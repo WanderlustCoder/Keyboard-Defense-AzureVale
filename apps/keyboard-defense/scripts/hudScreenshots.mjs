@@ -213,8 +213,7 @@ async function captureScreenshots(opts) {
           shell: false
         });
       } catch (stopError) {
-        summary.stopError =
-          stopError instanceof Error ? stopError.message : String(stopError);
+        summary.stopError = stopError instanceof Error ? stopError.message : String(stopError);
         if (summary.status === "success") {
           summary.status = "warning";
         }
