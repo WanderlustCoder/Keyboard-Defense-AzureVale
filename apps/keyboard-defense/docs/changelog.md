@@ -15,6 +15,7 @@
 
 - Diagnostics overlay now displays current gold with the latest delta/timestamp plus a running passive unlock summary so automation logs the same economy signals surfaced to players.
 - Added a "Recent gold events" block to diagnostics, showing the last three deltas (amount, resulting total, timestamp, and time since) so smoke logs and HUD captures immediately reveal economy swings.
+- HUD castle upgrade panel mirrors the same condensed history, listing the latest three gold deltas right next to passive summaries for quick at-a-glance economy context even when diagnostics are hidden.
 - Runtime metrics track `goldEvents` and `castlePassiveUnlocks`, enabling the analytics export pipeline to expose unlock counts, last unlock details, and gold event timelines.
 - `npm run analytics:aggregate` CSV gains `passiveUnlockCount`, `lastPassiveUnlock`, `castlePassiveUnlocks`, `goldEventsTracked`, `lastGoldDelta`, and `lastGoldEventTime` columns; docs updated accordingly.
 - Tutorial smoke and castle breach artifacts now attach passive unlock counts, summaries, and active castle passives for downstream dashboards.

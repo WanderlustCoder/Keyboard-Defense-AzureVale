@@ -3,6 +3,7 @@ import {
   CastlePassive,
   GameMode,
   GameState,
+  GoldEvent,
   TurretTargetPriority,
   TurretTypeId,
   WaveSpawnPreview,
@@ -193,6 +194,7 @@ export class HudView {
   private readonly castleRepairButton: HTMLButtonElement;
   private readonly castleStatus: HTMLSpanElement;
   private readonly castleBenefits: HTMLUListElement;
+  private readonly castleGoldEvents: HTMLUListElement;
   private readonly castlePassives: HTMLUListElement;
   private readonly wavePreview: WavePreviewPanel;
   private readonly slotControls = new Map<string, SlotControls>();
@@ -623,6 +625,11 @@ export class HudView {
     this.castlePassives.dataset.visible = "false";
     this.castlePassives.hidden = true;
     this.castlePassives.setAttribute("aria-label", "Active castle passive buffs");
+    this.castleGoldEvents = document.createElement("ul");
+    this.castleGoldEvents.className = "castle-gold-events";
+    this.castleGoldEvents.dataset.visible = "false";
+    this.castleGoldEvents.hidden = true;
+    this.castleGoldEvents.setAttribute("aria-label", "Recent gold events");
     this.castleBenefits = document.createElement("ul");
     this.castleBenefits.className = "castle-benefits";
     this.castleBenefits.dataset.visible = "false";
@@ -638,6 +645,7 @@ export class HudView {
     castleWrap.appendChild(this.castleRepairButton);
     castleWrap.appendChild(this.castleStatus);
     castleWrap.appendChild(this.castlePassives);
+    castleWrap.appendChild(this.castleGoldEvents);
     castleWrap.appendChild(this.castleBenefits);
     this.upgradePanel.appendChild(castleWrap);
 
@@ -1048,6 +1056,62 @@ export class HudView {
     }
   }
 
+  private renderCastleGoldEvents(events: GoldEvent[], currentTime: number): void {
+    const list = this.castleGoldEvents;
+    list.replaceChildren();
+    if (!events.length) {
+      list.dataset.visible = "false";
+      list.hidden = true;
+      return;
+    }
+    list.dataset.visible = "true";
+    list.hidden = false;
+    for (const event of events) {
+      const item = document.createElement("li");
+      item.className = "gold-event-entry";
+      const deltaValue =
+        typeof event.delta === "number" && Number.isFinite(event.delta)
+          ? Math.round(event.delta)
+          : null;
+      const goldValue =
+        typeof event.gold === "number" && Number.isFinite(event.gold)
+          ? Math.round(event.gold)
+          : null;
+      const timestamp =
+        typeof event.timestamp === "number" && Number.isFinite(event.timestamp)
+          ? event.timestamp
+          : null;
+      const age =
+        timestamp !== null && Number.isFinite(currentTime)
+          ? Math.max(0, currentTime - timestamp)
+          : null;
+      if (deltaValue !== null) {
+        item.dataset.deltaSign =
+          deltaValue > 0 ? "positive" : deltaValue < 0 ? "negative" : "neutral";
+      } else {
+        item.dataset.deltaSign = "neutral";
+      }
+      const parts: string[] = [];
+      if (deltaValue !== null) {
+        const prefix = deltaValue >= 0 ? "+" : "";
+        parts.push(`${prefix}${deltaValue}g`);
+      } else {
+        parts.push("??g");
+      }
+      if (goldValue !== null) {
+        parts.push(`→ ${goldValue}g`);
+      }
+      if (timestamp !== null) {
+        parts.push(`@ ${timestamp.toFixed(1)}s`);
+      }
+      if (age !== null) {
+        parts.push(`(${age.toFixed(1)}s ago)`);
+      }
+      item.textContent = parts.join(" ");
+      list.appendChild(item);
+    }
+  }
+
   private renderOptionsCastlePassives(passives: CastlePassive[]): void {
     if (!this.optionsCastlePassives) return;
     const list = this.optionsCastlePassives;
@@ -1139,6 +1203,8 @@ export class HudView {
     const passives = state.castle.passives ?? [];
     this.renderCastlePassives(passives);
     this.renderOptionsCastlePassives(passives);
+    const recentGoldEvents = (state.analytics.goldEvents ?? []).slice(-3).reverse();
+    this.renderCastleGoldEvents(recentGoldEvents, state.time ?? 0);
 
     this.castleBenefits.replaceChildren();
     this.castleBenefits.dataset.visible = "false";

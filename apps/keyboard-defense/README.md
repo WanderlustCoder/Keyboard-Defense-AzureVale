@@ -7,6 +7,7 @@ Keyboard Defense is a typing-driven castle defense game where fast, accurate inp
 - Deterministic game engine for repeatable playtests and automation.
 - Upgradeable castle and turret archetypes (arrow, arcane, flame) with unique behaviors.
 - Passive castle buffs (regen, armor, gold bonus) unlock as you upgrade and surface in HUD/options overlays.
+- Castle upgrade panel keeps a running log of the last few gold events (delta, total, timestamp) so sudden economy swings are visible without opening diagnostics.
 - Save and apply turret loadout presets with gold-cost previews for rapid experimentation.
 - Crystal Pulse turret archetype (feature toggle) that deals bonus shield damage to counter barrier-heavy waves.
 - Analytics tracking for wave summaries, accuracy, breaches, and DPS.

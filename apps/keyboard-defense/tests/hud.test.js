@@ -483,6 +483,8 @@ const initializeHud = () => {
 
   const castleStatus =
     findByClass(upgradePanel, "castle-status") ?? new FakeElement("span", "castle-status");
+  const castleGoldEvents =
+    findByClass(upgradePanel, "castle-gold-events") ?? new FakeElement("ul", "castle-gold-events");
 
   const cleanup = () => {
     if (originalDocument !== undefined) {
@@ -570,6 +572,7 @@ const initializeHud = () => {
       optionsCastleBenefits,
       optionsCastlePassives,
       castleStatus,
+      castleGoldEvents,
       waveScorecard,
       waveScorecardStats,
       waveScorecardContinue,
@@ -674,7 +677,8 @@ const buildInitialState = () => {
         completedRuns: 0,
         replayedRuns: 0,
         skippedRuns: 0
-      }
+      },
+      goldEvents: []
     }
   };
 };
@@ -729,6 +733,31 @@ test("HudView highlights combos and gold deltas", () => {
   hud.setTutorialMessage(null);
   assert.equal(tutorialBanner.dataset.visible, "false");
 
+  cleanup();
+});
+
+test("HudView renders recent gold events list", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  const { castleGoldEvents } = elements;
+
+  const baseState = buildInitialState();
+  hud.update(baseState, []);
+  assert.equal(castleGoldEvents.dataset.visible, "false");
+
+  const stateWithEvents = structuredClone(baseState);
+  stateWithEvents.time = 60;
+  stateWithEvents.analytics.goldEvents = [
+    { gold: 210, delta: 10, timestamp: 10 },
+    { gold: 260, delta: 50, timestamp: 25 },
+    { gold: 300, delta: 40, timestamp: 40 },
+    { gold: 330, delta: 30, timestamp: 55 }
+  ];
+  hud.update(stateWithEvents, []);
+
+  assert.equal(castleGoldEvents.dataset.visible, "true");
+  assert.equal(castleGoldEvents.children.length, 3);
+  assert.ok(castleGoldEvents.children[0].textContent.includes("+30g"));
+  assert.ok(castleGoldEvents.children[2].textContent.includes("+50g"));
   cleanup();
 });
 
