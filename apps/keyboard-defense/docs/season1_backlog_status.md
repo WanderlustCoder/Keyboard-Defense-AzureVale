@@ -67,7 +67,7 @@
 | 63 | Asset Pipeline & Visuals | Generate sprite atlas to minimize draw calls. | Not Started |  |
 | 64 | Asset Pipeline & Visuals | Defer high-res asset loading until post-ready signal. | Not Started |  |
 | 65 | Asset Pipeline & Visuals | Introduce projectile particle systems via offscreen canvas. | Not Started |  |
-| 66 | Asset Pipeline & Visuals | Add enemy defeat animation frames with easing. | Not Started |  |
+| 66 | Asset Pipeline & Visuals | Add enemy defeat animation frames with easing. | Done | Canvas renderer spawns eased defeat bursts with palette-matched rings and spikes |
 | 67 | Asset Pipeline & Visuals | Morph castle visuals across upgrade levels. | Not Started |  |
 | 68 | Asset Pipeline & Visuals | Overlay ambient starfield/parallax background effects. | Not Started |  |
 | 69 | Asset Pipeline & Visuals | Validate asset integrity via manifest checksum at startup. | Not Started |  |
