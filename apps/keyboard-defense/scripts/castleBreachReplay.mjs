@@ -370,6 +370,12 @@ async function main() {
           : "Timeout reached without breach."
       );
     }
+    if (result.status !== "breached") {
+      console.error(
+        "Castle breach replay did not reach a breach before timing out; investigate tutorial drill."
+      );
+      process.exitCode = 1;
+    }
   } catch (error) {
     console.error(error instanceof Error ? error.message : String(error));
     process.exit(1);
