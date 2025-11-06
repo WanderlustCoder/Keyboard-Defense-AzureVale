@@ -1,0 +1,385 @@
+#!/usr/bin/env node
+/**
+ * Castle breach replay CLI.
+ *
+ * Spins up the headless GameEngine with a minimal wave configuration,
+ * spawns a deterministic enemy, and advances the simulation until the
+ * castle takes damage (or a timeout is reached). Designed for nightly
+ * regression drills so we can ensure the scripted breach used in the
+ * tutorial remains intact.
+ *
+ * Usage:
+ *   node scripts/castleBreachReplay.mjs --help
+ */
+
+import { promises as fs } from "node:fs";
+import path from "node:path";
+import process from "node:process";
+
+import { GameEngine } from "../dist/src/engine/gameEngine.js";
+import { defaultConfig } from "../dist/src/core/config.js";
+
+const DEFAULT_SEED = 424242;
+const DEFAULT_STEP = 0.1;
+const DEFAULT_MAX_TIME = 45;
+const DEFAULT_SAMPLE = 0.5;
+const DEFAULT_ARTIFACT = "artifacts/castle-breach.json";
+const DEFAULT_TIER = "brute";
+const DEFAULT_LANE = 1;
+const DEFAULT_PREP = 1.5;
+const DEFAULT_SPEED_MULT = 1.25;
+const DEFAULT_HEALTH_MULT = 1.0;
+
+function cloneConfig() {
+  if (typeof structuredClone === "function") {
+    return structuredClone(defaultConfig);
+  }
+  return JSON.parse(JSON.stringify(defaultConfig));
+}
+
+function ensureDirectoryForFile(filePath) {
+  const dir = path.dirname(filePath);
+  return fs.mkdir(dir, { recursive: true });
+}
+
+export function parseArgs(argv = []) {
+  const options = {
+    seed: DEFAULT_SEED,
+    step: DEFAULT_STEP,
+    maxTime: DEFAULT_MAX_TIME,
+    sample: DEFAULT_SAMPLE,
+    artifact: DEFAULT_ARTIFACT,
+    tier: DEFAULT_TIER,
+    lane: DEFAULT_LANE,
+    prep: DEFAULT_PREP,
+    speedMultiplier: DEFAULT_SPEED_MULT,
+    healthMultiplier: DEFAULT_HEALTH_MULT,
+    help: false
+  };
+
+  for (let i = 0; i < argv.length; i += 1) {
+    const token = argv[i];
+    switch (token) {
+      case "--help":
+      case "-h":
+        options.help = true;
+        break;
+      case "--seed": {
+        const value = Number.parseInt(argv[++i] ?? "", 10);
+        if (!Number.isFinite(value)) throw new Error("Expected --seed <number>.");
+        options.seed = value;
+        break;
+      }
+      case "--step": {
+        const value = Number.parseFloat(argv[++i] ?? "");
+        if (!Number.isFinite(value) || value <= 0) {
+          throw new Error("Expected --step to be a positive number of seconds.");
+        }
+        options.step = value;
+        break;
+      }
+      case "--max-time": {
+        const value = Number.parseFloat(argv[++i] ?? "");
+        if (!Number.isFinite(value) || value <= 0) {
+          throw new Error("Expected --max-time to be a positive number of seconds.");
+        }
+        options.maxTime = value;
+        break;
+      }
+      case "--sample": {
+        const value = Number.parseFloat(argv[++i] ?? "");
+        if (!Number.isFinite(value) || value <= 0) {
+          throw new Error("Expected --sample to be a positive number of seconds.");
+        }
+        options.sample = value;
+        break;
+      }
+      case "--artifact": {
+        const value = argv[++i];
+        if (!value) throw new Error("Expected path after --artifact.");
+        options.artifact = value;
+        break;
+      }
+      case "--no-artifact":
+        options.artifact = null;
+        break;
+      case "--tier": {
+        const value = argv[++i];
+        if (!value) throw new Error("Expected tier id after --tier.");
+        options.tier = value;
+        break;
+      }
+      case "--lane": {
+        const value = Number.parseInt(argv[++i] ?? "", 10);
+        if (!Number.isFinite(value) || value < 0) {
+          throw new Error("Expected --lane to be a non-negative integer.");
+        }
+        options.lane = value;
+        break;
+      }
+      case "--prep": {
+        const value = Number.parseFloat(argv[++i] ?? "");
+        if (!Number.isFinite(value) || value < 0) {
+          throw new Error("Expected --prep to be >= 0.");
+        }
+        options.prep = value;
+        break;
+      }
+      case "--speed-mult": {
+        const value = Number.parseFloat(argv[++i] ?? "");
+        if (!Number.isFinite(value) || value <= 0) {
+          throw new Error("Expected --speed-mult to be a positive number.");
+        }
+        options.speedMultiplier = value;
+        break;
+      }
+      case "--health-mult": {
+        const value = Number.parseFloat(argv[++i] ?? "");
+        if (!Number.isFinite(value) || value <= 0) {
+          throw new Error("Expected --health-mult to be a positive number.");
+        }
+        options.healthMultiplier = value;
+        break;
+      }
+      default:
+        if (token.startsWith("-")) {
+          throw new Error(`Unknown argument "${token}". Use --help for usage.`);
+        }
+    }
+  }
+
+  return options;
+}
+
+export function printHelp() {
+  console.log(`Keyboard Defense Castle Breach Replay
+
+Runs a deterministic simulation to ensure the scripted castle-breach drill
+still lands. Requires a fresh build so dist/ artifacts exist.
+
+Options:
+  --seed <n>           RNG seed (default ${DEFAULT_SEED})
+  --step <seconds>     Simulation timestep per update (default ${DEFAULT_STEP})
+  --max-time <seconds> Maximum simulated seconds before timeout (default ${DEFAULT_MAX_TIME})
+  --sample <seconds>   Interval for timeline samples (default ${DEFAULT_SAMPLE})
+  --artifact <path>    JSON artifact output (default ${DEFAULT_ARTIFACT})
+  --no-artifact        Skip writing the artifact
+  --tier <id>          Enemy tier id to spawn (default "${DEFAULT_TIER}")
+  --lane <index>       Lane to spawn the enemy in (default ${DEFAULT_LANE})
+  --prep <seconds>     Countdown duration before the wave starts (default ${DEFAULT_PREP})
+  --speed-mult <n>     Multiplier applied to enemy speed (default ${DEFAULT_SPEED_MULT})
+  --health-mult <n>    Multiplier applied to enemy health (default ${DEFAULT_HEALTH_MULT})
+  --help, -h           Show this help message
+
+Example:
+  node scripts/castleBreachReplay.mjs --seed 1337 --lane 2 --speed-mult 1.4`);
+}
+
+function buildConfig(options) {
+  const config = cloneConfig();
+  config.prepCountdownSeconds = options.prep;
+  config.loopWaves = false;
+  config.waves = [
+    {
+      id: "breach-drill",
+      duration: Math.max(options.maxTime + 5, 30),
+      rewardBonus: 0,
+      spawns: []
+    }
+  ];
+  config.castleLevels = config.castleLevels.map((level, index) =>
+    index === 0
+      ? {
+          ...level,
+          unlockSlots: 0
+        }
+      : level
+  );
+  return config;
+}
+
+function createDifficulty(options) {
+  return {
+    fromWave: 0,
+    wordWeights: { easy: 1, medium: 0, hard: 0 },
+    enemyHealthMultiplier: options.healthMultiplier,
+    enemySpeedMultiplier: options.speedMultiplier,
+    rewardMultiplier: 1
+  };
+}
+
+export async function runBreachDrill(options) {
+  const engine = new GameEngine({
+    seed: options.seed,
+    config: buildConfig(options)
+  });
+
+  // Remove starter gold to keep the scenario sterile.
+  engine.grantGold(-engine.getState().resources.gold);
+
+  const events = [];
+  const timeline = [];
+  let breachEvent = null;
+
+  engine.events.on("enemy:spawned", (enemy) => {
+    events.push({
+      type: "enemy:spawned",
+      time: engine.getState().time,
+      enemy: {
+        id: enemy.id,
+        tier: enemy.tierId,
+        lane: enemy.lane,
+        maxHealth: enemy.maxHealth,
+        speed: enemy.speed
+      }
+    });
+  });
+
+  engine.events.on("enemy:escaped", ({ enemy }) => {
+    events.push({
+      type: "enemy:escaped",
+      time: engine.getState().time,
+      enemy: { id: enemy.id, tier: enemy.tierId, lane: enemy.lane }
+    });
+  });
+
+  engine.events.on("castle:damaged", ({ amount, health }) => {
+    if (breachEvent) return;
+    const state = engine.getState();
+    breachEvent = {
+      time: state.time,
+      amount,
+      healthAfter: health,
+      maxHealth: state.castle.maxHealth,
+      wave: state.wave.index
+    };
+    events.push({
+      type: "castle:damaged",
+      time: state.time,
+      amount,
+      health
+    });
+  });
+
+  const difficulty = createDifficulty(options);
+  let spawned = false;
+  let nextSample = 0;
+  const maxIterations = Math.ceil(options.maxTime / options.step) + 10;
+
+  for (let iteration = 0; iteration < maxIterations; iteration += 1) {
+    const state = engine.getState();
+
+    if (!spawned && !state.wave.inCountdown) {
+      const enemy = engine.spawnEnemy({
+        tierId: options.tier,
+        lane: options.lane,
+        waveIndex: state.wave.index,
+        difficulty
+      });
+      if (!enemy) {
+        throw new Error("Failed to spawn enemy for breach drill.");
+      }
+      spawned = true;
+    }
+
+    engine.update(options.step);
+    const updated = engine.getState();
+
+    if (updated.time >= nextSample) {
+      timeline.push({
+        time: Number(updated.time.toFixed(3)),
+        castleHealth: updated.castle.health,
+        enemiesAlive: updated.enemies.filter((enemy) => enemy.status === "alive").length,
+        distanceClosestEnemy: updated.enemies.length
+          ? Math.min(...updated.enemies.map((enemy) => enemy.distance))
+          : null
+      });
+      nextSample += options.sample;
+    }
+
+    if (breachEvent || updated.time >= options.maxTime) {
+      break;
+    }
+  }
+
+  const finalState = engine.getState();
+  const result = {
+    status: breachEvent ? "breached" : "timeout",
+    options: {
+      seed: options.seed,
+      step: options.step,
+      maxTime: options.maxTime,
+      sample: options.sample,
+      tier: options.tier,
+      lane: options.lane,
+      prep: options.prep,
+      speedMultiplier: options.speedMultiplier,
+      healthMultiplier: options.healthMultiplier
+    },
+    startedAt: null,
+    finishedAt: null,
+    timeline,
+    events,
+    breach: breachEvent,
+    finalState: {
+      time: Number(finalState.time.toFixed(3)),
+      castleHealth: finalState.castle.health,
+      castleMaxHealth: finalState.castle.maxHealth,
+      status: finalState.status
+    }
+  };
+
+  return result;
+}
+
+async function main() {
+  let options;
+  try {
+    options = parseArgs(process.argv.slice(2));
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : String(error));
+    process.exit(1);
+    return;
+  }
+
+  if (options.help) {
+    printHelp();
+    return;
+  }
+
+  const startedAt = new Date().toISOString();
+  let result;
+
+  try {
+    result = await runBreachDrill(options);
+    result.startedAt = startedAt;
+    result.finishedAt = new Date().toISOString();
+    if (options.artifact) {
+      const resolved = path.resolve(options.artifact);
+      await ensureDirectoryForFile(resolved);
+      await fs.writeFile(resolved, JSON.stringify(result, null, 2), "utf8");
+      console.log(
+        result.status === "breached"
+          ? `Castle breached at ${result.breach.time.toFixed(2)}s. Artifact: ${resolved}`
+          : `Timeout reached without breach. Artifact: ${resolved}`
+      );
+    } else {
+      console.log(
+        result.status === "breached"
+          ? `Castle breached at ${result.breach.time.toFixed(2)}s.`
+          : "Timeout reached without breach."
+      );
+    }
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : String(error));
+    process.exit(1);
+    return;
+  }
+}
+
+if (
+  import.meta.url === `file://${process.argv[1]}` ||
+  process.argv[1]?.endsWith("castleBreachReplay.mjs")
+) {
+  await main();
+}

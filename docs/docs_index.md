@@ -22,6 +22,7 @@ Status entries live under `docs/status/`. Recent highlights include:
 - `2025-11-06_crystal_pulse.md` - Crystal Pulse turret rollout, toggle wiring, and shield-burst analytics.
 - `2025-11-06_ci_pipeline.md` - CI workflow wiring for build/unit/integration + tutorial smoke and full E2E runs.
 - `2025-11-06_hud_screenshots.md` - Automated HUD/options overlay screenshot capture script and usage.
+- `2025-11-06_castle_breach_replay.md` - Deterministic castle breach replay CLI and backlog #99 closure.
 - `2025-11-04_telemetry_controls.md` - Telemetry toggles, export metadata, and analytics viewer updates.
 - `2025-11-04_automation_scaffold.md` - Scripts, test orchestration, and CI roadmap.
 - `2025-11-03_dev_monitor.md` - Dev monitor CLI implementation details.

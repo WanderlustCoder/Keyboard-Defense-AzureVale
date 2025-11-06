@@ -29,6 +29,7 @@
     "task:smoke": "node ./scripts/smoke.mjs",
     "task:seed": "node ./scripts/seed.mjs",
     "task:screenshots": "node ./scripts/hudScreenshots.mjs",
+    "task:breach": "node ./scripts/castleBreachReplay.mjs",
     "task:e2e": "node ./scripts/e2e.mjs",
     "task:lint": "npm run lint",
     "clean": "node -e \"try{require('fs').rmSync('dist',{recursive:true,force:true});}catch(e){if(e.code!== 'ENOENT'){console.warn('Clean warning:', e.message);}}\"",

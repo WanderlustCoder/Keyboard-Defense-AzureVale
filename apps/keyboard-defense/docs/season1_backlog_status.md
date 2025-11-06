@@ -100,7 +100,7 @@
 | 96 | QA & Testing | Fuzz test typing input buffer for invalid characters/timing. | Not Started |  |
 | 97 | QA & Testing | Automate tutorial summary modal snapshot tests. | Not Started |  |
 | 98 | QA & Testing | Add soak test that alternates tutorial replay/skip, verifying persistence. | Not Started |  |
-| 99 | QA & Testing | Create CLI to replay deterministic castle breach scenario for regression. | Not Started |  |
+| 99 | QA & Testing | Create CLI to replay deterministic castle breach scenario for regression. | Done | `node scripts/castleBreachReplay.mjs` simulates the breach and emits a timeline artifact |
 | 100 | QA & Testing | Track tutorials completed per session in QA dashboard. | Not Started |  |
 
 

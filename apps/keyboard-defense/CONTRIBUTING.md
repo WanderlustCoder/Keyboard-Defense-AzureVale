@@ -15,6 +15,7 @@ This project targets a fully automated delivery pipeline (see `docs/CODEX_AUTONO
 | `node scripts/e2e.mjs` | Start the dev server, run tutorial & campaign smokes, and archive artifacts. |
 | `node scripts/tutorialSmoke.mjs --mode full` | Full tutorial playback via Playwright (existing workflow). |
 | `node scripts/seed.mjs` | Generate deterministic localStorage/save fixtures under `artifacts/seed/`. |
+| `node scripts/castleBreachReplay.mjs` | Execute the castle breach drill and emit a JSON timeline under `artifacts/`. |
 | `node scripts/hudScreenshots.mjs` | Capture HUD/options overlay screenshots under `artifacts/screenshots/`. |
 
 All scripts accept `--ci` to emit artifacts under `apps/keyboard-defense/artifacts/**`.

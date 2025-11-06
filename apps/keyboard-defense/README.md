@@ -103,6 +103,7 @@ The new generation of orchestration scripts lives in `scripts/`:
 | `node scripts/seed.mjs`        | Emit deterministic local storage fixtures under `artifacts/seed/`.                                                                                      |
 | `node scripts/e2e.mjs`         | Start the dev server, run full tutorial & campaign smokes, archive artifacts (`artifacts/e2e/tutorial-full.json`, `campaign.json`, `e2e-summary.json`). |
 | `node scripts/hudScreenshots.mjs` | Capture HUD and options overlay screenshots into `artifacts/screenshots/` for documentation and regression references.                                 |
+| `node scripts/castleBreachReplay.mjs` | Replay the deterministic castle-breach drill and emit a JSON artifact summarising the timeline.                                                     |
 | `node scripts/analyticsAggregate.mjs` | Convert analytics snapshots into the detailed wave-by-wave CSV described in `docs/analytics_schema.md`.                                           |
 | `node scripts/analyticsLeaderboard.mjs` | Generate a leaderboard-ready CSV (or JSON) ranked by combo, accuracy, and DPS from exported analytics snapshots.                              |
 
