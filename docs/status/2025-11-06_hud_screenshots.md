@@ -16,6 +16,6 @@
 - Wired the GitHub Actions `ci-e2e-azure-vale` workflow to run the screenshot capture after the e2e orchestration and upload the resulting PNGs automatically.
 
 ## Next Steps
-1. Integrate screenshot capture into the E2E job once visual diff thresholds are defined.
+1. Surface the `screenshots-summary.ci.json` artifact in dashboards so nightly reviewers can diff HUD changes.
 2. Expand captures to include tutorial summary and wave scorecard overlays.
 3. Introduce automated diff tooling (e.g., Playwright `toHaveScreenshot`) once baselines stabilize.
