@@ -6,6 +6,7 @@ import process from "node:process";
 import { fileURLToPath } from "node:url";
 
 const DEFAULT_OUTPUT = null;
+const DEFAULT_GOLD_WINDOW = 5;
 
 function printHelp() {
   console.log(`Keyboard Defense passive unlock timeline
@@ -16,6 +17,8 @@ Usage:
 Options:
   --csv             Emit CSV instead of JSON
   --out <path>      Write output to the provided file (stdout otherwise)
+  --merge-gold      Attach nearby gold event metadata to each unlock
+  --gold-window n   Seconds to search for gold events around unlocks (default ${DEFAULT_GOLD_WINDOW})
   --help            Show this help message
 
 Description:
@@ -29,7 +32,9 @@ export function parseArgs(argv = []) {
     csv: false,
     out: DEFAULT_OUTPUT,
     help: false,
-    targets: []
+    targets: [],
+    mergeGold: false,
+    goldWindow: DEFAULT_GOLD_WINDOW
   };
 
   for (let i = 0; i < argv.length; i += 1) {
@@ -38,6 +43,17 @@ export function parseArgs(argv = []) {
       case "--csv":
         options.csv = true;
         break;
+      case "--merge-gold":
+        options.mergeGold = true;
+        break;
+      case "--gold-window": {
+        const value = Number.parseFloat(argv[++i] ?? "");
+        if (!Number.isFinite(value) || value < 0) {
+          throw new Error("Expected --gold-window <seconds> (non-negative number).");
+        }
+        options.goldWindow = value;
+        break;
+      }
       case "--out": {
         const value = argv[++i];
         if (!value) {
@@ -97,16 +113,21 @@ async function loadSnapshot(file) {
   }
 }
 
-export function buildTimelineEntries(snapshot, sourcePath) {
+export function buildTimelineEntries(snapshot, sourcePath, options = {}) {
   const unlocks = snapshot?.analytics?.castlePassiveUnlocks;
   if (!Array.isArray(unlocks) || unlocks.length === 0) {
     return [];
   }
+  const mergeGold = Boolean(options.mergeGold);
+  const goldWindow = Number.isFinite(options.goldWindow) ? options.goldWindow : 0;
+  const goldEvents = Array.isArray(snapshot?.analytics?.goldEvents)
+    ? snapshot.analytics.goldEvents
+    : [];
   const capturedAt = snapshot?.capturedAt ?? "";
   const runMode = snapshot?.mode ?? snapshot?.analytics?.mode ?? "";
   const waveIndex = snapshot?.wave?.index ?? "";
   const status = snapshot?.status ?? "";
-  return unlocks.map((unlock, index) => ({
+  const entries = unlocks.map((unlock, index) => ({
     file: sourcePath,
     capturedAt,
     status,
@@ -119,9 +140,41 @@ export function buildTimelineEntries(snapshot, sourcePath) {
     total: unlock.total ?? "",
     delta: unlock.delta ?? ""
   }));
+
+  if (!mergeGold || goldEvents.length === 0) {
+    return entries;
+  }
+
+  return entries.map((row, index) => {
+    const unlock = unlocks[index];
+    const unlockTime = Number(unlock?.time);
+    if (!Number.isFinite(unlockTime)) {
+      return row;
+    }
+    let nearest = null;
+    for (const event of goldEvents) {
+      const eventTime = Number(event?.timestamp);
+      if (!Number.isFinite(eventTime)) continue;
+      const diff = Math.abs(eventTime - unlockTime);
+      if (diff > goldWindow) continue;
+      if (!nearest || diff < nearest.diff) {
+        nearest = { diff, event };
+      }
+    }
+    if (!nearest) {
+      return row;
+    }
+    return {
+      ...row,
+      goldDelta: nearest.event?.delta ?? "",
+      gold: nearest.event?.gold ?? "",
+      goldEventTime: nearest.event?.timestamp ?? "",
+      goldLag: Number.isFinite(nearest.diff) ? Number(nearest.diff.toFixed(3)) : ""
+    };
+  });
 }
 
-function formatCsv(rows) {
+function formatCsv(rows, { includeGold = false } = {}) {
   const headers = [
     "file",
     "capturedAt",
@@ -135,6 +188,9 @@ function formatCsv(rows) {
     "total",
     "delta"
   ];
+  if (includeGold) {
+    headers.push("goldDelta", "gold", "goldEventTime", "goldLag");
+  }
   const escape = (value) => {
     if (value === null || value === undefined) return "";
     const string = String(value);
@@ -179,14 +235,16 @@ export async function runPassiveTimeline(options) {
   for (const file of files) {
     const snapshot = await loadSnapshot(file);
     if (!snapshot) continue;
-    rows.push(...buildTimelineEntries(snapshot, file));
+    rows.push(...buildTimelineEntries(snapshot, file, options));
   }
   if (rows.length === 0) {
     console.error("passiveTimeline: no castle passive unlocks found in provided snapshots.");
     return 1;
   }
 
-  const payload = options.csv ? formatCsv(rows) : formatJson(rows);
+  const payload = options.csv
+    ? formatCsv(rows, { includeGold: options.mergeGold })
+    : formatJson(rows);
 
   if (options.out) {
     const target = path.resolve(options.out);

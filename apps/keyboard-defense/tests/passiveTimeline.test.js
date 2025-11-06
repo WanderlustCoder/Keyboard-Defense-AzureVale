@@ -26,9 +26,19 @@ function runCli(args, options = {}) {
 }
 
 test("parseArgs captures flags and targets", () => {
-  const args = parseArgs(["--csv", "--out", "out/file.csv", "snapshot.json"]);
+  const args = parseArgs([
+    "--csv",
+    "--out",
+    "out/file.csv",
+    "--merge-gold",
+    "--gold-window",
+    "3.5",
+    "snapshot.json"
+  ]);
   assert.equal(args.csv, true);
   assert.equal(args.out, "out/file.csv");
+  assert.equal(args.mergeGold, true);
+  assert.equal(args.goldWindow, 3.5);
   assert.deepEqual(args.targets, ["snapshot.json"]);
 });
 
@@ -42,10 +52,17 @@ test("buildTimelineEntries maps snapshot unlocks", () => {
       castlePassiveUnlocks: [
         { id: "regen", level: 2, time: 45.2, total: 1.2, delta: 0.4 },
         { id: "gold", level: 3, time: 80.5, total: 0.15, delta: 0.05 }
+      ],
+      goldEvents: [
+        { gold: 200, delta: 25, timestamp: 45.4 },
+        { gold: 260, delta: 40, timestamp: 90 }
       ]
     }
   };
-  const entries = buildTimelineEntries(snapshot, "/tmp/snap.json");
+  const entries = buildTimelineEntries(snapshot, "/tmp/snap.json", {
+    mergeGold: true,
+    goldWindow: 3
+  });
   assert.equal(entries.length, 2);
   assert.equal(entries[0].id, "regen");
   assert.equal(entries[0].level, 2);
@@ -54,6 +71,8 @@ test("buildTimelineEntries maps snapshot unlocks", () => {
   assert.equal(entries[1].unlockIndex, 1);
   assert.equal(entries[1].mode, "campaign");
   assert.equal(entries[1].file, "/tmp/snap.json");
+  assert.equal(entries[0].goldDelta, 25);
+  assert.equal(entries[0].goldLag, 0.2);
 });
 
 test("runPassiveTimeline writes csv output", async () => {
@@ -64,7 +83,8 @@ test("runPassiveTimeline writes csv output", async () => {
       capturedAt: "2025-11-07T12:00:00.000Z",
       status: "running",
       analytics: {
-        castlePassiveUnlocks: [{ id: "armor", level: 3, time: 120.5, total: 2, delta: 1 }]
+        castlePassiveUnlocks: [{ id: "armor", level: 3, time: 120.5, total: 2, delta: 1 }],
+        goldEvents: [{ gold: 320, delta: 50, timestamp: 121 }]
       }
     };
     await fs.writeFile(file, JSON.stringify(snapshot), "utf8");
@@ -73,12 +93,15 @@ test("runPassiveTimeline writes csv output", async () => {
       csv: true,
       out: outPath,
       help: false,
-      targets: [file]
+      targets: [file],
+      mergeGold: true,
+      goldWindow: 5
     });
     assert.equal(exitCode, 0);
     const csv = await fs.readFile(outPath, "utf8");
     assert.match(csv, /file,capturedAt,status/);
     assert.match(csv, /armor/);
+    assert.match(csv, /goldDelta/);
   } finally {
     await fs.rm(dir, { recursive: true, force: true });
   }
@@ -101,6 +124,31 @@ test("CLI emits JSON by default", async () => {
     const payload = JSON.parse(stdout);
     assert.equal(payload.unlockCount, 1);
     assert.equal(payload.entries[0].id, "regen");
+  } finally {
+    await fs.rm(dir, { recursive: true, force: true });
+  }
+});
+
+test("CLI supports merge gold flag", async () => {
+  const dir = await fs.mkdtemp(path.join(os.tmpdir(), "passive-cli-gold-"));
+  try {
+    const file = path.join(dir, "snapshot.json");
+    await fs.writeFile(
+      file,
+      JSON.stringify({
+        analytics: {
+          castlePassiveUnlocks: [{ id: "gold", level: 3, time: 50, total: 0.2, delta: 0.05 }],
+          goldEvents: [{ gold: 400, delta: 30, timestamp: 51 }]
+        }
+      }),
+      "utf8"
+    );
+    const { stdout } = await runCli(["--merge-gold", "--gold-window", "2", file], {
+      cwd: path.resolve("./")
+    });
+    const payload = JSON.parse(stdout);
+    assert.equal(payload.entries[0].goldDelta, 30);
+    assert.equal(payload.entries[0].goldLag, 1);
   } finally {
     await fs.rm(dir, { recursive: true, force: true });
   }
