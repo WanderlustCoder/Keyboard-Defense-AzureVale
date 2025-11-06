@@ -27,6 +27,7 @@ Status entries live under `docs/status/`. Recent highlights include:
 - `2025-11-06_gold_event_delta.md` - Gold event delta/timestamp enrichment for economy analytics.
 - `2025-11-06_castle_passives.md` - Castle passive buffs surfaced in HUD/options with unlock events.
 - `2025-11-07_enemy_defeat_animation.md` - Procedural defeat burst animation added to fulfill backlog #66.
+- `2025-11-07_starfield.md` - Ambient starfield background layer for backlog #68.
 - `2025-11-07_passive_timeline.md` - Passive unlock timeline CLI for analytics exports and dashboard feeding.
 - `2025-11-04_telemetry_controls.md` - Telemetry toggles, export metadata, and analytics viewer updates.
 - `2025-11-04_automation_scaffold.md` - Scripts, test orchestration, and CI roadmap.

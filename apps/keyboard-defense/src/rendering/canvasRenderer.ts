@@ -39,6 +39,7 @@ export class CanvasRenderer {
   private cachedCheckeredPattern: CanvasPattern | null = null;
   private defeatBursts: DefeatBurst[] = [];
   private lastEnemyStatuses = new Map<string, EnemyStatus>();
+  private readonly starfield: StarParticle[];
 
   constructor(
     private readonly canvas: HTMLCanvasElement,
@@ -53,6 +54,7 @@ export class CanvasRenderer {
     this.pathLength = this.width * 0.7;
     this.laneCount = Math.max(...config.turretSlots.map((s) => s.lane)) + 1;
     this.spriteRenderer = new SpriteRenderer(assetLoader);
+    this.starfield = this.createStarfield(110);
   }
 
   render(
@@ -74,6 +76,7 @@ export class CanvasRenderer {
     this.updateDefeatBursts(state);
     this.clear();
     this.drawBackground();
+    this.drawStarfield(state.time);
     this.drawLanes();
     this.drawTurretRangeHighlight(state, options?.turretRange ?? null);
     this.drawTurretSlots(state);
@@ -134,6 +137,42 @@ export class CanvasRenderer {
     const pattern = this.ctx.createPattern(patternCanvas, "repeat");
     this.cachedCheckeredPattern = pattern;
     return pattern;
+  }
+
+  private createStarfield(count: number): StarParticle[] {
+    const stars: StarParticle[] = [];
+    for (let i = 0; i < count; i += 1) {
+      stars.push({
+        x: Math.random(),
+        y: Math.random(),
+        radius: 0.5 + Math.random() * 1.5,
+        phase: Math.random() * Math.PI * 2,
+        twinkleRate: 0.2 + Math.random() * 0.8
+      });
+    }
+    return stars;
+  }
+
+  private drawStarfield(time: number): void {
+    if (this.starfield.length === 0) return;
+    const parallaxScale = this.checkeredBackground ? 0.6 : 1;
+    const twinkleMultiplier = this.reducedMotion ? 0.15 : 0.5;
+    for (const star of this.starfield) {
+      const twinkle = this.reducedMotion
+        ? 0.6
+        : 0.5 + 0.5 * Math.sin(time * (star.twinkleRate ?? 0.4) + star.phase);
+      const alphaBase = this.checkeredBackground ? 0.18 : 0.35;
+      const alpha = alphaBase * (0.4 + twinkle * 0.6);
+      this.ctx.fillStyle = `rgba(226, 232, 240, ${alpha})`;
+      const x = star.x * this.width;
+      const y =
+        star.y * this.height +
+        Math.sin((time + star.phase) * twinkleMultiplier) * (this.checkeredBackground ? 4 : 9);
+      const radius = star.radius * parallaxScale;
+      this.ctx.beginPath();
+      this.ctx.arc(x, y, radius, 0, Math.PI * 2);
+      this.ctx.fill();
+    }
   }
 
   private drawLanes(): void {
@@ -662,4 +701,12 @@ interface DefeatBurst {
   tierId: string;
   startTime: number;
   duration: number;
+}
+
+interface StarParticle {
+  x: number;
+  y: number;
+  radius: number;
+  phase: number;
+  twinkleRate?: number;
 }

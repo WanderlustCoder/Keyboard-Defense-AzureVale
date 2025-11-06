@@ -69,7 +69,7 @@
 | 65 | Asset Pipeline & Visuals | Introduce projectile particle systems via offscreen canvas. | Not Started |  |
 | 66 | Asset Pipeline & Visuals | Add enemy defeat animation frames with easing. | Done | Canvas renderer spawns eased defeat bursts with palette-matched rings and spikes |
 | 67 | Asset Pipeline & Visuals | Morph castle visuals across upgrade levels. | Not Started |  |
-| 68 | Asset Pipeline & Visuals | Overlay ambient starfield/parallax background effects. | Not Started |  |
+| 68 | Asset Pipeline & Visuals | Overlay ambient starfield/parallax background effects. | Done | Starfield layer with twinkling particles now renders behind the battlefield |
 | 69 | Asset Pipeline & Visuals | Validate asset integrity via manifest checksum at startup. | Not Started |  |
 | 70 | Asset Pipeline & Visuals | Automate asset manifest generation from source sprites. | Not Started |  |
 | 71 | Automation, Monitoring, Tooling | Script tutorial auto-run CLI verifying onboarding path nightly. | Done | Tutorial smoke CLI executed in CI via `ci-e2e-azure-vale` workflow |
