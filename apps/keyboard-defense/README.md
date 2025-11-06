@@ -75,7 +75,7 @@ apps/keyboard-defense/
 
 ## Analytics Export
 
-- Use `npm run analytics:aggregate` to convert JSON snapshots into a CSV. Columns include turret/typing damage, DPS splits, shield breaks, castle bonus gold, and castle repair usage (count, HP restored, gold spent) per wave.
+- Use `npm run analytics:aggregate` to convert JSON snapshots into a CSV. Columns include turret/typing damage, DPS splits, shield breaks, castle bonus gold, castle repair usage (count, HP restored, gold spent), passive unlock counts/details, and recent gold event telemetry per wave.
 - Review [`docs/analytics_schema.md`](../docs/analytics_schema.md) for the full snapshot and CSV schema, including tutorial telemetry fields.
 - Snapshot JSONs are generated via the in-game analytics download button (debug panel) or the options overlay when analytics export is enabled.
 

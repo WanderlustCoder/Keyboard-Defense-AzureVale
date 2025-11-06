@@ -22,17 +22,17 @@ export function createInitialState(config: GameConfig): GameState {
     time: 0,
     status: "preparing",
     mode: "campaign",
-  castle: {
-    level: castleLevel.level,
-    maxHealth: castleLevel.maxHealth,
-    health: castleLevel.maxHealth,
-    armor: castleLevel.armor,
-    regenPerSecond: castleLevel.regenPerSecond,
-    nextUpgradeCost: castleLevel.upgradeCost,
-    repairCooldownRemaining: 0,
-    goldBonusPercent: castleLevel.goldBonusPercent ?? 0,
-    passives: deriveCastlePassives(config.castleLevels[0], castleLevel)
-  },
+    castle: {
+      level: castleLevel.level,
+      maxHealth: castleLevel.maxHealth,
+      health: castleLevel.maxHealth,
+      armor: castleLevel.armor,
+      regenPerSecond: castleLevel.regenPerSecond,
+      nextUpgradeCost: castleLevel.upgradeCost,
+      repairCooldownRemaining: 0,
+      goldBonusPercent: castleLevel.goldBonusPercent ?? 0,
+      passives: deriveCastlePassives(config.castleLevels[0], castleLevel)
+    },
     resources: {
       gold: 200,
       score: 0
@@ -106,6 +106,8 @@ export function createInitialState(config: GameConfig): GameState {
       averageTurretDps: 0,
       averageTypingDps: 0,
       timeToFirstTurret: null,
+      castlePassiveUnlocks: [],
+      goldEvents: [],
       tutorial: {
         events: [],
         assistsShown: 0,

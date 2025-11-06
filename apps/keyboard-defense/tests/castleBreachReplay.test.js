@@ -1,9 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  parseArgs,
-  runBreachDrill
-} from "../scripts/castleBreachReplay.mjs";
+import { parseArgs, runBreachDrill } from "../scripts/castleBreachReplay.mjs";
 
 describe("castleBreachReplay CLI", () => {
   it("parses defaults without arguments", () => {
@@ -36,5 +33,16 @@ describe("castleBreachReplay CLI", () => {
     expect(result.timeline[result.timeline.length - 1].castleHealth).toBeLessThan(
       result.finalState.castleMaxHealth + 1e-6
     );
+    expect(result.passiveUnlockCount).toBeGreaterThanOrEqual(0);
+    expect(Array.isArray(result.passiveUnlocks)).toBe(true);
+    expect(Array.isArray(result.activeCastlePassives)).toBe(true);
+    expect(result.finalState.passives).toEqual(result.activeCastlePassives);
+    if (result.passiveUnlockCount === 0) {
+      expect(result.passiveUnlockSummary).toBe(null);
+      expect(result.lastPassiveUnlock).toBe(null);
+    } else {
+      expect(typeof result.passiveUnlockSummary).toBe("string");
+      expect(result.passiveUnlockSummary?.length).toBeGreaterThan(0);
+    }
   });
 });

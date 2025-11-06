@@ -30,6 +30,65 @@ const DEFAULT_PREP = 1.5;
 const DEFAULT_SPEED_MULT = 1.25;
 const DEFAULT_HEALTH_MULT = 1.0;
 
+function cloneSimple(value) {
+  if (value === undefined || value === null) {
+    return value;
+  }
+  return JSON.parse(JSON.stringify(value));
+}
+
+function formatPassiveUnlockSummary(unlock) {
+  if (!unlock || typeof unlock !== "object") {
+    return "";
+  }
+  const labelMap = { regen: "Regen", armor: "Armor", gold: "Gold" };
+  const label = labelMap[unlock.id] ?? "Passive";
+  const level = Number.isFinite(unlock.level) ? ` L${unlock.level}` : "";
+  const total = Number.isFinite(unlock.total) ? unlock.total : 0;
+  const delta = Number.isFinite(unlock.delta) ? unlock.delta : 0;
+  let detail;
+  switch (unlock.id) {
+    case "regen": {
+      const totalStr = total.toFixed(1);
+      const deltaStr = delta > 0 ? ` (+${delta.toFixed(1)})` : "";
+      detail = `${totalStr} HP/s${deltaStr}`;
+      break;
+    }
+    case "armor": {
+      const totalStr = Math.round(total);
+      const deltaStr = Math.round(delta);
+      detail = `+${totalStr} armor${deltaStr > 0 ? ` (+${deltaStr})` : ""}`;
+      break;
+    }
+    case "gold": {
+      const totalStr = Math.round(total * 100);
+      const deltaStr = Math.round(delta * 100);
+      detail = `+${totalStr}% gold${deltaStr > 0 ? ` (+${deltaStr}%)` : ""}`;
+      break;
+    }
+    default: {
+      const totalStr = total.toFixed(2);
+      const deltaStr = delta > 0 ? ` (+${delta.toFixed(2)})` : "";
+      detail = `${totalStr}${deltaStr}`;
+    }
+  }
+  const time =
+    unlock.time !== undefined && Number.isFinite(unlock.time)
+      ? ` @ ${unlock.time.toFixed(2)}s`
+      : "";
+  return `${label}${level} ${detail}${time}`.trim();
+}
+
+function summarizePassiveUnlocks(unlocks) {
+  if (!Array.isArray(unlocks) || unlocks.length === 0) {
+    return "";
+  }
+  return unlocks
+    .map((unlock) => formatPassiveUnlockSummary(unlock))
+    .filter((entry) => entry.length > 0)
+    .join(" | ");
+}
+
 function cloneConfig() {
   if (typeof structuredClone === "function") {
     return structuredClone(defaultConfig);
@@ -303,6 +362,18 @@ export async function runBreachDrill(options) {
   }
 
   const finalState = engine.getState();
+  const passiveUnlocks = Array.isArray(finalState.analytics?.castlePassiveUnlocks)
+    ? cloneSimple(finalState.analytics.castlePassiveUnlocks)
+    : [];
+  const passiveUnlockSummary =
+    passiveUnlocks.length > 0 ? summarizePassiveUnlocks(passiveUnlocks) : null;
+  const lastPassiveUnlock =
+    passiveUnlocks.length > 0
+      ? formatPassiveUnlockSummary(passiveUnlocks[passiveUnlocks.length - 1])
+      : null;
+  const activeCastlePassives = Array.isArray(finalState.castle?.passives)
+    ? cloneSimple(finalState.castle.passives)
+    : [];
   const result = {
     status: breachEvent ? "breached" : "timeout",
     options: {
@@ -321,11 +392,17 @@ export async function runBreachDrill(options) {
     timeline,
     events,
     breach: breachEvent,
+    passiveUnlockCount: passiveUnlocks.length,
+    passiveUnlocks,
+    passiveUnlockSummary,
+    lastPassiveUnlock,
+    activeCastlePassives,
     finalState: {
       time: Number(finalState.time.toFixed(3)),
       castleHealth: finalState.castle.health,
       castleMaxHealth: finalState.castle.maxHealth,
-      status: finalState.status
+      status: finalState.status,
+      passives: activeCastlePassives
     }
   };
 

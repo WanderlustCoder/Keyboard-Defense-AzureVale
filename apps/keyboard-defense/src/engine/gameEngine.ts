@@ -4,9 +4,13 @@ import { GameEvents } from "../core/events.js";
 import { createInitialState, cloneState } from "../core/gameState.js";
 import {
   AnalyticsSnapshot,
+  CastlePassive,
+  CastlePassiveUnlock,
+  EnemyState,
   GameMode,
   GameState,
   GameStatus,
+  GoldEvent,
   TurretRuntimeStat,
   TurretSlotState,
   TurretTargetPriority,
@@ -26,6 +30,7 @@ import { ProjectileSystem } from "../systems/projectileSystem.js";
 import { TelemetryClient } from "../telemetry/telemetryClient.js";
 
 const MAX_WAVE_HISTORY = 100;
+const MAX_GOLD_EVENTS = 200;
 const DEFAULT_TURRET_PRIORITY: TurretTargetPriority = "first";
 
 export interface TurretBlueprintSlot {
@@ -87,6 +92,12 @@ export interface RuntimeMetrics {
     total: number;
   };
   turretStats: TurretRuntimeStat[];
+  goldEventCount: number;
+  goldDelta: number | null;
+  goldEventTimestamp: number | null;
+  castlePassives: CastlePassive[];
+  lastPassiveUnlock: CastlePassiveUnlock | null;
+  passiveUnlockCount: number;
 }
 
 export interface InputResult {
@@ -642,12 +653,21 @@ export class GameEngine {
     if (!Number.isFinite(amount)) return;
     if (amount === 0) return;
     const baseline = this.state.resources.gold;
-    this.state.resources.gold = Math.max(0, baseline + amount);
+    const nextGold = Math.max(0, baseline + amount);
+    const delta = nextGold - baseline;
+    this.state.resources.gold = nextGold;
+    const timestamp = this.state.time;
     this.events.emit("resources:gold", {
       gold: this.state.resources.gold,
-      delta: this.state.resources.gold - baseline,
-      timestamp: this.state.time
+      delta,
+      timestamp
     });
+    const analytics = this.state.analytics;
+    const entry: GoldEvent = { gold: this.state.resources.gold, delta, timestamp };
+    analytics.goldEvents.push(entry);
+    if (analytics.goldEvents.length > MAX_GOLD_EVENTS) {
+      analytics.goldEvents.splice(0, analytics.goldEvents.length - MAX_GOLD_EVENTS);
+    }
   }
 
   stripEnemyShield(enemyId: string): boolean {
@@ -661,11 +681,11 @@ export class GameEngine {
     return !target || !target.shield || target.shield.current <= 0;
   }
 
-  spawnEnemy(request: SpawnEnemyInput): void {
+  spawnEnemy(request: SpawnEnemyInput): EnemyState | null {
     const difficulty =
       request.difficulty ?? this.resolveDifficulty(request.waveIndex ?? this.state.wave.index);
     this.currentDifficultyBand = difficulty;
-    this.enemySystem.spawn(this.state, { ...request, difficulty });
+    return this.enemySystem.spawn(this.state, { ...request, difficulty });
   }
 
   damageCastle(amount: number): void {
@@ -725,6 +745,14 @@ export class GameEngine {
         };
       })
       .sort((a, b) => b.damage - a.damage);
+    const goldEvents = this.state.analytics.goldEvents ?? [];
+    const lastGoldEvent = goldEvents.length > 0 ? goldEvents[goldEvents.length - 1] : null;
+    const castlePassives = Array.isArray(this.state.castle.passives)
+      ? this.state.castle.passives.map((passive) => ({ ...passive }))
+      : [];
+    const passiveUnlocks = this.state.analytics.castlePassiveUnlocks ?? [];
+    const lastPassiveUnlock =
+      passiveUnlocks.length > 0 ? { ...passiveUnlocks[passiveUnlocks.length - 1] } : null;
     return {
       mode: this.state.mode,
       wave: {
@@ -754,7 +782,13 @@ export class GameEngine {
         typing: this.state.analytics.waveTypingDamage,
         total: this.state.analytics.waveTurretDamage + this.state.analytics.waveTypingDamage
       },
-      turretStats
+      turretStats,
+      goldEventCount: goldEvents.length,
+      goldDelta: lastGoldEvent ? lastGoldEvent.delta : null,
+      goldEventTimestamp: lastGoldEvent ? lastGoldEvent.timestamp : null,
+      castlePassives,
+      lastPassiveUnlock,
+      passiveUnlockCount: passiveUnlocks.length
     };
   }
 

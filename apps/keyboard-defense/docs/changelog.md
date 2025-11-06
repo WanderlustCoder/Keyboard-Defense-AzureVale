@@ -1,3 +1,10 @@
+## Diagnostics & Passive Telemetry Refresh
+
+- Diagnostics overlay now displays current gold with the latest delta/timestamp plus a running passive unlock summary so automation logs the same economy signals surfaced to players.
+- Runtime metrics track `goldEvents` and `castlePassiveUnlocks`, enabling the analytics export pipeline to expose unlock counts, last unlock details, and gold event timelines.
+- `npm run analytics:aggregate` CSV gains `passiveUnlockCount`, `lastPassiveUnlock`, `castlePassiveUnlocks`, `goldEventsTracked`, `lastGoldDelta`, and `lastGoldEventTime` columns; docs updated accordingly.
+- Tutorial smoke and castle breach artifacts now attach passive unlock counts, summaries, and active castle passives for downstream dashboards.
+
 ## Tutorial Wave Preview Highlight
 
 - Combo, placement, and upgrade tutorial steps now surface an on-HUD hint for the upcoming enemies panel, reinforcing how to plan defenses.

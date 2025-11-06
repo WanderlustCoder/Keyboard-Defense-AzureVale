@@ -19,6 +19,7 @@ Use this index to jump straight to the guidance you'll need while building and t
 
 ## Status Notes
 Status entries live under `docs/status/`. Recent highlights include:
+- `2025-11-07_diagnostics_passives.md` - Diagnostics gold delta display, analytics CSV enrichment, and passive unlock artifacts.
 - `2025-11-06_crystal_pulse.md` - Crystal Pulse turret rollout, toggle wiring, and shield-burst analytics.
 - `2025-11-06_ci_pipeline.md` - CI workflow wiring for build/unit/integration + tutorial smoke and full E2E runs.
 - `2025-11-06_hud_screenshots.md` - Automated HUD/options overlay screenshot capture script and usage.

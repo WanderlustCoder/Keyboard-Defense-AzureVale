@@ -73,6 +73,20 @@ export interface CastlePassive {
   delta: number;
 }
 
+export interface GoldEvent {
+  gold: number;
+  delta: number;
+  timestamp: number;
+}
+
+export interface CastlePassiveUnlock {
+  id: CastlePassiveId;
+  total: number;
+  delta: number;
+  level: number;
+  time: number;
+}
+
 export interface CastleState {
   level: number;
   maxHealth: number;
@@ -220,6 +234,8 @@ export interface GameAnalyticsState {
   averageTurretDps: number;
   averageTypingDps: number;
   timeToFirstTurret: number | null;
+  castlePassiveUnlocks: CastlePassiveUnlock[];
+  goldEvents: GoldEvent[];
   tutorial: TutorialAnalyticsState;
 }
 
