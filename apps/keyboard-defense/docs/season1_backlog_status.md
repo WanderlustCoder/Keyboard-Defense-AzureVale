@@ -73,7 +73,7 @@
 | 69 | Asset Pipeline & Visuals | Validate asset integrity via manifest checksum at startup. | Not Started |  |
 | 70 | Asset Pipeline & Visuals | Automate asset manifest generation from source sprites. | Not Started |  |
 | 71 | Automation, Monitoring, Tooling | Script tutorial auto-run CLI verifying onboarding path nightly. | Done | Tutorial smoke CLI executed in CI via `ci-e2e-azure-vale` workflow |
-| 72 | Automation, Monitoring, Tooling | Capture automated HUD screenshots for docs/regression. | Not Started |  |
+| 72 | Automation, Monitoring, Tooling | Capture automated HUD screenshots for docs/regression. | Done | `node scripts/hudScreenshots.mjs` produces deterministic HUD/options PNGs |
 | 73 | Automation, Monitoring, Tooling | Integrate ESLint/Prettier into build pipeline. | Done | `npm run lint` + `npm run format:check` wired into build orchestrator; configs live in repo |
 | 74 | Automation, Monitoring, Tooling | Add performance benchmark harness for engine throughput. | Not Started |  |
 | 75 | Automation, Monitoring, Tooling | Create deterministic wave simulation CLI for balance sweeps. | Not Started |  |
