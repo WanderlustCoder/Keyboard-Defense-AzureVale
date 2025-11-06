@@ -31,7 +31,7 @@
 | 27 | Castle & Turrets | Log per-wave turret DPS in diagnostics overlay. | Done | Diagnostics overlay lists per-slot damage and DPS |
 | 28 | Castle & Turrets | Provide turret range visualization on hover/focus. | Done | Canvas overlay shows lane coverage when HUD slot is hovered |
 | 29 | Castle & Turrets | Allow downgrade/refund via debug toggle for testing. | Done | Debug toggle enables per-slot turret downgrade/refund with HUD messaging |
-| 30 | Castle & Turrets | Unlock castle passive buffs (regen/armor/gold) at higher levels. | Not Started |  |
+| 30 | Castle & Turrets | Unlock castle passive buffs (regen/armor/gold) at higher levels. | Done | Passive list + HUD messaging surface regen/armor/gold bonuses |
 | 31 | Enemy & Wave Design | Create elite enemy affixes (slow aura, shielded, armored) under toggles. | Not Started |  |
 | 32 | Enemy & Wave Design | Script Episode 1 boss wave with bespoke mechanics and intro message. | Not Started |  |
 | 33 | Enemy & Wave Design | Display enemy taunt text when special units spawn. | Not Started |  |

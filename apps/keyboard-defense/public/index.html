@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Keyboard Defense</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="game-surface" width="960" height="540"></canvas>
+      <aside id="hud">
+        <section class="tutorial-banner" id="tutorial-banner" data-visible="false"></section>
+        <section class="castle">
+          <div class="castle-header">
+            <h1>Keyboard Defense</h1>
+            <div class="castle-actions">
+              <button id="pause-button" type="button">Pause</button>
+              <button
+                id="shortcut-launch"
+                class="icon-button"
+                type="button"
+                aria-label="Show keyboard shortcuts"
+              >
+                <span aria-hidden="true">?</span>
+              </button>
+            </div>
+          </div>
+          <div class="castle-health">
+            <span id="castle-health-label">Castle Health</span>
+            <div class="bar">
+              <div class="fill" id="castle-health-bar"></div>
+            </div>
+          </div>
+          <div class="resources">
+            <span>Gold:</span>
+            <span id="resource-gold">0</span>
+            <span id="resource-delta"></span>
+          </div>
+          <div class="upgrades" id="upgrade-panel"></div>
+        </section>
+        <section class="typing">
+          <div id="active-word"></div>
+          <div id="combo-stats">Combo x0</div>
+          <input id="typing-input" autocomplete="off" autofocus placeholder="Type to attack..." />
+        </section>
+        <section class="wave-preview">
+          <h2>Upcoming Enemies</h2>
+          <div
+            id="wave-preview-hint"
+            class="wave-preview-hint"
+            role="status"
+            aria-live="polite"
+            aria-hidden="true"
+            data-visible="false"
+          ></div>
+          <div id="wave-preview-list"></div>
+        </section>
+        <section class="events">
+          <h2>Battle Log</h2>
+          <ul id="battle-log"></ul>
+        </section>
+        <section class="debug">
+          <details>
+            <summary>Debug Hooks</summary>
+            <button id="debug-pause">Pause</button>
+            <button id="debug-resume">Resume</button>
+            <button id="debug-step">Step Frame</button>
+            <button id="debug-gold">+100 Gold</button>
+            <button id="debug-crystal-toggle" type="button">Enable Crystal Pulse</button>
+            <button id="debug-turret-downgrade" type="button" aria-pressed="false">
+              Enable Turret Downgrade
+            </button>
+            <button id="debug-diagnostics">Toggle Diagnostics</button>
+            <button id="debug-sound">Toggle Sound</button>
+            <div class="debug-sound-controls">
+              <label class="debug-sound-controls-label" for="debug-sound-volume"
+                >Sound volume</label
+              >
+              <input
+                id="debug-sound-volume"
+                class="debug-sound-controls-slider"
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                value="0.8"
+                aria-valuemin="0"
+                aria-valuemax="1"
+              />
+              <span
+                id="debug-sound-volume-value"
+                class="debug-sound-controls-value"
+                data-state="enabled"
+                aria-live="polite"
+              >
+                80%
+              </span>
+            </div>
+            <button id="debug-analytics-reset">Reset Analytics</button>
+            <button id="debug-analytics-export">Download Analytics</button>
+            <button id="debug-analytics-viewer-toggle" type="button" aria-expanded="false">
+              Show Analytics Viewer
+            </button>
+            <div
+              id="debug-telemetry-controls"
+              class="debug-telemetry-controls"
+              aria-hidden="true"
+              data-visible="false"
+            >
+              <p class="debug-telemetry-title">Telemetry</p>
+              <div class="debug-telemetry-buttons">
+                <button id="debug-telemetry-toggle" type="button" aria-pressed="false">
+                  Enable Telemetry
+                </button>
+                <button id="debug-telemetry-flush" type="button">Flush Telemetry (0)</button>
+                <button id="debug-telemetry-download" type="button">Download Telemetry (0)</button>
+              </div>
+              <label class="debug-telemetry-endpoint" for="debug-telemetry-endpoint">
+                Endpoint
+                <div class="debug-telemetry-endpoint-row">
+                  <input
+                    id="debug-telemetry-endpoint"
+                    type="url"
+                    inputmode="url"
+                    placeholder="https://collector.example/ingest"
+                    autocomplete="off"
+                  />
+                  <button id="debug-telemetry-endpoint-apply" type="button">Apply</button>
+                </div>
+              </label>
+            </div>
+            <button id="debug-tutorial-replay">Replay Tutorial</button>
+            <div
+              id="debug-analytics-viewer"
+              data-visible="false"
+              aria-hidden="true"
+              aria-live="polite"
+              role="region"
+              aria-label="Recent wave analytics summaries"
+            >
+              <div class="analytics-viewer-controls">
+                <label for="debug-analytics-viewer-filter">Show</label>
+                <select id="debug-analytics-viewer-filter">
+                  <option value="all">All waves</option>
+                  <option value="last-5">Last 5</option>
+                  <option value="last-10">Last 10</option>
+                  <option value="breaches">Breaches</option>
+                  <option value="shielded">Shield breaks</option>
+                </select>
+              </div>
+              <table aria-describedby="debug-analytics-viewer-caption">
+                <caption id="debug-analytics-viewer-caption">
+                  Recent wave summaries
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Wave</th>
+                    <th scope="col">Mode</th>
+                    <th scope="col">Accuracy</th>
+                    <th scope="col">Breaches</th>
+                    <th scope="col">Defeated</th>
+                    <th scope="col">Perfect Words</th>
+                    <th scope="col">Avg Reaction</th>
+                    <th scope="col">DPS</th>
+                    <th scope="col">Turret DPS</th>
+                    <th scope="col">Typing DPS</th>
+                    <th scope="col">Turret dmg</th>
+                    <th scope="col">Typing dmg</th>
+                    <th scope="col">Shield Breaks</th>
+                    <th scope="col">Repairs</th>
+                    <th scope="col">HP Restored</th>
+                    <th scope="col">Repair Gold</th>
+                    <th scope="col">Gold</th>
+                    <th scope="col">Bonus</th>
+                    <th scope="col">Castle Bonus</th>
+                    <th scope="col">Duration</th>
+                  </tr>
+                </thead>
+                <tbody id="debug-analytics-viewer-body">
+                  <tr class="analytics-empty-row">
+                    <td colspan="20">
+                      No wave summaries yet - finish a wave to populate analytics.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </details>
+        </section>
+      </aside>
+    </div>
+    <div id="diagnostics-overlay" data-visible="false"></div>
+    <div
+      id="main-menu-overlay"
+      data-visible="false"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="main-menu-title"
+    >
+      <div class="main-menu-card">
+        <h1 id="main-menu-title">Keyboard Defense</h1>
+        <p id="main-menu-copy">Prepare for the Siege of the Azure Vale.</p>
+        <div class="main-menu-options" id="main-menu-options">
+          <label class="option-toggle main-menu-telemetry" id="main-menu-telemetry-toggle-wrapper">
+            <input id="main-menu-telemetry-toggle" type="checkbox" />
+            <span class="option-toggle-label">Send telemetry to help improve the siege.</span>
+            <span class="option-toggle-help">
+              Telemetry stays local unless you export it. Toggle anytime from the pause menu.
+            </span>
+          </label>
+          <label class="option-toggle" id="main-menu-crystal-toggle-wrapper">
+            <input id="main-menu-crystal-toggle" type="checkbox" />
+            <span class="option-toggle-label">Enable Crystal Pulse turret (experimental)</span>
+            <span class="option-toggle-help">
+              Unlocks shield-burst pulses that shred enemy barriers when you need them.
+            </span>
+          </label>
+        </div>
+        <div class="main-menu-actions">
+          <button id="main-menu-start-tutorial">Begin Tutorial</button>
+          <button id="main-menu-skip-tutorial">Skip Tutorial</button>
+          <button id="main-menu-practice-mode">Practice Mode</button>
+          <button id="main-menu-replay-tutorial">Replay Tutorial</button>
+        </div>
+      </div>
+    </div>
+    <div
+      id="tutorial-summary"
+      data-visible="false"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="tutorial-summary-title"
+    >
+      <div class="tutorial-summary-card">
+        <h2 id="tutorial-summary-title">Training Complete</h2>
+        <p id="tutorial-summary-copy">Great work defending the gate. Here's how you did:</p>
+        <ul id="tutorial-summary-stats">
+          <li data-field="accuracy"></li>
+          <li data-field="combo"></li>
+          <li data-field="breaches"></li>
+          <li data-field="shield-breaks"></li>
+          \n
+          <li data-field="gold"></li>
+        </ul>
+        <div class="tutorial-summary-actions">
+          <button id="tutorial-summary-continue">Proceed to Campaign</button>
+          <button id="tutorial-summary-replay">Replay Tutorial</button>
+        </div>
+      </div>
+    </div>
+    <div
+      id="wave-scorecard"
+      data-visible="false"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="wave-scorecard-title"
+    >
+      <div class="wave-scorecard-card">
+        <header class="wave-scorecard-header">
+          <h2 id="wave-scorecard-title">Wave Complete</h2>
+          <p id="wave-scorecard-subtitle">
+            Breathe easy—your defenses held. Here's the after-action report.
+          </p>
+        </header>
+        <ul id="wave-scorecard-stats">
+          <li data-field="wave"></li>
+          <li data-field="accuracy"></li>
+          <li data-field="combo"></li>
+          <li data-field="session-combo"></li>
+          <li data-field="defeated"></li>
+          <li data-field="breaches"></li>
+          <li data-field="perfect-words"></li>
+          <li data-field="reaction"></li>
+          <li data-field="dps"></li>
+          <li data-field="dps-turret"></li>
+          <li data-field="dps-typing"></li>
+          <li data-field="damage-turret"></li>
+          <li data-field="damage-typing"></li>
+          <li data-field="shield-breaks"></li>
+          <li data-field="repairs"></li>
+          <li data-field="repair-health"></li>
+          <li data-field="repair-gold"></li>
+          <li data-field="bonus-gold"></li>
+          <li data-field="castle-bonus"></li>
+          <li data-field="gold"></li>
+        </ul>
+        <div class="wave-scorecard-actions">
+          <button id="wave-scorecard-continue" type="button" class="primary">
+            Ready the Next Wave
+          </button>
+        </div>
+      </div>
+    </div>
+    <div
+      id="shortcut-overlay"
+      data-visible="false"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="shortcut-overlay-title"
+    >
+      <div class="shortcut-overlay-card">
+        <header class="shortcut-overlay-header">
+          <h2 id="shortcut-overlay-title">Keyboard Shortcuts</h2>
+          <button
+            id="shortcut-overlay-close"
+            class="icon-button"
+            type="button"
+            aria-label="Close shortcut reference"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </header>
+        <p class="shortcut-overlay-subtitle">Stay on top of the siege with quick commands.</p>
+        <ul class="shortcut-list">
+          <li>
+            <span class="shortcut-key">?</span
+            ><span class="shortcut-desc">Toggle this overlay</span>
+          </li>
+          <li>
+            <span class="shortcut-key">D</span
+            ><span class="shortcut-desc">Toggle diagnostics overlay</span>
+          </li>
+          <li>
+            <span class="shortcut-key">M</span
+            ><span class="shortcut-desc">Mute or enable battle audio</span>
+          </li>
+          <li>
+            <span class="shortcut-key">P</span
+            ><span class="shortcut-desc">Pause or resume the battle</span>
+          </li>
+          <li>
+            <span class="shortcut-key">Ctrl/Cmd&nbsp;+&nbsp;⌫</span
+            ><span class="shortcut-desc">Clear typing buffer (lose 1 combo)</span>
+          </li>
+          <li>
+            <span class="shortcut-key">Esc</span
+            ><span class="shortcut-desc">Dismiss overlays and return focus to typing</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div
+      id="options-overlay"
+      data-visible="false"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="options-overlay-title"
+    >
+      <div class="options-overlay-card">
+        <header class="options-overlay-header">
+          <h2 id="options-overlay-title">Battle Paused</h2>
+          <button
+            id="options-overlay-close"
+            class="icon-button"
+            type="button"
+            aria-label="Close pause menu"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </header>
+        <p class="options-overlay-subtitle">
+          Adjust your defenses, then charge back into the fray.
+        </p>
+        <div
+          id="options-castle-bonus"
+          class="options-info"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+        ></div>
+        <ul id="options-castle-benefits" class="options-benefits" aria-live="polite"></ul>
+        <p class="options-passives-heading">Active Passives</p>
+        <ul id="options-castle-passives" class="options-passives" aria-live="polite"></ul>
+        <div class="options-toggle-group">
+          <label class="option-toggle">
+            <input id="options-sound-toggle" type="checkbox" />
+            <span class="option-toggle-label">Sound Effects</span>
+          </label>
+          <label class="option-toggle option-range">
+            <span class="option-toggle-label">Sound Volume</span>
+            <input
+              id="options-sound-volume"
+              type="range"
+              min="0"
+              max="1"
+              step="0.05"
+              value="0.8"
+              aria-label="Sound volume"
+            />
+            <span class="option-range-value" id="options-sound-volume-value">80%</span>
+          </label>
+          <label class="option-toggle">
+            <input id="options-diagnostics-toggle" type="checkbox" />
+            <span class="option-toggle-label">Diagnostics Overlay</span>
+          </label>
+          <label class="option-toggle">
+            <input id="options-reduced-motion-toggle" type="checkbox" />
+            <span class="option-toggle-label">Reduced Motion</span>
+          </label>
+          <label class="option-toggle">
+            <input id="options-checkered-bg-toggle" type="checkbox" />
+            <span class="option-toggle-label">Checkered Background</span>
+          </label>
+          <label class="option-toggle">
+            <input id="options-readable-font-toggle" type="checkbox" />
+            <span class="option-toggle-label">Readable Font</span>
+          </label>
+          <label class="option-toggle">
+            <input id="options-dyslexia-font-toggle" type="checkbox" />
+            <span class="option-toggle-label">Dyslexia-Friendly Font</span>
+          </label>
+          <label class="option-toggle">
+            <input id="options-colorblind-toggle" type="checkbox" />
+            <span class="option-toggle-label">Colorblind Palette</span>
+          </label>
+          <label class="option-toggle" id="options-crystal-toggle-wrapper">
+            <input id="options-crystal-toggle" type="checkbox" />
+            <span class="option-toggle-label">Enable Crystal Pulse turret</span>
+            <span class="option-toggle-help">
+              Experimental turret that delivers bonus shield damage for barrier-heavy waves.
+            </span>
+          </label>
+          <label class="option-toggle" id="options-telemetry-toggle-wrapper">
+            <input id="options-telemetry-toggle" type="checkbox" />
+            <span class="option-toggle-label">Send Telemetry</span>
+          </label>
+          <label class="option-toggle option-select">
+            <span class="option-toggle-label">HUD Font Size</span>
+            <select id="options-font-scale">
+              <option value="0.85">Small</option>
+              <option value="1">Default</option>
+              <option value="1.15">Large</option>
+              <option value="1.3">Extra Large</option>
+            </select>
+          </label>
+        </div>
+        <div class="options-actions">
+          <button id="options-analytics-export" type="button" class="secondary">
+            Download Analytics
+          </button>
+          <button id="options-resume-button" type="button" class="primary">Resume Battle</button>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="../dist/src/index.js"></script>
+  </body>
+</html>

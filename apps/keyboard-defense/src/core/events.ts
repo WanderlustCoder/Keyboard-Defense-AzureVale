@@ -1,4 +1,5 @@
 import {
+  CastlePassive,
   EnemyState,
   GameState,
   ProjectileState,
@@ -15,6 +16,7 @@ export interface GameEvents extends Record<string, unknown> {
   "castle:damaged": { amount: number; health: number };
   "castle:upgraded": { level: number };
   "castle:repaired": { amount: number; health: number; cost: number };
+  "castle:passive-unlocked": { passive: CastlePassive };
   "turret:placed": TurretSlotState;
   "turret:upgraded": TurretSlotState;
   "turret:downgraded": TurretSlotState;

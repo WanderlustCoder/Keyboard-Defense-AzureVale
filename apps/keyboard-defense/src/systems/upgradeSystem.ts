@@ -1,7 +1,8 @@
-import { GameConfig } from "../core/config.js";
+import { CastleLevelConfig, GameConfig } from "../core/config.js";
 import { EventBus } from "../core/eventBus.js";
 import { GameEvents } from "../core/events.js";
-import { GameState, TurretTypeId } from "../core/types.js";
+import { CastlePassive, GameState, TurretTypeId } from "../core/types.js";
+import { deriveCastlePassives } from "../utils/castlePassives.js";
 import { TurretSystem } from "./turretSystem.js";
 
 export interface UpgradeResult {
@@ -22,7 +23,12 @@ export class UpgradeSystem {
     private readonly config: GameConfig,
     private readonly events: EventBus<GameEvents>,
     private readonly turrets: TurretSystem
-  ) {}
+  ) {
+    this.baseCastleConfig = this.config.castleLevels[0];
+  }
+
+  private readonly baseCastleConfig: CastleLevelConfig;
+  private static readonly EPSILON = 0.0001;
 
   upgradeCastle(state: GameState): UpgradeResult {
     const currentLevelConfig = this.config.castleLevels.find((c) => c.level === state.castle.level);
@@ -54,6 +60,11 @@ export class UpgradeSystem {
     state.castle.regenPerSecond = nextLevelConfig.regenPerSecond;
     state.castle.nextUpgradeCost = nextLevelConfig.upgradeCost;
     state.castle.goldBonusPercent = nextLevelConfig.goldBonusPercent ?? 0;
+
+    const previousPassives = state.castle.passives ?? [];
+    const updatedPassives = this.updateCastlePassives(state, nextLevelConfig);
+    this.emitPassiveUnlocks(previousPassives, updatedPassives);
+
     this.events.emit("castle:upgraded", { level: state.castle.level });
 
     this.turrets.unlockSlotsByWave(state, state.wave.index);
@@ -212,6 +223,26 @@ export class UpgradeSystem {
   private unlockSlotsByCastleLevel(state: GameState, unlockedCount: number): void {
     for (let i = 0; i < state.turrets.length; i++) {
       state.turrets[i].unlocked = i < unlockedCount;
+    }
+  }
+
+  private updateCastlePassives(state: GameState, levelConfig: CastleLevelConfig): CastlePassive[] {
+    const passives = deriveCastlePassives(this.baseCastleConfig, levelConfig);
+    state.castle.passives = passives;
+    return passives;
+  }
+
+  private emitPassiveUnlocks(previous: CastlePassive[], current: CastlePassive[]): void {
+    const previousMap = new Map(previous.map((passive) => [passive.id, passive]));
+    for (const passive of current) {
+      const prior = previousMap.get(passive.id);
+      if (
+        !prior ||
+        passive.total - prior.total > UpgradeSystem.EPSILON ||
+        passive.delta - prior.delta > UpgradeSystem.EPSILON
+      ) {
+        this.events.emit("castle:passive-unlocked", { passive });
+      }
     }
   }
 }

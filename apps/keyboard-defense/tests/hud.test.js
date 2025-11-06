@@ -260,6 +260,7 @@ const initializeHud = () => {
   const analyticsExportButton = new FakeElement("button", "options-analytics-export");
   const optionsCastleBonus = new FakeElement("div", "options-castle-bonus");
   const optionsCastleBenefits = new FakeElement("ul", "options-castle-benefits");
+  const optionsCastlePassives = new FakeElement("ul", "options-castle-passives");
   const waveScorecard = new FakeElement("div", "wave-scorecard");
   waveScorecard.dataset.visible = "false";
   const waveScorecardStats = new FakeElement("ul", "wave-scorecard-stats");
@@ -359,6 +360,7 @@ const initializeHud = () => {
   register("options-analytics-export", analyticsExportButton);
   register("options-castle-bonus", optionsCastleBonus);
   register("options-castle-benefits", optionsCastleBenefits);
+  register("options-castle-passives", optionsCastlePassives);
   register("wave-scorecard", waveScorecard);
   register("wave-scorecard-stats", waveScorecardStats);
   register("wave-scorecard-continue", waveScorecardContinue);
@@ -551,8 +553,9 @@ const initializeHud = () => {
       telemetryToggle,
       telemetryToggleWrapper,
       fontScaleSelect,
-      optionsCastleBonus,
-      optionsCastleBenefits,
+    optionsCastleBonus,
+    optionsCastleBenefits,
+    optionsCastlePassives,
       castleStatus,
       waveScorecard,
       waveScorecardStats,
@@ -594,15 +597,17 @@ const buildInitialState = () => {
     time: 0,
     status: "running",
     mode: "campaign",
-    castle: {
-      level: 1,
-      maxHealth: 100,
-      health: 100,
-      armor: 0,
-      regenPerSecond: 1,
-      nextUpgradeCost: 180,
-      repairCooldownRemaining: 0
-    },
+  castle: {
+    level: 1,
+    maxHealth: 100,
+    health: 100,
+    armor: 0,
+    regenPerSecond: 1,
+    nextUpgradeCost: 180,
+    repairCooldownRemaining: 0,
+    goldBonusPercent: 0,
+    passives: []
+  },
     resources: { gold: 200, score: 0 },
     turrets: turretStates,
     enemies: [],
@@ -1202,6 +1207,31 @@ test("HudView updates castle bonus hint in options overlay", () => {
   );
 
   cleanup();
+});
+
+test("options overlay lists active castle passives", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  try {
+    const state = buildInitialState();
+    state.castle.passives = [
+      { id: "regen", total: 2.2, delta: 0.7 },
+      { id: "armor", total: 1, delta: 1 },
+      { id: "gold", total: 0.05, delta: 0.05 }
+    ];
+    hud.update(state, []);
+    const optionList = elements.optionsCastlePassives;
+    assert.equal(optionList.children.length, 3);
+    assert.ok(
+      optionList.children[0].textContent?.includes("Regen 2.2"),
+      "regen passive should be listed"
+    );
+    assert.ok(
+      optionList.children[2].textContent?.includes("gold"),
+      "gold passive should be listed"
+    );
+  } finally {
+    cleanup();
+  }
 });
 
 test("HudView tutorial summary overlay toggles and handlers respond", () => {
