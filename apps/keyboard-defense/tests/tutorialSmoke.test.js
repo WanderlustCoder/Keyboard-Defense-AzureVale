@@ -63,13 +63,18 @@ test("buildArtifact derives shield break totals", () => {
       summaryOverlay: { accuracy: "Accuracy: 98.5%" },
       consoleLogs: [{ type: "info", text: "[tutorial] advance" }],
       stateSnapshot: {
-        time: 1.5,
+        time: 50,
         status: "running",
         castle: { passives: [{ id: "regen", total: 1.2, delta: 0.5 }] }
       },
       analytics: {
         totalShieldBreaks: 4,
         castlePassiveUnlocks: [{ id: "regen", total: 1.2, delta: 0.5, level: 3, time: 120.5 }],
+        goldEvents: [
+          { gold: 200, delta: 25, timestamp: 10 },
+          { gold: 260, delta: 60, timestamp: 30 },
+          { gold: 310, delta: 50, timestamp: 45 }
+        ],
         tutorial: {
           events: [
             { event: "start", stepId: "intro" },
@@ -92,6 +97,14 @@ test("buildArtifact derives shield break totals", () => {
   assert.ok(artifact.passiveUnlockSummary?.includes("Regen"));
   assert.ok(artifact.lastPassiveUnlock?.startsWith("Regen"));
   assert.deepEqual(artifact.activeCastlePassives, [{ id: "regen", total: 1.2, delta: 0.5 }]);
+  assert.equal(artifact.recentGoldEvents.length, 3);
+  assert.deepEqual(artifact.recentGoldEvents[0], {
+    gold: 200,
+    delta: 25,
+    timestamp: 10,
+    timeSince: 40
+  });
+  assert.equal(artifact.recentGoldEvents[2].delta, 50);
 });
 
 test("buildArtifact counts shield-broken events when total missing", () => {
@@ -124,6 +137,7 @@ test("buildArtifact counts shield-broken events when total missing", () => {
   assert.equal(artifact.passiveUnlockSummary, null);
   assert.equal(artifact.lastPassiveUnlock, null);
   assert.deepEqual(artifact.activeCastlePassives, []);
+  assert.deepEqual(artifact.recentGoldEvents, []);
 });
 
 test("resumeGameplay resumes and applies speed multiplier", async () => {
@@ -187,4 +201,5 @@ test("buildArtifact handles campaign result metadata", () => {
   assert.equal(artifact.passiveUnlockSummary, null);
   assert.equal(artifact.lastPassiveUnlock, null);
   assert.deepEqual(artifact.activeCastlePassives, []);
+  assert.deepEqual(artifact.recentGoldEvents, []);
 });

@@ -86,6 +86,24 @@ function summarizePassiveUnlocks(unlocks) {
     .join(" | ");
 }
 
+function normalizeGoldEvents(events, referenceTime) {
+  if (!Array.isArray(events) || events.length === 0) {
+    return [];
+  }
+  const trimmed = events.slice(-3).map((event) => ({
+    gold: Number.isFinite(event.gold) ? Number(event.gold) : null,
+    delta: Number.isFinite(event.delta) ? Number(event.delta) : null,
+    timestamp: Number.isFinite(event.timestamp) ? Number(event.timestamp) : null
+  }));
+  return trimmed.map((event) => {
+    const timeSince =
+      typeof referenceTime === "number" && typeof event.timestamp === "number"
+        ? Math.max(0, referenceTime - event.timestamp)
+        : null;
+    return { ...event, timeSince };
+  });
+}
+
 export function parseArgs(argv = []) {
   const args = {
     baseUrl: DEFAULT_BASE_URL,
@@ -744,6 +762,14 @@ export function buildArtifact({ baseUrl, mode, result, startedAt }) {
   const activeCastlePassives = Array.isArray(castlePassivesSource)
     ? cloneSimple(castlePassivesSource)
     : [];
+  const referenceTime = result.stateSnapshot?.time ?? result.state?.time ?? analytics?.time ?? null;
+  const recentGoldEvents = normalizeGoldEvents(
+    analytics?.goldEvents ??
+      result.stateSnapshot?.analytics?.goldEvents ??
+      result.state?.analytics?.goldEvents ??
+      result.stateSnapshot?.state?.analytics?.goldEvents,
+    referenceTime
+  );
 
   return {
     baseUrl,
@@ -764,7 +790,8 @@ export function buildArtifact({ baseUrl, mode, result, startedAt }) {
     passiveUnlocks,
     passiveUnlockSummary,
     lastPassiveUnlock,
-    activeCastlePassives
+    activeCastlePassives,
+    recentGoldEvents
   };
 }
 
