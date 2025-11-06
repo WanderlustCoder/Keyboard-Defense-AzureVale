@@ -34,6 +34,10 @@ jobs:
         run: npm ci
         working-directory: apps/keyboard-defense
 
+      - name: Verify asset integrity hashes
+        run: npm run assets:integrity -- --check
+        working-directory: apps/keyboard-defense
+
       - name: Build orchestrator
         run: node scripts/build.mjs --ci
         working-directory: apps/keyboard-defense

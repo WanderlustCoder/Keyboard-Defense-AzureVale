@@ -11,6 +11,7 @@ Keyboard Defense is a typing-driven castle defense game where fast, accurate inp
 - Crystal Pulse turret archetype (feature toggle) that deals bonus shield damage to counter barrier-heavy waves.
 - Analytics tracking for wave summaries, accuracy, breaches, and DPS.
 - HUD with combo tracking, battle log, resource deltas, and an upcoming-enemy preview panel sourced from the wave scheduler.
+- Asset manifest with SHA-256 integrity hashes—sprites fail closed when tampering or corruption is detected at load time.
 - Debug overlay and `window.keyboardDefense` hooks for runtime inspection and mutation.
 - Optional Web Audio feedback for projectile launches, impacts, breaches, and upgrades.
 - Procedural enemy defeat bursts with easing-driven gradients so kills feel readable even before bespoke sprites ship.
@@ -109,5 +110,6 @@ The new generation of orchestration scripts lives in `scripts/`:
 | `node scripts/castleBreachReplay.mjs` | Replay the deterministic castle-breach drill and emit a JSON artifact summarising the timeline.                                                     |
 | `node scripts/analyticsAggregate.mjs` | Convert analytics snapshots into the detailed wave-by-wave CSV described in `docs/analytics_schema.md`.                                           |
 | `node scripts/analyticsLeaderboard.mjs` | Generate a leaderboard-ready CSV (or JSON) ranked by combo, accuracy, and DPS from exported analytics snapshots.                              |
+| `node scripts/assetIntegrity.mjs` | Hash every manifest-listed asset (SHA-256) and rewrite/verify the manifest integrity map (`--check` to verify without writing).                      |
 
 Pass `--ci` to any script to write artifacts into `artifacts/<task>/...` for pipeline consumption.

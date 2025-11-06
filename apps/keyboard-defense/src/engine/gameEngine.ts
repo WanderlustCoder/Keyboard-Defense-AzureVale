@@ -95,6 +95,7 @@ export interface RuntimeMetrics {
   goldEventCount: number;
   goldDelta: number | null;
   goldEventTimestamp: number | null;
+  recentGoldEvents: GoldEvent[];
   castlePassives: CastlePassive[];
   lastPassiveUnlock: CastlePassiveUnlock | null;
   passiveUnlockCount: number;
@@ -747,6 +748,7 @@ export class GameEngine {
       .sort((a, b) => b.damage - a.damage);
     const goldEvents = this.state.analytics.goldEvents ?? [];
     const lastGoldEvent = goldEvents.length > 0 ? goldEvents[goldEvents.length - 1] : null;
+    const recentGoldEvents = goldEvents.slice(-3).map((event) => ({ ...event }));
     const castlePassives = Array.isArray(this.state.castle.passives)
       ? this.state.castle.passives.map((passive) => ({ ...passive }))
       : [];
@@ -786,6 +788,7 @@ export class GameEngine {
       goldEventCount: goldEvents.length,
       goldDelta: lastGoldEvent ? lastGoldEvent.delta : null,
       goldEventTimestamp: lastGoldEvent ? lastGoldEvent.timestamp : null,
+      recentGoldEvents,
       castlePassives,
       lastPassiveUnlock,
       passiveUnlockCount: passiveUnlocks.length

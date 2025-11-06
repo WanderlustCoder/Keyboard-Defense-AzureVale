@@ -1,0 +1,181 @@
+import { DiagnosticsOverlay } from "../dist/src/ui/diagnostics.js";
+import { test } from "vitest";
+import assert from "node:assert/strict";
+import { GameEngine } from "../dist/src/engine/gameEngine.js";
+
+test("runtime metrics report wave, difficulty, and entity counts", () => {
+  const engine = new GameEngine({ seed: 12, config: { waves: [] } });
+
+  const metrics = engine.getRuntimeMetrics();
+  assert.equal(metrics.wave.index, 0);
+  assert.ok(metrics.difficulty.enemyHealthMultiplier >= 1);
+  assert.equal(metrics.projectiles, 0);
+  assert.equal(metrics.enemiesAlive, 0);
+  assert.equal(metrics.damage.total, 0);
+  assert.equal(metrics.damage.turret, 0);
+  assert.equal(metrics.damage.typing, 0);
+  assert.equal(typeof metrics.difficultyRating, "number");
+  assert.ok(metrics.difficultyRating >= 0);
+  assert.equal(metrics.typing.recentSampleSize, 0);
+  assert.equal(metrics.typing.difficultyBias, 0);
+  assert.ok(Array.isArray(metrics.turretStats));
+  assert.equal(metrics.turretStats.length, 0);
+  assert.equal(metrics.goldEventCount, 0);
+  assert.equal(metrics.goldDelta, null);
+  assert.equal(metrics.goldEventTimestamp, null);
+  assert.ok(Array.isArray(metrics.recentGoldEvents));
+  assert.equal(metrics.recentGoldEvents.length, 0);
+  assert.ok(Array.isArray(metrics.castlePassives));
+  assert.equal(metrics.castlePassives.length, 0);
+  assert.equal(metrics.passiveUnlockCount, 0);
+  assert.equal(metrics.lastPassiveUnlock, null);
+
+  engine.spawnEnemy({ tierId: "grunt", lane: 0, word: "test" });
+  engine.inputCharacter("t");
+  engine.grantGold(25);
+
+  const updated = engine.getRuntimeMetrics();
+  assert.equal(updated.enemiesAlive, 1);
+  assert.equal(updated.typing.totalInputs, 1);
+  assert.equal(updated.typing.correctInputs, 1);
+  assert.ok(updated.typing.accuracy > 0.9);
+  assert.ok(updated.typing.recentAccuracy > 0.9);
+  assert.equal(updated.typing.recentSampleSize, 1);
+  assert.equal(updated.typing.difficultyBias, 0);
+  assert.equal(typeof updated.damage.total, "number");
+  assert.equal(typeof updated.damage.typing, "number");
+  assert.equal(typeof updated.damage.turret, "number");
+  assert.equal(typeof updated.difficultyRating, "number");
+  assert.ok(updated.difficultyRating >= 0);
+  assert.equal(updated.turretStats.length, 0);
+  assert.equal(updated.goldEventCount, 1);
+  assert.equal(updated.goldDelta, 25);
+  assert.equal(typeof updated.goldEventTimestamp, "number");
+  assert.equal(updated.recentGoldEvents.length, 1);
+  assert.equal(updated.recentGoldEvents[0].delta, 25);
+});
+
+test("DiagnosticsOverlay displays shield forecast lines", () => {
+  const container = {
+    dataset: {},
+    innerHTML: "",
+    setAttribute(name, value) {
+      this.dataset[name] = value;
+    },
+    removeAttribute(name) {
+      delete this.dataset[name];
+    }
+  };
+
+  const overlay = new DiagnosticsOverlay(container);
+  overlay.setVisible(true);
+
+  overlay.update(
+    {
+      mode: "campaign",
+      wave: { index: 0, total: 3, inCountdown: false, countdown: 0 },
+      difficulty: new GameEngine().getRuntimeMetrics().difficulty,
+      difficultyRating: 275,
+      projectiles: 0,
+      enemiesAlive: 0,
+      combo: 0,
+      gold: 0,
+      time: 0,
+      goldEventCount: 0,
+      goldDelta: null,
+      goldEventTimestamp: null,
+      recentGoldEvents: [],
+      passiveUnlockCount: 0,
+      castlePassives: [],
+      lastPassiveUnlock: null,
+      typing: {
+        accuracy: 1,
+        totalInputs: 0,
+        correctInputs: 0,
+        errors: 0,
+        recentAccuracy: 1,
+        recentSampleSize: 0,
+        difficultyBias: 0
+      },
+      damage: { turret: 0, typing: 0, total: 0 },
+      turretStats: [
+        { slotId: "slot-1", turretType: "arrow", level: 2, damage: 320.5, dps: 48.2 },
+        { slotId: "slot-2", turretType: "flame", level: 1, damage: 210, dps: 35 }
+      ]
+    },
+    {
+      bestCombo: 4,
+      breaches: 1,
+      soundEnabled: true,
+      soundVolume: 0.6,
+      summaryCount: 0,
+      totalTurretDamage: 120,
+      totalTypingDamage: 45,
+      totalRepairs: 2,
+      totalRepairHealth: 160,
+      totalRepairGold: 300,
+      totalReactionTime: 5.2,
+      reactionSamples: 4,
+      timeToFirstTurretSeconds: 42.5,
+      shieldedNow: true,
+      shieldedNext: true
+    }
+  );
+
+  const output = container.innerHTML;
+  assert.ok(output.includes("Gold: 0 events: 0"));
+  assert.ok(output.includes("Castle passives: none unlocked"));
+  assert.ok(output.includes("Passive unlocks tracked: 0"));
+  assert.ok(output.includes("Shielded enemies: ACTIVE"));
+  assert.ok(output.includes("Wave threat rating"));
+  assert.ok(output.includes("Sound: on (60%)"));
+  assert.ok(output.includes("Session damage (turret/typing): 120 / 45"));
+  assert.ok(output.includes("Castle repairs: 2"));
+  assert.ok(output.includes("HP restored 160"));
+  assert.ok(output.includes("Gold spent 300g"));
+  assert.ok(output.includes("First turret deployed at 42.5s"));
+  assert.ok(output.includes("Average reaction: 1.30s (4 samples)"));
+  assert.ok(output.includes("Turret DPS breakdown:"));
+  assert.ok(output.includes("slot-1"));
+  assert.ok(output.includes("320.5 dmg"));
+});
+
+test("DiagnosticsOverlay lists recent gold events", () => {
+  const container = {
+    dataset: {},
+    innerHTML: "",
+    setAttribute(name, value) {
+      this.dataset[name] = value;
+    },
+    removeAttribute(name) {
+      delete this.dataset[name];
+    }
+  };
+
+  const engine = new GameEngine({ seed: 42, config: { waves: [] } });
+  const baseMetrics = engine.getRuntimeMetrics();
+  const overlay = new DiagnosticsOverlay(container);
+  overlay.setVisible(true);
+
+  overlay.update(
+    {
+      ...baseMetrics,
+      gold: 350,
+      goldEventCount: 3,
+      goldDelta: 40,
+      goldEventTimestamp: 120.5,
+      recentGoldEvents: [
+        { gold: 350, delta: 40, timestamp: 120.5 },
+        { gold: 310, delta: -20, timestamp: 95.2 },
+        { gold: 330, delta: 30, timestamp: 80 }
+      ],
+      time: 140
+    },
+    undefined
+  );
+
+  const output = container.innerHTML;
+  assert.ok(output.includes("Recent gold events:"));
+  assert.ok(output.includes("+40g -> 350g @ 120.5s"));
+  assert.ok(output.includes("-20g -> 310g @ 95.2s"));
+});

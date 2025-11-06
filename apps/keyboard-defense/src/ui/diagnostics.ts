@@ -124,6 +124,23 @@ export class DiagnosticsOverlay {
     goldLineParts.push(`events: ${metrics.goldEventCount}`);
     lines.push(goldLineParts.join(" "));
 
+    const recentGoldEvents = Array.isArray(metrics.recentGoldEvents)
+      ? metrics.recentGoldEvents
+      : [];
+    if (recentGoldEvents.length > 0) {
+      lines.push("Recent gold events:");
+      const orderedEvents = [...recentGoldEvents].sort((a, b) => b.timestamp - a.timestamp);
+      for (const event of orderedEvents) {
+        const deltaRounded = Math.round(event.delta);
+        const deltaLabel = `${deltaRounded >= 0 ? "+" : ""}${deltaRounded}g`;
+        const totalGold = Math.round(event.gold);
+        const timestamp = typeof event.timestamp === "number" ? event.timestamp : 0;
+        const secondsAgo = Math.max(0, metrics.time - timestamp);
+        const agoLabel = secondsAgo > 0 ? ` (${secondsAgo.toFixed(1)}s ago)` : "";
+        lines.push(`  ${deltaLabel} -> ${totalGold}g @ ${timestamp.toFixed(1)}s${agoLabel}`);
+      }
+    }
+
     if (metrics.castlePassives.length > 0) {
       lines.push(
         `Castle passives (${metrics.castlePassives.length} active): ${metrics.castlePassives

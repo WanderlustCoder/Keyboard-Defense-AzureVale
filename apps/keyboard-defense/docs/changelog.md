@@ -1,6 +1,20 @@
+## Asset Integrity Guard
+
+- `AssetLoader` now parses the optional `integrity` map in `public/assets/manifest.json`, downloads each sprite through `fetch`, hashes the bytes with `crypto.subtle.digest`, and refuses to cache any image whose digest does not match the declared `sha256-*` value.
+- Missing integrity entries for manifest sprites raise warnings so future assets are brought under the checksum policy.
+- When SubtleCrypto/fetch are unavailable (older browsers or offline scripts) the loader logs a degradable warning and continues so deterministic smoke tests keep running.
+- Vitest coverage exercises matching/mismatched cases to ensure errors propagate and cached sprites stay untouched on failure.
+
+## Asset Integrity Automation
+
+- Added `node scripts/assetIntegrity.mjs` (available via `npm run assets:integrity`) to compute SHA-256 digests for every manifest-listed sprite and rewrite the manifest's `integrity` block automatically.
+- `--check` mode lets CI and local hooks verify hashes without mutating the manifest, giving us a quick health check before commit/push.
+- New Vitest coverage targets the hashing helper and orchestration path so future pipeline tweaks surface regressions immediately.
+
 ## Diagnostics & Passive Telemetry Refresh
 
 - Diagnostics overlay now displays current gold with the latest delta/timestamp plus a running passive unlock summary so automation logs the same economy signals surfaced to players.
+- Added a "Recent gold events" block to diagnostics, showing the last three deltas (amount, resulting total, timestamp, and time since) so smoke logs and HUD captures immediately reveal economy swings.
 - Runtime metrics track `goldEvents` and `castlePassiveUnlocks`, enabling the analytics export pipeline to expose unlock counts, last unlock details, and gold event timelines.
 - `npm run analytics:aggregate` CSV gains `passiveUnlockCount`, `lastPassiveUnlock`, `castlePassiveUnlocks`, `goldEventsTracked`, `lastGoldDelta`, and `lastGoldEventTime` columns; docs updated accordingly.
 - Tutorial smoke and castle breach artifacts now attach passive unlock counts, summaries, and active castle passives for downstream dashboards.

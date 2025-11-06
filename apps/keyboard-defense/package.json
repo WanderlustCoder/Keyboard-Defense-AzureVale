@@ -21,6 +21,7 @@
     "analytics:aggregate": "node ./scripts/analyticsAggregate.mjs",
     "analytics:leaderboard": "node ./scripts/analyticsLeaderboard.mjs",
     "analytics:passives": "node ./scripts/passiveTimeline.mjs",
+    "assets:integrity": "node ./scripts/assetIntegrity.mjs",
     "smoke:tutorial": "node ./scripts/tutorialSmoke.mjs",
     "wave:sim": "node ./scripts/waveSim.mjs",
     "wave:benchmark": "node ./scripts/waveBenchmark.mjs",
@@ -32,6 +33,7 @@
     "task:screenshots": "node ./scripts/hudScreenshots.mjs",
     "task:breach": "node ./scripts/castleBreachReplay.mjs",
     "task:e2e": "node ./scripts/e2e.mjs",
+    "task:integrity": "node ./scripts/assetIntegrity.mjs",
     "task:lint": "npm run lint",
     "clean": "node -e \"try{require('fs').rmSync('dist',{recursive:true,force:true});}catch(e){if(e.code!== 'ENOENT'){console.warn('Clean warning:', e.message);}}\"",
     "test": "npm run clean && npm run lint && npm run format:check && npm run build && vitest run --coverage"
