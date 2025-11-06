@@ -38,6 +38,7 @@ This reference captures the structure of the JSON snapshots downloaded from the 
 | `analytics.castlePassiveUnlocks` | array | Chronological list of passive buffs unlocked `{ id, total, delta, level, time }`. |
 | `analytics.goldEvents` | array | Chronological gold events `{ gold, delta, timestamp }` (capped at 200 entries). |
 | `analytics.waveSummaries` | `WaveSummary[]` | Rolling array of recent wave summaries (latest appended). |
+| `analytics.castlePassiveUnlocks` | array | Chronological list of passive buffs unlocked `{ id, total, delta, level, time }`. Use `npm run analytics:passives` to flatten these entries into JSON/CSV timelines for dashboards. |
 | `analytics.waveHistory` | `WaveSummary[]` | Full session wave history (capped at 100 entries) retained for in-session review. |
 | `analytics.wavePerfectWords` | number | Perfect words recorded so far in the active wave. |
 | `analytics.waveBonusGold` | number | Bonus gold earned in the active wave prior to finalisation. |

@@ -20,6 +20,7 @@
     "smoke:campaign": "node ./scripts/tutorialSmoke.mjs --mode campaign",
     "analytics:aggregate": "node ./scripts/analyticsAggregate.mjs",
     "analytics:leaderboard": "node ./scripts/analyticsLeaderboard.mjs",
+    "analytics:passives": "node ./scripts/passiveTimeline.mjs",
     "smoke:tutorial": "node ./scripts/tutorialSmoke.mjs",
     "wave:sim": "node ./scripts/waveSim.mjs",
     "wave:benchmark": "node ./scripts/waveBenchmark.mjs",
