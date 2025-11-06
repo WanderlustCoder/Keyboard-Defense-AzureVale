@@ -129,6 +129,10 @@ jobs:
         run: node scripts/e2e.mjs --ci
         working-directory: apps/keyboard-defense
 
+      - name: Capture HUD screenshots
+        run: node scripts/hudScreenshots.mjs --ci
+        working-directory: apps/keyboard-defense
+
       - name: Upload e2e artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -136,5 +140,6 @@ jobs:
           name: e2e-artifacts
           path: |
             apps/keyboard-defense/artifacts/e2e
+            apps/keyboard-defense/artifacts/screenshots
             apps/keyboard-defense/monitor-artifacts
             apps/keyboard-defense/smoke-artifacts

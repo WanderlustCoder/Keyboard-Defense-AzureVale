@@ -13,6 +13,7 @@
 - CLI flags supported: `--url`, `--out`, `--no-server`, `--ci`.
 - Updated `package.json` (`task:screenshots`), CONTRIBUTING, and README to document the workflow.
 - CI jobs can publish the screenshot artifact by appending an `upload-artifact` step referencing `artifacts/screenshots/`.
+- Wired the GitHub Actions `ci-e2e-azure-vale` workflow to run the screenshot capture after the e2e orchestration and upload the resulting PNGs automatically.
 
 ## Next Steps
 1. Integrate screenshot capture into the E2E job once visual diff thresholds are defined.
