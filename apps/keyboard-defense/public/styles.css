@@ -280,10 +280,24 @@ section {
   gap: 4px;
 }
 
+.options-passives li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  background: rgba(15, 23, 42, 0.45);
+  border: 1px solid rgba(96, 165, 250, 0.25);
+}
+
 .options-passives li::before {
-  content: "•";
-  margin-right: 8px;
-  color: rgba(248, 250, 252, 0.5);
+  content: none;
+}
+
+.options-passives li.passive-empty {
+  background: transparent;
+  border: 1px dashed rgba(148, 163, 184, 0.4);
+  color: rgba(226, 232, 240, 0.8);
 }
 
 .options-toggle-group {
@@ -753,9 +767,50 @@ details {
 
 .castle-passives li {
   border-radius: 4px;
-  padding: 2px 4px;
+  padding: 3px 6px;
   background: rgba(59, 130, 246, 0.12);
   border: 1px solid rgba(59, 130, 246, 0.25);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.castle-passives li.passive-empty {
+  justify-content: center;
+  background: rgba(30, 64, 175, 0.18);
+  border-style: dashed;
+  color: rgba(191, 219, 254, 0.88);
+}
+
+.passive-icon {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: inline-flex;
+  flex-shrink: 0;
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.18);
+}
+
+.passive-icon--regen {
+  background: radial-gradient(circle at 35% 35%, #bbf7d0, #047857);
+}
+
+.passive-icon--armor {
+  background: radial-gradient(circle at 40% 40%, #f8fafc, #94a3b8);
+  border: 1px solid rgba(148, 163, 184, 0.7);
+}
+
+.passive-icon--gold {
+  background: radial-gradient(circle at 35% 30%, #fef9c3, #facc15 60%, #f97316);
+  box-shadow: 0 0 6px rgba(253, 224, 71, 0.35);
+}
+
+.passive-icon--generic {
+  background: radial-gradient(circle at 35% 35%, #e2e8f0, #64748b);
+}
+
+.passive-label {
+  flex: 1 1 auto;
 }
 
 .castle-benefits {

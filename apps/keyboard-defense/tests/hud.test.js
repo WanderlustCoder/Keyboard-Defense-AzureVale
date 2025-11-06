@@ -66,6 +66,19 @@ class FakeElement {
     return child;
   }
 
+  append(...nodes) {
+    for (const node of nodes) {
+      if (node === null || node === undefined) continue;
+      if (typeof node === "string" || typeof node === "number") {
+        const textWrapper = new FakeElement("#text");
+        textWrapper.textContent = String(node);
+        this.appendChild(textWrapper);
+      } else {
+        this.appendChild(node);
+      }
+    }
+  }
+
   replaceChildren(...children) {
     this.children = [...children];
   }
@@ -553,9 +566,9 @@ const initializeHud = () => {
       telemetryToggle,
       telemetryToggleWrapper,
       fontScaleSelect,
-    optionsCastleBonus,
-    optionsCastleBenefits,
-    optionsCastlePassives,
+      optionsCastleBonus,
+      optionsCastleBenefits,
+      optionsCastlePassives,
       castleStatus,
       waveScorecard,
       waveScorecardStats,
@@ -597,17 +610,17 @@ const buildInitialState = () => {
     time: 0,
     status: "running",
     mode: "campaign",
-  castle: {
-    level: 1,
-    maxHealth: 100,
-    health: 100,
-    armor: 0,
-    regenPerSecond: 1,
-    nextUpgradeCost: 180,
-    repairCooldownRemaining: 0,
-    goldBonusPercent: 0,
-    passives: []
-  },
+    castle: {
+      level: 1,
+      maxHealth: 100,
+      health: 100,
+      armor: 0,
+      regenPerSecond: 1,
+      nextUpgradeCost: 180,
+      repairCooldownRemaining: 0,
+      goldBonusPercent: 0,
+      passives: []
+    },
     resources: { gold: 200, score: 0 },
     turrets: turretStates,
     enemies: [],
@@ -1221,14 +1234,16 @@ test("options overlay lists active castle passives", () => {
     hud.update(state, []);
     const optionList = elements.optionsCastlePassives;
     assert.equal(optionList.children.length, 3);
-    assert.ok(
-      optionList.children[0].textContent?.includes("Regen 2.2"),
-      "regen passive should be listed"
-    );
-    assert.ok(
-      optionList.children[2].textContent?.includes("gold"),
-      "gold passive should be listed"
-    );
+    const [regenItem, armorItem, goldItem] = optionList.children;
+    assert.ok(regenItem?.children?.length >= 2, "regen passive entry should render icon + label");
+    const regenLabel = regenItem?.children?.at?.(1)?.textContent ?? regenItem?.textContent ?? "";
+    assert.match(regenLabel, /Regen 2\.2/, "regen passive text should include totals");
+    const regenIconClass = regenItem?.children?.at?.(0)?.className ?? "";
+    assert.match(regenIconClass, /passive-icon--regen/, "regen icon should be present");
+    const goldLabel = goldItem?.children?.at?.(1)?.textContent ?? goldItem?.textContent ?? "";
+    assert.match(goldLabel, /\+5% gold/i, "gold passive text should include percent bonus");
+    const armorLabel = armorItem?.children?.at?.(1)?.textContent ?? "";
+    assert.match(armorLabel, /\+1 armor/i, "armor passive text should include armor bonus");
   } finally {
     cleanup();
   }

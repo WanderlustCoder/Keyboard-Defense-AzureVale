@@ -1044,9 +1044,7 @@ export class HudView {
     list.dataset.visible = "true";
     list.hidden = false;
     for (const passive of passives) {
-      const item = document.createElement("li");
-      item.textContent = this.formatCastlePassive(passive);
-      list.appendChild(item);
+      list.appendChild(this.createPassiveListItem(passive));
     }
   }
 
@@ -1056,14 +1054,13 @@ export class HudView {
     list.replaceChildren();
     if (!passives.length) {
       const item = document.createElement("li");
+      item.className = "passive-empty";
       item.textContent = "No passive buffs unlocked yet.";
       list.appendChild(item);
       return;
     }
     for (const passive of passives) {
-      const item = document.createElement("li");
-      item.textContent = this.formatCastlePassive(passive, { includeDelta: true });
-      list.appendChild(item);
+      list.appendChild(this.createPassiveListItem(passive, { includeDelta: true }));
     }
   }
 
@@ -1094,6 +1091,23 @@ export class HudView {
       default:
         return "Passive upgrade unlocked";
     }
+  }
+
+  private createPassiveListItem(
+    passive: CastlePassive,
+    options: { includeDelta?: boolean } = {}
+  ): HTMLLIElement {
+    const item = document.createElement("li");
+    const icon = document.createElement("span");
+    const label = document.createElement("span");
+    const passiveId = passive.id ?? "generic";
+    icon.className = `passive-icon passive-icon--${passiveId}`;
+    icon.setAttribute("aria-hidden", "true");
+    label.className = "passive-label";
+    label.textContent = this.formatCastlePassive(passive, options);
+    item.appendChild(icon);
+    item.appendChild(label);
+    return item;
   }
 
   private renderOptionsCastleBenefits(
