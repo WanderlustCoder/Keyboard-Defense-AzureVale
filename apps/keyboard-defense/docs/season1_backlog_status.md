@@ -1,0 +1,106 @@
+# Season 1 Backlog Status
+
+| # | Category | Description | Status | Notes |
+|---|---|---|---|---|
+| 1 | Tutorial & Onboarding | Introduce tutorial pause/resume hooks and ensure intro overlay gates gameplay. | Done | Tutorial intro gating implemented |
+| 2 | Tutorial & Onboarding | Highlight turret slot and enforce guided placement with gold auto-top-up. | Done | Slot highlight + gold auto-top-up |
+| 3 | Tutorial & Onboarding | Gate upgrade step with forced slot selection and auto-replenished gold. | Done | Upgrade step enforced with gold replenish |
+| 4 | Tutorial & Onboarding | Script deterministic castle breach demonstration with guided messaging. | Done | Deterministic castle breach scripted |
+| 5 | Tutorial & Onboarding | Present wrap-up summary modal (accuracy/combo/breaches/gold) with replay/continue. | Done | Wrap-up modal shows stats & actions |
+| 6 | Tutorial & Onboarding | Persist tutorial completion in localStorage; expose debug replay/skip. | Done | Completion stored in localStorage; debug replay/skip |
+| 7 | Tutorial & Onboarding | Add assist tip when typing errors exceed threshold during tutorial. | Done | Assist hint after error streak |
+| 8 | Tutorial & Onboarding | Record tutorial telemetry events (start/step-complete/fail/skip/complete). | Done | Tutorial events/assists captured in analytics |
+| 9 | Tutorial & Onboarding | Provide tutorial skip option from main menu once completed. | Done | Main menu overlay offers skip/replay controls |
+| 10 | Tutorial & Onboarding | Surface tutorial firmware versioning to invalidate old completions if flow changes. | Done | Completion stored with version; old runs auto-replay |
+| 11 | Combat Systems & Typing | Scale word difficulty dynamically using rolling accuracy window. | Done | Rolling accuracy drives dynamic difficulty bias for spawn weights |
+| 12 | Combat Systems & Typing | Diversify lane word banks to reduce repetition and teach pacing. | Done | Lane-specific vocab with per-lane history reduces repeats |
+| 13 | Combat Systems & Typing | Add per-letter feedback colors for active enemy word progress. | Done | Canvas renderer highlights typed/next characters with accessible palette |
+| 14 | Combat Systems & Typing | Implement combo decay timer with HUD warning state. | Done | Combo auto-decays with timer, HUD warns before reset |
+| 15 | Combat Systems & Typing | Provide manual buffer purge hotkey with minor combo penalty. | Done | Ctrl/Cmd+⌫ clears buffer and drops combo by one stack |
+| 16 | Combat Systems & Typing | Track wave-side bonus objectives (e.g., perfect words) for rewards. | Done | Perfect-word streak bonus grants gold and appears in analytics/scorecard |
+| 17 | Combat Systems & Typing | Introduce shielded enemies requiring turret damage before typing is effective. | Done | Shielded variants live in waves with HUD/canvas cues and tutorial coverage |
+| 18 | Combat Systems & Typing | Add turret/enemy affinity bonuses to encourage mixed defenses. | Done | Turrets gain tier multipliers with HUD summaries encouraging varied loadouts |
+| 19 | Combat Systems & Typing | Offer low-intensity endless practice mode for casual warm-up. | Done | Main menu “Practice Mode” loops waves indefinitely without campaign victory |
+| 20 | Combat Systems & Typing | Log typing reaction time metrics for balancing. | Done | Reaction averages tracked in analytics, diagnostics overlay, and exports |
+| 21 | Castle & Turrets | Display upcoming castle upgrade benefits in upgrade panel tooltip. | Done | Upgrade panel lists HP/regen/armor/slot gains with tooltip |
+| 22 | Castle & Turrets | Add castle repair ability with cooldown/resource cost. | Done | Repair action tracks cooldown/gold, analytics + diagnostics/scorecard display usage with tests |
+| 23 | Castle & Turrets | Persist turret loadout presets per slot for experimentation. | Done | Presets panel saves/applies loadouts with gold preview and priority restore |
+| 24 | Castle & Turrets | Introduce "Crystal Pulse" turret archetype behind feature toggle. | Done | Crystal Pulse turret added with shield-burst bonus and toggle controls in debug/options/main menu |
+| 25 | Castle & Turrets | Allow turret targeting priority selection (first/strongest/weakest). | Done | HUD dropdown with persistence + engine targeting logic |
+| 26 | Castle & Turrets | Animate turret firing states with sprite overlays. | Done | Turret shots trigger muzzle flashes tied to archetype colors |
+| 27 | Castle & Turrets | Log per-wave turret DPS in diagnostics overlay. | Done | Diagnostics overlay lists per-slot damage and DPS |
+| 28 | Castle & Turrets | Provide turret range visualization on hover/focus. | Done | Canvas overlay shows lane coverage when HUD slot is hovered |
+| 29 | Castle & Turrets | Allow downgrade/refund via debug toggle for testing. | Done | Debug toggle enables per-slot turret downgrade/refund with HUD messaging |
+| 30 | Castle & Turrets | Unlock castle passive buffs (regen/armor/gold) at higher levels. | Not Started |  |
+| 31 | Enemy & Wave Design | Create elite enemy affixes (slow aura, shielded, armored) under toggles. | Not Started |  |
+| 32 | Enemy & Wave Design | Script Episode 1 boss wave with bespoke mechanics and intro message. | Not Started |  |
+| 33 | Enemy & Wave Design | Display enemy taunt text when special units spawn. | Not Started |  |
+| 34 | Enemy & Wave Design | Render spawn preview icons using sprite thumbnails. | Done | HUD wave preview shows tier icons with colorblind-aware palette |
+| 35 | Enemy & Wave Design | Add dynamic spawn scheduler for surprise mini-events. | Not Started |  |
+| 36 | Enemy & Wave Design | Implement evacuation event requiring long-form typing to rescue civilians. | Not Started |  |
+| 37 | Enemy & Wave Design | Introduce lane hazards (fog/storms) affecting visibility/accuracy. | Not Started |  |
+| 38 | Enemy & Wave Design | Provide JSON schema/editor for designer-authored wave configs. | Not Started |  |
+| 39 | Enemy & Wave Design | Calculate difficulty ratings per wave and surface in analytics overlay. | Done | Diagnostics overlay shows computed wave threat rating |
+| 40 | Enemy & Wave Design | Spawn practice dummy enemy for turret DPS tuning in debug mode. | Not Started |  |
+| 41 | Analytics & Telemetry | Expand analytics export to include tutorial metrics and summary history. | Done | Analytics export now includes tutorial state |
+| 42 | Analytics & Telemetry | Persist per-wave analytics snapshot history for in-session review. | Done | Wave summaries persisted for review |
+| 43 | Analytics & Telemetry | Build in-game analytics table accessible from debug panel. | Done | Debug viewer renders recent wave summaries with toggle |
+| 44 | Analytics & Telemetry | Separate turret vs typing DPS metrics in analytics payload. | Done | Analytics snapshots & HUD now report turret/typing DPS splits |
+| 45 | Analytics & Telemetry | Add CLI script to aggregate analytics logs into summary CSV. | Done | `npm run analytics:aggregate` generates CSV snapshots from exported JSON |
+| 46 | Analytics & Telemetry | Guard analytics reset mid-wave with dedicated tests. | Done | resetAnalytics mid-wave covered by tests |
+| 47 | Analytics & Telemetry | Export leaderboard-ready CSV covering key stats. | Done | `analyticsLeaderboard.mjs` ranks snapshots by combo, accuracy, DPS |
+| 48 | Analytics & Telemetry | Capture time-to-first-turret placement and include in analytics. | Done | Snapshots/CSV now include time-to-first-turret metric |
+| 49 | Analytics & Telemetry | Emit tutorial replay/skip counts for onboarding analysis. | Done | Analytics track replay/skip counts |
+| 50 | Analytics & Telemetry | Wire optional telemetry endpoint for backend ingestion (future-ready). | Done | Telemetry client now posts batches via custom transports/sendBeacon/fetch with queue rollback on errors |
+| 51 | UI/UX & Accessibility | Offer colorblind-friendly palette toggle across sprites/HUD. | Done | Checkered background + high-contrast palette toggle available |
+| 52 | UI/UX & Accessibility | Support adjustable HUD font size with persistence. | Not Started |  |
+| 53 | UI/UX & Accessibility | Reflow layout for narrow screens / touch devices. | Not Started |  |
+| 54 | UI/UX & Accessibility | Add audio intensity slider alongside mute toggle. | Not Started |  |
+| 55 | UI/UX & Accessibility | Provide dyslexia-friendly font option for key UI elements. | Done | Options overlay offers dyslexia-friendly toggle covering active words, input, tutorial prompts with persisted setting |
+| 56 | UI/UX & Accessibility | Highlight wave preview during tutorial to emphasize planning. | Done | Tutorial step now pulses wave preview with reduce-motion safe styling |
+| 57 | UI/UX & Accessibility | Surface keyboard shortcut reference overlay. | Done | Shortcut modal with launch button + '?' hotkey |
+| 58 | UI/UX & Accessibility | Add pause/options overlay while maintaining deterministic state. | Done | Pause menu with resume + sound/diagnostics toggles |
+| 59 | UI/UX & Accessibility | Present wave-end scorecard summarizing accuracy, breaches, rewards. | Done | Wave scorecard overlay shows accuracy, combo, breaches, DPS, gold with resume gating |
+| 60 | UI/UX & Accessibility | Implement reduced-motion mode (disable shake/particle effects). | Done | Reduced-motion toggle pauses transitions & stored in settings |
+| 61 | UI/UX & Accessibility | Persist player settings (audio, diagnostics, toggles) across sessions. | Done | Player settings stored in localStorage (sound & diagnostics) |
+| 62 | Asset Pipeline & Visuals | Replace inline SVG helpers with hashed asset pipeline utilities. | Done | Inline SVG helpers consolidated into asset loader |
+| 63 | Asset Pipeline & Visuals | Generate sprite atlas to minimize draw calls. | Not Started |  |
+| 64 | Asset Pipeline & Visuals | Defer high-res asset loading until post-ready signal. | Not Started |  |
+| 65 | Asset Pipeline & Visuals | Introduce projectile particle systems via offscreen canvas. | Not Started |  |
+| 66 | Asset Pipeline & Visuals | Add enemy defeat animation frames with easing. | Not Started |  |
+| 67 | Asset Pipeline & Visuals | Morph castle visuals across upgrade levels. | Not Started |  |
+| 68 | Asset Pipeline & Visuals | Overlay ambient starfield/parallax background effects. | Not Started |  |
+| 69 | Asset Pipeline & Visuals | Validate asset integrity via manifest checksum at startup. | Not Started |  |
+| 70 | Asset Pipeline & Visuals | Automate asset manifest generation from source sprites. | Not Started |  |
+| 71 | Automation, Monitoring, Tooling | Script tutorial auto-run CLI verifying onboarding path nightly. | Done | Tutorial smoke CLI executed in CI via `ci-e2e-azure-vale` workflow |
+| 72 | Automation, Monitoring, Tooling | Capture automated HUD screenshots for docs/regression. | Not Started |  |
+| 73 | Automation, Monitoring, Tooling | Integrate ESLint/Prettier into build pipeline. | Done | `npm run lint` + `npm run format:check` wired into build orchestrator; configs live in repo |
+| 74 | Automation, Monitoring, Tooling | Add performance benchmark harness for engine throughput. | Not Started |  |
+| 75 | Automation, Monitoring, Tooling | Create deterministic wave simulation CLI for balance sweeps. | Not Started |  |
+| 76 | Automation, Monitoring, Tooling | Validate config files against schema in pre-commit hook. | Done | `scripts/validateConfig.mjs` + schema enforce GameConfig structure, tests cover failures |
+| 77 | Automation, Monitoring, Tooling | Watch docs/ for changes and rebuild summaries automatically. | Not Started |  |
+| 78 | Automation, Monitoring, Tooling | Scaffold Playwright smoke tests for tutorial/campaign start. | Done | `npm run smoke:tutorial:full` drives tutorial via Playwright CLI |
+| 79 | Automation, Monitoring, Tooling | Aggregate runtime logs into breach/accuracy summary post-run. | Not Started |  |
+| 80 | Automation, Monitoring, Tooling | Provide git hook automation to run tests/lint locally. | Not Started |  |
+| 81 | Automation, Monitoring, Tooling | Add performance benchmark harness for engine update throughput. | Done | `scripts/waveBenchmark.mjs` runs auto/all-turret scenarios with artifacts + baseline guards |
+| 82 | Automation, Monitoring, Tooling | Create deterministic wave simulation CLI for balance sweeps. | Done | `scripts/waveSim.mjs` runs headless GameEngine simulations with artifacts & auto-typing |
+| 83 | Narrative & Content | Script Archivist Lyra dialogue blocks for Episode 1 beats. | Not Started |  |
+| 84 | Narrative & Content | Author lore codex entries unlocked by completing waves. | Not Started |  |
+| 85 | Narrative & Content | Enrich turret tooltips with flavor text. | Not Started |  |
+| 86 | Narrative & Content | Surface interactive season roadmap overlay within HUD. | Not Started |  |
+| 87 | Narrative & Content | Add enemy biography cards accessible from wave preview panel. | Not Started |  |
+| 88 | Narrative & Content | Curate ambient music tracks escalating across waves. | Not Started |  |
+| 89 | Narrative & Content | Expand word banks with themed lists per wave. | Not Started |  |
+| 90 | Narrative & Content | Compose short victory/defeat stingers. | Not Started |  |
+| 91 | QA & Testing | Expand tutorial state tests to cover assist cues and replay/skip flows. | Not Started |  |
+| 92 | QA & Testing | Add asset loader fallback tests (network failure/cache reuse). | Done | Node tests cover fetch rejection + cached image reuse |
+| 93 | QA & Testing | Write analytics export/reset integration tests for debug panel flows. | Done | HUD/Debug buttons gated when toggle off + CLI usage test |
+| 94 | QA & Testing | Implement visual regression harness for HUD layout snapshots. | Not Started |  |
+| 95 | QA & Testing | Include dev-server monitor smoke test in CI. | Done | CI smoke job runs startMonitored + dev monitor artifacts |
+| 96 | QA & Testing | Fuzz test typing input buffer for invalid characters/timing. | Not Started |  |
+| 97 | QA & Testing | Automate tutorial summary modal snapshot tests. | Not Started |  |
+| 98 | QA & Testing | Add soak test that alternates tutorial replay/skip, verifying persistence. | Not Started |  |
+| 99 | QA & Testing | Create CLI to replay deterministic castle breach scenario for regression. | Not Started |  |
+| 100 | QA & Testing | Track tutorials completed per session in QA dashboard. | Not Started |  |
+
+

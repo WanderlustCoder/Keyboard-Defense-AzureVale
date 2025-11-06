@@ -1,0 +1,23 @@
+# Dependency directories
+node_modules/
+apps/**/node_modules/
+
+# Build outputs & artifacts
+apps/**/dist/
+apps/**/.devserver/
+apps/**/artifacts/
+apps/**/monitor-artifacts/
+apps/**/smoke-artifacts/
+apps/**/temp/
+
+# Logs & temp files
+*.log
+*.tmp
+*.tmp.json
+tap.log
+tap_diag.log
+docs.zip
+
+# Miscellaneous scratch files
+temp_*.txt
+TEMP_*.txt
