@@ -80,6 +80,7 @@ apps/keyboard-defense/
 
 - Use `npm run analytics:aggregate` to convert JSON snapshots into a CSV. Columns include turret/typing damage, DPS splits, shield breaks, castle bonus gold, castle repair usage (count, HP restored, gold spent), passive unlock counts/details, and recent gold event telemetry per wave.
 - Use `npm run analytics:passives` to emit a castle passive unlock timeline (JSON or `--csv`) when analyzing exported snapshots or automation artifacts. Pass `--merge-gold --gold-window <seconds>` to attach the closest gold delta event to each unlock for economy dashboards.
+- Use `npm run analytics:gold` to export a gold event timeline (JSON by default, `--csv` optional) containing delta, resulting total, timestamp, and time-since data for the last few hundred events across one or more snapshots/artifacts.
 - Review [`docs/analytics_schema.md`](../docs/analytics_schema.md) for the full snapshot and CSV schema, including tutorial telemetry fields.
 - Snapshot JSONs are generated via the in-game analytics download button (debug panel) or the options overlay when analytics export is enabled.
 
@@ -111,6 +112,7 @@ The new generation of orchestration scripts lives in `scripts/`:
 | `node scripts/castleBreachReplay.mjs` | Replay the deterministic castle-breach drill and emit a JSON artifact summarising the timeline.                                                     |
 | `node scripts/analyticsAggregate.mjs` | Convert analytics snapshots into the detailed wave-by-wave CSV described in `docs/analytics_schema.md`.                                           |
 | `node scripts/analyticsLeaderboard.mjs` | Generate a leaderboard-ready CSV (or JSON) ranked by combo, accuracy, and DPS from exported analytics snapshots.                              |
+| `node scripts/goldTimeline.mjs` | Emit the recent-gold timeline (JSON or CSV) from analytics snapshots or smoke artifacts for dashboards and anomaly tracking.                      |
 | `node scripts/assetIntegrity.mjs` | Hash every manifest-listed asset (SHA-256) and rewrite/verify the manifest integrity map (`--check` to verify without writing).                      |
 
 Pass `--ci` to any script to write artifacts into `artifacts/<task>/...` for pipeline consumption.

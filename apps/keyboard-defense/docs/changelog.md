@@ -11,6 +11,12 @@
 - `--check` mode lets CI and local hooks verify hashes without mutating the manifest, giving us a quick health check before commit/push.
 - New Vitest coverage targets the hashing helper and orchestration path so future pipeline tweaks surface regressions immediately.
 
+## Gold Timeline CLI
+
+- Added `node scripts/goldTimeline.mjs` (`npm run analytics:gold`) to emit JSON/CSV timelines of gold events from analytics snapshots or smoke artifacts, capturing delta, resulting total, timestamps, and time-since values for dashboards.
+- Script mirrors the passive timeline interface (directory recursion, stdout by default, `--out` and `--csv` flags) so automation can publish artifacts without bespoke code.
+- Vitest coverage ensures argument parsing, entry shaping, and CSV output stay stable as analytics schemas evolve.
+
 ## Diagnostics & Passive Telemetry Refresh
 
 - Diagnostics overlay now displays current gold with the latest delta/timestamp plus a running passive unlock summary so automation logs the same economy signals surfaced to players.
