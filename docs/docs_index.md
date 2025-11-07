@@ -19,6 +19,7 @@ Use this index to jump straight to the guidance you'll need while building and t
 
 ## Status Notes
 Status entries live under `docs/status/`. Recent highlights include:
+- `2025-11-14_gold_summary_ci_guard.md` - CI smoke now runs `goldSummaryCheck` against the tutorial gold summary artifact.
 - `2025-11-14_combo_accuracy_delta.md` - Combo warning badge now surfaces the live accuracy delta so players can react before streaks fall off.
 - `2025-11-13_gold_summary_checker.md` - Standalone CLI validates gold summary artifacts (JSON/CSV) before dashboards ingest them.
 - `2025-11-12_gold_summary_metadata.md` - Gold summary artifacts now embed the percentile list (JSON + CSV) for downstream validation.
