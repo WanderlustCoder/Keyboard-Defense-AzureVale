@@ -24,6 +24,8 @@ const AUDIO_INTENSITY_MAX = 1.5;
 const AUDIO_INTENSITY_DEFAULT = 1;
 const CANVAS_BASE_WIDTH = 960;
 const CANVAS_BASE_HEIGHT = 540;
+const CANVAS_BASE_WIDTH = 960;
+const CANVAS_BASE_HEIGHT = 540;
 function svgCircleDataUri(primary, accent) {
     const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'>` +
         `<defs><radialGradient id='g' cx='50%' cy='40%' r='60%'>` +
@@ -51,6 +53,7 @@ export class GameController {
         this.canvasResolution = null;
         this.canvasResizeObserver = null;
         this.viewportResizeHandler = null;
+        this.dprMediaQuery = null;
         this.updateCanvasResolution(true);
         this.running = false;
         this.speedMultiplier = 1;
@@ -172,6 +175,7 @@ export class GameController {
         });
         this.renderer = new CanvasRenderer(options.canvas, this.engine.config, this.assetLoader);
         this.attachCanvasResizeObserver();
+        this.attachDevicePixelRatioListener();
         this.hud = new HudView(this.engine.config, {
             healthBar: "castle-health-bar",
             goldLabel: "resource-gold",
@@ -2758,6 +2762,52 @@ export class GameController {
             window.addEventListener("resize", this.viewportResizeHandler);
         }
     }
+    attachDevicePixelRatioListener() {
+        if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+            return;
+        }
+        this.detachDevicePixelRatioListener();
+        const ratio = typeof window.devicePixelRatio === "number" && window.devicePixelRatio > 0
+            ? window.devicePixelRatio
+            : 1;
+        let query;
+        try {
+            query = window.matchMedia(`(resolution: ${ratio}dppx)`);
+        }
+        catch {
+            return;
+        }
+        const handler = () => {
+            this.detachDevicePixelRatioListener();
+            this.updateCanvasResolution(true);
+            this.attachDevicePixelRatioListener();
+        };
+        if (typeof query.addEventListener === "function") {
+            query.addEventListener("change", handler);
+        }
+        else if (typeof query.addListener === "function") {
+            query.addListener(handler);
+        }
+        this.dprMediaQuery = { query, handler };
+    }
+    detachDevicePixelRatioListener() {
+        if (!this.dprMediaQuery) {
+            return;
+        }
+        const { query, handler } = this.dprMediaQuery;
+        try {
+            if (typeof query.removeEventListener === "function") {
+                query.removeEventListener("change", handler);
+            }
+            else if (typeof query.removeListener === "function") {
+                query.removeListener(handler);
+            }
+        }
+        catch {
+            // ignore
+        }
+        this.dprMediaQuery = null;
+    }
     updateCanvasResolution(force = false) {
         if (!this.canvas)
             return;
@@ -2774,6 +2824,7 @@ export class GameController {
         this.canvasResolution = resolution;
         this.canvas.width = resolution.renderWidth;
         this.canvas.height = resolution.renderHeight;
+        this.canvas.style.width = `${resolution.cssWidth}px`;
         this.canvas.style.height = `${resolution.cssHeight}px`;
         if (this.renderer?.resize) {
             this.renderer.resize(resolution.renderWidth, resolution.renderHeight);
@@ -2820,6 +2871,12 @@ export class GameController {
         }
         if (typeof window !== "undefined" && window.innerWidth > 0) {
             return Math.min(window.innerWidth - 32, CANVAS_BASE_WIDTH);
+        }
+        if (typeof document !== "undefined") {
+            const docWidth = document.documentElement?.clientWidth ?? 0;
+            if (docWidth > 0) {
+                return Math.min(docWidth - 32, CANVAS_BASE_WIDTH);
+            }
         }
         return CANVAS_BASE_WIDTH;
     }
