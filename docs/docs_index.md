@@ -22,6 +22,7 @@ Status entries live under `docs/status/`. Recent highlights include:
 - `2025-11-07_diagnostics_passives.md` - Diagnostics gold delta display, analytics CSV enrichment, and passive unlock artifacts.
 - `2025-11-08_gold_event_history.md` - Diagnostics overlay now lists recent gold events for rapid economy debugging.
 - `2025-11-08_gold_timeline_cli.md` - `npm run analytics:gold` CLI for exporting gold-event timelines from snapshots/artifacts.
+- `2025-11-08_gold_summary_cli.md` - `npm run analytics:gold:summary` aggregates gold timelines into per-file economy stats.
 - `2025-11-06_crystal_pulse.md` - Crystal Pulse turret rollout, toggle wiring, and shield-burst analytics.
 - `2025-11-06_ci_pipeline.md` - CI workflow wiring for build/unit/integration + tutorial smoke and full E2E runs.
 - `2025-11-06_hud_screenshots.md` - Automated HUD/options overlay screenshot capture script and usage.

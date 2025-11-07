@@ -22,6 +22,7 @@
     "analytics:leaderboard": "node ./scripts/analyticsLeaderboard.mjs",
     "analytics:passives": "node ./scripts/passiveTimeline.mjs",
     "analytics:gold": "node ./scripts/goldTimeline.mjs",
+    "analytics:gold:summary": "node ./scripts/goldSummary.mjs",
     "assets:integrity": "node ./scripts/assetIntegrity.mjs",
     "smoke:tutorial": "node ./scripts/tutorialSmoke.mjs",
     "wave:sim": "node ./scripts/waveSim.mjs",

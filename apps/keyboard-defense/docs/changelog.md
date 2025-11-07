@@ -17,6 +17,12 @@
 - Script mirrors the passive timeline interface (directory recursion, stdout by default, `--out` and `--csv` flags) so automation can publish artifacts without bespoke code.
 - Vitest coverage ensures argument parsing, entry shaping, and CSV output stay stable as analytics schemas evolve.
 
+## Gold Summary Aggregator
+
+- Added `node scripts/goldSummary.mjs` (`npm run analytics:gold:summary`) to crunch one or more timelines/snapshots into per-file economy stats (event counts, net delta, max gain/spend, passive linkage counts/lag).
+- CLI accepts both raw timeline files and original snapshots; when snapshots are provided it auto-merges passive unlock data via the shared timeline helper.
+- Vitest coverage ensures the new aggregation logic and CSV export remain stable.
+
 ## Diagnostics & Passive Telemetry Refresh
 
 - Diagnostics overlay now displays current gold with the latest delta/timestamp plus a running passive unlock summary so automation logs the same economy signals surfaced to players.

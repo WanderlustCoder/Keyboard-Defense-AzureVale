@@ -99,7 +99,7 @@ Each entry in `analytics.goldEvents` captures a single gold balance update:
 | `delta` | number | Net gold change applied by the event (negative for spend). |
 | `timestamp` | number | Game time in seconds when the event occurred. |
 
-> Need a quick timeline for dashboards or smoke artifacts? Run `npm run analytics:gold` (see `scripts/goldTimeline.mjs`) to export the last few hundred entries as JSON/CSV with additional metadata (file, mode, capturedAt, time-since). Pass `--merge-passives --passive-window <seconds>` to include the nearest passive unlock (id/level/time/lag) for each event.
+> Need a quick timeline for dashboards or smoke artifacts? Run `npm run analytics:gold` (see `scripts/goldTimeline.mjs`) to export the last few hundred entries as JSON/CSV with additional metadata (file, mode, capturedAt, time-since). Pass `--merge-passives --passive-window <seconds>` to include the nearest passive unlock (id/level/time/lag) for each event. For high-level summaries (net delta, max gain/spend, passive linkage counts) use `npm run analytics:gold:summary`.
 
 ## Telemetry Metadata Snapshot
 
