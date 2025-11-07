@@ -11,6 +11,7 @@ import { TutorialManager } from "../tutorial/tutorialManager.js";
 import { clearTutorialCompletion, readTutorialCompletion, writeTutorialCompletion } from "../tutorial/tutorialPersistence.js";
 import { createDefaultPlayerSettings, readPlayerSettings as loadPlayerSettingsFromStorage, withPatchedPlayerSettings, writePlayerSettings, TURRET_PRESET_IDS } from "../utils/playerSettings.js";
 import { TelemetryClient } from "../telemetry/telemetryClient.js";
+import { calculateCanvasResolution } from "../utils/canvasResolution.js";
 const FRAME_DURATION = 1 / 60;
 const TUTORIAL_VERSION = "v2";
 const HUD_FONT_SCALE_MIN = 0.85;
@@ -21,6 +22,8 @@ const SOUND_VOLUME_DEFAULT = 0.8;
 const AUDIO_INTENSITY_MIN = 0.5;
 const AUDIO_INTENSITY_MAX = 1.5;
 const AUDIO_INTENSITY_DEFAULT = 1;
+const CANVAS_BASE_WIDTH = 960;
+const CANVAS_BASE_HEIGHT = 540;
 function svgCircleDataUri(primary, accent) {
     const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'>` +
         `<defs><radialGradient id='g' cx='50%' cy='40%' r='60%'>` +
@@ -41,6 +44,14 @@ function svgTurretDataUri(base, barrel) {
 export class GameController {
     constructor(options) {
         this.options = options;
+        if (!options.canvas) {
+            throw new Error("GameController requires a canvas element.");
+        }
+        this.canvas = options.canvas;
+        this.canvasResolution = null;
+        this.canvasResizeObserver = null;
+        this.viewportResizeHandler = null;
+        this.updateCanvasResolution(true);
         this.running = false;
         this.speedMultiplier = 1;
         this.lastTimestamp = null;
@@ -160,6 +171,7 @@ export class GameController {
             console.warn("Asset load failed, continuing with procedural sprites.", error);
         });
         this.renderer = new CanvasRenderer(options.canvas, this.engine.config, this.assetLoader);
+        this.attachCanvasResizeObserver();
         this.hud = new HudView(this.engine.config, {
             healthBar: "castle-health-bar",
             goldLabel: "resource-gold",
@@ -2731,5 +2743,84 @@ export class GameController {
             turretType: extras.turretType ?? null,
             createdAt
         });
+    }
+    attachCanvasResizeObserver() {
+        if (typeof window === "undefined" || !this.canvas) {
+            return;
+        }
+        const target = this.canvas.parentElement ?? this.canvas;
+        if (typeof ResizeObserver !== "undefined") {
+            this.canvasResizeObserver = new ResizeObserver(() => this.updateCanvasResolution());
+            this.canvasResizeObserver.observe(target);
+        }
+        else {
+            this.viewportResizeHandler = () => this.updateCanvasResolution();
+            window.addEventListener("resize", this.viewportResizeHandler);
+        }
+    }
+    updateCanvasResolution(force = false) {
+        if (!this.canvas)
+            return;
+        const resolution = this.computeCanvasResolution();
+        if (!resolution)
+            return;
+        const changed = force ||
+            !this.canvasResolution ||
+            this.canvasResolution.renderWidth !== resolution.renderWidth ||
+            this.canvasResolution.renderHeight !== resolution.renderHeight;
+        if (!changed) {
+            return;
+        }
+        this.canvasResolution = resolution;
+        this.canvas.width = resolution.renderWidth;
+        this.canvas.height = resolution.renderHeight;
+        this.canvas.style.height = `${resolution.cssHeight}px`;
+        if (this.renderer?.resize) {
+            this.renderer.resize(resolution.renderWidth, resolution.renderHeight);
+        }
+    }
+    computeCanvasResolution() {
+        const availableWidth = this.measureCanvasAvailableWidth();
+        if (!availableWidth || !Number.isFinite(availableWidth)) {
+            return {
+                cssWidth: CANVAS_BASE_WIDTH,
+                cssHeight: CANVAS_BASE_HEIGHT,
+                renderWidth: CANVAS_BASE_WIDTH,
+                renderHeight: CANVAS_BASE_HEIGHT
+            };
+        }
+        const devicePixelRatio = typeof window !== "undefined" && typeof window.devicePixelRatio === "number"
+            ? window.devicePixelRatio
+            : 1;
+        return calculateCanvasResolution({
+            baseWidth: CANVAS_BASE_WIDTH,
+            baseHeight: CANVAS_BASE_HEIGHT,
+            availableWidth,
+            devicePixelRatio
+        });
+    }
+    measureCanvasAvailableWidth() {
+        if (!this.canvas) {
+            return CANVAS_BASE_WIDTH;
+        }
+        const parent = this.canvas.parentElement;
+        if (parent) {
+            const parentWidth = parent.clientWidth;
+            if (parentWidth > 0) {
+                return parentWidth;
+            }
+            const rect = parent.getBoundingClientRect?.();
+            if (rect && rect.width > 0) {
+                return rect.width;
+            }
+        }
+        const canvasRect = this.canvas.getBoundingClientRect?.();
+        if (canvasRect && canvasRect.width > 0) {
+            return canvasRect.width;
+        }
+        if (typeof window !== "undefined" && window.innerWidth > 0) {
+            return Math.min(window.innerWidth - 32, CANVAS_BASE_WIDTH);
+        }
+        return CANVAS_BASE_WIDTH;
     }
 }

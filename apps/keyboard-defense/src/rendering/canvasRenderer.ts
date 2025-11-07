@@ -28,9 +28,9 @@ export interface ImpactEffectRender {
 
 export class CanvasRenderer {
   private readonly ctx: CanvasRenderingContext2D;
-  private readonly width: number;
-  private readonly height: number;
-  private readonly pathLength: number;
+  private width: number;
+  private height: number;
+  private pathLength: number;
   private readonly laneCount: number;
   private readonly spriteRenderer: SpriteRenderer;
   private static readonly DEFEAT_BURST_DURATION = 0.6;
@@ -49,9 +49,7 @@ export class CanvasRenderer {
     const ctx = canvas.getContext("2d");
     if (!ctx) throw new Error("Unable to acquire 2d context.");
     this.ctx = ctx;
-    this.width = canvas.width;
-    this.height = canvas.height;
-    this.pathLength = this.width * 0.7;
+    this.applyDimensions(canvas.width, canvas.height);
     this.laneCount = Math.max(...config.turretSlots.map((s) => s.lane)) + 1;
     this.spriteRenderer = new SpriteRenderer(assetLoader);
     this.starfield = this.createStarfield(110);
@@ -90,6 +88,24 @@ export class CanvasRenderer {
 
   private clear(): void {
     this.ctx.clearRect(0, 0, this.width, this.height);
+  }
+
+  private applyDimensions(width: number, height: number): void {
+    this.width = width;
+    this.height = height;
+    this.pathLength = this.width * 0.7;
+    this.cachedCheckeredPattern = null;
+  }
+
+  resize(width: number, height: number): void {
+    const nextWidth = Math.max(1, Math.floor(width));
+    const nextHeight = Math.max(1, Math.floor(height));
+    if (this.canvas.width === nextWidth && this.canvas.height === nextHeight) {
+      return;
+    }
+    this.canvas.width = nextWidth;
+    this.canvas.height = nextHeight;
+    this.applyDimensions(nextWidth, nextHeight);
   }
 
   private drawBackground(): void {
