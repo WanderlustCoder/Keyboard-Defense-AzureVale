@@ -1,3 +1,9 @@
+## Responsive HUD Layout
+
+- HUD + canvas layout now reflows on viewports below 1024px: the canvas stacks above a grid-based HUD that auto-fits two columns on tablets and collapses to a single column on phones, preventing the sidebar from squishing or overflowing.
+- Options, wave scorecard, and main-menu overlays adopt reduced padding with scrollable cards on small screens so modals remain usable on touch devices.
+- Debug analytics tables gain horizontal scrolling guards when space is tight, and coarse-pointer media queries bump buttons, selects, and primary inputs (typing field, telemetry endpoint) to the 44px accessibility target.
+
 ## Audio Intensity Slider
 
 - Added an Audio Intensity slider to the pause/options overlay so players can scale SFX energy between 50% and 150% without muting the game; the slider disables automatically when master audio is off and mirrors the live percent label.

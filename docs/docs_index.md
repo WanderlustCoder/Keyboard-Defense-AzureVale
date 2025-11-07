@@ -19,6 +19,7 @@ Use this index to jump straight to the guidance you'll need while building and t
 
 ## Status Notes
 Status entries live under `docs/status/`. Recent highlights include:
+- `2025-11-17_responsive_layout.md` - HUD stacks vertically on tablets/phones, overlays scroll, and touch targets grow to 44px min height.
 - `2025-11-16_audio_intensity_slider.md` - Audio intensity slider in the pause/options overlay with persistence and scaled sound playback.
 - `2025-11-16_devserver_monitor_refresh.md` - Dev server lifecycle restored (`npm run start`), standalone monitor CLI, and `start:monitored` wrapper wired back in.
 - `2025-11-15_tooling_baseline.md` - ESLint/TypeScript/Prettier baselines restored so `npm run test` can run cleanly again.
