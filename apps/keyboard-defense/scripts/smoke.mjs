@@ -43,11 +43,11 @@ async function run(command, args, options = {}) {
   });
 }
 
-async function generateGoldTimeline(inputPath, artifactDir, summary, ciMode) {
-  const outputName = ciMode ? "gold-timeline.ci.json" : "gold-timeline.json";
-  const destination = path.join(artifactDir, outputName);
+async function generateGoldEconomyArtifacts(inputPath, artifactDir, summary, ciMode) {
+  const timelineName = ciMode ? "gold-timeline.ci.json" : "gold-timeline.json";
+  const timelinePath = path.join(artifactDir, timelineName);
   summary.commands.push(
-    `${process.execPath} ./scripts/goldTimeline.mjs --merge-passives --passive-window 8 --out ${destination} ${inputPath}`
+    `${process.execPath} ./scripts/goldTimeline.mjs --merge-passives --passive-window 8 --out ${timelinePath} ${inputPath}`
   );
   try {
     await run(
@@ -58,17 +58,35 @@ async function generateGoldTimeline(inputPath, artifactDir, summary, ciMode) {
         "--passive-window",
         "8",
         "--out",
-        destination,
+        timelinePath,
         inputPath
       ],
       {
         shell: false
       }
     );
-    summary.goldTimeline = destination;
+    summary.goldTimeline = timelinePath;
   } catch (error) {
     summary.status = summary.status === "failed" ? summary.status : "warning";
     summary.goldTimelineError = error instanceof Error ? error.message : String(error);
+    return;
+  }
+
+  const summaryName = ciMode ? "gold-summary.ci.json" : "gold-summary.json";
+  const summaryPath = path.join(artifactDir, summaryName);
+  summary.commands.push(
+    `${process.execPath} ./scripts/goldSummary.mjs --global --out ${summaryPath} ${timelinePath}`
+  );
+  try {
+    await run(
+      process.execPath,
+      ["./scripts/goldSummary.mjs", "--global", "--out", summaryPath, timelinePath],
+      { shell: false }
+    );
+    summary.goldSummary = summaryPath;
+  } catch (error) {
+    summary.status = summary.status === "failed" ? summary.status : "warning";
+    summary.goldSummaryError = error instanceof Error ? error.message : String(error);
   }
 }
 
@@ -99,7 +117,7 @@ async function main() {
       shell: false
     });
     summary.artifact = smokeArtifactPath;
-    await generateGoldTimeline(smokeArtifactPath, artifactDir, summary, opts.ci);
+    await generateGoldEconomyArtifacts(smokeArtifactPath, artifactDir, summary, opts.ci);
     if (opts.ci) {
       try {
         const payload = await readFile(smokeArtifactPath, "utf8");
