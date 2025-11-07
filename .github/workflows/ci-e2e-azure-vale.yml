@@ -145,6 +145,20 @@ jobs:
         run: node scripts/castleBreachReplay.mjs --artifact artifacts/castle-breach.ci.json
         working-directory: apps/keyboard-defense
 
+      - name: Generate gold summary for e2e runs
+        run: >
+          npm run analytics:gold:report --
+          --timeline-out artifacts/e2e/gold-timeline.ci.json
+          --summary-out artifacts/e2e/gold-summary.ci.json
+          --global
+          artifacts/e2e/tutorial-full.ci.json
+          artifacts/e2e/campaign.ci.json
+        working-directory: apps/keyboard-defense
+
+      - name: Validate e2e gold summary
+        run: npm run analytics:gold:check -- artifacts/e2e/gold-summary.ci.json
+        working-directory: apps/keyboard-defense
+
       - name: Upload e2e artifacts
         if: always()
         uses: actions/upload-artifact@v4
