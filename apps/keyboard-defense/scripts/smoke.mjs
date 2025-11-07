@@ -47,12 +47,24 @@ async function generateGoldTimeline(inputPath, artifactDir, summary, ciMode) {
   const outputName = ciMode ? "gold-timeline.ci.json" : "gold-timeline.json";
   const destination = path.join(artifactDir, outputName);
   summary.commands.push(
-    `${process.execPath} ./scripts/goldTimeline.mjs --out ${destination} ${inputPath}`
+    `${process.execPath} ./scripts/goldTimeline.mjs --merge-passives --passive-window 8 --out ${destination} ${inputPath}`
   );
   try {
-    await run(process.execPath, ["./scripts/goldTimeline.mjs", "--out", destination, inputPath], {
-      shell: false
-    });
+    await run(
+      process.execPath,
+      [
+        "./scripts/goldTimeline.mjs",
+        "--merge-passives",
+        "--passive-window",
+        "8",
+        "--out",
+        destination,
+        inputPath
+      ],
+      {
+        shell: false
+      }
+    );
     summary.goldTimeline = destination;
   } catch (error) {
     summary.status = summary.status === "failed" ? summary.status : "warning";
