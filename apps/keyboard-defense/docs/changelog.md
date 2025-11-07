@@ -1,3 +1,9 @@
+## HUD Castle Panel Condensed Lists
+
+- Castle passives and recent gold events in the HUD now render inside collapsible summary cards with explicit counts, keeping the sidebar compact on tablets/phones while preserving one-click access to the full lists.
+- Cards default to a collapsed state on screens ≤768px (desktop retains the previous always-expanded view), and the toggle buttons announce both the entry count and the latest gold delta so you can read economy drift without expanding.
+- Passives/gold event lists no longer pop in/out abruptly—they hide behind the cards, which stabilizes layout shifts and makes HUD screenshots/tests deterministic again on narrow viewports.
+
 ## Responsive HUD Layout
 
 - HUD + canvas layout now reflows on viewports below 1024px: the canvas stacks above a grid-based HUD that auto-fits two columns on tablets and collapses to a single column on phones, preventing the sidebar from squishing or overflowing.

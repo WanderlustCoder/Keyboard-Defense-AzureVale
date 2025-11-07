@@ -23,6 +23,8 @@ export class HudView {
     castleBenefits;
     castleGoldEvents;
     castlePassives;
+    castlePassivesSection;
+    castleGoldEventsSection;
     wavePreview;
     slotControls = new Map();
     presetControls = new Map();
@@ -398,16 +400,21 @@ export class HudView {
         this.castleStatus.className = "castle-status";
         this.castleStatus.setAttribute("role", "status");
         this.castleStatus.setAttribute("aria-live", "polite");
-        this.castlePassives = document.createElement("ul");
-        this.castlePassives.className = "castle-passives";
-        this.castlePassives.dataset.visible = "false";
-        this.castlePassives.hidden = true;
-        this.castlePassives.setAttribute("aria-label", "Active castle passive buffs");
-        this.castleGoldEvents = document.createElement("ul");
-        this.castleGoldEvents.className = "castle-gold-events";
-        this.castleGoldEvents.dataset.visible = "false";
-        this.castleGoldEvents.hidden = true;
-        this.castleGoldEvents.setAttribute("aria-label", "Recent gold events");
+        const prefersCondensedLists = this.prefersCondensedHudLists();
+        this.castlePassivesSection = this.createCondensedSection({
+            title: "Castle passives",
+            listClass: "castle-passives",
+            ariaLabel: "Active castle passive buffs",
+            collapsedByDefault: prefersCondensedLists
+        });
+        this.castlePassives = this.castlePassivesSection.list;
+        this.castleGoldEventsSection = this.createCondensedSection({
+            title: "Recent gold events",
+            listClass: "castle-gold-events",
+            ariaLabel: "Recent gold events",
+            collapsedByDefault: prefersCondensedLists
+        });
+        this.castleGoldEvents = this.castleGoldEventsSection.list;
         this.castleBenefits = document.createElement("ul");
         this.castleBenefits.className = "castle-benefits";
         this.castleBenefits.dataset.visible = "false";
@@ -422,8 +429,8 @@ export class HudView {
         castleWrap.appendChild(this.castleButton);
         castleWrap.appendChild(this.castleRepairButton);
         castleWrap.appendChild(this.castleStatus);
-        castleWrap.appendChild(this.castlePassives);
-        castleWrap.appendChild(this.castleGoldEvents);
+        castleWrap.appendChild(this.castlePassivesSection.container);
+        castleWrap.appendChild(this.castleGoldEventsSection.container);
         castleWrap.appendChild(this.castleBenefits);
         this.upgradePanel.appendChild(castleWrap);
         this.castleButton.addEventListener("click", () => {
@@ -777,26 +784,26 @@ export class HudView {
         const list = this.castlePassives;
         list.replaceChildren();
         if (!passives.length) {
-            list.dataset.visible = "false";
-            list.hidden = true;
+            this.setCondensedSectionVisibility(this.castlePassivesSection, false);
+            this.updateCondensedSectionSummary(this.castlePassivesSection, "No passives");
             return;
         }
-        list.dataset.visible = "true";
-        list.hidden = false;
+        this.setCondensedSectionVisibility(this.castlePassivesSection, true);
         for (const passive of passives) {
             list.appendChild(this.createPassiveListItem(passive));
         }
+        const summary = passives.length === 1 ? "1 passive" : `${passives.length} passives`;
+        this.updateCondensedSectionSummary(this.castlePassivesSection, summary);
     }
     renderCastleGoldEvents(events, currentTime) {
         const list = this.castleGoldEvents;
         list.replaceChildren();
         if (!events.length) {
-            list.dataset.visible = "false";
-            list.hidden = true;
+            this.setCondensedSectionVisibility(this.castleGoldEventsSection, false);
+            this.updateCondensedSectionSummary(this.castleGoldEventsSection, "No recent events");
             return;
         }
-        list.dataset.visible = "true";
-        list.hidden = false;
+        this.setCondensedSectionVisibility(this.castleGoldEventsSection, true);
         for (const event of events) {
             const item = document.createElement("li");
             item.className = "gold-event-entry";
@@ -839,6 +846,13 @@ export class HudView {
             item.textContent = parts.join(" ");
             list.appendChild(item);
         }
+        const descriptor = events.length === 1 ? "1 recent event" : `${events.length} recent events`;
+        const latestDelta = events[0];
+        const latestLabel = typeof latestDelta?.delta === "number" && Number.isFinite(latestDelta.delta)
+            ? `${latestDelta.delta > 0 ? "+" : ""}${Math.round(latestDelta.delta)}g`
+            : null;
+        const summary = latestLabel ? `${descriptor} (last ${latestLabel})` : descriptor;
+        this.updateCondensedSectionSummary(this.castleGoldEventsSection, summary);
     }
     renderOptionsCastlePassives(passives) {
         if (!this.optionsCastlePassives)
@@ -893,6 +907,90 @@ export class HudView {
         item.appendChild(icon);
         item.appendChild(label);
         return item;
+    }
+    createCondensedSection(options) {
+        const container = document.createElement("div");
+        container.className = "hud-condensed-section";
+        const header = document.createElement("div");
+        header.className = "hud-condensed-header";
+        const title = document.createElement("span");
+        title.className = "hud-condensed-title";
+        title.textContent = options.title;
+        const summary = document.createElement("span");
+        summary.className = "hud-condensed-summary";
+        summary.textContent = "";
+        const toggle = document.createElement("button");
+        toggle.type = "button";
+        toggle.className = "hud-condensed-toggle";
+        const body = document.createElement("div");
+        body.className = "hud-condensed-body";
+        const listId = `${options.listClass}-${++hudInstanceCounter}`;
+        const list = document.createElement("ul");
+        list.className = options.listClass;
+        list.id = listId;
+        list.setAttribute("aria-label", options.ariaLabel);
+        header.append(title, summary, toggle);
+        body.appendChild(list);
+        container.append(header, body);
+        const section = {
+            container,
+            body,
+            list,
+            summary,
+            toggle,
+            title: options.title,
+            collapsed: Boolean(options.collapsedByDefault)
+        };
+        toggle.setAttribute("aria-controls", listId);
+        toggle.addEventListener("click", () => {
+            this.setCondensedSectionCollapsed(section, !section.collapsed);
+        });
+        this.setCondensedSectionCollapsed(section, section.collapsed);
+        this.updateCondensedSectionSummary(section, "");
+        this.setCondensedSectionVisibility(section, false);
+        return section;
+    }
+    setCondensedSectionCollapsed(section, collapsed) {
+        section.collapsed = collapsed;
+        section.container.dataset.collapsed = collapsed ? "true" : "false";
+        section.toggle.setAttribute("aria-expanded", collapsed ? "false" : "true");
+        const summaryText = section.summary.textContent?.trim();
+        if (collapsed) {
+            section.toggle.textContent = summaryText
+                ? `Show ${section.title} (${summaryText})`
+                : `Show ${section.title}`;
+        }
+        else {
+            section.toggle.textContent = `Hide ${section.title}`;
+        }
+    }
+    updateCondensedSectionSummary(section, summary) {
+        section.summary.textContent = summary;
+        if (section.collapsed) {
+            this.setCondensedSectionCollapsed(section, section.collapsed);
+        }
+    }
+    setCondensedSectionVisibility(section, visible) {
+        section.container.hidden = !visible;
+        if (!visible) {
+            section.container.setAttribute("aria-hidden", "true");
+        }
+        else {
+            section.container.removeAttribute("aria-hidden");
+        }
+        section.list.dataset.visible = visible ? "true" : "false";
+        section.list.hidden = !visible;
+    }
+    prefersCondensedHudLists() {
+        if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+            return false;
+        }
+        try {
+            return window.matchMedia("(max-width: 768px)").matches;
+        }
+        catch {
+            return false;
+        }
     }
     renderOptionsCastleBenefits(benefits, nextConfig) {
         if (!this.optionsCastleBenefits)
