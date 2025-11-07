@@ -19,6 +19,7 @@ Use this index to jump straight to the guidance you'll need while building and t
 
 ## Status Notes
 Status entries live under `docs/status/`. Recent highlights include:
+- `2025-11-16_devserver_monitor_refresh.md` - Dev server lifecycle restored (`npm run start`), standalone monitor CLI, and `start:monitored` wrapper wired back in.
 - `2025-11-15_tooling_baseline.md` - ESLint/TypeScript/Prettier baselines restored so `npm run test` can run cleanly again.
 - `2025-11-14_gold_summary_ci_guard.md` - CI smoke now runs `goldSummaryCheck` against the tutorial gold summary artifact.
 - `2025-11-14_combo_accuracy_delta.md` - Combo warning badge now surfaces the live accuracy delta so players can react before streaks fall off.
