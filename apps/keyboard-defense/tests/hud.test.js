@@ -236,6 +236,7 @@ const initializeHud = () => {
   const typingInput = new FakeInputElement("typing-input");
   const upgradePanel = new FakeElement("div", "upgrade-panel");
   const comboLabel = new FakeElement("div", "combo-stats");
+  const comboAccuracyDelta = new FakeElement("div", "combo-accuracy-delta");
   const logList = new FakeElement("ul", "battle-log");
   const wavePreview = new FakeElement("div", "wave-preview-list");
   const wavePreviewHint = new FakeElement("div", "wave-preview-hint");
@@ -346,6 +347,7 @@ const initializeHud = () => {
   register("typing-input", typingInput);
   register("upgrade-panel", upgradePanel);
   register("combo-stats", comboLabel);
+  register("combo-accuracy-delta", comboAccuracyDelta);
   register("battle-log", logList);
   register("wave-preview-list", wavePreview);
   register("wave-preview-hint", wavePreviewHint);
@@ -413,6 +415,7 @@ const initializeHud = () => {
       typingInput: "typing-input",
       upgradePanel: "upgrade-panel",
       comboLabel: "combo-stats",
+      comboAccuracyDelta: "combo-accuracy-delta",
       eventLog: "battle-log",
       wavePreview: "wave-preview-list",
       wavePreviewHint: "wave-preview-hint",
@@ -547,6 +550,7 @@ const initializeHud = () => {
       wavePreview,
       wavePreviewHint,
       comboLabel,
+      comboAccuracyDelta,
       goldDelta,
       logList,
       tutorialBanner,
@@ -639,7 +643,16 @@ const buildInitialState = () => {
       activeEnemyId: null,
       buffer: "",
       combo: 0,
-      errors: 0
+      comboTimer: 0,
+      comboWarning: false,
+      errors: 0,
+      totalInputs: 0,
+      correctInputs: 0,
+      accuracy: 1,
+      recentInputs: [],
+      recentCorrectInputs: 0,
+      recentAccuracy: 1,
+      dynamicDifficultyBias: 0
     },
     analytics: {
       activeWaveIndex: 0,
@@ -683,19 +696,25 @@ const buildInitialState = () => {
   };
 };
 
-test("HudView highlights combos and gold deltas", () => {
+test("HudView highlights combos and accuracy delta during warnings", () => {
   const { hud, cleanup, elements } = initializeHud();
-  const { wavePreview, comboLabel, goldDelta, logList, tutorialBanner } = elements;
+  const { wavePreview, comboLabel, comboAccuracyDelta, goldDelta, logList, tutorialBanner } =
+    elements;
 
   const baseState = buildInitialState();
+  baseState.typing.accuracy = 0.96;
   hud.update(baseState, []);
   assert.equal(wavePreview.children.length, 1);
   assert.equal(wavePreview.children[0].textContent, "All clear.");
   assert.equal(comboLabel.dataset.active, "false");
+  assert.equal(comboAccuracyDelta.dataset.visible, "false");
 
   const nextState = structuredClone(baseState);
   nextState.resources.gold = 260;
   nextState.typing.combo = 4;
+  nextState.typing.comboWarning = false;
+  nextState.typing.comboTimer = 2;
+  nextState.typing.accuracy = 0.91;
   const upcoming = [
     {
       waveIndex: 0,
@@ -711,8 +730,18 @@ test("HudView highlights combos and gold deltas", () => {
 
   assert.equal(comboLabel.dataset.active, "true");
   assert.ok(comboLabel.textContent?.includes("x4"));
+  assert.equal(comboAccuracyDelta.dataset.visible, "false");
   assert.equal(goldDelta.dataset.visible, "true");
   assert.equal(goldDelta.textContent, "+60g");
+
+  const warningState = structuredClone(nextState);
+  warningState.typing.comboWarning = true;
+  warningState.typing.comboTimer = 0.8;
+  warningState.typing.accuracy = 0.82;
+  hud.update(warningState, upcoming);
+  assert.equal(comboAccuracyDelta.dataset.visible, "true");
+  assert.equal(comboAccuracyDelta.dataset.trend, "down");
+  assert.ok(comboAccuracyDelta.textContent?.includes("% accuracy"));
 
   hud.appendLog("Test entry");
   assert.equal(logList.children.length, 1);

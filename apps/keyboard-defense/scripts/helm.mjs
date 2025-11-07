@@ -14,10 +14,7 @@ const TASKS = new Map([
         cwd: process.cwd()
       })
   ],
-  [
-    "gold-check",
-    (args) => runCmd("npm", ["run", "analytics:gold:check", ...args.slice(1)])
-  ]
+  ["gold-check", (args) => runCmd("npm", ["run", "analytics:gold:check", ...args.slice(1)])]
 ]);
 
 function runCmd(command, args, options = {}) {
@@ -70,10 +67,6 @@ async function main() {
   }
 }
 
-if (
-  import.meta.url === `file://${process.argv[1]}` ||
-  process.argv[1]?.endsWith("helm.mjs")
-) {
+if (import.meta.url === `file://${process.argv[1]}` || process.argv[1]?.endsWith("helm.mjs")) {
   await main();
 }
-

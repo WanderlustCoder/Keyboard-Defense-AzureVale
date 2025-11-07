@@ -188,6 +188,7 @@ export class HudView {
   private readonly typingInput: HTMLInputElement;
   private readonly upgradePanel: HTMLElement;
   private readonly comboLabel: HTMLElement;
+  private readonly comboAccuracyDelta: HTMLElement;
   private readonly logList: HTMLUListElement;
   private readonly tutorialBanner?: HTMLElement;
   private readonly castleButton: HTMLButtonElement;
@@ -258,6 +259,8 @@ export class HudView {
     continueBtn: HTMLButtonElement;
   };
   private syncingOptionToggles = false;
+  private comboBaselineAccuracy = 1;
+  private lastAccuracy = 1;
 
   constructor(
     private readonly config: GameConfig,
@@ -269,6 +272,7 @@ export class HudView {
       typingInput: string;
       upgradePanel: string;
       comboLabel: string;
+      comboAccuracyDelta: string;
       eventLog: string;
       wavePreview: string;
       wavePreviewHint?: string;
@@ -294,6 +298,8 @@ export class HudView {
     this.typingInput = this.getElement(rootIds.typingInput) as HTMLInputElement;
     this.upgradePanel = this.getElement(rootIds.upgradePanel);
     this.comboLabel = this.getElement(rootIds.comboLabel);
+    this.comboAccuracyDelta = this.getElement(rootIds.comboAccuracyDelta);
+    this.hideComboAccuracyDelta();
     this.logList = this.getElement(rootIds.eventLog) as HTMLUListElement;
 
     const previewContainer = this.getElement(rootIds.wavePreview);
@@ -844,7 +850,12 @@ export class HudView {
     this.wavePreview.setColorBlindFriendly(Boolean(options.colorBlindFriendly));
     this.updateCastleControls(state);
     this.updateTurretControls(state);
-    this.updateCombo(state.typing.combo, state.typing.comboWarning, state.typing.comboTimer);
+    this.updateCombo(
+      state.typing.combo,
+      state.typing.comboWarning,
+      state.typing.comboTimer,
+      state.typing.accuracy
+    );
     this.wavePreview.render(upcoming);
     this.applyTutorialSlotLock(state);
     const history = state.analytics.waveHistory?.length
@@ -2157,7 +2168,17 @@ export class HudView {
     this.lastGold = currentGold;
   }
 
-  private updateCombo(combo: number, warning: boolean, timer: number): void {
+  private updateCombo(
+    combo: number,
+    warning: boolean,
+    timer: number,
+    accuracy: number | undefined
+  ): void {
+    const safeAccuracy =
+      typeof accuracy === "number" && Number.isFinite(accuracy)
+        ? accuracy
+        : (this.lastAccuracy ?? this.comboBaselineAccuracy);
+    this.lastAccuracy = safeAccuracy ?? 1;
     this.maxCombo = Math.max(this.maxCombo, combo);
     if (combo > 0) {
       this.comboLabel.dataset.active = "true";
@@ -2166,15 +2187,43 @@ export class HudView {
         this.comboLabel.dataset.warning = "true";
         const seconds = Math.max(0, timer).toFixed(1);
         this.comboLabel.textContent = `Combo x${combo} (Best x${this.maxCombo}) - ${seconds}s`;
+        this.showComboAccuracyDelta(safeAccuracy ?? 1);
       } else {
         delete this.comboLabel.dataset.warning;
         this.comboLabel.textContent = `Combo x${combo} (Best x${this.maxCombo})`;
+        this.comboBaselineAccuracy = safeAccuracy ?? this.comboBaselineAccuracy;
+        this.hideComboAccuracyDelta();
       }
     } else {
       this.comboLabel.dataset.active = "false";
       delete this.comboLabel.dataset.warning;
       this.comboLabel.textContent = `Combo x0 (Best x${this.maxCombo})`;
+      this.comboBaselineAccuracy = safeAccuracy ?? this.comboBaselineAccuracy;
+      this.hideComboAccuracyDelta();
     }
+  }
+
+  private showComboAccuracyDelta(currentAccuracy: number): void {
+    const baseline = Number.isFinite(this.comboBaselineAccuracy)
+      ? this.comboBaselineAccuracy
+      : currentAccuracy;
+    const delta = (currentAccuracy - baseline) * 100;
+    const prefix = delta > 0 ? "+" : "";
+    this.comboAccuracyDelta.textContent = `${prefix}${delta.toFixed(1)}% accuracy`;
+    this.comboAccuracyDelta.dataset.visible = "true";
+    if (delta > 0.05) {
+      this.comboAccuracyDelta.dataset.trend = "up";
+    } else if (delta < -0.05) {
+      this.comboAccuracyDelta.dataset.trend = "down";
+    } else {
+      delete this.comboAccuracyDelta.dataset.trend;
+    }
+  }
+
+  private hideComboAccuracyDelta(): void {
+    this.comboAccuracyDelta.dataset.visible = "false";
+    delete this.comboAccuracyDelta.dataset.trend;
+    this.comboAccuracyDelta.textContent = "";
   }
 
   private renderLog(): void {

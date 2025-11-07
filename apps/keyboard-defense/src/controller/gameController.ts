@@ -183,6 +183,7 @@ export class GameController {
         typingInput: "typing-input",
         upgradePanel: "upgrade-panel",
         comboLabel: "combo-stats",
+        comboAccuracyDelta: "combo-accuracy-delta",
         eventLog: "battle-log",
         wavePreview: "wave-preview-list",
         wavePreviewHint: "wave-preview-hint",

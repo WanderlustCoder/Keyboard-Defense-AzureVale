@@ -103,3 +103,7 @@
 - `castle:passive-unlocked` events drive automation logs/messages so tutorials and diagnostics can react.
 - Options overlay lists active passives with totals and deltas, clarifying upgrade impact at a glance.
 
+## Combo Warning Accuracy Delta
+
+- HUD combo panel now surfaces an `Accuracy Δ` badge whenever the combo timer enters the warning window, referencing the last stable accuracy so players (and automation) see if they're trending up or down before the streak drops.
+- Badge text/colour responds to positive/negative deltas and hides automatically when the warning clears or the combo resets.
