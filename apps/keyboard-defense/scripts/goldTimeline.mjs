@@ -6,6 +6,7 @@ import process from "node:process";
 import { fileURLToPath } from "node:url";
 
 const DEFAULT_OUTPUT = null;
+const DEFAULT_PASSIVE_WINDOW = 5;
 
 function printHelp() {
   console.log(`Keyboard Defense gold timeline export
@@ -16,6 +17,8 @@ Usage:
 Options:
   --csv           Emit CSV instead of JSON
   --out <path>    Write output to the provided file (stdout otherwise)
+  --merge-passives  Attach nearest passive unlock (within window) to each gold event
+  --passive-window <seconds>  Max seconds between gold event and passive unlock (default ${DEFAULT_PASSIVE_WINDOW})
   --help          Show this help message
 
 Description:
@@ -29,7 +32,9 @@ export function parseArgs(argv = []) {
     csv: false,
     out: DEFAULT_OUTPUT,
     help: false,
-    targets: []
+    targets: [],
+    mergePassives: false,
+    passiveWindow: DEFAULT_PASSIVE_WINDOW
   };
 
   for (let i = 0; i < argv.length; i += 1) {
@@ -44,6 +49,17 @@ export function parseArgs(argv = []) {
           throw new Error("Expected path after --out");
         }
         options.out = value;
+        break;
+      }
+      case "--merge-passives":
+        options.mergePassives = true;
+        break;
+      case "--passive-window": {
+        const value = Number.parseFloat(argv[++i] ?? "");
+        if (!Number.isFinite(value) || value < 0) {
+          throw new Error("Expected --passive-window <seconds> (non-negative number).");
+        }
+        options.passiveWindow = value;
         break;
       }
       case "--help":
@@ -116,6 +132,56 @@ function normalizeEvents(snapshot) {
   return [];
 }
 
+function collectArray(value) {
+  return Array.isArray(value) ? value : [];
+}
+
+function normalizePassiveUnlocks(snapshot) {
+  if (!snapshot || typeof snapshot !== "object") {
+    return [];
+  }
+  const analytics = snapshot.analytics ?? snapshot.state?.analytics ?? null;
+  const candidates = [
+    snapshot.passiveUnlocks,
+    analytics?.castlePassiveUnlocks,
+    snapshot.state?.analytics?.castlePassiveUnlocks,
+    snapshot.state?.passiveUnlocks
+  ];
+  const result = [];
+  for (const source of candidates) {
+    for (const entry of collectArray(source)) {
+      if (!entry || typeof entry !== "object") continue;
+      const time =
+        typeof entry.time === "number" && Number.isFinite(entry.time) ? entry.time : null;
+      result.push({
+        id: entry.id ?? null,
+        level: typeof entry.level === "number" && Number.isFinite(entry.level) ? entry.level : null,
+        delta: typeof entry.delta === "number" && Number.isFinite(entry.delta) ? entry.delta : null,
+        total: typeof entry.total === "number" && Number.isFinite(entry.total) ? entry.total : null,
+        time
+      });
+    }
+  }
+  return result;
+}
+
+function findNearestPassive(unlocks, timestamp, windowSeconds) {
+  if (!Array.isArray(unlocks) || unlocks.length === 0 || timestamp === null) {
+    return null;
+  }
+  let best = null;
+  let bestDistance = Infinity;
+  for (const unlock of unlocks) {
+    if (typeof unlock.time !== "number") continue;
+    const distance = Math.abs(timestamp - unlock.time);
+    if (distance <= windowSeconds && distance < bestDistance) {
+      bestDistance = distance;
+      best = unlock;
+    }
+  }
+  return best;
+}
+
 function resolveReferenceTime(snapshot) {
   if (typeof snapshot?.time === "number" && Number.isFinite(snapshot.time)) {
     return snapshot.time;
@@ -130,7 +196,7 @@ function resolveReferenceTime(snapshot) {
   return null;
 }
 
-export function buildGoldTimelineEntries(snapshot, filePath) {
+export function buildGoldTimelineEntries(snapshot, filePath, options = {}) {
   const events = normalizeEvents(snapshot);
   if (events.length === 0) {
     return [];
@@ -139,6 +205,12 @@ export function buildGoldTimelineEntries(snapshot, filePath) {
   const capturedAt = snapshot.capturedAt ?? null;
   const status = snapshot.status ?? snapshot.state?.status ?? null;
   const mode = snapshot.mode ?? snapshot.analytics?.mode ?? null;
+  const mergePassives = Boolean(options.mergePassives);
+  const passiveWindow =
+    typeof options.passiveWindow === "number" && Number.isFinite(options.passiveWindow)
+      ? options.passiveWindow
+      : DEFAULT_PASSIVE_WINDOW;
+  const passiveUnlocks = mergePassives ? normalizePassiveUnlocks(snapshot) : [];
 
   return events.map((event, index) => {
     const timestamp =
@@ -150,6 +222,13 @@ export function buildGoldTimelineEntries(snapshot, filePath) {
       typeof event.delta === "number" && Number.isFinite(event.delta) ? event.delta : null;
     const timeSince =
       referenceTime !== null && timestamp !== null ? Math.max(0, referenceTime - timestamp) : null;
+    const nearestPassive = mergePassives
+      ? findNearestPassive(passiveUnlocks, timestamp, passiveWindow)
+      : null;
+    const passiveLag =
+      nearestPassive && timestamp !== null && typeof nearestPassive.time === "number"
+        ? timestamp - nearestPassive.time
+        : null;
     return {
       file: filePath,
       capturedAt,
@@ -159,7 +238,12 @@ export function buildGoldTimelineEntries(snapshot, filePath) {
       gold,
       delta,
       timestamp,
-      timeSince
+      timeSince,
+      passiveId: nearestPassive?.id ?? null,
+      passiveLevel: nearestPassive?.level ?? null,
+      passiveDelta: nearestPassive?.delta ?? null,
+      passiveTime: nearestPassive?.time ?? null,
+      passiveLag
     };
   });
 }
@@ -174,7 +258,12 @@ function toCsv(rows) {
     "gold",
     "delta",
     "timestamp",
-    "timeSince"
+    "timeSince",
+    "passiveId",
+    "passiveLevel",
+    "passiveDelta",
+    "passiveTime",
+    "passiveLag"
   ];
   const escape = (value) => {
     if (value === null || value === undefined) return "";
@@ -213,7 +302,7 @@ export async function runGoldTimeline(options) {
       console.warn(error.message);
       continue;
     }
-    const entries = buildGoldTimelineEntries(payload, file);
+    const entries = buildGoldTimelineEntries(payload, file, options);
     rows.push(...entries);
   }
 
