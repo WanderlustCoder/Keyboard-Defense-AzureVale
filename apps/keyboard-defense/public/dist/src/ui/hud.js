@@ -52,6 +52,12 @@ export class HudView {
     optionsCastleBonus;
     optionsCastleBenefits;
     optionsCastlePassives;
+    optionsPassivesSection;
+    optionsPassivesSummary;
+    optionsPassivesToggle;
+    optionsPassivesBody;
+    optionsPassivesCollapsed = false;
+    optionsPassivesPreferredCollapsed = false;
     wavePreviewHint;
     wavePreviewHintMessage = DEFAULT_WAVE_PREVIEW_HINT;
     optionsOverlay;
@@ -230,10 +236,35 @@ export class HudView {
                 else {
                     console.warn("Options castle benefits element missing; upgrade summary disabled.");
                 }
+                const passivesSection = document.getElementById("options-passives-section");
+                if (passivesSection instanceof HTMLElement) {
+                    this.optionsPassivesSection = passivesSection;
+                    const passivesBody = passivesSection.querySelector(".options-passives-body");
+                    if (passivesBody instanceof HTMLElement) {
+                        this.optionsPassivesBody = passivesBody;
+                    }
+                }
+                const passivesSummary = document.getElementById("options-passives-summary");
+                if (passivesSummary instanceof HTMLElement) {
+                    this.optionsPassivesSummary = passivesSummary;
+                }
+                const passivesToggle = document.getElementById("options-passives-toggle");
+                if (passivesToggle instanceof HTMLButtonElement) {
+                    this.optionsPassivesToggle = passivesToggle;
+                    this.optionsPassivesPreferredCollapsed = this.prefersCondensedHudLists();
+                    this.optionsPassivesCollapsed = this.optionsPassivesPreferredCollapsed;
+                    passivesToggle.addEventListener("click", () => {
+                        const nextState = !this.optionsPassivesCollapsed;
+                        this.optionsPassivesPreferredCollapsed = nextState;
+                        this.setOptionsPassivesCollapsed(nextState);
+                    });
+                }
                 const castlePassivesList = document.getElementById("options-castle-passives");
                 if (isElementWithTag(castlePassivesList, "ul")) {
                     this.optionsCastlePassives = castlePassivesList;
                     this.optionsCastlePassives.replaceChildren();
+                    this.updateOptionsPassivesSummary("No passives");
+                    this.setOptionsPassivesCollapsed(this.optionsPassivesCollapsed);
                 }
                 else {
                     console.warn("Options castle passives element missing; passive summary disabled.");
@@ -864,11 +895,22 @@ export class HudView {
             item.className = "passive-empty";
             item.textContent = "No passive buffs unlocked yet.";
             list.appendChild(item);
+            if (this.optionsPassivesSection) {
+                this.optionsPassivesSection.hidden = false;
+            }
+            this.updateOptionsPassivesSummary("No passives");
+            this.setOptionsPassivesCollapsed(false);
             return;
         }
         for (const passive of passives) {
             list.appendChild(this.createPassiveListItem(passive, { includeDelta: true }));
         }
+        if (this.optionsPassivesSection) {
+            this.optionsPassivesSection.hidden = false;
+        }
+        const summary = passives.length === 1 ? "1 passive" : `${passives.length} passives`;
+        this.updateOptionsPassivesSummary(summary);
+        this.setOptionsPassivesCollapsed(this.optionsPassivesPreferredCollapsed);
     }
     formatCastlePassive(passive, options = {}) {
         const includeDelta = options.includeDelta ?? false;
@@ -907,6 +949,44 @@ export class HudView {
         item.appendChild(icon);
         item.appendChild(label);
         return item;
+    }
+    updateOptionsPassivesSummary(summary) {
+        if (this.optionsPassivesSummary) {
+            this.optionsPassivesSummary.textContent = summary;
+        }
+        this.applyOptionsPassivesToggleLabel();
+    }
+    applyOptionsPassivesToggleLabel() {
+        if (!this.optionsPassivesToggle)
+            return;
+        const summaryText = this.optionsPassivesSummary?.textContent?.trim();
+        if (this.optionsPassivesCollapsed) {
+            this.optionsPassivesToggle.textContent = summaryText
+                ? `Show Active Passives (${summaryText})`
+                : "Show Active Passives";
+        }
+        else {
+            this.optionsPassivesToggle.textContent = "Hide Active Passives";
+        }
+    }
+    setOptionsPassivesCollapsed(collapsed) {
+        if (!this.optionsCastlePassives) {
+            this.optionsPassivesCollapsed = collapsed;
+            return;
+        }
+        this.optionsPassivesCollapsed = collapsed;
+        if (this.optionsPassivesSection) {
+            this.optionsPassivesSection.dataset.collapsed = collapsed ? "true" : "false";
+        }
+        if (this.optionsPassivesBody) {
+            this.optionsPassivesBody.hidden = collapsed;
+        }
+        this.optionsCastlePassives.hidden = collapsed;
+        this.optionsCastlePassives.dataset.visible = collapsed ? "false" : "true";
+        if (this.optionsPassivesToggle) {
+            this.optionsPassivesToggle.setAttribute("aria-expanded", collapsed ? "false" : "true");
+        }
+        this.applyOptionsPassivesToggleLabel();
     }
     createCondensedSection(options) {
         const container = document.createElement("div");

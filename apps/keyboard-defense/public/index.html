@@ -393,8 +393,28 @@
           aria-atomic="true"
         ></div>
         <ul id="options-castle-benefits" class="options-benefits" aria-live="polite"></ul>
-        <p class="options-passives-heading">Active Passives</p>
-        <ul id="options-castle-passives" class="options-passives" aria-live="polite"></ul>
+        <div
+          id="options-passives-section"
+          class="options-passives-wrapper"
+          data-collapsed="false"
+        >
+          <div class="options-passives-header">
+            <p class="options-passives-heading">Active Passives</p>
+            <span id="options-passives-summary" class="options-passives-summary"></span>
+            <button
+              id="options-passives-toggle"
+              class="options-passives-toggle"
+              type="button"
+              aria-controls="options-castle-passives"
+              aria-expanded="true"
+            >
+              Hide Active Passives
+            </button>
+          </div>
+          <div class="options-passives-body">
+            <ul id="options-castle-passives" class="options-passives" aria-live="polite"></ul>
+          </div>
+        </div>
         <div class="options-toggle-group">
           <label class="option-toggle">
             <input id="options-sound-toggle" type="checkbox" />
