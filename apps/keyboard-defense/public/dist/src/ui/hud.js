@@ -17,6 +17,7 @@ export class HudView {
     comboAccuracyDelta;
     logList;
     tutorialBanner;
+    tutorialBannerExpanded = true;
     castleButton;
     castleRepairButton;
     castleStatus;
@@ -106,7 +107,29 @@ export class HudView {
             }
         }
         this.availableTurretTypes = Object.fromEntries(Object.keys(this.config.turretArchetypes).map((typeId) => [typeId, true]));
-        this.tutorialBanner = document.getElementById(rootIds.tutorialBanner) ?? undefined;
+        const tutorialBannerElement = document.getElementById(rootIds.tutorialBanner);
+        if (tutorialBannerElement instanceof HTMLElement) {
+            const messageElement = tutorialBannerElement.querySelector("[data-role='tutorial-message']");
+            const resolvedMessage = messageElement ?? tutorialBannerElement;
+            const toggleElement = tutorialBannerElement.querySelector("[data-role='tutorial-toggle']");
+            if (toggleElement) {
+                toggleElement.addEventListener("click", () => {
+                    if (tutorialBannerElement.dataset.visible !== "true") {
+                        return;
+                    }
+                    this.tutorialBannerExpanded = !this.tutorialBannerExpanded;
+                    this.refreshTutorialBannerLayout();
+                });
+            }
+            this.tutorialBanner = {
+                container: tutorialBannerElement,
+                message: resolvedMessage,
+                toggle: toggleElement ?? undefined
+            };
+        }
+        else {
+            this.tutorialBanner = undefined;
+        }
         const summaryContainer = document.getElementById(rootIds.tutorialSummary.container) ?? undefined;
         const summaryStats = document.getElementById(rootIds.tutorialSummary.stats);
         const summaryContinue = document.getElementById(rootIds.tutorialSummary.continue);
@@ -415,6 +438,7 @@ export class HudView {
                 console.warn("Analytics viewer elements missing; debug analytics viewer disabled.");
             }
         }
+        this.initializeViewportListeners();
         this.castleButton = document.createElement("button");
         this.castleButton.type = "button";
         this.castleButton.textContent = "Upgrade Castle";
@@ -660,22 +684,35 @@ export class HudView {
         this.renderLog();
     }
     setTutorialMessage(message, highlight) {
-        if (!this.tutorialBanner)
+        const banner = this.tutorialBanner;
+        if (!banner)
             return;
+        const { container, message: content } = banner;
+        const condensed = this.shouldCondenseTutorialBanner();
+        const wasVisible = container.dataset.visible === "true";
         if (!message) {
-            this.tutorialBanner.dataset.visible = "false";
-            this.tutorialBanner.textContent = "";
-            delete this.tutorialBanner.dataset.highlight;
+            container.dataset.visible = "false";
+            content.textContent = "";
+            delete container.dataset.highlight;
+            this.tutorialBannerExpanded = condensed ? false : true;
+            this.refreshTutorialBannerLayout();
             return;
         }
-        this.tutorialBanner.dataset.visible = "true";
+        container.dataset.visible = "true";
         if (highlight) {
-            this.tutorialBanner.dataset.highlight = "true";
+            container.dataset.highlight = "true";
         }
         else {
-            delete this.tutorialBanner.dataset.highlight;
+            delete container.dataset.highlight;
         }
-        this.tutorialBanner.textContent = message;
+        content.textContent = message;
+        if (!wasVisible) {
+            this.tutorialBannerExpanded = condensed ? false : true;
+        }
+        else if (!condensed) {
+            this.tutorialBannerExpanded = true;
+        }
+        this.refreshTutorialBannerLayout();
     }
     updateCastleBonusHint(state) {
         if (!this.optionsCastleBonus)
@@ -1116,11 +1153,92 @@ export class HudView {
         }
     }
     prefersCondensedHudLists() {
+        return (this.matchesMediaQuery("(max-width: 768px)") ||
+            this.matchesMediaQuery("(max-height: 540px)"));
+    }
+    initializeViewportListeners() {
+        if (typeof window === "undefined") {
+            this.refreshTutorialBannerLayout();
+            return;
+        }
+        const handleResize = () => this.refreshTutorialBannerLayout();
+        if (typeof window.addEventListener === "function") {
+            try {
+                window.addEventListener("resize", handleResize, { passive: true });
+            }
+            catch {
+                window.addEventListener("resize", handleResize);
+            }
+        }
+        if (typeof window.matchMedia === "function") {
+            try {
+                const orientationQuery = window.matchMedia("(orientation: landscape)");
+                const handleOrientation = () => this.refreshTutorialBannerLayout();
+                if (typeof orientationQuery.addEventListener === "function") {
+                    orientationQuery.addEventListener("change", handleOrientation);
+                }
+                else if (typeof orientationQuery.addListener === "function") {
+                    orientationQuery.addListener(handleOrientation);
+                }
+            }
+            catch {
+                // ignore
+            }
+        }
+        this.refreshTutorialBannerLayout();
+    }
+    refreshTutorialBannerLayout() {
+        this.updateCompactHeightDataset();
+        const banner = this.tutorialBanner;
+        if (!banner) {
+            return;
+        }
+        const condensed = this.shouldCondenseTutorialBanner();
+        const container = banner.container;
+        const toggle = banner.toggle ?? null;
+        if (!condensed) {
+            container.dataset.condensed = "false";
+            container.dataset.expanded = "true";
+            this.tutorialBannerExpanded = true;
+            if (toggle) {
+                toggle.hidden = true;
+                toggle.textContent = "Show full tip";
+                toggle.setAttribute("aria-expanded", "true");
+                toggle.setAttribute("aria-label", "Show full tutorial tip");
+            }
+            return;
+        }
+        container.dataset.condensed = "true";
+        container.dataset.expanded = this.tutorialBannerExpanded ? "true" : "false";
+        if (toggle) {
+            const expanded = this.tutorialBannerExpanded;
+            const visible = container.dataset.visible === "true";
+            toggle.hidden = !visible;
+            toggle.textContent = expanded ? "Hide tutorial tip" : "Show full tip";
+            toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+            toggle.setAttribute("aria-label", expanded ? "Hide full tutorial tip" : "Show full tutorial tip");
+        }
+    }
+    updateCompactHeightDataset() {
+        if (typeof document === "undefined" || !document.body) {
+            return;
+        }
+        if (this.shouldCondenseTutorialBanner()) {
+            document.body.dataset.compactHeight = "true";
+        }
+        else {
+            delete document.body.dataset.compactHeight;
+        }
+    }
+    shouldCondenseTutorialBanner() {
+        return this.matchesMediaQuery("(max-height: 540px)");
+    }
+    matchesMediaQuery(query) {
         if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
             return false;
         }
         try {
-            return window.matchMedia("(max-width: 768px)").matches;
+            return window.matchMedia(query).matches;
         }
         catch {
             return false;
@@ -2654,3 +2772,4 @@ export class HudView {
         }
     }
 }
+

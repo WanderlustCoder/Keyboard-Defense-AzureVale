@@ -7,7 +7,22 @@ import { defaultConfig } from "../dist/src/core/config.js";
 
 const htmlSource = readFileSync(new URL("../public/index.html", import.meta.url), "utf8");
 
-const initializeHud = () => {
+const createMatchMediaStub = (state = {}) => {
+  const resolver =
+    typeof state === "function" ? state : (query) => state[query] ?? state.default ?? false;
+  return (query) => ({
+    matches: Boolean(resolver(query)),
+    media: query,
+    onchange: null,
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    addListener: () => {},
+    removeListener: () => {},
+    dispatchEvent: () => false
+  });
+};
+
+const initializeHud = (options = {}) => {
   const { window } = parseHTML(htmlSource);
   const { document } = window;
 
@@ -23,7 +38,8 @@ const initializeHud = () => {
     HTMLUListElement: global.HTMLUListElement,
     HTMLTableSectionElement: global.HTMLTableSectionElement,
     setTimeout: global.setTimeout,
-    clearTimeout: global.clearTimeout
+    clearTimeout: global.clearTimeout,
+    matchMedia: global.matchMedia
   };
 
   Object.assign(global, {
@@ -41,8 +57,17 @@ const initializeHud = () => {
       fn();
       return 0;
     }),
-    clearTimeout: window.clearTimeout?.bind(window) ?? (() => {})
+    clearTimeout: window.clearTimeout?.bind(window) ?? (() => {}),
+    matchMedia:
+      typeof options.matchMedia === "function"
+        ? options.matchMedia
+        : createMatchMediaStub(options.matchMediaState ?? {})
   });
+
+  window.matchMedia =
+    typeof options.matchMedia === "function"
+      ? options.matchMedia
+      : window.matchMedia ?? createMatchMediaStub(options.matchMediaState ?? {});
 
   const get = (id) => {
     const el = document.getElementById(id);
@@ -67,6 +92,9 @@ const initializeHud = () => {
   const wavePreview = get("wave-preview-list");
   const wavePreviewHint = get("wave-preview-hint");
   const tutorialBanner = get("tutorial-banner");
+  const tutorialBannerMessage =
+    tutorialBanner.querySelector("[data-role='tutorial-message']") ?? tutorialBanner;
+  const tutorialBannerToggle = tutorialBanner.querySelector("[data-role='tutorial-toggle']");
   const summaryContainer = get("tutorial-summary");
   const summaryStats = get("tutorial-summary-stats");
   const summaryContinue = get("tutorial-summary-continue");
@@ -230,6 +258,8 @@ const initializeHud = () => {
       goldDelta,
       logList,
       tutorialBanner,
+      tutorialBannerMessage,
+      tutorialBannerToggle,
       summaryContainer,
       summaryContinue,
       summaryReplay,
@@ -426,8 +456,15 @@ const buildInitialState = () => {
 
 test("HudView highlights combos and accuracy delta during warnings", () => {
   const { hud, cleanup, elements } = initializeHud();
-  const { wavePreview, comboLabel, comboAccuracyDelta, goldDelta, logList, tutorialBanner } =
-    elements;
+  const {
+    wavePreview,
+    comboLabel,
+  comboAccuracyDelta,
+  goldDelta,
+  logList,
+  tutorialBanner,
+  tutorialBannerMessage
+} = elements;
 
   const baseState = buildInitialState();
   baseState.typing.accuracy = 0.96;
@@ -487,11 +524,41 @@ test("HudView highlights combos and accuracy delta during warnings", () => {
   assert.equal(secondRow.dataset.phase, "next");
 
   hud.setTutorialMessage("Practice typing", true);
+  assert.ok(hud.tutorialBanner, "tutorial banner reference missing");
+  assert.equal(hud.tutorialBanner.message, tutorialBannerMessage);
   assert.equal(tutorialBanner.dataset.visible, "true");
   assert.equal(tutorialBanner.dataset.highlight, "true");
-  assert.equal(tutorialBanner.textContent, "Practice typing");
+  assert.equal(tutorialBannerMessage.textContent, "Practice typing");
   hud.setTutorialMessage(null);
   assert.equal(tutorialBanner.dataset.visible, "false");
+
+  cleanup();
+});
+
+test("HudView condenses tutorial banner on compact heights", () => {
+  const matchMediaState = { "(max-height: 540px)": true };
+  const { hud, cleanup, elements } = initializeHud({ matchMediaState });
+  const { tutorialBanner, tutorialBannerMessage, tutorialBannerToggle } = elements;
+
+  hud.setTutorialMessage(
+    "Hold position and keep typing-perfect words trigger turret bursts even on mobile."
+  );
+  assert.equal(tutorialBanner.dataset.visible, "true");
+  assert.equal(tutorialBanner.dataset.condensed, "true");
+  assert.equal(tutorialBanner.dataset.expanded, "false");
+  assert.equal(document.body.dataset.compactHeight, "true");
+  assert.ok(tutorialBannerToggle);
+  assert.equal(tutorialBannerToggle.hidden, false);
+  tutorialBannerToggle.click();
+  assert.equal(tutorialBanner.dataset.expanded, "true");
+
+  matchMediaState["(max-height: 540px)"] = false;
+  hud.setTutorialMessage("Aim for steady accuracy bursts.");
+  assert.equal(tutorialBanner.dataset.condensed, "false");
+  assert.equal(tutorialBanner.dataset.expanded, "true");
+  assert.equal(document.body.dataset.compactHeight, undefined);
+  assert.equal(tutorialBannerToggle.hidden, true);
+  assert.equal(tutorialBannerMessage.textContent, "Aim for steady accuracy bursts.");
 
   cleanup();
 });

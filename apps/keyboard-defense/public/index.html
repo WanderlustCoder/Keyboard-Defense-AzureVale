@@ -10,7 +10,22 @@
     <div id="app">
       <canvas id="game-surface" width="960" height="540"></canvas>
       <aside id="hud">
-        <section class="tutorial-banner" id="tutorial-banner" data-visible="false"></section>
+        <section
+          class="tutorial-banner"
+          id="tutorial-banner"
+          data-visible="false"
+          aria-live="polite"
+        >
+          <div class="tutorial-banner__content" data-role="tutorial-message"></div>
+          <button
+            type="button"
+            class="tutorial-banner__toggle"
+            data-role="tutorial-toggle"
+            aria-expanded="false"
+          >
+            Show full tip
+          </button>
+        </section>
         <section class="castle">
           <div class="castle-header">
             <h1>Keyboard Defense</h1>

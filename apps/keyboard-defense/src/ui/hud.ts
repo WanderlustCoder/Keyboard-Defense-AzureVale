@@ -120,6 +120,12 @@ type TutorialSummaryElements = {
   replayBtn: HTMLButtonElement;
 };
 
+type TutorialBannerElements = {
+  container: HTMLElement;
+  message: HTMLElement;
+  toggle?: HTMLButtonElement | null;
+};
+
 type ShortcutOverlayElements = {
   container: string;
   closeButton: string;
@@ -219,7 +225,8 @@ export class HudView {
   private readonly comboLabel: HTMLElement;
   private readonly comboAccuracyDelta: HTMLElement;
   private readonly logList: HTMLUListElement;
-  private readonly tutorialBanner?: HTMLElement;
+  private readonly tutorialBanner?: TutorialBannerElements;
+  private tutorialBannerExpanded = true;
   private readonly castleButton: HTMLButtonElement;
   private readonly castleRepairButton: HTMLButtonElement;
   private readonly castleStatus: HTMLSpanElement;
@@ -370,7 +377,31 @@ export class HudView {
     this.availableTurretTypes = Object.fromEntries(
       Object.keys(this.config.turretArchetypes).map((typeId) => [typeId, true])
     );
-    this.tutorialBanner = document.getElementById(rootIds.tutorialBanner) ?? undefined;
+    const tutorialBannerElement = document.getElementById(rootIds.tutorialBanner);
+    if (tutorialBannerElement instanceof HTMLElement) {
+      const messageElement =
+        (tutorialBannerElement.querySelector("[data-role='tutorial-message']") as HTMLElement | null) ??
+        tutorialBannerElement;
+      const toggleElement = tutorialBannerElement.querySelector<HTMLButtonElement>(
+        "[data-role='tutorial-toggle']"
+      );
+      if (toggleElement) {
+        toggleElement.addEventListener("click", () => {
+          if (tutorialBannerElement.dataset.visible !== "true") {
+            return;
+          }
+          this.tutorialBannerExpanded = !this.tutorialBannerExpanded;
+          this.refreshTutorialBannerLayout();
+        });
+      }
+      this.tutorialBanner = {
+        container: tutorialBannerElement,
+        message: messageElement,
+        toggle: toggleElement ?? undefined
+      };
+    } else {
+      this.tutorialBanner = undefined;
+    }
     const summaryContainer =
       document.getElementById(rootIds.tutorialSummary.container) ?? undefined;
     const summaryStats = document.getElementById(
@@ -693,6 +724,8 @@ export class HudView {
       }
     }
 
+    this.initializeViewportListeners();
+
     this.castleButton = document.createElement("button");
     this.castleButton.type = "button";
     this.castleButton.textContent = "Upgrade Castle";
@@ -996,20 +1029,32 @@ export class HudView {
   }
 
   setTutorialMessage(message: string | null, highlight?: boolean): void {
-    if (!this.tutorialBanner) return;
+    const banner = this.tutorialBanner;
+    if (!banner) return;
+    const { container, message: content } = banner;
+    const condensed = this.shouldCondenseTutorialBanner();
+    const wasVisible = container.dataset.visible === "true";
     if (!message) {
-      this.tutorialBanner.dataset.visible = "false";
-      this.tutorialBanner.textContent = "";
-      delete this.tutorialBanner.dataset.highlight;
+      container.dataset.visible = "false";
+      content.textContent = "";
+      delete container.dataset.highlight;
+      this.tutorialBannerExpanded = condensed ? false : true;
+      this.refreshTutorialBannerLayout();
       return;
     }
-    this.tutorialBanner.dataset.visible = "true";
+    container.dataset.visible = "true";
     if (highlight) {
-      this.tutorialBanner.dataset.highlight = "true";
+      container.dataset.highlight = "true";
     } else {
-      delete this.tutorialBanner.dataset.highlight;
+      delete container.dataset.highlight;
     }
-    this.tutorialBanner.textContent = message;
+    content.textContent = message;
+    if (!wasVisible) {
+      this.tutorialBannerExpanded = condensed ? false : true;
+    } else if (!condensed) {
+      this.tutorialBannerExpanded = true;
+    }
+    this.refreshTutorialBannerLayout();
   }
 
   private updateCastleBonusHint(state: GameState): void {
@@ -1499,11 +1544,98 @@ export class HudView {
   }
 
   private prefersCondensedHudLists(): boolean {
+    return (
+      this.matchesMediaQuery("(max-width: 768px)") ||
+      this.matchesMediaQuery("(max-height: 540px)")
+    );
+  }
+
+  private initializeViewportListeners(): void {
+    if (typeof window === "undefined") {
+      this.refreshTutorialBannerLayout();
+      return;
+    }
+    const handleResize = () => this.refreshTutorialBannerLayout();
+    if (typeof window.addEventListener === "function") {
+      try {
+        window.addEventListener("resize", handleResize, { passive: true });
+      } catch {
+        window.addEventListener("resize", handleResize);
+      }
+    }
+    if (typeof window.matchMedia === "function") {
+      try {
+        const orientationQuery = window.matchMedia("(orientation: landscape)");
+        const handleOrientation = () => this.refreshTutorialBannerLayout();
+        if (typeof orientationQuery.addEventListener === "function") {
+          orientationQuery.addEventListener("change", handleOrientation);
+        } else if (typeof orientationQuery.addListener === "function") {
+          orientationQuery.addListener(handleOrientation);
+        }
+      } catch {
+        // ignore matchMedia failures
+      }
+    }
+    this.refreshTutorialBannerLayout();
+  }
+
+  private refreshTutorialBannerLayout(): void {
+    this.updateCompactHeightDataset();
+    const banner = this.tutorialBanner;
+    if (!banner) {
+      return;
+    }
+    const condensed = this.shouldCondenseTutorialBanner();
+    const container = banner.container;
+    const toggle = banner.toggle ?? null;
+    if (!condensed) {
+      container.dataset.condensed = "false";
+      container.dataset.expanded = "true";
+      this.tutorialBannerExpanded = true;
+      if (toggle) {
+        toggle.hidden = true;
+        toggle.textContent = "Show full tip";
+        toggle.setAttribute("aria-expanded", "true");
+        toggle.setAttribute("aria-label", "Show full tutorial tip");
+      }
+      return;
+    }
+    container.dataset.condensed = "true";
+    container.dataset.expanded = this.tutorialBannerExpanded ? "true" : "false";
+    if (toggle) {
+      const expanded = this.tutorialBannerExpanded;
+      const visible = container.dataset.visible === "true";
+      toggle.hidden = !visible;
+      toggle.textContent = expanded ? "Hide tutorial tip" : "Show full tip";
+      toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+      toggle.setAttribute(
+        "aria-label",
+        expanded ? "Hide full tutorial tip" : "Show full tutorial tip"
+      );
+    }
+  }
+
+  private updateCompactHeightDataset(): void {
+    if (typeof document === "undefined" || !document.body) {
+      return;
+    }
+    if (this.shouldCondenseTutorialBanner()) {
+      document.body.dataset.compactHeight = "true";
+    } else {
+      delete document.body.dataset.compactHeight;
+    }
+  }
+
+  private shouldCondenseTutorialBanner(): boolean {
+    return this.matchesMediaQuery("(max-height: 540px)");
+  }
+
+  private matchesMediaQuery(query: string): boolean {
     if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
       return false;
     }
     try {
-      return window.matchMedia("(max-width: 768px)").matches;
+      return window.matchMedia(query).matches;
     } catch {
       return false;
     }
