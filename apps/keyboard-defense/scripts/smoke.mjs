@@ -123,11 +123,15 @@ async function generateGoldEconomyArtifacts(inputPath, artifactDir, summary, ciM
     );
     summary.goldSummary = summaryPath;
     if (path.extname(summaryPath).toLowerCase() === ".json") {
-      await validateSummaryPercentiles(summaryPath, DASHBOARD_PERCENTILES);
+      const verified = await validateSummaryPercentiles(summaryPath, DASHBOARD_PERCENTILES);
+      summary.goldSummaryPercentiles = verified;
     }
   } catch (error) {
     summary.status = summary.status === "failed" ? summary.status : "warning";
     summary.goldSummaryError = error instanceof Error ? error.message : String(error);
+    if (summary.goldSummaryPercentiles === undefined) {
+      summary.goldSummaryPercentiles = null;
+    }
   }
 }
 
