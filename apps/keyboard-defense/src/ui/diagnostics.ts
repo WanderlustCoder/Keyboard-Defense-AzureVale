@@ -65,9 +65,11 @@ export interface DiagnosticsSessionStats {
 
 export class DiagnosticsOverlay {
   private visible = true;
+  private condensed = false;
 
   constructor(private readonly container: HTMLElement) {
     this.setVisible(false);
+    this.initializeResponsiveBehavior();
   }
 
   update(metrics: RuntimeMetrics, session?: DiagnosticsSessionStats): void {
@@ -260,5 +262,60 @@ export class DiagnosticsOverlay {
 
   isVisible(): boolean {
     return this.visible;
+  }
+
+  private initializeResponsiveBehavior(): void {
+    const apply = () => this.applyCondensedState(this.shouldCondense());
+    apply();
+    if (typeof window === "undefined") {
+      return;
+    }
+    const queries = ["(max-height: 540px)", "(max-width: 720px)"];
+    if (typeof window.matchMedia === "function") {
+      for (const query of queries) {
+        try {
+          const matcher = window.matchMedia(query);
+          if (typeof matcher.addEventListener === "function") {
+            matcher.addEventListener("change", apply);
+          } else if (typeof matcher.addListener === "function") {
+            matcher.addListener(apply);
+          }
+        } catch {
+          // ignore matchMedia failures
+        }
+      }
+    }
+    try {
+      window.addEventListener("resize", apply, { passive: true });
+    } catch {
+      window.addEventListener("resize", apply);
+    }
+  }
+
+  private applyCondensedState(condensed: boolean): void {
+    this.condensed = condensed;
+    if (condensed) {
+      this.container.dataset.condensed = "true";
+    } else {
+      delete this.container.dataset.condensed;
+    }
+  }
+
+  private shouldCondense(): boolean {
+    return (
+      this.matchesMediaQuery("(max-height: 540px)") ||
+      this.matchesMediaQuery("(max-width: 720px)")
+    );
+  }
+
+  private matchesMediaQuery(query: string): boolean {
+    if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+      return false;
+    }
+    try {
+      return window.matchMedia(query).matches;
+    } catch {
+      return false;
+    }
   }
 }

@@ -771,6 +771,27 @@ details {
   display: block;
 }
 
+#diagnostics-overlay[data-condensed="true"] {
+  top: auto;
+  bottom: 12px;
+  right: 12px;
+  left: 12px;
+  min-width: 0;
+  width: auto;
+  max-width: none;
+  max-height: min(45vh, 320px);
+  overflow-y: auto;
+  font-size: 0.78rem;
+  padding: 10px;
+  border-radius: 12px;
+  backdrop-filter: blur(6px);
+  z-index: 40;
+}
+
+#diagnostics-overlay[data-condensed="true"] .diagnostics-line {
+  margin-bottom: 6px;
+}
+
 .diagnostics-line {
   margin-bottom: 4px;
 }

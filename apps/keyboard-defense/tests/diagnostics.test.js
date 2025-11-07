@@ -3,6 +3,17 @@ import { test } from "vitest";
 import assert from "node:assert/strict";
 import { GameEngine } from "../dist/src/engine/gameEngine.js";
 
+const createContainer = () => ({
+  dataset: {},
+  innerHTML: "",
+  setAttribute(name, value) {
+    this.dataset[name] = value;
+  },
+  removeAttribute(name) {
+    delete this.dataset[name];
+  }
+});
+
 test("runtime metrics report wave, difficulty, and entity counts", () => {
   const engine = new GameEngine({ seed: 12, config: { waves: [] } });
 
@@ -66,16 +77,7 @@ test("runtime metrics report wave, difficulty, and entity counts", () => {
 });
 
 test("DiagnosticsOverlay displays shield forecast lines", () => {
-  const container = {
-    dataset: {},
-    innerHTML: "",
-    setAttribute(name, value) {
-      this.dataset[name] = value;
-    },
-    removeAttribute(name) {
-      delete this.dataset[name];
-    }
-  };
+  const container = createContainer();
 
   const overlay = new DiagnosticsOverlay(container);
   overlay.setVisible(true);
@@ -152,16 +154,7 @@ test("DiagnosticsOverlay displays shield forecast lines", () => {
 });
 
 test("DiagnosticsOverlay lists recent gold events", () => {
-  const container = {
-    dataset: {},
-    innerHTML: "",
-    setAttribute(name, value) {
-      this.dataset[name] = value;
-    },
-    removeAttribute(name) {
-      delete this.dataset[name];
-    }
-  };
+  const container = createContainer();
 
   const engine = new GameEngine({ seed: 42, config: { waves: [] } });
   const baseMetrics = engine.getRuntimeMetrics();
@@ -189,4 +182,48 @@ test("DiagnosticsOverlay lists recent gold events", () => {
   assert.ok(output.includes("Recent gold events:"));
   assert.ok(output.includes("+40g -> 350g @ 120.5s"));
   assert.ok(output.includes("-20g -> 310g @ 95.2s"));
+});
+
+test("DiagnosticsOverlay condenses overlay on compact height", () => {
+  const container = createContainer();
+  const listeners = new Map();
+  const matchState = {
+    "(max-height: 540px)": true,
+    "(max-width: 720px)": false
+  };
+  const stubMatchMedia = (query) => {
+    return {
+      matches: Boolean(matchState[query]),
+      media: query,
+      addEventListener: (event, handler) => {
+        if (event === "change") {
+          listeners.set(query, handler);
+        }
+      },
+      addListener: (handler) => {
+        listeners.set(query, handler);
+      },
+      removeEventListener: () => {},
+      removeListener: () => {}
+    };
+  };
+  const originalWindow = global.window;
+  global.window = {
+    matchMedia: stubMatchMedia,
+    addEventListener: () => {}
+  };
+  try {
+    new DiagnosticsOverlay(container);
+    assert.equal(container.dataset.condensed, "true");
+    matchState["(max-height: 540px)"] = false;
+    const handler = listeners.get("(max-height: 540px)");
+    handler?.({ matches: false });
+    assert.equal(container.dataset.condensed, undefined);
+  } finally {
+    if (typeof originalWindow === "undefined") {
+      delete global.window;
+    } else {
+      global.window = originalWindow;
+    }
+  }
 });
