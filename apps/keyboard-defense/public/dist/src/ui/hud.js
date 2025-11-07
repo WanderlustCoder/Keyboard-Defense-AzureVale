@@ -1,30 +1,65 @@
 import { WavePreviewPanel } from "./wavePreview.js";
 let hudInstanceCounter = 0;
+const isElementWithTag = (el, tagName) => {
+    return el instanceof HTMLElement && el.tagName.toLowerCase() === tagName.toLowerCase();
+};
 const DEFAULT_WAVE_PREVIEW_HINT = "Upcoming enemies appear here—use the preview to plan your defenses.";
 export class HudView {
+    config;
+    callbacks;
+    healthBar;
+    goldLabel;
+    goldDelta;
+    activeWord;
+    typingInput;
+    upgradePanel;
+    comboLabel;
+    comboAccuracyDelta;
+    logList;
+    tutorialBanner;
+    castleButton;
+    castleRepairButton;
+    castleStatus;
+    castleBenefits;
+    castleGoldEvents;
+    castlePassives;
+    wavePreview;
+    slotControls = new Map();
+    presetControls = new Map();
+    presetContainer = null;
+    presetList = null;
+    analyticsViewer;
+    analyticsViewerVisible = false;
+    analyticsViewerSignature = "";
+    analyticsViewerFilter = "all";
+    analyticsViewerFilterSelect;
+    lastShieldTelemetry = { current: false, next: false };
+    lastGold = 0;
+    maxCombo = 0;
+    goldTimeout = null;
+    logEntries = [];
+    logLimit = 6;
+    tutorialSlotLock = null;
+    lastState = null;
+    availableTurretTypes = {};
+    turretDowngradeEnabled = false;
+    tutorialSummary;
+    tutorialSummaryHandlers = null;
+    shortcutLaunchButton;
+    shortcutOverlay;
+    optionsCastleBonus;
+    optionsCastleBenefits;
+    optionsCastlePassives;
+    wavePreviewHint;
+    wavePreviewHintMessage = DEFAULT_WAVE_PREVIEW_HINT;
+    optionsOverlay;
+    waveScorecard;
+    syncingOptionToggles = false;
+    comboBaselineAccuracy = 1;
+    lastAccuracy = 1;
     constructor(config, rootIds, callbacks) {
         this.config = config;
         this.callbacks = callbacks;
-        this.slotControls = new Map();
-        this.presetControls = new Map();
-        this.presetContainer = null;
-        this.presetList = null;
-        this.analyticsViewerVisible = false;
-        this.analyticsViewerSignature = "";
-        this.analyticsViewerFilter = "all";
-        this.lastShieldTelemetry = { current: false, next: false };
-        this.lastGold = 0;
-        this.maxCombo = 0;
-        this.goldTimeout = null;
-        this.logEntries = [];
-        this.logLimit = 6;
-        this.tutorialSlotLock = null;
-        this.lastState = null;
-        this.availableTurretTypes = {};
-        this.turretDowngradeEnabled = false;
-        this.tutorialSummaryHandlers = null;
-        this.wavePreviewHintMessage = DEFAULT_WAVE_PREVIEW_HINT;
-        this.syncingOptionToggles = false;
         this.healthBar = this.getElement(rootIds.healthBar);
         this.goldLabel = this.getElement(rootIds.goldLabel);
         this.goldDelta = this.getElement(rootIds.goldDelta);
@@ -32,6 +67,8 @@ export class HudView {
         this.typingInput = this.getElement(rootIds.typingInput);
         this.upgradePanel = this.getElement(rootIds.upgradePanel);
         this.comboLabel = this.getElement(rootIds.comboLabel);
+        this.comboAccuracyDelta = this.getElement(rootIds.comboAccuracyDelta);
+        this.hideComboAccuracyDelta();
         this.logList = this.getElement(rootIds.eventLog);
         const previewContainer = this.getElement(rootIds.wavePreview);
         this.wavePreview = new WavePreviewPanel(previewContainer, this.config);
@@ -184,12 +221,20 @@ export class HudView {
                     console.warn("Options castle bonus element missing; bonus hint disabled.");
                 }
                 const castleBenefitsList = document.getElementById("options-castle-benefits");
-                if (castleBenefitsList instanceof HTMLUListElement) {
+                if (isElementWithTag(castleBenefitsList, "ul")) {
                     this.optionsCastleBenefits = castleBenefitsList;
                     this.optionsCastleBenefits.replaceChildren();
                 }
                 else {
                     console.warn("Options castle benefits element missing; upgrade summary disabled.");
+                }
+                const castlePassivesList = document.getElementById("options-castle-passives");
+                if (isElementWithTag(castlePassivesList, "ul")) {
+                    this.optionsCastlePassives = castlePassivesList;
+                    this.optionsCastlePassives.replaceChildren();
+                }
+                else {
+                    console.warn("Options castle passives element missing; passive summary disabled.");
                 }
                 closeButton.addEventListener("click", () => this.callbacks.onResumeRequested());
                 resumeButton.addEventListener("click", () => this.callbacks.onResumeRequested());
@@ -198,24 +243,24 @@ export class HudView {
                         return;
                     this.callbacks.onSoundToggle(soundToggle.checked);
                 });
-            soundVolumeSlider.addEventListener("input", () => {
-                if (this.syncingOptionToggles)
-                    return;
-                const nextValue = Number.parseFloat(soundVolumeSlider.value);
-                if (!Number.isFinite(nextValue))
-                    return;
-                this.updateSoundVolumeDisplay(nextValue);
-                this.callbacks.onSoundVolumeChange(nextValue);
-            });
-            soundIntensitySlider.addEventListener("input", () => {
-                if (this.syncingOptionToggles)
-                    return;
-                const nextValue = Number.parseFloat(soundIntensitySlider.value);
-                if (!Number.isFinite(nextValue))
-                    return;
-                this.updateSoundIntensityDisplay(nextValue);
-                this.callbacks.onSoundIntensityChange(nextValue);
-            });
+                soundVolumeSlider.addEventListener("input", () => {
+                    if (this.syncingOptionToggles)
+                        return;
+                    const nextValue = Number.parseFloat(soundVolumeSlider.value);
+                    if (!Number.isFinite(nextValue))
+                        return;
+                    this.updateSoundVolumeDisplay(nextValue);
+                    this.callbacks.onSoundVolumeChange(nextValue);
+                });
+                soundIntensitySlider.addEventListener("input", () => {
+                    if (this.syncingOptionToggles)
+                        return;
+                    const nextValue = Number.parseFloat(soundIntensitySlider.value);
+                    if (!Number.isFinite(nextValue))
+                        return;
+                    this.updateSoundIntensityDisplay(nextValue);
+                    this.callbacks.onSoundIntensityChange(nextValue);
+                });
                 diagnosticsToggle.addEventListener("change", () => {
                     if (this.syncingOptionToggles)
                         return;
@@ -249,7 +294,8 @@ export class HudView {
                 fontScaleSelect.addEventListener("change", () => {
                     if (this.syncingOptionToggles)
                         return;
-                    const nextValue = Number.parseFloat(fontScaleSelect.value);
+                    const rawValue = this.getSelectValue(fontScaleSelect);
+                    const nextValue = Number.parseFloat(rawValue ?? "");
                     if (!Number.isFinite(nextValue))
                         return;
                     this.callbacks.onHudFontScaleChange(nextValue);
@@ -283,7 +329,7 @@ export class HudView {
             const scorecardStats = document.getElementById(rootIds.waveScorecard.stats);
             const scorecardContinue = document.getElementById(rootIds.waveScorecard.continue);
             if (scorecardContainer instanceof HTMLElement &&
-                scorecardStats instanceof HTMLUListElement &&
+                isElementWithTag(scorecardStats, "ul") &&
                 scorecardContinue instanceof HTMLButtonElement) {
                 this.waveScorecard = {
                     container: scorecardContainer,
@@ -302,7 +348,8 @@ export class HudView {
             const viewerFilter = rootIds.analyticsViewer.filterSelect
                 ? document.getElementById(rootIds.analyticsViewer.filterSelect)
                 : null;
-            if (viewerContainer instanceof HTMLElement && viewerBody instanceof HTMLTableSectionElement) {
+            if (viewerContainer instanceof HTMLElement &&
+                isElementWithTag(viewerBody, "tbody")) {
                 this.analyticsViewer = {
                     container: viewerContainer,
                     tableBody: viewerBody,
@@ -312,9 +359,9 @@ export class HudView {
                 viewerContainer.setAttribute("aria-hidden", this.analyticsViewerVisible ? "false" : "true");
                 if (this.analyticsViewer.filterSelect) {
                     this.analyticsViewerFilterSelect = this.analyticsViewer.filterSelect;
-                    this.analyticsViewerFilterSelect.value = this.analyticsViewerFilter;
+                    this.setSelectValue(this.analyticsViewerFilterSelect, this.analyticsViewerFilter);
                     this.analyticsViewerFilterSelect.addEventListener("change", () => {
-                        const next = this.normalizeAnalyticsViewerFilter(this.analyticsViewerFilterSelect?.value ?? "all");
+                        const next = this.normalizeAnalyticsViewerFilter(this.getSelectValue(this.analyticsViewerFilterSelect) ?? "all");
                         if (next !== this.analyticsViewerFilter) {
                             this.analyticsViewerFilter = next;
                             if (this.lastState) {
@@ -328,7 +375,7 @@ export class HudView {
                             }
                         }
                         else if (this.analyticsViewerFilterSelect) {
-                            this.analyticsViewerFilterSelect.value = this.analyticsViewerFilter;
+                            this.setSelectValue(this.analyticsViewerFilterSelect, this.analyticsViewerFilter);
                         }
                     });
                 }
@@ -351,6 +398,16 @@ export class HudView {
         this.castleStatus.className = "castle-status";
         this.castleStatus.setAttribute("role", "status");
         this.castleStatus.setAttribute("aria-live", "polite");
+        this.castlePassives = document.createElement("ul");
+        this.castlePassives.className = "castle-passives";
+        this.castlePassives.dataset.visible = "false";
+        this.castlePassives.hidden = true;
+        this.castlePassives.setAttribute("aria-label", "Active castle passive buffs");
+        this.castleGoldEvents = document.createElement("ul");
+        this.castleGoldEvents.className = "castle-gold-events";
+        this.castleGoldEvents.dataset.visible = "false";
+        this.castleGoldEvents.hidden = true;
+        this.castleGoldEvents.setAttribute("aria-label", "Recent gold events");
         this.castleBenefits = document.createElement("ul");
         this.castleBenefits.className = "castle-benefits";
         this.castleBenefits.dataset.visible = "false";
@@ -365,6 +422,8 @@ export class HudView {
         castleWrap.appendChild(this.castleButton);
         castleWrap.appendChild(this.castleRepairButton);
         castleWrap.appendChild(this.castleStatus);
+        castleWrap.appendChild(this.castlePassives);
+        castleWrap.appendChild(this.castleGoldEvents);
         castleWrap.appendChild(this.castleBenefits);
         this.upgradePanel.appendChild(castleWrap);
         this.castleButton.addEventListener("click", () => {
@@ -424,7 +483,7 @@ export class HudView {
         this.optionsOverlay.readableFontToggle.checked = state.readableFontEnabled;
         this.optionsOverlay.dyslexiaFontToggle.checked = state.dyslexiaFontEnabled;
         this.optionsOverlay.colorblindPaletteToggle.checked = state.colorblindPaletteEnabled;
-        this.optionsOverlay.fontScaleSelect.value = state.hudFontScale.toString();
+        this.setSelectValue(this.optionsOverlay.fontScaleSelect, state.hudFontScale.toString());
         this.applyTelemetryOptionState(state.telemetry);
         if (this.optionsOverlay.crystalPulseToggle) {
             const toggle = this.optionsOverlay.crystalPulseToggle;
@@ -528,7 +587,7 @@ export class HudView {
         this.wavePreview.setColorBlindFriendly(Boolean(options.colorBlindFriendly));
         this.updateCastleControls(state);
         this.updateTurretControls(state);
-        this.updateCombo(state.typing.combo, state.typing.comboWarning, state.typing.comboTimer);
+        this.updateCombo(state.typing.combo, state.typing.comboWarning, state.typing.comboTimer, state.typing.accuracy);
         this.wavePreview.render(upcoming);
         this.applyTutorialSlotLock(state);
         const history = state.analytics.waveHistory?.length
@@ -615,6 +674,7 @@ export class HudView {
         container.innerHTML = `<strong>${heading}</strong>${summary}`;
         container.dataset.empty = currentLevelConfig ? "false" : "true";
         container.setAttribute("aria-hidden", "false");
+        this.renderOptionsCastlePassives(state.castle.passives ?? []);
     }
     updateWavePreviewHint(active, message) {
         if (!this.wavePreviewHint)
@@ -713,6 +773,127 @@ export class HudView {
         }
         return benefits;
     }
+    renderCastlePassives(passives) {
+        const list = this.castlePassives;
+        list.replaceChildren();
+        if (!passives.length) {
+            list.dataset.visible = "false";
+            list.hidden = true;
+            return;
+        }
+        list.dataset.visible = "true";
+        list.hidden = false;
+        for (const passive of passives) {
+            list.appendChild(this.createPassiveListItem(passive));
+        }
+    }
+    renderCastleGoldEvents(events, currentTime) {
+        const list = this.castleGoldEvents;
+        list.replaceChildren();
+        if (!events.length) {
+            list.dataset.visible = "false";
+            list.hidden = true;
+            return;
+        }
+        list.dataset.visible = "true";
+        list.hidden = false;
+        for (const event of events) {
+            const item = document.createElement("li");
+            item.className = "gold-event-entry";
+            const deltaValue = typeof event.delta === "number" && Number.isFinite(event.delta)
+                ? Math.round(event.delta)
+                : null;
+            const goldValue = typeof event.gold === "number" && Number.isFinite(event.gold)
+                ? Math.round(event.gold)
+                : null;
+            const timestamp = typeof event.timestamp === "number" && Number.isFinite(event.timestamp)
+                ? event.timestamp
+                : null;
+            const age = timestamp !== null && Number.isFinite(currentTime)
+                ? Math.max(0, currentTime - timestamp)
+                : null;
+            if (deltaValue !== null) {
+                item.dataset.deltaSign =
+                    deltaValue > 0 ? "positive" : deltaValue < 0 ? "negative" : "neutral";
+            }
+            else {
+                item.dataset.deltaSign = "neutral";
+            }
+            const parts = [];
+            if (deltaValue !== null) {
+                const prefix = deltaValue >= 0 ? "+" : "";
+                parts.push(`${prefix}${deltaValue}g`);
+            }
+            else {
+                parts.push("??g");
+            }
+            if (goldValue !== null) {
+                parts.push(`→ ${goldValue}g`);
+            }
+            if (timestamp !== null) {
+                parts.push(`@ ${timestamp.toFixed(1)}s`);
+            }
+            if (age !== null) {
+                parts.push(`(${age.toFixed(1)}s ago)`);
+            }
+            item.textContent = parts.join(" ");
+            list.appendChild(item);
+        }
+    }
+    renderOptionsCastlePassives(passives) {
+        if (!this.optionsCastlePassives)
+            return;
+        const list = this.optionsCastlePassives;
+        list.replaceChildren();
+        if (!passives.length) {
+            const item = document.createElement("li");
+            item.className = "passive-empty";
+            item.textContent = "No passive buffs unlocked yet.";
+            list.appendChild(item);
+            return;
+        }
+        for (const passive of passives) {
+            list.appendChild(this.createPassiveListItem(passive, { includeDelta: true }));
+        }
+    }
+    formatCastlePassive(passive, options = {}) {
+        const includeDelta = options.includeDelta ?? false;
+        switch (passive.id) {
+            case "regen": {
+                const total = passive.total.toFixed(1);
+                const delta = passive.delta.toFixed(1);
+                return includeDelta ? `Regen ${total} HP/s (+${delta})` : `Regen ${total} HP/s`;
+            }
+            case "armor": {
+                const total = passive.total.toFixed(0);
+                const delta = passive.delta.toFixed(0);
+                const prefix = `+${total} armor`;
+                return includeDelta && passive.delta > 0 ? `${prefix} (+${delta})` : prefix;
+            }
+            case "gold": {
+                const total = Math.round(passive.total * 100);
+                const delta = Math.round(passive.delta * 100);
+                return includeDelta && passive.delta > 0
+                    ? `+${total}% gold from rewards (+${delta}%)`
+                    : `+${total}% gold from rewards`;
+            }
+            default:
+                return "Passive upgrade unlocked";
+        }
+    }
+    createPassiveListItem(passive, options = {}) {
+        const item = document.createElement("li");
+        const icon = document.createElement("span");
+        const label = document.createElement("span");
+        const passiveId = passive.id ?? "generic";
+        icon.className = `passive-icon passive-icon--${passiveId}`;
+        icon.setAttribute("aria-hidden", "true");
+        label.className = "passive-label";
+        label.textContent = this.formatCastlePassive(passive, options);
+        item.appendChild(icon);
+        item.appendChild(label);
+        return item;
+    }
     renderOptionsCastleBenefits(benefits, nextConfig) {
         if (!this.optionsCastleBenefits)
             return;
@@ -736,6 +917,11 @@ export class HudView {
         const currentLevel = state.castle.level;
         const currentConfig = this.config.castleLevels.find((c) => c.level === currentLevel) ?? null;
         const nextConfig = this.config.castleLevels.find((c) => c.level === currentLevel + 1) ?? null;
+        const passives = state.castle.passives ?? [];
+        this.renderCastlePassives(passives);
+        this.renderOptionsCastlePassives(passives);
+        const recentGoldEvents = (state.analytics.goldEvents ?? []).slice(-3).reverse();
+        this.renderCastleGoldEvents(recentGoldEvents, state.time ?? 0);
         this.castleBenefits.replaceChildren();
         this.castleBenefits.dataset.visible = "false";
         this.castleBenefits.hidden = true;
@@ -873,7 +1059,7 @@ export class HudView {
                 continue;
             controls.title.textContent = `Slot ${slot.id.replace("slot-", "")} (Lane ${slot.lane + 1})`;
             const priority = this.normalizePriority(slot.targetingPriority) ?? "first";
-            controls.prioritySelect.value = priority;
+            this.setSelectValue(controls.prioritySelect, priority);
             if (!slot.unlocked) {
                 controls.action.disabled = true;
                 controls.action.textContent = "Locked";
@@ -898,11 +1084,11 @@ export class HudView {
             if (!slot.turret) {
                 controls.select.style.display = "inline-block";
                 this.applyAvailabilityToSelect(controls.select);
-                let selectedType = controls.select.value ?? "arrow";
+                let selectedType = this.getSelectValue(controls.select) ?? "arrow";
                 if (!this.isTurretTypeEnabled(selectedType)) {
                     const fallback = this.pickFirstEnabledTurretType();
                     if (fallback) {
-                        controls.select.value = fallback;
+                        this.setSelectValue(controls.select, fallback);
                         selectedType = fallback;
                     }
                 }
@@ -914,7 +1100,8 @@ export class HudView {
                 controls.select.disabled = !hasEnabledTypes;
                 if (typeEnabled) {
                     controls.action.onclick = () => {
-                        this.callbacks.onPlaceTurret(slot.id, controls.select.value);
+                        const next = this.getSelectValue(controls.select) ?? "arrow";
+                        this.callbacks.onPlaceTurret(slot.id, next);
                     };
                     const affordable = state.resources.gold >= cost;
                     controls.action.disabled = !affordable;
@@ -1164,7 +1351,7 @@ export class HudView {
                     controls.select.disabled = false;
                     controls.select.style.display = "inline-block";
                     if (lock.forcedType) {
-                        controls.select.value = lock.forcedType;
+                        this.setSelectValue(controls.select, lock.forcedType);
                         this.applyForcedSelectOption(controls.select, lock.forcedType);
                     }
                     else {
@@ -1228,7 +1415,7 @@ export class HudView {
         if (!controls) {
             return null;
         }
-        const selected = controls.select.value;
+        const selected = this.getSelectValue(controls.select);
         if (selected && this.config.turretArchetypes[selected]) {
             return {
                 typeId: selected,
@@ -1303,7 +1490,7 @@ export class HudView {
             this.applyAvailabilityToSelect(select);
             const firstEnabled = this.pickFirstEnabledTurretType();
             if (firstEnabled) {
-                select.value = firstEnabled;
+                this.setSelectValue(select, firstEnabled);
             }
             container.appendChild(select);
             const action = document.createElement("button");
@@ -1331,9 +1518,9 @@ export class HudView {
             priorityContainer.appendChild(prioritySelect);
             container.appendChild(priorityContainer);
             prioritySelect.addEventListener("change", () => {
-                const next = this.normalizePriority(prioritySelect.value);
+                const next = this.normalizePriority(this.getSelectValue(prioritySelect) ?? "");
                 if (!next) {
-                    prioritySelect.value = "first";
+                    this.setSelectValue(prioritySelect, "first");
                     return;
                 }
                 this.callbacks.onTurretPriorityChange(slot.id, next);
@@ -1394,7 +1581,7 @@ export class HudView {
             opt.textContent = option.label;
             select.appendChild(opt);
         }
-        select.value = "first";
+        this.setSelectValue(select, "first");
     }
     normalizePriority(value) {
         if (value === "first" || value === "strongest" || value === "weakest") {
@@ -1573,7 +1760,11 @@ export class HudView {
         }
         this.lastGold = currentGold;
     }
-    updateCombo(combo, warning, timer) {
+    updateCombo(combo, warning, timer, accuracy) {
+        const safeAccuracy = typeof accuracy === "number" && Number.isFinite(accuracy)
+            ? accuracy
+            : (this.lastAccuracy ?? this.comboBaselineAccuracy);
+        this.lastAccuracy = safeAccuracy ?? 1;
         this.maxCombo = Math.max(this.maxCombo, combo);
         if (combo > 0) {
             this.comboLabel.dataset.active = "true";
@@ -1582,17 +1773,45 @@ export class HudView {
                 this.comboLabel.dataset.warning = "true";
                 const seconds = Math.max(0, timer).toFixed(1);
                 this.comboLabel.textContent = `Combo x${combo} (Best x${this.maxCombo}) - ${seconds}s`;
+                this.showComboAccuracyDelta(safeAccuracy ?? 1);
             }
             else {
                 delete this.comboLabel.dataset.warning;
                 this.comboLabel.textContent = `Combo x${combo} (Best x${this.maxCombo})`;
+                this.comboBaselineAccuracy = safeAccuracy ?? this.comboBaselineAccuracy;
+                this.hideComboAccuracyDelta();
             }
         }
         else {
             this.comboLabel.dataset.active = "false";
             delete this.comboLabel.dataset.warning;
             this.comboLabel.textContent = `Combo x0 (Best x${this.maxCombo})`;
+            this.comboBaselineAccuracy = safeAccuracy ?? this.comboBaselineAccuracy;
+            this.hideComboAccuracyDelta();
         }
+    }
+    showComboAccuracyDelta(currentAccuracy) {
+        const baseline = Number.isFinite(this.comboBaselineAccuracy)
+            ? this.comboBaselineAccuracy
+            : currentAccuracy;
+        const delta = (currentAccuracy - baseline) * 100;
+        const prefix = delta > 0 ? "+" : "";
+        this.comboAccuracyDelta.textContent = `${prefix}${delta.toFixed(1)}% accuracy`;
+        this.comboAccuracyDelta.dataset.visible = "true";
+        if (delta > 0.05) {
+            this.comboAccuracyDelta.dataset.trend = "up";
+        }
+        else if (delta < -0.05) {
+            this.comboAccuracyDelta.dataset.trend = "down";
+        }
+        else {
+            delete this.comboAccuracyDelta.dataset.trend;
+        }
+    }
+    hideComboAccuracyDelta() {
+        this.comboAccuracyDelta.dataset.visible = "false";
+        delete this.comboAccuracyDelta.dataset.trend;
+        this.comboAccuracyDelta.textContent = "";
     }
     renderLog() {
         this.logList.replaceChildren();
@@ -1817,12 +2036,14 @@ export class HudView {
             button.disabled = false;
             button.setAttribute("aria-hidden", "false");
             button.tabIndex = 0;
+            button.setAttribute("tabindex", "0");
         }
         else {
             button.style.display = "none";
             button.disabled = true;
             button.setAttribute("aria-hidden", "true");
             button.tabIndex = -1;
+            button.setAttribute("tabindex", "-1");
         }
     }
     setHudFontScale(scale) {
@@ -1871,6 +2092,30 @@ export class HudView {
                 return summaries;
         }
     }
+    setSelectValue(select, value) {
+        if (!select)
+            return;
+        try {
+            select.value = value;
+        }
+        catch {
+            select.setAttribute("value", value);
+        }
+    }
+    getSelectValue(select) {
+        if (!select)
+            return undefined;
+        const direct = select.value;
+        if (typeof direct === "string" && direct !== "") {
+            return direct;
+        }
+        const options = Array.from(select.options ?? []);
+        const selected = options.find((option) => option.selected);
+        if (selected) {
+            return selected.value ?? selected.getAttribute("value") ?? undefined;
+        }
+        return select.getAttribute("value") ?? undefined;
+    }
     setAnalyticsViewerVisible(visible) {
         if (!this.analyticsViewer) {
             return false;
@@ -1880,7 +2125,7 @@ export class HudView {
         container.dataset.visible = visible ? "true" : "false";
         container.setAttribute("aria-hidden", visible ? "false" : "true");
         if (visible && this.analyticsViewerFilterSelect) {
-            this.analyticsViewerFilterSelect.value = this.analyticsViewerFilter;
+            this.setSelectValue(this.analyticsViewerFilterSelect, this.analyticsViewerFilter);
         }
         if (visible && this.lastState) {
             const history = this.lastState.analytics.waveHistory?.length

@@ -13,6 +13,13 @@ import { WavePreviewPanel } from "./wavePreview.js";
 
 let hudInstanceCounter = 0;
 
+const isElementWithTag = <T extends HTMLElement>(
+  el: Element | null | undefined,
+  tagName: string
+): el is T => {
+  return el instanceof HTMLElement && el.tagName.toLowerCase() === tagName.toLowerCase();
+};
+
 export interface HudCallbacks {
   onCastleUpgrade(): void;
   onCastleRepair(): void;
@@ -485,14 +492,14 @@ export class HudView {
           console.warn("Options castle bonus element missing; bonus hint disabled.");
         }
         const castleBenefitsList = document.getElementById("options-castle-benefits");
-        if (castleBenefitsList instanceof HTMLUListElement) {
+        if (isElementWithTag<HTMLUListElement>(castleBenefitsList, "ul")) {
           this.optionsCastleBenefits = castleBenefitsList;
           this.optionsCastleBenefits.replaceChildren();
         } else {
           console.warn("Options castle benefits element missing; upgrade summary disabled.");
         }
         const castlePassivesList = document.getElementById("options-castle-passives");
-        if (castlePassivesList instanceof HTMLUListElement) {
+        if (isElementWithTag<HTMLUListElement>(castlePassivesList, "ul")) {
           this.optionsCastlePassives = castlePassivesList;
           this.optionsCastlePassives.replaceChildren();
         } else {
@@ -544,7 +551,8 @@ export class HudView {
         });
         fontScaleSelect.addEventListener("change", () => {
           if (this.syncingOptionToggles) return;
-          const nextValue = Number.parseFloat(fontScaleSelect.value);
+          const rawValue = this.getSelectValue(fontScaleSelect);
+          const nextValue = Number.parseFloat(rawValue ?? "");
           if (!Number.isFinite(nextValue)) return;
           this.callbacks.onHudFontScaleChange(nextValue);
         });
@@ -572,13 +580,11 @@ export class HudView {
 
     if (rootIds.waveScorecard) {
       const scorecardContainer = document.getElementById(rootIds.waveScorecard.container);
-      const scorecardStats = document.getElementById(
-        rootIds.waveScorecard.stats
-      ) as HTMLUListElement | null;
+      const scorecardStats = document.getElementById(rootIds.waveScorecard.stats);
       const scorecardContinue = document.getElementById(rootIds.waveScorecard.continue);
       if (
         scorecardContainer instanceof HTMLElement &&
-        scorecardStats instanceof HTMLUListElement &&
+        isElementWithTag<HTMLUListElement>(scorecardStats, "ul") &&
         scorecardContinue instanceof HTMLButtonElement
       ) {
         this.waveScorecard = {
@@ -598,7 +604,10 @@ export class HudView {
       const viewerFilter = rootIds.analyticsViewer.filterSelect
         ? document.getElementById(rootIds.analyticsViewer.filterSelect)
         : null;
-      if (viewerContainer instanceof HTMLElement && viewerBody instanceof HTMLTableSectionElement) {
+      if (
+        viewerContainer instanceof HTMLElement &&
+        isElementWithTag<HTMLTableSectionElement>(viewerBody, "tbody")
+      ) {
         this.analyticsViewer = {
           container: viewerContainer,
           tableBody: viewerBody,
@@ -608,10 +617,10 @@ export class HudView {
         viewerContainer.setAttribute("aria-hidden", this.analyticsViewerVisible ? "false" : "true");
         if (this.analyticsViewer.filterSelect) {
           this.analyticsViewerFilterSelect = this.analyticsViewer.filterSelect;
-          this.analyticsViewerFilterSelect.value = this.analyticsViewerFilter;
+          this.setSelectValue(this.analyticsViewerFilterSelect, this.analyticsViewerFilter);
           this.analyticsViewerFilterSelect.addEventListener("change", () => {
             const next = this.normalizeAnalyticsViewerFilter(
-              this.analyticsViewerFilterSelect?.value ?? "all"
+              this.getSelectValue(this.analyticsViewerFilterSelect) ?? "all"
             );
             if (next !== this.analyticsViewerFilter) {
               this.analyticsViewerFilter = next;
@@ -625,7 +634,7 @@ export class HudView {
                 });
               }
             } else if (this.analyticsViewerFilterSelect) {
-              this.analyticsViewerFilterSelect.value = this.analyticsViewerFilter;
+              this.setSelectValue(this.analyticsViewerFilterSelect, this.analyticsViewerFilter);
             }
           });
         }
@@ -769,7 +778,7 @@ export class HudView {
     this.optionsOverlay.readableFontToggle.checked = state.readableFontEnabled;
     this.optionsOverlay.dyslexiaFontToggle.checked = state.dyslexiaFontEnabled;
     this.optionsOverlay.colorblindPaletteToggle.checked = state.colorblindPaletteEnabled;
-    this.optionsOverlay.fontScaleSelect.value = state.hudFontScale.toString();
+    this.setSelectValue(this.optionsOverlay.fontScaleSelect, state.hudFontScale.toString());
     this.applyTelemetryOptionState(state.telemetry);
     if (this.optionsOverlay.crystalPulseToggle) {
       const toggle = this.optionsOverlay.crystalPulseToggle;
@@ -1413,7 +1422,7 @@ export class HudView {
 
       controls.title.textContent = `Slot ${slot.id.replace("slot-", "")} (Lane ${slot.lane + 1})`;
       const priority = this.normalizePriority(slot.targetingPriority) ?? "first";
-      controls.prioritySelect.value = priority;
+    this.setSelectValue(controls.prioritySelect, priority);
 
       if (!slot.unlocked) {
         controls.action.disabled = true;
@@ -1441,11 +1450,11 @@ export class HudView {
       if (!slot.turret) {
         controls.select.style.display = "inline-block";
         this.applyAvailabilityToSelect(controls.select);
-        let selectedType = (controls.select.value as TurretTypeId) ?? "arrow";
+        let selectedType = (this.getSelectValue(controls.select) as TurretTypeId) ?? "arrow";
         if (!this.isTurretTypeEnabled(selectedType)) {
           const fallback = this.pickFirstEnabledTurretType();
           if (fallback) {
-            controls.select.value = fallback;
+            this.setSelectValue(controls.select, fallback);
             selectedType = fallback;
           }
         }
@@ -1457,7 +1466,8 @@ export class HudView {
         controls.select.disabled = !hasEnabledTypes;
         if (typeEnabled) {
           controls.action.onclick = () => {
-            this.callbacks.onPlaceTurret(slot.id, controls.select.value as TurretTypeId);
+            const next = (this.getSelectValue(controls.select) as TurretTypeId) ?? "arrow";
+            this.callbacks.onPlaceTurret(slot.id, next);
           };
           const affordable = state.resources.gold >= cost;
           controls.action.disabled = !affordable;
@@ -1728,7 +1738,7 @@ export class HudView {
           controls.select.disabled = false;
           controls.select.style.display = "inline-block";
           if (lock.forcedType) {
-            controls.select.value = lock.forcedType;
+            this.setSelectValue(controls.select, lock.forcedType);
             this.applyForcedSelectOption(controls.select, lock.forcedType);
           } else {
             this.resetTutorialSelectOptions(controls.select);
@@ -1795,7 +1805,7 @@ export class HudView {
     if (!controls) {
       return null;
     }
-    const selected = controls.select.value as TurretTypeId | "";
+    const selected = this.getSelectValue(controls.select) as TurretTypeId | "";
     if (selected && this.config.turretArchetypes[selected]) {
       return {
         typeId: selected,
@@ -1884,7 +1894,7 @@ export class HudView {
       this.applyAvailabilityToSelect(select);
       const firstEnabled = this.pickFirstEnabledTurretType();
       if (firstEnabled) {
-        select.value = firstEnabled;
+        this.setSelectValue(select, firstEnabled);
       }
       container.appendChild(select);
 
@@ -1918,9 +1928,9 @@ export class HudView {
       container.appendChild(priorityContainer);
 
       prioritySelect.addEventListener("change", () => {
-        const next = this.normalizePriority(prioritySelect.value);
+        const next = this.normalizePriority(this.getSelectValue(prioritySelect) ?? "");
         if (!next) {
-          prioritySelect.value = "first";
+          this.setSelectValue(prioritySelect, "first");
           return;
         }
         this.callbacks.onTurretPriorityChange(slot.id, next);
@@ -1990,7 +2000,7 @@ export class HudView {
       opt.textContent = option.label;
       select.appendChild(opt);
     }
-    select.value = "first";
+    this.setSelectValue(select, "first");
   }
 
   private normalizePriority(value: string): TurretTargetPriority | null {
@@ -2488,11 +2498,13 @@ export class HudView {
       button.disabled = false;
       button.setAttribute("aria-hidden", "false");
       button.tabIndex = 0;
+      button.setAttribute("tabindex", "0");
     } else {
       button.style.display = "none";
       button.disabled = true;
       button.setAttribute("aria-hidden", "true");
       button.tabIndex = -1;
+      button.setAttribute("tabindex", "-1");
     }
   }
 
@@ -2547,6 +2559,29 @@ export class HudView {
     }
   }
 
+  private setSelectValue(select: HTMLSelectElement | undefined, value: string): void {
+    if (!select) return;
+    try {
+      select.value = value;
+    } catch {
+      select.setAttribute("value", value);
+    }
+  }
+
+  private getSelectValue(select: HTMLSelectElement | undefined): string | undefined {
+    if (!select) return undefined;
+    const direct = select.value;
+    if (typeof direct === "string" && direct !== "") {
+      return direct;
+    }
+    const options = Array.from(select.options ?? []);
+    const selected = options.find((option) => option.selected);
+    if (selected) {
+      return selected.value ?? selected.getAttribute("value") ?? undefined;
+    }
+    return select.getAttribute("value") ?? undefined;
+  }
+
   setAnalyticsViewerVisible(visible: boolean): boolean {
     if (!this.analyticsViewer) {
       return false;
@@ -2556,7 +2591,7 @@ export class HudView {
     container.dataset.visible = visible ? "true" : "false";
     container.setAttribute("aria-hidden", visible ? "false" : "true");
     if (visible && this.analyticsViewerFilterSelect) {
-      this.analyticsViewerFilterSelect.value = this.analyticsViewerFilter;
+      this.setSelectValue(this.analyticsViewerFilterSelect, this.analyticsViewerFilter);
     }
     if (visible && this.lastState) {
       const history = this.lastState.analytics.waveHistory?.length

@@ -1,399 +1,102 @@
 import { test } from "vitest";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { parseHTML } from "linkedom";
 import { HudView } from "../dist/src/ui/hud.js";
 import { defaultConfig } from "../dist/src/core/config.js";
 
-class FakeElement {
-  constructor(tag, id) {
-    this.tag = tag;
-    this.id = id ?? null;
-    this.children = [];
-    this.textContent = "";
-    this._innerHTML = "";
-    this.className = "";
-    this.value = "";
-    this.disabled = false;
-    this.style = {};
-    this.dataset = {};
-    this.onclick = null;
-    this.onchange = null;
-    this.oninput = null;
-    this.onmouseenter = null;
-    this.onmouseleave = null;
-    this.onfocusin = null;
-    this.onfocusout = null;
-    this.attributes = new Map();
-    this.tabIndex = 0;
-    this.parentElement = null;
-    this.parentNode = null;
-  }
-
-  set innerHTML(value) {
-    this._innerHTML = String(value ?? "");
-    this.children = [];
-    this.textContent = this._innerHTML.replace(/<[^>]*>/g, "");
-  }
-
-  get innerHTML() {
-    return this._innerHTML;
-  }
-
-  appendChild(child) {
-    if (child && child.isFragment) {
-      for (const fragmentChild of child.children) {
-        this.appendChild(fragmentChild);
-      }
-      child.children = [];
-      return child;
-    }
-    this.children.push(child);
-    if (child && typeof child === "object") {
-      child.parentElement = this;
-      child.parentNode = this;
-      const childText =
-        typeof child.textContent === "string"
-          ? child.textContent
-          : Array.isArray(child.children)
-            ? child.children.map((node) => node.textContent ?? "").join("")
-            : "";
-      if (childText) {
-        this.textContent = `${this.textContent}${childText}`;
-      }
-    }
-    if (this.tag === "select" && this.value === "" && child && typeof child.value === "string") {
-      this.value = child.value;
-    }
-    return child;
-  }
-
-  append(...nodes) {
-    for (const node of nodes) {
-      if (node === null || node === undefined) continue;
-      if (typeof node === "string" || typeof node === "number") {
-        const textWrapper = new FakeElement("#text");
-        textWrapper.textContent = String(node);
-        this.appendChild(textWrapper);
-      } else {
-        this.appendChild(node);
-      }
-    }
-  }
-
-  replaceChildren(...children) {
-    this.children = [...children];
-  }
-
-  addEventListener(type, handler) {
-    if (type === "click") {
-      this.onclick = handler;
-    } else if (type === "change") {
-      this.onchange = handler;
-    } else if (type === "input") {
-      this.oninput = handler;
-    } else if (type === "mouseenter") {
-      this.onmouseenter = handler;
-    } else if (type === "mouseleave") {
-      this.onmouseleave = handler;
-    } else if (type === "focusin") {
-      this.onfocusin = handler;
-    } else if (type === "focusout") {
-      this.onfocusout = handler;
-    }
-  }
-
-  focus() {}
-  select() {}
-
-  setAttribute(name, value) {
-    this.attributes.set(name, String(value));
-  }
-
-  getAttribute(name) {
-    return this.attributes.has(name) ? this.attributes.get(name) : null;
-  }
-
-  removeAttribute(name) {
-    this.attributes.delete(name);
-  }
-
-  querySelector(selector) {
-    if (typeof selector !== "string") return null;
-    const dataFieldMatch = selector.match(/^\[data-field="(.+)"\]$/);
-    if (!dataFieldMatch) return null;
-    const target = dataFieldMatch[1];
-    const queue = [this];
-    while (queue.length > 0) {
-      const node = queue.shift();
-      if (node && node.dataset && node.dataset.field === target) {
-        return node;
-      }
-      if (node && Array.isArray(node.children)) {
-        for (const child of node.children) {
-          if (child && typeof child === "object") {
-            queue.push(child);
-          }
-        }
-      }
-    }
-    return null;
-  }
-}
-
-class FakeInputElement extends FakeElement {
-  constructor(id, type = "text") {
-    super("input", id);
-    this.type = type;
-    this.value = "";
-    this.checked = false;
-  }
-}
-
-class FakeDocumentFragment {
-  constructor() {
-    this.children = [];
-    this.isFragment = true;
-  }
-
-  appendChild(child) {
-    this.children.push(child);
-    return child;
-  }
-}
-
-const createStubDocument = () => {
-  const registry = new Map();
-
-  const register = (id, element) => {
-    registry.set(id, element);
-    return element;
-  };
-
-  const documentElement = new FakeElement("html");
-  const body = new FakeElement("body");
-
-  const documentStub = {
-    getElementById(id) {
-      const el = registry.get(id);
-      if (!el) {
-        throw new Error(`Missing element ${id}`);
-      }
-      return el;
-    },
-    createElement(tag) {
-      return new FakeElement(tag);
-    },
-    createDocumentFragment() {
-      return new FakeDocumentFragment();
-    }
-  };
-
-  documentStub.documentElement = documentElement;
-  documentStub.body = body;
-
-  return { documentStub, register };
-};
+const htmlSource = readFileSync(new URL("../public/index.html", import.meta.url), "utf8");
 
 const initializeHud = () => {
-  const originalDocument = global.document;
-  const originalWindow = global.window;
-  const originalHTMLElement = global.HTMLElement;
-  const originalHTMLDivElement = global.HTMLDivElement;
-  const originalHTMLButtonElement = global.HTMLButtonElement;
-  const originalHTMLInputElement = global.HTMLInputElement;
-  const originalHTMLTextAreaElement = global.HTMLTextAreaElement;
-  const originalHTMLSelectElement = global.HTMLSelectElement;
-  const originalHTMLUListElement = global.HTMLUListElement;
-  const originalHTMLTableSectionElement = global.HTMLTableSectionElement;
-  const { documentStub, register } = createStubDocument();
+  const { window } = parseHTML(htmlSource);
+  const { document } = window;
 
-  const findByClass = (root, className) => {
-    if (!root || !Array.isArray(root.children)) return undefined;
-    for (const child of root.children) {
-      if (child && child.className === className) {
-        return child;
-      }
-      const nested = findByClass(child, className);
-      if (nested) {
-        return nested;
-      }
+  const originalGlobals = {
+    document: global.document,
+    window: global.window,
+    HTMLElement: global.HTMLElement,
+    HTMLDivElement: global.HTMLDivElement,
+    HTMLButtonElement: global.HTMLButtonElement,
+    HTMLInputElement: global.HTMLInputElement,
+    HTMLTextAreaElement: global.HTMLTextAreaElement,
+    HTMLSelectElement: global.HTMLSelectElement,
+    HTMLUListElement: global.HTMLUListElement,
+    HTMLTableSectionElement: global.HTMLTableSectionElement,
+    setTimeout: global.setTimeout,
+    clearTimeout: global.clearTimeout
+  };
+
+  Object.assign(global, {
+    document,
+    window,
+    HTMLElement: window.HTMLElement,
+    HTMLDivElement: window.HTMLDivElement,
+    HTMLButtonElement: window.HTMLButtonElement,
+    HTMLInputElement: window.HTMLInputElement,
+    HTMLTextAreaElement: window.HTMLTextAreaElement,
+    HTMLSelectElement: window.HTMLSelectElement,
+    HTMLUListElement: window.HTMLUListElement,
+    HTMLTableSectionElement: window.HTMLTableSectionElement,
+    setTimeout: window.setTimeout?.bind(window) ?? ((fn) => {
+      fn();
+      return 0;
+    }),
+    clearTimeout: window.clearTimeout?.bind(window) ?? (() => {})
+  });
+
+  const get = (id) => {
+    const el = document.getElementById(id);
+    if (!el) {
+      throw new Error(`Missing element ${id}`);
     }
-    return undefined;
+    return el;
   };
 
-  global.HTMLElement = FakeElement;
-  global.HTMLDivElement = FakeElement;
-  global.HTMLButtonElement = FakeElement;
-  global.HTMLInputElement = FakeInputElement;
-  global.HTMLTextAreaElement = FakeElement;
-  global.HTMLSelectElement = FakeElement;
-  global.HTMLUListElement = FakeElement;
-  global.HTMLTableSectionElement = FakeElement;
+  const findByClass = (root, className) =>
+    root?.querySelector(`.${className}`) ?? undefined;
 
-  const healthBar = new FakeElement("div", "castle-health-bar");
-  const goldLabel = new FakeElement("span", "resource-gold");
-  const goldDelta = new FakeElement("span", "resource-delta");
-  const activeWord = new FakeElement("div", "active-word");
-  const typingInput = new FakeInputElement("typing-input");
-  const upgradePanel = new FakeElement("div", "upgrade-panel");
-  const comboLabel = new FakeElement("div", "combo-stats");
-  const comboAccuracyDelta = new FakeElement("div", "combo-accuracy-delta");
-  const logList = new FakeElement("ul", "battle-log");
-  const wavePreview = new FakeElement("div", "wave-preview-list");
-  const wavePreviewHint = new FakeElement("div", "wave-preview-hint");
-  wavePreviewHint.dataset.visible = "false";
-  wavePreviewHint.setAttribute("aria-hidden", "true");
-  wavePreviewHint.setAttribute("role", "status");
-  wavePreviewHint.setAttribute("aria-live", "polite");
-  const tutorialBanner = new FakeElement("div", "tutorial-banner");
-  const summaryContainer = new FakeElement("div", "tutorial-summary");
-  const summaryStats = new FakeElement("ul", "tutorial-summary-stats");
-  const summaryContinue = new FakeElement("button", "tutorial-summary-continue");
-  const summaryReplay = new FakeElement("button", "tutorial-summary-replay");
-  const pauseButton = new FakeElement("button", "pause-button");
-  const optionsOverlay = new FakeElement("div", "options-overlay");
-  optionsOverlay.dataset.visible = "false";
-  const optionsClose = new FakeElement("button", "options-overlay-close");
-  const optionsResume = new FakeElement("button", "options-resume-button");
-  const soundToggle = new FakeInputElement("options-sound-toggle", "checkbox");
-  const diagnosticsToggle = new FakeInputElement("options-diagnostics-toggle", "checkbox");
-  const reducedMotionToggle = new FakeInputElement("options-reduced-motion-toggle", "checkbox");
-  const checkeredBackgroundToggle = new FakeInputElement("options-checkered-bg-toggle", "checkbox");
-  const readableFontToggle = new FakeInputElement("options-readable-font-toggle", "checkbox");
-  const dyslexiaFontToggle = new FakeInputElement("options-dyslexia-font-toggle", "checkbox");
-  const colorblindPaletteToggle = new FakeInputElement("options-colorblind-toggle", "checkbox");
-  const soundVolumeSlider = new FakeInputElement("options-sound-volume", "range");
-  soundVolumeSlider.value = "0.8";
-  const soundVolumeValue = new FakeElement("span", "options-sound-volume-value");
-  soundVolumeValue.textContent = "80%";
-  const soundIntensitySlider = new FakeInputElement("options-sound-intensity", "range");
-  soundIntensitySlider.value = "1";
-  const soundIntensityValue = new FakeElement("span", "options-sound-intensity-value");
-  soundIntensityValue.textContent = "100%";
-  const telemetryToggleWrapper = new FakeElement("label", "options-telemetry-toggle-wrapper");
-  telemetryToggleWrapper.className = "option-toggle";
-  const telemetryToggle = new FakeInputElement("options-telemetry-toggle", "checkbox");
-  telemetryToggleWrapper.appendChild(telemetryToggle);
-  const fontScaleSelect = new FakeElement("select", "options-font-scale");
-  fontScaleSelect.value = "1";
-  const analyticsExportButton = new FakeElement("button", "options-analytics-export");
-  const optionsCastleBonus = new FakeElement("div", "options-castle-bonus");
-  const optionsCastleBenefits = new FakeElement("ul", "options-castle-benefits");
-  const optionsCastlePassives = new FakeElement("ul", "options-castle-passives");
-  const waveScorecard = new FakeElement("div", "wave-scorecard");
-  waveScorecard.dataset.visible = "false";
-  const waveScorecardStats = new FakeElement("ul", "wave-scorecard-stats");
-  const waveScorecardContinue = new FakeElement("button", "wave-scorecard-continue");
-  const analyticsViewerContainer = new FakeElement("div", "debug-analytics-viewer");
-  analyticsViewerContainer.dataset.visible = "false";
-  analyticsViewerContainer.dataset.empty = "true";
-  const analyticsViewerControls = new FakeElement("div");
-  analyticsViewerControls.className = "analytics-viewer-controls";
-  const analyticsFilterSelect = new FakeElement("select", "debug-analytics-viewer-filter");
-  analyticsFilterSelect.value = "all";
-  analyticsViewerControls.appendChild(analyticsFilterSelect);
-  const analyticsViewerBody = new FakeElement("tbody", "debug-analytics-viewer-body");
-  const placeholderRow = new FakeElement("tr");
-  placeholderRow.className = "analytics-empty-row";
-  const placeholderCell = new FakeElement("td");
-  placeholderCell.colSpan = 20;
-  placeholderCell.textContent = "No wave summaries yet - finish a wave to populate analytics.";
-  placeholderRow.appendChild(placeholderCell);
-  analyticsViewerBody.appendChild(placeholderRow);
-  const analyticsViewerTable = new FakeElement("table");
-  analyticsViewerTable.appendChild(analyticsViewerBody);
-  analyticsViewerContainer.appendChild(analyticsViewerControls);
-  analyticsViewerContainer.appendChild(analyticsViewerTable);
-
-  const summaryFields = ["accuracy", "combo", "breaches", "gold"];
-  for (const field of summaryFields) {
-    const item = new FakeElement("li");
-    item.dataset.field = field;
-    summaryStats.appendChild(item);
-  }
-  summaryContainer.appendChild(summaryStats);
-  summaryContainer.appendChild(summaryContinue);
-  summaryContainer.appendChild(summaryReplay);
-
-  const scorecardFields = [
-    "wave",
-    "accuracy",
-    "combo",
-    "session-combo",
-    "defeated",
-    "breaches",
-    "perfect-words",
-    "reaction",
-    "dps",
-    "dps-turret",
-    "dps-typing",
-    "damage-turret",
-    "damage-typing",
-    "shield-breaks",
-    "repairs",
-    "repair-health",
-    "repair-gold",
-    "bonus-gold",
-    "castle-bonus",
-    "gold"
-  ];
-  for (const field of scorecardFields) {
-    const item = new FakeElement("li");
-    item.dataset.field = field;
-    waveScorecardStats.appendChild(item);
-  }
-  waveScorecard.appendChild(waveScorecardStats);
-  waveScorecard.appendChild(waveScorecardContinue);
-
-  register("castle-health-bar", healthBar);
-  register("resource-gold", goldLabel);
-  register("resource-delta", goldDelta);
-  register("active-word", activeWord);
-  register("typing-input", typingInput);
-  register("upgrade-panel", upgradePanel);
-  register("combo-stats", comboLabel);
-  register("combo-accuracy-delta", comboAccuracyDelta);
-  register("battle-log", logList);
-  register("wave-preview-list", wavePreview);
-  register("wave-preview-hint", wavePreviewHint);
-  register("tutorial-banner", tutorialBanner);
-  register("tutorial-summary", summaryContainer);
-  register("tutorial-summary-stats", summaryStats);
-  register("tutorial-summary-continue", summaryContinue);
-  register("tutorial-summary-replay", summaryReplay);
-  register("pause-button", pauseButton);
-  register("options-overlay", optionsOverlay);
-  register("options-overlay-close", optionsClose);
-  register("options-resume-button", optionsResume);
-  register("options-sound-toggle", soundToggle);
-  register("options-diagnostics-toggle", diagnosticsToggle);
-  register("options-checkered-bg-toggle", checkeredBackgroundToggle);
-  register("options-reduced-motion-toggle", reducedMotionToggle);
-  register("options-readable-font-toggle", readableFontToggle);
-  register("options-dyslexia-font-toggle", dyslexiaFontToggle);
-  register("options-colorblind-toggle", colorblindPaletteToggle);
-  register("options-sound-volume", soundVolumeSlider);
-  register("options-sound-volume-value", soundVolumeValue);
-  register("options-sound-intensity", soundIntensitySlider);
-  register("options-sound-intensity-value", soundIntensityValue);
-  register("options-telemetry-toggle-wrapper", telemetryToggleWrapper);
-  register("options-telemetry-toggle", telemetryToggle);
-  register("options-font-scale", fontScaleSelect);
-  register("options-analytics-export", analyticsExportButton);
-  register("options-castle-bonus", optionsCastleBonus);
-  register("options-castle-benefits", optionsCastleBenefits);
-  register("options-castle-passives", optionsCastlePassives);
-  register("wave-scorecard", waveScorecard);
-  register("wave-scorecard-stats", waveScorecardStats);
-  register("wave-scorecard-continue", waveScorecardContinue);
-  register("debug-analytics-viewer", analyticsViewerContainer);
-  register("debug-analytics-viewer-filter", analyticsFilterSelect);
-  register("debug-analytics-viewer-body", analyticsViewerBody);
-
-  global.document = documentStub;
-  global.window = {
-    setTimeout: () => 0,
-    clearTimeout: () => {}
-  };
+  const healthBar = get("castle-health-bar");
+  const goldLabel = get("resource-gold");
+  const goldDelta = get("resource-delta");
+  const activeWord = get("active-word");
+  const typingInput = get("typing-input");
+  const upgradePanel = get("upgrade-panel");
+  const comboLabel = get("combo-stats");
+  const comboAccuracyDelta = get("combo-accuracy-delta");
+  const logList = get("battle-log");
+  const wavePreview = get("wave-preview-list");
+  const wavePreviewHint = get("wave-preview-hint");
+  const tutorialBanner = get("tutorial-banner");
+  const summaryContainer = get("tutorial-summary");
+  const summaryStats = get("tutorial-summary-stats");
+  const summaryContinue = get("tutorial-summary-continue");
+  const summaryReplay = get("tutorial-summary-replay");
+  const optionsCastleBonus = get("options-castle-bonus");
+  const optionsCastleBenefits = get("options-castle-benefits");
+  const optionsCastlePassives = get("options-castle-passives");
+  const soundToggle = get("options-sound-toggle");
+  const soundVolumeSlider = get("options-sound-volume");
+  const soundVolumeValue = get("options-sound-volume-value");
+  const soundIntensitySlider = get("options-sound-intensity");
+  const soundIntensityValue = get("options-sound-intensity-value");
+  const diagnosticsToggle = get("options-diagnostics-toggle");
+  const reducedMotionToggle = get("options-reduced-motion-toggle");
+  const checkeredBackgroundToggle = get("options-checkered-bg-toggle");
+  const readableFontToggle = get("options-readable-font-toggle");
+  const dyslexiaFontToggle = get("options-dyslexia-font-toggle");
+  const colorblindPaletteToggle = get("options-colorblind-toggle");
+  const telemetryToggle = get("options-telemetry-toggle");
+  const telemetryToggleWrapper = get("options-telemetry-toggle-wrapper");
+  const fontScaleSelect = get("options-font-scale");
+  const optionsOverlay = get("options-overlay");
+  const optionsResume = get("options-resume-button");
+  const analyticsExportButton = get("options-analytics-export");
+  const analyticsViewerContainer = get("debug-analytics-viewer");
+  const analyticsViewerBody = get("debug-analytics-viewer-body");
+  const analyticsFilterSelect = get("debug-analytics-viewer-filter");
+  const waveScorecard = get("wave-scorecard");
+  const waveScorecardStats = get("wave-scorecard-stats");
+  const waveScorecardContinue = get("wave-scorecard-continue");
 
   let scorecardContinues = 0;
   const reducedMotionToggleEvents = [];
@@ -494,62 +197,18 @@ const initializeHud = () => {
     }
   );
 
+  const comboAccuracyDeltaRef = hud.comboAccuracyDelta ?? comboAccuracyDelta;
+  const castleGoldEventsRef =
+    hud.castleGoldEvents ??
+    findByClass(upgradePanel, "castle-gold-events") ??
+    document.createElement("ul");
+  const optionsCastlePassivesRef = hud.optionsCastlePassives ?? optionsCastlePassives;
+
   const castleStatus =
-    findByClass(upgradePanel, "castle-status") ?? new FakeElement("span", "castle-status");
-  const castleGoldEvents =
-    findByClass(upgradePanel, "castle-gold-events") ?? new FakeElement("ul", "castle-gold-events");
+    findByClass(upgradePanel, "castle-status") ?? document.createElement("span");
 
   const cleanup = () => {
-    if (originalDocument !== undefined) {
-      global.document = originalDocument;
-    } else {
-      delete global.document;
-    }
-    if (originalWindow !== undefined) {
-      global.window = originalWindow;
-    } else {
-      delete global.window;
-    }
-    if (originalHTMLElement !== undefined) {
-      global.HTMLElement = originalHTMLElement;
-    } else {
-      delete global.HTMLElement;
-    }
-    if (originalHTMLDivElement !== undefined) {
-      global.HTMLDivElement = originalHTMLDivElement;
-    } else {
-      delete global.HTMLDivElement;
-    }
-    if (originalHTMLButtonElement !== undefined) {
-      global.HTMLButtonElement = originalHTMLButtonElement;
-    } else {
-      delete global.HTMLButtonElement;
-    }
-    if (originalHTMLInputElement !== undefined) {
-      global.HTMLInputElement = originalHTMLInputElement;
-    } else {
-      delete global.HTMLInputElement;
-    }
-    if (originalHTMLTextAreaElement !== undefined) {
-      global.HTMLTextAreaElement = originalHTMLTextAreaElement;
-    } else {
-      delete global.HTMLTextAreaElement;
-    }
-    if (originalHTMLSelectElement !== undefined) {
-      global.HTMLSelectElement = originalHTMLSelectElement;
-    } else {
-      delete global.HTMLSelectElement;
-    }
-    if (originalHTMLUListElement !== undefined) {
-      global.HTMLUListElement = originalHTMLUListElement;
-    } else {
-      delete global.HTMLUListElement;
-    }
-    if (originalHTMLTableSectionElement !== undefined) {
-      global.HTMLTableSectionElement = originalHTMLTableSectionElement;
-    } else {
-      delete global.HTMLTableSectionElement;
-    }
+    Object.assign(global, originalGlobals);
   };
 
   return {
@@ -560,7 +219,7 @@ const initializeHud = () => {
       wavePreview,
       wavePreviewHint,
       comboLabel,
-      comboAccuracyDelta,
+      comboAccuracyDelta: comboAccuracyDeltaRef,
       goldDelta,
       logList,
       tutorialBanner,
@@ -586,9 +245,9 @@ const initializeHud = () => {
       fontScaleSelect,
       optionsCastleBonus,
       optionsCastleBenefits,
-      optionsCastlePassives,
+      optionsCastlePassives: optionsCastlePassivesRef,
       castleStatus,
-      castleGoldEvents,
+      castleGoldEvents: castleGoldEventsRef,
       waveScorecard,
       waveScorecardStats,
       waveScorecardContinue,
@@ -614,6 +273,49 @@ const initializeHud = () => {
     },
     getAnalyticsExportEvents: () => [...analyticsExportEvents]
   };
+};
+
+const toChildrenArray = (node) => Array.from(node?.children ?? []);
+
+const findDescendantByClass = (root, className) => {
+  if (!root?.querySelector) return null;
+  return root.querySelector(`.${className}`);
+};
+
+const dispatchDomEvent = (node, type) => {
+  if (!node) return;
+  const EventCtor = node.ownerDocument?.defaultView?.Event ?? global.window?.Event;
+  if (!EventCtor) return;
+  node.dispatchEvent(new EventCtor(type, { bubbles: true }));
+};
+
+const setSelectValueForElement = (select, value) => {
+  if (!select) return;
+  const options = Array.from(select.options ?? []);
+  let matched = false;
+  for (const option of options) {
+    const isMatch = option.value === value;
+    option.selected = isMatch;
+    if (isMatch) {
+      matched = true;
+    }
+  }
+  try {
+    select.value = value;
+  } catch {
+    select.setAttribute?.("value", value);
+  }
+  if (!matched && options.length === 0) {
+    select.setAttribute?.("value", value);
+  }
+};
+
+const readSelectValue = (select) => {
+  if (!select) return undefined;
+  const options = Array.from(select.options ?? []);
+  const selected = options.find((option) => option.selected);
+  if (selected) return selected.value;
+  return select.getAttribute?.("value") ?? select.value;
 };
 
 const buildInitialState = () => {
@@ -717,6 +419,9 @@ test("HudView highlights combos and accuracy delta during warnings", () => {
   const baseState = buildInitialState();
   baseState.typing.accuracy = 0.96;
   hud.update(baseState, []);
+  const resolvedComboEl = global.document?.getElementById
+    ? global.document.getElementById("combo-accuracy-delta")
+    : null;
   assert.equal(wavePreview.children.length, 1);
   assert.equal(wavePreview.children[0].textContent, "All clear.");
   assert.equal(comboLabel.dataset.active, "false");
@@ -912,32 +617,29 @@ test("HudView displays next castle upgrade benefits", () => {
   const baseState = buildInitialState();
   hud.update(baseState, []);
 
-  const castleSection = elements.upgradePanel.children.find(
-    (child) => child.className === "castle-upgrade"
-  );
+  const castleSection = findDescendantByClass(elements.upgradePanel, "castle-upgrade");
   assert.ok(castleSection, "expected castle upgrade container");
-  const castleButtons = castleSection.children.filter((child) => child.tag === "button");
-  const castleButton = castleButtons.find((child) => child.className !== "castle-repair");
-  const repairButton = castleButtons.find((child) => child.className === "castle-repair");
+  const castleButtons = Array.from(castleSection.querySelectorAll("button"));
+  const castleButton = castleButtons.find((child) => !child.classList.contains("castle-repair"));
+  const repairButton = castleButtons.find((child) => child.classList.contains("castle-repair"));
   assert.ok(castleButton, "expected castle upgrade button");
   assert.ok(repairButton, "expected castle repair button");
-  const benefitsList = castleSection.children.find(
-    (child) => child.className === "castle-benefits"
-  );
+  const benefitsList = findDescendantByClass(castleSection, "castle-benefits");
   assert.ok(benefitsList, "expected castle benefits list");
   assert.equal(benefitsList.dataset.visible, "true");
   assert.equal(benefitsList.hidden, false);
-  const benefitTexts = benefitsList.children.map((child) => child.textContent ?? "");
+  const benefitTexts = Array.from(benefitsList.children).map((child) => child.textContent ?? "");
   assert.ok(
     benefitTexts.some((text) => text.includes("HP")),
     "expected HP benefit"
   );
   const optionsBenefits = elements.optionsCastleBenefits;
   assert.ok(optionsBenefits, "expected options overlay benefits list");
-  assert.equal(optionsBenefits.children.length, benefitTexts.length);
+  const optionBenefits = Array.from(optionsBenefits.children);
+  assert.equal(optionBenefits.length, benefitTexts.length);
   for (const line of benefitTexts) {
     assert.ok(
-      optionsBenefits.children.some((child) => (child.textContent ?? "").includes(line)),
+      optionBenefits.some((child) => (child.textContent ?? "").includes(line)),
       `expected options overlay to include benefit "${line}"`
     );
   }
@@ -970,8 +672,9 @@ test("HudView displays next castle upgrade benefits", () => {
     "expected max level aria-label to announce castle is at maximum level"
   );
   assert.equal(repairButton.disabled, true);
+  const maxOptionLines = Array.from(optionsBenefits.children);
   assert.ok(
-    (optionsBenefits.children[0]?.textContent ?? "").toLowerCase().includes("maximum level"),
+    (maxOptionLines[0]?.textContent ?? "").toLowerCase().includes("maximum level"),
     "options overlay should mention maximum level when no upgrades remain"
   );
 
@@ -1046,41 +749,27 @@ test("HudView turret priority controls reflect state and emit changes", () => {
 
   hud.update(baseState, []);
 
-  const findByClass = (node, targetClass) => {
-    if (!node || typeof node !== "object") return null;
-    if (node.className === targetClass) return node;
-    if (Array.isArray(node.children)) {
-      for (const child of node.children) {
-        const match = findByClass(child, targetClass);
-        if (match) return match;
-      }
-    }
-    return null;
-  };
-
-  const slotElements = upgradePanel.children.filter(
-    (child) => child && child.className === "turret-slot"
-  );
+  const slotElements = Array.from(upgradePanel.querySelectorAll(".turret-slot"));
   const [firstSlot, secondSlot, thirdSlot] = slotElements;
 
-  const firstPrioritySelect = findByClass(firstSlot, "slot-priority-select");
-  const secondPrioritySelect = findByClass(secondSlot, "slot-priority-select");
-  const thirdPriorityContainer = findByClass(thirdSlot, "slot-priority");
-  const thirdPrioritySelect = findByClass(thirdSlot, "slot-priority-select");
+  const firstPrioritySelect = firstSlot?.querySelector(".slot-priority-select");
+  const secondPrioritySelect = secondSlot?.querySelector(".slot-priority-select");
+  const thirdPriorityContainer = findDescendantByClass(thirdSlot, "slot-priority");
+  const thirdPrioritySelect = thirdSlot?.querySelector(".slot-priority-select");
 
-  assert.ok(firstPrioritySelect, "expected priority select for first slot");
-  assert.equal(firstPrioritySelect.value, "weakest");
-  const firstStatus = findByClass(firstSlot, "slot-status");
+  assert.ok(firstPrioritySelect instanceof window.HTMLSelectElement, "expected priority select for first slot");
+  assert.equal(readSelectValue(firstPrioritySelect), "weakest");
+  const firstStatus = findDescendantByClass(firstSlot, "slot-status");
   assert.ok(firstStatus?.textContent.includes("Weakest"));
 
-  assert.ok(secondPrioritySelect, "expected priority select for second slot");
-  assert.equal(secondPrioritySelect.value, "strongest");
+  assert.ok(secondPrioritySelect instanceof window.HTMLSelectElement, "expected priority select for second slot");
+  assert.equal(readSelectValue(secondPrioritySelect), "strongest");
 
   assert.ok(thirdPriorityContainer?.dataset.disabled === "true");
-  assert.equal(thirdPrioritySelect?.disabled, true);
+  assert.equal(thirdPrioritySelect instanceof window.HTMLSelectElement ? thirdPrioritySelect.disabled : true, true);
 
-  firstPrioritySelect.value = "strongest";
-  firstPrioritySelect.onchange?.();
+  setSelectValueForElement(firstPrioritySelect, "strongest");
+  dispatchDomEvent(firstPrioritySelect, "change");
 
   assert.deepEqual(getPriorityEvents(), [{ slotId: "slot-1", priority: "strongest" }]);
 
@@ -1095,20 +784,6 @@ test("HudView turret presets render summaries and emit callbacks", () => {
     getTurretPresetApplyEvents,
     getTurretPresetClearEvents
   } = elements;
-
-  const findByClass = (node, targetClass) => {
-    if (!node || typeof node !== "object") return null;
-    if (node.className === targetClass) {
-      return node;
-    }
-    if (Array.isArray(node.children)) {
-      for (const child of node.children) {
-        const match = findByClass(child, targetClass);
-        if (match) return match;
-      }
-    }
-    return null;
-  };
 
   const presets = [
     {
@@ -1143,14 +818,14 @@ test("HudView turret presets render summaries and emit callbacks", () => {
   try {
     hud.updateTurretPresets(presets);
 
-    const presetContainer = findByClass(upgradePanel, "turret-presets");
+    const presetContainer = findDescendantByClass(upgradePanel, "turret-presets");
     assert.ok(presetContainer, "expected presets container");
-    const presetList = findByClass(presetContainer, "turret-presets-list");
+    const presetList = findDescendantByClass(presetContainer, "turret-presets-list");
     assert.ok(presetList, "expected presets list container");
-    const presetItems = presetList.children.filter((child) => child?.className === "turret-preset");
+    const presetItems = Array.from(presetList.querySelectorAll(".turret-preset"));
     const presetById = Object.fromEntries(
       presetItems
-        .filter((item) => item?.dataset?.presetId)
+        .filter((item) => item.dataset?.presetId)
         .map((item) => [item.dataset.presetId, item])
     );
 
@@ -1158,27 +833,27 @@ test("HudView turret presets render summaries and emit callbacks", () => {
     const secondPreset = presetById["preset-b"];
     assert.ok(firstPreset, "expected Preset A entry");
     assert.ok(secondPreset, "expected Preset B entry");
-    const firstSummary = findByClass(firstPreset, "turret-preset-summary");
-    const firstStatus = findByClass(firstPreset, "turret-preset-status");
-    const firstApply = findByClass(firstPreset, "turret-preset-apply");
-    const firstClear = findByClass(firstPreset, "turret-preset-clear");
+    const firstSummary = findDescendantByClass(firstPreset, "turret-preset-summary");
+    const firstStatus = findDescendantByClass(firstPreset, "turret-preset-status");
+    const firstApply = findDescendantByClass(firstPreset, "turret-preset-apply");
+    const firstClear = findDescendantByClass(firstPreset, "turret-preset-clear");
     assert.ok(firstSummary);
     assert.equal(firstSummary.textContent, "S1 Arcane Focus Lv2 (Weakest) • S2 Flame Thrower Lv1");
     assert.equal(firstStatus?.textContent, "Cost 500g");
     assert.equal(firstPreset.dataset.active, "true");
     assert.equal(firstPreset.dataset.saved, "true");
     assert.equal(firstApply?.disabled, false);
-    firstApply?.onclick?.({ preventDefault() {} });
+    dispatchDomEvent(firstApply, "click");
     assert.deepEqual(getTurretPresetApplyEvents(), ["preset-a"]);
-    firstClear?.onclick?.({ preventDefault() {} });
+    dispatchDomEvent(firstClear, "click");
     assert.deepEqual(getTurretPresetClearEvents(), ["preset-a"]);
 
-    const secondSummary = findByClass(secondPreset, "turret-preset-summary");
-    const secondApply = findByClass(secondPreset, "turret-preset-apply");
-    const secondSave = findByClass(secondPreset, "turret-preset-save");
+    const secondSummary = findDescendantByClass(secondPreset, "turret-preset-summary");
+    const secondApply = findDescendantByClass(secondPreset, "turret-preset-apply");
+    const secondSave = findDescendantByClass(secondPreset, "turret-preset-save");
     assert.equal(secondSummary?.dataset.empty, "true");
     assert.equal(secondApply?.disabled, true);
-    secondSave?.onclick?.({ preventDefault() {} });
+    dispatchDomEvent(secondSave, "click");
     assert.deepEqual(getTurretPresetSaveEvents(), ["preset-b"]);
   } finally {
     cleanup();
@@ -1199,13 +874,10 @@ test("turret hover emits range preview context", () => {
 
     hud.update(state, []);
 
-    const slotElements = elements.upgradePanel.children.filter(
-      (child) => child && child.className === "turret-slot"
-    );
-    const firstSlot = slotElements[0];
+    const firstSlot = elements.upgradePanel.querySelector(".turret-slot");
     assert.ok(firstSlot, "expected first slot element");
 
-    firstSlot.onmouseenter?.();
+    dispatchDomEvent(firstSlot, "mouseenter");
     const hoverEvents = elements.getTurretHoverEvents();
     assert.ok(hoverEvents.length > 0, "hover event should be recorded");
     const { slotId, context } = hoverEvents[hoverEvents.length - 1];
@@ -1213,7 +885,7 @@ test("turret hover emits range preview context", () => {
     assert.equal(context?.typeId, "arrow");
     assert.equal(context?.level, 2);
 
-    firstSlot.onmouseleave?.();
+    dispatchDomEvent(firstSlot, "mouseleave");
     const clearedEvents = elements.getTurretHoverEvents();
     const lastEvent = clearedEvents[clearedEvents.length - 1];
     assert.equal(lastEvent.slotId, null);
@@ -1375,6 +1047,18 @@ test("HudView options overlay syncs controls and visibility", () => {
     getTelemetryToggleEvents,
     getFontScaleEvents
   } = elements;
+  assert.ok(hud.optionsOverlay?.fontScaleSelect, "font scale select is wired");
+  assert.equal(typeof hud.callbacks.onHudFontScaleChange, "function");
+  const recordedFontScaleCallbacks = [];
+  const originalFontScaleCallback = hud.callbacks.onHudFontScaleChange;
+  hud.callbacks.onHudFontScaleChange = (value) => {
+    recordedFontScaleCallbacks.push(value);
+    originalFontScaleCallback?.(value);
+  };
+  const fontScaleChangeLogs = [];
+  fontScaleSelect.addEventListener("change", () => {
+    fontScaleChangeLogs.push(readSelectValue(fontScaleSelect) ?? "");
+  });
 
   hud.syncOptionsOverlayState({
     soundEnabled: false,
@@ -1407,7 +1091,7 @@ test("HudView options overlay syncs controls and visibility", () => {
   assert.equal(telemetryToggle.checked, false);
   assert.equal(telemetryToggle.disabled, true);
   assert.equal(telemetryToggleWrapper.style.display, "none");
-  assert.equal(fontScaleSelect.value, "1");
+  assert.equal(readSelectValue(fontScaleSelect), "1");
   assert.equal(hud.isOptionsOverlayVisible(), false);
 
   hud.syncOptionsOverlayState({
@@ -1456,42 +1140,45 @@ test("HudView options overlay syncs controls and visibility", () => {
   assert.equal(hud.isOptionsOverlayVisible(), true);
 
   reducedMotionToggle.checked = false;
-  reducedMotionToggle.onchange?.();
+  dispatchDomEvent(reducedMotionToggle, "change");
   assert.deepEqual(getReducedMotionToggleEvents(), [false]);
 
   checkeredBackgroundToggle.checked = true;
-  checkeredBackgroundToggle.onchange?.();
+  dispatchDomEvent(checkeredBackgroundToggle, "change");
   assert.deepEqual(getCheckeredBackgroundToggleEvents(), [true]);
 
   readableFontToggle.checked = true;
-  readableFontToggle.onchange?.();
+  dispatchDomEvent(readableFontToggle, "change");
   assert.deepEqual(getReadableFontToggleEvents(), [true]);
 
   assert.equal(dyslexiaFontToggle.checked, true);
   dyslexiaFontToggle.checked = false;
-  dyslexiaFontToggle.onchange?.();
+  dispatchDomEvent(dyslexiaFontToggle, "change");
   assert.deepEqual(getDyslexiaFontToggleEvents(), [false]);
 
   soundVolumeSlider.value = "0.6";
-  soundVolumeSlider.oninput?.();
+  dispatchDomEvent(soundVolumeSlider, "input");
   assert.deepEqual(getSoundVolumeEvents(), [0.6]);
   assert.equal(soundVolumeValue.textContent, "60%");
 
   soundIntensitySlider.value = "1.3";
-  soundIntensitySlider.oninput?.();
+  dispatchDomEvent(soundIntensitySlider, "input");
   assert.deepEqual(getSoundIntensityEvents(), [1.3]);
   assert.equal(soundIntensityValue.textContent, "130%");
 
   colorblindPaletteToggle.checked = true;
-  colorblindPaletteToggle.onchange?.();
+  dispatchDomEvent(colorblindPaletteToggle, "change");
   assert.deepEqual(getColorblindToggleEvents(), [true]);
 
   telemetryToggle.checked = false;
-  telemetryToggle.onchange?.();
+  dispatchDomEvent(telemetryToggle, "change");
   assert.deepEqual(getTelemetryToggleEvents(), [false]);
 
-  fontScaleSelect.value = "1.2";
-  fontScaleSelect.onchange?.();
+  setSelectValueForElement(fontScaleSelect, "1.2");
+  assert.equal(readSelectValue(fontScaleSelect), "1.2");
+  dispatchDomEvent(fontScaleSelect, "change");
+  assert.deepEqual(fontScaleChangeLogs, ["1.2"]);
+  assert.deepEqual(recordedFontScaleCallbacks, [1.2]);
   assert.deepEqual(getFontScaleEvents(), [1.2]);
 
   hud.hideOptionsOverlay();
@@ -1509,15 +1196,15 @@ test("HudView toggles analytics export availability", () => {
   assert.equal(analyticsExportButton.style.display, "none");
   assert.equal(analyticsExportButton.disabled, true);
   assert.equal(analyticsExportButton.getAttribute("aria-hidden"), "true");
-  assert.equal(analyticsExportButton.tabIndex, -1);
+  assert.equal(analyticsExportButton.getAttribute("tabindex"), "-1");
 
   hud.setAnalyticsExportEnabled(true);
   assert.equal(analyticsExportButton.style.display, "");
   assert.equal(analyticsExportButton.disabled, false);
   assert.equal(analyticsExportButton.getAttribute("aria-hidden"), "false");
-  assert.equal(analyticsExportButton.tabIndex, 0);
+  assert.equal(analyticsExportButton.getAttribute("tabindex"), "0");
 
-  analyticsExportButton.onclick?.({ preventDefault() {} });
+  dispatchDomEvent(analyticsExportButton, "click");
   assert.equal(getAnalyticsExportEvents().length, 1);
 
   cleanup();
@@ -1589,20 +1276,20 @@ test("HudView analytics viewer renders wave summaries with filters and summary r
   assert.equal(latestRow.children[0].textContent, "#6");
   assert.equal(latestRow.children[1].textContent, "Campaign");
 
-  analyticsFilterSelect.value = "last-5";
-  analyticsFilterSelect.onchange?.();
+  setSelectValueForElement(analyticsFilterSelect, "last-5");
+  dispatchDomEvent(analyticsFilterSelect, "change");
   assert.equal(analyticsViewerBody.children.length, 6);
 
-  analyticsFilterSelect.value = "all";
-  analyticsFilterSelect.onchange?.();
+  setSelectValueForElement(analyticsFilterSelect, "all");
+  dispatchDomEvent(analyticsFilterSelect, "change");
   assert.equal(analyticsViewerBody.children.length, 7);
 
-  analyticsFilterSelect.value = "breaches";
-  analyticsFilterSelect.onchange?.();
+  setSelectValueForElement(analyticsFilterSelect, "breaches");
+  dispatchDomEvent(analyticsFilterSelect, "change");
   assert.equal(analyticsViewerBody.children.length, 4);
 
-  analyticsFilterSelect.value = "shielded";
-  analyticsFilterSelect.onchange?.();
+  setSelectValueForElement(analyticsFilterSelect, "shielded");
+  dispatchDomEvent(analyticsFilterSelect, "change");
   assert.equal(analyticsViewerBody.children.length, 5);
 
   cleanup();
@@ -1640,72 +1327,49 @@ test("HudView wave scorecard renders summary details", () => {
   });
 
   assert.equal(waveScorecard.dataset.visible, "true");
-  const accuracyRow = waveScorecardStats.children.find(
-    (child) => child.dataset.field === "accuracy"
-  );
+  const statRows = Array.from(waveScorecardStats.children);
+  const accuracyRow = statRows.find((child) => child.dataset.field === "accuracy");
   assert.ok(accuracyRow, "expected accuracy row to exist");
   assert.equal(accuracyRow.children[0].textContent, "Accuracy");
   assert.equal(accuracyRow.children[1].textContent, "92.5%");
-  const turretDpsRow = waveScorecardStats.children.find(
-    (child) => child.dataset.field === "dps-turret"
-  );
+  const turretDpsRow = statRows.find((child) => child.dataset.field === "dps-turret");
   assert.ok(turretDpsRow, "expected turret DPS row to exist");
   assert.equal(turretDpsRow.children[1].textContent, "28.3");
-  const typingDamageRow = waveScorecardStats.children.find(
-    (child) => child.dataset.field === "damage-typing"
-  );
+  const typingDamageRow = statRows.find((child) => child.dataset.field === "damage-typing");
   assert.ok(typingDamageRow, "expected typing damage row to exist");
   assert.equal(typingDamageRow.children[1].textContent, "156");
-  const shieldBreakRow = waveScorecardStats.children.find(
-    (child) => child.dataset.field === "shield-breaks"
-  );
+  const shieldBreakRow = statRows.find((child) => child.dataset.field === "shield-breaks");
   assert.ok(shieldBreakRow, "expected shield break row to exist");
   assert.equal(shieldBreakRow.children[1].textContent, "3");
-  const perfectWordsRow = waveScorecardStats.children.find(
-    (child) => child.dataset.field === "perfect-words"
-  );
+  const perfectWordsRow = statRows.find((child) => child.dataset.field === "perfect-words");
   assert.ok(perfectWordsRow, "expected perfect words row to exist");
   assert.equal(perfectWordsRow.children[1].textContent, "5");
-  const reactionRow = waveScorecardStats.children.find(
-    (child) => child.dataset.field === "reaction"
-  );
+  const reactionRow = statRows.find((child) => child.dataset.field === "reaction");
   assert.ok(reactionRow, "expected reaction row to exist");
   assert.equal(reactionRow.children[1].textContent, "1.23s");
-  const repairCountRow = waveScorecardStats.children.find(
-    (child) => child.dataset.field === "repairs"
-  );
+  const repairCountRow = statRows.find((child) => child.dataset.field === "repairs");
   assert.ok(repairCountRow, "expected repairs row to exist");
   assert.equal(repairCountRow.children[1].textContent, "2");
-  const repairHealingRow = waveScorecardStats.children.find(
-    (child) => child.dataset.field === "repair-health"
-  );
+  const repairHealingRow = statRows.find((child) => child.dataset.field === "repair-health");
   assert.ok(repairHealingRow, "expected repair health row to exist");
   assert.equal(repairHealingRow.children[1].textContent, "180");
-  const repairGoldRow = waveScorecardStats.children.find(
-    (child) => child.dataset.field === "repair-gold"
-  );
+  const repairGoldRow = statRows.find((child) => child.dataset.field === "repair-gold");
   assert.ok(repairGoldRow, "expected repair gold row to exist");
   assert.equal(repairGoldRow.children[1].textContent, "150g");
-  const bonusGoldRow = waveScorecardStats.children.find(
-    (child) => child.dataset.field === "bonus-gold"
-  );
+  const bonusGoldRow = statRows.find((child) => child.dataset.field === "bonus-gold");
   assert.ok(bonusGoldRow, "expected bonus gold row to exist");
   assert.equal(bonusGoldRow.children[1].textContent, "+45g");
-  const castleBonusRow = waveScorecardStats.children.find(
-    (child) => child.dataset.field === "castle-bonus"
-  );
+  const castleBonusRow = statRows.find((child) => child.dataset.field === "castle-bonus");
   assert.ok(castleBonusRow, "expected castle bonus row to exist");
   assert.equal(castleBonusRow.children[1].textContent, "+12g");
-  const comboRow = waveScorecardStats.children.find((child) => child.dataset.field === "combo");
+  const comboRow = statRows.find((child) => child.dataset.field === "combo");
   assert.ok(comboRow, "expected combo row to exist");
   assert.equal(comboRow.children[1].textContent, "x6");
-  const sessionComboRow = waveScorecardStats.children.find(
-    (child) => child.dataset.field === "session-combo"
-  );
+  const sessionComboRow = statRows.find((child) => child.dataset.field === "session-combo");
   assert.ok(sessionComboRow, "expected session combo row to exist");
   assert.equal(sessionComboRow.children[1].textContent, "x9");
 
-  waveScorecardContinue.onclick?.();
+  dispatchDomEvent(waveScorecardContinue, "click");
   assert.equal(getScorecardContinueCount(), 1);
 
   hud.hideWaveScorecard();
