@@ -1328,7 +1328,10 @@ export class GameController {
     }
     const slider = controls.slider;
     const valueLabel = controls.valueLabel;
+    const intensitySlider = controls.intensitySlider;
+    const intensityValueLabel = controls.intensityValueLabel;
     const percent = Math.round(this.soundVolume * 100);
+    const intensityPercent = Math.round(this.audioIntensity * 100);
     const muted = !this.soundEnabled;
     if (slider) {
       const nextValue = this.soundVolume.toFixed(2);
@@ -1347,6 +1350,28 @@ export class GameController {
       } else {
         valueLabel.textContent = `${percent}%`;
         valueLabel.dataset.state = "enabled";
+      }
+    }
+    if (intensitySlider) {
+      const nextIntensityValue = this.audioIntensity.toFixed(2);
+      if (intensitySlider.value !== nextIntensityValue) {
+        intensitySlider.value = nextIntensityValue;
+      }
+      intensitySlider.disabled = muted;
+      intensitySlider.setAttribute("aria-disabled", muted ? "true" : "false");
+      intensitySlider.setAttribute("aria-valuenow", nextIntensityValue);
+      intensitySlider.setAttribute(
+        "aria-valuetext",
+        muted ? `Muted (${intensityPercent}%)` : `${intensityPercent}%`
+      );
+    }
+    if (intensityValueLabel) {
+      if (muted) {
+        intensityValueLabel.textContent = `Muted (${intensityPercent}%)`;
+        intensityValueLabel.dataset.state = "muted";
+      } else {
+        intensityValueLabel.textContent = `${intensityPercent}%`;
+        intensityValueLabel.dataset.state = "enabled";
       }
     }
   }
@@ -2167,6 +2192,8 @@ export class GameController {
     const sound = document.getElementById("debug-sound");
     const soundVolumeSlider = document.getElementById("debug-sound-volume");
     const soundVolumeValue = document.getElementById("debug-sound-volume-value");
+    const soundIntensitySlider = document.getElementById("debug-sound-intensity");
+    const soundIntensityValue = document.getElementById("debug-sound-intensity-value");
     const resetAnalytics = document.getElementById("debug-analytics-reset");
     const exportAnalytics = document.getElementById("debug-analytics-export");
     const analyticsViewerToggle = document.getElementById("debug-analytics-viewer-toggle");
@@ -2227,13 +2254,24 @@ export class GameController {
     if (soundVolumeSlider instanceof HTMLInputElement) {
       this.soundDebugControls = {
         slider: soundVolumeSlider,
-        valueLabel: soundVolumeValue instanceof HTMLElement ? soundVolumeValue : undefined
+        valueLabel: soundVolumeValue instanceof HTMLElement ? soundVolumeValue : undefined,
+        intensitySlider:
+          soundIntensitySlider instanceof HTMLInputElement ? soundIntensitySlider : undefined,
+        intensityValueLabel:
+          soundIntensityValue instanceof HTMLElement ? soundIntensityValue : undefined
       };
       soundVolumeSlider.addEventListener("input", () => {
         const value = Number.parseFloat(soundVolumeSlider.value);
         if (!Number.isFinite(value)) return;
         this.setSoundVolume(value);
       });
+      if (this.soundDebugControls.intensitySlider) {
+        this.soundDebugControls.intensitySlider.addEventListener("input", () => {
+          const value = Number.parseFloat(this.soundDebugControls!.intensitySlider!.value);
+          if (!Number.isFinite(value)) return;
+          this.setAudioIntensity(value);
+        });
+      }
     } else {
       this.soundDebugControls = null;
     }
