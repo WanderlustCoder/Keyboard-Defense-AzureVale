@@ -1,5 +1,5 @@
 export const PLAYER_SETTINGS_STORAGE_KEY = "keyboard-defense:player-settings";
-export const PLAYER_SETTINGS_VERSION = 11;
+export const PLAYER_SETTINGS_VERSION = 12;
 const DEFAULT_UPDATED_AT = "1970-01-01T00:00:00.000Z";
 const HUD_FONT_SCALE_MIN = 0.85;
 const HUD_FONT_SCALE_MAX = 1.3;
@@ -29,6 +29,9 @@ const BASE_DEFAULT_SETTINGS = {
     hudFontScale: 1,
     turretTargeting: {},
     turretLoadoutPresets: Object.create(null),
+    hudPassivesCollapsed: null,
+    hudGoldEventsCollapsed: null,
+    optionsPassivesCollapsed: null,
     updatedAt: DEFAULT_UPDATED_AT
 };
 export const defaultPlayerSettings = Object.freeze({
@@ -100,6 +103,9 @@ export function readPlayerSettings(storage) {
             : fallback.hudFontScale;
         const turretTargeting = normalizeTargetingMap(parsed.turretTargeting);
         const turretLoadoutPresets = normalizeLoadoutPresets(parsed.turretLoadoutPresets);
+        const hudPassivesCollapsed = parseCollapsePreference(parsed.hudPassivesCollapsed);
+        const hudGoldEventsCollapsed = parseCollapsePreference(parsed.hudGoldEventsCollapsed);
+        const optionsPassivesCollapsed = parseCollapsePreference(parsed.optionsPassivesCollapsed);
         const updatedAt = typeof parsed.updatedAt === "string" && parsed.updatedAt.length > 0
             ? parsed.updatedAt
             : fallback.updatedAt;
@@ -119,6 +125,9 @@ export function readPlayerSettings(storage) {
             hudFontScale,
             turretTargeting,
             turretLoadoutPresets,
+            hudPassivesCollapsed,
+            hudGoldEventsCollapsed,
+            optionsPassivesCollapsed,
             updatedAt
         };
     }
@@ -175,6 +184,9 @@ export function withPatchedPlayerSettings(current, patch) {
         turretLoadoutPresets: patch.turretLoadoutPresets !== undefined
             ? normalizeLoadoutPresets(patch.turretLoadoutPresets)
             : cloneLoadoutPresets(current.turretLoadoutPresets),
+        hudPassivesCollapsed: mergeCollapsePreference(patch.hudPassivesCollapsed, current.hudPassivesCollapsed),
+        hudGoldEventsCollapsed: mergeCollapsePreference(patch.hudGoldEventsCollapsed, current.hudGoldEventsCollapsed),
+        optionsPassivesCollapsed: mergeCollapsePreference(patch.optionsPassivesCollapsed, current.optionsPassivesCollapsed),
         updatedAt: new Date().toISOString()
     };
 }
@@ -331,6 +343,19 @@ function normalizeHudFontScale(value) {
     }
     const clamped = Math.min(HUD_FONT_SCALE_MAX, Math.max(HUD_FONT_SCALE_MIN, value));
     return Math.round(clamped * 100) / 100;
+}
+function parseCollapsePreference(value) {
+    if (typeof value === "boolean")
+        return value;
+    if (value === null)
+        return null;
+    return null;
+}
+function mergeCollapsePreference(patchValue, currentValue) {
+    if (typeof patchValue === "boolean" || patchValue === null) {
+        return patchValue;
+    }
+    return currentValue ?? null;
 }
 function normalizeSoundVolume(value) {
     if (typeof value !== "number" || !Number.isFinite(value)) {

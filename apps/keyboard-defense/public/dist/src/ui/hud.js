@@ -57,7 +57,7 @@ export class HudView {
     optionsPassivesToggle;
     optionsPassivesBody;
     optionsPassivesCollapsed = false;
-    optionsPassivesPreferredCollapsed = false;
+    optionsPassivesDefaultCollapsed = false;
     wavePreviewHint;
     wavePreviewHintMessage = DEFAULT_WAVE_PREVIEW_HINT;
     optionsOverlay;
@@ -248,15 +248,13 @@ export class HudView {
                 if (passivesSummary instanceof HTMLElement) {
                     this.optionsPassivesSummary = passivesSummary;
                 }
+                this.optionsPassivesDefaultCollapsed = this.prefersCondensedHudLists();
+                this.optionsPassivesCollapsed = this.optionsPassivesDefaultCollapsed;
                 const passivesToggle = document.getElementById("options-passives-toggle");
                 if (passivesToggle instanceof HTMLButtonElement) {
                     this.optionsPassivesToggle = passivesToggle;
-                    this.optionsPassivesPreferredCollapsed = this.prefersCondensedHudLists();
-                    this.optionsPassivesCollapsed = this.optionsPassivesPreferredCollapsed;
                     passivesToggle.addEventListener("click", () => {
-                        const nextState = !this.optionsPassivesCollapsed;
-                        this.optionsPassivesPreferredCollapsed = nextState;
-                        this.setOptionsPassivesCollapsed(nextState);
+                        this.setOptionsPassivesCollapsed(!this.optionsPassivesCollapsed);
                     });
                 }
                 const castlePassivesList = document.getElementById("options-castle-passives");
@@ -264,7 +262,7 @@ export class HudView {
                     this.optionsCastlePassives = castlePassivesList;
                     this.optionsCastlePassives.replaceChildren();
                     this.updateOptionsPassivesSummary("No passives");
-                    this.setOptionsPassivesCollapsed(this.optionsPassivesCollapsed);
+                    this.setOptionsPassivesCollapsed(this.optionsPassivesCollapsed, { silent: true });
                 }
                 else {
                     console.warn("Options castle passives element missing; passive summary disabled.");
@@ -437,14 +435,14 @@ export class HudView {
             listClass: "castle-passives",
             ariaLabel: "Active castle passive buffs",
             collapsedByDefault: prefersCondensedLists
-        });
+        }, "hud-passives");
         this.castlePassives = this.castlePassivesSection.list;
         this.castleGoldEventsSection = this.createCondensedSection({
             title: "Recent gold events",
             listClass: "castle-gold-events",
             ariaLabel: "Recent gold events",
             collapsedByDefault: prefersCondensedLists
-        });
+        }, "hud-gold-events");
         this.castleGoldEvents = this.castleGoldEventsSection.list;
         this.castleBenefits = document.createElement("ul");
         this.castleBenefits.className = "castle-benefits";
@@ -910,7 +908,7 @@ export class HudView {
         }
         const summary = passives.length === 1 ? "1 passive" : `${passives.length} passives`;
         this.updateOptionsPassivesSummary(summary);
-        this.setOptionsPassivesCollapsed(this.optionsPassivesPreferredCollapsed);
+        this.setOptionsPassivesCollapsed(this.optionsPassivesCollapsed, { silent: true });
     }
     formatCastlePassive(passive, options = {}) {
         const includeDelta = options.includeDelta ?? false;
@@ -969,7 +967,7 @@ export class HudView {
             this.optionsPassivesToggle.textContent = "Hide Active Passives";
         }
     }
-    setOptionsPassivesCollapsed(collapsed) {
+    setOptionsPassivesCollapsed(collapsed, options = {}) {
         if (!this.optionsCastlePassives) {
             this.optionsPassivesCollapsed = collapsed;
             return;
@@ -987,8 +985,13 @@ export class HudView {
             this.optionsPassivesToggle.setAttribute("aria-expanded", collapsed ? "false" : "true");
         }
         this.applyOptionsPassivesToggleLabel();
+        if (!options.silent) {
+            this.callbacks.onCollapsePreferenceChange?.({
+                optionsPassivesCollapsed: collapsed
+            });
+        }
     }
-    createCondensedSection(options) {
+    createCondensedSection(options, sectionId) {
         const container = document.createElement("div");
         container.className = "hud-condensed-section";
         const header = document.createElement("div");
@@ -1023,14 +1026,17 @@ export class HudView {
         };
         toggle.setAttribute("aria-controls", listId);
         toggle.addEventListener("click", () => {
-            this.setCondensedSectionCollapsed(section, !section.collapsed);
+            this.setCondensedSectionCollapsed(section, !section.collapsed, { sectionId });
         });
-        this.setCondensedSectionCollapsed(section, section.collapsed);
+        this.setCondensedSectionCollapsed(section, section.collapsed, {
+            silent: true,
+            sectionId
+        });
         this.updateCondensedSectionSummary(section, "");
         this.setCondensedSectionVisibility(section, false);
         return section;
     }
-    setCondensedSectionCollapsed(section, collapsed) {
+    setCondensedSectionCollapsed(section, collapsed, options = {}) {
         section.collapsed = collapsed;
         section.container.dataset.collapsed = collapsed ? "true" : "false";
         section.toggle.setAttribute("aria-expanded", collapsed ? "false" : "true");
@@ -1042,6 +1048,18 @@ export class HudView {
         }
         else {
             section.toggle.textContent = `Hide ${section.title}`;
+        }
+        if (!options.silent) {
+            const patch = {};
+            if (options.sectionId === "hud-passives") {
+                patch.hudCastlePassivesCollapsed = collapsed;
+            }
+            else if (options.sectionId === "hud-gold-events") {
+                patch.hudGoldEventsCollapsed = collapsed;
+            }
+            if (Object.keys(patch).length > 0) {
+                this.callbacks.onCollapsePreferenceChange?.(patch);
+            }
         }
     }
     updateCondensedSectionSummary(section, summary) {
@@ -1060,6 +1078,42 @@ export class HudView {
         }
         section.list.dataset.visible = visible ? "true" : "false";
         section.list.hidden = !visible;
+    }
+    applyCollapsePreferences(prefs, options = {}) {
+        const shouldFallback = options.fallbackToPreferred ?? false;
+        if (this.castlePassivesSection) {
+            const value = prefs.hudCastlePassivesCollapsed;
+            if (typeof value === "boolean") {
+                this.setCondensedSectionCollapsed(this.castlePassivesSection, value, {
+                    silent: options.silent,
+                    sectionId: "hud-passives"
+                });
+            }
+            else if (shouldFallback) {
+                this.setCondensedSectionCollapsed(this.castlePassivesSection, this.prefersCondensedHudLists(), { silent: true, sectionId: "hud-passives" });
+            }
+        }
+        if (this.castleGoldEventsSection) {
+            const value = prefs.hudGoldEventsCollapsed;
+            if (typeof value === "boolean") {
+                this.setCondensedSectionCollapsed(this.castleGoldEventsSection, value, {
+                    silent: options.silent,
+                    sectionId: "hud-gold-events"
+                });
+            }
+            else if (shouldFallback) {
+                this.setCondensedSectionCollapsed(this.castleGoldEventsSection, this.prefersCondensedHudLists(), { silent: true, sectionId: "hud-gold-events" });
+            }
+        }
+        if (this.optionsCastlePassives) {
+            const value = prefs.optionsPassivesCollapsed;
+            if (typeof value === "boolean") {
+                this.setOptionsPassivesCollapsed(value, { silent: options.silent });
+            }
+            else if (shouldFallback) {
+                this.setOptionsPassivesCollapsed(this.optionsPassivesDefaultCollapsed, { silent: true });
+            }
+        }
     }
     prefersCondensedHudLists() {
         if (typeof window === "undefined" || typeof window.matchMedia !== "function") {

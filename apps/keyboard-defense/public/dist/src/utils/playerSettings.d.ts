@@ -33,6 +33,9 @@ export interface PlayerSettings {
     hudFontScale: number;
     turretTargeting: TurretTargetingPreferences;
     turretLoadoutPresets: TurretLoadoutPresetMap;
+    hudPassivesCollapsed: boolean | null;
+    hudGoldEventsCollapsed: boolean | null;
+    optionsPassivesCollapsed: boolean | null;
     updatedAt: string;
 }
 export type PlayerSettingsPatch = Partial<Omit<PlayerSettings, "version" | "updatedAt">>;

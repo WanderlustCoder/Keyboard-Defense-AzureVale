@@ -74,6 +74,9 @@ const initializeHud = () => {
   const optionsCastleBonus = get("options-castle-bonus");
   const optionsCastleBenefits = get("options-castle-benefits");
   const optionsCastlePassives = get("options-castle-passives");
+  const optionsPassivesSection = get("options-passives-section");
+  const optionsPassivesSummary = get("options-passives-summary");
+  const optionsPassivesToggle = get("options-passives-toggle");
   const soundToggle = get("options-sound-toggle");
   const soundVolumeSlider = get("options-sound-volume");
   const soundVolumeValue = get("options-sound-volume-value");
@@ -114,6 +117,7 @@ const initializeHud = () => {
   const turretPresetSaveEvents = [];
   const turretPresetApplyEvents = [];
   const turretPresetClearEvents = [];
+  const collapseEvents = [];
 
   const hud = new HudView(
     defaultConfig,
@@ -193,7 +197,8 @@ const initializeHud = () => {
       onColorblindPaletteToggle: (enabled) => colorblindToggleEvents.push(enabled),
       onTelemetryToggle: (enabled) => telemetryToggleEvents.push(enabled),
       onAnalyticsExport: () => analyticsExportEvents.push(true),
-      onHudFontScaleChange: (scale) => fontScaleChangeEvents.push(scale)
+      onHudFontScaleChange: (scale) => fontScaleChangeEvents.push(scale),
+      onCollapsePreferenceChange: (prefs) => collapseEvents.push({ ...prefs })
     }
   );
 
@@ -206,6 +211,8 @@ const initializeHud = () => {
 
   const castleStatus =
     findByClass(upgradePanel, "castle-status") ?? document.createElement("span");
+  const castlePassivesList =
+    findByClass(upgradePanel, "castle-passives") ?? document.createElement("ul");
 
   const cleanup = () => {
     Object.assign(global, originalGlobals);
@@ -246,7 +253,11 @@ const initializeHud = () => {
       optionsCastleBonus,
       optionsCastleBenefits,
       optionsCastlePassives: optionsCastlePassivesRef,
+      optionsPassivesSection,
+      optionsPassivesSummary,
+      optionsPassivesToggle,
       castleStatus,
+      castlePassivesList,
       castleGoldEvents: castleGoldEventsRef,
       waveScorecard,
       waveScorecardStats,
@@ -269,9 +280,11 @@ const initializeHud = () => {
       getTurretHoverEvents: () => [...turretHoverEvents],
       getTurretPresetSaveEvents: () => [...turretPresetSaveEvents],
       getTurretPresetApplyEvents: () => [...turretPresetApplyEvents],
-      getTurretPresetClearEvents: () => [...turretPresetClearEvents]
+      getTurretPresetClearEvents: () => [...turretPresetClearEvents],
+      getCollapseEvents: () => [...collapseEvents]
     },
-    getAnalyticsExportEvents: () => [...analyticsExportEvents]
+    getAnalyticsExportEvents: () => [...analyticsExportEvents],
+    getCollapseEvents: () => [...collapseEvents]
   };
 };
 
@@ -986,6 +999,75 @@ test("options overlay lists active castle passives", () => {
     assert.match(goldLabel, /\+5% gold/i, "gold passive text should include percent bonus");
     const armorLabel = armorItem?.children?.at?.(1)?.textContent ?? "";
     assert.match(armorLabel, /\+1 armor/i, "armor passive text should include armor bonus");
+    assert.equal(elements.optionsPassivesSummary?.textContent, "3 passives");
+  } finally {
+    cleanup();
+  }
+});
+
+test("options passive card collapses and notifies listeners", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  try {
+    const state = buildInitialState();
+    state.castle.passives = [{ id: "regen", total: 1.2, delta: 0.4 }];
+    hud.update(state, []);
+    const toggle = elements.optionsPassivesToggle;
+    assert.ok(toggle, "options passive toggle should exist");
+    assert.equal(elements.optionsCastlePassives.dataset.visible, "true");
+    dispatchDomEvent(toggle, "click");
+    assert.equal(elements.optionsCastlePassives.dataset.visible, "false");
+    assert.deepEqual(elements.getCollapseEvents().at(-1), { optionsPassivesCollapsed: true });
+    dispatchDomEvent(toggle, "click");
+    assert.equal(elements.optionsCastlePassives.dataset.visible, "true");
+  } finally {
+    cleanup();
+  }
+});
+
+test("HUD condensed cards emit collapse preferences", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  try {
+    const state = buildInitialState();
+    state.castle.passives = [{ id: "regen", total: 1.1, delta: 0.6 }];
+    state.analytics.goldEvents = [
+      { gold: 210, delta: 10, timestamp: 5 },
+      { gold: 250, delta: 40, timestamp: 15 }
+    ];
+    state.time = 20;
+    hud.update(state, []);
+    const toggles = elements.upgradePanel.querySelectorAll(".hud-condensed-toggle");
+    assert.ok(toggles.length >= 2, "expected condensed toggles for HUD cards");
+    dispatchDomEvent(toggles[0], "click");
+    assert.deepEqual(elements.getCollapseEvents().at(-1), { hudCastlePassivesCollapsed: true });
+    dispatchDomEvent(toggles[1], "click");
+    assert.deepEqual(elements.getCollapseEvents().at(-1), { hudGoldEventsCollapsed: true });
+  } finally {
+    cleanup();
+  }
+});
+
+test("HudView applyCollapsePreferences respects stored values", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  try {
+    const state = buildInitialState();
+    state.castle.passives = [{ id: "regen", total: 1.2, delta: 0.4 }];
+    state.analytics.goldEvents = [{ gold: 210, delta: 10, timestamp: 5 }];
+    state.time = 12;
+    hud.update(state, []);
+    hud.applyCollapsePreferences(
+      { hudCastlePassivesCollapsed: true, hudGoldEventsCollapsed: true, optionsPassivesCollapsed: true },
+      { silent: true }
+    );
+    assert.equal(elements.optionsCastlePassives.dataset.visible, "false");
+    const condensedContainers = elements.upgradePanel.querySelectorAll(".hud-condensed-section");
+    assert.equal(condensedContainers[0]?.dataset.collapsed, "true");
+    assert.equal(condensedContainers[1]?.dataset.collapsed, "true");
+    hud.applyCollapsePreferences(
+      { hudCastlePassivesCollapsed: false, optionsPassivesCollapsed: false },
+      { silent: true }
+    );
+    assert.equal(condensedContainers[0]?.dataset.collapsed, "false");
+    assert.equal(elements.optionsCastlePassives.dataset.visible, "true");
   } finally {
     cleanup();
   }

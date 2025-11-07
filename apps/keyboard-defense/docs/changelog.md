@@ -5,6 +5,11 @@
 - Passives/gold event lists no longer pop in/out abruptly—they hide behind the cards, which stabilizes layout shifts and makes HUD screenshots/tests deterministic again on narrow viewports.
 - The pause/options overlay mirrors the same condensed card for castle passives, with summary counts plus a toggle so touch players can collapse the passive stack without losing at-a-glance context.
 
+## Player Settings Collapse Preferences
+
+- Player settings schema bumped to `version 12` so we can persist each condensed card’s collapse state (HUD passives, HUD gold events, and the pause-menu passive card) across sessions.
+- When a player expands/collapses any of those cards, the preference now survives reloads on both desktop and touch layouts, while first-time sessions still respect the responsive default (collapsed on ≤768px).
+
 ## Responsive HUD Layout
 
 - HUD + canvas layout now reflows on viewports below 1024px: the canvas stacks above a grid-based HUD that auto-fits two columns on tablets and collapses to a single column on phones, preventing the sidebar from squishing or overflowing.
@@ -14,7 +19,7 @@
 ## Audio Intensity Slider
 
 - Added an Audio Intensity slider to the pause/options overlay so players can scale SFX energy between 50% and 150% without muting the game; the slider disables automatically when master audio is off and mirrors the live percent label.
-- Intensities persist via the upgraded player settings schema (`version 11`), propagate through `HudView.syncOptionsOverlayState`, and drive a new `SoundManager.setIntensity` multiplier so every procedural cue respects the preference.
+- Intensities persist via the upgraded player settings schema (`version 12`), propagate through `HudView.syncOptionsOverlayState`, and drive a new `SoundManager.setIntensity` multiplier so every procedural cue respects the preference.
 - Vitest HUD harness now covers the slider state/emit path, ensuring automation keeps watch over the comfort control and backlog #54 stays Done.
 
 ## Tooling Baseline Refresh

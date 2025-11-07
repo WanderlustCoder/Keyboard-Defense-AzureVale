@@ -259,7 +259,8 @@ export class GameController {
         onTurretPresetSave: (presetId) => this.handleTurretPresetSave(presetId),
         onTurretPresetApply: (presetId) => this.handleTurretPresetApply(presetId),
         onTurretPresetClear: (presetId) => this.handleTurretPresetClear(presetId),
-        onTurretHover: (slotId, context) => this.handleTurretHover(slotId, context)
+        onTurretHover: (slotId, context) => this.handleTurretHover(slotId, context),
+        onCollapsePreferenceChange: (prefs) => this.handleHudCollapsePreferenceChange(prefs)
       }
     );
     this.updateHudTurretAvailability();
@@ -942,7 +943,8 @@ export class GameController {
       available,
       enabled,
       endpoint: this.telemetryEndpoint ?? null,
-      queueSize: queue.length
+      queueSize: queue.length,
+      soundIntensity: this.audioIntensity
     };
     if (includeQueue) {
       exportData.queue = queue.map((event) => ({
@@ -1858,7 +1860,8 @@ export class GameController {
       ...snapshot,
       settings: {
         soundEnabled: this.soundEnabled,
-        soundVolume: this.soundVolume
+        soundVolume: this.soundVolume,
+        soundIntensity: this.audioIntensity
       },
       exportVersion: 2,
       telemetry: telemetryExport
@@ -1954,6 +1957,7 @@ export class GameController {
       breaches: analytics.sessionBreaches,
       soundEnabled: this.soundEnabled,
       soundVolume: this.soundVolume,
+      soundIntensity: this.audioIntensity,
       summaryCount: summaries.length,
       totalTurretDamage: analytics.totalTurretDamage,
       totalTypingDamage: analytics.totalTypingDamage,
@@ -2181,6 +2185,14 @@ export class GameController {
     }
     this.turretLoadoutPresets = this.cloneTurretPresetMap(stored.turretLoadoutPresets ?? {});
     this.syncTurretPresetsToHud(this.currentState);
+    this.hud.applyCollapsePreferences(
+      {
+        hudCastlePassivesCollapsed: stored.hudPassivesCollapsed ?? null,
+        hudGoldEventsCollapsed: stored.hudGoldEventsCollapsed ?? null,
+        optionsPassivesCollapsed: stored.optionsPassivesCollapsed ?? null
+      },
+      { silent: true, fallbackToPreferred: true }
+    );
     this.updateOptionsOverlayState();
   }
   attachDebugButtons() {
@@ -2495,6 +2507,21 @@ export class GameController {
     this.turretRangePreviewType = nextType;
     this.turretRangePreviewLevel = typeof nextLevel === "number" ? nextLevel : null;
     this.render();
+  }
+  handleHudCollapsePreferenceChange(preferences) {
+    const patch = {};
+    if (Object.prototype.hasOwnProperty.call(preferences, "hudCastlePassivesCollapsed")) {
+      patch.hudPassivesCollapsed = preferences.hudCastlePassivesCollapsed;
+    }
+    if (Object.prototype.hasOwnProperty.call(preferences, "hudGoldEventsCollapsed")) {
+      patch.hudGoldEventsCollapsed = preferences.hudGoldEventsCollapsed;
+    }
+    if (Object.prototype.hasOwnProperty.call(preferences, "optionsPassivesCollapsed")) {
+      patch.optionsPassivesCollapsed = preferences.optionsPassivesCollapsed;
+    }
+    if (Object.keys(patch).length > 0) {
+      this.persistPlayerSettings(patch);
+    }
   }
   presentTutorialSummary(summary) {
     this.pauseForTutorial();

@@ -50,6 +50,7 @@ export interface HudCallbacks {
     slotId: string | null,
     context?: { typeId?: TurretTypeId | null; level?: number | null }
   ) => void;
+  onCollapsePreferenceChange?: (prefs: HudCollapsePreferenceUpdate) => void;
 }
 
 interface SlotControls {
@@ -190,6 +191,14 @@ export interface WaveScorecardData {
 const DEFAULT_WAVE_PREVIEW_HINT =
   "Upcoming enemies appear here—use the preview to plan your defenses.";
 
+type HudCondensedSectionId = "hud-passives" | "hud-gold-events";
+
+export type HudCollapsePreferenceUpdate = {
+  hudCastlePassivesCollapsed?: boolean | null;
+  hudGoldEventsCollapsed?: boolean | null;
+  optionsPassivesCollapsed?: boolean | null;
+};
+
 interface CondensedSection {
   container: HTMLDivElement;
   body: HTMLDivElement;
@@ -258,7 +267,7 @@ export class HudView {
   private optionsPassivesToggle?: HTMLButtonElement;
   private optionsPassivesBody?: HTMLElement;
   private optionsPassivesCollapsed = false;
-  private optionsPassivesPreferredCollapsed = false;
+  private optionsPassivesDefaultCollapsed = false;
   private wavePreviewHint?: HTMLElement;
   private wavePreviewHintMessage = DEFAULT_WAVE_PREVIEW_HINT;
   private readonly optionsOverlay?: {
@@ -528,15 +537,13 @@ export class HudView {
         if (passivesSummary instanceof HTMLElement) {
           this.optionsPassivesSummary = passivesSummary;
         }
+        this.optionsPassivesDefaultCollapsed = this.prefersCondensedHudLists();
+        this.optionsPassivesCollapsed = this.optionsPassivesDefaultCollapsed;
         const passivesToggle = document.getElementById("options-passives-toggle");
         if (passivesToggle instanceof HTMLButtonElement) {
           this.optionsPassivesToggle = passivesToggle;
-          this.optionsPassivesPreferredCollapsed = this.prefersCondensedHudLists();
-          this.optionsPassivesCollapsed = this.optionsPassivesPreferredCollapsed;
           passivesToggle.addEventListener("click", () => {
-            const nextState = !this.optionsPassivesCollapsed;
-            this.optionsPassivesPreferredCollapsed = nextState;
-            this.setOptionsPassivesCollapsed(nextState);
+            this.setOptionsPassivesCollapsed(!this.optionsPassivesCollapsed);
           });
         }
         const castlePassivesList = document.getElementById("options-castle-passives");
@@ -544,7 +551,7 @@ export class HudView {
           this.optionsCastlePassives = castlePassivesList;
           this.optionsCastlePassives.replaceChildren();
           this.updateOptionsPassivesSummary("No passives");
-          this.setOptionsPassivesCollapsed(this.optionsPassivesCollapsed);
+          this.setOptionsPassivesCollapsed(this.optionsPassivesCollapsed, { silent: true });
         } else {
           console.warn("Options castle passives element missing; passive summary disabled.");
         }
@@ -701,19 +708,25 @@ export class HudView {
     this.castleStatus.setAttribute("role", "status");
     this.castleStatus.setAttribute("aria-live", "polite");
     const prefersCondensedLists = this.prefersCondensedHudLists();
-    this.castlePassivesSection = this.createCondensedSection({
-      title: "Castle passives",
-      listClass: "castle-passives",
-      ariaLabel: "Active castle passive buffs",
-      collapsedByDefault: prefersCondensedLists
-    });
+    this.castlePassivesSection = this.createCondensedSection(
+      {
+        title: "Castle passives",
+        listClass: "castle-passives",
+        ariaLabel: "Active castle passive buffs",
+        collapsedByDefault: prefersCondensedLists
+      },
+      "hud-passives"
+    );
     this.castlePassives = this.castlePassivesSection.list;
-    this.castleGoldEventsSection = this.createCondensedSection({
-      title: "Recent gold events",
-      listClass: "castle-gold-events",
-      ariaLabel: "Recent gold events",
-      collapsedByDefault: prefersCondensedLists
-    });
+    this.castleGoldEventsSection = this.createCondensedSection(
+      {
+        title: "Recent gold events",
+        listClass: "castle-gold-events",
+        ariaLabel: "Recent gold events",
+        collapsedByDefault: prefersCondensedLists
+      },
+      "hud-gold-events"
+    );
     this.castleGoldEvents = this.castleGoldEventsSection.list;
     this.castleBenefits = document.createElement("ul");
     this.castleBenefits.className = "castle-benefits";
@@ -1243,7 +1256,7 @@ export class HudView {
     }
     const summary = passives.length === 1 ? "1 passive" : `${passives.length} passives`;
     this.updateOptionsPassivesSummary(summary);
-    this.setOptionsPassivesCollapsed(this.optionsPassivesPreferredCollapsed);
+    this.setOptionsPassivesCollapsed(this.optionsPassivesCollapsed, { silent: true });
   }
 
   private formatCastlePassive(
@@ -1311,7 +1324,10 @@ export class HudView {
     }
   }
 
-  private setOptionsPassivesCollapsed(collapsed: boolean): void {
+  private setOptionsPassivesCollapsed(
+    collapsed: boolean,
+    options: { silent?: boolean } = {}
+  ): void {
     if (!this.optionsCastlePassives) {
       this.optionsPassivesCollapsed = collapsed;
       return;
@@ -1329,14 +1345,22 @@ export class HudView {
       this.optionsPassivesToggle.setAttribute("aria-expanded", collapsed ? "false" : "true");
     }
     this.applyOptionsPassivesToggleLabel();
+    if (!options.silent) {
+      this.callbacks.onCollapsePreferenceChange?.({
+        optionsPassivesCollapsed: collapsed
+      });
+    }
   }
 
-  private createCondensedSection(options: {
-    title: string;
-    listClass: string;
-    ariaLabel: string;
-    collapsedByDefault?: boolean;
-  }): CondensedSection {
+  private createCondensedSection(
+    options: {
+      title: string;
+      listClass: string;
+      ariaLabel: string;
+      collapsedByDefault?: boolean;
+    },
+    sectionId: HudCondensedSectionId
+  ): CondensedSection {
     const container = document.createElement("div");
     container.className = "hud-condensed-section";
     const header = document.createElement("div");
@@ -1371,15 +1395,22 @@ export class HudView {
     };
     toggle.setAttribute("aria-controls", listId);
     toggle.addEventListener("click", () => {
-      this.setCondensedSectionCollapsed(section, !section.collapsed);
+      this.setCondensedSectionCollapsed(section, !section.collapsed, { sectionId });
     });
-    this.setCondensedSectionCollapsed(section, section.collapsed);
+    this.setCondensedSectionCollapsed(section, section.collapsed, {
+      silent: true,
+      sectionId
+    });
     this.updateCondensedSectionSummary(section, "");
     this.setCondensedSectionVisibility(section, false);
     return section;
   }
 
-  private setCondensedSectionCollapsed(section: CondensedSection, collapsed: boolean): void {
+  private setCondensedSectionCollapsed(
+    section: CondensedSection,
+    collapsed: boolean,
+    options: { silent?: boolean; sectionId?: HudCondensedSectionId } = {}
+  ): void {
     section.collapsed = collapsed;
     section.container.dataset.collapsed = collapsed ? "true" : "false";
     section.toggle.setAttribute("aria-expanded", collapsed ? "false" : "true");
@@ -1390,6 +1421,17 @@ export class HudView {
         : `Show ${section.title}`;
     } else {
       section.toggle.textContent = `Hide ${section.title}`;
+    }
+    if (!options.silent) {
+      const patch: HudCollapsePreferenceUpdate = {};
+      if (options.sectionId === "hud-passives") {
+        patch.hudCastlePassivesCollapsed = collapsed;
+      } else if (options.sectionId === "hud-gold-events") {
+        patch.hudGoldEventsCollapsed = collapsed;
+      }
+      if (Object.keys(patch).length > 0) {
+        this.callbacks.onCollapsePreferenceChange?.(patch);
+      }
     }
   }
 
@@ -1409,6 +1451,51 @@ export class HudView {
     }
     section.list.dataset.visible = visible ? "true" : "false";
     section.list.hidden = !visible;
+  }
+
+  applyCollapsePreferences(
+    prefs: HudCollapsePreferenceUpdate,
+    options: { silent?: boolean; fallbackToPreferred?: boolean } = {}
+  ): void {
+    const shouldFallback = options.fallbackToPreferred ?? false;
+    if (this.castlePassivesSection) {
+      const value = prefs.hudCastlePassivesCollapsed;
+      if (typeof value === "boolean") {
+        this.setCondensedSectionCollapsed(this.castlePassivesSection, value, {
+          silent: options.silent,
+          sectionId: "hud-passives"
+        });
+      } else if (shouldFallback) {
+        this.setCondensedSectionCollapsed(
+          this.castlePassivesSection,
+          this.prefersCondensedHudLists(),
+          { silent: true, sectionId: "hud-passives" }
+        );
+      }
+    }
+    if (this.castleGoldEventsSection) {
+      const value = prefs.hudGoldEventsCollapsed;
+      if (typeof value === "boolean") {
+        this.setCondensedSectionCollapsed(this.castleGoldEventsSection, value, {
+          silent: options.silent,
+          sectionId: "hud-gold-events"
+        });
+      } else if (shouldFallback) {
+        this.setCondensedSectionCollapsed(
+          this.castleGoldEventsSection,
+          this.prefersCondensedHudLists(),
+          { silent: true, sectionId: "hud-gold-events" }
+        );
+      }
+    }
+    if (this.optionsCastlePassives) {
+      const value = prefs.optionsPassivesCollapsed;
+      if (typeof value === "boolean") {
+        this.setOptionsPassivesCollapsed(value, { silent: options.silent });
+      } else if (shouldFallback) {
+        this.setOptionsPassivesCollapsed(this.optionsPassivesDefaultCollapsed, { silent: true });
+      }
+    }
   }
 
   private prefersCondensedHudLists(): boolean {
