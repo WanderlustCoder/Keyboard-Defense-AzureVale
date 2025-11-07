@@ -26,6 +26,7 @@
     "analytics:gold:check": "node ./scripts/goldSummaryCheck.mjs",
     "analytics:gold:report": "node ./scripts/goldReport.mjs",
     "assets:integrity": "node ./scripts/assetIntegrity.mjs",
+    "helm": "node ./scripts/helm.mjs",
     "smoke:tutorial": "node ./scripts/tutorialSmoke.mjs",
     "wave:sim": "node ./scripts/waveSim.mjs",
     "wave:benchmark": "node ./scripts/waveBenchmark.mjs",
