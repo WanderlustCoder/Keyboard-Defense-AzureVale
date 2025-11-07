@@ -52,6 +52,7 @@
 | 48 | Analytics & Telemetry | Capture time-to-first-turret placement and include in analytics. | Done | Snapshots/CSV now include time-to-first-turret metric |
 | 49 | Analytics & Telemetry | Emit tutorial replay/skip counts for onboarding analysis. | Done | Analytics track replay/skip counts |
 | 50 | Analytics & Telemetry | Wire optional telemetry endpoint for backend ingestion (future-ready). | Done | Telemetry client now posts batches via custom transports/sendBeacon/fetch with queue rollback on errors |
+| 101 | Analytics & Telemetry | Add percentile stats to the gold summary CLI output for dashboards. | Done | `goldSummary.mjs` now emits median/p90 gain & spend columns (JSON/CSV) with updated tests |
 | 51 | UI/UX & Accessibility | Offer colorblind-friendly palette toggle across sprites/HUD. | Done | Checkered background + high-contrast palette toggle available |
 | 52 | UI/UX & Accessibility | Support adjustable HUD font size with persistence. | Not Started |  |
 | 53 | UI/UX & Accessibility | Reflow layout for narrow screens / touch devices. | Not Started |  |

@@ -35,6 +35,10 @@ test("summarizeFileEntries computes stats", () => {
   assert.equal(summary.passiveLinkedCount, 1);
   assert.equal(summary.uniquePassiveIds.length, 1);
   assert.equal(summary.maxPassiveLag, 2);
+  assert.equal(summary.medianGain, 35);
+  assert.equal(summary.p90Gain, 39);
+  assert.equal(summary.medianSpend, -50);
+  assert.equal(summary.p90Spend, -50);
 });
 
 test("summarizeGoldEntries groups by file", () => {
@@ -46,6 +50,14 @@ test("summarizeGoldEntries groups by file", () => {
   const fileA = summaries.find((row) => row.file.endsWith("a.json"));
   assert.equal(fileA.eventCount, 2);
   assert.equal(fileA.netDelta, 5);
+});
+
+test("summarizeFileEntries yields null percentile stats when no events", () => {
+  const summary = summarizeFileEntries("empty.json", []);
+  assert.equal(summary.medianGain, null);
+  assert.equal(summary.p90Gain, null);
+  assert.equal(summary.medianSpend, null);
+  assert.equal(summary.p90Spend, null);
 });
 
 test("runGoldSummary writes csv output", async () => {
@@ -66,7 +78,10 @@ test("runGoldSummary writes csv output", async () => {
     });
     assert.equal(exitCode, 0);
     const csv = await fs.readFile(outPath, "utf8");
-    assert.match(csv, /file,eventCount,netDelta/);
+    assert.match(
+      csv,
+      /file,eventCount,netDelta,maxGain,maxSpend,totalPositive,totalNegative,firstTimestamp,lastTimestamp,passiveLinkedCount,uniquePassiveIds,medianGain,p90Gain,medianSpend,p90Spend,maxPassiveLag/
+    );
     assert.match(csv, /sample,2,-10/);
   } finally {
     await fs.rm(dir, { recursive: true, force: true });
@@ -96,6 +111,8 @@ test("runGoldSummary appends global summary when requested", async () => {
     const globalRow = rows.find((row) => row.file === "ALL");
     assert.ok(globalRow, "expected global row");
     assert.equal(globalRow.netDelta, -15);
+    assert.equal(globalRow.medianGain, 25);
+    assert.equal(globalRow.medianSpend, -40);
   } finally {
     await fs.rm(dir, { recursive: true, force: true });
   }

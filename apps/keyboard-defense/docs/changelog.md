@@ -1,3 +1,9 @@
+## Gold Summary Percentiles
+
+- `goldSummary.mjs` now tracks every gain/spend delta per file to compute the median and 90th-percentile amounts; the JSON/CSV output adds `medianGain`, `p90Gain`, `medianSpend`, and `p90Spend` columns so dashboards can distinguish routine economy flow from rare spikes.
+- The optional global row reprocesses raw timeline entries (instead of aggregating existing summaries) to keep percentile math and passive unlock stats accurate across mixed run lengths.
+- Vitest coverage exercises empty timelines, per-file stats, CSV headers, and the new percentile calculation path to guard against regressions.
+
 ## Asset Integrity Guard
 
 - `AssetLoader` now parses the optional `integrity` map in `public/assets/manifest.json`, downloads each sprite through `fetch`, hashes the bytes with `crypto.subtle.digest`, and refuses to cache any image whose digest does not match the declared `sha256-*` value.

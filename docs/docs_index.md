@@ -19,6 +19,7 @@ Use this index to jump straight to the guidance you'll need while building and t
 
 ## Status Notes
 Status entries live under `docs/status/`. Recent highlights include:
+- `2025-11-09_gold_percentiles.md` - Gold summary CLI now emits median/p90 gain & spend stats plus accurate cross-file aggregates.
 - `2025-11-07_diagnostics_passives.md` - Diagnostics gold delta display, analytics CSV enrichment, and passive unlock artifacts.
 - `2025-11-08_gold_event_history.md` - Diagnostics overlay now lists recent gold events for rapid economy debugging.
 - `2025-11-08_gold_timeline_cli.md` - `npm run analytics:gold` CLI for exporting gold-event timelines from snapshots/artifacts.

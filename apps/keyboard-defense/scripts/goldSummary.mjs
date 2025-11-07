@@ -118,6 +118,33 @@ function groupByFile(entries) {
   return map;
 }
 
+function computePercentile(sortedValues, percentile) {
+  if (sortedValues.length === 0) return null;
+  if (sortedValues.length === 1) return sortedValues[0];
+  const clamped = Math.min(Math.max(percentile, 0), 100);
+  const position = (clamped / 100) * (sortedValues.length - 1);
+  const lowerIndex = Math.floor(position);
+  const upperIndex = Math.ceil(position);
+  if (lowerIndex === upperIndex) {
+    return sortedValues[lowerIndex];
+  }
+  const lowerValue = sortedValues[lowerIndex];
+  const upperValue = sortedValues[upperIndex];
+  const weight = position - lowerIndex;
+  return lowerValue + (upperValue - lowerValue) * weight;
+}
+
+function computePercentilePair(values) {
+  if (!values.length) {
+    return { median: null, p90: null };
+  }
+  const sorted = [...values].sort((a, b) => a - b);
+  return {
+    median: computePercentile(sorted, 50),
+    p90: computePercentile(sorted, 90)
+  };
+}
+
 export function summarizeFileEntries(file, entries) {
   if (entries.length === 0) {
     return {
@@ -132,6 +159,10 @@ export function summarizeFileEntries(file, entries) {
       lastTimestamp: null,
       passiveLinkedCount: 0,
       uniquePassiveIds: [],
+      medianGain: null,
+      p90Gain: null,
+      medianSpend: null,
+      p90Spend: null,
       maxPassiveLag: null
     };
   }
@@ -145,17 +176,21 @@ export function summarizeFileEntries(file, entries) {
   let passiveLinkedCount = 0;
   let maxPassiveLag = null;
   const passiveIds = new Set();
+  const gains = [];
+  const spends = [];
 
   for (const entry of entries) {
     const delta = Number.isFinite(entry.delta) ? entry.delta : 0;
     netDelta += delta;
     if (delta > 0) {
       totalPositive += delta;
+      gains.push(delta);
       if (maxGain === null || delta > maxGain) {
         maxGain = delta;
       }
     } else if (delta < 0) {
       totalNegative += Math.abs(delta);
+      spends.push(delta);
       if (maxSpend === null || delta < maxSpend) {
         maxSpend = delta;
       }
@@ -183,6 +218,8 @@ export function summarizeFileEntries(file, entries) {
       }
     }
   }
+  const gainPercentiles = computePercentilePair(gains);
+  const spendPercentiles = computePercentilePair(spends);
 
   return {
     file,
@@ -196,6 +233,10 @@ export function summarizeFileEntries(file, entries) {
     lastTimestamp,
     passiveLinkedCount,
     uniquePassiveIds: [...passiveIds],
+    medianGain: gainPercentiles.median,
+    p90Gain: gainPercentiles.p90,
+    medianSpend: spendPercentiles.median,
+    p90Spend: spendPercentiles.p90,
     maxPassiveLag
   };
 }
@@ -207,67 +248,6 @@ export function summarizeGoldEntries(entries) {
     summaries.push(summarizeFileEntries(file, groupedEntries));
   }
   return summaries;
-}
-
-function mergeSummaries(rows) {
-  if (rows.length === 0) {
-    return summarizeFileEntries("ALL", []);
-  }
-  const aggregate = {
-    file: "ALL",
-    eventCount: 0,
-    netDelta: 0,
-    maxGain: null,
-    maxSpend: null,
-    totalPositive: 0,
-    totalNegative: 0,
-    firstTimestamp: null,
-    lastTimestamp: null,
-    passiveLinkedCount: 0,
-    uniquePassiveIds: new Set(),
-    maxPassiveLag: null
-  };
-
-  for (const row of rows) {
-    aggregate.eventCount += row.eventCount;
-    aggregate.netDelta += row.netDelta;
-    aggregate.totalPositive += row.totalPositive;
-    aggregate.totalNegative += row.totalNegative;
-    if (typeof row.maxGain === "number") {
-      if (aggregate.maxGain === null || row.maxGain > aggregate.maxGain) {
-        aggregate.maxGain = row.maxGain;
-      }
-    }
-    if (typeof row.maxSpend === "number") {
-      if (aggregate.maxSpend === null || row.maxSpend < aggregate.maxSpend) {
-        aggregate.maxSpend = row.maxSpend;
-      }
-    }
-    if (typeof row.firstTimestamp === "number") {
-      if (aggregate.firstTimestamp === null || row.firstTimestamp < aggregate.firstTimestamp) {
-        aggregate.firstTimestamp = row.firstTimestamp;
-      }
-    }
-    if (typeof row.lastTimestamp === "number") {
-      if (aggregate.lastTimestamp === null || row.lastTimestamp > aggregate.lastTimestamp) {
-        aggregate.lastTimestamp = row.lastTimestamp;
-      }
-    }
-    aggregate.passiveLinkedCount += row.passiveLinkedCount;
-    for (const id of row.uniquePassiveIds ?? []) {
-      aggregate.uniquePassiveIds.add(id);
-    }
-    if (typeof row.maxPassiveLag === "number") {
-      if (aggregate.maxPassiveLag === null || row.maxPassiveLag > aggregate.maxPassiveLag) {
-        aggregate.maxPassiveLag = row.maxPassiveLag;
-      }
-    }
-  }
-
-  return {
-    ...aggregate,
-    uniquePassiveIds: [...aggregate.uniquePassiveIds]
-  };
 }
 
 function toCsv(rows) {
@@ -283,6 +263,10 @@ function toCsv(rows) {
     "lastTimestamp",
     "passiveLinkedCount",
     "uniquePassiveIds",
+    "medianGain",
+    "p90Gain",
+    "medianSpend",
+    "p90Spend",
     "maxPassiveLag"
   ];
   const escape = (value) => {
@@ -326,7 +310,7 @@ export async function runGoldSummary(options) {
   }
   const summaries = summarizeGoldEntries(entries);
   if (options.global) {
-    summaries.push(mergeSummaries(summaries));
+    summaries.push(summarizeFileEntries("ALL", entries));
   }
   const serialized = options.csv ? toCsv(summaries) : toJson(summaries);
   if (options.out) {
