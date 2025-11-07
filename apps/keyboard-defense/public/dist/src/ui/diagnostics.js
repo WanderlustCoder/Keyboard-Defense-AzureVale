@@ -41,31 +41,13 @@ class DiagnosticsOverlay {
     this.container = container;
     this.setVisible(false);
     this.initializeResponsiveBehavior();
-    if (typeof document !== "undefined") {
-      this.collapseToggle = document.getElementById(
-        "diagnostics-collapse-toggle"
-      );
-      if (!this.collapseToggle) {
-        this.collapseToggle = document.createElement("button");
-        this.collapseToggle.id = "diagnostics-collapse-toggle";
-        this.collapseToggle.type = "button";
-        this.collapseToggle.dataset.visible = "false";
-        document.body.appendChild(this.collapseToggle);
-      }
-      this.collapseToggle.addEventListener("click", () => {
-        this.sectionsCollapsed = !this.sectionsCollapsed;
-        this.updateCollapseButton();
-        if (this.lastMetrics) {
-          this.update(this.lastMetrics, this.lastSession);
-        }
-      });
-      this.updateCollapseButton();
-    }
+    this.syncCollapseToggle();
+    this.updateCollapseButton();
   }
   visible = true;
   condensed = false;
   sectionsCollapsed = true;
-  collapseToggle = null;
+  collapseToggle;
   lastMetrics = null;
   lastSession;
   update(metrics, session) {
@@ -273,12 +255,12 @@ class DiagnosticsOverlay {
     if (condensed) {
       this.container.dataset.condensed = "true";
       this.sectionsCollapsed = true;
-      this.collapseToggle?.setAttribute("data-visible", "true");
     } else {
       delete this.container.dataset.condensed;
       this.sectionsCollapsed = false;
-      this.collapseToggle?.setAttribute("data-visible", "false");
     }
+    this.syncCollapseToggle();
+    this.syncAutomationFlags();
     this.updateCollapseButton();
   }
   shouldCondense() {
@@ -294,11 +276,52 @@ class DiagnosticsOverlay {
       return false;
     }
   }
+  syncCollapseToggle() {
+    if (typeof document === "undefined") return;
+    if (!this.condensed) {
+      this.removeCollapseToggle();
+      return;
+    }
+    if (!this.collapseToggle) {
+      this.collapseToggle = document.createElement("button");
+      this.collapseToggle.id = "diagnostics-collapse-toggle";
+      this.collapseToggle.type = "button";
+      document.body.appendChild(this.collapseToggle);
+      this.collapseToggle.addEventListener("click", () => {
+        this.sectionsCollapsed = !this.sectionsCollapsed;
+        this.updateCollapseButton();
+        if (this.lastMetrics) {
+          this.update(this.lastMetrics, this.lastSession);
+        }
+      });
+    }
+    this.collapseToggle.dataset.visible = "true";
+  }
+  removeCollapseToggle() {
+    if (this.collapseToggle) {
+      this.collapseToggle.remove();
+      this.collapseToggle = null;
+    }
+  }
   updateCollapseButton() {
-    if (!this.collapseToggle || !this.condensed) return;
+    if (!this.collapseToggle || !this.condensed) {
+      this.syncAutomationFlags();
+      return;
+    }
     const expanded = !this.sectionsCollapsed;
     this.collapseToggle.textContent = expanded ? "Collapse diagnostics details" : "Expand diagnostics details";
     this.collapseToggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+    this.syncAutomationFlags();
+  }
+  syncAutomationFlags() {
+    if (typeof document === "undefined" || !document.body) return;
+    if (!this.condensed) {
+      delete document.body.dataset.diagnosticsCondensed;
+      delete document.body.dataset.diagnosticsSectionsCollapsed;
+      return;
+    }
+    document.body.dataset.diagnosticsCondensed = "true";
+    document.body.dataset.diagnosticsSectionsCollapsed = this.sectionsCollapsed ? "true" : "false";
   }
 }
 export {

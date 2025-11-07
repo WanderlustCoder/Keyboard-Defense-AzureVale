@@ -77,8 +77,8 @@ export class DiagnosticsOverlay {
   constructor(private readonly container: HTMLElement) {
     this.setVisible(false);
     this.initializeResponsiveBehavior();
-    if (typeof document !== "undefined") {
-    }
+    this.syncCollapseToggle();
+    this.updateCollapseButton();
   }
 
   update(metrics: RuntimeMetrics, session?: DiagnosticsSessionStats): void {
@@ -334,6 +334,7 @@ export class DiagnosticsOverlay {
       this.sectionsCollapsed = false;
     }
     this.syncCollapseToggle();
+    this.syncAutomationFlags();
     this.updateCollapseButton();
   }
 
@@ -385,11 +386,26 @@ export class DiagnosticsOverlay {
   }
 
   private updateCollapseButton(): void {
-    if (!this.collapseToggle || !this.condensed) return;
+    if (!this.collapseToggle || !this.condensed) {
+      this.syncAutomationFlags();
+      return;
+    }
     const expanded = !this.sectionsCollapsed;
     this.collapseToggle.textContent = expanded
       ? "Collapse diagnostics details"
       : "Expand diagnostics details";
     this.collapseToggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+    this.syncAutomationFlags();
+  }
+
+  private syncAutomationFlags(): void {
+    if (typeof document === "undefined" || !document.body) return;
+    if (!this.condensed) {
+      delete document.body.dataset.diagnosticsCondensed;
+      delete document.body.dataset.diagnosticsSectionsCollapsed;
+      return;
+    }
+    document.body.dataset.diagnosticsCondensed = "true";
+    document.body.dataset.diagnosticsSectionsCollapsed = this.sectionsCollapsed ? "true" : "false";
   }
 }

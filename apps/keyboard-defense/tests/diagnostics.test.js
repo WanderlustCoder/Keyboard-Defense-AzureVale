@@ -184,6 +184,60 @@ test("DiagnosticsOverlay lists recent gold events", () => {
   assert.ok(output.includes("-20g -> 310g @ 95.2s"));
 });
 
+const attachDom = () => {
+  const previous = {
+    window: global.window,
+    document: global.document
+  };
+  const body = {
+    dataset: {},
+    appendChild(node) {
+      this.lastChild = node;
+    }
+  };
+  const document = {
+    body,
+    getElementById() {
+      return null;
+    },
+    createElement() {
+      return {
+        id: "",
+        type: "button",
+        dataset: {},
+        textContent: "",
+        remove() {},
+        addEventListener() {},
+        setAttribute() {},
+        style: {}
+      };
+    }
+  };
+  const window = {
+    matchMedia: () => ({
+      matches: false,
+      media: "",
+      addEventListener() {},
+      removeEventListener() {},
+      addListener() {},
+      removeListener() {}
+    }),
+    addEventListener() {},
+    devicePixelRatio: 1,
+    document
+  };
+  global.document = document;
+  global.window = window;
+  globalThis.document = document;
+  globalThis.window = window;
+  return () => {
+    if (previous.document === undefined) delete global.document;
+    else global.document = previous.document;
+    if (previous.window === undefined) delete global.window;
+    else global.window = previous.window;
+  };
+};
+
 test("DiagnosticsOverlay condenses overlay on compact height", () => {
   const container = createContainer();
   const listeners = new Map();
@@ -207,24 +261,20 @@ test("DiagnosticsOverlay condenses overlay on compact height", () => {
       removeListener: () => {}
     };
   };
+  const restoreDom = attachDom();
   const originalWindow = global.window;
-  global.window = {
-    matchMedia: stubMatchMedia,
-    addEventListener: () => {}
-  };
+  global.window.matchMedia = stubMatchMedia;
   try {
-    new DiagnosticsOverlay(container);
+    const overlay = new DiagnosticsOverlay(container);
+    overlay.setVisible(true);
     assert.equal(container.dataset.condensed, "true");
     matchState["(max-height: 540px)"] = false;
     const handler = listeners.get("(max-height: 540px)");
     handler?.({ matches: false });
     assert.equal(container.dataset.condensed, undefined);
+    assert.equal(global.document.body.dataset.diagnosticsCondensed, undefined);
   } finally {
-    if (typeof originalWindow === "undefined") {
-      delete global.window;
-    } else {
-      global.window = originalWindow;
-    }
+    restoreDom();
   }
 });
 
@@ -242,11 +292,8 @@ test("DiagnosticsOverlay collapses detailed sections when condensed", () => {
     addListener: () => {},
     removeListener: () => {}
   });
-  const originalWindow = global.window;
-  global.window = {
-    matchMedia: stubMatchMedia,
-    addEventListener: () => {}
-  };
+  const restoreDom = attachDom();
+  global.window.matchMedia = stubMatchMedia;
   const engine = new GameEngine({ seed: 7, config: { waves: [] } });
   const metrics = engine.getRuntimeMetrics();
   const overlay = new DiagnosticsOverlay(container);
@@ -295,10 +342,6 @@ test("DiagnosticsOverlay collapses detailed sections when condensed", () => {
     assert.ok(expandedOutput.includes("Recent gold events:"));
     assert.ok(expandedOutput.includes("Turret DPS breakdown:"));
   } finally {
-    if (typeof originalWindow === "undefined") {
-      delete global.window;
-    } else {
-      global.window = originalWindow;
-    }
+    restoreDom();
   }
 });
