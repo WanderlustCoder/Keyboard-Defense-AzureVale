@@ -127,3 +127,4 @@ Structured backlog derived from the inspiration brief, architecture notes, and t
 102. Add percentile flag to the gold summary CLI so dashboards can request alternate gain/spend cutlines.
 103. Ensure CI smoke workflows emit gold summary artifacts with the standardized percentile list.
 104. Include the percentile list inside every gold summary artifact so downstream tooling can verify cutlines.
+105. Validate gold summary percentile metadata during CI smoke runs.

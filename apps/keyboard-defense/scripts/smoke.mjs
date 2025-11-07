@@ -10,9 +10,11 @@ import path from "node:path";
 import process from "node:process";
 
 const startedAt = new Date().toISOString();
+const DASHBOARD_PERCENTILES = [25, 50, 90];
+const DASHBOARD_PERCENTILES_ARG = DASHBOARD_PERCENTILES.join(",");
 const DASHBOARD_PERCENTILES = "25,50,90";
 
-function parseArgs(argv) {
+export function parseArgs(argv) {
   const opts = { ci: false, mode: "skip" };
   for (let i = 0; i < argv.length; i += 1) {
     const token = argv[i];
@@ -42,6 +44,33 @@ async function run(command, args, options = {}) {
       else reject(new Error(`${command} ${args.join(" ")} exited with code ${code}`));
     });
   });
+}
+
+export async function validateSummaryPercentiles(summaryPath, expected) {
+  let payload;
+  try {
+    const content = await readFile(summaryPath, "utf8");
+    payload = JSON.parse(content);
+  } catch (error) {
+    throw new Error(
+      `Failed to parse gold summary at ${summaryPath}: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+  }
+  if (!payload || typeof payload !== "object" || !Array.isArray(payload.percentiles)) {
+    throw new Error(`Gold summary at ${summaryPath} is missing the percentiles metadata.`);
+  }
+  const normalized = payload.percentiles.map((value) => Number(value));
+  const mismatch =
+    normalized.length !== expected.length ||
+    normalized.some((value, index) => value !== expected[index]);
+  if (mismatch) {
+    throw new Error(
+      `Expected percentiles ${expected.join(",")} but found ${normalized.join(",")} in ${summaryPath}.`
+    );
+  }
+  return normalized;
 }
 
 async function generateGoldEconomyArtifacts(inputPath, artifactDir, summary, ciMode) {
@@ -76,7 +105,7 @@ async function generateGoldEconomyArtifacts(inputPath, artifactDir, summary, ciM
   const summaryName = ciMode ? "gold-summary.ci.json" : "gold-summary.json";
   const summaryPath = path.join(artifactDir, summaryName);
   summary.commands.push(
-    `${process.execPath} ./scripts/goldSummary.mjs --global --percentiles ${DASHBOARD_PERCENTILES} --out ${summaryPath} ${timelinePath}`
+    `${process.execPath} ./scripts/goldSummary.mjs --global --percentiles ${DASHBOARD_PERCENTILES_ARG} --out ${summaryPath} ${timelinePath}`
   );
   try {
     await run(
@@ -85,7 +114,7 @@ async function generateGoldEconomyArtifacts(inputPath, artifactDir, summary, ciM
         "./scripts/goldSummary.mjs",
         "--global",
         "--percentiles",
-        DASHBOARD_PERCENTILES,
+        DASHBOARD_PERCENTILES_ARG,
         "--out",
         summaryPath,
         timelinePath
@@ -93,6 +122,9 @@ async function generateGoldEconomyArtifacts(inputPath, artifactDir, summary, ciM
       { shell: false }
     );
     summary.goldSummary = summaryPath;
+    if (path.extname(summaryPath).toLowerCase() === ".json") {
+      await validateSummaryPercentiles(summaryPath, DASHBOARD_PERCENTILES);
+    }
   } catch (error) {
     summary.status = summary.status === "failed" ? summary.status : "warning";
     summary.goldSummaryError = error instanceof Error ? error.message : String(error);
@@ -163,4 +195,9 @@ async function main() {
   }
 }
 
-await main();
+if (
+  import.meta.url === `file://${process.argv[1]}` ||
+  process.argv[1]?.endsWith("smoke.mjs")
+) {
+  await main();
+}
