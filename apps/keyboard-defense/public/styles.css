@@ -108,6 +108,33 @@ textarea {
   max-width: 100%;
   box-sizing: border-box;
   background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+  position: relative;
+  overflow: hidden;
+  transition: width 0.25s ease, height 0.25s ease;
+}
+
+#game-surface[data-resizing="true"] {
+  animation: canvas-resize-fade 0.25s ease;
+}
+
+#game-surface[data-resizing="true"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.15);
+  pointer-events: none;
+}
+
+@keyframes canvas-resize-fade {
+  0% {
+    opacity: 0.2;
+  }
+  60% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 #hud {

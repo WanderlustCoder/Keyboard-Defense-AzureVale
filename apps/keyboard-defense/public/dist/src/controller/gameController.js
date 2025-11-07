@@ -54,6 +54,7 @@ export class GameController {
         this.canvasResizeObserver = null;
         this.viewportResizeHandler = null;
         this.dprMediaQuery = null;
+        this.canvasResizeTimeout = null;
         this.updateCanvasResolution(true);
         this.running = false;
         this.speedMultiplier = 1;
@@ -2829,6 +2830,7 @@ export class GameController {
         if (this.renderer?.resize) {
             this.renderer.resize(resolution.renderWidth, resolution.renderHeight);
         }
+        this.triggerCanvasResizeFade();
     }
     computeCanvasResolution() {
         const availableWidth = this.measureCanvasAvailableWidth();
@@ -2879,5 +2881,20 @@ export class GameController {
             }
         }
         return CANVAS_BASE_WIDTH;
+    }
+    triggerCanvasResizeFade() {
+        if (typeof window === "undefined" || !this.canvas) {
+            return;
+        }
+        this.canvas.dataset.resizing = "true";
+        if (this.canvasResizeTimeout) {
+            window.clearTimeout(this.canvasResizeTimeout);
+        }
+        this.canvasResizeTimeout = window.setTimeout(() => {
+            if (this.canvas) {
+                delete this.canvas.dataset.resizing;
+            }
+            this.canvasResizeTimeout = null;
+        }, 220);
     }
 }
