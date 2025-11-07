@@ -55,6 +55,7 @@
 | 101 | Analytics & Telemetry | Add percentile stats to the gold summary CLI output for dashboards. | Done | `goldSummary.mjs` now emits median/p90 gain & spend columns (JSON/CSV) with updated tests |
 | 102 | Analytics & Telemetry | Add percentile flag to the gold summary CLI so dashboards can request alternate gain/spend cutlines. | Done | `goldSummary.mjs --percentiles 25,50,90` now yields matching `gainPXX`/`spendPXX` columns plus legacy aliases |
 | 103 | Analytics & Telemetry | Ensure CI smoke workflows emit gold summaries with the standardized percentile list. | Done | Smoke automation and `goldReport.mjs` now forward `--percentiles 25,50,90` to `goldSummary.mjs` |
+| 104 | Analytics & Telemetry | Include percentile metadata in gold summary artifacts for downstream validation. | Done | JSON output now wraps `{ percentiles, rows }` and CSV adds `summaryPercentiles` |
 | 51 | UI/UX & Accessibility | Offer colorblind-friendly palette toggle across sprites/HUD. | Done | Checkered background + high-contrast palette toggle available |
 | 52 | UI/UX & Accessibility | Support adjustable HUD font size with persistence. | Not Started |  |
 | 53 | UI/UX & Accessibility | Reflow layout for narrow screens / touch devices. | Not Started |  |

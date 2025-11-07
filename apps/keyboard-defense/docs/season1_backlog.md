@@ -126,3 +126,4 @@ Structured backlog derived from the inspiration brief, architecture notes, and t
 101. Add percentile stats (median/p90) to the gold summary CLI output so dashboards can monitor economy drift.
 102. Add percentile flag to the gold summary CLI so dashboards can request alternate gain/spend cutlines.
 103. Ensure CI smoke workflows emit gold summary artifacts with the standardized percentile list.
+104. Include the percentile list inside every gold summary artifact so downstream tooling can verify cutlines.

@@ -10,4 +10,4 @@
 - The default list lives in one place (`25,50,90`), minimizing the chance of future drift between automation and developer tooling.
 
 **Next Steps**
-1. Surface the requested percentile list directly inside the serialized gold summary output metadata so downstream tools can assert expectations without inspecting command logs.
+1. Consume the new percentile metadata downstream (dashboards/alerts) so ingestion jobs can assert cutline mismatches automatically.

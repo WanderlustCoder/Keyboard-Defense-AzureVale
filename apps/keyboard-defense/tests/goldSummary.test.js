@@ -90,9 +90,11 @@ test("runGoldSummary writes csv output", async () => {
     const csv = await fs.readFile(outPath, "utf8");
     assert.match(
       csv,
-      /file,eventCount,netDelta,maxGain,maxSpend,totalPositive,totalNegative,firstTimestamp,lastTimestamp,passiveLinkedCount,uniquePassiveIds,gainP50,spendP50,gainP90,spendP90,medianGain,p90Gain,medianSpend,p90Spend,maxPassiveLag/
+      /file,eventCount,netDelta,maxGain,maxSpend,totalPositive,totalNegative,firstTimestamp,lastTimestamp,passiveLinkedCount,uniquePassiveIds,gainP50,spendP50,gainP90,spendP90,medianGain,p90Gain,medianSpend,p90Spend,maxPassiveLag,summaryPercentiles/
     );
     assert.match(csv, /sample,2,-10/);
+    assert.match(csv, /summaryPercentiles/);
+    assert.match(csv, /50\|90/);
   } finally {
     await fs.rm(dir, { recursive: true, force: true });
   }
@@ -116,7 +118,9 @@ test("runGoldSummary appends global summary when requested", async () => {
       targets: [file]
     });
     assert.equal(exitCode, 0);
-    const rows = JSON.parse(await fs.readFile(outPath, "utf8"));
+    const payload = JSON.parse(await fs.readFile(outPath, "utf8"));
+    assert.deepEqual(payload.percentiles, [50, 90]);
+    const rows = payload.rows;
     assert.equal(rows.length, 2);
     const globalRow = rows.find((row) => row.file === "ALL");
     assert.ok(globalRow, "expected global row");
@@ -147,7 +151,9 @@ test("runGoldSummary honors custom percentiles", async () => {
       percentiles: [25, 75, 95],
       targets: [file]
     });
-    const [row] = JSON.parse(await fs.readFile(outPath, "utf8"));
+    const payload = JSON.parse(await fs.readFile(outPath, "utf8"));
+    assert.deepEqual(payload.percentiles, [25, 75, 95]);
+    const [row] = payload.rows;
     assert.equal(row.gainP25, 31.25);
     assert.equal(row.gainP75, 43.75);
     assert.equal(row.gainP95, 48.75);

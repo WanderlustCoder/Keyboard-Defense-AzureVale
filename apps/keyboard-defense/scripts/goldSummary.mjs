@@ -291,7 +291,7 @@ export function summarizeGoldEntries(entries, percentiles = DEFAULT_PERCENTILES)
   return summaries;
 }
 
-function toCsv(rows, percentiles) {
+function toCsv(rows, percentiles, metadata) {
   const baseHeaders = [
     "file",
     "eventCount",
@@ -311,6 +311,9 @@ function toCsv(rows, percentiles) {
   ]);
   const tailHeaders = ["medianGain", "p90Gain", "medianSpend", "p90Spend", "maxPassiveLag"];
   const headers = [...baseHeaders, ...percentileHeaders, ...tailHeaders];
+  if (metadata && metadata.percentiles?.length) {
+    headers.push("summaryPercentiles");
+  }
   const escape = (value) => {
     if (value === null || value === undefined) return "";
     const str = String(Array.isArray(value) ? value.join("|") : value);
@@ -321,12 +324,21 @@ function toCsv(rows, percentiles) {
   };
   const lines = [headers.join(",")];
   for (const row of rows) {
-    lines.push(headers.map((header) => escape(row[header])).join(","));
+    const serializedRow = {
+      ...row
+    };
+    if (metadata?.percentiles?.length) {
+      serializedRow.summaryPercentiles = metadata.percentiles.join("|");
+    }
+    lines.push(headers.map((header) => escape(serializedRow[header])).join(","));
   }
   return `${lines.join("\n")}\n`;
 }
 
-function toJson(rows) {
+function toJson(rows, metadata) {
+  if (metadata?.percentiles?.length) {
+    return `${JSON.stringify({ percentiles: metadata.percentiles, rows }, null, 2)}\n`;
+  }
   return `${JSON.stringify(rows, null, 2)}\n`;
 }
 
@@ -355,7 +367,10 @@ export async function runGoldSummary(options) {
   if (options.global) {
     summaries.push(summarizeFileEntries("ALL", entries, percentiles));
   }
-  const serialized = options.csv ? toCsv(summaries, percentiles) : toJson(summaries);
+  const metadata = { percentiles };
+  const serialized = options.csv
+    ? toCsv(summaries, percentiles, metadata)
+    : toJson(summaries, metadata);
   if (options.out) {
     const outPath = path.resolve(options.out);
     await fs.mkdir(path.dirname(outPath), { recursive: true });

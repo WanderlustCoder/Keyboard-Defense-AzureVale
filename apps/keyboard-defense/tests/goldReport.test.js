@@ -45,6 +45,7 @@ test("runGoldReport invokes goldTimeline then goldSummary", async () => {
     mergePassives: true,
     passiveWindow: 7,
     global: true,
+    percentiles: "25,50,90",
     targets: ["snapshots/sample.json"]
   };
   await runGoldReport(opts, fakeRunner);
