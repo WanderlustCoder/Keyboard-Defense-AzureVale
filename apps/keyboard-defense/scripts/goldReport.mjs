@@ -7,6 +7,7 @@ import process from "node:process";
 const DEFAULT_TIMELINE_OUT = "artifacts/gold-timeline.report.json";
 const DEFAULT_SUMMARY_OUT = "artifacts/gold-summary.report.json";
 const DEFAULT_PASSIVE_WINDOW = 5;
+const DEFAULT_SUMMARY_PERCENTILES = "25,50,90";
 
 function printHelp() {
   console.log(`Keyboard Defense gold report orchestrator
@@ -21,6 +22,7 @@ Options:
   --no-merge-passives     Skip attaching passive unlock metadata to the timeline
   --passive-window <secs> Seconds to search for passive unlock near each gold event (default ${DEFAULT_PASSIVE_WINDOW})
   --global                Append an aggregate row to the summary
+  --percentiles <list>    Comma-separated percentile cutlines for gain/spend stats (default ${DEFAULT_SUMMARY_PERCENTILES})
   --help                  Show this help message and exit
 
 Description:
@@ -37,6 +39,7 @@ export function parseArgs(argv = []) {
     passiveWindow: DEFAULT_PASSIVE_WINDOW,
     global: false,
     targets: [],
+    percentiles: DEFAULT_SUMMARY_PERCENTILES,
     help: false
   };
 
@@ -75,6 +78,12 @@ export function parseArgs(argv = []) {
       case "--help":
         options.help = true;
         break;
+      case "--percentiles": {
+        const value = argv[++i];
+        if (!value) throw new Error("Expected list after --percentiles");
+        options.percentiles = value;
+        break;
+      }
       default:
         if (token.startsWith("-")) {
           throw new Error(`Unknown option: ${token}`);
@@ -119,6 +128,9 @@ export async function runGoldReport(options, runner = run) {
   const summaryArgs = ["./scripts/goldSummary.mjs", "--out", summaryPath];
   if (options.summaryCsv) summaryArgs.push("--csv");
   if (options.global) summaryArgs.push("--global");
+  if (options.percentiles) {
+    summaryArgs.push("--percentiles", options.percentiles);
+  }
   summaryArgs.push(timelinePath);
 
   await runner(process.execPath, summaryArgs);

@@ -4,6 +4,13 @@ import path from "node:path";
 
 import { parseArgs, runGoldReport } from "../scripts/goldReport.mjs";
 
+test("parseArgs includes default percentiles and overrides", () => {
+  const defaults = parseArgs(["snapshots"]);
+  assert.equal(defaults.percentiles, "25,50,90");
+  const overrides = parseArgs(["--percentiles", "10,90", "snapshots"]);
+  assert.equal(overrides.percentiles, "10,90");
+});
+
 test("parseArgs captures defaults and overrides", () => {
   const parsed = parseArgs([
     "--timeline-out",
@@ -48,6 +55,8 @@ test("runGoldReport invokes goldTimeline then goldSummary", async () => {
   assert(commands[0].args.includes(path.resolve("snapshots/sample.json")));
   assert(commands[1].args.includes("./scripts/goldSummary.mjs"));
   assert(commands[1].args.includes("--global"));
+  assert(commands[1].args.includes("--percentiles"));
+  assert(commands[1].args.includes("25,50,90"));
   assert(commands[1].args.includes(path.resolve("tmp/timeline.json")));
 });
 

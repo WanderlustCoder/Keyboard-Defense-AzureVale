@@ -11,5 +11,4 @@
 - Vitest coverage exercises the parser, per-file math, CSV header contract, and JSON output when custom cutlines (25/75/95) are provided.
 
 **Next Steps**
-1. Thread the percentile list into CI workflows (tutorial smoke, breach drills) so artifacts destined for dashboards always include the exact cutlines those dashboards expect.
-2. Consider surfacing the chosen percentile list in the serialized output metadata for easier downstream auditing.
+1. Consider surfacing the chosen percentile list in the serialized output metadata for easier downstream auditing.

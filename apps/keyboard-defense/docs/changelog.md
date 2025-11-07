@@ -1,3 +1,8 @@
+## Gold Summary CI Percentiles
+
+- Tutorial smoke automation now calls `goldSummary.mjs --percentiles 25,50,90` so CI artifacts match the dashboard cutlines without any manual flags.
+- `goldReport.mjs` forwards `--percentiles` (defaulting to `25,50,90`) to the summary CLI, keeping local investigations aligned with the automation defaults while still letting engineers override the list when necessary.
+
 ## Gold Summary Custom Cutlines
 
 - Added `--percentiles <comma-list>` to `goldSummary.mjs`, enabling dashboards to request arbitrary gain/spend percentile columns alongside the existing stats; defaults remain `50,90` for median/p90 parity.

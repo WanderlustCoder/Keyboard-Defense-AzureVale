@@ -10,6 +10,7 @@ import path from "node:path";
 import process from "node:process";
 
 const startedAt = new Date().toISOString();
+const DASHBOARD_PERCENTILES = "25,50,90";
 
 function parseArgs(argv) {
   const opts = { ci: false, mode: "skip" };
@@ -75,12 +76,20 @@ async function generateGoldEconomyArtifacts(inputPath, artifactDir, summary, ciM
   const summaryName = ciMode ? "gold-summary.ci.json" : "gold-summary.json";
   const summaryPath = path.join(artifactDir, summaryName);
   summary.commands.push(
-    `${process.execPath} ./scripts/goldSummary.mjs --global --out ${summaryPath} ${timelinePath}`
+    `${process.execPath} ./scripts/goldSummary.mjs --global --percentiles ${DASHBOARD_PERCENTILES} --out ${summaryPath} ${timelinePath}`
   );
   try {
     await run(
       process.execPath,
-      ["./scripts/goldSummary.mjs", "--global", "--out", summaryPath, timelinePath],
+      [
+        "./scripts/goldSummary.mjs",
+        "--global",
+        "--percentiles",
+        DASHBOARD_PERCENTILES,
+        "--out",
+        summaryPath,
+        timelinePath
+      ],
       { shell: false }
     );
     summary.goldSummary = summaryPath;
