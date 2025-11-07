@@ -81,7 +81,7 @@ apps/keyboard-defense/
 - Use `npm run analytics:aggregate` to convert JSON snapshots into a CSV. Columns include turret/typing damage, DPS splits, shield breaks, castle bonus gold, castle repair usage (count, HP restored, gold spent), passive unlock counts/details, and recent gold event telemetry per wave.
 - Use `npm run analytics:passives` to emit a castle passive unlock timeline (JSON or `--csv`) when analyzing exported snapshots or automation artifacts. Pass `--merge-gold --gold-window <seconds>` to attach the closest gold delta event to each unlock for economy dashboards.
 - Use `npm run analytics:gold` to export a gold event timeline (JSON by default, `--csv` optional) containing delta, resulting total, timestamp, time-since data, and (optionally) the nearest passive unlock (`--merge-passives --passive-window <seconds>`).
-- Use `npm run analytics:gold:summary` to condense one or more timelines/snapshots into per-file economy stats (net delta, max gain/spend, totals, passive linkage counts). Append `--global` to include an overall aggregate row.
+- Use `npm run analytics:gold:summary` to condense one or more timelines/snapshots into per-file economy stats (net delta, max gain/spend, percentile gains/spends, passive linkage counts). Append `--global` to include an overall aggregate row, and pass `--percentiles 25,50,90` (for example) to customize which gain/spend percentiles are included.
 - Use `npm run analytics:gold:report` to generate both the passive-aware timeline and matching summary in one shot (uses the same flags as the underlying CLIs).
 - Review [`docs/analytics_schema.md`](../docs/analytics_schema.md) for the full snapshot and CSV schema, including tutorial telemetry fields.
 - Snapshot JSONs are generated via the in-game analytics download button (debug panel) or the options overlay when analytics export is enabled.
@@ -115,7 +115,7 @@ The new generation of orchestration scripts lives in `scripts/`:
 | `node scripts/analyticsAggregate.mjs` | Convert analytics snapshots into the detailed wave-by-wave CSV described in `docs/analytics_schema.md`.                                           |
 | `node scripts/analyticsLeaderboard.mjs` | Generate a leaderboard-ready CSV (or JSON) ranked by combo, accuracy, and DPS from exported analytics snapshots.                              |
 | `node scripts/goldTimeline.mjs` | Emit the recent-gold timeline (JSON or CSV) from analytics snapshots or smoke artifacts, with optional `--merge-passives` support for correlating unlocks. |
-| `node scripts/goldSummary.mjs` | Aggregate one or more timelines/snapshots into per-file economy stats (net totals, max gain/spend, median/p90 gain & spend, passive linkage counts). |
+| `node scripts/goldSummary.mjs` | Aggregate one or more timelines/snapshots into per-file economy stats (net totals, max gain/spend, configurable gain/spend percentiles via `--percentiles`, passive linkage counts). |
 | `node scripts/goldReport.mjs` | Convenience wrapper that runs the timeline + summary CLIs sequentially so you get both artifacts via one command. |
 | `node scripts/assetIntegrity.mjs` | Hash every manifest-listed asset (SHA-256) and rewrite/verify the manifest integrity map (`--check` to verify without writing).                      |
 

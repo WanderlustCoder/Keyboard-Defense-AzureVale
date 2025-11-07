@@ -1,3 +1,9 @@
+## Gold Summary Custom Cutlines
+
+- Added `--percentiles <comma-list>` to `goldSummary.mjs`, enabling dashboards to request arbitrary gain/spend percentile columns alongside the existing stats; defaults remain `50,90` for median/p90 parity.
+- The CLI now emits `gainP<percent>` / `spendP<percent>` columns (e.g., `gainP25`, `spendP95`) immediately after `uniquePassiveIds`, plus the legacy `medianGain`/`p90Gain` aliases so earlier tooling keeps working.
+- Parser validation, per-file aggregation, global rows, and CSV header generation gained coverage for custom percentiles (including decimal cut lines).
+
 ## Gold Summary Percentiles
 
 - `goldSummary.mjs` now tracks every gain/spend delta per file to compute the median and 90th-percentile amounts; the JSON/CSV output adds `medianGain`, `p90Gain`, `medianSpend`, and `p90Spend` columns so dashboards can distinguish routine economy flow from rare spikes.

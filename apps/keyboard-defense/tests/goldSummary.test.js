@@ -16,6 +16,12 @@ test("parseArgs captures csv flag and targets", () => {
   assert.equal(parsed.csv, true);
   assert.equal(parsed.out, "summary.csv");
   assert.deepEqual(parsed.targets, ["timeline.json"]);
+  assert.deepEqual(parsed.percentiles, [50, 90]);
+});
+
+test("parseArgs accepts custom percentiles", () => {
+  const parsed = parseArgs(["--percentiles", "25, 75,90", "foo.json"]);
+  assert.deepEqual(parsed.percentiles, [25, 75, 90]);
 });
 
 test("summarizeFileEntries computes stats", () => {
@@ -39,6 +45,8 @@ test("summarizeFileEntries computes stats", () => {
   assert.equal(summary.p90Gain, 39);
   assert.equal(summary.medianSpend, -50);
   assert.equal(summary.p90Spend, -50);
+  assert.equal(summary.gainP50, 35);
+  assert.equal(summary.spendP50, -50);
 });
 
 test("summarizeGoldEntries groups by file", () => {
@@ -58,6 +66,8 @@ test("summarizeFileEntries yields null percentile stats when no events", () => {
   assert.equal(summary.p90Gain, null);
   assert.equal(summary.medianSpend, null);
   assert.equal(summary.p90Spend, null);
+  assert.equal(summary.gainP50, null);
+  assert.equal(summary.spendP50, null);
 });
 
 test("runGoldSummary writes csv output", async () => {
@@ -80,7 +90,7 @@ test("runGoldSummary writes csv output", async () => {
     const csv = await fs.readFile(outPath, "utf8");
     assert.match(
       csv,
-      /file,eventCount,netDelta,maxGain,maxSpend,totalPositive,totalNegative,firstTimestamp,lastTimestamp,passiveLinkedCount,uniquePassiveIds,medianGain,p90Gain,medianSpend,p90Spend,maxPassiveLag/
+      /file,eventCount,netDelta,maxGain,maxSpend,totalPositive,totalNegative,firstTimestamp,lastTimestamp,passiveLinkedCount,uniquePassiveIds,gainP50,spendP50,gainP90,spendP90,medianGain,p90Gain,medianSpend,p90Spend,maxPassiveLag/
     );
     assert.match(csv, /sample,2,-10/);
   } finally {
@@ -113,6 +123,35 @@ test("runGoldSummary appends global summary when requested", async () => {
     assert.equal(globalRow.netDelta, -15);
     assert.equal(globalRow.medianGain, 25);
     assert.equal(globalRow.medianSpend, -40);
+  } finally {
+    await fs.rm(dir, { recursive: true, force: true });
+  }
+});
+
+test("runGoldSummary honors custom percentiles", async () => {
+  const dir = await fs.mkdtemp(path.join(os.tmpdir(), "gold-summary-pcts-"));
+  try {
+    const timeline = [
+      { file: "sample", eventIndex: 0, gold: 100, delta: 25, timestamp: 5 },
+      { file: "sample", eventIndex: 1, gold: 60, delta: -40, timestamp: 15 },
+      { file: "sample", eventIndex: 2, gold: 110, delta: 50, timestamp: 30 }
+    ];
+    const file = path.join(dir, "timeline.json");
+    await fs.writeFile(file, JSON.stringify(timeline, null, 2), "utf8");
+    const outPath = path.join(dir, "summary.json");
+    await runGoldSummary({
+      csv: false,
+      out: outPath,
+      help: false,
+      global: false,
+      percentiles: [25, 75, 95],
+      targets: [file]
+    });
+    const [row] = JSON.parse(await fs.readFile(outPath, "utf8"));
+    assert.equal(row.gainP25, 31.25);
+    assert.equal(row.gainP75, 43.75);
+    assert.equal(row.gainP95, 48.75);
+    assert.equal(row.spendP25, -40);
   } finally {
     await fs.rm(dir, { recursive: true, force: true });
   }

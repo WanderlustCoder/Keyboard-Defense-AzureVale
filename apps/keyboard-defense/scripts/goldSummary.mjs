@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 import { buildGoldTimelineEntries } from "./goldTimeline.mjs";
 
 const DEFAULT_OUTPUT = null;
+const DEFAULT_PERCENTILES = [50, 90];
 
 function printHelp() {
   console.log(`Keyboard Defense gold summary export
@@ -18,6 +19,8 @@ Usage:
 Options:
   --csv           Emit CSV instead of JSON
   --out <path>    Write output to the provided file (stdout otherwise)
+  --percentiles <list>
+                  Comma-separated percentile cutlines (0-100) to include in the output (defaults to 50,90)
   --help          Show this message
 
 Description:
@@ -31,7 +34,8 @@ export function parseArgs(argv = []) {
     out: DEFAULT_OUTPUT,
     help: false,
     targets: [],
-    global: false
+    global: false,
+    percentiles: [...DEFAULT_PERCENTILES]
   };
 
   for (let i = 0; i < argv.length; i += 1) {
@@ -54,6 +58,23 @@ export function parseArgs(argv = []) {
       case "--help":
         options.help = true;
         break;
+      case "--percentiles": {
+        const value = argv[++i];
+        if (!value) throw new Error("Expected list after --percentiles");
+        const parsed = value
+          .split(",")
+          .map((token) => Number.parseFloat(token.trim()))
+          .filter((num) => !Number.isNaN(num));
+        if (parsed.length === 0) {
+          throw new Error("Provide at least one numeric percentile (0-100).");
+        }
+        if (parsed.some((num) => num < 0 || num > 100)) {
+          throw new Error("Percentiles must fall between 0 and 100.");
+        }
+        const uniqueSorted = [...new Set(parsed)].sort((a, b) => a - b);
+        options.percentiles = uniqueSorted;
+        break;
+      }
       default:
         if (token.startsWith("-")) {
           throw new Error(`Unknown option: ${token}`);
@@ -134,18 +155,26 @@ function computePercentile(sortedValues, percentile) {
   return lowerValue + (upperValue - lowerValue) * weight;
 }
 
-function computePercentilePair(values) {
+function computePercentiles(values, percentiles) {
   if (!values.length) {
-    return { median: null, p90: null };
+    return new Map();
   }
   const sorted = [...values].sort((a, b) => a - b);
-  return {
-    median: computePercentile(sorted, 50),
-    p90: computePercentile(sorted, 90)
-  };
+  const map = new Map();
+  for (const pct of percentiles) {
+    map.set(pct, computePercentile(sorted, pct));
+  }
+  return map;
 }
 
-export function summarizeFileEntries(file, entries) {
+function formatPercentileKey(prefix, value) {
+  const normalized = String(value)
+    .replace(/\./g, "_")
+    .replace(/[^0-9_]/g, "");
+  return `${prefix}P${normalized}`;
+}
+
+export function summarizeFileEntries(file, entries, percentiles = DEFAULT_PERCENTILES) {
   if (entries.length === 0) {
     return {
       file,
@@ -159,11 +188,17 @@ export function summarizeFileEntries(file, entries) {
       lastTimestamp: null,
       passiveLinkedCount: 0,
       uniquePassiveIds: [],
+      maxPassiveLag: null,
       medianGain: null,
       p90Gain: null,
       medianSpend: null,
       p90Spend: null,
-      maxPassiveLag: null
+      ...Object.fromEntries(
+        percentiles.flatMap((pct) => [
+          [formatPercentileKey("gain", pct), null],
+          [formatPercentileKey("spend", pct), null]
+        ])
+      )
     };
   }
   let netDelta = 0;
@@ -218,8 +253,13 @@ export function summarizeFileEntries(file, entries) {
       }
     }
   }
-  const gainPercentiles = computePercentilePair(gains);
-  const spendPercentiles = computePercentilePair(spends);
+  const gainPercentiles = computePercentiles(gains, percentiles);
+  const spendPercentiles = computePercentiles(spends, percentiles);
+  const percentileFields = {};
+  for (const pct of percentiles) {
+    percentileFields[formatPercentileKey("gain", pct)] = gainPercentiles.get(pct) ?? null;
+    percentileFields[formatPercentileKey("spend", pct)] = spendPercentiles.get(pct) ?? null;
+  }
 
   return {
     file,
@@ -233,25 +273,26 @@ export function summarizeFileEntries(file, entries) {
     lastTimestamp,
     passiveLinkedCount,
     uniquePassiveIds: [...passiveIds],
-    medianGain: gainPercentiles.median,
-    p90Gain: gainPercentiles.p90,
-    medianSpend: spendPercentiles.median,
-    p90Spend: spendPercentiles.p90,
+    ...percentileFields,
+    medianGain: gainPercentiles.get(50) ?? null,
+    p90Gain: gainPercentiles.get(90) ?? null,
+    medianSpend: spendPercentiles.get(50) ?? null,
+    p90Spend: spendPercentiles.get(90) ?? null,
     maxPassiveLag
   };
 }
 
-export function summarizeGoldEntries(entries) {
+export function summarizeGoldEntries(entries, percentiles = DEFAULT_PERCENTILES) {
   const grouped = groupByFile(entries);
   const summaries = [];
   for (const [file, groupedEntries] of grouped.entries()) {
-    summaries.push(summarizeFileEntries(file, groupedEntries));
+    summaries.push(summarizeFileEntries(file, groupedEntries, percentiles));
   }
   return summaries;
 }
 
-function toCsv(rows) {
-  const headers = [
+function toCsv(rows, percentiles) {
+  const baseHeaders = [
     "file",
     "eventCount",
     "netDelta",
@@ -262,13 +303,14 @@ function toCsv(rows) {
     "firstTimestamp",
     "lastTimestamp",
     "passiveLinkedCount",
-    "uniquePassiveIds",
-    "medianGain",
-    "p90Gain",
-    "medianSpend",
-    "p90Spend",
-    "maxPassiveLag"
+    "uniquePassiveIds"
   ];
+  const percentileHeaders = percentiles.flatMap((pct) => [
+    formatPercentileKey("gain", pct),
+    formatPercentileKey("spend", pct)
+  ]);
+  const tailHeaders = ["medianGain", "p90Gain", "medianSpend", "p90Spend", "maxPassiveLag"];
+  const headers = [...baseHeaders, ...percentileHeaders, ...tailHeaders];
   const escape = (value) => {
     if (value === null || value === undefined) return "";
     const str = String(Array.isArray(value) ? value.join("|") : value);
@@ -308,11 +350,12 @@ export async function runGoldSummary(options) {
       console.warn(error.message);
     }
   }
-  const summaries = summarizeGoldEntries(entries);
+  const percentiles = options.percentiles ?? DEFAULT_PERCENTILES;
+  const summaries = summarizeGoldEntries(entries, percentiles);
   if (options.global) {
-    summaries.push(summarizeFileEntries("ALL", entries));
+    summaries.push(summarizeFileEntries("ALL", entries, percentiles));
   }
-  const serialized = options.csv ? toCsv(summaries) : toJson(summaries);
+  const serialized = options.csv ? toCsv(summaries, percentiles) : toJson(summaries);
   if (options.out) {
     const outPath = path.resolve(options.out);
     await fs.mkdir(path.dirname(outPath), { recursive: true });

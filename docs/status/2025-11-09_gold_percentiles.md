@@ -13,4 +13,3 @@
 
 **Next Steps**
 1. Pipe the new percentile signals into CI dashboards/alerts so we can spot economy drift before it hits players.
-2. Consider exposing a `--percentiles` flag so advanced workflows can request alternate cutlines (p95, p99) without editing the script.
