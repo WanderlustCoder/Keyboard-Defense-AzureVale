@@ -2080,3 +2080,23 @@ body[data-compact-height="true"] .tutorial-banner {
   }
 }
 
+#diagnostics-collapse-toggle {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 45;
+  font-size: 0.75rem;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.65);
+  background: rgba(15, 23, 42, 0.85);
+  color: #e2e8f0;
+  box-shadow: 0 10px 16px rgba(2, 6, 23, 0.45);
+  display: none;
+}
+
+#diagnostics-collapse-toggle[data-visible="true"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}

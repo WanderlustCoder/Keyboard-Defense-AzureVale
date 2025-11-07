@@ -1,27 +1,21 @@
-import { RuntimeMetrics } from "../engine/gameEngine.js";
-import { CastlePassive, CastlePassiveUnlock, WaveSummary } from "../core/types.js";
-
-function formatRegen(passive: CastlePassive): string {
+function formatRegen(passive) {
   const total = passive.total.toFixed(1);
   const delta = passive.delta > 0 ? ` (+${passive.delta.toFixed(1)})` : "";
   return `Regen ${total} HP/s${delta}`;
 }
-
-function formatArmor(passive: CastlePassive): string {
+function formatArmor(passive) {
   const total = Math.round(passive.total);
   const delta = Math.round(passive.delta);
   const deltaNote = delta > 0 ? ` (+${delta})` : "";
   return `+${total} armor${deltaNote}`;
 }
-
-function formatGold(passive: CastlePassive): string {
+function formatGold(passive) {
   const total = Math.round(passive.total * 100);
   const delta = Math.round(passive.delta * 100);
   const deltaNote = delta > 0 ? ` (+${delta}%)` : "";
   return `+${total}% gold${deltaNote}`;
 }
-
-function describeCastlePassive(passive: CastlePassive): string {
+function describeCastlePassive(passive) {
   switch (passive.id) {
     case "regen":
       return formatRegen(passive);
@@ -33,8 +27,7 @@ function describeCastlePassive(passive: CastlePassive): string {
       return "Passive unlocked";
   }
 }
-
-function describePassiveUnlock(unlock: CastlePassiveUnlock): string {
+function describePassiveUnlock(unlock) {
   const description = describeCastlePassive({
     id: unlock.id,
     total: unlock.total,
@@ -42,45 +35,16 @@ function describePassiveUnlock(unlock: CastlePassiveUnlock): string {
   });
   return `${description} @ ${unlock.time.toFixed(1)}s (castle L${unlock.level})`;
 }
-
-export interface DiagnosticsSessionStats {
-  bestCombo: number;
-  breaches: number;
-  soundEnabled: boolean;
-  soundVolume: number;
-  soundIntensity: number;
-  summaryCount: number;
-  lastSummary?: WaveSummary;
-  totalTurretDamage?: number;
-  totalTypingDamage?: number;
-  shieldedNow?: boolean;
-  shieldedNext?: boolean;
-  totalRepairs?: number;
-  totalRepairHealth?: number;
-  totalRepairGold?: number;
-  timeToFirstTurretSeconds?: number | null;
-  totalReactionTime?: number;
-  reactionSamples?: number;
-}
-
-const COLLAPSIBLE_SECTIONS = ["gold-events", "castle-passives", "turret-dps"] as const;
-type DiagnosticsSectionId = (typeof COLLAPSIBLE_SECTIONS)[number];
-
-export class DiagnosticsOverlay {
-  private visible = true;
-  private condensed = false;
-  private sectionsCollapsed = true;
-  private collapseToggle: HTMLButtonElement | null = null;
-  private lastMetrics: RuntimeMetrics | null = null;
-  private lastSession?: DiagnosticsSessionStats;
-
-  constructor(private readonly container: HTMLElement) {
+const COLLAPSIBLE_SECTIONS = ["gold-events", "castle-passives", "turret-dps"];
+class DiagnosticsOverlay {
+  constructor(container) {
+    this.container = container;
     this.setVisible(false);
     this.initializeResponsiveBehavior();
     if (typeof document !== "undefined") {
       this.collapseToggle = document.getElementById(
         "diagnostics-collapse-toggle"
-      ) as HTMLButtonElement | null;
+      );
       if (!this.collapseToggle) {
         this.collapseToggle = document.createElement("button");
         this.collapseToggle.id = "diagnostics-collapse-toggle";
@@ -98,31 +62,31 @@ export class DiagnosticsOverlay {
       this.updateCollapseButton();
     }
   }
-
-  update(metrics: RuntimeMetrics, session?: DiagnosticsSessionStats): void {
+  visible = true;
+  condensed = false;
+  sectionsCollapsed = true;
+  collapseToggle = null;
+  lastMetrics = null;
+  lastSession;
+  update(metrics, session) {
     this.lastMetrics = metrics;
     this.lastSession = session;
     if (!this.visible) {
       this.setVisible(false);
       return;
     }
-
     const difficulty = metrics.difficulty;
     const wave = metrics.wave;
     const waveCountdown = wave.inCountdown ? ` (prep ${wave.countdown.toFixed(1)}s)` : "";
     const modeSuffix = metrics.mode === "practice" ? " (Practice)" : "";
-
     const easy = (difficulty.wordWeights.easy ?? 0) * 100;
     const medium = (difficulty.wordWeights.medium ?? 0) * 100;
     const hard = (difficulty.wordWeights.hard ?? 0) * 100;
-
     const turretStats = metrics.turretStats ?? [];
     const goldEventCount = typeof metrics.goldEventCount === "number" ? metrics.goldEventCount : 0;
     const castlePassives = Array.isArray(metrics.castlePassives) ? metrics.castlePassives : [];
-    const passiveUnlockCount =
-      typeof metrics.passiveUnlockCount === "number" ? metrics.passiveUnlockCount : castlePassives.length;
+    const passiveUnlockCount = typeof metrics.passiveUnlockCount === "number" ? metrics.passiveUnlockCount : castlePassives.length;
     const lastPassiveUnlock = metrics.lastPassiveUnlock ?? null;
-
     const lines = [
       `Wave: ${wave.index + 1}/${wave.total}${modeSuffix}${waveCountdown}`,
       metrics.mode === "practice" ? "Mode: Practice - waves loop endlessly" : "Mode: Campaign",
@@ -139,15 +103,10 @@ export class DiagnosticsOverlay {
       `Wave damage (turret/typing/total): ${metrics.damage.turret.toFixed(1)} / ${metrics.damage.typing.toFixed(
         1
       )} / ${metrics.damage.total.toFixed(1)}`,
-      `Typing accuracy: ${(metrics.typing.accuracy * 100).toFixed(1)}% (${
-        metrics.typing.correctInputs
-      }/${metrics.typing.totalInputs})`,
-      `Rolling accuracy (${metrics.typing.recentSampleSize} inputs): ${(
-        metrics.typing.recentAccuracy * 100
-      ).toFixed(1)}%`,
+      `Typing accuracy: ${(metrics.typing.accuracy * 100).toFixed(1)}% (${metrics.typing.correctInputs}/${metrics.typing.totalInputs})`,
+      `Rolling accuracy (${metrics.typing.recentSampleSize} inputs): ${(metrics.typing.recentAccuracy * 100).toFixed(1)}%`,
       `Difficulty bias: ${metrics.typing.difficultyBias >= 0 ? "+" : ""}${metrics.typing.difficultyBias.toFixed(2)}`
     ];
-
     const roundedGold = Math.round(metrics.gold);
     const goldLineParts = [`Gold: ${roundedGold}`];
     if (typeof metrics.goldDelta === "number" && metrics.goldDelta !== 0) {
@@ -160,11 +119,8 @@ export class DiagnosticsOverlay {
     }
     goldLineParts.push(`events: ${goldEventCount}`);
     lines.push(goldLineParts.join(" "));
-
     const showDetails = !this.condensed || !this.sectionsCollapsed;
-    const recentGoldEvents = Array.isArray(metrics.recentGoldEvents)
-      ? metrics.recentGoldEvents
-      : [];
+    const recentGoldEvents = Array.isArray(metrics.recentGoldEvents) ? metrics.recentGoldEvents : [];
     if (recentGoldEvents.length > 0 && showDetails) {
       lines.push("Recent gold events:");
       const orderedEvents = [...recentGoldEvents].sort((a, b) => b.timestamp - a.timestamp);
@@ -178,7 +134,7 @@ export class DiagnosticsOverlay {
         lines.push(`  ${deltaLabel} -> ${totalGold}g @ ${timestamp.toFixed(1)}s${agoLabel}`);
       }
     } else if (recentGoldEvents.length > 0) {
-      const latest = recentGoldEvents.at(-1)!;
+      const latest = recentGoldEvents.at(-1);
       const deltaRounded = Math.round(latest.delta);
       const deltaLabel = `${deltaRounded >= 0 ? "+" : ""}${deltaRounded}g`;
       lines.push(
@@ -187,38 +143,28 @@ export class DiagnosticsOverlay {
         )}g (collapsed, tap expand to view)`
       );
     }
-
     if (castlePassives.length > 0) {
       lines.push(
-        `Castle passives (${castlePassives.length} active): ${castlePassives
-          .map(describeCastlePassive)
-          .join(" | ")}`
+        `Castle passives (${castlePassives.length} active): ${castlePassives.map(describeCastlePassive).join(" | ")}`
       );
     } else {
       lines.push("Castle passives: none unlocked");
     }
-
     lines.push(`Passive unlocks tracked: ${passiveUnlockCount}`);
     if (lastPassiveUnlock) {
       lines.push(`Last passive unlock: ${describePassiveUnlock(lastPassiveUnlock)}`);
     }
-
     lines.push(`Time: ${metrics.time.toFixed(1)}s`);
-
     if (turretStats.length > 0 && showDetails) {
       lines.push("Turret DPS breakdown:");
       for (const stat of turretStats) {
-        const label = stat.turretType
-          ? `${stat.turretType.toUpperCase()} L${stat.level ?? 1}`
-          : "Empty";
+        const label = stat.turretType ? `${stat.turretType.toUpperCase()} L${stat.level ?? 1}` : "Empty";
         lines.push(
           `  ${stat.slotId}: ${label} - ${stat.damage.toFixed(1)} dmg | ${stat.dps.toFixed(1)} DPS`
         );
       }
     } else if (turretStats.length > 0) {
-      const top =
-        turretStats.reduce((prev, current) => (current.dps > prev.dps ? current : prev), turretStats[0]) ??
-        null;
+      const top = turretStats.reduce((prev, current) => current.dps > prev.dps ? current : prev, turretStats[0]) ?? null;
       const label = top?.turretType ? `${top.turretType.toUpperCase()} L${top.level ?? 1}` : "slot";
       lines.push(
         `Turret DPS: ${turretStats.length} tracked, top ${label} ${top?.dps.toFixed(
@@ -226,7 +172,6 @@ export class DiagnosticsOverlay {
         )} DPS (collapsed)`
       );
     }
-
     if (session) {
       const totalTurret = Math.max(0, Math.round(session.totalTurretDamage ?? 0));
       const totalTyping = Math.max(0, Math.round(session.totalTypingDamage ?? 0));
@@ -241,10 +186,7 @@ export class DiagnosticsOverlay {
         0,
         Math.min(150, Math.round((session.soundIntensity ?? 0) * 100))
       );
-      const timeToFirstTurretSeconds =
-        typeof session.timeToFirstTurretSeconds === "number"
-          ? session.timeToFirstTurretSeconds
-          : (session.timeToFirstTurretSeconds ?? null);
+      const timeToFirstTurretSeconds = typeof session.timeToFirstTurretSeconds === "number" ? session.timeToFirstTurretSeconds : session.timeToFirstTurretSeconds ?? null;
       const totalReactionTime = Math.max(0, session.totalReactionTime ?? 0);
       const reactionSamples = Math.max(0, Math.floor(session.reactionSamples ?? 0));
       const averageReaction = reactionSamples > 0 ? totalReactionTime / reactionSamples : null;
@@ -253,9 +195,7 @@ export class DiagnosticsOverlay {
         `Breaches: ${session.breaches}`,
         `Sound: ${session.soundEnabled ? "on" : "muted"} (volume ${volumePercent}%, intensity ${intensityPercent}%)`,
         `Wave summaries tracked: ${session.summaryCount}`,
-        `Shielded enemies: ${session.shieldedNow ? "ACTIVE" : "none"}${
-          session.shieldedNext ? " | next wave" : ""
-        }`,
+        `Shielded enemies: ${session.shieldedNow ? "ACTIVE" : "none"}${session.shieldedNext ? " | next wave" : ""}`,
         `Session damage (turret/typing): ${totalTurret} / ${totalTyping}`,
         `Castle repairs: ${totalRepairs} | HP restored ${totalRepairHealth} | Gold spent ${totalRepairGold}g`
       );
@@ -277,14 +217,9 @@ export class DiagnosticsOverlay {
         const typingDamage = Math.round(last.typingDamage ?? 0);
         const turretDpsStr = (last.turretDps ?? 0).toFixed(1);
         const typingDpsStr = (last.typingDps ?? 0).toFixed(1);
-        const averageReactionNote =
-          typeof last.averageReaction === "number" && last.averageReaction > 0
-            ? ` | avg reaction ${last.averageReaction.toFixed(2)}s`
-            : "";
+        const averageReactionNote = typeof last.averageReaction === "number" && last.averageReaction > 0 ? ` | avg reaction ${last.averageReaction.toFixed(2)}s` : "";
         lines.push(
-          `Last wave ${last.index + 1}: ${last.enemiesDefeated} defeats, ${(
-            last.accuracy * 100
-          ).toFixed(
+          `Last wave ${last.index + 1}: ${last.enemiesDefeated} defeats, ${(last.accuracy * 100).toFixed(
             1
           )}% accuracy, ${last.breaches} breaches, DPS ${last.dps.toFixed(1)}, ${goldNote}${averageReactionNote}`
         );
@@ -293,28 +228,21 @@ export class DiagnosticsOverlay {
         );
       }
     }
-
-    this.container.innerHTML = lines
-      .map((line) => `<div class="diagnostics-line">${line}</div>`)
-      .join("");
+    this.container.innerHTML = lines.map((line) => `<div class="diagnostics-line">${line}</div>`).join("");
     this.container.dataset.visible = "true";
     this.updateCollapseButton();
   }
-
-  toggle(): void {
+  toggle() {
     this.setVisible(!this.visible);
   }
-
-  setVisible(next: boolean): void {
+  setVisible(next) {
     this.visible = next;
     this.container.dataset.visible = next ? "true" : "false";
   }
-
-  isVisible(): boolean {
+  isVisible() {
     return this.visible;
   }
-
-  private initializeResponsiveBehavior(): void {
+  initializeResponsiveBehavior() {
     const apply = () => this.applyCondensedState(this.shouldCondense());
     apply();
     if (typeof window === "undefined") {
@@ -331,7 +259,6 @@ export class DiagnosticsOverlay {
             matcher.addListener(apply);
           }
         } catch {
-          // ignore matchMedia failures
         }
       }
     }
@@ -341,8 +268,7 @@ export class DiagnosticsOverlay {
       window.addEventListener("resize", apply);
     }
   }
-
-  private applyCondensedState(condensed: boolean): void {
+  applyCondensedState(condensed) {
     this.condensed = condensed;
     if (condensed) {
       this.container.dataset.condensed = "true";
@@ -355,15 +281,10 @@ export class DiagnosticsOverlay {
     }
     this.updateCollapseButton();
   }
-
-  private shouldCondense(): boolean {
-    return (
-      this.matchesMediaQuery("(max-height: 540px)") ||
-      this.matchesMediaQuery("(max-width: 720px)")
-    );
+  shouldCondense() {
+    return this.matchesMediaQuery("(max-height: 540px)") || this.matchesMediaQuery("(max-width: 720px)");
   }
-
-  private matchesMediaQuery(query: string): boolean {
+  matchesMediaQuery(query) {
     if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
       return false;
     }
@@ -373,13 +294,13 @@ export class DiagnosticsOverlay {
       return false;
     }
   }
-
-  private updateCollapseButton(): void {
+  updateCollapseButton() {
     if (!this.collapseToggle || !this.condensed) return;
     const expanded = !this.sectionsCollapsed;
-    this.collapseToggle.textContent = expanded
-      ? "Collapse diagnostics details"
-      : "Expand diagnostics details";
+    this.collapseToggle.textContent = expanded ? "Collapse diagnostics details" : "Expand diagnostics details";
     this.collapseToggle.setAttribute("aria-expanded", expanded ? "true" : "false");
   }
 }
+export {
+  DiagnosticsOverlay
+};

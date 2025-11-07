@@ -227,3 +227,78 @@ test("DiagnosticsOverlay condenses overlay on compact height", () => {
     }
   }
 });
+
+test("DiagnosticsOverlay collapses detailed sections when condensed", () => {
+  const container = createContainer();
+  const matchState = {
+    "(max-height: 540px)": true,
+    "(max-width: 720px)": false
+  };
+  const stubMatchMedia = (query) => ({
+    matches: Boolean(matchState[query]),
+    media: query,
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    addListener: () => {},
+    removeListener: () => {}
+  });
+  const originalWindow = global.window;
+  global.window = {
+    matchMedia: stubMatchMedia,
+    addEventListener: () => {}
+  };
+  const engine = new GameEngine({ seed: 7, config: { waves: [] } });
+  const metrics = engine.getRuntimeMetrics();
+  const overlay = new DiagnosticsOverlay(container);
+  overlay.setVisible(true);
+  assert.equal(container.dataset.condensed, "true");
+  overlay.sectionsCollapsed = true;
+  overlay.update(
+    {
+      ...metrics,
+      recentGoldEvents: [
+        { gold: 300, delta: 50, timestamp: 10 },
+        { gold: 260, delta: -20, timestamp: 5 }
+      ],
+      gold: 300,
+      goldEventCount: 2,
+      turretStats: [
+        { slotId: "a1", turretType: "arrow", level: 2, damage: 250, dps: 45 },
+        { slotId: "b2", turretType: "flame", level: 1, damage: 120, dps: 30 }
+      ]
+    },
+    undefined
+  );
+  try {
+    const collapsedOutput = container.innerHTML;
+    assert.ok(collapsedOutput.includes("Recent gold events"));
+    const preExpanded = collapsedOutput;
+    overlay.sectionsCollapsed = false;
+    overlay.update(
+      {
+        ...metrics,
+        recentGoldEvents: [
+          { gold: 300, delta: 50, timestamp: 10 },
+          { gold: 260, delta: -20, timestamp: 5 }
+        ],
+        gold: 300,
+        goldEventCount: 2,
+        turretStats: [
+          { slotId: "a1", turretType: "arrow", level: 2, damage: 250, dps: 45 },
+          { slotId: "b2", turretType: "flame", level: 1, damage: 120, dps: 30 }
+        ]
+      },
+      undefined
+    );
+    const expandedOutput = container.innerHTML;
+    assert.notEqual(preExpanded, expandedOutput);
+    assert.ok(expandedOutput.includes("Recent gold events:"));
+    assert.ok(expandedOutput.includes("Turret DPS breakdown:"));
+  } finally {
+    if (typeof originalWindow === "undefined") {
+      delete global.window;
+    } else {
+      global.window = originalWindow;
+    }
+  }
+});
