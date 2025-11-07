@@ -1,5 +1,5 @@
 import { GameConfig } from "./config.js";
-import { GameMode, GameState, TurretSlotState } from "./types.js";
+import { GameState, TurretSlotState } from "./types.js";
 import { deriveCastlePassives } from "../utils/castlePassives.js";
 
 export function createInitialState(config: GameConfig): GameState {

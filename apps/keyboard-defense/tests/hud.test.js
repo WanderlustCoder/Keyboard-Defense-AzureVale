@@ -1051,7 +1051,6 @@ test("HudView turret priority controls reflect state and emit changes", () => {
   const [firstSlot, secondSlot, thirdSlot] = slotElements;
 
   const firstPrioritySelect = findByClass(firstSlot, "slot-priority-select");
-  const firstPriorityContainer = findByClass(firstSlot, "slot-priority");
   const secondPrioritySelect = findByClass(secondSlot, "slot-priority-select");
   const thirdPriorityContainer = findByClass(thirdSlot, "slot-priority");
   const thirdPrioritySelect = findByClass(thirdSlot, "slot-priority-select");

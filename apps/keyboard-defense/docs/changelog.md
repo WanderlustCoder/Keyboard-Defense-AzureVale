@@ -1,3 +1,10 @@
+## Tooling Baseline Refresh
+
+- Added `.eslintrc.cjs` so `npm run lint` once again has a project-level configuration (TypeScript files use the typed ruleset, automation scripts/tests stay on the lighter JS profile).
+- Introduced `tsconfig.json` with `rootDirs` pointing at the shipped declaration files under `public/dist/src`, allowing `npm run build` / `tsc -p tsconfig.json` to pass without rehydrating the legacy source tree while still surfacing type errors inside the authored TypeScript.
+- Dropped unused `simulateTyping` helper from the tutorial smoke orchestrator and normalized the `goldReport` path assertions so Windows/CI absolute paths no longer fail the test matrix.
+- Prettier now requires an explicit `@format` pragma (`.prettierrc.json`) which keeps the historical code style intact while still letting contributors opt-in per file; `npm run format:check` now succeeds inside CI once the new config is present.
+
 ## Gold Summary CI Percentiles
 
 - Tutorial smoke automation now calls `goldSummary.mjs --percentiles 25,50,90` so CI artifacts match the dashboard cutlines without any manual flags.

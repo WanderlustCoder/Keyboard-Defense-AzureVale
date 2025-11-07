@@ -277,14 +277,6 @@ async function dismissMainMenu(page) {
   );
 }
 
-async function simulateTyping(page, text) {
-  await page.evaluate((payload) => {
-    const kd = window.keyboardDefense;
-    if (!kd) throw new Error("keyboardDefense debug API missing during simulateTyping.");
-    kd.simulateTyping(payload);
-  }, text);
-}
-
 function createTutorialEventWaiter(page) {
   let cursor = 0;
   return async function waitForTutorialEvent(matcher, { timeout, description }) {

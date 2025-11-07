@@ -4,6 +4,18 @@ import path from "node:path";
 
 import { parseArgs, runGoldReport } from "../scripts/goldReport.mjs";
 
+function argsContainPath(args, expectedPath) {
+  const normalizedExpected = path.normalize(path.resolve(expectedPath));
+  return args.some((arg) => {
+    if (arg.startsWith("-")) return false;
+    try {
+      return path.normalize(path.resolve(arg)) === normalizedExpected;
+    } catch {
+      return false;
+    }
+  });
+}
+
 test("parseArgs includes default percentiles and overrides", () => {
   const defaults = parseArgs(["snapshots"]);
   assert.equal(defaults.percentiles, "25,50,90");
@@ -53,12 +65,12 @@ test("runGoldReport invokes goldTimeline then goldSummary", async () => {
   assert(commands[0].args.includes("./scripts/goldTimeline.mjs"));
   assert(commands[0].args.includes("--merge-passives"));
   assert(commands[0].args.includes("--passive-window"));
-  assert(commands[0].args.includes(path.resolve("snapshots/sample.json")));
+  assert(argsContainPath(commands[0].args, "snapshots/sample.json"));
   assert(commands[1].args.includes("./scripts/goldSummary.mjs"));
   assert(commands[1].args.includes("--global"));
   assert(commands[1].args.includes("--percentiles"));
   assert(commands[1].args.includes("25,50,90"));
-  assert(commands[1].args.includes(path.resolve("tmp/timeline.json")));
+  assert(argsContainPath(commands[1].args, "tmp/timeline.json"));
 });
 
 test("runGoldReport propagates errors from runner", async () => {
