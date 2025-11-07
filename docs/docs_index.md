@@ -19,6 +19,7 @@ Use this index to jump straight to the guidance you'll need while building and t
 
 ## Status Notes
 Status entries live under `docs/status/`. Recent highlights include:
+- `2025-11-13_gold_summary_checker.md` - Standalone CLI validates gold summary artifacts (JSON/CSV) before dashboards ingest them.
 - `2025-11-12_gold_summary_metadata.md` - Gold summary artifacts now embed the percentile list (JSON + CSV) for downstream validation.
 - `2025-11-11_gold_ci_percentiles.md` - CI smoke and `goldReport` now forward `--percentiles 25,50,90` so gold summaries match dashboards.
 - `2025-11-10_gold_percentile_flag.md` - `goldSummary.mjs` gains a `--percentiles` flag and dynamic gain/spend percentile columns.

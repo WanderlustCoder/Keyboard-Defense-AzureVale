@@ -23,6 +23,8 @@
     "analytics:passives": "node ./scripts/passiveTimeline.mjs",
     "analytics:gold": "node ./scripts/goldTimeline.mjs",
     "analytics:gold:summary": "node ./scripts/goldSummary.mjs",
+    "analytics:gold:check": "node ./scripts/goldSummaryCheck.mjs",
+    "analytics:gold:report": "node ./scripts/goldReport.mjs",
     "assets:integrity": "node ./scripts/assetIntegrity.mjs",
     "smoke:tutorial": "node ./scripts/tutorialSmoke.mjs",
     "wave:sim": "node ./scripts/waveSim.mjs",

@@ -12,7 +12,6 @@ import process from "node:process";
 const startedAt = new Date().toISOString();
 const DASHBOARD_PERCENTILES = [25, 50, 90];
 const DASHBOARD_PERCENTILES_ARG = DASHBOARD_PERCENTILES.join(",");
-const DASHBOARD_PERCENTILES = "25,50,90";
 
 export function parseArgs(argv) {
   const opts = { ci: false, mode: "skip" };
@@ -199,9 +198,6 @@ async function main() {
   }
 }
 
-if (
-  import.meta.url === `file://${process.argv[1]}` ||
-  process.argv[1]?.endsWith("smoke.mjs")
-) {
+if (import.meta.url === `file://${process.argv[1]}` || process.argv[1]?.endsWith("smoke.mjs")) {
   await main();
 }

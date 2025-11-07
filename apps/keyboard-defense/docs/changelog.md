@@ -8,6 +8,7 @@
 - `goldSummary.mjs` now embeds the percentile list used for each run: JSON output wraps the result in `{ percentiles, rows }`, and CSV output gains a trailing `summaryPercentiles` column so downstream tooling can validate cutlines without inspecting command logs.
 - Vitest coverage verifies the envelope/column across default and custom percentile runs.
 - Smoke summary JSON captures the verified percentile list (`goldSummaryPercentiles`) so dashboards/alerts can read the cutlines directly from the automation artifact.
+- Added `goldSummaryCheck.mjs` (`npm run analytics:gold:check`) to validate one or more gold summary artifacts (JSON or CSV), ensuring they embed the expected percentile metadata before dashboards ingest them.
 - Smoke automation now parses the JSON summary immediately after generation and raises a warning if the metadata deviates from the canonical `25,50,90` list, preventing mismatched artifacts from entering CI.
 
 ## Gold Summary Custom Cutlines
