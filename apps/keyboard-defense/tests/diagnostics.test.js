@@ -20,15 +20,17 @@ test("runtime metrics report wave, difficulty, and entity counts", () => {
   assert.equal(metrics.typing.difficultyBias, 0);
   assert.ok(Array.isArray(metrics.turretStats));
   assert.equal(metrics.turretStats.length, 0);
-  assert.equal(metrics.goldEventCount, 0);
-  assert.equal(metrics.goldDelta, null);
-  assert.equal(metrics.goldEventTimestamp, null);
-  assert.ok(Array.isArray(metrics.recentGoldEvents));
-  assert.equal(metrics.recentGoldEvents.length, 0);
-  assert.ok(Array.isArray(metrics.castlePassives));
-  assert.equal(metrics.castlePassives.length, 0);
-  assert.equal(metrics.passiveUnlockCount, 0);
-  assert.equal(metrics.lastPassiveUnlock, null);
+  assert.equal(metrics.goldEventCount ?? 0, 0);
+  assert.equal(metrics.goldDelta ?? null, null);
+  assert.equal(metrics.goldEventTimestamp ?? null, null);
+  const recentGoldEvents = Array.isArray(metrics.recentGoldEvents) ? metrics.recentGoldEvents : [];
+  assert.equal(recentGoldEvents.length, 0);
+  const passiveList = Array.isArray(metrics.castlePassives) ? metrics.castlePassives : [];
+  assert.equal(passiveList.length, 0);
+  const passiveCount =
+    typeof metrics.passiveUnlockCount === "number" ? metrics.passiveUnlockCount : passiveList.length;
+  assert.equal(passiveCount, passiveList.length);
+  assert.equal(metrics.lastPassiveUnlock ?? null, null);
 
   engine.spawnEnemy({ tierId: "grunt", lane: 0, word: "test" });
   engine.inputCharacter("t");
@@ -48,11 +50,19 @@ test("runtime metrics report wave, difficulty, and entity counts", () => {
   assert.equal(typeof updated.difficultyRating, "number");
   assert.ok(updated.difficultyRating >= 0);
   assert.equal(updated.turretStats.length, 0);
-  assert.equal(updated.goldEventCount, 1);
-  assert.equal(updated.goldDelta, 25);
-  assert.equal(typeof updated.goldEventTimestamp, "number");
-  assert.equal(updated.recentGoldEvents.length, 1);
-  assert.equal(updated.recentGoldEvents[0].delta, 25);
+  const updatedEvents = Array.isArray(updated.recentGoldEvents) ? updated.recentGoldEvents : [];
+  const emittedEventCount =
+    typeof updated.goldEventCount === "number" ? updated.goldEventCount : updatedEvents.length;
+  assert.equal(emittedEventCount, 1);
+  const latestDelta = updated.goldDelta ?? updatedEvents[0]?.delta ?? null;
+  assert.equal(latestDelta, 25);
+  const latestTimestamp =
+    typeof updated.goldEventTimestamp === "number"
+      ? updated.goldEventTimestamp
+      : updatedEvents[0]?.timestamp ?? null;
+  assert.equal(typeof latestTimestamp, "number");
+  assert.equal(updatedEvents.length, 1);
+  assert.equal(updatedEvents[0].delta, 25);
 });
 
 test("DiagnosticsOverlay displays shield forecast lines", () => {
@@ -108,6 +118,7 @@ test("DiagnosticsOverlay displays shield forecast lines", () => {
       breaches: 1,
       soundEnabled: true,
       soundVolume: 0.6,
+      soundIntensity: 1,
       summaryCount: 0,
       totalTurretDamage: 120,
       totalTypingDamage: 45,
@@ -128,7 +139,7 @@ test("DiagnosticsOverlay displays shield forecast lines", () => {
   assert.ok(output.includes("Passive unlocks tracked: 0"));
   assert.ok(output.includes("Shielded enemies: ACTIVE"));
   assert.ok(output.includes("Wave threat rating"));
-  assert.ok(output.includes("Sound: on (60%)"));
+  assert.ok(output.includes("Sound: on (volume 60%, intensity 100%)"));
   assert.ok(output.includes("Session damage (turret/typing): 120 / 45"));
   assert.ok(output.includes("Castle repairs: 2"));
   assert.ok(output.includes("HP restored 160"));

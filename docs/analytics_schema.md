@@ -14,6 +14,7 @@ This reference captures the structure of the JSON snapshots downloaded from the 
 | `wave.total` | number | Total wave count in the episode. |
 | `settings.soundEnabled` | boolean | Whether the master audio channel was enabled when the snapshot was captured. |
 | `settings.soundVolume` | number (0-1) | Master audio volume slider position (0 = muted, 1 = full). |
+| `settings.soundIntensity` | number (0.5-1.5) | Audio intensity multiplier applied to individual cues (0.5 = minimum energy, 1.5 = maximum). |
 | `typing.accuracy` | number (0-1) | Session accuracy up to the snapshot time. |
 | `resources.gold` | number | Current gold balance. |
 | `timeToFirstTurret` | number or null | Seconds elapsed before the first turret was placed (null if no turret yet). |
@@ -120,7 +121,7 @@ Each `TelemetryEnvelope` mirrors the structure emitted by the in-game client: `{
 When you run `npm run analytics:aggregate`, the CSV header is emitted exactly as:
 
 ```
-file,capturedAt,status,time,telemetryAvailable,telemetryEnabled,telemetryEndpoint,telemetryQueueSize,soundEnabled,soundVolume,timeToFirstTurret,waveIndex,waveTotal,mode,practiceMode,turretStats,summaryWave,duration,accuracy,enemiesDefeated,breaches,perfectWords,averageReaction,dps,turretDps,typingDps,turretDamage,typingDamage,shieldBreaks,repairsUsed,repairHealth,repairGold,bonusGold,castleBonusGold,passiveUnlockCount,lastPassiveUnlock,castlePassiveUnlocks,goldEventsTracked,lastGoldDelta,lastGoldEventTime,goldEarned,maxCombo,sessionBestCombo,sessionBreaches,totalDamageDealt,totalTurretDamage,totalTypingDamage,totalShieldBreaks,totalCastleRepairs,totalRepairHealth,totalRepairGold,totalPerfectWords,totalBonusGold,totalCastleBonusGold,totalReactionTime,reactionSamples,averageTotalDps,averageTurretDps,averageTypingDps,tutorialAttempts,tutorialAssists,tutorialCompletions,tutorialReplays,tutorialSkips
+file,capturedAt,status,time,telemetryAvailable,telemetryEnabled,telemetryEndpoint,telemetryQueueSize,soundEnabled,soundVolume,soundIntensity,timeToFirstTurret,waveIndex,waveTotal,mode,practiceMode,turretStats,summaryWave,duration,accuracy,enemiesDefeated,breaches,perfectWords,averageReaction,dps,turretDps,typingDps,turretDamage,typingDamage,shieldBreaks,repairsUsed,repairHealth,repairGold,bonusGold,castleBonusGold,passiveUnlockCount,lastPassiveUnlock,castlePassiveUnlocks,goldEventsTracked,lastGoldDelta,lastGoldEventTime,goldEarned,maxCombo,sessionBestCombo,sessionBreaches,totalDamageDealt,totalTurretDamage,totalTypingDamage,totalShieldBreaks,totalCastleRepairs,totalRepairHealth,totalRepairGold,totalPerfectWords,totalBonusGold,totalCastleBonusGold,totalReactionTime,reactionSamples,averageTotalDps,averageTurretDps,averageTypingDps,tutorialAttempts,tutorialAssists,tutorialCompletions,tutorialReplays,tutorialSkips
 ```
 
 This header mirrors the tables above so automated parsers can rely on stable ordering. Any future schema changes should update this document and the README before landing.

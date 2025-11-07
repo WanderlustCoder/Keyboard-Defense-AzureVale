@@ -286,6 +286,7 @@ export interface AnalyticsSnapshot {
   settings?: {
     soundEnabled: boolean;
     soundVolume: number;
+    soundIntensity: number;
   };
   turretStats?: TurretRuntimeStat[];
 }

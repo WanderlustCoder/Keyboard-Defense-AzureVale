@@ -48,6 +48,7 @@ export interface DiagnosticsSessionStats {
   breaches: number;
   soundEnabled: boolean;
   soundVolume: number;
+  soundIntensity: number;
   summaryCount: number;
   lastSummary?: WaveSummary;
   totalTurretDamage?: number;
@@ -85,6 +86,11 @@ export class DiagnosticsOverlay {
     const hard = (difficulty.wordWeights.hard ?? 0) * 100;
 
     const turretStats = metrics.turretStats ?? [];
+    const goldEventCount = typeof metrics.goldEventCount === "number" ? metrics.goldEventCount : 0;
+    const castlePassives = Array.isArray(metrics.castlePassives) ? metrics.castlePassives : [];
+    const passiveUnlockCount =
+      typeof metrics.passiveUnlockCount === "number" ? metrics.passiveUnlockCount : castlePassives.length;
+    const lastPassiveUnlock = metrics.lastPassiveUnlock ?? null;
 
     const lines = [
       `Wave: ${wave.index + 1}/${wave.total}${modeSuffix}${waveCountdown}`,
@@ -121,7 +127,7 @@ export class DiagnosticsOverlay {
     if (typeof metrics.goldEventTimestamp === "number") {
       goldLineParts.push(`@ ${metrics.goldEventTimestamp.toFixed(1)}s`);
     }
-    goldLineParts.push(`events: ${metrics.goldEventCount}`);
+    goldLineParts.push(`events: ${goldEventCount}`);
     lines.push(goldLineParts.join(" "));
 
     const recentGoldEvents = Array.isArray(metrics.recentGoldEvents)
@@ -141,9 +147,9 @@ export class DiagnosticsOverlay {
       }
     }
 
-    if (metrics.castlePassives.length > 0) {
+    if (castlePassives.length > 0) {
       lines.push(
-        `Castle passives (${metrics.castlePassives.length} active): ${metrics.castlePassives
+        `Castle passives (${castlePassives.length} active): ${castlePassives
           .map(describeCastlePassive)
           .join(" | ")}`
       );
@@ -151,9 +157,9 @@ export class DiagnosticsOverlay {
       lines.push("Castle passives: none unlocked");
     }
 
-    lines.push(`Passive unlocks tracked: ${metrics.passiveUnlockCount}`);
-    if (metrics.lastPassiveUnlock) {
-      lines.push(`Last passive unlock: ${describePassiveUnlock(metrics.lastPassiveUnlock)}`);
+    lines.push(`Passive unlocks tracked: ${passiveUnlockCount}`);
+    if (lastPassiveUnlock) {
+      lines.push(`Last passive unlock: ${describePassiveUnlock(lastPassiveUnlock)}`);
     }
 
     lines.push(`Time: ${metrics.time.toFixed(1)}s`);
@@ -180,6 +186,10 @@ export class DiagnosticsOverlay {
         0,
         Math.min(100, Math.round((session.soundVolume ?? 0) * 100))
       );
+      const intensityPercent = Math.max(
+        0,
+        Math.min(150, Math.round((session.soundIntensity ?? 0) * 100))
+      );
       const timeToFirstTurretSeconds =
         typeof session.timeToFirstTurretSeconds === "number"
           ? session.timeToFirstTurretSeconds
@@ -190,7 +200,7 @@ export class DiagnosticsOverlay {
       lines.push(
         `Session best combo: x${session.bestCombo}`,
         `Breaches: ${session.breaches}`,
-        `Sound: ${session.soundEnabled ? "on" : "muted"} (${volumePercent}%)`,
+        `Sound: ${session.soundEnabled ? "on" : "muted"} (volume ${volumePercent}%, intensity ${intensityPercent}%)`,
         `Wave summaries tracked: ${session.summaryCount}`,
         `Shielded enemies: ${session.shieldedNow ? "ACTIVE" : "none"}${
           session.shieldedNext ? " | next wave" : ""

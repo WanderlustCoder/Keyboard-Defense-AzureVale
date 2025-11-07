@@ -149,6 +149,12 @@ function* summarizeSnapshot(snapshot, sourcePath) {
       : typeof snapshot?.soundVolume === "number"
         ? Math.round(snapshot.soundVolume * 100) / 100
         : "";
+  const soundIntensityValue =
+    typeof snapshot?.settings?.soundIntensity === "number"
+      ? Math.round(snapshot.settings.soundIntensity * 100) / 100
+      : typeof snapshot?.soundIntensity === "number"
+        ? Math.round(snapshot.soundIntensity * 100) / 100
+        : "";
   const turretStatsValue = formatTurretStats(snapshot?.turretStats);
   const metadata = {
     file: sourcePath,
@@ -204,6 +210,7 @@ function* summarizeSnapshot(snapshot, sourcePath) {
     practiceMode: practiceFlag,
     turretStats: turretStatsValue
   };
+  metadata.soundIntensity = soundIntensityValue;
 
   const passiveUnlocks = Array.isArray(snapshot?.analytics?.castlePassiveUnlocks)
     ? snapshot.analytics.castlePassiveUnlocks
@@ -315,6 +322,7 @@ function printCsv(rows) {
     "telemetryQueueSize",
     "soundEnabled",
     "soundVolume",
+    "soundIntensity",
     "timeToFirstTurret",
     "waveIndex",
     "waveTotal",

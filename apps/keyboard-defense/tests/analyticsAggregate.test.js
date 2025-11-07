@@ -39,7 +39,8 @@ test("analyticsAggregate summarizes wave data into CSV", async () => {
       resources: { gold: 240, score: 820 },
       settings: {
         soundEnabled: true,
-        soundVolume: 0.65
+        soundVolume: 0.65,
+        soundIntensity: 1.25
       },
       telemetry: {
         available: true,
@@ -162,7 +163,8 @@ test("analyticsAggregate summarizes wave data into CSV", async () => {
       wave: { index: 4, total: 6 },
       settings: {
         soundEnabled: false,
-        soundVolume: 0.4
+        soundVolume: 0.4,
+        soundIntensity: 0.95
       },
       typing: { accuracy: 0.97, combo: 7 },
       turretStats: [],
@@ -223,6 +225,7 @@ test("analyticsAggregate summarizes wave data into CSV", async () => {
       "telemetryQueueSize",
       "soundEnabled",
       "soundVolume",
+      "soundIntensity",
       "timeToFirstTurret",
       "waveIndex",
       "waveTotal",
@@ -295,6 +298,7 @@ test("analyticsAggregate summarizes wave data into CSV", async () => {
     assert.equal(firstRow.telemetryQueueSize, "2");
     assert.equal(firstRow.soundEnabled, "true");
     assert.equal(firstRow.soundVolume, "0.65");
+    assert.equal(firstRow.soundIntensity, "1.25");
     assert.equal(firstRow.timeToFirstTurret, "0");
     assert.equal(firstRow.mode, "practice");
     assert.equal(firstRow.practiceMode, "yes");
@@ -343,6 +347,7 @@ test("analyticsAggregate summarizes wave data into CSV", async () => {
     assert.equal(thirdRow.telemetryQueueSize, "");
     assert.equal(thirdRow.soundEnabled, "false");
     assert.equal(thirdRow.soundVolume, "0.4");
+    assert.equal(thirdRow.soundIntensity, "0.95");
     assert.equal(thirdRow.timeToFirstTurret, "");
     assert.equal(thirdRow.summaryWave, "4");
     assert.equal(thirdRow.mode, "campaign");

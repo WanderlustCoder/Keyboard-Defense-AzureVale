@@ -168,6 +168,7 @@ export class GameController {
             typingInput: "typing-input",
             upgradePanel: "upgrade-panel",
             comboLabel: "combo-stats",
+            comboAccuracyDelta: "combo-accuracy-delta",
             eventLog: "battle-log",
             wavePreview: "wave-preview-list",
             wavePreviewHint: "wave-preview-hint",
@@ -909,7 +910,8 @@ export class GameController {
             available,
             enabled,
             endpoint: this.telemetryEndpoint ?? null,
-            queueSize: queue.length
+            queueSize: queue.length,
+            soundIntensity: this.audioIntensity
         };
         if (includeQueue) {
             exportData.queue = queue.map((event) => ({
@@ -1288,7 +1290,10 @@ export class GameController {
         }
         const slider = controls.slider;
         const valueLabel = controls.valueLabel;
+        const intensitySlider = controls.intensitySlider;
+        const intensityValueLabel = controls.intensityValueLabel;
         const percent = Math.round(this.soundVolume * 100);
+        const intensityPercent = Math.round(this.audioIntensity * 100);
         const muted = !this.soundEnabled;
         if (slider) {
             const nextValue = this.soundVolume.toFixed(2);
@@ -1308,6 +1313,26 @@ export class GameController {
             else {
                 valueLabel.textContent = `${percent}%`;
                 valueLabel.dataset.state = "enabled";
+            }
+        }
+        if (intensitySlider) {
+            const nextIntensityValue = this.audioIntensity.toFixed(2);
+            if (intensitySlider.value !== nextIntensityValue) {
+                intensitySlider.value = nextIntensityValue;
+            }
+            intensitySlider.disabled = muted;
+            intensitySlider.setAttribute("aria-disabled", muted ? "true" : "false");
+            intensitySlider.setAttribute("aria-valuenow", nextIntensityValue);
+            intensitySlider.setAttribute("aria-valuetext", muted ? `Muted (${intensityPercent}%)` : `${intensityPercent}%`);
+        }
+        if (intensityValueLabel) {
+            if (muted) {
+                intensityValueLabel.textContent = `Muted (${intensityPercent}%)`;
+                intensityValueLabel.dataset.state = "muted";
+            }
+            else {
+                intensityValueLabel.textContent = `${intensityPercent}%`;
+                intensityValueLabel.dataset.state = "enabled";
             }
         }
     }
@@ -1775,7 +1800,8 @@ export class GameController {
             ...snapshot,
             settings: {
                 soundEnabled: this.soundEnabled,
-                soundVolume: this.soundVolume
+                soundVolume: this.soundVolume,
+                soundIntensity: this.audioIntensity
             },
             exportVersion: 2,
             telemetry: telemetryExport
@@ -1874,6 +1900,7 @@ export class GameController {
             breaches: analytics.sessionBreaches,
             soundEnabled: this.soundEnabled,
             soundVolume: this.soundVolume,
+            soundIntensity: this.audioIntensity,
             summaryCount: summaries.length,
             totalTurretDamage: analytics.totalTurretDamage,
             totalTypingDamage: analytics.totalTypingDamage,
@@ -2111,6 +2138,8 @@ export class GameController {
         const sound = document.getElementById("debug-sound");
         const soundVolumeSlider = document.getElementById("debug-sound-volume");
         const soundVolumeValue = document.getElementById("debug-sound-volume-value");
+        const soundIntensitySlider = document.getElementById("debug-sound-intensity");
+        const soundIntensityValue = document.getElementById("debug-sound-intensity-value");
         const resetAnalytics = document.getElementById("debug-analytics-reset");
         const exportAnalytics = document.getElementById("debug-analytics-export");
         const analyticsViewerToggle = document.getElementById("debug-analytics-viewer-toggle");
@@ -2163,7 +2192,9 @@ export class GameController {
         if (soundVolumeSlider instanceof HTMLInputElement) {
             this.soundDebugControls = {
                 slider: soundVolumeSlider,
-                valueLabel: soundVolumeValue instanceof HTMLElement ? soundVolumeValue : undefined
+                valueLabel: soundVolumeValue instanceof HTMLElement ? soundVolumeValue : undefined,
+                intensitySlider: soundIntensitySlider instanceof HTMLInputElement ? soundIntensitySlider : undefined,
+                intensityValueLabel: soundIntensityValue instanceof HTMLElement ? soundIntensityValue : undefined
             };
             soundVolumeSlider.addEventListener("input", () => {
                 const value = Number.parseFloat(soundVolumeSlider.value);
@@ -2171,6 +2202,14 @@ export class GameController {
                     return;
                 this.setSoundVolume(value);
             });
+            if (this.soundDebugControls.intensitySlider) {
+                this.soundDebugControls.intensitySlider.addEventListener("input", () => {
+                    const value = Number.parseFloat(this.soundDebugControls.intensitySlider.value);
+                    if (!Number.isFinite(value))
+                        return;
+                    this.setAudioIntensity(value);
+                });
+            }
         }
         else {
             this.soundDebugControls = null;
@@ -2547,6 +2586,12 @@ export class GameController {
             this.hud.appendLog(`Castle upgraded to level ${level}`);
             this.playSound("upgrade");
         });
+        this.engine.events.on("castle:passive-unlocked", ({ passive }) => {
+            const description = this.describeCastlePassive(passive);
+            this.hud.appendLog(`Passive unlocked: ${description}`);
+            this.hud.showCastleMessage(description);
+            this.playSound("upgrade", 48);
+        });
         this.engine.events.on("castle:repaired", ({ amount, health, cost }) => {
             const healed = Math.max(0, Math.round(amount ?? 0));
             const remaining = Math.max(0, Math.round(health ?? 0));
@@ -2635,6 +2680,21 @@ export class GameController {
                 });
             }
         });
+    }
+    describeCastlePassive(passive) {
+        if (!passive) {
+            return "Castle passive unlocked";
+        }
+        switch (passive.id) {
+            case "regen":
+                return `Regen ${passive.total.toFixed(1)} HP/s`;
+            case "armor":
+                return `+${passive.total.toFixed(0)} armor`;
+            case "gold":
+                return `+${Math.round(passive.total * 100)}% gold from rewards`;
+            default:
+                return "Castle passive unlocked";
+        }
     }
     playSound(key, detune = 0) {
         if (!this.soundManager)
