@@ -30,7 +30,8 @@ export function parseArgs(argv = []) {
     csv: false,
     out: DEFAULT_OUTPUT,
     help: false,
-    targets: []
+    targets: [],
+    global: false
   };
 
   for (let i = 0; i < argv.length; i += 1) {
@@ -47,6 +48,9 @@ export function parseArgs(argv = []) {
         options.out = value;
         break;
       }
+      case "--global":
+        options.global = true;
+        break;
       case "--help":
         options.help = true;
         break;
@@ -205,6 +209,67 @@ export function summarizeGoldEntries(entries) {
   return summaries;
 }
 
+function mergeSummaries(rows) {
+  if (rows.length === 0) {
+    return summarizeFileEntries("ALL", []);
+  }
+  const aggregate = {
+    file: "ALL",
+    eventCount: 0,
+    netDelta: 0,
+    maxGain: null,
+    maxSpend: null,
+    totalPositive: 0,
+    totalNegative: 0,
+    firstTimestamp: null,
+    lastTimestamp: null,
+    passiveLinkedCount: 0,
+    uniquePassiveIds: new Set(),
+    maxPassiveLag: null
+  };
+
+  for (const row of rows) {
+    aggregate.eventCount += row.eventCount;
+    aggregate.netDelta += row.netDelta;
+    aggregate.totalPositive += row.totalPositive;
+    aggregate.totalNegative += row.totalNegative;
+    if (typeof row.maxGain === "number") {
+      if (aggregate.maxGain === null || row.maxGain > aggregate.maxGain) {
+        aggregate.maxGain = row.maxGain;
+      }
+    }
+    if (typeof row.maxSpend === "number") {
+      if (aggregate.maxSpend === null || row.maxSpend < aggregate.maxSpend) {
+        aggregate.maxSpend = row.maxSpend;
+      }
+    }
+    if (typeof row.firstTimestamp === "number") {
+      if (aggregate.firstTimestamp === null || row.firstTimestamp < aggregate.firstTimestamp) {
+        aggregate.firstTimestamp = row.firstTimestamp;
+      }
+    }
+    if (typeof row.lastTimestamp === "number") {
+      if (aggregate.lastTimestamp === null || row.lastTimestamp > aggregate.lastTimestamp) {
+        aggregate.lastTimestamp = row.lastTimestamp;
+      }
+    }
+    aggregate.passiveLinkedCount += row.passiveLinkedCount;
+    for (const id of row.uniquePassiveIds ?? []) {
+      aggregate.uniquePassiveIds.add(id);
+    }
+    if (typeof row.maxPassiveLag === "number") {
+      if (aggregate.maxPassiveLag === null || row.maxPassiveLag > aggregate.maxPassiveLag) {
+        aggregate.maxPassiveLag = row.maxPassiveLag;
+      }
+    }
+  }
+
+  return {
+    ...aggregate,
+    uniquePassiveIds: [...aggregate.uniquePassiveIds]
+  };
+}
+
 function toCsv(rows) {
   const headers = [
     "file",
@@ -260,6 +325,9 @@ export async function runGoldSummary(options) {
     }
   }
   const summaries = summarizeGoldEntries(entries);
+  if (options.global) {
+    summaries.push(mergeSummaries(summaries));
+  }
   const serialized = options.csv ? toCsv(summaries) : toJson(summaries);
   if (options.out) {
     const outPath = path.resolve(options.out);

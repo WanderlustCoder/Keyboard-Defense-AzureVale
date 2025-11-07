@@ -72,3 +72,31 @@ test("runGoldSummary writes csv output", async () => {
     await fs.rm(dir, { recursive: true, force: true });
   }
 });
+
+test("runGoldSummary appends global summary when requested", async () => {
+  const dir = await fs.mkdtemp(path.join(os.tmpdir(), "gold-summary-global-"));
+  try {
+    const timeline = [
+      { file: "sample", eventIndex: 0, gold: 100, delta: 25, timestamp: 5 },
+      { file: "sample", eventIndex: 1, gold: 60, delta: -40, timestamp: 15 }
+    ];
+    const file = path.join(dir, "timeline.json");
+    await fs.writeFile(file, JSON.stringify(timeline, null, 2), "utf8");
+    const outPath = path.join(dir, "summary.json");
+    const exitCode = await runGoldSummary({
+      csv: false,
+      out: outPath,
+      help: false,
+      global: true,
+      targets: [file]
+    });
+    assert.equal(exitCode, 0);
+    const rows = JSON.parse(await fs.readFile(outPath, "utf8"));
+    assert.equal(rows.length, 2);
+    const globalRow = rows.find((row) => row.file === "ALL");
+    assert.ok(globalRow, "expected global row");
+    assert.equal(globalRow.netDelta, -15);
+  } finally {
+    await fs.rm(dir, { recursive: true, force: true });
+  }
+});

@@ -81,7 +81,7 @@ apps/keyboard-defense/
 - Use `npm run analytics:aggregate` to convert JSON snapshots into a CSV. Columns include turret/typing damage, DPS splits, shield breaks, castle bonus gold, castle repair usage (count, HP restored, gold spent), passive unlock counts/details, and recent gold event telemetry per wave.
 - Use `npm run analytics:passives` to emit a castle passive unlock timeline (JSON or `--csv`) when analyzing exported snapshots or automation artifacts. Pass `--merge-gold --gold-window <seconds>` to attach the closest gold delta event to each unlock for economy dashboards.
 - Use `npm run analytics:gold` to export a gold event timeline (JSON by default, `--csv` optional) containing delta, resulting total, timestamp, time-since data, and (optionally) the nearest passive unlock (`--merge-passives --passive-window <seconds>`).
-- Use `npm run analytics:gold:summary` to condense one or more timelines/snapshots into per-file economy stats (net delta, max gain/spend, totals, passive linkage counts) ready for dashboards.
+- Use `npm run analytics:gold:summary` to condense one or more timelines/snapshots into per-file economy stats (net delta, max gain/spend, totals, passive linkage counts). Append `--global` to include an overall aggregate row.
 - Review [`docs/analytics_schema.md`](../docs/analytics_schema.md) for the full snapshot and CSV schema, including tutorial telemetry fields.
 - Snapshot JSONs are generated via the in-game analytics download button (debug panel) or the options overlay when analytics export is enabled.
 

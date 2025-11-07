@@ -22,6 +22,7 @@
 - Added `node scripts/goldSummary.mjs` (`npm run analytics:gold:summary`) to crunch one or more timelines/snapshots into per-file economy stats (event counts, net delta, max gain/spend, passive linkage counts/lag).
 - CLI accepts both raw timeline files and original snapshots; when snapshots are provided it auto-merges passive unlock data via the shared timeline helper.
 - Vitest coverage ensures the new aggregation logic and CSV export remain stable.
+- New `--global` flag appends an aggregate row so dashboards can track overall economy totals in a single run.
 
 ## Diagnostics & Passive Telemetry Refresh
 
