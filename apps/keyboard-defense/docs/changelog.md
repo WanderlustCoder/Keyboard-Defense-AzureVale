@@ -1,3 +1,9 @@
+## Audio Intensity Slider
+
+- Added an Audio Intensity slider to the pause/options overlay so players can scale SFX energy between 50% and 150% without muting the game; the slider disables automatically when master audio is off and mirrors the live percent label.
+- Intensities persist via the upgraded player settings schema (`version 11`), propagate through `HudView.syncOptionsOverlayState`, and drive a new `SoundManager.setIntensity` multiplier so every procedural cue respects the preference.
+- Vitest HUD harness now covers the slider state/emit path, ensuring automation keeps watch over the comfort control and backlog #54 stays Done.
+
 ## Tooling Baseline Refresh
 
 - Added `.eslintrc.cjs` so `npm run lint` once again has a project-level configuration (TypeScript files use the typed ruleset, automation scripts/tests stay on the lighter JS profile).

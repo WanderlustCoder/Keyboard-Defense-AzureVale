@@ -30,6 +30,7 @@ export interface HudCallbacks {
   onResumeRequested(): void;
   onSoundToggle(enabled: boolean): void;
   onSoundVolumeChange(volume: number): void;
+  onSoundIntensityChange(intensity: number): void;
   onDiagnosticsToggle(visible: boolean): void;
   onWaveScorecardContinue(): void;
   onReducedMotionToggle(enabled: boolean): void;
@@ -124,6 +125,8 @@ type OptionsOverlayElements = {
   soundToggle: string;
   soundVolumeSlider: string;
   soundVolumeValue: string;
+  soundIntensitySlider: string;
+  soundIntensityValue: string;
   diagnosticsToggle: string;
   reducedMotionToggle: string;
   checkeredBackgroundToggle: string;
@@ -240,6 +243,8 @@ export class HudView {
     soundToggle: HTMLInputElement;
     soundVolumeSlider: HTMLInputElement;
     soundVolumeValue: HTMLElement;
+    soundIntensitySlider: HTMLInputElement;
+    soundIntensityValue: HTMLElement;
     diagnosticsToggle: HTMLInputElement;
     reducedMotionToggle: HTMLInputElement;
     checkeredBackgroundToggle: HTMLInputElement;
@@ -391,6 +396,12 @@ export class HudView {
       const soundToggle = document.getElementById(rootIds.optionsOverlay.soundToggle);
       const soundVolumeSlider = document.getElementById(rootIds.optionsOverlay.soundVolumeSlider);
       const soundVolumeValue = document.getElementById(rootIds.optionsOverlay.soundVolumeValue);
+      const soundIntensitySlider = document.getElementById(
+        rootIds.optionsOverlay.soundIntensitySlider
+      );
+      const soundIntensityValue = document.getElementById(
+        rootIds.optionsOverlay.soundIntensityValue
+      );
       const diagnosticsToggle = document.getElementById(rootIds.optionsOverlay.diagnosticsToggle);
       const reducedMotionToggle = document.getElementById(
         rootIds.optionsOverlay.reducedMotionToggle
@@ -427,6 +438,8 @@ export class HudView {
         soundToggle instanceof HTMLInputElement &&
         soundVolumeSlider instanceof HTMLInputElement &&
         soundVolumeValue instanceof HTMLElement &&
+        soundIntensitySlider instanceof HTMLInputElement &&
+        soundIntensityValue instanceof HTMLElement &&
         diagnosticsToggle instanceof HTMLInputElement &&
         reducedMotionToggle instanceof HTMLInputElement &&
         checkeredBackgroundToggle instanceof HTMLInputElement &&
@@ -442,6 +455,8 @@ export class HudView {
           soundToggle,
           soundVolumeSlider,
           soundVolumeValue,
+          soundIntensitySlider,
+          soundIntensityValue,
           diagnosticsToggle,
           reducedMotionToggle,
           checkeredBackgroundToggle,
@@ -495,6 +510,13 @@ export class HudView {
           if (!Number.isFinite(nextValue)) return;
           this.updateSoundVolumeDisplay(nextValue);
           this.callbacks.onSoundVolumeChange(nextValue);
+        });
+        soundIntensitySlider.addEventListener("input", () => {
+          if (this.syncingOptionToggles) return;
+          const nextValue = Number.parseFloat(soundIntensitySlider.value);
+          if (!Number.isFinite(nextValue)) return;
+          this.updateSoundIntensityDisplay(nextValue);
+          this.callbacks.onSoundIntensityChange(nextValue);
         });
         diagnosticsToggle.addEventListener("change", () => {
           if (this.syncingOptionToggles) return;
@@ -702,6 +724,7 @@ export class HudView {
   syncOptionsOverlayState(state: {
     soundEnabled: boolean;
     soundVolume: number;
+    soundIntensity: number;
     diagnosticsVisible: boolean;
     reducedMotionEnabled: boolean;
     checkeredBackgroundEnabled: boolean;
@@ -732,6 +755,14 @@ export class HudView {
     this.optionsOverlay.soundVolumeSlider.tabIndex = state.soundEnabled ? 0 : -1;
     this.optionsOverlay.soundVolumeSlider.value = state.soundVolume.toString();
     this.updateSoundVolumeDisplay(state.soundVolume);
+    this.optionsOverlay.soundIntensitySlider.disabled = !state.soundEnabled;
+    this.optionsOverlay.soundIntensitySlider.setAttribute(
+      "aria-disabled",
+      state.soundEnabled ? "false" : "true"
+    );
+    this.optionsOverlay.soundIntensitySlider.tabIndex = state.soundEnabled ? 0 : -1;
+    this.optionsOverlay.soundIntensitySlider.value = state.soundIntensity.toString();
+    this.updateSoundIntensityDisplay(state.soundIntensity);
     this.optionsOverlay.diagnosticsToggle.checked = state.diagnosticsVisible;
     this.optionsOverlay.reducedMotionToggle.checked = state.reducedMotionEnabled;
     this.optionsOverlay.checkeredBackgroundToggle.checked = state.checkeredBackgroundEnabled;
@@ -2441,6 +2472,12 @@ export class HudView {
     if (!this.optionsOverlay?.soundVolumeValue) return;
     const percent = Math.round(volume * 100);
     this.optionsOverlay.soundVolumeValue.textContent = `${percent}%`;
+  }
+
+  private updateSoundIntensityDisplay(intensity: number): void {
+    if (!this.optionsOverlay?.soundIntensityValue) return;
+    const percent = Math.round(intensity * 100);
+    this.optionsOverlay.soundIntensityValue.textContent = `${percent}%`;
   }
 
   setAnalyticsExportEnabled(enabled: boolean): void {

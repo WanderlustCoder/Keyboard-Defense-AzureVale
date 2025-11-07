@@ -31,6 +31,9 @@ const HUD_FONT_SCALE_MAX = 1.3;
 const SOUND_VOLUME_MIN = 0;
 const SOUND_VOLUME_MAX = 1;
 const SOUND_VOLUME_DEFAULT = 0.8;
+const AUDIO_INTENSITY_MIN = 0.5;
+const AUDIO_INTENSITY_MAX = 1.5;
+const AUDIO_INTENSITY_DEFAULT = 1;
 function svgCircleDataUri(primary, accent) {
   const svg =
     `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'>` +
@@ -59,6 +62,7 @@ export class GameController {
     this.rafId = null;
     this.soundEnabled = true;
     this.soundVolume = SOUND_VOLUME_DEFAULT;
+    this.audioIntensity = AUDIO_INTENSITY_DEFAULT;
     this.reducedMotionEnabled = false;
     this.checkeredBackgroundEnabled = false;
     this.readableFontEnabled = false;
@@ -207,6 +211,8 @@ export class GameController {
           soundToggle: "options-sound-toggle",
           soundVolumeSlider: "options-sound-volume",
           soundVolumeValue: "options-sound-volume-value",
+          soundIntensitySlider: "options-sound-intensity",
+          soundIntensityValue: "options-sound-intensity-value",
           diagnosticsToggle: "options-diagnostics-toggle",
           reducedMotionToggle: "options-reduced-motion-toggle",
           checkeredBackgroundToggle: "options-checkered-bg-toggle",
@@ -241,6 +247,7 @@ export class GameController {
         onResumeRequested: () => this.closeOptionsOverlay(),
         onSoundToggle: (enabled) => this.setSoundEnabled(enabled),
         onSoundVolumeChange: (volume) => this.setSoundVolume(volume),
+        onSoundIntensityChange: (value) => this.setAudioIntensity(value),
         onDiagnosticsToggle: (visible) => this.setDiagnosticsVisible(visible),
         onWaveScorecardContinue: () => this.handleWaveScorecardContinue(),
         onReducedMotionToggle: (enabled) => this.setReducedMotionEnabled(enabled),
@@ -269,6 +276,7 @@ export class GameController {
     if (typeof window !== "undefined" && "AudioContext" in window) {
       this.soundManager = new SoundManager();
       this.soundManager.setVolume(this.soundVolume);
+      this.soundManager.setIntensity(this.audioIntensity);
     }
     this.initializePlayerSettings();
     this.hud.setAnalyticsExportEnabled(this.analyticsExportEnabled);
@@ -875,6 +883,22 @@ export class GameController {
       this.persistPlayerSettings({ soundVolume: normalized });
     }
   }
+  setAudioIntensity(intensity, options = {}) {
+    const normalized = this.normalizeAudioIntensity(intensity);
+    const changed = Math.abs(normalized - this.audioIntensity) > 0.001;
+    this.audioIntensity = normalized;
+    if (this.soundManager) {
+      this.soundManager.setIntensity(normalized);
+    }
+    if (changed && !options.silent) {
+      const percent = Math.round(normalized * 100);
+      this.hud.appendLog(`Audio intensity set to ${percent}%`);
+    }
+    this.updateOptionsOverlayState();
+    if (options.persist !== false && changed) {
+      this.persistPlayerSettings({ audioIntensity: normalized });
+    }
+  }
   setColorblindPaletteEnabled(enabled, options = {}) {
     this.colorblindPaletteEnabled = enabled;
     this.applyColorblindPaletteSetting(enabled);
@@ -942,11 +966,19 @@ export class GameController {
     const clamped = Math.min(SOUND_VOLUME_MAX, Math.max(SOUND_VOLUME_MIN, value));
     return Math.round(clamped * 100) / 100;
   }
+  normalizeAudioIntensity(value) {
+    if (!Number.isFinite(value)) {
+      return AUDIO_INTENSITY_DEFAULT;
+    }
+    const clamped = Math.min(AUDIO_INTENSITY_MAX, Math.max(AUDIO_INTENSITY_MIN, value));
+    return Math.round(clamped * 100) / 100;
+  }
   updateOptionsOverlayState() {
     if (!this.diagnostics) return;
     this.hud.syncOptionsOverlayState({
       soundEnabled: this.soundEnabled,
       soundVolume: this.soundVolume,
+      soundIntensity: this.audioIntensity,
       diagnosticsVisible: this.diagnostics.isVisible(),
       reducedMotionEnabled: this.reducedMotionEnabled,
       checkeredBackgroundEnabled: this.checkeredBackgroundEnabled,
@@ -1435,6 +1467,11 @@ export class GameController {
       patch.soundVolume === undefined ||
       Math.abs(this.normalizeSoundVolume(patch.soundVolume) - this.playerSettings.soundVolume) <=
         0.001;
+    const soundIntensityUnchanged =
+      patch.audioIntensity === undefined ||
+      Math.abs(
+        this.normalizeAudioIntensity(patch.audioIntensity) - this.playerSettings.audioIntensity
+      ) <= 0.001;
     const diagnosticsUnchanged =
       patch.diagnosticsVisible === undefined ||
       patch.diagnosticsVisible === this.playerSettings.diagnosticsVisible;
@@ -1472,6 +1509,7 @@ export class GameController {
     if (
       soundUnchanged &&
       soundVolumeUnchanged &&
+      soundIntensityUnchanged &&
       diagnosticsUnchanged &&
       reducedMotionUnchanged &&
       checkeredUnchanged &&
@@ -2060,6 +2098,10 @@ export class GameController {
     });
     this.setSoundEnabled(stored.soundEnabled, { silent: true, persist: false, render: false });
     this.setSoundVolume(stored.soundVolume ?? SOUND_VOLUME_DEFAULT, {
+      silent: true,
+      persist: false
+    });
+    this.setAudioIntensity(stored.audioIntensity ?? AUDIO_INTENSITY_DEFAULT, {
       silent: true,
       persist: false
     });

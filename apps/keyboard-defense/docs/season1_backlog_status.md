@@ -61,7 +61,7 @@
 | 51 | UI/UX & Accessibility | Offer colorblind-friendly palette toggle across sprites/HUD. | Done | Checkered background + high-contrast palette toggle available |
 | 52 | UI/UX & Accessibility | Support adjustable HUD font size with persistence. | Not Started |  |
 | 53 | UI/UX & Accessibility | Reflow layout for narrow screens / touch devices. | Not Started |  |
-| 54 | UI/UX & Accessibility | Add audio intensity slider alongside mute toggle. | Not Started |  |
+| 54 | UI/UX & Accessibility | Add audio intensity slider alongside mute toggle. | Done | Options overlay slider controls audio intensity multiplier with persistence |
 | 55 | UI/UX & Accessibility | Provide dyslexia-friendly font option for key UI elements. | Done | Options overlay offers dyslexia-friendly toggle covering active words, input, tutorial prompts with persisted setting |
 | 56 | UI/UX & Accessibility | Highlight wave preview during tutorial to emphasize planning. | Done | Tutorial step now pulses wave preview with reduce-motion safe styling |
 | 57 | UI/UX & Accessibility | Surface keyboard shortcut reference overlay. | Done | Shortcut modal with launch button + '?' hotkey |

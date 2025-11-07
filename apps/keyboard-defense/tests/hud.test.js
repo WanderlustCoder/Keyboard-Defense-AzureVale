@@ -265,6 +265,10 @@ const initializeHud = () => {
   soundVolumeSlider.value = "0.8";
   const soundVolumeValue = new FakeElement("span", "options-sound-volume-value");
   soundVolumeValue.textContent = "80%";
+  const soundIntensitySlider = new FakeInputElement("options-sound-intensity", "range");
+  soundIntensitySlider.value = "1";
+  const soundIntensityValue = new FakeElement("span", "options-sound-intensity-value");
+  soundIntensityValue.textContent = "100%";
   const telemetryToggleWrapper = new FakeElement("label", "options-telemetry-toggle-wrapper");
   telemetryToggleWrapper.className = "option-toggle";
   const telemetryToggle = new FakeInputElement("options-telemetry-toggle", "checkbox");
@@ -369,6 +373,8 @@ const initializeHud = () => {
   register("options-colorblind-toggle", colorblindPaletteToggle);
   register("options-sound-volume", soundVolumeSlider);
   register("options-sound-volume-value", soundVolumeValue);
+  register("options-sound-intensity", soundIntensitySlider);
+  register("options-sound-intensity-value", soundIntensityValue);
   register("options-telemetry-toggle-wrapper", telemetryToggleWrapper);
   register("options-telemetry-toggle", telemetryToggle);
   register("options-font-scale", fontScaleSelect);
@@ -398,6 +404,7 @@ const initializeHud = () => {
   const colorblindToggleEvents = [];
   const telemetryToggleEvents = [];
   const soundVolumeEvents = [];
+  const soundIntensityEvents = [];
   const fontScaleChangeEvents = [];
   const priorityChangeEvents = [];
   const turretHoverEvents = [];
@@ -434,6 +441,8 @@ const initializeHud = () => {
         soundToggle: "options-sound-toggle",
         soundVolumeSlider: "options-sound-volume",
         soundVolumeValue: "options-sound-volume-value",
+        soundIntensitySlider: "options-sound-intensity",
+        soundIntensityValue: "options-sound-intensity-value",
         diagnosticsToggle: "options-diagnostics-toggle",
         reducedMotionToggle: "options-reduced-motion-toggle",
         checkeredBackgroundToggle: "options-checkered-bg-toggle",
@@ -471,6 +480,7 @@ const initializeHud = () => {
       onResumeRequested: () => {},
       onSoundToggle: () => {},
       onSoundVolumeChange: (value) => soundVolumeEvents.push(value),
+      onSoundIntensityChange: (value) => soundIntensityEvents.push(value),
       onDiagnosticsToggle: () => {},
       onWaveScorecardContinue: () => scorecardContinues++,
       onReducedMotionToggle: (enabled) => reducedMotionToggleEvents.push(enabled),
@@ -563,6 +573,8 @@ const initializeHud = () => {
       soundToggle,
       soundVolumeSlider,
       soundVolumeValue,
+      soundIntensitySlider,
+      soundIntensityValue,
       diagnosticsToggle,
       reducedMotionToggle,
       checkeredBackgroundToggle,
@@ -591,6 +603,7 @@ const initializeHud = () => {
       getDyslexiaFontToggleEvents: () => [...dyslexiaFontToggleEvents],
       getColorblindToggleEvents: () => [...colorblindToggleEvents],
       getSoundVolumeEvents: () => [...soundVolumeEvents],
+      getSoundIntensityEvents: () => [...soundIntensityEvents],
       getTelemetryToggleEvents: () => [...telemetryToggleEvents],
       getFontScaleEvents: () => [...fontScaleChangeEvents],
       getPriorityEvents: () => [...priorityChangeEvents],
@@ -1341,6 +1354,8 @@ test("HudView options overlay syncs controls and visibility", () => {
     soundToggle,
     soundVolumeSlider,
     soundVolumeValue,
+    soundIntensitySlider,
+    soundIntensityValue,
     diagnosticsToggle,
     reducedMotionToggle,
     checkeredBackgroundToggle,
@@ -1356,6 +1371,7 @@ test("HudView options overlay syncs controls and visibility", () => {
     getDyslexiaFontToggleEvents,
     getColorblindToggleEvents,
     getSoundVolumeEvents,
+    getSoundIntensityEvents,
     getTelemetryToggleEvents,
     getFontScaleEvents
   } = elements;
@@ -1363,6 +1379,7 @@ test("HudView options overlay syncs controls and visibility", () => {
   hud.syncOptionsOverlayState({
     soundEnabled: false,
     soundVolume: 0.8,
+    soundIntensity: 1,
     diagnosticsVisible: false,
     reducedMotionEnabled: true,
     checkeredBackgroundEnabled: false,
@@ -1377,6 +1394,10 @@ test("HudView options overlay syncs controls and visibility", () => {
   assert.equal(soundVolumeValue.textContent, "80%");
   assert.equal(soundVolumeSlider.disabled, true);
   assert.equal(soundVolumeSlider.getAttribute("aria-disabled"), "true");
+  assert.equal(soundIntensitySlider.value, "1");
+  assert.equal(soundIntensityValue.textContent, "100%");
+  assert.equal(soundIntensitySlider.disabled, true);
+  assert.equal(soundIntensitySlider.getAttribute("aria-disabled"), "true");
   assert.equal(diagnosticsToggle.checked, false);
   assert.equal(reducedMotionToggle.checked, true);
   assert.equal(checkeredBackgroundToggle.checked, false);
@@ -1392,6 +1413,7 @@ test("HudView options overlay syncs controls and visibility", () => {
   hud.syncOptionsOverlayState({
     soundEnabled: true,
     soundVolume: 0.8,
+    soundIntensity: 1,
     diagnosticsVisible: false,
     reducedMotionEnabled: true,
     checkeredBackgroundEnabled: false,
@@ -1404,10 +1426,13 @@ test("HudView options overlay syncs controls and visibility", () => {
   assert.equal(soundToggle.checked, true);
   assert.equal(soundVolumeSlider.disabled, false);
   assert.equal(soundVolumeSlider.getAttribute("aria-disabled"), "false");
+  assert.equal(soundIntensitySlider.disabled, false);
+  assert.equal(soundIntensitySlider.getAttribute("aria-disabled"), "false");
 
   hud.syncOptionsOverlayState({
     soundEnabled: true,
     soundVolume: 0.55,
+    soundIntensity: 1.25,
     diagnosticsVisible: false,
     reducedMotionEnabled: true,
     checkeredBackgroundEnabled: false,
@@ -1419,6 +1444,8 @@ test("HudView options overlay syncs controls and visibility", () => {
   });
   assert.equal(soundVolumeSlider.value, "0.55");
   assert.equal(soundVolumeValue.textContent, "55%");
+  assert.equal(soundIntensitySlider.value, "1.25");
+  assert.equal(soundIntensityValue.textContent, "125%");
   assert.equal(colorblindPaletteToggle.checked, true);
   assert.equal(telemetryToggleWrapper.style.display, "");
   assert.equal(telemetryToggle.disabled, false);
@@ -1449,6 +1476,11 @@ test("HudView options overlay syncs controls and visibility", () => {
   soundVolumeSlider.oninput?.();
   assert.deepEqual(getSoundVolumeEvents(), [0.6]);
   assert.equal(soundVolumeValue.textContent, "60%");
+
+  soundIntensitySlider.value = "1.3";
+  soundIntensitySlider.oninput?.();
+  assert.deepEqual(getSoundIntensityEvents(), [1.3]);
+  assert.equal(soundIntensityValue.textContent, "130%");
 
   colorblindPaletteToggle.checked = true;
   colorblindPaletteToggle.onchange?.();
