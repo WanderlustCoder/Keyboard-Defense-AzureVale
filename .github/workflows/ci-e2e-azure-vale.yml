@@ -92,6 +92,11 @@ jobs:
         run: node scripts/smoke.mjs --ci --mode skip
         working-directory: apps/keyboard-defense
 
+      - name: Gold summary report
+        run: |
+          node scripts/goldSummary.mjs artifacts/smoke/gold-timeline.ci.json --csv --out artifacts/smoke/gold-summary.ci.csv
+        working-directory: apps/keyboard-defense
+
       - name: Upload smoke artifacts
         if: always()
         uses: actions/upload-artifact@v4
