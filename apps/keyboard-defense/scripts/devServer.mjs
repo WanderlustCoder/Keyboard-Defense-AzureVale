@@ -21,16 +21,25 @@ const READY_INTERVAL_MS = 500;
 const REQUEST_TIMEOUT_MS = 5_000;
 const MONITOR_INTERVAL_MS = 5_000;
 
-const HTTP_SERVER_BIN = (() => {
-  try {
-    return require.resolve("http-server/bin/http-server.js");
-  } catch (error) {
-    console.error(
-      "Unable to locate http-server. Run `npm install` before launching the dev server."
-    );
-    throw error;
+function resolveHttpServerBin() {
+  const candidates = [
+    "http-server/bin/http-server.js",
+    "http-server/bin/http-server"
+  ];
+  for (const candidate of candidates) {
+    try {
+      return require.resolve(candidate);
+    } catch {
+      continue;
+    }
   }
-})();
+  console.error(
+    "Unable to locate http-server. Run `npm install` before launching the dev server."
+  );
+  throw new Error("http-server executable not found");
+}
+
+const HTTP_SERVER_BIN = resolveHttpServerBin();
 
 function sanitizePort(value) {
   const parsed = Number(value);
