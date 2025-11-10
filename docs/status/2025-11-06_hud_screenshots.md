@@ -14,8 +14,8 @@
 - Updated `package.json` (`task:screenshots`), CONTRIBUTING, and README to document the workflow.
 - CI jobs can publish the screenshot artifact by appending an `upload-artifact` step referencing `artifacts/screenshots/`.
 - Wired the GitHub Actions `ci-e2e-azure-vale` workflow to run the screenshot capture after the e2e orchestration and upload the resulting PNGs automatically.
+- CLI now also captures `tutorial-summary.png` and `wave-scorecard.png` via new debug hooks, so docs and regression reviews include the tutorial wrap-up modal and wave-end scorecard states.
+- CI now reads `screenshots-summary.ci.json` and appends a markdown table to the workflow summary so nightly reviewers can inspect the captured shots (with condensed/diagnostics context) without downloading artifacts.
 
 ## Next Steps
-1. Surface the `screenshots-summary.ci.json` artifact in dashboards so nightly reviewers can diff HUD changes.
-2. Expand captures to include tutorial summary and wave scorecard overlays.
-3. Introduce automated diff tooling (e.g., Playwright `toHaveScreenshot`) once baselines stabilize.
+1. Introduce automated diff tooling (e.g., Playwright `toHaveScreenshot`) once baselines stabilize.

@@ -73,6 +73,33 @@ export declare class GameController {
     openOptionsOverlay(): void;
     closeOptionsOverlay(options?: {}): void;
     presentWaveScorecard(summary: any): void;
+    debugShowWaveScorecard(summary?: {
+        waveIndex?: number;
+        index?: number;
+        waveTotal?: number;
+        mode?: string;
+        accuracy?: number;
+        enemiesDefeated?: number;
+        breaches?: number;
+        perfectWords?: number;
+        averageReaction?: number;
+        dps?: number;
+        turretDps?: number;
+        typingDps?: number;
+        turretDamage?: number;
+        typingDamage?: number;
+        shieldBreaks?: number;
+        repairsUsed?: number;
+        repairHealth?: number;
+        repairGold?: number;
+        goldEarned?: number;
+        bonusGold?: number;
+        castleBonusGold?: number;
+        bestCombo?: number;
+        maxCombo?: number;
+        sessionBestCombo?: number;
+    }): void;
+    debugHideWaveScorecard(): void;
     handleWaveScorecardContinue(): void;
     closeWaveScorecard(options?: {}): void;
     persistPlayerSettings(patch: any): void;
@@ -113,6 +140,7 @@ export declare class GameController {
     formatPresetSavedAt(savedAt: any): string;
     isPresetMatch(preset: any, state: any): boolean;
     computeTurretSignature(state: any): any;
+    collectUiCondensedSnapshot(): any;
     resetAnalytics(): void;
     exportAnalytics(): void;
     pauseForTutorial(): void;
@@ -144,6 +172,13 @@ export declare class GameController {
     handleTurretPresetClear(presetId: any): void;
     handleTurretHover(slotId: any, context?: {}): void;
     presentTutorialSummary(summary: any): void;
+    debugShowTutorialSummary(summary?: {
+        accuracy?: number;
+        bestCombo?: number;
+        breaches?: number;
+        gold?: number;
+    }): void;
+    debugHideTutorialSummary(): void;
     collectTutorialSummary(): {
         accuracy: any;
         bestCombo: number;

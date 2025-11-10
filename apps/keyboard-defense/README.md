@@ -48,6 +48,8 @@ npm run serve:stop     # terminate the detached server and clear state files
 
 Runtime state lives in `.devserver/state.json`, and logs are written to `.devserver/server.log`. Override defaults with `PORT` and `HOST` environment variables before running `npm run start`.
 
+Need a fast confidence check without keeping the server up? `npm run serve:smoke` launches the dev server (skipping the redundant build by default), waits for readiness, performs HTTP probes, and then shuts everything down—perfect for CI or unattended validation of the harness. The run records a JSON summary at `artifacts/smoke/devserver-smoke-summary.json` (set `DEVSERVER_SMOKE_SUMMARY` to override), automatically prints the tail of `.devserver/server.log` if anything fails, and accepts `--json` to echo the summary to stdout so automation can capture it without touching the filesystem.
+
 ### Tests
 
 The Vitest suite targets compiled modules in `dist/`, using deterministic seeds and debug hooks to avoid any browser dependency. Run `npm run test` after changing engine, system, or HUD logic.
@@ -85,6 +87,7 @@ apps/keyboard-defense/
 - Use `npm run analytics:gold:check` to validate one or more gold summary artifacts (JSON or CSV) and ensure they embed the expected percentile list—ideal for dashboards/alerts that ingest artifacts outside the standard smoke workflow.
 - Use `npm run analytics:gold:report` to generate both the passive-aware timeline and matching summary in one shot (uses the same flags as the underlying CLIs).
 - Review [`docs/analytics_schema.md`](../docs/analytics_schema.md) for the full snapshot and CSV schema, including tutorial telemetry fields.
+- Snapshot JSONs now expose a `ui` object that records tutorial banner layout, HUD/pause collapse preferences, and diagnostics overlay responsiveness so automated consumers can distinguish mobile-first captures without scraping the DOM.
 - Snapshot JSONs are generated via the in-game analytics download button (debug panel) or the options overlay when analytics export is enabled.
 
 ### Telemetry
@@ -111,7 +114,7 @@ The new generation of orchestration scripts lives in `scripts/`:
 | `node scripts/smoke.mjs`       | Invoke the tutorial smoke CLI (default `--mode skip`).                                                                                                  |
 | `node scripts/seed.mjs`        | Emit deterministic local storage fixtures under `artifacts/seed/`.                                                                                      |
 | `node scripts/e2e.mjs`         | Start the dev server, run full tutorial & campaign smokes, archive artifacts (`artifacts/e2e/tutorial-full.json`, `campaign.json`, `e2e-summary.json`). |
-| `node scripts/hudScreenshots.mjs` | Capture HUD and options overlay screenshots into `artifacts/screenshots/` for documentation and regression references.                                 |
+| `node scripts/hudScreenshots.mjs` | Capture the standard HUD, options overlay, tutorial summary, and wave scorecard screenshots under `artifacts/screenshots/`; the summary JSON embeds a `uiSnapshot` for each capture so you can see whether the HUD was condensed, which panels were collapsed, and if diagnostics were minimized. |
 | `node scripts/castleBreachReplay.mjs` | Replay the deterministic castle-breach drill and emit a JSON artifact summarising the timeline.                                                     |
 | `node scripts/analyticsAggregate.mjs` | Convert analytics snapshots into the detailed wave-by-wave CSV described in `docs/analytics_schema.md`.                                           |
 | `node scripts/analyticsLeaderboard.mjs` | Generate a leaderboard-ready CSV (or JSON) ranked by combo, accuracy, and DPS from exported analytics snapshots.                              |

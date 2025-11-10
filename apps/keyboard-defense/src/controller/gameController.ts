@@ -1481,6 +1481,90 @@ export class GameController {
       this.pause();
     }
   }
+
+  debugShowWaveScorecard(summary = {}) {
+    const state = this.engine.getState();
+    const defaultSummary =
+      state.analytics?.waveSummaries?.at(-1) ??
+      state.analytics?.waveHistory?.at(-1) ?? {
+        index: state.wave?.index ?? 0,
+        mode: state.mode ?? "campaign",
+        accuracy: state.typing?.accuracy ?? 0,
+        enemiesDefeated: 0,
+        breaches: state.analytics?.sessionBreaches ?? 0,
+        perfectWords: 0,
+        averageReaction: 0,
+        dps: 0,
+        turretDps: 0,
+        typingDps: 0,
+        turretDamage: 0,
+        typingDamage: 0,
+        shieldBreaks: 0,
+        repairsUsed: 0,
+        repairHealth: 0,
+        repairGold: 0,
+        goldEarned: state.resources?.gold ?? 0,
+        bonusGold: 0,
+        castleBonusGold: 0,
+        maxCombo: this.bestCombo,
+        sessionBestCombo: this.bestCombo
+      };
+    const payload = {
+      waveIndex: summary.waveIndex ?? summary.index ?? defaultSummary.index ?? 0,
+      waveTotal: Array.isArray(this.engine.config?.waves)
+        ? this.engine.config.waves.length
+        : 0,
+      mode: summary.mode ?? defaultSummary.mode ?? this.engine.getMode(),
+      accuracy: summary.accuracy ?? defaultSummary.accuracy ?? 0,
+      enemiesDefeated: summary.enemiesDefeated ?? defaultSummary.enemiesDefeated ?? 0,
+      breaches: summary.breaches ?? defaultSummary.breaches ?? 0,
+      perfectWords: summary.perfectWords ?? defaultSummary.perfectWords ?? 0,
+      averageReaction: summary.averageReaction ?? defaultSummary.averageReaction ?? 0,
+      dps: summary.dps ?? defaultSummary.dps ?? 0,
+      turretDps: summary.turretDps ?? defaultSummary.turretDps ?? 0,
+      typingDps: summary.typingDps ?? defaultSummary.typingDps ?? 0,
+      turretDamage: summary.turretDamage ?? defaultSummary.turretDamage ?? 0,
+      typingDamage: summary.typingDamage ?? defaultSummary.typingDamage ?? 0,
+      shieldBreaks: summary.shieldBreaks ?? defaultSummary.shieldBreaks ?? 0,
+      repairsUsed: summary.repairsUsed ?? defaultSummary.repairsUsed ?? 0,
+      repairHealth: summary.repairHealth ?? defaultSummary.repairHealth ?? 0,
+      repairGold: summary.repairGold ?? defaultSummary.repairGold ?? 0,
+      goldEarned: summary.goldEarned ?? defaultSummary.goldEarned ?? 0,
+      bonusGold: summary.bonusGold ?? defaultSummary.bonusGold ?? 0,
+      castleBonusGold: summary.castleBonusGold ?? defaultSummary.castleBonusGold ?? 0,
+      bestCombo: summary.bestCombo ?? summary.maxCombo ?? defaultSummary.maxCombo ?? 0,
+      sessionBestCombo:
+        summary.sessionBestCombo ?? defaultSummary.sessionBestCombo ?? this.bestCombo
+    };
+    this.hud.showWaveScorecard({
+      waveIndex: payload.waveIndex ?? 0,
+      waveTotal: payload.waveTotal ?? 0,
+      mode: payload.mode ?? this.engine.getMode(),
+      accuracy: payload.accuracy ?? 0,
+      enemiesDefeated: payload.enemiesDefeated ?? 0,
+      breaches: payload.breaches ?? 0,
+      perfectWords: payload.perfectWords ?? 0,
+      averageReaction: payload.averageReaction ?? 0,
+      dps: payload.dps ?? 0,
+      turretDps: payload.turretDps ?? 0,
+      typingDps: payload.typingDps ?? 0,
+      turretDamage: payload.turretDamage ?? 0,
+      typingDamage: payload.typingDamage ?? 0,
+      shieldBreaks: payload.shieldBreaks ?? 0,
+      repairsUsed: payload.repairsUsed ?? 0,
+      repairHealth: payload.repairHealth ?? 0,
+      repairGold: payload.repairGold ?? 0,
+      goldEarned: payload.goldEarned ?? 0,
+      bonusGold: payload.bonusGold ?? 0,
+      castleBonusGold: payload.castleBonusGold ?? 0,
+      bestCombo: payload.bestCombo ?? 0,
+      sessionBestCombo: payload.sessionBestCombo ?? this.bestCombo
+    });
+  }
+
+  debugHideWaveScorecard() {
+    this.hud.hideWaveScorecard();
+  }
   handleWaveScorecardContinue() {
     this.closeWaveScorecard({ resume: true });
   }
@@ -1851,6 +1935,44 @@ export class GameController {
       })
       .join("|");
   }
+  collectUiCondensedSnapshot() {
+    const hudState = this.hud?.getCondensedState?.() ?? null;
+    const diagnosticsState = this.diagnostics?.getCondensedState?.() ?? null;
+    const preferences = {
+      hudPassivesCollapsed:
+        typeof this.playerSettings?.hudPassivesCollapsed === "boolean"
+          ? this.playerSettings.hudPassivesCollapsed
+          : null,
+      hudGoldEventsCollapsed:
+        typeof this.playerSettings?.hudGoldEventsCollapsed === "boolean"
+          ? this.playerSettings.hudGoldEventsCollapsed
+          : null,
+      optionsPassivesCollapsed:
+        typeof this.playerSettings?.optionsPassivesCollapsed === "boolean"
+          ? this.playerSettings.optionsPassivesCollapsed
+          : null
+    };
+    return {
+      compactHeight: hudState?.compactHeight ?? null,
+      tutorialBanner: {
+        condensed: hudState?.tutorialBannerCondensed ?? false,
+        expanded: hudState?.tutorialBannerExpanded ?? false
+      },
+      hud: {
+        passivesCollapsed: hudState?.hudCastlePassivesCollapsed ?? null,
+        goldEventsCollapsed: hudState?.hudGoldEventsCollapsed ?? null,
+        prefersCondensedLists: hudState?.prefersCondensedLists ?? null
+      },
+      options: {
+        passivesCollapsed: hudState?.optionsPassivesCollapsed ?? null
+      },
+      diagnostics: {
+        condensed: diagnosticsState?.condensed ?? null,
+        sectionsCollapsed: diagnosticsState?.sectionsCollapsed ?? null
+      },
+      preferences
+    };
+  }
   resetAnalytics() {
     this.engine.resetAnalytics();
     this.currentState = this.engine.getState();
@@ -1866,6 +1988,7 @@ export class GameController {
       return;
     }
     const snapshot = this.engine.getAnalyticsSnapshot();
+    const uiSnapshot = this.collectUiCondensedSnapshot();
     if (typeof document === "undefined" || !document.body) {
       console.warn("Analytics export skipped: document context unavailable.");
       this.hud.appendLog("Analytics export failed (no active document context).");
@@ -1874,6 +1997,7 @@ export class GameController {
     const telemetryExport = this.buildTelemetryExport(true);
     const exportPayload = {
       ...snapshot,
+      ui: uiSnapshot,
       settings: {
         soundEnabled: this.soundEnabled,
         soundVolume: this.soundVolume,
@@ -2558,6 +2682,36 @@ export class GameController {
       onContinue: () => this.handleTutorialContinue(),
       onReplay: () => this.handleTutorialReplay()
     });
+  }
+
+  debugShowTutorialSummary(summary = {}) {
+    const state = this.engine.getState();
+    const normalized = {
+      accuracy:
+        typeof summary.accuracy === "number"
+          ? summary.accuracy
+          : state.typing?.accuracy ?? 0,
+      bestCombo:
+        typeof summary.bestCombo === "number"
+          ? summary.bestCombo
+          : Math.max(this.bestCombo, state.typing?.combo ?? 0),
+      breaches:
+        typeof summary.breaches === "number"
+          ? summary.breaches
+          : state.analytics?.sessionBreaches ?? 0,
+      gold:
+        typeof summary.gold === "number"
+          ? summary.gold
+          : Math.round(state.resources?.gold ?? 0)
+    };
+    this.hud.showTutorialSummary(normalized, {
+      onContinue: () => {},
+      onReplay: () => {}
+    });
+  }
+
+  debugHideTutorialSummary() {
+    this.hud.hideTutorialSummary();
   }
   collectTutorialSummary() {
     const state = this.engine.getState();

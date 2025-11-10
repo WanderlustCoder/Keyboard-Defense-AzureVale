@@ -14,6 +14,7 @@
     "serve:stop": "node ./scripts/devServer.mjs stop",
     "serve:logs": "node ./scripts/devServer.mjs logs",
     "serve:monitor": "node ./scripts/devServer.mjs monitor",
+    "serve:smoke": "node ./scripts/devServerSmoke.mjs",
     "monitor:dev": "node ./scripts/devMonitor.mjs --wait-ready --artifact monitor-artifacts/dev-monitor.json",
     "start:monitored": "node ./scripts/startMonitored.mjs",
     "smoke:tutorial:full": "node ./scripts/smokeTutorialFull.mjs",

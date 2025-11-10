@@ -274,6 +274,31 @@ export interface WaveSpawnPreview {
   shield?: number;
 }
 
+export interface AnalyticsUiSnapshot {
+  compactHeight: boolean | null;
+  tutorialBanner: {
+    condensed: boolean;
+    expanded: boolean;
+  };
+  hud: {
+    passivesCollapsed: boolean | null;
+    goldEventsCollapsed: boolean | null;
+    prefersCondensedLists: boolean | null;
+  };
+  options: {
+    passivesCollapsed: boolean | null;
+  };
+  diagnostics: {
+    condensed: boolean | null;
+    sectionsCollapsed: boolean | null;
+  };
+  preferences: {
+    hudPassivesCollapsed: boolean | null;
+    hudGoldEventsCollapsed: boolean | null;
+    optionsPassivesCollapsed: boolean | null;
+  };
+}
+
 export interface AnalyticsSnapshot {
   capturedAt: string;
   time: number;
@@ -288,5 +313,6 @@ export interface AnalyticsSnapshot {
     soundVolume: number;
     soundIntensity: number;
   };
+  ui?: AnalyticsUiSnapshot;
   turretStats?: TurretRuntimeStat[];
 }

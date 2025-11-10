@@ -1113,6 +1113,36 @@ test("HUD condensed cards emit collapse preferences", () => {
   }
 });
 
+test("HudView exposes condensed snapshot for analytics", () => {
+  const matchMediaState = {
+    "(max-width: 768px)": false,
+    "(max-height: 540px)": true,
+    default: false
+  };
+  const { hud, cleanup } = initializeHud({ matchMediaState });
+  try {
+    hud.applyCollapsePreferences(
+      {
+        hudCastlePassivesCollapsed: true,
+        hudGoldEventsCollapsed: false,
+        optionsPassivesCollapsed: true
+      },
+      { silent: true }
+    );
+    hud.setTutorialMessage("Condensed tip incoming");
+    const snapshot = hud.getCondensedState();
+    assert.equal(snapshot.tutorialBannerCondensed, true);
+    assert.equal(snapshot.tutorialBannerExpanded, false);
+    assert.equal(snapshot.hudCastlePassivesCollapsed, true);
+    assert.equal(snapshot.hudGoldEventsCollapsed, false);
+    assert.equal(snapshot.optionsPassivesCollapsed, true);
+    assert.equal(snapshot.compactHeight, true);
+    assert.equal(snapshot.prefersCondensedLists, true);
+  } finally {
+    cleanup();
+  }
+});
+
 test("HudView applyCollapsePreferences respects stored values", () => {
   const { hud, cleanup, elements } = initializeHud();
   try {

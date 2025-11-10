@@ -4,9 +4,10 @@ import { promises as fs } from "node:fs";
 import { execFile } from "node:child_process";
 import os from "node:os";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { main as analyticsMain } from "../scripts/analyticsAggregate.mjs";
 
-const cliPath = path.resolve("./scripts/analyticsAggregate.mjs");
+const cliPath = fileURLToPath(new URL("../scripts/analyticsAggregate.mjs", import.meta.url));
 
 function runCli(args, options = {}) {
   return new Promise((resolve, reject) => {
@@ -41,6 +42,22 @@ test("analyticsAggregate summarizes wave data into CSV", async () => {
         soundEnabled: true,
         soundVolume: 0.65,
         soundIntensity: 1.25
+      },
+      ui: {
+        compactHeight: true,
+        tutorialBanner: { condensed: true, expanded: false },
+        hud: {
+          passivesCollapsed: true,
+          goldEventsCollapsed: false,
+          prefersCondensedLists: true
+        },
+        options: { passivesCollapsed: true },
+        diagnostics: { condensed: true, sectionsCollapsed: true },
+        preferences: {
+          hudPassivesCollapsed: true,
+          hudGoldEventsCollapsed: false,
+          optionsPassivesCollapsed: true
+        }
       },
       telemetry: {
         available: true,
@@ -221,12 +238,24 @@ test("analyticsAggregate summarizes wave data into CSV", async () => {
       "time",
       "telemetryAvailable",
       "telemetryEnabled",
-      "telemetryEndpoint",
-      "telemetryQueueSize",
-      "soundEnabled",
-      "soundVolume",
-      "soundIntensity",
-      "timeToFirstTurret",
+    "telemetryEndpoint",
+    "telemetryQueueSize",
+    "soundEnabled",
+    "soundVolume",
+    "soundIntensity",
+    "uiCompactHeight",
+    "uiTutorialCondensed",
+    "uiTutorialExpanded",
+    "uiHudPassivesCollapsed",
+    "uiHudGoldEventsCollapsed",
+    "uiHudPrefersCondensed",
+    "uiOptionsPassivesCollapsed",
+    "uiDiagnosticsCondensed",
+    "uiDiagnosticsSectionsCollapsed",
+    "uiPrefHudPassivesCollapsed",
+    "uiPrefHudGoldEventsCollapsed",
+    "uiPrefOptionsPassivesCollapsed",
+    "timeToFirstTurret",
       "waveIndex",
       "waveTotal",
       "mode",
@@ -299,6 +328,18 @@ test("analyticsAggregate summarizes wave data into CSV", async () => {
     assert.equal(firstRow.soundEnabled, "true");
     assert.equal(firstRow.soundVolume, "0.65");
     assert.equal(firstRow.soundIntensity, "1.25");
+    assert.equal(firstRow.uiCompactHeight, "true");
+    assert.equal(firstRow.uiTutorialCondensed, "true");
+    assert.equal(firstRow.uiTutorialExpanded, "false");
+    assert.equal(firstRow.uiHudPassivesCollapsed, "true");
+    assert.equal(firstRow.uiHudGoldEventsCollapsed, "false");
+    assert.equal(firstRow.uiHudPrefersCondensed, "true");
+    assert.equal(firstRow.uiOptionsPassivesCollapsed, "true");
+    assert.equal(firstRow.uiDiagnosticsCondensed, "true");
+    assert.equal(firstRow.uiDiagnosticsSectionsCollapsed, "true");
+    assert.equal(firstRow.uiPrefHudPassivesCollapsed, "true");
+    assert.equal(firstRow.uiPrefHudGoldEventsCollapsed, "false");
+    assert.equal(firstRow.uiPrefOptionsPassivesCollapsed, "true");
     assert.equal(firstRow.timeToFirstTurret, "0");
     assert.equal(firstRow.mode, "practice");
     assert.equal(firstRow.practiceMode, "yes");
@@ -348,6 +389,18 @@ test("analyticsAggregate summarizes wave data into CSV", async () => {
     assert.equal(thirdRow.soundEnabled, "false");
     assert.equal(thirdRow.soundVolume, "0.4");
     assert.equal(thirdRow.soundIntensity, "0.95");
+    assert.equal(thirdRow.uiCompactHeight, "");
+    assert.equal(thirdRow.uiTutorialCondensed, "");
+    assert.equal(thirdRow.uiTutorialExpanded, "");
+    assert.equal(thirdRow.uiHudPassivesCollapsed, "");
+    assert.equal(thirdRow.uiHudGoldEventsCollapsed, "");
+    assert.equal(thirdRow.uiHudPrefersCondensed, "");
+    assert.equal(thirdRow.uiOptionsPassivesCollapsed, "");
+    assert.equal(thirdRow.uiDiagnosticsCondensed, "");
+    assert.equal(thirdRow.uiDiagnosticsSectionsCollapsed, "");
+    assert.equal(thirdRow.uiPrefHudPassivesCollapsed, "");
+    assert.equal(thirdRow.uiPrefHudGoldEventsCollapsed, "");
+    assert.equal(thirdRow.uiPrefOptionsPassivesCollapsed, "");
     assert.equal(thirdRow.timeToFirstTurret, "");
     assert.equal(thirdRow.summaryWave, "4");
     assert.equal(thirdRow.mode, "campaign");

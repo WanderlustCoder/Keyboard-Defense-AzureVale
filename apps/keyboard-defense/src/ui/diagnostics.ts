@@ -283,6 +283,13 @@ export class DiagnosticsOverlay {
     this.updateCollapseButton();
   }
 
+  getCondensedState(): { condensed: boolean; sectionsCollapsed: boolean } {
+    return {
+      condensed: this.condensed,
+      sectionsCollapsed: this.sectionsCollapsed
+    };
+  }
+
   toggle(): void {
     this.setVisible(!this.visible);
   }

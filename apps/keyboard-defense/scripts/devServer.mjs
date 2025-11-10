@@ -26,17 +26,23 @@ function resolveHttpServerBin() {
     "http-server/bin/http-server.js",
     "http-server/bin/http-server"
   ];
+  const attempted = [];
   for (const candidate of candidates) {
     try {
       return require.resolve(candidate);
     } catch {
-      continue;
+      attempted.push(candidate);
     }
   }
-  console.error(
-    "Unable to locate http-server. Run `npm install` before launching the dev server."
-  );
-  throw new Error("http-server executable not found");
+  const guidanceLines = [
+    "Unable to locate the http-server binary required by npm run start.",
+    `Looked for ${attempted.join(", ") || "http-server"} via require.resolve().`,
+    "Run `npm install` inside apps/keyboard-defense/ (or `npm install --save-dev http-server`) so the dependency is available.",
+    "See docs/DEVELOPMENT.md (Dev Server Automation) for setup details."
+  ];
+  const guidance = guidanceLines.join(" ");
+  console.error(guidance);
+  throw new Error(guidance);
 }
 
 const HTTP_SERVER_BIN = resolveHttpServerBin();

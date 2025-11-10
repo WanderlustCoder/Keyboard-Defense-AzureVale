@@ -5,6 +5,8 @@
  * Produces PNGs under artifacts/screenshots/ by default:
  *   - hud-main.png: Core HUD during an active wave.
  *   - options-overlay.png: Pause/options overlay with accessibility controls.
+ *   - tutorial-summary.png: Tutorial wrap-up modal with mocked stats.
+ *   - wave-scorecard.png: Wave-end scorecard highlighting DPS and rewards.
  *
  * Usage:
  *   node scripts/hudScreenshots.mjs [--url http://127.0.0.1:4173] [--out artifacts/screenshots] [--ci]
@@ -22,7 +24,9 @@ const DEFAULT_OUTPUT_DIR =
 
 const SHOTS = [
   { id: "hud-main", file: "hud-main.png" },
-  { id: "options-overlay", file: "options-overlay.png" }
+  { id: "options-overlay", file: "options-overlay.png" },
+  { id: "tutorial-summary", file: "tutorial-summary.png" },
+  { id: "wave-scorecard", file: "wave-scorecard.png" }
 ];
 
 function parseArgs(argv) {
@@ -122,6 +126,23 @@ async function ensureDir(outDir) {
   await fs.mkdir(outDir, { recursive: true });
 }
 
+async function collectUiSnapshot(page) {
+  return page.evaluate(() => {
+    try {
+      const kd = window.keyboardDefense;
+      if (!kd || typeof kd.getUiSnapshot !== "function") {
+        return null;
+      }
+      const snapshot = kd.getUiSnapshot();
+      return snapshot ?? null;
+    } catch (error) {
+      const message =
+        error && typeof error === "object" && "message" in error ? error.message : String(error);
+      return { error: message };
+    }
+  });
+}
+
 async function captureHudMain(page, outPath) {
   await page.evaluate(() => {
     const kd = window.keyboardDefense;
@@ -138,6 +159,7 @@ async function captureHudMain(page, outPath) {
   await page.evaluate(() => window.keyboardDefense?.pause());
   await page.waitForTimeout(200);
   await page.screenshot({ path: outPath, fullPage: true });
+  return collectUiSnapshot(page);
 }
 
 async function captureOptionsOverlay(page, outPath) {
@@ -147,8 +169,69 @@ async function captureOptionsOverlay(page, outPath) {
   });
   await page.waitForTimeout(400);
   await page.screenshot({ path: outPath, fullPage: true });
+  const snapshot = await collectUiSnapshot(page);
   await page.keyboard.press("Escape");
   await page.waitForTimeout(200);
+  return snapshot;
+}
+
+async function captureTutorialSummaryOverlay(page, outPath) {
+  await page.evaluate(() => {
+    const kd = window.keyboardDefense;
+    if (!kd || typeof kd.showTutorialSummary !== "function") {
+      throw new Error("keyboardDefense debug API missing showTutorialSummary.");
+    }
+    kd.pause?.();
+    kd.showTutorialSummary({
+      accuracy: 0.97,
+      bestCombo: 42,
+      breaches: 1,
+      gold: 380
+    });
+  });
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: outPath, fullPage: true });
+  const snapshot = await collectUiSnapshot(page);
+  await page.evaluate(() => window.keyboardDefense?.hideTutorialSummary?.());
+  return snapshot;
+}
+
+async function captureWaveScorecard(page, outPath) {
+  await page.evaluate(() => {
+    const kd = window.keyboardDefense;
+    if (!kd || typeof kd.showWaveScorecard !== "function") {
+      throw new Error("keyboardDefense debug API missing showWaveScorecard.");
+    }
+    kd.showWaveScorecard({
+      waveIndex: 4,
+      waveTotal: 7,
+      mode: "campaign",
+      accuracy: 0.91,
+      enemiesDefeated: 18,
+      breaches: 1,
+      perfectWords: 6,
+      averageReaction: 1.1,
+      dps: 32,
+      turretDps: 18,
+      typingDps: 14,
+      turretDamage: 640,
+      typingDamage: 498,
+      shieldBreaks: 3,
+      repairsUsed: 1,
+      repairHealth: 80,
+      repairGold: 200,
+      goldEarned: 210,
+      bonusGold: 35,
+      castleBonusGold: 24,
+      bestCombo: 28,
+      sessionBestCombo: 35
+    });
+  });
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: outPath, fullPage: true });
+  const snapshot = await collectUiSnapshot(page);
+  await page.evaluate(() => window.keyboardDefense?.hideWaveScorecard?.());
+  return snapshot;
 }
 
 async function captureScreenshots(opts) {
@@ -188,14 +271,20 @@ async function captureScreenshots(opts) {
 
         for (const shot of SHOTS) {
           const outPath = path.join(opts.outputDir, shot.file);
+          let uiSnapshot = null;
           if (shot.id === "hud-main") {
-            await captureHudMain(page, outPath);
+            uiSnapshot = await captureHudMain(page, outPath);
           } else if (shot.id === "options-overlay") {
-            await captureOptionsOverlay(page, outPath);
+            uiSnapshot = await captureOptionsOverlay(page, outPath);
+          } else if (shot.id === "tutorial-summary") {
+            uiSnapshot = await captureTutorialSummaryOverlay(page, outPath);
+          } else if (shot.id === "wave-scorecard") {
+            uiSnapshot = await captureWaveScorecard(page, outPath);
           }
           summary.screenshots.push({
             id: shot.id,
-            path: outPath
+            path: outPath,
+            uiSnapshot: uiSnapshot ?? (await collectUiSnapshot(page))
           });
         }
       } finally {

@@ -50,6 +50,10 @@ jobs:
         run: node scripts/integration.mjs --ci
         working-directory: apps/keyboard-defense
 
+      - name: Dev server smoke
+        run: npm run serve:smoke -- --ci --json
+        working-directory: apps/keyboard-defense
+
       - name: Upload build artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -59,6 +63,7 @@ jobs:
             apps/keyboard-defense/artifacts/build
             apps/keyboard-defense/artifacts/unit
             apps/keyboard-defense/artifacts/integration
+            apps/keyboard-defense/artifacts/smoke/devserver-smoke-summary.json
             apps/keyboard-defense/baselines
 
   smoke:
@@ -139,6 +144,51 @@ jobs:
 
       - name: Capture HUD screenshots
         run: node scripts/hudScreenshots.mjs --ci
+        working-directory: apps/keyboard-defense
+
+      - name: Publish HUD screenshot summary
+        if: always()
+        run: |
+          node - <<'NODE'
+          import fs from "node:fs";
+          import path from "node:path";
+
+          const summaryPath = path.resolve("artifacts", "screenshots", "screenshots-summary.ci.json");
+          if (!fs.existsSync(summaryPath)) {
+            console.log(`No HUD screenshot summary at ${summaryPath}`);
+            process.exit(0);
+          }
+
+          const data = JSON.parse(fs.readFileSync(summaryPath, "utf8"));
+          const lines = [];
+          lines.push("## HUD Screenshot Summary");
+          lines.push(`Status: ${data.status ?? "unknown"}`);
+          lines.push(`Base URL: ${data.baseUrl ?? "unknown"}`);
+          lines.push("");
+
+          if (Array.isArray(data.screenshots) && data.screenshots.length > 0) {
+            lines.push("| Shot | Rel Path | Notes |");
+            lines.push("| --- | --- | --- |");
+            for (const shot of data.screenshots) {
+              const rel = shot.path ? path.relative(process.cwd(), shot.path) : "";
+              const condensed =
+                shot.uiSnapshot?.hud?.prefersCondensedLists === true ? "prefers condensed HUD" : "";
+              const diagnostics =
+                shot.uiSnapshot?.diagnostics?.condensed === true ? "diagnostics condensed" : "";
+              const notes = [condensed, diagnostics].filter(Boolean).join("; ");
+              lines.push(`| ${shot.id ?? "unknown"} | ${rel} | ${notes || ""} |`);
+            }
+          } else {
+            lines.push("_No screenshots recorded._");
+          }
+
+          const summaryFile = process.env.GITHUB_STEP_SUMMARY;
+          if (summaryFile) {
+            fs.appendFileSync(summaryFile, lines.join("\n") + "\n");
+          } else {
+            console.log(lines.join("\n"));
+          }
+          NODE
         working-directory: apps/keyboard-defense
 
       - name: Castle breach drill

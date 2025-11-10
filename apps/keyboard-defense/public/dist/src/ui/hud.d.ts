@@ -60,6 +60,15 @@ export interface TutorialSummaryData {
     breaches: number;
     gold: number;
 }
+export interface HudCondensedStateSnapshot {
+    tutorialBannerCondensed: boolean;
+    tutorialBannerExpanded: boolean;
+    hudCastlePassivesCollapsed: boolean | null;
+    hudGoldEventsCollapsed: boolean | null;
+    optionsPassivesCollapsed: boolean | null;
+    compactHeight: boolean;
+    prefersCondensedLists: boolean;
+}
 type TutorialSummaryHandlers = {
     onContinue: () => void;
     onReplay: () => void;
@@ -299,6 +308,7 @@ export declare class HudView {
     private applyAnalyticsViewerFilter;
     setAnalyticsViewerVisible(visible: boolean): boolean;
     isAnalyticsViewerVisible(): boolean;
+    getCondensedState(): HudCondensedStateSnapshot;
     private refreshAnalyticsViewer;
     private setOptionsOverlayVisible;
 }

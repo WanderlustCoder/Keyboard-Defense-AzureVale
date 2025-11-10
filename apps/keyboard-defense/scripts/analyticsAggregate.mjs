@@ -46,6 +46,10 @@ function formatNumber(value, precision = 2) {
   return Math.round(value * factor) / factor;
 }
 
+function boolOrEmpty(value) {
+  return typeof value === "boolean" ? value : "";
+}
+
 function formatTurretStats(turretStats) {
   if (!Array.isArray(turretStats) || turretStats.length === 0) {
     return "";
@@ -211,6 +215,24 @@ function* summarizeSnapshot(snapshot, sourcePath) {
     turretStats: turretStatsValue
   };
   metadata.soundIntensity = soundIntensityValue;
+  const uiSnapshot = snapshot?.ui ?? null;
+  const tutorialBannerUi = uiSnapshot?.tutorialBanner ?? {};
+  const hudUi = uiSnapshot?.hud ?? {};
+  const optionsUi = uiSnapshot?.options ?? {};
+  const diagnosticsUi = uiSnapshot?.diagnostics ?? {};
+  const preferencesUi = uiSnapshot?.preferences ?? {};
+  metadata.uiCompactHeight = boolOrEmpty(uiSnapshot?.compactHeight);
+  metadata.uiTutorialCondensed = boolOrEmpty(tutorialBannerUi?.condensed);
+  metadata.uiTutorialExpanded = boolOrEmpty(tutorialBannerUi?.expanded);
+  metadata.uiHudPassivesCollapsed = boolOrEmpty(hudUi?.passivesCollapsed);
+  metadata.uiHudGoldEventsCollapsed = boolOrEmpty(hudUi?.goldEventsCollapsed);
+  metadata.uiHudPrefersCondensed = boolOrEmpty(hudUi?.prefersCondensedLists);
+  metadata.uiOptionsPassivesCollapsed = boolOrEmpty(optionsUi?.passivesCollapsed);
+  metadata.uiDiagnosticsCondensed = boolOrEmpty(diagnosticsUi?.condensed);
+  metadata.uiDiagnosticsSectionsCollapsed = boolOrEmpty(diagnosticsUi?.sectionsCollapsed);
+  metadata.uiPrefHudPassivesCollapsed = boolOrEmpty(preferencesUi?.hudPassivesCollapsed);
+  metadata.uiPrefHudGoldEventsCollapsed = boolOrEmpty(preferencesUi?.hudGoldEventsCollapsed);
+  metadata.uiPrefOptionsPassivesCollapsed = boolOrEmpty(preferencesUi?.optionsPassivesCollapsed);
 
   const passiveUnlocks = Array.isArray(snapshot?.analytics?.castlePassiveUnlocks)
     ? snapshot.analytics.castlePassiveUnlocks
@@ -323,6 +345,18 @@ function printCsv(rows) {
     "soundEnabled",
     "soundVolume",
     "soundIntensity",
+    "uiCompactHeight",
+    "uiTutorialCondensed",
+    "uiTutorialExpanded",
+    "uiHudPassivesCollapsed",
+    "uiHudGoldEventsCollapsed",
+    "uiHudPrefersCondensed",
+    "uiOptionsPassivesCollapsed",
+    "uiDiagnosticsCondensed",
+    "uiDiagnosticsSectionsCollapsed",
+    "uiPrefHudPassivesCollapsed",
+    "uiPrefHudGoldEventsCollapsed",
+    "uiPrefOptionsPassivesCollapsed",
     "timeToFirstTurret",
     "waveIndex",
     "waveTotal",

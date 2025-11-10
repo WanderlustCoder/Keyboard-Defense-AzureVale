@@ -345,3 +345,18 @@ test("DiagnosticsOverlay collapses detailed sections when condensed", () => {
     restoreDom();
   }
 });
+
+test("DiagnosticsOverlay exposes condensed snapshot state", () => {
+  const container = createContainer();
+  const overlay = new DiagnosticsOverlay(container);
+  overlay.setVisible(true);
+  overlay.applyCondensedState(true);
+  overlay.sectionsCollapsed = true;
+  let snapshot = overlay.getCondensedState();
+  assert.equal(snapshot.condensed, true);
+  assert.equal(snapshot.sectionsCollapsed, true);
+  overlay.applyCondensedState(false);
+  snapshot = overlay.getCondensedState();
+  assert.equal(snapshot.condensed, false);
+  assert.equal(snapshot.sectionsCollapsed, false);
+});

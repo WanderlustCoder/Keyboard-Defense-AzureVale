@@ -48,6 +48,25 @@ This reference captures the structure of the JSON snapshots downloaded from the 
 
 > The CSV emitted by `analyticsAggregate.mjs` retains these fields as columns: `sessionBreaches`, `sessionBestCombo`, `totalDamageDealt`, `totalTurretDamage`, `totalTypingDamage`, `totalShieldBreaks`, `totalCastleRepairs`, `totalRepairHealth`, `totalRepairGold`, `totalPerfectWords`, `totalBonusGold`, `totalCastleBonusGold`, `totalReactionTime`, `reactionSamples`, `averageTotalDps`, `averageTurretDps`, `averageTypingDps`, along with per-wave `perfectWords`, `averageReaction`, `bonusGold`, `castleBonusGold`, and a serialised `turretStats` column summarising per-slot damage/DPS (`slotId:type Lx dmg=... dps=...`).
 
+## UI Snapshot Fields
+
+The `ui` object travels alongside each analytics export to describe how the HUD rendered when the snapshot was taken. This keeps automation artifacts honest without scraping DOM state.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `ui.compactHeight` | boolean \| null | Mirrors `document.body.dataset.compactHeight` to indicate the tutorial banner compact-height heuristic triggered. |
+| `ui.tutorialBanner.condensed` | boolean | Whether the tutorial banner is currently in condensed mode (viewport <540px tall). |
+| `ui.tutorialBanner.expanded` | boolean | Whether the condensed tutorial banner is expanded (player toggled it open). |
+| `ui.hud.passivesCollapsed` | boolean \| null | Current collapse state of the HUD castle passives card (`null` when unavailable). |
+| `ui.hud.goldEventsCollapsed` | boolean \| null | Current collapse state of the HUD recent gold events card. |
+| `ui.hud.prefersCondensedLists` | boolean \| null | Result of the viewport heuristic that drives the default collapse state (true on mobile-friendly viewports). |
+| `ui.options.passivesCollapsed` | boolean \| null | Collapse state of the pause/options overlay passives section. |
+| `ui.diagnostics.condensed` | boolean \| null | Whether the diagnostics overlay flipped into its condensed mode (short viewports). |
+| `ui.diagnostics.sectionsCollapsed` | boolean \| null | Whether the condensed diagnostics overlay has its verbose sections collapsed behind the toggle button. |
+| `ui.preferences.hudPassivesCollapsed` | boolean \| null | Player preference for the HUD passives card collapse state (persisted in player settings). |
+| `ui.preferences.hudGoldEventsCollapsed` | boolean \| null | Player preference for the HUD gold events card collapse state. |
+| `ui.preferences.optionsPassivesCollapsed` | boolean \| null | Player preference for the options overlay passives card. |
+
 ## Wave Summary Fields
 
 Each entry in `waveSummaries`/`waveHistory` (and the per-row CSV output) exposes:

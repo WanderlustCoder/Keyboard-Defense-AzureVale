@@ -205,6 +205,16 @@ export type HudCollapsePreferenceUpdate = {
   optionsPassivesCollapsed?: boolean | null;
 };
 
+export interface HudCondensedStateSnapshot {
+  tutorialBannerCondensed: boolean;
+  tutorialBannerExpanded: boolean;
+  hudCastlePassivesCollapsed: boolean | null;
+  hudGoldEventsCollapsed: boolean | null;
+  optionsPassivesCollapsed: boolean | null;
+  compactHeight: boolean;
+  prefersCondensedLists: boolean;
+}
+
 interface CondensedSection {
   container: HTMLDivElement;
   body: HTMLDivElement;
@@ -1541,6 +1551,23 @@ export class HudView {
         this.setOptionsPassivesCollapsed(this.optionsPassivesDefaultCollapsed, { silent: true });
       }
     }
+  }
+
+  getCondensedState(): HudCondensedStateSnapshot {
+    const compactHeightActive =
+      typeof document !== "undefined" &&
+      typeof document.body !== "undefined" &&
+      document.body.dataset.compactHeight === "true";
+    return {
+      tutorialBannerCondensed: this.shouldCondenseTutorialBanner(),
+      tutorialBannerExpanded: this.tutorialBannerExpanded,
+      hudCastlePassivesCollapsed: this.castlePassivesSection?.collapsed ?? null,
+      hudGoldEventsCollapsed: this.castleGoldEventsSection?.collapsed ?? null,
+      optionsPassivesCollapsed:
+        typeof this.optionsPassivesCollapsed === "boolean" ? this.optionsPassivesCollapsed : null,
+      compactHeight: compactHeightActive,
+      prefersCondensedLists: this.prefersCondensedHudLists()
+    };
   }
 
   private prefersCondensedHudLists(): boolean {

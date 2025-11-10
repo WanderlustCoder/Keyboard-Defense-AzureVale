@@ -214,12 +214,18 @@ class DiagnosticsOverlay {
     this.container.dataset.visible = "true";
     this.updateCollapseButton();
   }
-  toggle() {
-    this.setVisible(!this.visible);
-  }
   setVisible(next) {
     this.visible = next;
     this.container.dataset.visible = next ? "true" : "false";
+  }
+  getCondensedState() {
+    return {
+      condensed: this.condensed,
+      sectionsCollapsed: this.sectionsCollapsed
+    };
+  }
+  toggle() {
+    this.setVisible(!this.visible);
   }
   isVisible() {
     return this.visible;

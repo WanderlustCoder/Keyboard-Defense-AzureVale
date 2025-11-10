@@ -1152,6 +1152,23 @@ export class HudView {
             }
         }
     }
+    getCondensedState() {
+        var _a, _b;
+        const compactHeightActive = typeof document !== "undefined" &&
+            typeof document.body !== "undefined" &&
+            document.body.dataset.compactHeight === "true";
+        return {
+            tutorialBannerCondensed: this.shouldCondenseTutorialBanner(),
+            tutorialBannerExpanded: this.tutorialBannerExpanded,
+            hudCastlePassivesCollapsed: ((_a = this.castlePassivesSection) == null ? void 0 : _a.collapsed) ?? null,
+            hudGoldEventsCollapsed: ((_b = this.castleGoldEventsSection) == null ? void 0 : _b.collapsed) ?? null,
+            optionsPassivesCollapsed: typeof this.optionsPassivesCollapsed === "boolean"
+                ? this.optionsPassivesCollapsed
+                : null,
+            compactHeight: compactHeightActive,
+            prefersCondensedLists: this.prefersCondensedHudLists()
+        };
+    }
     prefersCondensedHudLists() {
         return (this.matchesMediaQuery("(max-width: 768px)") ||
             this.matchesMediaQuery("(max-height: 540px)"));

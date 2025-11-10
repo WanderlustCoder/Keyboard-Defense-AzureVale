@@ -24,6 +24,7 @@ Commands:
 | `npm run serve:check` | Fast readiness probe (non-zero exit code if unreachable). |
 | `npm run serve:logs` | Tail the captured `http-server` log from `.devserver/server.log`. |
 | `npm run serve:monitor` | Stream logs and periodic HTTP probes; exits when the server stops or on Ctrl+C. |
+| `npm run serve:smoke` | Launch `npm run start`, wait for readiness, issue reachability checks, and shut everything down again (used in CI). Emits `artifacts/smoke/devserver-smoke-summary.json` (override via `DEVSERVER_SMOKE_SUMMARY`), automatically prints the tail of `.devserver/server.log` when failures occur, and supports `--json` to dump the summary to stdout for automation-friendly parsing. |
 | `npm run serve:stop` | Gracefully terminate the background server and clear state files. |
 | `npm run monitor:dev` | Standalone poller (`devMonitor.mjs`) that waits for the dev server to become reachable and emits a JSON artifact. |
 | `npm run start:monitored` | Convenience wrapper that runs `npm run start` followed by the monitor (with `--wait-ready`) in one step. |
