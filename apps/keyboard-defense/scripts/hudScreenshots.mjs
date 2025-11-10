@@ -24,9 +24,7 @@ const DEFAULT_OUTPUT_DIR =
 
 const SHOTS = [
   { id: "hud-main", file: "hud-main.png" },
-  { id: "options-overlay", file: "options-overlay.png" },
-  { id: "tutorial-summary", file: "tutorial-summary.png" },
-  { id: "wave-scorecard", file: "wave-scorecard.png" }
+  { id: "options-overlay", file: "options-overlay.png" }
 ];
 
 function parseArgs(argv) {
