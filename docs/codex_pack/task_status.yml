@@ -81,3 +81,6 @@ tasks:
   gold-summary-dashboard-integration:
     state: todo
     owner: unassigned
+  diagnostics-condensed-controls:
+    state: todo
+    owner: unassigned

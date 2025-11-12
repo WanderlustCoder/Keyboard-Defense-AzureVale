@@ -145,6 +145,12 @@ tasks:
     status: todo
     status_note: docs/status/2025-11-08_gold_summary_cli.md
     backlog_refs: ["#101", "#79"]
+  - id: diagnostics-condensed-controls
+    path: tasks/28-diagnostics-condensed-controls.md
+    priority: P2
+    status: todo
+    status_note: docs/status/2025-11-18_diagnostics_overlay_condensed.md
+    backlog_refs: ["#41"]
   - id: enemy-defeat-spriteframes
     path: tasks/24-enemy-defeat-spriteframes.md
     priority: P3

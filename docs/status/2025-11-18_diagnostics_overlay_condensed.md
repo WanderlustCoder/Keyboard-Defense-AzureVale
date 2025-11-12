@@ -8,5 +8,5 @@
 - Automation can now detect condensed + collapsed state via `body.dataset.diagnosticsCondensed` and `body.dataset.diagnosticsSectionsCollapsed`, keeping screenshot tooling in sync with the responsive HUD.
 
 **Next Steps**
-1. Pipe the condensed-state signal into automation screenshots so mobile captures show the minimized diagnostics position.
-2. Explore collapsing long telemetry sections (turret DPS, gold events) behind toggles when condensed to reduce scrolling even further.
+1. Pipe the condensed-state signal into automation screenshots so mobile captures show the minimized diagnostics position. *(Codex: `docs/codex_pack/tasks/28-diagnostics-condensed-controls.md`)*
+2. Explore collapsing long telemetry sections (turret DPS, gold events) behind toggles when condensed to reduce scrolling even further. *(Same task.)*
