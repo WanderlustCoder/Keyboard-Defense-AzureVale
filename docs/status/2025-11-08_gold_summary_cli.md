@@ -9,5 +9,5 @@
 - Added `scripts/goldReport.mjs` (`npm run analytics:gold:report`) so devs can generate both artifacts locally with one command (timeline + summary) using the same flags as the underlying CLIs.
 
 **Next Steps**
-1. Feed the CI-generated summary into dashboards/alerts to track economy regression deltas automatically.
-2. Use the new percentile signals to flag economy anomalies (e.g., sustained p90 spends above tolerance) during smoke and breach drills.
+1. Feed the CI-generated summary into dashboards/alerts to track economy regression deltas automatically. *(Codex: `docs/codex_pack/tasks/27-gold-summary-dashboard-integration.md`)*
+2. Use the new percentile signals to flag economy anomalies (e.g., sustained p90 spends above tolerance) during smoke and breach drills. *(Same task, add thresholds.)*

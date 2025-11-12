@@ -78,3 +78,6 @@ tasks:
   combo-accuracy-analytics:
     state: todo
     owner: unassigned
+  gold-summary-dashboard-integration:
+    state: todo
+    owner: unassigned
