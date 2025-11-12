@@ -69,3 +69,9 @@ tasks:
   audio-intensity-telemetry:
     state: todo
     owner: unassigned
+  enemy-defeat-spriteframes:
+    state: todo
+    owner: unassigned
+  defeat-burst-diagnostics:
+    state: todo
+    owner: unassigned

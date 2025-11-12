@@ -139,3 +139,15 @@ tasks:
     status: todo
     status_note: docs/status/2025-11-16_audio_intensity_slider.md
     backlog_refs: ["#54", "#79"]
+  - id: enemy-defeat-spriteframes
+    path: tasks/24-enemy-defeat-spriteframes.md
+    priority: P3
+    status: todo
+    status_note: docs/status/2025-11-07_enemy_defeat_animation.md
+    backlog_refs: ["#66"]
+  - id: defeat-burst-diagnostics
+    path: tasks/25-defeat-burst-diagnostics.md
+    priority: P2
+    status: todo
+    status_note: docs/status/2025-11-07_enemy_defeat_animation.md
+    backlog_refs: ["#41"]

@@ -6,6 +6,6 @@
 - Backlog item #66 marked Done; adds quick polish that sells hits without needing sprite sheets yet.
 
 **Next**
-1. Consider layering sprite-based defeat frames once art lands to replace the procedural burst.
-2. Pipe defeat burst counts into diagnostics overlay for quick visual-regression smoke assertions.
+1. Consider layering sprite-based defeat frames once art lands to replace the procedural burst. *(Codex: `docs/codex_pack/tasks/24-enemy-defeat-spriteframes.md`)*
+2. Pipe defeat burst counts into diagnostics overlay for quick visual-regression smoke assertions. *(Codex: `docs/codex_pack/tasks/25-defeat-burst-diagnostics.md`)*
 
