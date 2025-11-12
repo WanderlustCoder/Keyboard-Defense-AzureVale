@@ -63,3 +63,9 @@ tasks:
   canvas-dpr-monitor:
     state: todo
     owner: unassigned
+  devserver-bin-guidance:
+    state: todo
+    owner: unassigned
+  audio-intensity-telemetry:
+    state: todo
+    owner: unassigned

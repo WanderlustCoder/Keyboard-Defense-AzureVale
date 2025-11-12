@@ -127,3 +127,15 @@ tasks:
     status: todo
     status_note: docs/status/2025-11-18_canvas_scaling.md
     backlog_refs: ["#53"]
+  - id: devserver-bin-guidance
+    path: tasks/22-devserver-bin-guidance.md
+    priority: P2
+    status: todo
+    status_note: docs/status/2025-11-18_devserver_bin_resolution.md
+    backlog_refs: ["#82"]
+  - id: audio-intensity-telemetry
+    path: tasks/23-audio-intensity-telemetry.md
+    priority: P2
+    status: todo
+    status_note: docs/status/2025-11-16_audio_intensity_slider.md
+    backlog_refs: ["#54", "#79"]

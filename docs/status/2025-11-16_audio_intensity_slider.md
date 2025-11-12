@@ -8,4 +8,4 @@
 - Analytics snapshots, telemetry exports, and the `analytics:aggregate` CSV now record `settings.soundIntensity`, so dashboards and automation can track both volume and intensity preferences per run.
 
 **Next Steps**
-1. Consider exposing intensity metrics in smoke artifacts/telemetry so we can correlate comfort settings with combo retention or session length.
+1. Consider exposing intensity metrics in smoke artifacts/telemetry so we can correlate comfort settings with combo retention or session length. *(Codex: `docs/codex_pack/tasks/23-audio-intensity-telemetry.md`)*
