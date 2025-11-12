@@ -54,3 +54,9 @@ tasks:
   passive-analytics-export:
     state: todo
     owner: unassigned
+  passive-iconography:
+    state: todo
+    owner: unassigned
+  tutorial-passive-messaging:
+    state: todo
+    owner: unassigned

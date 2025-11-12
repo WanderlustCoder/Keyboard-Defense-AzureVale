@@ -13,5 +13,5 @@
 
 ## Next Steps
 1. Expose passive deltas in analytics exports for economy/balance dashboards. *(Codex: `docs/codex_pack/tasks/18-passive-analytics-export.md`)*
-2. Add visual icons alongside passive entries in the HUD for quick parsing.
-3. Extend tutorial messaging to call out passive unlocks during onboarding upgrades.
+2. Add visual icons alongside passive entries in the HUD for quick parsing. *(Codex: `docs/codex_pack/tasks/19-passive-iconography.md`)*
+3. Extend tutorial messaging to call out passive unlocks during onboarding upgrades. *(Codex: `docs/codex_pack/tasks/20-tutorial-passive-messaging.md`)*

@@ -109,3 +109,15 @@ tasks:
     status: todo
     status_note: docs/status/2025-11-06_castle_passives.md
     backlog_refs: ["#41", "#79"]
+  - id: passive-iconography
+    path: tasks/19-passive-iconography.md
+    priority: P3
+    status: todo
+    status_note: docs/status/2025-11-06_castle_passives.md
+    backlog_refs: ["#30"]
+  - id: tutorial-passive-messaging
+    path: tasks/20-tutorial-passive-messaging.md
+    priority: P2
+    status: todo
+    status_note: docs/status/2025-11-06_castle_passives.md
+    backlog_refs: ["#1", "#30"]
