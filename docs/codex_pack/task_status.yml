@@ -60,3 +60,6 @@ tasks:
   tutorial-passive-messaging:
     state: todo
     owner: unassigned
+  canvas-dpr-monitor:
+    state: todo
+    owner: unassigned

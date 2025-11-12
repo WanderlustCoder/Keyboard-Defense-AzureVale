@@ -121,3 +121,9 @@ tasks:
     status: todo
     status_note: docs/status/2025-11-06_castle_passives.md
     backlog_refs: ["#1", "#30"]
+  - id: canvas-dpr-monitor
+    path: tasks/21-canvas-dpr-monitor.md
+    priority: P2
+    status: todo
+    status_note: docs/status/2025-11-18_canvas_scaling.md
+    backlog_refs: ["#53"]
