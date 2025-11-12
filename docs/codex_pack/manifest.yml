@@ -91,3 +91,15 @@ tasks:
     status: todo
     status_note: docs/status/2025-11-16_devserver_monitor_refresh.md
     backlog_refs: ["#82"]
+  - id: taunt-catalog-expansion
+    path: tasks/16-taunt-catalog-expansion.md
+    priority: P3
+    status: todo
+    status_note: docs/status/2025-11-19_enemy_taunts.md
+    backlog_refs: ["#83", "#87"]
+  - id: taunt-analytics-metadata
+    path: tasks/17-taunt-analytics-metadata.md
+    priority: P2
+    status: todo
+    status_note: docs/status/2025-11-19_enemy_taunts.md
+    backlog_refs: ["#41", "#79"]

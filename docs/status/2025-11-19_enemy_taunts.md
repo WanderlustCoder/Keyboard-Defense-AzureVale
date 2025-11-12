@@ -8,6 +8,5 @@
 - Wave 2 shielded brutes and wave 3 witches/brutes now ship bespoke taunts, while tier-level pools give the system something to say when future waves opt in without adding per-spawn copy.
 
 **Next Steps**
-1. Broaden the taunt catalog to cover Episode 1 bosses/affixes once those systems land so analytics/tests have richer examples.
-2. Consider piping the active taunt into screenshot/analytics metadata so regression galleries can flag when a capture happened during a special wave callout.
-
+1. Broaden the taunt catalog to cover Episode 1 bosses/affixes once those systems land so analytics/tests have richer examples. *(Codex: `docs/codex_pack/tasks/16-taunt-catalog-expansion.md`)*
+2. Consider piping the active taunt into screenshot/analytics metadata so regression galleries can flag when a capture happened during a special wave callout. *(Codex: `docs/codex_pack/tasks/17-taunt-analytics-metadata.md`)*

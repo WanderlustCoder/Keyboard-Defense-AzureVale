@@ -45,3 +45,9 @@ tasks:
   devserver-monitor-upgrade:
     state: todo
     owner: unassigned
+  taunt-catalog-expansion:
+    state: todo
+    owner: unassigned
+  taunt-analytics-metadata:
+    state: todo
+    owner: unassigned
