@@ -6,6 +6,7 @@
 - Introduced a scoped `.prettierrc.json` (pragma-gated) so `npm run format:check` can run cleanly on Windows/CI without rewriting the entire codebase.
 - Cleaned up the tutorial smoke helper (removed the unused `simulateTyping`) and updated `goldReport` tests to normalize Windows paths, fixing the last Vitest failure called out in the hand-off.
 
-**Next Steps**
+**Next Steps / Follow-up**
 1. Backfill `@format` pragmas on any files we actively want Prettier to own (e.g., scripts/tests) so contributors know which files are auto-formatted.
 2. Fold the new lint/build config into the `scripts/build.mjs` task runner once that file returns to the tree, ensuring CI and local commands stay aligned.
+3. Enforce lint/test/docs verification locally via Git hooks (`docs/codex_pack/tasks/12-git-hooks-lint.md`).

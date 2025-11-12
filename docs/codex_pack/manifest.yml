@@ -67,3 +67,9 @@ tasks:
     status: todo
     status_note: docs/status/2025-11-07_diagnostics_passives.md
     backlog_refs: ["#79"]
+  - id: git-hooks-lint
+    path: tasks/12-git-hooks-lint.md
+    priority: P2
+    status: todo
+    status_note: docs/status/2025-11-15_tooling_baseline.md
+    backlog_refs: ["#80"]

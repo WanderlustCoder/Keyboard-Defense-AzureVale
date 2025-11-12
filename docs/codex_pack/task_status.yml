@@ -33,3 +33,6 @@ tasks:
   diagnostics-dashboard:
     state: todo
     owner: unassigned
+  git-hooks-lint:
+    state: todo
+    owner: unassigned

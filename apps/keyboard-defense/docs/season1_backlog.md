@@ -95,8 +95,8 @@ Structured backlog derived from the inspiration brief, architecture notes, and t
 76. Validate config files against schema in pre-commit hook. *(Codex: `schema-contracts`)*
 77. Watch docs/ for changes and rebuild summaries automatically.
 78. Scaffold Playwright smoke tests for tutorial/campaign start.
-79. Aggregate runtime logs into breach/accuracy summary post-run. *(Codex: `ci-step-summary`, `static-dashboard`)*
-80. Provide git hook automation to run tests/lint locally. *(Codex: `semantic-release`)*
+79. Aggregate runtime logs into breach/accuracy summary post-run. *(Codex: `ci-step-summary`, `static-dashboard`, `diagnostics-dashboard`)*
+80. Provide git hook automation to run tests/lint locally. *(Codex: `git-hooks-lint`)*
 81. Implement dev-server monitor (logs + health probes) for unattended runs.
 82. Add tutorial smoke workflow leveraging diagnostics tolerance. *(Codex: `ci-guards`, `ci-matrix`, `hermetic-ci`)*
 
