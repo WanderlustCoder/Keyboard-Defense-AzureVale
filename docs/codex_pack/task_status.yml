@@ -51,3 +51,6 @@ tasks:
   taunt-analytics-metadata:
     state: todo
     owner: unassigned
+  passive-analytics-export:
+    state: todo
+    owner: unassigned
