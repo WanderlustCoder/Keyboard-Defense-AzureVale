@@ -73,3 +73,9 @@ tasks:
     status: todo
     status_note: docs/status/2025-11-15_tooling_baseline.md
     backlog_refs: ["#80"]
+  - id: gold-delta-aggregates
+    path: tasks/13-gold-delta-aggregates.md
+    priority: P2
+    status: todo
+    status_note: docs/status/2025-11-06_gold_event_delta.md
+    backlog_refs: ["#79"]

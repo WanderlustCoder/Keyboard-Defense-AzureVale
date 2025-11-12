@@ -10,5 +10,5 @@
 - HUD gold delta flashes reuse the computed delta, while analytics/startGold bookkeeping remains unchanged.
 - Added defensive guards so negative or non-finite gold grants are ignored instead of corrupting state.
 
-## Notes
-Future automation work (once scoped) should link to a Codex task here.
+## Follow-up
+- `docs/codex_pack/tasks/13-gold-delta-aggregates.md`

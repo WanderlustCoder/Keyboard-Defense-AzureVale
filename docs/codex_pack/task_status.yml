@@ -36,3 +36,6 @@ tasks:
   git-hooks-lint:
     state: todo
     owner: unassigned
+  gold-delta-aggregates:
+    state: todo
+    owner: unassigned
