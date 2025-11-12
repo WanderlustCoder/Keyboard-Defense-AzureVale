@@ -6,4 +6,4 @@
 - HUD tests now exercise the new element, and the tutorial smoke harness inherits the extra DOM id without additional work.
 
 **Next Steps**
-1. Consider logging the accuracy deltas to analytics so automation can correlate combo drops with accuracy swings across runs.
+1. Consider logging the accuracy deltas to analytics so automation can correlate combo drops with accuracy swings across runs. *(Codex: `docs/codex_pack/tasks/26-combo-accuracy-analytics.md`)*

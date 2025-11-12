@@ -151,3 +151,9 @@ tasks:
     status: todo
     status_note: docs/status/2025-11-07_enemy_defeat_animation.md
     backlog_refs: ["#41"]
+  - id: combo-accuracy-analytics
+    path: tasks/26-combo-accuracy-analytics.md
+    priority: P2
+    status: todo
+    status_note: docs/status/2025-11-14_combo_accuracy_delta.md
+    backlog_refs: ["#14", "#41"]
