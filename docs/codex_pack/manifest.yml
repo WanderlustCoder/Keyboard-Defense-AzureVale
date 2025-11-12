@@ -61,3 +61,9 @@ tasks:
     status: todo
     status_note: docs/status/2025-11-08_gold_summary_cli.md
     backlog_refs: ["#76"]
+  - id: diagnostics-dashboard
+    path: tasks/11-diagnostics-dashboard.md
+    priority: P2
+    status: todo
+    status_note: docs/status/2025-11-07_diagnostics_passives.md
+    backlog_refs: ["#79"]

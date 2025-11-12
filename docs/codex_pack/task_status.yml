@@ -30,3 +30,6 @@ tasks:
   schema-contracts:
     state: todo
     owner: unassigned
+  diagnostics-dashboard:
+    state: todo
+    owner: unassigned

@@ -7,5 +7,5 @@
 - Tutorial smoke and castle breach artifacts now embed passive unlock counts, summaries, and active passive lists, so automation timelines capture economy progression milestones without extra parsing.
 - Documentation updates cover the schema changes and changelog notes the diagnostic refresh plus artifact enrichment.
 
-**Notes**
-Future analytics/dashboard work will add a Codex follow-up when scoped.
+**Follow-up**
+- `docs/codex_pack/tasks/11-diagnostics-dashboard.md`
