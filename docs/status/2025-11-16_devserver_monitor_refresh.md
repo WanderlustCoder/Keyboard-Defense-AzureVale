@@ -7,5 +7,5 @@
 - Updated automation consumers (smoke CLI, HUD screenshots, monitor script) can now rely on the restored commands without stubbing missing files.
 
 **Next Steps**
-1. Consider adding a `--no-build` or `--force-restart` flag to `devServer.mjs` for workflows that want to skip compilation or restart an existing instance automatically.
-2. Surface the monitor artifact path in CI summaries so dashboards can pick up the JSON directly from the uploaded artifacts.
+1. Consider adding a `--no-build` or `--force-restart` flag to `devServer.mjs` for workflows that want to skip compilation or restart an existing instance automatically. *(Codex: `docs/codex_pack/tasks/15-devserver-monitor-upgrade.md`)*
+2. Surface the monitor artifact path in CI summaries so dashboards can pick up the JSON directly from the uploaded artifacts. *(Same Codex task as above.)*

@@ -42,3 +42,6 @@ tasks:
   ci-traceability-report:
     state: todo
     owner: unassigned
+  devserver-monitor-upgrade:
+    state: todo
+    owner: unassigned

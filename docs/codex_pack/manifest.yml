@@ -85,3 +85,9 @@ tasks:
     status: todo
     status_note: docs/status/2025-11-06_ci_pipeline.md
     backlog_refs: ["#71", "#95"]
+  - id: devserver-monitor-upgrade
+    path: tasks/15-devserver-monitor-upgrade.md
+    priority: P2
+    status: todo
+    status_note: docs/status/2025-11-16_devserver_monitor_refresh.md
+    backlog_refs: ["#82"]
