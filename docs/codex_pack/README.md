@@ -12,7 +12,9 @@ exposes `id`, `priority`, and outputs, and the pack includes ready-to-copy **sni
 ```
 codex_pack/
   README.md
+  CODEX_RUNBOOK.md
   manifest.yml
+  task_status.yml
   tasks/
     01-ci-step-summary.md
     02-ci-guards.md
@@ -31,14 +33,20 @@ codex_pack/
     guards.example.yml
     playwright.config.additions.ts
     workflow.patch.yaml
+  fixtures/
+    smoke-summary.json
+    gold-summary.json
 ```
+Use the fixture JSON files when running CLI dry-runs (see `tasks/01-ci-step-summary.md`).
 
 ## How to use
 
 1. Read `manifest.yml` to see the task list and priorities.
 2. For each task in `tasks/`, follow the **Steps** and copy the code from `snippets/`.
 3. Prefer small PRs that land tasks **in order** (P1 first).
-4. Codex operators must follow `CODEX_RUNBOOK.md` when selecting/claiming tasks.
+4. Run `npm run codex:validate-pack` (from `apps/keyboard-defense`) before every commit to ensure metadata stays consistent.
+5. Run `npm run codex:validate-links` to confirm status notes and tasks cross-reference correctly.
+6. Codex operators must follow `CODEX_RUNBOOK.md` (automation-specific loop) and the global `docs/CODEX_GUIDE.md`.
 
 ## Source-of-truth mapping
 
@@ -58,13 +66,38 @@ Workflow guidance:
 Authoring tips:
 - When you add "Follow-up" text to `docs/status/*`, link directly to the task ID here instead of duplicating instructions.
 - If a new automation idea appears in a backlog/status entry, immediately add a Codex task so every plan funnels through this pack.
-- Use `templates/task.md` when drafting a new entry so the required front-matter (status note, backlog refs, etc.) stays consistent.
+- Use `templates/task.md` when drafting a new entry so the required front-matter (status note, backlog refs, etc.) stays consistent and include a `## Verification` section (see `snippets/verify-task.md` for a boilerplate checklist).
 
 ## Tracking & metadata
 
 - `manifest.yml` records `status_note`, `backlog_refs`, and the current `status` for each task so scripts can cross-check dependencies.
 - `task_status.yml` is the lightweight progress tracker (owner + state). Update it whenever a task moves or gets picked up.
 - `CODEX_RUNBOOK.md` documents the end-to-end workflow Codex follows when acting as the sole developer.
+- `npm run codex:validate-pack` (from `apps/keyboard-defense`) runs automated checks that ensure the manifest, tasks, and tracker stay in sync and that only one owner holds an `in-progress` task at a time.
+- `npm run codex:validate-links` ensures every status note “Follow-up” entry references a real Codex task (and vice versa).
+- `npm run codex:status` prints the current task table for quick reviews.
+
+## CI integration
+
+Add these steps to the Build/Test job so automation fails fast when metadata drifts:
+
+```yaml
+- name: Validate Codex Pack
+  working-directory: apps/keyboard-defense
+  run: npm run codex:validate-pack
+
+- name: Validate Status Links
+  working-directory: apps/keyboard-defense
+  run: npm run codex:validate-links
+
+- name: Codex Task Tracker
+  working-directory: apps/keyboard-defense
+  run: npm run codex:status
+```
+
+See `snippets/status-ci-step.md` for a ready-to-copy block. Optionally follow it with a
+`git diff --exit-code docs/codex_pack/task_status.yml` check to ensure the tracker wasn't
+modified unexpectedly.
 
 ## Assumptions
 

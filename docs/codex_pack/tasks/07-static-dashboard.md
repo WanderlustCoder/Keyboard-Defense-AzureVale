@@ -17,3 +17,10 @@ backlog_refs:
 - Deploy via GitHub Pages (workflow push to `gh-pages`).
 
 **Acceptance**: Non‑engineers can browse the latest results without downloading artifacts.
+## Verification
+
+- npm run lint
+- npm run test
+- npm run codex:validate-pack
+- Build the static dashboard locally and open index.html to confirm charts load
+

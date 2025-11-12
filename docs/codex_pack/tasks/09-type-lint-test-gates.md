@@ -18,3 +18,10 @@ backlog_refs:
 - Add `tsc --noEmit` validating against `public/dist/src` declarations (per tooling baseline).
 - ESLint profile for `scripts/**/*.mjs` and tests; Prettier via lint-staged.
 - `vitest run --coverage` in the Build/Test job.
+## Verification
+
+- npm run lint
+- npm run test
+- npm run codex:validate-pack
+- npm run lint && npm run test -- --coverage (CI gate)
+

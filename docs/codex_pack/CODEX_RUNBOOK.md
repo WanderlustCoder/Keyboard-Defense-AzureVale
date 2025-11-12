@@ -16,7 +16,7 @@ time you touch the project.
    the GitHub username under `owner`.
 2. Commit this change immediately so collaborators see the claim.
 
-## 3. do the work
+## 3. Do the work
 
 1. Open the task file in `tasks/`. It contains the context, steps, and snippet
    references.
@@ -24,6 +24,11 @@ time you touch the project.
    original intent.
 3. Implement code/tests/scripts exactly as described. Prefer small commits.
 4. Run the acceptance criteria (tests, lint, CI dry-run) locally.
+5. Always execute (from `apps/keyboard-defense`):
+   - `npm run codex:validate-pack`
+   - `npm run codex:validate-links`
+   - `npm run codex:status`
+   before committing to ensure metadata stays consistent and the tracker matches reality.
 
 ## 4. update metadata
 
@@ -51,4 +56,3 @@ Before committing:
 
 With this runbook, Codex has a deterministic workflow: select → claim →
 implement → update docs → report. Repeat until every task reaches `done`.
-

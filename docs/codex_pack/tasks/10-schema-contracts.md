@@ -16,3 +16,10 @@ backlog_refs:
 
 - Author a JSON Schema for `analytics_schema.md` (root fields + arrays).
 - Validate CI artifacts with Ajv; assert `exportVersion` bumps when structure changes.
+## Verification
+
+- npm run lint
+- npm run test
+- npm run codex:validate-pack
+- node scripts/analytics/validate-schema.mjs --sample (once written)
+

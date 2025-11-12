@@ -26,6 +26,13 @@ backlog_refs:
 - PRs fail on visual diffs; summary links to diff artifact.
 - Baseline update path documented (e.g., label `update-screenshots`).
 
+## Verification
+
+- npm run lint
+- npm run test
+- npm run codex:validate-pack
+- npx playwright test --config playwright.config.ts --project=visual --grep \"hud-main|options-overlay|tutorial-summary|wave-scorecard\"
+
 ## Snippet
 
 See `snippets/playwright.config.additions.ts` for minimal config additions.

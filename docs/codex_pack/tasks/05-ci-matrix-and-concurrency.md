@@ -20,6 +20,13 @@ Docs mention Windows `http-server` bin resolution fixes. Lock it in with CI cove
 2) Add workflow concurrency: cancel in‑progress runs per branch.
 3) Keep Playwright/browser caches pinned.
 
+## Verification
+
+- npm run lint
+- npm run test
+- npm run codex:validate-pack
+- gh workflow lint (or act) to ensure matrix/concurrency syntax is valid
+
 ## Snippet
 
 See `snippets/workflow.patch.yaml`.

@@ -28,6 +28,14 @@ human‑scanable Markdown summary to `$GITHUB_STEP_SUMMARY` so reviewers don’t
 - CI job summary displays 5–10 key metrics with ✅/❌ and deep links to artifacts.
 - Missing artifacts don’t crash the step (they render as `—`).
 
+## Verification
+
+- npm run lint
+- npm run test
+- npm run codex:validate-pack
+- Dry-run `node scripts/ci/emit-summary.mjs --smoke docs/codex_pack/fixtures/smoke-summary.json --gold docs/codex_pack/fixtures/gold-summary.json` (or run unit tests) so missing files render as `-`
+
 ## Snippet
 
 See `snippets/emit-summary.mjs`.
+

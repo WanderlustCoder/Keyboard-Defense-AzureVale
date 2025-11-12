@@ -28,7 +28,21 @@ thresholds for smoke/monitor/gold/breach/screenshots.
 - Guard violations **fail** the job on `main`, **warn** on PRs (optional).
 - Clear list of failing rules in CI logs.
 
+## Verification
+
+- npm run lint
+- npm run test
+- npm run codex:validate-pack
+- node scripts/ci/validate.mjs --dry-run (once implemented) to confirm guards evaluate without throwing
+
 ## Snippets
 
 - `snippets/guards.example.yml` → copy to `ci/guards.yml` and tweak.
 - `snippets/validate.mjs` → copy to `scripts/ci/validate.mjs`.
+## Verification
+
+- npm run lint
+- npm run test
+- npm run codex:validate-pack
+- node scripts/ci/validate.mjs --dry-run (once implemented) to ensure guard failures report correctly
+

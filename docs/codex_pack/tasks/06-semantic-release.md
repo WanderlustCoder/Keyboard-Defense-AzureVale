@@ -17,3 +17,10 @@ backlog_refs:
 - Enforce **Conventional Commits** (PR title check or commit linter).
 - Configure **semantic-release** (node project): npm plugin, changelog, GitHub releases.
 - Attach zipped build artifacts (game bundle) to each release; create a nightly prerelease channel.
+## Verification
+
+- npm run lint
+- npm run test
+- npm run codex:validate-pack
+- npx semantic-release --dry-run (once configured)
+

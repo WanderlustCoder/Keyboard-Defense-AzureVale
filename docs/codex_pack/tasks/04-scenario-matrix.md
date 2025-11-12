@@ -25,3 +25,17 @@ Scale tutorial smoke and breach drills across multiple seeds/variants and aggreg
 ## Acceptance criteria
 
 - Matrix runs complete within time budget, artifacts uploaded, summary shows medians/p90s.
+
+## Verification
+
+- npm run lint
+- npm run test
+- npm run codex:validate-pack
+- node scripts/ci/run-matrix.mjs --dry-run --output artifacts/ci-matrix-summary.json
+## Verification
+
+- npm run lint
+- npm run test
+- npm run codex:validate-pack
+- node scripts/ci/run-matrix.mjs --dry-run (or CI job) to ensure summary JSON writes correctly
+
