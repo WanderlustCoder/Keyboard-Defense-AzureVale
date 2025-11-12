@@ -88,7 +88,7 @@ Structured backlog derived from the inspiration brief, architecture notes, and t
 
 ## Automation, Monitoring, Tooling
 71. Script tutorial auto-run CLI verifying onboarding path nightly. *(Codex: `scenario-matrix`)*
-72. Capture automated HUD screenshots for docs/regression.
+72. Capture automated HUD screenshots for docs/regression. *(Codex: `visual-diffs`, `hud-screenshot-expansion` — new)*
 73. Integrate ESLint/Prettier into build pipeline. *(Codex: `type-lint-test`)*
 74. Add performance benchmark harness for engine throughput.
 75. Create deterministic wave simulation CLI for balance sweeps.
