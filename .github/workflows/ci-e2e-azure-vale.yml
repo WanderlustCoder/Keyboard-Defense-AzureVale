@@ -54,6 +54,28 @@ jobs:
         run: npm run serve:smoke -- --ci --json
         working-directory: apps/keyboard-defense
 
+      - name: Validate Codex Pack
+        run: npm run codex:validate-pack
+        working-directory: apps/keyboard-defense
+
+      - name: Validate Status Links
+        run: npm run codex:validate-links
+        working-directory: apps/keyboard-defense
+
+      - name: Codex Task Tracker
+        run: npm run codex:status
+        working-directory: apps/keyboard-defense
+
+      - name: Generate Codex Dashboard
+        run: npm run codex:dashboard
+        working-directory: apps/keyboard-defense
+
+      - name: Publish Codex Dashboard
+        if: always()
+        run: |
+          cat docs/codex_dashboard.md >> "$GITHUB_STEP_SUMMARY"
+        working-directory: .
+
       - name: Upload build artifacts
         if: always()
         uses: actions/upload-artifact@v4

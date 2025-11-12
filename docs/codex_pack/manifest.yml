@@ -1,0 +1,63 @@
+version: 1
+pack: automation-blueprint
+tasks:
+  - id: ci-step-summary
+    path: tasks/01-ci-step-summary.md
+    priority: P1
+    status: todo
+    status_note: docs/status/2025-11-18_devserver_smoke_ci.md
+    backlog_refs: ["#79"]
+  - id: ci-guards
+    path: tasks/02-ci-guards.md
+    priority: P1
+    status: todo
+    status_note: docs/status/2025-11-14_gold_summary_ci_guard.md
+    backlog_refs: ["#82"]
+  - id: visual-diffs
+    path: tasks/03-playwright-visual-diffs.md
+    priority: P1
+    status: todo
+    status_note: docs/status/2025-11-06_hud_screenshots.md
+    backlog_refs: ["#94"]
+  - id: scenario-matrix
+    path: tasks/04-scenario-matrix.md
+    priority: P2
+    status: todo
+    status_note: docs/status/2025-11-06_ci_pipeline.md
+    backlog_refs: ["#71", "#95"]
+  - id: ci-matrix
+    path: tasks/05-ci-matrix-and-concurrency.md
+    priority: P1
+    status: todo
+    status_note: docs/status/2025-11-18_devserver_bin_resolution.md
+    backlog_refs: ["#82"]
+  - id: semantic-release
+    path: tasks/06-semantic-release.md
+    priority: P2
+    status: todo
+    status_note: docs/status/2025-11-15_tooling_baseline.md
+    backlog_refs: ["#80"]
+  - id: static-dashboard
+    path: tasks/07-static-dashboard.md
+    priority: P2
+    status: todo
+    status_note: docs/status/2025-11-18_devserver_smoke_ci.md
+    backlog_refs: ["#79"]
+  - id: hermetic-ci
+    path: tasks/08-hermetic-ci.md
+    priority: P2
+    status: todo
+    status_note: docs/status/2025-11-16_devserver_monitor_refresh.md
+    backlog_refs: ["#82"]
+  - id: type-lint-test
+    path: tasks/09-type-lint-test-gates.md
+    priority: P1
+    status: todo
+    status_note: docs/status/2025-11-15_tooling_baseline.md
+    backlog_refs: ["#73"]
+  - id: schema-contracts
+    path: tasks/10-schema-contracts.md
+    priority: P2
+    status: todo
+    status_note: docs/status/2025-11-08_gold_summary_cli.md
+    backlog_refs: ["#76"]

@@ -3,19 +3,24 @@
 Use this index to jump straight to the guidance you'll need while building and testing Keyboard Defense. Documents are grouped by theme; each bullet links to a Markdown file or status note within this repo.
 
 ## Project Overview & Strategy
-- `docs/season1_backlog.md` — Feature roadmap and numbered backlog for the Siege of the Azure Vale.
-- `docs/CODEX_AUTONOMOUS_TESTING_DIRECTIVE_Siege_of_the_Azure_Vale.md` — Automation-first definition of done, scripting expectations, and QA guardrails.
+- `docs/season1_backlog.md` - Feature roadmap and numbered backlog for the Siege of the Azure Vale.
+- `docs/CODEX_AUTONOMOUS_TESTING_DIRECTIVE_Siege_of_the_Azure_Vale.md` - Automation-first definition of done, scripting expectations, and QA guardrails.
+- `docs/CODEX_GUIDE.md` - Codex-oriented workflow guide (where to find tasks, required commands, documentation rules).
+- `docs/CODEX_PLAYBOOKS.md` - Domain-specific instruction sets (automation/CI, gameplay & UI, analytics/telemetry, documentation) tailored for Codex.
+- `docs/CODEX_PORTAL.md` - Single navigation surface for all Codex instructions, scripts, fixtures, and task workflows.
 
 ## Analytics & Telemetry
 - `docs/analytics_schema.md` — JSON/CSV snapshot schema, telemetry payload details, and aggregation column order.
 - `docs/status/2025-11-04_telemetry_controls.md` — Status updates covering telemetry UI, export, and analytics enhancements.
 
 ## Automation & Monitoring
-- `docs/status/2025-11-04_automation_scaffold.md` — Current automation script layout, future CI plans, and pending tooling work.
-- `docs/status/2025-11-03_dev_monitor.md` — Dev-server monitor CLI notes and follow-up ideas.
-- `apps/keyboard-defense/scripts/waveSim.mjs` — Deterministic wave simulation CLI (run `node scripts/waveSim.mjs --help`).
-- `apps/keyboard-defense/scripts/validateConfig.mjs` — Validate GameConfig JSON via JSON Schema (`node scripts/validateConfig.mjs --help`).
-- `apps/keyboard-defense/scripts/waveBenchmark.mjs` — Run curated wave benchmarks (`node scripts/waveBenchmark.mjs`) for quick balance checks.
+- `docs/status/2025-11-04_automation_scaffold.md` - Current automation script layout, future CI plans, and pending tooling work.
+- `docs/status/2025-11-03_dev_monitor.md` - Dev-server monitor CLI notes and follow-up ideas.
+- `docs/codex_pack/README.md` - Canonical automation task map, links to manifest, and authoring rules for Codex-driven work.
+- `docs/codex_pack/manifest.yml` - Machine-readable task list powering the Codex automation blueprint.
+- `apps/keyboard-defense/scripts/waveSim.mjs` - Deterministic wave simulation CLI (run `node scripts/waveSim.mjs --help`).
+- `apps/keyboard-defense/scripts/validateConfig.mjs` - Validate GameConfig JSON via JSON Schema (`node scripts/validateConfig.mjs --help`).
+- `apps/keyboard-defense/scripts/waveBenchmark.mjs` - Run curated wave benchmarks (`node scripts/waveBenchmark.mjs`) for quick balance checks.
 
 ## Status Notes
 Status entries live under `docs/status/`. Recent highlights include:

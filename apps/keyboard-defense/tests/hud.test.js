@@ -1001,6 +1001,25 @@ test("HudView wave preview highlight toggles accessibility cues", () => {
   cleanup();
 });
 
+test("announceEnemyTaunt surfaces taunts when hint is free and falls back when pinned", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  const { wavePreviewHint } = elements;
+  try {
+    const shown = hud.announceEnemyTaunt("Brutes roar down lane A!");
+    assert.equal(shown, true);
+    assert.equal(wavePreviewHint.dataset.visible, "true");
+    assert.equal(wavePreviewHint.getAttribute("aria-hidden"), "false");
+    assert.equal(wavePreviewHint.textContent, "Brutes roar down lane A!");
+
+    hud.setWavePreviewHighlight(true, "Tutorial owns this hint.");
+    const suppressed = hud.announceEnemyTaunt("Should be ignored");
+    assert.equal(suppressed, false);
+    assert.equal(wavePreviewHint.textContent, "Tutorial owns this hint.");
+  } finally {
+    cleanup();
+  }
+});
+
 test("HudView updates castle bonus hint in options overlay", () => {
   const { hud, cleanup, elements } = initializeHud();
   const { optionsCastleBonus, optionsCastleBenefits } = elements;

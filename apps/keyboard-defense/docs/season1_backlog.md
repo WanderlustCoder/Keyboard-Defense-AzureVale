@@ -87,18 +87,18 @@ Structured backlog derived from the inspiration brief, architecture notes, and t
 70. Automate asset manifest generation from source sprites.
 
 ## Automation, Monitoring, Tooling
-71. Script tutorial auto-run CLI verifying onboarding path nightly.
+71. Script tutorial auto-run CLI verifying onboarding path nightly. *(Codex: `scenario-matrix`)*
 72. Capture automated HUD screenshots for docs/regression.
-73. Integrate ESLint/Prettier into build pipeline.
+73. Integrate ESLint/Prettier into build pipeline. *(Codex: `type-lint-test`)*
 74. Add performance benchmark harness for engine throughput.
 75. Create deterministic wave simulation CLI for balance sweeps.
-76. Validate config files against schema in pre-commit hook.
+76. Validate config files against schema in pre-commit hook. *(Codex: `schema-contracts`)*
 77. Watch docs/ for changes and rebuild summaries automatically.
 78. Scaffold Playwright smoke tests for tutorial/campaign start.
-79. Aggregate runtime logs into breach/accuracy summary post-run.
-80. Provide git hook automation to run tests/lint locally.
+79. Aggregate runtime logs into breach/accuracy summary post-run. *(Codex: `ci-step-summary`, `static-dashboard`)*
+80. Provide git hook automation to run tests/lint locally. *(Codex: `semantic-release`)*
 81. Implement dev-server monitor (logs + health probes) for unattended runs.
-82. Add tutorial smoke workflow leveraging diagnostics tolerance.
+82. Add tutorial smoke workflow leveraging diagnostics tolerance. *(Codex: `ci-guards`, `ci-matrix`, `hermetic-ci`)*
 
 ## Narrative & Content
 83. Script Archivist Lyra dialogue blocks for Episode 1 beats.
@@ -114,8 +114,8 @@ Structured backlog derived from the inspiration brief, architecture notes, and t
 91. Expand tutorial state tests to cover assist cues and replay/skip flows.
 92. Add asset loader fallback tests (network failure/cache reuse).
 93. Write analytics export/reset integration tests for debug panel flows.
-94. Implement visual regression harness for HUD layout snapshots.
-95. Include dev-server monitor smoke test in CI.
+94. Implement visual regression harness for HUD layout snapshots. *(Codex: `visual-diffs`)*
+95. Include dev-server monitor smoke test in CI. *(Codex: `scenario-matrix`)*
 96. Fuzz test typing input buffer for invalid characters/timing.
 97. Automate tutorial summary modal snapshot tests.
 98. Add soak test that alternates tutorial replay/skip, verifying persistence.

@@ -1,0 +1,32 @@
+updated: 2025-11-19
+tasks:
+  ci-step-summary:
+    state: todo
+    owner: unassigned
+  ci-guards:
+    state: todo
+    owner: unassigned
+  visual-diffs:
+    state: todo
+    owner: unassigned
+  scenario-matrix:
+    state: todo
+    owner: unassigned
+  ci-matrix:
+    state: todo
+    owner: unassigned
+  semantic-release:
+    state: todo
+    owner: unassigned
+  static-dashboard:
+    state: todo
+    owner: unassigned
+  hermetic-ci:
+    state: todo
+    owner: unassigned
+  type-lint-test:
+    state: todo
+    owner: unassigned
+  schema-contracts:
+    state: todo
+    owner: unassigned

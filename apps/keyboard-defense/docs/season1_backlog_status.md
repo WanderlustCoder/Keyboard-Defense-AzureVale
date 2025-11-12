@@ -34,7 +34,7 @@
 | 30 | Castle & Turrets | Unlock castle passive buffs (regen/armor/gold) at higher levels. | Done | Passive list + HUD messaging surface regen/armor/gold bonuses |
 | 31 | Enemy & Wave Design | Create elite enemy affixes (slow aura, shielded, armored) under toggles. | Not Started |  |
 | 32 | Enemy & Wave Design | Script Episode 1 boss wave with bespoke mechanics and intro message. | Not Started |  |
-| 33 | Enemy & Wave Design | Display enemy taunt text when special units spawn. | Not Started |  |
+| 33 | Enemy & Wave Design | Display enemy taunt text when special units spawn. | Done | Wave 2/3 specials announce via taunt banner & battle log (#docs/status/2025-11-19_enemy_taunts.md) |
 | 34 | Enemy & Wave Design | Render spawn preview icons using sprite thumbnails. | Done | HUD wave preview shows tier icons with colorblind-aware palette |
 | 35 | Enemy & Wave Design | Add dynamic spawn scheduler for surprise mini-events. | Not Started |  |
 | 36 | Enemy & Wave Design | Implement evacuation event requiring long-form typing to rescue civilians. | Not Started |  |

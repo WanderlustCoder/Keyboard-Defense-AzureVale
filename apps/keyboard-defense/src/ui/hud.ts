@@ -287,6 +287,8 @@ export class HudView {
   private optionsPassivesDefaultCollapsed = false;
   private wavePreviewHint?: HTMLElement;
   private wavePreviewHintMessage = DEFAULT_WAVE_PREVIEW_HINT;
+  private wavePreviewHintPinned = false;
+  private wavePreviewHintTimeout: ReturnType<typeof setTimeout> | null = null;
   private readonly optionsOverlay?: {
     container: HTMLElement;
     closeButton: HTMLButtonElement;
@@ -1102,6 +1104,13 @@ export class HudView {
     this.renderOptionsCastlePassives(state.castle.passives ?? []);
   }
 
+  private clearWavePreviewHintTimeout(): void {
+    if (this.wavePreviewHintTimeout !== null) {
+      clearTimeout(this.wavePreviewHintTimeout);
+      this.wavePreviewHintTimeout = null;
+    }
+  }
+
   private updateWavePreviewHint(active: boolean, message: string | null): void {
     if (!this.wavePreviewHint) return;
     if (active) {
@@ -1120,8 +1129,34 @@ export class HudView {
   }
 
   setWavePreviewHighlight(active: boolean, message?: string | null): void {
+    this.wavePreviewHintPinned = active;
+    if (active) {
+      this.clearWavePreviewHintTimeout();
+    }
     this.wavePreview.setTutorialHighlight(active);
     this.updateWavePreviewHint(active, message ?? null);
+  }
+
+  announceEnemyTaunt(message: string, options?: { durationMs?: number }): boolean {
+    if (!this.wavePreviewHint || this.wavePreviewHintPinned) {
+      return false;
+    }
+    const trimmed = message?.trim();
+    if (!trimmed) {
+      return false;
+    }
+    this.updateWavePreviewHint(true, trimmed);
+    this.clearWavePreviewHintTimeout();
+    const duration = Math.max(1000, options?.durationMs ?? 5000);
+    this.wavePreviewHintTimeout = setTimeout(() => {
+      this.wavePreviewHintTimeout = null;
+      if (this.wavePreviewHintPinned) {
+        return;
+      }
+      this.updateWavePreviewHint(false, null);
+      this.wavePreviewHintMessage = DEFAULT_WAVE_PREVIEW_HINT;
+    }, duration);
+    return true;
   }
 
   setSlotTutorialLock(lock: TutorialSlotLock): void {

@@ -17,5 +17,7 @@
 - CLI now also captures `tutorial-summary.png` and `wave-scorecard.png` via new debug hooks, so docs and regression reviews include the tutorial wrap-up modal and wave-end scorecard states.
 - CI now reads `screenshots-summary.ci.json` and appends a markdown table to the workflow summary so nightly reviewers can inspect the captured shots (with condensed/diagnostics context) without downloading artifacts.
 
-## Next Steps
-1. Introduce automated diff tooling (e.g., Playwright `toHaveScreenshot`) once baselines stabilize.
+## Follow-up
+The Playwright visual regression rollout (baseline capture + `toHaveScreenshot` gating) is tracked
+solely in `docs/codex_pack/tasks/03-playwright-visual-diffs.md`. Consult that task for execution
+details to keep this note historical.

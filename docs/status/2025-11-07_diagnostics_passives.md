@@ -7,6 +7,5 @@
 - Tutorial smoke and castle breach artifacts now embed passive unlock counts, summaries, and active passive lists, so automation timelines capture economy progression milestones without extra parsing.
 - Documentation updates cover the schema changes and changelog notes the diagnostic refresh plus artifact enrichment.
 
-**Follow-ups**
-1. Thread passive unlock summaries into analytics dashboards / CI reports to visualize economy pacing over time.
-2. Extend tutorial smoke metrics with castle passive milestones for step-level assertions when new passives arrive mid-onboarding.
+**Notes**
+Future analytics/dashboard work will add a Codex follow-up when scoped.

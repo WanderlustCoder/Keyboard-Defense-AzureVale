@@ -8,6 +8,11 @@
     "lint": "eslint \"src\" \"tests\" \"scripts\" --ext .ts,.js,.mjs",
     "format": "prettier --write \"src/**/*.{ts,js}\" \"tests/**/*.js\" \"scripts/**/*.mjs\" \"public/index.html\"",
     "format:check": "prettier --check \"src/**/*.{ts,js}\" \"tests/**/*.js\" \"scripts/**/*.mjs\" \"public/index.html\"",
+    "codex:validate-pack": "node ./scripts/validateCodexPack.mjs",
+    "codex:status": "node ./scripts/printCodexStatus.mjs",
+    "codex:validate-links": "node ./scripts/validateStatusLinks.mjs",
+    "codex:next": "node ./scripts/codexNextTask.mjs",
+    "codex:dashboard": "node ./scripts/generateCodexDashboard.mjs",
     "start": "node ./scripts/devServer.mjs start",
     "serve:check": "node ./scripts/devServer.mjs check",
     "serve:status": "node ./scripts/devServer.mjs status",
@@ -56,6 +61,7 @@
     "http-server": "^14.1.1",
     "linkedom": "^0.18.12",
     "prettier": "^3.3.3",
-    "vitest": "^4.0.6"
+    "vitest": "^4.0.6",
+    "yaml": "^2.8.1"
   }
 }

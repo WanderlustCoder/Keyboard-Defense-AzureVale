@@ -1,0 +1,22 @@
+# ci/guards.yml (example) — copy and tune for your repo
+gold:
+  gain:
+    p90: { max: 2400 }
+  spend:
+    p90: { min: -1800 }
+  rows:
+    min: 1
+
+smoke:
+  serverReadyMs: { max: 6000 }
+
+breach:
+  breached: { eq: true }
+  timeToBreachMs: { max: 15000 }
+
+assets:
+  integrityFailures: { eq: 0 }
+
+screenshots:
+  # Once visual diffs are enabled, wire these up
+  diffPixels: { max: 0 }

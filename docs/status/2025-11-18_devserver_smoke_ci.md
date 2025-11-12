@@ -8,6 +8,6 @@
 - The smoke script now writes `artifacts/smoke/devserver-smoke-summary.json` (configurable via `DEVSERVER_SMOKE_SUMMARY`) with the server URL, PID, and timestamps, automatically prints the tail of `.devserver/server.log` when failures occur, and accepts `--json` so CI can emit the summary directly to stdout in addition to the artifact.
 - Build-test CI now runs `npm run serve:smoke -- --ci --json` and uploads `artifacts/smoke/devserver-smoke-summary.json` with the other build artifacts, so both the logs and downloadable bundle contain identical telemetry for debugging.
 
-**Next Steps**
-1. Parse the smoke summary JSON in CI (via a follow-up workflow step) to echo a concise status table/Set-Output that downstream jobs can consume.
-2. Pipe the parsed summary into GitHub workflow commands (annotations or job summaries) so failures link directly to the smoke run metadata/log tail.
+## Follow-up
+- `docs/codex_pack/tasks/01-ci-step-summary.md`
+- `docs/codex_pack/tasks/07-static-dashboard.md`

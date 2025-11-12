@@ -251,6 +251,9 @@ export declare class HudView {
     private updateCastleBonusHint;
     private updateWavePreviewHint;
     setWavePreviewHighlight(active: boolean, message?: string | null): void;
+    announceEnemyTaunt(message: string, options?: {
+        durationMs?: number;
+    }): boolean;
     setSlotTutorialLock(lock: TutorialSlotLock): void;
     clearSlotTutorialLock(): void;
     showTutorialSummary(data: TutorialSummaryData, handlers: TutorialSummaryHandlers): void;

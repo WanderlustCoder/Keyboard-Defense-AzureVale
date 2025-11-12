@@ -61,6 +61,8 @@ export class HudView {
     optionsPassivesDefaultCollapsed = false;
     wavePreviewHint;
     wavePreviewHintMessage = DEFAULT_WAVE_PREVIEW_HINT;
+    wavePreviewHintPinned = false;
+    wavePreviewHintTimeout = null;
     optionsOverlay;
     waveScorecard;
     syncingOptionToggles = false;
@@ -749,6 +751,12 @@ export class HudView {
         container.setAttribute("aria-hidden", "false");
         this.renderOptionsCastlePassives(state.castle.passives ?? []);
     }
+    clearWavePreviewHintTimeout() {
+        if (this.wavePreviewHintTimeout !== null) {
+            clearTimeout(this.wavePreviewHintTimeout);
+            this.wavePreviewHintTimeout = null;
+        }
+    }
     updateWavePreviewHint(active, message) {
         if (!this.wavePreviewHint)
             return;
@@ -768,8 +776,33 @@ export class HudView {
         }
     }
     setWavePreviewHighlight(active, message) {
+        this.wavePreviewHintPinned = active;
+        if (active) {
+            this.clearWavePreviewHintTimeout();
+        }
         this.wavePreview.setTutorialHighlight(active);
         this.updateWavePreviewHint(active, message ?? null);
+    }
+    announceEnemyTaunt(message, options) {
+        if (!this.wavePreviewHint || this.wavePreviewHintPinned) {
+            return false;
+        }
+        const trimmed = (message ?? "").trim();
+        if (!trimmed) {
+            return false;
+        }
+        this.updateWavePreviewHint(true, trimmed);
+        this.clearWavePreviewHintTimeout();
+        const duration = Math.max(1000, (options == null ? void 0 : options.durationMs) ?? 5e3);
+        this.wavePreviewHintTimeout = setTimeout(() => {
+            this.wavePreviewHintTimeout = null;
+            if (this.wavePreviewHintPinned) {
+                return;
+            }
+            this.updateWavePreviewHint(false, null);
+            this.wavePreviewHintMessage = DEFAULT_WAVE_PREVIEW_HINT;
+        }, duration);
+        return true;
     }
     setSlotTutorialLock(lock) {
         this.tutorialSlotLock = lock;

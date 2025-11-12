@@ -22,6 +22,7 @@ const SOUND_VOLUME_DEFAULT = 0.8;
 const AUDIO_INTENSITY_MIN = 0.5;
 const AUDIO_INTENSITY_MAX = 1.5;
 const AUDIO_INTENSITY_DEFAULT = 1;
+const LANE_LABELS = ["A", "B", "C", "D", "E"];
 const CANVAS_BASE_WIDTH = 960;
 const CANVAS_BASE_HEIGHT = 540;
 const CANVAS_BASE_WIDTH = 960;
@@ -2705,6 +2706,18 @@ export class GameController {
     }
     registerHudListeners() {
         const toGold = (value) => `${value > 0 ? "+" : ""}${value}g`;
+        this.engine.events.on("enemy:spawned", (enemy) => {
+            if (!(enemy == null ? void 0 : enemy.taunt)) {
+                return;
+            }
+            const laneLabel = this.describeLane(enemy.lane);
+            const enemyName = this.describeEnemyTier(enemy.tierId);
+            this.hud.appendLog(`Taunt (${enemyName} - ${laneLabel}): ${enemy.taunt}`);
+            const displayed = this.hud.announceEnemyTaunt(`${enemyName} • ${laneLabel}: ${enemy.taunt}`);
+            if (!displayed) {
+                this.hud.showCastleMessage(enemy.taunt);
+            }
+        });
         this.engine.events.on("enemy:defeated", ({ enemy, by, reward }) => {
             const source = by === "typing" ? "typed" : "turret";
             this.hud.appendLog(`Defeated ${enemy.word} (${source}) ${toGold(reward)}`);
@@ -2848,6 +2861,28 @@ export class GameController {
             default:
                 return "Castle passive unlocked";
         }
+    }
+    describeLane(lane) {
+        const token = this.getLaneLabelToken(lane);
+        return `Lane ${token}`;
+    }
+    getLaneLabelToken(lane) {
+        if (Number.isInteger(lane) && lane >= 0 && lane < LANE_LABELS.length) {
+            return LANE_LABELS[lane];
+        }
+        if (Number.isFinite(lane)) {
+            return String(lane + 1);
+        }
+        return "?";
+    }
+    describeEnemyTier(tierId) {
+        if (!tierId) {
+            return "Enemy";
+        }
+        return tierId
+            .split(/[-_]/g)
+            .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
+            .join(" ");
     }
     playSound(key, detune = 0) {
         if (!this.soundManager)

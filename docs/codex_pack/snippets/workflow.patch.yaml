@@ -1,0 +1,35 @@
+# .github/workflows/ci-e2e-azure-vale.yml — patch sketch
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node: [18, 20]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+
+      # Install deps, run integrity, build, unit/integration
+      - run: npm ci
+      - run: npm run assets:integrity -- --check
+      - run: npm run build
+      - run: npm test -- --run
+
+      # Dev server smoke
+      - run: npm run serve:smoke -- --ci --json
+
+      # Summarize & validate
+      - name: CI summary
+        run: node scripts/ci/emit-summary.mjs >> $GITHUB_STEP_SUMMARY
+      - name: CI guards
+        run: node scripts/ci/validate.mjs

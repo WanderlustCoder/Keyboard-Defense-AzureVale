@@ -36,6 +36,7 @@ export interface EnemyState {
   effects: EnemyEffect[];
   spawnedAt: number;
   waveIndex: number;
+  taunt?: string;
 }
 
 export interface TurretState {
