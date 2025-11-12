@@ -79,3 +79,9 @@ tasks:
     status: todo
     status_note: docs/status/2025-11-06_gold_event_delta.md
     backlog_refs: ["#79"]
+  - id: ci-traceability-report
+    path: tasks/14-ci-traceability-report.md
+    priority: P2
+    status: todo
+    status_note: docs/status/2025-11-06_ci_pipeline.md
+    backlog_refs: ["#71", "#95"]

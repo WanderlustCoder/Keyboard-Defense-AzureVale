@@ -16,4 +16,4 @@
 ## Next Steps
 1. Gate merges on the workflow once flake rate is confirmed.
 2. Layer mutation testing into the pipeline when Stryker harness matures.
-3. Add traceability report upload (coverage + backlog links) so CI exports the spec-to-test map automatically.
+3. Add traceability report upload (coverage + backlog links) so CI exports the spec-to-test map automatically. *(Codex: `docs/codex_pack/tasks/14-ci-traceability-report.md`)*

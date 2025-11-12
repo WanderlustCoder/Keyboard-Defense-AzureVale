@@ -39,3 +39,6 @@ tasks:
   gold-delta-aggregates:
     state: todo
     owner: unassigned
+  ci-traceability-report:
+    state: todo
+    owner: unassigned
