@@ -14,6 +14,7 @@ Use this index to jump straight to the guidance you'll need while building and t
 - `docs/analytics_schema.md` — JSON/CSV snapshot schema, telemetry payload details, and aggregation column order.
 - `docs/status/2025-11-04_telemetry_controls.md` — Status updates covering telemetry UI, export, and analytics enhancements.
 - `apps/keyboard-defense/scripts/ci/diagnosticsDashboard.mjs` — Gold delta + passive timeline dashboard generator (`node scripts/ci/diagnosticsDashboard.mjs --help`).
+- `apps/keyboard-defense/scripts/analytics/goldDeltaAggregator.mjs` — Per-wave gold delta aggregator powering docs/dashboards (`node scripts/analytics/goldDeltaAggregator.mjs --help`).
 
 ## Automation & Monitoring
 - `docs/status/2025-11-04_automation_scaffold.md` - Current automation script layout, future CI plans, and pending tooling work.

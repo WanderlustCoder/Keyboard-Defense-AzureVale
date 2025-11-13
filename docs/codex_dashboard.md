@@ -72,4 +72,9 @@
 - Local dry-run: `node scripts/ci/diagnosticsDashboard.mjs docs/codex_pack/fixtures/diagnostics-dashboard/sample.analytics.json --summary temp/diagnostics-dashboard.fixture.json --markdown temp/diagnostics-dashboard.fixture.md --mode warn`.
 - Thresholds: `DIAGNOSTICS_WARN_MAX_NEGATIVE_DELTA` (default -250g) controls when gold deltas raise alerts; `DIAGNOSTICS_FAIL_PASSIVE_LAG` (default 300s) enforces maximum time since the last passive unlock.
 
+## Gold Delta Aggregates
+- CI publishes `artifacts/summaries/gold-delta-aggregates.ci.json|md` via `node scripts/analytics/goldDeltaAggregator.mjs artifacts/smoke --output artifacts/summaries/gold-delta-aggregates.ci.json --markdown artifacts/summaries/gold-delta-aggregates.ci.md --mode fail` so reviewers can see per-wave gain/spend breakdowns.
+- Local dry-run: `node scripts/analytics/goldDeltaAggregator.mjs docs/codex_pack/fixtures/gold-delta-aggregates/sample.analytics.json --output temp/gold-delta.fixture.json --markdown temp/gold-delta.fixture.md --mode warn`.
+- Thresholds: `GOLD_DELTA_WARN_MAX_LOSS` (default -200g) warns on large single drops; `GOLD_DELTA_FAIL_MIN_NET` (default -300g) enforces minimum session net delta.
+
 Generated automatically via `npm run codex:dashboard`.

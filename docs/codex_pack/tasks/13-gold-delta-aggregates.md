@@ -81,6 +81,7 @@ gold delta aggregates and surface them in automation artifacts.
 - `scripts/analytics/goldDeltaAggregator.mjs` + tests/fixtures.
 - Updated analytics schema, docs, and guide references.
 - New dashboard tile + CI summary snippet referencing aggregate stats.
+- Sample outputs under `docs/codex_pack/fixtures/gold-delta-aggregates/` (analytics input + JSON/Markdown summary) for regression tests and documentation.
 
 ## Acceptance criteria
 

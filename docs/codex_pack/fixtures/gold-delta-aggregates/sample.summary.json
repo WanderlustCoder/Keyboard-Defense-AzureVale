@@ -1,0 +1,64 @@
+{
+  "generatedAt": "2025-11-13T16:11:29.354Z",
+  "mode": "warn",
+  "status": "ok",
+  "config": {
+    "warnMaxLoss": -200,
+    "failMinNet": -300
+  },
+  "entries": [
+    {
+      "file": "C:\\Users\\Werem\\OneDrive\\Documents\\Projects\\Keyboard-Defense\\docs\\codex_pack\\fixtures\\gold-delta-aggregates\\sample.analytics.json",
+      "scenario": "sample.analytics",
+      "stats": {
+        "netDelta": 0,
+        "largestGain": 40,
+        "largestLoss": -50,
+        "medianDelta": 20,
+        "cumulative": [
+          20,
+          60,
+          30,
+          60,
+          10,
+          50,
+          0
+        ]
+      },
+      "waves": [
+        {
+          "waveIndex": 0,
+          "start": 0,
+          "end": 70,
+          "events": 3,
+          "gain": 60,
+          "spend": -30,
+          "net": 30,
+          "largestDelta": 40
+        },
+        {
+          "waveIndex": 1,
+          "start": 70,
+          "end": 160,
+          "events": 2,
+          "gain": 30,
+          "spend": -50,
+          "net": -20,
+          "largestDelta": -50
+        },
+        {
+          "waveIndex": 2,
+          "start": 160,
+          "end": 260,
+          "events": 2,
+          "gain": 40,
+          "spend": -50,
+          "net": -10,
+          "largestDelta": -50
+        }
+      ],
+      "alerts": [],
+      "status": "ok"
+    }
+  ]
+}

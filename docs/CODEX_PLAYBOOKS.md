@@ -115,6 +115,8 @@ expectations.
       and thresholds via `scripts/ci/gold-percentile-thresholds.json` when economy expectations shift.
     - Use `node scripts/ci/diagnosticsDashboard.mjs docs/codex_pack/fixtures/diagnostics-dashboard/sample.analytics.json --summary temp/diagnostics-dashboard.fixture.json --markdown temp/diagnostics-dashboard.fixture.md --mode warn`
       to preview the diagnostics dashboard (gold delta trend + passive timeline) before committing changes.
+    - Run `node scripts/analytics/goldDeltaAggregator.mjs docs/codex_pack/fixtures/gold-delta-aggregates/sample.analytics.json --output temp/gold-delta-aggregates.fixture.json --markdown temp/gold-delta-aggregates.fixture.md --mode warn`
+      to regenerate the per-wave gold delta report used by docs/dashboards (task `gold-delta-aggregates`).
     - Capture HUD screenshots (`node scripts/hudScreenshots.mjs --ci --out artifacts/screenshots`) after taunt/UI changes and confirm each `.meta.json` contains the `taunt` block so docs/hud_gallery.md and the Codex dashboard can surface the active callout without inspecting raw JSON.
  5. Keep fixtures/sample artifacts under `docs/codex_pack/fixtures` for future
      runs.

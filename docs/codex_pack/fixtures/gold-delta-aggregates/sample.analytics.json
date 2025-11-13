@@ -1,0 +1,22 @@
+{
+  "capturedAt": "2025-11-20T10:00:00.000Z",
+  "time": 260,
+  "mode": "campaign",
+  "analytics": {
+    "mode": "campaign",
+    "goldEvents": [
+      { "timestamp": 15, "gold": 220, "delta": 20 },
+      { "timestamp": 45, "gold": 260, "delta": 40 },
+      { "timestamp": 62, "gold": 230, "delta": -30 },
+      { "timestamp": 110, "gold": 260, "delta": 30 },
+      { "timestamp": 150, "gold": 210, "delta": -50 },
+      { "timestamp": 190, "gold": 250, "delta": 40 },
+      { "timestamp": 230, "gold": 200, "delta": -50 }
+    ],
+    "waveSummaries": [
+      { "index": 0, "duration": 70 },
+      { "index": 1, "duration": 90 },
+      { "index": 2, "duration": 80 }
+    ]
+  }
+}

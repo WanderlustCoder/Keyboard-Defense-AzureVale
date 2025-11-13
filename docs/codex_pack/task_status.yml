@@ -37,8 +37,8 @@ tasks:
     state: done
     owner: codex
   gold-delta-aggregates:
-    state: todo
-    owner: unassigned
+    state: done
+    owner: codex
   ci-traceability-report:
     state: todo
     owner: unassigned

@@ -31,6 +31,7 @@
     "analytics:gold:summary": "node ./scripts/goldSummary.mjs",
     "analytics:gold:check": "node ./scripts/goldSummaryCheck.mjs",
     "analytics:gold:report": "node ./scripts/goldReport.mjs",
+    "analytics:gold:delta": "node ./scripts/analytics/goldDeltaAggregator.mjs",
     "analytics:diagnostics": "node ./scripts/ci/diagnosticsDashboard.mjs",
     "analytics:breach:summary": "node ./scripts/ci/castleBreachSummary.mjs",
     "assets:integrity": "node ./scripts/assetIntegrity.mjs",

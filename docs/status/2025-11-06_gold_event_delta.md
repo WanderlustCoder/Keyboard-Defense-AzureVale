@@ -11,4 +11,4 @@
 - Added defensive guards so negative or non-finite gold grants are ignored instead of corrupting state.
 
 ## Follow-up
-- `docs/codex_pack/tasks/13-gold-delta-aggregates.md`
+- `docs/codex_pack/tasks/13-gold-delta-aggregates.md` (DONE)
