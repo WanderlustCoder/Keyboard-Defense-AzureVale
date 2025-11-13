@@ -100,19 +100,21 @@ expectations.
   3. Update status notes with Follow-up links when creating new automation work.
   4. Run data validators/dry-runs (Ajv scripts, goldSummary CLI) plus the core
      command checklist.
-     - Use `node scripts/ci/goldPercentileGuard.mjs artifacts/smoke` to verify
-       gold summary artifacts before dashboards ingest them; the guard writes
-       `artifacts/summaries/gold-percentile-guard*.json` + Markdown so CI
-       summaries stay in sync.
-     - Run `node scripts/ci/passiveGoldDashboard.mjs artifacts/smoke --summary artifacts/summaries/passive-gold.local.json --mode warn`
-       to reproduce the passive unlock + gold dashboard output locally; CI uploads
-       the resulting `artifacts/summaries/passive-gold*.json` files alongside the
-       tutorial smoke and e2e bundles.
+    - Use `node scripts/ci/goldPercentileGuard.mjs artifacts/smoke` to verify
+      gold summary artifacts before dashboards ingest them; the guard writes
+      `artifacts/summaries/gold-percentile-guard*.json` + Markdown so CI
+      summaries stay in sync.
+    - Run `node scripts/ci/passiveGoldDashboard.mjs artifacts/smoke --summary artifacts/summaries/passive-gold.local.json --mode warn`
+      to reproduce the passive unlock + gold dashboard output locally; CI uploads
+      the resulting `artifacts/summaries/passive-gold*.json` files alongside the
+      tutorial smoke and e2e bundles.
     - Use `node scripts/ci/goldTimelineDashboard.mjs artifacts/smoke --summary artifacts/summaries/gold-timeline.local.json --mode warn`
       to regenerate the derived gold timeline dashboard (net delta, spend streaks, recent events).
     - Run `node scripts/ci/goldSummaryReport.mjs artifacts/smoke/gold-summary.ci.json --summary artifacts/summaries/gold-summary-report.local.json --mode warn`
       to mirror the CI gold summary dashboard (median/p90 gains & spends, thresholds). Update baselines via `docs/codex_pack/fixtures/gold/gold-percentiles.baseline.json`
       and thresholds via `scripts/ci/gold-percentile-thresholds.json` when economy expectations shift.
+    - Use `node scripts/ci/diagnosticsDashboard.mjs docs/codex_pack/fixtures/diagnostics-dashboard/sample.analytics.json --summary temp/diagnostics-dashboard.fixture.json --markdown temp/diagnostics-dashboard.fixture.md --mode warn`
+      to preview the diagnostics dashboard (gold delta trend + passive timeline) before committing changes.
     - Capture HUD screenshots (`node scripts/hudScreenshots.mjs --ci --out artifacts/screenshots`) after taunt/UI changes and confirm each `.meta.json` contains the `taunt` block so docs/hud_gallery.md and the Codex dashboard can surface the active callout without inspecting raw JSON.
  5. Keep fixtures/sample artifacts under `docs/codex_pack/fixtures` for future
      runs.

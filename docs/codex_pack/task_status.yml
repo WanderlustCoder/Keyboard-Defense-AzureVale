@@ -31,8 +31,8 @@ tasks:
     state: todo
     owner: unassigned
   diagnostics-dashboard:
-    state: todo
-    owner: unassigned
+    state: done
+    owner: codex
   git-hooks-lint:
     state: done
     owner: codex

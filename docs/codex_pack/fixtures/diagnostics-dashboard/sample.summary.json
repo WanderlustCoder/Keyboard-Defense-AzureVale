@@ -1,0 +1,73 @@
+{
+  "generatedAt": "2025-11-13T15:58:04.352Z",
+  "mode": "warn",
+  "config": {
+    "warnMaxNegativeDelta": -250,
+    "failPassiveLag": 300,
+    "recentEventCount": 3
+  },
+  "status": "ok",
+  "entries": [
+    {
+      "file": "C:\\Users\\Werem\\OneDrive\\Documents\\Projects\\Keyboard-Defense\\docs\\codex_pack\\fixtures\\diagnostics-dashboard\\sample.analytics.json",
+      "scenario": "sample.analytics",
+      "mode": "campaign",
+      "gold": {
+        "totalEvents": 5,
+        "lastDelta": -40,
+        "lastTimestamp": 200,
+        "largestGain": 60,
+        "largestLoss": -40,
+        "netDelta": 30,
+        "latestEvents": [
+          {
+            "delta": -40,
+            "gold": 210,
+            "timestamp": 200
+          },
+          {
+            "delta": 30,
+            "gold": 250,
+            "timestamp": 150
+          },
+          {
+            "delta": -40,
+            "gold": 220,
+            "timestamp": 120
+          }
+        ]
+      },
+      "passives": {
+        "totalUnlocks": 2,
+        "lastUnlock": {
+          "id": "armor",
+          "level": 3,
+          "delta": 2,
+          "total": 5,
+          "time": 140.25
+        },
+        "timeline": [
+          {
+            "id": "armor",
+            "level": 3,
+            "delta": 2,
+            "total": 5,
+            "time": 140.25,
+            "label": "Armor L3 (140.25s,  Δ2.00)"
+          },
+          {
+            "id": "regen",
+            "level": 2,
+            "delta": 0.4,
+            "total": 1.2,
+            "time": 80.5,
+            "label": "Regen L2 (80.50s,  Δ0.40)"
+          }
+        ]
+      },
+      "snapshotTime": 212.5,
+      "alerts": [],
+      "status": "ok"
+    }
+  ]
+}

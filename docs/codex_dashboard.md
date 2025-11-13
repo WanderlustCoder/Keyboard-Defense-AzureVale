@@ -16,7 +16,7 @@
 | `devserver-bin-guidance` | P2 | todo | unassigned | docs/status/2025-11-18_devserver_bin_resolution.md | #82 |
 | `devserver-monitor-upgrade` | P2 | todo | unassigned | docs/status/2025-11-16_devserver_monitor_refresh.md | #82 |
 | `diagnostics-condensed-controls` | P2 | todo | unassigned | docs/status/2025-11-18_diagnostics_overlay_condensed.md | #41 |
-| `diagnostics-dashboard` | P2 | todo | unassigned | docs/status/2025-11-07_diagnostics_passives.md | #79 |
+| `diagnostics-dashboard` | P2 | done | codex | docs/status/2025-11-07_diagnostics_passives.md | #79 |
 | `git-hooks-lint` | P2 | todo | unassigned | docs/status/2025-11-15_tooling_baseline.md | #80 |
 | `gold-analytics-board` | P2 | todo | unassigned | docs/status/2025-11-20_gold_summary_dashboard.md | #79, #101, #45 |
 | `gold-delta-aggregates` | P2 | todo | unassigned | docs/status/2025-11-06_gold_event_delta.md | #79 |
@@ -66,5 +66,10 @@
 - CI analytics exports now include `analytics.taunt` metadata plus HUD screenshot sidecars (`*.meta.json`) listing the active taunt, lane, wave, and timestamp.
 - Local dry-run: `npx vitest run tests/analyticsAggregate.test.js` to verify CSV columns, then `node scripts/hudScreenshots.mjs --ci --out artifacts/screenshots` to regenerate the gallery meta files.
 - Use the `hud_gallery.md` badges to confirm responsive captures reflect the taunt state without downloading raw artifacts.
+
+## Diagnostics Timeline
+- CI runs `node scripts/ci/diagnosticsDashboard.mjs artifacts/smoke --summary artifacts/summaries/diagnostics-dashboard.ci.json --markdown artifacts/summaries/diagnostics-dashboard.ci.md --mode fail` after analytics exports to publish gold delta streaks + passive unlock timelines.
+- Local dry-run: `node scripts/ci/diagnosticsDashboard.mjs docs/codex_pack/fixtures/diagnostics-dashboard/sample.analytics.json --summary temp/diagnostics-dashboard.fixture.json --markdown temp/diagnostics-dashboard.fixture.md --mode warn`.
+- Thresholds: `DIAGNOSTICS_WARN_MAX_NEGATIVE_DELTA` (default -250g) controls when gold deltas raise alerts; `DIAGNOSTICS_FAIL_PASSIVE_LAG` (default 300s) enforces maximum time since the last passive unlock.
 
 Generated automatically via `npm run codex:dashboard`.

@@ -64,7 +64,7 @@ tasks:
   - id: diagnostics-dashboard
     path: tasks/11-diagnostics-dashboard.md
     priority: P2
-    status: todo
+    status: done
     status_note: docs/status/2025-11-07_diagnostics_passives.md
     backlog_refs: ["#79"]
   - id: git-hooks-lint

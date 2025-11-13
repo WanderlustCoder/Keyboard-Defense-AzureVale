@@ -8,10 +8,12 @@ Use this index to jump straight to the guidance you'll need while building and t
 - `docs/CODEX_GUIDE.md` - Codex-oriented workflow guide (where to find tasks, required commands, documentation rules).
 - `docs/CODEX_PLAYBOOKS.md` - Domain-specific instruction sets (automation/CI, gameplay & UI, analytics/telemetry, documentation) tailored for Codex.
 - `docs/CODEX_PORTAL.md` - Single navigation surface for all Codex instructions, scripts, fixtures, and task workflows.
+- `docs/hud_gallery.md` - HUD/Tutorial screenshot gallery with condensed-state badges sourced from `scripts/hudScreenshots.mjs`.
 
 ## Analytics & Telemetry
 - `docs/analytics_schema.md` — JSON/CSV snapshot schema, telemetry payload details, and aggregation column order.
 - `docs/status/2025-11-04_telemetry_controls.md` — Status updates covering telemetry UI, export, and analytics enhancements.
+- `apps/keyboard-defense/scripts/ci/diagnosticsDashboard.mjs` — Gold delta + passive timeline dashboard generator (`node scripts/ci/diagnosticsDashboard.mjs --help`).
 
 ## Automation & Monitoring
 - `docs/status/2025-11-04_automation_scaffold.md` - Current automation script layout, future CI plans, and pending tooling work.
@@ -21,9 +23,23 @@ Use this index to jump straight to the guidance you'll need while building and t
 - `apps/keyboard-defense/scripts/waveSim.mjs` - Deterministic wave simulation CLI (run `node scripts/waveSim.mjs --help`).
 - `apps/keyboard-defense/scripts/validateConfig.mjs` - Validate GameConfig JSON via JSON Schema (`node scripts/validateConfig.mjs --help`).
 - `apps/keyboard-defense/scripts/waveBenchmark.mjs` - Run curated wave benchmarks (`node scripts/waveBenchmark.mjs`) for quick balance checks.
+- `docs/status/2025-11-06_castle_breach_replay.md` - Breach replay CLI summary plus outstanding analytics follow-ups.
+- `docs/codex_pack/tasks/29-castle-breach-analytics.md` - Detailed automation plan for breach summaries, turrets, multi-enemy scenarios, and dashboards.
+- `docs/CODEX_PLAYBOOKS.md#castle-breach-analytics-task-castle-breach-analytics` - Step-by-step workflow for implementing the breach analytics board.
+
+## Responsive Canvas & HUD
+- `docs/status/2025-11-18_canvas_scaling.md` - Canvas resize helper, flex-driven render size, and pending DPR listener follow-ups.
+- `docs/codex_pack/tasks/21-canvas-dpr-monitor.md` - Canonical work plan for DPR listeners, fade transitions, telemetry, and tests.
+- `docs/CODEX_PLAYBOOKS.md#canvas-dpr-monitor--transitions-task-canvas-dpr-monitor` - Step-by-step implementation + verification checklist for Codex.
 
 ## Status Notes
 Status entries live under `docs/status/`. Recent highlights include:
+- `2025-11-20_gold_percentile_guard.md` - CI guard script now validates gold summary percentiles and publishes JSON/Markdown summaries.
+- `2025-11-20_passive_gold_dashboard.md` - Passive unlock + gold dashboard automation now runs in CI and exposes summary JSON/Markdown for Codex reviews.
+- `2025-11-20_gold_timeline_dashboard.md` - Gold timeline dashboard automation surfaces derived metrics (net delta, spend streaks) directly in CI summaries.
+- `2025-11-20_gold_summary_dashboard.md` - Gold summary report now renders median/p90 gain/spend metrics with thresholds inside CI dashboards.
+- `2025-11-20_gold_percentile_alerts.md` - Gold percentile baselines + thresholds now drive automated alerts and CI Markdown tables.
+- `2025-11-20_ui_snapshot_gallery.md` - HUD screenshot metadata + gallery automation keep condensed-state badges visible in docs and CI summaries.
 - `2025-11-17_hud_condensed_lists.md` - Castle passives/gold events in the HUD collapse into summary cards for small screens.
 - `2025-11-17_responsive_layout.md` - HUD stacks vertically on tablets/phones, overlays scroll, and touch targets grow to 44px min height.
 - `2025-11-16_audio_intensity_slider.md` - Audio intensity slider in the pause/options overlay with persistence and scaled sound playback.
