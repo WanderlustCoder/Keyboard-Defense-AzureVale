@@ -36,6 +36,39 @@ dashboard view so automation reviews trendlines without opening raw JSON.
    - Ensure `npm run codex:dashboard` runs after the new data is generated so the
      Codex dashboard links to the enriched artifacts.
 
+## Implementation Notes
+
+- **Analytics exports**
+  - Extend `scripts/analyticsAggregate.mjs` (or a helper) to emit:
+    - `goldDelta.events` (timestamp, delta, type), `goldDelta.stats` (avg/min/max, largest spike, streak data).
+    - `passives.timeline` (passiveId, level, delta, time, waveIndex, gold impact).
+  - Update `docs/analytics_schema.md` + CSV ordering; refresh fixtures covering gold/passive fields.
+- **CLI helper**
+  - Add `scripts/ci/diagnosticsDashboard.mjs` that ingests analytics artifacts and writes:
+    - `artifacts/summaries/diagnostics-dashboard.ci.json`
+    - Markdown snippet summarizing gold delta streaks + upcoming passives.
+  - Flags: `--gold <file>`, `--passives <file>`, `--out-json`, `--out-md`, `--mode info|warn|fail`, `--fixtures`.
+- **Dashboard wiring**
+  - Update `scripts/generateCodexDashboard.mjs` to embed “Gold Delta Trend” and “Passive Unlock Timeline” tiles linking to the new summary JSON.
+  - Include sparkline data (array of deltas) so front-end dashboards can render charts later.
+- **CI integration**
+  - Run the new CLI after analytics exports in Build/Test + breach workflows, upload JSON/Markdown, append Markdown to `$GITHUB_STEP_SUMMARY`.
+  - Expose thresholds (`--warn-max-negative-delta`, `--fail-passive-lag-ms`) so CI warns/fails on anomalies.
+- **Docs + fixtures**
+  - Add `docs/codex_pack/fixtures/diagnostics-dashboard.json|md`.
+  - Document the workflow in `CODEX_GUIDE.md`, `CODEX_PLAYBOOKS.md` (Automation + Analytics), and note commands in `docs/docs_index.md`.
+  - Update `docs/status/2025-11-07_diagnostics_passives.md` once the dashboard lands, including screenshot/snippet references.
+- **Testing**
+  - Vitest coverage for analytics calculations + CLI outputs (JSON + Markdown snapshot tests).
+  - Negative tests for missing inputs / invalid data to ensure the CLI fails clearly.
+
+## Deliverables & Artifacts
+
+- Enhanced analytics exports + schema/docs updates.
+- `scripts/ci/diagnosticsDashboard.mjs` + fixtures/tests.
+- Codex dashboard + CI summary updates referencing gold delta/passive panels.
+- Guide/playbook/status documentation describing the workflow.
+
 ## Acceptance criteria
 
 - Analytics CLI outputs gold delta + passive unlock fields; schema + fixtures updated.

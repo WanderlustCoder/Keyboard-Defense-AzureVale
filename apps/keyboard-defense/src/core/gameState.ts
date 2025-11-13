@@ -1,5 +1,5 @@
-import { GameConfig } from "./config.js";
-import { GameState, TurretSlotState } from "./types.js";
+import { type GameConfig } from "./config.js";
+import { type GameState, type TurretSlotState } from "./types.js";
 import { deriveCastlePassives } from "../utils/castlePassives.js";
 
 export function createInitialState(config: GameConfig): GameState {
@@ -108,6 +108,18 @@ export function createInitialState(config: GameConfig): GameState {
       timeToFirstTurret: null,
       castlePassiveUnlocks: [],
       goldEvents: [],
+      taunt: {
+        active: false,
+        id: null,
+        text: null,
+        enemyType: null,
+        lane: null,
+        waveIndex: null,
+        timestampMs: null,
+        countPerWave: {},
+        uniqueLines: [],
+        history: []
+      },
       tutorial: {
         events: [],
         assistsShown: 0,

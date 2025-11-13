@@ -38,6 +38,7 @@ This reference captures the structure of the JSON snapshots downloaded from the 
 | `analytics.averageTypingDps` | number | Session-long average typing DPS. |
 | `analytics.castlePassiveUnlocks` | array | Chronological list of passive buffs unlocked `{ id, total, delta, level, time }`. |
 | `analytics.goldEvents` | array | Chronological gold events `{ gold, delta, timestamp }` (capped at 200 entries). |
+| `analytics.taunt` | object | Snapshot of the most recent taunt plus aggregate metadata (see **Taunt Metadata** below). |
 | `analytics.waveSummaries` | `WaveSummary[]` | Rolling array of recent wave summaries (latest appended). |
 | `analytics.waveHistory` | `WaveSummary[]` | Full session wave history (capped at 100 entries) retained for in-session review. |
 | `analytics.wavePerfectWords` | number | Perfect words recorded so far in the active wave. |
@@ -47,6 +48,25 @@ This reference captures the structure of the JSON snapshots downloaded from the 
 > Need a flattened unlock timeline for dashboards? Run `npm run analytics:passives` (new CLI) to emit the `analytics.castlePassiveUnlocks` array as JSON or CSV.
 
 > The CSV emitted by `analyticsAggregate.mjs` retains these fields as columns: `sessionBreaches`, `sessionBestCombo`, `totalDamageDealt`, `totalTurretDamage`, `totalTypingDamage`, `totalShieldBreaks`, `totalCastleRepairs`, `totalRepairHealth`, `totalRepairGold`, `totalPerfectWords`, `totalBonusGold`, `totalCastleBonusGold`, `totalReactionTime`, `reactionSamples`, `averageTotalDps`, `averageTurretDps`, `averageTypingDps`, along with per-wave `perfectWords`, `averageReaction`, `bonusGold`, `castleBonusGold`, and a serialised `turretStats` column summarising per-slot damage/DPS (`slotId:type Lx dmg=... dps=...`).
+
+## Taunt Metadata
+
+When enemies spawn with scripted taunts the analytics payload captures the most recent line plus lightweight aggregates so dashboards/snapshots can highlight the context without replaying the session.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `analytics.taunt.active` | boolean | `true` immediately after a taunt fires; `false` after the first snapshot when no taunts have triggered yet. |
+| `analytics.taunt.text` | string \| null | Text of the latest taunt (localised string once localization lands). |
+| `analytics.taunt.enemyType` | string \| null | Enemy tier id that triggered the taunt (e.g., `brute`, `witch`, boss ids). |
+| `analytics.taunt.waveIndex` | number \| null | Wave index associated with the taunt event. |
+| `analytics.taunt.lane` | number \| null | Lane where the taunting enemy spawned (0-indexed). |
+| `analytics.taunt.timestampMs` | number \| null | Session time in seconds when the taunt triggered. |
+| `analytics.taunt.id` | string \| null | Stable identifier for the taunt (falls back to the enemy id or text when no catalog id exists). |
+| `analytics.taunt.countPerWave` | object | Map of `waveIndex -> count` showing how many taunts fired per wave in the session. |
+| `analytics.taunt.uniqueLines` | string[] | Ordered list of unique taunt strings encountered this session. |
+| `analytics.taunt.history` | `TauntAnalyticsEntry[]` | Rolling list (last 25) of taunt events `{ id, text, enemyType, lane, waveIndex, timestamp }`. |
+
+The CSV emitted by `analyticsAggregate.mjs` adds the following columns to surface the same info without parsing nested JSON: `tauntActive`, `tauntText`, `tauntEnemyType`, `tauntWaveIndex`, `tauntLane`, `tauntTimestamp`, `tauntId`, `tauntCountPerWave`, `tauntUniqueLines`.
 
 ## UI Snapshot Fields
 
@@ -140,7 +160,7 @@ Each `TelemetryEnvelope` mirrors the structure emitted by the in-game client: `{
 When you run `npm run analytics:aggregate`, the CSV header is emitted exactly as:
 
 ```
-file,capturedAt,status,time,telemetryAvailable,telemetryEnabled,telemetryEndpoint,telemetryQueueSize,soundEnabled,soundVolume,soundIntensity,timeToFirstTurret,waveIndex,waveTotal,mode,practiceMode,turretStats,summaryWave,duration,accuracy,enemiesDefeated,breaches,perfectWords,averageReaction,dps,turretDps,typingDps,turretDamage,typingDamage,shieldBreaks,repairsUsed,repairHealth,repairGold,bonusGold,castleBonusGold,passiveUnlockCount,lastPassiveUnlock,castlePassiveUnlocks,goldEventsTracked,lastGoldDelta,lastGoldEventTime,goldEarned,maxCombo,sessionBestCombo,sessionBreaches,totalDamageDealt,totalTurretDamage,totalTypingDamage,totalShieldBreaks,totalCastleRepairs,totalRepairHealth,totalRepairGold,totalPerfectWords,totalBonusGold,totalCastleBonusGold,totalReactionTime,reactionSamples,averageTotalDps,averageTurretDps,averageTypingDps,tutorialAttempts,tutorialAssists,tutorialCompletions,tutorialReplays,tutorialSkips
+file,capturedAt,status,time,telemetryAvailable,telemetryEnabled,telemetryEndpoint,telemetryQueueSize,soundEnabled,soundVolume,soundIntensity,timeToFirstTurret,waveIndex,waveTotal,mode,practiceMode,turretStats,summaryWave,duration,accuracy,enemiesDefeated,breaches,perfectWords,averageReaction,dps,turretDps,typingDps,turretDamage,typingDamage,shieldBreaks,repairsUsed,repairHealth,repairGold,bonusGold,castleBonusGold,passiveUnlockCount,lastPassiveUnlock,castlePassiveUnlocks,goldEventsTracked,lastGoldDelta,lastGoldEventTime,tauntActive,tauntText,tauntEnemyType,tauntWaveIndex,tauntLane,tauntTimestamp,tauntId,tauntCountPerWave,tauntUniqueLines,goldEarned,maxCombo,sessionBestCombo,sessionBreaches,totalDamageDealt,totalTurretDamage,totalTypingDamage,totalShieldBreaks,totalCastleRepairs,totalRepairHealth,totalRepairGold,totalPerfectWords,totalBonusGold,totalCastleBonusGold,totalReactionTime,reactionSamples,averageTotalDps,averageTurretDps,averageTypingDps,tutorialAttempts,tutorialAssists,tutorialCompletions,tutorialReplays,tutorialSkips
 ```
 
 This header mirrors the tables above so automated parsers can rely on stable ordering. Any future schema changes should update this document and the README before landing.

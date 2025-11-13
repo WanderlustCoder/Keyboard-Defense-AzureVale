@@ -119,6 +119,27 @@ test("analyticsAggregate summarizes wave data into CSV", async () => {
           { gold: 220, delta: 20, timestamp: 30.5 },
           { gold: 240, delta: 20, timestamp: 40.25 }
         ],
+        taunt: {
+          active: true,
+          id: "brute_intro",
+          text: "I'll crack your walls!",
+          enemyType: "brute",
+          lane: 1,
+          waveIndex: 2,
+          timestampMs: 118.5,
+          countPerWave: { 2: 1 },
+          uniqueLines: ["I'll crack your walls!"],
+          history: [
+            {
+              id: "brute_intro",
+              text: "I'll crack your walls!",
+              enemyType: "brute",
+              lane: 1,
+              waveIndex: 2,
+              timestamp: 118.5
+            }
+          ]
+        },
         waveSummaries: [
           {
             index: 1,
@@ -217,7 +238,19 @@ test("analyticsAggregate summarizes wave data into CSV", async () => {
           replayedRuns: 0,
           skippedRuns: 0
         },
-        waveSummaries: []
+        waveSummaries: [],
+        taunt: {
+          active: false,
+          id: null,
+          text: null,
+          enemyType: null,
+          lane: null,
+          waveIndex: null,
+          timestampMs: null,
+          countPerWave: {},
+          uniqueLines: [],
+          history: []
+        }
       }
     };
 
@@ -279,15 +312,24 @@ test("analyticsAggregate summarizes wave data into CSV", async () => {
       "repairGold",
       "bonusGold",
       "castleBonusGold",
-      "passiveUnlockCount",
-      "lastPassiveUnlock",
-      "castlePassiveUnlocks",
-      "goldEventsTracked",
-      "lastGoldDelta",
-      "lastGoldEventTime",
-      "goldEarned",
-      "maxCombo",
-      "sessionBestCombo",
+    "passiveUnlockCount",
+    "lastPassiveUnlock",
+    "castlePassiveUnlocks",
+    "goldEventsTracked",
+    "lastGoldDelta",
+    "lastGoldEventTime",
+    "tauntActive",
+    "tauntText",
+    "tauntEnemyType",
+    "tauntWaveIndex",
+    "tauntLane",
+    "tauntTimestamp",
+    "tauntId",
+    "tauntCountPerWave",
+    "tauntUniqueLines",
+    "goldEarned",
+    "maxCombo",
+    "sessionBestCombo",
       "sessionBreaches",
       "totalDamageDealt",
       "totalTurretDamage",
@@ -331,6 +373,12 @@ test("analyticsAggregate summarizes wave data into CSV", async () => {
     assert.equal(firstRow.uiCompactHeight, "true");
     assert.equal(firstRow.uiTutorialCondensed, "true");
     assert.equal(firstRow.uiTutorialExpanded, "false");
+    assert.equal(firstRow.uiOptionsPassivesCollapsed, "true");
+    assert.equal(firstRow.uiDiagnosticsCondensed, "true");
+    assert.equal(firstRow.uiDiagnosticsSectionsCollapsed, "true");
+    assert.equal(firstRow.uiPrefHudPassivesCollapsed, "true");
+    assert.equal(firstRow.uiPrefHudGoldEventsCollapsed, "false");
+    assert.equal(firstRow.uiPrefOptionsPassivesCollapsed, "true");
     assert.equal(firstRow.uiHudPassivesCollapsed, "true");
     assert.equal(firstRow.uiHudGoldEventsCollapsed, "false");
     assert.equal(firstRow.uiHudPrefersCondensed, "true");
@@ -366,6 +414,15 @@ test("analyticsAggregate summarizes wave data into CSV", async () => {
     assert.equal(firstRow.goldEventsTracked, "2");
     assert.equal(firstRow.lastGoldDelta, "20");
     assert.equal(firstRow.lastGoldEventTime, "40.25");
+    assert.equal(firstRow.tauntActive, "true");
+    assert.equal(firstRow.tauntText, "I'll crack your walls!");
+    assert.equal(firstRow.tauntEnemyType, "brute");
+    assert.equal(firstRow.tauntWaveIndex, "2");
+    assert.equal(firstRow.tauntLane, "1");
+    assert.equal(firstRow.tauntTimestamp, "118.5");
+    assert.equal(firstRow.tauntId, "brute_intro");
+    assert.equal(firstRow.tauntCountPerWave, "W2:1");
+    assert.equal(firstRow.tauntUniqueLines, "I'll crack your walls!");
     assert.equal(firstRow.totalReactionTime, "5.4");
     assert.equal(firstRow.reactionSamples, "4");
     assert.equal(firstRow.averageTotalDps, "21.87");
@@ -389,9 +446,17 @@ test("analyticsAggregate summarizes wave data into CSV", async () => {
     assert.equal(thirdRow.soundEnabled, "false");
     assert.equal(thirdRow.soundVolume, "0.4");
     assert.equal(thirdRow.soundIntensity, "0.95");
+    assert.equal(thirdRow.tauntActive, "false");
+    assert.equal(thirdRow.tauntText, "");
     assert.equal(thirdRow.uiCompactHeight, "");
     assert.equal(thirdRow.uiTutorialCondensed, "");
     assert.equal(thirdRow.uiTutorialExpanded, "");
+    assert.equal(thirdRow.uiOptionsPassivesCollapsed, "");
+    assert.equal(thirdRow.uiDiagnosticsCondensed, "");
+    assert.equal(thirdRow.uiDiagnosticsSectionsCollapsed, "");
+    assert.equal(thirdRow.uiPrefHudPassivesCollapsed, "");
+    assert.equal(thirdRow.uiPrefHudGoldEventsCollapsed, "");
+    assert.equal(thirdRow.uiPrefOptionsPassivesCollapsed, "");
     assert.equal(thirdRow.uiHudPassivesCollapsed, "");
     assert.equal(thirdRow.uiHudGoldEventsCollapsed, "");
     assert.equal(thirdRow.uiHudPrefersCondensed, "");

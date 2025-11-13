@@ -4,31 +4,31 @@ tasks:
   - id: ci-step-summary
     path: tasks/01-ci-step-summary.md
     priority: P1
-    status: todo
+    status: done
     status_note: docs/status/2025-11-18_devserver_smoke_ci.md
     backlog_refs: ["#79"]
   - id: ci-guards
     path: tasks/02-ci-guards.md
     priority: P1
-    status: todo
+    status: done
     status_note: docs/status/2025-11-14_gold_summary_ci_guard.md
     backlog_refs: ["#82"]
   - id: visual-diffs
     path: tasks/03-playwright-visual-diffs.md
     priority: P1
-    status: todo
+    status: done
     status_note: docs/status/2025-11-06_hud_screenshots.md
     backlog_refs: ["#94"]
   - id: scenario-matrix
     path: tasks/04-scenario-matrix.md
     priority: P2
-    status: todo
+    status: done
     status_note: docs/status/2025-11-06_ci_pipeline.md
     backlog_refs: ["#71", "#95"]
   - id: ci-matrix
     path: tasks/05-ci-matrix-and-concurrency.md
     priority: P1
-    status: todo
+    status: done
     status_note: docs/status/2025-11-18_devserver_bin_resolution.md
     backlog_refs: ["#82"]
   - id: semantic-release
@@ -40,19 +40,19 @@ tasks:
   - id: static-dashboard
     path: tasks/07-static-dashboard.md
     priority: P2
-    status: todo
+    status: done
     status_note: docs/status/2025-11-18_devserver_smoke_ci.md
     backlog_refs: ["#79"]
   - id: hermetic-ci
     path: tasks/08-hermetic-ci.md
     priority: P2
-    status: todo
+    status: done
     status_note: docs/status/2025-11-16_devserver_monitor_refresh.md
     backlog_refs: ["#82"]
   - id: type-lint-test
     path: tasks/09-type-lint-test-gates.md
     priority: P1
-    status: todo
+    status: done
     status_note: docs/status/2025-11-15_tooling_baseline.md
     backlog_refs: ["#73"]
   - id: schema-contracts
@@ -70,7 +70,7 @@ tasks:
   - id: git-hooks-lint
     path: tasks/12-git-hooks-lint.md
     priority: P2
-    status: todo
+    status: done
     status_note: docs/status/2025-11-15_tooling_baseline.md
     backlog_refs: ["#80"]
   - id: gold-delta-aggregates
@@ -100,7 +100,7 @@ tasks:
   - id: taunt-analytics-metadata
     path: tasks/17-taunt-analytics-metadata.md
     priority: P2
-    status: todo
+    status: done
     status_note: docs/status/2025-11-19_enemy_taunts.md
     backlog_refs: ["#41", "#79"]
   - id: passive-analytics-export
@@ -139,18 +139,6 @@ tasks:
     status: todo
     status_note: docs/status/2025-11-16_audio_intensity_slider.md
     backlog_refs: ["#54", "#79"]
-  - id: gold-summary-dashboard-integration
-    path: tasks/27-gold-summary-dashboard-integration.md
-    priority: P2
-    status: todo
-    status_note: docs/status/2025-11-08_gold_summary_cli.md
-    backlog_refs: ["#101", "#79"]
-  - id: diagnostics-condensed-controls
-    path: tasks/28-diagnostics-condensed-controls.md
-    priority: P2
-    status: todo
-    status_note: docs/status/2025-11-18_diagnostics_overlay_condensed.md
-    backlog_refs: ["#41"]
   - id: enemy-defeat-spriteframes
     path: tasks/24-enemy-defeat-spriteframes.md
     priority: P3
@@ -169,3 +157,81 @@ tasks:
     status: todo
     status_note: docs/status/2025-11-14_combo_accuracy_delta.md
     backlog_refs: ["#14", "#41"]
+  - id: gold-summary-dashboard-integration
+    path: tasks/27-gold-summary-dashboard-integration.md
+    priority: P2
+    status: todo
+    status_note: docs/status/2025-11-08_gold_summary_cli.md
+    backlog_refs: ["#101", "#79"]
+  - id: diagnostics-condensed-controls
+    path: tasks/28-diagnostics-condensed-controls.md
+    priority: P2
+    status: todo
+    status_note: docs/status/2025-11-18_diagnostics_overlay_condensed.md
+    backlog_refs: ["#41"]
+  - id: castle-breach-analytics
+    path: tasks/29-castle-breach-analytics.md
+    priority: P2
+    status: done
+    status_note: docs/status/2025-11-06_castle_breach_replay.md
+    backlog_refs: ["#99", "#41"]
+  - id: gold-percentile-dashboard-alerts
+    path: tasks/30-gold-percentile-dashboard-alerts.md
+    priority: P2
+    status: todo
+    status_note: docs/status/2025-11-09_gold_percentiles.md
+    backlog_refs: ["#101", "#79"]
+  - id: asset-integrity-telemetry
+    path: tasks/31-asset-integrity-telemetry.md
+    priority: P2
+    status: todo
+    status_note: docs/status/2025-11-08_asset_integrity.md
+    backlog_refs: ["#69", "#41"]
+  - id: passive-gold-dashboard
+    path: tasks/32-passive-gold-dashboard.md
+    priority: P2
+    status: todo
+    status_note: docs/status/2025-11-07_passive_timeline.md
+    backlog_refs: ["#41", "#79"]
+  - id: tutorial-ui-snapshot-publishing
+    path: tasks/33-tutorial-ui-snapshot-publishing.md
+    priority: P2
+    status: todo
+    status_note: docs/status/2025-11-18_tutorial_condensed_states.md
+    backlog_refs: ["#53", "#59"]
+  - id: gold-timeline-dashboard
+    path: tasks/34-gold-timeline-dashboard.md
+    priority: P2
+    status: todo
+    status_note: docs/status/2025-11-08_gold_timeline_cli.md
+    backlog_refs: ["#45", "#79"]
+  - id: starfield-parallax-effects
+    path: tasks/35-starfield-parallax-effects.md
+    priority: P3
+    status: todo
+    status_note: docs/status/2025-11-07_starfield.md
+    backlog_refs: ["#68", "#94"]
+  - id: gold-percentile-ingestion-guard
+    path: tasks/36-gold-percentile-ingestion-guard.md
+    priority: P2
+    status: todo
+    status_note: docs/status/2025-11-13_gold_summary_checker.md
+    backlog_refs: ["#103", "#104", "#105", "#106"]
+  - id: responsive-condensed-audit
+    path: tasks/37-responsive-condensed-audit.md
+    priority: P2
+    status: todo
+    status_note: docs/status/2025-11-17_hud_condensed_lists.md
+    backlog_refs: ["#53", "#58"]
+  - id: gold-analytics-board
+    path: tasks/38-gold-analytics-board.md
+    priority: P2
+    status: todo
+    status_note: docs/status/2025-11-20_gold_summary_dashboard.md
+    backlog_refs: ["#79", "#101", "#45"]
+  - id: gold-percentile-baseline-refresh
+    path: tasks/39-gold-percentile-baseline-refresh.md
+    priority: P2
+    status: todo
+    status_note: docs/status/2025-11-20_gold_percentile_alerts.md
+    backlog_refs: ["#101", "#79"]

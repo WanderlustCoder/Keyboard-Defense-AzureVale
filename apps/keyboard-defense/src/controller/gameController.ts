@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 import { defaultConfig } from "../core/config.js";
 import { GameEngine } from "../engine/gameEngine.js";
@@ -19,9 +20,9 @@ import {
   withPatchedPlayerSettings,
   writePlayerSettings,
   TURRET_PRESET_IDS,
-  TurretLoadoutPreset,
-  TurretLoadoutPresetMap,
-  TurretLoadoutSlot
+  type TurretLoadoutPreset,
+  type TurretLoadoutPresetMap,
+  type TurretLoadoutSlot
 } from "../utils/playerSettings.js";
 import { TelemetryClient } from "../telemetry/telemetryClient.js";
 import { calculateCanvasResolution } from "../utils/canvasResolution.js";
@@ -321,6 +322,72 @@ export class GameController {
       this.tutorialCompleted = true;
     }
     this.render();
+  }
+  recordTauntAnalytics(enemy) {
+    if (!enemy || !enemy.taunt) {
+      return;
+    }
+    const state = this.engine.getState?.() ?? this.currentState;
+    if (!state || !state.analytics) {
+      return;
+    }
+    if (!state.analytics.taunt) {
+      state.analytics.taunt = {
+        active: false,
+        id: null,
+        text: null,
+        enemyType: null,
+        lane: null,
+        waveIndex: null,
+        timestampMs: null,
+        countPerWave: {},
+        uniqueLines: [],
+        history: []
+      };
+    }
+    const tauntState = state.analytics.taunt;
+    const waveIndex =
+      typeof enemy.waveIndex === "number"
+        ? enemy.waveIndex
+        : typeof state.wave?.index === "number"
+          ? state.wave.index
+          : null;
+    const timestamp = typeof state.time === "number" ? state.time : null;
+    tauntState.active = true;
+    tauntState.text = typeof enemy.taunt === "string" ? enemy.taunt : null;
+    tauntState.enemyType = enemy.tierId ?? null;
+    tauntState.lane = typeof enemy.lane === "number" ? enemy.lane : null;
+    tauntState.waveIndex = waveIndex;
+    tauntState.timestampMs = timestamp;
+    tauntState.id =
+      typeof enemy.tauntId === "string"
+        ? enemy.tauntId
+        : typeof enemy.id === "string"
+          ? enemy.id
+          : tauntState.text;
+    if (typeof waveIndex === "number") {
+      tauntState.countPerWave[waveIndex] = (tauntState.countPerWave[waveIndex] ?? 0) + 1;
+    }
+    if (tauntState.text && !tauntState.uniqueLines.includes(tauntState.text)) {
+      tauntState.uniqueLines.push(tauntState.text);
+    }
+    if (!Array.isArray(tauntState.history)) {
+      tauntState.history = [];
+    }
+    const entry = {
+      id: tauntState.id,
+      text: tauntState.text ?? "",
+      enemyType: tauntState.enemyType,
+      lane: tauntState.lane,
+      waveIndex,
+      timestamp: timestamp ?? 0
+    };
+    tauntState.history.push(entry);
+    const historyLimit = 25;
+    if (tauntState.history.length > historyLimit) {
+      tauntState.history.splice(0, tauntState.history.length - historyLimit);
+    }
+    this.currentState.analytics.taunt = tauntState;
   }
   initializeMainMenu(shouldSkipTutorial) {
     const overlay = document.getElementById("main-menu-overlay");
@@ -2819,6 +2886,7 @@ export class GameController {
       if (!enemy?.taunt) {
         return;
       }
+      this.recordTauntAnalytics(enemy);
       const laneLabel = this.describeLane(enemy.lane);
       const enemyName = this.describeEnemyTier(enemy.tierId);
       this.hud.appendLog(`Taunt (${enemyName} - ${laneLabel}): ${enemy.taunt}`);

@@ -38,6 +38,50 @@ gold delta aggregates and surface them in automation artifacts.
      output, e.g., show “Largest tutorial gold delta” and “Wave with biggest loss”.
    - Ensure `npm run codex:dashboard` references the new artifact path.
 
+## Implementation Notes
+
+- **CLI behavior**
+  - `scripts/analytics/goldDeltaAggregator.mjs` should accept:
+    - `--input <file>` (repeatable), `--out-json <file>`, `--out-md <file>`, `--mode info|warn|fail`, `--fixtures`.
+  - Output JSON shape:
+    ```json
+    {
+      "scenario": "tutorial-smoke",
+      "waves": [{ "wave": 3, "gain": 150, "spend": 40, "net": 110 }],
+      "stats": {
+        "largestGain": { "delta": 200, "wave": 5, "timestamp": 123456 },
+        "largestLoss": { "delta": -90, "wave": 7 },
+        "medianGain": 85,
+        "medianLoss": -30,
+        "netLine": [0, 110, 80, ...]
+      },
+      "alerts": [...]
+    }
+    ```
+  - Markdown should include tables for per-wave totals + badges for largest gain/loss and anomalies.
+- **Derived metrics**
+  - Calculate per-wave gain/spend, rolling net total, histogram buckets (time-of-day or event order), and streaks of negative deltas.
+  - Provide threshold flags (`--warn-max-loss`, `--fail-net-drop`) so CI can react to regressions.
+- **Schema/docs**
+  - Extend `docs/analytics_schema.md` with new sections describing:
+    - `goldDelta.waves[]`
+    - `goldDelta.stats`
+    - `goldDelta.alerts`
+  - Document how to regenerate the aggregates in `CODEX_GUIDE.md` + `docs/docs_index.md`.
+- **Fixtures/tests**
+  - Store baseline outputs under `docs/codex_pack/fixtures/gold-delta-aggregates/` (normal, spike, regression) and use them for Vitest snapshot tests.
+  - Add unit tests covering aggregation math, multi-file inputs, and threshold handling.
+- **Dashboard & CI**
+  - Wire the CLI into Build/Test + analytics workflows, uploading JSON/Markdown and appending key stats to `$GITHUB_STEP_SUMMARY`.
+  - Update `docs/codex_dashboard.md` with a “Gold Delta Watch” tile linking to the new artifact; display largest gain/loss and net change.
+  - Ensure `npm run codex:dashboard` reads the JSON so docs stay in sync.
+
+## Deliverables & Artifacts
+
+- `scripts/analytics/goldDeltaAggregator.mjs` + tests/fixtures.
+- Updated analytics schema, docs, and guide references.
+- New dashboard tile + CI summary snippet referencing aggregate stats.
+
 ## Acceptance criteria
 
 - CLI produces deterministic aggregates for both smoke and e2e artifacts.

@@ -1,33 +1,33 @@
-import { defaultConfig, GameConfig, DifficultyBand } from "../core/config.js";
+import { defaultConfig, type GameConfig, type DifficultyBand } from "../core/config.js";
 import { EventBus } from "../core/eventBus.js";
-import { GameEvents } from "../core/events.js";
+import { type GameEvents } from "../core/events.js";
 import { createInitialState, cloneState } from "../core/gameState.js";
 import {
-  AnalyticsSnapshot,
-  CastlePassive,
-  CastlePassiveUnlock,
-  EnemyState,
-  GameMode,
-  GameState,
-  GameStatus,
-  GoldEvent,
-  TurretRuntimeStat,
-  TurretSlotState,
-  TurretTargetPriority,
-  TurretTypeId,
-  TutorialSummaryStats,
-  WaveSpawnPreview,
-  WaveSummary
+  type AnalyticsSnapshot,
+  type CastlePassive,
+  type CastlePassiveUnlock,
+  type EnemyState,
+  type GameMode,
+  type GameState,
+  type GameStatus,
+  type GoldEvent,
+  type TurretRuntimeStat,
+  type TurretSlotState,
+  type TurretTargetPriority,
+  type TurretTypeId,
+  type TutorialSummaryStats,
+  type WaveSpawnPreview,
+  type WaveSummary
 } from "../core/types.js";
-import { defaultWordBank, WordBank } from "../core/wordBank.js";
+import { defaultWordBank, type WordBank } from "../core/wordBank.js";
 import { PRNG } from "../utils/random.js";
-import { EnemySystem, SpawnEnemyInput } from "../systems/enemySystem.js";
+import { EnemySystem, type SpawnEnemyInput } from "../systems/enemySystem.js";
 import { TurretSystem } from "../systems/turretSystem.js";
 import { TypingSystem } from "../systems/typingSystem.js";
-import { UpgradeSystem, UpgradeResult, RepairResult } from "../systems/upgradeSystem.js";
+import { UpgradeSystem, type UpgradeResult, type RepairResult } from "../systems/upgradeSystem.js";
 import { WaveSystem } from "../systems/waveSystem.js";
 import { ProjectileSystem } from "../systems/projectileSystem.js";
-import { TelemetryClient } from "../telemetry/telemetryClient.js";
+import { type TelemetryClient } from "../telemetry/telemetryClient.js";
 
 const MAX_WAVE_HISTORY = 100;
 const MAX_GOLD_EVENTS = 200;
@@ -841,6 +841,18 @@ export class GameEngine {
     this.state.analytics.totalCastleBonusGold = 0;
     this.state.analytics.totalReactionTime = 0;
     this.state.analytics.reactionSamples = 0;
+    this.state.analytics.taunt = {
+      active: false,
+      id: null,
+      text: null,
+      enemyType: null,
+      lane: null,
+      waveIndex: null,
+      timestampMs: null,
+      countPerWave: {},
+      uniqueLines: [],
+      history: []
+    };
     this.state.analytics.averageTotalDps = 0;
     this.state.analytics.averageTurretDps = 0;
     this.state.analytics.averageTypingDps = 0;

@@ -80,6 +80,28 @@ export interface GoldEvent {
   timestamp: number;
 }
 
+export interface TauntAnalyticsEntry {
+  id: string | null;
+  text: string;
+  enemyType: string | null;
+  lane: number | null;
+  waveIndex: number | null;
+  timestamp: number;
+}
+
+export interface TauntAnalyticsState {
+  active: boolean;
+  id: string | null;
+  text: string | null;
+  enemyType: string | null;
+  lane: number | null;
+  waveIndex: number | null;
+  timestampMs: number | null;
+  countPerWave: Record<number, number>;
+  uniqueLines: string[];
+  history: TauntAnalyticsEntry[];
+}
+
 export interface CastlePassiveUnlock {
   id: CastlePassiveId;
   total: number;
@@ -237,6 +259,7 @@ export interface GameAnalyticsState {
   timeToFirstTurret: number | null;
   castlePassiveUnlocks: CastlePassiveUnlock[];
   goldEvents: GoldEvent[];
+  taunt: TauntAnalyticsState;
   tutorial: TutorialAnalyticsState;
 }
 

@@ -128,6 +128,34 @@ function formatPassiveUnlockList(unlocks) {
     .join(" | ");
 }
 
+function formatTauntCounts(counts) {
+  if (!counts || typeof counts !== "object") {
+    return "";
+  }
+  const entries = Object.entries(counts)
+    .map(([wave, value]) => {
+      const waveIndex = Number(wave);
+      const count = Number(value);
+      if (!Number.isFinite(count)) {
+        return null;
+      }
+      const label = Number.isFinite(waveIndex) ? `W${waveIndex}` : wave;
+      return `${label}:${count}`;
+    })
+    .filter((entry) => entry);
+  return entries.length > 0 ? entries.join(" | ") : "";
+}
+
+function formatTauntUniqueLines(lines) {
+  if (!Array.isArray(lines) || lines.length === 0) {
+    return "";
+  }
+  return lines
+    .filter((line) => typeof line === "string" && line.trim().length > 0)
+    .map((line) => line.trim())
+    .join(" | ");
+}
+
 function* summarizeSnapshot(snapshot, sourcePath) {
   const summaries = snapshot?.analytics?.waveSummaries?.length
     ? snapshot.analytics.waveSummaries
@@ -257,6 +285,25 @@ function* summarizeSnapshot(snapshot, sourcePath) {
     lastGoldEvent && Number.isFinite(lastGoldEvent.timestamp)
       ? formatNumber(lastGoldEvent.timestamp, 2)
       : "";
+  const tauntState = snapshot?.analytics?.taunt ?? null;
+  metadata.tauntActive =
+    typeof tauntState?.active === "boolean" ? String(tauntState.active) : tauntState ? "false" : "";
+  metadata.tauntText =
+    typeof tauntState?.text === "string" && tauntState.text.length > 0 ? tauntState.text : "";
+  metadata.tauntEnemyType =
+    typeof tauntState?.enemyType === "string" ? tauntState.enemyType : "";
+  metadata.tauntWaveIndex =
+    typeof tauntState?.waveIndex === "number" ? tauntState.waveIndex : "";
+  metadata.tauntLane = typeof tauntState?.lane === "number" ? tauntState.lane : "";
+  metadata.tauntTimestamp =
+    typeof tauntState?.timestampMs === "number"
+      ? formatNumber(tauntState.timestampMs, 2)
+      : "";
+  metadata.tauntId = typeof tauntState?.id === "string" ? tauntState.id : "";
+  metadata.tauntCountPerWave = formatTauntCounts(tauntState?.countPerWave);
+  metadata.tauntUniqueLines = formatTauntUniqueLines(
+    Array.isArray(tauntState?.uniqueLines) ? tauntState.uniqueLines : []
+  );
 
   if (Array.isArray(summaries) && summaries.length > 0) {
     for (const summary of summaries) {
@@ -387,6 +434,15 @@ function printCsv(rows) {
     "goldEventsTracked",
     "lastGoldDelta",
     "lastGoldEventTime",
+    "tauntActive",
+    "tauntText",
+    "tauntEnemyType",
+    "tauntWaveIndex",
+    "tauntLane",
+    "tauntTimestamp",
+    "tauntId",
+    "tauntCountPerWave",
+    "tauntUniqueLines",
     "goldEarned",
     "maxCombo",
     "sessionBestCombo",

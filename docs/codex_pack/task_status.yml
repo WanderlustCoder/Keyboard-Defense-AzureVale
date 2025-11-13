@@ -1,32 +1,32 @@
-updated: 2025-11-19
+updated: 2025-11-20
 tasks:
   ci-step-summary:
-    state: todo
-    owner: unassigned
+    state: done
+    owner: codex
   ci-guards:
-    state: todo
-    owner: unassigned
+    state: done
+    owner: codex
   visual-diffs:
-    state: todo
-    owner: unassigned
+    state: done
+    owner: codex
   scenario-matrix:
-    state: todo
-    owner: unassigned
+    state: done
+    owner: codex
   ci-matrix:
-    state: todo
-    owner: unassigned
+    state: done
+    owner: codex
   semantic-release:
     state: todo
     owner: unassigned
   static-dashboard:
-    state: todo
-    owner: unassigned
+    state: done
+    owner: codex
   hermetic-ci:
-    state: todo
-    owner: unassigned
+    state: done
+    owner: codex
   type-lint-test:
-    state: todo
-    owner: unassigned
+    state: done
+    owner: codex
   schema-contracts:
     state: todo
     owner: unassigned
@@ -34,8 +34,8 @@ tasks:
     state: todo
     owner: unassigned
   git-hooks-lint:
-    state: todo
-    owner: unassigned
+    state: done
+    owner: codex
   gold-delta-aggregates:
     state: todo
     owner: unassigned
@@ -49,8 +49,8 @@ tasks:
     state: todo
     owner: unassigned
   taunt-analytics-metadata:
-    state: todo
-    owner: unassigned
+    state: done
+    owner: codex
   passive-analytics-export:
     state: todo
     owner: unassigned
@@ -79,8 +79,41 @@ tasks:
     state: todo
     owner: unassigned
   gold-summary-dashboard-integration:
-    state: todo
+    state: done
     owner: unassigned
   diagnostics-condensed-controls:
+    state: todo
+    owner: unassigned
+  castle-breach-analytics:
+    state: done
+    owner: unassigned
+  gold-percentile-dashboard-alerts:
+    state: done
+    owner: unassigned
+  asset-integrity-telemetry:
+    state: todo
+    owner: unassigned
+  passive-gold-dashboard:
+    state: done
+    owner: unassigned
+  tutorial-ui-snapshot-publishing:
+    state: done
+    owner: unassigned
+  gold-timeline-dashboard:
+    state: done
+    owner: unassigned
+  starfield-parallax-effects:
+    state: todo
+    owner: unassigned
+  gold-percentile-ingestion-guard:
+    state: done
+    owner: unassigned
+  responsive-condensed-audit:
+    state: todo
+    owner: unassigned
+  gold-analytics-board:
+    state: todo
+    owner: unassigned
+  gold-percentile-baseline-refresh:
     state: todo
     owner: unassigned

@@ -23,8 +23,10 @@ const DEFAULT_OUTPUT_DIR =
   process.env.HUD_SCREENSHOT_OUTPUT ?? path.resolve("artifacts", "screenshots");
 
 const SHOTS = [
-  { id: "hud-main", file: "hud-main.png" },
-  { id: "options-overlay", file: "options-overlay.png" }
+  { id: "hud-main", file: "hud-main.png", label: "Active HUD" },
+  { id: "options-overlay", file: "options-overlay.png", label: "Options overlay" },
+  { id: "tutorial-summary", file: "tutorial-summary.png", label: "Tutorial summary" },
+  { id: "wave-scorecard", file: "wave-scorecard.png", label: "Wave scorecard" }
 ];
 
 function parseArgs(argv) {
@@ -124,6 +126,117 @@ async function ensureDir(outDir) {
   await fs.mkdir(outDir, { recursive: true });
 }
 
+function deriveUiBadges(snapshot) {
+  if (!snapshot || typeof snapshot !== "object") {
+    return ["ui:unknown"];
+  }
+  const badges = [];
+
+  if (snapshot.compactHeight === true) {
+    badges.push("viewport:compact-height");
+  } else if (snapshot.compactHeight === false) {
+    badges.push("viewport:default-height");
+  }
+
+  const tutorial = snapshot.tutorialBanner ?? {};
+  if (tutorial.condensed) {
+    badges.push("tutorial:condensed");
+  } else if (tutorial.expanded) {
+    badges.push("tutorial:expanded");
+  } else {
+    badges.push("tutorial:default");
+  }
+
+  const hud = snapshot.hud ?? {};
+  if (hud.passivesCollapsed === true) {
+    badges.push("hud-passives:collapsed");
+  } else if (hud.passivesCollapsed === false) {
+    badges.push("hud-passives:expanded");
+  }
+  if (hud.goldEventsCollapsed === true) {
+    badges.push("hud-gold-events:collapsed");
+  } else if (hud.goldEventsCollapsed === false) {
+    badges.push("hud-gold-events:expanded");
+  }
+  if (hud.prefersCondensedLists === true) {
+    badges.push("hud:prefers-condensed");
+  }
+
+  const options = snapshot.options ?? {};
+  if (options.passivesCollapsed === true) {
+    badges.push("options-passives:collapsed");
+  } else if (options.passivesCollapsed === false) {
+    badges.push("options-passives:expanded");
+  }
+
+  const diagnostics = snapshot.diagnostics ?? {};
+  if (diagnostics.condensed === true) {
+    badges.push("diagnostics:condensed");
+  } else if (diagnostics.condensed === false) {
+    badges.push("diagnostics:expanded");
+  }
+  if (
+    Array.isArray(diagnostics.sectionsCollapsed) &&
+    diagnostics.sectionsCollapsed.length > 0
+  ) {
+    badges.push("diagnostics:sections-collapsed");
+  }
+
+  const preferences = snapshot.preferences ?? {};
+  if (preferences.hudPassivesCollapsed === true) {
+    badges.push("pref:hud-passives-collapsed");
+  }
+  if (preferences.hudGoldEventsCollapsed === true) {
+    badges.push("pref:hud-gold-events-collapsed");
+  }
+  if (preferences.optionsPassivesCollapsed === true) {
+    badges.push("pref:options-passives-collapsed");
+  }
+
+  return badges;
+}
+
+function describeUiSnapshot(snapshot) {
+  if (!snapshot || typeof snapshot !== "object") {
+    return "UI snapshot unavailable for this capture.";
+  }
+  const parts = [];
+  if (snapshot.compactHeight) {
+    parts.push("Compact viewport");
+  }
+  if (snapshot.tutorialBanner?.condensed) {
+    parts.push("Tutorial banner condensed");
+  } else if (snapshot.tutorialBanner?.expanded) {
+    parts.push("Tutorial banner expanded");
+  }
+  if (snapshot.hud?.passivesCollapsed === true) {
+    parts.push("HUD passives collapsed");
+  } else if (snapshot.hud?.passivesCollapsed === false) {
+    parts.push("HUD passives expanded");
+  }
+  if (snapshot.hud?.goldEventsCollapsed === true) {
+    parts.push("HUD gold events collapsed");
+  } else if (snapshot.hud?.goldEventsCollapsed === false) {
+    parts.push("HUD gold events expanded");
+  }
+  if (snapshot.options?.passivesCollapsed === true) {
+    parts.push("Options passives collapsed");
+  }
+  if (snapshot.diagnostics?.condensed === true) {
+    parts.push("Diagnostics condensed");
+  }
+  if (
+    Array.isArray(snapshot.diagnostics?.sectionsCollapsed) &&
+    snapshot.diagnostics.sectionsCollapsed.length > 0
+  ) {
+    parts.push("Diagnostics sections collapsed");
+  }
+  if (snapshot.hud?.prefersCondensedLists) {
+    parts.push("HUD prefers condensed lists");
+  }
+  return parts.length > 0 ? parts.join("; ") : "UI snapshot recorded.";
+}
+
 async function collectUiSnapshot(page) {
   return page.evaluate(() => {
     try {
@@ -133,6 +246,48 @@ async function collectUiSnapshot(page) {
       }
       const snapshot = kd.getUiSnapshot();
       return snapshot ?? null;
+    } catch (error) {
+      const message =
+        error && typeof error === "object" && "message" in error ? error.message : String(error);
+      return { error: message };
+    }
+  });
+}
+
+async function collectTauntMetadata(page) {
+  return page.evaluate(() => {
+    try {
+      const kd = window.keyboardDefense;
+      if (!kd || typeof kd.getAnalyticsSnapshot !== "function") {
+        return null;
+      }
+      const snapshot = kd.getAnalyticsSnapshot();
+      const taunt = snapshot?.analytics?.taunt;
+      if (!taunt) {
+        return null;
+      }
+      const clean = {
+        active: Boolean(taunt.active),
+        text: typeof taunt.text === "string" ? taunt.text : null,
+        enemyType: typeof taunt.enemyType === "string" ? taunt.enemyType : null,
+        lane: typeof taunt.lane === "number" ? taunt.lane : null,
+        waveIndex: typeof taunt.waveIndex === "number" ? taunt.waveIndex : null,
+        timestampMs: typeof taunt.timestampMs === "number" ? taunt.timestampMs : null,
+        id: typeof taunt.id === "string" ? taunt.id : null
+      };
+      const history = Array.isArray(taunt.history) ? taunt.history : [];
+      const last = history.length > 0 ? history[history.length - 1] : null;
+      if (last) {
+        clean.last = {
+          id: typeof last.id === "string" ? last.id : null,
+          text: typeof last.text === "string" ? last.text : null,
+          enemyType: typeof last.enemyType === "string" ? last.enemyType : null,
+          lane: typeof last.lane === "number" ? last.lane : null,
+          waveIndex: typeof last.waveIndex === "number" ? last.waveIndex : null,
+          timestamp: typeof last.timestamp === "number" ? last.timestamp : null
+        };
+      }
+      return clean;
     } catch (error) {
       const message =
         error && typeof error === "object" && "message" in error ? error.message : String(error);
@@ -279,10 +434,28 @@ async function captureScreenshots(opts) {
           } else if (shot.id === "wave-scorecard") {
             uiSnapshot = await captureWaveScorecard(page, outPath);
           }
+          const snapshot = uiSnapshot ?? (await collectUiSnapshot(page));
+          const tauntDetails = await collectTauntMetadata(page);
+          const metadata = {
+            id: shot.id,
+            description: shot.label,
+            file: path.relative(process.cwd(), outPath).replace(/\\/g, "/"),
+            badges: deriveUiBadges(snapshot),
+            summary: describeUiSnapshot(snapshot),
+            capturedAt: new Date().toISOString(),
+            uiSnapshot: snapshot,
+            taunt: tauntDetails
+          };
+          const metaPath = path.join(opts.outputDir, `${shot.id}.meta.json`);
+          await fs.writeFile(metaPath, JSON.stringify(metadata, null, 2), "utf8");
           summary.screenshots.push({
             id: shot.id,
             path: outPath,
-            uiSnapshot: uiSnapshot ?? (await collectUiSnapshot(page))
+            description: shot.label,
+            uiSnapshot: metadata.uiSnapshot,
+            badges: metadata.badges,
+            meta: metaPath,
+            taunt: metadata.taunt ?? null
           });
         }
       } finally {
