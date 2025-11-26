@@ -59,8 +59,8 @@
 - Fixture dry-run: `node scripts/ci/goldAnalyticsBoard.mjs --summary docs/codex_pack/fixtures/gold/gold-summary-report.json --timeline docs/codex_pack/fixtures/gold/gold-timeline-summary.json --passive docs/codex_pack/fixtures/gold/passive-gold-summary.json --percentile-guard docs/codex_pack/fixtures/gold/percentile-guard.json --percentile-alerts docs/codex_pack/fixtures/gold/gold-percentiles.baseline.json --out-json temp/gold-analytics-board.fixture.json --markdown temp/gold-analytics-board.fixture.md`.
 - Latest board (2025-11-15T15:14:49.341Z) status [PASS] with 1 scenario(s); warnings: 0.
 
-| Scenario | Net delta | Median Gain | Median Spend | Last Gold delta | Last Passive | Sparkline (delta@t) | Alerts |
-| --- | --- | --- | --- | --- | --- | --- | --- |
+| Scenario | Net delta | Median Gain | Median Spend | Last Gold delta | Last Passive | Sparkline (delta@t + bars) | Alerts |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | tutorial-skip | 175 | 60 | -35 | -60 @ 75.2s | gold L1 (+1.15) @ 78.2s | - | [PASS 4] |
 
 ## UI Snapshot Gallery

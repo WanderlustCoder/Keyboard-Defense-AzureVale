@@ -81,7 +81,7 @@ _Re-run `npm run codex:dashboard` after `npm run analytics:gold:report` to refre
 Generated: 2025-11-15T15:14:49.341Z ([PASS], warnings: 0)
 Starfield avg depth: 1.35, drift: 1.15, wave: 52.5%, castle: 70%, last tint: #fbbf24
 
-| Scenario | Net delta | Median Gain | Median Spend | Starfield | Last Gold delta | Last Passive | Sparkline (delta@t) | Alerts |
+| Scenario | Net delta | Median Gain | Median Spend | Starfield | Last Gold delta | Last Passive | Sparkline (delta@t + bars) | Alerts |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | tutorial-skip | 175 | 60 | -35 | depth 1.35 / drift 1.15 / 52.5% wave / 70% castle / #fbbf24 | -60 @ 75.2s | gold L1 (+1.15) @ 78.2s | - | [PASS 4] |
 

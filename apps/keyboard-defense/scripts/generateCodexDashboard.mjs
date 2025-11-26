@@ -88,6 +88,27 @@ const formatSparkline = (points) => {
     .join(", ");
 };
 
+const formatSparklineBar = (points) => {
+  if (!Array.isArray(points) || points.length === 0) return "-";
+  const deltas = points.map((p) =>
+    Number.isFinite(p?.delta) ? Math.abs(p.delta) : 0
+  );
+  const max = Math.max(...deltas, 1);
+  const bins = ".:-=*#";
+  return points
+    .map((point) => {
+      const delta = Number.isFinite(point?.delta) ? point.delta : 0;
+      const level = Math.min(
+        bins.length - 1,
+        Math.floor((Math.abs(delta) / max) * (bins.length - 1))
+      );
+      const symbol = bins[level];
+      const sign = delta > 0 ? "+" : delta < 0 ? "-" : " ";
+      return `${sign}${symbol}`;
+    })
+    .join("");
+};
+
 function buildPortalGoldSection(board) {
   const lines = [];
   if (!board) {
@@ -106,7 +127,7 @@ function buildPortalGoldSection(board) {
     );
   }
   lines.push("");
-  lines.push("| Scenario | Net delta | Median Gain | Median Spend | Starfield | Last Gold delta | Last Passive | Sparkline (delta@t) | Alerts |");
+  lines.push("| Scenario | Net delta | Median Gain | Median Spend | Starfield | Last Gold delta | Last Passive | Sparkline (delta@t + bars) | Alerts |");
   lines.push("| --- | --- | --- | --- | --- | --- | --- | --- | --- |");
   const scenarios = Array.isArray(board.scenarios) ? board.scenarios.slice(0, 5) : [];
   for (const scenario of scenarios) {
@@ -151,8 +172,10 @@ function buildPortalGoldSection(board) {
       }
     }
     const starfieldNote = starfieldParts.length ? starfieldParts.join(" / ") : "-";
+    const sparkline = formatSparkline(scenario.timelineSparkline);
+    const sparkbar = formatSparklineBar(scenario.timelineSparkline);
     lines.push(
-      `| ${scenario.id ?? "-"} | ${net} | ${medianGain} | ${medianSpend} | ${starfieldNote} | ${goldNote} | ${passiveNote} | ${formatSparkline(scenario.timelineSparkline)} | ${alertBadge} |`
+      `| ${scenario.id ?? "-"} | ${net} | ${medianGain} | ${medianSpend} | ${starfieldNote} | ${goldNote} | ${passiveNote} | ${sparkline}${sparkbar === "-" ? "" : ` ${sparkbar}`} | ${alertBadge} |`
     );
   }
   if (Array.isArray(board.scenarios) && board.scenarios.length > 5) {
@@ -321,9 +344,9 @@ const main = async () => {
     if (Array.isArray(goldBoard.scenarios) && goldBoard.scenarios.length > 0) {
       lines.push("");
       lines.push(
-        "| Scenario | Net delta | Median Gain | Median Spend | Last Gold delta | Last Passive | Sparkline (delta@t) | Alerts |"
+        "| Scenario | Net delta | Median Gain | Median Spend | Last Gold delta | Last Passive | Sparkline (delta@t + bars) | Alerts |"
       );
-      lines.push("| --- | --- | --- | --- | --- | --- | --- | --- |");
+      lines.push("| --- | --- | --- | --- | --- | --- | --- | --- | --- |");
       const sample = goldBoard.scenarios.slice(0, 5);
       for (const scenario of sample) {
         const net = scenario.summary?.netDelta ?? scenario.summary?.metrics?.netDelta ?? "-";
@@ -349,10 +372,10 @@ const main = async () => {
               lastPassive.time ?? "?"
             }s`
           : "-";
+        const sparkline = formatSparkline(scenario.timelineSparkline);
+        const sparkbar = formatSparklineBar(scenario.timelineSparkline);
         lines.push(
-          `| ${scenario.id ?? "-"} | ${net} | ${medianGain} | ${medianSpend} | ${goldNote} | ${passiveNote} | ${formatSparkline(
-            scenario.timelineSparkline
-          )} | ${alertBadge} |`
+          `| ${scenario.id ?? "-"} | ${net} | ${medianGain} | ${medianSpend} | ${goldNote} | ${passiveNote} | ${sparkline}${sparkbar === "-" ? "" : ` ${sparkbar}`} | ${alertBadge} |`
         );
       }
       if (goldBoard.scenarios.length > 5) {
