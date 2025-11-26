@@ -70,7 +70,7 @@ tasks:
     state: done
     owner: codex
   enemy-defeat-spriteframes:
-    state: todo
+    state: done
     owner: codex
   defeat-burst-diagnostics:
     state: done

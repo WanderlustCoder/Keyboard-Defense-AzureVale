@@ -142,7 +142,7 @@ tasks:
   - id: enemy-defeat-spriteframes
     path: tasks/24-enemy-defeat-spriteframes.md
     priority: P3
-    status: todo
+    status: done
     status_note: docs/status/2025-11-07_enemy_defeat_animation.md
     backlog_refs: ["#66"]
   - id: defeat-burst-diagnostics
