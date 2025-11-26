@@ -2,8 +2,8 @@ import { test } from "vitest";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { parseHTML } from "linkedom";
-import { HudView } from "../dist/src/ui/hud.js";
-import { defaultConfig } from "../dist/src/core/config.js";
+import { HudView } from "../src/ui/hud.ts";
+import { defaultConfig } from "../src/core/config.ts";
 
 const htmlSource = readFileSync(new URL("../public/index.html", import.meta.url), "utf8");
 
@@ -80,11 +80,9 @@ const initializeHud = (options = {}) => {
   const findByClass = (root, className) =>
     root?.querySelector(`.${className}`) ?? undefined;
 
-  const healthBar = get("castle-health-bar");
-  const goldLabel = get("resource-gold");
+  const hudRoot = get("hud");
   const goldDelta = get("resource-delta");
   const activeWord = get("active-word");
-  const typingInput = get("typing-input");
   const upgradePanel = get("upgrade-panel");
   const comboLabel = get("combo-stats");
   const comboAccuracyDelta = get("combo-accuracy-delta");
@@ -96,7 +94,6 @@ const initializeHud = (options = {}) => {
     tutorialBanner.querySelector("[data-role='tutorial-message']") ?? tutorialBanner;
   const tutorialBannerToggle = tutorialBanner.querySelector("[data-role='tutorial-toggle']");
   const summaryContainer = get("tutorial-summary");
-  const summaryStats = get("tutorial-summary-stats");
   const summaryContinue = get("tutorial-summary-continue");
   const summaryReplay = get("tutorial-summary-replay");
   const optionsCastleBonus = get("options-castle-bonus");
@@ -184,6 +181,7 @@ const initializeHud = (options = {}) => {
         readableFontToggle: "options-readable-font-toggle",
         dyslexiaFontToggle: "options-dyslexia-font-toggle",
         colorblindPaletteToggle: "options-colorblind-toggle",
+        defeatAnimationSelect: "options-defeat-animation",
         telemetryToggle: "options-telemetry-toggle",
         telemetryToggleWrapper: "options-telemetry-toggle-wrapper",
         fontScaleSelect: "options-font-scale",
@@ -295,6 +293,8 @@ const initializeHud = (options = {}) => {
       analyticsViewerContainer,
       analyticsViewerBody,
       analyticsFilterSelect,
+      hudRoot,
+      body: document.body,
       getScorecardContinueCount: () => scorecardContinues,
       getReducedMotionToggleEvents: () => [...reducedMotionToggleEvents],
       upgradePanel,
@@ -317,8 +317,6 @@ const initializeHud = (options = {}) => {
     getCollapseEvents: () => [...collapseEvents]
   };
 };
-
-const toChildrenArray = (node) => Array.from(node?.children ?? []);
 
 const findDescendantByClass = (root, className) => {
   if (!root?.querySelector) return null;
@@ -469,9 +467,6 @@ test("HudView highlights combos and accuracy delta during warnings", () => {
   const baseState = buildInitialState();
   baseState.typing.accuracy = 0.96;
   hud.update(baseState, []);
-  const resolvedComboEl = global.document?.getElementById
-    ? global.document.getElementById("combo-accuracy-delta")
-    : null;
   assert.equal(wavePreview.children.length, 1);
   assert.equal(wavePreview.children[0].textContent, "All clear.");
   assert.equal(comboLabel.dataset.active, "false");
@@ -1079,13 +1074,48 @@ test("options overlay lists active castle passives", () => {
     assert.ok(regenItem?.children?.length >= 2, "regen passive entry should render icon + label");
     const regenLabel = regenItem?.children?.at?.(1)?.textContent ?? regenItem?.textContent ?? "";
     assert.match(regenLabel, /Regen 2\.2/, "regen passive text should include totals");
-    const regenIconClass = regenItem?.children?.at?.(0)?.className ?? "";
+    const regenIcon = regenItem?.children?.at?.(0);
+    const regenIconClass = regenIcon?.className ?? "";
     assert.match(regenIconClass, /passive-icon--regen/, "regen icon should be present");
+    assert.equal(regenIcon?.getAttribute("role"), "img", "passive icons should expose img role");
+    assert.equal(
+      regenIcon?.getAttribute("aria-label"),
+      "Regen passive icon",
+      "passive icons should set accessible labels"
+    );
     const goldLabel = goldItem?.children?.at?.(1)?.textContent ?? goldItem?.textContent ?? "";
     assert.match(goldLabel, /\+5% gold/i, "gold passive text should include percent bonus");
     const armorLabel = armorItem?.children?.at?.(1)?.textContent ?? "";
     assert.match(armorLabel, /\+1 armor/i, "armor passive text should include armor bonus");
     assert.equal(elements.optionsPassivesSummary?.textContent, "3 passives");
+  } finally {
+    cleanup();
+  }
+});
+
+test("setPassiveHighlight accents HUD and options passive entries", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  try {
+    const state = buildInitialState();
+    state.castle.passives = [
+      { id: "regen", total: 1.6, delta: 0.4 },
+      { id: "gold", total: 0.05, delta: 0.02 }
+    ];
+    hud.update(state, []);
+    hud.setPassiveHighlight("regen", { autoExpand: true });
+    const highlighted = elements.castlePassivesList.querySelector('[data-passive-id="regen"]');
+    assert.ok(highlighted, "should locate HUD passive entry for regen");
+    assert.equal(
+      highlighted?.classList.contains("passive-item--highlight"),
+      true,
+      "highlight class should be applied"
+    );
+    hud.setPassiveHighlight(null);
+    assert.equal(
+      highlighted?.classList.contains("passive-item--highlight"),
+      false,
+      "highlight class should clear when disabled"
+    );
   } finally {
     cleanup();
   }
@@ -1384,6 +1414,40 @@ test("HudView options overlay syncs controls and visibility", () => {
   assert.equal(hud.isOptionsOverlayVisible(), false);
 
   cleanup();
+});
+
+test("HudView toggles canvas transition dataset and classes", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  const { hudRoot } = elements;
+  assert.ok(hudRoot, "hud root is available");
+  try {
+    hud.setCanvasTransitionState("running");
+    assert.equal(hudRoot.dataset.canvasTransition, "running");
+    assert.ok(hudRoot.classList.contains("hud--canvas-transition"));
+    hud.setCanvasTransitionState("idle");
+    assert.equal(hudRoot.dataset.canvasTransition, "idle");
+    assert.equal(hudRoot.classList.contains("hud--canvas-transition"), false);
+  } finally {
+    cleanup();
+  }
+});
+
+test("HudView updates reduced-motion dataset when preference changes", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  const { hudRoot } = elements;
+  assert.ok(hudRoot, "hud root is available");
+  try {
+    hud.setReducedMotionEnabled(true);
+    assert.equal(document.body.dataset.reducedMotion, "true");
+    assert.equal(document.documentElement.dataset.reducedMotion, "true");
+    assert.equal(hudRoot.dataset.reducedMotion, "true");
+    hud.setReducedMotionEnabled(false);
+    assert.equal(document.body.dataset.reducedMotion, "false");
+    assert.equal(document.documentElement.dataset.reducedMotion, "false");
+    assert.equal(hudRoot.dataset.reducedMotion, "false");
+  } finally {
+    cleanup();
+  }
 });
 
 test("HudView toggles analytics export availability", () => {

@@ -1,4 +1,4 @@
-updated: 2025-11-20
+updated: 2025-11-21
 tasks:
   ci-step-summary:
     state: done
@@ -16,8 +16,8 @@ tasks:
     state: done
     owner: codex
   semantic-release:
-    state: todo
-    owner: unassigned
+    state: done
+    owner: codex
   static-dashboard:
     state: done
     owner: codex
@@ -28,8 +28,8 @@ tasks:
     state: done
     owner: codex
   schema-contracts:
-    state: todo
-    owner: unassigned
+    state: done
+    owner: codex
   diagnostics-dashboard:
     state: done
     owner: codex
@@ -40,50 +40,50 @@ tasks:
     state: done
     owner: codex
   ci-traceability-report:
-    state: todo
-    owner: unassigned
+    state: done
+    owner: codex
   devserver-monitor-upgrade:
-    state: todo
-    owner: unassigned
+    state: done
+    owner: codex
   taunt-catalog-expansion:
-    state: todo
-    owner: unassigned
+    state: done
+    owner: codex
   taunt-analytics-metadata:
     state: done
     owner: codex
   passive-analytics-export:
-    state: todo
-    owner: unassigned
+    state: done
+    owner: codex
   passive-iconography:
-    state: todo
-    owner: unassigned
+    state: done
+    owner: codex
   tutorial-passive-messaging:
-    state: todo
-    owner: unassigned
+    state: done
+    owner: codex
   canvas-dpr-monitor:
-    state: todo
-    owner: unassigned
+    state: done
+    owner: codex
   devserver-bin-guidance:
-    state: todo
-    owner: unassigned
+    state: done
+    owner: codex
   audio-intensity-telemetry:
-    state: todo
-    owner: unassigned
+    state: done
+    owner: codex
   enemy-defeat-spriteframes:
     state: todo
-    owner: unassigned
+    owner: codex
   defeat-burst-diagnostics:
-    state: todo
-    owner: unassigned
+    state: done
+    owner: codex
   combo-accuracy-analytics:
-    state: todo
-    owner: unassigned
+    state: done
+    owner: codex
   gold-summary-dashboard-integration:
     state: done
     owner: unassigned
   diagnostics-condensed-controls:
-    state: todo
-    owner: unassigned
+    state: done
+    owner: codex
   castle-breach-analytics:
     state: done
     owner: unassigned
@@ -91,8 +91,8 @@ tasks:
     state: done
     owner: unassigned
   asset-integrity-telemetry:
-    state: todo
-    owner: unassigned
+    state: done
+    owner: codex
   passive-gold-dashboard:
     state: done
     owner: unassigned
@@ -103,17 +103,17 @@ tasks:
     state: done
     owner: unassigned
   starfield-parallax-effects:
-    state: todo
-    owner: unassigned
+    state: done
+    owner: codex
   gold-percentile-ingestion-guard:
     state: done
     owner: unassigned
   responsive-condensed-audit:
-    state: todo
-    owner: unassigned
+    state: done
+    owner: codex
   gold-analytics-board:
-    state: todo
-    owner: unassigned
+    state: done
+    owner: codex
   gold-percentile-baseline-refresh:
-    state: todo
-    owner: unassigned
+    state: done
+    owner: codex
