@@ -138,6 +138,23 @@ function buildTimelineSparkline(events) {
   }));
 }
 
+function formatSparkline(points) {
+  if (!Array.isArray(points) || points.length === 0) return "-";
+  return points
+    .map((point) => {
+      const deltaPart =
+        typeof point.delta === "number" && Number.isFinite(point.delta)
+          ? formatDelta(point.delta)
+          : "?";
+      const timePart =
+        typeof point.timestamp === "number" && Number.isFinite(point.timestamp)
+          ? point.timestamp
+          : "?";
+      return `${deltaPart}@${timePart}`;
+    })
+    .join(", ");
+}
+
 async function loadJsonOptional(filePath, label, warnings) {
   if (!filePath) return null;
   const absolute = path.resolve(filePath);
@@ -471,13 +488,13 @@ export function formatGoldAnalyticsMarkdown(board) {
   if (board.scenarios.length > 0) {
     lines.push("### Scenario Snapshot");
     lines.push(
-      "| Scenario | Net delta | Median Gain | Median Spend | Starfield | Last Gold delta | Last Passive | Alerts |"
+      "| Scenario | Net delta | Median Gain | Median Spend | Starfield | Last Gold delta | Last Passive | Sparkline (Δ@t) | Alerts |"
     );
-    lines.push("| --- | --- | --- | --- | --- | --- | --- | --- |");
+    lines.push("| --- | --- | --- | --- | --- | --- | --- | --- | --- |");
     for (const scenario of board.scenarios) {
       const row = buildScenarioSummaryRow(scenario);
       lines.push(
-        `| ${row.scenario} | ${row.netDelta ?? ""} | ${row.medianGain ?? ""} | ${row.medianSpend ?? ""} | ${row.starfield} | ${row.lastGold} | ${row.lastPassive} | ${row.alerts} |`
+        `| ${row.scenario} | ${row.netDelta ?? ""} | ${row.medianGain ?? ""} | ${row.medianSpend ?? ""} | ${row.starfield} | ${row.lastGold} | ${row.lastPassive} | ${formatSparkline(scenario.timelineSparkline)} | ${row.alerts} |`
       );
     }
     lines.push("");

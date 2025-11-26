@@ -127,6 +127,7 @@ describe("goldAnalyticsBoard", () => {
     expect(markdown).toContain("Gold Analytics Board");
     expect(markdown).toContain("tutorial-skip");
     expect(markdown).toMatch(/Starfield avg depth/i);
+    expect(markdown).toContain("-60@75.2");
     expect(markdown).toContain("gold-board.json");
   });
 });
