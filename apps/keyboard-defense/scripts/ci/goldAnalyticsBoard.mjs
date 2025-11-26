@@ -12,6 +12,7 @@ const DEFAULT_OUT_MARKDOWN = "artifacts/summaries/gold-analytics-board.ci.md";
 const VALID_MODES = new Set(["fail", "warn", "info"]);
 const MAX_EVENTS_PER_SCENARIO = 3;
 const MAX_UNLOCKS_PER_SCENARIO = 3;
+const MAX_SPARKLINE_POINTS = 8;
 
 function printHelp() {
   console.log(`Gold Analytics Board
@@ -115,6 +116,7 @@ function ensureScenario(map, id) {
       id,
       summary: null,
       timelineEvents: [],
+      timelineSparkline: [],
       passiveUnlocks: [],
       alerts: []
     });
@@ -125,6 +127,15 @@ function ensureScenario(map, id) {
 function pickLatest(list, count) {
   if (!Array.isArray(list)) return [];
   return list.slice(0, count);
+}
+
+function buildTimelineSparkline(events) {
+  if (!Array.isArray(events)) return [];
+  return events.slice(0, MAX_SPARKLINE_POINTS).map((event) => ({
+    delta: Number.isFinite(event?.delta) ? event.delta : null,
+    timestamp: Number.isFinite(event?.timestamp) ? event.timestamp : null,
+    gold: Number.isFinite(event?.gold) ? event.gold : null
+  }));
 }
 
 async function loadJsonOptional(filePath, label, warnings) {
@@ -386,6 +397,7 @@ export function buildGoldAnalyticsBoard({
   const scenarios = Array.from(scenarioMap.values()).map((scenario) => {
     scenario.timelineEvents = pickLatest(scenario.timelineEvents, MAX_EVENTS_PER_SCENARIO);
     scenario.passiveUnlocks = pickLatest(scenario.passiveUnlocks, MAX_UNLOCKS_PER_SCENARIO);
+    scenario.timelineSparkline = buildTimelineSparkline(scenario.timelineEvents);
     return scenario;
   });
   scenarios.sort((a, b) => a.id.localeCompare(b.id));

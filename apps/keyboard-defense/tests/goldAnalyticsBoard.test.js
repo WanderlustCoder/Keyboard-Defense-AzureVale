@@ -116,6 +116,9 @@ describe("goldAnalyticsBoard", () => {
     expect(tutorial.summary.starfield?.depth).toBe(1.35);
     expect(tutorial.summary.starfield?.wavePercent).toBe(52.5);
     expect(tutorial.timelineEvents[0].delta).toBe(-60);
+    expect(tutorial.timelineSparkline).toEqual([
+      { delta: -60, timestamp: 75.2, gold: 120 }
+    ]);
     expect(tutorial.passiveUnlocks[0].id).toBe("gold");
     expect(board.guard.failures).toBe(0);
     expect(board.percentileAlerts?.failures).toBe(0);
