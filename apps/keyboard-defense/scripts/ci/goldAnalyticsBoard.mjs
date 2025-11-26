@@ -412,9 +412,10 @@ export function buildGoldAnalyticsBoard({
   }
 
   const scenarios = Array.from(scenarioMap.values()).map((scenario) => {
+    const sparkline = buildTimelineSparkline(scenario.timelineEvents);
     scenario.timelineEvents = pickLatest(scenario.timelineEvents, MAX_EVENTS_PER_SCENARIO);
     scenario.passiveUnlocks = pickLatest(scenario.passiveUnlocks, MAX_UNLOCKS_PER_SCENARIO);
-    scenario.timelineSparkline = buildTimelineSparkline(scenario.timelineEvents);
+    scenario.timelineSparkline = sparkline;
     return scenario;
   });
   scenarios.sort((a, b) => a.id.localeCompare(b.id));

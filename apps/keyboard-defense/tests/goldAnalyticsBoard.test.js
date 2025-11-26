@@ -52,6 +52,30 @@ describe("goldAnalyticsBoard", () => {
             scenario: "tutorial-skip",
             passiveId: "gold",
             passiveLevel: 1
+          },
+          {
+            delta: 50,
+            gold: 215,
+            timestamp: 63.1,
+            file: "artifacts/tutorial-skip.timeline.json",
+            mode: "tutorial-skip",
+            scenario: "tutorial-skip"
+          },
+          {
+            delta: 75,
+            gold: 165,
+            timestamp: 46.4,
+            file: "artifacts/tutorial-skip.timeline.json",
+            mode: "tutorial-skip",
+            scenario: "tutorial-skip"
+          },
+          {
+            delta: 10,
+            gold: 130,
+            timestamp: 30.5,
+            file: "artifacts/tutorial-skip.timeline.json",
+            mode: "tutorial-skip",
+            scenario: "tutorial-skip"
           }
         ]
       }
@@ -112,12 +136,16 @@ describe("goldAnalyticsBoard", () => {
 
     const tutorial = board.scenarios[0];
     expect(tutorial.id).toBe("tutorial-skip");
+    expect(tutorial.timelineEvents).toHaveLength(3);
     expect(tutorial.summary.netDelta).toBe(175);
     expect(tutorial.summary.starfield?.depth).toBe(1.35);
     expect(tutorial.summary.starfield?.wavePercent).toBe(52.5);
     expect(tutorial.timelineEvents[0].delta).toBe(-60);
     expect(tutorial.timelineSparkline).toEqual([
-      { delta: -60, timestamp: 75.2, gold: 120 }
+      { delta: -60, timestamp: 75.2, gold: 120 },
+      { delta: 50, timestamp: 63.1, gold: 215 },
+      { delta: 75, timestamp: 46.4, gold: 165 },
+      { delta: 10, timestamp: 30.5, gold: 130 }
     ]);
     expect(tutorial.passiveUnlocks[0].id).toBe("gold");
     expect(board.guard.failures).toBe(0);
@@ -127,7 +155,7 @@ describe("goldAnalyticsBoard", () => {
     expect(markdown).toContain("Gold Analytics Board");
     expect(markdown).toContain("tutorial-skip");
     expect(markdown).toMatch(/Starfield avg depth/i);
-    expect(markdown).toContain("-60@75.2");
+    expect(markdown).toContain("-60@75.2, +50@63.1, +75@46.4, +10@30.5");
     expect(markdown).toContain("gold-board.json");
   });
 });
