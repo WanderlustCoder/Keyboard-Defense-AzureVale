@@ -14,7 +14,11 @@ Use this index to jump straight to the guidance you'll need while building and t
 - `docs/analytics_schema.md` — JSON/CSV snapshot schema, telemetry payload details, and aggregation column order.
 - `docs/status/2025-11-04_telemetry_controls.md` — Status updates covering telemetry UI, export, and analytics enhancements.
 - `apps/keyboard-defense/scripts/ci/diagnosticsDashboard.mjs` — Gold delta + passive timeline dashboard generator (`node scripts/ci/diagnosticsDashboard.mjs --help`).
-- `apps/keyboard-defense/scripts/analytics/goldDeltaAggregator.mjs` — Per-wave gold delta aggregator powering docs/dashboards (`node scripts/analytics/goldDeltaAggregator.mjs --help`).
+- `apps/keyboard-defense/scripts/analytics/goldDeltaAggregator.mjs` - Per-wave gold delta aggregator powering docs/dashboards (`node scripts/analytics/goldDeltaAggregator.mjs --help`).
+- `apps/keyboard-defense/scripts/ci/goldAnalyticsBoard.mjs` - Merges gold summary/timeline/passive/guard artifacts into a single Markdown/JSON board for Codex dashboards (`node scripts/ci/goldAnalyticsBoard.mjs --help`).
+- `apps/keyboard-defense/scripts/debug/dprTransition.mjs` - Headless DPR transition simulator (`npm run debug:dpr-transition -- --steps 1:960,1.5:840 --json`) for reproducing `ui.canvasResolutionChanged` telemetry without browser zooming.
+- `apps/keyboard-defense/scripts/analytics/validate-schema.mjs` — Ajv-based validator for analytics snapshots (`node scripts/analytics/validate-schema.mjs --help`).
+- `apps/keyboard-defense/scripts/docs/verifyHudSnapshots.mjs` — Verifies HUD screenshot metadata contains diagnostics + preference fields (`npm run docs:verify-hud-snapshots`).
 
 ## Automation & Monitoring
 - `docs/status/2025-11-04_automation_scaffold.md` - Current automation script layout, future CI plans, and pending tooling work.
@@ -23,10 +27,13 @@ Use this index to jump straight to the guidance you'll need while building and t
 - `docs/codex_pack/manifest.yml` - Machine-readable task list powering the Codex automation blueprint.
 - `apps/keyboard-defense/scripts/waveSim.mjs` - Deterministic wave simulation CLI (run `node scripts/waveSim.mjs --help`).
 - `apps/keyboard-defense/scripts/validateConfig.mjs` - Validate GameConfig JSON via JSON Schema (`node scripts/validateConfig.mjs --help`).
+- `apps/keyboard-defense/scripts/devMonitor.mjs` - Standalone readiness monitor that polls the dev server and writes `artifacts/monitor/dev-monitor.json` (`npm run monitor:dev -- --help`).
+- `apps/keyboard-defense/scripts/serveStartSmoke.mjs` - Force-restart/start/stop smoke harness used by CI (`npm run serve:start-smoke -- --help`).
 - `apps/keyboard-defense/scripts/waveBenchmark.mjs` - Run curated wave benchmarks (`node scripts/waveBenchmark.mjs`) for quick balance checks.
 - `docs/status/2025-11-06_castle_breach_replay.md` - Breach replay CLI summary plus outstanding analytics follow-ups.
 - `docs/codex_pack/tasks/29-castle-breach-analytics.md` - Detailed automation plan for breach summaries, turrets, multi-enemy scenarios, and dashboards.
 - `docs/CODEX_PLAYBOOKS.md#castle-breach-analytics-task-castle-breach-analytics` - Step-by-step workflow for implementing the breach analytics board.
+- `apps/keyboard-defense/scripts/ci/traceabilityReport.mjs` - Maps backlog IDs to Codex tasks/tests and emits JSON/Markdown traceability summaries (`npm run ci:traceability`).
 
 ## Responsive Canvas & HUD
 - `docs/status/2025-11-18_canvas_scaling.md` - Canvas resize helper, flex-driven render size, and pending DPR listener follow-ups.
@@ -35,17 +42,21 @@ Use this index to jump straight to the guidance you'll need while building and t
 
 ## Status Notes
 Status entries live under `docs/status/`. Recent highlights include:
+- `2025-11-21_semantic_release.md` - Release automation (semantic-release, release workflow, bundle manifest) plus documentation updates for Codex operators.
 - `2025-11-20_gold_percentile_guard.md` - CI guard script now validates gold summary percentiles and publishes JSON/Markdown summaries.
 - `2025-11-20_passive_gold_dashboard.md` - Passive unlock + gold dashboard automation now runs in CI and exposes summary JSON/Markdown for Codex reviews.
 - `2025-11-20_gold_timeline_dashboard.md` - Gold timeline dashboard automation surfaces derived metrics (net delta, spend streaks) directly in CI summaries.
 - `2025-11-20_gold_summary_dashboard.md` - Gold summary report now renders median/p90 gain/spend metrics with thresholds inside CI dashboards.
 - `2025-11-20_gold_percentile_alerts.md` - Gold percentile baselines + thresholds now drive automated alerts and CI Markdown tables.
+- `2025-11-20_gold_analytics_board.md` - Unified gold analytics board aggregates summary/timeline/passive/guard feeds and publishes a single CI tile.
 - `2025-11-20_ui_snapshot_gallery.md` - HUD screenshot metadata + gallery automation keep condensed-state badges visible in docs and CI summaries.
 - `2025-11-17_hud_condensed_lists.md` - Castle passives/gold events in the HUD collapse into summary cards for small screens.
 - `2025-11-17_responsive_layout.md` - HUD stacks vertically on tablets/phones, overlays scroll, and touch targets grow to 44px min height.
+- `codex_pack/fixtures/responsive/condensed-matrix.yml` - source of truth for condensed panel coverage (hud-main, options overlay, wave scorecard) consumed by `scripts/docs/condensedAudit.mjs`.
 - `2025-11-16_audio_intensity_slider.md` - Audio intensity slider in the pause/options overlay with persistence and scaled sound playback.
 - `2025-11-16_devserver_monitor_refresh.md` - Dev server lifecycle restored (`npm run start`), standalone monitor CLI, and `start:monitored` wrapper wired back in.
 - `2025-11-15_tooling_baseline.md` - ESLint/TypeScript/Prettier baselines restored so `npm run test` can run cleanly again.
+- `2025-11-28_codex_dashboard_nightly.md` - Nightly workflow refreshes the Codex dashboard/portal using gold board fixtures so starfield telemetry stays visible without manual runs.
 - `2025-11-14_gold_summary_ci_guard.md` - CI smoke now runs `goldSummaryCheck` against the tutorial gold summary artifact.
 - `2025-11-14_combo_accuracy_delta.md` - Combo warning badge now surfaces the live accuracy delta so players can react before streaks fall off.
 - `2025-11-13_gold_summary_checker.md` - Standalone CLI validates gold summary artifacts (JSON/CSV) before dashboards ingest them.
