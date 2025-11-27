@@ -128,6 +128,7 @@ Generated: 2025-11-27T15:21:29.271Z (shots: 6)
 | wave-scorecard | breach | Compact viewport; HUD prefers condensed layout; Diagnostics condensed with turret DPS collapsed |
 
 Artifacts: `apps/keyboard-defense/artifacts/summaries/ui-snapshot-gallery.json`
+Metadata sources: 12 file(s) across 6 shot(s) (deduped).
 <!-- UI_SNAPSHOT_GALLERY:END -->
 
 ## Task lifecycle

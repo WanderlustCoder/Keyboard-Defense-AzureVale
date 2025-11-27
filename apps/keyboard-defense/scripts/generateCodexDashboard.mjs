@@ -387,8 +387,16 @@ function buildPortalUiSection(gallery) {
     lines.push(`| ... | ... | ${gallery.shots.length - UI_SNAPSHOT_LIMIT} more entries |`);
   }
   lines.push("");
+  const metaSources = new Set();
+  for (const shot of gallery.shots) {
+    const sources = Array.isArray(shot.metaFiles) ? shot.metaFiles : shot.metaFile ? [shot.metaFile] : [];
+    sources.filter(Boolean).forEach((source) => metaSources.add(source));
+  }
   lines.push(
     `Artifacts: \`apps/keyboard-defense/artifacts/summaries/ui-snapshot-gallery.json\``
+  );
+  lines.push(
+    `Metadata sources: ${metaSources.size} file(s) across ${gallery.shots.length} shot(s) (deduped).`
   );
   return lines.join("\n");
 }
