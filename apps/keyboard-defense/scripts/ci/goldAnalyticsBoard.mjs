@@ -293,6 +293,7 @@ function buildScenarioSummaryRow(scenario) {
     netDelta: summary.netDelta ?? "",
     medianGain: summary.medianGain ?? "",
     medianSpend: summary.medianSpend ?? "",
+    timelineVariance: scenario.timelineVariance ?? null,
     starfield: formatStarfieldNote(summary.starfield),
     lastGold: goldNote,
     lastPassive: passiveNote,
@@ -614,11 +615,15 @@ export function formatGoldAnalyticsMarkdown(board) {
   if (board.scenarios.length > 0) {
     lines.push("### Scenario Snapshot");
     lines.push(
-      "| Scenario | Net delta | Median Gain | Median Spend | Starfield | Last Gold delta | Last Passive | Sparkline (delta@t + bars) | Alerts |"
+      "| Scenario | Net delta | Median Gain | Median Spend | Timeline Drift (med/p90) | Starfield | Last Gold delta | Last Passive | Sparkline (delta@t + bars) | Alerts |"
     );
-    lines.push("| --- | --- | --- | --- | --- | --- | --- | --- | --- |");
+    lines.push("| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |");
     for (const scenario of board.scenarios) {
       const row = buildScenarioSummaryRow(scenario);
+      const varianceNote =
+        typeof row.timelineVariance?.medianGain === "number" || typeof row.timelineVariance?.p90Gain === "number"
+          ? `${row.timelineVariance?.medianGain ?? "n/a"}/${row.timelineVariance?.p90Gain ?? "n/a"}`
+          : "-";
       const sparkline = formatSparkline(scenario.timelineSparkline);
       const sparkbar = formatSparklineBar(scenario.timelineSparkline);
       const starfieldNote = formatStarfieldNote(
@@ -626,7 +631,7 @@ export function formatGoldAnalyticsMarkdown(board) {
         board.thresholds?.starfield
       );
       lines.push(
-        `| ${row.scenario} | ${row.netDelta ?? ""} | ${row.medianGain ?? ""} | ${row.medianSpend ?? ""} | ${starfieldNote} | ${row.lastGold} | ${row.lastPassive} | ${sparkline}${sparkbar === "-" ? "" : ` ${sparkbar}`} | ${row.alerts} |`
+        `| ${row.scenario} | ${row.netDelta ?? ""} | ${row.medianGain ?? ""} | ${row.medianSpend ?? ""} | ${varianceNote} | ${starfieldNote} | ${row.lastGold} | ${row.lastPassive} | ${sparkline}${sparkbar === "-" ? "" : ` ${sparkbar}`} | ${row.alerts} |`
       );
     }
     lines.push("");
