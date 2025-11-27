@@ -28,6 +28,9 @@ expectations.
 - **CI**: ensure `.github/workflows/ci-e2e-azure-vale.yml` contains the Codex
   validation block (see `docs/codex_pack/snippets/status-ci-step.md`).
 - **Dev server harness**: run `npm run serve:start-smoke -- --artifact temp/start-smoke.json --log temp/start-smoke.log` after touching `scripts/devServer.mjs` so you can reproduce the same readiness/stop guard CI executes. If `http-server` resolution fails locally, inspect `.devserver/resolution-error.json` for attempted paths and quick fixes.
+- **Nightly dispatch**: trigger scheduled runs manually when needed:
+  - `gh workflow run ci-matrix-nightly.yml --ref master` (runs scenario matrix + asset integrity + HUD gallery + condensed audit).
+  - `gh workflow run codex-dashboard-nightly.yml --ref master` (rebuilds Codex dashboard/portal from live CI artifacts or fixtures).
 
 ### Semantic Release (task `semantic-release`)
 
