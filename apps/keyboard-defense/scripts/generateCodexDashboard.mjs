@@ -443,15 +443,20 @@ const main = async () => {
     if (Array.isArray(goldBoard.scenarios) && goldBoard.scenarios.length > 0) {
       lines.push("");
       lines.push(
-        "| Scenario | Net delta | Median Gain | Median Spend | Last Gold delta | Last Passive | Sparkline (delta@t + bars) | Alerts |"
+        "| Scenario | Net delta | Median Gain | Median Spend | Timeline Drift (med/p90) | Last Gold delta | Last Passive | Sparkline (delta@t + bars) | Alerts |"
       );
-      lines.push("| --- | --- | --- | --- | --- | --- | --- | --- | --- |");
+      lines.push("| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |");
       const sample = goldBoard.scenarios.slice(0, 5);
       for (const scenario of sample) {
         const net = scenario.summary?.netDelta ?? scenario.summary?.metrics?.netDelta ?? "-";
         const medianGain = scenario.summary?.medianGain ?? scenario.summary?.metrics?.medianGain ?? "-";
         const medianSpend =
           scenario.summary?.medianSpend ?? scenario.summary?.metrics?.medianSpend ?? "-";
+        const drift =
+          typeof scenario.timelineVariance?.medianGain === "number" ||
+          typeof scenario.timelineVariance?.p90Gain === "number"
+            ? `${scenario.timelineVariance?.medianGain ?? "n/a"}/${scenario.timelineVariance?.p90Gain ?? "n/a"}`
+            : "-";
         const lastGold = scenario.timelineEvents?.[0];
         const lastPassive = scenario.passiveUnlocks?.[0];
         const alertCount = (scenario.alerts ?? []).filter(
@@ -474,12 +479,12 @@ const main = async () => {
         const sparkline = formatSparkline(scenario.timelineSparkline);
         const sparkbar = formatSparklineBar(scenario.timelineSparkline);
         lines.push(
-          `| ${scenario.id ?? "-"} | ${net} | ${medianGain} | ${medianSpend} | ${goldNote} | ${passiveNote} | ${sparkline}${sparkbar === "-" ? "" : ` ${sparkbar}`} | ${alertBadge} |`
+          `| ${scenario.id ?? "-"} | ${net} | ${medianGain} | ${medianSpend} | ${drift} | ${goldNote} | ${passiveNote} | ${sparkline}${sparkbar === "-" ? "" : ` ${sparkbar}`} | ${alertBadge} |`
         );
       }
       if (goldBoard.scenarios.length > 5) {
         lines.push(
-          `| ... | ... | ... | ... | ... | ... | ... | ${goldBoard.scenarios.length - 5} more |`
+          `| ... | ... | ... | ... | ... | ... | ... | ... | ${goldBoard.scenarios.length - 5} more |`
         );
       }
     }
