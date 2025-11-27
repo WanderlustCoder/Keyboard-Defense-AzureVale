@@ -13,6 +13,10 @@ const VALID_MODES = new Set(["fail", "warn", "info"]);
 const MAX_EVENTS_PER_SCENARIO = 3;
 const MAX_UNLOCKS_PER_SCENARIO = 3;
 const MAX_SPARKLINE_POINTS = 8;
+const STARFIELD_SEVERITY_THRESHOLDS = {
+  warnCastlePercent: 65,
+  breachCastlePercent: 50
+};
 
 function printHelp() {
   console.log(`Gold Analytics Board
@@ -29,11 +33,19 @@ Options:
   --out-json <path>           Board JSON output path (default: ${DEFAULT_OUT_JSON})
   --markdown <path>           Board Markdown output path (default: ${DEFAULT_OUT_MARKDOWN})
   --mode <fail|warn|info>     Failure behaviour when warnings are present (default: fail)
+  --castle-warn <percent>     Castle ratio percent that triggers WARN severity (default: ${
+    STARFIELD_SEVERITY_THRESHOLDS.warnCastlePercent
+  })
+  --castle-breach <percent>   Castle ratio percent that triggers BREACH severity (default: ${
+    STARFIELD_SEVERITY_THRESHOLDS.breachCastlePercent
+  })
   --help                      Show this message
 `);
 }
 
 function parseArgs(argv) {
+  const envWarn = Number(process.env.GOLD_STARFIELD_WARN);
+  const envBreach = Number(process.env.GOLD_STARFIELD_BREACH);
   const options = {
     summaryPath: process.env.GOLD_SUMMARY_REPORT_PATH ?? DEFAULT_SUMMARY_PATH,
     timelinePath: process.env.GOLD_TIMELINE_SUMMARY ?? DEFAULT_TIMELINE_PATH,
@@ -43,6 +55,10 @@ function parseArgs(argv) {
     outJson: process.env.GOLD_ANALYTICS_JSON ?? DEFAULT_OUT_JSON,
     markdown: process.env.GOLD_ANALYTICS_MARKDOWN ?? DEFAULT_OUT_MARKDOWN,
     mode: (process.env.GOLD_ANALYTICS_MODE ?? "fail").toLowerCase(),
+    castleWarn: Number.isFinite(envWarn) ? envWarn : STARFIELD_SEVERITY_THRESHOLDS.warnCastlePercent,
+    castleBreach: Number.isFinite(envBreach)
+      ? envBreach
+      : STARFIELD_SEVERITY_THRESHOLDS.breachCastlePercent,
     help: false
   };
 
@@ -73,6 +89,20 @@ function parseArgs(argv) {
       case "--mode":
         options.mode = (argv[++i] ?? options.mode).toLowerCase();
         break;
+      case "--castle-warn": {
+        const value = Number(argv[++i]);
+        if (Number.isFinite(value)) {
+          options.castleWarn = value;
+        }
+        break;
+      }
+      case "--castle-breach": {
+        const value = Number(argv[++i]);
+        if (Number.isFinite(value)) {
+          options.castleBreach = value;
+        }
+        break;
+      }
       case "--help":
         options.help = true;
         break;
@@ -85,6 +115,11 @@ function parseArgs(argv) {
 
   if (!VALID_MODES.has(options.mode)) {
     throw new Error(`Invalid mode '${options.mode}'. Use one of: ${Array.from(VALID_MODES).join(", ")}`);
+  }
+  if (options.castleBreach >= options.castleWarn) {
+    throw new Error(
+      `Invalid starfield thresholds: breach (${options.castleBreach}) must be less than warn (${options.castleWarn}).`
+    );
   }
 
   return options;
@@ -155,6 +190,40 @@ function formatSparkline(points) {
     .join(", ");
 }
 
+function deriveStarfieldSeverity(starfield, thresholds = STARFIELD_SEVERITY_THRESHOLDS) {
+  const castle =
+    typeof starfield?.castlePercent === "number"
+      ? starfield.castlePercent
+      : typeof starfield?.castleRatioAvg === "number"
+        ? starfield.castleRatioAvg
+        : null;
+  if (castle === null) return null;
+  if (castle < thresholds.breachCastlePercent) return "breach";
+  if (castle < thresholds.warnCastlePercent) return "warn";
+  return "calm";
+}
+
+function formatSparklineBar(points) {
+  if (!Array.isArray(points) || points.length === 0) return "-";
+  const deltas = points.map((point) =>
+    Number.isFinite(point?.delta) ? Math.abs(point.delta) : 0
+  );
+  const max = Math.max(...deltas, 1);
+  const bins = ".:-=*#";
+  return points
+    .map((point) => {
+      const delta = Number.isFinite(point?.delta) ? point.delta : 0;
+      const level = Math.min(
+        bins.length - 1,
+        Math.floor((Math.abs(delta) / max) * (bins.length - 1))
+      );
+      const symbol = bins[level];
+      const sign = delta > 0 ? "+" : delta < 0 ? "-" : " ";
+      return `${sign}${symbol}`;
+    })
+    .join("");
+}
+
 async function loadJsonOptional(filePath, label, warnings) {
   if (!filePath) return null;
   const absolute = path.resolve(filePath);
@@ -175,11 +244,15 @@ function formatDelta(value) {
   return `${sign}${value}`;
 }
 
-function formatStarfieldNote(starfield) {
+function formatStarfieldNote(starfield, thresholds = STARFIELD_SEVERITY_THRESHOLDS) {
   if (!starfield || typeof starfield !== "object") {
     return "-";
   }
+  const severity = starfield.severity ?? deriveStarfieldSeverity(starfield, thresholds);
   const parts = [];
+  if (severity) {
+    parts.push(`[${String(severity).toUpperCase()}]`);
+  }
   if (typeof starfield.depth === "number") {
     parts.push(`depth ${starfield.depth}`);
   }
@@ -233,10 +306,12 @@ export function buildGoldAnalyticsBoard({
   alertsData,
   paths,
   now,
-  initialWarnings
+  initialWarnings,
+  starfieldThresholds
 }) {
   const warnings = Array.isArray(initialWarnings) ? [...initialWarnings] : [];
   const scenarioMap = new Map();
+  const thresholds = starfieldThresholds ?? STARFIELD_SEVERITY_THRESHOLDS;
   const board = {
     generatedAt: (now ?? new Date()).toISOString(),
     inputs: {
@@ -257,6 +332,9 @@ export function buildGoldAnalyticsBoard({
     percentileAlerts: null,
     scenarios: [],
     warnings,
+    thresholds: {
+      starfield: thresholds
+    },
     status: "pass"
   };
 
@@ -272,6 +350,13 @@ export function buildGoldAnalyticsBoard({
       metrics: summaryData.metrics ?? null,
       summaryPath: board.inputs.summary
     };
+    if (board.summary.metrics?.starfield) {
+      const severity = deriveStarfieldSeverity({
+        castlePercent:
+          board.summary.metrics.starfield.castleRatioAvg ?? board.summary.metrics.starfield.castlePercent
+      }, thresholds);
+      board.summary.metrics.starfield.severity = severity;
+    }
     if (Array.isArray(summaryData.summaries)) {
       for (const row of summaryData.summaries) {
         const scenarioId =
@@ -295,6 +380,7 @@ export function buildGoldAnalyticsBoard({
             tint: row.starfieldTint ?? null
           }
         };
+        bucket.summary.starfield.severity = deriveStarfieldSeverity(bucket.summary.starfield, thresholds);
       }
     }
   }
@@ -312,12 +398,11 @@ export function buildGoldAnalyticsBoard({
       thresholds: timelineData.thresholds ?? null,
       summaryPath: board.inputs.timeline
     };
-    const events =
-      Array.isArray(timelineData.latestEvents) && timelineData.latestEvents.length > 0
-        ? timelineData.latestEvents
-        : Array.isArray(timelineData.metrics?.latestEvents)
-          ? timelineData.metrics.latestEvents
-          : [];
+    const metricsEvents = Array.isArray(timelineData.metrics?.latestEvents)
+      ? timelineData.metrics.latestEvents
+      : [];
+    const summaryEvents = Array.isArray(timelineData.latestEvents) ? timelineData.latestEvents : [];
+    const events = metricsEvents.length > 0 ? metricsEvents : summaryEvents;
     for (const event of events) {
       const scenarioId =
         slugify(event.scenario ?? event.mode ?? "") || deriveScenarioId(event.file ?? "");
@@ -450,8 +535,17 @@ export function formatGoldAnalyticsMarkdown(board) {
     );
     if (board.summary.metrics?.starfield) {
       const starfield = board.summary.metrics.starfield;
+      const severityLabel = starfield.severity
+        ? ` (Severity: ${String(starfield.severity).toUpperCase()})`
+        : "";
+      const thresholds =
+        board.thresholds?.starfield ?? STARFIELD_SEVERITY_THRESHOLDS;
+      const thresholdNote =
+        thresholds && typeof thresholds.warnCastlePercent === "number"
+          ? ` (warn < ${thresholds.warnCastlePercent}%, breach < ${thresholds.breachCastlePercent}%)`
+          : "";
       lines.push(
-        `- Starfield avg depth: ${starfield.depthAvg ?? "n/a"}, drift: ${starfield.driftAvg ?? "n/a"}, wave: ${starfield.waveProgressAvg ?? "n/a"}%, castle: ${starfield.castleRatioAvg ?? "n/a"}%, last tint: ${starfield.lastTint ?? "n/a"}`
+        `- Starfield avg depth: ${starfield.depthAvg ?? "n/a"}, drift: ${starfield.driftAvg ?? "n/a"}, wave: ${starfield.waveProgressAvg ?? "n/a"}%, castle: ${starfield.castleRatioAvg ?? "n/a"}%, last tint: ${starfield.lastTint ?? "n/a"}${severityLabel}${thresholdNote}`
       );
     }
   }
@@ -489,13 +583,19 @@ export function formatGoldAnalyticsMarkdown(board) {
   if (board.scenarios.length > 0) {
     lines.push("### Scenario Snapshot");
     lines.push(
-      "| Scenario | Net delta | Median Gain | Median Spend | Starfield | Last Gold delta | Last Passive | Sparkline (Δ@t) | Alerts |"
+      "| Scenario | Net delta | Median Gain | Median Spend | Starfield | Last Gold delta | Last Passive | Sparkline (delta@t + bars) | Alerts |"
     );
     lines.push("| --- | --- | --- | --- | --- | --- | --- | --- | --- |");
     for (const scenario of board.scenarios) {
       const row = buildScenarioSummaryRow(scenario);
+      const sparkline = formatSparkline(scenario.timelineSparkline);
+      const sparkbar = formatSparklineBar(scenario.timelineSparkline);
+      const starfieldNote = formatStarfieldNote(
+        scenario.summary?.starfield,
+        board.thresholds?.starfield
+      );
       lines.push(
-        `| ${row.scenario} | ${row.netDelta ?? ""} | ${row.medianGain ?? ""} | ${row.medianSpend ?? ""} | ${row.starfield} | ${row.lastGold} | ${row.lastPassive} | ${formatSparkline(scenario.timelineSparkline)} | ${row.alerts} |`
+        `| ${row.scenario} | ${row.netDelta ?? ""} | ${row.medianGain ?? ""} | ${row.medianSpend ?? ""} | ${starfieldNote} | ${row.lastGold} | ${row.lastPassive} | ${sparkline}${sparkbar === "-" ? "" : ` ${sparkbar}`} | ${row.alerts} |`
       );
     }
     lines.push("");
@@ -574,7 +674,11 @@ async function main() {
       outJson: options.outJson,
       markdown: options.markdown
     },
-    initialWarnings: loadWarnings
+    initialWarnings: loadWarnings,
+    starfieldThresholds: {
+      warnCastlePercent: options.castleWarn,
+      breachCastlePercent: options.castleBreach
+    }
   });
 
   await writeFileEnsuringDir(options.outJson, `${JSON.stringify(board, null, 2)}\n`);

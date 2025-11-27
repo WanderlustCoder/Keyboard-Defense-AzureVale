@@ -16,7 +16,7 @@ describe("goldAnalyticsBoard", () => {
           depthAvg: 1.35,
           driftAvg: 1.15,
           waveProgressAvg: 52.5,
-          castleRatioAvg: 70,
+          castleRatioAvg: 55,
           lastTint: "#fbbf24"
         }
       },
@@ -30,7 +30,7 @@ describe("goldAnalyticsBoard", () => {
           starfieldDepth: 1.35,
           starfieldDrift: 1.15,
           starfieldWaveProgress: 52.5,
-          starfieldCastleRatio: 70,
+          starfieldCastleRatio: 55,
           starfieldTint: "#fbbf24"
         }
       ]
@@ -39,6 +39,26 @@ describe("goldAnalyticsBoard", () => {
     const timelineData = {
       generatedAt: "2025-11-20T00:00:01.000Z",
       thresholds: { maxSpendStreak: 5 },
+      latestEvents: [
+        {
+          delta: -60,
+          gold: 120,
+          timestamp: 75.2,
+          file: "artifacts/tutorial-skip.timeline.json",
+          mode: "tutorial-skip",
+          scenario: "tutorial-skip",
+          passiveId: "gold",
+          passiveLevel: 1
+        },
+        {
+          delta: 50,
+          gold: 215,
+          timestamp: 63.1,
+          file: "artifacts/tutorial-skip.timeline.json",
+          mode: "tutorial-skip",
+          scenario: "tutorial-skip"
+        }
+      ],
       metrics: {
         netDelta: 40,
         maxSpendStreak: 2,
@@ -127,7 +147,8 @@ describe("goldAnalyticsBoard", () => {
         outJson: "temp/gold-board.json",
         markdown: "temp/gold-board.md"
       },
-      now: new Date("2025-11-20T01:00:00.000Z")
+      now: new Date("2025-11-20T01:00:00.000Z"),
+      starfieldThresholds: { warnCastlePercent: 60, breachCastlePercent: 40 }
     });
 
     expect(board.status).toBe("pass");
@@ -140,6 +161,10 @@ describe("goldAnalyticsBoard", () => {
     expect(tutorial.summary.netDelta).toBe(175);
     expect(tutorial.summary.starfield?.depth).toBe(1.35);
     expect(tutorial.summary.starfield?.wavePercent).toBe(52.5);
+    expect(tutorial.summary.starfield?.severity).toBe("warn");
+    expect(board.summary?.metrics?.starfield?.severity).toBe("warn");
+    expect(board.thresholds?.starfield?.warnCastlePercent).toBe(60);
+    expect(board.thresholds?.starfield?.breachCastlePercent).toBe(40);
     expect(tutorial.timelineEvents[0].delta).toBe(-60);
     expect(tutorial.timelineSparkline).toEqual([
       { delta: -60, timestamp: 75.2, gold: 120 },
@@ -155,7 +180,8 @@ describe("goldAnalyticsBoard", () => {
     expect(markdown).toContain("Gold Analytics Board");
     expect(markdown).toContain("tutorial-skip");
     expect(markdown).toMatch(/Starfield avg depth/i);
-    expect(markdown).toContain("-60@75.2, +50@63.1, +75@46.4, +10@30.5");
+    expect(markdown).toMatch(/\[WARN\].*depth/);
+    expect(markdown).toContain("-60@75.2, +50@63.1, +75@46.4, +10@30.5 -*+=+#+.");
     expect(markdown).toContain("gold-board.json");
   });
 });
