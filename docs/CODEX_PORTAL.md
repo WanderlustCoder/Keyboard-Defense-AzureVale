@@ -16,6 +16,8 @@ you work on the project.
 | Backlog | `apps/keyboard-defense/docs/season1_backlog.md` |
 | Status notes | `docs/status/` |
 | Nightly dashboard workflow | `.github/workflows/codex-dashboard-nightly.yml` (dispatch with optional artifact inputs) |
+| Nightly scenario matrix | `.github/workflows/ci-matrix-nightly.yml` |
+| Release workflow | `.github/workflows/release.yml` |
 
 ## Command dashboard
 
