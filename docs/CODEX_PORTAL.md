@@ -15,6 +15,7 @@ you work on the project.
 | HUD screenshot gallery + JSON badges | `docs/hud_gallery.md` |
 | Backlog | `apps/keyboard-defense/docs/season1_backlog.md` |
 | Status notes | `docs/status/` |
+| Nightly dashboard workflow | `.github/workflows/codex-dashboard-nightly.yml` (dispatch with optional artifact inputs) |
 
 ## Command dashboard
 
