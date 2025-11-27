@@ -18,6 +18,7 @@ you work on the project.
 | Nightly dashboard workflow | `.github/workflows/codex-dashboard-nightly.yml` (dispatch with optional artifact inputs) |
 | Nightly scenario matrix | `.github/workflows/ci-matrix-nightly.yml` |
 | Release workflow | `.github/workflows/release.yml` |
+| Nightly ops cheat sheet | `docs/nightly_ops.md` |
 
 ## Command dashboard
 

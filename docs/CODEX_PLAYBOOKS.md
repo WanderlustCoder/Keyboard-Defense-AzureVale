@@ -31,6 +31,7 @@ expectations.
 - **Nightly dispatch**: trigger scheduled runs manually when needed:
   - `gh workflow run ci-matrix-nightly.yml --ref master` (runs scenario matrix + asset integrity + HUD gallery + condensed audit).
   - `gh workflow run codex-dashboard-nightly.yml --ref master` (rebuilds Codex dashboard/portal from live CI artifacts or fixtures).
+  - See `docs/nightly_ops.md` for artifact expectations and quick recovery commands.
 
 ### Semantic Release (task `semantic-release`)
 
