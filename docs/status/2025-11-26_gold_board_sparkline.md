@@ -6,10 +6,11 @@
 - The Vitest asserts the sparkline shape to prevent regressions, and scenario IDs prefer explicit `scenario`/`mode` fields before falling back to filenames so alerts, summaries, and timeline rows coalesce correctly even when artifacts use slugs instead of paths.
 - Sparklines now pull from the full timeline metrics payload when available (before falling back to a truncated `latestEvents` list) so dashboards keep up to 8 points even if CI summaries shorten their preview.
 - The timeline dashboard now emits per-scenario slices (`scenarios[*].latestEvents`), and the gold analytics board prefers those slices when rendering sparklines so each scenario keeps its own trendline even if aggregated summaries truncate events.
+- The timeline dashboard Markdown now renders a per-scenario table (events, net Δ, medians, spend streak, latest `Δ@t`), keeping the human-readable summary aligned with the JSON slices the board ingests.
 
 ## How to Use
 - Consumers can read `board.scenarios[*].timelineSparkline` directly for plotting per-scenario micro charts in Codex dashboards or portal embeds; values are already normalized to numbers or `null`.
 - CLI remains the same: `npm run analytics:gold:board` (or `node scripts/ci/goldAnalyticsBoard.mjs --help`) writes `artifacts/summaries/gold-analytics-board.ci.json` and `.md` plus appends to `$GITHUB_STEP_SUMMARY`.
 
 ## Next Steps
-1. Render a per-scenario table in the timeline dashboard Markdown so humans can read the same slices the board ingests, keeping the sparkline truncation capped at 8 points for readability.
+1. Add per-scenario percentile deltas (variance vs median/p90) once the timeline summary starts emitting percentile baselines.

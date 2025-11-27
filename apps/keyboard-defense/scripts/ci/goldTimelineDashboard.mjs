@@ -217,7 +217,7 @@ function computeMetrics(entries) {
   };
 }
 
-function buildMarkdown(summary) {
+export function buildMarkdown(summary) {
   const lines = [];
   lines.push("## Gold Timeline Dashboard");
   lines.push(
@@ -253,6 +253,30 @@ function buildMarkdown(summary) {
     }
     lines.push("");
   }
+
+  if (Array.isArray(summary.scenarios) && summary.scenarios.length > 0) {
+    lines.push("### Scenario Timeline");
+    lines.push(
+      "| Scenario | Events | Net Δ | Median Gain | Median Spend | Max Spend Streak | Latest Δ@t |"
+    );
+    lines.push("| --- | --- | --- | --- | --- | --- | --- |");
+    for (const scenario of summary.scenarios) {
+      const latestEvents = Array.isArray(scenario.latestEvents) ? scenario.latestEvents : [];
+      const latestInline = latestEvents
+        .map((event) => {
+          const delta = typeof event.delta === "number" ? event.delta : event.delta ?? "";
+          const sign = typeof delta === "number" && delta > 0 ? "+" : "";
+          const time = event.timestamp ?? "?";
+          return `${sign}${delta}@${time}`;
+        })
+        .join(", ");
+      lines.push(
+        `| ${scenario.id} | ${scenario.totals?.events ?? 0} | ${scenario.metrics?.netDelta ?? ""} | ${scenario.metrics?.medianGain ?? ""} | ${scenario.metrics?.medianSpend ?? ""} | ${scenario.metrics?.maxSpendStreak ?? ""} | ${latestInline || "-"} |`
+      );
+    }
+    lines.push("");
+  }
+
   lines.push(`Summary JSON: \`${summary.summaryPath}\``);
   return lines.join("\n");
 }
