@@ -53,6 +53,16 @@ jobs:
         run: npm ci
         working-directory: apps/keyboard-defense
 
+      - name: Prefer CI artifacts when present
+        working-directory: apps/keyboard-defense
+        run: |
+          ROOT="artifacts/summaries"
+          if [ -f "$ROOT/gold-summary-report.ci.json" ]; then echo "SUMMARY_PATH=$ROOT/gold-summary-report.ci.json" >> $GITHUB_ENV; fi
+          if [ -f "$ROOT/gold-timeline.ci.json" ]; then echo "TIMELINE_PATH=$ROOT/gold-timeline.ci.json" >> $GITHUB_ENV; fi
+          if [ -f "$ROOT/passive-gold.ci.json" ]; then echo "PASSIVE_PATH=$ROOT/passive-gold.ci.json" >> $GITHUB_ENV; fi
+          if [ -f "$ROOT/gold-percentile-guard.ci.json" ]; then echo "GUARD_PATH=$ROOT/gold-percentile-guard.ci.json" >> $GITHUB_ENV; fi
+          if [ -f "$ROOT/gold-percentiles.ci.json" ]; then echo "ALERTS_PATH=$ROOT/gold-percentiles.ci.json" >> $GITHUB_ENV; fi
+
       - name: Generate gold analytics board from fixtures
         working-directory: apps/keyboard-defense
         run: |
