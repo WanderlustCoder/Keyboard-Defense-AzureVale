@@ -82,9 +82,9 @@ _Re-run `npm run codex:dashboard` after `npm run analytics:gold:report` to refre
 Generated: 2025-11-26T22:55:33.841Z ([PASS], warnings: 0)
 Starfield avg depth: 1.35, drift: 1.15, wave: 52.5%, castle: 70%, last tint: #fbbf24 (Severity: CALM) (warn < 65%, breach < 50%)
 
-| Scenario | Net delta | Median Gain | Median Spend | Starfield | Last Gold delta | Last Passive | Sparkline (delta@t + bars) | Alerts |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| tutorial-skip | 175 | 60 | -35 | [CALM] / depth 1.35 / drift 1.15 / 52.5% wave / 70% castle / #fbbf24 | -60 @ 75.2s | gold L1 (+1.15) @ 78.2s | -60@75.2, +50@63.1, +75@46.4 -*+=+# | [PASS 4] |
+| Scenario | Net delta | Median Gain | Median Spend | Timeline Drift (med/p90) | Starfield | Last Gold delta | Last Passive | Sparkline (delta@t + bars) | Alerts |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| tutorial-skip | 175 | 60 | -35 | 0/0 | [CALM] / depth 1.35 / drift 1.15 / 52.5% wave / 70% castle / #fbbf24 | -60 @ 75.2s | gold L1 (+1.15) @ 78.2s | -60@75.2, +50@63.1, +75@46.4 -*+=+# | [PASS 4] |
 
 Artifacts: `artifacts/summaries/gold-analytics-board.ci.json`
 <!-- GOLD_ANALYTICS_BOARD:END -->
