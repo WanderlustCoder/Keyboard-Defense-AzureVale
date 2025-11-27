@@ -398,6 +398,28 @@ export function buildGoldAnalyticsBoard({
       thresholds: timelineData.thresholds ?? null,
       summaryPath: board.inputs.timeline
     };
+    const scenarioSlices = Array.isArray(timelineData.scenarios) ? timelineData.scenarios : [];
+    const scenarioSliceCoverage = new Set();
+    for (const slice of scenarioSlices) {
+      const scenarioId = slugify(slice.id ?? slice.scenario ?? "");
+      if (!scenarioId) continue;
+      const events = Array.isArray(slice.latestEvents) ? slice.latestEvents : [];
+      if (events.length > 0) {
+        scenarioSliceCoverage.add(scenarioId);
+      }
+      const bucket = ensureScenario(scenarioMap, scenarioId);
+      for (const event of events) {
+        bucket.timelineEvents.push({
+          delta: event.delta ?? null,
+          gold: event.gold ?? null,
+          timestamp: event.timestamp ?? null,
+          file: normalizePath(event.file ?? ""),
+          mode: event.mode ?? slice.id ?? null,
+          passiveId: event.passiveId ?? null,
+          passiveLevel: event.passiveLevel ?? null
+        });
+      }
+    }
     const metricsEvents = Array.isArray(timelineData.metrics?.latestEvents)
       ? timelineData.metrics.latestEvents
       : [];
@@ -407,6 +429,7 @@ export function buildGoldAnalyticsBoard({
       const scenarioId =
         slugify(event.scenario ?? event.mode ?? "") || deriveScenarioId(event.file ?? "");
       if (!scenarioId) continue;
+      if (scenarioSliceCoverage.has(scenarioId)) continue;
       const bucket = ensureScenario(scenarioMap, scenarioId);
       bucket.timelineEvents.push({
         delta: event.delta ?? null,

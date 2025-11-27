@@ -39,6 +39,55 @@ describe("goldAnalyticsBoard", () => {
     const timelineData = {
       generatedAt: "2025-11-20T00:00:01.000Z",
       thresholds: { maxSpendStreak: 5 },
+      scenarios: [
+        {
+          id: "tutorial-skip",
+          latestEvents: [
+            {
+              delta: 5,
+              gold: 240,
+              timestamp: 90,
+              file: "artifacts/tutorial-skip.timeline.json",
+              mode: "tutorial-skip",
+              scenario: "tutorial-skip"
+            },
+            {
+              delta: -60,
+              gold: 120,
+              timestamp: 75.2,
+              file: "artifacts/tutorial-skip.timeline.json",
+              mode: "tutorial-skip",
+              scenario: "tutorial-skip",
+              passiveId: "gold",
+              passiveLevel: 1
+            },
+            {
+              delta: 50,
+              gold: 215,
+              timestamp: 63.1,
+              file: "artifacts/tutorial-skip.timeline.json",
+              mode: "tutorial-skip",
+              scenario: "tutorial-skip"
+            },
+            {
+              delta: 75,
+              gold: 165,
+              timestamp: 46.4,
+              file: "artifacts/tutorial-skip.timeline.json",
+              mode: "tutorial-skip",
+              scenario: "tutorial-skip"
+            },
+            {
+              delta: 10,
+              gold: 130,
+              timestamp: 30.5,
+              file: "artifacts/tutorial-skip.timeline.json",
+              mode: "tutorial-skip",
+              scenario: "tutorial-skip"
+            }
+          ]
+        }
+      ],
       latestEvents: [
         {
           delta: -60,
@@ -165,8 +214,9 @@ describe("goldAnalyticsBoard", () => {
     expect(board.summary?.metrics?.starfield?.severity).toBe("warn");
     expect(board.thresholds?.starfield?.warnCastlePercent).toBe(60);
     expect(board.thresholds?.starfield?.breachCastlePercent).toBe(40);
-    expect(tutorial.timelineEvents[0].delta).toBe(-60);
+    expect(tutorial.timelineEvents[0].delta).toBe(5);
     expect(tutorial.timelineSparkline).toEqual([
+      { delta: 5, timestamp: 90, gold: 240 },
       { delta: -60, timestamp: 75.2, gold: 120 },
       { delta: 50, timestamp: 63.1, gold: 215 },
       { delta: 75, timestamp: 46.4, gold: 165 },
@@ -181,7 +231,7 @@ describe("goldAnalyticsBoard", () => {
     expect(markdown).toContain("tutorial-skip");
     expect(markdown).toMatch(/Starfield avg depth/i);
     expect(markdown).toMatch(/\[WARN\].*depth/);
-    expect(markdown).toContain("-60@75.2, +50@63.1, +75@46.4, +10@30.5 -*+=+#+.");
+    expect(markdown).toContain("+5@90, -60@75.2, +50@63.1, +75@46.4, +10@30.5 +.-*+=+#+.");
     expect(markdown).toContain("gold-board.json");
   });
 });
