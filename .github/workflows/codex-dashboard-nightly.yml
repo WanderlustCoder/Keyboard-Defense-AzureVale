@@ -4,6 +4,22 @@ on:
   schedule:
     - cron: "30 5 * * *"
   workflow_dispatch:
+    inputs:
+      summary:
+        description: Path to gold summary JSON (optional; defaults to fixtures)
+        required: false
+      timeline:
+        description: Path to gold timeline JSON (optional; defaults to fixtures)
+        required: false
+      passive:
+        description: Path to passive gold summary JSON (optional; defaults to fixtures)
+        required: false
+      guard:
+        description: Path to percentile guard JSON (optional; defaults to fixtures)
+        required: false
+      alerts:
+        description: Path to percentile alerts JSON (optional; defaults to fixtures)
+        required: false
 
 jobs:
   dashboard:
@@ -12,6 +28,11 @@ jobs:
       contents: read
     env:
       RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      SUMMARY_PATH: ${{ github.event.inputs.summary || '../../docs/codex_pack/fixtures/gold/gold-summary-report.json' }}
+      TIMELINE_PATH: ${{ github.event.inputs.timeline || '../../docs/codex_pack/fixtures/gold/gold-timeline-summary.json' }}
+      PASSIVE_PATH: ${{ github.event.inputs.passive || '../../docs/codex_pack/fixtures/gold/passive-gold-summary.json' }}
+      GUARD_PATH: ${{ github.event.inputs.guard || '../../docs/codex_pack/fixtures/gold/percentile-guard.json' }}
+      ALERTS_PATH: ${{ github.event.inputs.alerts || '../../docs/codex_pack/fixtures/gold/gold-percentiles.baseline.json' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -36,11 +57,11 @@ jobs:
         working-directory: apps/keyboard-defense
         run: |
           node ./scripts/ci/goldAnalyticsBoard.mjs \
-            --summary ../../docs/codex_pack/fixtures/gold/gold-summary-report.json \
-            --timeline ../../docs/codex_pack/fixtures/gold/gold-timeline-summary.json \
-            --passive ../../docs/codex_pack/fixtures/gold/passive-gold-summary.json \
-            --percentile-guard ../../docs/codex_pack/fixtures/gold/percentile-guard.json \
-            --percentile-alerts ../../docs/codex_pack/fixtures/gold/gold-percentiles.baseline.json \
+            --summary "$SUMMARY_PATH" \
+            --timeline "$TIMELINE_PATH" \
+            --passive "$PASSIVE_PATH" \
+            --percentile-guard "$GUARD_PATH" \
+            --percentile-alerts "$ALERTS_PATH" \
             --out-json artifacts/summaries/gold-analytics-board.ci.json \
             --markdown artifacts/summaries/gold-analytics-board.ci.md \
             --castle-warn 65 \

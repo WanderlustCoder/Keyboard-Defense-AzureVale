@@ -110,7 +110,7 @@ that require sample data, use the JSON files in `docs/codex_pack/fixtures/`.
 ### Nightly dashboard refresh
 
 - Workflow `codex-dashboard-nightly` runs daily at 05:30 UTC (or on dispatch) to regenerate `docs/codex_dashboard.md` and `docs/CODEX_PORTAL.md` from the gold board fixtures, keeping the portal starfield telemetry tile current without manual runs.
-- To use live artifacts instead of fixtures, update the workflow inputs to point at real gold summary/timeline/passive/guard files once CI produces them.
+- To use live artifacts instead of fixtures, dispatch the workflow with inputs (`summary`, `timeline`, `passive`, `guard`, `alerts`) pointing at real paths once CI produces them.
 
 ### Spark bars (gold analytics board)
 
