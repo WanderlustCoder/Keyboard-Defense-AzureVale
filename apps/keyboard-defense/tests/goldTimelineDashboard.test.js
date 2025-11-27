@@ -16,12 +16,14 @@ describe("goldTimelineDashboard", () => {
     const summaryPath = path.join(tempDir, "gold-timeline.summary.json");
     const fixture = path.join(REPO_ROOT, "docs", "codex_pack", "fixtures", "gold-timeline", "smoke.json");
 
+    const baseline = path.join(REPO_ROOT, "docs", "codex_pack", "fixtures", "gold", "gold-percentiles.baseline.json");
     const summary = await runDashboard({
       summaryPath,
       mode: "warn",
       passiveWindow: 5,
       maxSpendStreak: 200,
       minNetDelta: -250,
+      baselinePath: baseline,
       targets: [fixture]
     });
 
@@ -34,9 +36,11 @@ describe("goldTimelineDashboard", () => {
     const markdown = buildMarkdown(summary);
     expect(markdown).toContain("| Scenario | Events | Net Δ |");
     expect(markdown).toContain("tutorial-skip");
+    expect(markdown).toContain("Δ vs baseline");
 
     const saved = JSON.parse(await fs.readFile(summaryPath, "utf8"));
     expect(Array.isArray(saved.scenarios)).toBe(true);
     expect(saved.scenarios[0].latestEvents.length).toBeGreaterThan(0);
+    expect(saved.scenarios[0].baselineVariance?.medianGain).toBe(-10);
   });
 });

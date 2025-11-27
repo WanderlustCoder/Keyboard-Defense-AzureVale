@@ -9,6 +9,7 @@ import { buildGoldTimelineEntries } from "../goldTimeline.mjs";
 const DEFAULT_TARGETS = ["artifacts/smoke", "artifacts/e2e"];
 const DEFAULT_SUMMARY_PATH = "artifacts/summaries/gold-timeline.ci.json";
 const DEFAULT_MODE = (process.env.GOLD_TIMELINE_MODE ?? "fail").toLowerCase();
+const DEFAULT_BASELINE_PATH = process.env.GOLD_TIMELINE_BASELINE ?? "";
 const DEFAULT_PASSIVE_WINDOW = Number(process.env.GOLD_TIMELINE_PASSIVE_WINDOW ?? 5);
 const DEFAULT_MAX_SPEND_STREAK = Number(process.env.GOLD_TIMELINE_MAX_SPEND_STREAK ?? 200);
 const DEFAULT_MIN_NET_DELTA = Number(process.env.GOLD_TIMELINE_MIN_NET_DELTA ?? -250);
@@ -67,6 +68,7 @@ function parseArgs(argv) {
     passiveWindow: DEFAULT_PASSIVE_WINDOW,
     maxSpendStreak: DEFAULT_MAX_SPEND_STREAK,
     minNetDelta: DEFAULT_MIN_NET_DELTA,
+    baselinePath: DEFAULT_BASELINE_PATH,
     targets: [],
     help: false
   };
@@ -88,6 +90,9 @@ function parseArgs(argv) {
         break;
       case "--min-net-delta":
         options.minNetDelta = parseNumber(argv[++i], options.minNetDelta);
+        break;
+      case "--baseline":
+        options.baselinePath = argv[++i] ?? options.baselinePath;
         break;
       case "--help":
         options.help = true;
@@ -140,6 +145,22 @@ async function readJson(file) {
     console.warn(`goldTimelineDashboard: skipped ${file} (${error?.message ?? error})`);
     return null;
   }
+}
+
+function normalizeBaseline(baselineData) {
+  if (!baselineData || typeof baselineData !== "object") return new Map();
+  const map = new Map();
+  for (const [key, value] of Object.entries(baselineData)) {
+    if (key === "_meta") continue;
+    const id = deriveScenarioId(key);
+    map.set(id, {
+      medianGain: typeof value.medianGain === "number" ? value.medianGain : null,
+      medianSpend: typeof value.medianSpend === "number" ? value.medianSpend : null,
+      p90Gain: typeof value.p90Gain === "number" ? value.p90Gain : null,
+      p90Spend: typeof value.p90Spend === "number" ? value.p90Spend : null
+    });
+  }
+  return map;
 }
 
 function isTimelineEntryArray(payload) {
@@ -274,9 +295,9 @@ export function buildMarkdown(summary) {
   if (Array.isArray(summary.scenarios) && summary.scenarios.length > 0) {
     lines.push("### Scenario Timeline");
     lines.push(
-      "| Scenario | Events | Net Δ | Median Gain (p90) | Median Spend (p90) | Max Spend Streak | Δ vs global (gain/p90) | Latest Δ@t |"
+      "| Scenario | Events | Net Δ | Median Gain (p90) | Median Spend (p90) | Max Spend Streak | Δ vs global (gain/p90) | Δ vs baseline (gain/p90) | Latest Δ@t |"
     );
-    lines.push("| --- | --- | --- | --- | --- | --- | --- | --- |");
+    lines.push("| --- | --- | --- | --- | --- | --- | --- | --- | --- |");
     for (const scenario of summary.scenarios) {
       const latestEvents = Array.isArray(scenario.latestEvents) ? scenario.latestEvents : [];
       const latestInline = latestEvents
@@ -297,8 +318,18 @@ export function buildMarkdown(summary) {
         varianceGain === null && varianceP90Gain === null
           ? "-"
           : `${varianceGain ?? "n/a"}/${varianceP90Gain ?? "n/a"}`;
+      const baselineGain = typeof scenario.baselineVariance?.medianGain === "number"
+        ? scenario.baselineVariance.medianGain
+        : null;
+      const baselineP90Gain = typeof scenario.baselineVariance?.p90Gain === "number"
+        ? scenario.baselineVariance.p90Gain
+        : null;
+      const baselineNote =
+        baselineGain === null && baselineP90Gain === null
+          ? "-"
+          : `${baselineGain ?? "n/a"}/${baselineP90Gain ?? "n/a"}`;
       lines.push(
-        `| ${scenario.id} | ${scenario.totals?.events ?? 0} | ${scenario.metrics?.netDelta ?? ""} | ${scenario.metrics?.medianGain ?? ""} (${scenario.metrics?.p90Gain ?? ""}) | ${scenario.metrics?.medianSpend ?? ""} (${scenario.metrics?.p90Spend ?? ""}) | ${scenario.metrics?.maxSpendStreak ?? ""} | ${varianceNote} | ${latestInline || "-"} |`
+        `| ${scenario.id} | ${scenario.totals?.events ?? 0} | ${scenario.metrics?.netDelta ?? ""} | ${scenario.metrics?.medianGain ?? ""} (${scenario.metrics?.p90Gain ?? ""}) | ${scenario.metrics?.medianSpend ?? ""} (${scenario.metrics?.p90Spend ?? ""}) | ${scenario.metrics?.maxSpendStreak ?? ""} | ${varianceNote} | ${baselineNote} | ${latestInline || "-"} |`
       );
     }
     lines.push("");
@@ -328,6 +359,9 @@ export async function runDashboard(options) {
   if (files.length === 0) {
     throw new Error("No timeline or snapshot JSON files found. Provide at least one target.");
   }
+
+  const baselineData = options.baselinePath ? await readJson(options.baselinePath) : null;
+  const baselineMap = normalizeBaseline(baselineData);
 
   const entries = [];
   for (const file of files) {
@@ -371,6 +405,34 @@ export async function runDashboard(options) {
 
   const scenarios = Array.from(scenarioMap.entries()).map(([id, scenarioEntries]) => {
     const scenarioMetrics = computeMetrics(scenarioEntries);
+    const baseline =
+      baselineMap.get(id) ??
+      baselineMap.get(
+        deriveScenarioId(
+          scenarioEntries[0]?.file ??
+            (scenarioEntries[0]?.mode ? `${scenarioEntries[0].mode}.json` : "")
+        )
+      );
+    const baselineVariance = baseline
+      ? {
+          medianGain:
+            typeof scenarioMetrics.medianGain === "number" && typeof baseline.medianGain === "number"
+              ? Number((scenarioMetrics.medianGain - baseline.medianGain).toFixed(3))
+              : null,
+          p90Gain:
+            typeof scenarioMetrics.p90Gain === "number" && typeof baseline.p90Gain === "number"
+              ? Number((scenarioMetrics.p90Gain - baseline.p90Gain).toFixed(3))
+              : null,
+          medianSpend:
+            typeof scenarioMetrics.medianSpend === "number" && typeof baseline.medianSpend === "number"
+              ? Number((scenarioMetrics.medianSpend - baseline.medianSpend).toFixed(3))
+              : null,
+          p90Spend:
+            typeof scenarioMetrics.p90Spend === "number" && typeof baseline.p90Spend === "number"
+              ? Number((scenarioMetrics.p90Spend - baseline.p90Spend).toFixed(3))
+              : null
+        }
+      : null;
     const variance = {
       medianGain:
         typeof metrics.medianGain === "number" && typeof scenarioMetrics.medianGain === "number"
@@ -388,6 +450,7 @@ export async function runDashboard(options) {
       },
       metrics: scenarioMetrics,
       variance,
+      baselineVariance,
       latestEvents: scenarioMetrics.latestEvents.map((event) => ({
         delta: event.delta ?? null,
         gold: event.gold ?? null,
