@@ -43,6 +43,7 @@ Use this index to jump straight to the guidance you'll need while building and t
 ## Status Notes
 Status entries live under `docs/status/`. Recent highlights include:
 - `2025-11-21_semantic_release.md` - Release automation (semantic-release, release workflow, bundle manifest) plus documentation updates for Codex operators.
+- `2025-11-29_ci_matrix_nightly.md` - Nightly scenario matrix workflow (asset integrity, HUD screenshots, condensed audit) with uploaded summaries/artifacts.
 - `2025-11-20_gold_percentile_guard.md` - CI guard script now validates gold summary percentiles and publishes JSON/Markdown summaries.
 - `2025-11-20_passive_gold_dashboard.md` - Passive unlock + gold dashboard automation now runs in CI and exposes summary JSON/Markdown for Codex reviews.
 - `2025-11-20_gold_timeline_dashboard.md` - Gold timeline dashboard automation surfaces derived metrics (net delta, spend streaks) directly in CI summaries.
