@@ -69,8 +69,16 @@ node scripts/ci/goldAnalyticsBoard.mjs \
   --passive docs/codex_pack/fixtures/gold/passive-gold-summary.json \
   --percentile-guard docs/codex_pack/fixtures/gold/percentile-guard.json \
   --percentile-alerts docs/codex_pack/fixtures/gold/gold-percentiles.baseline.json \
+  --timeline-baseline docs/codex_pack/fixtures/gold/gold-percentiles.baseline.json \
   --out-json temp/gold-analytics-board.fixture.json \
   --markdown temp/gold-analytics-board.fixture.md
+
+# Baseline guard (coverage check)
+node scripts/ci/goldBaselineGuard.mjs \
+  --timeline artifacts/summaries/gold-timeline.ci.json \
+  --baseline docs/codex_pack/fixtures/gold/gold-percentiles.baseline.json \
+  --out-json artifacts/summaries/gold-baseline-guard.json \
+  --mode warn
 ```
 
 Run all commands from `apps/keyboard-defense/` unless noted. Release commands expect `GITHUB_TOKEN` when publishing; prefer `release:dry-run` locally and let CI own `npm run release`. Traceability commands reference `artifacts/summaries/vitest-summary*.json`, which CI now produces via the Vitest JSON reporter (dry-runs can rely on `docs/codex_pack/fixtures/traceability-tests.json`). Dev-server commands respect `.devserver/state.json` and emit monitor/start-smoke summaries under `artifacts/monitor/*.json`.
@@ -79,12 +87,14 @@ Run all commands from `apps/keyboard-defense/` unless noted. Release commands ex
 <!-- GOLD_ANALYTICS_BOARD:START -->
 
 _Re-run `npm run codex:dashboard` after `npm run analytics:gold:report` to refresh this table with the latest CI artifacts._
-Generated: 2025-11-26T22:55:33.841Z ([PASS], warnings: 0)
+Generated: 2025-11-27T04:30:34.847Z ([PASS], warnings: 0)
+Baseline guard: _missing_ (run `node scripts/ci/goldBaselineGuard.mjs --timeline artifacts/summaries/gold-timeline.ci.json --baseline docs/codex_pack/fixtures/gold/gold-percentiles.baseline.json --out-json artifacts/summaries/gold-baseline-guard.json --mode warn` to populate)
+Timeline baseline: ../../docs/codex_pack/fixtures/gold/gold-percentiles.baseline.json (1/1 matched)
 Starfield avg depth: 1.35, drift: 1.15, wave: 52.5%, castle: 70%, last tint: #fbbf24 (Severity: CALM) (warn < 65%, breach < 50%)
 
-| Scenario | Net delta | Median Gain | Median Spend | Timeline Drift (med/p90) | Starfield | Last Gold delta | Last Passive | Sparkline (delta@t + bars) | Alerts |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| tutorial-skip | 175 | 60 | -35 | 0/0 | [CALM] / depth 1.35 / drift 1.15 / 52.5% wave / 70% castle / #fbbf24 | -60 @ 75.2s | gold L1 (+1.15) @ 78.2s | -60@75.2, +50@63.1, +75@46.4 -*+=+# | [PASS 4] |
+| Scenario | Net delta | Median Gain | Median Spend | Timeline Drift (med/p90) | Baseline Drift (med/p90) | Starfield | Last Gold delta | Last Passive | Sparkline (delta@t + bars) | Alerts |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| tutorial-skip | 175 | 60 | -35 | 0/0 | -10/-40 | [CALM] / depth 1.35 / drift 1.15 / 52.5% wave / 70% castle / #fbbf24 | -60 @ 75.2s | gold L1 (+1.15) @ 78.2s | -60@75.2, +50@63.1, +75@46.4, -30@22.8, +40@10.5 -*+=+#--+- | [PASS 4] |
 
 Artifacts: `artifacts/summaries/gold-analytics-board.ci.json`
 <!-- GOLD_ANALYTICS_BOARD:END -->
@@ -106,16 +116,16 @@ Artifacts: `artifacts/summaries/gold-analytics-board.ci.json`
 <!-- UI_SNAPSHOT_GALLERY:START -->
 
 _Re-run `npm run docs:gallery` after capturing screenshots, then `npm run codex:dashboard` to refresh this HUD snapshot summary._
-Generated: 2025-11-14T22:29:35.250Z (shots: 8)
+Generated: 2025-11-27T15:21:29.271Z (shots: 6)
 
 | Shot | Starfield | Summary |
 | --- | --- | --- |
-| hud-main | tutorial | Tutorial banner expanded; HUD passives expanded; HUD gold events expanded; Diagnostics sections collapsed |
+| diagnostics-overlay | warning | Diagnostics overlay expanded with all sections visible; HUD and options panels expanded |
 | hud-main | tutorial | Compact viewport; Tutorial banner condensed; HUD passives collapsed; HUD gold events collapsed; Diagnostics condensed; Diagnostics sections — gold-events:collapsed, castle-passives:expanded |
-| options-overlay | warning | Tutorial banner expanded; HUD passives expanded; HUD gold events expanded; Diagnostics sections collapsed |
 | options-overlay | warning | Default viewport; HUD passives expanded; HUD gold events expanded; Options passives collapsed; Diagnostics expanded; Diagnostics sections — turret-dps:collapsed |
-| tutorial-summary | tutorial | Tutorial banner expanded; HUD passives expanded; HUD gold events expanded; Diagnostics sections collapsed |
-| ... | ... | 3 more entries |
+| shortcut-overlay | tutorial | Shortcut overlay displayed while diagnostics sections remain collapsed |
+| tutorial-summary | tutorial | Default viewport; Tutorial summary expanded; HUD + options panels expanded; Diagnostics expanded |
+| ... | ... | 1 more entries |
 
 Artifacts: `apps/keyboard-defense/artifacts/summaries/ui-snapshot-gallery.json`
 <!-- UI_SNAPSHOT_GALLERY:END -->

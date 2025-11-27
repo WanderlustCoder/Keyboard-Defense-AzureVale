@@ -1,4 +1,4 @@
-updated: 2025-11-21
+updated: 2025-11-28
 tasks:
   ci-step-summary:
     state: done
@@ -115,5 +115,11 @@ tasks:
     state: done
     owner: codex
   gold-percentile-baseline-refresh:
+    state: done
+    owner: codex
+  hud-screenshot-expansion:
+    state: done
+    owner: codex
+  hud-gallery-dedupe:
     state: done
     owner: codex

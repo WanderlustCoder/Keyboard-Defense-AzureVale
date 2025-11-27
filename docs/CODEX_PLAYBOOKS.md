@@ -109,12 +109,15 @@ expectations.
   7. Capture before/after context in the task file if needed (link screenshots or
      artifacts).
 - **Artifacts**: for visual work, use `node scripts/hudScreenshots.mjs --ci --starfield-scene tutorial`
-  (swap `tutorial|warning|breach` as needed) or
-  the Playwright visual tests once `visual-diffs` lands. When new screenshots are
-  captured, refresh `docs/hud_gallery.md` via
-  `node scripts/docs/renderHudGallery.mjs --input artifacts/screenshots --meta artifacts/screenshots`.
-  The `--starfield-scene` flag locks the parallax tint for reproducible baselines; omit it or pass
-  `auto` when you want the live gameplay-driven starfield back.
+  (swap `tutorial|warning|breach` as needed) to capture all six required shots
+  (`hud-main`, `diagnostics-overlay`, `options-overlay`, `shortcut-overlay`, `tutorial-summary`,
+  `wave-scorecard`) or the Playwright visual tests once `visual-diffs` lands.
+  When new screenshots are captured, refresh `docs/hud_gallery.md` via
+  `node scripts/docs/renderHudGallery.mjs --input artifacts/screenshots --meta artifacts/screenshots`
+  so the gallery dedupes fixture/live sources and lists every `.meta.json` under
+  each shot. The `--starfield-scene` flag locks the parallax tint for
+  reproducible baselines; omit it or pass `auto` when you want the live
+  gameplay-driven starfield back.
 - **Responsive condensed checklist**: keep `docs/codex_pack/fixtures/responsive/condensed-matrix.yml`
   in sync with any HUD/options/diagnostics changes. `npm run docs:verify-hud-snapshots`
   now chains the condensed audit automatically; use `npm run docs:condensed-audit`
@@ -197,11 +200,12 @@ expectations.
       the resulting `artifacts/summaries/passive-gold*.json` files alongside the
       tutorial smoke and e2e bundles.
     - Need a fast passive unlock table/Markdown card without the full dashboard CLI? Add `--passive-summary <json> [--passive-summary-csv <csv>] [--passive-summary-md <md>]` to the `analyticsAggregate` invocation so the existing aggregation step writes `artifacts/summaries/passive-analytics.*`.
-    - Use `node scripts/ci/goldTimelineDashboard.mjs artifacts/smoke --summary artifacts/summaries/gold-timeline.local.json --mode warn`
-      to regenerate the derived gold timeline dashboard (net delta, spend streaks, recent events).
+    - Use `node scripts/ci/goldTimelineDashboard.mjs artifacts/smoke --baseline docs/codex_pack/fixtures/gold/gold-percentiles.baseline.json --summary artifacts/summaries/gold-timeline.local.json --mode warn`
+      to regenerate the derived gold timeline dashboard (net delta, spend streaks, recent events) and compute drift vs the committed percentile baselines (this keeps the analytics board baseline column populated).
     - Run `node scripts/ci/goldSummaryReport.mjs artifacts/smoke/gold-summary.ci.json --summary artifacts/summaries/gold-summary-report.local.json --percentile-alerts artifacts/summaries/gold-percentiles.local.json --mode warn`
       to mirror the CI gold summary dashboard (median/p90 gains & spends, thresholds) and emit the percentile drift payload used by `goldAnalyticsBoard`. Update baselines via `docs/codex_pack/fixtures/gold/gold-percentiles.baseline.json`
       and thresholds via `scripts/ci/gold-percentile-thresholds.json` when economy expectations shift.
+    - If the gold analytics board warns about missing baselines, rerun the timeline dashboard with `--baseline <path>` and pass the same file to `goldAnalyticsBoard.mjs --timeline-baseline <path>` so the baseline drift column populates cleanly.
     - Use `node scripts/ci/diagnosticsDashboard.mjs docs/codex_pack/fixtures/diagnostics-dashboard/sample.analytics.json --summary temp/diagnostics-dashboard.fixture.json --markdown temp/diagnostics-dashboard.fixture.md --mode warn`
       to preview the diagnostics dashboard (gold delta trend + passive timeline) before committing changes.
     - Run `node scripts/analytics/goldDeltaAggregator.mjs docs/codex_pack/fixtures/gold-delta-aggregates/sample.analytics.json --output temp/gold-delta-aggregates.fixture.json --markdown temp/gold-delta-aggregates.fixture.md --mode warn`
@@ -233,6 +237,8 @@ expectations.
      --mode warn
    ```
    The CLI emits both Markdown and JSON (`artifacts/summaries/gold-analytics-board*.{json,md}`) so CI can attach a single dashboard tile per run—verify the resulting Markdown includes the starfield aggregate bullet (`Starfield avg depth: ...`) and the per-scenario `Starfield` column before shipping changes.
+   Run the baseline guard alongside the board to catch missing baseline rows:  
+   `node scripts/ci/goldBaselineGuard.mjs --timeline artifacts/summaries/gold-timeline.ci.json --baseline docs/codex_pack/fixtures/gold/gold-percentiles.baseline.json --out-json artifacts/summaries/gold-baseline-guard.json --mode warn`.
 3. **Dashboard wiring** - update `docs/codex_dashboard.md` plus CI workflows to
    publish the aggregated Markdown in `$GITHUB_STEP_SUMMARY`.
 4. **Sparkline legend** - the board table surfaces `delta@t` plus an ASCII bar strip

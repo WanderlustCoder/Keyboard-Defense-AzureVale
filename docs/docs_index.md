@@ -56,6 +56,10 @@ Status entries live under `docs/status/`. Recent highlights include:
 - `2025-11-16_audio_intensity_slider.md` - Audio intensity slider in the pause/options overlay with persistence and scaled sound playback.
 - `2025-11-16_devserver_monitor_refresh.md` - Dev server lifecycle restored (`npm run start`), standalone monitor CLI, and `start:monitored` wrapper wired back in.
 - `2025-11-15_tooling_baseline.md` - ESLint/TypeScript/Prettier baselines restored so `npm run test` can run cleanly again.
+- `2025-11-28_gold_board_baseline.md` - Gold analytics board rows now surface timeline baseline drift (median/p90) and docs point `goldTimelineDashboard` at the committed percentile baseline.
+- `2025-11-28_hud_screenshot_expansion.md` - Diagnostics and shortcut overlay captures added to the HUD gallery/fixtures with expanded required shot coverage.
+- `2025-11-28_hud_gallery_dedupe.md` - HUD gallery generator dedupes shot ids, prefers live artifacts, and lists all metadata sources.
+- `apps/keyboard-defense/scripts/ci/goldBaselineGuard.mjs` - CLI to check timeline scenarios against percentile baselines, emit a coverage report, and warn/fail when baselines are missing (nightly workflow includes it).
 - `2025-11-28_codex_dashboard_nightly.md` - Nightly workflow refreshes the Codex dashboard/portal using gold board fixtures so starfield telemetry stays visible without manual runs.
 - `.github/workflows/codex-dashboard-nightly.yml` - Actions workflow to regenerate the Codex dashboard/portal nightly or on dispatch (accepts artifact override inputs).
 - `2025-11-14_gold_summary_ci_guard.md` - CI smoke now runs `goldSummaryCheck` against the tutorial gold summary artifact.

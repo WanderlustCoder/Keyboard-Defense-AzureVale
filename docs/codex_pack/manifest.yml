@@ -235,3 +235,15 @@ tasks:
     status: done
     status_note: docs/status/2025-11-20_gold_percentile_alerts.md
     backlog_refs: ["#101", "#79"]
+  - id: hud-screenshot-expansion
+    path: tasks/40-hud-screenshot-expansion.md
+    priority: P2
+    status: done
+    status_note: docs/status/2025-11-28_hud_screenshot_expansion.md
+    backlog_refs: ["#72"]
+  - id: hud-gallery-dedupe
+    path: tasks/41-hud-gallery-dedupe.md
+    priority: P2
+    status: done
+    status_note: docs/status/2025-11-28_hud_gallery_dedupe.md
+    backlog_refs: ["#72"]

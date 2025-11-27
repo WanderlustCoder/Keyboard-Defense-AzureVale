@@ -27,6 +27,8 @@
 | `gold-summary-dashboard-integration` | P2 | done | unassigned | docs/status/2025-11-08_gold_summary_cli.md | #101, #79 |
 | `gold-timeline-dashboard` | P2 | done | unassigned | docs/status/2025-11-08_gold_timeline_cli.md | #45, #79 |
 | `hermetic-ci` | P2 | done | codex | docs/status/2025-11-16_devserver_monitor_refresh.md | #82 |
+| `hud-gallery-dedupe` | P2 | done | codex | docs/status/2025-11-28_hud_gallery_dedupe.md | #72 |
+| `hud-screenshot-expansion` | P2 | done | codex | docs/status/2025-11-28_hud_screenshot_expansion.md | #72 |
 | `passive-analytics-export` | P2 | done | codex | docs/status/2025-11-06_castle_passives.md | #41, #79 |
 | `passive-gold-dashboard` | P2 | done | unassigned | docs/status/2025-11-07_passive_timeline.md | #41, #79 |
 | `responsive-condensed-audit` | P2 | done | codex | docs/status/2025-11-17_hud_condensed_lists.md | #53, #58 |
@@ -57,26 +59,28 @@
 ## Gold Analytics Board
 - Aggregate gold summary, timeline, passive, guard, and percentile alerts via `node scripts/ci/goldAnalyticsBoard.mjs --summary artifacts/summaries/gold-summary-report.ci.json --timeline artifacts/summaries/gold-timeline.ci.json --passive artifacts/summaries/passive-gold.ci.json --percentile-guard artifacts/summaries/gold-percentile-guard.ci.json --percentile-alerts artifacts/summaries/gold-percentiles.ci.json --out-json artifacts/summaries/gold-analytics-board.ci.json --markdown artifacts/summaries/gold-analytics-board.ci.md`.
 - Fixture dry-run: `node scripts/ci/goldAnalyticsBoard.mjs --summary docs/codex_pack/fixtures/gold/gold-summary-report.json --timeline docs/codex_pack/fixtures/gold/gold-timeline-summary.json --passive docs/codex_pack/fixtures/gold/passive-gold-summary.json --percentile-guard docs/codex_pack/fixtures/gold/percentile-guard.json --percentile-alerts docs/codex_pack/fixtures/gold/gold-percentiles.baseline.json --out-json temp/gold-analytics-board.fixture.json --markdown temp/gold-analytics-board.fixture.md`.
-- Latest board (2025-11-26T22:55:33.841Z) status [PASS] with 1 scenario(s); warnings: 0.
+- Baseline guard: `node scripts/ci/goldBaselineGuard.mjs --timeline artifacts/summaries/gold-timeline.ci.json --baseline docs/codex_pack/fixtures/gold/gold-percentiles.baseline.json --out-json artifacts/summaries/gold-baseline-guard.json --mode warn` (nightly runs fail if coverage is missing).
+- Latest board (2025-11-27T04:30:34.847Z) status [PASS] with 1 scenario(s); warnings: 0.
+- Baseline guard report missing; run `node scripts/ci/goldBaselineGuard.mjs --timeline artifacts/summaries/gold-timeline.ci.json --baseline docs/codex_pack/fixtures/gold/gold-percentiles.baseline.json --out-json artifacts/summaries/gold-baseline-guard.json --mode warn`.
+- Timeline baseline: ../../docs/codex_pack/fixtures/gold/gold-percentiles.baseline.json (1/1 matched)
 
-| Scenario | Net delta | Median Gain | Median Spend | Last Gold delta | Last Passive | Sparkline (delta@t + bars) | Alerts |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| tutorial-skip | 175 | 60 | -35 | -60 @ 75.2s | gold L1 (+1.15) @ 78.2s | -60@75.2, +50@63.1, +75@46.4 -*+=+# | [PASS 4] |
+| Scenario | Net delta | Median Gain | Median Spend | Timeline Drift (med/p90) | Baseline Drift (med/p90) | Last Gold delta | Last Passive | Sparkline (delta@t + bars) | Alerts |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| tutorial-skip | 175 | 60 | -35 | 0/0 | -10/-40 | -60 @ 75.2s | gold L1 (+1.15) @ 78.2s | -60@75.2, +50@63.1, +75@46.4, -30@22.8, +40@10.5 -*+=+#--+- | [PASS 4] |
 
 ## UI Snapshot Gallery
 
 | Shot | Starfield | Summary |
 | --- | --- | --- |
-| hud-main | tutorial | Tutorial banner expanded; HUD passives expanded; HUD gold events expanded; Diagnostics sections collapsed |
+| diagnostics-overlay | warning | Diagnostics overlay expanded with all sections visible; HUD and options panels expanded |
 | hud-main | tutorial | Compact viewport; Tutorial banner condensed; HUD passives collapsed; HUD gold events collapsed; Diagnostics condensed; Diagnostics sections — gold-events:collapsed, castle-passives:expanded |
-| options-overlay | warning | Tutorial banner expanded; HUD passives expanded; HUD gold events expanded; Diagnostics sections collapsed |
 | options-overlay | warning | Default viewport; HUD passives expanded; HUD gold events expanded; Options passives collapsed; Diagnostics expanded; Diagnostics sections — turret-dps:collapsed |
-| tutorial-summary | tutorial | Tutorial banner expanded; HUD passives expanded; HUD gold events expanded; Diagnostics sections collapsed |
+| shortcut-overlay | tutorial | Shortcut overlay displayed while diagnostics sections remain collapsed |
 | tutorial-summary | tutorial | Default viewport; Tutorial summary expanded; HUD + options panels expanded; Diagnostics expanded |
-| ... | ... | 2 more entries |
+| wave-scorecard | breach | Compact viewport; HUD prefers condensed layout; Diagnostics condensed with turret DPS collapsed |
 
 ## Responsive Condensed Audit
-- Latest run (2025-11-14T15:09:44.682Z) passed with 30 checks across 7 panels (snapshots scanned: 4).
+- Latest run (2025-11-27T15:17:21.267Z) passed with 30 checks across 7 panels (snapshots scanned: 6).
 - No outstanding issues; all required panels/breakpoints are covered.
 
 Generated automatically via `npm run codex:dashboard`.
