@@ -50,6 +50,7 @@ downloading artifacts.
      - Net delta + percentile comparison vs baseline for each scenario.
      - Guard results (pass/fail) with links to raw artifacts.
      - A sparkline-friendly `delta@t` sequence per scenario that renders in both the board Markdown and Codex portal tiles.
+     - Starfield severity badges (`CALM/WARN/BREACH`) computed from castle ratio thresholds (default warn < 65%, breach < 50%; override via CLI `--castle-warn/--castle-breach` or env `GOLD_STARFIELD_WARN/BREACH`).
    - Provide an optional `--mode warn|fail|info` so CI can soften failures if any
      upstream feed is missing.
    - Include sparkline-friendly sequences (arrays) so future renderers can draw

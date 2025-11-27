@@ -78,15 +78,28 @@ Run all commands from `apps/keyboard-defense/` unless noted. Release commands ex
 <!-- GOLD_ANALYTICS_BOARD:START -->
 
 _Re-run `npm run codex:dashboard` after `npm run analytics:gold:report` to refresh this table with the latest CI artifacts._
-Generated: 2025-11-15T15:14:49.341Z ([PASS], warnings: 0)
-Starfield avg depth: 1.35, drift: 1.15, wave: 52.5%, castle: 70%, last tint: #fbbf24
+Generated: 2025-11-26T22:55:33.841Z ([PASS], warnings: 0)
+Starfield avg depth: 1.35, drift: 1.15, wave: 52.5%, castle: 70%, last tint: #fbbf24 (Severity: CALM) (warn < 65%, breach < 50%)
 
 | Scenario | Net delta | Median Gain | Median Spend | Starfield | Last Gold delta | Last Passive | Sparkline (delta@t + bars) | Alerts |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| tutorial-skip | 175 | 60 | -35 | depth 1.35 / drift 1.15 / 52.5% wave / 70% castle / #fbbf24 | -60 @ 75.2s | gold L1 (+1.15) @ 78.2s | - | [PASS 4] |
+| tutorial-skip | 175 | 60 | -35 | [CALM] / depth 1.35 / drift 1.15 / 52.5% wave / 70% castle / #fbbf24 | -60 @ 75.2s | gold L1 (+1.15) @ 78.2s | -60@75.2, +50@63.1, +75@46.4 -*+=+# | [PASS 4] |
 
 Artifacts: `artifacts/summaries/gold-analytics-board.ci.json`
 <!-- GOLD_ANALYTICS_BOARD:END -->
+
+## Starfield Telemetry
+<!-- STARFIELD_TELEMETRY:START -->
+
+_Re-run `npm run analytics:gold:board` followed by `npm run codex:dashboard` to refresh this snapshot with the latest starfield telemetry._
+Latest avg: [CALM] depth 1.35, drift 1.15, wave 52.5%, castle 70%, tint #fbbf24 (warn < 65%, breach < 50%)
+
+| Scenario | Severity | Depth | Drift | Wave % | Castle % | Tint |
+| --- | --- | --- | --- | --- | --- | --- |
+| tutorial-skip | CALM | 1.35 | 1.15 | 52.5 | 70 | #fbbf24 |
+
+Artifacts: `artifacts/summaries/gold-analytics-board.ci.json`
+<!-- STARFIELD_TELEMETRY:END -->
 
 ## HUD Snapshot Summary
 <!-- UI_SNAPSHOT_GALLERY:START -->

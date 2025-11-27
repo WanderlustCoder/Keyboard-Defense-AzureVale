@@ -17,9 +17,15 @@ const uiSnapshotGalleryPath = path.join(appRoot, "artifacts", "summaries", "ui-s
 const portalPath = path.join(docsDir, "CODEX_PORTAL.md");
 const PORTAL_MARKER_START = "<!-- GOLD_ANALYTICS_BOARD:START -->";
 const PORTAL_MARKER_END = "<!-- GOLD_ANALYTICS_BOARD:END -->";
+const PORTAL_STARFIELD_MARKER_START = "<!-- STARFIELD_TELEMETRY:START -->";
+const PORTAL_STARFIELD_MARKER_END = "<!-- STARFIELD_TELEMETRY:END -->";
 const PORTAL_UI_MARKER_START = "<!-- UI_SNAPSHOT_GALLERY:START -->";
 const PORTAL_UI_MARKER_END = "<!-- UI_SNAPSHOT_GALLERY:END -->";
 const priorityOrder = { P1: 1, P2: 2, P3: 3 };
+const STARFIELD_SEVERITY_THRESHOLDS = {
+  warnCastlePercent: 65,
+  breachCastlePercent: 50
+};
 
 const dashboardPath = path.join(docsDir, "codex_dashboard.md");
 
@@ -74,6 +80,19 @@ const formatDelta = (value) => {
   return `${sign}${value}`;
 };
 
+const deriveStarfieldSeverity = (starfield) => {
+  const castle =
+    typeof starfield?.castlePercent === "number"
+      ? starfield.castlePercent
+      : typeof starfield?.castleRatioAvg === "number"
+        ? starfield.castleRatioAvg
+        : null;
+  if (castle === null) return null;
+  if (castle < STARFIELD_SEVERITY_THRESHOLDS.breachCastlePercent) return "breach";
+  if (castle < STARFIELD_SEVERITY_THRESHOLDS.warnCastlePercent) return "warn";
+  return "calm";
+};
+
 const formatSparkline = (points) => {
   if (!Array.isArray(points) || points.length === 0) return "-";
   return points
@@ -115,6 +134,7 @@ function buildPortalGoldSection(board) {
     lines.push("_No gold analytics board snapshot found. Run `npm run analytics:gold:report` followed by `node scripts/ci/goldAnalyticsBoard.mjs ...` to regenerate before rerunning `npm run codex:dashboard`._");
     return lines.join("\n");
   }
+  const starfieldThresholds = board.thresholds?.starfield ?? STARFIELD_SEVERITY_THRESHOLDS;
   lines.push(
     "_Re-run `npm run codex:dashboard` after `npm run analytics:gold:report` to refresh this table with the latest CI artifacts._"
   );
@@ -122,8 +142,14 @@ function buildPortalGoldSection(board) {
   lines.push(`Generated: ${board.generatedAt ?? "unknown"} (${statusLabel}, warnings: ${board.warnings?.length ?? 0})`);
   if (board.summary?.metrics?.starfield) {
     const starfield = board.summary.metrics.starfield;
+    const severity = starfield.severity ?? deriveStarfieldSeverity(starfield, starfieldThresholds);
+    const severityLabel = severity ? ` (Severity: ${String(severity).toUpperCase()})` : "";
+    const thresholdNote =
+      typeof starfieldThresholds.warnCastlePercent === "number"
+        ? ` (warn < ${starfieldThresholds.warnCastlePercent}%, breach < ${starfieldThresholds.breachCastlePercent}%)`
+        : "";
     lines.push(
-      `Starfield avg depth: ${starfield.depthAvg ?? "n/a"}, drift: ${starfield.driftAvg ?? "n/a"}, wave: ${starfield.waveProgressAvg ?? "n/a"}%, castle: ${starfield.castleRatioAvg ?? "n/a"}%, last tint: ${starfield.lastTint ?? "n/a"}`
+      `Starfield avg depth: ${starfield.depthAvg ?? "n/a"}, drift: ${starfield.driftAvg ?? "n/a"}, wave: ${starfield.waveProgressAvg ?? "n/a"}%, castle: ${starfield.castleRatioAvg ?? "n/a"}%, last tint: ${starfield.lastTint ?? "n/a"}${severityLabel}${thresholdNote}`
     );
   }
   lines.push("");
@@ -155,6 +181,10 @@ function buildPortalGoldSection(board) {
     const starfieldParts = [];
     const starfield = scenario.summary?.starfield;
     if (starfield) {
+      const severity = starfield.severity ?? deriveStarfieldSeverity(starfield, starfieldThresholds);
+      if (severity) {
+        starfieldParts.push(`[${String(severity).toUpperCase()}]`);
+      }
       if (typeof starfield.depth === "number") {
         starfieldParts.push(`depth ${starfield.depth}`);
       }
@@ -211,6 +241,75 @@ async function updatePortalGoldSnapshot(board) {
   const before = portal.slice(0, start + PORTAL_MARKER_START.length);
   const after = portal.slice(end);
   const section = `\n\n${buildPortalGoldSection(board)}\n`;
+  const updated = `${before}${section}${after}`;
+  await fs.writeFile(portalPath, updated, "utf8");
+  console.log(`Codex portal updated: ${path.relative(repoRoot, portalPath)}`);
+}
+
+function buildPortalStarfieldSection(board) {
+  const lines = [];
+  if (!board || !board.summary?.metrics?.starfield) {
+    lines.push(
+      "_No starfield telemetry found. Run the gold analytics board (`npm run analytics:gold:board`) then rerun `npm run codex:dashboard`._"
+    );
+    return lines.join("\n");
+  }
+  const thresholds = board.thresholds?.starfield ?? STARFIELD_SEVERITY_THRESHOLDS;
+  const starfield = board.summary.metrics.starfield;
+  const severity = starfield.severity ?? deriveStarfieldSeverity(starfield, thresholds);
+  lines.push(
+    "_Re-run `npm run analytics:gold:board` followed by `npm run codex:dashboard` to refresh this snapshot with the latest starfield telemetry._"
+  );
+  const severityLabel = severity ? `[${String(severity).toUpperCase()}]` : "[N/A]";
+  const thresholdNote =
+    typeof thresholds.warnCastlePercent === "number"
+      ? `warn < ${thresholds.warnCastlePercent}%, breach < ${thresholds.breachCastlePercent}%`
+      : "";
+  lines.push(
+    `Latest avg: ${severityLabel} depth ${starfield.depthAvg ?? "n/a"}, drift ${starfield.driftAvg ?? "n/a"}, wave ${starfield.waveProgressAvg ?? "n/a"}%, castle ${starfield.castleRatioAvg ?? "n/a"}%, tint ${starfield.lastTint ?? "n/a"}${thresholdNote ? ` (${thresholdNote})` : ""}`
+  );
+  lines.push("");
+  lines.push("| Scenario | Severity | Depth | Drift | Wave % | Castle % | Tint |");
+  lines.push("| --- | --- | --- | --- | --- | --- | --- |");
+  const scenarios = Array.isArray(board.scenarios) ? board.scenarios.slice(0, 5) : [];
+  for (const scenario of scenarios) {
+    const note = scenario.summary?.starfield ?? {};
+    const sev = note.severity ?? deriveStarfieldSeverity(note, thresholds);
+    lines.push(
+      `| ${scenario.id ?? "-"} | ${sev ? sev.toUpperCase() : "-"} | ${note.depth ?? "-"} | ${note.drift ?? "-"} | ${note.wavePercent ?? "-"} | ${note.castlePercent ?? "-"} | ${note.tint ?? "-"} |`
+    );
+  }
+  if (Array.isArray(board.scenarios) && board.scenarios.length > 5) {
+    lines.push(`| ... | ... | ... | ... | ... | ... | ${board.scenarios.length - 5} more |`);
+  }
+  lines.push("");
+  lines.push(
+    `Artifacts: \`${board.outputs?.json ?? "apps/keyboard-defense/artifacts/summaries/gold-analytics-board.ci.json"}\``
+  );
+  return lines.join("\n");
+}
+
+async function updatePortalStarfieldSnapshot(board) {
+  let portal;
+  try {
+    portal = await fs.readFile(portalPath, "utf8");
+  } catch (error) {
+    console.warn(
+      `codex portal update skipped: unable to read ${portalPath} (${error instanceof Error ? error.message : String(
+        error
+      )})`
+    );
+    return;
+  }
+  const start = portal.indexOf(PORTAL_STARFIELD_MARKER_START);
+  const end = portal.indexOf(PORTAL_STARFIELD_MARKER_END);
+  if (start === -1 || end === -1 || end <= start) {
+    console.warn("codex portal update skipped: starfield telemetry markers missing.");
+    return;
+  }
+  const before = portal.slice(0, start + PORTAL_STARFIELD_MARKER_START.length);
+  const after = portal.slice(end);
+  const section = `\n\n${buildPortalStarfieldSection(board)}\n`;
   const updated = `${before}${section}${after}`;
   await fs.writeFile(portalPath, updated, "utf8");
   console.log(`Codex portal updated: ${path.relative(repoRoot, portalPath)}`);
@@ -443,6 +542,7 @@ const main = async () => {
   await fs.writeFile(dashboardPath, lines.join("\n"), "utf8");
   console.log(`Codex dashboard updated: ${path.relative(repoRoot, dashboardPath)}`);
   await updatePortalGoldSnapshot(goldBoard);
+  await updatePortalStarfieldSnapshot(goldBoard);
   await updatePortalUiSnapshot(uiGallery);
 };
 

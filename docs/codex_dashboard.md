@@ -57,11 +57,11 @@
 ## Gold Analytics Board
 - Aggregate gold summary, timeline, passive, guard, and percentile alerts via `node scripts/ci/goldAnalyticsBoard.mjs --summary artifacts/summaries/gold-summary-report.ci.json --timeline artifacts/summaries/gold-timeline.ci.json --passive artifacts/summaries/passive-gold.ci.json --percentile-guard artifacts/summaries/gold-percentile-guard.ci.json --percentile-alerts artifacts/summaries/gold-percentiles.ci.json --out-json artifacts/summaries/gold-analytics-board.ci.json --markdown artifacts/summaries/gold-analytics-board.ci.md`.
 - Fixture dry-run: `node scripts/ci/goldAnalyticsBoard.mjs --summary docs/codex_pack/fixtures/gold/gold-summary-report.json --timeline docs/codex_pack/fixtures/gold/gold-timeline-summary.json --passive docs/codex_pack/fixtures/gold/passive-gold-summary.json --percentile-guard docs/codex_pack/fixtures/gold/percentile-guard.json --percentile-alerts docs/codex_pack/fixtures/gold/gold-percentiles.baseline.json --out-json temp/gold-analytics-board.fixture.json --markdown temp/gold-analytics-board.fixture.md`.
-- Latest board (2025-11-15T15:14:49.341Z) status [PASS] with 1 scenario(s); warnings: 0.
+- Latest board (2025-11-26T22:55:33.841Z) status [PASS] with 1 scenario(s); warnings: 0.
 
 | Scenario | Net delta | Median Gain | Median Spend | Last Gold delta | Last Passive | Sparkline (delta@t + bars) | Alerts |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| tutorial-skip | 175 | 60 | -35 | -60 @ 75.2s | gold L1 (+1.15) @ 78.2s | - | [PASS 4] |
+| tutorial-skip | 175 | 60 | -35 | -60 @ 75.2s | gold L1 (+1.15) @ 78.2s | -60@75.2, +50@63.1, +75@46.4 -*+=+# | [PASS 4] |
 
 ## UI Snapshot Gallery
 
