@@ -36,8 +36,16 @@ codex_pack/
   fixtures/
     smoke-summary.json
     gold-summary.json
+    traceability-tests.json
+    traceability-report.json
+    audio-intensity/
+      summary.json
+      summary.csv
+    responsive/
+      condensed-audit.json
 ```
-Use the fixture JSON files when running CLI dry-runs (see `tasks/01-ci-step-summary.md`).
+Use the fixture JSON files when running CLI dry-runs (see `tasks/01-ci-step-summary.md`). For example,
+`responsive/condensed-audit.json` feeds the condensed HUD audit rows that now appear in CI summaries.
 
 ## How to use
 
@@ -47,6 +55,7 @@ Use the fixture JSON files when running CLI dry-runs (see `tasks/01-ci-step-summ
 4. Run `npm run codex:validate-pack` (from `apps/keyboard-defense`) before every commit to ensure metadata stays consistent.
 5. Run `npm run codex:validate-links` to confirm status notes and tasks cross-reference correctly.
 6. Codex operators must follow `CODEX_RUNBOOK.md` (automation-specific loop) and the global `docs/CODEX_GUIDE.md`.
+7. GitHub Actions `codex-dashboard-nightly` regenerates `docs/codex_dashboard.md` + `docs/CODEX_PORTAL.md` daily (05:30 UTC) using gold fixtures; dispatch inputs (`summary`, `timeline`, `passive`, `guard`, `alerts`) let you point at real artifacts without editing the workflow.
 
 ## Source-of-truth mapping
 
@@ -101,7 +110,7 @@ modified unexpectedly.
 
 ## Assumptions
 
-- Artifact paths follow the docs: `monitor-artifacts/run.json`, `artifacts/smoke/devserver-smoke-summary*.json`,
+- Artifact paths follow the docs: `artifacts/monitor/dev-monitor.json` (legacy: `monitor-artifacts/run.json`), `artifacts/smoke/devserver-smoke-summary*.json`,
   `artifacts/screenshots/screenshots-summary.ci.json`, `artifacts/*/gold-summary.ci.json`,
   `artifacts/castle-breach.ci.json`. Adjust in snippets if your repo differs.
 - Node >= 18, Playwright installed in CI with a pinned `PLAYWRIGHT_BROWSERS_PATH`.
