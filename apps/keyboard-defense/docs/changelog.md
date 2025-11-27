@@ -1,3 +1,26 @@
+## Defeat Animation Sprite Pipeline
+
+- AssetLoader now parses optional defeat animation definitions from the manifest and exposes `getDefeatAnimation`/`hasDefeatAnimation` so the renderer can stream sprite frames when defeat art drops into `public/assets/defeat/`.
+- CanvasRenderer/GameEngine share a new `DefeatAnimationMode` preference (`auto`, `sprite`, `procedural`) so analytics match the rendered burst type, and diagnostics/CI summaries continue reporting sprite vs procedural usage via the upgraded analytics state.
+- The pause/options overlay gained a “Defeat Animations” select that persists in player settings (`version 15`), letting comfort testers force procedural effects, require sprites, or keep the default auto mode; HUD/tests cover the new control.
+
+## Castle Passive Iconography
+
+- Added dedicated SVG iconography for regen, armor, and bonus-gold passives (served from `public/assets/icons/passives/`) so players can parse buffs at a glance without reading every row.
+- HUD + pause/options passive lists now render the icons with accessible labels/tooltips, including condensed layouts, keeping the responsive cards legible while meeting the design request from backlog #30/#19.
+- HUD tests cover the new semantics and fallback styling ensures generic passives (future content) still render a badge even if a specific icon is missing.
+
+## Tutorial Passive Messaging
+
+- Inserted a new tutorial beat after the castle upgrade that spotlights the freshly unlocked passive, highlights its HUD entry, and ensures condensed cards auto-expand so the badge is visible on tablets/phones.
+- The tutorial now emits `tutorial.passiveAnnounced` telemetry with passive id/totals, letting smoke fixtures and dashboards confirm onboarding awareness; the message auto-advances after a short timer to keep the flow brisk.
+
+## Passive Analytics Summaries
+
+- `scripts/analyticsAggregate.mjs` gained `--passive-summary`, `--passive-summary-csv`, and `--passive-summary-md` flags so automation can emit passive unlock JSON/CSV/Markdown artifacts while still printing the core CSV to stdout.
+- CI now writes `artifacts/summaries/passive-analytics.(json|csv|md)` alongside the existing passive gold dashboard outputs, and docs/guides describe the new workflow.
+- Vitest coverage exercises the new flags to guard against regressions when the aggregation script evolves.
+
 ## HUD Castle Panel Condensed Lists
 
 - Castle passives and recent gold events in the HUD now render inside collapsible summary cards with explicit counts, keeping the sidebar compact on tablets/phones while preserving one-click access to the full lists.
@@ -21,6 +44,12 @@
 - Added an Audio Intensity slider to the pause/options overlay so players can scale SFX energy between 50% and 150% without muting the game; the slider disables automatically when master audio is off and mirrors the live percent label.
 - Intensities persist via the upgraded player settings schema (`version 12`), propagate through `HudView.syncOptionsOverlayState`, and drive a new `SoundManager.setIntensity` multiplier so every procedural cue respects the preference.
 - Vitest HUD harness now covers the slider state/emit path, ensuring automation keeps watch over the comfort control and backlog #54 stays Done.
+
+## Canvas DPR Telemetry & Diagnostics
+
+- GameController now propagates the canvas resize cause from the renderer into diagnostics (`Last canvas resize: …`), `document.body.dataset.canvasResizeCause`, and analytics snapshots so responsive regressions are traceable across HUD, telemetry, and dashboards.
+- `analyticsAggregate` emits the new responsive columns (`uiHudLayout`, `uiResolution*`, `uiResolutionLastCause`, `uiPrefDevicePixelRatio`, `uiPrefHudLayout`) and the Codex dashboard docs describe how to pipe them into CI summaries.
+- `npm run debug:dpr-transition` gained a `--markdown <path>` flag for drop-in PR/dashboards summaries, and the status note highlights the automation hook for quicker debugging.
 
 ## Tooling Baseline Refresh
 

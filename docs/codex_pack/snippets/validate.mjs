@@ -35,7 +35,11 @@ const guards = await readGuards(guardsPath);
 // Load artifacts
 const smoke = readJSON('artifacts/smoke/devserver-smoke-summary.ci.json')
            || readJSON('artifacts/smoke/devserver-smoke-summary.json') || {};
-const monitor = readJSON('monitor-artifacts/run.json') || {};
+const monitor =
+  readJSON('artifacts/monitor/dev-monitor.ci.json') ||
+  readJSON('artifacts/monitor/dev-monitor.json') ||
+  readJSON('monitor-artifacts/run.json') ||
+  {};
 const gold = readJSON('artifacts/smoke/gold-summary.ci.json')
           || readJSON('artifacts/e2e/gold-summary.ci.json') || {};
 const breach = readJSON('artifacts/castle-breach.ci.json')

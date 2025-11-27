@@ -191,6 +191,17 @@ describe("goldAnalyticsBoard", () => {
       rows: [{ scenario: "tutorial-skip", status: "pass", file: "alerts.json" }],
       totals: { failures: 0 }
     };
+    const timelineBaselineMap = new Map([
+      [
+        "tutorial-skip",
+        {
+          medianGain: 60,
+          p90Gain: 72,
+          medianSpend: -38,
+          p90Spend: -39
+        }
+      ]
+    ]);
 
     const board = buildGoldAnalyticsBoard({
       summaryData,
@@ -198,6 +209,7 @@ describe("goldAnalyticsBoard", () => {
       passiveData,
       guardData,
       alertsData,
+      timelineBaselineMap,
       paths: {
         summary: "artifacts/tutorial-skip.summary.json",
         timeline: "artifacts/tutorial-skip.timeline.json",
@@ -224,6 +236,8 @@ describe("goldAnalyticsBoard", () => {
     expect(tutorial.summary.starfield?.severity).toBe("warn");
     expect(tutorial.timelineMetrics?.p90Gain).toBe(80);
     expect(tutorial.timelineVariance?.medianGain).toBe(-10);
+    expect(tutorial.timelineBaselineVariance?.medianGain).toBe(-5);
+    expect(tutorial.timelineBaselineVariance?.p90Spend).toBe(4);
     expect(board.summary?.metrics?.starfield?.severity).toBe("warn");
     expect(board.thresholds?.starfield?.warnCastlePercent).toBe(60);
     expect(board.thresholds?.starfield?.breachCastlePercent).toBe(40);
@@ -244,7 +258,45 @@ describe("goldAnalyticsBoard", () => {
     expect(markdown).toContain("tutorial-skip");
     expect(markdown).toMatch(/Starfield avg depth/i);
     expect(markdown).toMatch(/\[WARN\].*depth/);
+    expect(markdown).toContain("Baseline Drift (med/p90)");
+    expect(markdown).toContain("-5/8");
     expect(markdown).toContain("+5@90, -60@75.2, +50@63.1, +75@46.4, +10@30.5 +.-*+=+#+.");
     expect(markdown).toContain("gold-board.json");
+  });
+
+  it("warns when timeline baselines are missing", () => {
+    const summaryData = {
+      metrics: { netDelta: 0, avgMedianGain: 0, avgMedianSpend: 0 },
+      summaries: [{ scenario: "tutorial-skip", netDelta: 1, medianGain: 10, medianSpend: -5 }]
+    };
+    const timelineData = {
+      thresholds: { maxSpendStreak: 5 },
+      scenarios: [
+        {
+          id: "tutorial-skip",
+          metrics: { netDelta: 1, medianGain: 10, medianSpend: -5, p90Gain: 12, p90Spend: -6 },
+          variance: { medianGain: 1, p90Gain: 2 },
+          latestEvents: [{ delta: 1, gold: 5, timestamp: 1, file: "tutorial.json" }]
+        }
+      ]
+    };
+
+    const board = buildGoldAnalyticsBoard({
+      summaryData,
+      timelineData,
+      passiveData: null,
+      guardData: null,
+      alertsData: null,
+      timelineBaselineMap: new Map(),
+      paths: { timelineBaseline: "baseline.json" },
+      now: new Date("2025-11-20T01:00:00.000Z"),
+      starfieldThresholds: { warnCastlePercent: 60, breachCastlePercent: 40 }
+    });
+
+    expect(board.timelineBaseline?.matched).toBe(0);
+    expect(board.timelineBaseline?.missing).toBe(1);
+    expect(board.timelineBaseline?.baselineEntries).toBe(0);
+    expect(board.timelineBaseline?.missingScenarios).toEqual(["tutorial-skip"]);
+    expect(board.warnings.some((w) => w.includes("timeline-baseline"))).toBe(true);
   });
 });

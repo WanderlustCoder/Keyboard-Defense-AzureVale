@@ -11,6 +11,15 @@ status_note: docs/status/2025-11-06_ci_pipeline.md
 backlog_refs:
   - "#71"
   - "#95"
+traceability:
+  tests:
+    - path: apps/keyboard-defense/tests/tutorialSmoke.test.js
+      description: Tutorial smoke CLI fixtures
+    - path: apps/keyboard-defense/tests/castleBreachSummary.test.js
+      description: Castle breach nightly summary
+  commands:
+    - npm run smoke:tutorial -- --ci
+    - node scripts/ci/castleBreachSummary.mjs --mode warn docs/codex_pack/fixtures/castle-breach
 ---
 
 **Context**  

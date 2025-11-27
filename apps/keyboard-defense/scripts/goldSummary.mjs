@@ -261,6 +261,7 @@ export function summarizeFileEntries(file, entries, percentiles = DEFAULT_PERCEN
     percentileFields[formatPercentileKey("spend", pct)] = spendPercentiles.get(pct) ?? null;
   }
 
+  const starfieldStats = summarizeStarfield(entries);
   return {
     file,
     eventCount: entries.length,
@@ -278,8 +279,70 @@ export function summarizeFileEntries(file, entries, percentiles = DEFAULT_PERCEN
     p90Gain: gainPercentiles.get(90) ?? null,
     medianSpend: spendPercentiles.get(50) ?? null,
     p90Spend: spendPercentiles.get(90) ?? null,
-    maxPassiveLag
+    maxPassiveLag,
+    starfieldDepth: starfieldStats.depth,
+    starfieldDrift: starfieldStats.drift,
+    starfieldTint: starfieldStats.tint,
+    starfieldWaveProgress: starfieldStats.waveProgress,
+    starfieldCastleRatio: starfieldStats.castleRatio
   };
+}
+
+function average(values) {
+  if (!Array.isArray(values) || values.length === 0) {
+    return null;
+  }
+  const sum = values.reduce((acc, value) => acc + value, 0);
+  return Number((sum / values.length).toFixed(3));
+}
+
+function summarizeStarfield(entries) {
+  const depthValues = [];
+  const driftValues = [];
+  const waveValues = [];
+  const castleValues = [];
+  let latestTint = null;
+  for (const entry of entries) {
+    const state = entry.starfield;
+    if (!state || typeof state !== "object") {
+      continue;
+    }
+    if (typeof state.tint === "string" && state.tint.length > 0) {
+      latestTint = state.tint;
+    }
+    if (typeof state.depth === "number" && Number.isFinite(state.depth)) {
+      depthValues.push(state.depth);
+    }
+    if (
+      typeof state.driftMultiplier === "number" &&
+      Number.isFinite(state.driftMultiplier)
+    ) {
+      driftValues.push(state.driftMultiplier);
+    }
+    if (typeof state.waveProgress === "number" && Number.isFinite(state.waveProgress)) {
+      waveValues.push(state.waveProgress);
+    }
+    if (
+      typeof state.castleHealthRatio === "number" &&
+      Number.isFinite(state.castleHealthRatio)
+    ) {
+      castleValues.push(state.castleHealthRatio);
+    }
+  }
+  return {
+    depth: average(depthValues),
+    drift: average(driftValues),
+    tint: latestTint,
+    waveProgress: toPercent(average(waveValues)),
+    castleRatio: toPercent(average(castleValues))
+  };
+}
+
+function toPercent(value) {
+  if (!Number.isFinite(value)) {
+    return null;
+  }
+  return Number((value * 100).toFixed(3));
 }
 
 export function summarizeGoldEntries(entries, percentiles = DEFAULT_PERCENTILES) {
@@ -309,7 +372,18 @@ function toCsv(rows, percentiles, metadata) {
     formatPercentileKey("gain", pct),
     formatPercentileKey("spend", pct)
   ]);
-  const tailHeaders = ["medianGain", "p90Gain", "medianSpend", "p90Spend", "maxPassiveLag"];
+  const tailHeaders = [
+    "medianGain",
+    "p90Gain",
+    "medianSpend",
+    "p90Spend",
+    "maxPassiveLag",
+    "starfieldDepth",
+    "starfieldDrift",
+    "starfieldTint",
+    "starfieldWaveProgress",
+    "starfieldCastleRatio"
+  ];
   const headers = [...baseHeaders, ...percentileHeaders, ...tailHeaders];
   if (metadata && metadata.percentiles?.length) {
     headers.push("summaryPercentiles");

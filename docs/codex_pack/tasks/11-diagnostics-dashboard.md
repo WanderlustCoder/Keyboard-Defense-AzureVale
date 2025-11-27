@@ -76,6 +76,53 @@ dashboard view so automation reviews trendlines without opening raw JSON.
   artifacts.
 - CI job summary references the new panels (or provides direct links).
 
+## Data definition & events
+
+- **Gold delta envelope**
+  - Persist `{ timestampMs, rawDelta, netGold, source }` for every tracked event,
+    plus derived streak data (`streakId`, `streakDelta`, `streakLen`).
+  - Tag events from scripted waves (tutorial, castle breach) with `scenarioId`
+    so CI can group comparisons.
+  - Emit rolling aggregates in the summary JSON:
+    - `delta.stats`: `{ avg, median, min, max, p90, largestSpend, largestGain }`.
+    - `delta.alerts`: threshold breaches with `severity`, `message`, `recommendation`.
+- **Passive unlock timeline**
+  - Normalize unlocks to `{ passiveId, passiveName, waveIndex, level, goldCost, effect }`.
+  - Attach HUD state snapshots when available so we can link to UI screenshots
+    from the dashboard.
+  - Track lag metrics (`secondsFromAvailable`, `wavesFromAvailable`) to highlight
+    passives that players delay too long.
+
+## Dashboard layout targets
+
+- Tile 1: **Gold Delta Sparkline**
+  - Primary stat row: latest delta, rolling average, percent change vs. baseline.
+  - Secondary section: table of top 5 spikes/dips with context (wave, passive,
+    taunt, tower placement).
+  - Link to raw JSON + Markdown summary and provide CLI repro command.
+- Tile 2: **Passive Unlock Timeline**
+  - Timeline visualization (stacked rows per passive) plus quick badges for
+    “delayed unlock” and “early unlock”.
+  - Inline filters for scenario + wave range (even if manual for now, describe
+    the JSON shape so UI can read it later).
+  - CTA linking to `passiveTimeline.mjs` instructions inside `CODEX_PLAYBOOKS.md`.
+- Tile 3 (stretch): **Gold Delta vs. Passive Overlay**
+  - Combined view plotting delta spikes alongside passive unlock timestamps to
+    highlight correlation/regressions.
+
+## Observability & testing checklist
+
+- Add `vitest` suites for:
+  - Parsing analytics artifacts into the summary model (happy + edge cases).
+  - Markdown snapshot verifying sparkline stats + alert copy.
+  - CLI flag combinations (`--fixtures`, `--mode warn`, missing inputs).
+- Include integration tests that load fixtures into `scripts/generateCodexDashboard.mjs`
+  so we catch layout regressions whenever the JSON schema changes.
+- Provide a `npm run analytics:diagnostics --fixtures` smoke command for Codex
+  to run locally; document sample output in `docs/codex_dashboard.md`.
+- Log `generatedBy`, `gitSha`, `analyticsSchemaVersion`, and `fixturesVersion`
+  in every JSON artifact to keep dashboards traceable.
+
 ## Verification
 
 - npm run lint

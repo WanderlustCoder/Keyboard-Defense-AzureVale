@@ -8,3 +8,6 @@
 
 **Next Steps**
 1. Wire `goldSummaryPercentiles` into dashboards/alerts so ingestion jobs flag mismatches automatically.
+
+## Follow-up
+- `docs/codex_pack/tasks/36-gold-percentile-ingestion-guard.md`

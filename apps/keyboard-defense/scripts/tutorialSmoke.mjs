@@ -26,6 +26,39 @@ const DEFAULT_MODE = "full";
 const SHIELD_LESSON_WORD = "bulwark";
 const WAIT_INTERVAL_MS = 100;
 const DEFAULT_RESUME_SPEED = 1;
+const AUDIO_INTENSITY_MIN = 0.5;
+const AUDIO_INTENSITY_MAX = 1.5;
+const AUDIO_INTENSITY_DEFAULT = 1;
+const PLAYER_SETTINGS_STORAGE_KEY = "keyboard-defense:player-settings";
+
+function clampAudioIntensity(value) {
+  if (!Number.isFinite(value)) {
+    return AUDIO_INTENSITY_DEFAULT;
+  }
+  return Math.max(AUDIO_INTENSITY_MIN, Math.min(AUDIO_INTENSITY_MAX, value));
+}
+
+function roundTo(value, precision = 3) {
+  if (!Number.isFinite(value)) {
+    return null;
+  }
+  const factor = 10 ** precision;
+  return Math.round(value * factor) / factor;
+}
+
+function parseAudioIntensityToken(rawValue) {
+  if (rawValue === undefined || rawValue === null) {
+    throw new Error("Missing value for --audio-intensity.");
+  }
+  const cleaned =
+    typeof rawValue === "string" ? rawValue.trim().replace(/%$/, "") : String(rawValue);
+  const parsed = Number.parseFloat(cleaned);
+  if (!Number.isFinite(parsed)) {
+    throw new Error(`Invalid audio intensity value "${rawValue}".`);
+  }
+  const normalized = parsed > AUDIO_INTENSITY_MAX ? parsed / 100 : parsed;
+  return clampAudioIntensity(normalized);
+}
 
 function cloneSimple(value) {
   if (value === undefined || value === null) {
@@ -104,12 +137,68 @@ function normalizeGoldEvents(events, referenceTime) {
   });
 }
 
+function extractSoundSettings(snapshot) {
+  if (!snapshot || typeof snapshot !== "object") {
+    return { soundEnabled: null, soundVolume: null, soundIntensity: null };
+  }
+  const intensityValue =
+    typeof snapshot.soundIntensity === "number"
+      ? snapshot.soundIntensity
+      : typeof snapshot.audioIntensity === "number"
+        ? snapshot.audioIntensity
+        : null;
+  return {
+    soundEnabled:
+      typeof snapshot.soundEnabled === "boolean" ? snapshot.soundEnabled : null,
+    soundVolume: Number.isFinite(snapshot.soundVolume) ? roundTo(snapshot.soundVolume) : null,
+    soundIntensity: Number.isFinite(intensityValue) ? roundTo(intensityValue) : null
+  };
+}
+
+function sanitizeAudioIntensityHistory(history) {
+  if (!Array.isArray(history)) {
+    return [];
+  }
+  return history
+    .map((entry) => {
+      if (!entry || typeof entry !== "object") {
+        return null;
+      }
+      const toValue = Number.isFinite(entry.to) ? roundTo(entry.to) : null;
+      const fromValue = Number.isFinite(entry.from) ? roundTo(entry.from) : null;
+      if (toValue === null && fromValue === null) {
+        return null;
+      }
+      return {
+        timestampMs: Number.isFinite(entry.timestampMs) ? Math.round(entry.timestampMs) : null,
+        gameTime: Number.isFinite(entry.gameTime) ? roundTo(entry.gameTime, 3) : null,
+        waveIndex:
+          Number.isInteger(entry.waveIndex) || entry.waveIndex === 0 ? entry.waveIndex : null,
+        combo: Number.isFinite(entry.combo) ? Math.round(entry.combo) : null,
+        accuracy: Number.isFinite(entry.accuracy) ? roundTo(entry.accuracy, 4) : null,
+        from: fromValue,
+        to: toValue,
+        source: typeof entry.source === "string" ? entry.source : null
+      };
+    })
+    .filter((entry) => entry);
+}
+
+function average(values) {
+  if (!Array.isArray(values) || values.length === 0) {
+    return null;
+  }
+  const total = values.reduce((sum, value) => sum + value, 0);
+  return roundTo(total / values.length);
+}
+
 export function parseArgs(argv = []) {
   const args = {
     baseUrl: DEFAULT_BASE_URL,
     artifact: DEFAULT_ARTIFACT,
     mode: DEFAULT_MODE,
-    help: false
+    help: false,
+    audioIntensity: AUDIO_INTENSITY_DEFAULT
   };
 
   for (let i = 0; i < argv.length; i++) {
@@ -131,20 +220,24 @@ export function parseArgs(argv = []) {
         if (value) args.mode = value;
         break;
       }
+      case "--audio-intensity":
+      case "--sound-intensity": {
+        const value = argv[++i];
+        args.audioIntensity = parseAudioIntensityToken(value);
+        break;
+      }
       case "--help":
       case "-h":
         args.help = true;
         break;
-      default:
-        if (token.startsWith("-")) {
-          throw new Error(`Unknown argument "${token}". Try --help.`);
-        }
-        break;
+      default: {
+        throw new Error(`Unknown argument "${token}". Use --help for usage.`);
+      }
     }
   }
-
   return args;
 }
+
 
 export function validateMode(mode) {
   if (mode !== "skip" && mode !== "full" && mode !== "campaign") {
@@ -160,6 +253,7 @@ Options:
   --url, --base-url   Base URL for the running dev server (default ${DEFAULT_BASE_URL})
   --artifact          Path to write the JSON artifact (default ${DEFAULT_ARTIFACT})
   --mode              "full" (default), "skip", or "campaign"
+  --audio-intensity   Audio intensity multiplier (0.5-1.5 or percent, default ${AUDIO_INTENSITY_DEFAULT})
   --help, -h          Show this help
 
 Requirements:
@@ -205,15 +299,34 @@ async function waitFor(predicate, { timeout = 10_000, description = "condition" 
 }
 
 async function fetchState(page) {
-  return page.evaluate(() => {
+  return page.evaluate(({ settingsKey }) => {
     const kd = window.keyboardDefense;
     if (!kd) throw new Error("keyboardDefense debug API missing in page context.");
+    let playerSettings = null;
+    try {
+      const rawSettings = window.localStorage.getItem(settingsKey);
+      if (rawSettings) {
+        playerSettings = JSON.parse(rawSettings);
+      }
+    } catch {
+      playerSettings = null;
+    }
+    const audioState = window.__tutorialSmokeAudioIntensity
+      ? JSON.parse(JSON.stringify(window.__tutorialSmokeAudioIntensity))
+      : null;
     return {
       state: kd.getState(),
       tutorialAnalytics: kd.getTutorialAnalytics?.() ?? null,
-      tutorialStorage: window.localStorage.getItem("keyboard-defense:tutorialCompleted")
+      tutorialStorage: window.localStorage.getItem("keyboard-defense:tutorialCompleted"),
+      playerSettings,
+      audioIntensity: audioState,
+      soundSettings: {
+        soundIntensity: typeof kd.audioIntensity === "number" ? kd.audioIntensity : null,
+        soundVolume: typeof kd.soundVolume === "number" ? kd.soundVolume : null,
+        soundEnabled: typeof kd.soundEnabled === "boolean" ? kd.soundEnabled : null
+      }
     };
-  });
+  }, { settingsKey: PLAYER_SETTINGS_STORAGE_KEY });
 }
 
 async function ensureTypingFocus(page) {
@@ -224,6 +337,99 @@ async function ensureTypingFocus(page) {
       input.select();
     }
   });
+}
+
+async function initializeAudioIntensityProbe(page) {
+  await page.evaluate(() => {
+    if (window.__tutorialSmokeAudioIntensity?.hooked) {
+      return;
+    }
+    const tracker =
+      window.__tutorialSmokeAudioIntensity ??
+      {
+        requested: null,
+        applied: null,
+        history: []
+      };
+    const kd = window.keyboardDefense;
+    if (!kd || typeof kd.setAudioIntensity !== "function") {
+      window.__tutorialSmokeAudioIntensity = tracker;
+      return;
+    }
+    const recordEntry = (from, to, source) => {
+      const state = typeof kd.getState === "function" ? kd.getState() : null;
+      tracker.history.push({
+        timestampMs: typeof performance !== "undefined" ? performance.now() : Date.now(),
+        gameTime: state?.time ?? null,
+        waveIndex: state?.wave?.index ?? null,
+        combo: state?.typing?.combo ?? null,
+        accuracy: state?.typing?.accuracy ?? null,
+        from: Number.isFinite(from) ? Number(from.toFixed(3)) : null,
+        to: Number.isFinite(to) ? Number(to.toFixed(3)) : null,
+        source: source ?? null
+      });
+      tracker.applied = Number.isFinite(to) ? Number(to.toFixed(3)) : tracker.applied;
+    };
+
+    const original = kd.setAudioIntensity?.bind(kd);
+    if (typeof original !== "function") {
+      window.__tutorialSmokeAudioIntensity = tracker;
+      return;
+    }
+
+    kd.setAudioIntensity = function patchedSetAudioIntensity(value, options = {}) {
+      const before = typeof kd.audioIntensity === "number" ? kd.audioIntensity : null;
+      const result = original(value, options);
+      const after = typeof kd.audioIntensity === "number" ? kd.audioIntensity : null;
+      const source =
+        typeof options.source === "string"
+          ? options.source
+          : options.silent
+            ? "automation"
+            : "ui";
+      recordEntry(before, after, source);
+      return result;
+    };
+
+    const initialValue = typeof kd.audioIntensity === "number" ? kd.audioIntensity : null;
+    if (tracker.history.length === 0) {
+      recordEntry(initialValue, initialValue, "initial");
+    }
+    tracker.hooked = true;
+    window.__tutorialSmokeAudioIntensity = tracker;
+  });
+}
+
+async function applyAudioIntensityPreference(page, requested) {
+  if (!Number.isFinite(requested)) {
+    return null;
+  }
+  const normalized = clampAudioIntensity(requested);
+  await page.evaluate(({ value }) => {
+    const kd = window.keyboardDefense;
+    if (!kd || typeof kd.setAudioIntensity !== "function") {
+      throw new Error("keyboardDefense debug API missing setAudioIntensity.");
+    }
+    const tracker =
+      window.__tutorialSmokeAudioIntensity ??
+      {
+        requested: null,
+        applied: null,
+        history: []
+      };
+    tracker.requested = value;
+    window.__tutorialSmokeAudioIntensity = tracker;
+    kd.setAudioIntensity(value, { silent: true, persist: false, source: "cli" });
+  }, { value: normalized });
+  return normalized;
+}
+
+async function prepareAudioIntensity(page, requested) {
+  await initializeAudioIntensityProbe(page);
+  if (requested === undefined || requested === null) {
+    return null;
+  }
+  return applyAudioIntensityPreference(page, requested);
 }
 
 export async function resumeGameplay(page, { speed = DEFAULT_RESUME_SPEED } = {}) {
@@ -429,8 +635,9 @@ async function fetchStateSafe(page) {
   }
 }
 
-async function performSkipSmoke(page) {
+async function performSkipSmoke(page, options = {}) {
   await waitForPageReady(page);
+  await prepareAudioIntensity(page, options.audioIntensity);
 
   const result = await page.evaluate(async () => {
     const kd = window.keyboardDefense;
@@ -452,18 +659,41 @@ async function performSkipSmoke(page) {
     };
   });
 
+  const stateBundle = await fetchState(page);
+  const assetIntegrity = await fetchAssetIntegritySummary(page);
+
   return {
     mode: "skip",
     success: true,
     durationMs: 0,
     summaryOverlay: null,
     consoleLogs: [],
-    ...result
+    ...result,
+    playerSettings: stateBundle.playerSettings ?? null,
+    soundSettings: stateBundle.soundSettings ?? null,
+    audioIntensity: stateBundle.audioIntensity ?? null,
+    assetIntegrity
   };
 }
 
-async function performFullTutorialSmoke(page) {
+async function fetchAssetIntegritySummary(page) {
+  try {
+    return await page.evaluate(() => {
+      const kd = window.keyboardDefense;
+      if (!kd || typeof kd.getAssetIntegritySummary !== "function") {
+        return null;
+      }
+      const summary = kd.getAssetIntegritySummary();
+      return summary ? JSON.parse(JSON.stringify(summary)) : null;
+    });
+  } catch {
+    return null;
+  }
+}
+
+async function performFullTutorialSmoke(page, options = {}) {
   await waitForPageReady(page);
+  await prepareAudioIntensity(page, options.audioIntensity);
   await dismissMainMenu(page);
   await ensureTypingFocus(page);
   const consoleLogs = [];
@@ -588,7 +818,14 @@ async function performFullTutorialSmoke(page) {
     });
 
     const stateBundle = await fetchState(page);
+    const analyticsPayload = stateBundle.state.analytics
+      ? cloneSimple(stateBundle.state.analytics)
+      : {};
+    if (stateBundle.tutorialAnalytics) {
+      analyticsPayload.tutorial = stateBundle.tutorialAnalytics;
+    }
 
+    const assetIntegrity = await fetchAssetIntegritySummary(page);
     return {
       mode: "full",
       success: true,
@@ -606,18 +843,16 @@ async function performFullTutorialSmoke(page) {
         },
         resources: { ...stateBundle.state.resources }
       },
-      analytics: {
-        totalShieldBreaks: stateBundle.state.analytics.totalShieldBreaks,
-        sessionBreaches: stateBundle.state.analytics.sessionBreaches,
-        totalDamageDealt: stateBundle.state.analytics.totalDamageDealt,
-        totalTypingDamage: stateBundle.state.analytics.totalTypingDamage,
-        totalTurretDamage: stateBundle.state.analytics.totalTurretDamage,
-        tutorial: stateBundle.tutorialAnalytics
-      },
-      tutorialStorage: stateBundle.tutorialStorage
+      analytics: analyticsPayload,
+      tutorialStorage: stateBundle.tutorialStorage,
+      playerSettings: stateBundle.playerSettings ?? null,
+      soundSettings: stateBundle.soundSettings ?? null,
+      audioIntensity: stateBundle.audioIntensity ?? null,
+      assetIntegrity
     };
   } catch (error) {
     const failureState = await fetchStateSafe(page);
+    const failedIntegrity = await fetchAssetIntegritySummary(page);
     const context = {
       mode: "full",
       success: false,
@@ -628,6 +863,10 @@ async function performFullTutorialSmoke(page) {
       analytics: failureState?.state?.analytics ?? null,
       tutorialAnalytics: failureState?.tutorialAnalytics ?? null,
       tutorialStorage: failureState?.tutorialStorage ?? null,
+      playerSettings: failureState?.playerSettings ?? null,
+      soundSettings: failureState?.soundSettings ?? null,
+      audioIntensity: failureState?.audioIntensity ?? null,
+      assetIntegrity: failedIntegrity,
       error: {
         message: error instanceof Error ? error.message : String(error),
         stack: error instanceof Error ? (error.stack ?? null) : null
@@ -640,8 +879,9 @@ async function performFullTutorialSmoke(page) {
   }
 }
 
-async function performCampaignSmoke(page) {
+async function performCampaignSmoke(page, options = {}) {
   await waitForPageReady(page);
+  await prepareAudioIntensity(page, options.audioIntensity);
   await ensureTypingFocus(page);
   await page.evaluate(() => {
     const kd = window.keyboardDefense;
@@ -699,7 +939,12 @@ async function performCampaignSmoke(page) {
   );
 
   const stateBundle = await fetchState(page);
+  const analyticsPayload = stateBundle.state.analytics
+    ? cloneSimple(stateBundle.state.analytics)
+    : {};
+  analyticsPayload.metadata = campaignSetup;
 
+  const assetIntegrity = await fetchAssetIntegritySummary(page);
   return {
     mode: "campaign",
     success: true,
@@ -716,21 +961,21 @@ async function performCampaignSmoke(page) {
       },
       resources: { ...stateBundle.state.resources }
     },
-    analytics: {
-      totalDamageDealt: stateBundle.state.analytics.totalDamageDealt,
-      enemiesDefeated: stateBundle.state.analytics.enemiesDefeated,
-      waveSummaries: stateBundle.state.analytics.waveSummaries,
-      metadata: campaignSetup
-    },
-    tutorialStorage: stateBundle.tutorialStorage
+    analytics: analyticsPayload,
+    tutorialStorage: stateBundle.tutorialStorage,
+    playerSettings: stateBundle.playerSettings ?? null,
+    soundSettings: stateBundle.soundSettings ?? null,
+    audioIntensity: stateBundle.audioIntensity ?? null,
+    assetIntegrity
   };
 }
 
-export function buildArtifact({ baseUrl, mode, result, startedAt }) {
+export function buildArtifact({ baseUrl, mode, result, startedAt, requestedAudioIntensity = null }) {
   const capturedAt = new Date().toISOString();
   const status = result.success ? "success" : "failure";
-  const analytics =
+  const analyticsSource =
     result.analytics ?? result.stateSnapshot?.analytics ?? result.state?.analytics ?? null;
+  const analytics = analyticsSource ? cloneSimple(analyticsSource) : null;
   const shieldBreaks =
     analytics?.totalShieldBreaks ??
     analytics?.tutorial?.events?.filter((event) => event.event === "shield-broken")?.length ??
@@ -754,7 +999,8 @@ export function buildArtifact({ baseUrl, mode, result, startedAt }) {
   const activeCastlePassives = Array.isArray(castlePassivesSource)
     ? cloneSimple(castlePassivesSource)
     : [];
-  const referenceTime = result.stateSnapshot?.time ?? result.state?.time ?? analytics?.time ?? null;
+  const referenceTime =
+    result.stateSnapshot?.time ?? result.state?.time ?? analytics?.time ?? null;
   const recentGoldEvents = normalizeGoldEvents(
     analytics?.goldEvents ??
       result.stateSnapshot?.analytics?.goldEvents ??
@@ -762,8 +1008,63 @@ export function buildArtifact({ baseUrl, mode, result, startedAt }) {
       result.stateSnapshot?.state?.analytics?.goldEvents,
     referenceTime
   );
+  const soundLive = extractSoundSettings(result.soundSettings);
+  const soundStored = extractSoundSettings(
+    result.playerSettings
+      ? {
+          soundEnabled: result.playerSettings.soundEnabled,
+          soundVolume: result.playerSettings.soundVolume,
+          audioIntensity: result.playerSettings.audioIntensity
+        }
+      : null
+  );
+  const settings = {
+    soundEnabled: soundLive.soundEnabled ?? soundStored.soundEnabled,
+    soundVolume: soundLive.soundVolume ?? soundStored.soundVolume,
+    soundIntensity: soundLive.soundIntensity ?? soundStored.soundIntensity,
+    sources: {
+      live: soundLive,
+      stored: soundStored
+    }
+  };
+  const audioProbe = result.audioIntensity ?? null;
+  const historySource =
+    audioProbe?.history ?? analytics?.audioIntensityHistory ?? result.audioIntensityHistory ?? [];
+  const audioHistory = sanitizeAudioIntensityHistory(historySource);
+  if (analytics && !analytics.audioIntensityHistory && audioHistory.length > 0) {
+    analytics.audioIntensityHistory = audioHistory;
+  }
+  const requested =
+    Number.isFinite(requestedAudioIntensity) && requestedAudioIntensity > 0
+      ? roundTo(requestedAudioIntensity)
+      : null;
+  const recordedProbe =
+    typeof audioProbe?.applied === "number" ? roundTo(audioProbe.applied) : null;
+  const recordedSettings = settings.soundIntensity ?? null;
+  const recorded = recordedProbe ?? recordedSettings ?? null;
+  const historyValues = audioHistory
+    .map((entry) => entry.to)
+    .filter((value) => value !== null);
+  const averageIntensity = average(historyValues) ?? recorded;
+  const deltaIntensity =
+    historyValues.length >= 2
+      ? roundTo(historyValues[historyValues.length - 1] - historyValues[0])
+      : null;
+  const audioIntensity = {
+    requested,
+    recorded,
+    recordedSource: recordedProbe !== null ? "probe" : recordedSettings !== null ? "settings" : null,
+    average: averageIntensity,
+    delta: deltaIntensity,
+    historySamples: audioHistory.length,
+    history: audioHistory
+  };
+  const flags = {};
+  if (requested !== null) {
+    flags.audioIntensity = requested;
+  }
 
-  return {
+  const artifact = {
     baseUrl,
     mode,
     startedAt,
@@ -776,6 +1077,7 @@ export function buildArtifact({ baseUrl, mode, result, startedAt }) {
     summaryOverlay: result.summaryOverlay ?? null,
     consoleLogs: result.consoleLogs ?? [],
     error: result.error ?? null,
+    assetIntegrity: result.assetIntegrity ?? null,
     shieldBreaks,
     tutorialEvents: analytics?.tutorial?.events ?? null,
     passiveUnlockCount: passiveUnlocks.length,
@@ -783,11 +1085,19 @@ export function buildArtifact({ baseUrl, mode, result, startedAt }) {
     passiveUnlockSummary,
     lastPassiveUnlock,
     activeCastlePassives,
-    recentGoldEvents
+    recentGoldEvents,
+    settings,
+    audioIntensity
   };
+
+  if (Object.keys(flags).length > 0) {
+    artifact.flags = flags;
+  }
+
+  return artifact;
 }
 
-async function runSmoke(baseUrl, artifactPath, mode) {
+async function runSmoke(baseUrl, artifactPath, mode, options = {}) {
   const chromium = await loadChromium();
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({
@@ -810,11 +1120,11 @@ async function runSmoke(baseUrl, artifactPath, mode) {
   let failureError = null;
   try {
     if (mode === "skip") {
-      result = await performSkipSmoke(page);
+      result = await performSkipSmoke(page, options);
     } else if (mode === "campaign") {
-      result = await performCampaignSmoke(page);
+      result = await performCampaignSmoke(page, options);
     } else {
-      result = await performFullTutorialSmoke(page);
+      result = await performFullTutorialSmoke(page, options);
     }
   } catch (error) {
     failureError = error instanceof Error ? error : new Error(String(error));
@@ -845,7 +1155,13 @@ async function runSmoke(baseUrl, artifactPath, mode) {
 
   const artifactDir = path.dirname(artifactPath);
   fs.mkdirSync(artifactDir, { recursive: true });
-  const artifact = buildArtifact({ baseUrl, mode, result, startedAt });
+  const artifact = buildArtifact({
+    baseUrl,
+    mode,
+    result,
+    startedAt,
+    requestedAudioIntensity: options.audioIntensity ?? null
+  });
   fs.writeFileSync(artifactPath, JSON.stringify(artifact, null, 2));
   console.log(
     `Tutorial smoke (${mode}) complete with status "${artifact.status}". Artifact written to ${artifactPath}`
@@ -876,7 +1192,9 @@ async function main() {
   try {
     const mode = validateMode(args.mode);
     const validatedUrl = new url.URL(args.baseUrl);
-    await runSmoke(validatedUrl.toString(), args.artifact, mode);
+    await runSmoke(validatedUrl.toString(), args.artifact, mode, {
+      audioIntensity: args.audioIntensity
+    });
   } catch (error) {
     console.error(
       error instanceof Error ? error.message : `Tutorial smoke error: ${String(error)}`

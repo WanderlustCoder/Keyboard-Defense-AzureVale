@@ -1,0 +1,280 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://keyboard-defense.dev/schemas/analytics.schema.json",
+  "title": "Keyboard Defense Analytics Snapshot",
+  "type": "object",
+  "required": ["capturedAt", "time", "status", "wave", "typing", "resources", "analytics"],
+  "properties": {
+    "capturedAt": { "type": "string", "format": "date-time" },
+    "time": { "type": "number" },
+    "status": { "type": "string", "enum": ["preparing", "running", "victory", "defeat"] },
+    "mode": { "type": "string", "enum": ["campaign", "practice"], "nullable": true },
+    "wave": {
+      "type": "object",
+      "required": ["index", "total"],
+      "properties": {
+        "index": { "type": "integer", "minimum": 0 },
+        "total": { "type": "integer", "minimum": 0 },
+        "inCountdown": { "type": "boolean" },
+        "countdownRemaining": { "type": "number" }
+      },
+      "additionalProperties": true
+    },
+    "typing": {
+      "type": "object",
+      "properties": {
+        "accuracy": { "type": "number" },
+        "totalInputs": { "type": "integer", "minimum": 0 },
+        "correctInputs": { "type": "integer", "minimum": 0 },
+        "errors": { "type": "integer", "minimum": 0 },
+        "combo": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": true
+    },
+    "resources": {
+      "type": "object",
+      "properties": {
+        "gold": { "type": "number" },
+        "score": { "type": "number" }
+      },
+      "additionalProperties": true
+    },
+    "turretStats": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "slotId": { "type": "string" },
+          "turretType": { "type": ["string", "null"] },
+          "level": { "type": ["integer", "null"] },
+          "damage": { "type": ["number", "null"] },
+          "dps": { "type": ["number", "null"] }
+        },
+        "additionalProperties": true
+      }
+    },
+    "settings": { "type": "object", "additionalProperties": true },
+    "ui": {
+      "type": "object",
+      "properties": {
+        "diagnostics": {
+          "type": "object",
+          "properties": {
+            "condensed": { "type": ["boolean", "null"] },
+            "sectionsCollapsed": { "type": ["boolean", "null"] },
+            "collapsedSections": {
+              "type": ["object", "null"],
+              "propertyNames": {
+                "enum": ["gold-events", "castle-passives", "turret-dps"]
+              },
+              "additionalProperties": { "type": "boolean" }
+            },
+            "lastUpdatedAt": { "type": ["string", "null"], "format": "date-time" }
+          },
+          "additionalProperties": true
+        },
+        "hud": {
+          "type": "object",
+          "properties": {
+            "passivesCollapsed": { "type": ["boolean", "null"] },
+            "goldEventsCollapsed": { "type": ["boolean", "null"] },
+            "prefersCondensedLists": { "type": ["boolean", "null"] },
+            "layout": {
+              "type": ["string", "null"],
+              "enum": ["stacked", "condensed", null]
+            }
+          },
+          "additionalProperties": true
+        },
+        "preferences": {
+          "type": "object",
+          "properties": {
+            "hudPassivesCollapsed": { "type": ["boolean", "null"] },
+            "hudGoldEventsCollapsed": { "type": ["boolean", "null"] },
+            "optionsPassivesCollapsed": { "type": ["boolean", "null"] },
+            "devicePixelRatio": { "type": ["number", "null"], "minimum": 0 },
+            "hudLayout": {
+              "type": ["string", "null"],
+              "enum": ["stacked", "condensed", null]
+            },
+            "diagnosticsSections": {
+              "type": ["object", "null"],
+              "propertyNames": {
+                "enum": ["gold-events", "castle-passives", "turret-dps"]
+              },
+              "additionalProperties": { "type": "boolean" }
+            },
+            "diagnosticsSectionsUpdatedAt": {
+              "type": ["string", "null"],
+              "format": "date-time"
+            }
+          },
+          "additionalProperties": true
+        },
+        "resolution": {
+          "type": ["object", "null"],
+          "required": ["cssWidth", "cssHeight", "renderWidth", "renderHeight"],
+          "properties": {
+            "cssWidth": { "type": "integer", "minimum": 1 },
+            "cssHeight": { "type": "integer", "minimum": 1 },
+            "renderWidth": { "type": "integer", "minimum": 1 },
+            "renderHeight": { "type": "integer", "minimum": 1 },
+            "devicePixelRatio": { "type": ["number", "null"], "minimum": 0 },
+            "hudLayout": {
+              "type": ["string", "null"],
+              "enum": ["stacked", "condensed", null]
+            },
+            "lastResizeCause": {
+              "type": ["string", "null"]
+            }
+          },
+          "additionalProperties": false
+        },
+        "resolutionChanges": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["capturedAt", "cssWidth", "cssHeight", "renderWidth", "renderHeight"],
+            "properties": {
+              "capturedAt": { "type": "string", "format": "date-time" },
+              "cause": { "type": ["string", "null"] },
+              "fromDpr": { "type": ["number", "null"], "minimum": 0 },
+              "toDpr": { "type": ["number", "null"], "minimum": 0 },
+              "cssWidth": { "type": "integer", "minimum": 1 },
+              "cssHeight": { "type": "integer", "minimum": 1 },
+              "renderWidth": { "type": "integer", "minimum": 1 },
+              "renderHeight": { "type": "integer", "minimum": 1 },
+              "transitionMs": { "type": ["number", "null"], "minimum": 0 },
+              "prefersCondensedHud": { "type": ["boolean", "null"] },
+              "hudLayout": {
+                "type": ["string", "null"],
+                "enum": ["stacked", "condensed", null]
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "analytics": {
+      "type": "object",
+      "required": ["mode", "goldEvents", "castlePassiveUnlocks", "taunt"],
+      "properties": {
+        "mode": { "type": "string", "enum": ["campaign", "practice"] },
+        "sessionBreaches": { "type": "integer", "minimum": 0 },
+        "sessionBestCombo": { "type": "integer", "minimum": 0 },
+        "totalDamageDealt": { "type": "number" },
+        "totalTurretDamage": { "type": "number" },
+        "totalTypingDamage": { "type": "number" },
+        "totalShieldBreaks": { "type": "integer", "minimum": 0 },
+        "totalCastleRepairs": { "type": "integer", "minimum": 0 },
+        "totalRepairHealth": { "type": "number" },
+        "totalRepairGold": { "type": "number" },
+        "totalPerfectWords": { "type": "integer", "minimum": 0 },
+        "totalBonusGold": { "type": "number" },
+        "totalCastleBonusGold": { "type": "number" },
+        "totalReactionTime": { "type": "number" },
+        "reactionSamples": { "type": "integer", "minimum": 0 },
+        "averageTotalDps": { "type": "number" },
+        "averageTurretDps": { "type": "number" },
+        "averageTypingDps": { "type": "number" },
+        "timeToFirstTurret": { "type": ["number", "null"] },
+        "castlePassiveUnlocks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "time"],
+            "properties": {
+              "id": { "type": "string" },
+              "level": { "type": ["integer", "null"] },
+              "delta": { "type": ["number", "null"] },
+              "total": { "type": ["number", "null"] },
+              "time": { "type": "number" }
+            },
+            "additionalProperties": true
+          }
+        },
+        "goldEvents": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["delta", "timestamp"],
+            "properties": {
+              "gold": { "type": ["number", "null"] },
+              "delta": { "type": "number" },
+              "timestamp": { "type": "number" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "audioIntensityHistory": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "timestampMs": { "type": ["number", "null"] },
+              "gameTime": { "type": ["number", "null"] },
+              "waveIndex": { "type": ["integer", "null"] },
+              "combo": { "type": ["number", "null"] },
+              "accuracy": { "type": ["number", "null"] },
+              "from": { "type": ["number", "null"] },
+              "to": { "type": ["number", "null"] },
+              "source": { "type": ["string", "null"] }
+            },
+            "additionalProperties": false
+          }
+        },
+        "taunt": {
+          "type": "object",
+          "required": ["active", "history"],
+          "properties": {
+            "active": { "type": "boolean" },
+            "id": { "type": ["string", "null"] },
+            "text": { "type": ["string", "null"] },
+            "enemyType": { "type": ["string", "null"] },
+            "lane": { "type": ["integer", "null"] },
+            "waveIndex": { "type": ["integer", "null"] },
+            "timestampMs": { "type": ["number", "null"] },
+            "countPerWave": { "type": "object", "additionalProperties": { "type": "integer" } },
+            "uniqueLines": { "type": "array", "items": { "type": "string" } },
+            "history": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": { "type": ["string", "null"] },
+                  "text": { "type": ["string", "null"] },
+                  "enemyType": { "type": ["string", "null"] },
+                  "lane": { "type": ["integer", "null"] },
+                  "waveIndex": { "type": ["integer", "null"] },
+                  "timestamp": { "type": ["number", "null"] }
+                },
+                "additionalProperties": true
+              }
+            }
+          },
+          "additionalProperties": true
+        },
+        "waveSummaries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "index": { "type": "integer" },
+              "duration": { "type": "number" },
+              "accuracy": { "type": "number" },
+              "enemiesDefeated": { "type": "integer" },
+              "breaches": { "type": "integer" },
+              "perfectWords": { "type": "integer" },
+              "goldEarned": { "type": "number" }
+            },
+            "additionalProperties": true
+          }
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

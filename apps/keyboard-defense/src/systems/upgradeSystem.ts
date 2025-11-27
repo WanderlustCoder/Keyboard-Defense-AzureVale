@@ -1,9 +1,9 @@
-import { CastleLevelConfig, GameConfig } from "../core/config.js";
-import { EventBus } from "../core/eventBus.js";
-import { GameEvents } from "../core/events.js";
-import { CastlePassive, GameState, TurretTypeId } from "../core/types.js";
+import { type CastleLevelConfig, type GameConfig } from "../core/config.js";
+import { type EventBus } from "../core/eventBus.js";
+import { type GameEvents } from "../core/events.js";
+import { type CastlePassive, type GameState, type TurretTypeId } from "../core/types.js";
 import { deriveCastlePassives } from "../utils/castlePassives.js";
-import { TurretSystem } from "./turretSystem.js";
+import { type TurretSystem } from "./turretSystem.js";
 
 export interface UpgradeResult {
   success: boolean;

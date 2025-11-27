@@ -36,11 +36,14 @@ test("parseArgs captures overrides", () => {
     "--artifact",
     "out/smoke.json",
     "--mode",
-    "campaign"
+    "campaign",
+    "--audio-intensity",
+    "75"
   ]);
   assert.equal(args.baseUrl, "http://localhost:9999");
   assert.equal(args.artifact, "out/smoke.json");
   assert.equal(args.mode, "campaign");
+  assert.equal(args.audioIntensity, 0.75);
 });
 
 test("validateMode enforces allowed values", () => {
@@ -105,6 +108,42 @@ test("buildArtifact derives shield break totals", () => {
     timeSince: 40
   });
   assert.equal(artifact.recentGoldEvents[2].delta, 50);
+});
+
+test("buildArtifact captures audio intensity telemetry", () => {
+  const artifact = buildArtifact({
+    baseUrl: "http://localhost",
+    mode: "full",
+    startedAt: "2025-01-01T00:00:00.000Z",
+    requestedAudioIntensity: 0.9,
+    result: {
+      success: true,
+      durationMs: 2500,
+      soundSettings: { soundIntensity: 1.1, soundVolume: 0.8, soundEnabled: true },
+      playerSettings: { soundEnabled: true, soundVolume: 0.7, audioIntensity: 0.85 },
+      audioIntensity: {
+        applied: 1.2,
+        history: [
+          { to: 0.9, combo: 4, accuracy: 0.93, timestampMs: 5 },
+          { to: 1.2, combo: 6, accuracy: 0.97, timestampMs: 10 }
+        ]
+      },
+      analytics: {
+        goldEvents: [],
+        tutorial: { events: [] }
+      }
+    }
+  });
+  assert.equal(artifact.audioIntensity.requested, 0.9);
+  assert.equal(artifact.audioIntensity.recorded, 1.2);
+  assert.equal(artifact.audioIntensity.average, 1.05);
+  assert.equal(artifact.audioIntensity.historySamples, 2);
+  assert.deepEqual(artifact.settings.soundIntensity, 1.1);
+  assert.deepEqual(artifact.settings.sources.live.soundIntensity, 1.1);
+  assert.deepEqual(artifact.settings.sources.stored.soundIntensity, 0.85);
+  assert.equal(artifact.audioIntensity.history[0].combo, 4);
+  assert.equal(artifact.audioIntensity.history[1].accuracy, 0.97);
+  assert.equal(artifact.flags.audioIntensity, 0.9);
 });
 
 test("buildArtifact counts shield-broken events when total missing", () => {

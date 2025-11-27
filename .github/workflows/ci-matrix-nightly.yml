@@ -1,0 +1,98 @@
+name: ci-matrix-nightly
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+jobs:
+  matrix:
+    name: Nightly Scenario Matrix
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            apps/keyboard-defense/package-lock.json
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Install app dependencies
+        run: npm ci
+        working-directory: apps/keyboard-defense
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+        working-directory: apps/keyboard-defense
+
+      - name: Verify asset integrity hashes (nightly)
+        run: >
+          npm run assets:integrity --
+          --check --mode strict
+          --telemetry artifacts/summaries/asset-integrity.nightly.json
+          --telemetry-md artifacts/summaries/asset-integrity.nightly.md
+          --history artifacts/history/asset-integrity.log
+          --scenario nightly-matrix
+        working-directory: apps/keyboard-defense
+
+      - name: Asset integrity summary (nightly)
+        if: always()
+        run: >
+          node scripts/ci/assetIntegritySummary.mjs
+          --telemetry artifacts/summaries/asset-integrity.nightly.json
+          --history artifacts/history/asset-integrity.log
+          --out-json artifacts/summaries/asset-integrity-report.nightly.json
+          --markdown artifacts/summaries/asset-integrity-report.nightly.md
+          --mode warn
+        working-directory: apps/keyboard-defense
+
+      - name: Run scenario matrix
+        working-directory: apps/keyboard-defense
+        run: |
+          node scripts/ci/run-matrix.mjs \
+            --tutorial-modes skip,full \
+            --breach-seeds 2025,1337 \
+            --output artifacts/ci-matrix-summary.json
+
+      - name: Capture HUD screenshots
+        working-directory: apps/keyboard-defense
+        run: node scripts/hudScreenshots.mjs --ci --out artifacts/screenshots
+
+      - name: Verify HUD screenshot metadata
+        working-directory: apps/keyboard-defense
+        run: npm run docs:verify-hud-snapshots -- --meta artifacts/screenshots ../../docs/codex_pack/fixtures/ui-snapshot
+
+      - name: Build HUD gallery artifacts
+        working-directory: apps/keyboard-defense
+        run: >
+          node scripts/docs/renderHudGallery.mjs
+          --input artifacts/screenshots
+          --meta artifacts/screenshots
+          --output artifacts/summaries/ui-snapshot-gallery-nightly.md
+          --json artifacts/summaries/ui-snapshot-gallery-nightly.json
+          --verify
+          --required hud-main,options-overlay,tutorial-summary,wave-scorecard
+
+      - name: Upload matrix summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-matrix-summary
+          path: |
+            apps/keyboard-defense/artifacts/ci-matrix-summary.json
+            apps/keyboard-defense/artifacts/summaries/ui-snapshot-gallery-nightly.md
+            apps/keyboard-defense/artifacts/summaries/ui-snapshot-gallery-nightly.json
+            apps/keyboard-defense/artifacts/summaries/asset-integrity.nightly.json
+            apps/keyboard-defense/artifacts/summaries/asset-integrity.nightly.md
+            apps/keyboard-defense/artifacts/summaries/asset-integrity-report.nightly.json
+            apps/keyboard-defense/artifacts/summaries/asset-integrity-report.nightly.md
+            apps/keyboard-defense/artifacts/history/asset-integrity.log

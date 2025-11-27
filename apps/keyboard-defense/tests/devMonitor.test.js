@@ -24,6 +24,8 @@ test("parseArgs merges CLI overrides onto defaults", () => {
     "2500",
     "--artifact",
     "./tmp/monitor.json",
+    "--state",
+    "./tmp/state.json",
     "--wait-ready",
     "--verbose"
   ]);
@@ -33,6 +35,7 @@ test("parseArgs merges CLI overrides onto defaults", () => {
   assert.equal(options.timeoutMs, 60000);
   assert.equal(options.requestTimeoutMs, 2500);
   assert.equal(options.artifactPath, path.resolve("tmp/monitor.json"));
+  assert.equal(options.statePath, path.resolve("tmp/state.json"));
   assert.equal(options.waitReady, true);
   assert.equal(options.verbose, true);
 });
@@ -96,6 +99,45 @@ test("runMonitor marks timeout when no probe succeeds", async () => {
     assert.ok(summary.failureCount > 0);
     const artifact = JSON.parse(await fs.readFile(artifactPath, "utf8"));
     assert.equal(artifact.status, "timeout");
+  } finally {
+    await fs.rm(tmpDir, { recursive: true, force: true });
+  }
+});
+
+test("runMonitor records server metadata + last latency", async () => {
+  const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "dev-monitor-metadata-"));
+  const artifactPath = path.join(tmpDir, "summary.json");
+  const statePath = path.join(tmpDir, "state.json");
+  const stateSnapshot = {
+    host: "127.0.0.1",
+    port: 9999,
+    url: "http://127.0.0.1:9999",
+    logPath: ".devserver/server.log",
+    flags: ["no-build"]
+  };
+  await fs.writeFile(statePath, JSON.stringify(stateSnapshot), "utf8");
+
+  globalThis.fetch = async () => ({ ok: true, status: 200 });
+
+  const summary = await runMonitor({
+    url: "http://127.0.0.1:9999",
+    intervalMs: 5,
+    timeoutMs: 50,
+    requestTimeoutMs: 5,
+    artifactPath,
+    statePath,
+    waitReady: true,
+    verbose: false
+  });
+
+  try {
+    assert.equal(summary.server?.host, "127.0.0.1");
+    assert.deepEqual(summary.flags, ["no-build"]);
+    assert.equal(summary.status, "ready");
+    assert.ok(summary.lastLatencyMs === 0 || summary.lastLatencyMs > 0);
+    const persisted = JSON.parse(await fs.readFile(artifactPath, "utf8"));
+    assert.equal(persisted.server.flags[0], "no-build");
+    assert.ok(typeof persisted.uptimeMs === "number");
   } finally {
     await fs.rm(tmpDir, { recursive: true, force: true });
   }

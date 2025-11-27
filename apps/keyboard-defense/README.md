@@ -48,11 +48,25 @@ npm run serve:stop     # terminate the detached server and clear state files
 
 Runtime state lives in `.devserver/state.json`, and logs are written to `.devserver/server.log`. Override defaults with `PORT` and `HOST` environment variables before running `npm run start`.
 
-Need a fast confidence check without keeping the server up? `npm run serve:smoke` launches the dev server (skipping the redundant build by default), waits for readiness, performs HTTP probes, and then shuts everything down—perfect for CI or unattended validation of the harness. The run records a JSON summary at `artifacts/smoke/devserver-smoke-summary.json` (set `DEVSERVER_SMOKE_SUMMARY` to override), automatically prints the tail of `.devserver/server.log` if anything fails, and accepts `--json` to echo the summary to stdout so automation can capture it without touching the filesystem.
+Need a fast confidence check without keeping the server up? `npm run serve:smoke` launches the dev server (skipping the redundant build by default), waits for readiness, performs HTTP probes, and then shuts everything down-perfect for CI or unattended validation of the harness. The run records a JSON summary at `artifacts/smoke/devserver-smoke-summary.json` (set `DEVSERVER_SMOKE_SUMMARY` to override), automatically prints the tail of `.devserver/server.log` if anything fails, and accepts `--json` to echo the summary to stdout so automation can capture it without touching the filesystem.
+
+Want to validate the start/stop lifecycle itself? `npm run serve:start-smoke` force-restarts the server with `--no-build`, waits for readiness, copies `.devserver/server.log`, writes `artifacts/monitor/start-smoke.json`, and then stops everything again. CI runs this after the regular smoke so regressions in `npm run start` surface immediately. If the `http-server` binary ever goes missing, `scripts/devServer.mjs` now emits `.devserver/resolution-error.json` with attempted paths, PATH information, and install suggestions—check that file whenever `npm run start` fails before the build phase.
 
 ### Tests
 
 The Vitest suite targets compiled modules in `dist/`, using deterministic seeds and debug hooks to avoid any browser dependency. Run `npm run test` after changing engine, system, or HUD logic.
+
+### Git Hooks
+
+Local commits should always pass the same gates as CI. The repo ships with an auto-generated pre-commit hook that runs:
+
+1. `npm run lint`
+2. `npm run test`
+3. `npm run codex:validate-pack`
+4. `npm run codex:validate-links`
+5. `npm run codex:status`
+
+Hooks install automatically after `npm install`, or you can run `npm run hooks:install`. Set `SKIP_HOOKS=1` before committing to bypass them (useful inside CI jobs that already executed the checks).
 
 ## Project Layout
 

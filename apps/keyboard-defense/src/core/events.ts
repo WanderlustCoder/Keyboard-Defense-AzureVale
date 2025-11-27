@@ -1,11 +1,13 @@
 import {
-  CastlePassive,
-  EnemyState,
-  GameState,
-  ProjectileState,
-  TurretSlotState,
-  TurretTargetPriority,
-  WaveSummary
+  type CastlePassive,
+  type EnemyState,
+  type GameState,
+  type StarfieldAnalyticsState,
+  type ProjectileState,
+  type TurretSlotState,
+  type TurretTargetPriority,
+  type WaveSummary,
+  type DefeatBurstMode
 } from "./types.js";
 
 export interface GameEvents extends Record<string, unknown> {
@@ -36,4 +38,6 @@ export interface GameEvents extends Record<string, unknown> {
   "analytics:wave-summary": WaveSummary;
   "state:snapshot": GameState;
   "tutorial:event": { stepId: string | null; event: string; timeInStep: number };
+  "combat:defeat-burst": { enemy: EnemyState; mode: DefeatBurstMode };
+  "visual:starfield-state": StarfieldAnalyticsState;
 }

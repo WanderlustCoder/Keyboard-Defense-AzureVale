@@ -1,5 +1,11 @@
 import { WavePreviewPanel } from "./wavePreview.js";
 let hudInstanceCounter = 0;
+const PASSIVE_ICON_MAP = {
+    regen: { label: "Regen passive icon" },
+    armor: { label: "Armor passive icon" },
+    gold: { label: "Bonus gold passive icon" },
+    generic: { label: "Castle passive icon" }
+};
 const isElementWithTag = (el, tagName) => {
     return el instanceof HTMLElement && el.tagName.toLowerCase() === tagName.toLowerCase();
 };
@@ -43,6 +49,7 @@ export class HudView {
     logEntries = [];
     logLimit = 6;
     tutorialSlotLock = null;
+    passiveHighlightId = null;
     lastState = null;
     availableTurretTypes = {};
     turretDowngradeEnabled = false;
@@ -68,9 +75,14 @@ export class HudView {
     syncingOptionToggles = false;
     comboBaselineAccuracy = 1;
     lastAccuracy = 1;
+    hudRoot = null;
     constructor(config, rootIds, callbacks) {
         this.config = config;
         this.callbacks = callbacks;
+        this.hudRoot = document.getElementById("hud");
+        if (this.hudRoot && !this.hudRoot.dataset.canvasTransition) {
+            this.hudRoot.dataset.canvasTransition = "idle";
+        }
         this.healthBar = this.getElement(rootIds.healthBar);
         this.goldLabel = this.getElement(rootIds.goldLabel);
         this.goldDelta = this.getElement(rootIds.goldDelta);
@@ -111,8 +123,8 @@ export class HudView {
         this.availableTurretTypes = Object.fromEntries(Object.keys(this.config.turretArchetypes).map((typeId) => [typeId, true]));
         const tutorialBannerElement = document.getElementById(rootIds.tutorialBanner);
         if (tutorialBannerElement instanceof HTMLElement) {
-            const messageElement = tutorialBannerElement.querySelector("[data-role='tutorial-message']");
-            const resolvedMessage = messageElement ?? tutorialBannerElement;
+            const messageElement = tutorialBannerElement.querySelector("[data-role='tutorial-message']") ??
+                tutorialBannerElement;
             const toggleElement = tutorialBannerElement.querySelector("[data-role='tutorial-toggle']");
             if (toggleElement) {
                 toggleElement.addEventListener("click", () => {
@@ -125,7 +137,7 @@ export class HudView {
             }
             this.tutorialBanner = {
                 container: tutorialBannerElement,
-                message: resolvedMessage,
+                message: messageElement,
                 toggle: toggleElement ?? undefined
             };
         }
@@ -191,6 +203,7 @@ export class HudView {
             const dyslexiaFontToggle = document.getElementById(rootIds.optionsOverlay.dyslexiaFontToggle);
             const colorblindPaletteToggle = document.getElementById(rootIds.optionsOverlay.colorblindPaletteToggle);
             const fontScaleSelect = document.getElementById(rootIds.optionsOverlay.fontScaleSelect);
+            const defeatAnimationSelect = document.getElementById(rootIds.optionsOverlay.defeatAnimationSelect);
             const telemetryToggle = rootIds.optionsOverlay.telemetryToggle
                 ? document.getElementById(rootIds.optionsOverlay.telemetryToggle)
                 : null;
@@ -220,7 +233,8 @@ export class HudView {
                 readableFontToggle instanceof HTMLInputElement &&
                 dyslexiaFontToggle instanceof HTMLInputElement &&
                 colorblindPaletteToggle instanceof HTMLInputElement &&
-                fontScaleSelect instanceof HTMLSelectElement) {
+                fontScaleSelect instanceof HTMLSelectElement &&
+                defeatAnimationSelect instanceof HTMLSelectElement) {
                 this.optionsOverlay = {
                     container: optionsContainer,
                     closeButton,
@@ -237,6 +251,7 @@ export class HudView {
                     dyslexiaFontToggle,
                     colorblindPaletteToggle,
                     fontScaleSelect,
+                    defeatAnimationSelect,
                     telemetryToggle: telemetryToggle instanceof HTMLInputElement ? telemetryToggle : undefined,
                     telemetryWrapper: telemetryToggleWrapper instanceof HTMLElement ? telemetryToggleWrapper : undefined,
                     crystalPulseToggle: crystalPulseToggle instanceof HTMLInputElement ? crystalPulseToggle : undefined,
@@ -346,6 +361,12 @@ export class HudView {
                     if (this.syncingOptionToggles)
                         return;
                     this.callbacks.onColorblindPaletteToggle(colorblindPaletteToggle.checked);
+                });
+                this.optionsOverlay.defeatAnimationSelect.addEventListener("change", () => {
+                    if (this.syncingOptionToggles)
+                        return;
+                    const nextMode = this.optionsOverlay.defeatAnimationSelect.value;
+                    this.callbacks.onDefeatAnimationModeChange(nextMode);
                 });
                 fontScaleSelect.addEventListener("change", () => {
                     if (this.syncingOptionToggles)
@@ -546,6 +567,7 @@ export class HudView {
         this.optionsOverlay.dyslexiaFontToggle.checked = state.dyslexiaFontEnabled;
         this.optionsOverlay.colorblindPaletteToggle.checked = state.colorblindPaletteEnabled;
         this.setSelectValue(this.optionsOverlay.fontScaleSelect, state.hudFontScale.toString());
+        this.setSelectValue(this.optionsOverlay.defeatAnimationSelect, state.defeatAnimationMode ?? "auto");
         this.applyTelemetryOptionState(state.telemetry);
         if (this.optionsOverlay.crystalPulseToggle) {
             const toggle = this.optionsOverlay.crystalPulseToggle;
@@ -787,13 +809,13 @@ export class HudView {
         if (!this.wavePreviewHint || this.wavePreviewHintPinned) {
             return false;
         }
-        const trimmed = (message ?? "").trim();
+        const trimmed = message?.trim();
         if (!trimmed) {
             return false;
         }
         this.updateWavePreviewHint(true, trimmed);
         this.clearWavePreviewHintTimeout();
-        const duration = Math.max(1000, (options == null ? void 0 : options.durationMs) ?? 5e3);
+        const duration = Math.max(1000, options?.durationMs ?? 5000);
         this.wavePreviewHintTimeout = setTimeout(() => {
             this.wavePreviewHintTimeout = null;
             if (this.wavePreviewHintPinned) {
@@ -893,6 +915,7 @@ export class HudView {
         }
         const summary = passives.length === 1 ? "1 passive" : `${passives.length} passives`;
         this.updateCondensedSectionSummary(this.castlePassivesSection, summary);
+        this.applyPassiveHighlight();
     }
     renderCastleGoldEvents(events, currentTime) {
         const list = this.castleGoldEvents;
@@ -979,6 +1002,7 @@ export class HudView {
         const summary = passives.length === 1 ? "1 passive" : `${passives.length} passives`;
         this.updateOptionsPassivesSummary(summary);
         this.setOptionsPassivesCollapsed(this.optionsPassivesCollapsed, { silent: true });
+        this.applyPassiveHighlight();
     }
     formatCastlePassive(passive, options = {}) {
         const includeDelta = options.includeDelta ?? false;
@@ -1010,13 +1034,57 @@ export class HudView {
         const icon = document.createElement("span");
         const label = document.createElement("span");
         const passiveId = passive.id ?? "generic";
+        item.dataset.passiveId = passiveId;
+        const iconMeta = PASSIVE_ICON_MAP[passiveId] ?? PASSIVE_ICON_MAP.generic;
         icon.className = `passive-icon passive-icon--${passiveId}`;
-        icon.setAttribute("aria-hidden", "true");
+        icon.setAttribute("role", "img");
+        icon.setAttribute("aria-label", iconMeta.label);
+        icon.title = iconMeta.label;
         label.className = "passive-label";
         label.textContent = this.formatCastlePassive(passive, options);
         item.appendChild(icon);
         item.appendChild(label);
         return item;
+    }
+    setPassiveHighlight(passiveId, options = {}) {
+        this.passiveHighlightId = passiveId;
+        if (passiveId) {
+            if (options.autoExpand !== false) {
+                if (this.castlePassivesSection) {
+                    this.setCondensedSectionCollapsed(this.castlePassivesSection, false, {
+                        silent: true,
+                        sectionId: "hud-passives"
+                    });
+                }
+                if (this.optionsCastlePassives) {
+                    this.setOptionsPassivesCollapsed(false, { silent: true });
+                }
+            }
+        }
+        this.applyPassiveHighlight(options);
+    }
+    applyPassiveHighlight(options = {}) {
+        const highlight = this.passiveHighlightId;
+        const targets = [];
+        if (this.castlePassives)
+            targets.push(this.castlePassives);
+        if (this.optionsCastlePassives)
+            targets.push(this.optionsCastlePassives);
+        for (const list of targets) {
+            const items = Array.from(list.querySelectorAll("li"));
+            for (const item of items) {
+                const isMatch = Boolean(highlight && item.dataset.passiveId === highlight);
+                if (isMatch) {
+                    item.classList.add("passive-item--highlight");
+                    if (options.scrollIntoView && typeof item.scrollIntoView === "function") {
+                        item.scrollIntoView({ block: "nearest" });
+                    }
+                }
+                else {
+                    item.classList.remove("passive-item--highlight");
+                }
+            }
+        }
     }
     updateOptionsPassivesSummary(summary) {
         if (this.optionsPassivesSummary) {
@@ -1186,18 +1254,15 @@ export class HudView {
         }
     }
     getCondensedState() {
-        var _a, _b;
         const compactHeightActive = typeof document !== "undefined" &&
             typeof document.body !== "undefined" &&
             document.body.dataset.compactHeight === "true";
         return {
             tutorialBannerCondensed: this.shouldCondenseTutorialBanner(),
             tutorialBannerExpanded: this.tutorialBannerExpanded,
-            hudCastlePassivesCollapsed: ((_a = this.castlePassivesSection) == null ? void 0 : _a.collapsed) ?? null,
-            hudGoldEventsCollapsed: ((_b = this.castleGoldEventsSection) == null ? void 0 : _b.collapsed) ?? null,
-            optionsPassivesCollapsed: typeof this.optionsPassivesCollapsed === "boolean"
-                ? this.optionsPassivesCollapsed
-                : null,
+            hudCastlePassivesCollapsed: this.castlePassivesSection?.collapsed ?? null,
+            hudGoldEventsCollapsed: this.castleGoldEventsSection?.collapsed ?? null,
+            optionsPassivesCollapsed: typeof this.optionsPassivesCollapsed === "boolean" ? this.optionsPassivesCollapsed : null,
             compactHeight: compactHeightActive,
             prefersCondensedLists: this.prefersCondensedHudLists()
         };
@@ -1232,7 +1297,7 @@ export class HudView {
                 }
             }
             catch {
-                // ignore
+                // ignore matchMedia failures
             }
         }
         this.refreshTutorialBannerLayout();
@@ -2451,6 +2516,25 @@ export class HudView {
             return;
         document.documentElement.style.setProperty("--hud-font-scale", scale.toString());
     }
+    setReducedMotionEnabled(enabled) {
+        if (typeof document !== "undefined") {
+            if (document.documentElement) {
+                document.documentElement.dataset.reducedMotion = enabled ? "true" : "false";
+            }
+            if (document.body) {
+                document.body.dataset.reducedMotion = enabled ? "true" : "false";
+            }
+        }
+        if (this.hudRoot) {
+            this.hudRoot.dataset.reducedMotion = enabled ? "true" : "false";
+        }
+    }
+    setCanvasTransitionState(state) {
+        if (!this.hudRoot)
+            return;
+        this.hudRoot.dataset.canvasTransition = state;
+        this.hudRoot.classList.toggle("hud--canvas-transition", state === "running");
+    }
     hasAnalyticsViewer() {
         return Boolean(this.analyticsViewer);
     }
@@ -2822,4 +2906,3 @@ export class HudView {
         }
     }
 }
-

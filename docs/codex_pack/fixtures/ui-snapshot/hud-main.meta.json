@@ -1,0 +1,44 @@
+{
+  "id": "hud-main",
+  "description": "Fixture HUD capture showcasing compact tutorial banner",
+  "file": "artifacts/screenshots/hud-main.png",
+  "capturedAt": "2025-11-20T00:00:00.000Z",
+  "starfieldScene": "tutorial",
+  "badges": [
+    "viewport:compact-height",
+    "tutorial:condensed",
+    "hud-passives:collapsed",
+    "hud-gold-events:collapsed",
+    "hud:prefers-condensed",
+    "diagnostics:condensed",
+    "diagnostics:sections-collapsed",
+    "diagnostics:gold-events:collapsed",
+    "diagnostics:castle-passives:expanded",
+    "pref:diagnostics:gold-events:collapsed",
+    "starfield:tutorial"
+  ],
+  "summary": "Compact viewport; Tutorial banner condensed; HUD passives collapsed; HUD gold events collapsed; Diagnostics condensed; Diagnostics sections — gold-events:collapsed, castle-passives:expanded",
+  "uiSnapshot": {
+    "compactHeight": true,
+    "tutorialBanner": { "condensed": true, "expanded": false },
+    "hud": {
+      "passivesCollapsed": true,
+      "goldEventsCollapsed": true,
+      "prefersCondensedLists": true
+    },
+    "options": { "passivesCollapsed": false },
+    "diagnostics": {
+      "condensed": true,
+      "sectionsCollapsed": true,
+      "collapsedSections": { "gold-events": true, "castle-passives": false },
+      "lastUpdatedAt": "2025-11-20T00:00:00.000Z"
+    },
+    "preferences": {
+      "hudPassivesCollapsed": true,
+      "hudGoldEventsCollapsed": true,
+      "optionsPassivesCollapsed": false,
+      "diagnosticsSections": { "gold-events": true, "castle-passives": false },
+      "diagnosticsSectionsUpdatedAt": "2025-11-20T00:00:00.000Z"
+    }
+  }
+}

@@ -10,6 +10,14 @@ produces:
 status_note: docs/status/2025-11-06_hud_screenshots.md
 backlog_refs:
   - "#94"
+traceability:
+  tests:
+    - path: apps/keyboard-defense/tests/renderHudGallery.test.js
+      description: HUD gallery rendering + metadata
+    - path: apps/keyboard-defense/tests/hudScreenshotsMetadata.test.js
+      description: HUD screenshot metadata validation
+  commands:
+    - npx playwright test --config playwright.config.ts --project=visual
 ---
 
 **Context**  

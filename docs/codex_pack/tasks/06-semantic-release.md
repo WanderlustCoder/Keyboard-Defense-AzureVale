@@ -7,7 +7,7 @@ depends_on: []
 produces:
   - semantic-release config
   - GitHub Releases with attached build
-status_note: docs/status/2025-11-15_tooling_baseline.md
+status_note: docs/status/2025-11-21_semantic_release.md
 backlog_refs:
   - "#80"
 ---

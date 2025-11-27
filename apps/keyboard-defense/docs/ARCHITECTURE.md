@@ -21,6 +21,8 @@
 ## Rendering & Input
 - Rendering lives in `rendering/CanvasRenderer.ts`, consuming read-only `GameState` snapshots each frame.
 - `SpriteRenderer` synthesizes lightweight gradients/patterns so enemies and turrets have distinct silhouettes without requiring external assets.
+- Starfield parallax uses a shared config/controller (`utils/starfield.ts`) so the canvas background drifts/tints based on wave progress + castle health; diagnostics surface drift/tint plus severity and `reducedMotionApplied` flags for CI evidence.
+- Defeat burst animations now honor optional sprite atlases defined in the asset manifest: `AssetLoader` exposes defeat animation metadata, the renderer streams frames when available, and the player's "Defeat Animations" preference (auto/sprite/procedural) controls whether sprites or the procedural fallback are used.
 - UI overlays (HUD, upgrade panels, typing feedback) are DOM-driven, decoupled from simulation data.
 - Input adapters translate keyboard events into `TypingSystem` calls; alternative adapters (recorded scripts, automated typing) can be swapped in tests.
 

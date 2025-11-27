@@ -1,5 +1,8 @@
-import { RuntimeMetrics } from "../engine/gameEngine.js";
-import { CastlePassive, CastlePassiveUnlock, WaveSummary } from "../core/types.js";
+import { type RuntimeMetrics } from "../engine/gameEngine.js";
+import { type CastlePassive, type CastlePassiveUnlock, type WaveSummary } from "../core/types.js";
+import type { ResolutionTransitionState } from "./ResolutionTransitionController.js";
+import type { AssetIntegritySummary } from "../types/assetIntegrity.js";
+import { type StarfieldParallaxState } from "../utils/starfield.js";
 
 function formatRegen(passive: CastlePassive): string {
   const total = passive.total.toFixed(1);
@@ -43,6 +46,13 @@ function describePassiveUnlock(unlock: CastlePassiveUnlock): string {
   return `${description} @ ${unlock.time.toFixed(1)}s (castle L${unlock.level})`;
 }
 
+function formatFloat(value: number | null | undefined, digits = 2): string {
+  if (typeof value !== "number" || Number.isNaN(value)) {
+    return "-";
+  }
+  return value.toFixed(digits);
+}
+
 export interface DiagnosticsSessionStats {
   bestCombo: number;
   breaches: number;
@@ -61,10 +71,26 @@ export interface DiagnosticsSessionStats {
   timeToFirstTurretSeconds?: number | null;
   totalReactionTime?: number;
   reactionSamples?: number;
+  assetIntegrity?: AssetIntegritySummary | null;
+  lastCanvasResizeCause?: string | null;
+  starfield?: StarfieldParallaxState | null;
 }
 
 const COLLAPSIBLE_SECTIONS = ["gold-events", "castle-passives", "turret-dps"] as const;
 type DiagnosticsSectionId = (typeof COLLAPSIBLE_SECTIONS)[number];
+
+const SECTION_LABELS: Record<DiagnosticsSectionId, string> = {
+  "gold-events": "Gold events",
+  "castle-passives": "Castle passives",
+  "turret-dps": "Turret DPS"
+};
+
+type DiagnosticsSectionPreferences = Partial<Record<DiagnosticsSectionId, boolean>>;
+
+interface DiagnosticsOverlayOptions {
+  sectionPreferences?: DiagnosticsSectionPreferences;
+  onPreferencesChange?: (prefs: DiagnosticsSectionPreferences) => void;
+}
 
 export class DiagnosticsOverlay {
   private visible = true;
@@ -73,12 +99,25 @@ export class DiagnosticsOverlay {
   private collapseToggle?: HTMLButtonElement | null;
   private lastMetrics: RuntimeMetrics | null = null;
   private lastSession?: DiagnosticsSessionStats;
+  private sectionCollapsed: DiagnosticsSectionPreferences = {};
+  private controlsRoot: HTMLDivElement | null = null;
+  private linesRoot: HTMLDivElement | null = null;
+  private readonly onPreferencesChange?: (prefs: DiagnosticsSectionPreferences) => void;
+  private canvasTransitionState: ResolutionTransitionState = "idle";
 
-  constructor(private readonly container: HTMLElement) {
+  constructor(
+    private readonly container: HTMLElement,
+    options: DiagnosticsOverlayOptions = {}
+  ) {
+    this.sectionCollapsed = { ...(options.sectionPreferences ?? {}) };
+    this.onPreferencesChange = options.onPreferencesChange;
     this.setVisible(false);
+    this.setupRoots();
     this.initializeResponsiveBehavior();
     this.syncCollapseToggle();
+    this.renderSectionControls();
     this.updateCollapseButton();
+    this.container.dataset.canvasTransition = this.container.dataset.canvasTransition ?? "idle";
   }
 
   update(metrics: RuntimeMetrics, session?: DiagnosticsSessionStats): void {
@@ -127,8 +166,98 @@ export class DiagnosticsOverlay {
       `Rolling accuracy (${metrics.typing.recentSampleSize} inputs): ${(
         metrics.typing.recentAccuracy * 100
       ).toFixed(1)}%`,
-      `Difficulty bias: ${metrics.typing.difficultyBias >= 0 ? "+" : ""}${metrics.typing.difficultyBias.toFixed(2)}`
+      `Difficulty bias: ${
+        metrics.typing.difficultyBias >= 0 ? "+" : ""
+      }${metrics.typing.difficultyBias.toFixed(2)}`
     ];
+    const defeatStats = metrics.defeatBursts;
+    if (defeatStats) {
+      const perMinuteLabel = formatFloat(defeatStats.perMinute, 2);
+      const spritePctLabel = formatFloat(defeatStats.spriteUsagePct, 1);
+      lines.push(
+        `Defeat bursts: ${defeatStats.total} total (${perMinuteLabel}/min, sprite ${spritePctLabel}%)`
+      );
+      if (
+        typeof defeatStats.lastTimestamp === "number" ||
+        typeof defeatStats.lastEnemyType === "string"
+      ) {
+        const laneLabel =
+          typeof defeatStats.lastLane === "number"
+            ? `lane ${defeatStats.lastLane + 1}`
+            : "lane ?";
+        const ageLabel =
+          typeof defeatStats.lastAgeSeconds === "number"
+            ? `${defeatStats.lastAgeSeconds.toFixed(1)}s ago`
+            : "n/a";
+        const idleAlert =
+          typeof defeatStats.lastAgeSeconds === "number" &&
+          defeatStats.lastAgeSeconds > 15 &&
+          metrics.enemiesAlive > 0
+            ? " ⚠️ idle"
+            : "";
+        lines.push(
+          `  Last: ${defeatStats.lastEnemyType ?? "unknown"} @ ${laneLabel} (${defeatStats.lastMode ?? "procedural"}, ${ageLabel})${idleAlert}`
+        );
+      }
+    }
+    const starfield = session?.starfield ?? null;
+    if (starfield) {
+      lines.push(
+        `Starfield: drift ${formatFloat(starfield.driftMultiplier, 2)}x | depth ${formatFloat(
+          starfield.depth,
+          2
+        )} | tint ${starfield.tint}${starfield.reducedMotionApplied ? " (reduced motion)" : ""}`
+      );
+      lines.push(
+        `  Wave ${Math.round(starfield.waveProgress * 100)}% · Castle HP ${Math.round(
+          starfield.castleHealthRatio * 100
+        )}% · Severity ${Math.round((starfield.severity ?? 0) * 100)}%`
+      );
+      if (Array.isArray(starfield.layers) && starfield.layers.length > 0) {
+        const layerNotes = starfield.layers
+          .slice(0, 3)
+          .map((layer) => {
+            const dir = layer.direction === 1 ? "→" : "←";
+            return `${layer.id}:${formatFloat(layer.velocity, 3)}${dir}`;
+          })
+          .join(" | ");
+        lines.push(`  Layers: ${layerNotes}`);
+      }
+    }
+    const lastCanvasResizeCause = session?.lastCanvasResizeCause ?? null;
+    if (lastCanvasResizeCause) {
+      lines.push(`Last canvas resize: ${lastCanvasResizeCause}`);
+    }
+    const assetIntegrity = session?.assetIntegrity ?? null;
+    if (assetIntegrity) {
+      const strictLabel = assetIntegrity.strictMode ? "strict" : "soft";
+      const statusLabel = (assetIntegrity.status ?? "pending").toUpperCase();
+      const totalImages =
+        typeof assetIntegrity.totalImages === "number"
+          ? assetIntegrity.totalImages
+          : assetIntegrity.checked ?? 0;
+      const issues: string[] = [];
+      if ((assetIntegrity.missingHash ?? 0) > 0) {
+        issues.push(`missing ${assetIntegrity.missingHash}`);
+      }
+      if ((assetIntegrity.failed ?? 0) > 0) {
+        issues.push(`failed ${assetIntegrity.failed}`);
+      }
+      const issueLabel = issues.length > 0 ? ` | ${issues.join(" | ")}` : "";
+      lines.unshift(
+        `Asset integrity: ${statusLabel} (${strictLabel}) - checked ${assetIntegrity.checked ?? 0}/${totalImages}${issueLabel}`
+      );
+      if (assetIntegrity.firstFailure) {
+        const failure = assetIntegrity.firstFailure;
+        const pathLabel =
+          failure.path && failure.path !== failure.key ? `${failure.path} (${failure.key})` : failure.key;
+        lines.splice(1, 0, `  First issue: ${pathLabel ?? "unknown"} [${failure.type}]`);
+      }
+    } else {
+      lines.unshift(
+        "Asset integrity: telemetry unavailable (run npm run assets:integrity -- --check)"
+      );
+    }
 
     const roundedGold = Math.round(metrics.gold);
     const goldLineParts = [`Gold: ${roundedGold}`];
@@ -143,11 +272,13 @@ export class DiagnosticsOverlay {
     goldLineParts.push(`events: ${goldEventCount}`);
     lines.push(goldLineParts.join(" "));
 
-    const showDetails = !this.condensed || !this.sectionsCollapsed;
+    const showGoldEvents = this.shouldShowSection("gold-events");
+    const showTurretStats = this.shouldShowSection("turret-dps");
+    const showCastlePassives = this.shouldShowSection("castle-passives");
     const recentGoldEvents = Array.isArray(metrics.recentGoldEvents)
       ? metrics.recentGoldEvents
       : [];
-    if (recentGoldEvents.length > 0 && showDetails) {
+    if (recentGoldEvents.length > 0 && showGoldEvents) {
       lines.push("Recent gold events:");
       const orderedEvents = [...recentGoldEvents].sort((a, b) => b.timestamp - a.timestamp);
       for (const event of orderedEvents) {
@@ -171,11 +302,17 @@ export class DiagnosticsOverlay {
     }
 
     if (castlePassives.length > 0) {
-      lines.push(
-        `Castle passives (${castlePassives.length} active): ${castlePassives
-          .map(describeCastlePassive)
-          .join(" | ")}`
-      );
+      if (showCastlePassives) {
+        lines.push(
+          `Castle passives (${castlePassives.length} active): ${castlePassives
+            .map(describeCastlePassive)
+            .join(" | ")}`
+        );
+      } else {
+        lines.push(
+          `Castle passives (${castlePassives.length} active) (collapsed, expand to view details)`
+        );
+      }
     } else {
       lines.push("Castle passives: none unlocked");
     }
@@ -187,7 +324,7 @@ export class DiagnosticsOverlay {
 
     lines.push(`Time: ${metrics.time.toFixed(1)}s`);
 
-    if (turretStats.length > 0 && showDetails) {
+    if (turretStats.length > 0 && showTurretStats) {
       lines.push("Turret DPS breakdown:");
       for (const stat of turretStats) {
         const label = stat.turretType
@@ -276,22 +413,125 @@ export class DiagnosticsOverlay {
       }
     }
 
-    this.container.innerHTML = lines
+    const target = this.linesRoot ?? this.container;
+    target.innerHTML = lines
       .map((line) => `<div class="diagnostics-line">${line}</div>`)
       .join("");
     this.container.dataset.visible = "true";
     this.updateCollapseButton();
+    this.renderSectionControls();
   }
 
-  getCondensedState(): { condensed: boolean; sectionsCollapsed: boolean } {
+  setCanvasTransitionState(state: ResolutionTransitionState): void {
+    if (this.canvasTransitionState === state) return;
+    this.canvasTransitionState = state;
+    this.container.dataset.canvasTransition = state;
+  }
+
+  getCondensedState(): {
+    condensed: boolean;
+    sectionsCollapsed: boolean;
+    collapsedSections: DiagnosticsSectionPreferences;
+  } {
     return {
       condensed: this.condensed,
-      sectionsCollapsed: this.sectionsCollapsed
+      sectionsCollapsed: this.sectionsCollapsed,
+      collapsedSections: { ...this.sectionCollapsed }
     };
+  }
+
+  applySectionPreferences(
+    preferences: DiagnosticsSectionPreferences,
+    options: { silent?: boolean } = {}
+  ): void {
+    this.sectionCollapsed = { ...this.sectionCollapsed, ...preferences };
+    this.updateSectionsCollapsedFlag();
+    if (!options.silent) {
+      this.emitSectionPreferences();
+    }
+    if (this.lastMetrics) {
+      this.update(this.lastMetrics, this.lastSession);
+    } else {
+      this.renderSectionControls();
+    }
   }
 
   toggle(): void {
     this.setVisible(!this.visible);
+  }
+
+  private shouldShowSection(sectionId: DiagnosticsSectionId): boolean {
+    if (!this.condensed) {
+      return true;
+    }
+    return this.sectionCollapsed[sectionId] !== true;
+  }
+
+  private isSectionCollapsed(sectionId: DiagnosticsSectionId): boolean {
+    return this.sectionCollapsed[sectionId] !== false;
+  }
+
+  private setSectionCollapsed(
+    sectionId: DiagnosticsSectionId,
+    collapsed: boolean,
+    options: { userInitiated?: boolean } = {}
+  ): void {
+    const next = collapsed ? true : false;
+    if (this.sectionCollapsed[sectionId] === next) {
+      return;
+    }
+    this.sectionCollapsed[sectionId] = next;
+    this.updateSectionsCollapsedFlag();
+    if (options.userInitiated) {
+      this.emitSectionPreferences();
+    }
+    if (this.lastMetrics) {
+      this.update(this.lastMetrics, this.lastSession);
+    }
+  }
+
+  private collapseAllSections(): void {
+    for (const sectionId of COLLAPSIBLE_SECTIONS) {
+      this.sectionCollapsed[sectionId] = true;
+    }
+    this.updateSectionsCollapsedFlag();
+    this.emitSectionPreferences();
+    if (this.lastMetrics) {
+      this.update(this.lastMetrics, this.lastSession);
+    }
+  }
+
+  private expandAllSections(): void {
+    for (const sectionId of COLLAPSIBLE_SECTIONS) {
+      this.sectionCollapsed[sectionId] = false;
+    }
+    this.updateSectionsCollapsedFlag();
+    this.emitSectionPreferences();
+    if (this.lastMetrics) {
+      this.update(this.lastMetrics, this.lastSession);
+    }
+  }
+
+  private areAllSectionsCollapsed(): boolean {
+    return COLLAPSIBLE_SECTIONS.every((sectionId) => this.sectionCollapsed[sectionId] !== false);
+  }
+
+  private emitSectionPreferences(): void {
+    if (typeof this.onPreferencesChange === "function") {
+      const clone: DiagnosticsSectionPreferences = {};
+      for (const sectionId of COLLAPSIBLE_SECTIONS) {
+        if (this.sectionCollapsed[sectionId] !== undefined) {
+          clone[sectionId] = this.sectionCollapsed[sectionId];
+        }
+      }
+      this.onPreferencesChange(clone);
+    }
+    this.renderSectionControls();
+  }
+
+  private updateSectionsCollapsedFlag(): void {
+    this.sectionsCollapsed = this.areAllSectionsCollapsed();
+    this.syncAutomationFlags();
   }
 
   setVisible(next: boolean): void {
@@ -335,13 +575,17 @@ export class DiagnosticsOverlay {
     this.condensed = condensed;
     if (condensed) {
       this.container.dataset.condensed = "true";
-      this.sectionsCollapsed = true;
+      for (const sectionId of COLLAPSIBLE_SECTIONS) {
+        if (this.sectionCollapsed[sectionId] === undefined) {
+          this.sectionCollapsed[sectionId] = true;
+        }
+      }
     } else {
       delete this.container.dataset.condensed;
-      this.sectionsCollapsed = false;
     }
+    this.updateSectionsCollapsedFlag();
     this.syncCollapseToggle();
-    this.syncAutomationFlags();
+    this.renderSectionControls();
     this.updateCollapseButton();
   }
 
@@ -375,10 +619,10 @@ export class DiagnosticsOverlay {
       this.collapseToggle.type = "button";
       document.body.appendChild(this.collapseToggle);
       this.collapseToggle.addEventListener("click", () => {
-        this.sectionsCollapsed = !this.sectionsCollapsed;
-        this.updateCollapseButton();
-        if (this.lastMetrics) {
-          this.update(this.lastMetrics, this.lastSession);
+        if (this.areAllSectionsCollapsed()) {
+          this.expandAllSections();
+        } else {
+          this.collapseAllSections();
         }
       });
     }
@@ -397,7 +641,7 @@ export class DiagnosticsOverlay {
       this.syncAutomationFlags();
       return;
     }
-    const expanded = !this.sectionsCollapsed;
+    const expanded = !this.areAllSectionsCollapsed();
     this.collapseToggle.textContent = expanded
       ? "Collapse diagnostics details"
       : "Expand diagnostics details";
@@ -413,6 +657,79 @@ export class DiagnosticsOverlay {
       return;
     }
     document.body.dataset.diagnosticsCondensed = "true";
-    document.body.dataset.diagnosticsSectionsCollapsed = this.sectionsCollapsed ? "true" : "false";
+    document.body.dataset.diagnosticsSectionsCollapsed = this.areAllSectionsCollapsed()
+      ? "true"
+      : "false";
+  }
+
+  private setupRoots(): void {
+    if (typeof document === "undefined") {
+      this.controlsRoot = null;
+      this.linesRoot = null;
+      return;
+    }
+    this.container.innerHTML = "";
+    this.controlsRoot = document.createElement("div");
+    this.controlsRoot.id = "diagnostics-section-controls";
+    this.controlsRoot.dataset.visible = "false";
+    this.controlsRoot.addEventListener("click", (event) => this.handleControlsClick(event));
+    this.container.appendChild(this.controlsRoot);
+
+    this.linesRoot = document.createElement("div");
+    this.linesRoot.className = "diagnostics-lines";
+    this.container.appendChild(this.linesRoot);
+  }
+
+  private handleControlsClick(event: Event): void {
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) {
+      return;
+    }
+    const action = target.dataset.action;
+    if (action === "expand-all") {
+      this.expandAllSections();
+      return;
+    }
+    if (action === "collapse-all") {
+      this.collapseAllSections();
+      return;
+    }
+    const sectionId = target.dataset.section as DiagnosticsSectionId | undefined;
+    if (!sectionId) {
+      return;
+    }
+    const currentlyCollapsed = this.isSectionCollapsed(sectionId);
+    this.setSectionCollapsed(sectionId, !currentlyCollapsed, { userInitiated: true });
+  }
+
+  private renderSectionControls(): void {
+    if (!this.controlsRoot) {
+      return;
+    }
+    if (!this.condensed) {
+      this.controlsRoot.dataset.visible = "false";
+      this.controlsRoot.innerHTML = "";
+      return;
+    }
+    this.controlsRoot.dataset.visible = "true";
+    const controls: string[] = [];
+    controls.push(
+      `<button type="button" data-action="expand-all" class="diagnostics-control-button">Expand all</button>`
+    );
+    controls.push(
+      `<button type="button" data-action="collapse-all" class="diagnostics-control-button">Collapse all</button>`
+    );
+    for (const sectionId of COLLAPSIBLE_SECTIONS) {
+      const collapsed = this.isSectionCollapsed(sectionId);
+      const label = SECTION_LABELS[sectionId];
+      controls.push(
+        `<button type="button" class="diagnostics-control-button" data-section="${sectionId}" aria-pressed="${collapsed ? "false" : "true"}">${
+          collapsed ? "Show" : "Hide"
+        } ${label}</button>`
+      );
+    }
+    this.controlsRoot.innerHTML = `<div class="diagnostics-controls-inner">${controls.join(
+      ""
+    )}</div>`;
   }
 }

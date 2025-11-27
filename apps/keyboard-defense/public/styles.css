@@ -125,6 +125,28 @@ textarea {
   pointer-events: none;
 }
 
+.canvas-transition-overlay {
+  border-radius: 8px;
+  pointer-events: none;
+  z-index: 20;
+  will-change: opacity;
+}
+
+body[data-canvas-transition="running"] #hud,
+body[data-canvas-transition="running"] #diagnostics-overlay {
+  opacity: 0.92;
+  transition: opacity 0.15s ease;
+}
+
+#hud[data-canvas-transition="running"],
+#diagnostics-overlay[data-canvas-transition="running"] {
+  pointer-events: none;
+}
+
+#hud.hud--canvas-transition {
+  transition: opacity 0.15s ease;
+}
+
 @keyframes canvas-resize-fade {
   0% {
     opacity: 0.2;
@@ -993,30 +1015,69 @@ details {
 }
 
 .passive-icon {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
   display: inline-flex;
   flex-shrink: 0;
-  box-shadow: 0 0 4px rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(15, 23, 42, 0.35);
+  background-color: rgba(15, 23, 42, 0.65);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 14px 14px;
+  box-shadow: 0 0 8px rgba(15, 23, 42, 0.25);
 }
 
 .passive-icon--regen {
-  background: radial-gradient(circle at 35% 35%, #bbf7d0, #047857);
+  background-color: #022c22;
+  border-color: rgba(16, 185, 129, 0.45);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.25);
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTAiIGZpbGw9IiMwNjRlM2IiLz48cGF0aCBmaWxsPSIjYmJmN2QwIiBkPSJNMTEgNmgydjVoNXYyaC01djVoLTJ2LTVINnYtMmg1eiIvPjwvc3ZnPg==");
 }
 
 .passive-icon--armor {
-  background: radial-gradient(circle at 40% 40%, #f8fafc, #94a3b8);
-  border: 1px solid rgba(148, 163, 184, 0.7);
+  background-color: #0f172a;
+  border-color: rgba(148, 163, 184, 0.8);
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2UyZThmMCIgc3Ryb2tlPSIjOTRhM2I4IiBzdHJva2Utd2lkdGg9IjEuMiIgZD0iTTEyIDMuNSA1IDZ2NmMwIDMuOSAyLjY2IDcuNTYgNi40NCA4LjkzYTEgMSAwIDAgMCAuNzIgMEMxNS44NCAyMC41NiAxOSAxNyAxOSAxMlY2bC02LTIuNVoiLz48cGF0aCBmaWxsPSIjNjQ3NDhiIiBkPSJNMTIgN2MtMi4xIDAtMy42IDEuOC0zLjYgNC4xIDAgMi42IDEuNCA0LjkgMy42IDYuMSAyLjItMS4yIDMuNi0zLjUgMy42LTYuMUMxNS42IDguOCAxNC4xIDcgMTIgN1ptMCAxLjhjMSAwIDEuOC44IDEuOCAyLjMgMCAxLjQtLjcgMi42LTEuOCAzLjMtMS4xLS43LTEuOC0xLjktMS44LTMuMyAwLTEuNS44LTIuMyAxLjgtMi4zWiIvPjwvc3ZnPg==");
 }
 
 .passive-icon--gold {
-  background: radial-gradient(circle at 35% 30%, #fef9c3, #facc15 60%, #f97316);
-  box-shadow: 0 0 6px rgba(253, 224, 71, 0.35);
+  background-color: #78350f;
+  border-color: rgba(250, 204, 21, 0.8);
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.35);
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PGVsbGlwc2UgY3g9IjEyIiBjeT0iOCIgcng9IjciIHJ5PSIzLjUiIGZpbGw9IiNmY2QzNGQiIHN0cm9rZT0iI2Y1OWUwYiIgc3Ryb2tlLXdpZHRoPSIxLjEiLz48cGF0aCBmaWxsPSIjZmJiZjI0IiBzdHJva2U9IiNmNTllMGIiIHN0cm9rZS13aWR0aD0iMS4xIiBkPSJNNSA5LjV2NWMwIDEuOTMgMy4xMyAzLjUgNyAzLjVzNy0xLjU3IDctMy41di01Ii8+PGVsbGlwc2UgY3g9IjEyIiBjeT0iOS41IiByeD0iNyIgcnk9IjMuNSIgZmlsbD0iI2ZkZTY4YSIgb3BhY2l0eT0iLjciLz48L3N2Zz4=");
 }
 
 .passive-icon--generic {
-  background: radial-gradient(circle at 35% 35%, #e2e8f0, #64748b);
+  background-color: #1e1b4b;
+  border-color: rgba(129, 140, 248, 0.7);
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTAiIGZpbGw9IiMzMTJlODEiLz48cGF0aCBmaWxsPSIjYTViNGZjIiBkPSJNMTEgN2gydjEwaC0yeiIgb3BhY2l0eT0iLjciLz48cGF0aCBmaWxsPSIjYzdkMmZlIiBkPSJNNyAxMWgxMHYySDd6Ii8+PC9zdmc+");
+}
+
+.passive-item--highlight {
+  background: rgba(59, 130, 246, 0.12);
+  border-radius: 8px;
+  animation: passiveHighlightPulse 1.4s ease-in-out infinite alternate;
+}
+
+.passive-item--highlight .passive-icon {
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.35);
+  border-color: rgba(59, 130, 246, 0.45);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .passive-item--highlight {
+    animation: none;
+  }
+}
+
+@keyframes passiveHighlightPulse {
+  from {
+    box-shadow: 0 0 0 rgba(96, 165, 250, 0.45);
+  }
+  to {
+    box-shadow: 0 0 12px rgba(96, 165, 250, 0.6);
+  }
 }
 
 .passive-label {
@@ -2099,4 +2160,12 @@ body[data-compact-height="true"] .tutorial-banner {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+}
+
+body[data-asset-integrity-status="failed"] #diagnostics-overlay {
+  box-shadow: 0 0 0 2px #dc2626;
+}
+
+body[data-asset-integrity-status="warning"] #diagnostics-overlay {
+  box-shadow: 0 0 0 2px #f97316;
 }

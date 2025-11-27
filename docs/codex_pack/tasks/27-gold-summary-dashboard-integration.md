@@ -33,6 +33,46 @@ publish metrics (percentiles, anomalies) automatically.
 4. **Docs**
    - Update status/backlog references once the integration is live.
 
+## Implementation Notes
+
+- **CLI contract**
+  - `scripts/ci/goldSummaryReport.mjs` should accept multiple inputs
+    (`--summary`, `--percentiles`, `--baseline`, `--out-json`, `--out-md`) so it can
+    be invoked both in CI (pointing to fresh artifacts) and locally (pointing to
+    fixtures under `docs/codex_pack/fixtures/gold/`).
+  - Normalize outputs into a shared structure:
+    ```json
+    {
+      "scenario": "tutorial-smoke",
+      "metrics": {
+        "gain": { "median": 145, "p90": 210 },
+        "spend": { "median": 90, "p90": 140 },
+        "netDelta": 32
+      },
+      "alerts": [{ "metric": "spend.p90", "status": "warn", "delta": 15 }]
+    }
+    ```
+  - Markdown renderer should print a table per scenario plus an alert section with emoji badges + remediation tips.
+- **Thresholds & config**
+  - Read defaults from `ci/gold-summary-thresholds.json` (abs + % deltas) with env override (`GOLD_SUMMARY_THRESHOLDS`).
+  - Support `--mode info|warn|fail` so nightly runs can warn while release branches fail on drift.
+- **Workflow integration**
+  - After `npm run analytics:gold`, run the report CLI, upload JSON to `artifacts/summaries/gold-summary-report.ci.json`, and append Markdown to the job summary.
+  - Publish the Markdown snippet to the Codex dashboard tile (via `docs/codex_dashboard.md` or `scripts/generateCodexDashboard.mjs`).
+- **Docs & playbooks**
+  - Document regeneration steps (`npm run analytics:gold && node scripts/ci/goldSummaryReport.mjs --fixtures ...`) inside `CODEX_GUIDE.md`, `CODEX_PLAYBOOKS.md` (Analytics section), and `docs/docs_index.md`.
+  - Update the Nov-08 gold summary status note once dashboards consume the new feed.
+- **Testing**
+  - Create fixtures covering normal + drift scenarios and snapshot both JSON + Markdown outputs.
+  - Add unit tests for threshold evaluation, scenario filtering, and CLI argument parsing.
+
+## Deliverables & Artifacts
+
+- `scripts/ci/goldSummaryReport.mjs` + tests + fixtures.
+- Threshold config file + documentation on updating it.
+- CI workflow update uploading `artifacts/summaries/gold-summary-report*.json|md`.
+- Dashboard + doc updates pointing to the new summary.
+
 ## Acceptance criteria
 
 - CI job summary shows gold summary metrics without downloading artifacts.
@@ -46,4 +86,4 @@ publish metrics (percentiles, anomalies) automatically.
 - npm run codex:validate-pack
 - npm run codex:validate-links
 - npm run codex:status
-- Run the script locally with fixtures to confirm summary output.
+- node scripts/ci/goldSummaryReport.mjs docs/codex_pack/fixtures/gold-summary.json --summary temp/gold-summary-report.fixture.json --mode warn

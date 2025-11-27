@@ -6,11 +6,15 @@ import {
   type AnalyticsSnapshot,
   type CastlePassive,
   type CastlePassiveUnlock,
+  type ComboWarningHistoryEntry,
+  type DefeatBurstAnalyticsEntry,
+  type DefeatBurstMode,
   type EnemyState,
   type GameMode,
   type GameState,
   type GameStatus,
   type GoldEvent,
+  type StarfieldAnalyticsState,
   type TurretRuntimeStat,
   type TurretSlotState,
   type TurretTargetPriority,
@@ -31,6 +35,7 @@ import { type TelemetryClient } from "../telemetry/telemetryClient.js";
 
 const MAX_WAVE_HISTORY = 100;
 const MAX_GOLD_EVENTS = 200;
+const MAX_COMBO_WARNING_HISTORY = 20;
 const DEFAULT_TURRET_PRIORITY: TurretTargetPriority = "first";
 
 export interface TurretBlueprintSlot {
@@ -99,6 +104,20 @@ export interface RuntimeMetrics {
   castlePassives: CastlePassive[];
   lastPassiveUnlock: CastlePassiveUnlock | null;
   passiveUnlockCount: number;
+  defeatBursts: {
+    total: number;
+    perMinute: number;
+    spriteUsagePct: number;
+    sprite: number;
+    procedural: number;
+    lastEnemyType: string | null;
+    lastLane: number | null;
+    lastTimestamp: number | null;
+    lastAgeSeconds: number | null;
+    lastMode: DefeatBurstMode | null;
+  };
+  defeatBurstHistory: DefeatBurstAnalyticsEntry[];
+  starfield?: StarfieldAnalyticsState | null;
 }
 
 export interface InputResult {
@@ -126,6 +145,7 @@ export class GameEngine {
   private lastWaveIndex: number;
   private readonly difficultyBands: DifficultyBand[];
   private currentDifficultyBand: DifficultyBand;
+  private defeatBurstModeResolver: ((enemy: EnemyState) => DefeatBurstMode) | null = null;
 
   private recalculateAverageDps(): void {
     const analytics = this.state.analytics;
@@ -719,6 +739,38 @@ export class GameEngine {
     this.state.analytics.mode = mode;
   }
 
+  setStarfieldAnalytics(state: StarfieldAnalyticsState | null): void {
+    if (!state) {
+      this.state.analytics.starfield = null;
+      return;
+    }
+    this.state.analytics.starfield = {
+      driftMultiplier: state.driftMultiplier,
+      depth: state.depth,
+      tint: state.tint,
+      waveProgress: state.waveProgress,
+      castleHealthRatio: state.castleHealthRatio,
+      severity: state.severity,
+      reducedMotionApplied: state.reducedMotionApplied,
+      layers: Array.isArray(state.layers)
+        ? state.layers.map((layer) => ({
+            id: layer.id,
+            velocity: layer.velocity,
+            direction: layer.direction,
+            depth: layer.depth,
+            baseDepth: layer.baseDepth,
+            depthOffset: layer.depthOffset
+          }))
+        : []
+    };
+  }
+
+  setDefeatBurstModeResolver(
+    resolver: ((enemy: EnemyState) => DefeatBurstMode) | null
+  ): void {
+    this.defeatBurstModeResolver = resolver ?? null;
+  }
+
   getMode(): GameMode {
     return this.state.mode;
   }
@@ -755,6 +807,29 @@ export class GameEngine {
     const passiveUnlocks = this.state.analytics.castlePassiveUnlocks ?? [];
     const lastPassiveUnlock =
       passiveUnlocks.length > 0 ? { ...passiveUnlocks[passiveUnlocks.length - 1] } : null;
+    const defeatBurstState = this.state.analytics.defeatBurst ?? {
+      total: 0,
+      sprite: 0,
+      procedural: 0,
+      lastEnemyType: null,
+      lastLane: null,
+      lastTimestamp: null,
+      lastMode: null,
+      history: []
+    };
+    const elapsedMinutes = this.state.time > 0 ? Math.max(this.state.time / 60, 0) : 0;
+    const perMinute =
+      elapsedMinutes > 0 ? defeatBurstState.total / elapsedMinutes : defeatBurstState.total > 0 ? Infinity : 0;
+    const totalBursts = Math.max(1, defeatBurstState.total);
+    const spriteUsagePct = (defeatBurstState.sprite / totalBursts) * 100;
+    const lastAgeSeconds =
+      defeatBurstState.lastTimestamp !== null
+        ? Math.max(0, this.state.time - defeatBurstState.lastTimestamp)
+        : null;
+    const defeatBurstHistory = defeatBurstState.history.slice(-10).map((entry) => ({ ...entry }));
+    const starfieldAnalytics = this.state.analytics.starfield
+      ? structuredClone(this.state.analytics.starfield)
+      : null;
     return {
       mode: this.state.mode,
       wave: {
@@ -791,7 +866,21 @@ export class GameEngine {
       recentGoldEvents,
       castlePassives,
       lastPassiveUnlock,
-      passiveUnlockCount: passiveUnlocks.length
+      passiveUnlockCount: passiveUnlocks.length,
+      defeatBursts: {
+        total: defeatBurstState.total,
+        perMinute: Number.isFinite(perMinute) ? perMinute : 0,
+        spriteUsagePct: Number.isFinite(spriteUsagePct) ? spriteUsagePct : 0,
+        sprite: defeatBurstState.sprite,
+        procedural: defeatBurstState.procedural,
+        lastEnemyType: defeatBurstState.lastEnemyType ?? null,
+        lastLane: defeatBurstState.lastLane ?? null,
+        lastTimestamp: defeatBurstState.lastTimestamp ?? null,
+        lastAgeSeconds,
+        lastMode: defeatBurstState.lastMode ?? null
+      },
+      starfield: starfieldAnalytics,
+      defeatBurstHistory
     };
   }
 
@@ -851,6 +940,16 @@ export class GameEngine {
       timestampMs: null,
       countPerWave: {},
       uniqueLines: [],
+      history: []
+    };
+    this.state.analytics.defeatBurst = {
+      total: 0,
+      sprite: 0,
+      procedural: 0,
+      lastEnemyType: null,
+      lastLane: null,
+      lastTimestamp: null,
+      lastMode: null,
       history: []
     };
     this.state.analytics.averageTotalDps = 0;
@@ -1006,6 +1105,7 @@ export class GameEngine {
       }
       this.typingSystem.releaseEnemy(this.state, enemy.id);
       this.state.analytics.enemiesDefeated += 1;
+      this.recordDefeatBurst(enemy);
     });
 
     this.events.on("enemy:escaped", ({ enemy }) => {
@@ -1026,6 +1126,46 @@ export class GameEngine {
     });
   }
 
+  private recordDefeatBurst(enemy: EnemyState): void {
+    const analytics = this.state.analytics;
+    if (!analytics.defeatBurst) {
+      analytics.defeatBurst = {
+        total: 0,
+        sprite: 0,
+        procedural: 0,
+        lastEnemyType: null,
+        lastLane: null,
+        lastTimestamp: null,
+        lastMode: null,
+        history: []
+      };
+    }
+    const burst = analytics.defeatBurst;
+    const mode =
+      this.defeatBurstModeResolver?.(enemy) === "sprite" ? "sprite" : "procedural";
+    burst.total += 1;
+    if (mode === "sprite") {
+      burst.sprite += 1;
+    } else {
+      burst.procedural += 1;
+    }
+    burst.lastEnemyType = enemy.tierId ?? null;
+    burst.lastLane = typeof enemy.lane === "number" ? enemy.lane : null;
+    burst.lastTimestamp = this.state.time;
+    burst.lastMode = mode;
+    burst.history.push({
+      enemyType: burst.lastEnemyType,
+      lane: burst.lastLane,
+      timestamp: this.state.time,
+      mode
+    });
+    const maxHistory = 50;
+    if (burst.history.length > maxHistory) {
+      burst.history.splice(0, burst.history.length - maxHistory);
+    }
+    this.events.emit("combat:defeat-burst", { enemy, mode });
+  }
+
   private applyCastleRegen(dt: number): void {
     if (this.state.castle.health <= 0) return;
     if (this.state.castle.health >= this.state.castle.maxHealth) return;
@@ -1042,22 +1182,132 @@ export class GameEngine {
         typing.comboTimer = 0;
       }
       if (typing.comboWarning) {
-        typing.comboWarning = false;
+        this.finalizeComboWarning(typing.combo);
       }
+      typing.comboWarning = false;
+      this.updateComboWarningBaseline();
       return;
     }
 
     const remaining = Math.max(0, typing.comboTimer - dt);
     typing.comboTimer = remaining;
     if (remaining <= 0) {
+      if (typing.comboWarning) {
+        this.finalizeComboWarning(0);
+      }
       typing.combo = 0;
       typing.comboTimer = 0;
       typing.comboWarning = false;
+      this.updateComboWarningBaseline();
       return;
     }
 
     const warningThreshold = Math.max(0, this.config.comboWarningSeconds);
+    const wasWarning = typing.comboWarning;
     typing.comboWarning = remaining <= warningThreshold;
+    if (!wasWarning && typing.comboWarning) {
+      this.startComboWarning();
+    } else if (wasWarning && !typing.comboWarning) {
+      this.finalizeComboWarning(typing.combo);
+    }
+
+    if (!typing.comboWarning) {
+      this.updateComboWarningBaseline();
+    }
+  }
+
+  private startComboWarning(): void {
+    const comboWarning = this.state.analytics.comboWarning;
+    const currentAccuracy = this.getComboWarningAccuracy();
+    const baseline =
+      Number.isFinite(comboWarning.baselineAccuracy) && comboWarning.baselineAccuracy >= 0
+        ? comboWarning.baselineAccuracy
+        : currentAccuracy;
+    const deltaPercent = this.roundValue((currentAccuracy - baseline) * 100, 2);
+    comboWarning.active = {
+      startedAt: this.state.time,
+      comboBefore: this.state.typing.combo,
+      baselineAccuracy: baseline,
+      accuracy: currentAccuracy,
+      deltaPercent,
+      waveIndex: this.state.wave.index
+    };
+  }
+
+  private finalizeComboWarning(comboAfter: number): void {
+    const comboWarning = this.state.analytics.comboWarning;
+    const active = comboWarning.active;
+    if (!active) {
+      return;
+    }
+    const durationMs = Math.max(0, (this.state.time - active.startedAt) * 1000);
+    const entry: ComboWarningHistoryEntry = {
+      timestamp: active.startedAt,
+      waveIndex: active.waveIndex,
+      comboBefore: active.comboBefore,
+      comboAfter,
+      accuracy: this.roundValue(active.accuracy, 4),
+      baselineAccuracy: this.roundValue(active.baselineAccuracy, 4),
+      deltaPercent: this.roundValue(active.deltaPercent, 2),
+      durationMs
+    };
+    comboWarning.history.push(entry);
+    if (comboWarning.history.length > MAX_COMBO_WARNING_HISTORY) {
+      comboWarning.history.shift();
+    }
+    comboWarning.count += 1;
+    comboWarning.deltaSum += entry.deltaPercent;
+    comboWarning.deltaMin =
+      comboWarning.deltaMin === null
+        ? entry.deltaPercent
+        : Math.min(comboWarning.deltaMin, entry.deltaPercent);
+    comboWarning.deltaMax =
+      comboWarning.deltaMax === null
+        ? entry.deltaPercent
+        : Math.max(comboWarning.deltaMax, entry.deltaPercent);
+    const previousTimestamp = comboWarning.lastTimestamp;
+    comboWarning.lastTimestamp = this.state.time;
+    comboWarning.lastDelta = entry.deltaPercent;
+    comboWarning.active = null;
+    const timeSinceLastWarningMs =
+      previousTimestamp === null
+        ? null
+        : Math.max(0, (this.state.time - previousTimestamp) * 1000);
+    this.telemetryClient?.track("combat.comboWarningDelta", {
+      timestamp: entry.timestamp,
+      waveIndex: entry.waveIndex,
+      comboBefore: entry.comboBefore,
+      comboAfter,
+      deltaPercent: entry.deltaPercent,
+      accuracyPercent: this.roundValue(entry.accuracy * 100, 2),
+      baselineAccuracyPercent: this.roundValue(entry.baselineAccuracy * 100, 2),
+      durationMs,
+      timeSinceLastWarningMs
+    });
+  }
+
+  private updateComboWarningBaseline(): void {
+    const accuracy = this.state.typing.accuracy;
+    if (!Number.isFinite(accuracy)) {
+      return;
+    }
+    this.state.analytics.comboWarning.baselineAccuracy = Math.max(0, Math.min(1, accuracy));
+  }
+
+  private getComboWarningAccuracy(): number {
+    const accuracy = this.state.typing.accuracy;
+    if (!Number.isFinite(accuracy)) {
+      return Math.max(0, Math.min(1, this.state.analytics.comboWarning.baselineAccuracy));
+    }
+    return Math.max(0, Math.min(1, accuracy));
+  }
+
+  private roundValue(value: number, precision = 2): number {
+    if (!Number.isFinite(value)) {
+      return 0;
+    }
+    const factor = 10 ** precision;
+    return Math.round(value * factor) / factor;
   }
 
   private tickCastleRepairCooldown(dt: number): void {

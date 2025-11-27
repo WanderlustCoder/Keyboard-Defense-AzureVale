@@ -60,6 +60,18 @@ module.exports = {
       rules: {
         "no-console": "off"
       }
+    },
+    {
+      files: ["tests/**/*.ts"],
+      parser: "@typescript-eslint/parser",
+      parserOptions: {
+        sourceType: "module",
+        ecmaVersion: 2022
+      },
+      extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended", "prettier"],
+      rules: {
+        "no-console": "off"
+      }
     }
   ]
 };

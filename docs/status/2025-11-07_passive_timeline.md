@@ -10,3 +10,6 @@
 **Next**
 1. Feed the CSV output into CI artifacts (tutorial smoke + castle breach) to visualize passive unlock cadence nightly.
 2. Consider piping the merged gold/unlock rows directly into dashboards for combined economy timelines or enable `analytics:passives --ci` to drop artifacts automatically.
+
+## Follow-up
+- `docs/codex_pack/tasks/32-passive-gold-dashboard.md`

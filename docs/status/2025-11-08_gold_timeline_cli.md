@@ -9,3 +9,6 @@
 **Next Steps**
 1. Feed the generated timelines into nightly dashboards/alerts so economy spikes trigger automated analysis.
 2. Consider extending the CLI with derived metrics (rolling sums, average delta) before plugging the data into reporting.
+
+## Follow-up
+- `docs/codex_pack/tasks/34-gold-timeline-dashboard.md`

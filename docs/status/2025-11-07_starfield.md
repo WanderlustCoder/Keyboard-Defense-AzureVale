@@ -9,6 +9,7 @@
 - Fresh HUD screenshots were captured for tutorial, warning, and breach presets, and `docs/codex_dashboard.md` now displays the starfield scene for each gallery shot via the snapshot JSON so reviewers can see the active tint directly.
 - Gold summary/report artifacts now emit `starfieldDepth|Drift|WaveProgress|CastleRatio|Tint`, and the gold analytics board surfaces both aggregated averages and a per-scenario `Starfield` column, letting reviewers correlate castle tint severity with net delta without leaving the board/portal.
 - Gold analytics board + portal now tag starfield entries with severity badges (`CALM/WARN/BREACH`) based on castle ratio thresholds (default warn < 65%, breach < 50%), keeping castle damage drift visible inline with gold deltas; thresholds are overridable via `--castle-warn/--castle-breach` or env `GOLD_STARFIELD_WARN/BREACH` for new economy cutlines.
+- Diagnostics overlay now shows starfield severity (%), reduced-motion flag, and per-layer velocities (first 3 layers) so parallax tuning and accessibility clamps are visible in CI artifacts without opening raw JSON.
 
 **Next**
 1. Keep the new Codex portal starfield tile refreshed with real artifacts (ensure nightly `npm run analytics:gold:board && npm run codex:dashboard` runs) so severity drift stays visible without manual refreshes.

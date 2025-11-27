@@ -1,0 +1,58 @@
+{
+  "generatedAt": "2025-11-20T00:03:00.000Z",
+  "mode": "warn",
+  "summaryPath": "docs/codex_pack/fixtures/gold/passive-gold-summary.json",
+  "thresholds": {
+    "maxGapSeconds": 600,
+    "maxGoldLagSeconds": 10
+  },
+  "totals": {
+    "files": 1,
+    "unlocks": 3,
+    "goldEvents": 3
+  },
+  "unlocks": {
+    "latest": [
+      {
+        "id": "gold",
+        "level": 1,
+        "delta": 1.15,
+        "time": 78.2,
+        "goldDelta": 75,
+        "goldLag": 1.2,
+        "file": "artifacts/smoke/tutorial.skip.json"
+      },
+      {
+        "id": "armor",
+        "level": 1,
+        "delta": 1,
+        "time": 42.7,
+        "goldDelta": 60,
+        "goldLag": 0.4,
+        "file": "artifacts/smoke/tutorial.skip.json"
+      },
+      {
+        "id": "regen",
+        "level": 1,
+        "delta": 1,
+        "time": 12.5,
+        "goldDelta": 40,
+        "goldLag": 0.7,
+        "file": "artifacts/smoke/tutorial.skip.json"
+      }
+    ]
+  },
+  "metrics": {
+    "maxGapSeconds": 35.5,
+    "avgGapSeconds": 32.85,
+    "maxGoldLagSeconds": 1.2
+  },
+  "gold": {
+    "latest": [
+      { "delta": 75, "gold": 225, "timestamp": 79.4, "source": "artifacts/smoke/tutorial.skip.json" },
+      { "delta": -30, "gold": 150, "timestamp": 65.2, "source": "artifacts/smoke/tutorial.skip.json" },
+      { "delta": 60, "gold": 180, "timestamp": 43.1, "source": "artifacts/smoke/tutorial.skip.json" }
+    ]
+  },
+  "warnings": []
+}

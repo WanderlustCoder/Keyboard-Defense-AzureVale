@@ -51,11 +51,11 @@ Structured backlog derived from the inspiration brief, architecture notes, and t
 40. Spawn practice dummy enemy for turret DPS tuning in debug mode.
 
 ## Analytics & Telemetry
-41. Expand analytics export to include tutorial metrics and summary history.
+41. Expand analytics export to include tutorial metrics and summary history. *(Codex: `passive-analytics-export`, `passive-gold-dashboard`)*
 42. Persist per-wave analytics snapshot history for in-session review.
 43. Build in-game analytics table accessible from debug panel.
 44. Separate turret vs typing DPS metrics in analytics payload.
-45. Add CLI script to aggregate analytics logs into summary CSV.
+45. Add CLI script to aggregate analytics logs into summary CSV. *(Codex: `gold-timeline-dashboard`)*
 46. Guard analytics reset mid-wave with dedicated tests.
 47. Export leaderboard-ready CSV covering key stats.
 48. Capture time-to-first-turret placement and include in analytics.
@@ -65,13 +65,13 @@ Structured backlog derived from the inspiration brief, architecture notes, and t
 ## UI/UX & Accessibility
 51. Offer colorblind-friendly palette toggle across sprites/HUD.
 52. Support adjustable HUD font size with persistence.
-53. Reflow layout for narrow screens / touch devices.
+53. Reflow layout for narrow screens / touch devices. *(Codex: `tutorial-ui-snapshot-publishing`, `responsive-condensed-audit`)*
 54. Add audio intensity slider alongside mute toggle.
 55. Provide dyslexia-friendly font option for key UI elements.
 56. Highlight wave preview during tutorial to emphasize planning.
 57. Surface keyboard shortcut reference overlay.
-58. Add pause/options overlay while maintaining deterministic state.
-59. Present wave-end scorecard summarizing accuracy, breaches, rewards.
+58. Add pause/options overlay while maintaining deterministic state. *(Codex: `responsive-condensed-audit`)*
+59. Present wave-end scorecard summarizing accuracy, breaches, rewards. *(Codex: `tutorial-ui-snapshot-publishing`)*
 60. Implement reduced-motion mode (disable shake/particle effects).
 61. Persist player settings (audio, diagnostics, toggles) across sessions.
 
@@ -82,13 +82,13 @@ Structured backlog derived from the inspiration brief, architecture notes, and t
 65. Introduce projectile particle systems via offscreen canvas.
 66. Add enemy defeat animation frames with easing.
 67. Morph castle visuals across upgrade levels.
-68. Overlay ambient starfield/parallax background effects.
-69. Validate asset integrity via manifest checksum at startup.
+68. Overlay ambient starfield/parallax background effects. *(Codex: `starfield-parallax-effects`)*
+69. Validate asset integrity via manifest checksum at startup. *(Codex: `asset-integrity-telemetry`)*
 70. Automate asset manifest generation from source sprites.
 
 ## Automation, Monitoring, Tooling
 71. Script tutorial auto-run CLI verifying onboarding path nightly. *(Codex: `scenario-matrix`)*
-72. Capture automated HUD screenshots for docs/regression. *(Codex: `visual-diffs`, `hud-screenshot-expansion` — new)*
+72. Capture automated HUD screenshots for docs/regression. *(Codex: `visual-diffs`, `hud-screenshot-expansion`)*
 73. Integrate ESLint/Prettier into build pipeline. *(Codex: `type-lint-test`)*
 74. Add performance benchmark harness for engine throughput.
 75. Create deterministic wave simulation CLI for balance sweeps.
@@ -119,13 +119,13 @@ Structured backlog derived from the inspiration brief, architecture notes, and t
 96. Fuzz test typing input buffer for invalid characters/timing.
 97. Automate tutorial summary modal snapshot tests.
 98. Add soak test that alternates tutorial replay/skip, verifying persistence.
-99. Create CLI to replay deterministic castle breach scenario for regression.
+99. Create CLI to replay deterministic castle breach scenario for regression. *(Codex: `castle-breach-analytics`)*
 100. Track tutorials completed per session in QA dashboard.
 
 ## Economy & Telemetry
-101. Add percentile stats (median/p90) to the gold summary CLI output so dashboards can monitor economy drift. *(Codex: `gold-summary-dashboard-integration`)*
+101. Add percentile stats (median/p90) to the gold summary CLI output so dashboards can monitor economy drift. *(Codex: `gold-summary-dashboard-integration`, `gold-percentile-dashboard-alerts`)*
 102. Add percentile flag to the gold summary CLI so dashboards can request alternate gain/spend cutlines.
 103. Ensure CI smoke workflows emit gold summary artifacts with the standardized percentile list.
 104. Include the percentile list inside every gold summary artifact so downstream tooling can verify cutlines.
-105. Validate gold summary percentile metadata during CI smoke runs.
+105. Validate gold summary percentile metadata during CI smoke runs. *(Codex: `gold-percentile-ingestion-guard`)*
 106. Provide a standalone gold summary validation CLI for dashboards/alerts.

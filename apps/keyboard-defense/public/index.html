@@ -485,6 +485,17 @@
             <input id="options-colorblind-toggle" type="checkbox" />
             <span class="option-toggle-label">Colorblind Palette</span>
           </label>
+          <label class="option-toggle option-select">
+            <span class="option-toggle-label">Defeat Animations</span>
+            <select id="options-defeat-animation" aria-label="Defeat animation mode">
+              <option value="auto">Auto (sprites when available)</option>
+              <option value="sprite">Sprites only</option>
+              <option value="procedural">Procedural only</option>
+            </select>
+            <span class="option-toggle-help">
+              Choose how enemy defeat bursts render when art assets are available.
+            </span>
+          </label>
           <label class="option-toggle" id="options-crystal-toggle-wrapper">
             <input id="options-crystal-toggle" type="checkbox" />
             <span class="option-toggle-label">Enable Crystal Pulse turret</span>

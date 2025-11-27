@@ -1,5 +1,6 @@
 import { SpriteRenderer } from "./spriteRenderer.js";
 import { resolveLetterColors } from "./wordHighlighter.js";
+import { defaultStarfieldConfig } from "../config/starfield.js";
 const PROJECTILE_COLORS = {
     arrow: "#38bdf8",
     arcane: "#a855f7",
@@ -7,19 +8,41 @@ const PROJECTILE_COLORS = {
     crystal: "#67e8f9"
 };
 export class CanvasRenderer {
+    canvas;
+    config;
+    ctx;
+    width;
+    height;
+    pathLength;
+    laneCount;
+    spriteRenderer;
+    assetLoader;
+    starfieldConfig = defaultStarfieldConfig;
+    starfieldState = null;
+    static DEFEAT_BURST_DURATION = 0.6;
+    reducedMotion = false;
+    checkeredBackground = false;
+    cachedCheckeredPattern = null;
+    defeatBursts = [];
+    lastEnemyStatuses = new Map();
+    starfield;
+    lastResizeCause = "initial";
+    defeatAnimationMode = "auto";
     constructor(canvas, config, assetLoader) {
         this.canvas = canvas;
         this.config = config;
-        this.reducedMotion = false;
-        this.checkeredBackground = false;
-        this.cachedCheckeredPattern = null;
         const ctx = canvas.getContext("2d");
         if (!ctx)
             throw new Error("Unable to acquire 2d context.");
         this.ctx = ctx;
+        this.assetLoader = assetLoader;
         this.applyDimensions(canvas.width, canvas.height);
         this.laneCount = Math.max(...config.turretSlots.map((s) => s.lane)) + 1;
         this.spriteRenderer = new SpriteRenderer(assetLoader);
+        this.starfield = this.createStarfield();
+    }
+    setDefeatAnimationMode(mode) {
+        this.defeatAnimationMode = mode;
     }
     render(state, impactEffects = [], options) {
         this.reducedMotion = Boolean(options?.reducedMotion);
@@ -29,12 +52,16 @@ export class CanvasRenderer {
         }
         this.checkeredBackground = nextCheckered;
         this.spriteRenderer.setColorBlindFriendly(this.checkeredBackground);
+        this.starfieldState = options?.starfield ?? null;
+        this.updateDefeatBursts(state);
         this.clear();
         this.drawBackground();
+        this.drawStarfield(state.time, this.starfieldState);
         this.drawLanes();
         this.drawTurretRangeHighlight(state, options?.turretRange ?? null);
         this.drawTurretSlots(state);
         this.drawEnemies(state);
+        this.drawDefeatBursts(state);
         this.drawProjectiles(state);
         this.drawImpactEffects(state, impactEffects);
         this.drawCastle(state);
@@ -43,7 +70,16 @@ export class CanvasRenderer {
     clear() {
         this.ctx.clearRect(0, 0, this.width, this.height);
     }
-    resize(width, height) {
+    applyDimensions(width, height) {
+        this.width = width;
+        this.height = height;
+        this.pathLength = this.width * 0.7;
+        this.cachedCheckeredPattern = null;
+        if (!this.lastResizeCause) {
+            this.lastResizeCause = "initial";
+        }
+    }
+    resize(width, height, options = {}) {
         const nextWidth = Math.max(1, Math.floor(width));
         const nextHeight = Math.max(1, Math.floor(height));
         if (this.canvas.width === nextWidth && this.canvas.height === nextHeight) {
@@ -52,12 +88,10 @@ export class CanvasRenderer {
         this.canvas.width = nextWidth;
         this.canvas.height = nextHeight;
         this.applyDimensions(nextWidth, nextHeight);
+        this.lastResizeCause = options.cause ?? "auto";
     }
-    applyDimensions(width, height) {
-        this.width = width;
-        this.height = height;
-        this.pathLength = this.width * 0.7;
-        this.cachedCheckeredPattern = null;
+    getLastResizeCause() {
+        return this.lastResizeCause;
     }
     drawBackground() {
         if (this.checkeredBackground) {
@@ -97,6 +131,70 @@ export class CanvasRenderer {
         const pattern = this.ctx.createPattern(patternCanvas, "repeat");
         this.cachedCheckeredPattern = pattern;
         return pattern;
+    }
+    createStarfield() {
+        const stars = [];
+        for (const layer of this.starfieldConfig.layers) {
+            for (let i = 0; i < layer.count; i += 1) {
+                stars.push({
+                    x: Math.random(),
+                    y: Math.random(),
+                    radius: 0.4 + Math.random() * (1.4 * layer.depth),
+                    phase: Math.random() * Math.PI * 2,
+                    twinkleRate: 0.2 + Math.random() * 0.8,
+                    layerId: layer.id
+                });
+            }
+        }
+        return stars;
+    }
+    drawStarfield(time, state) {
+        if (this.starfield.length === 0)
+            return;
+        if (!state) {
+            const parallaxScale = this.checkeredBackground ? 0.6 : 1;
+            const twinkleMultiplier = this.reducedMotion ? 0.15 : 0.5;
+            for (const star of this.starfield) {
+                const twinkle = this.reducedMotion
+                    ? 0.6
+                    : 0.5 + 0.5 * Math.sin(time * (star.twinkleRate ?? 0.4) + star.phase);
+                const alphaBase = this.checkeredBackground ? 0.18 : 0.35;
+                const alpha = alphaBase * (0.4 + twinkle * 0.6);
+                this.ctx.fillStyle = `rgba(226, 232, 240, ${alpha})`;
+                const x = star.x * this.width;
+                const y = star.y * this.height +
+                    Math.sin((time + star.phase) * twinkleMultiplier) * (this.checkeredBackground ? 4 : 9);
+                const radius = star.radius * parallaxScale;
+                this.ctx.beginPath();
+                this.ctx.arc(x, y, radius, 0, Math.PI * 2);
+                this.ctx.fill();
+            }
+            return;
+        }
+        const layerMap = new Map(state.layers.map((layer) => [layer.id, layer]));
+        const baseColor = this.checkeredBackground ? "#cbd5f5" : "#e2e8f0";
+        const tintIntensity = 1 - state.castleHealthRatio;
+        const fillColor = mixHexColors(baseColor, state.tint, tintIntensity);
+        const twinkleMultiplier = this.reducedMotion ? 0.05 : 0.4;
+        for (const star of this.starfield) {
+            const layerState = layerMap.get(star.layerId);
+            const layerDepth = layerState?.depth ?? 1;
+            const drift = layerState ? layerState.scroll * layerState.direction : 0;
+            const scrollX = ((star.x + drift) % 1 + 1) % 1;
+            const x = scrollX * this.width;
+            const y = star.y * this.height +
+                Math.sin(time * twinkleMultiplier + star.phase) * (layerDepth * (this.checkeredBackground ? 3 : 7));
+            const twinkle = this.reducedMotion && this.starfieldConfig.reducedMotion.tintOnly
+                ? 0.35
+                : 0.5 + 0.5 * Math.sin(time * (star.twinkleRate ?? 0.4) + star.phase);
+            const alphaBase = this.checkeredBackground ? 0.22 : 0.42;
+            const alpha = alphaBase * (0.3 + twinkle * 0.7);
+            this.ctx.fillStyle = hexToRgba(fillColor, alpha);
+            const radius = star.radius * layerDepth * (this.checkeredBackground ? 0.8 : 1);
+            this.ctx.beginPath();
+            this.ctx.arc(x, y, radius, 0, Math.PI * 2);
+            this.ctx.fill();
+        }
     }
     drawLanes() {
         const margin = this.height * 0.15;
@@ -494,4 +592,179 @@ export class CanvasRenderer {
         }
         return verticalMargin + (span / (this.laneCount - 1)) * lane;
     }
+    updateDefeatBursts(state) {
+        const now = state.time;
+        const seen = new Set();
+        for (const enemy of state.enemies) {
+            seen.add(enemy.id);
+            const previous = this.lastEnemyStatuses.get(enemy.id);
+            if (enemy.status === "defeated" && previous !== "defeated") {
+                let spriteInstance = null;
+                if (this.defeatAnimationMode !== "procedural" && !this.reducedMotion) {
+                    spriteInstance = this.createDefeatSpriteBurst(enemy.tierId);
+                }
+                const mode = spriteInstance ? "sprite" : "procedural";
+                this.defeatBursts.push({
+                    id: enemy.id,
+                    lane: enemy.lane,
+                    position: enemy.distance,
+                    tierId: enemy.tierId,
+                    startTime: now,
+                    duration: spriteInstance?.totalDuration ?? CanvasRenderer.DEFEAT_BURST_DURATION,
+                    mode,
+                    sprite: spriteInstance
+                });
+            }
+            this.lastEnemyStatuses.set(enemy.id, enemy.status);
+        }
+        for (const id of [...this.lastEnemyStatuses.keys()]) {
+            if (!seen.has(id)) {
+                this.lastEnemyStatuses.delete(id);
+            }
+        }
+        this.defeatBursts = this.defeatBursts.filter((burst) => now - burst.startTime <= burst.duration);
+    }
+    createDefeatSpriteBurst(tierId) {
+        if (!tierId ||
+            typeof this.assetLoader?.getDefeatAnimation !== "function" ||
+            typeof this.assetLoader?.getImage !== "function") {
+            return null;
+        }
+        const definition = this.assetLoader.getDefeatAnimation(tierId);
+        if (!definition || !Array.isArray(definition.frames) || definition.frames.length === 0) {
+            return null;
+        }
+        const frames = [];
+        let totalDuration = 0;
+        for (const frameDefinition of definition.frames) {
+            const image = this.assetLoader.getImage(frameDefinition.key);
+            if (!image) {
+                continue;
+            }
+            const duration = Math.max(0.016, frameDefinition.durationMs / 1000);
+            frames.push({
+                image,
+                startTime: totalDuration,
+                duration,
+                offsetX: frameDefinition.offsetX ?? 0,
+                offsetY: frameDefinition.offsetY ?? 0,
+                size: frameDefinition.size ?? 96
+            });
+            totalDuration += duration;
+        }
+        if (frames.length === 0 || totalDuration <= 0) {
+            return null;
+        }
+        return {
+            frames,
+            totalDuration,
+            loop: Boolean(definition.loop)
+        };
+    }
+    drawDefeatBursts(state) {
+        if (this.defeatBursts.length === 0)
+            return;
+        const baseX = this.width * 0.1;
+        const now = state.time;
+        for (const burst of this.defeatBursts) {
+            const elapsed = now - burst.startTime;
+            const x = baseX + burst.position * this.pathLength;
+            const y = this.laneY(burst.lane);
+            if (burst.mode === "sprite" && burst.sprite) {
+                this.drawSpriteBurst(burst, x, y, elapsed);
+                continue;
+            }
+            const progress = Math.min(1, Math.max(0, elapsed / burst.duration));
+            const eased = 1 - Math.pow(1 - progress, 2);
+            const fade = 1 - progress;
+            const palette = this.spriteRenderer.getEnemyPalette(burst.tierId);
+            const innerRadius = 14 + eased * 8;
+            const outerRadius = innerRadius + 18;
+            const gradient = this.ctx.createRadialGradient(x, y, innerRadius * 0.2, x, y, outerRadius);
+            gradient.addColorStop(0, this.withAlpha(palette.highlight, 0.45 * fade));
+            gradient.addColorStop(1, this.withAlpha(palette.base, 0));
+            this.ctx.fillStyle = gradient;
+            this.ctx.beginPath();
+            this.ctx.arc(x, y, outerRadius, 0, Math.PI * 2);
+            this.ctx.fill();
+            this.ctx.strokeStyle = this.withAlpha(palette.accent, 0.85 * fade);
+            this.ctx.lineWidth = 2 + 2 * fade;
+            this.ctx.beginPath();
+            this.ctx.arc(x, y, innerRadius, 0, Math.PI * 2);
+            this.ctx.stroke();
+            if (!this.reducedMotion) {
+                const spikes = 6;
+                const spikeLength = 8 + eased * 6;
+                this.ctx.strokeStyle = this.withAlpha(palette.accent, 0.45 * fade);
+                this.ctx.lineWidth = 1.5;
+                for (let i = 0; i < spikes; i++) {
+                    const angle = (i / spikes) * Math.PI * 2;
+                    const startR = innerRadius + 2;
+                    const sx = x + Math.cos(angle) * startR;
+                    const sy = y + Math.sin(angle) * startR;
+                    const ex = x + Math.cos(angle) * (startR + spikeLength);
+                    const ey = y + Math.sin(angle) * (startR + spikeLength);
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(sx, sy);
+                    this.ctx.lineTo(ex, ey);
+                    this.ctx.stroke();
+                }
+            }
+        }
+    }
+    drawSpriteBurst(burst, x, y, elapsed) {
+        const sprite = burst.sprite;
+        if (!sprite || sprite.frames.length === 0 || sprite.totalDuration <= 0) {
+            return;
+        }
+        const total = sprite.totalDuration;
+        const timeInAnimation = sprite.loop && total > 0 ? elapsed % total : Math.min(elapsed, Math.max(0, total - 0.0001));
+        let frame = sprite.frames[sprite.frames.length - 1] ?? null;
+        for (const candidate of sprite.frames) {
+            if (timeInAnimation >= candidate.startTime &&
+                timeInAnimation < candidate.startTime + candidate.duration) {
+                frame = candidate;
+                break;
+            }
+        }
+        if (!frame) {
+            return;
+        }
+        const drawX = x + frame.offsetX;
+        const drawY = y + frame.offsetY;
+        this.ctx.drawImage(frame.image, drawX - frame.size / 2, drawY - frame.size / 2, frame.size, frame.size);
+    }
+}
+function hexToRgbChannels(hex) {
+    const normalized = hex.replace("#", "");
+    if (normalized.length !== 6)
+        return null;
+    const value = Number.parseInt(normalized, 16);
+    if (Number.isNaN(value))
+        return null;
+    return {
+        r: (value >> 16) & 255,
+        g: (value >> 8) & 255,
+        b: value & 255
+    };
+}
+function mixHexColors(a, b, ratio) {
+    const start = hexToRgbChannels(a);
+    const end = hexToRgbChannels(b);
+    if (!start || !end) {
+        return a;
+    }
+    const t = Math.min(1, Math.max(0, ratio));
+    const r = start.r + (end.r - start.r) * t;
+    const g = start.g + (end.g - start.g) * t;
+    const blue = start.b + (end.b - start.b) * t;
+    const toHex = (value) => Math.min(255, Math.max(0, Math.round(value))).toString(16).padStart(2, "0");
+    return `#${toHex(r)}${toHex(g)}${toHex(blue)}`;
+}
+function hexToRgba(hex, alpha) {
+    const channels = hexToRgbChannels(hex);
+    if (!channels) {
+        return `rgba(226, 232, 240, ${alpha.toFixed(3)})`;
+    }
+    return `rgba(${channels.r}, ${channels.g}, ${channels.b}, ${alpha.toFixed(3)})`;
 }

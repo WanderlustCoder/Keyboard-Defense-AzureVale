@@ -1,5 +1,5 @@
 export const PLAYER_SETTINGS_STORAGE_KEY = "keyboard-defense:player-settings";
-export const PLAYER_SETTINGS_VERSION = 12;
+export const PLAYER_SETTINGS_VERSION = 15;
 const DEFAULT_UPDATED_AT = "1970-01-01T00:00:00.000Z";
 const HUD_FONT_SCALE_MIN = 0.85;
 const HUD_FONT_SCALE_MAX = 1.3;
@@ -13,6 +13,8 @@ const DEFAULT_PRESET_SAVED_AT = "1970-01-01T00:00:00.000Z";
 const MAX_TURRET_LEVEL = 10;
 export const TURRET_PRESET_IDS = ["preset-a", "preset-b", "preset-c"];
 const ALLOWED_TURRET_PRESET_IDS = TURRET_PRESET_IDS;
+const DIAGNOSTICS_SECTION_IDS = ["gold-events", "castle-passives", "turret-dps"];
+const DEFEAT_ANIMATION_MODES = new Set(["auto", "sprite", "procedural"]);
 const BASE_DEFAULT_SETTINGS = {
     version: PLAYER_SETTINGS_VERSION,
     soundEnabled: true,
@@ -27,17 +29,23 @@ const BASE_DEFAULT_SETTINGS = {
     telemetryEnabled: false,
     crystalPulseEnabled: false,
     hudFontScale: 1,
+    defeatAnimationMode: "auto",
     turretTargeting: {},
     turretLoadoutPresets: Object.create(null),
+    diagnosticsSections: Object.create(null),
+    diagnosticsSectionsUpdatedAt: DEFAULT_UPDATED_AT,
     hudPassivesCollapsed: null,
     hudGoldEventsCollapsed: null,
     optionsPassivesCollapsed: null,
+    lastDevicePixelRatio: null,
+    lastHudLayout: null,
     updatedAt: DEFAULT_UPDATED_AT
 };
 export const defaultPlayerSettings = Object.freeze({
     ...BASE_DEFAULT_SETTINGS,
     turretTargeting: {},
-    turretLoadoutPresets: Object.freeze({})
+    turretLoadoutPresets: Object.freeze({}),
+    diagnosticsSections: Object.freeze({})
 });
 export function createDefaultPlayerSettings() {
     return {
@@ -49,7 +57,9 @@ export function createDefaultPlayerSettings() {
         crystalPulseEnabled: false,
         hudFontScale: 1,
         turretTargeting: {},
-        turretLoadoutPresets: Object.create(null)
+        turretLoadoutPresets: Object.create(null),
+        diagnosticsSections: Object.create(null),
+        diagnosticsSectionsUpdatedAt: DEFAULT_UPDATED_AT
     };
 }
 export function readPlayerSettings(storage) {
@@ -89,6 +99,7 @@ export function readPlayerSettings(storage) {
         const colorblindPaletteEnabled = typeof parsed.colorblindPaletteEnabled === "boolean"
             ? parsed.colorblindPaletteEnabled
             : fallback.colorblindPaletteEnabled;
+        const defeatAnimationMode = normalizeDefeatAnimationMode(parsed.defeatAnimationMode);
         const audioIntensity = typeof parsed.audioIntensity === "number"
             ? normalizeAudioIntensity(parsed.audioIntensity)
             : fallback.audioIntensity;
@@ -106,6 +117,10 @@ export function readPlayerSettings(storage) {
         const hudPassivesCollapsed = parseCollapsePreference(parsed.hudPassivesCollapsed);
         const hudGoldEventsCollapsed = parseCollapsePreference(parsed.hudGoldEventsCollapsed);
         const optionsPassivesCollapsed = parseCollapsePreference(parsed.optionsPassivesCollapsed);
+        const lastDevicePixelRatio = normalizeDevicePixelRatioPreference(parsed.lastDevicePixelRatio);
+        const lastHudLayout = normalizeHudLayoutPreference(parsed.lastHudLayout);
+        const diagnosticsSections = normalizeDiagnosticsSections(parsed.diagnosticsSections);
+        const diagnosticsSectionsUpdatedAt = normalizeTimestamp(parsed.diagnosticsSectionsUpdatedAt ?? DEFAULT_UPDATED_AT);
         const updatedAt = typeof parsed.updatedAt === "string" && parsed.updatedAt.length > 0
             ? parsed.updatedAt
             : fallback.updatedAt;
@@ -123,11 +138,16 @@ export function readPlayerSettings(storage) {
             telemetryEnabled,
             crystalPulseEnabled,
             hudFontScale,
+            defeatAnimationMode,
             turretTargeting,
             turretLoadoutPresets,
+            diagnosticsSections,
+            diagnosticsSectionsUpdatedAt,
             hudPassivesCollapsed,
             hudGoldEventsCollapsed,
             optionsPassivesCollapsed,
+            lastDevicePixelRatio,
+            lastHudLayout,
             updatedAt
         };
     }
@@ -178,15 +198,30 @@ export function withPatchedPlayerSettings(current, patch) {
         hudFontScale: typeof patch.hudFontScale === "number"
             ? normalizeHudFontScale(patch.hudFontScale)
             : current.hudFontScale,
+        defeatAnimationMode: typeof patch.defeatAnimationMode === "string"
+            ? normalizeDefeatAnimationMode(patch.defeatAnimationMode)
+            : current.defeatAnimationMode,
         turretTargeting: patch.turretTargeting !== undefined
             ? normalizeTargetingMap(patch.turretTargeting)
             : { ...current.turretTargeting },
         turretLoadoutPresets: patch.turretLoadoutPresets !== undefined
             ? normalizeLoadoutPresets(patch.turretLoadoutPresets)
             : cloneLoadoutPresets(current.turretLoadoutPresets),
+        diagnosticsSections: patch.diagnosticsSections !== undefined
+            ? cloneDiagnosticsSections(normalizeDiagnosticsSections(patch.diagnosticsSections))
+            : cloneDiagnosticsSections(current.diagnosticsSections ?? {}),
+        diagnosticsSectionsUpdatedAt: typeof patch.diagnosticsSectionsUpdatedAt === "string"
+            ? normalizeTimestamp(patch.diagnosticsSectionsUpdatedAt)
+            : current.diagnosticsSectionsUpdatedAt ?? DEFAULT_UPDATED_AT,
         hudPassivesCollapsed: mergeCollapsePreference(patch.hudPassivesCollapsed, current.hudPassivesCollapsed),
         hudGoldEventsCollapsed: mergeCollapsePreference(patch.hudGoldEventsCollapsed, current.hudGoldEventsCollapsed),
         optionsPassivesCollapsed: mergeCollapsePreference(patch.optionsPassivesCollapsed, current.optionsPassivesCollapsed),
+        lastDevicePixelRatio: patch.lastDevicePixelRatio !== undefined
+            ? normalizeDevicePixelRatioPreference(patch.lastDevicePixelRatio)
+            : current.lastDevicePixelRatio ?? null,
+        lastHudLayout: patch.lastHudLayout !== undefined
+            ? normalizeHudLayoutPreference(patch.lastHudLayout)
+            : current.lastHudLayout ?? null,
         updatedAt: new Date().toISOString()
     };
 }
@@ -344,6 +379,13 @@ function normalizeHudFontScale(value) {
     const clamped = Math.min(HUD_FONT_SCALE_MAX, Math.max(HUD_FONT_SCALE_MIN, value));
     return Math.round(clamped * 100) / 100;
 }
+function normalizeDefeatAnimationMode(value) {
+    if (typeof value !== "string") {
+        return "auto";
+    }
+    const normalized = value.toLowerCase();
+    return DEFEAT_ANIMATION_MODES.has(normalized) ? normalized : "auto";
+}
 function parseCollapsePreference(value) {
     if (typeof value === "boolean")
         return value;
@@ -356,6 +398,48 @@ function mergeCollapsePreference(patchValue, currentValue) {
         return patchValue;
     }
     return currentValue ?? null;
+}
+function normalizeDiagnosticsSections(value) {
+    if (!value || typeof value !== "object") {
+        return Object.create(null);
+    }
+    const normalized = Object.create(null);
+    for (const sectionId of DIAGNOSTICS_SECTION_IDS) {
+        if (typeof value[sectionId] === "boolean") {
+            normalized[sectionId] = value[sectionId];
+        }
+    }
+    return normalized;
+}
+function cloneDiagnosticsSections(value) {
+    const clone = Object.create(null);
+    if (!value || typeof value !== "object") {
+        return clone;
+    }
+    for (const sectionId of DIAGNOSTICS_SECTION_IDS) {
+        if (typeof value[sectionId] === "boolean") {
+            clone[sectionId] = value[sectionId];
+        }
+    }
+    return clone;
+}
+function normalizeDevicePixelRatioPreference(value) {
+    if (value === null) {
+        return null;
+    }
+    if (typeof value !== "number" || !Number.isFinite(value) || value <= 0) {
+        return null;
+    }
+    return Math.round(value * 100) / 100;
+}
+function normalizeHudLayoutPreference(value) {
+    if (value === null) {
+        return null;
+    }
+    if (value === "stacked" || value === "condensed") {
+        return value;
+    }
+    return null;
 }
 function normalizeSoundVolume(value) {
     if (typeof value !== "number" || !Number.isFinite(value)) {

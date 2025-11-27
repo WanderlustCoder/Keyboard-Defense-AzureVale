@@ -9,3 +9,7 @@
 **Next Steps**
 1. Audit the tutorial banners and passive logs for additional condensed states so very short, landscape phones avoid excessive scroll.
 2. Consider dynamically rescaling the canvas render resolution on ultra-small devices so the WebGL/canvas workload matches the reduced viewport.
+
+## Follow-up
+- `docs/codex_pack/tasks/37-responsive-condensed-audit.md`
+- `docs/codex_pack/tasks/21-canvas-dpr-monitor.md`

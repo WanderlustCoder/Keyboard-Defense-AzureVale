@@ -1,0 +1,97 @@
+{
+  "generatedAt": "2025-11-20T00:00:00.000Z",
+  "mode": "warn",
+  "summaryPath": "docs/codex_pack/fixtures/gold/gold-summary-report.json",
+  "thresholds": {
+    "minNetDelta": -250,
+    "maxP90SpendMagnitude": 250
+  },
+  "totals": {
+    "files": 1,
+    "summaries": 1
+  },
+  "metrics": {
+    "netDelta": 175,
+    "avgMedianGain": 60,
+    "avgMedianSpend": -35,
+    "maxP90SpendMagnitude": 65,
+    "starfield": {
+      "depthAvg": 1.35,
+      "driftAvg": 1.15,
+      "waveProgressAvg": 52.5,
+      "castleRatioAvg": 70,
+      "lastTint": "#fbbf24"
+    }
+  },
+  "summaries": [
+    {
+      "file": "artifacts/smoke/tutorial.skip.json",
+      "eventCount": 42,
+      "netDelta": 175,
+      "medianGain": 60,
+      "p90Gain": 110,
+      "medianSpend": -35,
+      "p90Spend": -65,
+      "starfieldDepth": 1.35,
+      "starfieldDrift": 1.15,
+      "starfieldWaveProgress": 52.5,
+      "starfieldCastleRatio": 70,
+      "starfieldTint": "#fbbf24"
+    }
+  ],
+  "warnings": [],
+  "percentileAlerts": {
+    "rows": [
+      {
+        "file": "artifacts/smoke/tutorial.skip.json",
+        "metric": "medianGain",
+        "actual": 60,
+        "baseline": 60,
+        "diff": 0,
+        "absDiff": 0,
+        "pctDiff": 0,
+        "absLimit": 15,
+        "pctLimit": 0.25,
+        "status": "pass"
+      },
+      {
+        "file": "artifacts/smoke/tutorial.skip.json",
+        "metric": "p90Gain",
+        "actual": 110,
+        "baseline": 110,
+        "diff": 0,
+        "absDiff": 0,
+        "pctDiff": 0,
+        "absLimit": 20,
+        "pctLimit": 0.2,
+        "status": "pass"
+      },
+      {
+        "file": "artifacts/smoke/tutorial.skip.json",
+        "metric": "medianSpend",
+        "actual": -35,
+        "baseline": -35,
+        "diff": 0,
+        "absDiff": 0,
+        "pctDiff": 0,
+        "absLimit": 10,
+        "pctLimit": 0.25,
+        "status": "pass"
+      },
+      {
+        "file": "artifacts/smoke/tutorial.skip.json",
+        "metric": "p90Spend",
+        "actual": -65,
+        "baseline": -65,
+        "diff": 0,
+        "absDiff": 0,
+        "pctDiff": 0,
+        "absLimit": 15,
+        "pctLimit": 0.2,
+        "status": "pass"
+      }
+    ],
+    "failures": 0,
+    "warnings": []
+  }
+}

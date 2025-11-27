@@ -37,6 +37,7 @@ export interface EnemyState {
   spawnedAt: number;
   waveIndex: number;
   taunt?: string;
+  tauntId?: string | null;
 }
 
 export interface TurretState {
@@ -102,6 +103,47 @@ export interface TauntAnalyticsState {
   history: TauntAnalyticsEntry[];
 }
 
+export type DefeatBurstMode = "sprite" | "procedural";
+export type DefeatAnimationPreference = "auto" | "sprite" | "procedural";
+
+export interface DefeatBurstAnalyticsEntry {
+  timestamp: number;
+  enemyType: string | null;
+  lane: number | null;
+  mode: DefeatBurstMode;
+}
+
+export interface DefeatBurstAnalyticsState {
+  total: number;
+  sprite: number;
+  procedural: number;
+  lastEnemyType: string | null;
+  lastLane: number | null;
+  lastTimestamp: number | null;
+  lastMode: DefeatBurstMode | null;
+  history: DefeatBurstAnalyticsEntry[];
+}
+
+export interface StarfieldLayerAnalyticsState {
+  id: string;
+  velocity: number;
+  direction: 1 | -1;
+  depth: number;
+  baseDepth: number;
+  depthOffset?: number;
+}
+
+export interface StarfieldAnalyticsState {
+  driftMultiplier: number;
+  depth: number;
+  tint: string;
+  waveProgress: number;
+  castleHealthRatio: number;
+  severity: number;
+  reducedMotionApplied: boolean;
+  layers: StarfieldLayerAnalyticsState[];
+}
+
 export interface CastlePassiveUnlock {
   id: CastlePassiveId;
   total: number;
@@ -149,6 +191,36 @@ export interface TypingState {
   recentCorrectInputs: number;
   recentAccuracy: number;
   dynamicDifficultyBias: number;
+}
+
+export interface ComboWarningHistoryEntry {
+  timestamp: number;
+  waveIndex: number;
+  comboBefore: number;
+  comboAfter: number;
+  accuracy: number;
+  baselineAccuracy: number;
+  deltaPercent: number;
+  durationMs: number;
+}
+
+export interface ComboWarningAnalyticsState {
+  active: {
+    startedAt: number;
+    comboBefore: number;
+    baselineAccuracy: number;
+    accuracy: number;
+    deltaPercent: number;
+    waveIndex: number;
+  } | null;
+  baselineAccuracy: number;
+  lastTimestamp: number | null;
+  lastDelta: number | null;
+  deltaMin: number | null;
+  deltaMax: number | null;
+  deltaSum: number;
+  count: number;
+  history: ComboWarningHistoryEntry[];
 }
 
 export interface TutorialAnalyticsEvent {
@@ -260,7 +332,10 @@ export interface GameAnalyticsState {
   castlePassiveUnlocks: CastlePassiveUnlock[];
   goldEvents: GoldEvent[];
   taunt: TauntAnalyticsState;
+  defeatBurst: DefeatBurstAnalyticsState;
   tutorial: TutorialAnalyticsState;
+  comboWarning: ComboWarningAnalyticsState;
+  starfield: StarfieldAnalyticsState | null;
 }
 
 export interface WaveSummary {

@@ -1,0 +1,47 @@
+{
+  "branches": [
+    "master",
+    {
+      "name": "nightly",
+      "prerelease": "nightly"
+    }
+  ],
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    [
+      "@semantic-release/changelog",
+      {
+        "changelogFile": "CHANGELOG.md"
+      }
+    ],
+    [
+      "@semantic-release/exec",
+      {
+        "prepareCmd": "node ./scripts/packageRelease.mjs ${nextRelease.version}"
+      }
+    ],
+    [
+      "@semantic-release/github",
+      {
+        "assets": [
+          {
+            "path": "artifacts/release/keyboard-defense-${nextRelease.version}.zip",
+            "label": "Keyboard Defense bundle v${nextRelease.version}"
+          },
+          {
+            "path": "artifacts/release/release-manifest-${nextRelease.version}.json",
+            "label": "Release manifest v${nextRelease.version}"
+          }
+        ]
+      }
+    ],
+    [
+      "@semantic-release/git",
+      {
+        "assets": ["CHANGELOG.md"],
+        "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+      }
+    ]
+  ]
+}

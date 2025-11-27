@@ -70,6 +70,19 @@ test("summarizeFileEntries yields null percentile stats when no events", () => {
   assert.equal(summary.spendP50, null);
 });
 
+test("summarizeFileEntries tracks starfield averages and tint", () => {
+  const summary = summarizeFileEntries("starfield.json", [
+    { starfield: { depth: 1.2, driftMultiplier: 1.05, waveProgress: 0.4, castleHealthRatio: 0.8, tint: "#222222" } },
+    { starfield: { depth: 1.5, driftMultiplier: 1.25, waveProgress: 0.65, castleHealthRatio: 0.6, tint: "#00ffcc" } },
+    {}
+  ]);
+  assert.equal(summary.starfieldDepth, 1.35);
+  assert.equal(summary.starfieldDrift, 1.15);
+  assert.equal(summary.starfieldWaveProgress, 52.5);
+  assert.equal(summary.starfieldCastleRatio, 70);
+  assert.equal(summary.starfieldTint, "#00ffcc");
+});
+
 test("runGoldSummary writes csv output", async () => {
   const dir = await fs.mkdtemp(path.join(os.tmpdir(), "gold-summary-"));
   try {
@@ -90,7 +103,7 @@ test("runGoldSummary writes csv output", async () => {
     const csv = await fs.readFile(outPath, "utf8");
     assert.match(
       csv,
-      /file,eventCount,netDelta,maxGain,maxSpend,totalPositive,totalNegative,firstTimestamp,lastTimestamp,passiveLinkedCount,uniquePassiveIds,gainP50,spendP50,gainP90,spendP90,medianGain,p90Gain,medianSpend,p90Spend,maxPassiveLag,summaryPercentiles/
+      /file,eventCount,netDelta,maxGain,maxSpend,totalPositive,totalNegative,firstTimestamp,lastTimestamp,passiveLinkedCount,uniquePassiveIds,gainP50,spendP50,gainP90,spendP90,medianGain,p90Gain,medianSpend,p90Spend,maxPassiveLag,starfieldDepth,starfieldDrift,starfieldTint,starfieldWaveProgress,starfieldCastleRatio,summaryPercentiles/
     );
     assert.match(csv, /sample,2,-10/);
     assert.match(csv, /summaryPercentiles/);

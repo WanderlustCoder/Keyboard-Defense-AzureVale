@@ -52,7 +52,7 @@ const validateStatusNote = async (note, taskMap) => {
     return; // not every status note must have follow-up
   }
   // naive: search for `codex_pack/tasks/`
-  const matches = content.match(/(?:docs\/)?codex_pack\/tasks\/[A-Za-z0-9\-]+\.md/g);
+  const matches = content.match(/(?:docs\/)?codex_pack\/tasks\/[A-Za-z0-9-]+\.md/g);
   if (!matches) {
     errors.push(`${note.relPath} reference missing Codex task link in Follow-up`);
     return;

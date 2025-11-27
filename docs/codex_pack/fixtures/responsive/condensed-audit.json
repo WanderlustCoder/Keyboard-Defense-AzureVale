@@ -1,0 +1,21 @@
+{
+  "generatedAt": "2025-11-20T12:00:00.000Z",
+  "ok": false,
+  "panelsChecked": 6,
+  "snapshotsChecked": 4,
+  "checks": 27,
+  "failures": [
+    {
+      "panelId": "hud-passives",
+      "snapshot": "hud-main",
+      "breakpoint": "compact-height",
+      "message": "Missing diagnostics badge for hud-passives at compact breakpoint."
+    },
+    {
+      "panelId": "diagnostics-sections-gold",
+      "snapshot": "hud-main",
+      "breakpoint": "compact-height",
+      "message": "collapsedSections.gold-events expected true."
+    }
+  ]
+}

@@ -1,6 +1,12 @@
-import { TurretLoadoutPreset, TurretLoadoutSlot } from "../utils/playerSettings.js";
+import { type ResolutionTransitionState } from "../ui/ResolutionTransitionController.js";
+import { type DiagnosticsSectionsPreferenceMap, type TurretLoadoutPreset, type TurretLoadoutSlot } from "../utils/playerSettings.js";
 export declare class GameController {
     constructor(options: any);
+    private resolveStarfieldPreset;
+    private applyStarfieldOverride;
+    private buildStarfieldAnalyticsSummary;
+    private handleStarfieldStateChange;
+    recordTauntAnalytics(enemy: any): void;
     initializeMainMenu(shouldSkipTutorial: any): void;
     start(): void;
     togglePause(): void;
@@ -43,12 +49,18 @@ export declare class GameController {
     setSoundVolume(volume: any, options?: {}): void;
     setAudioIntensity(intensity: any, options?: {}): void;
     setColorblindPaletteEnabled(enabled: any, options?: {}): void;
+    setDefeatAnimationMode(mode: any, options?: {}): void;
+    setStarfieldScene(scene: any): any;
+    syncDefeatAnimationPreferences(): void;
+    resolveDefeatBurstMode(enemy: any): "sprite" | "procedural";
+    shouldUseSpriteForTier(tierId: any): boolean;
     setHudFontScale(scale: any, options?: {}): void;
     buildTelemetryExport(includeQueue?: boolean): {
         available: boolean;
         enabled: any;
         endpoint: any;
         queueSize: number;
+        soundIntensity: any;
     };
     normalizeHudFontScale(value: any): number;
     normalizeSoundVolume(value: any): number;
@@ -73,32 +85,7 @@ export declare class GameController {
     openOptionsOverlay(): void;
     closeOptionsOverlay(options?: {}): void;
     presentWaveScorecard(summary: any): void;
-    debugShowWaveScorecard(summary?: {
-        waveIndex?: number;
-        index?: number;
-        waveTotal?: number;
-        mode?: string;
-        accuracy?: number;
-        enemiesDefeated?: number;
-        breaches?: number;
-        perfectWords?: number;
-        averageReaction?: number;
-        dps?: number;
-        turretDps?: number;
-        typingDps?: number;
-        turretDamage?: number;
-        typingDamage?: number;
-        shieldBreaks?: number;
-        repairsUsed?: number;
-        repairHealth?: number;
-        repairGold?: number;
-        goldEarned?: number;
-        bonusGold?: number;
-        castleBonusGold?: number;
-        bestCombo?: number;
-        maxCombo?: number;
-        sessionBestCombo?: number;
-    }): void;
+    debugShowWaveScorecard(summary?: {}): void;
     debugHideWaveScorecard(): void;
     handleWaveScorecardContinue(): void;
     closeWaveScorecard(options?: {}): void;
@@ -107,6 +94,7 @@ export declare class GameController {
     areTargetingMapsEqual(current?: {}, next?: {}): boolean;
     areTurretPresetMapsEqual(current?: {}, next?: {}): boolean;
     areTurretPresetSlotsEqual(currentSlots?: {}, nextSlots?: {}): boolean;
+    areDiagnosticsSectionsEqual(current?: DiagnosticsSectionsPreferenceMap, next?: DiagnosticsSectionsPreferenceMap): boolean;
     cloneTurretPresetMap(source?: {}): Partial<Record<"preset-a" | "preset-b" | "preset-c", TurretLoadoutPreset>>;
     cloneTurretPresetSlots(slots?: {}): Record<string, TurretLoadoutSlot>;
     isValidPresetId(presetId: any): boolean;
@@ -140,7 +128,58 @@ export declare class GameController {
     formatPresetSavedAt(savedAt: any): string;
     isPresetMatch(preset: any, state: any): boolean;
     computeTurretSignature(state: any): any;
-    collectUiCondensedSnapshot(): any;
+    collectUiCondensedSnapshot(): {
+        compactHeight: any;
+        tutorialBanner: {
+            condensed: any;
+            expanded: any;
+        };
+        hud: {
+            passivesCollapsed: any;
+            goldEventsCollapsed: any;
+            prefersCondensedLists: any;
+            layout: string;
+        };
+        options: {
+            passivesCollapsed: any;
+        };
+        diagnostics: {
+            condensed: any;
+            sectionsCollapsed: any;
+            collapsedSections: any;
+            lastUpdatedAt: any;
+        };
+        preferences: {
+            hudPassivesCollapsed: any;
+            hudGoldEventsCollapsed: any;
+            optionsPassivesCollapsed: any;
+            diagnosticsSections: any;
+            diagnosticsSectionsUpdatedAt: any;
+            devicePixelRatio: any;
+            hudLayout: any;
+        };
+        resolution: {
+            cssWidth: any;
+            cssHeight: any;
+            renderWidth: any;
+            renderHeight: any;
+            devicePixelRatio: any;
+            hudLayout: string;
+            lastResizeCause: any;
+        };
+        resolutionChanges: any;
+        assetIntegrity: {
+            status: any;
+            strictMode: any;
+            checked: any;
+            missing: any;
+            failed: any;
+            total: any;
+            scenario: any;
+            manifest: any;
+            firstFailure: any;
+        };
+    };
     resetAnalytics(): void;
     exportAnalytics(): void;
     pauseForTutorial(): void;
@@ -149,12 +188,13 @@ export declare class GameController {
     replayTutorial(): void;
     skipTutorial(): void;
     getTutorialAnalyticsSummary(): any;
+    getAssetIntegritySummary(): any;
     render(): void;
     buildTurretRangeRenderOptions(): {
         slotId: any;
         typeId: any;
         level: number;
-    } | null;
+    };
     handleAssetImageLoaded(): void;
     waitForAssets(): Promise<void>;
     attachInputHandlers(typingInput: any): void;
@@ -171,13 +211,10 @@ export declare class GameController {
     handleTurretPresetApply(presetId: any): void;
     handleTurretPresetClear(presetId: any): void;
     handleTurretHover(slotId: any, context?: {}): void;
+    handleHudCollapsePreferenceChange(preferences: any): void;
+    handleDiagnosticsSectionPreferenceChange(preferences: DiagnosticsSectionsPreferenceMap): void;
     presentTutorialSummary(summary: any): void;
-    debugShowTutorialSummary(summary?: {
-        accuracy?: number;
-        bestCombo?: number;
-        breaches?: number;
-        gold?: number;
-    }): void;
+    debugShowTutorialSummary(summary?: {}): void;
     debugHideTutorialSummary(): void;
     collectTutorialSummary(): {
         accuracy: any;
@@ -195,7 +232,27 @@ export declare class GameController {
     clearTutorialProgress(): void;
     replayTutorialFromDebug(): void;
     registerHudListeners(): void;
+    describeCastlePassive(passive: any): string;
+    describeLane(lane: number): string;
+    getLaneLabelToken(lane: number): string;
+    describeEnemyTier(tierId: string): string;
     playSound(key: any, detune?: number): void;
     collectImpactEffects(): any;
     addImpactEffect(lane: any, position: any, kind: any, extras?: {}): void;
+    attachCanvasResizeObserver(): void;
+    attachDevicePixelRatioListener(): void;
+    detachDevicePixelRatioListener(): void;
+    handleDevicePixelRatioChange(event: any): void;
+    updateCanvasResolution(force?: boolean, cause?: string): void;
+    computeCanvasResolution(): import("../utils/canvasResolution.js").CanvasResolution;
+    getDevicePixelRatio(): any;
+    readWindowDevicePixelRatio(): number;
+    recordCanvasResolutionChange(resolution: any, cause?: string, transitionMs?: number): void;
+    persistResolutionPreferences(devicePixelRatio: number, hudLayout: string | null): void;
+    handleCanvasTransitionStateChange(state: ResolutionTransitionState): void;
+    measureCanvasAvailableWidth(): any;
+    triggerCanvasResizeFade(): void;
+    syncAssetIntegrityFlags(): void;
+    syncCanvasResizeCause(): void;
 }
+//# sourceMappingURL=gameController.d.ts.map

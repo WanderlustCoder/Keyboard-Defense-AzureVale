@@ -1,0 +1,10 @@
+{
+  "generatedAt": "2025-11-13T16:10:54.173Z",
+  "mode": "warn",
+  "status": "ok",
+  "config": {
+    "warnMaxLoss": -200,
+    "failMinNet": -300
+  },
+  "entries": []
+}

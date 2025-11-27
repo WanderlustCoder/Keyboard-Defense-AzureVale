@@ -1,0 +1,43 @@
+{
+  "_meta": {
+    "deltaAbs": 20,
+    "deltaPct": 0.3,
+    "generatedAt": "2025-11-14T19:35:06.376Z"
+  },
+  "artifacts/smoke/tutorial.skip.json": {
+    "medianGain": {
+      "abs": 15,
+      "pct": 0.25
+    },
+    "medianSpend": {
+      "abs": 10,
+      "pct": 0.25
+    },
+    "p90Gain": {
+      "abs": 20,
+      "pct": 0.2
+    },
+    "p90Spend": {
+      "abs": 15,
+      "pct": 0.2
+    }
+  },
+  "defaults": {
+    "medianGain": {
+      "abs": 20,
+      "pct": 0.3
+    },
+    "medianSpend": {
+      "abs": 20,
+      "pct": 0.3
+    },
+    "p90Gain": {
+      "abs": 20,
+      "pct": 0.3
+    },
+    "p90Spend": {
+      "abs": 20,
+      "pct": 0.3
+    }
+  }
+}

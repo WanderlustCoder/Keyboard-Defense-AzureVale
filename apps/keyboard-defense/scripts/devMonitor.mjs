@@ -12,8 +12,9 @@ const DEFAULT_REQUEST_TIMEOUT = sanitizeNumber(
   5_000
 );
 const DEFAULT_ARTIFACT =
-  process.env.DEV_MONITOR_ARTIFACT ??
-  path.resolve("monitor-artifacts", "dev-monitor.json");
+  process.env.DEV_MONITOR_ARTIFACT ?? path.resolve("artifacts", "monitor", "dev-monitor.json");
+const DEFAULT_STATE_PATH =
+  process.env.DEV_MONITOR_STATE ?? path.resolve(".devserver", "state.json");
 const HISTORY_LIMIT = 300;
 
 function sanitizeNumber(value, fallback) {
@@ -28,6 +29,7 @@ export function parseArgs(argv = []) {
     timeoutMs: DEFAULT_TIMEOUT,
     requestTimeoutMs: DEFAULT_REQUEST_TIMEOUT,
     artifactPath: DEFAULT_ARTIFACT,
+    statePath: DEFAULT_STATE_PATH,
     waitReady: false,
     verbose: false,
     help: false
@@ -68,6 +70,12 @@ export function parseArgs(argv = []) {
         options.artifactPath = path.resolve(value);
         break;
       }
+      case "--state": {
+        const value = argv[++i];
+        if (!value) throw new Error("Expected path after --state");
+        options.statePath = path.resolve(value);
+        break;
+      }
       case "--no-artifact":
         options.artifactPath = null;
         break;
@@ -89,6 +97,16 @@ export function parseArgs(argv = []) {
   }
 
   return options;
+}
+
+async function readStateSnapshot(statePath) {
+  if (!statePath) return null;
+  try {
+    const raw = await fs.readFile(statePath, "utf8");
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
 }
 
 function sleep(ms) {
@@ -133,20 +151,37 @@ function pushHistory(history, entry) {
 }
 
 export async function runMonitor(options) {
+  const stateSnapshot = await readStateSnapshot(options.statePath);
   const summary = {
     url: options.url,
     intervalMs: options.intervalMs,
     timeoutMs: options.timeoutMs,
     requestTimeoutMs: options.requestTimeoutMs,
     artifactPath: options.artifactPath,
+    statePath: options.statePath,
     startedAt: new Date().toISOString(),
     status: "pending",
     readyAt: null,
     failureCount: 0,
     successCount: 0,
     lastError: null,
+    lastLatencyMs: null,
+    lastSuccessAt: null,
+    lastFailureAt: null,
+    completedAt: null,
     history: [],
-    completedAt: null
+    uptimeMs: 0,
+    server: stateSnapshot
+      ? {
+          host: stateSnapshot.host ?? null,
+          port: stateSnapshot.port ?? null,
+          url: stateSnapshot.url ?? null,
+          logPath: stateSnapshot.logPath ?? null,
+          startedAt: stateSnapshot.startedAt ?? null,
+          flags: Array.isArray(stateSnapshot.flags) ? stateSnapshot.flags : []
+        }
+      : null,
+    flags: Array.isArray(stateSnapshot?.flags) ? stateSnapshot.flags : []
   };
 
   const deadline = Date.now() + options.timeoutMs;
@@ -162,8 +197,10 @@ export async function runMonitor(options) {
     };
     pushHistory(summary.history, entry);
 
+    summary.lastLatencyMs = entry.latencyMs ?? summary.lastLatencyMs;
     if (reading.ok) {
       summary.successCount += 1;
+      summary.lastSuccessAt = entry.timestamp;
       if (options.verbose) {
         console.log(
           `[dev-monitor] OK ${reading.status} (${reading.latencyMs ?? 0} ms) at ${entry.timestamp}`
@@ -177,6 +214,7 @@ export async function runMonitor(options) {
     } else {
       summary.failureCount += 1;
       summary.lastError = reading.error;
+      summary.lastFailureAt = entry.timestamp;
       if (options.verbose) {
         console.warn(
           `[dev-monitor] ERROR ${reading.error ?? "unknown"} at ${entry.timestamp}`
@@ -197,6 +235,10 @@ export async function runMonitor(options) {
   }
 
   summary.completedAt = new Date().toISOString();
+  summary.uptimeMs = Math.max(
+    0,
+    Date.parse(summary.completedAt) - Date.parse(summary.startedAt)
+  );
   await writeArtifact(summary, options.artifactPath);
   return summary;
 }

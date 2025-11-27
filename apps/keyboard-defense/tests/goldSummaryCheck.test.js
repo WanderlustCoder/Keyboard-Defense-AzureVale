@@ -4,7 +4,11 @@ import os from "node:os";
 import path from "node:path";
 import { promises as fs } from "node:fs";
 
-import { parseArgs, runGoldSummaryCheck } from "../scripts/goldSummaryCheck.mjs";
+import {
+  collectGoldSummaryResults,
+  parseArgs,
+  runGoldSummaryCheck
+} from "../scripts/goldSummaryCheck.mjs";
 
 async function makeTempFile(name, content) {
   const dir = await fs.mkdtemp(path.join(os.tmpdir(), "gold-summary-check-"));
@@ -62,6 +66,26 @@ test("runGoldSummaryCheck fails when CSV percentiles mismatch", async () => {
   const { dir, file } = await makeTempFile("summary.csv", csv);
   try {
     await assert.rejects(() => runGoldSummaryCheck({ percentiles: [10, 90], targets: [file] }));
+  } finally {
+    await fs.rm(dir, { recursive: true, force: true });
+  }
+});
+
+test("collectGoldSummaryResults returns pass/fail metadata", async () => {
+  const { dir, file: goodFile } = await makeTempFile(
+    "summary.json",
+    JSON.stringify({ percentiles: [25, 50], rows: [] }, null, 2)
+  );
+  const badFile = path.join(dir, "bad.json");
+  await fs.writeFile(badFile, JSON.stringify({ rows: [] }), "utf8");
+  try {
+    const results = await collectGoldSummaryResults([dir], [25, 50]);
+    assert.equal(results.length, 2);
+    const success = results.find((entry) => entry.file === goodFile);
+    const failure = results.find((entry) => entry.file === badFile);
+    assert.ok(success?.ok);
+    assert.ok(!failure?.ok);
+    assert.match(failure?.error ?? "", /missing percentiles/i);
   } finally {
     await fs.rm(dir, { recursive: true, force: true });
   }

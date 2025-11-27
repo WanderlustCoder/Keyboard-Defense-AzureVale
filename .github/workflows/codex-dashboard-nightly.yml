@@ -20,6 +20,9 @@ on:
       alerts:
         description: Path to percentile alerts JSON (optional; defaults to fixtures)
         required: false
+      timeline_baseline:
+        description: Path to percentile baseline JSON for timeline drift (optional; defaults to fixtures)
+        required: false
 
 jobs:
   dashboard:
@@ -33,6 +36,7 @@ jobs:
       PASSIVE_PATH: ${{ github.event.inputs.passive || '../../docs/codex_pack/fixtures/gold/passive-gold-summary.json' }}
       GUARD_PATH: ${{ github.event.inputs.guard || '../../docs/codex_pack/fixtures/gold/percentile-guard.json' }}
       ALERTS_PATH: ${{ github.event.inputs.alerts || '../../docs/codex_pack/fixtures/gold/gold-percentiles.baseline.json' }}
+      TIMELINE_BASELINE_PATH: ${{ github.event.inputs.timeline_baseline || '../../docs/codex_pack/fixtures/gold/gold-percentiles.baseline.json' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -62,6 +66,16 @@ jobs:
           if [ -f "$ROOT/passive-gold.ci.json" ]; then echo "PASSIVE_PATH=$ROOT/passive-gold.ci.json" >> $GITHUB_ENV; fi
           if [ -f "$ROOT/gold-percentile-guard.ci.json" ]; then echo "GUARD_PATH=$ROOT/gold-percentile-guard.ci.json" >> $GITHUB_ENV; fi
           if [ -f "$ROOT/gold-percentiles.ci.json" ]; then echo "ALERTS_PATH=$ROOT/gold-percentiles.ci.json" >> $GITHUB_ENV; fi
+          if [ -f "$ROOT/gold-percentiles.baseline.json" ]; then echo "TIMELINE_BASELINE_PATH=$ROOT/gold-percentiles.baseline.json" >> $GITHUB_ENV; fi
+
+      - name: Guard baseline coverage
+        working-directory: apps/keyboard-defense
+        run: |
+          node ./scripts/ci/goldBaselineGuard.mjs \
+            --timeline "$TIMELINE_PATH" \
+            --baseline "$TIMELINE_BASELINE_PATH" \
+            --out-json artifacts/summaries/gold-baseline-guard.json \
+            --mode fail
 
       - name: Generate gold analytics board from fixtures
         working-directory: apps/keyboard-defense
@@ -72,6 +86,7 @@ jobs:
             --passive "$PASSIVE_PATH" \
             --percentile-guard "$GUARD_PATH" \
             --percentile-alerts "$ALERTS_PATH" \
+            --timeline-baseline "$TIMELINE_BASELINE_PATH" \
             --out-json artifacts/summaries/gold-analytics-board.ci.json \
             --markdown artifacts/summaries/gold-analytics-board.ci.md \
             --castle-warn 65 \
@@ -91,6 +106,9 @@ jobs:
             echo "Gold board artifact: \`artifacts/summaries/gold-analytics-board.ci.json\`"
             echo "Run artifacts: ${RUN_URL}"
             echo ""
+            echo "### Baseline coverage"
+            node -e "const fs=require('fs');const p='artifacts/summaries/gold-analytics-board.ci.json';try{const d=JSON.parse(fs.readFileSync(p,'utf8'));const b=d.timelineBaseline||{};const note=\`\${b.matched??0}/\${b.totalEntries??0} matched (baseline entries: \${b.baselineEntries??'n/a'})\`;console.log(note);}catch(e){console.log('Unavailable:',e.message);}"
+            echo ""
             echo "### Portal snapshot"
             sed -n '/<!-- GOLD_ANALYTICS_BOARD:START -->/,/<!-- GOLD_ANALYTICS_BOARD:END -->/p' ../../docs/CODEX_PORTAL.md
             echo ""
@@ -105,5 +123,6 @@ jobs:
           path: |
             docs/codex_dashboard.md
             docs/CODEX_PORTAL.md
+            apps/keyboard-defense/artifacts/summaries/gold-baseline-guard.json
             apps/keyboard-defense/artifacts/summaries/gold-analytics-board.ci.json
             apps/keyboard-defense/artifacts/summaries/gold-analytics-board.ci.md

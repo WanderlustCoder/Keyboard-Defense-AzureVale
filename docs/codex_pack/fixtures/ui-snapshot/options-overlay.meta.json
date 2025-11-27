@@ -1,0 +1,43 @@
+{
+  "id": "options-overlay",
+  "description": "Fixture options overlay with expanded passives",
+  "file": "artifacts/screenshots/options-overlay.png",
+  "capturedAt": "2025-11-20T00:05:00.000Z",
+  "starfieldScene": "warning",
+  "badges": [
+    "viewport:default-height",
+    "tutorial:default",
+    "hud-passives:expanded",
+    "hud-gold-events:expanded",
+    "options-passives:collapsed",
+    "diagnostics:expanded",
+    "diagnostics:sections-expanded",
+    "diagnostics:turret-dps:collapsed",
+    "pref:diagnostics:turret-dps:collapsed",
+    "starfield:warning"
+  ],
+  "summary": "Default viewport; HUD passives expanded; HUD gold events expanded; Options passives collapsed; Diagnostics expanded; Diagnostics sections — turret-dps:collapsed",
+  "uiSnapshot": {
+    "compactHeight": false,
+    "tutorialBanner": { "condensed": false, "expanded": true },
+    "hud": {
+      "passivesCollapsed": false,
+      "goldEventsCollapsed": false,
+      "prefersCondensedLists": false
+    },
+    "options": { "passivesCollapsed": true },
+    "diagnostics": {
+      "condensed": false,
+      "sectionsCollapsed": false,
+      "collapsedSections": { "turret-dps": true },
+      "lastUpdatedAt": "2025-11-20T00:04:30.000Z"
+    },
+    "preferences": {
+      "hudPassivesCollapsed": false,
+      "hudGoldEventsCollapsed": false,
+      "optionsPassivesCollapsed": true,
+      "diagnosticsSections": { "turret-dps": true },
+      "diagnosticsSectionsUpdatedAt": "2025-11-20T00:04:30.000Z"
+    }
+  }
+}

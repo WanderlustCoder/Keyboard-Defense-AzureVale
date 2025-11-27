@@ -1,0 +1,349 @@
+{
+  "generatedAt": "2025-11-14T22:52:02.934Z",
+  "inputs": {
+    "summary": "..\\..\\docs\\codex_pack\\fixtures\\gold\\gold-summary-report.json",
+    "timeline": "..\\..\\docs\\codex_pack\\fixtures\\gold\\gold-timeline-summary.json",
+    "passive": "..\\..\\docs\\codex_pack\\fixtures\\gold\\passive-gold-summary.json",
+    "guard": "..\\..\\docs\\codex_pack\\fixtures\\gold\\percentile-guard.json",
+    "alerts": "..\\..\\docs\\codex_pack\\fixtures\\gold\\gold-percentiles.baseline.json"
+  },
+  "outputs": {
+    "json": "..\\..\\temp\\gold-analytics-board.fixture.json",
+    "markdown": "..\\..\\temp\\gold-analytics-board.fixture.md"
+  },
+  "summary": {
+    "generatedAt": "2025-11-20T00:00:00.000Z",
+    "totals": {
+      "files": 1,
+      "summaries": 1
+    },
+    "metrics": {
+      "netDelta": 175,
+      "avgMedianGain": 60,
+      "avgMedianSpend": -35,
+      "maxP90SpendMagnitude": 65
+    },
+    "summaryPath": "..\\..\\docs\\codex_pack\\fixtures\\gold\\gold-summary-report.json"
+  },
+  "timeline": {
+    "generatedAt": "2025-11-20T00:05:00.000Z",
+    "totals": {
+      "files": 1,
+      "events": 5
+    },
+    "metrics": {
+      "netDelta": 75,
+      "avgDelta": 15,
+      "medianGain": 50,
+      "medianSpend": -45,
+      "maxSpendStreak": 60,
+      "latestEvents": [
+        {
+          "file": "artifacts/smoke/tutorial.skip.json",
+          "capturedAt": "2025-11-19T08:00:00.000Z",
+          "status": "success",
+          "mode": "tutorial-skip",
+          "eventIndex": 4,
+          "gold": 155,
+          "delta": -60,
+          "timestamp": 75.2,
+          "timeSince": 64.7,
+          "passiveId": "gold",
+          "passiveLevel": 1,
+          "passiveDelta": 1.1,
+          "passiveTime": 74,
+          "passiveLag": 1.2
+        },
+        {
+          "file": "artifacts/smoke/tutorial.skip.json",
+          "capturedAt": "2025-11-19T08:00:00.000Z",
+          "status": "success",
+          "mode": "tutorial-skip",
+          "eventIndex": 3,
+          "gold": 215,
+          "delta": 50,
+          "timestamp": 63.1,
+          "timeSince": 52.6,
+          "passiveId": null,
+          "passiveLevel": null,
+          "passiveDelta": null,
+          "passiveTime": null,
+          "passiveLag": null
+        },
+        {
+          "file": "artifacts/smoke/tutorial.skip.json",
+          "capturedAt": "2025-11-19T08:00:00.000Z",
+          "status": "success",
+          "mode": "tutorial-skip",
+          "eventIndex": 2,
+          "gold": 165,
+          "delta": 75,
+          "timestamp": 46.4,
+          "timeSince": 35.9,
+          "passiveId": "armor",
+          "passiveLevel": 1,
+          "passiveDelta": 1,
+          "passiveTime": 45,
+          "passiveLag": 1.4
+        },
+        {
+          "file": "artifacts/smoke/tutorial.skip.json",
+          "capturedAt": "2025-11-19T08:00:00.000Z",
+          "status": "success",
+          "mode": "tutorial-skip",
+          "eventIndex": 1,
+          "gold": 90,
+          "delta": -30,
+          "timestamp": 22.8,
+          "timeSince": 12.3,
+          "passiveId": "regen",
+          "passiveLevel": 1,
+          "passiveDelta": 1,
+          "passiveTime": 21.9,
+          "passiveLag": 0.9
+        },
+        {
+          "file": "artifacts/smoke/tutorial.skip.json",
+          "capturedAt": "2025-11-19T08:00:00.000Z",
+          "status": "success",
+          "mode": "tutorial-skip",
+          "eventIndex": 0,
+          "gold": 120,
+          "delta": 40,
+          "timestamp": 10.5,
+          "timeSince": 0,
+          "passiveId": null,
+          "passiveLevel": null,
+          "passiveDelta": null,
+          "passiveTime": null,
+          "passiveLag": null
+        }
+      ]
+    },
+    "thresholds": {
+      "maxSpendStreak": 200,
+      "minNetDelta": -250
+    },
+    "summaryPath": "..\\..\\docs\\codex_pack\\fixtures\\gold\\gold-timeline-summary.json"
+  },
+  "passive": {
+    "generatedAt": "2025-11-20T00:03:00.000Z",
+    "totals": {
+      "files": 1,
+      "unlocks": 3,
+      "goldEvents": 3
+    },
+    "metrics": {
+      "maxGapSeconds": 35.5,
+      "avgGapSeconds": 32.85,
+      "maxGoldLagSeconds": 1.2
+    },
+    "thresholds": {
+      "maxGapSeconds": 600,
+      "maxGoldLagSeconds": 10
+    },
+    "summaryPath": "..\\..\\docs\\codex_pack\\fixtures\\gold\\passive-gold-summary.json"
+  },
+  "guard": {
+    "generatedAt": "2025-11-20T00:10:00.000Z",
+    "totals": {
+      "checked": 1,
+      "failures": 0
+    },
+    "percentiles": [
+      25,
+      50,
+      90
+    ],
+    "files": [
+      {
+        "path": "artifacts/smoke/gold-summary.ci.json",
+        "ok": true,
+        "error": null
+      }
+    ],
+    "summaryPath": "..\\..\\docs\\codex_pack\\fixtures\\gold\\percentile-guard.json",
+    "failures": 0
+  },
+  "percentileAlerts": {
+    "rows": [
+      {
+        "file": "artifacts/smoke/tutorial.skip.json",
+        "metric": "medianGain",
+        "actual": 60,
+        "baseline": 60,
+        "diff": 0,
+        "absDiff": 0,
+        "pctDiff": 0,
+        "absLimit": 15,
+        "pctLimit": 0.25,
+        "status": "pass"
+      },
+      {
+        "file": "artifacts/smoke/tutorial.skip.json",
+        "metric": "p90Gain",
+        "actual": 110,
+        "baseline": 110,
+        "diff": 0,
+        "absDiff": 0,
+        "pctDiff": 0,
+        "absLimit": 20,
+        "pctLimit": 0.2,
+        "status": "pass"
+      },
+      {
+        "file": "artifacts/smoke/tutorial.skip.json",
+        "metric": "medianSpend",
+        "actual": -35,
+        "baseline": -35,
+        "diff": 0,
+        "absDiff": 0,
+        "pctDiff": 0,
+        "absLimit": 10,
+        "pctLimit": 0.25,
+        "status": "pass"
+      },
+      {
+        "file": "artifacts/smoke/tutorial.skip.json",
+        "metric": "p90Spend",
+        "actual": -65,
+        "baseline": -65,
+        "diff": 0,
+        "absDiff": 0,
+        "pctDiff": 0,
+        "absLimit": 15,
+        "pctLimit": 0.2,
+        "status": "pass"
+      }
+    ],
+    "failures": 0,
+    "summaryPath": "..\\..\\docs\\codex_pack\\fixtures\\gold\\gold-percentiles.baseline.json"
+  },
+  "scenarios": [
+    {
+      "id": "tutorial-skip",
+      "summary": {
+        "file": "artifacts/smoke/tutorial.skip.json",
+        "netDelta": 175,
+        "medianGain": 60,
+        "p90Gain": 110,
+        "medianSpend": -35,
+        "p90Spend": -65,
+        "eventCount": 42
+      },
+      "timelineEvents": [
+        {
+          "delta": -60,
+          "gold": 155,
+          "timestamp": 75.2,
+          "file": "artifacts/smoke/tutorial.skip.json",
+          "mode": "tutorial-skip",
+          "passiveId": null,
+          "passiveLevel": null
+        },
+        {
+          "delta": 50,
+          "gold": 215,
+          "timestamp": 63.1,
+          "file": "artifacts/smoke/tutorial.skip.json",
+          "mode": "tutorial-skip",
+          "passiveId": null,
+          "passiveLevel": null
+        },
+        {
+          "delta": 75,
+          "gold": 165,
+          "timestamp": 46.4,
+          "file": "artifacts/smoke/tutorial.skip.json",
+          "mode": "tutorial-skip",
+          "passiveId": null,
+          "passiveLevel": null
+        }
+      ],
+      "passiveUnlocks": [
+        {
+          "id": "gold",
+          "level": 1,
+          "delta": 1.15,
+          "time": 78.2,
+          "goldDelta": 75,
+          "goldLag": 1.2,
+          "file": "artifacts/smoke/tutorial.skip.json"
+        },
+        {
+          "id": "armor",
+          "level": 1,
+          "delta": 1,
+          "time": 42.7,
+          "goldDelta": 60,
+          "goldLag": 0.4,
+          "file": "artifacts/smoke/tutorial.skip.json"
+        },
+        {
+          "id": "regen",
+          "level": 1,
+          "delta": 1,
+          "time": 12.5,
+          "goldDelta": 40,
+          "goldLag": 0.7,
+          "file": "artifacts/smoke/tutorial.skip.json"
+        }
+      ],
+      "alerts": [
+        {
+          "file": "artifacts/smoke/tutorial.skip.json",
+          "metric": "medianGain",
+          "actual": 60,
+          "baseline": 60,
+          "diff": 0,
+          "absDiff": 0,
+          "pctDiff": 0,
+          "absLimit": 15,
+          "pctLimit": 0.25,
+          "status": "pass"
+        },
+        {
+          "file": "artifacts/smoke/tutorial.skip.json",
+          "metric": "p90Gain",
+          "actual": 110,
+          "baseline": 110,
+          "diff": 0,
+          "absDiff": 0,
+          "pctDiff": 0,
+          "absLimit": 20,
+          "pctLimit": 0.2,
+          "status": "pass"
+        },
+        {
+          "file": "artifacts/smoke/tutorial.skip.json",
+          "metric": "medianSpend",
+          "actual": -35,
+          "baseline": -35,
+          "diff": 0,
+          "absDiff": 0,
+          "pctDiff": 0,
+          "absLimit": 10,
+          "pctLimit": 0.25,
+          "status": "pass"
+        },
+        {
+          "file": "artifacts/smoke/tutorial.skip.json",
+          "metric": "p90Spend",
+          "actual": -65,
+          "baseline": -65,
+          "diff": 0,
+          "absDiff": 0,
+          "pctDiff": 0,
+          "absLimit": 15,
+          "pctLimit": 0.2,
+          "status": "pass"
+        }
+      ]
+    }
+  ],
+  "warnings": [],
+  "status": "pass",
+  "totals": {
+    "scenarios": 1
+  }
+}

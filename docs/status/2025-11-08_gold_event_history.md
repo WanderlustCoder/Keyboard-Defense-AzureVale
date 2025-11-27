@@ -10,3 +10,6 @@
 **Next Steps**
 1. Extend smoke/e2e dashboards (and analytics CSV tooling) to visualize both passive unlocks and `recentGoldEvents`, highlighting suspect spikes automatically.
 2. Consider echoing the condensed gold history in the options overlay or battle log so the data remains visible even when diagnostics are hidden.
+
+## Follow-up
+- `docs/codex_pack/tasks/32-passive-gold-dashboard.md`

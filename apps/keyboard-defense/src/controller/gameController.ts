@@ -1,8 +1,13 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 import { defaultConfig } from "../core/config.js";
+import { type StarfieldAnalyticsState } from "../core/types.js";
 import { GameEngine } from "../engine/gameEngine.js";
 import { CanvasRenderer } from "../rendering/canvasRenderer.js";
+import {
+  ResolutionTransitionController,
+  type ResolutionTransitionState
+} from "../ui/ResolutionTransitionController.js";
 import { HudView } from "../ui/hud.js";
 import { DiagnosticsOverlay } from "../ui/diagnostics.js";
 import { DebugApi } from "../debug/debugApi.js";
@@ -20,12 +25,16 @@ import {
   withPatchedPlayerSettings,
   writePlayerSettings,
   TURRET_PRESET_IDS,
+  type DiagnosticsSectionsPreferenceMap,
   type TurretLoadoutPreset,
   type TurretLoadoutPresetMap,
   type TurretLoadoutSlot
 } from "../utils/playerSettings.js";
 import { TelemetryClient } from "../telemetry/telemetryClient.js";
-import { calculateCanvasResolution } from "../utils/canvasResolution.js";
+import { calculateCanvasResolution, createDprListener } from "../utils/canvasResolution.js";
+import { buildResolutionChangeEntry } from "../utils/canvasTransition.js";
+import { deriveStarfieldState, type StarfieldParallaxState } from "../utils/starfield.js";
+import { defaultStarfieldConfig } from "../config/starfield.js";
 const FRAME_DURATION = 1 / 60;
 const TUTORIAL_VERSION = "v2";
 const HUD_FONT_SCALE_MIN = 0.85;
@@ -39,6 +48,14 @@ const AUDIO_INTENSITY_DEFAULT = 1;
 const CANVAS_BASE_WIDTH = 960;
 const CANVAS_BASE_HEIGHT = 540;
 const LANE_LABELS = ["A", "B", "C", "D", "E"];
+const CANVAS_RESIZE_FADE_MS = 250;
+const CANVAS_RESOLUTION_HOLD_MS = 70;
+const MAX_CANVAS_RESOLUTION_EVENTS = 10;
+const STARFIELD_PRESETS = {
+  calm: { scene: "calm", waveProgress: 0.15, castleHealthRatio: 1, freeze: true },
+  warning: { scene: "warning", waveProgress: 0.55, castleHealthRatio: 0.55 },
+  breach: { scene: "breach", waveProgress: 0.9, castleHealthRatio: 0.25 }
+};
 function svgCircleDataUri(primary, accent) {
   const svg =
     `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'>` +
@@ -66,12 +83,24 @@ export class GameController {
     }
     this.canvas = options.canvas;
     this.canvasResolution = null;
+    this.canvasResolutionEvents = [];
+    this.currentDevicePixelRatio = this.getDevicePixelRatio();
+    this.resolutionTransitionController =
+      typeof window !== "undefined"
+        ? new ResolutionTransitionController(this.canvas, {
+            fadeMs: CANVAS_RESIZE_FADE_MS - CANVAS_RESOLUTION_HOLD_MS,
+            holdMs: CANVAS_RESOLUTION_HOLD_MS,
+            onStateChange: (state) => this.handleCanvasTransitionStateChange(state)
+          })
+        : null;
+    if (typeof document !== "undefined" && document.body) {
+      document.body.dataset.canvasTransition = document.body.dataset.canvasTransition ?? "idle";
+    }
     this.canvasResizeObserver = null;
     this.viewportResizeHandler = null;
-    this.dprMediaQuery = null;
+    this.dprListener = null;
     this.canvasResizeTimeout = null;
-    this.dprMediaQuery = null;
-    this.updateCanvasResolution(true);
+    this.updateCanvasResolution(true, "initial");
     this.running = false;
     this.speedMultiplier = 1;
     this.lastTimestamp = null;
@@ -84,6 +113,11 @@ export class GameController {
     this.readableFontEnabled = false;
     this.dyslexiaFontEnabled = false;
     this.colorblindPaletteEnabled = false;
+    this.defeatAnimationMode = "auto";
+    this.starfieldOverride = null;
+    this.lastStarfieldSummary = null;
+    this.starfieldConfig = defaultStarfieldConfig;
+    this.starfieldState = null;
     this.hudFontScale = 1;
     this.impactEffects = [];
     this.turretRangeHighlightSlot = null;
@@ -118,6 +152,7 @@ export class GameController {
       ...(options.config?.featureToggles ?? {})
     };
     this.featureToggles = { ...initialFeatureToggles };
+    this.starfieldEnabled = Boolean(this.featureToggles.starfieldParallax);
     const mergedConfig = {
       ...defaultConfig,
       ...options.config,
@@ -144,12 +179,21 @@ export class GameController {
     this.telemetryDebugControls = null;
     this.soundDebugControls = null;
     this.assetLoader = new AssetLoader();
+    this.assetIntegritySummary = this.assetLoader.getIntegritySummary?.() ?? null;
+    this.assetIntegrityUnsubscribe =
+      typeof this.assetLoader.onIntegrityUpdate === "function"
+        ? this.assetLoader.onIntegrityUpdate((summary) => {
+            this.assetIntegritySummary = summary ?? null;
+            this.syncAssetIntegrityFlags();
+          })
+        : null;
     this.assetReady = false;
     this.assetStartPending = false;
     this.assetReadyPromise = Promise.resolve();
     this.assetLoaderUnsubscribe = this.assetLoader.onImageLoaded(() => {
       this.handleAssetImageLoaded();
     });
+    this.syncAssetIntegrityFlags();
     const fallbackSprites = {
       "enemy-grunt": svgCircleDataUri("#f87171", "#fca5a5"),
       "enemy-runner": svgCircleDataUri("#34d399", "#6ee7b7"),
@@ -176,7 +220,10 @@ export class GameController {
         console.warn("Asset manifest load failed; using inline sprites.", error);
         return this.assetLoader.loadImages(fallbackSprites);
       });
-    this.assetLoadPromise = manifestPromise.then(() => undefined);
+    this.assetLoadPromise = manifestPromise.then(() => {
+      this.syncDefeatAnimationPreferences();
+      return undefined;
+    });
     this.assetReadyPromise = manifestPromise
       .catch(() => undefined)
       .then(() => this.assetLoader.whenIdle())
@@ -186,6 +233,7 @@ export class GameController {
           this.assetLoaderUnsubscribe();
           this.assetLoaderUnsubscribe = null;
         }
+        this.syncDefeatAnimationPreferences();
       });
     manifestPromise
       .then(() => this.render())
@@ -193,8 +241,10 @@ export class GameController {
         console.warn("Asset load failed, continuing with procedural sprites.", error);
       });
     this.renderer = new CanvasRenderer(options.canvas, this.engine.config, this.assetLoader);
+    this.syncCanvasResizeCause();
     this.attachCanvasResizeObserver();
     this.attachDevicePixelRatioListener();
+    this.syncDefeatAnimationPreferences();
     this.hud = new HudView(
       this.engine.config,
       {
@@ -238,6 +288,7 @@ export class GameController {
           dyslexiaFontToggle: "options-dyslexia-font-toggle",
           colorblindPaletteToggle: "options-colorblind-toggle",
           fontScaleSelect: "options-font-scale",
+          defeatAnimationSelect: "options-defeat-animation",
           telemetryToggle: "options-telemetry-toggle",
           telemetryToggleWrapper: "options-telemetry-toggle-wrapper",
           crystalPulseToggle: "options-crystal-toggle",
@@ -273,6 +324,7 @@ export class GameController {
         onReadableFontToggle: (enabled) => this.setReadableFontEnabled(enabled),
         onDyslexiaFontToggle: (enabled) => this.setDyslexiaFontEnabled(enabled),
         onColorblindPaletteToggle: (enabled) => this.setColorblindPaletteEnabled(enabled),
+        onDefeatAnimationModeChange: (mode) => this.setDefeatAnimationMode(mode),
         onHudFontScaleChange: (scale) => this.setHudFontScale(scale),
         onTurretPresetSave: (presetId) => this.handleTurretPresetSave(presetId),
         onTurretPresetApply: (presetId) => this.handleTurretPresetApply(presetId),
@@ -281,6 +333,7 @@ export class GameController {
         onCollapsePreferenceChange: (prefs) => this.handleHudCollapsePreferenceChange(prefs)
       }
     );
+    this.hud.setCanvasTransitionState("idle");
     this.updateHudTurretAvailability();
     this.hud.setTurretDowngradeEnabled(Boolean(this.featureToggles?.turretDowngrade));
     this.debugApi = new DebugApi(this);
@@ -291,7 +344,11 @@ export class GameController {
     if (!diagnosticsContainer) {
       throw new Error("Diagnostics overlay container missing from DOM.");
     }
-    this.diagnostics = new DiagnosticsOverlay(diagnosticsContainer);
+    this.diagnostics = new DiagnosticsOverlay(diagnosticsContainer, {
+      sectionPreferences: this.playerSettings?.diagnosticsSections,
+      onPreferencesChange: (prefs) => this.handleDiagnosticsSectionPreferenceChange(prefs)
+    });
+    this.diagnostics.setCanvasTransitionState("idle");
     if (typeof window !== "undefined" && "AudioContext" in window) {
       this.soundManager = new SoundManager();
       this.soundManager.setVolume(this.soundVolume);
@@ -323,6 +380,100 @@ export class GameController {
     }
     this.render();
   }
+  private resolveStarfieldPreset(scene: string | undefined) {
+    if (!scene) return null;
+    const preset = STARFIELD_PRESETS[scene.toLowerCase()];
+    return preset ? { ...preset } : null;
+  }
+
+  private applyStarfieldOverride(state: StarfieldParallaxState | null): StarfieldParallaxState | null {
+    if (!state || !this.starfieldOverride) {
+      return state;
+    }
+    const override = this.starfieldOverride;
+    const clone: StarfieldParallaxState = {
+      ...state,
+      layers: state.layers.map((layer) => ({ ...layer }))
+    };
+    if (typeof override.waveProgress === "number") {
+      clone.waveProgress = Math.min(1, Math.max(0, override.waveProgress));
+    }
+    if (typeof override.castleHealthRatio === "number") {
+      clone.castleHealthRatio = Math.min(1, Math.max(0, override.castleHealthRatio));
+    }
+    if (typeof override.depth === "number") {
+      clone.depth = override.depth;
+    }
+    if (typeof override.driftMultiplier === "number") {
+      clone.driftMultiplier = override.driftMultiplier;
+    }
+    if (typeof override.tint === "string" && override.tint.length > 0) {
+      clone.tint = override.tint;
+    }
+    if (override.freeze) {
+      for (const layer of clone.layers) {
+        layer.velocity = 0;
+      }
+    }
+    return clone;
+  }
+
+  private buildStarfieldAnalyticsSummary(
+    state: StarfieldParallaxState | null
+  ): StarfieldAnalyticsState | null {
+    if (!state) {
+      return null;
+    }
+    return {
+      driftMultiplier: Number(state.driftMultiplier.toFixed(3)),
+      depth: Number(state.depth.toFixed(3)),
+      tint: state.tint,
+      waveProgress: Number(state.waveProgress.toFixed(3)),
+      castleHealthRatio: Number(state.castleHealthRatio.toFixed(3)),
+      severity: Number(state.severity.toFixed(3)),
+      reducedMotionApplied: Boolean(state.reducedMotionApplied),
+      layers: state.layers.map((layer) => ({
+        id: layer.id,
+        velocity: Number(layer.velocity.toFixed(4)),
+        direction: layer.direction,
+        depth: layer.depth,
+        baseDepth: layer.baseDepth,
+        depthOffset: layer.depth - layer.baseDepth
+      }))
+    };
+  }
+
+  private handleStarfieldStateChange(summary: StarfieldAnalyticsState | null): void {
+    const previous = this.lastStarfieldSummary;
+    if (!summary && !previous) {
+      return;
+    }
+    const changed =
+      !summary ||
+      !previous ||
+      Math.abs(summary.depth - previous.depth) > 0.05 ||
+      Math.abs(summary.driftMultiplier - previous.driftMultiplier) > 0.05 ||
+      Math.abs(summary.castleHealthRatio - previous.castleHealthRatio) > 0.05 ||
+      Math.abs(summary.severity - previous.severity) > 0.05 ||
+      summary.reducedMotionApplied !== previous.reducedMotionApplied ||
+      summary.tint !== previous.tint;
+    if (!changed) {
+      return;
+    }
+    this.lastStarfieldSummary = summary
+      ? {
+          ...summary,
+          layers: summary.layers.map((layer) => ({ ...layer }))
+        }
+      : null;
+    if (summary) {
+      this.engine.events.emit("visual:starfield-state", summary);
+      if (this.telemetryClient && typeof this.telemetryClient.track === "function") {
+        this.telemetryClient.track("visual.starfieldStateChanged", summary);
+      }
+    }
+  }
+
   recordTauntAnalytics(enemy) {
     if (!enemy || !enemy.taunt) {
       return;
@@ -902,6 +1053,7 @@ export class GameController {
       this.hud.appendLog(`Reduced motion ${enabled ? "enabled" : "disabled"}`);
     }
     this.updateOptionsOverlayState();
+    this.syncDefeatAnimationPreferences();
     if (options.persist !== false) {
       this.persistPlayerSettings({ reducedMotionEnabled: enabled });
     }
@@ -998,6 +1150,79 @@ export class GameController {
       this.render();
     }
   }
+
+  setDefeatAnimationMode(mode, options = {}) {
+    const normalized =
+      mode === "sprite" || mode === "procedural" || mode === "auto" ? mode : "auto";
+    if (normalized === this.defeatAnimationMode) {
+      return;
+    }
+    this.defeatAnimationMode = normalized;
+    this.syncDefeatAnimationPreferences();
+    if (!options.silent) {
+      this.hud.appendLog?.(`Defeat animations set to ${normalized}`);
+    }
+    if (options.persist !== false) {
+      this.persistPlayerSettings({ defeatAnimationMode: normalized });
+    }
+  }
+
+  setStarfieldScene(scene) {
+    if (!scene) {
+      this.starfieldOverride = null;
+      this.render();
+      return null;
+    }
+    let override = null;
+    if (typeof scene === "string") {
+      override = this.resolveStarfieldPreset(scene);
+    } else if (typeof scene === "object") {
+      const preset =
+        scene && typeof scene.scene === "string" ? this.resolveStarfieldPreset(scene.scene) : null;
+      override = {
+        ...preset,
+        ...scene
+      };
+    }
+    this.starfieldOverride = override;
+    this.render();
+    return this.starfieldOverride;
+  }
+
+  syncDefeatAnimationPreferences() {
+    if (this.renderer?.setDefeatAnimationMode) {
+      this.renderer.setDefeatAnimationMode(this.defeatAnimationMode);
+    }
+    this.engine.setDefeatBurstModeResolver((enemy) => this.resolveDefeatBurstMode(enemy));
+    this.updateOptionsOverlayState();
+  }
+
+  resolveDefeatBurstMode(enemy) {
+    return this.shouldUseSpriteForTier(enemy?.tierId) ? "sprite" : "procedural";
+  }
+
+  shouldUseSpriteForTier(tierId) {
+    if (
+      !tierId ||
+      this.reducedMotionEnabled ||
+      this.defeatAnimationMode === "procedural" ||
+      typeof this.assetLoader?.getDefeatAnimation !== "function" ||
+      typeof this.assetLoader?.getImage !== "function"
+    ) {
+      return false;
+    }
+    const definition = this.assetLoader.getDefeatAnimation(tierId);
+    if (!definition || !Array.isArray(definition.frames) || definition.frames.length === 0) {
+      return false;
+    }
+    const hasRenderableFrame = definition.frames.some(
+      (frame) => !!this.assetLoader?.getImage?.(frame.key)
+    );
+    if (!hasRenderableFrame) {
+      return false;
+    }
+    return this.defeatAnimationMode === "sprite" || this.defeatAnimationMode === "auto";
+  }
   setHudFontScale(scale, options = {}) {
     const normalized = this.normalizeHudFontScale(scale);
     const changed = Math.abs(normalized - this.hudFontScale) > 0.001;
@@ -1072,6 +1297,7 @@ export class GameController {
       dyslexiaFontEnabled: this.dyslexiaFontEnabled,
       colorblindPaletteEnabled: this.colorblindPaletteEnabled,
       hudFontScale: this.hudFontScale,
+      defeatAnimationMode: this.defeatAnimationMode,
       telemetry: {
         available: Boolean(this.telemetryClient),
         checked: Boolean(this.telemetryClient ? this.telemetryEnabled : false),
@@ -1086,6 +1312,10 @@ export class GameController {
     });
   }
   applyReducedMotionSetting(enabled) {
+    if (typeof this.hud?.setReducedMotionEnabled === "function") {
+      this.hud.setReducedMotionEnabled(enabled);
+      return;
+    }
     if (typeof document === "undefined") return;
     const root = document.documentElement;
     if (root) {
@@ -1685,6 +1915,9 @@ export class GameController {
     const colorblindUnchanged =
       patch.colorblindPaletteEnabled === undefined ||
       patch.colorblindPaletteEnabled === this.playerSettings.colorblindPaletteEnabled;
+    const defeatAnimationModeUnchanged =
+      patch.defeatAnimationMode === undefined ||
+      patch.defeatAnimationMode === this.playerSettings.defeatAnimationMode;
     const fontScaleUnchanged =
       patch.hudFontScale === undefined ||
       Math.abs(this.normalizeHudFontScale(patch.hudFontScale) - this.playerSettings.hudFontScale) <=
@@ -1701,6 +1934,21 @@ export class GameController {
     const telemetryUnchanged =
       patch.telemetryEnabled === undefined ||
       patch.telemetryEnabled === this.playerSettings.telemetryEnabled;
+    const diagnosticsSectionsUnchanged =
+      patch.diagnosticsSections === undefined ||
+      this.areDiagnosticsSectionsEqual(
+        this.playerSettings.diagnosticsSections,
+        patch.diagnosticsSections
+      );
+    const diagnosticsSectionsUpdatedAtUnchanged =
+      patch.diagnosticsSectionsUpdatedAt === undefined ||
+      patch.diagnosticsSectionsUpdatedAt ===
+        this.playerSettings.diagnosticsSectionsUpdatedAt;
+    const dprPreferenceUnchanged =
+      patch.lastDevicePixelRatio === undefined ||
+      patch.lastDevicePixelRatio === this.playerSettings.lastDevicePixelRatio;
+    const hudLayoutPreferenceUnchanged =
+      patch.lastHudLayout === undefined || patch.lastHudLayout === this.playerSettings.lastHudLayout;
     if (
       soundUnchanged &&
       soundVolumeUnchanged &&
@@ -1711,10 +1959,15 @@ export class GameController {
       readableFontUnchanged &&
       dyslexiaFontUnchanged &&
       colorblindUnchanged &&
+      defeatAnimationModeUnchanged &&
       fontScaleUnchanged &&
       targetingUnchanged &&
       presetsUnchanged &&
-      telemetryUnchanged
+      telemetryUnchanged &&
+      diagnosticsSectionsUnchanged &&
+      diagnosticsSectionsUpdatedAtUnchanged &&
+      dprPreferenceUnchanged &&
+      hudLayoutPreferenceUnchanged
     ) {
       return;
     }
@@ -1786,6 +2039,22 @@ export class GameController {
         currentSlot.level !== nextSlot.level ||
         (currentSlot.priority ?? "first") !== (nextSlot.priority ?? "first")
       ) {
+        return false;
+      }
+    }
+    return true;
+  }
+  areDiagnosticsSectionsEqual(
+    current: DiagnosticsSectionsPreferenceMap = {},
+    next: DiagnosticsSectionsPreferenceMap = {}
+  ): boolean {
+    const ids: Array<keyof DiagnosticsSectionsPreferenceMap> = [
+      "gold-events",
+      "castle-passives",
+      "turret-dps"
+    ];
+    for (const id of ids) {
+      if ((current?.[id] ?? undefined) !== (next?.[id] ?? undefined)) {
         return false;
       }
     }
@@ -2006,6 +2275,21 @@ export class GameController {
   collectUiCondensedSnapshot() {
     const hudState = this.hud?.getCondensedState?.() ?? null;
     const diagnosticsState = this.diagnostics?.getCondensedState?.() ?? null;
+    const diagnosticsSectionPrefs =
+      this.playerSettings?.diagnosticsSections &&
+      Object.keys(this.playerSettings.diagnosticsSections).length > 0
+        ? { ...this.playerSettings.diagnosticsSections }
+        : null;
+    const diagnosticsSectionsUpdatedAt = this.playerSettings?.diagnosticsSectionsUpdatedAt ?? null;
+    const storedDevicePixelRatio =
+      typeof this.playerSettings?.lastDevicePixelRatio === "number"
+        ? this.playerSettings.lastDevicePixelRatio
+        : null;
+    const storedHudLayout =
+      this.playerSettings?.lastHudLayout === "stacked" ||
+      this.playerSettings?.lastHudLayout === "condensed"
+        ? this.playerSettings.lastHudLayout
+        : null;
     const preferences = {
       hudPassivesCollapsed:
         typeof this.playerSettings?.hudPassivesCollapsed === "boolean"
@@ -2018,8 +2302,51 @@ export class GameController {
       optionsPassivesCollapsed:
         typeof this.playerSettings?.optionsPassivesCollapsed === "boolean"
           ? this.playerSettings.optionsPassivesCollapsed
-          : null
+          : null,
+      diagnosticsSections: diagnosticsSectionPrefs,
+      diagnosticsSectionsUpdatedAt,
+      devicePixelRatio: storedDevicePixelRatio,
+      hudLayout: storedHudLayout
     };
+    const hudLayoutState =
+      typeof hudState?.prefersCondensedLists === "boolean"
+        ? hudState.prefersCondensedLists
+          ? "condensed"
+          : "stacked"
+        : null;
+    const resolutionSnapshot = this.canvasResolution
+      ? {
+          cssWidth: this.canvasResolution.cssWidth,
+          cssHeight: this.canvasResolution.cssHeight,
+          renderWidth: this.canvasResolution.renderWidth,
+          renderHeight: this.canvasResolution.renderHeight,
+          devicePixelRatio:
+            typeof this.currentDevicePixelRatio === "number"
+              ? this.currentDevicePixelRatio
+              : null,
+          hudLayout: hudLayoutState,
+          lastResizeCause: this.renderer?.getLastResizeCause?.() ?? null
+        }
+      : null;
+    const resolutionChanges = this.canvasResolutionEvents.map((entry) => ({ ...entry }));
+    const assetIntegrity = this.assetIntegritySummary
+      ? {
+          status: this.assetIntegritySummary.status ?? "pending",
+          strictMode: this.assetIntegritySummary.strictMode ?? false,
+          checked: this.assetIntegritySummary.checked ?? 0,
+          missing: this.assetIntegritySummary.missingHash ?? 0,
+          failed: this.assetIntegritySummary.failed ?? 0,
+          total: this.assetIntegritySummary.totalImages ?? 0,
+          scenario: this.assetIntegritySummary.scenario ?? null,
+          manifest: this.assetIntegritySummary.manifest ?? null,
+          firstFailure: this.assetIntegritySummary.firstFailure ?? null
+        }
+      : null;
+    const diagnosticsCollapsedSections =
+      diagnosticsState?.collapsedSections &&
+      Object.keys(diagnosticsState.collapsedSections).length > 0
+        ? { ...diagnosticsState.collapsedSections }
+        : null;
     return {
       compactHeight: hudState?.compactHeight ?? null,
       tutorialBanner: {
@@ -2029,16 +2356,22 @@ export class GameController {
       hud: {
         passivesCollapsed: hudState?.hudCastlePassivesCollapsed ?? null,
         goldEventsCollapsed: hudState?.hudGoldEventsCollapsed ?? null,
-        prefersCondensedLists: hudState?.prefersCondensedLists ?? null
+        prefersCondensedLists: hudState?.prefersCondensedLists ?? null,
+        layout: hudLayoutState
       },
       options: {
         passivesCollapsed: hudState?.optionsPassivesCollapsed ?? null
       },
       diagnostics: {
         condensed: diagnosticsState?.condensed ?? null,
-        sectionsCollapsed: diagnosticsState?.sectionsCollapsed ?? null
+        sectionsCollapsed: diagnosticsState?.sectionsCollapsed ?? null,
+        collapsedSections: diagnosticsCollapsedSections,
+        lastUpdatedAt: diagnosticsSectionsUpdatedAt
       },
-      preferences
+      preferences,
+      resolution: resolutionSnapshot,
+      resolutionChanges,
+      assetIntegrity
     };
   }
   resetAnalytics() {
@@ -2135,6 +2468,12 @@ export class GameController {
   getTutorialAnalyticsSummary() {
     return structuredClone(this.engine.getState().analytics.tutorial);
   }
+  getAssetIntegritySummary() {
+    if (!this.assetIntegritySummary) {
+      return null;
+    }
+    return { ...this.assetIntegritySummary };
+  }
   render() {
     this.currentState = this.engine.getState();
     const turretSignature = this.computeTurretSignature(this.currentState);
@@ -2144,11 +2483,25 @@ export class GameController {
     }
     const impactRenders = this.collectImpactEffects();
     const turretRange = this.buildTurretRangeRenderOptions();
+    let starfieldState =
+      this.starfieldEnabled
+        ? deriveStarfieldState(this.currentState, {
+            config: this.starfieldConfig,
+            reducedMotion: this.reducedMotionEnabled
+          })
+        : null;
+    starfieldState = this.applyStarfieldOverride(starfieldState);
+    this.starfieldState = starfieldState;
+    const starfieldAnalytics = this.buildStarfieldAnalyticsSummary(starfieldState);
+    this.engine.setStarfieldAnalytics(starfieldAnalytics);
+    this.handleStarfieldStateChange(starfieldAnalytics);
     this.renderer.render(this.currentState, impactRenders, {
       reducedMotion: this.reducedMotionEnabled,
       checkeredBackground: this.checkeredBackgroundEnabled,
-      turretRange
+      turretRange,
+      starfield: starfieldState
     });
+    this.syncCanvasResizeCause();
     const upcoming = this.engine.getUpcomingSpawns();
     this.hud.update(this.currentState, upcoming, {
       colorBlindFriendly: this.colorblindPaletteEnabled || this.checkeredBackgroundEnabled
@@ -2177,7 +2530,10 @@ export class GameController {
       timeToFirstTurretSeconds: analytics.timeToFirstTurret,
       shieldedNow: shieldForecast.current,
       shieldedNext: shieldForecast.next,
-      lastSummary: summaries.length > 0 ? summaries[summaries.length - 1] : undefined
+      lastSummary: summaries.length > 0 ? summaries[summaries.length - 1] : undefined,
+      assetIntegrity: this.assetIntegritySummary ?? undefined,
+      lastCanvasResizeCause: this.renderer?.getLastResizeCause?.() ?? null,
+      starfield: starfieldState ?? undefined
     });
   }
   buildTurretRangeRenderOptions() {
@@ -2362,6 +2718,10 @@ export class GameController {
       persist: false,
       render: false
     });
+    this.setDefeatAnimationMode(stored.defeatAnimationMode ?? "auto", {
+      silent: true,
+      persist: false
+    });
     this.setReadableFontEnabled(stored.readableFontEnabled ?? false, {
       silent: true,
       persist: false,
@@ -2401,6 +2761,9 @@ export class GameController {
       },
       { silent: true, fallbackToPreferred: true }
     );
+    if (this.diagnostics) {
+      this.diagnostics.applySectionPreferences(stored.diagnosticsSections ?? {}, { silent: true });
+    }
     this.updateOptionsOverlayState();
   }
   attachDebugButtons() {
@@ -2731,6 +3094,15 @@ export class GameController {
       this.persistPlayerSettings(patch);
     }
   }
+  handleDiagnosticsSectionPreferenceChange(preferences: DiagnosticsSectionsPreferenceMap): void {
+    if (!preferences || typeof preferences !== "object") {
+      return;
+    }
+    this.persistPlayerSettings({
+      diagnosticsSections: { ...preferences },
+      diagnosticsSectionsUpdatedAt: new Date().toISOString()
+    });
+  }
   presentTutorialSummary(summary) {
     this.pauseForTutorial();
     const normalizedSummary = {
@@ -2936,6 +3308,10 @@ export class GameController {
       this.hud.appendLog(`Passive unlocked: ${description}`);
       this.hud.showCastleMessage(description);
       this.playSound("upgrade", 48);
+      this.tutorialManager?.notify({
+        type: "castle:passive-unlocked",
+        payload: { passive }
+      });
     });
     this.engine.events.on("castle:repaired", ({ amount, health, cost }) => {
       const healed = Math.max(0, Math.round(amount ?? 0));
@@ -3112,60 +3488,53 @@ export class GameController {
     }
     const target = this.canvas.parentElement ?? this.canvas;
     if (typeof ResizeObserver !== "undefined") {
-      this.canvasResizeObserver = new ResizeObserver(() => this.updateCanvasResolution());
+      this.canvasResizeObserver = new ResizeObserver(() =>
+        this.updateCanvasResolution(false, "resize-observer")
+      );
       this.canvasResizeObserver.observe(target);
     } else {
-      this.viewportResizeHandler = () => this.updateCanvasResolution();
+      this.viewportResizeHandler = () => this.updateCanvasResolution(false, "viewport");
       window.addEventListener("resize", this.viewportResizeHandler);
     }
   }
 
   attachDevicePixelRatioListener() {
-    if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+    if (typeof window === "undefined") {
       return;
     }
     this.detachDevicePixelRatioListener();
-    const ratio =
-      typeof window.devicePixelRatio === "number" && window.devicePixelRatio > 0
-        ? window.devicePixelRatio
-        : 1;
-    let query: MediaQueryList;
-    try {
-      query = window.matchMedia(`(resolution: ${ratio}dppx)`);
-    } catch {
-      return;
-    }
-    const handler = () => {
-      this.detachDevicePixelRatioListener();
-      this.updateCanvasResolution(true);
-      this.attachDevicePixelRatioListener();
-    };
-    if (typeof query.addEventListener === "function") {
-      query.addEventListener("change", handler);
-    } else if (typeof query.addListener === "function") {
-      query.addListener(handler);
-    }
-    this.dprMediaQuery = { query, handler };
+    const handle = createDprListener({
+      getCurrent: () => this.readWindowDevicePixelRatio(),
+      onChange: (event) => this.handleDevicePixelRatioChange(event)
+    });
+    this.dprListener = handle;
+    handle.start();
+    this.currentDevicePixelRatio = handle.getCurrent();
   }
 
   detachDevicePixelRatioListener() {
-    if (!this.dprMediaQuery) {
-      return;
-    }
-    const { query, handler } = this.dprMediaQuery;
-    try {
-      if (typeof query.removeEventListener === "function") {
-        query.removeEventListener("change", handler);
-      } else if (typeof query.removeListener === "function") {
-        query.removeListener(handler);
+    if (this.dprListener) {
+      try {
+        this.dprListener.stop();
+      } catch {
+        // ignore cleanup failures
       }
-    } catch {
-      // ignore
+      this.dprListener = null;
     }
-    this.dprMediaQuery = null;
   }
 
-  updateCanvasResolution(force = false) {
+  handleDevicePixelRatioChange(event) {
+    this.currentDevicePixelRatio = event.next;
+    const cause =
+      event.cause === "manual"
+        ? "device-pixel-ratio-manual"
+        : event.cause === "simulate"
+          ? "device-pixel-ratio-simulated"
+          : "device-pixel-ratio";
+    this.updateCanvasResolution(true, cause);
+  }
+
+  updateCanvasResolution(force = false, cause = "auto") {
     if (!this.canvas) return;
     const resolution = this.computeCanvasResolution();
     if (!resolution) return;
@@ -3177,13 +3546,27 @@ export class GameController {
     if (!changed) {
       return;
     }
+
+    const shouldAnimate = !this.reducedMotionEnabled && Boolean(this.canvasResolution);
+    const bounds =
+      shouldAnimate && typeof this.canvas.getBoundingClientRect === "function"
+        ? this.canvas.getBoundingClientRect()
+        : null;
+    if (shouldAnimate) {
+      this.resolutionTransitionController?.trigger(bounds);
+    }
+
     this.canvasResolution = resolution;
     this.canvas.width = resolution.renderWidth;
     this.canvas.height = resolution.renderHeight;
     this.canvas.style.width = `${resolution.cssWidth}px`;
     this.canvas.style.height = `${resolution.cssHeight}px`;
-    this.renderer?.resize(resolution.renderWidth, resolution.renderHeight);
+    this.renderer?.resize(resolution.renderWidth, resolution.renderHeight, { cause });
     this.triggerCanvasResizeFade();
+    const transitionDuration = shouldAnimate
+      ? this.resolutionTransitionController?.getDuration() ?? CANVAS_RESIZE_FADE_MS
+      : 0;
+    this.recordCanvasResolutionChange(resolution, cause, transitionDuration);
   }
 
   computeCanvasResolution() {
@@ -3197,15 +3580,104 @@ export class GameController {
       };
     }
     const devicePixelRatio =
-      typeof window !== "undefined" && typeof window.devicePixelRatio === "number"
-        ? window.devicePixelRatio
-        : 1;
+      this.dprListener?.getCurrent?.() ?? this.readWindowDevicePixelRatio();
     return calculateCanvasResolution({
       baseWidth: CANVAS_BASE_WIDTH,
       baseHeight: CANVAS_BASE_HEIGHT,
       availableWidth,
       devicePixelRatio
     });
+  }
+
+  getDevicePixelRatio() {
+    if (this.dprListener && typeof this.dprListener.getCurrent === "function") {
+      const ratio = this.dprListener.getCurrent();
+      if (Number.isFinite(ratio) && ratio > 0) {
+        return ratio;
+      }
+    }
+    return this.readWindowDevicePixelRatio();
+  }
+
+  readWindowDevicePixelRatio() {
+    if (typeof window === "undefined" || typeof window.devicePixelRatio !== "number") {
+      return 1;
+    }
+    const ratio = Number(window.devicePixelRatio);
+    if (!Number.isFinite(ratio) || ratio <= 0) {
+      return 1;
+    }
+    return Math.round(ratio * 100) / 100;
+  }
+
+  recordCanvasResolutionChange(resolution, cause = "auto", transitionMs = CANVAS_RESIZE_FADE_MS) {
+    if (typeof window === "undefined" || !resolution) {
+      return;
+    }
+    const nextDpr = this.getDevicePixelRatio();
+    const hudState = this.hud?.getCondensedState?.() ?? null;
+    const prefersCondensed =
+      typeof hudState?.prefersCondensedLists === "boolean"
+        ? hudState.prefersCondensedLists
+        : null;
+    const hudLayout =
+      prefersCondensed === null ? null : prefersCondensed ? "condensed" : "stacked";
+    const entry = buildResolutionChangeEntry({
+      resolution,
+      cause,
+      previousDpr:
+        typeof this.currentDevicePixelRatio === "number"
+          ? this.currentDevicePixelRatio
+          : nextDpr,
+      nextDpr,
+      transitionMs,
+      prefersCondensedHud: prefersCondensed,
+      hudLayout
+    });
+    this.canvasResolutionEvents.push(entry);
+    if (this.canvasResolutionEvents.length > MAX_CANVAS_RESOLUTION_EVENTS) {
+      this.canvasResolutionEvents.splice(
+        0,
+        this.canvasResolutionEvents.length - MAX_CANVAS_RESOLUTION_EVENTS
+      );
+    }
+    this.currentDevicePixelRatio = nextDpr;
+    this.persistResolutionPreferences(nextDpr, hudLayout);
+    if (this.telemetryClient && typeof this.telemetryClient.track === "function") {
+      this.telemetryClient.track("ui.canvasResolutionChanged", { ...entry });
+    }
+  }
+
+  persistResolutionPreferences(devicePixelRatio: number, hudLayout: string | null) {
+    if (!this.playerSettings) {
+      return;
+    }
+    const patch: Record<string, unknown> = {};
+    let changed = false;
+    if (Number.isFinite(devicePixelRatio) && devicePixelRatio > 0) {
+      const normalized = Math.round(devicePixelRatio * 100) / 100;
+      if (this.playerSettings.lastDevicePixelRatio !== normalized) {
+        patch.lastDevicePixelRatio = normalized;
+        changed = true;
+      }
+    }
+    if (hudLayout === "stacked" || hudLayout === "condensed") {
+      if (this.playerSettings.lastHudLayout !== hudLayout) {
+        patch.lastHudLayout = hudLayout;
+        changed = true;
+      }
+    }
+    if (changed) {
+      this.persistPlayerSettings(patch);
+    }
+  }
+
+  handleCanvasTransitionStateChange(state: ResolutionTransitionState) {
+    if (typeof document !== "undefined" && document.body) {
+      document.body.dataset.canvasTransition = state;
+    }
+    this.hud?.setCanvasTransitionState?.(state);
+    this.diagnostics?.setCanvasTransitionState?.(state);
   }
 
   measureCanvasAvailableWidth() {
@@ -3240,7 +3712,7 @@ export class GameController {
   }
 
   triggerCanvasResizeFade() {
-    if (typeof window === "undefined" || !this.canvas) {
+    if (typeof window === "undefined" || !this.canvas || this.reducedMotionEnabled) {
       return;
     }
     this.canvas.dataset.resizing = "true";
@@ -3252,6 +3724,33 @@ export class GameController {
         delete this.canvas.dataset.resizing;
       }
       this.canvasResizeTimeout = null;
-    }, 220);
+    }, CANVAS_RESIZE_FADE_MS);
+  }
+
+  syncAssetIntegrityFlags() {
+    if (typeof document === "undefined" || !document.body) {
+      return;
+    }
+    if (!this.assetIntegritySummary) {
+      delete document.body.dataset.assetIntegrityStatus;
+      delete document.body.dataset.assetIntegrityStrict;
+      return;
+    }
+    document.body.dataset.assetIntegrityStatus = this.assetIntegritySummary.status ?? "pending";
+    document.body.dataset.assetIntegrityStrict = this.assetIntegritySummary.strictMode
+      ? "true"
+      : "false";
+  }
+
+  syncCanvasResizeCause() {
+    if (typeof document === "undefined" || !document.body) {
+      return;
+    }
+    const cause = this.renderer?.getLastResizeCause?.();
+    if (typeof cause !== "string" || !cause) {
+      delete document.body.dataset.canvasResizeCause;
+      return;
+    }
+    document.body.dataset.canvasResizeCause = cause;
   }
 }

@@ -1,17 +1,31 @@
-import { CastleLevelConfig, GameConfig } from "../core/config.js";
+import { type CastleLevelConfig, type GameConfig } from "../core/config.js";
 import {
-  CastlePassive,
-  GameMode,
-  GameState,
-  GoldEvent,
-  TurretTargetPriority,
-  TurretTypeId,
-  WaveSpawnPreview,
-  WaveSummary
+  type CastlePassive,
+  type GameMode,
+  type GameState,
+  type GoldEvent,
+  type DefeatAnimationPreference,
+  type TurretTargetPriority,
+  type TurretTypeId,
+  type WaveSpawnPreview,
+  type WaveSummary
 } from "../core/types.js";
 import { WavePreviewPanel } from "./wavePreview.js";
+import type { ResolutionTransitionState } from "./ResolutionTransitionController.js";
 
 let hudInstanceCounter = 0;
+
+const PASSIVE_ICON_MAP: Record<
+  string,
+  {
+    label: string;
+  }
+> = {
+  regen: { label: "Regen passive icon" },
+  armor: { label: "Armor passive icon" },
+  gold: { label: "Bonus gold passive icon" },
+  generic: { label: "Castle passive icon" }
+};
 
 const isElementWithTag = <T extends HTMLElement>(
   el: Element | null | undefined,
@@ -45,6 +59,7 @@ export interface HudCallbacks {
   onReadableFontToggle(enabled: boolean): void;
   onDyslexiaFontToggle(enabled: boolean): void;
   onColorblindPaletteToggle(enabled: boolean): void;
+  onDefeatAnimationModeChange(mode: DefeatAnimationPreference): void;
   onHudFontScaleChange(scale: number): void;
   onTurretHover?: (
     slotId: string | null,
@@ -148,6 +163,7 @@ type OptionsOverlayElements = {
   dyslexiaFontToggle: string;
   colorblindPaletteToggle: string;
   fontScaleSelect: string;
+  defeatAnimationSelect: string;
   telemetryToggle?: string;
   telemetryToggleWrapper?: string;
   crystalPulseToggle?: string;
@@ -266,6 +282,7 @@ export class HudView {
   private readonly logEntries: string[] = [];
   private readonly logLimit = 6;
   private tutorialSlotLock: TutorialSlotLock | null = null;
+  private passiveHighlightId: string | null = null;
   private lastState: GameState | null = null;
   private availableTurretTypes: Record<string, boolean> = {};
   private turretDowngradeEnabled = false;
@@ -305,6 +322,7 @@ export class HudView {
     dyslexiaFontToggle: HTMLInputElement;
     colorblindPaletteToggle: HTMLInputElement;
     fontScaleSelect: HTMLSelectElement;
+    defeatAnimationSelect: HTMLSelectElement;
     telemetryToggle?: HTMLInputElement;
     telemetryWrapper?: HTMLElement;
     crystalPulseToggle?: HTMLInputElement;
@@ -319,6 +337,7 @@ export class HudView {
   private syncingOptionToggles = false;
   private comboBaselineAccuracy = 1;
   private lastAccuracy = 1;
+  private hudRoot: HTMLElement | null = null;
 
   constructor(
     private readonly config: GameConfig,
@@ -349,6 +368,11 @@ export class HudView {
     },
     private readonly callbacks: HudCallbacks
   ) {
+    this.hudRoot = document.getElementById("hud");
+    if (this.hudRoot && !this.hudRoot.dataset.canvasTransition) {
+      this.hudRoot.dataset.canvasTransition = "idle";
+    }
+
     this.healthBar = this.getElement(rootIds.healthBar);
     this.goldLabel = this.getElement(rootIds.goldLabel);
     this.goldDelta = this.getElement(rootIds.goldDelta);
@@ -492,6 +516,9 @@ export class HudView {
         rootIds.optionsOverlay.colorblindPaletteToggle
       );
       const fontScaleSelect = document.getElementById(rootIds.optionsOverlay.fontScaleSelect);
+      const defeatAnimationSelect = document.getElementById(
+        rootIds.optionsOverlay.defeatAnimationSelect
+      );
       const telemetryToggle = rootIds.optionsOverlay.telemetryToggle
         ? document.getElementById(rootIds.optionsOverlay.telemetryToggle)
         : null;
@@ -523,7 +550,8 @@ export class HudView {
         readableFontToggle instanceof HTMLInputElement &&
         dyslexiaFontToggle instanceof HTMLInputElement &&
         colorblindPaletteToggle instanceof HTMLInputElement &&
-        fontScaleSelect instanceof HTMLSelectElement
+        fontScaleSelect instanceof HTMLSelectElement &&
+        defeatAnimationSelect instanceof HTMLSelectElement
       ) {
         this.optionsOverlay = {
           container: optionsContainer,
@@ -541,6 +569,7 @@ export class HudView {
           dyslexiaFontToggle,
           colorblindPaletteToggle,
           fontScaleSelect,
+          defeatAnimationSelect,
           telemetryToggle:
             telemetryToggle instanceof HTMLInputElement ? telemetryToggle : undefined,
           telemetryWrapper:
@@ -641,6 +670,11 @@ export class HudView {
         colorblindPaletteToggle.addEventListener("change", () => {
           if (this.syncingOptionToggles) return;
           this.callbacks.onColorblindPaletteToggle(colorblindPaletteToggle.checked);
+        });
+        this.optionsOverlay.defeatAnimationSelect.addEventListener("change", () => {
+          if (this.syncingOptionToggles) return;
+          const nextMode = this.optionsOverlay!.defeatAnimationSelect!.value as DefeatAnimationPreference;
+          this.callbacks.onDefeatAnimationModeChange(nextMode);
         });
         fontScaleSelect.addEventListener("change", () => {
           if (this.syncingOptionToggles) return;
@@ -847,6 +881,7 @@ export class HudView {
     dyslexiaFontEnabled: boolean;
     colorblindPaletteEnabled: boolean;
     hudFontScale: number;
+    defeatAnimationMode: DefeatAnimationPreference;
     telemetry?: {
       available: boolean;
       checked: boolean;
@@ -885,6 +920,10 @@ export class HudView {
     this.optionsOverlay.dyslexiaFontToggle.checked = state.dyslexiaFontEnabled;
     this.optionsOverlay.colorblindPaletteToggle.checked = state.colorblindPaletteEnabled;
     this.setSelectValue(this.optionsOverlay.fontScaleSelect, state.hudFontScale.toString());
+    this.setSelectValue(
+      this.optionsOverlay.defeatAnimationSelect,
+      state.defeatAnimationMode ?? "auto"
+    );
     this.applyTelemetryOptionState(state.telemetry);
     if (this.optionsOverlay.crystalPulseToggle) {
       const toggle = this.optionsOverlay.crystalPulseToggle;
@@ -1257,6 +1296,7 @@ export class HudView {
     }
     const summary = passives.length === 1 ? "1 passive" : `${passives.length} passives`;
     this.updateCondensedSectionSummary(this.castlePassivesSection, summary);
+    this.applyPassiveHighlight();
   }
 
   private renderCastleGoldEvents(events: GoldEvent[], currentTime: number): void {
@@ -1347,6 +1387,7 @@ export class HudView {
     const summary = passives.length === 1 ? "1 passive" : `${passives.length} passives`;
     this.updateOptionsPassivesSummary(summary);
     this.setOptionsPassivesCollapsed(this.optionsPassivesCollapsed, { silent: true });
+    this.applyPassiveHighlight();
   }
 
   private formatCastlePassive(
@@ -1386,13 +1427,59 @@ export class HudView {
     const icon = document.createElement("span");
     const label = document.createElement("span");
     const passiveId = passive.id ?? "generic";
+    item.dataset.passiveId = passiveId;
+    const iconMeta = PASSIVE_ICON_MAP[passiveId] ?? PASSIVE_ICON_MAP.generic;
     icon.className = `passive-icon passive-icon--${passiveId}`;
-    icon.setAttribute("aria-hidden", "true");
+    icon.setAttribute("role", "img");
+    icon.setAttribute("aria-label", iconMeta.label);
+    icon.title = iconMeta.label;
     label.className = "passive-label";
     label.textContent = this.formatCastlePassive(passive, options);
     item.appendChild(icon);
     item.appendChild(label);
     return item;
+  }
+
+  setPassiveHighlight(
+    passiveId: string | null,
+    options: { autoExpand?: boolean; scrollIntoView?: boolean } = {}
+  ): void {
+    this.passiveHighlightId = passiveId;
+    if (passiveId) {
+      if (options.autoExpand !== false) {
+        if (this.castlePassivesSection) {
+          this.setCondensedSectionCollapsed(this.castlePassivesSection, false, {
+            silent: true,
+            sectionId: "hud-passives"
+          });
+        }
+        if (this.optionsCastlePassives) {
+          this.setOptionsPassivesCollapsed(false, { silent: true });
+        }
+      }
+    }
+    this.applyPassiveHighlight(options);
+  }
+
+  private applyPassiveHighlight(options: { scrollIntoView?: boolean } = {}): void {
+    const highlight = this.passiveHighlightId;
+    const targets: HTMLUListElement[] = [];
+    if (this.castlePassives) targets.push(this.castlePassives);
+    if (this.optionsCastlePassives) targets.push(this.optionsCastlePassives);
+    for (const list of targets) {
+      const items = Array.from(list.querySelectorAll<HTMLLIElement>("li"));
+      for (const item of items) {
+        const isMatch = Boolean(highlight && item.dataset.passiveId === highlight);
+        if (isMatch) {
+          item.classList.add("passive-item--highlight");
+          if (options.scrollIntoView && typeof item.scrollIntoView === "function") {
+            item.scrollIntoView({ block: "nearest" });
+          }
+        } else {
+          item.classList.remove("passive-item--highlight");
+        }
+      }
+    }
   }
 
   private updateOptionsPassivesSummary(summary: string): void {
@@ -2989,6 +3076,26 @@ export class HudView {
   setHudFontScale(scale: number): void {
     if (typeof document === "undefined") return;
     document.documentElement.style.setProperty("--hud-font-scale", scale.toString());
+  }
+
+  setReducedMotionEnabled(enabled: boolean): void {
+    if (typeof document !== "undefined") {
+      if (document.documentElement) {
+        document.documentElement.dataset.reducedMotion = enabled ? "true" : "false";
+      }
+      if (document.body) {
+        document.body.dataset.reducedMotion = enabled ? "true" : "false";
+      }
+    }
+    if (this.hudRoot) {
+      this.hudRoot.dataset.reducedMotion = enabled ? "true" : "false";
+    }
+  }
+
+  setCanvasTransitionState(state: ResolutionTransitionState): void {
+    if (!this.hudRoot) return;
+    this.hudRoot.dataset.canvasTransition = state;
+    this.hudRoot.classList.toggle("hud--canvas-transition", state === "running");
   }
 
   hasAnalyticsViewer(): boolean {

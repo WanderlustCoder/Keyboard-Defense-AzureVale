@@ -12,3 +12,6 @@
 
 **Next Steps**
 1. Consider surfacing the chosen percentile list in the serialized output metadata for easier downstream auditing.
+
+## Follow-up
+- `docs/codex_pack/tasks/36-gold-percentile-ingestion-guard.md`

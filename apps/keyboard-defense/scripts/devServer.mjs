@@ -3,6 +3,7 @@
 import { spawn } from "node:child_process";
 import { createRequire } from "node:module";
 import { watch } from "node:fs";
+import fsSync from "node:fs";
 import fs from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
@@ -12,6 +13,7 @@ const require = createRequire(import.meta.url);
 const DEVSERVER_DIR = path.resolve(".devserver");
 const STATE_PATH = path.join(DEVSERVER_DIR, "state.json");
 const LOG_PATH = path.join(DEVSERVER_DIR, "server.log");
+const RESOLUTION_ERROR_PATH = path.join(DEVSERVER_DIR, "resolution-error.json");
 const PUBLIC_DIR = path.resolve("public");
 const BUILD_CMD = process.platform === "win32" ? "npm.cmd" : "npm";
 const DEFAULT_PORT = sanitizePort(process.env.PORT);
@@ -20,6 +22,56 @@ const READY_TIMEOUT_MS = sanitizeNumber(process.env.DEVSERVER_READY_TIMEOUT, 30_
 const READY_INTERVAL_MS = 500;
 const REQUEST_TIMEOUT_MS = 5_000;
 const MONITOR_INTERVAL_MS = 5_000;
+
+const START_FLAG_TOKENS = new Set(["--no-build", "--force-restart"]);
+
+export function parseStartOptions(args = []) {
+  const options = {
+    noBuild: false,
+    forceRestart: false
+  };
+
+  for (const token of args) {
+    if (!token) continue;
+    switch (token) {
+      case "--no-build":
+        options.noBuild = true;
+        break;
+      case "--force-restart":
+        options.forceRestart = true;
+        break;
+      default:
+        if (token.startsWith("-")) {
+          throw new Error(`Unknown start flag "${token}". Supported flags: ${[
+            ...START_FLAG_TOKENS
+          ].join(", ")}`);
+        }
+    }
+  }
+
+  return options;
+}
+
+function shouldSkipBuild(options = {}) {
+  if (options.noBuild) return true;
+  if (process.env.DEVSERVER_NO_BUILD === "1") return true;
+  if (process.env.DEVSERVER_SKIP_BUILD === "1") return true;
+  return false;
+}
+
+function getDeps(overrides = {}) {
+  return {
+    readState,
+    writeState,
+    clearState,
+    runBuild,
+    launchHttpServer,
+    waitForReady,
+    terminateProcess,
+    isProcessRunning,
+    ...overrides
+  };
+}
 
 function resolveHttpServerBin() {
   const candidates = [
@@ -35,17 +87,56 @@ function resolveHttpServerBin() {
     }
   }
   const guidanceLines = [
-    "Unable to locate the http-server binary required by npm run start.",
-    `Looked for ${attempted.join(", ") || "http-server"} via require.resolve().`,
-    "Run `npm install` inside apps/keyboard-defense/ (or `npm install --save-dev http-server`) so the dependency is available.",
-    "See docs/DEVELOPMENT.md (Dev Server Automation) for setup details."
-  ];
-  const guidance = guidanceLines.join(" ");
-  console.error(guidance);
-  throw new Error(guidance);
+    "Unable to locate the http-server binary required by `npm run start`.",
+    `Tried resolving: ${attempted.join(", ") || "http-server"}.`,
+    "",
+    "Fixes:",
+    "  • From apps/keyboard-defense/: run `npm install --save-dev http-server`.",
+    "  • Or install globally: `npm install -g http-server` (then re-run `npm run start -- --no-build`).",
+    "  • Or run `npx http-server --version` once so Node caches the shim.",
+    "",
+    "Docs:",
+    "  • apps/keyboard-defense/docs/DEVELOPMENT.md#dev-server-automation",
+    "  • docs/CODEX_PORTAL.md",
+    "",
+    "After installing, retry with `npm run start -- --no-build` for a faster loop."
+  ].join("\n");
+
+  persistResolutionError({
+    attempted,
+    cwd: process.cwd(),
+    pathEnv: process.env.PATH ?? "",
+    suggestions: [
+      "npm install --save-dev http-server",
+      "npm install -g http-server",
+      "npx http-server --version",
+      "See apps/keyboard-defense/docs/DEVELOPMENT.md#dev-server-automation"
+    ],
+    timestamp: new Date().toISOString()
+  });
+
+  const message = `${guidanceLines}\nResolution diagnostics written to ${RESOLUTION_ERROR_PATH}`;
+  console.error(message);
+  throw new Error(message);
 }
 
-const HTTP_SERVER_BIN = resolveHttpServerBin();
+let HTTP_SERVER_BIN = null;
+
+function getHttpServerBin() {
+  if (!HTTP_SERVER_BIN) {
+    HTTP_SERVER_BIN = resolveHttpServerBin();
+  }
+  return HTTP_SERVER_BIN;
+}
+
+function persistResolutionError(payload) {
+  try {
+    fsSync.mkdirSync(DEVSERVER_DIR, { recursive: true });
+    fsSync.writeFileSync(RESOLUTION_ERROR_PATH, JSON.stringify(payload, null, 2), "utf8");
+  } catch {
+    // best effort
+  }
+}
 
 function sanitizePort(value) {
   const parsed = Number(value);
@@ -119,15 +210,15 @@ function run(command, args, options = {}) {
 }
 
 async function runBuild() {
-  if (process.env.DEVSERVER_SKIP_BUILD === "1") {
+  if (process.env.DEVSERVER_SKIP_BUILD === "1" || process.env.DEVSERVER_NO_BUILD === "1") {
     return;
   }
   console.log("Building project (npm run build)...");
   await run(BUILD_CMD, ["run", "build"]);
 }
 
-function resolveHostInfo() {
-  const listenHost = DEFAULT_HOST;
+function resolveHostInfo(hostOverride) {
+  const listenHost = hostOverride?.trim() || DEFAULT_HOST;
   const urlHost = listenHost === "0.0.0.0" ? "127.0.0.1" : listenHost;
   return { listenHost, urlHost };
 }
@@ -146,7 +237,7 @@ async function launchHttpServer(host, port) {
     "--log-ip",
     "--cors"
   ];
-  const child = spawn(process.execPath, [HTTP_SERVER_BIN, ...args], {
+    const child = spawn(process.execPath, [getHttpServerBin(), ...args], {
     detached: true,
     stdio: ["ignore", logHandle.fd, logHandle.fd]
   });
@@ -222,23 +313,41 @@ async function waitForReady(url) {
   );
 }
 
-async function startServer() {
-  const existing = await readState();
-  if (existing && isProcessRunning(existing.pid)) {
-    console.log(`Dev server already running on ${existing.url} (pid ${existing.pid}).`);
-    console.log("Use `npm run serve:status` or `npm run serve:stop` if you need to inspect it.");
-    return;
-  }
-  if (existing) {
-    await clearState();
+export async function startServer(options = {}, overrides = {}) {
+  const deps = getDeps(overrides);
+  const skipBuild = shouldSkipBuild(options);
+  const flags = [];
+  if (skipBuild) flags.push("no-build");
+  if (options.forceRestart) flags.push("force-restart");
+
+  const existing = await deps.readState();
+  if (existing && deps.isProcessRunning(existing.pid)) {
+    if (options.forceRestart) {
+      console.log(
+        `Force restarting dev server on ${existing.url} (pid ${existing.pid}).`
+      );
+      await stopServer({ quiet: true }, deps);
+    } else {
+      console.log(`Dev server already running on ${existing.url} (pid ${existing.pid}).`);
+      console.log(
+        "Use `npm run serve:status` or `npm run serve:stop` if you need to inspect it."
+      );
+      return;
+    }
+  } else if (existing) {
+    await deps.clearState();
   }
 
-  await runBuild();
+  if (!skipBuild) {
+    await deps.runBuild();
+  } else {
+    console.log("Skipping build step (--no-build).");
+  }
 
-  const port = DEFAULT_PORT;
-  const { listenHost, urlHost } = resolveHostInfo();
+  const port = options.port ? sanitizePort(options.port) : DEFAULT_PORT;
+  const { listenHost, urlHost } = resolveHostInfo(options.host);
   console.log(`Starting http-server on ${listenHost}:${port} (serving ${PUBLIC_DIR}).`);
-  const child = await launchHttpServer(listenHost, port);
+  const child = await deps.launchHttpServer(listenHost, port);
   if (!child.pid) {
     throw new Error("Failed to spawn http-server process.");
   }
@@ -251,38 +360,50 @@ async function startServer() {
     url: `http://${urlHost}:${port}`,
     logPath: LOG_PATH,
     startedAt: new Date().toISOString(),
-    ready: false
+    ready: false,
+    flags
   };
-  await writeState(state);
+  await deps.writeState(state);
 
   try {
-    await waitForReady(state.url);
+    await deps.waitForReady(state.url);
     state.ready = true;
     state.readyAt = new Date().toISOString();
-    await writeState(state);
-    console.log(`DEV_SERVER_READY url=${state.url} pid=${state.pid} log=${state.logPath}`);
-  } catch (error) {
-    await terminateProcess(child.pid);
-    await clearState();
-    throw error;
-  }
+    await deps.writeState(state);
+      console.log(`DEV_SERVER_READY url=${state.url} pid=${state.pid} log=${state.logPath}`);
+    } catch (error) {
+      await deps.terminateProcess(child.pid);
+      await deps.clearState();
+      throw error;
+    }
+  return state;
 }
 
-async function stopServer() {
-  const state = await readState();
+export async function stopServer(options = {}, overrides = {}) {
+  const deps = getDeps(overrides);
+  const quiet = options.quiet ?? false;
+  const state = await deps.readState();
   if (!state) {
-    console.log("Dev server is not running (no state file).");
+    if (!quiet) {
+      console.log("Dev server is not running (no state file).");
+    }
     return;
   }
-  if (!isProcessRunning(state.pid)) {
-    console.log("Dev server process already stopped. Cleaning up state.");
-    await clearState();
+  if (!deps.isProcessRunning(state.pid)) {
+    if (!quiet) {
+      console.log("Dev server process already stopped. Cleaning up state.");
+    }
+    await deps.clearState();
     return;
   }
-  console.log(`Stopping dev server (pid ${state.pid})...`);
-  await terminateProcess(state.pid);
-  await clearState();
-  console.log("Dev server stopped.");
+  if (!quiet) {
+    console.log(`Stopping dev server (pid ${state.pid})...`);
+  }
+  await deps.terminateProcess(state.pid);
+  await deps.clearState();
+  if (!quiet) {
+    console.log("Dev server stopped.");
+  }
 }
 
 async function requireRunningState() {
@@ -445,14 +566,21 @@ Commands:
   logs      Tail .devserver/server.log until interrupted.
   monitor   Tail logs while issuing periodic HTTP probes.
   help      Show this message.
+
+Flags (apply to the "start" command):
+  --no-build        Skip \`npm run build\` (also respects DEVSERVER_NO_BUILD=1).
+  --force-restart   Stop an existing server before starting a new one.
 `);
 }
 
 async function main() {
-  const [, , command] = process.argv;
+  const [, , ...rawArgs] = process.argv;
+  const command = rawArgs[0];
+  const commandArgs = rawArgs.slice(1);
+
   switch (command) {
     case "start":
-      await startServer();
+      await startServer(parseStartOptions(commandArgs));
       break;
     case "stop":
       await stopServer();

@@ -16,8 +16,8 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import process from "node:process";
 
-import { GameEngine } from "../dist/src/engine/gameEngine.js";
-import { defaultConfig } from "../dist/src/core/config.js";
+import { GameEngine } from "../public/dist/src/engine/gameEngine.js";
+import { defaultConfig } from "../public/dist/src/core/config.js";
 
 const DEFAULT_SEED = 424242;
 const DEFAULT_STEP = 0.1;
@@ -29,6 +29,49 @@ const DEFAULT_LANE = 1;
 const DEFAULT_PREP = 1.5;
 const DEFAULT_SPEED_MULT = 1.25;
 const DEFAULT_HEALTH_MULT = 1.0;
+const DEFAULT_TURRET_GOLD_BUFFER = 5000;
+
+function parseTurretArg(value) {
+  if (!value) {
+    throw new Error("Expected value after --turret (slot:type[@level]).");
+  }
+  const [slotId, rest] = value.split(":");
+  if (!slotId || !rest) {
+    throw new Error(
+      `Invalid --turret "${value}". Expected format slot-id:type[@level].`
+    );
+  }
+  const [typeId, levelPart] = rest.split("@");
+  if (!typeId) {
+    throw new Error(`Missing turret type in "${value}".`);
+  }
+  let level = 1;
+  if (levelPart !== undefined) {
+    level = Number.parseInt(levelPart, 10);
+    if (!Number.isFinite(level) || level < 1) {
+      throw new Error(`Invalid turret level in "${value}".`);
+    }
+  }
+  return { slotId, typeId, level };
+}
+
+function parseEnemyArg(value) {
+  if (!value) {
+    throw new Error("Expected value after --enemy (tier[:lane]).");
+  }
+  const [tierId, lanePart] = value.split(":");
+  if (!tierId) {
+    throw new Error(`Invalid --enemy "${value}". Expected tier[:lane].`);
+  }
+  let lane = null;
+  if (lanePart !== undefined) {
+    lane = Number.parseInt(lanePart, 10);
+    if (!Number.isFinite(lane) || lane < 0) {
+      throw new Error(`Invalid lane for --enemy "${value}". Expected >= 0.`);
+    }
+  }
+  return { tierId, lane };
+}
 
 function cloneSimple(value) {
   if (value === undefined || value === null) {
@@ -101,6 +144,68 @@ function ensureDirectoryForFile(filePath) {
   return fs.mkdir(dir, { recursive: true });
 }
 
+function resolveEnemySpecs(options) {
+  const explicit = Array.isArray(options.enemySpecs) ? options.enemySpecs : [];
+  if (explicit.length > 0) {
+    return explicit.map((enemy) => ({
+      tierId: enemy.tierId ?? options.tier,
+      lane:
+        enemy.lane !== undefined && enemy.lane !== null ? enemy.lane : options.lane ?? DEFAULT_LANE
+    }));
+  }
+  return [
+    {
+      tierId: options.tier ?? DEFAULT_TIER,
+      lane: options.lane ?? DEFAULT_LANE
+    }
+  ];
+}
+
+function applyTurretLoadout(engine, loadout = []) {
+  if (!Array.isArray(loadout) || loadout.length === 0) {
+    return [];
+  }
+  const state = engine.getState();
+  const placements = [];
+  engine.unlockSlotsForWave(Number.MAX_SAFE_INTEGER);
+  const beforeGold = state.resources.gold;
+  if (beforeGold < DEFAULT_TURRET_GOLD_BUFFER) {
+    engine.grantGold(DEFAULT_TURRET_GOLD_BUFFER - beforeGold);
+  }
+  for (const entry of loadout) {
+    const slotId = entry.slotId;
+    const typeId = entry.typeId;
+    const level = Math.max(1, Number.parseInt(entry.level ?? 1, 10) || 1);
+    if (!slotId || !typeId) {
+      throw new Error("Turret loadout entries require slotId and typeId.");
+    }
+    const placementResult = engine.placeTurret(slotId, typeId);
+    if (!placementResult?.success) {
+      throw new Error(
+        `Failed to place turret ${typeId} in ${slotId}: ${placementResult?.reason ?? "unknown"}`
+      );
+    }
+    if (level > 1) {
+      for (let upgradeLevel = 2; upgradeLevel <= level; upgradeLevel += 1) {
+        const upgradeResult = engine.upgradeTurret(slotId);
+        if (!upgradeResult?.success) {
+          throw new Error(
+            `Failed to upgrade turret ${slotId} to level ${level}: ${
+              upgradeResult?.reason ?? "unknown"
+            }`
+          );
+        }
+      }
+    }
+    placements.push({ slotId, typeId, level });
+  }
+  const remainingGold = engine.getState().resources.gold;
+  if (remainingGold > 0) {
+    engine.grantGold(-remainingGold);
+  }
+  return placements;
+}
+
 export function parseArgs(argv = []) {
   const options = {
     seed: DEFAULT_SEED,
@@ -113,6 +218,8 @@ export function parseArgs(argv = []) {
     prep: DEFAULT_PREP,
     speedMultiplier: DEFAULT_SPEED_MULT,
     healthMultiplier: DEFAULT_HEALTH_MULT,
+    turrets: [],
+    enemySpecs: [],
     help: false
   };
 
@@ -200,6 +307,16 @@ export function parseArgs(argv = []) {
         options.healthMultiplier = value;
         break;
       }
+      case "--turret": {
+        const spec = parseTurretArg(argv[++i]);
+        options.turrets.push(spec);
+        break;
+      }
+      case "--enemy": {
+        const spec = parseEnemyArg(argv[++i]);
+        options.enemySpecs.push(spec);
+        break;
+      }
       default:
         if (token.startsWith("-")) {
           throw new Error(`Unknown argument "${token}". Use --help for usage.`);
@@ -228,6 +345,8 @@ Options:
   --prep <seconds>     Countdown duration before the wave starts (default ${DEFAULT_PREP})
   --speed-mult <n>     Multiplier applied to enemy speed (default ${DEFAULT_SPEED_MULT})
   --health-mult <n>    Multiplier applied to enemy health (default ${DEFAULT_HEALTH_MULT})
+  --enemy <tier[:lane]> Repeatable enemy spec (defaults to --tier/--lane when omitted)
+  --turret <slot:type[@level]>  Pre-place turret loadout before the drill starts (repeatable)
   --help, -h           Show this help message
 
 Example:
@@ -268,6 +387,8 @@ function createDifficulty(options) {
 }
 
 export async function runBreachDrill(options) {
+  const turretLoadout = Array.isArray(options.turrets) ? options.turrets : [];
+  const enemyLoadout = resolveEnemySpecs(options);
   const engine = new GameEngine({
     seed: options.seed,
     config: buildConfig(options)
@@ -275,10 +396,12 @@ export async function runBreachDrill(options) {
 
   // Remove starter gold to keep the scenario sterile.
   engine.grantGold(-engine.getState().resources.gold);
+  const turretPlacements = applyTurretLoadout(engine, turretLoadout);
 
   const events = [];
   const timeline = [];
   let breachEvent = null;
+  const castleHpStart = engine.getState().castle.health;
 
   engine.events.on("enemy:spawned", (enemy) => {
     events.push({
@@ -321,24 +444,30 @@ export async function runBreachDrill(options) {
   });
 
   const difficulty = createDifficulty(options);
-  let spawned = false;
+  let enemiesSpawned = false;
   let nextSample = 0;
   const maxIterations = Math.ceil(options.maxTime / options.step) + 10;
 
   for (let iteration = 0; iteration < maxIterations; iteration += 1) {
     const state = engine.getState();
 
-    if (!spawned && !state.wave.inCountdown) {
-      const enemy = engine.spawnEnemy({
-        tierId: options.tier,
-        lane: options.lane,
-        waveIndex: state.wave.index,
-        difficulty
-      });
-      if (!enemy) {
-        throw new Error("Failed to spawn enemy for breach drill.");
+    if (!enemiesSpawned && !state.wave.inCountdown) {
+      for (const enemySpec of enemyLoadout) {
+        const beforeCount = engine.getState().enemies.length;
+        engine.spawnEnemy({
+          tierId: enemySpec.tierId,
+          lane: enemySpec.lane,
+          waveIndex: state.wave.index,
+          difficulty
+        });
+        const afterCount = engine.getState().enemies.length;
+        if (afterCount <= beforeCount) {
+          throw new Error(
+            `Failed to spawn enemy "${enemySpec.tierId}" in lane ${enemySpec.lane}.`
+          );
+        }
       }
-      spawned = true;
+      enemiesSpawned = true;
     }
 
     engine.update(options.step);
@@ -385,7 +514,9 @@ export async function runBreachDrill(options) {
       lane: options.lane,
       prep: options.prep,
       speedMultiplier: options.speedMultiplier,
-      healthMultiplier: options.healthMultiplier
+      healthMultiplier: options.healthMultiplier,
+      enemySpecs: enemyLoadout,
+      turrets: turretLoadout
     },
     startedAt: null,
     finishedAt: null,
@@ -397,12 +528,29 @@ export async function runBreachDrill(options) {
     passiveUnlockSummary,
     lastPassiveUnlock,
     activeCastlePassives,
+    turretPlacements,
     finalState: {
       time: Number(finalState.time.toFixed(3)),
       castleHealth: finalState.castle.health,
       castleMaxHealth: finalState.castle.maxHealth,
       status: finalState.status,
       passives: activeCastlePassives
+    },
+    metrics: {
+      timeToBreachMs: breachEvent ? Math.round(breachEvent.time * 1000) : null,
+      timeToBreachSeconds: breachEvent ? Number(breachEvent.time.toFixed(3)) : null,
+      castleHpStart: castleHpStart ?? finalState.castle.maxHealth,
+      castleHpEnd: finalState.castle.health,
+      castleHpDelta:
+        castleHpStart !== undefined
+          ? Number((finalState.castle.health - castleHpStart).toFixed(3))
+          : null,
+      damageTaken:
+        castleHpStart !== undefined
+          ? Number((castleHpStart - finalState.castle.health).toFixed(3))
+          : null,
+      enemiesSpawned: enemyLoadout.length,
+      turretsPlaced: turretPlacements.length
     }
   };
 

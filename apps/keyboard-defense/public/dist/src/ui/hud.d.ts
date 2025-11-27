@@ -1,5 +1,6 @@
-import { GameConfig } from "../core/config.js";
-import { GameMode, GameState, TurretTargetPriority, TurretTypeId, WaveSpawnPreview } from "../core/types.js";
+import { type GameConfig } from "../core/config.js";
+import { type GameMode, type GameState, type DefeatAnimationPreference, type TurretTargetPriority, type TurretTypeId, type WaveSpawnPreview } from "../core/types.js";
+import type { ResolutionTransitionState } from "./ResolutionTransitionController.js";
 export interface HudCallbacks {
     onCastleUpgrade(): void;
     onCastleRepair(): void;
@@ -25,11 +26,13 @@ export interface HudCallbacks {
     onReadableFontToggle(enabled: boolean): void;
     onDyslexiaFontToggle(enabled: boolean): void;
     onColorblindPaletteToggle(enabled: boolean): void;
+    onDefeatAnimationModeChange(mode: DefeatAnimationPreference): void;
     onHudFontScaleChange(scale: number): void;
     onTurretHover?: (slotId: string | null, context?: {
         typeId?: TurretTypeId | null;
         level?: number | null;
     }) => void;
+    onCollapsePreferenceChange?: (prefs: HudCollapsePreferenceUpdate) => void;
 }
 interface HudTurretPresetSlotData {
     slotId: string;
@@ -60,15 +63,6 @@ export interface TutorialSummaryData {
     breaches: number;
     gold: number;
 }
-export interface HudCondensedStateSnapshot {
-    tutorialBannerCondensed: boolean;
-    tutorialBannerExpanded: boolean;
-    hudCastlePassivesCollapsed: boolean | null;
-    hudGoldEventsCollapsed: boolean | null;
-    optionsPassivesCollapsed: boolean | null;
-    compactHeight: boolean;
-    prefersCondensedLists: boolean;
-}
 type TutorialSummaryHandlers = {
     onContinue: () => void;
     onReplay: () => void;
@@ -94,6 +88,7 @@ type OptionsOverlayElements = {
     dyslexiaFontToggle: string;
     colorblindPaletteToggle: string;
     fontScaleSelect: string;
+    defeatAnimationSelect: string;
     telemetryToggle?: string;
     telemetryToggleWrapper?: string;
     crystalPulseToggle?: string;
@@ -134,6 +129,20 @@ export interface WaveScorecardData {
     castleBonusGold: number;
     bonusGold: number;
 }
+export type HudCollapsePreferenceUpdate = {
+    hudCastlePassivesCollapsed?: boolean | null;
+    hudGoldEventsCollapsed?: boolean | null;
+    optionsPassivesCollapsed?: boolean | null;
+};
+export interface HudCondensedStateSnapshot {
+    tutorialBannerCondensed: boolean;
+    tutorialBannerExpanded: boolean;
+    hudCastlePassivesCollapsed: boolean | null;
+    hudGoldEventsCollapsed: boolean | null;
+    optionsPassivesCollapsed: boolean | null;
+    compactHeight: boolean;
+    prefersCondensedLists: boolean;
+}
 export declare class HudView {
     private readonly config;
     private readonly callbacks;
@@ -144,12 +153,18 @@ export declare class HudView {
     private readonly typingInput;
     private readonly upgradePanel;
     private readonly comboLabel;
+    private readonly comboAccuracyDelta;
     private readonly logList;
     private readonly tutorialBanner?;
+    private tutorialBannerExpanded;
     private readonly castleButton;
     private readonly castleRepairButton;
     private readonly castleStatus;
     private readonly castleBenefits;
+    private readonly castleGoldEvents;
+    private readonly castlePassives;
+    private readonly castlePassivesSection;
+    private readonly castleGoldEventsSection;
     private readonly wavePreview;
     private readonly slotControls;
     private readonly presetControls;
@@ -167,6 +182,7 @@ export declare class HudView {
     private readonly logEntries;
     private readonly logLimit;
     private tutorialSlotLock;
+    private passiveHighlightId;
     private lastState;
     private availableTurretTypes;
     private turretDowngradeEnabled;
@@ -176,11 +192,23 @@ export declare class HudView {
     private readonly shortcutOverlay?;
     private optionsCastleBonus?;
     private optionsCastleBenefits?;
+    private optionsCastlePassives?;
+    private optionsPassivesSection?;
+    private optionsPassivesSummary?;
+    private optionsPassivesToggle?;
+    private optionsPassivesBody?;
+    private optionsPassivesCollapsed;
+    private optionsPassivesDefaultCollapsed;
     private wavePreviewHint?;
     private wavePreviewHintMessage;
+    private wavePreviewHintPinned;
+    private wavePreviewHintTimeout;
     private readonly optionsOverlay?;
     private readonly waveScorecard?;
     private syncingOptionToggles;
+    private comboBaselineAccuracy;
+    private lastAccuracy;
+    private hudRoot;
     constructor(config: GameConfig, rootIds: {
         healthBar: string;
         goldLabel: string;
@@ -189,6 +217,7 @@ export declare class HudView {
         typingInput: string;
         upgradePanel: string;
         comboLabel: string;
+        comboAccuracyDelta: string;
         eventLog: string;
         wavePreview: string;
         wavePreviewHint?: string;
@@ -224,6 +253,7 @@ export declare class HudView {
         dyslexiaFontEnabled: boolean;
         colorblindPaletteEnabled: boolean;
         hudFontScale: number;
+        defeatAnimationMode: DefeatAnimationPreference;
         telemetry?: {
             available: boolean;
             checked: boolean;
@@ -249,6 +279,7 @@ export declare class HudView {
     appendLog(message: string): void;
     setTutorialMessage(message: string | null, highlight?: boolean): void;
     private updateCastleBonusHint;
+    private clearWavePreviewHintTimeout;
     private updateWavePreviewHint;
     setWavePreviewHighlight(active: boolean, message?: string | null): void;
     announceEnemyTaunt(message: string, options?: {
@@ -259,6 +290,34 @@ export declare class HudView {
     showTutorialSummary(data: TutorialSummaryData, handlers: TutorialSummaryHandlers): void;
     hideTutorialSummary(): void;
     private getCastleUpgradeBenefits;
+    private renderCastlePassives;
+    private renderCastleGoldEvents;
+    private renderOptionsCastlePassives;
+    private formatCastlePassive;
+    private createPassiveListItem;
+    setPassiveHighlight(passiveId: string | null, options?: {
+        autoExpand?: boolean;
+        scrollIntoView?: boolean;
+    }): void;
+    private applyPassiveHighlight;
+    private updateOptionsPassivesSummary;
+    private applyOptionsPassivesToggleLabel;
+    private setOptionsPassivesCollapsed;
+    private createCondensedSection;
+    private setCondensedSectionCollapsed;
+    private updateCondensedSectionSummary;
+    private setCondensedSectionVisibility;
+    applyCollapsePreferences(prefs: HudCollapsePreferenceUpdate, options?: {
+        silent?: boolean;
+        fallbackToPreferred?: boolean;
+    }): void;
+    getCondensedState(): HudCondensedStateSnapshot;
+    private prefersCondensedHudLists;
+    private initializeViewportListeners;
+    private refreshTutorialBannerLayout;
+    private updateCompactHeightDataset;
+    private shouldCondenseTutorialBanner;
+    private matchesMediaQuery;
     private renderOptionsCastleBenefits;
     private updateCastleControls;
     private updateCastleRepair;
@@ -290,6 +349,8 @@ export declare class HudView {
     private getElement;
     private handleGoldDelta;
     private updateCombo;
+    private showComboAccuracyDelta;
+    private hideComboAccuracyDelta;
     private renderLog;
     private renderWaveScorecard;
     private updateShieldTelemetry;
@@ -302,17 +363,22 @@ export declare class HudView {
     private setShortcutOverlayVisible;
     private applyTelemetryOptionState;
     private updateSoundVolumeDisplay;
+    private updateSoundIntensityDisplay;
     setAnalyticsExportEnabled(enabled: boolean): void;
     setHudFontScale(scale: number): void;
+    setReducedMotionEnabled(enabled: boolean): void;
+    setCanvasTransitionState(state: ResolutionTransitionState): void;
     hasAnalyticsViewer(): boolean;
     toggleAnalyticsViewer(): boolean;
     private normalizeAnalyticsViewerFilter;
     private describeAnalyticsViewerFilter;
     private applyAnalyticsViewerFilter;
+    private setSelectValue;
+    private getSelectValue;
     setAnalyticsViewerVisible(visible: boolean): boolean;
     isAnalyticsViewerVisible(): boolean;
-    getCondensedState(): HudCondensedStateSnapshot;
     private refreshAnalyticsViewer;
     private setOptionsOverlayVisible;
 }
 export {};
+//# sourceMappingURL=hud.d.ts.map

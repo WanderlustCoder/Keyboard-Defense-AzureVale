@@ -7,8 +7,9 @@
 Run `npm install` from `apps/keyboard-defense/` before building or running scripts.
 
 ## Building & Testing
-- `npm run build` - compile TypeScript into `dist/`.
-- `npm run test` - clean, build, and execute the Node test suite (uses the compiled artifacts in `dist/`).
+- `npm run build` - type-check the authored TypeScript and regenerate `public/dist/src` (JS + `.d.ts`) so the shipped bundle matches the sources.
+- `npm run build:dist` - skip the type-checking pass and only refresh `public/dist/src` (useful when iterating on UI files such as `src/ui/diagnostics.ts`).
+- `npm run test` - clean, build, and execute the Node/Vitest suite (includes the Playwright fixtures and depends on the regenerated `public/dist/src` tree).
 
 Tests rely on deterministic seeds and the debug hooks exposed by the game engine, so they do not require a browser.
 
@@ -25,24 +26,33 @@ Commands:
 | `npm run serve:logs` | Tail the captured `http-server` log from `.devserver/server.log`. |
 | `npm run serve:monitor` | Stream logs and periodic HTTP probes; exits when the server stops or on Ctrl+C. |
 | `npm run serve:smoke` | Launch `npm run start`, wait for readiness, issue reachability checks, and shut everything down again (used in CI). Emits `artifacts/smoke/devserver-smoke-summary.json` (override via `DEVSERVER_SMOKE_SUMMARY`), automatically prints the tail of `.devserver/server.log` when failures occur, and supports `--json` to dump the summary to stdout for automation-friendly parsing. |
+| `npm run serve:start-smoke` | Force-restarts the dev server with `--no-build`, waits for readiness, then stops and writes `artifacts/monitor/start-smoke.json` plus a copied log so CI can fail fast on regressions. |
 | `npm run serve:stop` | Gracefully terminate the background server and clear state files. |
-| `npm run monitor:dev` | Standalone poller (`devMonitor.mjs`) that waits for the dev server to become reachable and emits a JSON artifact. |
+| `npm run monitor:dev` | Standalone poller (`devMonitor.mjs`) that waits for the dev server to become reachable and emits a JSON artifact under `artifacts/monitor/dev-monitor.json`. |
 | `npm run start:monitored` | Convenience wrapper that runs `npm run start` followed by the monitor (with `--wait-ready`) in one step. |
 | `npm run smoke:tutorial:full` | Launches the dev server, runs the full tutorial smoke (`tutorialSmoke.mjs --mode full`), then stops the server. Requires `@playwright/test` + installed browser binaries. |
+| `npm run test:visual` | Runs the Playwright visual regression suite (`tests/visual/hud.spec.ts`) against the local dev server. Use `npm run test:visual:update` after intentional HUD/overlay changes to refresh the tracked baselines. |
+| `npm run ci:matrix` | Executes the scenario matrix runner (tutorial smoke modes + castle breach seeds) and writes `artifacts/ci-matrix-summary.json`. |
+| `npm run dashboard:static` | Generates the static dashboard under `static-dashboard/` from the latest artifacts so GitHub Pages can publish it. |
 
 The script tracks runtime state in `.devserver/state.json` and writes logs to `.devserver/server.log`. On Windows/OneDrive the script avoids source-map locking by compiling without `.map` files.
 
-`serve:monitor` keeps polling reachability every five seconds while streaming appended log lines, and exits automatically if the background process dies—useful for unattended smoke checks. `monitor:dev` works independently of the managed process and is handy when the server is launched through other tooling (e.g., `npm run start` in a separate terminal or remote VM); it writes its latest poll history to `monitor-artifacts/dev-monitor.json` by default. `start:monitored` bundles both steps so local workflows can kick off a fresh server and wait for readiness without juggling multiple terminals.
+`serve:monitor` keeps polling reachability every five seconds while streaming appended log lines, and exits automatically if the background process dies—useful for unattended smoke checks. `monitor:dev` works independently of the managed process and is handy when the server is launched through other tooling (e.g., `npm run start` in a separate terminal or remote VM); it writes its latest poll history to `artifacts/monitor/dev-monitor.json` by default. `serve:start-smoke` force-restarts the server with `--no-build`, waits for readiness, copies `.devserver/server.log`, and shuts everything down so CI can verify the harness quickly (summary lives at `artifacts/monitor/start-smoke.json`). `start:monitored` bundles both steps so local workflows can kick off a fresh server and wait for readiness without juggling multiple terminals. Flags such as `--no-build` or `--force-restart` are forwarded to `npm run start`, while the remaining arguments still configure the monitor (`--timeout`, `--artifact`, etc.). If `http-server` cannot be resolved, `scripts/devServer.mjs` writes `.devserver/resolution-error.json` with attempted paths and quick fixes—inspect that file whenever the start command fails before the build phase.
+
+Dev server flags:
+
+- `--no-build` (or `DEVSERVER_NO_BUILD=1`) - skip `npm run build` for rapid restarts.
+- `--force-restart` - stop any existing `.devserver` instance before starting a new one.
 
 Example:
 
 ```bash
-npm run start:monitored -- --timeout 60000 --artifact monitor-artifacts/run.json
+npm run start:monitored -- --no-build --timeout 60000 --artifact artifacts/monitor/dev-monitor.json
 ```
 
 Anything after `--` is forwarded to `devMonitor.mjs`.
 
-When triggering the full smoke (`smoke:tutorial:full`), install Playwright first:
+When triggering the full smoke (`smoke:tutorial:full`), the visual regression suite (`npm run test:visual`), or the static dashboard build (`npm run dashboard:static`), install Playwright first:
 
 ```bash
 npm install
@@ -79,3 +89,9 @@ The HUD now shows an "Upcoming Enemies" list sourced from `GameEngine.getUpcomin
 - `AssetLoader` exposes `onImageLoaded` and `whenIdle()` helpers. Tooling can listen for individual sprite arrivals or await the whole batch before capturing screenshots.
 - `GameController.waitForAssets()` bridges that promise to gameplay code-automation can await it after constructing the controller to ensure sprite swaps are applied before play begins.
 - `GameController.start()` now defers the main loop until `assetReadyPromise` settles, so automation calling `start()` ahead of `waitForAssets()` won't run the simulation before sprites land.
+- Run `npm run assets:integrity -- --check` (optional `--mode strict` or `ASSET_INTEGRITY_MODE=strict`) to verify manifest hashes. When `CI=1` (or `ASSET_INTEGRITY_SUMMARY`/`ASSET_INTEGRITY_SUMMARY_MD` are set) the script now writes telemetry under `artifacts/summaries/asset-integrity.(json|md)` so dashboards/CI summaries can ingest checked/missing/failure counts.
+
+## Canvas DPR Monitor & Telemetry
+- Reproduce canvas/devicePixelRatio transitions without touching the browser via `npm run debug:dpr-transition -- --steps 1:960:init,1.5:840:pinch,2:720:zoom --json --markdown temp/dpr-transition.md`. The JSON mirrors the `ui.resolutionChanges[]` entries stored inside analytics exports, while the Markdown is drop-in ready for PR notes or Codex dashboards.
+- `node scripts/analyticsAggregate.mjs artifacts/analytics/*.json > artifacts/summaries/analytics.csv` flattens the responsive metadata into the CSV columns `uiHudLayout`, `uiResolutionCssWidth/Height/Render*`, `uiResolutionDevicePixelRatio`, `uiResolutionLastCause`, `uiPrefDevicePixelRatio`, and `uiPrefHudLayout`, giving Codex dashboards and spreadsheets deterministic hooks to audit DPR changes.
+- At runtime the diagnostics overlay prints “Last canvas resize: …” and `document.body.dataset.canvasResizeCause` is updated each render from `CanvasRenderer.getLastResizeCause()`, so automation (Linkedom/Playwright) can assert DPR-driven resizes without diffing HUD text.

@@ -9,11 +9,48 @@ on:
 env:
   CI: true
   PLAYWRIGHT_BROWSERS_PATH: ./node_modules/.cache/ms-playwright
+  PLAYWRIGHT_IMAGE: ghcr.io/${{ github.repository_owner }}/keyboard-defense-playwright:lts
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build-test:
-    name: Build & Tests
+  build-playwright-image:
+    name: Build Playwright container image
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Authenticate to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Playwright image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ci/Dockerfile.playwright
+          push: true
+          tags: ${{ env.PLAYWRIGHT_IMAGE }}
+
+  build-test-linux:
+    name: Build & Tests (Linux container)
+    runs-on: ubuntu-latest
+    needs: build-playwright-image
+    container:
+      image: ${{ env.PLAYWRIGHT_IMAGE }}
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [18, 20]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -21,7 +58,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ matrix.node }}
           cache: npm
           cache-dependency-path: |
             package-lock.json
@@ -34,8 +71,31 @@ jobs:
         run: npm ci
         working-directory: apps/keyboard-defense
 
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+        working-directory: apps/keyboard-defense
+
+      - name: TypeScript type check
+        run: npm run typecheck
+        working-directory: apps/keyboard-defense
+
       - name: Verify asset integrity hashes
         run: npm run assets:integrity -- --check
+        working-directory: apps/keyboard-defense
+
+      - name: Asset integrity summary
+        if: always()
+        run: >
+          node scripts/ci/assetIntegritySummary.mjs
+          --telemetry artifacts/summaries/asset-integrity.json
+          --history artifacts/history/asset-integrity.log
+          --out-json artifacts/summaries/asset-integrity-report.node${{ matrix.node }}.json
+          --markdown artifacts/summaries/asset-integrity-report.node${{ matrix.node }}.md
+          --mode warn
+        working-directory: apps/keyboard-defense
+
+      - name: Lint workspace
+        run: npm run lint
         working-directory: apps/keyboard-defense
 
       - name: Build orchestrator
@@ -50,8 +110,46 @@ jobs:
         run: node scripts/integration.mjs --ci
         working-directory: apps/keyboard-defense
 
+      - name: Vitest coverage
+        run: npx vitest run --coverage
+        working-directory: apps/keyboard-defense
+
+      - name: Vitest JSON summary
+        run: >
+          npx vitest run
+          --reporter=json
+          --outputFile artifacts/summaries/vitest-summary-node${{ matrix.node }}.json
+        working-directory: apps/keyboard-defense
+
       - name: Dev server smoke
         run: npm run serve:smoke -- --ci --json
+        working-directory: apps/keyboard-defense
+
+      - name: Publish audio intensity summary
+        if: always()
+        shell: bash
+        working-directory: apps/keyboard-defense
+        run: |
+          SUMMARY_JSON="artifacts/summaries/audio-intensity.json"
+          if [ -f "$SUMMARY_JSON" ] && [ -n "$GITHUB_STEP_SUMMARY" ]; then
+            {
+              echo "### Audio Intensity Summary (Node ${{ matrix.node }})"
+              node scripts/ci/audioIntensitySummary.mjs --file "$SUMMARY_JSON"
+              echo ""
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Audio intensity summary not found at $SUMMARY_JSON"
+          fi
+
+      - name: Dev server start smoke
+        run: >
+          npm run serve:start-smoke --
+          --artifact artifacts/monitor/start-smoke-node${{ matrix.node }}.json
+          --log artifacts/monitor/start-smoke-node${{ matrix.node }}.log
+        working-directory: apps/keyboard-defense
+
+      - name: Visual regression (Playwright)
+        run: npx playwright test --config playwright.config.ts --project=visual
         working-directory: apps/keyboard-defense
 
       - name: Validate Codex Pack
@@ -70,17 +168,251 @@ jobs:
         run: npm run codex:dashboard
         working-directory: apps/keyboard-defense
 
+      - name: Analytics schema validation (fixtures)
+        run: >
+          npm run analytics:validate-schema --
+          --report artifacts/summaries/analytics-validate-node${{ matrix.node }}.json
+          --report-md artifacts/summaries/analytics-validate-node${{ matrix.node }}.md
+          ../../docs/codex_pack/fixtures/analytics
+        working-directory: apps/keyboard-defense
+
+      - name: Publish analytics schema summary (fixtures)
+        if: always()
+        run: |
+          SUMMARY="artifacts/summaries/analytics-validate-node${{ matrix.node }}.md"
+          if [ -f "$SUMMARY" ] && [ -n "$GITHUB_STEP_SUMMARY" ]; then
+            cat "$SUMMARY" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No analytics schema summary at $SUMMARY"
+          fi
+        working-directory: apps/keyboard-defense
+        shell: bash
+
       - name: Publish Codex Dashboard
         if: always()
         run: |
           cat docs/codex_dashboard.md >> "$GITHUB_STEP_SUMMARY"
         working-directory: .
+        shell: bash
+
+      - name: Traceability report
+        if: ${{ always() && matrix.node == 20 }}
+        run: >
+          node scripts/ci/traceabilityReport.mjs
+          --mode warn
+          --test-report artifacts/summaries/vitest-summary-node20.json
+          --out-json artifacts/summaries/traceability-report-node20.json
+          --out-md artifacts/summaries/traceability-report-node20.md
+        working-directory: apps/keyboard-defense
+
+      - name: Publish traceability summary
+        if: ${{ always() && matrix.node == 20 }}
+        run: |
+          if [ -f artifacts/summaries/traceability-report-node20.md ]; then
+            cat artifacts/summaries/traceability-report-node20.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+        working-directory: apps/keyboard-defense
+        shell: bash
 
       - name: Upload build artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: build-test-artifacts
+          name: build-test-artifacts-linux-node${{ matrix.node }}
+            path: |
+              apps/keyboard-defense/artifacts/build
+              apps/keyboard-defense/artifacts/unit
+              apps/keyboard-defense/artifacts/integration
+              apps/keyboard-defense/artifacts/smoke/devserver-smoke-summary.json
+              apps/keyboard-defense/baselines
+              apps/keyboard-defense/artifacts/monitor
+              apps/keyboard-defense/monitor-artifacts
+              apps/keyboard-defense/artifacts/monitor
+              apps/keyboard-defense/monitor-artifacts
+              apps/keyboard-defense/artifacts/summaries/analytics-validate-node${{ matrix.node }}.json
+            apps/keyboard-defense/artifacts/summaries/analytics-validate-node${{ matrix.node }}.md
+            apps/keyboard-defense/artifacts/summaries/vitest-summary-node${{ matrix.node }}.json
+            apps/keyboard-defense/artifacts/summaries/analytics-validate-node${{ matrix.node }}.json
+            apps/keyboard-defense/artifacts/summaries/analytics-validate-node${{ matrix.node }}.md
+
+      - name: Upload traceability summaries
+        if: ${{ always() && matrix.node == 20 }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: traceability-report
+          path: |
+            apps/keyboard-defense/artifacts/summaries/traceability-report-node20.json
+            apps/keyboard-defense/artifacts/summaries/traceability-report-node20.md
+
+      - name: Publish CI summary (build-test linux)
+        if: always()
+        working-directory: apps/keyboard-defense
+        run: node scripts/ci/emit-summary.mjs >> "$GITHUB_STEP_SUMMARY"
+        shell: bash
+
+      - name: Validate CI guards (build-test linux)
+        if: always()
+        working-directory: apps/keyboard-defense
+        run: node scripts/ci/validate.mjs --sections smoke,monitor
+
+      - name: Upload Playwright artifacts (linux)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-visual-linux-node${{ matrix.node }}
+          path: |
+            apps/keyboard-defense/test-results
+            apps/keyboard-defense/playwright-report
+          if-no-files-found: ignore
+
+  build-test-windows:
+    name: Build & Tests (Windows)
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [18, 20]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            apps/keyboard-defense/package-lock.json
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Install app dependencies
+        run: npm ci
+        working-directory: apps/keyboard-defense
+
+      - name: TypeScript type check
+        run: npm run typecheck
+        working-directory: apps/keyboard-defense
+
+      - name: Verify asset integrity hashes
+        run: npm run assets:integrity -- --check
+        working-directory: apps/keyboard-defense
+
+      - name: Asset integrity summary
+        if: always()
+        run: >
+          node scripts/ci/assetIntegritySummary.mjs
+          --telemetry artifacts/summaries/asset-integrity.json
+          --history artifacts/history/asset-integrity.log
+          --out-json artifacts/summaries/asset-integrity-report.windows.json
+          --markdown artifacts/summaries/asset-integrity-report.windows.md
+          --mode warn
+        working-directory: apps/keyboard-defense
+
+      - name: Lint workspace
+        run: npm run lint
+        working-directory: apps/keyboard-defense
+
+      - name: Build orchestrator
+        run: node scripts/build.mjs --ci
+        working-directory: apps/keyboard-defense
+
+      - name: Unit suite
+        run: node scripts/unit.mjs --ci
+        working-directory: apps/keyboard-defense
+
+      - name: Integration suite
+        run: node scripts/integration.mjs --ci
+        working-directory: apps/keyboard-defense
+
+      - name: Vitest coverage
+        run: npx vitest run --coverage
+        working-directory: apps/keyboard-defense
+
+      - name: Vitest JSON summary
+        run: >
+          npx vitest run
+          --reporter=json
+          --outputFile artifacts/summaries/vitest-summary-node${{ matrix.node }}.json
+        working-directory: apps/keyboard-defense
+
+      - name: Dev server smoke
+        run: npm run serve:smoke -- --ci --json
+        working-directory: apps/keyboard-defense
+
+      - name: Publish audio intensity summary
+        if: always()
+        shell: bash
+        working-directory: apps/keyboard-defense
+        run: |
+          SUMMARY_JSON="artifacts/summaries/audio-intensity.json"
+          if [ -f "$SUMMARY_JSON" ] && [ -n "$GITHUB_STEP_SUMMARY" ]; then
+            {
+              echo "### Audio Intensity Summary (Node ${{ matrix.node }})"
+              node scripts/ci/audioIntensitySummary.mjs --file "$SUMMARY_JSON"
+              echo ""
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Audio intensity summary not found at $SUMMARY_JSON"
+          fi
+
+      - name: Dev server start smoke
+        run: >
+          npm run serve:start-smoke --
+          --artifact artifacts/monitor/start-smoke-node${{ matrix.node }}.json
+          --log artifacts/monitor/start-smoke-node${{ matrix.node }}.log
+        working-directory: apps/keyboard-defense
+
+      - name: Validate Codex Pack
+        run: npm run codex:validate-pack
+        working-directory: apps/keyboard-defense
+
+      - name: Validate Status Links
+        run: npm run codex:validate-links
+        working-directory: apps/keyboard-defense
+
+      - name: Codex Task Tracker
+        run: npm run codex:status
+        working-directory: apps/keyboard-defense
+
+      - name: Generate Codex Dashboard
+        run: npm run codex:dashboard
+        working-directory: apps/keyboard-defense
+
+      - name: Analytics schema validation (fixtures)
+        run: >
+          npm run analytics:validate-schema --
+          --report artifacts/summaries/analytics-validate-node${{ matrix.node }}.json
+          --report-md artifacts/summaries/analytics-validate-node${{ matrix.node }}.md
+          ../../docs/codex_pack/fixtures/analytics
+        working-directory: apps/keyboard-defense
+
+      - name: Publish analytics schema summary (fixtures)
+        if: always()
+        run: |
+          SUMMARY="artifacts/summaries/analytics-validate-node${{ matrix.node }}.md"
+          if [ -f "$SUMMARY" ] && [ -n "$GITHUB_STEP_SUMMARY" ]; then
+            cat "$SUMMARY" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No analytics schema summary at $SUMMARY"
+          fi
+        working-directory: apps/keyboard-defense
+        shell: bash
+
+      - name: Publish Codex Dashboard
+        if: always()
+        run: |
+          cat docs/codex_dashboard.md >> "$GITHUB_STEP_SUMMARY"
+        working-directory: .
+        shell: bash
+
+      - name: Upload build artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-test-artifacts-windows-node${{ matrix.node }}
           path: |
             apps/keyboard-defense/artifacts/build
             apps/keyboard-defense/artifacts/unit
@@ -88,10 +420,23 @@ jobs:
             apps/keyboard-defense/artifacts/smoke/devserver-smoke-summary.json
             apps/keyboard-defense/baselines
 
+      - name: Publish CI summary (build-test windows)
+        if: always()
+        working-directory: apps/keyboard-defense
+        run: node scripts/ci/emit-summary.mjs >> "$GITHUB_STEP_SUMMARY"
+        shell: bash
+
+      - name: Validate CI guards (build-test windows)
+        if: always()
+        working-directory: apps/keyboard-defense
+        run: node scripts/ci/validate.mjs --sections smoke,monitor
+
   smoke:
     name: Tutorial Smoke
     runs-on: ubuntu-latest
-    needs: build-test
+    needs: build-test-linux
+    container:
+      image: ${{ env.PLAYWRIGHT_IMAGE }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -115,12 +460,70 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
+      - name: Verify asset integrity hashes (smoke)
+        run: >
+          npm run assets:integrity --
+          --check --mode strict
+          --telemetry artifacts/summaries/asset-integrity.smoke.json
+          --telemetry-md artifacts/summaries/asset-integrity.smoke.md
+          --history artifacts/history/asset-integrity.log
+          --scenario tutorial-smoke
+        working-directory: apps/keyboard-defense
+
+      - name: Asset integrity summary (smoke)
+        if: always()
+        run: >
+          node scripts/ci/assetIntegritySummary.mjs
+          --telemetry artifacts/summaries/asset-integrity.smoke.json
+          --history artifacts/history/asset-integrity.log
+          --out-json artifacts/summaries/asset-integrity-report.smoke.json
+          --markdown artifacts/summaries/asset-integrity-report.smoke.md
+          --mode warn
+        working-directory: apps/keyboard-defense
+
       - name: Tutorial smoke (--mode skip)
         run: node scripts/smoke.mjs --ci --mode skip
         working-directory: apps/keyboard-defense
 
-      - name: Validate smoke gold summary
-        run: npm run analytics:gold:check -- artifacts/smoke/gold-summary.ci.json
+      - name: Gold percentile guard (smoke)
+        run: >
+          node scripts/ci/goldPercentileGuard.mjs
+          --summary artifacts/summaries/gold-percentile-guard.smoke.json
+          artifacts/smoke
+        working-directory: apps/keyboard-defense
+
+      - name: Passive/gold dashboard (smoke)
+        run: >
+          node scripts/ci/passiveGoldDashboard.mjs
+          --summary artifacts/summaries/passive-gold.smoke.json
+          artifacts/smoke
+        working-directory: apps/keyboard-defense
+
+      - name: Gold timeline dashboard (smoke)
+        run: >
+          node scripts/ci/goldTimelineDashboard.mjs
+          --summary artifacts/summaries/gold-timeline.smoke.json
+          artifacts/smoke
+        working-directory: apps/keyboard-defense
+
+      - name: Gold summary dashboard (smoke)
+        run: >
+          node scripts/ci/goldSummaryReport.mjs
+          --summary artifacts/summaries/gold-summary-report.smoke.json
+          --percentile-alerts artifacts/summaries/gold-percentiles.smoke.json
+          artifacts/smoke/gold-summary.ci.json
+        working-directory: apps/keyboard-defense
+
+      - name: Gold analytics board (smoke)
+        run: >
+          node scripts/ci/goldAnalyticsBoard.mjs
+          --summary artifacts/summaries/gold-summary-report.smoke.json
+          --timeline artifacts/summaries/gold-timeline.smoke.json
+          --passive artifacts/summaries/passive-gold.smoke.json
+          --percentile-guard artifacts/summaries/gold-percentile-guard.smoke.json
+          --percentile-alerts artifacts/summaries/gold-percentiles.smoke.json
+          --out-json artifacts/summaries/gold-analytics-board.smoke.json
+          --markdown artifacts/summaries/gold-analytics-board.smoke.md
         working-directory: apps/keyboard-defense
 
       - name: Upload smoke artifacts
@@ -130,13 +533,33 @@ jobs:
           name: smoke-artifacts
           path: |
             apps/keyboard-defense/artifacts/smoke
+            apps/keyboard-defense/artifacts/summaries/passive-gold.smoke.json
+            apps/keyboard-defense/artifacts/summaries/gold-timeline.smoke.json
+            apps/keyboard-defense/artifacts/summaries/gold-summary-report.smoke.json
+            apps/keyboard-defense/artifacts/summaries/gold-percentile-guard.smoke.json
+            apps/keyboard-defense/artifacts/summaries/gold-percentiles.smoke.json
+            apps/keyboard-defense/artifacts/summaries/asset-integrity.smoke.json
+            apps/keyboard-defense/artifacts/summaries/asset-integrity.smoke.md
+            apps/keyboard-defense/artifacts/summaries/asset-integrity-report.smoke.json
+            apps/keyboard-defense/artifacts/summaries/asset-integrity-report.smoke.md
+            apps/keyboard-defense/artifacts/summaries/gold-analytics-board.smoke.json
+            apps/keyboard-defense/artifacts/summaries/gold-analytics-board.smoke.md
+            apps/keyboard-defense/artifacts/history/asset-integrity.log
             apps/keyboard-defense/monitor-artifacts
             apps/keyboard-defense/smoke-artifacts
+
+      - name: Publish CI summary (smoke)
+        if: always()
+        working-directory: apps/keyboard-defense
+        run: node scripts/ci/emit-summary.mjs >> "$GITHUB_STEP_SUMMARY"
+        shell: bash
 
   e2e:
     name: Full E2E
     runs-on: ubuntu-latest
     needs: smoke
+    container:
+      image: ${{ env.PLAYWRIGHT_IMAGE }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -160,12 +583,62 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
+      - name: Verify asset integrity hashes (e2e)
+        run: >
+          npm run assets:integrity --
+          --check --mode strict
+          --telemetry artifacts/summaries/asset-integrity.e2e.json
+          --telemetry-md artifacts/summaries/asset-integrity.e2e.md
+          --history artifacts/history/asset-integrity.log
+          --scenario full-e2e
+        working-directory: apps/keyboard-defense
+
+      - name: Asset integrity summary (e2e)
+        if: always()
+        run: >
+          node scripts/ci/assetIntegritySummary.mjs
+          --telemetry artifacts/summaries/asset-integrity.e2e.json
+          --history artifacts/history/asset-integrity.log
+          --out-json artifacts/summaries/asset-integrity-report.e2e.json
+          --markdown artifacts/summaries/asset-integrity-report.e2e.md
+          --mode warn
+        working-directory: apps/keyboard-defense
+
       - name: Run e2e orchestrator
         run: node scripts/e2e.mjs --ci
         working-directory: apps/keyboard-defense
 
       - name: Capture HUD screenshots
         run: node scripts/hudScreenshots.mjs --ci
+        working-directory: apps/keyboard-defense
+
+      - name: Verify HUD screenshot metadata
+        run: npm run docs:verify-hud-snapshots -- --meta artifacts/screenshots ../../docs/codex_pack/fixtures/ui-snapshot
+        working-directory: apps/keyboard-defense
+
+      - name: Publish condensed audit summary
+        if: always()
+        shell: bash
+        working-directory: apps/keyboard-defense
+        run: |
+          SUMMARY="artifacts/summaries/condensed-audit.md"
+          if [ -f "$SUMMARY" ] && [ -n "$GITHUB_STEP_SUMMARY" ]; then
+            echo "### Responsive Condensed Audit" >> "$GITHUB_STEP_SUMMARY"
+            cat "$SUMMARY" >> "$GITHUB_STEP_SUMMARY"
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Condensed audit summary not found at $SUMMARY"
+          fi
+
+      - name: Build HUD gallery artifacts
+        run: >
+          node scripts/docs/renderHudGallery.mjs
+          --input artifacts/screenshots
+          --meta artifacts/screenshots
+          --output artifacts/summaries/ui-snapshot-gallery.md
+          --json artifacts/summaries/ui-snapshot-gallery.ci.json
+          --verify
+          --required hud-main,options-overlay,tutorial-summary,wave-scorecard
         working-directory: apps/keyboard-defense
 
       - name: Publish HUD screenshot summary
@@ -204,6 +677,13 @@ jobs:
             lines.push("_No screenshots recorded._");
           }
 
+          const galleryJson = path.resolve("artifacts", "summaries", "ui-snapshot-gallery.ci.json");
+          if (fs.existsSync(galleryJson)) {
+            const relGallery = path.relative(process.cwd(), galleryJson);
+            lines.push("");
+            lines.push(`Gallery JSON: ${relGallery}`);
+          }
+
           const summaryFile = process.env.GITHUB_STEP_SUMMARY;
           if (summaryFile) {
             fs.appendFileSync(summaryFile, lines.join("\n") + "\n");
@@ -217,6 +697,13 @@ jobs:
         run: node scripts/castleBreachReplay.mjs --artifact artifacts/castle-breach.ci.json
         working-directory: apps/keyboard-defense
 
+      - name: Castle breach summary
+        run: >
+          node scripts/ci/castleBreachSummary.mjs
+          --summary artifacts/summaries/castle-breach.e2e.json
+          artifacts/castle-breach.ci.json
+        working-directory: apps/keyboard-defense
+
       - name: Generate gold summary for e2e runs
         run: >
           npm run analytics:gold:report --
@@ -227,9 +714,85 @@ jobs:
           artifacts/e2e/campaign.ci.json
         working-directory: apps/keyboard-defense
 
-      - name: Validate e2e gold summary
-        run: npm run analytics:gold:check -- artifacts/e2e/gold-summary.ci.json
+      - name: Analytics schema validation (e2e snapshots)
+        shell: bash
         working-directory: apps/keyboard-defense
+        run: |
+          set -euo pipefail
+          snapshots=()
+          for candidate in artifacts/e2e/tutorial-full.ci.json artifacts/e2e/campaign.ci.json; do
+            if [ -f "$candidate" ]; then
+              snapshots+=("$candidate")
+            fi
+          done
+          if [ "${#snapshots[@]}" -eq 0 ]; then
+            echo "No e2e analytics snapshots found; skipping validation."
+            exit 0
+          fi
+          node scripts/analytics/validate-schema.mjs \
+            --report artifacts/summaries/analytics-validate-e2e.json \
+            --report-md artifacts/summaries/analytics-validate-e2e.md \
+            "${snapshots[@]}"
+
+      - name: Publish analytics schema summary (e2e)
+        if: always()
+        shell: bash
+        working-directory: apps/keyboard-defense
+        run: |
+          SUMMARY="artifacts/summaries/analytics-validate-e2e.md"
+          if [ -f "$SUMMARY" ] && [ -n "$GITHUB_STEP_SUMMARY" ]; then
+            cat "$SUMMARY" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No analytics schema summary at $SUMMARY"
+          fi
+
+      - name: Gold percentile guard (e2e)
+        run: >
+          node scripts/ci/goldPercentileGuard.mjs
+          --summary artifacts/summaries/gold-percentile-guard.e2e.json
+          artifacts/e2e
+        working-directory: apps/keyboard-defense
+
+      - name: Passive/gold dashboard (e2e)
+        run: >
+          node scripts/ci/passiveGoldDashboard.mjs
+          --summary artifacts/summaries/passive-gold.e2e.json
+          artifacts/e2e
+          artifacts/castle-breach.ci.json
+        working-directory: apps/keyboard-defense
+
+      - name: Gold timeline dashboard (e2e)
+        run: >
+          node scripts/ci/goldTimelineDashboard.mjs
+          --summary artifacts/summaries/gold-timeline.e2e.json
+          artifacts/e2e
+          artifacts/e2e/gold-timeline.ci.json
+        working-directory: apps/keyboard-defense
+
+      - name: Gold summary dashboard (e2e)
+        run: >
+          node scripts/ci/goldSummaryReport.mjs
+          --summary artifacts/summaries/gold-summary-report.e2e.json
+          --percentile-alerts artifacts/summaries/gold-percentiles.e2e.json
+          artifacts/e2e/gold-summary.ci.json
+        working-directory: apps/keyboard-defense
+
+      - name: Gold analytics board (e2e)
+        run: >
+          node scripts/ci/goldAnalyticsBoard.mjs
+          --summary artifacts/summaries/gold-summary-report.e2e.json
+          --timeline artifacts/summaries/gold-timeline.e2e.json
+          --passive artifacts/summaries/passive-gold.e2e.json
+          --percentile-guard artifacts/summaries/gold-percentile-guard.e2e.json
+          --percentile-alerts artifacts/summaries/gold-percentiles.e2e.json
+          --out-json artifacts/summaries/gold-analytics-board.e2e.json
+          --markdown artifacts/summaries/gold-analytics-board.e2e.md
+        working-directory: apps/keyboard-defense
+
+      - name: Validate CI guards (e2e dashboards)
+        if: always()
+        working-directory: apps/keyboard-defense
+        run: node scripts/ci/validate.mjs --sections gold,screenshots,breach
 
       - name: Upload e2e artifacts
         if: always()
@@ -240,5 +803,22 @@ jobs:
             apps/keyboard-defense/artifacts/e2e
             apps/keyboard-defense/artifacts/screenshots
             apps/keyboard-defense/artifacts/castle-breach.ci.json
+            apps/keyboard-defense/artifacts/summaries/castle-breach.e2e.json
+            apps/keyboard-defense/artifacts/summaries/passive-gold.e2e.json
+            apps/keyboard-defense/artifacts/summaries/gold-timeline.e2e.json
+            apps/keyboard-defense/artifacts/summaries/gold-summary-report.e2e.json
+            apps/keyboard-defense/artifacts/summaries/ui-snapshot-gallery.ci.json
+            apps/keyboard-defense/artifacts/summaries/ui-snapshot-gallery.md
+            apps/keyboard-defense/artifacts/summaries/gold-percentile-guard.e2e.json
+            apps/keyboard-defense/artifacts/summaries/gold-percentiles.e2e.json
+            apps/keyboard-defense/artifacts/summaries/asset-integrity.e2e.json
+            apps/keyboard-defense/artifacts/summaries/asset-integrity.e2e.md
+            apps/keyboard-defense/artifacts/summaries/asset-integrity-report.e2e.json
+            apps/keyboard-defense/artifacts/summaries/asset-integrity-report.e2e.md
+            apps/keyboard-defense/artifacts/summaries/gold-analytics-board.e2e.json
+            apps/keyboard-defense/artifacts/summaries/gold-analytics-board.e2e.md
+            apps/keyboard-defense/artifacts/summaries/analytics-validate-e2e.json
+            apps/keyboard-defense/artifacts/summaries/analytics-validate-e2e.md
+            apps/keyboard-defense/artifacts/history/asset-integrity.log
             apps/keyboard-defense/monitor-artifacts
             apps/keyboard-defense/smoke-artifacts

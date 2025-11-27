@@ -165,6 +165,26 @@ function normalizePassiveUnlocks(snapshot) {
   return result;
 }
 
+function extractStarfieldState(snapshot) {
+  const starfield =
+    snapshot?.analytics?.starfield ??
+    snapshot?.state?.analytics?.starfield ??
+    null;
+  if (!starfield || typeof starfield !== "object") {
+    return null;
+  }
+  return {
+    depth: typeof starfield.depth === "number" ? starfield.depth : null,
+    driftMultiplier:
+      typeof starfield.driftMultiplier === "number" ? starfield.driftMultiplier : null,
+    tint: typeof starfield.tint === "string" ? starfield.tint : null,
+    waveProgress:
+      typeof starfield.waveProgress === "number" ? starfield.waveProgress : null,
+    castleHealthRatio:
+      typeof starfield.castleHealthRatio === "number" ? starfield.castleHealthRatio : null
+  };
+}
+
 function findNearestPassive(unlocks, timestamp, windowSeconds) {
   if (!Array.isArray(unlocks) || unlocks.length === 0 || timestamp === null) {
     return null;
@@ -211,6 +231,7 @@ export function buildGoldTimelineEntries(snapshot, filePath, options = {}) {
       ? options.passiveWindow
       : DEFAULT_PASSIVE_WINDOW;
   const passiveUnlocks = mergePassives ? normalizePassiveUnlocks(snapshot) : [];
+  const starfield = extractStarfieldState(snapshot);
 
   return events.map((event, index) => {
     const timestamp =
@@ -243,7 +264,8 @@ export function buildGoldTimelineEntries(snapshot, filePath, options = {}) {
       passiveLevel: nearestPassive?.level ?? null,
       passiveDelta: nearestPassive?.delta ?? null,
       passiveTime: nearestPassive?.time ?? null,
-      passiveLag
+      passiveLag,
+      starfield
     };
   });
 }

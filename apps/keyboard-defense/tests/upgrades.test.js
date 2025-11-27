@@ -1,6 +1,6 @@
 import { test } from "vitest";
 import assert from "node:assert/strict";
-import { GameEngine } from "../dist/src/engine/gameEngine.js";
+import { GameEngine } from "../src/engine/gameEngine.ts";
 
 test("castle upgrade increases stats and unlocks slots", () => {
   const engine = new GameEngine({ seed: 99, config: { waves: [] } });

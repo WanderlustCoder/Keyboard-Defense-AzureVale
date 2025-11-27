@@ -3,6 +3,8 @@
 import { spawn } from "node:child_process";
 import process from "node:process";
 
+const DEVSERVER_FLAG_TOKENS = new Set(["--no-build", "--force-restart"]);
+
 function run(command, args) {
   return new Promise((resolve, reject) => {
     const child = spawn(command, args, {
@@ -18,9 +20,18 @@ function run(command, args) {
 }
 
 async function main() {
-  const monitorArgs = process.argv.slice(2);
+  const rawArgs = process.argv.slice(2);
+  const devServerArgs = [];
+  const monitorArgs = [];
+  for (const token of rawArgs) {
+    if (DEVSERVER_FLAG_TOKENS.has(token)) {
+      devServerArgs.push(token);
+    } else {
+      monitorArgs.push(token);
+    }
+  }
   try {
-    await run(process.execPath, ["./scripts/devServer.mjs", "start"]);
+    await run(process.execPath, ["./scripts/devServer.mjs", "start", ...devServerArgs]);
   } catch (error) {
     console.error(
       error instanceof Error ? `Failed to launch dev server: ${error.message}` : String(error)

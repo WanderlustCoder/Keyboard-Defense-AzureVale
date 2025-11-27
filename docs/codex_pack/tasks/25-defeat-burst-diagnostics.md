@@ -26,6 +26,35 @@ firing. Exposing counts in the overlay + smoke artifacts helps visual regression
 3. **CI summary**
    - Extend `scripts/ci/emit-summary.mjs` to surface burst stats when available.
 
+## Implementation Notes
+
+- **Diagnostics UI**
+  - Add a “Defeat Bursts” card to the diagnostics overlay listing:
+    - Total bursts this run / per-minute rate.
+    - Last burst timestamp + enemy type.
+    - Warnings when bursts pause for > N seconds while enemies are still dying (possible animation regression).
+  - Include toggles in condensed mode (ties into task #28) so mobile HUDs can expand/collapse the section.
+- **Instrumentation**
+  - Extend the combat system to emit `combat.defeatBurst` events with payload `{enemyType, lane, burstMode("sprite"|"procedural"), durationMs}`.
+  - Track rolling counters inside `analyticsSnapshot` (e.g., `defeatBurstCount`, `defeatBurstRatePerMin`, `spriteBurstUsagePct`).
+  - When running in automation/smoke mode, persist raw events to `artifacts/analytics/defeatBursts.json` for troubleshooting.
+- **CI summary**
+  - Update `scripts/ci/emit-summary.mjs` (or new `ci/defeatBurstSummary.mjs`) to read the snapshot and print a table with scenario, count, sprite usage %, and last burst age. Fail or warn if counts drop to zero unexpectedly.
+- **Testing**
+  - Unit tests for the analytics tracking ensuring counters reset per wave/session and survive reduced-motion toggles.
+  - Diagnostics overlay tests verifying the new section renders, updates in real time, and respects condensed mode preferences.
+  - Fixture-based tests for the CI summary script to guarantee output formatting + threshold logic.
+- **Docs**
+  - Update `docs/status/2025-11-07_enemy_defeat_animation.md` when metrics land, documenting where to find the overlay section and artifacts.
+  - Add instructions to `CODEX_PLAYBOOKS.md` (Automation + Gameplay) on how to verify burst metrics locally and regenerate fixtures.
+
+## Deliverables & Artifacts
+
+- Updated diagnostics overlay components/styles.
+- Analytics + telemetry additions with fixtures under `docs/codex_pack/fixtures/defeat-bursts/`.
+- CI summary helper output appended to `$GITHUB_STEP_SUMMARY`.
+- Documentation updates (status note, playbook, analytics schema) referencing the new metrics.
+
 ## Acceptance criteria
 
 - Diagnostics panel shows defeat burst metrics.

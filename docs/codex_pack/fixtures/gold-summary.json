@@ -1,1 +1,29 @@
-{"percentiles":[25,50,90],"rows":[{"file":"artifacts/smoke/gold-summary.ci.json","gainP25":120,"gainP50":180,"gainP90":240}]}
+{
+  "percentiles": [25, 50, 90],
+  "rows": [
+    {
+      "file": "artifacts/smoke/tutorial.skip.json",
+      "eventCount": 42,
+      "netDelta": 175,
+      "maxGain": 120,
+      "maxSpend": -80,
+      "totalPositive": 620,
+      "totalNegative": 445,
+      "medianGain": 60,
+      "p90Gain": 110,
+      "medianSpend": -35,
+      "p90Spend": -65,
+      "gainP25": 40,
+      "gainP50": 60,
+      "gainP90": 110,
+      "spendP25": -15,
+      "spendP50": -35,
+      "spendP90": -65,
+      "starfieldDepth": 1.35,
+      "starfieldDrift": 1.15,
+      "starfieldWaveProgress": 52.5,
+      "starfieldCastleRatio": 70,
+      "starfieldTint": "#fbbf24"
+    }
+  ]
+}

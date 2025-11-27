@@ -33,6 +33,51 @@ and session length.
    - Update the audio slider status note once the metrics are exposed and mention
      how to interpret them.
 
+## Implementation Notes
+
+- **Runtime data flow**
+  - Store the current slider value under `playerSettings.audio.intensity`.
+  - Publish a `ui.audioIntensityChanged` event whenever the slider moves; include
+    `{from, to, timestampMs, duringWave}` so analytics can correlate with accuracy
+    drops or combo recovery.
+  - Feed that value into the diagnostics overlay + pause menu so manual testing can
+    confirm the setting that smoke automation applied.
+- **Smoke + CI artifacts**
+  - Extend the smoke harness to accept `--audio-intensity <0..100>` and default to
+    the slider's midpoint. Persist both the configured target and the actual values
+    observed during playback (`recordedIntensity`), plus a time series if the slider
+    is exercised mid-run.
+  - Emit a compact CSV (`artifacts/summaries/audio-intensity.csv`) with columns
+    `scenario, intensity, avgCombo, sessionDurationMs, accuracy` so dashboards can
+    plot correlations without post-processing.
+  - Provide a `node scripts/ci/audioIntensitySummary.mjs` helper that renders the
+    latest audio metrics (requested/recorded, averages, drift %, correlations) so
+    CI and coders can embed the Markdown table in summaries without opening the raw JSON.
+- **Analytics correlations**
+  - Inside `analyticsAggregate`, track per-wave aggregates: average intensity,
+    intensity delta vs previous wave, and derived stats (combo retention, miss rate).
+  - Compute lightweight correlations (e.g., Pearson between intensity and combo) and
+    include them in the JSON summary (`audioIntensityCorrelation` field).
+- **CI / dashboard exposure**
+  - Update the Codex dashboard to show a small card with the latest intensity,
+    correlation coefficient, and combo delta so reviewers can spot regressions quickly.
+  - Add a `--audio-intensity-threshold` flag that warns if the scripted intensity deviates
+    from expected by more than N %, catching automation drift.
+- **Docs & playbooks**
+  - Document the workflow (`npm run analytics:audio`) in `CODEX_GUIDE.md` and add a
+    “Audio metrics” checklist to the UI/Gameplay playbook.
+  - Update `docs/status/2025-11-16_audio_intensity_slider.md` once telemetry lands,
+    noting where to find the dashboards/artifacts.
+
+## Deliverables & Artifacts
+
+- Updated smoke artifact(s):
+  - `artifacts/smoke/devserver-smoke-summary.json` (with intensity fields)
+  - `artifacts/summaries/audio-intensity.csv|json`
+- `scripts/ci/audioIntensitySummary.mjs` (optional helper) that renders Markdown for CI.
+- Analytics fixture updates capturing the new fields (`docs/codex_pack/fixtures/audio-intensity/*.json`).
+- Doc updates across `CODEX_GUIDE.md`, `CODEX_PLAYBOOKS.md`, `docs/codex_dashboard.md`, and the Nov-16 status note.
+
 ## Acceptance criteria
 
 - Smoke artifacts include audio intensity settings.

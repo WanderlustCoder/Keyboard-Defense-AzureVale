@@ -1,0 +1,20 @@
+{
+  "defeatAnimations": [
+    {
+      "id": "default",
+      "default": true,
+      "match": ["grunt", "runner", "witch"],
+      "frames": [
+        { "key": "defeat-default-01", "durationMs": 80, "size": 72, "offsetY": -4 },
+        { "key": "defeat-default-02", "durationMs": 110, "size": 96, "offsetY": -6 },
+        { "key": "defeat-default-03", "durationMs": 140, "size": 110 }
+      ]
+    },
+    {
+      "id": "brute",
+      "match": ["elite-brute"],
+      "fallback": "default",
+      "frames": []
+    }
+  ]
+}

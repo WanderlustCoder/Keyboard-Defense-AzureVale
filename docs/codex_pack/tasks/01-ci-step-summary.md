@@ -21,7 +21,7 @@ human‑scanable Markdown summary to `$GITHUB_STEP_SUMMARY` so reviewers don’t
 1) **Add** `scripts/ci/emit-summary.mjs` (see snippet).  
 2) **Call it** at the end of the Build/Test and Smoke jobs:  
    `node scripts/ci/emit-summary.mjs >> $GITHUB_STEP_SUMMARY`  
-3) **Verify** the summary shows: server ready ms, tutorial status, gold percentiles, breach drill, links to artifacts.
+3) **Verify** the summary shows: server ready ms, tutorial status, gold percentiles, breach drill, responsive condensed coverage rows, and artifact links.
 
 ## Acceptance criteria
 
@@ -33,7 +33,7 @@ human‑scanable Markdown summary to `$GITHUB_STEP_SUMMARY` so reviewers don’t
 - npm run lint
 - npm run test
 - npm run codex:validate-pack
-- Dry-run `node scripts/ci/emit-summary.mjs --smoke docs/codex_pack/fixtures/smoke-summary.json --gold docs/codex_pack/fixtures/gold-summary.json` (or run unit tests) so missing files render as `-`
+- Dry-run `node scripts/ci/emit-summary.mjs --smoke docs/codex_pack/fixtures/smoke-summary.json --gold docs/codex_pack/fixtures/gold-summary.json --condensed-audit docs/codex_pack/fixtures/responsive/condensed-audit.json` (or run unit tests) so missing files render as `-` and the condensed audit rows appear when supplied
 
 ## Snippet
 

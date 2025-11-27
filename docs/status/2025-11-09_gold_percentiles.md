@@ -13,3 +13,7 @@
 
 **Next Steps**
 1. Pipe the new percentile signals into CI dashboards/alerts so we can spot economy drift before it hits players.
+
+## Follow-up
+- `docs/codex_pack/tasks/30-gold-percentile-dashboard-alerts.md`
+- `docs/status/2025-11-20_gold_percentile_alerts.md`

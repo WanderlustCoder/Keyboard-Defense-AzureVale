@@ -1,0 +1,21 @@
+{
+  "generatedAt": "2025-11-20T12:00:00.000Z",
+  "runs": [
+    {
+      "scenario": "tutorial-full",
+      "requestedIntensity": 1,
+      "recordedIntensity": 1.1,
+      "averageIntensity": 1.05,
+      "intensityDelta": 0.1,
+      "durationMs": 126000,
+      "accuracy": 0.985,
+      "accuracySource": "summary-overlay",
+      "combo": 14,
+      "comboSource": "analytics-sessionBestCombo",
+      "historySamples": 3,
+      "comboCorrelation": 0.87,
+      "accuracyCorrelation": -0.2,
+      "driftPercent": 10
+    }
+  ]
+}

@@ -194,34 +194,54 @@ async function verifyCsvFile(file, expected) {
   }
 }
 
-export async function runGoldSummaryCheck(options) {
-  const files = await resolveTargets(options.targets);
+async function verifyFile(file, expected) {
+  const ext = path.extname(file).toLowerCase();
+  if (ext === ".json") {
+    await verifyJsonFile(file, expected);
+  } else if (ext === ".csv") {
+    await verifyCsvFile(file, expected);
+  } else {
+    throw new Error(`${file}: unsupported file type.`);
+  }
+}
+export async function collectGoldSummaryResults(targets, expectedPercentiles) {
+  const files = await resolveTargets(targets);
   if (files.length === 0) {
     throw new Error("No gold summary files found. Supported extensions: .json, .csv");
   }
-  const expected = options.percentiles;
-  const failures = [];
+  const expected = expectedPercentiles ?? DEFAULT_PERCENTILES;
+  const results = [];
   for (const file of files) {
     try {
-      const ext = path.extname(file).toLowerCase();
-      if (ext === ".json") {
-        await verifyJsonFile(file, expected);
-      } else if (ext === ".csv") {
-        await verifyCsvFile(file, expected);
-      } else {
-        throw new Error(`${file}: unsupported file type.`);
-      }
-      console.log(`✔ ${file} (percentiles: ${expected.join(",")})`);
+      await verifyFile(file, expected);
+      results.push({ file, ok: true, error: null });
     } catch (error) {
-      failures.push(error instanceof Error ? error.message : String(error));
-      console.error(`✖ ${file}: ${failures[failures.length - 1]}`);
+      results.push({
+        file,
+        ok: false,
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  }
+  return results;
+}
+
+export async function runGoldSummaryCheck(options) {
+  const results = await collectGoldSummaryResults(options.targets, options.percentiles);
+  const failures = [];
+  for (const result of results) {
+    if (result.ok) {
+      console.log(`✔ ${result.file} (percentiles: ${options.percentiles.join(",")})`);
+    } else {
+      const message = result.error ?? `Unknown error validating ${result.file}`;
+      failures.push(message);
+      console.error(`✖ ${result.file}: ${message}`);
     }
   }
   if (failures.length > 0) {
     throw new Error(`${failures.length} file(s) failed validation.`);
   }
 }
-
 async function main() {
   let options;
   try {
@@ -251,3 +271,4 @@ if (
 ) {
   await main();
 }
+

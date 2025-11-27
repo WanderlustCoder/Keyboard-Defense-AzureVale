@@ -11,3 +11,6 @@
 
 **Next Steps**
 1. Consume the new percentile metadata downstream (dashboards/alerts) so ingestion jobs can assert cutline mismatches automatically.
+
+## Follow-up
+- `docs/codex_pack/tasks/36-gold-percentile-ingestion-guard.md`

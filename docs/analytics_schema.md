@@ -1,6 +1,6 @@
 # Analytics Snapshot & Export Schema
 
-This reference captures the structure of the JSON snapshots downloaded from the in-game analytics exporter as well as the CSV emitted by `npm run analytics:aggregate`. Use it to build dashboards or to validate downstream tooling when snapshot formats evolve.
+This reference captures the structure of the JSON snapshots downloaded from the in-game analytics exporter as well as the CSV emitted by `npm run analytics:aggregate`. Use it to build dashboards or to validate downstream tooling when snapshot formats evolve. The canonical JSON Schema lives at `apps/keyboard-defense/schemas/analytics.schema.json`; validate snapshots locally or in CI via `npm run analytics:validate-schema` (which runs `node scripts/analytics/validate-schema.mjs <files>` under the hood).
 
 ## Root Snapshot Fields
 
@@ -41,13 +41,29 @@ This reference captures the structure of the JSON snapshots downloaded from the 
 | `analytics.taunt` | object | Snapshot of the most recent taunt plus aggregate metadata (see **Taunt Metadata** below). |
 | `analytics.waveSummaries` | `WaveSummary[]` | Rolling array of recent wave summaries (latest appended). |
 | `analytics.waveHistory` | `WaveSummary[]` | Full session wave history (capped at 100 entries) retained for in-session review. |
+| `analytics.comboWarning` | object | Combo warning accuracy delta analytics (see **Combo Warning Analytics** below). |
+| `analytics.audioIntensityHistory` | array | Chronological list of audio intensity adjustments `{ timestampMs, gameTime, waveIndex, combo, accuracy, from, to, source }` for telemetry/correlation. |
 | `analytics.wavePerfectWords` | number | Perfect words recorded so far in the active wave. |
 | `analytics.waveBonusGold` | number | Bonus gold earned in the active wave prior to finalisation. |
 | `telemetry` | object | Telemetry opt-in metadata captured alongside the snapshot (see table below). |
 
-> Need a flattened unlock timeline for dashboards? Run `npm run analytics:passives` (new CLI) to emit the `analytics.castlePassiveUnlocks` array as JSON or CSV.
+> Need a flattened unlock timeline for dashboards? Run `npm run analytics:passives` (new CLI) to emit the `analytics.castlePassiveUnlocks` array as JSON or CSV. For CI/automation that already runs `analyticsAggregate`, pass `--passive-summary <json> [--passive-summary-csv <csv>] [--passive-summary-md <md>]` so the aggregation step also writes passive unlock artifacts alongside the main CSV.
 
-> The CSV emitted by `analyticsAggregate.mjs` retains these fields as columns: `sessionBreaches`, `sessionBestCombo`, `totalDamageDealt`, `totalTurretDamage`, `totalTypingDamage`, `totalShieldBreaks`, `totalCastleRepairs`, `totalRepairHealth`, `totalRepairGold`, `totalPerfectWords`, `totalBonusGold`, `totalCastleBonusGold`, `totalReactionTime`, `reactionSamples`, `averageTotalDps`, `averageTurretDps`, `averageTypingDps`, along with per-wave `perfectWords`, `averageReaction`, `bonusGold`, `castleBonusGold`, and a serialised `turretStats` column summarising per-slot damage/DPS (`slotId:type Lx dmg=... dps=...`).
+> The CSV emitted by `analyticsAggregate.mjs` retains these fields as columns: `sessionBreaches`, `sessionBestCombo`, `totalDamageDealt`, `totalTurretDamage`, `totalTypingDamage`, `totalShieldBreaks`, `totalCastleRepairs`, `totalRepairHealth`, `totalRepairGold`, `totalPerfectWords`, `totalBonusGold`, `totalCastleBonusGold`, `totalReactionTime`, `reactionSamples`, `averageTotalDps`, `averageTurretDps`, `averageTypingDps`, per-wave `perfectWords`, `averageReaction`, `bonusGold`, `castleBonusGold`, the serialized `turretStats` column, plus the combo warning analytics (`comboWarningCount`, `comboWarningDeltaLast`, `comboWarningDeltaAvg`, `comboWarningDeltaMin`, `comboWarningDeltaMax`, `comboWarningHistory`) and audio telemetry columns (`audioIntensitySamples`, `audioIntensityAvg`, `audioIntensityDelta`, `audioIntensityComboCorrelation`, `audioIntensityAccuracyCorrelation`).
+
+### Combo Warning Analytics
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `comboWarning.count` | number | Total number of combo warnings recorded this session. |
+| `comboWarning.lastDelta` | number | Most recent accuracy delta (percent) captured when a warning triggered. |
+| `comboWarning.deltaMin` | number | Worst (lowest) delta percent recorded this session. |
+| `comboWarning.deltaMax` | number | Highest delta percent recorded (closest to zero or positive) this session. |
+| `comboWarning.deltaSum` | number | Sum of all delta percents; divide by `count` for the average value used by dashboards/CI. |
+| `comboWarning.baselineAccuracy` | number | Current 0-1 baseline accuracy used to compute the next warning delta. |
+| `comboWarning.history` | array | Rolling buffer of warning entries `{ timestamp, waveIndex, comboBefore, comboAfter, accuracy, baselineAccuracy, deltaPercent, durationMs }` (capped so snapshots remain small). |
+
+Each warning also emits a telemetry envelope named `combat.comboWarningDelta` containing `{ comboBefore, comboAfter, deltaPercent, durationMs, timeSinceLastWarningMs }` so CI and dashboards can flag accuracy swings without parsing the raw snapshots.
 
 ## Taunt Metadata
 
@@ -68,6 +84,32 @@ When enemies spawn with scripted taunts the analytics payload captures the most 
 
 The CSV emitted by `analyticsAggregate.mjs` adds the following columns to surface the same info without parsing nested JSON: `tauntActive`, `tauntText`, `tauntEnemyType`, `tauntWaveIndex`, `tauntLane`, `tauntTimestamp`, `tauntId`, `tauntCountPerWave`, `tauntUniqueLines`.
 
+## Defeat Burst Metrics
+
+Defeat bursts capture the defeat-animation activity per session so diagnostics, smoke artifacts, and CI summaries can ensure the effects keep firing (and track sprite vs procedural usage).
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `analytics.defeatBurst.total` | number | Total bursts fired this session. |
+| `analytics.defeatBurst.sprite` | number | Count of bursts rendered via sprite atlases. |
+| `analytics.defeatBurst.procedural` | number | Count of procedural fallback bursts. |
+| `analytics.defeatBurst.lastEnemyType` | string \| null | Tier id of the last enemy that triggered a burst. |
+| `analytics.defeatBurst.lastLane` | number \| null | Lane index of the last burst. |
+| `analytics.defeatBurst.lastTimestamp` | number \| null | Session time (seconds) when the last burst started. |
+| `analytics.defeatBurst.lastMode` | `"sprite"` \| `"procedural"` \| null | Rendering mode used for the last burst. |
+| `analytics.defeatBurst.history` | array | Rolling list of events `{ enemyType, lane, timestamp, mode }` used by dashboards and diagnostics. |
+| `analytics.starfield` | object \| null | Snapshot of the current starfield parallax state (depth, drift, tint, wave progress, castle health ratio, severity, reduced-motion flag, and layer velocities/depths). |
+| `analytics.starfield.depth` | number | Depth multiplier applied to the starfield layers. |
+| `analytics.starfield.driftMultiplier` | number | Current multiplier applied to per-layer velocities. |
+| `analytics.starfield.tint` | string | Hex color tint currently applied based on castle damage. |
+| `analytics.starfield.waveProgress` | number | Normalized wave progress (0-1) used by the parallax controller. |
+| `analytics.starfield.castleHealthRatio` | number | Current castle health ratio (0-1). |
+| `analytics.starfield.severity` | number | Normalized (0-1) castle damage severity derived from health ratio. |
+| `analytics.starfield.reducedMotionApplied` | boolean | Whether parallax was frozen/clamped due to reduced-motion settings. |
+| `analytics.starfield.layers` | array | Layer diagnostics `{ id, velocity, direction, depth, baseDepth, depthOffset }`. |
+
+CSV columns: `defeatBurstCount`, `defeatBurstSpriteCount`, `defeatBurstProceduralCount`, `defeatBurstPerMinute`, `defeatBurstSpritePct`, `defeatBurstLastEnemyType`, `defeatBurstLastLane`, `defeatBurstLastMode`, `defeatBurstLastTimestamp`, `defeatBurstHistory`, `starfieldDepth`, `starfieldDrift`, `starfieldTint`, `starfieldWaveProgress`, `starfieldCastleRatio`, `starfieldSeverity`, `starfieldReducedMotionApplied`, `starfieldLayers`.
+
 ## UI Snapshot Fields
 
 The `ui` object travels alongside each analytics export to describe how the HUD rendered when the snapshot was taken. This keeps automation artifacts honest without scraping DOM state.
@@ -79,13 +121,38 @@ The `ui` object travels alongside each analytics export to describe how the HUD 
 | `ui.tutorialBanner.expanded` | boolean | Whether the condensed tutorial banner is expanded (player toggled it open). |
 | `ui.hud.passivesCollapsed` | boolean \| null | Current collapse state of the HUD castle passives card (`null` when unavailable). |
 | `ui.hud.goldEventsCollapsed` | boolean \| null | Current collapse state of the HUD recent gold events card. |
-| `ui.hud.prefersCondensedLists` | boolean \| null | Result of the viewport heuristic that drives the default collapse state (true on mobile-friendly viewports). |
+| `ui.hud.prefersCondensedLists` | boolean \| null | Result of the viewport heuristic that drives the default collapse state (true on mobile viewports). |
+| `ui.hud.layout` | `"stacked"` \| `"condensed"` \| null | Resolved HUD layout badge (mirrors the heuristic controlled collapse state). |
 | `ui.options.passivesCollapsed` | boolean \| null | Collapse state of the pause/options overlay passives section. |
 | `ui.diagnostics.condensed` | boolean \| null | Whether the diagnostics overlay flipped into its condensed mode (short viewports). |
 | `ui.diagnostics.sectionsCollapsed` | boolean \| null | Whether the condensed diagnostics overlay has its verbose sections collapsed behind the toggle button. |
+| `ui.diagnostics.collapsedSections` | object \| null | Per-section collapsed state (e.g., `{ "gold-events": true }`), allowing dashboards to render badges for individual cards. |
+| `ui.diagnostics.lastUpdatedAt` | string \| null | ISO timestamp when diagnostics section preferences last changed (mirrors player settings metadata). |
 | `ui.preferences.hudPassivesCollapsed` | boolean \| null | Player preference for the HUD passives card collapse state (persisted in player settings). |
 | `ui.preferences.hudGoldEventsCollapsed` | boolean \| null | Player preference for the HUD gold events card collapse state. |
 | `ui.preferences.optionsPassivesCollapsed` | boolean \| null | Player preference for the options overlay passives card. |
+| `ui.preferences.diagnosticsSections` | object \| null | Persisted diagnostics section collapse map (matches `ui.diagnostics.collapsedSections`). |
+| `ui.preferences.diagnosticsSectionsUpdatedAt` | string \| null | ISO timestamp when diagnostics section preferences were last persisted. |
+| `ui.preferences.devicePixelRatio` | number \| null | Persisted devicePixelRatio sample (rounded to two decimals) from player settings. |
+| `ui.preferences.hudLayout` | `"stacked"` \| `"condensed"` \| null | Persisted HUD layout preference captured from the last known responsive state. |
+| `ui.resolution.cssWidth` | number \| null | Latest CSS width applied to the canvas (null until the canvas is measured). |
+| `ui.resolution.cssHeight` | number \| null | CSS height computed from the base aspect ratio. |
+| `ui.resolution.renderWidth` | number \| null | Internal renderer width after DPR scaling. |
+| `ui.resolution.renderHeight` | number \| null | Internal renderer height after DPR scaling. |
+| `ui.resolution.devicePixelRatio` | number \| null | Most recent DPR sample (rounded to two decimals). |
+| `ui.resolution.hudLayout` | `"stacked"` \| `"condensed"` \| null | HUD layout sampled at the time the resolution snapshot was captured. |
+| `ui.resolution.lastResizeCause` | string \| null | Last recorded resize cause from the renderer (`viewport`, `device-pixel-ratio`, etc.). |
+| `ui.resolutionChanges[]` | object[] | Rolling list (max 10) describing each resolution transition captured during the session. |
+| `ui.resolutionChanges[].capturedAt` | string | ISO timestamp recorded when the transition completed. |
+| `ui.resolutionChanges[].cause` | string \| null | Source of the transition (`initial`, `resize-observer`, `viewport`, `device-pixel-ratio`, etc.). |
+| `ui.resolutionChanges[].fromDpr` / `toDpr` | number \| null | DPR values before/after the transition (identical when only the viewport width changed). |
+| `ui.resolutionChanges[].cssWidth` / `cssHeight` | number | CSS dimensions applied after the transition. |
+| `ui.resolutionChanges[].renderWidth` / `renderHeight` | number | Renderer dimensions applied after the transition. |
+| `ui.resolutionChanges[].transitionMs` | number \| null | Duration of the fade/hold animation applied to mask the resize. |
+| `ui.resolutionChanges[].prefersCondensedHud` | boolean \| null | HUD condensed preference sampled at the time of the transition. |
+| `ui.resolutionChanges[].hudLayout` | `"stacked"` \| `"condensed"` \| null | Derived HUD layout badge used by dashboards and telemetry. |
+
+> Use `npm run debug:dpr-transition -- --steps 1:960:init,1.5:840:pinch,2:720:zoom --json` to regenerate the DPR transition payloads without relying on browser zooming; the CLI emits the same entries recorded under `ui.resolutionChanges[]`.
 
 ## Wave Summary Fields
 
@@ -139,7 +206,7 @@ Each entry in `analytics.goldEvents` captures a single gold balance update:
 | `delta` | number | Net gold change applied by the event (negative for spend). |
 | `timestamp` | number | Game time in seconds when the event occurred. |
 
-> Need a quick timeline for dashboards or smoke artifacts? Run `npm run analytics:gold` (see `scripts/goldTimeline.mjs`) to export the last few hundred entries as JSON/CSV with additional metadata (file, mode, capturedAt, time-since). Pass `--merge-passives --passive-window <seconds>` to include the nearest passive unlock (id/level/time/lag) for each event. For high-level summaries (net delta, max gain/spend, configurable gain/spend percentiles, passive linkage counts) use `npm run analytics:gold:summary` (add `--percentiles 25,50,90` to control which percentile cutlines appear; defaults to `50,90`). The summary output always appends `gainP<percent>` / `spendP<percent>` columns (e.g., `gainP50`, `spendP90`) along with the legacy `medianGain`/`p90Gain` aliases for backward compatibility, and CI smoke/report workflows pass `--percentiles 25,50,90` by default so artifacts line up with dashboards. JSON output includes a wrapper `{ percentiles: number[], rows: SummaryRow[] }` and CSV output includes a trailing `summaryPercentiles` column containing the pipe-delimited percentile list so downstream tools can assert the cutlines that generated the artifact. Want to gate ingestion? Run `npm run analytics:gold:check <path>` to validate that an artifact’s metadata matches the expected percentile list.
+> Need a quick timeline for dashboards or smoke artifacts? Run `npm run analytics:gold` (see `scripts/goldTimeline.mjs`) to export the last few hundred entries as JSON/CSV with additional metadata (file, mode, capturedAt, time-since). Pass `--merge-passives --passive-window <seconds>` to include the nearest passive unlock (id/level/time/lag) for each event. For high-level summaries (net delta, max gain/spend, configurable gain/spend percentiles, passive linkage counts) use `npm run analytics:gold:summary` (add `--percentiles 25,50,90` to control which percentile cutlines appear; defaults to `50,90`). The summary output always appends `gainP<percent>` / `spendP<percent>` columns (e.g., `gainP50`, `spendP90`) along with the legacy `medianGain`/`p90Gain` aliases for backward compatibility, and CI smoke/report workflows pass `--percentiles 25,50,90` by default so artifacts line up with dashboards. JSON output includes a wrapper `{ percentiles: number[], rows: SummaryRow[] }` and CSV output includes a trailing `summaryPercentiles` column containing the pipe-delimited percentile list so downstream tools can assert the cutlines that generated the artifact. Want to gate ingestion? Run `npm run analytics:gold:check <path>` to validate that an artifact’s metadata matches the expected percentile list.\n\n> Starfield telemetry now flows through the gold summary pipeline: each summary row includes starfieldDepth, starfieldDrift, starfieldWaveProgress, starfieldCastleRatio, and starfieldTint. The CI dashboard step (scripts/ci/goldSummaryReport.mjs) aggregates those into metrics.starfield with average depth/drift/percentages plus the last recorded tint so reviewers can correlate castle damage tinting with economy swings directly from Markdown/JSON.
 
 ## Telemetry Metadata Snapshot
 
@@ -160,10 +227,28 @@ Each `TelemetryEnvelope` mirrors the structure emitted by the in-game client: `{
 When you run `npm run analytics:aggregate`, the CSV header is emitted exactly as:
 
 ```
-file,capturedAt,status,time,telemetryAvailable,telemetryEnabled,telemetryEndpoint,telemetryQueueSize,soundEnabled,soundVolume,soundIntensity,timeToFirstTurret,waveIndex,waveTotal,mode,practiceMode,turretStats,summaryWave,duration,accuracy,enemiesDefeated,breaches,perfectWords,averageReaction,dps,turretDps,typingDps,turretDamage,typingDamage,shieldBreaks,repairsUsed,repairHealth,repairGold,bonusGold,castleBonusGold,passiveUnlockCount,lastPassiveUnlock,castlePassiveUnlocks,goldEventsTracked,lastGoldDelta,lastGoldEventTime,tauntActive,tauntText,tauntEnemyType,tauntWaveIndex,tauntLane,tauntTimestamp,tauntId,tauntCountPerWave,tauntUniqueLines,goldEarned,maxCombo,sessionBestCombo,sessionBreaches,totalDamageDealt,totalTurretDamage,totalTypingDamage,totalShieldBreaks,totalCastleRepairs,totalRepairHealth,totalRepairGold,totalPerfectWords,totalBonusGold,totalCastleBonusGold,totalReactionTime,reactionSamples,averageTotalDps,averageTurretDps,averageTypingDps,tutorialAttempts,tutorialAssists,tutorialCompletions,tutorialReplays,tutorialSkips
+file,capturedAt,status,time,telemetryAvailable,telemetryEnabled,telemetryEndpoint,telemetryQueueSize,soundEnabled,soundVolume,soundIntensity,timeToFirstTurret,waveIndex,waveTotal,mode,practiceMode,turretStats,summaryWave,duration,accuracy,enemiesDefeated,breaches,perfectWords,averageReaction,dps,turretDps,typingDps,turretDamage,typingDamage,shieldBreaks,repairsUsed,repairHealth,repairGold,bonusGold,castleBonusGold,passiveUnlockCount,lastPassiveUnlock,castlePassiveUnlocks,goldEventsTracked,lastGoldDelta,lastGoldEventTime,tauntActive,tauntText,tauntEnemyType,tauntWaveIndex,tauntLane,tauntTimestamp,tauntId,tauntCountPerWave,tauntUniqueLines,goldEarned,maxCombo,sessionBestCombo,sessionBreaches,totalDamageDealt,totalTurretDamage,totalTypingDamage,totalShieldBreaks,totalCastleRepairs,totalRepairHealth,totalRepairGold,totalPerfectWords,totalBonusGold,totalCastleBonusGold,totalReactionTime,reactionSamples,averageTotalDps,averageTurretDps,averageTypingDps,tutorialAttempts,tutorialAssists,tutorialCompletions,tutorialReplays,tutorialSkips,audioIntensitySamples,audioIntensityAvg,audioIntensityDelta,audioIntensityComboCorrelation,audioIntensityAccuracyCorrelation
 ```
 
 This header mirrors the tables above so automated parsers can rely on stable ordering. Any future schema changes should update this document and the README before landing.
+
+## Validation CLI
+
+- JSON Schema: `apps/keyboard-defense/schemas/analytics.schema.json`
+- Command: `npm run analytics:validate-schema -- <files|directories>` (wrap extra targets after `--` to forward them through npm) or call `node scripts/analytics/validate-schema.mjs <targets>` directly.
+- Flags:
+  - `--mode warn` (or `info`) keeps the exit code at 0 even when failures occur; default `fail` blocks CI/commits.
+  - `--report <path>` overrides the JSON artifact (`artifacts/summaries/analytics-validate.ci.json` by default).
+  - `--report-md <path>` writes/overrides the Markdown summary (`artifacts/summaries/analytics-validate.ci.md` by default).
+  - `--no-report` / `--no-md-report` skip writing the respective artifacts entirely.
+- Outputs: both JSON + Markdown reports list per-file status, error counts, `gitSha`, schema path, and the invocation mode so CI dashboards can surface the triage data without inspecting logs.
+- Dry-runs: point the CLI at `docs/codex_pack/fixtures/analytics` (valid + invalid fixtures) and at `artifacts/analytics/*.json` before shipping schema changes, e.g.
+  ```
+  node scripts/analytics/validate-schema.mjs docs/codex_pack/fixtures/analytics artifacts/analytics \
+    --mode warn \
+    --report temp/analytics-validate.local.json \
+    --report-md temp/analytics-validate.local.md
+  ```
 
 ## Leaderboard Export
 
@@ -185,3 +270,4 @@ Each entry in `turretStats` (and the serialised CSV column) contains:
 | `level` | number \\ null | Current level of the turret (null if empty). |
 | `damage` | number | Total damage dealt by the slot during the active wave. |
 | `dps` | number | Per-second damage for the slot during the active wave (uses wave duration). |
+

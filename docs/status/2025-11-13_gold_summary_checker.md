@@ -8,3 +8,6 @@
 
 **Next Steps**
 1. Hook `npm run analytics:gold:check artifacts/gold-summary.report.json` into CI dashboards/alerts so mismatched cutlines block ingestion automatically.
+
+## Follow-up
+- `docs/codex_pack/tasks/36-gold-percentile-ingestion-guard.md`

@@ -120,6 +120,28 @@ export function createInitialState(config: GameConfig): GameState {
         uniqueLines: [],
         history: []
       },
+      defeatBurst: {
+        total: 0,
+        sprite: 0,
+        procedural: 0,
+        lastEnemyType: null,
+        lastLane: null,
+        lastTimestamp: null,
+        lastMode: null,
+        history: []
+      },
+      starfield: null,
+      comboWarning: {
+        active: null,
+        baselineAccuracy: 1,
+        lastTimestamp: null,
+        lastDelta: null,
+        deltaMin: null,
+        deltaMax: null,
+        deltaSum: 0,
+        count: 0,
+        history: []
+      },
       tutorial: {
         events: [],
         assistsShown: 0,

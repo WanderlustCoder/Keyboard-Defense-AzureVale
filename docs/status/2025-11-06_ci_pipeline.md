@@ -11,9 +11,10 @@
   - **Full E2E**: drives `node scripts/e2e.mjs --ci` to exercise tutorial (full) and campaign flows, archiving results.
 - Workflow caches both root and app dependency lockfiles to keep installs fast.
 - `PLAYWRIGHT_BROWSERS_PATH` is pinned so runners reuse browser downloads.
-- Artifacts include `monitor-artifacts/` output, ensuring the dev monitor JSON is captured per run.
+- Artifacts include `artifacts/monitor/` output (legacy `monitor-artifacts/`), ensuring the dev monitor JSON is captured per run.
+- CI now emits a spec-to-test traceability report via `node scripts/ci/traceabilityReport.mjs`, pulling backlog/task metadata plus the Vitest JSON reporter and appending the Markdown summary to `$GITHUB_STEP_SUMMARY` (also uploaded under `artifacts/summaries/traceability-report*.json|md`).
 
 ## Next Steps
 1. Gate merges on the workflow once flake rate is confirmed.
 2. Layer mutation testing into the pipeline when Stryker harness matures.
-3. Add traceability report upload (coverage + backlog links) so CI exports the spec-to-test map automatically. *(Codex: `docs/codex_pack/tasks/14-ci-traceability-report.md`)*
+3. Extend the traceability report with Playwright + smoke artifacts so HUD/E2E validations surface alongside Vitest coverage.

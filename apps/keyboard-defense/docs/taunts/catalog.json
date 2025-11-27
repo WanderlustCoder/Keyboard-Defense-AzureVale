@@ -1,0 +1,66 @@
+{
+  "entries": [
+    {
+      "id": "boss_archivist_intro",
+      "enemyType": "archivist",
+      "rarity": "boss",
+      "text": "Archivist Lyra snaps her quill: \"I'll erase this keep myself.\"",
+      "tags": ["episode1", "archivist", "phase1"],
+      "voiceLineId": "vo.archivist.intro"
+    },
+    {
+      "id": "boss_archivist_phase2",
+      "enemyType": "archivist",
+      "rarity": "boss",
+      "text": "\"Annotated defenses? Adorable.\" Lyra drenches the lanes in inkfire.",
+      "tags": ["episode1", "archivist", "phase2"],
+      "voiceLineId": "vo.archivist.phase2"
+    },
+    {
+      "id": "boss_archivist_finale",
+      "enemyType": "archivist",
+      "rarity": "boss",
+      "text": "Lyra slams the ledger shut: \"Your story ends when I decree it!\"",
+      "tags": ["episode1", "archivist", "phase3"],
+      "voiceLineId": "vo.archivist.final"
+    },
+    {
+      "id": "affix_shield_overcharge",
+      "enemyType": "brute",
+      "rarity": "affix",
+      "text": "Overcharged brutes chant, \"Layer the wards, crush the gate!\"",
+      "tags": ["episode1", "affix", "shield"],
+      "voiceLineId": "vo.affix.shield"
+    },
+    {
+      "id": "affix_frost_aegis",
+      "enemyType": "witch",
+      "rarity": "affix",
+      "text": "Frostbound witches hiss, \"Ice for your turrets, silence for your scribes.\"",
+      "tags": ["episode1", "affix", "frost"],
+      "voiceLineId": "vo.affix.frost"
+    },
+    {
+      "id": "affix_berserker_crescendo",
+      "enemyType": "runner",
+      "rarity": "affix",
+      "text": "Berserker runners pound their drums: \"Faster! Louder! Leave rubble!\"",
+      "tags": ["episode1", "affix", "frenzy"],
+      "voiceLineId": "vo.affix.berserker"
+    },
+    {
+      "id": "elite_vanguard_lancer",
+      "enemyType": "vanguard",
+      "rarity": "elite",
+      "text": "Vanguard lancers lock shields: \"Columns forward. We spear the archive.\"",
+      "tags": ["episode1", "elite", "vanguard"]
+    },
+    {
+      "id": "elite_embermancer",
+      "enemyType": "embermancer",
+      "rarity": "elite",
+      "text": "An embermancer twirls embers between her claws: \"Let their banners burn.\"",
+      "tags": ["episode1", "elite", "ember", "pyre"]
+    }
+  ]
+}

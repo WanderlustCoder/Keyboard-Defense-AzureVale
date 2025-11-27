@@ -9,6 +9,7 @@ apps/**/artifacts/
 apps/**/monitor-artifacts/
 apps/**/smoke-artifacts/
 apps/**/temp/
+apps/**/static-dashboard/
 
 # Logs & temp files
 *.log

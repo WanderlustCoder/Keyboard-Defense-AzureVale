@@ -1,5 +1,5 @@
-import { CastleLevelConfig } from "../core/config.js";
-import { CastlePassive } from "../core/types.js";
+import { type CastleLevelConfig } from "../core/config.js";
+import { type CastlePassive } from "../core/types.js";
 
 const EPSILON = 0.0001;
 

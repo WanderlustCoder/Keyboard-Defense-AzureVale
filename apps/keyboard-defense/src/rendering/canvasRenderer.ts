@@ -1,8 +1,17 @@
-import { GameConfig } from "../core/config.js";
-import { GameState, TurretTypeId, EnemyState, EnemyStatus } from "../core/types.js";
-import { AssetLoader } from "../assets/assetLoader.js";
+import { type GameConfig } from "../core/config.js";
+import {
+  type GameState,
+  type TurretTypeId,
+  type EnemyState,
+  type EnemyStatus,
+  type DefeatAnimationPreference,
+  type DefeatBurstMode
+} from "../core/types.js";
+import { type AssetLoader } from "../assets/assetLoader.js";
 import { SpriteRenderer } from "./spriteRenderer.js";
-import { resolveLetterColors, WordHighlightPalette } from "./wordHighlighter.js";
+import { resolveLetterColors, type WordHighlightPalette } from "./wordHighlighter.js";
+import { defaultStarfieldConfig, type StarfieldConfig } from "../config/starfield.js";
+import { type StarfieldParallaxState } from "../utils/starfield.js";
 
 const PROJECTILE_COLORS: Record<TurretTypeId, string> = {
   arrow: "#38bdf8",
@@ -26,6 +35,18 @@ export interface ImpactEffectRender {
   turretType?: TurretTypeId | null;
 }
 
+export type CanvasResizeCause =
+  | "initial"
+  | "viewport"
+  | "device-pixel-ratio"
+  | "manual"
+  | "auto"
+  | string;
+
+export interface CanvasResizeOptions {
+  cause?: CanvasResizeCause;
+}
+
 export class CanvasRenderer {
   private readonly ctx: CanvasRenderingContext2D;
   private width: number;
@@ -33,6 +54,9 @@ export class CanvasRenderer {
   private pathLength: number;
   private readonly laneCount: number;
   private readonly spriteRenderer: SpriteRenderer;
+  private readonly assetLoader?: AssetLoader;
+  private readonly starfieldConfig: StarfieldConfig = defaultStarfieldConfig;
+  private starfieldState: StarfieldParallaxState | null = null;
   private static readonly DEFEAT_BURST_DURATION = 0.6;
   private reducedMotion = false;
   private checkeredBackground = false;
@@ -40,6 +64,8 @@ export class CanvasRenderer {
   private defeatBursts: DefeatBurst[] = [];
   private lastEnemyStatuses = new Map<string, EnemyStatus>();
   private readonly starfield: StarParticle[];
+  private lastResizeCause: CanvasResizeCause = "initial";
+  private defeatAnimationMode: DefeatAnimationPreference = "auto";
 
   constructor(
     private readonly canvas: HTMLCanvasElement,
@@ -49,10 +75,15 @@ export class CanvasRenderer {
     const ctx = canvas.getContext("2d");
     if (!ctx) throw new Error("Unable to acquire 2d context.");
     this.ctx = ctx;
+    this.assetLoader = assetLoader;
     this.applyDimensions(canvas.width, canvas.height);
     this.laneCount = Math.max(...config.turretSlots.map((s) => s.lane)) + 1;
     this.spriteRenderer = new SpriteRenderer(assetLoader);
-    this.starfield = this.createStarfield(110);
+    this.starfield = this.createStarfield();
+  }
+
+  setDefeatAnimationMode(mode: DefeatAnimationPreference): void {
+    this.defeatAnimationMode = mode;
   }
 
   render(
@@ -62,6 +93,7 @@ export class CanvasRenderer {
       reducedMotion?: boolean;
       checkeredBackground?: boolean;
       turretRange?: TurretRangeRenderOptions | null;
+      starfield?: StarfieldParallaxState | null;
     }
   ): void {
     this.reducedMotion = Boolean(options?.reducedMotion);
@@ -71,10 +103,11 @@ export class CanvasRenderer {
     }
     this.checkeredBackground = nextCheckered;
     this.spriteRenderer.setColorBlindFriendly(this.checkeredBackground);
+    this.starfieldState = options?.starfield ?? null;
     this.updateDefeatBursts(state);
     this.clear();
     this.drawBackground();
-    this.drawStarfield(state.time);
+    this.drawStarfield(state.time, this.starfieldState);
     this.drawLanes();
     this.drawTurretRangeHighlight(state, options?.turretRange ?? null);
     this.drawTurretSlots(state);
@@ -95,9 +128,12 @@ export class CanvasRenderer {
     this.height = height;
     this.pathLength = this.width * 0.7;
     this.cachedCheckeredPattern = null;
+    if (!this.lastResizeCause) {
+      this.lastResizeCause = "initial";
+    }
   }
 
-  resize(width: number, height: number): void {
+  resize(width: number, height: number, options: CanvasResizeOptions = {}): void {
     const nextWidth = Math.max(1, Math.floor(width));
     const nextHeight = Math.max(1, Math.floor(height));
     if (this.canvas.width === nextWidth && this.canvas.height === nextHeight) {
@@ -106,6 +142,11 @@ export class CanvasRenderer {
     this.canvas.width = nextWidth;
     this.canvas.height = nextHeight;
     this.applyDimensions(nextWidth, nextHeight);
+    this.lastResizeCause = options.cause ?? "auto";
+  }
+
+  getLastResizeCause(): CanvasResizeCause {
+    return this.lastResizeCause;
   }
 
   private drawBackground(): void {
@@ -155,36 +196,70 @@ export class CanvasRenderer {
     return pattern;
   }
 
-  private createStarfield(count: number): StarParticle[] {
+  private createStarfield(): StarParticle[] {
     const stars: StarParticle[] = [];
-    for (let i = 0; i < count; i += 1) {
-      stars.push({
-        x: Math.random(),
-        y: Math.random(),
-        radius: 0.5 + Math.random() * 1.5,
-        phase: Math.random() * Math.PI * 2,
-        twinkleRate: 0.2 + Math.random() * 0.8
-      });
+    for (const layer of this.starfieldConfig.layers) {
+      for (let i = 0; i < layer.count; i += 1) {
+        stars.push({
+          x: Math.random(),
+          y: Math.random(),
+          radius: 0.4 + Math.random() * (1.4 * layer.depth),
+          phase: Math.random() * Math.PI * 2,
+          twinkleRate: 0.2 + Math.random() * 0.8,
+          layerId: layer.id
+        });
+      }
     }
     return stars;
   }
 
-  private drawStarfield(time: number): void {
+  private drawStarfield(time: number, state: StarfieldParallaxState | null): void {
     if (this.starfield.length === 0) return;
-    const parallaxScale = this.checkeredBackground ? 0.6 : 1;
-    const twinkleMultiplier = this.reducedMotion ? 0.15 : 0.5;
+    if (!state) {
+      const parallaxScale = this.checkeredBackground ? 0.6 : 1;
+      const twinkleMultiplier = this.reducedMotion ? 0.15 : 0.5;
+      for (const star of this.starfield) {
+        const twinkle = this.reducedMotion
+          ? 0.6
+          : 0.5 + 0.5 * Math.sin(time * (star.twinkleRate ?? 0.4) + star.phase);
+        const alphaBase = this.checkeredBackground ? 0.18 : 0.35;
+        const alpha = alphaBase * (0.4 + twinkle * 0.6);
+        this.ctx.fillStyle = `rgba(226, 232, 240, ${alpha})`;
+        const x = star.x * this.width;
+        const y =
+          star.y * this.height +
+          Math.sin((time + star.phase) * twinkleMultiplier) * (this.checkeredBackground ? 4 : 9);
+        const radius = star.radius * parallaxScale;
+        this.ctx.beginPath();
+        this.ctx.arc(x, y, radius, 0, Math.PI * 2);
+        this.ctx.fill();
+      }
+      return;
+    }
+
+    const layerMap = new Map(state.layers.map((layer) => [layer.id, layer]));
+    const baseColor = this.checkeredBackground ? "#cbd5f5" : "#e2e8f0";
+    const tintIntensity = 1 - state.castleHealthRatio;
+    const fillColor = mixHexColors(baseColor, state.tint, tintIntensity);
+    const twinkleMultiplier = this.reducedMotion ? 0.05 : 0.4;
+
     for (const star of this.starfield) {
-      const twinkle = this.reducedMotion
-        ? 0.6
-        : 0.5 + 0.5 * Math.sin(time * (star.twinkleRate ?? 0.4) + star.phase);
-      const alphaBase = this.checkeredBackground ? 0.18 : 0.35;
-      const alpha = alphaBase * (0.4 + twinkle * 0.6);
-      this.ctx.fillStyle = `rgba(226, 232, 240, ${alpha})`;
-      const x = star.x * this.width;
+      const layerState = layerMap.get(star.layerId);
+      const layerDepth = layerState?.depth ?? 1;
+      const drift = layerState ? layerState.scroll * layerState.direction : 0;
+      const scrollX = ((star.x + drift) % 1 + 1) % 1;
+      const x = scrollX * this.width;
       const y =
         star.y * this.height +
-        Math.sin((time + star.phase) * twinkleMultiplier) * (this.checkeredBackground ? 4 : 9);
-      const radius = star.radius * parallaxScale;
+        Math.sin(time * twinkleMultiplier + star.phase) * (layerDepth * (this.checkeredBackground ? 3 : 7));
+      const twinkle =
+        this.reducedMotion && this.starfieldConfig.reducedMotion.tintOnly
+          ? 0.35
+          : 0.5 + 0.5 * Math.sin(time * (star.twinkleRate ?? 0.4) + star.phase);
+      const alphaBase = this.checkeredBackground ? 0.22 : 0.42;
+      const alpha = alphaBase * (0.3 + twinkle * 0.7);
+      this.ctx.fillStyle = hexToRgba(fillColor, alpha);
+      const radius = star.radius * layerDepth * (this.checkeredBackground ? 0.8 : 1);
       this.ctx.beginPath();
       this.ctx.arc(x, y, radius, 0, Math.PI * 2);
       this.ctx.fill();
@@ -638,13 +713,20 @@ export class CanvasRenderer {
       seen.add(enemy.id);
       const previous = this.lastEnemyStatuses.get(enemy.id);
       if (enemy.status === "defeated" && previous !== "defeated") {
+        let spriteInstance: DefeatSpriteInstance | null = null;
+        if (this.defeatAnimationMode !== "procedural" && !this.reducedMotion) {
+          spriteInstance = this.createDefeatSpriteBurst(enemy.tierId);
+        }
+        const mode: DefeatBurstMode = spriteInstance ? "sprite" : "procedural";
         this.defeatBursts.push({
           id: enemy.id,
           lane: enemy.lane,
           position: enemy.distance,
           tierId: enemy.tierId,
           startTime: now,
-          duration: CanvasRenderer.DEFEAT_BURST_DURATION
+          duration: spriteInstance?.totalDuration ?? CanvasRenderer.DEFEAT_BURST_DURATION,
+          mode,
+          sprite: spriteInstance
         });
       }
       this.lastEnemyStatuses.set(enemy.id, enemy.status);
@@ -654,9 +736,47 @@ export class CanvasRenderer {
         this.lastEnemyStatuses.delete(id);
       }
     }
-    this.defeatBursts = this.defeatBursts.filter(
-      (burst) => now - burst.startTime <= burst.duration
-    );
+    this.defeatBursts = this.defeatBursts.filter((burst) => now - burst.startTime <= burst.duration);
+  }
+
+  private createDefeatSpriteBurst(tierId: string | null | undefined): DefeatSpriteInstance | null {
+    if (
+      !tierId ||
+      typeof this.assetLoader?.getDefeatAnimation !== "function" ||
+      typeof this.assetLoader?.getImage !== "function"
+    ) {
+      return null;
+    }
+    const definition = this.assetLoader.getDefeatAnimation(tierId);
+    if (!definition || !Array.isArray(definition.frames) || definition.frames.length === 0) {
+      return null;
+    }
+    const frames: SpriteBurstFrame[] = [];
+    let totalDuration = 0;
+    for (const frameDefinition of definition.frames) {
+      const image = this.assetLoader.getImage(frameDefinition.key);
+      if (!image) {
+        continue;
+      }
+      const duration = Math.max(0.016, frameDefinition.durationMs / 1000);
+      frames.push({
+        image,
+        startTime: totalDuration,
+        duration,
+        offsetX: frameDefinition.offsetX ?? 0,
+        offsetY: frameDefinition.offsetY ?? 0,
+        size: frameDefinition.size ?? 96
+      });
+      totalDuration += duration;
+    }
+    if (frames.length === 0 || totalDuration <= 0) {
+      return null;
+    }
+    return {
+      frames,
+      totalDuration,
+      loop: Boolean(definition.loop)
+    };
   }
 
   private drawDefeatBursts(state: GameState): void {
@@ -665,11 +785,15 @@ export class CanvasRenderer {
     const now = state.time;
     for (const burst of this.defeatBursts) {
       const elapsed = now - burst.startTime;
+      const x = baseX + burst.position * this.pathLength;
+      const y = this.laneY(burst.lane);
+      if (burst.mode === "sprite" && burst.sprite) {
+        this.drawSpriteBurst(burst, x, y, elapsed);
+        continue;
+      }
       const progress = Math.min(1, Math.max(0, elapsed / burst.duration));
       const eased = 1 - Math.pow(1 - progress, 2);
       const fade = 1 - progress;
-      const x = baseX + burst.position * this.pathLength;
-      const y = this.laneY(burst.lane);
       const palette = this.spriteRenderer.getEnemyPalette(burst.tierId);
       const innerRadius = 14 + eased * 8;
       const outerRadius = innerRadius + 18;
@@ -708,6 +832,32 @@ export class CanvasRenderer {
       }
     }
   }
+
+  private drawSpriteBurst(burst: DefeatBurst, x: number, y: number, elapsed: number): void {
+    const sprite = burst.sprite;
+    if (!sprite || sprite.frames.length === 0 || sprite.totalDuration <= 0) {
+      return;
+    }
+    const total = sprite.totalDuration;
+    const timeInAnimation =
+      sprite.loop && total > 0 ? elapsed % total : Math.min(elapsed, Math.max(0, total - 0.0001));
+    let frame: SpriteBurstFrame | null = sprite.frames[sprite.frames.length - 1] ?? null;
+    for (const candidate of sprite.frames) {
+      if (
+        timeInAnimation >= candidate.startTime &&
+        timeInAnimation < candidate.startTime + candidate.duration
+      ) {
+        frame = candidate;
+        break;
+      }
+    }
+    if (!frame) {
+      return;
+    }
+    const drawX = x + frame.offsetX;
+    const drawY = y + frame.offsetY;
+    this.ctx.drawImage(frame.image, drawX - frame.size / 2, drawY - frame.size / 2, frame.size, frame.size);
+  }
 }
 
 interface DefeatBurst {
@@ -717,6 +867,66 @@ interface DefeatBurst {
   tierId: string;
   startTime: number;
   duration: number;
+  mode: DefeatBurstMode;
+  sprite?: DefeatSpriteInstance | null;
+}
+
+interface DefeatSpriteInstance {
+  frames: SpriteBurstFrame[];
+  totalDuration: number;
+  loop: boolean;
+}
+
+interface SpriteBurstFrame {
+  image: HTMLImageElement;
+  startTime: number;
+  duration: number;
+  offsetX: number;
+  offsetY: number;
+  size: number;
+}
+
+interface StarParticle {
+  x: number;
+  y: number;
+  radius: number;
+  phase: number;
+  twinkleRate?: number;
+  layerId?: string;
+}
+
+function hexToRgbChannels(hex: string): { r: number; g: number; b: number } | null {
+  const normalized = hex.replace("#", "");
+  if (normalized.length !== 6) return null;
+  const value = Number.parseInt(normalized, 16);
+  if (Number.isNaN(value)) return null;
+  return {
+    r: (value >> 16) & 255,
+    g: (value >> 8) & 255,
+    b: value & 255
+  };
+}
+
+function mixHexColors(a: string, b: string, ratio: number): string {
+  const start = hexToRgbChannels(a);
+  const end = hexToRgbChannels(b);
+  if (!start || !end) {
+    return a;
+  }
+  const t = Math.min(1, Math.max(0, ratio));
+  const r = start.r + (end.r - start.r) * t;
+  const g = start.g + (end.g - start.g) * t;
+  const blue = start.b + (end.b - start.b) * t;
+  const toHex = (value: number) => Math.min(255, Math.max(0, Math.round(value))).toString(16).padStart(2, "0");
+  return `#${toHex(r)}${toHex(g)}${toHex(blue)}`;
+}
+
+function hexToRgba(hex: string, alpha: number): string {
+  const channels = hexToRgbChannels(hex);
+  if (!channels) {
+    return `rgba(226, 232, 240, ${alpha.toFixed(3)})`;
+  }
+  return `rgba(${channels.r}, ${channels.g}, ${channels.b}, ${alpha.toFixed(3)})`;
 }
 
 interface StarParticle {

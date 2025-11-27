@@ -1,0 +1,2 @@
+scenario,requestedIntensity,recordedIntensity,averageIntensity,intensityDelta,accuracy,combo,durationMs,historySamples,comboCorrelation,accuracyCorrelation,driftPercent
+tutorial-full,1,1.1,1.05,0.1,0.985,14,126000,3,0.87,-0.2,10

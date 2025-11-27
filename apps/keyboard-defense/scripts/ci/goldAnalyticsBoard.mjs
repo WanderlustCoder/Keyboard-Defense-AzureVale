@@ -7,6 +7,7 @@ const DEFAULT_TIMELINE_PATH = "artifacts/summaries/gold-timeline.ci.json";
 const DEFAULT_PASSIVE_PATH = "artifacts/summaries/passive-gold.ci.json";
 const DEFAULT_GUARD_PATH = "artifacts/summaries/gold-percentile-guard.ci.json";
 const DEFAULT_ALERTS_PATH = "artifacts/summaries/gold-percentiles.ci.json";
+const DEFAULT_TIMELINE_BASELINE_PATH = process.env.GOLD_TIMELINE_BASELINE ?? "";
 const DEFAULT_OUT_JSON = "artifacts/summaries/gold-analytics-board.ci.json";
 const DEFAULT_OUT_MARKDOWN = "artifacts/summaries/gold-analytics-board.ci.md";
 const VALID_MODES = new Set(["fail", "warn", "info"]);
@@ -30,6 +31,7 @@ Options:
   --passive <path>            Passive gold summary JSON (default: ${DEFAULT_PASSIVE_PATH})
   --percentile-guard <path>   Percentile guard JSON (default: ${DEFAULT_GUARD_PATH})
   --percentile-alerts <path>  Percentile alerts JSON (default: ${DEFAULT_ALERTS_PATH})
+  --timeline-baseline <path>  Percentile baseline JSON for timelines (fallback drift calc; default: env GOLD_TIMELINE_BASELINE)
   --out-json <path>           Board JSON output path (default: ${DEFAULT_OUT_JSON})
   --markdown <path>           Board Markdown output path (default: ${DEFAULT_OUT_MARKDOWN})
   --mode <fail|warn|info>     Failure behaviour when warnings are present (default: fail)
@@ -39,6 +41,7 @@ Options:
   --castle-breach <percent>   Castle ratio percent that triggers BREACH severity (default: ${
     STARFIELD_SEVERITY_THRESHOLDS.breachCastlePercent
   })
+  -- Note: Baseline warnings are raised when scenarios are missing timeline baselines; pass --timeline-baseline to surface coverage in the board.
   --help                      Show this message
 `);
 }
@@ -52,6 +55,7 @@ function parseArgs(argv) {
     passivePath: process.env.PASSIVE_GOLD_SUMMARY ?? DEFAULT_PASSIVE_PATH,
     guardPath: process.env.GOLD_GUARD_SUMMARY ?? DEFAULT_GUARD_PATH,
     alertsPath: process.env.GOLD_PERCENTILE_ALERTS ?? DEFAULT_ALERTS_PATH,
+    timelineBaselinePath: DEFAULT_TIMELINE_BASELINE_PATH,
     outJson: process.env.GOLD_ANALYTICS_JSON ?? DEFAULT_OUT_JSON,
     markdown: process.env.GOLD_ANALYTICS_MARKDOWN ?? DEFAULT_OUT_MARKDOWN,
     mode: (process.env.GOLD_ANALYTICS_MODE ?? "fail").toLowerCase(),
@@ -79,6 +83,9 @@ function parseArgs(argv) {
         break;
       case "--percentile-alerts":
         options.alertsPath = argv[++i] ?? options.alertsPath;
+        break;
+      case "--timeline-baseline":
+        options.timelineBaselinePath = argv[++i] ?? options.timelineBaselinePath;
         break;
       case "--out-json":
         options.outJson = argv[++i] ?? options.outJson;
@@ -145,6 +152,22 @@ function deriveScenarioId(source) {
   return slugify(trimmed) || "unknown";
 }
 
+function normalizeTimelineBaseline(baselineData) {
+  if (!baselineData || typeof baselineData !== "object") return new Map();
+  const map = new Map();
+  for (const [key, value] of Object.entries(baselineData)) {
+    if (key === "_meta") continue;
+    const id = deriveScenarioId(key);
+    map.set(id, {
+      medianGain: Number.isFinite(value?.medianGain) ? value.medianGain : null,
+      medianSpend: Number.isFinite(value?.medianSpend) ? value.medianSpend : null,
+      p90Gain: Number.isFinite(value?.p90Gain) ? value.p90Gain : null,
+      p90Spend: Number.isFinite(value?.p90Spend) ? value.p90Spend : null
+    });
+  }
+  return map;
+}
+
 function ensureScenario(map, id) {
   if (!map.has(id)) {
     map.set(id, {
@@ -152,6 +175,7 @@ function ensureScenario(map, id) {
       summary: null,
       timelineMetrics: null,
       timelineVariance: null,
+      timelineBaselineVariance: null,
       timelineEvents: [],
       timelineSparkline: [],
       passiveUnlocks: [],
@@ -294,6 +318,7 @@ function buildScenarioSummaryRow(scenario) {
     medianGain: summary.medianGain ?? "",
     medianSpend: summary.medianSpend ?? "",
     timelineVariance: scenario.timelineVariance ?? null,
+    timelineBaselineVariance: scenario.timelineBaselineVariance ?? null,
     starfield: formatStarfieldNote(summary.starfield),
     lastGold: goldNote,
     lastPassive: passiveNote,
@@ -307,6 +332,7 @@ export function buildGoldAnalyticsBoard({
   passiveData,
   guardData,
   alertsData,
+  timelineBaselineMap,
   paths,
   now,
   initialWarnings,
@@ -315,6 +341,7 @@ export function buildGoldAnalyticsBoard({
   const warnings = Array.isArray(initialWarnings) ? [...initialWarnings] : [];
   const scenarioMap = new Map();
   const thresholds = starfieldThresholds ?? STARFIELD_SEVERITY_THRESHOLDS;
+  const timelineBaseline = timelineBaselineMap instanceof Map ? timelineBaselineMap : new Map();
   const board = {
     generatedAt: (now ?? new Date()).toISOString(),
     inputs: {
@@ -322,7 +349,8 @@ export function buildGoldAnalyticsBoard({
       timeline: paths?.timeline ?? null,
       passive: paths?.passive ?? null,
       guard: paths?.guard ?? null,
-      alerts: paths?.alerts ?? null
+      alerts: paths?.alerts ?? null,
+      timelineBaseline: paths?.timelineBaseline ?? null
     },
     outputs: {
       json: paths?.outJson ?? null,
@@ -417,6 +445,9 @@ export function buildGoldAnalyticsBoard({
       if (slice.variance && typeof slice.variance === "object") {
         bucket.timelineVariance = { ...slice.variance };
       }
+      if (slice.baselineVariance && typeof slice.baselineVariance === "object") {
+        bucket.timelineBaselineVariance = { ...slice.baselineVariance };
+      }
       for (const event of events) {
         bucket.timelineEvents.push({
           delta: event.delta ?? null,
@@ -449,6 +480,75 @@ export function buildGoldAnalyticsBoard({
         passiveId: event.passiveId ?? null,
         passiveLevel: event.passiveLevel ?? null
       });
+    }
+
+    let matchedBaselines = 0;
+    if (timelineBaseline.size > 0) {
+      for (const bucket of scenarioMap.values()) {
+        if (bucket.timelineBaselineVariance) continue;
+        const baseline = timelineBaseline.get(bucket.id);
+        const metrics = bucket.timelineMetrics;
+        if (!baseline || !metrics) continue;
+        const medianGain =
+          Number.isFinite(metrics.medianGain) && Number.isFinite(baseline.medianGain)
+            ? Number((metrics.medianGain - baseline.medianGain).toFixed(3))
+            : null;
+        const p90Gain =
+          Number.isFinite(metrics.p90Gain) && Number.isFinite(baseline.p90Gain)
+            ? Number((metrics.p90Gain - baseline.p90Gain).toFixed(3))
+            : null;
+        const medianSpend =
+          Number.isFinite(metrics.medianSpend) && Number.isFinite(baseline.medianSpend)
+            ? Number((metrics.medianSpend - baseline.medianSpend).toFixed(3))
+            : null;
+        const p90Spend =
+          Number.isFinite(metrics.p90Spend) && Number.isFinite(baseline.p90Spend)
+            ? Number((metrics.p90Spend - baseline.p90Spend).toFixed(3))
+            : null;
+        if (
+          medianGain !== null ||
+          p90Gain !== null ||
+          medianSpend !== null ||
+          p90Spend !== null
+        ) {
+          bucket.timelineBaselineVariance = {
+            medianGain,
+            p90Gain,
+            medianSpend,
+            p90Spend
+          };
+          matchedBaselines += 1;
+        }
+      }
+    }
+    const missingScenarios = Array.from(scenarioMap.values())
+      .filter((scenario) => !scenario.timelineBaselineVariance)
+      .map((scenario) => scenario.id);
+
+    if (timelineBaseline.size > 0) {
+      const totalEntries = scenarioMap.size;
+      board.timelineBaseline = {
+        summaryPath: paths?.timelineBaseline ?? null,
+        totalEntries,
+        baselineEntries: timelineBaseline.size,
+        matched: matchedBaselines,
+        missing: Math.max(0, totalEntries - matchedBaselines),
+        missingScenarios
+      };
+    } else if (paths?.timelineBaseline) {
+      board.timelineBaseline = {
+        summaryPath: paths.timelineBaseline,
+        totalEntries: scenarioMap.size,
+        baselineEntries: 0,
+        matched: 0,
+        missing: scenarioMap.size,
+        missingScenarios
+      };
+    }
+    if (board.timelineBaseline && (board.timelineBaseline.missing ?? 0) > 0) {
+      warnings.push(
+        `[timeline-baseline] ${board.timelineBaseline.missing} scenario(s) missing baseline coverage (path: ${board.timelineBaseline.summaryPath ?? "n/a"}; missing: ${(board.timelineBaseline.missingScenarios ?? []).join(", ") || "n/a"}).`
+      );
     }
   }
 
@@ -587,6 +687,19 @@ export function formatGoldAnalyticsMarkdown(board) {
         board.timeline.metrics?.maxSpendStreak ?? "n/a"
       } (limit ${board.timeline.thresholds?.maxSpendStreak ?? "?"})`
     );
+    if (board.timelineBaseline) {
+      const baselineNote = `${board.timelineBaseline.matched ?? 0}/${board.timelineBaseline.totalEntries ?? 0} matched (baseline entries: ${board.timelineBaseline.baselineEntries ?? "n/a"})`;
+      const missingList =
+        Array.isArray(board.timelineBaseline.missingScenarios) &&
+        board.timelineBaseline.missingScenarios.length > 0
+          ? `; missing: ${board.timelineBaseline.missingScenarios.join(", ")}`
+          : "";
+      lines.push(
+        `- Timeline baseline: ${board.timelineBaseline.summaryPath ?? "n/a"} (${baselineNote}${
+          board.timelineBaseline.missing ? `, missing ${board.timelineBaseline.missing}` : ""
+        }${missingList})`
+      );
+    }
   }
   if (board.passive) {
     lines.push(
@@ -615,14 +728,19 @@ export function formatGoldAnalyticsMarkdown(board) {
   if (board.scenarios.length > 0) {
     lines.push("### Scenario Snapshot");
     lines.push(
-      "| Scenario | Net delta | Median Gain | Median Spend | Timeline Drift (med/p90) | Starfield | Last Gold delta | Last Passive | Sparkline (delta@t + bars) | Alerts |"
+      "| Scenario | Net delta | Median Gain | Median Spend | Timeline Drift (med/p90) | Baseline Drift (med/p90) | Starfield | Last Gold delta | Last Passive | Sparkline (delta@t + bars) | Alerts |"
     );
-    lines.push("| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |");
+    lines.push("| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |");
     for (const scenario of board.scenarios) {
       const row = buildScenarioSummaryRow(scenario);
       const varianceNote =
         typeof row.timelineVariance?.medianGain === "number" || typeof row.timelineVariance?.p90Gain === "number"
           ? `${row.timelineVariance?.medianGain ?? "n/a"}/${row.timelineVariance?.p90Gain ?? "n/a"}`
+          : "-";
+      const baselineNote =
+        typeof row.timelineBaselineVariance?.medianGain === "number" ||
+        typeof row.timelineBaselineVariance?.p90Gain === "number"
+          ? `${row.timelineBaselineVariance?.medianGain ?? "n/a"}/${row.timelineBaselineVariance?.p90Gain ?? "n/a"}`
           : "-";
       const sparkline = formatSparkline(scenario.timelineSparkline);
       const sparkbar = formatSparklineBar(scenario.timelineSparkline);
@@ -631,7 +749,7 @@ export function formatGoldAnalyticsMarkdown(board) {
         board.thresholds?.starfield
       );
       lines.push(
-        `| ${row.scenario} | ${row.netDelta ?? ""} | ${row.medianGain ?? ""} | ${row.medianSpend ?? ""} | ${varianceNote} | ${starfieldNote} | ${row.lastGold} | ${row.lastPassive} | ${sparkline}${sparkbar === "-" ? "" : ` ${sparkbar}`} | ${row.alerts} |`
+        `| ${row.scenario} | ${row.netDelta ?? ""} | ${row.medianGain ?? ""} | ${row.medianSpend ?? ""} | ${varianceNote} | ${baselineNote} | ${starfieldNote} | ${row.lastGold} | ${row.lastPassive} | ${sparkline}${sparkbar === "-" ? "" : ` ${sparkbar}`} | ${row.alerts} |`
       );
     }
     lines.push("");
@@ -694,6 +812,12 @@ async function main() {
   const passiveData = await loadJsonOptional(options.passivePath, "passive", loadWarnings);
   const guardData = await loadJsonOptional(options.guardPath, "percentile-guard", loadWarnings);
   const alertsData = await loadJsonOptional(options.alertsPath, "percentile-alerts", loadWarnings);
+  const timelineBaselineData = await loadJsonOptional(
+    options.timelineBaselinePath,
+    "timeline-baseline",
+    loadWarnings
+  );
+  const timelineBaselineMap = normalizeTimelineBaseline(timelineBaselineData);
 
   const board = buildGoldAnalyticsBoard({
     summaryData,
@@ -701,12 +825,14 @@ async function main() {
     passiveData,
     guardData,
     alertsData,
+    timelineBaselineMap,
     paths: {
       summary: options.summaryPath,
       timeline: options.timelinePath,
       passive: options.passivePath,
       guard: options.guardPath,
       alerts: options.alertsPath,
+      timelineBaseline: options.timelineBaselinePath,
       outJson: options.outJson,
       markdown: options.markdown
     },

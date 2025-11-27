@@ -1,6 +1,6 @@
-import { EnemyState, TurretSlotState, TurretTypeId } from "../core/types.js";
-import { AssetLoader } from "../assets/assetLoader.js";
-import { EnemyPalette, ENEMY_PALETTES, ENEMY_PALETTES_HIGH_CONTRAST } from "./enemyPalettes.js";
+import { type EnemyState, type TurretSlotState, type TurretTypeId } from "../core/types.js";
+import { type AssetLoader } from "../assets/assetLoader.js";
+import { type EnemyPalette, ENEMY_PALETTES, ENEMY_PALETTES_HIGH_CONTRAST } from "./enemyPalettes.js";
 
 const TURRET_COLORS: Record<TurretTypeId, { base: string; barrel: string }> = {
   arrow: { base: "#38bdf8", barrel: "#0c4a6e" },
