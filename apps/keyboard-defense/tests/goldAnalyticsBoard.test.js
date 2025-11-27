@@ -42,6 +42,14 @@ describe("goldAnalyticsBoard", () => {
       scenarios: [
         {
           id: "tutorial-skip",
+          metrics: {
+            netDelta: 80,
+            medianGain: 55,
+            medianSpend: -40,
+            p90Gain: 80,
+            p90Spend: -35
+          },
+          variance: { medianGain: -10, p90Gain: 15 },
           latestEvents: [
             {
               delta: 5,
@@ -108,9 +116,12 @@ describe("goldAnalyticsBoard", () => {
           scenario: "tutorial-skip"
         }
       ],
+      variance: { medianGain: -10, p90Gain: 15 },
       metrics: {
         netDelta: 40,
         maxSpendStreak: 2,
+        p90Gain: 80,
+        p90Spend: -50,
         latestEvents: [
           {
             delta: -60,
@@ -211,6 +222,8 @@ describe("goldAnalyticsBoard", () => {
     expect(tutorial.summary.starfield?.depth).toBe(1.35);
     expect(tutorial.summary.starfield?.wavePercent).toBe(52.5);
     expect(tutorial.summary.starfield?.severity).toBe("warn");
+    expect(tutorial.timelineMetrics?.p90Gain).toBe(80);
+    expect(tutorial.timelineVariance?.medianGain).toBe(-10);
     expect(board.summary?.metrics?.starfield?.severity).toBe("warn");
     expect(board.thresholds?.starfield?.warnCastlePercent).toBe(60);
     expect(board.thresholds?.starfield?.breachCastlePercent).toBe(40);

@@ -150,6 +150,8 @@ function ensureScenario(map, id) {
     map.set(id, {
       id,
       summary: null,
+      timelineMetrics: null,
+      timelineVariance: null,
       timelineEvents: [],
       timelineSparkline: [],
       passiveUnlocks: [],
@@ -408,6 +410,12 @@ export function buildGoldAnalyticsBoard({
         scenarioSliceCoverage.add(scenarioId);
       }
       const bucket = ensureScenario(scenarioMap, scenarioId);
+      if (slice.metrics && typeof slice.metrics === "object") {
+        bucket.timelineMetrics = { ...slice.metrics };
+      }
+      if (slice.variance && typeof slice.variance === "object") {
+        bucket.timelineVariance = { ...slice.variance };
+      }
       for (const event of events) {
         bucket.timelineEvents.push({
           delta: event.delta ?? null,
