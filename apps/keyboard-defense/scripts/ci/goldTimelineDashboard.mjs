@@ -179,6 +179,18 @@ function median(values) {
   return sorted[mid];
 }
 
+function percentile(values, pct) {
+  if (!Array.isArray(values) || values.length === 0) return 0;
+  const sorted = [...values].sort((a, b) => a - b);
+  const index = (pct / 100) * (sorted.length - 1);
+  const lower = Math.floor(index);
+  const upper = Math.ceil(index);
+  const fraction = index - lower;
+  if (upper >= sorted.length) return sorted[sorted.length - 1];
+  if (lower === upper) return sorted[lower];
+  return sorted[lower] + (sorted[upper] - sorted[lower]) * fraction;
+}
+
 function computeMetrics(entries) {
   const sorted = [...entries].sort(
     (a, b) => (Number(a.timestamp) || 0) - (Number(b.timestamp) || 0)
@@ -212,6 +224,8 @@ function computeMetrics(entries) {
     avgDelta,
     medianGain: median(gains),
     medianSpend: median(spends),
+    p90Gain: gains.length > 0 ? Number(percentile(gains, 90).toFixed(3)) : 0,
+    p90Spend: spends.length > 0 ? Number(percentile(spends, 90).toFixed(3)) : 0,
     maxSpendStreak: Number(maxSpendStreak.toFixed(3)),
     latestEvents: sorted.slice(-5).reverse()
   };
@@ -225,6 +239,9 @@ export function buildMarkdown(summary) {
   );
   lines.push(
     `Median gain: ${summary.metrics.medianGain} · Median spend: ${summary.metrics.medianSpend} · Avg Δ: ${summary.metrics.avgDelta}`
+  );
+  lines.push(
+    `P90 gain: ${summary.metrics.p90Gain} · P90 spend: ${summary.metrics.p90Spend}`
   );
   lines.push(
     `Max spend streak: ${summary.metrics.maxSpendStreak} (limit ${summary.thresholds.maxSpendStreak}) · Min net Δ limit: ${summary.thresholds.minNetDelta}`
@@ -257,9 +274,9 @@ export function buildMarkdown(summary) {
   if (Array.isArray(summary.scenarios) && summary.scenarios.length > 0) {
     lines.push("### Scenario Timeline");
     lines.push(
-      "| Scenario | Events | Net Δ | Median Gain | Median Spend | Max Spend Streak | Latest Δ@t |"
+      "| Scenario | Events | Net Δ | Median Gain (p90) | Median Spend (p90) | Max Spend Streak | Δ vs global (gain/p90) | Latest Δ@t |"
     );
-    lines.push("| --- | --- | --- | --- | --- | --- | --- |");
+    lines.push("| --- | --- | --- | --- | --- | --- | --- | --- |");
     for (const scenario of summary.scenarios) {
       const latestEvents = Array.isArray(scenario.latestEvents) ? scenario.latestEvents : [];
       const latestInline = latestEvents
@@ -270,8 +287,18 @@ export function buildMarkdown(summary) {
           return `${sign}${delta}@${time}`;
         })
         .join(", ");
+      const varianceGain = typeof scenario.variance?.medianGain === "number"
+        ? scenario.variance.medianGain
+        : null;
+      const varianceP90Gain = typeof scenario.variance?.p90Gain === "number"
+        ? scenario.variance.p90Gain
+        : null;
+      const varianceNote =
+        varianceGain === null && varianceP90Gain === null
+          ? "-"
+          : `${varianceGain ?? "n/a"}/${varianceP90Gain ?? "n/a"}`;
       lines.push(
-        `| ${scenario.id} | ${scenario.totals?.events ?? 0} | ${scenario.metrics?.netDelta ?? ""} | ${scenario.metrics?.medianGain ?? ""} | ${scenario.metrics?.medianSpend ?? ""} | ${scenario.metrics?.maxSpendStreak ?? ""} | ${latestInline || "-"} |`
+        `| ${scenario.id} | ${scenario.totals?.events ?? 0} | ${scenario.metrics?.netDelta ?? ""} | ${scenario.metrics?.medianGain ?? ""} (${scenario.metrics?.p90Gain ?? ""}) | ${scenario.metrics?.medianSpend ?? ""} (${scenario.metrics?.p90Spend ?? ""}) | ${scenario.metrics?.maxSpendStreak ?? ""} | ${varianceNote} | ${latestInline || "-"} |`
       );
     }
     lines.push("");
@@ -344,12 +371,23 @@ export async function runDashboard(options) {
 
   const scenarios = Array.from(scenarioMap.entries()).map(([id, scenarioEntries]) => {
     const scenarioMetrics = computeMetrics(scenarioEntries);
+    const variance = {
+      medianGain:
+        typeof metrics.medianGain === "number" && typeof scenarioMetrics.medianGain === "number"
+          ? Number((scenarioMetrics.medianGain - metrics.medianGain).toFixed(3))
+          : null,
+      p90Gain:
+        typeof metrics.p90Gain === "number" && typeof scenarioMetrics.p90Gain === "number"
+          ? Number((scenarioMetrics.p90Gain - metrics.p90Gain).toFixed(3))
+          : null
+    };
     return {
       id,
       totals: {
         events: scenarioEntries.length
       },
       metrics: scenarioMetrics,
+      variance,
       latestEvents: scenarioMetrics.latestEvents.map((event) => ({
         delta: event.delta ?? null,
         gold: event.gold ?? null,
