@@ -49,6 +49,21 @@ jobs:
         working-directory: apps/keyboard-defense
         run: npm run codex:dashboard
 
+      - name: Publish summary
+        working-directory: apps/keyboard-defense
+        run: |
+          {
+            echo "## Codex Dashboard Nightly"
+            echo ""
+            echo "Gold board artifact: \`artifacts/summaries/gold-analytics-board.ci.json\`"
+            echo ""
+            echo "### Portal snapshot"
+            sed -n '/<!-- GOLD_ANALYTICS_BOARD:START -->/,/<!-- GOLD_ANALYTICS_BOARD:END -->/p' ../../docs/CODEX_PORTAL.md
+            echo ""
+            echo "### Starfield telemetry"
+            sed -n '/<!-- STARFIELD_TELEMETRY:START -->/,/<!-- STARFIELD_TELEMETRY:END -->/p' ../../docs/CODEX_PORTAL.md
+          } >> $GITHUB_STEP_SUMMARY
+
       - name: Upload dashboard artifacts
         uses: actions/upload-artifact@v4
         with:
