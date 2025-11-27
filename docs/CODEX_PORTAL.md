@@ -125,7 +125,7 @@ Generated: 2025-11-27T15:21:29.271Z (shots: 6)
 | options-overlay | warning | Default viewport; HUD passives expanded; HUD gold events expanded; Options passives collapsed; Diagnostics expanded; Diagnostics sections — turret-dps:collapsed |
 | shortcut-overlay | tutorial | Shortcut overlay displayed while diagnostics sections remain collapsed |
 | tutorial-summary | tutorial | Default viewport; Tutorial summary expanded; HUD + options panels expanded; Diagnostics expanded |
-| ... | ... | 1 more entries |
+| wave-scorecard | breach | Compact viewport; HUD prefers condensed layout; Diagnostics condensed with turret DPS collapsed |
 
 Artifacts: `apps/keyboard-defense/artifacts/summaries/ui-snapshot-gallery.json`
 <!-- UI_SNAPSHOT_GALLERY:END -->

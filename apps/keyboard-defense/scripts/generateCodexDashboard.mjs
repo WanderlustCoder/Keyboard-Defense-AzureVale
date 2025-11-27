@@ -13,6 +13,7 @@ const appRoot = path.join(repoRoot, "apps", "keyboard-defense");
 const backlogPath = path.join(appRoot, "docs", "season1_backlog.md");
 const condensedAuditSummaryPath = path.join(appRoot, "artifacts", "summaries", "condensed-audit.json");
 const goldAnalyticsBoardPath = path.join(appRoot, "artifacts", "summaries", "gold-analytics-board.ci.json");
+const goldBaselineGuardPath = path.join(appRoot, "artifacts", "summaries", "gold-baseline-guard.json");
 const uiSnapshotGalleryPath = path.join(appRoot, "artifacts", "summaries", "ui-snapshot-gallery.json");
 const portalPath = path.join(docsDir, "CODEX_PORTAL.md");
 const PORTAL_MARKER_START = "<!-- GOLD_ANALYTICS_BOARD:START -->";
@@ -26,6 +27,7 @@ const STARFIELD_SEVERITY_THRESHOLDS = {
   warnCastlePercent: 65,
   breachCastlePercent: 50
 };
+const UI_SNAPSHOT_LIMIT = 10;
 
 const dashboardPath = path.join(docsDir, "codex_dashboard.md");
 
@@ -128,7 +130,7 @@ const formatSparklineBar = (points) => {
     .join("");
 };
 
-function buildPortalGoldSection(board) {
+function buildPortalGoldSection(board, baselineGuard) {
   const lines = [];
   if (!board) {
     lines.push("_No gold analytics board snapshot found. Run `npm run analytics:gold:report` followed by `node scripts/ci/goldAnalyticsBoard.mjs ...` to regenerate before rerunning `npm run codex:dashboard`._");
@@ -140,6 +142,41 @@ function buildPortalGoldSection(board) {
   );
   const statusLabel = board.status === "pass" ? "[PASS]" : "[WARN]";
   lines.push(`Generated: ${board.generatedAt ?? "unknown"} (${statusLabel}, warnings: ${board.warnings?.length ?? 0})`);
+  if (Array.isArray(board.warnings) && board.warnings.length > 0) {
+    lines.push(`Warnings (sample): ${board.warnings[0]}`);
+  }
+  if (baselineGuard) {
+    const missing = baselineGuard.totals?.missing ?? 0;
+    const scenarios = baselineGuard.totals?.scenarios ?? "?";
+    const entries = baselineGuard.totals?.baselineEntries ?? "?";
+    const missingList =
+      Array.isArray(baselineGuard.missing) && baselineGuard.missing.length > 0
+        ? ` (missing: ${baselineGuard.missing.join(", ")})`
+        : "";
+    lines.push(
+      `Baseline guard: ${missing > 0 ? "[WARN]" : "[PASS]"} ${missing}/${scenarios} missing (baseline entries: ${entries})${missingList}`
+    );
+    if (baselineGuard.inputs?.baseline) {
+      lines.push(`Baseline guard artifact: \`${path.relative(repoRoot, goldBaselineGuardPath)}\``);
+    }
+  } else {
+    lines.push(
+      "Baseline guard: _missing_ (run `node scripts/ci/goldBaselineGuard.mjs --timeline artifacts/summaries/gold-timeline.ci.json --baseline docs/codex_pack/fixtures/gold/gold-percentiles.baseline.json --out-json artifacts/summaries/gold-baseline-guard.json --mode warn` to populate)"
+    );
+  }
+  if (board.timelineBaseline) {
+    const matched = board.timelineBaseline.matched ?? 0;
+    const total = board.timelineBaseline.totalEntries ?? 0;
+    const missing = board.timelineBaseline.missing ?? 0;
+    const missingList =
+      Array.isArray(board.timelineBaseline.missingScenarios) &&
+      board.timelineBaseline.missingScenarios.length > 0
+        ? `; missing: ${board.timelineBaseline.missingScenarios.join(", ")}`
+        : "";
+    lines.push(
+      `Timeline baseline: ${board.timelineBaseline.summaryPath ?? "n/a"} (${matched}/${total} matched${missing ? `, missing ${missing}` : ""}${missingList})`
+    );
+  }
   if (board.summary?.metrics?.starfield) {
     const starfield = board.summary.metrics.starfield;
     const severity = starfield.severity ?? deriveStarfieldSeverity(starfield, starfieldThresholds);
@@ -154,9 +191,9 @@ function buildPortalGoldSection(board) {
   }
   lines.push("");
   lines.push(
-    "| Scenario | Net delta | Median Gain | Median Spend | Timeline Drift (med/p90) | Starfield | Last Gold delta | Last Passive | Sparkline (delta@t + bars) | Alerts |"
+    "| Scenario | Net delta | Median Gain | Median Spend | Timeline Drift (med/p90) | Baseline Drift (med/p90) | Starfield | Last Gold delta | Last Passive | Sparkline (delta@t + bars) | Alerts |"
   );
-  lines.push("| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |");
+  lines.push("| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |");
   const scenarios = Array.isArray(board.scenarios) ? board.scenarios.slice(0, 5) : [];
   for (const scenario of scenarios) {
     const net = scenario.summary?.netDelta ?? scenario.summary?.metrics?.netDelta ?? "-";
@@ -167,6 +204,11 @@ function buildPortalGoldSection(board) {
       typeof scenario.timelineVariance?.medianGain === "number" ||
       typeof scenario.timelineVariance?.p90Gain === "number"
         ? `${scenario.timelineVariance?.medianGain ?? "n/a"}/${scenario.timelineVariance?.p90Gain ?? "n/a"}`
+        : "-";
+    const baselineDrift =
+      typeof scenario.timelineBaselineVariance?.medianGain === "number" ||
+      typeof scenario.timelineBaselineVariance?.p90Gain === "number"
+        ? `${scenario.timelineBaselineVariance?.medianGain ?? "n/a"}/${scenario.timelineBaselineVariance?.p90Gain ?? "n/a"}`
         : "-";
     const lastGold = scenario.timelineEvents?.[0];
     const lastPassive = scenario.passiveUnlocks?.[0];
@@ -208,12 +250,12 @@ function buildPortalGoldSection(board) {
         starfieldParts.push(starfield.tint);
       }
     }
-    const starfieldNote = starfieldParts.length ? starfieldParts.join(" / ") : "-";
-    const sparkline = formatSparkline(scenario.timelineSparkline);
-    const sparkbar = formatSparklineBar(scenario.timelineSparkline);
-    lines.push(
-      `| ${scenario.id ?? "-"} | ${net} | ${medianGain} | ${medianSpend} | ${drift} | ${starfieldNote} | ${goldNote} | ${passiveNote} | ${sparkline}${sparkbar === "-" ? "" : ` ${sparkbar}`} | ${alertBadge} |`
-    );
+      const starfieldNote = starfieldParts.length ? starfieldParts.join(" / ") : "-";
+      const sparkline = formatSparkline(scenario.timelineSparkline);
+      const sparkbar = formatSparklineBar(scenario.timelineSparkline);
+      lines.push(
+        `| ${scenario.id ?? "-"} | ${net} | ${medianGain} | ${medianSpend} | ${drift} | ${baselineDrift} | ${starfieldNote} | ${goldNote} | ${passiveNote} | ${sparkline}${sparkbar === "-" ? "" : ` ${sparkbar}`} | ${alertBadge} |`
+      );
   }
   if (Array.isArray(board.scenarios) && board.scenarios.length > 5) {
     lines.push(
@@ -337,11 +379,12 @@ function buildPortalUiSection(gallery) {
   lines.push("");
   lines.push("| Shot | Starfield | Summary |");
   lines.push("| --- | --- | --- |");
-  for (const shot of gallery.shots.slice(0, 5)) {
+  const shotsToShow = gallery.shots.slice(0, UI_SNAPSHOT_LIMIT);
+  for (const shot of shotsToShow) {
     lines.push(`| ${shot.id ?? "-"} | ${shot.starfieldScene ?? "auto"} | ${shot.summary ?? ""} |`);
   }
-  if (gallery.shots.length > 5) {
-    lines.push(`| ... | ... | ${gallery.shots.length - 5} more entries |`);
+  if (gallery.shots.length > UI_SNAPSHOT_LIMIT) {
+    lines.push(`| ... | ... | ${gallery.shots.length - UI_SNAPSHOT_LIMIT} more entries |`);
   }
   lines.push("");
   lines.push(
@@ -435,7 +478,11 @@ const main = async () => {
   lines.push(
     "- Fixture dry-run: `node scripts/ci/goldAnalyticsBoard.mjs --summary docs/codex_pack/fixtures/gold/gold-summary-report.json --timeline docs/codex_pack/fixtures/gold/gold-timeline-summary.json --passive docs/codex_pack/fixtures/gold/passive-gold-summary.json --percentile-guard docs/codex_pack/fixtures/gold/percentile-guard.json --percentile-alerts docs/codex_pack/fixtures/gold/gold-percentiles.baseline.json --out-json temp/gold-analytics-board.fixture.json --markdown temp/gold-analytics-board.fixture.md`."
   );
+  lines.push(
+    "- Baseline guard: `node scripts/ci/goldBaselineGuard.mjs --timeline artifacts/summaries/gold-timeline.ci.json --baseline docs/codex_pack/fixtures/gold/gold-percentiles.baseline.json --out-json artifacts/summaries/gold-baseline-guard.json --mode warn` (nightly runs fail if coverage is missing)."
+  );
   const goldBoard = await readJsonIfExists(goldAnalyticsBoardPath);
+  const baselineGuard = await readJsonIfExists(goldBaselineGuardPath);
   if (!goldBoard) {
     lines.push(
       "- Latest board JSON not found; run the gold dashboards (`npm run analytics:gold:report`, `node scripts/ci/goldAnalyticsBoard.mjs ...`) to refresh `artifacts/summaries/gold-analytics-board.ci.json`."
@@ -447,12 +494,33 @@ const main = async () => {
         goldBoard.scenarios?.length ?? 0
       } scenario(s); warnings: ${goldBoard.warnings?.length ?? 0}.`
     );
+    if (Array.isArray(goldBoard.warnings) && goldBoard.warnings.length > 0) {
+      lines.push(`- Warnings (sample): ${goldBoard.warnings[0]}`);
+    }
+    if (!baselineGuard) {
+      lines.push(
+        "- Baseline guard report missing; run `node scripts/ci/goldBaselineGuard.mjs --timeline artifacts/summaries/gold-timeline.ci.json --baseline docs/codex_pack/fixtures/gold/gold-percentiles.baseline.json --out-json artifacts/summaries/gold-baseline-guard.json --mode warn`."
+      );
+    }
+    if (goldBoard.timelineBaseline) {
+      const matched = goldBoard.timelineBaseline.matched ?? 0;
+      const total = goldBoard.timelineBaseline.totalEntries ?? 0;
+      const missing = goldBoard.timelineBaseline.missing ?? 0;
+      const missingList =
+        Array.isArray(goldBoard.timelineBaseline.missingScenarios) &&
+        goldBoard.timelineBaseline.missingScenarios.length > 0
+          ? `; missing: ${goldBoard.timelineBaseline.missingScenarios.join(", ")}`
+          : "";
+      lines.push(
+        `- Timeline baseline: ${goldBoard.timelineBaseline.summaryPath ?? "n/a"} (${matched}/${total} matched${missing ? `, missing ${missing}` : ""}${missingList})`
+      );
+    }
     if (Array.isArray(goldBoard.scenarios) && goldBoard.scenarios.length > 0) {
       lines.push("");
       lines.push(
-        "| Scenario | Net delta | Median Gain | Median Spend | Timeline Drift (med/p90) | Last Gold delta | Last Passive | Sparkline (delta@t + bars) | Alerts |"
+        "| Scenario | Net delta | Median Gain | Median Spend | Timeline Drift (med/p90) | Baseline Drift (med/p90) | Last Gold delta | Last Passive | Sparkline (delta@t + bars) | Alerts |"
       );
-      lines.push("| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |");
+      lines.push("| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |");
       const sample = goldBoard.scenarios.slice(0, 5);
       for (const scenario of sample) {
         const net = scenario.summary?.netDelta ?? scenario.summary?.metrics?.netDelta ?? "-";
@@ -464,6 +532,11 @@ const main = async () => {
           typeof scenario.timelineVariance?.p90Gain === "number"
             ? `${scenario.timelineVariance?.medianGain ?? "n/a"}/${scenario.timelineVariance?.p90Gain ?? "n/a"}`
             : "-";
+    const baselineDrift =
+      typeof scenario.timelineBaselineVariance?.medianGain === "number" ||
+      typeof scenario.timelineBaselineVariance?.p90Gain === "number"
+        ? `${scenario.timelineBaselineVariance?.medianGain ?? "n/a"}/${scenario.timelineBaselineVariance?.p90Gain ?? "n/a"}`
+        : "-";
         const lastGold = scenario.timelineEvents?.[0];
         const lastPassive = scenario.passiveUnlocks?.[0];
         const alertCount = (scenario.alerts ?? []).filter(
@@ -486,12 +559,12 @@ const main = async () => {
         const sparkline = formatSparkline(scenario.timelineSparkline);
         const sparkbar = formatSparklineBar(scenario.timelineSparkline);
         lines.push(
-          `| ${scenario.id ?? "-"} | ${net} | ${medianGain} | ${medianSpend} | ${drift} | ${goldNote} | ${passiveNote} | ${sparkline}${sparkbar === "-" ? "" : ` ${sparkbar}`} | ${alertBadge} |`
-        );
-      }
+      `| ${scenario.id ?? "-"} | ${net} | ${medianGain} | ${medianSpend} | ${drift} | ${baselineDrift} | ${goldNote} | ${passiveNote} | ${sparkline}${sparkbar === "-" ? "" : ` ${sparkbar}`} | ${alertBadge} |`
+      );
+    }
       if (goldBoard.scenarios.length > 5) {
         lines.push(
-          `| ... | ... | ... | ... | ... | ... | ... | ... | ${goldBoard.scenarios.length - 5} more |`
+          `| ... | ... | ... | ... | ... | ... | ... | ... | ... | ${goldBoard.scenarios.length - 5} more |`
         );
       }
     }
@@ -507,12 +580,13 @@ const main = async () => {
     lines.push("");
     lines.push("| Shot | Starfield | Summary |");
     lines.push("| --- | --- | --- |");
-    for (const shot of uiGallery.shots.slice(0, 6)) {
+    const shotsToShow = uiGallery.shots.slice(0, UI_SNAPSHOT_LIMIT);
+    for (const shot of shotsToShow) {
       const starfieldScene = shot.starfieldScene ?? "auto";
       lines.push(`| ${shot.id ?? "-"} | ${starfieldScene} | ${shot.summary ?? ""} |`);
     }
-    if (uiGallery.shots.length > 6) {
-      lines.push(`| ... | ... | ${uiGallery.shots.length - 6} more entries |`);
+    if (uiGallery.shots.length > UI_SNAPSHOT_LIMIT) {
+      lines.push(`| ... | ... | ${uiGallery.shots.length - UI_SNAPSHOT_LIMIT} more entries |`);
     }
   }
   lines.push("");
@@ -553,7 +627,7 @@ const main = async () => {
   lines.push("Generated automatically via `npm run codex:dashboard`.");
   await fs.writeFile(dashboardPath, lines.join("\n"), "utf8");
   console.log(`Codex dashboard updated: ${path.relative(repoRoot, dashboardPath)}`);
-  await updatePortalGoldSnapshot(goldBoard);
+  await updatePortalGoldSnapshot(goldBoard, baselineGuard);
   await updatePortalStarfieldSnapshot(goldBoard);
   await updatePortalUiSnapshot(uiGallery);
 };
