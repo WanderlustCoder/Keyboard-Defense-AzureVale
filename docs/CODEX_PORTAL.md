@@ -116,7 +116,7 @@ Artifacts: `artifacts/summaries/gold-analytics-board.ci.json`
 <!-- UI_SNAPSHOT_GALLERY:START -->
 
 _Re-run `npm run docs:gallery` after capturing screenshots, then `npm run codex:dashboard` to refresh this HUD snapshot summary._
-Generated: 2025-11-27T15:21:29.271Z (shots: 6)
+Generated: 2025-11-27T19:03:32.234Z (shots: 6)
 
 | Shot | Starfield | Summary |
 | --- | --- | --- |
