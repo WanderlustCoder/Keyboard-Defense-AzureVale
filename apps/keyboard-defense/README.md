@@ -34,6 +34,15 @@ npm run build         # compile TypeScript to dist/ (invoked automatically by np
 npm run test          # clean, lint, format check, build, then run vitest --coverage
 ```
 
+### Nightly workflows (manual dispatch)
+
+Use GitHub CLI when you need to kick the scheduled jobs on demand:
+
+```bash
+gh workflow run ci-matrix-nightly.yml --ref master      # scenario matrix + asset integrity + HUD gallery + condensed audit
+gh workflow run codex-dashboard-nightly.yml --ref master # rebuild Codex dashboard/portal from live artifacts or fixtures
+```
+
 ### Development Server
 
 A helper script (`scripts/devServer.mjs`) wraps `http-server` so automation can detect readiness and manage the lifecycle.
