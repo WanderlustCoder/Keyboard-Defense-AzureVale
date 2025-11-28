@@ -25,6 +25,27 @@ gh workflow run ci-matrix-nightly.yml --ref master
 gh workflow run codex-dashboard-nightly.yml --ref master
 ```
 
+## Retrieve artifacts
+
+After a run completes:
+
+```bash
+# replace RUN_ID with the Actions run id
+gh run download RUN_ID --name ci-matrix-summary --dir artifacts/ci-matrix-nightly
+gh run download RUN_ID --name codex-dashboard-nightly --dir artifacts/codex-dashboard-nightly
+```
+
+Artifacts you should see:
+
+- `ci-matrix-summary`: `ci-matrix-summary.json`, `ui-snapshot-gallery-nightly.(md|json)`, `asset-integrity.nightly.(json|md)`, `asset-integrity-report.nightly.(json|md)`, `asset-integrity.log`
+- `codex-dashboard-nightly`: `docs/codex_dashboard.md`, `docs/CODEX_PORTAL.md`, `gold-analytics-board.ci.(json|md)`, `gold-baseline-guard.json`
+
+## Quick triage
+
+- HUD gallery missing shots: rerun `npm run docs:gallery` locally, ensure `artifacts/screenshots/*.meta.json` exist, then re-dispatch.
+- Asset integrity failure: run `npm run assets:integrity -- --check --mode strict --telemetry artifacts/summaries/asset-integrity.json --telemetry-md artifacts/summaries/asset-integrity.md --history artifacts/history/asset-integrity.log`.
+- Baseline guard missing: `node scripts/ci/goldBaselineGuard.mjs --timeline artifacts/summaries/gold-timeline.ci.json --baseline docs/codex_pack/fixtures/gold/gold-percentiles.baseline.json --out-json artifacts/summaries/gold-baseline-guard.json --mode warn` then `npm run codex:dashboard`.
+
 ## When to rerun locally
 
 - HUD screenshots changed: `cd apps/keyboard-defense && npm run docs:gallery && npm run codex:dashboard`
