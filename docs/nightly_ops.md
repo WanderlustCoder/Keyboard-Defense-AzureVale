@@ -46,6 +46,13 @@ Artifacts you should see:
 - `ci-matrix-summary`: `ci-matrix-summary.json`, `ui-snapshot-gallery-nightly.(md|json)`, `asset-integrity.nightly.(json|md)`, `asset-integrity-report.nightly.(json|md)`, `asset-integrity.log`
 - `codex-dashboard-nightly`: `docs/codex_dashboard.md`, `docs/CODEX_PORTAL.md`, `gold-analytics-board.ci.(json|md)`, `gold-baseline-guard.json`
 
+If you need the run id, list recent workflow runs:
+
+```bash
+gh run list --workflow ci-matrix-nightly.yml --limit 5
+gh run list --workflow codex-dashboard-nightly.yml --limit 5
+```
+
 ## Quick triage
 
 - HUD gallery missing shots: rerun `npm run docs:gallery` locally, ensure `artifacts/screenshots/*.meta.json` exist, then re-dispatch.
