@@ -19,6 +19,7 @@ function parseArgs(argv) {
     runId: null,
     outDir: path.resolve("artifacts", "nightly-download"),
     names: ["ci-matrix-summary", "codex-dashboard-nightly"],
+    workflows: [],
     help: false
   };
   for (let i = 0; i < argv.length; i += 1) {
@@ -35,6 +36,10 @@ function parseArgs(argv) {
       case "--name":
       case "--artifact":
         opts.names.push(argv[++i]);
+        break;
+      case "--workflow":
+      case "--wf":
+        opts.workflows.push(argv[++i]);
         break;
       case "--help":
       case "-h":
@@ -54,6 +59,7 @@ function printHelp() {
 
 Options:
   --run-id, --run   GitHub Actions run id (required)
+  --workflow, --wf  Workflow filename to pull the latest run id (optional; ignored when --run-id is set)
   --out, --dir      Target directory (default artifacts/nightly-download)
   --name, --artifact Artifact name to download (repeatable; defaults: ci-matrix-summary, codex-dashboard-nightly)
   --help, -h        Show this help
@@ -81,6 +87,22 @@ function downloadArtifact(runId, name, outDir) {
   return targetDir;
 }
 
+function resolveLatestRunId(workflow) {
+  const res = spawnSync(
+    "gh",
+    ["run", "list", "--workflow", workflow, "--limit", "1", "--json", "databaseId", "-q", ".[0].databaseId"],
+    { shell: process.platform === "win32", encoding: "utf8" }
+  );
+  if (res.status !== 0) {
+    throw new Error(`Failed to resolve latest run id for workflow "${workflow}". Ensure the workflow name is correct and gh is authenticated.`);
+  }
+  const runId = String(res.stdout ?? "").trim();
+  if (!runId) {
+    throw new Error(`No runs found for workflow "${workflow}".`);
+  }
+  return runId;
+}
+
 async function main() {
   let opts;
   try {
@@ -99,6 +121,16 @@ async function main() {
 
   ensureGhAvailable();
 
+  let runId = opts.runId;
+  if (!runId && opts.workflows.length > 0) {
+    runId = resolveLatestRunId(opts.workflows[0]);
+  }
+  if (!runId) {
+    console.error("Missing --run-id (or --workflow to resolve latest run).");
+    process.exit(1);
+    return;
+  }
+
   const uniqueNames = Array.from(new Set(opts.names.filter(Boolean)));
   if (uniqueNames.length === 0) {
     console.error("No artifact names provided. Use --name to specify at least one.");
@@ -109,7 +141,7 @@ async function main() {
   const summary = [];
   for (const name of uniqueNames) {
     try {
-      const dir = downloadArtifact(opts.runId, name, opts.outDir);
+      const dir = downloadArtifact(runId, name, opts.outDir);
       summary.push({ name, dir });
     } catch (error) {
       console.error(error instanceof Error ? error.message : String(error));
@@ -121,6 +153,7 @@ async function main() {
   for (const item of summary) {
     console.log(`- ${item.name}: ${item.dir}`);
   }
+  console.log(`Run id: ${runId}`);
 }
 
 await main();

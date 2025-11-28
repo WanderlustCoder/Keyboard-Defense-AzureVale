@@ -29,6 +29,7 @@ Alternatively, from `apps/keyboard-defense/` use the helper script with a run id
 
 ```bash
 npm run ci:download-artifacts -- --run-id <RUN_ID> --name ci-matrix-summary --name codex-dashboard-nightly
+npm run ci:download-artifacts -- --workflow ci-matrix-nightly.yml --name ci-matrix-summary
 ```
 
 ## Retrieve artifacts
