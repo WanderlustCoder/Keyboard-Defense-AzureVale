@@ -11,6 +11,11 @@ Use this as a fast reference for running or troubleshooting the nightly jobs.
   - Rebuilds Codex dashboard/portal from live CI artifacts when present, otherwise falls back to fixtures.
   - Artifacts: `codex-dashboard-nightly` (portal + dashboard MD, gold board JSON/MD, baseline guard JSON).
 
+## Prereqs
+
+- GitHub CLI installed and authenticated (`gh auth status`).
+- `gh` must have repo/workflow scopes to dispatch Actions runs.
+
 ## Manual dispatch
 
 From repo root (GitHub CLI):
