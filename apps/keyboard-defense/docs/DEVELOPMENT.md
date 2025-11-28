@@ -34,6 +34,8 @@ Commands:
 | `npm run test:visual` | Runs the Playwright visual regression suite (`tests/visual/hud.spec.ts`) against the local dev server. Use `npm run test:visual:update` after intentional HUD/overlay changes to refresh the tracked baselines. |
 | `npm run ci:matrix` | Executes the scenario matrix runner (tutorial smoke modes + castle breach seeds) and writes `artifacts/ci-matrix-summary.json`. |
 | `npm run dashboard:static` | Generates the static dashboard under `static-dashboard/` from the latest artifacts so GitHub Pages can publish it. |
+| `gh workflow run ci-matrix-nightly.yml --ref master` | Manually trigger the nightly scenario matrix (asset integrity + HUD gallery + condensed audit). |
+| `gh workflow run codex-dashboard-nightly.yml --ref master` | Manually trigger the nightly dashboard/portal refresh (uses live CI artifacts when present). |
 
 The script tracks runtime state in `.devserver/state.json` and writes logs to `.devserver/server.log`. On Windows/OneDrive the script avoids source-map locking by compiling without `.map` files.
 
