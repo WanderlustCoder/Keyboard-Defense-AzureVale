@@ -18,6 +18,7 @@
     "docs:condensed-audit": "node ./scripts/docs/condensedAudit.mjs",
     "docs:gallery": "node ./scripts/docs/renderHudGallery.mjs --input artifacts/screenshots --meta artifacts/screenshots --meta ../../docs/codex_pack/fixtures/ui-snapshot --json artifacts/summaries/ui-snapshot-gallery.json --verify",
     "debug:dpr-transition": "node ./scripts/debug/dprTransition.mjs",
+    "ci:download-artifacts": "node ./scripts/ci/downloadArtifacts.mjs",
     "release": "semantic-release",
     "release:dry-run": "semantic-release --dry-run",
     "start": "node ./scripts/devServer.mjs start",

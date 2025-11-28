@@ -25,6 +25,12 @@ gh workflow run ci-matrix-nightly.yml --ref master
 gh workflow run codex-dashboard-nightly.yml --ref master
 ```
 
+Alternatively, from `apps/keyboard-defense/` use the helper script with a run id:
+
+```bash
+npm run ci:download-artifacts -- --run-id <RUN_ID> --name ci-matrix-summary --name codex-dashboard-nightly
+```
+
 ## Retrieve artifacts
 
 After a run completes:
