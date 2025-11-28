@@ -43,6 +43,15 @@ gh workflow run ci-matrix-nightly.yml --ref master      # scenario matrix + asse
 gh workflow run codex-dashboard-nightly.yml --ref master # rebuild Codex dashboard/portal from live artifacts or fixtures
 ```
 
+### Download CI/Nightly artifacts
+
+Use the helper script (requires GitHub CLI auth):
+
+```bash
+npm run ci:download-artifacts -- --workflow ci-matrix-nightly.yml --name ci-matrix-summary
+npm run ci:download-artifacts -- --workflow codex-dashboard-nightly.yml --name codex-dashboard-nightly
+```
+
 ### Development Server
 
 A helper script (`scripts/devServer.mjs`) wraps `http-server` so automation can detect readiness and manage the lifecycle.
