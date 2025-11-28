@@ -32,6 +32,7 @@ expectations.
   - `gh workflow run ci-matrix-nightly.yml --ref master` (runs scenario matrix + asset integrity + HUD gallery + condensed audit).
   - `gh workflow run codex-dashboard-nightly.yml --ref master` (rebuilds Codex dashboard/portal from live CI artifacts or fixtures).
   - See `docs/nightly_ops.md` for artifact expectations and quick recovery commands.
+  - Need artifacts without rerunning? `npm run ci:download-artifacts -- --workflow ci-matrix-nightly.yml --name ci-matrix-summary --name codex-dashboard-nightly` (requires `gh` auth).
 
 ### Semantic Release (task `semantic-release`)
 
