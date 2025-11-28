@@ -58,7 +58,7 @@ function printHelp() {
   console.log(`Usage: node scripts/ci/downloadArtifacts.mjs --run-id <id> [--out dir] [--name artifact]...
 
 Options:
-  --run-id, --run   GitHub Actions run id (required)
+  --run-id, --run   GitHub Actions run id (required unless --workflow is provided)
   --workflow, --wf  Workflow filename to pull the latest run id (optional; ignored when --run-id is set)
   --out, --dir      Target directory (default artifacts/nightly-download)
   --name, --artifact Artifact name to download (repeatable; defaults: ci-matrix-summary, codex-dashboard-nightly)
@@ -113,9 +113,9 @@ async function main() {
     return;
   }
 
-  if (opts.help || !opts.runId) {
+  if (opts.help) {
     printHelp();
-    process.exit(opts.runId ? 0 : 1);
+    process.exit(0);
     return;
   }
 
@@ -126,7 +126,8 @@ async function main() {
     runId = resolveLatestRunId(opts.workflows[0]);
   }
   if (!runId) {
-    console.error("Missing --run-id (or --workflow to resolve latest run).");
+    printHelp();
+    console.error("Missing --run-id (or provide --workflow to resolve latest run).");
     process.exit(1);
     return;
   }
