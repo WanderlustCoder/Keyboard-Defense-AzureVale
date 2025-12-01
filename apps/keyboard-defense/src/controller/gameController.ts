@@ -1822,6 +1822,8 @@ export class GameController {
     this.setTypingDrillMenuRecommendation(recommendation);
     if (recommendation) {
       this.typingDrills.setRecommendation(recommendation.mode, recommendation.reason);
+    } else {
+      this.typingDrills.showNoRecommendation("You're in the groove - pick any drill.");
     }
     this.shouldResumeAfterDrills =
       wasRunning && !this.menuActive && !this.waveScorecardActive && !fromOptions;
@@ -2849,6 +2851,16 @@ export class GameController {
     const typingDrillRecommendation = this.buildTypingDrillRecommendation(this.currentState);
     this.setTypingDrillCtaRecommendation(typingDrillRecommendation);
     this.setTypingDrillMenuRecommendation(typingDrillRecommendation);
+    if (this.typingDrills?.isVisible?.()) {
+      if (typingDrillRecommendation) {
+        this.typingDrills.setRecommendation(
+          typingDrillRecommendation.mode,
+          typingDrillRecommendation.reason
+        );
+      } else {
+        this.typingDrills.showNoRecommendation("You're in the groove - pick any drill.");
+      }
+    }
     const shieldForecast = this.hud.getShieldForecast();
     this.bestCombo = Math.max(this.bestCombo, this.currentState.typing.combo);
     const analytics = this.currentState.analytics;

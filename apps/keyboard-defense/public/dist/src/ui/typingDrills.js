@@ -44,6 +44,7 @@ export class TypingDrillsOverlay {
     summaryWords;
     summaryErrors;
     summaryTip;
+    fallbackEl;
     recommendationEl;
     recommendationBadge;
     recommendationReason;
@@ -93,6 +94,7 @@ export class TypingDrillsOverlay {
         this.summaryWords = document.getElementById("typing-drill-summary-words");
         this.summaryErrors = document.getElementById("typing-drill-summary-errors");
         this.summaryTip = document.getElementById("typing-drill-summary-tip");
+        this.fallbackEl = document.getElementById("typing-drill-fallback");
         this.recommendationEl = document.getElementById("typing-drill-recommendation");
         this.recommendationBadge = document.getElementById("typing-drill-recommendation-badge");
         this.recommendationReason = document.getElementById("typing-drill-recommendation-reason");
@@ -198,6 +200,9 @@ export class TypingDrillsOverlay {
         this.updateMetrics();
         this.updateTimer();
         this.summaryEl?.setAttribute("data-visible", "false");
+        if (this.fallbackEl) {
+            this.fallbackEl.dataset.visible = "false";
+        }
         if (this.statusLabel) {
             this.statusLabel.textContent = "Ready";
         }
@@ -543,6 +548,9 @@ export class TypingDrillsOverlay {
         return () => window.clearInterval(interval);
     }
     setRecommendation(mode, reason) {
+        if (this.fallbackEl) {
+            this.fallbackEl.dataset.visible = "false";
+        }
         this.recommendationMode = mode;
         this.modeButtons.forEach((btn) => {
             const isRecommended = btn.dataset.mode === mode;
@@ -553,6 +561,22 @@ export class TypingDrillsOverlay {
                 mode === "burst" ? "Warmup" : mode === "endurance" ? "Cadence" : "Accuracy";
             this.recommendationReason.textContent = reason;
             this.recommendationEl.dataset.visible = "true";
+        }
+    }
+    showNoRecommendation(message) {
+        if (this.recommendationEl) {
+            this.recommendationEl.dataset.visible = "false";
+        }
+        this.recommendationMode = null;
+        this.modeButtons.forEach((btn) => {
+            btn.dataset.recommended = "false";
+        });
+        if (this.fallbackEl) {
+            this.fallbackEl.dataset.visible = "true";
+            const textNode = this.fallbackEl.querySelector(".typing-drill-fallback__text");
+            if (textNode) {
+                textNode.textContent = message;
+            }
         }
     }
 }

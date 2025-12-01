@@ -2179,6 +2179,36 @@ body[data-compact-height="true"] .tutorial-banner {
   font-size: 1.6rem;
 }
 
+.typing-drill-fallback {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(14, 116, 144, 0.18), rgba(59, 130, 246, 0.14));
+  border: 1px solid #334155;
+  color: #e2e8f0;
+}
+
+.typing-drill-fallback__pill {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(59, 130, 246, 0.28);
+  color: #e2e8f0;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.2px;
+}
+
+.typing-drill-fallback__text {
+  font-weight: 600;
+}
+
+.typing-drill-fallback[data-visible="true"] {
+  display: inline-flex;
+}
+
 .typing-drill-recommendation {
   margin-top: 8px;
   display: none;
@@ -2804,6 +2834,13 @@ button.ghost:focus-visible {
   }
   .typing-drill-input-row .primary,
   .typing-drill-input-row .ghost {
+    width: 100%;
+  }
+  .typing-drill-fallback {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  .typing-drill-fallback__text {
     width: 100%;
   }
   .typing-drill-recommendation {

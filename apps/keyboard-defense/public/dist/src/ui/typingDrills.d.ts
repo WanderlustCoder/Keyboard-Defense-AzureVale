@@ -29,6 +29,7 @@ export declare class TypingDrillsOverlay {
     private readonly summaryWords?;
     private readonly summaryErrors?;
     private readonly summaryTip?;
+    private readonly fallbackEl?;
     private readonly recommendationEl?;
     private readonly recommendationBadge?;
     private readonly recommendationReason?;
@@ -67,6 +68,7 @@ export declare class TypingDrillsOverlay {
     private updateTimer;
     private startTimer;
     setRecommendation(mode: TypingDrillMode, reason: string): void;
+    showNoRecommendation(message: string): void;
 }
 export {};
 //# sourceMappingURL=typingDrills.d.ts.map
