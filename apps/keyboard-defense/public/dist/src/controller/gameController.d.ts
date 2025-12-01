@@ -85,7 +85,11 @@ export declare class GameController {
     toggleSound(): void;
     openOptionsOverlay(): void;
     closeOptionsOverlay(options?: {}): void;
-    openTypingDrills(source?: string): void;
+    openTypingDrills(source?: string | undefined, options?: {
+        mode?: TypingDrillMode;
+        autoStart?: boolean;
+        reason?: string;
+    }): void;
     closeTypingDrills(): void;
     handleTypingDrillsClosed(): void;
     recordTypingDrillSummary(summary: TypingDrillSummary): void;

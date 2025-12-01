@@ -1703,11 +1703,11 @@ export class GameController {
             this.resume();
         }
     }
-    openTypingDrills(source = "cta") {
+    openTypingDrills(source = "cta", options) {
         if (!this.typingDrills)
             return;
         if (this.typingDrillsOverlayActive && this.typingDrills.isVisible()) {
-            this.typingDrills.reset();
+            this.typingDrills.reset(options?.mode);
             return;
         }
         const fromOptions = this.optionsOverlayActive;
@@ -1722,14 +1722,19 @@ export class GameController {
         if (wasRunning) {
             this.pause();
         }
-        const recommendation = this.buildTypingDrillRecommendation();
+        const recommendation = options?.mode && options?.reason
+            ? { mode: options.mode, reason: options.reason }
+            : this.buildTypingDrillRecommendation();
         if (recommendation) {
             this.typingDrills.setRecommendation(recommendation.mode, recommendation.reason);
         }
         this.shouldResumeAfterDrills =
             wasRunning && !this.menuActive && !this.waveScorecardActive && !fromOptions;
         this.typingDrillsOverlayActive = true;
-        this.typingDrills.open(undefined, source);
+        this.typingDrills.open(options?.mode, source);
+        if (options?.autoStart && options.mode) {
+            this.typingDrills.start(options.mode);
+        }
     }
     closeTypingDrills() {
         if (!this.typingDrillsOverlayActive || !this.typingDrills) {
@@ -2742,6 +2747,18 @@ export class GameController {
                 return;
             }
             const key = event.key.toLowerCase();
+            if (event.shiftKey && key === "r") {
+                event.preventDefault();
+                const recommendation = this.buildTypingDrillRecommendation();
+                if (recommendation) {
+                    this.openTypingDrills("shortcut", {
+                        mode: recommendation.mode,
+                        autoStart: true,
+                        reason: recommendation.reason
+                    });
+                }
+                return;
+            }
             switch (key) {
                 case "d":
                     event.preventDefault();
