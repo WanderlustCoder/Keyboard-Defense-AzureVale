@@ -34,6 +34,7 @@
 | `responsive-condensed-audit` | P2 | done | codex | docs/status/2025-11-17_hud_condensed_lists.md | #53, #58 |
 | `scenario-matrix` | P2 | done | codex | docs/status/2025-11-06_ci_pipeline.md | #71, #95 |
 | `schema-contracts` | P2 | done | codex | docs/status/2025-11-08_gold_summary_cli.md | #76 |
+| `typing-drills-overlay` | P2 | done | codex | docs/status/2025-12-02_typing_drills_responsive.md | — |
 | `semantic-release` | P2 | done | codex | docs/status/2025-11-21_semantic_release.md | #80 |
 | `static-dashboard` | P2 | done | codex | docs/status/2025-11-18_devserver_smoke_ci.md | #79 |
 | `taunt-analytics-metadata` | P2 | done | codex | docs/status/2025-11-19_enemy_taunts.md | #41, #79 |
@@ -82,5 +83,10 @@
 ## Responsive Condensed Audit
 - Latest run (2025-11-27T15:17:21.267Z) passed with 30 checks across 7 panels (snapshots scanned: 6).
 - No outstanding issues; all required panels/breakpoints are covered.
+
+## Typing Drills Quickstart Telemetry
+- Status: drills overlay + responsive recommendation banners landed (docs/status/2025-12-02_typing_drills_responsive.md).
+- Telemetry: `ui.typingDrill.menuQuickstart` logs `{ mode, hadRecommendation, reason, timestamp }` when the main-menu quickstart fires (falls back to Burst when no recommendation exists).
+- HUD: fallback quickstart logs a HUD note so players know which mode auto-started when the heuristic is empty.
 
 Generated automatically via `npm run codex:dashboard`.
