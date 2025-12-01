@@ -348,7 +348,9 @@ function buildTypingTelemetrySection(summary) {
     `- Recommendation mix: recommended ${formatShare(quick.recommendedRate)} | fallback ${formatShare(quick.fallbackRate)}.`
   );
   lines.push(
-    `- Drill starts by source: ${formatCountMap(starts.bySource ?? {})}; modes: ${formatCountMap(starts.byMode ?? {})}.`
+    `- Drill starts by source: ${formatCountMap(starts.bySource ?? {})}; share: ${formatCountMap(
+      starts.shareBySource ?? {}
+    )}; modes: ${formatCountMap(starts.byMode ?? {})}.`
   );
   lines.push(
     `- Quickstart reasons: ${formatCountMap(quick.byReason ?? {})}; modes: ${formatCountMap(quick.byMode ?? {})}.`
@@ -394,7 +396,9 @@ function buildPortalTypingSection(summary) {
     `Latest summary: ${summary.generatedAt ?? "unknown"} (events: ${totals.events ?? 0}, drill starts: ${totals.drillStarts ?? 0}, menu quickstarts: ${quick.count ?? 0}, share of menu starts: ${formatShare(quick.menuStartShare)}).`
   );
   lines.push(
-    `Starts by source: ${formatCountMap(starts.bySource ?? {})}; quickstart reasons: ${formatCountMap(quick.byReason ?? {})}.`
+    `Starts by source: ${formatCountMap(starts.bySource ?? {})}; share: ${formatCountMap(
+      starts.shareBySource ?? {}
+    )}; quickstart reasons: ${formatCountMap(quick.byReason ?? {})}.`
   );
   lines.push(
     `Recommendation mix: recommended ${formatShare(quick.recommendedRate)} | fallback ${formatShare(quick.fallbackRate)}.`

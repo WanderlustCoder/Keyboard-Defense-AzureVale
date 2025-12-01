@@ -175,6 +175,17 @@ function increment(map, key) {
   map[normalized] = (map[normalized] ?? 0) + 1;
 }
 
+function shareMap(counts, total) {
+  if (!counts || typeof counts !== "object" || !Number.isFinite(total) || total <= 0) return {};
+  const shares = {};
+  for (const [key, value] of Object.entries(counts)) {
+    if (typeof value === "number" && value > 0) {
+      shares[key] = value / total;
+    }
+  }
+  return shares;
+}
+
 function sortCounts(map) {
   return Object.entries(map)
     .sort((a, b) => b[1] - a[1])
@@ -228,6 +239,7 @@ function summarizeTelemetry(events, options = {}) {
     menuStarts.length > 0 ? quickstarts.length / menuStarts.length : null;
   const recommendedRate = quickstarts.length > 0 ? recommended / quickstarts.length : null;
   const fallbackRate = quickstarts.length > 0 ? fallback / quickstarts.length : null;
+  const startShareBySource = shareMap(startsBySource, starts.length);
 
   if (quickstarts.length === 0) {
     warnings.push("No menu quickstart telemetry found (ui.typingDrill.menuQuickstart).");
@@ -244,7 +256,8 @@ function summarizeTelemetry(events, options = {}) {
     },
     starts: {
       bySource: startsBySource,
-      byMode: startsByMode
+      byMode: startsByMode,
+      shareBySource: startShareBySource
     },
     menuQuickstart: {
       count: quickstarts.length,
@@ -265,6 +278,15 @@ function formatCountMap(map) {
   const entries = sortCounts(map);
   if (entries.length === 0) return "-";
   return entries.map(({ key, value }) => `${key} ${value}`).join(", ");
+}
+
+function formatShareMap(map) {
+  if (!map || typeof map !== "object") return "-";
+  const entries = Object.entries(map)
+    .filter(([, value]) => typeof value === "number")
+    .sort((a, b) => b[1] - a[1]);
+  if (entries.length === 0) return "-";
+  return entries.map(([key, value]) => `${key} ${formatShare(value)}`).join(", ");
 }
 
 function formatShare(share) {
@@ -297,12 +319,13 @@ function formatMarkdown(summary) {
   const shareLabel = formatShare(quickstarts.menuStartShare);
   const recommendedRate = formatShare(quickstarts.recommendedRate);
   const fallbackRate = formatShare(quickstarts.fallbackRate);
+  const startShare = formatShareMap(starts.shareBySource);
   lines.push(
     `Menu quickstarts: ${quickstarts.count} (recommended ${quickstarts.recommended}, fallback ${quickstarts.fallback}); share of menu starts: ${shareLabel}.`
   );
   lines.push(`Recommendation mix: recommended ${recommendedRate}, fallback ${fallbackRate}.`);
   lines.push(
-    `Drill starts: ${summary.totals.drillStarts} (sources: ${formatCountMap(starts.bySource)}; modes: ${formatCountMap(starts.byMode)}).`
+    `Drill starts: ${summary.totals.drillStarts} (sources: ${formatCountMap(starts.bySource)}; share: ${startShare}; modes: ${formatCountMap(starts.byMode)}).`
   );
   lines.push(
     `Quickstart reasons: ${formatCountMap(quickstarts.byReason)}; modes: ${formatCountMap(quickstarts.byMode)}.`
