@@ -150,6 +150,10 @@ export class GameController {
     this.typingDrillCtaMode =
       this.typingDrillCta?.querySelector?.(".typing-drills-cta-reco-mode") ?? null;
     this.typingDrillCtaLastRecommendation = null;
+    this.typingDrillMenuReco = document.getElementById("main-menu-typing-drill-reco");
+    this.typingDrillMenuRecoMode =
+      this.typingDrillMenuReco?.querySelector?.(".main-menu-typing-drill-reco-mode") ?? null;
+    this.typingDrillMenuRecoLastRecommendation = null;
     this.practiceMode = false;
     this.allTurretArchetypes = Object.create(null);
     this.enabledTurretTypes = new Set();
@@ -623,6 +627,8 @@ export class GameController {
         this.openTypingDrills("menu");
       });
     }
+    const menuDrillReco = this.buildTypingDrillRecommendation();
+    this.setTypingDrillMenuRecommendation(menuDrillReco);
 
     this.pause();
     this.menuActive = true;
@@ -1798,6 +1804,7 @@ export class GameController {
         ? { mode: options.mode, reason: options.reason }
         : this.buildTypingDrillRecommendation();
     this.setTypingDrillCtaRecommendation(recommendation);
+    this.setTypingDrillMenuRecommendation(recommendation);
     if (recommendation) {
       this.typingDrills.setRecommendation(recommendation.mode, recommendation.reason);
     }
@@ -1943,6 +1950,48 @@ export class GameController {
       container.removeAttribute("title");
     }
     this.typingDrillCtaLastRecommendation = normalized;
+  }
+  setTypingDrillMenuRecommendation(
+    recommendation: { mode: TypingDrillMode; reason?: string } | null
+  ) {
+    const container =
+      this.typingDrillMenuReco instanceof HTMLElement ? this.typingDrillMenuReco : null;
+    if (!container) {
+      this.typingDrillMenuRecoLastRecommendation = recommendation ? { ...recommendation } : null;
+      return;
+    }
+    const labelEl =
+      this.typingDrillMenuRecoMode instanceof HTMLElement
+        ? this.typingDrillMenuRecoMode
+        : container.querySelector?.(".main-menu-typing-drill-reco-mode");
+    if (!recommendation) {
+      container.dataset.visible = "false";
+      container.setAttribute("aria-hidden", "true");
+      if (labelEl) {
+        labelEl.textContent = "";
+      }
+      this.typingDrillMenuRecoLastRecommendation = null;
+      return;
+    }
+    const normalized = {
+      mode: recommendation.mode,
+      reason: recommendation.reason ?? ""
+    };
+    const unchanged =
+      this.typingDrillMenuRecoLastRecommendation?.mode === normalized.mode &&
+      this.typingDrillMenuRecoLastRecommendation?.reason === normalized.reason &&
+      container.dataset.visible === "true";
+    if (unchanged) {
+      return;
+    }
+    const label = this.getTypingDrillModeLabel(recommendation.mode);
+    if (labelEl) {
+      labelEl.textContent = label;
+    }
+    container.dataset.visible = "true";
+    container.setAttribute("aria-hidden", "false");
+    container.setAttribute("aria-label", `Recommended drill: ${label}`);
+    this.typingDrillMenuRecoLastRecommendation = normalized;
   }
   buildTypingDrillRecommendation(
     state = this.engine.getState()
@@ -2741,6 +2790,7 @@ export class GameController {
     });
     const typingDrillRecommendation = this.buildTypingDrillRecommendation(this.currentState);
     this.setTypingDrillCtaRecommendation(typingDrillRecommendation);
+    this.setTypingDrillMenuRecommendation(typingDrillRecommendation);
     const shieldForecast = this.hud.getShieldForecast();
     this.bestCombo = Math.max(this.bestCombo, this.currentState.typing.combo);
     const analytics = this.currentState.analytics;

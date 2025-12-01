@@ -100,6 +100,10 @@ export declare class GameController {
         mode: TypingDrillMode;
         reason?: string;
     } | null): void;
+    setTypingDrillMenuRecommendation(recommendation: {
+        mode: TypingDrillMode;
+        reason?: string;
+    } | null): void;
     buildTypingDrillRecommendation(state?: any): {
         mode: TypingDrillMode;
         reason: string;

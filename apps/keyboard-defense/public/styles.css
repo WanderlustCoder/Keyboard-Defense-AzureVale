@@ -1958,6 +1958,18 @@ body[data-compact-height="true"] .tutorial-banner {
   gap: 12px;
 }
 
+.main-menu-typing-drill-reco {
+  margin: -2px 0 4px;
+  font-size: 0.9rem;
+  color: #67e8f9;
+  letter-spacing: 0.02em;
+  display: none;
+}
+
+.main-menu-typing-drill-reco[data-visible="true"] {
+  display: block;
+}
+
 .main-menu-actions button {
   width: 100%;
   justify-content: center;
