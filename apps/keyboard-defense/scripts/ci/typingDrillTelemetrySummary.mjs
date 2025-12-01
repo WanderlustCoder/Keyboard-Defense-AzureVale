@@ -261,6 +261,13 @@ function summarizeTelemetry(events, options = {}) {
   const completionShareByMode = shareMap(completionsByMode, completions.length);
   const completionShareBySource = shareMap(completionsBySource, completions.length);
   const completionRate = starts.length > 0 ? completions.length / starts.length : null;
+  const completionRateBySource = {};
+  for (const [source, count] of Object.entries(completionsBySource)) {
+    const startsForSource = startsBySource[source];
+    if (typeof startsForSource === "number" && startsForSource > 0) {
+      completionRateBySource[source] = count / startsForSource;
+    }
+  }
   const completionMetrics = {
     avgAccuracy: completionAccCount > 0 ? completionAccSum / completionAccCount : null,
     avgWpm: completionWpmCount > 0 ? completionWpmSum / completionWpmCount : null
@@ -291,6 +298,7 @@ function summarizeTelemetry(events, options = {}) {
       shareByMode: completionShareByMode,
       shareBySource: completionShareBySource,
       rate: completionRate,
+      rateBySource: completionRateBySource,
       metrics: completionMetrics
     },
     menuQuickstart: {
@@ -368,6 +376,7 @@ function formatMarkdown(summary) {
   const completionRate = formatShare(completions.rate);
   const completionShare = formatShareMap(completions.shareByMode);
   const completionShareSource = formatShareMap(completions.shareBySource);
+  const completionRateSource = formatShareMap(completions.rateBySource);
   const avgAcc = formatPercent(completions.metrics?.avgAccuracy);
   const avgWpm = formatNumber(completions.metrics?.avgWpm);
   lines.push(
@@ -378,7 +387,7 @@ function formatMarkdown(summary) {
     `Drill starts: ${summary.totals.drillStarts} (sources: ${formatCountMap(starts.bySource)}; share: ${startShare}; modes: ${formatCountMap(starts.byMode)}).`
   );
   lines.push(
-    `Drill completions: ${completions.count ?? 0} (completion rate: ${completionRate}; avg: ${avgAcc} / ${avgWpm} wpm; sources: ${completionShareSource}; modes: ${completionShare}).`
+    `Drill completions: ${completions.count ?? 0} (completion rate: ${completionRate}; per-source: ${completionRateSource}; avg: ${avgAcc} / ${avgWpm} wpm; sources: ${completionShareSource}; modes: ${completionShare}).`
   );
   lines.push(
     `Quickstart reasons: ${formatCountMap(quickstarts.byReason)}; modes: ${formatCountMap(quickstarts.byMode)}.`

@@ -86,6 +86,8 @@ describe("typingDrillTelemetrySummary", () => {
     expect(summary.completions.metrics.avgWpm).toBeCloseTo(70);
     expect(summary.completions.shareBySource.menu).toBeCloseTo(0.5);
     expect(summary.completions.shareBySource.cta).toBeCloseTo(0.5);
+    expect(summary.completions.rateBySource.menu).toBeCloseTo(0.5);
+    expect(summary.completions.rateBySource.cta).toBeCloseTo(1);
     const markdown = formatMarkdown(summary);
     expect(markdown).toContain("Menu quickstarts: 2");
     expect(markdown).toContain("| Timestamp | Mode | Recommendation | Reason |");
