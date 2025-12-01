@@ -2184,6 +2184,13 @@ body[data-compact-height="true"] .tutorial-banner {
   cursor: pointer;
 }
 
+.typing-drills-shortcut {
+  margin: 6px 0 0;
+  color: #94a3b8;
+  font-size: 0.84rem;
+  letter-spacing: 0.02em;
+}
+
 .typing-drills-subtitle {
   margin: 0;
   color: rgba(226, 232, 240, 0.85);
