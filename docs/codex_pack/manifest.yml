@@ -247,3 +247,9 @@ tasks:
     status: done
     status_note: docs/status/2025-11-28_hud_gallery_dedupe.md
     backlog_refs: ["#72"]
+  - id: typing-drills-overlay
+    path: tasks/42-typing-drills-overlay.md
+    priority: P2
+    status: done
+    status_note: docs/status/2025-12-01_typing_drills.md
+    backlog_refs: ["#19"]

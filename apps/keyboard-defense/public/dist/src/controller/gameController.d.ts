@@ -1,3 +1,4 @@
+import { type TypingDrillSummary } from "../core/types.js";
 import { type ResolutionTransitionState } from "../ui/ResolutionTransitionController.js";
 import { type DiagnosticsSectionsPreferenceMap, type TurretLoadoutPreset, type TurretLoadoutSlot } from "../utils/playerSettings.js";
 export declare class GameController {
@@ -84,6 +85,10 @@ export declare class GameController {
     toggleSound(): void;
     openOptionsOverlay(): void;
     closeOptionsOverlay(options?: {}): void;
+    openTypingDrills(source?: string): void;
+    closeTypingDrills(): void;
+    handleTypingDrillsClosed(): void;
+    recordTypingDrillSummary(summary: TypingDrillSummary): void;
     presentWaveScorecard(summary: any): void;
     debugShowWaveScorecard(summary?: {}): void;
     debugHideWaveScorecard(): void;
@@ -197,6 +202,7 @@ export declare class GameController {
     };
     handleAssetImageLoaded(): void;
     waitForAssets(): Promise<void>;
+    attachTypingDrillHooks(): void;
     attachInputHandlers(typingInput: any): void;
     attachGlobalShortcuts(): void;
     initializePlayerSettings(): void;

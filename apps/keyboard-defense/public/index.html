@@ -59,6 +59,17 @@
           <div id="combo-stats">Combo x0</div>
           <div id="combo-accuracy-delta" role="status" aria-live="polite"></div>
           <input id="typing-input" autocomplete="off" autofocus placeholder="Type to attack..." />
+          <div class="typing-drills-cta" id="typing-drills-cta">
+            <div class="typing-drills-cta-text">
+              <p class="typing-drills-cta-title">Need a warmup?</p>
+              <p class="typing-drills-cta-copy">
+                Run quick drills to lock in rhythm without risking the castle.
+              </p>
+            </div>
+            <button id="typing-drills-open" class="typing-drills-cta-button" type="button">
+              Launch drills
+            </button>
+          </div>
         </section>
         <section class="wave-preview">
           <h2>Upcoming Enemies</h2>
@@ -187,6 +198,7 @@
                   <option value="shielded">Shield breaks</option>
                 </select>
               </div>
+              <div id="debug-analytics-drills" class="analytics-drills" aria-live="polite"></div>
               <table aria-describedby="debug-analytics-viewer-caption">
                 <caption id="debug-analytics-viewer-caption">
                   Recent wave summaries
@@ -259,6 +271,7 @@
           <button id="main-menu-start-tutorial">Begin Tutorial</button>
           <button id="main-menu-skip-tutorial">Skip Tutorial</button>
           <button id="main-menu-practice-mode">Practice Mode</button>
+          <button id="main-menu-typing-drills">Typing Drills</button>
           <button id="main-menu-replay-tutorial">Replay Tutorial</button>
         </div>
       </div>
@@ -521,7 +534,152 @@
           <button id="options-analytics-export" type="button" class="secondary">
             Download Analytics
           </button>
+          <button id="options-typing-drills" type="button" class="secondary">
+            Open Typing Drills
+          </button>
           <button id="options-resume-button" type="button" class="primary">Resume Battle</button>
+        </div>
+      </div>
+    </div>
+    <div
+      id="typing-drills-overlay"
+      data-visible="false"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="typing-drills-title"
+    >
+      <div class="typing-drills-card">
+        <div class="typing-drills-header">
+          <div>
+            <p class="typing-drills-kicker">Training Grounds</p>
+            <h2 id="typing-drills-title">Typing Drills</h2>
+            <p class="typing-drills-subtitle">
+              Build muscle memory without risking the gate. Pick a drill, then type until you clear
+              the stack or the timer runs out.
+            </p>
+          </div>
+          <button
+            id="typing-drills-close"
+            class="icon-button typing-drills-close"
+            type="button"
+            aria-label="Close typing drills"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="typing-drills-body">
+          <div class="typing-drills-art" aria-hidden="true">
+            <div class="typing-drills-orb"></div>
+            <div class="typing-drills-arc typing-drills-arc--outer"></div>
+            <div class="typing-drills-arc typing-drills-arc--inner"></div>
+            <div class="typing-drills-keys">
+              <span>Q</span>
+              <span>J</span>
+              <span>K</span>
+              <span>F</span>
+              <span>P</span>
+            </div>
+            <div class="typing-drills-sparks">
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+          <div class="typing-drills-panel">
+            <div class="typing-drills-modes" role="tablist" aria-label="Typing drill modes">
+              <button
+                type="button"
+                class="typing-drill-mode"
+                data-mode="burst"
+                aria-selected="true"
+                role="tab"
+              >
+                <span class="mode-label">Burst Warmup</span>
+                <span class="mode-meta">5 quick words</span>
+              </button>
+              <button
+                type="button"
+                class="typing-drill-mode"
+                data-mode="endurance"
+                aria-selected="false"
+                role="tab"
+              >
+                <span class="mode-label">Endurance</span>
+                <span class="mode-meta">30s cadence</span>
+              </button>
+              <button
+                type="button"
+                class="typing-drill-mode"
+                data-mode="precision"
+                aria-selected="false"
+                role="tab"
+              >
+                <span class="mode-label">Shield Breaker</span>
+                <span class="mode-meta">Hard-focus strings</span>
+              </button>
+            </div>
+            <div class="typing-drill-stage">
+              <div class="typing-drill-status">
+                <span class="typing-drill-status-label" id="typing-drill-status-label">Ready</span>
+                <span class="typing-drill-progress" id="typing-drill-progress"></span>
+                <span class="typing-drill-timer" id="typing-drill-timer">00:00</span>
+              </div>
+              <div class="typing-drill-target" id="typing-drill-target"></div>
+              <div class="typing-drill-input-row">
+                <input
+                  id="typing-drill-input"
+                  type="text"
+                  inputmode="text"
+                  autocomplete="off"
+                  autocapitalize="none"
+                  spellcheck="false"
+                  placeholder="Type to strike..."
+                />
+                <button id="typing-drill-start" class="primary" type="button">Start Drill</button>
+                <button id="typing-drill-reset" class="ghost" type="button">Reset</button>
+              </div>
+              <div class="typing-drill-metrics">
+                <div>
+                  <span class="metric-label">Accuracy</span>
+                  <span class="metric-value" id="typing-drill-accuracy">100%</span>
+                </div>
+                <div>
+                  <span class="metric-label">Combo</span>
+                  <span class="metric-value" id="typing-drill-combo">x0</span>
+                </div>
+                <div>
+                  <span class="metric-label">WPM</span>
+                  <span class="metric-value" id="typing-drill-wpm">0</span>
+                </div>
+                <div>
+                  <span class="metric-label">Words</span>
+                  <span class="metric-value" id="typing-drill-words">0</span>
+                </div>
+              </div>
+              <div class="typing-drill-summary" id="typing-drill-summary" data-visible="false">
+                <p class="summary-title">Drill Summary</p>
+                <ul>
+                  <li>
+                    <span>Elapsed</span><span id="typing-drill-summary-time">0s</span>
+                  </li>
+                  <li>
+                    <span>Accuracy</span><span id="typing-drill-summary-accuracy">100%</span>
+                  </li>
+                  <li>
+                    <span>Best Combo</span><span id="typing-drill-summary-combo">x0</span>
+                  </li>
+                  <li>
+                    <span>Words Cleared</span><span id="typing-drill-summary-words">0</span>
+                  </li>
+                  <li>
+                    <span>Errors</span><span id="typing-drill-summary-errors">0</span>
+                  </li>
+                </ul>
+                <p class="summary-tip" id="typing-drill-summary-tip"></p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

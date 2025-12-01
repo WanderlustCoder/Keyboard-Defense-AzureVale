@@ -43,6 +43,7 @@ This reference captures the structure of the JSON snapshots downloaded from the 
 | `analytics.waveHistory` | `WaveSummary[]` | Full session wave history (capped at 100 entries) retained for in-session review. |
 | `analytics.comboWarning` | object | Combo warning accuracy delta analytics (see **Combo Warning Analytics** below). |
 | `analytics.audioIntensityHistory` | array | Chronological list of audio intensity adjustments `{ timestampMs, gameTime, waveIndex, combo, accuracy, from, to, source }` for telemetry/correlation. |
+| `analytics.typingDrills` | array | Recorded typing drill summaries from the drills overlay (see **Typing Drill Analytics** below). |
 | `analytics.wavePerfectWords` | number | Perfect words recorded so far in the active wave. |
 | `analytics.waveBonusGold` | number | Bonus gold earned in the active wave prior to finalisation. |
 | `telemetry` | object | Telemetry opt-in metadata captured alongside the snapshot (see table below). |
@@ -50,6 +51,7 @@ This reference captures the structure of the JSON snapshots downloaded from the 
 > Need a flattened unlock timeline for dashboards? Run `npm run analytics:passives` (new CLI) to emit the `analytics.castlePassiveUnlocks` array as JSON or CSV. For CI/automation that already runs `analyticsAggregate`, pass `--passive-summary <json> [--passive-summary-csv <csv>] [--passive-summary-md <md>]` so the aggregation step also writes passive unlock artifacts alongside the main CSV.
 
 > The CSV emitted by `analyticsAggregate.mjs` retains these fields as columns: `sessionBreaches`, `sessionBestCombo`, `totalDamageDealt`, `totalTurretDamage`, `totalTypingDamage`, `totalShieldBreaks`, `totalCastleRepairs`, `totalRepairHealth`, `totalRepairGold`, `totalPerfectWords`, `totalBonusGold`, `totalCastleBonusGold`, `totalReactionTime`, `reactionSamples`, `averageTotalDps`, `averageTurretDps`, `averageTypingDps`, per-wave `perfectWords`, `averageReaction`, `bonusGold`, `castleBonusGold`, the serialized `turretStats` column, plus the combo warning analytics (`comboWarningCount`, `comboWarningDeltaLast`, `comboWarningDeltaAvg`, `comboWarningDeltaMin`, `comboWarningDeltaMax`, `comboWarningHistory`) and audio telemetry columns (`audioIntensitySamples`, `audioIntensityAvg`, `audioIntensityDelta`, `audioIntensityComboCorrelation`, `audioIntensityAccuracyCorrelation`).
+> Typing drills are exported too: `typingDrillCount`, `typingDrillLastMode`, `typingDrillLastSource`, `typingDrillLastAccuracyPct`, `typingDrillLastWpm`, `typingDrillLastBestCombo`, `typingDrillLastWords`, `typingDrillLastErrors`, `typingDrillLastTimestamp`, and a compact `typingDrillHistory` string.
 
 ### Combo Warning Analytics
 
@@ -64,6 +66,24 @@ This reference captures the structure of the JSON snapshots downloaded from the 
 | `comboWarning.history` | array | Rolling buffer of warning entries `{ timestamp, waveIndex, comboBefore, comboAfter, accuracy, baselineAccuracy, deltaPercent, durationMs }` (capped so snapshots remain small). |
 
 Each warning also emits a telemetry envelope named `combat.comboWarningDelta` containing `{ comboBefore, comboAfter, deltaPercent, durationMs, timeSinceLastWarningMs }` so CI and dashboards can flag accuracy swings without parsing the raw snapshots.
+
+### Typing Drill Analytics
+
+When players run the typing drills overlay, each finished drill is appended to `analytics.typingDrills`.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `typingDrills[].mode` | `"burst" \| "endurance" \| "precision"` | Drill variant that ran. |
+| `typingDrills[].source` | string | Where the drill launched from (`menu`, `options`, `cta`, `practice`, `debug`, or custom). |
+| `typingDrills[].elapsedMs` | number | Duration of the drill in milliseconds. |
+| `typingDrills[].accuracy` | number (0-1) | Accuracy achieved during the drill. |
+| `typingDrills[].bestCombo` | number | Highest combo reached during the drill. |
+| `typingDrills[].words` | number | Words cleared during the drill. |
+| `typingDrills[].errors` | number | Total errors recorded during the drill. |
+| `typingDrills[].wpm` | number | Gross WPM approximation (based on correct characters / 5 per minute). |
+| `typingDrills[].timestamp` | number | Epoch milliseconds when the drill finished. |
+
+CSV columns flatten the latest drill and a compact history: `typingDrillCount`, `typingDrillLastMode`, `typingDrillLastSource`, `typingDrillLastAccuracyPct`, `typingDrillLastWpm`, `typingDrillLastBestCombo`, `typingDrillLastWords`, `typingDrillLastErrors`, `typingDrillLastTimestamp`, `typingDrillHistory`.
 
 ## Taunt Metadata
 

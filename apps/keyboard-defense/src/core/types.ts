@@ -193,6 +193,27 @@ export interface TypingState {
   dynamicDifficultyBias: number;
 }
 
+export type TypingDrillMode = "burst" | "endurance" | "precision";
+export type TypingDrillSource =
+  | "menu"
+  | "options"
+  | "cta"
+  | "practice"
+  | "debug"
+  | (string & Record<string, never>);
+
+export interface TypingDrillSummary {
+  mode: TypingDrillMode;
+  source: TypingDrillSource;
+  elapsedMs: number;
+  accuracy: number;
+  bestCombo: number;
+  words: number;
+  errors: number;
+  wpm: number;
+  timestamp: number;
+}
+
 export interface ComboWarningHistoryEntry {
   timestamp: number;
   waveIndex: number;
@@ -336,6 +357,7 @@ export interface GameAnalyticsState {
   tutorial: TutorialAnalyticsState;
   comboWarning: ComboWarningAnalyticsState;
   starfield: StarfieldAnalyticsState | null;
+  typingDrills: TypingDrillSummary[];
 }
 
 export interface WaveSummary {

@@ -225,6 +225,25 @@
             "additionalProperties": false
           }
         },
+        "typingDrills": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["mode", "source", "elapsedMs", "accuracy", "bestCombo", "words", "errors", "wpm", "timestamp"],
+            "properties": {
+              "mode": { "type": "string" },
+              "source": { "type": "string" },
+              "elapsedMs": { "type": ["number", "null"], "minimum": 0 },
+              "accuracy": { "type": ["number", "null"] },
+              "bestCombo": { "type": ["number", "null"] },
+              "words": { "type": ["number", "null"] },
+              "errors": { "type": ["number", "null"] },
+              "wpm": { "type": ["number", "null"] },
+              "timestamp": { "type": ["number", "null"] }
+            },
+            "additionalProperties": false
+          }
+        },
         "taunt": {
           "type": "object",
           "required": ["active", "history"],

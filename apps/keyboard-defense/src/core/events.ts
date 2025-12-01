@@ -7,7 +7,8 @@ import {
   type TurretSlotState,
   type TurretTargetPriority,
   type WaveSummary,
-  type DefeatBurstMode
+  type DefeatBurstMode,
+  type TypingDrillSummary
 } from "./types.js";
 
 export interface GameEvents extends Record<string, unknown> {
@@ -36,6 +37,7 @@ export interface GameEvents extends Record<string, unknown> {
   "projectile:impact": { projectile: ProjectileState; enemyId: string | null };
   "wave:bonus": { waveIndex: number; type: "perfect-words"; count: number; gold: number };
   "analytics:wave-summary": WaveSummary;
+  "analytics:typing-drill": TypingDrillSummary;
   "state:snapshot": GameState;
   "tutorial:event": { stepId: string | null; event: string; timeInStep: number };
   "combat:defeat-burst": { enemy: EnemyState; mode: DefeatBurstMode };

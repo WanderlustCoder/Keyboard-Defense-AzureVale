@@ -425,12 +425,16 @@ export class HudView {
             const viewerFilter = rootIds.analyticsViewer.filterSelect
                 ? document.getElementById(rootIds.analyticsViewer.filterSelect)
                 : null;
+            const drillsContainer = rootIds.analyticsViewer.drills
+                ? document.getElementById(rootIds.analyticsViewer.drills)
+                : null;
             if (viewerContainer instanceof HTMLElement &&
                 isElementWithTag(viewerBody, "tbody")) {
                 this.analyticsViewer = {
                     container: viewerContainer,
                     tableBody: viewerBody,
-                    filterSelect: viewerFilter instanceof HTMLSelectElement ? viewerFilter : undefined
+                    filterSelect: viewerFilter instanceof HTMLSelectElement ? viewerFilter : undefined,
+                    drills: drillsContainer instanceof HTMLElement ? drillsContainer : undefined
                 };
                 this.analyticsViewerVisible = viewerContainer.dataset.visible === "true";
                 viewerContainer.setAttribute("aria-hidden", this.analyticsViewerVisible ? "false" : "true");
@@ -2625,11 +2629,79 @@ export class HudView {
     isAnalyticsViewerVisible() {
         return this.analyticsViewerVisible;
     }
+    updateAnalyticsViewerDrills() {
+        if (!this.analyticsViewer?.drills) {
+            return;
+        }
+        const container = this.analyticsViewer.drills;
+        container.replaceChildren();
+        const drills = this.lastState?.analytics?.typingDrills ?? [];
+        if (!Array.isArray(drills) || drills.length === 0) {
+            const empty = document.createElement("div");
+            empty.textContent = "Typing drills: none run yet.";
+            container.appendChild(empty);
+            return;
+        }
+        const last = drills[drills.length - 1];
+        const headline = document.createElement("div");
+        headline.className = "analytics-drills__headline";
+        headline.textContent = `Typing drills (${drills.length})`;
+        const meta = document.createElement("div");
+        meta.className = "analytics-drills__meta";
+        const mode = document.createElement("span");
+        mode.className = "analytics-drills__pill";
+        mode.textContent = `${last.mode}${last.source ? ` @${last.source}` : ""}`;
+        const accuracy = document.createElement("span");
+        accuracy.className = "analytics-drills__pill";
+        const accuracyPct = typeof last.accuracy === "number" && Number.isFinite(last.accuracy)
+            ? Math.round(Math.max(0, Math.min(1, last.accuracy)) * 100)
+            : null;
+        accuracy.textContent = accuracyPct !== null ? `${accuracyPct}% acc` : "acc ?";
+        const wpm = document.createElement("span");
+        wpm.className = "analytics-drills__pill";
+        const wpmValue = typeof last.wpm === "number" && Number.isFinite(last.wpm) ? Math.round(last.wpm) : null;
+        wpm.textContent = wpmValue !== null ? `${wpmValue} wpm` : "wpm ?";
+        const combo = document.createElement("span");
+        combo.className = "analytics-drills__pill";
+        combo.textContent =
+            typeof last.bestCombo === "number" && Number.isFinite(last.bestCombo)
+                ? `combo x${last.bestCombo}`
+                : "combo ?";
+        const words = document.createElement("span");
+        words.className = "analytics-drills__pill";
+        const wordsText = typeof last.words === "number" && Number.isFinite(last.words) ? `${last.words} words` : "? words";
+        const errorsText = typeof last.errors === "number" && Number.isFinite(last.errors)
+            ? `${last.errors} errors`
+            : "? errors";
+        words.textContent = `${wordsText}, ${errorsText}`;
+        meta.append(mode, accuracy, wpm, combo, words);
+        const history = document.createElement("div");
+        history.className = "analytics-drills__history";
+        const recent = drills.slice(-3).reverse();
+        const historyText = recent
+            .map((entry) => {
+            const acc = typeof entry.accuracy === "number" && Number.isFinite(entry.accuracy)
+                ? `${Math.round(Math.max(0, Math.min(1, entry.accuracy)) * 100)}%`
+                : "?%";
+            const comboLabel = typeof entry.bestCombo === "number" && Number.isFinite(entry.bestCombo)
+                ? `x${entry.bestCombo}`
+                : "x?";
+            const wpmLabel = typeof entry.wpm === "number" && Number.isFinite(entry.wpm)
+                ? `${Math.round(entry.wpm)}wpm`
+                : "?wpm";
+            const sourceLabel = entry.source ? `@${entry.source}` : "";
+            return `${entry.mode}${sourceLabel} ${acc} ${comboLabel} ${wpmLabel}`;
+        })
+            .join(" | ");
+        history.textContent = historyText;
+        container.append(headline, meta, history);
+    }
     refreshAnalyticsViewer(summaries, options = {}) {
         if (!this.analyticsViewer) {
             return;
         }
         const { force = false, timeToFirstTurret = null } = options;
+        this.updateAnalyticsViewerDrills();
         const fallbackMode = this.lastState?.mode ?? "campaign";
         const filteredSummaries = this.applyAnalyticsViewerFilter(summaries);
         const signatureSource = filteredSummaries.length === 0

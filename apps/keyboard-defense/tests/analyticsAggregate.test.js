@@ -249,12 +249,38 @@ test("analyticsAggregate summarizes wave data into CSV", async () => {
           tint: "#fbbf24",
           waveProgress: 0.66,
           castleHealthRatio: 0.72,
+          severity: 0.58,
+          reducedMotionApplied: true,
           layers: [
             { id: "backdrop", velocity: 0.005, direction: -1, depth: 0.45 },
             { id: "mid", velocity: 0.012, direction: -1, depth: 0.75 },
             { id: "foreground", velocity: 0.02, direction: 1, depth: 1.1 }
           ]
         },
+        typingDrills: [
+          {
+            mode: "burst",
+            source: "cta",
+            elapsedMs: 6000,
+            accuracy: 0.95,
+            bestCombo: 4,
+            words: 5,
+            errors: 1,
+            wpm: 52.3,
+            timestamp: 1733044800000
+          },
+          {
+            mode: "endurance",
+            source: "options",
+            elapsedMs: 30000,
+            accuracy: 0.88,
+            bestCombo: 3,
+            words: 12,
+            errors: 5,
+            wpm: 44.2,
+            timestamp: 1733044860000
+          }
+        ],
         waveSummaries: [
           {
             index: 1,
@@ -406,39 +432,39 @@ test("analyticsAggregate summarizes wave data into CSV", async () => {
       "telemetryAvailable",
       "telemetryEnabled",
     "telemetryEndpoint",
-    "telemetryQueueSize",
-    "soundEnabled",
-    "soundVolume",
-    "soundIntensity",
-    "uiCompactHeight",
-    "uiTutorialCondensed",
-    "uiTutorialExpanded",
-    "uiHudPassivesCollapsed",
-    "uiHudGoldEventsCollapsed",
-    "uiHudPrefersCondensed",
-    "uiHudLayout",
-    "uiOptionsPassivesCollapsed",
-    "uiResolutionCssWidth",
-    "uiResolutionCssHeight",
+      "telemetryQueueSize",
+      "soundEnabled",
+      "soundVolume",
+      "soundIntensity",
+      "uiCompactHeight",
+      "uiTutorialCondensed",
+      "uiTutorialExpanded",
+      "uiHudPassivesCollapsed",
+      "uiHudGoldEventsCollapsed",
+      "uiHudPrefersCondensed",
+      "uiHudLayout",
+      "uiOptionsPassivesCollapsed",
+      "uiResolutionCssWidth",
+      "uiResolutionCssHeight",
       "uiResolutionRenderWidth",
       "uiResolutionRenderHeight",
       "uiResolutionDevicePixelRatio",
       "uiResolutionLastCause",
       "uiResolutionHudLayout",
-    "uiResolutionChangeCount",
-    "uiResolutionChanges",
-    "uiDiagnosticsCondensed",
-    "uiDiagnosticsSectionsCollapsed",
-    "uiDiagnosticsCollapsedSections",
-    "uiDiagnosticsLastUpdatedAt",
-    "uiPrefHudPassivesCollapsed",
-    "uiPrefHudGoldEventsCollapsed",
-    "uiPrefOptionsPassivesCollapsed",
-    "uiPrefDiagnosticsSections",
-    "uiPrefDiagnosticsSectionsUpdatedAt",
-    "uiPrefDevicePixelRatio",
-    "uiPrefHudLayout",
-    "timeToFirstTurret",
+      "uiResolutionChangeCount",
+      "uiResolutionChanges",
+      "uiDiagnosticsCondensed",
+      "uiDiagnosticsSectionsCollapsed",
+      "uiDiagnosticsCollapsedSections",
+      "uiDiagnosticsLastUpdatedAt",
+      "uiPrefHudPassivesCollapsed",
+      "uiPrefHudGoldEventsCollapsed",
+      "uiPrefOptionsPassivesCollapsed",
+      "uiPrefDiagnosticsSections",
+      "uiPrefDiagnosticsSectionsUpdatedAt",
+      "uiPrefDevicePixelRatio",
+      "uiPrefHudLayout",
+      "timeToFirstTurret",
       "waveIndex",
       "waveTotal",
       "mode",
@@ -465,7 +491,7 @@ test("analyticsAggregate summarizes wave data into CSV", async () => {
     "passiveUnlockCount",
     "lastPassiveUnlock",
     "castlePassiveUnlocks",
-    "goldEventsTracked",
+      "goldEventsTracked",
       "lastGoldDelta",
       "lastGoldEventTime",
       "tauntActive",
@@ -477,6 +503,16 @@ test("analyticsAggregate summarizes wave data into CSV", async () => {
       "tauntId",
       "tauntCountPerWave",
       "tauntUniqueLines",
+      "typingDrillCount",
+      "typingDrillLastMode",
+      "typingDrillLastSource",
+      "typingDrillLastAccuracyPct",
+      "typingDrillLastWpm",
+      "typingDrillLastBestCombo",
+      "typingDrillLastWords",
+      "typingDrillLastErrors",
+      "typingDrillLastTimestamp",
+      "typingDrillHistory",
       "defeatBurstCount",
       "defeatBurstSpriteCount",
       "defeatBurstProceduralCount",
@@ -485,18 +521,20 @@ test("analyticsAggregate summarizes wave data into CSV", async () => {
       "defeatBurstLastEnemyType",
       "defeatBurstLastLane",
       "defeatBurstLastMode",
-    "defeatBurstLastTimestamp",
-    "defeatBurstHistory",
-    "starfieldDepth",
-    "starfieldDrift",
-    "starfieldTint",
-    "starfieldWaveProgress",
-    "starfieldCastleRatio",
-    "starfieldLayers",
-    "goldEarned",
-    "maxCombo",
-    "sessionBestCombo",
-    "sessionBreaches",
+      "defeatBurstLastTimestamp",
+      "defeatBurstHistory",
+      "starfieldDepth",
+      "starfieldDrift",
+      "starfieldTint",
+      "starfieldWaveProgress",
+      "starfieldCastleRatio",
+      "starfieldSeverity",
+      "starfieldReducedMotionApplied",
+      "starfieldLayers",
+      "goldEarned",
+      "maxCombo",
+      "sessionBestCombo",
+      "sessionBreaches",
       "totalDamageDealt",
       "totalTurretDamage",
       "totalTypingDamage",
@@ -627,7 +665,9 @@ test("analyticsAggregate summarizes wave data into CSV", async () => {
     assert.equal(firstRow.starfieldTint, "#fbbf24");
     assert.equal(firstRow.starfieldWaveProgress, "66");
     assert.equal(firstRow.starfieldCastleRatio, "72");
-    assert.equal(firstRow.starfieldLayers, "backdrop:0.005← | mid:0.012← | foreground:0.02→");
+    assert.equal(firstRow.starfieldSeverity, "58");
+    assert.equal(firstRow.starfieldReducedMotionApplied, "true");
+    assert.equal(firstRow.starfieldLayers, "backdrop:0.005← (z 0.45) | mid:0.012← (z 0.75) | foreground:0.02→ (z 1.1)");
     assert.equal(firstRow.passiveUnlockCount, "2");
     assert.ok(firstRow.lastPassiveUnlock.startsWith("Gold"));
     assert.ok(firstRow.castlePassiveUnlocks.includes("Regen"));
@@ -643,6 +683,19 @@ test("analyticsAggregate summarizes wave data into CSV", async () => {
     assert.equal(firstRow.tauntId, "brute_intro");
     assert.equal(firstRow.tauntCountPerWave, "W2:1");
     assert.equal(firstRow.tauntUniqueLines, "I'll crack your walls!");
+    assert.equal(firstRow.typingDrillCount, "2");
+    assert.equal(firstRow.typingDrillLastMode, "endurance");
+    assert.equal(firstRow.typingDrillLastSource, "options");
+    assert.equal(firstRow.typingDrillLastAccuracyPct, "88");
+    assert.equal(firstRow.typingDrillLastWpm, "44.2");
+    assert.equal(firstRow.typingDrillLastBestCombo, "3");
+    assert.equal(firstRow.typingDrillLastWords, "12");
+    assert.equal(firstRow.typingDrillLastErrors, "5");
+    assert.equal(firstRow.typingDrillLastTimestamp, "1733044860000");
+    assert.equal(
+      firstRow.typingDrillHistory,
+      "burst@cta:95% 52.3wpm x4/5w/1err | endurance@options:88% 44.2wpm x3/12w/5err"
+    );
     assert.equal(firstRow.defeatBurstCount, "12");
     assert.equal(firstRow.defeatBurstSpriteCount, "3");
     assert.equal(firstRow.defeatBurstProceduralCount, "9");
@@ -658,6 +711,8 @@ test("analyticsAggregate summarizes wave data into CSV", async () => {
     assert.equal(firstRow.starfieldTint, "#fbbf24");
     assert.equal(firstRow.starfieldWaveProgress, "66");
     assert.equal(firstRow.starfieldCastleRatio, "72");
+    assert.equal(firstRow.starfieldSeverity, "58");
+    assert.equal(firstRow.starfieldReducedMotionApplied, "true");
     assert.match(firstRow.starfieldLayers, /backdrop:0\.005/);
     assert.equal(firstRow.totalReactionTime, "5.4");
     assert.equal(firstRow.reactionSamples, "4");
@@ -726,6 +781,11 @@ test("analyticsAggregate summarizes wave data into CSV", async () => {
     );
     assert.equal(secondRow.uiPrefDevicePixelRatio, "1.5");
     assert.equal(secondRow.uiPrefHudLayout, "condensed");
+    assert.equal(secondRow.typingDrillCount, "2");
+    assert.equal(
+      secondRow.typingDrillHistory,
+      "burst@cta:95% 52.3wpm x4/5w/1err | endurance@options:88% 44.2wpm x3/12w/5err"
+    );
 
     const thirdRow = toRow(lines[3]);
     assert.ok(thirdRow.file.endsWith("snapshot-b.json"));
@@ -778,6 +838,10 @@ test("analyticsAggregate summarizes wave data into CSV", async () => {
     assert.equal(thirdRow.castleBonusGold, "");
     assert.equal(thirdRow.totalCastleBonusGold, "0");
     assert.equal(thirdRow.practiceMode, "no");
+    assert.equal(thirdRow.typingDrillCount, "0");
+    assert.equal(thirdRow.typingDrillHistory, "");
+    assert.equal(thirdRow.typingDrillLastMode, "");
+    assert.equal(thirdRow.typingDrillLastSource, "");
     assert.equal(thirdRow.turretStats, "");
     assert.equal(thirdRow.accuracy, "0.97");
     assert.equal(thirdRow.maxCombo, "7");

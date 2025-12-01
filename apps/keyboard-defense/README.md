@@ -12,12 +12,13 @@ Keyboard Defense is a typing-driven castle defense game where fast, accurate inp
 - Crystal Pulse turret archetype (feature toggle) that deals bonus shield damage to counter barrier-heavy waves.
 - Analytics tracking for wave summaries, accuracy, breaches, and DPS.
 - HUD with combo tracking, battle log, resource deltas, and an upcoming-enemy preview panel sourced from the wave scheduler.
-- Asset manifest with SHA-256 integrity hashes—sprites fail closed when tampering or corruption is detected at load time.
+- Asset manifest with SHA-256 integrity hashes; sprites fail closed when tampering or corruption is detected at load time.
 - Debug overlay and `window.keyboardDefense` hooks for runtime inspection and mutation.
 - Optional Web Audio feedback for projectile launches, impacts, breaches, and upgrades.
 - Procedural enemy defeat bursts with easing-driven gradients so kills feel readable even before bespoke sprites ship.
 - Accessibility and comfort toggles for reduced motion, readable fonts, adjustable HUD scale, an audio intensity slider, and a colorblind-friendly palette.
 - Endless practice mode accessible from the main menu, looping waves indefinitely for warm-up runs.
+- Typing drills overlay (Burst, Endurance, Shield Breaker) that lets players warm up combos and accuracy without risking the castle.
 
 ## Getting Started
 

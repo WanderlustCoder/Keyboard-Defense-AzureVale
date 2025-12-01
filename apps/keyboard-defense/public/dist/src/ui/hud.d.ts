@@ -99,6 +99,7 @@ type AnalyticsViewerElements = {
     container: string;
     tableBody: string;
     filterSelect?: string;
+    drills?: string;
 };
 type WaveScorecardElements = {
     container: string;
@@ -377,6 +378,7 @@ export declare class HudView {
     private getSelectValue;
     setAnalyticsViewerVisible(visible: boolean): boolean;
     isAnalyticsViewerVisible(): boolean;
+    private updateAnalyticsViewerDrills;
     private refreshAnalyticsViewer;
     private setOptionsOverlayVisible;
 }

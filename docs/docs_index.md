@@ -42,6 +42,7 @@ Use this index to jump straight to the guidance you'll need while building and t
 
 ## Status Notes
 Status entries live under `docs/status/`. Recent highlights include:
+- `2025-12-01_typing_drills.md` - Typing drills overlay (Burst/Endurance/Shield Breaker) with HUD CTA, pause-safe flow, and analytics export columns.
 - `2025-11-21_semantic_release.md` - Release automation (semantic-release, release workflow, bundle manifest) plus documentation updates for Codex operators.
 - `2025-11-29_ci_matrix_nightly.md` - Nightly scenario matrix workflow (asset integrity, HUD screenshots, condensed audit) with uploaded summaries/artifacts.
 - `docs/nightly_ops.md` - Cheat sheet for dispatching nightly workflows, artifacts to expect, and quick recovery commands.

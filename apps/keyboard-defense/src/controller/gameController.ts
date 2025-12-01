@@ -1,7 +1,8 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 import { defaultConfig } from "../core/config.js";
-import { type StarfieldAnalyticsState } from "../core/types.js";
+import { defaultWordBank } from "../core/wordBank.js";
+import { type StarfieldAnalyticsState, type TypingDrillSummary } from "../core/types.js";
 import { GameEngine } from "../engine/gameEngine.js";
 import { CanvasRenderer } from "../rendering/canvasRenderer.js";
 import {
@@ -10,6 +11,7 @@ import {
 } from "../ui/ResolutionTransitionController.js";
 import { HudView } from "../ui/hud.js";
 import { DiagnosticsOverlay } from "../ui/diagnostics.js";
+import { TypingDrillsOverlay } from "../ui/typingDrills.js";
 import { DebugApi } from "../debug/debugApi.js";
 import { SoundManager } from "../audio/soundManager.js";
 import { AssetLoader, toSvgDataUri } from "../assets/assetLoader.js";
@@ -136,6 +138,10 @@ export class GameController {
     this.menuActive = false;
     this.tutorialCompleted = false;
     this.pendingTutorialSummary = null;
+    this.typingDrills = null;
+    this.typingDrillsOverlayActive = false;
+    this.shouldResumeAfterDrills = false;
+    this.reopenOptionsAfterDrills = false;
     this.practiceMode = false;
     this.allTurretArchetypes = Object.create(null);
     this.enabledTurretTypes = new Set();
@@ -299,6 +305,12 @@ export class GameController {
           container: "wave-scorecard",
           stats: "wave-scorecard-stats",
           continue: "wave-scorecard-continue"
+        },
+        analyticsViewer: {
+          container: "debug-analytics-viewer",
+          tableBody: "debug-analytics-viewer-body",
+          filterSelect: "debug-analytics-viewer-filter",
+          drills: "debug-analytics-drills"
         }
       },
       {
@@ -357,6 +369,7 @@ export class GameController {
     this.initializePlayerSettings();
     this.hud.setAnalyticsExportEnabled(this.analyticsExportEnabled);
     this.attachInputHandlers(options.typingInput);
+    this.attachTypingDrillHooks();
     this.attachDebugButtons();
     this.attachGlobalShortcuts();
     this.registerHudListeners();
@@ -547,6 +560,7 @@ export class GameController {
     const skipBtn = document.getElementById("main-menu-skip-tutorial");
     const replayBtn = document.getElementById("main-menu-replay-tutorial");
     const practiceBtn = document.getElementById("main-menu-practice-mode");
+    const drillsBtn = document.getElementById("main-menu-typing-drills");
     const telemetryWrapper = document.getElementById("main-menu-telemetry-toggle-wrapper");
     const telemetryToggle = document.getElementById("main-menu-telemetry-toggle");
     const crystalWrapper = document.getElementById("main-menu-crystal-toggle-wrapper");
@@ -594,6 +608,11 @@ export class GameController {
         overlay.dataset.visible = "false";
         this.menuActive = false;
         this.startPracticeMode();
+      });
+    }
+    if (drillsBtn instanceof HTMLButtonElement) {
+      drillsBtn.addEventListener("click", () => {
+        this.openTypingDrills("menu");
       });
     }
 
@@ -690,6 +709,11 @@ export class GameController {
       this.lastTimestamp = null;
       return;
     }
+    if (this.typingDrillsOverlayActive) {
+      this.running = false;
+      this.lastTimestamp = null;
+      return;
+    }
     if (!this.assetReady) {
       this.running = false;
       this.lastTimestamp = null;
@@ -709,6 +733,10 @@ export class GameController {
   }
   togglePause() {
     if (this.menuActive || this.waveScorecardActive) return;
+    if (this.typingDrillsOverlayActive) {
+      this.closeTypingDrills();
+      return;
+    }
     if (this.optionsOverlayActive) {
       this.closeOptionsOverlay();
     } else {
@@ -1695,6 +1723,9 @@ export class GameController {
     this.setSoundEnabled(!this.soundEnabled);
   }
   openOptionsOverlay() {
+    if (this.typingDrillsOverlayActive) {
+      return;
+    }
     if (this.optionsOverlayActive || this.menuActive || this.waveScorecardActive) {
       return;
     }
@@ -1732,6 +1763,67 @@ export class GameController {
     this.resumeAfterOptions = false;
     if (shouldResume) {
       this.resume();
+    }
+  }
+  openTypingDrills(source = "cta") {
+    if (!this.typingDrills) return;
+    if (this.typingDrillsOverlayActive && this.typingDrills.isVisible()) {
+      this.typingDrills.reset();
+      return;
+    }
+    const fromOptions = this.optionsOverlayActive;
+    if (fromOptions) {
+      this.closeOptionsOverlay({ resume: false });
+      this.reopenOptionsAfterDrills = true;
+    } else {
+      this.reopenOptionsAfterDrills = false;
+    }
+    const wasRunning = this.running && !this.manualTick;
+    if (wasRunning) {
+      this.pause();
+    }
+    this.shouldResumeAfterDrills =
+      wasRunning && !this.menuActive && !this.waveScorecardActive && !fromOptions;
+    this.typingDrillsOverlayActive = true;
+    this.typingDrills.open(undefined, source);
+  }
+  closeTypingDrills() {
+    if (!this.typingDrillsOverlayActive || !this.typingDrills) {
+      return;
+    }
+    this.typingDrills.close();
+  }
+  handleTypingDrillsClosed() {
+    this.typingDrillsOverlayActive = false;
+    const shouldReopenOptions = this.reopenOptionsAfterDrills;
+    this.reopenOptionsAfterDrills = false;
+    if (shouldReopenOptions) {
+      this.openOptionsOverlay();
+      this.resumeAfterOptions = false;
+      return;
+    }
+    const shouldResume =
+      this.shouldResumeAfterDrills &&
+      !this.menuActive &&
+      !this.waveScorecardActive &&
+      !this.optionsOverlayActive &&
+      !this.manualTick;
+    this.shouldResumeAfterDrills = false;
+    if (shouldResume) {
+      this.resume();
+    } else if (!this.menuActive) {
+      this.hud.focusTypingInput();
+    }
+  }
+  recordTypingDrillSummary(summary: TypingDrillSummary) {
+    try {
+      const entry = this.engine.recordTypingDrill(summary);
+      const percent = Math.round(Math.max(0, Math.min(100, entry.accuracy * 100)));
+      this.hud.appendLog(
+        `Drill (${entry.mode}) ${percent}% acc, ${entry.words} words, best combo x${entry.bestCombo}`
+      );
+    } catch (error) {
+      console.warn("[analytics] failed to record typing drill", error);
     }
   }
   presentWaveScorecard(summary) {
@@ -2572,8 +2664,32 @@ export class GameController {
   async waitForAssets() {
     await this.assetReadyPromise;
   }
+  attachTypingDrillHooks() {
+    const overlayRoot = document.getElementById("typing-drills-overlay");
+    if (overlayRoot instanceof HTMLElement) {
+      this.typingDrills = new TypingDrillsOverlay({
+        root: overlayRoot,
+        wordBank: defaultWordBank,
+        callbacks: {
+          onClose: () => this.handleTypingDrillsClosed(),
+          onSummary: (summary) => this.recordTypingDrillSummary(summary)
+        }
+      });
+    }
+    const ctaButton = document.getElementById("typing-drills-open");
+    if (ctaButton instanceof HTMLButtonElement) {
+      ctaButton.addEventListener("click", () => this.openTypingDrills("cta"));
+    }
+    const optionsButton = document.getElementById("options-typing-drills");
+    if (optionsButton instanceof HTMLButtonElement) {
+      optionsButton.addEventListener("click", () => this.openTypingDrills("options"));
+    }
+  }
   attachInputHandlers(typingInput) {
     const handler = (event) => {
+      if (this.typingDrillsOverlayActive) {
+        return;
+      }
       if (event.key === "Enter") {
         this.tutorialManager?.notify({ type: "ui:continue" });
         if (this.tutorialManager?.getState().active) {
@@ -2620,6 +2736,13 @@ export class GameController {
   attachGlobalShortcuts() {
     if (typeof window === "undefined") return;
     const handler = (event) => {
+      if (this.typingDrills?.isVisible?.()) {
+        if (event.key === "Escape") {
+          event.preventDefault();
+          this.closeTypingDrills();
+        }
+        return;
+      }
       if (this.hud.isWaveScorecardVisible()) {
         if (event.key === "Escape" || event.key === "Enter" || event.key === " ") {
           event.preventDefault();

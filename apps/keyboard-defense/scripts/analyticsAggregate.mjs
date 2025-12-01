@@ -291,6 +291,54 @@ function formatTauntUniqueLines(lines) {
     .join(" | ");
 }
 
+function summarizeTypingDrills(drills) {
+  if (!Array.isArray(drills) || drills.length === 0) {
+    return {
+      count: 0,
+      last: null,
+      history: ""
+    };
+  }
+  const normalized = drills
+    .map((entry) => {
+      if (!entry || typeof entry !== "object") return null;
+      const mode = typeof entry.mode === "string" ? entry.mode : "";
+      const source = typeof entry.source === "string" ? entry.source : "";
+      const accuracy = Number.isFinite(entry.accuracy) ? entry.accuracy : null;
+      const bestCombo = Number.isFinite(entry.bestCombo) ? entry.bestCombo : null;
+      const words = Number.isFinite(entry.words) ? entry.words : null;
+      const errors = Number.isFinite(entry.errors) ? entry.errors : null;
+      const wpm = Number.isFinite(entry.wpm) ? entry.wpm : null;
+      const elapsedMs = Number.isFinite(entry.elapsedMs) ? entry.elapsedMs : null;
+      const timestamp = Number.isFinite(entry.timestamp) ? entry.timestamp : null;
+      if (!mode && !source && accuracy === null) return null;
+      return { mode, source, accuracy, bestCombo, words, errors, wpm, elapsedMs, timestamp };
+    })
+    .filter((entry) => entry);
+  const last = normalized.at(-1) ?? null;
+  const history = normalized
+    .slice(-5)
+    .map((entry) => {
+      const mode = entry.mode || "drill";
+      const source = entry.source ? `@${entry.source}` : "";
+      const accuracy =
+        entry.accuracy !== null && entry.accuracy !== undefined
+          ? `${formatNumber(entry.accuracy * 100, 1)}%`
+          : "?";
+      const wpm = entry.wpm !== null && entry.wpm !== undefined ? `${formatNumber(entry.wpm, 1)}wpm` : "?wpm";
+      const combo = entry.bestCombo !== null && entry.bestCombo !== undefined ? `x${entry.bestCombo}` : "x?";
+      const words = entry.words !== null && entry.words !== undefined ? `${entry.words}w` : "?w";
+      const errors = entry.errors !== null && entry.errors !== undefined ? `${entry.errors}err` : "?err";
+      return `${mode}${source}:${accuracy} ${wpm} ${combo}/${words}/${errors}`;
+    })
+    .join(" | ");
+  return {
+    count: normalized.length,
+    last,
+    history
+  };
+}
+
 function* summarizeSnapshot(snapshot, sourcePath) {
   const summaries = snapshot?.analytics?.waveSummaries?.length
     ? snapshot.analytics.waveSummaries
@@ -649,6 +697,30 @@ function* summarizeSnapshot(snapshot, sourcePath) {
   metadata.tauntUniqueLines = formatTauntUniqueLines(
     Array.isArray(tauntState?.uniqueLines) ? tauntState.uniqueLines : []
   );
+  const typingDrills = summarizeTypingDrills(snapshot?.analytics?.typingDrills);
+  metadata.typingDrillCount = typingDrills.count;
+  metadata.typingDrillHistory = typingDrills.history;
+  const lastDrill = typingDrills.last;
+  metadata.typingDrillLastMode = lastDrill?.mode ?? "";
+  metadata.typingDrillLastSource = lastDrill?.source ?? "";
+  metadata.typingDrillLastAccuracyPct =
+    lastDrill?.accuracy !== null && lastDrill?.accuracy !== undefined
+      ? formatNumber(lastDrill.accuracy * 100, 1)
+      : "";
+  metadata.typingDrillLastWpm =
+    lastDrill?.wpm !== null && lastDrill?.wpm !== undefined
+      ? formatNumber(lastDrill.wpm, 1)
+      : "";
+  metadata.typingDrillLastBestCombo =
+    lastDrill?.bestCombo !== null && lastDrill?.bestCombo !== undefined
+      ? lastDrill.bestCombo
+      : "";
+  metadata.typingDrillLastWords =
+    lastDrill?.words !== null && lastDrill?.words !== undefined ? lastDrill.words : "";
+  metadata.typingDrillLastErrors =
+    lastDrill?.errors !== null && lastDrill?.errors !== undefined ? lastDrill.errors : "";
+  metadata.typingDrillLastTimestamp =
+    lastDrill?.timestamp !== null && lastDrill?.timestamp !== undefined ? lastDrill.timestamp : "";
 
   if (Array.isArray(summaries) && summaries.length > 0) {
     for (const summary of summaries) {
@@ -813,6 +885,16 @@ function printCsv(rows) {
     "tauntId",
     "tauntCountPerWave",
     "tauntUniqueLines",
+    "typingDrillCount",
+    "typingDrillLastMode",
+    "typingDrillLastSource",
+    "typingDrillLastAccuracyPct",
+    "typingDrillLastWpm",
+    "typingDrillLastBestCombo",
+    "typingDrillLastWords",
+    "typingDrillLastErrors",
+    "typingDrillLastTimestamp",
+    "typingDrillHistory",
     "defeatBurstCount",
     "defeatBurstSpriteCount",
     "defeatBurstProceduralCount",

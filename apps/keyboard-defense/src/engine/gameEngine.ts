@@ -20,6 +20,7 @@ import {
   type TurretTargetPriority,
   type TurretTypeId,
   type TutorialSummaryStats,
+  type TypingDrillSummary,
   type WaveSpawnPreview,
   type WaveSummary
 } from "../core/types.js";
@@ -36,6 +37,7 @@ import { type TelemetryClient } from "../telemetry/telemetryClient.js";
 const MAX_WAVE_HISTORY = 100;
 const MAX_GOLD_EVENTS = 200;
 const MAX_COMBO_WARNING_HISTORY = 20;
+const MAX_TYPING_DRILL_HISTORY = 20;
 const DEFAULT_TURRET_PRIORITY: TurretTargetPriority = "first";
 
 export interface TurretBlueprintSlot {
@@ -908,6 +910,26 @@ export class GameEngine {
     };
   }
 
+  recordTypingDrill(summary: TypingDrillSummary): TypingDrillSummary {
+    const normalized: TypingDrillSummary = {
+      ...summary,
+      elapsedMs: Math.max(0, summary.elapsedMs ?? 0),
+      accuracy: Math.max(0, Math.min(1, summary.accuracy ?? 0)),
+      bestCombo: Math.max(0, summary.bestCombo ?? 0),
+      words: Math.max(0, summary.words ?? 0),
+      errors: Math.max(0, summary.errors ?? 0),
+      wpm: Math.max(0, summary.wpm ?? 0),
+      timestamp: Number.isFinite(summary.timestamp) ? summary.timestamp : Date.now()
+    };
+    const drills = this.state.analytics.typingDrills;
+    drills.push(normalized);
+    if (drills.length > MAX_TYPING_DRILL_HISTORY) {
+      drills.splice(0, drills.length - MAX_TYPING_DRILL_HISTORY);
+    }
+    this.events.emit("analytics:typing-drill", normalized);
+    return normalized;
+  }
+
   getUpcomingSpawns(limit = 6): WaveSpawnPreview[] {
     return this.waveSystem.getUpcomingSpawns(this.state, limit);
   }
@@ -957,6 +979,7 @@ export class GameEngine {
     this.state.analytics.averageTypingDps = 0;
     this.state.analytics.timeToFirstTurret = null;
     this.state.analytics.waveTurretDamageBySlot = {};
+    this.state.analytics.typingDrills = [];
     this.resetPerWaveAnalytics(this.state.wave.inCountdown ? null : this.state.wave.index);
     this.recalculateAverageDps();
   }

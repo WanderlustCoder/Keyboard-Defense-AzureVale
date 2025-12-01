@@ -149,7 +149,8 @@ export function createInitialState(config: GameConfig): GameState {
         completedRuns: 0,
         replayedRuns: 0,
         skippedRuns: 0
-      }
+      },
+      typingDrills: []
     }
   };
 }

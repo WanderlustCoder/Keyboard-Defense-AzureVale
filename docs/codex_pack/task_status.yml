@@ -1,4 +1,4 @@
-updated: 2025-11-28
+updated: 2025-12-01
 tasks:
   ci-step-summary:
     state: done
@@ -121,5 +121,8 @@ tasks:
     state: done
     owner: codex
   hud-gallery-dedupe:
+    state: done
+    owner: codex
+  typing-drills-overlay:
     state: done
     owner: codex
