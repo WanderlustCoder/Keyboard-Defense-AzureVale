@@ -2083,6 +2083,18 @@ body[data-compact-height="true"] .tutorial-banner {
   letter-spacing: 0.02em;
 }
 
+.typing-drills-cta-reco {
+  margin: 2px 0 0;
+  font-size: 0.85rem;
+  color: #67e8f9;
+  letter-spacing: 0.02em;
+  display: none;
+}
+
+.typing-drills-cta-reco[data-visible="true"] {
+  display: block;
+}
+
 .typing-drills-cta-button {
   flex: 0 0 auto;
   border-radius: 10px;

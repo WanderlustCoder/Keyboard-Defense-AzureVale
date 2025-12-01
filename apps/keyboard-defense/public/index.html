@@ -59,18 +59,21 @@
           <div id="combo-stats">Combo x0</div>
           <div id="combo-accuracy-delta" role="status" aria-live="polite"></div>
           <input id="typing-input" autocomplete="off" autofocus placeholder="Type to attack..." />
-          <div class="typing-drills-cta" id="typing-drills-cta">
-            <div class="typing-drills-cta-text">
-            <p class="typing-drills-cta-title">Need a warmup?</p>
-            <p class="typing-drills-cta-copy">
-              Run quick drills to lock in rhythm without risking the castle.
-            </p>
-            <p class="typing-drills-cta-hint">Shortcut: Shift + R to launch recommended drill</p>
-          </div>
-          <button id="typing-drills-open" class="typing-drills-cta-button" type="button">
-            Launch drills
-          </button>
-        </div>
+            <div class="typing-drills-cta" id="typing-drills-cta">
+              <div class="typing-drills-cta-text">
+                <p class="typing-drills-cta-title">Need a warmup?</p>
+                <p class="typing-drills-cta-copy">
+                  Run quick drills to lock in rhythm without risking the castle.
+                </p>
+                <p class="typing-drills-cta-hint">Shortcut: Shift + R to launch recommended drill</p>
+                <p id="typing-drills-cta-reco" class="typing-drills-cta-reco" data-visible="false">
+                  Recommended: <span class="typing-drills-cta-reco-mode"></span>
+                </p>
+              </div>
+              <button id="typing-drills-open" class="typing-drills-cta-button" type="button">
+                Launch drills
+              </button>
+            </div>
         </section>
         <section class="wave-preview">
           <h2>Upcoming Enemies</h2>

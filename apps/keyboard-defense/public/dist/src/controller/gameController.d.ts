@@ -95,7 +95,12 @@ export declare class GameController {
     recordTypingDrillSummary(summary: TypingDrillSummary): void;
     handleTypingDrillStarted(mode: TypingDrillMode, source: string | undefined): void;
     trackTypingDrillCompleted(entry: TypingDrillSummary): void;
-    buildTypingDrillRecommendation(): {
+    getTypingDrillModeLabel(mode: TypingDrillMode): string;
+    setTypingDrillCtaRecommendation(recommendation: {
+        mode: TypingDrillMode;
+        reason?: string;
+    } | null): void;
+    buildTypingDrillRecommendation(state?: any): {
         mode: TypingDrillMode;
         reason: string;
     } | null;

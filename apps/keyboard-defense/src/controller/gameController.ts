@@ -146,6 +146,10 @@ export class GameController {
     this.typingDrillsOverlayActive = false;
     this.shouldResumeAfterDrills = false;
     this.reopenOptionsAfterDrills = false;
+    this.typingDrillCta = document.getElementById("typing-drills-cta-reco");
+    this.typingDrillCtaMode =
+      this.typingDrillCta?.querySelector?.(".typing-drills-cta-reco-mode") ?? null;
+    this.typingDrillCtaLastRecommendation = null;
     this.practiceMode = false;
     this.allTurretArchetypes = Object.create(null);
     this.enabledTurretTypes = new Set();
@@ -1793,6 +1797,7 @@ export class GameController {
       options?.mode && options?.reason
         ? { mode: options.mode, reason: options.reason }
         : this.buildTypingDrillRecommendation();
+    this.setTypingDrillCtaRecommendation(recommendation);
     if (recommendation) {
       this.typingDrills.setRecommendation(recommendation.mode, recommendation.reason);
     }
@@ -1840,6 +1845,7 @@ export class GameController {
         `Drill (${entry.mode}) ${percent}% acc, ${entry.words} words, best combo x${entry.bestCombo}`
       );
       this.trackTypingDrillCompleted(entry);
+      this.setTypingDrillCtaRecommendation(this.buildTypingDrillRecommendation());
     } catch (error) {
       console.warn("[analytics] failed to record typing drill", error);
     }
@@ -1879,15 +1885,78 @@ export class GameController {
       console.warn("[telemetry] failed to track typing drill completion", error);
     }
   }
-  buildTypingDrillRecommendation():
+  getTypingDrillModeLabel(mode: TypingDrillMode): string {
+    switch (mode) {
+      case "precision":
+        return "Shield Breaker";
+      case "endurance":
+        return "Endurance";
+      case "burst":
+      default:
+        return "Burst Warmup";
+    }
+  }
+  setTypingDrillCtaRecommendation(
+    recommendation: { mode: TypingDrillMode; reason?: string } | null
+  ) {
+    const container = this.typingDrillCta instanceof HTMLElement ? this.typingDrillCta : null;
+    if (!container) {
+      this.typingDrillCtaLastRecommendation = recommendation ? { ...recommendation } : null;
+      return;
+    }
+    const labelEl =
+      this.typingDrillCtaMode instanceof HTMLElement
+        ? this.typingDrillCtaMode
+        : container.querySelector?.(".typing-drills-cta-reco-mode");
+    if (!recommendation) {
+      container.dataset.visible = "false";
+      container.setAttribute("aria-hidden", "true");
+      container.removeAttribute("aria-label");
+      container.removeAttribute("title");
+      if (labelEl) {
+        labelEl.textContent = "";
+      }
+      this.typingDrillCtaLastRecommendation = null;
+      return;
+    }
+    const normalized = {
+      mode: recommendation.mode,
+      reason: recommendation.reason ?? ""
+    };
+    const unchanged =
+      this.typingDrillCtaLastRecommendation?.mode === normalized.mode &&
+      this.typingDrillCtaLastRecommendation?.reason === normalized.reason &&
+      container.dataset.visible === "true";
+    if (unchanged) {
+      return;
+    }
+    const label = this.getTypingDrillModeLabel(recommendation.mode);
+    if (labelEl) {
+      labelEl.textContent = label;
+    }
+    container.dataset.visible = "true";
+    container.setAttribute("aria-hidden", "false");
+    container.setAttribute("aria-label", `Recommended drill: ${label}`);
+    if (normalized.reason) {
+      container.setAttribute("title", normalized.reason);
+    } else {
+      container.removeAttribute("title");
+    }
+    this.typingDrillCtaLastRecommendation = normalized;
+  }
+  buildTypingDrillRecommendation(
+    state = this.engine.getState()
+  ):
     | { mode: TypingDrillMode; reason: string }
     | null {
-    const state = this.engine.getState();
+    if (!state) {
+      return null;
+    }
     const accuracy = typeof state.typing?.accuracy === "number" ? state.typing.accuracy : 1;
     const combo = typeof state.typing?.combo === "number" ? state.typing.combo : 0;
     const warnings = state.analytics?.comboWarning?.count ?? 0;
     const lastDrill = state.analytics?.typingDrills?.at?.(-1) ?? null;
-    if (accuracy < 0.9 || warnings > 0) {
+    if (accuracy < 0.9 || warnings > 1) {
       return { mode: "precision", reason: "Tighten accuracy after recent drops." };
     }
     if (combo >= 6 && accuracy >= 0.97) {
@@ -2670,6 +2739,8 @@ export class GameController {
     this.hud.update(this.currentState, upcoming, {
       colorBlindFriendly: this.colorblindPaletteEnabled || this.checkeredBackgroundEnabled
     });
+    const typingDrillRecommendation = this.buildTypingDrillRecommendation(this.currentState);
+    this.setTypingDrillCtaRecommendation(typingDrillRecommendation);
     const shieldForecast = this.hud.getShieldForecast();
     this.bestCombo = Math.max(this.bestCombo, this.currentState.typing.combo);
     const analytics = this.currentState.analytics;
