@@ -2067,6 +2067,13 @@ body[data-compact-height="true"] .tutorial-banner {
   color: #e2e8f0;
 }
 
+.typing-drills-cta-hint {
+  margin: 2px 0 0;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  letter-spacing: 0.02em;
+}
+
 .typing-drills-cta-button {
   flex: 0 0 auto;
   border-radius: 10px;
