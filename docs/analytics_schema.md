@@ -85,6 +85,8 @@ When players run the typing drills overlay, each finished drill is appended to `
 
 CSV columns flatten the latest drill and a compact history: `typingDrillCount`, `typingDrillLastMode`, `typingDrillLastSource`, `typingDrillLastAccuracyPct`, `typingDrillLastWpm`, `typingDrillLastBestCombo`, `typingDrillLastWords`, `typingDrillLastErrors`, `typingDrillLastTimestamp`, `typingDrillHistory`.
 
+> Telemetry mirrors the drills: `typing-drill.started` and `typing-drill.completed` envelopes include mode/source plus elapsed/accuracy/WPM/combo counts so dashboards can react to warmup usage without parsing full snapshots.
+
 ## Taunt Metadata
 
 When enemies spawn with scripted taunts the analytics payload captures the most recent line plus lightweight aggregates so dashboards/snapshots can highlight the context without replaying the session.

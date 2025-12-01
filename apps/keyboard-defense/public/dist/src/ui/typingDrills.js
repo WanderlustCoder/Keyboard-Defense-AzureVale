@@ -1,0 +1,489 @@
+import { defaultWordBank } from "../core/wordBank.js";
+const DRILL_CONFIGS = {
+    burst: {
+        label: "Burst Warmup",
+        description: "Clear five snappy words to warm up before battle.",
+        wordCount: 5,
+        difficulties: ["easy", "easy", "medium", "medium", "hard"]
+    },
+    endurance: {
+        label: "Endurance",
+        description: "Stay consistent for thirty seconds; cadence matters more than speed.",
+        timerMs: 30000,
+        difficulties: ["easy", "medium", "medium", "hard"]
+    },
+    precision: {
+        label: "Shield Breaker",
+        description: "Eight tougher strings. Errors reset the current word to mimic shield pressure.",
+        wordCount: 8,
+        difficulties: ["medium", "medium", "hard", "hard"],
+        penalizeErrors: true
+    }
+};
+export class TypingDrillsOverlay {
+    root;
+    wordBank;
+    callbacks;
+    modeButtons = [];
+    statusLabel;
+    progressLabel;
+    timerLabel;
+    targetEl;
+    input;
+    startBtn;
+    resetBtn;
+    accuracyEl;
+    comboEl;
+    wpmEl;
+    wordsEl;
+    summaryEl;
+    summaryTime;
+    summaryAccuracy;
+    summaryCombo;
+    summaryWords;
+    summaryErrors;
+    summaryTip;
+    cleanupTimer;
+    state = {
+        mode: "burst",
+        active: false,
+        startSource: "cta",
+        buffer: "",
+        target: "",
+        correctInputs: 0,
+        totalInputs: 0,
+        errors: 0,
+        wordsCompleted: 0,
+        combo: 0,
+        bestCombo: 0,
+        wordErrors: 0,
+        startTime: 0,
+        elapsedMs: 0,
+        timerEndsAt: null
+    };
+    constructor(options) {
+        this.root = options.root;
+        this.wordBank = options.wordBank ?? defaultWordBank;
+        this.callbacks = options.callbacks ?? {};
+        this.statusLabel = document.getElementById("typing-drill-status-label");
+        this.progressLabel = document.getElementById("typing-drill-progress");
+        this.timerLabel = document.getElementById("typing-drill-timer");
+        this.targetEl = document.getElementById("typing-drill-target");
+        this.input = document.getElementById("typing-drill-input");
+        this.startBtn = document.getElementById("typing-drill-start");
+        this.resetBtn = document.getElementById("typing-drill-reset");
+        this.accuracyEl = document.getElementById("typing-drill-accuracy");
+        this.comboEl = document.getElementById("typing-drill-combo");
+        this.wpmEl = document.getElementById("typing-drill-wpm");
+        this.wordsEl = document.getElementById("typing-drill-words");
+        this.summaryEl = document.getElementById("typing-drill-summary");
+        this.summaryTime = document.getElementById("typing-drill-summary-time");
+        this.summaryAccuracy = document.getElementById("typing-drill-summary-accuracy");
+        this.summaryCombo = document.getElementById("typing-drill-summary-combo");
+        this.summaryWords = document.getElementById("typing-drill-summary-words");
+        this.summaryErrors = document.getElementById("typing-drill-summary-errors");
+        this.summaryTip = document.getElementById("typing-drill-summary-tip");
+        const modeButtons = Array.from(this.root.querySelectorAll(".typing-drill-mode"));
+        this.modeButtons.push(...modeButtons);
+        this.attachEvents();
+        this.updateMode(this.state.mode, { silent: true });
+        this.updateTarget();
+        this.updateMetrics();
+        this.updateTimer();
+    }
+    open(mode, source) {
+        this.root.dataset.visible = "true";
+        this.state.startSource = source ?? this.state.startSource ?? "cta";
+        this.reset(mode);
+        this.input?.focus();
+    }
+    close() {
+        this.cleanupTimer?.();
+        this.cleanupTimer = undefined;
+        this.state.active = false;
+        this.state.buffer = "";
+        this.state.target = "";
+        this.root.dataset.visible = "false";
+        this.summaryEl?.setAttribute("data-visible", "false");
+        this.callbacks.onClose?.();
+    }
+    isVisible() {
+        return this.root.dataset.visible === "true";
+    }
+    isActive() {
+        return this.state.active;
+    }
+    start(mode) {
+        const nextMode = mode ?? this.state.mode;
+        this.state = {
+            ...this.state,
+            mode: nextMode,
+            active: true,
+            startSource: this.state.startSource,
+            buffer: "",
+            target: "",
+            correctInputs: 0,
+            totalInputs: 0,
+            errors: 0,
+            wordsCompleted: 0,
+            combo: 0,
+            bestCombo: 0,
+            wordErrors: 0,
+            startTime: performance.now(),
+            elapsedMs: 0,
+            timerEndsAt: null
+        };
+        this.summaryEl?.setAttribute("data-visible", "false");
+        this.updateMode(nextMode);
+        this.state.target = this.pickWord(nextMode);
+        const config = DRILL_CONFIGS[nextMode];
+        if (typeof config.timerMs === "number" && config.timerMs > 0) {
+            const endsAt = performance.now() + config.timerMs;
+            this.state.timerEndsAt = endsAt;
+            this.cleanupTimer = this.startTimer(endsAt);
+        }
+        this.updateTarget();
+        this.updateMetrics();
+        this.updateTimer();
+        this.callbacks.onStart?.(nextMode, this.state.startSource);
+        if (this.statusLabel) {
+            this.statusLabel.textContent = config.label;
+        }
+        if (this.startBtn) {
+            this.startBtn.textContent = "Restart";
+        }
+    }
+    reset(mode) {
+        const nextMode = mode ?? this.state.mode;
+        this.cleanupTimer?.();
+        this.cleanupTimer = undefined;
+        this.state = {
+            mode: nextMode,
+            active: false,
+            startSource: this.state.startSource,
+            buffer: "",
+            target: this.pickWord(nextMode),
+            correctInputs: 0,
+            totalInputs: 0,
+            errors: 0,
+            wordsCompleted: 0,
+            combo: 0,
+            bestCombo: 0,
+            wordErrors: 0,
+            startTime: 0,
+            elapsedMs: 0,
+            timerEndsAt: null
+        };
+        this.updateMode(nextMode);
+        this.updateTarget();
+        this.updateMetrics();
+        this.updateTimer();
+        this.summaryEl?.setAttribute("data-visible", "false");
+        if (this.statusLabel) {
+            this.statusLabel.textContent = "Ready";
+        }
+        if (this.startBtn) {
+            this.startBtn.textContent = "Start Drill";
+        }
+    }
+    attachEvents() {
+        if (this.input) {
+            this.input.addEventListener("keydown", (event) => this.handleKey(event));
+        }
+        if (this.startBtn) {
+            this.startBtn.addEventListener("click", () => {
+                if (!this.state.active) {
+                    this.start();
+                }
+                else {
+                    this.reset();
+                    this.start();
+                }
+            });
+        }
+        if (this.resetBtn) {
+            this.resetBtn.addEventListener("click", () => this.reset());
+        }
+        this.modeButtons.forEach((btn) => btn.addEventListener("click", () => {
+            const mode = btn.dataset.mode;
+            if (!mode)
+                return;
+            this.reset(mode);
+            if (this.state.active) {
+                this.start(mode);
+            }
+        }));
+        const closeBtn = document.getElementById("typing-drills-close");
+        closeBtn?.addEventListener("click", () => this.close());
+    }
+    handleKey(event) {
+        if (event.key === "Escape") {
+            event.preventDefault();
+            this.close();
+            return;
+        }
+        if (!this.state.active) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                this.start();
+            }
+            return;
+        }
+        if (event.key === "Backspace") {
+            event.preventDefault();
+            this.state.buffer = this.state.buffer.slice(0, -1);
+            this.updateTarget();
+            return;
+        }
+        if (event.key === "Enter") {
+            event.preventDefault();
+            this.commitWord(true);
+            return;
+        }
+        if (event.key.length === 1 && /^[a-zA-Z]$/.test(event.key)) {
+            event.preventDefault();
+            const char = event.key.toLowerCase();
+            this.state.buffer += char;
+            this.state.totalInputs += 1;
+            const expected = this.state.target[this.state.buffer.length - 1] ?? "";
+            if (char === expected) {
+                this.state.correctInputs += 1;
+            }
+            else {
+                this.state.errors += 1;
+                this.state.wordErrors += 1;
+                if (DRILL_CONFIGS[this.state.mode].penalizeErrors) {
+                    this.state.combo = 0;
+                    this.state.buffer = "";
+                }
+            }
+            this.updateTarget();
+            this.updateMetrics();
+            this.evaluateCompletion();
+        }
+    }
+    evaluateCompletion() {
+        if (!this.state.target || this.state.buffer.length === 0) {
+            return;
+        }
+        if (this.state.buffer === this.state.target) {
+            this.commitWord(false);
+        }
+    }
+    commitWord(skipped) {
+        const config = DRILL_CONFIGS[this.state.mode];
+        const flawless = this.state.wordErrors === 0 && !skipped;
+        if (flawless) {
+            this.state.combo += 1;
+        }
+        else if (!skipped) {
+            this.state.combo = Math.max(0, Math.floor(this.state.combo * 0.5));
+        }
+        else {
+            this.state.combo = Math.max(0, this.state.combo - 1);
+            this.state.errors += 1;
+        }
+        this.state.bestCombo = Math.max(this.state.bestCombo, this.state.combo);
+        this.state.wordsCompleted += skipped ? 0 : 1;
+        this.state.wordErrors = 0;
+        this.state.buffer = "";
+        this.updateMetrics();
+        const now = performance.now();
+        this.state.elapsedMs = this.state.startTime > 0 ? now - this.state.startTime : 0;
+        const reachedWordGoal = typeof config.wordCount === "number" && this.state.wordsCompleted >= config.wordCount;
+        if (reachedWordGoal) {
+            this.finish("complete");
+            return;
+        }
+        this.state.target = this.pickWord(this.state.mode);
+        this.updateTarget();
+    }
+    finish(reason) {
+        this.cleanupTimer?.();
+        this.cleanupTimer = undefined;
+        const now = performance.now();
+        this.state.active = false;
+        this.state.elapsedMs =
+            this.state.startTime > 0 && now > this.state.startTime ? now - this.state.startTime : 0;
+        this.state.buffer = "";
+        this.updateTarget();
+        this.updateMetrics();
+        if (this.statusLabel) {
+            this.statusLabel.textContent = reason === "timeout" ? "Time" : "Complete";
+        }
+        const summary = this.buildSummary();
+        this.renderSummary(summary);
+        const analyticsSummary = this.toAnalyticsSummary(summary);
+        this.callbacks.onSummary?.(analyticsSummary);
+        if (this.startBtn) {
+            this.startBtn.textContent = "Run again";
+        }
+    }
+    buildSummary() {
+        const elapsedMs = this.state.elapsedMs > 0 ? this.state.elapsedMs : 1;
+        const accuracy = this.state.totalInputs > 0 ? this.state.correctInputs / this.state.totalInputs : 1;
+        const minutes = elapsedMs / 60000;
+        const wpm = minutes > 0 ? (this.state.correctInputs / 5) / minutes : 0;
+        return {
+            mode: this.state.mode,
+            source: this.state.startSource ?? "cta",
+            timestamp: Date.now(),
+            elapsedMs,
+            accuracy,
+            bestCombo: this.state.bestCombo,
+            words: this.state.wordsCompleted,
+            errors: this.state.errors,
+            wpm,
+            tip: this.buildTip(accuracy, wpm)
+        };
+    }
+    toAnalyticsSummary(summary) {
+        return {
+            mode: summary.mode,
+            source: summary.source,
+            elapsedMs: summary.elapsedMs,
+            accuracy: summary.accuracy,
+            bestCombo: summary.bestCombo,
+            words: summary.words,
+            errors: summary.errors,
+            wpm: summary.wpm,
+            timestamp: summary.timestamp
+        };
+    }
+    buildTip(accuracy, wpm) {
+        if (accuracy < 0.85) {
+            return "Slow the first three letters and reset on mistakes to rebuild accuracy.";
+        }
+        if (this.state.mode === "burst" && accuracy >= 0.97) {
+            return "Great start. Jump to Shield Breaker to stress accuracy under pressure.";
+        }
+        if (this.state.mode === "endurance" && wpm >= 55) {
+            return "Solid cadence. Try holding 55+ WPM with fewer than two errors next run.";
+        }
+        if (this.state.mode === "precision" && this.state.bestCombo >= 4) {
+            return "You are breaking shields. Add a metronome or try the Burst warmup between waves.";
+        }
+        return "Use drills between waves to keep combo decay comfortable before rejoining the siege.";
+    }
+    renderSummary(summary) {
+        if (!this.summaryEl)
+            return;
+        this.summaryEl.setAttribute("data-visible", "true");
+        if (this.summaryTime) {
+            this.summaryTime.textContent = `${(summary.elapsedMs / 1000).toFixed(1)}s`;
+        }
+        if (this.summaryAccuracy) {
+            this.summaryAccuracy.textContent = `${Math.round(summary.accuracy * 100)}%`;
+        }
+        if (this.summaryCombo) {
+            this.summaryCombo.textContent = `x${summary.bestCombo}`;
+        }
+        if (this.summaryWords) {
+            this.summaryWords.textContent = `${summary.words}`;
+        }
+        if (this.summaryErrors) {
+            this.summaryErrors.textContent = `${summary.errors}`;
+        }
+        if (this.summaryTip) {
+            this.summaryTip.textContent = summary.tip;
+        }
+    }
+    updateMode(mode, options = {}) {
+        this.state.mode = mode;
+        for (const btn of this.modeButtons) {
+            const selected = btn.dataset.mode === mode;
+            btn.setAttribute("aria-selected", selected ? "true" : "false");
+        }
+        if (!options.silent) {
+            this.state.target = this.pickWord(mode);
+            this.updateTarget();
+        }
+    }
+    pickWord(mode) {
+        const config = DRILL_CONFIGS[mode];
+        const pool = [...config.difficulties];
+        const difficulty = pool.length > 0 ? pool[Math.floor(Math.random() * pool.length)] : "easy";
+        const source = this.wordBank[difficulty] ?? defaultWordBank[difficulty];
+        if (!Array.isArray(source) || source.length === 0) {
+            return "defend";
+        }
+        return source[Math.floor(Math.random() * source.length)] ?? "defend";
+    }
+    updateTarget() {
+        if (!this.targetEl)
+            return;
+        const typed = this.state.buffer;
+        const remaining = (this.state.target ?? "").slice(typed.length);
+        const typedSpan = document.createElement("span");
+        typedSpan.className = "typed";
+        typedSpan.textContent = typed || " ";
+        const remainingSpan = document.createElement("span");
+        remainingSpan.className = "target-remaining";
+        remainingSpan.textContent = remaining || " ";
+        this.targetEl.replaceChildren(typedSpan, remainingSpan);
+        if (this.input) {
+            this.input.value = this.state.buffer;
+        }
+    }
+    updateMetrics() {
+        const accuracy = this.state.totalInputs > 0 ? this.state.correctInputs / this.state.totalInputs : 1;
+        const minutes = this.state.elapsedMs / 60000;
+        const wpm = minutes > 0 ? (this.state.correctInputs / 5) / minutes : 0;
+        if (this.accuracyEl) {
+            this.accuracyEl.textContent = `${Math.round(accuracy * 100)}%`;
+        }
+        if (this.comboEl) {
+            this.comboEl.textContent = `x${this.state.combo}`;
+        }
+        if (this.wpmEl) {
+            this.wpmEl.textContent = Math.max(0, Math.round(wpm)).toString();
+        }
+        if (this.wordsEl) {
+            this.wordsEl.textContent = `${this.state.wordsCompleted}`;
+        }
+        if (this.progressLabel) {
+            const config = DRILL_CONFIGS[this.state.mode];
+            if (typeof config.wordCount === "number") {
+                this.progressLabel.textContent = `${this.state.wordsCompleted}/${config.wordCount}`;
+            }
+            else {
+                this.progressLabel.textContent = `Words: ${this.state.wordsCompleted}`;
+            }
+        }
+    }
+    updateTimer() {
+        const label = this.timerLabel;
+        if (!label)
+            return;
+        if (this.state.timerEndsAt && this.state.active) {
+            const remainingMs = Math.max(0, this.state.timerEndsAt - performance.now());
+            const minutes = Math.floor(remainingMs / 60000);
+            const seconds = Math.floor((remainingMs % 60000) / 1000);
+            label.textContent = `${minutes.toString().padStart(2, "0")}:${seconds
+                .toString()
+                .padStart(2, "0")}`;
+            if (remainingMs <= 0) {
+                this.finish("timeout");
+            }
+            return;
+        }
+        const elapsedSeconds = Math.max(0, this.state.elapsedMs / 1000);
+        const minutes = Math.floor(elapsedSeconds / 60);
+        const seconds = Math.floor(elapsedSeconds % 60);
+        label.textContent = `${minutes.toString().padStart(2, "0")}:${seconds
+            .toString()
+            .padStart(2, "0")}`;
+    }
+    startTimer(endsAt) {
+        const interval = window.setInterval(() => {
+            this.state.elapsedMs =
+                this.state.startTime > 0 ? Math.max(0, performance.now() - this.state.startTime) : 0;
+            this.updateMetrics();
+            this.updateTimer();
+            if (performance.now() >= endsAt) {
+                this.finish("timeout");
+            }
+        }, 120);
+        return () => window.clearInterval(interval);
+    }
+}

@@ -1,0 +1,61 @@
+import { type WordBank } from "../core/wordBank.js";
+import { type TypingDrillMode, type TypingDrillSummary } from "../core/types.js";
+type TypingDrillCallbacks = {
+    onClose?: () => void;
+    onStart?: (mode: TypingDrillMode, source: string) => void;
+    onSummary?: (summary: TypingDrillSummary) => void;
+};
+export declare class TypingDrillsOverlay {
+    private readonly root;
+    private readonly wordBank;
+    private readonly callbacks;
+    private readonly modeButtons;
+    private readonly statusLabel?;
+    private readonly progressLabel?;
+    private readonly timerLabel?;
+    private readonly targetEl?;
+    private readonly input?;
+    private readonly startBtn?;
+    private readonly resetBtn?;
+    private readonly accuracyEl?;
+    private readonly comboEl?;
+    private readonly wpmEl?;
+    private readonly wordsEl?;
+    private readonly summaryEl?;
+    private readonly summaryTime?;
+    private readonly summaryAccuracy?;
+    private readonly summaryCombo?;
+    private readonly summaryWords?;
+    private readonly summaryErrors?;
+    private readonly summaryTip?;
+    private cleanupTimer?;
+    private state;
+    constructor(options: {
+        root: HTMLElement;
+        wordBank?: WordBank;
+        callbacks?: TypingDrillCallbacks;
+    });
+    open(mode?: TypingDrillMode, source?: string): void;
+    close(): void;
+    isVisible(): boolean;
+    isActive(): boolean;
+    start(mode?: TypingDrillMode): void;
+    reset(mode?: TypingDrillMode): void;
+    private attachEvents;
+    private handleKey;
+    private evaluateCompletion;
+    private commitWord;
+    private finish;
+    private buildSummary;
+    private toAnalyticsSummary;
+    private buildTip;
+    private renderSummary;
+    private updateMode;
+    private pickWord;
+    private updateTarget;
+    private updateMetrics;
+    private updateTimer;
+    private startTimer;
+}
+export {};
+//# sourceMappingURL=typingDrills.d.ts.map

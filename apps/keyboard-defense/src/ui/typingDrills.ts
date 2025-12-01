@@ -36,7 +36,7 @@ const DRILL_CONFIGS: Record<TypingDrillMode, DrillConfig> = {
 
 type TypingDrillCallbacks = {
   onClose?: () => void;
-  onStart?: (mode: TypingDrillMode) => void;
+  onStart?: (mode: TypingDrillMode, source: string) => void;
   onSummary?: (summary: TypingDrillSummary) => void;
 };
 
@@ -194,13 +194,13 @@ export class TypingDrillsOverlay {
     this.updateTarget();
     this.updateMetrics();
     this.updateTimer();
+    this.callbacks.onStart?.(nextMode, this.state.startSource);
     if (this.statusLabel) {
       this.statusLabel.textContent = config.label;
     }
     if (this.startBtn) {
       this.startBtn.textContent = "Restart";
     }
-    this.callbacks.onStart?.(nextMode);
   }
 
   reset(mode?: TypingDrillMode): void {

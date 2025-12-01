@@ -1,4 +1,4 @@
-import { type TypingDrillSummary } from "../core/types.js";
+import { type TypingDrillMode, type TypingDrillSummary } from "../core/types.js";
 import { type ResolutionTransitionState } from "../ui/ResolutionTransitionController.js";
 import { type DiagnosticsSectionsPreferenceMap, type TurretLoadoutPreset, type TurretLoadoutSlot } from "../utils/playerSettings.js";
 export declare class GameController {
@@ -89,6 +89,8 @@ export declare class GameController {
     closeTypingDrills(): void;
     handleTypingDrillsClosed(): void;
     recordTypingDrillSummary(summary: TypingDrillSummary): void;
+    handleTypingDrillStarted(mode: TypingDrillMode, source: string | undefined): void;
+    trackTypingDrillCompleted(entry: TypingDrillSummary): void;
     presentWaveScorecard(summary: any): void;
     debugShowWaveScorecard(summary?: {}): void;
     debugHideWaveScorecard(): void;

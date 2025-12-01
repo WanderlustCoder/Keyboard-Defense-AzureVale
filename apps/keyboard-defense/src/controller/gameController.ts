@@ -2,7 +2,11 @@
 // @ts-nocheck
 import { defaultConfig } from "../core/config.js";
 import { defaultWordBank } from "../core/wordBank.js";
-import { type StarfieldAnalyticsState, type TypingDrillSummary } from "../core/types.js";
+import {
+  type StarfieldAnalyticsState,
+  type TypingDrillMode,
+  type TypingDrillSummary
+} from "../core/types.js";
 import { GameEngine } from "../engine/gameEngine.js";
 import { CanvasRenderer } from "../rendering/canvasRenderer.js";
 import {
@@ -1822,8 +1826,44 @@ export class GameController {
       this.hud.appendLog(
         `Drill (${entry.mode}) ${percent}% acc, ${entry.words} words, best combo x${entry.bestCombo}`
       );
+      this.trackTypingDrillCompleted(entry);
     } catch (error) {
       console.warn("[analytics] failed to record typing drill", error);
+    }
+  }
+  handleTypingDrillStarted(mode: TypingDrillMode, source: string | undefined) {
+    if (!this.telemetryClient?.track) return;
+    try {
+      this.telemetryClient.track("typing-drill.started", {
+        mode,
+        source: source ?? "cta",
+        timestamp: Date.now(),
+        telemetryEnabled: Boolean(this.telemetryEnabled),
+        menu: this.menuActive,
+        optionsOverlay: this.optionsOverlayActive,
+        waveScorecard: this.waveScorecardActive
+      });
+    } catch (error) {
+      console.warn("[telemetry] failed to track typing drill start", error);
+    }
+  }
+  trackTypingDrillCompleted(entry: TypingDrillSummary) {
+    if (!this.telemetryClient?.track) return;
+    try {
+      this.telemetryClient.track("typing-drill.completed", {
+        mode: entry.mode,
+        source: entry.source,
+        elapsedMs: entry.elapsedMs,
+        accuracy: entry.accuracy,
+        bestCombo: entry.bestCombo,
+        words: entry.words,
+        errors: entry.errors,
+        wpm: entry.wpm,
+        timestamp: entry.timestamp ?? Date.now(),
+        telemetryEnabled: Boolean(this.telemetryEnabled)
+      });
+    } catch (error) {
+      console.warn("[telemetry] failed to track typing drill completion", error);
     }
   }
   presentWaveScorecard(summary) {
@@ -2671,6 +2711,7 @@ export class GameController {
         root: overlayRoot,
         wordBank: defaultWordBank,
         callbacks: {
+          onStart: (mode, source) => this.handleTypingDrillStarted(mode, source),
           onClose: () => this.handleTypingDrillsClosed(),
           onSummary: (summary) => this.recordTypingDrillSummary(summary)
         }
