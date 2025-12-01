@@ -83,6 +83,7 @@ export class TypingDrillsOverlay {
   private readonly summaryErrors?: HTMLElement | null;
   private readonly summaryTip?: HTMLElement | null;
   private readonly fallbackEl?: HTMLElement | null;
+  private readonly toastEl?: HTMLElement | null;
   private readonly recommendationEl?: HTMLElement | null;
   private readonly recommendationBadge?: HTMLElement | null;
   private readonly recommendationReason?: HTMLElement | null;
@@ -92,6 +93,7 @@ export class TypingDrillsOverlay {
   private isCondensedLayout: boolean = false;
   private cleanupTimer?: () => void;
   private recommendationMode: TypingDrillMode | null = null;
+  private toastTimeout?: number | null;
   private state: TypingDrillState = {
     mode: "burst",
     active: false,
@@ -135,6 +137,7 @@ export class TypingDrillsOverlay {
     this.summaryErrors = document.getElementById("typing-drill-summary-errors");
     this.summaryTip = document.getElementById("typing-drill-summary-tip");
     this.fallbackEl = document.getElementById("typing-drill-fallback");
+    this.toastEl = document.getElementById("typing-drill-toast");
     this.recommendationEl = document.getElementById("typing-drill-recommendation");
     this.recommendationBadge = document.getElementById("typing-drill-recommendation-badge");
     this.recommendationReason = document.getElementById("typing-drill-recommendation-reason");
@@ -159,16 +162,27 @@ export class TypingDrillsOverlay {
     this.updateTimer();
   }
 
-  open(mode?: TypingDrillMode, source?: string): void {
+  open(mode?: TypingDrillMode, source?: string, toastMessage?: string): void {
     this.root.dataset.visible = "true";
     this.state.startSource = source ?? this.state.startSource ?? "cta";
     this.reset(mode);
     this.input?.focus();
+    if (toastMessage) {
+      this.showToast(toastMessage);
+    }
   }
 
   close(): void {
     this.cleanupTimer?.();
     this.cleanupTimer = undefined;
+    if (this.toastEl) {
+      this.toastEl.dataset.visible = "false";
+      this.toastEl.textContent = "";
+    }
+    if (this.toastTimeout) {
+      window.clearTimeout(this.toastTimeout);
+      this.toastTimeout = null;
+    }
     this.state.active = false;
     this.state.buffer = "";
     this.state.target = "";
@@ -663,5 +677,18 @@ export class TypingDrillsOverlay {
       default:
         return "Burst Warmup";
     }
+  }
+
+  showToast(message: string): void {
+    if (!this.toastEl) return;
+    this.toastEl.textContent = message;
+    this.toastEl.dataset.visible = "true";
+    window.clearTimeout(this.toastTimeout ?? 0);
+    this.toastTimeout = window.setTimeout(() => {
+      if (this.toastEl) {
+        this.toastEl.dataset.visible = "false";
+        this.toastEl.textContent = "";
+      }
+    }, 3200);
   }
 }

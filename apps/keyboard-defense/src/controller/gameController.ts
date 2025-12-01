@@ -641,7 +641,8 @@ export class GameController {
         this.openTypingDrills("menu-recommended", {
           mode: resolved.mode,
           reason: resolved.reason,
-          autoStart: true
+          autoStart: true,
+          toastMessage: `${prefix}: ${label}`
         });
       });
     }
@@ -1799,7 +1800,12 @@ export class GameController {
   }
   openTypingDrills(
     source: string | undefined = "cta",
-    options?: { mode?: TypingDrillMode; autoStart?: boolean; reason?: string }
+    options?: {
+      mode?: TypingDrillMode;
+      autoStart?: boolean;
+      reason?: string;
+      toastMessage?: string;
+    }
   ) {
     if (!this.typingDrills) return;
     if (this.typingDrillsOverlayActive && this.typingDrills.isVisible()) {
@@ -1834,7 +1840,7 @@ export class GameController {
     this.shouldResumeAfterDrills =
       wasRunning && !this.menuActive && !this.waveScorecardActive && !fromOptions;
     this.typingDrillsOverlayActive = true;
-    this.typingDrills.open(options?.mode, source);
+    this.typingDrills.open(options?.mode, source, options?.toastMessage);
     if (options?.autoStart && options.mode) {
       this.typingDrills.start(options.mode);
     }

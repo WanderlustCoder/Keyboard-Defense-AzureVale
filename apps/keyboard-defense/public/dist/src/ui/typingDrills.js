@@ -45,6 +45,7 @@ export class TypingDrillsOverlay {
     summaryErrors;
     summaryTip;
     fallbackEl;
+    toastEl;
     recommendationEl;
     recommendationBadge;
     recommendationReason;
@@ -54,6 +55,7 @@ export class TypingDrillsOverlay {
     isCondensedLayout = false;
     cleanupTimer;
     recommendationMode = null;
+    toastTimeout;
     state = {
         mode: "burst",
         active: false,
@@ -95,6 +97,7 @@ export class TypingDrillsOverlay {
         this.summaryErrors = document.getElementById("typing-drill-summary-errors");
         this.summaryTip = document.getElementById("typing-drill-summary-tip");
         this.fallbackEl = document.getElementById("typing-drill-fallback");
+        this.toastEl = document.getElementById("typing-drill-toast");
         this.recommendationEl = document.getElementById("typing-drill-recommendation");
         this.recommendationBadge = document.getElementById("typing-drill-recommendation-badge");
         this.recommendationReason = document.getElementById("typing-drill-recommendation-reason");
@@ -112,15 +115,26 @@ export class TypingDrillsOverlay {
         this.updateMetrics();
         this.updateTimer();
     }
-    open(mode, source) {
+    open(mode, source, toastMessage) {
         this.root.dataset.visible = "true";
         this.state.startSource = source ?? this.state.startSource ?? "cta";
         this.reset(mode);
         this.input?.focus();
+        if (toastMessage) {
+            this.showToast(toastMessage);
+        }
     }
     close() {
         this.cleanupTimer?.();
         this.cleanupTimer = undefined;
+        if (this.toastEl) {
+            this.toastEl.dataset.visible = "false";
+            this.toastEl.textContent = "";
+        }
+        if (this.toastTimeout) {
+            window.clearTimeout(this.toastTimeout);
+            this.toastTimeout = null;
+        }
         this.state.active = false;
         this.state.buffer = "";
         this.state.target = "";
@@ -591,5 +605,18 @@ export class TypingDrillsOverlay {
             default:
                 return "Burst Warmup";
         }
+    }
+    showToast(message) {
+        if (!this.toastEl)
+            return;
+        this.toastEl.textContent = message;
+        this.toastEl.dataset.visible = "true";
+        window.clearTimeout(this.toastTimeout ?? 0);
+        this.toastTimeout = window.setTimeout(() => {
+            if (this.toastEl) {
+                this.toastEl.dataset.visible = "false";
+                this.toastEl.textContent = "";
+            }
+        }, 3200);
     }
 }

@@ -30,6 +30,7 @@ export declare class TypingDrillsOverlay {
     private readonly summaryErrors?;
     private readonly summaryTip?;
     private readonly fallbackEl?;
+    private readonly toastEl?;
     private readonly recommendationEl?;
     private readonly recommendationBadge?;
     private readonly recommendationReason?;
@@ -39,13 +40,14 @@ export declare class TypingDrillsOverlay {
     private isCondensedLayout;
     private cleanupTimer?;
     private recommendationMode;
+    private toastTimeout?;
     private state;
     constructor(options: {
         root: HTMLElement;
         wordBank?: WordBank;
         callbacks?: TypingDrillCallbacks;
     });
-    open(mode?: TypingDrillMode, source?: string): void;
+    open(mode?: TypingDrillMode, source?: string, toastMessage?: string): void;
     close(): void;
     isVisible(): boolean;
     isActive(): boolean;
@@ -70,6 +72,7 @@ export declare class TypingDrillsOverlay {
     setRecommendation(mode: TypingDrillMode, reason: string): void;
     showNoRecommendation(message: string, autoStartMode?: TypingDrillMode | null): void;
     private getModeLabel;
+    showToast(message: string): void;
 }
 export {};
 //# sourceMappingURL=typingDrills.d.ts.map

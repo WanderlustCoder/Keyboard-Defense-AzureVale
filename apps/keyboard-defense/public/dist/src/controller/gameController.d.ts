@@ -89,6 +89,7 @@ export declare class GameController {
         mode?: TypingDrillMode;
         autoStart?: boolean;
         reason?: string;
+        toastMessage?: string;
     }): void;
     closeTypingDrills(): void;
     handleTypingDrillsClosed(): void;

@@ -2209,6 +2209,33 @@ body[data-compact-height="true"] .tutorial-banner {
   display: inline-flex;
 }
 
+.typing-drill-toast {
+  display: none;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(94, 234, 212, 0.4);
+  color: #e2e8f0;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+  animation: toast-pop 180ms ease-out;
+}
+
+.typing-drill-toast[data-visible="true"] {
+  display: inline-flex;
+}
+
+@keyframes toast-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 .typing-drill-recommendation {
   margin-top: 8px;
   display: none;
