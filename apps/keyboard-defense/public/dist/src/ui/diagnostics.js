@@ -1,3 +1,4 @@
+import { formatHudFontScale } from "./fontScale.js";
 function formatRegen(passive) {
     const total = passive.total.toFixed(1);
     const delta = passive.delta > 0 ? ` (+${passive.delta.toFixed(1)})` : "";
@@ -250,13 +251,14 @@ export class DiagnosticsOverlay {
             const totalRepairGold = Math.max(0, Math.round(session.totalRepairGold ?? 0));
             const volumePercent = Math.max(0, Math.min(100, Math.round((session.soundVolume ?? 0) * 100)));
             const intensityPercent = Math.max(0, Math.min(150, Math.round((session.soundIntensity ?? 0) * 100)));
+            const fontScaleDescription = formatHudFontScale(session.hudFontScale ?? 1);
             const timeToFirstTurretSeconds = typeof session.timeToFirstTurretSeconds === "number"
                 ? session.timeToFirstTurretSeconds
                 : (session.timeToFirstTurretSeconds ?? null);
             const totalReactionTime = Math.max(0, session.totalReactionTime ?? 0);
             const reactionSamples = Math.max(0, Math.floor(session.reactionSamples ?? 0));
             const averageReaction = reactionSamples > 0 ? totalReactionTime / reactionSamples : null;
-            lines.push(`Session best combo: x${session.bestCombo}`, `Breaches: ${session.breaches}`, `Sound: ${session.soundEnabled ? "on" : "muted"} (volume ${volumePercent}%, intensity ${intensityPercent}%)`, `Wave summaries tracked: ${session.summaryCount}`, `Shielded enemies: ${session.shieldedNow ? "ACTIVE" : "none"}${session.shieldedNext ? " | next wave" : ""}`, `Session damage (turret/typing): ${totalTurret} / ${totalTyping}`, `Castle repairs: ${totalRepairs} | HP restored ${totalRepairHealth} | Gold spent ${totalRepairGold}g`);
+            lines.push(`Session best combo: x${session.bestCombo}`, `Breaches: ${session.breaches}`, `Sound: ${session.soundEnabled ? "on" : "muted"} (volume ${volumePercent}%, intensity ${intensityPercent}%)`, `HUD font size: ${fontScaleDescription}`, `Wave summaries tracked: ${session.summaryCount}`, `Shielded enemies: ${session.shieldedNow ? "ACTIVE" : "none"}${session.shieldedNext ? " | next wave" : ""}`, `Session damage (turret/typing): ${totalTurret} / ${totalTyping}`, `Castle repairs: ${totalRepairs} | HP restored ${totalRepairHealth} | Gold spent ${totalRepairGold}g`);
             if (timeToFirstTurretSeconds !== null) {
                 lines.push(`First turret deployed at ${timeToFirstTurretSeconds.toFixed(1)}s`);
             }

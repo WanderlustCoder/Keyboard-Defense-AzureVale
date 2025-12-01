@@ -16,6 +16,11 @@ import {
 import { HudView } from "../ui/hud.js";
 import { DiagnosticsOverlay } from "../ui/diagnostics.js";
 import { TypingDrillsOverlay } from "../ui/typingDrills.js";
+import {
+  formatHudFontScale,
+  getNextHudFontPreset,
+  normalizeHudFontScaleValue
+} from "../ui/fontScale.js";
 import { DebugApi } from "../debug/debugApi.js";
 import { SoundManager } from "../audio/soundManager.js";
 import { AssetLoader, toSvgDataUri } from "../assets/assetLoader.js";
@@ -43,8 +48,6 @@ import { deriveStarfieldState, type StarfieldParallaxState } from "../utils/star
 import { defaultStarfieldConfig } from "../config/starfield.js";
 const FRAME_DURATION = 1 / 60;
 const TUTORIAL_VERSION = "v2";
-const HUD_FONT_SCALE_MIN = 0.85;
-const HUD_FONT_SCALE_MAX = 1.3;
 const SOUND_VOLUME_MIN = 0;
 const SOUND_VOLUME_MAX = 1;
 const SOUND_VOLUME_DEFAULT = 0.8;
@@ -1290,8 +1293,7 @@ export class GameController {
     this.hudFontScale = normalized;
     this.applyHudFontScaleSetting(normalized);
     if (changed && !options.silent) {
-      const percent = Math.round(normalized * 100);
-      this.hud.appendLog(`HUD font size set to ${percent}%`);
+      this.hud.appendLog(`HUD font size set to ${formatHudFontScale(normalized)}`);
     }
     this.updateOptionsOverlayState();
     if (options.persist !== false && changed) {
@@ -1300,6 +1302,10 @@ export class GameController {
     if (options.render !== false && changed) {
       this.render();
     }
+  }
+  cycleHudFontScale(direction = 1) {
+    const nextPreset = getNextHudFontPreset(this.hudFontScale, direction);
+    this.setHudFontScale(nextPreset.value);
   }
   buildTelemetryExport(includeQueue = false) {
     const available = Boolean(this.telemetryClient);
@@ -1325,11 +1331,7 @@ export class GameController {
     return exportData;
   }
   normalizeHudFontScale(value) {
-    if (!Number.isFinite(value)) {
-      return 1;
-    }
-    const clamped = Math.min(HUD_FONT_SCALE_MAX, Math.max(HUD_FONT_SCALE_MIN, value));
-    return Math.round(clamped * 100) / 100;
+    return normalizeHudFontScaleValue(value);
   }
   normalizeSoundVolume(value) {
     if (!Number.isFinite(value)) {
@@ -2886,6 +2888,7 @@ export class GameController {
       soundEnabled: this.soundEnabled,
       soundVolume: this.soundVolume,
       soundIntensity: this.audioIntensity,
+      hudFontScale: this.hudFontScale,
       summaryCount: summaries.length,
       totalTurretDamage: analytics.totalTurretDamage,
       totalTypingDamage: analytics.totalTypingDamage,
@@ -3012,13 +3015,14 @@ export class GameController {
   attachGlobalShortcuts() {
     if (typeof window === "undefined") return;
     const handler = (event) => {
-    if (this.typingDrills?.isVisible?.()) {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        this.closeTypingDrills();
+      if (this.typingDrills?.isVisible?.()) {
+        if (event.key === "Escape") {
+          event.preventDefault();
+          this.closeTypingDrills();
+        }
+        return;
       }
-      return;
-    }
+      const optionsVisible = this.hud.isOptionsOverlayVisible();
       if (this.hud.isWaveScorecardVisible()) {
         if (event.key === "Escape" || event.key === "Enter" || event.key === " ") {
           event.preventDefault();
@@ -3027,7 +3031,7 @@ export class GameController {
         return;
       }
       if (event.key === "Escape") {
-        if (this.hud.isOptionsOverlayVisible()) {
+        if (optionsVisible) {
           event.preventDefault();
           this.closeOptionsOverlay();
           return;
@@ -3038,7 +3042,12 @@ export class GameController {
         }
         return;
       }
-      if (this.hud.isOptionsOverlayVisible()) {
+      if (optionsVisible) {
+        const direction = this.getHudFontScaleShortcutDelta(event);
+        if (direction !== 0) {
+          event.preventDefault();
+          this.cycleHudFontScale(direction);
+        }
         return;
       }
       if (event.key === "?" || (event.key === "/" && event.shiftKey)) {
@@ -3088,6 +3097,14 @@ export class GameController {
       }
     };
     window.addEventListener("keydown", handler);
+  }
+  getHudFontScaleShortcutDelta(event) {
+    if (!event || event.metaKey || event.ctrlKey || event.altKey) {
+      return 0;
+    }
+    if (event.key === "[") return -1;
+    if (event.key === "]") return 1;
+    return 0;
   }
   initializePlayerSettings() {
     if (typeof window === "undefined") {

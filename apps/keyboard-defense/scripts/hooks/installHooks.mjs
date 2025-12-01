@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Installs the repo's pre-commit hook so lint/test/docs commands run automatically.
+ * Installs a pre-commit hook that runs local lint/test/docs validations.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -12,6 +12,7 @@ const GIT_DIR = path.join(REPO_ROOT, ".git");
 const HOOKS_DIR = path.join(GIT_DIR, "hooks");
 const HOOK_PATH = path.join(HOOKS_DIR, "pre-commit");
 const MARKER = "# Keyboard Defense pre-commit hook";
+const RUNNER_RELATIVE_PATH = "apps/keyboard-defense/scripts/hooks/runChecks.mjs";
 
 function ensureGitRepo() {
   if (!fs.existsSync(GIT_DIR) || !fs.statSync(GIT_DIR).isDirectory()) {
@@ -24,35 +25,24 @@ function ensureHooksDir() {
   fs.mkdirSync(HOOKS_DIR, { recursive: true });
 }
 
-function buildHookContent() {
-  const cmds = [
-    "lint",
-    "test",
-    "codex:validate-pack",
-    "codex:validate-links",
-    "codex:status"
-  ];
-  const prefix = "apps/keyboard-defense";
+export function buildHookContent() {
   const lines = [
     "#!/usr/bin/env bash",
     MARKER,
     "set -euo pipefail",
     "",
-    'if [ "${SKIP_HOOKS:-}" = "1" ]; then',
-    '  echo "[hooks] SKIP_HOOKS=1 detected. Skipping pre-commit checks."',
-    "  exit 0",
+    'REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"',
+    `HOOK_RUNNER="$REPO_ROOT/${RUNNER_RELATIVE_PATH}"`,
+    "",
+    'if [ ! -f "$HOOK_RUNNER" ]; then',
+    '  echo "[hooks] runner not found at $HOOK_RUNNER"',
+    "  exit 1",
     "fi",
     "",
-    'REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"',
-    'cd "$REPO_ROOT"',
-    'echo "[hooks] Running Keyboard Defense pre-commit checks..."',
+    'export REPO_ROOT',
+    'node "$HOOK_RUNNER" "$@"',
     ""
   ];
-  for (const cmd of cmds) {
-    lines.push(`npm run ${cmd} --prefix ${prefix}`);
-  }
-  lines.push('echo "[hooks] All checks passed."');
-  lines.push("");
   return lines.join("\n");
 }
 

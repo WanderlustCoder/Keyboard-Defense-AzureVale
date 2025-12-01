@@ -56,6 +56,7 @@ export declare class GameController {
     resolveDefeatBurstMode(enemy: any): "sprite" | "procedural";
     shouldUseSpriteForTier(tierId: any): boolean;
     setHudFontScale(scale: any, options?: {}): void;
+    cycleHudFontScale(direction?: number): void;
     buildTelemetryExport(includeQueue?: boolean): {
         available: boolean;
         enabled: any;
@@ -229,6 +230,7 @@ export declare class GameController {
     attachTypingDrillHooks(): void;
     attachInputHandlers(typingInput: any): void;
     attachGlobalShortcuts(): void;
+    getHudFontScaleShortcutDelta(event: any): 1 | -1 | 0;
     initializePlayerSettings(): void;
     attachDebugButtons(): void;
     handleCastleUpgrade(): void;

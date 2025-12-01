@@ -184,6 +184,7 @@ test("DiagnosticsOverlay displays shield forecast lines", () => {
       soundEnabled: true,
       soundVolume: 0.6,
       soundIntensity: 1,
+      hudFontScale: 1.15,
       summaryCount: 0,
       totalTurretDamage: 120,
       totalTypingDamage: 45,
@@ -205,6 +206,7 @@ test("DiagnosticsOverlay displays shield forecast lines", () => {
     assert.ok(output.includes("Shielded enemies: ACTIVE"));
     assert.ok(output.includes("Wave threat rating"));
     assert.ok(output.includes("Sound: on (volume 60%, intensity 100%)"));
+    assert.ok(output.includes("HUD font size: 115% (Large)"));
     assert.ok(output.includes("Session damage (turret/typing): 120 / 45"));
     assert.ok(output.includes("Castle repairs: 2"));
     assert.ok(output.includes("HP restored 160"));

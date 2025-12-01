@@ -53,6 +53,9 @@ npm ci
 cd apps/keyboard-defense
 npm ci
 
+# Git hooks
+npm run hooks:install    # installs pre-commit hook (SKIP_HOOKS=1 to skip)
+
 # Core Codex checks
 npm run lint
 npm run test

@@ -3,6 +3,7 @@ import { type CastlePassive, type CastlePassiveUnlock, type WaveSummary } from "
 import type { ResolutionTransitionState } from "./ResolutionTransitionController.js";
 import type { AssetIntegritySummary } from "../types/assetIntegrity.js";
 import { type StarfieldParallaxState } from "../utils/starfield.js";
+import { formatHudFontScale } from "./fontScale.js";
 
 function formatRegen(passive: CastlePassive): string {
   const total = passive.total.toFixed(1);
@@ -59,6 +60,7 @@ export interface DiagnosticsSessionStats {
   soundEnabled: boolean;
   soundVolume: number;
   soundIntensity: number;
+  hudFontScale?: number;
   summaryCount: number;
   lastSummary?: WaveSummary;
   totalTurretDamage?: number;
@@ -360,6 +362,7 @@ export class DiagnosticsOverlay {
         0,
         Math.min(150, Math.round((session.soundIntensity ?? 0) * 100))
       );
+      const fontScaleDescription = formatHudFontScale(session.hudFontScale ?? 1);
       const timeToFirstTurretSeconds =
         typeof session.timeToFirstTurretSeconds === "number"
           ? session.timeToFirstTurretSeconds
@@ -371,6 +374,7 @@ export class DiagnosticsOverlay {
         `Session best combo: x${session.bestCombo}`,
         `Breaches: ${session.breaches}`,
         `Sound: ${session.soundEnabled ? "on" : "muted"} (volume ${volumePercent}%, intensity ${intensityPercent}%)`,
+        `HUD font size: ${fontScaleDescription}`,
         `Wave summaries tracked: ${session.summaryCount}`,
         `Shielded enemies: ${session.shieldedNow ? "ACTIVE" : "none"}${
           session.shieldedNext ? " | next wave" : ""

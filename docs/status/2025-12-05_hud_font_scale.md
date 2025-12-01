@@ -6,8 +6,8 @@
 - Existing tests cover HUD option wiring and state sync; no gameplay changes required beyond the scaling multiplier.
 
 ## Next Steps
-1. Consider surfacing the selected font size in the diagnostics overlay for debugging accessibility regressions.
-2. Add a quick keyboard shortcut to cycle font sizes when the options overlay is open.
+1. Add a small hint in the options overlay to teach the new `[` / `]` font size shortcut.
+2. Evaluate allowing the font-size shortcut outside the options overlay for rapid adjustments during playtests.
 
 ## Related Work
 - `apps/keyboard-defense/public/index.html` (font scale select)
