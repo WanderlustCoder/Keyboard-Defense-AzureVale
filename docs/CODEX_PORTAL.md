@@ -19,6 +19,7 @@ you work on the project.
 | Nightly scenario matrix | `.github/workflows/ci-matrix-nightly.yml` |
 | Release workflow | `.github/workflows/release.yml` |
 | Nightly ops cheat sheet | `docs/nightly_ops.md` |
+| Typing drills overlay (warmups + analytics) | `docs/status/2025-12-01_typing_drills.md` |
 
 ## Command dashboard
 
@@ -36,9 +37,17 @@ npm run codex:validate-links
 npm run codex:status
 npm run codex:dashboard
 npm run codex:next        # prints the next TODO task
+npm run docs:status       # open recent status notes (see drills shortcuts + telemetry)
 
 # CI summary dry-run (surfaces audio intensity + condensed audit rows)
 node scripts/ci/emit-summary.mjs --smoke docs/codex_pack/fixtures/smoke-summary.json --gold docs/codex_pack/fixtures/gold-summary.json --condensed-audit docs/codex_pack/fixtures/responsive/condensed-audit.json
+
+# Typing drills (warmup overlay)
+# Open overlay in-app or use shortcuts:
+#   Shift+R          -> open & auto-run recommended drill
+#   HUD CTA button   -> opens overlay
+#   Options button   -> opens overlay
+
 
 # HUD gallery refresh (after `node scripts/hudScreenshots.mjs ...`)
 # runs HUD metadata checks + condensed audit
