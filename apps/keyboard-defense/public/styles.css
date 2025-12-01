@@ -2166,6 +2166,17 @@ body[data-compact-height="true"] .tutorial-banner {
   font-weight: 600;
 }
 
+.typing-drill-recommendation__run {
+  margin-left: auto;
+  padding: 6px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(94, 234, 212, 0.5);
+  background: linear-gradient(120deg, rgba(34, 197, 94, 0.65), rgba(14, 165, 233, 0.5));
+  color: #022c22;
+  font-weight: 800;
+  cursor: pointer;
+}
+
 .typing-drills-subtitle {
   margin: 0;
   color: rgba(226, 232, 240, 0.85);

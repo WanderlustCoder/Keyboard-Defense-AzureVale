@@ -31,7 +31,9 @@ export declare class TypingDrillsOverlay {
     private readonly recommendationEl?;
     private readonly recommendationBadge?;
     private readonly recommendationReason?;
+    private readonly recommendationRun?;
     private cleanupTimer?;
+    private recommendationMode;
     private state;
     constructor(options: {
         root: HTMLElement;

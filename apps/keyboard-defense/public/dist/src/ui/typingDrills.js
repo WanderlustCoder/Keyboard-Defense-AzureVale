@@ -46,7 +46,9 @@ export class TypingDrillsOverlay {
     recommendationEl;
     recommendationBadge;
     recommendationReason;
+    recommendationRun;
     cleanupTimer;
+    recommendationMode = null;
     state = {
         mode: "burst",
         active: false,
@@ -89,6 +91,7 @@ export class TypingDrillsOverlay {
         this.recommendationEl = document.getElementById("typing-drill-recommendation");
         this.recommendationBadge = document.getElementById("typing-drill-recommendation-badge");
         this.recommendationReason = document.getElementById("typing-drill-recommendation-reason");
+        this.recommendationRun = document.getElementById("typing-drill-recommendation-run");
         const modeButtons = Array.from(this.root.querySelectorAll(".typing-drill-mode"));
         this.modeButtons.push(...modeButtons);
         this.attachEvents();
@@ -221,6 +224,14 @@ export class TypingDrillsOverlay {
         }));
         const closeBtn = document.getElementById("typing-drills-close");
         closeBtn?.addEventListener("click", () => this.close());
+        if (this.recommendationRun) {
+            this.recommendationRun.addEventListener("click", () => {
+                if (this.recommendationMode) {
+                    this.reset(this.recommendationMode);
+                    this.start(this.recommendationMode);
+                }
+            });
+        }
     }
     handleKey(event) {
         if (event.key === "Escape") {
@@ -493,12 +504,14 @@ export class TypingDrillsOverlay {
         return () => window.clearInterval(interval);
     }
     setRecommendation(mode, reason) {
+        this.recommendationMode = mode;
         this.modeButtons.forEach((btn) => {
             const isRecommended = btn.dataset.mode === mode;
             btn.dataset.recommended = isRecommended ? "true" : "false";
         });
         if (this.recommendationEl && this.recommendationBadge && this.recommendationReason) {
-            this.recommendationBadge.textContent = mode === "burst" ? "Warmup" : mode === "endurance" ? "Cadence" : "Accuracy";
+            this.recommendationBadge.textContent =
+                mode === "burst" ? "Warmup" : mode === "endurance" ? "Cadence" : "Accuracy";
             this.recommendationReason.textContent = reason;
             this.recommendationEl.dataset.visible = "true";
         }
