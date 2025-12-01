@@ -1,4 +1,4 @@
-updated: 2025-12-03
+updated: 2025-12-04
 tasks:
   ci-step-summary:
     state: done
@@ -124,5 +124,8 @@ tasks:
     state: done
     owner: codex
   typing-drills-overlay:
+    state: done
+    owner: codex
+  docs-watch:
     state: done
     owner: codex

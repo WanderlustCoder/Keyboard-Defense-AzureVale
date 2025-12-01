@@ -30,7 +30,7 @@ _Re-run `npm run telemetry:typing-drills` after exporting telemetry to refresh t
 Latest summary: 2025-12-01T22:55:13.580Z (events: 6, drill starts: 3, menu quickstarts: 2, share of menu starts: 100%).
 Starts by source: menu 2, cta 1; share: menu 0.6666666666666666, cta 0.3333333333333333; quickstart reasons: accuracyDip 1, fallback 1.
 Recommendation mix: recommended 50% | fallback 50%.
-Drill completions: 1 (rate: 33.3%; avg: 96% / 82 wpm; modes: burst 1).
+Drill completions: 1 (rate: 33.3%; per-source: -; avg: 96% / 82 wpm; sources: -; modes: burst 1).
 
 | Timestamp | Mode | Recommendation | Reason |
 | --- | --- | --- | --- |
@@ -55,6 +55,7 @@ npm run codex:status
 npm run codex:dashboard
 npm run codex:next        # prints the next TODO task
 npm run docs:status       # open recent status notes (see drills shortcuts + telemetry)
+npm run docs:watch        # watch docs/ and auto-regenerate the Codex dashboard/portal
 
 # CI summary dry-run (surfaces audio intensity + condensed audit rows)
 node scripts/ci/emit-summary.mjs --smoke docs/codex_pack/fixtures/smoke-summary.json --gold docs/codex_pack/fixtures/gold-summary.json --condensed-audit docs/codex_pack/fixtures/responsive/condensed-audit.json

@@ -18,6 +18,7 @@
 | `devserver-monitor-upgrade` | P2 | done | codex | docs/status/2025-11-16_devserver_monitor_refresh.md | #82 |
 | `diagnostics-condensed-controls` | P2 | done | codex | docs/status/2025-11-18_diagnostics_overlay_condensed.md | #41 |
 | `diagnostics-dashboard` | P2 | done | codex | docs/status/2025-11-07_diagnostics_passives.md | #79 |
+| `docs-watch` | P2 | done | unassigned | docs/status/2025-12-04_docs_watch.md | #77 |
 | `git-hooks-lint` | P2 | done | codex | docs/status/2025-11-15_tooling_baseline.md | #80 |
 | `gold-analytics-board` | P2 | done | codex | docs/status/2025-11-20_gold_summary_dashboard.md | #79, #101, #45 |
 | `gold-delta-aggregates` | P2 | done | codex | docs/status/2025-11-06_gold_event_delta.md | #79 |
@@ -74,7 +75,7 @@
 - Menu quickstarts: 2 (recommended 1, fallback 1); share of menu starts: 100%.
 - Recommendation mix: recommended 50% | fallback 50%.
 - Drill starts by source: menu 2, cta 1; share: menu 0.6666666666666666, cta 0.3333333333333333; modes: burst 2, endurance 1.
-- Drill completions: 1 (rate: 33.3%; avg: 96% / 82 wpm; modes: burst 1).
+- Drill completions: 1 (rate: 33.3%; per-source: -; avg: 96% / 82 wpm; sources: -; modes: burst 1).
 - Quickstart reasons: accuracyDip 1, fallback 1; modes: burst 2.
 
 | Timestamp | Mode | Recommendation | Reason |

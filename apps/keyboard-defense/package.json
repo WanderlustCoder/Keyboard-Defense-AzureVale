@@ -16,6 +16,7 @@
     "codex:dashboard": "node ./scripts/generateCodexDashboard.mjs",
     "docs:verify-hud-snapshots": "node ./scripts/docs/verifyHudSnapshots.mjs --meta ../../docs/codex_pack/fixtures/ui-snapshot && node ./scripts/docs/condensedAudit.mjs --meta ../../docs/codex_pack/fixtures/ui-snapshot --out-json artifacts/summaries/condensed-audit.json --out-md artifacts/summaries/condensed-audit.md",
     "docs:condensed-audit": "node ./scripts/docs/condensedAudit.mjs",
+    "docs:watch": "node ./scripts/docs/watchDocs.mjs",
     "docs:gallery": "node ./scripts/docs/renderHudGallery.mjs --input artifacts/screenshots --meta artifacts/screenshots --meta ../../docs/codex_pack/fixtures/ui-snapshot --json artifacts/summaries/ui-snapshot-gallery.json --verify",
     "debug:dpr-transition": "node ./scripts/debug/dprTransition.mjs",
     "ci:download-artifacts": "node ./scripts/ci/downloadArtifacts.mjs",
