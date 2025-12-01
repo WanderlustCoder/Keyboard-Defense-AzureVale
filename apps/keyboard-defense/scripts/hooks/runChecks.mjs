@@ -13,6 +13,7 @@ export const DEFAULT_COMMANDS = [
   "codex:validate-links",
   "codex:status"
 ];
+export const FAST_COMMANDS = ["lint", "format:check", "codex:validate-pack", "codex:validate-links"];
 
 function makeCommandDescriptor(command) {
   return {
@@ -45,11 +46,17 @@ export async function runCommandSequence(commands, options = {}) {
 
 export async function runChecks(options = {}) {
   const env = options.env ?? process.env;
+  const fastMode =
+    options.fast === true || env.HOOKS_FAST === "1" || (env.HOOKS_FAST ?? "").toLowerCase() === "true";
   if (env.SKIP_HOOKS === "1") {
     console.log("[hooks] SKIP_HOOKS=1 detected. Skipping pre-commit checks.");
     return { skipped: true, results: [] };
   }
-  const commands = (options.commands ?? DEFAULT_COMMANDS).map(makeCommandDescriptor);
+  const sourceCommands = options.commands ?? (fastMode ? FAST_COMMANDS : DEFAULT_COMMANDS);
+  if (fastMode) {
+    console.log("[hooks] FAST mode enabled; running a reduced command set.");
+  }
+  const commands = sourceCommands.map(makeCommandDescriptor);
   const results = await runCommandSequence(commands, {
     runner: options.runner,
     dryRun: options.dryRun
@@ -72,7 +79,8 @@ function defaultRunner(descriptor) {
 async function main() {
   try {
     const dryRun = process.argv.includes("--dry-run");
-    await runChecks({ dryRun });
+    const fast = process.argv.includes("--fast");
+    await runChecks({ dryRun, fast });
     console.log("[hooks] All pre-commit checks passed.");
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);

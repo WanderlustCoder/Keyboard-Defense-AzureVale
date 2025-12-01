@@ -3,7 +3,8 @@
 ## Summary
 - Pre-commit hook now delegates to a cross-platform Node runner (`scripts/hooks/runChecks.mjs`) that executes lint, test, Codex pack validation, status link validation, and Codex status generation from repo root.
 - `npm run hooks:install` installs a generated `.git/hooks/pre-commit` that respects `SKIP_HOOKS=1`, verifies the runner exists, and works on Windows via `node` instead of bash-specific tooling.
-- Added vitest coverage for the hook runner to ensure sequences stop on failures, honor dry-run, and short-circuit when hooks are skipped.
+- `HOOKS_FAST=1` (or `--fast` when invoking `runChecks.mjs`) now runs a reduced set (lint, format:check, Codex pack/link validation) for quick iterations; still honors `SKIP_HOOKS=1`.
+- Added vitest coverage for the hook runner to ensure sequences stop on failures, honor dry-run, short-circuit when hooks are skipped, and respect fast mode.
 
 ## Verification
 - `cd apps/keyboard-defense && npx vitest run hooks.test.js`

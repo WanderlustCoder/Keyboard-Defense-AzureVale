@@ -3,6 +3,7 @@ import { test } from "vitest";
 
 import {
   DEFAULT_COMMANDS,
+  FAST_COMMANDS,
   runChecks,
   runCommandSequence
 } from "../scripts/hooks/runChecks.mjs";
@@ -29,6 +30,18 @@ test("runChecks runs commands sequentially", async () => {
   assert.equal(result.skipped, false);
   assert.deepEqual(executed, ["lint", "test"]);
   assert.equal(result.results.length, 2);
+});
+
+test("runChecks honors fast mode when HOOKS_FAST=1", async () => {
+  const executed = [];
+  await runChecks({
+    env: { HOOKS_FAST: "1" },
+    runner: async (descriptor) => {
+      executed.push(descriptor.id);
+      return 0;
+    }
+  });
+  assert.deepEqual(executed, FAST_COMMANDS);
 });
 
 test("runCommandSequence surfaces failures and stops", async () => {
