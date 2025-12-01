@@ -10,6 +10,7 @@ export declare class TypingDrillsOverlay {
     private readonly wordBank;
     private readonly callbacks;
     private readonly modeButtons;
+    private readonly body?;
     private readonly statusLabel?;
     private readonly progressLabel?;
     private readonly timerLabel?;
@@ -32,6 +33,7 @@ export declare class TypingDrillsOverlay {
     private readonly recommendationBadge?;
     private readonly recommendationReason?;
     private readonly recommendationRun?;
+    private resizeHandler?;
     private cleanupTimer?;
     private recommendationMode;
     private state;
@@ -46,6 +48,7 @@ export declare class TypingDrillsOverlay {
     isActive(): boolean;
     start(mode?: TypingDrillMode): void;
     reset(mode?: TypingDrillMode): void;
+    private updateLayoutMode;
     private attachEvents;
     private handleKey;
     private evaluateCompletion;

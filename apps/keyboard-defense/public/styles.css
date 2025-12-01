@@ -2380,7 +2380,7 @@ body[data-compact-height="true"] .tutorial-banner {
 }
 
 .typing-drill-mode[data-recommended="true"]::after {
-  content: "• recommended";
+  content: "recommended";
   display: inline-block;
   margin-left: 6px;
   color: #5eead4;
@@ -2569,6 +2569,10 @@ button.ghost:focus-visible {
   margin: 0;
   font-size: 0.9rem;
   color: #cbd5e1;
+}
+
+.typing-drills-body[data-condensed="true"] .typing-drills-art {
+  display: none;
 }
 
 @media (max-width: 1280px) {

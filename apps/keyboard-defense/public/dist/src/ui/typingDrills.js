@@ -25,6 +25,7 @@ export class TypingDrillsOverlay {
     wordBank;
     callbacks;
     modeButtons = [];
+    body;
     statusLabel;
     progressLabel;
     timerLabel;
@@ -47,6 +48,7 @@ export class TypingDrillsOverlay {
     recommendationBadge;
     recommendationReason;
     recommendationRun;
+    resizeHandler;
     cleanupTimer;
     recommendationMode = null;
     state = {
@@ -70,6 +72,7 @@ export class TypingDrillsOverlay {
         this.root = options.root;
         this.wordBank = options.wordBank ?? defaultWordBank;
         this.callbacks = options.callbacks ?? {};
+        this.body = this.root.querySelector(".typing-drills-body");
         this.statusLabel = document.getElementById("typing-drill-status-label");
         this.progressLabel = document.getElementById("typing-drill-progress");
         this.timerLabel = document.getElementById("typing-drill-timer");
@@ -95,6 +98,11 @@ export class TypingDrillsOverlay {
         const modeButtons = Array.from(this.root.querySelectorAll(".typing-drill-mode"));
         this.modeButtons.push(...modeButtons);
         this.attachEvents();
+        this.updateLayoutMode();
+        if (typeof window !== "undefined") {
+            this.resizeHandler = () => this.updateLayoutMode();
+            window.addEventListener("resize", this.resizeHandler);
+        }
         this.updateMode(this.state.mode, { silent: true });
         this.updateTarget();
         this.updateMetrics();
@@ -194,6 +202,19 @@ export class TypingDrillsOverlay {
         if (this.startBtn) {
             this.startBtn.textContent = "Start Drill";
         }
+    }
+    updateLayoutMode() {
+        const body = this.body;
+        if (!body)
+            return;
+        if (typeof window === "undefined") {
+            body.dataset.condensed = "false";
+            return;
+        }
+        const height = window.innerHeight;
+        const width = window.innerWidth;
+        const condensed = height < 760 || width < 960;
+        body.dataset.condensed = condensed ? "true" : "false";
     }
     attachEvents() {
         if (this.input) {

@@ -63,6 +63,7 @@ export class TypingDrillsOverlay {
   private readonly wordBank: WordBank;
   private readonly callbacks: TypingDrillCallbacks;
   private readonly modeButtons: HTMLButtonElement[] = [];
+  private readonly body?: HTMLElement | null;
   private readonly statusLabel?: HTMLElement | null;
   private readonly progressLabel?: HTMLElement | null;
   private readonly timerLabel?: HTMLElement | null;
@@ -85,6 +86,7 @@ export class TypingDrillsOverlay {
   private readonly recommendationBadge?: HTMLElement | null;
   private readonly recommendationReason?: HTMLElement | null;
   private readonly recommendationRun?: HTMLButtonElement | null;
+  private resizeHandler?: () => void;
   private cleanupTimer?: () => void;
   private recommendationMode: TypingDrillMode | null = null;
   private state: TypingDrillState = {
@@ -110,6 +112,7 @@ export class TypingDrillsOverlay {
     this.wordBank = options.wordBank ?? defaultWordBank;
     this.callbacks = options.callbacks ?? {};
 
+    this.body = this.root.querySelector(".typing-drills-body");
     this.statusLabel = document.getElementById("typing-drill-status-label");
     this.progressLabel = document.getElementById("typing-drill-progress");
     this.timerLabel = document.getElementById("typing-drill-timer");
@@ -141,6 +144,11 @@ export class TypingDrillsOverlay {
     this.modeButtons.push(...modeButtons);
 
     this.attachEvents();
+    this.updateLayoutMode();
+    if (typeof window !== "undefined") {
+      this.resizeHandler = () => this.updateLayoutMode();
+      window.addEventListener("resize", this.resizeHandler);
+    }
     this.updateMode(this.state.mode, { silent: true });
     this.updateTarget();
     this.updateMetrics();
@@ -246,6 +254,19 @@ export class TypingDrillsOverlay {
     if (this.startBtn) {
       this.startBtn.textContent = "Start Drill";
     }
+  }
+
+  private updateLayoutMode(): void {
+    const body = this.body;
+    if (!body) return;
+    if (typeof window === "undefined") {
+      body.dataset.condensed = "false";
+      return;
+    }
+    const height = window.innerHeight;
+    const width = window.innerWidth;
+    const condensed = height < 760 || width < 960;
+    body.dataset.condensed = condensed ? "true" : "false";
   }
 
   private attachEvents(): void {
