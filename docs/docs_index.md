@@ -11,9 +11,10 @@ Use this index to jump straight to the guidance you'll need while building and t
 - `docs/hud_gallery.md` - HUD/Tutorial screenshot gallery with condensed-state badges sourced from `scripts/hudScreenshots.mjs`.
 
 ## Analytics & Telemetry
-- `docs/analytics_schema.md` — JSON/CSV snapshot schema, telemetry payload details, and aggregation column order.
-- `docs/status/2025-11-04_telemetry_controls.md` — Status updates covering telemetry UI, export, and analytics enhancements.
-- `apps/keyboard-defense/scripts/ci/diagnosticsDashboard.mjs` — Gold delta + passive timeline dashboard generator (`node scripts/ci/diagnosticsDashboard.mjs --help`).
+- `docs/analytics_schema.md` - JSON/CSV snapshot schema, telemetry payload details, and aggregation column order.
+- Typing drills quickstart telemetry (`ui.typingDrill.menuQuickstart`) - see `docs/analytics_schema.md#typing-drill-telemetry`.
+- `docs/status/2025-11-04_telemetry_controls.md` - Status updates covering telemetry UI, export, and analytics enhancements.
+- `apps/keyboard-defense/scripts/ci/diagnosticsDashboard.mjs` - Gold delta + passive timeline dashboard generator (`node scripts/ci/diagnosticsDashboard.mjs --help`).
 - `apps/keyboard-defense/scripts/analytics/goldDeltaAggregator.mjs` - Per-wave gold delta aggregator powering docs/dashboards (`node scripts/analytics/goldDeltaAggregator.mjs --help`).
 - `apps/keyboard-defense/scripts/ci/goldAnalyticsBoard.mjs` - Merges gold summary/timeline/passive/guard artifacts into a single Markdown/JSON board for Codex dashboards (`node scripts/ci/goldAnalyticsBoard.mjs --help`).
 - `apps/keyboard-defense/scripts/debug/dprTransition.mjs` - Headless DPR transition simulator (`npm run debug:dpr-transition -- --steps 1:960,1.5:840 --json`) for reproducing `ui.canvasResolutionChanged` telemetry without browser zooming.
