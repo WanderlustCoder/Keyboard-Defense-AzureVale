@@ -20,6 +20,7 @@ you work on the project.
 | Release workflow | `.github/workflows/release.yml` |
 | Nightly ops cheat sheet | `docs/nightly_ops.md` |
 | Typing drills overlay + responsive quickstart | `docs/status/2025-12-01_typing_drills.md` / `docs/status/2025-12-02_typing_drills_responsive.md` |
+| Typing drills quickstart telemetry | `docs/analytics_schema.md#typing-drill-telemetry` (event: `ui.typingDrill.menuQuickstart`) |
 
 ## Command dashboard
 
