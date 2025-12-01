@@ -635,10 +635,9 @@ export class GameController {
         const resolved =
           recommendation ?? { mode: "burst", reason: "Fallback warmup (no recommendation)" };
         this.trackMenuDrillQuickstart(resolved, Boolean(recommendation));
-        if (!recommendation) {
-          const label = this.getTypingDrillModeLabel(resolved.mode);
-          this.hud.appendLog?.(`Starting ${label} (fallback quickstart).`);
-        }
+        const label = this.getTypingDrillModeLabel(resolved.mode);
+        const prefix = recommendation ? "Starting recommended drill" : "Starting fallback drill";
+        this.hud.appendLog?.(`${prefix}: ${label}.`);
         this.openTypingDrills("menu-recommended", {
           mode: resolved.mode,
           reason: resolved.reason,
