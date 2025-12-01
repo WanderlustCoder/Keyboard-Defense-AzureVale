@@ -81,8 +81,8 @@
 | 71 | Automation, Monitoring, Tooling | Script tutorial auto-run CLI verifying onboarding path nightly. | Done | Tutorial smoke CLI executed in CI via `ci-e2e-azure-vale` workflow |
 | 72 | Automation, Monitoring, Tooling | Capture automated HUD screenshots for docs/regression. | Done | `node scripts/hudScreenshots.mjs` produces deterministic HUD/options PNGs |
 | 73 | Automation, Monitoring, Tooling | Integrate ESLint/Prettier into build pipeline. | Done | `npm run lint` + `npm run format:check` wired into build orchestrator; configs live in repo |
-| 74 | Automation, Monitoring, Tooling | Add performance benchmark harness for engine throughput. | Not Started |  |
-| 75 | Automation, Monitoring, Tooling | Create deterministic wave simulation CLI for balance sweeps. | Not Started |  |
+| 74 | Automation, Monitoring, Tooling | Add performance benchmark harness for engine throughput. | Done | `scripts/waveBenchmark.mjs` benchmarks auto/all-turret scenarios with artifacts and baseline guards |
+| 75 | Automation, Monitoring, Tooling | Create deterministic wave simulation CLI for balance sweeps. | Done | `scripts/waveSim.mjs` runs headless simulations for balance sweeps with auto-typing |
 | 76 | Automation, Monitoring, Tooling | Validate config files against schema in pre-commit hook. | Done | `scripts/validateConfig.mjs` + schema enforce GameConfig structure, tests cover failures |
 | 77 | Automation, Monitoring, Tooling | Watch docs/ for changes and rebuild summaries automatically. | Done | `npm run docs:watch` rebuilds codex dashboard/portal on doc changes |
 | 78 | Automation, Monitoring, Tooling | Scaffold Playwright smoke tests for tutorial/campaign start. | Done | `npm run smoke:tutorial:full` drives tutorial via Playwright CLI |
