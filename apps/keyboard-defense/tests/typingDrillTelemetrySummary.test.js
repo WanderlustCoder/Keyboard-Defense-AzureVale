@@ -51,7 +51,12 @@ describe("typingDrillTelemetrySummary", () => {
       },
       {
         event: "typing-drill.completed",
-        payload: { mode: "burst", source: "menu", elapsedMs: 60000, accuracy: 0.9 },
+        payload: { mode: "burst", source: "menu", elapsedMs: 60000, accuracy: 0.9, wpm: 60 },
+        timestamp: 4000
+      },
+      {
+        event: "typing-drill.completed",
+        payload: { mode: "endurance", source: "cta", elapsedMs: 90000, accuracy: 0.8, wpm: 80 },
         timestamp: 4000
       },
       {
@@ -74,9 +79,11 @@ describe("typingDrillTelemetrySummary", () => {
     expect(summary.menuQuickstart.fallbackRate).toBeCloseTo(0.5);
     expect(summary.starts.shareBySource.menu).toBeCloseTo(2 / 3);
     expect(summary.starts.shareBySource.cta).toBeCloseTo(1 / 3);
-    expect(summary.completions.count).toBe(1);
-    expect(summary.completions.rate).toBeCloseTo(1 / 3);
-    expect(summary.completions.shareByMode.burst).toBeCloseTo(1);
+    expect(summary.completions.count).toBe(2);
+    expect(summary.completions.rate).toBeCloseTo(2 / 3);
+    expect(summary.completions.shareByMode.burst).toBeCloseTo(0.5);
+    expect(summary.completions.metrics.avgAccuracy).toBeCloseTo(0.85);
+    expect(summary.completions.metrics.avgWpm).toBeCloseTo(70);
     const markdown = formatMarkdown(summary);
     expect(markdown).toContain("Menu quickstarts: 2");
     expect(markdown).toContain("| Timestamp | Mode | Recommendation | Reason |");

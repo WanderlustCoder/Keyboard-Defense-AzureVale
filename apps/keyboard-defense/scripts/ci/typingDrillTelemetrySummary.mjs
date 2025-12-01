@@ -242,12 +242,28 @@ function summarizeTelemetry(events, options = {}) {
   const startShareBySource = shareMap(startsBySource, starts.length);
   const completionsByMode = {};
   const completionsBySource = {};
+  let completionAccSum = 0;
+  let completionAccCount = 0;
+  let completionWpmSum = 0;
+  let completionWpmCount = 0;
   for (const entry of completions) {
     increment(completionsByMode, entry.payload?.mode ?? "unknown");
     increment(completionsBySource, entry.payload?.source ?? "unknown");
+    if (Number.isFinite(entry.payload?.accuracy)) {
+      completionAccSum += entry.payload.accuracy;
+      completionAccCount += 1;
+    }
+    if (Number.isFinite(entry.payload?.wpm)) {
+      completionWpmSum += entry.payload.wpm;
+      completionWpmCount += 1;
+    }
   }
   const completionShareByMode = shareMap(completionsByMode, completions.length);
   const completionRate = starts.length > 0 ? completions.length / starts.length : null;
+  const completionMetrics = {
+    avgAccuracy: completionAccCount > 0 ? completionAccSum / completionAccCount : null,
+    avgWpm: completionWpmCount > 0 ? completionWpmSum / completionWpmCount : null
+  };
 
   if (quickstarts.length === 0) {
     warnings.push("No menu quickstart telemetry found (ui.typingDrill.menuQuickstart).");
@@ -272,7 +288,8 @@ function summarizeTelemetry(events, options = {}) {
       byMode: completionsByMode,
       bySource: completionsBySource,
       shareByMode: completionShareByMode,
-      rate: completionRate
+      rate: completionRate,
+      metrics: completionMetrics
     },
     menuQuickstart: {
       count: quickstarts.length,
@@ -309,6 +326,16 @@ function formatShare(share) {
   return `${Math.round(share * 1000) / 10}%`;
 }
 
+function formatPercent(value) {
+  if (!Number.isFinite(value)) return "n/a";
+  return `${Math.round(value * 1000) / 10}%`;
+}
+
+function formatNumber(value) {
+  if (!Number.isFinite(value)) return "n/a";
+  return Math.round(value * 10) / 10;
+}
+
 function formatTimestamp(ms) {
   if (!Number.isFinite(ms)) return "n/a";
   try {
@@ -338,6 +365,8 @@ function formatMarkdown(summary) {
   const startShare = formatShareMap(starts.shareBySource);
   const completionRate = formatShare(completions.rate);
   const completionShare = formatShareMap(completions.shareByMode);
+  const avgAcc = formatPercent(completions.metrics?.avgAccuracy);
+  const avgWpm = formatNumber(completions.metrics?.avgWpm);
   lines.push(
     `Menu quickstarts: ${quickstarts.count} (recommended ${quickstarts.recommended}, fallback ${quickstarts.fallback}); share of menu starts: ${shareLabel}.`
   );
@@ -346,7 +375,7 @@ function formatMarkdown(summary) {
     `Drill starts: ${summary.totals.drillStarts} (sources: ${formatCountMap(starts.bySource)}; share: ${startShare}; modes: ${formatCountMap(starts.byMode)}).`
   );
   lines.push(
-    `Drill completions: ${completions.count ?? 0} (completion rate: ${completionRate}; modes: ${completionShare}).`
+    `Drill completions: ${completions.count ?? 0} (completion rate: ${completionRate}; avg: ${avgAcc} / ${avgWpm} wpm; modes: ${completionShare}).`
   );
   lines.push(
     `Quickstart reasons: ${formatCountMap(quickstarts.byReason)}; modes: ${formatCountMap(quickstarts.byMode)}.`

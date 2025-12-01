@@ -27,10 +27,10 @@ you work on the project.
 <!-- TYPING_DRILL_QUICKSTART:START -->
 
 _Re-run `npm run telemetry:typing-drills` after exporting telemetry to refresh this snapshot, then rerun `npm run codex:dashboard`._
-Latest summary: 2025-12-01T22:51:56.149Z (events: 6, drill starts: 3, menu quickstarts: 2, share of menu starts: 100%).
+Latest summary: 2025-12-01T22:55:13.580Z (events: 6, drill starts: 3, menu quickstarts: 2, share of menu starts: 100%).
 Starts by source: menu 2, cta 1; share: menu 0.6666666666666666, cta 0.3333333333333333; quickstart reasons: accuracyDip 1, fallback 1.
 Recommendation mix: recommended 50% | fallback 50%.
-Drill completions: 1 (rate: 33.3%; modes: burst 1).
+Drill completions: 1 (rate: 33.3%; avg: 96% / 82 wpm; modes: burst 1).
 
 | Timestamp | Mode | Recommendation | Reason |
 | --- | --- | --- | --- |

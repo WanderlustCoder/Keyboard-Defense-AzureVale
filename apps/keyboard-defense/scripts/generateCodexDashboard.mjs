@@ -161,6 +161,16 @@ const formatTimestamp = (value) => {
   }
 };
 
+const formatPercent = (value) => {
+  if (!Number.isFinite(value)) return "n/a";
+  return `${Math.round(value * 1000) / 10}%`;
+};
+
+const formatNumber = (value) => {
+  if (!Number.isFinite(value)) return "n/a";
+  return Math.round(value * 10) / 10;
+};
+
 function buildPortalGoldSection(board, baselineGuard) {
   const lines = [];
   if (!board) {
@@ -339,6 +349,8 @@ function buildTypingTelemetrySection(summary) {
   const quick = summary.menuQuickstart ?? {};
   const starts = summary.starts ?? {};
   const completions = summary.completions ?? {};
+  const avgAcc = formatPercent(completions.metrics?.avgAccuracy);
+  const avgWpm = formatNumber(completions.metrics?.avgWpm);
   lines.push(
     `- Latest summary (${summary.generatedAt ?? "unknown"}) scanned ${totals.events ?? 0} telemetry event(s) with ${totals.drillStarts ?? 0} drill start(s).`
   );
@@ -354,7 +366,7 @@ function buildTypingTelemetrySection(summary) {
     )}; modes: ${formatCountMap(starts.byMode ?? {})}.`
   );
   lines.push(
-    `- Drill completions: ${completions.count ?? 0} (rate: ${formatShare(completions.rate)}; modes: ${formatCountMap(completions.shareByMode ?? {})}).`
+    `- Drill completions: ${completions.count ?? 0} (rate: ${formatShare(completions.rate)}; avg: ${avgAcc} / ${avgWpm} wpm; modes: ${formatCountMap(completions.shareByMode ?? {})}).`
   );
   lines.push(
     `- Quickstart reasons: ${formatCountMap(quick.byReason ?? {})}; modes: ${formatCountMap(quick.byMode ?? {})}.`
@@ -394,6 +406,8 @@ function buildPortalTypingSection(summary) {
   const quick = summary.menuQuickstart ?? {};
   const starts = summary.starts ?? {};
   const completions = summary.completions ?? {};
+  const avgAcc = formatPercent(completions.metrics?.avgAccuracy);
+  const avgWpm = formatNumber(completions.metrics?.avgWpm);
   lines.push(
     `_Re-run \`npm run telemetry:typing-drills\` after exporting telemetry to refresh this snapshot, then rerun \`npm run codex:dashboard\`._`
   );
@@ -411,7 +425,7 @@ function buildPortalTypingSection(summary) {
   lines.push(
     `Drill completions: ${completions.count ?? 0} (rate: ${formatShare(
       completions.rate
-    )}; modes: ${formatCountMap(completions.shareByMode ?? {})}).`
+    )}; avg: ${avgAcc} / ${avgWpm} wpm; modes: ${formatCountMap(completions.shareByMode ?? {})}).`
   );
   if (Array.isArray(quick.recent) && quick.recent.length > 0) {
     lines.push("");

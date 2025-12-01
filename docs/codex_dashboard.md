@@ -70,11 +70,11 @@
 | tutorial-skip | 175 | 60 | -35 | 0/0 | -10/-40 | -60 @ 75.2s | gold L1 (+1.15) @ 78.2s | -60@75.2, +50@63.1, +75@46.4, -30@22.8, +40@10.5 -*+=+#--+- | [PASS 4] |
 
 ## Typing Drills Quickstart Telemetry
-- Latest summary (2025-12-01T22:51:56.149Z) scanned 6 telemetry event(s) with 3 drill start(s).
+- Latest summary (2025-12-01T22:55:13.580Z) scanned 6 telemetry event(s) with 3 drill start(s).
 - Menu quickstarts: 2 (recommended 1, fallback 1); share of menu starts: 100%.
 - Recommendation mix: recommended 50% | fallback 50%.
 - Drill starts by source: menu 2, cta 1; share: menu 0.6666666666666666, cta 0.3333333333333333; modes: burst 2, endurance 1.
-- Drill completions: 1 (rate: 33.3%; modes: burst 1).
+- Drill completions: 1 (rate: 33.3%; avg: 96% / 82 wpm; modes: burst 1).
 - Quickstart reasons: accuracyDip 1, fallback 1; modes: burst 2.
 
 | Timestamp | Mode | Recommendation | Reason |
