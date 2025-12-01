@@ -4,6 +4,7 @@
 - Added a three-mode typing drills overlay (Burst Warmup, Endurance, Shield Breaker) that opens from the HUD CTA, options overlay, or main menu, pausing the run safely and resuming when closed.
 - Drill completions now record analytics entries (`analytics.typingDrills`) with mode/source, accuracy, WPM, best combo, words cleared, errors, and timestamps, and surface a brief HUD log + debug analytics pills.
 - Telemetry envelopes fire on drill start/complete (`typing-drill.started` / `typing-drill.completed`) including mode/source and accuracy/WPM rollups so dashboards/portal tiles can ingest drill usage.
+- Added a recommended-drill quickstart: `Shift + R` opens and auto-runs the suggested mode, and the overlay surfaces a “Run it” CTA plus a shortcut reminder inline.
 - Updated the analytics schema, docs, and `analyticsAggregate` export to include typing drill columns (count/last/historical string) with refreshed tests so downstream dashboards can ingest the new metrics.
 
 ## Next Steps
