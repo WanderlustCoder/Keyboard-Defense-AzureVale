@@ -65,6 +65,8 @@ describe("typingDrillTelemetrySummary", () => {
     expect(summary.menuQuickstart.count).toBe(2);
     expect(summary.menuQuickstart.recommended).toBe(1);
     expect(summary.menuQuickstart.menuStartShare).toBeCloseTo(1);
+    expect(summary.menuQuickstart.recommendedRate).toBeCloseTo(0.5);
+    expect(summary.menuQuickstart.fallbackRate).toBeCloseTo(0.5);
     const markdown = formatMarkdown(summary);
     expect(markdown).toContain("Menu quickstarts: 2");
     expect(markdown).toContain("| Timestamp | Mode | Recommendation | Reason |");

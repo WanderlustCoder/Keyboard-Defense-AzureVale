@@ -345,6 +345,9 @@ function buildTypingTelemetrySection(summary) {
     `- Menu quickstarts: ${quick.count ?? 0} (recommended ${quick.recommended ?? 0}, fallback ${quick.fallback ?? 0}); share of menu starts: ${formatShare(quick.menuStartShare)}.`
   );
   lines.push(
+    `- Recommendation mix: recommended ${formatShare(quick.recommendedRate)} | fallback ${formatShare(quick.fallbackRate)}.`
+  );
+  lines.push(
     `- Drill starts by source: ${formatCountMap(starts.bySource ?? {})}; modes: ${formatCountMap(starts.byMode ?? {})}.`
   );
   lines.push(
@@ -392,6 +395,9 @@ function buildPortalTypingSection(summary) {
   );
   lines.push(
     `Starts by source: ${formatCountMap(starts.bySource ?? {})}; quickstart reasons: ${formatCountMap(quick.byReason ?? {})}.`
+  );
+  lines.push(
+    `Recommendation mix: recommended ${formatShare(quick.recommendedRate)} | fallback ${formatShare(quick.fallbackRate)}.`
   );
   if (Array.isArray(quick.recent) && quick.recent.length > 0) {
     lines.push("");

@@ -226,6 +226,8 @@ function summarizeTelemetry(events, options = {}) {
   const menuStarts = starts.filter((entry) => (entry.payload?.source ?? "unknown") === "menu");
   const menuQuickstartShare =
     menuStarts.length > 0 ? quickstarts.length / menuStarts.length : null;
+  const recommendedRate = quickstarts.length > 0 ? recommended / quickstarts.length : null;
+  const fallbackRate = quickstarts.length > 0 ? fallback / quickstarts.length : null;
 
   if (quickstarts.length === 0) {
     warnings.push("No menu quickstart telemetry found (ui.typingDrill.menuQuickstart).");
@@ -251,6 +253,8 @@ function summarizeTelemetry(events, options = {}) {
       byMode: quickstartByMode,
       byReason: quickstartReasons,
       menuStartShare: menuQuickstartShare,
+      recommendedRate,
+      fallbackRate,
       recent: recentQuickstarts
     },
     warnings
@@ -291,9 +295,12 @@ function formatMarkdown(summary) {
   const quickstarts = summary.menuQuickstart;
   const starts = summary.starts;
   const shareLabel = formatShare(quickstarts.menuStartShare);
+  const recommendedRate = formatShare(quickstarts.recommendedRate);
+  const fallbackRate = formatShare(quickstarts.fallbackRate);
   lines.push(
     `Menu quickstarts: ${quickstarts.count} (recommended ${quickstarts.recommended}, fallback ${quickstarts.fallback}); share of menu starts: ${shareLabel}.`
   );
+  lines.push(`Recommendation mix: recommended ${recommendedRate}, fallback ${fallbackRate}.`);
   lines.push(
     `Drill starts: ${summary.totals.drillStarts} (sources: ${formatCountMap(starts.bySource)}; modes: ${formatCountMap(starts.byMode)}).`
   );
