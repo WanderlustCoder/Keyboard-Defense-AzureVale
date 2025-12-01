@@ -1,0 +1,59 @@
+{
+  "telemetry": {
+    "queue": [
+      {
+        "event": "ui.typingDrill.menuQuickstart",
+        "payload": {
+          "mode": "burst",
+          "hadRecommendation": true,
+          "reason": "accuracyDip",
+          "timestamp": 1764643200000
+        }
+      },
+      {
+        "event": "typing-drill.started",
+        "payload": {
+          "mode": "burst",
+          "source": "menu",
+          "timestamp": 1764643200500
+        }
+      },
+      {
+        "event": "typing-drill.completed",
+        "payload": {
+          "mode": "burst",
+          "source": "menu",
+          "elapsedMs": 61000,
+          "accuracy": 0.96,
+          "wpm": 82,
+          "timestamp": 1764643261000
+        }
+      },
+      {
+        "event": "typing-drill.started",
+        "payload": {
+          "mode": "endurance",
+          "source": "cta",
+          "timestamp": 1764644000000
+        }
+      },
+      {
+        "event": "ui.typingDrill.menuQuickstart",
+        "payload": {
+          "mode": "burst",
+          "hadRecommendation": false,
+          "reason": "fallback",
+          "timestamp": 1764729600000
+        }
+      },
+      {
+        "event": "typing-drill.started",
+        "payload": {
+          "mode": "burst",
+          "source": "menu",
+          "timestamp": 1764729600500
+        }
+      }
+    ]
+  }
+}

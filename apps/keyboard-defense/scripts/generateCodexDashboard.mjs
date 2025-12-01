@@ -15,6 +15,12 @@ const condensedAuditSummaryPath = path.join(appRoot, "artifacts", "summaries", "
 const goldAnalyticsBoardPath = path.join(appRoot, "artifacts", "summaries", "gold-analytics-board.ci.json");
 const goldBaselineGuardPath = path.join(appRoot, "artifacts", "summaries", "gold-baseline-guard.json");
 const uiSnapshotGalleryPath = path.join(appRoot, "artifacts", "summaries", "ui-snapshot-gallery.json");
+const typingTelemetrySummaryPath = path.join(
+  appRoot,
+  "artifacts",
+  "summaries",
+  "typing-drill-telemetry.json"
+);
 const portalPath = path.join(docsDir, "CODEX_PORTAL.md");
 const PORTAL_MARKER_START = "<!-- GOLD_ANALYTICS_BOARD:START -->";
 const PORTAL_MARKER_END = "<!-- GOLD_ANALYTICS_BOARD:END -->";
@@ -22,6 +28,8 @@ const PORTAL_STARFIELD_MARKER_START = "<!-- STARFIELD_TELEMETRY:START -->";
 const PORTAL_STARFIELD_MARKER_END = "<!-- STARFIELD_TELEMETRY:END -->";
 const PORTAL_UI_MARKER_START = "<!-- UI_SNAPSHOT_GALLERY:START -->";
 const PORTAL_UI_MARKER_END = "<!-- UI_SNAPSHOT_GALLERY:END -->";
+const PORTAL_TYPING_MARKER_START = "<!-- TYPING_DRILL_QUICKSTART:START -->";
+const PORTAL_TYPING_MARKER_END = "<!-- TYPING_DRILL_QUICKSTART:END -->";
 const priorityOrder = { P1: 1, P2: 2, P3: 3 };
 const STARFIELD_SEVERITY_THRESHOLDS = {
   warnCastlePercent: 65,
@@ -128,6 +136,29 @@ const formatSparklineBar = (points) => {
       return `${sign}${symbol}`;
     })
     .join("");
+};
+
+const formatCountMap = (map) => {
+  if (!map || typeof map !== "object") return "-";
+  const entries = Object.entries(map)
+    .filter(([, value]) => typeof value === "number")
+    .sort((a, b) => b[1] - a[1]);
+  if (entries.length === 0) return "-";
+  return entries.map(([key, value]) => `${key} ${value}`).join(", ");
+};
+
+const formatShare = (value) => {
+  if (!Number.isFinite(value)) return "n/a";
+  return `${Math.round(value * 1000) / 10}%`;
+};
+
+const formatTimestamp = (value) => {
+  if (!Number.isFinite(value)) return "n/a";
+  try {
+    return new Date(value).toISOString();
+  } catch {
+    return "n/a";
+  }
 };
 
 function buildPortalGoldSection(board, baselineGuard) {
@@ -290,6 +321,120 @@ async function updatePortalGoldSnapshot(board) {
   const before = portal.slice(0, start + PORTAL_MARKER_START.length);
   const after = portal.slice(end);
   const section = `\n\n${buildPortalGoldSection(board)}\n`;
+  const updated = `${before}${section}${after}`;
+  await fs.writeFile(portalPath, updated, "utf8");
+  console.log(`Codex portal updated: ${path.relative(repoRoot, portalPath)}`);
+}
+
+function buildTypingTelemetrySection(summary) {
+  const lines = [];
+  lines.push("## Typing Drills Quickstart Telemetry");
+  if (!summary) {
+    lines.push(
+      "- Telemetry summary missing; run `npm run telemetry:typing-drills -- --telemetry docs/codex_pack/fixtures/telemetry/typing-drill-quickstart.json` to refresh `apps/keyboard-defense/artifacts/summaries/typing-drill-telemetry.json`."
+    );
+    return lines.join("\n");
+  }
+  const totals = summary.totals ?? {};
+  const quick = summary.menuQuickstart ?? {};
+  const starts = summary.starts ?? {};
+  lines.push(
+    `- Latest summary (${summary.generatedAt ?? "unknown"}) scanned ${totals.events ?? 0} telemetry event(s) with ${totals.drillStarts ?? 0} drill start(s).`
+  );
+  lines.push(
+    `- Menu quickstarts: ${quick.count ?? 0} (recommended ${quick.recommended ?? 0}, fallback ${quick.fallback ?? 0}); share of menu starts: ${formatShare(quick.menuStartShare)}.`
+  );
+  lines.push(
+    `- Drill starts by source: ${formatCountMap(starts.bySource ?? {})}; modes: ${formatCountMap(starts.byMode ?? {})}.`
+  );
+  lines.push(
+    `- Quickstart reasons: ${formatCountMap(quick.byReason ?? {})}; modes: ${formatCountMap(quick.byMode ?? {})}.`
+  );
+  if (Array.isArray(quick.recent) && quick.recent.length > 0) {
+    lines.push("");
+    lines.push("| Timestamp | Mode | Recommendation | Reason |");
+    lines.push("| --- | --- | --- | --- |");
+    for (const entry of quick.recent.slice(0, 6)) {
+      lines.push(
+        `| ${formatTimestamp(entry.timestamp)} | ${entry.mode ?? "-"} | ${entry.hadRecommendation ? "recommended" : "fallback"} | ${entry.reason ?? "-"} |`
+      );
+    }
+  }
+  if (Array.isArray(summary.warnings) && summary.warnings.length > 0) {
+    lines.push("");
+    lines.push("Warnings:");
+    for (const warning of summary.warnings.slice(0, 5)) {
+      lines.push(`- ${warning}`);
+    }
+    if (summary.warnings.length > 5) {
+      lines.push(`- ...and ${summary.warnings.length - 5} more warning(s).`);
+    }
+  }
+  return lines.join("\n");
+}
+
+function buildPortalTypingSection(summary) {
+  const lines = [];
+  if (!summary) {
+    lines.push(
+      "_No typing drill telemetry summary found. Run `npm run telemetry:typing-drills` (optionally pointing at exported telemetry JSON) then rerun `npm run codex:dashboard`._"
+    );
+    return lines.join("\n");
+  }
+  const totals = summary.totals ?? {};
+  const quick = summary.menuQuickstart ?? {};
+  const starts = summary.starts ?? {};
+  lines.push(
+    `_Re-run \`npm run telemetry:typing-drills\` after exporting telemetry to refresh this snapshot, then rerun \`npm run codex:dashboard\`._`
+  );
+  lines.push(
+    `Latest summary: ${summary.generatedAt ?? "unknown"} (events: ${totals.events ?? 0}, drill starts: ${totals.drillStarts ?? 0}, menu quickstarts: ${quick.count ?? 0}, share of menu starts: ${formatShare(quick.menuStartShare)}).`
+  );
+  lines.push(
+    `Starts by source: ${formatCountMap(starts.bySource ?? {})}; quickstart reasons: ${formatCountMap(quick.byReason ?? {})}.`
+  );
+  if (Array.isArray(quick.recent) && quick.recent.length > 0) {
+    lines.push("");
+    lines.push("| Timestamp | Mode | Recommendation | Reason |");
+    lines.push("| --- | --- | --- | --- |");
+    for (const entry of quick.recent.slice(0, 5)) {
+      lines.push(
+        `| ${formatTimestamp(entry.timestamp)} | ${entry.mode ?? "-"} | ${entry.hadRecommendation ? "recommended" : "fallback"} | ${entry.reason ?? "-"} |`
+      );
+    }
+  }
+  if (Array.isArray(summary.warnings) && summary.warnings.length > 0) {
+    lines.push("");
+    lines.push(
+      `Warnings: ${summary.warnings.slice(0, 2).join("; ")}${
+        summary.warnings.length > 2 ? ` (+${summary.warnings.length - 2} more)` : ""
+      }`
+    );
+  }
+  return lines.join("\n");
+}
+
+async function updatePortalTypingTelemetry(summary) {
+  let portal;
+  try {
+    portal = await fs.readFile(portalPath, "utf8");
+  } catch (error) {
+    console.warn(
+      `codex portal update skipped: unable to read ${portalPath} (${error instanceof Error ? error.message : String(
+        error
+      )})`
+    );
+    return;
+  }
+  const start = portal.indexOf(PORTAL_TYPING_MARKER_START);
+  const end = portal.indexOf(PORTAL_TYPING_MARKER_END);
+  if (start === -1 || end === -1 || end <= start) {
+    console.warn("codex portal update skipped: typing drill telemetry markers missing.");
+    return;
+  }
+  const before = portal.slice(0, start + PORTAL_TYPING_MARKER_START.length);
+  const after = portal.slice(end);
+  const section = `\n\n${buildPortalTypingSection(summary)}\n`;
   const updated = `${before}${section}${after}`;
   await fs.writeFile(portalPath, updated, "utf8");
   console.log(`Codex portal updated: ${path.relative(repoRoot, portalPath)}`);
@@ -491,6 +636,7 @@ const main = async () => {
   );
   const goldBoard = await readJsonIfExists(goldAnalyticsBoardPath);
   const baselineGuard = await readJsonIfExists(goldBaselineGuardPath);
+  const typingTelemetrySummary = await readJsonIfExists(typingTelemetrySummaryPath);
   if (!goldBoard) {
     lines.push(
       "- Latest board JSON not found; run the gold dashboards (`npm run analytics:gold:report`, `node scripts/ci/goldAnalyticsBoard.mjs ...`) to refresh `artifacts/summaries/gold-analytics-board.ci.json`."
@@ -578,6 +724,8 @@ const main = async () => {
     }
   }
   lines.push("");
+  lines.push(buildTypingTelemetrySection(typingTelemetrySummary));
+  lines.push("");
   lines.push("## UI Snapshot Gallery");
   const uiGallery = await readJsonIfExists(uiSnapshotGalleryPath);
   if (!uiGallery || !Array.isArray(uiGallery.shots) || uiGallery.shots.length === 0) {
@@ -638,6 +786,7 @@ const main = async () => {
   await updatePortalGoldSnapshot(goldBoard, baselineGuard);
   await updatePortalStarfieldSnapshot(goldBoard);
   await updatePortalUiSnapshot(uiGallery);
+  await updatePortalTypingTelemetry(typingTelemetrySummary);
 };
 
 main().catch((error) => {

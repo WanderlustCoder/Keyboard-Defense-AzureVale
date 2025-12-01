@@ -20,7 +20,21 @@ you work on the project.
 | Release workflow | `.github/workflows/release.yml` |
 | Nightly ops cheat sheet | `docs/nightly_ops.md` |
 | Typing drills overlay + responsive quickstart | `docs/status/2025-12-01_typing_drills.md` / `docs/status/2025-12-02_typing_drills_responsive.md` |
+| Typing drills telemetry summary | `docs/status/2025-12-03_typing_drills_telemetry.md` |
 | Typing drills quickstart telemetry | `docs/analytics_schema.md#typing-drill-telemetry` (event: `ui.typingDrill.menuQuickstart`) |
+
+## Typing Drill Quickstart Telemetry
+<!-- TYPING_DRILL_QUICKSTART:START -->
+
+_Re-run `npm run telemetry:typing-drills` after exporting telemetry to refresh this snapshot, then rerun `npm run codex:dashboard`._
+Latest summary: 2025-12-01T22:42:37.790Z (events: 6, drill starts: 3, menu quickstarts: 2, share of menu starts: 100%).
+Starts by source: menu 2, cta 1; quickstart reasons: accuracyDip 1, fallback 1.
+
+| Timestamp | Mode | Recommendation | Reason |
+| --- | --- | --- | --- |
+| 2025-12-03T02:40:00.000Z | burst | fallback | fallback |
+| 2025-12-02T02:40:00.000Z | burst | recommended | accuracyDip |
+<!-- TYPING_DRILL_QUICKSTART:END -->
 
 ## Command dashboard
 
@@ -48,6 +62,9 @@ node scripts/ci/emit-summary.mjs --smoke docs/codex_pack/fixtures/smoke-summary.
 #   Shift+R          -> open & auto-run recommended drill
 #   HUD CTA button   -> opens overlay
 #   Options button   -> opens overlay
+
+# Typing drill telemetry summary (menu quickstarts)
+npm run telemetry:typing-drills -- --telemetry docs/codex_pack/fixtures/telemetry/typing-drill-quickstart.json --out-json artifacts/summaries/typing-drill-telemetry.json --markdown artifacts/summaries/typing-drill-telemetry.md
 
 
 # HUD gallery refresh (after `node scripts/hudScreenshots.mjs ...`)

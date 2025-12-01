@@ -8,6 +8,7 @@ apps/**/.devserver/
 apps/**/artifacts/
 apps/**/monitor-artifacts/
 apps/**/smoke-artifacts/
+apps/**/coverage/
 apps/**/temp/
 apps/**/static-dashboard/
 

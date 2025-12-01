@@ -34,12 +34,12 @@
 | `responsive-condensed-audit` | P2 | done | codex | docs/status/2025-11-17_hud_condensed_lists.md | #53, #58 |
 | `scenario-matrix` | P2 | done | codex | docs/status/2025-11-06_ci_pipeline.md | #71, #95 |
 | `schema-contracts` | P2 | done | codex | docs/status/2025-11-08_gold_summary_cli.md | #76 |
-| `typing-drills-overlay` | P2 | done | codex | docs/status/2025-12-02_typing_drills_responsive.md | — |
 | `semantic-release` | P2 | done | codex | docs/status/2025-11-21_semantic_release.md | #80 |
 | `static-dashboard` | P2 | done | codex | docs/status/2025-11-18_devserver_smoke_ci.md | #79 |
 | `taunt-analytics-metadata` | P2 | done | codex | docs/status/2025-11-19_enemy_taunts.md | #41, #79 |
 | `tutorial-passive-messaging` | P2 | done | codex | docs/status/2025-11-06_castle_passives.md | #1, #30 |
 | `tutorial-ui-snapshot-publishing` | P2 | done | unassigned | docs/status/2025-11-18_tutorial_condensed_states.md | #53, #59 |
+| `typing-drills-overlay` | P2 | done | codex | docs/status/2025-12-03_typing_drills_telemetry.md | #19 |
 | `enemy-defeat-spriteframes` | P3 | done | codex | docs/status/2025-11-07_enemy_defeat_animation.md | #66 |
 | `passive-iconography` | P3 | done | codex | docs/status/2025-11-06_castle_passives.md | #30 |
 | `starfield-parallax-effects` | P3 | done | codex | docs/status/2025-11-07_starfield.md | #68, #94 |
@@ -69,6 +69,17 @@
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | tutorial-skip | 175 | 60 | -35 | 0/0 | -10/-40 | -60 @ 75.2s | gold L1 (+1.15) @ 78.2s | -60@75.2, +50@63.1, +75@46.4, -30@22.8, +40@10.5 -*+=+#--+- | [PASS 4] |
 
+## Typing Drills Quickstart Telemetry
+- Latest summary (2025-12-01T22:42:37.790Z) scanned 6 telemetry event(s) with 3 drill start(s).
+- Menu quickstarts: 2 (recommended 1, fallback 1); share of menu starts: 100%.
+- Drill starts by source: menu 2, cta 1; modes: burst 2, endurance 1.
+- Quickstart reasons: accuracyDip 1, fallback 1; modes: burst 2.
+
+| Timestamp | Mode | Recommendation | Reason |
+| --- | --- | --- | --- |
+| 2025-12-03T02:40:00.000Z | burst | fallback | fallback |
+| 2025-12-02T02:40:00.000Z | burst | recommended | accuracyDip |
+
 ## UI Snapshot Gallery
 
 | Shot | Starfield | Summary |
@@ -83,10 +94,5 @@
 ## Responsive Condensed Audit
 - Latest run (2025-11-27T15:17:21.267Z) passed with 30 checks across 7 panels (snapshots scanned: 6).
 - No outstanding issues; all required panels/breakpoints are covered.
-
-## Typing Drills Quickstart Telemetry
-- Status: drills overlay + responsive recommendation banners landed (docs/status/2025-12-02_typing_drills_responsive.md).
-- Telemetry: `ui.typingDrill.menuQuickstart` logs `{ mode, hadRecommendation, reason, timestamp }` when the main-menu quickstart fires (falls back to Burst when no recommendation exists).
-- HUD: fallback quickstart logs a HUD note so players know which mode auto-started when the heuristic is empty.
 
 Generated automatically via `npm run codex:dashboard`.

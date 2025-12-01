@@ -13,6 +13,7 @@ Use this index to jump straight to the guidance you'll need while building and t
 ## Analytics & Telemetry
 - `docs/analytics_schema.md` - JSON/CSV snapshot schema, telemetry payload details, and aggregation column order.
 - Typing drills quickstart telemetry (`ui.typingDrill.menuQuickstart`) - see `docs/analytics_schema.md#typing-drill-telemetry`.
+- Typing drill quickstart summary CLI (`npm run telemetry:typing-drills`) - `apps/keyboard-defense/scripts/ci/typingDrillTelemetrySummary.mjs` (fixture: `docs/codex_pack/fixtures/telemetry/typing-drill-quickstart.json`).
 - `docs/status/2025-11-04_telemetry_controls.md` - Status updates covering telemetry UI, export, and analytics enhancements.
 - `apps/keyboard-defense/scripts/ci/diagnosticsDashboard.mjs` - Gold delta + passive timeline dashboard generator (`node scripts/ci/diagnosticsDashboard.mjs --help`).
 - `apps/keyboard-defense/scripts/analytics/goldDeltaAggregator.mjs` - Per-wave gold delta aggregator powering docs/dashboards (`node scripts/analytics/goldDeltaAggregator.mjs --help`).
@@ -43,6 +44,7 @@ Use this index to jump straight to the guidance you'll need while building and t
 
 ## Status Notes
 Status entries live under `docs/status/`. Recent highlights include:
+- `2025-12-03_typing_drills_telemetry.md` - Telemetry summary CLI + dashboard tile for menu quickstarts, with fixtures/tests and coverage ignores.
 - `2025-12-02_typing_drills_responsive.md` - HUD CTA now shows recommended drills inline; overlay gains condensed/mobile layout with scroll-capped card.
 - `2025-12-01_typing_drills.md` - Typing drills overlay (Burst/Endurance/Shield Breaker) with HUD CTA, pause-safe flow, and analytics export columns.
 - `2025-11-21_semantic_release.md` - Release automation (semantic-release, release workflow, bundle manifest) plus documentation updates for Codex operators.
