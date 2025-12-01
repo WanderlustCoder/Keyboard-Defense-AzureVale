@@ -1722,6 +1722,10 @@ export class GameController {
         if (wasRunning) {
             this.pause();
         }
+        const recommendation = this.buildTypingDrillRecommendation();
+        if (recommendation) {
+            this.typingDrills.setRecommendation(recommendation.mode, recommendation.reason);
+        }
         this.shouldResumeAfterDrills =
             wasRunning && !this.menuActive && !this.waveScorecardActive && !fromOptions;
         this.typingDrillsOverlayActive = true;
@@ -1804,6 +1808,23 @@ export class GameController {
         catch (error) {
             console.warn("[telemetry] failed to track typing drill completion", error);
         }
+    }
+    buildTypingDrillRecommendation() {
+        const state = this.engine.getState();
+        const accuracy = typeof state.typing?.accuracy === "number" ? state.typing.accuracy : 1;
+        const combo = typeof state.typing?.combo === "number" ? state.typing.combo : 0;
+        const warnings = state.analytics?.comboWarning?.count ?? 0;
+        const lastDrill = state.analytics?.typingDrills?.at?.(-1) ?? null;
+        if (accuracy < 0.9 || warnings > 0) {
+            return { mode: "precision", reason: "Tighten accuracy after recent drops." };
+        }
+        if (combo >= 6 && accuracy >= 0.97) {
+            return { mode: "endurance", reason: "Hold cadence and combo for longer strings." };
+        }
+        if (lastDrill?.mode === "precision" && lastDrill.accuracy >= 0.97) {
+            return { mode: "burst", reason: "Reset rhythm with a quick burst between waves." };
+        }
+        return { mode: "burst", reason: "Warm up with five quick clears before rejoining." };
     }
     presentWaveScorecard(summary) {
         if (this.menuActive)

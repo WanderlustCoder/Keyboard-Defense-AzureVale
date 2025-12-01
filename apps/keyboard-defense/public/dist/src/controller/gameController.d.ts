@@ -91,6 +91,10 @@ export declare class GameController {
     recordTypingDrillSummary(summary: TypingDrillSummary): void;
     handleTypingDrillStarted(mode: TypingDrillMode, source: string | undefined): void;
     trackTypingDrillCompleted(entry: TypingDrillSummary): void;
+    buildTypingDrillRecommendation(): {
+        mode: TypingDrillMode;
+        reason: string;
+    } | null;
     presentWaveScorecard(summary: any): void;
     debugShowWaveScorecard(summary?: {}): void;
     debugHideWaveScorecard(): void;

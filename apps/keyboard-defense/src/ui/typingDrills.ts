@@ -81,6 +81,9 @@ export class TypingDrillsOverlay {
   private readonly summaryWords?: HTMLElement | null;
   private readonly summaryErrors?: HTMLElement | null;
   private readonly summaryTip?: HTMLElement | null;
+  private readonly recommendationEl?: HTMLElement | null;
+  private readonly recommendationBadge?: HTMLElement | null;
+  private readonly recommendationReason?: HTMLElement | null;
   private cleanupTimer?: () => void;
   private state: TypingDrillState = {
     mode: "burst",
@@ -123,6 +126,9 @@ export class TypingDrillsOverlay {
     this.summaryWords = document.getElementById("typing-drill-summary-words");
     this.summaryErrors = document.getElementById("typing-drill-summary-errors");
     this.summaryTip = document.getElementById("typing-drill-summary-tip");
+    this.recommendationEl = document.getElementById("typing-drill-recommendation");
+    this.recommendationBadge = document.getElementById("typing-drill-recommendation-badge");
+    this.recommendationReason = document.getElementById("typing-drill-recommendation-reason");
 
     const modeButtons = Array.from(
       this.root.querySelectorAll<HTMLButtonElement>(".typing-drill-mode")
@@ -552,5 +558,17 @@ export class TypingDrillsOverlay {
       }
     }, 120);
     return () => window.clearInterval(interval);
+  }
+
+  setRecommendation(mode: TypingDrillMode, reason: string): void {
+    this.modeButtons.forEach((btn) => {
+      const isRecommended = btn.dataset.mode === mode;
+      btn.dataset.recommended = isRecommended ? "true" : "false";
+    });
+    if (this.recommendationEl && this.recommendationBadge && this.recommendationReason) {
+      this.recommendationBadge.textContent = mode === "burst" ? "Warmup" : mode === "endurance" ? "Cadence" : "Accuracy";
+      this.recommendationReason.textContent = reason;
+      this.recommendationEl.dataset.visible = "true";
+    }
   }
 }

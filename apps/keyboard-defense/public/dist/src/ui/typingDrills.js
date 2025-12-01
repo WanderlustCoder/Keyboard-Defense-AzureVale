@@ -43,6 +43,9 @@ export class TypingDrillsOverlay {
     summaryWords;
     summaryErrors;
     summaryTip;
+    recommendationEl;
+    recommendationBadge;
+    recommendationReason;
     cleanupTimer;
     state = {
         mode: "burst",
@@ -83,6 +86,9 @@ export class TypingDrillsOverlay {
         this.summaryWords = document.getElementById("typing-drill-summary-words");
         this.summaryErrors = document.getElementById("typing-drill-summary-errors");
         this.summaryTip = document.getElementById("typing-drill-summary-tip");
+        this.recommendationEl = document.getElementById("typing-drill-recommendation");
+        this.recommendationBadge = document.getElementById("typing-drill-recommendation-badge");
+        this.recommendationReason = document.getElementById("typing-drill-recommendation-reason");
         const modeButtons = Array.from(this.root.querySelectorAll(".typing-drill-mode"));
         this.modeButtons.push(...modeButtons);
         this.attachEvents();
@@ -485,5 +491,16 @@ export class TypingDrillsOverlay {
             }
         }, 120);
         return () => window.clearInterval(interval);
+    }
+    setRecommendation(mode, reason) {
+        this.modeButtons.forEach((btn) => {
+            const isRecommended = btn.dataset.mode === mode;
+            btn.dataset.recommended = isRecommended ? "true" : "false";
+        });
+        if (this.recommendationEl && this.recommendationBadge && this.recommendationReason) {
+            this.recommendationBadge.textContent = mode === "burst" ? "Warmup" : mode === "endurance" ? "Cadence" : "Accuracy";
+            this.recommendationReason.textContent = reason;
+            this.recommendationEl.dataset.visible = "true";
+        }
     }
 }

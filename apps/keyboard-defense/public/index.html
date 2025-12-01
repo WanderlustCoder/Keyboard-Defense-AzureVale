@@ -61,15 +61,15 @@
           <input id="typing-input" autocomplete="off" autofocus placeholder="Type to attack..." />
           <div class="typing-drills-cta" id="typing-drills-cta">
             <div class="typing-drills-cta-text">
-              <p class="typing-drills-cta-title">Need a warmup?</p>
-              <p class="typing-drills-cta-copy">
-                Run quick drills to lock in rhythm without risking the castle.
-              </p>
-            </div>
-            <button id="typing-drills-open" class="typing-drills-cta-button" type="button">
-              Launch drills
-            </button>
+            <p class="typing-drills-cta-title">Need a warmup?</p>
+            <p class="typing-drills-cta-copy">
+              Run quick drills to lock in rhythm without risking the castle.
+            </p>
           </div>
+          <button id="typing-drills-open" class="typing-drills-cta-button" type="button">
+            Launch drills
+          </button>
+        </div>
         </section>
         <section class="wave-preview">
           <h2>Upcoming Enemies</h2>
@@ -557,6 +557,10 @@
               Build muscle memory without risking the gate. Pick a drill, then type until you clear
               the stack or the timer runs out.
             </p>
+            <div id="typing-drill-recommendation" class="typing-drill-recommendation" data-visible="false">
+              <span id="typing-drill-recommendation-badge" class="typing-drill-recommendation__badge"></span>
+              <span id="typing-drill-recommendation-reason" class="typing-drill-recommendation__reason"></span>
+            </div>
           </div>
           <button
             id="typing-drills-close"
