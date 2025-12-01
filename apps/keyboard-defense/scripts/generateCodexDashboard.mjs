@@ -351,6 +351,7 @@ function buildTypingTelemetrySection(summary) {
   const completions = summary.completions ?? {};
   const avgAcc = formatPercent(completions.metrics?.avgAccuracy);
   const avgWpm = formatNumber(completions.metrics?.avgWpm);
+  const completionShareSource = formatCountMap(completions.shareBySource ?? {});
   lines.push(
     `- Latest summary (${summary.generatedAt ?? "unknown"}) scanned ${totals.events ?? 0} telemetry event(s) with ${totals.drillStarts ?? 0} drill start(s).`
   );
@@ -366,7 +367,7 @@ function buildTypingTelemetrySection(summary) {
     )}; modes: ${formatCountMap(starts.byMode ?? {})}.`
   );
   lines.push(
-    `- Drill completions: ${completions.count ?? 0} (rate: ${formatShare(completions.rate)}; avg: ${avgAcc} / ${avgWpm} wpm; modes: ${formatCountMap(completions.shareByMode ?? {})}).`
+    `- Drill completions: ${completions.count ?? 0} (rate: ${formatShare(completions.rate)}; avg: ${avgAcc} / ${avgWpm} wpm; sources: ${completionShareSource}; modes: ${formatCountMap(completions.shareByMode ?? {})}).`
   );
   lines.push(
     `- Quickstart reasons: ${formatCountMap(quick.byReason ?? {})}; modes: ${formatCountMap(quick.byMode ?? {})}.`
@@ -408,6 +409,7 @@ function buildPortalTypingSection(summary) {
   const completions = summary.completions ?? {};
   const avgAcc = formatPercent(completions.metrics?.avgAccuracy);
   const avgWpm = formatNumber(completions.metrics?.avgWpm);
+  const completionShareSource = formatCountMap(completions.shareBySource ?? {});
   lines.push(
     `_Re-run \`npm run telemetry:typing-drills\` after exporting telemetry to refresh this snapshot, then rerun \`npm run codex:dashboard\`._`
   );
@@ -425,7 +427,7 @@ function buildPortalTypingSection(summary) {
   lines.push(
     `Drill completions: ${completions.count ?? 0} (rate: ${formatShare(
       completions.rate
-    )}; avg: ${avgAcc} / ${avgWpm} wpm; modes: ${formatCountMap(completions.shareByMode ?? {})}).`
+    )}; avg: ${avgAcc} / ${avgWpm} wpm; sources: ${completionShareSource}; modes: ${formatCountMap(completions.shareByMode ?? {})}).`
   );
   if (Array.isArray(quick.recent) && quick.recent.length > 0) {
     lines.push("");

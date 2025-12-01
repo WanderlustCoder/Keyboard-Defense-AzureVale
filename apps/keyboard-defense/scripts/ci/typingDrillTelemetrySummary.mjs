@@ -259,6 +259,7 @@ function summarizeTelemetry(events, options = {}) {
     }
   }
   const completionShareByMode = shareMap(completionsByMode, completions.length);
+  const completionShareBySource = shareMap(completionsBySource, completions.length);
   const completionRate = starts.length > 0 ? completions.length / starts.length : null;
   const completionMetrics = {
     avgAccuracy: completionAccCount > 0 ? completionAccSum / completionAccCount : null,
@@ -288,6 +289,7 @@ function summarizeTelemetry(events, options = {}) {
       byMode: completionsByMode,
       bySource: completionsBySource,
       shareByMode: completionShareByMode,
+      shareBySource: completionShareBySource,
       rate: completionRate,
       metrics: completionMetrics
     },
@@ -365,6 +367,7 @@ function formatMarkdown(summary) {
   const startShare = formatShareMap(starts.shareBySource);
   const completionRate = formatShare(completions.rate);
   const completionShare = formatShareMap(completions.shareByMode);
+  const completionShareSource = formatShareMap(completions.shareBySource);
   const avgAcc = formatPercent(completions.metrics?.avgAccuracy);
   const avgWpm = formatNumber(completions.metrics?.avgWpm);
   lines.push(
@@ -375,7 +378,7 @@ function formatMarkdown(summary) {
     `Drill starts: ${summary.totals.drillStarts} (sources: ${formatCountMap(starts.bySource)}; share: ${startShare}; modes: ${formatCountMap(starts.byMode)}).`
   );
   lines.push(
-    `Drill completions: ${completions.count ?? 0} (completion rate: ${completionRate}; avg: ${avgAcc} / ${avgWpm} wpm; modes: ${completionShare}).`
+    `Drill completions: ${completions.count ?? 0} (completion rate: ${completionRate}; avg: ${avgAcc} / ${avgWpm} wpm; sources: ${completionShareSource}; modes: ${completionShare}).`
   );
   lines.push(
     `Quickstart reasons: ${formatCountMap(quickstarts.byReason)}; modes: ${formatCountMap(quickstarts.byMode)}.`
