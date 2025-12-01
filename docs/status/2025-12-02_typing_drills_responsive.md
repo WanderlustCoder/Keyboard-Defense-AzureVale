@@ -3,7 +3,7 @@
 ## Summary
 - HUD CTA now surfaces the recommended typing drill inline, with aria labels/tooltips fed by the live heuristic so players see the suggested mode without opening the overlay.
 - Main menu now mirrors the recommendation under the Typing Drills button so players can pick the suggested mode before launching a session, and the quickstart button falls back to Burst Warmup when no recommendation exists.
-- Drills overlay now shows a slim “No recommendation” banner with the fallback copy when the heuristic has no guidance, matching the main-menu wording.
+- Drills overlay now shows a slim “No recommendation” banner with the fallback copy when the heuristic has no guidance, matching the main-menu wording and logging a brief HUD note when the fallback quickstart triggers.
 - Telemetry now captures menu quickstarts via `ui.typingDrill.menuQuickstart`, with schema/docs covering the payload for downstream dashboards.
 - Condensed layout now emits a brief pulse animation when it switches, calling attention to the stacked/mobile arrangement.
 - Drills overlay is viewport-aware: it collapses into a stacked column when height < 760px or width < 960px, hides art on very small screens, and widens primary/ghost buttons for touch comfort.

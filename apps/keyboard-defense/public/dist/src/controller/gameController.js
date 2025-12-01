@@ -600,6 +600,10 @@ export class GameController {
                 const recommendation = this.buildTypingDrillRecommendation();
                 const resolved = recommendation ?? { mode: "burst", reason: "Fallback warmup (no recommendation)" };
                 this.trackMenuDrillQuickstart(resolved, Boolean(recommendation));
+                if (!recommendation) {
+                    const label = this.getTypingDrillModeLabel(resolved.mode);
+                    this.hud.appendLog?.(`Starting ${label} (fallback quickstart).`);
+                }
                 this.openTypingDrills("menu-recommended", {
                     mode: resolved.mode,
                     reason: resolved.reason,
