@@ -87,6 +87,8 @@ export class TypingDrillsOverlay {
   private readonly recommendationReason?: HTMLElement | null;
   private readonly recommendationRun?: HTMLButtonElement | null;
   private resizeHandler?: () => void;
+  private layoutPulseTimeout?: number | null;
+  private isCondensedLayout: boolean = false;
   private cleanupTimer?: () => void;
   private recommendationMode: TypingDrillMode | null = null;
   private state: TypingDrillState = {
@@ -261,12 +263,28 @@ export class TypingDrillsOverlay {
     if (!body) return;
     if (typeof window === "undefined") {
       body.dataset.condensed = "false";
+      this.isCondensedLayout = false;
       return;
     }
     const height = window.innerHeight;
     const width = window.innerWidth;
     const condensed = height < 760 || width < 960;
-    body.dataset.condensed = condensed ? "true" : "false";
+    const nextCondensed = condensed ? "true" : "false";
+    const changed = body.dataset.condensed !== nextCondensed;
+    body.dataset.condensed = nextCondensed;
+    this.isCondensedLayout = condensed;
+    if (changed) {
+      body.classList.remove("typing-drills-layout-pulse");
+      if (this.layoutPulseTimeout) {
+        window.clearTimeout(this.layoutPulseTimeout);
+      }
+      void body.offsetWidth;
+      body.classList.add("typing-drills-layout-pulse");
+      this.layoutPulseTimeout = window.setTimeout(() => {
+        body.classList.remove("typing-drills-layout-pulse");
+        this.layoutPulseTimeout = null;
+      }, 650);
+    }
   }
 
   private attachEvents(): void {

@@ -49,6 +49,8 @@ export class TypingDrillsOverlay {
     recommendationReason;
     recommendationRun;
     resizeHandler;
+    layoutPulseTimeout;
+    isCondensedLayout = false;
     cleanupTimer;
     recommendationMode = null;
     state = {
@@ -209,12 +211,28 @@ export class TypingDrillsOverlay {
             return;
         if (typeof window === "undefined") {
             body.dataset.condensed = "false";
+            this.isCondensedLayout = false;
             return;
         }
         const height = window.innerHeight;
         const width = window.innerWidth;
         const condensed = height < 760 || width < 960;
-        body.dataset.condensed = condensed ? "true" : "false";
+        const nextCondensed = condensed ? "true" : "false";
+        const changed = body.dataset.condensed !== nextCondensed;
+        body.dataset.condensed = nextCondensed;
+        this.isCondensedLayout = condensed;
+        if (changed) {
+            body.classList.remove("typing-drills-layout-pulse");
+            if (this.layoutPulseTimeout) {
+                window.clearTimeout(this.layoutPulseTimeout);
+            }
+            void body.offsetWidth;
+            body.classList.add("typing-drills-layout-pulse");
+            this.layoutPulseTimeout = window.setTimeout(() => {
+                body.classList.remove("typing-drills-layout-pulse");
+                this.layoutPulseTimeout = null;
+            }, 650);
+        }
     }
     attachEvents() {
         if (this.input) {

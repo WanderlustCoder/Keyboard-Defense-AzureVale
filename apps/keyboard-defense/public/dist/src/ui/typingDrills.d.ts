@@ -34,6 +34,8 @@ export declare class TypingDrillsOverlay {
     private readonly recommendationReason?;
     private readonly recommendationRun?;
     private resizeHandler?;
+    private layoutPulseTimeout?;
+    private isCondensedLayout;
     private cleanupTimer?;
     private recommendationMode;
     private state;

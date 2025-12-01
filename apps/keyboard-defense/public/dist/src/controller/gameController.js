@@ -130,6 +130,7 @@ export class GameController {
         this.typingDrillMenuRecoMode =
             this.typingDrillMenuReco?.querySelector?.(".main-menu-typing-drill-reco-mode") ?? null;
         this.typingDrillMenuRecoLastRecommendation = null;
+        this.typingDrillMenuRunButton = document.getElementById("main-menu-typing-drill-run");
         this.practiceMode = false;
         this.allTurretArchetypes = Object.create(null);
         this.enabledTurretTypes = new Set();
@@ -591,6 +592,22 @@ export class GameController {
         if (drillsBtn instanceof HTMLButtonElement) {
             drillsBtn.addEventListener("click", () => {
                 this.openTypingDrills("menu");
+            });
+        }
+        const drillsRunBtn = document.getElementById("main-menu-typing-drill-run");
+        if (drillsRunBtn instanceof HTMLButtonElement) {
+            drillsRunBtn.addEventListener("click", () => {
+                const recommendation = this.buildTypingDrillRecommendation();
+                if (recommendation) {
+                    this.openTypingDrills("menu", {
+                        mode: recommendation.mode,
+                        reason: recommendation.reason,
+                        autoStart: true
+                    });
+                }
+                else {
+                    this.openTypingDrills("menu");
+                }
             });
         }
         const menuDrillReco = this.buildTypingDrillRecommendation();
@@ -1885,8 +1902,15 @@ export class GameController {
     }
     setTypingDrillMenuRecommendation(recommendation) {
         const container = this.typingDrillMenuReco instanceof HTMLElement ? this.typingDrillMenuReco : null;
+        const runButton = this.typingDrillMenuRunButton instanceof HTMLButtonElement
+            ? this.typingDrillMenuRunButton
+            : null;
         if (!container) {
             this.typingDrillMenuRecoLastRecommendation = recommendation ? { ...recommendation } : null;
+            if (runButton) {
+                runButton.disabled = !recommendation;
+                runButton.setAttribute("aria-disabled", runButton.disabled ? "true" : "false");
+            }
             return;
         }
         const labelEl = this.typingDrillMenuRecoMode instanceof HTMLElement
@@ -1897,6 +1921,10 @@ export class GameController {
             container.setAttribute("aria-hidden", "true");
             if (labelEl) {
                 labelEl.textContent = "";
+            }
+            if (runButton) {
+                runButton.disabled = true;
+                runButton.setAttribute("aria-disabled", "true");
             }
             this.typingDrillMenuRecoLastRecommendation = null;
             return;
@@ -1909,6 +1937,10 @@ export class GameController {
             this.typingDrillMenuRecoLastRecommendation?.reason === normalized.reason &&
             container.dataset.visible === "true";
         if (unchanged) {
+            if (runButton) {
+                runButton.disabled = false;
+                runButton.setAttribute("aria-disabled", "false");
+            }
             return;
         }
         const label = this.getTypingDrillModeLabel(recommendation.mode);
@@ -1918,6 +1950,11 @@ export class GameController {
         container.dataset.visible = "true";
         container.setAttribute("aria-hidden", "false");
         container.setAttribute("aria-label", `Recommended drill: ${label}`);
+        if (runButton) {
+            runButton.disabled = false;
+            runButton.setAttribute("aria-disabled", "false");
+            runButton.setAttribute("aria-label", `Run recommended drill: ${label}`);
+        }
         this.typingDrillMenuRecoLastRecommendation = normalized;
     }
     buildTypingDrillRecommendation(state = this.engine.getState()) {
