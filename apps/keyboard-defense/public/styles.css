@@ -517,6 +517,15 @@ body[data-checkered-background="true"] #wave-scorecard-stats li {
   flex-wrap: wrap;
 }
 
+.options-hint {
+  width: 100%;
+  text-align: center;
+  margin: 0;
+  font-size: 0.82rem;
+  color: #94a3b8;
+  letter-spacing: 0.02em;
+}
+
 .options-actions .primary {
   min-width: 0;
   padding: 10px 18px;
