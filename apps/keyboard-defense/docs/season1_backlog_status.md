@@ -59,7 +59,7 @@
 | 105 | Analytics & Telemetry | Validate gold summary percentile metadata during CI smoke runs. | Done | `smoke.mjs` now parses the JSON summary, surfaces `goldSummaryPercentiles`, and warns/fails if the metadata deviates from `25,50,90` |
 | 106 | Analytics & Telemetry | Provide a standalone gold summary validation CLI for dashboards/alerts. | Done | `goldSummaryCheck.mjs` validates JSON/CSV summaries via `npm run analytics:gold:check` |
 | 51 | UI/UX & Accessibility | Offer colorblind-friendly palette toggle across sprites/HUD. | Done | Checkered background + high-contrast palette toggle available |
-| 52 | UI/UX & Accessibility | Support adjustable HUD font size with persistence. | Not Started |  |
+| 52 | UI/UX & Accessibility | Support adjustable HUD font size with persistence. | Done | HUD options menu offers Small/Default/Large/XL font sizes with persisted setting |
 | 53 | UI/UX & Accessibility | Reflow layout for narrow screens / touch devices. | Done | HUD/game stack on tablets/phones with scrollable overlays + 44px touch targets |
 | 54 | UI/UX & Accessibility | Add audio intensity slider alongside mute toggle. | Done | Options overlay slider controls audio intensity multiplier with persistence |
 | 55 | UI/UX & Accessibility | Provide dyslexia-friendly font option for key UI elements. | Done | Options overlay offers dyslexia-friendly toggle covering active words, input, tutorial prompts with persisted setting |
