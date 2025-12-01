@@ -2571,8 +2571,19 @@ button.ghost:focus-visible {
   color: #cbd5e1;
 }
 
+.typing-drill-focus-hint {
+  margin: 4px 0 6px;
+  font-size: 0.82rem;
+  color: #94a3b8;
+  letter-spacing: 0.02em;
+  display: none;
+}
+
 .typing-drills-body[data-condensed="true"] .typing-drills-art {
   display: none;
+}
+.typing-drills-body[data-condensed="true"] .typing-drill-focus-hint {
+  display: block;
 }
 
 @media (max-width: 1280px) {
