@@ -8,9 +8,9 @@
 - Recommendation badges inside the overlay use cleaner copy, and the container height is capped with scrolling to keep controls reachable on short windows.
 
 ## Next Steps
-1. Add an explicit “Tap to focus input” hint for mobile users when the drills overlay opens in condensed mode.
-2. Consider moving the recommended CTA into the main menu as well, showing the current suggestion before launching the drills overlay.
-3. Add visual feedback for window resize (e.g., gentle fade) when the layout toggles condensed mode mid-session.
+1. Track analytics for main-menu "Run Recommended Drill" usage and compare against HUD CTA to tune placement.
+2. Add a slim toast/banner when no recommendation is available (e.g., "You’re in the groove—pick any drill").
+3. Wire a quick fallback that opens drills in burst mode if the recommendation cannot be computed (offline/edge state).
 
 ## Related Work
 - `apps/keyboard-defense/public/styles.css`
