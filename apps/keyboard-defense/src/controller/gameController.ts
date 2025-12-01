@@ -1823,7 +1823,10 @@ export class GameController {
     if (recommendation) {
       this.typingDrills.setRecommendation(recommendation.mode, recommendation.reason);
     } else {
-      this.typingDrills.showNoRecommendation("You're in the groove - pick any drill.");
+      this.typingDrills.showNoRecommendation(
+        "No recommendation available.",
+        options?.autoStart && options.mode ? options.mode : null
+      );
     }
     this.shouldResumeAfterDrills =
       wasRunning && !this.menuActive && !this.waveScorecardActive && !fromOptions;
@@ -2858,7 +2861,7 @@ export class GameController {
           typingDrillRecommendation.reason
         );
       } else {
-        this.typingDrills.showNoRecommendation("You're in the groove - pick any drill.");
+        this.typingDrills.showNoRecommendation("No recommendation available.");
       }
     }
     const shieldForecast = this.hud.getShieldForecast();

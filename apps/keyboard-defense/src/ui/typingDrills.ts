@@ -634,7 +634,7 @@ export class TypingDrillsOverlay {
     }
   }
 
-  showNoRecommendation(message: string): void {
+  showNoRecommendation(message: string, autoStartMode?: TypingDrillMode | null): void {
     if (this.recommendationEl) {
       this.recommendationEl.dataset.visible = "false";
     }
@@ -646,8 +646,22 @@ export class TypingDrillsOverlay {
       this.fallbackEl.dataset.visible = "true";
       const textNode = this.fallbackEl.querySelector(".typing-drill-fallback__text");
       if (textNode) {
-        textNode.textContent = message;
+        textNode.textContent = autoStartMode
+          ? `${message} Starting ${this.getModeLabel(autoStartMode)}.`
+          : message;
       }
+    }
+  }
+
+  private getModeLabel(mode: TypingDrillMode): string {
+    switch (mode) {
+      case "precision":
+        return "Shield Breaker";
+      case "endurance":
+        return "Endurance";
+      case "burst":
+      default:
+        return "Burst Warmup";
     }
   }
 }

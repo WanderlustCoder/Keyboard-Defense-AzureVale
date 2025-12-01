@@ -563,7 +563,7 @@ export class TypingDrillsOverlay {
             this.recommendationEl.dataset.visible = "true";
         }
     }
-    showNoRecommendation(message) {
+    showNoRecommendation(message, autoStartMode) {
         if (this.recommendationEl) {
             this.recommendationEl.dataset.visible = "false";
         }
@@ -575,8 +575,21 @@ export class TypingDrillsOverlay {
             this.fallbackEl.dataset.visible = "true";
             const textNode = this.fallbackEl.querySelector(".typing-drill-fallback__text");
             if (textNode) {
-                textNode.textContent = message;
+                textNode.textContent = autoStartMode
+                    ? `${message} Starting ${this.getModeLabel(autoStartMode)}.`
+                    : message;
             }
+        }
+    }
+    getModeLabel(mode) {
+        switch (mode) {
+            case "precision":
+                return "Shield Breaker";
+            case "endurance":
+                return "Endurance";
+            case "burst":
+            default:
+                return "Burst Warmup";
         }
     }
 }

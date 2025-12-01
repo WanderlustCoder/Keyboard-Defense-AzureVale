@@ -68,7 +68,8 @@ export declare class TypingDrillsOverlay {
     private updateTimer;
     private startTimer;
     setRecommendation(mode: TypingDrillMode, reason: string): void;
-    showNoRecommendation(message: string): void;
+    showNoRecommendation(message: string, autoStartMode?: TypingDrillMode | null): void;
+    private getModeLabel;
 }
 export {};
 //# sourceMappingURL=typingDrills.d.ts.map

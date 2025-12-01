@@ -11,7 +11,7 @@
 
 ## Next Steps
 1. Pipe `ui.typingDrill.menuQuickstart` into Codex dashboards/portal tiles to compare menu vs HUD CTA adoption.
-2. Surface a quick hint when the fallback Burst Warmup autostarts so players know which mode launched from the menu CTA.
+2. Surface a quick hint when the fallback Burst Warmup autostarts so players know which mode launched from the menu CTA (now shows an inline “No recommendation available. Starting Burst Warmup.” message).
 
 ## Related Work
 - `apps/keyboard-defense/public/styles.css`
