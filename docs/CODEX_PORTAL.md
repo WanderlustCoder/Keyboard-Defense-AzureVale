@@ -56,6 +56,7 @@ npm run codex:dashboard
 npm run codex:next        # prints the next TODO task
 npm run docs:status       # open recent status notes (see drills shortcuts + telemetry)
 npm run docs:watch        # watch docs/ and auto-regenerate the Codex dashboard/portal
+npm run logs:summary      # aggregate monitor/dev-server logs into breach/accuracy summaries
 
 # CI summary dry-run (surfaces audio intensity + condensed audit rows)
 node scripts/ci/emit-summary.mjs --smoke docs/codex_pack/fixtures/smoke-summary.json --gold docs/codex_pack/fixtures/gold-summary.json --condensed-audit docs/codex_pack/fixtures/responsive/condensed-audit.json

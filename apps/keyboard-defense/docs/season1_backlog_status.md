@@ -86,7 +86,7 @@
 | 76 | Automation, Monitoring, Tooling | Validate config files against schema in pre-commit hook. | Done | `scripts/validateConfig.mjs` + schema enforce GameConfig structure, tests cover failures |
 | 77 | Automation, Monitoring, Tooling | Watch docs/ for changes and rebuild summaries automatically. | Done | `npm run docs:watch` rebuilds codex dashboard/portal on doc changes |
 | 78 | Automation, Monitoring, Tooling | Scaffold Playwright smoke tests for tutorial/campaign start. | Done | `npm run smoke:tutorial:full` drives tutorial via Playwright CLI |
-| 79 | Automation, Monitoring, Tooling | Aggregate runtime logs into breach/accuracy summary post-run. | Not Started |  |
+| 79 | Automation, Monitoring, Tooling | Aggregate runtime logs into breach/accuracy summary post-run. | Done | `npm run logs:summary` emits breach/accuracy + warning/error summaries |
 | 80 | Automation, Monitoring, Tooling | Provide git hook automation to run tests/lint locally. | Not Started |  |
 | 81 | Automation, Monitoring, Tooling | Add performance benchmark harness for engine update throughput. | Done | `scripts/waveBenchmark.mjs` runs auto/all-turret scenarios with artifacts + baseline guards |
 | 82 | Automation, Monitoring, Tooling | Create deterministic wave simulation CLI for balance sweeps. | Done | `scripts/waveSim.mjs` runs headless GameEngine simulations with artifacts & auto-typing |

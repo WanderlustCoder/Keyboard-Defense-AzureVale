@@ -129,3 +129,6 @@ tasks:
   docs-watch:
     state: done
     owner: codex
+  runtime-log-summary:
+    state: done
+    owner: codex

@@ -259,3 +259,9 @@ tasks:
     status: done
     status_note: docs/status/2025-12-04_docs_watch.md
     backlog_refs: ["#77"]
+  - id: runtime-log-summary
+    path: tasks/44-runtime-log-summary.md
+    priority: P2
+    status: done
+    status_note: docs/status/2025-12-04_runtime_log_summary.md
+    backlog_refs: ["#79"]

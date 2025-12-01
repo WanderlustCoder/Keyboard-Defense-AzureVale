@@ -45,6 +45,7 @@
     "defeat:preview": "node ./scripts/defeatFramesPreview.mjs --manifest public/assets/manifest.json --mode warn",
     "taunts:validate": "node ./scripts/taunts/validateCatalog.mjs",
     "analytics:asset-integrity": "node ./scripts/ci/assetIntegritySummary.mjs",
+    "logs:summary": "node ./scripts/ci/runtimeLogSummary.mjs",
     "telemetry:typing-drills": "node ./scripts/ci/typingDrillTelemetrySummary.mjs",
     "gold:percentiles:refresh": "node ./scripts/ci/goldPercentileBaseline.mjs artifacts/summaries/gold-summary-report*.json ../../docs/codex_pack/fixtures/gold-summary.json",
     "analytics:gold:delta": "node ./scripts/analytics/goldDeltaAggregator.mjs",

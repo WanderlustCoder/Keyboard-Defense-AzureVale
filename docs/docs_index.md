@@ -45,6 +45,7 @@ Use this index to jump straight to the guidance you'll need while building and t
 ## Status Notes
 Status entries live under `docs/status/`. Recent highlights include:
 - `2025-12-04_docs_watch.md` - `npm run docs:watch` monitors docs folders and auto-regenerates the Codex dashboard/portal after doc edits with debounced rebuilds.
+- `2025-12-04_runtime_log_summary.md` - `npm run logs:summary` scans monitor/dev-server logs and emits breach/accuracy + warning/error summaries in JSON/Markdown.
 - `2025-12-03_typing_drills_telemetry.md` - Telemetry summary CLI + dashboard tile for menu quickstarts, with fixtures/tests and coverage ignores.
 - `2025-12-02_typing_drills_responsive.md` - HUD CTA now shows recommended drills inline; overlay gains condensed/mobile layout with scroll-capped card.
 - `2025-12-01_typing_drills.md` - Typing drills overlay (Burst/Endurance/Shield Breaker) with HUD CTA, pause-safe flow, and analytics export columns.

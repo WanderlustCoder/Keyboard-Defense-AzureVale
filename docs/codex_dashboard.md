@@ -18,7 +18,7 @@
 | `devserver-monitor-upgrade` | P2 | done | codex | docs/status/2025-11-16_devserver_monitor_refresh.md | #82 |
 | `diagnostics-condensed-controls` | P2 | done | codex | docs/status/2025-11-18_diagnostics_overlay_condensed.md | #41 |
 | `diagnostics-dashboard` | P2 | done | codex | docs/status/2025-11-07_diagnostics_passives.md | #79 |
-| `docs-watch` | P2 | done | unassigned | docs/status/2025-12-04_docs_watch.md | #77 |
+| `docs-watch` | P2 | done | codex | docs/status/2025-12-04_docs_watch.md | #77 |
 | `git-hooks-lint` | P2 | done | codex | docs/status/2025-11-15_tooling_baseline.md | #80 |
 | `gold-analytics-board` | P2 | done | codex | docs/status/2025-11-20_gold_summary_dashboard.md | #79, #101, #45 |
 | `gold-delta-aggregates` | P2 | done | codex | docs/status/2025-11-06_gold_event_delta.md | #79 |
@@ -33,6 +33,7 @@
 | `passive-analytics-export` | P2 | done | codex | docs/status/2025-11-06_castle_passives.md | #41, #79 |
 | `passive-gold-dashboard` | P2 | done | unassigned | docs/status/2025-11-07_passive_timeline.md | #41, #79 |
 | `responsive-condensed-audit` | P2 | done | codex | docs/status/2025-11-17_hud_condensed_lists.md | #53, #58 |
+| `runtime-log-summary` | P2 | done | codex | docs/status/2025-12-04_runtime_log_summary.md | #79 |
 | `scenario-matrix` | P2 | done | codex | docs/status/2025-11-06_ci_pipeline.md | #71, #95 |
 | `schema-contracts` | P2 | done | codex | docs/status/2025-11-08_gold_summary_cli.md | #76 |
 | `semantic-release` | P2 | done | codex | docs/status/2025-11-21_semantic_release.md | #80 |
