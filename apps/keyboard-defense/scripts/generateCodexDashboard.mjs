@@ -338,6 +338,7 @@ function buildTypingTelemetrySection(summary) {
   const totals = summary.totals ?? {};
   const quick = summary.menuQuickstart ?? {};
   const starts = summary.starts ?? {};
+  const completions = summary.completions ?? {};
   lines.push(
     `- Latest summary (${summary.generatedAt ?? "unknown"}) scanned ${totals.events ?? 0} telemetry event(s) with ${totals.drillStarts ?? 0} drill start(s).`
   );
@@ -351,6 +352,9 @@ function buildTypingTelemetrySection(summary) {
     `- Drill starts by source: ${formatCountMap(starts.bySource ?? {})}; share: ${formatCountMap(
       starts.shareBySource ?? {}
     )}; modes: ${formatCountMap(starts.byMode ?? {})}.`
+  );
+  lines.push(
+    `- Drill completions: ${completions.count ?? 0} (rate: ${formatShare(completions.rate)}; modes: ${formatCountMap(completions.shareByMode ?? {})}).`
   );
   lines.push(
     `- Quickstart reasons: ${formatCountMap(quick.byReason ?? {})}; modes: ${formatCountMap(quick.byMode ?? {})}.`
@@ -389,6 +393,7 @@ function buildPortalTypingSection(summary) {
   const totals = summary.totals ?? {};
   const quick = summary.menuQuickstart ?? {};
   const starts = summary.starts ?? {};
+  const completions = summary.completions ?? {};
   lines.push(
     `_Re-run \`npm run telemetry:typing-drills\` after exporting telemetry to refresh this snapshot, then rerun \`npm run codex:dashboard\`._`
   );
@@ -402,6 +407,11 @@ function buildPortalTypingSection(summary) {
   );
   lines.push(
     `Recommendation mix: recommended ${formatShare(quick.recommendedRate)} | fallback ${formatShare(quick.fallbackRate)}.`
+  );
+  lines.push(
+    `Drill completions: ${completions.count ?? 0} (rate: ${formatShare(
+      completions.rate
+    )}; modes: ${formatCountMap(completions.shareByMode ?? {})}).`
   );
   if (Array.isArray(quick.recent) && quick.recent.length > 0) {
     lines.push("");

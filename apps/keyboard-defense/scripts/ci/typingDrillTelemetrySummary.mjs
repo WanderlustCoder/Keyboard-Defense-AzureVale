@@ -240,6 +240,14 @@ function summarizeTelemetry(events, options = {}) {
   const recommendedRate = quickstarts.length > 0 ? recommended / quickstarts.length : null;
   const fallbackRate = quickstarts.length > 0 ? fallback / quickstarts.length : null;
   const startShareBySource = shareMap(startsBySource, starts.length);
+  const completionsByMode = {};
+  const completionsBySource = {};
+  for (const entry of completions) {
+    increment(completionsByMode, entry.payload?.mode ?? "unknown");
+    increment(completionsBySource, entry.payload?.source ?? "unknown");
+  }
+  const completionShareByMode = shareMap(completionsByMode, completions.length);
+  const completionRate = starts.length > 0 ? completions.length / starts.length : null;
 
   if (quickstarts.length === 0) {
     warnings.push("No menu quickstart telemetry found (ui.typingDrill.menuQuickstart).");
@@ -258,6 +266,13 @@ function summarizeTelemetry(events, options = {}) {
       bySource: startsBySource,
       byMode: startsByMode,
       shareBySource: startShareBySource
+    },
+    completions: {
+      count: completions.length,
+      byMode: completionsByMode,
+      bySource: completionsBySource,
+      shareByMode: completionShareByMode,
+      rate: completionRate
     },
     menuQuickstart: {
       count: quickstarts.length,
@@ -316,16 +331,22 @@ function formatMarkdown(summary) {
 
   const quickstarts = summary.menuQuickstart;
   const starts = summary.starts;
+  const completions = summary.completions ?? {};
   const shareLabel = formatShare(quickstarts.menuStartShare);
   const recommendedRate = formatShare(quickstarts.recommendedRate);
   const fallbackRate = formatShare(quickstarts.fallbackRate);
   const startShare = formatShareMap(starts.shareBySource);
+  const completionRate = formatShare(completions.rate);
+  const completionShare = formatShareMap(completions.shareByMode);
   lines.push(
     `Menu quickstarts: ${quickstarts.count} (recommended ${quickstarts.recommended}, fallback ${quickstarts.fallback}); share of menu starts: ${shareLabel}.`
   );
   lines.push(`Recommendation mix: recommended ${recommendedRate}, fallback ${fallbackRate}.`);
   lines.push(
     `Drill starts: ${summary.totals.drillStarts} (sources: ${formatCountMap(starts.bySource)}; share: ${startShare}; modes: ${formatCountMap(starts.byMode)}).`
+  );
+  lines.push(
+    `Drill completions: ${completions.count ?? 0} (completion rate: ${completionRate}; modes: ${completionShare}).`
   );
   lines.push(
     `Quickstart reasons: ${formatCountMap(quickstarts.byReason)}; modes: ${formatCountMap(quickstarts.byMode)}.`

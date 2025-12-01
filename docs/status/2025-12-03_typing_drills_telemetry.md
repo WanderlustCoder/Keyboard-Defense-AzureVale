@@ -2,7 +2,7 @@
 
 ## Summary
 - Added `npm run telemetry:typing-drills` to summarize `ui.typingDrill.menuQuickstart` + `typing-drill.started/completed` envelopes from exported telemetry JSON, producing JSON/Markdown for dashboards and GH step summaries.
-- Codex dashboard + portal now render a Typing Drills Quickstart section (counts, source/mode mix, reasons, recent quickstarts) powered by `artifacts/summaries/typing-drill-telemetry.json`.
+- Codex dashboard + portal now render a Typing Drills Quickstart section (counts, source/mode mix/share, recommendation mix, completion rate, reasons, recent quickstarts) powered by `artifacts/summaries/typing-drill-telemetry.json`.
 - New telemetry fixture (`docs/codex_pack/fixtures/telemetry/typing-drill-quickstart.json`) and Vitest coverage validate parsing/formatting for drill quickstart adoption metrics.
 - .gitignore now ignores coverage outputs under `apps/**/coverage/` to keep repo clean after local test runs.
 
