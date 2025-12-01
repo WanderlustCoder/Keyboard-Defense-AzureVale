@@ -632,15 +632,14 @@ export class GameController {
     if (drillsRunBtn instanceof HTMLButtonElement) {
       drillsRunBtn.addEventListener("click", () => {
         const recommendation = this.buildTypingDrillRecommendation();
-        if (recommendation) {
-          this.openTypingDrills("menu", {
-            mode: recommendation.mode,
-            reason: recommendation.reason,
-            autoStart: true
-          });
-        } else {
-          this.openTypingDrills("menu");
-        }
+        const resolved =
+          recommendation ?? { mode: "burst", reason: "Fallback warmup (no recommendation)" };
+        this.trackMenuDrillQuickstart(resolved, Boolean(recommendation));
+        this.openTypingDrills("menu-recommended", {
+          mode: resolved.mode,
+          reason: resolved.reason,
+          autoStart: true
+        });
       });
     }
     const menuDrillReco = this.buildTypingDrillRecommendation();
@@ -1989,14 +1988,18 @@ export class GameController {
         ? this.typingDrillMenuRecoMode
         : container.querySelector?.(".main-menu-typing-drill-reco-mode");
     if (!recommendation) {
-      container.dataset.visible = "false";
-      container.setAttribute("aria-hidden", "true");
+      const fallbackText = "You're in the groove - pick any drill.";
+      container.dataset.visible = "true";
+      container.setAttribute("aria-hidden", "false");
+      container.setAttribute("aria-label", fallbackText);
       if (labelEl) {
-        labelEl.textContent = "";
+        labelEl.textContent = fallbackText;
       }
       if (runButton) {
-        runButton.disabled = true;
-        runButton.setAttribute("aria-disabled", "true");
+        runButton.disabled = false;
+        runButton.setAttribute("aria-disabled", "false");
+        runButton.textContent = "Run Burst Warmup";
+        runButton.setAttribute("aria-label", "Run Burst Warmup (fallback)");
       }
       this.typingDrillMenuRecoLastRecommendation = null;
       return;
@@ -2013,6 +2016,7 @@ export class GameController {
       if (runButton) {
         runButton.disabled = false;
         runButton.setAttribute("aria-disabled", "false");
+        runButton.setAttribute("aria-label", `Run recommended drill: ${labelEl?.textContent ?? label}`);
       }
       return;
     }
@@ -2026,9 +2030,26 @@ export class GameController {
     if (runButton) {
       runButton.disabled = false;
       runButton.setAttribute("aria-disabled", "false");
+      runButton.textContent = "Run Recommended Drill";
       runButton.setAttribute("aria-label", `Run recommended drill: ${label}`);
     }
     this.typingDrillMenuRecoLastRecommendation = normalized;
+  }
+  trackMenuDrillQuickstart(
+    recommendation: { mode: TypingDrillMode; reason?: string },
+    hadRecommendation: boolean
+  ) {
+    if (!this.telemetryClient?.track) return;
+    try {
+      this.telemetryClient.track("ui.typingDrill.menuQuickstart", {
+        mode: recommendation.mode,
+        hadRecommendation,
+        reason: recommendation.reason ?? null,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.warn("[telemetry] failed to track menu drill quickstart", error);
+    }
   }
   buildTypingDrillRecommendation(
     state = this.engine.getState()

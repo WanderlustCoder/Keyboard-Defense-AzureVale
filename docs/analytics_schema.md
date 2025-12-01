@@ -85,7 +85,11 @@ When players run the typing drills overlay, each finished drill is appended to `
 
 CSV columns flatten the latest drill and a compact history: `typingDrillCount`, `typingDrillLastMode`, `typingDrillLastSource`, `typingDrillLastAccuracyPct`, `typingDrillLastWpm`, `typingDrillLastBestCombo`, `typingDrillLastWords`, `typingDrillLastErrors`, `typingDrillLastTimestamp`, `typingDrillHistory`.
 
-> Telemetry mirrors the drills: `typing-drill.started` and `typing-drill.completed` envelopes include mode/source plus elapsed/accuracy/WPM/combo counts so dashboards can react to warmup usage without parsing full snapshots.
+### Typing Drill Telemetry
+
+- `typing-drill.started`: `{ mode, source, timestamp, telemetryEnabled, menu, optionsOverlay, waveScorecard }`
+- `typing-drill.completed`: `{ mode, source, elapsedMs, accuracy, bestCombo, words, errors, wpm, timestamp, telemetryEnabled }`
+- `ui.typingDrill.menuQuickstart`: `{ mode, hadRecommendation, reason, timestamp }` (fires from the main-menu quickstart CTA and falls back to Burst Warmup when no recommendation is available)
 
 ## Taunt Metadata
 
@@ -240,6 +244,7 @@ When telemetry is compiled with the export (regardless of opt-in state) the payl
 | `enabled` | boolean | Player opt-in state at the time of export. |
 | `endpoint` | string \| null | Custom endpoint applied through the debug controls (if any). |
 | `queueSize` | number | Count of telemetry envelopes currently buffered in the client. |
+| `soundIntensity` | number | Latest audio intensity multiplier applied when the export was generated. |
 | `queue` | `TelemetryEnvelope[]` | Shallow copies of the queued envelopes (capped by the client's queue size, default 50). |
 
 Each `TelemetryEnvelope` mirrors the structure emitted by the in-game client: `{ type, capturedAt, payload, metadata }`.

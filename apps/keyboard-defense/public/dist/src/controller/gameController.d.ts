@@ -104,6 +104,10 @@ export declare class GameController {
         mode: TypingDrillMode;
         reason?: string;
     } | null): void;
+    trackMenuDrillQuickstart(recommendation: {
+        mode: TypingDrillMode;
+        reason?: string;
+    }, hadRecommendation: boolean): void;
     buildTypingDrillRecommendation(state?: any): {
         mode: TypingDrillMode;
         reason: string;

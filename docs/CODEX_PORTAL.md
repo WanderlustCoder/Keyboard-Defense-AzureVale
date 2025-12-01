@@ -19,7 +19,7 @@ you work on the project.
 | Nightly scenario matrix | `.github/workflows/ci-matrix-nightly.yml` |
 | Release workflow | `.github/workflows/release.yml` |
 | Nightly ops cheat sheet | `docs/nightly_ops.md` |
-| Typing drills overlay (warmups + analytics) | `docs/status/2025-12-01_typing_drills.md` |
+| Typing drills overlay + responsive quickstart | `docs/status/2025-12-01_typing_drills.md` / `docs/status/2025-12-02_typing_drills_responsive.md` |
 
 ## Command dashboard
 

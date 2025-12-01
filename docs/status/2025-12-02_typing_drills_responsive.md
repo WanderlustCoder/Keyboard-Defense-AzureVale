@@ -2,15 +2,16 @@
 
 ## Summary
 - HUD CTA now surfaces the recommended typing drill inline, with aria labels/tooltips fed by the live heuristic so players see the suggested mode without opening the overlay.
-- Main menu now mirrors the recommendation under the Typing Drills button so players can pick the suggested mode before launching a session.
+- Main menu now mirrors the recommendation under the Typing Drills button so players can pick the suggested mode before launching a session, and the quickstart button falls back to Burst Warmup when no recommendation exists.
+- Telemetry now captures menu quickstarts via `ui.typingDrill.menuQuickstart`, with schema/docs covering the payload for downstream dashboards.
 - Condensed layout now emits a brief pulse animation when it switches, calling attention to the stacked/mobile arrangement.
 - Drills overlay is viewport-aware: it collapses into a stacked column when height < 760px or width < 960px, hides art on very small screens, and widens primary/ghost buttons for touch comfort.
 - Recommendation badges inside the overlay use cleaner copy, and the container height is capped with scrolling to keep controls reachable on short windows.
 
 ## Next Steps
-1. Track analytics for main-menu "Run Recommended Drill" usage and compare against HUD CTA to tune placement.
-2. Add a slim toast/banner when no recommendation is available (e.g., "You’re in the groove—pick any drill").
-3. Wire a quick fallback that opens drills in burst mode if the recommendation cannot be computed (offline/edge state).
+1. Pipe `ui.typingDrill.menuQuickstart` into Codex dashboards/portal tiles to compare menu vs HUD CTA adoption.
+2. Add a slim toast/banner when no recommendation is available (e.g., "You're in the groove - pick any drill").
+3. Surface a quick hint when the fallback Burst Warmup autostarts so players know which mode launched from the menu CTA.
 
 ## Related Work
 - `apps/keyboard-defense/public/styles.css`

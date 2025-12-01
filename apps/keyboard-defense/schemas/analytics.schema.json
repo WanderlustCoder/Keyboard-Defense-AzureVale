@@ -157,6 +157,21 @@
       },
       "additionalProperties": true
     },
+    "telemetry": {
+      "type": "object",
+      "properties": {
+        "available": { "type": "boolean" },
+        "enabled": { "type": "boolean" },
+        "endpoint": { "type": ["string", "null"] },
+        "queueSize": { "type": "integer", "minimum": 0 },
+        "soundIntensity": { "type": ["number", "null"] },
+        "queue": {
+          "type": "array",
+          "items": { "type": "object", "additionalProperties": true }
+        }
+      },
+      "additionalProperties": true
+    },
     "analytics": {
       "type": "object",
       "required": ["mode", "goldEvents", "castlePassiveUnlocks", "taunt"],
