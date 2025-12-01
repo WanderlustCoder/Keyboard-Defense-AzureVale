@@ -38,6 +38,13 @@ Drill completions: 1 (rate: 33.3%; per-source: -; avg: 96% / 82 wpm; sources: -;
 | 2025-12-02T02:40:00.000Z | burst | recommended | accuracyDip |
 <!-- TYPING_DRILL_QUICKSTART:END -->
 
+## Runtime Log Summary
+<!-- RUNTIME_LOG_SUMMARY:START -->
+
+## Runtime Log Summary
+- No runtime log summary found. Run `npm run logs:summary` after monitor/dev-server runs to populate `artifacts/summaries/runtime-log-summary.json` then rerun `npm run codex:dashboard`.
+<!-- RUNTIME_LOG_SUMMARY:END -->
+
 ## Command dashboard
 
 ```bash

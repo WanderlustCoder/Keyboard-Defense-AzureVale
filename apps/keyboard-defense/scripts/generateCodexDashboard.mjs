@@ -21,6 +21,12 @@ const typingTelemetrySummaryPath = path.join(
   "summaries",
   "typing-drill-telemetry.json"
 );
+const runtimeLogSummaryPath = path.join(
+  appRoot,
+  "artifacts",
+  "summaries",
+  "runtime-log-summary.json"
+);
 const portalPath = path.join(docsDir, "CODEX_PORTAL.md");
 const PORTAL_MARKER_START = "<!-- GOLD_ANALYTICS_BOARD:START -->";
 const PORTAL_MARKER_END = "<!-- GOLD_ANALYTICS_BOARD:END -->";
@@ -30,6 +36,8 @@ const PORTAL_UI_MARKER_START = "<!-- UI_SNAPSHOT_GALLERY:START -->";
 const PORTAL_UI_MARKER_END = "<!-- UI_SNAPSHOT_GALLERY:END -->";
 const PORTAL_TYPING_MARKER_START = "<!-- TYPING_DRILL_QUICKSTART:START -->";
 const PORTAL_TYPING_MARKER_END = "<!-- TYPING_DRILL_QUICKSTART:END -->";
+const PORTAL_RUNTIME_LOGS_MARKER_START = "<!-- RUNTIME_LOG_SUMMARY:START -->";
+const PORTAL_RUNTIME_LOGS_MARKER_END = "<!-- RUNTIME_LOG_SUMMARY:END -->";
 const priorityOrder = { P1: 1, P2: 2, P3: 3 };
 const STARFIELD_SEVERITY_THRESHOLDS = {
   warnCastlePercent: 65,
@@ -170,6 +178,26 @@ const formatNumber = (value) => {
   if (!Number.isFinite(value)) return "n/a";
   return Math.round(value * 10) / 10;
 };
+
+function buildRuntimeLogSection(summary) {
+  const lines = [];
+  lines.push("## Runtime Log Summary");
+  if (!summary) {
+    lines.push(
+      "- No runtime log summary found. Run `npm run logs:summary` after monitor/dev-server runs to populate `artifacts/summaries/runtime-log-summary.json` then rerun `npm run codex:dashboard`."
+    );
+    return lines.join("\n");
+  }
+  lines.push(
+    `- Files scanned: ${summary.files?.length ?? 0}; events: ${summary.events ?? 0}; warnings: ${summary.warnings ?? 0}; errors: ${summary.errors ?? 0}.`
+  );
+  lines.push(
+    `- Breaches sum/max: ${summary.breaches?.sum ?? 0}/${summary.breaches?.max ?? 0}; last accuracy: ${formatPercent(
+      summary.accuracy?.last
+    )}.`
+  );
+  return lines.join("\n");
+}
 
 function buildPortalGoldSection(board, baselineGuard) {
   const lines = [];
@@ -610,6 +638,32 @@ async function updatePortalUiSnapshot(gallery) {
   console.log(`Codex portal updated: ${path.relative(repoRoot, portalPath)}`);
 }
 
+async function updatePortalRuntimeLogs(summary) {
+  let portal;
+  try {
+    portal = await fs.readFile(portalPath, "utf8");
+  } catch (error) {
+    console.warn(
+      `codex portal update skipped: unable to read ${portalPath} (${error instanceof Error ? error.message : String(
+        error
+      )})`
+    );
+    return;
+  }
+  const start = portal.indexOf(PORTAL_RUNTIME_LOGS_MARKER_START);
+  const end = portal.indexOf(PORTAL_RUNTIME_LOGS_MARKER_END);
+  if (start === -1 || end === -1 || end <= start) {
+    console.warn("codex portal update skipped: runtime log summary markers missing.");
+    return;
+  }
+  const before = portal.slice(0, start + PORTAL_RUNTIME_LOGS_MARKER_START.length);
+  const after = portal.slice(end);
+  const section = `\n\n${buildRuntimeLogSection(summary)}\n`;
+  const updated = `${before}${section}${after}`;
+  await fs.writeFile(portalPath, updated, "utf8");
+  console.log(`Codex portal updated: ${path.relative(repoRoot, portalPath)}`);
+}
+
 const main = async () => {
   const tasks = await readManifest();
   const backlogMap = await extractBacklogRefs();
@@ -675,6 +729,7 @@ const main = async () => {
   const goldBoard = await readJsonIfExists(goldAnalyticsBoardPath);
   const baselineGuard = await readJsonIfExists(goldBaselineGuardPath);
   const typingTelemetrySummary = await readJsonIfExists(typingTelemetrySummaryPath);
+  const runtimeLogSummary = await readJsonIfExists(runtimeLogSummaryPath);
   if (!goldBoard) {
     lines.push(
       "- Latest board JSON not found; run the gold dashboards (`npm run analytics:gold:report`, `node scripts/ci/goldAnalyticsBoard.mjs ...`) to refresh `artifacts/summaries/gold-analytics-board.ci.json`."
@@ -764,6 +819,8 @@ const main = async () => {
   lines.push("");
   lines.push(buildTypingTelemetrySection(typingTelemetrySummary));
   lines.push("");
+  lines.push(buildRuntimeLogSection(runtimeLogSummary));
+  lines.push("");
   lines.push("## UI Snapshot Gallery");
   const uiGallery = await readJsonIfExists(uiSnapshotGalleryPath);
   if (!uiGallery || !Array.isArray(uiGallery.shots) || uiGallery.shots.length === 0) {
@@ -825,6 +882,7 @@ const main = async () => {
   await updatePortalStarfieldSnapshot(goldBoard);
   await updatePortalUiSnapshot(uiGallery);
   await updatePortalTypingTelemetry(typingTelemetrySummary);
+  await updatePortalRuntimeLogs(runtimeLogSummary);
 };
 
 main().catch((error) => {

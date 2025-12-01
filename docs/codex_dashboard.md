@@ -84,6 +84,9 @@
 | 2025-12-03T02:40:00.000Z | burst | fallback | fallback |
 | 2025-12-02T02:40:00.000Z | burst | recommended | accuracyDip |
 
+## Runtime Log Summary
+- No runtime log summary found. Run `npm run logs:summary` after monitor/dev-server runs to populate `artifacts/summaries/runtime-log-summary.json` then rerun `npm run codex:dashboard`.
+
 ## UI Snapshot Gallery
 
 | Shot | Starfield | Summary |
