@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 
 import { createRebuildTrigger, defaultWatchPaths, parseArgs } from "../scripts/docs/watchDocs.mjs";
 
@@ -43,21 +43,23 @@ describe("watchDocs", () => {
   });
 
   test("createRebuildTrigger debounces and queues rebuilds", async () => {
+    vi.useFakeTimers();
     const invocations = [];
     const trigger = createRebuildTrigger(async (reason) => {
       invocations.push(reason);
-      await wait(20);
+      await wait(10);
     }, 5);
 
     trigger("first");
     trigger("second");
-    await wait(15);
+    await vi.advanceTimersByTimeAsync(20);
     expect(invocations).toEqual(["second"]);
 
     trigger("slow");
-    await wait(10);
+    await vi.advanceTimersByTimeAsync(6);
     trigger("queued");
-    await wait(60);
+    await vi.advanceTimersByTimeAsync(40);
     expect(invocations).toEqual(["second", "slow", "queued"]);
+    vi.useRealTimers();
   });
 });
