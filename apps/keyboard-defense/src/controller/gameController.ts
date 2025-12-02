@@ -4441,6 +4441,11 @@ export class GameController {
       this.unlockLoreForWave(summary.index + 1);
     });
     this.engine.events.on("typing:error", ({ enemyId, expected, received, totalErrors }) => {
+      this.hud.showTypingErrorHint({
+        enemyId: enemyId ?? null,
+        expected: expected ?? null,
+        received: received ?? null
+      });
       if (this.tutorialManager?.getState().active) {
         this.tutorialManager.notify({
           type: "typing:error",

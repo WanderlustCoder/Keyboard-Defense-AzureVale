@@ -65,6 +65,7 @@ export class HudView {
     maxCombo = 0;
     goldTimeout = null;
     logEntries = [];
+    typingErrorHint = null;
     logLimit = 6;
     tutorialSlotLock = null;
     passiveHighlightId = null;
@@ -995,6 +996,7 @@ export class HudView {
         return this.waveScorecard.container.dataset.visible === "true";
     }
     update(state, upcoming, options = {}) {
+        const now = typeof performance !== "undefined" ? performance.now() : Date.now();
         this.lastState = state;
         this.updateCastleBonusHint(state);
         if (this.analyticsViewer) {
@@ -1015,11 +1017,21 @@ export class HudView {
         const activeEnemy = state.typing.activeEnemyId
             ? state.enemies.find((enemy) => enemy.id === state.typing.activeEnemyId)
             : null;
+        const hint = this.typingErrorHint;
+        const hintFresh = Boolean(hint) && now - (hint?.timestamp ?? 0) < 2000;
+        if (hintFresh && activeEnemy && activeEnemy.typed > 0) {
+            this.typingErrorHint = null;
+        }
+        const hasTypingError = hintFresh && (!hint?.enemyId || hint?.enemyId === activeEnemy?.id);
         if (activeEnemy) {
             const typed = activeEnemy.word.slice(0, activeEnemy.typed);
             const remaining = activeEnemy.word.slice(activeEnemy.typed);
             const shielded = Boolean(activeEnemy.shield && activeEnemy.shield.current > 0);
-            const segments = `<span class="word-text"><span class="typed">${typed}</span><span>${remaining}</span></span>`;
+            const expectedKey = hasTypingError ? hint?.expected ?? null : null;
+            const errorHint = hasTypingError && expectedKey
+                ? `<span class="word-error-hint" role="status" aria-live="polite"><span class="word-error-key">${expectedKey.toUpperCase()}</span><span>Needed this key</span></span>`
+                : "";
+            const segments = `<span class="word-text${hasTypingError ? " word-text-error" : ""}"><span class="typed">${typed}</span><span>${remaining}</span></span>${errorHint}`;
             if (shielded) {
                 this.activeWord.innerHTML = `<span class="word-status shielded" role="status" aria-live="polite">🛡 Shielded</span>${segments}`;
                 this.activeWord.dataset.shielded = "true";
@@ -1028,10 +1040,26 @@ export class HudView {
                 this.activeWord.innerHTML = segments;
                 delete this.activeWord.dataset.shielded;
             }
+            if (hasTypingError) {
+                this.activeWord.dataset.error = "true";
+            }
+            else {
+                delete this.activeWord.dataset.error;
+            }
         }
         else {
-            this.activeWord.innerHTML = "";
+            if (hintFresh && hint?.expected) {
+                this.activeWord.innerHTML = `<span class="word-error-hint solo" role="status" aria-live="polite"><span class="word-error-key">${hint.expected.toUpperCase()}</span><span>Needed this key</span></span>`;
+                this.activeWord.dataset.error = "true";
+            }
+            else {
+                this.activeWord.innerHTML = "";
+                delete this.activeWord.dataset.error;
+            }
             delete this.activeWord.dataset.shielded;
+        }
+        if (this.typingErrorHint && !hintFresh) {
+            this.typingErrorHint = null;
         }
         if (this.virtualKeyboard) {
             if (this.virtualKeyboardEnabled && activeEnemy?.word) {
@@ -1074,6 +1102,14 @@ export class HudView {
             slot.status.textContent = "";
             delete slot.status.dataset.messageActive;
         }, 2000);
+    }
+    showTypingErrorHint(hint) {
+        this.typingErrorHint = {
+            expected: hint.expected,
+            received: hint.received,
+            enemyId: hint.enemyId,
+            timestamp: typeof performance !== "undefined" ? performance.now() : Date.now()
+        };
     }
     appendLog(message) {
         this.logEntries.unshift(message);

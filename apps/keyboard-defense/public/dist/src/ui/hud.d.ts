@@ -224,6 +224,7 @@ export declare class HudView {
     private maxCombo;
     private goldTimeout;
     private readonly logEntries;
+    private typingErrorHint;
     private readonly logLimit;
     private tutorialSlotLock;
     private passiveHighlightId;
@@ -346,6 +347,11 @@ export declare class HudView {
     }): void;
     showCastleMessage(message: string): void;
     showSlotMessage(slotId: string, message: string): void;
+    showTypingErrorHint(hint: {
+        expected: string | null;
+        received: string | null;
+        enemyId: string | null;
+    }): void;
     appendLog(message: string): void;
     setTutorialMessage(message: string | null, highlight?: boolean): void;
     private updateCastleBonusHint;
