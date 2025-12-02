@@ -1,12 +1,12 @@
 import { describe, expect, test } from "vitest";
 import path from "node:path";
-import fs from "node:fs/promises";
 import {
   applyToggles,
   buildFromCore,
   compileValidator,
   loadSchema,
-  summarize
+  summarize,
+  validateConfig
 } from "../scripts/waves/editConfig.mjs";
 
 const SCHEMA_PATH = path.join(process.cwd(), "schemas", "wave-config.schema.json");
@@ -55,5 +55,20 @@ describe("wave config editor helpers", () => {
     expect(summary).toContain("wave-1");
     expect(summary).toContain("hazards=1");
     expect(summary).toContain("evac");
+  });
+
+  test("validateConfig rejects bad config", async () => {
+    const configPath = path.join(process.cwd(), "temp-wave-invalid.json");
+    await fs.writeFile(
+      configPath,
+      JSON.stringify({
+        waves: [{ id: "bad", duration: -1, rewardBonus: 0, spawns: [] }]
+      }),
+      "utf8"
+    );
+    await expect(
+      validateConfig(configPath, SCHEMA_PATH)
+    ).rejects.toThrow(/failed validation/i);
+    await fs.unlink(configPath);
   });
 });

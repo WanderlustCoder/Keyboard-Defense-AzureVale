@@ -61,6 +61,7 @@
     "wave:sim": "node ./scripts/waveSim.mjs",
     "wave:benchmark": "node ./scripts/waveBenchmark.mjs",
     "wave:edit": "node ./scripts/waves/editConfig.mjs",
+    "wave:preview": "node ./scripts/waves/previewConfig.mjs",
     "task:build": "npm run build",
     "task:unit": "node ./scripts/unit.mjs",
     "task:integration": "node ./scripts/integration.mjs",
