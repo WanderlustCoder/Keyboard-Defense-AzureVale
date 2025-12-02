@@ -23,7 +23,7 @@ Commands:
 | `npm run start` | Build + launch the dev server. Emits `DEV_SERVER_READY ...` once the static site is reachable. |
 | `npm run serve:status` | Report whether the server is running and reachable; outputs URL/pid when active. |
 | `npm run serve:check` | Fast readiness probe (non-zero exit code if unreachable). |
-| `npm run serve:open` | Start the dev server with `--no-build` if needed and open it in your default browser. Pass `--force-restart` to replace an existing instance. |
+| `npm run serve:open` | Start the dev server with `--no-build` if needed and open it in your default browser. Pass `--force-restart` to replace an existing instance; `--host`/`--port` forward overrides to the managed server. |
 | `npm run serve:logs` | Tail the captured `http-server` log from `.devserver/server.log`. |
 | `npm run serve:monitor` | Stream logs and periodic HTTP probes; exits when the server stops or on Ctrl+C. |
 | `npm run serve:smoke` | Launch `npm run start`, wait for readiness, issue reachability checks, and shut everything down again (used in CI). Emits `artifacts/smoke/devserver-smoke-summary.json` (override via `DEVSERVER_SMOKE_SUMMARY`), automatically prints the tail of `.devserver/server.log` when failures occur, and supports `--json` to dump the summary to stdout for automation-friendly parsing. |

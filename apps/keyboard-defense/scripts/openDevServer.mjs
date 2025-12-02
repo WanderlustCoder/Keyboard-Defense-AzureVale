@@ -5,6 +5,7 @@
  * - Reuses the running server when healthy.
  * - Skips the build step for speed (`--no-build`); rebuild manually when assets change.
  * - Pass `--force-restart` to kill and restart the managed server.
+ * - Accepts `--host <host>` / `--port <port>` to override bind/URL.
  */
 
 import { spawn } from "node:child_process";
@@ -17,6 +18,11 @@ import { startServer, stopServer } from "./devServer.mjs";
 
 const STATE_PATH = path.resolve(".devserver", "state.json");
 const DEFAULT_URL = "http://127.0.0.1:4173";
+const ARG_MAP = new Map([
+  ["--host", "host"],
+  ["--port", "port"],
+  ["--force-restart", "forceRestart"]
+]);
 
 async function readState() {
   try {
@@ -67,15 +73,23 @@ function openInBrowser(url) {
   }
 }
 
-async function ensureServer(forceRestart = false) {
+async function ensureServer(options = {}) {
+  const { forceRestart = false, host, port } = options;
   // 1) Reuse healthy existing server.
   const existing = await readState();
+  const wantsPort = typeof port === "number" && Number.isFinite(port);
+  const wantsHost = typeof host === "string" && host.trim().length > 0;
+  const existingMatches =
+    existing &&
+    (!wantsPort || existing.port === port) &&
+    (!wantsHost || existing.host === host || existing.url?.includes(host));
+
   if (existing && !forceRestart && isProcessRunning(existing.pid) && existing.url) {
     const healthy = await ping(existing.url);
-    if (healthy) {
+    if (healthy && existingMatches) {
       return { url: existing.url, fromExisting: true };
     }
-    // unhealthy; clear state so startServer can recover
+    // unhealthy or option mismatch; clear state so startServer can recover
     try {
       fsSync.rmSync(STATE_PATH, { force: true });
     } catch {
@@ -84,16 +98,41 @@ async function ensureServer(forceRestart = false) {
   }
 
   // 2) Start a new server without rebuilding the bundle for speed.
-  const state = await startServer({ noBuild: true, forceRestart });
+  const state = await startServer({
+    noBuild: true,
+    forceRestart,
+    host,
+    port
+  });
   const url = state?.url ?? existing?.url ?? DEFAULT_URL;
   return { url, fromExisting: Boolean(existing) && !forceRestart };
 }
 
 async function main() {
   const rawArgs = process.argv.slice(2);
-  const forceRestart = rawArgs.includes("--force-restart");
+  const options = {
+    forceRestart: rawArgs.includes("--force-restart"),
+    host: undefined,
+    port: undefined
+  };
 
-  const { url, fromExisting } = await ensureServer(forceRestart);
+  for (let i = 0; i < rawArgs.length; i += 1) {
+    const token = rawArgs[i];
+    const key = ARG_MAP.get(token);
+    if (!key || key === "forceRestart") continue;
+    const value = rawArgs[i + 1];
+    if (!value || value.startsWith("--")) {
+      throw new Error(`Flag ${token} requires a value`);
+    }
+    if (key === "port") {
+      options.port = Number(value);
+    } else if (key === "host") {
+      options.host = value;
+    }
+    i += 1;
+  }
+
+  const { url, fromExisting } = await ensureServer(options);
   console.log(
     fromExisting
       ? `Dev server already running at ${url}. Opening browser...`
@@ -102,7 +141,7 @@ async function main() {
 
   openInBrowser(url);
 
-  if (forceRestart) {
+  if (options.forceRestart) {
     process.on("exit", async () => {
       await stopServer({ quiet: true });
     });
