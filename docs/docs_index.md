@@ -3,7 +3,8 @@
 Use this index to jump straight to the guidance you'll need while building and testing Keyboard Defense. Documents are grouped by theme; each bullet links to a Markdown file or status note within this repo.
 
 ## Project Overview & Strategy
-- `docs/season1_backlog.md` - Feature roadmap and numbered backlog for the Siege of the Azure Vale.
+- `apps/keyboard-defense/docs/season1_backlog.md` - Feature roadmap and numbered backlog for the Siege of the Azure Vale.
+- `apps/keyboard-defense/docs/season2_backlog.md` - Next-phase 100-item backlog for ages 8-16 (Edge/Chrome, free, pixel art direction).
 - `apps/keyboard-defense/docs/roadmap/season1.json` - Season 1 roadmap milestones consumed by the HUD overlay.
 - `docs/CODEX_AUTONOMOUS_TESTING_DIRECTIVE_Siege_of_the_Azure_Vale.md` - Automation-first definition of done, scripting expectations, and QA guardrails.
 - `docs/CODEX_GUIDE.md` - Codex-oriented workflow guide (where to find tasks, required commands, documentation rules).
@@ -46,6 +47,7 @@ Use this index to jump straight to the guidance you'll need while building and t
 
 ## Status Notes
 Status entries live under `docs/status/`. Recent highlights include:
+- `2025-12-10_loading_screen.md` - Loading overlay with pixel animation and rotating typing tips that auto-dismiss after assets are ready.
 - `2025-12-09_devserver_open.md` - `npm run serve:open` starts/reuses the dev server with `--no-build` and opens the browser (supports `--force-restart`, `--host`, and `--port`).
 - `2025-12-09_visual_auto_runner.md` - One-command Playwright visual runner that starts/stops the dev server and supports `--update`/`--keep-alive` flags.
 - `2025-12-09_remote_visual_testing.md` - Quick steps for running Playwright visual tests over the network using `--host`/`--port` overrides.

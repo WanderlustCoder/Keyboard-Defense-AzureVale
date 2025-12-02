@@ -21,6 +21,7 @@ import {
   getNextHudFontPreset,
   normalizeHudFontScaleValue
 } from "../ui/fontScale.js";
+import { LoadingScreen } from "../ui/loadingScreen.js";
 import { DebugApi } from "../debug/debugApi.js";
 import { SoundManager } from "../audio/soundManager.js";
 import { AssetLoader, toSvgDataUri } from "../assets/assetLoader.js";
@@ -149,6 +150,17 @@ export class GameController {
     this.readableFontEnabled = false;
     this.dyslexiaFontEnabled = false;
     this.colorblindPaletteEnabled = false;
+    this.loadingScreen =
+      typeof document !== "undefined"
+        ? new LoadingScreen({
+            containerId: "loading-screen",
+            statusId: "loading-status",
+            tipId: "loading-tip"
+          })
+        : null;
+    if (this.loadingScreen) {
+      this.loadingScreen.show("Loading pixel defenders...");
+    }
     this.defeatAnimationMode = "auto";
     this.starfieldOverride = null;
     this.lastStarfieldSummary = null;
@@ -253,6 +265,11 @@ export class GameController {
       this.handleAssetImageLoaded();
     });
     this.syncAssetIntegrityFlags();
+    const setLoadingStatus = (text) => {
+      if (this.loadingScreen && typeof text === "string") {
+        this.loadingScreen.setStatus(text);
+      }
+    };
     const castleSprites = {};
     for (const levelConfig of config.castleLevels ?? []) {
       const spriteKey = levelConfig.spriteKey ?? `castle-level-${levelConfig.level}`;
@@ -275,6 +292,11 @@ export class GameController {
       "turret-crystal": svgTurretDataUri("#67e8f9", "#0f766e"),
       ...castleSprites
     };
+    if (atlasEnabled) {
+      setLoadingStatus("Packing sprite atlas...");
+    } else {
+      setLoadingStatus("Loading sprites and defenses...");
+    }
     const atlasPromise = atlasEnabled
       ? this.assetLoader
           .loadAtlas(this.assetLoader.atlasUrl ?? "./assets/atlas.json")
@@ -286,6 +308,7 @@ export class GameController {
     const manifestPromise = atlasPromise
       .catch(() => undefined)
       .then(() => {
+        setLoadingStatus("Loading sprites, sounds, and effects...");
         const skip = new Set(this.assetLoader.listAtlasKeys?.() ?? []);
         return this.assetLoader
           .loadManifest("./assets/manifest.json", { skip })
@@ -305,6 +328,7 @@ export class GameController {
         return this.assetLoader.loadImages(fallbackSprites);
       });
     this.assetLoadPromise = manifestPromise.then(() => {
+      setLoadingStatus("Preparing castle visuals...");
       this.syncDefeatAnimationPreferences();
       return undefined;
     });
@@ -317,7 +341,22 @@ export class GameController {
           this.assetLoaderUnsubscribe();
           this.assetLoaderUnsubscribe = null;
         }
+        setLoadingStatus("Finalizing battle prep...");
         this.syncDefeatAnimationPreferences();
+        if (this.loadingScreen) {
+          this.loadingScreen.hide();
+        }
+      })
+      .catch((error) => {
+        console.warn("Asset loading encountered an issue; continuing with fallbacks.", error);
+        this.assetReady = true;
+        if (this.assetLoaderUnsubscribe) {
+          this.assetLoaderUnsubscribe();
+          this.assetLoaderUnsubscribe = null;
+        }
+        if (this.loadingScreen) {
+          this.loadingScreen.hide();
+        }
       });
     manifestPromise
       .then(() => this.render())

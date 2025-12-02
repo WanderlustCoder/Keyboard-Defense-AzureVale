@@ -7,6 +7,25 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+    <div
+      id="loading-screen"
+      data-visible="true"
+      aria-live="polite"
+      aria-busy="true"
+      role="status"
+    >
+      <div class="loading-card">
+        <div class="loading-pixel">
+          <div class="loading-pixel-sprite" aria-hidden="true"></div>
+        </div>
+        <div class="loading-copy">
+          <p class="loading-title">Forging defenses...</p>
+          <p class="loading-status" id="loading-status">Loading pixel defenders...</p>
+          <p class="loading-tip-label">Tip</p>
+          <p class="loading-tip" id="loading-tip">Keep wrists relaxed and float above home row.</p>
+        </div>
+      </div>
+    </div>
     <div id="app">
       <canvas id="game-surface" width="960" height="540"></canvas>
       <aside id="hud">
