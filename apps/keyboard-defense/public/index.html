@@ -73,6 +73,31 @@
             <span id="resource-gold">0</span>
             <span id="resource-delta"></span>
           </div>
+          <div class="session-panel" aria-live="polite">
+            <div class="session-row">
+              <span class="session-label">Session</span>
+              <span id="session-timer" class="session-time">00:00</span>
+            </div>
+            <div
+              id="break-reminder"
+              class="break-reminder"
+              data-visible="false"
+              role="status"
+              aria-live="polite"
+              aria-hidden="true"
+            >
+              <div class="break-reminder-copy">
+                <p class="break-reminder-title">Time for a stretch?</p>
+                <p class="break-reminder-tip" id="break-reminder-tip">
+                  You have been practicing for 20 minutes. Stand, stretch, and sip water.
+                </p>
+              </div>
+              <div class="break-reminder-actions">
+                <button id="break-reminder-snooze" type="button">Remind in 10m</button>
+                <button id="break-reminder-reset" type="button">I took a break</button>
+              </div>
+            </div>
+          </div>
           <div class="upgrades" id="upgrade-panel"></div>
         </section>
         <section class="typing">

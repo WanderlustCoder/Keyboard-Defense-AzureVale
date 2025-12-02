@@ -4,6 +4,7 @@ Quick status for the Season 2 backlog items referenced in `season2_backlog.md`.
 
 | ID | Title | Status | Notes |
 | --- | --- | --- | --- |
+| 73 | Session timer and break reminders | Done | HUD shows session timer with 20m reminder + 10m snooze and reset after break; logs friendly nudge to stretch. |
 | 94 | Loading screen with tips and pixel animation | Done | Rotating typing tips (3.8s), pixel bob animation with reduced-motion fallback, and doc `loading_screen.md` to edit tips safely. |
 | 95 | Build-time lint/tests gate expanded to lesson JSON validator | Done | `npm run lint` now runs strict wordlist/lesson lint; pre-commit and CI enforce it. |
 | 96 | Wordlist/lesson content lints | Done | Validator covers safe chars, denylist, lengths, sorting, gating; seed lists added. |
