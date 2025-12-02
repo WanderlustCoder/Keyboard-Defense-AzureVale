@@ -185,6 +185,11 @@ export class GameController {
     this.optionsOverlayActive = false;
     this.resumeAfterOptions = false;
     this.menuActive = false;
+    this.fullscreenSupported =
+      typeof document !== "undefined" &&
+      (document.fullscreenEnabled ?? Boolean(document.documentElement?.requestFullscreen));
+    this.fullscreenChangeHandler = null;
+    this.isFullscreen = false;
     this.tutorialCompleted = false;
     this.pendingTutorialSummary = null;
     this.typingDrills = null;
@@ -373,13 +378,14 @@ export class GameController {
       {
         healthBar: "castle-health-bar",
         goldLabel: "resource-gold",
-        goldDelta: "resource-delta",
-        activeWord: "active-word",
-        typingInput: "typing-input",
-        upgradePanel: "upgrade-panel",
-        comboLabel: "combo-stats",
-        comboAccuracyDelta: "combo-accuracy-delta",
-        eventLog: "battle-log",
+      goldDelta: "resource-delta",
+      activeWord: "active-word",
+      typingInput: "typing-input",
+      fullscreenButton: "fullscreen-button",
+      upgradePanel: "upgrade-panel",
+      comboLabel: "combo-stats",
+      comboAccuracyDelta: "combo-accuracy-delta",
+      eventLog: "battle-log",
         wavePreview: "wave-preview-list",
         wavePreviewHint: "wave-preview-hint",
         tutorialBanner: "tutorial-banner",
@@ -483,6 +489,7 @@ export class GameController {
         onColorblindPaletteToggle: (enabled) => this.setColorblindPaletteEnabled(enabled),
         onDefeatAnimationModeChange: (mode) => this.setDefeatAnimationMode(mode),
         onHudFontScaleChange: (scale) => this.setHudFontScale(scale),
+        onFullscreenToggle: (next) => this.toggleFullscreen(next),
         onTurretPresetSave: (presetId) => this.handleTurretPresetSave(presetId),
         onTurretPresetApply: (presetId) => this.handleTurretPresetApply(presetId),
         onTurretPresetClear: (presetId) => this.handleTurretPresetClear(presetId),
@@ -513,10 +520,12 @@ export class GameController {
     }
     this.initializePlayerSettings();
     this.hud.setAnalyticsExportEnabled(this.analyticsExportEnabled);
+    this.hud.setFullscreenAvailable(this.fullscreenSupported);
     this.attachInputHandlers(options.typingInput);
     this.attachTypingDrillHooks();
     this.attachDebugButtons();
     this.attachGlobalShortcuts();
+    this.attachFullscreenListeners();
     this.registerHudListeners();
     if (config.featureToggles.tutorials) {
       const shouldSkipTutorial = this.shouldSkipTutorial();
@@ -3274,6 +3283,55 @@ export class GameController {
       this.hud.setCapsLockWarning(false);
     });
     this.hud.focusTypingInput();
+  }
+  attachFullscreenListeners() {
+    if (typeof document === "undefined") return;
+    const handler = () => this.syncFullscreenStateFromDocument();
+    document.addEventListener("fullscreenchange", handler);
+    this.fullscreenChangeHandler = handler;
+    this.syncFullscreenStateFromDocument();
+  }
+  syncFullscreenStateFromDocument() {
+    if (!this.fullscreenSupported) {
+      this.hud.setFullscreenActive(false);
+      return;
+    }
+    const active = Boolean(document.fullscreenElement);
+    this.isFullscreen = active;
+    this.hud.setFullscreenActive(active);
+  }
+  toggleFullscreen(nextActive) {
+    if (!this.fullscreenSupported || typeof document === "undefined") return;
+    if (nextActive) {
+      if (document.fullscreenElement) {
+        this.syncFullscreenStateFromDocument();
+        return;
+      }
+      const target =
+        document.documentElement ?? document.body ?? (this.canvas?.ownerDocument?.documentElement ?? null);
+      target
+        ?.requestFullscreen?.()
+        .then(() => {
+          this.syncFullscreenStateFromDocument();
+        })
+        .catch((error) => {
+          console.warn("Fullscreen request failed:", error);
+          this.syncFullscreenStateFromDocument();
+        });
+    } else {
+      if (!document.fullscreenElement) {
+        this.syncFullscreenStateFromDocument();
+        return;
+      }
+      document
+        .exitFullscreen?.()
+        .catch((error) => {
+          console.warn("Fullscreen exit failed:", error);
+        })
+        .finally(() => {
+          this.syncFullscreenStateFromDocument();
+        });
+    }
   }
   attachGlobalShortcuts() {
     if (typeof window === "undefined") return;

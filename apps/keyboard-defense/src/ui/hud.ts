@@ -76,6 +76,7 @@ export interface HudCallbacks {
   onColorblindPaletteToggle(enabled: boolean): void;
   onDefeatAnimationModeChange(mode: DefeatAnimationPreference): void;
   onHudFontScaleChange(scale: number): void;
+  onFullscreenToggle?: (nextActive: boolean) => void;
   onTurretHover?: (
     slotId: string | null,
     context?: { typeId?: TurretTypeId | null; level?: number | null }
@@ -291,6 +292,7 @@ export class HudView {
   private readonly goldDelta: HTMLElement;
   private readonly activeWord: HTMLElement;
   private readonly typingInput: HTMLInputElement;
+  private readonly fullscreenButton: HTMLButtonElement | null = null;
   private readonly capsLockWarning: HTMLElement | null = null;
   private readonly upgradePanel: HTMLElement;
   private readonly comboLabel: HTMLElement;
@@ -461,6 +463,7 @@ export class HudView {
       comboLabel: string;
       comboAccuracyDelta: string;
       eventLog: string;
+      fullscreenButton?: string;
       wavePreview: string;
       wavePreviewHint?: string;
       tutorialBanner: string;
@@ -542,6 +545,11 @@ export class HudView {
     this.goldDelta = this.getElement(rootIds.goldDelta);
     this.activeWord = this.getElement(rootIds.activeWord);
     this.typingInput = this.getElement(rootIds.typingInput) as HTMLInputElement;
+    this.fullscreenButton = (() => {
+      if (!rootIds.fullscreenButton) return null;
+      const el = document.getElementById(rootIds.fullscreenButton);
+      return el instanceof HTMLButtonElement ? el : null;
+    })();
     const capsEl = document.getElementById("caps-lock-warning");
     this.capsLockWarning = capsEl instanceof HTMLElement ? capsEl : null;
     if (this.capsLockWarning) {
@@ -1188,6 +1196,12 @@ export class HudView {
     this.castleRepairButton.addEventListener("click", () => {
       this.callbacks.onCastleRepair();
     });
+    if (this.fullscreenButton && typeof this.callbacks.onFullscreenToggle === "function") {
+      this.fullscreenButton.addEventListener("click", () => {
+        const next = this.fullscreenButton?.dataset.active === "true" ? false : true;
+        this.callbacks.onFullscreenToggle?.(next);
+      });
+    }
 
     this.createTurretControls();
   }
@@ -1200,6 +1214,22 @@ export class HudView {
     if (!this.capsLockWarning) return;
     this.capsLockWarning.dataset.visible = visible ? "true" : "false";
     this.capsLockWarning.setAttribute("aria-hidden", visible ? "false" : "true");
+  }
+
+  setFullscreenAvailable(available: boolean): void {
+    if (!this.fullscreenButton) return;
+    this.fullscreenButton.disabled = !available;
+    this.fullscreenButton.setAttribute("aria-disabled", available ? "false" : "true");
+    if (!available) {
+      this.fullscreenButton.textContent = "Fullscreen Unavailable";
+    }
+  }
+
+  setFullscreenActive(active: boolean): void {
+    if (!this.fullscreenButton) return;
+    this.fullscreenButton.dataset.active = active ? "true" : "false";
+    this.fullscreenButton.setAttribute("aria-pressed", active ? "true" : "false");
+    this.fullscreenButton.textContent = active ? "Exit Fullscreen" : "Fullscreen";
   }
 
   showShortcutOverlay(): void {

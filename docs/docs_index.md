@@ -47,6 +47,7 @@ Use this index to jump straight to the guidance you'll need while building and t
 
 ## Status Notes
 Status entries live under `docs/status/`. Recent highlights include:
+- `2025-12-10_fullscreen_toggle.md` - HUD fullscreen toggle button (syncs on fullscreenchange, disables if unsupported).
 - `2025-12-10_caps_lock_warning.md` - Caps-lock warning under the typing input with aria-live feedback.
 - `2025-12-10_loading_screen.md` - Loading overlay with pixel animation and rotating typing tips that auto-dismiss after assets are ready.
 - `2025-12-09_devserver_open.md` - `npm run serve:open` starts/reuses the dev server with `--no-build` and opens the browser (supports `--force-restart`, `--host`, and `--port`).
