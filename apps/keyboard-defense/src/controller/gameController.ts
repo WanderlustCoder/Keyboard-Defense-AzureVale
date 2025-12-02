@@ -46,6 +46,9 @@ import { calculateCanvasResolution, createDprListener } from "../utils/canvasRes
 import { buildResolutionChangeEntry } from "../utils/canvasTransition.js";
 import { deriveStarfieldState, type StarfieldParallaxState } from "../utils/starfield.js";
 import { defaultStarfieldConfig } from "../config/starfield.js";
+import { listNewLoreForWave } from "../data/lore.js";
+import { readLoreProgress, writeLoreProgress } from "../utils/lorePersistence.js";
+import { selectAmbientProfile } from "../audio/ambientProfiles.js";
 const FRAME_DURATION = 1 / 60;
 const TUTORIAL_VERSION = "v2";
 const SOUND_VOLUME_MIN = 0;
@@ -65,6 +68,7 @@ const STARFIELD_PRESETS = {
   warning: { scene: "warning", waveProgress: 0.55, castleHealthRatio: 0.55 },
   breach: { scene: "breach", waveProgress: 0.9, castleHealthRatio: 0.25 }
 };
+const LORE_VERSION = "v1";
 function svgCircleDataUri(primary, accent) {
   const svg =
     `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'>` +
@@ -157,6 +161,8 @@ export class GameController {
     this.turretRangePreviewLevel = null;
     this.bestCombo = 0;
     this.playerSettings = createDefaultPlayerSettings();
+    this.lastAmbientProfile = null;
+    this.unlockedLore = new Set();
     this.turretLoadoutPresets = Object.create(null);
     this.activeTurretPresetId = null;
     this.lastTurretSignature = "";
@@ -236,6 +242,7 @@ export class GameController {
             this.syncAssetIntegrityFlags();
           })
         : null;
+    this.initializeLoreProgress();
     this.assetReady = false;
     this.assetStartPending = false;
     this.assetReadyPromise = Promise.resolve();
@@ -379,7 +386,32 @@ export class GameController {
           tableBody: "debug-analytics-viewer-body",
           filterSelect: "debug-analytics-viewer-filter",
           drills: "debug-analytics-drills"
-        }
+        },
+        roadmapOverlay: {
+          container: "roadmap-overlay",
+          closeButton: "roadmap-overlay-close",
+          list: "roadmap-list",
+          summaryWave: "roadmap-summary-wave",
+          summaryCastle: "roadmap-summary-castle",
+          summaryLore: "roadmap-summary-lore",
+          filterStory: "roadmap-filter-story",
+          filterSystems: "roadmap-filter-systems",
+          filterChallenge: "roadmap-filter-challenge",
+          filterLore: "roadmap-filter-lore",
+          filterCompleted: "roadmap-filter-completed",
+          trackedContainer: "roadmap-tracked",
+          trackedTitle: "roadmap-tracked-title",
+          trackedProgress: "roadmap-tracked-progress",
+          trackedClear: "roadmap-tracked-clear"
+        },
+        roadmapGlance: {
+          container: "roadmap-glance",
+          title: "roadmap-glance-title",
+          progress: "roadmap-glance-progress",
+          openButton: "roadmap-glance-open",
+          clearButton: "roadmap-glance-clear"
+        },
+        roadmapLaunch: "roadmap-launch"
       },
       {
         onCastleUpgrade: () => this.handleCastleUpgrade(),
@@ -1146,9 +1178,13 @@ export class GameController {
       void this.soundManager?.ensureInitialized().then(() => {
         this.soundManager?.setVolume(this.soundVolume);
         this.soundManager?.setEnabled(true);
+        if (this.currentState) {
+          this.updateAmbientTrack(this.currentState);
+        }
       });
     } else {
       this.soundManager?.setEnabled(false);
+      this.soundManager?.stopAmbient?.();
     }
     if (!options.silent) {
       this.hud.appendLog(`Sound ${enabled ? "enabled" : "muted"}`);
@@ -1251,6 +1287,21 @@ export class GameController {
     if (options.persist !== false && changed) {
       this.persistPlayerSettings({ audioIntensity: normalized });
     }
+  }
+  updateAmbientTrack(state) {
+    if (!this.soundManager) return;
+    if (!this.soundEnabled) {
+      this.soundManager.stopAmbient?.();
+      return;
+    }
+    const healthRatio =
+      state && state.castle && state.castle.maxHealth > 0
+        ? Math.max(0, Math.min(1, state.castle.health / state.castle.maxHealth))
+        : 1;
+    const profile = selectAmbientProfile(state?.wave?.index ?? 0, state?.wave?.total ?? 1, healthRatio);
+    if (profile === this.lastAmbientProfile) return;
+    this.lastAmbientProfile = profile;
+    this.soundManager.setAmbientProfile(profile);
   }
   setColorblindPaletteEnabled(enabled, options = {}) {
     this.colorblindPaletteEnabled = enabled;
@@ -2909,10 +2960,13 @@ export class GameController {
       turretRange,
       starfield: starfieldState
     });
+    this.updateAmbientTrack(this.currentState);
     this.syncCanvasResizeCause();
     const upcoming = this.engine.getUpcomingSpawns();
     this.hud.update(this.currentState, upcoming, {
-      colorBlindFriendly: this.colorblindPaletteEnabled || this.checkeredBackgroundEnabled
+      colorBlindFriendly: this.colorblindPaletteEnabled || this.checkeredBackgroundEnabled,
+      tutorialCompleted: this.tutorialCompleted,
+      loreUnlocked: this.unlockedLore?.size ?? 0
     });
     const typingDrillRecommendation = this.buildTypingDrillRecommendation(this.currentState);
     this.setTypingDrillCtaRecommendation(typingDrillRecommendation);
@@ -3075,6 +3129,7 @@ export class GameController {
         return;
       }
       const optionsVisible = this.hud.isOptionsOverlayVisible();
+      const roadmapVisible = this.hud.isRoadmapOverlayVisible?.() ?? false;
       if (this.hud.isWaveScorecardVisible()) {
         if (event.key === "Escape" || event.key === "Enter" || event.key === " ") {
           event.preventDefault();
@@ -3083,6 +3138,11 @@ export class GameController {
         return;
       }
       if (event.key === "Escape") {
+        if (roadmapVisible) {
+          event.preventDefault();
+          this.hud.hideRoadmapOverlay();
+          return;
+        }
         if (optionsVisible) {
           event.preventDefault();
           this.closeOptionsOverlay();
@@ -3100,6 +3160,9 @@ export class GameController {
           event.preventDefault();
           this.cycleHudFontScale(direction);
         }
+        return;
+      }
+      if (roadmapVisible) {
         return;
       }
       if (event.key === "?" || (event.key === "/" && event.shiftKey)) {
@@ -3707,6 +3770,24 @@ export class GameController {
     this.render();
     this.start();
   }
+
+  initializeLoreProgress() {
+    if (typeof window === "undefined" || !window.localStorage) return;
+    const progress = readLoreProgress(window.localStorage, LORE_VERSION);
+    this.unlockedLore = new Set(progress.unlocked ?? []);
+  }
+
+  unlockLoreForWave(waveNumber) {
+    if (typeof window === "undefined" || !window.localStorage) return;
+    const newEntries = listNewLoreForWave(waveNumber, this.unlockedLore ?? new Set());
+    if (!newEntries.length) return;
+    for (const entry of newEntries) {
+      this.unlockedLore.add(entry.id);
+      this.hud?.appendLog?.(`Codex unlocked: ${entry.title}`);
+    }
+    writeLoreProgress(window.localStorage, this.unlockedLore, LORE_VERSION);
+  }
+
   shouldSkipTutorial() {
     if (typeof window === "undefined") {
       return false;
@@ -3878,6 +3959,7 @@ export class GameController {
       );
       this.render();
       this.presentWaveScorecard(summary);
+      this.unlockLoreForWave(summary.index + 1);
     });
     this.engine.events.on("typing:error", ({ enemyId, expected, received, totalErrors }) => {
       if (this.tutorialManager?.getState().active) {

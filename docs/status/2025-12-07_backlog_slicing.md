@@ -51,4 +51,4 @@ Outlined manageable sub-tasks for remaining “Not Started” backlog items to e
   - Add automated coverage to ensure completion rows render in tutorial + matrix sections.
 
 ## Next Action
-- Lore codex entries (#84) shipped. Next priority: #86 interactive season roadmap overlay within HUD (narrative/content progression).
+- Ambient music (#88) shipped. Next priority: #89 expand wave-themed word banks (narrative/content progression).

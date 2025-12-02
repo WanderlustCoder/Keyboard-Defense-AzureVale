@@ -31,6 +31,7 @@
             <h1>Keyboard Defense</h1>
             <div class="castle-actions">
               <button id="pause-button" type="button">Pause</button>
+              <button id="roadmap-launch" type="button">Roadmap</button>
               <button
                 id="shortcut-launch"
                 class="icon-button"
@@ -86,6 +87,53 @@
             data-visible="false"
           ></div>
           <div id="wave-preview-list"></div>
+          <div
+            id="enemy-bio-card"
+            class="enemy-bio-card"
+            aria-live="polite"
+            aria-hidden="true"
+            data-visible="false"
+          >
+            <div class="enemy-bio-header">
+              <div>
+                <p id="enemy-bio-role" class="enemy-bio-role"></p>
+                <h3 id="enemy-bio-title" class="enemy-bio-title"></h3>
+              </div>
+              <span id="enemy-bio-danger" class="enemy-bio-danger"></span>
+            </div>
+            <p id="enemy-bio-description" class="enemy-bio-description"></p>
+            <div class="enemy-bio-columns">
+              <div>
+                <p class="enemy-bio-label">Abilities</p>
+                <ul id="enemy-bio-abilities"></ul>
+              </div>
+              <div>
+                <p class="enemy-bio-label">Tips</p>
+                <ul id="enemy-bio-tips"></ul>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section
+          id="roadmap-glance"
+          class="roadmap-glance"
+          data-visible="false"
+          aria-live="polite"
+          aria-hidden="true"
+        >
+          <div class="roadmap-glance-header">
+            <h2>Season Roadmap</h2>
+            <div class="roadmap-glance-actions">
+              <button id="roadmap-glance-open" type="button" class="ghost-button">
+                Open
+              </button>
+              <button id="roadmap-glance-clear" type="button" class="ghost-button">
+                Clear
+              </button>
+            </div>
+          </div>
+          <p id="roadmap-glance-title" class="roadmap-glance-title"></p>
+          <p id="roadmap-glance-progress" class="roadmap-glance-progress"></p>
         </section>
         <section class="events">
           <h2>Battle Log</h2>
@@ -351,6 +399,67 @@
             Ready the Next Wave
           </button>
         </div>
+      </div>
+    </div>
+    <div
+      id="roadmap-overlay"
+      data-visible="false"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="roadmap-overlay-title"
+    >
+      <div class="roadmap-card">
+        <header class="roadmap-header">
+          <div class="roadmap-title-block">
+            <p class="roadmap-kicker">Siege of the Azure Vale</p>
+            <h2 id="roadmap-overlay-title">Season Roadmap</h2>
+          </div>
+          <button
+            id="roadmap-overlay-close"
+            class="icon-button"
+            type="button"
+            aria-label="Close season roadmap"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </header>
+        <p class="roadmap-subtitle">
+          Track the story beats, systems, and codex drops as you push through the siege.
+        </p>
+        <div class="roadmap-summary">
+          <div class="roadmap-pill" aria-live="polite">
+            <span class="roadmap-pill-label">Wave</span>
+            <span id="roadmap-summary-wave" class="roadmap-pill-value">Wave 1 / 3</span>
+          </div>
+          <div class="roadmap-pill" aria-live="polite">
+            <span class="roadmap-pill-label">Castle</span>
+            <span id="roadmap-summary-castle" class="roadmap-pill-value">Lv. 1</span>
+          </div>
+          <div class="roadmap-pill" aria-live="polite">
+            <span class="roadmap-pill-label">Codex</span>
+            <span id="roadmap-summary-lore" class="roadmap-pill-value">0 entries</span>
+          </div>
+        </div>
+        <div class="roadmap-filters" role="group" aria-label="Filter roadmap steps">
+          <label><input id="roadmap-filter-story" type="checkbox" checked />Story</label>
+          <label><input id="roadmap-filter-systems" type="checkbox" checked />Systems</label>
+          <label><input id="roadmap-filter-challenge" type="checkbox" checked />Challenges</label>
+          <label><input id="roadmap-filter-lore" type="checkbox" checked />Lore</label>
+          <label><input id="roadmap-filter-completed" type="checkbox" />Show completed</label>
+        </div>
+        <div id="roadmap-tracked" class="roadmap-tracked" data-visible="false">
+          <div class="roadmap-tracked-text">
+            <p class="roadmap-tracked-label">Tracking</p>
+            <p id="roadmap-tracked-title" class="roadmap-tracked-title"></p>
+            <p id="roadmap-tracked-progress" class="roadmap-tracked-progress"></p>
+          </div>
+          <div class="roadmap-tracked-actions">
+            <button id="roadmap-tracked-clear" type="button" class="ghost-button">
+              Clear
+            </button>
+          </div>
+        </div>
+        <ul id="roadmap-list" class="roadmap-list" aria-live="polite"></ul>
       </div>
     </div>
     <div

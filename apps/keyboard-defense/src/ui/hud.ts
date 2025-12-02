@@ -12,6 +12,20 @@ import {
 } from "../core/types.js";
 import { WavePreviewPanel } from "./wavePreview.js";
 import type { ResolutionTransitionState } from "./ResolutionTransitionController.js";
+import {
+  SEASON_ROADMAP,
+  evaluateRoadmap,
+  type RoadmapEntryState
+} from "../data/roadmap.js";
+import { getEnemyBiography } from "../data/bestiary.js";
+import {
+  DEFAULT_ROADMAP_PREFERENCES,
+  mergeRoadmapPreferences,
+  readRoadmapPreferences,
+  writeRoadmapPreferences,
+  type RoadmapFilterPreferences,
+  type RoadmapPreferences
+} from "../utils/roadmapPreferences.js";
 
 let hudInstanceCounter = 0;
 
@@ -184,6 +198,32 @@ type WaveScorecardElements = {
   continue: string;
 };
 
+type RoadmapOverlayElements = {
+  container: string;
+  closeButton: string;
+  list: string;
+  summaryWave: string;
+  summaryCastle: string;
+  summaryLore: string;
+  filterStory: string;
+  filterSystems: string;
+  filterChallenge: string;
+  filterLore: string;
+  filterCompleted: string;
+  trackedContainer: string;
+  trackedTitle: string;
+  trackedProgress: string;
+  trackedClear: string;
+};
+
+type RoadmapGlanceElements = {
+  container: string;
+  title: string;
+  progress: string;
+  openButton: string;
+  clearButton: string;
+};
+
 type AnalyticsViewerFilter = "all" | "last-5" | "last-10" | "breaches" | "shielded";
 
 export interface WaveScorecardData {
@@ -277,7 +317,47 @@ export class HudView {
   private analyticsViewerSignature = "";
   private analyticsViewerFilter: AnalyticsViewerFilter = "all";
   private analyticsViewerFilterSelect?: HTMLSelectElement;
+  private roadmapPreferences: RoadmapPreferences = {
+    ...DEFAULT_ROADMAP_PREFERENCES,
+    filters: { ...DEFAULT_ROADMAP_PREFERENCES.filters }
+  };
+  private roadmapState: {
+    entries: RoadmapEntryState[];
+    completed: number;
+    total: number;
+    activeId: string | null;
+  } | null = null;
+  private readonly roadmapOverlay?: {
+    container: HTMLElement;
+    closeButton: HTMLButtonElement;
+    list: HTMLUListElement;
+    summaryWave: HTMLElement;
+    summaryCastle: HTMLElement;
+    summaryLore: HTMLElement;
+    filters: {
+      story: HTMLInputElement;
+      systems: HTMLInputElement;
+      challenge: HTMLInputElement;
+      lore: HTMLInputElement;
+      completed: HTMLInputElement;
+    };
+    tracked: {
+      container: HTMLElement;
+      title: HTMLElement;
+      progress: HTMLElement;
+      clear: HTMLButtonElement;
+    };
+  };
+  private readonly roadmapGlance?: {
+    container: HTMLElement;
+    title: HTMLElement;
+    progress: HTMLElement;
+    openButton?: HTMLButtonElement;
+    clearButton?: HTMLButtonElement;
+  };
   private lastShieldTelemetry = { current: false, next: false };
+  private lastWavePreviewEntries: WaveSpawnPreview[] = [];
+  private lastWavePreviewColorBlind = false;
   private lastGold = 0;
   private maxCombo = 0;
   private goldTimeout: number | null = null;
@@ -295,6 +375,16 @@ export class HudView {
     container: HTMLElement;
     closeButton: HTMLButtonElement;
   };
+  private readonly enemyBioCard?: {
+    container: HTMLElement;
+    title: HTMLElement;
+    role: HTMLElement;
+    danger: HTMLElement;
+    description: HTMLElement;
+    abilities: HTMLUListElement;
+    tips: HTMLUListElement;
+  };
+  private selectedEnemyBioId: string | null = null;
   private optionsCastleBonus?: HTMLElement;
   private optionsCastleBenefits?: HTMLUListElement;
   private optionsCastlePassives?: HTMLUListElement;
@@ -367,6 +457,9 @@ export class HudView {
       optionsOverlay?: OptionsOverlayElements;
       waveScorecard?: WaveScorecardElements;
       analyticsViewer?: AnalyticsViewerElements;
+      roadmapOverlay?: RoadmapOverlayElements;
+      roadmapGlance?: RoadmapGlanceElements;
+      roadmapLaunch?: string;
     },
     private readonly callbacks: HudCallbacks
   ) {
@@ -412,9 +505,47 @@ export class HudView {
         this.wavePreviewHint = hint;
       }
     }
+    const enemyBioContainer = document.getElementById("enemy-bio-card");
+    const enemyBioTitle = document.getElementById("enemy-bio-title");
+    const enemyBioRole = document.getElementById("enemy-bio-role");
+    const enemyBioDanger = document.getElementById("enemy-bio-danger");
+    const enemyBioDescription = document.getElementById("enemy-bio-description");
+    const enemyBioAbilities = document.getElementById("enemy-bio-abilities");
+    const enemyBioTips = document.getElementById("enemy-bio-tips");
+    if (
+      enemyBioContainer instanceof HTMLElement &&
+      enemyBioTitle instanceof HTMLElement &&
+      enemyBioRole instanceof HTMLElement &&
+      enemyBioDanger instanceof HTMLElement &&
+      enemyBioDescription instanceof HTMLElement &&
+      isElementWithTag<HTMLUListElement>(enemyBioAbilities, "ul") &&
+      isElementWithTag<HTMLUListElement>(enemyBioTips, "ul")
+    ) {
+      this.enemyBioCard = {
+        container: enemyBioContainer,
+        title: enemyBioTitle,
+        role: enemyBioRole,
+        danger: enemyBioDanger,
+        description: enemyBioDescription,
+        abilities: enemyBioAbilities,
+        tips: enemyBioTips
+      };
+      this.enemyBioCard.container.dataset.visible = "false";
+      this.enemyBioCard.container.setAttribute("aria-hidden", "true");
+    } else {
+      console.warn("Enemy biography elements missing; wave preview bios disabled.");
+    }
     this.availableTurretTypes = Object.fromEntries(
       Object.keys(this.config.turretArchetypes).map((typeId) => [typeId, true])
     );
+    if (typeof window !== "undefined" && window.localStorage) {
+      this.roadmapPreferences = readRoadmapPreferences(window.localStorage);
+    } else {
+      this.roadmapPreferences = {
+        ...DEFAULT_ROADMAP_PREFERENCES,
+        filters: { ...DEFAULT_ROADMAP_PREFERENCES.filters }
+      };
+    }
     const tutorialBannerElement = document.getElementById(rootIds.tutorialBanner);
     if (tutorialBannerElement instanceof HTMLElement) {
       const messageElement =
@@ -776,6 +907,135 @@ export class HudView {
       }
     }
 
+    if (rootIds.roadmapLaunch) {
+      const launchButton = document.getElementById(rootIds.roadmapLaunch);
+      if (launchButton instanceof HTMLButtonElement) {
+        launchButton.addEventListener("click", () => this.showRoadmapOverlay());
+      }
+    }
+
+    if (rootIds.roadmapGlance) {
+      const glanceContainer = document.getElementById(rootIds.roadmapGlance.container);
+      const glanceTitle = document.getElementById(rootIds.roadmapGlance.title);
+      const glanceProgress = document.getElementById(rootIds.roadmapGlance.progress);
+      const glanceOpen = document.getElementById(rootIds.roadmapGlance.openButton);
+      const glanceClear = document.getElementById(rootIds.roadmapGlance.clearButton);
+      if (
+        glanceContainer instanceof HTMLElement &&
+        glanceTitle instanceof HTMLElement &&
+        glanceProgress instanceof HTMLElement
+      ) {
+        this.roadmapGlance = {
+          container: glanceContainer,
+          title: glanceTitle,
+          progress: glanceProgress,
+          openButton: glanceOpen instanceof HTMLButtonElement ? glanceOpen : undefined,
+          clearButton: glanceClear instanceof HTMLButtonElement ? glanceClear : undefined
+        };
+        this.roadmapGlance.container.dataset.visible = "false";
+        this.roadmapGlance.container.setAttribute("aria-hidden", "true");
+        if (this.roadmapGlance.openButton) {
+          this.roadmapGlance.openButton.addEventListener("click", () => this.showRoadmapOverlay());
+        }
+        if (this.roadmapGlance.clearButton) {
+          this.roadmapGlance.clearButton.addEventListener("click", () => this.clearRoadmapTracking());
+        }
+      } else {
+        console.warn("Roadmap glance elements missing; roadmap tracker disabled.");
+      }
+    }
+
+    if (rootIds.roadmapOverlay) {
+      const overlayContainer = document.getElementById(rootIds.roadmapOverlay.container);
+      const closeButton = document.getElementById(rootIds.roadmapOverlay.closeButton);
+      const list = document.getElementById(rootIds.roadmapOverlay.list);
+      const summaryWave = document.getElementById(rootIds.roadmapOverlay.summaryWave);
+      const summaryCastle = document.getElementById(rootIds.roadmapOverlay.summaryCastle);
+      const summaryLore = document.getElementById(rootIds.roadmapOverlay.summaryLore);
+      const filterStory = document.getElementById(rootIds.roadmapOverlay.filterStory);
+      const filterSystems = document.getElementById(rootIds.roadmapOverlay.filterSystems);
+      const filterChallenge = document.getElementById(rootIds.roadmapOverlay.filterChallenge);
+      const filterLore = document.getElementById(rootIds.roadmapOverlay.filterLore);
+      const filterCompleted = document.getElementById(rootIds.roadmapOverlay.filterCompleted);
+      const trackedContainer = document.getElementById(rootIds.roadmapOverlay.trackedContainer);
+      const trackedTitle = document.getElementById(rootIds.roadmapOverlay.trackedTitle);
+      const trackedProgress = document.getElementById(rootIds.roadmapOverlay.trackedProgress);
+      const trackedClear = document.getElementById(rootIds.roadmapOverlay.trackedClear);
+      if (
+        overlayContainer instanceof HTMLElement &&
+        closeButton instanceof HTMLButtonElement &&
+        list instanceof HTMLUListElement &&
+        summaryWave instanceof HTMLElement &&
+        summaryCastle instanceof HTMLElement &&
+        summaryLore instanceof HTMLElement &&
+        filterStory instanceof HTMLInputElement &&
+        filterSystems instanceof HTMLInputElement &&
+        filterChallenge instanceof HTMLInputElement &&
+        filterLore instanceof HTMLInputElement &&
+        filterCompleted instanceof HTMLInputElement &&
+        trackedContainer instanceof HTMLElement &&
+        trackedTitle instanceof HTMLElement &&
+        trackedProgress instanceof HTMLElement &&
+        trackedClear instanceof HTMLButtonElement
+      ) {
+        this.roadmapOverlay = {
+          container: overlayContainer,
+          closeButton,
+          list,
+          summaryWave,
+          summaryCastle,
+          summaryLore,
+          filters: {
+            story: filterStory,
+            systems: filterSystems,
+            challenge: filterChallenge,
+            lore: filterLore,
+            completed: filterCompleted
+          },
+          tracked: {
+            container: trackedContainer,
+            title: trackedTitle,
+            progress: trackedProgress,
+            clear: trackedClear
+          }
+        };
+        closeButton.addEventListener("click", () => this.hideRoadmapOverlay());
+        trackedClear.addEventListener("click", () => this.clearRoadmapTracking());
+        const applyFilters = () => {
+          this.applyRoadmapFilters({
+            story: this.roadmapOverlay?.filters.story.checked ?? true,
+            systems: this.roadmapOverlay?.filters.systems.checked ?? true,
+            challenge: this.roadmapOverlay?.filters.challenge.checked ?? true,
+            lore: this.roadmapOverlay?.filters.lore.checked ?? true,
+            completed: this.roadmapOverlay?.filters.completed.checked ?? false
+          });
+        };
+        filterStory.addEventListener("change", applyFilters);
+        filterSystems.addEventListener("change", applyFilters);
+        filterChallenge.addEventListener("change", applyFilters);
+        filterLore.addEventListener("change", applyFilters);
+        filterCompleted.addEventListener("change", applyFilters);
+        filterStory.checked = this.roadmapPreferences.filters.story;
+        filterSystems.checked = this.roadmapPreferences.filters.systems;
+        filterChallenge.checked = this.roadmapPreferences.filters.challenge;
+        filterLore.checked = this.roadmapPreferences.filters.lore;
+        filterCompleted.checked = this.roadmapPreferences.filters.completed;
+        this.roadmapOverlay.container.dataset.visible =
+          this.roadmapOverlay.container.dataset.visible ?? "false";
+        this.roadmapOverlay.container.setAttribute("aria-hidden", "true");
+        const kicker = overlayContainer.querySelector(".roadmap-kicker");
+        if (kicker instanceof HTMLElement) {
+          kicker.textContent = SEASON_ROADMAP.season;
+        }
+        const subtitle = overlayContainer.querySelector(".roadmap-subtitle");
+        if (subtitle instanceof HTMLElement && SEASON_ROADMAP.theme) {
+          subtitle.textContent = SEASON_ROADMAP.theme;
+        }
+      } else {
+        console.warn("Roadmap overlay elements missing; roadmap overlay disabled.");
+      }
+    }
+
     this.initializeViewportListeners();
 
     this.castleButton = document.createElement("button");
@@ -861,6 +1121,23 @@ export class HudView {
   isShortcutOverlayVisible(): boolean {
     if (!this.shortcutOverlay) return false;
     return this.shortcutOverlay.container.dataset.visible === "true";
+  }
+
+  showRoadmapOverlay(): void {
+    this.setRoadmapOverlayVisible(true);
+  }
+
+  hideRoadmapOverlay(): void {
+    this.setRoadmapOverlayVisible(false);
+  }
+
+  toggleRoadmapOverlay(): void {
+    this.setRoadmapOverlayVisible(!this.isRoadmapOverlayVisible());
+  }
+
+  isRoadmapOverlayVisible(): boolean {
+    if (!this.roadmapOverlay) return false;
+    return this.roadmapOverlay.container.dataset.visible === "true";
   }
 
   showOptionsOverlay(): void {
@@ -1000,7 +1277,7 @@ export class HudView {
   update(
     state: GameState,
     upcoming: WaveSpawnPreview[],
-    options: { colorBlindFriendly?: boolean } = {}
+    options: { colorBlindFriendly?: boolean; tutorialCompleted?: boolean; loreUnlocked?: number } = {}
   ): void {
     this.lastState = state;
     this.updateCastleBonusHint(state);
@@ -1011,6 +1288,7 @@ export class HudView {
         state.mode === "practice" ? "true" : "false";
     }
     this.updateShieldTelemetry(upcoming);
+    this.refreshRoadmap(state, options);
     const hpRatio = Math.max(0, state.castle.health / state.castle.maxHealth);
     (this.healthBar as HTMLElement).style.width = `${hpRatio * 100}%`;
     const gold = Math.floor(state.resources.gold);
@@ -1038,7 +1316,6 @@ export class HudView {
       delete this.activeWord.dataset.shielded;
     }
 
-    this.wavePreview.setColorBlindFriendly(Boolean(options.colorBlindFriendly));
     this.updateCastleControls(state);
     this.updateTurretControls(state);
     this.updateCombo(
@@ -1047,7 +1324,7 @@ export class HudView {
       state.typing.comboTimer,
       state.typing.accuracy
     );
-    this.wavePreview.render(upcoming);
+    this.renderWavePreview(upcoming, options.colorBlindFriendly);
     this.applyTutorialSlotLock(state);
     const history = state.analytics.waveHistory?.length
       ? state.analytics.waveHistory
@@ -1202,6 +1479,85 @@ export class HudView {
       this.wavePreviewHintMessage = DEFAULT_WAVE_PREVIEW_HINT;
     }, duration);
     return true;
+  }
+
+  private renderWavePreview(
+    entries: WaveSpawnPreview[],
+    colorBlindFriendly: boolean | undefined
+  ): void {
+    this.lastWavePreviewEntries = entries;
+    this.lastWavePreviewColorBlind = Boolean(colorBlindFriendly);
+    const selected = this.syncEnemyBioSelection(entries);
+    this.wavePreview.render(entries, {
+      colorBlindFriendly: this.lastWavePreviewColorBlind,
+      selectedTierId: selected,
+      onSelect: (tierId) => this.handleEnemyBioSelect(tierId)
+    });
+    this.renderEnemyBiography(selected);
+  }
+
+  private handleEnemyBioSelect(tierId: string): void {
+    if (!tierId) return;
+    this.selectedEnemyBioId = tierId;
+    this.renderEnemyBiography(tierId);
+    if (this.lastWavePreviewEntries.length > 0) {
+      this.wavePreview.render(this.lastWavePreviewEntries, {
+        colorBlindFriendly: this.lastWavePreviewColorBlind,
+        selectedTierId: this.selectedEnemyBioId,
+        onSelect: (nextTier) => this.handleEnemyBioSelect(nextTier)
+      });
+    }
+  }
+
+  private syncEnemyBioSelection(entries: WaveSpawnPreview[]): string | null {
+    if (!this.enemyBioCard) {
+      return null;
+    }
+    if (!entries.length) {
+      this.selectedEnemyBioId = null;
+      this.renderEnemyBiography(null);
+      return null;
+    }
+    const availableIds = new Set(entries.map((entry) => entry.tierId));
+    if (this.selectedEnemyBioId && availableIds.has(this.selectedEnemyBioId)) {
+      return this.selectedEnemyBioId;
+    }
+    const fallbackId = entries[0]?.tierId ?? null;
+    this.selectedEnemyBioId = fallbackId;
+    return fallbackId;
+  }
+
+  private renderEnemyBiography(tierId: string | null): void {
+    if (!this.enemyBioCard) return;
+    if (!tierId) {
+      this.enemyBioCard.container.dataset.visible = "false";
+      this.enemyBioCard.container.setAttribute("aria-hidden", "true");
+      return;
+    }
+    const tierConfig = this.config.enemyTiers[tierId];
+    const bio = getEnemyBiography(tierId, tierConfig);
+    this.enemyBioCard.title.textContent = bio.name;
+    this.enemyBioCard.role.textContent = bio.role;
+    this.enemyBioCard.danger.textContent = bio.danger;
+    this.enemyBioCard.description.textContent = bio.description;
+    const renderList = (target: HTMLUListElement, values: string[]) => {
+      target.replaceChildren();
+      if (!values || values.length === 0) {
+        const item = document.createElement("li");
+        item.textContent = "No notes yet.";
+        target.appendChild(item);
+        return;
+      }
+      for (const value of values) {
+        const item = document.createElement("li");
+        item.textContent = value;
+        target.appendChild(item);
+      }
+    };
+    renderList(this.enemyBioCard.abilities, bio.abilities);
+    renderList(this.enemyBioCard.tips, bio.tips);
+    this.enemyBioCard.container.dataset.visible = "true";
+    this.enemyBioCard.container.setAttribute("aria-hidden", "false");
   }
 
   setSlotTutorialLock(lock: TutorialSlotLock): void {
@@ -2992,8 +3348,243 @@ export class HudView {
     this.lastShieldTelemetry = { current: currentShielded, next: nextShielded };
   }
 
+  private refreshRoadmap(
+    state: GameState,
+    options: { tutorialCompleted?: boolean; loreUnlocked?: number }
+  ): void {
+    if (!this.roadmapOverlay && !this.roadmapGlance) return;
+    const completedWaves =
+      state.analytics.waveHistory && state.analytics.waveHistory.length > 0
+        ? state.analytics.waveHistory.length
+        : state.analytics.waveSummaries?.length ?? 0;
+    const currentWave = Math.max(1, (state.wave?.index ?? 0) + 1);
+    const totalWaves = Math.max(state.wave?.total ?? currentWave, currentWave, completedWaves || 0);
+    const loreUnlocked = Math.max(0, Math.floor(options?.loreUnlocked ?? 0));
+    const tutorialCompleted =
+      options?.tutorialCompleted ?? (state.analytics.tutorial?.completedRuns ?? 0) > 0;
+
+    this.roadmapState = evaluateRoadmap({
+      tutorialCompleted,
+      currentWave,
+      completedWaves,
+      totalWaves,
+      castleLevel: state.castle.level,
+      loreUnlocked
+    });
+
+    if (this.roadmapOverlay) {
+      this.roadmapOverlay.summaryWave.textContent = `Wave ${currentWave} / ${totalWaves}`;
+      this.roadmapOverlay.summaryCastle.textContent = `Lv. ${state.castle.level}`;
+      const loreLabel = loreUnlocked === 1 ? "entry" : "entries";
+      this.roadmapOverlay.summaryLore.textContent = `${loreUnlocked} ${loreLabel}`;
+      this.renderRoadmapList();
+    }
+    this.updateRoadmapTrackingDisplay();
+  }
+
   getShieldForecast(): { current: boolean; next: boolean } {
     return { ...this.lastShieldTelemetry };
+  }
+
+  private renderRoadmapList(): void {
+    if (!this.roadmapOverlay || !this.roadmapState) return;
+    const filters = this.roadmapPreferences.filters;
+    const items = this.roadmapState.entries.filter((entry) => {
+      if (!filters.completed && entry.status === "done") return false;
+      switch (entry.type) {
+        case "story":
+          return filters.story;
+        case "systems":
+          return filters.systems;
+        case "challenge":
+          return filters.challenge;
+        case "lore":
+          return filters.lore;
+        default:
+          return true;
+      }
+    });
+
+    this.roadmapOverlay.list.replaceChildren();
+    if (items.length === 0) {
+      const placeholder = document.createElement("li");
+      placeholder.className = "roadmap-placeholder";
+      placeholder.textContent =
+        'All visible steps are complete. Enable "Show completed" to review finished milestones.';
+      this.roadmapOverlay.list.appendChild(placeholder);
+      this.updateRoadmapTrackingDisplay();
+      return;
+    }
+
+    for (const entry of items) {
+      const li = document.createElement("li");
+      li.className = "roadmap-item";
+      li.dataset.status = entry.status;
+      li.dataset.type = entry.type;
+      const isTracked = this.roadmapPreferences.trackedId === entry.id;
+      li.dataset.tracked = isTracked ? "true" : "false";
+
+      const header = document.createElement("div");
+      header.className = "roadmap-item-header";
+      const titleBlock = document.createElement("div");
+      titleBlock.className = "roadmap-title-block";
+      const title = document.createElement("h3");
+      title.className = "roadmap-item-title";
+      title.textContent = entry.title;
+      const phase = document.createElement("p");
+      phase.className = "roadmap-phase";
+      phase.textContent = entry.phase
+        ? `${entry.phase} • ${entry.milestone}`
+        : entry.milestone;
+      titleBlock.appendChild(title);
+      titleBlock.appendChild(phase);
+
+      const statusBadge = document.createElement("span");
+      statusBadge.className = "roadmap-status";
+      statusBadge.dataset.status = entry.status;
+      const statusLabel =
+        entry.status === "done"
+          ? "Complete"
+          : entry.status === "active"
+            ? "Active"
+            : entry.status === "locked"
+              ? "Locked"
+              : "Upcoming";
+      statusBadge.textContent = statusLabel;
+
+      const tag = document.createElement("span");
+      tag.className = "roadmap-tag";
+      tag.dataset.type = entry.type;
+      tag.textContent = entry.type;
+
+      header.appendChild(titleBlock);
+      const headerMeta = document.createElement("div");
+      headerMeta.className = "roadmap-item-meta";
+      headerMeta.appendChild(tag);
+      headerMeta.appendChild(statusBadge);
+      header.appendChild(headerMeta);
+      li.appendChild(header);
+
+      const summary = document.createElement("p");
+      summary.className = "roadmap-item-body";
+      summary.textContent = entry.summary;
+      li.appendChild(summary);
+
+      const progress = document.createElement("p");
+      progress.className = "roadmap-progress";
+      progress.textContent =
+        entry.status === "done" ? "Complete" : entry.progressLabel || "In progress";
+      li.appendChild(progress);
+
+      if (entry.reward) {
+        const reward = document.createElement("p");
+        reward.className = "roadmap-progress";
+        reward.textContent = `Reward: ${entry.reward}`;
+        li.appendChild(reward);
+      }
+
+      if (entry.blockers.length > 0 && entry.status !== "done") {
+        const blockers = document.createElement("p");
+        blockers.className = "roadmap-blockers";
+        blockers.textContent = `Next: ${entry.blockers.join(" • ")}`;
+        li.appendChild(blockers);
+      }
+
+      const actions = document.createElement("div");
+      actions.className = "roadmap-actions";
+      const trackButton = document.createElement("button");
+      trackButton.type = "button";
+      trackButton.className = "roadmap-track-btn";
+      trackButton.dataset.tracked = isTracked ? "true" : "false";
+      trackButton.textContent = isTracked ? "Tracking" : "Track";
+      trackButton.addEventListener("click", () =>
+        this.updateRoadmapTracking(isTracked ? null : entry.id)
+      );
+      actions.appendChild(trackButton);
+      li.appendChild(actions);
+
+      this.roadmapOverlay.list.appendChild(li);
+    }
+
+    this.updateRoadmapTrackingDisplay();
+  }
+
+  private updateRoadmapTrackingDisplay(): void {
+    const trackedId = this.roadmapPreferences.trackedId;
+    const entry = this.roadmapState?.entries.find((item) => item.id === trackedId);
+    const visible = Boolean(entry);
+    const progressText = entry
+      ? entry.status === "done"
+        ? "Complete"
+        : entry.progressLabel
+      : "Track a step to pin it here.";
+
+    if (this.roadmapOverlay) {
+      this.roadmapOverlay.tracked.container.dataset.visible = visible ? "true" : "false";
+      if (visible && entry) {
+        this.roadmapOverlay.tracked.title.textContent = entry.title;
+        this.roadmapOverlay.tracked.progress.textContent = progressText;
+      } else {
+        this.roadmapOverlay.tracked.title.textContent = "";
+        this.roadmapOverlay.tracked.progress.textContent = "";
+      }
+    }
+
+    if (this.roadmapGlance) {
+      this.roadmapGlance.container.dataset.visible = visible ? "true" : "false";
+      this.roadmapGlance.container.setAttribute("aria-hidden", visible ? "false" : "true");
+      if (visible && entry) {
+        this.roadmapGlance.title.textContent = entry.title;
+        this.roadmapGlance.progress.textContent = progressText;
+      } else {
+        this.roadmapGlance.title.textContent = "Season roadmap";
+        this.roadmapGlance.progress.textContent = "No step tracked.";
+      }
+    }
+  }
+
+  private applyRoadmapFilters(filters: RoadmapFilterPreferences): void {
+    const mergedFilters: RoadmapFilterPreferences = {
+      ...this.roadmapPreferences.filters,
+      ...filters
+    };
+    this.roadmapPreferences = mergeRoadmapPreferences(this.roadmapPreferences, {
+      filters: mergedFilters
+    });
+    if (this.roadmapOverlay) {
+      this.roadmapOverlay.filters.story.checked = this.roadmapPreferences.filters.story;
+      this.roadmapOverlay.filters.systems.checked = this.roadmapPreferences.filters.systems;
+      this.roadmapOverlay.filters.challenge.checked =
+        this.roadmapPreferences.filters.challenge;
+      this.roadmapOverlay.filters.lore.checked = this.roadmapPreferences.filters.lore;
+      this.roadmapOverlay.filters.completed.checked =
+        this.roadmapPreferences.filters.completed;
+    }
+    this.persistRoadmapPreferences();
+    this.renderRoadmapList();
+    if (!this.roadmapOverlay) {
+      this.updateRoadmapTrackingDisplay();
+    }
+  }
+
+  private updateRoadmapTracking(nextId: string | null): void {
+    this.roadmapPreferences = mergeRoadmapPreferences(this.roadmapPreferences, {
+      trackedId: nextId
+    });
+    this.persistRoadmapPreferences();
+    this.renderRoadmapList();
+    if (!this.roadmapOverlay) {
+      this.updateRoadmapTrackingDisplay();
+    }
+  }
+
+  private clearRoadmapTracking(): void {
+    this.updateRoadmapTracking(null);
+  }
+
+  private persistRoadmapPreferences(): void {
+    if (typeof window === "undefined") return;
+    writeRoadmapPreferences(window.localStorage, this.roadmapPreferences);
   }
 
   private setWaveScorecardField(field: string, label: string, value: string): void {
@@ -3024,6 +3615,18 @@ export class HudView {
     this.shortcutOverlay.container.dataset.visible = visible ? "true" : "false";
     if (visible) {
       this.shortcutOverlay.closeButton.focus();
+    } else {
+      this.focusTypingInput();
+    }
+  }
+
+  private setRoadmapOverlayVisible(visible: boolean): void {
+    if (!this.roadmapOverlay) return;
+    this.roadmapOverlay.container.dataset.visible = visible ? "true" : "false";
+    this.roadmapOverlay.container.setAttribute("aria-hidden", visible ? "false" : "true");
+    if (visible) {
+      this.renderRoadmapList();
+      this.roadmapOverlay.closeButton.focus();
     } else {
       this.focusTypingInput();
     }

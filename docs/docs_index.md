@@ -4,11 +4,13 @@ Use this index to jump straight to the guidance you'll need while building and t
 
 ## Project Overview & Strategy
 - `docs/season1_backlog.md` - Feature roadmap and numbered backlog for the Siege of the Azure Vale.
+- `apps/keyboard-defense/docs/roadmap/season1.json` - Season 1 roadmap milestones consumed by the HUD overlay.
 - `docs/CODEX_AUTONOMOUS_TESTING_DIRECTIVE_Siege_of_the_Azure_Vale.md` - Automation-first definition of done, scripting expectations, and QA guardrails.
 - `docs/CODEX_GUIDE.md` - Codex-oriented workflow guide (where to find tasks, required commands, documentation rules).
 - `docs/CODEX_PLAYBOOKS.md` - Domain-specific instruction sets (automation/CI, gameplay & UI, analytics/telemetry, documentation) tailored for Codex.
 - `docs/CODEX_PORTAL.md` - Single navigation surface for all Codex instructions, scripts, fixtures, and task workflows.
 - `docs/hud_gallery.md` - HUD/Tutorial screenshot gallery with condensed-state badges sourced from `scripts/hudScreenshots.mjs`.
+- `apps/keyboard-defense/docs/enemies/bestiary.json` - Enemy dossiers (roles, abilities, tips) consumed by the HUD wave preview bios.
 
 ## Analytics & Telemetry
 - `docs/analytics_schema.md` - JSON/CSV snapshot schema, telemetry payload details, and aggregation column order.
@@ -49,6 +51,9 @@ Status entries live under `docs/status/`. Recent highlights include:
 - `2025-12-06_hud_font_shortcuts.md` - Diagnostics lists the active HUD font preset and options overlay supports `[` / `]` shortcuts to cycle sizes.
 - `2025-12-05_hud_font_scale.md` - HUD font size options now include Small/Default/Large/XL presets with persistence and live scaling.
 - `2025-12-07_typing_buffer_fuzz.md` - Typing buffer fuzz tests guard invalid input handling, buffer overflow, and purge/reset behavior.
+- `2025-12-08_season_roadmap_overlay.md` - HUD roadmap overlay with filters/tracking and persisted preferences.
+- `2025-12-08_enemy_biographies.md` - Wave preview enemy bios with selectable dossiers and tips.
+- `2025-12-08_ambient_music_escalation.md` - Ambient profiles (calm/rising/siege/dire) with wave/health-driven escalation.
 - `2025-12-07_backlog_slicing.md` - Breakdowns for remaining "Not Started" backlog items and the planned slices for each.
 - `2025-12-07_visual_regression_harness.md` - Playwright visual baselines for HUD overlays (hud-main, options, tutorial summary, wave scorecard) with update/run commands.
 - `2025-12-07_tutorial_assist_replay_skip.md` - TutorialManager tests cover assist hints, skip cleanup, and replay/reset state clearing.

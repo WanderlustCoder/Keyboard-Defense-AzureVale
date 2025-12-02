@@ -93,9 +93,9 @@
 | 83 | Narrative & Content | Script Archivist Lyra dialogue blocks for Episode 1 beats. | Done | Dialogue catalog added (Lyra intro/phase shifts/breach/victory) with tests |
 | 84 | Narrative & Content | Author lore codex entries unlocked by completing waves. | Done | Lore codex catalog + wave unlocks with persistence and HUD log |
 | 85 | Narrative & Content | Enrich turret tooltips with flavor text. | Done | Turret selector/status now show archetype flavor blurbs for Arrow/Arcane/Flame/Crystal |
-| 86 | Narrative & Content | Surface interactive season roadmap overlay within HUD. | Not Started |  |
-| 87 | Narrative & Content | Add enemy biography cards accessible from wave preview panel. | Not Started |  |
-| 88 | Narrative & Content | Curate ambient music tracks escalating across waves. | Not Started |  |
+| 86 | Narrative & Content | Surface interactive season roadmap overlay within HUD. | Done | Roadmap overlay with filters + tracking (docs/status/2025-12-08_season_roadmap_overlay.md) |
+| 87 | Narrative & Content | Add enemy biography cards accessible from wave preview panel. | Done | Wave preview bios with selectable dossiers and tips |
+| 88 | Narrative & Content | Curate ambient music tracks escalating across waves. | Done | Ambient profiles (calm/rising/siege/dire) with wave/health-driven escalation |
 | 89 | Narrative & Content | Expand word banks with themed lists per wave. | Not Started |  |
 | 90 | Narrative & Content | Compose short victory/defeat stingers. | Not Started |  |
 | 91 | QA & Testing | Expand tutorial state tests to cover assist cues and replay/skip flows. | Done | TutorialManager tests cover assist hints, skip, reset, and replay |
