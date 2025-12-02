@@ -17,6 +17,7 @@ Additional linting:
 - `npm run lint` - Runs ESLint plus strict wordlist/lesson linting and writes `artifacts/summaries/wordlist-lint.json` (warnings fail the run).
 - `npm run lint:wordlists:strict` - Shortcut for the strict lint (writes the summary artifact).
 - `npm run lint:wordlists -- [--fix-sort] [--strict] [--out <file>]` - Validate lesson/word bank files under `data/wordlists` (safe characters, denylist, lengths, duplicates, weights, lesson gating). Use `--fix-sort` to auto-sort words and rewrite files; `--strict` fails on warnings; `--out` writes a JSON summary (created automatically in strict mode).
+- `npm run playtest:bot -- [--duration <ms>] [--delay <ms>] [--words a,b,c] [--url <http://127.0.0.1:4173>] [--artifact <path>] [--headful]` - Opens the running game in headless Chromium and types a loop of words for perf smoke. Writes `artifacts/summaries/playtest-bot.json` by default with counts and basic HUD state (accuracy/WPM/combo when exposed).
 
 ## Dev Server Automation
 The repo ships with `scripts/devServer.mjs`, a thin wrapper around `http-server` that builds the project, serves `public/`, and emits readiness signals for automated tooling.

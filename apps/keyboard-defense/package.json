@@ -36,6 +36,7 @@
     "start:monitored": "node ./scripts/startMonitored.mjs",
     "smoke:tutorial:full": "node ./scripts/smokeTutorialFull.mjs",
     "smoke:campaign": "node ./scripts/tutorialSmoke.mjs --mode campaign",
+    "playtest:bot": "node ./scripts/playtestBot.mjs",
     "analytics:aggregate": "node ./scripts/analyticsAggregate.mjs",
     "analytics:leaderboard": "node ./scripts/analyticsLeaderboard.mjs",
     "analytics:passives": "node ./scripts/passiveTimeline.mjs",
