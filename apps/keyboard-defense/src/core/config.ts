@@ -23,6 +23,7 @@ export interface FeatureToggles {
   crystalPulse: boolean;
   turretDowngrade: boolean;
   starfieldParallax: boolean;
+  assetAtlas: boolean;
 }
 
 export interface CastleRepairConfig {
@@ -178,7 +179,8 @@ export const defaultConfig: GameConfig = {
     telemetry: false,
     crystalPulse: false,
     turretDowngrade: false,
-    starfieldParallax: true
+    starfieldParallax: true,
+    assetAtlas: false
   },
   castleRepair: {
     cost: 150,

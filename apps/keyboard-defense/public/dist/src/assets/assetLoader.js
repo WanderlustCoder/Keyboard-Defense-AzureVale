@@ -52,6 +52,11 @@ export class AssetLoader {
         this.idleResolvers = [];
         this.integritySummary = null;
         this.integrityTracker = null;
+        this.atlas = null;
+        this.atlasEnabled = this.resolveAtlasEnabled(options.useAtlas);
+        this.atlasUrl = typeof options.atlasUrl === "string" && options.atlasUrl.trim().length > 0
+            ? options.atlasUrl.trim()
+            : null;
         this.integrityMode = this.resolveIntegrityMode(options.integrityMode);
         this.integrityScenario = this.resolveScenario(options.scenario);
         this.defeatAnimationSets = new Map();
@@ -72,6 +77,18 @@ export class AssetLoader {
             return window.location.pathname || "runtime";
         }
         return "runtime";
+    }
+    resolveAtlasEnabled(explicit) {
+        if (typeof explicit === "boolean") {
+            return explicit;
+        }
+        if (typeof document !== "undefined" && document.body?.dataset?.assetAtlasEnabled) {
+            return document.body.dataset.assetAtlasEnabled === "true";
+        }
+        if (typeof window !== "undefined" && typeof window.ASSET_ATLAS_ENABLED === "boolean") {
+            return window.ASSET_ATLAS_ENABLED;
+        }
+        return true;
     }
     resolveIntegrityMode(explicit) {
         const candidates = [
@@ -269,6 +286,9 @@ export class AssetLoader {
         const baseUrl = new URL("./", absoluteUrl).toString();
         const resolvedImages = {};
         for (const [key, relative] of Object.entries(manifest.images)) {
+            if (options.skip?.has?.(key)) {
+                continue;
+            }
             resolvedImages[key] = this.resolveUrl(relative, baseUrl);
         }
         const integrityMap = manifest.integrity && typeof manifest.integrity === "object" ? manifest.integrity : null;
@@ -565,11 +585,181 @@ export class AssetLoader {
         return new ctor();
     }
     getImage(key) {
-        return this.imageCache.get(key);
+        const cached = this.imageCache.get(key);
+        if (cached) {
+            return cached;
+        }
+        if (this.hasAtlasFrame(key)) {
+            void this.resolveAtlasImage(key);
+        }
+        return this.imageCache.get(key) ?? null;
     }
     onImageLoaded(listener) {
         this.listeners.add(listener);
         return () => this.listeners.delete(listener);
+    }
+    hasAtlasFrame(key) {
+        return Boolean(this.atlas?.frames?.[key]);
+    }
+    listAtlasKeys() {
+        if (!this.atlas?.frames) {
+            return [];
+        }
+        return Object.keys(this.atlas.frames);
+    }
+    setAtlasEnabled(enabled) {
+        this.atlasEnabled = Boolean(enabled);
+        if (!this.atlasEnabled) {
+            this.atlas = null;
+        }
+    }
+    async loadAtlas(atlasUrl, options = {}) {
+        if (!this.atlasEnabled || options.disable === true || !atlasUrl) {
+            this.atlas = null;
+            return;
+        }
+        const absoluteUrl = this.resolveUrl(atlasUrl);
+        let response;
+        try {
+            response = await fetch(absoluteUrl, { cache: "force-cache" });
+        }
+        catch (error) {
+            console.warn(`AssetLoader: failed to fetch atlas ${absoluteUrl}`, error);
+            return;
+        }
+        if (!response.ok) {
+            console.warn(`AssetLoader: atlas responded with ${response.status} for ${absoluteUrl}`);
+            return;
+        }
+        let atlas;
+        try {
+            atlas = (await response.json());
+        }
+        catch (error) {
+            console.warn(`AssetLoader: atlas ${absoluteUrl} contained invalid JSON.`, error);
+            return;
+        }
+        const frames = this.normalizeAtlasFrames(atlas?.frames ?? atlas?.sprites ?? {});
+        if (!frames || Object.keys(frames).length === 0) {
+            console.warn(`AssetLoader: atlas ${absoluteUrl} missing frames; skipping.`);
+            return;
+        }
+        const baseUrl = new URL("./", absoluteUrl).toString();
+        const inferredImage = typeof atlas?.image === "string"
+            ? atlas.image
+            : typeof atlas?.meta?.image === "string"
+                ? atlas.meta.image
+                : this.inferAtlasImagePath(absoluteUrl, atlas?.atlas ?? null);
+        const imageUrl = this.resolveUrl(inferredImage, baseUrl);
+        let atlasImage = options.image ?? null;
+        if (!atlasImage) {
+            try {
+                atlasImage = await this.loadAtlasImage(imageUrl);
+            }
+            catch (error) {
+                console.warn(`AssetLoader: failed to load atlas image ${imageUrl}`, error);
+                return;
+            }
+        }
+        this.atlas = {
+            url: absoluteUrl,
+            imageUrl,
+            image: atlasImage,
+            frames
+        };
+    }
+    inferAtlasImagePath(atlasJsonUrl, atlasName) {
+        try {
+            const url = new URL(atlasJsonUrl);
+            const base = url.pathname.replace(/\.json$/i, "");
+            const filename = atlasName ? `${atlasName}.png` : `${base.split("/").pop() ?? "atlas"}.png`;
+            url.pathname = url.pathname.replace(/[^/]+$/, filename);
+            return url.toString();
+        }
+        catch {
+            return atlasName ? `${atlasName}.png` : atlasJsonUrl.replace(/\.json$/i, ".png");
+        }
+    }
+    normalizeAtlasFrames(framesInput) {
+        if (!framesInput || typeof framesInput !== "object") {
+            return null;
+        }
+        const frames = {};
+        for (const [key, entry] of Object.entries(framesInput)) {
+            const frame = entry?.frame ?? entry;
+            const x = Number(frame?.x);
+            const y = Number(frame?.y);
+            const w = Number(frame?.w ?? frame?.width);
+            const h = Number(frame?.h ?? frame?.height);
+            if ([x, y, w, h].every((value) => Number.isFinite(value))) {
+                frames[key] = { x, y, w, h };
+            }
+        }
+        return frames;
+    }
+    async loadAtlasImage(imageUrl) {
+        const image = this.createImageInstance("atlas");
+        if (!image) {
+            throw new Error("AssetLoader: Image constructor unavailable for atlas.");
+        }
+        const promise = new Promise((resolve, reject) => {
+            image.onload = () => resolve(image);
+            image.onerror = reject;
+        });
+        image.src = imageUrl;
+        return promise;
+    }
+    drawFrame(ctx, key, dx, dy, dw, dh) {
+        const cached = this.imageCache.get(key);
+        if (cached) {
+            try {
+                ctx.drawImage(cached, dx, dy, dw ?? cached.width ?? 0, dh ?? cached.height ?? 0);
+                return true;
+            }
+            catch {
+                return false;
+            }
+        }
+        const frame = this.atlas?.frames?.[key];
+        if (!frame || !this.atlas?.image) {
+            return false;
+        }
+        try {
+            ctx.drawImage(this.atlas.image, frame.x, frame.y, frame.w, frame.h, dx, dy, dw ?? frame.w, dh ?? frame.h);
+            return true;
+        }
+        catch {
+            return false;
+        }
+    }
+    async resolveAtlasImage(key) {
+        if (!this.atlas || !this.atlas.frames?.[key] || !this.atlas.image) {
+            return null;
+        }
+        const frame = this.atlas.frames[key];
+        if (typeof createImageBitmap === "function") {
+            try {
+                const bitmap = await createImageBitmap(this.atlas.image, frame.x, frame.y, frame.w, frame.h);
+                this.imageCache.set(key, bitmap);
+                return bitmap;
+            }
+            catch {
+                // fall back to canvas extraction
+            }
+        }
+        if (typeof document === "undefined") {
+            return null;
+        }
+        const canvas = document.createElement("canvas");
+        canvas.width = frame.w;
+        canvas.height = frame.h;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+            return null;
+        }
+        ctx.drawImage(this.atlas.image, frame.x, frame.y, frame.w, frame.h, 0, 0, frame.w, frame.h);
+        this.imageCache.set(key, canvas);
+        return canvas;
     }
     whenIdle() {
         if (this.pendingLoads === 0) {

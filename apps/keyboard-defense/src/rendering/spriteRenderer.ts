@@ -32,9 +32,14 @@ export class SpriteRenderer {
     y: number,
     radius: number
   ): void {
-    const image = this.assets?.getImage(`enemy-${enemy.tierId}`);
+    const key = `enemy-${enemy.tierId}`;
+    if (this.assets?.drawFrame?.(ctx, key, x - radius, y - radius, radius * 2, radius * 2)) {
+      return;
+    }
+
+    const image = this.assets?.getImage(key);
     if (image) {
-      ctx.drawImage(image, x - radius, y - radius, radius * 2, radius * 2);
+      ctx.drawImage(image as CanvasImageSource, x - radius, y - radius, radius * 2, radius * 2);
       return;
     }
 
@@ -80,14 +85,19 @@ export class SpriteRenderer {
     const palette = paletteMap[slot.turret.typeId];
     if (!palette) return;
 
-    const image = this.assets?.getImage(`turret-${slot.turret.typeId}`);
-    if (image) {
-      ctx.drawImage(image, x - radius, y - radius, radius * 2, radius * 2);
+    const key = `turret-${slot.turret.typeId}`;
+    if (this.assets?.drawFrame?.(ctx, key, x - radius, y - radius, radius * 2, radius * 2)) {
+      // drawn from atlas
     } else {
-      ctx.fillStyle = palette.base;
-      ctx.beginPath();
-      ctx.arc(x, y, radius * 0.6, 0, Math.PI * 2);
-      ctx.fill();
+      const image = this.assets?.getImage(key);
+      if (image) {
+        ctx.drawImage(image as CanvasImageSource, x - radius, y - radius, radius * 2, radius * 2);
+      } else {
+        ctx.fillStyle = palette.base;
+        ctx.beginPath();
+        ctx.arc(x, y, radius * 0.6, 0, Math.PI * 2);
+        ctx.fill();
+      }
     }
 
     // Barrel

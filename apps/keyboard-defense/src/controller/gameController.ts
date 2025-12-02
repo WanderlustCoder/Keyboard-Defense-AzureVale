@@ -200,7 +200,11 @@ export class GameController {
     this.telemetryEndpoint = this.telemetryClient?.getEndpoint?.() ?? null;
     this.telemetryDebugControls = null;
     this.soundDebugControls = null;
-    this.assetLoader = new AssetLoader();
+    const atlasEnabled = Boolean(config.featureToggles?.assetAtlas);
+    this.assetLoader = new AssetLoader({
+      useAtlas: atlasEnabled,
+      atlasUrl: "./assets/atlas.json"
+    });
     this.assetIntegritySummary = this.assetLoader.getIntegritySummary?.() ?? null;
     this.assetIntegrityUnsubscribe =
       typeof this.assetLoader.onIntegrityUpdate === "function"
@@ -226,17 +230,30 @@ export class GameController {
       "turret-flame": svgTurretDataUri("#fb923c", "#9a3412"),
       "turret-crystal": svgTurretDataUri("#67e8f9", "#0f766e")
     };
-    const manifestPromise = this.assetLoader
-      .loadManifest("./assets/manifest.json")
+    const atlasPromise = atlasEnabled
+      ? this.assetLoader
+          .loadAtlas(this.assetLoader.atlasUrl ?? "./assets/atlas.json")
+          .catch((error) => {
+            console.warn("[assets] atlas load failed; falling back to loose sprites.", error);
+            return undefined;
+          })
+      : Promise.resolve();
+    const manifestPromise = atlasPromise
+      .catch(() => undefined)
       .then(() => {
-        const missing = Object.keys(fallbackSprites).filter(
-          (key) => !this.assetLoader.getImage(key)
-        );
-        if (missing.length > 0) {
-          const subset = Object.fromEntries(missing.map((key) => [key, fallbackSprites[key]]));
-          return this.assetLoader.loadImages(subset);
-        }
-        return undefined;
+        const skip = new Set(this.assetLoader.listAtlasKeys?.() ?? []);
+        return this.assetLoader
+          .loadManifest("./assets/manifest.json", { skip })
+          .then(() => {
+            const missing = Object.keys(fallbackSprites).filter(
+              (key) => !this.assetLoader.getImage(key)
+            );
+            if (missing.length > 0) {
+              const subset = Object.fromEntries(missing.map((key) => [key, fallbackSprites[key]]));
+              return this.assetLoader.loadImages(subset);
+            }
+            return undefined;
+          });
       })
       .catch((error) => {
         console.warn("Asset manifest load failed; using inline sprites.", error);

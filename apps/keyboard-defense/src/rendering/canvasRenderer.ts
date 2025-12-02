@@ -756,13 +756,40 @@ export class CanvasRenderer {
     const frames: SpriteBurstFrame[] = [];
     let totalDuration = 0;
     for (const frameDefinition of definition.frames) {
+      const hasAtlasFrame =
+        typeof this.assetLoader?.hasAtlasFrame === "function" &&
+        this.assetLoader.hasAtlasFrame(frameDefinition.key);
       const image = this.assetLoader.getImage(frameDefinition.key);
-      if (!image) {
+      const duration = Math.max(0.016, frameDefinition.durationMs / 1000);
+      const draw = (
+        ctx: CanvasRenderingContext2D,
+        cx: number,
+        cy: number,
+        size: number
+      ): boolean => {
+        if (
+          this.assetLoader?.drawFrame?.(
+            ctx,
+            frameDefinition.key,
+            cx - size / 2,
+            cy - size / 2,
+            size,
+            size
+          )
+        ) {
+          return true;
+        }
+        if (image) {
+          ctx.drawImage(image as CanvasImageSource, cx - size / 2, cy - size / 2, size, size);
+          return true;
+        }
+        return false;
+      };
+      if (!hasAtlasFrame && !image) {
         continue;
       }
-      const duration = Math.max(0.016, frameDefinition.durationMs / 1000);
       frames.push({
-        image,
+        draw,
         startTime: totalDuration,
         duration,
         offsetX: frameDefinition.offsetX ?? 0,
@@ -858,7 +885,7 @@ export class CanvasRenderer {
     }
     const drawX = x + frame.offsetX;
     const drawY = y + frame.offsetY;
-    this.ctx.drawImage(frame.image, drawX - frame.size / 2, drawY - frame.size / 2, frame.size, frame.size);
+    frame.draw?.(this.ctx, drawX, drawY, frame.size);
   }
 }
 
@@ -880,7 +907,7 @@ interface DefeatSpriteInstance {
 }
 
 interface SpriteBurstFrame {
-  image: HTMLImageElement;
+  draw: (ctx: CanvasRenderingContext2D, x: number, y: number, size: number) => boolean;
   startTime: number;
   duration: number;
   offsetX: number;

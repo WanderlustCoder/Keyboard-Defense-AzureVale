@@ -1,6 +1,7 @@
 import { SpriteRenderer } from "./spriteRenderer.js";
 import { resolveLetterColors } from "./wordHighlighter.js";
 import { defaultStarfieldConfig } from "../config/starfield.js";
+import { resolveCastlePalette } from "./castlePalette.js";
 const PROJECTILE_COLORS = {
     arrow: "#38bdf8",
     arcane: "#a855f7",
@@ -551,12 +552,13 @@ export class CanvasRenderer {
         const castleHeight = this.height * 0.6;
         const x = this.width * 0.85;
         const y = (this.height - castleHeight) / 2;
-        this.ctx.fillStyle = "#475569";
+        const palette = resolveCastlePalette(this.config, state.castle.level);
+        this.ctx.fillStyle = palette.fill;
         this.ctx.fillRect(x, y, castleWidth, castleHeight);
         const hpRatio = Math.max(0, state.castle.health / state.castle.maxHealth);
-        this.ctx.fillStyle = "#22d3ee";
+        this.ctx.fillStyle = palette.accent;
         this.ctx.fillRect(x, y + castleHeight * (1 - hpRatio), castleWidth, castleHeight * hpRatio);
-        this.ctx.strokeStyle = "#1f2937";
+        this.ctx.strokeStyle = palette.border;
         this.ctx.lineWidth = 4;
         this.ctx.strokeRect(x, y, castleWidth, castleHeight);
     }
@@ -637,13 +639,25 @@ export class CanvasRenderer {
         const frames = [];
         let totalDuration = 0;
         for (const frameDefinition of definition.frames) {
+            const hasAtlasFrame = typeof this.assetLoader?.hasAtlasFrame === "function" &&
+                this.assetLoader.hasAtlasFrame(frameDefinition.key);
             const image = this.assetLoader.getImage(frameDefinition.key);
-            if (!image) {
+            const duration = Math.max(0.016, frameDefinition.durationMs / 1000);
+            const draw = (ctx, cx, cy, size) => {
+                if (this.assetLoader?.drawFrame?.(ctx, frameDefinition.key, cx - size / 2, cy - size / 2, size, size)) {
+                    return true;
+                }
+                if (image) {
+                    ctx.drawImage(image, cx - size / 2, cy - size / 2, size, size);
+                    return true;
+                }
+                return false;
+            };
+            if (!hasAtlasFrame && !image) {
                 continue;
             }
-            const duration = Math.max(0.016, frameDefinition.durationMs / 1000);
             frames.push({
-                image,
+                draw,
                 startTime: totalDuration,
                 duration,
                 offsetX: frameDefinition.offsetX ?? 0,
@@ -732,7 +746,7 @@ export class CanvasRenderer {
         }
         const drawX = x + frame.offsetX;
         const drawY = y + frame.offsetY;
-        this.ctx.drawImage(frame.image, drawX - frame.size / 2, drawY - frame.size / 2, frame.size, frame.size);
+        frame.draw?.(this.ctx, drawX, drawY, frame.size);
     }
 }
 function hexToRgbChannels(hex) {

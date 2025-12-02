@@ -47,4 +47,4 @@ Outlined manageable sub-tasks for remaining “Not Started” backlog items to e
   - Record summary of attempts and final completion flag.
 
 ## Next Action
-- #94 harness delivered with cross-platform baselines in `baselines/visual`. Next priority: wire sprite atlas loading (#63) using the new atlas builder and add loader fallbacks/tests.
+- #63 atlas loader/fallbacks landed. Next priority: #91 tutorial state coverage (assist cue + replay/skip flows) to harden onboarding tests.

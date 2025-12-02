@@ -70,7 +70,7 @@
 | 60 | UI/UX & Accessibility | Implement reduced-motion mode (disable shake/particle effects). | Done | Reduced-motion toggle pauses transitions & stored in settings |
 | 61 | UI/UX & Accessibility | Persist player settings (audio, diagnostics, toggles) across sessions. | Done | Player settings stored in localStorage (sound & diagnostics) |
 | 62 | Asset Pipeline & Visuals | Replace inline SVG helpers with hashed asset pipeline utilities. | Done | Inline SVG helpers consolidated into asset loader |
-| 63 | Asset Pipeline & Visuals | Generate sprite atlas to minimize draw calls. | Not Started |  |
+| 63 | Asset Pipeline & Visuals | Generate sprite atlas to minimize draw calls. | Done | Atlas builder + loader drawFrame; manifest skips atlas-backed keys |
 | 64 | Asset Pipeline & Visuals | Defer high-res asset loading until post-ready signal. | Not Started |  |
 | 65 | Asset Pipeline & Visuals | Introduce projectile particle systems via offscreen canvas. | Not Started |  |
 | 66 | Asset Pipeline & Visuals | Add enemy defeat animation frames with easing. | Done | Canvas renderer spawns eased defeat bursts with palette-matched rings and spikes |
