@@ -5,6 +5,7 @@
 - **HUD_NOTES.md** - quick ideas and TODOs specific to HUD polish (upcoming enemy icons, animations, etc.).
 - **season1_backlog.md** - completed Siege of the Azure Vale backlog with IDs referenced across docs/status notes.
 - **season2_backlog.md** - new 100-item backlog for ages 8-16 (Edge/Chrome), free single-player with pixel art direction.
+- **icon_set_spec.md** - pixel UI icon set specification (sizes, palette, states, naming, exports) for buttons/toggles/HUD controls.
 
 When adding new doc files, include a one-line summary here for easy discovery.
 
