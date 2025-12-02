@@ -1,0 +1,3 @@
+# Keep this list lowercase; entries are checked case-insensitively.
+# Avoid adding real profane terms here; use placeholders until curated.
+placeholder-badword

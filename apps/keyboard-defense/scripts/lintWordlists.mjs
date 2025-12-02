@@ -3,8 +3,11 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import process from "node:process";
+import { fileURLToPath } from "node:url";
 
-const APP_ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const APP_ROOT = path.resolve(__dirname, "..");
 const WORDLIST_DIR = path.join(APP_ROOT, "data", "wordlists");
 const DENYLIST_PATH = path.join(WORDLIST_DIR, "denylist.txt");
 const DEFAULT_ALLOWED_CHARS = ".,?!;:'\"- ";
