@@ -120,6 +120,7 @@ export class GameController {
         this.audioIntensity = AUDIO_INTENSITY_DEFAULT;
         this.reducedMotionEnabled = false;
         this.checkeredBackgroundEnabled = false;
+        this.virtualKeyboardEnabled = false;
         this.readableFontEnabled = false;
         this.dyslexiaFontEnabled = false;
         this.colorblindPaletteEnabled = false;
@@ -139,6 +140,8 @@ export class GameController {
         this.lastStarfieldSummary = null;
         this.starfieldConfig = defaultStarfieldConfig;
         this.starfieldState = null;
+        this.lowGraphicsEnabled = false;
+        this.lowGraphicsRestoreState = null;
         this.hudFontScale = 1;
         this.impactEffects = [];
         this.turretRangeHighlightSlot = null;
@@ -357,6 +360,7 @@ export class GameController {
             goldDelta: "resource-delta",
             activeWord: "active-word",
             typingInput: "typing-input",
+            virtualKeyboard: "virtual-keyboard",
             fullscreenButton: "fullscreen-button",
             upgradePanel: "upgrade-panel",
             comboLabel: "combo-stats",
@@ -387,6 +391,8 @@ export class GameController {
                 soundIntensitySlider: "options-sound-intensity",
                 soundIntensityValue: "options-sound-intensity-value",
                 diagnosticsToggle: "options-diagnostics-toggle",
+                virtualKeyboardToggle: "options-virtual-keyboard-toggle",
+                lowGraphicsToggle: "options-low-graphics-toggle",
                 reducedMotionToggle: "options-reduced-motion-toggle",
                 checkeredBackgroundToggle: "options-checkered-bg-toggle",
                 readableFontToggle: "options-readable-font-toggle",
@@ -455,6 +461,8 @@ export class GameController {
             onSoundVolumeChange: (volume) => this.setSoundVolume(volume),
             onSoundIntensityChange: (value) => this.setAudioIntensity(value),
             onDiagnosticsToggle: (visible) => this.setDiagnosticsVisible(visible),
+            onLowGraphicsToggle: (enabled) => this.setLowGraphicsEnabled(enabled),
+            onVirtualKeyboardToggle: (enabled) => this.setVirtualKeyboardEnabled(enabled),
             onWaveScorecardContinue: () => this.handleWaveScorecardContinue(),
             onReducedMotionToggle: (enabled) => this.setReducedMotionEnabled(enabled),
             onCheckeredBackgroundToggle: (enabled) => this.setCheckeredBackgroundEnabled(enabled),
@@ -1338,6 +1346,55 @@ export class GameController {
             this.render();
         }
     }
+    setLowGraphicsEnabled(enabled, options = {}) {
+        const next = Boolean(enabled);
+        const force = options.force === true;
+        if (!force && this.lowGraphicsEnabled === next) {
+            return false;
+        }
+        const persist = options.persist !== false;
+        const silent = Boolean(options.silent);
+        if (next) {
+            this.lowGraphicsRestoreState = {
+                reducedMotion: this.reducedMotionEnabled,
+                checkeredBackground: this.checkeredBackgroundEnabled,
+                defeatAnimationMode: this.defeatAnimationMode,
+                starfieldEnabled: this.starfieldEnabled
+            };
+            this.setReducedMotionEnabled(true, { persist, silent: true, render: false });
+            this.setCheckeredBackgroundEnabled(false, { persist, silent: true, render: false });
+            this.setDefeatAnimationMode("procedural", { persist, silent: true, render: false });
+            this.starfieldEnabled = false;
+        }
+        else {
+            const restore = this.lowGraphicsRestoreState;
+            const restoredStarfield = restore?.starfieldEnabled ?? Boolean(this.featureToggles?.starfieldParallax);
+            this.starfieldEnabled = restoredStarfield;
+            if (restore) {
+                this.setReducedMotionEnabled(restore.reducedMotion, { persist, silent: true, render: false });
+                this.setCheckeredBackgroundEnabled(restore.checkeredBackground, {
+                    persist,
+                    silent: true,
+                    render: false
+                });
+                this.setDefeatAnimationMode(restore.defeatAnimationMode ?? "auto", {
+                    persist,
+                    silent: true,
+                    render: false
+                });
+            }
+        }
+        this.lowGraphicsEnabled = next;
+        if (persist) {
+            this.persistPlayerSettings({ lowGraphicsEnabled: next });
+        }
+        this.updateOptionsOverlayState();
+        if (!silent) {
+            this.hud.appendLog(`Low graphics ${next ? "enabled" : "disabled"}`);
+        }
+        this.render();
+        return true;
+    }
     setReadableFontEnabled(enabled, options = {}) {
         this.readableFontEnabled = enabled;
         this.applyReadableFontSetting(enabled);
@@ -1348,6 +1405,20 @@ export class GameController {
         if (options.persist !== false) {
             this.persistPlayerSettings({ readableFontEnabled: enabled });
         }
+        if (options.render !== false) {
+            this.render();
+        }
+    }
+    setVirtualKeyboardEnabled(enabled, options = {}) {
+        this.virtualKeyboardEnabled = Boolean(enabled);
+        this.hud.setVirtualKeyboardEnabled(this.virtualKeyboardEnabled);
+        if (!options.silent) {
+            this.hud.appendLog(`On-screen keyboard ${this.virtualKeyboardEnabled ? "enabled" : "disabled"}`);
+        }
+        if (options.persist !== false) {
+            this.persistPlayerSettings({ virtualKeyboardEnabled: this.virtualKeyboardEnabled });
+        }
+        this.updateOptionsOverlayState();
         if (options.render !== false) {
             this.render();
         }
@@ -1573,6 +1644,8 @@ export class GameController {
             soundVolume: this.soundVolume,
             soundIntensity: this.audioIntensity,
             diagnosticsVisible: this.diagnostics.isVisible(),
+            lowGraphicsEnabled: this.lowGraphicsEnabled,
+            virtualKeyboardEnabled: this.virtualKeyboardEnabled,
             reducedMotionEnabled: this.reducedMotionEnabled,
             checkeredBackgroundEnabled: this.checkeredBackgroundEnabled,
             readableFontEnabled: this.readableFontEnabled,
@@ -2475,6 +2548,10 @@ export class GameController {
             patch.diagnosticsVisible === this.playerSettings.diagnosticsVisible;
         const reducedMotionUnchanged = patch.reducedMotionEnabled === undefined ||
             patch.reducedMotionEnabled === this.playerSettings.reducedMotionEnabled;
+        const virtualKeyboardUnchanged = patch.virtualKeyboardEnabled === undefined ||
+            patch.virtualKeyboardEnabled === this.playerSettings.virtualKeyboardEnabled;
+        const lowGraphicsUnchanged = patch.lowGraphicsEnabled === undefined ||
+            patch.lowGraphicsEnabled === this.playerSettings.lowGraphicsEnabled;
         const checkeredUnchanged = patch.checkeredBackgroundEnabled === undefined ||
             patch.checkeredBackgroundEnabled === this.playerSettings.checkeredBackgroundEnabled;
         const readableFontUnchanged = patch.readableFontEnabled === undefined ||
@@ -2511,6 +2588,8 @@ export class GameController {
             readableFontUnchanged &&
             dyslexiaFontUnchanged &&
             colorblindUnchanged &&
+            virtualKeyboardUnchanged &&
+            lowGraphicsUnchanged &&
             defeatAnimationModeUnchanged &&
             fontScaleUnchanged &&
             targetingUnchanged &&
@@ -3433,6 +3512,17 @@ export class GameController {
             silent: true,
             persist: false,
             render: false
+        });
+        this.setVirtualKeyboardEnabled(stored.virtualKeyboardEnabled ?? false, {
+            silent: true,
+            persist: false,
+            render: false
+        });
+        this.setLowGraphicsEnabled(stored.lowGraphicsEnabled ?? false, {
+            silent: true,
+            persist: false,
+            render: false,
+            force: true
         });
         this.setColorblindPaletteEnabled(stored.colorblindPaletteEnabled ?? false, {
             silent: true,

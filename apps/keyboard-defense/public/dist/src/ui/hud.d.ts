@@ -21,6 +21,8 @@ export interface HudCallbacks {
     onSoundVolumeChange(volume: number): void;
     onSoundIntensityChange(intensity: number): void;
     onDiagnosticsToggle(visible: boolean): void;
+    onVirtualKeyboardToggle?: (enabled: boolean) => void;
+    onLowGraphicsToggle?: (enabled: boolean) => void;
     onWaveScorecardContinue(): void;
     onReducedMotionToggle(enabled: boolean): void;
     onCheckeredBackgroundToggle(enabled: boolean): void;
@@ -84,6 +86,8 @@ type OptionsOverlayElements = {
     soundIntensitySlider: string;
     soundIntensityValue: string;
     diagnosticsToggle: string;
+    virtualKeyboardToggle?: string;
+    lowGraphicsToggle: string;
     reducedMotionToggle: string;
     checkeredBackgroundToggle: string;
     readableFontToggle: string;
@@ -188,6 +192,8 @@ export declare class HudView {
     private readonly logList;
     private readonly tutorialBanner?;
     private tutorialBannerExpanded;
+    private readonly virtualKeyboard?;
+    private virtualKeyboardEnabled;
     private readonly castleButton;
     private readonly castleRepairButton;
     private readonly castleStatus;
@@ -258,6 +264,7 @@ export declare class HudView {
         goldDelta: string;
         activeWord: string;
         typingInput: string;
+        virtualKeyboard?: string;
         upgradePanel: string;
         comboLabel: string;
         comboAccuracyDelta: string;
@@ -287,6 +294,7 @@ export declare class HudView {
     setFullscreenActive(active: boolean): void;
     showShortcutOverlay(): void;
     hideShortcutOverlay(): void;
+    setVirtualKeyboardEnabled(enabled: boolean): void;
     toggleShortcutOverlay(): void;
     isShortcutOverlayVisible(): boolean;
     showRoadmapOverlay(): void;
@@ -301,6 +309,8 @@ export declare class HudView {
         soundVolume: number;
         soundIntensity: number;
         diagnosticsVisible: boolean;
+        lowGraphicsEnabled: boolean;
+        virtualKeyboardEnabled?: boolean;
         reducedMotionEnabled: boolean;
         checkeredBackgroundEnabled: boolean;
         readableFontEnabled: boolean;

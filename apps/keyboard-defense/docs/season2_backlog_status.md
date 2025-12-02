@@ -13,4 +13,4 @@ Quick status for the Season 2 backlog items referenced in `season2_backlog.md`.
 | 97 | Automatic playtest script (bot) to simulate key input for perf smoke | Done | `npm run playtest:bot` types headless via Playwright; writes summary artifact. |
 | 98 | Visual regression baselines for core screens | Done | HUD/overlay baselines refreshed; new loading and caps-lock shots tracked. |
 | 99 | Deployment checklist for browser compatibility (Edge/Chrome) | Done | `docs/deployment_checklist.md` added; smoke and accessibility steps captured. |
-| 100 | Post-Season roadmap placeholder for multiplayer/co-op ideas (not active now) | Pending | Reserved for future planning; no multiplayer work in scope. |
+| 100 | Post-Season roadmap placeholder for multiplayer/co-op ideas (not active now) | Done | `docs/roadmap/post_season_multiplayer.md` captures parking-lot concepts and guardrails; still single-player only. |

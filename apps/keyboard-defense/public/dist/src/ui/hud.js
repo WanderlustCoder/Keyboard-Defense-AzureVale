@@ -2,6 +2,7 @@ import { WavePreviewPanel } from "./wavePreview.js";
 import { SEASON_ROADMAP, evaluateRoadmap } from "../data/roadmap.js";
 import { getEnemyBiography } from "../data/bestiary.js";
 import { DEFAULT_ROADMAP_PREFERENCES, mergeRoadmapPreferences, readRoadmapPreferences, writeRoadmapPreferences } from "../utils/roadmapPreferences.js";
+import { VirtualKeyboard } from "./virtualKeyboard.js";
 let hudInstanceCounter = 0;
 const PASSIVE_ICON_MAP = {
     regen: { label: "Regen passive icon" },
@@ -29,6 +30,8 @@ export class HudView {
     logList;
     tutorialBanner;
     tutorialBannerExpanded = true;
+    virtualKeyboard;
+    virtualKeyboardEnabled = false;
     castleButton;
     castleRepairButton;
     castleStatus;
@@ -176,6 +179,12 @@ export class HudView {
         this.comboAccuracyDelta = this.getElement(rootIds.comboAccuracyDelta);
         this.hideComboAccuracyDelta();
         this.logList = this.getElement(rootIds.eventLog);
+        if (rootIds.virtualKeyboard) {
+            const virtualKeyboardEl = document.getElementById(rootIds.virtualKeyboard);
+            if (virtualKeyboardEl instanceof HTMLElement) {
+                this.virtualKeyboard = new VirtualKeyboard(virtualKeyboardEl);
+            }
+        }
         const previewContainer = this.getElement(rootIds.wavePreview);
         this.wavePreview = new WavePreviewPanel(previewContainer, this.config);
         if (rootIds.wavePreviewHint) {
@@ -318,6 +327,10 @@ export class HudView {
             const soundIntensitySlider = document.getElementById(rootIds.optionsOverlay.soundIntensitySlider);
             const soundIntensityValue = document.getElementById(rootIds.optionsOverlay.soundIntensityValue);
             const diagnosticsToggle = document.getElementById(rootIds.optionsOverlay.diagnosticsToggle);
+            const virtualKeyboardToggle = rootIds.optionsOverlay.virtualKeyboardToggle
+                ? document.getElementById(rootIds.optionsOverlay.virtualKeyboardToggle)
+                : null;
+            const lowGraphicsToggle = document.getElementById(rootIds.optionsOverlay.lowGraphicsToggle);
             const reducedMotionToggle = document.getElementById(rootIds.optionsOverlay.reducedMotionToggle);
             const checkeredBackgroundToggle = document.getElementById(rootIds.optionsOverlay.checkeredBackgroundToggle);
             const readableFontToggle = document.getElementById(rootIds.optionsOverlay.readableFontToggle);
@@ -372,6 +385,8 @@ export class HudView {
                     soundIntensitySlider,
                     soundIntensityValue,
                     diagnosticsToggle,
+                    virtualKeyboardToggle: virtualKeyboardToggle instanceof HTMLInputElement ? virtualKeyboardToggle : undefined,
+                    lowGraphicsToggle: lowGraphicsToggle instanceof HTMLInputElement ? lowGraphicsToggle : undefined,
                     reducedMotionToggle,
                     checkeredBackgroundToggle,
                     readableFontToggle,
@@ -466,6 +481,20 @@ export class HudView {
                         return;
                     this.callbacks.onDiagnosticsToggle(diagnosticsToggle.checked);
                 });
+                if (this.optionsOverlay.virtualKeyboardToggle) {
+                    this.optionsOverlay.virtualKeyboardToggle.addEventListener("change", () => {
+                        if (this.syncingOptionToggles)
+                            return;
+                        this.callbacks.onVirtualKeyboardToggle?.(this.optionsOverlay.virtualKeyboardToggle.checked);
+                    });
+                }
+                if (this.optionsOverlay.lowGraphicsToggle) {
+                    this.optionsOverlay.lowGraphicsToggle.addEventListener("change", () => {
+                        if (this.syncingOptionToggles)
+                            return;
+                        this.callbacks.onLowGraphicsToggle?.(this.optionsOverlay.lowGraphicsToggle.checked);
+                    });
+                }
                 reducedMotionToggle.addEventListener("change", () => {
                     if (this.syncingOptionToggles)
                         return;
@@ -818,6 +847,13 @@ export class HudView {
     hideShortcutOverlay() {
         this.setShortcutOverlayVisible(false);
     }
+    setVirtualKeyboardEnabled(enabled) {
+        this.virtualKeyboardEnabled = Boolean(enabled);
+        if (this.virtualKeyboard && !this.virtualKeyboardEnabled) {
+            this.virtualKeyboard.setVisible(false);
+            this.virtualKeyboard.setActiveWord(null, 0);
+        }
+    }
     toggleShortcutOverlay() {
         this.setShortcutOverlayVisible(!this.isShortcutOverlayVisible());
     }
@@ -867,6 +903,12 @@ export class HudView {
         this.optionsOverlay.soundIntensitySlider.value = state.soundIntensity.toString();
         this.updateSoundIntensityDisplay(state.soundIntensity);
         this.optionsOverlay.diagnosticsToggle.checked = state.diagnosticsVisible;
+        if (this.optionsOverlay.virtualKeyboardToggle && state.virtualKeyboardEnabled !== undefined) {
+            this.optionsOverlay.virtualKeyboardToggle.checked = state.virtualKeyboardEnabled;
+        }
+        if (this.optionsOverlay.lowGraphicsToggle) {
+            this.optionsOverlay.lowGraphicsToggle.checked = state.lowGraphicsEnabled;
+        }
         this.optionsOverlay.reducedMotionToggle.checked = state.reducedMotionEnabled;
         this.optionsOverlay.checkeredBackgroundToggle.checked = state.checkeredBackgroundEnabled;
         this.optionsOverlay.readableFontToggle.checked = state.readableFontEnabled;
@@ -990,6 +1032,16 @@ export class HudView {
         else {
             this.activeWord.innerHTML = "";
             delete this.activeWord.dataset.shielded;
+        }
+        if (this.virtualKeyboard) {
+            if (this.virtualKeyboardEnabled && activeEnemy?.word) {
+                this.virtualKeyboard.setVisible(true);
+                this.virtualKeyboard.setActiveWord(activeEnemy.word, activeEnemy.typed);
+            }
+            else {
+                this.virtualKeyboard.setActiveWord(null, 0);
+                this.virtualKeyboard.setVisible(false);
+            }
         }
         this.updateCastleControls(state);
         this.updateTurretControls(state);

@@ -422,6 +422,7 @@ export class HudView {
     soundIntensitySlider: HTMLInputElement;
     soundIntensityValue: HTMLElement;
     diagnosticsToggle: HTMLInputElement;
+    virtualKeyboardToggle?: HTMLInputElement;
     lowGraphicsToggle?: HTMLInputElement;
     reducedMotionToggle: HTMLInputElement;
     checkeredBackgroundToggle: HTMLInputElement;

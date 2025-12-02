@@ -49,7 +49,9 @@ export declare class GameController {
     setSoundEnabled(enabled: any, options?: {}): void;
     setReducedMotionEnabled(enabled: any, options?: {}): void;
     setCheckeredBackgroundEnabled(enabled: any, options?: {}): void;
+    setLowGraphicsEnabled(enabled: any, options?: {}): boolean;
     setReadableFontEnabled(enabled: any, options?: {}): void;
+    setVirtualKeyboardEnabled(enabled: any, options?: {}): void;
     setDyslexiaFontEnabled(enabled: any, options?: {}): void;
     setSoundVolume(volume: any, options?: {}): void;
     setAudioIntensity(intensity: any, options?: {}): void;
