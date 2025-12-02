@@ -49,9 +49,11 @@
           <div class="castle-header">
             <h1>Keyboard Defense</h1>
             <div class="castle-actions">
-              <button id="fullscreen-button" type="button" aria-pressed="false">Fullscreen</button>
-              <button id="pause-button" type="button">Pause</button>
-              <button id="roadmap-launch" type="button">Roadmap</button>
+              <button id="fullscreen-button" type="button" aria-pressed="false" aria-label="Toggle fullscreen">
+                Fullscreen
+              </button>
+              <button id="pause-button" type="button" aria-label="Pause game">Pause</button>
+              <button id="roadmap-launch" type="button" aria-label="Open roadmap">Roadmap</button>
               <button
                 id="shortcut-launch"
                 class="icon-button"
@@ -93,8 +95,12 @@
                 </p>
               </div>
               <div class="break-reminder-actions">
-                <button id="break-reminder-snooze" type="button">Remind in 10m</button>
-                <button id="break-reminder-reset" type="button">I took a break</button>
+                <button id="break-reminder-snooze" type="button" aria-label="Snooze break reminder for 10 minutes">
+                  Remind in 10m
+                </button>
+                <button id="break-reminder-reset" type="button" aria-label="Confirm break taken and reset timer">
+                  I took a break
+                </button>
               </div>
             </div>
           </div>
@@ -114,7 +120,13 @@
           </div>
           <div id="combo-stats">Combo x0</div>
           <div id="combo-accuracy-delta" role="status" aria-live="polite"></div>
-          <input id="typing-input" autocomplete="off" autofocus placeholder="Type to attack..." />
+          <input
+            id="typing-input"
+            autocomplete="off"
+            autofocus
+            placeholder="Type to attack..."
+            aria-label="Typing input. Type the on-screen words to attack."
+          />
           <div
             id="caps-lock-warning"
             class="caps-lock-warning"
