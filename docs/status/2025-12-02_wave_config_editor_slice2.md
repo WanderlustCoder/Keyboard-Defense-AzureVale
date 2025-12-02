@@ -1,4 +1,4 @@
-# Wave Config Editor – Slice 2 (2025-12-02)
+# Wave Config Editor - Slice 2 (2025-12-02)
 
 ## What shipped
 - CLI `npm run wave:edit` (`scripts/waves/editConfig.mjs`) to validate, summarize, and generate wave configs for designers.
@@ -16,3 +16,5 @@
 
 ## Next slice
 - Add designer-friendly preview/authoring UI or dev-server hook to render upcoming waves/hazards/affixes/evac markers.
+
+Update 2025-12-09: Preview UI shipped in `2025-12-09_wave_preview_slice3.md` (`npm run wave:preview` with filters/timelines and live reload).

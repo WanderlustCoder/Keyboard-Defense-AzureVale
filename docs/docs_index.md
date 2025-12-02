@@ -21,8 +21,8 @@ Use this index to jump straight to the guidance you'll need while building and t
 - `apps/keyboard-defense/scripts/analytics/goldDeltaAggregator.mjs` - Per-wave gold delta aggregator powering docs/dashboards (`node scripts/analytics/goldDeltaAggregator.mjs --help`).
 - `apps/keyboard-defense/scripts/ci/goldAnalyticsBoard.mjs` - Merges gold summary/timeline/passive/guard artifacts into a single Markdown/JSON board for Codex dashboards (`node scripts/ci/goldAnalyticsBoard.mjs --help`).
 - `apps/keyboard-defense/scripts/debug/dprTransition.mjs` - Headless DPR transition simulator (`npm run debug:dpr-transition -- --steps 1:960,1.5:840 --json`) for reproducing `ui.canvasResolutionChanged` telemetry without browser zooming.
-- `apps/keyboard-defense/scripts/analytics/validate-schema.mjs` — Ajv-based validator for analytics snapshots (`node scripts/analytics/validate-schema.mjs --help`).
-- `apps/keyboard-defense/scripts/docs/verifyHudSnapshots.mjs` — Verifies HUD screenshot metadata contains diagnostics + preference fields (`npm run docs:verify-hud-snapshots`).
+- `apps/keyboard-defense/scripts/analytics/validate-schema.mjs` - Ajv-based validator for analytics snapshots (`node scripts/analytics/validate-schema.mjs --help`).
+- `apps/keyboard-defense/scripts/docs/verifyHudSnapshots.mjs` - Verifies HUD screenshot metadata contains diagnostics + preference fields (`npm run docs:verify-hud-snapshots`).
 
 ## Automation & Monitoring
 - `docs/status/2025-11-04_automation_scaffold.md` - Current automation script layout, future CI plans, and pending tooling work.
@@ -46,6 +46,7 @@ Use this index to jump straight to the guidance you'll need while building and t
 
 ## Status Notes
 Status entries live under `docs/status/`. Recent highlights include:
+- `2025-12-09_wave_preview_slice3.md` - Live wave preview UI with timelines, lane/event filters, and SSE reloads (`npm run wave:preview`).
 - `2025-12-06_git_hooks_precommit.md` - Pre-commit hook now uses a Node runner, respects `SKIP_HOOKS`, and installs via `npm run hooks:install`.
 - `2025-12-06_turret_flavor_tooltips.md` - Turret selectors/status tooltips now carry flavor blurbs for Arrow/Arcane/Flame/Crystal.
 - `2025-12-06_hud_font_shortcuts.md` - Diagnostics lists the active HUD font preset and options overlay supports `[` / `]` shortcuts to cycle sizes.

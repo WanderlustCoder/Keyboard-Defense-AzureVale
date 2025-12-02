@@ -16,11 +16,11 @@
 | 12 | Combat Systems & Typing | Diversify lane word banks to reduce repetition and teach pacing. | Done | Lane-specific vocab with per-lane history reduces repeats |
 | 13 | Combat Systems & Typing | Add per-letter feedback colors for active enemy word progress. | Done | Canvas renderer highlights typed/next characters with accessible palette |
 | 14 | Combat Systems & Typing | Implement combo decay timer with HUD warning state. | Done | Combo auto-decays with timer, HUD warns before reset |
-| 15 | Combat Systems & Typing | Provide manual buffer purge hotkey with minor combo penalty. | Done | Ctrl/Cmd+⌫ clears buffer and drops combo by one stack |
+| 15 | Combat Systems & Typing | Provide manual buffer purge hotkey with minor combo penalty. | Done | Ctrl/Cmd+Backspace clears buffer and drops combo by one stack |
 | 16 | Combat Systems & Typing | Track wave-side bonus objectives (e.g., perfect words) for rewards. | Done | Perfect-word streak bonus grants gold and appears in analytics/scorecard |
 | 17 | Combat Systems & Typing | Introduce shielded enemies requiring turret damage before typing is effective. | Done | Shielded variants live in waves with HUD/canvas cues and tutorial coverage |
 | 18 | Combat Systems & Typing | Add turret/enemy affinity bonuses to encourage mixed defenses. | Done | Turrets gain tier multipliers with HUD summaries encouraging varied loadouts |
-| 19 | Combat Systems & Typing | Offer low-intensity endless practice mode for casual warm-up. | Done | Main menu “Practice Mode” loops waves indefinitely without campaign victory |
+| 19 | Combat Systems & Typing | Offer low-intensity endless practice mode for casual warm-up. | Done | Main menu \"Practice Mode\" loops waves indefinitely without campaign victory |
 | 20 | Combat Systems & Typing | Log typing reaction time metrics for balancing. | Done | Reaction averages tracked in analytics, diagnostics overlay, and exports |
 | 21 | Castle & Turrets | Display upcoming castle upgrade benefits in upgrade panel tooltip. | Done | Upgrade panel lists HP/regen/armor/slot gains with tooltip |
 | 22 | Castle & Turrets | Add castle repair ability with cooldown/resource cost. | Done | Repair action tracks cooldown/gold, analytics + diagnostics/scorecard display usage with tests |
@@ -39,7 +39,7 @@
 | 35 | Enemy & Wave Design | Add dynamic spawn scheduler for surprise mini-events. | Done | Deterministic micro-events (skirmish/gold-runner/shield-carrier) gated by toggle |
 | 36 | Enemy & Wave Design | Implement evacuation event requiring long-form typing to rescue civilians. | In Progress | Slices 1-2 shipped (transport + banner, gold reward/penalty) |
 | 37 | Enemy & Wave Design | Introduce lane hazards (fog/storms) affecting visibility/accuracy. | Done | Seeded fog/storm hazards reduce lane fire-rate with HUD messaging |
-| 38 | Enemy & Wave Design | Provide JSON schema/editor for designer-authored wave configs. | In Progress | Schema added (hazards/dynamic/evac/boss); editor/preview pending |
+| 38 | Enemy & Wave Design | Provide JSON schema/editor for designer-authored wave configs. | Done | Schema + editor + live preview with filters/timelines (`npm run wave:preview`, docs/status/2025-12-09_wave_preview_slice3.md) |
 | 39 | Enemy & Wave Design | Calculate difficulty ratings per wave and surface in analytics overlay. | Done | Diagnostics overlay shows computed wave threat rating |
 | 40 | Enemy & Wave Design | Spawn practice dummy enemy for turret DPS tuning in debug mode. | Done | Debug/main-menu toggle spawns stationary dummy target; clear button removes |
 | 41 | Analytics & Telemetry | Expand analytics export to include tutorial metrics and summary history. | Done | Analytics export now includes tutorial state |

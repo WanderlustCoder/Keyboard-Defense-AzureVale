@@ -1,13 +1,8 @@
 import { describe, expect, test } from "vitest";
 import path from "node:path";
-import {
-  applyToggles,
-  buildFromCore,
-  compileValidator,
-  loadSchema,
-  summarize,
-  validateConfig
-} from "../scripts/waves/editConfig.mjs";
+import fs from "node:fs/promises";
+import { applyToggles, buildFromCore, compileValidator, loadSchema, summarize } from "../scripts/waves/editConfig.mjs";
+import { validateConfig as validateConfigPreview } from "../scripts/waves/previewConfig.mjs";
 
 const SCHEMA_PATH = path.join(process.cwd(), "schemas", "wave-config.schema.json");
 
@@ -66,9 +61,7 @@ describe("wave config editor helpers", () => {
       }),
       "utf8"
     );
-    await expect(
-      validateConfig(configPath, SCHEMA_PATH)
-    ).rejects.toThrow(/failed validation/i);
+    await expect(validateConfigPreview(configPath, SCHEMA_PATH)).rejects.toThrow(/failed validation/i);
     await fs.unlink(configPath);
   });
 });
