@@ -54,6 +54,7 @@
     "analytics:breach:summary": "node ./scripts/ci/castleBreachSummary.mjs",
     "ci:traceability": "node ./scripts/ci/traceabilityReport.mjs",
     "assets:integrity": "node ./scripts/assetIntegrity.mjs",
+    "assets:manifest": "node ./scripts/assets/generateManifest.mjs",
     "helm": "node ./scripts/helm.mjs",
     "smoke:tutorial": "node ./scripts/tutorialSmoke.mjs",
     "wave:sim": "node ./scripts/waveSim.mjs",

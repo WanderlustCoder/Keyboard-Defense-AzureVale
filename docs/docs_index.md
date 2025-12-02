@@ -54,6 +54,7 @@ Status entries live under `docs/status/`. Recent highlights include:
 - `2025-12-07_tutorial_assist_replay_skip.md` - TutorialManager tests cover assist hints, skip cleanup, and replay/reset state clearing.
 - `2025-12-07_tutorial_summary_snapshot.md` - Tutorial summary modal snapshot test covering stat text and CTA wiring.
 - `2025-12-07_tutorial_replay_skip_soak.md` - Soak test alternates tutorial replay/skip, validating completion flag persistence across rapid cycles.
+- `2025-12-07_asset_manifest_generation.md` - CLI to generate asset manifests with integrity hashes (`npm run assets:manifest`) plus verification mode.
 - `2025-12-04_docs_watch.md` - `npm run docs:watch` monitors docs folders and auto-regenerates the Codex dashboard/portal after doc edits with debounced rebuilds.
 - `2025-12-04_runtime_log_summary.md` - `npm run logs:summary` scans monitor/dev-server logs and emits breach/accuracy + warning/error summaries in JSON/Markdown.
 - `2025-12-03_typing_drills_telemetry.md` - Telemetry summary CLI + dashboard tile for menu quickstarts, with fixtures/tests and coverage ignores.
