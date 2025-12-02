@@ -71,8 +71,8 @@
 | 61 | UI/UX & Accessibility | Persist player settings (audio, diagnostics, toggles) across sessions. | Done | Player settings stored in localStorage (sound & diagnostics) |
 | 62 | Asset Pipeline & Visuals | Replace inline SVG helpers with hashed asset pipeline utilities. | Done | Inline SVG helpers consolidated into asset loader |
 | 63 | Asset Pipeline & Visuals | Generate sprite atlas to minimize draw calls. | Done | Atlas builder + loader drawFrame; manifest skips atlas-backed keys |
-| 64 | Asset Pipeline & Visuals | Defer high-res asset loading until post-ready signal. | Not Started |  |
-| 65 | Asset Pipeline & Visuals | Introduce projectile particle systems via offscreen canvas. | Not Started |  |
+| 64 | Asset Pipeline & Visuals | Defer high-res asset loading until post-ready signal. | Done | Tiered manifest loadWithTiers swaps hi-res after ready with graceful fallback |
+| 65 | Asset Pipeline & Visuals | Introduce projectile particle systems via offscreen canvas. | Done | Offscreen-capable particle renderer stub with reduced-motion no-op |
 | 66 | Asset Pipeline & Visuals | Add enemy defeat animation frames with easing. | Done | Canvas renderer spawns eased defeat bursts with palette-matched rings and spikes |
 | 67 | Asset Pipeline & Visuals | Morph castle visuals across upgrade levels. | Not Started |  |
 | 68 | Asset Pipeline & Visuals | Overlay ambient starfield/parallax background effects. | Done | Starfield layer with twinkling particles now renders behind the battlefield |
@@ -104,8 +104,8 @@
 | 94 | QA & Testing | Implement visual regression harness for HUD layout snapshots. | Done | Playwright visual project captures hud-main/options/tutorial-summary/wave-scorecard with baselines stored in `baselines/visual` |
 | 95 | QA & Testing | Include dev-server monitor smoke test in CI. | Done | CI smoke job runs startMonitored + dev monitor artifacts |
 | 96 | QA & Testing | Fuzz test typing input buffer for invalid characters/timing. | Done | TypingSystem fuzz tests cover invalid chars, mixed input, purge/reset behaviors |
-| 97 | QA & Testing | Automate tutorial summary modal snapshot tests. | Not Started |  |
-| 98 | QA & Testing | Add soak test that alternates tutorial replay/skip, verifying persistence. | Not Started |  |
+| 97 | QA & Testing | Automate tutorial summary modal snapshot tests. | Done | Tutorial summary overlay snapshot test locks stat text and CTA wiring |
+| 98 | QA & Testing | Add soak test that alternates tutorial replay/skip, verifying persistence. | Done | Replay/skip soak loops tutorial completion/version and validates persistence |
 | 99 | QA & Testing | Create CLI to replay deterministic castle breach scenario for regression. | Done | `node scripts/castleBreachReplay.mjs` simulates the breach and emits a timeline artifact |
 | 100 | QA & Testing | Track tutorials completed per session in QA dashboard. | Not Started |  |
 

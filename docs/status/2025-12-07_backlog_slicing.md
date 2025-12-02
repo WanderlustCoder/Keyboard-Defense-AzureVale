@@ -47,4 +47,4 @@ Outlined manageable sub-tasks for remaining “Not Started” backlog items to e
   - Record summary of attempts and final completion flag.
 
 ## Next Action
-- #91 tutorial assist/replay coverage landed. Next priority: #97 tutorial summary modal snapshot tests to lock UI content and controls.
+- #97 tutorial summary snapshot and #98 replay/skip soak are covered. Next priority: #100 QA dashboard metric for tutorials-per-session to close out remaining tutorial QA items.
