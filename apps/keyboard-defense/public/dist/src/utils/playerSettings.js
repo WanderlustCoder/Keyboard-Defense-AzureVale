@@ -1,5 +1,5 @@
 export const PLAYER_SETTINGS_STORAGE_KEY = "keyboard-defense:player-settings";
-export const PLAYER_SETTINGS_VERSION = 21;
+export const PLAYER_SETTINGS_VERSION = 22;
 const DEFAULT_UPDATED_AT = "1970-01-01T00:00:00.000Z";
 const HUD_FONT_SCALE_MIN = 0.85;
 const HUD_FONT_SCALE_MAX = 1.3;
@@ -31,6 +31,7 @@ const BASE_DEFAULT_SETTINGS = {
     readableFontEnabled: false,
     dyslexiaFontEnabled: false,
     dyslexiaSpacingEnabled: false,
+    backgroundBrightness: 1,
     colorblindPaletteEnabled: false,
     audioIntensity: DEFAULT_AUDIO_INTENSITY,
     telemetryEnabled: false,
@@ -61,6 +62,7 @@ export function createDefaultPlayerSettings() {
         readableFontEnabled: false,
         dyslexiaFontEnabled: false,
         dyslexiaSpacingEnabled: false,
+        backgroundBrightness: 1,
         colorblindPaletteEnabled: false,
         telemetryEnabled: false,
         eliteAffixesEnabled: true,
@@ -115,6 +117,9 @@ export function readPlayerSettings(storage) {
         const dyslexiaSpacingEnabled = typeof parsed.dyslexiaSpacingEnabled === "boolean"
             ? parsed.dyslexiaSpacingEnabled
             : fallback.dyslexiaSpacingEnabled;
+        const backgroundBrightness = typeof parsed.backgroundBrightness === "number"
+            ? parsed.backgroundBrightness
+            : fallback.backgroundBrightness;
         const colorblindPaletteEnabled = typeof parsed.colorblindPaletteEnabled === "boolean"
             ? parsed.colorblindPaletteEnabled
             : fallback.colorblindPaletteEnabled;
@@ -166,6 +171,7 @@ export function readPlayerSettings(storage) {
             readableFontEnabled,
             dyslexiaFontEnabled,
             dyslexiaSpacingEnabled,
+            backgroundBrightness,
             colorblindPaletteEnabled,
             audioIntensity,
             telemetryEnabled,
@@ -232,6 +238,9 @@ export function withPatchedPlayerSettings(current, patch) {
         dyslexiaSpacingEnabled: typeof patch.dyslexiaSpacingEnabled === "boolean"
             ? patch.dyslexiaSpacingEnabled
             : current.dyslexiaSpacingEnabled,
+        backgroundBrightness: typeof patch.backgroundBrightness === "number"
+            ? patch.backgroundBrightness
+            : current.backgroundBrightness,
         colorblindPaletteEnabled: typeof patch.colorblindPaletteEnabled === "boolean"
             ? patch.colorblindPaletteEnabled
             : current.colorblindPaletteEnabled,

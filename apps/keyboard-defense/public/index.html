@@ -748,6 +748,22 @@
             <input id="options-colorblind-toggle" type="checkbox" />
             <span class="option-toggle-label">Colorblind Palette</span>
           </label>
+          <label class="option-toggle option-range">
+            <span class="option-toggle-label">Background Brightness</span>
+            <input
+              id="options-bg-brightness"
+              type="range"
+              min="0.9"
+              max="1.1"
+              step="0.02"
+              value="1"
+              aria-label="Background brightness"
+            />
+            <span class="option-range-value" id="options-bg-brightness-value">100%</span>
+            <span class="option-toggle-help">
+              Lighten or darken UI backgrounds for comfort; unaffected by low-graphics.
+            </span>
+          </label>
           <label class="option-toggle option-select">
             <span class="option-toggle-label">Defeat Animations</span>
             <select id="options-defeat-animation" aria-label="Defeat animation mode">

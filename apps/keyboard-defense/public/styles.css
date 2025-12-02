@@ -34,6 +34,7 @@
     "Arial Rounded MT Bold", "Verdana", sans-serif;
   --dyslexia-letter-spacing: 0.06em;
   --dyslexia-line-height: 1.25;
+  --bg-brightness: 1;
 }
 
 :root[data-colorblind-palette="true"] {
@@ -67,6 +68,7 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+  filter: brightness(var(--bg-brightness, 1));
 }
 
 #loading-screen {

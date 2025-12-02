@@ -61,6 +61,9 @@ const AUDIO_INTENSITY_MAX = 1.5;
 const AUDIO_INTENSITY_DEFAULT = 1;
 const CANVAS_BASE_WIDTH = 960;
 const CANVAS_BASE_HEIGHT = 540;
+const BG_BRIGHTNESS_MIN = 0.9;
+const BG_BRIGHTNESS_MAX = 1.1;
+const BG_BRIGHTNESS_DEFAULT = 1;
 const LANE_LABELS = ["A", "B", "C", "D", "E"];
 const CANVAS_RESIZE_FADE_MS = 250;
 const CANVAS_RESOLUTION_HOLD_MS = 70;
@@ -159,6 +162,7 @@ export class GameController {
     this.readableFontEnabled = false;
     this.dyslexiaFontEnabled = false;
     this.dyslexiaSpacingEnabled = false;
+    this.backgroundBrightness = BG_BRIGHTNESS_DEFAULT;
     this.colorblindPaletteEnabled = false;
     this.loadingScreen =
       typeof document !== "undefined"
@@ -444,6 +448,8 @@ export class GameController {
           dyslexiaFontToggle: "options-dyslexia-font-toggle",
           dyslexiaSpacingToggle: "options-dyslexia-spacing-toggle",
           colorblindPaletteToggle: "options-colorblind-toggle",
+          backgroundBrightnessSlider: "options-bg-brightness",
+          backgroundBrightnessValue: "options-bg-brightness-value",
           fontScaleSelect: "options-font-scale",
           defeatAnimationSelect: "options-defeat-animation",
           telemetryToggle: "options-telemetry-toggle",
@@ -520,6 +526,7 @@ export class GameController {
         onDyslexiaFontToggle: (enabled) => this.setDyslexiaFontEnabled(enabled),
         onDyslexiaSpacingToggle: (enabled) => this.setDyslexiaSpacingEnabled(enabled),
         onColorblindPaletteToggle: (enabled) => this.setColorblindPaletteEnabled(enabled),
+        onBackgroundBrightnessChange: (value) => this.setBackgroundBrightness(value),
         onDefeatAnimationModeChange: (mode) => this.setDefeatAnimationMode(mode),
         onHudFontScaleChange: (scale) => this.setHudFontScale(scale),
         onFullscreenToggle: (next) => this.toggleFullscreen(next),
@@ -1543,6 +1550,21 @@ export class GameController {
     }
     return changed;
   }
+  setBackgroundBrightness(value, options = {}) {
+    const normalized = this.normalizeBackgroundBrightness(value);
+    const changed = Math.abs(normalized - this.backgroundBrightness) > 0.001;
+    this.backgroundBrightness = normalized;
+    this.applyBackgroundBrightnessSetting(normalized);
+    if (!options.silent && changed) {
+      const percent = Math.round(normalized * 100);
+      this.hud.appendLog(`Background brightness set to ${percent}%`);
+    }
+    this.updateOptionsOverlayState();
+    if (options.persist !== false && changed) {
+      this.persistPlayerSettings({ backgroundBrightness: normalized });
+    }
+    return changed;
+  }
   setSoundVolume(volume, options = {}) {
     const normalized = this.normalizeSoundVolume(volume);
     const changed = Math.abs(normalized - this.soundVolume) > 0.001;
@@ -1755,6 +1777,11 @@ export class GameController {
     if (!Number.isFinite(value)) return 1;
     return Math.min(1.1, Math.max(0.9, Math.round(value * 100) / 100));
   }
+  normalizeBackgroundBrightness(value) {
+    if (!Number.isFinite(value)) return BG_BRIGHTNESS_DEFAULT;
+    const clamped = Math.min(BG_BRIGHTNESS_MAX, Math.max(BG_BRIGHTNESS_MIN, value));
+    return Math.round(clamped * 100) / 100;
+  }
   normalizeSoundVolume(value) {
     if (!Number.isFinite(value)) {
       return SOUND_VOLUME_DEFAULT;
@@ -1785,6 +1812,7 @@ export class GameController {
       readableFontEnabled: this.readableFontEnabled,
       dyslexiaFontEnabled: this.dyslexiaFontEnabled,
       dyslexiaSpacingEnabled: this.dyslexiaSpacingEnabled,
+      backgroundBrightness: this.backgroundBrightness,
       colorblindPaletteEnabled: this.colorblindPaletteEnabled,
       hudFontScale: this.hudFontScale,
       defeatAnimationMode: this.defeatAnimationMode,
@@ -1862,6 +1890,13 @@ export class GameController {
     const body = document.body;
     if (body) {
       body.dataset.dyslexiaSpacing = enabled ? "true" : "false";
+    }
+  }
+  applyBackgroundBrightnessSetting(value) {
+    if (typeof document === "undefined") return;
+    const root = document.documentElement;
+    if (root && root.style) {
+      root.style.setProperty("--bg-brightness", value.toString());
     }
   }
   applyColorblindPaletteSetting(enabled) {
@@ -3837,6 +3872,10 @@ export class GameController {
       silent: true,
       persist: false,
       render: false
+    });
+    this.setBackgroundBrightness(stored.backgroundBrightness ?? BG_BRIGHTNESS_DEFAULT, {
+      silent: true,
+      persist: false
     });
     this.setHudFontScale(stored.hudFontScale ?? 1, {
       silent: true,
