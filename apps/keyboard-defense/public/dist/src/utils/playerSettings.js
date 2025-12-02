@@ -1,5 +1,5 @@
 export const PLAYER_SETTINGS_STORAGE_KEY = "keyboard-defense:player-settings";
-export const PLAYER_SETTINGS_VERSION = 19;
+export const PLAYER_SETTINGS_VERSION = 20;
 const DEFAULT_UPDATED_AT = "1970-01-01T00:00:00.000Z";
 const HUD_FONT_SCALE_MIN = 0.85;
 const HUD_FONT_SCALE_MAX = 1.3;
@@ -11,6 +11,8 @@ const AUDIO_INTENSITY_MAX = 1.5;
 const DEFAULT_AUDIO_INTENSITY = 1;
 const DEFAULT_PRESET_SAVED_AT = "1970-01-01T00:00:00.000Z";
 const MAX_TURRET_LEVEL = 10;
+const TEXT_SIZE_MIN = 0.9;
+const TEXT_SIZE_MAX = 1.1;
 export const TURRET_PRESET_IDS = ["preset-a", "preset-b", "preset-c"];
 const ALLOWED_TURRET_PRESET_IDS = TURRET_PRESET_IDS;
 const DIAGNOSTICS_SECTION_IDS = ["gold-events", "castle-passives", "turret-dps"];
@@ -24,6 +26,7 @@ const BASE_DEFAULT_SETTINGS = {
     lowGraphicsEnabled: false,
     virtualKeyboardEnabled: false,
     hapticsEnabled: false,
+    textSizeScale: 1,
     checkeredBackgroundEnabled: false,
     readableFontEnabled: false,
     dyslexiaFontEnabled: false,
@@ -110,6 +113,9 @@ export function readPlayerSettings(storage) {
         const colorblindPaletteEnabled = typeof parsed.colorblindPaletteEnabled === "boolean"
             ? parsed.colorblindPaletteEnabled
             : fallback.colorblindPaletteEnabled;
+        const textSizeScale = typeof parsed.textSizeScale === "number"
+            ? normalizeTextSizeScale(parsed.textSizeScale)
+            : fallback.textSizeScale;
         const hapticsEnabled = typeof parsed.hapticsEnabled === "boolean"
             ? parsed.hapticsEnabled
             : fallback.hapticsEnabled;
@@ -150,6 +156,7 @@ export function readPlayerSettings(storage) {
             lowGraphicsEnabled,
             virtualKeyboardEnabled,
             hapticsEnabled,
+            textSizeScale,
             checkeredBackgroundEnabled,
             readableFontEnabled,
             dyslexiaFontEnabled,
@@ -201,6 +208,9 @@ export function withPatchedPlayerSettings(current, patch) {
         hapticsEnabled: typeof patch.hapticsEnabled === "boolean"
             ? patch.hapticsEnabled
             : current.hapticsEnabled,
+        textSizeScale: typeof patch.textSizeScale === "number"
+            ? normalizeTextSizeScale(patch.textSizeScale)
+            : current.textSizeScale,
         virtualKeyboardEnabled: typeof patch.virtualKeyboardEnabled === "boolean"
             ? patch.virtualKeyboardEnabled
             : current.virtualKeyboardEnabled,
@@ -473,6 +483,13 @@ function normalizeHudLayoutPreference(value) {
         return value;
     }
     return null;
+}
+function normalizeTextSizeScale(value) {
+    if (typeof value !== "number" || !Number.isFinite(value)) {
+        return 1;
+    }
+    const clamped = Math.min(TEXT_SIZE_MAX, Math.max(TEXT_SIZE_MIN, value));
+    return Math.round(clamped * 100) / 100;
 }
 function normalizeSoundVolume(value) {
     if (typeof value !== "number" || !Number.isFinite(value)) {

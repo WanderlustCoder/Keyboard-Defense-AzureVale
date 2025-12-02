@@ -122,6 +122,7 @@ export class GameController {
         this.checkeredBackgroundEnabled = false;
         this.virtualKeyboardEnabled = false;
         this.hapticsEnabled = false;
+        this.textSizeScale = 1;
         this.readableFontEnabled = false;
         this.dyslexiaFontEnabled = false;
         this.colorblindPaletteEnabled = false;
@@ -397,6 +398,7 @@ export class GameController {
                 virtualKeyboardToggle: "options-virtual-keyboard-toggle",
                 lowGraphicsToggle: "options-low-graphics-toggle",
                 hapticsToggle: "options-haptics-toggle",
+                textSizeSelect: "options-text-size",
                 reducedMotionToggle: "options-reduced-motion-toggle",
                 checkeredBackgroundToggle: "options-checkered-bg-toggle",
                 readableFontToggle: "options-readable-font-toggle",
@@ -467,6 +469,7 @@ export class GameController {
             onDiagnosticsToggle: (visible) => this.setDiagnosticsVisible(visible),
             onLowGraphicsToggle: (enabled) => this.setLowGraphicsEnabled(enabled),
             onVirtualKeyboardToggle: (enabled) => this.setVirtualKeyboardEnabled(enabled),
+            onTextSizeChange: (scale) => this.setTextSizeScale(scale),
             onHapticsToggle: (enabled) => this.setHapticsEnabled(enabled),
             onWaveScorecardContinue: () => this.handleWaveScorecardContinue(),
             onReducedMotionToggle: (enabled) => this.setReducedMotionEnabled(enabled),
@@ -1610,6 +1613,22 @@ export class GameController {
             this.render();
         }
     }
+    setTextSizeScale(scale, options = {}) {
+        const normalized = this.normalizeTextSizeScale(scale);
+        const changed = Math.abs(normalized - this.textSizeScale) > 0.001;
+        this.textSizeScale = normalized;
+        this.applyTextSizeScaleSetting(normalized);
+        if (options.persist !== false && changed) {
+            this.persistPlayerSettings({ textSizeScale: normalized });
+        }
+        this.updateOptionsOverlayState();
+        if (!options.silent && changed) {
+            this.hud.appendLog(`Text size set to ${Math.round(normalized * 100)}%`);
+        }
+        if (options.render !== false && changed) {
+            this.render();
+        }
+    }
     cycleHudFontScale(direction = 1) {
         const nextPreset = getNextHudFontPreset(this.hudFontScale, direction);
         this.setHudFontScale(nextPreset.value);
@@ -1640,6 +1659,11 @@ export class GameController {
     normalizeHudFontScale(value) {
         return normalizeHudFontScaleValue(value);
     }
+    normalizeTextSizeScale(value) {
+        if (!Number.isFinite(value))
+            return 1;
+        return Math.min(1.1, Math.max(0.9, Math.round(value * 100) / 100));
+    }
     normalizeSoundVolume(value) {
         if (!Number.isFinite(value)) {
             return SOUND_VOLUME_DEFAULT;
@@ -1665,6 +1689,7 @@ export class GameController {
             lowGraphicsEnabled: this.lowGraphicsEnabled,
             virtualKeyboardEnabled: this.virtualKeyboardEnabled,
             hapticsEnabled: this.hapticsEnabled,
+            textSizeScale: this.textSizeScale,
             reducedMotionEnabled: this.reducedMotionEnabled,
             checkeredBackgroundEnabled: this.checkeredBackgroundEnabled,
             readableFontEnabled: this.readableFontEnabled,
@@ -1786,6 +1811,11 @@ export class GameController {
     }
     applyHudFontScaleSetting(scale) {
         this.hud.setHudFontScale(scale);
+    }
+    applyTextSizeScaleSetting(scale) {
+        if (typeof document !== "undefined" && document.documentElement) {
+            document.documentElement.style.setProperty("--text-size-scale", scale.toString());
+        }
     }
     setTelemetryEnabled(enabled, options = {}) {
         const silent = Boolean(options.silent);
@@ -2579,6 +2609,9 @@ export class GameController {
             patch.dyslexiaFontEnabled === this.playerSettings.dyslexiaFontEnabled;
         const colorblindUnchanged = patch.colorblindPaletteEnabled === undefined ||
             patch.colorblindPaletteEnabled === this.playerSettings.colorblindPaletteEnabled;
+        const textSizeUnchanged = patch.textSizeScale === undefined ||
+            Math.abs(this.normalizeTextSizeScale(patch.textSizeScale) - this.playerSettings.textSizeScale) <=
+                0.001;
         const hapticsUnchanged = patch.hapticsEnabled === undefined ||
             patch.hapticsEnabled === this.playerSettings.hapticsEnabled;
         const defeatAnimationModeUnchanged = patch.defeatAnimationMode === undefined ||
@@ -2609,6 +2642,7 @@ export class GameController {
             readableFontUnchanged &&
             dyslexiaFontUnchanged &&
             colorblindUnchanged &&
+            textSizeUnchanged &&
             hapticsUnchanged &&
             virtualKeyboardUnchanged &&
             lowGraphicsUnchanged &&
@@ -3526,6 +3560,11 @@ export class GameController {
             render: false
         });
         this.setReducedMotionEnabled(stored.reducedMotionEnabled, {
+            silent: true,
+            persist: false,
+            render: false
+        });
+        this.setTextSizeScale(stored.textSizeScale ?? 1, {
             silent: true,
             persist: false,
             render: false

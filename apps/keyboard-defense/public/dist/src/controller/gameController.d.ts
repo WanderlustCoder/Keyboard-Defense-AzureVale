@@ -65,6 +65,7 @@ export declare class GameController {
     resolveDefeatBurstMode(enemy: any): "sprite" | "procedural";
     shouldUseSpriteForTier(tierId: any): boolean;
     setHudFontScale(scale: any, options?: {}): void;
+    setTextSizeScale(scale: any, options?: {}): void;
     cycleHudFontScale(direction?: number): void;
     buildTelemetryExport(includeQueue?: boolean): {
         available: boolean;
@@ -74,6 +75,7 @@ export declare class GameController {
         soundIntensity: any;
     };
     normalizeHudFontScale(value: any): number;
+    normalizeTextSizeScale(value: any): number;
     normalizeSoundVolume(value: any): number;
     normalizeAudioIntensity(value: any): number;
     updateOptionsOverlayState(): void;
@@ -87,6 +89,7 @@ export declare class GameController {
     handleBreakReminderSnooze(): void;
     handleBreakReset(): void;
     applyHudFontScaleSetting(scale: any): void;
+    applyTextSizeScaleSetting(scale: any): void;
     setTelemetryEnabled(enabled: any, options?: {}): boolean;
     toggleTelemetry(options?: {}): boolean;
     setTelemetryEndpoint(endpoint: any, options?: {}): void;

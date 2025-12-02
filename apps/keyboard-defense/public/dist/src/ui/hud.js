@@ -342,6 +342,7 @@ export class HudView {
                 ? document.getElementById(rootIds.optionsOverlay.virtualKeyboardToggle)
                 : null;
             const lowGraphicsToggle = document.getElementById(rootIds.optionsOverlay.lowGraphicsToggle);
+            const textSizeSelect = document.getElementById(rootIds.optionsOverlay.textSizeSelect);
             const hapticsToggle = rootIds.optionsOverlay.hapticsToggle
                 ? document.getElementById(rootIds.optionsOverlay.hapticsToggle)
                 : null;
@@ -401,6 +402,7 @@ export class HudView {
                     diagnosticsToggle,
                     virtualKeyboardToggle: virtualKeyboardToggle instanceof HTMLInputElement ? virtualKeyboardToggle : undefined,
                     lowGraphicsToggle: lowGraphicsToggle instanceof HTMLInputElement ? lowGraphicsToggle : undefined,
+                    textSizeSelect: textSizeSelect instanceof HTMLSelectElement ? textSizeSelect : undefined,
                     hapticsToggle: hapticsToggle instanceof HTMLInputElement ? hapticsToggle : undefined,
                     reducedMotionToggle,
                     checkeredBackgroundToggle,
@@ -508,6 +510,17 @@ export class HudView {
                         if (this.syncingOptionToggles)
                             return;
                         this.callbacks.onLowGraphicsToggle?.(this.optionsOverlay.lowGraphicsToggle.checked);
+                    });
+                }
+                if (this.optionsOverlay.textSizeSelect) {
+                    this.optionsOverlay.textSizeSelect.addEventListener("change", () => {
+                        if (this.syncingOptionToggles)
+                            return;
+                        const rawValue = this.getSelectValue(this.optionsOverlay.textSizeSelect);
+                        const parsed = Number.parseFloat(rawValue ?? "1");
+                        if (Number.isFinite(parsed)) {
+                            this.callbacks.onTextSizeChange?.(parsed);
+                        }
                     });
                 }
                 if (this.optionsOverlay.hapticsToggle) {
@@ -930,6 +943,9 @@ export class HudView {
         }
         if (this.optionsOverlay.lowGraphicsToggle) {
             this.optionsOverlay.lowGraphicsToggle.checked = state.lowGraphicsEnabled;
+        }
+        if (this.optionsOverlay.textSizeSelect && state.textSizeScale !== undefined) {
+            this.setSelectValue(this.optionsOverlay.textSizeSelect, state.textSizeScale.toString());
         }
         if (this.optionsOverlay.hapticsToggle && state.hapticsEnabled !== undefined) {
             this.optionsOverlay.hapticsToggle.checked = state.hapticsEnabled;
