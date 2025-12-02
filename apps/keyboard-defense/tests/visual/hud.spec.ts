@@ -78,6 +78,38 @@ async function captureWaveScorecard(page: Page) {
   await page.waitForTimeout(400);
 }
 
+async function captureLoadingScreen(page: Page) {
+  await page.evaluate(() => {
+    const container = document.getElementById("loading-screen");
+    const status = document.getElementById("loading-status");
+    const tip = document.getElementById("loading-tip");
+    if (container) {
+      container.dataset.visible = "true";
+      container.setAttribute("aria-busy", "true");
+    }
+    if (status) status.textContent = "Loading pixel defenders...";
+    if (tip) tip.textContent = "Keep wrists relaxed and float your fingers above home row.";
+  });
+  await page.waitForTimeout(200);
+}
+
+async function captureCapsLockWarning(page: Page) {
+  await page.evaluate(() => {
+    const warning = document.getElementById("caps-lock-warning");
+    if (warning) {
+      warning.dataset.visible = "true";
+      warning.setAttribute("aria-hidden", "false");
+      warning.textContent = "Caps Lock is ON";
+    }
+    const input = document.getElementById("typing-input");
+    if (input instanceof HTMLInputElement) {
+      input.focus();
+      input.value = "";
+    }
+  });
+  await page.waitForTimeout(200);
+}
+
 test.describe("HUD visual regression", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/", { waitUntil: "networkidle" });
@@ -106,6 +138,16 @@ test.describe("HUD visual regression", () => {
     await captureWaveScorecard(page);
     await expect(page).toHaveScreenshot("wave-scorecard.png", SCREENSHOT_OPTIONS);
     await page.evaluate(() => window.keyboardDefense?.hideWaveScorecard?.());
+  });
+
+  test("loading screen screenshot", async ({ page }) => {
+    await captureLoadingScreen(page);
+    await expect(page).toHaveScreenshot("loading-screen.png", SCREENSHOT_OPTIONS);
+  });
+
+  test("caps lock warning screenshot", async ({ page }) => {
+    await captureCapsLockWarning(page);
+    await expect(page).toHaveScreenshot("caps-lock-warning.png", SCREENSHOT_OPTIONS);
   });
 });
 
