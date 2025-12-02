@@ -39,6 +39,11 @@ export interface CastleLevelConfig {
   upgradeCost: number | null;
   unlockSlots: number;
   goldBonusPercent: number;
+  visual?: {
+    fill: string;
+    border: string;
+    accent: string;
+  };
 }
 
 type TurretLevelEffectKind = "slow" | "burn";
@@ -188,7 +193,8 @@ export const defaultConfig: GameConfig = {
       armor: 0,
       upgradeCost: 180,
       unlockSlots: 2,
-      goldBonusPercent: 0
+      goldBonusPercent: 0,
+      visual: { fill: "#475569", border: "#1f2937", accent: "#22d3ee" }
     },
     {
       level: 2,
@@ -197,7 +203,8 @@ export const defaultConfig: GameConfig = {
       armor: 1,
       upgradeCost: 320,
       unlockSlots: 3,
-      goldBonusPercent: 0.05
+      goldBonusPercent: 0.05,
+      visual: { fill: "#4338ca", border: "#1e1b4b", accent: "#a5b4fc" }
     },
     {
       level: 3,
@@ -206,7 +213,8 @@ export const defaultConfig: GameConfig = {
       armor: 2,
       upgradeCost: 450,
       unlockSlots: 4,
-      goldBonusPercent: 0.08
+      goldBonusPercent: 0.08,
+      visual: { fill: "#2563eb", border: "#0f172a", accent: "#7dd3fc" }
     },
     {
       level: 4,
@@ -215,7 +223,8 @@ export const defaultConfig: GameConfig = {
       armor: 3,
       upgradeCost: null,
       unlockSlots: 5,
-      goldBonusPercent: 0.12
+      goldBonusPercent: 0.12,
+      visual: { fill: "#0ea5e9", border: "#0b1120", accent: "#38bdf8" }
     }
   ],
   turretArchetypes: {

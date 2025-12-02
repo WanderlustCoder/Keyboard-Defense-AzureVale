@@ -12,6 +12,7 @@ import { SpriteRenderer } from "./spriteRenderer.js";
 import { resolveLetterColors, type WordHighlightPalette } from "./wordHighlighter.js";
 import { defaultStarfieldConfig, type StarfieldConfig } from "../config/starfield.js";
 import { type StarfieldParallaxState } from "../utils/starfield.js";
+import { resolveCastlePalette } from "./castlePalette.js";
 
 const PROJECTILE_COLORS: Record<TurretTypeId, string> = {
   arrow: "#38bdf8",
@@ -657,14 +658,15 @@ export class CanvasRenderer {
     const x = this.width * 0.85;
     const y = (this.height - castleHeight) / 2;
 
-    this.ctx.fillStyle = "#475569";
+    const palette = resolveCastlePalette(this.config, state.castle.level);
+    this.ctx.fillStyle = palette.fill;
     this.ctx.fillRect(x, y, castleWidth, castleHeight);
 
     const hpRatio = Math.max(0, state.castle.health / state.castle.maxHealth);
-    this.ctx.fillStyle = "#22d3ee";
+    this.ctx.fillStyle = palette.accent;
     this.ctx.fillRect(x, y + castleHeight * (1 - hpRatio), castleWidth, castleHeight * hpRatio);
 
-    this.ctx.strokeStyle = "#1f2937";
+    this.ctx.strokeStyle = palette.border;
     this.ctx.lineWidth = 4;
     this.ctx.strokeRect(x, y, castleWidth, castleHeight);
   }
