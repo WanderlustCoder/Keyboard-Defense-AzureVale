@@ -62,6 +62,7 @@
     "wave:benchmark": "node ./scripts/waveBenchmark.mjs",
     "wave:edit": "node ./scripts/waves/editConfig.mjs",
     "wave:preview": "node ./scripts/waves/previewConfig.mjs",
+    "wave:preview:open": "npm run wave:preview -- --open",
     "task:build": "npm run build",
     "task:unit": "node ./scripts/unit.mjs",
     "task:integration": "node ./scripts/integration.mjs",

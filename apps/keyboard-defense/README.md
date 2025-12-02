@@ -78,7 +78,7 @@ Want to validate the start/stop lifecycle itself? `npm run serve:start-smoke` fo
   - `npm run wave:edit -- --input config/waves.designer.json --summarize --no-write` (validate + summarize).
   - Apply feature toggles: `npm run wave:edit -- --set-toggle evacuationEvents=false`.
 - Live preview for designers:
-  - `npm run wave:preview -- --config config/waves.designer.json --open`
+  - `npm run wave:preview -- --config config/waves.designer.json --open` (or `npm run wave:preview:open`)
   - Features: lane filters, event-type toggles (spawns/hazards/dynamic/evac/boss), timelines, search tokens, SSE auto-reload when config or schema changes.
   - Validation errors render inline so you can fix the file and refresh instantly.
 - Evacuation events avoid lanes already booked by hazards or dynamic events; if all lanes are occupied, the evacuation is skipped for that wave.

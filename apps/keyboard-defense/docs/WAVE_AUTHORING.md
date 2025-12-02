@@ -12,7 +12,8 @@ This guide is for designers and engineers who need to edit wave configs, validat
 
 ## Live preview
 - Launch the preview server (opens browser):  
-  `npm run wave:preview -- --config config/waves.designer.json --open`
+  `npm run wave:preview -- --config config/waves.designer.json --open`  
+  or `npm run wave:preview:open` for the shorthand
 - Features:
   - Timeline bars per wave with lane/event filters (spawns, hazards, dynamic, evac, boss).
   - Search for tiers/affixes/lanes/evac words; live-reloads on config/schema changes (SSE).
