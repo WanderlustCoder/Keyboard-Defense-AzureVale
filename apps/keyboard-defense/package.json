@@ -48,6 +48,7 @@
     "analytics:asset-integrity": "node ./scripts/ci/assetIntegritySummary.mjs",
     "logs:summary": "node ./scripts/ci/runtimeLogSummary.mjs",
     "telemetry:typing-drills": "node ./scripts/ci/typingDrillTelemetrySummary.mjs",
+    "lint:wordlists": "node ./scripts/lintWordlists.mjs",
     "gold:percentiles:refresh": "node ./scripts/ci/goldPercentileBaseline.mjs artifacts/summaries/gold-summary-report*.json ../../docs/codex_pack/fixtures/gold-summary.json",
     "analytics:gold:delta": "node ./scripts/analytics/goldDeltaAggregator.mjs",
     "analytics:validate-schema": "node ./scripts/analytics/validate-schema.mjs",
