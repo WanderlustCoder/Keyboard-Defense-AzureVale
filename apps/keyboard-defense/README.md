@@ -33,6 +33,11 @@ npm run lint          # ESLint across src/, tests/, scripts/ (warnings fail the 
 npm run format:check  # Assert Prettier formatting without modifying files
 npm run build         # compile TypeScript to dist/ (invoked automatically by npm run test)
 npm run test          # clean, lint, format check, build, then run vitest --coverage
+
+# Visual Regression (Playwright)
+npm run test:visual:auto        # auto-start dev server (no build), run visual snapshots, stop afterward
+npm run test:visual:auto -- --update  # refresh baselines after intentional HUD/overlay changes
+npm run test:visual:auto -- --grep hud-main  # run a single visual spec
 ```
 
 ### Nightly workflows (manual dispatch)
