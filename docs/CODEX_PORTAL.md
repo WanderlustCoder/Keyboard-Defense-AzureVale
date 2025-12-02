@@ -59,6 +59,10 @@ npm run hooks:install    # installs pre-commit hook (SKIP_HOOKS=1 to skip)
 #   HOOKS_FAST=1 git commit ...   # run lint/format/pack/link only
 #   node apps/keyboard-defense/scripts/hooks/runChecks.mjs --fast
 
+# Visual regression
+npm run test:visual          # Playwright HUD/layout baselines
+npm run test:visual:update   # refresh baselines after intentional UI changes
+
 # Core Codex checks
 npm run lint
 npm run test
