@@ -241,6 +241,8 @@ export declare class GameController {
         typeId: any;
         level: number;
     };
+    scheduleAssetPrewarm(): void;
+    prewarmAtlasFrames(): Promise<void>;
     handleAssetImageLoaded(): void;
     waitForAssets(): Promise<void>;
     attachTypingDrillHooks(): void;

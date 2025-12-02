@@ -48,6 +48,8 @@ const LORE_VERSION = "v1";
 const SESSION_TIMER_TICK_MS = 1000;
 const BREAK_REMINDER_INTERVAL_MS = 20 * 60 * 1000;
 const BREAK_REMINDER_SNOOZE_MS = 10 * 60 * 1000;
+const ASSET_PREWARM_BATCH = 32;
+const ASSET_PREWARM_TIMEOUT_MS = 300;
 function svgCircleDataUri(primary, accent) {
     const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'>` +
         `<defs><radialGradient id='g' cx='50%' cy='40%' r='60%'>` +
@@ -249,6 +251,7 @@ export class GameController {
         this.assetReady = false;
         this.assetStartPending = false;
         this.assetReadyPromise = Promise.resolve();
+        this.assetPrewarmScheduled = false;
         this.assetLoaderUnsubscribe = this.assetLoader.onImageLoaded(() => {
             this.handleAssetImageLoaded();
         });
@@ -331,6 +334,7 @@ export class GameController {
             }
             setLoadingStatus("Finalizing battle prep...");
             this.syncDefeatAnimationPreferences();
+            this.scheduleAssetPrewarm();
             if (this.loadingScreen) {
                 this.loadingScreen.hide();
             }
@@ -342,6 +346,7 @@ export class GameController {
                 this.assetLoaderUnsubscribe();
                 this.assetLoaderUnsubscribe = null;
             }
+            this.scheduleAssetPrewarm();
             if (this.loadingScreen) {
                 this.loadingScreen.hide();
             }
@@ -3253,6 +3258,47 @@ export class GameController {
             typeId,
             level
         };
+    }
+    scheduleAssetPrewarm() {
+        if (this.assetPrewarmScheduled ||
+            !this.assetLoader ||
+            this.lowGraphicsEnabled ||
+            this.reducedMotionEnabled) {
+            return;
+        }
+        this.assetPrewarmScheduled = true;
+        const runner = () => {
+            void this.prewarmAtlasFrames().catch(() => undefined);
+        };
+        if (typeof requestIdleCallback === "function") {
+            requestIdleCallback(() => runner(), { timeout: ASSET_PREWARM_TIMEOUT_MS });
+            return;
+        }
+        setTimeout(() => runner(), 50);
+    }
+    async prewarmAtlasFrames() {
+        if (!this.assetLoader ||
+            typeof this.assetLoader.listAtlasKeys !== "function" ||
+            typeof this.assetLoader.resolveAtlasImage !== "function") {
+            return;
+        }
+        const atlasKeys = this.assetLoader.listAtlasKeys();
+        if (!atlasKeys || atlasKeys.length === 0) {
+            return;
+        }
+        const pending = [];
+        for (const key of atlasKeys.slice(0, ASSET_PREWARM_BATCH)) {
+            if (typeof this.assetLoader.getImage === "function" && this.assetLoader.getImage(key)) {
+                continue;
+            }
+            pending.push(this.assetLoader
+                .resolveAtlasImage(key)
+                .then(() => undefined)
+                .catch(() => undefined));
+        }
+        if (pending.length > 0) {
+            await Promise.allSettled(pending);
+        }
     }
     handleAssetImageLoaded() {
         if (!this.renderer) {
