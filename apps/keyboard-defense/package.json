@@ -25,6 +25,7 @@
     "start": "node ./scripts/devServer.mjs start",
     "serve:check": "node ./scripts/devServer.mjs check",
     "serve:status": "node ./scripts/devServer.mjs status",
+    "serve:open": "node ./scripts/openDevServer.mjs",
     "serve:stop": "node ./scripts/devServer.mjs stop",
     "serve:logs": "node ./scripts/devServer.mjs logs",
     "serve:monitor": "node ./scripts/devServer.mjs monitor",
