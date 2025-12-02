@@ -1,0 +1,8 @@
+{
+  "id": "punctuation-sentences",
+  "lesson": 6,
+  "introducedLetters": "abcdefghijklmnopqrstuvwxyz",
+  "allowedCharacters": ".,?!;:'\"- ",
+  "allowProper": false,
+  "words": ["attack!", "brace;", "hold line.", "ready?", "stay-alert"]
+}

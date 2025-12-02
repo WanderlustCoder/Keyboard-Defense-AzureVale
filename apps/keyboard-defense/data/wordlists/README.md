@@ -16,3 +16,5 @@ Add new lists alongside the lesson progression (home row → top row → bottom 
 - `lesson_mixed_review.json`
 - `numbers_basic.json`
 - `punctuation_basic.json`
+- `punctuation_sentences.json`
+- `castle_theme_basic.json`

@@ -1,0 +1,7 @@
+{
+  "id": "castle-theme-basic",
+  "lesson": 6,
+  "introducedLetters": "abcdefghijklmnopqrstuvwxyz",
+  "allowProper": false,
+  "words": ["banner", "bastion", "brick", "cannon", "castle", "gate", "guard", "lantern", "moat", "tower"]
+}
