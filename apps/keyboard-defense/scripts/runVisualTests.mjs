@@ -100,9 +100,9 @@ async function main() {
     exitCode = 1;
   } finally {
     const serverWasStartedByScript = Boolean(startedState);
-    if (serverWasStartedByScript && !keepAlive) {
+    if (serverWasStartedByScript && !options.keepAlive) {
       await stopServer({ quiet: true });
-    } else if (serverWasStartedByScript && keepAlive) {
+    } else if (serverWasStartedByScript && options.keepAlive) {
       console.log(
         `Dev server left running at ${startedState?.url ?? "http://localhost:4173"} (pid ${
           startedState?.pid ?? "unknown"
