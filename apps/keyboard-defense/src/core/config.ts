@@ -363,6 +363,15 @@ export const defaultConfig: GameConfig = {
     }
   },
   enemyTiers: {
+    dummy: {
+      id: "dummy",
+      wordLength: [5, 6],
+      health: 500,
+      speed: 0,
+      damage: 0,
+      reward: 0,
+      taunt: "Training construct deployed."
+    },
     grunt: { id: "grunt", wordLength: [3, 4], health: 30, speed: 0.05, damage: 12, reward: 18 },
     runner: { id: "runner", wordLength: [3, 5], health: 24, speed: 0.075, damage: 14, reward: 20 },
     brute: {

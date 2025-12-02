@@ -41,7 +41,7 @@
 | 37 | Enemy & Wave Design | Introduce lane hazards (fog/storms) affecting visibility/accuracy. | Not Started |  |
 | 38 | Enemy & Wave Design | Provide JSON schema/editor for designer-authored wave configs. | Not Started |  |
 | 39 | Enemy & Wave Design | Calculate difficulty ratings per wave and surface in analytics overlay. | Done | Diagnostics overlay shows computed wave threat rating |
-| 40 | Enemy & Wave Design | Spawn practice dummy enemy for turret DPS tuning in debug mode. | Not Started |  |
+| 40 | Enemy & Wave Design | Spawn practice dummy enemy for turret DPS tuning in debug mode. | Done | Debug/main-menu toggle spawns stationary dummy target; clear button removes |
 | 41 | Analytics & Telemetry | Expand analytics export to include tutorial metrics and summary history. | Done | Analytics export now includes tutorial state |
 | 42 | Analytics & Telemetry | Persist per-wave analytics snapshot history for in-session review. | Done | Wave summaries persisted for review |
 | 43 | Analytics & Telemetry | Build in-game analytics table accessible from debug panel. | Done | Debug viewer renders recent wave summaries with toggle |

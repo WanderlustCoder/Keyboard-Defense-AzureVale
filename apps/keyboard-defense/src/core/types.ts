@@ -414,6 +414,7 @@ export interface WaveSpawnPreview {
   order: number;
   affixes?: EliteAffixInstance[];
   shield?: number;
+  word?: string;
 }
 
 export interface AnalyticsUiSnapshot {

@@ -774,6 +774,12 @@ export class GameEngine {
     return this.enemySystem.spawn(this.state, { ...request, waveIndex, difficulty, affixes });
   }
 
+  removeEnemiesByTier(tierId: string): number {
+    const before = this.state.enemies.length;
+    this.state.enemies = this.state.enemies.filter((enemy) => enemy.tierId !== tierId);
+    return before - this.state.enemies.length;
+  }
+
   damageCastle(amount: number): void {
     const mitigated = Math.max(1, amount - this.state.castle.armor);
     this.state.castle.health = Math.max(0, this.state.castle.health - mitigated);

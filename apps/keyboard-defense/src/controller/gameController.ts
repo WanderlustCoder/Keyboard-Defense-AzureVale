@@ -911,6 +911,33 @@ export class GameController {
     this.engine.spawnEnemy(payload);
     this.render();
   }
+  spawnPracticeDummy(lane = 1) {
+    const clampedLane = Math.max(0, Math.min(2, Number.isFinite(lane) ? Number(lane) : 1));
+    const enemy = this.engine.spawnEnemy({
+      tierId: "dummy",
+      lane: clampedLane,
+      word: "practice",
+      order: 999
+    });
+    if (enemy) {
+      enemy.distance = 0.6;
+      enemy.speed = 0;
+      enemy.baseSpeed = 0;
+      enemy.damage = 0;
+      enemy.reward = 0;
+      this.hud.appendLog?.(`Practice dummy spawned in lane ${["A", "B", "C"][clampedLane] ?? clampedLane + 1}.`);
+    }
+    this.render();
+    return enemy?.id ?? null;
+  }
+  clearPracticeDummies() {
+    const removed = this.engine.removeEnemiesByTier("dummy");
+    if (removed > 0) {
+      this.hud.appendLog?.(`Removed ${removed} practice dummy${removed === 1 ? "" : "ies"}.`);
+    }
+    this.render();
+    return removed;
+  }
   grantGold(amount) {
     this.engine.grantGold(amount);
     this.render();
@@ -3422,6 +3449,8 @@ export class GameController {
     const crystalToggleButton = document.getElementById("debug-crystal-toggle");
     const eliteToggleButton = document.getElementById("debug-elite-toggle");
     const downgradeToggleButton = document.getElementById("debug-turret-downgrade");
+    const spawnDummyButton = document.getElementById("debug-spawn-dummy");
+    const clearDummiesButton = document.getElementById("debug-clear-dummies");
 
     const candidateTelemetryControls = {
       container:
@@ -3467,6 +3496,12 @@ export class GameController {
       );
     } else {
       this.debugDowngradeToggle = null;
+    }
+    if (spawnDummyButton instanceof HTMLButtonElement) {
+      spawnDummyButton.addEventListener("click", () => this.spawnPracticeDummy(1));
+    }
+    if (clearDummiesButton instanceof HTMLButtonElement) {
+      clearDummiesButton.addEventListener("click", () => this.clearPracticeDummies());
     }
 
     pause?.addEventListener("click", () => this.pause());
