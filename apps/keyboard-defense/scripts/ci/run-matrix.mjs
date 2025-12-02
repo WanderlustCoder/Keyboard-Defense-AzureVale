@@ -151,14 +151,18 @@ async function runTutorialMode(mode, matrixDir) {
     smokeSummaryPath,
     path.join(variantDir, `tutorial-${mode}-summary.json`)
   );
+  const tutorialAnalytics = tutorialData.analytics ?? {};
   return {
     mode,
     status: tutorialData.status ?? smokeSummary.status ?? "unknown",
     durationMs: deriveDurationMs(tutorialData, smokeSummary),
     startedAt: smokeSummary.startedAt ?? tutorialData.startedAt ?? null,
     finishedAt: smokeSummary.finishedAt ?? tutorialData.capturedAt ?? null,
-    skippedRuns: tutorialData.analytics?.skippedRuns ?? null,
-    assistsShown: tutorialData.analytics?.assistsShown ?? null,
+    attemptedRuns: tutorialAnalytics.attemptedRuns ?? null,
+    completedRuns: tutorialAnalytics.completedRuns ?? null,
+    replayedRuns: tutorialAnalytics.replayedRuns ?? null,
+    skippedRuns: tutorialAnalytics.skippedRuns ?? null,
+    assistsShown: tutorialAnalytics.assistsShown ?? null,
     failureReason: tutorialData.error ?? smokeSummary.error ?? null
   };
 }

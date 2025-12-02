@@ -107,6 +107,6 @@
 | 97 | QA & Testing | Automate tutorial summary modal snapshot tests. | Done | Tutorial summary overlay snapshot test locks stat text and CTA wiring |
 | 98 | QA & Testing | Add soak test that alternates tutorial replay/skip, verifying persistence. | Done | Replay/skip soak loops tutorial completion/version and validates persistence |
 | 99 | QA & Testing | Create CLI to replay deterministic castle breach scenario for regression. | Done | `node scripts/castleBreachReplay.mjs` simulates the breach and emits a timeline artifact |
-| 100 | QA & Testing | Track tutorials completed per session in QA dashboard. | Not Started |  |
+| 100 | QA & Testing | Track tutorials completed per session in QA dashboard. | Done | Static dashboard now surfaces tutorial completion counts/rate per session with coverage test |
 
 

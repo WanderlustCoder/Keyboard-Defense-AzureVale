@@ -5,6 +5,7 @@
  */
 import fs from "node:fs";
 import path from "node:path";
+import process from "node:process";
 import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -37,6 +38,88 @@ function readJson(file) {
     );
     return null;
   }
+}
+
+const pickNumber = (...values) => {
+  for (const value of values) {
+    if (value === undefined || value === null) continue;
+    const num = Number(value);
+    if (Number.isFinite(num)) return num;
+  }
+  return null;
+};
+
+function extractTutorialAnalytics(source) {
+  if (!source) return {};
+  const analytics =
+    source.analytics?.tutorial ??
+    source.analytics ??
+    source.tutorialAnalytics ??
+    source;
+  return {
+    attemptedRuns: pickNumber(
+      analytics?.attemptedRuns,
+      analytics?.attempted,
+      source.attemptedRuns
+    ),
+    completedRuns: pickNumber(
+      analytics?.completedRuns,
+      analytics?.completed,
+      source.completedRuns
+    ),
+    replayedRuns: pickNumber(analytics?.replayedRuns, source.replayedRuns),
+    skippedRuns: pickNumber(analytics?.skippedRuns, source.skippedRuns),
+    assistsShown: pickNumber(analytics?.assistsShown, source.assistsShown)
+  };
+}
+
+function deriveTutorialMetrics(sources = {}) {
+  const candidates = [];
+  if (sources.tutorialPayload) candidates.push(extractTutorialAnalytics(sources.tutorialPayload));
+  if (sources.smokeSummary) candidates.push(extractTutorialAnalytics(sources.smokeSummary));
+  if (Array.isArray(sources.ciMatrix?.tutorialRuns)) {
+    for (const run of sources.ciMatrix.tutorialRuns) {
+      candidates.push(extractTutorialAnalytics(run));
+    }
+  }
+  const pick = (key) => {
+    for (const entry of candidates) {
+      if (entry[key] !== null && entry[key] !== undefined) return entry[key];
+    }
+    return null;
+  };
+  const attemptedRuns = pick("attemptedRuns");
+  const completedRuns = pick("completedRuns");
+  const completionRate =
+    Number.isFinite(attemptedRuns) &&
+    Number.isFinite(completedRuns) &&
+    attemptedRuns > 0
+      ? completedRuns / attemptedRuns
+      : null;
+  return {
+    attemptedRuns,
+    completedRuns,
+    completionRate,
+    skippedRuns: pick("skippedRuns"),
+    assistsShown: pick("assistsShown"),
+    replayedRuns: pick("replayedRuns")
+  };
+}
+
+function buildPayload(sourceMap = SOURCE_MAP) {
+  const sources = {
+    smokeSummary: readJson(sourceMap.smokeSummary),
+    tutorialPayload: readJson(sourceMap.tutorialPayload),
+    ciMatrix: readJson(sourceMap.ciMatrix),
+    goldSummarySmoke: readJson(sourceMap.goldSummarySmoke),
+    goldSummaryE2E: readJson(sourceMap.goldSummaryE2E),
+    screenshotSummary: readJson(sourceMap.screenshotSummary)
+  };
+  return {
+    generatedAt: new Date().toISOString(),
+    sources,
+    tutorialMetrics: deriveTutorialMetrics(sources)
+  };
 }
 
 function buildHtml(payload) {
@@ -184,10 +267,49 @@ function buildHtml(payload) {
         return '<span class="status-pill ' + cls + '">' + (status ?? "unknown") + "</span>";
       };
 
+      const formatCompletion = (completed, attempted, rate) => {
+        const completedNum = Number(completed);
+        const attemptedNum = Number(attempted);
+        if (Number.isFinite(completedNum) && Number.isFinite(attemptedNum) && attemptedNum > 0) {
+          const pct = Number.isFinite(rate) ? rate * 100 : (completedNum / attemptedNum) * 100;
+          return completedNum + "/" + attemptedNum + " (" + pct.toFixed(1) + "%)";
+        }
+        if (Number.isFinite(completedNum)) return String(completedNum);
+        return "-";
+      };
+
       document.getElementById("generatedAt").textContent = formatDate(DATA.generatedAt);
 
       const tutorialTarget = document.getElementById("tutorial-content");
-      const smokeSummary = DATA.sources.smokeSummary ?? DATA.sources.tutorialPayload;
+      const tutorialPayload = DATA.sources.tutorialPayload;
+      const smokeSummary = DATA.sources.smokeSummary ?? tutorialPayload;
+      const tutorialMetrics = DATA.tutorialMetrics ?? {};
+      const tutorialAnalytics = tutorialPayload?.analytics ?? smokeSummary?.analytics ?? {};
+      const attemptedRuns = Number.isFinite(tutorialMetrics.attemptedRuns)
+        ? tutorialMetrics.attemptedRuns
+        : Number.isFinite(tutorialAnalytics.attemptedRuns)
+          ? tutorialAnalytics.attemptedRuns
+          : null;
+      const completedRuns = Number.isFinite(tutorialMetrics.completedRuns)
+        ? tutorialMetrics.completedRuns
+        : Number.isFinite(tutorialAnalytics.completedRuns)
+          ? tutorialAnalytics.completedRuns
+          : null;
+      const skippedRuns = Number.isFinite(tutorialMetrics.skippedRuns)
+        ? tutorialMetrics.skippedRuns
+        : Number.isFinite(tutorialAnalytics.skippedRuns)
+          ? tutorialAnalytics.skippedRuns
+          : null;
+      const assistsShown = Number.isFinite(tutorialMetrics.assistsShown)
+        ? tutorialMetrics.assistsShown
+        : Number.isFinite(tutorialAnalytics.assistsShown)
+          ? tutorialAnalytics.assistsShown
+          : null;
+      const completionRate = formatCompletion(
+        completedRuns,
+        attemptedRuns,
+        tutorialMetrics.completionRate
+      );
       if (smokeSummary) {
         const rows = [
           ["Mode", smokeSummary.mode ?? "-"],
@@ -195,8 +317,11 @@ function buildHtml(payload) {
           ["Started", formatDate(smokeSummary.startedAt)],
           ["Finished", formatDate(smokeSummary.finishedAt ?? smokeSummary.capturedAt)],
           ["Duration (ms)", smokeSummary.durationMs ?? "-"],
-          ["Skipped runs", smokeSummary.analytics?.skippedRuns ?? "-"],
-          ["Assists shown", smokeSummary.analytics?.assistsShown ?? "-"]
+          ["Completed runs", completedRuns ?? "-"],
+          ["Attempted runs", attemptedRuns ?? "-"],
+          ["Completion rate", completionRate],
+          ["Skipped runs", skippedRuns ?? "-"],
+          ["Assists shown", assistsShown ?? "-"]
         ];
         tutorialTarget.innerHTML =
           "<table>" +
@@ -211,12 +336,16 @@ function buildHtml(payload) {
         const aggs = matrix.aggregates ?? {};
         let html = "";
         if (Array.isArray(matrix.tutorialRuns) && matrix.tutorialRuns.length) {
-          html += "<h3>Tutorial runs</h3><table><thead><tr><th>Mode</th><th>Status</th><th>Duration (ms)</th><th>Notes</th></tr></thead><tbody>";
+          html += "<h3>Tutorial runs</h3><table><thead><tr><th>Mode</th><th>Status</th><th>Duration (ms)</th><th>Completions</th><th>Notes</th></tr></thead><tbody>";
           html += matrix.tutorialRuns
             .map((run) => {
               const duration =
-                run.durationMs ?? run.finishedAt ? (Date.parse(run.finishedAt) - Date.parse(run.startedAt) || "") : "-";
-              return "<tr><td>" + run.mode + "</td><td>" + pill(run.status) + "</td><td>" + (run.durationMs ?? "-") + "</td><td>" + (run.failureReason ?? "") + "</td></tr>";
+                run.durationMs ??
+                (run.finishedAt && run.startedAt
+                  ? Date.parse(run.finishedAt) - Date.parse(run.startedAt) || ""
+                  : "-");
+              const completions = formatCompletion(run.completedRuns, run.attemptedRuns);
+              return "<tr><td>" + run.mode + "</td><td>" + pill(run.status) + "</td><td>" + (duration ?? "-") + "</td><td>" + completions + "</td><td>" + (run.failureReason ?? "") + "</td></tr>";
             })
             .join("");
           html += "</tbody></table>";
@@ -299,17 +428,7 @@ function buildHtml(payload) {
 }
 
 function main() {
-  const payload = {
-    generatedAt: new Date().toISOString(),
-    sources: {
-      smokeSummary: readJson(SOURCE_MAP.smokeSummary),
-      tutorialPayload: readJson(SOURCE_MAP.tutorialPayload),
-      ciMatrix: readJson(SOURCE_MAP.ciMatrix),
-      goldSummarySmoke: readJson(SOURCE_MAP.goldSummarySmoke),
-      goldSummaryE2E: readJson(SOURCE_MAP.goldSummaryE2E),
-      screenshotSummary: readJson(SOURCE_MAP.screenshotSummary)
-    }
-  };
+  const payload = buildPayload();
 
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
   fs.writeFileSync(path.join(OUTPUT_DIR, "dashboard-data.json"), JSON.stringify(payload, null, 2));
@@ -318,4 +437,12 @@ function main() {
   console.log(`[dashboard] Static dashboard written to ${OUTPUT_DIR}`);
 }
 
-main();
+const isCliInvocation =
+  typeof process.argv[1] === "string" &&
+  fileURLToPath(import.meta.url) === path.resolve(process.argv[1]);
+
+if (isCliInvocation) {
+  main();
+}
+
+export { buildHtml, buildPayload, deriveTutorialMetrics, readJson, SOURCE_MAP };

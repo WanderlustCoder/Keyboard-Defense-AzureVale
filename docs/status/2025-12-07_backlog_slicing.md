@@ -46,5 +46,9 @@ Outlined manageable sub-tasks for remaining “Not Started” backlog items to e
   - Add CLI/test loop that toggles replay/skip repeatedly, verifying persisted completion/version and stability.
   - Record summary of attempts and final completion flag.
 
+- **#100 Tutorial completion QA metric**
+  - Surface tutorial attempt/completion counts and rate in the static QA dashboard and scenario matrix output.
+  - Add automated coverage to ensure completion rows render in tutorial + matrix sections.
+
 ## Next Action
-- #97 tutorial summary snapshot and #98 replay/skip soak are covered. Next priority: #100 QA dashboard metric for tutorials-per-session to close out remaining tutorial QA items.
+- Tutorial completion QA metric (#100) is shipped. Next priority: #70 asset manifest generation baseline under the sliced plan above.
