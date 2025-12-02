@@ -31,7 +31,7 @@ Update 2025-12-02: #32 is now implemented (see `2025-12-02_boss_archivist_mechan
   - Tests: overlapping events resolve gracefully, lane reserved flag clears on completion/reset, reduced-motion safe visuals.
 
 ## #38 Wave Config Schema/Editor
-- **Slice 1: Schema expansion**
+- **Slice 1: Schema expansion** ✅ shipped (`wave-config.schema.json`, tests)
   - Extend JSON schema to cover affixes, hazards, dynamic/evacuation events, and boss markers; ship fixtures for valid/invalid samples.
   - Tests: schema validation pass/fail cases, CI hook for schema check.
 - **Slice 2: Authoring CLI**

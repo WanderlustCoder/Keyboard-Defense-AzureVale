@@ -39,7 +39,7 @@
 | 35 | Enemy & Wave Design | Add dynamic spawn scheduler for surprise mini-events. | Done | Deterministic micro-events (skirmish/gold-runner/shield-carrier) gated by toggle |
 | 36 | Enemy & Wave Design | Implement evacuation event requiring long-form typing to rescue civilians. | In Progress | Slices 1-2 shipped (transport + banner, gold reward/penalty) |
 | 37 | Enemy & Wave Design | Introduce lane hazards (fog/storms) affecting visibility/accuracy. | Done | Seeded fog/storm hazards reduce lane fire-rate with HUD messaging |
-| 38 | Enemy & Wave Design | Provide JSON schema/editor for designer-authored wave configs. | Not Started |  |
+| 38 | Enemy & Wave Design | Provide JSON schema/editor for designer-authored wave configs. | In Progress | Schema added (hazards/dynamic/evac/boss); editor/preview pending |
 | 39 | Enemy & Wave Design | Calculate difficulty ratings per wave and surface in analytics overlay. | Done | Diagnostics overlay shows computed wave threat rating |
 | 40 | Enemy & Wave Design | Spawn practice dummy enemy for turret DPS tuning in debug mode. | Done | Debug/main-menu toggle spawns stationary dummy target; clear button removes |
 | 41 | Analytics & Telemetry | Expand analytics export to include tutorial metrics and summary history. | Done | Analytics export now includes tutorial state |

@@ -4375,7 +4375,17 @@ export class HudView {
 
   private updateEvacuation(state: GameState): void {
     if (!this.evacBanner) return;
-    const evac = state.evacuation;
+    const evac =
+      state.evacuation ?? {
+        active: false,
+        succeeded: false,
+        failed: false,
+        remaining: 0,
+        duration: 0,
+        lane: null,
+        word: null,
+        enemyId: null
+      };
     const container = this.evacBanner.container;
     const title = this.evacBanner.title;
     const timerLabel = this.evacBanner.timer;
