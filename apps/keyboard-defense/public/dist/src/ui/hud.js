@@ -353,6 +353,12 @@ export class HudView {
             const dyslexiaSpacingToggle = rootIds.optionsOverlay.dyslexiaSpacingToggle
                 ? document.getElementById(rootIds.optionsOverlay.dyslexiaSpacingToggle)
                 : null;
+            const backgroundBrightnessSlider = rootIds.optionsOverlay.backgroundBrightnessSlider
+                ? document.getElementById(rootIds.optionsOverlay.backgroundBrightnessSlider)
+                : null;
+            const backgroundBrightnessValue = rootIds.optionsOverlay.backgroundBrightnessValue
+                ? document.getElementById(rootIds.optionsOverlay.backgroundBrightnessValue)
+                : null;
             const colorblindPaletteToggle = document.getElementById(rootIds.optionsOverlay.colorblindPaletteToggle);
             const fontScaleSelect = document.getElementById(rootIds.optionsOverlay.fontScaleSelect);
             const defeatAnimationSelect = document.getElementById(rootIds.optionsOverlay.defeatAnimationSelect);
@@ -391,6 +397,9 @@ export class HudView {
                 readableFontToggle instanceof HTMLInputElement &&
                 dyslexiaFontToggle instanceof HTMLInputElement &&
                 (dyslexiaSpacingToggle === null || dyslexiaSpacingToggle instanceof HTMLInputElement) &&
+                (backgroundBrightnessSlider === null ||
+                    backgroundBrightnessSlider instanceof HTMLInputElement) &&
+                (backgroundBrightnessValue === null || backgroundBrightnessValue instanceof HTMLElement) &&
                 colorblindPaletteToggle instanceof HTMLInputElement &&
                 fontScaleSelect instanceof HTMLSelectElement &&
                 defeatAnimationSelect instanceof HTMLSelectElement) {
@@ -413,6 +422,10 @@ export class HudView {
                     readableFontToggle,
                     dyslexiaFontToggle,
                     dyslexiaSpacingToggle: dyslexiaSpacingToggle instanceof HTMLInputElement ? dyslexiaSpacingToggle : undefined,
+                    backgroundBrightnessSlider: backgroundBrightnessSlider instanceof HTMLInputElement
+                        ? backgroundBrightnessSlider
+                        : undefined,
+                    backgroundBrightnessValue: backgroundBrightnessValue instanceof HTMLElement ? backgroundBrightnessValue : undefined,
                     colorblindPaletteToggle,
                     fontScaleSelect,
                     defeatAnimationSelect,
@@ -555,6 +568,17 @@ export class HudView {
                         return;
                     this.callbacks.onDyslexiaFontToggle(dyslexiaFontToggle.checked);
                 });
+                if (this.optionsOverlay.backgroundBrightnessSlider) {
+                    this.optionsOverlay.backgroundBrightnessSlider.addEventListener("input", () => {
+                        if (this.syncingOptionToggles)
+                            return;
+                        const rawValue = Number.parseFloat(this.optionsOverlay.backgroundBrightnessSlider.value);
+                        if (!Number.isFinite(rawValue))
+                            return;
+                        this.updateBackgroundBrightnessDisplay(rawValue);
+                        this.callbacks.onBackgroundBrightnessChange?.(rawValue);
+                    });
+                }
                 if (this.optionsOverlay.dyslexiaSpacingToggle) {
                     this.optionsOverlay.dyslexiaSpacingToggle.addEventListener("change", () => {
                         if (this.syncingOptionToggles)
@@ -968,6 +992,11 @@ export class HudView {
         this.optionsOverlay.dyslexiaFontToggle.checked = state.dyslexiaFontEnabled;
         if (this.optionsOverlay.dyslexiaSpacingToggle && state.dyslexiaSpacingEnabled !== undefined) {
             this.optionsOverlay.dyslexiaSpacingToggle.checked = state.dyslexiaSpacingEnabled;
+        }
+        if (this.optionsOverlay.backgroundBrightnessSlider &&
+            typeof state.backgroundBrightness === "number") {
+            this.optionsOverlay.backgroundBrightnessSlider.value = state.backgroundBrightness.toString();
+            this.updateBackgroundBrightnessDisplay(state.backgroundBrightness);
         }
         this.optionsOverlay.colorblindPaletteToggle.checked = state.colorblindPaletteEnabled;
         this.setSelectValue(this.optionsOverlay.fontScaleSelect, state.hudFontScale.toString());
@@ -3310,6 +3339,12 @@ export class HudView {
             return;
         const percent = Math.round(intensity * 100);
         this.optionsOverlay.soundIntensityValue.textContent = `${percent}%`;
+    }
+    updateBackgroundBrightnessDisplay(value) {
+        if (!this.optionsOverlay?.backgroundBrightnessValue)
+            return;
+        const percent = Math.round(value * 100);
+        this.optionsOverlay.backgroundBrightnessValue.textContent = `${percent}%`;
     }
     setAnalyticsExportEnabled(enabled) {
         const button = this.optionsOverlay?.analyticsExportButton;

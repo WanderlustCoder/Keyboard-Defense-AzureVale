@@ -308,6 +308,8 @@ export class HudView {
   private readonly typingInput: HTMLInputElement;
   private readonly fullscreenButton: HTMLButtonElement | null = null;
   private readonly capsLockWarning: HTMLElement | null = null;
+  private readonly lockIndicatorCaps: HTMLElement | null = null;
+  private readonly lockIndicatorNum: HTMLElement | null = null;
   private readonly upgradePanel: HTMLElement;
   private readonly comboLabel: HTMLElement;
   private readonly comboAccuracyDelta: HTMLElement;
@@ -584,6 +586,10 @@ export class HudView {
       this.typingWpmLabel = wpm instanceof HTMLElement ? wpm : null;
     }
     this.typingInput = this.getElement(rootIds.typingInput) as HTMLInputElement;
+    const lockCaps = document.getElementById("lock-indicator-caps");
+    const lockNum = document.getElementById("lock-indicator-num");
+    this.lockIndicatorCaps = lockCaps instanceof HTMLElement ? lockCaps : null;
+    this.lockIndicatorNum = lockNum instanceof HTMLElement ? lockNum : null;
     this.fullscreenButton = (() => {
       if (!rootIds.fullscreenButton) return null;
       const el = document.getElementById(rootIds.fullscreenButton);
@@ -1342,6 +1348,23 @@ export class HudView {
     if (!this.capsLockWarning) return;
     this.capsLockWarning.dataset.visible = visible ? "true" : "false";
     this.capsLockWarning.setAttribute("aria-hidden", visible ? "false" : "true");
+  }
+
+  setLockIndicators(options: { capsOn: boolean; numOn: boolean }): void {
+    if (this.lockIndicatorCaps) {
+      this.lockIndicatorCaps.dataset.active = options.capsOn ? "true" : "false";
+      this.lockIndicatorCaps.setAttribute(
+        "aria-label",
+        `Caps Lock ${options.capsOn ? "on" : "off"}`
+      );
+    }
+    if (this.lockIndicatorNum) {
+      this.lockIndicatorNum.dataset.active = options.numOn ? "true" : "false";
+      this.lockIndicatorNum.setAttribute(
+        "aria-label",
+        `Num Lock ${options.numOn ? "on" : "off"}`
+      );
+    }
   }
 
   setFullscreenAvailable(available: boolean): void {

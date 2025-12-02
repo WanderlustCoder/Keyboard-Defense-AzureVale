@@ -32,6 +32,7 @@ export interface HudCallbacks {
     onDyslexiaFontToggle(enabled: boolean): void;
     onDyslexiaSpacingToggle?: (enabled: boolean) => void;
     onColorblindPaletteToggle(enabled: boolean): void;
+    onBackgroundBrightnessChange?: (value: number) => void;
     onDefeatAnimationModeChange(mode: DefeatAnimationPreference): void;
     onHudFontScaleChange(scale: number): void;
     onFullscreenToggle?: (nextActive: boolean) => void;
@@ -99,6 +100,8 @@ type OptionsOverlayElements = {
     dyslexiaFontToggle: string;
     dyslexiaSpacingToggle?: string;
     colorblindPaletteToggle: string;
+    backgroundBrightnessSlider?: string;
+    backgroundBrightnessValue?: string;
     fontScaleSelect: string;
     defeatAnimationSelect: string;
     telemetryToggle?: string;
@@ -329,6 +332,7 @@ export declare class HudView {
         readableFontEnabled: boolean;
         dyslexiaFontEnabled: boolean;
         dyslexiaSpacingEnabled?: boolean;
+        backgroundBrightness?: number;
         colorblindPaletteEnabled: boolean;
         hudFontScale: number;
         defeatAnimationMode: DefeatAnimationPreference;
@@ -468,6 +472,7 @@ export declare class HudView {
     private applyTelemetryOptionState;
     private updateSoundVolumeDisplay;
     private updateSoundIntensityDisplay;
+    private updateBackgroundBrightnessDisplay;
     setAnalyticsExportEnabled(enabled: boolean): void;
     setHudFontScale(scale: number): void;
     setReducedMotionEnabled(enabled: boolean): void;

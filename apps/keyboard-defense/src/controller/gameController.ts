@@ -3545,12 +3545,14 @@ export class GameController {
     }
   }
   attachInputHandlers(typingInput) {
-    const syncCapsLockWarning = (event) => {
-      const isOn = Boolean(event?.getModifierState?.("CapsLock"));
-      this.hud.setCapsLockWarning(isOn);
+    const syncLockIndicators = (event) => {
+      const capsOn = Boolean(event?.getModifierState?.("CapsLock"));
+      const numOn = Boolean(event?.getModifierState?.("NumLock"));
+      this.hud.setCapsLockWarning(capsOn);
+      this.hud.setLockIndicators({ capsOn, numOn });
     };
     const handler = (event) => {
-      syncCapsLockWarning(event);
+      syncLockIndicators(event);
       if (this.typingDrillsOverlayActive) {
         return;
       }
@@ -3592,13 +3594,15 @@ export class GameController {
       }
     };
     typingInput.addEventListener("keydown", handler);
-    typingInput.addEventListener("keyup", syncCapsLockWarning);
+    typingInput.addEventListener("keyup", syncLockIndicators);
     typingInput.addEventListener("focus", () => {
       typingInput.select();
       this.hud.setCapsLockWarning(false);
+      this.hud.setLockIndicators({ capsOn: false, numOn: false });
     });
     typingInput.addEventListener("blur", () => {
       this.hud.setCapsLockWarning(false);
+      this.hud.setLockIndicators({ capsOn: false, numOn: false });
     });
     this.hud.focusTypingInput();
   }
