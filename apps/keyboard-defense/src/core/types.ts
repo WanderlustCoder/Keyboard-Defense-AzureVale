@@ -11,6 +11,22 @@ export type EnemyEffect =
   | { kind: "slow"; multiplier: number; remaining: number }
   | { kind: "burn"; dps: number; remaining: number };
 
+export type EliteAffixId = "slow-aura" | "shielded" | "armored";
+
+export interface EliteAffixEffects {
+  laneFireRateMultiplier?: number;
+  turretDamageTakenMultiplier?: number;
+  bonusShield?: number;
+}
+
+export interface EliteAffixInstance {
+  id: EliteAffixId;
+  label: string;
+  description: string;
+  source?: "roll" | "scripted";
+  effects: EliteAffixEffects;
+}
+
 export type GameMode = "campaign" | "practice";
 
 export interface EnemyState {
@@ -36,6 +52,9 @@ export interface EnemyState {
   effects: EnemyEffect[];
   spawnedAt: number;
   waveIndex: number;
+  affixes?: EliteAffixInstance[];
+  turretDamageTakenMultiplier?: number;
+  laneFireRateMultiplier?: number;
   taunt?: string;
   tauntId?: string | null;
 }
@@ -392,6 +411,8 @@ export interface WaveSpawnPreview {
   timeUntil: number;
   scheduledTime: number;
   isNextWave: boolean;
+  order: number;
+  affixes?: EliteAffixInstance[];
   shield?: number;
 }
 

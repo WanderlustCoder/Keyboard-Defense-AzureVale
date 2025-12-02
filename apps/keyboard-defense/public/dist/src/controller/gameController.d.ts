@@ -37,7 +37,9 @@ export declare class GameController {
     updateHudTurretAvailability(): void;
     syncTurretDowngradeControls(): void;
     syncCrystalPulseControls(): void;
+    syncEliteAffixControls(): void;
     setCrystalPulseEnabled(enabled: any, options?: {}): void;
+    setEliteAffixesEnabled(enabled: any, options?: {}): any;
     setTurretDowngradeEnabled(enabled: any, options?: {}): any;
     toggleTurretDowngrade(): any;
     setDiagnosticsVisible(visible: any, options?: {}): void;
@@ -50,6 +52,7 @@ export declare class GameController {
     setSoundVolume(volume: any, options?: {}): void;
     setAudioIntensity(intensity: any, options?: {}): void;
     updateAmbientTrack(state: any): void;
+    handleGameStatusAudio(status: any): void;
     setColorblindPaletteEnabled(enabled: any, options?: {}): void;
     setDefeatAnimationMode(mode: any, options?: {}): void;
     setStarfieldScene(scene: any): any;

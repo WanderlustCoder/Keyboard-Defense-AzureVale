@@ -29,6 +29,8 @@ export class WavePreviewPanel {
   private highlighted = false;
   private shieldCurrent = false;
   private shieldNext = false;
+  private affixCurrent = false;
+  private affixNext = false;
   private colorBlindFriendly = false;
   private iconCache = new Map<string, string>();
 
@@ -53,6 +55,8 @@ export class WavePreviewPanel {
     const fragment = document.createDocumentFragment();
     let currentShielded = false;
     let nextShielded = false;
+    let currentAffixed = false;
+    let nextAffixed = false;
     const currentWaveEntries = entries.filter((entry) => !entry.isNextWave);
     if (currentWaveEntries.length > 0) {
       const summary = document.createElement("div");
@@ -90,6 +94,9 @@ export class WavePreviewPanel {
         if ((entry.shield ?? 0) > 0) {
           nextShielded = true;
         }
+        if (entry.affixes && entry.affixes.length > 0) {
+          nextAffixed = true;
+        }
       }
       const lane = document.createElement("span");
       lane.className = "preview-lane";
@@ -117,6 +124,28 @@ export class WavePreviewPanel {
         badge.setAttribute("aria-label", `Shield ${Math.round(entry.shield)} HP`);
         enemy.appendChild(badge);
       }
+      if (entry.affixes && entry.affixes.length > 0) {
+        row.dataset.affixed = "true";
+        const affixWrapper = document.createElement("span");
+        affixWrapper.className = "preview-affixes";
+        for (const affix of entry.affixes) {
+          const badge = document.createElement("span");
+          badge.className = "preview-badge affix";
+          if (affix.id) {
+            badge.dataset.affixId = affix.id;
+          }
+          badge.textContent = affix.label ?? toTitle(affix.id);
+          if (affix.description) {
+            badge.title = affix.description;
+          }
+          badge.setAttribute("aria-label", affix.label ?? toTitle(affix.id));
+          affixWrapper.appendChild(badge);
+        }
+        enemy.appendChild(affixWrapper);
+        if (!entry.isNextWave) {
+          currentAffixed = true;
+        }
+      }
       row.appendChild(enemy);
       const wave = document.createElement("span");
       wave.className = "preview-wave";
@@ -143,6 +172,7 @@ export class WavePreviewPanel {
       fragment.appendChild(row);
     }
     this.setShieldForecast(currentShielded, nextShielded);
+    this.setAffixForecast(currentAffixed, nextAffixed);
     this.container.appendChild(fragment);
     this.applyHighlightState();
   }
@@ -186,6 +216,25 @@ export class WavePreviewPanel {
       this.container.dataset.shieldNext = "true";
     } else {
       delete this.container.dataset.shieldNext;
+    }
+  }
+
+  setAffixForecast(current: boolean, next: boolean): void {
+    this.affixCurrent = current;
+    this.affixNext = next;
+    this.applyAffixState();
+  }
+
+  private applyAffixState(): void {
+    if (this.affixCurrent) {
+      this.container.dataset.affixCurrent = "true";
+    } else {
+      delete this.container.dataset.affixCurrent;
+    }
+    if (this.affixNext) {
+      this.container.dataset.affixNext = "true";
+    } else {
+      delete this.container.dataset.affixNext;
     }
   }
 

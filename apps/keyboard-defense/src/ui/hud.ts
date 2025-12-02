@@ -61,6 +61,7 @@ export interface HudCallbacks {
   onAnalyticsExport?: () => void;
   onTelemetryToggle?: (enabled: boolean) => void;
   onCrystalPulseToggle?: (enabled: boolean) => void;
+  onEliteAffixesToggle?: (enabled: boolean) => void;
   onPauseRequested(): void;
   onResumeRequested(): void;
   onSoundToggle(enabled: boolean): void;
@@ -182,6 +183,8 @@ type OptionsOverlayElements = {
   telemetryToggleWrapper?: string;
   crystalPulseToggle?: string;
   crystalPulseToggleWrapper?: string;
+  eliteAffixToggle?: string;
+  eliteAffixToggleWrapper?: string;
   analyticsExportButton?: string;
 };
 
@@ -356,6 +359,7 @@ export class HudView {
     clearButton?: HTMLButtonElement;
   };
   private lastShieldTelemetry = { current: false, next: false };
+  private lastAffixTelemetry = { current: false, next: false };
   private lastWavePreviewEntries: WaveSpawnPreview[] = [];
   private lastWavePreviewColorBlind = false;
   private lastGold = 0;
@@ -419,6 +423,8 @@ export class HudView {
     telemetryWrapper?: HTMLElement;
     crystalPulseToggle?: HTMLInputElement;
     crystalPulseWrapper?: HTMLElement;
+    eliteAffixToggle?: HTMLInputElement;
+    eliteAffixWrapper?: HTMLElement;
     analyticsExportButton?: HTMLButtonElement;
   };
   private readonly waveScorecard?: {
@@ -664,6 +670,12 @@ export class HudView {
       const crystalPulseToggleWrapper = rootIds.optionsOverlay.crystalPulseToggleWrapper
         ? document.getElementById(rootIds.optionsOverlay.crystalPulseToggleWrapper)
         : null;
+      const eliteAffixToggle = rootIds.optionsOverlay.eliteAffixToggle
+        ? document.getElementById(rootIds.optionsOverlay.eliteAffixToggle)
+        : null;
+      const eliteAffixToggleWrapper = rootIds.optionsOverlay.eliteAffixToggleWrapper
+        ? document.getElementById(rootIds.optionsOverlay.eliteAffixToggleWrapper)
+        : null;
       const analyticsExportButton = rootIds.optionsOverlay.analyticsExportButton
         ? document.getElementById(rootIds.optionsOverlay.analyticsExportButton)
         : null;
@@ -713,6 +725,9 @@ export class HudView {
             crystalPulseToggleWrapper instanceof HTMLElement
               ? crystalPulseToggleWrapper
               : undefined,
+          eliteAffixToggle: eliteAffixToggle instanceof HTMLInputElement ? eliteAffixToggle : undefined,
+          eliteAffixWrapper:
+            eliteAffixToggleWrapper instanceof HTMLElement ? eliteAffixToggleWrapper : undefined,
           analyticsExportButton:
             analyticsExportButton instanceof HTMLButtonElement ? analyticsExportButton : undefined
         };
@@ -820,6 +835,12 @@ export class HudView {
           this.optionsOverlay.telemetryToggle.addEventListener("change", () => {
             if (this.syncingOptionToggles) return;
             this.callbacks.onTelemetryToggle?.(this.optionsOverlay!.telemetryToggle!.checked);
+          });
+        }
+        if (this.optionsOverlay.eliteAffixToggle) {
+          this.optionsOverlay.eliteAffixToggle.addEventListener("change", () => {
+            if (this.syncingOptionToggles) return;
+            this.callbacks.onEliteAffixesToggle?.(this.optionsOverlay!.eliteAffixToggle!.checked);
           });
         }
         if (this.optionsOverlay.crystalPulseToggle) {
@@ -1176,6 +1197,10 @@ export class HudView {
         disabled?: boolean;
       };
     };
+    eliteAffixes?: {
+      enabled: boolean;
+      disabled?: boolean;
+    };
   }): void {
     if (!this.optionsOverlay) return;
     this.syncingOptionToggles = true;
@@ -1214,6 +1239,22 @@ export class HudView {
         this.optionsOverlay.crystalPulseWrapper ??
         (toggle.parentElement instanceof HTMLElement ? toggle.parentElement : undefined);
       const featureState = state.turretFeatures?.crystalPulse;
+      const enabled = Boolean(featureState?.enabled);
+      const disabled = Boolean(featureState?.disabled);
+      toggle.checked = enabled;
+      toggle.disabled = disabled;
+      toggle.setAttribute("aria-disabled", disabled ? "true" : "false");
+      toggle.tabIndex = disabled ? -1 : 0;
+      if (wrapper) {
+        wrapper.dataset.disabled = disabled ? "true" : "false";
+      }
+    }
+    if (this.optionsOverlay.eliteAffixToggle) {
+      const toggle = this.optionsOverlay.eliteAffixToggle;
+      const wrapper =
+        this.optionsOverlay.eliteAffixWrapper ??
+        (toggle.parentElement instanceof HTMLElement ? toggle.parentElement : undefined);
+      const featureState = state.eliteAffixes;
       const enabled = Boolean(featureState?.enabled);
       const disabled = Boolean(featureState?.disabled);
       toggle.checked = enabled;
@@ -1288,6 +1329,7 @@ export class HudView {
         state.mode === "practice" ? "true" : "false";
     }
     this.updateShieldTelemetry(upcoming);
+    this.updateAffixTelemetry(upcoming);
     this.refreshRoadmap(state, options);
     const hpRatio = Math.max(0, state.castle.health / state.castle.maxHealth);
     (this.healthBar as HTMLElement).style.width = `${hpRatio * 100}%`;
@@ -3346,6 +3388,35 @@ export class HudView {
     }
 
     this.lastShieldTelemetry = { current: currentShielded, next: nextShielded };
+  }
+
+  private updateAffixTelemetry(entries: WaveSpawnPreview[]): void {
+    const currentAffixed = entries.some((entry) => !entry.isNextWave && (entry.affixes?.length ?? 0) > 0);
+    const nextAffixed = entries.some((entry) => entry.isNextWave && (entry.affixes?.length ?? 0) > 0);
+    if (currentAffixed && !this.lastAffixTelemetry.current) {
+      const labels = this.summarizeAffixLabels(entries.filter((entry) => !entry.isNextWave));
+      const message = labels.length > 0 ? `Elite affixes active: ${labels}.` : "Elite affixes active this wave.";
+      this.showCastleMessage(message);
+    } else if (!currentAffixed && nextAffixed && !this.lastAffixTelemetry.next) {
+      this.showCastleMessage("Next wave spawns elite affixes. Prep turret coverage.");
+    }
+    this.lastAffixTelemetry = { current: currentAffixed, next: nextAffixed };
+  }
+
+  private summarizeAffixLabels(entries: WaveSpawnPreview[]): string {
+    const labels = new Set<string>();
+    for (const entry of entries) {
+      const affixes = entry.affixes ?? [];
+      for (const affix of affixes) {
+        if (affix?.label) {
+          labels.add(affix.label);
+        } else if (affix?.id) {
+          labels.add(affix.id);
+        }
+      }
+      if (labels.size >= 3) break;
+    }
+    return Array.from(labels).slice(0, 3).join(", ");
   }
 
   private refreshRoadmap(

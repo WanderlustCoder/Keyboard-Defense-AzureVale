@@ -9,6 +9,7 @@ import {
   type ComboWarningHistoryEntry,
   type DefeatBurstAnalyticsEntry,
   type DefeatBurstMode,
+  type EliteAffixInstance,
   type EnemyState,
   type GameMode,
   type GameState,
@@ -34,6 +35,7 @@ import { UpgradeSystem, type UpgradeResult, type RepairResult } from "../systems
 import { WaveSystem } from "../systems/waveSystem.js";
 import { ProjectileSystem } from "../systems/projectileSystem.js";
 import { type TelemetryClient } from "../telemetry/telemetryClient.js";
+import { rollEliteAffixes } from "../data/eliteAffixes.js";
 
 const MAX_WAVE_HISTORY = 100;
 const MAX_GOLD_EVENTS = 200;
@@ -142,6 +144,7 @@ export class GameEngine {
   readonly events: EventBus<GameEvents>;
   readonly config: GameConfig;
 
+  private readonly seed: number;
   private readonly rng: PRNG;
   private readonly enemySystem: EnemySystem;
   private readonly waveSystem: WaveSystem;
@@ -165,6 +168,53 @@ export class GameEngine {
     analytics.averageTotalDps = analytics.totalDamageDealt / elapsed;
   }
 
+  private resolveAffixSeed(input: {
+    waveIndex: number;
+    order?: number;
+    lane?: number;
+    tierId: string;
+  }): number {
+    let hash = this.seed ^ Math.imul(input.waveIndex + 1, 0x9e3779b1);
+    hash = Math.imul(hash ^ Math.imul((input.order ?? 0) + 11, 0x85ebca6b), 0x27d4eb2d);
+    hash = Math.imul(hash ^ Math.imul((input.lane ?? 0) + 3, 0xc2b2ae35), 0x165667b1);
+    for (let i = 0; i < input.tierId.length; i += 1) {
+      hash ^= input.tierId.charCodeAt(i) << ((i % 4) * 8);
+      hash >>>= 0;
+    }
+    hash >>>= 0;
+    return hash === 0 ? 1 : hash;
+  }
+
+  private rollEliteAffixesForSpawn(request: SpawnEnemyInput & { waveIndex: number }): EliteAffixInstance[] {
+    const baseShield =
+      typeof request.shield === "number"
+        ? request.shield
+        : request.shield?.health ?? request.shield?.max ?? 0;
+    const seed = this.resolveAffixSeed({
+      waveIndex: request.waveIndex,
+      order: request.order ?? 0,
+      lane: request.lane,
+      tierId: request.tierId
+    });
+    const rng = new PRNG(seed);
+    return rollEliteAffixes({
+      tierId: request.tierId,
+      waveIndex: request.waveIndex,
+      rng,
+      baseShield
+    });
+  }
+
+  private resolveSpawnAffixes(request: SpawnEnemyInput, waveIndex: number): EliteAffixInstance[] {
+    if (Array.isArray(request.affixes)) {
+      return request.affixes;
+    }
+    if (!this.config.featureToggles.eliteAffixes) {
+      return [];
+    }
+    return this.rollEliteAffixesForSpawn({ ...request, waveIndex });
+  }
+
   constructor(options: GameEngineOptions = {}) {
     this.config = {
       ...defaultConfig,
@@ -176,7 +226,8 @@ export class GameEngine {
     };
     this.events = options.events ?? new EventBus<GameEvents>();
     this.wordBank = options.wordBank ?? defaultWordBank;
-    this.rng = new PRNG(options.seed);
+    this.seed = options.seed ?? Date.now();
+    this.rng = new PRNG(this.seed);
     this.state = createInitialState(this.config);
     this.state.mode = this.config.loopWaves ? "practice" : "campaign";
     this.state.analytics.mode = this.state.mode;
@@ -232,10 +283,12 @@ export class GameEngine {
     for (const request of spawnRequests) {
       const difficulty = this.resolveDifficulty(this.state.wave.index);
       this.currentDifficultyBand = difficulty;
+      const affixes = this.resolveSpawnAffixes(request, this.state.wave.index);
       this.enemySystem.spawn(this.state, {
         ...request,
         waveIndex: this.state.wave.index,
-        difficulty
+        difficulty,
+        affixes
       });
     }
 
@@ -716,7 +769,9 @@ export class GameEngine {
     const difficulty =
       request.difficulty ?? this.resolveDifficulty(request.waveIndex ?? this.state.wave.index);
     this.currentDifficultyBand = difficulty;
-    return this.enemySystem.spawn(this.state, { ...request, difficulty });
+    const waveIndex = request.waveIndex ?? this.state.wave.index;
+    const affixes = this.resolveSpawnAffixes(request, waveIndex);
+    return this.enemySystem.spawn(this.state, { ...request, waveIndex, difficulty, affixes });
   }
 
   damageCastle(amount: number): void {
@@ -947,7 +1002,17 @@ export class GameEngine {
   }
 
   getUpcomingSpawns(limit = 6): WaveSpawnPreview[] {
-    return this.waveSystem.getUpcomingSpawns(this.state, limit);
+    const previews = this.waveSystem.getUpcomingSpawns(this.state, limit);
+    if (!this.config.featureToggles.eliteAffixes) {
+      return previews;
+    }
+    return previews.map((entry) => {
+      const affixes = this.resolveSpawnAffixes(
+        entry as unknown as SpawnEnemyInput,
+        entry.waveIndex ?? this.state.wave.index
+      );
+      return { ...entry, affixes };
+    });
   }
 
   resetAnalytics(): void {

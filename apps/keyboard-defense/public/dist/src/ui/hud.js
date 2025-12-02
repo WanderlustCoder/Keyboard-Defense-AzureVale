@@ -53,6 +53,7 @@ export class HudView {
     roadmapOverlay;
     roadmapGlance;
     lastShieldTelemetry = { current: false, next: false };
+    lastAffixTelemetry = { current: false, next: false };
     lastWavePreviewEntries = [];
     lastWavePreviewColorBlind = false;
     lastGold = 0;
@@ -268,6 +269,12 @@ export class HudView {
             const crystalPulseToggleWrapper = rootIds.optionsOverlay.crystalPulseToggleWrapper
                 ? document.getElementById(rootIds.optionsOverlay.crystalPulseToggleWrapper)
                 : null;
+            const eliteAffixToggle = rootIds.optionsOverlay.eliteAffixToggle
+                ? document.getElementById(rootIds.optionsOverlay.eliteAffixToggle)
+                : null;
+            const eliteAffixToggleWrapper = rootIds.optionsOverlay.eliteAffixToggleWrapper
+                ? document.getElementById(rootIds.optionsOverlay.eliteAffixToggleWrapper)
+                : null;
             const analyticsExportButton = rootIds.optionsOverlay.analyticsExportButton
                 ? document.getElementById(rootIds.optionsOverlay.analyticsExportButton)
                 : null;
@@ -310,6 +317,8 @@ export class HudView {
                     crystalPulseWrapper: crystalPulseToggleWrapper instanceof HTMLElement
                         ? crystalPulseToggleWrapper
                         : undefined,
+                    eliteAffixToggle: eliteAffixToggle instanceof HTMLInputElement ? eliteAffixToggle : undefined,
+                    eliteAffixWrapper: eliteAffixToggleWrapper instanceof HTMLElement ? eliteAffixToggleWrapper : undefined,
                     analyticsExportButton: analyticsExportButton instanceof HTMLButtonElement ? analyticsExportButton : undefined
                 };
                 const castleBonusHint = document.getElementById("options-castle-bonus");
@@ -434,6 +443,13 @@ export class HudView {
                         if (this.syncingOptionToggles)
                             return;
                         this.callbacks.onTelemetryToggle?.(this.optionsOverlay.telemetryToggle.checked);
+                    });
+                }
+                if (this.optionsOverlay.eliteAffixToggle) {
+                    this.optionsOverlay.eliteAffixToggle.addEventListener("change", () => {
+                        if (this.syncingOptionToggles)
+                            return;
+                        this.callbacks.onEliteAffixesToggle?.(this.optionsOverlay.eliteAffixToggle.checked);
                     });
                 }
                 if (this.optionsOverlay.crystalPulseToggle) {
@@ -778,6 +794,21 @@ export class HudView {
                 wrapper.dataset.disabled = disabled ? "true" : "false";
             }
         }
+        if (this.optionsOverlay.eliteAffixToggle) {
+            const toggle = this.optionsOverlay.eliteAffixToggle;
+            const wrapper = this.optionsOverlay.eliteAffixWrapper ??
+                (toggle.parentElement instanceof HTMLElement ? toggle.parentElement : undefined);
+            const featureState = state.eliteAffixes;
+            const enabled = Boolean(featureState?.enabled);
+            const disabled = Boolean(featureState?.disabled);
+            toggle.checked = enabled;
+            toggle.disabled = disabled;
+            toggle.setAttribute("aria-disabled", disabled ? "true" : "false");
+            toggle.tabIndex = disabled ? -1 : 0;
+            if (wrapper) {
+                wrapper.dataset.disabled = disabled ? "true" : "false";
+            }
+        }
         this.syncingOptionToggles = false;
         if (this.lastState) {
             this.updateCastleBonusHint(this.lastState);
@@ -835,6 +866,7 @@ export class HudView {
                 state.mode === "practice" ? "true" : "false";
         }
         this.updateShieldTelemetry(upcoming);
+        this.updateAffixTelemetry(upcoming);
         this.refreshRoadmap(state, options);
         const hpRatio = Math.max(0, state.castle.health / state.castle.maxHealth);
         this.healthBar.style.width = `${hpRatio * 100}%`;
@@ -2694,6 +2726,36 @@ export class HudView {
             this.showCastleMessage("Next wave includes shielded foes. Prepare turrets to break shields.");
         }
         this.lastShieldTelemetry = { current: currentShielded, next: nextShielded };
+    }
+    updateAffixTelemetry(entries) {
+        const currentAffixed = entries.some((entry) => !entry.isNextWave && (entry.affixes?.length ?? 0) > 0);
+        const nextAffixed = entries.some((entry) => entry.isNextWave && (entry.affixes?.length ?? 0) > 0);
+        if (currentAffixed && !this.lastAffixTelemetry.current) {
+            const labels = this.summarizeAffixLabels(entries.filter((entry) => !entry.isNextWave));
+            const message = labels.length > 0 ? `Elite affixes active: ${labels}.` : "Elite affixes active this wave.";
+            this.showCastleMessage(message);
+        }
+        else if (!currentAffixed && nextAffixed && !this.lastAffixTelemetry.next) {
+            this.showCastleMessage("Next wave spawns elite affixes. Prep turret coverage.");
+        }
+        this.lastAffixTelemetry = { current: currentAffixed, next: nextAffixed };
+    }
+    summarizeAffixLabels(entries) {
+        const labels = new Set();
+        for (const entry of entries) {
+            const affixes = entry.affixes ?? [];
+            for (const affix of affixes) {
+                if (affix?.label) {
+                    labels.add(affix.label);
+                }
+                else if (affix?.id) {
+                    labels.add(affix.id);
+                }
+            }
+            if (labels.size >= 3)
+                break;
+        }
+        return Array.from(labels).slice(0, 3).join(", ");
     }
     refreshRoadmap(state, options) {
         if (!this.roadmapOverlay && !this.roadmapGlance)

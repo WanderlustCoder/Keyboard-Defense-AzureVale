@@ -147,6 +147,7 @@
             <button id="debug-step">Step Frame</button>
             <button id="debug-gold">+100 Gold</button>
             <button id="debug-crystal-toggle" type="button">Enable Crystal Pulse</button>
+            <button id="debug-elite-toggle" type="button">Enable Elite Affixes</button>
             <button id="debug-turret-downgrade" type="button" aria-pressed="false">
               Enable Turret Downgrade
             </button>
@@ -316,6 +317,13 @@
             <span class="option-toggle-label">Enable Crystal Pulse turret (experimental)</span>
             <span class="option-toggle-help">
               Unlocks shield-burst pulses that shred enemy barriers when you need them.
+            </span>
+          </label>
+          <label class="option-toggle" id="main-menu-elite-toggle-wrapper">
+            <input id="main-menu-elite-toggle" type="checkbox" />
+            <span class="option-toggle-label">Enable Elite Affixes</span>
+            <span class="option-toggle-help">
+              Allow armored, shielded, or aura elites to appear for greater rewards.
             </span>
           </label>
         </div>
@@ -630,6 +638,13 @@
             </select>
             <span class="option-toggle-help">
               Choose how enemy defeat bursts render when art assets are available.
+            </span>
+          </label>
+          <label class="option-toggle" id="options-elite-affix-toggle-wrapper">
+            <input id="options-elite-affix-toggle" type="checkbox" />
+            <span class="option-toggle-label">Enable Elite Affixes</span>
+            <span class="option-toggle-help">
+              Armored, shielded, or aura elites join waves when enabled; toggle off for calmer runs.
             </span>
           </label>
           <label class="option-toggle" id="options-crystal-toggle-wrapper">

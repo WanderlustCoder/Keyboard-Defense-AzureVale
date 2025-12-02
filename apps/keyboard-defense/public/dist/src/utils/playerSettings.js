@@ -1,5 +1,5 @@
 export const PLAYER_SETTINGS_STORAGE_KEY = "keyboard-defense:player-settings";
-export const PLAYER_SETTINGS_VERSION = 15;
+export const PLAYER_SETTINGS_VERSION = 16;
 const DEFAULT_UPDATED_AT = "1970-01-01T00:00:00.000Z";
 const HUD_FONT_SCALE_MIN = 0.85;
 const HUD_FONT_SCALE_MAX = 1.3;
@@ -27,6 +27,7 @@ const BASE_DEFAULT_SETTINGS = {
     colorblindPaletteEnabled: false,
     audioIntensity: DEFAULT_AUDIO_INTENSITY,
     telemetryEnabled: false,
+    eliteAffixesEnabled: true,
     crystalPulseEnabled: false,
     hudFontScale: 1,
     defeatAnimationMode: "auto",
@@ -54,6 +55,7 @@ export function createDefaultPlayerSettings() {
         dyslexiaFontEnabled: false,
         colorblindPaletteEnabled: false,
         telemetryEnabled: false,
+        eliteAffixesEnabled: true,
         crystalPulseEnabled: false,
         hudFontScale: 1,
         turretTargeting: {},
@@ -106,6 +108,9 @@ export function readPlayerSettings(storage) {
         const telemetryEnabled = typeof parsed.telemetryEnabled === "boolean"
             ? parsed.telemetryEnabled
             : fallback.telemetryEnabled;
+        const eliteAffixesEnabled = typeof parsed.eliteAffixesEnabled === "boolean"
+            ? parsed.eliteAffixesEnabled
+            : fallback.eliteAffixesEnabled;
         const crystalPulseEnabled = typeof parsed.crystalPulseEnabled === "boolean"
             ? parsed.crystalPulseEnabled
             : fallback.crystalPulseEnabled;
@@ -136,6 +141,7 @@ export function readPlayerSettings(storage) {
             colorblindPaletteEnabled,
             audioIntensity,
             telemetryEnabled,
+            eliteAffixesEnabled,
             crystalPulseEnabled,
             hudFontScale,
             defeatAnimationMode,
@@ -192,6 +198,9 @@ export function withPatchedPlayerSettings(current, patch) {
         telemetryEnabled: typeof patch.telemetryEnabled === "boolean"
             ? patch.telemetryEnabled
             : current.telemetryEnabled,
+        eliteAffixesEnabled: typeof patch.eliteAffixesEnabled === "boolean"
+            ? patch.eliteAffixesEnabled
+            : current.eliteAffixesEnabled,
         crystalPulseEnabled: typeof patch.crystalPulseEnabled === "boolean"
             ? patch.crystalPulseEnabled
             : current.crystalPulseEnabled,

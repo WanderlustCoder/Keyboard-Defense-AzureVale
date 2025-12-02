@@ -175,7 +175,7 @@ export const defaultConfig: GameConfig = {
     tutorials: true,
     campaignMap: false,
     dynamicDifficulty: false,
-    eliteAffixes: false,
+    eliteAffixes: true,
     analyticsExport: true,
     telemetry: false,
     crystalPulse: false,

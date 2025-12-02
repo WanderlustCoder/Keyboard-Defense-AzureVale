@@ -14,6 +14,7 @@ export interface HudCallbacks {
     onAnalyticsExport?: () => void;
     onTelemetryToggle?: (enabled: boolean) => void;
     onCrystalPulseToggle?: (enabled: boolean) => void;
+    onEliteAffixesToggle?: (enabled: boolean) => void;
     onPauseRequested(): void;
     onResumeRequested(): void;
     onSoundToggle(enabled: boolean): void;
@@ -93,6 +94,8 @@ type OptionsOverlayElements = {
     telemetryToggleWrapper?: string;
     crystalPulseToggle?: string;
     crystalPulseToggleWrapper?: string;
+    eliteAffixToggle?: string;
+    eliteAffixToggleWrapper?: string;
     analyticsExportButton?: string;
 };
 type AnalyticsViewerElements = {
@@ -205,6 +208,7 @@ export declare class HudView {
     private readonly roadmapOverlay?;
     private readonly roadmapGlance?;
     private lastShieldTelemetry;
+    private lastAffixTelemetry;
     private lastWavePreviewEntries;
     private lastWavePreviewColorBlind;
     private lastGold;
@@ -305,6 +309,10 @@ export declare class HudView {
                 disabled?: boolean;
             };
         };
+        eliteAffixes?: {
+            enabled: boolean;
+            disabled?: boolean;
+        };
     }): void;
     setTurretAvailability(availability: Record<string, boolean>): void;
     setTurretDowngradeEnabled(enabled: boolean): void;
@@ -401,6 +409,8 @@ export declare class HudView {
     private renderLog;
     private renderWaveScorecard;
     private updateShieldTelemetry;
+    private updateAffixTelemetry;
+    private summarizeAffixLabels;
     private refreshRoadmap;
     getShieldForecast(): {
         current: boolean;

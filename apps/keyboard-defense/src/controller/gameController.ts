@@ -193,8 +193,10 @@ export class GameController {
     this.enabledTurretTypes = new Set();
     this.featureToggles = { ...defaultConfig.featureToggles };
     this.debugCrystalToggle = null;
+    this.debugEliteToggle = null;
     this.debugDowngradeToggle = null;
     this.mainMenuCrystalToggle = null;
+    this.mainMenuEliteToggle = null;
     const mergedTurretArchetypes = {
       ...defaultConfig.turretArchetypes,
       ...(options.config?.turretArchetypes ?? {})
@@ -373,6 +375,8 @@ export class GameController {
           defeatAnimationSelect: "options-defeat-animation",
           telemetryToggle: "options-telemetry-toggle",
           telemetryToggleWrapper: "options-telemetry-toggle-wrapper",
+          eliteAffixToggle: "options-elite-affix-toggle",
+          eliteAffixToggleWrapper: "options-elite-affix-toggle-wrapper",
           crystalPulseToggle: "options-crystal-toggle",
           crystalPulseToggleWrapper: "options-crystal-toggle-wrapper",
           analyticsExportButton: "options-analytics-export"
@@ -425,6 +429,7 @@ export class GameController {
         onAnalyticsExport: this.analyticsExportEnabled ? () => this.exportAnalytics() : undefined,
         onTelemetryToggle: (enabled) => this.setTelemetryEnabled(enabled),
         onCrystalPulseToggle: (enabled) => this.setCrystalPulseEnabled(enabled),
+        onEliteAffixesToggle: (enabled) => this.setEliteAffixesEnabled(enabled),
         onPauseRequested: () => this.openOptionsOverlay(),
         onResumeRequested: () => this.closeOptionsOverlay(),
         onSoundToggle: (enabled) => this.setSoundEnabled(enabled),
@@ -666,6 +671,8 @@ export class GameController {
     const telemetryToggle = document.getElementById("main-menu-telemetry-toggle");
     const crystalWrapper = document.getElementById("main-menu-crystal-toggle-wrapper");
     const crystalToggle = document.getElementById("main-menu-crystal-toggle");
+    const eliteWrapper = document.getElementById("main-menu-elite-toggle-wrapper");
+    const eliteToggle = document.getElementById("main-menu-elite-toggle");
     if (!overlay || !copy || !skipBtn) {
       this.menuActive = false;
       if (!shouldSkipTutorial) {
@@ -699,6 +706,17 @@ export class GameController {
       });
     } else {
       this.mainMenuCrystalToggle = null;
+    }
+    if (eliteWrapper instanceof HTMLElement && eliteToggle instanceof HTMLInputElement) {
+      this.mainMenuEliteToggle = eliteToggle;
+      eliteWrapper.style.display = "";
+      eliteWrapper.setAttribute("aria-hidden", "false");
+      eliteToggle.checked = Boolean(this.featureToggles.eliteAffixes);
+      eliteToggle.addEventListener("change", () => {
+        this.setEliteAffixesEnabled(eliteToggle.checked);
+      });
+    } else {
+      this.mainMenuEliteToggle = null;
     }
     const show = (el, visible) => {
       if (!el) return;
@@ -741,6 +759,7 @@ export class GameController {
     this.menuActive = true;
     overlay.dataset.visible = "true";
     this.syncCrystalPulseControls();
+    this.syncEliteAffixControls();
     if (!shouldSkipTutorial) {
       copy.textContent =
         "Welcome defender! Start with the guided tutorial or jump straight into the campaign.";
@@ -1095,6 +1114,18 @@ export class GameController {
       this.mainMenuCrystalToggle.checked = enabled;
     }
   }
+  syncEliteAffixControls() {
+    const enabled = Boolean(this.featureToggles?.eliteAffixes);
+    if (this.debugEliteToggle instanceof HTMLButtonElement) {
+      this.debugEliteToggle.textContent = enabled
+        ? "Disable Elite Affixes"
+        : "Enable Elite Affixes";
+      this.debugEliteToggle.setAttribute("aria-pressed", enabled ? "true" : "false");
+    }
+    if (this.mainMenuEliteToggle instanceof HTMLInputElement) {
+      this.mainMenuEliteToggle.checked = enabled;
+    }
+  }
   setCrystalPulseEnabled(enabled, options = {}) {
     const { persist = true, silent = false, force = false, skipSync = false } = options;
     const normalized = Boolean(enabled);
@@ -1130,6 +1161,39 @@ export class GameController {
     if (!skipSync) {
       sync();
     }
+  }
+  setEliteAffixesEnabled(enabled, options = {}) {
+    const { persist = true, silent = false, force = false, skipSync = false } = options;
+    const normalized = Boolean(enabled);
+    const sync = () => {
+      this.updateOptionsOverlayState();
+      this.syncEliteAffixControls();
+    };
+    if (this.featureToggles.eliteAffixes === normalized && !force) {
+      if (!skipSync) {
+        sync();
+      }
+      return this.featureToggles.eliteAffixes;
+    }
+    this.featureToggles.eliteAffixes = normalized;
+    this.engine.config.featureToggles = {
+      ...this.engine.config.featureToggles,
+      eliteAffixes: normalized
+    };
+    if (persist) {
+      this.persistPlayerSettings({ eliteAffixesEnabled: normalized });
+    }
+    if (!silent) {
+      this.hud.appendLog(
+        normalized
+          ? "Elite affixes enabled. Expect armored, shielded, or aura elites."
+          : "Elite affixes disabled."
+      );
+    }
+    if (!skipSync) {
+      sync();
+    }
+    return normalized;
   }
   setTurretDowngradeEnabled(enabled, options = {}) {
     const { silent = false } = options;
@@ -1480,6 +1544,10 @@ export class GameController {
         available: Boolean(this.telemetryClient),
         checked: Boolean(this.telemetryClient ? this.telemetryEnabled : false),
         disabled: !this.telemetryClient
+      },
+      eliteAffixes: {
+        enabled: Boolean(this.featureToggles?.eliteAffixes),
+        disabled: false
       },
       turretFeatures: {
         crystalPulse: {
@@ -3245,6 +3313,14 @@ export class GameController {
       persist: false,
       silent: true
     });
+    this.setEliteAffixesEnabled(
+      stored.eliteAffixesEnabled ?? this.featureToggles.eliteAffixes ?? false,
+      {
+        persist: false,
+        silent: true,
+        force: true
+      }
+    );
     this.setSoundEnabled(stored.soundEnabled, { silent: true, persist: false, render: false });
     this.setSoundVolume(stored.soundVolume ?? SOUND_VOLUME_DEFAULT, {
       silent: true,
@@ -3344,6 +3420,7 @@ export class GameController {
     const telemetryEndpointInput = document.getElementById("debug-telemetry-endpoint");
     const telemetryEndpointApply = document.getElementById("debug-telemetry-endpoint-apply");
     const crystalToggleButton = document.getElementById("debug-crystal-toggle");
+    const eliteToggleButton = document.getElementById("debug-elite-toggle");
     const downgradeToggleButton = document.getElementById("debug-turret-downgrade");
 
     const candidateTelemetryControls = {
@@ -3374,6 +3451,14 @@ export class GameController {
       );
     } else {
       this.debugCrystalToggle = null;
+    }
+    if (eliteToggleButton instanceof HTMLButtonElement) {
+      this.debugEliteToggle = eliteToggleButton;
+      eliteToggleButton.addEventListener("click", () =>
+        this.setEliteAffixesEnabled(!this.featureToggles.eliteAffixes)
+      );
+    } else {
+      this.debugEliteToggle = null;
     }
     if (downgradeToggleButton instanceof HTMLButtonElement) {
       this.debugDowngradeToggle = downgradeToggleButton;
@@ -3491,6 +3576,7 @@ export class GameController {
     this.syncSoundDebugControls();
     this.syncTurretDowngradeControls();
     this.syncCrystalPulseControls();
+    this.syncEliteAffixControls();
   }
   handleCastleUpgrade() {
     this.upgradeCastle();
