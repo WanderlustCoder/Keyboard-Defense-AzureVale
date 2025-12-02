@@ -57,6 +57,7 @@ Status entries live under `docs/status/`. Recent highlights include:
 - `2025-12-07_asset_manifest_generation.md` - CLI to generate asset manifests with integrity hashes (`npm run assets:manifest`) plus verification mode.
 - `2025-12-07_sprite_atlas_generation.md` - Sprite atlas packer CLI (`npm run assets:atlas`) with row-wrapping layout and tests.
 - `2025-12-07_deferred_highres_assets.md` - Tiered asset loader loads low-res first, then high-res replacements with forced reloads and graceful fallback on failure.
+- `2025-12-07_projectile_particles.md` - Offscreen-capable particle renderer stub with reduced-motion no-op and decay tests.
 - `2025-12-04_docs_watch.md` - `npm run docs:watch` monitors docs folders and auto-regenerates the Codex dashboard/portal after doc edits with debounced rebuilds.
 - `2025-12-04_runtime_log_summary.md` - `npm run logs:summary` scans monitor/dev-server logs and emits breach/accuracy + warning/error summaries in JSON/Markdown.
 - `2025-12-03_typing_drills_telemetry.md` - Telemetry summary CLI + dashboard tile for menu quickstarts, with fixtures/tests and coverage ignores.
