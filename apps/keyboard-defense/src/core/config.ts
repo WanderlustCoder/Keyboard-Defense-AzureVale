@@ -17,6 +17,7 @@ export interface FeatureToggles {
   tutorials: boolean;
   campaignMap: boolean;
   dynamicDifficulty: boolean;
+  dynamicSpawns: boolean;
   eliteAffixes: boolean;
   analyticsExport: boolean;
   telemetry: boolean;
@@ -175,6 +176,7 @@ export const defaultConfig: GameConfig = {
     tutorials: true,
     campaignMap: false,
     dynamicDifficulty: false,
+    dynamicSpawns: true,
     eliteAffixes: true,
     analyticsExport: true,
     telemetry: false,

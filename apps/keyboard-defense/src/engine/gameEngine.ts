@@ -42,6 +42,16 @@ const MAX_GOLD_EVENTS = 200;
 const MAX_COMBO_WARNING_HISTORY = 20;
 const MAX_TYPING_DRILL_HISTORY = 20;
 const DEFAULT_TURRET_PRIORITY: TurretTargetPriority = "first";
+const DYNAMIC_EVENT_ORDER_START = 1000;
+
+type DynamicSpawnEvent = {
+  time: number;
+  lane: number;
+  tierId: string;
+  shield?: number;
+  taunt?: string;
+  order: number;
+};
 
 export interface TurretBlueprintSlot {
   typeId: TurretTypeId;
@@ -159,6 +169,8 @@ export class GameEngine {
   private readonly difficultyBands: DifficultyBand[];
   private currentDifficultyBand: DifficultyBand;
   private defeatBurstModeResolver: ((enemy: EnemyState) => DefeatBurstMode) | null = null;
+  private dynamicEvents: DynamicSpawnEvent[] = [];
+  private dynamicEventIndex = 0;
 
   private recalculateAverageDps(): void {
     const analytics = this.state.analytics;
@@ -166,6 +178,75 @@ export class GameEngine {
     analytics.averageTurretDps = analytics.totalTurretDamage / elapsed;
     analytics.averageTypingDps = analytics.totalTypingDamage / elapsed;
     analytics.averageTotalDps = analytics.totalDamageDealt / elapsed;
+  }
+
+  private resetDynamicEvents(): void {
+    this.dynamicEvents = [];
+    this.dynamicEventIndex = 0;
+  }
+
+  private buildDynamicEventsForWave(waveIndex: number): void {
+    this.resetDynamicEvents();
+    if (!this.config.featureToggles.dynamicSpawns) {
+      return;
+    }
+    const waveConfig = this.config.waves[waveIndex];
+    if (!waveConfig || waveConfig.duration <= 6) {
+      return;
+    }
+    const lanes = Array.from(new Set(this.config.turretSlots.map((slot) => slot.lane))).sort(
+      (a, b) => a - b
+    );
+    if (lanes.length === 0) {
+      return;
+    }
+    const rng = new PRNG(this.seed ^ Math.imul(waveIndex + 1, 0x9e3779b1));
+    const count = Math.max(1, Math.min(3, Math.round(rng.range(1, 2.4)) + (waveIndex > 0 ? 1 : 0)));
+    const events: DynamicSpawnEvent[] = [];
+    let order = DYNAMIC_EVENT_ORDER_START;
+    for (let i = 0; i < count; i++) {
+      const timeWindowStart = 4;
+      const timeWindowEnd = Math.max(timeWindowStart + 2, waveConfig.duration - 4);
+      const time = rng.range(timeWindowStart, timeWindowEnd);
+      const lane = rng.pick(lanes);
+      const kind = rng.pick<"skirmish" | "gold-runner" | "shield-carrier">([
+        "skirmish",
+        "gold-runner",
+        "shield-carrier"
+      ]);
+      if (kind === "shield-carrier") {
+        events.push({ time, lane, tierId: "runner", shield: 35, taunt: "Shield courier inbound!", order: order++ });
+      } else if (kind === "gold-runner") {
+        events.push({ time, lane, tierId: "runner", taunt: "Gold courier sprinting!", order: order++ });
+      } else {
+        events.push({ time, lane, tierId: "grunt", order: order++ });
+      }
+    }
+    events.sort((a, b) => a.time - b.time);
+    this.dynamicEvents = events;
+    this.dynamicEventIndex = 0;
+  }
+
+  private collectDynamicSpawnRequests(currentTime: number): Omit<SpawnEnemyInput, "difficulty">[] {
+    const requests: Omit<SpawnEnemyInput, "difficulty">[] = [];
+    if (!this.config.featureToggles.dynamicSpawns || this.dynamicEvents.length === 0) {
+      return requests;
+    }
+    while (
+      this.dynamicEventIndex < this.dynamicEvents.length &&
+      this.dynamicEvents[this.dynamicEventIndex].time <= currentTime
+    ) {
+      const event = this.dynamicEvents[this.dynamicEventIndex];
+      requests.push({
+        tierId: event.tierId,
+        lane: event.lane,
+        shield: typeof event.shield === "number" ? { health: event.shield } : undefined,
+        taunt: event.taunt,
+        order: event.order
+      });
+      this.dynamicEventIndex += 1;
+    }
+    return requests;
   }
 
   private resolveAffixSeed(input: {
@@ -241,6 +322,7 @@ export class GameEngine {
     this.telemetryClient = options.telemetryClient;
     this.lastWaveIndex = this.state.wave.index;
     this.unlockSlotsForWave(this.lastWaveIndex);
+    this.resetDynamicEvents();
     this.difficultyBands = [...this.config.difficultyBands].sort((a, b) => a.fromWave - b.fromWave);
     this.currentDifficultyBand = this.resolveDifficulty(this.state.wave.index);
 
@@ -255,6 +337,7 @@ export class GameEngine {
     this.state.analytics.mode = this.state.mode;
     this.lastWaveIndex = this.state.wave.index;
     this.unlockSlotsForWave(this.lastWaveIndex);
+    this.resetDynamicEvents();
     this.currentDifficultyBand = this.resolveDifficulty(this.state.wave.index);
     this.resetAnalytics();
   }
@@ -280,7 +363,9 @@ export class GameEngine {
     this.state.time += deltaSeconds;
 
     const spawnRequests = this.waveSystem.update(this.state, deltaSeconds);
-    for (const request of spawnRequests) {
+    const dynamicRequests = this.collectDynamicSpawnRequests(this.state.wave.timeInWave);
+    const allRequests = [...spawnRequests, ...dynamicRequests];
+    for (const request of allRequests) {
       const difficulty = this.resolveDifficulty(this.state.wave.index);
       this.currentDifficultyBand = difficulty;
       const affixes = this.resolveSpawnAffixes(request, this.state.wave.index);
@@ -293,12 +378,14 @@ export class GameEngine {
     }
 
     if (prevInCountdown && !this.state.wave.inCountdown && this.state.status === "running") {
+      this.buildDynamicEventsForWave(this.state.wave.index);
       this.beginWaveAnalytics(this.state.wave.index);
     }
 
     if (this.state.wave.index !== this.lastWaveIndex) {
       this.lastWaveIndex = this.state.wave.index;
       this.unlockSlotsForWave(this.lastWaveIndex);
+      this.resetDynamicEvents();
     }
 
     this.enemySystem.update(this.state, deltaSeconds);
@@ -1009,16 +1096,38 @@ export class GameEngine {
 
   getUpcomingSpawns(limit = 6): WaveSpawnPreview[] {
     const previews = this.waveSystem.getUpcomingSpawns(this.state, limit);
-    if (!this.config.featureToggles.eliteAffixes) {
-      return previews;
+    const dynamicPreviews: WaveSpawnPreview[] = [];
+    if (this.config.featureToggles.dynamicSpawns && this.dynamicEvents.length > 0) {
+      const waveTime = this.state.wave.inCountdown ? 0 : this.state.wave.timeInWave;
+      const countdown = this.state.wave.inCountdown ? this.state.wave.countdownRemaining : 0;
+      for (let i = this.dynamicEventIndex; i < this.dynamicEvents.length; i++) {
+        const event = this.dynamicEvents[i];
+        const timeUntil = this.state.wave.inCountdown
+          ? countdown + event.time
+          : Math.max(0, event.time - waveTime);
+        dynamicPreviews.push({
+          waveIndex: this.state.wave.index,
+          lane: event.lane,
+          tierId: event.tierId,
+          timeUntil,
+          scheduledTime: event.time,
+          isNextWave: false,
+          order: event.order
+        });
+      }
     }
-    return previews.map((entry) => {
+    const all = [...previews, ...dynamicPreviews].map((entry) => {
+      if (!this.config.featureToggles.eliteAffixes) {
+        return entry;
+      }
       const affixes = this.resolveSpawnAffixes(
         entry as unknown as SpawnEnemyInput,
         entry.waveIndex ?? this.state.wave.index
       );
       return { ...entry, affixes };
     });
+    all.sort((a, b) => a.timeUntil - b.timeUntil);
+    return all.slice(0, limit);
   }
 
   resetAnalytics(): void {
