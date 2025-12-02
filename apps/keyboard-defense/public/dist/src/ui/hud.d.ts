@@ -30,6 +30,7 @@ export interface HudCallbacks {
     onCheckeredBackgroundToggle(enabled: boolean): void;
     onReadableFontToggle(enabled: boolean): void;
     onDyslexiaFontToggle(enabled: boolean): void;
+    onDyslexiaSpacingToggle?: (enabled: boolean) => void;
     onColorblindPaletteToggle(enabled: boolean): void;
     onDefeatAnimationModeChange(mode: DefeatAnimationPreference): void;
     onHudFontScaleChange(scale: number): void;
@@ -96,6 +97,7 @@ type OptionsOverlayElements = {
     checkeredBackgroundToggle: string;
     readableFontToggle: string;
     dyslexiaFontToggle: string;
+    dyslexiaSpacingToggle?: string;
     colorblindPaletteToggle: string;
     fontScaleSelect: string;
     defeatAnimationSelect: string;
@@ -326,6 +328,7 @@ export declare class HudView {
         checkeredBackgroundEnabled: boolean;
         readableFontEnabled: boolean;
         dyslexiaFontEnabled: boolean;
+        dyslexiaSpacingEnabled?: boolean;
         colorblindPaletteEnabled: boolean;
         hudFontScale: number;
         defeatAnimationMode: DefeatAnimationPreference;

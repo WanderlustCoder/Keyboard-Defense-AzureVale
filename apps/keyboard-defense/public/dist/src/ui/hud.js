@@ -350,6 +350,9 @@ export class HudView {
             const checkeredBackgroundToggle = document.getElementById(rootIds.optionsOverlay.checkeredBackgroundToggle);
             const readableFontToggle = document.getElementById(rootIds.optionsOverlay.readableFontToggle);
             const dyslexiaFontToggle = document.getElementById(rootIds.optionsOverlay.dyslexiaFontToggle);
+            const dyslexiaSpacingToggle = rootIds.optionsOverlay.dyslexiaSpacingToggle
+                ? document.getElementById(rootIds.optionsOverlay.dyslexiaSpacingToggle)
+                : null;
             const colorblindPaletteToggle = document.getElementById(rootIds.optionsOverlay.colorblindPaletteToggle);
             const fontScaleSelect = document.getElementById(rootIds.optionsOverlay.fontScaleSelect);
             const defeatAnimationSelect = document.getElementById(rootIds.optionsOverlay.defeatAnimationSelect);
@@ -387,6 +390,7 @@ export class HudView {
                 checkeredBackgroundToggle instanceof HTMLInputElement &&
                 readableFontToggle instanceof HTMLInputElement &&
                 dyslexiaFontToggle instanceof HTMLInputElement &&
+                (dyslexiaSpacingToggle === null || dyslexiaSpacingToggle instanceof HTMLInputElement) &&
                 colorblindPaletteToggle instanceof HTMLInputElement &&
                 fontScaleSelect instanceof HTMLSelectElement &&
                 defeatAnimationSelect instanceof HTMLSelectElement) {
@@ -408,6 +412,7 @@ export class HudView {
                     checkeredBackgroundToggle,
                     readableFontToggle,
                     dyslexiaFontToggle,
+                    dyslexiaSpacingToggle: dyslexiaSpacingToggle instanceof HTMLInputElement ? dyslexiaSpacingToggle : undefined,
                     colorblindPaletteToggle,
                     fontScaleSelect,
                     defeatAnimationSelect,
@@ -550,6 +555,13 @@ export class HudView {
                         return;
                     this.callbacks.onDyslexiaFontToggle(dyslexiaFontToggle.checked);
                 });
+                if (this.optionsOverlay.dyslexiaSpacingToggle) {
+                    this.optionsOverlay.dyslexiaSpacingToggle.addEventListener("change", () => {
+                        if (this.syncingOptionToggles)
+                            return;
+                        this.callbacks.onDyslexiaSpacingToggle?.(this.optionsOverlay.dyslexiaSpacingToggle.checked);
+                    });
+                }
                 colorblindPaletteToggle.addEventListener("change", () => {
                     if (this.syncingOptionToggles)
                         return;
@@ -954,6 +966,9 @@ export class HudView {
         this.optionsOverlay.checkeredBackgroundToggle.checked = state.checkeredBackgroundEnabled;
         this.optionsOverlay.readableFontToggle.checked = state.readableFontEnabled;
         this.optionsOverlay.dyslexiaFontToggle.checked = state.dyslexiaFontEnabled;
+        if (this.optionsOverlay.dyslexiaSpacingToggle && state.dyslexiaSpacingEnabled !== undefined) {
+            this.optionsOverlay.dyslexiaSpacingToggle.checked = state.dyslexiaSpacingEnabled;
+        }
         this.optionsOverlay.colorblindPaletteToggle.checked = state.colorblindPaletteEnabled;
         this.setSelectValue(this.optionsOverlay.fontScaleSelect, state.hudFontScale.toString());
         this.setSelectValue(this.optionsOverlay.defeatAnimationSelect, state.defeatAnimationMode ?? "auto");

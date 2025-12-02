@@ -54,6 +54,7 @@ export declare class GameController {
     setVirtualKeyboardEnabled(enabled: any, options?: {}): void;
     setHapticsEnabled(enabled: any, options?: {}): boolean;
     setDyslexiaFontEnabled(enabled: any, options?: {}): void;
+    setDyslexiaSpacingEnabled(enabled: any, options?: {}): boolean;
     setSoundVolume(volume: any, options?: {}): void;
     setAudioIntensity(intensity: any, options?: {}): void;
     updateAmbientTrack(state: any): void;
@@ -83,6 +84,7 @@ export declare class GameController {
     applyCheckeredBackgroundSetting(enabled: any): void;
     applyReadableFontSetting(enabled: any): void;
     applyDyslexiaFontSetting(enabled: any): void;
+    applyDyslexiaSpacingSetting(enabled: any): void;
     applyColorblindPaletteSetting(enabled: any): void;
     updateSessionWellness(): void;
     showBreakReminder(elapsedMs: any): void;
