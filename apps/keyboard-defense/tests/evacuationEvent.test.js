@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 import { defaultConfig } from "../src/core/config.js";
 import { EventBus } from "../src/core/eventBus.js";
 import { GameEngine } from "../src/engine/gameEngine.js";
+import { PRNG } from "../src/utils/random.js";
 
 function createEngine(overrides = {}) {
   const config = {
@@ -85,5 +86,54 @@ describe("evacuation event", () => {
     const expectedGoldGain =
       defaultConfig.evacuation.rewardGold + defaultConfig.enemyTiers["evac-transport"].reward;
     expect(final.resources.gold).toBeGreaterThanOrEqual(startGold + expectedGoldGain - 1);
+  });
+
+  test("evacuation avoids lanes reserved by hazards/dynamic events", () => {
+    const engine = createEngine({
+      turretSlots: [
+        { id: "lane-a", lane: 0, unlocked: true },
+        { id: "lane-b", lane: 1, unlocked: true }
+      ],
+      waves: [
+        {
+          id: "evac-wave",
+          duration: 28,
+          rewardBonus: 0,
+          spawns: []
+        }
+      ]
+    });
+    engine["hazardEvents"] = [{ time: 12, lane: 0, kind: "fog", duration: 10 }];
+    engine["dynamicEvents"] = [{ time: 14, lane: 0, tierId: "grunt", order: 1000 }];
+    engine["buildEvacuationEventForWave"](0, new PRNG(999));
+    expect(engine["evacuationEvent"]).not.toBeNull();
+    expect(engine["evacuationEvent"]?.lane).toBe(1);
+  });
+
+  test("evacuation skips scheduling when every lane is occupied", () => {
+    const engine = createEngine({
+      turretSlots: [
+        { id: "lane-a", lane: 0, unlocked: true },
+        { id: "lane-b", lane: 1, unlocked: true }
+      ],
+      waves: [
+        {
+          id: "evac-wave",
+          duration: 26,
+          rewardBonus: 0,
+          spawns: []
+        }
+      ]
+    });
+    engine["hazardEvents"] = [
+      { time: 10, lane: 0, kind: "fog", duration: 10 },
+      { time: 12, lane: 1, kind: "storm", duration: 12 }
+    ];
+    engine["dynamicEvents"] = [
+      { time: 16, lane: 0, tierId: "grunt", order: 1000 },
+      { time: 15, lane: 1, tierId: "runner", order: 1001 }
+    ];
+    engine["buildEvacuationEventForWave"](0, new PRNG(123));
+    expect(engine["evacuationEvent"]).toBeNull();
   });
 });

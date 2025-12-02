@@ -56,6 +56,7 @@ const BOSS_SHOCKWAVE_DURATION = 3.5;
 const BOSS_SHOCKWAVE_SLOW = 0.65;
 const EVAC_REWARD_FALLBACK = 80;
 const EVAC_PENALTY_FALLBACK = 40;
+const EVAC_DYNAMIC_BUFFER = 4;
 
 type DynamicSpawnEvent = {
   time: number;
@@ -242,13 +243,45 @@ export class GameEngine {
       (a, b) => a - b
     );
     if (lanes.length === 0) return;
-    const lane = rng.pick(lanes);
     const midWindowStart = Math.max(6, wave.duration * 0.4);
     const midWindowEnd = Math.max(midWindowStart + 2, wave.duration * 0.65);
-    const time = rng.range(midWindowStart, midWindowEnd);
-    const duration = rng.range(10, 16);
-    const word = this.pickEvacuationWord(lane, waveIndex, rng);
-    this.evacuationEvent = { time, lane, duration, word };
+    const candidateLanes = [...lanes];
+    for (let i = candidateLanes.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(rng.next() * (i + 1));
+      [candidateLanes[i], candidateLanes[j]] = [candidateLanes[j], candidateLanes[i]];
+    }
+    const attempts = Math.max(4, candidateLanes.length * 3);
+    for (let i = 0; i < attempts; i += 1) {
+      const lane = candidateLanes[i % candidateLanes.length];
+      const time = rng.range(midWindowStart, midWindowEnd);
+      const duration = rng.range(10, 16);
+      if (this.hasLaneConflict(lane, time, duration)) {
+        continue;
+      }
+      const word = this.pickEvacuationWord(lane, waveIndex, rng);
+      this.evacuationEvent = { time, lane, duration, word };
+      return;
+    }
+  }
+
+  private hasLaneConflict(lane: number, startTime: number, duration: number): boolean {
+    const endTime = startTime + duration;
+    for (const hazard of this.hazardEvents) {
+      if (hazard.lane !== lane) continue;
+      const hazardEnd = hazard.time + hazard.duration;
+      if (hazard.time <= endTime && hazardEnd >= startTime) {
+        return true;
+      }
+    }
+    for (const event of this.dynamicEvents) {
+      if (event.lane !== lane) continue;
+      const dynStart = event.time;
+      const dynEnd = event.time + EVAC_DYNAMIC_BUFFER;
+      if (dynStart <= endTime && dynEnd >= startTime) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private pickEvacuationWord(lane: number, waveIndex: number, rng: PRNG): string | null {

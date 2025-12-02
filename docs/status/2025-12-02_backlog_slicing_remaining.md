@@ -4,7 +4,7 @@ Context: Only #32, #36, and #38 remain in "Not Started". Each slice below is sco
 
 Update 2025-12-02: #32 is now implemented (see `2025-12-02_boss_archivist_mechanics.md`). Slices retained for phase follow-ups; #36 and #38 remain pending.
 
-Update 2025-12-09: #38 slice 3 shipped (`2025-12-09_wave_preview_slice3.md`); #36 slice 3 remains open.
+Update 2025-12-09: #38 slice 3 shipped (`2025-12-09_wave_preview_slice3.md`); #36 slice 3 closed with lane reservation (`2025-12-09_evacuation_events_slice3.md`).
 
 ## #32 Episode 1 Boss Mechanics (Archivist)
 - **Slice 1: Boss scaffolding & gating**
