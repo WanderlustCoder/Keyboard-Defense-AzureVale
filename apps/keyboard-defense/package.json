@@ -45,6 +45,7 @@
     "analytics:gold:check": "node ./scripts/goldSummaryCheck.mjs",
     "analytics:gold:report": "node ./scripts/goldReport.mjs",
     "analytics:gold:board": "node ./scripts/ci/goldAnalyticsBoard.mjs",
+    "analytics:difficulty-tuning": "node ./scripts/analytics/difficultyTuning.mjs",
     "defeat:preview": "node ./scripts/defeatFramesPreview.mjs --manifest public/assets/manifest.json --mode warn",
     "taunts:validate": "node ./scripts/taunts/validateCatalog.mjs",
     "analytics:asset-integrity": "node ./scripts/ci/assetIntegritySummary.mjs",
