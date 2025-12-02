@@ -168,4 +168,28 @@ describe("TutorialManager assist + replay/skip flows", () => {
     expect(engine.recordTutorialAssist).toHaveBeenCalledTimes(2);
     expect(hud.messages.at(-1)).toMatch(/Hint/i);
   });
+
+  test("skip then replay restarts tutorial and re-arms assist hint", () => {
+    const { manager, hud, engine } = buildTutorialManager();
+
+    manager.start();
+    manager.notify({ type: "ui:continue" }); // intro -> typing-basic
+    manager.skip();
+
+    // Replay from fresh state.
+    manager.start();
+    const state = manager.getState();
+    expect(state.active).toBe(true);
+    expect(state.completedSteps).toHaveLength(0);
+    expect(manager.getCurrentStepId()).toBe("intro");
+    expect(manager.assistHintShown).toBe(false);
+    expect(manager.errorsInStep).toBe(0);
+
+    manager.notify({ type: "ui:continue" }); // intro -> typing-basic
+    for (let i = 0; i < 5; i += 1) {
+      manager.notify({ type: "typing:error" });
+    }
+    expect(engine.recordTutorialAssist).toHaveBeenCalledTimes(1);
+    expect(hud.messages.at(-1)).toMatch(/Hint/i);
+  });
 });
