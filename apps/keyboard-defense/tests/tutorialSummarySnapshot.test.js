@@ -64,12 +64,6 @@ function setupHud() {
   });
   window.matchMedia = global.matchMedia;
 
-  const get = (id) => {
-    const el = document.getElementById(id);
-    if (!el) throw new Error(`Missing element ${id}`);
-    return el;
-  };
-
   const noop = () => {};
   const hud = new HudView(
     defaultConfig,
