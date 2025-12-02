@@ -78,6 +78,7 @@ export interface HudCallbacks {
   onCheckeredBackgroundToggle(enabled: boolean): void;
   onReadableFontToggle(enabled: boolean): void;
   onDyslexiaFontToggle(enabled: boolean): void;
+  onDyslexiaSpacingToggle?: (enabled: boolean) => void;
   onColorblindPaletteToggle(enabled: boolean): void;
   onDefeatAnimationModeChange(mode: DefeatAnimationPreference): void;
   onHudFontScaleChange(scale: number): void;
@@ -186,6 +187,7 @@ type OptionsOverlayElements = {
   checkeredBackgroundToggle: string;
   readableFontToggle: string;
   dyslexiaFontToggle: string;
+  dyslexiaSpacingToggle?: string;
   colorblindPaletteToggle: string;
   fontScaleSelect: string;
   defeatAnimationSelect: string;
@@ -439,6 +441,7 @@ export class HudView {
     checkeredBackgroundToggle: HTMLInputElement;
     readableFontToggle: HTMLInputElement;
     dyslexiaFontToggle: HTMLInputElement;
+    dyslexiaSpacingToggle?: HTMLInputElement;
     colorblindPaletteToggle: HTMLInputElement;
     fontScaleSelect: HTMLSelectElement;
     defeatAnimationSelect: HTMLSelectElement;
@@ -773,6 +776,9 @@ export class HudView {
       );
       const readableFontToggle = document.getElementById(rootIds.optionsOverlay.readableFontToggle);
       const dyslexiaFontToggle = document.getElementById(rootIds.optionsOverlay.dyslexiaFontToggle);
+      const dyslexiaSpacingToggle = rootIds.optionsOverlay.dyslexiaSpacingToggle
+        ? document.getElementById(rootIds.optionsOverlay.dyslexiaSpacingToggle)
+        : null;
       const colorblindPaletteToggle = document.getElementById(
         rootIds.optionsOverlay.colorblindPaletteToggle
       );
@@ -816,6 +822,7 @@ export class HudView {
         checkeredBackgroundToggle instanceof HTMLInputElement &&
         readableFontToggle instanceof HTMLInputElement &&
         dyslexiaFontToggle instanceof HTMLInputElement &&
+        (dyslexiaSpacingToggle === null || dyslexiaSpacingToggle instanceof HTMLInputElement) &&
         colorblindPaletteToggle instanceof HTMLInputElement &&
         fontScaleSelect instanceof HTMLSelectElement &&
         defeatAnimationSelect instanceof HTMLSelectElement
@@ -837,12 +844,14 @@ export class HudView {
           textSizeSelect:
             textSizeSelect instanceof HTMLSelectElement ? textSizeSelect : undefined,
           hapticsToggle: hapticsToggle instanceof HTMLInputElement ? hapticsToggle : undefined,
-          reducedMotionToggle,
-          checkeredBackgroundToggle,
-          readableFontToggle,
-          dyslexiaFontToggle,
-          colorblindPaletteToggle,
-          fontScaleSelect,
+        reducedMotionToggle,
+        checkeredBackgroundToggle,
+        readableFontToggle,
+        dyslexiaFontToggle,
+        dyslexiaSpacingToggle:
+          dyslexiaSpacingToggle instanceof HTMLInputElement ? dyslexiaSpacingToggle : undefined,
+        colorblindPaletteToggle,
+        fontScaleSelect,
           defeatAnimationSelect,
           telemetryToggle:
             telemetryToggle instanceof HTMLInputElement ? telemetryToggle : undefined,
@@ -974,6 +983,14 @@ export class HudView {
           if (this.syncingOptionToggles) return;
           this.callbacks.onDyslexiaFontToggle(dyslexiaFontToggle.checked);
         });
+        if (this.optionsOverlay.dyslexiaSpacingToggle) {
+          this.optionsOverlay.dyslexiaSpacingToggle.addEventListener("change", () => {
+            if (this.syncingOptionToggles) return;
+            this.callbacks.onDyslexiaSpacingToggle?.(
+              this.optionsOverlay!.dyslexiaSpacingToggle!.checked
+            );
+          });
+        }
         colorblindPaletteToggle.addEventListener("change", () => {
           if (this.syncingOptionToggles) return;
           this.callbacks.onColorblindPaletteToggle(colorblindPaletteToggle.checked);
@@ -1382,6 +1399,7 @@ export class HudView {
     checkeredBackgroundEnabled: boolean;
     readableFontEnabled: boolean;
     dyslexiaFontEnabled: boolean;
+    dyslexiaSpacingEnabled?: boolean;
     colorblindPaletteEnabled: boolean;
     hudFontScale: number;
     defeatAnimationMode: DefeatAnimationPreference;
@@ -1437,6 +1455,9 @@ export class HudView {
     this.optionsOverlay.checkeredBackgroundToggle.checked = state.checkeredBackgroundEnabled;
     this.optionsOverlay.readableFontToggle.checked = state.readableFontEnabled;
     this.optionsOverlay.dyslexiaFontToggle.checked = state.dyslexiaFontEnabled;
+    if (this.optionsOverlay.dyslexiaSpacingToggle && state.dyslexiaSpacingEnabled !== undefined) {
+      this.optionsOverlay.dyslexiaSpacingToggle.checked = state.dyslexiaSpacingEnabled;
+    }
     this.optionsOverlay.colorblindPaletteToggle.checked = state.colorblindPaletteEnabled;
     this.setSelectValue(this.optionsOverlay.fontScaleSelect, state.hudFontScale.toString());
     this.setSelectValue(

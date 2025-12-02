@@ -1,5 +1,5 @@
 export const PLAYER_SETTINGS_STORAGE_KEY = "keyboard-defense:player-settings";
-export const PLAYER_SETTINGS_VERSION = 20;
+export const PLAYER_SETTINGS_VERSION = 21;
 const DEFAULT_UPDATED_AT = "1970-01-01T00:00:00.000Z";
 const HUD_FONT_SCALE_MIN = 0.85;
 const HUD_FONT_SCALE_MAX = 1.3;
@@ -30,6 +30,7 @@ const BASE_DEFAULT_SETTINGS = {
     checkeredBackgroundEnabled: false,
     readableFontEnabled: false,
     dyslexiaFontEnabled: false,
+    dyslexiaSpacingEnabled: false,
     colorblindPaletteEnabled: false,
     audioIntensity: DEFAULT_AUDIO_INTENSITY,
     telemetryEnabled: false,
@@ -59,6 +60,7 @@ export function createDefaultPlayerSettings() {
         ...BASE_DEFAULT_SETTINGS,
         readableFontEnabled: false,
         dyslexiaFontEnabled: false,
+        dyslexiaSpacingEnabled: false,
         colorblindPaletteEnabled: false,
         telemetryEnabled: false,
         eliteAffixesEnabled: true,
@@ -110,6 +112,9 @@ export function readPlayerSettings(storage) {
         const dyslexiaFontEnabled = typeof parsed.dyslexiaFontEnabled === "boolean"
             ? parsed.dyslexiaFontEnabled
             : fallback.dyslexiaFontEnabled;
+        const dyslexiaSpacingEnabled = typeof parsed.dyslexiaSpacingEnabled === "boolean"
+            ? parsed.dyslexiaSpacingEnabled
+            : fallback.dyslexiaSpacingEnabled;
         const colorblindPaletteEnabled = typeof parsed.colorblindPaletteEnabled === "boolean"
             ? parsed.colorblindPaletteEnabled
             : fallback.colorblindPaletteEnabled;
@@ -160,6 +165,7 @@ export function readPlayerSettings(storage) {
             checkeredBackgroundEnabled,
             readableFontEnabled,
             dyslexiaFontEnabled,
+            dyslexiaSpacingEnabled,
             colorblindPaletteEnabled,
             audioIntensity,
             telemetryEnabled,
@@ -223,6 +229,9 @@ export function withPatchedPlayerSettings(current, patch) {
         dyslexiaFontEnabled: typeof patch.dyslexiaFontEnabled === "boolean"
             ? patch.dyslexiaFontEnabled
             : current.dyslexiaFontEnabled,
+        dyslexiaSpacingEnabled: typeof patch.dyslexiaSpacingEnabled === "boolean"
+            ? patch.dyslexiaSpacingEnabled
+            : current.dyslexiaSpacingEnabled,
         colorblindPaletteEnabled: typeof patch.colorblindPaletteEnabled === "boolean"
             ? patch.colorblindPaletteEnabled
             : current.colorblindPaletteEnabled,

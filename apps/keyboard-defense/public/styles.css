@@ -32,6 +32,8 @@
   --accent-primary-pill-text: #60a5fa;
   --dyslexia-font-stack: "OpenDyslexic", "Atkinson Hyperlegible", "Comic Sans MS",
     "Arial Rounded MT Bold", "Verdana", sans-serif;
+  --dyslexia-letter-spacing: 0.06em;
+  --dyslexia-line-height: 1.25;
 }
 
 :root[data-colorblind-palette="true"] {
@@ -190,6 +192,18 @@ body[data-dyslexia-font="true"] .tutorial-banner {
 
 body[data-dyslexia-font="true"] #typing-input {
   font-size: 1.05rem;
+}
+
+body[data-dyslexia-spacing="true"] #active-word,
+body[data-dyslexia-spacing="true"] #typing-input,
+body[data-dyslexia-spacing="true"] .typing,
+body[data-dyslexia-spacing="true"] .typing-metric-value,
+body[data-dyslexia-spacing="true"] .typing-drills-cta,
+body[data-dyslexia-spacing="true"] .tutorial-banner,
+body[data-dyslexia-spacing="true"] .tutorial-banner__content,
+body[data-dyslexia-spacing="true"] #wave-preview-list {
+  letter-spacing: var(--dyslexia-letter-spacing);
+  line-height: var(--dyslexia-line-height);
 }
 
 button,

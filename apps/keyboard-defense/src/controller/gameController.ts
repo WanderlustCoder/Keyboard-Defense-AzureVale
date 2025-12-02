@@ -158,6 +158,7 @@ export class GameController {
     this.textSizeScale = 1;
     this.readableFontEnabled = false;
     this.dyslexiaFontEnabled = false;
+    this.dyslexiaSpacingEnabled = false;
     this.colorblindPaletteEnabled = false;
     this.loadingScreen =
       typeof document !== "undefined"
@@ -441,6 +442,7 @@ export class GameController {
           checkeredBackgroundToggle: "options-checkered-bg-toggle",
           readableFontToggle: "options-readable-font-toggle",
           dyslexiaFontToggle: "options-dyslexia-font-toggle",
+          dyslexiaSpacingToggle: "options-dyslexia-spacing-toggle",
           colorblindPaletteToggle: "options-colorblind-toggle",
           fontScaleSelect: "options-font-scale",
           defeatAnimationSelect: "options-defeat-animation",
@@ -516,6 +518,7 @@ export class GameController {
         onCheckeredBackgroundToggle: (enabled) => this.setCheckeredBackgroundEnabled(enabled),
         onReadableFontToggle: (enabled) => this.setReadableFontEnabled(enabled),
         onDyslexiaFontToggle: (enabled) => this.setDyslexiaFontEnabled(enabled),
+        onDyslexiaSpacingToggle: (enabled) => this.setDyslexiaSpacingEnabled(enabled),
         onColorblindPaletteToggle: (enabled) => this.setColorblindPaletteEnabled(enabled),
         onDefeatAnimationModeChange: (mode) => this.setDefeatAnimationMode(mode),
         onHudFontScaleChange: (scale) => this.setHudFontScale(scale),
@@ -1523,6 +1526,23 @@ export class GameController {
       this.render();
     }
   }
+  setDyslexiaSpacingEnabled(enabled, options = {}) {
+    const next = Boolean(enabled);
+    const changed = this.dyslexiaSpacingEnabled !== next;
+    this.dyslexiaSpacingEnabled = next;
+    this.applyDyslexiaSpacingSetting(next);
+    if (!options.silent && changed) {
+      this.hud.appendLog(`Letter spacing ${next ? "increased" : "normal"}`);
+    }
+    this.updateOptionsOverlayState();
+    if (options.persist !== false && changed) {
+      this.persistPlayerSettings({ dyslexiaSpacingEnabled: next });
+    }
+    if (options.render !== false && changed) {
+      this.render();
+    }
+    return changed;
+  }
   setSoundVolume(volume, options = {}) {
     const normalized = this.normalizeSoundVolume(volume);
     const changed = Math.abs(normalized - this.soundVolume) > 0.001;
@@ -1764,6 +1784,7 @@ export class GameController {
       checkeredBackgroundEnabled: this.checkeredBackgroundEnabled,
       readableFontEnabled: this.readableFontEnabled,
       dyslexiaFontEnabled: this.dyslexiaFontEnabled,
+      dyslexiaSpacingEnabled: this.dyslexiaSpacingEnabled,
       colorblindPaletteEnabled: this.colorblindPaletteEnabled,
       hudFontScale: this.hudFontScale,
       defeatAnimationMode: this.defeatAnimationMode,
@@ -1830,6 +1851,17 @@ export class GameController {
     const body = document.body;
     if (body) {
       body.dataset.dyslexiaFont = enabled ? "true" : "false";
+    }
+  }
+  applyDyslexiaSpacingSetting(enabled) {
+    if (typeof document === "undefined") return;
+    const root = document.documentElement;
+    if (root) {
+      root.dataset.dyslexiaSpacing = enabled ? "true" : "false";
+    }
+    const body = document.body;
+    if (body) {
+      body.dataset.dyslexiaSpacing = enabled ? "true" : "false";
     }
   }
   applyColorblindPaletteSetting(enabled) {
@@ -3797,6 +3829,11 @@ export class GameController {
       render: false
     });
     this.setDyslexiaFontEnabled(stored.dyslexiaFontEnabled ?? false, {
+      silent: true,
+      persist: false,
+      render: false
+    });
+    this.setDyslexiaSpacingEnabled(stored.dyslexiaSpacingEnabled ?? false, {
       silent: true,
       persist: false,
       render: false
