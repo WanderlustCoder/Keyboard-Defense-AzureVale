@@ -78,6 +78,7 @@ Status entries live under `docs/status/`. Recent highlights include:
 - `docs/nightly_ops.md` - Cheat sheet for dispatching nightly workflows, artifacts to expect, and quick recovery commands.
 - `apps/keyboard-defense/scripts/ci/downloadArtifacts.mjs` - Helper to pull nightly artifacts via `npm run ci:download-artifacts -- --run-id <id> --name <artifact>`.
   - Can auto-resolve the latest run id via `--workflow ci-matrix-nightly.yml` or `--workflow codex-dashboard-nightly.yml`.
+- `apps/keyboard-defense/docs/WAVE_AUTHORING.md` - Quickstart for generating, validating, and live-previewing designer wave configs.
 - `2025-11-20_gold_percentile_guard.md` - CI guard script now validates gold summary percentiles and publishes JSON/Markdown summaries.
 - `2025-11-20_passive_gold_dashboard.md` - Passive unlock + gold dashboard automation now runs in CI and exposes summary JSON/Markdown for Codex reviews.
 - `2025-11-20_gold_timeline_dashboard.md` - Gold timeline dashboard automation surfaces derived metrics (net delta, spend streaks) directly in CI summaries.
