@@ -11,6 +11,7 @@ export declare class SoundManager {
     private ambientSource;
     private ambientProfile;
     private ambientBuffers;
+    private stingers;
     constructor();
     ensureInitialized(): Promise<void>;
     play(key: string, detune?: number): void;
@@ -25,7 +26,9 @@ export declare class SoundManager {
     setIntensity(intensity: number): void;
     getIntensity(): number;
     private loadSounds;
+    playStinger(kind: "victory" | "defeat"): void;
     private loadAmbientBuffers;
+    private loadStingers;
     private createPad;
     private createTone;
     private createNoise;

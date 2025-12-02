@@ -11,6 +11,7 @@ export class SoundManager {
     ambientSource = null;
     ambientProfile = null;
     ambientBuffers = new Map();
+    stingers = new Map();
     constructor() {
         // Guard for environments without WebAudio (tests/SSR)
         const AudioCtx = globalThis
@@ -34,6 +35,7 @@ export class SoundManager {
         }
         this.loadSounds();
         this.loadAmbientBuffers();
+        this.loadStingers();
         this.initialized = true;
     }
     play(key, detune = 0) {
@@ -170,6 +172,21 @@ export class SoundManager {
             volume: 0.8
         });
     }
+    playStinger(kind) {
+        if (!this.enabled || !this.initialized || !this.ctx || !this.masterGain)
+            return;
+        const buffer = this.stingers.get(kind);
+        if (!buffer)
+            return;
+        const source = this.ctx.createBufferSource();
+        source.buffer = buffer;
+        const gain = this.ctx.createGain();
+        const target = Math.max(0, Math.min(1, 0.8 * this.intensity));
+        gain.gain.value = target;
+        source.connect(gain);
+        gain.connect(this.masterGain);
+        source.start();
+    }
     loadAmbientBuffers() {
         if (!this.ctx)
             return;
@@ -178,6 +195,31 @@ export class SoundManager {
         this.ambientBuffers.set("rising", this.createPad(sampleRate, { baseFreq: 320, spread: 2.4, modFreq: 0.3, noise: 0.04 }));
         this.ambientBuffers.set("siege", this.createPad(sampleRate, { baseFreq: 440, spread: 3.6, modFreq: 0.4, noise: 0.05 }));
         this.ambientBuffers.set("dire", this.createPad(sampleRate, { baseFreq: 180, spread: 4.5, modFreq: 0.18, noise: 0.08 }));
+    }
+    loadStingers() {
+        if (!this.ctx)
+            return;
+        const sampleRate = this.ctx.sampleRate;
+        const buildChord = (root) => {
+            const duration = 1.2;
+            const length = Math.floor(sampleRate * duration);
+            const buffer = this.ctx.createBuffer(1, length, sampleRate);
+            const data = buffer.getChannelData(0);
+            const freqs = [root, root * 1.25, root * 1.5];
+            for (let i = 0; i < length; i++) {
+                const t = i / sampleRate;
+                const env = Math.max(0, 1 - t / duration);
+                const value = freqs.reduce((sum, freq, idx) => {
+                    const detune = idx === 0 ? 0 : idx * 2;
+                    return sum + Math.sin(2 * Math.PI * (freq + detune) * t);
+                }, 0) /
+                    freqs.length;
+                data[i] = value * env * 0.7;
+            }
+            return buffer;
+        };
+        this.stingers.set("victory", buildChord(440));
+        this.stingers.set("defeat", buildChord(196));
     }
     createPad(sampleRate, options) {
         const duration = 4.5;

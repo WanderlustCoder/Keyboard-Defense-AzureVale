@@ -17,6 +17,8 @@ export declare class GameController {
     setSpeed(multiplier: any): void;
     getStateSnapshot(): any;
     spawnEnemy(payload: any): void;
+    spawnPracticeDummy(lane?: number): any;
+    clearPracticeDummies(): any;
     grantGold(amount: any): void;
     getTutorialState(): any;
     completeTutorialStep(stepId: any): boolean;
@@ -233,6 +235,9 @@ export declare class GameController {
     waitForAssets(): Promise<void>;
     attachTypingDrillHooks(): void;
     attachInputHandlers(typingInput: any): void;
+    attachFullscreenListeners(): void;
+    syncFullscreenStateFromDocument(): void;
+    toggleFullscreen(nextActive: any): void;
     attachGlobalShortcuts(): void;
     getHudFontScaleShortcutDelta(event: any): 1 | 0 | -1;
     initializePlayerSettings(): void;

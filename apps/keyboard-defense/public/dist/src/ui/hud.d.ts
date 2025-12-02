@@ -29,6 +29,7 @@ export interface HudCallbacks {
     onColorblindPaletteToggle(enabled: boolean): void;
     onDefeatAnimationModeChange(mode: DefeatAnimationPreference): void;
     onHudFontScaleChange(scale: number): void;
+    onFullscreenToggle?: (nextActive: boolean) => void;
     onTurretHover?: (slotId: string | null, context?: {
         typeId?: TurretTypeId | null;
         level?: number | null;
@@ -179,6 +180,8 @@ export declare class HudView {
     private readonly goldDelta;
     private readonly activeWord;
     private readonly typingInput;
+    private readonly fullscreenButton;
+    private readonly capsLockWarning;
     private readonly upgradePanel;
     private readonly comboLabel;
     private readonly comboAccuracyDelta;
@@ -246,6 +249,9 @@ export declare class HudView {
     private comboBaselineAccuracy;
     private lastAccuracy;
     private hudRoot;
+    private evacBanner?;
+    private evacHideTimeout;
+    private evacResolvedState;
     constructor(config: GameConfig, rootIds: {
         healthBar: string;
         goldLabel: string;
@@ -256,6 +262,7 @@ export declare class HudView {
         comboLabel: string;
         comboAccuracyDelta: string;
         eventLog: string;
+        fullscreenButton?: string;
         wavePreview: string;
         wavePreviewHint?: string;
         tutorialBanner: string;
@@ -275,6 +282,9 @@ export declare class HudView {
         roadmapLaunch?: string;
     }, callbacks: HudCallbacks);
     focusTypingInput(): void;
+    setCapsLockWarning(visible: boolean): void;
+    setFullscreenAvailable(available: boolean): void;
+    setFullscreenActive(active: boolean): void;
     showShortcutOverlay(): void;
     hideShortcutOverlay(): void;
     toggleShortcutOverlay(): void;
@@ -445,6 +455,9 @@ export declare class HudView {
     private updateAnalyticsViewerDrills;
     private refreshAnalyticsViewer;
     private setOptionsOverlayVisible;
+    private updateEvacuation;
+    private scheduleEvacHide;
+    private formatLaneLabel;
 }
 export {};
 //# sourceMappingURL=hud.d.ts.map

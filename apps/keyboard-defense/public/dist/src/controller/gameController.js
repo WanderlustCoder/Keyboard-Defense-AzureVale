@@ -9,6 +9,7 @@ import { HudView } from "../ui/hud.js";
 import { DiagnosticsOverlay } from "../ui/diagnostics.js";
 import { TypingDrillsOverlay } from "../ui/typingDrills.js";
 import { formatHudFontScale, getNextHudFontPreset, normalizeHudFontScaleValue } from "../ui/fontScale.js";
+import { LoadingScreen } from "../ui/loadingScreen.js";
 import { DebugApi } from "../debug/debugApi.js";
 import { SoundManager } from "../audio/soundManager.js";
 import { AssetLoader, toSvgDataUri } from "../assets/assetLoader.js";
@@ -118,6 +119,17 @@ export class GameController {
         this.readableFontEnabled = false;
         this.dyslexiaFontEnabled = false;
         this.colorblindPaletteEnabled = false;
+        this.loadingScreen =
+            typeof document !== "undefined"
+                ? new LoadingScreen({
+                    containerId: "loading-screen",
+                    statusId: "loading-status",
+                    tipId: "loading-tip"
+                })
+                : null;
+        if (this.loadingScreen) {
+            this.loadingScreen.show("Loading pixel defenders...");
+        }
         this.defeatAnimationMode = "auto";
         this.starfieldOverride = null;
         this.lastStarfieldSummary = null;
@@ -142,6 +154,11 @@ export class GameController {
         this.optionsOverlayActive = false;
         this.resumeAfterOptions = false;
         this.menuActive = false;
+        this.fullscreenSupported =
+            typeof document !== "undefined" &&
+                (document.fullscreenEnabled ?? Boolean(document.documentElement?.requestFullscreen));
+        this.fullscreenChangeHandler = null;
+        this.isFullscreen = false;
         this.tutorialCompleted = false;
         this.pendingTutorialSummary = null;
         this.typingDrills = null;
@@ -222,6 +239,11 @@ export class GameController {
             this.handleAssetImageLoaded();
         });
         this.syncAssetIntegrityFlags();
+        const setLoadingStatus = (text) => {
+            if (this.loadingScreen && typeof text === "string") {
+                this.loadingScreen.setStatus(text);
+            }
+        };
         const castleSprites = {};
         for (const levelConfig of config.castleLevels ?? []) {
             const spriteKey = levelConfig.spriteKey ?? `castle-level-${levelConfig.level}`;
@@ -245,6 +267,12 @@ export class GameController {
             "turret-crystal": svgTurretDataUri("#67e8f9", "#0f766e"),
             ...castleSprites
         };
+        if (atlasEnabled) {
+            setLoadingStatus("Packing sprite atlas...");
+        }
+        else {
+            setLoadingStatus("Loading sprites and defenses...");
+        }
         const atlasPromise = atlasEnabled
             ? this.assetLoader
                 .loadAtlas(this.assetLoader.atlasUrl ?? "./assets/atlas.json")
@@ -256,6 +284,7 @@ export class GameController {
         const manifestPromise = atlasPromise
             .catch(() => undefined)
             .then(() => {
+            setLoadingStatus("Loading sprites, sounds, and effects...");
             const skip = new Set(this.assetLoader.listAtlasKeys?.() ?? []);
             return this.assetLoader
                 .loadManifest("./assets/manifest.json", { skip })
@@ -273,6 +302,7 @@ export class GameController {
             return this.assetLoader.loadImages(fallbackSprites);
         });
         this.assetLoadPromise = manifestPromise.then(() => {
+            setLoadingStatus("Preparing castle visuals...");
             this.syncDefeatAnimationPreferences();
             return undefined;
         });
@@ -285,7 +315,22 @@ export class GameController {
                 this.assetLoaderUnsubscribe();
                 this.assetLoaderUnsubscribe = null;
             }
+            setLoadingStatus("Finalizing battle prep...");
             this.syncDefeatAnimationPreferences();
+            if (this.loadingScreen) {
+                this.loadingScreen.hide();
+            }
+        })
+            .catch((error) => {
+            console.warn("Asset loading encountered an issue; continuing with fallbacks.", error);
+            this.assetReady = true;
+            if (this.assetLoaderUnsubscribe) {
+                this.assetLoaderUnsubscribe();
+                this.assetLoaderUnsubscribe = null;
+            }
+            if (this.loadingScreen) {
+                this.loadingScreen.hide();
+            }
         });
         manifestPromise
             .then(() => this.render())
@@ -303,6 +348,7 @@ export class GameController {
             goldDelta: "resource-delta",
             activeWord: "active-word",
             typingInput: "typing-input",
+            fullscreenButton: "fullscreen-button",
             upgradePanel: "upgrade-panel",
             comboLabel: "combo-stats",
             comboAccuracyDelta: "combo-accuracy-delta",
@@ -408,6 +454,7 @@ export class GameController {
             onColorblindPaletteToggle: (enabled) => this.setColorblindPaletteEnabled(enabled),
             onDefeatAnimationModeChange: (mode) => this.setDefeatAnimationMode(mode),
             onHudFontScaleChange: (scale) => this.setHudFontScale(scale),
+            onFullscreenToggle: (next) => this.toggleFullscreen(next),
             onTurretPresetSave: (presetId) => this.handleTurretPresetSave(presetId),
             onTurretPresetApply: (presetId) => this.handleTurretPresetApply(presetId),
             onTurretPresetClear: (presetId) => this.handleTurretPresetClear(presetId),
@@ -437,10 +484,12 @@ export class GameController {
         }
         this.initializePlayerSettings();
         this.hud.setAnalyticsExportEnabled(this.analyticsExportEnabled);
+        this.hud.setFullscreenAvailable(this.fullscreenSupported);
         this.attachInputHandlers(options.typingInput);
         this.attachTypingDrillHooks();
         this.attachDebugButtons();
         this.attachGlobalShortcuts();
+        this.attachFullscreenListeners();
         this.registerHudListeners();
         if (config.featureToggles.tutorials) {
             const shouldSkipTutorial = this.shouldSkipTutorial();
@@ -857,6 +906,33 @@ export class GameController {
     spawnEnemy(payload) {
         this.engine.spawnEnemy(payload);
         this.render();
+    }
+    spawnPracticeDummy(lane = 1) {
+        const clampedLane = Math.max(0, Math.min(2, Number.isFinite(lane) ? Number(lane) : 1));
+        const enemy = this.engine.spawnEnemy({
+            tierId: "dummy",
+            lane: clampedLane,
+            word: "practice",
+            order: 999
+        });
+        if (enemy) {
+            enemy.distance = 0.6;
+            enemy.speed = 0;
+            enemy.baseSpeed = 0;
+            enemy.damage = 0;
+            enemy.reward = 0;
+            this.hud.appendLog?.(`Practice dummy spawned in lane ${["A", "B", "C"][clampedLane] ?? clampedLane + 1}.`);
+        }
+        this.render();
+        return enemy?.id ?? null;
+    }
+    clearPracticeDummies() {
+        const removed = this.engine.removeEnemiesByTier("dummy");
+        if (removed > 0) {
+            this.hud.appendLog?.(`Removed ${removed} practice dummy${removed === 1 ? "" : "ies"}.`);
+        }
+        this.render();
+        return removed;
     }
     grantGold(amount) {
         this.engine.grantGold(amount);
@@ -3018,7 +3094,12 @@ export class GameController {
         }
     }
     attachInputHandlers(typingInput) {
+        const syncCapsLockWarning = (event) => {
+            const isOn = Boolean(event?.getModifierState?.("CapsLock"));
+            this.hud.setCapsLockWarning(isOn);
+        };
         const handler = (event) => {
+            syncCapsLockWarning(event);
             if (this.typingDrillsOverlayActive) {
                 return;
             }
@@ -3060,10 +3141,66 @@ export class GameController {
             }
         };
         typingInput.addEventListener("keydown", handler);
+        typingInput.addEventListener("keyup", syncCapsLockWarning);
         typingInput.addEventListener("focus", () => {
             typingInput.select();
+            this.hud.setCapsLockWarning(false);
+        });
+        typingInput.addEventListener("blur", () => {
+            this.hud.setCapsLockWarning(false);
         });
         this.hud.focusTypingInput();
+    }
+    attachFullscreenListeners() {
+        if (typeof document === "undefined")
+            return;
+        const handler = () => this.syncFullscreenStateFromDocument();
+        document.addEventListener("fullscreenchange", handler);
+        this.fullscreenChangeHandler = handler;
+        this.syncFullscreenStateFromDocument();
+    }
+    syncFullscreenStateFromDocument() {
+        if (!this.fullscreenSupported) {
+            this.hud.setFullscreenActive(false);
+            return;
+        }
+        const active = Boolean(document.fullscreenElement);
+        this.isFullscreen = active;
+        this.hud.setFullscreenActive(active);
+    }
+    toggleFullscreen(nextActive) {
+        if (!this.fullscreenSupported || typeof document === "undefined")
+            return;
+        if (nextActive) {
+            if (document.fullscreenElement) {
+                this.syncFullscreenStateFromDocument();
+                return;
+            }
+            const target = document.documentElement ?? document.body ?? (this.canvas?.ownerDocument?.documentElement ?? null);
+            target
+                ?.requestFullscreen?.()
+                .then(() => {
+                this.syncFullscreenStateFromDocument();
+            })
+                .catch((error) => {
+                console.warn("Fullscreen request failed:", error);
+                this.syncFullscreenStateFromDocument();
+            });
+        }
+        else {
+            if (!document.fullscreenElement) {
+                this.syncFullscreenStateFromDocument();
+                return;
+            }
+            document
+                .exitFullscreen?.()
+                .catch((error) => {
+                console.warn("Fullscreen exit failed:", error);
+            })
+                .finally(() => {
+                this.syncFullscreenStateFromDocument();
+            });
+        }
     }
     attachGlobalShortcuts() {
         if (typeof window === "undefined")
@@ -3283,6 +3420,11 @@ export class GameController {
         const crystalToggleButton = document.getElementById("debug-crystal-toggle");
         const eliteToggleButton = document.getElementById("debug-elite-toggle");
         const downgradeToggleButton = document.getElementById("debug-turret-downgrade");
+        const spawnDummyButton = document.getElementById("debug-spawn-dummy");
+        const clearDummiesButton = document.getElementById("debug-clear-dummies");
+        const wavePreviewButton = document.getElementById("debug-wave-preview");
+        const wavePreviewUrlInput = document.getElementById("debug-wave-preview-url");
+        const wavePreviewSaveButton = document.getElementById("debug-wave-preview-save");
         const candidateTelemetryControls = {
             container: telemetryControlsContainer instanceof HTMLElement ? telemetryControlsContainer : null,
             toggleButton: telemetryToggle instanceof HTMLButtonElement ? telemetryToggle : null,
@@ -3320,6 +3462,43 @@ export class GameController {
         }
         else {
             this.debugDowngradeToggle = null;
+        }
+        if (spawnDummyButton instanceof HTMLButtonElement) {
+            spawnDummyButton.addEventListener("click", () => this.spawnPracticeDummy(1));
+        }
+        if (clearDummiesButton instanceof HTMLButtonElement) {
+            clearDummiesButton.addEventListener("click", () => this.clearPracticeDummies());
+        }
+        const resolveWavePreviewUrl = () => {
+            const storedUrl = safeWindow().localStorage?.getItem("wavePreviewUrl")?.trim() ?? "";
+            const inputUrl = wavePreviewUrlInput instanceof HTMLInputElement ? wavePreviewUrlInput.value.trim() : "";
+            const candidate = inputUrl || storedUrl;
+            return candidate && candidate.startsWith("http") ? candidate : "http://localhost:4179/";
+        };
+        if (wavePreviewUrlInput instanceof HTMLInputElement) {
+            const storedUrl = safeWindow().localStorage?.getItem("wavePreviewUrl");
+            if (storedUrl && storedUrl.startsWith("http")) {
+                wavePreviewUrlInput.value = storedUrl;
+            }
+        }
+        if (wavePreviewSaveButton instanceof HTMLButtonElement && wavePreviewUrlInput) {
+            wavePreviewSaveButton.addEventListener("click", () => {
+                const url = resolveWavePreviewUrl();
+                safeWindow().localStorage?.setItem("wavePreviewUrl", url);
+            });
+        }
+        if (wavePreviewButton instanceof HTMLButtonElement) {
+            wavePreviewButton.addEventListener("click", () => {
+                const url = resolveWavePreviewUrl();
+                safeWindow().localStorage?.setItem("wavePreviewUrl", url);
+                try {
+                    window.open(url, "_blank", "noopener,noreferrer");
+                }
+                catch {
+                    // best-effort open
+                    window.open(url, "_blank");
+                }
+            });
         }
         pause?.addEventListener("click", () => this.pause());
         resume?.addEventListener("click", () => this.resume());
@@ -3841,6 +4020,26 @@ export class GameController {
                 this.hud.appendLog(`Turret ${slot.id.toUpperCase()} -> Lv.${turret.level}`);
                 this.playSound("upgrade", 120);
             }
+        });
+        this.engine.events.on("evac:start", ({ lane, word, duration }) => {
+            const laneLabel = this.describeLane(lane);
+            const label = word ? `"${word}"` : "transport";
+            this.hud.appendLog(`Evacuation started in ${laneLabel} (${label})`);
+            this.hud.showCastleMessage(`Evac in ${laneLabel} — ${Math.round(duration)}s`);
+        });
+        this.engine.events.on("evac:complete", ({ lane, word }) => {
+            const laneLabel = this.describeLane(lane);
+            const label = word ? `"${word}"` : "transport";
+            this.hud.appendLog(`Evac secured in ${laneLabel} (${label}) +reward`);
+            this.hud.showCastleMessage("Evacuation secured!");
+            this.playSound("upgrade", 100);
+        });
+        this.engine.events.on("evac:fail", ({ lane, word }) => {
+            const laneLabel = this.describeLane(lane);
+            const label = word ? `"${word}"` : "transport";
+            this.hud.appendLog(`Evac failed in ${laneLabel} (${label}) -penalty`);
+            this.hud.showCastleMessage("Evacuation failed!");
+            this.playSound("impact-breach", 90);
         });
         this.engine.events.on("projectile:impact", ({ projectile, enemyId }) => {
             if (enemyId) {
