@@ -52,4 +52,30 @@ describe("generateManifest", () => {
       /mismatches/i
     );
   });
+
+  test("preserves existing custom manifest fields", async () => {
+    const tmp = await fs.mkdtemp(path.join(os.tmpdir(), "manifest-test-"));
+    const sprite = path.join(tmp, "gamma.png");
+    await writePng(sprite);
+
+    const outPath = path.join(tmp, "manifest.json");
+    const seedManifest = {
+      version: "seed",
+      customField: { foo: "bar" },
+      defeatAnimations: [{ id: "default", frames: [{ key: "gamma", durationMs: 50 }] }],
+      images: { placeholder: "missing.png" },
+      integrity: { placeholder: "sha256-MISSING" }
+    };
+    await fs.writeFile(outPath, JSON.stringify(seedManifest, null, 2), "utf8");
+
+    await generateManifest({ sourceDir: tmp, outPath });
+    const manifest = JSON.parse(await fs.readFile(outPath, "utf8"));
+    expect(manifest.customField).toEqual({ foo: "bar" });
+    expect(manifest.defeatAnimations).toEqual(seedManifest.defeatAnimations);
+    expect(manifest.version).toBe("seed");
+    expect(manifest.images.gamma).toBe("gamma.png");
+    expect(manifest.integrity.gamma).toMatch(/^sha256-/);
+    expect(manifest.images.placeholder).toBeUndefined();
+    expect(manifest.integrity.placeholder).toBeUndefined();
+  });
 });

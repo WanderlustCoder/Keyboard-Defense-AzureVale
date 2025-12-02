@@ -6,7 +6,7 @@ import { pathToFileURL } from "node:url";
 
 const DEFAULT_SOURCE = "public/assets";
 const DEFAULT_OUT = "public/assets/manifest.json";
-const ALLOWED_EXT = new Set([".png", ".jpg", ".jpeg", ".webp", ".gif", ".svg"]);
+const ALLOWED_EXT = new Set([".png", ".jpg", ".jpeg", ".webp", ".gif", ".svg", ".json"]);
 
 function usage() {
   console.log(`Generate an asset manifest (images + integrity hashes) from a source directory.
@@ -56,12 +56,13 @@ function parseArgs(argv) {
   return options;
 }
 
-async function walkFiles(dir, accumulator = []) {
+async function walkFiles(dir, accumulator = [], skipSet = new Set()) {
   const entries = await fs.readdir(dir, { withFileTypes: true });
   for (const entry of entries) {
     const full = path.join(dir, entry.name);
+    if (skipSet.has(path.resolve(full))) continue;
     if (entry.isDirectory()) {
-      await walkFiles(full, accumulator);
+      await walkFiles(full, accumulator, skipSet);
       continue;
     }
     const ext = path.extname(entry.name).toLowerCase();
@@ -86,7 +87,8 @@ async function hashFile(filePath) {
 }
 
 export async function generateManifest({ sourceDir, outPath, version }) {
-  const files = await walkFiles(sourceDir, []);
+  const skipSet = new Set([path.resolve(outPath)]);
+  const files = await walkFiles(sourceDir, [], skipSet);
   const images = {};
   const integrity = {};
   for (const file of files) {

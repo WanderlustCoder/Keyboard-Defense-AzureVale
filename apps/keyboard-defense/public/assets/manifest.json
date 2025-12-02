@@ -1,12 +1,12 @@
 {
   "version": "1.1",
   "images": {
-    "defeat-default-01": "defeat/defeat-default-01.png",
-    "defeat-default-02": "defeat/defeat-default-02.png",
-    "defeat-default-03": "defeat/defeat-default-03.png",
+    "atlas": "defeat/atlas.json",
     "defeat-brute-01": "defeat/defeat-brute-01.png",
     "defeat-brute-02": "defeat/defeat-brute-02.png",
-    "defeat-atlas": "defeat/atlas.json"
+    "defeat-default-01": "defeat/defeat-default-01.png",
+    "defeat-default-02": "defeat/defeat-default-02.png",
+    "defeat-default-03": "defeat/defeat-default-03.png"
   },
   "defeatAnimations": [
     {
@@ -63,11 +63,11 @@
     }
   ],
   "integrity": {
-    "defeat-default-01": "sha256-HS3cm9AIDCKDrYlKI2Jykr34xU9Gu/Lw6OqW97H7nQg=",
-    "defeat-default-02": "sha256-HS3cm9AIDCKDrYlKI2Jykr34xU9Gu/Lw6OqW97H7nQg=",
-    "defeat-default-03": "sha256-HS3cm9AIDCKDrYlKI2Jykr34xU9Gu/Lw6OqW97H7nQg=",
+    "atlas": "sha256-MsANhlcsl+g+BISeJDJqhX9DqtH6jLl3/xBh0Fmgi/U=",
     "defeat-brute-01": "sha256-HS3cm9AIDCKDrYlKI2Jykr34xU9Gu/Lw6OqW97H7nQg=",
     "defeat-brute-02": "sha256-HS3cm9AIDCKDrYlKI2Jykr34xU9Gu/Lw6OqW97H7nQg=",
-    "defeat-atlas": "sha256-MsANhlcsl+g+BISeJDJqhX9DqtH6jLl3/xBh0Fmgi/U="
+    "defeat-default-01": "sha256-HS3cm9AIDCKDrYlKI2Jykr34xU9Gu/Lw6OqW97H7nQg=",
+    "defeat-default-02": "sha256-HS3cm9AIDCKDrYlKI2Jykr34xU9Gu/Lw6OqW97H7nQg=",
+    "defeat-default-03": "sha256-HS3cm9AIDCKDrYlKI2Jykr34xU9Gu/Lw6OqW97H7nQg="
   }
 }

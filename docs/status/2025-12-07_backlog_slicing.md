@@ -26,7 +26,7 @@ Outlined manageable sub-tasks for remaining “Not Started” backlog items to e
 
 - **#70 Asset manifest generation from source sprites**
   - Create `scripts/assets/generateManifest.mjs` to scan assets and emit a hashed manifest.
-  - Integrate into build/dist and integrity checks; provide “verify only” mode.
+  - Integrate into build/dist and integrity checks; provide "verify only" mode.
   - Tests: fixture snapshot generation and manifest-based integrity pass/fail.
 
 - **#94 Visual regression harness for HUD layout snapshots**
@@ -51,4 +51,4 @@ Outlined manageable sub-tasks for remaining “Not Started” backlog items to e
   - Add automated coverage to ensure completion rows render in tutorial + matrix sections.
 
 ## Next Action
-- Tutorial completion QA metric (#100) is shipped. Next priority: #70 asset manifest generation baseline under the sliced plan above.
+- Asset manifest generation (#70) shipped and bound into `npm run build`. Next priority: #67 castle visual morphing across upgrades.

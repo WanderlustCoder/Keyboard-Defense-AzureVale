@@ -77,7 +77,7 @@
 | 67 | Asset Pipeline & Visuals | Morph castle visuals across upgrade levels. | Not Started |  |
 | 68 | Asset Pipeline & Visuals | Overlay ambient starfield/parallax background effects. | Done | Starfield layer with twinkling particles now renders behind the battlefield |
 | 69 | Asset Pipeline & Visuals | Validate asset integrity via manifest checksum at startup. | Done | AssetLoader hashes sprites via crypto.subtle and rejects mismatches while warning on missing entries |
-| 70 | Asset Pipeline & Visuals | Automate asset manifest generation from source sprites. | Not Started |  |
+| 70 | Asset Pipeline & Visuals | Automate asset manifest generation from source sprites. | Done | Manifest generator runs via `npm run build` and `assets:manifest[:verify]`, preserving custom fields |
 | 71 | Automation, Monitoring, Tooling | Script tutorial auto-run CLI verifying onboarding path nightly. | Done | Tutorial smoke CLI executed in CI via `ci-e2e-azure-vale` workflow |
 | 72 | Automation, Monitoring, Tooling | Capture automated HUD screenshots for docs/regression. | Done | `node scripts/hudScreenshots.mjs` produces deterministic HUD/options PNGs |
 | 73 | Automation, Monitoring, Tooling | Integrate ESLint/Prettier into build pipeline. | Done | `npm run lint` + `npm run format:check` wired into build orchestrator; configs live in repo |
