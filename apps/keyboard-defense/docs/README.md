@@ -16,6 +16,7 @@
 - **deployment_checklist.md** - Edge/Chrome release checklist (automated gates, browser smoke, accessibility, and packaging notes).
 - **visual_baselines.md** - Playwright visual snapshot guidance (commands, coverage, stability notes).
 - **performance_budget.md** - Edge/Chrome performance budgets for sprites, VFX, audio, and payload sizes.
+- **qa_enemy_behaviors.md** - QA checklist for shielded/splitting/stealth/frost enemies, traps, and status effects.
 - **season2_backlog_status.md** - Rolling status for Season 2 backlog items (95-100 tracked; multiplayer placeholder noted).
 
 When adding new doc files, include a one-line summary here for easy discovery.
