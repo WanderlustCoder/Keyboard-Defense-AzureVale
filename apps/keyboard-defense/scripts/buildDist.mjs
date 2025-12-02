@@ -12,6 +12,9 @@ const APP_ROOT = path.resolve(__dirname, "..");
 const TEMP_ROOT = path.join(APP_ROOT, "temp", "dist-build");
 const BUILD_OUT = path.join(TEMP_ROOT, "src");
 const DIST_OUT = path.join(APP_ROOT, "public", "dist", "src");
+const DOCS_SRC = path.join(APP_ROOT, "docs");
+const DOCS_OUT = path.join(APP_ROOT, "public", "dist", "docs");
+const DOC_FOLDERS = ["lore", "enemies", "roadmap", "taunts", "dialogue"];
 
 async function runTsc() {
   await rm(TEMP_ROOT, { recursive: true, force: true });
@@ -33,6 +36,12 @@ async function runTsc() {
 async function copyArtifacts() {
   await mkdir(DIST_OUT, { recursive: true });
   await cp(BUILD_OUT, DIST_OUT, { recursive: true, force: true });
+  await mkdir(DOCS_OUT, { recursive: true });
+  for (const folder of DOC_FOLDERS) {
+    const from = path.join(DOCS_SRC, folder);
+    const to = path.join(DOCS_OUT, folder);
+    await cp(from, to, { recursive: true, force: true });
+  }
   await rm(TEMP_ROOT, { recursive: true, force: true });
 }
 
