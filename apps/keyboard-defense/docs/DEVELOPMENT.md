@@ -75,6 +75,13 @@ npm run start
 
 The readiness token and log file make it easy to integrate with higher-level automation (CI, scripted playtesting, etc.).
 
+### Remote Visual Testing Quickstart
+- Start the dev server bound to your LAN IP:
+  - `npm run serve:open -- --host 0.0.0.0 --port 4200 --force-restart`
+- Run Playwright visuals against that host/port (adds `--update` to refresh baselines):
+  - `npm run test:visual:auto -- --host 0.0.0.0 --port 4200 -- --grep hud-main`
+- Optional: add `--keep-alive` to leave the server running after the visual suite.
+
 ## In-Game HUD Preview
 The HUD now shows an "Upcoming Enemies" list sourced from `GameEngine.getUpcomingSpawns()`. This previews lane, wave, tier, and ETA (including partial lookahead into the next wave) so you can plan turret placements or typing priorities without pausing the game. The section uses the same data exposed through debug APIs, making it useful for automated scenarios as well.
 
