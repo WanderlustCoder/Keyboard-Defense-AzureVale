@@ -98,7 +98,7 @@
 | 88 | Narrative & Content | Curate ambient music tracks escalating across waves. | Not Started |  |
 | 89 | Narrative & Content | Expand word banks with themed lists per wave. | Not Started |  |
 | 90 | Narrative & Content | Compose short victory/defeat stingers. | Not Started |  |
-| 91 | QA & Testing | Expand tutorial state tests to cover assist cues and replay/skip flows. | Not Started |  |
+| 91 | QA & Testing | Expand tutorial state tests to cover assist cues and replay/skip flows. | Done | TutorialManager tests cover assist hints, skip, reset, and replay |
 | 92 | QA & Testing | Add asset loader fallback tests (network failure/cache reuse). | Done | Node tests cover fetch rejection + cached image reuse |
 | 93 | QA & Testing | Write analytics export/reset integration tests for debug panel flows. | Done | HUD/Debug buttons gated when toggle off + CLI usage test |
 | 94 | QA & Testing | Implement visual regression harness for HUD layout snapshots. | Done | Playwright visual project captures hud-main/options/tutorial-summary/wave-scorecard with baselines stored in `baselines/visual` |

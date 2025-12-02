@@ -47,4 +47,4 @@ Outlined manageable sub-tasks for remaining “Not Started” backlog items to e
   - Record summary of attempts and final completion flag.
 
 ## Next Action
-- #63 atlas loader/fallbacks landed. Next priority: #91 tutorial state coverage (assist cue + replay/skip flows) to harden onboarding tests.
+- #91 tutorial assist/replay coverage landed. Next priority: #97 tutorial summary modal snapshot tests to lock UI content and controls.
