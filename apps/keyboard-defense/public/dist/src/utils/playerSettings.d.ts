@@ -1,6 +1,6 @@
 import { TurretTargetPriority, TurretTypeId } from "../core/types.js";
 export declare const PLAYER_SETTINGS_STORAGE_KEY = "keyboard-defense:player-settings";
-export declare const PLAYER_SETTINGS_VERSION = 18;
+export declare const PLAYER_SETTINGS_VERSION = 19;
 export declare const TURRET_PRESET_IDS: readonly ["preset-a", "preset-b", "preset-c"];
 declare const ALLOWED_TURRET_PRESET_IDS: readonly ["preset-a", "preset-b", "preset-c"];
 export type DiagnosticsSectionId = "gold-events" | "castle-passives" | "turret-dps";
@@ -27,6 +27,7 @@ export interface PlayerSettings {
     reducedMotionEnabled: boolean;
     lowGraphicsEnabled: boolean;
     virtualKeyboardEnabled: boolean;
+    hapticsEnabled: boolean;
     checkeredBackgroundEnabled: boolean;
     readableFontEnabled: boolean;
     dyslexiaFontEnabled: boolean;

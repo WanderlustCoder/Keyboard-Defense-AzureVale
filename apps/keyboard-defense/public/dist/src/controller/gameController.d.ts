@@ -52,6 +52,7 @@ export declare class GameController {
     setLowGraphicsEnabled(enabled: any, options?: {}): boolean;
     setReadableFontEnabled(enabled: any, options?: {}): void;
     setVirtualKeyboardEnabled(enabled: any, options?: {}): void;
+    setHapticsEnabled(enabled: any, options?: {}): boolean;
     setDyslexiaFontEnabled(enabled: any, options?: {}): void;
     setSoundVolume(volume: any, options?: {}): void;
     setAudioIntensity(intensity: any, options?: {}): void;
@@ -287,6 +288,7 @@ export declare class GameController {
     getLaneLabelToken(lane: number): string;
     describeEnemyTier(tierId: string): string;
     playSound(key: any, detune?: number): void;
+    triggerHaptics(pattern: number | number[]): void;
     collectImpactEffects(): any;
     addImpactEffect(lane: any, position: any, kind: any, extras?: {}): void;
     attachCanvasResizeObserver(): void;

@@ -1,5 +1,5 @@
 export const PLAYER_SETTINGS_STORAGE_KEY = "keyboard-defense:player-settings";
-export const PLAYER_SETTINGS_VERSION = 18;
+export const PLAYER_SETTINGS_VERSION = 19;
 const DEFAULT_UPDATED_AT = "1970-01-01T00:00:00.000Z";
 const HUD_FONT_SCALE_MIN = 0.85;
 const HUD_FONT_SCALE_MAX = 1.3;
@@ -23,6 +23,7 @@ const BASE_DEFAULT_SETTINGS = {
     reducedMotionEnabled: false,
     lowGraphicsEnabled: false,
     virtualKeyboardEnabled: false,
+    hapticsEnabled: false,
     checkeredBackgroundEnabled: false,
     readableFontEnabled: false,
     dyslexiaFontEnabled: false,
@@ -109,6 +110,9 @@ export function readPlayerSettings(storage) {
         const colorblindPaletteEnabled = typeof parsed.colorblindPaletteEnabled === "boolean"
             ? parsed.colorblindPaletteEnabled
             : fallback.colorblindPaletteEnabled;
+        const hapticsEnabled = typeof parsed.hapticsEnabled === "boolean"
+            ? parsed.hapticsEnabled
+            : fallback.hapticsEnabled;
         const defeatAnimationMode = normalizeDefeatAnimationMode(parsed.defeatAnimationMode);
         const audioIntensity = typeof parsed.audioIntensity === "number"
             ? normalizeAudioIntensity(parsed.audioIntensity)
@@ -145,6 +149,7 @@ export function readPlayerSettings(storage) {
             reducedMotionEnabled,
             lowGraphicsEnabled,
             virtualKeyboardEnabled,
+            hapticsEnabled,
             checkeredBackgroundEnabled,
             readableFontEnabled,
             dyslexiaFontEnabled,
@@ -193,6 +198,9 @@ export function withPatchedPlayerSettings(current, patch) {
         lowGraphicsEnabled: typeof patch.lowGraphicsEnabled === "boolean"
             ? patch.lowGraphicsEnabled
             : current.lowGraphicsEnabled,
+        hapticsEnabled: typeof patch.hapticsEnabled === "boolean"
+            ? patch.hapticsEnabled
+            : current.hapticsEnabled,
         virtualKeyboardEnabled: typeof patch.virtualKeyboardEnabled === "boolean"
             ? patch.virtualKeyboardEnabled
             : current.virtualKeyboardEnabled,

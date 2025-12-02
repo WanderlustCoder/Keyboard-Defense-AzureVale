@@ -71,6 +71,7 @@ export interface HudCallbacks {
   onDiagnosticsToggle(visible: boolean): void;
   onVirtualKeyboardToggle?: (enabled: boolean) => void;
   onLowGraphicsToggle?: (enabled: boolean) => void;
+  onHapticsToggle?: (enabled: boolean) => void;
   onWaveScorecardContinue(): void;
   onReducedMotionToggle(enabled: boolean): void;
   onCheckeredBackgroundToggle(enabled: boolean): void;
@@ -178,6 +179,7 @@ type OptionsOverlayElements = {
   diagnosticsToggle: string;
   virtualKeyboardToggle?: string;
   lowGraphicsToggle: string;
+  hapticsToggle?: string;
   reducedMotionToggle: string;
   checkeredBackgroundToggle: string;
   readableFontToggle: string;
@@ -427,6 +429,7 @@ export class HudView {
     diagnosticsToggle: HTMLInputElement;
     virtualKeyboardToggle?: HTMLInputElement;
     lowGraphicsToggle?: HTMLInputElement;
+    hapticsToggle?: HTMLInputElement;
     reducedMotionToggle: HTMLInputElement;
     checkeredBackgroundToggle: HTMLInputElement;
     readableFontToggle: HTMLInputElement;
@@ -743,6 +746,9 @@ export class HudView {
         ? document.getElementById(rootIds.optionsOverlay.virtualKeyboardToggle)
         : null;
       const lowGraphicsToggle = document.getElementById(rootIds.optionsOverlay.lowGraphicsToggle);
+      const hapticsToggle = rootIds.optionsOverlay.hapticsToggle
+        ? document.getElementById(rootIds.optionsOverlay.hapticsToggle)
+        : null;
       const reducedMotionToggle = document.getElementById(
         rootIds.optionsOverlay.reducedMotionToggle
       );
@@ -812,6 +818,7 @@ export class HudView {
             virtualKeyboardToggle instanceof HTMLInputElement ? virtualKeyboardToggle : undefined,
           lowGraphicsToggle:
             lowGraphicsToggle instanceof HTMLInputElement ? lowGraphicsToggle : undefined,
+          hapticsToggle: hapticsToggle instanceof HTMLInputElement ? hapticsToggle : undefined,
           reducedMotionToggle,
           checkeredBackgroundToggle,
           readableFontToggle,
@@ -915,6 +922,12 @@ export class HudView {
           this.optionsOverlay.lowGraphicsToggle.addEventListener("change", () => {
             if (this.syncingOptionToggles) return;
             this.callbacks.onLowGraphicsToggle?.(this.optionsOverlay!.lowGraphicsToggle!.checked);
+          });
+        }
+        if (this.optionsOverlay.hapticsToggle) {
+          this.optionsOverlay.hapticsToggle.addEventListener("change", () => {
+            if (this.syncingOptionToggles) return;
+            this.callbacks.onHapticsToggle?.(this.optionsOverlay!.hapticsToggle!.checked);
           });
         }
         reducedMotionToggle.addEventListener("change", () => {
@@ -1335,6 +1348,7 @@ export class HudView {
     diagnosticsVisible: boolean;
     lowGraphicsEnabled: boolean;
     virtualKeyboardEnabled?: boolean;
+    hapticsEnabled?: boolean;
     reducedMotionEnabled: boolean;
     checkeredBackgroundEnabled: boolean;
     readableFontEnabled: boolean;
@@ -1383,6 +1397,9 @@ export class HudView {
     }
     if (this.optionsOverlay.lowGraphicsToggle) {
       this.optionsOverlay.lowGraphicsToggle.checked = state.lowGraphicsEnabled;
+    }
+    if (this.optionsOverlay.hapticsToggle && state.hapticsEnabled !== undefined) {
+      this.optionsOverlay.hapticsToggle.checked = state.hapticsEnabled;
     }
     this.optionsOverlay.reducedMotionToggle.checked = state.reducedMotionEnabled;
     this.optionsOverlay.checkeredBackgroundToggle.checked = state.checkeredBackgroundEnabled;

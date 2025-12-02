@@ -23,6 +23,7 @@ export interface HudCallbacks {
     onDiagnosticsToggle(visible: boolean): void;
     onVirtualKeyboardToggle?: (enabled: boolean) => void;
     onLowGraphicsToggle?: (enabled: boolean) => void;
+    onHapticsToggle?: (enabled: boolean) => void;
     onWaveScorecardContinue(): void;
     onReducedMotionToggle(enabled: boolean): void;
     onCheckeredBackgroundToggle(enabled: boolean): void;
@@ -88,6 +89,7 @@ type OptionsOverlayElements = {
     diagnosticsToggle: string;
     virtualKeyboardToggle?: string;
     lowGraphicsToggle: string;
+    hapticsToggle?: string;
     reducedMotionToggle: string;
     checkeredBackgroundToggle: string;
     readableFontToggle: string;
@@ -312,6 +314,7 @@ export declare class HudView {
         diagnosticsVisible: boolean;
         lowGraphicsEnabled: boolean;
         virtualKeyboardEnabled?: boolean;
+        hapticsEnabled?: boolean;
         reducedMotionEnabled: boolean;
         checkeredBackgroundEnabled: boolean;
         readableFontEnabled: boolean;

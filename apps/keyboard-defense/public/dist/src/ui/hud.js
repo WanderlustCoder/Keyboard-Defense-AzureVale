@@ -332,6 +332,9 @@ export class HudView {
                 ? document.getElementById(rootIds.optionsOverlay.virtualKeyboardToggle)
                 : null;
             const lowGraphicsToggle = document.getElementById(rootIds.optionsOverlay.lowGraphicsToggle);
+            const hapticsToggle = rootIds.optionsOverlay.hapticsToggle
+                ? document.getElementById(rootIds.optionsOverlay.hapticsToggle)
+                : null;
             const reducedMotionToggle = document.getElementById(rootIds.optionsOverlay.reducedMotionToggle);
             const checkeredBackgroundToggle = document.getElementById(rootIds.optionsOverlay.checkeredBackgroundToggle);
             const readableFontToggle = document.getElementById(rootIds.optionsOverlay.readableFontToggle);
@@ -388,6 +391,7 @@ export class HudView {
                     diagnosticsToggle,
                     virtualKeyboardToggle: virtualKeyboardToggle instanceof HTMLInputElement ? virtualKeyboardToggle : undefined,
                     lowGraphicsToggle: lowGraphicsToggle instanceof HTMLInputElement ? lowGraphicsToggle : undefined,
+                    hapticsToggle: hapticsToggle instanceof HTMLInputElement ? hapticsToggle : undefined,
                     reducedMotionToggle,
                     checkeredBackgroundToggle,
                     readableFontToggle,
@@ -494,6 +498,13 @@ export class HudView {
                         if (this.syncingOptionToggles)
                             return;
                         this.callbacks.onLowGraphicsToggle?.(this.optionsOverlay.lowGraphicsToggle.checked);
+                    });
+                }
+                if (this.optionsOverlay.hapticsToggle) {
+                    this.optionsOverlay.hapticsToggle.addEventListener("change", () => {
+                        if (this.syncingOptionToggles)
+                            return;
+                        this.callbacks.onHapticsToggle?.(this.optionsOverlay.hapticsToggle.checked);
                     });
                 }
                 reducedMotionToggle.addEventListener("change", () => {
@@ -909,6 +920,9 @@ export class HudView {
         }
         if (this.optionsOverlay.lowGraphicsToggle) {
             this.optionsOverlay.lowGraphicsToggle.checked = state.lowGraphicsEnabled;
+        }
+        if (this.optionsOverlay.hapticsToggle && state.hapticsEnabled !== undefined) {
+            this.optionsOverlay.hapticsToggle.checked = state.hapticsEnabled;
         }
         this.optionsOverlay.reducedMotionToggle.checked = state.reducedMotionEnabled;
         this.optionsOverlay.checkeredBackgroundToggle.checked = state.checkeredBackgroundEnabled;

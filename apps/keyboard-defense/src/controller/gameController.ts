@@ -152,6 +152,7 @@ export class GameController {
     this.reducedMotionEnabled = false;
     this.checkeredBackgroundEnabled = false;
     this.virtualKeyboardEnabled = false;
+    this.hapticsEnabled = false;
     this.readableFontEnabled = false;
     this.dyslexiaFontEnabled = false;
     this.colorblindPaletteEnabled = false;
@@ -426,6 +427,7 @@ export class GameController {
           diagnosticsToggle: "options-diagnostics-toggle",
           virtualKeyboardToggle: "options-virtual-keyboard-toggle",
           lowGraphicsToggle: "options-low-graphics-toggle",
+          hapticsToggle: "options-haptics-toggle",
           reducedMotionToggle: "options-reduced-motion-toggle",
           checkeredBackgroundToggle: "options-checkered-bg-toggle",
           readableFontToggle: "options-readable-font-toggle",
@@ -498,6 +500,7 @@ export class GameController {
         onDiagnosticsToggle: (visible) => this.setDiagnosticsVisible(visible),
         onLowGraphicsToggle: (enabled) => this.setLowGraphicsEnabled(enabled),
         onVirtualKeyboardToggle: (enabled) => this.setVirtualKeyboardEnabled(enabled),
+        onHapticsToggle: (enabled) => this.setHapticsEnabled(enabled),
         onWaveScorecardContinue: () => this.handleWaveScorecardContinue(),
         onReducedMotionToggle: (enabled) => this.setReducedMotionEnabled(enabled),
         onCheckeredBackgroundToggle: (enabled) => this.setCheckeredBackgroundEnabled(enabled),
@@ -1483,6 +1486,19 @@ export class GameController {
       this.render();
     }
   }
+  setHapticsEnabled(enabled, options = {}) {
+    const next = Boolean(enabled);
+    const changed = this.hapticsEnabled !== next;
+    this.hapticsEnabled = next;
+    if (options.persist !== false && changed) {
+      this.persistPlayerSettings({ hapticsEnabled: next });
+    }
+    this.updateOptionsOverlayState();
+    if (!options.silent && changed) {
+      this.hud.appendLog(`Haptics ${next ? "enabled" : "disabled"}`);
+    }
+    return changed;
+  }
   setDyslexiaFontEnabled(enabled, options = {}) {
     this.dyslexiaFontEnabled = enabled;
     this.applyDyslexiaFontSetting(enabled);
@@ -1712,6 +1728,7 @@ export class GameController {
       diagnosticsVisible: this.diagnostics.isVisible(),
       lowGraphicsEnabled: this.lowGraphicsEnabled,
       virtualKeyboardEnabled: this.virtualKeyboardEnabled,
+      hapticsEnabled: this.hapticsEnabled,
       reducedMotionEnabled: this.reducedMotionEnabled,
       checkeredBackgroundEnabled: this.checkeredBackgroundEnabled,
       readableFontEnabled: this.readableFontEnabled,
@@ -2669,6 +2686,9 @@ export class GameController {
     const colorblindUnchanged =
       patch.colorblindPaletteEnabled === undefined ||
       patch.colorblindPaletteEnabled === this.playerSettings.colorblindPaletteEnabled;
+    const hapticsUnchanged =
+      patch.hapticsEnabled === undefined ||
+      patch.hapticsEnabled === this.playerSettings.hapticsEnabled;
     const defeatAnimationModeUnchanged =
       patch.defeatAnimationMode === undefined ||
       patch.defeatAnimationMode === this.playerSettings.defeatAnimationMode;
@@ -2713,6 +2733,7 @@ export class GameController {
       readableFontUnchanged &&
       dyslexiaFontUnchanged &&
       colorblindUnchanged &&
+      hapticsUnchanged &&
       virtualKeyboardUnchanged &&
       lowGraphicsUnchanged &&
       defeatAnimationModeUnchanged &&
@@ -3657,6 +3678,11 @@ export class GameController {
       persist: false,
       render: false
     });
+    this.setHapticsEnabled(stored.hapticsEnabled ?? false, {
+      silent: true,
+      persist: false,
+      render: false
+    });
     this.setLowGraphicsEnabled(stored.lowGraphicsEnabled ?? false, {
       silent: true,
       persist: false,
@@ -4293,6 +4319,7 @@ export class GameController {
       const source = by === "typing" ? "typed" : "turret";
       this.hud.appendLog(`Defeated ${enemy.word} (${source}) ${toGold(reward)}`);
       this.playSound(by === "typing" ? "impact-hit" : "projectile-arrow");
+      this.triggerHaptics(by === "typing" ? [6, 10] : [8]);
       if (this.tutorialManager?.getState().active) {
         this.tutorialManager.notify({
           type: "enemy:defeated",
@@ -4318,6 +4345,7 @@ export class GameController {
     });
     this.engine.events.on("castle:damaged", ({ amount, health }) => {
       this.hud.appendLog(`Castle hit for ${amount} (HP ${Math.ceil(health)})`);
+      this.triggerHaptics([0, 30]);
     });
     this.engine.events.on("castle:upgraded", ({ level }) => {
       this.hud.appendLog(`Castle upgraded to level ${level}`);
@@ -4496,6 +4524,16 @@ export class GameController {
     void this.soundManager.ensureInitialized().then(() => {
       this.soundManager?.play(key, detune);
     });
+  }
+  triggerHaptics(pattern: number | number[]): void {
+    if (!this.hapticsEnabled) return;
+    try {
+      if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
+        navigator.vibrate(pattern);
+      }
+    } catch {
+      // ignore unsupported vibration calls
+    }
   }
   collectImpactEffects() {
     if (!this.currentState) return [];
