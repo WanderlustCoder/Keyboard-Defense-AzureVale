@@ -25,6 +25,7 @@ import { defaultStarfieldConfig } from "../config/starfield.js";
 import { listNewLoreForWave } from "../data/lore.js";
 import { readLoreProgress, writeLoreProgress } from "../utils/lorePersistence.js";
 import { selectAmbientProfile } from "../audio/ambientProfiles.js";
+import { getEnemyBiography } from "../data/bestiary.js";
 const FRAME_DURATION = 1 / 60;
 const TUTORIAL_VERSION = "v2";
 const SOUND_VOLUME_MIN = 0;
@@ -53,6 +54,7 @@ const BREAK_REMINDER_INTERVAL_MS = 20 * 60 * 1000;
 const BREAK_REMINDER_SNOOZE_MS = 10 * 60 * 1000;
 const ASSET_PREWARM_BATCH = 32;
 const ASSET_PREWARM_TIMEOUT_MS = 300;
+const FIRST_ENCOUNTER_STORAGE_KEY = "keyboard-defense:first-encounter-enemies";
 const MEMORY_SAMPLE_INTERVAL_MS = 5_000;
 const MEMORY_WARNING_RATIO = 0.82;
 function svgCircleDataUri(primary, accent) {
@@ -154,6 +156,10 @@ export class GameController {
         this.lowGraphicsEnabled = false;
         this.lowGraphicsRestoreState = null;
         this.hudFontScale = 1;
+        this.firstEncounterSeen = this.loadFirstEncounterSeen();
+        this.enemyIntroOverlay = null;
+        this.enemyIntroActiveTier = null;
+        this.resumeAfterEnemyIntro = false;
         this.impactEffects = [];
         this.turretRangeHighlightSlot = null;
         this.turretRangePreviewType = null;
@@ -551,6 +557,7 @@ export class GameController {
         this.attachDebugButtons();
         this.attachGlobalShortcuts();
         this.attachFullscreenListeners();
+        this.attachEnemyIntroOverlay();
         this.registerHudListeners();
         if (config.featureToggles.tutorials) {
             const shouldSkipTutorial = this.shouldSkipTutorial();
@@ -3307,6 +3314,7 @@ export class GameController {
             lastCanvasResizeCause: this.renderer?.getLastResizeCause?.() ?? null,
             starfield: starfieldState ?? undefined
         });
+        this.checkFirstEncounterOverlay();
     }
     sampleMemoryUsage() {
         if (typeof performance === "undefined" || !performance.memory) {
@@ -4819,6 +4827,138 @@ export class GameController {
             }
             this.canvasResizeTimeout = null;
         }, CANVAS_RESIZE_FADE_MS);
+    }
+    loadFirstEncounterSeen() {
+        if (typeof window === "undefined" || !window.localStorage) {
+            return new Set();
+        }
+        try {
+            const raw = window.localStorage.getItem(FIRST_ENCOUNTER_STORAGE_KEY);
+            if (!raw)
+                return new Set();
+            const parsed = JSON.parse(raw);
+            if (!Array.isArray(parsed))
+                return new Set();
+            return new Set(parsed.filter((id) => typeof id === "string" && id.length > 0));
+        }
+        catch {
+            return new Set();
+        }
+    }
+    persistFirstEncounterSeen() {
+        if (typeof window === "undefined" || !window.localStorage) {
+            return;
+        }
+        const payload = Array.from(this.firstEncounterSeen);
+        try {
+            window.localStorage.setItem(FIRST_ENCOUNTER_STORAGE_KEY, JSON.stringify(payload));
+        }
+        catch {
+            // best effort
+        }
+    }
+    attachEnemyIntroOverlay() {
+        if (typeof document === "undefined")
+            return;
+        const container = document.getElementById("enemy-intro-overlay");
+        const title = document.getElementById("enemy-intro-title");
+        const role = document.getElementById("enemy-intro-role");
+        const description = document.getElementById("enemy-intro-description");
+        const tips = document.getElementById("enemy-intro-tips");
+        const closeButton = document.getElementById("enemy-intro-close");
+        const dismissButton = document.getElementById("enemy-intro-dismiss");
+        if (!container ||
+            !title ||
+            !role ||
+            !description ||
+            !tips ||
+            !(closeButton instanceof HTMLButtonElement) ||
+            !(dismissButton instanceof HTMLButtonElement)) {
+            return;
+        }
+        const hide = () => this.hideEnemyIntroOverlay();
+        closeButton.addEventListener("click", hide);
+        dismissButton.addEventListener("click", hide);
+        container.addEventListener("click", (event) => {
+            if (event.target === container) {
+                hide();
+            }
+        });
+        this.enemyIntroOverlay = {
+            container,
+            title,
+            role,
+            description,
+            tips,
+            closeButton,
+            dismissButton,
+            visible: false
+        };
+    }
+    showEnemyIntroOverlay(tierId, bio) {
+        if (!this.enemyIntroOverlay)
+            return;
+        const overlay = this.enemyIntroOverlay;
+        overlay.title.textContent = bio.name || tierId;
+        overlay.role.textContent = bio.danger ? `${bio.role} • ${bio.danger}` : bio.role ?? "";
+        overlay.description.textContent = bio.description ?? "";
+        overlay.tips.replaceChildren();
+        const tipList = Array.isArray(bio.tips) && bio.tips.length > 0
+            ? bio.tips
+            : ["Stay calm and type clean hits to break through."];
+        for (const tip of tipList.slice(0, 3)) {
+            const li = document.createElement("li");
+            li.textContent = tip;
+            overlay.tips.appendChild(li);
+        }
+        overlay.container.dataset.visible = "true";
+        overlay.container.setAttribute("aria-hidden", "false");
+        overlay.visible = true;
+        this.enemyIntroActiveTier = tierId;
+        this.resumeAfterEnemyIntro = this.running && !this.optionsOverlayActive;
+        if (this.resumeAfterEnemyIntro) {
+            this.pause();
+        }
+        window.setTimeout(() => overlay.dismissButton.focus(), 0);
+    }
+    hideEnemyIntroOverlay() {
+        if (!this.enemyIntroOverlay || !this.enemyIntroOverlay.visible)
+            return;
+        const overlay = this.enemyIntroOverlay;
+        overlay.container.dataset.visible = "false";
+        overlay.container.setAttribute("aria-hidden", "true");
+        overlay.visible = false;
+        if (this.enemyIntroActiveTier) {
+            this.firstEncounterSeen.add(this.enemyIntroActiveTier);
+            this.persistFirstEncounterSeen();
+        }
+        this.enemyIntroActiveTier = null;
+        const shouldResume = this.resumeAfterEnemyIntro &&
+            !this.running &&
+            !this.optionsOverlayActive &&
+            !this.typingDrillsOverlayActive;
+        this.resumeAfterEnemyIntro = false;
+        if (shouldResume) {
+            this.start();
+        }
+    }
+    checkFirstEncounterOverlay() {
+        if (!this.enemyIntroOverlay || this.enemyIntroOverlay.visible)
+            return;
+        if (this.optionsOverlayActive || this.typingDrillsOverlayActive || this.menuActive)
+            return;
+        if (!this.currentState?.enemies || this.currentState.enemies.length === 0)
+            return;
+        for (const enemy of this.currentState.enemies) {
+            const tierId = enemy?.tierId;
+            if (!tierId || tierId === "dummy" || this.firstEncounterSeen.has(tierId)) {
+                continue;
+            }
+            const configTier = this.engine.config.enemyTiers?.[tierId];
+            const bio = getEnemyBiography(tierId, configTier);
+            this.showEnemyIntroOverlay(tierId, bio);
+            break;
+        }
     }
     syncAssetIntegrityFlags() {
         if (typeof document === "undefined" || !document.body) {

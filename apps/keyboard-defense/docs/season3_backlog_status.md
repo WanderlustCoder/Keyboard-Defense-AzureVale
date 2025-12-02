@@ -15,3 +15,4 @@ Quick status snapshot for items in `season3_backlog.md`. Audience ages 8-16, Edg
 | 94 | Asset preloading strategy to avoid hitches during waves | Done | Documented in `docs/asset_preloading_strategy.md`; idle atlas frame prewarm added after manifest load. |
 | 90 | QA checklist for new enemy behaviors and traps | Done | `docs/qa_enemy_behaviors.md` covers shielded/splitting/stealth/frost enemies, traps, status effects, and reduced-motion expectations. |
 | 100 | Release readiness checklist for Season 3 drop | Done | `docs/release_readiness.md` details functional, perf, accessibility, analytics, and packaging gates. |
+| 74 | First-encounter overlays for new enemy types | Done | One-time intro overlay surfaces name/role/tips when an unseen enemy tier spawns; stored in localStorage and auto-pauses until dismissed. |

@@ -1,6 +1,7 @@
 import { type TypingDrillMode, type TypingDrillSummary } from "../core/types.js";
 import { type ResolutionTransitionState } from "../ui/ResolutionTransitionController.js";
 import { type DiagnosticsSectionsPreferenceMap, type TurretLoadoutPreset, type TurretLoadoutSlot } from "../utils/playerSettings.js";
+import { type EnemyBiography } from "../data/bestiary.js";
 export declare class GameController {
     constructor(options: any);
     private resolveStarfieldPreset;
@@ -315,6 +316,12 @@ export declare class GameController {
     handleCanvasTransitionStateChange(state: ResolutionTransitionState): void;
     measureCanvasAvailableWidth(): any;
     triggerCanvasResizeFade(): void;
+    loadFirstEncounterSeen(): Set<any>;
+    persistFirstEncounterSeen(): void;
+    attachEnemyIntroOverlay(): void;
+    showEnemyIntroOverlay(tierId: string, bio: EnemyBiography): void;
+    hideEnemyIntroOverlay(): void;
+    checkFirstEncounterOverlay(): void;
     syncAssetIntegrityFlags(): void;
     syncCanvasResizeCause(): void;
 }

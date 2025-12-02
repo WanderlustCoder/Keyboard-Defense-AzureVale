@@ -514,6 +514,35 @@
       </div>
     </div>
     <div
+      id="enemy-intro-overlay"
+      data-visible="false"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="enemy-intro-title"
+      aria-hidden="true"
+    >
+      <div class="enemy-intro-card">
+        <header class="enemy-intro-header">
+          <div class="enemy-intro-kicker">First encounter</div>
+          <h3 id="enemy-intro-title">New enemy</h3>
+          <p id="enemy-intro-role" class="enemy-intro-role"></p>
+          <button
+            id="enemy-intro-close"
+            class="icon-button"
+            type="button"
+            aria-label="Close enemy intro"
+          ></button>
+        </header>
+        <p id="enemy-intro-description" class="enemy-intro-description"></p>
+        <ul id="enemy-intro-tips" class="enemy-intro-tips"></ul>
+        <div class="enemy-intro-actions">
+          <button id="enemy-intro-dismiss" type="button" class="primary-button">
+            Got it
+          </button>
+        </div>
+      </div>
+    </div>
+    <div
       id="roadmap-overlay"
       data-visible="false"
       role="dialog"
