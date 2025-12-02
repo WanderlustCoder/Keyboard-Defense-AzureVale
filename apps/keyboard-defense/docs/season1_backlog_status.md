@@ -92,7 +92,7 @@
 | 82 | Automation, Monitoring, Tooling | Create deterministic wave simulation CLI for balance sweeps. | Done | `scripts/waveSim.mjs` runs headless GameEngine simulations with artifacts & auto-typing |
 | 83 | Narrative & Content | Script Archivist Lyra dialogue blocks for Episode 1 beats. | Not Started |  |
 | 84 | Narrative & Content | Author lore codex entries unlocked by completing waves. | Not Started |  |
-| 85 | Narrative & Content | Enrich turret tooltips with flavor text. | Not Started |  |
+| 85 | Narrative & Content | Enrich turret tooltips with flavor text. | Done | Turret selector/status now show archetype flavor blurbs for Arrow/Arcane/Flame/Crystal |
 | 86 | Narrative & Content | Surface interactive season roadmap overlay within HUD. | Not Started |  |
 | 87 | Narrative & Content | Add enemy biography cards accessible from wave preview panel. | Not Started |  |
 | 88 | Narrative & Content | Curate ambient music tracks escalating across waves. | Not Started |  |

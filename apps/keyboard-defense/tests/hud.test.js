@@ -851,6 +851,30 @@ test("HudView turret priority controls reflect state and emit changes", () => {
   cleanup();
 });
 
+test("HudView surfaces turret flavor text on slot controls", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  const { upgradePanel } = elements;
+  const baseState = buildInitialState();
+
+  hud.update(baseState, []);
+
+  const firstSlot = upgradePanel.querySelector(".turret-slot");
+  const firstSelect = firstSlot?.querySelector(".slot-select");
+  assert.ok(firstSelect instanceof window.HTMLSelectElement, "expected turret select");
+  const firstAction = firstSlot?.querySelector(".slot-action");
+  assert.ok(firstAction instanceof window.HTMLButtonElement, "expected turret action button");
+  assert.ok(
+    firstSelect.title.toLowerCase().includes("reliable fletching tower"),
+    "expected arrow turret flavor on select title"
+  );
+  assert.ok(
+    firstAction.title.toLowerCase().includes("reliable fletching tower"),
+    "expected arrow turret flavor on action title"
+  );
+
+  cleanup();
+});
+
 test("HudView turret presets render summaries and emit callbacks", () => {
   const { hud, cleanup, elements } = initializeHud();
   const {

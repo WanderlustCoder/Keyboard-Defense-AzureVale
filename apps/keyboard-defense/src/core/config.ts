@@ -62,6 +62,7 @@ export interface TurretArchetypeConfig {
   id: TurretTypeId;
   name: string;
   description: string;
+  flavor?: string;
   levels: TurretLevelConfig[];
   affinityMultipliers?: Record<string, number>;
 }
@@ -222,6 +223,7 @@ export const defaultConfig: GameConfig = {
       id: "arrow",
       name: "Arrow Tower",
       description: "High single-target damage with fast reload.",
+      flavor: "Reliable fletching tower that snaps to runners before they touch the gate.",
       levels: [
         { level: 1, damage: 16, fireRate: 1.4, range: 0.45, cost: 120 },
         { level: 2, damage: 22, fireRate: 1.6, range: 0.5, cost: 180 },
@@ -237,6 +239,7 @@ export const defaultConfig: GameConfig = {
       id: "arcane",
       name: "Arcane Focus",
       description: "Channels beams that slow enemies while dealing damage.",
+      flavor: "Prismatic focus that tethers foes in slowing beams; excels at bullying witches.",
       levels: [
         {
           level: 1,
@@ -273,6 +276,7 @@ export const defaultConfig: GameConfig = {
       id: "flame",
       name: "Flame Thrower",
       description: "Low upfront damage but applies sustained burning.",
+      flavor: "Alchemist’s rig that drenches lanes in fire, ideal for bruisers that linger.",
       levels: [
         {
           level: 1,
@@ -309,6 +313,7 @@ export const defaultConfig: GameConfig = {
       id: "crystal",
       name: "Crystal Pulse",
       description: "Fires concentrated pulses that shatter shields with bonus damage.",
+      flavor: "Shard engine tuned to crack barriers and stagger elites with concussive pulses.",
       levels: [
         {
           level: 1,
