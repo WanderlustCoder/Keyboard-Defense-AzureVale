@@ -10,6 +10,7 @@ import { DiagnosticsOverlay } from "../ui/diagnostics.js";
 import { TypingDrillsOverlay } from "../ui/typingDrills.js";
 import { formatHudFontScale, getNextHudFontPreset, normalizeHudFontScaleValue } from "../ui/fontScale.js";
 import { LoadingScreen } from "../ui/loadingScreen.js";
+import { SessionWellness } from "../ui/sessionWellness.js";
 import { DebugApi } from "../debug/debugApi.js";
 import { SoundManager } from "../audio/soundManager.js";
 import { AssetLoader, toSvgDataUri } from "../assets/assetLoader.js";
@@ -44,6 +45,9 @@ const STARFIELD_PRESETS = {
     breach: { scene: "breach", waveProgress: 0.9, castleHealthRatio: 0.25 }
 };
 const LORE_VERSION = "v1";
+const SESSION_TIMER_TICK_MS = 1000;
+const BREAK_REMINDER_INTERVAL_MS = 20 * 60 * 1000;
+const BREAK_REMINDER_SNOOZE_MS = 10 * 60 * 1000;
 function svgCircleDataUri(primary, accent) {
     const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'>` +
         `<defs><radialGradient id='g' cx='50%' cy='40%' r='60%'>` +
@@ -141,6 +145,11 @@ export class GameController {
         this.turretRangePreviewType = null;
         this.turretRangePreviewLevel = null;
         this.bestCombo = 0;
+        this.sessionStartMs = typeof performance !== "undefined" ? performance.now() : 0;
+        this.sessionWellness = null;
+        this.sessionTimerInterval = null;
+        this.sessionNextReminderMs = BREAK_REMINDER_INTERVAL_MS;
+        this.sessionReminderActive = false;
         this.playerSettings = createDefaultPlayerSettings();
         this.lastAmbientProfile = null;
         this.lastGameStatus = null;
@@ -464,6 +473,22 @@ export class GameController {
         this.hud.setCanvasTransitionState("idle");
         this.updateHudTurretAvailability();
         this.hud.setTurretDowngradeEnabled(Boolean(this.featureToggles?.turretDowngrade));
+        this.sessionWellness =
+            typeof document !== "undefined"
+                ? new SessionWellness({
+                    timerId: "session-timer",
+                    reminderId: "break-reminder",
+                    tipId: "break-reminder-tip",
+                    snoozeId: "break-reminder-snooze",
+                    resetId: "break-reminder-reset",
+                    onSnooze: () => this.handleBreakReminderSnooze(),
+                    onReset: () => this.handleBreakReset()
+                })
+                : null;
+        if (this.sessionWellness) {
+            this.sessionWellness.setElapsed(0);
+            this.sessionTimerInterval = window.setInterval(() => this.updateSessionWellness(), SESSION_TIMER_TICK_MS);
+        }
         this.debugApi = new DebugApi(this);
         this.debugApi.expose();
         this.manualTick = Boolean(options.manualTick);
@@ -1634,6 +1659,37 @@ export class GameController {
         if (body) {
             body.dataset.colorblindPalette = enabled ? "true" : "false";
         }
+    }
+    updateSessionWellness() {
+        if (!this.sessionWellness)
+            return;
+        const now = typeof performance !== "undefined" ? performance.now() : Date.now();
+        const elapsed = Math.max(0, now - this.sessionStartMs);
+        this.sessionWellness.setElapsed(elapsed);
+        if (!this.sessionReminderActive && elapsed >= this.sessionNextReminderMs) {
+            this.showBreakReminder(elapsed);
+        }
+    }
+    showBreakReminder(elapsedMs) {
+        this.sessionReminderActive = true;
+        this.sessionNextReminderMs = elapsedMs + BREAK_REMINDER_INTERVAL_MS;
+        this.sessionWellness?.showReminder(elapsedMs);
+        this.hud?.appendLog?.("Break reminder: stretch, breathe, and rest your hands.");
+    }
+    handleBreakReminderSnooze() {
+        const now = typeof performance !== "undefined" ? performance.now() : Date.now();
+        const elapsed = Math.max(0, now - this.sessionStartMs);
+        this.sessionNextReminderMs = elapsed + BREAK_REMINDER_SNOOZE_MS;
+        this.sessionReminderActive = false;
+        this.sessionWellness?.hideReminder();
+        this.hud?.appendLog?.("Break reminder snoozed for 10 minutes.");
+    }
+    handleBreakReset() {
+        this.sessionStartMs = typeof performance !== "undefined" ? performance.now() : Date.now();
+        this.sessionNextReminderMs = BREAK_REMINDER_INTERVAL_MS;
+        this.sessionReminderActive = false;
+        this.sessionWellness?.hideReminder();
+        this.hud?.appendLog?.("Session timer reset after a break.");
     }
     applyHudFontScaleSetting(scale) {
         this.hud.setHudFontScale(scale);

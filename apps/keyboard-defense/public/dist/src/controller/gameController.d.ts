@@ -79,6 +79,10 @@ export declare class GameController {
     applyReadableFontSetting(enabled: any): void;
     applyDyslexiaFontSetting(enabled: any): void;
     applyColorblindPaletteSetting(enabled: any): void;
+    updateSessionWellness(): void;
+    showBreakReminder(elapsedMs: any): void;
+    handleBreakReminderSnooze(): void;
+    handleBreakReset(): void;
     applyHudFontScaleSetting(scale: any): void;
     setTelemetryEnabled(enabled: any, options?: {}): boolean;
     toggleTelemetry(options?: {}): boolean;
