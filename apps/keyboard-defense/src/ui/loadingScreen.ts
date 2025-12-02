@@ -1,18 +1,20 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
-const DEFAULT_TIPS = [
-  "Keep wrists relaxed and float your fingers above home row.",
-  "Look at the screen, not the keyboard — muscle memory wins battles.",
-  "Short bursts first: accuracy > speed. Speed comes after clean reps.",
-  "Use the spacebar with your thumbs to keep rhythm steady.",
-  "Stretch your fingers before longer sessions to avoid fatigue.",
-  "Balance hands: alternating between left/right keeps pace smooth.",
-  "Shift with the opposite hand from the key you are typing.",
-  "If accuracy drops, pause and breathe — reset your posture.",
-  "Light taps beat heavy presses; less force means faster recovery.",
-  "Glance at upcoming words so you are always one letter ahead."
-];
+import { loadingTips as defaultLoadingTips } from "../data/loadingTips.js";
+
 const TIP_INTERVAL_MS = 3800;
+const MIN_TIP_INTERVAL_MS = 1500;
+
+function normalizeTips(rawTips) {
+  if (!Array.isArray(rawTips)) {
+    return [...defaultLoadingTips];
+  }
+  const normalized = rawTips
+    .map((tip) => (typeof tip === "string" ? tip.trim() : ""))
+    .filter(Boolean);
+  const unique = Array.from(new Set(normalized));
+  return unique.length > 0 ? unique : [...defaultLoadingTips];
+}
 export class LoadingScreen {
   constructor(options = {}) {
     this.container =
@@ -20,9 +22,12 @@ export class LoadingScreen {
     this.statusLabel =
       document.getElementById(options.statusId ?? "loading-status") ?? null;
     this.tipLabel = document.getElementById(options.tipId ?? "loading-tip") ?? null;
-    this.tips =
-      Array.isArray(options.tips) && options.tips.length > 0 ? options.tips : DEFAULT_TIPS;
-    this.tipIndex = 0;
+    this.tipIntervalMs =
+      typeof options.tipIntervalMs === "number" && options.tipIntervalMs >= MIN_TIP_INTERVAL_MS
+        ? options.tipIntervalMs
+        : TIP_INTERVAL_MS;
+    this.tips = normalizeTips(options.tips ?? defaultLoadingTips);
+    this.tipIndex = this.getCurrentTipIndex();
     this.tipTimer = null;
   }
   show(statusText) {
@@ -30,8 +35,9 @@ export class LoadingScreen {
     this.container.dataset.visible = "true";
     this.container.setAttribute("aria-busy", "true");
     if (statusText) this.setStatus(statusText);
-    if (this.tipLabel && !this.tipLabel.textContent) {
-      this.setTip(this.tips[this.tipIndex % this.tips.length]);
+    if (this.tipLabel && this.tips.length > 0) {
+      this.tipIndex = this.getCurrentTipIndex();
+      this.setTip(this.tips[this.tipIndex]);
     }
     this.startTipRotation();
   }
@@ -50,16 +56,26 @@ export class LoadingScreen {
     this.tipLabel.textContent = text;
   }
   startTipRotation() {
-    if (!this.tipLabel || this.tipTimer) return;
+    if (!this.tipLabel || this.tipTimer || this.tips.length < 2) return;
     this.tipTimer = window.setInterval(() => {
       this.tipIndex = (this.tipIndex + 1) % this.tips.length;
       this.setTip(this.tips[this.tipIndex]);
-    }, TIP_INTERVAL_MS);
+    }, this.tipIntervalMs);
   }
   stopTipRotation() {
     if (this.tipTimer) {
       clearInterval(this.tipTimer);
       this.tipTimer = null;
     }
+  }
+
+  getCurrentTipIndex() {
+    if (!this.tipLabel || this.tips.length === 0) return 0;
+    const current = (this.tipLabel.textContent ?? "").trim();
+    const existingIndex = this.tips.findIndex((tip) => tip === current);
+    if (existingIndex >= 0) {
+      return existingIndex;
+    }
+    return Math.floor(Math.random() * this.tips.length);
   }
 }

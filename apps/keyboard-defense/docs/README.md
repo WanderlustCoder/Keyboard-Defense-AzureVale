@@ -6,6 +6,7 @@
 - **season1_backlog.md** - completed Siege of the Azure Vale backlog with IDs referenced across docs/status notes.
 - **season2_backlog.md** - new 100-item backlog for ages 8-16 (Edge/Chrome), free single-player with pixel art direction.
 - **icon_set_spec.md** - pixel UI icon set specification (sizes, palette, states, naming, exports) for buttons/toggles/HUD controls.
+- **loading_screen.md** - loading overlay behavior (tips, pixel animation, accessibility, and baseline guidance).
 - **qa_typing_edge_cases.md** - QA checklist for typing input edge cases (modifiers, buffer rules, accessibility, and smoke commands).
 - **wordlist_lint_spec.md** - rules/CLI expectations for lesson/word bank linting (safe vocab, gating, lengths, weights, themes).
 - **castle_tileset_spec.md** - pixel castle tileset spec (walls, gates, towers, damage states, palette, exports).
