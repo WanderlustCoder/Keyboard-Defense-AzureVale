@@ -1,7 +1,7 @@
 import { SpriteRenderer } from "./spriteRenderer.js";
 import { resolveLetterColors } from "./wordHighlighter.js";
 import { defaultStarfieldConfig } from "../config/starfield.js";
-import { resolveCastlePalette } from "./castlePalette.js";
+import { resolveCastleVisual } from "./castlePalette.js";
 const PROJECTILE_COLORS = {
     arrow: "#38bdf8",
     arcane: "#a855f7",
@@ -552,13 +552,26 @@ export class CanvasRenderer {
         const castleHeight = this.height * 0.6;
         const x = this.width * 0.85;
         const y = (this.height - castleHeight) / 2;
-        const palette = resolveCastlePalette(this.config, state.castle.level);
-        this.ctx.fillStyle = palette.fill;
+        const visual = resolveCastleVisual(this.config, state.castle.level);
+        const drawn = this.assetLoader?.drawFrame?.(this.ctx, visual.spriteKey, x, y, castleWidth, castleHeight);
+        if (drawn) {
+            // Render HP overlay on top of sprite.
+            const hpRatio = Math.max(0, state.castle.health / state.castle.maxHealth);
+            const hpHeight = castleHeight * hpRatio;
+            this.ctx.fillStyle = this.withAlpha(visual.accent, 0.3);
+            this.ctx.fillRect(x, y + castleHeight - hpHeight, castleWidth, hpHeight);
+            this.ctx.strokeStyle = visual.border;
+            this.ctx.lineWidth = 3;
+            this.ctx.strokeRect(x, y, castleWidth, castleHeight);
+            return;
+        }
+        // Fallback minimalist shape using palette colors when sprite missing.
+        this.ctx.fillStyle = visual.fill;
         this.ctx.fillRect(x, y, castleWidth, castleHeight);
         const hpRatio = Math.max(0, state.castle.health / state.castle.maxHealth);
-        this.ctx.fillStyle = palette.accent;
+        this.ctx.fillStyle = visual.accent;
         this.ctx.fillRect(x, y + castleHeight * (1 - hpRatio), castleWidth, castleHeight * hpRatio);
-        this.ctx.strokeStyle = palette.border;
+        this.ctx.strokeStyle = visual.border;
         this.ctx.lineWidth = 4;
         this.ctx.strokeRect(x, y, castleWidth, castleHeight);
     }

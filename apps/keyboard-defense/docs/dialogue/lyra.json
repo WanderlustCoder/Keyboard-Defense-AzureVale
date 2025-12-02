@@ -1,0 +1,54 @@
+{
+  "speaker": "Archivist Lyra",
+  "episode": "Episode 1",
+  "entries": [
+    {
+      "id": "lyra_intro_incursion",
+      "stage": "intro",
+      "tone": "cold-open",
+      "text": "Archivist Lyra snaps her ledger shut: \"Azure Vale, I'll annotate your fall myself.\"",
+      "trigger": "episode:start",
+      "tags": ["archivist", "episode1", "boss", "phase1"]
+    },
+    {
+      "id": "lyra_phase_shift_quills",
+      "stage": "phase-shift",
+      "tone": "taunt",
+      "text": "\"Annotated defenses? Adorable.\" Ink quills pierce the lanes as Lyra pivots to phase two.",
+      "trigger": "boss:phase2",
+      "tags": ["archivist", "phase2", "inkfire"]
+    },
+    {
+      "id": "lyra_pressure_wave",
+      "stage": "pressure",
+      "tone": "command",
+      "text": "Lyra raises a hand: \"Lancer columns, spear their ramparts. Leave no margin for scribes.\"",
+      "trigger": "wave:pressure",
+      "tags": ["archivist", "vanguard", "command"]
+    },
+    {
+      "id": "lyra_breach_warning",
+      "stage": "breach-warning",
+      "tone": "threat",
+      "text": "\"See your ink spill? That's your history leaking.\" Castle wards flicker as breach risk climbs.",
+      "trigger": "castle:low-health",
+      "tags": ["archivist", "breach", "warning"]
+    },
+    {
+      "id": "lyra_defeat_decree",
+      "stage": "defeat",
+      "tone": "finale",
+      "text": "She slams the ledger: \"Your entry ends here.\" The archive sears the front lines.",
+      "trigger": "boss:phase3",
+      "tags": ["archivist", "phase3", "finale"]
+    },
+    {
+      "id": "lyra_retreats",
+      "stage": "victory",
+      "tone": "retreat",
+      "text": "Lyra exhales ink smoke: \"Fine. Keep your keep—for now.\" Her pages snap shut and she retreats.",
+      "trigger": "boss:defeated",
+      "tags": ["archivist", "victory", "retreat"]
+    }
+  ]
+}

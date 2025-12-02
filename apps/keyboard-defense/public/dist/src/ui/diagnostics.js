@@ -92,6 +92,7 @@ export class DiagnosticsOverlay {
         const castlePassives = Array.isArray(metrics.castlePassives) ? metrics.castlePassives : [];
         const passiveUnlockCount = typeof metrics.passiveUnlockCount === "number" ? metrics.passiveUnlockCount : castlePassives.length;
         const lastPassiveUnlock = metrics.lastPassiveUnlock ?? null;
+        const castleVisual = metrics.castleVisual ?? null;
         const lines = [
             `Wave: ${wave.index + 1}/${wave.total}${modeSuffix}${waveCountdown}`,
             metrics.mode === "practice" ? "Mode: Practice - waves loop endlessly" : "Mode: Campaign",
@@ -102,6 +103,9 @@ export class DiagnosticsOverlay {
             `Words: easy ${easy.toFixed(0)}% | medium ${medium.toFixed(0)}% | hard ${hard.toFixed(0)}%`,
             `Projectiles: ${metrics.projectiles}`,
             `Enemies alive: ${metrics.enemiesAlive}`,
+            castleVisual
+                ? `Castle: L${castleVisual.level} sprite ${castleVisual.spriteKey}`
+                : "Castle: visual unknown",
             `Combo: x${metrics.combo}`,
             `Wave damage (turret/typing/total): ${metrics.damage.turret.toFixed(1)} / ${metrics.damage.typing.toFixed(1)} / ${metrics.damage.total.toFixed(1)}`,
             `Typing accuracy: ${(metrics.typing.accuracy * 100).toFixed(1)}% (${metrics.typing.correctInputs}/${metrics.typing.totalInputs})`,

@@ -51,4 +51,4 @@ Outlined manageable sub-tasks for remaining “Not Started” backlog items to e
   - Add automated coverage to ensure completion rows render in tutorial + matrix sections.
 
 ## Next Action
-- Castle visual morphing (#67) shipped. Next priority: #83 Archivist Lyra dialogue blocks for Episode 1 beats (narrative/content slice).
+- Lyra dialogue blocks (#83) shipped. Next priority: #84 lore codex entries unlocked by wave completions.
