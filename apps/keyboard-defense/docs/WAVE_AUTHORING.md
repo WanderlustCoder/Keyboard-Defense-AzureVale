@@ -15,6 +15,7 @@ This guide is for designers and engineers who need to edit wave configs, validat
   `npm run wave:preview -- --config config/waves.designer.json --open`  
   or `npm run wave:preview:open` for the shorthand
 - In-game debug panel also has an "Open Wave Preview" button (uses `localStorage.wavePreviewUrl` if set, otherwise `http://localhost:4179`).
+- You can set a custom preview URL in the debug panel input (persists to `localStorage.wavePreviewUrl`) and reuse it for quick launches.
 - Features:
   - Timeline bars per wave with lane/event filters (spawns, hazards, dynamic, evac, boss).
   - Search for tiers/affixes/lanes/evac words; live-reloads on config/schema changes (SSE).

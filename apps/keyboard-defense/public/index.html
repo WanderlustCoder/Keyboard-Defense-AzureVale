@@ -153,7 +153,20 @@
             </button>
             <button id="debug-spawn-dummy" type="button">Spawn Practice Dummy</button>
             <button id="debug-clear-dummies" type="button">Clear Practice Dummies</button>
-            <button id="debug-wave-preview" type="button">Open Wave Preview</button>
+            <div class="debug-wave-preview-row">
+              <div class="debug-wave-preview-inputs">
+                <label for="debug-wave-preview-url">Wave Preview URL</label>
+                <input
+                  id="debug-wave-preview-url"
+                  type="url"
+                  inputmode="url"
+                  placeholder="http://localhost:4179/"
+                  aria-label="Wave preview URL"
+                />
+                <button id="debug-wave-preview-save" type="button">Save URL</button>
+              </div>
+              <button id="debug-wave-preview" type="button">Open Wave Preview</button>
+            </div>
             <button id="debug-diagnostics">Toggle Diagnostics</button>
             <button id="debug-sound">Toggle Sound</button>
             <div class="debug-sound-controls">

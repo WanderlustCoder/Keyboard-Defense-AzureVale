@@ -3452,6 +3452,8 @@ export class GameController {
     const spawnDummyButton = document.getElementById("debug-spawn-dummy");
     const clearDummiesButton = document.getElementById("debug-clear-dummies");
     const wavePreviewButton = document.getElementById("debug-wave-preview");
+    const wavePreviewUrlInput = document.getElementById("debug-wave-preview-url");
+    const wavePreviewSaveButton = document.getElementById("debug-wave-preview-save");
 
     const candidateTelemetryControls = {
       container:
@@ -3504,11 +3506,29 @@ export class GameController {
     if (clearDummiesButton instanceof HTMLButtonElement) {
       clearDummiesButton.addEventListener("click", () => this.clearPracticeDummies());
     }
+    const resolveWavePreviewUrl = () => {
+      const storedUrl = safeWindow().localStorage?.getItem("wavePreviewUrl")?.trim() ?? "";
+      const inputUrl =
+        wavePreviewUrlInput instanceof HTMLInputElement ? wavePreviewUrlInput.value.trim() : "";
+      const candidate = inputUrl || storedUrl;
+      return candidate && candidate.startsWith("http") ? candidate : "http://localhost:4179/";
+    };
+    if (wavePreviewUrlInput instanceof HTMLInputElement) {
+      const storedUrl = safeWindow().localStorage?.getItem("wavePreviewUrl");
+      if (storedUrl && storedUrl.startsWith("http")) {
+        wavePreviewUrlInput.value = storedUrl;
+      }
+    }
+    if (wavePreviewSaveButton instanceof HTMLButtonElement && wavePreviewUrlInput) {
+      wavePreviewSaveButton.addEventListener("click", () => {
+        const url = resolveWavePreviewUrl();
+        safeWindow().localStorage?.setItem("wavePreviewUrl", url);
+      });
+    }
     if (wavePreviewButton instanceof HTMLButtonElement) {
       wavePreviewButton.addEventListener("click", () => {
-        const storedUrl = safeWindow().localStorage?.getItem("wavePreviewUrl");
-        const url =
-          storedUrl && storedUrl.startsWith("http") ? storedUrl : "http://localhost:4179/";
+        const url = resolveWavePreviewUrl();
+        safeWindow().localStorage?.setItem("wavePreviewUrl", url);
         try {
           window.open(url, "_blank", "noopener,noreferrer");
         } catch {
