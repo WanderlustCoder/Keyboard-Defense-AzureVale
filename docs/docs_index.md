@@ -46,6 +46,7 @@ Use this index to jump straight to the guidance you'll need while building and t
 
 ## Status Notes
 Status entries live under `docs/status/`. Recent highlights include:
+- `2025-12-09_visual_auto_runner.md` - One-command Playwright visual runner that starts/stops the dev server and supports `--update`/`--keep-alive` flags.
 - `2025-12-09_evacuation_events_slice3.md` - Evacuation lane reservation prevents conflicts with hazards/dynamic events; skips if no lane is free.
 - `2025-12-09_wave_preview_slice3.md` - Live wave preview UI with timelines, lane/event filters, and SSE reloads (`npm run wave:preview`).
 - `2025-12-06_git_hooks_precommit.md` - Pre-commit hook now uses a Node runner, respects `SKIP_HOOKS`, and installs via `npm run hooks:install`.

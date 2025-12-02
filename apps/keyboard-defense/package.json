@@ -76,6 +76,7 @@
     "typecheck": "tsc --noEmit",
     "test:visual": "npx playwright test --config playwright.config.ts --project=visual",
     "test:visual:update": "npx playwright test --config playwright.config.ts --project=visual --update-snapshots",
+    "test:visual:auto": "node ./scripts/runVisualTests.mjs",
     "ci:matrix": "node ./scripts/ci/run-matrix.mjs",
     "dashboard:static": "node ./scripts/generateStaticDashboard.mjs",
     "hooks:install": "node ./scripts/hooks/installHooks.mjs",
