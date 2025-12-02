@@ -55,6 +55,7 @@ const BREAK_REMINDER_SNOOZE_MS = 10 * 60 * 1000;
 const ASSET_PREWARM_BATCH = 32;
 const ASSET_PREWARM_TIMEOUT_MS = 300;
 const FIRST_ENCOUNTER_STORAGE_KEY = "keyboard-defense:first-encounter-enemies";
+const ACCESSIBILITY_ONBOARDING_KEY = "keyboard-defense:accessibility-onboarding";
 const MEMORY_SAMPLE_INTERVAL_MS = 5_000;
 const MEMORY_WARNING_RATIO = 0.82;
 function svgCircleDataUri(primary, accent) {
@@ -137,6 +138,9 @@ export class GameController {
         this.dyslexiaSpacingEnabled = false;
         this.backgroundBrightness = BG_BRIGHTNESS_DEFAULT;
         this.colorblindPaletteEnabled = false;
+        this.accessibilityOnboardingSeen = this.loadAccessibilitySeen();
+        this.accessibilityOverlay = null;
+        this.resumeAfterAccessibility = false;
         this.loadingScreen =
             typeof document !== "undefined"
                 ? new LoadingScreen({
@@ -557,6 +561,7 @@ export class GameController {
         this.attachDebugButtons();
         this.attachGlobalShortcuts();
         this.attachFullscreenListeners();
+        this.attachAccessibilityOnboarding();
         this.attachEnemyIntroOverlay();
         this.registerHudListeners();
         if (config.featureToggles.tutorials) {
@@ -579,6 +584,7 @@ export class GameController {
             this.tutorialCompleted = true;
         }
         this.render();
+        this.maybeShowAccessibilityOnboarding();
     }
     resolveStarfieldPreset(scene) {
         if (!scene)
@@ -4827,6 +4833,148 @@ export class GameController {
             }
             this.canvasResizeTimeout = null;
         }, CANVAS_RESIZE_FADE_MS);
+    }
+    loadAccessibilitySeen() {
+        if (typeof window === "undefined" || !window.localStorage) {
+            return false;
+        }
+        try {
+            return window.localStorage.getItem(ACCESSIBILITY_ONBOARDING_KEY) === "seen";
+        }
+        catch {
+            return false;
+        }
+    }
+    persistAccessibilitySeen() {
+        this.accessibilityOnboardingSeen = true;
+        if (typeof window === "undefined" || !window.localStorage) {
+            return;
+        }
+        try {
+            window.localStorage.setItem(ACCESSIBILITY_ONBOARDING_KEY, "seen");
+        }
+        catch {
+            // best effort
+        }
+    }
+    attachAccessibilityOnboarding() {
+        if (typeof document === "undefined")
+            return;
+        const container = document.getElementById("accessibility-onboarding");
+        const closeButton = document.getElementById("accessibility-onboarding-close");
+        const skipButton = document.getElementById("accessibility-skip");
+        const applyButton = document.getElementById("accessibility-apply");
+        const reducedMotionToggle = document.getElementById("accessibility-reduced-motion");
+        const dyslexiaSpacingToggle = document.getElementById("accessibility-dyslexia-spacing");
+        const colorblindToggle = document.getElementById("accessibility-colorblind");
+        const brightnessSlider = document.getElementById("accessibility-bg-brightness");
+        const brightnessValue = document.getElementById("accessibility-bg-brightness-value");
+        if (!container ||
+            !(closeButton instanceof HTMLButtonElement) ||
+            !(skipButton instanceof HTMLButtonElement) ||
+            !(applyButton instanceof HTMLButtonElement) ||
+            !(reducedMotionToggle instanceof HTMLInputElement) ||
+            !(dyslexiaSpacingToggle instanceof HTMLInputElement) ||
+            !(colorblindToggle instanceof HTMLInputElement) ||
+            !(brightnessSlider instanceof HTMLInputElement) ||
+            !brightnessValue) {
+            return;
+        }
+        const syncBrightnessLabel = () => {
+            const normalized = this.normalizeBackgroundBrightness(Number(brightnessSlider.value));
+            brightnessSlider.value = String(normalized);
+            brightnessValue.textContent = `${Math.round(normalized * 100)}%`;
+        };
+        brightnessSlider.addEventListener("input", syncBrightnessLabel);
+        const applyPreferences = () => {
+            this.setReducedMotionEnabled(Boolean(reducedMotionToggle.checked));
+            this.setDyslexiaSpacingEnabled(Boolean(dyslexiaSpacingToggle.checked));
+            this.setColorblindPaletteEnabled(Boolean(colorblindToggle.checked));
+            const brightness = this.normalizeBackgroundBrightness(Number(brightnessSlider.value));
+            this.setBackgroundBrightness(brightness);
+            this.persistAccessibilitySeen();
+            this.hideAccessibilityOnboarding();
+        };
+        const skipOnboarding = () => {
+            this.persistAccessibilitySeen();
+            this.hideAccessibilityOnboarding();
+        };
+        closeButton.addEventListener("click", skipOnboarding);
+        skipButton.addEventListener("click", skipOnboarding);
+        applyButton.addEventListener("click", applyPreferences);
+        container.addEventListener("click", (event) => {
+            if (event.target === container) {
+                skipOnboarding();
+            }
+        });
+        this.accessibilityOverlay = {
+            container,
+            closeButton,
+            skipButton,
+            applyButton,
+            reducedMotionToggle,
+            dyslexiaSpacingToggle,
+            colorblindToggle,
+            brightnessSlider,
+            brightnessValue,
+            visible: false
+        };
+        this.syncAccessibilityOverlay();
+    }
+    syncAccessibilityOverlay() {
+        if (!this.accessibilityOverlay)
+            return;
+        this.accessibilityOverlay.reducedMotionToggle.checked = Boolean(this.reducedMotionEnabled);
+        this.accessibilityOverlay.dyslexiaSpacingToggle.checked = Boolean(this.dyslexiaSpacingEnabled);
+        this.accessibilityOverlay.colorblindToggle.checked = Boolean(this.colorblindPaletteEnabled);
+        const normalized = this.normalizeBackgroundBrightness(this.backgroundBrightness);
+        this.accessibilityOverlay.brightnessSlider.value = String(normalized);
+        this.accessibilityOverlay.brightnessValue.textContent = `${Math.round(normalized * 100)}%`;
+    }
+    maybeShowAccessibilityOnboarding() {
+        if (this.accessibilityOnboardingSeen ||
+            !this.accessibilityOverlay ||
+            this.accessibilityOverlay.visible) {
+            return;
+        }
+        const blocked = this.optionsOverlayActive ||
+            this.typingDrillsOverlayActive ||
+            this.waveScorecardActive ||
+            this.enemyIntroOverlay?.visible;
+        if (blocked) {
+            if (typeof window !== "undefined") {
+                window.setTimeout(() => this.maybeShowAccessibilityOnboarding(), 800);
+            }
+            return;
+        }
+        this.syncAccessibilityOverlay();
+        const overlay = this.accessibilityOverlay;
+        overlay.container.dataset.visible = "true";
+        overlay.container.setAttribute("aria-hidden", "false");
+        overlay.visible = true;
+        this.resumeAfterAccessibility = this.running && !this.optionsOverlayActive;
+        if (this.resumeAfterAccessibility) {
+            this.pause();
+        }
+        window.setTimeout(() => overlay.applyButton.focus(), 0);
+    }
+    hideAccessibilityOnboarding() {
+        if (!this.accessibilityOverlay || !this.accessibilityOverlay.visible)
+            return;
+        const overlay = this.accessibilityOverlay;
+        overlay.container.dataset.visible = "false";
+        overlay.container.setAttribute("aria-hidden", "true");
+        overlay.visible = false;
+        const shouldResume = this.resumeAfterAccessibility &&
+            !this.running &&
+            !this.optionsOverlayActive &&
+            !this.typingDrillsOverlayActive &&
+            !this.menuActive &&
+            !this.waveScorecardActive;
+        this.resumeAfterAccessibility = false;
+        if (shouldResume) {
+            this.start();
+        }
     }
     loadFirstEncounterSeen() {
         if (typeof window === "undefined" || !window.localStorage) {

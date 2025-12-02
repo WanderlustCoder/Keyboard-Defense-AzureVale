@@ -8,6 +8,7 @@ Quick status snapshot for items in `season3_backlog.md`. Audience ages 8-16, Edg
 | 68 | Background brightness/contrast comfort slider | Done | Options slider adjusts global background brightness (90-110%) and persists per player. |
 | 71 | Persistent caps/num lock indicators near input | Done | HUD pills show Caps/Num lock states beside the typing input; Caps warning remains for errors. |
 | 67 | Screen-reader labels for controls/overlays | Done | Added ARIA labels for core controls (fullscreen, pause, roadmap, typing input, break reminders) and ensured options dialog landmarks remain announced. |
+| 72 | Accessibility preference check during onboarding | Done | First-run comfort overlay asks for reduced motion, dyslexia spacing, colorblind palette, and brightness; applies and persists choices before play. |
 | 87 | Automated difficulty tuning script (bot-driven) | Done | New script `npm run analytics:difficulty-tuning` ingests playtest-bot artifacts and outputs JSON/Markdown recommendations; see `docs/difficulty_tuning.md`. |
 | 93 | Performance budget doc for effects/sprites/audio | Done | `docs/performance_budget.md` defines Edge/Chrome budgets for draw calls, particles, memory, audio, and payload sizes. |
 | 69 | Reduced-motion variant for enemy deaths/UI transitions | Done | Reduced motion toggle now explicitly disables enemy death splashes and UI transitions while keeping essential cues. |

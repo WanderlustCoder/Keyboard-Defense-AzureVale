@@ -316,6 +316,12 @@ export declare class GameController {
     handleCanvasTransitionStateChange(state: ResolutionTransitionState): void;
     measureCanvasAvailableWidth(): any;
     triggerCanvasResizeFade(): void;
+    loadAccessibilitySeen(): boolean;
+    persistAccessibilitySeen(): void;
+    attachAccessibilityOnboarding(): void;
+    syncAccessibilityOverlay(): void;
+    maybeShowAccessibilityOnboarding(): void;
+    hideAccessibilityOnboarding(): void;
     loadFirstEncounterSeen(): Set<any>;
     persistFirstEncounterSeen(): void;
     attachEnemyIntroOverlay(): void;
