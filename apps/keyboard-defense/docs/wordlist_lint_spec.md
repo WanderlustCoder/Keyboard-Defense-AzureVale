@@ -24,9 +24,9 @@ Guardrails for validating lesson/wordlist content before it reaches builds or CI
 - For wave banks, include `allowedCharacters` and `difficulty` so lints can tailor bounds per bucket.
 
 ## CLI Expectations
-- Command: `npm run lint:wordlists` (to be implemented) that validates all lesson/word bank files; fails CI on violations and prints a per-file summary plus a JSON report.
-- Flags: `--fix-sort` to auto-sort, `--strict` to treat warnings as errors, `--out artifacts/wordlist-lint.json` for CI.
-- Should run in pre-commit hook once available; for now plan for CI integration.
+- Command: `npm run lint:wordlists` validates all lesson/word bank files; `npm run lint:wordlists:strict` runs with `--strict --out artifacts/summaries/wordlist-lint.json` and is invoked by `npm run lint`/CI/pre-commit.
+- Flags: `--fix-sort` to auto-sort, `--strict` to treat warnings as errors, `--out <file>` to emit a JSON report (CI writes `artifacts/summaries/wordlist-lint.json`).
+- Integrated into `npm run lint` (and therefore `npm run test`) so CI and hooks gate on content quality; keep the standalone command for focused edits or auto-sorting.
 
 ## Test Ideas
 - Fixtures covering: forbidden character rejection, profanity denylist hit, lesson gating failure, duplicates, bad weights, out-of-range lengths, proper nouns blocked unless allowed, and theme validation.

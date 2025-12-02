@@ -14,7 +14,9 @@ Run `npm install` from `apps/keyboard-defense/` before building or running scrip
 Tests rely on deterministic seeds and the debug hooks exposed by the game engine, so they do not require a browser.
 
 Additional linting:
-- `npm run lint:wordlists -- [--fix-sort] [--strict] [--out <file>]` - Validate lesson/word bank files under `data/wordlists` (safe characters, denylist, lengths, duplicates, weights, lesson gating). Use `--fix-sort` to auto-sort words and rewrite files; `--strict` fails on warnings; `--out` writes a JSON summary.
+- `npm run lint` - Runs ESLint plus strict wordlist/lesson linting and writes `artifacts/summaries/wordlist-lint.json` (warnings fail the run).
+- `npm run lint:wordlists:strict` - Shortcut for the strict lint (writes the summary artifact).
+- `npm run lint:wordlists -- [--fix-sort] [--strict] [--out <file>]` - Validate lesson/word bank files under `data/wordlists` (safe characters, denylist, lengths, duplicates, weights, lesson gating). Use `--fix-sort` to auto-sort words and rewrite files; `--strict` fails on warnings; `--out` writes a JSON summary (created automatically in strict mode).
 
 ## Dev Server Automation
 The repo ships with `scripts/devServer.mjs`, a thin wrapper around `http-server` that builds the project, serves `public/`, and emits readiness signals for automated tooling.

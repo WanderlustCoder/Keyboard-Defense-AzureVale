@@ -6,7 +6,8 @@
   "scripts": {
     "build": "npm run assets:manifest && tsc -p tsconfig.json && npm run build:dist",
     "build:dist": "node ./scripts/buildDist.mjs",
-    "lint": "eslint \"src\" \"tests\" \"scripts\" --ext .ts,.js,.mjs",
+    "lint": "npm run lint:code && npm run lint:wordlists:strict",
+    "lint:code": "eslint \"src\" \"tests\" \"scripts\" --ext .ts,.js,.mjs",
     "format": "prettier --write \"src/**/*.{ts,js}\" \"tests/**/*.js\" \"scripts/**/*.mjs\" \"public/index.html\"",
     "format:check": "prettier --check \"src/**/*.{ts,js}\" \"tests/**/*.js\" \"scripts/**/*.mjs\" \"public/index.html\"",
     "codex:validate-pack": "node ./scripts/validateCodexPack.mjs",
@@ -49,6 +50,7 @@
     "logs:summary": "node ./scripts/ci/runtimeLogSummary.mjs",
     "telemetry:typing-drills": "node ./scripts/ci/typingDrillTelemetrySummary.mjs",
     "lint:wordlists": "node ./scripts/lintWordlists.mjs",
+    "lint:wordlists:strict": "node ./scripts/lintWordlists.mjs --strict --out artifacts/summaries/wordlist-lint.json",
     "gold:percentiles:refresh": "node ./scripts/ci/goldPercentileBaseline.mjs artifacts/summaries/gold-summary-report*.json ../../docs/codex_pack/fixtures/gold-summary.json",
     "analytics:gold:delta": "node ./scripts/analytics/goldDeltaAggregator.mjs",
     "analytics:validate-schema": "node ./scripts/analytics/validate-schema.mjs",
