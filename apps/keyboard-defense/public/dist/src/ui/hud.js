@@ -24,6 +24,8 @@ export class HudView {
     typingInput;
     fullscreenButton = null;
     capsLockWarning = null;
+    lockIndicatorCaps = null;
+    lockIndicatorNum = null;
     upgradePanel;
     comboLabel;
     comboAccuracyDelta;
@@ -173,6 +175,10 @@ export class HudView {
             this.typingWpmLabel = wpm instanceof HTMLElement ? wpm : null;
         }
         this.typingInput = this.getElement(rootIds.typingInput);
+        const lockCaps = document.getElementById("lock-indicator-caps");
+        const lockNum = document.getElementById("lock-indicator-num");
+        this.lockIndicatorCaps = lockCaps instanceof HTMLElement ? lockCaps : null;
+        this.lockIndicatorNum = lockNum instanceof HTMLElement ? lockNum : null;
         this.fullscreenButton = (() => {
             if (!rootIds.fullscreenButton)
                 return null;
@@ -895,6 +901,16 @@ export class HudView {
             return;
         this.capsLockWarning.dataset.visible = visible ? "true" : "false";
         this.capsLockWarning.setAttribute("aria-hidden", visible ? "false" : "true");
+    }
+    setLockIndicators(options) {
+        if (this.lockIndicatorCaps) {
+            this.lockIndicatorCaps.dataset.active = options.capsOn ? "true" : "false";
+            this.lockIndicatorCaps.setAttribute("aria-label", `Caps Lock ${options.capsOn ? "on" : "off"}`);
+        }
+        if (this.lockIndicatorNum) {
+            this.lockIndicatorNum.dataset.active = options.numOn ? "true" : "false";
+            this.lockIndicatorNum.setAttribute("aria-label", `Num Lock ${options.numOn ? "on" : "off"}`);
+        }
     }
     setFullscreenAvailable(available) {
         if (!this.fullscreenButton)

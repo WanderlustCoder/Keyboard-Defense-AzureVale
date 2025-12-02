@@ -54,6 +54,24 @@ function formatFloat(value: number | null | undefined, digits = 2): string {
   return value.toFixed(digits);
 }
 
+function formatMemory(memory?: RuntimeMetrics["memory"]): string | null {
+  if (!memory || typeof memory.usedMB !== "number") {
+    return null;
+  }
+  const parts = [`Memory: ${memory.usedMB.toFixed(1)} MB`];
+  if (typeof memory.totalMB === "number") {
+    parts.push(`/ ${memory.totalMB.toFixed(1)} MB`);
+  }
+  if (typeof memory.limitMB === "number" && memory.limitMB > 0) {
+    const pct = (memory.usedMB / memory.limitMB) * 100;
+    parts.push(`(cap ${memory.limitMB.toFixed(0)} MB, ${pct.toFixed(1)}%)`);
+  }
+  if (memory.warning) {
+    parts.push("[watch]");
+  }
+  return parts.join(" ");
+}
+
 export interface DiagnosticsSessionStats {
   bestCombo: number;
   breaches: number;
@@ -146,6 +164,7 @@ export class DiagnosticsOverlay {
       typeof metrics.passiveUnlockCount === "number" ? metrics.passiveUnlockCount : castlePassives.length;
     const lastPassiveUnlock = metrics.lastPassiveUnlock ?? null;
     const castleVisual = metrics.castleVisual ?? null;
+    const memoryLine = formatMemory(metrics.memory);
 
     const lines = [
       `Wave: ${wave.index + 1}/${wave.total}${modeSuffix}${waveCountdown}`,
@@ -176,6 +195,9 @@ export class DiagnosticsOverlay {
         metrics.typing.difficultyBias >= 0 ? "+" : ""
       }${metrics.typing.difficultyBias.toFixed(2)}`
     ];
+    if (memoryLine) {
+      lines.push(memoryLine);
+    }
     const defeatStats = metrics.defeatBursts;
     if (defeatStats) {
       const perMinuteLabel = formatFloat(defeatStats.perMinute, 2);

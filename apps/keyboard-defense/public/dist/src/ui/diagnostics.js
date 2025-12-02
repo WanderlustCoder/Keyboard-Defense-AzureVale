@@ -42,6 +42,23 @@ function formatFloat(value, digits = 2) {
     }
     return value.toFixed(digits);
 }
+function formatMemory(memory) {
+    if (!memory || typeof memory.usedMB !== "number") {
+        return null;
+    }
+    const parts = [`Memory: ${memory.usedMB.toFixed(1)} MB`];
+    if (typeof memory.totalMB === "number") {
+        parts.push(`/ ${memory.totalMB.toFixed(1)} MB`);
+    }
+    if (typeof memory.limitMB === "number" && memory.limitMB > 0) {
+        const pct = (memory.usedMB / memory.limitMB) * 100;
+        parts.push(`(cap ${memory.limitMB.toFixed(0)} MB, ${pct.toFixed(1)}%)`);
+    }
+    if (memory.warning) {
+        parts.push("[watch]");
+    }
+    return parts.join(" ");
+}
 const COLLAPSIBLE_SECTIONS = ["gold-events", "castle-passives", "turret-dps"];
 const SECTION_LABELS = {
     "gold-events": "Gold events",
@@ -93,6 +110,7 @@ export class DiagnosticsOverlay {
         const passiveUnlockCount = typeof metrics.passiveUnlockCount === "number" ? metrics.passiveUnlockCount : castlePassives.length;
         const lastPassiveUnlock = metrics.lastPassiveUnlock ?? null;
         const castleVisual = metrics.castleVisual ?? null;
+        const memoryLine = formatMemory(metrics.memory);
         const lines = [
             `Wave: ${wave.index + 1}/${wave.total}${modeSuffix}${waveCountdown}`,
             metrics.mode === "practice" ? "Mode: Practice - waves loop endlessly" : "Mode: Campaign",
@@ -112,6 +130,9 @@ export class DiagnosticsOverlay {
             `Rolling accuracy (${metrics.typing.recentSampleSize} inputs): ${(metrics.typing.recentAccuracy * 100).toFixed(1)}%`,
             `Difficulty bias: ${metrics.typing.difficultyBias >= 0 ? "+" : ""}${metrics.typing.difficultyBias.toFixed(2)}`
         ];
+        if (memoryLine) {
+            lines.push(memoryLine);
+        }
         const defeatStats = metrics.defeatBursts;
         if (defeatStats) {
             const perMinuteLabel = formatFloat(defeatStats.perMinute, 2);

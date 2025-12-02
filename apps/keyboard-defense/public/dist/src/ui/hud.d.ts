@@ -195,6 +195,8 @@ export declare class HudView {
     private readonly typingInput;
     private readonly fullscreenButton;
     private readonly capsLockWarning;
+    private readonly lockIndicatorCaps;
+    private readonly lockIndicatorNum;
     private readonly upgradePanel;
     private readonly comboLabel;
     private readonly comboAccuracyDelta;
@@ -304,6 +306,10 @@ export declare class HudView {
     }, callbacks: HudCallbacks);
     focusTypingInput(): void;
     setCapsLockWarning(visible: boolean): void;
+    setLockIndicators(options: {
+        capsOn: boolean;
+        numOn: boolean;
+    }): void;
     setFullscreenAvailable(available: boolean): void;
     setFullscreenActive(active: boolean): void;
     showShortcutOverlay(): void;

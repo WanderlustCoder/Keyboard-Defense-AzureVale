@@ -162,6 +162,12 @@ export interface RuntimeMetrics {
   };
   defeatBurstHistory: DefeatBurstAnalyticsEntry[];
   starfield?: StarfieldAnalyticsState | null;
+  memory?: {
+    usedMB: number;
+    totalMB?: number;
+    limitMB?: number;
+    warning?: boolean;
+  } | null;
 }
 
 export interface InputResult {

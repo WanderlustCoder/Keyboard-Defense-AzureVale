@@ -241,6 +241,7 @@ export declare class GameController {
     getTutorialAnalyticsSummary(): any;
     getAssetIntegritySummary(): any;
     render(): void;
+    sampleMemoryUsage(): any;
     buildTurretRangeRenderOptions(): {
         slotId: any;
         typeId: any;

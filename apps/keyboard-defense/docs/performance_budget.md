@@ -38,6 +38,7 @@ Guardrails for visuals, audio, and runtime load to keep the game smooth on typic
 
 ## Measurement & Verification
 - Dev overlay (`npm run serve:monitor`) to watch fps, draw calls, overdraw flags if available.
+- Memory watchdog (Diagnostics overlay) shows heap usage; warns once >82% of `jsHeapSizeLimit`.
 - Playtest bot + telemetry (`npm run playtest:bot`) to stress input without human variability.
 - Profiling passes: Chrome DevTools performance + memory snapshots after wave 10 and boss wave.
 - Visual regression (`npm run test:visual:auto`) to ensure budget-friendly effects remain visible after trims.

@@ -79,6 +79,8 @@ const BREAK_REMINDER_INTERVAL_MS = 20 * 60 * 1000;
 const BREAK_REMINDER_SNOOZE_MS = 10 * 60 * 1000;
 const ASSET_PREWARM_BATCH = 32;
 const ASSET_PREWARM_TIMEOUT_MS = 300;
+const MEMORY_SAMPLE_INTERVAL_MS = 5_000;
+const MEMORY_WARNING_RATIO = 0.82;
 function svgCircleDataUri(primary, accent) {
   const svg =
     `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'>` +
@@ -270,6 +272,8 @@ export class GameController {
     this.telemetryEndpoint = this.telemetryClient?.getEndpoint?.() ?? null;
     this.telemetryDebugControls = null;
     this.soundDebugControls = null;
+    this.memorySample = null;
+    this.nextMemorySampleAt = 0;
     const atlasEnabled = Boolean(config.featureToggles?.assetAtlas);
     this.assetLoader = new AssetLoader({
       useAtlas: atlasEnabled,
@@ -3415,7 +3419,9 @@ export class GameController {
       analytics.waveHistory && analytics.waveHistory.length > 0
         ? analytics.waveHistory
         : analytics.waveSummaries;
-    this.diagnostics.update(this.engine.getRuntimeMetrics(), {
+    const runtimeMetrics = this.engine.getRuntimeMetrics();
+    runtimeMetrics.memory = this.sampleMemoryUsage();
+    this.diagnostics.update(runtimeMetrics, {
       bestCombo: this.bestCombo,
       breaches: analytics.sessionBreaches,
       soundEnabled: this.soundEnabled,
@@ -3438,6 +3444,32 @@ export class GameController {
       lastCanvasResizeCause: this.renderer?.getLastResizeCause?.() ?? null,
       starfield: starfieldState ?? undefined
     });
+  }
+  sampleMemoryUsage() {
+    if (typeof performance === "undefined" || !performance.memory) {
+      return null;
+    }
+    const now = performance.now();
+    if (now < this.nextMemorySampleAt && this.memorySample) {
+      return this.memorySample;
+    }
+    this.nextMemorySampleAt = now + MEMORY_SAMPLE_INTERVAL_MS;
+    const usedMB = performance.memory.usedJSHeapSize / 1024 / 1024;
+    const totalMB = performance.memory.totalJSHeapSize
+      ? performance.memory.totalJSHeapSize / 1024 / 1024
+      : null;
+    const limitMB = performance.memory.jsHeapSizeLimit
+      ? performance.memory.jsHeapSizeLimit / 1024 / 1024
+      : null;
+    const warning =
+      typeof limitMB === "number" && limitMB > 0 ? usedMB / limitMB >= MEMORY_WARNING_RATIO : false;
+    this.memorySample = {
+      usedMB,
+      totalMB: totalMB ?? undefined,
+      limitMB: limitMB ?? undefined,
+      warning
+    };
+    return this.memorySample;
   }
   buildTurretRangeRenderOptions() {
     if (!this.turretRangeHighlightSlot) {
