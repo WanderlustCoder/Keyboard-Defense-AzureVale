@@ -13,6 +13,9 @@ Run `npm install` from `apps/keyboard-defense/` before building or running scrip
 
 Tests rely on deterministic seeds and the debug hooks exposed by the game engine, so they do not require a browser.
 
+Additional linting:
+- `npm run lint:wordlists -- [--fix-sort] [--strict] [--out <file>]` - Validate lesson/word bank files under `data/wordlists` (safe characters, denylist, lengths, duplicates, weights, lesson gating). Use `--fix-sort` to auto-sort words and rewrite files; `--strict` fails on warnings; `--out` writes a JSON summary.
+
 ## Dev Server Automation
 The repo ships with `scripts/devServer.mjs`, a thin wrapper around `http-server` that builds the project, serves `public/`, and emits readiness signals for automated tooling.
 
