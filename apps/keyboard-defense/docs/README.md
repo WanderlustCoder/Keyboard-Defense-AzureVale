@@ -10,6 +10,7 @@
 - **wordlist_lint_spec.md** - rules/CLI expectations for lesson/word bank linting (safe vocab, gating, lengths, weights, themes).
 - **castle_tileset_spec.md** - pixel castle tileset spec (walls, gates, towers, damage states, palette, exports).
 - **deployment_checklist.md** - Edge/Chrome release checklist (automated gates, browser smoke, accessibility, and packaging notes).
+- **visual_baselines.md** - Playwright visual snapshot guidance (commands, coverage, stability notes).
 
 When adding new doc files, include a one-line summary here for easy discovery.
 
