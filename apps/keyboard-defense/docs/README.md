@@ -6,6 +6,7 @@
 - **season1_backlog.md** - completed Siege of the Azure Vale backlog with IDs referenced across docs/status notes.
 - **season2_backlog.md** - new 100-item backlog for ages 8-16 (Edge/Chrome), free single-player with pixel art direction.
 - **icon_set_spec.md** - pixel UI icon set specification (sizes, palette, states, naming, exports) for buttons/toggles/HUD controls.
+- **qa_typing_edge_cases.md** - QA checklist for typing input edge cases (modifiers, buffer rules, accessibility, and smoke commands).
 
 When adding new doc files, include a one-line summary here for easy discovery.
 

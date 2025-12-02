@@ -6,6 +6,7 @@ Use this index to jump straight to the guidance you'll need while building and t
 - `apps/keyboard-defense/docs/season1_backlog.md` - Feature roadmap and numbered backlog for the Siege of the Azure Vale.
 - `apps/keyboard-defense/docs/season2_backlog.md` - Next-phase 100-item backlog for ages 8-16 (Edge/Chrome, free, pixel art direction).
 - `apps/keyboard-defense/docs/icon_set_spec.md` - Pixel UI icon set spec (sizes, palette, states, naming) for buttons/toggles/HUD controls.
+- `apps/keyboard-defense/docs/qa_typing_edge_cases.md` - QA checklist for typing input edge cases (modifiers, buffer rules, accessibility).
 - `apps/keyboard-defense/docs/roadmap/season1.json` - Season 1 roadmap milestones consumed by the HUD overlay.
 - `docs/CODEX_AUTONOMOUS_TESTING_DIRECTIVE_Siege_of_the_Azure_Vale.md` - Automation-first definition of done, scripting expectations, and QA guardrails.
 - `docs/CODEX_GUIDE.md` - Codex-oriented workflow guide (where to find tasks, required commands, documentation rules).
