@@ -377,6 +377,8 @@ export class HudView {
   private lastGold = 0;
   private maxCombo = 0;
   private goldTimeout: number | null = null;
+  private typingAccuracyLabel: HTMLElement | null = null;
+  private typingWpmLabel: HTMLElement | null = null;
   private readonly logEntries: string[] = [];
   private typingErrorHint:
     | { expected: string | null; received: string | null; enemyId: string | null; timestamp: number }
@@ -469,15 +471,17 @@ export class HudView {
   constructor(
     private readonly config: GameConfig,
     rootIds: {
-      healthBar: string;
-      goldLabel: string;
-      goldDelta: string;
-      activeWord: string;
-      typingInput: string;
-      virtualKeyboard?: string;
-      upgradePanel: string;
-      comboLabel: string;
-      comboAccuracyDelta: string;
+  healthBar: string;
+  goldLabel: string;
+  goldDelta: string;
+  activeWord: string;
+  typingAccuracy?: string;
+  typingWpm?: string;
+  typingInput: string;
+  virtualKeyboard?: string;
+  upgradePanel: string;
+  comboLabel: string;
+  comboAccuracyDelta: string;
       eventLog: string;
       fullscreenButton?: string;
       wavePreview: string;
@@ -560,6 +564,14 @@ export class HudView {
     this.goldLabel = this.getElement(rootIds.goldLabel);
     this.goldDelta = this.getElement(rootIds.goldDelta);
     this.activeWord = this.getElement(rootIds.activeWord);
+    if (rootIds.typingAccuracy) {
+      const acc = document.getElementById(rootIds.typingAccuracy);
+      this.typingAccuracyLabel = acc instanceof HTMLElement ? acc : null;
+    }
+    if (rootIds.typingWpm) {
+      const wpm = document.getElementById(rootIds.typingWpm);
+      this.typingWpmLabel = wpm instanceof HTMLElement ? wpm : null;
+    }
     this.typingInput = this.getElement(rootIds.typingInput) as HTMLInputElement;
     this.fullscreenButton = (() => {
       if (!rootIds.fullscreenButton) return null;
@@ -1517,6 +1529,15 @@ export class HudView {
     this.goldLabel.textContent = gold.toString();
     this.handleGoldDelta(gold);
     this.typingInput.value = state.typing.buffer;
+    if (this.typingAccuracyLabel) {
+      const pct = Math.max(0, Math.min(100, Math.round((state.typing.accuracy ?? 0) * 100)));
+      this.typingAccuracyLabel.textContent = `${pct}%`;
+    }
+    if (this.typingWpmLabel) {
+      const minutes = Math.max(state.time / 60, 0.1);
+      const wpm = Math.max(0, Math.round((state.typing.correctInputs / 5) / minutes));
+      this.typingWpmLabel.textContent = wpm.toString();
+    }
 
     const activeEnemy = state.typing.activeEnemyId
       ? state.enemies.find((enemy) => enemy.id === state.typing.activeEnemyId)

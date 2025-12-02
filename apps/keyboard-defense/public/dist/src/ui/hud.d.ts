@@ -225,6 +225,8 @@ export declare class HudView {
     private lastGold;
     private maxCombo;
     private goldTimeout;
+    private typingAccuracyLabel;
+    private typingWpmLabel;
     private readonly logEntries;
     private typingErrorHint;
     private readonly logLimit;
@@ -266,6 +268,8 @@ export declare class HudView {
         goldLabel: string;
         goldDelta: string;
         activeWord: string;
+        typingAccuracy?: string;
+        typingWpm?: string;
         typingInput: string;
         virtualKeyboard?: string;
         upgradePanel: string;

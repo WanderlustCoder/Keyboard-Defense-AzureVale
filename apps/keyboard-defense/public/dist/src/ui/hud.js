@@ -64,6 +64,8 @@ export class HudView {
     lastGold = 0;
     maxCombo = 0;
     goldTimeout = null;
+    typingAccuracyLabel = null;
+    typingWpmLabel = null;
     logEntries = [];
     typingErrorHint = null;
     logLimit = 6;
@@ -162,6 +164,14 @@ export class HudView {
         this.goldLabel = this.getElement(rootIds.goldLabel);
         this.goldDelta = this.getElement(rootIds.goldDelta);
         this.activeWord = this.getElement(rootIds.activeWord);
+        if (rootIds.typingAccuracy) {
+            const acc = document.getElementById(rootIds.typingAccuracy);
+            this.typingAccuracyLabel = acc instanceof HTMLElement ? acc : null;
+        }
+        if (rootIds.typingWpm) {
+            const wpm = document.getElementById(rootIds.typingWpm);
+            this.typingWpmLabel = wpm instanceof HTMLElement ? wpm : null;
+        }
         this.typingInput = this.getElement(rootIds.typingInput);
         this.fullscreenButton = (() => {
             if (!rootIds.fullscreenButton)
@@ -1028,6 +1038,15 @@ export class HudView {
         this.goldLabel.textContent = gold.toString();
         this.handleGoldDelta(gold);
         this.typingInput.value = state.typing.buffer;
+        if (this.typingAccuracyLabel) {
+            const pct = Math.max(0, Math.min(100, Math.round((state.typing.accuracy ?? 0) * 100)));
+            this.typingAccuracyLabel.textContent = `${pct}%`;
+        }
+        if (this.typingWpmLabel) {
+            const minutes = Math.max(state.time / 60, 0.1);
+            const wpm = Math.max(0, Math.round((state.typing.correctInputs / 5) / minutes));
+            this.typingWpmLabel.textContent = wpm.toString();
+        }
         const activeEnemy = state.typing.activeEnemyId
             ? state.enemies.find((enemy) => enemy.id === state.typing.activeEnemyId)
             : null;

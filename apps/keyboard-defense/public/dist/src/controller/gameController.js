@@ -360,6 +360,8 @@ export class GameController {
             goldLabel: "resource-gold",
             goldDelta: "resource-delta",
             activeWord: "active-word",
+            typingAccuracy: "typing-accuracy",
+            typingWpm: "typing-wpm",
             typingInput: "typing-input",
             virtualKeyboard: "virtual-keyboard",
             fullscreenButton: "fullscreen-button",

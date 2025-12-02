@@ -102,6 +102,16 @@
         </section>
         <section class="typing">
           <div id="active-word"></div>
+          <div id="typing-metrics" aria-live="polite">
+            <div class="typing-metric">
+              <span class="typing-metric-label">Accuracy</span>
+              <span class="typing-metric-value" id="typing-accuracy">100%</span>
+            </div>
+            <div class="typing-metric">
+              <span class="typing-metric-label">WPM</span>
+              <span class="typing-metric-value" id="typing-wpm">0</span>
+            </div>
+          </div>
           <div id="combo-stats">Combo x0</div>
           <div id="combo-accuracy-delta" role="status" aria-live="polite"></div>
           <input id="typing-input" autocomplete="off" autofocus placeholder="Type to attack..." />

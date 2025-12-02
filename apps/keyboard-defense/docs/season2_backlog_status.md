@@ -4,6 +4,7 @@ Quick status for the Season 2 backlog items referenced in `season2_backlog.md`.
 
 | ID | Title | Status | Notes |
 | --- | --- | --- | --- |
+| 31 | Live accuracy meter and WPM indicator | Done | HUD now shows live accuracy % and WPM next to the active word; updates every frame. |
 | 54 | Low-graphics toggle for weak devices | Done | Low graphics mode disables starfield/heavy effects, enforces reduced motion, and trims visuals for slow laptops. |
 | 56 | Virtual keyboard (optional) for accessibility | Done | Toggle in options shows on-screen QWERTY highlighting the next key; hides by default. |
 | 62 | Mis-typed key highlight with correct-key hint | Done | Active word shakes briefly and shows the needed key pill after a wrong press; hides automatically on the next attempt. |

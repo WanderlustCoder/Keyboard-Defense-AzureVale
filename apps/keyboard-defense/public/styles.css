@@ -1108,6 +1108,34 @@ body[data-checkered-background="true"] #wave-scorecard-stats li {
   margin-bottom: 8px;
   min-height: 2.2rem;
 }
+#typing-metrics {
+  display: inline-flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 6px;
+  color: #e2e8f0;
+}
+.typing-metric {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 6px 8px;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+}
+.typing-metric-label {
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  color: #94a3b8;
+}
+.typing-metric-value {
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+  color: #f8fafc;
+}
 #active-word[data-error="true"] {
   color: #fecdd3;
 }

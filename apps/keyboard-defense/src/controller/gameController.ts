@@ -389,10 +389,12 @@ export class GameController {
     this.hud = new HudView(
       this.engine.config,
       {
-        healthBar: "castle-health-bar",
+      healthBar: "castle-health-bar",
       goldLabel: "resource-gold",
       goldDelta: "resource-delta",
       activeWord: "active-word",
+      typingAccuracy: "typing-accuracy",
+      typingWpm: "typing-wpm",
       typingInput: "typing-input",
       virtualKeyboard: "virtual-keyboard",
       fullscreenButton: "fullscreen-button",
