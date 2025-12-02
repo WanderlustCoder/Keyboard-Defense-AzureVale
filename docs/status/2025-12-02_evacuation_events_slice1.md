@@ -17,5 +17,5 @@
 - In-game with toggles on: play wave 2+; expect a mid-wave transport spawning with a long word and a countdown banner (event hooks ready; HUD surface TBD). Toggling `evacuationEvents` or `dynamicSpawns` off removes the scheduling.
 
 ## Next slices (per slicing doc)
-- HUD/flow polish: banner with timer/progress, reward/penalty application.
+- HUD/flow polish ✅ now added: HUD banner with timer/progress, reward (+80g) and penalty (-40g) applied via engine and HUD messaging.
 - Coexistence/balance: lane reservation with hazards/affixes, reduced-motion visuals, optional penalties on failure.

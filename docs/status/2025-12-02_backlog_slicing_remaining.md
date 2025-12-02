@@ -23,7 +23,7 @@ Update 2025-12-02: #32 is now implemented (see `2025-12-02_boss_archivist_mechan
   - Introduce an `evacuation` event type gated by `featureToggles.dynamicSpawns` + `evacuationEvents` sub-toggle.
   - Spawn rescue transport at wave midpoint with long-form word and countdown timer; emit start/resolve events.
   - Tests: event schedules deterministically by seed, timer ticks, and cancel respects toggle.
-- **Slice 2: HUD/resolution flow**
+- **Slice 2: HUD/resolution flow** ✅ shipped in-engine/HUD (banner + gold resolution)
   - Add banner with timer/progress meter, reward on completion, and failure penalty (small breach or gold loss) on timeout.
   - Tests: banner state transitions, reward/penalty applied once, analytics entries for attempt/success/fail.
 - **Slice 3: Coexistence & balance**

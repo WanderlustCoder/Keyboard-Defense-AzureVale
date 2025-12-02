@@ -119,6 +119,10 @@ export interface GameConfig {
   comboWarningSeconds: number;
   burnTickRate: number;
   loopWaves: boolean;
+  evacuation: {
+    rewardGold: number;
+    failPenaltyGold: number;
+  };
   perfectWordBonus: {
     threshold: number;
     gold: number;
@@ -140,6 +144,10 @@ export const defaultConfig: GameConfig = {
   comboWarningSeconds: 1.5,
   burnTickRate: 0.3,
   loopWaves: false,
+  evacuation: {
+    rewardGold: 80,
+    failPenaltyGold: 40
+  },
   perfectWordBonus: {
     threshold: 5,
     gold: 25

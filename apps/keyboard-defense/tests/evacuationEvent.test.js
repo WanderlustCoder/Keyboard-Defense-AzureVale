@@ -55,16 +55,21 @@ describe("evacuation event", () => {
 
   test("evacuation fails when timer expires", () => {
     const engine = createEngine();
+    const startGold = engine.getState().resources.gold;
     advanceUntilEvac(engine);
     engine.update(30);
     const state = engine.getState();
     expect(state.evacuation.active).toBe(false);
     expect(state.analytics.evacuationFailures).toBe(1);
+    expect(state.resources.gold).toBeLessThanOrEqual(
+      startGold - defaultConfig.evacuation.failPenaltyGold
+    );
     expect(state.enemies.some((enemy) => enemy.tierId === "evac-transport")).toBe(false);
   });
 
   test("evacuation completes when transport is destroyed", () => {
     const engine = createEngine();
+    const startGold = engine.getState().resources.gold;
     advanceUntilEvac(engine);
     const runtime = engine;
     const evacState = runtime.getState().evacuation;
@@ -77,5 +82,8 @@ describe("evacuation event", () => {
     const final = engine.getState();
     expect(final.analytics.evacuationSuccesses).toBe(1);
     expect(final.evacuation.active).toBe(false);
+    const expectedGoldGain =
+      defaultConfig.evacuation.rewardGold + defaultConfig.enemyTiers["evac-transport"].reward;
+    expect(final.resources.gold).toBeGreaterThanOrEqual(startGold + expectedGoldGain - 1);
   });
 });

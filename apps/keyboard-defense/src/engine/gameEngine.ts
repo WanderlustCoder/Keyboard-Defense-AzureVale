@@ -10,7 +10,6 @@ import {
   type DefeatBurstAnalyticsEntry,
   type DefeatBurstMode,
   type BossEventEntry,
-  type BossPhase,
   type EliteAffixInstance,
   type EnemyState,
   type GameMode,
@@ -55,6 +54,8 @@ const BOSS_SHOCKWAVE_INTERVAL = 10;
 const BOSS_SHOCKWAVE_INTERVAL_PHASE2 = 7.5;
 const BOSS_SHOCKWAVE_DURATION = 3.5;
 const BOSS_SHOCKWAVE_SLOW = 0.65;
+const EVAC_REWARD_FALLBACK = 80;
+const EVAC_PENALTY_FALLBACK = 40;
 
 type DynamicSpawnEvent = {
   time: number;
@@ -546,8 +547,19 @@ export class GameEngine {
     evac.active = false;
     evac.succeeded = success;
     evac.failed = !success;
+    const rewardGold =
+      typeof this.config.evacuation?.rewardGold === "number"
+        ? Math.max(0, this.config.evacuation.rewardGold)
+        : EVAC_REWARD_FALLBACK;
+    const penaltyGold =
+      typeof this.config.evacuation?.failPenaltyGold === "number"
+        ? Math.max(0, this.config.evacuation.failPenaltyGold)
+        : EVAC_PENALTY_FALLBACK;
     if (success) {
       this.state.analytics.evacuationSuccesses += 1;
+      if (rewardGold > 0) {
+        this.grantGold(rewardGold);
+      }
       this.events.emit("evac:complete", {
         waveIndex: this.state.wave.index,
         lane: evac.lane,
@@ -556,6 +568,9 @@ export class GameEngine {
       });
     } else {
       this.state.analytics.evacuationFailures += 1;
+      if (penaltyGold > 0) {
+        this.grantGold(-penaltyGold);
+      }
       this.events.emit("evac:fail", {
         waveIndex: this.state.wave.index,
         lane: evac.lane,

@@ -436,6 +436,17 @@ export class HudView {
   private comboBaselineAccuracy = 1;
   private lastAccuracy = 1;
   private hudRoot: HTMLElement | null = null;
+  private evacBanner?:
+    | {
+        container: HTMLElement;
+        title: HTMLElement;
+        timer: HTMLElement;
+        progress: HTMLElement;
+        status: HTMLElement;
+      }
+    | undefined;
+  private evacHideTimeout: ReturnType<typeof setTimeout> | null = null;
+  private evacResolvedState: "idle" | "success" | "fail" = "idle";
 
   constructor(
     private readonly config: GameConfig,
@@ -472,6 +483,57 @@ export class HudView {
     this.hudRoot = document.getElementById("hud");
     if (this.hudRoot && !this.hudRoot.dataset.canvasTransition) {
       this.hudRoot.dataset.canvasTransition = "idle";
+    }
+    if (this.hudRoot) {
+      const banner = document.createElement("div");
+      banner.className = "evac-banner";
+      banner.dataset.visible = "false";
+      banner.setAttribute("role", "status");
+      banner.setAttribute("aria-live", "polite");
+      banner.style.display = "none";
+      banner.style.background = "linear-gradient(90deg, #0f172a, #0b2339)";
+      banner.style.color = "#e0f2fe";
+      banner.style.border = "1px solid #38bdf8";
+      banner.style.borderRadius = "10px";
+      banner.style.padding = "10px";
+      banner.style.gap = "10px";
+      banner.style.alignItems = "center";
+      banner.style.justifyContent = "space-between";
+      banner.style.boxShadow = "0 6px 14px rgba(0,0,0,0.25)";
+      banner.style.marginBottom = "12px";
+      banner.style.flexWrap = "wrap";
+      banner.style.display = "none";
+      banner.style.position = "relative";
+      const title = document.createElement("div");
+      title.className = "evac-title";
+      title.style.fontWeight = "700";
+      title.style.letterSpacing = "0.3px";
+      const timer = document.createElement("div");
+      timer.className = "evac-timer";
+      timer.style.fontVariantNumeric = "tabular-nums";
+      timer.style.fontSize = "14px";
+      const status = document.createElement("div");
+      status.className = "evac-status";
+      status.style.fontSize = "12px";
+      status.style.opacity = "0.85";
+      const barOuter = document.createElement("div");
+      barOuter.className = "evac-progress";
+      barOuter.style.width = "100%";
+      barOuter.style.height = "6px";
+      barOuter.style.background = "rgba(255,255,255,0.08)";
+      barOuter.style.borderRadius = "999px";
+      const barInner = document.createElement("div");
+      barInner.style.height = "100%";
+      barInner.style.width = "0%";
+      barInner.style.borderRadius = "999px";
+      barInner.style.background = "linear-gradient(90deg, #38bdf8, #a5b4fc)";
+      barOuter.appendChild(barInner);
+      banner.appendChild(title);
+      banner.appendChild(timer);
+      banner.appendChild(status);
+      banner.appendChild(barOuter);
+      this.hudRoot.prepend(banner);
+      this.evacBanner = { container: banner, title, timer, progress: barInner, status };
     }
 
     this.healthBar = this.getElement(rootIds.healthBar);
@@ -1366,6 +1428,7 @@ export class HudView {
       state.typing.comboTimer,
       state.typing.accuracy
     );
+    this.updateEvacuation(state);
     this.renderWavePreview(upcoming, options.colorBlindFriendly);
     this.applyTutorialSlotLock(state);
     const history = state.analytics.waveHistory?.length
@@ -4308,5 +4371,94 @@ export class HudView {
     } else {
       this.focusTypingInput();
     }
+  }
+
+  private updateEvacuation(state: GameState): void {
+    if (!this.evacBanner) return;
+    const evac = state.evacuation;
+    const container = this.evacBanner.container;
+    const title = this.evacBanner.title;
+    const timerLabel = this.evacBanner.timer;
+    const statusLabel = this.evacBanner.status;
+    const reward = Math.max(0, this.config.evacuation?.rewardGold ?? 0);
+    const penalty = Math.max(0, this.config.evacuation?.failPenaltyGold ?? 0);
+    const visible = evac.active || evac.succeeded || evac.failed;
+
+    if (!visible) {
+      container.dataset.visible = "false";
+      container.style.display = "none";
+      statusLabel.textContent = "";
+      this.evacResolvedState = "idle";
+      if (this.evacHideTimeout) {
+        clearTimeout(this.evacHideTimeout);
+        this.evacHideTimeout = null;
+      }
+      return;
+    }
+
+    container.dataset.visible = "true";
+    container.style.display = "flex";
+
+    const laneLabel = this.formatLaneLabel(evac.lane);
+    const wordLabel = evac.word ? `"${evac.word}"` : "transport";
+    title.textContent = `${laneLabel} evacuation — ${wordLabel}`;
+
+    const progressRatio =
+      evac.duration > 0 ? Math.min(1, Math.max(0, (evac.duration - evac.remaining) / evac.duration)) : 0;
+    this.evacBanner.progress.style.width = `${progressRatio * 100}%`;
+
+    if (evac.succeeded) {
+      container.dataset.state = "success";
+      timerLabel.textContent = "Evacuated";
+      statusLabel.textContent = reward > 0 ? `Reward +${reward}g` : "Evacuation secured";
+      this.evacBanner.progress.style.width = "100%";
+      if (this.evacResolvedState !== "success") {
+        this.evacResolvedState = "success";
+        this.scheduleEvacHide();
+      }
+      return;
+    }
+
+    if (evac.failed) {
+      container.dataset.state = "fail";
+      timerLabel.textContent = "Failed";
+      statusLabel.textContent = penalty > 0 ? `Penalty -${penalty}g` : "Evacuation failed";
+      if (this.evacResolvedState !== "fail") {
+        this.evacResolvedState = "fail";
+        this.scheduleEvacHide();
+      }
+      return;
+    }
+
+    this.evacResolvedState = "idle";
+    if (this.evacHideTimeout) {
+      clearTimeout(this.evacHideTimeout);
+      this.evacHideTimeout = null;
+    }
+    container.dataset.state = "active";
+    timerLabel.textContent = `${evac.remaining.toFixed(1)}s remaining`;
+    statusLabel.textContent = `Hold until transport clears`;
+  }
+
+  private scheduleEvacHide(): void {
+    if (this.evacHideTimeout) {
+      clearTimeout(this.evacHideTimeout);
+    }
+    this.evacHideTimeout = setTimeout(() => {
+      if (!this.evacBanner) return;
+      this.evacBanner.container.dataset.visible = "false";
+      this.evacBanner.container.style.display = "none";
+      this.evacResolvedState = "idle";
+      this.evacHideTimeout = null;
+    }, 2200);
+  }
+
+  private formatLaneLabel(lane: number | null): string {
+    if (!Number.isFinite(lane)) {
+      return "Lane ?";
+    }
+    const index = Math.max(0, Math.floor(lane ?? 0));
+    const letter = String.fromCharCode(65 + (index % 26));
+    return `Lane ${letter}`;
   }
 }

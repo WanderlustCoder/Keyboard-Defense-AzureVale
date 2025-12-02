@@ -37,7 +37,7 @@
 | 33 | Enemy & Wave Design | Display enemy taunt text when special units spawn. | Done | Wave 2/3 specials announce via taunt banner & battle log (#docs/status/2025-11-19_enemy_taunts.md) |
 | 34 | Enemy & Wave Design | Render spawn preview icons using sprite thumbnails. | Done | HUD wave preview shows tier icons with colorblind-aware palette |
 | 35 | Enemy & Wave Design | Add dynamic spawn scheduler for surprise mini-events. | Done | Deterministic micro-events (skirmish/gold-runner/shield-carrier) gated by toggle |
-| 36 | Enemy & Wave Design | Implement evacuation event requiring long-form typing to rescue civilians. | In Progress | Slice 1 shipped (mid-wave transport + countdown, events & analytics) |
+| 36 | Enemy & Wave Design | Implement evacuation event requiring long-form typing to rescue civilians. | In Progress | Slices 1-2 shipped (transport + banner, gold reward/penalty) |
 | 37 | Enemy & Wave Design | Introduce lane hazards (fog/storms) affecting visibility/accuracy. | Done | Seeded fog/storm hazards reduce lane fire-rate with HUD messaging |
 | 38 | Enemy & Wave Design | Provide JSON schema/editor for designer-authored wave configs. | Not Started |  |
 | 39 | Enemy & Wave Design | Calculate difficulty ratings per wave and surface in analytics overlay. | Done | Diagnostics overlay shows computed wave threat rating |

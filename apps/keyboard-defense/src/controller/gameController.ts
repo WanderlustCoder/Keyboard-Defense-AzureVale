@@ -4038,6 +4038,26 @@ export class GameController {
         this.playSound("upgrade", 120);
       }
     });
+    this.engine.events.on("evac:start", ({ lane, word, duration }) => {
+      const laneLabel = this.describeLane(lane);
+      const label = word ? `"${word}"` : "transport";
+      this.hud.appendLog(`Evacuation started in ${laneLabel} (${label})`);
+      this.hud.showCastleMessage(`Evac in ${laneLabel} — ${Math.round(duration)}s`);
+    });
+    this.engine.events.on("evac:complete", ({ lane, word }) => {
+      const laneLabel = this.describeLane(lane);
+      const label = word ? `"${word}"` : "transport";
+      this.hud.appendLog(`Evac secured in ${laneLabel} (${label}) +reward`);
+      this.hud.showCastleMessage("Evacuation secured!");
+      this.playSound("upgrade", 100);
+    });
+    this.engine.events.on("evac:fail", ({ lane, word }) => {
+      const laneLabel = this.describeLane(lane);
+      const label = word ? `"${word}"` : "transport";
+      this.hud.appendLog(`Evac failed in ${laneLabel} (${label}) -penalty`);
+      this.hud.showCastleMessage("Evacuation failed!");
+      this.playSound("impact-breach", 90);
+    });
     this.engine.events.on("projectile:impact", ({ projectile, enemyId }) => {
       if (enemyId) {
         this.hud.appendLog(`Hit confirmed from ${projectile.sourceSlotId.toUpperCase()}`);
