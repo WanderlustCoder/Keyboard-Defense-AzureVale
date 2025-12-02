@@ -9,6 +9,8 @@ import {
   type ComboWarningHistoryEntry,
   type DefeatBurstAnalyticsEntry,
   type DefeatBurstMode,
+  type BossEventEntry,
+  type BossPhase,
   type EliteAffixInstance,
   type EnemyState,
   type GameMode,
@@ -43,6 +45,16 @@ const MAX_COMBO_WARNING_HISTORY = 20;
 const MAX_TYPING_DRILL_HISTORY = 20;
 const DEFAULT_TURRET_PRIORITY: TurretTargetPriority = "first";
 const DYNAMIC_EVENT_ORDER_START = 1000;
+const BOSS_SEGMENT_COUNT = 3;
+const BOSS_SEGMENT_SHIELD = 75;
+const BOSS_ROTATION_INTERVAL = 9;
+const BOSS_ROTATION_INTERVAL_PHASE2 = 6;
+const BOSS_VULNERABILITY_DURATION = 3.5;
+const BOSS_VULNERABILITY_MULTIPLIER = 1.35;
+const BOSS_SHOCKWAVE_INTERVAL = 10;
+const BOSS_SHOCKWAVE_INTERVAL_PHASE2 = 7.5;
+const BOSS_SHOCKWAVE_DURATION = 3.5;
+const BOSS_SHOCKWAVE_SLOW = 0.65;
 
 type DynamicSpawnEvent = {
   time: number;
@@ -181,6 +193,8 @@ export class GameEngine {
   private dynamicEventIndex = 0;
   private hazardEvents: LaneHazardEvent[] = [];
   private hazardEventIndex = 0;
+  private evacuationEvent: { time: number; lane: number; duration: number; word?: string | null } | null =
+    null;
 
   private recalculateAverageDps(): void {
     const analytics = this.state.analytics;
@@ -198,6 +212,83 @@ export class GameEngine {
   private resetHazardEvents(): void {
     this.hazardEvents = [];
     this.hazardEventIndex = 0;
+  }
+
+  private resetEvacuationSchedule(): void {
+    this.evacuationEvent = null;
+    this.state.evacuation = {
+      active: false,
+      lane: null,
+      remaining: 0,
+      duration: 0,
+      enemyId: null,
+      word: null,
+      succeeded: false,
+      failed: false
+    };
+  }
+
+  private buildEvacuationEventForWave(waveIndex: number, rng: PRNG): void {
+    this.resetEvacuationSchedule();
+    if (!this.config.featureToggles.dynamicSpawns || !this.config.featureToggles.evacuationEvents) {
+      return;
+    }
+    const wave = this.config.waves[waveIndex];
+    if (!wave || wave.duration <= 12) {
+      return;
+    }
+    const lanes = Array.from(new Set(this.config.turretSlots.map((slot) => slot.lane))).sort(
+      (a, b) => a - b
+    );
+    if (lanes.length === 0) return;
+    const lane = rng.pick(lanes);
+    const midWindowStart = Math.max(6, wave.duration * 0.4);
+    const midWindowEnd = Math.max(midWindowStart + 2, wave.duration * 0.65);
+    const time = rng.range(midWindowStart, midWindowEnd);
+    const duration = rng.range(10, 16);
+    const word = this.pickEvacuationWord(lane, waveIndex, rng);
+    this.evacuationEvent = { time, lane, duration, word };
+  }
+
+  private pickEvacuationWord(lane: number, waveIndex: number, rng: PRNG): string | null {
+    const candidates = (this.wordBank.hard ?? []).filter((word) => word.length >= 9);
+    if (candidates.length === 0) {
+      return "evacuation";
+    }
+    try {
+      return rng.pick(candidates);
+    } catch {
+      return candidates[0] ?? "evacuation";
+    }
+  }
+
+  private createBossState(): GameState["boss"] {
+    return {
+      active: false,
+      enemyId: null,
+      tierId: null,
+      lane: null,
+      phase: null,
+      introAnnounced: false,
+      segmentIndex: 0,
+      segmentTotal: BOSS_SEGMENT_COUNT,
+      segmentShield: BOSS_SEGMENT_SHIELD,
+      rotationInterval: BOSS_ROTATION_INTERVAL,
+      rotationTimer: BOSS_ROTATION_INTERVAL,
+      vulnerabilityRemaining: 0,
+      vulnerabilityMultiplier: 1,
+      vulnerabilityAppliesToShield: true,
+      shockwaveInterval: BOSS_SHOCKWAVE_INTERVAL,
+      shockwaveTimer: BOSS_SHOCKWAVE_INTERVAL,
+      shockwaveDuration: BOSS_SHOCKWAVE_DURATION,
+      shockwaveRemaining: 0,
+      shockwaveMultiplier: 1,
+      phaseShifted: false
+    };
+  }
+
+  private resetBossState(): void {
+    this.state.boss = this.createBossState();
   }
 
   private clearLaneHazards(): void {
@@ -339,6 +430,283 @@ export class GameEngine {
     }
   }
 
+  private isBossTier(tierId: string | undefined | null): boolean {
+    return tierId === "archivist";
+  }
+
+  private recordBossEvent(type: BossEventEntry["type"], enemy?: EnemyState | null): void {
+    const analytics = this.state.analytics;
+    const entry: BossEventEntry = {
+      type,
+      time: this.state.time,
+      phase: this.state.boss.phase,
+      health: enemy?.health ?? null,
+      shield: enemy?.shield?.current ?? null,
+      lane: this.state.boss.lane
+    };
+    analytics.bossEvents.push(entry);
+    if (analytics.bossEvents.length > 30) {
+      analytics.bossEvents.splice(0, analytics.bossEvents.length - 30);
+    }
+  }
+
+  private handleBossSpawn(enemy: EnemyState): void {
+    if (!this.config.featureToggles.bossMechanics) return;
+    if (!this.isBossTier(enemy.tierId)) return;
+    const boss = this.state.boss;
+    boss.active = true;
+    boss.enemyId = enemy.id;
+    boss.tierId = enemy.tierId;
+    boss.lane = typeof enemy.lane === "number" ? enemy.lane : null;
+    boss.phase = "phase-one";
+    boss.introAnnounced = false;
+    boss.segmentIndex = 0;
+    boss.segmentTotal = BOSS_SEGMENT_COUNT;
+    boss.segmentShield = BOSS_SEGMENT_SHIELD;
+    boss.rotationInterval = BOSS_ROTATION_INTERVAL;
+    boss.rotationTimer = Math.max(1, BOSS_ROTATION_INTERVAL / 2);
+    boss.vulnerabilityRemaining = 0;
+    boss.vulnerabilityMultiplier = BOSS_VULNERABILITY_MULTIPLIER;
+    boss.vulnerabilityAppliesToShield = true;
+    boss.shockwaveInterval = BOSS_SHOCKWAVE_INTERVAL;
+    boss.shockwaveTimer = Math.max(2, BOSS_SHOCKWAVE_INTERVAL / 2);
+    boss.shockwaveDuration = BOSS_SHOCKWAVE_DURATION;
+    boss.shockwaveRemaining = 0;
+    boss.shockwaveMultiplier = BOSS_SHOCKWAVE_SLOW;
+    boss.phaseShifted = false;
+    const desiredShield = Math.max(0, boss.segmentShield);
+    if (desiredShield > 0) {
+      enemy.shield = {
+        current: desiredShield,
+        max: desiredShield
+      };
+    }
+    this.state.analytics.bossPhase = boss.phase;
+    this.state.analytics.bossActive = true;
+    this.state.analytics.bossLane = boss.lane;
+    this.recordBossEvent("intro", enemy);
+    this.events.emit("boss:intro", {
+      waveIndex: this.state.wave.index,
+      enemyId: enemy.id,
+      lane: boss.lane,
+      phase: boss.phase
+    });
+  }
+
+  private rotateBossShield(enemy: EnemyState): void {
+    const boss = this.state.boss;
+    boss.segmentIndex = (boss.segmentIndex + 1) % Math.max(1, boss.segmentTotal);
+    boss.rotationTimer = boss.rotationInterval;
+    const value = Math.max(0, boss.segmentShield);
+    if (value > 0) {
+      enemy.shield = { current: value, max: value };
+    } else {
+      enemy.shield = undefined;
+    }
+    this.recordBossEvent("shield-rotated", enemy);
+    const duration = Math.max(1.25, BOSS_VULNERABILITY_DURATION);
+    boss.vulnerabilityRemaining = Math.max(boss.vulnerabilityRemaining, duration);
+    this.events.emit("boss:vulnerability", {
+      waveIndex: this.state.wave.index,
+      enemyId: enemy.id,
+      active: true,
+      multiplier: boss.vulnerabilityMultiplier,
+      remaining: boss.vulnerabilityRemaining
+    });
+    this.recordBossEvent("vulnerable-start", enemy);
+  }
+
+  private triggerBossShockwave(enemy: EnemyState | null): void {
+    const boss = this.state.boss;
+    boss.shockwaveTimer = boss.shockwaveInterval;
+    boss.shockwaveRemaining = boss.shockwaveDuration;
+    boss.shockwaveMultiplier = BOSS_SHOCKWAVE_SLOW;
+    this.recordBossEvent("shockwave", enemy ?? undefined);
+    this.events.emit("boss:shockwave", {
+      waveIndex: this.state.wave.index,
+      enemyId: enemy?.id ?? null,
+      lane: boss.lane,
+      multiplier: boss.shockwaveMultiplier,
+      duration: boss.shockwaveDuration
+    });
+  }
+
+  private handleEvacuationSpawn(enemy: EnemyState): void {
+    if (!this.config.featureToggles.evacuationEvents) return;
+    const evac = this.state.evacuation;
+    if (!evac.active || evac.enemyId || enemy.tierId !== "evac-transport") {
+      return;
+    }
+    evac.enemyId = enemy.id;
+  }
+
+  private completeEvacuation(success: boolean): void {
+    const evac = this.state.evacuation;
+    if (!evac.active) return;
+    evac.active = false;
+    evac.succeeded = success;
+    evac.failed = !success;
+    if (success) {
+      this.state.analytics.evacuationSuccesses += 1;
+      this.events.emit("evac:complete", {
+        waveIndex: this.state.wave.index,
+        lane: evac.lane,
+        word: evac.word,
+        remaining: evac.remaining
+      });
+    } else {
+      this.state.analytics.evacuationFailures += 1;
+      this.events.emit("evac:fail", {
+        waveIndex: this.state.wave.index,
+        lane: evac.lane,
+        word: evac.word
+      });
+    }
+    this.evacuationEvent = null;
+  }
+
+  private tickEvacuation(deltaSeconds: number): void {
+    const evac = this.state.evacuation;
+    if (!evac.active) return;
+    evac.remaining = Math.max(0, evac.remaining - deltaSeconds);
+    const evacEnemyAlive =
+      evac.enemyId &&
+      this.state.enemies.some((enemy) => enemy.id === evac.enemyId && enemy.status === "alive");
+    if (!evacEnemyAlive) {
+      this.completeEvacuation(true);
+      return;
+    }
+    if (evac.remaining <= 0) {
+      this.state.enemies = this.state.enemies.filter((enemy) => enemy.id !== evac.enemyId);
+      this.completeEvacuation(false);
+    }
+  }
+
+  private updateBoss(deltaSeconds: number): void {
+    if (!this.config.featureToggles.bossMechanics) return;
+    const boss = this.state.boss;
+    if (!boss.active || !boss.enemyId) {
+      return;
+    }
+    const enemy = this.state.enemies.find(
+      (entry) => entry.id === boss.enemyId && entry.status === "alive"
+    );
+    if (!enemy) {
+      boss.active = false;
+      this.state.analytics.bossActive = false;
+      return;
+    }
+
+    this.state.analytics.bossPhase = boss.phase;
+    this.state.analytics.bossActive = true;
+    this.state.analytics.bossLane = boss.lane;
+
+    if (!boss.introAnnounced) {
+      boss.introAnnounced = true;
+      this.events.emit("boss:intro", {
+        waveIndex: this.state.wave.index,
+        enemyId: enemy.id,
+        lane: boss.lane,
+        phase: boss.phase
+      });
+    }
+
+    if (!boss.phaseShifted && enemy.health <= enemy.maxHealth * 0.5) {
+      boss.phaseShifted = true;
+      boss.phase = "phase-two";
+      boss.rotationInterval = BOSS_ROTATION_INTERVAL_PHASE2;
+      boss.shockwaveInterval = BOSS_SHOCKWAVE_INTERVAL_PHASE2;
+      boss.rotationTimer = Math.min(boss.rotationTimer, boss.rotationInterval);
+      boss.vulnerabilityRemaining = Math.max(
+        boss.vulnerabilityRemaining,
+        BOSS_VULNERABILITY_DURATION + 1
+      );
+      enemy.shield = enemy.shield
+        ? { current: Math.min(enemy.shield.current, boss.segmentShield), max: boss.segmentShield }
+        : undefined;
+      this.recordBossEvent("phase-shift", enemy);
+      this.events.emit("boss:phase", {
+        waveIndex: this.state.wave.index,
+        enemyId: enemy.id,
+        phase: boss.phase,
+        lane: boss.lane
+      });
+      this.events.emit("boss:vulnerability", {
+        waveIndex: this.state.wave.index,
+        enemyId: enemy.id,
+        active: true,
+        multiplier: boss.vulnerabilityMultiplier,
+        remaining: boss.vulnerabilityRemaining
+      });
+    }
+
+    boss.rotationTimer = Math.max(0, boss.rotationTimer - deltaSeconds);
+    if (boss.rotationTimer <= 0) {
+      this.rotateBossShield(enemy);
+    }
+
+    if (boss.vulnerabilityRemaining > 0) {
+      boss.vulnerabilityRemaining = Math.max(0, boss.vulnerabilityRemaining - deltaSeconds);
+      if (boss.vulnerabilityRemaining === 0) {
+        this.recordBossEvent("vulnerable-end", enemy);
+        this.events.emit("boss:vulnerability", {
+          waveIndex: this.state.wave.index,
+          enemyId: enemy.id,
+          active: false,
+          multiplier: boss.vulnerabilityMultiplier,
+          remaining: 0
+        });
+      }
+    }
+
+    boss.shockwaveTimer = Math.max(0, boss.shockwaveTimer - deltaSeconds);
+    if (boss.shockwaveTimer <= 0) {
+      this.triggerBossShockwave(enemy);
+    }
+    if (boss.shockwaveRemaining > 0) {
+      boss.shockwaveRemaining = Math.max(0, boss.shockwaveRemaining - deltaSeconds);
+    }
+  }
+
+  private collectEvacuationSpawnRequest(currentTime: number): SpawnEnemyInput | null {
+    if (!this.config.featureToggles.dynamicSpawns || !this.config.featureToggles.evacuationEvents) {
+      return null;
+    }
+    if (!this.evacuationEvent || this.state.evacuation.active) {
+      return null;
+    }
+    if (currentTime < this.evacuationEvent.time) {
+      return null;
+    }
+    const event = this.evacuationEvent;
+    const word = event.word ?? this.pickEvacuationWord(event.lane, this.state.wave.index, this.rng);
+    this.state.evacuation = {
+      active: true,
+      lane: event.lane,
+      remaining: event.duration,
+      duration: event.duration,
+      enemyId: null,
+      word,
+      succeeded: false,
+      failed: false
+    };
+    this.state.analytics.evacuationAttempts += 1;
+    this.events.emit("evac:start", {
+      waveIndex: this.state.wave.index,
+      lane: event.lane,
+      word,
+      duration: event.duration
+    });
+    return {
+      tierId: "evac-transport",
+      lane: event.lane,
+      order: DYNAMIC_EVENT_ORDER_START + 200,
+      word,
+      waveIndex: this.state.wave.index,
+      taunt: "Civilians inbound—cover their escape!"
+    };
+  }
+
   private resolveAffixSeed(input: {
     waveIndex: number;
     order?: number;
@@ -414,6 +782,8 @@ export class GameEngine {
     this.unlockSlotsForWave(this.lastWaveIndex);
     this.clearLaneHazards();
     this.resetDynamicEvents();
+    this.resetEvacuationSchedule();
+    this.resetBossState();
     this.difficultyBands = [...this.config.difficultyBands].sort((a, b) => a.fromWave - b.fromWave);
     this.currentDifficultyBand = this.resolveDifficulty(this.state.wave.index);
 
@@ -430,6 +800,8 @@ export class GameEngine {
     this.unlockSlotsForWave(this.lastWaveIndex);
     this.clearLaneHazards();
     this.resetDynamicEvents();
+    this.resetEvacuationSchedule();
+    this.resetBossState();
     this.currentDifficultyBand = this.resolveDifficulty(this.state.wave.index);
     this.resetAnalytics();
   }
@@ -456,22 +828,32 @@ export class GameEngine {
 
     const spawnRequests = this.waveSystem.update(this.state, deltaSeconds);
     const dynamicRequests = this.collectDynamicSpawnRequests(this.state.wave.timeInWave);
+    const evacRequest = this.collectEvacuationSpawnRequest(this.state.wave.timeInWave);
     const allRequests = [...spawnRequests, ...dynamicRequests];
+    if (evacRequest) {
+      allRequests.push(evacRequest);
+    }
     this.activateLaneHazards(this.state.wave.timeInWave, deltaSeconds);
     for (const request of allRequests) {
       const difficulty = this.resolveDifficulty(this.state.wave.index);
       this.currentDifficultyBand = difficulty;
       const affixes = this.resolveSpawnAffixes(request, this.state.wave.index);
-      this.enemySystem.spawn(this.state, {
+      const spawned = this.enemySystem.spawn(this.state, {
         ...request,
         waveIndex: this.state.wave.index,
         difficulty,
         affixes
       });
+      if (spawned) {
+        this.handleBossSpawn(spawned);
+        this.handleEvacuationSpawn(spawned);
+      }
     }
 
     if (prevInCountdown && !this.state.wave.inCountdown && this.state.status === "running") {
       this.buildDynamicEventsForWave(this.state.wave.index);
+      const evacRng = new PRNG(this.seed ^ Math.imul(this.state.wave.index + 3, 0x517cc1b7));
+      this.buildEvacuationEventForWave(this.state.wave.index, evacRng);
       this.beginWaveAnalytics(this.state.wave.index);
     }
 
@@ -480,9 +862,13 @@ export class GameEngine {
       this.unlockSlotsForWave(this.lastWaveIndex);
       this.clearLaneHazards();
       this.resetDynamicEvents();
+      this.resetEvacuationSchedule();
+      this.resetBossState();
     }
 
     this.enemySystem.update(this.state, deltaSeconds);
+    this.tickEvacuation(deltaSeconds);
+    this.updateBoss(deltaSeconds);
     this.projectileSystem.update(this.state, deltaSeconds);
     this.turretSystem.update(this.state, deltaSeconds, this.projectileSystem);
     this.tickComboTimer(deltaSeconds);
@@ -952,7 +1338,11 @@ export class GameEngine {
     this.currentDifficultyBand = difficulty;
     const waveIndex = request.waveIndex ?? this.state.wave.index;
     const affixes = this.resolveSpawnAffixes(request, waveIndex);
-    return this.enemySystem.spawn(this.state, { ...request, waveIndex, difficulty, affixes });
+    const enemy = this.enemySystem.spawn(this.state, { ...request, waveIndex, difficulty, affixes });
+    if (enemy) {
+      this.handleBossSpawn(enemy);
+    }
+    return enemy;
   }
 
   removeEnemiesByTier(tierId: string): number {
@@ -1211,14 +1601,15 @@ export class GameEngine {
       }
     }
     const all = [...previews, ...dynamicPreviews].map((entry) => {
+      const withBoss = { ...entry, isBoss: this.isBossTier(entry.tierId) };
       if (!this.config.featureToggles.eliteAffixes) {
-        return entry;
+        return withBoss;
       }
       const affixes = this.resolveSpawnAffixes(
         entry as unknown as SpawnEnemyInput,
         entry.waveIndex ?? this.state.wave.index
       );
-      return { ...entry, affixes };
+      return { ...withBoss, affixes };
     });
     all.sort((a, b) => a.timeUntil - b.timeUntil);
     return all.slice(0, limit);
@@ -1264,6 +1655,13 @@ export class GameEngine {
       lastMode: null,
       history: []
     };
+    this.state.analytics.evacuationAttempts = 0;
+    this.state.analytics.evacuationSuccesses = 0;
+    this.state.analytics.evacuationFailures = 0;
+    this.state.analytics.bossEvents = [];
+    this.state.analytics.bossPhase = null;
+    this.state.analytics.bossActive = false;
+    this.state.analytics.bossLane = null;
     this.state.analytics.averageTotalDps = 0;
     this.state.analytics.averageTurretDps = 0;
     this.state.analytics.averageTypingDps = 0;
@@ -1326,6 +1724,10 @@ export class GameEngine {
       analytics.waveReactionSamples > 0
         ? analytics.waveReactionTime / analytics.waveReactionSamples
         : 0;
+    const bossEvents = analytics.bossEvents ?? [];
+    const bossPhase = analytics.bossPhase ?? null;
+    const bossActive = analytics.bossActive ?? false;
+    const bossLane = analytics.bossLane ?? null;
     analytics.totalDamageDealt = totalDamage;
     const castleBonusGold = analytics.waveCastleBonusGold;
     const summary: WaveSummary = {
@@ -1350,7 +1752,11 @@ export class GameEngine {
       repairsUsed: analytics.waveRepairs,
       repairHealth: analytics.waveRepairHealth,
       repairGold: analytics.waveRepairGold,
-      averageReaction
+      averageReaction,
+      bossEvents,
+      bossPhase,
+      bossActive,
+      bossLane
     };
     analytics.waveSummaries.push(summary);
     if (analytics.waveSummaries.length > 12) {
@@ -1393,8 +1799,15 @@ export class GameEngine {
     analytics.waveCastleBonusGold = 0;
     analytics.waveReactionTime = 0;
     analytics.waveReactionSamples = 0;
+    analytics.evacuationAttempts = 0;
+    analytics.evacuationSuccesses = 0;
+    analytics.evacuationFailures = 0;
     analytics.enemiesDefeated = 0;
     analytics.breaches = 0;
+    analytics.bossEvents = [];
+    analytics.bossPhase = null;
+    analytics.bossActive = false;
+    analytics.bossLane = null;
     analytics.startGold = this.state.resources.gold;
     analytics.startTotalInputs = this.state.typing.totalInputs;
     analytics.startCorrectInputs = this.state.typing.correctInputs;
@@ -1419,6 +1832,14 @@ export class GameEngine {
       this.typingSystem.releaseEnemy(this.state, enemy.id);
       this.state.analytics.enemiesDefeated += 1;
       this.recordDefeatBurst(enemy);
+      if (this.state.boss.active && enemy.id === this.state.boss.enemyId) {
+        this.recordBossEvent("defeated", enemy);
+        this.state.analytics.bossActive = false;
+        this.resetBossState();
+      }
+      if (this.state.evacuation.active && enemy.id === this.state.evacuation.enemyId) {
+        this.completeEvacuation(true);
+      }
     });
 
     this.events.on("enemy:escaped", ({ enemy }) => {
@@ -1426,6 +1847,14 @@ export class GameEngine {
       this.state.analytics.sessionBreaches += 1;
       this.damageCastle(enemy.damage);
       this.typingSystem.releaseEnemy(this.state, enemy.id);
+      if (this.state.boss.active && enemy.id === this.state.boss.enemyId) {
+        this.recordBossEvent("despawned", enemy);
+        this.state.analytics.bossActive = false;
+        this.resetBossState();
+      }
+      if (this.state.evacuation.active && enemy.id === this.state.evacuation.enemyId) {
+        this.completeEvacuation(false);
+      }
     });
 
     this.events.on("castle:repaired", ({ amount, cost }) => {

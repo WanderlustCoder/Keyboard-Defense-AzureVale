@@ -33,11 +33,11 @@
 | 29 | Castle & Turrets | Allow downgrade/refund via debug toggle for testing. | Done | Debug toggle enables per-slot turret downgrade/refund with HUD messaging |
 | 30 | Castle & Turrets | Unlock castle passive buffs (regen/armor/gold) at higher levels. | Done | Passive list + HUD messaging surface regen/armor/gold bonuses |
 | 31 | Enemy & Wave Design | Create elite enemy affixes (slow aura, shielded, armored) under toggles. | Done | Affix catalog (aura/armored/shielded) with toggle + preview badges and turret slowdown/mitigation |
-| 32 | Enemy & Wave Design | Script Episode 1 boss wave with bespoke mechanics and intro message. | Not Started |  |
+| 32 | Enemy & Wave Design | Script Episode 1 boss wave with bespoke mechanics and intro message. | Done | Archivist boss gains rotating shields, vulnerability windows, shockwave slow, boss analytics/toggle |
 | 33 | Enemy & Wave Design | Display enemy taunt text when special units spawn. | Done | Wave 2/3 specials announce via taunt banner & battle log (#docs/status/2025-11-19_enemy_taunts.md) |
 | 34 | Enemy & Wave Design | Render spawn preview icons using sprite thumbnails. | Done | HUD wave preview shows tier icons with colorblind-aware palette |
 | 35 | Enemy & Wave Design | Add dynamic spawn scheduler for surprise mini-events. | Done | Deterministic micro-events (skirmish/gold-runner/shield-carrier) gated by toggle |
-| 36 | Enemy & Wave Design | Implement evacuation event requiring long-form typing to rescue civilians. | Not Started |  |
+| 36 | Enemy & Wave Design | Implement evacuation event requiring long-form typing to rescue civilians. | In Progress | Slice 1 shipped (mid-wave transport + countdown, events & analytics) |
 | 37 | Enemy & Wave Design | Introduce lane hazards (fog/storms) affecting visibility/accuracy. | Done | Seeded fog/storm hazards reduce lane fire-rate with HUD messaging |
 | 38 | Enemy & Wave Design | Provide JSON schema/editor for designer-authored wave configs. | Not Started |  |
 | 39 | Enemy & Wave Design | Calculate difficulty ratings per wave and surface in analytics overlay. | Done | Diagnostics overlay shows computed wave threat rating |

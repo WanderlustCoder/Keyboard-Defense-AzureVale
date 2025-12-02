@@ -18,6 +18,8 @@ export interface FeatureToggles {
   campaignMap: boolean;
   dynamicDifficulty: boolean;
   dynamicSpawns: boolean;
+  evacuationEvents: boolean;
+  bossMechanics: boolean;
   eliteAffixes: boolean;
   analyticsExport: boolean;
   telemetry: boolean;
@@ -177,6 +179,8 @@ export const defaultConfig: GameConfig = {
     campaignMap: false,
     dynamicDifficulty: false,
     dynamicSpawns: true,
+    evacuationEvents: true,
+    bossMechanics: true,
     eliteAffixes: true,
     analyticsExport: true,
     telemetry: false,
@@ -421,6 +425,15 @@ export const defaultConfig: GameConfig = {
       reward: 54,
       taunts: [getTauntText("elite_embermancer")]
     },
+    "evac-transport": {
+      id: "evac-transport",
+      wordLength: [9, 14],
+      health: 110,
+      speed: 0.045,
+      damage: 0,
+      reward: 60,
+      taunt: "Civilians boarding—keep them safe!"
+    },
     archivist: {
       id: "archivist",
       wordLength: [7, 9],
@@ -532,7 +545,7 @@ export const defaultConfig: GameConfig = {
           tierId: "archivist",
           count: 1,
           cadence: 0,
-          shield: 120,
+          shield: 90,
           taunt: getTauntText("boss_archivist_intro")
         }
       ]

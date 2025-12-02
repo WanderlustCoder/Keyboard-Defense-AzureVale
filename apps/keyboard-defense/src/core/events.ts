@@ -8,7 +8,8 @@ import {
   type TurretTargetPriority,
   type WaveSummary,
   type DefeatBurstMode,
-  type TypingDrillSummary
+  type TypingDrillSummary,
+  type BossPhase
 } from "./types.js";
 
 export interface GameEvents extends Record<string, unknown> {
@@ -42,4 +43,24 @@ export interface GameEvents extends Record<string, unknown> {
   "tutorial:event": { stepId: string | null; event: string; timeInStep: number };
   "combat:defeat-burst": { enemy: EnemyState; mode: DefeatBurstMode };
   "visual:starfield-state": StarfieldAnalyticsState;
+  "boss:intro": { waveIndex: number; enemyId: string | null; lane: number | null; phase: BossPhase };
+  "boss:phase": { waveIndex: number; enemyId: string | null; phase: BossPhase; lane: number | null };
+  "boss:shield-rotated": {
+    waveIndex: number;
+    enemyId: string;
+    shield: number;
+    segmentIndex: number;
+    totalSegments: number;
+  };
+  "boss:vulnerability": {
+    waveIndex: number;
+    enemyId: string;
+    active: boolean;
+    multiplier: number;
+    remaining: number;
+  };
+  "boss:shockwave": { waveIndex: number; enemyId: string | null; lane: number | null; multiplier: number; duration: number };
+  "evac:start": { waveIndex: number; lane: number | null; word: string | null; duration: number };
+  "evac:complete": { waveIndex: number; lane: number | null; word: string | null; remaining: number };
+  "evac:fail": { waveIndex: number; lane: number | null; word: string | null };
 }

@@ -23,6 +23,61 @@ export interface LaneHazardState {
   fireRateMultiplier?: number;
 }
 
+export interface EvacuationState {
+  active: boolean;
+  lane: number | null;
+  remaining: number;
+  duration: number;
+  enemyId: string | null;
+  word: string | null;
+  succeeded: boolean;
+  failed: boolean;
+}
+
+export type BossPhase = "intro" | "phase-one" | "phase-two" | "finale";
+
+export type BossEventType =
+  | "intro"
+  | "phase-shift"
+  | "shield-rotated"
+  | "vulnerable-start"
+  | "vulnerable-end"
+  | "shockwave"
+  | "defeated"
+  | "despawned";
+
+export interface BossRuntimeState {
+  active: boolean;
+  enemyId: string | null;
+  tierId: string | null;
+  lane: number | null;
+  phase: BossPhase | null;
+  introAnnounced: boolean;
+  segmentIndex: number;
+  segmentTotal: number;
+  segmentShield: number;
+  rotationInterval: number;
+  rotationTimer: number;
+  vulnerabilityRemaining: number;
+  vulnerabilityMultiplier: number;
+  vulnerabilityAppliesToShield: boolean;
+  shockwaveInterval: number;
+  shockwaveTimer: number;
+  shockwaveDuration: number;
+  shockwaveRemaining: number;
+  shockwaveMultiplier: number;
+  phaseShifted: boolean;
+}
+
+export interface BossEventEntry {
+  type: BossEventType;
+  time: number;
+  phase: BossPhase | null;
+  health: number | null;
+  shield: number | null;
+  lane: number | null;
+}
+
 export interface EliteAffixEffects {
   laneFireRateMultiplier?: number;
   turretDamageTakenMultiplier?: number;
@@ -329,6 +384,8 @@ export interface GameState {
   enemies: EnemyState[];
   projectiles: ProjectileState[];
   laneHazards: LaneHazardState[];
+  evacuation: EvacuationState;
+  boss: BossRuntimeState;
   wave: WaveRuntimeState;
   typing: TypingState;
   analytics: GameAnalyticsState;
@@ -384,6 +441,13 @@ export interface GameAnalyticsState {
   goldEvents: GoldEvent[];
   taunt: TauntAnalyticsState;
   defeatBurst: DefeatBurstAnalyticsState;
+  evacuationAttempts: number;
+  evacuationSuccesses: number;
+  evacuationFailures: number;
+  bossEvents: BossEventEntry[];
+  bossPhase: BossPhase | null;
+  bossActive: boolean;
+  bossLane: number | null;
   tutorial: TutorialAnalyticsState;
   comboWarning: ComboWarningAnalyticsState;
   starfield: StarfieldAnalyticsState | null;
@@ -413,6 +477,10 @@ export interface WaveSummary {
   repairHealth: number;
   repairGold: number;
   averageReaction: number;
+  bossEvents?: BossEventEntry[];
+  bossPhase?: BossPhase | null;
+  bossActive?: boolean;
+  bossLane?: number | null;
 }
 
 export interface WaveSpawnPreview {
@@ -426,6 +494,7 @@ export interface WaveSpawnPreview {
   affixes?: EliteAffixInstance[];
   shield?: number;
   word?: string;
+  isBoss?: boolean;
 }
 
 export interface AnalyticsUiSnapshot {
