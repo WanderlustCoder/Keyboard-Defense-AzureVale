@@ -54,6 +54,7 @@ Status entries live under `docs/status/`. Recent highlights include:
 - `2025-12-08_season_roadmap_overlay.md` - HUD roadmap overlay with filters/tracking and persisted preferences.
 - `2025-12-08_enemy_biographies.md` - Wave preview enemy bios with selectable dossiers and tips.
 - `2025-12-08_ambient_music_escalation.md` - Ambient profiles (calm/rising/siege/dire) with wave/health-driven escalation.
+- `2025-12-08_wave_wordbanks.md` - Wave-themed vocab merged into enemy word pools (scout/shield/boss).
 - `2025-12-07_backlog_slicing.md` - Breakdowns for remaining "Not Started" backlog items and the planned slices for each.
 - `2025-12-07_visual_regression_harness.md` - Playwright visual baselines for HUD overlays (hud-main, options, tutorial summary, wave scorecard) with update/run commands.
 - `2025-12-07_tutorial_assist_replay_skip.md` - TutorialManager tests cover assist hints, skip cleanup, and replay/reset state clearing.

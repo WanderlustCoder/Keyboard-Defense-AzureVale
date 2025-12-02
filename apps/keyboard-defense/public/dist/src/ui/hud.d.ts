@@ -106,6 +106,30 @@ type WaveScorecardElements = {
     stats: string;
     continue: string;
 };
+type RoadmapOverlayElements = {
+    container: string;
+    closeButton: string;
+    list: string;
+    summaryWave: string;
+    summaryCastle: string;
+    summaryLore: string;
+    filterStory: string;
+    filterSystems: string;
+    filterChallenge: string;
+    filterLore: string;
+    filterCompleted: string;
+    trackedContainer: string;
+    trackedTitle: string;
+    trackedProgress: string;
+    trackedClear: string;
+};
+type RoadmapGlanceElements = {
+    container: string;
+    title: string;
+    progress: string;
+    openButton: string;
+    clearButton: string;
+};
 export interface WaveScorecardData {
     waveIndex: number;
     waveTotal: number;
@@ -176,7 +200,13 @@ export declare class HudView {
     private analyticsViewerSignature;
     private analyticsViewerFilter;
     private analyticsViewerFilterSelect?;
+    private roadmapPreferences;
+    private roadmapState;
+    private readonly roadmapOverlay?;
+    private readonly roadmapGlance?;
     private lastShieldTelemetry;
+    private lastWavePreviewEntries;
+    private lastWavePreviewColorBlind;
     private lastGold;
     private maxCombo;
     private goldTimeout;
@@ -191,6 +221,8 @@ export declare class HudView {
     private tutorialSummaryHandlers;
     private readonly shortcutLaunchButton?;
     private readonly shortcutOverlay?;
+    private readonly enemyBioCard?;
+    private selectedEnemyBioId;
     private optionsCastleBonus?;
     private optionsCastleBenefits?;
     private optionsCastlePassives?;
@@ -234,12 +266,19 @@ export declare class HudView {
         optionsOverlay?: OptionsOverlayElements;
         waveScorecard?: WaveScorecardElements;
         analyticsViewer?: AnalyticsViewerElements;
+        roadmapOverlay?: RoadmapOverlayElements;
+        roadmapGlance?: RoadmapGlanceElements;
+        roadmapLaunch?: string;
     }, callbacks: HudCallbacks);
     focusTypingInput(): void;
     showShortcutOverlay(): void;
     hideShortcutOverlay(): void;
     toggleShortcutOverlay(): void;
     isShortcutOverlayVisible(): boolean;
+    showRoadmapOverlay(): void;
+    hideRoadmapOverlay(): void;
+    toggleRoadmapOverlay(): void;
+    isRoadmapOverlayVisible(): boolean;
     showOptionsOverlay(): void;
     hideOptionsOverlay(): void;
     isOptionsOverlayVisible(): boolean;
@@ -274,6 +313,8 @@ export declare class HudView {
     isWaveScorecardVisible(): boolean;
     update(state: GameState, upcoming: WaveSpawnPreview[], options?: {
         colorBlindFriendly?: boolean;
+        tutorialCompleted?: boolean;
+        loreUnlocked?: number;
     }): void;
     showCastleMessage(message: string): void;
     showSlotMessage(slotId: string, message: string): void;
@@ -286,6 +327,10 @@ export declare class HudView {
     announceEnemyTaunt(message: string, options?: {
         durationMs?: number;
     }): boolean;
+    private renderWavePreview;
+    private handleEnemyBioSelect;
+    private syncEnemyBioSelection;
+    private renderEnemyBiography;
     setSlotTutorialLock(lock: TutorialSlotLock): void;
     clearSlotTutorialLock(): void;
     showTutorialSummary(data: TutorialSummaryData, handlers: TutorialSummaryHandlers): void;
@@ -356,13 +401,21 @@ export declare class HudView {
     private renderLog;
     private renderWaveScorecard;
     private updateShieldTelemetry;
+    private refreshRoadmap;
     getShieldForecast(): {
         current: boolean;
         next: boolean;
     };
+    private renderRoadmapList;
+    private updateRoadmapTrackingDisplay;
+    private applyRoadmapFilters;
+    private updateRoadmapTracking;
+    private clearRoadmapTracking;
+    private persistRoadmapPreferences;
     private setWaveScorecardField;
     private setWaveScorecardVisible;
     private setShortcutOverlayVisible;
+    private setRoadmapOverlayVisible;
     private applyTelemetryOptionState;
     private updateSoundVolumeDisplay;
     private updateSoundIntensityDisplay;

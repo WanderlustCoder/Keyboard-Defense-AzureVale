@@ -51,4 +51,4 @@ Outlined manageable sub-tasks for remaining “Not Started” backlog items to e
   - Add automated coverage to ensure completion rows render in tutorial + matrix sections.
 
 ## Next Action
-- Ambient music (#88) shipped. Next priority: #89 expand wave-themed word banks (narrative/content progression).
+- Wave-themed word banks (#89) shipped. Next priority: #90 compose victory/defeat stingers (narrative/audio polish).

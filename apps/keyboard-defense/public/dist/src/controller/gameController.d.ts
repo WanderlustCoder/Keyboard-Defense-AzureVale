@@ -49,6 +49,7 @@ export declare class GameController {
     setDyslexiaFontEnabled(enabled: any, options?: {}): void;
     setSoundVolume(volume: any, options?: {}): void;
     setAudioIntensity(intensity: any, options?: {}): void;
+    updateAmbientTrack(state: any): void;
     setColorblindPaletteEnabled(enabled: any, options?: {}): void;
     setDefeatAnimationMode(mode: any, options?: {}): void;
     setStarfieldScene(scene: any): any;
@@ -230,7 +231,7 @@ export declare class GameController {
     attachTypingDrillHooks(): void;
     attachInputHandlers(typingInput: any): void;
     attachGlobalShortcuts(): void;
-    getHudFontScaleShortcutDelta(event: any): 1 | -1 | 0;
+    getHudFontScaleShortcutDelta(event: any): 1 | 0 | -1;
     initializePlayerSettings(): void;
     attachDebugButtons(): void;
     handleCastleUpgrade(): void;
