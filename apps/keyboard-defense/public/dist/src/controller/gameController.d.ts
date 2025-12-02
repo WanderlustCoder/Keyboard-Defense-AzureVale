@@ -259,6 +259,8 @@ export declare class GameController {
     startTutorial(forceReplay?: boolean): void;
     setPracticeMode(enabled: any): void;
     startPracticeMode(): void;
+    initializeLoreProgress(): void;
+    unlockLoreForWave(waveNumber: any): void;
     shouldSkipTutorial(): boolean;
     markTutorialComplete(): void;
     clearTutorialProgress(): void;

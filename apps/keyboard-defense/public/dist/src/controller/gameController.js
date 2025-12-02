@@ -20,6 +20,8 @@ import { calculateCanvasResolution, createDprListener } from "../utils/canvasRes
 import { buildResolutionChangeEntry } from "../utils/canvasTransition.js";
 import { deriveStarfieldState } from "../utils/starfield.js";
 import { defaultStarfieldConfig } from "../config/starfield.js";
+import { listNewLoreForWave } from "../data/lore.js";
+import { readLoreProgress, writeLoreProgress } from "../utils/lorePersistence.js";
 const FRAME_DURATION = 1 / 60;
 const TUTORIAL_VERSION = "v2";
 const SOUND_VOLUME_MIN = 0;
@@ -39,6 +41,7 @@ const STARFIELD_PRESETS = {
     warning: { scene: "warning", waveProgress: 0.55, castleHealthRatio: 0.55 },
     breach: { scene: "breach", waveProgress: 0.9, castleHealthRatio: 0.25 }
 };
+const LORE_VERSION = "v1";
 function svgCircleDataUri(primary, accent) {
     const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'>` +
         `<defs><radialGradient id='g' cx='50%' cy='40%' r='60%'>` +
@@ -126,6 +129,7 @@ export class GameController {
         this.turretRangePreviewLevel = null;
         this.bestCombo = 0;
         this.playerSettings = createDefaultPlayerSettings();
+        this.unlockedLore = new Set();
         this.turretLoadoutPresets = Object.create(null);
         this.activeTurretPresetId = null;
         this.lastTurretSignature = "";
@@ -205,6 +209,7 @@ export class GameController {
                     this.syncAssetIntegrityFlags();
                 })
                 : null;
+        this.initializeLoreProgress();
         this.assetReady = false;
         this.assetStartPending = false;
         this.assetReadyPromise = Promise.resolve();
@@ -3551,6 +3556,24 @@ export class GameController {
         this.render();
         this.start();
     }
+    initializeLoreProgress() {
+        if (typeof window === "undefined" || !window.localStorage)
+            return;
+        const progress = readLoreProgress(window.localStorage, LORE_VERSION);
+        this.unlockedLore = new Set(progress.unlocked ?? []);
+    }
+    unlockLoreForWave(waveNumber) {
+        if (typeof window === "undefined" || !window.localStorage)
+            return;
+        const newEntries = listNewLoreForWave(waveNumber, this.unlockedLore ?? new Set());
+        if (!newEntries.length)
+            return;
+        for (const entry of newEntries) {
+            this.unlockedLore.add(entry.id);
+            this.hud?.appendLog?.(`Codex unlocked: ${entry.title}`);
+        }
+        writeLoreProgress(window.localStorage, this.unlockedLore, LORE_VERSION);
+    }
     shouldSkipTutorial() {
         if (typeof window === "undefined") {
             return false;
@@ -3715,6 +3738,7 @@ export class GameController {
             this.hud.appendLog(`Wave ${summary.index + 1} summary: ${summary.enemiesDefeated} defeats, ${(summary.accuracy * 100).toFixed(1)}% accuracy, ${summary.breaches} breaches, ${notes.join(", ")}`);
             this.render();
             this.presentWaveScorecard(summary);
+            this.unlockLoreForWave(summary.index + 1);
         });
         this.engine.events.on("typing:error", ({ enemyId, expected, received, totalErrors }) => {
             if (this.tutorialManager?.getState().active) {

@@ -51,4 +51,4 @@ Outlined manageable sub-tasks for remaining “Not Started” backlog items to e
   - Add automated coverage to ensure completion rows render in tutorial + matrix sections.
 
 ## Next Action
-- Lyra dialogue blocks (#83) shipped. Next priority: #84 lore codex entries unlocked by wave completions.
+- Lore codex entries (#84) shipped. Next priority: #86 interactive season roadmap overlay within HUD (narrative/content progression).

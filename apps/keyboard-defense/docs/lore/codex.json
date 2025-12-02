@@ -1,0 +1,36 @@
+{
+  "entries": [
+    {
+      "id": "lore_wave_1_prologue",
+      "title": "Azure Vale Prologue",
+      "summary": "The siege began when Archivist Lyra unsealed the inkforge beneath the vale.",
+      "unlockWave": 1,
+      "body": "Reports note that Lyra turned the town's scriptorium into a staging ground, binding inkfire to the lanes.",
+      "tags": ["episode1", "archivist", "prologue"]
+    },
+    {
+      "id": "lore_wave_3_vanguard",
+      "title": "Vanguard Columns",
+      "summary": "Shielded lancers march in measured columns, absorbing turret fire as scribes advance.",
+      "unlockWave": 3,
+      "body": "The vanguard units carry mirrored wards that scatter bolt trajectories. Runners travel behind them, sheltered from arrows.",
+      "tags": ["episode1", "vanguard", "tactics"]
+    },
+    {
+      "id": "lore_wave_5_affixes",
+      "title": "Affix Experiments",
+      "summary": "Affix-bearing elites rotate experimental wards through the lines to test Azure defenses.",
+      "unlockWave": 5,
+      "body": "Brutes wear overcharged shield lattices while witches weave frost auras to slow repairs. Lyra logs the results in the margin.",
+      "tags": ["episode1", "affix", "experiments"]
+    },
+    {
+      "id": "lore_wave_7_archivist",
+      "title": "Archivist's Ledger",
+      "summary": "Lyra's ledger lists every breach, and she vows to pen the castle's ending herself.",
+      "unlockWave": 7,
+      "body": "Each wave she annotates new countermeasures: inkfire volleys, parchment golems, and notes on turret resonance.",
+      "tags": ["episode1", "archivist", "ledger"]
+    }
+  ]
+}

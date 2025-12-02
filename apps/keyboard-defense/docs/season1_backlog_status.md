@@ -91,7 +91,7 @@
 | 81 | Automation, Monitoring, Tooling | Add performance benchmark harness for engine update throughput. | Done | `scripts/waveBenchmark.mjs` runs auto/all-turret scenarios with artifacts + baseline guards |
 | 82 | Automation, Monitoring, Tooling | Create deterministic wave simulation CLI for balance sweeps. | Done | `scripts/waveSim.mjs` runs headless GameEngine simulations with artifacts & auto-typing |
 | 83 | Narrative & Content | Script Archivist Lyra dialogue blocks for Episode 1 beats. | Done | Dialogue catalog added (Lyra intro/phase shifts/breach/victory) with tests |
-| 84 | Narrative & Content | Author lore codex entries unlocked by completing waves. | Not Started |  |
+| 84 | Narrative & Content | Author lore codex entries unlocked by completing waves. | Done | Lore codex catalog + wave unlocks with persistence and HUD log |
 | 85 | Narrative & Content | Enrich turret tooltips with flavor text. | Done | Turret selector/status now show archetype flavor blurbs for Arrow/Arcane/Flame/Crystal |
 | 86 | Narrative & Content | Surface interactive season roadmap overlay within HUD. | Not Started |  |
 | 87 | Narrative & Content | Add enemy biography cards accessible from wave preview panel. | Not Started |  |
