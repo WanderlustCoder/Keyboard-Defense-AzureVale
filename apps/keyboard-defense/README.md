@@ -37,6 +37,7 @@ npm run test          # clean, lint, format check, build, then run vitest --cove
 # Visual Regression (Playwright)
 npm run test:visual:auto        # auto-start dev server (no build), run visual snapshots, stop afterward
 npm run test:visual:auto -- --update  # refresh baselines after intentional HUD/overlay changes
+npm run test:visual:auto -- --host 0.0.0.0 --port 4200  # target a custom bind/port (e.g., remote device)
 npm run test:visual:auto -- --grep hud-main  # run a single visual spec
 ```
 
