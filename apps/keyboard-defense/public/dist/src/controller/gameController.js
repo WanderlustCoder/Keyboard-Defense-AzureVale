@@ -489,6 +489,7 @@ export class GameController {
             this.sessionWellness.setElapsed(0);
             this.sessionTimerInterval = window.setInterval(() => this.updateSessionWellness(), SESSION_TIMER_TICK_MS);
         }
+        this.attachFocusTrap();
         this.debugApi = new DebugApi(this);
         this.debugApi.expose();
         this.manualTick = Boolean(options.manualTick);
@@ -3279,6 +3280,7 @@ export class GameController {
                 return;
             }
             if (event.key === "Escape") {
+                const shortcutVisible = this.hud.isShortcutOverlayVisible();
                 if (roadmapVisible) {
                     event.preventDefault();
                     this.hud.hideRoadmapOverlay();
@@ -3289,10 +3291,13 @@ export class GameController {
                     this.closeOptionsOverlay();
                     return;
                 }
-                if (this.hud.isShortcutOverlayVisible()) {
+                if (shortcutVisible) {
                     event.preventDefault();
                     this.hud.hideShortcutOverlay();
+                    return;
                 }
+                event.preventDefault();
+                this.togglePause();
                 return;
             }
             if (optionsVisible) {
@@ -3352,6 +3357,32 @@ export class GameController {
             }
         };
         window.addEventListener("keydown", handler);
+    }
+    attachFocusTrap() {
+        if (typeof window === "undefined")
+            return;
+        const handler = (event) => {
+            const target = event.target;
+            const interactive = target instanceof HTMLInputElement ||
+                target instanceof HTMLTextAreaElement ||
+                target instanceof HTMLSelectElement ||
+                target instanceof HTMLButtonElement ||
+                target instanceof HTMLAnchorElement ||
+                (target !== null && target.isContentEditable);
+            if (interactive) {
+                return;
+            }
+            const modalOpen = this.hud.isOptionsOverlayVisible() ||
+                (this.hud.isRoadmapOverlayVisible?.() ?? false) ||
+                this.hud.isShortcutOverlayVisible() ||
+                this.hud.isWaveScorecardVisible() ||
+                Boolean(this.typingDrills?.isVisible?.());
+            if (modalOpen) {
+                return;
+            }
+            this.hud.focusTypingInput();
+        };
+        window.addEventListener("pointerdown", handler);
     }
     getHudFontScaleShortcutDelta(event) {
         if (!event || event.metaKey || event.ctrlKey || event.altKey) {

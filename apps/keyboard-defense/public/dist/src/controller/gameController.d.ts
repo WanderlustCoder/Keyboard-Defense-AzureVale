@@ -243,6 +243,7 @@ export declare class GameController {
     syncFullscreenStateFromDocument(): void;
     toggleFullscreen(nextActive: any): void;
     attachGlobalShortcuts(): void;
+    attachFocusTrap(): void;
     getHudFontScaleShortcutDelta(event: any): 1 | 0 | -1;
     initializePlayerSettings(): void;
     attachDebugButtons(): void;

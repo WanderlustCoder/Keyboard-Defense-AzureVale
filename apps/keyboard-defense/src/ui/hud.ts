@@ -68,6 +68,7 @@ export interface HudCallbacks {
   onSoundVolumeChange(volume: number): void;
   onSoundIntensityChange(intensity: number): void;
   onDiagnosticsToggle(visible: boolean): void;
+  onLowGraphicsToggle?: (enabled: boolean) => void;
   onWaveScorecardContinue(): void;
   onReducedMotionToggle(enabled: boolean): void;
   onCheckeredBackgroundToggle(enabled: boolean): void;
@@ -173,6 +174,7 @@ type OptionsOverlayElements = {
   soundIntensitySlider: string;
   soundIntensityValue: string;
   diagnosticsToggle: string;
+  lowGraphicsToggle: string;
   reducedMotionToggle: string;
   checkeredBackgroundToggle: string;
   readableFontToggle: string;
@@ -415,6 +417,7 @@ export class HudView {
     soundIntensitySlider: HTMLInputElement;
     soundIntensityValue: HTMLElement;
     diagnosticsToggle: HTMLInputElement;
+    lowGraphicsToggle?: HTMLInputElement;
     reducedMotionToggle: HTMLInputElement;
     checkeredBackgroundToggle: HTMLInputElement;
     readableFontToggle: HTMLInputElement;
@@ -720,6 +723,7 @@ export class HudView {
         rootIds.optionsOverlay.soundIntensityValue
       );
       const diagnosticsToggle = document.getElementById(rootIds.optionsOverlay.diagnosticsToggle);
+      const lowGraphicsToggle = document.getElementById(rootIds.optionsOverlay.lowGraphicsToggle);
       const reducedMotionToggle = document.getElementById(
         rootIds.optionsOverlay.reducedMotionToggle
       );
@@ -785,6 +789,8 @@ export class HudView {
           soundIntensitySlider,
           soundIntensityValue,
           diagnosticsToggle,
+          lowGraphicsToggle:
+            lowGraphicsToggle instanceof HTMLInputElement ? lowGraphicsToggle : undefined,
           reducedMotionToggle,
           checkeredBackgroundToggle,
           readableFontToggle,
@@ -876,6 +882,12 @@ export class HudView {
           if (this.syncingOptionToggles) return;
           this.callbacks.onDiagnosticsToggle(diagnosticsToggle.checked);
         });
+        if (this.optionsOverlay.lowGraphicsToggle) {
+          this.optionsOverlay.lowGraphicsToggle.addEventListener("change", () => {
+            if (this.syncingOptionToggles) return;
+            this.callbacks.onLowGraphicsToggle?.(this.optionsOverlay!.lowGraphicsToggle!.checked);
+          });
+        }
         reducedMotionToggle.addEventListener("change", () => {
           if (this.syncingOptionToggles) return;
           this.callbacks.onReducedMotionToggle(reducedMotionToggle.checked);
@@ -1284,6 +1296,7 @@ export class HudView {
     soundVolume: number;
     soundIntensity: number;
     diagnosticsVisible: boolean;
+    lowGraphicsEnabled: boolean;
     reducedMotionEnabled: boolean;
     checkeredBackgroundEnabled: boolean;
     readableFontEnabled: boolean;
@@ -1327,6 +1340,9 @@ export class HudView {
     this.optionsOverlay.soundIntensitySlider.value = state.soundIntensity.toString();
     this.updateSoundIntensityDisplay(state.soundIntensity);
     this.optionsOverlay.diagnosticsToggle.checked = state.diagnosticsVisible;
+    if (this.optionsOverlay.lowGraphicsToggle) {
+      this.optionsOverlay.lowGraphicsToggle.checked = state.lowGraphicsEnabled;
+    }
     this.optionsOverlay.reducedMotionToggle.checked = state.reducedMotionEnabled;
     this.optionsOverlay.checkeredBackgroundToggle.checked = state.checkeredBackgroundEnabled;
     this.optionsOverlay.readableFontToggle.checked = state.readableFontEnabled;

@@ -170,6 +170,8 @@ export class GameController {
     this.lastStarfieldSummary = null;
     this.starfieldConfig = defaultStarfieldConfig;
     this.starfieldState = null;
+    this.lowGraphicsEnabled = false;
+    this.lowGraphicsRestoreState = null;
     this.hudFontScale = 1;
     this.impactEffects = [];
     this.turretRangeHighlightSlot = null;
@@ -490,6 +492,7 @@ export class GameController {
         onSoundVolumeChange: (volume) => this.setSoundVolume(volume),
         onSoundIntensityChange: (value) => this.setAudioIntensity(value),
         onDiagnosticsToggle: (visible) => this.setDiagnosticsVisible(visible),
+        onLowGraphicsToggle: (enabled) => this.setLowGraphicsEnabled(enabled),
         onWaveScorecardContinue: () => this.handleWaveScorecardContinue(),
         onReducedMotionToggle: (enabled) => this.setReducedMotionEnabled(enabled),
         onCheckeredBackgroundToggle: (enabled) => this.setCheckeredBackgroundEnabled(enabled),
@@ -1396,6 +1399,55 @@ export class GameController {
       this.render();
     }
   }
+  setLowGraphicsEnabled(enabled, options = {}) {
+    const next = Boolean(enabled);
+    const force = options.force === true;
+    if (!force && this.lowGraphicsEnabled === next) {
+      return false;
+    }
+    const persist = options.persist !== false;
+    const silent = Boolean(options.silent);
+    if (next) {
+      this.lowGraphicsRestoreState = {
+        reducedMotion: this.reducedMotionEnabled,
+        checkeredBackground: this.checkeredBackgroundEnabled,
+        defeatAnimationMode: this.defeatAnimationMode,
+        starfieldEnabled: this.starfieldEnabled
+      };
+      this.setReducedMotionEnabled(true, { persist, silent: true, render: false });
+      this.setCheckeredBackgroundEnabled(false, { persist, silent: true, render: false });
+      this.setDefeatAnimationMode("procedural", { persist, silent: true, render: false });
+      this.starfieldEnabled = false;
+    } else {
+      const restore = this.lowGraphicsRestoreState;
+      const restoredStarfield =
+        restore?.starfieldEnabled ?? Boolean(this.featureToggles?.starfieldParallax);
+      this.starfieldEnabled = restoredStarfield;
+      if (restore) {
+        this.setReducedMotionEnabled(restore.reducedMotion, { persist, silent: true, render: false });
+        this.setCheckeredBackgroundEnabled(restore.checkeredBackground, {
+          persist,
+          silent: true,
+          render: false
+        });
+        this.setDefeatAnimationMode(restore.defeatAnimationMode ?? "auto", {
+          persist,
+          silent: true,
+          render: false
+        });
+      }
+    }
+    this.lowGraphicsEnabled = next;
+    if (persist) {
+      this.persistPlayerSettings({ lowGraphicsEnabled: next });
+    }
+    this.updateOptionsOverlayState();
+    if (!silent) {
+      this.hud.appendLog(`Low graphics ${next ? "enabled" : "disabled"}`);
+    }
+    this.render();
+    return true;
+  }
   setReadableFontEnabled(enabled, options = {}) {
     this.readableFontEnabled = enabled;
     this.applyReadableFontSetting(enabled);
@@ -1637,6 +1689,7 @@ export class GameController {
       soundVolume: this.soundVolume,
       soundIntensity: this.audioIntensity,
       diagnosticsVisible: this.diagnostics.isVisible(),
+      lowGraphicsEnabled: this.lowGraphicsEnabled,
       reducedMotionEnabled: this.reducedMotionEnabled,
       checkeredBackgroundEnabled: this.checkeredBackgroundEnabled,
       readableFontEnabled: this.readableFontEnabled,
@@ -2576,6 +2629,9 @@ export class GameController {
     const reducedMotionUnchanged =
       patch.reducedMotionEnabled === undefined ||
       patch.reducedMotionEnabled === this.playerSettings.reducedMotionEnabled;
+    const lowGraphicsUnchanged =
+      patch.lowGraphicsEnabled === undefined ||
+      patch.lowGraphicsEnabled === this.playerSettings.lowGraphicsEnabled;
     const checkeredUnchanged =
       patch.checkeredBackgroundEnabled === undefined ||
       patch.checkeredBackgroundEnabled === this.playerSettings.checkeredBackgroundEnabled;
@@ -2632,6 +2688,7 @@ export class GameController {
       readableFontUnchanged &&
       dyslexiaFontUnchanged &&
       colorblindUnchanged &&
+      lowGraphicsUnchanged &&
       defeatAnimationModeUnchanged &&
       fontScaleUnchanged &&
       targetingUnchanged &&
@@ -3568,6 +3625,12 @@ export class GameController {
       silent: true,
       persist: false,
       render: false
+    });
+    this.setLowGraphicsEnabled(stored.lowGraphicsEnabled ?? false, {
+      silent: true,
+      persist: false,
+      render: false,
+      force: true
     });
     this.setColorblindPaletteEnabled(stored.colorblindPaletteEnabled ?? false, {
       silent: true,
