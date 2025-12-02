@@ -7,6 +7,8 @@ const WEB_PORT = Number(process.env.PLAYWRIGHT_WEB_PORT ?? 4173);
 export default defineConfig({
   testDir: "./tests/visual",
   timeout: 60_000,
+  snapshotDir: "./baselines",
+  snapshotPathTemplate: "{snapshotDir}/{projectName}/{testFilePath}/{arg}{ext}",
   expect: {
     toHaveScreenshot: {
       maxDiffPixelRatio: 0.01

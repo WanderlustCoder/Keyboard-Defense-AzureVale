@@ -101,7 +101,7 @@
 | 91 | QA & Testing | Expand tutorial state tests to cover assist cues and replay/skip flows. | Not Started |  |
 | 92 | QA & Testing | Add asset loader fallback tests (network failure/cache reuse). | Done | Node tests cover fetch rejection + cached image reuse |
 | 93 | QA & Testing | Write analytics export/reset integration tests for debug panel flows. | Done | HUD/Debug buttons gated when toggle off + CLI usage test |
-| 94 | QA & Testing | Implement visual regression harness for HUD layout snapshots. | Done | Playwright visual project captures hud-main/options/tutorial-summary/wave-scorecard with baselines |
+| 94 | QA & Testing | Implement visual regression harness for HUD layout snapshots. | Done | Playwright visual project captures hud-main/options/tutorial-summary/wave-scorecard with baselines stored in `baselines/visual` |
 | 95 | QA & Testing | Include dev-server monitor smoke test in CI. | Done | CI smoke job runs startMonitored + dev monitor artifacts |
 | 96 | QA & Testing | Fuzz test typing input buffer for invalid characters/timing. | Done | TypingSystem fuzz tests cover invalid chars, mixed input, purge/reset behaviors |
 | 97 | QA & Testing | Automate tutorial summary modal snapshot tests. | Not Started |  |

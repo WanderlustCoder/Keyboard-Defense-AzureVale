@@ -31,7 +31,7 @@ Commands:
 | `npm run monitor:dev` | Standalone poller (`devMonitor.mjs`) that waits for the dev server to become reachable and emits a JSON artifact under `artifacts/monitor/dev-monitor.json`. |
 | `npm run start:monitored` | Convenience wrapper that runs `npm run start` followed by the monitor (with `--wait-ready`) in one step. |
 | `npm run smoke:tutorial:full` | Launches the dev server, runs the full tutorial smoke (`tutorialSmoke.mjs --mode full`), then stops the server. Requires `@playwright/test` + installed browser binaries. |
-| `npm run test:visual` | Runs the Playwright visual regression suite (`tests/visual/hud.spec.ts`) against the local dev server. Use `npm run test:visual:update` after intentional HUD/overlay changes to refresh the tracked baselines. |
+| `npm run test:visual` | Runs the Playwright visual regression suite (`tests/visual/hud.spec.ts`) against the local dev server. Baselines live in `baselines/visual/visual/<spec>/`; use `npm run test:visual:update` after intentional HUD/overlay changes to refresh them. |
 | `npm run ci:matrix` | Executes the scenario matrix runner (tutorial smoke modes + castle breach seeds) and writes `artifacts/ci-matrix-summary.json`. |
 | `npm run dashboard:static` | Generates the static dashboard under `static-dashboard/` from the latest artifacts so GitHub Pages can publish it. |
 | `gh workflow run ci-matrix-nightly.yml --ref master` | Manually trigger the nightly scenario matrix (asset integrity + HUD gallery + condensed audit). |

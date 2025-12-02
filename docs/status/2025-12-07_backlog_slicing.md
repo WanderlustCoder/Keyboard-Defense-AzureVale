@@ -47,4 +47,4 @@ Outlined manageable sub-tasks for remaining “Not Started” backlog items to e
   - Record summary of attempts and final completion flag.
 
 ## Next Action
-- Proceed with #94: implement visual regression harness as outlined above once approved.
+- #94 harness delivered with cross-platform baselines in `baselines/visual`. Next priority: wire sprite atlas loading (#63) using the new atlas builder and add loader fallbacks/tests.
