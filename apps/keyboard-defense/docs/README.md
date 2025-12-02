@@ -11,6 +11,7 @@
 - **castle_tileset_spec.md** - pixel castle tileset spec (walls, gates, towers, damage states, palette, exports).
 - **deployment_checklist.md** - Edge/Chrome release checklist (automated gates, browser smoke, accessibility, and packaging notes).
 - **visual_baselines.md** - Playwright visual snapshot guidance (commands, coverage, stability notes).
+- **season2_backlog_status.md** - Rolling status for Season 2 backlog items (95-100 tracked; multiplayer placeholder noted).
 
 When adding new doc files, include a one-line summary here for easy discovery.
 

@@ -12,6 +12,7 @@ Use this index to jump straight to the guidance you'll need while building and t
 - `apps/keyboard-defense/docs/roadmap/season1.json` - Season 1 roadmap milestones consumed by the HUD overlay.
 - `apps/keyboard-defense/docs/deployment_checklist.md` - Deployment/release checklist for Edge/Chrome (automated gates, browser smoke, accessibility, packaging).
 - `apps/keyboard-defense/docs/visual_baselines.md` - Playwright visual snapshot coverage and usage notes (HUD/loading/options/caps-lock).
+- `apps/keyboard-defense/docs/season2_backlog_status.md` - Rolling status for Season 2 backlog items (IDs 95-100).
 - `docs/CODEX_AUTONOMOUS_TESTING_DIRECTIVE_Siege_of_the_Azure_Vale.md` - Automation-first definition of done, scripting expectations, and QA guardrails.
 - `docs/CODEX_GUIDE.md` - Codex-oriented workflow guide (where to find tasks, required commands, documentation rules).
 - `docs/CODEX_PLAYBOOKS.md` - Domain-specific instruction sets (automation/CI, gameplay & UI, analytics/telemetry, documentation) tailored for Codex.
