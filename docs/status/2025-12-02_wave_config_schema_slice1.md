@@ -9,5 +9,5 @@
 - Use `schema` to drive future CLI/editor tooling (slice 2+ in backlog).
 
 ## Next slices
-- Build authoring CLI (`scripts/waves/editConfig.mjs`) with load/validate/pretty-print.
+- Build authoring CLI (`scripts/waves/editConfig.mjs`) with load/validate/pretty-print. ✅ now available via `npm run wave:edit`.
 - Add live preview hook in dev server to render upcoming waves/hazards/affixes/evac markers.
