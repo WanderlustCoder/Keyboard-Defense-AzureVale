@@ -1565,6 +1565,9 @@ export class HudView {
                 const typeName = this.getTurretDisplayName(selectedType);
                 const cost = archetype?.levels[0]?.cost ?? 0;
                 const typeEnabled = this.isTurretTypeEnabled(selectedType);
+                const flavor = this.getTurretFlavor(selectedType);
+                controls.select.title = flavor ?? "";
+                controls.status.title = flavor ?? "";
                 const hasEnabledTypes = this.hasEnabledTurretTypes();
                 controls.select.disabled = !hasEnabledTypes;
                 if (typeEnabled) {
@@ -1575,11 +1578,13 @@ export class HudView {
                     const affordable = state.resources.gold >= cost;
                     controls.action.disabled = !affordable;
                     controls.action.textContent = `Place (${cost}g)`;
+                    controls.action.title = flavor ? `${typeName}: ${flavor}` : "";
                 }
                 else {
                     controls.action.onclick = null;
                     controls.action.disabled = true;
                     controls.action.textContent = `${typeName} (Disabled)`;
+                    controls.action.title = flavor ? `${typeName}: ${flavor}` : "";
                 }
                 if (controls.status.dataset.messageActive !== "true") {
                     controls.status.textContent = typeEnabled
@@ -1603,6 +1608,8 @@ export class HudView {
                 const nextConfig = this.config.turretArchetypes[turret.typeId]?.levels.find((level) => level.level === turret.level + 1);
                 const priorityDescription = this.describePriority(priority);
                 const turretEnabled = this.isTurretTypeEnabled(turret.typeId);
+                const flavor = this.getTurretFlavor(turret.typeId);
+                controls.status.title = flavor ?? "";
                 if (!nextConfig) {
                     controls.action.disabled = true;
                     controls.action.textContent = `${turret.typeId.toUpperCase()} Lv.${turret.level} (Max)`;
@@ -1620,6 +1627,7 @@ export class HudView {
                         this.callbacks.onUpgradeTurret(slot.id);
                     };
                 }
+                controls.action.title = flavor ?? this.config.turretArchetypes[turret.typeId]?.description ?? "";
                 if (controls.downgradeButton) {
                     const canDowngrade = this.turretDowngradeEnabled && Boolean(this.callbacks.onDowngradeTurret);
                     if (canDowngrade) {
@@ -1954,6 +1962,10 @@ export class HudView {
                 option.value = type.id;
                 option.textContent = `${type.name}`;
                 option.dataset.baseLabel = type.name;
+                const flavor = this.getTurretFlavor(type.id);
+                if (flavor) {
+                    option.title = flavor;
+                }
                 select.appendChild(option);
             }
             this.applyAvailabilityToSelect(select);
@@ -2115,6 +2127,12 @@ export class HudView {
     getTurretDisplayName(typeId) {
         const archetype = this.config.turretArchetypes[typeId];
         return archetype?.name ?? typeId.toUpperCase();
+    }
+    getTurretFlavor(typeId) {
+        const archetype = this.config.turretArchetypes[typeId];
+        if (!archetype)
+            return null;
+        return archetype.flavor ?? archetype.description ?? null;
     }
     describePriority(priority) {
         switch (priority) {

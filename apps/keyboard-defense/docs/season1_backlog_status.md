@@ -103,7 +103,7 @@
 | 93 | QA & Testing | Write analytics export/reset integration tests for debug panel flows. | Done | HUD/Debug buttons gated when toggle off + CLI usage test |
 | 94 | QA & Testing | Implement visual regression harness for HUD layout snapshots. | Not Started |  |
 | 95 | QA & Testing | Include dev-server monitor smoke test in CI. | Done | CI smoke job runs startMonitored + dev monitor artifacts |
-| 96 | QA & Testing | Fuzz test typing input buffer for invalid characters/timing. | Not Started |  |
+| 96 | QA & Testing | Fuzz test typing input buffer for invalid characters/timing. | Done | TypingSystem fuzz tests cover invalid chars, mixed input, purge/reset behaviors |
 | 97 | QA & Testing | Automate tutorial summary modal snapshot tests. | Not Started |  |
 | 98 | QA & Testing | Add soak test that alternates tutorial replay/skip, verifying persistence. | Not Started |  |
 | 99 | QA & Testing | Create CLI to replay deterministic castle breach scenario for regression. | Done | `node scripts/castleBreachReplay.mjs` simulates the breach and emits a timeline artifact |

@@ -48,6 +48,7 @@ Status entries live under `docs/status/`. Recent highlights include:
 - `2025-12-06_turret_flavor_tooltips.md` - Turret selectors/status tooltips now carry flavor blurbs for Arrow/Arcane/Flame/Crystal.
 - `2025-12-06_hud_font_shortcuts.md` - Diagnostics lists the active HUD font preset and options overlay supports `[` / `]` shortcuts to cycle sizes.
 - `2025-12-05_hud_font_scale.md` - HUD font size options now include Small/Default/Large/XL presets with persistence and live scaling.
+- `2025-12-07_typing_buffer_fuzz.md` - Typing buffer fuzz tests guard invalid input handling, buffer overflow, and purge/reset behavior.
 - `2025-12-04_docs_watch.md` - `npm run docs:watch` monitors docs folders and auto-regenerates the Codex dashboard/portal after doc edits with debounced rebuilds.
 - `2025-12-04_runtime_log_summary.md` - `npm run logs:summary` scans monitor/dev-server logs and emits breach/accuracy + warning/error summaries in JSON/Markdown.
 - `2025-12-03_typing_drills_telemetry.md` - Telemetry summary CLI + dashboard tile for menu quickstarts, with fixtures/tests and coverage ignores.

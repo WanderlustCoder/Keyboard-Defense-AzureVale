@@ -341,6 +341,7 @@ export declare class HudView {
     private hasEnabledTurretTypes;
     private isTurretTypeEnabled;
     private getTurretDisplayName;
+    private getTurretFlavor;
     private describePriority;
     private describeAffinity;
     private describeShieldBonus;
