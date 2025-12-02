@@ -3451,6 +3451,7 @@ export class GameController {
     const downgradeToggleButton = document.getElementById("debug-turret-downgrade");
     const spawnDummyButton = document.getElementById("debug-spawn-dummy");
     const clearDummiesButton = document.getElementById("debug-clear-dummies");
+    const wavePreviewButton = document.getElementById("debug-wave-preview");
 
     const candidateTelemetryControls = {
       container:
@@ -3502,6 +3503,19 @@ export class GameController {
     }
     if (clearDummiesButton instanceof HTMLButtonElement) {
       clearDummiesButton.addEventListener("click", () => this.clearPracticeDummies());
+    }
+    if (wavePreviewButton instanceof HTMLButtonElement) {
+      wavePreviewButton.addEventListener("click", () => {
+        const storedUrl = safeWindow().localStorage?.getItem("wavePreviewUrl");
+        const url =
+          storedUrl && storedUrl.startsWith("http") ? storedUrl : "http://localhost:4179/";
+        try {
+          window.open(url, "_blank", "noopener,noreferrer");
+        } catch {
+          // best-effort open
+          window.open(url, "_blank");
+        }
+      });
     }
 
     pause?.addEventListener("click", () => this.pause());
