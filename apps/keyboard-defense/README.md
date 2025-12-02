@@ -61,6 +61,7 @@ A helper script (`scripts/devServer.mjs`) wraps `http-server` so automation can 
 npm run start          # build + launch, emits DEV_SERVER_READY ... when ready
 npm run serve:status   # report URL/pid and HTTP reachability
 npm run serve:check    # exit 0 only when the server responds successfully
+npm run serve:open     # start/reuse the server with --no-build, open the browser (supports --force-restart, --host, --port)
 npm run serve:logs     # tail the captured http-server output
 npm run serve:stop     # terminate the detached server and clear state files
 ```
