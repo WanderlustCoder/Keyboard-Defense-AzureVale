@@ -26,6 +26,7 @@ import {
   type RoadmapFilterPreferences,
   type RoadmapPreferences
 } from "../utils/roadmapPreferences.js";
+import { VirtualKeyboard } from "./virtualKeyboard.js";
 
 let hudInstanceCounter = 0;
 
@@ -68,6 +69,7 @@ export interface HudCallbacks {
   onSoundVolumeChange(volume: number): void;
   onSoundIntensityChange(intensity: number): void;
   onDiagnosticsToggle(visible: boolean): void;
+  onVirtualKeyboardToggle?: (enabled: boolean) => void;
   onLowGraphicsToggle?: (enabled: boolean) => void;
   onWaveScorecardContinue(): void;
   onReducedMotionToggle(enabled: boolean): void;
@@ -174,6 +176,7 @@ type OptionsOverlayElements = {
   soundIntensitySlider: string;
   soundIntensityValue: string;
   diagnosticsToggle: string;
+  virtualKeyboardToggle?: string;
   lowGraphicsToggle: string;
   reducedMotionToggle: string;
   checkeredBackgroundToggle: string;
@@ -302,6 +305,8 @@ export class HudView {
   private readonly logList: HTMLUListElement;
   private readonly tutorialBanner?: TutorialBannerElements;
   private tutorialBannerExpanded = true;
+  private readonly virtualKeyboard?: VirtualKeyboard;
+  private virtualKeyboardEnabled = false;
   private readonly castleButton: HTMLButtonElement;
   private readonly castleRepairButton: HTMLButtonElement;
   private readonly castleStatus: HTMLSpanElement;
@@ -462,6 +467,7 @@ export class HudView {
       goldDelta: string;
       activeWord: string;
       typingInput: string;
+      virtualKeyboard?: string;
       upgradePanel: string;
       comboLabel: string;
       comboAccuracyDelta: string;
@@ -564,6 +570,12 @@ export class HudView {
     this.comboAccuracyDelta = this.getElement(rootIds.comboAccuracyDelta);
     this.hideComboAccuracyDelta();
     this.logList = this.getElement(rootIds.eventLog) as HTMLUListElement;
+    if (rootIds.virtualKeyboard) {
+      const virtualKeyboardEl = document.getElementById(rootIds.virtualKeyboard);
+      if (virtualKeyboardEl instanceof HTMLElement) {
+        this.virtualKeyboard = new VirtualKeyboard(virtualKeyboardEl);
+      }
+    }
 
     const previewContainer = this.getElement(rootIds.wavePreview);
     this.wavePreview = new WavePreviewPanel(previewContainer, this.config);
@@ -723,6 +735,9 @@ export class HudView {
         rootIds.optionsOverlay.soundIntensityValue
       );
       const diagnosticsToggle = document.getElementById(rootIds.optionsOverlay.diagnosticsToggle);
+      const virtualKeyboardToggle = rootIds.optionsOverlay.virtualKeyboardToggle
+        ? document.getElementById(rootIds.optionsOverlay.virtualKeyboardToggle)
+        : null;
       const lowGraphicsToggle = document.getElementById(rootIds.optionsOverlay.lowGraphicsToggle);
       const reducedMotionToggle = document.getElementById(
         rootIds.optionsOverlay.reducedMotionToggle
@@ -789,6 +804,8 @@ export class HudView {
           soundIntensitySlider,
           soundIntensityValue,
           diagnosticsToggle,
+          virtualKeyboardToggle:
+            virtualKeyboardToggle instanceof HTMLInputElement ? virtualKeyboardToggle : undefined,
           lowGraphicsToggle:
             lowGraphicsToggle instanceof HTMLInputElement ? lowGraphicsToggle : undefined,
           reducedMotionToggle,
@@ -882,6 +899,14 @@ export class HudView {
           if (this.syncingOptionToggles) return;
           this.callbacks.onDiagnosticsToggle(diagnosticsToggle.checked);
         });
+        if (this.optionsOverlay.virtualKeyboardToggle) {
+          this.optionsOverlay.virtualKeyboardToggle.addEventListener("change", () => {
+            if (this.syncingOptionToggles) return;
+            this.callbacks.onVirtualKeyboardToggle?.(
+              this.optionsOverlay!.virtualKeyboardToggle!.checked
+            );
+          });
+        }
         if (this.optionsOverlay.lowGraphicsToggle) {
           this.optionsOverlay.lowGraphicsToggle.addEventListener("change", () => {
             if (this.syncingOptionToggles) return;
@@ -1252,6 +1277,14 @@ export class HudView {
     this.setShortcutOverlayVisible(false);
   }
 
+  setVirtualKeyboardEnabled(enabled: boolean): void {
+    this.virtualKeyboardEnabled = Boolean(enabled);
+    if (this.virtualKeyboard && !this.virtualKeyboardEnabled) {
+      this.virtualKeyboard.setVisible(false);
+      this.virtualKeyboard.setActiveWord(null, 0);
+    }
+  }
+
   toggleShortcutOverlay(): void {
     this.setShortcutOverlayVisible(!this.isShortcutOverlayVisible());
   }
@@ -1297,6 +1330,7 @@ export class HudView {
     soundIntensity: number;
     diagnosticsVisible: boolean;
     lowGraphicsEnabled: boolean;
+    virtualKeyboardEnabled?: boolean;
     reducedMotionEnabled: boolean;
     checkeredBackgroundEnabled: boolean;
     readableFontEnabled: boolean;
@@ -1340,6 +1374,9 @@ export class HudView {
     this.optionsOverlay.soundIntensitySlider.value = state.soundIntensity.toString();
     this.updateSoundIntensityDisplay(state.soundIntensity);
     this.optionsOverlay.diagnosticsToggle.checked = state.diagnosticsVisible;
+    if (this.optionsOverlay.virtualKeyboardToggle && state.virtualKeyboardEnabled !== undefined) {
+      this.optionsOverlay.virtualKeyboardToggle.checked = state.virtualKeyboardEnabled;
+    }
     if (this.optionsOverlay.lowGraphicsToggle) {
       this.optionsOverlay.lowGraphicsToggle.checked = state.lowGraphicsEnabled;
     }
@@ -1477,6 +1514,16 @@ export class HudView {
     } else {
       this.activeWord.innerHTML = "";
       delete this.activeWord.dataset.shielded;
+    }
+
+    if (this.virtualKeyboard) {
+      if (this.virtualKeyboardEnabled && activeEnemy?.word) {
+        this.virtualKeyboard.setVisible(true);
+        this.virtualKeyboard.setActiveWord(activeEnemy.word, activeEnemy.typed);
+      } else {
+        this.virtualKeyboard.setActiveWord(null, 0);
+        this.virtualKeyboard.setVisible(false);
+      }
     }
 
     this.updateCastleControls(state);

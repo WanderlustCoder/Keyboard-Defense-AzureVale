@@ -151,6 +151,7 @@ export class GameController {
     this.audioIntensity = AUDIO_INTENSITY_DEFAULT;
     this.reducedMotionEnabled = false;
     this.checkeredBackgroundEnabled = false;
+    this.virtualKeyboardEnabled = false;
     this.readableFontEnabled = false;
     this.dyslexiaFontEnabled = false;
     this.colorblindPaletteEnabled = false;
@@ -388,10 +389,11 @@ export class GameController {
       this.engine.config,
       {
         healthBar: "castle-health-bar",
-        goldLabel: "resource-gold",
+      goldLabel: "resource-gold",
       goldDelta: "resource-delta",
       activeWord: "active-word",
       typingInput: "typing-input",
+      virtualKeyboard: "virtual-keyboard",
       fullscreenButton: "fullscreen-button",
       upgradePanel: "upgrade-panel",
       comboLabel: "combo-stats",
@@ -422,6 +424,8 @@ export class GameController {
           soundIntensitySlider: "options-sound-intensity",
           soundIntensityValue: "options-sound-intensity-value",
           diagnosticsToggle: "options-diagnostics-toggle",
+          virtualKeyboardToggle: "options-virtual-keyboard-toggle",
+          lowGraphicsToggle: "options-low-graphics-toggle",
           reducedMotionToggle: "options-reduced-motion-toggle",
           checkeredBackgroundToggle: "options-checkered-bg-toggle",
           readableFontToggle: "options-readable-font-toggle",
@@ -493,6 +497,7 @@ export class GameController {
         onSoundIntensityChange: (value) => this.setAudioIntensity(value),
         onDiagnosticsToggle: (visible) => this.setDiagnosticsVisible(visible),
         onLowGraphicsToggle: (enabled) => this.setLowGraphicsEnabled(enabled),
+        onVirtualKeyboardToggle: (enabled) => this.setVirtualKeyboardEnabled(enabled),
         onWaveScorecardContinue: () => this.handleWaveScorecardContinue(),
         onReducedMotionToggle: (enabled) => this.setReducedMotionEnabled(enabled),
         onCheckeredBackgroundToggle: (enabled) => this.setCheckeredBackgroundEnabled(enabled),
@@ -1462,6 +1467,22 @@ export class GameController {
       this.render();
     }
   }
+  setVirtualKeyboardEnabled(enabled, options = {}) {
+    this.virtualKeyboardEnabled = Boolean(enabled);
+    this.hud.setVirtualKeyboardEnabled(this.virtualKeyboardEnabled);
+    if (!options.silent) {
+      this.hud.appendLog(
+        `On-screen keyboard ${this.virtualKeyboardEnabled ? "enabled" : "disabled"}`
+      );
+    }
+    if (options.persist !== false) {
+      this.persistPlayerSettings({ virtualKeyboardEnabled: this.virtualKeyboardEnabled });
+    }
+    this.updateOptionsOverlayState();
+    if (options.render !== false) {
+      this.render();
+    }
+  }
   setDyslexiaFontEnabled(enabled, options = {}) {
     this.dyslexiaFontEnabled = enabled;
     this.applyDyslexiaFontSetting(enabled);
@@ -1690,6 +1711,7 @@ export class GameController {
       soundIntensity: this.audioIntensity,
       diagnosticsVisible: this.diagnostics.isVisible(),
       lowGraphicsEnabled: this.lowGraphicsEnabled,
+      virtualKeyboardEnabled: this.virtualKeyboardEnabled,
       reducedMotionEnabled: this.reducedMotionEnabled,
       checkeredBackgroundEnabled: this.checkeredBackgroundEnabled,
       readableFontEnabled: this.readableFontEnabled,
@@ -2629,6 +2651,9 @@ export class GameController {
     const reducedMotionUnchanged =
       patch.reducedMotionEnabled === undefined ||
       patch.reducedMotionEnabled === this.playerSettings.reducedMotionEnabled;
+    const virtualKeyboardUnchanged =
+      patch.virtualKeyboardEnabled === undefined ||
+      patch.virtualKeyboardEnabled === this.playerSettings.virtualKeyboardEnabled;
     const lowGraphicsUnchanged =
       patch.lowGraphicsEnabled === undefined ||
       patch.lowGraphicsEnabled === this.playerSettings.lowGraphicsEnabled;
@@ -2688,6 +2713,7 @@ export class GameController {
       readableFontUnchanged &&
       dyslexiaFontUnchanged &&
       colorblindUnchanged &&
+      virtualKeyboardUnchanged &&
       lowGraphicsUnchanged &&
       defeatAnimationModeUnchanged &&
       fontScaleUnchanged &&
@@ -3622,6 +3648,11 @@ export class GameController {
       render: false
     });
     this.setCheckeredBackgroundEnabled(stored.checkeredBackgroundEnabled, {
+      silent: true,
+      persist: false,
+      render: false
+    });
+    this.setVirtualKeyboardEnabled(stored.virtualKeyboardEnabled ?? false, {
       silent: true,
       persist: false,
       render: false
