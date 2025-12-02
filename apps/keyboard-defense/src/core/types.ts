@@ -13,6 +13,16 @@ export type EnemyEffect =
 
 export type EliteAffixId = "slow-aura" | "shielded" | "armored";
 
+export type LaneHazardKind = "fog" | "storm";
+
+export interface LaneHazardState {
+  lane: number;
+  kind: LaneHazardKind;
+  remaining: number;
+  duration: number;
+  fireRateMultiplier?: number;
+}
+
 export interface EliteAffixEffects {
   laneFireRateMultiplier?: number;
   turretDamageTakenMultiplier?: number;
@@ -318,6 +328,7 @@ export interface GameState {
   turrets: TurretSlotState[];
   enemies: EnemyState[];
   projectiles: ProjectileState[];
+  laneHazards: LaneHazardState[];
   wave: WaveRuntimeState;
   typing: TypingState;
   analytics: GameAnalyticsState;

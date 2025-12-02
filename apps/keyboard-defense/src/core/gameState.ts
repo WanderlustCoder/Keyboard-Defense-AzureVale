@@ -40,6 +40,7 @@ export function createInitialState(config: GameConfig): GameState {
     turrets: initialSlots,
     enemies: [],
     projectiles: [],
+    laneHazards: [],
     wave: {
       index: 0,
       total: config.waves.length,

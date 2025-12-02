@@ -53,6 +53,14 @@ type DynamicSpawnEvent = {
   order: number;
 };
 
+type LaneHazardEvent = {
+  time: number;
+  lane: number;
+  kind: "fog" | "storm";
+  duration: number;
+  fireRateMultiplier?: number;
+};
+
 export interface TurretBlueprintSlot {
   typeId: TurretTypeId;
   level: number;
@@ -171,6 +179,8 @@ export class GameEngine {
   private defeatBurstModeResolver: ((enemy: EnemyState) => DefeatBurstMode) | null = null;
   private dynamicEvents: DynamicSpawnEvent[] = [];
   private dynamicEventIndex = 0;
+  private hazardEvents: LaneHazardEvent[] = [];
+  private hazardEventIndex = 0;
 
   private recalculateAverageDps(): void {
     const analytics = this.state.analytics;
@@ -185,8 +195,18 @@ export class GameEngine {
     this.dynamicEventIndex = 0;
   }
 
+  private resetHazardEvents(): void {
+    this.hazardEvents = [];
+    this.hazardEventIndex = 0;
+  }
+
+  private clearLaneHazards(): void {
+    this.state.laneHazards = [];
+  }
+
   private buildDynamicEventsForWave(waveIndex: number): void {
     this.resetDynamicEvents();
+    this.resetHazardEvents();
     if (!this.config.featureToggles.dynamicSpawns) {
       return;
     }
@@ -225,6 +245,31 @@ export class GameEngine {
     events.sort((a, b) => a.time - b.time);
     this.dynamicEvents = events;
     this.dynamicEventIndex = 0;
+
+    this.buildLaneHazardsForWave(waveIndex, rng);
+  }
+
+  private buildLaneHazardsForWave(waveIndex: number, rng: PRNG): void {
+    this.resetHazardEvents();
+    if (waveIndex < 1) return;
+    if (this.config.waves[waveIndex]?.duration <= 8) return;
+    const lanes = Array.from(new Set(this.config.turretSlots.map((slot) => slot.lane))).sort(
+      (a, b) => a - b
+    );
+    if (lanes.length === 0) return;
+    const hazardCount = rng.next() > 0.55 ? 1 : 0;
+    const events: LaneHazardEvent[] = [];
+    for (let i = 0; i < hazardCount; i++) {
+      const kind = rng.next() > 0.5 ? "storm" : "fog";
+      const lane = rng.pick(lanes);
+      const duration = kind === "storm" ? rng.range(8, 14) : rng.range(10, 18);
+      const fireRateMultiplier = kind === "storm" ? 0.85 : undefined;
+      const time = rng.range(6, Math.max(8, this.config.waves[waveIndex].duration - 6));
+      events.push({ time, lane, kind, duration, fireRateMultiplier });
+    }
+    events.sort((a, b) => a.time - b.time);
+    this.hazardEvents = events;
+    this.hazardEventIndex = 0;
   }
 
   private collectDynamicSpawnRequests(currentTime: number): Omit<SpawnEnemyInput, "difficulty">[] {
@@ -247,6 +292,51 @@ export class GameEngine {
       this.dynamicEventIndex += 1;
     }
     return requests;
+  }
+
+  private activateLaneHazards(currentTime: number, deltaSeconds: number): void {
+    if (!this.config.featureToggles.dynamicSpawns || this.hazardEvents.length === 0) {
+      return;
+    }
+    while (
+      this.hazardEventIndex < this.hazardEvents.length &&
+      this.hazardEvents[this.hazardEventIndex].time <= currentTime
+    ) {
+      const event = this.hazardEvents[this.hazardEventIndex];
+      const existing = this.state.laneHazards.find((h) => h.lane === event.lane);
+      const hazardState = {
+        lane: event.lane,
+        kind: event.kind,
+        remaining: event.duration,
+        duration: event.duration,
+        fireRateMultiplier: event.fireRateMultiplier
+      };
+      if (existing) {
+        Object.assign(existing, hazardState);
+      } else {
+        this.state.laneHazards.push(hazardState);
+      }
+      this.hazardEventIndex += 1;
+      const laneLabel = ["A", "B", "C", "D", "E"][event.lane] ?? `Lane ${event.lane + 1}`;
+      this.events.emit("hazard:started", {
+        lane: event.lane,
+        kind: event.kind,
+        remaining: event.duration,
+        label: `${event.kind} in ${laneLabel}`
+      });
+    }
+    if (this.state.laneHazards.length > 0) {
+      const survivors: typeof this.state.laneHazards = [];
+      for (const hazard of this.state.laneHazards) {
+        const remaining = hazard.remaining - deltaSeconds;
+        if (remaining > 0) {
+          survivors.push({ ...hazard, remaining });
+        } else {
+          this.events.emit("hazard:ended", { lane: hazard.lane, kind: hazard.kind });
+        }
+      }
+      this.state.laneHazards = survivors;
+    }
   }
 
   private resolveAffixSeed(input: {
@@ -322,6 +412,7 @@ export class GameEngine {
     this.telemetryClient = options.telemetryClient;
     this.lastWaveIndex = this.state.wave.index;
     this.unlockSlotsForWave(this.lastWaveIndex);
+    this.clearLaneHazards();
     this.resetDynamicEvents();
     this.difficultyBands = [...this.config.difficultyBands].sort((a, b) => a.fromWave - b.fromWave);
     this.currentDifficultyBand = this.resolveDifficulty(this.state.wave.index);
@@ -337,6 +428,7 @@ export class GameEngine {
     this.state.analytics.mode = this.state.mode;
     this.lastWaveIndex = this.state.wave.index;
     this.unlockSlotsForWave(this.lastWaveIndex);
+    this.clearLaneHazards();
     this.resetDynamicEvents();
     this.currentDifficultyBand = this.resolveDifficulty(this.state.wave.index);
     this.resetAnalytics();
@@ -365,6 +457,7 @@ export class GameEngine {
     const spawnRequests = this.waveSystem.update(this.state, deltaSeconds);
     const dynamicRequests = this.collectDynamicSpawnRequests(this.state.wave.timeInWave);
     const allRequests = [...spawnRequests, ...dynamicRequests];
+    this.activateLaneHazards(this.state.wave.timeInWave, deltaSeconds);
     for (const request of allRequests) {
       const difficulty = this.resolveDifficulty(this.state.wave.index);
       this.currentDifficultyBand = difficulty;
@@ -385,6 +478,7 @@ export class GameEngine {
     if (this.state.wave.index !== this.lastWaveIndex) {
       this.lastWaveIndex = this.state.wave.index;
       this.unlockSlotsForWave(this.lastWaveIndex);
+      this.clearLaneHazards();
       this.resetDynamicEvents();
     }
 
