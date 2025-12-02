@@ -291,6 +291,7 @@ export class HudView {
   private readonly goldDelta: HTMLElement;
   private readonly activeWord: HTMLElement;
   private readonly typingInput: HTMLInputElement;
+  private readonly capsLockWarning: HTMLElement | null = null;
   private readonly upgradePanel: HTMLElement;
   private readonly comboLabel: HTMLElement;
   private readonly comboAccuracyDelta: HTMLElement;
@@ -541,6 +542,12 @@ export class HudView {
     this.goldDelta = this.getElement(rootIds.goldDelta);
     this.activeWord = this.getElement(rootIds.activeWord);
     this.typingInput = this.getElement(rootIds.typingInput) as HTMLInputElement;
+    const capsEl = document.getElementById("caps-lock-warning");
+    this.capsLockWarning = capsEl instanceof HTMLElement ? capsEl : null;
+    if (this.capsLockWarning) {
+      this.capsLockWarning.dataset.visible = this.capsLockWarning.dataset.visible ?? "false";
+      this.capsLockWarning.setAttribute("aria-hidden", "true");
+    }
     this.upgradePanel = this.getElement(rootIds.upgradePanel);
     this.comboLabel = this.getElement(rootIds.comboLabel);
     this.comboAccuracyDelta = this.getElement(rootIds.comboAccuracyDelta);
@@ -1187,6 +1194,12 @@ export class HudView {
 
   focusTypingInput(): void {
     this.typingInput.focus();
+  }
+
+  setCapsLockWarning(visible: boolean): void {
+    if (!this.capsLockWarning) return;
+    this.capsLockWarning.dataset.visible = visible ? "true" : "false";
+    this.capsLockWarning.setAttribute("aria-hidden", visible ? "false" : "true");
   }
 
   showShortcutOverlay(): void {

@@ -841,6 +841,29 @@ body[data-checkered-background="true"] #wave-scorecard-stats li {
   color: inherit;
 }
 
+.caps-lock-warning {
+  margin-top: 6px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(249, 115, 22, 0.4);
+  background: rgba(249, 115, 22, 0.1);
+  color: #fdba74;
+  font-size: 0.95rem;
+  display: none;
+  align-items: center;
+  gap: 8px;
+}
+
+.caps-lock-warning::before {
+  content: "⬆";
+  font-weight: 700;
+  color: #fb923c;
+}
+
+.caps-lock-warning[data-visible="true"] {
+  display: flex;
+}
+
 #combo-stats {
   font-size: 1rem;
   color: #e2e8f0;
