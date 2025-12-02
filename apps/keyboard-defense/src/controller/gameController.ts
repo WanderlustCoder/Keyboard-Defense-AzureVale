@@ -84,6 +84,29 @@ function svgTurretDataUri(base, barrel) {
     `</svg>`;
   return toSvgDataUri(svg);
 }
+function svgCastleDataUri(visual, level) {
+  const merlons = Math.max(3, Math.min(7, level + 2));
+  const towerHeight = 44 + level * 2;
+  const towerWidth = 30 + level * 3;
+  const bodyHeight = 34 + level * 3;
+  const bodyWidth = 46 + level * 4;
+  const merlonWidth = bodyWidth / merlons;
+  let merlonRects = "";
+  for (let i = 0; i < merlons; i += 1) {
+    const x = (64 - bodyWidth) / 2 + i * merlonWidth + 1;
+    merlonRects += `<rect x='${x.toFixed(2)}' y='${64 - towerHeight - 10}' width='${(
+      merlonWidth - 2
+    ).toFixed(2)}' height='6' rx='2' fill='${visual.border}' />`;
+  }
+  const svg =
+    `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'>` +
+    `<rect x='${(64 - bodyWidth) / 2}' y='${64 - bodyHeight}' width='${bodyWidth}' height='${bodyHeight}' rx='4' fill='${visual.fill}' stroke='${visual.border}' stroke-width='3'/>` +
+    `<rect x='${(64 - towerWidth) / 2}' y='${64 - towerHeight}' width='${towerWidth}' height='${towerHeight}' rx='5' fill='${visual.accent}' opacity='0.85'/>` +
+    merlonRects +
+    `<circle cx='32' cy='${64 - towerHeight + 10}' r='6' fill='${visual.border}' opacity='0.3'/>` +
+    `</svg>`;
+  return toSvgDataUri(svg);
+}
 export class GameController {
   constructor(options) {
     this.options = options;
@@ -220,6 +243,17 @@ export class GameController {
       this.handleAssetImageLoaded();
     });
     this.syncAssetIntegrityFlags();
+    const castleSprites = {};
+    for (const levelConfig of config.castleLevels ?? []) {
+      const spriteKey = levelConfig.spriteKey ?? `castle-level-${levelConfig.level}`;
+      if (!spriteKey) continue;
+      const visual = levelConfig.visual ?? {
+        fill: "#475569",
+        border: "#1f2937",
+        accent: "#22d3ee"
+      };
+      castleSprites[spriteKey] = svgCastleDataUri(visual, levelConfig.level);
+    }
     const fallbackSprites = {
       "enemy-grunt": svgCircleDataUri("#f87171", "#fca5a5"),
       "enemy-runner": svgCircleDataUri("#34d399", "#6ee7b7"),
@@ -228,7 +262,8 @@ export class GameController {
       "turret-arrow": svgTurretDataUri("#38bdf8", "#0c4a6e"),
       "turret-arcane": svgTurretDataUri("#c084fc", "#581c87"),
       "turret-flame": svgTurretDataUri("#fb923c", "#9a3412"),
-      "turret-crystal": svgTurretDataUri("#67e8f9", "#0f766e")
+      "turret-crystal": svgTurretDataUri("#67e8f9", "#0f766e"),
+      ...castleSprites
     };
     const atlasPromise = atlasEnabled
       ? this.assetLoader

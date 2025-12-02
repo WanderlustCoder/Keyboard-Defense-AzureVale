@@ -40,6 +40,7 @@ export interface CastleLevelConfig {
   upgradeCost: number | null;
   unlockSlots: number;
   goldBonusPercent: number;
+  spriteKey?: string;
   visual?: {
     fill: string;
     border: string;
@@ -196,6 +197,7 @@ export const defaultConfig: GameConfig = {
       upgradeCost: 180,
       unlockSlots: 2,
       goldBonusPercent: 0,
+      spriteKey: "castle-level-1",
       visual: { fill: "#475569", border: "#1f2937", accent: "#22d3ee" }
     },
     {
@@ -206,6 +208,7 @@ export const defaultConfig: GameConfig = {
       upgradeCost: 320,
       unlockSlots: 3,
       goldBonusPercent: 0.05,
+      spriteKey: "castle-level-2",
       visual: { fill: "#4338ca", border: "#1e1b4b", accent: "#a5b4fc" }
     },
     {
@@ -216,6 +219,7 @@ export const defaultConfig: GameConfig = {
       upgradeCost: 450,
       unlockSlots: 4,
       goldBonusPercent: 0.08,
+      spriteKey: "castle-level-3",
       visual: { fill: "#2563eb", border: "#0f172a", accent: "#7dd3fc" }
     },
     {
@@ -226,6 +230,7 @@ export const defaultConfig: GameConfig = {
       upgradeCost: null,
       unlockSlots: 5,
       goldBonusPercent: 0.12,
+      spriteKey: "castle-level-4",
       visual: { fill: "#0ea5e9", border: "#0b1120", accent: "#38bdf8" }
     }
   ],

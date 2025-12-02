@@ -51,4 +51,4 @@ Outlined manageable sub-tasks for remaining “Not Started” backlog items to e
   - Add automated coverage to ensure completion rows render in tutorial + matrix sections.
 
 ## Next Action
-- Asset manifest generation (#70) shipped and bound into `npm run build`. Next priority: #67 castle visual morphing across upgrades.
+- Castle visual morphing (#67) shipped. Next priority: #83 Archivist Lyra dialogue blocks for Episode 1 beats (narrative/content slice).

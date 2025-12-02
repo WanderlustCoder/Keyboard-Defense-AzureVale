@@ -26,6 +26,7 @@ import {
 } from "../core/types.js";
 import { defaultWordBank, type WordBank } from "../core/wordBank.js";
 import { PRNG } from "../utils/random.js";
+import { resolveCastleVisual } from "../rendering/castlePalette.js";
 import { EnemySystem, type SpawnEnemyInput } from "../systems/enemySystem.js";
 import { TurretSystem } from "../systems/turretSystem.js";
 import { TypingSystem } from "../systems/typingSystem.js";
@@ -106,6 +107,13 @@ export interface RuntimeMetrics {
   castlePassives: CastlePassive[];
   lastPassiveUnlock: CastlePassiveUnlock | null;
   passiveUnlockCount: number;
+  castleVisual: {
+    level: number;
+    spriteKey: string;
+    fill: string;
+    border: string;
+    accent: string;
+  };
   defeatBursts: {
     total: number;
     perMinute: number;
@@ -809,6 +817,7 @@ export class GameEngine {
     const passiveUnlocks = this.state.analytics.castlePassiveUnlocks ?? [];
     const lastPassiveUnlock =
       passiveUnlocks.length > 0 ? { ...passiveUnlocks[passiveUnlocks.length - 1] } : null;
+    const castleVisual = resolveCastleVisual(this.config, this.state.castle.level);
     const defeatBurstState = this.state.analytics.defeatBurst ?? {
       total: 0,
       sprite: 0,
@@ -869,6 +878,13 @@ export class GameEngine {
       castlePassives,
       lastPassiveUnlock,
       passiveUnlockCount: passiveUnlocks.length,
+      castleVisual: {
+        level: this.state.castle.level,
+        spriteKey: castleVisual.spriteKey,
+        fill: castleVisual.fill,
+        border: castleVisual.border,
+        accent: castleVisual.accent
+      },
       defeatBursts: {
         total: defeatBurstState.total,
         perMinute: Number.isFinite(perMinute) ? perMinute : 0,

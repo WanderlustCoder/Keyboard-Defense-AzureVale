@@ -74,7 +74,7 @@
 | 64 | Asset Pipeline & Visuals | Defer high-res asset loading until post-ready signal. | Done | Tiered manifest loadWithTiers swaps hi-res after ready with graceful fallback |
 | 65 | Asset Pipeline & Visuals | Introduce projectile particle systems via offscreen canvas. | Done | Offscreen-capable particle renderer stub with reduced-motion no-op |
 | 66 | Asset Pipeline & Visuals | Add enemy defeat animation frames with easing. | Done | Canvas renderer spawns eased defeat bursts with palette-matched rings and spikes |
-| 67 | Asset Pipeline & Visuals | Morph castle visuals across upgrade levels. | Not Started |  |
+| 67 | Asset Pipeline & Visuals | Morph castle visuals across upgrade levels. | Done | Castle renders level-specific sprites/keys with diagnostics noting current tier |
 | 68 | Asset Pipeline & Visuals | Overlay ambient starfield/parallax background effects. | Done | Starfield layer with twinkling particles now renders behind the battlefield |
 | 69 | Asset Pipeline & Visuals | Validate asset integrity via manifest checksum at startup. | Done | AssetLoader hashes sprites via crypto.subtle and rejects mismatches while warning on missing entries |
 | 70 | Asset Pipeline & Visuals | Automate asset manifest generation from source sprites. | Done | Manifest generator runs via `npm run build` and `assets:manifest[:verify]`, preserving custom fields |

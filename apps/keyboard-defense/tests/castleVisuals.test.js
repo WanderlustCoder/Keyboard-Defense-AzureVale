@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 
-import { resolveCastlePalette } from "../src/rendering/castlePalette.ts";
+import { resolveCastlePalette, resolveCastleVisual } from "../src/rendering/castlePalette.ts";
 import { defaultConfig } from "../src/core/config.ts";
 
 describe("castle visuals", () => {
@@ -19,5 +19,11 @@ describe("castle visuals", () => {
     expect(palette.fill).toBeDefined();
     expect(palette.border).toBeDefined();
     expect(palette.accent).toBeDefined();
+  });
+
+  test("exposes sprite keys per level for renderer swaps", () => {
+    const visual = resolveCastleVisual(defaultConfig, 2);
+    expect(visual.spriteKey).toBe("castle-level-2");
+    expect(visual.fill).toBeDefined();
   });
 });
