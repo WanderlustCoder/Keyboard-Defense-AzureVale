@@ -19,6 +19,7 @@ export class SoundManager {
   private ambientSource: AudioBufferSourceNode | null = null;
   private ambientProfile: AmbientProfile | null = null;
   private ambientBuffers = new Map<AmbientProfile, AudioBuffer>();
+  private stingers = new Map<string, AudioBuffer>();
 
   constructor() {
     // Guard for environments without WebAudio (tests/SSR)
@@ -44,6 +45,7 @@ export class SoundManager {
     }
     this.loadSounds();
     this.loadAmbientBuffers();
+    this.loadStingers();
     this.initialized = true;
   }
 
@@ -188,6 +190,20 @@ export class SoundManager {
     });
   }
 
+  playStinger(kind: "victory" | "defeat"): void {
+    if (!this.enabled || !this.initialized || !this.ctx || !this.masterGain) return;
+    const buffer = this.stingers.get(kind);
+    if (!buffer) return;
+    const source = this.ctx.createBufferSource();
+    source.buffer = buffer;
+    const gain = this.ctx.createGain();
+    const target = Math.max(0, Math.min(1, 0.8 * this.intensity));
+    gain.gain.value = target;
+    source.connect(gain);
+    gain.connect(this.masterGain);
+    source.start();
+  }
+
   private loadAmbientBuffers(): void {
     if (!this.ctx) return;
     const sampleRate = this.ctx.sampleRate;
@@ -204,6 +220,32 @@ export class SoundManager {
       "dire",
       this.createPad(sampleRate, { baseFreq: 180, spread: 4.5, modFreq: 0.18, noise: 0.08 })
     );
+  }
+
+  private loadStingers(): void {
+    if (!this.ctx) return;
+    const sampleRate = this.ctx.sampleRate;
+    const buildChord = (root: number): AudioBuffer => {
+      const duration = 1.2;
+      const length = Math.floor(sampleRate * duration);
+      const buffer = this.ctx!.createBuffer(1, length, sampleRate);
+      const data = buffer.getChannelData(0);
+      const freqs = [root, root * 1.25, root * 1.5];
+      for (let i = 0; i < length; i++) {
+        const t = i / sampleRate;
+        const env = Math.max(0, 1 - t / duration);
+        const value =
+          freqs.reduce((sum, freq, idx) => {
+            const detune = idx === 0 ? 0 : idx * 2;
+            return sum + Math.sin(2 * Math.PI * (freq + detune) * t);
+          }, 0) /
+          freqs.length;
+        data[i] = value * env * 0.7;
+      }
+      return buffer;
+    };
+    this.stingers.set("victory", buildChord(440));
+    this.stingers.set("defeat", buildChord(196));
   }
 
   private createPad(

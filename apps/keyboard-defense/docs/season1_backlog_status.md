@@ -97,7 +97,7 @@
 | 87 | Narrative & Content | Add enemy biography cards accessible from wave preview panel. | Done | Wave preview bios with selectable dossiers and tips |
 | 88 | Narrative & Content | Curate ambient music tracks escalating across waves. | Done | Ambient profiles (calm/rising/siege/dire) with wave/health-driven escalation |
 | 89 | Narrative & Content | Expand word banks with themed lists per wave. | Done | Wave-themed vocab (scout/shield/boss) merged into per-lane buckets |
-| 90 | Narrative & Content | Compose short victory/defeat stingers. | Not Started |  |
+| 90 | Narrative & Content | Compose short victory/defeat stingers. | Done | Synth stingers trigger on victory/defeat with WebAudio fades |
 | 91 | QA & Testing | Expand tutorial state tests to cover assist cues and replay/skip flows. | Done | TutorialManager tests cover assist hints, skip, reset, and replay |
 | 92 | QA & Testing | Add asset loader fallback tests (network failure/cache reuse). | Done | Node tests cover fetch rejection + cached image reuse |
 | 93 | QA & Testing | Write analytics export/reset integration tests for debug panel flows. | Done | HUD/Debug buttons gated when toggle off + CLI usage test |

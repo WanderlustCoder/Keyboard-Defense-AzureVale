@@ -51,4 +51,4 @@ Outlined manageable sub-tasks for remaining “Not Started” backlog items to e
   - Add automated coverage to ensure completion rows render in tutorial + matrix sections.
 
 ## Next Action
-- Wave-themed word banks (#89) shipped. Next priority: #90 compose victory/defeat stingers (narrative/audio polish).
+- Victory/defeat stingers (#90) shipped. Next priority: #91 enemy biography cards are done; proceed to #92 or other open items per backlog.

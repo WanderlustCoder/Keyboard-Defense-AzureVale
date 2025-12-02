@@ -162,6 +162,7 @@ export class GameController {
     this.bestCombo = 0;
     this.playerSettings = createDefaultPlayerSettings();
     this.lastAmbientProfile = null;
+    this.lastGameStatus = null;
     this.unlockedLore = new Set();
     this.turretLoadoutPresets = Object.create(null);
     this.activeTurretPresetId = null;
@@ -1302,6 +1303,17 @@ export class GameController {
     if (profile === this.lastAmbientProfile) return;
     this.lastAmbientProfile = profile;
     this.soundManager.setAmbientProfile(profile);
+  }
+
+  handleGameStatusAudio(status) {
+    if (!this.soundManager || !this.soundEnabled) return;
+    if (this.lastGameStatus === status) return;
+    if (status === "victory") {
+      this.soundManager.playStinger?.("victory");
+    } else if (status === "defeat") {
+      this.soundManager.playStinger?.("defeat");
+    }
+    this.lastGameStatus = status;
   }
   setColorblindPaletteEnabled(enabled, options = {}) {
     this.colorblindPaletteEnabled = enabled;
@@ -2961,6 +2973,7 @@ export class GameController {
       starfield: starfieldState
     });
     this.updateAmbientTrack(this.currentState);
+    this.handleGameStatusAudio(this.currentState.status);
     this.syncCanvasResizeCause();
     const upcoming = this.engine.getUpcomingSpawns();
     this.hud.update(this.currentState, upcoming, {
