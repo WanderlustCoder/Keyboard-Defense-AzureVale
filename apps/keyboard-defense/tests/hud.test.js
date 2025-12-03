@@ -95,6 +95,34 @@ const initializeHud = (options = {}) => {
   const loreScrollsLessons = get("lore-scrolls-lessons");
   const loreScrollsNext = get("lore-scrolls-next");
   const loreScrollsOpen = get("lore-scrolls-open");
+  const masteryCertificatePanel = get("mastery-certificate-panel");
+  const masteryCertificateSummary = get("mastery-certificate-summary");
+  const masteryCertificateStats = get("mastery-certificate-stats");
+  const masteryCertificateDate = get("mastery-certificate-date");
+  const masteryCertificateName = get("mastery-certificate-name");
+  const masteryCertificateOpen = get("mastery-certificate-open");
+  const museumPanel = get("castle-museum-panel");
+  const museumSummary = get("castle-museum-summary");
+  const museumStats = get("castle-museum-stats");
+  const museumOpen = get("castle-museum-open");
+  const sideQuestPanel = get("side-quest-panel");
+  const sideQuestSummary = get("side-quest-summary");
+  const sideQuestStats = get("side-quest-stats");
+  const sideQuestOpen = get("side-quest-open");
+  const mentorDialogue = get("mentor-dialogue");
+  const mentorDialogueText = get("mentor-dialogue-text");
+  const mentorDialogueFocus = get("mentor-dialogue-focus");
+  const milestoneCelebration = get("milestone-celebration");
+  const milestoneCelebrationTitle = get("milestone-celebration-title");
+  const milestoneCelebrationDetail = get("milestone-celebration-detail");
+  const milestoneCelebrationBadge = get("milestone-celebration-badge");
+  const milestoneCelebrationClose = get("milestone-celebration-close");
+  const lessonMedalPanel = get("lesson-medal-panel");
+  const lessonMedalBadge = get("lesson-medal-badge");
+  const lessonMedalSummary = get("lesson-medal-summary");
+  const lessonMedalBest = get("lesson-medal-best");
+  const lessonMedalNext = get("lesson-medal-next");
+  const lessonMedalOpen = get("lesson-medal-open");
   const logList = get("battle-log");
   const wavePreview = get("wave-preview-list");
   const wavePreviewHint = get("wave-preview-hint");
@@ -137,6 +165,9 @@ const initializeHud = (options = {}) => {
   const contrastAuditButton = get("options-contrast-audit");
   const stickerBookButton = get("options-sticker-book");
   const optionsSeasonTrackButton = get("options-season-track");
+  const optionsSideQuestButton = get("options-side-quests");
+  const optionsMasteryCertificateButton = get("options-mastery-certificate");
+  const optionsLessonMedalsButton = get("options-lesson-medals");
   const optionsParentSummaryButton = get("options-parent-summary");
   const optionsLoreScrollsButton = get("options-lore-scrolls");
   const contrastOverlay = get("contrast-overlay");
@@ -159,6 +190,27 @@ const initializeHud = (options = {}) => {
   const seasonTrackLessons = get("season-track-overlay-lessons");
   const seasonTrackNext = get("season-track-overlay-next");
   const seasonTrackClose = get("season-track-close");
+  const sideQuestOverlay = get("side-quest-overlay");
+  const sideQuestList = get("side-quest-list");
+  const sideQuestSubtitle = get("side-quest-overlay-subtitle");
+  const sideQuestClose = get("side-quest-close");
+  const masteryCertificateOverlay = get("mastery-certificate-overlay");
+  const masteryCertificateStatsList = get("mastery-certificate-stats-list");
+  const masteryCertificateDownload = get("mastery-certificate-download");
+  const masteryCertificateOverlaySummary = get("mastery-certificate-overlay-summary");
+  const masteryCertificateOverlayDate = get("mastery-certificate-date");
+  const masteryCertificateOverlayClose = get("mastery-certificate-close");
+  const lessonMedalOverlay = get("lesson-medal-overlay");
+  const lessonMedalList = get("lesson-medal-best-list");
+  const lessonMedalHistory = get("lesson-medal-history-list");
+  const lessonMedalReplay = get("lesson-medal-replay");
+  const lessonMedalOverlayBadge = get("lesson-medal-overlay-badge");
+  const lessonMedalOverlayLast = get("lesson-medal-overlay-last");
+  const lessonMedalOverlayNext = get("lesson-medal-overlay-next");
+  const lessonMedalClose = get("lesson-medal-close");
+  const museumOverlay = get("museum-overlay");
+  const museumList = get("museum-list");
+  const museumSubtitle = get("museum-overlay-subtitle");
   const parentSummaryOverlay = get("parent-summary-overlay");
   const parentSummaryClose = get("parent-summary-close");
   const parentSummaryProgress = get("parent-summary-progress");
@@ -279,7 +331,11 @@ const initializeHud = (options = {}) => {
         hudLayoutToggle: "options-hud-left",
         fontScaleSelect: "options-font-scale",
         analyticsExportButton: "options-analytics-export",
-        seasonTrackButton: "options-season-track"
+        seasonTrackButton: "options-season-track",
+        sideQuestButton: "options-side-quests",
+        museumButton: "options-museum",
+        masteryCertificateButton: "options-mastery-certificate",
+        lessonMedalButton: "options-lesson-medals"
       },
       waveScorecard: {
         container: "wave-scorecard",
@@ -311,6 +367,37 @@ const initializeHud = (options = {}) => {
         lessons: "season-track-overlay-lessons",
         next: "season-track-overlay-next",
         closeButton: "season-track-close"
+      },
+      sideQuestOverlay: {
+        container: "side-quest-overlay",
+        closeButton: "side-quest-close",
+        list: "side-quest-list",
+        subtitle: "side-quest-overlay-subtitle"
+      },
+      museumOverlay: {
+        container: "museum-overlay",
+        closeButton: "museum-close",
+        list: "museum-list",
+        subtitle: "museum-overlay-subtitle"
+      },
+      masteryCertificateOverlay: {
+        container: "mastery-certificate-overlay",
+        closeButton: "mastery-certificate-close",
+        downloadButton: "mastery-certificate-download",
+        nameInput: "mastery-certificate-name",
+        summary: "mastery-certificate-overlay-summary",
+        statsList: "mastery-certificate-stats-list",
+        date: "mastery-certificate-date"
+      },
+      lessonMedalOverlay: {
+        container: "lesson-medal-overlay",
+        closeButton: "lesson-medal-close",
+        badge: "lesson-medal-overlay-badge",
+        last: "lesson-medal-overlay-last",
+        next: "lesson-medal-overlay-next",
+        bestList: "lesson-medal-best-list",
+        historyList: "lesson-medal-history-list",
+        replayButton: "lesson-medal-replay"
       },
       parentSummaryOverlay: {
         container: "parent-summary-overlay",
@@ -415,6 +502,37 @@ const initializeHud = (options = {}) => {
       loreScrollsLessons,
       loreScrollsNext,
       loreScrollsOpen,
+      masteryCertificatePanel,
+      masteryCertificateSummary,
+      masteryCertificateStats,
+      masteryCertificateDate,
+      masteryCertificateName,
+      masteryCertificateOpen,
+      museumPanel,
+      museumSummary,
+      museumStats,
+      museumOpen,
+      sideQuestPanel,
+      sideQuestSummary,
+      sideQuestStats,
+      sideQuestOpen,
+      museumOverlay,
+      museumList,
+      museumSubtitle,
+      mentorDialogue,
+      mentorDialogueText,
+      mentorDialogueFocus,
+      lessonMedalPanel,
+      lessonMedalBadge,
+      lessonMedalSummary,
+      lessonMedalBest,
+      lessonMedalNext,
+      lessonMedalOpen,
+      milestoneCelebration,
+      milestoneCelebrationTitle,
+      milestoneCelebrationDetail,
+      milestoneCelebrationBadge,
+      milestoneCelebrationClose,
       tutorialBanner,
       tutorialBannerMessage,
       tutorialBannerToggle,
@@ -436,6 +554,9 @@ const initializeHud = (options = {}) => {
       contrastAuditButton,
       stickerBookButton,
       optionsSeasonTrackButton,
+      optionsSideQuestButton,
+      optionsMasteryCertificateButton,
+      optionsLessonMedalsButton,
       optionsParentSummaryButton,
       optionsLoreScrollsButton,
       contrastOverlay,
@@ -453,6 +574,24 @@ const initializeHud = (options = {}) => {
       seasonTrackLessons,
       seasonTrackNext,
       seasonTrackClose,
+      sideQuestOverlay,
+      sideQuestList,
+      sideQuestSubtitle,
+      sideQuestClose,
+      masteryCertificateOverlay,
+      masteryCertificateStatsList,
+      masteryCertificateDownload,
+      masteryCertificateOverlaySummary,
+      masteryCertificateOverlayDate,
+      masteryCertificateClose: masteryCertificateOverlayClose,
+      lessonMedalOverlay,
+      lessonMedalList,
+      lessonMedalHistory,
+      lessonMedalReplay,
+      lessonMedalOverlayBadge,
+      lessonMedalOverlayLast,
+      lessonMedalOverlayNext,
+      lessonMedalClose,
       parentSummaryOverlay,
       parentSummaryClose,
       parentSummaryProgress,
@@ -2081,6 +2220,308 @@ test("HudView season track overlay renders rewards and toggles visibility", () =
   assert.equal(elements.seasonTrackList.children.length, 4);
   hud.hideSeasonTrackOverlay();
   assert.equal(elements.seasonTrackOverlay.dataset.visible, "false");
+  cleanup();
+});
+
+test("HudView mastery certificate overlay renders stats and toggles visibility", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  hud.setMasteryCertificate({
+    lessonsCompleted: 7,
+    accuracyPct: 96,
+    wpm: 54,
+    bestCombo: 12,
+    drillsCompleted: 3,
+    timeMinutes: 42,
+    recordedAt: new Date("2025-12-21T00:00:00Z").toISOString()
+  });
+  assert.ok(elements.masteryCertificateSummary.textContent.includes("Learner"));
+  assert.ok(elements.masteryCertificateStats.textContent.includes("lessons"));
+  elements.optionsMasteryCertificateButton.click();
+  assert.equal(elements.masteryCertificateOverlay.dataset.visible, "true");
+  assert.ok(elements.masteryCertificateOverlaySummary.textContent.includes("accuracy"));
+  assert.ok(elements.masteryCertificateOverlayDate.textContent.length > 0);
+  assert.ok(elements.masteryCertificateStatsList.children.length > 0);
+  hud.hideMasteryCertificateOverlay();
+  assert.equal(elements.masteryCertificateOverlay.dataset.visible, "false");
+  cleanup();
+});
+
+test("HudView milestone celebration fires for gold medals and lesson milestones", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  hud.setLessonMedalProgress({
+    last: {
+      id: "medal-10",
+      tier: "gold",
+      mode: "precision",
+      accuracy: 0.975,
+      wpm: 58,
+      bestCombo: 9,
+      errors: 0,
+      words: 10,
+      elapsedMs: 24000,
+      timestamp: 10
+    },
+    recent: [],
+    bestByMode: { burst: null, endurance: null, precision: null },
+    totals: { bronze: 0, silver: 0, gold: 1, platinum: 0 },
+    nextTarget: null
+  });
+  assert.equal(elements.milestoneCelebration.dataset.visible, "true");
+  assert.ok(elements.milestoneCelebrationTitle.textContent.includes("Gold"));
+  hud.hideMilestoneCelebration();
+  assert.equal(elements.milestoneCelebration.dataset.visible, "false");
+
+  const state = buildInitialState();
+  hud.update(state, [], { lessonsCompleted: 5 });
+  assert.equal(elements.milestoneCelebration.dataset.visible, "true");
+  assert.ok(elements.milestoneCelebrationBadge.textContent.length > 0);
+  cleanup();
+});
+
+test("HudView mentor dialogue adapts focus between accuracy and speed", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  const accuracyState = buildInitialState();
+  accuracyState.time = 60;
+  accuracyState.typing.totalInputs = 50;
+  accuracyState.typing.correctInputs = 40;
+  accuracyState.typing.accuracy = 0.8;
+  hud.update(accuracyState, []);
+  assert.equal(elements.mentorDialogue.dataset.focus, "accuracy");
+  assert.ok(elements.mentorDialogueText.textContent.toLowerCase().includes("accuracy"));
+
+  const speedState = structuredClone(accuracyState);
+  speedState.time = 180;
+  speedState.typing.totalInputs = 82;
+  speedState.typing.correctInputs = 80;
+  speedState.typing.accuracy = 0.98;
+  hud.update(speedState, []);
+  assert.equal(elements.mentorDialogue.dataset.focus, "speed");
+  assert.ok(elements.mentorDialogueText.textContent.toLowerCase().includes("speed"));
+  cleanup();
+});
+
+test("HudView museum overlay renders entries and toggles visibility", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  hud.setSeasonTrackProgress({
+    lessonsCompleted: 6,
+    total: 10,
+    unlocked: 3,
+    next: { requiredLessons: 7, remaining: 1, title: "Castle Accent" },
+    entries: []
+  });
+  hud.setLessonMedalProgress({
+    last: {
+      id: "medal-10",
+      tier: "gold",
+      mode: "precision",
+      accuracy: 0.975,
+      wpm: 58,
+      bestCombo: 9,
+      errors: 0,
+      words: 10,
+      elapsedMs: 24000,
+      timestamp: 10
+    },
+    recent: [],
+    bestByMode: { burst: null, endurance: null, precision: null },
+    totals: { bronze: 0, silver: 0, gold: 1, platinum: 0 },
+    nextTarget: null
+  });
+  hud.setLoreScrollProgress({
+    lessonsCompleted: 6,
+    total: 5,
+    unlocked: 2,
+    next: { requiredLessons: 7, remaining: 1, title: "Archive Log" },
+    entries: []
+  });
+  hud.setMasteryCertificate({
+    lessonsCompleted: 7,
+    accuracyPct: 96,
+    wpm: 54,
+    bestCombo: 12,
+    drillsCompleted: 3,
+    timeMinutes: 42,
+    recordedAt: new Date("2025-12-21T00:00:00Z").toISOString()
+  });
+  elements.museumOpen.click();
+  assert.equal(elements.museumOverlay.dataset.visible, "true");
+  assert.ok(elements.museumList.children.length >= 5);
+  hud.hideMuseumOverlay();
+  assert.equal(elements.museumOverlay.dataset.visible, "false");
+  cleanup();
+});
+
+test("HudView side quest overlay renders quests and toggles visibility", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  hud.setLoreScrollProgress({
+    lessonsCompleted: 4,
+    total: 6,
+    unlocked: 2,
+    next: { requiredLessons: 5, remaining: 1, title: "Library Ledger" },
+    entries: []
+  });
+  hud.setLessonMedalProgress({
+    last: {
+      id: "medal-quest",
+      tier: "gold",
+      mode: "burst",
+      accuracy: 0.97,
+      wpm: 55,
+      bestCombo: 8,
+      errors: 0,
+      words: 10,
+      elapsedMs: 23000,
+      timestamp: 456
+    },
+    recent: [
+      {
+        id: "recent-1",
+        tier: "silver",
+        mode: "burst",
+        accuracy: 0.94,
+        wpm: 42,
+        bestCombo: 5,
+        errors: 1,
+        words: 9,
+        elapsedMs: 25000,
+        timestamp: 300
+      },
+      {
+        id: "recent-2",
+        tier: "bronze",
+        mode: "endurance",
+        accuracy: 0.9,
+        wpm: 35,
+        bestCombo: 4,
+        errors: 3,
+        words: 12,
+        elapsedMs: 31000,
+        timestamp: 301
+      },
+      {
+        id: "recent-3",
+        tier: "gold",
+        mode: "precision",
+        accuracy: 0.96,
+        wpm: 48,
+        bestCombo: 6,
+        errors: 1,
+        words: 11,
+        elapsedMs: 28000,
+        timestamp: 302
+      },
+      {
+        id: "recent-4",
+        tier: "silver",
+        mode: "burst",
+        accuracy: 0.92,
+        wpm: 40,
+        bestCombo: 4,
+        errors: 2,
+        words: 10,
+        elapsedMs: 26000,
+        timestamp: 303
+      },
+      {
+        id: "recent-5",
+        tier: "silver",
+        mode: "burst",
+        accuracy: 0.93,
+        wpm: 41,
+        bestCombo: 4,
+        errors: 2,
+        words: 10,
+        elapsedMs: 25500,
+        timestamp: 304
+      }
+    ],
+    bestByMode: { burst: null, endurance: null, precision: null },
+    totals: { bronze: 1, silver: 2, gold: 1, platinum: 0 },
+    nextTarget: null
+  });
+  const state = buildInitialState();
+  hud.update(state, [], { lessonsCompleted: 5 });
+  elements.optionsSideQuestButton.click();
+  assert.equal(elements.sideQuestOverlay.dataset.visible, "true");
+  assert.ok(elements.sideQuestList.children.length >= 4);
+  assert.ok(elements.sideQuestSubtitle.textContent.includes("quests completed"));
+  elements.sideQuestClose.click();
+  assert.equal(elements.sideQuestOverlay.dataset.visible, "false");
+  cleanup();
+});
+
+test("HudView lesson medals overlay renders and toggles visibility", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  hud.setLessonMedalProgress({
+    last: {
+      id: "medal-1",
+      tier: "gold",
+      mode: "precision",
+      accuracy: 0.965,
+      wpm: 42,
+      bestCombo: 7,
+      errors: 0,
+      words: 8,
+      elapsedMs: 25000,
+      timestamp: 1234
+    },
+    recent: [
+      {
+        id: "medal-2",
+        tier: "silver",
+        mode: "burst",
+        accuracy: 0.92,
+        wpm: 32,
+        bestCombo: 4,
+        errors: 2,
+        words: 5,
+        elapsedMs: 15000,
+        timestamp: 1200
+      }
+    ],
+    bestByMode: {
+      burst: {
+        id: "medal-2",
+        tier: "silver",
+        mode: "burst",
+        accuracy: 0.92,
+        wpm: 32,
+        bestCombo: 4,
+        errors: 2,
+        words: 5,
+        elapsedMs: 15000,
+        timestamp: 1200
+      },
+      endurance: null,
+      precision: {
+        id: "medal-1",
+        tier: "gold",
+        mode: "precision",
+        accuracy: 0.965,
+        wpm: 42,
+        bestCombo: 7,
+        errors: 0,
+        words: 8,
+        elapsedMs: 25000,
+        timestamp: 1234
+      }
+    },
+    totals: { bronze: 0, silver: 1, gold: 1, platinum: 0 },
+    nextTarget: { tier: "platinum", hint: "Replay for Platinum: hold 98% accuracy and combo x7." }
+  });
+
+  assert.equal(elements.lessonMedalBadge.dataset.tier, "gold");
+  assert.ok(elements.lessonMedalSummary.textContent.includes("Gold"));
+  assert.ok(elements.lessonMedalBest.textContent.includes("Burst"));
+  assert.equal(elements.lessonMedalOverlay.dataset.visible, "false");
+  elements.optionsLessonMedalsButton.click();
+  assert.equal(elements.lessonMedalOverlay.dataset.visible, "true");
+  assert.ok(elements.lessonMedalOverlayLast.textContent.includes("Shield Breaker"));
+  assert.ok(elements.lessonMedalOverlayNext.textContent.includes("Platinum"));
+  assert.equal(elements.lessonMedalList.children.length, 3);
+  assert.ok(elements.lessonMedalHistory.children.length >= 1);
+  hud.hideLessonMedalOverlay();
+  assert.equal(elements.lessonMedalOverlay.dataset.visible, "false");
   cleanup();
 });
 

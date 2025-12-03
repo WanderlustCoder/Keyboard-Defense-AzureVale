@@ -70,12 +70,12 @@ Quick status snapshot for items in `season4_backlog.md`. All items start as Not 
 | 64 | Collectible lore scrolls | Done | Lore scroll overlay unlocks scrolls when lessons/drills are completed, with HUD progress, persistence, and reading-friendly snippets. |
 | 65 | Weekly parent summary | Done | Options/HUD button opens a parent-friendly weekly summary overlay with session time, accuracy/WPM, combo, breaches, drills, repairs, notes, and a print/download action. |
 | 66 | Free seasonal reward track | Done | Free, predictable 10-tier reward track unlocks via lesson milestones with HUD/overlay views. |
-| 67 | Medal tiers per lesson | Not Started | - |
-| 68 | Mastery certificates | Not Started | - |
-| 69 | Milestone celebration VFX | Not Started | - |
-| 70 | Adaptive mentor dialogue | Not Started | - |
-| 71 | Castle museum room | Not Started | - |
-| 72 | Side-mission quest log | Not Started | - |
+| 67 | Medal tiers per lesson | Done | Bronze/Silver/Gold/Platinum medals per drill with HUD panel/overlay and replay CTA. |
+| 68 | Mastery certificates | Done | Printable mastery certificate with learner name, session stats, and HUD panel/overlay + options shortcut. |
+| 69 | Milestone celebration VFX | Done | Reduced-motion-safe celebration banner with fireworks/spotlights for lesson milestones and Gold/Platinum medals. |
+| 70 | Adaptive mentor dialogue | Done | Mentor card surfaces focus-specific tips (accuracy vs speed) based on live stats with cooldowns and reduced-motion-safe styling. |
+| 71 | Castle museum room | Done | Castle Museum panel/overlay shows unlocked skins, reward artifacts, companion moods, lore scrolls, medals, certificates, and drills. |
+| 72 | Side-mission quest log | Done | HUD panel and overlay list narrative side quests with progress (lessons, medals, scrolls, drills) plus options and HUD entry points. |
 | 73 | Personal WPM ladder | Not Started | - |
 | 74 | Streak-freeze tokens | Not Started | - |
 | 75 | Training calendar heatmap | Not Started | - |

@@ -57,7 +57,13 @@ Use this index to jump straight to the guidance you'll need while building and t
 - `docs/CODEX_PLAYBOOKS.md#canvas-dpr-monitor--transitions-task-canvas-dpr-monitor` - Step-by-step implementation + verification checklist for Codex.
 
 ## Status Notes
-Status entries live under `docs/status/`. Recent highlights include:
+-Status entries live under `docs/status/`. Recent highlights include:
+- `2025-12-26_side_quests_log.md` - Side Quest HUD panel and overlay list narrative quests with progress from lessons, medals, scrolls, and drills (Season 4 #72).
+- `2025-12-25_castle_museum_room.md` - Castle Museum panel/overlay shows unlocked skins, artifacts, scrolls, medals, and certificates (Season 4 #71).
+- `2025-12-24_adaptive_mentor_dialogue.md` - Mentor card adapts between accuracy/speed/balanced tips based on live stats (Season 4 #70).
+- `2025-12-23_milestone_celebrations.md` - Reduced-motion-safe celebration banner for lesson milestones and Gold/Platinum medals (Season 4 #69).
+- `2025-12-22_mastery_certificates.md` - Printable mastery certificate overlay with learner name, session stats, and HUD/options entry.
+- `2025-12-21_medal_tiers_per_lesson.md` - Bronze/Silver/Gold/Platinum lesson medals with HUD panel/overlay, next-tier hints, and replay CTA from drill summaries.
 - `2025-12-20_season_reward_track.md` - Season 4 free reward track with fixed lesson milestones and overlay/HUD views.
 - `2025-12-19_weekly_parent_summary.md` - Parent-friendly weekly summary overlay with printable metrics (time, accuracy/WPM, combo, breaches, drills, repairs) from the pause/options menu.
 - `2025-12-18_collectible_lore_scrolls.md` - Lore scroll panel + overlay unlocks via lesson/typing drill completions with persisted progress (Season 4 backlog #64).
