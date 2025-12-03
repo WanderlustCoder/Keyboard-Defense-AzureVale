@@ -68,6 +68,7 @@ export declare class GameController {
     syncDefeatAnimationPreferences(): void;
     resolveDefeatBurstMode(enemy: any): "sprite" | "procedural";
     shouldUseSpriteForTier(tierId: any): boolean;
+    setHudZoom(scale: any, options?: {}): void;
     setHudFontScale(scale: any, options?: {}): void;
     setTextSizeScale(scale: any, options?: {}): void;
     cycleHudFontScale(direction?: number): void;
@@ -78,6 +79,7 @@ export declare class GameController {
         queueSize: number;
         soundIntensity: any;
     };
+    normalizeHudZoom(value: any): number;
     normalizeHudFontScale(value: any): number;
     normalizeTextSizeScale(value: any): number;
     getNextWaveMicroTip(): string;
@@ -98,6 +100,7 @@ export declare class GameController {
     showBreakReminder(elapsedMs: any): void;
     handleBreakReminderSnooze(): void;
     handleBreakReset(): void;
+    applyHudZoomSetting(scale: any): void;
     applyHudFontScaleSetting(scale: any): void;
     applyTextSizeScaleSetting(scale: any): void;
     setTelemetryEnabled(enabled: any, options?: {}): boolean;

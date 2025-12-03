@@ -426,6 +426,7 @@ export class HudView {
             const hotkeyShortcutsSelect = rootIds.optionsOverlay.hotkeyShortcutsSelect
                 ? document.getElementById(rootIds.optionsOverlay.hotkeyShortcutsSelect)
                 : null;
+            const hudZoomSelect = document.getElementById(rootIds.optionsOverlay.hudZoomSelect);
             const fontScaleSelect = document.getElementById(rootIds.optionsOverlay.fontScaleSelect);
             const defeatAnimationSelect = document.getElementById(rootIds.optionsOverlay.defeatAnimationSelect);
             const telemetryToggle = rootIds.optionsOverlay.telemetryToggle
@@ -470,6 +471,7 @@ export class HudView {
                 (colorblindPaletteSelect === null || colorblindPaletteSelect instanceof HTMLSelectElement) &&
                 (hotkeyPauseSelect === null || hotkeyPauseSelect instanceof HTMLSelectElement) &&
                 (hotkeyShortcutsSelect === null || hotkeyShortcutsSelect instanceof HTMLSelectElement) &&
+                hudZoomSelect instanceof HTMLSelectElement &&
                 fontScaleSelect instanceof HTMLSelectElement &&
                 defeatAnimationSelect instanceof HTMLSelectElement) {
                 this.optionsOverlay = {
@@ -499,6 +501,7 @@ export class HudView {
                     colorblindPaletteSelect: colorblindPaletteSelect instanceof HTMLSelectElement ? colorblindPaletteSelect : undefined,
                     hotkeyPauseSelect: hotkeyPauseSelect instanceof HTMLSelectElement ? hotkeyPauseSelect : undefined,
                     hotkeyShortcutsSelect: hotkeyShortcutsSelect instanceof HTMLSelectElement ? hotkeyShortcutsSelect : undefined,
+                    hudZoomSelect,
                     fontScaleSelect,
                     defeatAnimationSelect,
                     telemetryToggle: telemetryToggle instanceof HTMLInputElement ? telemetryToggle : undefined,
@@ -699,6 +702,15 @@ export class HudView {
                         return;
                     const nextMode = this.optionsOverlay.defeatAnimationSelect.value;
                     this.callbacks.onDefeatAnimationModeChange(nextMode);
+                });
+                this.optionsOverlay.hudZoomSelect.addEventListener("change", () => {
+                    if (this.syncingOptionToggles)
+                        return;
+                    const rawValue = this.getSelectValue(this.optionsOverlay.hudZoomSelect);
+                    const nextValue = Number.parseFloat(rawValue ?? "");
+                    if (!Number.isFinite(nextValue))
+                        return;
+                    this.callbacks.onHudZoomChange(nextValue);
                 });
                 fontScaleSelect.addEventListener("change", () => {
                     if (this.syncingOptionToggles)
@@ -1193,6 +1205,7 @@ export class HudView {
             const shortcuts = state.hotkeys?.shortcuts ?? "?";
             this.setSelectValue(this.optionsOverlay.hotkeyShortcutsSelect, shortcuts);
         }
+        this.setSelectValue(this.optionsOverlay.hudZoomSelect, state.hudZoom.toString());
         this.setSelectValue(this.optionsOverlay.fontScaleSelect, state.hudFontScale.toString());
         this.setSelectValue(this.optionsOverlay.defeatAnimationSelect, state.defeatAnimationMode ?? "auto");
         this.applyTelemetryOptionState(state.telemetry);
@@ -3658,6 +3671,14 @@ export class HudView {
             button.setAttribute("aria-hidden", "true");
             button.tabIndex = -1;
             button.setAttribute("tabindex", "-1");
+        }
+    }
+    setHudZoom(scale) {
+        if (typeof document !== "undefined") {
+            document.documentElement.style.setProperty("--hud-zoom", scale.toString());
+        }
+        if (this.hudRoot) {
+            this.hudRoot.dataset.zoom = scale.toString();
         }
     }
     setHudFontScale(scale) {

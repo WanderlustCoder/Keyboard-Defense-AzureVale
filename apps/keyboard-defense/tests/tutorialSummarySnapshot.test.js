@@ -110,6 +110,7 @@ function setupHud() {
         defeatAnimationSelect: "options-defeat-animation",
         telemetryToggle: "options-telemetry-toggle",
         telemetryToggleWrapper: "options-telemetry-toggle-wrapper",
+        hudZoomSelect: "options-hud-zoom",
         fontScaleSelect: "options-font-scale",
         analyticsExportButton: "options-analytics-export"
       },

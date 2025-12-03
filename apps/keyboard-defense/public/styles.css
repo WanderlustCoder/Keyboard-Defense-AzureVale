@@ -8,6 +8,7 @@
   color-scheme: dark;
   font-family: "Segoe UI", Tahoma, sans-serif;
   --hud-font-scale: 1;
+  --hud-zoom: 1;
   --text-size-scale: 1;
   font-size: calc(100% * var(--hud-font-scale, 1) * var(--text-size-scale, 1));
   --accent-primary-base: #2563eb;
@@ -391,6 +392,10 @@ body[data-canvas-transition="running"] #diagnostics-overlay {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  transform: scale(var(--hud-zoom, 1));
+  transform-origin: top right;
+  will-change: transform;
+  transition: transform 0.2s ease;
 }
 
 section {

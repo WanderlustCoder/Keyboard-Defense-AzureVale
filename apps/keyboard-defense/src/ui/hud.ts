@@ -132,6 +132,7 @@ export interface HudCallbacks {
   onBackgroundBrightnessChange?: (value: number) => void;
   onDefeatAnimationModeChange(mode: DefeatAnimationPreference): void;
   onHudFontScaleChange(scale: number): void;
+  onHudZoomChange(scale: number): void;
   onFullscreenToggle?: (nextActive: boolean) => void;
   onTurretHover?: (
     slotId: string | null,
@@ -245,6 +246,7 @@ type OptionsOverlayElements = {
   backgroundBrightnessSlider?: string;
   backgroundBrightnessValue?: string;
   fontScaleSelect: string;
+  hudZoomSelect: string;
   defeatAnimationSelect: string;
   telemetryToggle?: string;
   telemetryToggleWrapper?: string;
@@ -519,6 +521,7 @@ export class HudView {
     hotkeyShortcutsSelect?: HTMLSelectElement;
     backgroundBrightnessSlider?: HTMLInputElement;
     backgroundBrightnessValue?: HTMLElement;
+    hudZoomSelect: HTMLSelectElement;
     fontScaleSelect: HTMLSelectElement;
     defeatAnimationSelect: HTMLSelectElement;
     telemetryToggle?: HTMLInputElement;
@@ -882,6 +885,7 @@ export class HudView {
       const hotkeyShortcutsSelect = rootIds.optionsOverlay.hotkeyShortcutsSelect
         ? document.getElementById(rootIds.optionsOverlay.hotkeyShortcutsSelect)
         : null;
+      const hudZoomSelect = document.getElementById(rootIds.optionsOverlay.hudZoomSelect);
       const fontScaleSelect = document.getElementById(rootIds.optionsOverlay.fontScaleSelect);
       const defeatAnimationSelect = document.getElementById(
         rootIds.optionsOverlay.defeatAnimationSelect
@@ -930,6 +934,7 @@ export class HudView {
         (colorblindPaletteSelect === null || colorblindPaletteSelect instanceof HTMLSelectElement) &&
         (hotkeyPauseSelect === null || hotkeyPauseSelect instanceof HTMLSelectElement) &&
         (hotkeyShortcutsSelect === null || hotkeyShortcutsSelect instanceof HTMLSelectElement) &&
+        hudZoomSelect instanceof HTMLSelectElement &&
         fontScaleSelect instanceof HTMLSelectElement &&
         defeatAnimationSelect instanceof HTMLSelectElement
       ) {
@@ -969,6 +974,7 @@ export class HudView {
           hotkeyPauseSelect instanceof HTMLSelectElement ? hotkeyPauseSelect : undefined,
         hotkeyShortcutsSelect:
           hotkeyShortcutsSelect instanceof HTMLSelectElement ? hotkeyShortcutsSelect : undefined,
+        hudZoomSelect,
         fontScaleSelect,
           defeatAnimationSelect,
           telemetryToggle:
@@ -1154,6 +1160,13 @@ export class HudView {
           if (this.syncingOptionToggles) return;
           const nextMode = this.optionsOverlay!.defeatAnimationSelect!.value as DefeatAnimationPreference;
           this.callbacks.onDefeatAnimationModeChange(nextMode);
+        });
+        this.optionsOverlay.hudZoomSelect.addEventListener("change", () => {
+          if (this.syncingOptionToggles) return;
+          const rawValue = this.getSelectValue(this.optionsOverlay!.hudZoomSelect);
+          const nextValue = Number.parseFloat(rawValue ?? "");
+          if (!Number.isFinite(nextValue)) return;
+          this.callbacks.onHudZoomChange(nextValue);
         });
         fontScaleSelect.addEventListener("change", () => {
           if (this.syncingOptionToggles) return;
@@ -1648,6 +1661,7 @@ export class HudView {
     backgroundBrightness?: number;
     colorblindPaletteEnabled: boolean;
     colorblindPaletteMode?: string;
+    hudZoom: number;
     hudFontScale: number;
     defeatAnimationMode: DefeatAnimationPreference;
     hotkeys?: { pause?: string; shortcuts?: string };
@@ -1728,6 +1742,7 @@ export class HudView {
       const shortcuts = state.hotkeys?.shortcuts ?? "?";
       this.setSelectValue(this.optionsOverlay.hotkeyShortcutsSelect, shortcuts);
     }
+    this.setSelectValue(this.optionsOverlay.hudZoomSelect, state.hudZoom.toString());
     this.setSelectValue(this.optionsOverlay.fontScaleSelect, state.hudFontScale.toString());
     this.setSelectValue(
       this.optionsOverlay.defeatAnimationSelect,
@@ -4430,6 +4445,15 @@ export class HudView {
       button.setAttribute("aria-hidden", "true");
       button.tabIndex = -1;
       button.setAttribute("tabindex", "-1");
+    }
+  }
+
+  setHudZoom(scale: number): void {
+    if (typeof document !== "undefined") {
+      document.documentElement.style.setProperty("--hud-zoom", scale.toString());
+    }
+    if (this.hudRoot) {
+      this.hudRoot.dataset.zoom = scale.toString();
     }
   }
 

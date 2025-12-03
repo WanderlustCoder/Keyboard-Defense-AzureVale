@@ -49,7 +49,7 @@ Quick status snapshot for items in `season4_backlog.md`. All items start as Not 
 | 43 | Spawnable training dummy | Not Started | - |
 | 44 | Power phrase overdrive | Not Started | - |
 | 45 | Defensive rune sockets | Not Started | - |
-| 46 | HUD zoom control | Not Started | - |
+| 46 | HUD zoom control | Done | Options overlay adds a HUD zoom selector (90-120%) that scales the entire HUD and persists per profile. |
 | 47 | Left-handed layout | Not Started | - |
 | 48 | Onboarding dyslexia preset suggestion | Not Started | - |
 | 49 | Reduced cognitive-load mode | Not Started | - |

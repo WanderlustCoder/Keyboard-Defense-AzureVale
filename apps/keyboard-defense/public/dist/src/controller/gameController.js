@@ -39,6 +39,9 @@ const CANVAS_BASE_HEIGHT = 540;
 const BG_BRIGHTNESS_MIN = 0.9;
 const BG_BRIGHTNESS_MAX = 1.1;
 const BG_BRIGHTNESS_DEFAULT = 1;
+const HUD_ZOOM_MIN = 0.9;
+const HUD_ZOOM_MAX = 1.2;
+const HUD_ZOOM_DEFAULT = 1;
 const INPUT_LATENCY_SAMPLE_MS = 500;
 const INPUT_LATENCY_WINDOW = 8;
 const INPUT_LATENCY_WARN_MS = 40;
@@ -185,6 +188,7 @@ export class GameController {
         this.starfieldState = null;
         this.lowGraphicsEnabled = false;
         this.lowGraphicsRestoreState = null;
+        this.hudZoom = 1;
         this.hudFontScale = 1;
         this.firstEncounterSeen = this.loadFirstEncounterSeen();
         this.enemyIntroOverlay = null;
@@ -458,6 +462,7 @@ export class GameController {
                 colorblindPaletteSelect: "options-colorblind-mode",
                 backgroundBrightnessSlider: "options-bg-brightness",
                 backgroundBrightnessValue: "options-bg-brightness-value",
+                hudZoomSelect: "options-hud-zoom",
                 fontScaleSelect: "options-font-scale",
                 defeatAnimationSelect: "options-defeat-animation",
                 telemetryToggle: "options-telemetry-toggle",
@@ -539,6 +544,7 @@ export class GameController {
             onColorblindPaletteToggle: (enabled) => this.setColorblindPaletteEnabled(enabled),
             onColorblindPaletteModeChange: (mode) => this.setColorblindPaletteMode(mode),
             onBackgroundBrightnessChange: (value) => this.setBackgroundBrightness(value),
+            onHudZoomChange: (scale) => this.setHudZoom(scale),
             onDefeatAnimationModeChange: (mode) => this.setDefeatAnimationMode(mode),
             onHudFontScaleChange: (scale) => this.setHudFontScale(scale),
             onFullscreenToggle: (next) => this.toggleFullscreen(next),
@@ -1725,6 +1731,23 @@ export class GameController {
         }
         return this.defeatAnimationMode === "sprite" || this.defeatAnimationMode === "auto";
     }
+    setHudZoom(scale, options = {}) {
+        const normalized = this.normalizeHudZoom(scale);
+        const changed = Math.abs(normalized - this.hudZoom) > 0.001;
+        this.hudZoom = normalized;
+        this.applyHudZoomSetting(normalized);
+        if (changed && !options.silent) {
+            const percent = Math.round(normalized * 100);
+            this.hud.appendLog(`HUD zoom set to ${percent}%`);
+        }
+        this.updateOptionsOverlayState();
+        if (options.persist !== false && changed) {
+            this.persistPlayerSettings({ hudZoom: normalized });
+        }
+        if (options.render !== false && changed) {
+            this.render();
+        }
+    }
     setHudFontScale(scale, options = {}) {
         const normalized = this.normalizeHudFontScale(scale);
         const changed = Math.abs(normalized - this.hudFontScale) > 0.001;
@@ -1784,6 +1807,12 @@ export class GameController {
         }
         return exportData;
     }
+    normalizeHudZoom(value) {
+        if (!Number.isFinite(value))
+            return HUD_ZOOM_DEFAULT;
+        const clamped = Math.min(HUD_ZOOM_MAX, Math.max(HUD_ZOOM_MIN, value));
+        return Math.round(clamped * 100) / 100;
+    }
     normalizeHudFontScale(value) {
         return normalizeHudFontScaleValue(value);
     }
@@ -1840,6 +1869,7 @@ export class GameController {
             backgroundBrightness: this.backgroundBrightness,
             colorblindPaletteEnabled: this.colorblindPaletteEnabled,
             colorblindPaletteMode: this.colorblindPaletteMode,
+            hudZoom: this.hudZoom,
             hudFontScale: this.hudFontScale,
             defeatAnimationMode: this.defeatAnimationMode,
             hotkeys: this.hotkeys,
@@ -1995,6 +2025,11 @@ export class GameController {
         this.sessionReminderActive = false;
         this.sessionWellness?.hideReminder();
         this.hud?.appendLog?.("Session timer reset after a break.");
+    }
+    applyHudZoomSetting(scale) {
+        if (this.hud?.setHudZoom) {
+            this.hud.setHudZoom(scale);
+        }
     }
     applyHudFontScaleSetting(scale) {
         this.hud.setHudFontScale(scale);
@@ -2805,6 +2840,9 @@ export class GameController {
             patch.hapticsEnabled === this.playerSettings.hapticsEnabled;
         const defeatAnimationModeUnchanged = patch.defeatAnimationMode === undefined ||
             patch.defeatAnimationMode === this.playerSettings.defeatAnimationMode;
+        const hudZoomUnchanged = patch.hudZoom === undefined ||
+            Math.abs(this.normalizeHudZoom(patch.hudZoom) - (this.playerSettings.hudZoom ?? HUD_ZOOM_DEFAULT)) <=
+                0.001;
         const fontScaleUnchanged = patch.hudFontScale === undefined ||
             Math.abs(this.normalizeHudFontScale(patch.hudFontScale) - this.playerSettings.hudFontScale) <=
                 0.001;
@@ -2836,6 +2874,7 @@ export class GameController {
             virtualKeyboardUnchanged &&
             lowGraphicsUnchanged &&
             defeatAnimationModeUnchanged &&
+            hudZoomUnchanged &&
             fontScaleUnchanged &&
             targetingUnchanged &&
             presetsUnchanged &&
@@ -3905,6 +3944,11 @@ export class GameController {
         this.setBackgroundBrightness(stored.backgroundBrightness ?? BG_BRIGHTNESS_DEFAULT, {
             silent: true,
             persist: false
+        });
+        this.setHudZoom(stored.hudZoom ?? HUD_ZOOM_DEFAULT, {
+            silent: true,
+            persist: false,
+            render: false
         });
         this.setHudFontScale(stored.hudFontScale ?? 1, {
             silent: true,

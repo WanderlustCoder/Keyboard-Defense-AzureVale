@@ -115,6 +115,7 @@ const initializeHud = (options = {}) => {
   const colorblindPaletteToggle = get("options-colorblind-toggle");
   const telemetryToggle = get("options-telemetry-toggle");
   const telemetryToggleWrapper = get("options-telemetry-toggle-wrapper");
+  const hudZoomSelect = get("options-hud-zoom");
   const fontScaleSelect = get("options-font-scale");
   const optionsOverlay = get("options-overlay");
   const optionsResume = get("options-resume-button");
@@ -136,6 +137,7 @@ const initializeHud = (options = {}) => {
   const telemetryToggleEvents = [];
   const soundVolumeEvents = [];
   const soundIntensityEvents = [];
+  const hudZoomChangeEvents = [];
   const fontScaleChangeEvents = [];
   const priorityChangeEvents = [];
   const turretHoverEvents = [];
@@ -184,6 +186,7 @@ const initializeHud = (options = {}) => {
         defeatAnimationSelect: "options-defeat-animation",
         telemetryToggle: "options-telemetry-toggle",
         telemetryToggleWrapper: "options-telemetry-toggle-wrapper",
+        hudZoomSelect: "options-hud-zoom",
         fontScaleSelect: "options-font-scale",
         analyticsExportButton: "options-analytics-export"
       },
@@ -223,6 +226,7 @@ const initializeHud = (options = {}) => {
       onColorblindPaletteToggle: (enabled) => colorblindToggleEvents.push(enabled),
       onTelemetryToggle: (enabled) => telemetryToggleEvents.push(enabled),
       onAnalyticsExport: () => analyticsExportEvents.push(true),
+      onHudZoomChange: (scale) => hudZoomChangeEvents.push(scale),
       onHudFontScaleChange: (scale) => fontScaleChangeEvents.push(scale),
       onCollapsePreferenceChange: (prefs) => collapseEvents.push({ ...prefs })
     }
@@ -277,6 +281,7 @@ const initializeHud = (options = {}) => {
       colorblindPaletteToggle,
       telemetryToggle,
       telemetryToggleWrapper,
+      hudZoomSelect,
       fontScaleSelect,
       optionsCastleBonus,
       optionsCastleBenefits,
@@ -305,6 +310,7 @@ const initializeHud = (options = {}) => {
       getSoundVolumeEvents: () => [...soundVolumeEvents],
       getSoundIntensityEvents: () => [...soundIntensityEvents],
       getTelemetryToggleEvents: () => [...telemetryToggleEvents],
+      getHudZoomEvents: () => [...hudZoomChangeEvents],
       getFontScaleEvents: () => [...fontScaleChangeEvents],
       getPriorityEvents: () => [...priorityChangeEvents],
       getTurretHoverEvents: () => [...turretHoverEvents],
@@ -1288,6 +1294,7 @@ test("HudView options overlay syncs controls and visibility", () => {
     colorblindPaletteToggle,
     telemetryToggle,
     telemetryToggleWrapper,
+    hudZoomSelect,
     fontScaleSelect,
     getReducedMotionToggleEvents,
     getCheckeredBackgroundToggleEvents,
@@ -1297,6 +1304,7 @@ test("HudView options overlay syncs controls and visibility", () => {
     getSoundVolumeEvents,
     getSoundIntensityEvents,
     getTelemetryToggleEvents,
+    getHudZoomEvents,
     getFontScaleEvents
   } = elements;
   assert.ok(hud.optionsOverlay?.fontScaleSelect, "font scale select is wired");
@@ -1311,6 +1319,10 @@ test("HudView options overlay syncs controls and visibility", () => {
   fontScaleSelect.addEventListener("change", () => {
     fontScaleChangeLogs.push(readSelectValue(fontScaleSelect) ?? "");
   });
+  const hudZoomChangeLogs = [];
+  hudZoomSelect.addEventListener("change", () => {
+    hudZoomChangeLogs.push(readSelectValue(hudZoomSelect) ?? "");
+  });
 
   hud.syncOptionsOverlayState({
     soundEnabled: false,
@@ -1322,6 +1334,7 @@ test("HudView options overlay syncs controls and visibility", () => {
     readableFontEnabled: false,
     dyslexiaFontEnabled: false,
     colorblindPaletteEnabled: false,
+    hudZoom: 1,
     hudFontScale: 1,
     telemetry: { available: false, checked: false, disabled: true }
   });
@@ -1343,6 +1356,7 @@ test("HudView options overlay syncs controls and visibility", () => {
   assert.equal(telemetryToggle.checked, false);
   assert.equal(telemetryToggle.disabled, true);
   assert.equal(telemetryToggleWrapper.style.display, "none");
+  assert.equal(readSelectValue(hudZoomSelect), "1");
   assert.equal(readSelectValue(fontScaleSelect), "1");
   assert.equal(hud.isOptionsOverlayVisible(), false);
 
@@ -1356,6 +1370,7 @@ test("HudView options overlay syncs controls and visibility", () => {
     readableFontEnabled: false,
     dyslexiaFontEnabled: false,
     colorblindPaletteEnabled: false,
+    hudZoom: 1,
     hudFontScale: 1,
     telemetry: { available: false, checked: false, disabled: true }
   });
@@ -1375,6 +1390,7 @@ test("HudView options overlay syncs controls and visibility", () => {
     readableFontEnabled: false,
     dyslexiaFontEnabled: true,
     colorblindPaletteEnabled: true,
+    hudZoom: 1.1,
     hudFontScale: 1.15,
     telemetry: { available: true, checked: true, disabled: false }
   });
@@ -1386,6 +1402,7 @@ test("HudView options overlay syncs controls and visibility", () => {
   assert.equal(telemetryToggleWrapper.style.display, "");
   assert.equal(telemetryToggle.disabled, false);
   assert.equal(telemetryToggle.checked, true);
+  assert.equal(readSelectValue(hudZoomSelect), "1.1");
 
   hud.showOptionsOverlay();
   assert.equal(optionsOverlay.dataset.visible, "true");
@@ -1432,6 +1449,12 @@ test("HudView options overlay syncs controls and visibility", () => {
   assert.deepEqual(fontScaleChangeLogs, ["1.2"]);
   assert.deepEqual(recordedFontScaleCallbacks, [1.2]);
   assert.deepEqual(getFontScaleEvents(), [1.2]);
+
+  setSelectValueForElement(hudZoomSelect, "1.2");
+  assert.equal(readSelectValue(hudZoomSelect), "1.2");
+  dispatchDomEvent(hudZoomSelect, "change");
+  assert.deepEqual(hudZoomChangeLogs, ["1.2"]);
+  assert.deepEqual(getHudZoomEvents(), [1.2]);
 
   hud.hideOptionsOverlay();
   assert.equal(optionsOverlay.dataset.visible, "false");
