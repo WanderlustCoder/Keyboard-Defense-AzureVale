@@ -81,6 +81,8 @@ export interface HudCallbacks {
   onDyslexiaSpacingToggle?: (enabled: boolean) => void;
   onColorblindPaletteToggle(enabled: boolean): void;
   onColorblindPaletteModeChange?: (mode: string) => void;
+  onHotkeyPauseChange?: (key: string) => void;
+  onHotkeyShortcutsChange?: (key: string) => void;
   onBackgroundBrightnessChange?: (value: number) => void;
   onDefeatAnimationModeChange(mode: DefeatAnimationPreference): void;
   onHudFontScaleChange(scale: number): void;
@@ -192,6 +194,8 @@ type OptionsOverlayElements = {
   dyslexiaSpacingToggle?: string;
   colorblindPaletteToggle: string;
   colorblindPaletteSelect?: string;
+  hotkeyPauseSelect?: string;
+  hotkeyShortcutsSelect?: string;
   backgroundBrightnessSlider?: string;
   backgroundBrightnessValue?: string;
   fontScaleSelect: string;
@@ -453,6 +457,8 @@ export class HudView {
     dyslexiaSpacingToggle?: HTMLInputElement;
     colorblindPaletteToggle: HTMLInputElement;
     colorblindPaletteSelect?: HTMLSelectElement;
+    hotkeyPauseSelect?: HTMLSelectElement;
+    hotkeyShortcutsSelect?: HTMLSelectElement;
     backgroundBrightnessSlider?: HTMLInputElement;
     backgroundBrightnessValue?: HTMLElement;
     fontScaleSelect: HTMLSelectElement;
@@ -808,6 +814,12 @@ export class HudView {
       const colorblindPaletteSelect = rootIds.optionsOverlay.colorblindPaletteSelect
         ? document.getElementById(rootIds.optionsOverlay.colorblindPaletteSelect)
         : null;
+      const hotkeyPauseSelect = rootIds.optionsOverlay.hotkeyPauseSelect
+        ? document.getElementById(rootIds.optionsOverlay.hotkeyPauseSelect)
+        : null;
+      const hotkeyShortcutsSelect = rootIds.optionsOverlay.hotkeyShortcutsSelect
+        ? document.getElementById(rootIds.optionsOverlay.hotkeyShortcutsSelect)
+        : null;
       const fontScaleSelect = document.getElementById(rootIds.optionsOverlay.fontScaleSelect);
       const defeatAnimationSelect = document.getElementById(
         rootIds.optionsOverlay.defeatAnimationSelect
@@ -854,6 +866,8 @@ export class HudView {
         (backgroundBrightnessValue === null || backgroundBrightnessValue instanceof HTMLElement) &&
         colorblindPaletteToggle instanceof HTMLInputElement &&
         (colorblindPaletteSelect === null || colorblindPaletteSelect instanceof HTMLSelectElement) &&
+        (hotkeyPauseSelect === null || hotkeyPauseSelect instanceof HTMLSelectElement) &&
+        (hotkeyShortcutsSelect === null || hotkeyShortcutsSelect instanceof HTMLSelectElement) &&
         fontScaleSelect instanceof HTMLSelectElement &&
         defeatAnimationSelect instanceof HTMLSelectElement
       ) {
@@ -889,6 +903,10 @@ export class HudView {
         colorblindPaletteToggle,
         colorblindPaletteSelect:
           colorblindPaletteSelect instanceof HTMLSelectElement ? colorblindPaletteSelect : undefined,
+        hotkeyPauseSelect:
+          hotkeyPauseSelect instanceof HTMLSelectElement ? hotkeyPauseSelect : undefined,
+        hotkeyShortcutsSelect:
+          hotkeyShortcutsSelect instanceof HTMLSelectElement ? hotkeyShortcutsSelect : undefined,
         fontScaleSelect,
           defeatAnimationSelect,
           telemetryToggle:
@@ -1048,6 +1066,24 @@ export class HudView {
             const next = this.getSelectValue(this.optionsOverlay!.colorblindPaletteSelect!);
             if (next) {
               this.callbacks.onColorblindPaletteModeChange?.(next);
+            }
+          });
+        }
+        if (this.optionsOverlay.hotkeyPauseSelect) {
+          this.optionsOverlay.hotkeyPauseSelect.addEventListener("change", () => {
+            if (this.syncingOptionToggles) return;
+            const next = this.getSelectValue(this.optionsOverlay!.hotkeyPauseSelect!);
+            if (next) {
+              this.callbacks.onHotkeyPauseChange?.(next);
+            }
+          });
+        }
+        if (this.optionsOverlay.hotkeyShortcutsSelect) {
+          this.optionsOverlay.hotkeyShortcutsSelect.addEventListener("change", () => {
+            if (this.syncingOptionToggles) return;
+            const next = this.getSelectValue(this.optionsOverlay!.hotkeyShortcutsSelect!);
+            if (next) {
+              this.callbacks.onHotkeyShortcutsChange?.(next);
             }
           });
         }
@@ -1482,6 +1518,7 @@ export class HudView {
     colorblindPaletteMode?: string;
     hudFontScale: number;
     defeatAnimationMode: DefeatAnimationPreference;
+    hotkeys?: { pause?: string; shortcuts?: string };
     telemetry?: {
       available: boolean;
       checked: boolean;
@@ -1550,6 +1587,14 @@ export class HudView {
         this.optionsOverlay.colorblindPaletteSelect,
         state.colorblindPaletteMode ?? (state.colorblindPaletteEnabled ? "deuteran" : "off")
       );
+    }
+    if (this.optionsOverlay.hotkeyPauseSelect) {
+      const pause = state.hotkeys?.pause ?? "p";
+      this.setSelectValue(this.optionsOverlay.hotkeyPauseSelect, pause);
+    }
+    if (this.optionsOverlay.hotkeyShortcutsSelect) {
+      const shortcuts = state.hotkeys?.shortcuts ?? "?";
+      this.setSelectValue(this.optionsOverlay.hotkeyShortcutsSelect, shortcuts);
     }
     this.setSelectValue(this.optionsOverlay.fontScaleSelect, state.hudFontScale.toString());
     this.setSelectValue(

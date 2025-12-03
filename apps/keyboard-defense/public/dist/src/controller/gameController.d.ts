@@ -262,6 +262,7 @@ export declare class GameController {
     syncFullscreenStateFromDocument(): void;
     toggleFullscreen(nextActive: any): void;
     attachGlobalShortcuts(): void;
+    isHotkeyMatch(event: any, hotkey: any): any;
     attachFocusTrap(): void;
     getHudFontScaleShortcutDelta(event: any): 1 | 0 | -1;
     initializePlayerSettings(): void;
@@ -333,6 +334,13 @@ export declare class GameController {
     attachHudVisibilityToggles(): void;
     syncHudVisibilityToggles(): void;
     applyHudVisibility(): void;
+    loadHotkeys(): {
+        pause: any;
+        shortcuts: any;
+    };
+    persistHotkeys(hotkeys: any): void;
+    attachHotkeyControls(): void;
+    syncHotkeyControls(): void;
     loadColorblindMode(): string;
     persistColorblindMode(mode: any): void;
     loadContextualHintsSeen(): Set<any>;

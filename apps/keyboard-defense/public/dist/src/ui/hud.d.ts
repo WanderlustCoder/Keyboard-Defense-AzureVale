@@ -33,6 +33,8 @@ export interface HudCallbacks {
     onDyslexiaSpacingToggle?: (enabled: boolean) => void;
     onColorblindPaletteToggle(enabled: boolean): void;
     onColorblindPaletteModeChange?: (mode: string) => void;
+    onHotkeyPauseChange?: (key: string) => void;
+    onHotkeyShortcutsChange?: (key: string) => void;
     onBackgroundBrightnessChange?: (value: number) => void;
     onDefeatAnimationModeChange(mode: DefeatAnimationPreference): void;
     onHudFontScaleChange(scale: number): void;
@@ -102,6 +104,8 @@ type OptionsOverlayElements = {
     dyslexiaSpacingToggle?: string;
     colorblindPaletteToggle: string;
     colorblindPaletteSelect?: string;
+    hotkeyPauseSelect?: string;
+    hotkeyShortcutsSelect?: string;
     backgroundBrightnessSlider?: string;
     backgroundBrightnessValue?: string;
     fontScaleSelect: string;
@@ -347,6 +351,10 @@ export declare class HudView {
         colorblindPaletteMode?: string;
         hudFontScale: number;
         defeatAnimationMode: DefeatAnimationPreference;
+        hotkeys?: {
+            pause?: string;
+            shortcuts?: string;
+        };
         telemetry?: {
             available: boolean;
             checked: boolean;

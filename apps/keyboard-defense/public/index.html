@@ -995,6 +995,29 @@
             </select>
             <span class="option-toggle-help">Tip: While this menu is open press [ / ] to change HUD font size.</span>
           </label>
+          <label class="option-toggle option-select">
+            <span class="option-toggle-label">Pause Shortcut</span>
+            <select id="options-hotkey-pause" aria-label="Pause shortcut key">
+              <option value="p">P (default)</option>
+              <option value="escape">Escape</option>
+              <option value="space">Spacebar</option>
+              <option value="o">O</option>
+            </select>
+            <span class="option-toggle-help">
+              Choose which key pauses/resumes. Works even while typing input is focused.
+            </span>
+          </label>
+          <label class="option-toggle option-select">
+            <span class="option-toggle-label">Shortcuts Overlay</span>
+            <select id="options-hotkey-shortcuts" aria-label="Shortcuts overlay key">
+              <option value="?">?</option>
+              <option value="slash">/</option>
+              <option value="f1">F1</option>
+            </select>
+            <span class="option-toggle-help">
+              Pick a key to toggle the keyboard shortcuts overlay for accessibility.
+            </span>
+          </label>
           <label class="option-toggle">
             <input id="options-toggle-metrics" type="checkbox" />
             <span class="option-toggle-label">Show Typing Metrics</span>

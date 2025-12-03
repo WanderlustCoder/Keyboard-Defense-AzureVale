@@ -46,6 +46,7 @@ const INPUT_LATENCY_BAD_MS = 75;
 const HUD_VISIBILITY_KEY = "keyboard-defense:hud-visibility";
 const COLORBLIND_MODE_KEY = "keyboard-defense:colorblind-mode";
 const CONTEXTUAL_HINTS_KEY = "keyboard-defense:contextual-hints";
+const HOTKEY_STORAGE_KEY = "keyboard-defense:hotkeys";
 const WAVE_MICRO_TIPS = [
     "Keep wrists lifted and let fingers hover over home row—no desk planting.",
     "Aim for light taps. If keys feel loud, ease up and keep rhythm steady.",
@@ -162,6 +163,7 @@ export class GameController {
             Math.floor((typeof Math !== "undefined" ? Math.random() : 0) * WAVE_MICRO_TIPS.length) % WAVE_MICRO_TIPS.length;
         this.hudVisibility = this.loadHudVisibilityPrefs();
         this.contextualHintsSeen = this.loadContextualHintsSeen();
+        this.hotkeys = this.loadHotkeys();
         this.accessibilityOnboardingSeen = this.loadAccessibilitySeen();
         this.accessibilityOverlay = null;
         this.resumeAfterAccessibility = false;
@@ -588,6 +590,7 @@ export class GameController {
         this.attachDebugButtons();
         this.attachGlobalShortcuts();
         this.attachHudVisibilityToggles();
+        this.attachHotkeyControls();
         this.attachContextualHints();
         this.attachLatencyIndicator();
         this.attachFullscreenListeners();
@@ -1835,6 +1838,7 @@ export class GameController {
             colorblindPaletteMode: this.colorblindPaletteMode,
             hudFontScale: this.hudFontScale,
             defeatAnimationMode: this.defeatAnimationMode,
+            hotkeys: this.hotkeys,
             telemetry: {
                 available: Boolean(this.telemetryClient),
                 checked: Boolean(this.telemetryClient ? this.telemetryEnabled : false),
@@ -3700,7 +3704,7 @@ export class GameController {
             if (roadmapVisible) {
                 return;
             }
-            if (event.key === "?" || (event.key === "/" && event.shiftKey)) {
+            if (this.isHotkeyMatch(event, this.hotkeys.shortcuts)) {
                 event.preventDefault();
                 this.hud.toggleShortcutOverlay();
                 return;
@@ -3728,24 +3732,41 @@ export class GameController {
                 }
                 return;
             }
-            switch (key) {
-                case "d":
-                    event.preventDefault();
-                    this.toggleDiagnostics();
-                    break;
-                case "m":
-                    event.preventDefault();
-                    this.toggleSound();
-                    break;
-                case "p":
-                    event.preventDefault();
-                    this.togglePause();
-                    break;
-                default:
-                    break;
+            if (this.isHotkeyMatch(event, this.hotkeys.pause)) {
+                event.preventDefault();
+                this.togglePause();
+                return;
+            }
+            if (key === "d") {
+                event.preventDefault();
+                this.toggleDiagnostics();
+                return;
+            }
+            if (key === "m") {
+                event.preventDefault();
+                this.toggleSound();
             }
         };
         window.addEventListener("keydown", handler);
+    }
+    isHotkeyMatch(event, hotkey) {
+        if (!hotkey || typeof hotkey !== "string")
+            return false;
+        const key = event.key?.toLowerCase?.() ?? "";
+        const normalized = hotkey.toLowerCase();
+        if (normalized === "?") {
+            return key === "?" || (key === "/" && event.shiftKey);
+        }
+        if (normalized === "slash") {
+            return key === "/";
+        }
+        if (normalized === "space") {
+            return key === " " || key === "spacebar" || key === "space";
+        }
+        if (normalized === "escape" || normalized === "esc") {
+            return key === "escape" || key === "esc";
+        }
+        return key === normalized;
     }
     attachFocusTrap() {
         if (typeof window === "undefined")
@@ -5089,6 +5110,69 @@ export class GameController {
         if (battleLog instanceof HTMLElement) {
             battleLog.dataset.hidden = prefs.battleLog ? "false" : "true";
             battleLog.setAttribute("aria-hidden", prefs.battleLog ? "false" : "true");
+        }
+    }
+    loadHotkeys() {
+        const defaults = { pause: "p", shortcuts: "?" };
+        if (typeof window === "undefined" || !window.localStorage)
+            return defaults;
+        try {
+            const raw = window.localStorage.getItem(HOTKEY_STORAGE_KEY);
+            if (!raw)
+                return defaults;
+            const parsed = JSON.parse(raw);
+            const pause = typeof parsed.pause === "string" ? parsed.pause.toLowerCase() : defaults.pause;
+            const shortcuts = typeof parsed.shortcuts === "string" ? parsed.shortcuts.toLowerCase() : defaults.shortcuts;
+            return { pause, shortcuts };
+        }
+        catch {
+            return defaults;
+        }
+    }
+    persistHotkeys(hotkeys) {
+        this.hotkeys = {
+            pause: typeof hotkeys.pause === "string" ? hotkeys.pause.toLowerCase() : "p",
+            shortcuts: typeof hotkeys.shortcuts === "string" ? hotkeys.shortcuts.toLowerCase() : "?"
+        };
+        if (typeof window === "undefined" || !window.localStorage)
+            return;
+        try {
+            window.localStorage.setItem(HOTKEY_STORAGE_KEY, JSON.stringify(this.hotkeys));
+        }
+        catch {
+            // best effort
+        }
+    }
+    attachHotkeyControls() {
+        if (typeof document === "undefined")
+            return;
+        const pauseSelect = document.getElementById("options-hotkey-pause");
+        const shortcutsSelect = document.getElementById("options-hotkey-shortcuts");
+        const apply = () => {
+            const pauseValue = pauseSelect instanceof HTMLSelectElement ? pauseSelect.value.toLowerCase() : "p";
+            const shortcutsValue = shortcutsSelect instanceof HTMLSelectElement ? shortcutsSelect.value.toLowerCase() : "?";
+            this.persistHotkeys({ pause: pauseValue, shortcuts: shortcutsValue });
+            this.syncHotkeyControls();
+        };
+        if (pauseSelect instanceof HTMLSelectElement) {
+            pauseSelect.value = this.hotkeys.pause;
+            pauseSelect.addEventListener("change", apply);
+        }
+        if (shortcutsSelect instanceof HTMLSelectElement) {
+            shortcutsSelect.value = this.hotkeys.shortcuts;
+            shortcutsSelect.addEventListener("change", apply);
+        }
+    }
+    syncHotkeyControls() {
+        if (typeof document === "undefined")
+            return;
+        const pauseSelect = document.getElementById("options-hotkey-pause");
+        const shortcutsSelect = document.getElementById("options-hotkey-shortcuts");
+        if (pauseSelect instanceof HTMLSelectElement) {
+            pauseSelect.value = this.hotkeys.pause;
+        }
+        if (shortcutsSelect instanceof HTMLSelectElement) {
+            shortcutsSelect.value = this.hotkeys.shortcuts;
         }
     }
     loadColorblindMode() {

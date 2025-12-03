@@ -369,6 +369,12 @@ export class HudView {
             const colorblindPaletteSelect = rootIds.optionsOverlay.colorblindPaletteSelect
                 ? document.getElementById(rootIds.optionsOverlay.colorblindPaletteSelect)
                 : null;
+            const hotkeyPauseSelect = rootIds.optionsOverlay.hotkeyPauseSelect
+                ? document.getElementById(rootIds.optionsOverlay.hotkeyPauseSelect)
+                : null;
+            const hotkeyShortcutsSelect = rootIds.optionsOverlay.hotkeyShortcutsSelect
+                ? document.getElementById(rootIds.optionsOverlay.hotkeyShortcutsSelect)
+                : null;
             const fontScaleSelect = document.getElementById(rootIds.optionsOverlay.fontScaleSelect);
             const defeatAnimationSelect = document.getElementById(rootIds.optionsOverlay.defeatAnimationSelect);
             const telemetryToggle = rootIds.optionsOverlay.telemetryToggle
@@ -411,6 +417,8 @@ export class HudView {
                 (backgroundBrightnessValue === null || backgroundBrightnessValue instanceof HTMLElement) &&
                 colorblindPaletteToggle instanceof HTMLInputElement &&
                 (colorblindPaletteSelect === null || colorblindPaletteSelect instanceof HTMLSelectElement) &&
+                (hotkeyPauseSelect === null || hotkeyPauseSelect instanceof HTMLSelectElement) &&
+                (hotkeyShortcutsSelect === null || hotkeyShortcutsSelect instanceof HTMLSelectElement) &&
                 fontScaleSelect instanceof HTMLSelectElement &&
                 defeatAnimationSelect instanceof HTMLSelectElement) {
                 this.optionsOverlay = {
@@ -438,6 +446,8 @@ export class HudView {
                     backgroundBrightnessValue: backgroundBrightnessValue instanceof HTMLElement ? backgroundBrightnessValue : undefined,
                     colorblindPaletteToggle,
                     colorblindPaletteSelect: colorblindPaletteSelect instanceof HTMLSelectElement ? colorblindPaletteSelect : undefined,
+                    hotkeyPauseSelect: hotkeyPauseSelect instanceof HTMLSelectElement ? hotkeyPauseSelect : undefined,
+                    hotkeyShortcutsSelect: hotkeyShortcutsSelect instanceof HTMLSelectElement ? hotkeyShortcutsSelect : undefined,
                     fontScaleSelect,
                     defeatAnimationSelect,
                     telemetryToggle: telemetryToggle instanceof HTMLInputElement ? telemetryToggle : undefined,
@@ -609,6 +619,26 @@ export class HudView {
                         const next = this.getSelectValue(this.optionsOverlay.colorblindPaletteSelect);
                         if (next) {
                             this.callbacks.onColorblindPaletteModeChange?.(next);
+                        }
+                    });
+                }
+                if (this.optionsOverlay.hotkeyPauseSelect) {
+                    this.optionsOverlay.hotkeyPauseSelect.addEventListener("change", () => {
+                        if (this.syncingOptionToggles)
+                            return;
+                        const next = this.getSelectValue(this.optionsOverlay.hotkeyPauseSelect);
+                        if (next) {
+                            this.callbacks.onHotkeyPauseChange?.(next);
+                        }
+                    });
+                }
+                if (this.optionsOverlay.hotkeyShortcutsSelect) {
+                    this.optionsOverlay.hotkeyShortcutsSelect.addEventListener("change", () => {
+                        if (this.syncingOptionToggles)
+                            return;
+                        const next = this.getSelectValue(this.optionsOverlay.hotkeyShortcutsSelect);
+                        if (next) {
+                            this.callbacks.onHotkeyShortcutsChange?.(next);
                         }
                     });
                 }
@@ -1036,6 +1066,14 @@ export class HudView {
         this.optionsOverlay.colorblindPaletteToggle.checked = state.colorblindPaletteEnabled;
         if (this.optionsOverlay.colorblindPaletteSelect) {
             this.setSelectValue(this.optionsOverlay.colorblindPaletteSelect, state.colorblindPaletteMode ?? (state.colorblindPaletteEnabled ? "deuteran" : "off"));
+        }
+        if (this.optionsOverlay.hotkeyPauseSelect) {
+            const pause = state.hotkeys?.pause ?? "p";
+            this.setSelectValue(this.optionsOverlay.hotkeyPauseSelect, pause);
+        }
+        if (this.optionsOverlay.hotkeyShortcutsSelect) {
+            const shortcuts = state.hotkeys?.shortcuts ?? "?";
+            this.setSelectValue(this.optionsOverlay.hotkeyShortcutsSelect, shortcuts);
         }
         this.setSelectValue(this.optionsOverlay.fontScaleSelect, state.hudFontScale.toString());
         this.setSelectValue(this.optionsOverlay.defeatAnimationSelect, state.defeatAnimationMode ?? "auto");
