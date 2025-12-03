@@ -66,6 +66,7 @@ Use this index to jump straight to the guidance you'll need while building and t
 - `2025-12-27_mobile_hud_compact_plan.md` - Plan for compact HUD/options on short viewports with sticky quick bar, FABs, auto-collapse, and accessibility guards.
 - `2025-12-27_overlay_condensation_plan.md` - Plan to condense major overlays (quests, museum, lore, certificates, analytics) with tabs, filters, pinned CTAs, and reduced-motion-safe collapsibles.
 - `2025-12-27_accessibility_shortcuts_plan.md` - Plan for pinned accessibility preset strip, keycap shortcuts, quick test overlay, and safe persistence/ARIA guards.
+- `2025-12-27_battle_log_summary_plan.md` - Plan for battle-log summary strip, filters, pins, and virtualized log with key event focus.
 - `2025-12-25_castle_museum_room.md` - Castle Museum panel/overlay shows unlocked skins, artifacts, scrolls, medals, and certificates (Season 4 #71).
 - `2025-12-24_adaptive_mentor_dialogue.md` - Mentor card adapts between accuracy/speed/balanced tips based on live stats (Season 4 #70).
 - `2025-12-23_milestone_celebrations.md` - Reduced-motion-safe celebration banner for lesson milestones and Gold/Platinum medals (Season 4 #69).
