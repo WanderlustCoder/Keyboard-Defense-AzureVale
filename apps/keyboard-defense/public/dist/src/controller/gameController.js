@@ -26,6 +26,7 @@ import { listNewLoreForWave } from "../data/lore.js";
 import { buildLoreScrollProgress, listNewLoreScrollsForLessons } from "../data/loreScrolls.js";
 import { readLoreProgress, writeLoreProgress } from "../utils/lorePersistence.js";
 import { readLessonProgress, writeLessonProgress, LESSON_PROGRESS_VERSION } from "../utils/lessonProgress.js";
+import { buildSeasonTrackProgress, listSeasonTrack } from "../data/seasonTrack.js";
 import { selectAmbientProfile } from "../audio/ambientProfiles.js";
 import { getEnemyBiography } from "../data/bestiary.js";
 const FRAME_DURATION = 1 / 60;
@@ -240,6 +241,7 @@ export class GameController {
         this.lastAmbientProfile = null;
         this.lastGameStatus = null;
         this.unlockedLore = new Set();
+        this.seasonTrackRewards = listSeasonTrack();
         this.lessonProgress = {
             lessonsCompleted: 0,
             unlockedScrolls: new Set()
@@ -495,6 +497,7 @@ export class GameController {
                 screenShakeDemo: "options-screen-shake-demo",
                 contrastAuditButton: "options-contrast-audit",
                 stickerBookButton: "options-sticker-book",
+                seasonTrackButton: "options-season-track",
                 parentSummaryButton: "options-parent-summary",
                 selfTestContainer: "options-self-test",
                 selfTestRun: "options-self-test-run",
@@ -606,6 +609,14 @@ export class GameController {
                 repairs: "parent-summary-repairs",
                 download: "parent-summary-download"
             },
+            seasonTrackOverlay: {
+                container: "season-track-overlay",
+                list: "season-track-list",
+                progress: "season-track-overlay-progress",
+                lessons: "season-track-overlay-lessons",
+                next: "season-track-overlay-next",
+                closeButton: "season-track-close"
+            },
             loreScrollOverlay: {
                 container: "scrolls-overlay",
                 list: "scrolls-overlay-list",
@@ -704,6 +715,7 @@ export class GameController {
         this.initializePlayerSettings();
         this.hud.setAnalyticsExportEnabled(this.analyticsExportEnabled);
         this.syncLoreScrollsToHud();
+        this.syncSeasonTrackToHud();
         this.hud.setFullscreenAvailable(this.fullscreenSupported);
         this.attachInputHandlers(options.typingInput);
         this.attachTypingDrillHooks();
@@ -4957,6 +4969,15 @@ export class GameController {
             }))
         };
     }
+    buildSeasonTrackViewState() {
+        const lessons = this.lessonProgress?.lessonsCompleted ?? 0;
+        return buildSeasonTrackProgress(lessons, this.seasonTrackRewards ?? listSeasonTrack());
+    }
+    syncSeasonTrackToHud() {
+        if (!this.hud)
+            return;
+        this.hud.setSeasonTrackProgress(this.buildSeasonTrackViewState());
+    }
     syncLoreScrollsToHud() {
         if (!this.hud || !this.lessonProgress)
             return;
@@ -4988,6 +5009,7 @@ export class GameController {
             });
         }
         this.syncLoreScrollsToHud();
+        this.syncSeasonTrackToHud();
     }
     shouldSkipTutorial() {
         if (typeof window === "undefined") {

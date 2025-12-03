@@ -123,6 +123,9 @@ export class HudView {
     loreScrollPanel;
     loreScrollState;
     loreScrollHighlightTimeout = null;
+    seasonTrackOverlay;
+    seasonTrackPanel;
+    seasonTrackState;
     parentSummaryOverlay;
     parentSummary;
     castleSkin = "classic";
@@ -454,6 +457,9 @@ export class HudView {
             const stickerBookButton = rootIds.optionsOverlay.stickerBookButton
                 ? document.getElementById(rootIds.optionsOverlay.stickerBookButton)
                 : null;
+            const seasonTrackButton = rootIds.optionsOverlay.seasonTrackButton
+                ? document.getElementById(rootIds.optionsOverlay.seasonTrackButton)
+                : null;
             const loreScrollsButton = rootIds.optionsOverlay.loreScrollsButton
                 ? document.getElementById(rootIds.optionsOverlay.loreScrollsButton)
                 : null;
@@ -567,6 +573,7 @@ export class HudView {
                 (screenShakeDemo === null || screenShakeDemo instanceof HTMLElement) &&
                 (contrastAuditButton === null || contrastAuditButton instanceof HTMLButtonElement) &&
                 (stickerBookButton === null || stickerBookButton instanceof HTMLButtonElement) &&
+                (seasonTrackButton === null || seasonTrackButton instanceof HTMLButtonElement) &&
                 (loreScrollsButton === null || loreScrollsButton instanceof HTMLButtonElement) &&
                 (parentSummaryButton === null || parentSummaryButton instanceof HTMLButtonElement) &&
                 (selfTestContainer === null || selfTestContainer instanceof HTMLElement) &&
@@ -613,6 +620,7 @@ export class HudView {
                     screenShakeDemo: screenShakeDemo instanceof HTMLElement ? screenShakeDemo : undefined,
                     contrastAuditButton: contrastAuditButton instanceof HTMLButtonElement ? contrastAuditButton : undefined,
                     stickerBookButton: stickerBookButton instanceof HTMLButtonElement ? stickerBookButton : undefined,
+                    seasonTrackButton: seasonTrackButton instanceof HTMLButtonElement ? seasonTrackButton : undefined,
                     loreScrollsButton: loreScrollsButton instanceof HTMLButtonElement ? loreScrollsButton : undefined,
                     selfTestContainer: selfTestContainer instanceof HTMLElement ? selfTestContainer : undefined,
                     selfTestRun: selfTestRun instanceof HTMLButtonElement ? selfTestRun : undefined,
@@ -765,6 +773,11 @@ export class HudView {
                 if (this.optionsOverlay.stickerBookButton) {
                     this.optionsOverlay.stickerBookButton.addEventListener("click", () => {
                         this.showStickerBookOverlay();
+                    });
+                }
+                if (this.optionsOverlay.seasonTrackButton) {
+                    this.optionsOverlay.seasonTrackButton.addEventListener("click", () => {
+                        this.showSeasonTrackOverlay();
                     });
                 }
                 if (this.optionsOverlay.loreScrollsButton) {
@@ -1290,6 +1303,38 @@ export class HudView {
                 console.warn("Lore scroll overlay elements missing; scroll overlay disabled.");
             }
         }
+        if (rootIds.seasonTrackOverlay) {
+            const seasonContainer = document.getElementById(rootIds.seasonTrackOverlay.container);
+            const seasonList = document.getElementById(rootIds.seasonTrackOverlay.list);
+            const seasonProgress = document.getElementById(rootIds.seasonTrackOverlay.progress);
+            const seasonLessons = rootIds.seasonTrackOverlay.lessons
+                ? document.getElementById(rootIds.seasonTrackOverlay.lessons)
+                : null;
+            const seasonNext = rootIds.seasonTrackOverlay.next
+                ? document.getElementById(rootIds.seasonTrackOverlay.next)
+                : null;
+            const seasonClose = document.getElementById(rootIds.seasonTrackOverlay.closeButton);
+            if (seasonContainer instanceof HTMLElement &&
+                seasonList instanceof HTMLElement &&
+                seasonProgress instanceof HTMLElement &&
+                seasonClose instanceof HTMLButtonElement) {
+                this.seasonTrackOverlay = {
+                    container: seasonContainer,
+                    list: seasonList,
+                    progress: seasonProgress,
+                    lessons: seasonLessons instanceof HTMLElement ? seasonLessons : undefined,
+                    next: seasonNext instanceof HTMLElement ? seasonNext : undefined,
+                    closeButton: seasonClose
+                };
+                seasonContainer.dataset.visible = seasonContainer.dataset.visible ?? "false";
+                seasonContainer.setAttribute("aria-hidden", "true");
+                seasonClose.addEventListener("click", () => this.hideSeasonTrackOverlay());
+                this.addFocusTrap(seasonContainer);
+            }
+            else {
+                console.warn("Season track overlay elements missing; reward track disabled.");
+            }
+        }
         const loreScrollPanel = document.getElementById("lore-scroll-panel");
         const loreScrollSummary = document.getElementById("lore-scrolls-summary");
         const loreScrollProgress = document.getElementById("lore-scrolls-progress");
@@ -1306,6 +1351,25 @@ export class HudView {
         };
         if (this.loreScrollPanel.openButton) {
             this.loreScrollPanel.openButton.addEventListener("click", () => this.showLoreScrollOverlay());
+        }
+        const seasonTrackPanel = document.getElementById("season-track-panel");
+        const seasonTrackSummary = document.getElementById("season-track-summary");
+        const seasonTrackProgress = document.getElementById("season-track-progress-pill");
+        const seasonTrackLessons = document.getElementById("season-track-lessons");
+        const seasonTrackNext = document.getElementById("season-track-next");
+        const seasonTrackRequirement = document.getElementById("season-track-next-requirement");
+        const seasonTrackOpen = document.getElementById("season-track-open");
+        this.seasonTrackPanel = {
+            container: seasonTrackPanel instanceof HTMLElement ? seasonTrackPanel : undefined,
+            summary: seasonTrackSummary instanceof HTMLElement ? seasonTrackSummary : undefined,
+            progress: seasonTrackProgress instanceof HTMLElement ? seasonTrackProgress : undefined,
+            lessons: seasonTrackLessons instanceof HTMLElement ? seasonTrackLessons : undefined,
+            next: seasonTrackNext instanceof HTMLElement ? seasonTrackNext : undefined,
+            requirement: seasonTrackRequirement instanceof HTMLElement ? seasonTrackRequirement : undefined,
+            openButton: seasonTrackOpen instanceof HTMLButtonElement ? seasonTrackOpen : undefined
+        };
+        if (this.seasonTrackPanel.openButton) {
+            this.seasonTrackPanel.openButton.addEventListener("click", () => this.showSeasonTrackOverlay());
         }
         if (rootIds.parentSummaryOverlay) {
             const summaryContainer = document.getElementById(rootIds.parentSummaryOverlay.container);
@@ -4284,6 +4348,32 @@ export class HudView {
         this.stickerBookOverlay.container.dataset.visible = "false";
         this.stickerBookOverlay.container.setAttribute("aria-hidden", "true");
     }
+    showSeasonTrackOverlay() {
+        if (!this.seasonTrackOverlay)
+            return;
+        if (this.seasonTrackState) {
+            this.renderSeasonTrackOverlay(this.seasonTrackState);
+        }
+        else {
+            this.renderSeasonTrackOverlay({
+                lessonsCompleted: 0,
+                total: 0,
+                unlocked: 0,
+                next: null,
+                entries: []
+            });
+        }
+        this.seasonTrackOverlay.container.dataset.visible = "true";
+        this.seasonTrackOverlay.container.setAttribute("aria-hidden", "false");
+        const focusable = this.getFocusableElements(this.seasonTrackOverlay.container);
+        focusable[0]?.focus();
+    }
+    hideSeasonTrackOverlay() {
+        if (!this.seasonTrackOverlay)
+            return;
+        this.seasonTrackOverlay.container.dataset.visible = "false";
+        this.seasonTrackOverlay.container.setAttribute("aria-hidden", "true");
+    }
     showParentSummary() {
         if (!this.parentSummaryOverlay)
             return;
@@ -4320,6 +4410,33 @@ export class HudView {
             this.renderStickerBook(entries);
         }
     }
+    setSeasonTrackProgress(state) {
+        this.seasonTrackState = state;
+        if (this.seasonTrackPanel?.progress) {
+            this.seasonTrackPanel.progress.textContent = `${state.unlocked} / ${state.total} unlocked`;
+        }
+        if (this.seasonTrackPanel?.lessons) {
+            const lessonLabel = state.lessonsCompleted === 1 ? "lesson completed" : "lessons completed";
+            this.seasonTrackPanel.lessons.textContent = `${state.lessonsCompleted} ${lessonLabel}`;
+        }
+        if (this.seasonTrackPanel?.next) {
+            this.seasonTrackPanel.next.textContent =
+                state.next && state.next.remaining > 0
+                    ? `Next reward after ${state.next.remaining} more lessons`
+                    : "All rewards unlocked!";
+        }
+        if (this.seasonTrackPanel?.requirement) {
+            if (state.next) {
+                this.seasonTrackPanel.requirement.textContent = `Upcoming: ${state.next.title} (needs ${state.next.requiredLessons} lessons)`;
+            }
+            else {
+                this.seasonTrackPanel.requirement.textContent = "Season complete. Enjoy your rewards!";
+            }
+        }
+        if (this.seasonTrackOverlay) {
+            this.renderSeasonTrackOverlay(state);
+        }
+    }
     showLoreScrollOverlay() {
         if (!this.loreScrollOverlay)
             return;
@@ -4345,6 +4462,46 @@ export class HudView {
             return;
         this.loreScrollOverlay.container.dataset.visible = "false";
         this.loreScrollOverlay.container.setAttribute("aria-hidden", "true");
+    }
+    renderSeasonTrackOverlay(state) {
+        if (!this.seasonTrackOverlay)
+            return;
+        this.seasonTrackOverlay.progress.textContent = `${state.unlocked} / ${state.total} unlocked`;
+        if (this.seasonTrackOverlay.lessons) {
+            const lessonLabel = state.lessonsCompleted === 1 ? "lesson completed" : "lessons completed";
+            this.seasonTrackOverlay.lessons.textContent = `${state.lessonsCompleted} ${lessonLabel}`;
+        }
+        if (this.seasonTrackOverlay.next) {
+            this.seasonTrackOverlay.next.textContent =
+                state.next && state.next.remaining > 0
+                    ? `${state.next.title} unlocks after ${state.next.remaining} more lessons`
+                    : "You have unlocked every seasonal reward.";
+        }
+        this.seasonTrackOverlay.list.replaceChildren();
+        for (const entry of state.entries) {
+            const item = document.createElement("li");
+            item.className = "season-track-card";
+            item.dataset.status = entry.unlocked ? "unlocked" : "locked";
+            const titleRow = document.createElement("p");
+            titleRow.className = "season-track-card__title";
+            titleRow.textContent = entry.title;
+            const pill = document.createElement("span");
+            pill.className = "season-track-card__pill";
+            pill.textContent = entry.unlocked
+                ? "Unlocked"
+                : `${entry.remaining} lesson${entry.remaining === 1 ? "" : "s"} to go`;
+            titleRow.appendChild(pill);
+            const desc = document.createElement("p");
+            desc.className = "season-track-card__desc";
+            desc.textContent = entry.description;
+            const meta = document.createElement("p");
+            meta.className = "season-track-card__requirement";
+            meta.textContent = `Requires ${entry.requiredLessons} lesson${entry.requiredLessons === 1 ? "" : "s"}`;
+            item.appendChild(titleRow);
+            item.appendChild(desc);
+            item.appendChild(meta);
+            this.seasonTrackOverlay.list.appendChild(item);
+        }
     }
     setLoreScrollProgress(state) {
         const previousUnlocked = this.loreScrollState?.unlocked ?? 0;

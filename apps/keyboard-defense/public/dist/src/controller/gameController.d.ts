@@ -345,6 +345,8 @@ export declare class GameController {
             remaining: number;
         }[];
     };
+    buildSeasonTrackViewState(): import("../data/seasonTrack.js").SeasonTrackViewState;
+    syncSeasonTrackToHud(): void;
     syncLoreScrollsToHud(): void;
     handleLessonCompletion(summary: TypingDrillSummary): void;
     shouldSkipTutorial(): boolean;

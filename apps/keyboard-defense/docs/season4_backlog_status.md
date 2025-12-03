@@ -69,7 +69,7 @@ Quick status snapshot for items in `season4_backlog.md`. All items start as Not 
 | 63 | Companion pet sprites | Done | HUD adds a companion pet sprite panel that reacts to performance (calm/happy/cheer/sad) with live mood text. |
 | 64 | Collectible lore scrolls | Done | Lore scroll overlay unlocks scrolls when lessons/drills are completed, with HUD progress, persistence, and reading-friendly snippets. |
 | 65 | Weekly parent summary | Done | Options/HUD button opens a parent-friendly weekly summary overlay with session time, accuracy/WPM, combo, breaches, drills, repairs, notes, and a print/download action. |
-| 66 | Free seasonal reward track | Not Started | - |
+| 66 | Free seasonal reward track | Done | Free, predictable 10-tier reward track unlocks via lesson milestones with HUD/overlay views. |
 | 67 | Medal tiers per lesson | Not Started | - |
 | 68 | Mastery certificates | Not Started | - |
 | 69 | Milestone celebration VFX | Not Started | - |

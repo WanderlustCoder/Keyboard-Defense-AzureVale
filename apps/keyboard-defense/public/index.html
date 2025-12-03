@@ -165,6 +165,26 @@
             <button id="lore-scrolls-open" type="button" class="secondary">Open Scrolls</button>
           </div>
         </section>
+        <section class="season-track-panel" id="season-track-panel" aria-live="polite">
+          <div class="season-track-panel__content">
+            <div>
+              <p class="season-track-panel__kicker">Season 4</p>
+              <p class="season-track-panel__summary" id="season-track-summary">
+                Earn predictable rewards by completing lessons.
+              </p>
+              <p class="season-track-panel__stats">
+                <span id="season-track-progress-pill">0 / 10 unlocked</span>
+                <span aria-hidden="true" class="season-track-panel__dot">ú</span>
+                <span id="season-track-lessons">0 lessons completed</span>
+              </p>
+              <p class="season-track-panel__next" id="season-track-next">
+                Next reward after 1 more lesson.
+              </p>
+              <p class="season-track-panel__requirement" id="season-track-next-requirement"></p>
+            </div>
+            <button id="season-track-open" type="button" class="secondary">View Track</button>
+          </div>
+        </section>
         <section class="typing">
           <div id="active-word"></div>
           <div id="typing-metrics" aria-live="polite">
@@ -1265,6 +1285,9 @@
           <button id="options-sticker-book" type="button" class="secondary">
             Sticker Book
           </button>
+          <button id="options-season-track" type="button" class="secondary">
+            Season Reward Track
+          </button>
           <button id="options-parent-summary" type="button" class="secondary">
             Weekly Parent Summary
           </button>
@@ -1555,6 +1578,47 @@
         </header>
         <div class="scrolls-overlay-body">
           <ul id="scrolls-overlay-list" class="scrolls-grid" role="list"></ul>
+        </div>
+      </div>
+    </div>
+    <div
+      id="season-track-overlay"
+      class="season-track-overlay"
+      data-visible="false"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="season-track-title"
+      aria-hidden="true"
+    >
+      <div class="season-track-overlay-card">
+        <header class="season-track-header">
+          <div>
+            <p class="season-track-kicker">Season 4</p>
+            <h2 id="season-track-title">Free Reward Track</h2>
+            <p id="season-track-subtitle" class="season-track-subtitle">
+              Predictable unlocks—no random rolls.
+            </p>
+          </div>
+          <button
+            id="season-track-close"
+            class="icon-button"
+            type="button"
+            aria-label="Close season track"
+          >
+            ×
+          </button>
+        </header>
+        <div class="season-track-body">
+          <div class="season-track-meta">
+            <p id="season-track-overlay-progress" class="season-track-progress">
+              0 of 0 rewards unlocked
+            </p>
+            <p id="season-track-overlay-lessons" class="season-track-lessons">0 lessons completed</p>
+            <p id="season-track-overlay-next" class="season-track-next">
+              Keep completing lessons to unlock your next reward.
+            </p>
+          </div>
+          <ul id="season-track-list" class="season-track-list" role="list"></ul>
         </div>
       </div>
     </div>

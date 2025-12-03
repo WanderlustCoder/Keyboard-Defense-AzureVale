@@ -58,6 +58,7 @@ Use this index to jump straight to the guidance you'll need while building and t
 
 ## Status Notes
 Status entries live under `docs/status/`. Recent highlights include:
+- `2025-12-20_season_reward_track.md` - Season 4 free reward track with fixed lesson milestones and overlay/HUD views.
 - `2025-12-19_weekly_parent_summary.md` - Parent-friendly weekly summary overlay with printable metrics (time, accuracy/WPM, combo, breaches, drills, repairs) from the pause/options menu.
 - `2025-12-18_collectible_lore_scrolls.md` - Lore scroll panel + overlay unlocks via lesson/typing drill completions with persisted progress (Season 4 backlog #64).
 - `2025-12-16_sticker_book_achievements.md` - Sticker Book overlay with pixel-art achievements and live progress (Season 4 backlog #61).

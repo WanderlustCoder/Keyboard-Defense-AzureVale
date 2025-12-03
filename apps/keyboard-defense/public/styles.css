@@ -775,6 +775,194 @@ section {
   white-space: nowrap;
 }
 
+.season-track-panel {
+  background: linear-gradient(135deg, #0d1325, #102040);
+  border: 1px solid #1e293b;
+  border-radius: 12px;
+  padding: 16px 20px;
+  color: #e2e8f0;
+}
+
+.season-track-panel__content {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.season-track-panel__kicker {
+  margin: 0;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #38bdf8;
+}
+
+.season-track-panel__summary {
+  margin: 4px 0 0;
+  font-size: 0.95rem;
+  color: #cbd5e1;
+}
+
+.season-track-panel__stats {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 8px 0 0;
+  font-weight: 600;
+}
+
+.season-track-panel__dot {
+  color: #475569;
+}
+
+.season-track-panel__next,
+.season-track-panel__requirement {
+  margin: 4px 0 0;
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+.season-track-panel button.secondary {
+  align-self: center;
+  white-space: nowrap;
+}
+
+.season-track-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 6, 14, 0.8);
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  z-index: 1200;
+}
+
+.season-track-overlay[data-visible="false"] {
+  display: none;
+}
+
+.season-track-overlay-card {
+  max-width: 760px;
+  width: 100%;
+  background: #0b1222;
+  border: 1px solid #1e293b;
+  border-radius: 16px;
+  padding: 20px 24px;
+  color: #e2e8f0;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+}
+
+.season-track-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.season-track-kicker {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.75rem;
+  color: #38bdf8;
+}
+
+.season-track-subtitle {
+  margin: 6px 0 0;
+  color: #94a3b8;
+  font-size: 0.95rem;
+}
+
+.season-track-body {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.season-track-meta {
+  display: grid;
+  gap: 4px;
+}
+
+.season-track-progress {
+  margin: 0;
+  font-weight: 700;
+}
+
+.season-track-lessons,
+.season-track-next {
+  margin: 0;
+  color: #cbd5e1;
+}
+
+.season-track-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.season-track-card {
+  border: 1px solid #1f2937;
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: #0e182d;
+  display: grid;
+  gap: 4px;
+}
+
+.season-track-card__title {
+  margin: 0;
+  font-weight: 700;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.season-track-card__desc {
+  margin: 0;
+  color: #cbd5e1;
+}
+
+.season-track-card__requirement {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 0.85rem;
+}
+
+.season-track-card__pill {
+  font-size: 0.85rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid #334155;
+  color: #94a3b8;
+}
+
+.season-track-card[data-status="unlocked"] {
+  border-color: #22c55e;
+  background: #0f1f15;
+}
+
+.season-track-card[data-status="unlocked"] .season-track-card__pill {
+  border-color: #22c55e;
+  color: #bbf7d0;
+}
+
+@media (max-width: 720px) {
+  .season-track-panel__content {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .season-track-panel button.secondary {
+    width: 100%;
+  }
+}
+
 @media (max-width: 720px) {
   .lore-scrolls__content {
     flex-direction: column;

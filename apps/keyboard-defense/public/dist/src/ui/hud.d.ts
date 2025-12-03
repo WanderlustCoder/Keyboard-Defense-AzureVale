@@ -1,6 +1,7 @@
 import { type GameConfig } from "../core/config.js";
 import { type GameMode, type GameState, type DefeatAnimationPreference, type TurretTargetPriority, type TurretTypeId, type WaveSpawnPreview } from "../core/types.js";
 import type { ResolutionTransitionState } from "./ResolutionTransitionController.js";
+import { type SeasonTrackViewState } from "../data/seasonTrack.js";
 type CastleSkinId = "classic" | "dusk" | "aurora" | "ember";
 type ContrastAuditResult = {
     label: string;
@@ -183,6 +184,7 @@ type OptionsOverlayElements = {
     castleSkinSelect?: string;
     defeatAnimationSelect: string;
     stickerBookButton?: string;
+    seasonTrackButton?: string;
     loreScrollsButton?: string;
     parentSummaryButton?: string;
     telemetryToggle?: string;
@@ -251,6 +253,14 @@ type LoreScrollOverlayElements = {
     list: string;
     summary: string;
     progress?: string;
+    closeButton: string;
+};
+type SeasonTrackOverlayElements = {
+    container: string;
+    list: string;
+    progress: string;
+    lessons?: string;
+    next?: string;
     closeButton: string;
 };
 type ParentSummaryOverlayElements = {
@@ -366,6 +376,9 @@ export declare class HudView {
     private loreScrollPanel?;
     private loreScrollState?;
     private loreScrollHighlightTimeout;
+    private readonly seasonTrackOverlay?;
+    private readonly seasonTrackPanel?;
+    private seasonTrackState?;
     private readonly parentSummaryOverlay?;
     private parentSummary?;
     private castleSkin;
@@ -452,6 +465,7 @@ export declare class HudView {
         parentalOverlay?: ParentalOverlayElements;
         contrastOverlay?: ContrastOverlayElements;
         stickerBookOverlay?: StickerBookOverlayElements;
+        seasonTrackOverlay?: SeasonTrackOverlayElements;
         loreScrollOverlay?: LoreScrollOverlayElements;
         parentSummaryOverlay?: ParentSummaryOverlayElements;
     }, callbacks: HudCallbacks);
@@ -669,12 +683,16 @@ export declare class HudView {
     setCastleSkin(skin: CastleSkinId): void;
     showStickerBookOverlay(): void;
     hideStickerBookOverlay(): void;
+    showSeasonTrackOverlay(): void;
+    hideSeasonTrackOverlay(): void;
     showParentSummary(): void;
     hideParentSummary(): void;
     downloadParentSummary(): void;
     setStickerBookEntries(entries: StickerBookEntry[]): void;
+    setSeasonTrackProgress(state: SeasonTrackViewState): void;
     showLoreScrollOverlay(): void;
     hideLoreScrollOverlay(): void;
+    private renderSeasonTrackOverlay;
     setLoreScrollProgress(state: LoreScrollViewState): void;
     private flashLoreScrollHighlight;
     private renderLoreScrollOverlay;

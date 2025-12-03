@@ -136,6 +136,7 @@ const initializeHud = (options = {}) => {
   const castleSkinSelect = get("options-castle-skin");
   const contrastAuditButton = get("options-contrast-audit");
   const stickerBookButton = get("options-sticker-book");
+  const optionsSeasonTrackButton = get("options-season-track");
   const optionsParentSummaryButton = get("options-parent-summary");
   const optionsLoreScrollsButton = get("options-lore-scrolls");
   const contrastOverlay = get("contrast-overlay");
@@ -152,6 +153,12 @@ const initializeHud = (options = {}) => {
   const scrollOverlaySummary = get("scrolls-overlay-summary");
   const scrollOverlayProgress = get("scrolls-overlay-progress");
   const scrollOverlayClose = get("scrolls-overlay-close");
+  const seasonTrackOverlay = get("season-track-overlay");
+  const seasonTrackList = get("season-track-list");
+  const seasonTrackProgress = get("season-track-overlay-progress");
+  const seasonTrackLessons = get("season-track-overlay-lessons");
+  const seasonTrackNext = get("season-track-overlay-next");
+  const seasonTrackClose = get("season-track-close");
   const parentSummaryOverlay = get("parent-summary-overlay");
   const parentSummaryClose = get("parent-summary-close");
   const parentSummaryProgress = get("parent-summary-progress");
@@ -271,7 +278,8 @@ const initializeHud = (options = {}) => {
         hudZoomSelect: "options-hud-zoom",
         hudLayoutToggle: "options-hud-left",
         fontScaleSelect: "options-font-scale",
-        analyticsExportButton: "options-analytics-export"
+        analyticsExportButton: "options-analytics-export",
+        seasonTrackButton: "options-season-track"
       },
       waveScorecard: {
         container: "wave-scorecard",
@@ -295,6 +303,14 @@ const initializeHud = (options = {}) => {
         list: "sticker-overlay-list",
         summary: "sticker-overlay-summary",
         closeButton: "sticker-overlay-close"
+      },
+      seasonTrackOverlay: {
+        container: "season-track-overlay",
+        list: "season-track-list",
+        progress: "season-track-overlay-progress",
+        lessons: "season-track-overlay-lessons",
+        next: "season-track-overlay-next",
+        closeButton: "season-track-close"
       },
       parentSummaryOverlay: {
         container: "parent-summary-overlay",
@@ -419,6 +435,7 @@ const initializeHud = (options = {}) => {
       screenShakePreview,
       contrastAuditButton,
       stickerBookButton,
+      optionsSeasonTrackButton,
       optionsParentSummaryButton,
       optionsLoreScrollsButton,
       contrastOverlay,
@@ -430,6 +447,12 @@ const initializeHud = (options = {}) => {
       stickerOverlayList,
       stickerOverlaySummary,
       stickerOverlayClose,
+      seasonTrackOverlay,
+      seasonTrackList,
+      seasonTrackProgress,
+      seasonTrackLessons,
+      seasonTrackNext,
+      seasonTrackClose,
       parentSummaryOverlay,
       parentSummaryClose,
       parentSummaryProgress,
@@ -2000,6 +2023,64 @@ test("HudView lore scroll overlay renders progress and entries", () => {
 
   hud.hideLoreScrollOverlay();
   assert.equal(elements.scrollOverlay.dataset.visible, "false");
+  cleanup();
+});
+
+test("HudView season track overlay renders rewards and toggles visibility", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  hud.setSeasonTrackProgress({
+    lessonsCompleted: 6,
+    total: 10,
+    unlocked: 3,
+    next: { requiredLessons: 7, remaining: 1, title: "Castle Accent" },
+    entries: [
+      {
+        id: "tier-01",
+        title: "Welcome Bundle",
+        description: "Castle banner + gold.",
+        requiredLessons: 1,
+        unlocked: true,
+        progress: 1,
+        remaining: 0
+      },
+      {
+        id: "tier-02",
+        title: "Sticker Pack",
+        description: "Unlocks stickers.",
+        requiredLessons: 3,
+        unlocked: true,
+        progress: 3,
+        remaining: 0
+      },
+      {
+        id: "tier-03",
+        title: "Trail Particles",
+        description: "Arrow embers.",
+        requiredLessons: 5,
+        unlocked: true,
+        progress: 5,
+        remaining: 0
+      },
+      {
+        id: "tier-04",
+        title: "Castle Accent",
+        description: "New accent skin.",
+        requiredLessons: 7,
+        unlocked: false,
+        progress: 6,
+        remaining: 1
+      }
+    ]
+  });
+
+  assert.equal(elements.seasonTrackProgress.textContent, "3 / 10 unlocked");
+  assert.ok(elements.seasonTrackLessons.textContent.includes("lessons completed"));
+  assert.equal(elements.seasonTrackOverlay.dataset.visible, "false");
+  elements.optionsSeasonTrackButton.click();
+  assert.equal(elements.seasonTrackOverlay.dataset.visible, "true");
+  assert.equal(elements.seasonTrackList.children.length, 4);
+  hud.hideSeasonTrackOverlay();
+  assert.equal(elements.seasonTrackOverlay.dataset.visible, "false");
   cleanup();
 });
 

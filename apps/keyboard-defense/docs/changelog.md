@@ -4,6 +4,12 @@
 - Overlay is fully accessible (aria labels, focus trap, keyboard-close), supports print-to-PDF, and offers both header/inline close buttons so parents can dismiss without touching gameplay controls.
 - HUD refreshes the summary live from session analytics so parents see up-to-date metrics even mid-run; tests cover the overlay toggle and metric rendering.
 
+## Free Seasonal Reward Track
+
+- Added a Season 4 reward track card plus overlay with 10 predictable, non-random tiers unlocked by cumulative lesson completions.
+- Pause/options menu button opens the track; overlay lists rewards, remaining lessons, and updates live from lesson progress with keyboard focus traps and accessible labels.
+- HUD sidebar shows unlocked/total counts, lessons completed, and the next requirement; tests verify rendering and overlay toggling.
+
 ## Collectible Lore Scrolls
 
 - Lesson completions now unlock a Lore Scrolls overlay with short, kid-friendly reading snippets; progress persists locally via the new lesson progress storage.
