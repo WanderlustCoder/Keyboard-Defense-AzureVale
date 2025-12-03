@@ -323,6 +323,7 @@ export declare class GameController {
     setPracticeMode(enabled: any): void;
     startPracticeMode(): void;
     initializeLessonProgress(): void;
+    initializeLessonMedals(): void;
     initializeLoreProgress(): void;
     unlockLoreForWave(waveNumber: any): void;
     buildLoreScrollViewState(): {
@@ -347,6 +348,7 @@ export declare class GameController {
     };
     buildSeasonTrackViewState(): import("../data/seasonTrack.js").SeasonTrackViewState;
     syncSeasonTrackToHud(): void;
+    syncLessonMedalsToHud(nextTarget: any): void;
     syncLoreScrollsToHud(): void;
     handleLessonCompletion(summary: TypingDrillSummary): void;
     shouldSkipTutorial(): boolean;

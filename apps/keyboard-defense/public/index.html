@@ -144,6 +144,15 @@
             <p class="companion-tip" id="companion-tip">
               Keep clean streaks to cheer them up.
             </p>
+            <div class="mentor-dialogue" id="mentor-dialogue" data-focus="neutral" aria-live="polite">
+              <div class="mentor-dialogue__header">
+                <span class="mentor-dialogue__label">Mentor</span>
+                <span id="mentor-dialogue-focus" class="mentor-dialogue__pill">Balanced</span>
+              </div>
+              <p id="mentor-dialogue-text" class="mentor-dialogue__text">
+                Balanced focus: keep accuracy steady, then push speed.
+              </p>
+            </div>
           </div>
         </section>
         <section class="lore-scrolls" id="lore-scroll-panel" aria-live="polite">
@@ -183,6 +192,63 @@
               <p class="season-track-panel__requirement" id="season-track-next-requirement"></p>
             </div>
             <button id="season-track-open" type="button" class="secondary">View Track</button>
+          </div>
+        </section>
+        <section class="museum-panel" id="castle-museum-panel" aria-live="polite">
+          <div class="museum-panel__content">
+            <div>
+              <p class="museum-panel__kicker">Castle Museum</p>
+              <p class="museum-panel__summary" id="castle-museum-summary">
+                Unlock art, skins, and artifacts as you progress.
+              </p>
+              <p class="museum-panel__stats" id="castle-museum-stats">0 / 0 on display</p>
+            </div>
+            <button id="castle-museum-open" type="button" class="secondary">Open Museum</button>
+          </div>
+        </section>
+        <section class="quest-panel" id="side-quest-panel" aria-live="polite">
+          <div class="quest-panel__content">
+            <div>
+              <p class="quest-panel__kicker">Side quests</p>
+              <p class="quest-panel__summary" id="side-quest-summary">
+                Complete optional goals between lessons.
+              </p>
+              <p class="quest-panel__stats" id="side-quest-stats">0 active · 0 completed</p>
+            </div>
+            <button id="side-quest-open" type="button" class="secondary">Open Quest Log</button>
+          </div>
+        </section>
+        <section class="lesson-medals" id="lesson-medal-panel" aria-live="polite">
+          <div class="lesson-medal__content">
+            <div class="lesson-medal__badge" id="lesson-medal-badge" data-tier="bronze">Bronze</div>
+            <div class="lesson-medal__copy">
+              <p class="lesson-medal__kicker">Lesson medals</p>
+              <p class="lesson-medal__summary" id="lesson-medal-summary">
+                Complete a typing drill to start earning medals.
+              </p>
+              <p class="lesson-medal__best" id="lesson-medal-best">Burst: None · Endurance: None · Precision: None</p>
+              <p class="lesson-medal__next" id="lesson-medal-next">
+                Replay drills to chase the next tier.
+              </p>
+            </div>
+            <button id="lesson-medal-open" type="button" class="secondary">View Medals</button>
+          </div>
+        </section>
+        <section class="mastery-certificate" id="mastery-certificate-panel" aria-live="polite">
+          <div class="mastery-cert__content">
+            <div class="mastery-cert__copy">
+              <p class="mastery-cert__kicker">Print-ready</p>
+              <p class="mastery-cert__summary" id="mastery-certificate-summary">
+                Complete a session to generate a mastery certificate.
+              </p>
+              <p class="mastery-cert__stats" id="mastery-certificate-stats">0 lessons • 0% accuracy • 0 WPM</p>
+              <p class="mastery-cert__date" id="mastery-certificate-date"></p>
+              <label class="mastery-cert__name">
+                <span>Certificate name</span>
+                <input id="mastery-certificate-name" type="text" placeholder="Enter learner name" />
+              </label>
+            </div>
+            <button id="mastery-certificate-open" type="button" class="secondary">Open Certificate</button>
           </div>
         </section>
         <section class="typing">
@@ -1288,6 +1354,18 @@
           <button id="options-season-track" type="button" class="secondary">
             Season Reward Track
           </button>
+          <button id="options-museum" type="button" class="secondary">
+            Castle Museum
+          </button>
+          <button id="options-side-quests" type="button" class="secondary">
+            Side Quest Log
+          </button>
+          <button id="options-mastery-certificate" type="button" class="secondary">
+            Mastery Certificate
+          </button>
+          <button id="options-lesson-medals" type="button" class="secondary">
+            Lesson Medals
+          </button>
           <button id="options-parent-summary" type="button" class="secondary">
             Weekly Parent Summary
           </button>
@@ -1507,6 +1585,17 @@
                     <span>Errors</span><span id="typing-drill-summary-errors">0</span>
                   </li>
                 </ul>
+                <div class="summary-medal" id="typing-drill-summary-medal" data-tier="bronze">
+                  <p class="summary-medal__label" id="typing-drill-summary-medal-label">
+                    Bronze medal earned
+                  </p>
+                  <p class="summary-medal__hint" id="typing-drill-summary-medal-hint">
+                    Replay drills to chase the next tier.
+                  </p>
+                  <button id="typing-drill-summary-replay" class="secondary" type="button">
+                    Replay drill
+                  </button>
+                </div>
                 <p class="summary-tip" id="typing-drill-summary-tip"></p>
               </div>
             </div>
@@ -1619,6 +1708,189 @@
             </p>
           </div>
           <ul id="season-track-list" class="season-track-list" role="list"></ul>
+        </div>
+      </div>
+    </div>
+    <div
+      id="mastery-certificate-overlay"
+      class="mastery-cert-overlay"
+      data-visible="false"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="mastery-certificate-title"
+      aria-hidden="true"
+    >
+      <div class="mastery-cert-overlay-card">
+        <header class="mastery-cert-header">
+          <div>
+            <p class="mastery-cert-kicker">Celebrate progress</p>
+            <h2 id="mastery-certificate-title">Mastery Certificate</h2>
+            <p id="mastery-certificate-subtitle" class="mastery-cert-subtitle">
+              Printable snapshot of lessons and accuracy.
+            </p>
+          </div>
+          <button
+            id="mastery-certificate-close"
+            class="icon-button"
+            type="button"
+            aria-label="Close mastery certificate"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </header>
+        <div class="mastery-cert-body">
+          <label class="mastery-cert-name">
+            <span>Learner name</span>
+            <input
+              id="mastery-certificate-name-input"
+              type="text"
+              placeholder="Enter learner name"
+              autocomplete="name"
+            />
+          </label>
+          <p id="mastery-certificate-overlay-summary" class="mastery-cert-summary">
+            Complete a session to generate a mastery certificate.
+          </p>
+          <p id="mastery-certificate-date" class="mastery-cert-date"></p>
+          <ul id="mastery-certificate-stats-list" class="mastery-cert-stats" role="list"></ul>
+          <div class="mastery-cert-actions">
+            <button id="mastery-certificate-download" class="primary" type="button">
+              Download / Print
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      id="milestone-celebration"
+      class="milestone-celebration"
+      data-visible="false"
+      aria-hidden="true"
+      role="status"
+      aria-live="polite"
+    >
+      <div class="milestone-celebration__backdrop" aria-hidden="true"></div>
+      <div class="milestone-celebration__sparks" aria-hidden="true"></div>
+      <div class="milestone-celebration__content">
+        <div id="milestone-celebration-badge" class="milestone-celebration__badge">Milestone</div>
+        <div class="milestone-celebration__copy">
+          <p id="milestone-celebration-eyebrow" class="milestone-celebration__eyebrow">
+            Goal reached
+          </p>
+          <h3 id="milestone-celebration-title" class="milestone-celebration__title">
+            Milestone unlocked
+          </h3>
+          <p id="milestone-celebration-detail" class="milestone-celebration__detail">
+            Keep up the momentum!
+          </p>
+        </div>
+        <button
+          id="milestone-celebration-close"
+          class="icon-button"
+          type="button"
+          aria-label="Close celebration"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    </div>
+    <div
+      id="museum-overlay"
+      class="museum-overlay"
+      data-visible="false"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="museum-overlay-title"
+      aria-hidden="true"
+    >
+      <div class="museum-card">
+        <header class="museum-header">
+          <div>
+            <p class="museum-kicker">Castle Museum</p>
+            <h2 id="museum-overlay-title">Unlocked Artifacts</h2>
+            <p id="museum-overlay-subtitle" class="museum-subtitle">
+              View the art, skins, and keepsakes you've earned.
+            </p>
+          </div>
+          <button id="museum-close" class="icon-button" type="button" aria-label="Close castle museum">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </header>
+        <div class="museum-grid" id="museum-list" role="list"></div>
+      </div>
+    </div>
+    <div
+      id="side-quest-overlay"
+      class="quest-overlay"
+      data-visible="false"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="side-quest-overlay-title"
+      aria-hidden="true"
+    >
+      <div class="quest-card">
+        <header class="quest-header">
+          <div>
+            <p class="quest-kicker">Side quests</p>
+            <h2 id="side-quest-overlay-title">Quest Log</h2>
+            <p id="side-quest-overlay-subtitle" class="quest-subtitle">
+              Optional objectives to guide your next run.
+            </p>
+          </div>
+          <button id="side-quest-close" class="icon-button" type="button" aria-label="Close quest log">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </header>
+        <div id="side-quest-list" class="quest-grid" role="list"></div>
+      </div>
+    </div>
+    <div
+      id="lesson-medal-overlay"
+      class="lesson-medal-overlay"
+      data-visible="false"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="lesson-medal-title"
+      aria-hidden="true"
+    >
+      <div class="lesson-medal-card">
+        <header class="lesson-medal-header">
+          <div>
+            <p class="lesson-medal-kicker">Lesson milestones</p>
+            <h2 id="lesson-medal-title">Medal Board</h2>
+            <p id="lesson-medal-subtitle" class="lesson-medal-subtitle">
+              Bronze, Silver, Gold, and Platinum medals tied to each drill.
+            </p>
+          </div>
+          <button
+            id="lesson-medal-close"
+            class="icon-button"
+            type="button"
+            aria-label="Close lesson medals"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </header>
+        <div class="lesson-medal-body">
+          <div class="lesson-medal-banner">
+            <div id="lesson-medal-overlay-badge" class="lesson-medal-badge" data-tier="bronze">
+              Bronze
+            </div>
+            <div class="lesson-medal-banner__copy">
+              <p id="lesson-medal-overlay-last" class="lesson-medal-last">
+                Complete a typing drill to claim your first medal.
+              </p>
+              <p id="lesson-medal-overlay-next" class="lesson-medal-next">
+                Replay drills to chase the next tier.
+              </p>
+            </div>
+            <button id="lesson-medal-replay" class="secondary" type="button">Replay drill</button>
+          </div>
+          <div id="lesson-medal-best-list" class="lesson-medal-grid" role="list"></div>
+          <div class="lesson-medal-history">
+            <p class="lesson-medal-history__title">Recent runs</p>
+            <ul id="lesson-medal-history-list" class="lesson-medal-history-list" role="list"></ul>
+          </div>
         </div>
       </div>
     </div>

@@ -9,7 +9,7 @@
   "status": "ok",
   "entries": [
     {
-      "file": "C:\\Users\\Werem\\OneDrive\\Documents\\Projects\\Keyboard-Defense\\docs\\codex_pack\\fixtures\\diagnostics-dashboard\\sample.analytics.json",
+      "file": "docs/codex_pack/fixtures/diagnostics-dashboard/sample.analytics.json",
       "scenario": "sample.analytics",
       "mode": "campaign",
       "gold": {

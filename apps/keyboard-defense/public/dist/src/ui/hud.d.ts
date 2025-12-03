@@ -1,7 +1,8 @@
 import { type GameConfig } from "../core/config.js";
-import { type GameMode, type GameState, type DefeatAnimationPreference, type TurretTargetPriority, type TurretTypeId, type WaveSpawnPreview } from "../core/types.js";
+import { type GameMode, type GameState, type DefeatAnimationPreference, type TypingDrillMode, type TurretTargetPriority, type TurretTypeId, type WaveSpawnPreview } from "../core/types.js";
 import type { ResolutionTransitionState } from "./ResolutionTransitionController.js";
 import { type SeasonTrackViewState } from "../data/seasonTrack.js";
+import { type LessonMedalViewState } from "../utils/lessonMedals.js";
 type CastleSkinId = "classic" | "dusk" | "aurora" | "ember";
 type ContrastAuditResult = {
     label: string;
@@ -77,6 +78,10 @@ export interface HudCallbacks {
     onTextSizeChange?: (scale: number) => void;
     onHapticsToggle?: (enabled: boolean) => void;
     onWaveScorecardContinue(): void;
+    onLessonMedalReplay?: (options?: {
+        mode?: TypingDrillMode;
+        hint?: string;
+    }) => void;
     onReducedMotionToggle(enabled: boolean): void;
     onCheckeredBackgroundToggle(enabled: boolean): void;
     onReadableFontToggle(enabled: boolean): void;
@@ -185,6 +190,10 @@ type OptionsOverlayElements = {
     defeatAnimationSelect: string;
     stickerBookButton?: string;
     seasonTrackButton?: string;
+    lessonMedalButton?: string;
+    museumButton?: string;
+    sideQuestButton?: string;
+    masteryCertificateButton?: string;
     loreScrollsButton?: string;
     parentSummaryButton?: string;
     telemetryToggle?: string;
@@ -262,6 +271,37 @@ type SeasonTrackOverlayElements = {
     lessons?: string;
     next?: string;
     closeButton: string;
+};
+type LessonMedalOverlayElements = {
+    container: string;
+    closeButton: string;
+    badge?: string;
+    last?: string;
+    next?: string;
+    bestList?: string;
+    historyList?: string;
+    replayButton?: string;
+};
+type MuseumOverlayElements = {
+    container: string;
+    closeButton: string;
+    list: string;
+    subtitle?: string;
+};
+type SideQuestOverlayElements = {
+    container: string;
+    closeButton: string;
+    list: string;
+    subtitle?: string;
+};
+type MasteryCertificateElements = {
+    container: string;
+    closeButton: string;
+    downloadButton?: string;
+    nameInput?: string;
+    summary?: string;
+    statsList?: string;
+    date?: string;
 };
 type ParentSummaryOverlayElements = {
     container: string;
@@ -379,6 +419,29 @@ export declare class HudView {
     private readonly seasonTrackOverlay?;
     private readonly seasonTrackPanel?;
     private seasonTrackState?;
+    private readonly lessonMedalOverlay?;
+    private readonly lessonMedalPanel?;
+    private lessonMedalState?;
+    private lessonMedalHighlightTimeout;
+    private readonly masteryCertificatePanel?;
+    private readonly masteryCertificate?;
+    private readonly sideQuestPanel?;
+    private readonly sideQuestOverlay?;
+    private sideQuestEntries;
+    private lessonsCompletedCount;
+    private readonly museumOverlay?;
+    private readonly museumPanel?;
+    private museumEntries;
+    private certificateName;
+    private certificateStats?;
+    private readonly mentorDialogue?;
+    private mentorFocus;
+    private mentorMessageCursor;
+    private mentorNextUpdateAt;
+    private readonly milestoneCelebration?;
+    private milestoneCelebrationHideTimeout;
+    private lastLessonMilestoneCelebrated;
+    private lastCertificateCelebratedAt;
     private readonly parentSummaryOverlay?;
     private parentSummary?;
     private castleSkin;
@@ -466,6 +529,10 @@ export declare class HudView {
         contrastOverlay?: ContrastOverlayElements;
         stickerBookOverlay?: StickerBookOverlayElements;
         seasonTrackOverlay?: SeasonTrackOverlayElements;
+        museumOverlay?: MuseumOverlayElements;
+        sideQuestOverlay?: SideQuestOverlayElements;
+        lessonMedalOverlay?: LessonMedalOverlayElements;
+        masteryCertificateOverlay?: MasteryCertificateElements;
         loreScrollOverlay?: LoreScrollOverlayElements;
         parentSummaryOverlay?: ParentSummaryOverlayElements;
     }, callbacks: HudCallbacks);
@@ -552,6 +619,7 @@ export declare class HudView {
         colorBlindFriendly?: boolean;
         tutorialCompleted?: boolean;
         loreUnlocked?: number;
+        lessonsCompleted?: number;
     }): void;
     showCastleMessage(message: string): void;
     showSlotMessage(slotId: string, message: string): void;
@@ -690,9 +758,58 @@ export declare class HudView {
     downloadParentSummary(): void;
     setStickerBookEntries(entries: StickerBookEntry[]): void;
     setSeasonTrackProgress(state: SeasonTrackViewState): void;
+    private readCertificateName;
+    private persistCertificateName;
+    private setCertificateName;
+    showLessonMedalOverlay(): void;
+    hideLessonMedalOverlay(): void;
+    showMasteryCertificateOverlay(): void;
+    hideMasteryCertificateOverlay(): void;
+    showSideQuestOverlay(): void;
+    hideSideQuestOverlay(): void;
+    showMuseumOverlay(): void;
+    hideMuseumOverlay(): void;
+    celebrateMilestone(options: {
+        title: string;
+        detail: string;
+        tone?: "gold" | "platinum" | "lesson" | "default";
+        eyebrow?: string;
+        durationMs?: number;
+    }): void;
+    hideMilestoneCelebration(): void;
+    private scheduleMilestoneHide;
+    private updateMentorDialogue;
+    private pickMentorMessage;
+    private buildMuseumEntries;
+    private renderMuseumPanel;
+    private renderMuseumOverlay;
+    private buildSideQuestEntries;
+    private renderSideQuestPanel;
+    private renderSideQuestOverlay;
+    private maybeCelebrateLessonMilestone;
+    downloadMasteryCertificate(): void;
+    setLessonMedalProgress(state: LessonMedalViewState): void;
+    private getEmptyLessonMedalState;
+    private flashLessonMedalHighlight;
+    private updateLessonMedalPanel;
+    private renderLessonMedalOverlay;
+    private formatMedalTier;
+    private formatTypingDrillMode;
+    private formatBestMedalLine;
     showLoreScrollOverlay(): void;
     hideLoreScrollOverlay(): void;
     private renderSeasonTrackOverlay;
+    setMasteryCertificate(state: {
+        lessonsCompleted: number;
+        accuracyPct: number;
+        wpm: number;
+        bestCombo: number;
+        drillsCompleted: number;
+        timeMinutes: number;
+        recordedAt: string;
+    }): void;
+    private renderMasteryCertificatePanel;
+    private renderMasteryCertificateOverlay;
     setLoreScrollProgress(state: LoreScrollViewState): void;
     private flashLoreScrollHighlight;
     private renderLoreScrollOverlay;
@@ -702,6 +819,7 @@ export declare class HudView {
     private updateCompanionMood;
     private applyCompanionMood;
     private refreshParentSummary;
+    private refreshMasteryCertificate;
     private renderParentSummary;
     private describeCompanionMood;
     private renderStickerBook;
@@ -719,6 +837,7 @@ export declare class HudView {
     setHudZoom(scale: number): void;
     setHudLayoutSide(side: "left" | "right"): void;
     setHudFontScale(scale: number): void;
+    private computeWpm;
     setReducedMotionEnabled(enabled: boolean): void;
     setCanvasTransitionState(state: ResolutionTransitionState): void;
     hasAnalyticsViewer(): boolean;

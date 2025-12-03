@@ -60,6 +60,7 @@ const ACCESSIBILITY_SELF_TEST_DEFAULT = {
     visualConfirmed: false,
     motionConfirmed: false
 };
+const CERTIFICATE_NAME_KEY = "keyboard-defense:certificate-name";
 const isElementWithTag = (el, tagName) => {
     return el instanceof HTMLElement && el.tagName.toLowerCase() === tagName.toLowerCase();
 };
@@ -126,6 +127,33 @@ export class HudView {
     seasonTrackOverlay;
     seasonTrackPanel;
     seasonTrackState;
+    lessonMedalOverlay;
+    lessonMedalPanel;
+    lessonMedalState;
+    lessonMedalHighlightTimeout = null;
+    masteryCertificatePanel;
+    masteryCertificate;
+    sideQuestPanel;
+    sideQuestOverlay;
+    sideQuestEntries = [];
+    lessonsCompletedCount = 0;
+    museumOverlay;
+    museumPanel;
+    museumEntries = [];
+    certificateName = "";
+    certificateStats;
+    mentorDialogue;
+    mentorFocus = "neutral";
+    mentorMessageCursor = {
+        accuracy: 0,
+        speed: 0,
+        neutral: 0
+    };
+    mentorNextUpdateAt = 0;
+    milestoneCelebration;
+    milestoneCelebrationHideTimeout = null;
+    lastLessonMilestoneCelebrated = 0;
+    lastCertificateCelebratedAt = null;
     parentSummaryOverlay;
     parentSummary;
     castleSkin = "classic";
@@ -178,6 +206,7 @@ export class HudView {
     constructor(config, rootIds, callbacks) {
         this.config = config;
         this.callbacks = callbacks;
+        this.certificateName = this.readCertificateName();
         this.hudRoot = document.getElementById("hud");
         if (this.hudRoot && !this.hudRoot.dataset.canvasTransition) {
             this.hudRoot.dataset.canvasTransition = "idle";
@@ -460,6 +489,18 @@ export class HudView {
             const seasonTrackButton = rootIds.optionsOverlay.seasonTrackButton
                 ? document.getElementById(rootIds.optionsOverlay.seasonTrackButton)
                 : null;
+            const museumButton = rootIds.optionsOverlay.museumButton
+                ? document.getElementById(rootIds.optionsOverlay.museumButton)
+                : null;
+            const sideQuestButton = rootIds.optionsOverlay.sideQuestButton
+                ? document.getElementById(rootIds.optionsOverlay.sideQuestButton)
+                : null;
+            const masteryCertificateButton = rootIds.optionsOverlay.masteryCertificateButton
+                ? document.getElementById(rootIds.optionsOverlay.masteryCertificateButton)
+                : null;
+            const lessonMedalButton = rootIds.optionsOverlay.lessonMedalButton
+                ? document.getElementById(rootIds.optionsOverlay.lessonMedalButton)
+                : null;
             const loreScrollsButton = rootIds.optionsOverlay.loreScrollsButton
                 ? document.getElementById(rootIds.optionsOverlay.loreScrollsButton)
                 : null;
@@ -574,6 +615,7 @@ export class HudView {
                 (contrastAuditButton === null || contrastAuditButton instanceof HTMLButtonElement) &&
                 (stickerBookButton === null || stickerBookButton instanceof HTMLButtonElement) &&
                 (seasonTrackButton === null || seasonTrackButton instanceof HTMLButtonElement) &&
+                (museumButton === null || museumButton instanceof HTMLButtonElement) &&
                 (loreScrollsButton === null || loreScrollsButton instanceof HTMLButtonElement) &&
                 (parentSummaryButton === null || parentSummaryButton instanceof HTMLButtonElement) &&
                 (selfTestContainer === null || selfTestContainer instanceof HTMLElement) &&
@@ -621,6 +663,10 @@ export class HudView {
                     contrastAuditButton: contrastAuditButton instanceof HTMLButtonElement ? contrastAuditButton : undefined,
                     stickerBookButton: stickerBookButton instanceof HTMLButtonElement ? stickerBookButton : undefined,
                     seasonTrackButton: seasonTrackButton instanceof HTMLButtonElement ? seasonTrackButton : undefined,
+                    museumButton: museumButton instanceof HTMLButtonElement ? museumButton : undefined,
+                    sideQuestButton: sideQuestButton instanceof HTMLButtonElement ? sideQuestButton : undefined,
+                    masteryCertificateButton: masteryCertificateButton instanceof HTMLButtonElement ? masteryCertificateButton : undefined,
+                    lessonMedalButton: lessonMedalButton instanceof HTMLButtonElement ? lessonMedalButton : undefined,
                     loreScrollsButton: loreScrollsButton instanceof HTMLButtonElement ? loreScrollsButton : undefined,
                     selfTestContainer: selfTestContainer instanceof HTMLElement ? selfTestContainer : undefined,
                     selfTestRun: selfTestRun instanceof HTMLButtonElement ? selfTestRun : undefined,
@@ -778,6 +824,26 @@ export class HudView {
                 if (this.optionsOverlay.seasonTrackButton) {
                     this.optionsOverlay.seasonTrackButton.addEventListener("click", () => {
                         this.showSeasonTrackOverlay();
+                    });
+                }
+                if (this.optionsOverlay.museumButton) {
+                    this.optionsOverlay.museumButton.addEventListener("click", () => {
+                        this.showMuseumOverlay();
+                    });
+                }
+                if (this.optionsOverlay.sideQuestButton) {
+                    this.optionsOverlay.sideQuestButton.addEventListener("click", () => {
+                        this.showSideQuestOverlay();
+                    });
+                }
+                if (this.optionsOverlay.masteryCertificateButton) {
+                    this.optionsOverlay.masteryCertificateButton.addEventListener("click", () => {
+                        this.showMasteryCertificateOverlay();
+                    });
+                }
+                if (this.optionsOverlay.lessonMedalButton) {
+                    this.optionsOverlay.lessonMedalButton.addEventListener("click", () => {
+                        this.showLessonMedalOverlay();
                     });
                 }
                 if (this.optionsOverlay.loreScrollsButton) {
@@ -1335,6 +1401,153 @@ export class HudView {
                 console.warn("Season track overlay elements missing; reward track disabled.");
             }
         }
+        if (rootIds.lessonMedalOverlay) {
+            const medalContainer = document.getElementById(rootIds.lessonMedalOverlay.container);
+            const medalBadge = rootIds.lessonMedalOverlay.badge
+                ? document.getElementById(rootIds.lessonMedalOverlay.badge)
+                : null;
+            const medalLast = rootIds.lessonMedalOverlay.last
+                ? document.getElementById(rootIds.lessonMedalOverlay.last)
+                : null;
+            const medalNext = rootIds.lessonMedalOverlay.next
+                ? document.getElementById(rootIds.lessonMedalOverlay.next)
+                : null;
+            const medalBestList = rootIds.lessonMedalOverlay.bestList
+                ? document.getElementById(rootIds.lessonMedalOverlay.bestList)
+                : null;
+            const medalHistory = rootIds.lessonMedalOverlay.historyList
+                ? document.getElementById(rootIds.lessonMedalOverlay.historyList)
+                : null;
+            const medalReplay = rootIds.lessonMedalOverlay.replayButton
+                ? document.getElementById(rootIds.lessonMedalOverlay.replayButton)
+                : null;
+            const medalClose = document.getElementById(rootIds.lessonMedalOverlay.closeButton);
+            if (medalContainer instanceof HTMLElement &&
+                medalClose instanceof HTMLButtonElement &&
+                medalHistory instanceof HTMLElement) {
+                this.lessonMedalOverlay = {
+                    container: medalContainer,
+                    closeButton: medalClose,
+                    badge: medalBadge instanceof HTMLElement ? medalBadge : undefined,
+                    last: medalLast instanceof HTMLElement ? medalLast : undefined,
+                    next: medalNext instanceof HTMLElement ? medalNext : undefined,
+                    bestList: medalBestList instanceof HTMLElement ? medalBestList : undefined,
+                    historyList: medalHistory,
+                    replayButton: medalReplay instanceof HTMLButtonElement ? medalReplay : undefined
+                };
+                if (this.lessonMedalOverlay.replayButton) {
+                    this.lessonMedalOverlay.replayButton.addEventListener("click", () => {
+                        const mode = this.lessonMedalState?.last?.mode ?? "burst";
+                        const hint = this.lessonMedalState?.nextTarget?.hint;
+                        this.callbacks.onLessonMedalReplay?.({ mode, hint });
+                    });
+                }
+                medalContainer.dataset.visible = medalContainer.dataset.visible ?? "false";
+                medalContainer.setAttribute("aria-hidden", "true");
+                medalClose.addEventListener("click", () => this.hideLessonMedalOverlay());
+                this.addFocusTrap(medalContainer);
+            }
+            else {
+                console.warn("Lesson medal overlay elements missing; medal overlay disabled.");
+            }
+        }
+        if (rootIds.museumOverlay) {
+            const museumContainer = document.getElementById(rootIds.museumOverlay.container);
+            const museumClose = document.getElementById(rootIds.museumOverlay.closeButton);
+            const museumList = document.getElementById(rootIds.museumOverlay.list);
+            const museumSubtitle = rootIds.museumOverlay.subtitle
+                ? document.getElementById(rootIds.museumOverlay.subtitle)
+                : null;
+            if (museumContainer instanceof HTMLElement &&
+                museumClose instanceof HTMLButtonElement &&
+                museumList instanceof HTMLElement) {
+                this.museumOverlay = {
+                    container: museumContainer,
+                    closeButton: museumClose,
+                    list: museumList,
+                    subtitle: museumSubtitle instanceof HTMLElement ? museumSubtitle : undefined
+                };
+                museumContainer.dataset.visible = museumContainer.dataset.visible ?? "false";
+                museumContainer.setAttribute("aria-hidden", "true");
+                museumClose.addEventListener("click", () => this.hideMuseumOverlay());
+                this.addFocusTrap(museumContainer);
+            }
+            else {
+                console.warn("Museum overlay elements missing; museum overlay disabled.");
+            }
+        }
+        if (rootIds.sideQuestOverlay) {
+            const questContainer = document.getElementById(rootIds.sideQuestOverlay.container);
+            const questClose = document.getElementById(rootIds.sideQuestOverlay.closeButton);
+            const questList = document.getElementById(rootIds.sideQuestOverlay.list);
+            const questSubtitle = rootIds.sideQuestOverlay.subtitle
+                ? document.getElementById(rootIds.sideQuestOverlay.subtitle)
+                : null;
+            if (questContainer instanceof HTMLElement &&
+                questClose instanceof HTMLButtonElement &&
+                questList instanceof HTMLElement) {
+                this.sideQuestOverlay = {
+                    container: questContainer,
+                    closeButton: questClose,
+                    list: questList,
+                    subtitle: questSubtitle instanceof HTMLElement ? questSubtitle : undefined
+                };
+                questContainer.dataset.visible = questContainer.dataset.visible ?? "false";
+                questContainer.setAttribute("aria-hidden", "true");
+                questClose.addEventListener("click", () => this.hideSideQuestOverlay());
+                this.addFocusTrap(questContainer);
+            }
+            else {
+                console.warn("Side quest overlay elements missing; quest overlay disabled.");
+            }
+        }
+        if (rootIds.masteryCertificateOverlay) {
+            const certContainer = document.getElementById(rootIds.masteryCertificateOverlay.container);
+            const certClose = document.getElementById(rootIds.masteryCertificateOverlay.closeButton);
+            const certDownload = rootIds.masteryCertificateOverlay.downloadButton
+                ? document.getElementById(rootIds.masteryCertificateOverlay.downloadButton)
+                : null;
+            const certNameInput = rootIds.masteryCertificateOverlay.nameInput
+                ? document.getElementById(rootIds.masteryCertificateOverlay.nameInput)
+                : null;
+            const certSummary = rootIds.masteryCertificateOverlay.summary
+                ? document.getElementById(rootIds.masteryCertificateOverlay.summary)
+                : null;
+            const certStats = rootIds.masteryCertificateOverlay.statsList
+                ? document.getElementById(rootIds.masteryCertificateOverlay.statsList)
+                : null;
+            const certDate = rootIds.masteryCertificateOverlay.date
+                ? document.getElementById(rootIds.masteryCertificateOverlay.date)
+                : null;
+            if (certContainer instanceof HTMLElement && certClose instanceof HTMLButtonElement) {
+                this.masteryCertificate = {
+                    container: certContainer,
+                    closeButton: certClose,
+                    downloadButton: certDownload instanceof HTMLButtonElement ? certDownload : undefined,
+                    nameInput: certNameInput instanceof HTMLInputElement ? certNameInput : undefined,
+                    summary: certSummary instanceof HTMLElement ? certSummary : undefined,
+                    statsList: certStats instanceof HTMLElement ? certStats : undefined,
+                    date: certDate instanceof HTMLElement ? certDate : undefined
+                };
+                certContainer.dataset.visible = certContainer.dataset.visible ?? "false";
+                certContainer.setAttribute("aria-hidden", "true");
+                certClose.addEventListener("click", () => this.hideMasteryCertificateOverlay());
+                if (this.masteryCertificate.downloadButton) {
+                    this.masteryCertificate.downloadButton.addEventListener("click", () => this.downloadMasteryCertificate());
+                }
+                if (this.masteryCertificate.nameInput) {
+                    this.masteryCertificate.nameInput.value = this.certificateName;
+                    this.masteryCertificate.nameInput.addEventListener("input", (event) => {
+                        const target = event.target;
+                        this.setCertificateName(target.value ?? "");
+                    });
+                }
+                this.addFocusTrap(certContainer);
+            }
+            else {
+                console.warn("Mastery certificate overlay elements missing; certificate overlay disabled.");
+            }
+        }
         const loreScrollPanel = document.getElementById("lore-scroll-panel");
         const loreScrollSummary = document.getElementById("lore-scrolls-summary");
         const loreScrollProgress = document.getElementById("lore-scrolls-progress");
@@ -1351,6 +1564,32 @@ export class HudView {
         };
         if (this.loreScrollPanel.openButton) {
             this.loreScrollPanel.openButton.addEventListener("click", () => this.showLoreScrollOverlay());
+        }
+        const museumPanel = document.getElementById("castle-museum-panel");
+        const museumSummary = document.getElementById("castle-museum-summary");
+        const museumStats = document.getElementById("castle-museum-stats");
+        const museumOpen = document.getElementById("castle-museum-open");
+        this.museumPanel = {
+            container: museumPanel instanceof HTMLElement ? museumPanel : undefined,
+            summary: museumSummary instanceof HTMLElement ? museumSummary : undefined,
+            stats: museumStats instanceof HTMLElement ? museumStats : undefined,
+            openButton: museumOpen instanceof HTMLButtonElement ? museumOpen : undefined
+        };
+        if (this.museumPanel.openButton) {
+            this.museumPanel.openButton.addEventListener("click", () => this.showMuseumOverlay());
+        }
+        const sideQuestPanel = document.getElementById("side-quest-panel");
+        const sideQuestSummary = document.getElementById("side-quest-summary");
+        const sideQuestStats = document.getElementById("side-quest-stats");
+        const sideQuestOpen = document.getElementById("side-quest-open");
+        this.sideQuestPanel = {
+            container: sideQuestPanel instanceof HTMLElement ? sideQuestPanel : undefined,
+            summary: sideQuestSummary instanceof HTMLElement ? sideQuestSummary : undefined,
+            stats: sideQuestStats instanceof HTMLElement ? sideQuestStats : undefined,
+            openButton: sideQuestOpen instanceof HTMLButtonElement ? sideQuestOpen : undefined
+        };
+        if (this.sideQuestPanel.openButton) {
+            this.sideQuestPanel.openButton.addEventListener("click", () => this.showSideQuestOverlay());
         }
         const seasonTrackPanel = document.getElementById("season-track-panel");
         const seasonTrackSummary = document.getElementById("season-track-summary");
@@ -1370,6 +1609,79 @@ export class HudView {
         };
         if (this.seasonTrackPanel.openButton) {
             this.seasonTrackPanel.openButton.addEventListener("click", () => this.showSeasonTrackOverlay());
+        }
+        const lessonMedalPanel = document.getElementById("lesson-medal-panel");
+        const lessonMedalBadge = document.getElementById("lesson-medal-badge");
+        const lessonMedalSummary = document.getElementById("lesson-medal-summary");
+        const lessonMedalBest = document.getElementById("lesson-medal-best");
+        const lessonMedalNext = document.getElementById("lesson-medal-next");
+        const lessonMedalOpen = document.getElementById("lesson-medal-open");
+        this.lessonMedalPanel = {
+            container: lessonMedalPanel instanceof HTMLElement ? lessonMedalPanel : undefined,
+            badge: lessonMedalBadge instanceof HTMLElement ? lessonMedalBadge : undefined,
+            summary: lessonMedalSummary instanceof HTMLElement ? lessonMedalSummary : undefined,
+            best: lessonMedalBest instanceof HTMLElement ? lessonMedalBest : undefined,
+            next: lessonMedalNext instanceof HTMLElement ? lessonMedalNext : undefined,
+            openButton: lessonMedalOpen instanceof HTMLButtonElement ? lessonMedalOpen : undefined
+        };
+        if (this.lessonMedalPanel.openButton) {
+            this.lessonMedalPanel.openButton.addEventListener("click", () => this.showLessonMedalOverlay());
+        }
+        const masteryCertificatePanel = document.getElementById("mastery-certificate-panel");
+        const masteryCertificateSummary = document.getElementById("mastery-certificate-summary");
+        const masteryCertificateStats = document.getElementById("mastery-certificate-stats");
+        const masteryCertificateDate = document.getElementById("mastery-certificate-date");
+        const masteryCertificateName = document.getElementById("mastery-certificate-name");
+        const masteryCertificateOpen = document.getElementById("mastery-certificate-open");
+        this.masteryCertificatePanel = {
+            container: masteryCertificatePanel instanceof HTMLElement ? masteryCertificatePanel : undefined,
+            summary: masteryCertificateSummary instanceof HTMLElement ? masteryCertificateSummary : undefined,
+            stats: masteryCertificateStats instanceof HTMLElement ? masteryCertificateStats : undefined,
+            date: masteryCertificateDate instanceof HTMLElement ? masteryCertificateDate : undefined,
+            nameInput: masteryCertificateName ?? undefined,
+            openButton: masteryCertificateOpen instanceof HTMLButtonElement ? masteryCertificateOpen : undefined
+        };
+        if (this.masteryCertificatePanel.nameInput) {
+            this.masteryCertificatePanel.nameInput.value = this.certificateName;
+            this.masteryCertificatePanel.nameInput.addEventListener("input", (event) => {
+                const nextValue = event.target?.value ?? "";
+                this.setCertificateName(nextValue);
+            });
+        }
+        if (this.masteryCertificatePanel.openButton) {
+            this.masteryCertificatePanel.openButton.addEventListener("click", () => this.showMasteryCertificateOverlay());
+        }
+        const mentorContainer = document.getElementById("mentor-dialogue");
+        const mentorText = document.getElementById("mentor-dialogue-text");
+        const mentorFocus = document.getElementById("mentor-dialogue-focus");
+        if (mentorContainer instanceof HTMLElement) {
+            this.mentorDialogue = {
+                container: mentorContainer,
+                text: mentorText instanceof HTMLElement ? mentorText : undefined,
+                focus: mentorFocus instanceof HTMLElement ? mentorFocus : undefined
+            };
+            mentorContainer.dataset.focus = mentorContainer.dataset.focus ?? "neutral";
+        }
+        const milestoneContainer = document.getElementById("milestone-celebration");
+        const milestoneTitle = document.getElementById("milestone-celebration-title");
+        const milestoneDetail = document.getElementById("milestone-celebration-detail");
+        const milestoneBadge = document.getElementById("milestone-celebration-badge");
+        const milestoneEyebrow = document.getElementById("milestone-celebration-eyebrow");
+        const milestoneClose = document.getElementById("milestone-celebration-close");
+        if (milestoneContainer instanceof HTMLElement) {
+            this.milestoneCelebration = {
+                container: milestoneContainer,
+                title: milestoneTitle instanceof HTMLElement ? milestoneTitle : undefined,
+                detail: milestoneDetail instanceof HTMLElement ? milestoneDetail : undefined,
+                badge: milestoneBadge instanceof HTMLElement ? milestoneBadge : undefined,
+                eyebrow: milestoneEyebrow instanceof HTMLElement ? milestoneEyebrow : undefined,
+                closeButton: milestoneClose instanceof HTMLButtonElement ? milestoneClose : undefined
+            };
+            milestoneContainer.dataset.visible = milestoneContainer.dataset.visible ?? "false";
+            milestoneContainer.setAttribute("aria-hidden", "true");
+            if (this.milestoneCelebration.closeButton) {
+                this.milestoneCelebration.closeButton.addEventListener("click", () => this.hideMilestoneCelebration());
+            }
         }
         if (rootIds.parentSummaryOverlay) {
             const summaryContainer = document.getElementById(rootIds.parentSummaryOverlay.container);
@@ -1809,8 +2121,17 @@ export class HudView {
     update(state, upcoming, options = {}) {
         const now = typeof performance !== "undefined" ? performance.now() : Date.now();
         this.lastState = state;
+        const wpm = this.computeWpm(state);
+        if (typeof options.lessonsCompleted === "number") {
+            this.lessonsCompletedCount = Math.max(0, Math.floor(options.lessonsCompleted));
+        }
         this.updateCastleBonusHint(state);
         this.refreshParentSummary(state);
+        this.refreshMasteryCertificate(state, options.lessonsCompleted ?? 0);
+        this.maybeCelebrateLessonMilestone(options.lessonsCompleted ?? 0);
+        this.updateMentorDialogue(state, wpm);
+        this.renderMuseumPanel();
+        this.renderSideQuestPanel();
         if (this.analyticsViewer) {
             const modeValue = state.mode === "practice" ? "practice" : "campaign";
             this.analyticsViewer.container.dataset.mode = modeValue;
@@ -1832,8 +2153,6 @@ export class HudView {
             this.typingAccuracyLabel.textContent = `${pct}%`;
         }
         if (this.typingWpmLabel) {
-            const minutes = Math.max(state.time / 60, 0.1);
-            const wpm = Math.max(0, Math.round((state.typing.correctInputs / 5) / minutes));
             this.typingWpmLabel.textContent = wpm.toString();
         }
         const activeEnemy = state.typing.activeEnemyId
@@ -4304,7 +4623,7 @@ export class HudView {
                 this.contrastOverlay.summary.textContent = "No elements were inspected.";
             }
             else {
-                this.contrastOverlay.summary.textContent = `Checked ${total} regions · ${failCount} fail, ${warnCount} warn (target 4.5:1).`;
+                this.contrastOverlay.summary.textContent = `Checked ${total} regions / ${failCount} fail, ${warnCount} warn (target 4.5:1).`;
             }
         }
         container.dataset.visible = "true";
@@ -4437,6 +4756,656 @@ export class HudView {
             this.renderSeasonTrackOverlay(state);
         }
     }
+    readCertificateName() {
+        if (typeof window === "undefined" || !window.localStorage)
+            return "";
+        try {
+            const raw = window.localStorage.getItem(CERTIFICATE_NAME_KEY);
+            return typeof raw === "string" ? raw : "";
+        }
+        catch {
+            return "";
+        }
+    }
+    persistCertificateName(name) {
+        if (typeof window === "undefined" || !window.localStorage)
+            return;
+        try {
+            window.localStorage.setItem(CERTIFICATE_NAME_KEY, name);
+        }
+        catch {
+            // ignore storage write failures
+        }
+    }
+    setCertificateName(name) {
+        const next = name?.trim() ?? "";
+        this.certificateName = next;
+        this.persistCertificateName(next);
+        this.renderMasteryCertificatePanel();
+        this.renderMasteryCertificateOverlay();
+    }
+    showLessonMedalOverlay() {
+        if (!this.lessonMedalOverlay)
+            return;
+        this.lessonMedalOverlay.container.dataset.visible = "true";
+        this.lessonMedalOverlay.container.setAttribute("aria-hidden", "false");
+        this.renderLessonMedalOverlay(this.lessonMedalState ?? this.getEmptyLessonMedalState());
+        const focusable = this.getFocusableElements(this.lessonMedalOverlay.container);
+        focusable[0]?.focus();
+    }
+    hideLessonMedalOverlay() {
+        if (!this.lessonMedalOverlay)
+            return;
+        this.lessonMedalOverlay.container.dataset.visible = "false";
+        this.lessonMedalOverlay.container.setAttribute("aria-hidden", "true");
+    }
+    showMasteryCertificateOverlay() {
+        if (!this.masteryCertificate)
+            return;
+        this.masteryCertificate.container.dataset.visible = "true";
+        this.masteryCertificate.container.setAttribute("aria-hidden", "false");
+        this.renderMasteryCertificateOverlay();
+        const focusable = this.getFocusableElements(this.masteryCertificate.container);
+        focusable[0]?.focus();
+    }
+    hideMasteryCertificateOverlay() {
+        if (!this.masteryCertificate)
+            return;
+        this.masteryCertificate.container.dataset.visible = "false";
+        this.masteryCertificate.container.setAttribute("aria-hidden", "true");
+    }
+    showSideQuestOverlay() {
+        if (!this.sideQuestOverlay)
+            return;
+        this.renderSideQuestOverlay();
+        this.sideQuestOverlay.container.dataset.visible = "true";
+        this.sideQuestOverlay.container.setAttribute("aria-hidden", "false");
+        const focusable = this.getFocusableElements(this.sideQuestOverlay.container);
+        focusable[0]?.focus();
+    }
+    hideSideQuestOverlay() {
+        if (!this.sideQuestOverlay)
+            return;
+        this.sideQuestOverlay.container.dataset.visible = "false";
+        this.sideQuestOverlay.container.setAttribute("aria-hidden", "true");
+    }
+    showMuseumOverlay() {
+        if (!this.museumOverlay)
+            return;
+        this.renderMuseumOverlay();
+        this.museumOverlay.container.dataset.visible = "true";
+        this.museumOverlay.container.setAttribute("aria-hidden", "false");
+        const focusable = this.getFocusableElements(this.museumOverlay.container);
+        focusable[0]?.focus();
+    }
+    hideMuseumOverlay() {
+        if (!this.museumOverlay)
+            return;
+        this.museumOverlay.container.dataset.visible = "false";
+        this.museumOverlay.container.setAttribute("aria-hidden", "true");
+    }
+    celebrateMilestone(options) {
+        if (!this.milestoneCelebration)
+            return;
+        const { container, title, detail, badge, eyebrow } = this.milestoneCelebration;
+        if (title) {
+            title.textContent = options.title;
+        }
+        if (detail) {
+            detail.textContent = options.detail;
+        }
+        if (eyebrow) {
+            eyebrow.textContent = options.eyebrow ?? "Milestone reached";
+        }
+        if (badge) {
+            const tone = options.tone ?? "default";
+            if (tone === "gold") {
+                badge.textContent = "Gold milestone";
+            }
+            else if (tone === "platinum") {
+                badge.textContent = "Platinum milestone";
+            }
+            else if (tone === "lesson") {
+                badge.textContent = "Lessons";
+            }
+            else {
+                badge.textContent = "Milestone";
+            }
+            if (tone === "gold" || tone === "platinum" || tone === "lesson") {
+                badge.dataset.tone = tone;
+            }
+            else {
+                delete badge.dataset.tone;
+            }
+        }
+        container.dataset.visible = "true";
+        container.setAttribute("aria-hidden", "false");
+        this.scheduleMilestoneHide(options.durationMs ?? 4800);
+    }
+    hideMilestoneCelebration() {
+        if (!this.milestoneCelebration)
+            return;
+        this.milestoneCelebration.container.dataset.visible = "false";
+        this.milestoneCelebration.container.setAttribute("aria-hidden", "true");
+        if (this.milestoneCelebrationHideTimeout) {
+            window.clearTimeout(this.milestoneCelebrationHideTimeout);
+            this.milestoneCelebrationHideTimeout = null;
+        }
+    }
+    scheduleMilestoneHide(durationMs) {
+        if (this.milestoneCelebrationHideTimeout) {
+            window.clearTimeout(this.milestoneCelebrationHideTimeout);
+        }
+        this.milestoneCelebrationHideTimeout = window.setTimeout(() => {
+            this.hideMilestoneCelebration();
+        }, durationMs);
+    }
+    updateMentorDialogue(state, wpm) {
+        if (!this.mentorDialogue)
+            return;
+        const now = typeof performance !== "undefined" ? performance.now() : Date.now();
+        const accuracy = Math.max(0, Math.min(1, state.typing.accuracy ?? 0));
+        const totalInputs = Math.max(0, state.typing.totalInputs ?? 0);
+        let focus = "neutral";
+        if (totalInputs >= 20) {
+            if (accuracy < 0.9) {
+                focus = "accuracy";
+            }
+            else if (accuracy >= 0.95 && wpm < 40) {
+                focus = "speed";
+            }
+            else if (accuracy >= 0.96 && wpm >= 55) {
+                focus = "speed";
+            }
+            else if (accuracy < 0.93 && wpm >= 45) {
+                focus = "accuracy";
+            }
+            else {
+                focus = "neutral";
+            }
+        }
+        if (focus === this.mentorFocus && now < this.mentorNextUpdateAt) {
+            return;
+        }
+        const focusLabel = focus === "accuracy" ? "Accuracy focus" : focus === "speed" ? "Speed focus" : "Balanced";
+        if (this.mentorDialogue.focus) {
+            this.mentorDialogue.focus.textContent = focusLabel;
+        }
+        this.mentorFocus = focus;
+        this.mentorDialogue.container.dataset.focus = focus;
+        const messages = {
+            accuracy: [
+                "Dial back and steady accuracy - slow until errors disappear.",
+                "Accuracy first: breathe, reset fingers, and chase clean streaks.",
+                "Focus on clean inputs; short words and calm rhythm beat speed right now."
+            ],
+            speed: [
+                "Accuracy looks solid - add a small speed burst for the next wave.",
+                "Try a quicker tempo for 10 seconds while keeping combos alive.",
+                "Feeling steady? Nudge speed up and keep accuracy above 95%."
+            ],
+            neutral: [
+                "Balanced focus: keep accuracy steady, then push speed in sprints.",
+                "Nice balance - stay relaxed and hold your rhythm.",
+                "Keep the flow: calm hands, even pacing, clean combos."
+            ]
+        };
+        const messagePool = messages[focus] ?? messages.neutral;
+        const message = this.pickMentorMessage(focus, messagePool);
+        if (this.mentorDialogue.text) {
+            this.mentorDialogue.text.textContent = message;
+        }
+        this.mentorNextUpdateAt = now + 6000;
+    }
+    pickMentorMessage(focus, pool) {
+        if (!pool.length)
+            return "";
+        const index = this.mentorMessageCursor[focus] ?? 0;
+        const message = pool[index % pool.length];
+        this.mentorMessageCursor[focus] = (index + 1) % pool.length;
+        return message;
+    }
+    buildMuseumEntries() {
+        const lessons = this.lessonMedalState?.recent?.length ?? 0;
+        const lessonMedalsUnlocked = (this.lessonMedalState?.totals?.bronze ?? 0) +
+            (this.lessonMedalState?.totals?.silver ?? 0) +
+            (this.lessonMedalState?.totals?.gold ?? 0) +
+            (this.lessonMedalState?.totals?.platinum ?? 0) >
+            0;
+        const loreUnlocked = this.loreScrollState?.unlocked ?? 0;
+        const seasonUnlocks = this.seasonTrackState?.unlocked ?? 0;
+        const skinsUnlocked = this.castleSkin ? 1 : 0;
+        const certificateUnlocked = Boolean(this.certificateStats);
+        const companionMood = this.companionMood;
+        return [
+            {
+                id: "castle-skins",
+                title: "Castle Skins",
+                description: "Concept art and palettes for your unlocked castle skins.",
+                unlocked: skinsUnlocked > 0,
+                meta: `Active skin: ${this.castleSkin}`
+            },
+            {
+                id: "reward-track",
+                title: "Season Artifacts",
+                description: "Artifacts from the season reward track displayed in the hall.",
+                unlocked: seasonUnlocks > 0,
+                meta: `${seasonUnlocks} reward${seasonUnlocks === 1 ? "" : "s"} unlocked`
+            },
+            {
+                id: "companion-gallery",
+                title: "Companion Gallery",
+                description: "Moods and sketches of your companion friend.",
+                unlocked: companionMood === "happy" || companionMood === "cheer",
+                meta: `Mood: ${companionMood}`
+            },
+            {
+                id: "lore-shelves",
+                title: "Lore Shelves",
+                description: "Codex scrolls and lore snippets you've unlocked.",
+                unlocked: loreUnlocked > 0,
+                meta: `${loreUnlocked} scroll${loreUnlocked === 1 ? "" : "s"} collected`
+            },
+            {
+                id: "medal-hall",
+                title: "Medal Hall",
+                description: "Frames for lesson medals and best runs.",
+                unlocked: lessonMedalsUnlocked,
+                meta: lessonMedalsUnlocked
+                    ? "Medals earned; best runs highlighted"
+                    : "Earn a medal to mount your first frame"
+            },
+            {
+                id: "certificate-wing",
+                title: "Certificate Wing",
+                description: "Mastery certificate prints and signatures.",
+                unlocked: certificateUnlocked,
+                meta: certificateUnlocked ? "Certificate unlocked" : "Complete a run with strong accuracy"
+            },
+            {
+                id: "practice-archives",
+                title: "Practice Archives",
+                description: "Gallery of drills and practice reels.",
+                unlocked: lessons > 0,
+                meta: `${lessons} drill${lessons === 1 ? "" : "s"} tracked`
+            }
+        ];
+    }
+    renderMuseumPanel() {
+        if (!this.museumPanel)
+            return;
+        this.museumEntries = this.buildMuseumEntries();
+        const unlocked = this.museumEntries.filter((entry) => entry.unlocked).length;
+        const total = this.museumEntries.length;
+        if (this.museumPanel.summary) {
+            this.museumPanel.summary.textContent = unlocked
+                ? "Artifacts are being curated in the castle museum."
+                : "Earn skins, medals, and scrolls to fill the museum.";
+        }
+        if (this.museumPanel.stats) {
+            this.museumPanel.stats.textContent = `${unlocked} / ${total} on display`;
+        }
+    }
+    renderMuseumOverlay() {
+        if (!this.museumOverlay)
+            return;
+        this.museumEntries = this.buildMuseumEntries();
+        if (this.museumOverlay.subtitle) {
+            const unlocked = this.museumEntries.filter((entry) => entry.unlocked).length;
+            const total = this.museumEntries.length;
+            this.museumOverlay.subtitle.textContent = `${unlocked} of ${total} artifacts are on display.`;
+        }
+        this.museumOverlay.list.replaceChildren();
+        for (const entry of this.museumEntries) {
+            const tile = document.createElement("div");
+            tile.className = "museum-tile";
+            tile.dataset.status = entry.unlocked ? "unlocked" : "locked";
+            tile.setAttribute("role", "listitem");
+            const title = document.createElement("p");
+            title.className = "museum-tile__title";
+            title.textContent = entry.title;
+            const desc = document.createElement("p");
+            desc.className = "museum-tile__desc";
+            desc.textContent = entry.description;
+            const meta = document.createElement("div");
+            meta.className = "museum-tile__meta";
+            const pill = document.createElement("span");
+            pill.className = "museum-pill";
+            pill.textContent = entry.unlocked ? "Unlocked" : "Locked";
+            const metaText = document.createElement("span");
+            metaText.textContent = entry.meta;
+            meta.append(pill, metaText);
+            tile.append(title, desc, meta);
+            this.museumOverlay.list.appendChild(tile);
+        }
+    }
+    buildSideQuestEntries() {
+        const lessonsCompleted = this.lessonsCompletedCount;
+        const loreUnlocked = this.loreScrollState?.unlocked ?? 0;
+        const medals = this.lessonMedalState?.totals ?? {
+            bronze: 0,
+            silver: 0,
+            gold: 0,
+            platinum: 0
+        };
+        const goldAndHigher = (medals.gold ?? 0) + (medals.platinum ?? 0);
+        const drillsCompleted = this.lessonMedalState?.recent?.length ?? 0;
+        return [
+            {
+                id: "quest-lessons",
+                title: "Complete 3 lessons",
+                description: "Finish three lessons or drills to stay sharp.",
+                progress: Math.min(lessonsCompleted, 3),
+                total: 3,
+                status: lessonsCompleted >= 3 ? "completed" : "active",
+                meta: `${Math.min(lessonsCompleted, 3)}/3`
+            },
+            {
+                id: "quest-medal",
+                title: "Earn a Gold medal",
+                description: "Chase a Gold or Platinum medal on any drill.",
+                progress: Math.min(goldAndHigher, 1),
+                total: 1,
+                status: goldAndHigher >= 1 ? "completed" : "active",
+                meta: goldAndHigher >= 1 ? "Complete" : "0/1"
+            },
+            {
+                id: "quest-lore",
+                title: "Unlock a lore scroll",
+                description: "Finish lessons to discover a new scroll.",
+                progress: Math.min(loreUnlocked, 1),
+                total: 1,
+                status: loreUnlocked >= 1 ? "completed" : "active",
+                meta: loreUnlocked >= 1 ? "Complete" : "0/1"
+            },
+            {
+                id: "quest-drills",
+                title: "Play 5 practice drills",
+                description: "Keep fingers fresh with practice runs.",
+                progress: Math.min(drillsCompleted, 5),
+                total: 5,
+                status: drillsCompleted >= 5 ? "completed" : "active",
+                meta: `${Math.min(drillsCompleted, 5)}/5`
+            }
+        ];
+    }
+    renderSideQuestPanel() {
+        if (!this.sideQuestPanel)
+            return;
+        this.sideQuestEntries = this.buildSideQuestEntries();
+        const completed = this.sideQuestEntries.filter((entry) => entry.status === "completed").length;
+        const active = this.sideQuestEntries.length - completed;
+        if (this.sideQuestPanel.summary) {
+            this.sideQuestPanel.summary.textContent = completed
+                ? "Quests are updating as you play."
+                : "Pick a quest and aim for clean runs.";
+        }
+        if (this.sideQuestPanel.stats) {
+            this.sideQuestPanel.stats.textContent = `${active} active / ${completed} completed`;
+        }
+    }
+    renderSideQuestOverlay() {
+        if (!this.sideQuestOverlay)
+            return;
+        this.sideQuestEntries = this.buildSideQuestEntries();
+        const completed = this.sideQuestEntries.filter((entry) => entry.status === "completed").length;
+        const total = this.sideQuestEntries.length;
+        if (this.sideQuestOverlay.subtitle) {
+            this.sideQuestOverlay.subtitle.textContent = `${completed} of ${total} quests completed`;
+        }
+        this.sideQuestOverlay.list.replaceChildren();
+        for (const entry of this.sideQuestEntries) {
+            const tile = document.createElement("div");
+            tile.className = "quest-tile";
+            tile.dataset.status = entry.status;
+            tile.setAttribute("role", "listitem");
+            const title = document.createElement("p");
+            title.className = "quest-tile__title";
+            title.textContent = entry.title;
+            const desc = document.createElement("p");
+            desc.className = "quest-tile__desc";
+            desc.textContent = entry.description;
+            const meta = document.createElement("div");
+            meta.className = "quest-tile__meta";
+            const pill = document.createElement("span");
+            pill.className = "quest-pill";
+            pill.textContent = entry.status === "completed" ? "Completed" : "Active";
+            const metaText = document.createElement("span");
+            metaText.textContent = entry.meta;
+            meta.append(pill, metaText);
+            const progress = document.createElement("div");
+            progress.className = "quest-progress";
+            const bar = document.createElement("div");
+            bar.className = "quest-progress__bar";
+            const ratio = entry.total > 0 ? Math.min(1, entry.progress / entry.total) : 0;
+            bar.style.width = `${ratio * 100}%`;
+            progress.appendChild(bar);
+            tile.append(title, desc, meta, progress);
+            this.sideQuestOverlay.list.appendChild(tile);
+        }
+    }
+    maybeCelebrateLessonMilestone(lessonsCompleted) {
+        if (!Number.isFinite(lessonsCompleted))
+            return;
+        const thresholds = [5, 10, 20, 30, 50, 75, 100];
+        const nextThreshold = thresholds.find((value) => lessonsCompleted >= value && this.lastLessonMilestoneCelebrated < value);
+        if (!nextThreshold) {
+            if (lessonsCompleted < this.lastLessonMilestoneCelebrated) {
+                this.lastLessonMilestoneCelebrated = lessonsCompleted;
+            }
+            return;
+        }
+        this.lastLessonMilestoneCelebrated = nextThreshold;
+        this.celebrateMilestone({
+            title: `${nextThreshold} lessons completed!`,
+            detail: `You have completed ${lessonsCompleted} lessons—hydrate, stretch, then tackle the next challenge.`,
+            tone: "lesson",
+            eyebrow: "Lesson milestone"
+        });
+    }
+    downloadMasteryCertificate() {
+        if (!this.masteryCertificate)
+            return;
+        const wasVisible = this.masteryCertificate.container.dataset.visible === "true";
+        if (!wasVisible) {
+            this.showMasteryCertificateOverlay();
+        }
+        if (typeof window !== "undefined" && typeof window.print === "function") {
+            window.print();
+        }
+        if (!wasVisible) {
+            this.hideMasteryCertificateOverlay();
+        }
+    }
+    setLessonMedalProgress(state) {
+        const previousTimestamp = this.lessonMedalState?.last?.timestamp ?? 0;
+        this.lessonMedalState = state;
+        this.updateLessonMedalPanel(state);
+        if (this.lessonMedalOverlay?.container.dataset.visible === "true") {
+            this.renderLessonMedalOverlay(state);
+        }
+        if ((state.last?.timestamp ?? 0) > previousTimestamp) {
+            if (state.last?.tier === "gold" || state.last?.tier === "platinum") {
+                const tierLabel = state.last.tier.charAt(0).toUpperCase() + state.last.tier.slice(1).toLowerCase();
+                const modeLabel = state.last.mode === "burst"
+                    ? "Burst"
+                    : state.last.mode === "endurance"
+                        ? "Endurance"
+                        : "Precision";
+                const accuracy = Number.isFinite(state.last.accuracy)
+                    ? `${Math.round(Math.max(0, Math.min(1, state.last.accuracy)) * 100)}% accuracy`
+                    : "Great accuracy";
+                this.celebrateMilestone({
+                    title: `${tierLabel} medal earned!`,
+                    detail: `${modeLabel} drill completed with ${accuracy}.`,
+                    tone: state.last.tier === "platinum" ? "platinum" : "gold",
+                    eyebrow: "Lesson milestone"
+                });
+            }
+            this.flashLessonMedalHighlight();
+        }
+    }
+    getEmptyLessonMedalState() {
+        return {
+            last: null,
+            recent: [],
+            bestByMode: { burst: null, endurance: null, precision: null },
+            totals: { bronze: 0, silver: 0, gold: 0, platinum: 0 },
+            nextTarget: null
+        };
+    }
+    flashLessonMedalHighlight() {
+        if (!this.lessonMedalPanel?.container)
+            return;
+        this.lessonMedalPanel.container.dataset.highlight = "true";
+        if (this.lessonMedalHighlightTimeout) {
+            window.clearTimeout(this.lessonMedalHighlightTimeout);
+        }
+        this.lessonMedalHighlightTimeout = window.setTimeout(() => {
+            if (this.lessonMedalPanel?.container) {
+                this.lessonMedalPanel.container.dataset.highlight = "false";
+            }
+            this.lessonMedalHighlightTimeout = null;
+        }, 2200);
+    }
+    updateLessonMedalPanel(state) {
+        if (!this.lessonMedalPanel)
+            return;
+        const lastTier = state.last?.tier ?? "bronze";
+        const tierLabel = lastTier.charAt(0).toUpperCase() + lastTier.slice(1);
+        const modeLabel = state.last ? this.formatTypingDrillMode(state.last.mode) : null;
+        if (this.lessonMedalPanel.badge) {
+            this.lessonMedalPanel.badge.dataset.tier = lastTier;
+            this.lessonMedalPanel.badge.textContent = tierLabel;
+        }
+        if (this.lessonMedalPanel.summary) {
+            if (state.last) {
+                const accuracy = Math.round(state.last.accuracy * 100);
+                const wpm = Math.round(state.last.wpm);
+                this.lessonMedalPanel.summary.textContent = `${tierLabel} / ${modeLabel} / ${accuracy}% / ${wpm} WPM`;
+            }
+            else {
+                this.lessonMedalPanel.summary.textContent =
+                    "Complete a typing drill to start earning medals.";
+            }
+        }
+        if (this.lessonMedalPanel.best) {
+            this.lessonMedalPanel.best.textContent = this.formatBestMedalLine(state);
+        }
+        if (this.lessonMedalPanel.next) {
+            this.lessonMedalPanel.next.textContent =
+                state.nextTarget?.hint ?? "Platinum secured—keep the streak alive.";
+        }
+    }
+    renderLessonMedalOverlay(state) {
+        if (!this.lessonMedalOverlay)
+            return;
+        const lastTier = state.last?.tier ?? "bronze";
+        const tierLabel = lastTier.charAt(0).toUpperCase() + lastTier.slice(1);
+        if (this.lessonMedalOverlay.badge) {
+            this.lessonMedalOverlay.badge.dataset.tier = lastTier;
+            this.lessonMedalOverlay.badge.textContent = tierLabel;
+        }
+        if (this.lessonMedalOverlay.last) {
+            this.lessonMedalOverlay.last.textContent = state.last
+                ? `${tierLabel} in ${this.formatTypingDrillMode(state.last.mode)} / ${Math.round(state.last.accuracy * 100)}% accuracy / ${Math.round(state.last.wpm)} WPM`
+                : "Complete a typing drill to claim your first medal.";
+        }
+        if (this.lessonMedalOverlay.next) {
+            this.lessonMedalOverlay.next.textContent =
+                state.nextTarget?.hint ?? "Replay drills to keep medals fresh.";
+        }
+        if (this.lessonMedalOverlay.bestList) {
+            const modes = [
+                { id: "burst", label: "Burst Warmup" },
+                { id: "endurance", label: "Endurance" },
+                { id: "precision", label: "Shield Breaker" }
+            ];
+            this.lessonMedalOverlay.bestList.replaceChildren();
+            for (const mode of modes) {
+                const entry = state.bestByMode[mode.id];
+                const card = document.createElement("div");
+                card.className = "lesson-medal-mode";
+                card.dataset.tier = entry?.tier ?? "bronze";
+                const title = document.createElement("p");
+                title.className = "lesson-medal-mode__title";
+                title.textContent = mode.label;
+                const badge = document.createElement("span");
+                badge.className = "lesson-medal-mode__badge";
+                badge.textContent = entry ? this.formatMedalTier(entry.tier) : "None";
+                const stats = document.createElement("p");
+                stats.className = "lesson-medal-mode__stats";
+                if (entry) {
+                    stats.textContent = `${Math.round(entry.accuracy * 100)}% / ${Math.round(entry.wpm)} WPM / combo x${entry.bestCombo}`;
+                }
+                else {
+                    stats.textContent = "No medal yet—run this drill to set a baseline.";
+                }
+                title.appendChild(badge);
+                card.appendChild(title);
+                card.appendChild(stats);
+                this.lessonMedalOverlay.bestList.appendChild(card);
+            }
+        }
+        if (this.lessonMedalOverlay.historyList) {
+            this.lessonMedalOverlay.historyList.replaceChildren();
+            for (const entry of state.recent) {
+                const item = document.createElement("li");
+                item.className = "lesson-medal-history__item";
+                item.dataset.tier = entry.tier;
+                const badge = document.createElement("span");
+                badge.className = "lesson-medal-history__badge";
+                badge.textContent = this.formatMedalTier(entry.tier);
+                const text = document.createElement("span");
+                text.className = "lesson-medal-history__text";
+                text.textContent = `${this.formatTypingDrillMode(entry.mode)} / ${Math.round(entry.accuracy * 100)}% / ${Math.round(entry.wpm)} WPM / combo x${entry.bestCombo} / ${entry.errors} error${entry.errors === 1 ? "" : "s"}`;
+                item.appendChild(badge);
+                item.appendChild(text);
+                this.lessonMedalOverlay.historyList.appendChild(item);
+            }
+            if (!state.recent.length) {
+                const empty = document.createElement("li");
+                empty.className = "lesson-medal-history__item lesson-medal-history__item--empty";
+                empty.textContent = "Run a drill to start building medal history.";
+                this.lessonMedalOverlay.historyList.appendChild(empty);
+            }
+        }
+        if (this.lessonMedalOverlay.replayButton) {
+            this.lessonMedalOverlay.replayButton.textContent = state.nextTarget
+                ? `Replay for ${this.formatMedalTier(state.nextTarget.tier)}`
+                : "Replay drill";
+        }
+    }
+    formatMedalTier(tier) {
+        const value = typeof tier === "string" && tier.length > 0 ? tier : "";
+        if (!value)
+            return "None";
+        return value.charAt(0).toUpperCase() + value.slice(1);
+    }
+    formatTypingDrillMode(mode) {
+        switch (mode) {
+            case "precision":
+                return "Shield Breaker";
+            case "endurance":
+                return "Endurance";
+            case "burst":
+            default:
+                return "Burst Warmup";
+        }
+    }
+    formatBestMedalLine(state) {
+        const parts = [];
+        const modes = [
+            { id: "burst", label: "Burst" },
+            { id: "endurance", label: "Endurance" },
+            { id: "precision", label: "Precision" }
+        ];
+        for (const mode of modes) {
+            const entry = state.bestByMode[mode.id];
+            parts.push(`${mode.label}: ${entry ? this.formatMedalTier(entry.tier) : "None"}`);
+        }
+        return parts.join(" / ");
+    }
     showLoreScrollOverlay() {
         if (!this.loreScrollOverlay)
             return;
@@ -4503,6 +5472,98 @@ export class HudView {
             this.seasonTrackOverlay.list.appendChild(item);
         }
     }
+    setMasteryCertificate(state) {
+        const isNewCertificate = state.recordedAt !== this.lastCertificateCelebratedAt;
+        this.certificateStats = state;
+        if (isNewCertificate) {
+            this.lastCertificateCelebratedAt = state.recordedAt;
+            if (state.accuracyPct >= 95) {
+                const name = this.certificateName || "Learner";
+                this.celebrateMilestone({
+                    title: "Mastery certificate earned",
+                    detail: `${name} hit ${state.accuracyPct}% accuracy and ${state.wpm} WPM.`,
+                    tone: "platinum",
+                    eyebrow: "Certificate ready"
+                });
+            }
+        }
+        this.renderMasteryCertificatePanel();
+        if (this.masteryCertificate?.container.dataset.visible === "true") {
+            this.renderMasteryCertificateOverlay();
+        }
+    }
+    renderMasteryCertificatePanel() {
+        if (!this.masteryCertificatePanel)
+            return;
+        const stats = this.certificateStats;
+        if (this.masteryCertificatePanel.summary) {
+            if (stats) {
+                this.masteryCertificatePanel.summary.textContent = `${this.certificateName || "Learner"} is tracking towards mastery.`;
+            }
+            else {
+                this.masteryCertificatePanel.summary.textContent =
+                    "Complete a session to generate a mastery certificate.";
+            }
+        }
+        if (this.masteryCertificatePanel.stats) {
+            if (stats) {
+                this.masteryCertificatePanel.stats.textContent = `${stats.lessonsCompleted} lessons • ${stats.accuracyPct}% accuracy • ${stats.wpm} WPM • combo x${stats.bestCombo}`;
+            }
+            else {
+                this.masteryCertificatePanel.stats.textContent = "Progress appears here after your next run.";
+            }
+        }
+        if (this.masteryCertificatePanel.date) {
+            this.masteryCertificatePanel.date.textContent = stats
+                ? `Updated ${new Date(stats.recordedAt).toLocaleDateString()}`
+                : "";
+        }
+        if (this.masteryCertificatePanel.nameInput) {
+            if (this.masteryCertificatePanel.nameInput.value !== this.certificateName) {
+                this.masteryCertificatePanel.nameInput.value = this.certificateName;
+            }
+        }
+    }
+    renderMasteryCertificateOverlay() {
+        if (!this.masteryCertificate)
+            return;
+        const stats = this.certificateStats;
+        const name = this.certificateName || "Learner";
+        if (this.masteryCertificate.nameInput) {
+            if (this.masteryCertificate.nameInput.value !== this.certificateName) {
+                this.masteryCertificate.nameInput.value = this.certificateName;
+            }
+        }
+        if (this.masteryCertificate.summary) {
+            this.masteryCertificate.summary.textContent = stats
+                ? `${name} earned this certificate with ${stats.accuracyPct}% accuracy and ${stats.wpm} WPM.`
+                : "Complete a run to generate a mastery certificate.";
+        }
+        if (this.masteryCertificate.date) {
+            this.masteryCertificate.date.textContent = stats
+                ? new Date(stats.recordedAt).toLocaleDateString()
+                : "";
+        }
+        if (this.masteryCertificate.statsList) {
+            this.masteryCertificate.statsList.replaceChildren();
+            const list = this.masteryCertificate.statsList;
+            const entries = stats
+                ? [
+                    `Lessons completed: ${stats.lessonsCompleted}`,
+                    `Accuracy: ${stats.accuracyPct}%`,
+                    `WPM: ${stats.wpm}`,
+                    `Best combo: x${stats.bestCombo}`,
+                    `Typing drills: ${stats.drillsCompleted}`,
+                    `Time practiced: ${Math.round(stats.timeMinutes)} minutes`
+                ]
+                : ["Complete a lesson or drill to populate your certificate."];
+            for (const text of entries) {
+                const item = document.createElement("li");
+                item.textContent = text;
+                list.appendChild(item);
+            }
+        }
+    }
     setLoreScrollProgress(state) {
         const previousUnlocked = this.loreScrollState?.unlocked ?? 0;
         this.loreScrollState = state;
@@ -4558,7 +5619,7 @@ export class HudView {
             pill.className = "scroll-card__pill";
             pill.textContent = entry.unlocked
                 ? "Unlocked"
-                : `Locked · ${entry.requiredLessons} lesson${entry.requiredLessons === 1 ? "" : "s"}`;
+                : `Locked / ${entry.requiredLessons} lesson${entry.requiredLessons === 1 ? "" : "s"}`;
             const progressBar = document.createElement("div");
             progressBar.className = "scroll-card__progress";
             const progressFill = document.createElement("div");
@@ -4708,6 +5769,26 @@ export class HudView {
         };
         this.renderParentSummary();
     }
+    refreshMasteryCertificate(state, lessonsCompleted) {
+        const timeMinutes = Math.max(0, (state.time ?? 0) / 60);
+        const accuracyPct = Math.round(Math.max(0, Math.min(100, (state.typing?.accuracy ?? 0) * 100)));
+        const wpm = timeMinutes > 0
+            ? Math.max(0, Math.round((state.typing?.correctInputs ?? 0) / 5 / timeMinutes))
+            : 0;
+        const bestCombo = Math.max(state.analytics?.sessionBestCombo ?? 0, state.typing?.combo ?? 0, state.analytics?.waveMaxCombo ?? 0);
+        const drills = Array.isArray(state.analytics?.typingDrills)
+            ? state.analytics.typingDrills.length
+            : 0;
+        this.setMasteryCertificate({
+            lessonsCompleted: Math.max(0, Math.floor(lessonsCompleted)),
+            accuracyPct,
+            wpm,
+            bestCombo,
+            drillsCompleted: drills,
+            timeMinutes,
+            recordedAt: new Date().toISOString()
+        });
+    }
     renderParentSummary() {
         if (!this.parentSummaryOverlay || !this.parentSummary)
             return;
@@ -4715,7 +5796,7 @@ export class HudView {
         const minutesLabel = summary.timeMinutes < 90
             ? `${Math.round(summary.timeMinutes)} minutes`
             : `${(summary.timeMinutes / 60).toFixed(1)} hours`;
-        const progressText = `${minutesLabel} · ${summary.accuracyPct}% accuracy · ${summary.wpm} WPM`;
+        const progressText = `${minutesLabel} / ${summary.accuracyPct}% accuracy / ${summary.wpm} WPM`;
         if (this.parentSummaryOverlay.progress) {
             this.parentSummaryOverlay.progress.textContent = progressText;
         }
@@ -4840,7 +5921,7 @@ export class HudView {
             return;
         const unlocked = this.stickerBookEntries.filter((entry) => entry.status === "unlocked").length;
         const inProgress = this.stickerBookEntries.filter((entry) => entry.status === "in-progress").length;
-        this.stickerBookOverlay.summary.textContent = `Unlocked ${unlocked} of ${this.stickerBookEntries.length} · ${inProgress} in progress`;
+        this.stickerBookOverlay.summary.textContent = `Unlocked ${unlocked} of ${this.stickerBookEntries.length} / ${inProgress} in progress`;
     }
     refreshStickerBookState(state) {
         const entries = this.buildStickerBookEntriesFromState(state);
@@ -5099,6 +6180,10 @@ export class HudView {
         if (typeof document === "undefined")
             return;
         document.documentElement.style.setProperty("--hud-font-scale", scale.toString());
+    }
+    computeWpm(state) {
+        const minutes = Math.max(state.time / 60, 0.1);
+        return Math.max(0, Math.round((state.typing.correctInputs / 5) / minutes));
     }
     setReducedMotionEnabled(enabled) {
         if (typeof document !== "undefined") {

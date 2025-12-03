@@ -1,7 +1,7 @@
 ## Diagnostics Dashboard
 
 ### sample.analytics
-Source: `C:\Users\Werem\OneDrive\Documents\Projects\Keyboard-Defense\docs\codex_pack\fixtures\diagnostics-dashboard\sample.analytics.json`
+Source: `docs/codex_pack/fixtures/diagnostics-dashboard/sample.analytics.json`
 
 **Gold Delta**
 | Δg | Gold | Time (s) |

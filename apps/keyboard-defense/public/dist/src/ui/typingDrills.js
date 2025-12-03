@@ -1,4 +1,5 @@
 import { defaultWordBank } from "../core/wordBank.js";
+import { evaluateLessonMedal } from "../utils/lessonMedals.js";
 const DRILL_CONFIGS = {
     burst: {
         label: "Burst Warmup",
@@ -44,6 +45,10 @@ export class TypingDrillsOverlay {
     summaryWords;
     summaryErrors;
     summaryTip;
+    summaryMedal;
+    summaryMedalLabel;
+    summaryMedalHint;
+    summaryReplay;
     fallbackEl;
     toastEl;
     recommendationEl;
@@ -96,6 +101,10 @@ export class TypingDrillsOverlay {
         this.summaryWords = document.getElementById("typing-drill-summary-words");
         this.summaryErrors = document.getElementById("typing-drill-summary-errors");
         this.summaryTip = document.getElementById("typing-drill-summary-tip");
+        this.summaryMedal = document.getElementById("typing-drill-summary-medal");
+        this.summaryMedalLabel = document.getElementById("typing-drill-summary-medal-label");
+        this.summaryMedalHint = document.getElementById("typing-drill-summary-medal-hint");
+        this.summaryReplay = document.getElementById("typing-drill-summary-replay");
         this.fallbackEl = document.getElementById("typing-drill-fallback");
         this.toastEl = document.getElementById("typing-drill-toast");
         this.recommendationEl = document.getElementById("typing-drill-recommendation");
@@ -290,6 +299,12 @@ export class TypingDrillsOverlay {
                 }
             });
         }
+        if (this.summaryReplay) {
+            this.summaryReplay.addEventListener("click", () => {
+                this.reset(this.state.mode);
+                this.start(this.state.mode);
+            });
+        }
     }
     handleKey(event) {
         if (event.key === "Escape") {
@@ -387,8 +402,8 @@ export class TypingDrillsOverlay {
             this.statusLabel.textContent = reason === "timeout" ? "Time" : "Complete";
         }
         const summary = this.buildSummary();
-        this.renderSummary(summary);
         const analyticsSummary = this.toAnalyticsSummary(summary);
+        this.renderSummary(summary, analyticsSummary);
         this.callbacks.onSummary?.(analyticsSummary);
         if (this.startBtn) {
             this.startBtn.textContent = "Run again";
@@ -440,7 +455,7 @@ export class TypingDrillsOverlay {
         }
         return "Use drills between waves to keep combo decay comfortable before rejoining the siege.";
     }
-    renderSummary(summary) {
+    renderSummary(summary, analyticsSummary) {
         if (!this.summaryEl)
             return;
         this.summaryEl.setAttribute("data-visible", "true");
@@ -461,6 +476,27 @@ export class TypingDrillsOverlay {
         }
         if (this.summaryTip) {
             this.summaryTip.textContent = summary.tip;
+        }
+        const medalResult = evaluateLessonMedal(analyticsSummary ?? this.toAnalyticsSummary(summary));
+        this.renderMedalResult(medalResult.tier, medalResult.nextTarget);
+    }
+    renderMedalResult(tier, nextTarget) {
+        const label = tier.charAt(0).toUpperCase() + tier.slice(1);
+        if (this.summaryMedal) {
+            this.summaryMedal.dataset.tier = tier;
+        }
+        if (this.summaryMedalLabel) {
+            this.summaryMedalLabel.textContent = `${label} medal earned`;
+        }
+        if (this.summaryMedalHint) {
+            this.summaryMedalHint.textContent =
+                nextTarget?.hint ?? "You reached the top tier. Great work!";
+        }
+        if (this.summaryReplay) {
+            this.summaryReplay.textContent = nextTarget
+                ? `Replay for ${nextTarget.tier.charAt(0).toUpperCase() + nextTarget.tier.slice(1)}`
+                : "Replay drill";
+            this.summaryReplay.dataset.tier = tier;
         }
     }
     updateMode(mode, options = {}) {

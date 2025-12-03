@@ -29,6 +29,10 @@ export declare class TypingDrillsOverlay {
     private readonly summaryWords?;
     private readonly summaryErrors?;
     private readonly summaryTip?;
+    private readonly summaryMedal?;
+    private readonly summaryMedalLabel?;
+    private readonly summaryMedalHint?;
+    private readonly summaryReplay?;
     private readonly fallbackEl?;
     private readonly toastEl?;
     private readonly recommendationEl?;
@@ -63,6 +67,7 @@ export declare class TypingDrillsOverlay {
     private toAnalyticsSummary;
     private buildTip;
     private renderSummary;
+    private renderMedalResult;
     private updateMode;
     private pickWord;
     private updateTarget;

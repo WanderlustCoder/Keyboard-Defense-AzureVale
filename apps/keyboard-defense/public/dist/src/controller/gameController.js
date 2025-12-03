@@ -26,6 +26,7 @@ import { listNewLoreForWave } from "../data/lore.js";
 import { buildLoreScrollProgress, listNewLoreScrollsForLessons } from "../data/loreScrolls.js";
 import { readLoreProgress, writeLoreProgress } from "../utils/lorePersistence.js";
 import { readLessonProgress, writeLessonProgress, LESSON_PROGRESS_VERSION } from "../utils/lessonProgress.js";
+import { buildLessonMedalViewState, readLessonMedalProgress, recordLessonMedal, writeLessonMedalProgress } from "../utils/lessonMedals.js";
 import { buildSeasonTrackProgress, listSeasonTrack } from "../data/seasonTrack.js";
 import { selectAmbientProfile } from "../audio/ambientProfiles.js";
 import { getEnemyBiography } from "../data/bestiary.js";
@@ -335,6 +336,7 @@ export class GameController {
                 })
                 : null;
         this.initializeLessonProgress();
+        this.initializeLessonMedals();
         this.initializeLoreProgress();
         this.assetReady = false;
         this.assetStartPending = false;
@@ -498,6 +500,10 @@ export class GameController {
                 contrastAuditButton: "options-contrast-audit",
                 stickerBookButton: "options-sticker-book",
                 seasonTrackButton: "options-season-track",
+                museumButton: "options-museum",
+                sideQuestButton: "options-side-quests",
+                masteryCertificateButton: "options-mastery-certificate",
+                lessonMedalButton: "options-lesson-medals",
                 parentSummaryButton: "options-parent-summary",
                 selfTestContainer: "options-self-test",
                 selfTestRun: "options-self-test-run",
@@ -617,6 +623,37 @@ export class GameController {
                 next: "season-track-overlay-next",
                 closeButton: "season-track-close"
             },
+            museumOverlay: {
+                container: "museum-overlay",
+                closeButton: "museum-close",
+                list: "museum-list",
+                subtitle: "museum-overlay-subtitle"
+            },
+            sideQuestOverlay: {
+                container: "side-quest-overlay",
+                closeButton: "side-quest-close",
+                list: "side-quest-list",
+                subtitle: "side-quest-overlay-subtitle"
+            },
+            masteryCertificateOverlay: {
+                container: "mastery-certificate-overlay",
+                closeButton: "mastery-certificate-close",
+                downloadButton: "mastery-certificate-download",
+                nameInput: "mastery-certificate-name-input",
+                summary: "mastery-certificate-overlay-summary",
+                statsList: "mastery-certificate-stats-list",
+                date: "mastery-certificate-date"
+            },
+            lessonMedalOverlay: {
+                container: "lesson-medal-overlay",
+                closeButton: "lesson-medal-close",
+                badge: "lesson-medal-overlay-badge",
+                last: "lesson-medal-overlay-last",
+                next: "lesson-medal-overlay-next",
+                bestList: "lesson-medal-best-list",
+                historyList: "lesson-medal-history-list",
+                replayButton: "lesson-medal-replay"
+            },
             loreScrollOverlay: {
                 container: "scrolls-overlay",
                 list: "scrolls-overlay-list",
@@ -652,6 +689,15 @@ export class GameController {
             onTextSizeChange: (scale) => this.setTextSizeScale(scale),
             onHapticsToggle: (enabled) => this.setHapticsEnabled(enabled),
             onWaveScorecardContinue: () => this.handleWaveScorecardContinue(),
+            onLessonMedalReplay: (options) => {
+                const lastMedal = this.lessonMedalProgress?.history?.[(this.lessonMedalProgress?.history?.length ?? 1) - 1];
+                const mode = options?.mode ?? lastMedal?.mode ?? "burst";
+                this.openTypingDrills("medal-replay", {
+                    mode,
+                    autoStart: true,
+                    toastMessage: options?.hint ?? "Replay a drill to chase the next medal tier."
+                });
+            },
             onReducedMotionToggle: (enabled) => this.setReducedMotionEnabled(enabled),
             onCheckeredBackgroundToggle: (enabled) => this.setCheckeredBackgroundEnabled(enabled),
             onReadableFontToggle: (enabled) => this.setReadableFontEnabled(enabled),
@@ -716,6 +762,7 @@ export class GameController {
         this.hud.setAnalyticsExportEnabled(this.analyticsExportEnabled);
         this.syncLoreScrollsToHud();
         this.syncSeasonTrackToHud();
+        this.syncLessonMedalsToHud();
         this.hud.setFullscreenAvailable(this.fullscreenSupported);
         this.attachInputHandlers(options.typingInput);
         this.attachTypingDrillHooks();
@@ -3832,7 +3879,8 @@ export class GameController {
         this.hud.update(this.currentState, upcoming, {
             colorBlindFriendly: this.isColorblindPaletteActive() || this.checkeredBackgroundEnabled,
             tutorialCompleted: this.tutorialCompleted,
-            loreUnlocked: this.unlockedLore?.size ?? 0
+            loreUnlocked: this.unlockedLore?.size ?? 0,
+            lessonsCompleted: this.lessonProgress?.lessonsCompleted ?? 0
         });
         const typingDrillRecommendation = this.buildTypingDrillRecommendation(this.currentState);
         this.setTypingDrillCtaRecommendation(typingDrillRecommendation);
@@ -4932,6 +4980,10 @@ export class GameController {
             unlockedScrolls: new Set(stored.unlockedScrolls ?? [])
         };
     }
+    initializeLessonMedals() {
+        const storage = typeof window !== "undefined" && window.localStorage ? window.localStorage : null;
+        this.lessonMedalProgress = readLessonMedalProgress(storage);
+    }
     initializeLoreProgress() {
         if (typeof window === "undefined" || !window.localStorage)
             return;
@@ -4978,6 +5030,15 @@ export class GameController {
             return;
         this.hud.setSeasonTrackProgress(this.buildSeasonTrackViewState());
     }
+    syncLessonMedalsToHud(nextTarget) {
+        if (!this.hud || !this.lessonMedalProgress)
+            return;
+        const state = buildLessonMedalViewState(this.lessonMedalProgress);
+        if (nextTarget) {
+            state.nextTarget = nextTarget;
+        }
+        this.hud.setLessonMedalProgress(state);
+    }
     syncLoreScrollsToHud() {
         if (!this.hud || !this.lessonProgress)
             return;
@@ -5008,8 +5069,18 @@ export class GameController {
                 updatedAt: new Date().toISOString()
             });
         }
+        const medalBase = this.lessonMedalProgress ?? readLessonMedalProgress(null);
+        const medalResult = recordLessonMedal(medalBase, summary);
+        this.lessonMedalProgress = medalResult.progress;
+        const medalLabel = medalResult.record.tier.charAt(0).toUpperCase() + medalResult.record.tier.slice(1);
+        const modeLabel = this.getTypingDrillModeLabel(medalResult.record.mode);
+        this.hud?.appendLog?.(`${medalLabel} medal earned in ${modeLabel}.`);
+        if (typeof window !== "undefined" && window.localStorage) {
+            writeLessonMedalProgress(window.localStorage, medalResult.progress);
+        }
         this.syncLoreScrollsToHud();
         this.syncSeasonTrackToHud();
+        this.syncLessonMedalsToHud(medalResult.nextTarget);
     }
     shouldSkipTutorial() {
         if (typeof window === "undefined") {

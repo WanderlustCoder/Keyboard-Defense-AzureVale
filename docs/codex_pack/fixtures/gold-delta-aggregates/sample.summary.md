@@ -1,7 +1,7 @@
 ## Gold Delta Aggregates
 
 ### sample.analytics
-Source: `C:\Users\Werem\OneDrive\Documents\Projects\Keyboard-Defense\docs\codex_pack\fixtures\gold-delta-aggregates\sample.analytics.json`
+Source: `docs/codex_pack/fixtures/gold-delta-aggregates/sample.analytics.json`
 
 Net Δ: 0g • Largest gain: 40g • Largest loss: -50g
 
