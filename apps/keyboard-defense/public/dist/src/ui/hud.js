@@ -10,6 +10,50 @@ const PASSIVE_ICON_MAP = {
     gold: { label: "Bonus gold passive icon" },
     generic: { label: "Castle passive icon" }
 };
+const FINGER_SHIFTED_KEY_MAP = {
+    "!": "1",
+    "@": "2",
+    "#": "3",
+    $: "4",
+    "%": "5",
+    "^": "6",
+    "&": "7",
+    "*": "8",
+    "(": "9",
+    ")": "0",
+    _: "-",
+    "+": "=",
+    "{": "[",
+    "}": "]",
+    ":": ";",
+    '"': "'",
+    "|": "\\",
+    "<": ",",
+    ">": ".",
+    "?": "/",
+    "~": "`"
+};
+const FINGER_LOOKUP = (() => {
+    const zones = [
+        ["Left pinky", ["`", "1", "q", "a", "z"]],
+        ["Left ring", ["2", "w", "s", "x"]],
+        ["Left middle", ["3", "e", "d", "c"]],
+        ["Left index", ["4", "5", "r", "t", "f", "g", "v", "b"]],
+        ["Right index", ["6", "7", "y", "u", "h", "j", "n", "m"]],
+        ["Right middle", ["8", "i", "k", ","]],
+        ["Right ring", ["9", "o", "l", "."]],
+        ["Right pinky", ["0", "-", "=", "p", "[", "]", ";", "'", "/", "\\"]]
+    ];
+    const map = {};
+    for (const [finger, keys] of zones) {
+        for (const key of keys) {
+            map[key] = finger;
+            map[key.toLowerCase()] = finger;
+            map[key.toUpperCase()] = finger;
+        }
+    }
+    return map;
+})();
 const isElementWithTag = (el, tagName) => {
     return el instanceof HTMLElement && el.tagName.toLowerCase() === tagName.toLowerCase();
 };
@@ -21,6 +65,7 @@ export class HudView {
     goldLabel;
     goldDelta;
     activeWord;
+    fingerHint = null;
     typingInput;
     fullscreenButton = null;
     capsLockWarning = null;
@@ -174,6 +219,8 @@ export class HudView {
             const wpm = document.getElementById(rootIds.typingWpm);
             this.typingWpmLabel = wpm instanceof HTMLElement ? wpm : null;
         }
+        const fingerHintEl = document.getElementById("finger-hint");
+        this.fingerHint = fingerHintEl instanceof HTMLElement ? fingerHintEl : null;
         this.typingInput = this.getElement(rootIds.typingInput);
         const lockCaps = document.getElementById("lock-indicator-caps");
         const lockNum = document.getElementById("lock-indicator-num");
@@ -1192,11 +1239,11 @@ export class HudView {
             this.typingErrorHint = null;
         }
         const hasTypingError = hintFresh && (!hint?.enemyId || hint?.enemyId === activeEnemy?.id);
+        const expectedKey = hasTypingError ? hint?.expected ?? null : null;
         if (activeEnemy) {
             const typed = activeEnemy.word.slice(0, activeEnemy.typed);
             const remaining = activeEnemy.word.slice(activeEnemy.typed);
             const shielded = Boolean(activeEnemy.shield && activeEnemy.shield.current > 0);
-            const expectedKey = hasTypingError ? hint?.expected ?? null : null;
             const errorHint = hasTypingError && expectedKey
                 ? `<span class="word-error-hint" role="status" aria-live="polite"><span class="word-error-key">${expectedKey.toUpperCase()}</span><span>Needed this key</span></span>`
                 : "";
@@ -1252,6 +1299,9 @@ export class HudView {
         this.refreshAnalyticsViewer(history, {
             timeToFirstTurret: state.analytics.timeToFirstTurret ?? null
         });
+        const nextFingerChar = (hasTypingError && expectedKey ? expectedKey : activeEnemy?.word?.charAt(activeEnemy.typed)) ??
+            null;
+        this.renderFingerHint(nextFingerChar);
     }
     showCastleMessage(message) {
         this.castleStatus.textContent = message;
@@ -1279,6 +1329,69 @@ export class HudView {
             enemyId: hint.enemyId,
             timestamp: typeof performance !== "undefined" ? performance.now() : Date.now()
         };
+    }
+    renderFingerHint(targetChar) {
+        if (!this.fingerHint)
+            return;
+        const mapping = this.getFingerMapping(targetChar);
+        if (!mapping) {
+            this.fingerHint.dataset.visible = "false";
+            this.fingerHint.setAttribute("aria-hidden", "true");
+            this.fingerHint.textContent = "";
+            return;
+        }
+        const { finger, keyLabel } = mapping;
+        this.fingerHint.dataset.visible = "true";
+        this.fingerHint.setAttribute("aria-hidden", "false");
+        this.fingerHint.replaceChildren();
+        const fingerSpan = document.createElement("span");
+        fingerSpan.className = "finger-finger";
+        fingerSpan.textContent = finger;
+        const keySpan = document.createElement("span");
+        keySpan.className = "finger-key";
+        keySpan.textContent = keyLabel;
+        this.fingerHint.append(fingerSpan, keySpan);
+    }
+    getFingerMapping(char) {
+        if (!char || char.length === 0)
+            return null;
+        if (char === " ") {
+            return { finger: "Thumb", keyLabel: "Space" };
+        }
+        if (char === "\t") {
+            return { finger: "Left pinky", keyLabel: "Tab" };
+        }
+        if (char === "\n") {
+            return { finger: "Right pinky", keyLabel: "Enter" };
+        }
+        const normalizedKey = this.normalizeFingerKey(char);
+        const finger = FINGER_LOOKUP[normalizedKey];
+        if (!finger) {
+            return null;
+        }
+        return {
+            finger,
+            keyLabel: this.formatFingerKeyLabel(char)
+        };
+    }
+    normalizeFingerKey(char) {
+        const mapped = FINGER_SHIFTED_KEY_MAP[char] ?? char;
+        if (!mapped || mapped.length === 0) {
+            return "";
+        }
+        return mapped.charAt(0).toLowerCase();
+    }
+    formatFingerKeyLabel(char) {
+        if (char === " ")
+            return "Space";
+        if (char === "\t")
+            return "Tab";
+        if (char === "\n")
+            return "Enter";
+        if (char.length === 1 && /[a-z]/i.test(char)) {
+            return char.toUpperCase();
+        }
+        return char;
     }
     appendLog(message) {
         this.logEntries.unshift(message);

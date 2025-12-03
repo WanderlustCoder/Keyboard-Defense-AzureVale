@@ -200,6 +200,7 @@ export declare class HudView {
     private readonly goldLabel;
     private readonly goldDelta;
     private readonly activeWord;
+    private readonly fingerHint;
     private readonly typingInput;
     private readonly fullscreenButton;
     private readonly capsLockWarning;
@@ -388,6 +389,10 @@ export declare class HudView {
         received: string | null;
         enemyId: string | null;
     }): void;
+    private renderFingerHint;
+    private getFingerMapping;
+    private normalizeFingerKey;
+    private formatFingerKeyLabel;
     appendLog(message: string): void;
     setTutorialMessage(message: string | null, highlight?: boolean): void;
     private updateCastleBonusHint;
