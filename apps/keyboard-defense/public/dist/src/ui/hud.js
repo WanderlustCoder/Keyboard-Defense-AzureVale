@@ -139,6 +139,7 @@ export class HudView {
     sideQuestEntries = [];
     lessonsCompletedCount = 0;
     museumOverlay;
+    museumFilter = "all";
     museumPanel;
     museumEntries = [];
     certificateName = "";
@@ -1502,6 +1503,10 @@ export class HudView {
             const museumSubtitle = rootIds.museumOverlay.subtitle
                 ? document.getElementById(rootIds.museumOverlay.subtitle)
                 : null;
+            const museumFilters = museumContainer?.querySelectorAll("[data-museum-filter]");
+            const filterButtons = museumFilters
+                ? Array.from(museumFilters).filter((btn) => btn instanceof HTMLButtonElement)
+                : [];
             if (museumContainer instanceof HTMLElement &&
                 museumClose instanceof HTMLButtonElement &&
                 museumList instanceof HTMLElement) {
@@ -1509,11 +1514,21 @@ export class HudView {
                     container: museumContainer,
                     closeButton: museumClose,
                     list: museumList,
-                    subtitle: museumSubtitle instanceof HTMLElement ? museumSubtitle : undefined
+                    subtitle: museumSubtitle instanceof HTMLElement ? museumSubtitle : undefined,
+                    filters: filterButtons
                 };
                 museumContainer.dataset.visible = museumContainer.dataset.visible ?? "false";
                 museumContainer.setAttribute("aria-hidden", "true");
                 museumClose.addEventListener("click", () => this.hideMuseumOverlay());
+                for (const button of filterButtons) {
+                    button.addEventListener("click", () => {
+                        const next = button.dataset.museumFilter ?? "all";
+                        this.museumFilter = next;
+                        filterButtons.forEach((btn) => btn.setAttribute("aria-pressed", btn === button ? "true" : "false"));
+                        this.renderMuseumOverlay();
+                    });
+                }
+                filterButtons.forEach((btn) => btn.setAttribute("aria-pressed", btn.dataset.museumFilter === this.museumFilter ? "true" : "false"));
                 this.addFocusTrap(museumContainer);
             }
             else {
@@ -5108,13 +5123,25 @@ export class HudView {
         if (!this.museumOverlay)
             return;
         this.museumEntries = this.buildMuseumEntries();
+        const filtered = this.museumEntries.filter((entry) => {
+            if (this.museumFilter === "unlocked")
+                return entry.unlocked;
+            if (this.museumFilter === "locked")
+                return !entry.unlocked;
+            return true;
+        });
         if (this.museumOverlay.subtitle) {
             const unlocked = this.museumEntries.filter((entry) => entry.unlocked).length;
             const total = this.museumEntries.length;
-            this.museumOverlay.subtitle.textContent = `${unlocked} of ${total} artifacts are on display.`;
+            const filterLabel = this.museumFilter === "all"
+                ? ""
+                : this.museumFilter === "unlocked"
+                    ? " · Showing unlocked"
+                    : " · Showing locked";
+            this.museumOverlay.subtitle.textContent = `${unlocked} of ${total} artifacts are on display${filterLabel}.`;
         }
         this.museumOverlay.list.replaceChildren();
-        for (const entry of this.museumEntries) {
+        for (const entry of filtered) {
             const tile = document.createElement("div");
             tile.className = "museum-tile";
             tile.dataset.status = entry.unlocked ? "unlocked" : "locked";

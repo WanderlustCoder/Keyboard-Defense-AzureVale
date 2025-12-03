@@ -2379,6 +2379,34 @@ test("HudView museum overlay renders entries and toggles visibility", () => {
   cleanup();
 });
 
+test("HudView museum overlay filters locked and unlocked entries", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  hud.setLoreScrollProgress({
+    lessonsCompleted: 0,
+    total: 6,
+    unlocked: 0,
+    next: { requiredLessons: 5, remaining: 5, title: "Library Ledger" },
+    entries: []
+  });
+  hud.setLessonMedalProgress({
+    last: null,
+    recent: [],
+    bestByMode: { burst: null, endurance: null, precision: null },
+    totals: { bronze: 0, silver: 0, gold: 0, platinum: 0 },
+    nextTarget: null
+  });
+  const state = buildInitialState();
+  hud.update(state, [], { lessonsCompleted: 0 });
+  elements.museumOpen.click();
+  const filterButtons = Array.from(document.querySelectorAll(".museum-filter"));
+  const allCount = elements.museumList.children.length;
+  const unlockedBtn = filterButtons.find((btn) => btn.dataset.museumFilter === "unlocked");
+  unlockedBtn?.click();
+  const unlockedCount = elements.museumList.children.length;
+  assert.ok(allCount >= unlockedCount);
+  cleanup();
+});
+
 test("HudView side quest overlay renders quests and toggles visibility", () => {
   const { hud, cleanup, elements } = initializeHud();
   hud.setLoreScrollProgress({
