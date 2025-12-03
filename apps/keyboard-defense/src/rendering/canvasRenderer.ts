@@ -95,6 +95,7 @@ export class CanvasRenderer {
       checkeredBackground?: boolean;
       turretRange?: TurretRangeRenderOptions | null;
       starfield?: StarfieldParallaxState | null;
+      screenShake?: { x: number; y: number } | null;
     }
   ): void {
     this.reducedMotion = Boolean(options?.reducedMotion);
@@ -105,8 +106,15 @@ export class CanvasRenderer {
     this.checkeredBackground = nextCheckered;
     this.spriteRenderer.setColorBlindFriendly(this.checkeredBackground);
     this.starfieldState = options?.starfield ?? null;
+    const shake = !this.reducedMotion ? options?.screenShake : null;
+    const applyShake =
+      Boolean(shake) && (Math.abs(shake?.x ?? 0) > 0.01 || Math.abs(shake?.y ?? 0) > 0.01);
     this.updateDefeatBursts(state);
     this.clear();
+    if (applyShake && shake) {
+      this.ctx.save();
+      this.ctx.translate(shake.x, shake.y);
+    }
     this.drawBackground();
     this.drawStarfield(state.time, this.starfieldState);
     this.drawLanes();
@@ -118,6 +126,9 @@ export class CanvasRenderer {
     this.drawImpactEffects(state, impactEffects);
     this.drawCastle(state);
     this.drawStatus(state);
+    if (applyShake) {
+      this.ctx.restore();
+    }
   }
 
   private clear(): void {

@@ -86,6 +86,15 @@ const initializeHud = (options = {}) => {
   const upgradePanel = get("upgrade-panel");
   const comboLabel = get("combo-stats");
   const comboAccuracyDelta = get("combo-accuracy-delta");
+  const companionPet = get("companion-pet");
+  const companionMoodLabel = get("companion-mood-label");
+  const companionTip = get("companion-tip");
+  const loreScrollPanel = get("lore-scroll-panel");
+  const loreScrollsSummary = get("lore-scrolls-summary");
+  const loreScrollsProgress = get("lore-scrolls-progress");
+  const loreScrollsLessons = get("lore-scrolls-lessons");
+  const loreScrollsNext = get("lore-scrolls-next");
+  const loreScrollsOpen = get("lore-scrolls-open");
   const logList = get("battle-log");
   const wavePreview = get("wave-preview-list");
   const wavePreviewHint = get("wave-preview-hint");
@@ -107,17 +116,56 @@ const initializeHud = (options = {}) => {
   const soundVolumeValue = get("options-sound-volume-value");
   const soundIntensitySlider = get("options-sound-intensity");
   const soundIntensityValue = get("options-sound-intensity-value");
+  const screenShakeToggle = get("options-screen-shake-toggle");
+  const screenShakeSlider = get("options-screen-shake-intensity");
+  const screenShakeValue = get("options-screen-shake-intensity-value");
+  const screenShakePreview = get("options-screen-shake-preview");
   const diagnosticsToggle = get("options-diagnostics-toggle");
   const reducedMotionToggle = get("options-reduced-motion-toggle");
   const checkeredBackgroundToggle = get("options-checkered-bg-toggle");
   const readableFontToggle = get("options-readable-font-toggle");
   const dyslexiaFontToggle = get("options-dyslexia-font-toggle");
+  const dyslexiaSpacingToggle = get("options-dyslexia-spacing-toggle");
+  const cognitiveLoadToggle = get("options-cognitive-load");
   const colorblindPaletteToggle = get("options-colorblind-toggle");
   const telemetryToggle = get("options-telemetry-toggle");
   const telemetryToggleWrapper = get("options-telemetry-toggle-wrapper");
   const hudZoomSelect = get("options-hud-zoom");
   const hudLayoutToggle = get("options-hud-left");
   const fontScaleSelect = get("options-font-scale");
+  const castleSkinSelect = get("options-castle-skin");
+  const contrastAuditButton = get("options-contrast-audit");
+  const stickerBookButton = get("options-sticker-book");
+  const optionsParentSummaryButton = get("options-parent-summary");
+  const optionsLoreScrollsButton = get("options-lore-scrolls");
+  const contrastOverlay = get("contrast-overlay");
+  const contrastOverlayList = get("contrast-overlay-list");
+  const contrastOverlaySummary = get("contrast-overlay-summary");
+  const contrastOverlayClose = get("contrast-overlay-close");
+  const contrastOverlayMarkers = get("contrast-overlay-markers");
+  const stickerOverlay = get("sticker-overlay");
+  const stickerOverlayList = get("sticker-overlay-list");
+  const stickerOverlaySummary = get("sticker-overlay-summary");
+  const stickerOverlayClose = get("sticker-overlay-close");
+  const scrollOverlay = get("scrolls-overlay");
+  const scrollOverlayList = get("scrolls-overlay-list");
+  const scrollOverlaySummary = get("scrolls-overlay-summary");
+  const scrollOverlayProgress = get("scrolls-overlay-progress");
+  const scrollOverlayClose = get("scrolls-overlay-close");
+  const parentSummaryOverlay = get("parent-summary-overlay");
+  const parentSummaryClose = get("parent-summary-close");
+  const parentSummaryProgress = get("parent-summary-progress");
+  const parentSummaryAccuracy = get("parent-summary-accuracy");
+  const parentSummaryDownload = get("parent-summary-download");
+  const selfTestContainer = get("options-self-test");
+  const selfTestRun = get("options-self-test-run");
+  const selfTestStatus = get("options-self-test-status");
+  const selfTestSoundToggle = get("options-self-test-sound");
+  const selfTestVisualToggle = get("options-self-test-visual");
+  const selfTestMotionToggle = get("options-self-test-motion");
+  const selfTestSoundIndicator = get("options-self-test-sound-indicator");
+  const selfTestVisualIndicator = get("options-self-test-visual-indicator");
+  const selfTestMotionIndicator = get("options-self-test-motion-indicator");
   const optionsOverlay = get("options-overlay");
   const optionsResume = get("options-resume-button");
   const analyticsExportButton = get("options-analytics-export");
@@ -134,10 +182,18 @@ const initializeHud = (options = {}) => {
   const checkeredBackgroundToggleEvents = [];
   const readableFontToggleEvents = [];
   const dyslexiaFontToggleEvents = [];
+  const cognitiveLoadToggleEvents = [];
   const colorblindToggleEvents = [];
+  const castleSkinEvents = [];
+  const contrastAuditEvents = [];
   const telemetryToggleEvents = [];
   const soundVolumeEvents = [];
   const soundIntensityEvents = [];
+  const screenShakeToggleEvents = [];
+  const screenShakeIntensityEvents = [];
+  const screenShakePreviewEvents = [];
+  const selfTestRunEvents = [];
+  const selfTestConfirmEvents = [];
   const hudZoomChangeEvents = [];
   const hudLayoutEvents = [];
   const fontScaleChangeEvents = [];
@@ -156,6 +212,9 @@ const initializeHud = (options = {}) => {
       goldDelta: "resource-delta",
       activeWord: "active-word",
       typingInput: "typing-input",
+      companionPet: "companion-pet",
+      companionMoodLabel: "companion-mood-label",
+      companionTip: "companion-tip",
       upgradePanel: "upgrade-panel",
       comboLabel: "combo-stats",
       comboAccuracyDelta: "combo-accuracy-delta",
@@ -179,12 +238,33 @@ const initializeHud = (options = {}) => {
         soundVolumeValue: "options-sound-volume-value",
         soundIntensitySlider: "options-sound-intensity",
         soundIntensityValue: "options-sound-intensity-value",
+        screenShakeToggle: "options-screen-shake-toggle",
+        screenShakeSlider: "options-screen-shake-intensity",
+        screenShakeValue: "options-screen-shake-intensity-value",
+        screenShakePreview: "options-screen-shake-preview",
+        screenShakeDemo: "options-screen-shake-demo",
+        contrastAuditButton: "options-contrast-audit",
+        stickerBookButton: "options-sticker-book",
+        parentSummaryButton: "options-parent-summary",
+        loreScrollsButton: "options-lore-scrolls",
+        selfTestContainer: "options-self-test",
+        selfTestRun: "options-self-test-run",
+        selfTestStatus: "options-self-test-status",
+        selfTestSoundToggle: "options-self-test-sound",
+        selfTestVisualToggle: "options-self-test-visual",
+        selfTestMotionToggle: "options-self-test-motion",
+        selfTestSoundIndicator: "options-self-test-sound-indicator",
+        selfTestVisualIndicator: "options-self-test-visual-indicator",
+        selfTestMotionIndicator: "options-self-test-motion-indicator",
         diagnosticsToggle: "options-diagnostics-toggle",
         reducedMotionToggle: "options-reduced-motion-toggle",
         checkeredBackgroundToggle: "options-checkered-bg-toggle",
         readableFontToggle: "options-readable-font-toggle",
         dyslexiaFontToggle: "options-dyslexia-font-toggle",
+        dyslexiaSpacingToggle: "options-dyslexia-spacing-toggle",
+        cognitiveLoadToggle: "options-cognitive-load",
         colorblindPaletteToggle: "options-colorblind-toggle",
+        castleSkinSelect: "options-castle-skin",
         defeatAnimationSelect: "options-defeat-animation",
         telemetryToggle: "options-telemetry-toggle",
         telemetryToggleWrapper: "options-telemetry-toggle-wrapper",
@@ -202,6 +282,44 @@ const initializeHud = (options = {}) => {
         container: "debug-analytics-viewer",
         tableBody: "debug-analytics-viewer-body",
         filterSelect: "debug-analytics-viewer-filter"
+      },
+      contrastOverlay: {
+        container: "contrast-overlay",
+        list: "contrast-overlay-list",
+        summary: "contrast-overlay-summary",
+        closeButton: "contrast-overlay-close",
+        markers: "contrast-overlay-markers"
+      },
+      stickerBookOverlay: {
+        container: "sticker-overlay",
+        list: "sticker-overlay-list",
+        summary: "sticker-overlay-summary",
+        closeButton: "sticker-overlay-close"
+      },
+      parentSummaryOverlay: {
+        container: "parent-summary-overlay",
+        closeButton: "parent-summary-close",
+        closeSecondary: "parent-summary-close-secondary",
+        title: "parent-summary-title",
+        subtitle: "parent-summary-subtitle",
+        progress: "parent-summary-progress",
+        note: "parent-summary-note",
+        time: "parent-summary-time",
+        accuracy: "parent-summary-accuracy",
+        wpm: "parent-summary-wpm",
+        combo: "parent-summary-combo",
+        perfect: "parent-summary-perfect",
+        breaches: "parent-summary-breaches",
+        drills: "parent-summary-drills",
+        repairs: "parent-summary-repairs",
+        download: "parent-summary-download"
+      },
+      loreScrollOverlay: {
+        container: "scrolls-overlay",
+        list: "scrolls-overlay-list",
+        summary: "scrolls-overlay-summary",
+        progress: "scrolls-overlay-progress",
+        closeButton: "scrolls-overlay-close"
       }
     },
     {
@@ -220,12 +338,21 @@ const initializeHud = (options = {}) => {
       onSoundToggle: () => {},
       onSoundVolumeChange: (value) => soundVolumeEvents.push(value),
       onSoundIntensityChange: (value) => soundIntensityEvents.push(value),
+      onScreenShakeToggle: (value) => screenShakeToggleEvents.push(value),
+      onScreenShakeIntensityChange: (value) => screenShakeIntensityEvents.push(value),
+      onScreenShakePreview: () => screenShakePreviewEvents.push(true),
+      onCastleSkinChange: (skin) => castleSkinEvents.push(skin),
+      onContrastAuditRequested: () => contrastAuditEvents.push(true),
+      onAccessibilitySelfTestRun: () => selfTestRunEvents.push(true),
+      onAccessibilitySelfTestConfirm: (kind, confirmed) =>
+        selfTestConfirmEvents.push({ kind, confirmed }),
       onDiagnosticsToggle: () => {},
       onWaveScorecardContinue: () => scorecardContinues++,
       onReducedMotionToggle: (enabled) => reducedMotionToggleEvents.push(enabled),
       onCheckeredBackgroundToggle: (enabled) => checkeredBackgroundToggleEvents.push(enabled),
       onReadableFontToggle: (enabled) => readableFontToggleEvents.push(enabled),
       onDyslexiaFontToggle: (enabled) => dyslexiaFontToggleEvents.push(enabled),
+      onCognitiveLoadToggle: (enabled) => cognitiveLoadToggleEvents.push(enabled),
       onColorblindPaletteToggle: (enabled) => colorblindToggleEvents.push(enabled),
       onTelemetryToggle: (enabled) => telemetryToggleEvents.push(enabled),
       onAnalyticsExport: () => analyticsExportEvents.push(true),
@@ -263,6 +390,15 @@ const initializeHud = (options = {}) => {
       comboAccuracyDelta: comboAccuracyDeltaRef,
       goldDelta,
       logList,
+      companionPet,
+      companionMoodLabel,
+      companionTip,
+      loreScrollPanel,
+      loreScrollsSummary,
+      loreScrollsProgress,
+      loreScrollsLessons,
+      loreScrollsNext,
+      loreScrollsOpen,
       tutorialBanner,
       tutorialBannerMessage,
       tutorialBannerToggle,
@@ -277,17 +413,56 @@ const initializeHud = (options = {}) => {
       soundVolumeValue,
       soundIntensitySlider,
       soundIntensityValue,
+      screenShakeToggle,
+      screenShakeSlider,
+      screenShakeValue,
+      screenShakePreview,
+      contrastAuditButton,
+      stickerBookButton,
+      optionsParentSummaryButton,
+      optionsLoreScrollsButton,
+      contrastOverlay,
+      contrastOverlayList,
+      contrastOverlaySummary,
+      contrastOverlayClose,
+      contrastOverlayMarkers,
+      stickerOverlay,
+      stickerOverlayList,
+      stickerOverlaySummary,
+      stickerOverlayClose,
+      parentSummaryOverlay,
+      parentSummaryClose,
+      parentSummaryProgress,
+      parentSummaryAccuracy,
+      parentSummaryDownload,
+      scrollOverlay,
+      scrollOverlayList,
+      scrollOverlaySummary,
+      scrollOverlayProgress,
+      scrollOverlayClose,
+      selfTestContainer,
+      selfTestRun,
+      selfTestStatus,
+      selfTestSoundToggle,
+      selfTestVisualToggle,
+      selfTestMotionToggle,
+      selfTestSoundIndicator,
+      selfTestVisualIndicator,
+      selfTestMotionIndicator,
       diagnosticsToggle,
       reducedMotionToggle,
       checkeredBackgroundToggle,
       readableFontToggle,
       dyslexiaFontToggle,
+      dyslexiaSpacingToggle,
+      cognitiveLoadToggle,
       colorblindPaletteToggle,
       telemetryToggle,
       telemetryToggleWrapper,
       hudZoomSelect,
       hudLayoutToggle,
       fontScaleSelect,
+      castleSkinSelect,
       optionsCastleBonus,
       optionsCastleBenefits,
       optionsCastlePassives: optionsCastlePassivesRef,
@@ -311,9 +486,17 @@ const initializeHud = (options = {}) => {
       getCheckeredBackgroundToggleEvents: () => [...checkeredBackgroundToggleEvents],
       getReadableFontToggleEvents: () => [...readableFontToggleEvents],
       getDyslexiaFontToggleEvents: () => [...dyslexiaFontToggleEvents],
+      getCognitiveLoadToggleEvents: () => [...cognitiveLoadToggleEvents],
       getColorblindToggleEvents: () => [...colorblindToggleEvents],
+      getCastleSkinEvents: () => [...castleSkinEvents],
       getSoundVolumeEvents: () => [...soundVolumeEvents],
       getSoundIntensityEvents: () => [...soundIntensityEvents],
+      getScreenShakeToggleEvents: () => [...screenShakeToggleEvents],
+      getScreenShakeIntensityEvents: () => [...screenShakeIntensityEvents],
+      getScreenShakePreviewEvents: () => [...screenShakePreviewEvents],
+      getContrastAuditEvents: () => [...contrastAuditEvents],
+      getSelfTestRunEvents: () => [...selfTestRunEvents],
+      getSelfTestConfirmEvents: () => [...selfTestConfirmEvents],
       getTelemetryToggleEvents: () => [...telemetryToggleEvents],
       getHudZoomEvents: () => [...hudZoomChangeEvents],
       getHudLayoutEvents: () => [...hudLayoutEvents],
@@ -1297,17 +1480,22 @@ test("HudView options overlay syncs controls and visibility", () => {
     checkeredBackgroundToggle,
     readableFontToggle,
     dyslexiaFontToggle,
+    dyslexiaSpacingToggle,
+    cognitiveLoadToggle,
     colorblindPaletteToggle,
     telemetryToggle,
     telemetryToggleWrapper,
     hudLayoutToggle,
     hudZoomSelect,
     fontScaleSelect,
+    castleSkinSelect,
     getReducedMotionToggleEvents,
     getCheckeredBackgroundToggleEvents,
     getReadableFontToggleEvents,
     getDyslexiaFontToggleEvents,
+    getCognitiveLoadToggleEvents,
     getColorblindToggleEvents,
+    getCastleSkinEvents,
     getSoundVolumeEvents,
     getSoundIntensityEvents,
     getTelemetryToggleEvents,
@@ -1340,12 +1528,17 @@ test("HudView options overlay syncs controls and visibility", () => {
     soundEnabled: false,
     soundVolume: 0.8,
     soundIntensity: 1,
+    screenShakeEnabled: false,
+    screenShakeIntensity: 0.65,
     diagnosticsVisible: false,
     reducedMotionEnabled: true,
     checkeredBackgroundEnabled: false,
     readableFontEnabled: false,
     dyslexiaFontEnabled: false,
+    dyslexiaSpacingEnabled: false,
+    reducedCognitiveLoadEnabled: false,
     colorblindPaletteEnabled: false,
+    castleSkin: "aurora",
     hudLayout: "right",
     hudZoom: 1,
     hudFontScale: 1,
@@ -1360,11 +1553,17 @@ test("HudView options overlay syncs controls and visibility", () => {
   assert.equal(soundIntensityValue.textContent, "100%");
   assert.equal(soundIntensitySlider.disabled, true);
   assert.equal(soundIntensitySlider.getAttribute("aria-disabled"), "true");
+  assert.equal(elements.screenShakeToggle.disabled, true);
+  assert.equal(elements.screenShakeSlider.disabled, true);
+  assert.equal(elements.screenShakePreview.dataset.disabled, "true");
+  assert.ok(elements.screenShakeValue.textContent.includes("65"));
   assert.equal(diagnosticsToggle.checked, false);
   assert.equal(reducedMotionToggle.checked, true);
   assert.equal(checkeredBackgroundToggle.checked, false);
   assert.equal(readableFontToggle.checked, false);
   assert.equal(dyslexiaFontToggle.checked, false);
+  assert.equal(dyslexiaSpacingToggle.checked, false);
+  assert.equal(cognitiveLoadToggle.checked, false);
   assert.equal(colorblindPaletteToggle.checked, false);
   assert.equal(telemetryToggle.checked, false);
   assert.equal(telemetryToggle.disabled, true);
@@ -1372,18 +1571,25 @@ test("HudView options overlay syncs controls and visibility", () => {
   assert.equal(readSelectValue(hudZoomSelect), "1");
   assert.equal(hudLayoutToggle.checked, false);
   assert.equal(readSelectValue(fontScaleSelect), "1");
+  assert.equal(readSelectValue(castleSkinSelect), "aurora");
+  assert.equal(document.body.dataset.castleSkin, "aurora");
   assert.equal(hud.isOptionsOverlayVisible(), false);
 
   hud.syncOptionsOverlayState({
     soundEnabled: true,
     soundVolume: 0.8,
     soundIntensity: 1,
+    screenShakeEnabled: true,
+    screenShakeIntensity: 0.7,
     diagnosticsVisible: false,
     reducedMotionEnabled: true,
     checkeredBackgroundEnabled: false,
     readableFontEnabled: false,
     dyslexiaFontEnabled: false,
+    dyslexiaSpacingEnabled: false,
+    reducedCognitiveLoadEnabled: false,
     colorblindPaletteEnabled: false,
+    castleSkin: "aurora",
     hudLayout: "right",
     hudZoom: 1,
     hudFontScale: 1,
@@ -1394,17 +1600,24 @@ test("HudView options overlay syncs controls and visibility", () => {
   assert.equal(soundVolumeSlider.getAttribute("aria-disabled"), "false");
   assert.equal(soundIntensitySlider.disabled, false);
   assert.equal(soundIntensitySlider.getAttribute("aria-disabled"), "false");
+  assert.equal(elements.screenShakeToggle.disabled, true);
+  assert.equal(elements.screenShakeSlider.disabled, true);
 
   hud.syncOptionsOverlayState({
     soundEnabled: true,
     soundVolume: 0.55,
     soundIntensity: 1.25,
+    screenShakeEnabled: true,
+    screenShakeIntensity: 1.1,
     diagnosticsVisible: false,
     reducedMotionEnabled: true,
     checkeredBackgroundEnabled: false,
     readableFontEnabled: false,
     dyslexiaFontEnabled: true,
+    dyslexiaSpacingEnabled: true,
+    reducedCognitiveLoadEnabled: true,
     colorblindPaletteEnabled: true,
+    castleSkin: "aurora",
     hudLayout: "left",
     hudZoom: 1.1,
     hudFontScale: 1.15,
@@ -1414,10 +1627,14 @@ test("HudView options overlay syncs controls and visibility", () => {
   assert.equal(soundVolumeValue.textContent, "55%");
   assert.equal(soundIntensitySlider.value, "1.25");
   assert.equal(soundIntensityValue.textContent, "125%");
+  assert.equal(elements.screenShakeSlider.value, "1.1");
+  assert.ok(elements.screenShakeValue.textContent.includes("110"));
   assert.equal(colorblindPaletteToggle.checked, true);
   assert.equal(telemetryToggleWrapper.style.display, "");
   assert.equal(telemetryToggle.disabled, false);
   assert.equal(telemetryToggle.checked, true);
+  assert.equal(dyslexiaSpacingToggle.checked, true);
+  assert.equal(cognitiveLoadToggle.checked, true);
   assert.equal(readSelectValue(hudZoomSelect), "1.1");
   assert.equal(hudLayoutToggle.checked, true);
 
@@ -1428,6 +1645,29 @@ test("HudView options overlay syncs controls and visibility", () => {
   reducedMotionToggle.checked = false;
   dispatchDomEvent(reducedMotionToggle, "change");
   assert.deepEqual(getReducedMotionToggleEvents(), [false]);
+  hud.syncOptionsOverlayState({
+    soundEnabled: true,
+    soundVolume: 0.55,
+    soundIntensity: 1.1,
+    screenShakeEnabled: true,
+    screenShakeIntensity: 0.8,
+    diagnosticsVisible: false,
+    reducedMotionEnabled: false,
+    checkeredBackgroundEnabled: false,
+    readableFontEnabled: false,
+    dyslexiaFontEnabled: true,
+    dyslexiaSpacingEnabled: true,
+    reducedCognitiveLoadEnabled: true,
+    colorblindPaletteEnabled: true,
+    hudLayout: "left",
+    hudZoom: 1.1,
+    hudFontScale: 1.15,
+    telemetry: { available: true, checked: true, disabled: false }
+  });
+  assert.equal(elements.screenShakeToggle.disabled, false);
+  assert.equal(elements.screenShakeSlider.disabled, false);
+  assert.equal(elements.screenShakeToggle.checked, true);
+  assert.equal(elements.screenShakeSlider.value, "0.8");
 
   checkeredBackgroundToggle.checked = true;
   dispatchDomEvent(checkeredBackgroundToggle, "change");
@@ -1441,6 +1681,10 @@ test("HudView options overlay syncs controls and visibility", () => {
   dyslexiaFontToggle.checked = false;
   dispatchDomEvent(dyslexiaFontToggle, "change");
   assert.deepEqual(getDyslexiaFontToggleEvents(), [false]);
+
+  cognitiveLoadToggle.checked = false;
+  dispatchDomEvent(cognitiveLoadToggle, "change");
+  assert.deepEqual(getCognitiveLoadToggleEvents(), [false]);
 
   soundVolumeSlider.value = "0.6";
   dispatchDomEvent(soundVolumeSlider, "input");
@@ -1459,6 +1703,11 @@ test("HudView options overlay syncs controls and visibility", () => {
   telemetryToggle.checked = false;
   dispatchDomEvent(telemetryToggle, "change");
   assert.deepEqual(getTelemetryToggleEvents(), [false]);
+
+  setSelectValueForElement(castleSkinSelect, "dusk");
+  dispatchDomEvent(castleSkinSelect, "change");
+  assert.deepEqual(getCastleSkinEvents(), ["dusk"]);
+  assert.equal(document.body.dataset.castleSkin, "dusk");
 
   setSelectValueForElement(fontScaleSelect, "1.2");
   assert.equal(readSelectValue(fontScaleSelect), "1.2");
@@ -1482,6 +1731,326 @@ test("HudView options overlay syncs controls and visibility", () => {
   assert.equal(optionsOverlay.dataset.visible, "false");
   assert.equal(hud.isOptionsOverlayVisible(), false);
 
+  cleanup();
+});
+
+test("Companion pet reflects performance mood cues", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  const { companionPet, companionMoodLabel } = elements;
+
+  const baseState = buildInitialState();
+  hud.update(baseState, []);
+  assert.equal(companionPet.dataset.mood, "calm");
+  assert.equal(companionMoodLabel.textContent, "Calm");
+
+  const hypeState = structuredClone(baseState);
+  hypeState.typing.accuracy = 0.97;
+  hypeState.typing.combo = 30;
+  hypeState.analytics.sessionBestCombo = 30;
+  hud.update(hypeState, []);
+  assert.equal(companionPet.dataset.mood, "cheer");
+  assert.ok((companionMoodLabel.textContent ?? "").toLowerCase().includes("cheer"));
+
+  const sadState = structuredClone(baseState);
+  sadState.castle.health = sadState.castle.maxHealth * 0.2;
+  sadState.analytics.sessionBreaches = 1;
+  hud.update(sadState, []);
+  assert.equal(companionPet.dataset.mood, "sad");
+  assert.ok((companionMoodLabel.textContent ?? "").toLowerCase().includes("concern"));
+
+  cleanup();
+});
+
+test("HudView screen shake controls emit events and preview animation", () => {
+  const { cleanup, elements } = initializeHud();
+  const { screenShakeToggle, screenShakeSlider, screenShakePreview, screenShakeValue } = elements;
+
+  screenShakeToggle.checked = true;
+  dispatchDomEvent(screenShakeToggle, "change");
+  screenShakeSlider.value = "0.9";
+  dispatchDomEvent(screenShakeSlider, "input");
+  screenShakePreview.click();
+
+  assert.deepEqual(elements.getScreenShakeToggleEvents(), [true]);
+  assert.equal(elements.getScreenShakeIntensityEvents().at(-1), 0.9);
+  assert.equal(elements.getScreenShakePreviewEvents().length, 1);
+  assert.ok(screenShakeValue.textContent.includes("90"));
+
+  cleanup();
+});
+
+test("HudView accessibility self-test respects availability states", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  const baseState = {
+    soundEnabled: false,
+    soundVolume: 0.8,
+    soundIntensity: 1,
+    screenShakeEnabled: false,
+    screenShakeIntensity: 0.65,
+    selfTest: {
+      lastRunAt: null,
+      soundConfirmed: true,
+      visualConfirmed: true,
+      motionConfirmed: true
+    },
+    diagnosticsVisible: false,
+    lowGraphicsEnabled: false,
+    virtualKeyboardEnabled: false,
+    hapticsEnabled: false,
+    textSizeScale: 1,
+    reducedMotionEnabled: true,
+    checkeredBackgroundEnabled: false,
+    readableFontEnabled: false,
+    dyslexiaFontEnabled: false,
+    dyslexiaSpacingEnabled: false,
+    reducedCognitiveLoadEnabled: false,
+    backgroundBrightness: 1,
+    colorblindPaletteEnabled: false,
+    colorblindPaletteMode: "off",
+    hudZoom: 1,
+    hudLayout: "right",
+    hudFontScale: 1,
+    defeatAnimationMode: "auto",
+    telemetry: { available: false, checked: false, disabled: true }
+  };
+
+  hud.syncOptionsOverlayState(baseState);
+  assert.equal(elements.selfTestSoundToggle.disabled, true);
+  assert.equal(elements.selfTestMotionToggle.disabled, true);
+  assert.equal(elements.selfTestVisualToggle.disabled, false);
+  assert.equal(elements.selfTestStatus.textContent, "Not run yet");
+
+  hud.syncOptionsOverlayState({
+    ...baseState,
+    soundEnabled: true,
+    reducedMotionEnabled: false,
+    selfTest: {
+      lastRunAt: "2025-12-14T10:15:00.000Z",
+      soundConfirmed: true,
+      visualConfirmed: true,
+      motionConfirmed: true
+    }
+  });
+  assert.equal(elements.selfTestSoundToggle.disabled, false);
+  assert.equal(elements.selfTestMotionToggle.disabled, false);
+  assert.equal(elements.selfTestSoundToggle.checked, true);
+  assert.equal(elements.selfTestMotionToggle.checked, true);
+  assert.ok(elements.selfTestStatus.textContent.includes("2025-12-14"));
+
+  cleanup();
+});
+
+test("HudView accessibility self-test emits callbacks and plays cues", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  const baseState = {
+    soundEnabled: true,
+    soundVolume: 0.8,
+    soundIntensity: 1,
+    screenShakeEnabled: true,
+    screenShakeIntensity: 0.8,
+    selfTest: {
+      lastRunAt: null,
+      soundConfirmed: false,
+      visualConfirmed: false,
+      motionConfirmed: false
+    },
+    diagnosticsVisible: false,
+    lowGraphicsEnabled: false,
+    virtualKeyboardEnabled: false,
+    hapticsEnabled: false,
+    textSizeScale: 1,
+    reducedMotionEnabled: false,
+    checkeredBackgroundEnabled: false,
+    readableFontEnabled: false,
+    dyslexiaFontEnabled: false,
+    dyslexiaSpacingEnabled: false,
+    reducedCognitiveLoadEnabled: false,
+    backgroundBrightness: 1,
+    colorblindPaletteEnabled: false,
+    colorblindPaletteMode: "off",
+    hudZoom: 1,
+    hudLayout: "right",
+    hudFontScale: 1,
+    defeatAnimationMode: "auto",
+    telemetry: { available: false, checked: false, disabled: true }
+  };
+
+  hud.syncOptionsOverlayState(baseState);
+  elements.selfTestRun.click();
+  elements.selfTestSoundToggle.checked = true;
+  dispatchDomEvent(elements.selfTestSoundToggle, "change");
+  elements.selfTestVisualToggle.checked = true;
+  dispatchDomEvent(elements.selfTestVisualToggle, "change");
+  elements.selfTestMotionToggle.checked = true;
+  dispatchDomEvent(elements.selfTestMotionToggle, "change");
+  hud.playAccessibilitySelfTestCues({ includeMotion: true, soundEnabled: true });
+
+  assert.equal(elements.getSelfTestRunEvents().length, 1);
+  assert.deepEqual(elements.getSelfTestConfirmEvents(), [
+    { kind: "sound", confirmed: true },
+    { kind: "visual", confirmed: true },
+    { kind: "motion", confirmed: true }
+  ]);
+  assert.equal(elements.selfTestSoundIndicator.dataset.active, "true");
+  assert.equal(elements.selfTestMotionIndicator.dataset.active, "true");
+
+  cleanup();
+});
+
+test("HudView contrast audit overlay toggles and lists results", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  assert.equal(elements.contrastOverlay.dataset.visible, "false");
+  elements.contrastAuditButton.click();
+  assert.equal(elements.getContrastAuditEvents().length, 1);
+
+  hud.presentContrastAudit([
+    { label: "Option toggle", ratio: 3.2, status: "warn", rect: { x: 0, y: 0, width: 50, height: 20 } },
+    { label: "Battle log", ratio: 2.4, status: "fail", rect: { x: 10, y: 10, width: 30, height: 15 } }
+  ]);
+
+  assert.equal(elements.contrastOverlay.dataset.visible, "true");
+  assert.equal(elements.contrastOverlayList.children.length, 2);
+  assert.ok(elements.contrastOverlaySummary.textContent.includes("2"));
+  assert.equal(elements.contrastOverlayMarkers.children.length, 2);
+
+  hud.hideContrastOverlay();
+  assert.equal(elements.contrastOverlay.dataset.visible, "false");
+  assert.equal(elements.contrastOverlayList.children.length, 0);
+  cleanup();
+});
+
+test("HudView sticker book overlay renders entries and toggles visibility", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  hud.setStickerBookEntries([
+    {
+      id: "combo-cub",
+      title: "Combo Cub",
+      description: "Reach a 3x combo in any wave.",
+      icon: "combo",
+      status: "unlocked",
+      progress: 3,
+      goal: 3
+    },
+    {
+      id: "gold-glider",
+      title: "Gold Glider",
+      description: "Hold 200 gold in your purse.",
+      icon: "treasure",
+      status: "in-progress",
+      progress: 1,
+      goal: 3
+    }
+  ]);
+
+  assert.equal(elements.stickerOverlay.dataset.visible, "false");
+  elements.stickerBookButton.click();
+  assert.equal(elements.stickerOverlay.dataset.visible, "true");
+  assert.equal(elements.stickerOverlayList.children.length, 2);
+  assert.ok(elements.stickerOverlaySummary.textContent.includes("2"));
+
+  const firstSticker = elements.stickerOverlayList.children[0];
+  assert.equal(firstSticker.dataset.status, "unlocked");
+
+  hud.hideStickerBookOverlay();
+  assert.equal(elements.stickerOverlay.dataset.visible, "false");
+  cleanup();
+});
+
+test("HudView lore scroll overlay renders progress and entries", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  hud.setLoreScrollProgress({
+    lessonsCompleted: 3,
+    total: 5,
+    unlocked: 2,
+    next: { requiredLessons: 5, remaining: 2, title: "Signal Flares" },
+    entries: [
+      {
+        id: "scroll-one",
+        title: "First Scroll",
+        summary: "Quick recap",
+        body: "Unlocked snippet text.",
+        requiredLessons: 1,
+        unlocked: true,
+        progress: 3,
+        remaining: 0
+      },
+      {
+        id: "scroll-two",
+        title: "Second Scroll",
+        summary: "Needs more lessons",
+        body: "Locked snippet text.",
+        requiredLessons: 5,
+        unlocked: false,
+        progress: 3,
+        remaining: 2
+      }
+    ]
+  });
+
+  assert.equal(elements.loreScrollsProgress.textContent, "2 / 5 scrolls");
+  assert.equal(elements.loreScrollsLessons.textContent, "3 lessons completed");
+  assert.ok(elements.loreScrollsNext.textContent.includes("2 more"));
+
+  assert.equal(elements.scrollOverlay.dataset.visible, "false");
+  elements.optionsLoreScrollsButton.click();
+  assert.equal(elements.scrollOverlay.dataset.visible, "true");
+  assert.equal(elements.scrollOverlayList.children.length, 2);
+  const firstScroll = elements.scrollOverlayList.children[0];
+  assert.equal(firstScroll.dataset.status, "unlocked");
+
+  hud.hideLoreScrollOverlay();
+  assert.equal(elements.scrollOverlay.dataset.visible, "false");
+  cleanup();
+});
+
+test("HudView parent summary overlay renders session stats and toggles visibility", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  hud.update(
+    {
+      time: 600,
+      mode: "campaign",
+      wave: { index: 2, total: 5, inCountdown: false, timeInWave: 0, countdownRemaining: 0 },
+      castle: { level: 1, health: 100, maxHealth: 100 },
+      typing: { accuracy: 0.9, correctInputs: 150, totalInputs: 160, combo: 4, buffer: "", activeEnemyId: null },
+      enemies: [],
+      turrets: [],
+      resources: { gold: 50 },
+      projectiles: [],
+      analytics: {
+        sessionBreaches: 1,
+        totalPerfectWords: 7,
+        wavePerfectWords: 0,
+        waveHistory: [],
+        waveSummaries: [],
+        sessionBestCombo: 12,
+        waveMaxCombo: 0,
+        totalCastleRepairs: 2,
+        typingDrills: [
+          {
+            mode: "burst",
+            accuracy: 0.8,
+            bestCombo: 3,
+            words: 5,
+            errors: 1,
+            elapsedMs: 20000,
+            timestamp: Date.now(),
+            wpm: 30,
+            source: "cta"
+          }
+        ]
+      }
+    },
+    []
+  );
+
+  assert.equal(elements.parentSummaryOverlay.dataset.visible, "false");
+  elements.optionsParentSummaryButton.click();
+  assert.equal(elements.parentSummaryOverlay.dataset.visible, "true");
+  assert.ok(elements.parentSummaryProgress.textContent.includes("accuracy"));
+  assert.equal(elements.parentSummaryAccuracy.textContent, "90%");
+
+  hud.hideParentSummary();
+  assert.equal(elements.parentSummaryOverlay.dataset.visible, "false");
   cleanup();
 });
 

@@ -1,3 +1,50 @@
+## Weekly Parent Summary Overlay
+
+- Pause/options menu now includes a "Weekly Parent Summary" button that opens a printable overlay with time practiced, average accuracy/WPM, combo peak, perfect words, breaches, drills completed, repairs used, and a coaching note.
+- Overlay is fully accessible (aria labels, focus trap, keyboard-close), supports print-to-PDF, and offers both header/inline close buttons so parents can dismiss without touching gameplay controls.
+- HUD refreshes the summary live from session analytics so parents see up-to-date metrics even mid-run; tests cover the overlay toggle and metric rendering.
+
+## Collectible Lore Scrolls
+
+- Lesson completions now unlock a Lore Scrolls overlay with short, kid-friendly reading snippets; progress persists locally via the new lesson progress storage.
+- HUD sidebar adds a Lore Scrolls card showing lessons completed, scroll unlock count, and the next requirement, with buttons in the HUD/options menu to open the overlay.
+- Typing drill completions log scroll unlocks, and new helpers/tests cover lesson progress normalization and scroll unlock summaries.
+
+## Castle Skin Themes
+
+- Pause/options overlay now includes a Castle Skin selector (Classic, Dusk, Aurora, Ember) that applies instantly to the HUD castle panel and health bar.
+- Castle passives, gold events, benefits, and the castle card/background now pull from skin-specific CSS variables set on root/body/HUD via `data-castle-skin`.
+- Skin choice persists through the new `castleSkin` player setting (with normalization tests) and restores on load before syncing the pause menu.
+
+## Companion Pet Sprites
+
+- HUD sidebar now features a companion pet sprite that reacts to performance (calm/happy/cheer/sad) using live session accuracy, combo peaks, and castle health.
+- Companion mood is announced via aria-label/text so assistive tech can read changes; reduced-motion settings dampen animations automatically.
+- Added CSS pixel styling and tests covering mood transitions.
+
+## Sticker Book Achievements
+
+- Added a pixel-art Sticker Book overlay to the pause/options menu with a dedicated button, showing a grid of collectible achievement stickers with progress bars and status pills.
+- HUD derives sticker progress from session stats (combos, breaches, shields broken, gold held, accuracy, drills) and auto-updates the summary/unlocked counts as runs progress.
+- Overlay includes keyboard focus traps and accessible labels, plus tests to verify rendering, toggling, and summary counts.
+
+## Contrast Audit Overlay
+
+- Added a Contrast Audit overlay in the pause/options menu that scans key UI regions and highlights any text/background pairs below WCAG targets with inline markers and a summary list.
+- The overlay is launched via a dedicated button (non-persistent), plays nicely with Reduced Motion and existing accessibility toggles, and reuses HUD layout data to position warning boxes.
+- HUD tests cover the new control and overlay rendering; the audit is advisory and does not change player settings.
+
+## Accessibility Self-Test Mode
+
+- Pause/options overlay now includes an Accessibility Self-Test card that plays a short chime, flash, and motion cue with per-channel confirmations so players can verify comfort before enabling effects; motion checks auto-disable when Reduced Motion is on and sound checks skip when audio is muted.
+- Self-test results (last run timestamp + confirmation flags) persist via player settings schema version 27 (`accessibilitySelfTest`) and ride alongside the screen-shake preview controls.
+- HUD wiring animates the inline indicators and disables confirmations when unavailable, with tests covering UI state and persistence.
+
+## Screen Shake Preview
+
+- Pause/options overlay now includes a Screen Shake toggle with an intensity slider (0-120%) plus an inline preview tile so players can test comfort before enabling; controls respect Reduced Motion and default to off.
+- Impact effects trigger a mild canvas shake when enabled (hits, breaches, muzzle flashes), reusing the preview path; preferences persist via player settings v27 alongside new HUD wiring and tests.
+
 ## Defeat Animation Sprite Pipeline
 
 - AssetLoader now parses optional defeat animation definitions from the manifest and exposes `getDefeatAnimation`/`hasDefeatAnimation` so the renderer can stream sprite frames when defeat art drops into `public/assets/defeat/`.

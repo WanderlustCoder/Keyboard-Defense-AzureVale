@@ -75,11 +75,11 @@
             <span id="resource-gold">0</span>
             <span id="resource-delta"></span>
           </div>
-          <div class="session-panel" aria-live="polite">
-          <div class="session-row">
-            <span class="session-label">Session</span>
-            <span id="session-timer" class="session-time">00:00</span>
-          </div>
+        <div class="session-panel" aria-live="polite">
+        <div class="session-row">
+          <span class="session-label">Session</span>
+          <span id="session-timer" class="session-time">00:00</span>
+        </div>
           <div
             id="latency-indicator"
             class="latency-indicator"
@@ -117,6 +117,53 @@
             </div>
           </div>
           <div class="upgrades" id="upgrade-panel"></div>
+        </section>
+        <section class="companion" id="companion">
+          <div
+            class="companion-visual"
+            id="companion-pet"
+            data-mood="calm"
+            role="img"
+            aria-live="polite"
+            aria-label="Companion mood: Calm"
+          >
+            <div class="companion-pet-core">
+              <div class="companion-pet-face">
+                <span class="companion-pet-eye companion-pet-eye--left"></span>
+                <span class="companion-pet-eye companion-pet-eye--right"></span>
+                <span class="companion-pet-mouth"></span>
+              </div>
+              <div class="companion-pet-tail"></div>
+              <div class="companion-pet-spark companion-pet-spark--one"></div>
+              <div class="companion-pet-spark companion-pet-spark--two"></div>
+            </div>
+          </div>
+          <div class="companion-meta">
+            <p class="companion-title">Companion</p>
+            <p class="companion-mood" id="companion-mood-label">Calm</p>
+            <p class="companion-tip" id="companion-tip">
+              Keep clean streaks to cheer them up.
+            </p>
+          </div>
+        </section>
+        <section class="lore-scrolls" id="lore-scroll-panel" aria-live="polite">
+          <div class="lore-scrolls__content">
+            <div class="lore-scrolls__copy">
+              <p class="lore-scrolls__kicker">Reading break</p>
+              <p class="lore-scrolls__summary" id="lore-scrolls-summary">
+                Finish lessons to unlock calm lore scrolls between waves.
+              </p>
+              <p class="lore-scrolls__stats">
+                <span id="lore-scrolls-progress">0 / 5 scrolls</span>
+                <span aria-hidden="true" class="lore-scrolls__dot">·</span>
+                <span id="lore-scrolls-lessons">0 lessons completed</span>
+              </p>
+              <p class="lore-scrolls__next" id="lore-scrolls-next">
+                Next scroll unlocks after 1 more lesson.
+              </p>
+            </div>
+            <button id="lore-scrolls-open" type="button" class="secondary">Open Scrolls</button>
+          </div>
         </section>
         <section class="typing">
           <div id="active-word"></div>
@@ -666,6 +713,25 @@
             <span class="option-range-value" id="accessibility-bg-brightness-value">100%</span>
           </label>
         </div>
+        <div class="accessibility-presets">
+          <div class="accessibility-preset">
+            <div class="accessibility-preset-header">
+              <span class="accessibility-pill">Recommended</span>
+              <p class="accessibility-preset-title">Dyslexia-friendly preset</p>
+            </div>
+            <p class="accessibility-preset-desc">
+              Turns on the dyslexia-friendly font and wider spacing across menus, prompts, and the HUD.
+              You can tweak these later in Options.
+            </p>
+            <button
+              id="accessibility-dyslexia-preset"
+              type="button"
+              class="ghost-button accessibility-preset-button"
+            >
+              Apply dyslexia preset
+            </button>
+          </div>
+        </div>
         <div class="accessibility-actions">
           <button id="accessibility-skip" type="button" class="ghost-button">Skip</button>
           <button id="accessibility-apply" type="button" class="primary-button">
@@ -870,6 +936,37 @@
             />
             <span class="option-range-value" id="options-sound-intensity-value">100%</span>
           </label>
+          <div class="option-toggle option-range option-shake">
+            <div class="option-shake-header">
+              <label class="option-toggle-label" for="options-screen-shake-toggle">
+                Screen Shake
+              </label>
+              <div class="option-shake-inline">
+                <input id="options-screen-shake-toggle" type="checkbox" />
+                <span class="option-range-value" id="options-screen-shake-intensity-value">65%</span>
+              </div>
+            </div>
+            <input
+              id="options-screen-shake-intensity"
+              type="range"
+              min="0"
+              max="1.2"
+              step="0.05"
+              value="0.65"
+              aria-label="Screen shake intensity"
+            />
+            <div class="option-shake-preview">
+              <div class="option-shake-demo" id="options-screen-shake-demo" aria-hidden="true">
+                <span class="option-shake-demo-box"></span>
+              </div>
+              <button id="options-screen-shake-preview" type="button" class="ghost">
+                Preview shake
+              </button>
+              <span class="option-toggle-help">
+                Play a quick shake before enabling to check comfort. Disabled when Reduced Motion is on.
+              </span>
+            </div>
+          </div>
           <label class="option-toggle">
             <input id="options-diagnostics-toggle" type="checkbox" />
             <span class="option-toggle-label">Diagnostics Overlay</span>
@@ -896,6 +993,86 @@
               Short vibrations on hits when supported; desktop browsers usually ignore this.
             </span>
           </label>
+          <button id="options-contrast-audit" type="button" class="option-toggle option-contrast">
+            <div class="option-contrast-copy">
+              <span class="option-toggle-label">Contrast Audit Overlay</span>
+              <span class="option-toggle-help">
+                Highlights UI regions that may fail contrast checks. Best-effort preview for quick comfort scans.
+              </span>
+            </div>
+            <span class="option-contrast-cta">Run audit</span>
+          </button>
+          <div
+            class="option-toggle option-selftest"
+            id="options-self-test"
+            role="group"
+            aria-labelledby="options-self-test-title"
+          >
+            <div class="option-selftest-header">
+              <div>
+                <p class="option-selftest-kicker">Accessibility check</p>
+                <p class="option-toggle-label" id="options-self-test-title">Self-Test Cues</p>
+                <p class="option-toggle-help">
+                  Play a quick sound, flash, and motion cue to confirm you can sense them before enabling
+                  effects.
+                </p>
+              </div>
+              <div class="option-selftest-actions">
+                <span class="option-selftest-status" id="options-self-test-status">Not run yet</span>
+                <button id="options-self-test-run" type="button" class="secondary">Run self-test</button>
+              </div>
+            </div>
+            <div class="option-selftest-grid" role="group" aria-label="Self-test confirmations">
+              <label class="option-selftest-row" for="options-self-test-sound">
+                <span
+                  class="option-selftest-indicator"
+                  id="options-self-test-sound-indicator"
+                  aria-hidden="true"
+                ></span>
+                <div class="option-selftest-copy">
+                  <span class="option-selftest-label">Sound chime</span>
+                  <span class="option-toggle-help">Listen for a short chime.</span>
+                </div>
+                <span class="option-selftest-confirm">
+                  <input id="options-self-test-sound" type="checkbox" />
+                  <span class="option-selftest-confirm-label">Heard it</span>
+                </span>
+              </label>
+              <label class="option-selftest-row" for="options-self-test-visual">
+                <span
+                  class="option-selftest-indicator option-selftest-indicator--flash"
+                  id="options-self-test-visual-indicator"
+                  aria-hidden="true"
+                ></span>
+                <div class="option-selftest-copy">
+                  <span class="option-selftest-label">Visual flash</span>
+                  <span class="option-toggle-help">Watch for a bright tile flash.</span>
+                </div>
+                <span class="option-selftest-confirm">
+                  <input id="options-self-test-visual" type="checkbox" />
+                  <span class="option-selftest-confirm-label">Saw it</span>
+                </span>
+              </label>
+              <label class="option-selftest-row" for="options-self-test-motion">
+                <span
+                  class="option-selftest-indicator option-selftest-indicator--motion"
+                  id="options-self-test-motion-indicator"
+                  aria-hidden="true"
+                ></span>
+                <div class="option-selftest-copy">
+                  <span class="option-selftest-label">Motion check</span>
+                  <span class="option-toggle-help">Uses the screen shake preview.</span>
+                </div>
+                <span class="option-selftest-confirm">
+                  <input id="options-self-test-motion" type="checkbox" />
+                  <span class="option-selftest-confirm-label">Felt it</span>
+                </span>
+              </label>
+            </div>
+            <p class="option-toggle-help option-selftest-footnote">
+              Motion step skips when Reduced Motion is on; sound skips when audio is disabled.
+            </p>
+          </div>
           <label class="option-toggle option-select">
             <span class="option-toggle-label">Text Size</span>
             <select id="options-text-size" aria-label="Text size preference">
@@ -925,6 +1102,14 @@
             </span>
           </label>
           <label class="option-toggle">
+            <input id="options-cognitive-load" type="checkbox" />
+            <span class="option-toggle-label">Reduced Cognitive Load</span>
+            <span class="option-toggle-help">
+              Hides bonus panels (metrics, battle log, roadmap hints) and trims extra overlays for
+              younger players. You can re-enable panels anytime.
+            </span>
+          </label>
+          <label class="option-toggle">
             <input id="options-colorblind-toggle" type="checkbox" />
             <span class="option-toggle-label">Colorblind Palette</span>
           </label>
@@ -939,6 +1124,18 @@
             </select>
             <span class="option-toggle-help">
               Pick the palette that separates reds/greens/blues best for you. Enabling a mode turns on the palette.
+            </span>
+          </label>
+          <label class="option-toggle option-select">
+            <span class="option-toggle-label">Castle Skin</span>
+            <select id="options-castle-skin" aria-label="Castle skin theme">
+              <option value="classic">Classic walls</option>
+              <option value="dusk">Dusk citadel</option>
+              <option value="aurora">Aurora keep</option>
+              <option value="ember">Ember bastion</option>
+            </select>
+            <span class="option-toggle-help">
+              Pick the castle palette you've unlocked from streaks; the HUD updates instantly.
             </span>
           </label>
           <label class="option-toggle option-range">
@@ -1064,6 +1261,15 @@
         <div class="options-actions">
           <button id="options-parental-info" type="button" class="secondary">
             Parental Info
+          </button>
+          <button id="options-sticker-book" type="button" class="secondary">
+            Sticker Book
+          </button>
+          <button id="options-parent-summary" type="button" class="secondary">
+            Weekly Parent Summary
+          </button>
+          <button id="options-lore-scrolls" type="button" class="secondary">
+            Lore Scrolls
           </button>
           <button id="options-analytics-export" type="button" class="secondary">
             Download Analytics
@@ -1282,6 +1488,181 @@
               </div>
             </div>
           </div>
+      </div>
+    </div>
+  </div>
+    <div
+      id="sticker-overlay"
+      class="sticker-overlay"
+      data-visible="false"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="sticker-overlay-title"
+      aria-hidden="true"
+    >
+      <div class="sticker-overlay-card">
+        <header class="sticker-overlay-header">
+          <div>
+            <p class="sticker-overlay-kicker">Season 4 keepsakes</p>
+            <h2 id="sticker-overlay-title">Sticker Book</h2>
+            <p id="sticker-overlay-summary" class="sticker-overlay-summary">
+              Collect pixel stickers by hitting milestones across runs.
+            </p>
+          </div>
+          <button
+            id="sticker-overlay-close"
+            class="icon-button"
+            type="button"
+            aria-label="Close sticker book"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </header>
+        <div class="sticker-overlay-body">
+          <ul id="sticker-overlay-list" class="sticker-grid" role="list"></ul>
+        </div>
+      </div>
+    </div>
+    <div
+      id="scrolls-overlay"
+      class="scrolls-overlay"
+      data-visible="false"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="scrolls-overlay-title"
+      aria-hidden="true"
+    >
+      <div class="scrolls-overlay-card">
+        <header class="scrolls-overlay-header">
+          <div>
+            <p class="scrolls-overlay-kicker">Reading rewards</p>
+            <h2 id="scrolls-overlay-title">Lore Scrolls</h2>
+            <p id="scrolls-overlay-summary" class="scrolls-overlay-summary">
+              Unlock scrolls by completing lessons, then read them between waves.
+            </p>
+            <p id="scrolls-overlay-progress" class="scrolls-overlay-progress">
+              0 lessons completed · 0 / 0 scrolls unlocked
+            </p>
+          </div>
+          <button
+            id="scrolls-overlay-close"
+            class="icon-button"
+            type="button"
+            aria-label="Close lore scrolls"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </header>
+        <div class="scrolls-overlay-body">
+          <ul id="scrolls-overlay-list" class="scrolls-grid" role="list"></ul>
+        </div>
+      </div>
+    </div>
+    <div
+      id="parent-summary-overlay"
+      class="parent-summary-overlay"
+      data-visible="false"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="parent-summary-title"
+      aria-hidden="true"
+    >
+      <div class="parent-summary-card">
+        <header class="parent-summary-header">
+          <div>
+            <p class="parent-summary-kicker">For parents & mentors</p>
+            <h2 id="parent-summary-title">Weekly Summary</h2>
+            <p id="parent-summary-subtitle" class="parent-summary-subtitle">
+              Session highlights for the week.
+            </p>
+          </div>
+          <button
+            id="parent-summary-close"
+            class="icon-button"
+            type="button"
+            aria-label="Close parent summary"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </header>
+        <div class="parent-summary-body">
+          <div class="parent-summary-meta">
+            <p id="parent-summary-progress" class="parent-summary-progress">
+              0 minutes practiced · 0% accuracy · 0 WPM
+            </p>
+            <p id="parent-summary-note" class="parent-summary-note">
+              Tip: keep sessions around 20-30 minutes with short stretch breaks.
+            </p>
+          </div>
+          <ul class="parent-summary-metrics" role="list">
+            <li>
+              <span>Time practiced</span>
+              <span id="parent-summary-time">0 minutes</span>
+            </li>
+            <li>
+              <span>Average accuracy</span>
+              <span id="parent-summary-accuracy">0%</span>
+            </li>
+            <li>
+              <span>Average WPM</span>
+              <span id="parent-summary-wpm">0</span>
+            </li>
+            <li>
+              <span>Best combo</span>
+              <span id="parent-summary-combo">x0</span>
+            </li>
+            <li>
+              <span>Perfect words</span>
+              <span id="parent-summary-perfect">0</span>
+            </li>
+            <li>
+              <span>Castle breaches</span>
+              <span id="parent-summary-breaches">0</span>
+            </li>
+            <li>
+              <span>Typing drills completed</span>
+              <span id="parent-summary-drills">0</span>
+            </li>
+            <li>
+              <span>Repairs used</span>
+              <span id="parent-summary-repairs">0</span>
+            </li>
+          </ul>
+          <div class="parent-summary-actions">
+            <button id="parent-summary-download" class="primary" type="button">
+              Download PDF
+            </button>
+            <button id="parent-summary-close-secondary" class="ghost" type="button">
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      id="contrast-overlay"
+      data-visible="false"
+      aria-hidden="true"
+      aria-live="polite"
+      role="region"
+      aria-label="Contrast audit overlay"
+    >
+      <div class="contrast-overlay-card">
+        <header class="contrast-overlay-header">
+          <div>
+            <p class="contrast-overlay-kicker">Visual check</p>
+            <h2 class="contrast-overlay-title">Contrast Audit</h2>
+            <p id="contrast-overlay-summary" class="contrast-overlay-summary">
+              Running audit...
+            </p>
+          </div>
+          <button id="contrast-overlay-close" class="icon-button" type="button" aria-label="Close contrast audit">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </header>
+        <div id="contrast-overlay-body" class="contrast-overlay-body">
+          <div id="contrast-overlay-markers" class="contrast-overlay-markers" aria-hidden="true"></div>
+          <ul id="contrast-overlay-list" class="contrast-overlay-list"></ul>
         </div>
       </div>
     </div>

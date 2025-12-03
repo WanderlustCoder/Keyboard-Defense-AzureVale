@@ -23,7 +23,9 @@ import { buildResolutionChangeEntry } from "../utils/canvasTransition.js";
 import { deriveStarfieldState } from "../utils/starfield.js";
 import { defaultStarfieldConfig } from "../config/starfield.js";
 import { listNewLoreForWave } from "../data/lore.js";
+import { buildLoreScrollProgress, listNewLoreScrollsForLessons } from "../data/loreScrolls.js";
 import { readLoreProgress, writeLoreProgress } from "../utils/lorePersistence.js";
+import { readLessonProgress, writeLessonProgress, LESSON_PROGRESS_VERSION } from "../utils/lessonProgress.js";
 import { selectAmbientProfile } from "../audio/ambientProfiles.js";
 import { getEnemyBiography } from "../data/bestiary.js";
 const FRAME_DURATION = 1 / 60;
@@ -34,6 +36,28 @@ const SOUND_VOLUME_DEFAULT = 0.8;
 const AUDIO_INTENSITY_MIN = 0.5;
 const AUDIO_INTENSITY_MAX = 1.5;
 const AUDIO_INTENSITY_DEFAULT = 1;
+const SCREEN_SHAKE_INTENSITY_MIN = 0;
+const SCREEN_SHAKE_INTENSITY_MAX = 1.2;
+const SCREEN_SHAKE_INTENSITY_DEFAULT = 0.65;
+const SCREEN_SHAKE_BASE = {
+    muzzle: 1.2,
+    hit: 2.4,
+    breach: 3.2,
+    preview: 2.8
+};
+const SCREEN_SHAKE_DURATION = {
+    muzzle: 0.25,
+    hit: 0.4,
+    breach: 0.55,
+    preview: 0.45
+};
+const SCREEN_SHAKE_MAX_OFFSET = 8;
+const ACCESSIBILITY_SELF_TEST_DEFAULT = {
+    lastRunAt: null,
+    soundConfirmed: false,
+    visualConfirmed: false,
+    motionConfirmed: false
+};
 const CANVAS_BASE_WIDTH = 960;
 const CANVAS_BASE_HEIGHT = 540;
 const BG_BRIGHTNESS_MIN = 0.9;
@@ -148,6 +172,10 @@ export class GameController {
         this.soundEnabled = true;
         this.soundVolume = SOUND_VOLUME_DEFAULT;
         this.audioIntensity = AUDIO_INTENSITY_DEFAULT;
+        this.screenShakeEnabled = false;
+        this.screenShakeIntensity = SCREEN_SHAKE_INTENSITY_DEFAULT;
+        this.screenShakeBursts = [];
+        this.accessibilitySelfTest = { ...ACCESSIBILITY_SELF_TEST_DEFAULT };
         this.reducedMotionEnabled = false;
         this.checkeredBackgroundEnabled = false;
         this.virtualKeyboardEnabled = false;
@@ -156,6 +184,7 @@ export class GameController {
         this.readableFontEnabled = false;
         this.dyslexiaFontEnabled = false;
         this.dyslexiaSpacingEnabled = false;
+        this.reducedCognitiveLoadEnabled = false;
         this.backgroundBrightness = BG_BRIGHTNESS_DEFAULT;
         this.colorblindPaletteEnabled = false;
         this.colorblindPaletteMode = "off";
@@ -191,6 +220,7 @@ export class GameController {
         this.lowGraphicsRestoreState = null;
         this.hudZoom = 1;
         this.hudLayout = HUD_LAYOUT_DEFAULT;
+        this.castleSkin = "classic";
         this.hudFontScale = 1;
         this.firstEncounterSeen = this.loadFirstEncounterSeen();
         this.enemyIntroOverlay = null;
@@ -210,6 +240,10 @@ export class GameController {
         this.lastAmbientProfile = null;
         this.lastGameStatus = null;
         this.unlockedLore = new Set();
+        this.lessonProgress = {
+            lessonsCompleted: 0,
+            unlockedScrolls: new Set()
+        };
         this.turretLoadoutPresets = Object.create(null);
         this.activeTurretPresetId = null;
         this.lastTurretSignature = "";
@@ -298,6 +332,7 @@ export class GameController {
                     this.syncAssetIntegrityFlags();
                 })
                 : null;
+        this.initializeLessonProgress();
         this.initializeLoreProgress();
         this.assetReady = false;
         this.assetStartPending = false;
@@ -420,6 +455,9 @@ export class GameController {
             typingAccuracy: "typing-accuracy",
             typingWpm: "typing-wpm",
             typingInput: "typing-input",
+            companionPet: "companion-pet",
+            companionMoodLabel: "companion-mood-label",
+            companionTip: "companion-tip",
             virtualKeyboard: "virtual-keyboard",
             fullscreenButton: "fullscreen-button",
             upgradePanel: "upgrade-panel",
@@ -450,6 +488,23 @@ export class GameController {
                 soundVolumeValue: "options-sound-volume-value",
                 soundIntensitySlider: "options-sound-intensity",
                 soundIntensityValue: "options-sound-intensity-value",
+                screenShakeToggle: "options-screen-shake-toggle",
+                screenShakeSlider: "options-screen-shake-intensity",
+                screenShakeValue: "options-screen-shake-intensity-value",
+                screenShakePreview: "options-screen-shake-preview",
+                screenShakeDemo: "options-screen-shake-demo",
+                contrastAuditButton: "options-contrast-audit",
+                stickerBookButton: "options-sticker-book",
+                parentSummaryButton: "options-parent-summary",
+                selfTestContainer: "options-self-test",
+                selfTestRun: "options-self-test-run",
+                selfTestStatus: "options-self-test-status",
+                selfTestSoundToggle: "options-self-test-sound",
+                selfTestVisualToggle: "options-self-test-visual",
+                selfTestMotionToggle: "options-self-test-motion",
+                selfTestSoundIndicator: "options-self-test-sound-indicator",
+                selfTestVisualIndicator: "options-self-test-visual-indicator",
+                selfTestMotionIndicator: "options-self-test-motion-indicator",
                 diagnosticsToggle: "options-diagnostics-toggle",
                 virtualKeyboardToggle: "options-virtual-keyboard-toggle",
                 lowGraphicsToggle: "options-low-graphics-toggle",
@@ -460,12 +515,14 @@ export class GameController {
                 readableFontToggle: "options-readable-font-toggle",
                 dyslexiaFontToggle: "options-dyslexia-font-toggle",
                 dyslexiaSpacingToggle: "options-dyslexia-spacing-toggle",
+                cognitiveLoadToggle: "options-cognitive-load",
                 colorblindPaletteToggle: "options-colorblind-toggle",
                 colorblindPaletteSelect: "options-colorblind-mode",
                 backgroundBrightnessSlider: "options-bg-brightness",
                 backgroundBrightnessValue: "options-bg-brightness-value",
                 hudZoomSelect: "options-hud-zoom",
                 hudLayoutToggle: "options-hud-left",
+                castleSkinSelect: "options-castle-skin",
                 fontScaleSelect: "options-font-scale",
                 defeatAnimationSelect: "options-defeat-animation",
                 telemetryToggle: "options-telemetry-toggle",
@@ -474,6 +531,7 @@ export class GameController {
                 eliteAffixToggleWrapper: "options-elite-affix-toggle-wrapper",
                 crystalPulseToggle: "options-crystal-toggle",
                 crystalPulseToggleWrapper: "options-crystal-toggle-wrapper",
+                loreScrollsButton: "options-lore-scrolls",
                 analyticsExportButton: "options-analytics-export"
             },
             waveScorecard: {
@@ -516,6 +574,44 @@ export class GameController {
             parentalOverlay: {
                 container: "parental-overlay",
                 closeButton: "parental-overlay-close"
+            },
+            contrastOverlay: {
+                container: "contrast-overlay",
+                list: "contrast-overlay-list",
+                summary: "contrast-overlay-summary",
+                closeButton: "contrast-overlay-close",
+                markers: "contrast-overlay-markers"
+            },
+            stickerBookOverlay: {
+                container: "sticker-overlay",
+                list: "sticker-overlay-list",
+                summary: "sticker-overlay-summary",
+                closeButton: "sticker-overlay-close"
+            },
+            parentSummaryOverlay: {
+                container: "parent-summary-overlay",
+                closeButton: "parent-summary-close",
+                closeSecondary: "parent-summary-close-secondary",
+                title: "parent-summary-title",
+                subtitle: "parent-summary-subtitle",
+                progress: "parent-summary-progress",
+                note: "parent-summary-note",
+                time: "parent-summary-time",
+                accuracy: "parent-summary-accuracy",
+                wpm: "parent-summary-wpm",
+                combo: "parent-summary-combo",
+                perfect: "parent-summary-perfect",
+                breaches: "parent-summary-breaches",
+                drills: "parent-summary-drills",
+                repairs: "parent-summary-repairs",
+                download: "parent-summary-download"
+            },
+            loreScrollOverlay: {
+                container: "scrolls-overlay",
+                list: "scrolls-overlay-list",
+                summary: "scrolls-overlay-summary",
+                progress: "scrolls-overlay-progress",
+                closeButton: "scrolls-overlay-close"
             }
         }, {
             onCastleUpgrade: () => this.handleCastleUpgrade(),
@@ -533,6 +629,12 @@ export class GameController {
             onSoundToggle: (enabled) => this.setSoundEnabled(enabled),
             onSoundVolumeChange: (volume) => this.setSoundVolume(volume),
             onSoundIntensityChange: (value) => this.setAudioIntensity(value),
+            onScreenShakeToggle: (enabled) => this.setScreenShakeEnabled(enabled),
+            onScreenShakeIntensityChange: (value) => this.setScreenShakeIntensity(value),
+            onScreenShakePreview: () => this.previewScreenShake(),
+            onContrastAuditRequested: () => this.hud.runContrastAudit(),
+            onAccessibilitySelfTestRun: () => this.runAccessibilitySelfTest(),
+            onAccessibilitySelfTestConfirm: (kind, value) => this.setAccessibilitySelfTestConfirmation(kind, value),
             onDiagnosticsToggle: (visible) => this.setDiagnosticsVisible(visible),
             onLowGraphicsToggle: (enabled) => this.setLowGraphicsEnabled(enabled),
             onVirtualKeyboardToggle: (enabled) => this.setVirtualKeyboardEnabled(enabled),
@@ -544,9 +646,11 @@ export class GameController {
             onReadableFontToggle: (enabled) => this.setReadableFontEnabled(enabled),
             onDyslexiaFontToggle: (enabled) => this.setDyslexiaFontEnabled(enabled),
             onDyslexiaSpacingToggle: (enabled) => this.setDyslexiaSpacingEnabled(enabled),
+            onCognitiveLoadToggle: (enabled) => this.setReducedCognitiveLoadEnabled(enabled),
             onColorblindPaletteToggle: (enabled) => this.setColorblindPaletteEnabled(enabled),
             onColorblindPaletteModeChange: (mode) => this.setColorblindPaletteMode(mode),
             onBackgroundBrightnessChange: (value) => this.setBackgroundBrightness(value),
+            onCastleSkinChange: (skin) => this.setCastleSkin(skin, { updateOptions: false }),
             onHudZoomChange: (scale) => this.setHudZoom(scale),
             onHudLayoutToggle: (leftHanded) => this.setHudLayoutSide(leftHanded ? "left" : "right"),
             onDefeatAnimationModeChange: (mode) => this.setDefeatAnimationMode(mode),
@@ -599,6 +703,7 @@ export class GameController {
         }
         this.initializePlayerSettings();
         this.hud.setAnalyticsExportEnabled(this.analyticsExportEnabled);
+        this.syncLoreScrollsToHud();
         this.hud.setFullscreenAvailable(this.fullscreenSupported);
         this.attachInputHandlers(options.typingInput);
         this.attachTypingDrillHooks();
@@ -1408,6 +1513,16 @@ export class GameController {
     setReducedMotionEnabled(enabled, options = {}) {
         this.reducedMotionEnabled = enabled;
         this.applyReducedMotionSetting(enabled);
+        if (enabled) {
+            this.screenShakeBursts = [];
+            if (this.screenShakeEnabled) {
+                this.setScreenShakeEnabled(false, {
+                    persist: options.persist !== false,
+                    silent: true,
+                    render: false
+                });
+            }
+        }
         if (!options.silent) {
             this.hud.appendLog(`Reduced motion ${enabled ? "enabled" : "disabled"}`);
         }
@@ -1555,6 +1670,25 @@ export class GameController {
         }
         return changed;
     }
+    setReducedCognitiveLoadEnabled(enabled, options = {}) {
+        const next = Boolean(enabled);
+        const changed = this.reducedCognitiveLoadEnabled !== next;
+        this.reducedCognitiveLoadEnabled = next;
+        this.applyCognitiveLoadSetting(next);
+        this.applyHudVisibility();
+        this.syncHudVisibilityToggles();
+        this.updateOptionsOverlayState();
+        if (options.persist !== false && changed) {
+            this.persistPlayerSettings({ reducedCognitiveLoadEnabled: next });
+        }
+        if (!options.silent && changed) {
+            this.hud.appendLog(`Reduced cognitive load ${next ? "enabled" : "disabled"}`);
+        }
+        if (options.render !== false && changed) {
+            this.render();
+        }
+        return changed;
+    }
     setBackgroundBrightness(value, options = {}) {
         const normalized = this.normalizeBackgroundBrightness(value);
         const changed = Math.abs(normalized - this.backgroundBrightness) > 0.001;
@@ -1601,6 +1735,101 @@ export class GameController {
         this.updateOptionsOverlayState();
         if (options.persist !== false && changed) {
             this.persistPlayerSettings({ audioIntensity: normalized });
+        }
+    }
+    setScreenShakeEnabled(enabled, options = {}) {
+        const next = Boolean(enabled) && !this.reducedMotionEnabled;
+        const persist = options.persist !== false;
+        const silent = Boolean(options.silent);
+        const render = options.render !== false;
+        const changed = this.screenShakeEnabled !== next;
+        this.screenShakeEnabled = next;
+        if (!next) {
+            this.screenShakeBursts = [];
+        }
+        if (!silent) {
+            const message = this.reducedMotionEnabled && enabled
+                ? "Reduced motion is on; screen shake stays disabled."
+                : `Screen shake ${next ? "enabled" : "disabled"}`;
+            this.hud.appendLog(message);
+        }
+        this.updateOptionsOverlayState();
+        if (persist && changed) {
+            this.persistPlayerSettings({ screenShakeEnabled: next });
+        }
+        if (render) {
+            this.render();
+        }
+        return changed;
+    }
+    setScreenShakeIntensity(intensity, options = {}) {
+        const normalized = this.normalizeScreenShakeIntensity(intensity);
+        const changed = Math.abs(normalized - this.screenShakeIntensity) > 0.001;
+        this.screenShakeIntensity = normalized;
+        if (!options.silent && changed) {
+            const percent = Math.round(normalized * 100);
+            this.hud.appendLog(`Screen shake intensity set to ${percent}%`);
+        }
+        this.updateOptionsOverlayState();
+        if (options.persist !== false && changed) {
+            this.persistPlayerSettings({ screenShakeIntensity: normalized });
+        }
+        return changed;
+    }
+    previewScreenShake() {
+        if (this.reducedMotionEnabled) {
+            this.hud.appendLog("Reduced motion is on; screen shake preview skipped.");
+            return false;
+        }
+        this.enqueueScreenShake("preview", {
+            force: true,
+            intensityOverride: this.screenShakeIntensity
+        });
+        this.hud.playScreenShakePreview?.();
+        return true;
+    }
+    getAccessibilitySelfTestDefaults() {
+        return { ...ACCESSIBILITY_SELF_TEST_DEFAULT };
+    }
+    runAccessibilitySelfTest() {
+        const nextState = {
+            lastRunAt: new Date().toISOString(),
+            soundConfirmed: false,
+            visualConfirmed: false,
+            motionConfirmed: this.reducedMotionEnabled ? false : false
+        };
+        this.persistPlayerSettings({ accessibilitySelfTest: nextState });
+        this.accessibilitySelfTest =
+            this.playerSettings.accessibilitySelfTest ?? this.getAccessibilitySelfTestDefaults();
+        this.updateOptionsOverlayState();
+        this.playAccessibilitySelfTestCues();
+    }
+    setAccessibilitySelfTestConfirmation(kind, confirmed) {
+        if (kind !== "sound" && kind !== "visual" && kind !== "motion") {
+            return;
+        }
+        const current = this.playerSettings.accessibilitySelfTest ?? this.getAccessibilitySelfTestDefaults();
+        const nextState = {
+            ...current,
+            [kind]: Boolean(confirmed)
+        };
+        this.persistPlayerSettings({ accessibilitySelfTest: nextState });
+        this.accessibilitySelfTest =
+            this.playerSettings.accessibilitySelfTest ?? this.getAccessibilitySelfTestDefaults();
+        this.updateOptionsOverlayState();
+    }
+    playAccessibilitySelfTestCues() {
+        if (this.soundManager && this.soundEnabled) {
+            void this.soundManager.ensureInitialized().then(() => {
+                this.soundManager?.play?.("impact-hit");
+            });
+        }
+        this.hud.playAccessibilitySelfTestCues?.({
+            includeMotion: !this.reducedMotionEnabled,
+            soundEnabled: this.soundEnabled
+        });
+        if (!this.reducedMotionEnabled) {
+            this.previewScreenShake();
         }
     }
     updateAmbientTrack(state) {
@@ -1769,6 +1998,20 @@ export class GameController {
             this.render();
         }
     }
+    setCastleSkin(skin, options = {}) {
+        const normalized = this.normalizeCastleSkin(skin);
+        const changed = normalized !== this.castleSkin;
+        this.castleSkin = normalized;
+        if (this.hud?.setCastleSkin) {
+            this.hud.setCastleSkin(normalized);
+        }
+        if (changed && options.persist !== false) {
+            this.persistPlayerSettings({ castleSkin: normalized });
+        }
+        if (changed && options.updateOptions !== false) {
+            this.updateOptionsOverlayState();
+        }
+    }
     setHudFontScale(scale, options = {}) {
         const normalized = this.normalizeHudFontScale(scale);
         const changed = Math.abs(normalized - this.hudFontScale) > 0.001;
@@ -1834,6 +2077,16 @@ export class GameController {
         const clamped = Math.min(HUD_ZOOM_MAX, Math.max(HUD_ZOOM_MIN, value));
         return Math.round(clamped * 100) / 100;
     }
+    normalizeCastleSkin(value) {
+        if (typeof value !== "string") {
+            return "classic";
+        }
+        const normalized = value.toLowerCase();
+        if (normalized === "dusk" || normalized === "aurora" || normalized === "ember") {
+            return normalized;
+        }
+        return "classic";
+    }
     normalizeHudLayout(side) {
         return side === "left" ? "left" : "right";
     }
@@ -1873,13 +2126,23 @@ export class GameController {
         const clamped = Math.min(AUDIO_INTENSITY_MAX, Math.max(AUDIO_INTENSITY_MIN, value));
         return Math.round(clamped * 100) / 100;
     }
+    normalizeScreenShakeIntensity(value) {
+        if (!Number.isFinite(value)) {
+            return SCREEN_SHAKE_INTENSITY_DEFAULT;
+        }
+        const clamped = Math.min(SCREEN_SHAKE_INTENSITY_MAX, Math.max(SCREEN_SHAKE_INTENSITY_MIN, value));
+        return Math.round(clamped * 100) / 100;
+    }
     updateOptionsOverlayState() {
         if (!this.diagnostics)
             return;
+        const selfTestState = this.playerSettings?.accessibilitySelfTest ?? ACCESSIBILITY_SELF_TEST_DEFAULT;
         this.hud.syncOptionsOverlayState({
             soundEnabled: this.soundEnabled,
             soundVolume: this.soundVolume,
             soundIntensity: this.audioIntensity,
+            screenShakeEnabled: this.screenShakeEnabled,
+            screenShakeIntensity: this.screenShakeIntensity,
             diagnosticsVisible: this.diagnostics.isVisible(),
             lowGraphicsEnabled: this.lowGraphicsEnabled,
             virtualKeyboardEnabled: this.virtualKeyboardEnabled,
@@ -1890,9 +2153,12 @@ export class GameController {
             readableFontEnabled: this.readableFontEnabled,
             dyslexiaFontEnabled: this.dyslexiaFontEnabled,
             dyslexiaSpacingEnabled: this.dyslexiaSpacingEnabled,
+            reducedCognitiveLoadEnabled: this.reducedCognitiveLoadEnabled,
             backgroundBrightness: this.backgroundBrightness,
             colorblindPaletteEnabled: this.colorblindPaletteEnabled,
             colorblindPaletteMode: this.colorblindPaletteMode,
+            castleSkin: this.castleSkin,
+            selfTest: selfTestState,
             hudZoom: this.hudZoom,
             hudLayout: this.hudLayout,
             hudFontScale: this.hudFontScale,
@@ -1977,6 +2243,38 @@ export class GameController {
         const body = document.body;
         if (body) {
             body.dataset.dyslexiaSpacing = enabled ? "true" : "false";
+        }
+    }
+    applyCognitiveLoadSetting(enabled) {
+        if (typeof document === "undefined")
+            return;
+        const root = document.documentElement;
+        const body = document.body;
+        const hud = document.getElementById("hud");
+        const modeValue = enabled ? "reduced" : undefined;
+        if (root) {
+            if (modeValue) {
+                root.dataset.cognitiveMode = modeValue;
+            }
+            else {
+                delete root.dataset.cognitiveMode;
+            }
+        }
+        if (body) {
+            if (modeValue) {
+                body.dataset.cognitiveMode = modeValue;
+            }
+            else {
+                delete body.dataset.cognitiveMode;
+            }
+        }
+        if (hud instanceof HTMLElement) {
+            if (modeValue) {
+                hud.dataset.cognitiveMode = modeValue;
+            }
+            else {
+                hud.removeAttribute("data-cognitive-mode");
+            }
         }
     }
     applyBackgroundBrightnessSetting(value) {
@@ -2494,6 +2792,7 @@ export class GameController {
             const percent = Math.round(Math.max(0, Math.min(100, entry.accuracy * 100)));
             this.hud.appendLog(`Drill (${entry.mode}) ${percent}% acc, ${entry.words} words, best combo x${entry.bestCombo}`);
             this.trackTypingDrillCompleted(entry);
+            this.handleLessonCompletion(entry);
             this.setTypingDrillCtaRecommendation(this.buildTypingDrillRecommendation());
         }
         catch (error) {
@@ -2850,6 +3149,11 @@ export class GameController {
                 0.001;
         const soundIntensityUnchanged = patch.audioIntensity === undefined ||
             Math.abs(this.normalizeAudioIntensity(patch.audioIntensity) - this.playerSettings.audioIntensity) <= 0.001;
+        const screenShakeEnabledUnchanged = patch.screenShakeEnabled === undefined ||
+            patch.screenShakeEnabled === this.playerSettings.screenShakeEnabled;
+        const screenShakeIntensityUnchanged = patch.screenShakeIntensity === undefined ||
+            Math.abs(this.normalizeScreenShakeIntensity(patch.screenShakeIntensity) -
+                this.playerSettings.screenShakeIntensity) <= 0.001;
         const diagnosticsUnchanged = patch.diagnosticsVisible === undefined ||
             patch.diagnosticsVisible === this.playerSettings.diagnosticsVisible;
         const reducedMotionUnchanged = patch.reducedMotionEnabled === undefined ||
@@ -2864,6 +3168,8 @@ export class GameController {
             patch.readableFontEnabled === this.playerSettings.readableFontEnabled;
         const dyslexiaFontUnchanged = patch.dyslexiaFontEnabled === undefined ||
             patch.dyslexiaFontEnabled === this.playerSettings.dyslexiaFontEnabled;
+        const cognitiveLoadUnchanged = patch.reducedCognitiveLoadEnabled === undefined ||
+            patch.reducedCognitiveLoadEnabled === this.playerSettings.reducedCognitiveLoadEnabled;
         const colorblindUnchanged = patch.colorblindPaletteEnabled === undefined ||
             patch.colorblindPaletteEnabled === this.playerSettings.colorblindPaletteEnabled;
         const textSizeUnchanged = patch.textSizeScale === undefined ||
@@ -2876,6 +3182,9 @@ export class GameController {
         const hudZoomUnchanged = patch.hudZoom === undefined ||
             Math.abs(this.normalizeHudZoom(patch.hudZoom) - (this.playerSettings.hudZoom ?? HUD_ZOOM_DEFAULT)) <=
                 0.001;
+        const castleSkinUnchanged = patch.castleSkin === undefined ||
+            this.normalizeCastleSkin(patch.castleSkin) ===
+                this.normalizeCastleSkin(this.playerSettings.castleSkin ?? "classic");
         const fontScaleUnchanged = patch.hudFontScale === undefined ||
             Math.abs(this.normalizeHudFontScale(patch.hudFontScale) - this.playerSettings.hudFontScale) <=
                 0.001;
@@ -2886,6 +3195,17 @@ export class GameController {
             this.areTurretPresetMapsEqual(this.playerSettings.turretLoadoutPresets, patch.turretLoadoutPresets);
         const telemetryUnchanged = patch.telemetryEnabled === undefined ||
             patch.telemetryEnabled === this.playerSettings.telemetryEnabled;
+        const currentSelfTest = this.playerSettings.accessibilitySelfTest ?? ACCESSIBILITY_SELF_TEST_DEFAULT;
+        const nextSelfTestSnapshot = patch.accessibilitySelfTest === undefined
+            ? currentSelfTest
+            : {
+                ...currentSelfTest,
+                ...patch.accessibilitySelfTest,
+                lastRunAt: patch.accessibilitySelfTest.lastRunAt === undefined
+                    ? currentSelfTest.lastRunAt
+                    : patch.accessibilitySelfTest.lastRunAt
+            };
+        const selfTestUnchanged = this.areAccessibilitySelfTestsEqual(currentSelfTest, nextSelfTestSnapshot);
         const diagnosticsSectionsUnchanged = patch.diagnosticsSections === undefined ||
             this.areDiagnosticsSectionsEqual(this.playerSettings.diagnosticsSections, patch.diagnosticsSections);
         const diagnosticsSectionsUpdatedAtUnchanged = patch.diagnosticsSectionsUpdatedAt === undefined ||
@@ -2902,26 +3222,33 @@ export class GameController {
             checkeredUnchanged &&
             readableFontUnchanged &&
             dyslexiaFontUnchanged &&
+            cognitiveLoadUnchanged &&
             colorblindUnchanged &&
             textSizeUnchanged &&
             hapticsUnchanged &&
+            screenShakeEnabledUnchanged &&
+            screenShakeIntensityUnchanged &&
             virtualKeyboardUnchanged &&
             lowGraphicsUnchanged &&
             defeatAnimationModeUnchanged &&
             hudZoomUnchanged &&
             hudLayoutUnchanged &&
+            castleSkinUnchanged &&
             fontScaleUnchanged &&
             targetingUnchanged &&
             presetsUnchanged &&
             telemetryUnchanged &&
             diagnosticsSectionsUnchanged &&
             diagnosticsSectionsUpdatedAtUnchanged &&
+            selfTestUnchanged &&
             dprPreferenceUnchanged &&
             hudLayoutPreferenceUnchanged) {
             return;
         }
         const next = withPatchedPlayerSettings(this.playerSettings, patch);
         this.playerSettings = next;
+        this.accessibilitySelfTest =
+            next.accessibilitySelfTest ?? { ...ACCESSIBILITY_SELF_TEST_DEFAULT };
         if (patch.turretLoadoutPresets !== undefined) {
             this.turretLoadoutPresets = this.cloneTurretPresetMap(next.turretLoadoutPresets);
         }
@@ -3008,6 +3335,14 @@ export class GameController {
             }
         }
         return true;
+    }
+    areAccessibilitySelfTestsEqual(current, next) {
+        const a = current ?? ACCESSIBILITY_SELF_TEST_DEFAULT;
+        const b = next ?? ACCESSIBILITY_SELF_TEST_DEFAULT;
+        return ((a.lastRunAt ?? null) === (b.lastRunAt ?? null) &&
+            Boolean(a.soundConfirmed) === Boolean(b.soundConfirmed) &&
+            Boolean(a.visualConfirmed) === Boolean(b.visualConfirmed) &&
+            Boolean(a.motionConfirmed) === Boolean(b.motionConfirmed));
     }
     cloneTurretPresetMap(source = {}) {
         const clone = Object.create(null);
@@ -3314,6 +3649,7 @@ export class GameController {
         this.engine.resetAnalytics();
         this.currentState = this.engine.getState();
         this.impactEffects = [];
+        this.screenShakeBursts = [];
         this.bestCombo = this.currentState.typing.combo;
         this.hud.appendLog("Analytics reset");
         this.render();
@@ -3414,6 +3750,42 @@ export class GameController {
         }
         return { ...this.assetIntegritySummary };
     }
+    enqueueScreenShake(kind, options = {}) {
+        if (this.reducedMotionEnabled)
+            return;
+        const allow = options.force || this.screenShakeEnabled;
+        if (!allow)
+            return;
+        const now = this.currentState?.time ?? this.engine.getState().time ?? 0;
+        const base = SCREEN_SHAKE_BASE[kind] ?? SCREEN_SHAKE_BASE.hit;
+        const duration = SCREEN_SHAKE_DURATION[kind] ?? SCREEN_SHAKE_DURATION.hit;
+        const intensity = this.normalizeScreenShakeIntensity(options.intensityOverride ?? this.screenShakeIntensity);
+        const magnitude = base * intensity * 2;
+        this.screenShakeBursts.push({ createdAt: now, duration, magnitude });
+        if (this.screenShakeBursts.length > 12) {
+            this.screenShakeBursts = this.screenShakeBursts.slice(-12);
+        }
+    }
+    getScreenShakeOffset() {
+        if (this.reducedMotionEnabled)
+            return null;
+        const now = this.currentState?.time ?? this.engine.getState().time ?? 0;
+        this.screenShakeBursts = this.screenShakeBursts.filter((entry) => now - entry.createdAt <= entry.duration);
+        if (this.screenShakeBursts.length === 0)
+            return null;
+        let magnitude = 0;
+        for (const entry of this.screenShakeBursts) {
+            const age = Math.max(0, now - entry.createdAt);
+            const progress = entry.duration > 0 ? Math.min(1, age / entry.duration) : 1;
+            magnitude += entry.magnitude * Math.max(0, 1 - progress);
+        }
+        if (magnitude <= 0)
+            return null;
+        const clamped = Math.min(SCREEN_SHAKE_MAX_OFFSET, magnitude);
+        const offsetX = (Math.random() * 2 - 1) * clamped;
+        const offsetY = (Math.random() * 2 - 1) * clamped;
+        return { x: offsetX, y: offsetY };
+    }
     render() {
         this.currentState = this.engine.getState();
         const turretSignature = this.computeTurretSignature(this.currentState);
@@ -3438,7 +3810,8 @@ export class GameController {
             reducedMotion: this.reducedMotionEnabled,
             checkeredBackground: this.checkeredBackgroundEnabled,
             turretRange,
-            starfield: starfieldState
+            starfield: starfieldState,
+            screenShake: this.getScreenShakeOffset()
         });
         this.updateAmbientTrack(this.currentState);
         this.handleGameStatusAudio(this.currentState.status);
@@ -3889,6 +4262,8 @@ export class GameController {
         }
         const stored = loadPlayerSettingsFromStorage(window.localStorage);
         this.playerSettings = stored;
+        this.accessibilitySelfTest =
+            stored.accessibilitySelfTest ?? { ...ACCESSIBILITY_SELF_TEST_DEFAULT };
         this.colorblindPaletteMode = this.loadColorblindMode();
         if (this.colorblindPaletteMode !== "off") {
             this.lastColorblindMode = this.colorblindPaletteMode;
@@ -3917,6 +4292,15 @@ export class GameController {
             render: false
         });
         this.setReducedMotionEnabled(stored.reducedMotionEnabled, {
+            silent: true,
+            persist: false,
+            render: false
+        });
+        this.setScreenShakeIntensity(stored.screenShakeIntensity ?? SCREEN_SHAKE_INTENSITY_DEFAULT, {
+            silent: true,
+            persist: false
+        });
+        this.setScreenShakeEnabled(stored.screenShakeEnabled ?? false, {
             silent: true,
             persist: false,
             render: false
@@ -3976,6 +4360,11 @@ export class GameController {
             persist: false,
             render: false
         });
+        this.setReducedCognitiveLoadEnabled(stored.reducedCognitiveLoadEnabled ?? false, {
+            silent: true,
+            persist: false,
+            render: false
+        });
         this.setBackgroundBrightness(stored.backgroundBrightness ?? BG_BRIGHTNESS_DEFAULT, {
             silent: true,
             persist: false
@@ -3989,6 +4378,10 @@ export class GameController {
             silent: true,
             persist: false,
             render: false
+        });
+        this.setCastleSkin(stored.castleSkin ?? "classic", {
+            persist: false,
+            updateOptions: false
         });
         this.setHudFontScale(stored.hudFontScale ?? 1, {
             silent: true,
@@ -4485,6 +4878,7 @@ export class GameController {
             this.engine.reset();
             this.bestCombo = 0;
             this.impactEffects = [];
+            this.screenShakeBursts = [];
         }
         this.tutorialCompleted = false;
         this.render();
@@ -4509,10 +4903,22 @@ export class GameController {
         this.engine.reset();
         this.bestCombo = 0;
         this.impactEffects = [];
+        this.screenShakeBursts = [];
         this.currentState = this.engine.getState();
         this.hud.appendLog("Practice mode engaged: waves now loop endlessly.");
         this.render();
         this.start();
+    }
+    initializeLessonProgress() {
+        if (typeof window === "undefined" || !window.localStorage) {
+            this.lessonProgress = { lessonsCompleted: 0, unlockedScrolls: new Set() };
+            return;
+        }
+        const stored = readLessonProgress(window.localStorage);
+        this.lessonProgress = {
+            lessonsCompleted: Math.max(0, stored.lessonsCompleted ?? 0),
+            unlockedScrolls: new Set(stored.unlockedScrolls ?? [])
+        };
     }
     initializeLoreProgress() {
         if (typeof window === "undefined" || !window.localStorage)
@@ -4531,6 +4937,57 @@ export class GameController {
             this.hud?.appendLog?.(`Codex unlocked: ${entry.title}`);
         }
         writeLoreProgress(window.localStorage, this.unlockedLore, LORE_VERSION);
+    }
+    buildLoreScrollViewState() {
+        const summary = buildLoreScrollProgress(this.lessonProgress?.lessonsCompleted ?? 0, this.lessonProgress?.unlockedScrolls ?? []);
+        return {
+            lessonsCompleted: summary.lessonsCompleted,
+            total: summary.total,
+            unlocked: summary.unlocked,
+            next: summary.next,
+            entries: summary.entries.map((entry) => ({
+                id: entry.scroll.id,
+                title: entry.scroll.title,
+                summary: entry.scroll.summary,
+                body: entry.scroll.body ?? "",
+                requiredLessons: entry.scroll.requiredLessons,
+                unlocked: entry.unlocked,
+                progress: entry.progress,
+                remaining: entry.remaining
+            }))
+        };
+    }
+    syncLoreScrollsToHud() {
+        if (!this.hud || !this.lessonProgress)
+            return;
+        this.hud.setLoreScrollProgress(this.buildLoreScrollViewState());
+    }
+    handleLessonCompletion(summary) {
+        const words = Math.max(0, summary?.words ?? 0);
+        if (words <= 0)
+            return;
+        const previousLessons = this.lessonProgress?.lessonsCompleted ?? 0;
+        const previousUnlocked = new Set(this.lessonProgress?.unlockedScrolls ?? []);
+        const nextLessons = previousLessons + 1;
+        const newlyUnlocked = listNewLoreScrollsForLessons(nextLessons, previousUnlocked);
+        const unlocked = new Set(previousUnlocked);
+        for (const scroll of newlyUnlocked) {
+            unlocked.add(scroll.id);
+            this.hud?.appendLog?.(`Lore scroll unlocked: ${scroll.title}`);
+        }
+        this.lessonProgress = {
+            lessonsCompleted: nextLessons,
+            unlockedScrolls: unlocked
+        };
+        if (typeof window !== "undefined" && window.localStorage) {
+            writeLessonProgress(window.localStorage, {
+                version: LESSON_PROGRESS_VERSION,
+                lessonsCompleted: nextLessons,
+                unlockedScrolls: Array.from(unlocked),
+                updatedAt: new Date().toISOString()
+            });
+        }
+        this.syncLoreScrollsToHud();
     }
     shouldSkipTutorial() {
         if (typeof window === "undefined") {
@@ -4809,6 +5266,7 @@ export class GameController {
         if (this.reducedMotionEnabled) {
             return;
         }
+        this.enqueueScreenShake(kind);
         const createdAt = this.currentState?.time ?? this.engine.getState().time ?? 0;
         this.impactEffects.push({
             lane,
@@ -5163,6 +5621,7 @@ export class GameController {
             });
         }
         this.applyHudVisibility();
+        this.syncHudVisibilityToggles();
     }
     syncHudVisibilityToggles() {
         if (typeof document === "undefined")
@@ -5170,14 +5629,28 @@ export class GameController {
         const metricsToggle = document.getElementById("options-toggle-metrics");
         const wavePreviewToggle = document.getElementById("options-toggle-wave-preview");
         const battleLogToggle = document.getElementById("options-toggle-battle-log");
+        const reduced = this.reducedCognitiveLoadEnabled;
+        const prefs = this.hudVisibility ?? { metrics: true, battleLog: true, wavePreview: true };
+        const disabledTitle = reduced
+            ? "Disabled while Reduced Cognitive Load is on"
+            : "";
         if (metricsToggle instanceof HTMLInputElement) {
-            metricsToggle.checked = this.hudVisibility.metrics;
+            metricsToggle.checked = reduced ? false : prefs.metrics;
+            metricsToggle.disabled = reduced;
+            metricsToggle.setAttribute("aria-disabled", reduced ? "true" : "false");
+            metricsToggle.title = disabledTitle;
         }
         if (wavePreviewToggle instanceof HTMLInputElement) {
-            wavePreviewToggle.checked = this.hudVisibility.wavePreview;
+            wavePreviewToggle.checked = reduced ? false : prefs.wavePreview;
+            wavePreviewToggle.disabled = reduced;
+            wavePreviewToggle.setAttribute("aria-disabled", reduced ? "true" : "false");
+            wavePreviewToggle.title = disabledTitle;
         }
         if (battleLogToggle instanceof HTMLInputElement) {
-            battleLogToggle.checked = this.hudVisibility.battleLog;
+            battleLogToggle.checked = reduced ? false : prefs.battleLog;
+            battleLogToggle.disabled = reduced;
+            battleLogToggle.setAttribute("aria-disabled", reduced ? "true" : "false");
+            battleLogToggle.title = disabledTitle;
         }
     }
     applyHudVisibility() {
@@ -5187,17 +5660,23 @@ export class GameController {
         const wavePreview = document.querySelector(".wave-preview");
         const battleLog = document.querySelector(".events");
         const prefs = this.hudVisibility ?? { metrics: true, battleLog: true, wavePreview: true };
+        const reduced = this.reducedCognitiveLoadEnabled;
+        const effectivePrefs = {
+            metrics: !reduced && prefs.metrics,
+            wavePreview: !reduced && prefs.wavePreview,
+            battleLog: !reduced && prefs.battleLog
+        };
         if (metrics instanceof HTMLElement) {
-            metrics.dataset.hidden = prefs.metrics ? "false" : "true";
-            metrics.setAttribute("aria-hidden", prefs.metrics ? "false" : "true");
+            metrics.dataset.hidden = effectivePrefs.metrics ? "false" : "true";
+            metrics.setAttribute("aria-hidden", effectivePrefs.metrics ? "false" : "true");
         }
         if (wavePreview instanceof HTMLElement) {
-            wavePreview.dataset.hidden = prefs.wavePreview ? "false" : "true";
-            wavePreview.setAttribute("aria-hidden", prefs.wavePreview ? "false" : "true");
+            wavePreview.dataset.hidden = effectivePrefs.wavePreview ? "false" : "true";
+            wavePreview.setAttribute("aria-hidden", effectivePrefs.wavePreview ? "false" : "true");
         }
         if (battleLog instanceof HTMLElement) {
-            battleLog.dataset.hidden = prefs.battleLog ? "false" : "true";
-            battleLog.setAttribute("aria-hidden", prefs.battleLog ? "false" : "true");
+            battleLog.dataset.hidden = effectivePrefs.battleLog ? "false" : "true";
+            battleLog.setAttribute("aria-hidden", effectivePrefs.battleLog ? "false" : "true");
         }
     }
     loadHotkeys() {
@@ -5387,6 +5866,7 @@ export class GameController {
         const colorblindToggle = document.getElementById("accessibility-colorblind");
         const brightnessSlider = document.getElementById("accessibility-bg-brightness");
         const brightnessValue = document.getElementById("accessibility-bg-brightness-value");
+        const dyslexiaPresetButton = document.getElementById("accessibility-dyslexia-preset");
         if (!container ||
             !(closeButton instanceof HTMLButtonElement) ||
             !(skipButton instanceof HTMLButtonElement) ||
@@ -5420,6 +5900,15 @@ export class GameController {
         closeButton.addEventListener("click", skipOnboarding);
         skipButton.addEventListener("click", skipOnboarding);
         applyButton.addEventListener("click", applyPreferences);
+        if (dyslexiaPresetButton instanceof HTMLButtonElement) {
+            dyslexiaPresetButton.addEventListener("click", () => {
+                dyslexiaSpacingToggle.checked = true;
+                this.setDyslexiaSpacingEnabled(true);
+                this.setDyslexiaFontEnabled(true);
+                this.persistAccessibilitySeen();
+                this.hideAccessibilityOnboarding();
+            });
+        }
         container.addEventListener("click", (event) => {
             if (event.target === container) {
                 skipOnboarding();

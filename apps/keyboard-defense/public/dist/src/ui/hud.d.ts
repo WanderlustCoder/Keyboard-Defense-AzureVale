@@ -1,6 +1,49 @@
 import { type GameConfig } from "../core/config.js";
 import { type GameMode, type GameState, type DefeatAnimationPreference, type TurretTargetPriority, type TurretTypeId, type WaveSpawnPreview } from "../core/types.js";
 import type { ResolutionTransitionState } from "./ResolutionTransitionController.js";
+type CastleSkinId = "classic" | "dusk" | "aurora" | "ember";
+type ContrastAuditResult = {
+    label: string;
+    ratio: number;
+    status: "pass" | "warn" | "fail";
+    rect: {
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+    };
+};
+type StickerBookEntry = {
+    id: string;
+    title: string;
+    description: string;
+    icon: "castle" | "combo" | "shield" | "treasure" | "scroll" | "drill" | "perfect" | "calm";
+    status: "locked" | "unlocked" | "in-progress";
+    progress: number;
+    goal: number;
+    unlockedLabel?: string;
+};
+export type LoreScrollViewEntry = {
+    id: string;
+    title: string;
+    summary: string;
+    body: string;
+    requiredLessons: number;
+    unlocked: boolean;
+    progress: number;
+    remaining: number;
+};
+export type LoreScrollViewState = {
+    lessonsCompleted: number;
+    total: number;
+    unlocked: number;
+    next?: {
+        requiredLessons: number;
+        remaining: number;
+        title: string;
+    } | null;
+    entries: LoreScrollViewEntry[];
+};
 export interface HudCallbacks {
     onCastleUpgrade(): void;
     onCastleRepair(): void;
@@ -20,6 +63,13 @@ export interface HudCallbacks {
     onSoundToggle(enabled: boolean): void;
     onSoundVolumeChange(volume: number): void;
     onSoundIntensityChange(intensity: number): void;
+    onScreenShakeToggle?: (enabled: boolean) => void;
+    onScreenShakeIntensityChange?: (intensity: number) => void;
+    onScreenShakePreview?: () => void;
+    onContrastAuditRequested?: () => void;
+    onCastleSkinChange?: (skin: CastleSkinId) => void;
+    onAccessibilitySelfTestRun?: () => void;
+    onAccessibilitySelfTestConfirm?: (kind: "sound" | "visual" | "motion", confirmed: boolean) => void;
     onDiagnosticsToggle(visible: boolean): void;
     onVirtualKeyboardToggle?: (enabled: boolean) => void;
     onLowGraphicsToggle?: (enabled: boolean) => void;
@@ -31,6 +81,7 @@ export interface HudCallbacks {
     onReadableFontToggle(enabled: boolean): void;
     onDyslexiaFontToggle(enabled: boolean): void;
     onDyslexiaSpacingToggle?: (enabled: boolean) => void;
+    onCognitiveLoadToggle?: (enabled: boolean) => void;
     onColorblindPaletteToggle(enabled: boolean): void;
     onColorblindPaletteModeChange?: (mode: string) => void;
     onHotkeyPauseChange?: (key: string) => void;
@@ -94,6 +145,21 @@ type OptionsOverlayElements = {
     soundVolumeValue: string;
     soundIntensitySlider: string;
     soundIntensityValue: string;
+    screenShakeToggle?: string;
+    screenShakeSlider?: string;
+    screenShakeValue?: string;
+    screenShakePreview?: string;
+    screenShakeDemo?: string;
+    contrastAuditButton?: string;
+    selfTestContainer?: string;
+    selfTestRun?: string;
+    selfTestStatus?: string;
+    selfTestSoundToggle?: string;
+    selfTestVisualToggle?: string;
+    selfTestMotionToggle?: string;
+    selfTestSoundIndicator?: string;
+    selfTestVisualIndicator?: string;
+    selfTestMotionIndicator?: string;
     diagnosticsToggle: string;
     virtualKeyboardToggle?: string;
     lowGraphicsToggle: string;
@@ -104,6 +170,7 @@ type OptionsOverlayElements = {
     readableFontToggle: string;
     dyslexiaFontToggle: string;
     dyslexiaSpacingToggle?: string;
+    cognitiveLoadToggle?: string;
     colorblindPaletteToggle: string;
     colorblindPaletteSelect?: string;
     hotkeyPauseSelect?: string;
@@ -113,7 +180,11 @@ type OptionsOverlayElements = {
     fontScaleSelect: string;
     hudZoomSelect: string;
     hudLayoutToggle?: string;
+    castleSkinSelect?: string;
     defeatAnimationSelect: string;
+    stickerBookButton?: string;
+    loreScrollsButton?: string;
+    parentSummaryButton?: string;
     telemetryToggle?: string;
     telemetryToggleWrapper?: string;
     crystalPulseToggle?: string;
@@ -161,6 +232,44 @@ type RoadmapGlanceElements = {
 type ParentalOverlayElements = {
     container: string;
     closeButton: string;
+};
+type ContrastOverlayElements = {
+    container: string;
+    list: string;
+    summary: string;
+    closeButton: string;
+    markers: string;
+};
+type StickerBookOverlayElements = {
+    container: string;
+    list: string;
+    summary: string;
+    closeButton: string;
+};
+type LoreScrollOverlayElements = {
+    container: string;
+    list: string;
+    summary: string;
+    progress?: string;
+    closeButton: string;
+};
+type ParentSummaryOverlayElements = {
+    container: string;
+    closeButton: string;
+    closeSecondary?: string;
+    title?: string;
+    subtitle?: string;
+    progress?: string;
+    note?: string;
+    time?: string;
+    accuracy?: string;
+    wpm?: string;
+    combo?: string;
+    perfect?: string;
+    breaches?: string;
+    drills?: string;
+    repairs?: string;
+    download?: string;
 };
 export interface WaveScorecardData {
     waveIndex: number;
@@ -210,6 +319,10 @@ export declare class HudView {
     private readonly activeWord;
     private readonly fingerHint;
     private readonly typingInput;
+    private companionPet;
+    private companionMoodLabel;
+    private companionTip;
+    private companionMood;
     private readonly fullscreenButton;
     private readonly capsLockWarning;
     private readonly lockIndicatorCaps;
@@ -246,6 +359,16 @@ export declare class HudView {
     private readonly roadmapOverlay?;
     private readonly roadmapGlance?;
     private readonly parentalOverlay?;
+    private readonly contrastOverlay?;
+    private readonly stickerBookOverlay?;
+    private stickerBookEntries;
+    private readonly loreScrollOverlay?;
+    private loreScrollPanel?;
+    private loreScrollState?;
+    private loreScrollHighlightTimeout;
+    private readonly parentSummaryOverlay?;
+    private parentSummary?;
+    private castleSkin;
     private parentalOverlayTrigger?;
     private lastShieldTelemetry;
     private lastAffixTelemetry;
@@ -306,6 +429,9 @@ export declare class HudView {
         comboAccuracyDelta: string;
         eventLog: string;
         fullscreenButton?: string;
+        companionPet?: string;
+        companionMoodLabel?: string;
+        companionTip?: string;
         wavePreview: string;
         wavePreviewHint?: string;
         tutorialBanner: string;
@@ -324,6 +450,10 @@ export declare class HudView {
         roadmapGlance?: RoadmapGlanceElements;
         roadmapLaunch?: string;
         parentalOverlay?: ParentalOverlayElements;
+        contrastOverlay?: ContrastOverlayElements;
+        stickerBookOverlay?: StickerBookOverlayElements;
+        loreScrollOverlay?: LoreScrollOverlayElements;
+        parentSummaryOverlay?: ParentSummaryOverlayElements;
     }, callbacks: HudCallbacks);
     focusTypingInput(): void;
     setCapsLockWarning(visible: boolean): void;
@@ -352,6 +482,14 @@ export declare class HudView {
         soundEnabled: boolean;
         soundVolume: number;
         soundIntensity: number;
+        screenShakeEnabled: boolean;
+        screenShakeIntensity: number;
+        selfTest?: {
+            lastRunAt: string | null;
+            soundConfirmed: boolean;
+            visualConfirmed: boolean;
+            motionConfirmed: boolean;
+        };
         diagnosticsVisible: boolean;
         lowGraphicsEnabled: boolean;
         virtualKeyboardEnabled?: boolean;
@@ -362,9 +500,11 @@ export declare class HudView {
         readableFontEnabled: boolean;
         dyslexiaFontEnabled: boolean;
         dyslexiaSpacingEnabled?: boolean;
+        reducedCognitiveLoadEnabled?: boolean;
         backgroundBrightness?: number;
         colorblindPaletteEnabled: boolean;
         colorblindPaletteMode?: string;
+        castleSkin?: CastleSkinId;
         hudZoom: number;
         hudLayout: "left" | "right";
         hudFontScale: number;
@@ -515,6 +655,47 @@ export declare class HudView {
     private applyTelemetryOptionState;
     private updateSoundVolumeDisplay;
     private updateSoundIntensityDisplay;
+    private updateScreenShakeIntensityDisplay;
+    playScreenShakePreview(): void;
+    private updateAccessibilitySelfTestDisplay;
+    private applySelfTestToggleState;
+    playAccessibilitySelfTestCues(options?: {
+        includeMotion?: boolean;
+        soundEnabled?: boolean;
+    }): void;
+    runContrastAudit(): void;
+    presentContrastAudit(results: ContrastAuditResult[]): void;
+    hideContrastOverlay(): void;
+    setCastleSkin(skin: CastleSkinId): void;
+    showStickerBookOverlay(): void;
+    hideStickerBookOverlay(): void;
+    showParentSummary(): void;
+    hideParentSummary(): void;
+    downloadParentSummary(): void;
+    setStickerBookEntries(entries: StickerBookEntry[]): void;
+    showLoreScrollOverlay(): void;
+    hideLoreScrollOverlay(): void;
+    setLoreScrollProgress(state: LoreScrollViewState): void;
+    private flashLoreScrollHighlight;
+    private renderLoreScrollOverlay;
+    private updateLoreScrollPanel;
+    private normalizeCastleSkin;
+    private applyCastleSkinDataset;
+    private updateCompanionMood;
+    private applyCompanionMood;
+    private refreshParentSummary;
+    private renderParentSummary;
+    private describeCompanionMood;
+    private renderStickerBook;
+    private updateStickerBookSummary;
+    private refreshStickerBookState;
+    private buildStickerBookEntriesFromState;
+    private collectContrastAuditResults;
+    private measureElementContrast;
+    private describeNode;
+    private resolveBackgroundColor;
+    private parseColor;
+    private computeContrastRatio;
     private updateBackgroundBrightnessDisplay;
     setAnalyticsExportEnabled(enabled: boolean): void;
     setHudZoom(scale: number): void;

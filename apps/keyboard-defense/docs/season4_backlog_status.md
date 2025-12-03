@@ -51,8 +51,8 @@ Quick status snapshot for items in `season4_backlog.md`. All items start as Not 
 | 45 | Defensive rune sockets | Not Started | - |
 | 46 | HUD zoom control | Done | Options overlay adds a HUD zoom selector (90-120%) that scales the entire HUD and persists per profile. |
 | 47 | Left-handed layout | Done | Options toggle flips HUD to the left side; persists per profile with body data attribute for layout. |
-| 48 | Onboarding dyslexia preset suggestion | Not Started | - |
-| 49 | Reduced cognitive-load mode | Not Started | - |
+| 48 | Onboarding dyslexia preset suggestion | Done | Accessibility onboarding now spotlights a dyslexia-friendly preset button that enables the font + spacing defaults and marks onboarding complete. |
+| 49 | Reduced cognitive-load mode | Done | Options toggle hides non-essential HUD panels (metrics, wave preview, battle log) and softens hints/debug panels; persists per profile and disables panel toggles while active. |
 | 50 | Focus outline presets | Not Started | - |
 | 51 | Audio narration toggle | Not Started | - |
 | 52 | Posture checklist | Not Started | - |
@@ -61,14 +61,14 @@ Quick status snapshot for items in `season4_backlog.md`. All items start as Not 
 | 55 | Tutorial pacing slider | Not Started | - |
 | 56 | Input latency sparkline | Not Started | - |
 | 57 | Profile-bound accessibility toggle | Not Started | - |
-| 58 | Screen-shake preview | Not Started | - |
-| 59 | Accessibility self-test mode | Not Started | - |
-| 60 | Contrast audit overlay | Not Started | - |
-| 61 | Sticker book achievements | Not Started | - |
-| 62 | Castle skin themes | Not Started | - |
-| 63 | Companion pet sprites | Not Started | - |
-| 64 | Collectible lore scrolls | Not Started | - |
-| 65 | Weekly parent summary | Not Started | - |
+| 58 | Screen-shake preview | Done | Options adds a screen shake toggle with intensity slider, preview button, and reduced-motion guard so players can test before enabling. |
+| 59 | Accessibility self-test mode | Done | Options overlay adds an accessibility self-test card that plays sound/flash/motion cues with per-channel confirmations and persisted last-run state; motion check respects Reduced Motion. |
+| 60 | Contrast audit overlay | Done | Options overlay adds a Contrast Audit overlay that scans UI regions for low-contrast text and highlights warnings/fails with an overlay list and markers. |
+| 61 | Sticker book achievements | Done | Options overlay now links to a Sticker Book overlay with pixel stickers and live progress/unlock states driven by session stats. |
+| 62 | Castle skin themes | Done | Options overlay adds a castle skin selector (Classic/Dusk/Aurora/Ember) with live HUD theming and per-profile persistence. |
+| 63 | Companion pet sprites | Done | HUD adds a companion pet sprite panel that reacts to performance (calm/happy/cheer/sad) with live mood text. |
+| 64 | Collectible lore scrolls | Done | Lore scroll overlay unlocks scrolls when lessons/drills are completed, with HUD progress, persistence, and reading-friendly snippets. |
+| 65 | Weekly parent summary | Done | Options/HUD button opens a parent-friendly weekly summary overlay with session time, accuracy/WPM, combo, breaches, drills, repairs, notes, and a print/download action. |
 | 66 | Free seasonal reward track | Not Started | - |
 | 67 | Medal tiers per lesson | Not Started | - |
 | 68 | Mastery certificates | Not Started | - |

@@ -56,9 +56,22 @@ export declare class GameController {
     setHapticsEnabled(enabled: any, options?: {}): boolean;
     setDyslexiaFontEnabled(enabled: any, options?: {}): void;
     setDyslexiaSpacingEnabled(enabled: any, options?: {}): boolean;
+    setReducedCognitiveLoadEnabled(enabled: any, options?: {}): boolean;
     setBackgroundBrightness(value: any, options?: {}): boolean;
     setSoundVolume(volume: any, options?: {}): void;
     setAudioIntensity(intensity: any, options?: {}): void;
+    setScreenShakeEnabled(enabled: any, options?: {}): boolean;
+    setScreenShakeIntensity(intensity: any, options?: {}): boolean;
+    previewScreenShake(): boolean;
+    getAccessibilitySelfTestDefaults(): {
+        lastRunAt: any;
+        soundConfirmed: boolean;
+        visualConfirmed: boolean;
+        motionConfirmed: boolean;
+    };
+    runAccessibilitySelfTest(): void;
+    setAccessibilitySelfTestConfirmation(kind: any, confirmed: any): void;
+    playAccessibilitySelfTestCues(): void;
     updateAmbientTrack(state: any): void;
     handleGameStatusAudio(status: any): void;
     setColorblindPaletteEnabled(enabled: any, options?: {}): boolean;
@@ -70,6 +83,7 @@ export declare class GameController {
     shouldUseSpriteForTier(tierId: any): boolean;
     setHudZoom(scale: any, options?: {}): void;
     setHudLayoutSide(side: any, options?: {}): void;
+    setCastleSkin(skin: any, options?: {}): void;
     setHudFontScale(scale: any, options?: {}): void;
     setTextSizeScale(scale: any, options?: {}): void;
     cycleHudFontScale(direction?: number): void;
@@ -81,6 +95,7 @@ export declare class GameController {
         soundIntensity: any;
     };
     normalizeHudZoom(value: any): number;
+    normalizeCastleSkin(value: any): "ember" | "aurora" | "classic" | "dusk";
     normalizeHudLayout(side: any): "left" | "right";
     normalizeHudFontScale(value: any): number;
     normalizeTextSizeScale(value: any): number;
@@ -88,12 +103,14 @@ export declare class GameController {
     normalizeBackgroundBrightness(value: any): number;
     normalizeSoundVolume(value: any): number;
     normalizeAudioIntensity(value: any): number;
+    normalizeScreenShakeIntensity(value: any): number;
     updateOptionsOverlayState(): void;
     applyReducedMotionSetting(enabled: any): void;
     applyCheckeredBackgroundSetting(enabled: any): void;
     applyReadableFontSetting(enabled: any): void;
     applyDyslexiaFontSetting(enabled: any): void;
     applyDyslexiaSpacingSetting(enabled: any): void;
+    applyCognitiveLoadSetting(enabled: any): void;
     applyBackgroundBrightnessSetting(value: any): void;
     normalizeColorblindMode(mode: any): string;
     applyColorblindPaletteSetting(mode: any): void;
@@ -157,6 +174,7 @@ export declare class GameController {
     areTurretPresetMapsEqual(current?: {}, next?: {}): boolean;
     areTurretPresetSlotsEqual(currentSlots?: {}, nextSlots?: {}): boolean;
     areDiagnosticsSectionsEqual(current?: DiagnosticsSectionsPreferenceMap, next?: DiagnosticsSectionsPreferenceMap): boolean;
+    areAccessibilitySelfTestsEqual(current: any, next: any): boolean;
     cloneTurretPresetMap(source?: {}): Partial<Record<"preset-a" | "preset-b" | "preset-c", TurretLoadoutPreset>>;
     cloneTurretPresetSlots(slots?: {}): Record<string, TurretLoadoutSlot>;
     isValidPresetId(presetId: any): boolean;
@@ -251,6 +269,11 @@ export declare class GameController {
     skipTutorial(): void;
     getTutorialAnalyticsSummary(): any;
     getAssetIntegritySummary(): any;
+    enqueueScreenShake(kind: any, options?: {}): void;
+    getScreenShakeOffset(): {
+        x: number;
+        y: number;
+    };
     render(): void;
     sampleMemoryUsage(): any;
     buildTurretRangeRenderOptions(): {
@@ -299,8 +322,31 @@ export declare class GameController {
     startTutorial(forceReplay?: boolean): void;
     setPracticeMode(enabled: any): void;
     startPracticeMode(): void;
+    initializeLessonProgress(): void;
     initializeLoreProgress(): void;
     unlockLoreForWave(waveNumber: any): void;
+    buildLoreScrollViewState(): {
+        lessonsCompleted: number;
+        total: number;
+        unlocked: number;
+        next: {
+            requiredLessons: number;
+            remaining: number;
+            title: string;
+        };
+        entries: {
+            id: string;
+            title: string;
+            summary: string;
+            body: string;
+            requiredLessons: number;
+            unlocked: boolean;
+            progress: number;
+            remaining: number;
+        }[];
+    };
+    syncLoreScrollsToHud(): void;
+    handleLessonCompletion(summary: TypingDrillSummary): void;
     shouldSkipTutorial(): boolean;
     markTutorialComplete(): void;
     clearTutorialProgress(): void;

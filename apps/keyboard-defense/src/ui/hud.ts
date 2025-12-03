@@ -87,6 +87,52 @@ const FINGER_LOOKUP: Record<string, string> = (() => {
   }
   return map;
 })();
+const ACCESSIBILITY_SELF_TEST_DEFAULT = {
+  lastRunAt: null,
+  soundConfirmed: false,
+  visualConfirmed: false,
+  motionConfirmed: false
+};
+
+type CastleSkinId = "classic" | "dusk" | "aurora" | "ember";
+type CompanionMood = "calm" | "happy" | "cheer" | "sad";
+
+type ContrastAuditResult = {
+  label: string;
+  ratio: number;
+  status: "pass" | "warn" | "fail";
+  rect: { x: number; y: number; width: number; height: number };
+};
+
+type StickerBookEntry = {
+  id: string;
+  title: string;
+  description: string;
+  icon: "castle" | "combo" | "shield" | "treasure" | "scroll" | "drill" | "perfect" | "calm";
+  status: "locked" | "unlocked" | "in-progress";
+  progress: number;
+  goal: number;
+  unlockedLabel?: string;
+};
+
+export type LoreScrollViewEntry = {
+  id: string;
+  title: string;
+  summary: string;
+  body: string;
+  requiredLessons: number;
+  unlocked: boolean;
+  progress: number;
+  remaining: number;
+};
+
+export type LoreScrollViewState = {
+  lessonsCompleted: number;
+  total: number;
+  unlocked: number;
+  next?: { requiredLessons: number; remaining: number; title: string } | null;
+  entries: LoreScrollViewEntry[];
+};
 
 const isElementWithTag = <T extends HTMLElement>(
   el: Element | null | undefined,
@@ -114,6 +160,16 @@ export interface HudCallbacks {
   onSoundToggle(enabled: boolean): void;
   onSoundVolumeChange(volume: number): void;
   onSoundIntensityChange(intensity: number): void;
+  onScreenShakeToggle?: (enabled: boolean) => void;
+  onScreenShakeIntensityChange?: (intensity: number) => void;
+  onScreenShakePreview?: () => void;
+  onContrastAuditRequested?: () => void;
+  onCastleSkinChange?: (skin: CastleSkinId) => void;
+  onAccessibilitySelfTestRun?: () => void;
+  onAccessibilitySelfTestConfirm?: (
+    kind: "sound" | "visual" | "motion",
+    confirmed: boolean
+  ) => void;
   onDiagnosticsToggle(visible: boolean): void;
   onVirtualKeyboardToggle?: (enabled: boolean) => void;
   onLowGraphicsToggle?: (enabled: boolean) => void;
@@ -125,6 +181,7 @@ export interface HudCallbacks {
   onReadableFontToggle(enabled: boolean): void;
   onDyslexiaFontToggle(enabled: boolean): void;
   onDyslexiaSpacingToggle?: (enabled: boolean) => void;
+  onCognitiveLoadToggle?: (enabled: boolean) => void;
   onColorblindPaletteToggle(enabled: boolean): void;
   onColorblindPaletteModeChange?: (mode: string) => void;
   onHotkeyPauseChange?: (key: string) => void;
@@ -230,6 +287,21 @@ type OptionsOverlayElements = {
   soundVolumeValue: string;
   soundIntensitySlider: string;
   soundIntensityValue: string;
+  screenShakeToggle?: string;
+  screenShakeSlider?: string;
+  screenShakeValue?: string;
+  screenShakePreview?: string;
+  screenShakeDemo?: string;
+  contrastAuditButton?: string;
+  selfTestContainer?: string;
+  selfTestRun?: string;
+  selfTestStatus?: string;
+  selfTestSoundToggle?: string;
+  selfTestVisualToggle?: string;
+  selfTestMotionToggle?: string;
+  selfTestSoundIndicator?: string;
+  selfTestVisualIndicator?: string;
+  selfTestMotionIndicator?: string;
   diagnosticsToggle: string;
   virtualKeyboardToggle?: string;
   lowGraphicsToggle: string;
@@ -240,6 +312,7 @@ type OptionsOverlayElements = {
   readableFontToggle: string;
   dyslexiaFontToggle: string;
   dyslexiaSpacingToggle?: string;
+  cognitiveLoadToggle?: string;
   colorblindPaletteToggle: string;
   colorblindPaletteSelect?: string;
   hotkeyPauseSelect?: string;
@@ -249,7 +322,11 @@ type OptionsOverlayElements = {
   fontScaleSelect: string;
   hudZoomSelect: string;
   hudLayoutToggle?: string;
+  castleSkinSelect?: string;
   defeatAnimationSelect: string;
+  stickerBookButton?: string;
+  loreScrollsButton?: string;
+  parentSummaryButton?: string;
   telemetryToggle?: string;
   telemetryToggleWrapper?: string;
   crystalPulseToggle?: string;
@@ -302,6 +379,48 @@ type RoadmapGlanceElements = {
 type ParentalOverlayElements = {
   container: string;
   closeButton: string;
+};
+
+type ContrastOverlayElements = {
+  container: string;
+  list: string;
+  summary: string;
+  closeButton: string;
+  markers: string;
+};
+
+type StickerBookOverlayElements = {
+  container: string;
+  list: string;
+  summary: string;
+  closeButton: string;
+};
+
+type LoreScrollOverlayElements = {
+  container: string;
+  list: string;
+  summary: string;
+  progress?: string;
+  closeButton: string;
+};
+
+type ParentSummaryOverlayElements = {
+  container: string;
+  closeButton: string;
+  closeSecondary?: string;
+  title?: string;
+  subtitle?: string;
+  progress?: string;
+  note?: string;
+  time?: string;
+  accuracy?: string;
+  wpm?: string;
+  combo?: string;
+  perfect?: string;
+  breaches?: string;
+  drills?: string;
+  repairs?: string;
+  download?: string;
 };
 
 type AnalyticsViewerFilter = "all" | "last-5" | "last-10" | "breaches" | "shielded";
@@ -370,6 +489,10 @@ export class HudView {
   private readonly activeWord: HTMLElement;
   private readonly fingerHint: HTMLElement | null = null;
   private readonly typingInput: HTMLInputElement;
+  private companionPet: HTMLElement | null = null;
+  private companionMoodLabel: HTMLElement | null = null;
+  private companionTip: HTMLElement | null = null;
+  private companionMood: CompanionMood = "calm";
   private readonly fullscreenButton: HTMLButtonElement | null = null;
   private readonly capsLockWarning: HTMLElement | null = null;
   private readonly lockIndicatorCaps: HTMLElement | null = null;
@@ -448,6 +571,66 @@ export class HudView {
     container: HTMLElement;
     closeButton: HTMLButtonElement;
   };
+  private readonly contrastOverlay?: {
+    container: HTMLElement;
+    list: HTMLUListElement;
+    summary: HTMLElement;
+    closeButton: HTMLButtonElement;
+    markers: HTMLElement;
+  };
+  private readonly stickerBookOverlay?: {
+    container: HTMLElement;
+    list: HTMLElement;
+    summary: HTMLElement;
+    closeButton: HTMLButtonElement;
+  };
+  private stickerBookEntries: StickerBookEntry[] = [];
+  private readonly loreScrollOverlay?: {
+    container: HTMLElement;
+    list: HTMLElement;
+    summary: HTMLElement;
+    progress?: HTMLElement;
+    closeButton: HTMLButtonElement;
+  };
+  private loreScrollPanel?: {
+    container?: HTMLElement;
+    summary?: HTMLElement;
+    progress?: HTMLElement;
+    lessons?: HTMLElement;
+    next?: HTMLElement;
+    openButton?: HTMLButtonElement;
+  };
+  private loreScrollState?: LoreScrollViewState;
+  private loreScrollHighlightTimeout: number | null = null;
+  private readonly parentSummaryOverlay?: {
+    container: HTMLElement;
+    closeButton: HTMLButtonElement;
+    closeSecondary?: HTMLButtonElement;
+    title?: HTMLElement;
+    subtitle?: HTMLElement;
+    progress?: HTMLElement;
+    note?: HTMLElement;
+    time?: HTMLElement;
+    accuracy?: HTMLElement;
+    wpm?: HTMLElement;
+    combo?: HTMLElement;
+    perfect?: HTMLElement;
+    breaches?: HTMLElement;
+    drills?: HTMLElement;
+    repairs?: HTMLElement;
+    download?: HTMLButtonElement;
+  };
+  private parentSummary?: {
+    timeMinutes: number;
+    accuracyPct: number;
+    wpm: number;
+    bestCombo: number;
+    perfectWords: number;
+    breaches: number;
+    drills: number;
+    repairs: number;
+  };
+  private castleSkin: CastleSkinId = "classic";
   private parentalOverlayTrigger?: HTMLElement | null;
   private lastShieldTelemetry = { current: false, next: false };
   private lastAffixTelemetry = { current: false, next: false };
@@ -507,6 +690,23 @@ export class HudView {
     soundVolumeValue: HTMLElement;
     soundIntensitySlider: HTMLInputElement;
     soundIntensityValue: HTMLElement;
+    screenShakeToggle?: HTMLInputElement;
+    screenShakeSlider?: HTMLInputElement;
+    screenShakeValue?: HTMLElement;
+    screenShakePreview?: HTMLButtonElement;
+    screenShakeDemo?: HTMLElement;
+    contrastAuditButton?: HTMLButtonElement;
+    stickerBookButton?: HTMLButtonElement;
+    loreScrollsButton?: HTMLButtonElement;
+    selfTestContainer?: HTMLElement;
+    selfTestRun?: HTMLButtonElement;
+    selfTestStatus?: HTMLElement;
+    selfTestSoundToggle?: HTMLInputElement;
+    selfTestVisualToggle?: HTMLInputElement;
+    selfTestMotionToggle?: HTMLInputElement;
+    selfTestSoundIndicator?: HTMLElement;
+    selfTestVisualIndicator?: HTMLElement;
+    selfTestMotionIndicator?: HTMLElement;
     diagnosticsToggle: HTMLInputElement;
     virtualKeyboardToggle?: HTMLInputElement;
     lowGraphicsToggle?: HTMLInputElement;
@@ -517,6 +717,7 @@ export class HudView {
     readableFontToggle: HTMLInputElement;
     dyslexiaFontToggle: HTMLInputElement;
     dyslexiaSpacingToggle?: HTMLInputElement;
+    cognitiveLoadToggle?: HTMLInputElement;
     colorblindPaletteToggle: HTMLInputElement;
     colorblindPaletteSelect?: HTMLSelectElement;
     hotkeyPauseSelect?: HTMLSelectElement;
@@ -525,6 +726,7 @@ export class HudView {
     backgroundBrightnessValue?: HTMLElement;
     hudZoomSelect: HTMLSelectElement;
     hudLayoutToggle?: HTMLInputElement;
+    castleSkinSelect?: HTMLSelectElement;
     fontScaleSelect: HTMLSelectElement;
     defeatAnimationSelect: HTMLSelectElement;
     telemetryToggle?: HTMLInputElement;
@@ -534,6 +736,7 @@ export class HudView {
     eliteAffixToggle?: HTMLInputElement;
     eliteAffixWrapper?: HTMLElement;
     analyticsExportButton?: HTMLButtonElement;
+    parentSummaryButton?: HTMLButtonElement;
   };
   private readonly waveScorecard?: {
     container: HTMLElement;
@@ -573,6 +776,9 @@ export class HudView {
   comboAccuracyDelta: string;
       eventLog: string;
       fullscreenButton?: string;
+      companionPet?: string;
+      companionMoodLabel?: string;
+      companionTip?: string;
       wavePreview: string;
       wavePreviewHint?: string;
       tutorialBanner: string;
@@ -591,6 +797,10 @@ export class HudView {
       roadmapGlance?: RoadmapGlanceElements;
       roadmapLaunch?: string;
       parentalOverlay?: ParentalOverlayElements;
+      contrastOverlay?: ContrastOverlayElements;
+      stickerBookOverlay?: StickerBookOverlayElements;
+      loreScrollOverlay?: LoreScrollOverlayElements;
+      parentSummaryOverlay?: ParentSummaryOverlayElements;
     },
     private readonly callbacks: HudCallbacks
   ) {
@@ -665,6 +875,25 @@ export class HudView {
     const fingerHintEl = document.getElementById("finger-hint");
     this.fingerHint = fingerHintEl instanceof HTMLElement ? fingerHintEl : null;
     this.typingInput = this.getElement(rootIds.typingInput) as HTMLInputElement;
+    if (rootIds.companionPet) {
+      const pet = document.getElementById(rootIds.companionPet);
+      if (pet instanceof HTMLElement) {
+        this.companionPet = pet;
+        this.companionPet.dataset.mood = this.companionMood;
+        this.companionPet.setAttribute("aria-label", "Companion mood: Calm");
+      }
+    }
+    if (rootIds.companionMoodLabel) {
+      const moodLabel = document.getElementById(rootIds.companionMoodLabel);
+      if (moodLabel instanceof HTMLElement) {
+        this.companionMoodLabel = moodLabel;
+        this.companionMoodLabel.textContent = "Calm";
+      }
+    }
+    if (rootIds.companionTip) {
+      const tip = document.getElementById(rootIds.companionTip);
+      this.companionTip = tip instanceof HTMLElement ? tip : null;
+    }
     const lockCaps = document.getElementById("lock-indicator-caps");
     const lockNum = document.getElementById("lock-indicator-num");
     this.lockIndicatorCaps = lockCaps instanceof HTMLElement ? lockCaps : null;
@@ -850,6 +1079,60 @@ export class HudView {
       const soundIntensityValue = document.getElementById(
         rootIds.optionsOverlay.soundIntensityValue
       );
+      const screenShakeToggle = rootIds.optionsOverlay.screenShakeToggle
+        ? document.getElementById(rootIds.optionsOverlay.screenShakeToggle)
+        : null;
+      const screenShakeSlider = rootIds.optionsOverlay.screenShakeSlider
+        ? document.getElementById(rootIds.optionsOverlay.screenShakeSlider)
+        : null;
+      const screenShakeValue = rootIds.optionsOverlay.screenShakeValue
+        ? document.getElementById(rootIds.optionsOverlay.screenShakeValue)
+        : null;
+      const screenShakePreview = rootIds.optionsOverlay.screenShakePreview
+        ? document.getElementById(rootIds.optionsOverlay.screenShakePreview)
+        : null;
+      const screenShakeDemo = rootIds.optionsOverlay.screenShakeDemo
+        ? document.getElementById(rootIds.optionsOverlay.screenShakeDemo)
+        : null;
+      const contrastAuditButton = rootIds.optionsOverlay.contrastAuditButton
+        ? document.getElementById(rootIds.optionsOverlay.contrastAuditButton)
+        : null;
+      const stickerBookButton = rootIds.optionsOverlay.stickerBookButton
+        ? document.getElementById(rootIds.optionsOverlay.stickerBookButton)
+        : null;
+      const loreScrollsButton = rootIds.optionsOverlay.loreScrollsButton
+        ? document.getElementById(rootIds.optionsOverlay.loreScrollsButton)
+        : null;
+      const parentSummaryButton = rootIds.optionsOverlay.parentSummaryButton
+        ? document.getElementById(rootIds.optionsOverlay.parentSummaryButton)
+        : null;
+      const selfTestContainer = rootIds.optionsOverlay.selfTestContainer
+        ? document.getElementById(rootIds.optionsOverlay.selfTestContainer)
+        : null;
+      const selfTestRun = rootIds.optionsOverlay.selfTestRun
+        ? document.getElementById(rootIds.optionsOverlay.selfTestRun)
+        : null;
+      const selfTestStatus = rootIds.optionsOverlay.selfTestStatus
+        ? document.getElementById(rootIds.optionsOverlay.selfTestStatus)
+        : null;
+      const selfTestSoundToggle = rootIds.optionsOverlay.selfTestSoundToggle
+        ? document.getElementById(rootIds.optionsOverlay.selfTestSoundToggle)
+        : null;
+      const selfTestVisualToggle = rootIds.optionsOverlay.selfTestVisualToggle
+        ? document.getElementById(rootIds.optionsOverlay.selfTestVisualToggle)
+        : null;
+      const selfTestMotionToggle = rootIds.optionsOverlay.selfTestMotionToggle
+        ? document.getElementById(rootIds.optionsOverlay.selfTestMotionToggle)
+        : null;
+      const selfTestSoundIndicator = rootIds.optionsOverlay.selfTestSoundIndicator
+        ? document.getElementById(rootIds.optionsOverlay.selfTestSoundIndicator)
+        : null;
+      const selfTestVisualIndicator = rootIds.optionsOverlay.selfTestVisualIndicator
+        ? document.getElementById(rootIds.optionsOverlay.selfTestVisualIndicator)
+        : null;
+      const selfTestMotionIndicator = rootIds.optionsOverlay.selfTestMotionIndicator
+        ? document.getElementById(rootIds.optionsOverlay.selfTestMotionIndicator)
+        : null;
       const diagnosticsToggle = document.getElementById(rootIds.optionsOverlay.diagnosticsToggle);
       const virtualKeyboardToggle = rootIds.optionsOverlay.virtualKeyboardToggle
         ? document.getElementById(rootIds.optionsOverlay.virtualKeyboardToggle)
@@ -870,6 +1153,9 @@ export class HudView {
       const dyslexiaSpacingToggle = rootIds.optionsOverlay.dyslexiaSpacingToggle
         ? document.getElementById(rootIds.optionsOverlay.dyslexiaSpacingToggle)
         : null;
+      const cognitiveLoadToggle = rootIds.optionsOverlay.cognitiveLoadToggle
+        ? document.getElementById(rootIds.optionsOverlay.cognitiveLoadToggle)
+        : null;
       const backgroundBrightnessSlider = rootIds.optionsOverlay.backgroundBrightnessSlider
         ? document.getElementById(rootIds.optionsOverlay.backgroundBrightnessSlider)
         : null;
@@ -881,6 +1167,9 @@ export class HudView {
       );
       const colorblindPaletteSelect = rootIds.optionsOverlay.colorblindPaletteSelect
         ? document.getElementById(rootIds.optionsOverlay.colorblindPaletteSelect)
+        : null;
+      const castleSkinSelect = rootIds.optionsOverlay.castleSkinSelect
+        ? document.getElementById(rootIds.optionsOverlay.castleSkinSelect)
         : null;
       const hotkeyPauseSelect = rootIds.optionsOverlay.hotkeyPauseSelect
         ? document.getElementById(rootIds.optionsOverlay.hotkeyPauseSelect)
@@ -927,17 +1216,37 @@ export class HudView {
         soundVolumeValue instanceof HTMLElement &&
         soundIntensitySlider instanceof HTMLInputElement &&
         soundIntensityValue instanceof HTMLElement &&
+        (screenShakeToggle === null || screenShakeToggle instanceof HTMLInputElement) &&
+        (screenShakeSlider === null || screenShakeSlider instanceof HTMLInputElement) &&
+        (screenShakeValue === null || screenShakeValue instanceof HTMLElement) &&
+        (screenShakePreview === null || screenShakePreview instanceof HTMLButtonElement) &&
+        (screenShakeDemo === null || screenShakeDemo instanceof HTMLElement) &&
+        (contrastAuditButton === null || contrastAuditButton instanceof HTMLButtonElement) &&
+        (stickerBookButton === null || stickerBookButton instanceof HTMLButtonElement) &&
+        (loreScrollsButton === null || loreScrollsButton instanceof HTMLButtonElement) &&
+        (parentSummaryButton === null || parentSummaryButton instanceof HTMLButtonElement) &&
+        (selfTestContainer === null || selfTestContainer instanceof HTMLElement) &&
+        (selfTestRun === null || selfTestRun instanceof HTMLButtonElement) &&
+        (selfTestStatus === null || selfTestStatus instanceof HTMLElement) &&
+        (selfTestSoundToggle === null || selfTestSoundToggle instanceof HTMLInputElement) &&
+        (selfTestVisualToggle === null || selfTestVisualToggle instanceof HTMLInputElement) &&
+        (selfTestMotionToggle === null || selfTestMotionToggle instanceof HTMLInputElement) &&
+        (selfTestSoundIndicator === null || selfTestSoundIndicator instanceof HTMLElement) &&
+        (selfTestVisualIndicator === null || selfTestVisualIndicator instanceof HTMLElement) &&
+        (selfTestMotionIndicator === null || selfTestMotionIndicator instanceof HTMLElement) &&
         diagnosticsToggle instanceof HTMLInputElement &&
         reducedMotionToggle instanceof HTMLInputElement &&
         checkeredBackgroundToggle instanceof HTMLInputElement &&
         readableFontToggle instanceof HTMLInputElement &&
         dyslexiaFontToggle instanceof HTMLInputElement &&
         (dyslexiaSpacingToggle === null || dyslexiaSpacingToggle instanceof HTMLInputElement) &&
+        (cognitiveLoadToggle === null || cognitiveLoadToggle instanceof HTMLInputElement) &&
         (backgroundBrightnessSlider === null ||
           backgroundBrightnessSlider instanceof HTMLInputElement) &&
         (backgroundBrightnessValue === null || backgroundBrightnessValue instanceof HTMLElement) &&
         colorblindPaletteToggle instanceof HTMLInputElement &&
         (colorblindPaletteSelect === null || colorblindPaletteSelect instanceof HTMLSelectElement) &&
+        (castleSkinSelect === null || castleSkinSelect instanceof HTMLSelectElement) &&
         (hotkeyPauseSelect === null || hotkeyPauseSelect instanceof HTMLSelectElement) &&
         (hotkeyShortcutsSelect === null || hotkeyShortcutsSelect instanceof HTMLSelectElement) &&
         hudZoomSelect instanceof HTMLSelectElement &&
@@ -954,6 +1263,36 @@ export class HudView {
           soundVolumeValue,
           soundIntensitySlider,
           soundIntensityValue,
+          screenShakeToggle:
+            screenShakeToggle instanceof HTMLInputElement ? screenShakeToggle : undefined,
+          screenShakeSlider:
+            screenShakeSlider instanceof HTMLInputElement ? screenShakeSlider : undefined,
+          screenShakeValue: screenShakeValue instanceof HTMLElement ? screenShakeValue : undefined,
+          screenShakePreview:
+            screenShakePreview instanceof HTMLButtonElement ? screenShakePreview : undefined,
+          screenShakeDemo: screenShakeDemo instanceof HTMLElement ? screenShakeDemo : undefined,
+          contrastAuditButton:
+            contrastAuditButton instanceof HTMLButtonElement ? contrastAuditButton : undefined,
+          stickerBookButton:
+            stickerBookButton instanceof HTMLButtonElement ? stickerBookButton : undefined,
+          loreScrollsButton:
+            loreScrollsButton instanceof HTMLButtonElement ? loreScrollsButton : undefined,
+          selfTestContainer:
+            selfTestContainer instanceof HTMLElement ? selfTestContainer : undefined,
+          selfTestRun: selfTestRun instanceof HTMLButtonElement ? selfTestRun : undefined,
+          selfTestStatus: selfTestStatus instanceof HTMLElement ? selfTestStatus : undefined,
+          selfTestSoundToggle:
+            selfTestSoundToggle instanceof HTMLInputElement ? selfTestSoundToggle : undefined,
+          selfTestVisualToggle:
+            selfTestVisualToggle instanceof HTMLInputElement ? selfTestVisualToggle : undefined,
+          selfTestMotionToggle:
+            selfTestMotionToggle instanceof HTMLInputElement ? selfTestMotionToggle : undefined,
+          selfTestSoundIndicator:
+            selfTestSoundIndicator instanceof HTMLElement ? selfTestSoundIndicator : undefined,
+          selfTestVisualIndicator:
+            selfTestVisualIndicator instanceof HTMLElement ? selfTestVisualIndicator : undefined,
+          selfTestMotionIndicator:
+            selfTestMotionIndicator instanceof HTMLElement ? selfTestMotionIndicator : undefined,
           diagnosticsToggle,
           virtualKeyboardToggle:
             virtualKeyboardToggle instanceof HTMLInputElement ? virtualKeyboardToggle : undefined,
@@ -962,31 +1301,33 @@ export class HudView {
           textSizeSelect:
             textSizeSelect instanceof HTMLSelectElement ? textSizeSelect : undefined,
           hapticsToggle: hapticsToggle instanceof HTMLInputElement ? hapticsToggle : undefined,
-        reducedMotionToggle,
-        checkeredBackgroundToggle,
-        readableFontToggle,
-        dyslexiaFontToggle,
-        dyslexiaSpacingToggle:
-          dyslexiaSpacingToggle instanceof HTMLInputElement ? dyslexiaSpacingToggle : undefined,
-        backgroundBrightnessSlider:
-          backgroundBrightnessSlider instanceof HTMLInputElement
-            ? backgroundBrightnessSlider
-            : undefined,
-        backgroundBrightnessValue:
-          backgroundBrightnessValue instanceof HTMLElement ? backgroundBrightnessValue : undefined,
-        colorblindPaletteToggle,
-        colorblindPaletteSelect:
-          colorblindPaletteSelect instanceof HTMLSelectElement ? colorblindPaletteSelect : undefined,
-        hotkeyPauseSelect:
-          hotkeyPauseSelect instanceof HTMLSelectElement ? hotkeyPauseSelect : undefined,
-        hotkeyShortcutsSelect:
-          hotkeyShortcutsSelect instanceof HTMLSelectElement ? hotkeyShortcutsSelect : undefined,
-        hudZoomSelect,
-        hudLayoutToggle: hudLayoutToggle instanceof HTMLInputElement ? hudLayoutToggle : undefined,
-        fontScaleSelect,
+          reducedMotionToggle,
+          checkeredBackgroundToggle,
+          readableFontToggle,
+          dyslexiaFontToggle,
+          dyslexiaSpacingToggle:
+            dyslexiaSpacingToggle instanceof HTMLInputElement ? dyslexiaSpacingToggle : undefined,
+          cognitiveLoadToggle:
+            cognitiveLoadToggle instanceof HTMLInputElement ? cognitiveLoadToggle : undefined,
+          backgroundBrightnessSlider:
+            backgroundBrightnessSlider instanceof HTMLInputElement
+              ? backgroundBrightnessSlider
+              : undefined,
+          backgroundBrightnessValue:
+            backgroundBrightnessValue instanceof HTMLElement ? backgroundBrightnessValue : undefined,
+          colorblindPaletteToggle,
+          colorblindPaletteSelect:
+            colorblindPaletteSelect instanceof HTMLSelectElement ? colorblindPaletteSelect : undefined,
+          castleSkinSelect: castleSkinSelect instanceof HTMLSelectElement ? castleSkinSelect : undefined,
+          hotkeyPauseSelect:
+            hotkeyPauseSelect instanceof HTMLSelectElement ? hotkeyPauseSelect : undefined,
+          hotkeyShortcutsSelect:
+            hotkeyShortcutsSelect instanceof HTMLSelectElement ? hotkeyShortcutsSelect : undefined,
+          hudZoomSelect,
+          hudLayoutToggle: hudLayoutToggle instanceof HTMLInputElement ? hudLayoutToggle : undefined,
+          fontScaleSelect,
           defeatAnimationSelect,
-          telemetryToggle:
-            telemetryToggle instanceof HTMLInputElement ? telemetryToggle : undefined,
+          telemetryToggle: telemetryToggle instanceof HTMLInputElement ? telemetryToggle : undefined,
           telemetryWrapper:
             telemetryToggleWrapper instanceof HTMLElement ? telemetryToggleWrapper : undefined,
           crystalPulseToggle:
@@ -998,6 +1339,8 @@ export class HudView {
           eliteAffixToggle: eliteAffixToggle instanceof HTMLInputElement ? eliteAffixToggle : undefined,
           eliteAffixWrapper:
             eliteAffixToggleWrapper instanceof HTMLElement ? eliteAffixToggleWrapper : undefined,
+          parentSummaryButton:
+            parentSummaryButton instanceof HTMLButtonElement ? parentSummaryButton : undefined,
           analyticsExportButton:
             analyticsExportButton instanceof HTMLButtonElement ? analyticsExportButton : undefined
         };
@@ -1066,6 +1409,86 @@ export class HudView {
           this.updateSoundIntensityDisplay(nextValue);
           this.callbacks.onSoundIntensityChange(nextValue);
         });
+        if (this.optionsOverlay.screenShakeToggle) {
+          this.optionsOverlay.screenShakeToggle.addEventListener("change", () => {
+            if (this.syncingOptionToggles) return;
+            this.callbacks.onScreenShakeToggle?.(
+              this.optionsOverlay!.screenShakeToggle!.checked
+            );
+          });
+        }
+        if (this.optionsOverlay.screenShakeSlider) {
+          this.optionsOverlay.screenShakeSlider.addEventListener("input", () => {
+            if (this.syncingOptionToggles) return;
+            const rawValue = Number.parseFloat(this.optionsOverlay!.screenShakeSlider!.value);
+            if (!Number.isFinite(rawValue)) return;
+            this.updateScreenShakeIntensityDisplay(rawValue);
+            this.callbacks.onScreenShakeIntensityChange?.(rawValue);
+          });
+        }
+        if (this.optionsOverlay.screenShakePreview) {
+          this.optionsOverlay.screenShakePreview.addEventListener("click", () => {
+            if (this.optionsOverlay?.screenShakePreview?.dataset.disabled === "true") return;
+            this.playScreenShakePreview();
+            this.callbacks.onScreenShakePreview?.();
+          });
+        }
+        if (this.optionsOverlay.contrastAuditButton) {
+          this.optionsOverlay.contrastAuditButton.addEventListener("click", () => {
+            this.callbacks.onContrastAuditRequested?.();
+          });
+        }
+        if (this.optionsOverlay.stickerBookButton) {
+          this.optionsOverlay.stickerBookButton.addEventListener("click", () => {
+            this.showStickerBookOverlay();
+          });
+        }
+        if (this.optionsOverlay.loreScrollsButton) {
+          this.optionsOverlay.loreScrollsButton.addEventListener("click", () => {
+            this.showLoreScrollOverlay();
+          });
+        }
+        if (this.optionsOverlay.parentSummaryButton) {
+          this.optionsOverlay.parentSummaryButton.addEventListener("click", () => {
+            this.showParentSummary();
+          });
+        }
+        if (this.optionsOverlay.selfTestRun) {
+          this.optionsOverlay.selfTestRun.addEventListener("click", () => {
+            this.playAccessibilitySelfTestCues({
+              includeMotion: this.optionsOverlay?.selfTestMotionToggle?.disabled !== true,
+              soundEnabled: this.optionsOverlay?.selfTestSoundToggle?.disabled !== true
+            });
+            this.callbacks.onAccessibilitySelfTestRun?.();
+          });
+        }
+        if (this.optionsOverlay.selfTestSoundToggle) {
+          this.optionsOverlay.selfTestSoundToggle.addEventListener("change", () => {
+            if (this.syncingOptionToggles) return;
+            this.callbacks.onAccessibilitySelfTestConfirm?.(
+              "sound",
+              this.optionsOverlay!.selfTestSoundToggle!.checked
+            );
+          });
+        }
+        if (this.optionsOverlay.selfTestVisualToggle) {
+          this.optionsOverlay.selfTestVisualToggle.addEventListener("change", () => {
+            if (this.syncingOptionToggles) return;
+            this.callbacks.onAccessibilitySelfTestConfirm?.(
+              "visual",
+              this.optionsOverlay!.selfTestVisualToggle!.checked
+            );
+          });
+        }
+        if (this.optionsOverlay.selfTestMotionToggle) {
+          this.optionsOverlay.selfTestMotionToggle.addEventListener("change", () => {
+            if (this.syncingOptionToggles) return;
+            this.callbacks.onAccessibilitySelfTestConfirm?.(
+              "motion",
+              this.optionsOverlay!.selfTestMotionToggle!.checked
+            );
+          });
+        }
         diagnosticsToggle.addEventListener("change", () => {
           if (this.syncingOptionToggles) return;
           this.callbacks.onDiagnosticsToggle(diagnosticsToggle.checked);
@@ -1133,6 +1556,14 @@ export class HudView {
             );
           });
         }
+        if (this.optionsOverlay.cognitiveLoadToggle) {
+          this.optionsOverlay.cognitiveLoadToggle.addEventListener("change", () => {
+            if (this.syncingOptionToggles) return;
+            this.callbacks.onCognitiveLoadToggle?.(
+              this.optionsOverlay!.cognitiveLoadToggle!.checked
+            );
+          });
+        }
         colorblindPaletteToggle.addEventListener("change", () => {
           if (this.syncingOptionToggles) return;
           this.callbacks.onColorblindPaletteToggle(colorblindPaletteToggle.checked);
@@ -1144,6 +1575,15 @@ export class HudView {
             if (next) {
               this.callbacks.onColorblindPaletteModeChange?.(next);
             }
+          });
+        }
+        if (this.optionsOverlay.castleSkinSelect) {
+          this.optionsOverlay.castleSkinSelect.addEventListener("change", () => {
+            if (this.syncingOptionToggles) return;
+            const next = (this.getSelectValue(this.optionsOverlay!.castleSkinSelect!) ??
+              "classic") as CastleSkinId;
+            this.setCastleSkin(next);
+            this.callbacks.onCastleSkinChange?.(next);
           });
         }
         if (this.optionsOverlay.hotkeyPauseSelect) {
@@ -1442,6 +1882,185 @@ export class HudView {
         console.warn("Parental info overlay missing; parental info dialog disabled.");
       }
     }
+    if (rootIds.contrastOverlay) {
+      const overlayContainer = document.getElementById(rootIds.contrastOverlay.container);
+      const overlayList = document.getElementById(rootIds.contrastOverlay.list);
+      const overlaySummary = document.getElementById(rootIds.contrastOverlay.summary);
+      const overlayClose = document.getElementById(rootIds.contrastOverlay.closeButton);
+      const overlayMarkers = document.getElementById(rootIds.contrastOverlay.markers);
+      if (
+        overlayContainer instanceof HTMLElement &&
+        isElementWithTag<HTMLUListElement>(overlayList, "ul") &&
+        overlaySummary instanceof HTMLElement &&
+        overlayClose instanceof HTMLButtonElement &&
+        overlayMarkers instanceof HTMLElement
+      ) {
+        this.contrastOverlay = {
+          container: overlayContainer,
+          list: overlayList,
+          summary: overlaySummary,
+          closeButton: overlayClose,
+          markers: overlayMarkers
+        };
+        overlayContainer.dataset.visible = overlayContainer.dataset.visible ?? "false";
+        overlayContainer.setAttribute("aria-hidden", "true");
+        overlayClose.addEventListener("click", () => this.hideContrastOverlay());
+      } else {
+        console.warn("Contrast overlay elements missing; contrast audit disabled.");
+      }
+    }
+    if (rootIds.stickerBookOverlay) {
+      const stickerContainer = document.getElementById(rootIds.stickerBookOverlay.container);
+      const stickerList = document.getElementById(rootIds.stickerBookOverlay.list);
+      const stickerSummary = document.getElementById(rootIds.stickerBookOverlay.summary);
+      const stickerClose = document.getElementById(rootIds.stickerBookOverlay.closeButton);
+      if (
+        stickerContainer instanceof HTMLElement &&
+        stickerList instanceof HTMLElement &&
+        stickerSummary instanceof HTMLElement &&
+        stickerClose instanceof HTMLButtonElement
+      ) {
+        this.stickerBookOverlay = {
+          container: stickerContainer,
+          list: stickerList,
+          summary: stickerSummary,
+          closeButton: stickerClose
+        };
+        stickerContainer.dataset.visible = stickerContainer.dataset.visible ?? "false";
+        stickerContainer.setAttribute("aria-hidden", "true");
+        stickerClose.addEventListener("click", () => this.hideStickerBookOverlay());
+        this.addFocusTrap(stickerContainer);
+      } else {
+        console.warn("Sticker book elements missing; sticker overlay disabled.");
+      }
+    }
+    if (rootIds.loreScrollOverlay) {
+      const scrollContainer = document.getElementById(rootIds.loreScrollOverlay.container);
+      const scrollList = document.getElementById(rootIds.loreScrollOverlay.list);
+      const scrollSummary = document.getElementById(rootIds.loreScrollOverlay.summary);
+      const scrollProgress = rootIds.loreScrollOverlay.progress
+        ? document.getElementById(rootIds.loreScrollOverlay.progress)
+        : null;
+      const scrollClose = document.getElementById(rootIds.loreScrollOverlay.closeButton);
+      if (
+        scrollContainer instanceof HTMLElement &&
+        scrollList instanceof HTMLElement &&
+        scrollSummary instanceof HTMLElement &&
+        scrollClose instanceof HTMLButtonElement
+      ) {
+        this.loreScrollOverlay = {
+          container: scrollContainer,
+          list: scrollList,
+          summary: scrollSummary,
+          progress: scrollProgress instanceof HTMLElement ? scrollProgress : undefined,
+          closeButton: scrollClose
+        };
+        scrollContainer.dataset.visible = scrollContainer.dataset.visible ?? "false";
+        scrollContainer.setAttribute("aria-hidden", "true");
+        scrollClose.addEventListener("click", () => this.hideLoreScrollOverlay());
+        this.addFocusTrap(scrollContainer);
+      } else {
+        console.warn("Lore scroll overlay elements missing; scroll overlay disabled.");
+      }
+    }
+
+    const loreScrollPanel = document.getElementById("lore-scroll-panel");
+    const loreScrollSummary = document.getElementById("lore-scrolls-summary");
+    const loreScrollProgress = document.getElementById("lore-scrolls-progress");
+    const loreScrollLessons = document.getElementById("lore-scrolls-lessons");
+    const loreScrollNext = document.getElementById("lore-scrolls-next");
+    const loreScrollOpen = document.getElementById("lore-scrolls-open");
+    this.loreScrollPanel = {
+      container: loreScrollPanel instanceof HTMLElement ? loreScrollPanel : undefined,
+      summary: loreScrollSummary instanceof HTMLElement ? loreScrollSummary : undefined,
+      progress: loreScrollProgress instanceof HTMLElement ? loreScrollProgress : undefined,
+      lessons: loreScrollLessons instanceof HTMLElement ? loreScrollLessons : undefined,
+      next: loreScrollNext instanceof HTMLElement ? loreScrollNext : undefined,
+      openButton: loreScrollOpen instanceof HTMLButtonElement ? loreScrollOpen : undefined
+    };
+    if (this.loreScrollPanel.openButton) {
+      this.loreScrollPanel.openButton.addEventListener("click", () => this.showLoreScrollOverlay());
+    }
+
+    if (rootIds.parentSummaryOverlay) {
+      const summaryContainer = document.getElementById(rootIds.parentSummaryOverlay.container);
+      const summaryClose = document.getElementById(rootIds.parentSummaryOverlay.closeButton);
+      const summaryCloseSecondary = rootIds.parentSummaryOverlay.closeSecondary
+        ? document.getElementById(rootIds.parentSummaryOverlay.closeSecondary)
+        : null;
+      const summaryTitle = rootIds.parentSummaryOverlay.title
+        ? document.getElementById(rootIds.parentSummaryOverlay.title)
+        : null;
+      const summarySubtitle = rootIds.parentSummaryOverlay.subtitle
+        ? document.getElementById(rootIds.parentSummaryOverlay.subtitle)
+        : null;
+      const summaryProgress = rootIds.parentSummaryOverlay.progress
+        ? document.getElementById(rootIds.parentSummaryOverlay.progress)
+        : null;
+      const summaryNote = rootIds.parentSummaryOverlay.note
+        ? document.getElementById(rootIds.parentSummaryOverlay.note)
+        : null;
+      const summaryTime = rootIds.parentSummaryOverlay.time
+        ? document.getElementById(rootIds.parentSummaryOverlay.time)
+        : null;
+      const summaryAccuracy = rootIds.parentSummaryOverlay.accuracy
+        ? document.getElementById(rootIds.parentSummaryOverlay.accuracy)
+        : null;
+      const summaryWpm = rootIds.parentSummaryOverlay.wpm
+        ? document.getElementById(rootIds.parentSummaryOverlay.wpm)
+        : null;
+      const summaryCombo = rootIds.parentSummaryOverlay.combo
+        ? document.getElementById(rootIds.parentSummaryOverlay.combo)
+        : null;
+      const summaryPerfect = rootIds.parentSummaryOverlay.perfect
+        ? document.getElementById(rootIds.parentSummaryOverlay.perfect)
+        : null;
+      const summaryBreaches = rootIds.parentSummaryOverlay.breaches
+        ? document.getElementById(rootIds.parentSummaryOverlay.breaches)
+        : null;
+      const summaryDrills = rootIds.parentSummaryOverlay.drills
+        ? document.getElementById(rootIds.parentSummaryOverlay.drills)
+        : null;
+      const summaryRepairs = rootIds.parentSummaryOverlay.repairs
+        ? document.getElementById(rootIds.parentSummaryOverlay.repairs)
+        : null;
+      const summaryDownload = rootIds.parentSummaryOverlay.download
+        ? document.getElementById(rootIds.parentSummaryOverlay.download)
+        : null;
+
+      if (
+        summaryContainer instanceof HTMLElement &&
+        summaryClose instanceof HTMLButtonElement
+      ) {
+        this.parentSummaryOverlay = {
+          container: summaryContainer,
+          closeButton: summaryClose,
+          closeSecondary:
+            summaryCloseSecondary instanceof HTMLButtonElement ? summaryCloseSecondary : undefined,
+          title: summaryTitle instanceof HTMLElement ? summaryTitle : undefined,
+          subtitle: summarySubtitle instanceof HTMLElement ? summarySubtitle : undefined,
+          progress: summaryProgress instanceof HTMLElement ? summaryProgress : undefined,
+          note: summaryNote instanceof HTMLElement ? summaryNote : undefined,
+          time: summaryTime instanceof HTMLElement ? summaryTime : undefined,
+          accuracy: summaryAccuracy instanceof HTMLElement ? summaryAccuracy : undefined,
+          wpm: summaryWpm instanceof HTMLElement ? summaryWpm : undefined,
+          combo: summaryCombo instanceof HTMLElement ? summaryCombo : undefined,
+          perfect: summaryPerfect instanceof HTMLElement ? summaryPerfect : undefined,
+          breaches: summaryBreaches instanceof HTMLElement ? summaryBreaches : undefined,
+          drills: summaryDrills instanceof HTMLElement ? summaryDrills : undefined,
+          repairs: summaryRepairs instanceof HTMLElement ? summaryRepairs : undefined,
+          download: summaryDownload instanceof HTMLButtonElement ? summaryDownload : undefined
+        };
+        summaryContainer.dataset.visible = summaryContainer.dataset.visible ?? "false";
+        summaryContainer.setAttribute("aria-hidden", "true");
+        summaryClose.addEventListener("click", () => this.hideParentSummary());
+        summaryCloseSecondary?.addEventListener("click", () => this.hideParentSummary());
+        summaryDownload?.addEventListener("click", () => this.downloadParentSummary());
+        this.addFocusTrap(summaryContainer);
+      } else {
+        console.warn("Parent summary overlay elements missing; parent summary disabled.");
+      }
+    }
 
     this.initializeViewportListeners();
 
@@ -1512,6 +2131,7 @@ export class HudView {
       });
     }
 
+    this.applyCastleSkinDataset(this.castleSkin);
     this.createTurretControls();
   }
 
@@ -1662,6 +2282,14 @@ export class HudView {
     soundEnabled: boolean;
     soundVolume: number;
     soundIntensity: number;
+    screenShakeEnabled: boolean;
+    screenShakeIntensity: number;
+    selfTest?: {
+      lastRunAt: string | null;
+      soundConfirmed: boolean;
+      visualConfirmed: boolean;
+      motionConfirmed: boolean;
+    };
     diagnosticsVisible: boolean;
     lowGraphicsEnabled: boolean;
     virtualKeyboardEnabled?: boolean;
@@ -1672,9 +2300,11 @@ export class HudView {
     readableFontEnabled: boolean;
     dyslexiaFontEnabled: boolean;
     dyslexiaSpacingEnabled?: boolean;
+    reducedCognitiveLoadEnabled?: boolean;
     backgroundBrightness?: number;
     colorblindPaletteEnabled: boolean;
     colorblindPaletteMode?: string;
+    castleSkin?: CastleSkinId;
     hudZoom: number;
     hudLayout: "left" | "right";
     hudFontScale: number;
@@ -1715,6 +2345,42 @@ export class HudView {
     this.optionsOverlay.soundIntensitySlider.tabIndex = state.soundEnabled ? 0 : -1;
     this.optionsOverlay.soundIntensitySlider.value = state.soundIntensity.toString();
     this.updateSoundIntensityDisplay(state.soundIntensity);
+    const shakeDisabled = state.reducedMotionEnabled;
+    if (this.optionsOverlay.screenShakeToggle) {
+      this.optionsOverlay.screenShakeToggle.checked =
+        state.screenShakeEnabled && !state.reducedMotionEnabled;
+      this.optionsOverlay.screenShakeToggle.disabled = shakeDisabled;
+      this.optionsOverlay.screenShakeToggle.setAttribute(
+        "aria-disabled",
+        shakeDisabled ? "true" : "false"
+      );
+      this.optionsOverlay.screenShakeToggle.tabIndex = shakeDisabled ? -1 : 0;
+    }
+    if (this.optionsOverlay.screenShakeSlider) {
+      this.optionsOverlay.screenShakeSlider.disabled = shakeDisabled;
+      this.optionsOverlay.screenShakeSlider.setAttribute(
+        "aria-disabled",
+        shakeDisabled ? "true" : "false"
+      );
+      this.optionsOverlay.screenShakeSlider.tabIndex = shakeDisabled ? -1 : 0;
+      this.optionsOverlay.screenShakeSlider.value = state.screenShakeIntensity.toString();
+    }
+    if (this.optionsOverlay.screenShakePreview) {
+      this.optionsOverlay.screenShakePreview.disabled = shakeDisabled;
+      this.optionsOverlay.screenShakePreview.setAttribute(
+        "aria-disabled",
+        shakeDisabled ? "true" : "false"
+      );
+      this.optionsOverlay.screenShakePreview.dataset.disabled = shakeDisabled ? "true" : "false";
+    }
+    if (this.optionsOverlay.screenShakeDemo) {
+      this.optionsOverlay.screenShakeDemo.dataset.disabled = shakeDisabled ? "true" : "false";
+    }
+    this.updateScreenShakeIntensityDisplay(state.screenShakeIntensity);
+    this.updateAccessibilitySelfTestDisplay(state.selfTest, {
+      soundEnabled: state.soundEnabled,
+      reducedMotionEnabled: state.reducedMotionEnabled
+    });
     this.optionsOverlay.diagnosticsToggle.checked = state.diagnosticsVisible;
     if (this.optionsOverlay.virtualKeyboardToggle && state.virtualKeyboardEnabled !== undefined) {
       this.optionsOverlay.virtualKeyboardToggle.checked = state.virtualKeyboardEnabled;
@@ -1736,6 +2402,12 @@ export class HudView {
       this.optionsOverlay.dyslexiaSpacingToggle.checked = state.dyslexiaSpacingEnabled;
     }
     if (
+      this.optionsOverlay.cognitiveLoadToggle &&
+      state.reducedCognitiveLoadEnabled !== undefined
+    ) {
+      this.optionsOverlay.cognitiveLoadToggle.checked = state.reducedCognitiveLoadEnabled;
+    }
+    if (
       this.optionsOverlay.backgroundBrightnessSlider &&
       typeof state.backgroundBrightness === "number"
     ) {
@@ -1749,6 +2421,11 @@ export class HudView {
         state.colorblindPaletteMode ?? (state.colorblindPaletteEnabled ? "deuteran" : "off")
       );
     }
+    const castleSkin = state.castleSkin ?? this.castleSkin ?? "classic";
+    if (this.optionsOverlay.castleSkinSelect) {
+      this.setSelectValue(this.optionsOverlay.castleSkinSelect, castleSkin);
+    }
+    this.setCastleSkin(castleSkin as CastleSkinId);
     if (this.optionsOverlay.hotkeyPauseSelect) {
       const pause = state.hotkeys?.pause ?? "p";
       this.setSelectValue(this.optionsOverlay.hotkeyPauseSelect, pause);
@@ -1858,6 +2535,7 @@ export class HudView {
     const now = typeof performance !== "undefined" ? performance.now() : Date.now();
     this.lastState = state;
     this.updateCastleBonusHint(state);
+    this.refreshParentSummary(state);
     if (this.analyticsViewer) {
       const modeValue = state.mode === "practice" ? "practice" : "campaign";
       this.analyticsViewer.container.dataset.mode = modeValue;
@@ -1867,6 +2545,7 @@ export class HudView {
     this.updateShieldTelemetry(upcoming);
     this.updateAffixTelemetry(upcoming);
     this.refreshRoadmap(state, options);
+    this.updateCompanionMood(state);
     const hpRatio = Math.max(0, state.castle.health / state.castle.maxHealth);
     (this.healthBar as HTMLElement).style.width = `${hpRatio * 100}%`;
     const gold = Math.floor(state.resources.gold);
@@ -1960,6 +2639,7 @@ export class HudView {
       (hasTypingError && expectedKey ? expectedKey : activeEnemy?.word?.charAt(activeEnemy.typed)) ??
       null;
     this.renderFingerHint(nextFingerChar);
+    this.refreshStickerBookState(state);
   }
 
   showCastleMessage(message: string): void {
@@ -4441,6 +5121,873 @@ export class HudView {
     if (!this.optionsOverlay?.soundIntensityValue) return;
     const percent = Math.round(intensity * 100);
     this.optionsOverlay.soundIntensityValue.textContent = `${percent}%`;
+  }
+
+  private updateScreenShakeIntensityDisplay(intensity: number): void {
+    if (this.optionsOverlay?.screenShakeValue) {
+      const percent = Math.round(intensity * 100);
+      this.optionsOverlay.screenShakeValue.textContent = `${percent}%`;
+    }
+    if (this.optionsOverlay?.screenShakeDemo) {
+      this.optionsOverlay.screenShakeDemo.style.setProperty(
+        "--shake-strength",
+        intensity.toString()
+      );
+    }
+  }
+
+  playScreenShakePreview(): void {
+    const demo = this.optionsOverlay?.screenShakeDemo;
+    if (!demo || demo.dataset.disabled === "true") return;
+    demo.dataset.shaking = "false";
+    // force reflow to restart animation
+    void demo.offsetWidth;
+    demo.dataset.shaking = "true";
+    setTimeout(() => {
+      demo.dataset.shaking = "false";
+    }, 450);
+  }
+
+  private updateAccessibilitySelfTestDisplay(
+    selfTest:
+      | {
+          lastRunAt: string | null;
+          soundConfirmed: boolean;
+          visualConfirmed: boolean;
+          motionConfirmed: boolean;
+        }
+      | undefined,
+    options: { soundEnabled: boolean; reducedMotionEnabled: boolean } = {
+      soundEnabled: true,
+      reducedMotionEnabled: false
+    }
+  ): void {
+    if (!this.optionsOverlay) return;
+    const state = selfTest ?? ACCESSIBILITY_SELF_TEST_DEFAULT;
+    const soundDisabled = !(options?.soundEnabled ?? true);
+    const motionDisabled = Boolean(options?.reducedMotionEnabled);
+    if (this.optionsOverlay.selfTestContainer) {
+      this.optionsOverlay.selfTestContainer.dataset.soundDisabled = soundDisabled ? "true" : "false";
+      this.optionsOverlay.selfTestContainer.dataset.motionDisabled = motionDisabled ? "true" : "false";
+    }
+    if (this.optionsOverlay.selfTestStatus) {
+      const label = state.lastRunAt
+        ? `Last run: ${state.lastRunAt.slice(0, 16).replace("T", " ")}`
+        : "Not run yet";
+      this.optionsOverlay.selfTestStatus.textContent = label;
+    }
+    this.applySelfTestToggleState(
+      this.optionsOverlay.selfTestSoundToggle,
+      this.optionsOverlay.selfTestSoundIndicator,
+      state.soundConfirmed && !soundDisabled,
+      soundDisabled
+    );
+    this.applySelfTestToggleState(
+      this.optionsOverlay.selfTestVisualToggle,
+      this.optionsOverlay.selfTestVisualIndicator,
+      state.visualConfirmed,
+      false
+    );
+    this.applySelfTestToggleState(
+      this.optionsOverlay.selfTestMotionToggle,
+      this.optionsOverlay.selfTestMotionIndicator,
+      state.motionConfirmed && !motionDisabled,
+      motionDisabled
+    );
+  }
+
+  private applySelfTestToggleState(
+    toggle: HTMLInputElement | undefined,
+    indicator: HTMLElement | undefined,
+    confirmed: boolean,
+    disabled: boolean
+  ): void {
+    if (toggle) {
+      toggle.checked = confirmed;
+      toggle.disabled = disabled;
+      toggle.tabIndex = disabled ? -1 : 0;
+      toggle.setAttribute("aria-disabled", disabled ? "true" : "false");
+    }
+    const row =
+      (indicator?.closest(".option-selftest-row") as HTMLElement | null) ??
+      (toggle?.closest(".option-selftest-row") as HTMLElement | null);
+    if (row) {
+      row.dataset.disabled = disabled ? "true" : "false";
+      row.dataset.confirmed = confirmed ? "true" : "false";
+    }
+    if (indicator) {
+      indicator.dataset.disabled = disabled ? "true" : "false";
+      indicator.dataset.confirmed = confirmed ? "true" : "false";
+    }
+  }
+
+  playAccessibilitySelfTestCues(options: { includeMotion?: boolean; soundEnabled?: boolean } = {}): void {
+    const includeMotion = options.includeMotion !== false;
+    const soundAllowed = options.soundEnabled !== false;
+    const pulse = (el: HTMLElement | undefined, duration = 700) => {
+      if (!el) return;
+      el.dataset.active = "false";
+      void el.offsetWidth;
+      el.dataset.active = "true";
+      setTimeout(() => {
+        el.dataset.active = "false";
+      }, duration);
+    };
+    if (soundAllowed) {
+      pulse(this.optionsOverlay?.selfTestSoundIndicator, 700);
+    }
+    pulse(this.optionsOverlay?.selfTestVisualIndicator, 760);
+    if (includeMotion) {
+      pulse(this.optionsOverlay?.selfTestMotionIndicator, 650);
+    }
+  }
+
+  runContrastAudit(): void {
+    if (!this.contrastOverlay) {
+      console.warn("Contrast overlay is not available; cannot run audit.");
+      return;
+    }
+    const results = this.collectContrastAuditResults();
+    this.presentContrastAudit(results);
+  }
+
+  presentContrastAudit(results: ContrastAuditResult[]): void {
+    if (!this.contrastOverlay) return;
+    const container = this.contrastOverlay.container;
+    const list = this.contrastOverlay.list;
+    const markers = this.contrastOverlay.markers;
+    list.replaceChildren();
+    markers.replaceChildren();
+
+    let warnCount = 0;
+    let failCount = 0;
+    for (const result of results) {
+      if (result.status === "warn") warnCount += 1;
+      if (result.status === "fail") failCount += 1;
+      const item = document.createElement("li");
+      item.className = "contrast-overlay-item";
+      item.dataset.status = result.status;
+      const label = document.createElement("div");
+      label.className = "contrast-overlay-label";
+      label.textContent = result.label;
+      const ratio = document.createElement("span");
+      ratio.className = "contrast-overlay-ratio";
+      ratio.textContent = `${result.ratio.toFixed(2)} : 1`;
+      item.appendChild(label);
+      item.appendChild(ratio);
+      list.appendChild(item);
+
+      const marker = document.createElement("div");
+      marker.className = "contrast-overlay-marker";
+      marker.dataset.status = result.status;
+      marker.style.left = `${result.rect.x + window.scrollX}px`;
+      marker.style.top = `${result.rect.y + window.scrollY}px`;
+      marker.style.width = `${result.rect.width}px`;
+      marker.style.height = `${result.rect.height}px`;
+      markers.appendChild(marker);
+    }
+
+    const total = results.length;
+    if (this.contrastOverlay.summary) {
+      if (total === 0) {
+        this.contrastOverlay.summary.textContent = "No elements were inspected.";
+      } else {
+        this.contrastOverlay.summary.textContent = `Checked ${total} regions · ${failCount} fail, ${warnCount} warn (target 4.5:1).`;
+      }
+    }
+
+    container.dataset.visible = "true";
+    container.setAttribute("aria-hidden", "false");
+  }
+
+  hideContrastOverlay(): void {
+    if (!this.contrastOverlay) return;
+    this.contrastOverlay.container.dataset.visible = "false";
+    this.contrastOverlay.container.setAttribute("aria-hidden", "true");
+    this.contrastOverlay.list.replaceChildren();
+    this.contrastOverlay.markers.replaceChildren();
+  }
+
+  setCastleSkin(skin: CastleSkinId): void {
+    const normalized = this.normalizeCastleSkin(skin);
+    if (this.castleSkin === normalized && this.optionsOverlay?.castleSkinSelect) {
+      this.setSelectValue(this.optionsOverlay.castleSkinSelect, normalized);
+      return;
+    }
+    this.castleSkin = normalized;
+    this.applyCastleSkinDataset(normalized);
+    if (this.optionsOverlay?.castleSkinSelect) {
+      this.setSelectValue(this.optionsOverlay.castleSkinSelect, normalized);
+    }
+  }
+
+  showStickerBookOverlay(): void {
+    if (!this.stickerBookOverlay) return;
+    if (this.lastState) {
+      this.refreshStickerBookState(this.lastState);
+    }
+    this.renderStickerBook(this.stickerBookEntries);
+    this.stickerBookOverlay.container.dataset.visible = "true";
+    this.stickerBookOverlay.container.setAttribute("aria-hidden", "false");
+    const focusable = this.getFocusableElements(this.stickerBookOverlay.container);
+    focusable[0]?.focus();
+  }
+
+  hideStickerBookOverlay(): void {
+    if (!this.stickerBookOverlay) return;
+    this.stickerBookOverlay.container.dataset.visible = "false";
+    this.stickerBookOverlay.container.setAttribute("aria-hidden", "true");
+  }
+
+  showParentSummary(): void {
+    if (!this.parentSummaryOverlay) return;
+    this.renderParentSummary();
+    this.parentSummaryOverlay.container.dataset.visible = "true";
+    this.parentSummaryOverlay.container.setAttribute("aria-hidden", "false");
+    const focusable = this.getFocusableElements(this.parentSummaryOverlay.container);
+    focusable[0]?.focus();
+  }
+
+  hideParentSummary(): void {
+    if (!this.parentSummaryOverlay) return;
+    this.parentSummaryOverlay.container.dataset.visible = "false";
+    this.parentSummaryOverlay.container.setAttribute("aria-hidden", "true");
+  }
+
+  downloadParentSummary(): void {
+    if (!this.parentSummaryOverlay) return;
+    const wasVisible = this.parentSummaryOverlay.container.dataset.visible === "true";
+    if (!wasVisible) {
+      this.showParentSummary();
+    }
+    if (typeof window !== "undefined" && typeof window.print === "function") {
+      window.print();
+    }
+    if (!wasVisible) {
+      this.hideParentSummary();
+    }
+  }
+
+  setStickerBookEntries(entries: StickerBookEntry[]): void {
+    this.stickerBookEntries = entries;
+    this.updateStickerBookSummary();
+    if (this.stickerBookOverlay?.container.dataset.visible === "true") {
+      this.renderStickerBook(entries);
+    }
+  }
+
+  showLoreScrollOverlay(): void {
+    if (!this.loreScrollOverlay) return;
+    if (this.loreScrollState) {
+      this.renderLoreScrollOverlay(this.loreScrollState);
+    } else {
+      this.renderLoreScrollOverlay({
+        lessonsCompleted: 0,
+        total: 0,
+        unlocked: 0,
+        next: null,
+        entries: []
+      });
+    }
+    this.loreScrollOverlay.container.dataset.visible = "true";
+    this.loreScrollOverlay.container.setAttribute("aria-hidden", "false");
+    const focusable = this.getFocusableElements(this.loreScrollOverlay.container);
+    focusable[0]?.focus();
+  }
+
+  hideLoreScrollOverlay(): void {
+    if (!this.loreScrollOverlay) return;
+    this.loreScrollOverlay.container.dataset.visible = "false";
+    this.loreScrollOverlay.container.setAttribute("aria-hidden", "true");
+  }
+
+  setLoreScrollProgress(state: LoreScrollViewState): void {
+    const previousUnlocked = this.loreScrollState?.unlocked ?? 0;
+    this.loreScrollState = state;
+    this.updateLoreScrollPanel(state);
+    if (this.loreScrollOverlay?.container.dataset.visible === "true") {
+      this.renderLoreScrollOverlay(state);
+    }
+    if (state.unlocked > previousUnlocked) {
+      this.flashLoreScrollHighlight();
+    }
+  }
+
+  private flashLoreScrollHighlight(): void {
+    if (!this.loreScrollPanel?.container) return;
+    this.loreScrollPanel.container.dataset.highlight = "true";
+    if (this.loreScrollHighlightTimeout) {
+      window.clearTimeout(this.loreScrollHighlightTimeout);
+    }
+    this.loreScrollHighlightTimeout = window.setTimeout(() => {
+      if (this.loreScrollPanel?.container) {
+        this.loreScrollPanel.container.dataset.highlight = "false";
+      }
+      this.loreScrollHighlightTimeout = null;
+    }, 2400);
+  }
+
+  private renderLoreScrollOverlay(state: LoreScrollViewState): void {
+    if (!this.loreScrollOverlay) return;
+    const { list, summary, progress } = this.loreScrollOverlay;
+    summary.textContent = `Unlocked ${state.unlocked} of ${state.total} scrolls`;
+    if (progress) {
+      const lessonsLabel = state.lessonsCompleted === 1 ? "lesson" : "lessons";
+      progress.textContent = `${state.lessonsCompleted} ${lessonsLabel} completed`;
+    }
+    list.replaceChildren();
+    for (const entry of state.entries) {
+      const item = document.createElement("li");
+      item.className = "scroll-card";
+      item.dataset.status = entry.unlocked ? "unlocked" : "locked";
+
+      const header = document.createElement("div");
+      header.className = "scroll-card__header";
+      const title = document.createElement("p");
+      title.className = "scroll-card__title";
+      title.textContent = entry.title;
+      const summaryText = document.createElement("p");
+      summaryText.className = "scroll-card__summary";
+      summaryText.textContent = entry.summary;
+      header.appendChild(title);
+      header.appendChild(summaryText);
+
+      const meta = document.createElement("div");
+      meta.className = "scroll-card__meta";
+      const pill = document.createElement("span");
+      pill.className = "scroll-card__pill";
+      pill.textContent = entry.unlocked
+        ? "Unlocked"
+        : `Locked · ${entry.requiredLessons} lesson${entry.requiredLessons === 1 ? "" : "s"}`;
+      const progressBar = document.createElement("div");
+      progressBar.className = "scroll-card__progress";
+      const progressFill = document.createElement("div");
+      progressFill.className = "scroll-card__progress-fill";
+      const required = Math.max(1, entry.requiredLessons);
+      const percent = Math.max(
+        0,
+        Math.min(100, Math.round((Math.min(entry.progress, required) / required) * 100))
+      );
+      progressFill.style.width = `${percent}%`;
+      const progressLabel = document.createElement("span");
+      progressLabel.className = "scroll-card__progress-label";
+      progressLabel.textContent = entry.unlocked
+        ? "Complete"
+        : `${Math.min(entry.progress, required)} / ${required}`;
+      progressBar.appendChild(progressFill);
+      progressBar.appendChild(progressLabel);
+      meta.appendChild(pill);
+      meta.appendChild(progressBar);
+
+      const body = document.createElement("p");
+      body.className = "scroll-card__body";
+      body.textContent = entry.unlocked
+        ? entry.body
+        : `Complete ${entry.requiredLessons} lesson${entry.requiredLessons === 1 ? "" : "s"} to read this scroll.`;
+
+      item.appendChild(header);
+      item.appendChild(meta);
+      item.appendChild(body);
+      list.appendChild(item);
+    }
+  }
+
+  private updateLoreScrollPanel(state: LoreScrollViewState): void {
+    if (!this.loreScrollPanel) return;
+    const lessonsLabel = state.lessonsCompleted === 1 ? "lesson" : "lessons";
+    if (this.loreScrollPanel.summary) {
+      this.loreScrollPanel.summary.textContent =
+        "Finish lessons to unlock calming lore scrolls between waves.";
+    }
+    if (this.loreScrollPanel.progress) {
+      this.loreScrollPanel.progress.textContent = `${state.unlocked} / ${state.total} scrolls`;
+    }
+    if (this.loreScrollPanel.lessons) {
+      this.loreScrollPanel.lessons.textContent = `${state.lessonsCompleted} ${lessonsLabel} completed`;
+    }
+    if (this.loreScrollPanel.next) {
+      if (!state.next) {
+        this.loreScrollPanel.next.textContent = "All scrolls unlocked. Revisit any time.";
+      } else {
+        const remainingLabel = state.next.remaining === 1 ? "lesson" : "lessons";
+        this.loreScrollPanel.next.textContent =
+          state.next.remaining <= 0
+            ? `Next scroll ready: ${state.next.title}`
+            : `Next scroll unlocks after ${state.next.remaining} more ${remainingLabel}.`;
+      }
+    }
+  }
+
+  private normalizeCastleSkin(value: string): CastleSkinId {
+    if (value === "dusk" || value === "aurora" || value === "ember") return value;
+    return "classic";
+  }
+
+  private applyCastleSkinDataset(skin: CastleSkinId): void {
+    const root = document.documentElement;
+    if (root) {
+      root.dataset.castleSkin = skin;
+    }
+    if (document.body) {
+      document.body.dataset.castleSkin = skin;
+    }
+    if (this.hudRoot) {
+      this.hudRoot.dataset.castleSkin = skin;
+    }
+  }
+
+  private updateCompanionMood(state: GameState): void {
+    if (!this.companionPet) return;
+    const healthRatio =
+      state.castle && typeof state.castle.health === "number" && typeof state.castle.maxHealth === "number"
+        ? Math.max(0, Math.min(1, state.castle.health / Math.max(1, state.castle.maxHealth)))
+        : 1;
+    const breaches = state.analytics?.sessionBreaches ?? state.analytics?.breaches ?? 0;
+    const accuracy = Math.max(0, Math.min(1, state.typing?.accuracy ?? 0));
+    const totalInputs = Math.max(0, state.typing?.totalInputs ?? 0);
+    const combo = Math.max(
+      state.typing?.combo ?? 0,
+      state.analytics?.sessionBestCombo ?? 0,
+      state.analytics?.waveMaxCombo ?? 0
+    );
+    let mood: CompanionMood = "calm";
+    if (healthRatio < 0.35 || breaches > 0) {
+      mood = "sad";
+    } else if (combo >= 25 || (combo >= 12 && accuracy >= 0.95)) {
+      mood = "cheer";
+    } else if (combo >= 6 || (accuracy >= 0.9 && totalInputs >= 10)) {
+      mood = "happy";
+    }
+    this.applyCompanionMood(mood);
+  }
+
+  private applyCompanionMood(mood: CompanionMood): void {
+    if (!this.companionPet) return;
+    if (this.companionMood === mood && this.companionPet.dataset.mood === mood) {
+      return;
+    }
+    this.companionMood = mood;
+    this.companionPet.dataset.mood = mood;
+    const label = this.describeCompanionMood(mood);
+    this.companionPet.setAttribute("aria-label", `Companion mood: ${label}`);
+    if (this.companionMoodLabel) {
+      this.companionMoodLabel.textContent = label;
+    }
+    if (this.companionTip) {
+      if (mood === "sad") {
+        this.companionTip.textContent = "Patch the gates and keep accuracy steady to calm them.";
+      } else if (mood === "cheer") {
+        this.companionTip.textContent = "Great streak! Ride the momentum to keep them cheering.";
+      } else if (mood === "happy") {
+        this.companionTip.textContent = "Clean typing keeps your companion upbeat.";
+      } else {
+        this.companionTip.textContent = "Keep clean streaks to cheer them up.";
+      }
+    }
+  }
+
+  private refreshParentSummary(state: GameState): void {
+    const timeMinutes = Math.max(0, (state.time ?? 0) / 60);
+    const accuracyPct = Math.round(Math.max(0, Math.min(100, (state.typing?.accuracy ?? 0) * 100)));
+    const wpm =
+      timeMinutes > 0
+        ? Math.max(0, Math.round((state.typing?.correctInputs ?? 0) / 5 / timeMinutes))
+        : 0;
+    const bestCombo = Math.max(
+      state.analytics?.sessionBestCombo ?? 0,
+      state.typing?.combo ?? 0,
+      state.analytics?.waveMaxCombo ?? 0
+    );
+    const perfectWords =
+      state.analytics?.totalPerfectWords ??
+      state.analytics?.wavePerfectWords ??
+      state.analytics?.waveHistory?.reduce((sum, wave) => sum + (wave.perfectWords ?? 0), 0) ??
+      0;
+    const breaches = state.analytics?.sessionBreaches ?? state.analytics?.breaches ?? 0;
+    const drills = Array.isArray(state.analytics?.typingDrills)
+      ? state.analytics.typingDrills.length
+      : 0;
+    const repairs = state.analytics?.totalCastleRepairs ?? 0;
+    this.parentSummary = {
+      timeMinutes,
+      accuracyPct,
+      wpm,
+      bestCombo,
+      perfectWords,
+      breaches,
+      drills,
+      repairs
+    };
+    this.renderParentSummary();
+  }
+
+  private renderParentSummary(): void {
+    if (!this.parentSummaryOverlay || !this.parentSummary) return;
+    const summary = this.parentSummary;
+    const minutesLabel =
+      summary.timeMinutes < 90
+        ? `${Math.round(summary.timeMinutes)} minutes`
+        : `${(summary.timeMinutes / 60).toFixed(1)} hours`;
+    const progressText = `${minutesLabel} · ${summary.accuracyPct}% accuracy · ${summary.wpm} WPM`;
+    if (this.parentSummaryOverlay.progress) {
+      this.parentSummaryOverlay.progress.textContent = progressText;
+    }
+    if (this.parentSummaryOverlay.note) {
+      if (summary.breaches > 3) {
+        this.parentSummaryOverlay.note.textContent =
+          "Consider shorter runs or more repairs to reduce castle breaches.";
+      } else if (summary.accuracyPct < 85) {
+        this.parentSummaryOverlay.note.textContent =
+          "Slow down for a session to rebuild accuracy, then ramp WPM later.";
+      } else if (summary.drills > 0) {
+        this.parentSummaryOverlay.note.textContent =
+          "Great job mixing drills into the week. Keep streaks short and steady.";
+      } else {
+        this.parentSummaryOverlay.note.textContent =
+          "Tip: add a few drills between waves to keep accuracy comfortable.";
+      }
+    }
+    if (this.parentSummaryOverlay.time) {
+      this.parentSummaryOverlay.time.textContent = minutesLabel;
+    }
+    if (this.parentSummaryOverlay.accuracy) {
+      this.parentSummaryOverlay.accuracy.textContent = `${summary.accuracyPct}%`;
+    }
+    if (this.parentSummaryOverlay.wpm) {
+      this.parentSummaryOverlay.wpm.textContent = summary.wpm.toString();
+    }
+    if (this.parentSummaryOverlay.combo) {
+      this.parentSummaryOverlay.combo.textContent = `x${summary.bestCombo}`;
+    }
+    if (this.parentSummaryOverlay.perfect) {
+      this.parentSummaryOverlay.perfect.textContent = summary.perfectWords.toString();
+    }
+    if (this.parentSummaryOverlay.breaches) {
+      this.parentSummaryOverlay.breaches.textContent = summary.breaches.toString();
+    }
+    if (this.parentSummaryOverlay.drills) {
+      this.parentSummaryOverlay.drills.textContent = summary.drills.toString();
+    }
+    if (this.parentSummaryOverlay.repairs) {
+      this.parentSummaryOverlay.repairs.textContent = summary.repairs.toString();
+    }
+  }
+
+  private describeCompanionMood(mood: CompanionMood): string {
+    switch (mood) {
+      case "cheer":
+        return "Cheering";
+      case "happy":
+        return "Happy";
+      case "sad":
+        return "Concerned";
+      default:
+        return "Calm";
+    }
+  }
+
+  private renderStickerBook(entries: StickerBookEntry[]): void {
+    if (!this.stickerBookOverlay) return;
+    const list = this.stickerBookOverlay.list;
+    list.replaceChildren();
+    for (const entry of entries) {
+      const item = document.createElement("li");
+      item.className = "sticker-card";
+      item.dataset.status = entry.status;
+      item.dataset.icon = entry.icon;
+
+      const art = document.createElement("div");
+      art.className = `sticker-icon sticker-icon--${entry.icon}`;
+      art.setAttribute("aria-hidden", "true");
+      item.appendChild(art);
+
+      const content = document.createElement("div");
+      const title = document.createElement("p");
+      title.className = "sticker-card__title";
+      title.textContent = entry.title;
+      const desc = document.createElement("p");
+      desc.className = "sticker-card__desc";
+      desc.textContent = entry.description;
+
+      const meta = document.createElement("div");
+      meta.className = "sticker-card__meta";
+      const statusPill = document.createElement("span");
+      statusPill.className = "sticker-status-pill";
+      statusPill.textContent =
+        entry.status === "unlocked"
+          ? entry.unlockedLabel ?? "Unlocked"
+          : entry.status === "in-progress"
+            ? "In progress"
+            : "Locked";
+      const progress = document.createElement("div");
+      progress.className = "sticker-progress";
+      const progressBar = document.createElement("div");
+      progressBar.className = "sticker-progress-bar";
+      const progressFill = document.createElement("div");
+      progressFill.className = "sticker-progress-fill";
+      const percent = Math.max(
+        0,
+        Math.min(100, Math.round(((entry.progress ?? 0) / Math.max(1, entry.goal)) * 100))
+      );
+      progressFill.style.width = `${percent}%`;
+      const progressLabel = document.createElement("span");
+      progressLabel.className = "sticker-progress-label";
+      progressLabel.textContent =
+        entry.status === "unlocked"
+          ? "Complete"
+          : `${Math.min(entry.progress, entry.goal)} / ${entry.goal}`;
+      progressBar.appendChild(progressFill);
+      progress.appendChild(progressBar);
+      progress.appendChild(progressLabel);
+      meta.appendChild(statusPill);
+      meta.appendChild(progress);
+
+      const footer = document.createElement("div");
+      footer.className = "sticker-card__footer";
+      footer.appendChild(meta);
+
+      content.appendChild(title);
+      content.appendChild(desc);
+      content.appendChild(footer);
+
+      item.appendChild(content);
+      list.appendChild(item);
+    }
+    this.updateStickerBookSummary();
+  }
+
+  private updateStickerBookSummary(): void {
+    if (!this.stickerBookOverlay) return;
+    const unlocked = this.stickerBookEntries.filter((entry) => entry.status === "unlocked").length;
+    const inProgress = this.stickerBookEntries.filter(
+      (entry) => entry.status === "in-progress"
+    ).length;
+    this.stickerBookOverlay.summary.textContent = `Unlocked ${unlocked} of ${this.stickerBookEntries.length} · ${inProgress} in progress`;
+  }
+
+  private refreshStickerBookState(state: GameState): void {
+    const entries = this.buildStickerBookEntriesFromState(state);
+    this.setStickerBookEntries(entries);
+  }
+
+  private buildStickerBookEntriesFromState(state: GameState): StickerBookEntry[] {
+    const wavesCleared = Math.max(0, Math.floor(state.wave?.index ?? 0));
+    const breaches = state.analytics?.sessionBreaches ?? state.analytics?.breaches ?? 0;
+    const comboPeak = Math.max(
+      state.analytics?.sessionBestCombo ?? 0,
+      state.typing?.combo ?? 0,
+      state.analytics?.waveMaxCombo ?? 0
+    );
+    const shieldBreaks =
+      state.analytics?.totalShieldBreaks ?? state.analytics?.waveShieldBreaks ?? 0;
+    const goldHeld = Math.round(Math.max(0, state.resources?.gold ?? 0));
+    const perfectWords =
+      state.analytics?.totalPerfectWords ??
+      state.analytics?.wavePerfectWords ??
+      state.analytics?.waveHistory?.reduce((sum, wave) => sum + (wave.perfectWords ?? 0), 0) ??
+      0;
+    const typingDrills = Array.isArray(state.analytics?.typingDrills)
+      ? state.analytics.typingDrills.length
+      : 0;
+    const accuracyPct = Math.round(Math.max(0, (state.typing?.accuracy ?? 0) * 100));
+
+    const makeStatus = (progress: number, goal: number, unlocked = false): StickerBookEntry["status"] => {
+      if (unlocked || progress >= goal) return "unlocked";
+      if (progress > 0) return "in-progress";
+      return "locked";
+    };
+
+    const entries: StickerBookEntry[] = [
+      {
+        id: "gate-guardian",
+        title: "Gate Guardian",
+        description: "Clear your first wave without a breach.",
+        icon: "castle",
+        goal: 1,
+        progress: wavesCleared >= 1 && breaches === 0 ? 1 : wavesCleared,
+        status: makeStatus(wavesCleared, 1, wavesCleared >= 1 && breaches === 0),
+        unlockedLabel: breaches === 0 && wavesCleared >= 1 ? "Flawless opener" : undefined
+      },
+      {
+        id: "combo-spark",
+        title: "Combo Spark",
+        description: "Hit a 5x combo without dropping the chain.",
+        icon: "combo",
+        goal: 5,
+        progress: Math.min(comboPeak, 5),
+        status: makeStatus(comboPeak, 5)
+      },
+      {
+        id: "shield-breaker",
+        title: "Shield Breaker",
+        description: "Shatter 5 shields in a single session.",
+        icon: "shield",
+        goal: 5,
+        progress: Math.min(shieldBreaks, 5),
+        status: makeStatus(shieldBreaks, 5)
+      },
+      {
+        id: "gold-keeper",
+        title: "Gold Keeper",
+        description: "Hold 350 gold at once without spending it.",
+        icon: "treasure",
+        goal: 350,
+        progress: Math.min(goldHeld, 350),
+        status: makeStatus(goldHeld, 350)
+      },
+      {
+        id: "perfect-words",
+        title: "Perfect Words",
+        description: "Stack up 10 perfect words across any waves.",
+        icon: "perfect",
+        goal: 10,
+        progress: Math.min(perfectWords, 10),
+        status: makeStatus(perfectWords, 10)
+      },
+      {
+        id: "calm-focus",
+        title: "Calm Focus",
+        description: "Finish a wave with 95%+ accuracy.",
+        icon: "calm",
+        goal: 95,
+        progress: Math.min(accuracyPct, 95),
+        status: makeStatus(accuracyPct, 95)
+      },
+      {
+        id: "drill-runner",
+        title: "Drill Runner",
+        description: "Complete any typing drill this session.",
+        icon: "drill",
+        goal: 1,
+        progress: Math.min(typingDrills, 1),
+        status: makeStatus(typingDrills, 1)
+      }
+    ];
+
+    return entries;
+  }
+
+  private collectContrastAuditResults(): ContrastAuditResult[] {
+    if (typeof document === "undefined") return [];
+    const selectors = [
+      "#hud",
+      "#options-overlay .option-toggle",
+      "#options-overlay .option-range",
+      "#options-overlay button",
+      "#wave-scorecard",
+      "#battle-log",
+      "#typing-drills-overlay",
+      "#diagnostics-overlay",
+      ".roadmap-card",
+      "#wave-preview",
+      "#shortcut-overlay",
+      "#hud .metrics",
+      "#hud .castle-section"
+    ];
+    const visited = new Set<HTMLElement>();
+    const results: ContrastAuditResult[] = [];
+    for (const selector of selectors) {
+      const nodes = Array.from(document.querySelectorAll(selector));
+      for (const node of nodes) {
+        if (!(node instanceof HTMLElement)) continue;
+        if (visited.has(node)) continue;
+        visited.add(node);
+        const measured = this.measureElementContrast(node);
+        if (measured) {
+          results.push(measured);
+        }
+      }
+    }
+    return results;
+  }
+
+  private measureElementContrast(el: HTMLElement): ContrastAuditResult | null {
+    const rect = el.getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0) return null;
+    const styles = getComputedStyle(el);
+    const fg = this.parseColor(styles.color);
+    const bg = this.resolveBackgroundColor(el);
+    if (!fg || !bg) return null;
+    const ratio = this.computeContrastRatio(fg, bg);
+    const status: "pass" | "warn" | "fail" =
+      ratio >= 4.5 ? "pass" : ratio >= 3 ? "warn" : "fail";
+    return {
+      label: this.describeNode(el),
+      ratio,
+      status,
+      rect: { x: rect.left, y: rect.top, width: rect.width, height: rect.height }
+    };
+  }
+
+  private describeNode(el: HTMLElement): string {
+    const aria = el.getAttribute("aria-label");
+    if (aria) return aria;
+    if (el.id) return `#${el.id}`;
+    if (el.dataset.label) return el.dataset.label;
+    if (el.className) return `${el.tagName.toLowerCase()}.${(el.className as string)
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .join(".")}`;
+    return el.tagName.toLowerCase();
+  }
+
+  private resolveBackgroundColor(el: HTMLElement): [number, number, number, number] | null {
+    let current: HTMLElement | null = el;
+    while (current) {
+      const bg = getComputedStyle(current).backgroundColor;
+      const parsed = this.parseColor(bg);
+      if (parsed && parsed[3] > 0) {
+        return parsed;
+      }
+      current = current.parentElement;
+    }
+    return this.parseColor(getComputedStyle(document.body).backgroundColor) ?? [15, 23, 42, 1];
+  }
+
+  private parseColor(value: string | null): [number, number, number, number] | null {
+    if (!value) return null;
+    const rgbMatch = value.match(
+      /rgba?\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)(?:\s*,\s*(\d*(?:\.\d+)?))?\s*\)/
+    );
+    if (rgbMatch) {
+      const [, r, g, b, a] = rgbMatch;
+      return [
+        Number.parseInt(r, 10),
+        Number.parseInt(g, 10),
+        Number.parseInt(b, 10),
+        a !== undefined ? Number.parseFloat(a) : 1
+      ];
+    }
+    if (value.startsWith("#")) {
+      const hex = value.replace("#", "");
+      if (hex.length === 6) {
+        const r = Number.parseInt(hex.slice(0, 2), 16);
+        const g = Number.parseInt(hex.slice(2, 4), 16);
+        const b = Number.parseInt(hex.slice(4, 6), 16);
+        return [r, g, b, 1];
+      }
+    }
+    return null;
+  }
+
+  private computeContrastRatio(
+    fg: [number, number, number, number],
+    bg: [number, number, number, number]
+  ): number {
+    const toLinear = (channel: number) => {
+      const normalized = channel / 255;
+      return normalized <= 0.03928
+        ? normalized / 12.92
+        : Math.pow((normalized + 0.055) / 1.055, 2.4);
+    };
+    const fgLum =
+      0.2126 * toLinear(fg[0]) + 0.7152 * toLinear(fg[1]) + 0.0722 * toLinear(fg[2]);
+    const bgLum =
+      0.2126 * toLinear(bg[0]) + 0.7152 * toLinear(bg[1]) + 0.0722 * toLinear(bg[2]);
+    const lighter = Math.max(fgLum, bgLum);
+    const darker = Math.min(fgLum, bgLum);
+    return Math.round(((lighter + 0.05) / (darker + 0.05)) * 100) / 100;
   }
 
   private updateBackgroundBrightnessDisplay(value: number): void {

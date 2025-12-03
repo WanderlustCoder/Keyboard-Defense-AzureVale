@@ -1,5 +1,5 @@
 export const PLAYER_SETTINGS_STORAGE_KEY = "keyboard-defense:player-settings";
-export const PLAYER_SETTINGS_VERSION = 24;
+export const PLAYER_SETTINGS_VERSION = 27;
 const DEFAULT_UPDATED_AT = "1970-01-01T00:00:00.000Z";
 const HUD_FONT_SCALE_MIN = 0.85;
 const HUD_FONT_SCALE_MAX = 1.3;
@@ -13,6 +13,17 @@ const DEFAULT_SOUND_VOLUME = 0.8;
 const AUDIO_INTENSITY_MIN = 0.5;
 const AUDIO_INTENSITY_MAX = 1.5;
 const DEFAULT_AUDIO_INTENSITY = 1;
+const SCREEN_SHAKE_INTENSITY_MIN = 0;
+const SCREEN_SHAKE_INTENSITY_MAX = 1.2;
+const DEFAULT_SCREEN_SHAKE_INTENSITY = 0.65;
+const CASTLE_SKINS = new Set(["classic", "dusk", "aurora", "ember"]);
+const DEFAULT_CASTLE_SKIN = "classic";
+const ACCESSIBILITY_SELF_TEST_DEFAULT = {
+    lastRunAt: null,
+    soundConfirmed: false,
+    visualConfirmed: false,
+    motionConfirmed: false
+};
 const DEFAULT_PRESET_SAVED_AT = "1970-01-01T00:00:00.000Z";
 const MAX_TURRET_LEVEL = 10;
 const TEXT_SIZE_MIN = 0.9;
@@ -35,14 +46,19 @@ const BASE_DEFAULT_SETTINGS = {
     readableFontEnabled: false,
     dyslexiaFontEnabled: false,
     dyslexiaSpacingEnabled: false,
+    reducedCognitiveLoadEnabled: false,
     backgroundBrightness: 1,
     colorblindPaletteEnabled: false,
     audioIntensity: DEFAULT_AUDIO_INTENSITY,
+    screenShakeEnabled: false,
+    screenShakeIntensity: DEFAULT_SCREEN_SHAKE_INTENSITY,
     telemetryEnabled: false,
     eliteAffixesEnabled: true,
     crystalPulseEnabled: false,
+    accessibilitySelfTest: { ...ACCESSIBILITY_SELF_TEST_DEFAULT },
     hudZoom: HUD_ZOOM_DEFAULT,
     hudLayout: HUD_LAYOUT_DEFAULT,
+    castleSkin: DEFAULT_CASTLE_SKIN,
     hudFontScale: 1,
     defeatAnimationMode: "auto",
     turretTargeting: {},
@@ -60,7 +76,8 @@ export const defaultPlayerSettings = Object.freeze({
     ...BASE_DEFAULT_SETTINGS,
     turretTargeting: {},
     turretLoadoutPresets: Object.freeze({}),
-    diagnosticsSections: Object.freeze({})
+    diagnosticsSections: Object.freeze({}),
+    accessibilitySelfTest: Object.freeze({ ...ACCESSIBILITY_SELF_TEST_DEFAULT })
 });
 export function createDefaultPlayerSettings() {
     return {
@@ -77,7 +94,8 @@ export function createDefaultPlayerSettings() {
         turretTargeting: {},
         turretLoadoutPresets: Object.create(null),
         diagnosticsSections: Object.create(null),
-        diagnosticsSectionsUpdatedAt: DEFAULT_UPDATED_AT
+        diagnosticsSectionsUpdatedAt: DEFAULT_UPDATED_AT,
+        accessibilitySelfTest: { ...ACCESSIBILITY_SELF_TEST_DEFAULT }
     };
 }
 export function readPlayerSettings(storage) {
@@ -123,6 +141,9 @@ export function readPlayerSettings(storage) {
         const dyslexiaSpacingEnabled = typeof parsed.dyslexiaSpacingEnabled === "boolean"
             ? parsed.dyslexiaSpacingEnabled
             : fallback.dyslexiaSpacingEnabled;
+        const reducedCognitiveLoadEnabled = typeof parsed.reducedCognitiveLoadEnabled === "boolean"
+            ? parsed.reducedCognitiveLoadEnabled
+            : fallback.reducedCognitiveLoadEnabled;
         const backgroundBrightness = typeof parsed.backgroundBrightness === "number"
             ? parsed.backgroundBrightness
             : fallback.backgroundBrightness;
@@ -139,6 +160,12 @@ export function readPlayerSettings(storage) {
         const audioIntensity = typeof parsed.audioIntensity === "number"
             ? normalizeAudioIntensity(parsed.audioIntensity)
             : fallback.audioIntensity;
+        const screenShakeEnabled = typeof parsed.screenShakeEnabled === "boolean"
+            ? parsed.screenShakeEnabled
+            : fallback.screenShakeEnabled;
+        const screenShakeIntensity = typeof parsed.screenShakeIntensity === "number"
+            ? normalizeScreenShakeIntensity(parsed.screenShakeIntensity)
+            : fallback.screenShakeIntensity;
         const telemetryEnabled = typeof parsed.telemetryEnabled === "boolean"
             ? parsed.telemetryEnabled
             : fallback.telemetryEnabled;
@@ -152,6 +179,7 @@ export function readPlayerSettings(storage) {
             ? normalizeHudZoom(parsed.hudZoom)
             : fallback.hudZoom;
         const hudLayout = typeof parsed.hudLayout === "string" ? normalizeHudLayout(parsed.hudLayout) : fallback.hudLayout;
+        const castleSkin = normalizeCastleSkin(parsed.castleSkin);
         const hudFontScale = typeof parsed.hudFontScale === "number"
             ? normalizeHudFontScale(parsed.hudFontScale)
             : fallback.hudFontScale;
@@ -164,6 +192,7 @@ export function readPlayerSettings(storage) {
         const lastHudLayout = normalizeHudLayoutPreference(parsed.lastHudLayout);
         const diagnosticsSections = normalizeDiagnosticsSections(parsed.diagnosticsSections);
         const diagnosticsSectionsUpdatedAt = normalizeTimestamp(parsed.diagnosticsSectionsUpdatedAt ?? DEFAULT_UPDATED_AT);
+        const accessibilitySelfTest = normalizeAccessibilitySelfTest(parsed.accessibilitySelfTest);
         const updatedAt = typeof parsed.updatedAt === "string" && parsed.updatedAt.length > 0
             ? parsed.updatedAt
             : fallback.updatedAt;
@@ -181,17 +210,22 @@ export function readPlayerSettings(storage) {
             readableFontEnabled,
             dyslexiaFontEnabled,
             dyslexiaSpacingEnabled,
+            reducedCognitiveLoadEnabled,
             backgroundBrightness,
             colorblindPaletteEnabled,
             audioIntensity,
-        telemetryEnabled,
-        eliteAffixesEnabled,
-        crystalPulseEnabled,
-        hudZoom,
-        hudLayout,
-        hudFontScale,
-        defeatAnimationMode,
-        turretTargeting,
+            screenShakeEnabled,
+            screenShakeIntensity,
+            telemetryEnabled,
+            eliteAffixesEnabled,
+            crystalPulseEnabled,
+            accessibilitySelfTest,
+            hudZoom,
+            hudLayout,
+            castleSkin,
+            hudFontScale,
+            defeatAnimationMode,
+            turretTargeting,
             turretLoadoutPresets,
             diagnosticsSections,
             diagnosticsSectionsUpdatedAt,
@@ -250,6 +284,9 @@ export function withPatchedPlayerSettings(current, patch) {
         dyslexiaSpacingEnabled: typeof patch.dyslexiaSpacingEnabled === "boolean"
             ? patch.dyslexiaSpacingEnabled
             : current.dyslexiaSpacingEnabled,
+        reducedCognitiveLoadEnabled: typeof patch.reducedCognitiveLoadEnabled === "boolean"
+            ? patch.reducedCognitiveLoadEnabled
+            : current.reducedCognitiveLoadEnabled,
         backgroundBrightness: typeof patch.backgroundBrightness === "number"
             ? patch.backgroundBrightness
             : current.backgroundBrightness,
@@ -259,6 +296,12 @@ export function withPatchedPlayerSettings(current, patch) {
         audioIntensity: typeof patch.audioIntensity === "number"
             ? normalizeAudioIntensity(patch.audioIntensity)
             : current.audioIntensity,
+        screenShakeEnabled: typeof patch.screenShakeEnabled === "boolean"
+            ? patch.screenShakeEnabled
+            : current.screenShakeEnabled,
+        screenShakeIntensity: typeof patch.screenShakeIntensity === "number"
+            ? normalizeScreenShakeIntensity(patch.screenShakeIntensity)
+            : current.screenShakeIntensity,
         telemetryEnabled: typeof patch.telemetryEnabled === "boolean"
             ? patch.telemetryEnabled
             : current.telemetryEnabled,
@@ -274,12 +317,21 @@ export function withPatchedPlayerSettings(current, patch) {
         hudLayout: typeof patch.hudLayout === "string"
             ? normalizeHudLayout(patch.hudLayout)
             : current.hudLayout,
+        castleSkin: typeof patch.castleSkin === "string"
+            ? normalizeCastleSkin(patch.castleSkin)
+            : current.castleSkin ?? DEFAULT_CASTLE_SKIN,
         hudFontScale: typeof patch.hudFontScale === "number"
             ? normalizeHudFontScale(patch.hudFontScale)
             : current.hudFontScale,
         defeatAnimationMode: typeof patch.defeatAnimationMode === "string"
             ? normalizeDefeatAnimationMode(patch.defeatAnimationMode)
             : current.defeatAnimationMode,
+        accessibilitySelfTest: patch.accessibilitySelfTest !== undefined
+            ? normalizeAccessibilitySelfTest({
+                ...current.accessibilitySelfTest,
+                ...patch.accessibilitySelfTest
+            })
+            : normalizeAccessibilitySelfTest(current.accessibilitySelfTest),
         turretTargeting: patch.turretTargeting !== undefined
             ? normalizeTargetingMap(patch.turretTargeting)
             : { ...current.turretTargeting },
@@ -451,6 +503,13 @@ function cloneLoadoutSlots(slots) {
     }
     return cloned;
 }
+function normalizeCastleSkin(value) {
+    if (typeof value !== "string") {
+        return DEFAULT_CASTLE_SKIN;
+    }
+    const normalized = value.toLowerCase();
+    return CASTLE_SKINS.has(normalized) ? normalized : DEFAULT_CASTLE_SKIN;
+}
 function normalizeHudZoom(value) {
     if (typeof value !== "number" || !Number.isFinite(value)) {
         return HUD_ZOOM_DEFAULT;
@@ -551,4 +610,28 @@ function normalizeAudioIntensity(value) {
     }
     const clamped = Math.min(AUDIO_INTENSITY_MAX, Math.max(AUDIO_INTENSITY_MIN, value));
     return Math.round(clamped * 100) / 100;
+}
+function normalizeScreenShakeIntensity(value) {
+    if (typeof value !== "number" || !Number.isFinite(value)) {
+        return DEFAULT_SCREEN_SHAKE_INTENSITY;
+    }
+    const clamped = Math.min(SCREEN_SHAKE_INTENSITY_MAX, Math.max(SCREEN_SHAKE_INTENSITY_MIN, value));
+    return Math.round(clamped * 100) / 100;
+}
+function normalizeAccessibilitySelfTest(value) {
+    const lastRunAt = typeof (value === null || value === void 0 ? void 0 : value.lastRunAt) === "string" && value.lastRunAt.length > 0
+        ? value.lastRunAt
+        : null;
+    return {
+        lastRunAt,
+        soundConfirmed: typeof (value === null || value === void 0 ? void 0 : value.soundConfirmed) === "boolean"
+            ? value.soundConfirmed
+            : ACCESSIBILITY_SELF_TEST_DEFAULT.soundConfirmed,
+        visualConfirmed: typeof (value === null || value === void 0 ? void 0 : value.visualConfirmed) === "boolean"
+            ? value.visualConfirmed
+            : ACCESSIBILITY_SELF_TEST_DEFAULT.visualConfirmed,
+        motionConfirmed: typeof (value === null || value === void 0 ? void 0 : value.motionConfirmed) === "boolean"
+            ? value.motionConfirmed
+            : ACCESSIBILITY_SELF_TEST_DEFAULT.motionConfirmed
+    };
 }

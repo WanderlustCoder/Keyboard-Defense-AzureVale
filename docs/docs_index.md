@@ -58,8 +58,17 @@ Use this index to jump straight to the guidance you'll need while building and t
 
 ## Status Notes
 Status entries live under `docs/status/`. Recent highlights include:
+- `2025-12-19_weekly_parent_summary.md` - Parent-friendly weekly summary overlay with printable metrics (time, accuracy/WPM, combo, breaches, drills, repairs) from the pause/options menu.
+- `2025-12-18_collectible_lore_scrolls.md` - Lore scroll panel + overlay unlocks via lesson/typing drill completions with persisted progress (Season 4 backlog #64).
+- `2025-12-16_sticker_book_achievements.md` - Sticker Book overlay with pixel-art achievements and live progress (Season 4 backlog #61).
+- `2025-12-16_castle_skin_themes.md` - Castle skin selector with themed palettes/persistence (Season 4 backlog #62).
+- `2025-12-17_companion_pet_sprites.md` - Companion pet sprite reacts to performance moods (Season 4 backlog #63).
+- `2025-12-15_contrast_audit_overlay.md` - Contrast audit overlay with markers/list to flag low-contrast regions (Season 4 backlog #60).
+- `2025-12-15_accessibility_self_test.md` - Accessibility self-test card with persisted confirmations (Season 4 backlog #59).
+- `2025-12-14_screen_shake_preview.md` - Screen shake toggle + intensity slider with inline preview, guarded by Reduced Motion (Season 4 backlog #58).
+- `2025-12-13_accessibility_presets_cognitive_mode.md` - Dyslexia preset in accessibility onboarding and Reduced Cognitive Load mode toggle (Season 4 items 48 & 49).
 - `2025-12-12_left_handed_layout.md` - Options toggle to flip the HUD to the left side; persisted per profile (Season 4 item 47).
-- `2025-12-12_hud_zoom_control.md` - HUD zoom selector (90–120%) in Options with persisted player setting for Season 4 item 46.
+- `2025-12-12_hud_zoom_control.md` - HUD zoom selector (90-120%) in Options with persisted player setting for Season 4 item 46.
 - `2025-12-10_fullscreen_toggle.md` - HUD fullscreen toggle button (syncs on fullscreenchange, disables if unsupported).
 - `2025-12-10_caps_lock_warning.md` - Caps-lock warning under the typing input with aria-live feedback.
 - `2025-12-10_loading_screen.md` - Loading overlay with pixel animation and rotating typing tips that auto-dismiss after assets are ready.
