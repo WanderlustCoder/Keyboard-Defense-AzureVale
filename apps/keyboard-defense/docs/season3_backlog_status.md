@@ -10,6 +10,7 @@ Quick status snapshot for items in `season3_backlog.md`. Audience ages 8-16, Edg
 | 71 | Persistent caps/num lock indicators near input | Done | HUD pills show Caps/Num lock states beside the typing input; Caps warning remains for errors. |
 | 64 | Input latency indicator with warning thresholds | Done | HUD pill samples event-loop delay and shows green/amber/red states with live ms readout. |
 | 63 | HUD customization toggles | Done | Pause menu can hide typing metrics, wave preview, and battle log for a cleaner view; persists locally. |
+| 73 | Contextual tooltips for new systems | Done | Once-per-user comfort hints now surface for drills, wave preview, and battle log until dismissed. |
 | 67 | Screen-reader labels for controls/overlays | Done | Added ARIA labels for core controls (fullscreen, pause, roadmap, typing input, break reminders) and ensured options dialog landmarks remain announced. |
 | 72 | Accessibility preference check during onboarding | Done | First-run comfort overlay asks for reduced motion, dyslexia spacing, colorblind palette, and brightness; applies and persists choices before play. |
 | 87 | Automated difficulty tuning script (bot-driven) | Done | New script `npm run analytics:difficulty-tuning` ingests playtest-bot artifacts and outputs JSON/Markdown recommendations; see `docs/difficulty_tuning.md`. |

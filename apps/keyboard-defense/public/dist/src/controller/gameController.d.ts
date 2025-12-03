@@ -330,6 +330,9 @@ export declare class GameController {
     attachHudVisibilityToggles(): void;
     syncHudVisibilityToggles(): void;
     applyHudVisibility(): void;
+    loadContextualHintsSeen(): Set<any>;
+    persistContextualHintsSeen(): void;
+    attachContextualHints(): void;
     loadAccessibilitySeen(): boolean;
     persistAccessibilitySeen(): void;
     attachAccessibilityOnboarding(): void;

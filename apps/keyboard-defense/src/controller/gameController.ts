@@ -70,6 +70,7 @@ const INPUT_LATENCY_WINDOW = 8;
 const INPUT_LATENCY_WARN_MS = 40;
 const INPUT_LATENCY_BAD_MS = 75;
 const HUD_VISIBILITY_KEY = "keyboard-defense:hud-visibility";
+const CONTEXTUAL_HINTS_KEY = "keyboard-defense:contextual-hints";
 const WAVE_MICRO_TIPS = [
   "Keep wrists lifted and let fingers hover over home row—no desk planting.",
   "Aim for light taps. If keys feel loud, ease up and keep rhythm steady.",
@@ -188,6 +189,7 @@ export class GameController {
     this.waveMicroTipIndex =
       Math.floor((typeof Math !== "undefined" ? Math.random() : 0) * WAVE_MICRO_TIPS.length) % WAVE_MICRO_TIPS.length;
     this.hudVisibility = this.loadHudVisibilityPrefs();
+    this.contextualHintsSeen = this.loadContextualHintsSeen();
     this.accessibilityOnboardingSeen = this.loadAccessibilitySeen();
     this.accessibilityOverlay = null;
     this.resumeAfterAccessibility = false;
@@ -620,6 +622,7 @@ export class GameController {
     this.attachDebugButtons();
     this.attachGlobalShortcuts();
     this.attachHudVisibilityToggles();
+    this.attachContextualHints();
     this.attachLatencyIndicator();
     this.attachFullscreenListeners();
     this.attachAccessibilityOnboarding();
@@ -5224,6 +5227,67 @@ export class GameController {
     if (battleLog instanceof HTMLElement) {
       battleLog.dataset.hidden = prefs.battleLog ? "false" : "true";
       battleLog.setAttribute("aria-hidden", prefs.battleLog ? "false" : "true");
+    }
+  }
+
+  loadContextualHintsSeen() {
+    if (typeof window === "undefined" || !window.localStorage) {
+      return new Set();
+    }
+    try {
+      const raw = window.localStorage.getItem(CONTEXTUAL_HINTS_KEY);
+      if (!raw) return new Set();
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        return new Set(parsed.filter((id) => typeof id === "string" && id.length > 0));
+      }
+      return new Set();
+    } catch {
+      return new Set();
+    }
+  }
+
+  persistContextualHintsSeen() {
+    if (typeof window === "undefined" || !window.localStorage) {
+      return;
+    }
+    try {
+      window.localStorage.setItem(CONTEXTUAL_HINTS_KEY, JSON.stringify(Array.from(this.contextualHintsSeen)));
+    } catch {
+      // best effort
+    }
+  }
+
+  attachContextualHints() {
+    if (typeof document === "undefined") return;
+    const hintIds = [
+      { id: "hint-typing-drills", key: "typing-drills" },
+      { id: "hint-wave-preview", key: "wave-preview" },
+      { id: "hint-battle-log", key: "battle-log" }
+    ];
+    for (const hint of hintIds) {
+      const el = document.getElementById(hint.id);
+      const closeBtn = el?.querySelector?.(".contextual-hint-close");
+      if (!(el instanceof HTMLElement) || !(closeBtn instanceof HTMLButtonElement)) {
+        continue;
+      }
+      const dismiss = () => {
+        el.dataset.visible = "false";
+        el.setAttribute("aria-hidden", "true");
+        this.contextualHintsSeen.add(hint.key);
+        this.persistContextualHintsSeen();
+      };
+      closeBtn.addEventListener("click", dismiss);
+      el.addEventListener("click", (event) => {
+        if (event.target === el) dismiss();
+      });
+      if (!this.contextualHintsSeen.has(hint.key)) {
+        el.dataset.visible = "true";
+        el.setAttribute("aria-hidden", "false");
+      } else {
+        el.dataset.visible = "false";
+        el.setAttribute("aria-hidden", "true");
+      }
     }
   }
 

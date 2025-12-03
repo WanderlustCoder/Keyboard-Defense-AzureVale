@@ -2134,6 +2134,44 @@ details {
   display: none !important;
 }
 
+.contextual-hint {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: linear-gradient(90deg, rgba(59, 130, 246, 0.12), rgba(14, 165, 233, 0.08));
+  color: #e2e8f0;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.35);
+}
+
+.contextual-hint[data-visible="false"] {
+  display: none;
+}
+
+.contextual-hint-text {
+  margin: 0;
+  line-height: 1.4;
+}
+
+.contextual-hint-close {
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  color: #e2e8f0;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0 6px;
+  align-self: center;
+}
+
+#hint-wave-preview,
+#hint-battle-log,
+#hint-typing-drills {
+  margin: 6px 0 10px;
+}
+
 .wave-preview-hint {
   display: none;
   margin-bottom: 6px;

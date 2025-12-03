@@ -167,17 +167,45 @@
                   Run quick drills to lock in rhythm without risking the castle.
                 </p>
                 <p class="typing-drills-cta-hint">Shortcut: Shift + R to launch recommended drill</p>
-                <p id="typing-drills-cta-reco" class="typing-drills-cta-reco" data-visible="false">
-                  Recommended: <span class="typing-drills-cta-reco-mode"></span>
-                </p>
-              </div>
-              <button id="typing-drills-open" class="typing-drills-cta-button" type="button">
-                Launch drills
-              </button>
-            </div>
+            <p id="typing-drills-cta-reco" class="typing-drills-cta-reco" data-visible="false">
+              Recommended: <span class="typing-drills-cta-reco-mode"></span>
+            </p>
+          </div>
+          <button id="typing-drills-open" class="typing-drills-cta-button" type="button">
+            Launch drills
+          </button>
+          <div
+            id="hint-typing-drills"
+            class="contextual-hint"
+            data-visible="false"
+            role="status"
+            aria-live="polite"
+          >
+            <p class="contextual-hint-text">
+              Hint: Use Shift + R to open drills before the next wave for a quick warmup.
+            </p>
+            <button type="button" class="contextual-hint-close" aria-label="Dismiss drills hint">
+              ×
+            </button>
+          </div>
+        </div>
         </section>
         <section class="wave-preview">
           <h2>Upcoming Enemies</h2>
+          <div
+            id="hint-wave-preview"
+            class="contextual-hint"
+            data-visible="false"
+            role="status"
+            aria-live="polite"
+          >
+            <p class="contextual-hint-text">
+              Hint: Preview shows the next wave. Hover an enemy to read its role and tips.
+            </p>
+            <button type="button" class="contextual-hint-close" aria-label="Dismiss wave preview hint">
+              ×
+            </button>
+          </div>
           <div
             id="wave-preview-hint"
             class="wave-preview-hint"
@@ -237,6 +265,20 @@
         </section>
         <section class="events">
           <h2>Battle Log</h2>
+          <div
+            id="hint-battle-log"
+            class="contextual-hint"
+            data-visible="false"
+            role="status"
+            aria-live="polite"
+          >
+            <p class="contextual-hint-text">
+              Hint: The battle log tracks pickups, breaches, and shields. Toggle it in Options.
+            </p>
+            <button type="button" class="contextual-hint-close" aria-label="Dismiss battle log hint">
+              ×
+            </button>
+          </div>
           <ul id="battle-log"></ul>
         </section>
         <section class="debug">
