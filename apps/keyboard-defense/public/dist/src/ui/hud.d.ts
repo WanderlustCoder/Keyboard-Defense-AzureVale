@@ -154,6 +154,10 @@ type RoadmapGlanceElements = {
     openButton: string;
     clearButton: string;
 };
+type ParentalOverlayElements = {
+    container: string;
+    closeButton: string;
+};
 export interface WaveScorecardData {
     waveIndex: number;
     waveTotal: number;
@@ -237,6 +241,8 @@ export declare class HudView {
     private roadmapState;
     private readonly roadmapOverlay?;
     private readonly roadmapGlance?;
+    private readonly parentalOverlay?;
+    private parentalOverlayTrigger?;
     private lastShieldTelemetry;
     private lastAffixTelemetry;
     private lastWavePreviewEntries;
@@ -313,6 +319,7 @@ export declare class HudView {
         roadmapOverlay?: RoadmapOverlayElements;
         roadmapGlance?: RoadmapGlanceElements;
         roadmapLaunch?: string;
+        parentalOverlay?: ParentalOverlayElements;
     }, callbacks: HudCallbacks);
     focusTypingInput(): void;
     setCapsLockWarning(visible: boolean): void;
@@ -497,6 +504,8 @@ export declare class HudView {
     private setWaveScorecardVisible;
     private setShortcutOverlayVisible;
     private setRoadmapOverlayVisible;
+    private showParentalOverlay;
+    private hideParentalOverlay;
     private applyTelemetryOptionState;
     private updateSoundVolumeDisplay;
     private updateSoundIntensityDisplay;

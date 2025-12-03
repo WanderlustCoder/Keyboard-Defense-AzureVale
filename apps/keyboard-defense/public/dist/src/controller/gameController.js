@@ -504,7 +504,11 @@ export class GameController {
                 openButton: "roadmap-glance-open",
                 clearButton: "roadmap-glance-clear"
             },
-            roadmapLaunch: "roadmap-launch"
+            roadmapLaunch: "roadmap-launch",
+            parentalOverlay: {
+                container: "parental-overlay",
+                closeButton: "parental-overlay-close"
+            }
         }, {
             onCastleUpgrade: () => this.handleCastleUpgrade(),
             onCastleRepair: () => this.handleCastleRepair(),

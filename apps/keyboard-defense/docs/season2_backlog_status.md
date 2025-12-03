@@ -13,6 +13,7 @@ Quick status for the Season 2 backlog items referenced in `season2_backlog.md`.
 | 69 | Age-appropriate language throughout UI | Done | Guidelines documented in `docs/age_appropriate_language.md`; enforce friendly, safe copy for ages 8–16. |
 | 86 | Keyboard focus trap & ESC hotkey | Done | ESC now closes overlays or toggles pause; focus trap refocuses typing input when clicking non-interactive areas. |
 | 61 | Input debounce/forgiveness for near-simultaneous keys | Done | TypingSystem debounces rapid repeat of the same wrong key (within 12ms) to avoid cascading errors from held/ghost inputs while preserving double-letter progress. |
+| 74 | Parental info screen: what is tracked (local only) | Done | Pause menu has a Parental Info dialog summarizing privacy guardrails: no accounts/ads, local-only storage, telemetry off by default, manual exports only. |
 | 94 | Loading screen with tips and pixel animation | Done | Rotating typing tips (3.8s), pixel bob animation with reduced-motion fallback, and doc `loading_screen.md` to edit tips safely. |
 | 95 | Build-time lint/tests gate expanded to lesson JSON validator | Done | `npm run lint` now runs strict wordlist/lesson lint; pre-commit and CI enforce it. |
 | 96 | Wordlist/lesson content lints | Done | Validator covers safe chars, denylist, lengths, sorting, gating; seed lists added. |

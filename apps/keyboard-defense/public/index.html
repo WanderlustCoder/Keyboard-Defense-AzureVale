@@ -1042,6 +1042,9 @@
           </label>
         </div>
         <div class="options-actions">
+          <button id="options-parental-info" type="button" class="secondary">
+            Parental Info
+          </button>
           <button id="options-analytics-export" type="button" class="secondary">
             Download Analytics
           </button>
@@ -1051,6 +1054,47 @@
           <p class="options-hint">Tip: Press Shift + R to launch the recommended drill instantly.</p>
           <button id="options-resume-button" type="button" class="primary">Resume Battle</button>
         </div>
+      </div>
+    </div>
+    <div
+      id="parental-overlay"
+      data-visible="false"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="parental-overlay-title"
+      aria-describedby="parental-overlay-desc"
+      aria-hidden="true"
+    >
+      <div class="info-overlay-card">
+        <header class="info-overlay-header">
+          <div>
+            <p class="info-overlay-kicker">For parents & guardians</p>
+            <h2 id="parental-overlay-title">Privacy & Safety Notes</h2>
+            <p id="parental-overlay-desc" class="info-overlay-subtitle">
+              Keyboard Defense is local-first: no accounts, no online tracking, and everything is
+              built for ages 8-16 on Edge/Chrome.
+            </p>
+          </div>
+          <button
+            id="parental-overlay-close"
+            class="icon-button"
+            type="button"
+            aria-label="Close parental info"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </header>
+        <ul class="info-overlay-list">
+          <li>All progress/settings stay in local storage; nothing is sent online.</li>
+          <li>Telemetry is opt-in only and off by default; exports are manual.</li>
+          <li>No accounts, chat, ads, or payment flows are present.</li>
+          <li>Word lists and UI copy follow kid-safe language guidelines.</li>
+          <li>You can clear data anytime via browser storage or by resetting progress.</li>
+        </ul>
+        <p class="info-overlay-footer">
+          Questions about data? Check the pause menu toggles (Telemetry/Analytics) or export locally
+          for your own review.
+        </p>
       </div>
     </div>
     <div

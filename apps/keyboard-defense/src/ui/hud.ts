@@ -295,6 +295,11 @@ type RoadmapGlanceElements = {
   clearButton: string;
 };
 
+type ParentalOverlayElements = {
+  container: string;
+  closeButton: string;
+};
+
 type AnalyticsViewerFilter = "all" | "last-5" | "last-10" | "breaches" | "shielded";
 
 export interface WaveScorecardData {
@@ -435,6 +440,11 @@ export class HudView {
     openButton?: HTMLButtonElement;
     clearButton?: HTMLButtonElement;
   };
+  private readonly parentalOverlay?: {
+    container: HTMLElement;
+    closeButton: HTMLButtonElement;
+  };
+  private parentalOverlayTrigger?: HTMLElement | null;
   private lastShieldTelemetry = { current: false, next: false };
   private lastAffixTelemetry = { current: false, next: false };
   private lastWavePreviewEntries: WaveSpawnPreview[] = [];
@@ -574,6 +584,7 @@ export class HudView {
       roadmapOverlay?: RoadmapOverlayElements;
       roadmapGlance?: RoadmapGlanceElements;
       roadmapLaunch?: string;
+      parentalOverlay?: ParentalOverlayElements;
     },
     private readonly callbacks: HudCallbacks
   ) {
@@ -1174,6 +1185,10 @@ export class HudView {
             this.callbacks.onAnalyticsExport?.();
           });
         }
+        const parentalButton = document.getElementById("options-parental-info");
+        if (parentalButton instanceof HTMLButtonElement) {
+          parentalButton.addEventListener("click", () => this.showParentalOverlay(parentalButton));
+        }
       } else {
         console.warn("Options overlay elements missing; pause overlay disabled.");
       }
@@ -1380,6 +1395,24 @@ export class HudView {
         this.addFocusTrap(overlayContainer);
       } else {
         console.warn("Roadmap overlay elements missing; roadmap overlay disabled.");
+      }
+    }
+
+    if (rootIds.parentalOverlay) {
+      const parentalContainer = document.getElementById(rootIds.parentalOverlay.container);
+      const parentalClose = document.getElementById(rootIds.parentalOverlay.closeButton);
+      if (parentalContainer instanceof HTMLElement && parentalClose instanceof HTMLButtonElement) {
+        this.parentalOverlay = {
+          container: parentalContainer,
+          closeButton: parentalClose
+        };
+        this.parentalOverlay.container.dataset.visible =
+          this.parentalOverlay.container.dataset.visible ?? "false";
+        this.parentalOverlay.container.setAttribute("aria-hidden", "true");
+        this.addFocusTrap(parentalContainer);
+        parentalClose.addEventListener("click", () => this.hideParentalOverlay());
+      } else {
+        console.warn("Parental info overlay missing; parental info dialog disabled.");
       }
     }
 
@@ -4300,6 +4333,27 @@ export class HudView {
     if (visible) {
       this.renderRoadmapList();
       this.roadmapOverlay.closeButton.focus();
+    } else {
+      this.focusTypingInput();
+    }
+  }
+
+  private showParentalOverlay(trigger?: HTMLElement): void {
+    if (!this.parentalOverlay) return;
+    this.parentalOverlayTrigger = trigger ?? null;
+    this.parentalOverlay.container.dataset.visible = "true";
+    this.parentalOverlay.container.setAttribute("aria-hidden", "false");
+    this.parentalOverlay.closeButton.focus();
+  }
+
+  private hideParentalOverlay(): void {
+    if (!this.parentalOverlay) return;
+    this.parentalOverlay.container.dataset.visible = "false";
+    this.parentalOverlay.container.setAttribute("aria-hidden", "true");
+    const target = this.parentalOverlayTrigger;
+    this.parentalOverlayTrigger = null;
+    if (target instanceof HTMLElement) {
+      target.focus();
     } else {
       this.focusTypingInput();
     }
