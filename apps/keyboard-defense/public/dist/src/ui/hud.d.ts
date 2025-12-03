@@ -214,6 +214,7 @@ export declare class HudView {
     private tutorialBannerExpanded;
     private readonly virtualKeyboard?;
     private virtualKeyboardEnabled;
+    private readonly focusTraps;
     private readonly castleButton;
     private readonly castleRepairButton;
     private readonly castleStatus;
@@ -319,6 +320,9 @@ export declare class HudView {
         capsOn: boolean;
         numOn: boolean;
     }): void;
+    private getFocusableElements;
+    private isElementVisible;
+    private addFocusTrap;
     setFullscreenAvailable(available: boolean): void;
     setFullscreenActive(active: boolean): void;
     showShortcutOverlay(): void;

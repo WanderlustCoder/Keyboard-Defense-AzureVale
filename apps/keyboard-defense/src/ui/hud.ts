@@ -373,6 +373,7 @@ export class HudView {
   private tutorialBannerExpanded = true;
   private readonly virtualKeyboard?: VirtualKeyboard;
   private virtualKeyboardEnabled = false;
+  private readonly focusTraps = new Map<HTMLElement, (event: KeyboardEvent) => void>();
   private readonly castleButton: HTMLButtonElement;
   private readonly castleRepairButton: HTMLButtonElement;
   private readonly castleStatus: HTMLSpanElement;
@@ -798,6 +799,7 @@ export class HudView {
           container: shortcutContainer,
           closeButton
         };
+        this.addFocusTrap(shortcutContainer);
         closeButton.addEventListener("click", () => this.hideShortcutOverlay());
       } else {
         console.warn("Shortcut overlay elements missing; reference overlay disabled.");
@@ -974,6 +976,7 @@ export class HudView {
           analyticsExportButton:
             analyticsExportButton instanceof HTMLButtonElement ? analyticsExportButton : undefined
         };
+        this.addFocusTrap(optionsContainer);
         const castleBonusHint = document.getElementById("options-castle-bonus");
         if (castleBonusHint instanceof HTMLElement) {
           this.optionsCastleBonus = castleBonusHint;
@@ -1194,6 +1197,7 @@ export class HudView {
           continueBtn: scorecardContinue,
           tip: scorecardTip instanceof HTMLElement ? scorecardTip : undefined
         };
+        this.addFocusTrap(scorecardContainer);
         scorecardContinue.addEventListener("click", () => this.callbacks.onWaveScorecardContinue());
       } else {
         console.warn("Wave scorecard elements missing; wave summary overlay disabled.");
@@ -1373,6 +1377,7 @@ export class HudView {
         if (subtitle instanceof HTMLElement && SEASON_ROADMAP.theme) {
           subtitle.textContent = SEASON_ROADMAP.theme;
         }
+        this.addFocusTrap(overlayContainer);
       } else {
         console.warn("Roadmap overlay elements missing; roadmap overlay disabled.");
       }
@@ -1475,6 +1480,51 @@ export class HudView {
         `Num Lock ${options.numOn ? "on" : "off"}`
       );
     }
+  }
+
+  private getFocusableElements(container: HTMLElement): HTMLElement[] {
+    const candidates = Array.from(
+      container.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      )
+    );
+    return candidates.filter((el) => {
+      if (el.hasAttribute("disabled") || el.getAttribute("aria-hidden") === "true") {
+        return false;
+      }
+      return el.tabIndex >= 0 && this.isElementVisible(el);
+    });
+  }
+
+  private isElementVisible(element: HTMLElement): boolean {
+    return !!(element.offsetParent || element.getClientRects().length);
+  }
+
+  private addFocusTrap(container: HTMLElement): void {
+    if (this.focusTraps.has(container)) return;
+    const handler = (event: KeyboardEvent) => {
+      if (event.key !== "Tab") return;
+      const focusable = this.getFocusableElements(container);
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const active = (document.activeElement as HTMLElement | null) ?? null;
+      const within = active ? container.contains(active) : false;
+      if (!within) {
+        event.preventDefault();
+        (event.shiftKey ? last : first).focus();
+        return;
+      }
+      if (!event.shiftKey && active === last) {
+        event.preventDefault();
+        first.focus();
+      } else if (event.shiftKey && active === first) {
+        event.preventDefault();
+        last.focus();
+      }
+    };
+    container.addEventListener("keydown", handler);
+    this.focusTraps.set(container, handler);
   }
 
   setFullscreenAvailable(available: boolean): void {

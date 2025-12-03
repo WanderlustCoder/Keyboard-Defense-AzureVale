@@ -79,6 +79,7 @@ export class HudView {
     tutorialBannerExpanded = true;
     virtualKeyboard;
     virtualKeyboardEnabled = false;
+    focusTraps = new Map();
     castleButton;
     castleRepairButton;
     castleStatus;
@@ -362,6 +363,7 @@ export class HudView {
                     container: shortcutContainer,
                     closeButton
                 };
+                this.addFocusTrap(shortcutContainer);
                 closeButton.addEventListener("click", () => this.hideShortcutOverlay());
             }
             else {
@@ -507,6 +509,7 @@ export class HudView {
                     eliteAffixWrapper: eliteAffixToggleWrapper instanceof HTMLElement ? eliteAffixToggleWrapper : undefined,
                     analyticsExportButton: analyticsExportButton instanceof HTMLButtonElement ? analyticsExportButton : undefined
                 };
+                this.addFocusTrap(optionsContainer);
                 const castleBonusHint = document.getElementById("options-castle-bonus");
                 if (castleBonusHint instanceof HTMLElement) {
                     this.optionsCastleBonus = castleBonusHint;
@@ -751,6 +754,7 @@ export class HudView {
                     continueBtn: scorecardContinue,
                     tip: scorecardTip instanceof HTMLElement ? scorecardTip : undefined
                 };
+                this.addFocusTrap(scorecardContainer);
                 scorecardContinue.addEventListener("click", () => this.callbacks.onWaveScorecardContinue());
             }
             else {
@@ -922,6 +926,7 @@ export class HudView {
                 if (subtitle instanceof HTMLElement && SEASON_ROADMAP.theme) {
                     subtitle.textContent = SEASON_ROADMAP.theme;
                 }
+                this.addFocusTrap(overlayContainer);
             }
             else {
                 console.warn("Roadmap overlay elements missing; roadmap overlay disabled.");
@@ -1007,6 +1012,48 @@ export class HudView {
             this.lockIndicatorNum.dataset.active = options.numOn ? "true" : "false";
             this.lockIndicatorNum.setAttribute("aria-label", `Num Lock ${options.numOn ? "on" : "off"}`);
         }
+    }
+    getFocusableElements(container) {
+        const candidates = Array.from(container.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'));
+        return candidates.filter((el) => {
+            if (el.hasAttribute("disabled") || el.getAttribute("aria-hidden") === "true") {
+                return false;
+            }
+            return el.tabIndex >= 0 && this.isElementVisible(el);
+        });
+    }
+    isElementVisible(element) {
+        return !!(element.offsetParent || element.getClientRects().length);
+    }
+    addFocusTrap(container) {
+        if (this.focusTraps.has(container))
+            return;
+        const handler = (event) => {
+            if (event.key !== "Tab")
+                return;
+            const focusable = this.getFocusableElements(container);
+            if (!focusable.length)
+                return;
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+            const active = document.activeElement ?? null;
+            const within = active ? container.contains(active) : false;
+            if (!within) {
+                event.preventDefault();
+                (event.shiftKey ? last : first).focus();
+                return;
+            }
+            if (!event.shiftKey && active === last) {
+                event.preventDefault();
+                first.focus();
+            }
+            else if (event.shiftKey && active === first) {
+                event.preventDefault();
+                last.focus();
+            }
+        };
+        container.addEventListener("keydown", handler);
+        this.focusTraps.set(container, handler);
     }
     setFullscreenAvailable(available) {
         if (!this.fullscreenButton)

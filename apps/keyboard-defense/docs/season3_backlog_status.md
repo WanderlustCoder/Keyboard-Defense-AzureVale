@@ -10,6 +10,7 @@ Quick status snapshot for items in `season3_backlog.md`. Audience ages 8-16, Edg
 | 71 | Persistent caps/num lock indicators near input | Done | HUD pills show Caps/Num lock states beside the typing input; Caps warning remains for errors. |
 | 64 | Input latency indicator with warning thresholds | Done | HUD pill samples event-loop delay and shows green/amber/red states with live ms readout. |
 | 65 | Expanded key hints showing finger assignment per character | Done | Finger hint pill beside the input surfaces the recommended finger and key for the next character (or the expected key after an error), hiding automatically when idle. |
+| 66 | Fully keyboard-navigable menus with clear focus outlines | Done | Options, roadmap, shortcut reference, and wave scorecard overlays trap focus while open and auto-focus the primary action; focus-visible outlines remain for keyboard users. |
 | 62 | Colorblind-safe palette set (multiple modes) | Done | Options menu now lets players choose deuteran/protan/tritan/high-contrast palettes; applies across HUD and wave previews. |
 | 70 | Remappable pause and shortcut overlay keys | Done | Pause key (P/Esc/Space/O) and shortcuts overlay key (?,?,/,F1) are configurable in Options and persist locally. |
 | 63 | HUD customization toggles | Done | Pause menu can hide typing metrics, wave preview, and battle log for a cleaner view; persists locally. |
