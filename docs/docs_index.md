@@ -61,6 +61,7 @@ Use this index to jump straight to the guidance you'll need while building and t
 - `2025-12-26_side_quests_log.md` - Side Quest HUD panel and overlay list narrative quests with progress from lessons, medals, scrolls, and drills (Season 4 #72).
 - `2025-12-27_collapsible_menus_plan.md` - Plan for collapsible options sections with persisted state, quick controls, and reduced-motion-safe toggles.
 - `2025-12-27_ui_navigation_plan.md` - Plan for UI quick-access/navigation (sticky quick bar, mini-nav pills, responsive layout, condensed cards).
+- `2025-12-27_castle_ui_refit_plan.md` - Plan to refit HUD/options with castle/keyboard-flavored command strip, tabbed stacks, collapsible drawers, and keyboard-first shortcuts.
 - `2025-12-25_castle_museum_room.md` - Castle Museum panel/overlay shows unlocked skins, artifacts, scrolls, medals, and certificates (Season 4 #71).
 - `2025-12-24_adaptive_mentor_dialogue.md` - Mentor card adapts between accuracy/speed/balanced tips based on live stats (Season 4 #70).
 - `2025-12-23_milestone_celebrations.md` - Reduced-motion-safe celebration banner for lesson milestones and Gold/Platinum medals (Season 4 #69).
