@@ -961,6 +961,16 @@
         <p class="options-overlay-subtitle">
           Adjust your defenses, then charge back into the fray.
         </p>
+        <nav id="options-quick-nav" class="options-quick-nav" aria-label="Quick menu navigation">
+          <button type="button" data-target="options-anchor-passives" aria-current="true">
+            Overview
+          </button>
+          <button type="button" data-target="options-anchor-audio">Audio &amp; VFX</button>
+          <button type="button" data-target="options-anchor-accessibility">Accessibility</button>
+          <button type="button" data-target="options-anchor-hud">HUD &amp; Layout</button>
+          <button type="button" data-target="options-anchor-overlays">Overlays</button>
+          <button type="button" data-target="options-anchor-diagnostics">Diagnostics</button>
+        </nav>
         <div
           id="options-castle-bonus"
           class="options-info"
@@ -974,6 +984,7 @@
           class="options-passives-wrapper"
           data-collapsed="false"
         >
+          <div class="options-anchor" id="options-anchor-passives"></div>
           <div class="options-passives-header">
             <p class="options-passives-heading">Active Passives</p>
             <span id="options-passives-summary" class="options-passives-summary"></span>
@@ -991,6 +1002,7 @@
             <ul id="options-castle-passives" class="options-passives" aria-live="polite"></ul>
           </div>
         </div>
+        <div class="options-anchor" id="options-anchor-audio"></div>
         <div class="options-toggle-group">
           <label class="option-toggle">
             <input id="options-sound-toggle" type="checkbox" />
@@ -1053,6 +1065,7 @@
               </span>
             </div>
           </div>
+          <div class="options-anchor" id="options-anchor-diagnostics"></div>
           <label class="option-toggle">
             <input id="options-diagnostics-toggle" type="checkbox" />
             <span class="option-toggle-label">Diagnostics Overlay</span>
@@ -1065,6 +1078,7 @@
               motion).
             </span>
           </label>
+          <div class="options-anchor" id="options-anchor-accessibility"></div>
             <label class="option-toggle">
               <input id="options-reduced-motion-toggle" type="checkbox" />
               <span class="option-toggle-label">Reduced Motion</span>
@@ -1279,6 +1293,7 @@
             </select>
             <span class="option-toggle-help">Tip: While this menu is open press [ / ] to change HUD font size.</span>
           </label>
+          <div class="options-anchor" id="options-anchor-hud"></div>
           <label class="option-toggle option-select">
             <span class="option-toggle-label">HUD Zoom</span>
             <select id="options-hud-zoom" aria-label="HUD zoom">
@@ -1344,6 +1359,7 @@
             </span>
           </label>
         </div>
+        <div class="options-anchor" id="options-anchor-overlays"></div>
         <div class="options-actions">
           <button id="options-parental-info" type="button" class="secondary">
             Parental Info

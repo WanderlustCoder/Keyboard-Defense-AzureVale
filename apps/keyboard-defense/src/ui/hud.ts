@@ -1897,6 +1897,28 @@ export class HudView {
         if (parentalButton instanceof HTMLButtonElement) {
           parentalButton.addEventListener("click", () => this.showParentalOverlay(parentalButton));
         }
+        const optionsNav = document.getElementById("options-quick-nav");
+        const navButtons = optionsNav
+          ? Array.from(
+              optionsNav.querySelectorAll<HTMLButtonElement>("button[data-target]")
+            ).filter((btn): btn is HTMLButtonElement => btn instanceof HTMLButtonElement)
+          : [];
+        if (navButtons.length > 0) {
+          const setActive = (button: HTMLButtonElement) => {
+            navButtons.forEach((btn) => btn.setAttribute("aria-current", "false"));
+            button.setAttribute("aria-current", "true");
+          };
+          for (const button of navButtons) {
+            button.addEventListener("click", () => {
+              const targetId = button.dataset.target ?? "";
+              const anchor = targetId ? document.getElementById(targetId) : null;
+              if (anchor) {
+                anchor.scrollIntoView({ block: "start", behavior: "auto" });
+              }
+              setActive(button);
+            });
+          }
+        }
       } else {
         console.warn("Options overlay elements missing; pause overlay disabled.");
       }

@@ -1822,6 +1822,46 @@ section {
   color: rgba(226, 232, 240, 0.84);
 }
 
+.options-quick-nav {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 8px;
+  padding: 10px 0 14px;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.6));
+  backdrop-filter: blur(4px);
+}
+
+.options-quick-nav button {
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  border-radius: 10px;
+  background: rgba(59, 130, 246, 0.12);
+  color: #e2e8f0;
+  padding: 10px 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 120ms ease, background-color 120ms ease;
+}
+
+.options-quick-nav button[aria-current="true"] {
+  background: rgba(96, 165, 250, 0.25);
+  border-color: rgba(96, 165, 250, 0.8);
+}
+
+.options-quick-nav button:hover,
+.options-quick-nav button:focus-visible {
+  border-color: rgba(191, 219, 254, 0.9);
+  outline: none;
+}
+
+.options-anchor {
+  width: 100%;
+  height: 1px;
+  margin: 12px 0;
+}
+
 .options-info {
   margin: 0 0 20px;
   padding: 10px 14px;
