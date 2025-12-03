@@ -174,6 +174,7 @@ The new generation of orchestration scripts lives in `scripts/`:
 | `node scripts/goldSummary.mjs` | Aggregate one or more timelines/snapshots into per-file economy stats (net totals, max gain/spend, configurable gain/spend percentiles via `--percentiles`, passive linkage counts). |
 | `node scripts/goldSummaryCheck.mjs` | Validate gold summary artifacts (JSON/CSV) to ensure they embed the expected percentile list (`--percentiles 25,50,90` by default). |
 | `node scripts/goldReport.mjs` | Convenience wrapper that runs the timeline + summary CLIs sequentially so you get both artifacts via one command; defaults to `--percentiles 25,50,90` when invoking `goldSummary.mjs` so local reports match CI. |
+| `node scripts/ci/inputStressTest.mjs` | Simulate rapid typing bursts (correct/wrong/hold/backspace) against TypingSystem to surface buffer overflow or throughput regressions; writes a JSON summary. |
 | `node scripts/helm.mjs` | Lightweight task runner that proxies common npm workflows (`start`, `build`, `test`, `smoke`, `gold-check`). |
 | `node scripts/assetIntegrity.mjs` | Hash every manifest-listed asset (SHA-256) and rewrite/verify the manifest integrity map (`--check` to verify without writing).                      |
 

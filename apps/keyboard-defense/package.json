@@ -63,6 +63,7 @@
     "assets:manifest": "node ./scripts/assets/generateManifest.mjs",
     "assets:manifest:verify": "node ./scripts/assets/generateManifest.mjs --verify-only",
     "helm": "node ./scripts/helm.mjs",
+    "input:stress": "node ./scripts/ci/inputStressTest.mjs",
     "smoke:tutorial": "node ./scripts/tutorialSmoke.mjs",
     "wave:sim": "node ./scripts/waveSim.mjs",
     "wave:benchmark": "node ./scripts/waveBenchmark.mjs",
