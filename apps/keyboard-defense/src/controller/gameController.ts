@@ -69,6 +69,7 @@ const INPUT_LATENCY_SAMPLE_MS = 500;
 const INPUT_LATENCY_WINDOW = 8;
 const INPUT_LATENCY_WARN_MS = 40;
 const INPUT_LATENCY_BAD_MS = 75;
+const HUD_VISIBILITY_KEY = "keyboard-defense:hud-visibility";
 const WAVE_MICRO_TIPS = [
   "Keep wrists lifted and let fingers hover over home row—no desk planting.",
   "Aim for light taps. If keys feel loud, ease up and keep rhythm steady.",
@@ -186,6 +187,7 @@ export class GameController {
     this.latencyMonitorTimeout = null;
     this.waveMicroTipIndex =
       Math.floor((typeof Math !== "undefined" ? Math.random() : 0) * WAVE_MICRO_TIPS.length) % WAVE_MICRO_TIPS.length;
+    this.hudVisibility = this.loadHudVisibilityPrefs();
     this.accessibilityOnboardingSeen = this.loadAccessibilitySeen();
     this.accessibilityOverlay = null;
     this.resumeAfterAccessibility = false;
@@ -617,6 +619,7 @@ export class GameController {
     this.attachTypingDrillHooks();
     this.attachDebugButtons();
     this.attachGlobalShortcuts();
+    this.attachHudVisibilityToggles();
     this.attachLatencyIndicator();
     this.attachFullscreenListeners();
     this.attachAccessibilityOnboarding();
@@ -5113,10 +5116,115 @@ export class GameController {
     this.latencyIndicator.container.dataset.state = severity;
     const rounded = Math.max(0, Math.round(averageMs));
     this.latencyIndicator.value.textContent = `${rounded}ms`;
-    this.latencyIndicator.container.setAttribute(
-      "aria-label",
-      `Input latency ${rounded} milliseconds, ${severity}`
-    );
+      this.latencyIndicator.container.setAttribute(
+        "aria-label",
+        `Input latency ${rounded} milliseconds, ${severity}`
+      );
+    }
+
+  loadHudVisibilityPrefs() {
+    const defaults = { metrics: true, battleLog: true, wavePreview: true };
+    if (typeof window === "undefined" || !window.localStorage) {
+      return defaults;
+    }
+    try {
+      const raw = window.localStorage.getItem(HUD_VISIBILITY_KEY);
+      if (!raw) return defaults;
+      const parsed = JSON.parse(raw);
+      return {
+        metrics: parsed?.metrics !== false,
+        battleLog: parsed?.battleLog !== false,
+        wavePreview: parsed?.wavePreview !== false
+      };
+    } catch {
+      return defaults;
+    }
+  }
+
+  persistHudVisibilityPrefs(prefs) {
+    this.hudVisibility = {
+      metrics: prefs.metrics !== false,
+      battleLog: prefs.battleLog !== false,
+      wavePreview: prefs.wavePreview !== false
+    };
+    if (typeof window === "undefined" || !window.localStorage) {
+      return;
+    }
+    try {
+      window.localStorage.setItem(HUD_VISIBILITY_KEY, JSON.stringify(this.hudVisibility));
+    } catch {
+      // best effort
+    }
+  }
+
+  attachHudVisibilityToggles() {
+    if (typeof document === "undefined") return;
+    const metricsToggle = document.getElementById("options-toggle-metrics");
+    const wavePreviewToggle = document.getElementById("options-toggle-wave-preview");
+    const battleLogToggle = document.getElementById("options-toggle-battle-log");
+    const applyState = () => {
+      this.applyHudVisibility();
+      this.syncHudVisibilityToggles();
+      this.persistHudVisibilityPrefs(this.hudVisibility ?? { metrics: true, battleLog: true, wavePreview: true });
+    };
+    if (metricsToggle instanceof HTMLInputElement) {
+      metricsToggle.checked = this.hudVisibility.metrics;
+      metricsToggle.addEventListener("change", () => {
+        this.hudVisibility.metrics = Boolean(metricsToggle.checked);
+        applyState();
+      });
+    }
+    if (wavePreviewToggle instanceof HTMLInputElement) {
+      wavePreviewToggle.checked = this.hudVisibility.wavePreview;
+      wavePreviewToggle.addEventListener("change", () => {
+        this.hudVisibility.wavePreview = Boolean(wavePreviewToggle.checked);
+        applyState();
+      });
+    }
+    if (battleLogToggle instanceof HTMLInputElement) {
+      battleLogToggle.checked = this.hudVisibility.battleLog;
+      battleLogToggle.addEventListener("change", () => {
+        this.hudVisibility.battleLog = Boolean(battleLogToggle.checked);
+        applyState();
+      });
+    }
+    this.applyHudVisibility();
+  }
+
+  syncHudVisibilityToggles() {
+    if (typeof document === "undefined") return;
+    const metricsToggle = document.getElementById("options-toggle-metrics");
+    const wavePreviewToggle = document.getElementById("options-toggle-wave-preview");
+    const battleLogToggle = document.getElementById("options-toggle-battle-log");
+    if (metricsToggle instanceof HTMLInputElement) {
+      metricsToggle.checked = this.hudVisibility.metrics;
+    }
+    if (wavePreviewToggle instanceof HTMLInputElement) {
+      wavePreviewToggle.checked = this.hudVisibility.wavePreview;
+    }
+    if (battleLogToggle instanceof HTMLInputElement) {
+      battleLogToggle.checked = this.hudVisibility.battleLog;
+    }
+  }
+
+  applyHudVisibility() {
+    if (typeof document === "undefined") return;
+    const metrics = document.getElementById("typing-metrics");
+    const wavePreview = document.querySelector(".wave-preview");
+    const battleLog = document.querySelector(".events");
+    const prefs = this.hudVisibility ?? { metrics: true, battleLog: true, wavePreview: true };
+    if (metrics instanceof HTMLElement) {
+      metrics.dataset.hidden = prefs.metrics ? "false" : "true";
+      metrics.setAttribute("aria-hidden", prefs.metrics ? "false" : "true");
+    }
+    if (wavePreview instanceof HTMLElement) {
+      wavePreview.dataset.hidden = prefs.wavePreview ? "false" : "true";
+      wavePreview.setAttribute("aria-hidden", prefs.wavePreview ? "false" : "true");
+    }
+    if (battleLog instanceof HTMLElement) {
+      battleLog.dataset.hidden = prefs.battleLog ? "false" : "true";
+      battleLog.setAttribute("aria-hidden", prefs.battleLog ? "false" : "true");
+    }
   }
 
   loadAccessibilitySeen() {

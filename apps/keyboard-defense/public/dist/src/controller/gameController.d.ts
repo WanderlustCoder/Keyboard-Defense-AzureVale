@@ -321,6 +321,15 @@ export declare class GameController {
     startLatencyMonitor(): void;
     recordLatencySample(value: any): void;
     updateLatencyIndicator(averageMs: any): void;
+    loadHudVisibilityPrefs(): {
+        metrics: boolean;
+        battleLog: boolean;
+        wavePreview: boolean;
+    };
+    persistHudVisibilityPrefs(prefs: any): void;
+    attachHudVisibilityToggles(): void;
+    syncHudVisibilityToggles(): void;
+    applyHudVisibility(): void;
     loadAccessibilitySeen(): boolean;
     persistAccessibilitySeen(): void;
     attachAccessibilityOnboarding(): void;

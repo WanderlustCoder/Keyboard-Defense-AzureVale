@@ -2128,6 +2128,12 @@ details {
   position: relative;
 }
 
+#typing-metrics[data-hidden="true"],
+.wave-preview[data-hidden="true"],
+.events[data-hidden="true"] {
+  display: none !important;
+}
+
 .wave-preview-hint {
   display: none;
   margin-bottom: 6px;
