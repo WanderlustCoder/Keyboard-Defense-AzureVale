@@ -927,6 +927,19 @@
             <input id="options-colorblind-toggle" type="checkbox" />
             <span class="option-toggle-label">Colorblind Palette</span>
           </label>
+          <label class="option-toggle option-select">
+            <span class="option-toggle-label">Colorblind Palette Mode</span>
+            <select id="options-colorblind-mode" aria-label="Colorblind palette mode">
+              <option value="off">Off</option>
+              <option value="deuteran">Deuteran (green weakness)</option>
+              <option value="protan">Protan (red weakness)</option>
+              <option value="tritan">Tritan (blue weakness)</option>
+              <option value="high-contrast">High contrast</option>
+            </select>
+            <span class="option-toggle-help">
+              Pick the palette that separates reds/greens/blues best for you. Enabling a mode turns on the palette.
+            </span>
+          </label>
           <label class="option-toggle option-range">
             <span class="option-toggle-label">Background Brightness</span>
             <input

@@ -44,6 +44,7 @@ const INPUT_LATENCY_WINDOW = 8;
 const INPUT_LATENCY_WARN_MS = 40;
 const INPUT_LATENCY_BAD_MS = 75;
 const HUD_VISIBILITY_KEY = "keyboard-defense:hud-visibility";
+const COLORBLIND_MODE_KEY = "keyboard-defense:colorblind-mode";
 const CONTEXTUAL_HINTS_KEY = "keyboard-defense:contextual-hints";
 const WAVE_MICRO_TIPS = [
     "Keep wrists lifted and let fingers hover over home row—no desk planting.",
@@ -152,6 +153,8 @@ export class GameController {
         this.dyslexiaSpacingEnabled = false;
         this.backgroundBrightness = BG_BRIGHTNESS_DEFAULT;
         this.colorblindPaletteEnabled = false;
+        this.colorblindPaletteMode = "off";
+        this.lastColorblindMode = "deuteran";
         this.latencyIndicator = null;
         this.latencySamples = [];
         this.latencyMonitorTimeout = null;
@@ -450,6 +453,7 @@ export class GameController {
                 dyslexiaFontToggle: "options-dyslexia-font-toggle",
                 dyslexiaSpacingToggle: "options-dyslexia-spacing-toggle",
                 colorblindPaletteToggle: "options-colorblind-toggle",
+                colorblindPaletteSelect: "options-colorblind-mode",
                 backgroundBrightnessSlider: "options-bg-brightness",
                 backgroundBrightnessValue: "options-bg-brightness-value",
                 fontScaleSelect: "options-font-scale",
@@ -527,6 +531,7 @@ export class GameController {
             onDyslexiaFontToggle: (enabled) => this.setDyslexiaFontEnabled(enabled),
             onDyslexiaSpacingToggle: (enabled) => this.setDyslexiaSpacingEnabled(enabled),
             onColorblindPaletteToggle: (enabled) => this.setColorblindPaletteEnabled(enabled),
+            onColorblindPaletteModeChange: (mode) => this.setColorblindPaletteMode(mode),
             onBackgroundBrightnessChange: (value) => this.setBackgroundBrightness(value),
             onDefeatAnimationModeChange: (mode) => this.setDefeatAnimationMode(mode),
             onHudFontScaleChange: (scale) => this.setHudFontScale(scale),
@@ -1610,18 +1615,45 @@ export class GameController {
         this.lastGameStatus = status;
     }
     setColorblindPaletteEnabled(enabled, options = {}) {
+        const nextMode = enabled && this.colorblindPaletteMode === "off"
+            ? this.lastColorblindMode || "deuteran"
+            : enabled
+                ? this.colorblindPaletteMode
+                : "off";
+        return this.setColorblindPaletteMode(nextMode, options);
+    }
+    setColorblindPaletteMode(mode, options = {}) {
+        const normalized = this.normalizeColorblindMode(mode);
+        const enabled = normalized !== "off";
+        const changedMode = this.colorblindPaletteMode !== normalized;
+        const changedEnabled = this.colorblindPaletteEnabled !== enabled;
+        this.colorblindPaletteMode = normalized;
         this.colorblindPaletteEnabled = enabled;
-        this.applyColorblindPaletteSetting(enabled);
-        if (!options.silent) {
-            this.hud.appendLog(`Colorblind palette ${enabled ? "enabled" : "disabled"}`);
+        if (enabled) {
+            this.lastColorblindMode = normalized;
+        }
+        this.applyColorblindPaletteSetting(normalized);
+        if (!options.silent && (changedMode || changedEnabled)) {
+            const label = normalized === "off"
+                ? "disabled"
+                : normalized === "deuteran"
+                    ? "Deuteran (green-red separation)"
+                    : normalized === "protan"
+                        ? "Protan (red shift)"
+                        : normalized === "tritan"
+                            ? "Tritan (blue/yellow separation)"
+                            : "High contrast";
+            this.hud.appendLog(`Colorblind palette ${label}`);
         }
         this.updateOptionsOverlayState();
-        if (options.persist !== false) {
+        if (options.persist !== false && (changedMode || changedEnabled)) {
+            this.persistColorblindMode(normalized);
             this.persistPlayerSettings({ colorblindPaletteEnabled: enabled });
         }
-        if (options.render !== false) {
+        if (options.render !== false && (changedMode || changedEnabled)) {
             this.render();
         }
+        return changedMode || changedEnabled;
     }
     setDefeatAnimationMode(mode, options = {}) {
         const normalized = mode === "sprite" || mode === "procedural" || mode === "auto" ? mode : "auto";
@@ -1800,6 +1832,7 @@ export class GameController {
             dyslexiaSpacingEnabled: this.dyslexiaSpacingEnabled,
             backgroundBrightness: this.backgroundBrightness,
             colorblindPaletteEnabled: this.colorblindPaletteEnabled,
+            colorblindPaletteMode: this.colorblindPaletteMode,
             hudFontScale: this.hudFontScale,
             defeatAnimationMode: this.defeatAnimationMode,
             telemetry: {
@@ -1891,17 +1924,38 @@ export class GameController {
             root.style.setProperty("--bg-brightness", value.toString());
         }
     }
-    applyColorblindPaletteSetting(enabled) {
+    normalizeColorblindMode(mode) {
+        const allowed = new Set(["off", "deuteran", "protan", "tritan", "high-contrast"]);
+        if (typeof mode !== "string")
+            return "off";
+        const trimmed = mode.trim().toLowerCase();
+        return allowed.has(trimmed) ? trimmed : "off";
+    }
+    applyColorblindPaletteSetting(mode) {
         if (typeof document === "undefined")
             return;
+        const normalized = this.normalizeColorblindMode(mode);
         const root = document.documentElement;
         if (root) {
-            root.dataset.colorblindPalette = enabled ? "true" : "false";
+            if (normalized === "off") {
+                delete root.dataset.colorblindPalette;
+            }
+            else {
+                root.dataset.colorblindPalette = normalized;
+            }
         }
         const body = document.body;
         if (body) {
-            body.dataset.colorblindPalette = enabled ? "true" : "false";
+            if (normalized === "off") {
+                delete body.dataset.colorblindPalette;
+            }
+            else {
+                body.dataset.colorblindPalette = normalized;
+            }
         }
+    }
+    isColorblindPaletteActive() {
+        return this.colorblindPaletteMode !== "off";
     }
     updateSessionWellness() {
         if (!this.sessionWellness)
@@ -3309,7 +3363,7 @@ export class GameController {
         this.syncCanvasResizeCause();
         const upcoming = this.engine.getUpcomingSpawns();
         this.hud.update(this.currentState, upcoming, {
-            colorBlindFriendly: this.colorblindPaletteEnabled || this.checkeredBackgroundEnabled,
+            colorBlindFriendly: this.isColorblindPaletteActive() || this.checkeredBackgroundEnabled,
             tutorialCompleted: this.tutorialCompleted,
             loreUnlocked: this.unlockedLore?.size ?? 0
         });
@@ -3736,6 +3790,10 @@ export class GameController {
         }
         const stored = loadPlayerSettingsFromStorage(window.localStorage);
         this.playerSettings = stored;
+        this.colorblindPaletteMode = this.loadColorblindMode();
+        if (this.colorblindPaletteMode !== "off") {
+            this.lastColorblindMode = this.colorblindPaletteMode;
+        }
         this.setCrystalPulseEnabled(stored.crystalPulseEnabled ?? false, {
             persist: false,
             silent: true
@@ -3790,7 +3848,12 @@ export class GameController {
             render: false,
             force: true
         });
-        this.setColorblindPaletteEnabled(stored.colorblindPaletteEnabled ?? false, {
+        const initialColorblindMode = stored.colorblindPaletteEnabled === false
+            ? "off"
+            : this.colorblindPaletteMode !== "off"
+                ? this.colorblindPaletteMode
+                : this.lastColorblindMode ?? "deuteran";
+        this.setColorblindPaletteMode(initialColorblindMode, {
             silent: true,
             persist: false,
             render: false
@@ -5026,6 +5089,31 @@ export class GameController {
         if (battleLog instanceof HTMLElement) {
             battleLog.dataset.hidden = prefs.battleLog ? "false" : "true";
             battleLog.setAttribute("aria-hidden", prefs.battleLog ? "false" : "true");
+        }
+    }
+    loadColorblindMode() {
+        if (typeof window === "undefined" || !window.localStorage) {
+            return "off";
+        }
+        try {
+            const raw = window.localStorage.getItem(COLORBLIND_MODE_KEY);
+            if (!raw)
+                return "off";
+            return this.normalizeColorblindMode(raw);
+        }
+        catch {
+            return "off";
+        }
+    }
+    persistColorblindMode(mode) {
+        if (typeof window === "undefined" || !window.localStorage) {
+            return;
+        }
+        try {
+            window.localStorage.setItem(COLORBLIND_MODE_KEY, mode);
+        }
+        catch {
+            // best effort
         }
     }
     loadContextualHintsSeen() {

@@ -61,7 +61,8 @@ export declare class GameController {
     setAudioIntensity(intensity: any, options?: {}): void;
     updateAmbientTrack(state: any): void;
     handleGameStatusAudio(status: any): void;
-    setColorblindPaletteEnabled(enabled: any, options?: {}): void;
+    setColorblindPaletteEnabled(enabled: any, options?: {}): boolean;
+    setColorblindPaletteMode(mode: any, options?: {}): boolean;
     setDefeatAnimationMode(mode: any, options?: {}): void;
     setStarfieldScene(scene: any): any;
     syncDefeatAnimationPreferences(): void;
@@ -90,7 +91,9 @@ export declare class GameController {
     applyDyslexiaFontSetting(enabled: any): void;
     applyDyslexiaSpacingSetting(enabled: any): void;
     applyBackgroundBrightnessSetting(value: any): void;
-    applyColorblindPaletteSetting(enabled: any): void;
+    normalizeColorblindMode(mode: any): string;
+    applyColorblindPaletteSetting(mode: any): void;
+    isColorblindPaletteActive(): boolean;
     updateSessionWellness(): void;
     showBreakReminder(elapsedMs: any): void;
     handleBreakReminderSnooze(): void;
@@ -330,6 +333,8 @@ export declare class GameController {
     attachHudVisibilityToggles(): void;
     syncHudVisibilityToggles(): void;
     applyHudVisibility(): void;
+    loadColorblindMode(): string;
+    persistColorblindMode(mode: any): void;
     loadContextualHintsSeen(): Set<any>;
     persistContextualHintsSeen(): void;
     attachContextualHints(): void;

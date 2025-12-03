@@ -366,6 +366,9 @@ export class HudView {
                 ? document.getElementById(rootIds.optionsOverlay.backgroundBrightnessValue)
                 : null;
             const colorblindPaletteToggle = document.getElementById(rootIds.optionsOverlay.colorblindPaletteToggle);
+            const colorblindPaletteSelect = rootIds.optionsOverlay.colorblindPaletteSelect
+                ? document.getElementById(rootIds.optionsOverlay.colorblindPaletteSelect)
+                : null;
             const fontScaleSelect = document.getElementById(rootIds.optionsOverlay.fontScaleSelect);
             const defeatAnimationSelect = document.getElementById(rootIds.optionsOverlay.defeatAnimationSelect);
             const telemetryToggle = rootIds.optionsOverlay.telemetryToggle
@@ -407,6 +410,7 @@ export class HudView {
                     backgroundBrightnessSlider instanceof HTMLInputElement) &&
                 (backgroundBrightnessValue === null || backgroundBrightnessValue instanceof HTMLElement) &&
                 colorblindPaletteToggle instanceof HTMLInputElement &&
+                (colorblindPaletteSelect === null || colorblindPaletteSelect instanceof HTMLSelectElement) &&
                 fontScaleSelect instanceof HTMLSelectElement &&
                 defeatAnimationSelect instanceof HTMLSelectElement) {
                 this.optionsOverlay = {
@@ -433,6 +437,7 @@ export class HudView {
                         : undefined,
                     backgroundBrightnessValue: backgroundBrightnessValue instanceof HTMLElement ? backgroundBrightnessValue : undefined,
                     colorblindPaletteToggle,
+                    colorblindPaletteSelect: colorblindPaletteSelect instanceof HTMLSelectElement ? colorblindPaletteSelect : undefined,
                     fontScaleSelect,
                     defeatAnimationSelect,
                     telemetryToggle: telemetryToggle instanceof HTMLInputElement ? telemetryToggle : undefined,
@@ -597,6 +602,16 @@ export class HudView {
                         return;
                     this.callbacks.onColorblindPaletteToggle(colorblindPaletteToggle.checked);
                 });
+                if (this.optionsOverlay.colorblindPaletteSelect) {
+                    this.optionsOverlay.colorblindPaletteSelect.addEventListener("change", () => {
+                        if (this.syncingOptionToggles)
+                            return;
+                        const next = this.getSelectValue(this.optionsOverlay.colorblindPaletteSelect);
+                        if (next) {
+                            this.callbacks.onColorblindPaletteModeChange?.(next);
+                        }
+                    });
+                }
                 this.optionsOverlay.defeatAnimationSelect.addEventListener("change", () => {
                     if (this.syncingOptionToggles)
                         return;
@@ -1019,6 +1034,9 @@ export class HudView {
             this.updateBackgroundBrightnessDisplay(state.backgroundBrightness);
         }
         this.optionsOverlay.colorblindPaletteToggle.checked = state.colorblindPaletteEnabled;
+        if (this.optionsOverlay.colorblindPaletteSelect) {
+            this.setSelectValue(this.optionsOverlay.colorblindPaletteSelect, state.colorblindPaletteMode ?? (state.colorblindPaletteEnabled ? "deuteran" : "off"));
+        }
         this.setSelectValue(this.optionsOverlay.fontScaleSelect, state.hudFontScale.toString());
         this.setSelectValue(this.optionsOverlay.defeatAnimationSelect, state.defeatAnimationMode ?? "auto");
         this.applyTelemetryOptionState(state.telemetry);

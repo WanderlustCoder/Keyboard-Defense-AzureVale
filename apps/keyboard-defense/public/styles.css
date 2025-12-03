@@ -37,7 +37,8 @@
   --bg-brightness: 1;
 }
 
-:root[data-colorblind-palette="true"] {
+:root[data-colorblind-palette="true"],
+:root[data-colorblind-palette="deuteran"] {
   --accent-primary-base: #f97316;
   --accent-primary-dark: #ea580c;
   --accent-primary-25: rgba(249, 115, 22, 0.25);
@@ -58,6 +59,75 @@
   --accent-primary-row: rgba(14, 165, 233, 0.18);
   --accent-primary-pill: rgba(14, 165, 233, 0.28);
   --accent-primary-pill-text: #082f49;
+}
+
+:root[data-colorblind-palette="protan"] {
+  --accent-primary-base: #22c55e;
+  --accent-primary-dark: #16a34a;
+  --accent-primary-25: rgba(34, 197, 94, 0.25);
+  --accent-primary-40: rgba(34, 197, 94, 0.4);
+  --accent-primary-45: rgba(34, 197, 94, 0.45);
+  --accent-primary-55: rgba(34, 197, 94, 0.55);
+  --accent-primary-75: rgba(34, 197, 94, 0.75);
+  --accent-primary-text: #dcfce7;
+  --accent-toggle-border: rgba(34, 197, 94, 0.35);
+  --accent-checkbox: #0ea5e9;
+  --accent-secondary-border: rgba(59, 130, 246, 0.45);
+  --accent-secondary-start: #0ea5e9;
+  --accent-secondary-end: #0369a1;
+  --castle-benefit-text: #d9f99d;
+  --castle-benefit-bg: rgba(190, 242, 100, 0.15);
+  --castle-benefit-border: rgba(190, 242, 100, 0.35);
+  --cooldown-text: #eab308;
+  --accent-primary-row: rgba(34, 197, 94, 0.18);
+  --accent-primary-pill: rgba(34, 197, 94, 0.28);
+  --accent-primary-pill-text: #064e3b;
+}
+
+:root[data-colorblind-palette="tritan"] {
+  --accent-primary-base: #6366f1;
+  --accent-primary-dark: #4f46e5;
+  --accent-primary-25: rgba(99, 102, 241, 0.25);
+  --accent-primary-40: rgba(99, 102, 241, 0.4);
+  --accent-primary-45: rgba(99, 102, 241, 0.45);
+  --accent-primary-55: rgba(99, 102, 241, 0.55);
+  --accent-primary-75: rgba(99, 102, 241, 0.75);
+  --accent-primary-text: #e0e7ff;
+  --accent-toggle-border: rgba(99, 102, 241, 0.35);
+  --accent-checkbox: #38bdf8;
+  --accent-secondary-border: rgba(14, 165, 233, 0.45);
+  --accent-secondary-start: #0ea5e9;
+  --accent-secondary-end: #0284c7;
+  --castle-benefit-text: #c7d2fe;
+  --castle-benefit-bg: rgba(96, 165, 250, 0.18);
+  --castle-benefit-border: rgba(96, 165, 250, 0.35);
+  --cooldown-text: #eab308;
+  --accent-primary-row: rgba(99, 102, 241, 0.18);
+  --accent-primary-pill: rgba(99, 102, 241, 0.28);
+  --accent-primary-pill-text: #111827;
+}
+
+:root[data-colorblind-palette="high-contrast"] {
+  --accent-primary-base: #facc15;
+  --accent-primary-dark: #ca8a04;
+  --accent-primary-25: rgba(250, 204, 21, 0.28);
+  --accent-primary-40: rgba(250, 204, 21, 0.42);
+  --accent-primary-45: rgba(250, 204, 21, 0.5);
+  --accent-primary-55: rgba(250, 204, 21, 0.6);
+  --accent-primary-75: rgba(250, 204, 21, 0.8);
+  --accent-primary-text: #fef9c3;
+  --accent-toggle-border: rgba(250, 204, 21, 0.35);
+  --accent-checkbox: #22c55e;
+  --accent-secondary-border: rgba(34, 197, 94, 0.5);
+  --accent-secondary-start: #22c55e;
+  --accent-secondary-end: #15803d;
+  --castle-benefit-text: #fef9c3;
+  --castle-benefit-bg: rgba(250, 204, 21, 0.18);
+  --castle-benefit-border: rgba(250, 204, 21, 0.35);
+  --cooldown-text: #fb7185;
+  --accent-primary-row: rgba(250, 204, 21, 0.22);
+  --accent-primary-pill: rgba(250, 204, 21, 0.32);
+  --accent-primary-pill-text: #111827;
 }
 
 body {
