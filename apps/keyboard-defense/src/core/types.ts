@@ -275,6 +275,8 @@ export interface TypingState {
   recentCorrectInputs: number;
   recentAccuracy: number;
   dynamicDifficultyBias: number;
+  lastInputChar?: string | null;
+  lastInputAtMs?: number | null;
 }
 
 export type TypingDrillMode = "burst" | "endurance" | "precision";

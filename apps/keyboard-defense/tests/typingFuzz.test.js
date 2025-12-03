@@ -118,3 +118,20 @@ test("TypingSystem purgeBuffer safely resets active enemy and combo", () => {
   assert.equal(state.typing.activeEnemyId, null);
   assert.equal(state.typing.combo, 1, "purge should apply minor combo penalty when active");
 });
+
+test("TypingSystem ignores rapid repeat of the same wrong key", () => {
+  const typing = new TypingSystem(defaultConfig, fakeEvents);
+  const state = createTestState();
+
+  const first = typing.inputCharacter(state, "x", fakeEnemySystem);
+  assert.equal(first.status, "error");
+  const errorsAfterFirst = state.typing.errors;
+
+  const second = typing.inputCharacter(state, "x", fakeEnemySystem);
+  assert.equal(second.status, "ignored", "repeat wrong key should be debounced");
+  assert.equal(
+    state.typing.errors,
+    errorsAfterFirst,
+    "debounced wrong key should not add more errors"
+  );
+});

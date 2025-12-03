@@ -93,7 +93,9 @@ export function createInitialState(config: GameConfig): GameState {
       recentInputs: [],
       recentCorrectInputs: 0,
       recentAccuracy: 1,
-      dynamicDifficultyBias: 0
+      dynamicDifficultyBias: 0,
+      lastInputChar: null,
+      lastInputAtMs: null
     },
     analytics: {
       activeWaveIndex: null,
