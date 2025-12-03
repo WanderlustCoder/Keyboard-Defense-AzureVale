@@ -1,11 +1,12 @@
 export const PLAYER_SETTINGS_STORAGE_KEY = "keyboard-defense:player-settings";
-export const PLAYER_SETTINGS_VERSION = 23;
+export const PLAYER_SETTINGS_VERSION = 24;
 const DEFAULT_UPDATED_AT = "1970-01-01T00:00:00.000Z";
 const HUD_FONT_SCALE_MIN = 0.85;
 const HUD_FONT_SCALE_MAX = 1.3;
 const HUD_ZOOM_MIN = 0.9;
 const HUD_ZOOM_MAX = 1.2;
 const HUD_ZOOM_DEFAULT = 1;
+const HUD_LAYOUT_DEFAULT = "right";
 const SOUND_VOLUME_MIN = 0;
 const SOUND_VOLUME_MAX = 1;
 const DEFAULT_SOUND_VOLUME = 0.8;
@@ -41,6 +42,7 @@ const BASE_DEFAULT_SETTINGS = {
     eliteAffixesEnabled: true,
     crystalPulseEnabled: false,
     hudZoom: HUD_ZOOM_DEFAULT,
+    hudLayout: HUD_LAYOUT_DEFAULT,
     hudFontScale: 1,
     defeatAnimationMode: "auto",
     turretTargeting: {},
@@ -149,6 +151,7 @@ export function readPlayerSettings(storage) {
         const hudZoom = typeof parsed.hudZoom === "number"
             ? normalizeHudZoom(parsed.hudZoom)
             : fallback.hudZoom;
+        const hudLayout = typeof parsed.hudLayout === "string" ? normalizeHudLayout(parsed.hudLayout) : fallback.hudLayout;
         const hudFontScale = typeof parsed.hudFontScale === "number"
             ? normalizeHudFontScale(parsed.hudFontScale)
             : fallback.hudFontScale;
@@ -185,6 +188,7 @@ export function readPlayerSettings(storage) {
         eliteAffixesEnabled,
         crystalPulseEnabled,
         hudZoom,
+        hudLayout,
         hudFontScale,
         defeatAnimationMode,
         turretTargeting,
@@ -267,6 +271,9 @@ export function withPatchedPlayerSettings(current, patch) {
         hudZoom: typeof patch.hudZoom === "number"
             ? normalizeHudZoom(patch.hudZoom)
             : current.hudZoom,
+        hudLayout: typeof patch.hudLayout === "string"
+            ? normalizeHudLayout(patch.hudLayout)
+            : current.hudLayout,
         hudFontScale: typeof patch.hudFontScale === "number"
             ? normalizeHudFontScale(patch.hudFontScale)
             : current.hudFontScale,
@@ -450,6 +457,10 @@ function normalizeHudZoom(value) {
     }
     const clamped = Math.min(HUD_ZOOM_MAX, Math.max(HUD_ZOOM_MIN, value));
     return Math.round(clamped * 100) / 100;
+}
+function normalizeHudLayout(value) {
+    if (value === "left") return "left";
+    return HUD_LAYOUT_DEFAULT;
 }
 function normalizeHudFontScale(value) {
     if (typeof value !== "number" || !Number.isFinite(value)) {

@@ -133,6 +133,7 @@ export interface HudCallbacks {
   onDefeatAnimationModeChange(mode: DefeatAnimationPreference): void;
   onHudFontScaleChange(scale: number): void;
   onHudZoomChange(scale: number): void;
+  onHudLayoutToggle?: (leftHanded: boolean) => void;
   onFullscreenToggle?: (nextActive: boolean) => void;
   onTurretHover?: (
     slotId: string | null,
@@ -247,6 +248,7 @@ type OptionsOverlayElements = {
   backgroundBrightnessValue?: string;
   fontScaleSelect: string;
   hudZoomSelect: string;
+  hudLayoutToggle?: string;
   defeatAnimationSelect: string;
   telemetryToggle?: string;
   telemetryToggleWrapper?: string;
@@ -522,6 +524,7 @@ export class HudView {
     backgroundBrightnessSlider?: HTMLInputElement;
     backgroundBrightnessValue?: HTMLElement;
     hudZoomSelect: HTMLSelectElement;
+    hudLayoutToggle?: HTMLInputElement;
     fontScaleSelect: HTMLSelectElement;
     defeatAnimationSelect: HTMLSelectElement;
     telemetryToggle?: HTMLInputElement;
@@ -886,6 +889,9 @@ export class HudView {
         ? document.getElementById(rootIds.optionsOverlay.hotkeyShortcutsSelect)
         : null;
       const hudZoomSelect = document.getElementById(rootIds.optionsOverlay.hudZoomSelect);
+      const hudLayoutToggle = rootIds.optionsOverlay.hudLayoutToggle
+        ? document.getElementById(rootIds.optionsOverlay.hudLayoutToggle)
+        : null;
       const fontScaleSelect = document.getElementById(rootIds.optionsOverlay.fontScaleSelect);
       const defeatAnimationSelect = document.getElementById(
         rootIds.optionsOverlay.defeatAnimationSelect
@@ -935,6 +941,7 @@ export class HudView {
         (hotkeyPauseSelect === null || hotkeyPauseSelect instanceof HTMLSelectElement) &&
         (hotkeyShortcutsSelect === null || hotkeyShortcutsSelect instanceof HTMLSelectElement) &&
         hudZoomSelect instanceof HTMLSelectElement &&
+        (hudLayoutToggle === null || hudLayoutToggle instanceof HTMLInputElement) &&
         fontScaleSelect instanceof HTMLSelectElement &&
         defeatAnimationSelect instanceof HTMLSelectElement
       ) {
@@ -975,6 +982,7 @@ export class HudView {
         hotkeyShortcutsSelect:
           hotkeyShortcutsSelect instanceof HTMLSelectElement ? hotkeyShortcutsSelect : undefined,
         hudZoomSelect,
+        hudLayoutToggle: hudLayoutToggle instanceof HTMLInputElement ? hudLayoutToggle : undefined,
         fontScaleSelect,
           defeatAnimationSelect,
           telemetryToggle:
@@ -1168,6 +1176,12 @@ export class HudView {
           if (!Number.isFinite(nextValue)) return;
           this.callbacks.onHudZoomChange(nextValue);
         });
+        if (this.optionsOverlay.hudLayoutToggle) {
+          this.optionsOverlay.hudLayoutToggle.addEventListener("change", () => {
+            if (this.syncingOptionToggles) return;
+            this.callbacks.onHudLayoutToggle?.(this.optionsOverlay!.hudLayoutToggle!.checked);
+          });
+        }
         fontScaleSelect.addEventListener("change", () => {
           if (this.syncingOptionToggles) return;
           const rawValue = this.getSelectValue(fontScaleSelect);
@@ -1662,6 +1676,7 @@ export class HudView {
     colorblindPaletteEnabled: boolean;
     colorblindPaletteMode?: string;
     hudZoom: number;
+    hudLayout: "left" | "right";
     hudFontScale: number;
     defeatAnimationMode: DefeatAnimationPreference;
     hotkeys?: { pause?: string; shortcuts?: string };
@@ -1743,11 +1758,15 @@ export class HudView {
       this.setSelectValue(this.optionsOverlay.hotkeyShortcutsSelect, shortcuts);
     }
     this.setSelectValue(this.optionsOverlay.hudZoomSelect, state.hudZoom.toString());
+    if (this.optionsOverlay.hudLayoutToggle) {
+      this.optionsOverlay.hudLayoutToggle.checked = state.hudLayout === "left";
+    }
     this.setSelectValue(this.optionsOverlay.fontScaleSelect, state.hudFontScale.toString());
     this.setSelectValue(
       this.optionsOverlay.defeatAnimationSelect,
       state.defeatAnimationMode ?? "auto"
     );
+    this.setHudLayoutSide(state.hudLayout ?? "right");
     this.applyTelemetryOptionState(state.telemetry);
     if (this.optionsOverlay.crystalPulseToggle) {
       const toggle = this.optionsOverlay.crystalPulseToggle;
@@ -4454,6 +4473,14 @@ export class HudView {
     }
     if (this.hudRoot) {
       this.hudRoot.dataset.zoom = scale.toString();
+    }
+  }
+  setHudLayoutSide(side: "left" | "right"): void {
+    if (typeof document !== "undefined") {
+      document.body.dataset.hudLayout = side;
+    }
+    if (this.hudRoot) {
+      this.hudRoot.dataset.layout = side;
     }
   }
 

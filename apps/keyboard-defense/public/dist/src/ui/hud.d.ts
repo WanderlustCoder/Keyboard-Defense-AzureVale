@@ -39,6 +39,7 @@ export interface HudCallbacks {
     onDefeatAnimationModeChange(mode: DefeatAnimationPreference): void;
     onHudFontScaleChange(scale: number): void;
     onHudZoomChange(scale: number): void;
+    onHudLayoutToggle?: (leftHanded: boolean) => void;
     onFullscreenToggle?: (nextActive: boolean) => void;
     onTurretHover?: (slotId: string | null, context?: {
         typeId?: TurretTypeId | null;
@@ -111,6 +112,7 @@ type OptionsOverlayElements = {
     backgroundBrightnessValue?: string;
     fontScaleSelect: string;
     hudZoomSelect: string;
+    hudLayoutToggle?: string;
     defeatAnimationSelect: string;
     telemetryToggle?: string;
     telemetryToggleWrapper?: string;
@@ -364,6 +366,7 @@ export declare class HudView {
         colorblindPaletteEnabled: boolean;
         colorblindPaletteMode?: string;
         hudZoom: number;
+        hudLayout: "left" | "right";
         hudFontScale: number;
         defeatAnimationMode: DefeatAnimationPreference;
         hotkeys?: {
@@ -515,6 +518,7 @@ export declare class HudView {
     private updateBackgroundBrightnessDisplay;
     setAnalyticsExportEnabled(enabled: boolean): void;
     setHudZoom(scale: number): void;
+    setHudLayoutSide(side: "left" | "right"): void;
     setHudFontScale(scale: number): void;
     setReducedMotionEnabled(enabled: boolean): void;
     setCanvasTransitionState(state: ResolutionTransitionState): void;

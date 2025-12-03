@@ -68,6 +68,7 @@ const BG_BRIGHTNESS_DEFAULT = 1;
 const HUD_ZOOM_MIN = 0.9;
 const HUD_ZOOM_MAX = 1.2;
 const HUD_ZOOM_DEFAULT = 1;
+const HUD_LAYOUT_DEFAULT = "right";
 const INPUT_LATENCY_SAMPLE_MS = 500;
 const INPUT_LATENCY_WINDOW = 8;
 const INPUT_LATENCY_WARN_MS = 40;
@@ -220,6 +221,7 @@ export class GameController {
     this.lowGraphicsEnabled = false;
     this.lowGraphicsRestoreState = null;
     this.hudZoom = 1;
+    this.hudLayout = HUD_LAYOUT_DEFAULT;
     this.hudFontScale = 1;
     this.firstEncounterSeen = this.loadFirstEncounterSeen();
     this.enemyIntroOverlay = null;
@@ -496,6 +498,7 @@ export class GameController {
           backgroundBrightnessSlider: "options-bg-brightness",
           backgroundBrightnessValue: "options-bg-brightness-value",
           hudZoomSelect: "options-hud-zoom",
+          hudLayoutToggle: "options-hud-left",
           fontScaleSelect: "options-font-scale",
           defeatAnimationSelect: "options-defeat-animation",
           telemetryToggle: "options-telemetry-toggle",
@@ -580,6 +583,7 @@ export class GameController {
         onColorblindPaletteModeChange: (mode) => this.setColorblindPaletteMode(mode),
         onBackgroundBrightnessChange: (value) => this.setBackgroundBrightness(value),
         onHudZoomChange: (scale) => this.setHudZoom(scale),
+        onHudLayoutToggle: (leftHanded) => this.setHudLayoutSide(leftHanded ? "left" : "right"),
         onDefeatAnimationModeChange: (mode) => this.setDefeatAnimationMode(mode),
         onHudFontScaleChange: (scale) => this.setHudFontScale(scale),
         onFullscreenToggle: (next) => this.toggleFullscreen(next),
@@ -591,6 +595,7 @@ export class GameController {
       }
     );
     this.hud.setCanvasTransitionState("idle");
+    this.applyHudLayoutSetting(this.hudLayout);
     this.updateHudTurretAvailability();
     this.hud.setTurretDowngradeEnabled(Boolean(this.featureToggles?.turretDowngrade));
     this.sessionWellness =
@@ -1818,6 +1823,22 @@ export class GameController {
       this.render();
     }
   }
+  setHudLayoutSide(side, options = {}) {
+    const normalized = this.normalizeHudLayout(side);
+    const changed = normalized !== this.hudLayout;
+    this.hudLayout = normalized;
+    this.applyHudLayoutSetting(normalized);
+    this.updateOptionsOverlayState();
+    if (options.persist !== false && changed) {
+      this.persistPlayerSettings({ hudLayout: normalized });
+    }
+    if (!options.silent && changed) {
+      this.hud.appendLog(`HUD layout set to ${normalized === "left" ? "left-handed" : "right-handed"}.`);
+    }
+    if (options.render !== false && changed) {
+      this.render();
+    }
+  }
   setHudFontScale(scale, options = {}) {
     const normalized = this.normalizeHudFontScale(scale);
     const changed = Math.abs(normalized - this.hudFontScale) > 0.001;
@@ -1882,6 +1903,9 @@ export class GameController {
     const clamped = Math.min(HUD_ZOOM_MAX, Math.max(HUD_ZOOM_MIN, value));
     return Math.round(clamped * 100) / 100;
   }
+  normalizeHudLayout(side) {
+    return side === "left" ? "left" : "right";
+  }
   normalizeHudFontScale(value) {
     return normalizeHudFontScaleValue(value);
   }
@@ -1936,6 +1960,7 @@ export class GameController {
       colorblindPaletteEnabled: this.colorblindPaletteEnabled,
       colorblindPaletteMode: this.colorblindPaletteMode,
       hudZoom: this.hudZoom,
+      hudLayout: this.hudLayout,
       hudFontScale: this.hudFontScale,
       defeatAnimationMode: this.defeatAnimationMode,
       hotkeys: this.hotkeys,
@@ -2086,6 +2111,14 @@ export class GameController {
   applyHudZoomSetting(scale) {
     if (this.hud?.setHudZoom) {
       this.hud.setHudZoom(scale);
+    }
+  }
+  applyHudLayoutSetting(side) {
+    if (this.hud?.setHudLayoutSide) {
+      this.hud.setHudLayoutSide(side);
+    }
+    if (typeof document !== "undefined") {
+      document.body.dataset.hudLayout = side;
     }
   }
   applyHudFontScaleSetting(scale) {
@@ -2957,6 +2990,8 @@ export class GameController {
       patch.hudFontScale === undefined ||
       Math.abs(this.normalizeHudFontScale(patch.hudFontScale) - this.playerSettings.hudFontScale) <=
         0.001;
+    const hudLayoutUnchanged =
+      patch.hudLayout === undefined || this.normalizeHudLayout(patch.hudLayout) === this.hudLayout;
     const targetingUnchanged =
       patch.turretTargeting === undefined ||
       this.areTargetingMapsEqual(this.playerSettings.turretTargeting, patch.turretTargeting);
@@ -3000,6 +3035,7 @@ export class GameController {
       lowGraphicsUnchanged &&
       defeatAnimationModeUnchanged &&
       hudZoomUnchanged &&
+      hudLayoutUnchanged &&
       fontScaleUnchanged &&
       targetingUnchanged &&
       presetsUnchanged &&
@@ -4093,6 +4129,11 @@ export class GameController {
       persist: false
     });
     this.setHudZoom(stored.hudZoom ?? HUD_ZOOM_DEFAULT, {
+      silent: true,
+      persist: false,
+      render: false
+    });
+    this.setHudLayoutSide(stored.hudLayout ?? HUD_LAYOUT_DEFAULT, {
       silent: true,
       persist: false,
       render: false

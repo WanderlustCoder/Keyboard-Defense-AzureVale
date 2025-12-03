@@ -397,6 +397,12 @@ body[data-canvas-transition="running"] #diagnostics-overlay {
   will-change: transform;
   transition: transform 0.2s ease;
 }
+body[data-hud-layout="left"] #app {
+  flex-direction: row-reverse;
+}
+body[data-hud-layout="left"] #hud {
+  transform-origin: top left;
+}
 
 section {
   background: rgba(15, 23, 42, 0.85);

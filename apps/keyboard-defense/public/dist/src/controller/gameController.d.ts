@@ -69,6 +69,7 @@ export declare class GameController {
     resolveDefeatBurstMode(enemy: any): "sprite" | "procedural";
     shouldUseSpriteForTier(tierId: any): boolean;
     setHudZoom(scale: any, options?: {}): void;
+    setHudLayoutSide(side: any, options?: {}): void;
     setHudFontScale(scale: any, options?: {}): void;
     setTextSizeScale(scale: any, options?: {}): void;
     cycleHudFontScale(direction?: number): void;
@@ -80,6 +81,7 @@ export declare class GameController {
         soundIntensity: any;
     };
     normalizeHudZoom(value: any): number;
+    normalizeHudLayout(side: any): "left" | "right";
     normalizeHudFontScale(value: any): number;
     normalizeTextSizeScale(value: any): number;
     getNextWaveMicroTip(): string;
@@ -101,6 +103,7 @@ export declare class GameController {
     handleBreakReminderSnooze(): void;
     handleBreakReset(): void;
     applyHudZoomSetting(scale: any): void;
+    applyHudLayoutSetting(side: any): void;
     applyHudFontScaleSetting(scale: any): void;
     applyTextSizeScaleSetting(scale: any): void;
     setTelemetryEnabled(enabled: any, options?: {}): boolean;
