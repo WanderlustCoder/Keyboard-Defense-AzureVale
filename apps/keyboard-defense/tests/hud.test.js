@@ -175,6 +175,7 @@ const initializeHud = (options = {}) => {
   const contrastOverlaySummary = get("contrast-overlay-summary");
   const contrastOverlayClose = get("contrast-overlay-close");
   const contrastOverlayMarkers = get("contrast-overlay-markers");
+  const optionsQuickNav = get("options-quick-nav");
   const stickerOverlay = get("sticker-overlay");
   const stickerOverlayList = get("sticker-overlay-list");
   const stickerOverlaySummary = get("sticker-overlay-summary");
@@ -564,6 +565,7 @@ const initializeHud = (options = {}) => {
       contrastOverlaySummary,
       contrastOverlayClose,
       contrastOverlayMarkers,
+      optionsQuickNav,
       stickerOverlay,
       stickerOverlayList,
       stickerOverlaySummary,
@@ -659,6 +661,8 @@ const initializeHud = (options = {}) => {
       getContrastAuditEvents: () => [...contrastAuditEvents],
       getSelfTestRunEvents: () => [...selfTestRunEvents],
       getSelfTestConfirmEvents: () => [...selfTestConfirmEvents],
+      getOptionsSectionToggles: () =>
+        Array.from(document.querySelectorAll(".options-section-toggle")),
       getTelemetryToggleEvents: () => [...telemetryToggleEvents],
       getHudZoomEvents: () => [...hudZoomChangeEvents],
       getHudLayoutEvents: () => [...hudLayoutEvents],
@@ -2275,6 +2279,30 @@ test("HudView milestone celebration fires for gold medals and lesson milestones"
   hud.update(state, [], { lessonsCompleted: 5 });
   assert.equal(elements.milestoneCelebration.dataset.visible, "true");
   assert.ok(elements.milestoneCelebrationBadge.textContent.length > 0);
+  cleanup();
+});
+
+test("Options quick nav updates aria-current and keeps sections reachable", () => {
+  const { cleanup, elements } = initializeHud();
+  const navButtons = elements.optionsQuickNav.querySelectorAll("button");
+  assert.ok(navButtons.length >= 3);
+  navButtons[1].click();
+  assert.equal(navButtons[1].getAttribute("aria-current"), "true");
+  assert.equal(navButtons[0].getAttribute("aria-current"), "false");
+  cleanup();
+});
+
+test("Options sections can be collapsed and expanded", () => {
+  const { cleanup, elements } = initializeHud();
+  const toggles = elements.getOptionsSectionToggles();
+  assert.ok(toggles.length >= 2);
+  const section = toggles[0].closest(".options-section");
+  assert.ok(section);
+  assert.equal(section.dataset.collapsed, "false");
+  toggles[0].click();
+  assert.equal(section.dataset.collapsed, "true");
+  toggles[0].click();
+  assert.equal(section.dataset.collapsed, "false");
   cleanup();
 });
 

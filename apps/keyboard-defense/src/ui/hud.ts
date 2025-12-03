@@ -1912,10 +1912,33 @@ export class HudView {
             button.addEventListener("click", () => {
               const targetId = button.dataset.target ?? "";
               const anchor = targetId ? document.getElementById(targetId) : null;
-              if (anchor) {
+              if (anchor && typeof anchor.scrollIntoView === "function") {
                 anchor.scrollIntoView({ block: "start", behavior: "auto" });
               }
               setActive(button);
+            });
+          }
+        }
+        const optionSections = Array.from(
+          optionsContainer.querySelectorAll<HTMLElement>(".options-section")
+        );
+        for (const section of optionSections) {
+          const toggle = section.querySelector<HTMLButtonElement>(".options-section-toggle");
+          const body = section.querySelector<HTMLElement>(".options-section-body");
+          const collapsed = section.dataset.collapsed === "true";
+          const update = (next: boolean) => {
+            section.dataset.collapsed = next ? "true" : "false";
+            if (toggle) toggle.setAttribute("aria-expanded", next ? "false" : "true");
+            if (toggle) toggle.textContent = next ? "Expand" : "Collapse";
+            if (body) {
+              body.style.display = next ? "none" : "";
+            }
+          };
+          update(collapsed);
+          if (toggle) {
+            toggle.addEventListener("click", () => {
+              const next = section.dataset.collapsed !== "true";
+              update(next);
             });
           }
         }

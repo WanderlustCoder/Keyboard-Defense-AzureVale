@@ -1074,6 +1074,49 @@ export class HudView {
                 if (parentalButton instanceof HTMLButtonElement) {
                     parentalButton.addEventListener("click", () => this.showParentalOverlay(parentalButton));
                 }
+                const optionsNav = document.getElementById("options-quick-nav");
+                const navButtons = optionsNav
+                    ? Array.from(optionsNav.querySelectorAll("button[data-target]")).filter((btn) => btn instanceof HTMLButtonElement)
+                    : [];
+                if (navButtons.length > 0) {
+                    const setActive = (button) => {
+                        navButtons.forEach((btn) => btn.setAttribute("aria-current", "false"));
+                        button.setAttribute("aria-current", "true");
+                    };
+                    for (const button of navButtons) {
+                        button.addEventListener("click", () => {
+                            const targetId = button.dataset.target ?? "";
+                            const anchor = targetId ? document.getElementById(targetId) : null;
+                            if (anchor && typeof anchor.scrollIntoView === "function") {
+                                anchor.scrollIntoView({ block: "start", behavior: "auto" });
+                            }
+                            setActive(button);
+                        });
+                    }
+                }
+                const optionSections = Array.from(optionsContainer.querySelectorAll(".options-section"));
+                for (const section of optionSections) {
+                    const toggle = section.querySelector(".options-section-toggle");
+                    const body = section.querySelector(".options-section-body");
+                    const collapsed = section.dataset.collapsed === "true";
+                    const update = (next) => {
+                        section.dataset.collapsed = next ? "true" : "false";
+                        if (toggle)
+                            toggle.setAttribute("aria-expanded", next ? "false" : "true");
+                        if (toggle)
+                            toggle.textContent = next ? "Expand" : "Collapse";
+                        if (body) {
+                            body.style.display = next ? "none" : "";
+                        }
+                    };
+                    update(collapsed);
+                    if (toggle) {
+                        toggle.addEventListener("click", () => {
+                            const next = section.dataset.collapsed !== "true";
+                            update(next);
+                        });
+                    }
+                }
             }
             else {
                 console.warn("Options overlay elements missing; pause overlay disabled.");

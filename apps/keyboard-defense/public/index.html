@@ -1002,83 +1002,105 @@
             <ul id="options-castle-passives" class="options-passives" aria-live="polite"></ul>
           </div>
         </div>
-        <div class="options-anchor" id="options-anchor-audio"></div>
-        <div class="options-toggle-group">
-          <label class="option-toggle">
-            <input id="options-sound-toggle" type="checkbox" />
-            <span class="option-toggle-label">Sound Effects</span>
-          </label>
-          <label class="option-toggle option-range">
-            <span class="option-toggle-label">Sound Volume</span>
-            <input
-              id="options-sound-volume"
-              type="range"
-              min="0"
-              max="1"
-              step="0.05"
-              value="0.8"
-              aria-label="Sound volume"
-            />
-            <span class="option-range-value" id="options-sound-volume-value">80%</span>
-          </label>
-          <label class="option-toggle option-range">
-            <span class="option-toggle-label">Audio Intensity</span>
-            <input
-              id="options-sound-intensity"
-              type="range"
-              min="0.5"
-              max="1.5"
-              step="0.05"
-              value="1"
-              aria-label="Audio intensity"
-            />
-            <span class="option-range-value" id="options-sound-intensity-value">100%</span>
-          </label>
-          <div class="option-toggle option-range option-shake">
-            <div class="option-shake-header">
-              <label class="option-toggle-label" for="options-screen-shake-toggle">
-                Screen Shake
-              </label>
-              <div class="option-shake-inline">
-                <input id="options-screen-shake-toggle" type="checkbox" />
-                <span class="option-range-value" id="options-screen-shake-intensity-value">65%</span>
+        <section class="options-section" data-group="audio" data-collapsed="false">
+          <div class="options-section-header">
+            <div class="options-anchor" id="options-anchor-audio"></div>
+            <h3>Audio &amp; VFX</h3>
+            <button
+              type="button"
+              class="options-section-toggle"
+              aria-controls="options-section-body-audio"
+              aria-expanded="true"
+            >
+              Collapse
+            </button>
+          </div>
+          <div class="options-toggle-group options-section-body" id="options-section-body-audio">
+            <label class="option-toggle">
+              <input id="options-sound-toggle" type="checkbox" />
+              <span class="option-toggle-label">Sound Effects</span>
+            </label>
+            <label class="option-toggle option-range">
+              <span class="option-toggle-label">Sound Volume</span>
+              <input
+                id="options-sound-volume"
+                type="range"
+                min="0"
+                max="1"
+                step="0.05"
+                value="0.8"
+                aria-label="Sound volume"
+              />
+              <span class="option-range-value" id="options-sound-volume-value">80%</span>
+            </label>
+            <label class="option-toggle option-range">
+              <span class="option-toggle-label">Audio Intensity</span>
+              <input
+                id="options-sound-intensity"
+                type="range"
+                min="0.5"
+                max="1.5"
+                step="0.05"
+                value="1"
+                aria-label="Audio intensity"
+              />
+              <span class="option-range-value" id="options-sound-intensity-value">100%</span>
+            </label>
+            <div class="option-toggle option-range option-shake">
+              <div class="option-shake-header">
+                <label class="option-toggle-label" for="options-screen-shake-toggle">
+                  Screen Shake
+                </label>
+                <div class="option-shake-inline">
+                  <input id="options-screen-shake-toggle" type="checkbox" />
+                  <span class="option-range-value" id="options-screen-shake-intensity-value">65%</span>
+                </div>
               </div>
-            </div>
-            <input
-              id="options-screen-shake-intensity"
-              type="range"
-              min="0"
-              max="1.2"
-              step="0.05"
-              value="0.65"
-              aria-label="Screen shake intensity"
-            />
-            <div class="option-shake-preview">
-              <div class="option-shake-demo" id="options-screen-shake-demo" aria-hidden="true">
-                <span class="option-shake-demo-box"></span>
+              <input
+                id="options-screen-shake-intensity"
+                type="range"
+                min="0"
+                max="1.2"
+                step="0.05"
+                value="0.65"
+                aria-label="Screen shake intensity"
+              />
+              <div class="option-shake-preview">
+                <div class="option-shake-demo" id="options-screen-shake-demo" aria-hidden="true">
+                  <span class="option-shake-demo-box"></span>
+                </div>
+                <button id="options-screen-shake-preview" type="button" class="ghost">
+                  Preview shake
+                </button>
+                <span class="option-toggle-help">
+                  Play a quick shake before enabling to check comfort. Disabled when Reduced Motion is
+                  on.
+                </span>
               </div>
-              <button id="options-screen-shake-preview" type="button" class="ghost">
-                Preview shake
-              </button>
-              <span class="option-toggle-help">
-                Play a quick shake before enabling to check comfort. Disabled when Reduced Motion is on.
-              </span>
             </div>
           </div>
-          <div class="options-anchor" id="options-anchor-diagnostics"></div>
-          <label class="option-toggle">
-            <input id="options-diagnostics-toggle" type="checkbox" />
-            <span class="option-toggle-label">Diagnostics Overlay</span>
-          </label>
-          <label class="option-toggle">
-            <input id="options-low-graphics-toggle" type="checkbox" />
-            <span class="option-toggle-label">Low Graphics Mode</span>
-            <span class="option-toggle-help">
-              Turns off starfield and heavy effects for slower devices (auto-enables reduced
-              motion).
-            </span>
-          </label>
-          <div class="options-anchor" id="options-anchor-accessibility"></div>
+        </section>
+        <section class="options-section" data-group="accessibility" data-collapsed="false">
+          <div class="options-section-header">
+            <div class="options-anchor" id="options-anchor-accessibility"></div>
+            <h3>Accessibility &amp; Comfort</h3>
+            <button
+              type="button"
+              class="options-section-toggle"
+              aria-controls="options-section-body-accessibility"
+              aria-expanded="true"
+            >
+              Collapse
+            </button>
+          </div>
+          <div class="options-toggle-group options-section-body" id="options-section-body-accessibility">
+            <label class="option-toggle">
+              <input id="options-low-graphics-toggle" type="checkbox" />
+              <span class="option-toggle-label">Low Graphics Mode</span>
+              <span class="option-toggle-help">
+                Turns off starfield and heavy effects for slower devices (auto-enables reduced motion).
+              </span>
+            </label>
             <label class="option-toggle">
               <input id="options-reduced-motion-toggle" type="checkbox" />
               <span class="option-toggle-label">Reduced Motion</span>
@@ -1086,317 +1108,377 @@
                 Disables enemy death splashes and UI transitions; keeps essential cues only.
               </span>
             </label>
-          <label class="option-toggle">
-            <input id="options-haptics-toggle" type="checkbox" />
-            <span class="option-toggle-label">Haptics (vibration)</span>
-            <span class="option-toggle-help">
-              Short vibrations on hits when supported; desktop browsers usually ignore this.
-            </span>
-          </label>
-          <button id="options-contrast-audit" type="button" class="option-toggle option-contrast">
-            <div class="option-contrast-copy">
-              <span class="option-toggle-label">Contrast Audit Overlay</span>
+            <label class="option-toggle">
+              <input id="options-haptics-toggle" type="checkbox" />
+              <span class="option-toggle-label">Haptics (vibration)</span>
               <span class="option-toggle-help">
-                Highlights UI regions that may fail contrast checks. Best-effort preview for quick comfort scans.
+                Short vibrations on hits when supported; desktop browsers usually ignore this.
               </span>
-            </div>
-            <span class="option-contrast-cta">Run audit</span>
-          </button>
-          <div
-            class="option-toggle option-selftest"
-            id="options-self-test"
-            role="group"
-            aria-labelledby="options-self-test-title"
-          >
-            <div class="option-selftest-header">
-              <div>
-                <p class="option-selftest-kicker">Accessibility check</p>
-                <p class="option-toggle-label" id="options-self-test-title">Self-Test Cues</p>
-                <p class="option-toggle-help">
-                  Play a quick sound, flash, and motion cue to confirm you can sense them before enabling
-                  effects.
-                </p>
+            </label>
+            <button id="options-contrast-audit" type="button" class="option-toggle option-contrast">
+              <div class="option-contrast-copy">
+                <span class="option-toggle-label">Contrast Audit Overlay</span>
+                <span class="option-toggle-help">
+                  Highlights UI regions that may fail contrast checks. Best-effort preview for quick
+                  comfort scans.
+                </span>
               </div>
-              <div class="option-selftest-actions">
-                <span class="option-selftest-status" id="options-self-test-status">Not run yet</span>
-                <button id="options-self-test-run" type="button" class="secondary">Run self-test</button>
+              <span class="option-contrast-cta">Run audit</span>
+            </button>
+            <div
+              class="option-toggle option-selftest"
+              id="options-self-test"
+              role="group"
+              aria-labelledby="options-self-test-title"
+            >
+              <div class="option-selftest-header">
+                <div>
+                  <p class="option-selftest-kicker">Accessibility check</p>
+                  <p class="option-toggle-label" id="options-self-test-title">Self-Test Cues</p>
+                  <p class="option-toggle-help">
+                    Play a quick sound, flash, and motion cue to confirm you can sense them before
+                    enabling effects.
+                  </p>
+                </div>
+                <div class="option-selftest-actions">
+                  <span class="option-selftest-status" id="options-self-test-status">Not run yet</span>
+                  <button id="options-self-test-run" type="button" class="secondary">Run self-test</button>
+                </div>
               </div>
+              <div class="option-selftest-grid" role="group" aria-label="Self-test confirmations">
+                <label class="option-selftest-row" for="options-self-test-sound">
+                  <span
+                    class="option-selftest-indicator"
+                    id="options-self-test-sound-indicator"
+                    aria-hidden="true"
+                  ></span>
+                  <div class="option-selftest-copy">
+                    <span class="option-selftest-label">Sound chime</span>
+                    <span class="option-toggle-help">Listen for a short chime.</span>
+                  </div>
+                  <span class="option-selftest-confirm">
+                    <input id="options-self-test-sound" type="checkbox" />
+                    <span class="option-selftest-confirm-label">Heard it</span>
+                  </span>
+                </label>
+                <label class="option-selftest-row" for="options-self-test-visual">
+                  <span
+                    class="option-selftest-indicator option-selftest-indicator--flash"
+                    id="options-self-test-visual-indicator"
+                    aria-hidden="true"
+                  ></span>
+                  <div class="option-selftest-copy">
+                    <span class="option-selftest-label">Visual flash</span>
+                    <span class="option-toggle-help">Watch for a bright tile flash.</span>
+                  </div>
+                  <span class="option-selftest-confirm">
+                    <input id="options-self-test-visual" type="checkbox" />
+                    <span class="option-selftest-confirm-label">Saw it</span>
+                  </span>
+                </label>
+                <label class="option-selftest-row" for="options-self-test-motion">
+                  <span
+                    class="option-selftest-indicator option-selftest-indicator--motion"
+                    id="options-self-test-motion-indicator"
+                    aria-hidden="true"
+                  ></span>
+                  <div class="option-selftest-copy">
+                    <span class="option-selftest-label">Motion check</span>
+                    <span class="option-toggle-help">Uses the screen shake preview.</span>
+                  </div>
+                  <span class="option-selftest-confirm">
+                    <input id="options-self-test-motion" type="checkbox" />
+                    <span class="option-selftest-confirm-label">Felt it</span>
+                  </span>
+                </label>
+              </div>
+              <p class="option-toggle-help option-selftest-footnote">
+                Motion step skips when Reduced Motion is on; sound skips when audio is disabled.
+              </p>
             </div>
-            <div class="option-selftest-grid" role="group" aria-label="Self-test confirmations">
-              <label class="option-selftest-row" for="options-self-test-sound">
-                <span
-                  class="option-selftest-indicator"
-                  id="options-self-test-sound-indicator"
-                  aria-hidden="true"
-                ></span>
-                <div class="option-selftest-copy">
-                  <span class="option-selftest-label">Sound chime</span>
-                  <span class="option-toggle-help">Listen for a short chime.</span>
-                </div>
-                <span class="option-selftest-confirm">
-                  <input id="options-self-test-sound" type="checkbox" />
-                  <span class="option-selftest-confirm-label">Heard it</span>
-                </span>
-              </label>
-              <label class="option-selftest-row" for="options-self-test-visual">
-                <span
-                  class="option-selftest-indicator option-selftest-indicator--flash"
-                  id="options-self-test-visual-indicator"
-                  aria-hidden="true"
-                ></span>
-                <div class="option-selftest-copy">
-                  <span class="option-selftest-label">Visual flash</span>
-                  <span class="option-toggle-help">Watch for a bright tile flash.</span>
-                </div>
-                <span class="option-selftest-confirm">
-                  <input id="options-self-test-visual" type="checkbox" />
-                  <span class="option-selftest-confirm-label">Saw it</span>
-                </span>
-              </label>
-              <label class="option-selftest-row" for="options-self-test-motion">
-                <span
-                  class="option-selftest-indicator option-selftest-indicator--motion"
-                  id="options-self-test-motion-indicator"
-                  aria-hidden="true"
-                ></span>
-                <div class="option-selftest-copy">
-                  <span class="option-selftest-label">Motion check</span>
-                  <span class="option-toggle-help">Uses the screen shake preview.</span>
-                </div>
-                <span class="option-selftest-confirm">
-                  <input id="options-self-test-motion" type="checkbox" />
-                  <span class="option-selftest-confirm-label">Felt it</span>
-                </span>
-              </label>
-            </div>
-            <p class="option-toggle-help option-selftest-footnote">
-              Motion step skips when Reduced Motion is on; sound skips when audio is disabled.
-            </p>
           </div>
-          <label class="option-toggle option-select">
-            <span class="option-toggle-label">Text Size</span>
-            <select id="options-text-size" aria-label="Text size preference">
-              <option value="0.9">Small</option>
-              <option value="1">Medium</option>
-              <option value="1.1">Large</option>
-            </select>
-            <span class="option-toggle-help">Scales HUD and menu text without changing layout.</span>
-          </label>
-          <label class="option-toggle">
-            <input id="options-checkered-bg-toggle" type="checkbox" />
-            <span class="option-toggle-label">Checkered Background</span>
-          </label>
-          <label class="option-toggle">
-            <input id="options-readable-font-toggle" type="checkbox" />
-            <span class="option-toggle-label">Readable Font</span>
-          </label>
-          <label class="option-toggle">
-            <input id="options-dyslexia-font-toggle" type="checkbox" />
-            <span class="option-toggle-label">Dyslexia-Friendly Font</span>
-          </label>
-          <label class="option-toggle">
-            <input id="options-dyslexia-spacing-toggle" type="checkbox" />
-            <span class="option-toggle-label">Increase Letter Spacing</span>
-            <span class="option-toggle-help">
-              Adds extra spacing and line height for clearer shapes while typing.
-            </span>
-          </label>
-          <label class="option-toggle">
-            <input id="options-cognitive-load" type="checkbox" />
-            <span class="option-toggle-label">Reduced Cognitive Load</span>
-            <span class="option-toggle-help">
-              Hides bonus panels (metrics, battle log, roadmap hints) and trims extra overlays for
-              younger players. You can re-enable panels anytime.
-            </span>
-          </label>
-          <label class="option-toggle">
-            <input id="options-colorblind-toggle" type="checkbox" />
-            <span class="option-toggle-label">Colorblind Palette</span>
-          </label>
-          <label class="option-toggle option-select">
-            <span class="option-toggle-label">Colorblind Palette Mode</span>
-            <select id="options-colorblind-mode" aria-label="Colorblind palette mode">
-              <option value="off">Off</option>
-              <option value="deuteran">Deuteran (green weakness)</option>
-              <option value="protan">Protan (red weakness)</option>
-              <option value="tritan">Tritan (blue weakness)</option>
-              <option value="high-contrast">High contrast</option>
-            </select>
-            <span class="option-toggle-help">
-              Pick the palette that separates reds/greens/blues best for you. Enabling a mode turns on the palette.
-            </span>
-          </label>
-          <label class="option-toggle option-select">
-            <span class="option-toggle-label">Castle Skin</span>
-            <select id="options-castle-skin" aria-label="Castle skin theme">
-              <option value="classic">Classic walls</option>
-              <option value="dusk">Dusk citadel</option>
-              <option value="aurora">Aurora keep</option>
-              <option value="ember">Ember bastion</option>
-            </select>
-            <span class="option-toggle-help">
-              Pick the castle palette you've unlocked from streaks; the HUD updates instantly.
-            </span>
-          </label>
-          <label class="option-toggle option-range">
-            <span class="option-toggle-label">Background Brightness</span>
-            <input
-              id="options-bg-brightness"
-              type="range"
-              min="0.9"
-              max="1.1"
-              step="0.02"
-              value="1"
-              aria-label="Background brightness"
-            />
-            <span class="option-range-value" id="options-bg-brightness-value">100%</span>
-            <span class="option-toggle-help">
-              Lighten or darken UI backgrounds for comfort; unaffected by low-graphics.
-            </span>
-          </label>
-          <label class="option-toggle option-select">
-            <span class="option-toggle-label">Defeat Animations</span>
-            <select id="options-defeat-animation" aria-label="Defeat animation mode">
-              <option value="auto">Auto (sprites when available)</option>
-              <option value="sprite">Sprites only</option>
-              <option value="procedural">Procedural only</option>
-            </select>
-            <span class="option-toggle-help">
-              Choose how enemy defeat bursts render when art assets are available.
-            </span>
-          </label>
-          <label class="option-toggle" id="options-elite-affix-toggle-wrapper">
-            <input id="options-elite-affix-toggle" type="checkbox" />
-            <span class="option-toggle-label">Enable Elite Affixes</span>
-            <span class="option-toggle-help">
-              Armored, shielded, or aura elites join waves when enabled; toggle off for calmer runs.
-            </span>
-          </label>
-          <label class="option-toggle" id="options-crystal-toggle-wrapper">
-            <input id="options-crystal-toggle" type="checkbox" />
-            <span class="option-toggle-label">Enable Crystal Pulse turret</span>
-            <span class="option-toggle-help">
-              Experimental turret that delivers bonus shield damage for barrier-heavy waves.
-            </span>
-          </label>
-          <label class="option-toggle" id="options-telemetry-toggle-wrapper">
-            <input id="options-telemetry-toggle" type="checkbox" />
-            <span class="option-toggle-label">Send Telemetry</span>
-          </label>
-          <label class="option-toggle option-select">
-            <span class="option-toggle-label">HUD Font Size</span>
-            <select id="options-font-scale">
-              <option value="0.85">Small</option>
-              <option value="1">Default</option>
-              <option value="1.15">Large</option>
-              <option value="1.3">Extra Large</option>
-            </select>
-            <span class="option-toggle-help">Tip: While this menu is open press [ / ] to change HUD font size.</span>
-          </label>
-          <div class="options-anchor" id="options-anchor-hud"></div>
-          <label class="option-toggle option-select">
-            <span class="option-toggle-label">HUD Zoom</span>
-            <select id="options-hud-zoom" aria-label="HUD zoom">
-              <option value="0.9">90% (compact)</option>
-              <option value="1">100% (default)</option>
-              <option value="1.1">110% (comfortable)</option>
-              <option value="1.2">120% (large)</option>
-            </select>
-            <span class="option-toggle-help">
-              Scales the entire HUD for small displays or low-vision comfort. Does not affect the game
-              canvas.
-            </span>
-          </label>
-          <label class="option-toggle">
-            <input id="options-hud-left" type="checkbox" />
-            <span class="option-toggle-label">Left-Handed HUD Layout</span>
-            <span class="option-toggle-help">
-              Flips the HUD to the left side of the screen so the game canvas sits on the right.
-            </span>
-          </label>
-          <label class="option-toggle option-select">
-            <span class="option-toggle-label">Pause Shortcut</span>
-            <select id="options-hotkey-pause" aria-label="Pause shortcut key">
-              <option value="p">P (default)</option>
-              <option value="escape">Escape</option>
-              <option value="space">Spacebar</option>
-              <option value="o">O</option>
-            </select>
-            <span class="option-toggle-help">
-              Choose which key pauses/resumes. Works even while typing input is focused.
-            </span>
-          </label>
-          <label class="option-toggle option-select">
-            <span class="option-toggle-label">Shortcuts Overlay</span>
-            <select id="options-hotkey-shortcuts" aria-label="Shortcuts overlay key">
-              <option value="?">?</option>
-              <option value="slash">/</option>
-              <option value="f1">F1</option>
-            </select>
-            <span class="option-toggle-help">
-              Pick a key to toggle the keyboard shortcuts overlay for accessibility.
-            </span>
-          </label>
-          <label class="option-toggle">
-            <input id="options-toggle-metrics" type="checkbox" />
-            <span class="option-toggle-label">Show Typing Metrics</span>
-            <span class="option-toggle-help">
-              Hides or shows the Accuracy/WPM panel if you prefer fewer HUD elements.
-            </span>
-          </label>
-          <label class="option-toggle">
-            <input id="options-toggle-wave-preview" type="checkbox" />
-            <span class="option-toggle-label">Show Upcoming Enemies</span>
-            <span class="option-toggle-help">
-              Toggle the wave preview list; turn off for a cleaner combat view.
-            </span>
-          </label>
-          <label class="option-toggle">
-            <input id="options-toggle-battle-log" type="checkbox" />
-            <span class="option-toggle-label">Show Battle Log</span>
-            <span class="option-toggle-help">
-              Turn off the running battle log if you only want on-screen cues.
-            </span>
-          </label>
-        </div>
-        <div class="options-anchor" id="options-anchor-overlays"></div>
-        <div class="options-actions">
-          <button id="options-parental-info" type="button" class="secondary">
-            Parental Info
-          </button>
-          <button id="options-sticker-book" type="button" class="secondary">
-            Sticker Book
-          </button>
-          <button id="options-season-track" type="button" class="secondary">
-            Season Reward Track
-          </button>
-          <button id="options-museum" type="button" class="secondary">
-            Castle Museum
-          </button>
-          <button id="options-side-quests" type="button" class="secondary">
-            Side Quest Log
-          </button>
-          <button id="options-mastery-certificate" type="button" class="secondary">
-            Mastery Certificate
-          </button>
-          <button id="options-lesson-medals" type="button" class="secondary">
-            Lesson Medals
-          </button>
-          <button id="options-parent-summary" type="button" class="secondary">
-            Weekly Parent Summary
-          </button>
-          <button id="options-lore-scrolls" type="button" class="secondary">
-            Lore Scrolls
-          </button>
-          <button id="options-analytics-export" type="button" class="secondary">
-            Download Analytics
-          </button>
-          <button id="options-typing-drills" type="button" class="secondary">
-            Open Typing Drills
-          </button>
-          <p class="options-hint">Tip: Press Shift + R to launch the recommended drill instantly.</p>
-          <button id="options-resume-button" type="button" class="primary">Resume Battle</button>
-        </div>
+        </section>
+        <section class="options-section" data-group="hud" data-collapsed="false">
+          <div class="options-section-header">
+            <div class="options-anchor" id="options-anchor-hud"></div>
+            <h3>HUD &amp; Layout</h3>
+            <button
+              type="button"
+              class="options-section-toggle"
+              aria-controls="options-section-body-hud"
+              aria-expanded="true"
+            >
+              Collapse
+            </button>
+          </div>
+          <div class="options-toggle-group options-section-body" id="options-section-body-hud">
+            <label class="option-toggle option-select">
+              <span class="option-toggle-label">Text Size</span>
+              <select id="options-text-size" aria-label="Text size preference">
+                <option value="0.9">Small</option>
+                <option value="1">Medium</option>
+                <option value="1.1">Large</option>
+              </select>
+              <span class="option-toggle-help">Scales HUD and menu text without changing layout.</span>
+            </label>
+            <label class="option-toggle">
+              <input id="options-checkered-bg-toggle" type="checkbox" />
+              <span class="option-toggle-label">Checkered Background</span>
+            </label>
+            <label class="option-toggle">
+              <input id="options-readable-font-toggle" type="checkbox" />
+              <span class="option-toggle-label">Readable Font</span>
+            </label>
+            <label class="option-toggle">
+              <input id="options-dyslexia-font-toggle" type="checkbox" />
+              <span class="option-toggle-label">Dyslexia-Friendly Font</span>
+            </label>
+            <label class="option-toggle">
+              <input id="options-dyslexia-spacing-toggle" type="checkbox" />
+              <span class="option-toggle-label">Increase Letter Spacing</span>
+              <span class="option-toggle-help">
+                Adds extra spacing and line height for clearer shapes while typing.
+              </span>
+            </label>
+            <label class="option-toggle">
+              <input id="options-cognitive-load" type="checkbox" />
+              <span class="option-toggle-label">Reduced Cognitive Load</span>
+              <span class="option-toggle-help">
+                Hides bonus panels (metrics, battle log, roadmap hints) and trims extra overlays for
+                younger players. You can re-enable panels anytime.
+              </span>
+            </label>
+            <label class="option-toggle">
+              <input id="options-colorblind-toggle" type="checkbox" />
+              <span class="option-toggle-label">Colorblind Palette</span>
+            </label>
+            <label class="option-toggle option-select">
+              <span class="option-toggle-label">Colorblind Palette Mode</span>
+              <select id="options-colorblind-mode" aria-label="Colorblind palette mode">
+                <option value="off">Off</option>
+                <option value="deuteran">Deuteran (green weakness)</option>
+                <option value="protan">Protan (red weakness)</option>
+                <option value="tritan">Tritan (blue weakness)</option>
+                <option value="high-contrast">High contrast</option>
+              </select>
+              <span class="option-toggle-help">
+                Pick the palette that separates reds/greens/blues best for you. Enabling a mode turns
+                on the palette.
+              </span>
+            </label>
+            <label class="option-toggle option-select">
+              <span class="option-toggle-label">Castle Skin</span>
+              <select id="options-castle-skin" aria-label="Castle skin theme">
+                <option value="classic">Classic walls</option>
+                <option value="dusk">Dusk citadel</option>
+                <option value="aurora">Aurora keep</option>
+                <option value="ember">Ember bastion</option>
+              </select>
+              <span class="option-toggle-help">
+                Pick the castle palette you've unlocked from streaks; the HUD updates instantly.
+              </span>
+            </label>
+            <label class="option-toggle option-range">
+              <span class="option-toggle-label">Background Brightness</span>
+              <input
+                id="options-bg-brightness"
+                type="range"
+                min="0.9"
+                max="1.1"
+                step="0.02"
+                value="1"
+                aria-label="Background brightness"
+              />
+              <span class="option-range-value" id="options-bg-brightness-value">100%</span>
+              <span class="option-toggle-help">
+                Lighten or darken UI backgrounds for comfort; unaffected by low-graphics.
+              </span>
+            </label>
+            <label class="option-toggle option-select">
+              <span class="option-toggle-label">Defeat Animations</span>
+              <select id="options-defeat-animation" aria-label="Defeat animation mode">
+                <option value="auto">Auto (sprites when available)</option>
+                <option value="sprite">Sprites only</option>
+                <option value="procedural">Procedural only</option>
+              </select>
+              <span class="option-toggle-help">
+                Choose how enemy defeat bursts render when art assets are available.
+              </span>
+            </label>
+            <label class="option-toggle" id="options-elite-affix-toggle-wrapper">
+              <input id="options-elite-affix-toggle" type="checkbox" />
+              <span class="option-toggle-label">Enable Elite Affixes</span>
+              <span class="option-toggle-help">
+                Armored, shielded, or aura elites join waves when enabled; toggle off for calmer runs.
+              </span>
+            </label>
+            <label class="option-toggle" id="options-crystal-toggle-wrapper">
+              <input id="options-crystal-toggle" type="checkbox" />
+              <span class="option-toggle-label">Enable Crystal Pulse turret</span>
+              <span class="option-toggle-help">
+                Experimental turret that delivers bonus shield damage for barrier-heavy waves.
+              </span>
+            </label>
+            <label class="option-toggle option-select">
+              <span class="option-toggle-label">HUD Font Size</span>
+              <select id="options-font-scale">
+                <option value="0.85">Small</option>
+                <option value="1">Default</option>
+                <option value="1.15">Large</option>
+                <option value="1.3">Extra Large</option>
+              </select>
+              <span class="option-toggle-help">
+                Tip: While this menu is open press [ / ] to change HUD font size.
+              </span>
+            </label>
+            <label class="option-toggle option-select">
+              <span class="option-toggle-label">HUD Zoom</span>
+              <select id="options-hud-zoom" aria-label="HUD zoom">
+                <option value="0.9">90% (compact)</option>
+                <option value="1">100% (default)</option>
+                <option value="1.1">110% (comfortable)</option>
+                <option value="1.2">120% (large)</option>
+              </select>
+              <span class="option-toggle-help">
+                Scales the entire HUD for small displays or low-vision comfort. Does not affect the game
+                canvas.
+              </span>
+            </label>
+            <label class="option-toggle">
+              <input id="options-hud-left" type="checkbox" />
+              <span class="option-toggle-label">Left-Handed HUD Layout</span>
+              <span class="option-toggle-help">
+                Flips the HUD to the left side of the screen so the game canvas sits on the right.
+              </span>
+            </label>
+            <label class="option-toggle option-select">
+              <span class="option-toggle-label">Pause Shortcut</span>
+              <select id="options-hotkey-pause" aria-label="Pause shortcut key">
+                <option value="p">P (default)</option>
+                <option value="escape">Escape</option>
+                <option value="space">Spacebar</option>
+                <option value="o">O</option>
+              </select>
+              <span class="option-toggle-help">
+                Choose which key pauses/resumes. Works even while typing input is focused.
+              </span>
+            </label>
+            <label class="option-toggle option-select">
+              <span class="option-toggle-label">Shortcuts Overlay</span>
+              <select id="options-hotkey-shortcuts" aria-label="Shortcuts overlay key">
+                <option value="?">?</option>
+                <option value="slash">/</option>
+                <option value="f1">F1</option>
+              </select>
+              <span class="option-toggle-help">
+                Pick a key to toggle the keyboard shortcuts overlay for accessibility.
+              </span>
+            </label>
+          </div>
+        </section>
+        <section class="options-section" data-group="overlays" data-collapsed="false">
+          <div class="options-section-header">
+            <div class="options-anchor" id="options-anchor-overlays"></div>
+            <h3>Overlays &amp; Progress</h3>
+            <button
+              type="button"
+              class="options-section-toggle"
+              aria-controls="options-section-body-overlays"
+              aria-expanded="true"
+            >
+              Collapse
+            </button>
+          </div>
+          <div class="options-section-body" id="options-section-body-overlays">
+            <div class="options-toggle-group">
+              <label class="option-toggle">
+                <input id="options-toggle-metrics" type="checkbox" />
+                <span class="option-toggle-label">Show Typing Metrics</span>
+                <span class="option-toggle-help">
+                  Hides or shows the Accuracy/WPM panel if you prefer fewer HUD elements.
+                </span>
+              </label>
+              <label class="option-toggle">
+                <input id="options-toggle-wave-preview" type="checkbox" />
+                <span class="option-toggle-label">Show Upcoming Enemies</span>
+                <span class="option-toggle-help">
+                  Toggle the wave preview list; turn off for a cleaner combat view.
+                </span>
+              </label>
+              <label class="option-toggle">
+                <input id="options-toggle-battle-log" type="checkbox" />
+                <span class="option-toggle-label">Show Battle Log</span>
+                <span class="option-toggle-help">
+                  Turn off the running battle log if you only want on-screen cues.
+                </span>
+              </label>
+            </div>
+            <div class="options-actions">
+              <button id="options-parental-info" type="button" class="secondary">
+                Parental Info
+              </button>
+              <button id="options-sticker-book" type="button" class="secondary">
+                Sticker Book
+              </button>
+              <button id="options-season-track" type="button" class="secondary">
+                Season Reward Track
+              </button>
+              <button id="options-museum" type="button" class="secondary">
+                Castle Museum
+              </button>
+              <button id="options-side-quests" type="button" class="secondary">
+                Side Quest Log
+              </button>
+              <button id="options-mastery-certificate" type="button" class="secondary">
+                Mastery Certificate
+              </button>
+              <button id="options-lesson-medals" type="button" class="secondary">
+                Lesson Medals
+              </button>
+              <button id="options-parent-summary" type="button" class="secondary">
+                Weekly Parent Summary
+              </button>
+              <button id="options-lore-scrolls" type="button" class="secondary">
+                Lore Scrolls
+              </button>
+              <button id="options-typing-drills" type="button" class="secondary">
+                Open Typing Drills
+              </button>
+              <p class="options-hint">Tip: Press Shift + R to launch the recommended drill instantly.</p>
+            </div>
+          </div>
+        </section>
+        <section class="options-section" data-group="diagnostics" data-collapsed="false">
+          <div class="options-section-header">
+            <div class="options-anchor" id="options-anchor-diagnostics"></div>
+            <h3>Diagnostics</h3>
+            <button
+              type="button"
+              class="options-section-toggle"
+              aria-controls="options-section-body-diagnostics"
+              aria-expanded="true"
+            >
+              Collapse
+            </button>
+          </div>
+          <div
+            class="options-toggle-group options-section-body"
+            id="options-section-body-diagnostics"
+          >
+            <label class="option-toggle">
+              <input id="options-diagnostics-toggle" type="checkbox" />
+              <span class="option-toggle-label">Diagnostics Overlay</span>
+            </label>
+            <label class="option-toggle" id="options-telemetry-toggle-wrapper">
+              <input id="options-telemetry-toggle" type="checkbox" />
+              <span class="option-toggle-label">Send Telemetry</span>
+            </label>
+            <button id="options-analytics-export" type="button" class="secondary">
+              Download Analytics
+            </button>
+          </div>
+        </section>
+        <button id="options-resume-button" type="button" class="primary">Resume Battle</button>
       </div>
     </div>
     <div
