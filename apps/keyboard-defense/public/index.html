@@ -1917,31 +1917,45 @@
         <div class="museum-grid" id="museum-list" role="list"></div>
       </div>
     </div>
-    <div
-      id="side-quest-overlay"
-      class="quest-overlay"
-      data-visible="false"
-      role="dialog"
+        <div
+          id="side-quest-overlay"
+          class="quest-overlay"
+          data-visible="false"
+          role="dialog"
       aria-modal="true"
       aria-labelledby="side-quest-overlay-title"
       aria-hidden="true"
-    >
-      <div class="quest-card">
-        <header class="quest-header">
-          <div>
-            <p class="quest-kicker">Side quests</p>
-            <h2 id="side-quest-overlay-title">Quest Log</h2>
-            <p id="side-quest-overlay-subtitle" class="quest-subtitle">
-              Optional objectives to guide your next run.
-            </p>
+        >
+          <div class="quest-card">
+            <header class="quest-header">
+              <div>
+                <p class="quest-kicker">Side quests</p>
+                <h2 id="side-quest-overlay-title">Quest Log</h2>
+                <p id="side-quest-overlay-subtitle" class="quest-subtitle">
+                  Optional objectives to guide your next run.
+                </p>
+              </div>
+              <button id="side-quest-close" class="icon-button" type="button" aria-label="Close quest log">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </header>
+            <div class="quest-toolbar">
+              <div class="quest-filters" role="group" aria-label="Filter quests">
+                <button type="button" class="quest-filter" data-quest-filter="all" aria-pressed="true">
+                  All
+                </button>
+                <button type="button" class="quest-filter" data-quest-filter="active" aria-pressed="false">
+                  Active
+                </button>
+                <button type="button" class="quest-filter" data-quest-filter="completed" aria-pressed="false">
+                  Completed
+                </button>
+              </div>
+              <p class="quest-toolbar-hint">Filters help condense the list; press Tab to reach results.</p>
+            </div>
+            <div id="side-quest-list" class="quest-grid" role="list"></div>
           </div>
-          <button id="side-quest-close" class="icon-button" type="button" aria-label="Close quest log">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </header>
-        <div id="side-quest-list" class="quest-grid" role="list"></div>
-      </div>
-    </div>
+        </div>
     <div
       id="lesson-medal-overlay"
       class="lesson-medal-overlay"

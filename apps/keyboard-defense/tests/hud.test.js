@@ -2478,6 +2478,49 @@ test("HudView side quest overlay renders quests and toggles visibility", () => {
   cleanup();
 });
 
+test("Side quest overlay filters between active and completed quests", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  hud.setLoreScrollProgress({
+    lessonsCompleted: 4,
+    total: 6,
+    unlocked: 2,
+    next: { requiredLessons: 5, remaining: 1, title: "Library Ledger" },
+    entries: []
+  });
+  hud.setLessonMedalProgress({
+    last: {
+      id: "medal-quest",
+      tier: "gold",
+      mode: "burst",
+      accuracy: 0.97,
+      wpm: 55,
+      bestCombo: 8,
+      errors: 0,
+      words: 10,
+      elapsedMs: 23000,
+      timestamp: 456
+    },
+    recent: [],
+    bestByMode: { burst: null, endurance: null, precision: null },
+    totals: { bronze: 0, silver: 0, gold: 1, platinum: 0 },
+    nextTarget: null
+  });
+  const state = buildInitialState();
+  hud.update(state, [], { lessonsCompleted: 5 });
+  elements.optionsSideQuestButton.click();
+  const filters = Array.from(document.querySelectorAll(".quest-filter"));
+  const allCount = elements.sideQuestList.children.length;
+  const activeBtn = filters.find((btn) => btn.dataset.questFilter === "active");
+  const completedBtn = filters.find((btn) => btn.dataset.questFilter === "completed");
+  assert.ok(allCount >= 1);
+  activeBtn?.click();
+  const activeCount = elements.sideQuestList.children.length;
+  completedBtn?.click();
+  const completedCount = elements.sideQuestList.children.length;
+  assert.ok(activeCount < allCount || completedCount < allCount);
+  cleanup();
+});
+
 test("HudView lesson medals overlay renders and toggles visibility", () => {
   const { hud, cleanup, elements } = initializeHud();
   hud.setLessonMedalProgress({

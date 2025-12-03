@@ -427,6 +427,7 @@ export declare class HudView {
     private readonly masteryCertificate?;
     private readonly sideQuestPanel?;
     private readonly sideQuestOverlay?;
+    private sideQuestFilter;
     private sideQuestEntries;
     private lessonsCompletedCount;
     private readonly museumOverlay?;

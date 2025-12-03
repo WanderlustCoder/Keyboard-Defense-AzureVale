@@ -135,6 +135,7 @@ export class HudView {
     masteryCertificate;
     sideQuestPanel;
     sideQuestOverlay;
+    sideQuestFilter = "all";
     sideQuestEntries = [];
     lessonsCompletedCount = 0;
     museumOverlay;
@@ -1526,6 +1527,10 @@ export class HudView {
             const questSubtitle = rootIds.sideQuestOverlay.subtitle
                 ? document.getElementById(rootIds.sideQuestOverlay.subtitle)
                 : null;
+            const questFilters = questContainer?.querySelectorAll("[data-quest-filter]");
+            const filterButtons = questFilters
+                ? Array.from(questFilters).filter((btn) => btn instanceof HTMLButtonElement)
+                : [];
             if (questContainer instanceof HTMLElement &&
                 questClose instanceof HTMLButtonElement &&
                 questList instanceof HTMLElement) {
@@ -1533,11 +1538,21 @@ export class HudView {
                     container: questContainer,
                     closeButton: questClose,
                     list: questList,
-                    subtitle: questSubtitle instanceof HTMLElement ? questSubtitle : undefined
+                    subtitle: questSubtitle instanceof HTMLElement ? questSubtitle : undefined,
+                    filters: filterButtons
                 };
                 questContainer.dataset.visible = questContainer.dataset.visible ?? "false";
                 questContainer.setAttribute("aria-hidden", "true");
                 questClose.addEventListener("click", () => this.hideSideQuestOverlay());
+                for (const button of filterButtons) {
+                    button.addEventListener("click", () => {
+                        const next = button.dataset.questFilter ?? "all";
+                        this.sideQuestFilter = next;
+                        filterButtons.forEach((btn) => btn.setAttribute("aria-pressed", btn === button ? "true" : "false"));
+                        this.renderSideQuestOverlay();
+                    });
+                }
+                filterButtons.forEach((btn) => btn.setAttribute("aria-pressed", btn.dataset.questFilter === this.sideQuestFilter ? "true" : "false"));
                 this.addFocusTrap(questContainer);
             }
             else {
@@ -5193,11 +5208,23 @@ export class HudView {
         this.sideQuestEntries = this.buildSideQuestEntries();
         const completed = this.sideQuestEntries.filter((entry) => entry.status === "completed").length;
         const total = this.sideQuestEntries.length;
+        const filtered = this.sideQuestEntries.filter((entry) => {
+            if (this.sideQuestFilter === "completed")
+                return entry.status === "completed";
+            if (this.sideQuestFilter === "active")
+                return entry.status === "active";
+            return true;
+        });
         if (this.sideQuestOverlay.subtitle) {
-            this.sideQuestOverlay.subtitle.textContent = `${completed} of ${total} quests completed`;
+            const filterLabel = this.sideQuestFilter === "all"
+                ? ""
+                : this.sideQuestFilter === "active"
+                    ? " · Showing active"
+                    : " · Showing completed";
+            this.sideQuestOverlay.subtitle.textContent = `${completed} of ${total} quests completed${filterLabel}`;
         }
         this.sideQuestOverlay.list.replaceChildren();
-        for (const entry of this.sideQuestEntries) {
+        for (const entry of filtered) {
             const tile = document.createElement("div");
             tile.className = "quest-tile";
             tile.dataset.status = entry.status;
@@ -5207,6 +5234,7 @@ export class HudView {
             title.textContent = entry.title;
             const desc = document.createElement("p");
             desc.className = "quest-tile__desc";
+            desc.dataset.expanded = "false";
             desc.textContent = entry.description;
             const meta = document.createElement("div");
             meta.className = "quest-tile__meta";
@@ -5223,7 +5251,18 @@ export class HudView {
             const ratio = entry.total > 0 ? Math.min(1, entry.progress / entry.total) : 0;
             bar.style.width = `${ratio * 100}%`;
             progress.appendChild(bar);
-            tile.append(title, desc, meta, progress);
+            const more = document.createElement("button");
+            more.type = "button";
+            more.className = "quest-more";
+            const setExpanded = (expanded) => {
+                desc.dataset.expanded = expanded ? "true" : "false";
+                more.textContent = expanded ? "Less" : "More";
+            };
+            setExpanded(false);
+            more.addEventListener("click", () => {
+                setExpanded(desc.dataset.expanded !== "true");
+            });
+            tile.append(title, desc, meta, progress, more);
             this.sideQuestOverlay.list.appendChild(tile);
         }
     }
