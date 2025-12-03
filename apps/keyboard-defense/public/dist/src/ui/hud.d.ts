@@ -122,6 +122,7 @@ type WaveScorecardElements = {
     container: string;
     stats: string;
     continue: string;
+    tip?: string;
 };
 type RoadmapOverlayElements = {
     container: string;
@@ -170,6 +171,7 @@ export interface WaveScorecardData {
     repairGold: number;
     castleBonusGold: number;
     bonusGold: number;
+    microTip?: string | null;
 }
 export type HudCollapsePreferenceUpdate = {
     hudCastlePassivesCollapsed?: boolean | null;

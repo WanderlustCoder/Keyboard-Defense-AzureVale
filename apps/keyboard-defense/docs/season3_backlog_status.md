@@ -4,6 +4,7 @@ Quick status snapshot for items in `season3_backlog.md`. Audience ages 8-16, Edg
 
 | ID | Title | Status | Notes |
 | --- | --- | --- | --- |
+| 3 | Rotating posture and wrist micro-tips between waves | Done | Wave recap card shows a rotating comfort tip (posture, breathing, light taps) after each wave. |
 | 61 | Dyslexia-friendly spacing toggle | Done | New option increases letter spacing/line-height for typing UI; persists in player settings. |
 | 68 | Background brightness/contrast comfort slider | Done | Options slider adjusts global background brightness (90-110%) and persists per player. |
 | 71 | Persistent caps/num lock indicators near input | Done | HUD pills show Caps/Num lock states beside the typing input; Caps warning remains for errors. |

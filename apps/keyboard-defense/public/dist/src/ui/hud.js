@@ -647,13 +647,17 @@ export class HudView {
             const scorecardContainer = document.getElementById(rootIds.waveScorecard.container);
             const scorecardStats = document.getElementById(rootIds.waveScorecard.stats);
             const scorecardContinue = document.getElementById(rootIds.waveScorecard.continue);
+            const scorecardTip = rootIds.waveScorecard.tip
+                ? document.getElementById(rootIds.waveScorecard.tip)
+                : null;
             if (scorecardContainer instanceof HTMLElement &&
                 isElementWithTag(scorecardStats, "ul") &&
                 scorecardContinue instanceof HTMLButtonElement) {
                 this.waveScorecard = {
                     container: scorecardContainer,
                     statsList: scorecardStats,
-                    continueBtn: scorecardContinue
+                    continueBtn: scorecardContinue,
+                    tip: scorecardTip instanceof HTMLElement ? scorecardTip : undefined
                 };
                 scorecardContinue.addEventListener("click", () => this.callbacks.onWaveScorecardContinue());
             }
@@ -3007,6 +3011,19 @@ export class HudView {
         ];
         for (const entry of entries) {
             this.setWaveScorecardField(entry.field, entry.label, entry.value);
+        }
+        if (this.waveScorecard.tip) {
+            const text = (data.microTip ?? "").trim();
+            if (text) {
+                this.waveScorecard.tip.textContent = text;
+                this.waveScorecard.tip.dataset.visible = "true";
+                this.waveScorecard.tip.setAttribute("aria-hidden", "false");
+            }
+            else {
+                this.waveScorecard.tip.textContent = "";
+                this.waveScorecard.tip.dataset.visible = "false";
+                this.waveScorecard.tip.setAttribute("aria-hidden", "true");
+            }
         }
     }
     updateShieldTelemetry(entries) {

@@ -79,6 +79,7 @@ export declare class GameController {
     };
     normalizeHudFontScale(value: any): number;
     normalizeTextSizeScale(value: any): number;
+    getNextWaveMicroTip(): string;
     normalizeBackgroundBrightness(value: any): number;
     normalizeSoundVolume(value: any): number;
     normalizeAudioIntensity(value: any): number;

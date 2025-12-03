@@ -214,6 +214,7 @@ type WaveScorecardElements = {
   container: string;
   stats: string;
   continue: string;
+  tip?: string;
 };
 
 type RoadmapOverlayElements = {
@@ -267,6 +268,7 @@ export interface WaveScorecardData {
   repairGold: number;
   castleBonusGold: number;
   bonusGold: number;
+  microTip?: string | null;
 }
 
 const DEFAULT_WAVE_PREVIEW_HINT =
@@ -464,6 +466,7 @@ export class HudView {
     container: HTMLElement;
     statsList: HTMLUListElement;
     continueBtn: HTMLButtonElement;
+    tip?: HTMLElement;
   };
   private syncingOptionToggles = false;
   private comboBaselineAccuracy = 1;
@@ -1074,6 +1077,9 @@ export class HudView {
       const scorecardContainer = document.getElementById(rootIds.waveScorecard.container);
       const scorecardStats = document.getElementById(rootIds.waveScorecard.stats);
       const scorecardContinue = document.getElementById(rootIds.waveScorecard.continue);
+      const scorecardTip = rootIds.waveScorecard.tip
+        ? document.getElementById(rootIds.waveScorecard.tip)
+        : null;
       if (
         scorecardContainer instanceof HTMLElement &&
         isElementWithTag<HTMLUListElement>(scorecardStats, "ul") &&
@@ -1082,7 +1088,8 @@ export class HudView {
         this.waveScorecard = {
           container: scorecardContainer,
           statsList: scorecardStats,
-          continueBtn: scorecardContinue
+          continueBtn: scorecardContinue,
+          tip: scorecardTip instanceof HTMLElement ? scorecardTip : undefined
         };
         scorecardContinue.addEventListener("click", () => this.callbacks.onWaveScorecardContinue());
       } else {
@@ -3721,6 +3728,18 @@ export class HudView {
     ];
     for (const entry of entries) {
       this.setWaveScorecardField(entry.field, entry.label, entry.value);
+    }
+    if (this.waveScorecard.tip) {
+      const text = (data.microTip ?? "").trim();
+      if (text) {
+        this.waveScorecard.tip.textContent = text;
+        this.waveScorecard.tip.dataset.visible = "true";
+        this.waveScorecard.tip.setAttribute("aria-hidden", "false");
+      } else {
+        this.waveScorecard.tip.textContent = "";
+        this.waveScorecard.tip.dataset.visible = "false";
+        this.waveScorecard.tip.setAttribute("aria-hidden", "true");
+      }
     }
   }
 

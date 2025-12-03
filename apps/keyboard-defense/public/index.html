@@ -488,16 +488,16 @@
       role="dialog"
       aria-modal="true"
       aria-labelledby="wave-scorecard-title"
-    >
-      <div class="wave-scorecard-card">
-        <header class="wave-scorecard-header">
-          <h2 id="wave-scorecard-title">Wave Complete</h2>
-          <p id="wave-scorecard-subtitle">
-            Breathe easy—your defenses held. Here's the after-action report.
-          </p>
-        </header>
-        <ul id="wave-scorecard-stats">
-          <li data-field="wave"></li>
+        >
+          <div class="wave-scorecard-card">
+            <header class="wave-scorecard-header">
+              <h2 id="wave-scorecard-title">Wave Complete</h2>
+              <p id="wave-scorecard-subtitle">
+                Breathe easy-your defenses held. Here's the after-action report.
+              </p>
+            </header>
+            <ul id="wave-scorecard-stats">
+              <li data-field="wave"></li>
           <li data-field="accuracy"></li>
           <li data-field="combo"></li>
           <li data-field="session-combo"></li>
@@ -515,14 +515,22 @@
           <li data-field="repair-health"></li>
           <li data-field="repair-gold"></li>
           <li data-field="bonus-gold"></li>
-          <li data-field="castle-bonus"></li>
-          <li data-field="gold"></li>
-        </ul>
-        <div class="wave-scorecard-actions">
-          <button id="wave-scorecard-continue" type="button" class="primary">
-            Ready the Next Wave
-          </button>
-        </div>
+              <li data-field="castle-bonus"></li>
+              <li data-field="gold"></li>
+            </ul>
+            <p
+              id="wave-scorecard-tip"
+              class="wave-scorecard-tip"
+              data-visible="false"
+              role="status"
+              aria-live="polite"
+              aria-hidden="true"
+            ></p>
+            <div class="wave-scorecard-actions">
+              <button id="wave-scorecard-continue" type="button" class="primary">
+                Ready the Next Wave
+              </button>
+            </div>
       </div>
     </div>
     <div

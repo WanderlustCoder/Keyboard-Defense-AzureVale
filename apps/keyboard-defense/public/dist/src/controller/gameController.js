@@ -43,6 +43,14 @@ const INPUT_LATENCY_SAMPLE_MS = 500;
 const INPUT_LATENCY_WINDOW = 8;
 const INPUT_LATENCY_WARN_MS = 40;
 const INPUT_LATENCY_BAD_MS = 75;
+const WAVE_MICRO_TIPS = [
+    "Keep wrists lifted and let fingers hover over home row—no desk planting.",
+    "Aim for light taps. If keys feel loud, ease up and keep rhythm steady.",
+    "Reset posture: shoulders relaxed, elbows at 90°, screen at eye height.",
+    "Eyes on the words, not the keys; touch typing keeps accuracy higher.",
+    "Short breaths between waves keep hands loose and reduce errors.",
+    "If accuracy dips, slow two beats, rebuild clean strokes, then speed up."
+];
 const LANE_LABELS = ["A", "B", "C", "D", "E"];
 const CANVAS_RESIZE_FADE_MS = 250;
 const CANVAS_RESOLUTION_HOLD_MS = 70;
@@ -145,6 +153,8 @@ export class GameController {
         this.latencyIndicator = null;
         this.latencySamples = [];
         this.latencyMonitorTimeout = null;
+        this.waveMicroTipIndex =
+            Math.floor((typeof Math !== "undefined" ? Math.random() : 0) * WAVE_MICRO_TIPS.length) % WAVE_MICRO_TIPS.length;
         this.accessibilityOnboardingSeen = this.loadAccessibilitySeen();
         this.accessibilityOverlay = null;
         this.resumeAfterAccessibility = false;
@@ -451,7 +461,8 @@ export class GameController {
             waveScorecard: {
                 container: "wave-scorecard",
                 stats: "wave-scorecard-stats",
-                continue: "wave-scorecard-continue"
+                continue: "wave-scorecard-continue",
+                tip: "wave-scorecard-tip"
             },
             analyticsViewer: {
                 container: "debug-analytics-viewer",
@@ -1736,6 +1747,14 @@ export class GameController {
             return 1;
         return Math.min(1.1, Math.max(0.9, Math.round(value * 100) / 100));
     }
+    getNextWaveMicroTip() {
+        if (!Array.isArray(WAVE_MICRO_TIPS) || WAVE_MICRO_TIPS.length === 0) {
+            return null;
+        }
+        const tip = WAVE_MICRO_TIPS[this.waveMicroTipIndex % WAVE_MICRO_TIPS.length];
+        this.waveMicroTipIndex = (this.waveMicroTipIndex + 1) % WAVE_MICRO_TIPS.length;
+        return tip;
+    }
     normalizeBackgroundBrightness(value) {
         if (!Number.isFinite(value))
             return BG_BRIGHTNESS_DEFAULT;
@@ -2572,7 +2591,8 @@ export class GameController {
             bonusGold: summary.bonusGold ?? 0,
             castleBonusGold: summary.castleBonusGold ?? 0,
             bestCombo: summary.maxCombo ?? 0,
-            sessionBestCombo: summary.sessionBestCombo ?? this.bestCombo
+            sessionBestCombo: summary.sessionBestCombo ?? this.bestCombo,
+            microTip: this.getNextWaveMicroTip()
         };
         this.hud.showWaveScorecard(data);
         this.waveScorecardActive = true;
@@ -2635,7 +2655,8 @@ export class GameController {
             bonusGold: summary.bonusGold ?? defaultSummary.bonusGold ?? 0,
             castleBonusGold: summary.castleBonusGold ?? defaultSummary.castleBonusGold ?? 0,
             bestCombo: summary.bestCombo ?? summary.maxCombo ?? defaultSummary.maxCombo ?? 0,
-            sessionBestCombo: summary.sessionBestCombo ?? defaultSummary.sessionBestCombo ?? this.bestCombo
+            sessionBestCombo: summary.sessionBestCombo ?? defaultSummary.sessionBestCombo ?? this.bestCombo,
+            microTip: this.getNextWaveMicroTip()
         };
         this.hud.showWaveScorecard({
             waveIndex: payload.waveIndex ?? 0,
