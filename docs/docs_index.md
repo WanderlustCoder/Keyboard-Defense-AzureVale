@@ -5,6 +5,8 @@ Use this index to jump straight to the guidance you'll need while building and t
 ## Project Overview & Strategy
 - `apps/keyboard-defense/docs/season1_backlog.md` - Feature roadmap and numbered backlog for the Siege of the Azure Vale.
 - `apps/keyboard-defense/docs/season2_backlog.md` - Next-phase 100-item backlog for ages 8-16 (Edge/Chrome, free, pixel art direction).
+- `apps/keyboard-defense/docs/season3_backlog.md` - Mastery-track backlog focusing on accessibility, polish, and automation-heavy workflows.
+- `apps/keyboard-defense/docs/season4_backlog.md` - New 100-item mastery & engagement backlog (ages 8-16, free single-player, pixel art).
 - `apps/keyboard-defense/docs/icon_set_spec.md` - Pixel UI icon set spec (sizes, palette, states, naming) for buttons/toggles/HUD controls.
 - `apps/keyboard-defense/docs/qa_typing_edge_cases.md` - QA checklist for typing input edge cases (modifiers, buffer rules, accessibility).
 - `apps/keyboard-defense/docs/wordlist_lint_spec.md` - Wordlist/lesson lint rules and planned CLI (safe vocab, gating, lengths, weights, themes).
@@ -13,6 +15,8 @@ Use this index to jump straight to the guidance you'll need while building and t
 - `apps/keyboard-defense/docs/deployment_checklist.md` - Deployment/release checklist for Edge/Chrome (automated gates, browser smoke, accessibility, packaging).
 - `apps/keyboard-defense/docs/visual_baselines.md` - Playwright visual snapshot coverage and usage notes (HUD/loading/options/caps-lock).
 - `apps/keyboard-defense/docs/season2_backlog_status.md` - Rolling status for Season 2 backlog items (IDs 95-100).
+- `apps/keyboard-defense/docs/season3_backlog_status.md` - Rolling status for Season 3 backlog items (keyboard nav, input harness, etc.).
+- `apps/keyboard-defense/docs/season4_backlog_status.md` - Rolling status for the new Season 4 backlog (all items start Not Started).
 - `docs/CODEX_AUTONOMOUS_TESTING_DIRECTIVE_Siege_of_the_Azure_Vale.md` - Automation-first definition of done, scripting expectations, and QA guardrails.
 - `docs/CODEX_GUIDE.md` - Codex-oriented workflow guide (where to find tasks, required commands, documentation rules).
 - `docs/CODEX_PLAYBOOKS.md` - Domain-specific instruction sets (automation/CI, gameplay & UI, analytics/telemetry, documentation) tailored for Codex.
