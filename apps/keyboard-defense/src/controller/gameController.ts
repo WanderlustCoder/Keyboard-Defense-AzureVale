@@ -65,6 +65,10 @@ const CANVAS_BASE_HEIGHT = 540;
 const BG_BRIGHTNESS_MIN = 0.9;
 const BG_BRIGHTNESS_MAX = 1.1;
 const BG_BRIGHTNESS_DEFAULT = 1;
+const INPUT_LATENCY_SAMPLE_MS = 500;
+const INPUT_LATENCY_WINDOW = 8;
+const INPUT_LATENCY_WARN_MS = 40;
+const INPUT_LATENCY_BAD_MS = 75;
 const LANE_LABELS = ["A", "B", "C", "D", "E"];
 const CANVAS_RESIZE_FADE_MS = 250;
 const CANVAS_RESOLUTION_HOLD_MS = 70;
@@ -169,6 +173,9 @@ export class GameController {
     this.dyslexiaSpacingEnabled = false;
     this.backgroundBrightness = BG_BRIGHTNESS_DEFAULT;
     this.colorblindPaletteEnabled = false;
+    this.latencyIndicator = null;
+    this.latencySamples = [];
+    this.latencyMonitorTimeout = null;
     this.accessibilityOnboardingSeen = this.loadAccessibilitySeen();
     this.accessibilityOverlay = null;
     this.resumeAfterAccessibility = false;
@@ -599,6 +606,7 @@ export class GameController {
     this.attachTypingDrillHooks();
     this.attachDebugButtons();
     this.attachGlobalShortcuts();
+    this.attachLatencyIndicator();
     this.attachFullscreenListeners();
     this.attachAccessibilityOnboarding();
     this.attachEnemyIntroOverlay();
@@ -5028,6 +5036,66 @@ export class GameController {
       }
       this.canvasResizeTimeout = null;
     }, CANVAS_RESIZE_FADE_MS);
+  }
+
+  attachLatencyIndicator() {
+    if (typeof document === "undefined") return;
+    const container = document.getElementById("latency-indicator");
+    const value = document.getElementById("latency-value");
+    if (!(container instanceof HTMLElement) || !(value instanceof HTMLElement)) {
+      return;
+    }
+    this.latencyIndicator = { container, value };
+    this.latencySamples = [];
+    this.updateLatencyIndicator(0);
+    this.startLatencyMonitor();
+  }
+
+  startLatencyMonitor() {
+    if (!this.latencyIndicator || this.latencyMonitorTimeout || typeof window === "undefined") {
+      return;
+    }
+    const interval = INPUT_LATENCY_SAMPLE_MS;
+    let expected =
+      (typeof performance !== "undefined" ? performance.now() : Date.now()) + interval;
+    const sample = () => {
+      const now = typeof performance !== "undefined" ? performance.now() : Date.now();
+      const drift = Math.max(0, now - expected);
+      expected = now + interval;
+      this.recordLatencySample(drift);
+      this.latencyMonitorTimeout = window.setTimeout(sample, interval);
+    };
+    this.latencyMonitorTimeout = window.setTimeout(sample, interval);
+  }
+
+  recordLatencySample(value) {
+    if (!Array.isArray(this.latencySamples)) {
+      this.latencySamples = [];
+    }
+    this.latencySamples.push(value);
+    if (this.latencySamples.length > INPUT_LATENCY_WINDOW) {
+      this.latencySamples.shift();
+    }
+    const sum = this.latencySamples.reduce((acc, entry) => acc + entry, 0);
+    const avg = this.latencySamples.length > 0 ? sum / this.latencySamples.length : value;
+    this.updateLatencyIndicator(avg);
+  }
+
+  updateLatencyIndicator(averageMs) {
+    if (!this.latencyIndicator) return;
+    const severity =
+      averageMs >= INPUT_LATENCY_BAD_MS
+        ? "bad"
+        : averageMs >= INPUT_LATENCY_WARN_MS
+          ? "warn"
+          : "good";
+    this.latencyIndicator.container.dataset.state = severity;
+    const rounded = Math.max(0, Math.round(averageMs));
+    this.latencyIndicator.value.textContent = `${rounded}ms`;
+    this.latencyIndicator.container.setAttribute(
+      "aria-label",
+      `Input latency ${rounded} milliseconds, ${severity}`
+    );
   }
 
   loadAccessibilitySeen() {

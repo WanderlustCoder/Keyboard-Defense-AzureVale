@@ -76,15 +76,27 @@
             <span id="resource-delta"></span>
           </div>
           <div class="session-panel" aria-live="polite">
-            <div class="session-row">
-              <span class="session-label">Session</span>
-              <span id="session-timer" class="session-time">00:00</span>
-            </div>
-            <div
-              id="break-reminder"
-              class="break-reminder"
-              data-visible="false"
-              role="status"
+          <div class="session-row">
+            <span class="session-label">Session</span>
+            <span id="session-timer" class="session-time">00:00</span>
+          </div>
+          <div
+            id="latency-indicator"
+            class="latency-indicator"
+            data-state="good"
+            role="status"
+            aria-live="polite"
+            aria-label="Input latency good"
+          >
+            <span class="latency-dot" aria-hidden="true"></span>
+            <span class="latency-label">Input latency</span>
+            <span id="latency-value" class="latency-value">0ms</span>
+          </div>
+          <div
+            id="break-reminder"
+            class="break-reminder"
+            data-visible="false"
+            role="status"
               aria-live="polite"
               aria-hidden="true"
             >

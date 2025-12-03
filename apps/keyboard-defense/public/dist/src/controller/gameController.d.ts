@@ -316,6 +316,10 @@ export declare class GameController {
     handleCanvasTransitionStateChange(state: ResolutionTransitionState): void;
     measureCanvasAvailableWidth(): any;
     triggerCanvasResizeFade(): void;
+    attachLatencyIndicator(): void;
+    startLatencyMonitor(): void;
+    recordLatencySample(value: any): void;
+    updateLatencyIndicator(averageMs: any): void;
     loadAccessibilitySeen(): boolean;
     persistAccessibilitySeen(): void;
     attachAccessibilityOnboarding(): void;
