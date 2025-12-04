@@ -121,6 +121,8 @@ export class HudView {
     stickerBookOverlay;
     stickerBookEntries = [];
     loreScrollOverlay;
+    loreScrollFilter = "all";
+    loreScrollSearch = "";
     loreScrollPanel;
     loreScrollState;
     loreScrollHighlightTimeout = null;
@@ -1394,6 +1396,14 @@ export class HudView {
                 ? document.getElementById(rootIds.loreScrollOverlay.progress)
                 : null;
             const scrollClose = document.getElementById(rootIds.loreScrollOverlay.closeButton);
+            const scrollFilters = rootIds.loreScrollOverlay.filters
+                ? rootIds.loreScrollOverlay.filters
+                    .map((id) => document.getElementById(id))
+                    .filter((el) => el instanceof HTMLButtonElement)
+                : [];
+            const scrollSearch = rootIds.loreScrollOverlay.searchInput
+                ? document.getElementById(rootIds.loreScrollOverlay.searchInput)
+                : null;
             if (scrollContainer instanceof HTMLElement &&
                 scrollList instanceof HTMLElement &&
                 scrollSummary instanceof HTMLElement &&
@@ -1403,11 +1413,32 @@ export class HudView {
                     list: scrollList,
                     summary: scrollSummary,
                     progress: scrollProgress instanceof HTMLElement ? scrollProgress : undefined,
-                    closeButton: scrollClose
+                    closeButton: scrollClose,
+                    filters: scrollFilters,
+                    searchInput: scrollSearch ?? undefined
                 };
                 scrollContainer.dataset.visible = scrollContainer.dataset.visible ?? "false";
                 scrollContainer.setAttribute("aria-hidden", "true");
                 scrollClose.addEventListener("click", () => this.hideLoreScrollOverlay());
+                for (const button of scrollFilters) {
+                    button.addEventListener("click", () => {
+                        const next = button.dataset.scrollFilter ?? "all";
+                        this.loreScrollFilter = next;
+                        scrollFilters.forEach((btn) => btn.setAttribute("aria-pressed", btn === button ? "true" : "false"));
+                        if (this.loreScrollState) {
+                            this.renderLoreScrollOverlay(this.loreScrollState);
+                        }
+                    });
+                }
+                scrollFilters.forEach((btn) => btn.setAttribute("aria-pressed", btn.dataset.scrollFilter === this.loreScrollFilter ? "true" : "false"));
+                if (scrollSearch) {
+                    scrollSearch.addEventListener("input", () => {
+                        this.loreScrollSearch = scrollSearch.value.trim().toLowerCase();
+                        if (this.loreScrollState) {
+                            this.renderLoreScrollOverlay(this.loreScrollState);
+                        }
+                    });
+                }
                 this.addFocusTrap(scrollContainer);
             }
             else {
@@ -5530,6 +5561,12 @@ export class HudView {
                 entries: []
             });
         }
+        if (this.loreScrollOverlay.filters) {
+            this.loreScrollOverlay.filters.forEach((btn) => btn.setAttribute("aria-pressed", btn.dataset.scrollFilter === this.loreScrollFilter ? "true" : "false"));
+        }
+        if (this.loreScrollOverlay.searchInput) {
+            this.loreScrollOverlay.searchInput.value = this.loreScrollSearch;
+        }
         this.loreScrollOverlay.container.dataset.visible = "true";
         this.loreScrollOverlay.container.setAttribute("aria-hidden", "false");
         const focusable = this.getFocusableElements(this.loreScrollOverlay.container);
@@ -5702,13 +5739,31 @@ export class HudView {
         if (!this.loreScrollOverlay)
             return;
         const { list, summary, progress } = this.loreScrollOverlay;
+        const normalizedSearch = this.loreScrollSearch.trim().toLowerCase();
+        const filteredEntries = state.entries.filter((entry) => {
+            if (this.loreScrollFilter === "unlocked" && !entry.unlocked)
+                return false;
+            if (this.loreScrollFilter === "locked" && entry.unlocked)
+                return false;
+            if (normalizedSearch) {
+                const haystack = `${entry.title} ${entry.summary}`.toLowerCase();
+                if (!haystack.includes(normalizedSearch))
+                    return false;
+            }
+            return true;
+        });
         summary.textContent = `Unlocked ${state.unlocked} of ${state.total} scrolls`;
         if (progress) {
             const lessonsLabel = state.lessonsCompleted === 1 ? "lesson" : "lessons";
-            progress.textContent = `${state.lessonsCompleted} ${lessonsLabel} completed`;
+            const filterNote = this.loreScrollFilter === "all"
+                ? ""
+                : this.loreScrollFilter === "unlocked"
+                    ? " · Showing unlocked"
+                    : " · Showing locked";
+            progress.textContent = `${state.lessonsCompleted} ${lessonsLabel} completed${filterNote}`;
         }
         list.replaceChildren();
-        for (const entry of state.entries) {
+        for (const entry of filteredEntries) {
             const item = document.createElement("li");
             item.className = "scroll-card";
             item.dataset.status = entry.unlocked ? "unlocked" : "locked";

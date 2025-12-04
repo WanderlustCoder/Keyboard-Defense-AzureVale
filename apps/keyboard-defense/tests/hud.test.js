@@ -185,6 +185,7 @@ const initializeHud = (options = {}) => {
   const scrollOverlaySummary = get("scrolls-overlay-summary");
   const scrollOverlayProgress = get("scrolls-overlay-progress");
   const scrollOverlayClose = get("scrolls-overlay-close");
+  const scrollOverlaySearch = get("scrolls-overlay-search");
   const seasonTrackOverlay = get("season-track-overlay");
   const seasonTrackList = get("season-track-list");
   const seasonTrackProgress = get("season-track-overlay-progress");
@@ -423,7 +424,9 @@ const initializeHud = (options = {}) => {
         list: "scrolls-overlay-list",
         summary: "scrolls-overlay-summary",
         progress: "scrolls-overlay-progress",
-        closeButton: "scrolls-overlay-close"
+        closeButton: "scrolls-overlay-close",
+        filters: ["scrolls-filter-all", "scrolls-filter-unlocked", "scrolls-filter-locked"],
+        searchInput: "scrolls-overlay-search"
       }
     },
     {
@@ -604,6 +607,7 @@ const initializeHud = (options = {}) => {
       scrollOverlaySummary,
       scrollOverlayProgress,
       scrollOverlayClose,
+      scrollOverlaySearch,
       selfTestContainer,
       selfTestRun,
       selfTestStatus,
@@ -2166,6 +2170,64 @@ test("HudView lore scroll overlay renders progress and entries", () => {
 
   hud.hideLoreScrollOverlay();
   assert.equal(elements.scrollOverlay.dataset.visible, "false");
+  cleanup();
+});
+
+test("Lore scroll overlay filters and searches scrolls", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  hud.setLoreScrollProgress({
+    lessonsCompleted: 6,
+    total: 3,
+    unlocked: 2,
+    next: { requiredLessons: 7, remaining: 1, title: "Signal Flares" },
+    entries: [
+      {
+        id: "scroll-one",
+        title: "First Scroll",
+        summary: "Quick recap",
+        body: "Unlocked snippet text.",
+        requiredLessons: 1,
+        unlocked: true,
+        progress: 6,
+        remaining: 0
+      },
+      {
+        id: "scroll-two",
+        title: "Second Scroll",
+        summary: "Needs more lessons",
+        body: "Locked snippet text.",
+        requiredLessons: 7,
+        unlocked: false,
+        progress: 6,
+        remaining: 1
+      },
+      {
+        id: "scroll-three",
+        title: "Third Scroll",
+        summary: "Hidden lore",
+        body: "Locked snippet text.",
+        requiredLessons: 9,
+        unlocked: false,
+        progress: 6,
+        remaining: 3
+      }
+    ]
+  });
+  elements.optionsLoreScrollsButton.click();
+  const allCount = elements.scrollOverlayList.children.length;
+  const unlockedBtn = document.getElementById("scrolls-filter-unlocked");
+  const lockedBtn = document.getElementById("scrolls-filter-locked");
+  unlockedBtn?.click();
+  const unlockedCount = elements.scrollOverlayList.children.length;
+  lockedBtn?.click();
+  const lockedCount = elements.scrollOverlayList.children.length;
+  assert.ok(unlockedCount < allCount);
+  assert.ok(lockedCount < allCount);
+  elements.scrollOverlaySearch.value = "Third";
+  dispatchDomEvent(elements.scrollOverlaySearch, "input");
+  assert.equal(elements.scrollOverlayList.children.length, 1);
+  const only = elements.scrollOverlayList.children[0];
+  assert.equal(only.dataset.status, "locked");
   cleanup();
 });
 

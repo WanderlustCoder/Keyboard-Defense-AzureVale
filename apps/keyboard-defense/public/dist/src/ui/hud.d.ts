@@ -263,6 +263,8 @@ type LoreScrollOverlayElements = {
     summary: string;
     progress?: string;
     closeButton: string;
+    filters?: string[];
+    searchInput?: string;
 };
 type SeasonTrackOverlayElements = {
     container: string;
@@ -413,6 +415,8 @@ export declare class HudView {
     private readonly stickerBookOverlay?;
     private stickerBookEntries;
     private readonly loreScrollOverlay?;
+    private loreScrollFilter;
+    private loreScrollSearch;
     private loreScrollPanel?;
     private loreScrollState?;
     private loreScrollHighlightTimeout;

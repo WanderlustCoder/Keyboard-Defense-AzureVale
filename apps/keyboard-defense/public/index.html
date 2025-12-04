@@ -1763,6 +1763,46 @@
             <span aria-hidden="true">&times;</span>
           </button>
         </header>
+        <div class="scrolls-toolbar">
+          <div class="scrolls-filters" role="group" aria-label="Filter scrolls">
+            <button
+              id="scrolls-filter-all"
+              type="button"
+              class="scrolls-filter"
+              data-scroll-filter="all"
+              aria-pressed="true"
+            >
+              All
+            </button>
+            <button
+              id="scrolls-filter-unlocked"
+              type="button"
+              class="scrolls-filter"
+              data-scroll-filter="unlocked"
+              aria-pressed="false"
+            >
+              Unlocked
+            </button>
+            <button
+              id="scrolls-filter-locked"
+              type="button"
+              class="scrolls-filter"
+              data-scroll-filter="locked"
+              aria-pressed="false"
+            >
+              Locked
+            </button>
+          </div>
+          <label class="scrolls-search">
+            <span class="scrolls-search__label">Search</span>
+            <input
+              id="scrolls-overlay-search"
+              type="search"
+              placeholder="Find a scroll..."
+              aria-label="Search scroll titles and summaries"
+            />
+          </label>
+        </div>
         <div class="scrolls-overlay-body">
           <ul id="scrolls-overlay-list" class="scrolls-grid" role="list"></ul>
         </div>

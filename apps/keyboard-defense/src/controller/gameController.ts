@@ -704,7 +704,13 @@ export class GameController {
           list: "scrolls-overlay-list",
           summary: "scrolls-overlay-summary",
           progress: "scrolls-overlay-progress",
-          closeButton: "scrolls-overlay-close"
+          closeButton: "scrolls-overlay-close",
+          filters: [
+            "scrolls-filter-all",
+            "scrolls-filter-unlocked",
+            "scrolls-filter-locked"
+          ],
+          searchInput: "scrolls-overlay-search"
         }
       },
       {
