@@ -113,6 +113,17 @@ test("tutorial pacing persists and clamps", () => {
   assert.equal(clamped.tutorialPacing, 1.25);
 });
 
+test("accessibility preset flag persists", () => {
+  const storage = createMemoryStorage();
+  const defaults = createDefaultPlayerSettings();
+  assert.equal(defaults.accessibilityPresetEnabled, false);
+
+  const patched = withPatchedPlayerSettings(defaults, { accessibilityPresetEnabled: true });
+  writePlayerSettings(storage, patched);
+  const loaded = readPlayerSettings(storage);
+  assert.equal(loaded.accessibilityPresetEnabled, true);
+});
+
 test("accessibility self-test state persists confirmations and timestamps", () => {
   const storage = createMemoryStorage();
   const defaults = createDefaultPlayerSettings();

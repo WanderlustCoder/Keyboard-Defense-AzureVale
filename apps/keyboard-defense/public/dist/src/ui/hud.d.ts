@@ -104,6 +104,7 @@ export interface HudCallbacks {
     }) => void;
     onReducedMotionToggle(enabled: boolean): void;
     onCheckeredBackgroundToggle(enabled: boolean): void;
+    onAccessibilityPresetToggle?: (enabled: boolean) => void;
     onReadableFontToggle(enabled: boolean): void;
     onDyslexiaFontToggle(enabled: boolean): void;
     onDyslexiaSpacingToggle?: (enabled: boolean) => void;
@@ -234,6 +235,7 @@ type OptionsOverlayElements = {
     hapticsToggle?: string;
     reducedMotionToggle: string;
     checkeredBackgroundToggle: string;
+    accessibilityPresetToggle?: string;
     latencySparklineToggle?: string;
     readableFontToggle: string;
     dyslexiaFontToggle: string;
@@ -666,6 +668,7 @@ export declare class HudView {
     private postureReminderTarget;
     private postureLastReviewed;
     private audioNarrationEnabled;
+    private accessibilityPresetEnabled;
     private narration;
     private subtitleLargeEnabled;
     private focusOutlinePreset;
@@ -772,6 +775,7 @@ export declare class HudView {
         soundVolume: number;
         soundIntensity: number;
         audioNarrationEnabled?: boolean;
+        accessibilityPresetEnabled?: boolean;
         tutorialPacing?: number;
         largeSubtitlesEnabled?: boolean;
         musicEnabled?: boolean;

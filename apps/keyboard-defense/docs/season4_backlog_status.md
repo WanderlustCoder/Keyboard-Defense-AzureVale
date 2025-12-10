@@ -60,7 +60,7 @@ Quick status snapshot for items in `season4_backlog.md`. All items start as Not 
 | 54 | Large-text subtitles | Done | Options overlay adds a Large-Text Subtitles toggle plus a preview dialog; enables global large subtitles with higher contrast across overlays and voice-line captions. |
 | 55 | Tutorial pacing slider | Done | Options overlay adds a Tutorial Pacing slider (75-125%) that rescales scripted tutorial timings and persists per profile. |
 | 56 | Input latency sparkline | Done | Latency indicator now renders a live sparkline of recent samples alongside the value. |
-| 57 | Profile-bound accessibility toggle | Not Started | - |
+| 57 | Profile-bound accessibility toggle | Done | One-tap accessibility preset per profile that bundles reduced motion, readable/dyslexia fonts and spacing, narration, large subtitles, and a simplified HUD. |
 | 58 | Screen-shake preview | Done | Options adds a screen shake toggle with intensity slider, preview button, and reduced-motion guard so players can test before enabling. |
 | 59 | Accessibility self-test mode | Done | Options overlay adds an accessibility self-test card that plays sound/flash/motion cues with per-channel confirmations and persisted last-run state; motion check respects Reduced Motion. |
 | 60 | Contrast audit overlay | Done | Options overlay adds a Contrast Audit overlay that scans UI regions for low-contrast text and highlights warnings/fails with an overlay list and markers. |

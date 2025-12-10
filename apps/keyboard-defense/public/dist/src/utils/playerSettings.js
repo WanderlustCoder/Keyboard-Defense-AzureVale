@@ -1,5 +1,5 @@
 export const PLAYER_SETTINGS_STORAGE_KEY = "keyboard-defense:player-settings";
-export const PLAYER_SETTINGS_VERSION = 30;
+export const PLAYER_SETTINGS_VERSION = 31;
 const DEFAULT_UPDATED_AT = "1970-01-01T00:00:00.000Z";
 const HUD_FONT_SCALE_MIN = 0.85;
 const HUD_FONT_SCALE_MAX = 1.3;
@@ -7,6 +7,7 @@ const HUD_ZOOM_MIN = 0.9;
 const HUD_ZOOM_MAX = 1.2;
 const HUD_ZOOM_DEFAULT = 1;
 const HUD_LAYOUT_DEFAULT = "right";
+const DEFAULT_ACCESSIBILITY_PRESET = false;
 const TUTORIAL_PACING_MIN = 0.75;
 const TUTORIAL_PACING_MAX = 1.25;
 const DEFAULT_TUTORIAL_PACING = 1;
@@ -57,6 +58,7 @@ const BASE_DEFAULT_SETTINGS = {
     dyslexiaSpacingEnabled: false,
     reducedCognitiveLoadEnabled: false,
     audioNarrationEnabled: false,
+    accessibilityPresetEnabled: DEFAULT_ACCESSIBILITY_PRESET,
     tutorialPacing: DEFAULT_TUTORIAL_PACING,
     largeSubtitlesEnabled: false,
     backgroundBrightness: 1,
@@ -165,6 +167,9 @@ export function readPlayerSettings(storage) {
         const audioNarrationEnabled = typeof parsed.audioNarrationEnabled === "boolean"
             ? parsed.audioNarrationEnabled
             : fallback.audioNarrationEnabled;
+        const accessibilityPresetEnabled = typeof parsed.accessibilityPresetEnabled === "boolean"
+            ? parsed.accessibilityPresetEnabled
+            : fallback.accessibilityPresetEnabled;
         const largeSubtitlesEnabled = typeof parsed.largeSubtitlesEnabled === "boolean"
             ? parsed.largeSubtitlesEnabled
             : fallback.largeSubtitlesEnabled;
@@ -247,6 +252,7 @@ export function readPlayerSettings(storage) {
             dyslexiaSpacingEnabled,
             reducedCognitiveLoadEnabled,
             audioNarrationEnabled,
+            accessibilityPresetEnabled,
             largeSubtitlesEnabled,
             backgroundBrightness,
             colorblindPaletteEnabled,
@@ -340,6 +346,9 @@ export function withPatchedPlayerSettings(current, patch) {
         audioNarrationEnabled: typeof patch.audioNarrationEnabled === "boolean"
             ? patch.audioNarrationEnabled
             : current.audioNarrationEnabled,
+        accessibilityPresetEnabled: typeof patch.accessibilityPresetEnabled === "boolean"
+            ? patch.accessibilityPresetEnabled
+            : current.accessibilityPresetEnabled,
         largeSubtitlesEnabled: typeof patch.largeSubtitlesEnabled === "boolean"
             ? patch.largeSubtitlesEnabled
             : current.largeSubtitlesEnabled,

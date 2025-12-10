@@ -329,6 +329,7 @@ export class HudView {
     postureReminderTarget = null;
     postureLastReviewed = null;
     audioNarrationEnabled = false;
+    accessibilityPresetEnabled = false;
     narration = new NarrationManager();
     subtitleLargeEnabled = false;
     focusOutlinePreset = "system";
@@ -817,6 +818,9 @@ export class HudView {
                 : null;
             const reducedMotionToggle = document.getElementById(rootIds.optionsOverlay.reducedMotionToggle);
             const checkeredBackgroundToggle = document.getElementById(rootIds.optionsOverlay.checkeredBackgroundToggle);
+            const accessibilityPresetToggle = rootIds.optionsOverlay.accessibilityPresetToggle
+                ? document.getElementById(rootIds.optionsOverlay.accessibilityPresetToggle)
+                : null;
             const readableFontToggle = document.getElementById(rootIds.optionsOverlay.readableFontToggle);
             const dyslexiaFontToggle = document.getElementById(rootIds.optionsOverlay.dyslexiaFontToggle);
             const dyslexiaSpacingToggle = rootIds.optionsOverlay.dyslexiaSpacingToggle
@@ -946,6 +950,7 @@ export class HudView {
                 diagnosticsToggle instanceof HTMLInputElement &&
                 reducedMotionToggle instanceof HTMLInputElement &&
                 checkeredBackgroundToggle instanceof HTMLInputElement &&
+                (accessibilityPresetToggle === null || accessibilityPresetToggle instanceof HTMLInputElement) &&
                 (latencySparklineToggle === null || latencySparklineToggle instanceof HTMLInputElement) &&
                 readableFontToggle instanceof HTMLInputElement &&
                 dyslexiaFontToggle instanceof HTMLInputElement &&
@@ -1029,6 +1034,9 @@ export class HudView {
                     hapticsToggle: hapticsToggle instanceof HTMLInputElement ? hapticsToggle : undefined,
                     reducedMotionToggle,
                     checkeredBackgroundToggle,
+                    accessibilityPresetToggle: accessibilityPresetToggle instanceof HTMLInputElement
+                        ? accessibilityPresetToggle
+                        : undefined,
                     latencySparklineToggle: latencySparklineToggle instanceof HTMLInputElement ? latencySparklineToggle : undefined,
                     readableFontToggle,
                     dyslexiaFontToggle,
@@ -1368,6 +1376,13 @@ export class HudView {
                         return;
                     this.callbacks.onCheckeredBackgroundToggle(checkeredBackgroundToggle.checked);
                 });
+                if (this.optionsOverlay.accessibilityPresetToggle) {
+                    this.optionsOverlay.accessibilityPresetToggle.addEventListener("change", () => {
+                        if (this.syncingOptionToggles)
+                            return;
+                        this.callbacks.onAccessibilityPresetToggle?.(this.optionsOverlay.accessibilityPresetToggle.checked);
+                    });
+                }
                 if (this.optionsOverlay.latencySparklineToggle) {
                     this.optionsOverlay.latencySparklineToggle.addEventListener("change", () => {
                         if (this.syncingOptionToggles)
@@ -3142,6 +3157,11 @@ export class HudView {
             this.optionsOverlay.hapticsToggle.checked = state.hapticsEnabled;
         }
         this.optionsOverlay.reducedMotionToggle.checked = state.reducedMotionEnabled;
+        if (this.optionsOverlay.accessibilityPresetToggle &&
+            state.accessibilityPresetEnabled !== undefined) {
+            this.accessibilityPresetEnabled = Boolean(state.accessibilityPresetEnabled);
+            this.optionsOverlay.accessibilityPresetToggle.checked = this.accessibilityPresetEnabled;
+        }
         if (this.optionsOverlay.audioNarrationToggle && state.audioNarrationEnabled !== undefined) {
             this.optionsOverlay.audioNarrationToggle.checked = state.audioNarrationEnabled;
         }

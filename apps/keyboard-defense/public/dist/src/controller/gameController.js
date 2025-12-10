@@ -218,6 +218,7 @@ export class GameController {
         this.dyslexiaSpacingEnabled = false;
         this.reducedCognitiveLoadEnabled = false;
         this.audioNarrationEnabled = false;
+        this.accessibilityPresetEnabled = false;
         this.tutorialPacing = 1;
         this.largeSubtitlesEnabled = false;
         this.backgroundBrightness = BG_BRIGHTNESS_DEFAULT;
@@ -581,6 +582,7 @@ export class GameController {
                 textSizeSelect: "options-text-size",
                 reducedMotionToggle: "options-reduced-motion-toggle",
                 checkeredBackgroundToggle: "options-checkered-bg-toggle",
+                accessibilityPresetToggle: "options-accessibility-preset",
                 latencySparklineToggle: "options-latency-sparkline",
                 readableFontToggle: "options-readable-font-toggle",
                 dyslexiaFontToggle: "options-dyslexia-font-toggle",
@@ -884,6 +886,7 @@ export class GameController {
             },
             onReducedMotionToggle: (enabled) => this.setReducedMotionEnabled(enabled),
             onCheckeredBackgroundToggle: (enabled) => this.setCheckeredBackgroundEnabled(enabled),
+            onAccessibilityPresetToggle: (enabled) => this.setAccessibilityPresetEnabled(enabled),
             onLargeSubtitlesToggle: (enabled) => this.setLargeSubtitlesEnabled(enabled),
             onTutorialPacingChange: (value) => this.setTutorialPacing(value),
             onAudioNarrationToggle: (enabled) => this.setAudioNarrationEnabled(enabled),
@@ -2364,6 +2367,59 @@ export class GameController {
         }
         return this.tutorialPacing;
     }
+    setAccessibilityPresetEnabled(enabled, options = {}) {
+        const next = Boolean(enabled);
+        const applyPreset = options.applyPreset !== false;
+        if (this.accessibilityPresetEnabled === next && !options.force) {
+            return this.accessibilityPresetEnabled;
+        }
+        this.accessibilityPresetEnabled = next;
+        if (applyPreset) {
+            this.applyAccessibilityPreset(next, {
+                persist: false,
+                render: false,
+                silent: true
+            });
+        }
+        if (!options.silent) {
+            this.hud.appendLog(next
+                ? "Accessibility preset enabled for this profile."
+                : "Accessibility preset disabled.");
+        }
+        if (options.persist !== false) {
+            this.persistPlayerSettings({
+                accessibilityPresetEnabled: next,
+                reducedMotionEnabled: applyPreset ? this.reducedMotionEnabled : undefined,
+                readableFontEnabled: applyPreset ? this.readableFontEnabled : undefined,
+                dyslexiaFontEnabled: applyPreset ? this.dyslexiaFontEnabled : undefined,
+                dyslexiaSpacingEnabled: applyPreset ? this.dyslexiaSpacingEnabled : undefined,
+                reducedCognitiveLoadEnabled: applyPreset ? this.reducedCognitiveLoadEnabled : undefined,
+                audioNarrationEnabled: applyPreset ? this.audioNarrationEnabled : undefined,
+                largeSubtitlesEnabled: applyPreset ? this.largeSubtitlesEnabled : undefined,
+                screenShakeEnabled: applyPreset ? this.screenShakeEnabled : undefined
+            });
+        }
+        if (options.render !== false) {
+            this.updateOptionsOverlayState();
+        }
+        return this.accessibilityPresetEnabled;
+    }
+    applyAccessibilityPreset(enabled, options = {}) {
+        const presetOptions = {
+            persist: options.persist ?? false,
+            render: options.render ?? false,
+            silent: options.silent ?? true
+        };
+        const target = Boolean(enabled);
+        this.setReducedMotionEnabled(target, presetOptions);
+        this.setReadableFontEnabled(target, presetOptions);
+        this.setDyslexiaFontEnabled(target, presetOptions);
+        this.setDyslexiaSpacingEnabled(target, presetOptions);
+        this.setReducedCognitiveLoadEnabled(target, presetOptions);
+        this.setAudioNarrationEnabled(target, presetOptions);
+        this.setLargeSubtitlesEnabled(target, presetOptions);
+        return target;
+    }
     setLargeSubtitlesEnabled(enabled, options = {}) {
         const next = Boolean(enabled);
         if (this.largeSubtitlesEnabled === next) {
@@ -2688,6 +2744,7 @@ export class GameController {
             soundVolume: this.soundVolume,
             soundIntensity: this.audioIntensity,
             audioNarrationEnabled: this.audioNarrationEnabled,
+            accessibilityPresetEnabled: this.accessibilityPresetEnabled,
             tutorialPacing: this.tutorialPacing,
             largeSubtitlesEnabled: this.largeSubtitlesEnabled,
             musicEnabled: this.musicEnabled,
@@ -3809,6 +3866,8 @@ export class GameController {
                 normalizeFocusOutlinePreset(previousFocusOutline);
         const audioNarrationUnchanged = patch.audioNarrationEnabled === undefined ||
             patch.audioNarrationEnabled === this.audioNarrationEnabled;
+        const accessibilityPresetUnchanged = patch.accessibilityPresetEnabled === undefined ||
+            patch.accessibilityPresetEnabled === this.accessibilityPresetEnabled;
         const tutorialPacingUnchanged = patch.tutorialPacing === undefined ||
             Math.abs(this.normalizeTutorialPacing(patch.tutorialPacing) -
                 this.normalizeTutorialPacing(this.playerSettings.tutorialPacing ?? 1)) <= 0.001;
@@ -3869,6 +3928,7 @@ export class GameController {
             cognitiveLoadUnchanged &&
             colorblindUnchanged &&
             audioNarrationUnchanged &&
+            accessibilityPresetUnchanged &&
             tutorialPacingUnchanged &&
             largeSubtitlesUnchanged &&
             focusOutlineUnchanged &&
@@ -5080,6 +5140,12 @@ export class GameController {
             silent: true,
             persist: false,
             render: false
+        });
+        this.setAccessibilityPresetEnabled(stored.accessibilityPresetEnabled ?? false, {
+            silent: true,
+            persist: false,
+            render: false,
+            applyPreset: false
         });
         this.setAudioNarrationEnabled(stored.audioNarrationEnabled ?? false, {
             silent: true,

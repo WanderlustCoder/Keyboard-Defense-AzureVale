@@ -98,6 +98,8 @@ export declare class GameController {
     setColorblindPaletteEnabled(enabled: any, options?: {}): boolean;
     setAudioNarrationEnabled(enabled: any, options?: {}): any;
     setTutorialPacing(value: any, options?: {}): any;
+    setAccessibilityPresetEnabled(enabled: any, options?: {}): any;
+    applyAccessibilityPreset(enabled: any, options?: {}): boolean;
     setLargeSubtitlesEnabled(enabled: any, options?: {}): any;
     setColorblindPaletteMode(mode: any, options?: {}): boolean;
     setFocusOutlinePreset(preset: FocusOutlinePreset, options?: {}): boolean;
