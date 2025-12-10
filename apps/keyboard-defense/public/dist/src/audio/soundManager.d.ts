@@ -1,3 +1,6 @@
+import { type SfxLibraryId } from "../utils/sfxLibrary.js";
+import { type MusicProfile, type MusicStemId } from "../utils/musicStems.js";
+import { type UiSampleKey, type UiSchemeId } from "../utils/uiSoundScheme.js";
 export type AmbientProfile = "calm" | "rising" | "siege" | "dire";
 export declare class SoundManager {
     private enabled;
@@ -6,12 +9,23 @@ export declare class SoundManager {
     private intensity;
     private ctx;
     private masterGain;
+    private musicGain;
     private sounds;
     private ambientGain;
     private ambientSource;
     private ambientProfile;
     private ambientBuffers;
     private stingers;
+    private sfxLibraryId;
+    private musicEnabled;
+    private musicLevel;
+    private musicProfile;
+    private musicSuiteId;
+    private musicBuffers;
+    private musicSources;
+    private musicGains;
+    private uiSchemeId;
+    private uiSounds;
     constructor();
     ensureInitialized(): Promise<void>;
     play(key: string, detune?: number): void;
@@ -25,12 +39,31 @@ export declare class SoundManager {
     getVolume(): number;
     setIntensity(intensity: number): void;
     getIntensity(): number;
+    setLibrary(libraryId: SfxLibraryId): void;
+    setUiScheme(schemeId: UiSchemeId): void;
+    setMusicEnabled(enabled: boolean): void;
+    setMusicLevel(level: number): void;
+    playUi(key: UiSampleKey): void;
+    setMusicSuite(suiteId: MusicStemId): void;
+    setMusicProfile(profile: MusicProfile | AmbientProfile): void;
     private loadSounds;
     playStinger(kind: "victory" | "defeat"): void;
     private loadAmbientBuffers;
     private loadStingers;
+    private loadMusicStems;
+    private restartMusicLoops;
+    private applyMusicProfile;
+    private stopMusic;
+    private buildMusicStemBuffer;
+    private createPulse;
+    private loadUiSounds;
+    private normalizeUiPatch;
+    private buildUiDescriptor;
     private createPad;
     private createTone;
+    private createHybrid;
     private createNoise;
+    private normalizePatch;
+    private buildDescriptor;
 }
 //# sourceMappingURL=soundManager.d.ts.map

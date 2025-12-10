@@ -1,6 +1,12 @@
 import { type TypingDrillMode, type TypingDrillSummary } from "../core/types.js";
 import { type ResolutionTransitionState } from "../ui/ResolutionTransitionController.js";
 import { type DiagnosticsSectionsPreferenceMap, type TurretLoadoutPreset, type TurretLoadoutSlot } from "../utils/playerSettings.js";
+import { type SfxLibraryId } from "../utils/sfxLibrary.js";
+import { type UiSchemeId } from "../utils/uiSoundScheme.js";
+import { type MusicStemId } from "../utils/musicStems.js";
+import { type DayNightMode } from "../utils/dayNightTheme.js";
+import { type ParallaxScene } from "../utils/parallaxBackground.js";
+import { type BiomeId } from "../utils/biomeGallery.js";
 import { type EnemyBiography } from "../data/bestiary.js";
 export declare class GameController {
     constructor(options: any);
@@ -48,6 +54,8 @@ export declare class GameController {
     setDiagnosticsVisible(visible: any, options?: {}): void;
     toggleDiagnostics(): void;
     setSoundEnabled(enabled: any, options?: {}): void;
+    setMusicEnabled(enabled: any, options?: {}): void;
+    setMusicLevel(level: any, options?: {}): void;
     setReducedMotionEnabled(enabled: any, options?: {}): void;
     setCheckeredBackgroundEnabled(enabled: any, options?: {}): void;
     setLowGraphicsEnabled(enabled: any, options?: {}): boolean;
@@ -60,6 +68,18 @@ export declare class GameController {
     setBackgroundBrightness(value: any, options?: {}): boolean;
     setSoundVolume(volume: any, options?: {}): void;
     setAudioIntensity(intensity: any, options?: {}): void;
+    setMusicSuiteSelection(suiteId: MusicStemId, options?: {
+        silent?: boolean;
+    }): boolean;
+    previewMusicSuite(suiteId: MusicStemId): void;
+    setUiSoundSchemeSelection(schemeId: UiSchemeId, options?: {
+        silent?: boolean;
+    }): boolean;
+    previewUiSoundScheme(schemeId: UiSchemeId): void;
+    setSfxLibrarySelection(libraryId: SfxLibraryId, options?: {
+        silent?: boolean;
+    }): boolean;
+    previewSfxLibrary(libraryId: SfxLibraryId): void;
     setScreenShakeEnabled(enabled: any, options?: {}): boolean;
     setScreenShakeIntensity(intensity: any, options?: {}): boolean;
     previewScreenShake(): boolean;
@@ -95,7 +115,7 @@ export declare class GameController {
         soundIntensity: any;
     };
     normalizeHudZoom(value: any): number;
-    normalizeCastleSkin(value: any): "ember" | "aurora" | "classic" | "dusk";
+    normalizeCastleSkin(value: any): "classic" | "ember" | "aurora" | "dusk";
     normalizeHudLayout(side: any): "left" | "right";
     normalizeHudFontScale(value: any): number;
     normalizeTextSizeScale(value: any): number;
@@ -103,6 +123,7 @@ export declare class GameController {
     normalizeBackgroundBrightness(value: any): number;
     normalizeSoundVolume(value: any): number;
     normalizeAudioIntensity(value: any): number;
+    normalizeMusicLevel(value: any): number;
     normalizeScreenShakeIntensity(value: any): number;
     updateOptionsOverlayState(): void;
     applyReducedMotionSetting(enabled: any): void;
@@ -262,6 +283,7 @@ export declare class GameController {
     };
     resetAnalytics(): void;
     exportAnalytics(): void;
+    copyAnalyticsRecap(): Promise<void>;
     pauseForTutorial(): void;
     resumeFromTutorial(): void;
     tick(timestamp: any): void;
@@ -324,6 +346,15 @@ export declare class GameController {
     startPracticeMode(): void;
     initializeLessonProgress(): void;
     initializeLessonMedals(): void;
+    initializeWpmLadder(): void;
+    initializeSfxLibrary(): void;
+    initializeUiSoundScheme(): void;
+    initializeMusicStems(): void;
+    initializeBiomeGallery(): void;
+    initializeDayNightTheme(): void;
+    initializeParallaxScene(): void;
+    initializeTrainingCalendar(): void;
+    initializeStreakTokens(): void;
     initializeLoreProgress(): void;
     unlockLoreForWave(waveNumber: any): void;
     buildLoreScrollViewState(): {
@@ -349,8 +380,33 @@ export declare class GameController {
     buildSeasonTrackViewState(): import("../data/seasonTrack.js").SeasonTrackViewState;
     syncSeasonTrackToHud(): void;
     syncLessonMedalsToHud(nextTarget: any): void;
+    syncWpmLadderToHud(): void;
+    syncBiomeGalleryToHud(): void;
+    syncDayNightThemeToHud(): void;
+    syncParallaxSceneToHud(): void;
+    syncSfxLibraryToHud(): void;
+    syncUiSoundSchemeToHud(): void;
+    syncMusicStemsToHud(): void;
+    syncParallaxMotionPause(): void;
+    syncTrainingCalendarToHud(): void;
+    syncStreakTokensToHud(): void;
     syncLoreScrollsToHud(): void;
     handleLessonCompletion(summary: TypingDrillSummary): void;
+    recordWpmLadderEntry(summary: TypingDrillSummary): void;
+    recordTrainingCalendarEntry(summary: TypingDrillSummary, calendarDelta?: {
+        lessons: number;
+        drills: number;
+    }): void;
+    recordBiomeEntry(summary: TypingDrillSummary, calendarDelta?: {
+        lessons: number;
+        drills: number;
+    }): void;
+    setActiveBiomeSelection(biomeId: BiomeId): void;
+    setDayNightTheme(mode: DayNightMode): void;
+    setParallaxScene(scene: ParallaxScene, options?: {
+        persist?: boolean;
+        silent?: boolean;
+    }): boolean;
     shouldSkipTutorial(): boolean;
     markTutorialComplete(): void;
     clearTutorialProgress(): void;
@@ -381,6 +437,13 @@ export declare class GameController {
     startLatencyMonitor(): void;
     recordLatencySample(value: any): void;
     updateLatencyIndicator(averageMs: any): void;
+    updateLatencySparkline(): void;
+    updateLatencySparklineVisibility(): void;
+    isLatencySparklineVisible(): boolean;
+    loadLatencySparklineEnabled(): boolean;
+    persistLatencySparklineEnabled(enabled: any): void;
+    persistLegacyLatencySparklineEnabled(enabled: any): void;
+    setLatencySparklineEnabled(enabled: any, options?: {}): void;
     loadHudVisibilityPrefs(): {
         metrics: boolean;
         battleLog: boolean;

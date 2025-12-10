@@ -15,10 +15,19 @@ Keyboard Defense is a typing-driven castle defense game where fast, accurate inp
 - Asset manifest with SHA-256 integrity hashes; sprites fail closed when tampering or corruption is detected at load time.
 - Debug overlay and `window.keyboardDefense` hooks for runtime inspection and mutation.
 - Optional Web Audio feedback for projectile launches, impacts, breaches, and upgrades.
+- Dynamic music suites that layer stems by castle danger with an options overlay picker/preview.
+- Refreshed SFX library with selectable palettes and an options overlay preview.
 - Procedural enemy defeat bursts with easing-driven gradients so kills feel readable even before bespoke sprites ship.
 - Accessibility and comfort toggles for reduced motion, readable fonts, adjustable HUD scale, an audio intensity slider, and a colorblind-friendly palette.
 - Endless practice mode accessible from the main menu, looping waves indefinitely for warm-up runs.
 - Typing drills overlay (Burst, Endurance, Shield Breaker) that lets players warm up combos and accuracy without risking the castle.
+- Personal WPM ladder that records per-mode best runs with a HUD card, options shortcut, and local-only overlay.
+- Training calendar heatmap that tracks daily lessons/drills locally with a HUD card and overlay grid.
+- Pixel-art biome gallery that lets you pick an active backdrop, preview palettes/tags, and track runs/lessons/drills per biome with a HUD card, options shortcut, and local-only overlay.
+- Day/night palette toggle to swap global HUD theming (panels, overlays, biome cards) with local persistence.
+- Enemy readability guide overlay that highlights refreshed silhouettes, tier colors, and quick tips for every enemy tier.
+- Layered parallax backgrounds (day/night/storm) with gentle motion that pauses for Reduced Motion/Low Graphics, selectable from options.
+- Streak-freeze tokens awarded on 5-day streaks to protect progress; shown in HUD with an options shortcut.
 
 ## Getting Started
 

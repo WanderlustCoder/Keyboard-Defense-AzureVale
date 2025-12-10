@@ -1,6 +1,6 @@
 import { TurretTargetPriority, TurretTypeId } from "../core/types.js";
 export declare const PLAYER_SETTINGS_STORAGE_KEY = "keyboard-defense:player-settings";
-export declare const PLAYER_SETTINGS_VERSION = 27;
+export declare const PLAYER_SETTINGS_VERSION = 28;
 export declare const TURRET_PRESET_IDS: readonly ["preset-a", "preset-b", "preset-c"];
 declare const ALLOWED_TURRET_PRESET_IDS: readonly ["preset-a", "preset-b", "preset-c"];
 export type DiagnosticsSectionId = "gold-events" | "castle-passives" | "turret-dps";
@@ -30,6 +30,7 @@ export interface PlayerSettings {
     version: number;
     soundEnabled: boolean;
     soundVolume: number;
+    latencySparklineEnabled: boolean;
     diagnosticsVisible: boolean;
     reducedMotionEnabled: boolean;
     lowGraphicsEnabled: boolean;
@@ -44,6 +45,8 @@ export interface PlayerSettings {
     backgroundBrightness: number;
     colorblindPaletteEnabled: boolean;
     audioIntensity: number;
+    musicEnabled: boolean;
+    musicLevel: number;
     screenShakeEnabled: boolean;
     screenShakeIntensity: number;
     telemetryEnabled: boolean;

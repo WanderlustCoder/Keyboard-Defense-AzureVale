@@ -59,7 +59,7 @@ Quick status snapshot for items in `season4_backlog.md`. All items start as Not 
 | 53 | Layout preview overlay | Not Started | - |
 | 54 | Large-text subtitles | Not Started | - |
 | 55 | Tutorial pacing slider | Not Started | - |
-| 56 | Input latency sparkline | Not Started | - |
+| 56 | Input latency sparkline | Done | Latency indicator now renders a live sparkline of recent samples alongside the value. |
 | 57 | Profile-bound accessibility toggle | Not Started | - |
 | 58 | Screen-shake preview | Done | Options adds a screen shake toggle with intensity slider, preview button, and reduced-motion guard so players can test before enabling. |
 | 59 | Accessibility self-test mode | Done | Options overlay adds an accessibility self-test card that plays sound/flash/motion cues with per-channel confirmations and persisted last-run state; motion check respects Reduced Motion. |
@@ -76,15 +76,15 @@ Quick status snapshot for items in `season4_backlog.md`. All items start as Not 
 | 70 | Adaptive mentor dialogue | Done | Mentor card surfaces focus-specific tips (accuracy vs speed) based on live stats with cooldowns and reduced-motion-safe styling. |
 | 71 | Castle museum room | Done | Castle Museum panel/overlay shows unlocked skins, reward artifacts, companion moods, lore scrolls, medals, certificates, and drills. |
 | 72 | Side-mission quest log | Done | HUD panel and overlay list narrative side quests with progress (lessons, medals, scrolls, drills) plus options and HUD entry points. |
-| 73 | Personal WPM ladder | Not Started | - |
-| 74 | Streak-freeze tokens | Not Started | - |
-| 75 | Training calendar heatmap | Not Started | - |
-| 76 | Pixel art biome expansion | Not Started | - |
-| 77 | Day/night palette swaps | Not Started | - |
-| 78 | Parallax backgrounds | Not Started | - |
-| 79 | Enemy readability guide refresh | Not Started | - |
-| 80 | SFX library refresh | Not Started | - |
-| 81 | Dynamic music stems | Not Started | - |
+| 73 | Personal WPM ladder | Done | HUD card + options overlay surface per-mode best WPM ladders from typing drills (local storage). |
+| 74 | Streak-freeze tokens | Done | Daily streak tokens granted after 5-day streaks; HUD card shows tokens/streak and options shortcut. |
+| 75 | Training calendar heatmap | Done | HUD card + overlay show recent lessons/drills per day with a 4+ week heatmap (local storage). |
+| 76 | Pixel art biome expansion | Done | HUD biome gallery adds themed palettes, active biome selection, and per-biome run tracking (local storage). |
+| 77 | Day/night palette swaps | Done | HUD adds a day/night palette selector with global theming for panels/overlays; persists locally. |
+| 78 | Parallax backgrounds | Done | Layered parallax sky/hills with day/night/storm scenes, gentle motion that pauses with Reduced Motion/Low Graphics, and an options toggle. |
+| 79 | Enemy readability guide refresh | Done | Overlay guide refreshed with silhouettes, tier color tags, and quick readability tips for each enemy tier. |
+| 80 | SFX library refresh | Done | Options adds an SFX library picker with palette previews and a selectable active mix. |
+| 81 | Dynamic music stems | Done | Dynamic music suites layer stems that react to wave danger/health with an options picker and local persistence. |
 | 82 | UI sound scheme selector | Not Started | - |
 | 83 | Voice pack stubs | Not Started | - |
 | 84 | Reduced-motion VFX variants | Not Started | - |

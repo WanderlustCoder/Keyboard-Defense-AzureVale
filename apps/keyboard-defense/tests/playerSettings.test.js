@@ -50,6 +50,18 @@ test("screen shake preference clamps intensity and persists enabled flag", () =>
   assert.ok(loaded.screenShakeIntensity <= 1.2);
 });
 
+test("latency sparkline preference round-trips via player settings", () => {
+  const storage = createMemoryStorage();
+  const defaults = createDefaultPlayerSettings();
+  assert.equal(defaults.latencySparklineEnabled, true);
+
+  const patched = withPatchedPlayerSettings(defaults, { latencySparklineEnabled: false });
+  writePlayerSettings(storage, patched);
+
+  const loaded = readPlayerSettings(storage);
+  assert.equal(loaded.latencySparklineEnabled, false);
+});
+
 test("accessibility self-test state persists confirmations and timestamps", () => {
   const storage = createMemoryStorage();
   const defaults = createDefaultPlayerSettings();
@@ -85,4 +97,20 @@ test("castle skin selection normalizes and persists", () => {
 
   const invalid = withPatchedPlayerSettings(defaults, { castleSkin: "midnight" });
   assert.equal(invalid.castleSkin, "classic");
+});
+
+test("music settings clamp level and persist enabled flag", () => {
+  const storage = createMemoryStorage();
+  const defaults = createDefaultPlayerSettings();
+  assert.equal(defaults.musicEnabled, true);
+  assert.ok(defaults.musicLevel > 0);
+
+  const patched = withPatchedPlayerSettings(defaults, {
+    musicEnabled: false,
+    musicLevel: 2
+  });
+  writePlayerSettings(storage, patched);
+  const loaded = readPlayerSettings(storage);
+  assert.equal(loaded.musicEnabled, false);
+  assert.ok(loaded.musicLevel <= 1);
 });

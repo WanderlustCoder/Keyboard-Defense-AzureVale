@@ -7,6 +7,16 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+    <div id="parallax-shell" aria-hidden="true" role="presentation">
+      <div class="parallax-layer parallax-layer--sky"></div>
+      <div class="parallax-layer parallax-layer--glow"></div>
+      <div class="parallax-layer parallax-layer--stars"></div>
+      <div class="parallax-layer parallax-layer--clouds"></div>
+      <div class="parallax-layer parallax-layer--far"></div>
+      <div class="parallax-layer parallax-layer--mid"></div>
+      <div class="parallax-layer parallax-layer--near"></div>
+      <div class="parallax-layer parallax-layer--rain"></div>
+    </div>
     <div
       id="loading-screen"
       data-visible="true"
@@ -27,7 +37,174 @@
       </div>
     </div>
     <div id="app">
-      <canvas id="game-surface" width="960" height="540"></canvas>
+      <aside id="wave-rail" class="wave-rail">
+        <section class="wave-preview">
+          <div class="wave-preview-header">
+            <h2>Upcoming Enemies</h2>
+            <p class="wave-preview-sub">Scout the wave before it hits.</p>
+          </div>
+          <div
+            id="hint-wave-preview"
+            class="contextual-hint"
+            data-visible="false"
+            role="status"
+            aria-live="polite"
+          >
+            <p class="contextual-hint-text">
+              Hint: Preview shows the next wave. Hover an enemy to read its role and tips.
+            </p>
+            <button type="button" class="contextual-hint-close" aria-label="Dismiss wave preview hint">
+              x
+            </button>
+          </div>
+          <div
+            id="wave-preview-hint"
+            class="wave-preview-hint"
+            role="status"
+            aria-live="polite"
+            aria-hidden="true"
+            data-visible="false"
+          ></div>
+          <div id="wave-preview-list"></div>
+          <div
+            id="enemy-bio-card"
+            class="enemy-bio-card"
+            aria-live="polite"
+            aria-hidden="true"
+            data-visible="false"
+          >
+            <div class="enemy-bio-header">
+              <div>
+                <p id="enemy-bio-role" class="enemy-bio-role"></p>
+                <h3 id="enemy-bio-title" class="enemy-bio-title"></h3>
+              </div>
+              <span id="enemy-bio-danger" class="enemy-bio-danger"></span>
+            </div>
+            <p id="enemy-bio-description" class="enemy-bio-description"></p>
+            <div class="enemy-bio-columns">
+              <div>
+                <p class="enemy-bio-label">Abilities</p>
+                <ul id="enemy-bio-abilities"></ul>
+              </div>
+              <div>
+                <p class="enemy-bio-label">Tips</p>
+                <ul id="enemy-bio-tips"></ul>
+              </div>
+            </div>
+          </div>
+        </section>
+      </aside>
+      <div id="playfield-shell" class="playfield-shell">
+        <div class="playfield-topbar">
+          <div class="playfield-brand">
+            <h1>Keyboard Defense</h1>
+            <div class="playfield-actions">
+              <button id="fullscreen-button" type="button" aria-pressed="false" aria-label="Toggle fullscreen">
+                Fullscreen
+              </button>
+              <button id="pause-button" type="button" aria-label="Pause game">Pause</button>
+              <button id="roadmap-launch" type="button" aria-label="Open roadmap">Roadmap</button>
+              <button
+                id="shortcut-launch"
+                class="icon-button"
+                type="button"
+                aria-label="Show keyboard shortcuts"
+              >
+                <span aria-hidden="true">?</span>
+              </button>
+            </div>
+          </div>
+          <div class="playfield-health">
+            <span id="castle-health-label">Castle Health</span>
+            <div class="bar">
+              <div class="fill" id="castle-health-bar"></div>
+            </div>
+          </div>
+          <div class="playfield-meta">
+            <div class="session-inline">
+              <span class="session-label">Session</span>
+              <span id="session-timer" class="session-time session-time--inline">00:00</span>
+            </div>
+            <div
+              id="latency-indicator"
+              class="latency-indicator latency-indicator--inline"
+              data-state="good"
+              role="status"
+              aria-live="polite"
+              aria-label="Input latency good"
+            >
+              <span class="latency-dot" aria-hidden="true"></span>
+              <span class="latency-label">Input latency</span>
+              <svg
+                id="latency-sparkline"
+                class="latency-sparkline"
+                viewBox="0 0 80 18"
+                role="presentation"
+                aria-hidden="true"
+              >
+                <polyline id="latency-sparkline-path" points="0,18 80,18" />
+              </svg>
+              <span id="latency-value" class="latency-value">0ms</span>
+            </div>
+          </div>
+        </div>
+        <canvas id="game-surface" width="960" height="540"></canvas>
+        <div class="playfield-footer">
+          <div class="playfield-footer-left">
+            <div class="playfield-gold">
+              <span class="playfield-gold-label">Gold</span>
+              <span id="resource-gold">0</span>
+              <span id="resource-delta"></span>
+            </div>
+            <div class="typing-drills-cta" id="typing-drills-cta">
+              <div class="typing-drills-cta-text">
+                <p class="typing-drills-cta-title">Need a warmup?</p>
+                <p class="typing-drills-cta-copy">
+                  Run quick drills to lock in rhythm without risking the castle.
+                </p>
+                <p class="typing-drills-cta-hint">Shortcut: Shift + R to launch recommended drill</p>
+                <p id="typing-drills-cta-reco" class="typing-drills-cta-reco" data-visible="false">
+                  Recommended: <span class="typing-drills-cta-reco-mode"></span>
+                </p>
+              </div>
+              <button id="typing-drills-open" class="typing-drills-cta-button" type="button">
+                Launch drills
+              </button>
+            </div>
+          </div>
+          <div
+            id="break-reminder"
+            class="break-reminder break-reminder--inline"
+            data-visible="false"
+            role="status"
+            aria-live="polite"
+            aria-hidden="true"
+          >
+            <div class="break-reminder-copy">
+              <p class="break-reminder-title">Time for a stretch?</p>
+              <p class="break-reminder-tip" id="break-reminder-tip">
+                You have been practicing for 20 minutes. Stand, stretch, and sip water.
+              </p>
+            </div>
+            <div class="break-reminder-actions">
+              <button
+                id="break-reminder-snooze"
+                type="button"
+                aria-label="Snooze break reminder for 10 minutes"
+              >
+                Remind in 10m
+              </button>
+              <button
+                id="break-reminder-reset"
+                type="button"
+                aria-label="Confirm break taken and reset timer"
+              >
+                I took a break
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
       <aside id="hud">
         <section
           class="tutorial-banner"
@@ -46,77 +223,292 @@
           </button>
         </section>
         <section class="castle">
-          <div class="castle-header">
-            <h1>Keyboard Defense</h1>
-            <div class="castle-actions">
-              <button id="fullscreen-button" type="button" aria-pressed="false" aria-label="Toggle fullscreen">
-                Fullscreen
-              </button>
-              <button id="pause-button" type="button" aria-label="Pause game">Pause</button>
-              <button id="roadmap-launch" type="button" aria-label="Open roadmap">Roadmap</button>
-              <button
-                id="shortcut-launch"
-                class="icon-button"
-                type="button"
-                aria-label="Show keyboard shortcuts"
-              >
-                <span aria-hidden="true">?</span>
-              </button>
-            </div>
-          </div>
-          <div class="castle-health">
-            <span id="castle-health-label">Castle Health</span>
-            <div class="bar">
-              <div class="fill" id="castle-health-bar"></div>
-            </div>
-          </div>
-          <div class="resources">
-            <span>Gold:</span>
-            <span id="resource-gold">0</span>
-            <span id="resource-delta"></span>
-          </div>
-        <div class="session-panel" aria-live="polite">
-        <div class="session-row">
-          <span class="session-label">Session</span>
-          <span id="session-timer" class="session-time">00:00</span>
-        </div>
-          <div
-            id="latency-indicator"
-            class="latency-indicator"
-            data-state="good"
-            role="status"
-            aria-live="polite"
-            aria-label="Input latency good"
-          >
-            <span class="latency-dot" aria-hidden="true"></span>
-            <span class="latency-label">Input latency</span>
-            <span id="latency-value" class="latency-value">0ms</span>
-          </div>
-          <div
-            id="break-reminder"
-            class="break-reminder"
-            data-visible="false"
-            role="status"
-              aria-live="polite"
-              aria-hidden="true"
+        </section>
+        <section class="hud-dock" id="hud-dock">
+          <div class="hud-dock-tabs" id="hud-dock-tabs" role="tablist" aria-label="HUD command dock">
+            <button
+              id="hud-dock-tab-build"
+              type="button"
+              class="hud-dock-tab"
+              data-pane-target="build"
+              role="tab"
+              aria-selected="true"
+              aria-controls="hud-pane-build"
             >
-              <div class="break-reminder-copy">
-                <p class="break-reminder-title">Time for a stretch?</p>
-                <p class="break-reminder-tip" id="break-reminder-tip">
-                  You have been practicing for 20 minutes. Stand, stretch, and sip water.
-                </p>
+              Build
+              <span class="hud-dock-sub">Towers &amp; upgrades</span>
+            </button>
+            <button
+              id="hud-dock-tab-quests"
+              type="button"
+              class="hud-dock-tab"
+              data-pane-target="quests"
+              role="tab"
+              aria-selected="false"
+              aria-controls="hud-pane-quests"
+            >
+              Quests
+              <span class="hud-dock-sub">Missions &amp; side tasks</span>
+            </button>
+            <button
+              id="hud-dock-tab-rewards"
+              type="button"
+              class="hud-dock-tab"
+              data-pane-target="rewards"
+              role="tab"
+              aria-selected="false"
+              aria-controls="hud-pane-rewards"
+            >
+              Rewards
+              <span class="hud-dock-sub">Medals &amp; certificates</span>
+            </button>
+            <button
+              id="hud-dock-tab-lore"
+              type="button"
+              class="hud-dock-tab"
+              data-pane-target="lore"
+              role="tab"
+              aria-selected="false"
+              aria-controls="hud-pane-lore"
+            >
+              Lore
+              <span class="hud-dock-sub">Scrolls &amp; museum</span>
+            </button>
+          </div>
+          <div class="hud-pane-stack" id="hud-pane-stack">
+            <div
+              class="hud-pane"
+              id="hud-pane-build"
+              data-pane="build"
+              role="tabpanel"
+              aria-labelledby="hud-dock-tab-build"
+            >
+              <div class="hud-pane-label">
+                <p class="hud-pane-title">Build &amp; Commands</p>
+                <p class="hud-pane-copy">Pop the drawer to place towers or repair the keep.</p>
               </div>
-              <div class="break-reminder-actions">
-                <button id="break-reminder-snooze" type="button" aria-label="Snooze break reminder for 10 minutes">
-                  Remind in 10m
-                </button>
-                <button id="break-reminder-reset" type="button" aria-label="Confirm break taken and reset timer">
-                  I took a break
-                </button>
+              <div class="build-drawer" id="build-drawer" data-open="false">
+                <div class="build-rail">
+                  <div class="build-rail-copy">
+                    <p class="build-rail-kicker">Build &amp; Commands</p>
+                    <p class="build-rail-title">Deploy towers, upgrade the keep</p>
+                  </div>
+                  <button
+                    id="build-drawer-toggle"
+                    type="button"
+                    class="build-rail-button"
+                    aria-expanded="false"
+                    aria-controls="build-content"
+                  >
+                    Open build menu
+                  </button>
+                </div>
+                <div class="build-content" id="build-content" aria-hidden="true" hidden>
+                  <div class="upgrades" id="upgrade-panel"></div>
+                </div>
               </div>
             </div>
+            <div
+              class="hud-pane"
+              id="hud-pane-quests"
+              data-pane="quests"
+              role="tabpanel"
+              aria-labelledby="hud-dock-tab-quests"
+              aria-hidden="true"
+              hidden
+            >
+              <div class="hud-pane-label">
+                <p class="hud-pane-title">Mission Control</p>
+                <p class="hud-pane-copy">Track quests without scrolling below the battlefield.</p>
+              </div>
+              <section class="quest-panel" id="side-quest-panel" aria-live="polite">
+                <div class="quest-panel__content">
+                  <div>
+                    <p class="quest-panel__kicker">Side quests</p>
+                    <p class="quest-panel__summary" id="side-quest-summary">
+                      Complete optional goals between lessons.
+                    </p>
+                    <p class="quest-panel__stats" id="side-quest-stats">0 active ú 0 completed</p>
+                  </div>
+                  <button id="side-quest-open" type="button" class="secondary">Open Quest Log</button>
+                </div>
+              </section>
+            </div>
+            <div
+              class="hud-pane"
+              id="hud-pane-rewards"
+              data-pane="rewards"
+              role="tabpanel"
+              aria-labelledby="hud-dock-tab-rewards"
+              aria-hidden="true"
+              hidden
+            >
+              <div class="hud-pane-label">
+                <p class="hud-pane-title">Rewards</p>
+                <p class="hud-pane-copy">Season track, medals, and printable certificates.</p>
+              </div>
+              <section class="season-track-panel" id="season-track-panel" aria-live="polite">
+                <div class="season-track-panel__content">
+                  <div>
+                    <p class="season-track-panel__kicker">Season 4</p>
+                    <p class="season-track-panel__summary" id="season-track-summary">
+                      Earn predictable rewards by completing lessons.
+                    </p>
+                    <p class="season-track-panel__stats">
+                      <span id="season-track-progress-pill">0 / 10 unlocked</span>
+                      <span aria-hidden="true" class="season-track-panel__dot">Ł</span>
+                      <span id="season-track-lessons">0 lessons completed</span>
+                    </p>
+                    <p class="season-track-panel__next" id="season-track-next">
+                      Next reward after 1 more lesson.
+                    </p>
+                    <p class="season-track-panel__requirement" id="season-track-next-requirement"></p>
+                  </div>
+                  <button id="season-track-open" type="button" class="secondary">View Track</button>
+                </div>
+              </section>
+              <section class="lesson-medals" id="lesson-medal-panel" aria-live="polite">
+                <div class="lesson-medal__content">
+                  <div class="lesson-medal__badge" id="lesson-medal-badge" data-tier="bronze">Bronze</div>
+                  <div class="lesson-medal__copy">
+                    <p class="lesson-medal__kicker">Lesson medals</p>
+                    <p class="lesson-medal__summary" id="lesson-medal-summary">
+                      Complete a typing drill to start earning medals.
+                    </p>
+                    <p class="lesson-medal__best" id="lesson-medal-best">
+                      Burst: None ú Endurance: None ú Precision: None
+                    </p>
+                    <p class="lesson-medal__next" id="lesson-medal-next">
+                      Replay drills to chase the next tier.
+                    </p>
+                  </div>
+                  <button id="lesson-medal-open" type="button" class="secondary">View Medals</button>
+                </div>
+              </section>
+              <section class="wpm-ladder" id="wpm-ladder-panel" aria-live="polite">
+                <div class="wpm-ladder__content">
+                  <div>
+                    <p class="wpm-ladder__kicker">Personal bests</p>
+                    <p class="wpm-ladder__summary" id="wpm-ladder-summary">
+                      Complete a typing drill to start your WPM ladder.
+                    </p>
+                    <p class="wpm-ladder__stats" id="wpm-ladder-stats">
+                      Burst: None · Endurance: None · Precision: None
+                    </p>
+                    <p class="wpm-ladder__top" id="wpm-ladder-top">No runs recorded yet.</p>
+                  </div>
+                  <button id="wpm-ladder-open" type="button" class="secondary">View Ladder</button>
+                </div>
+              </section>
+              <section class="biome-gallery" id="biome-gallery-panel" aria-live="polite">
+                <div class="biome-gallery__content">
+                  <div>
+                    <p class="biome-gallery__kicker">Biome gallery</p>
+                    <p class="biome-gallery__summary" id="biome-gallery-summary">
+                      Pick a backdrop to theme your drills.
+                    </p>
+                    <p class="biome-gallery__stats" id="biome-gallery-stats">
+                      No biome sessions yet.
+                    </p>
+                  </div>
+                  <button id="biome-gallery-open" type="button" class="secondary">Open Gallery</button>
+                </div>
+              </section>
+              <section class="training-calendar" id="training-calendar-panel" aria-live="polite">
+                <div class="training-calendar__content">
+                  <div>
+                    <p class="training-calendar__kicker">Training calendar</p>
+                    <p class="training-calendar__summary" id="training-calendar-summary">
+                      Complete a drill to start the calendar.
+                    </p>
+                    <p class="training-calendar__stats" id="training-calendar-stats">
+                      0 lessons · 0 drills last 4 weeks
+                    </p>
+                  </div>
+                  <button id="training-calendar-open" type="button" class="secondary">View Calendar</button>
+                </div>
+              </section>
+              <section class="streak-token" id="streak-token-panel" aria-live="polite">
+                <div>
+                  <p class="streak-token__kicker">Streak freeze</p>
+                  <p class="streak-token__summary" id="streak-token-count">0 tokens available</p>
+                  <p class="streak-token__status" id="streak-token-status">
+                    No active streak yet. Complete a drill to start one.
+                  </p>
+                </div>
+              </section>
+              <section class="mastery-certificate" id="mastery-certificate-panel" aria-live="polite">
+                <div class="mastery-cert__content">
+                  <div class="mastery-cert__copy">
+                    <p class="mastery-cert__kicker">Print-ready</p>
+                    <p class="mastery-cert__summary" id="mastery-certificate-summary">
+                      Complete a session to generate a mastery certificate.
+                    </p>
+                    <p class="mastery-cert__stats" id="mastery-certificate-stats">
+                      0 lessons  0% accuracy  0 WPM
+                    </p>
+                    <p class="mastery-cert__date" id="mastery-certificate-date"></p>
+                    <label class="mastery-cert__name">
+                      <span>Certificate name</span>
+                      <input
+                        id="mastery-certificate-name"
+                        type="text"
+                        placeholder="Enter learner name"
+                      />
+                    </label>
+                  </div>
+                  <button id="mastery-certificate-open" type="button" class="secondary">
+                    Open Certificate
+                  </button>
+                </div>
+              </section>
+            </div>
+            <div
+              class="hud-pane"
+              id="hud-pane-lore"
+              data-pane="lore"
+              role="tabpanel"
+              aria-labelledby="hud-dock-tab-lore"
+              aria-hidden="true"
+              hidden
+            >
+              <div class="hud-pane-label">
+                <p class="hud-pane-title">Lore &amp; Gallery</p>
+                <p class="hud-pane-copy">Dip into scrolls or stroll the museum without leaving the fight.</p>
+              </div>
+              <section class="lore-scrolls" id="lore-scroll-panel" aria-live="polite">
+                <div class="lore-scrolls__content">
+                  <div class="lore-scrolls__copy">
+                    <p class="lore-scrolls__kicker">Reading break</p>
+                    <p class="lore-scrolls__summary" id="lore-scrolls-summary">
+                      Finish lessons to unlock calm lore scrolls between waves.
+                    </p>
+                    <p class="lore-scrolls__stats">
+                      <span id="lore-scrolls-progress">0 / 5 scrolls</span>
+                      <span aria-hidden="true" class="lore-scrolls__dot">ú</span>
+                      <span id="lore-scrolls-lessons">0 lessons completed</span>
+                    </p>
+                    <p class="lore-scrolls__next" id="lore-scrolls-next">
+                      Next scroll unlocks after 1 more lesson.
+                    </p>
+                  </div>
+                  <button id="lore-scrolls-open" type="button" class="secondary">Open Scrolls</button>
+                </div>
+              </section>
+              <section class="museum-panel" id="castle-museum-panel" aria-live="polite">
+                <div class="museum-panel__content">
+                  <div>
+                    <p class="museum-panel__kicker">Castle Museum</p>
+                    <p class="museum-panel__summary" id="castle-museum-summary">
+                      Unlock art, skins, and artifacts as you progress.
+                    </p>
+                    <p class="museum-panel__stats" id="castle-museum-stats">0 / 0 on display</p>
+                  </div>
+                  <button id="castle-museum-open" type="button" class="secondary">Open Museum</button>
+                </div>
+              </section>
+            </div>
           </div>
-          <div class="upgrades" id="upgrade-panel"></div>
         </section>
         <section class="companion" id="companion">
           <div
@@ -153,102 +545,6 @@
                 Balanced focus: keep accuracy steady, then push speed.
               </p>
             </div>
-          </div>
-        </section>
-        <section class="lore-scrolls" id="lore-scroll-panel" aria-live="polite">
-          <div class="lore-scrolls__content">
-            <div class="lore-scrolls__copy">
-              <p class="lore-scrolls__kicker">Reading break</p>
-              <p class="lore-scrolls__summary" id="lore-scrolls-summary">
-                Finish lessons to unlock calm lore scrolls between waves.
-              </p>
-              <p class="lore-scrolls__stats">
-                <span id="lore-scrolls-progress">0 / 5 scrolls</span>
-                <span aria-hidden="true" class="lore-scrolls__dot">·</span>
-                <span id="lore-scrolls-lessons">0 lessons completed</span>
-              </p>
-              <p class="lore-scrolls__next" id="lore-scrolls-next">
-                Next scroll unlocks after 1 more lesson.
-              </p>
-            </div>
-            <button id="lore-scrolls-open" type="button" class="secondary">Open Scrolls</button>
-          </div>
-        </section>
-        <section class="season-track-panel" id="season-track-panel" aria-live="polite">
-          <div class="season-track-panel__content">
-            <div>
-              <p class="season-track-panel__kicker">Season 4</p>
-              <p class="season-track-panel__summary" id="season-track-summary">
-                Earn predictable rewards by completing lessons.
-              </p>
-              <p class="season-track-panel__stats">
-                <span id="season-track-progress-pill">0 / 10 unlocked</span>
-                <span aria-hidden="true" class="season-track-panel__dot">ú</span>
-                <span id="season-track-lessons">0 lessons completed</span>
-              </p>
-              <p class="season-track-panel__next" id="season-track-next">
-                Next reward after 1 more lesson.
-              </p>
-              <p class="season-track-panel__requirement" id="season-track-next-requirement"></p>
-            </div>
-            <button id="season-track-open" type="button" class="secondary">View Track</button>
-          </div>
-        </section>
-        <section class="museum-panel" id="castle-museum-panel" aria-live="polite">
-          <div class="museum-panel__content">
-            <div>
-              <p class="museum-panel__kicker">Castle Museum</p>
-              <p class="museum-panel__summary" id="castle-museum-summary">
-                Unlock art, skins, and artifacts as you progress.
-              </p>
-              <p class="museum-panel__stats" id="castle-museum-stats">0 / 0 on display</p>
-            </div>
-            <button id="castle-museum-open" type="button" class="secondary">Open Museum</button>
-          </div>
-        </section>
-        <section class="quest-panel" id="side-quest-panel" aria-live="polite">
-          <div class="quest-panel__content">
-            <div>
-              <p class="quest-panel__kicker">Side quests</p>
-              <p class="quest-panel__summary" id="side-quest-summary">
-                Complete optional goals between lessons.
-              </p>
-              <p class="quest-panel__stats" id="side-quest-stats">0 active · 0 completed</p>
-            </div>
-            <button id="side-quest-open" type="button" class="secondary">Open Quest Log</button>
-          </div>
-        </section>
-        <section class="lesson-medals" id="lesson-medal-panel" aria-live="polite">
-          <div class="lesson-medal__content">
-            <div class="lesson-medal__badge" id="lesson-medal-badge" data-tier="bronze">Bronze</div>
-            <div class="lesson-medal__copy">
-              <p class="lesson-medal__kicker">Lesson medals</p>
-              <p class="lesson-medal__summary" id="lesson-medal-summary">
-                Complete a typing drill to start earning medals.
-              </p>
-              <p class="lesson-medal__best" id="lesson-medal-best">Burst: None · Endurance: None · Precision: None</p>
-              <p class="lesson-medal__next" id="lesson-medal-next">
-                Replay drills to chase the next tier.
-              </p>
-            </div>
-            <button id="lesson-medal-open" type="button" class="secondary">View Medals</button>
-          </div>
-        </section>
-        <section class="mastery-certificate" id="mastery-certificate-panel" aria-live="polite">
-          <div class="mastery-cert__content">
-            <div class="mastery-cert__copy">
-              <p class="mastery-cert__kicker">Print-ready</p>
-              <p class="mastery-cert__summary" id="mastery-certificate-summary">
-                Complete a session to generate a mastery certificate.
-              </p>
-              <p class="mastery-cert__stats" id="mastery-certificate-stats">0 lessons • 0% accuracy • 0 WPM</p>
-              <p class="mastery-cert__date" id="mastery-certificate-date"></p>
-              <label class="mastery-cert__name">
-                <span>Certificate name</span>
-                <input id="mastery-certificate-name" type="text" placeholder="Enter learner name" />
-              </label>
-            </div>
-            <button id="mastery-certificate-open" type="button" class="secondary">Open Certificate</button>
           </div>
         </section>
         <section class="typing">
@@ -294,20 +590,6 @@
             aria-hidden="true"
             aria-label="On-screen keyboard"
           ></div>
-            <div class="typing-drills-cta" id="typing-drills-cta">
-              <div class="typing-drills-cta-text">
-                <p class="typing-drills-cta-title">Need a warmup?</p>
-                <p class="typing-drills-cta-copy">
-                  Run quick drills to lock in rhythm without risking the castle.
-                </p>
-                <p class="typing-drills-cta-hint">Shortcut: Shift + R to launch recommended drill</p>
-            <p id="typing-drills-cta-reco" class="typing-drills-cta-reco" data-visible="false">
-              Recommended: <span class="typing-drills-cta-reco-mode"></span>
-            </p>
-          </div>
-          <button id="typing-drills-open" class="typing-drills-cta-button" type="button">
-            Launch drills
-          </button>
           <div
             id="hint-typing-drills"
             class="contextual-hint"
@@ -322,60 +604,8 @@
               ×
             </button>
           </div>
-        </div>
         </section>
-        <section class="wave-preview">
-          <h2>Upcoming Enemies</h2>
-          <div
-            id="hint-wave-preview"
-            class="contextual-hint"
-            data-visible="false"
-            role="status"
-            aria-live="polite"
-          >
-            <p class="contextual-hint-text">
-              Hint: Preview shows the next wave. Hover an enemy to read its role and tips.
-            </p>
-            <button type="button" class="contextual-hint-close" aria-label="Dismiss wave preview hint">
-              ×
-            </button>
-          </div>
-          <div
-            id="wave-preview-hint"
-            class="wave-preview-hint"
-            role="status"
-            aria-live="polite"
-            aria-hidden="true"
-            data-visible="false"
-          ></div>
-          <div id="wave-preview-list"></div>
-          <div
-            id="enemy-bio-card"
-            class="enemy-bio-card"
-            aria-live="polite"
-            aria-hidden="true"
-            data-visible="false"
-          >
-            <div class="enemy-bio-header">
-              <div>
-                <p id="enemy-bio-role" class="enemy-bio-role"></p>
-                <h3 id="enemy-bio-title" class="enemy-bio-title"></h3>
-              </div>
-              <span id="enemy-bio-danger" class="enemy-bio-danger"></span>
-            </div>
-            <p id="enemy-bio-description" class="enemy-bio-description"></p>
-            <div class="enemy-bio-columns">
-              <div>
-                <p class="enemy-bio-label">Abilities</p>
-                <ul id="enemy-bio-abilities"></ul>
-              </div>
-              <div>
-                <p class="enemy-bio-label">Tips</p>
-                <ul id="enemy-bio-tips"></ul>
-              </div>
-            </div>
-          </div>
-        </section>
+        
         <section
           id="roadmap-glance"
           class="roadmap-glance"
@@ -492,7 +722,6 @@
               </span>
             </div>
             <button id="debug-analytics-reset">Reset Analytics</button>
-            <button id="debug-analytics-export">Download Analytics</button>
             <button id="debug-analytics-viewer-toggle" type="button" aria-expanded="false">
               Show Analytics Viewer
             </button>
@@ -533,53 +762,156 @@
               role="region"
               aria-label="Recent wave analytics summaries"
             >
-              <div class="analytics-viewer-controls">
-                <label for="debug-analytics-viewer-filter">Show</label>
-                <select id="debug-analytics-viewer-filter">
-                  <option value="all">All waves</option>
-                  <option value="last-5">Last 5</option>
-                  <option value="last-10">Last 10</option>
-                  <option value="breaches">Breaches</option>
-                  <option value="shielded">Shield breaks</option>
-                </select>
+              <div class="analytics-viewer-topbar">
+                <div class="analytics-tablist" role="tablist" aria-label="Analytics views">
+                  <button
+                    id="debug-analytics-tab-summary"
+                    class="analytics-tab"
+                    type="button"
+                    role="tab"
+                    aria-selected="true"
+                    data-tab="summary"
+                  >
+                    Summary
+                  </button>
+                  <button
+                    id="debug-analytics-tab-traces"
+                    class="analytics-tab"
+                    type="button"
+                    role="tab"
+                    aria-selected="false"
+                    data-tab="traces"
+                  >
+                    Traces
+                  </button>
+                  <button
+                    id="debug-analytics-tab-exports"
+                    class="analytics-tab"
+                    type="button"
+                    role="tab"
+                    aria-selected="false"
+                    data-tab="exports"
+                  >
+                    Exports
+                  </button>
+                </div>
+                <div class="analytics-mini-bar">
+                  <button id="debug-analytics-copy-link" type="button" class="ghost">
+                    Copy recap
+                  </button>
+                  <button id="debug-analytics-export" type="button" class="secondary">
+                    Download Analytics
+                  </button>
+                </div>
               </div>
-              <div id="debug-analytics-drills" class="analytics-drills" aria-live="polite"></div>
-              <table aria-describedby="debug-analytics-viewer-caption">
-                <caption id="debug-analytics-viewer-caption">
-                  Recent wave summaries
-                </caption>
-                <thead>
-                  <tr>
-                    <th scope="col">Wave</th>
-                    <th scope="col">Mode</th>
-                    <th scope="col">Accuracy</th>
-                    <th scope="col">Breaches</th>
-                    <th scope="col">Defeated</th>
-                    <th scope="col">Perfect Words</th>
-                    <th scope="col">Avg Reaction</th>
-                    <th scope="col">DPS</th>
-                    <th scope="col">Turret DPS</th>
-                    <th scope="col">Typing DPS</th>
-                    <th scope="col">Turret dmg</th>
-                    <th scope="col">Typing dmg</th>
-                    <th scope="col">Shield Breaks</th>
-                    <th scope="col">Repairs</th>
-                    <th scope="col">HP Restored</th>
-                    <th scope="col">Repair Gold</th>
-                    <th scope="col">Gold</th>
-                    <th scope="col">Bonus</th>
-                    <th scope="col">Castle Bonus</th>
-                    <th scope="col">Duration</th>
-                  </tr>
-                </thead>
-                <tbody id="debug-analytics-viewer-body">
-                  <tr class="analytics-empty-row">
-                    <td colspan="20">
-                      No wave summaries yet - finish a wave to populate analytics.
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+              <div
+                id="debug-analytics-panel-summary"
+                class="analytics-viewer-panel"
+                data-tab="summary"
+                data-active="true"
+                role="tabpanel"
+                aria-labelledby="debug-analytics-tab-summary"
+              >
+                <div class="analytics-viewer-controls">
+                  <label for="debug-analytics-viewer-filter">Show</label>
+                  <select id="debug-analytics-viewer-filter">
+                    <option value="all">All waves</option>
+                    <option value="last-5">Last 5</option>
+                    <option value="last-10">Last 10</option>
+                    <option value="breaches">Breaches</option>
+                    <option value="shielded">Shield breaks</option>
+                  </select>
+                </div>
+                <div id="debug-analytics-drills" class="analytics-drills" aria-live="polite"></div>
+                <div class="analytics-table-wrapper">
+                  <table aria-describedby="debug-analytics-viewer-caption">
+                    <caption id="debug-analytics-viewer-caption">
+                      Recent wave summaries
+                    </caption>
+                    <thead>
+                      <tr>
+                        <th scope="col">Wave</th>
+                        <th scope="col">Mode</th>
+                        <th scope="col">Accuracy</th>
+                        <th scope="col">Breaches</th>
+                        <th scope="col">Defeated</th>
+                        <th scope="col">Perfect Words</th>
+                        <th scope="col">Avg Reaction</th>
+                        <th scope="col">DPS</th>
+                        <th scope="col">Turret DPS</th>
+                        <th scope="col">Typing DPS</th>
+                        <th scope="col">Turret dmg</th>
+                        <th scope="col">Typing dmg</th>
+                        <th scope="col">Shield Breaks</th>
+                        <th scope="col">Repairs</th>
+                        <th scope="col">HP Restored</th>
+                        <th scope="col">Repair Gold</th>
+                        <th scope="col">Gold</th>
+                        <th scope="col">Bonus</th>
+                        <th scope="col">Castle Bonus</th>
+                        <th scope="col">Duration</th>
+                      </tr>
+                    </thead>
+                    <tbody id="debug-analytics-viewer-body">
+                      <tr class="analytics-empty-row">
+                        <td colspan="20">
+                          No wave summaries yet - finish a wave to populate analytics.
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div
+                id="debug-analytics-panel-traces"
+                class="analytics-viewer-panel"
+                data-tab="traces"
+                role="tabpanel"
+                aria-labelledby="debug-analytics-tab-traces"
+                aria-hidden="true"
+              >
+                <div id="debug-analytics-traces" class="analytics-traces" aria-live="polite">
+                  <p class="analytics-traces__empty">
+                    No traces yet. Finish a wave to view castle alerts and gold events.
+                  </p>
+                </div>
+              </div>
+              <div
+                id="debug-analytics-panel-exports"
+                class="analytics-viewer-panel"
+                data-tab="exports"
+                role="tabpanel"
+                aria-labelledby="debug-analytics-tab-exports"
+                aria-hidden="true"
+              >
+                <div class="analytics-exports">
+                  <p class="analytics-exports__summary">
+                    Export bundles wave summaries, drills, telemetry, and HUD preferences into a single
+                    siege-ready JSON.
+                  </p>
+                  <div class="analytics-exports__meta" id="debug-analytics-export-meta">
+                    <div class="analytics-exports__pill">
+                      <span class="label">Waves</span>
+                      <span class="value" id="debug-analytics-export-waves">0</span>
+                    </div>
+                    <div class="analytics-exports__pill">
+                      <span class="label">Drills</span>
+                      <span class="value" id="debug-analytics-export-drills">0</span>
+                    </div>
+                    <div class="analytics-exports__pill">
+                      <span class="label">Breaches</span>
+                      <span class="value" id="debug-analytics-export-breaches">0</span>
+                    </div>
+                    <div class="analytics-exports__pill">
+                      <span class="label">Time to first turret</span>
+                      <span class="value" id="debug-analytics-export-ttf">—</span>
+                    </div>
+                  </div>
+                  <p class="analytics-exports__note" id="debug-analytics-export-note">
+                    Stay steady: export after a full run for the richest story.
+                  </p>
+                </div>
+              </div>
             </div>
           </details>
         </section>
@@ -961,257 +1293,377 @@
         <p class="options-overlay-subtitle">
           Adjust your defenses, then charge back into the fray.
         </p>
-        <nav id="options-quick-nav" class="options-quick-nav" aria-label="Quick menu navigation">
-          <button type="button" data-target="options-anchor-passives" aria-current="true">
-            Overview
-          </button>
-          <button type="button" data-target="options-anchor-audio">Audio &amp; VFX</button>
-          <button type="button" data-target="options-anchor-accessibility">Accessibility</button>
-          <button type="button" data-target="options-anchor-hud">HUD &amp; Layout</button>
-          <button type="button" data-target="options-anchor-overlays">Overlays</button>
-          <button type="button" data-target="options-anchor-diagnostics">Diagnostics</button>
-        </nav>
-        <div
-          id="options-castle-bonus"
-          class="options-info"
-          role="status"
-          aria-live="polite"
-          aria-atomic="true"
-        ></div>
-        <ul id="options-castle-benefits" class="options-benefits" aria-live="polite"></ul>
-        <div
-          id="options-passives-section"
-          class="options-passives-wrapper"
-          data-collapsed="false"
-        >
-          <div class="options-anchor" id="options-anchor-passives"></div>
-          <div class="options-passives-header">
-            <p class="options-passives-heading">Active Passives</p>
-            <span id="options-passives-summary" class="options-passives-summary"></span>
-            <button
-              id="options-passives-toggle"
-              class="options-passives-toggle"
-              type="button"
-              aria-controls="options-castle-passives"
-              aria-expanded="true"
-            >
-              Hide Active Passives
-            </button>
+        <div class="options-layout">
+          <div class="options-nav-slot">
+            <nav id="options-quick-nav" class="options-quick-nav" aria-label="Quick menu navigation">
+              <button type="button" data-target="overview" aria-current="true">Overview</button>
+              <button type="button" data-target="audio">Audio &amp; VFX</button>
+              <button type="button" data-target="accessibility">Accessibility</button>
+              <button type="button" data-target="hud">HUD &amp; Layout</button>
+              <button type="button" data-target="overlays">Overlays</button>
+              <button type="button" data-target="diagnostics">Diagnostics</button>
+            </nav>
           </div>
-          <div class="options-passives-body">
-            <ul id="options-castle-passives" class="options-passives" aria-live="polite"></ul>
-          </div>
-        </div>
-        <section class="options-section" data-group="audio" data-collapsed="false">
-          <div class="options-section-header">
-            <div class="options-anchor" id="options-anchor-audio"></div>
-            <h3>Audio &amp; VFX</h3>
-            <button
-              type="button"
-              class="options-section-toggle"
-              aria-controls="options-section-body-audio"
-              aria-expanded="true"
-            >
-              Collapse
-            </button>
-          </div>
-          <div class="options-toggle-group options-section-body" id="options-section-body-audio">
-            <label class="option-toggle">
-              <input id="options-sound-toggle" type="checkbox" />
-              <span class="option-toggle-label">Sound Effects</span>
-            </label>
-            <label class="option-toggle option-range">
-              <span class="option-toggle-label">Sound Volume</span>
-              <input
-                id="options-sound-volume"
-                type="range"
-                min="0"
-                max="1"
-                step="0.05"
-                value="0.8"
-                aria-label="Sound volume"
-              />
-              <span class="option-range-value" id="options-sound-volume-value">80%</span>
-            </label>
-            <label class="option-toggle option-range">
-              <span class="option-toggle-label">Audio Intensity</span>
-              <input
-                id="options-sound-intensity"
-                type="range"
-                min="0.5"
-                max="1.5"
-                step="0.05"
-                value="1"
-                aria-label="Audio intensity"
-              />
-              <span class="option-range-value" id="options-sound-intensity-value">100%</span>
-            </label>
-            <div class="option-toggle option-range option-shake">
-              <div class="option-shake-header">
-                <label class="option-toggle-label" for="options-screen-shake-toggle">
-                  Screen Shake
-                </label>
-                <div class="option-shake-inline">
-                  <input id="options-screen-shake-toggle" type="checkbox" />
-                  <span class="option-range-value" id="options-screen-shake-intensity-value">65%</span>
-                </div>
-              </div>
-              <input
-                id="options-screen-shake-intensity"
-                type="range"
-                min="0"
-                max="1.2"
-                step="0.05"
-                value="0.65"
-                aria-label="Screen shake intensity"
-              />
-              <div class="option-shake-preview">
-                <div class="option-shake-demo" id="options-screen-shake-demo" aria-hidden="true">
-                  <span class="option-shake-demo-box"></span>
-                </div>
-                <button id="options-screen-shake-preview" type="button" class="ghost">
-                  Preview shake
-                </button>
-                <span class="option-toggle-help">
-                  Play a quick shake before enabling to check comfort. Disabled when Reduced Motion is
-                  on.
-                </span>
-              </div>
-            </div>
-          </div>
-        </section>
-        <section class="options-section" data-group="accessibility" data-collapsed="false">
-          <div class="options-section-header">
-            <div class="options-anchor" id="options-anchor-accessibility"></div>
-            <h3>Accessibility &amp; Comfort</h3>
-            <button
-              type="button"
-              class="options-section-toggle"
-              aria-controls="options-section-body-accessibility"
-              aria-expanded="true"
-            >
-              Collapse
-            </button>
-          </div>
-          <div class="options-toggle-group options-section-body" id="options-section-body-accessibility">
-            <label class="option-toggle">
-              <input id="options-low-graphics-toggle" type="checkbox" />
-              <span class="option-toggle-label">Low Graphics Mode</span>
-              <span class="option-toggle-help">
-                Turns off starfield and heavy effects for slower devices (auto-enables reduced motion).
-              </span>
-            </label>
-            <label class="option-toggle">
-              <input id="options-reduced-motion-toggle" type="checkbox" />
-              <span class="option-toggle-label">Reduced Motion</span>
-              <span class="option-toggle-help">
-                Disables enemy death splashes and UI transitions; keeps essential cues only.
-              </span>
-            </label>
-            <label class="option-toggle">
-              <input id="options-haptics-toggle" type="checkbox" />
-              <span class="option-toggle-label">Haptics (vibration)</span>
-              <span class="option-toggle-help">
-                Short vibrations on hits when supported; desktop browsers usually ignore this.
-              </span>
-            </label>
-            <button id="options-contrast-audit" type="button" class="option-toggle option-contrast">
-              <div class="option-contrast-copy">
-                <span class="option-toggle-label">Contrast Audit Overlay</span>
-                <span class="option-toggle-help">
-                  Highlights UI regions that may fail contrast checks. Best-effort preview for quick
-                  comfort scans.
-                </span>
-              </div>
-              <span class="option-contrast-cta">Run audit</span>
-            </button>
-            <div
-              class="option-toggle option-selftest"
-              id="options-self-test"
-              role="group"
-              aria-labelledby="options-self-test-title"
-            >
-              <div class="option-selftest-header">
-                <div>
-                  <p class="option-selftest-kicker">Accessibility check</p>
-                  <p class="option-toggle-label" id="options-self-test-title">Self-Test Cues</p>
-                  <p class="option-toggle-help">
-                    Play a quick sound, flash, and motion cue to confirm you can sense them before
-                    enabling effects.
-                  </p>
-                </div>
-                <div class="option-selftest-actions">
-                  <span class="option-selftest-status" id="options-self-test-status">Not run yet</span>
-                  <button id="options-self-test-run" type="button" class="secondary">Run self-test</button>
-                </div>
-              </div>
-              <div class="option-selftest-grid" role="group" aria-label="Self-test confirmations">
-                <label class="option-selftest-row" for="options-self-test-sound">
-                  <span
-                    class="option-selftest-indicator"
-                    id="options-self-test-sound-indicator"
-                    aria-hidden="true"
-                  ></span>
-                  <div class="option-selftest-copy">
-                    <span class="option-selftest-label">Sound chime</span>
-                    <span class="option-toggle-help">Listen for a short chime.</span>
+          <div class="options-main-column">
+            <div class="options-panels" id="options-panels">
+              <section
+                class="options-panel"
+                data-panel="overview"
+                data-active="true"
+                aria-hidden="false"
+              >
+                <div class="options-window-grid">
+                  <div class="options-window">
+                    <div class="options-window-header">
+                      <p class="options-window-kicker">Castle Status</p>
+                      <h3 class="options-window-title">Overview</h3>
+                    </div>
+                    <div class="options-window-body">
+                      <div
+                        id="options-castle-bonus"
+                        class="options-info"
+                        role="status"
+                        aria-live="polite"
+                        aria-atomic="true"
+                      ></div>
+                      <ul
+                        id="options-castle-benefits"
+                        class="options-benefits"
+                        aria-live="polite"
+                      ></ul>
+                      <div
+                        id="options-passives-section"
+                        class="options-passives-wrapper"
+                        data-collapsed="false"
+                      >
+                        <div class="options-anchor" id="options-anchor-passives"></div>
+                        <div class="options-passives-header">
+                          <p class="options-passives-heading">Active Passives</p>
+                          <span id="options-passives-summary" class="options-passives-summary"></span>
+                          <button
+                            id="options-passives-toggle"
+                            class="options-passives-toggle"
+                            type="button"
+                            aria-controls="options-castle-passives"
+                            aria-expanded="true"
+                          >
+                            Hide Active Passives
+                          </button>
+                        </div>
+                        <div class="options-passives-body">
+                          <ul
+                            id="options-castle-passives"
+                            class="options-passives"
+                            aria-live="polite"
+                          ></ul>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <span class="option-selftest-confirm">
-                    <input id="options-self-test-sound" type="checkbox" />
-                    <span class="option-selftest-confirm-label">Heard it</span>
-                  </span>
-                </label>
-                <label class="option-selftest-row" for="options-self-test-visual">
-                  <span
-                    class="option-selftest-indicator option-selftest-indicator--flash"
-                    id="options-self-test-visual-indicator"
-                    aria-hidden="true"
-                  ></span>
-                  <div class="option-selftest-copy">
-                    <span class="option-selftest-label">Visual flash</span>
-                    <span class="option-toggle-help">Watch for a bright tile flash.</span>
+                </div>
+              </section>
+              <section class="options-panel" data-panel="audio" aria-hidden="true" hidden>
+                <div class="options-window-grid">
+                  <div class="options-window">
+                    <div class="options-window-header">
+                      <p class="options-window-kicker">Audio</p>
+                      <h3 class="options-window-title">Sound &amp; VFX</h3>
+                    </div>
+                    <div class="options-window-body">
+                      <section class="options-section" data-group="audio" data-collapsed="false">
+                        <div class="options-section-header">
+                          <div class="options-anchor" id="options-anchor-audio"></div>
+                          <h3>Audio &amp; VFX</h3>
+                          <button
+                            type="button"
+                            class="options-section-toggle"
+                            aria-controls="options-section-body-audio"
+                            aria-expanded="true"
+                          >
+                            Collapse
+                          </button>
+                        </div>
+                        <div
+                          class="options-toggle-group options-section-body"
+                          id="options-section-body-audio"
+                        >
+                          <label class="option-toggle">
+                            <input id="options-sound-toggle" type="checkbox" />
+                            <span class="option-toggle-label">Sound Effects</span>
+                          </label>
+                          <label class="option-toggle option-range">
+                            <span class="option-toggle-label">Sound Volume</span>
+                            <input
+                              id="options-sound-volume"
+                              type="range"
+                              min="0"
+                              max="1"
+                              step="0.05"
+                              value="0.8"
+                              aria-label="Sound volume"
+                            />
+                            <span class="option-range-value" id="options-sound-volume-value">80%</span>
+                          </label>
+                          <label class="option-toggle option-range">
+                            <span class="option-toggle-label">Audio Intensity</span>
+                            <input
+                              id="options-sound-intensity"
+                              type="range"
+                              min="0.5"
+                              max="1.5"
+                              step="0.05"
+                              value="1"
+                              aria-label="Audio intensity"
+                            />
+                            <span class="option-range-value" id="options-sound-intensity-value">100%</span>
+                          </label>
+                          <label class="option-toggle">
+                            <input id="options-music-toggle" type="checkbox" />
+                            <span class="option-toggle-label">Dynamic Music</span>
+                            <span class="option-toggle-help">
+                              Layered stems react to wave danger and castle health.
+                            </span>
+                          </label>
+                          <label class="option-toggle option-range">
+                            <span class="option-toggle-label">Music Level</span>
+                            <input
+                              id="options-music-level"
+                              type="range"
+                              min="0"
+                              max="1"
+                              step="0.05"
+                              value="0.65"
+                              aria-label="Music level"
+                            />
+                            <span class="option-range-value" id="options-music-level-value">65%</span>
+                          </label>
+                          <div class="options-audio-library">
+                            <button id="options-music-library" type="button" class="secondary">
+                              Music Suite
+                            </button>
+                            <p id="options-music-library-label" class="options-hint">
+                              Active suite: Siege Suite (Cinematic)
+                            </p>
+                          </div>
+                          <div class="options-audio-library">
+                            <button id="options-ui-sound-library" type="button" class="secondary">
+                              UI Sounds
+                            </button>
+                            <p id="options-ui-sound-library-label" class="options-hint">
+                              UI sounds: Clarity (Clean)
+                            </p>
+                          </div>
+                          <div class="options-audio-library">
+                            <button id="options-sfx-library" type="button" class="secondary">
+                              SFX Library
+                            </button>
+                            <p id="options-sfx-library-label" class="options-hint">
+                              Active mix: Classic Mix (Balanced)
+                            </p>
+                          </div>
+                          <div class="option-toggle option-range option-shake">
+                            <div class="option-shake-header">
+                              <label class="option-toggle-label" for="options-screen-shake-toggle">
+                                Screen Shake
+                              </label>
+                              <div class="option-shake-inline">
+                                <input id="options-screen-shake-toggle" type="checkbox" />
+                                <span class="option-range-value" id="options-screen-shake-intensity-value"
+                                  >65%</span
+                                >
+                              </div>
+                            </div>
+                            <input
+                              id="options-screen-shake-intensity"
+                              type="range"
+                              min="0"
+                              max="1.2"
+                              step="0.05"
+                              value="0.65"
+                              aria-label="Screen shake intensity"
+                            />
+                            <div class="option-shake-preview">
+                              <div
+                                class="option-shake-demo"
+                                id="options-screen-shake-demo"
+                                aria-hidden="true"
+                              >
+                                <span class="option-shake-demo-box"></span>
+                              </div>
+                              <button id="options-screen-shake-preview" type="button" class="ghost">
+                                Preview shake
+                              </button>
+                              <span class="option-toggle-help">
+                                Play a quick shake before enabling to check comfort. Disabled when Reduced
+                                Motion is on.
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </section>
+                    </div>
                   </div>
-                  <span class="option-selftest-confirm">
-                    <input id="options-self-test-visual" type="checkbox" />
-                    <span class="option-selftest-confirm-label">Saw it</span>
-                  </span>
-                </label>
-                <label class="option-selftest-row" for="options-self-test-motion">
-                  <span
-                    class="option-selftest-indicator option-selftest-indicator--motion"
-                    id="options-self-test-motion-indicator"
-                    aria-hidden="true"
-                  ></span>
-                  <div class="option-selftest-copy">
-                    <span class="option-selftest-label">Motion check</span>
-                    <span class="option-toggle-help">Uses the screen shake preview.</span>
+                </div>
+              </section>
+              <section class="options-panel" data-panel="accessibility" aria-hidden="true" hidden>
+                <div class="options-window-grid">
+                  <div class="options-window">
+                    <div class="options-window-header">
+                      <p class="options-window-kicker">Comfort</p>
+                      <h3 class="options-window-title">Accessibility</h3>
+                    </div>
+                    <div class="options-window-body">
+                      <section class="options-section" data-group="accessibility" data-collapsed="false">
+                        <div class="options-section-header">
+                          <div class="options-anchor" id="options-anchor-accessibility"></div>
+                          <h3>Accessibility &amp; Comfort</h3>
+                          <button
+                            type="button"
+                            class="options-section-toggle"
+                            aria-controls="options-section-body-accessibility"
+                            aria-expanded="true"
+                          >
+                            Collapse
+                          </button>
+                        </div>
+                        <div
+                          class="options-toggle-group options-section-body"
+                          id="options-section-body-accessibility"
+                        >
+                          <label class="option-toggle">
+                            <input id="options-low-graphics-toggle" type="checkbox" />
+                            <span class="option-toggle-label">Low Graphics Mode</span>
+                            <span class="option-toggle-help">
+                              Turns off starfield and heavy effects for slower devices (auto-enables reduced motion).
+                            </span>
+                          </label>
+                          <label class="option-toggle">
+                            <input id="options-reduced-motion-toggle" type="checkbox" />
+                            <span class="option-toggle-label">Reduced Motion</span>
+                            <span class="option-toggle-help">
+                              Disables enemy death splashes and UI transitions; keeps essential cues only.
+                            </span>
+                          </label>
+                          <label class="option-toggle">
+                            <input id="options-haptics-toggle" type="checkbox" />
+                            <span class="option-toggle-label">Haptics (vibration)</span>
+                            <span class="option-toggle-help">
+                              Short vibrations on hits when supported; desktop browsers usually ignore this.
+                            </span>
+                          </label>
+                          <button
+                            id="options-contrast-audit"
+                            type="button"
+                            class="option-toggle option-contrast"
+                          >
+                            <div class="option-contrast-copy">
+                              <span class="option-toggle-label">Contrast Audit Overlay</span>
+                              <span class="option-toggle-help">
+                                Highlights UI regions that may fail contrast checks. Best-effort preview for quick
+                                comfort scans.
+                              </span>
+                            </div>
+                            <span class="option-contrast-cta">Run audit</span>
+                          </button>
+                          <div
+                            class="option-toggle option-selftest"
+                            id="options-self-test"
+                            role="group"
+                            aria-labelledby="options-self-test-title"
+                          >
+                            <div class="option-selftest-header">
+                              <div>
+                                <p class="option-selftest-kicker">Accessibility check</p>
+                                <p class="option-toggle-label" id="options-self-test-title">Self-Test Cues</p>
+                                <p class="option-toggle-help">
+                                  Play a quick sound, flash, and motion cue to confirm you can sense them before
+                                  enabling effects.
+                                </p>
+                              </div>
+                              <div class="option-selftest-actions">
+                                <span class="option-selftest-status" id="options-self-test-status">Not run yet</span>
+                                <button id="options-self-test-run" type="button" class="secondary">Run self-test</button>
+                              </div>
+                            </div>
+                            <div class="option-selftest-grid" role="group" aria-label="Self-test confirmations">
+                              <label class="option-selftest-row" for="options-self-test-sound">
+                                <span
+                                  class="option-selftest-indicator"
+                                  id="options-self-test-sound-indicator"
+                                  aria-hidden="true"
+                                ></span>
+                                <div class="option-selftest-copy">
+                                  <span class="option-selftest-label">Sound chime</span>
+                                  <span class="option-toggle-help">Listen for a short chime.</span>
+                                </div>
+                                <span class="option-selftest-confirm">
+                                  <input id="options-self-test-sound" type="checkbox" />
+                                  <span class="option-selftest-confirm-label">Heard it</span>
+                                </span>
+                              </label>
+                              <label class="option-selftest-row" for="options-self-test-visual">
+                                <span
+                                  class="option-selftest-indicator option-selftest-indicator--flash"
+                                  id="options-self-test-visual-indicator"
+                                  aria-hidden="true"
+                                ></span>
+                                <div class="option-selftest-copy">
+                                  <span class="option-selftest-label">Visual flash</span>
+                                  <span class="option-toggle-help">Watch for a bright tile flash.</span>
+                                </div>
+                                <span class="option-selftest-confirm">
+                                  <input id="options-self-test-visual" type="checkbox" />
+                                  <span class="option-selftest-confirm-label">Saw it</span>
+                                </span>
+                              </label>
+                              <label class="option-selftest-row" for="options-self-test-motion">
+                                <span
+                                  class="option-selftest-indicator option-selftest-indicator--motion"
+                                  id="options-self-test-motion-indicator"
+                                  aria-hidden="true"
+                                ></span>
+                                <div class="option-selftest-copy">
+                                  <span class="option-selftest-label">Motion check</span>
+                                  <span class="option-toggle-help">Uses the screen shake preview.</span>
+                                </div>
+                                <span class="option-selftest-confirm">
+                                  <input id="options-self-test-motion" type="checkbox" />
+                                  <span class="option-selftest-confirm-label">Felt it</span>
+                                </span>
+                              </label>
+                            </div>
+                            <p class="option-toggle-help option-selftest-footnote">
+                              Motion step skips when Reduced Motion is on; sound skips when audio is disabled.
+                            </p>
+                          </div>
+                        </div>
+                      </section>
+                    </div>
                   </div>
-                  <span class="option-selftest-confirm">
-                    <input id="options-self-test-motion" type="checkbox" />
-                    <span class="option-selftest-confirm-label">Felt it</span>
-                  </span>
-                </label>
-              </div>
-              <p class="option-toggle-help option-selftest-footnote">
-                Motion step skips when Reduced Motion is on; sound skips when audio is disabled.
-              </p>
-            </div>
-          </div>
-        </section>
-        <section class="options-section" data-group="hud" data-collapsed="false">
-          <div class="options-section-header">
-            <div class="options-anchor" id="options-anchor-hud"></div>
-            <h3>HUD &amp; Layout</h3>
-            <button
-              type="button"
-              class="options-section-toggle"
-              aria-controls="options-section-body-hud"
-              aria-expanded="true"
-            >
-              Collapse
-            </button>
-          </div>
-          <div class="options-toggle-group options-section-body" id="options-section-body-hud">
+                </div>
+              </section>
+              <section class="options-panel" data-panel="hud" aria-hidden="true" hidden>
+                <div class="options-window-grid">
+                  <div class="options-window">
+                    <div class="options-window-header">
+                      <p class="options-window-kicker">Layout</p>
+                      <h3 class="options-window-title">HUD &amp; Visuals</h3>
+                    </div>
+                    <div class="options-window-body">
+                      <section class="options-section" data-group="hud" data-collapsed="false">
+                        <div class="options-section-header">
+                          <div class="options-anchor" id="options-anchor-hud"></div>
+                          <h3>HUD &amp; Layout</h3>
+                          <button
+                            type="button"
+                            class="options-section-toggle"
+                            aria-controls="options-section-body-hud"
+                            aria-expanded="true"
+                          >
+                            Collapse
+                          </button>
+                        </div>
+                        <div class="options-toggle-group options-section-body" id="options-section-body-hud">
             <label class="option-toggle option-select">
               <span class="option-toggle-label">Text Size</span>
               <select id="options-text-size" aria-label="Text size preference">
@@ -1224,6 +1676,13 @@
             <label class="option-toggle">
               <input id="options-checkered-bg-toggle" type="checkbox" />
               <span class="option-toggle-label">Checkered Background</span>
+            </label>
+            <label class="option-toggle">
+              <input id="options-latency-sparkline" type="checkbox" />
+              <span class="option-toggle-label">Show Latency Sparkline</span>
+              <span class="option-toggle-help">
+                Hide the mini latency graph for reduced-motion or tight layouts; the ms value stays visible.
+              </span>
             </label>
             <label class="option-toggle">
               <input id="options-readable-font-toggle" type="checkbox" />
@@ -1276,6 +1735,28 @@
               </select>
               <span class="option-toggle-help">
                 Pick the castle palette you've unlocked from streaks; the HUD updates instantly.
+              </span>
+            </label>
+            <label class="option-toggle option-select">
+              <span class="option-toggle-label">Day/Night Palette</span>
+              <select id="options-day-night-theme" aria-label="Day or night palette">
+                <option value="night">Night (default)</option>
+                <option value="day">Day</option>
+              </select>
+              <span class="option-toggle-help">
+                Swap the global palette to brighter day hues or cooler night tones.
+              </span>
+            </label>
+            <label class="option-toggle option-select">
+              <span class="option-toggle-label">Parallax Background</span>
+              <select id="options-parallax-scene" aria-label="Parallax background scene">
+                <option value="auto">Auto (match day/night)</option>
+                <option value="day">Day drift</option>
+                <option value="night">Night drift</option>
+                <option value="storm">Stormfront</option>
+              </select>
+              <span class="option-toggle-help">
+                Layered sky + hills with gentle motion; pauses automatically with Reduced Motion or Low Graphics.
               </span>
             </label>
             <label class="option-toggle option-range">
@@ -1374,111 +1855,158 @@
                 Pick a key to toggle the keyboard shortcuts overlay for accessibility.
               </span>
             </label>
-          </div>
-        </section>
-        <section class="options-section" data-group="overlays" data-collapsed="false">
-          <div class="options-section-header">
-            <div class="options-anchor" id="options-anchor-overlays"></div>
-            <h3>Overlays &amp; Progress</h3>
-            <button
-              type="button"
-              class="options-section-toggle"
-              aria-controls="options-section-body-overlays"
-              aria-expanded="true"
-            >
-              Collapse
-            </button>
-          </div>
-          <div class="options-section-body" id="options-section-body-overlays">
-            <div class="options-toggle-group">
-              <label class="option-toggle">
-                <input id="options-toggle-metrics" type="checkbox" />
-                <span class="option-toggle-label">Show Typing Metrics</span>
-                <span class="option-toggle-help">
-                  Hides or shows the Accuracy/WPM panel if you prefer fewer HUD elements.
-                </span>
-              </label>
-              <label class="option-toggle">
-                <input id="options-toggle-wave-preview" type="checkbox" />
-                <span class="option-toggle-label">Show Upcoming Enemies</span>
-                <span class="option-toggle-help">
-                  Toggle the wave preview list; turn off for a cleaner combat view.
-                </span>
-              </label>
-              <label class="option-toggle">
-                <input id="options-toggle-battle-log" type="checkbox" />
-                <span class="option-toggle-label">Show Battle Log</span>
-                <span class="option-toggle-help">
-                  Turn off the running battle log if you only want on-screen cues.
-                </span>
-              </label>
+                        </div>
+                      </section>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <section class="options-panel" data-panel="overlays" aria-hidden="true" hidden>
+                <div class="options-window-grid">
+                  <div class="options-window">
+                    <div class="options-window-header">
+                      <p class="options-window-kicker">Progress</p>
+                      <h3 class="options-window-title">Overlays &amp; Codex</h3>
+                    </div>
+                    <div class="options-window-body">
+                      <section class="options-section" data-group="overlays" data-collapsed="false">
+                        <div class="options-section-header">
+                          <div class="options-anchor" id="options-anchor-overlays"></div>
+                          <h3>Overlays &amp; Progress</h3>
+                          <button
+                            type="button"
+                            class="options-section-toggle"
+                            aria-controls="options-section-body-overlays"
+                            aria-expanded="true"
+                          >
+                            Collapse
+                          </button>
+                        </div>
+                        <div class="options-section-body" id="options-section-body-overlays">
+                          <div class="options-toggle-group">
+                            <label class="option-toggle">
+                              <input id="options-toggle-metrics" type="checkbox" />
+                              <span class="option-toggle-label">Show Typing Metrics</span>
+                              <span class="option-toggle-help">
+                                Hides or shows the Accuracy/WPM panel if you prefer fewer HUD elements.
+                              </span>
+                            </label>
+                            <label class="option-toggle">
+                              <input id="options-toggle-wave-preview" type="checkbox" />
+                              <span class="option-toggle-label">Show Upcoming Enemies</span>
+                              <span class="option-toggle-help">
+                                Toggle the wave preview list; turn off for a cleaner combat view.
+                              </span>
+                            </label>
+                            <label class="option-toggle">
+                              <input id="options-toggle-battle-log" type="checkbox" />
+                              <span class="option-toggle-label">Show Battle Log</span>
+                              <span class="option-toggle-help">
+                                Turn off the running battle log if you only want on-screen cues.
+                              </span>
+                            </label>
+                          </div>
+                          <div class="options-actions">
+                            <button id="options-parental-info" type="button" class="secondary">
+                              Parental Info
+                            </button>
+                            <button id="options-sticker-book" type="button" class="secondary">
+                              Sticker Book
+                            </button>
+                            <button id="options-season-track" type="button" class="secondary">
+                              Season Reward Track
+                            </button>
+                            <button id="options-readability-guide" type="button" class="secondary">
+                              Enemy Readability Guide
+                            </button>
+                            <button id="options-museum" type="button" class="secondary">
+                              Castle Museum
+                            </button>
+                            <button id="options-side-quests" type="button" class="secondary">
+                              Side Quest Log
+                            </button>
+                            <button id="options-mastery-certificate" type="button" class="secondary">
+                              Mastery Certificate
+                            </button>
+                            <button id="options-lesson-medals" type="button" class="secondary">
+                              Lesson Medals
+                            </button>
+                            <button id="options-wpm-ladder" type="button" class="secondary">
+                              WPM Ladder
+                            </button>
+                            <button id="options-biome-gallery" type="button" class="secondary">
+                              Biome Gallery
+                            </button>
+                            <button id="options-training-calendar" type="button" class="secondary">
+                              Training Calendar
+                            </button>
+                            <button id="options-parent-summary" type="button" class="secondary">
+                              Weekly Parent Summary
+                            </button>
+                            <button id="options-lore-scrolls" type="button" class="secondary">
+                              Lore Scrolls
+                            </button>
+                            <button id="options-typing-drills" type="button" class="secondary">
+                              Open Typing Drills
+                            </button>
+                            <p class="options-hint">
+                              Tip: Press Shift + R to launch the recommended drill instantly.
+                            </p>
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <section class="options-panel" data-panel="diagnostics" aria-hidden="true" hidden>
+                <div class="options-window-grid">
+                  <div class="options-window">
+                    <div class="options-window-header">
+                      <p class="options-window-kicker">Debug</p>
+                      <h3 class="options-window-title">Diagnostics</h3>
+                    </div>
+                    <div class="options-window-body">
+                      <section class="options-section" data-group="diagnostics" data-collapsed="false">
+                        <div class="options-section-header">
+                          <div class="options-anchor" id="options-anchor-diagnostics"></div>
+                          <h3>Diagnostics</h3>
+                          <button
+                            type="button"
+                            class="options-section-toggle"
+                            aria-controls="options-section-body-diagnostics"
+                            aria-expanded="true"
+                          >
+                            Collapse
+                          </button>
+                        </div>
+                        <div
+                          class="options-toggle-group options-section-body"
+                          id="options-section-body-diagnostics"
+                        >
+                          <label class="option-toggle">
+                            <input id="options-diagnostics-toggle" type="checkbox" />
+                            <span class="option-toggle-label">Diagnostics Overlay</span>
+                          </label>
+                          <label class="option-toggle" id="options-telemetry-toggle-wrapper">
+                            <input id="options-telemetry-toggle" type="checkbox" />
+                            <span class="option-toggle-label">Send Telemetry</span>
+                          </label>
+                          <button id="options-analytics-export" type="button" class="secondary">
+                            Download Analytics
+                          </button>
+                        </div>
+                      </section>
+                    </div>
+                  </div>
+                </div>
+              </section>
             </div>
-            <div class="options-actions">
-              <button id="options-parental-info" type="button" class="secondary">
-                Parental Info
-              </button>
-              <button id="options-sticker-book" type="button" class="secondary">
-                Sticker Book
-              </button>
-              <button id="options-season-track" type="button" class="secondary">
-                Season Reward Track
-              </button>
-              <button id="options-museum" type="button" class="secondary">
-                Castle Museum
-              </button>
-              <button id="options-side-quests" type="button" class="secondary">
-                Side Quest Log
-              </button>
-              <button id="options-mastery-certificate" type="button" class="secondary">
-                Mastery Certificate
-              </button>
-              <button id="options-lesson-medals" type="button" class="secondary">
-                Lesson Medals
-              </button>
-              <button id="options-parent-summary" type="button" class="secondary">
-                Weekly Parent Summary
-              </button>
-              <button id="options-lore-scrolls" type="button" class="secondary">
-                Lore Scrolls
-              </button>
-              <button id="options-typing-drills" type="button" class="secondary">
-                Open Typing Drills
-              </button>
-              <p class="options-hint">Tip: Press Shift + R to launch the recommended drill instantly.</p>
+            <div class="options-footer">
+              <button id="options-resume-button" type="button" class="primary">Resume Battle</button>
             </div>
           </div>
-        </section>
-        <section class="options-section" data-group="diagnostics" data-collapsed="false">
-          <div class="options-section-header">
-            <div class="options-anchor" id="options-anchor-diagnostics"></div>
-            <h3>Diagnostics</h3>
-            <button
-              type="button"
-              class="options-section-toggle"
-              aria-controls="options-section-body-diagnostics"
-              aria-expanded="true"
-            >
-              Collapse
-            </button>
-          </div>
-          <div
-            class="options-toggle-group options-section-body"
-            id="options-section-body-diagnostics"
-          >
-            <label class="option-toggle">
-              <input id="options-diagnostics-toggle" type="checkbox" />
-              <span class="option-toggle-label">Diagnostics Overlay</span>
-            </label>
-            <label class="option-toggle" id="options-telemetry-toggle-wrapper">
-              <input id="options-telemetry-toggle" type="checkbox" />
-              <span class="option-toggle-label">Send Telemetry</span>
-            </label>
-            <button id="options-analytics-export" type="button" class="secondary">
-              Download Analytics
-            </button>
-          </div>
-        </section>
-        <button id="options-resume-button" type="button" class="primary">Resume Battle</button>
+        </div>
       </div>
     </div>
     <div
@@ -1734,6 +2262,134 @@
       </div>
     </div>
     <div
+      id="music-overlay"
+      class="sfx-overlay"
+      data-visible="false"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="music-overlay-title"
+      aria-hidden="true"
+    >
+      <div class="sfx-overlay-card">
+        <header class="sfx-overlay-header">
+          <div>
+            <p class="sfx-overlay-kicker">Dynamic music</p>
+            <h2 id="music-overlay-title">Music Suites</h2>
+            <p id="music-overlay-summary" class="sfx-overlay-summary">
+              Pick a music suite to layer stems by wave danger.
+            </p>
+          </div>
+          <button
+            id="music-overlay-close"
+            class="icon-button"
+            type="button"
+            aria-label="Close music library"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </header>
+        <div class="sfx-overlay-body">
+          <div id="music-overlay-list" class="sfx-grid" role="list"></div>
+        </div>
+      </div>
+    </div>
+    <div
+      id="ui-sound-overlay"
+      class="sfx-overlay"
+      data-visible="false"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="ui-sound-overlay-title"
+      aria-hidden="true"
+    >
+      <div class="sfx-overlay-card">
+        <header class="sfx-overlay-header">
+          <div>
+            <p class="sfx-overlay-kicker">Interface cues</p>
+            <h2 id="ui-sound-overlay-title">UI Sound Sets</h2>
+            <p id="ui-sound-overlay-summary" class="sfx-overlay-summary">
+              Pick a tone set for menus, overlays, and alerts.
+            </p>
+          </div>
+          <button
+            id="ui-sound-overlay-close"
+            class="icon-button"
+            type="button"
+            aria-label="Close UI sounds library"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </header>
+        <div class="sfx-overlay-body">
+          <div id="ui-sound-overlay-list" class="sfx-grid" role="list"></div>
+        </div>
+      </div>
+    </div>
+    <div
+      id="sfx-overlay"
+      class="sfx-overlay"
+      data-visible="false"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="sfx-overlay-title"
+      aria-hidden="true"
+    >
+      <div class="sfx-overlay-card">
+        <header class="sfx-overlay-header">
+          <div>
+            <p class="sfx-overlay-kicker">Audio refresh</p>
+            <h2 id="sfx-overlay-title">SFX Library</h2>
+            <p id="sfx-overlay-summary" class="sfx-overlay-summary">
+              Preview refreshed projectile, impact, and upgrade mixes before activating.
+            </p>
+          </div>
+          <button id="sfx-overlay-close" class="icon-button" type="button" aria-label="Close SFX library">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </header>
+        <div class="sfx-overlay-body">
+          <div id="sfx-overlay-list" class="sfx-grid" role="list"></div>
+        </div>
+      </div>
+    </div>
+    <div
+      id="readability-overlay"
+      class="readability-overlay"
+      data-visible="false"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="readability-overlay-title"
+      aria-hidden="true"
+    >
+      <div class="readability-overlay-card">
+        <header class="readability-overlay-header">
+          <div>
+            <p class="readability-overlay-kicker">Clarity first</p>
+            <h2 id="readability-overlay-title">Enemy Readability Guide</h2>
+            <p id="readability-overlay-summary" class="readability-overlay-summary">
+              Updated silhouettes, color tags, and quick tips so every threat stays readable.
+            </p>
+          </div>
+          <button
+            id="readability-overlay-close"
+            class="icon-button"
+            type="button"
+            aria-label="Close readability guide"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </header>
+        <div class="readability-overlay-body">
+          <div class="readability-overlay-legend" aria-hidden="true">
+            <span class="legend-chip legend-chip--silhouette">Silhouette</span>
+            <span class="legend-chip legend-chip--accent">Accent glow</span>
+            <span class="legend-chip legend-chip--tag">Tier color</span>
+          </div>
+          <div id="readability-overlay-list" class="readability-grid" role="list"></div>
+        </div>
+      </div>
+    </div>
+    <div
       id="scrolls-overlay"
       class="scrolls-overlay"
       data-visible="false"
@@ -1867,14 +2523,19 @@
               Printable snapshot of lessons and accuracy.
             </p>
           </div>
-          <button
-            id="mastery-certificate-close"
-            class="icon-button"
-            type="button"
-            aria-label="Close mastery certificate"
-          >
-            <span aria-hidden="true">&times;</span>
-          </button>
+          <div class="mastery-cert-toolbar">
+            <button id="mastery-certificate-download" class="primary" type="button">
+              Download / Print
+            </button>
+            <button
+              id="mastery-certificate-close"
+              class="icon-button"
+              type="button"
+              aria-label="Close mastery certificate"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
         </header>
         <div class="mastery-cert-body">
           <label class="mastery-cert-name">
@@ -1889,13 +2550,52 @@
           <p id="mastery-certificate-overlay-summary" class="mastery-cert-summary">
             Complete a session to generate a mastery certificate.
           </p>
-          <p id="mastery-certificate-date" class="mastery-cert-date"></p>
-          <ul id="mastery-certificate-stats-list" class="mastery-cert-stats" role="list"></ul>
-          <div class="mastery-cert-actions">
-            <button id="mastery-certificate-download" class="primary" type="button">
-              Download / Print
-            </button>
+          <div class="mastery-cert-summary-grid" id="mastery-certificate-summary-grid">
+            <div class="mastery-cert-stat" data-metric="lessons">
+              <p class="mastery-cert-stat__label">Lessons</p>
+              <p class="mastery-cert-stat__value" id="mastery-certificate-stat-lessons">0</p>
+            </div>
+            <div class="mastery-cert-stat" data-metric="accuracy">
+              <p class="mastery-cert-stat__label">Accuracy</p>
+              <p class="mastery-cert-stat__value" id="mastery-certificate-stat-accuracy">0%</p>
+            </div>
+            <div class="mastery-cert-stat" data-metric="wpm">
+              <p class="mastery-cert-stat__label">WPM</p>
+              <p class="mastery-cert-stat__value" id="mastery-certificate-stat-wpm">0</p>
+            </div>
+            <div class="mastery-cert-stat" data-metric="combo">
+              <p class="mastery-cert-stat__label">Combo</p>
+              <p class="mastery-cert-stat__value" id="mastery-certificate-stat-combo">x0</p>
+            </div>
+            <div class="mastery-cert-stat" data-metric="drills">
+              <p class="mastery-cert-stat__label">Drills</p>
+              <p class="mastery-cert-stat__value" id="mastery-certificate-stat-drills">0</p>
+            </div>
+            <div class="mastery-cert-stat" data-metric="time">
+              <p class="mastery-cert-stat__label">Time</p>
+              <p class="mastery-cert-stat__value" id="mastery-certificate-stat-time">0m</p>
+            </div>
           </div>
+          <p id="mastery-certificate-date" class="mastery-cert-date"></p>
+          <section class="mastery-cert-details" id="mastery-cert-details" data-collapsed="true">
+            <div class="mastery-cert-details-header">
+              <div class="mastery-cert-details-copy">
+                <p class="mastery-cert-details-title">Session breakdown</p>
+                <p class="mastery-cert-details-note">Toggle for full stats</p>
+              </div>
+              <button
+                id="mastery-cert-details-toggle"
+                class="ghost"
+                type="button"
+                aria-expanded="false"
+              >
+                Expand
+              </button>
+            </div>
+            <div class="mastery-cert-details-body">
+              <ul id="mastery-certificate-stats-list" class="mastery-cert-stats" role="list"></ul>
+            </div>
+          </section>
         </div>
       </div>
     </div>
@@ -2058,6 +2758,96 @@
             <ul id="lesson-medal-history-list" class="lesson-medal-history-list" role="list"></ul>
           </div>
         </div>
+      </div>
+    </div>
+    <div
+      id="wpm-ladder-overlay"
+      class="wpm-ladder-overlay"
+      data-visible="false"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="wpm-ladder-title"
+      aria-hidden="true"
+    >
+      <div class="wpm-ladder-dialog">
+        <header class="wpm-ladder-header">
+          <div>
+            <p class="wpm-ladder-kicker">Personal records</p>
+            <h2 id="wpm-ladder-title">WPM Ladder</h2>
+            <p id="wpm-ladder-subtitle" class="wpm-ladder-subtitle">
+              Tracks your fastest drills per mode. Stored locally.
+            </p>
+            <p id="wpm-ladder-meta" class="wpm-ladder-meta">No runs recorded yet.</p>
+          </div>
+          <button id="wpm-ladder-close" class="icon-button" type="button" aria-label="Close WPM ladder">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </header>
+        <div id="wpm-ladder-list" class="wpm-ladder-grid" role="list"></div>
+      </div>
+    </div>
+    <div
+      id="biome-overlay"
+      class="biome-overlay"
+      data-visible="false"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="biome-overlay-title"
+      aria-hidden="true"
+    >
+      <div class="biome-dialog">
+        <header class="biome-header">
+          <div>
+            <p class="biome-kicker">Pixel biome expansion</p>
+            <h2 id="biome-overlay-title">Biome Gallery</h2>
+            <p id="biome-overlay-subtitle" class="biome-subtitle">
+              Choose a biome and track your runs per backdrop.
+            </p>
+            <p id="biome-overlay-meta" class="biome-meta">No biome selected yet.</p>
+          </div>
+          <button
+            id="biome-overlay-close"
+            class="icon-button"
+            type="button"
+            aria-label="Close biome gallery"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </header>
+        <div id="biome-overlay-list" class="biome-grid" role="list"></div>
+      </div>
+    </div>
+    <div
+      id="training-calendar-overlay"
+      class="training-calendar-overlay"
+      data-visible="false"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="training-calendar-title"
+      aria-hidden="true"
+    >
+      <div class="training-calendar-dialog">
+        <header class="training-calendar-header">
+          <div>
+            <p class="training-calendar-kicker">Habit tracker</p>
+            <h2 id="training-calendar-title">Training Calendar</h2>
+            <p id="training-calendar-subtitle" class="training-calendar-subtitle">
+              Lessons and drills tracked per day.
+            </p>
+            <p id="training-calendar-legend" class="training-calendar-legend">
+              Darker tiles = more sessions.
+            </p>
+          </div>
+          <button
+            id="training-calendar-close"
+            class="icon-button"
+            type="button"
+            aria-label="Close training calendar"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </header>
+        <div id="training-calendar-grid" class="training-calendar-grid" role="list"></div>
       </div>
     </div>
     <div

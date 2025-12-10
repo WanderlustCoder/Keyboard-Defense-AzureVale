@@ -1,5 +1,5 @@
 export const PLAYER_SETTINGS_STORAGE_KEY = "keyboard-defense:player-settings";
-export const PLAYER_SETTINGS_VERSION = 27;
+export const PLAYER_SETTINGS_VERSION = 28;
 const DEFAULT_UPDATED_AT = "1970-01-01T00:00:00.000Z";
 const HUD_FONT_SCALE_MIN = 0.85;
 const HUD_FONT_SCALE_MAX = 1.3;
@@ -13,6 +13,9 @@ const DEFAULT_SOUND_VOLUME = 0.8;
 const AUDIO_INTENSITY_MIN = 0.5;
 const AUDIO_INTENSITY_MAX = 1.5;
 const DEFAULT_AUDIO_INTENSITY = 1;
+const MUSIC_LEVEL_MIN = 0;
+const MUSIC_LEVEL_MAX = 1;
+const DEFAULT_MUSIC_LEVEL = 0.65;
 const SCREEN_SHAKE_INTENSITY_MIN = 0;
 const SCREEN_SHAKE_INTENSITY_MAX = 1.2;
 const DEFAULT_SCREEN_SHAKE_INTENSITY = 0.65;
@@ -37,6 +40,7 @@ const BASE_DEFAULT_SETTINGS = {
     soundEnabled: true,
     soundVolume: DEFAULT_SOUND_VOLUME,
     diagnosticsVisible: false,
+    latencySparklineEnabled: true,
     reducedMotionEnabled: false,
     lowGraphicsEnabled: false,
     virtualKeyboardEnabled: false,
@@ -50,6 +54,8 @@ const BASE_DEFAULT_SETTINGS = {
     backgroundBrightness: 1,
     colorblindPaletteEnabled: false,
     audioIntensity: DEFAULT_AUDIO_INTENSITY,
+    musicEnabled: true,
+    musicLevel: DEFAULT_MUSIC_LEVEL,
     screenShakeEnabled: false,
     screenShakeIntensity: DEFAULT_SCREEN_SHAKE_INTENSITY,
     telemetryEnabled: false,
@@ -117,6 +123,9 @@ export function readPlayerSettings(storage) {
         const soundVolume = typeof parsed.soundVolume === "number"
             ? normalizeSoundVolume(parsed.soundVolume)
             : fallback.soundVolume;
+        const latencySparklineEnabled = typeof parsed.latencySparklineEnabled === "boolean"
+            ? parsed.latencySparklineEnabled
+            : fallback.latencySparklineEnabled;
         const diagnosticsVisible = typeof parsed.diagnosticsVisible === "boolean"
             ? parsed.diagnosticsVisible
             : fallback.diagnosticsVisible;
@@ -160,6 +169,12 @@ export function readPlayerSettings(storage) {
         const audioIntensity = typeof parsed.audioIntensity === "number"
             ? normalizeAudioIntensity(parsed.audioIntensity)
             : fallback.audioIntensity;
+        const musicEnabled = typeof parsed.musicEnabled === "boolean"
+            ? parsed.musicEnabled
+            : fallback.musicEnabled;
+        const musicLevel = typeof parsed.musicLevel === "number"
+            ? normalizeMusicLevel(parsed.musicLevel)
+            : fallback.musicLevel;
         const screenShakeEnabled = typeof parsed.screenShakeEnabled === "boolean"
             ? parsed.screenShakeEnabled
             : fallback.screenShakeEnabled;
@@ -200,6 +215,7 @@ export function readPlayerSettings(storage) {
             version: PLAYER_SETTINGS_VERSION,
             soundEnabled,
             soundVolume,
+            latencySparklineEnabled,
             diagnosticsVisible,
             reducedMotionEnabled,
             lowGraphicsEnabled,
@@ -214,6 +230,8 @@ export function readPlayerSettings(storage) {
             backgroundBrightness,
             colorblindPaletteEnabled,
             audioIntensity,
+            musicEnabled,
+            musicLevel,
             screenShakeEnabled,
             screenShakeIntensity,
             telemetryEnabled,
@@ -254,6 +272,15 @@ export function withPatchedPlayerSettings(current, patch) {
         soundVolume: typeof patch.soundVolume === "number"
             ? normalizeSoundVolume(patch.soundVolume)
             : current.soundVolume,
+        musicEnabled: typeof patch.musicEnabled === "boolean"
+            ? patch.musicEnabled
+            : current.musicEnabled,
+        musicLevel: typeof patch.musicLevel === "number"
+            ? normalizeMusicLevel(patch.musicLevel)
+            : current.musicLevel,
+        latencySparklineEnabled: typeof patch.latencySparklineEnabled === "boolean"
+            ? patch.latencySparklineEnabled
+            : current.latencySparklineEnabled,
         diagnosticsVisible: typeof patch.diagnosticsVisible === "boolean"
             ? patch.diagnosticsVisible
             : current.diagnosticsVisible,
@@ -609,6 +636,13 @@ function normalizeAudioIntensity(value) {
         return DEFAULT_AUDIO_INTENSITY;
     }
     const clamped = Math.min(AUDIO_INTENSITY_MAX, Math.max(AUDIO_INTENSITY_MIN, value));
+    return Math.round(clamped * 100) / 100;
+}
+function normalizeMusicLevel(value) {
+    if (typeof value !== "number" || !Number.isFinite(value)) {
+        return DEFAULT_MUSIC_LEVEL;
+    }
+    const clamped = Math.min(MUSIC_LEVEL_MAX, Math.max(MUSIC_LEVEL_MIN, value));
     return Math.round(clamped * 100) / 100;
 }
 function normalizeScreenShakeIntensity(value) {

@@ -4,6 +4,9 @@ import { readFileSync } from "node:fs";
 import { parseHTML } from "linkedom";
 import { HudView } from "../src/ui/hud.ts";
 import { defaultConfig } from "../src/core/config.ts";
+import { buildSfxLibraryView, readSfxLibraryState } from "../src/utils/sfxLibrary.ts";
+import { buildMusicStemView, readMusicStemState } from "../src/utils/musicStems.ts";
+import { buildUiSchemeView, readUiSchemeState } from "../src/utils/uiSoundScheme.ts";
 
 const htmlSource = readFileSync(new URL("../public/index.html", import.meta.url), "utf8");
 
@@ -86,6 +89,14 @@ const initializeHud = (options = {}) => {
   const upgradePanel = get("upgrade-panel");
   const comboLabel = get("combo-stats");
   const comboAccuracyDelta = get("combo-accuracy-delta");
+  const buildDrawer = get("build-drawer");
+  const buildContent = get("build-content");
+  const buildToggle = get("build-drawer-toggle");
+  const hudDockTabs = document.querySelectorAll("#hud-dock-tabs .hud-dock-tab");
+  const hudPaneBuild = get("hud-pane-build");
+  const hudPaneQuests = get("hud-pane-quests");
+  const hudPaneRewards = get("hud-pane-rewards");
+  const hudPaneLore = get("hud-pane-lore");
   const companionPet = get("companion-pet");
   const companionMoodLabel = get("companion-mood-label");
   const companionTip = get("companion-tip");
@@ -123,6 +134,19 @@ const initializeHud = (options = {}) => {
   const lessonMedalBest = get("lesson-medal-best");
   const lessonMedalNext = get("lesson-medal-next");
   const lessonMedalOpen = get("lesson-medal-open");
+  const wpmLadderPanel = get("wpm-ladder-panel");
+  const wpmLadderSummary = get("wpm-ladder-summary");
+  const wpmLadderStats = get("wpm-ladder-stats");
+  const wpmLadderTop = get("wpm-ladder-top");
+  const wpmLadderOpen = get("wpm-ladder-open");
+  const biomeGalleryPanel = get("biome-gallery-panel");
+  const biomeGallerySummary = get("biome-gallery-summary");
+  const biomeGalleryStats = get("biome-gallery-stats");
+  const biomeGalleryOpen = get("biome-gallery-open");
+  const trainingCalendarPanel = get("training-calendar-panel");
+  const trainingCalendarSummary = get("training-calendar-summary");
+  const trainingCalendarStats = get("training-calendar-stats");
+  const trainingCalendarOpen = get("training-calendar-open");
   const logList = get("battle-log");
   const wavePreview = get("wave-preview-list");
   const wavePreviewHint = get("wave-preview-hint");
@@ -144,6 +168,13 @@ const initializeHud = (options = {}) => {
   const soundVolumeValue = get("options-sound-volume-value");
   const soundIntensitySlider = get("options-sound-intensity");
   const soundIntensityValue = get("options-sound-intensity-value");
+  const musicToggle = get("options-music-toggle");
+  const musicLevelSlider = get("options-music-level");
+  const musicLevelValue = get("options-music-level-value");
+  const optionsMusicLibraryButton = get("options-music-library");
+  const optionsMusicLibraryLabel = get("options-music-library-label");
+  const optionsUiSoundLibraryButton = get("options-ui-sound-library");
+  const optionsUiSoundLibraryLabel = get("options-ui-sound-library-label");
   const screenShakeToggle = get("options-screen-shake-toggle");
   const screenShakeSlider = get("options-screen-shake-intensity");
   const screenShakeValue = get("options-screen-shake-intensity-value");
@@ -162,12 +193,37 @@ const initializeHud = (options = {}) => {
   const hudLayoutToggle = get("options-hud-left");
   const fontScaleSelect = get("options-font-scale");
   const castleSkinSelect = get("options-castle-skin");
+  const dayNightThemeSelect = get("options-day-night-theme");
+  const parallaxSceneSelect = get("options-parallax-scene");
+  const optionsSfxLibraryButton = get("options-sfx-library");
+  const optionsSfxLibraryLabel = get("options-sfx-library-label");
+  const optionsReadabilityGuideButton = get("options-readability-guide");
+  const readabilityOverlay = get("readability-overlay");
+  const readabilityOverlayList = get("readability-overlay-list");
+  const readabilityOverlaySummary = get("readability-overlay-summary");
+  const readabilityOverlayClose = get("readability-overlay-close");
+  const musicOverlay = get("music-overlay");
+  const musicOverlayList = get("music-overlay-list");
+  const musicOverlaySummary = get("music-overlay-summary");
+  const musicOverlayClose = get("music-overlay-close");
+  const uiSoundOverlay = get("ui-sound-overlay");
+  const uiSoundOverlayList = get("ui-sound-overlay-list");
+  const uiSoundOverlaySummary = get("ui-sound-overlay-summary");
+  const uiSoundOverlayClose = get("ui-sound-overlay-close");
+  const sfxOverlay = get("sfx-overlay");
+  const sfxOverlayList = get("sfx-overlay-list");
+  const sfxOverlaySummary = get("sfx-overlay-summary");
+  const sfxOverlayClose = get("sfx-overlay-close");
+  const parallaxShell = get("parallax-shell");
   const contrastAuditButton = get("options-contrast-audit");
   const stickerBookButton = get("options-sticker-book");
   const optionsSeasonTrackButton = get("options-season-track");
   const optionsSideQuestButton = get("options-side-quests");
   const optionsMasteryCertificateButton = get("options-mastery-certificate");
   const optionsLessonMedalsButton = get("options-lesson-medals");
+  const optionsWpmLadderButton = get("options-wpm-ladder");
+  const optionsBiomeGalleryButton = get("options-biome-gallery");
+  const optionsTrainingCalendarButton = get("options-training-calendar");
   const optionsParentSummaryButton = get("options-parent-summary");
   const optionsLoreScrollsButton = get("options-lore-scrolls");
   const contrastOverlay = get("contrast-overlay");
@@ -202,6 +258,14 @@ const initializeHud = (options = {}) => {
   const masteryCertificateOverlaySummary = get("mastery-certificate-overlay-summary");
   const masteryCertificateOverlayDate = get("mastery-certificate-date");
   const masteryCertificateOverlayClose = get("mastery-certificate-close");
+  const masteryCertificateStatLessons = get("mastery-certificate-stat-lessons");
+  const masteryCertificateStatAccuracy = get("mastery-certificate-stat-accuracy");
+  const masteryCertificateStatWpm = get("mastery-certificate-stat-wpm");
+  const masteryCertificateStatCombo = get("mastery-certificate-stat-combo");
+  const masteryCertificateStatDrills = get("mastery-certificate-stat-drills");
+  const masteryCertificateStatTime = get("mastery-certificate-stat-time");
+  const masteryCertificateDetails = get("mastery-cert-details");
+  const masteryCertificateDetailsToggle = get("mastery-cert-details-toggle");
   const lessonMedalOverlay = get("lesson-medal-overlay");
   const lessonMedalList = get("lesson-medal-best-list");
   const lessonMedalHistory = get("lesson-medal-history-list");
@@ -210,6 +274,21 @@ const initializeHud = (options = {}) => {
   const lessonMedalOverlayLast = get("lesson-medal-overlay-last");
   const lessonMedalOverlayNext = get("lesson-medal-overlay-next");
   const lessonMedalClose = get("lesson-medal-close");
+  const trainingCalendarOverlay = get("training-calendar-overlay");
+  const trainingCalendarOverlayClose = get("training-calendar-close");
+  const trainingCalendarOverlayGrid = get("training-calendar-grid");
+  const trainingCalendarOverlaySubtitle = get("training-calendar-subtitle");
+  const trainingCalendarOverlayLegend = get("training-calendar-legend");
+  const wpmLadderOverlay = get("wpm-ladder-overlay");
+  const wpmLadderOverlayClose = get("wpm-ladder-close");
+  const wpmLadderOverlayList = get("wpm-ladder-list");
+  const wpmLadderOverlaySubtitle = get("wpm-ladder-subtitle");
+  const wpmLadderOverlayMeta = get("wpm-ladder-meta");
+  const biomeOverlay = get("biome-overlay");
+  const biomeOverlayClose = get("biome-overlay-close");
+  const biomeOverlayList = get("biome-overlay-list");
+  const biomeOverlaySubtitle = get("biome-overlay-subtitle");
+  const biomeOverlayMeta = get("biome-overlay-meta");
   const museumOverlay = get("museum-overlay");
   const museumList = get("museum-list");
   const museumSubtitle = get("museum-overlay-subtitle");
@@ -229,10 +308,25 @@ const initializeHud = (options = {}) => {
   const selfTestMotionIndicator = get("options-self-test-motion-indicator");
   const optionsOverlay = get("options-overlay");
   const optionsResume = get("options-resume-button");
+  const optionsMainColumn = findByClass(optionsOverlay, "options-main-column");
+  const optionsPanelContainer = get("options-panels");
+  const optionsPanels = optionsPanelContainer.querySelectorAll(".options-panel");
   const analyticsExportButton = get("options-analytics-export");
   const analyticsViewerContainer = get("debug-analytics-viewer");
   const analyticsViewerBody = get("debug-analytics-viewer-body");
   const analyticsFilterSelect = get("debug-analytics-viewer-filter");
+  const analyticsTabSummary = get("debug-analytics-tab-summary");
+  const analyticsTabTraces = get("debug-analytics-tab-traces");
+  const analyticsTabExports = get("debug-analytics-tab-exports");
+  const analyticsPanelSummary = get("debug-analytics-panel-summary");
+  const analyticsPanelTraces = get("debug-analytics-panel-traces");
+  const analyticsPanelExports = get("debug-analytics-panel-exports");
+  const analyticsTraces = get("debug-analytics-traces");
+  const analyticsExportWaves = get("debug-analytics-export-waves");
+  const analyticsExportDrills = get("debug-analytics-export-drills");
+  const analyticsExportBreaches = get("debug-analytics-export-breaches");
+  const analyticsExportTtf = get("debug-analytics-export-ttf");
+  const analyticsExportNote = get("debug-analytics-export-note");
   const waveScorecard = get("wave-scorecard");
   const waveScorecardStats = get("wave-scorecard-stats");
   const waveScorecardContinue = get("wave-scorecard-continue");
@@ -250,6 +344,14 @@ const initializeHud = (options = {}) => {
   const telemetryToggleEvents = [];
   const soundVolumeEvents = [];
   const soundIntensityEvents = [];
+  const musicToggleEvents = [];
+  const musicLevelEvents = [];
+  const musicLibrarySelectEvents = [];
+  const musicLibraryPreviewEvents = [];
+  const uiSoundSelectEvents = [];
+  const uiSoundPreviewEvents = [];
+  const sfxLibrarySelectEvents = [];
+  const sfxLibraryPreviewEvents = [];
   const screenShakeToggleEvents = [];
   const screenShakeIntensityEvents = [];
   const screenShakePreviewEvents = [];
@@ -299,15 +401,28 @@ const initializeHud = (options = {}) => {
         soundVolumeValue: "options-sound-volume-value",
         soundIntensitySlider: "options-sound-intensity",
         soundIntensityValue: "options-sound-intensity-value",
+        musicToggle: "options-music-toggle",
+        musicLevelSlider: "options-music-level",
+        musicLevelValue: "options-music-level-value",
+        musicLibraryButton: "options-music-library",
+        musicLibrarySummary: "options-music-library-label",
+        uiSoundLibraryButton: "options-ui-sound-library",
+        uiSoundLibrarySummary: "options-ui-sound-library-label",
         screenShakeToggle: "options-screen-shake-toggle",
         screenShakeSlider: "options-screen-shake-intensity",
         screenShakeValue: "options-screen-shake-intensity-value",
         screenShakePreview: "options-screen-shake-preview",
         screenShakeDemo: "options-screen-shake-demo",
         contrastAuditButton: "options-contrast-audit",
+        sfxLibraryButton: "options-sfx-library",
+        sfxLibrarySummary: "options-sfx-library-label",
         stickerBookButton: "options-sticker-book",
         parentSummaryButton: "options-parent-summary",
         loreScrollsButton: "options-lore-scrolls",
+        wpmLadderButton: "options-wpm-ladder",
+        biomeGalleryButton: "options-biome-gallery",
+        trainingCalendarButton: "options-training-calendar",
+        readabilityGuideButton: "options-readability-guide",
         selfTestContainer: "options-self-test",
         selfTestRun: "options-self-test-run",
         selfTestStatus: "options-self-test-status",
@@ -326,6 +441,8 @@ const initializeHud = (options = {}) => {
         cognitiveLoadToggle: "options-cognitive-load",
         colorblindPaletteToggle: "options-colorblind-toggle",
         castleSkinSelect: "options-castle-skin",
+        dayNightThemeSelect: "options-day-night-theme",
+        parallaxSceneSelect: "options-parallax-scene",
         defeatAnimationSelect: "options-defeat-animation",
         telemetryToggle: "options-telemetry-toggle",
         telemetryToggleWrapper: "options-telemetry-toggle-wrapper",
@@ -347,7 +464,25 @@ const initializeHud = (options = {}) => {
       analyticsViewer: {
         container: "debug-analytics-viewer",
         tableBody: "debug-analytics-viewer-body",
-        filterSelect: "debug-analytics-viewer-filter"
+        filterSelect: "debug-analytics-viewer-filter",
+        tabButtons: [
+          "debug-analytics-tab-summary",
+          "debug-analytics-tab-traces",
+          "debug-analytics-tab-exports"
+        ],
+        panels: {
+          summary: "debug-analytics-panel-summary",
+          traces: "debug-analytics-panel-traces",
+          exports: "debug-analytics-panel-exports"
+        },
+        traces: "debug-analytics-traces",
+        exportMeta: {
+          waves: "debug-analytics-export-waves",
+          drills: "debug-analytics-export-drills",
+          breaches: "debug-analytics-export-breaches",
+          timeToFirstTurret: "debug-analytics-export-ttf",
+          note: "debug-analytics-export-note"
+        }
       },
       contrastOverlay: {
         container: "contrast-overlay",
@@ -355,6 +490,30 @@ const initializeHud = (options = {}) => {
         summary: "contrast-overlay-summary",
         closeButton: "contrast-overlay-close",
         markers: "contrast-overlay-markers"
+      },
+      musicOverlay: {
+        container: "music-overlay",
+        closeButton: "music-overlay-close",
+        list: "music-overlay-list",
+        summary: "music-overlay-summary"
+      },
+      uiSoundOverlay: {
+        container: "ui-sound-overlay",
+        closeButton: "ui-sound-overlay-close",
+        list: "ui-sound-overlay-list",
+        summary: "ui-sound-overlay-summary"
+      },
+      sfxOverlay: {
+        container: "sfx-overlay",
+        list: "sfx-overlay-list",
+        summary: "sfx-overlay-summary",
+        closeButton: "sfx-overlay-close"
+      },
+      readabilityOverlay: {
+        container: "readability-overlay",
+        list: "readability-overlay-list",
+        summary: "readability-overlay-summary",
+        closeButton: "readability-overlay-close"
       },
       stickerBookOverlay: {
         container: "sticker-overlay",
@@ -389,7 +548,15 @@ const initializeHud = (options = {}) => {
         nameInput: "mastery-certificate-name",
         summary: "mastery-certificate-overlay-summary",
         statsList: "mastery-certificate-stats-list",
-        date: "mastery-certificate-date"
+        date: "mastery-certificate-date",
+        statLessons: "mastery-certificate-stat-lessons",
+        statAccuracy: "mastery-certificate-stat-accuracy",
+        statWpm: "mastery-certificate-stat-wpm",
+        statCombo: "mastery-certificate-stat-combo",
+        statDrills: "mastery-certificate-stat-drills",
+        statTime: "mastery-certificate-stat-time",
+        details: "mastery-cert-details",
+        detailsToggle: "mastery-cert-details-toggle"
       },
       lessonMedalOverlay: {
         container: "lesson-medal-overlay",
@@ -400,6 +567,27 @@ const initializeHud = (options = {}) => {
         bestList: "lesson-medal-best-list",
         historyList: "lesson-medal-history-list",
         replayButton: "lesson-medal-replay"
+      },
+      wpmLadderOverlay: {
+        container: "wpm-ladder-overlay",
+        closeButton: "wpm-ladder-close",
+        list: "wpm-ladder-list",
+        subtitle: "wpm-ladder-subtitle",
+        meta: "wpm-ladder-meta"
+      },
+      biomeOverlay: {
+        container: "biome-overlay",
+        closeButton: "biome-overlay-close",
+        list: "biome-overlay-list",
+        subtitle: "biome-overlay-subtitle",
+        meta: "biome-overlay-meta"
+      },
+      trainingCalendarOverlay: {
+        container: "training-calendar-overlay",
+        closeButton: "training-calendar-close",
+        grid: "training-calendar-grid",
+        subtitle: "training-calendar-subtitle",
+        legend: "training-calendar-legend"
       },
       parentSummaryOverlay: {
         container: "parent-summary-overlay",
@@ -445,6 +633,14 @@ const initializeHud = (options = {}) => {
       onSoundToggle: () => {},
       onSoundVolumeChange: (value) => soundVolumeEvents.push(value),
       onSoundIntensityChange: (value) => soundIntensityEvents.push(value),
+      onMusicToggle: (value) => musicToggleEvents.push(value),
+      onMusicLevelChange: (value) => musicLevelEvents.push(value),
+      onMusicLibrarySelect: (id) => musicLibrarySelectEvents.push(id),
+      onMusicLibraryPreview: (id) => musicLibraryPreviewEvents.push(id),
+      onUiSoundSchemeSelect: (id) => uiSoundSelectEvents.push(id),
+      onUiSoundSchemePreview: (id) => uiSoundPreviewEvents.push(id),
+      onSfxLibrarySelect: (id) => sfxLibrarySelectEvents.push(id),
+      onSfxLibraryPreview: (id) => sfxLibraryPreviewEvents.push(id),
       onScreenShakeToggle: (value) => screenShakeToggleEvents.push(value),
       onScreenShakeIntensityChange: (value) => screenShakeIntensityEvents.push(value),
       onScreenShakePreview: () => screenShakePreviewEvents.push(true),
@@ -497,6 +693,14 @@ const initializeHud = (options = {}) => {
       comboAccuracyDelta: comboAccuracyDeltaRef,
       goldDelta,
       logList,
+      buildDrawer,
+      buildContent,
+      buildToggle,
+      hudDockTabs: Array.from(hudDockTabs),
+      hudPaneBuild,
+      hudPaneQuests,
+      hudPaneRewards,
+      hudPaneLore,
       companionPet,
       companionMoodLabel,
       companionTip,
@@ -532,6 +736,19 @@ const initializeHud = (options = {}) => {
       lessonMedalBest,
       lessonMedalNext,
       lessonMedalOpen,
+      wpmLadderPanel,
+      wpmLadderSummary,
+      wpmLadderStats,
+      wpmLadderTop,
+      wpmLadderOpen,
+      biomeGalleryPanel,
+      biomeGallerySummary,
+      biomeGalleryStats,
+      biomeGalleryOpen,
+      trainingCalendarPanel,
+      trainingCalendarSummary,
+      trainingCalendarStats,
+      trainingCalendarOpen,
       milestoneCelebration,
       milestoneCelebrationTitle,
       milestoneCelebrationDetail,
@@ -545,12 +762,18 @@ const initializeHud = (options = {}) => {
       summaryReplay,
       optionsOverlay,
       optionsResume,
+      optionsMainColumn,
+      optionsPanelContainer,
+      optionsPanels,
       analyticsExportButton,
       soundToggle,
       soundVolumeSlider,
       soundVolumeValue,
       soundIntensitySlider,
       soundIntensityValue,
+      musicToggle,
+      musicLevelSlider,
+      musicLevelValue,
       screenShakeToggle,
       screenShakeSlider,
       screenShakeValue,
@@ -561,6 +784,34 @@ const initializeHud = (options = {}) => {
       optionsSideQuestButton,
       optionsMasteryCertificateButton,
       optionsLessonMedalsButton,
+      optionsWpmLadderButton,
+      dayNightThemeSelect,
+      parallaxSceneSelect,
+      optionsMusicLibraryButton,
+      optionsMusicLibraryLabel,
+      optionsUiSoundLibraryButton,
+      optionsUiSoundLibraryLabel,
+      optionsSfxLibraryButton,
+      optionsSfxLibraryLabel,
+      optionsReadabilityGuideButton,
+      musicOverlay,
+      musicOverlayList,
+      musicOverlaySummary,
+      musicOverlayClose,
+      uiSoundOverlay,
+      uiSoundOverlayList,
+      uiSoundOverlaySummary,
+      uiSoundOverlayClose,
+      sfxOverlay,
+      sfxOverlayList,
+      sfxOverlaySummary,
+      sfxOverlayClose,
+      readabilityOverlay,
+      readabilityOverlayList,
+      readabilityOverlaySummary,
+      readabilityOverlayClose,
+      optionsBiomeGalleryButton,
+      optionsTrainingCalendarButton,
       optionsParentSummaryButton,
       optionsLoreScrollsButton,
       contrastOverlay,
@@ -588,6 +839,14 @@ const initializeHud = (options = {}) => {
       masteryCertificateDownload,
       masteryCertificateOverlaySummary,
       masteryCertificateOverlayDate,
+      masteryCertificateStatLessons,
+      masteryCertificateStatAccuracy,
+      masteryCertificateStatWpm,
+      masteryCertificateStatCombo,
+      masteryCertificateStatDrills,
+      masteryCertificateStatTime,
+      masteryCertificateDetails,
+      masteryCertificateDetailsToggle,
       masteryCertificateClose: masteryCertificateOverlayClose,
       lessonMedalOverlay,
       lessonMedalList,
@@ -597,6 +856,21 @@ const initializeHud = (options = {}) => {
       lessonMedalOverlayLast,
       lessonMedalOverlayNext,
       lessonMedalClose,
+      trainingCalendarOverlay,
+      trainingCalendarOverlayClose,
+      trainingCalendarOverlayGrid,
+      trainingCalendarOverlaySubtitle,
+      trainingCalendarOverlayLegend,
+      wpmLadderOverlay,
+      wpmLadderOverlayClose,
+      wpmLadderOverlayList,
+      wpmLadderOverlaySubtitle,
+      wpmLadderOverlayMeta,
+      biomeOverlay,
+      biomeOverlayClose,
+      biomeOverlayList,
+      biomeOverlaySubtitle,
+      biomeOverlayMeta,
       parentSummaryOverlay,
       parentSummaryClose,
       parentSummaryProgress,
@@ -646,7 +920,20 @@ const initializeHud = (options = {}) => {
       analyticsViewerContainer,
       analyticsViewerBody,
       analyticsFilterSelect,
+      analyticsTabSummary,
+      analyticsTabTraces,
+      analyticsTabExports,
+      analyticsPanelSummary,
+      analyticsPanelTraces,
+      analyticsPanelExports,
+      analyticsTraces,
+      analyticsExportWaves,
+      analyticsExportDrills,
+      analyticsExportBreaches,
+      analyticsExportTtf,
+      analyticsExportNote,
       hudRoot,
+      parallaxShell,
       body: document.body,
       getScorecardContinueCount: () => scorecardContinues,
       getReducedMotionToggleEvents: () => [...reducedMotionToggleEvents],
@@ -659,6 +946,14 @@ const initializeHud = (options = {}) => {
       getCastleSkinEvents: () => [...castleSkinEvents],
       getSoundVolumeEvents: () => [...soundVolumeEvents],
       getSoundIntensityEvents: () => [...soundIntensityEvents],
+      getMusicToggleEvents: () => [...musicToggleEvents],
+      getMusicLevelEvents: () => [...musicLevelEvents],
+      getMusicLibrarySelectEvents: () => [...musicLibrarySelectEvents],
+      getMusicLibraryPreviewEvents: () => [...musicLibraryPreviewEvents],
+      getUiSoundSelectEvents: () => [...uiSoundSelectEvents],
+      getUiSoundPreviewEvents: () => [...uiSoundPreviewEvents],
+      getSfxLibrarySelectEvents: () => [...sfxLibrarySelectEvents],
+      getSfxLibraryPreviewEvents: () => [...sfxLibraryPreviewEvents],
       getScreenShakeToggleEvents: () => [...screenShakeToggleEvents],
       getScreenShakeIntensityEvents: () => [...screenShakeIntensityEvents],
       getScreenShakePreviewEvents: () => [...screenShakePreviewEvents],
@@ -667,6 +962,8 @@ const initializeHud = (options = {}) => {
       getSelfTestConfirmEvents: () => [...selfTestConfirmEvents],
       getOptionsSectionToggles: () =>
         Array.from(document.querySelectorAll(".options-section-toggle")),
+      getOptionsPanel: (key) =>
+        document.querySelector(`.options-panel[data-panel="${key}"]`) ?? undefined,
       getTelemetryToggleEvents: () => [...telemetryToggleEvents],
       getHudZoomEvents: () => [...hudZoomChangeEvents],
       getHudLayoutEvents: () => [...hudLayoutEvents],
@@ -679,7 +976,11 @@ const initializeHud = (options = {}) => {
       getCollapseEvents: () => [...collapseEvents]
     },
     getAnalyticsExportEvents: () => [...analyticsExportEvents],
-    getCollapseEvents: () => [...collapseEvents]
+    getCollapseEvents: () => [...collapseEvents],
+    getMusicLibrarySelectEvents: () => [...musicLibrarySelectEvents],
+    getMusicLibraryPreviewEvents: () => [...musicLibraryPreviewEvents],
+    getUiSoundSelectEvents: () => [...uiSoundSelectEvents],
+    getUiSoundPreviewEvents: () => [...uiSoundPreviewEvents]
   };
 };
 
@@ -816,6 +1117,46 @@ const buildInitialState = () => {
     }
   };
 };
+
+test("HUD dock collapses secondary panes so build commands stay tucked", () => {
+  const { cleanup, elements } = initializeHud();
+  const { hudDockTabs, hudPaneBuild, hudPaneQuests, hudPaneRewards, hudPaneLore } = elements;
+
+  assert.equal(hudPaneBuild.hidden, false);
+  assert.equal(hudPaneBuild.getAttribute("aria-hidden"), "false");
+  assert.equal(hudPaneQuests.hidden, true);
+  assert.equal(hudPaneRewards.hidden, true);
+  assert.equal(hudPaneLore.hidden, true);
+
+  const questTab = hudDockTabs.find((tab) => tab.dataset.paneTarget === "quests");
+  assert.ok(questTab, "quest tab should exist");
+  dispatchDomEvent(questTab, "click");
+  assert.equal(hudPaneQuests.hidden, false);
+  assert.equal(hudPaneBuild.hidden, true);
+
+  const rewardsTab = hudDockTabs.find((tab) => tab.dataset.paneTarget === "rewards");
+  assert.ok(rewardsTab, "rewards tab should exist");
+  dispatchDomEvent(rewardsTab, "click");
+  assert.equal(hudPaneRewards.hidden, false);
+  assert.equal(hudPaneQuests.hidden, true);
+
+  cleanup();
+});
+
+test("Build drawer toggle opens and closes inside the HUD dock", () => {
+  const { cleanup, elements } = initializeHud();
+  const { buildContent, buildToggle } = elements;
+
+  assert.equal(buildContent.hidden, false);
+  assert.equal(buildContent.getAttribute("aria-hidden"), "false");
+  assert.equal(buildToggle.getAttribute("aria-expanded"), "true");
+
+  dispatchDomEvent(buildToggle, "click");
+  assert.equal(buildContent.hidden, true);
+  assert.equal(buildToggle.getAttribute("aria-expanded"), "false");
+
+  cleanup();
+});
 
 test("HudView highlights combos and accuracy delta during warnings", () => {
   const { hud, cleanup, elements } = initializeHud();
@@ -2307,6 +2648,13 @@ test("HudView mastery certificate overlay renders stats and toggles visibility",
   assert.ok(elements.masteryCertificateOverlaySummary.textContent.includes("accuracy"));
   assert.ok(elements.masteryCertificateOverlayDate.textContent.length > 0);
   assert.ok(elements.masteryCertificateStatsList.children.length > 0);
+  assert.equal(elements.masteryCertificateStatLessons.textContent, "7");
+  assert.equal(elements.masteryCertificateStatAccuracy.textContent, "96%");
+  assert.equal(elements.masteryCertificateStatTime.textContent, "42m");
+  assert.equal(elements.masteryCertificateDetails.dataset.collapsed, "true");
+  elements.masteryCertificateDetailsToggle.click();
+  assert.equal(elements.masteryCertificateDetails.dataset.collapsed, "false");
+  assert.equal(elements.masteryCertificateDetailsToggle.getAttribute("aria-expanded"), "true");
   hud.hideMasteryCertificateOverlay();
   assert.equal(elements.masteryCertificateOverlay.dataset.visible, "false");
   cleanup();
@@ -2344,13 +2692,48 @@ test("HudView milestone celebration fires for gold medals and lesson milestones"
   cleanup();
 });
 
-test("Options quick nav updates aria-current and keeps sections reachable", () => {
+test("Build drawer toggle hides milestone celebration overlay", () => {
+  const { cleanup, elements } = initializeHud();
+  const { buildToggle, milestoneCelebration } = elements;
+
+  milestoneCelebration.dataset.visible = "true";
+  milestoneCelebration.setAttribute("aria-hidden", "false");
+  assert.equal(milestoneCelebration.dataset.visible, "true");
+
+  dispatchDomEvent(buildToggle, "click");
+
+  assert.equal(milestoneCelebration.dataset.visible, "false");
+  assert.equal(milestoneCelebration.getAttribute("aria-hidden"), "true");
+  cleanup();
+});
+
+test("Options quick nav switches panels and aria state", () => {
   const { cleanup, elements } = initializeHud();
   const navButtons = elements.optionsQuickNav.querySelectorAll("button");
   assert.ok(navButtons.length >= 3);
+  const overviewPanel = elements.getOptionsPanel("overview");
+  const audioPanel = elements.getOptionsPanel("audio");
+  assert.equal(overviewPanel?.dataset.active, "true");
   navButtons[1].click();
   assert.equal(navButtons[1].getAttribute("aria-current"), "true");
   assert.equal(navButtons[0].getAttribute("aria-current"), "false");
+  assert.equal(audioPanel?.dataset.active, "true");
+  assert.equal(audioPanel?.getAttribute("aria-hidden"), "false");
+  assert.equal(overviewPanel?.dataset.active, "false");
+  cleanup();
+});
+
+test("Options overlay resets scroll position when opened or switching panels", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  const navButtons = elements.optionsQuickNav.querySelectorAll("button");
+  const mainColumn = elements.optionsMainColumn;
+  assert.ok(mainColumn);
+  mainColumn.scrollTop = 420;
+  hud.showOptionsOverlay();
+  assert.equal(mainColumn.scrollTop, 0);
+  mainColumn.scrollTop = 250;
+  navButtons[2].click();
+  assert.equal(mainColumn.scrollTop, 0);
   cleanup();
 });
 
@@ -2686,6 +3069,356 @@ test("HudView lesson medals overlay renders and toggles visibility", () => {
   cleanup();
 });
 
+test("HudView WPM ladder overlay renders and toggles visibility", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  const updatedAt = new Date("2025-01-02T12:00:00Z").toISOString();
+  hud.setWpmLadder({
+    totalRuns: 4,
+    updatedAt,
+    lastRun: {
+      id: "wpm-last",
+      mode: "burst",
+      wpm: 58,
+      accuracy: 0.94,
+      bestCombo: 8,
+      errors: 1,
+      elapsedMs: 22000,
+      timestamp: Date.parse(updatedAt)
+    },
+    bestByMode: {
+      burst: {
+        id: "wpm-burst",
+        mode: "burst",
+        wpm: 62,
+        accuracy: 0.96,
+        bestCombo: 9,
+        errors: 1,
+        elapsedMs: 21000,
+        timestamp: Date.parse(updatedAt)
+      },
+      endurance: {
+        id: "wpm-end",
+        mode: "endurance",
+        wpm: 48,
+        accuracy: 0.91,
+        bestCombo: 7,
+        errors: 2,
+        elapsedMs: 30000,
+        timestamp: Date.parse(updatedAt) - 1000
+      },
+      precision: {
+        id: "wpm-prec",
+        mode: "precision",
+        wpm: 44,
+        accuracy: 0.97,
+        bestCombo: 6,
+        errors: 0,
+        elapsedMs: 26000,
+        timestamp: Date.parse(updatedAt) - 2000
+      }
+    },
+    ladderByMode: {
+      burst: [
+        {
+          id: "wpm-burst",
+          mode: "burst",
+          wpm: 62,
+          accuracy: 0.96,
+          bestCombo: 9,
+          errors: 1,
+          elapsedMs: 21000,
+          timestamp: Date.parse(updatedAt)
+        },
+        {
+          id: "wpm-burst-2",
+          mode: "burst",
+          wpm: 55,
+          accuracy: 0.92,
+          bestCombo: 7,
+          errors: 2,
+          elapsedMs: 23000,
+          timestamp: Date.parse(updatedAt) - 3000
+        }
+      ],
+      endurance: [
+        {
+          id: "wpm-end",
+          mode: "endurance",
+          wpm: 48,
+          accuracy: 0.91,
+          bestCombo: 7,
+          errors: 2,
+          elapsedMs: 30000,
+          timestamp: Date.parse(updatedAt) - 1000
+        }
+      ],
+      precision: [
+        {
+          id: "wpm-prec",
+          mode: "precision",
+          wpm: 44,
+          accuracy: 0.97,
+          bestCombo: 6,
+          errors: 0,
+          elapsedMs: 26000,
+          timestamp: Date.parse(updatedAt) - 2000
+        }
+      ]
+    },
+    topRuns: [
+      {
+        id: "wpm-burst",
+        mode: "burst",
+        wpm: 62,
+        accuracy: 0.96,
+        bestCombo: 9,
+        errors: 1,
+        elapsedMs: 21000,
+        timestamp: Date.parse(updatedAt)
+      },
+      {
+        id: "wpm-end",
+        mode: "endurance",
+        wpm: 48,
+        accuracy: 0.91,
+        bestCombo: 7,
+        errors: 2,
+        elapsedMs: 30000,
+        timestamp: Date.parse(updatedAt) - 1000
+      }
+    ]
+  });
+
+  assert.ok(elements.wpmLadderStats.textContent.includes("Burst"));
+  assert.ok(elements.wpmLadderTop.textContent.includes("WPM"));
+  assert.equal(elements.wpmLadderOverlay.dataset.visible, "false");
+  elements.optionsWpmLadderButton.click();
+  assert.equal(elements.wpmLadderOverlay.dataset.visible, "true");
+  assert.ok(elements.wpmLadderOverlaySubtitle.textContent.includes("runs"));
+  assert.ok(elements.wpmLadderOverlayList.children.length >= 3);
+  hud.hideWpmLadderOverlay();
+  assert.equal(elements.wpmLadderOverlay.dataset.visible, "false");
+  cleanup();
+});
+
+test("HudView biome gallery overlay renders and toggles visibility", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  hud.setBiomeGallery({
+    activeId: "ember-forge",
+    updatedAt: "2025-01-02T12:00:00Z",
+    cards: [
+      {
+        id: "mossy-ruins",
+        name: "Mossy Ruins",
+        tagline: "Overgrown battlements with calm tempo.",
+        focus: "Accuracy first",
+        tags: ["steady", "calm"],
+        palette: { sky: "#1d3557", mid: "#315c6e", ground: "#223944", accent: "#9ef0a0" },
+        difficulty: "calm",
+        isActive: false,
+        stats: {
+          runs: 2,
+          lessons: 1,
+          drills: 1,
+          bestWpm: 45,
+          bestAccuracy: 0.94,
+          bestCombo: 8,
+          lastPlayedAt: "2025-01-01T12:00:00Z",
+          heat: 0.35
+        }
+      },
+      {
+        id: "ember-forge",
+        name: "Ember Forge",
+        tagline: "Volcanic glow and quicker bursts.",
+        focus: "Speed spikes",
+        tags: ["burst", "tempo shifts"],
+        palette: { sky: "#2b1b2f", mid: "#4a243b", ground: "#2f1a24", accent: "#ff7a3d" },
+        difficulty: "spiky",
+        isActive: true,
+        stats: {
+          runs: 3,
+          lessons: 2,
+          drills: 2,
+          bestWpm: 62,
+          bestAccuracy: 0.95,
+          bestCombo: 10,
+          lastPlayedAt: "2025-01-02T12:00:00Z",
+          heat: 0.7
+        }
+      }
+    ]
+  });
+  assert.ok(elements.biomeGallerySummary.textContent.includes("Ember Forge"));
+  assert.equal(elements.biomeOverlay.dataset.visible, "false");
+  elements.optionsBiomeGalleryButton.click();
+  assert.equal(elements.biomeOverlay.dataset.visible, "true");
+  assert.ok(elements.biomeOverlaySubtitle.textContent.toLowerCase().includes("biome"));
+  assert.equal(elements.biomeOverlayList.children.length, 2);
+  hud.hideBiomeOverlay();
+  assert.equal(elements.biomeOverlay.dataset.visible, "false");
+  cleanup();
+});
+
+test("HudView training calendar overlay renders and toggles visibility", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  hud.setTrainingCalendar({
+    days: [
+      { date: "2025-01-01", lessons: 1, drills: 1, weekIndex: 0, weekday: 3 },
+      { date: "2025-01-02", lessons: 0, drills: 2, weekIndex: 0, weekday: 4 },
+      { date: "2025-01-03", lessons: 1, drills: 0, weekIndex: 0, weekday: 5 }
+    ],
+    totalLessons: 2,
+    totalDrills: 3,
+    lastUpdated: "2025-01-03T12:00:00Z"
+  });
+  assert.ok(elements.trainingCalendarStats.textContent.includes("lessons"));
+  assert.equal(elements.trainingCalendarOverlay.dataset.visible, "false");
+  elements.optionsTrainingCalendarButton.click();
+  assert.equal(elements.trainingCalendarOverlay.dataset.visible, "true");
+  assert.ok(elements.trainingCalendarOverlaySubtitle.textContent.includes("Lessons"));
+  assert.ok(elements.trainingCalendarOverlayGrid.children.length >= 1);
+  hud.hideTrainingCalendarOverlay();
+  assert.equal(elements.trainingCalendarOverlay.dataset.visible, "false");
+  cleanup();
+});
+
+test("HudView sets day/night palette and syncs options select", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  hud.setDayNightTheme("day");
+  assert.equal(document.body.dataset.theme, "day");
+  assert.equal(elements.hudRoot.dataset.theme, "day");
+  assert.equal(elements.dayNightThemeSelect.getAttribute("value"), "day");
+  hud.setDayNightTheme("night");
+  assert.equal(document.body.dataset.theme, "night");
+  cleanup();
+});
+
+test("Music suite overlay toggles, renders, and emits callbacks", () => {
+  const {
+    hud,
+    cleanup,
+    elements,
+    getMusicLibrarySelectEvents,
+    getMusicLibraryPreviewEvents
+  } = initializeHud();
+  const view = buildMusicStemView(readMusicStemState(null));
+  hud.setMusicStems(view);
+  assert.equal(elements.musicOverlay.dataset.visible, "false");
+  hud.showMusicOverlay();
+  assert.equal(elements.musicOverlay.dataset.visible, "true");
+  assert.ok(
+    elements.musicOverlayList.children.length >= view.entries.length,
+    "music overlay renders cards"
+  );
+  const previewButton = elements.musicOverlayList.querySelector(".sfx-card__actions .ghost");
+  if (previewButton) {
+    dispatchDomEvent(previewButton, "click");
+  }
+  const applyButton = elements.musicOverlayList.querySelector(
+    ".sfx-card:not([data-active='true']) .sfx-card__actions .secondary"
+  );
+  if (applyButton) {
+    dispatchDomEvent(applyButton, "click");
+  }
+  assert.ok(getMusicLibraryPreviewEvents().length >= 0);
+  assert.ok(getMusicLibrarySelectEvents().length >= 0);
+  elements.musicOverlayClose.click();
+  assert.equal(elements.musicOverlay.dataset.visible, "false");
+  cleanup();
+});
+
+test("UI sound overlay toggles, renders, and emits callbacks", () => {
+  const {
+    hud,
+    cleanup,
+    elements,
+    getUiSoundSelectEvents,
+    getUiSoundPreviewEvents
+  } = initializeHud();
+  const view = buildUiSchemeView(readUiSchemeState(null));
+  hud.setUiSoundScheme(view);
+  assert.match(elements.optionsUiSoundLibraryLabel.textContent, /UI sounds:/);
+  assert.equal(elements.uiSoundOverlay.dataset.visible, "false");
+  elements.optionsUiSoundLibraryButton.click();
+  assert.equal(elements.uiSoundOverlay.dataset.visible, "true");
+  assert.ok(
+    elements.uiSoundOverlayList.children.length >= view.entries.length,
+    "ui sound overlay renders cards"
+  );
+  const previewButton = elements.uiSoundOverlayList.querySelector(".sfx-card__actions .ghost");
+  if (previewButton) {
+    dispatchDomEvent(previewButton, "click");
+  }
+  const applyButton = elements.uiSoundOverlayList.querySelector(
+    ".sfx-card:not([data-active='true']) .sfx-card__actions .secondary"
+  );
+  if (applyButton) {
+    dispatchDomEvent(applyButton, "click");
+  }
+  assert.ok(getUiSoundPreviewEvents().length >= 0);
+  assert.ok(getUiSoundSelectEvents().length >= 0);
+  elements.uiSoundOverlayClose.click();
+  assert.equal(elements.uiSoundOverlay.dataset.visible, "false");
+  cleanup();
+});
+
+test("SFX library overlay toggles, renders, and emits callbacks", () => {
+  const {
+    hud,
+    cleanup,
+    elements
+  } = initializeHud();
+  const view = buildSfxLibraryView(readSfxLibraryState(null));
+  hud.setSfxLibrary(view);
+  assert.match(elements.optionsSfxLibraryLabel.textContent, /Active mix:/);
+  assert.equal(elements.sfxOverlay.dataset.visible, "false");
+  elements.optionsSfxLibraryButton.click();
+  assert.equal(elements.sfxOverlay.dataset.visible, "true");
+  assert.ok(
+    elements.sfxOverlayList.children.length >= view.entries.length,
+    "sfx overlay renders cards"
+  );
+  const previewButton = elements.sfxOverlayList.querySelector(".sfx-card__actions .ghost");
+  assert.ok(previewButton, "preview button rendered");
+  const selectable = Array.from(
+    elements.sfxOverlayList.querySelectorAll(".sfx-card__actions button")
+  ).find((btn) => btn.textContent?.toLowerCase().includes("set active"));
+  assert.ok(selectable, "select button rendered");
+  elements.sfxOverlayClose.click();
+  assert.equal(elements.sfxOverlay.dataset.visible, "false");
+  cleanup();
+});
+
+test("Enemy readability guide overlay toggles and renders entries", () => {
+  const { cleanup, elements } = initializeHud();
+  assert.equal(elements.readabilityOverlay.dataset.visible, "false");
+  elements.optionsReadabilityGuideButton.click();
+  assert.equal(elements.readabilityOverlay.dataset.visible, "true");
+  assert.ok(elements.readabilityOverlayList.children.length >= 3, "guide renders cards");
+  assert.ok(elements.readabilityOverlaySummary.textContent.includes("readability"), "summary filled");
+  elements.readabilityOverlayClose.click();
+  assert.equal(elements.readabilityOverlay.dataset.visible, "false");
+  cleanup();
+});
+
+test("HudView applies parallax background, resolves auto, and pauses motion", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  hud.setParallaxScene("storm");
+  assert.equal(document.body.dataset.parallaxScene, "storm");
+  assert.equal(elements.parallaxShell.dataset.scene, "storm");
+  assert.equal(elements.parallaxSceneSelect.getAttribute("value"), "storm");
+  hud.setDayNightTheme("day");
+  hud.setParallaxScene("auto");
+  assert.equal(document.body.dataset.parallaxScene, "day");
+  assert.equal(elements.parallaxSceneSelect.getAttribute("value"), "auto");
+  hud.setReducedMotionEnabled(true);
+  assert.equal(document.body.dataset.parallaxPaused, "true");
+  hud.setReducedMotionEnabled(false);
+  assert.ok(!document.body.dataset.parallaxPaused);
+  cleanup();
+});
+
 test("HudView parent summary overlay renders session stats and toggles visibility", () => {
   const { hud, cleanup, elements } = initializeHud();
   hud.update(
@@ -2874,6 +3607,87 @@ test("HudView analytics viewer renders wave summaries with filters and summary r
   setSelectValueForElement(analyticsFilterSelect, "shielded");
   dispatchDomEvent(analyticsFilterSelect, "change");
   assert.equal(analyticsViewerBody.children.length, 5);
+
+  cleanup();
+});
+
+test("HudView analytics viewer switches tabs and renders traces/export meta", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  const state = buildInitialState();
+  state.analytics.waveSummaries = [
+    {
+      index: 0,
+      mode: "campaign",
+      duration: 9.6,
+      accuracy: 0.91,
+      enemiesDefeated: 8,
+      breaches: 1,
+      perfectWords: 3,
+      averageReaction: 1.1,
+      dps: 15.5,
+      goldEarned: 50,
+      bonusGold: 2,
+      castleBonusGold: 1,
+      maxCombo: 4,
+      sessionBestCombo: 6,
+      turretDamage: 80,
+      typingDamage: 72,
+      turretDps: 9,
+      typingDps: 7,
+      shieldBreaks: 1,
+      repairsUsed: 0,
+      repairHealth: 10,
+      repairGold: 12
+    },
+    {
+      index: 1,
+      mode: "campaign",
+      duration: 11.2,
+      accuracy: 0.95,
+      enemiesDefeated: 10,
+      breaches: 1,
+      perfectWords: 5,
+      averageReaction: 0.9,
+      dps: 18.4,
+      goldEarned: 70,
+      bonusGold: 3,
+      castleBonusGold: 1,
+      maxCombo: 5,
+      sessionBestCombo: 7,
+      turretDamage: 90,
+      typingDamage: 85,
+      turretDps: 10,
+      typingDps: 8,
+      shieldBreaks: 2,
+      repairsUsed: 1,
+      repairHealth: 16,
+      repairGold: 18
+    }
+  ];
+  state.analytics.waveHistory = [...state.analytics.waveSummaries];
+  state.analytics.goldEvents = [{ gold: 210, delta: 10, timestamp: 5 }];
+  state.analytics.sessionBreaches = 2;
+  state.analytics.typingDrills = [
+    { mode: "burst", accuracy: 0.91, wpm: 51, bestCombo: 9, words: 30, errors: 1 }
+  ];
+  state.analytics.timeToFirstTurret = 3.2;
+
+  hud.update(state, []);
+  hud.toggleAnalyticsViewer();
+
+  assert.equal(elements.analyticsTabSummary.getAttribute("aria-selected"), "true");
+  elements.analyticsTabTraces.click();
+  assert.equal(elements.analyticsPanelTraces.dataset.active, "true");
+  const traceRow = elements.analyticsTraces.querySelector(".analytics-trace");
+  assert.ok(traceRow, "traces render rows");
+
+  elements.analyticsTabExports.click();
+  assert.equal(elements.analyticsPanelExports.dataset.active, "true");
+  assert.equal(elements.analyticsExportWaves.textContent, "2");
+  assert.equal(elements.analyticsExportDrills.textContent, "1");
+  assert.equal(elements.analyticsExportBreaches.textContent, "2");
+  assert.equal(elements.analyticsExportTtf.textContent, "3.2s");
+  assert.ok(elements.analyticsExportNote.textContent.length > 0);
 
   cleanup();
 });

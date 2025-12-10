@@ -3,6 +3,15 @@ import { type GameMode, type GameState, type DefeatAnimationPreference, type Typ
 import type { ResolutionTransitionState } from "./ResolutionTransitionController.js";
 import { type SeasonTrackViewState } from "../data/seasonTrack.js";
 import { type LessonMedalViewState } from "../utils/lessonMedals.js";
+import { type WpmLadderViewState } from "../utils/wpmLadder.js";
+import { type BiomeGalleryViewState } from "../utils/biomeGallery.js";
+import { type TrainingCalendarViewState } from "../utils/trainingCalendar.js";
+import { type DayNightMode } from "../utils/dayNightTheme.js";
+import { type ParallaxScene } from "../utils/parallaxBackground.js";
+import { type SfxLibraryViewState } from "../utils/sfxLibrary.js";
+import { type MusicStemViewState } from "../utils/musicStems.js";
+import { type UiSchemeViewState } from "../utils/uiSoundScheme.js";
+type ResolvedParallaxScene = Exclude<ParallaxScene, "auto">;
 type CastleSkinId = "classic" | "dusk" | "aurora" | "ember";
 type ContrastAuditResult = {
     label: string;
@@ -65,11 +74,20 @@ export interface HudCallbacks {
     onSoundToggle(enabled: boolean): void;
     onSoundVolumeChange(volume: number): void;
     onSoundIntensityChange(intensity: number): void;
+    onMusicToggle?: (enabled: boolean) => void;
+    onMusicLevelChange?: (level: number) => void;
+    onMusicLibrarySelect?: (suiteId: string) => void;
+    onMusicLibraryPreview?: (suiteId: string) => void;
+    onUiSoundSchemeSelect?: (schemeId: string) => void;
+    onUiSoundSchemePreview?: (schemeId: string) => void;
+    onSfxLibrarySelect?: (libraryId: string) => void;
+    onSfxLibraryPreview?: (libraryId: string) => void;
     onScreenShakeToggle?: (enabled: boolean) => void;
     onScreenShakeIntensityChange?: (intensity: number) => void;
     onScreenShakePreview?: () => void;
     onContrastAuditRequested?: () => void;
     onCastleSkinChange?: (skin: CastleSkinId) => void;
+    onBiomeSelect?: (biomeId: string) => void;
     onAccessibilitySelfTestRun?: () => void;
     onAccessibilitySelfTestConfirm?: (kind: "sound" | "visual" | "motion", confirmed: boolean) => void;
     onDiagnosticsToggle(visible: boolean): void;
@@ -87,12 +105,15 @@ export interface HudCallbacks {
     onReadableFontToggle(enabled: boolean): void;
     onDyslexiaFontToggle(enabled: boolean): void;
     onDyslexiaSpacingToggle?: (enabled: boolean) => void;
+    onLatencySparklineToggle?: (enabled: boolean) => void;
     onCognitiveLoadToggle?: (enabled: boolean) => void;
     onColorblindPaletteToggle(enabled: boolean): void;
     onColorblindPaletteModeChange?: (mode: string) => void;
     onHotkeyPauseChange?: (key: string) => void;
     onHotkeyShortcutsChange?: (key: string) => void;
     onBackgroundBrightnessChange?: (value: number) => void;
+    onDayNightThemeChange?: (mode: DayNightMode) => void;
+    onParallaxSceneChange?: (scene: ParallaxScene) => void;
     onDefeatAnimationModeChange(mode: DefeatAnimationPreference): void;
     onHudFontScaleChange(scale: number): void;
     onHudZoomChange(scale: number): void;
@@ -142,6 +163,30 @@ type ShortcutOverlayElements = {
     closeButton: string;
     launchButton: string;
 };
+type ReadabilityOverlayElements = {
+    container: string;
+    closeButton: string;
+    list: string;
+    summary?: string;
+};
+type SfxOverlayElements = {
+    container: string;
+    closeButton: string;
+    list: string;
+    summary?: string;
+};
+type MusicOverlayElements = {
+    container: string;
+    closeButton: string;
+    list: string;
+    summary?: string;
+};
+type UiSoundOverlayElements = {
+    container: string;
+    closeButton: string;
+    list: string;
+    summary?: string;
+};
 type OptionsOverlayElements = {
     container: string;
     closeButton: string;
@@ -151,12 +196,21 @@ type OptionsOverlayElements = {
     soundVolumeValue: string;
     soundIntensitySlider: string;
     soundIntensityValue: string;
+    musicToggle?: string;
+    musicLevelSlider?: string;
+    musicLevelValue?: string;
+    musicLibraryButton?: string;
+    musicLibrarySummary?: string;
+    uiSoundLibraryButton?: string;
+    uiSoundLibrarySummary?: string;
     screenShakeToggle?: string;
     screenShakeSlider?: string;
     screenShakeValue?: string;
     screenShakePreview?: string;
     screenShakeDemo?: string;
     contrastAuditButton?: string;
+    sfxLibraryButton?: string;
+    sfxLibrarySummary?: string;
     selfTestContainer?: string;
     selfTestRun?: string;
     selfTestStatus?: string;
@@ -173,6 +227,7 @@ type OptionsOverlayElements = {
     hapticsToggle?: string;
     reducedMotionToggle: string;
     checkeredBackgroundToggle: string;
+    latencySparklineToggle?: string;
     readableFontToggle: string;
     dyslexiaFontToggle: string;
     dyslexiaSpacingToggle?: string;
@@ -187,10 +242,16 @@ type OptionsOverlayElements = {
     hudZoomSelect: string;
     hudLayoutToggle?: string;
     castleSkinSelect?: string;
+    dayNightThemeSelect?: string;
+    parallaxSceneSelect?: string;
     defeatAnimationSelect: string;
     stickerBookButton?: string;
     seasonTrackButton?: string;
+    readabilityGuideButton?: string;
     lessonMedalButton?: string;
+    wpmLadderButton?: string;
+    biomeGalleryButton?: string;
+    trainingCalendarButton?: string;
     museumButton?: string;
     sideQuestButton?: string;
     masteryCertificateButton?: string;
@@ -209,6 +270,20 @@ type AnalyticsViewerElements = {
     tableBody: string;
     filterSelect?: string;
     drills?: string;
+    tabButtons?: string[];
+    panels?: {
+        summary?: string;
+        traces?: string;
+        exports?: string;
+    };
+    traces?: string;
+    exportMeta?: {
+        waves?: string;
+        drills?: string;
+        breaches?: string;
+        timeToFirstTurret?: string;
+        note?: string;
+    };
 };
 type WaveScorecardElements = {
     container: string;
@@ -284,6 +359,27 @@ type LessonMedalOverlayElements = {
     historyList?: string;
     replayButton?: string;
 };
+type WpmLadderOverlayElements = {
+    container: string;
+    closeButton: string;
+    list: string;
+    subtitle?: string;
+    meta?: string;
+};
+type BiomeOverlayElements = {
+    container: string;
+    closeButton: string;
+    list: string;
+    subtitle?: string;
+    meta?: string;
+};
+type TrainingCalendarOverlayElements = {
+    container: string;
+    closeButton: string;
+    grid: string;
+    subtitle?: string;
+    legend?: string;
+};
 type MuseumOverlayElements = {
     container: string;
     closeButton: string;
@@ -304,6 +400,14 @@ type MasteryCertificateElements = {
     summary?: string;
     statsList?: string;
     date?: string;
+    statLessons?: string;
+    statAccuracy?: string;
+    statWpm?: string;
+    statCombo?: string;
+    statDrills?: string;
+    statTime?: string;
+    details?: string;
+    detailsToggle?: string;
 };
 type ParentSummaryOverlayElements = {
     container: string;
@@ -405,6 +509,7 @@ export declare class HudView {
     private analyticsViewerVisible;
     private analyticsViewerSignature;
     private analyticsViewerFilter;
+    private analyticsViewerTab;
     private analyticsViewerFilterSelect?;
     private roadmapPreferences;
     private roadmapState;
@@ -412,6 +517,10 @@ export declare class HudView {
     private readonly roadmapGlance?;
     private readonly parentalOverlay?;
     private readonly contrastOverlay?;
+    private readonly musicOverlay?;
+    private readonly uiSoundOverlay?;
+    private readonly sfxOverlay?;
+    private readonly readabilityOverlay?;
     private readonly stickerBookOverlay?;
     private stickerBookEntries;
     private readonly loreScrollOverlay?;
@@ -427,6 +536,22 @@ export declare class HudView {
     private readonly lessonMedalPanel?;
     private lessonMedalState?;
     private lessonMedalHighlightTimeout;
+    private readonly wpmLadderPanel?;
+    private readonly wpmLadderOverlay?;
+    private wpmLadderState?;
+    private sfxLibraryState?;
+    private uiSoundSchemeState?;
+    private musicStemState?;
+    private wpmLadderHighlightTimeout;
+    private readonly biomePanel?;
+    private readonly biomeOverlay?;
+    private biomeState?;
+    private biomeHighlightTimeout;
+    private readonly trainingCalendarPanel?;
+    private readonly trainingCalendarOverlay?;
+    private trainingCalendarState?;
+    private readonly streakTokenPanel?;
+    private streakTokens;
     private readonly masteryCertificatePanel?;
     private readonly masteryCertificate?;
     private readonly sideQuestPanel?;
@@ -440,12 +565,16 @@ export declare class HudView {
     private museumEntries;
     private certificateName;
     private certificateStats?;
+    private certificateDetailsCollapsed;
     private readonly mentorDialogue?;
     private mentorFocus;
     private mentorMessageCursor;
     private mentorNextUpdateAt;
     private readonly milestoneCelebration?;
     private milestoneCelebrationHideTimeout;
+    private lastMilestoneKey;
+    private lastMilestoneAt;
+    private lastLessonMedalCelebratedId;
     private lastLessonMilestoneCelebrated;
     private lastCertificateCelebratedAt;
     private readonly parentSummaryOverlay?;
@@ -484,6 +613,14 @@ export declare class HudView {
     private optionsPassivesBody?;
     private optionsPassivesCollapsed;
     private optionsPassivesDefaultCollapsed;
+    private sfxActiveLabel?;
+    private uiSoundActiveLabel?;
+    private musicActiveLabel?;
+    private dayNightTheme;
+    private parallaxSceneChoice;
+    private parallaxSceneResolved;
+    private parallaxShell;
+    private parallaxPaused;
     private wavePreviewHint?;
     private wavePreviewHintMessage;
     private wavePreviewHintPinned;
@@ -533,11 +670,18 @@ export declare class HudView {
         roadmapLaunch?: string;
         parentalOverlay?: ParentalOverlayElements;
         contrastOverlay?: ContrastOverlayElements;
+        musicOverlay?: MusicOverlayElements;
+        uiSoundOverlay?: UiSoundOverlayElements;
+        sfxOverlay?: SfxOverlayElements;
+        readabilityOverlay?: ReadabilityOverlayElements;
         stickerBookOverlay?: StickerBookOverlayElements;
         seasonTrackOverlay?: SeasonTrackOverlayElements;
         museumOverlay?: MuseumOverlayElements;
         sideQuestOverlay?: SideQuestOverlayElements;
         lessonMedalOverlay?: LessonMedalOverlayElements;
+        wpmLadderOverlay?: WpmLadderOverlayElements;
+        biomeOverlay?: BiomeOverlayElements;
+        trainingCalendarOverlay?: TrainingCalendarOverlayElements;
         masteryCertificateOverlay?: MasteryCertificateElements;
         loreScrollOverlay?: LoreScrollOverlayElements;
         parentSummaryOverlay?: ParentSummaryOverlayElements;
@@ -569,6 +713,8 @@ export declare class HudView {
         soundEnabled: boolean;
         soundVolume: number;
         soundIntensity: number;
+        musicEnabled?: boolean;
+        musicLevel?: number;
         screenShakeEnabled: boolean;
         screenShakeIntensity: number;
         selfTest?: {
@@ -583,6 +729,7 @@ export declare class HudView {
         hapticsEnabled?: boolean;
         textSizeScale?: number;
         reducedMotionEnabled: boolean;
+        latencySparklineEnabled?: boolean;
         checkeredBackgroundEnabled: boolean;
         readableFontEnabled: boolean;
         dyslexiaFontEnabled: boolean;
@@ -592,6 +739,7 @@ export declare class HudView {
         colorblindPaletteEnabled: boolean;
         colorblindPaletteMode?: string;
         castleSkin?: CastleSkinId;
+        parallaxScene?: ParallaxScene;
         hudZoom: number;
         hudLayout: "left" | "right";
         hudFontScale: number;
@@ -743,6 +891,7 @@ export declare class HudView {
     private applyTelemetryOptionState;
     private updateSoundVolumeDisplay;
     private updateSoundIntensityDisplay;
+    private updateMusicLevelDisplay;
     private updateScreenShakeIntensityDisplay;
     playScreenShakePreview(): void;
     private updateAccessibilitySelfTestDisplay;
@@ -755,6 +904,19 @@ export declare class HudView {
     presentContrastAudit(results: ContrastAuditResult[]): void;
     hideContrastOverlay(): void;
     setCastleSkin(skin: CastleSkinId): void;
+    setDayNightTheme(mode: DayNightMode): void;
+    setParallaxScene(scene: ParallaxScene, resolved?: ResolvedParallaxScene): void;
+    private resolveParallaxScene;
+    private applyParallaxScene;
+    setParallaxMotionPaused(paused: boolean): void;
+    showMusicOverlay(): void;
+    hideMusicOverlay(): void;
+    showUiSoundOverlay(): void;
+    hideUiSoundOverlay(): void;
+    showSfxOverlay(): void;
+    hideSfxOverlay(): void;
+    showReadabilityOverlay(): void;
+    hideReadabilityOverlay(): void;
     showStickerBookOverlay(): void;
     hideStickerBookOverlay(): void;
     showSeasonTrackOverlay(): void;
@@ -781,6 +943,7 @@ export declare class HudView {
         tone?: "gold" | "platinum" | "lesson" | "default";
         eyebrow?: string;
         durationMs?: number;
+        force?: boolean;
     }): void;
     hideMilestoneCelebration(): void;
     private scheduleMilestoneHide;
@@ -805,6 +968,35 @@ export declare class HudView {
     showLoreScrollOverlay(): void;
     hideLoreScrollOverlay(): void;
     private renderSeasonTrackOverlay;
+    setWpmLadder(state: WpmLadderViewState): void;
+    setMusicStems(state: MusicStemViewState): void;
+    setUiSoundScheme(state: UiSchemeViewState): void;
+    setSfxLibrary(state: SfxLibraryViewState): void;
+    private getEmptyWpmLadderState;
+    private flashWpmLadderHighlight;
+    private updateWpmLadderPanel;
+    private renderWpmLadderOverlay;
+    showWpmLadderOverlay(): void;
+    hideWpmLadderOverlay(): void;
+    setBiomeGallery(state: BiomeGalleryViewState): void;
+    private getEmptyBiomeState;
+    private flashBiomeHighlight;
+    private updateBiomePanel;
+    private renderBiomeOverlay;
+    showBiomeOverlay(): void;
+    hideBiomeOverlay(): void;
+    setTrainingCalendar(state: TrainingCalendarViewState): void;
+    private getEmptyTrainingCalendarState;
+    private updateTrainingCalendarPanel;
+    private renderTrainingCalendarOverlay;
+    showTrainingCalendarOverlay(): void;
+    hideTrainingCalendarOverlay(): void;
+    setStreakTokens(state: {
+        tokens: number;
+        streak: number;
+        lastAwarded: string | null;
+    }): void;
+    private updateStreakTokenPanel;
     setMasteryCertificate(state: {
         lessonsCompleted: number;
         accuracyPct: number;
@@ -816,17 +1008,30 @@ export declare class HudView {
     }): void;
     private renderMasteryCertificatePanel;
     private renderMasteryCertificateOverlay;
+    private setMasteryCertificateDetailsCollapsed;
     setLoreScrollProgress(state: LoreScrollViewState): void;
     private flashLoreScrollHighlight;
     private renderLoreScrollOverlay;
     private updateLoreScrollPanel;
     private normalizeCastleSkin;
     private applyCastleSkinDataset;
+    private applyDayNightTheme;
     private updateCompanionMood;
     private applyCompanionMood;
     private refreshParentSummary;
     private refreshMasteryCertificate;
+    private getEmptyMusicState;
+    private updateMusicActiveLabel;
+    private renderMusicOverlay;
+    private getEmptyUiSoundState;
+    private updateUiSoundActiveLabel;
+    private renderUiSoundOverlay;
+    private getEmptySfxLibraryState;
+    private updateSfxActiveLabel;
+    private renderSfxOverlay;
+    private renderReadabilityGuide;
     private renderParentSummary;
+    private describeReadabilityTier;
     private describeCompanionMood;
     private renderStickerBook;
     private updateStickerBookSummary;
@@ -848,6 +1053,7 @@ export declare class HudView {
     setCanvasTransitionState(state: ResolutionTransitionState): void;
     hasAnalyticsViewer(): boolean;
     toggleAnalyticsViewer(): boolean;
+    private setAnalyticsViewerTab;
     private normalizeAnalyticsViewerFilter;
     private describeAnalyticsViewerFilter;
     private applyAnalyticsViewerFilter;
@@ -856,6 +1062,8 @@ export declare class HudView {
     setAnalyticsViewerVisible(visible: boolean): boolean;
     isAnalyticsViewerVisible(): boolean;
     private updateAnalyticsViewerDrills;
+    private renderAnalyticsTraces;
+    private renderAnalyticsExportMeta;
     private refreshAnalyticsViewer;
     private setOptionsOverlayVisible;
     private updateEvacuation;

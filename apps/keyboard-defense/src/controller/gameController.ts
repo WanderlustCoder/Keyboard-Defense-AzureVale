@@ -65,6 +65,68 @@ import {
   recordLessonMedal,
   writeLessonMedalProgress
 } from "../utils/lessonMedals.js";
+import {
+  buildWpmLadderView,
+  readWpmLadderProgress,
+  recordWpmLadderRun,
+  writeWpmLadderProgress
+} from "../utils/wpmLadder.js";
+import {
+  buildSfxLibraryView,
+  getSfxLibraryDefinition,
+  markSfxLibraryAudition,
+  readSfxLibraryState,
+  setActiveSfxLibrary,
+  writeSfxLibraryState,
+  type SfxLibraryId
+} from "../utils/sfxLibrary.js";
+import {
+  buildUiSchemeView,
+  getUiSchemeDefinition,
+  markUiSchemeAudition,
+  readUiSchemeState,
+  setActiveUiScheme,
+  writeUiSchemeState,
+  type UiSchemeId,
+  type UiSampleKey
+} from "../utils/uiSoundScheme.js";
+import {
+  buildMusicStemView,
+  getMusicStemDefinition,
+  markMusicStemAudition,
+  readMusicStemState,
+  setActiveMusicStem,
+  writeMusicStemState,
+  type MusicStemId
+} from "../utils/musicStems.js";
+import { readDayNightTheme, writeDayNightTheme, type DayNightMode } from "../utils/dayNightTheme.js";
+import {
+  readParallaxScene,
+  resolveParallaxScene,
+  writeParallaxScene,
+  type ParallaxScene
+} from "../utils/parallaxBackground.js";
+import {
+  buildBiomeGalleryView,
+  readBiomeGallery,
+  recordBiomeRun,
+  setActiveBiome,
+  writeBiomeGallery,
+  type BiomeId
+} from "../utils/biomeGallery.js";
+import {
+  computeCurrentStreak,
+  maybeAwardStreakToken,
+  readStreakTokens,
+  writeStreakTokens
+} from "../utils/streakTokens.js";
+import {
+  buildTrainingCalendarView,
+  drillSummaryToCalendarDelta,
+  readTrainingCalendar,
+  recordTrainingDay,
+  writeTrainingCalendar
+} from "../utils/trainingCalendar.js";
 import { buildSeasonTrackProgress, listSeasonTrack } from "../data/seasonTrack.js";
 import { selectAmbientProfile } from "../audio/ambientProfiles.js";
 import { getEnemyBiography, type EnemyBiography } from "../data/bestiary.js";
@@ -76,6 +138,9 @@ const SOUND_VOLUME_DEFAULT = 0.8;
 const AUDIO_INTENSITY_MIN = 0.5;
 const AUDIO_INTENSITY_MAX = 1.5;
 const AUDIO_INTENSITY_DEFAULT = 1;
+const MUSIC_LEVEL_MIN = 0;
+const MUSIC_LEVEL_MAX = 1;
+const MUSIC_LEVEL_DEFAULT = 0.65;
 const SCREEN_SHAKE_INTENSITY_MIN = 0;
 const SCREEN_SHAKE_INTENSITY_MAX = 1.2;
 const SCREEN_SHAKE_INTENSITY_DEFAULT = 0.65;
@@ -111,6 +176,10 @@ const INPUT_LATENCY_SAMPLE_MS = 500;
 const INPUT_LATENCY_WINDOW = 8;
 const INPUT_LATENCY_WARN_MS = 40;
 const INPUT_LATENCY_BAD_MS = 75;
+const INPUT_LATENCY_SPARKLINE_WIDTH = 80;
+const INPUT_LATENCY_SPARKLINE_HEIGHT = 18;
+const INPUT_LATENCY_SPARKLINE_CAP_MS = 120;
+const LATENCY_SPARKLINE_KEY = "keyboard-defense:latency-sparkline";
 const HUD_VISIBILITY_KEY = "keyboard-defense:hud-visibility";
 const COLORBLIND_MODE_KEY = "keyboard-defense:colorblind-mode";
 const CONTEXTUAL_HINTS_KEY = "keyboard-defense:contextual-hints";
@@ -217,6 +286,18 @@ export class GameController {
     this.soundEnabled = true;
     this.soundVolume = SOUND_VOLUME_DEFAULT;
     this.audioIntensity = AUDIO_INTENSITY_DEFAULT;
+    this.musicEnabled = true;
+    this.musicLevel = MUSIC_LEVEL_DEFAULT;
+    this.musicStems = {
+      activeId: "siege-suite",
+      auditioned: [],
+      dynamicEnabled: true,
+      updatedAt: null
+    };
+    this.musicPreviewTimeout = null;
+    this.uiSoundScheme = { activeId: "clarity", auditioned: [], updatedAt: null };
+    this.uiSchemePreviewTimeout = null;
+    this.sfxLibrary = { activeId: "classic", auditioned: [], updatedAt: null };
     this.screenShakeEnabled = false;
     this.screenShakeIntensity = SCREEN_SHAKE_INTENSITY_DEFAULT;
     this.screenShakeBursts = [];
@@ -234,7 +315,11 @@ export class GameController {
     this.colorblindPaletteEnabled = false;
     this.colorblindPaletteMode = "off";
     this.lastColorblindMode = "deuteran";
+    this.dayNightTheme = "night";
+    this.parallaxScene = "auto";
     this.latencyIndicator = null;
+    this.latencySparklineEnabled = this.loadLatencySparklineEnabled();
+    this.latencySparkline = null;
     this.latencySamples = [];
     this.latencyMonitorTimeout = null;
     this.waveMicroTipIndex =
@@ -380,6 +465,15 @@ export class GameController {
         : null;
     this.initializeLessonProgress();
     this.initializeLessonMedals();
+    this.initializeSfxLibrary();
+    this.initializeUiSoundScheme();
+    this.initializeMusicStems();
+    this.initializeWpmLadder();
+    this.initializeTrainingCalendar();
+    this.initializeStreakTokens();
+    this.initializeBiomeGallery();
+    this.initializeDayNightTheme();
+    this.initializeParallaxScene();
     this.initializeLoreProgress();
     this.assetReady = false;
     this.assetStartPending = false;
@@ -537,18 +631,30 @@ export class GameController {
           soundVolumeValue: "options-sound-volume-value",
           soundIntensitySlider: "options-sound-intensity",
           soundIntensityValue: "options-sound-intensity-value",
+          musicToggle: "options-music-toggle",
+          musicLevelSlider: "options-music-level",
+          musicLevelValue: "options-music-level-value",
+          musicLibraryButton: "options-music-library",
+          musicLibrarySummary: "options-music-library-label",
+          uiSoundLibraryButton: "options-ui-sound-library",
+          uiSoundLibrarySummary: "options-ui-sound-library-label",
           screenShakeToggle: "options-screen-shake-toggle",
           screenShakeSlider: "options-screen-shake-intensity",
           screenShakeValue: "options-screen-shake-intensity-value",
           screenShakePreview: "options-screen-shake-preview",
           screenShakeDemo: "options-screen-shake-demo",
           contrastAuditButton: "options-contrast-audit",
+          sfxLibraryButton: "options-sfx-library",
+          sfxLibrarySummary: "options-sfx-library-label",
           stickerBookButton: "options-sticker-book",
           seasonTrackButton: "options-season-track",
           museumButton: "options-museum",
           sideQuestButton: "options-side-quests",
           masteryCertificateButton: "options-mastery-certificate",
           lessonMedalButton: "options-lesson-medals",
+          wpmLadderButton: "options-wpm-ladder",
+          trainingCalendarButton: "options-training-calendar",
+          biomeGalleryButton: "options-biome-gallery",
           parentSummaryButton: "options-parent-summary",
           selfTestContainer: "options-self-test",
           selfTestRun: "options-self-test-run",
@@ -566,6 +672,7 @@ export class GameController {
           textSizeSelect: "options-text-size",
           reducedMotionToggle: "options-reduced-motion-toggle",
           checkeredBackgroundToggle: "options-checkered-bg-toggle",
+          latencySparklineToggle: "options-latency-sparkline",
           readableFontToggle: "options-readable-font-toggle",
           dyslexiaFontToggle: "options-dyslexia-font-toggle",
           dyslexiaSpacingToggle: "options-dyslexia-spacing-toggle",
@@ -577,6 +684,8 @@ export class GameController {
           hudZoomSelect: "options-hud-zoom",
           hudLayoutToggle: "options-hud-left",
           castleSkinSelect: "options-castle-skin",
+          dayNightThemeSelect: "options-day-night-theme",
+          parallaxSceneSelect: "options-parallax-scene",
           fontScaleSelect: "options-font-scale",
           defeatAnimationSelect: "options-defeat-animation",
           telemetryToggle: "options-telemetry-toggle",
@@ -585,6 +694,7 @@ export class GameController {
           eliteAffixToggleWrapper: "options-elite-affix-toggle-wrapper",
           crystalPulseToggle: "options-crystal-toggle",
           crystalPulseToggleWrapper: "options-crystal-toggle-wrapper",
+          readabilityGuideButton: "options-readability-guide",
           loreScrollsButton: "options-lore-scrolls",
           analyticsExportButton: "options-analytics-export"
         },
@@ -598,7 +708,25 @@ export class GameController {
           container: "debug-analytics-viewer",
           tableBody: "debug-analytics-viewer-body",
           filterSelect: "debug-analytics-viewer-filter",
-          drills: "debug-analytics-drills"
+          drills: "debug-analytics-drills",
+          tabButtons: [
+            "debug-analytics-tab-summary",
+            "debug-analytics-tab-traces",
+            "debug-analytics-tab-exports"
+          ],
+          panels: {
+            summary: "debug-analytics-panel-summary",
+            traces: "debug-analytics-panel-traces",
+            exports: "debug-analytics-panel-exports"
+          },
+          traces: "debug-analytics-traces",
+          exportMeta: {
+            waves: "debug-analytics-export-waves",
+            drills: "debug-analytics-export-drills",
+            breaches: "debug-analytics-export-breaches",
+            timeToFirstTurret: "debug-analytics-export-ttf",
+            note: "debug-analytics-export-note"
+          }
         },
         roadmapOverlay: {
           container: "roadmap-overlay",
@@ -635,6 +763,30 @@ export class GameController {
           summary: "contrast-overlay-summary",
           closeButton: "contrast-overlay-close",
           markers: "contrast-overlay-markers"
+        },
+        musicOverlay: {
+          container: "music-overlay",
+          closeButton: "music-overlay-close",
+          list: "music-overlay-list",
+          summary: "music-overlay-summary"
+        },
+        uiSoundOverlay: {
+          container: "ui-sound-overlay",
+          closeButton: "ui-sound-overlay-close",
+          list: "ui-sound-overlay-list",
+          summary: "ui-sound-overlay-summary"
+        },
+        sfxOverlay: {
+          container: "sfx-overlay",
+          closeButton: "sfx-overlay-close",
+          list: "sfx-overlay-list",
+          summary: "sfx-overlay-summary"
+        },
+        readabilityOverlay: {
+          container: "readability-overlay",
+          closeButton: "readability-overlay-close",
+          list: "readability-overlay-list",
+          summary: "readability-overlay-summary"
         },
         stickerBookOverlay: {
           container: "sticker-overlay",
@@ -687,7 +839,15 @@ export class GameController {
           nameInput: "mastery-certificate-name-input",
           summary: "mastery-certificate-overlay-summary",
           statsList: "mastery-certificate-stats-list",
-          date: "mastery-certificate-date"
+          date: "mastery-certificate-date",
+          statLessons: "mastery-certificate-stat-lessons",
+          statAccuracy: "mastery-certificate-stat-accuracy",
+          statWpm: "mastery-certificate-stat-wpm",
+          statCombo: "mastery-certificate-stat-combo",
+          statDrills: "mastery-certificate-stat-drills",
+          statTime: "mastery-certificate-stat-time",
+          details: "mastery-cert-details",
+          detailsToggle: "mastery-cert-details-toggle"
         },
         lessonMedalOverlay: {
           container: "lesson-medal-overlay",
@@ -698,6 +858,27 @@ export class GameController {
           bestList: "lesson-medal-best-list",
           historyList: "lesson-medal-history-list",
           replayButton: "lesson-medal-replay"
+        },
+        wpmLadderOverlay: {
+          container: "wpm-ladder-overlay",
+          closeButton: "wpm-ladder-close",
+          list: "wpm-ladder-list",
+          subtitle: "wpm-ladder-subtitle",
+          meta: "wpm-ladder-meta"
+        },
+        biomeOverlay: {
+          container: "biome-overlay",
+          closeButton: "biome-overlay-close",
+          list: "biome-overlay-list",
+          subtitle: "biome-overlay-subtitle",
+          meta: "biome-overlay-meta"
+        },
+        trainingCalendarOverlay: {
+          container: "training-calendar-overlay",
+          closeButton: "training-calendar-close",
+          grid: "training-calendar-grid",
+          subtitle: "training-calendar-subtitle",
+          legend: "training-calendar-legend"
         },
         loreScrollOverlay: {
           container: "scrolls-overlay",
@@ -730,6 +911,16 @@ export class GameController {
         onSoundToggle: (enabled) => this.setSoundEnabled(enabled),
         onSoundVolumeChange: (volume) => this.setSoundVolume(volume),
         onSoundIntensityChange: (value) => this.setAudioIntensity(value),
+        onMusicToggle: (enabled) => this.setMusicEnabled(enabled),
+        onMusicLevelChange: (value) => this.setMusicLevel(value),
+        onMusicLibrarySelect: (suiteId) => this.setMusicSuiteSelection(suiteId as MusicStemId),
+        onMusicLibraryPreview: (suiteId) => this.previewMusicSuite(suiteId as MusicStemId),
+        onUiSoundSchemeSelect: (schemeId) => this.setUiSoundSchemeSelection(schemeId as UiSchemeId),
+        onUiSoundSchemePreview: (schemeId) => this.previewUiSoundScheme(schemeId as UiSchemeId),
+        onSfxLibrarySelect: (libraryId) =>
+          this.setSfxLibrarySelection(libraryId as SfxLibraryId),
+        onSfxLibraryPreview: (libraryId) =>
+          this.previewSfxLibrary(libraryId as SfxLibraryId),
         onScreenShakeToggle: (enabled) => this.setScreenShakeEnabled(enabled),
         onScreenShakeIntensityChange: (value) => this.setScreenShakeIntensity(value),
         onScreenShakePreview: () => this.previewScreenShake(),
@@ -756,6 +947,7 @@ export class GameController {
         },
         onReducedMotionToggle: (enabled) => this.setReducedMotionEnabled(enabled),
         onCheckeredBackgroundToggle: (enabled) => this.setCheckeredBackgroundEnabled(enabled),
+        onLatencySparklineToggle: (enabled) => this.setLatencySparklineEnabled(enabled),
         onReadableFontToggle: (enabled) => this.setReadableFontEnabled(enabled),
         onDyslexiaFontToggle: (enabled) => this.setDyslexiaFontEnabled(enabled),
         onDyslexiaSpacingToggle: (enabled) => this.setDyslexiaSpacingEnabled(enabled),
@@ -764,6 +956,9 @@ export class GameController {
         onColorblindPaletteModeChange: (mode) => this.setColorblindPaletteMode(mode),
         onBackgroundBrightnessChange: (value) => this.setBackgroundBrightness(value),
         onCastleSkinChange: (skin) => this.setCastleSkin(skin, { updateOptions: false }),
+        onDayNightThemeChange: (mode) => this.setDayNightTheme(mode as DayNightMode),
+        onParallaxSceneChange: (scene) => this.setParallaxScene(scene as ParallaxScene),
+        onBiomeSelect: (biomeId) => this.setActiveBiomeSelection(biomeId as BiomeId),
         onHudZoomChange: (scale) => this.setHudZoom(scale),
         onHudLayoutToggle: (leftHanded) => this.setHudLayoutSide(leftHanded ? "left" : "right"),
         onDefeatAnimationModeChange: (mode) => this.setDefeatAnimationMode(mode),
@@ -815,6 +1010,11 @@ export class GameController {
     this.diagnostics.setCanvasTransitionState("idle");
     if (typeof window !== "undefined" && "AudioContext" in window) {
       this.soundManager = new SoundManager();
+      this.soundManager.setLibrary(this.sfxLibrary?.activeId ?? "classic");
+      this.soundManager.setUiScheme(this.uiSoundScheme?.activeId ?? "clarity");
+      this.soundManager.setMusicSuite(this.musicStems?.activeId ?? "siege-suite");
+      this.soundManager.setMusicLevel(this.musicLevel);
+      this.soundManager.setMusicEnabled(this.musicEnabled && this.soundEnabled);
       this.soundManager.setVolume(this.soundVolume);
       this.soundManager.setIntensity(this.audioIntensity);
     }
@@ -823,6 +1023,15 @@ export class GameController {
     this.syncLoreScrollsToHud();
     this.syncSeasonTrackToHud();
     this.syncLessonMedalsToHud();
+    this.syncWpmLadderToHud();
+    this.syncTrainingCalendarToHud();
+    this.syncBiomeGalleryToHud();
+    this.syncDayNightThemeToHud();
+    this.syncParallaxSceneToHud();
+    this.syncUiSoundSchemeToHud();
+    this.syncSfxLibraryToHud();
+    this.syncMusicStemsToHud();
+    this.syncStreakTokensToHud();
     this.hud.setFullscreenAvailable(this.fullscreenSupported);
     this.attachInputHandlers(options.typingInput);
     this.attachTypingDrillHooks();
@@ -1628,6 +1837,7 @@ export class GameController {
       void this.soundManager?.ensureInitialized().then(() => {
         this.soundManager?.setVolume(this.soundVolume);
         this.soundManager?.setEnabled(true);
+        this.soundManager?.setMusicEnabled(this.musicEnabled);
         if (this.currentState) {
           this.updateAmbientTrack(this.currentState);
         }
@@ -1635,6 +1845,7 @@ export class GameController {
     } else {
       this.soundManager?.setEnabled(false);
       this.soundManager?.stopAmbient?.();
+      this.soundManager?.setMusicEnabled(false);
     }
     if (!options.silent) {
       this.hud.appendLog(`Sound ${enabled ? "enabled" : "muted"}`);
@@ -1648,9 +1859,60 @@ export class GameController {
       this.render();
     }
   }
+  setMusicEnabled(enabled, options = {}) {
+    const next = Boolean(enabled);
+    const changed = this.musicEnabled !== next;
+    this.musicEnabled = next;
+    if (this.musicStems) {
+      this.musicStems = { ...this.musicStems, dynamicEnabled: next, updatedAt: new Date().toISOString() };
+      if (typeof window !== "undefined" && window.localStorage) {
+        writeMusicStemState(window.localStorage, this.musicStems);
+      }
+      this.syncMusicStemsToHud();
+    }
+    if (this.soundManager) {
+      if (this.soundEnabled) {
+        this.soundManager.setMusicEnabled(next);
+        if (this.currentState) {
+          this.lastAmbientProfile = null;
+          this.updateAmbientTrack(this.currentState);
+        }
+      } else {
+        this.soundManager.setMusicEnabled(false);
+      }
+    }
+    if (!options.silent && changed) {
+      this.hud.appendLog(`Dynamic music ${next ? "enabled" : "muted"}`);
+    }
+    this.updateOptionsOverlayState();
+    if (options.persist !== false && changed) {
+      this.persistPlayerSettings({ musicEnabled: next });
+    }
+    if (options.render !== false && changed) {
+      this.render();
+    }
+  }
+  setMusicLevel(level, options = {}) {
+    const normalized = this.normalizeMusicLevel(level);
+    const changed = Math.abs(normalized - this.musicLevel) > 0.001;
+    this.musicLevel = normalized;
+    if (this.soundManager) {
+      this.soundManager.setMusicLevel(normalized);
+    }
+    if (!options.silent && changed) {
+      const percent = Math.round(normalized * 100);
+      this.hud.appendLog(`Music level set to ${percent}%`);
+    }
+    this.updateOptionsOverlayState();
+    if (options.persist !== false && changed) {
+      this.persistPlayerSettings({ musicLevel: normalized });
+    }
+  }
   setReducedMotionEnabled(enabled, options = {}) {
     this.reducedMotionEnabled = enabled;
     this.applyReducedMotionSetting(enabled);
+    this.updateLatencySparklineVisibility();
+    this.syncParallaxMotionPause();
     if (enabled) {
       this.screenShakeBursts = [];
       if (this.screenShakeEnabled) {
@@ -1726,6 +1988,7 @@ export class GameController {
       }
     }
     this.lowGraphicsEnabled = next;
+    this.syncParallaxMotionPause();
     if (persist) {
       this.persistPlayerSettings({ lowGraphicsEnabled: next });
     }
@@ -1876,6 +2139,161 @@ export class GameController {
     if (options.persist !== false && changed) {
       this.persistPlayerSettings({ audioIntensity: normalized });
     }
+  }
+  setMusicSuiteSelection(suiteId: MusicStemId, options: { silent?: boolean } = {}) {
+    const nextState = setActiveMusicStem(
+      this.musicStems ?? {
+        activeId: "siege-suite",
+        auditioned: [],
+        dynamicEnabled: true,
+        updatedAt: null
+      },
+      suiteId
+    );
+    const changed = (this.musicStems?.activeId ?? "siege-suite") !== nextState.activeId;
+    this.musicStems = nextState;
+    if (this.soundManager) {
+      this.soundManager.setMusicSuite(nextState.activeId);
+      if (this.musicEnabled && this.soundEnabled && this.currentState) {
+        this.lastAmbientProfile = null;
+        this.updateAmbientTrack(this.currentState);
+      }
+    }
+    if (!options.silent) {
+      const def = getMusicStemDefinition(nextState.activeId);
+      this.hud.appendLog?.(`Music suite set to ${def.name} (${def.vibe}).`);
+    }
+    if (typeof window !== "undefined" && window.localStorage) {
+      writeMusicStemState(window.localStorage, this.musicStems);
+    }
+    this.syncMusicStemsToHud();
+    return changed;
+  }
+  previewMusicSuite(suiteId: MusicStemId) {
+    const current = this.musicStems?.activeId ?? "siege-suite";
+    const target = getMusicStemDefinition(suiteId).id;
+    const manager = this.soundManager;
+    if (manager && this.soundEnabled) {
+      manager.setMusicSuite(target);
+      manager.setMusicEnabled(true);
+      manager.setMusicProfile(this.lastAmbientProfile ?? "calm");
+      if (this.musicPreviewTimeout) {
+        window.clearTimeout(this.musicPreviewTimeout);
+      }
+      this.musicPreviewTimeout = window.setTimeout(() => {
+        manager.setMusicSuite(current);
+        manager.setMusicEnabled(this.musicEnabled && this.soundEnabled);
+        manager.setMusicProfile(this.lastAmbientProfile ?? "calm");
+        this.musicPreviewTimeout = null;
+      }, 5000);
+    }
+    this.musicStems = markMusicStemAudition(
+      this.musicStems ?? { activeId: current, auditioned: [], dynamicEnabled: true, updatedAt: null },
+      target
+    );
+    if (typeof window !== "undefined" && window.localStorage) {
+      writeMusicStemState(window.localStorage, this.musicStems);
+    }
+    this.syncMusicStemsToHud();
+  }
+  setUiSoundSchemeSelection(schemeId: UiSchemeId, options: { silent?: boolean } = {}) {
+    const nextState = setActiveUiScheme(
+      this.uiSoundScheme ?? { activeId: "clarity", auditioned: [], updatedAt: null },
+      schemeId
+    );
+    const changed = (this.uiSoundScheme?.activeId ?? "clarity") !== nextState.activeId;
+    this.uiSoundScheme = nextState;
+    if (this.soundManager) {
+      this.soundManager.setUiScheme(nextState.activeId);
+      void this.soundManager.ensureInitialized?.();
+    }
+    if (!options.silent) {
+      const def = getUiSchemeDefinition(nextState.activeId);
+      this.hud.appendLog?.(`UI sounds set to ${def.name} (${def.vibe}).`);
+    }
+    if (typeof window !== "undefined" && window.localStorage) {
+      writeUiSchemeState(window.localStorage, this.uiSoundScheme);
+    }
+    this.syncUiSoundSchemeToHud();
+    return changed;
+  }
+  previewUiSoundScheme(schemeId: UiSchemeId) {
+    const current = this.uiSoundScheme?.activeId ?? "clarity";
+    const target = getUiSchemeDefinition(schemeId).id;
+    const manager = this.soundManager;
+    if (manager && this.soundEnabled) {
+      manager.setUiScheme(target);
+      void manager.ensureInitialized?.().then(() => {
+        const previewKeys: UiSampleKey[] = ["ui-open", "ui-select", "ui-alert"];
+        const delays = [0, 160, 340];
+        previewKeys.forEach((key, idx) => {
+          window.setTimeout(() => manager.playUi(key), delays[idx] ?? idx * 120);
+        });
+        if (current !== target) {
+          window.setTimeout(() => manager.setUiScheme(current), 1200);
+        }
+      });
+    }
+    this.uiSoundScheme = markUiSchemeAudition(
+      this.uiSoundScheme ?? { activeId: current, auditioned: [], updatedAt: null },
+      target
+    );
+    if (typeof window !== "undefined" && window.localStorage) {
+      writeUiSchemeState(window.localStorage, this.uiSoundScheme);
+    }
+    this.syncUiSoundSchemeToHud();
+  }
+  setSfxLibrarySelection(libraryId: SfxLibraryId, options: { silent?: boolean } = {}) {
+    const nextState = setActiveSfxLibrary(
+      this.sfxLibrary ?? { activeId: "classic", auditioned: [], updatedAt: null },
+      libraryId
+    );
+    const changed = (this.sfxLibrary?.activeId ?? "classic") !== nextState.activeId;
+    this.sfxLibrary = nextState;
+    if (this.soundManager) {
+      this.soundManager.setLibrary(nextState.activeId);
+      void this.soundManager.ensureInitialized?.();
+    }
+    if (!options.silent) {
+      const def = getSfxLibraryDefinition(nextState.activeId);
+      this.hud.appendLog?.(`SFX library set to ${def.name} (${def.vibe}).`);
+    }
+    if (typeof window !== "undefined" && window.localStorage) {
+      writeSfxLibraryState(window.localStorage, this.sfxLibrary);
+    }
+    this.syncSfxLibraryToHud();
+    return changed;
+  }
+  previewSfxLibrary(libraryId: SfxLibraryId) {
+    const current = this.sfxLibrary?.activeId ?? "classic";
+    const target = getSfxLibraryDefinition(libraryId).id;
+    const manager = this.soundManager;
+    if (manager) {
+      manager.setLibrary(target);
+      void manager.ensureInitialized?.().then(() => {
+        const previewKeys: Array<[string, number]> = [
+          ["projectile-arrow", 0],
+          ["impact-hit", 180],
+          ["upgrade", 360],
+          ["impact-breach", 640]
+        ];
+        for (const [key, delay] of previewKeys) {
+          window.setTimeout(() => manager.play(key), delay);
+        }
+        window.setTimeout(() => manager.playStinger?.("victory"), 820);
+        if (current !== target) {
+          window.setTimeout(() => manager.setLibrary(current), 1000);
+        }
+      });
+    }
+    this.sfxLibrary = markSfxLibraryAudition(
+      this.sfxLibrary ?? { activeId: current, auditioned: [], updatedAt: null },
+      target
+    );
+    if (typeof window !== "undefined" && window.localStorage) {
+      writeSfxLibraryState(window.localStorage, this.sfxLibrary);
+    }
+    this.syncSfxLibraryToHud();
   }
   setScreenShakeEnabled(enabled, options = {}) {
     const next = Boolean(enabled) && !this.reducedMotionEnabled;
@@ -2275,6 +2693,13 @@ export class GameController {
     const clamped = Math.min(AUDIO_INTENSITY_MAX, Math.max(AUDIO_INTENSITY_MIN, value));
     return Math.round(clamped * 100) / 100;
   }
+  normalizeMusicLevel(value) {
+    if (!Number.isFinite(value)) {
+      return MUSIC_LEVEL_DEFAULT;
+    }
+    const clamped = Math.min(MUSIC_LEVEL_MAX, Math.max(MUSIC_LEVEL_MIN, value));
+    return Math.round(clamped * 100) / 100;
+  }
   normalizeScreenShakeIntensity(value) {
     if (!Number.isFinite(value)) {
       return SCREEN_SHAKE_INTENSITY_DEFAULT;
@@ -2293,6 +2718,8 @@ export class GameController {
       soundEnabled: this.soundEnabled,
       soundVolume: this.soundVolume,
       soundIntensity: this.audioIntensity,
+      musicEnabled: this.musicEnabled,
+      musicLevel: this.musicLevel,
       screenShakeEnabled: this.screenShakeEnabled,
       screenShakeIntensity: this.screenShakeIntensity,
       diagnosticsVisible: this.diagnostics.isVisible(),
@@ -2301,6 +2728,7 @@ export class GameController {
       hapticsEnabled: this.hapticsEnabled,
       textSizeScale: this.textSizeScale,
       reducedMotionEnabled: this.reducedMotionEnabled,
+      latencySparklineEnabled: this.latencySparklineEnabled,
       checkeredBackgroundEnabled: this.checkeredBackgroundEnabled,
       readableFontEnabled: this.readableFontEnabled,
       dyslexiaFontEnabled: this.dyslexiaFontEnabled,
@@ -2310,6 +2738,7 @@ export class GameController {
       colorblindPaletteEnabled: this.colorblindPaletteEnabled,
       colorblindPaletteMode: this.colorblindPaletteMode,
       castleSkin: this.castleSkin,
+      parallaxScene: this.parallaxScene,
       selfTest: selfTestState,
       hudZoom: this.hudZoom,
       hudLayout: this.hudLayout,
@@ -2837,6 +3266,7 @@ export class GameController {
     if (this.optionsOverlayActive || this.menuActive || this.waveScorecardActive) {
       return;
     }
+    this.soundManager?.playUi?.("ui-open");
     this.updateOptionsOverlayState();
     this.hud.showOptionsOverlay();
     if (!this.hud.isOptionsOverlayVisible()) {
@@ -2860,6 +3290,7 @@ export class GameController {
       return;
     }
     this.optionsOverlayActive = false;
+    this.soundManager?.playUi?.("ui-back");
     this.hud.hideOptionsOverlay();
     const shouldResume =
       options.resume !== false &&
@@ -3320,10 +3751,19 @@ export class GameController {
   persistPlayerSettings(patch) {
     const soundUnchanged =
       patch.soundEnabled === undefined || patch.soundEnabled === this.playerSettings.soundEnabled;
+    const musicEnabledUnchanged =
+      patch.musicEnabled === undefined || patch.musicEnabled === this.playerSettings.musicEnabled;
+    const musicLevelUnchanged =
+      patch.musicLevel === undefined ||
+      Math.abs(this.normalizeMusicLevel(patch.musicLevel) - this.playerSettings.musicLevel) <=
+        0.001;
     const soundVolumeUnchanged =
       patch.soundVolume === undefined ||
       Math.abs(this.normalizeSoundVolume(patch.soundVolume) - this.playerSettings.soundVolume) <=
         0.001;
+    const latencySparklineUnchanged =
+      patch.latencySparklineEnabled === undefined ||
+      patch.latencySparklineEnabled === this.playerSettings.latencySparklineEnabled;
     const soundIntensityUnchanged =
       patch.audioIntensity === undefined ||
       Math.abs(
@@ -3436,6 +3876,8 @@ export class GameController {
     if (
       soundUnchanged &&
       soundVolumeUnchanged &&
+      musicEnabledUnchanged &&
+      musicLevelUnchanged &&
       soundIntensityUnchanged &&
       diagnosticsUnchanged &&
       reducedMotionUnchanged &&
@@ -3448,6 +3890,7 @@ export class GameController {
       hapticsUnchanged &&
       screenShakeEnabledUnchanged &&
       screenShakeIntensityUnchanged &&
+      latencySparklineUnchanged &&
       virtualKeyboardUnchanged &&
       lowGraphicsUnchanged &&
       defeatAnimationModeUnchanged &&
@@ -3931,6 +4374,33 @@ export class GameController {
     } finally {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
+    }
+  }
+  async copyAnalyticsRecap() {
+    const clipboard = typeof navigator !== "undefined" ? navigator.clipboard : undefined;
+    if (!clipboard || typeof clipboard.writeText !== "function") {
+      this.hud.appendLog("Clipboard unavailable; try exporting instead.");
+      return;
+    }
+    const snapshot = this.engine.getAnalyticsSnapshot();
+    const accuracyPct = Math.round(Math.max(0, Math.min(1, snapshot.typing?.accuracy ?? 0)) * 100);
+    const wpm = Math.round(Math.max(0, snapshot.typing?.wpm ?? 0));
+    const waves = snapshot.waveSummaries?.length ?? 0;
+    const breaches = snapshot.breaches ?? 0;
+    const recap = [
+      "Keyboard Defense analytics recap",
+      `Captured: ${snapshot.capturedAt}`,
+      `Waves: ${waves}`,
+      `Accuracy: ${accuracyPct}%`,
+      `WPM: ${wpm}`,
+      `Breaches: ${breaches}`
+    ].join("\n");
+    try {
+      await clipboard.writeText(recap);
+      this.hud.appendLog("Analytics recap copied to clipboard.");
+    } catch (error) {
+      console.warn("[analytics] clipboard copy failed", error);
+      this.hud.appendLog("Copy failed; try full export instead.");
     }
   }
   pauseForTutorial() {
@@ -4529,6 +4999,15 @@ export class GameController {
       silent: true,
       persist: false
     });
+    this.setMusicEnabled(stored.musicEnabled ?? true, {
+      silent: true,
+      persist: false,
+      render: false
+    });
+    this.setMusicLevel(stored.musicLevel ?? MUSIC_LEVEL_DEFAULT, {
+      silent: true,
+      persist: false
+    });
     this.setDiagnosticsVisible(stored.diagnosticsVisible, {
       silent: true,
       persist: false,
@@ -4538,6 +5017,16 @@ export class GameController {
       silent: true,
       persist: false,
       render: false
+    });
+    const legacySparkline = this.loadLatencySparklineEnabled();
+    const storedSparkline =
+      typeof stored.latencySparklineEnabled === "boolean"
+        ? stored.latencySparklineEnabled
+        : legacySparkline;
+    this.setLatencySparklineEnabled(storedSparkline, {
+      silent: true,
+      persist: typeof stored.latencySparklineEnabled === "boolean" ? false : true,
+      force: true
     });
     this.setScreenShakeIntensity(
       stored.screenShakeIntensity ?? SCREEN_SHAKE_INTENSITY_DEFAULT,
@@ -4677,6 +5166,7 @@ export class GameController {
     const soundIntensityValue = document.getElementById("debug-sound-intensity-value");
     const resetAnalytics = document.getElementById("debug-analytics-reset");
     const exportAnalytics = document.getElementById("debug-analytics-export");
+    const copyAnalytics = document.getElementById("debug-analytics-copy-link");
     const analyticsViewerToggle = document.getElementById("debug-analytics-viewer-toggle");
     const tutorialReplay = document.getElementById("debug-tutorial-replay");
     const telemetryControlsContainer = document.getElementById("debug-telemetry-controls");
@@ -4825,6 +5315,11 @@ export class GameController {
         }
         exportAnalytics.addEventListener("click", () => this.exportAnalytics());
       }
+    }
+    if (copyAnalytics instanceof HTMLButtonElement) {
+      copyAnalytics.addEventListener("click", () => {
+        void this.copyAnalyticsRecap();
+      });
     }
     if (analyticsViewerToggle instanceof HTMLButtonElement) {
       if (!this.hud.hasAnalyticsViewer()) {
@@ -5198,6 +5693,61 @@ export class GameController {
     this.lessonMedalProgress = readLessonMedalProgress(storage);
   }
 
+  initializeWpmLadder() {
+    const storage =
+      typeof window !== "undefined" && window.localStorage ? window.localStorage : null;
+    this.wpmLadderProgress = readWpmLadderProgress(storage);
+  }
+
+  initializeSfxLibrary() {
+    const storage =
+      typeof window !== "undefined" && window.localStorage ? window.localStorage : null;
+    this.sfxLibrary = readSfxLibraryState(storage);
+  }
+
+  initializeUiSoundScheme() {
+    const storage =
+      typeof window !== "undefined" && window.localStorage ? window.localStorage : null;
+    this.uiSoundScheme = readUiSchemeState(storage);
+  }
+
+  initializeMusicStems() {
+    const storage =
+      typeof window !== "undefined" && window.localStorage ? window.localStorage : null;
+    this.musicStems = readMusicStemState(storage);
+  }
+
+  initializeBiomeGallery() {
+    const storage =
+      typeof window !== "undefined" && window.localStorage ? window.localStorage : null;
+    this.biomeGallery = readBiomeGallery(storage);
+  }
+
+  initializeDayNightTheme() {
+    const storage =
+      typeof window !== "undefined" && window.localStorage ? window.localStorage : null;
+    const theme = readDayNightTheme(storage);
+    this.dayNightTheme = theme.mode ?? "night";
+  }
+
+  initializeParallaxScene() {
+    const storage =
+      typeof window !== "undefined" && window.localStorage ? window.localStorage : null;
+    this.parallaxScene = readParallaxScene(storage);
+  }
+
+  initializeTrainingCalendar() {
+    const storage =
+      typeof window !== "undefined" && window.localStorage ? window.localStorage : null;
+    this.trainingCalendar = readTrainingCalendar(storage);
+  }
+
+  initializeStreakTokens() {
+    const storage =
+      typeof window !== "undefined" && window.localStorage ? window.localStorage : null;
+    this.streakTokens = readStreakTokens(storage);
+  }
+
   initializeLoreProgress() {
     if (typeof window === "undefined" || !window.localStorage) return;
     const progress = readLoreProgress(window.localStorage, LORE_VERSION);
@@ -5257,6 +5807,66 @@ export class GameController {
     this.hud.setLessonMedalProgress(state);
   }
 
+  syncWpmLadderToHud() {
+    if (!this.hud || !this.wpmLadderProgress) return;
+    this.hud.setWpmLadder(buildWpmLadderView(this.wpmLadderProgress));
+  }
+
+  syncBiomeGalleryToHud() {
+    if (!this.hud || !this.biomeGallery) return;
+    this.hud.setBiomeGallery(buildBiomeGalleryView(this.biomeGallery));
+  }
+
+  syncDayNightThemeToHud() {
+    if (!this.hud) return;
+    const mode = this.dayNightTheme ?? "night";
+    this.hud.setDayNightTheme(mode);
+  }
+
+  syncParallaxSceneToHud() {
+    if (!this.hud) return;
+    const selection: ParallaxScene = this.parallaxScene ?? "auto";
+    const resolved = resolveParallaxScene(selection, this.dayNightTheme ?? "night");
+    this.hud.setParallaxScene(selection, resolved);
+  }
+
+  syncSfxLibraryToHud() {
+    if (!this.hud || !this.sfxLibrary) return;
+    this.hud.setSfxLibrary(buildSfxLibraryView(this.sfxLibrary));
+  }
+
+  syncUiSoundSchemeToHud() {
+    if (!this.hud || !this.uiSoundScheme) return;
+    this.hud.setUiSoundScheme(buildUiSchemeView(this.uiSoundScheme));
+  }
+
+  syncMusicStemsToHud() {
+    if (!this.hud || !this.musicStems) return;
+    this.hud.setMusicStems(buildMusicStemView(this.musicStems));
+  }
+
+  syncParallaxMotionPause() {
+    if (typeof this.hud?.setParallaxMotionPaused === "function") {
+      const paused = Boolean(this.reducedMotionEnabled || this.lowGraphicsEnabled);
+      this.hud.setParallaxMotionPaused(paused);
+    }
+  }
+
+  syncTrainingCalendarToHud() {
+    if (!this.hud || !this.trainingCalendar) return;
+    this.hud.setTrainingCalendar(buildTrainingCalendarView(this.trainingCalendar));
+  }
+
+  syncStreakTokensToHud() {
+    if (!this.hud || !this.trainingCalendar || !this.streakTokens) return;
+    const calendarView = buildTrainingCalendarView(this.trainingCalendar);
+    const streak = computeCurrentStreak(calendarView);
+    this.hud.setStreakTokens({
+      tokens: this.streakTokens.tokens ?? 0,
+      streak,
+      lastAwarded: this.streakTokens.lastAwardedDate ?? null
+    });
+  }
   syncLoreScrollsToHud() {
     if (!this.hud || !this.lessonProgress) return;
     this.hud.setLoreScrollProgress(this.buildLoreScrollViewState());
@@ -5296,9 +5906,116 @@ export class GameController {
     if (typeof window !== "undefined" && window.localStorage) {
       writeLessonMedalProgress(window.localStorage, medalResult.progress);
     }
+    const calendarDelta = drillSummaryToCalendarDelta(summary);
+    this.recordWpmLadderEntry(summary);
+    this.recordTrainingCalendarEntry(summary, calendarDelta);
+    this.recordBiomeEntry(summary, calendarDelta);
+    this.syncStreakTokensToHud();
     this.syncLoreScrollsToHud();
     this.syncSeasonTrackToHud();
     this.syncLessonMedalsToHud(medalResult.nextTarget);
+  }
+
+  recordWpmLadderEntry(summary: TypingDrillSummary) {
+    const base = this.wpmLadderProgress ?? readWpmLadderProgress(null);
+    const result = recordWpmLadderRun(base, summary);
+    this.wpmLadderProgress = result.progress;
+    if (typeof window !== "undefined" && window.localStorage) {
+      writeWpmLadderProgress(window.localStorage, result.progress);
+    }
+    this.hud?.setWpmLadder(buildWpmLadderView(result.progress));
+  }
+
+  recordTrainingCalendarEntry(
+    summary: TypingDrillSummary,
+    calendarDelta?: { lessons: number; drills: number }
+  ) {
+    const base = this.trainingCalendar ?? readTrainingCalendar(null);
+    const deltas = calendarDelta ?? drillSummaryToCalendarDelta(summary);
+    const next = recordTrainingDay(base, deltas);
+    this.trainingCalendar = next;
+    const calendarView = buildTrainingCalendarView(next);
+    const tokens = this.streakTokens ?? readStreakTokens(null);
+    const tokenResult = maybeAwardStreakToken({
+      calendar: calendarView,
+      state: tokens
+    });
+    this.streakTokens = tokenResult.state;
+    if (tokenResult.awarded) {
+      this.hud?.appendLog?.("Streak-freeze token earned for your daily streak.");
+    }
+    if (typeof window !== "undefined" && window.localStorage) {
+      writeTrainingCalendar(window.localStorage, next);
+      writeStreakTokens(window.localStorage, this.streakTokens);
+    }
+    this.hud?.setTrainingCalendar(calendarView);
+    this.hud?.setStreakTokens({
+      tokens: this.streakTokens.tokens ?? 0,
+      streak: computeCurrentStreak(calendarView),
+      lastAwarded: this.streakTokens.lastAwardedDate ?? null
+    });
+  }
+
+  recordBiomeEntry(
+    summary: TypingDrillSummary,
+    calendarDelta?: { lessons: number; drills: number }
+  ) {
+    const delta = calendarDelta ?? drillSummaryToCalendarDelta(summary);
+    const result = recordBiomeRun(this.biomeGallery, summary, delta);
+    this.biomeGallery = result.progress;
+    if (typeof window !== "undefined" && window.localStorage) {
+      writeBiomeGallery(window.localStorage, this.biomeGallery);
+    }
+    this.syncBiomeGalleryToHud();
+  }
+
+  setActiveBiomeSelection(biomeId: BiomeId) {
+    this.biomeGallery = setActiveBiome(this.biomeGallery, biomeId);
+    if (typeof window !== "undefined" && window.localStorage) {
+      writeBiomeGallery(window.localStorage, this.biomeGallery);
+    }
+    const view = buildBiomeGalleryView(this.biomeGallery);
+    const match = view.cards.find((card) => card.id === biomeId);
+    if (match) {
+      this.hud?.appendLog?.(`Biome set to ${match.name} (${match.focus}).`);
+    }
+    this.hud?.setBiomeGallery(view);
+  }
+
+  setDayNightTheme(mode: DayNightMode) {
+    const nextMode: DayNightMode = mode === "day" ? "day" : "night";
+    this.dayNightTheme = nextMode;
+    if (typeof window !== "undefined" && window.localStorage) {
+      writeDayNightTheme(window.localStorage, {
+        mode: nextMode,
+        updatedAt: new Date().toISOString()
+      });
+    }
+    this.syncDayNightThemeToHud();
+    this.syncParallaxSceneToHud();
+  }
+
+  setParallaxScene(scene: ParallaxScene, options: { persist?: boolean; silent?: boolean } = {}) {
+    const nextScene: ParallaxScene =
+      scene === "day" || scene === "night" || scene === "storm" ? scene : "auto";
+    const changed = this.parallaxScene !== nextScene;
+    this.parallaxScene = nextScene;
+    if (!options.silent && changed) {
+      const label =
+        nextScene === "auto"
+          ? "Auto (match day/night)"
+          : nextScene === "storm"
+            ? "Storm"
+            : nextScene === "day"
+              ? "Day"
+              : "Night";
+      this.hud.appendLog?.(`Parallax scene set to ${label}.`);
+    }
+    if (typeof window !== "undefined" && window.localStorage && options.persist !== false) {
+      writeParallaxScene(window.localStorage, nextScene);
+    }
+    this.syncParallaxSceneToHud();
+    return changed;
   }
 
   shouldSkipTutorial() {
@@ -5844,10 +6561,18 @@ export class GameController {
     if (typeof document === "undefined") return;
     const container = document.getElementById("latency-indicator");
     const value = document.getElementById("latency-value");
+    const sparkline = document.getElementById("latency-sparkline-path");
+    const sparklineSvg = document.getElementById("latency-sparkline");
     if (!(container instanceof HTMLElement) || !(value instanceof HTMLElement)) {
       return;
     }
-    this.latencyIndicator = { container, value };
+    this.latencyIndicator = {
+      container,
+      value,
+      sparkline:
+        sparkline instanceof SVGPolylineElement ? sparkline : null,
+      sparklineWrapper: sparklineSvg instanceof SVGSVGElement ? sparklineSvg : null
+    };
     this.latencySamples = [];
     this.updateLatencyIndicator(0);
     this.startLatencyMonitor();
@@ -5894,11 +6619,104 @@ export class GameController {
     this.latencyIndicator.container.dataset.state = severity;
     const rounded = Math.max(0, Math.round(averageMs));
     this.latencyIndicator.value.textContent = `${rounded}ms`;
-      this.latencyIndicator.container.setAttribute(
-        "aria-label",
-        `Input latency ${rounded} milliseconds, ${severity}`
-      );
+    this.latencyIndicator.container.setAttribute(
+      "aria-label",
+      `Input latency ${rounded} milliseconds, ${severity}`
+    );
+    this.updateLatencySparklineVisibility();
+  }
+
+  updateLatencySparkline() {
+    if (!this.latencyIndicator?.sparkline || !this.isLatencySparklineVisible()) return;
+    const samples = Array.isArray(this.latencySamples) ? this.latencySamples.slice(-INPUT_LATENCY_WINDOW) : [];
+    const width = INPUT_LATENCY_SPARKLINE_WIDTH;
+    const height = INPUT_LATENCY_SPARKLINE_HEIGHT;
+    if (!samples.length) {
+      this.latencyIndicator.sparkline.setAttribute("points", `0,${height} ${width},${height}`);
+      return;
     }
+    const maxSamples = Math.max(1, samples.length - 1);
+    const points = samples.map((value, index) => {
+      const x = maxSamples === 0 ? width : (index / maxSamples) * width;
+      const clamped = Math.min(INPUT_LATENCY_SPARKLINE_CAP_MS, Math.max(0, value));
+      const y = height - (clamped / INPUT_LATENCY_SPARKLINE_CAP_MS) * height;
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    });
+    if (points.length === 1) {
+      points.unshift(`0,${height}`);
+    }
+    this.latencyIndicator.sparkline.setAttribute("points", points.join(" "));
+  }
+
+  updateLatencySparklineVisibility() {
+    if (!this.latencyIndicator?.sparklineWrapper) {
+      this.updateLatencySparkline();
+      return;
+    }
+    const visible = this.isLatencySparklineVisible();
+    this.latencyIndicator.sparklineWrapper.style.display = visible ? "" : "none";
+    this.latencyIndicator.sparklineWrapper.setAttribute("aria-hidden", visible ? "false" : "true");
+    if (visible) {
+      this.updateLatencySparkline();
+    } else if (this.latencyIndicator.sparkline) {
+      const height = INPUT_LATENCY_SPARKLINE_HEIGHT;
+      const width = INPUT_LATENCY_SPARKLINE_WIDTH;
+      this.latencyIndicator.sparkline.setAttribute("points", `0,${height} ${width},${height}`);
+    }
+  }
+
+  isLatencySparklineVisible() {
+    const compact =
+      typeof document !== "undefined" &&
+      typeof document.body !== "undefined" &&
+      document.body.dataset.compactHeight === "true";
+    return this.latencySparklineEnabled && !this.reducedMotionEnabled && !compact;
+  }
+
+  loadLatencySparklineEnabled() {
+    if (typeof window === "undefined" || !window.localStorage) return true;
+    try {
+      const raw = window.localStorage.getItem(LATENCY_SPARKLINE_KEY);
+      if (raw === "false") return false;
+      if (raw === "true") return true;
+      return true;
+    } catch {
+      return true;
+    }
+  }
+
+  persistLatencySparklineEnabled(enabled) {
+    this.persistPlayerSettings({ latencySparklineEnabled: enabled });
+    this.persistLegacyLatencySparklineEnabled(enabled);
+  }
+
+  persistLegacyLatencySparklineEnabled(enabled) {
+    if (typeof window === "undefined" || !window.localStorage) return;
+    try {
+      window.localStorage.setItem(LATENCY_SPARKLINE_KEY, enabled ? "true" : "false");
+    } catch {
+      // ignore storage failures
+    }
+  }
+
+  setLatencySparklineEnabled(enabled, options = {}) {
+    const next = Boolean(enabled);
+    if (this.latencySparklineEnabled === next && options.force !== true) {
+      return;
+    }
+    this.latencySparklineEnabled = next;
+    if (this.playerSettings) {
+      this.playerSettings.latencySparklineEnabled = next;
+    }
+    this.updateLatencySparklineVisibility();
+    this.updateOptionsOverlayState();
+    if (!options.silent) {
+      this.hud?.appendLog?.(`Latency sparkline ${next ? "shown" : "hidden"}.`);
+    }
+    if (options.persist !== false) {
+      this.persistLatencySparklineEnabled(next);
+    }
+  }
 
   loadHudVisibilityPrefs() {
     const defaults = { metrics: true, battleLog: true, wavePreview: true };
