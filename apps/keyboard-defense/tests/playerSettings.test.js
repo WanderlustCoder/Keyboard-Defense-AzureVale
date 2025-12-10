@@ -99,6 +99,20 @@ test("large subtitle preference persists", () => {
   assert.equal(loaded.largeSubtitlesEnabled, true);
 });
 
+test("tutorial pacing persists and clamps", () => {
+  const storage = createMemoryStorage();
+  const defaults = createDefaultPlayerSettings();
+  assert.equal(defaults.tutorialPacing, 1);
+
+  const patched = withPatchedPlayerSettings(defaults, { tutorialPacing: 1.2 });
+  writePlayerSettings(storage, patched);
+  const loaded = readPlayerSettings(storage);
+  assert.equal(loaded.tutorialPacing, 1.2);
+
+  const clamped = withPatchedPlayerSettings(defaults, { tutorialPacing: 2 });
+  assert.equal(clamped.tutorialPacing, 1.25);
+});
+
 test("accessibility self-test state persists confirmations and timestamps", () => {
   const storage = createMemoryStorage();
   const defaults = createDefaultPlayerSettings();

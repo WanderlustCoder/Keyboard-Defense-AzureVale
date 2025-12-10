@@ -109,6 +109,7 @@ export interface HudCallbacks {
     onDyslexiaSpacingToggle?: (enabled: boolean) => void;
     onLatencySparklineToggle?: (enabled: boolean) => void;
     onLargeSubtitlesToggle?: (enabled: boolean) => void;
+    onTutorialPacingChange?: (value: number) => void;
     onCognitiveLoadToggle?: (enabled: boolean) => void;
     onAudioNarrationToggle?: (enabled: boolean) => void;
     onColorblindPaletteToggle(enabled: boolean): void;
@@ -239,6 +240,8 @@ type OptionsOverlayElements = {
     dyslexiaSpacingToggle?: string;
     cognitiveLoadToggle?: string;
     audioNarrationToggle?: string;
+    tutorialPacingSlider?: string;
+    tutorialPacingValue?: string;
     colorblindPaletteToggle: string;
     colorblindPaletteSelect?: string;
     focusOutlineSelect?: string;
@@ -675,6 +678,7 @@ export declare class HudView {
     private wavePreviewHintMessage;
     private wavePreviewHintPinned;
     private wavePreviewHintTimeout;
+    private tutorialPacing;
     private readonly optionsOverlay?;
     private readonly waveScorecard?;
     private syncingOptionToggles;
@@ -768,6 +772,7 @@ export declare class HudView {
         soundVolume: number;
         soundIntensity: number;
         audioNarrationEnabled?: boolean;
+        tutorialPacing?: number;
         largeSubtitlesEnabled?: boolean;
         musicEnabled?: boolean;
         musicLevel?: number;
@@ -949,6 +954,7 @@ export declare class HudView {
     private updateSoundVolumeDisplay;
     private updateSoundIntensityDisplay;
     private updateMusicLevelDisplay;
+    private updateTutorialPacingDisplay;
     private updateScreenShakeIntensityDisplay;
     playScreenShakePreview(): void;
     private updateAccessibilitySelfTestDisplay;

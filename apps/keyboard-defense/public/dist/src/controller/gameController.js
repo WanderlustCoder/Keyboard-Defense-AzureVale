@@ -218,6 +218,7 @@ export class GameController {
         this.dyslexiaSpacingEnabled = false;
         this.reducedCognitiveLoadEnabled = false;
         this.audioNarrationEnabled = false;
+        this.tutorialPacing = 1;
         this.largeSubtitlesEnabled = false;
         this.backgroundBrightness = BG_BRIGHTNESS_DEFAULT;
         this.colorblindPaletteEnabled = false;
@@ -588,6 +589,8 @@ export class GameController {
                 audioNarrationToggle: "options-audio-narration",
                 subtitleLargeToggle: "options-subtitle-large",
                 subtitlePreviewButton: "options-subtitle-preview",
+                tutorialPacingSlider: "options-tutorial-pacing",
+                tutorialPacingValue: "options-tutorial-pacing-value",
                 colorblindPaletteToggle: "options-colorblind-toggle",
                 colorblindPaletteSelect: "options-colorblind-mode",
                 focusOutlineSelect: "options-focus-outline",
@@ -882,6 +885,7 @@ export class GameController {
             onReducedMotionToggle: (enabled) => this.setReducedMotionEnabled(enabled),
             onCheckeredBackgroundToggle: (enabled) => this.setCheckeredBackgroundEnabled(enabled),
             onLargeSubtitlesToggle: (enabled) => this.setLargeSubtitlesEnabled(enabled),
+            onTutorialPacingChange: (value) => this.setTutorialPacing(value),
             onAudioNarrationToggle: (enabled) => this.setAudioNarrationEnabled(enabled),
             onLatencySparklineToggle: (enabled) => this.setLatencySparklineEnabled(enabled),
             onReadableFontToggle: (enabled) => this.setReadableFontEnabled(enabled),
@@ -984,6 +988,7 @@ export class GameController {
             this.tutorialManager = new TutorialManager({
                 engine: this.engine,
                 hud: this.hud,
+                pacing: this.tutorialPacing,
                 pauseGame: () => this.pauseForTutorial(),
                 resumeGame: () => this.resumeFromTutorial(),
                 collectSummaryMetrics: () => this.collectTutorialSummary(),
@@ -992,6 +997,7 @@ export class GameController {
                     console.info("[tutorial] Completed");
                 }
             });
+            this.tutorialManager?.setPacingMultiplier?.(this.tutorialPacing);
             this.initializeMainMenu(shouldSkipTutorial);
         }
         else {
@@ -2340,6 +2346,24 @@ export class GameController {
         }
         return this.audioNarrationEnabled;
     }
+    setTutorialPacing(value, options = {}) {
+        const next = this.normalizeTutorialPacing(value);
+        if (this.tutorialPacing === next) {
+            return this.tutorialPacing;
+        }
+        this.tutorialPacing = next;
+        this.tutorialManager?.setPacingMultiplier?.(next);
+        if (!options.silent) {
+            this.hud.appendLog(`Tutorial pacing set to ${Math.round(next * 100)}%.`);
+        }
+        if (options.persist !== false) {
+            this.persistPlayerSettings({ tutorialPacing: next });
+        }
+        if (options.render !== false) {
+            this.updateOptionsOverlayState();
+        }
+        return this.tutorialPacing;
+    }
     setLargeSubtitlesEnabled(enabled, options = {}) {
         const next = Boolean(enabled);
         if (this.largeSubtitlesEnabled === next) {
@@ -2643,6 +2667,11 @@ export class GameController {
         const clamped = Math.min(MUSIC_LEVEL_MAX, Math.max(MUSIC_LEVEL_MIN, value));
         return Math.round(clamped * 100) / 100;
     }
+    normalizeTutorialPacing(value) {
+        const paced = Number.isFinite(value) ? value : 1;
+        const clamped = Math.min(1.25, Math.max(0.75, paced));
+        return Math.round(clamped * 100) / 100;
+    }
     normalizeScreenShakeIntensity(value) {
         if (!Number.isFinite(value)) {
             return SCREEN_SHAKE_INTENSITY_DEFAULT;
@@ -2659,6 +2688,7 @@ export class GameController {
             soundVolume: this.soundVolume,
             soundIntensity: this.audioIntensity,
             audioNarrationEnabled: this.audioNarrationEnabled,
+            tutorialPacing: this.tutorialPacing,
             largeSubtitlesEnabled: this.largeSubtitlesEnabled,
             musicEnabled: this.musicEnabled,
             musicLevel: this.musicLevel,
@@ -3779,6 +3809,9 @@ export class GameController {
                 normalizeFocusOutlinePreset(previousFocusOutline);
         const audioNarrationUnchanged = patch.audioNarrationEnabled === undefined ||
             patch.audioNarrationEnabled === this.audioNarrationEnabled;
+        const tutorialPacingUnchanged = patch.tutorialPacing === undefined ||
+            Math.abs(this.normalizeTutorialPacing(patch.tutorialPacing) -
+                this.normalizeTutorialPacing(this.playerSettings.tutorialPacing ?? 1)) <= 0.001;
         const largeSubtitlesUnchanged = patch.largeSubtitlesEnabled === undefined ||
             patch.largeSubtitlesEnabled === this.largeSubtitlesEnabled;
         const textSizeUnchanged = patch.textSizeScale === undefined ||
@@ -3836,6 +3869,7 @@ export class GameController {
             cognitiveLoadUnchanged &&
             colorblindUnchanged &&
             audioNarrationUnchanged &&
+            tutorialPacingUnchanged &&
             largeSubtitlesUnchanged &&
             focusOutlineUnchanged &&
             textSizeUnchanged &&
@@ -4938,6 +4972,11 @@ export class GameController {
         this.setMusicLevel(stored.musicLevel ?? MUSIC_LEVEL_DEFAULT, {
             silent: true,
             persist: false
+        });
+        this.setTutorialPacing(stored.tutorialPacing ?? 1, {
+            silent: true,
+            persist: false,
+            render: false
         });
         this.setDiagnosticsVisible(stored.diagnosticsVisible, {
             silent: true,

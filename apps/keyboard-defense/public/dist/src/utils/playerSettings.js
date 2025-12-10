@@ -1,5 +1,5 @@
 export const PLAYER_SETTINGS_STORAGE_KEY = "keyboard-defense:player-settings";
-export const PLAYER_SETTINGS_VERSION = 29;
+export const PLAYER_SETTINGS_VERSION = 30;
 const DEFAULT_UPDATED_AT = "1970-01-01T00:00:00.000Z";
 const HUD_FONT_SCALE_MIN = 0.85;
 const HUD_FONT_SCALE_MAX = 1.3;
@@ -7,6 +7,9 @@ const HUD_ZOOM_MIN = 0.9;
 const HUD_ZOOM_MAX = 1.2;
 const HUD_ZOOM_DEFAULT = 1;
 const HUD_LAYOUT_DEFAULT = "right";
+const TUTORIAL_PACING_MIN = 0.75;
+const TUTORIAL_PACING_MAX = 1.25;
+const DEFAULT_TUTORIAL_PACING = 1;
 const SOUND_VOLUME_MIN = 0;
 const SOUND_VOLUME_MAX = 1;
 const DEFAULT_SOUND_VOLUME = 0.8;
@@ -54,6 +57,7 @@ const BASE_DEFAULT_SETTINGS = {
     dyslexiaSpacingEnabled: false,
     reducedCognitiveLoadEnabled: false,
     audioNarrationEnabled: false,
+    tutorialPacing: DEFAULT_TUTORIAL_PACING,
     largeSubtitlesEnabled: false,
     backgroundBrightness: 1,
     colorblindPaletteEnabled: false,
@@ -181,6 +185,9 @@ export function readPlayerSettings(storage) {
         const audioIntensity = typeof parsed.audioIntensity === "number"
             ? normalizeAudioIntensity(parsed.audioIntensity)
             : fallback.audioIntensity;
+        const tutorialPacing = typeof parsed.tutorialPacing === "number"
+            ? normalizeTutorialPacing(parsed.tutorialPacing)
+            : fallback.tutorialPacing;
         const musicEnabled = typeof parsed.musicEnabled === "boolean"
             ? parsed.musicEnabled
             : fallback.musicEnabled;
@@ -245,6 +252,7 @@ export function readPlayerSettings(storage) {
             colorblindPaletteEnabled,
             focusOutlinePreset,
             audioIntensity,
+            tutorialPacing,
             musicEnabled,
             musicLevel,
             screenShakeEnabled,
@@ -347,6 +355,9 @@ export function withPatchedPlayerSettings(current, patch) {
         audioIntensity: typeof patch.audioIntensity === "number"
             ? normalizeAudioIntensity(patch.audioIntensity)
             : current.audioIntensity,
+        tutorialPacing: typeof patch.tutorialPacing === "number"
+            ? normalizeTutorialPacing(patch.tutorialPacing)
+            : current.tutorialPacing,
         screenShakeEnabled: typeof patch.screenShakeEnabled === "boolean"
             ? patch.screenShakeEnabled
             : current.screenShakeEnabled,
@@ -566,6 +577,13 @@ function normalizeHudZoom(value) {
         return HUD_ZOOM_DEFAULT;
     }
     const clamped = Math.min(HUD_ZOOM_MAX, Math.max(HUD_ZOOM_MIN, value));
+    return Math.round(clamped * 100) / 100;
+}
+function normalizeTutorialPacing(value) {
+    if (typeof value !== "number" || !Number.isFinite(value)) {
+        return DEFAULT_TUTORIAL_PACING;
+    }
+    const clamped = Math.min(TUTORIAL_PACING_MAX, Math.max(TUTORIAL_PACING_MIN, value));
     return Math.round(clamped * 100) / 100;
 }
 function normalizeHudLayout(value) {

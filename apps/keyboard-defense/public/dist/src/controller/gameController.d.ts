@@ -97,6 +97,7 @@ export declare class GameController {
     handleGameStatusAudio(status: any): void;
     setColorblindPaletteEnabled(enabled: any, options?: {}): boolean;
     setAudioNarrationEnabled(enabled: any, options?: {}): any;
+    setTutorialPacing(value: any, options?: {}): any;
     setLargeSubtitlesEnabled(enabled: any, options?: {}): any;
     setColorblindPaletteMode(mode: any, options?: {}): boolean;
     setFocusOutlinePreset(preset: FocusOutlinePreset, options?: {}): boolean;
@@ -128,6 +129,7 @@ export declare class GameController {
     normalizeSoundVolume(value: any): number;
     normalizeAudioIntensity(value: any): number;
     normalizeMusicLevel(value: any): number;
+    normalizeTutorialPacing(value: any): number;
     normalizeScreenShakeIntensity(value: any): number;
     updateOptionsOverlayState(): void;
     applyReducedMotionSetting(enabled: any): void;

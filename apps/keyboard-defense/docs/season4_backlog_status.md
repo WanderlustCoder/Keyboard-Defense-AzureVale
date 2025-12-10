@@ -58,7 +58,7 @@ Quick status snapshot for items in `season4_backlog.md`. All items start as Not 
 | 52 | Posture checklist | Done | Options adds a Posture Checklist overlay with a 5-minute micro-reminder and inline posture toast, plus a quick summary in options. |
 | 53 | Layout preview overlay | Done | Options overlay adds a Layout Preview dialog with left/right mockups and quick apply buttons so players can compare layouts before switching. |
 | 54 | Large-text subtitles | Done | Options overlay adds a Large-Text Subtitles toggle plus a preview dialog; enables global large subtitles with higher contrast across overlays and voice-line captions. |
-| 55 | Tutorial pacing slider | Not Started | - |
+| 55 | Tutorial pacing slider | Done | Options overlay adds a Tutorial Pacing slider (75-125%) that rescales scripted tutorial timings and persists per profile. |
 | 56 | Input latency sparkline | Done | Latency indicator now renders a live sparkline of recent samples alongside the value. |
 | 57 | Profile-bound accessibility toggle | Not Started | - |
 | 58 | Screen-shake preview | Done | Options adds a screen shake toggle with intensity slider, preview button, and reduced-motion guard so players can test before enabling. |

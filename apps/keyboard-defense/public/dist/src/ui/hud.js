@@ -341,6 +341,7 @@ export class HudView {
     wavePreviewHintMessage = DEFAULT_WAVE_PREVIEW_HINT;
     wavePreviewHintPinned = false;
     wavePreviewHintTimeout = null;
+    tutorialPacing = 1;
     optionsOverlay;
     waveScorecard;
     syncingOptionToggles = false;
@@ -836,6 +837,12 @@ export class HudView {
             const subtitlePreviewButton = rootIds.optionsOverlay.subtitlePreviewButton
                 ? document.getElementById(rootIds.optionsOverlay.subtitlePreviewButton)
                 : null;
+            const tutorialPacingSlider = rootIds.optionsOverlay.tutorialPacingSlider
+                ? document.getElementById(rootIds.optionsOverlay.tutorialPacingSlider)
+                : null;
+            const tutorialPacingValue = rootIds.optionsOverlay.tutorialPacingValue
+                ? document.getElementById(rootIds.optionsOverlay.tutorialPacingValue)
+                : null;
             const backgroundBrightnessSlider = rootIds.optionsOverlay.backgroundBrightnessSlider
                 ? document.getElementById(rootIds.optionsOverlay.backgroundBrightnessSlider)
                 : null;
@@ -947,6 +954,8 @@ export class HudView {
                 (audioNarrationToggle === null || audioNarrationToggle instanceof HTMLInputElement) &&
                 (subtitleLargeToggle === null || subtitleLargeToggle instanceof HTMLInputElement) &&
                 (subtitlePreviewButton === null || subtitlePreviewButton instanceof HTMLButtonElement) &&
+                (tutorialPacingSlider === null || tutorialPacingSlider instanceof HTMLInputElement) &&
+                (tutorialPacingValue === null || tutorialPacingValue instanceof HTMLElement) &&
                 (backgroundBrightnessSlider === null ||
                     backgroundBrightnessSlider instanceof HTMLInputElement) &&
                 (backgroundBrightnessValue === null || backgroundBrightnessValue instanceof HTMLElement) &&
@@ -1026,6 +1035,8 @@ export class HudView {
                     dyslexiaSpacingToggle: dyslexiaSpacingToggle instanceof HTMLInputElement ? dyslexiaSpacingToggle : undefined,
                     cognitiveLoadToggle: cognitiveLoadToggle instanceof HTMLInputElement ? cognitiveLoadToggle : undefined,
                     audioNarrationToggle: audioNarrationToggle instanceof HTMLInputElement ? audioNarrationToggle : undefined,
+                    tutorialPacingSlider: tutorialPacingSlider instanceof HTMLInputElement ? tutorialPacingSlider : undefined,
+                    tutorialPacingValue: tutorialPacingValue instanceof HTMLElement ? tutorialPacingValue : undefined,
                     subtitleLargeToggle: subtitleLargeToggle instanceof HTMLInputElement ? subtitleLargeToggle : undefined,
                     subtitlePreviewButton: subtitlePreviewButton instanceof HTMLButtonElement ? subtitlePreviewButton : undefined,
                     backgroundBrightnessSlider: backgroundBrightnessSlider instanceof HTMLInputElement
@@ -1420,6 +1431,17 @@ export class HudView {
                 if (this.optionsOverlay.subtitlePreviewButton && this.subtitleOverlay) {
                     this.optionsOverlay.subtitlePreviewButton.addEventListener("click", () => {
                         this.showSubtitleOverlay();
+                    });
+                }
+                if (this.optionsOverlay.tutorialPacingSlider) {
+                    this.optionsOverlay.tutorialPacingSlider.addEventListener("input", () => {
+                        const raw = this.optionsOverlay.tutorialPacingSlider.value;
+                        const parsed = Number.parseFloat(raw);
+                        if (!Number.isFinite(parsed))
+                            return;
+                        this.tutorialPacing = parsed;
+                        this.updateTutorialPacingDisplay(parsed);
+                        this.callbacks.onTutorialPacingChange?.(parsed);
                     });
                 }
                 if (this.optionsOverlay.cognitiveLoadToggle) {
@@ -3122,6 +3144,13 @@ export class HudView {
         this.optionsOverlay.reducedMotionToggle.checked = state.reducedMotionEnabled;
         if (this.optionsOverlay.audioNarrationToggle && state.audioNarrationEnabled !== undefined) {
             this.optionsOverlay.audioNarrationToggle.checked = state.audioNarrationEnabled;
+        }
+        if (this.optionsOverlay.tutorialPacingSlider && state.tutorialPacing !== undefined) {
+            const pacing = Number.isFinite(state.tutorialPacing) ? state.tutorialPacing : 1;
+            this.tutorialPacing = pacing;
+            this.optionsOverlay.tutorialPacingSlider.value = pacing.toString();
+            this.optionsOverlay.tutorialPacingSlider.setAttribute("aria-valuenow", pacing.toString());
+            this.updateTutorialPacingDisplay(pacing);
         }
         if (state.largeSubtitlesEnabled !== undefined) {
             this.subtitleLargeEnabled = Boolean(state.largeSubtitlesEnabled);
@@ -5637,6 +5666,12 @@ export class HudView {
             return;
         const percent = Math.round(level * 100);
         this.optionsOverlay.musicLevelValue.textContent = `${percent}%`;
+    }
+    updateTutorialPacingDisplay(scale) {
+        if (!this.optionsOverlay?.tutorialPacingValue)
+            return;
+        const percent = Math.round(scale * 100);
+        this.optionsOverlay.tutorialPacingValue.textContent = `${percent}% speed`;
     }
     updateScreenShakeIntensityDisplay(intensity) {
         if (this.optionsOverlay?.screenShakeValue) {

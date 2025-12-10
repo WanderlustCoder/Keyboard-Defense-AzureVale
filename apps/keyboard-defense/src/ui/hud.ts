@@ -317,6 +317,7 @@ export interface HudCallbacks {
   onDyslexiaSpacingToggle?: (enabled: boolean) => void;
   onLatencySparklineToggle?: (enabled: boolean) => void;
   onLargeSubtitlesToggle?: (enabled: boolean) => void;
+  onTutorialPacingChange?: (value: number) => void;
   onCognitiveLoadToggle?: (enabled: boolean) => void;
   onAudioNarrationToggle?: (enabled: boolean) => void;
   onColorblindPaletteToggle(enabled: boolean): void;
@@ -493,6 +494,8 @@ type OptionsOverlayElements = {
   dyslexiaSpacingToggle?: string;
   cognitiveLoadToggle?: string;
   audioNarrationToggle?: string;
+  tutorialPacingSlider?: string;
+  tutorialPacingValue?: string;
   colorblindPaletteToggle: string;
   colorblindPaletteSelect?: string;
   focusOutlineSelect?: string;
@@ -1287,6 +1290,7 @@ export class HudView {
   private wavePreviewHintMessage = DEFAULT_WAVE_PREVIEW_HINT;
   private wavePreviewHintPinned = false;
   private wavePreviewHintTimeout: ReturnType<typeof setTimeout> | null = null;
+  private tutorialPacing = 1;
   private readonly optionsOverlay?: {
     container: HTMLElement;
     closeButton: HTMLButtonElement;
@@ -1345,6 +1349,8 @@ export class HudView {
     dyslexiaSpacingToggle?: HTMLInputElement;
     cognitiveLoadToggle?: HTMLInputElement;
     audioNarrationToggle?: HTMLInputElement;
+    tutorialPacingSlider?: HTMLInputElement;
+    tutorialPacingValue?: HTMLElement;
     colorblindPaletteToggle: HTMLInputElement;
     colorblindPaletteSelect?: HTMLSelectElement;
     focusOutlineSelect?: HTMLSelectElement;
@@ -1967,6 +1973,12 @@ export class HudView {
       const subtitlePreviewButton = rootIds.optionsOverlay.subtitlePreviewButton
         ? document.getElementById(rootIds.optionsOverlay.subtitlePreviewButton)
         : null;
+      const tutorialPacingSlider = rootIds.optionsOverlay.tutorialPacingSlider
+        ? document.getElementById(rootIds.optionsOverlay.tutorialPacingSlider)
+        : null;
+      const tutorialPacingValue = rootIds.optionsOverlay.tutorialPacingValue
+        ? document.getElementById(rootIds.optionsOverlay.tutorialPacingValue)
+        : null;
       const backgroundBrightnessSlider = rootIds.optionsOverlay.backgroundBrightnessSlider
         ? document.getElementById(rootIds.optionsOverlay.backgroundBrightnessSlider)
         : null;
@@ -2084,6 +2096,8 @@ export class HudView {
         (audioNarrationToggle === null || audioNarrationToggle instanceof HTMLInputElement) &&
         (subtitleLargeToggle === null || subtitleLargeToggle instanceof HTMLInputElement) &&
         (subtitlePreviewButton === null || subtitlePreviewButton instanceof HTMLButtonElement) &&
+        (tutorialPacingSlider === null || tutorialPacingSlider instanceof HTMLInputElement) &&
+        (tutorialPacingValue === null || tutorialPacingValue instanceof HTMLElement) &&
         (backgroundBrightnessSlider === null ||
           backgroundBrightnessSlider instanceof HTMLInputElement) &&
         (backgroundBrightnessValue === null || backgroundBrightnessValue instanceof HTMLElement) &&
@@ -2199,6 +2213,10 @@ export class HudView {
             cognitiveLoadToggle instanceof HTMLInputElement ? cognitiveLoadToggle : undefined,
           audioNarrationToggle:
             audioNarrationToggle instanceof HTMLInputElement ? audioNarrationToggle : undefined,
+          tutorialPacingSlider:
+            tutorialPacingSlider instanceof HTMLInputElement ? tutorialPacingSlider : undefined,
+          tutorialPacingValue:
+            tutorialPacingValue instanceof HTMLElement ? tutorialPacingValue : undefined,
           subtitleLargeToggle:
             subtitleLargeToggle instanceof HTMLInputElement ? subtitleLargeToggle : undefined,
           subtitlePreviewButton:
@@ -2598,6 +2616,16 @@ export class HudView {
         if (this.optionsOverlay.subtitlePreviewButton && this.subtitleOverlay) {
           this.optionsOverlay.subtitlePreviewButton.addEventListener("click", () => {
             this.showSubtitleOverlay();
+          });
+        }
+        if (this.optionsOverlay.tutorialPacingSlider) {
+          this.optionsOverlay.tutorialPacingSlider.addEventListener("input", () => {
+            const raw = this.optionsOverlay!.tutorialPacingSlider!.value;
+            const parsed = Number.parseFloat(raw);
+            if (!Number.isFinite(parsed)) return;
+            this.tutorialPacing = parsed;
+            this.updateTutorialPacingDisplay(parsed);
+            this.callbacks.onTutorialPacingChange?.(parsed);
           });
         }
         if (this.optionsOverlay.cognitiveLoadToggle) {
@@ -4294,6 +4322,7 @@ export class HudView {
     soundVolume: number;
     soundIntensity: number;
     audioNarrationEnabled?: boolean;
+    tutorialPacing?: number;
     largeSubtitlesEnabled?: boolean;
     musicEnabled?: boolean;
     musicLevel?: number;
@@ -4474,6 +4503,13 @@ export class HudView {
     this.optionsOverlay.reducedMotionToggle.checked = state.reducedMotionEnabled;
     if (this.optionsOverlay.audioNarrationToggle && state.audioNarrationEnabled !== undefined) {
       this.optionsOverlay.audioNarrationToggle.checked = state.audioNarrationEnabled;
+    }
+    if (this.optionsOverlay.tutorialPacingSlider && state.tutorialPacing !== undefined) {
+      const pacing = Number.isFinite(state.tutorialPacing) ? state.tutorialPacing : 1;
+      this.tutorialPacing = pacing;
+      this.optionsOverlay.tutorialPacingSlider.value = pacing.toString();
+      this.optionsOverlay.tutorialPacingSlider.setAttribute("aria-valuenow", pacing.toString());
+      this.updateTutorialPacingDisplay(pacing);
     }
     if (state.largeSubtitlesEnabled !== undefined) {
       this.subtitleLargeEnabled = Boolean(state.largeSubtitlesEnabled);
@@ -7239,6 +7275,12 @@ export class HudView {
     if (!this.optionsOverlay?.musicLevelValue) return;
     const percent = Math.round(level * 100);
     this.optionsOverlay.musicLevelValue.textContent = `${percent}%`;
+  }
+
+  private updateTutorialPacingDisplay(scale: number): void {
+    if (!this.optionsOverlay?.tutorialPacingValue) return;
+    const percent = Math.round(scale * 100);
+    this.optionsOverlay.tutorialPacingValue.textContent = `${percent}% speed`;
   }
 
   private updateScreenShakeIntensityDisplay(intensity: number): void {
