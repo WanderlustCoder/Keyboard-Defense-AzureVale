@@ -24,6 +24,7 @@ Keyboard Defense is a typing-driven castle defense game where fast, accurate inp
 - Large-text subtitles toggle with a preview overlay to boost caption size and contrast for dialogue, taunts, and overlay summaries.
 - Tutorial pacing slider (75-125%) to slow down or speed up scripted tutorial prompts and timings.
 - Profile-bound accessibility preset toggle that bundles reduced motion, narration, readable/dyslexia fonts, spaced letters, large subtitles, and a simplified HUD.
+- UI sound scheme picker with preview/apply controls to switch between refreshed interface sound sets.
 - Posture checklist overlay with a 5-minute micro reminder toast so players can reset posture between waves.
 - Endless practice mode accessible from the main menu, looping waves indefinitely for warm-up runs.
 - Typing drills overlay (Burst, Endurance, Shield Breaker) that lets players warm up combos and accuracy without risking the castle.
