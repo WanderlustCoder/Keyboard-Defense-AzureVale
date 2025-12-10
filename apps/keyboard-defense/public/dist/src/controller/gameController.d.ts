@@ -100,6 +100,7 @@ export declare class GameController {
     setTutorialPacing(value: any, options?: {}): any;
     setAccessibilityPresetEnabled(enabled: any, options?: {}): any;
     applyAccessibilityPreset(enabled: any, options?: {}): boolean;
+    setVoicePack(packId: any, options?: {}): any;
     setLargeSubtitlesEnabled(enabled: any, options?: {}): any;
     setColorblindPaletteMode(mode: any, options?: {}): boolean;
     setFocusOutlinePreset(preset: FocusOutlinePreset, options?: {}): boolean;
@@ -130,6 +131,7 @@ export declare class GameController {
     normalizeBackgroundBrightness(value: any): number;
     normalizeSoundVolume(value: any): number;
     normalizeAudioIntensity(value: any): number;
+    normalizeVoicePack(value: any): "mentor-classic" | "mentor-calm" | "mentor-arcade";
     normalizeMusicLevel(value: any): number;
     normalizeTutorialPacing(value: any): number;
     normalizeScreenShakeIntensity(value: any): number;

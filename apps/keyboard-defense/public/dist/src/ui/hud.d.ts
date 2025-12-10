@@ -113,6 +113,7 @@ export interface HudCallbacks {
     onTutorialPacingChange?: (value: number) => void;
     onCognitiveLoadToggle?: (enabled: boolean) => void;
     onAudioNarrationToggle?: (enabled: boolean) => void;
+    onVoicePackChange?: (packId: string) => void;
     onColorblindPaletteToggle(enabled: boolean): void;
     onColorblindPaletteModeChange?: (mode: string) => void;
     onFocusOutlineChange?: (preset: FocusOutlinePreset) => void;
@@ -236,6 +237,7 @@ type OptionsOverlayElements = {
     reducedMotionToggle: string;
     checkeredBackgroundToggle: string;
     accessibilityPresetToggle?: string;
+    voicePackSelect?: string;
     latencySparklineToggle?: string;
     readableFontToggle: string;
     dyslexiaFontToggle: string;
@@ -776,6 +778,7 @@ export declare class HudView {
         soundIntensity: number;
         audioNarrationEnabled?: boolean;
         accessibilityPresetEnabled?: boolean;
+        voicePackId?: string;
         tutorialPacing?: number;
         largeSubtitlesEnabled?: boolean;
         musicEnabled?: boolean;

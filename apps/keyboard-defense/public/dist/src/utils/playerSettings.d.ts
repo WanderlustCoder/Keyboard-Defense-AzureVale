@@ -1,6 +1,7 @@
 import { TurretTargetPriority, TurretTypeId } from "../core/types.js";
 export declare const PLAYER_SETTINGS_STORAGE_KEY = "keyboard-defense:player-settings";
 export declare const PLAYER_SETTINGS_VERSION = 31;
+export declare const VOICE_PACK_IDS: readonly ["mentor-classic", "mentor-calm", "mentor-arcade"];
 export declare const TUTORIAL_PACING_MIN = 0.75;
 export declare const TUTORIAL_PACING_MAX = 1.25;
 export declare const TURRET_PRESET_IDS: readonly ["preset-a", "preset-b", "preset-c"];
@@ -46,6 +47,7 @@ export interface PlayerSettings {
     dyslexiaSpacingEnabled: boolean;
     reducedCognitiveLoadEnabled: boolean;
     audioNarrationEnabled: boolean;
+    voicePackId: (typeof VOICE_PACK_IDS)[number];
     accessibilityPresetEnabled: boolean;
     tutorialPacing: number;
     largeSubtitlesEnabled: boolean;

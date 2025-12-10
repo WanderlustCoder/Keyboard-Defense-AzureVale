@@ -124,6 +124,17 @@ test("accessibility preset flag persists", () => {
   assert.equal(loaded.accessibilityPresetEnabled, true);
 });
 
+test("voice pack selection persists", () => {
+  const storage = createMemoryStorage();
+  const defaults = createDefaultPlayerSettings();
+  assert.equal(defaults.voicePackId, "mentor-classic");
+
+  const patched = withPatchedPlayerSettings(defaults, { voicePackId: "mentor-arcade" });
+  writePlayerSettings(storage, patched);
+  const loaded = readPlayerSettings(storage);
+  assert.equal(loaded.voicePackId, "mentor-arcade");
+});
+
 test("accessibility self-test state persists confirmations and timestamps", () => {
   const storage = createMemoryStorage();
   const defaults = createDefaultPlayerSettings();

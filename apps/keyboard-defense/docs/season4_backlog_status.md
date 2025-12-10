@@ -86,7 +86,7 @@ Quick status snapshot for items in `season4_backlog.md`. All items start as Not 
 | 80 | SFX library refresh | Done | Options adds an SFX library picker with palette previews and a selectable active mix. |
 | 81 | Dynamic music stems | Done | Dynamic music suites layer stems that react to wave danger/health with an options picker and local persistence. |
 | 82 | UI sound scheme selector | Done | UI sound scheme picker with overlay previews and inline apply/preview controls; persists chosen scheme per profile. |
-| 83 | Voice pack stubs | Not Started | - |
+| 83 | Voice pack stubs | Done | Voice pack selector with text-based stubs for narration styles; persists choice per profile. |
 | 84 | Reduced-motion VFX variants | Not Started | - |
 | 85 | Sprite batching/atlas plan | Not Started | - |
 | 86 | Session timeline export | Not Started | - |

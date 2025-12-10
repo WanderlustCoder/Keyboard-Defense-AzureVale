@@ -219,6 +219,7 @@ export class GameController {
         this.reducedCognitiveLoadEnabled = false;
         this.audioNarrationEnabled = false;
         this.accessibilityPresetEnabled = false;
+        this.voicePackId = "mentor-classic";
         this.tutorialPacing = 1;
         this.largeSubtitlesEnabled = false;
         this.backgroundBrightness = BG_BRIGHTNESS_DEFAULT;
@@ -583,6 +584,7 @@ export class GameController {
                 reducedMotionToggle: "options-reduced-motion-toggle",
                 checkeredBackgroundToggle: "options-checkered-bg-toggle",
                 accessibilityPresetToggle: "options-accessibility-preset",
+                voicePackSelect: "options-voice-pack",
                 latencySparklineToggle: "options-latency-sparkline",
                 readableFontToggle: "options-readable-font-toggle",
                 dyslexiaFontToggle: "options-dyslexia-font-toggle",
@@ -890,6 +892,7 @@ export class GameController {
             onLargeSubtitlesToggle: (enabled) => this.setLargeSubtitlesEnabled(enabled),
             onTutorialPacingChange: (value) => this.setTutorialPacing(value),
             onAudioNarrationToggle: (enabled) => this.setAudioNarrationEnabled(enabled),
+            onVoicePackChange: (packId) => this.setVoicePack(packId),
             onLatencySparklineToggle: (enabled) => this.setLatencySparklineEnabled(enabled),
             onReadableFontToggle: (enabled) => this.setReadableFontEnabled(enabled),
             onDyslexiaFontToggle: (enabled) => this.setDyslexiaFontEnabled(enabled),
@@ -2420,6 +2423,22 @@ export class GameController {
         this.setLargeSubtitlesEnabled(target, presetOptions);
         return target;
     }
+    setVoicePack(packId, options = {}) {
+        const next = this.normalizeVoicePack(packId);
+        if (this.voicePackId === next && !options.force)
+            return this.voicePackId;
+        this.voicePackId = next;
+        if (!options.silent) {
+            this.hud.appendLog(`Voice pack set to ${next.replace("mentor-", "Mentor ")} (text stubs).`);
+        }
+        if (options.persist !== false) {
+            this.persistPlayerSettings({ voicePackId: next });
+        }
+        if (options.render !== false) {
+            this.updateOptionsOverlayState();
+        }
+        return this.voicePackId;
+    }
     setLargeSubtitlesEnabled(enabled, options = {}) {
         const next = Boolean(enabled);
         if (this.largeSubtitlesEnabled === next) {
@@ -2716,6 +2735,15 @@ export class GameController {
         const clamped = Math.min(AUDIO_INTENSITY_MAX, Math.max(AUDIO_INTENSITY_MIN, value));
         return Math.round(clamped * 100) / 100;
     }
+    normalizeVoicePack(value) {
+        if (typeof value !== "string")
+            return "mentor-classic";
+        const normalized = value.toLowerCase();
+        if (normalized === "mentor-calm" || normalized === "mentor-arcade") {
+            return normalized;
+        }
+        return "mentor-classic";
+    }
     normalizeMusicLevel(value) {
         if (!Number.isFinite(value)) {
             return MUSIC_LEVEL_DEFAULT;
@@ -2745,6 +2773,7 @@ export class GameController {
             soundIntensity: this.audioIntensity,
             audioNarrationEnabled: this.audioNarrationEnabled,
             accessibilityPresetEnabled: this.accessibilityPresetEnabled,
+            voicePackId: this.voicePackId,
             tutorialPacing: this.tutorialPacing,
             largeSubtitlesEnabled: this.largeSubtitlesEnabled,
             musicEnabled: this.musicEnabled,
@@ -3866,6 +3895,7 @@ export class GameController {
                 normalizeFocusOutlinePreset(previousFocusOutline);
         const audioNarrationUnchanged = patch.audioNarrationEnabled === undefined ||
             patch.audioNarrationEnabled === this.audioNarrationEnabled;
+        const voicePackUnchanged = patch.voicePackId === undefined || this.normalizeVoicePack(patch.voicePackId) === this.voicePackId;
         const accessibilityPresetUnchanged = patch.accessibilityPresetEnabled === undefined ||
             patch.accessibilityPresetEnabled === this.accessibilityPresetEnabled;
         const tutorialPacingUnchanged = patch.tutorialPacing === undefined ||
@@ -3928,6 +3958,7 @@ export class GameController {
             cognitiveLoadUnchanged &&
             colorblindUnchanged &&
             audioNarrationUnchanged &&
+            voicePackUnchanged &&
             accessibilityPresetUnchanged &&
             tutorialPacingUnchanged &&
             largeSubtitlesUnchanged &&
@@ -5023,6 +5054,11 @@ export class GameController {
         this.setAudioIntensity(stored.audioIntensity ?? AUDIO_INTENSITY_DEFAULT, {
             silent: true,
             persist: false
+        });
+        this.setVoicePack(stored.voicePackId ?? "mentor-classic", {
+            silent: true,
+            persist: false,
+            render: false
         });
         this.setMusicEnabled(stored.musicEnabled ?? true, {
             silent: true,

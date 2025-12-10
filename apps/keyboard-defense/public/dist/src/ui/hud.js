@@ -821,6 +821,9 @@ export class HudView {
             const accessibilityPresetToggle = rootIds.optionsOverlay.accessibilityPresetToggle
                 ? document.getElementById(rootIds.optionsOverlay.accessibilityPresetToggle)
                 : null;
+            const voicePackSelect = rootIds.optionsOverlay.voicePackSelect
+                ? document.getElementById(rootIds.optionsOverlay.voicePackSelect)
+                : null;
             const readableFontToggle = document.getElementById(rootIds.optionsOverlay.readableFontToggle);
             const dyslexiaFontToggle = document.getElementById(rootIds.optionsOverlay.dyslexiaFontToggle);
             const dyslexiaSpacingToggle = rootIds.optionsOverlay.dyslexiaSpacingToggle
@@ -951,6 +954,7 @@ export class HudView {
                 reducedMotionToggle instanceof HTMLInputElement &&
                 checkeredBackgroundToggle instanceof HTMLInputElement &&
                 (accessibilityPresetToggle === null || accessibilityPresetToggle instanceof HTMLInputElement) &&
+                (voicePackSelect === null || voicePackSelect instanceof HTMLSelectElement) &&
                 (latencySparklineToggle === null || latencySparklineToggle instanceof HTMLInputElement) &&
                 readableFontToggle instanceof HTMLInputElement &&
                 dyslexiaFontToggle instanceof HTMLInputElement &&
@@ -1037,6 +1041,7 @@ export class HudView {
                     accessibilityPresetToggle: accessibilityPresetToggle instanceof HTMLInputElement
                         ? accessibilityPresetToggle
                         : undefined,
+                    voicePackSelect: voicePackSelect instanceof HTMLSelectElement ? voicePackSelect : undefined,
                     latencySparklineToggle: latencySparklineToggle instanceof HTMLInputElement ? latencySparklineToggle : undefined,
                     readableFontToggle,
                     dyslexiaFontToggle,
@@ -1400,6 +1405,16 @@ export class HudView {
                         return;
                     this.callbacks.onDyslexiaFontToggle(dyslexiaFontToggle.checked);
                 });
+                if (this.optionsOverlay.voicePackSelect) {
+                    this.optionsOverlay.voicePackSelect.addEventListener("change", () => {
+                        if (this.syncingOptionToggles)
+                            return;
+                        const value = this.getSelectValue(this.optionsOverlay.voicePackSelect);
+                        if (value) {
+                            this.callbacks.onVoicePackChange?.(value);
+                        }
+                    });
+                }
                 if (this.optionsOverlay.backgroundBrightnessSlider) {
                     this.optionsOverlay.backgroundBrightnessSlider.addEventListener("input", () => {
                         if (this.syncingOptionToggles)
@@ -3164,6 +3179,9 @@ export class HudView {
         }
         if (this.optionsOverlay.audioNarrationToggle && state.audioNarrationEnabled !== undefined) {
             this.optionsOverlay.audioNarrationToggle.checked = state.audioNarrationEnabled;
+        }
+        if (this.optionsOverlay.voicePackSelect && state.voicePackId) {
+            this.setSelectValue(this.optionsOverlay.voicePackSelect, state.voicePackId);
         }
         if (this.optionsOverlay.tutorialPacingSlider && state.tutorialPacing !== undefined) {
             const pacing = Number.isFinite(state.tutorialPacing) ? state.tutorialPacing : 1;
