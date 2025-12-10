@@ -192,4 +192,41 @@ describe("TutorialManager assist + replay/skip flows", () => {
     expect(engine.recordTutorialAssist).toHaveBeenCalledTimes(1);
     expect(hud.messages.at(-1)).toMatch(/Hint/i);
   });
+
+  test("pacing scales delta and clamps multiplier", () => {
+    const { manager } = buildTutorialManager({ pacing: 1.2 });
+
+    manager.start();
+    manager.update(1);
+    expect(manager.timeInStep).toBeCloseTo(1.2, 2);
+
+    const clampedSlow = manager.setPacingMultiplier(0.1);
+    expect(clampedSlow).toBe(0.75);
+    const clampedFast = manager.setPacingMultiplier(2);
+    expect(clampedFast).toBe(1.25);
+
+    manager.timeInStep = 0;
+    manager.update(2);
+    expect(manager.timeInStep).toBeCloseTo(2.5, 2); // 2s * 1.25 pacing
+  });
+
+  test("castle breach timer respects pacing multiplier", () => {
+    vi.useFakeTimers();
+    const { manager, engine } = buildTutorialManager({ pacing: 1.25 });
+
+    manager.start();
+    ["intro", "typing-basic", "combo-diagnostics", "shielded-enemy", "turret-placement", "turret-upgrade"].forEach(
+      (stepId) => manager.completeStep(stepId)
+    );
+    expect(manager.getCurrentStepId()).toBe("castle-health");
+
+    // 1500ms base / 1.25 pacing = 1200ms
+    expect(engine.damageCastle).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(1199);
+    expect(engine.damageCastle).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(2);
+    expect(engine.damageCastle).toHaveBeenCalledTimes(1);
+
+    vi.useRealTimers();
+  });
 });
