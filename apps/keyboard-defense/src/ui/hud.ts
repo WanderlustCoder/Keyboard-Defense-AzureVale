@@ -285,6 +285,7 @@ export interface HudCallbacks {
   onMusicLevelChange?: (level: number) => void;
   onMusicLibrarySelect?: (suiteId: string) => void;
   onMusicLibraryPreview?: (suiteId: string) => void;
+  onUiSoundPreview?: () => void;
   onUiSoundSchemeSelect?: (schemeId: string) => void;
   onUiSoundSchemePreview?: (schemeId: string) => void;
   onSfxLibrarySelect?: (libraryId: string) => void;
@@ -456,6 +457,7 @@ type OptionsOverlayElements = {
   musicLibrarySummary?: string;
   uiSoundLibraryButton?: string;
   uiSoundLibrarySummary?: string;
+  uiSoundPreviewButton?: string;
   screenShakeToggle?: string;
   screenShakeSlider?: string;
   screenShakeValue?: string;
@@ -1221,6 +1223,7 @@ export class HudView {
     musicLibrarySummary?: HTMLElement;
     uiSoundLibraryButton?: HTMLButtonElement;
     uiSoundLibrarySummary?: HTMLElement;
+    uiSoundPreviewButton?: HTMLButtonElement;
     screenShakeToggle?: HTMLInputElement;
     screenShakeSlider?: HTMLInputElement;
     screenShakeValue?: HTMLElement;
@@ -1742,6 +1745,9 @@ export class HudView {
       const uiSoundLibrarySummary = rootIds.optionsOverlay.uiSoundLibrarySummary
         ? document.getElementById(rootIds.optionsOverlay.uiSoundLibrarySummary)
         : null;
+      const uiSoundPreviewButton = rootIds.optionsOverlay.uiSoundPreviewButton
+        ? document.getElementById(rootIds.optionsOverlay.uiSoundPreviewButton)
+        : null;
       const screenShakeToggle = rootIds.optionsOverlay.screenShakeToggle
         ? document.getElementById(rootIds.optionsOverlay.screenShakeToggle)
         : null;
@@ -1928,6 +1934,7 @@ export class HudView {
         (musicLibrarySummary === null || musicLibrarySummary instanceof HTMLElement) &&
         (uiSoundLibraryButton === null || uiSoundLibraryButton instanceof HTMLButtonElement) &&
         (uiSoundLibrarySummary === null || uiSoundLibrarySummary instanceof HTMLElement) &&
+        (uiSoundPreviewButton === null || uiSoundPreviewButton instanceof HTMLButtonElement) &&
         (screenShakeToggle === null || screenShakeToggle instanceof HTMLInputElement) &&
         (screenShakeSlider === null || screenShakeSlider instanceof HTMLInputElement) &&
         (screenShakeValue === null || screenShakeValue instanceof HTMLElement) &&
@@ -1998,6 +2005,8 @@ export class HudView {
             uiSoundLibraryButton instanceof HTMLButtonElement ? uiSoundLibraryButton : undefined,
           uiSoundLibrarySummary:
             uiSoundLibrarySummary instanceof HTMLElement ? uiSoundLibrarySummary : undefined,
+          uiSoundPreviewButton:
+            uiSoundPreviewButton instanceof HTMLButtonElement ? uiSoundPreviewButton : undefined,
           screenShakeToggle:
             screenShakeToggle instanceof HTMLInputElement ? screenShakeToggle : undefined,
           screenShakeSlider:
@@ -2195,6 +2204,11 @@ export class HudView {
         if (this.optionsOverlay.uiSoundLibraryButton) {
           this.optionsOverlay.uiSoundLibraryButton.addEventListener("click", () => {
             this.showUiSoundOverlay();
+          });
+        }
+        if (this.optionsOverlay.uiSoundPreviewButton) {
+          this.optionsOverlay.uiSoundPreviewButton.addEventListener("click", () => {
+            this.callbacks.onUiSoundPreview?.();
           });
         }
         if (this.optionsOverlay.screenShakeToggle) {
@@ -4068,6 +4082,14 @@ export class HudView {
         audioLibrariesDisabled ? "true" : "false"
       );
       this.optionsOverlay.uiSoundLibraryButton.tabIndex = audioLibrariesDisabled ? -1 : 0;
+    }
+    if (this.optionsOverlay.uiSoundPreviewButton) {
+      this.optionsOverlay.uiSoundPreviewButton.disabled = audioLibrariesDisabled;
+      this.optionsOverlay.uiSoundPreviewButton.setAttribute(
+        "aria-disabled",
+        audioLibrariesDisabled ? "true" : "false"
+      );
+      this.optionsOverlay.uiSoundPreviewButton.tabIndex = audioLibrariesDisabled ? -1 : 0;
     }
     if (this.optionsOverlay.sfxLibraryButton) {
       this.optionsOverlay.sfxLibraryButton.disabled = audioLibrariesDisabled;

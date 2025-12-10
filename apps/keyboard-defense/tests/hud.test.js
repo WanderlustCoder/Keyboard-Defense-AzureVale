@@ -174,6 +174,7 @@ const initializeHud = (options = {}) => {
   const optionsMusicLibraryButton = get("options-music-library");
   const optionsMusicLibraryLabel = get("options-music-library-label");
   const optionsUiSoundLibraryButton = get("options-ui-sound-library");
+  const optionsUiSoundPreviewButton = get("options-ui-sound-preview");
   const optionsUiSoundLibraryLabel = get("options-ui-sound-library-label");
   const screenShakeToggle = get("options-screen-shake-toggle");
   const screenShakeSlider = get("options-screen-shake-intensity");
@@ -350,6 +351,7 @@ const initializeHud = (options = {}) => {
   const musicLibraryPreviewEvents = [];
   const uiSoundSelectEvents = [];
   const uiSoundPreviewEvents = [];
+  const uiSoundInlinePreviewEvents = [];
   const sfxLibrarySelectEvents = [];
   const sfxLibraryPreviewEvents = [];
   const screenShakeToggleEvents = [];
@@ -408,6 +410,7 @@ const initializeHud = (options = {}) => {
         musicLibrarySummary: "options-music-library-label",
         uiSoundLibraryButton: "options-ui-sound-library",
         uiSoundLibrarySummary: "options-ui-sound-library-label",
+        uiSoundPreviewButton: "options-ui-sound-preview",
         screenShakeToggle: "options-screen-shake-toggle",
         screenShakeSlider: "options-screen-shake-intensity",
         screenShakeValue: "options-screen-shake-intensity-value",
@@ -639,6 +642,7 @@ const initializeHud = (options = {}) => {
       onMusicLibraryPreview: (id) => musicLibraryPreviewEvents.push(id),
       onUiSoundSchemeSelect: (id) => uiSoundSelectEvents.push(id),
       onUiSoundSchemePreview: (id) => uiSoundPreviewEvents.push(id),
+      onUiSoundPreview: () => uiSoundInlinePreviewEvents.push(true),
       onSfxLibrarySelect: (id) => sfxLibrarySelectEvents.push(id),
       onSfxLibraryPreview: (id) => sfxLibraryPreviewEvents.push(id),
       onScreenShakeToggle: (value) => screenShakeToggleEvents.push(value),
@@ -790,6 +794,7 @@ const initializeHud = (options = {}) => {
       optionsMusicLibraryButton,
       optionsMusicLibraryLabel,
       optionsUiSoundLibraryButton,
+      optionsUiSoundPreviewButton,
       optionsUiSoundLibraryLabel,
       optionsSfxLibraryButton,
       optionsSfxLibraryLabel,
@@ -952,6 +957,7 @@ const initializeHud = (options = {}) => {
       getMusicLibraryPreviewEvents: () => [...musicLibraryPreviewEvents],
       getUiSoundSelectEvents: () => [...uiSoundSelectEvents],
       getUiSoundPreviewEvents: () => [...uiSoundPreviewEvents],
+      getUiSoundInlinePreviewEvents: () => [...uiSoundInlinePreviewEvents],
       getSfxLibrarySelectEvents: () => [...sfxLibrarySelectEvents],
       getSfxLibraryPreviewEvents: () => [...sfxLibraryPreviewEvents],
       getScreenShakeToggleEvents: () => [...screenShakeToggleEvents],
@@ -980,7 +986,8 @@ const initializeHud = (options = {}) => {
     getMusicLibrarySelectEvents: () => [...musicLibrarySelectEvents],
     getMusicLibraryPreviewEvents: () => [...musicLibraryPreviewEvents],
     getUiSoundSelectEvents: () => [...uiSoundSelectEvents],
-    getUiSoundPreviewEvents: () => [...uiSoundPreviewEvents]
+    getUiSoundPreviewEvents: () => [...uiSoundPreviewEvents],
+    getUiSoundInlinePreviewEvents: () => [...uiSoundInlinePreviewEvents]
   };
 };
 
@@ -3334,7 +3341,8 @@ test("UI sound overlay toggles, renders, and emits callbacks", () => {
     cleanup,
     elements,
     getUiSoundSelectEvents,
-    getUiSoundPreviewEvents
+    getUiSoundPreviewEvents,
+    getUiSoundInlinePreviewEvents
   } = initializeHud();
   const view = buildUiSchemeView(readUiSchemeState(null));
   hud.setUiSoundScheme(view);
@@ -3360,6 +3368,8 @@ test("UI sound overlay toggles, renders, and emits callbacks", () => {
   assert.ok(getUiSoundSelectEvents().length >= 0);
   elements.uiSoundOverlayClose.click();
   assert.equal(elements.uiSoundOverlay.dataset.visible, "false");
+  elements.optionsUiSoundPreviewButton.click();
+  assert.equal(getUiSoundInlinePreviewEvents().length, 1);
   cleanup();
 });
 

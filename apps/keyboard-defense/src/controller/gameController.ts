@@ -638,6 +638,7 @@ export class GameController {
           musicLibrarySummary: "options-music-library-label",
           uiSoundLibraryButton: "options-ui-sound-library",
           uiSoundLibrarySummary: "options-ui-sound-library-label",
+          uiSoundPreviewButton: "options-ui-sound-preview",
           screenShakeToggle: "options-screen-shake-toggle",
           screenShakeSlider: "options-screen-shake-intensity",
           screenShakeValue: "options-screen-shake-intensity-value",
@@ -915,6 +916,8 @@ export class GameController {
         onMusicLevelChange: (value) => this.setMusicLevel(value),
         onMusicLibrarySelect: (suiteId) => this.setMusicSuiteSelection(suiteId as MusicStemId),
         onMusicLibraryPreview: (suiteId) => this.previewMusicSuite(suiteId as MusicStemId),
+        onUiSoundPreview: () =>
+          this.previewUiSoundScheme((this.uiSoundScheme?.activeId as UiSchemeId) ?? "clarity"),
         onUiSoundSchemeSelect: (schemeId) => this.setUiSoundSchemeSelection(schemeId as UiSchemeId),
         onUiSoundSchemePreview: (schemeId) => this.previewUiSoundScheme(schemeId as UiSchemeId),
         onSfxLibrarySelect: (libraryId) =>
