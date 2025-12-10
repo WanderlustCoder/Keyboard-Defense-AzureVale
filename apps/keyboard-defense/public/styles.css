@@ -3299,6 +3299,96 @@ section {
   justify-self: flex-start;
 }
 
+#subtitle-overlay {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 83;
+  pointer-events: none;
+}
+
+#subtitle-overlay[data-visible="true"] {
+  display: flex;
+}
+
+.subtitle-overlay-card {
+  position: relative;
+  width: min(900px, 100%);
+  background: radial-gradient(circle at 30% 12%, rgba(56, 189, 248, 0.12), transparent 32%),
+    radial-gradient(circle at 78% 22%, rgba(52, 211, 153, 0.12), transparent 32%),
+    rgba(9, 12, 24, 0.96);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
+  pointer-events: auto;
+}
+
+.subtitle-overlay-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.subtitle-overlay-kicker {
+  margin: 0;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #38bdf8;
+}
+
+.subtitle-overlay-summary {
+  margin: 6px 0 0;
+  color: #e2e8f0;
+}
+
+.subtitle-overlay-body {
+  margin-top: 12px;
+  display: grid;
+  gap: 12px;
+}
+
+.subtitle-samples {
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 12px;
+  padding: 12px;
+  background: linear-gradient(145deg, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.82));
+  display: grid;
+  gap: 10px;
+}
+
+.subtitle-line {
+  margin: 0;
+  color: #e2e8f0;
+  font-size: 1.05rem;
+  line-height: 1.45;
+  letter-spacing: 0.01em;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+}
+
+.subtitle-line[data-size="large"],
+body[data-subtitles="large"] .subtitle-line {
+  font-size: 1.35rem;
+  line-height: 1.6;
+  background: rgba(52, 211, 153, 0.12);
+  border-color: rgba(52, 211, 153, 0.35);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+}
+
+body[data-subtitles="large"] [class*="subtitle"] {
+  font-size: 1.15rem;
+  line-height: 1.55;
+  letter-spacing: 0.01em;
+}
+
 .legend-chip--silhouette::before,
 .legend-chip--accent::before,
 .legend-chip--tag::before {

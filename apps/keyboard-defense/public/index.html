@@ -1747,6 +1747,16 @@
               </span>
             </label>
             <label class="option-toggle">
+              <input id="options-subtitle-large" type="checkbox" />
+              <span class="option-toggle-label">Large-Text Subtitles</span>
+              <span class="option-toggle-help">
+                Boosts subtitle size and contrast for dialogue, taunts, and overlay captions.
+              </span>
+            </label>
+            <button id="options-subtitle-preview" type="button" class="secondary option-inline-button">
+              Subtitle Preview
+            </button>
+            <label class="option-toggle">
               <input id="options-colorblind-toggle" type="checkbox" />
               <span class="option-toggle-label">Colorblind Palette</span>
             </label>
@@ -2498,6 +2508,55 @@
             <div class="posture-actions-right">
               <p id="posture-overlay-status" class="posture-status">No reminder active.</p>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      id="subtitle-overlay"
+      class="subtitle-overlay"
+      data-visible="false"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="subtitle-overlay-title"
+      aria-hidden="true"
+    >
+      <div class="subtitle-overlay-card">
+        <header class="subtitle-overlay-header">
+          <div>
+            <p class="subtitle-overlay-kicker">Readable voice lines</p>
+            <h2 id="subtitle-overlay-title">Large-Text Subtitles</h2>
+            <p id="subtitle-overlay-summary" class="subtitle-overlay-summary">
+              Enable large subtitles to boost size and contrast for dialogue and taunts.
+            </p>
+          </div>
+          <button
+            id="subtitle-overlay-close"
+            class="icon-button"
+            type="button"
+            aria-label="Close subtitle preview"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </header>
+        <div class="subtitle-overlay-body">
+          <label class="option-toggle">
+            <input id="subtitle-overlay-toggle" type="checkbox" />
+            <span class="option-toggle-label">Use Large Subtitles</span>
+            <span class="option-toggle-help">
+              Makes subtitles larger with extra line spacing and higher contrast.
+            </span>
+          </label>
+          <div id="subtitle-overlay-samples" class="subtitle-samples">
+            <p class="subtitle-line" data-subtitle-line>
+              [Commander] Focus fire on the shielded crawler. Turrets marked in green are ready.
+            </p>
+            <p class="subtitle-line" data-subtitle-line>
+              [Scholar] Remember: tap lightly, keep wrists floating, and breathe between waves.
+            </p>
+            <p class="subtitle-line" data-subtitle-line>
+              [Enemy] You cannot hold the west gate forever—our next wave brings siege engines!
+            </p>
           </div>
         </div>
       </div>

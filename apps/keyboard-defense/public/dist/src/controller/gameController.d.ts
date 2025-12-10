@@ -97,6 +97,7 @@ export declare class GameController {
     handleGameStatusAudio(status: any): void;
     setColorblindPaletteEnabled(enabled: any, options?: {}): boolean;
     setAudioNarrationEnabled(enabled: any, options?: {}): any;
+    setLargeSubtitlesEnabled(enabled: any, options?: {}): any;
     setColorblindPaletteMode(mode: any, options?: {}): boolean;
     setFocusOutlinePreset(preset: FocusOutlinePreset, options?: {}): boolean;
     setDefeatAnimationMode(mode: any, options?: {}): void;
@@ -136,6 +137,7 @@ export declare class GameController {
     applyDyslexiaSpacingSetting(enabled: any): void;
     applyCognitiveLoadSetting(enabled: any): void;
     applyAudioNarrationSetting(enabled: any): void;
+    applyLargeSubtitlesSetting(enabled: any): void;
     applyFocusOutlinePreset(preset: FocusOutlinePreset): void;
     applyBackgroundBrightnessSetting(value: any): void;
     normalizeColorblindMode(mode: any): string;

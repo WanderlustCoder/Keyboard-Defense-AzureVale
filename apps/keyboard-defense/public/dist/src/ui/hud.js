@@ -218,6 +218,7 @@ export class HudView {
     uiSoundOverlay;
     sfxOverlay;
     readabilityOverlay;
+    subtitleOverlay;
     postureOverlay;
     stickerBookOverlay;
     stickerBookEntries = [];
@@ -329,6 +330,7 @@ export class HudView {
     postureLastReviewed = null;
     audioNarrationEnabled = false;
     narration = new NarrationManager();
+    subtitleLargeEnabled = false;
     focusOutlinePreset = "system";
     dayNightTheme = "night";
     parallaxSceneChoice = "auto";
@@ -828,6 +830,12 @@ export class HudView {
             const audioNarrationToggle = rootIds.optionsOverlay.audioNarrationToggle
                 ? document.getElementById(rootIds.optionsOverlay.audioNarrationToggle)
                 : null;
+            const subtitleLargeToggle = rootIds.optionsOverlay.subtitleLargeToggle
+                ? document.getElementById(rootIds.optionsOverlay.subtitleLargeToggle)
+                : null;
+            const subtitlePreviewButton = rootIds.optionsOverlay.subtitlePreviewButton
+                ? document.getElementById(rootIds.optionsOverlay.subtitlePreviewButton)
+                : null;
             const backgroundBrightnessSlider = rootIds.optionsOverlay.backgroundBrightnessSlider
                 ? document.getElementById(rootIds.optionsOverlay.backgroundBrightnessSlider)
                 : null;
@@ -937,6 +945,8 @@ export class HudView {
                 (dyslexiaSpacingToggle === null || dyslexiaSpacingToggle instanceof HTMLInputElement) &&
                 (cognitiveLoadToggle === null || cognitiveLoadToggle instanceof HTMLInputElement) &&
                 (audioNarrationToggle === null || audioNarrationToggle instanceof HTMLInputElement) &&
+                (subtitleLargeToggle === null || subtitleLargeToggle instanceof HTMLInputElement) &&
+                (subtitlePreviewButton === null || subtitlePreviewButton instanceof HTMLButtonElement) &&
                 (backgroundBrightnessSlider === null ||
                     backgroundBrightnessSlider instanceof HTMLInputElement) &&
                 (backgroundBrightnessValue === null || backgroundBrightnessValue instanceof HTMLElement) &&
@@ -1016,6 +1026,8 @@ export class HudView {
                     dyslexiaSpacingToggle: dyslexiaSpacingToggle instanceof HTMLInputElement ? dyslexiaSpacingToggle : undefined,
                     cognitiveLoadToggle: cognitiveLoadToggle instanceof HTMLInputElement ? cognitiveLoadToggle : undefined,
                     audioNarrationToggle: audioNarrationToggle instanceof HTMLInputElement ? audioNarrationToggle : undefined,
+                    subtitleLargeToggle: subtitleLargeToggle instanceof HTMLInputElement ? subtitleLargeToggle : undefined,
+                    subtitlePreviewButton: subtitlePreviewButton instanceof HTMLButtonElement ? subtitlePreviewButton : undefined,
                     backgroundBrightnessSlider: backgroundBrightnessSlider instanceof HTMLInputElement
                         ? backgroundBrightnessSlider
                         : undefined,
@@ -1395,6 +1407,19 @@ export class HudView {
                         }
                         this.audioNarrationEnabled = enabled;
                         this.callbacks.onAudioNarrationToggle?.(enabled);
+                    });
+                }
+                if (this.optionsOverlay.subtitleLargeToggle) {
+                    this.optionsOverlay.subtitleLargeToggle.addEventListener("change", () => {
+                        if (this.syncingOptionToggles)
+                            return;
+                        const enabled = this.optionsOverlay.subtitleLargeToggle.checked;
+                        this.callbacks.onLargeSubtitlesToggle?.(enabled);
+                    });
+                }
+                if (this.optionsOverlay.subtitlePreviewButton && this.subtitleOverlay) {
+                    this.optionsOverlay.subtitlePreviewButton.addEventListener("click", () => {
+                        this.showSubtitleOverlay();
                     });
                 }
                 if (this.optionsOverlay.cognitiveLoadToggle) {
@@ -2021,6 +2046,45 @@ export class HudView {
             }
             else {
                 console.warn("Readability overlay elements missing; readability guide disabled.");
+            }
+        }
+        if (rootIds.subtitleOverlay) {
+            const subtitleContainer = document.getElementById(rootIds.subtitleOverlay.container);
+            const subtitleClose = document.getElementById(rootIds.subtitleOverlay.closeButton);
+            const subtitleToggle = rootIds.subtitleOverlay.toggle
+                ? document.getElementById(rootIds.subtitleOverlay.toggle)
+                : null;
+            const subtitleSummary = rootIds.subtitleOverlay.summary
+                ? document.getElementById(rootIds.subtitleOverlay.summary)
+                : null;
+            const subtitleSamples = rootIds.subtitleOverlay.samples &&
+                document.querySelectorAll(`#${rootIds.subtitleOverlay.samples} [data-subtitle-line]`);
+            if (subtitleContainer instanceof HTMLElement &&
+                subtitleClose instanceof HTMLButtonElement &&
+                (subtitleToggle === null || subtitleToggle instanceof HTMLInputElement)) {
+                this.subtitleOverlay = {
+                    container: subtitleContainer,
+                    closeButton: subtitleClose,
+                    toggle: subtitleToggle instanceof HTMLInputElement ? subtitleToggle : undefined,
+                    summary: subtitleSummary instanceof HTMLElement ? subtitleSummary : undefined,
+                    samples: subtitleSamples && subtitleSamples.length > 0
+                        ? Array.from(subtitleSamples).filter((el) => el instanceof HTMLElement)
+                        : undefined
+                };
+                subtitleContainer.dataset.visible = subtitleContainer.dataset.visible ?? "false";
+                subtitleContainer.setAttribute("aria-hidden", "true");
+                subtitleClose.addEventListener("click", () => this.hideSubtitleOverlay());
+                this.addFocusTrap(subtitleContainer);
+                if (this.subtitleOverlay.toggle) {
+                    this.subtitleOverlay.toggle.addEventListener("change", () => {
+                        if (this.syncingOptionToggles)
+                            return;
+                        this.callbacks.onLargeSubtitlesToggle?.(this.subtitleOverlay.toggle.checked);
+                    });
+                }
+            }
+            else {
+                console.warn("Subtitle overlay elements missing; subtitle preview disabled.");
             }
         }
         if (rootIds.layoutOverlay) {
@@ -3058,6 +3122,13 @@ export class HudView {
         this.optionsOverlay.reducedMotionToggle.checked = state.reducedMotionEnabled;
         if (this.optionsOverlay.audioNarrationToggle && state.audioNarrationEnabled !== undefined) {
             this.optionsOverlay.audioNarrationToggle.checked = state.audioNarrationEnabled;
+        }
+        if (state.largeSubtitlesEnabled !== undefined) {
+            this.subtitleLargeEnabled = Boolean(state.largeSubtitlesEnabled);
+            if (this.optionsOverlay.subtitleLargeToggle) {
+                this.optionsOverlay.subtitleLargeToggle.checked = this.subtitleLargeEnabled;
+            }
+            this.syncSubtitleOverlayState();
         }
         if (this.optionsOverlay.latencySparklineToggle && state.latencySparklineEnabled !== undefined) {
             this.optionsOverlay.latencySparklineToggle.checked = state.latencySparklineEnabled;
@@ -5865,6 +5936,40 @@ export class HudView {
             return;
         this.readabilityOverlay.container.dataset.visible = "false";
         this.readabilityOverlay.container.setAttribute("aria-hidden", "true");
+    }
+    showSubtitleOverlay() {
+        if (!this.subtitleOverlay)
+            return;
+        this.syncSubtitleOverlayState();
+        this.subtitleOverlay.container.dataset.visible = "true";
+        this.subtitleOverlay.container.setAttribute("aria-hidden", "false");
+        const focusable = this.getFocusableElements(this.subtitleOverlay.container);
+        this.subtitleOverlay.toggle?.focus() ??
+            focusable[0]?.focus();
+    }
+    hideSubtitleOverlay() {
+        if (!this.subtitleOverlay)
+            return;
+        this.subtitleOverlay.container.dataset.visible = "false";
+        this.subtitleOverlay.container.setAttribute("aria-hidden", "true");
+        this.optionsOverlay?.subtitlePreviewButton?.focus();
+    }
+    syncSubtitleOverlayState() {
+        if (!this.subtitleOverlay)
+            return;
+        if (this.subtitleOverlay.toggle) {
+            this.subtitleOverlay.toggle.checked = this.subtitleLargeEnabled;
+        }
+        if (this.subtitleOverlay.summary) {
+            this.subtitleOverlay.summary.textContent = this.subtitleLargeEnabled
+                ? "Large subtitles enabled. All subtitle lines render at larger sizes with extra contrast."
+                : "Normal subtitles active. Enable large subtitles to boost size and contrast.";
+        }
+        if (this.subtitleOverlay.samples) {
+            for (const sample of this.subtitleOverlay.samples) {
+                sample.dataset.size = this.subtitleLargeEnabled ? "large" : "normal";
+            }
+        }
     }
     showLayoutOverlay() {
         if (!this.layoutOverlay)

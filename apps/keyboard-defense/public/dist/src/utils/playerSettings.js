@@ -1,5 +1,5 @@
 export const PLAYER_SETTINGS_STORAGE_KEY = "keyboard-defense:player-settings";
-export const PLAYER_SETTINGS_VERSION = 28;
+export const PLAYER_SETTINGS_VERSION = 29;
 const DEFAULT_UPDATED_AT = "1970-01-01T00:00:00.000Z";
 const HUD_FONT_SCALE_MIN = 0.85;
 const HUD_FONT_SCALE_MAX = 1.3;
@@ -54,6 +54,7 @@ const BASE_DEFAULT_SETTINGS = {
     dyslexiaSpacingEnabled: false,
     reducedCognitiveLoadEnabled: false,
     audioNarrationEnabled: false,
+    largeSubtitlesEnabled: false,
     backgroundBrightness: 1,
     colorblindPaletteEnabled: false,
     focusOutlinePreset: DEFAULT_FOCUS_OUTLINE,
@@ -160,6 +161,9 @@ export function readPlayerSettings(storage) {
         const audioNarrationEnabled = typeof parsed.audioNarrationEnabled === "boolean"
             ? parsed.audioNarrationEnabled
             : fallback.audioNarrationEnabled;
+        const largeSubtitlesEnabled = typeof parsed.largeSubtitlesEnabled === "boolean"
+            ? parsed.largeSubtitlesEnabled
+            : fallback.largeSubtitlesEnabled;
         const backgroundBrightness = typeof parsed.backgroundBrightness === "number"
             ? parsed.backgroundBrightness
             : fallback.backgroundBrightness;
@@ -236,6 +240,7 @@ export function readPlayerSettings(storage) {
             dyslexiaSpacingEnabled,
             reducedCognitiveLoadEnabled,
             audioNarrationEnabled,
+            largeSubtitlesEnabled,
             backgroundBrightness,
             colorblindPaletteEnabled,
             focusOutlinePreset,
@@ -327,6 +332,9 @@ export function withPatchedPlayerSettings(current, patch) {
         audioNarrationEnabled: typeof patch.audioNarrationEnabled === "boolean"
             ? patch.audioNarrationEnabled
             : current.audioNarrationEnabled,
+        largeSubtitlesEnabled: typeof patch.largeSubtitlesEnabled === "boolean"
+            ? patch.largeSubtitlesEnabled
+            : current.largeSubtitlesEnabled,
         backgroundBrightness: typeof patch.backgroundBrightness === "number"
             ? patch.backgroundBrightness
             : current.backgroundBrightness,

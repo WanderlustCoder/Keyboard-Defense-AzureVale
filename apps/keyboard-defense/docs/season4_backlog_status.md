@@ -57,7 +57,7 @@ Quick status snapshot for items in `season4_backlog.md`. All items start as Not 
 | 51 | Audio narration toggle | Done | Options overlay adds an Audio Narration toggle that persists per profile and applies a global data attribute for spoken menu cues. |
 | 52 | Posture checklist | Done | Options adds a Posture Checklist overlay with a 5-minute micro-reminder and inline posture toast, plus a quick summary in options. |
 | 53 | Layout preview overlay | Done | Options overlay adds a Layout Preview dialog with left/right mockups and quick apply buttons so players can compare layouts before switching. |
-| 54 | Large-text subtitles | Not Started | - |
+| 54 | Large-text subtitles | Done | Options overlay adds a Large-Text Subtitles toggle plus a preview dialog; enables global large subtitles with higher contrast across overlays and voice-line captions. |
 | 55 | Tutorial pacing slider | Not Started | - |
 | 56 | Input latency sparkline | Done | Latency indicator now renders a live sparkline of recent samples alongside the value. |
 | 57 | Profile-bound accessibility toggle | Not Started | - |

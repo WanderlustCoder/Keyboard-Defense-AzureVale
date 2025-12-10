@@ -88,6 +88,17 @@ test("audio narration preference persists", () => {
   assert.equal(loaded.audioNarrationEnabled, true);
 });
 
+test("large subtitle preference persists", () => {
+  const storage = createMemoryStorage();
+  const defaults = createDefaultPlayerSettings();
+  assert.equal(defaults.largeSubtitlesEnabled, false);
+
+  const patched = withPatchedPlayerSettings(defaults, { largeSubtitlesEnabled: true });
+  writePlayerSettings(storage, patched);
+  const loaded = readPlayerSettings(storage);
+  assert.equal(loaded.largeSubtitlesEnabled, true);
+});
+
 test("accessibility self-test state persists confirmations and timestamps", () => {
   const storage = createMemoryStorage();
   const defaults = createDefaultPlayerSettings();

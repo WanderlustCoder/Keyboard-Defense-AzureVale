@@ -218,6 +218,7 @@ export class GameController {
         this.dyslexiaSpacingEnabled = false;
         this.reducedCognitiveLoadEnabled = false;
         this.audioNarrationEnabled = false;
+        this.largeSubtitlesEnabled = false;
         this.backgroundBrightness = BG_BRIGHTNESS_DEFAULT;
         this.colorblindPaletteEnabled = false;
         this.colorblindPaletteMode = "off";
@@ -585,6 +586,8 @@ export class GameController {
                 dyslexiaSpacingToggle: "options-dyslexia-spacing-toggle",
                 cognitiveLoadToggle: "options-cognitive-load",
                 audioNarrationToggle: "options-audio-narration",
+                subtitleLargeToggle: "options-subtitle-large",
+                subtitlePreviewButton: "options-subtitle-preview",
                 colorblindPaletteToggle: "options-colorblind-toggle",
                 colorblindPaletteSelect: "options-colorblind-mode",
                 focusOutlineSelect: "options-focus-outline",
@@ -668,6 +671,13 @@ export class GameController {
             parentalOverlay: {
                 container: "parental-overlay",
                 closeButton: "parental-overlay-close"
+            },
+            subtitleOverlay: {
+                container: "subtitle-overlay",
+                closeButton: "subtitle-overlay-close",
+                toggle: "subtitle-overlay-toggle",
+                summary: "subtitle-overlay-summary",
+                samples: "subtitle-overlay-samples"
             },
             layoutOverlay: {
                 container: "layout-overlay",
@@ -871,6 +881,7 @@ export class GameController {
             },
             onReducedMotionToggle: (enabled) => this.setReducedMotionEnabled(enabled),
             onCheckeredBackgroundToggle: (enabled) => this.setCheckeredBackgroundEnabled(enabled),
+            onLargeSubtitlesToggle: (enabled) => this.setLargeSubtitlesEnabled(enabled),
             onAudioNarrationToggle: (enabled) => this.setAudioNarrationEnabled(enabled),
             onLatencySparklineToggle: (enabled) => this.setLatencySparklineEnabled(enabled),
             onReadableFontToggle: (enabled) => this.setReadableFontEnabled(enabled),
@@ -2329,6 +2340,24 @@ export class GameController {
         }
         return this.audioNarrationEnabled;
     }
+    setLargeSubtitlesEnabled(enabled, options = {}) {
+        const next = Boolean(enabled);
+        if (this.largeSubtitlesEnabled === next) {
+            return this.largeSubtitlesEnabled;
+        }
+        this.largeSubtitlesEnabled = next;
+        this.applyLargeSubtitlesSetting(next);
+        if (!options.silent) {
+            this.hud.appendLog(`Large-text subtitles ${next ? "enabled" : "disabled"}.`);
+        }
+        if (options.persist !== false) {
+            this.persistPlayerSettings({ largeSubtitlesEnabled: next });
+        }
+        if (options.render !== false) {
+            this.updateOptionsOverlayState();
+        }
+        return this.largeSubtitlesEnabled;
+    }
     setColorblindPaletteMode(mode, options = {}) {
         const normalized = this.normalizeColorblindMode(mode);
         const enabled = normalized !== "off";
@@ -2630,6 +2659,7 @@ export class GameController {
             soundVolume: this.soundVolume,
             soundIntensity: this.audioIntensity,
             audioNarrationEnabled: this.audioNarrationEnabled,
+            largeSubtitlesEnabled: this.largeSubtitlesEnabled,
             musicEnabled: this.musicEnabled,
             musicLevel: this.musicLevel,
             screenShakeEnabled: this.screenShakeEnabled,
@@ -2790,6 +2820,29 @@ export class GameController {
             }
             else {
                 delete body.dataset.audioNarration;
+            }
+        }
+    }
+    applyLargeSubtitlesSetting(enabled) {
+        if (typeof document === "undefined")
+            return;
+        const root = document.documentElement;
+        const body = document.body;
+        const value = enabled ? "large" : undefined;
+        if (root) {
+            if (value) {
+                root.dataset.subtitles = value;
+            }
+            else {
+                delete root.dataset.subtitles;
+            }
+        }
+        if (body) {
+            if (value) {
+                body.dataset.subtitles = value;
+            }
+            else {
+                delete body.dataset.subtitles;
             }
         }
     }
@@ -3726,6 +3779,8 @@ export class GameController {
                 normalizeFocusOutlinePreset(previousFocusOutline);
         const audioNarrationUnchanged = patch.audioNarrationEnabled === undefined ||
             patch.audioNarrationEnabled === this.audioNarrationEnabled;
+        const largeSubtitlesUnchanged = patch.largeSubtitlesEnabled === undefined ||
+            patch.largeSubtitlesEnabled === this.largeSubtitlesEnabled;
         const textSizeUnchanged = patch.textSizeScale === undefined ||
             Math.abs(this.normalizeTextSizeScale(patch.textSizeScale) - this.playerSettings.textSizeScale) <=
                 0.001;
@@ -3781,6 +3836,7 @@ export class GameController {
             cognitiveLoadUnchanged &&
             colorblindUnchanged &&
             audioNarrationUnchanged &&
+            largeSubtitlesUnchanged &&
             focusOutlineUnchanged &&
             textSizeUnchanged &&
             hapticsUnchanged &&
@@ -4894,6 +4950,11 @@ export class GameController {
             render: false
         });
         this.setAudioNarrationEnabled(stored.audioNarrationEnabled ?? false, {
+            silent: true,
+            persist: false,
+            render: false
+        });
+        this.setLargeSubtitlesEnabled(stored.largeSubtitlesEnabled ?? false, {
             silent: true,
             persist: false,
             render: false

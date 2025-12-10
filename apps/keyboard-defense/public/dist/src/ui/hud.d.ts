@@ -108,6 +108,7 @@ export interface HudCallbacks {
     onDyslexiaFontToggle(enabled: boolean): void;
     onDyslexiaSpacingToggle?: (enabled: boolean) => void;
     onLatencySparklineToggle?: (enabled: boolean) => void;
+    onLargeSubtitlesToggle?: (enabled: boolean) => void;
     onCognitiveLoadToggle?: (enabled: boolean) => void;
     onAudioNarrationToggle?: (enabled: boolean) => void;
     onColorblindPaletteToggle(enabled: boolean): void;
@@ -241,6 +242,8 @@ type OptionsOverlayElements = {
     colorblindPaletteToggle: string;
     colorblindPaletteSelect?: string;
     focusOutlineSelect?: string;
+    subtitleLargeToggle?: string;
+    subtitlePreviewButton?: string;
     postureChecklistButton?: string;
     postureChecklistSummary?: string;
     hotkeyPauseSelect?: string;
@@ -328,6 +331,13 @@ type RoadmapGlanceElements = {
 type ParentalOverlayElements = {
     container: string;
     closeButton: string;
+};
+type SubtitleOverlayElements = {
+    container: string;
+    closeButton: string;
+    toggle?: string;
+    summary?: string;
+    samples?: string;
 };
 type LayoutOverlayElements = {
     container: string;
@@ -550,6 +560,7 @@ export declare class HudView {
     private readonly uiSoundOverlay?;
     private readonly sfxOverlay?;
     private readonly readabilityOverlay?;
+    private readonly subtitleOverlay?;
     private readonly postureOverlay?;
     private readonly stickerBookOverlay?;
     private stickerBookEntries;
@@ -653,6 +664,7 @@ export declare class HudView {
     private postureLastReviewed;
     private audioNarrationEnabled;
     private narration;
+    private subtitleLargeEnabled;
     private focusOutlinePreset;
     private dayNightTheme;
     private parallaxSceneChoice;
@@ -708,6 +720,7 @@ export declare class HudView {
         roadmapGlance?: RoadmapGlanceElements;
         roadmapLaunch?: string;
         parentalOverlay?: ParentalOverlayElements;
+        subtitleOverlay?: SubtitleOverlayElements;
         layoutOverlay?: LayoutOverlayElements;
         contrastOverlay?: ContrastOverlayElements;
         postureOverlay?: PostureOverlayElements;
@@ -755,6 +768,7 @@ export declare class HudView {
         soundVolume: number;
         soundIntensity: number;
         audioNarrationEnabled?: boolean;
+        largeSubtitlesEnabled?: boolean;
         musicEnabled?: boolean;
         musicLevel?: number;
         screenShakeEnabled: boolean;
@@ -960,6 +974,9 @@ export declare class HudView {
     hideSfxOverlay(): void;
     showReadabilityOverlay(): void;
     hideReadabilityOverlay(): void;
+    showSubtitleOverlay(): void;
+    hideSubtitleOverlay(): void;
+    private syncSubtitleOverlayState;
     showLayoutOverlay(): void;
     hideLayoutOverlay(): void;
     private syncLayoutOverlayState;
