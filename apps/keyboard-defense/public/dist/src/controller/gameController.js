@@ -594,6 +594,7 @@ export class GameController {
                 backgroundBrightnessValue: "options-bg-brightness-value",
                 hudZoomSelect: "options-hud-zoom",
                 hudLayoutToggle: "options-hud-left",
+                layoutPreviewButton: "options-layout-preview",
                 castleSkinSelect: "options-castle-skin",
                 dayNightThemeSelect: "options-day-night-theme",
                 parallaxSceneSelect: "options-parallax-scene",
@@ -667,6 +668,15 @@ export class GameController {
             parentalOverlay: {
                 container: "parental-overlay",
                 closeButton: "parental-overlay-close"
+            },
+            layoutOverlay: {
+                container: "layout-overlay",
+                closeButton: "layout-overlay-close",
+                summary: "layout-overlay-summary",
+                leftCard: "layout-overlay-left",
+                rightCard: "layout-overlay-right",
+                leftApply: "layout-apply-left",
+                rightApply: "layout-apply-right"
             },
             contrastOverlay: {
                 container: "contrast-overlay",

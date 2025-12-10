@@ -1891,6 +1891,9 @@
                 Flips the HUD to the left side of the screen so the game canvas sits on the right.
               </span>
             </label>
+            <button id="options-layout-preview" type="button" class="secondary option-inline-button">
+              Preview Layouts
+            </button>
             <label class="option-toggle option-select">
               <span class="option-toggle-label">Pause Shortcut</span>
               <select id="options-hotkey-pause" aria-label="Pause shortcut key">
@@ -2494,6 +2497,67 @@
             </div>
             <div class="posture-actions-right">
               <p id="posture-overlay-status" class="posture-status">No reminder active.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      id="layout-overlay"
+      class="layout-overlay"
+      data-visible="false"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="layout-overlay-title"
+      aria-hidden="true"
+    >
+      <div class="layout-overlay-card">
+        <header class="layout-overlay-header">
+          <div>
+            <p class="layout-overlay-kicker">Try before you switch</p>
+            <h2 id="layout-overlay-title">HUD Layout Preview</h2>
+            <p id="layout-overlay-summary" class="layout-overlay-summary">
+              Right-handed layout active. HUD anchors right; canvas stays on the left.
+            </p>
+          </div>
+          <button
+            id="layout-overlay-close"
+            class="icon-button"
+            type="button"
+            aria-label="Close layout preview"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </header>
+        <div class="layout-overlay-body">
+          <div class="layout-preview-grid">
+            <div id="layout-overlay-left" class="layout-preview-card" data-side="left">
+              <div class="layout-preview-head">
+                <span class="layout-pill layout-pill--left">Left-handed</span>
+                <span class="layout-preview-caption">HUD on the left, canvas on the right.</span>
+              </div>
+              <div class="layout-preview-canvas">
+                <div class="layout-preview-hud layout-preview-hud--left">
+                  <span class="layout-preview-label">HUD</span>
+                </div>
+                <div class="layout-preview-playfield">Playfield</div>
+              </div>
+              <button id="layout-apply-left" class="primary" type="button">Use Left Layout</button>
+            </div>
+            <div id="layout-overlay-right" class="layout-preview-card" data-side="right">
+              <div class="layout-preview-head">
+                <span class="layout-pill layout-pill--right">Right-handed</span>
+                <span class="layout-preview-caption">HUD on the right, canvas on the left.</span>
+              </div>
+              <div class="layout-preview-canvas">
+                <div class="layout-preview-playfield">Playfield</div>
+                <div class="layout-preview-hud layout-preview-hud--right">
+                  <span class="layout-preview-label">HUD</span>
+                </div>
+              </div>
+              <button id="layout-apply-right" class="secondary" type="button">
+                Use Right Layout
+              </button>
             </div>
           </div>
         </div>

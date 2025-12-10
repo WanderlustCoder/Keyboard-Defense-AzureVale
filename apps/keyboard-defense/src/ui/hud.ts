@@ -504,6 +504,7 @@ type OptionsOverlayElements = {
   fontScaleSelect: string;
   hudZoomSelect: string;
   hudLayoutToggle?: string;
+  layoutPreviewButton?: string;
   castleSkinSelect?: string;
   dayNightThemeSelect?: string;
   parallaxSceneSelect?: string;
@@ -588,6 +589,16 @@ type RoadmapGlanceElements = {
 type ParentalOverlayElements = {
   container: string;
   closeButton: string;
+};
+
+type LayoutOverlayElements = {
+  container: string;
+  closeButton: string;
+  summary?: string;
+  leftCard: string;
+  rightCard: string;
+  leftApply: string;
+  rightApply: string;
 };
 
 type ContrastOverlayElements = {
@@ -880,6 +891,15 @@ export class HudView {
   private readonly parentalOverlay?: {
     container: HTMLElement;
     closeButton: HTMLButtonElement;
+  };
+  private readonly layoutOverlay?: {
+    container: HTMLElement;
+    closeButton: HTMLButtonElement;
+    summary?: HTMLElement;
+    leftCard: HTMLElement;
+    rightCard: HTMLElement;
+    leftApply: HTMLButtonElement;
+    rightApply: HTMLButtonElement;
   };
   private readonly contrastOverlay?: {
     container: HTMLElement;
@@ -1317,6 +1337,7 @@ export class HudView {
     backgroundBrightnessValue?: HTMLElement;
     hudZoomSelect: HTMLSelectElement;
     hudLayoutToggle?: HTMLInputElement;
+    layoutPreviewButton?: HTMLButtonElement;
     castleSkinSelect?: HTMLSelectElement;
     dayNightThemeSelect?: HTMLSelectElement;
     parallaxSceneSelect?: HTMLSelectElement;
@@ -1345,6 +1366,7 @@ export class HudView {
   private comboBaselineAccuracy = 1;
   private lastAccuracy = 1;
   private hudRoot: HTMLElement | null = null;
+  private hudLayoutSide: "left" | "right" = "right";
   private evacBanner?:
     | {
         container: HTMLElement;
@@ -1394,6 +1416,7 @@ export class HudView {
       roadmapGlance?: RoadmapGlanceElements;
       roadmapLaunch?: string;
       parentalOverlay?: ParentalOverlayElements;
+      layoutOverlay?: LayoutOverlayElements;
       contrastOverlay?: ContrastOverlayElements;
       postureOverlay?: PostureOverlayElements;
       musicOverlay?: MusicOverlayElements;
@@ -1950,6 +1973,9 @@ export class HudView {
       const hudLayoutToggle = rootIds.optionsOverlay.hudLayoutToggle
         ? document.getElementById(rootIds.optionsOverlay.hudLayoutToggle)
         : null;
+      const layoutPreviewButton = rootIds.optionsOverlay.layoutPreviewButton
+        ? document.getElementById(rootIds.optionsOverlay.layoutPreviewButton)
+        : null;
       const fontScaleSelect = document.getElementById(rootIds.optionsOverlay.fontScaleSelect);
       const defeatAnimationSelect = document.getElementById(
         rootIds.optionsOverlay.defeatAnimationSelect
@@ -2040,6 +2066,7 @@ export class HudView {
         (hotkeyShortcutsSelect === null || hotkeyShortcutsSelect instanceof HTMLSelectElement) &&
         hudZoomSelect instanceof HTMLSelectElement &&
         (hudLayoutToggle === null || hudLayoutToggle instanceof HTMLInputElement) &&
+        (layoutPreviewButton === null || layoutPreviewButton instanceof HTMLButtonElement) &&
         fontScaleSelect instanceof HTMLSelectElement &&
         defeatAnimationSelect instanceof HTMLSelectElement
       ) {
@@ -2164,6 +2191,8 @@ export class HudView {
             hotkeyShortcutsSelect instanceof HTMLSelectElement ? hotkeyShortcutsSelect : undefined,
           hudZoomSelect,
           hudLayoutToggle: hudLayoutToggle instanceof HTMLInputElement ? hudLayoutToggle : undefined,
+          layoutPreviewButton:
+            layoutPreviewButton instanceof HTMLButtonElement ? layoutPreviewButton : undefined,
           fontScaleSelect,
           defeatAnimationSelect,
           telemetryToggle: telemetryToggle instanceof HTMLInputElement ? telemetryToggle : undefined,
@@ -2618,6 +2647,11 @@ export class HudView {
           this.optionsOverlay.hudLayoutToggle.addEventListener("change", () => {
             if (this.syncingOptionToggles) return;
             this.callbacks.onHudLayoutToggle?.(this.optionsOverlay!.hudLayoutToggle!.checked);
+          });
+        }
+        if (this.optionsOverlay.layoutPreviewButton && this.layoutOverlay) {
+          this.optionsOverlay.layoutPreviewButton.addEventListener("click", () => {
+            this.showLayoutOverlay();
           });
         }
         fontScaleSelect.addEventListener("change", () => {
@@ -3147,6 +3181,43 @@ export class HudView {
         this.addFocusTrap(guideContainer);
       } else {
         console.warn("Readability overlay elements missing; readability guide disabled.");
+      }
+    }
+    if (rootIds.layoutOverlay) {
+      const layoutContainer = document.getElementById(rootIds.layoutOverlay.container);
+      const layoutClose = document.getElementById(rootIds.layoutOverlay.closeButton);
+      const layoutSummary = rootIds.layoutOverlay.summary
+        ? document.getElementById(rootIds.layoutOverlay.summary)
+        : null;
+      const layoutLeftCard = document.getElementById(rootIds.layoutOverlay.leftCard);
+      const layoutRightCard = document.getElementById(rootIds.layoutOverlay.rightCard);
+      const layoutLeftApply = document.getElementById(rootIds.layoutOverlay.leftApply);
+      const layoutRightApply = document.getElementById(rootIds.layoutOverlay.rightApply);
+      if (
+        layoutContainer instanceof HTMLElement &&
+        layoutClose instanceof HTMLButtonElement &&
+        layoutLeftCard instanceof HTMLElement &&
+        layoutRightCard instanceof HTMLElement &&
+        layoutLeftApply instanceof HTMLButtonElement &&
+        layoutRightApply instanceof HTMLButtonElement
+      ) {
+        this.layoutOverlay = {
+          container: layoutContainer,
+          closeButton: layoutClose,
+          summary: layoutSummary instanceof HTMLElement ? layoutSummary : undefined,
+          leftCard: layoutLeftCard,
+          rightCard: layoutRightCard,
+          leftApply: layoutLeftApply,
+          rightApply: layoutRightApply
+        };
+        layoutContainer.dataset.visible = layoutContainer.dataset.visible ?? "false";
+        layoutContainer.setAttribute("aria-hidden", "true");
+        layoutClose.addEventListener("click", () => this.hideLayoutOverlay());
+        layoutLeftApply.addEventListener("click", () => this.applyLayoutPreview("left"));
+        layoutRightApply.addEventListener("click", () => this.applyLayoutPreview("right"));
+        this.addFocusTrap(layoutContainer);
+      } else {
+        console.warn("Layout overlay elements missing; layout preview disabled.");
       }
     }
     if (rootIds.postureOverlay) {
@@ -7416,6 +7487,43 @@ export class HudView {
     this.readabilityOverlay.container.setAttribute("aria-hidden", "true");
   }
 
+  showLayoutOverlay(): void {
+    if (!this.layoutOverlay) return;
+    this.syncLayoutOverlayState();
+    this.layoutOverlay.container.dataset.visible = "true";
+    this.layoutOverlay.container.setAttribute("aria-hidden", "false");
+    const focusable = this.getFocusableElements(this.layoutOverlay.container);
+    const target =
+      (this.hudLayoutSide === "left" ? this.layoutOverlay.leftApply : this.layoutOverlay.rightApply) ??
+      focusable[0];
+    target?.focus();
+  }
+
+  hideLayoutOverlay(): void {
+    if (!this.layoutOverlay) return;
+    this.layoutOverlay.container.dataset.visible = "false";
+    this.layoutOverlay.container.setAttribute("aria-hidden", "true");
+    this.optionsOverlay?.layoutPreviewButton?.focus();
+  }
+
+  private syncLayoutOverlayState(): void {
+    if (!this.layoutOverlay) return;
+    const isLeft = this.hudLayoutSide === "left";
+    this.layoutOverlay.leftCard.dataset.active = isLeft ? "true" : "false";
+    this.layoutOverlay.rightCard.dataset.active = isLeft ? "false" : "true";
+    if (this.layoutOverlay.summary) {
+      this.layoutOverlay.summary.textContent = isLeft
+        ? "Left-handed layout active. HUD anchors left; canvas stays on the right."
+        : "Right-handed layout active. HUD anchors right; canvas stays on the left.";
+    }
+  }
+
+  private applyLayoutPreview(side: "left" | "right"): void {
+    this.setHudLayoutSide(side);
+    this.callbacks.onHudLayoutToggle?.(side === "left");
+    this.hideLayoutOverlay();
+  }
+
   showPostureOverlay(): void {
     if (!this.postureOverlay) return;
     this.postureOverlay.container.dataset.visible = "true";
@@ -10205,12 +10313,14 @@ export class HudView {
     }
   }
   setHudLayoutSide(side: "left" | "right"): void {
+    this.hudLayoutSide = side;
     if (typeof document !== "undefined") {
       document.body.dataset.hudLayout = side;
     }
     if (this.hudRoot) {
       this.hudRoot.dataset.layout = side;
     }
+    this.syncLayoutOverlayState();
   }
 
   setHudFontScale(scale: number): void {

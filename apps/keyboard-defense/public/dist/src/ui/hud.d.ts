@@ -250,6 +250,7 @@ type OptionsOverlayElements = {
     fontScaleSelect: string;
     hudZoomSelect: string;
     hudLayoutToggle?: string;
+    layoutPreviewButton?: string;
     castleSkinSelect?: string;
     dayNightThemeSelect?: string;
     parallaxSceneSelect?: string;
@@ -327,6 +328,15 @@ type RoadmapGlanceElements = {
 type ParentalOverlayElements = {
     container: string;
     closeButton: string;
+};
+type LayoutOverlayElements = {
+    container: string;
+    closeButton: string;
+    summary?: string;
+    leftCard: string;
+    rightCard: string;
+    leftApply: string;
+    rightApply: string;
 };
 type ContrastOverlayElements = {
     container: string;
@@ -534,6 +544,7 @@ export declare class HudView {
     private readonly roadmapOverlay?;
     private readonly roadmapGlance?;
     private readonly parentalOverlay?;
+    private readonly layoutOverlay?;
     private readonly contrastOverlay?;
     private readonly musicOverlay?;
     private readonly uiSoundOverlay?;
@@ -658,6 +669,7 @@ export declare class HudView {
     private comboBaselineAccuracy;
     private lastAccuracy;
     private hudRoot;
+    private hudLayoutSide;
     private evacBanner?;
     private evacHideTimeout;
     private evacResolvedState;
@@ -696,6 +708,7 @@ export declare class HudView {
         roadmapGlance?: RoadmapGlanceElements;
         roadmapLaunch?: string;
         parentalOverlay?: ParentalOverlayElements;
+        layoutOverlay?: LayoutOverlayElements;
         contrastOverlay?: ContrastOverlayElements;
         postureOverlay?: PostureOverlayElements;
         musicOverlay?: MusicOverlayElements;
@@ -947,6 +960,10 @@ export declare class HudView {
     hideSfxOverlay(): void;
     showReadabilityOverlay(): void;
     hideReadabilityOverlay(): void;
+    showLayoutOverlay(): void;
+    hideLayoutOverlay(): void;
+    private syncLayoutOverlayState;
+    private applyLayoutPreview;
     showPostureOverlay(): void;
     hidePostureOverlay(): void;
     private renderPostureOverlay;
