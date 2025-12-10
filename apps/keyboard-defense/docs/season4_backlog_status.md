@@ -53,9 +53,9 @@ Quick status snapshot for items in `season4_backlog.md`. All items start as Not 
 | 47 | Left-handed layout | Done | Options toggle flips HUD to the left side; persists per profile with body data attribute for layout. |
 | 48 | Onboarding dyslexia preset suggestion | Done | Accessibility onboarding now spotlights a dyslexia-friendly preset button that enables the font + spacing defaults and marks onboarding complete. |
 | 49 | Reduced cognitive-load mode | Done | Options toggle hides non-essential HUD panels (metrics, wave preview, battle log) and softens hints/debug panels; persists per profile and disables panel toggles while active. |
-| 50 | Focus outline presets | Not Started | - |
-| 51 | Audio narration toggle | Not Started | - |
-| 52 | Posture checklist | Not Started | - |
+| 50 | Focus outline presets | Done | Options overlay adds a Focus Outline selector (system/high-contrast/glow) that updates global focus rings and persists per profile. |
+| 51 | Audio narration toggle | Done | Options overlay adds an Audio Narration toggle that persists per profile and applies a global data attribute for spoken menu cues. |
+| 52 | Posture checklist | Done | Options adds a Posture Checklist overlay with a 5-minute micro-reminder and inline posture toast, plus a quick summary in options. |
 | 53 | Layout preview overlay | Not Started | - |
 | 54 | Large-text subtitles | Not Started | - |
 | 55 | Tutorial pacing slider | Not Started | - |

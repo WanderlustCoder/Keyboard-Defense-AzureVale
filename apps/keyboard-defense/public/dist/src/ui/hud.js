@@ -1,5 +1,6 @@
 import { WavePreviewPanel } from "./wavePreview.js";
 import { SEASON_ROADMAP, evaluateRoadmap } from "../data/roadmap.js";
+import { NarrationManager } from "../utils/narration.js";
 import { getUiSchemeDefinition } from "../utils/uiSoundScheme.js";
 import { getEnemyBiography } from "../data/bestiary.js";
 import { DEFAULT_ROADMAP_PREFERENCES, mergeRoadmapPreferences, readRoadmapPreferences, writeRoadmapPreferences } from "../utils/roadmapPreferences.js";
@@ -216,6 +217,7 @@ export class HudView {
     uiSoundOverlay;
     sfxOverlay;
     readabilityOverlay;
+    postureOverlay;
     stickerBookOverlay;
     stickerBookEntries = [];
     loreScrollOverlay;
@@ -319,6 +321,14 @@ export class HudView {
     sfxActiveLabel;
     uiSoundActiveLabel;
     musicActiveLabel;
+    postureReminder;
+    postureReminderTimeout = null;
+    postureReminderInterval = null;
+    postureReminderTarget = null;
+    postureLastReviewed = null;
+    audioNarrationEnabled = false;
+    narration = new NarrationManager();
+    focusOutlinePreset = "system";
     dayNightTheme = "night";
     parallaxSceneChoice = "auto";
     parallaxSceneResolved = "night";
@@ -695,6 +705,9 @@ export class HudView {
             const uiSoundLibrarySummary = rootIds.optionsOverlay.uiSoundLibrarySummary
                 ? document.getElementById(rootIds.optionsOverlay.uiSoundLibrarySummary)
                 : null;
+            const uiSoundPreviewButton = rootIds.optionsOverlay.uiSoundPreviewButton
+                ? document.getElementById(rootIds.optionsOverlay.uiSoundPreviewButton)
+                : null;
             const screenShakeToggle = rootIds.optionsOverlay.screenShakeToggle
                 ? document.getElementById(rootIds.optionsOverlay.screenShakeToggle)
                 : null;
@@ -748,6 +761,12 @@ export class HudView {
                 : null;
             const trainingCalendarButton = rootIds.optionsOverlay.trainingCalendarButton
                 ? document.getElementById(rootIds.optionsOverlay.trainingCalendarButton)
+                : null;
+            const postureChecklistButton = rootIds.optionsOverlay.postureChecklistButton
+                ? document.getElementById(rootIds.optionsOverlay.postureChecklistButton)
+                : null;
+            const postureChecklistSummary = rootIds.optionsOverlay.postureChecklistSummary
+                ? document.getElementById(rootIds.optionsOverlay.postureChecklistSummary)
                 : null;
             const loreScrollsButton = rootIds.optionsOverlay.loreScrollsButton
                 ? document.getElementById(rootIds.optionsOverlay.loreScrollsButton)
@@ -804,6 +823,9 @@ export class HudView {
             const cognitiveLoadToggle = rootIds.optionsOverlay.cognitiveLoadToggle
                 ? document.getElementById(rootIds.optionsOverlay.cognitiveLoadToggle)
                 : null;
+            const audioNarrationToggle = rootIds.optionsOverlay.audioNarrationToggle
+                ? document.getElementById(rootIds.optionsOverlay.audioNarrationToggle)
+                : null;
             const backgroundBrightnessSlider = rootIds.optionsOverlay.backgroundBrightnessSlider
                 ? document.getElementById(rootIds.optionsOverlay.backgroundBrightnessSlider)
                 : null;
@@ -813,6 +835,9 @@ export class HudView {
             const colorblindPaletteToggle = document.getElementById(rootIds.optionsOverlay.colorblindPaletteToggle);
             const colorblindPaletteSelect = rootIds.optionsOverlay.colorblindPaletteSelect
                 ? document.getElementById(rootIds.optionsOverlay.colorblindPaletteSelect)
+                : null;
+            const focusOutlineSelect = rootIds.optionsOverlay.focusOutlineSelect
+                ? document.getElementById(rootIds.optionsOverlay.focusOutlineSelect)
                 : null;
             const castleSkinSelect = rootIds.optionsOverlay.castleSkinSelect
                 ? document.getElementById(rootIds.optionsOverlay.castleSkinSelect)
@@ -871,6 +896,7 @@ export class HudView {
                 (musicLibrarySummary === null || musicLibrarySummary instanceof HTMLElement) &&
                 (uiSoundLibraryButton === null || uiSoundLibraryButton instanceof HTMLButtonElement) &&
                 (uiSoundLibrarySummary === null || uiSoundLibrarySummary instanceof HTMLElement) &&
+                (uiSoundPreviewButton === null || uiSoundPreviewButton instanceof HTMLButtonElement) &&
                 (screenShakeToggle === null || screenShakeToggle instanceof HTMLInputElement) &&
                 (screenShakeSlider === null || screenShakeSlider instanceof HTMLInputElement) &&
                 (screenShakeValue === null || screenShakeValue instanceof HTMLElement) &&
@@ -885,6 +911,8 @@ export class HudView {
                 (loreScrollsButton === null || loreScrollsButton instanceof HTMLButtonElement) &&
                 (wpmLadderButton === null || wpmLadderButton instanceof HTMLButtonElement) &&
                 (trainingCalendarButton === null || trainingCalendarButton instanceof HTMLButtonElement) &&
+                (postureChecklistButton === null || postureChecklistButton instanceof HTMLButtonElement) &&
+                (postureChecklistSummary === null || postureChecklistSummary instanceof HTMLElement) &&
                 (parentSummaryButton === null || parentSummaryButton instanceof HTMLButtonElement) &&
                 (selfTestContainer === null || selfTestContainer instanceof HTMLElement) &&
                 (selfTestRun === null || selfTestRun instanceof HTMLButtonElement) &&
@@ -903,11 +931,13 @@ export class HudView {
                 dyslexiaFontToggle instanceof HTMLInputElement &&
                 (dyslexiaSpacingToggle === null || dyslexiaSpacingToggle instanceof HTMLInputElement) &&
                 (cognitiveLoadToggle === null || cognitiveLoadToggle instanceof HTMLInputElement) &&
+                (audioNarrationToggle === null || audioNarrationToggle instanceof HTMLInputElement) &&
                 (backgroundBrightnessSlider === null ||
                     backgroundBrightnessSlider instanceof HTMLInputElement) &&
                 (backgroundBrightnessValue === null || backgroundBrightnessValue instanceof HTMLElement) &&
                 colorblindPaletteToggle instanceof HTMLInputElement &&
                 (colorblindPaletteSelect === null || colorblindPaletteSelect instanceof HTMLSelectElement) &&
+                (focusOutlineSelect === null || focusOutlineSelect instanceof HTMLSelectElement) &&
                 (castleSkinSelect === null || castleSkinSelect instanceof HTMLSelectElement) &&
                 (dayNightThemeSelect === null || dayNightThemeSelect instanceof HTMLSelectElement) &&
                 (hotkeyPauseSelect === null || hotkeyPauseSelect instanceof HTMLSelectElement) &&
@@ -936,6 +966,7 @@ export class HudView {
                     musicLibrarySummary: musicLibrarySummary instanceof HTMLElement ? musicLibrarySummary : undefined,
                     uiSoundLibraryButton: uiSoundLibraryButton instanceof HTMLButtonElement ? uiSoundLibraryButton : undefined,
                     uiSoundLibrarySummary: uiSoundLibrarySummary instanceof HTMLElement ? uiSoundLibrarySummary : undefined,
+                    uiSoundPreviewButton: uiSoundPreviewButton instanceof HTMLButtonElement ? uiSoundPreviewButton : undefined,
                     screenShakeToggle: screenShakeToggle instanceof HTMLInputElement ? screenShakeToggle : undefined,
                     screenShakeSlider: screenShakeSlider instanceof HTMLInputElement ? screenShakeSlider : undefined,
                     screenShakeValue: screenShakeValue instanceof HTMLElement ? screenShakeValue : undefined,
@@ -955,6 +986,8 @@ export class HudView {
                     biomeGalleryButton: biomeGalleryButton instanceof HTMLButtonElement ? biomeGalleryButton : undefined,
                     trainingCalendarButton: trainingCalendarButton instanceof HTMLButtonElement ? trainingCalendarButton : undefined,
                     loreScrollsButton: loreScrollsButton instanceof HTMLButtonElement ? loreScrollsButton : undefined,
+                    postureChecklistButton: postureChecklistButton instanceof HTMLButtonElement ? postureChecklistButton : undefined,
+                    postureChecklistSummary: postureChecklistSummary instanceof HTMLElement ? postureChecklistSummary : undefined,
                     selfTestContainer: selfTestContainer instanceof HTMLElement ? selfTestContainer : undefined,
                     selfTestRun: selfTestRun instanceof HTMLButtonElement ? selfTestRun : undefined,
                     selfTestStatus: selfTestStatus instanceof HTMLElement ? selfTestStatus : undefined,
@@ -976,12 +1009,14 @@ export class HudView {
                     dyslexiaFontToggle,
                     dyslexiaSpacingToggle: dyslexiaSpacingToggle instanceof HTMLInputElement ? dyslexiaSpacingToggle : undefined,
                     cognitiveLoadToggle: cognitiveLoadToggle instanceof HTMLInputElement ? cognitiveLoadToggle : undefined,
+                    audioNarrationToggle: audioNarrationToggle instanceof HTMLInputElement ? audioNarrationToggle : undefined,
                     backgroundBrightnessSlider: backgroundBrightnessSlider instanceof HTMLInputElement
                         ? backgroundBrightnessSlider
                         : undefined,
                     backgroundBrightnessValue: backgroundBrightnessValue instanceof HTMLElement ? backgroundBrightnessValue : undefined,
                     colorblindPaletteToggle,
                     colorblindPaletteSelect: colorblindPaletteSelect instanceof HTMLSelectElement ? colorblindPaletteSelect : undefined,
+                    focusOutlineSelect: focusOutlineSelect instanceof HTMLSelectElement ? focusOutlineSelect : undefined,
                     castleSkinSelect: castleSkinSelect instanceof HTMLSelectElement ? castleSkinSelect : undefined,
                     dayNightThemeSelect: dayNightThemeSelect instanceof HTMLSelectElement ? dayNightThemeSelect : undefined,
                     parallaxSceneSelect: parallaxSceneSelect instanceof HTMLSelectElement ? parallaxSceneSelect : undefined,
@@ -1006,6 +1041,20 @@ export class HudView {
                 this.sfxActiveLabel = this.optionsOverlay.sfxLibrarySummary;
                 this.uiSoundActiveLabel = this.optionsOverlay.uiSoundLibrarySummary;
                 this.musicActiveLabel = this.optionsOverlay.musicLibrarySummary;
+                const postureReminder = document.getElementById("posture-reminder");
+                const postureReminderTip = document.getElementById("posture-reminder-tip");
+                const postureReminderDismiss = document.getElementById("posture-reminder-dismiss");
+                if (postureReminder instanceof HTMLElement &&
+                    postureReminderDismiss instanceof HTMLButtonElement) {
+                    this.postureReminder = {
+                        container: postureReminder,
+                        tip: postureReminderTip instanceof HTMLElement ? postureReminderTip : postureReminder,
+                        dismiss: postureReminderDismiss
+                    };
+                    postureReminder.dataset.visible = postureReminder.dataset.visible ?? "false";
+                    postureReminder.setAttribute("aria-hidden", "true");
+                    postureReminderDismiss.addEventListener("click", () => this.clearPostureReminder());
+                }
                 const castleBonusHint = document.getElementById("options-castle-bonus");
                 if (castleBonusHint instanceof HTMLElement) {
                     this.optionsCastleBonus = castleBonusHint;
@@ -1106,6 +1155,11 @@ export class HudView {
                         this.showUiSoundOverlay();
                     });
                 }
+                if (this.optionsOverlay.uiSoundPreviewButton) {
+                    this.optionsOverlay.uiSoundPreviewButton.addEventListener("click", () => {
+                        this.callbacks.onUiSoundPreview?.();
+                    });
+                }
                 if (this.optionsOverlay.screenShakeToggle) {
                     this.optionsOverlay.screenShakeToggle.addEventListener("change", () => {
                         if (this.syncingOptionToggles)
@@ -1190,6 +1244,11 @@ export class HudView {
                 if (this.optionsOverlay.trainingCalendarButton) {
                     this.optionsOverlay.trainingCalendarButton.addEventListener("click", () => {
                         this.showTrainingCalendarOverlay();
+                    });
+                }
+                if (this.optionsOverlay.postureChecklistButton) {
+                    this.optionsOverlay.postureChecklistButton.addEventListener("click", () => {
+                        this.showPostureOverlay();
                     });
                 }
                 if (this.optionsOverlay.loreScrollsButton) {
@@ -1314,6 +1373,23 @@ export class HudView {
                         this.callbacks.onDyslexiaSpacingToggle?.(this.optionsOverlay.dyslexiaSpacingToggle.checked);
                     });
                 }
+                if (this.optionsOverlay.audioNarrationToggle) {
+                    this.optionsOverlay.audioNarrationToggle.addEventListener("change", () => {
+                        if (this.syncingOptionToggles)
+                            return;
+                        const enabled = this.optionsOverlay.audioNarrationToggle.checked;
+                        if (enabled) {
+                            this.narration.setEnabled(true);
+                            this.narration.speak("Audio narration enabled. Menus and overlays will be spoken.", { interrupt: true });
+                        }
+                        else {
+                            this.narration.speak("Audio narration disabled.", { interrupt: true });
+                            this.narration.setEnabled(false);
+                        }
+                        this.audioNarrationEnabled = enabled;
+                        this.callbacks.onAudioNarrationToggle?.(enabled);
+                    });
+                }
                 if (this.optionsOverlay.cognitiveLoadToggle) {
                     this.optionsOverlay.cognitiveLoadToggle.addEventListener("change", () => {
                         if (this.syncingOptionToggles)
@@ -1333,6 +1409,17 @@ export class HudView {
                         const next = this.getSelectValue(this.optionsOverlay.colorblindPaletteSelect);
                         if (next) {
                             this.callbacks.onColorblindPaletteModeChange?.(next);
+                        }
+                    });
+                }
+                if (this.optionsOverlay.focusOutlineSelect) {
+                    this.optionsOverlay.focusOutlineSelect.addEventListener("change", () => {
+                        if (this.syncingOptionToggles)
+                            return;
+                        const next = this.getSelectValue(this.optionsOverlay.focusOutlineSelect) ??
+                            null;
+                        if (next) {
+                            this.callbacks.onFocusOutlineChange?.(next);
                         }
                     });
                 }
@@ -1922,6 +2009,43 @@ export class HudView {
             }
             else {
                 console.warn("Readability overlay elements missing; readability guide disabled.");
+            }
+        }
+        if (rootIds.postureOverlay) {
+            const postureContainer = document.getElementById(rootIds.postureOverlay.container);
+            const postureList = document.getElementById(rootIds.postureOverlay.list);
+            const postureSummary = rootIds.postureOverlay.summary
+                ? document.getElementById(rootIds.postureOverlay.summary)
+                : null;
+            const postureStatus = rootIds.postureOverlay.status
+                ? document.getElementById(rootIds.postureOverlay.status)
+                : null;
+            const postureClose = document.getElementById(rootIds.postureOverlay.closeButton);
+            const postureStart = document.getElementById(rootIds.postureOverlay.startButton);
+            const postureReview = document.getElementById(rootIds.postureOverlay.reviewButton);
+            if (postureContainer instanceof HTMLElement &&
+                postureList instanceof HTMLElement &&
+                postureClose instanceof HTMLButtonElement &&
+                postureStart instanceof HTMLButtonElement &&
+                postureReview instanceof HTMLButtonElement) {
+                this.postureOverlay = {
+                    container: postureContainer,
+                    list: postureList,
+                    summary: postureSummary instanceof HTMLElement ? postureSummary : undefined,
+                    status: postureStatus instanceof HTMLElement ? postureStatus : undefined,
+                    closeButton: postureClose,
+                    startButton: postureStart,
+                    reviewButton: postureReview
+                };
+                postureContainer.dataset.visible = postureContainer.dataset.visible ?? "false";
+                postureContainer.setAttribute("aria-hidden", "true");
+                postureClose.addEventListener("click", () => this.hidePostureOverlay());
+                postureStart.addEventListener("click", () => this.startPostureReminder());
+                postureReview.addEventListener("click", () => this.markPostureReviewed());
+                this.addFocusTrap(postureContainer);
+            }
+            else {
+                console.warn("Posture overlay elements missing; posture checklist disabled.");
             }
         }
         if (rootIds.stickerBookOverlay) {
@@ -2789,6 +2913,10 @@ export class HudView {
         if (!this.optionsOverlay)
             return;
         this.syncingOptionToggles = true;
+        if (state.audioNarrationEnabled !== undefined) {
+            this.audioNarrationEnabled = Boolean(state.audioNarrationEnabled);
+            this.narration.setEnabled(this.audioNarrationEnabled);
+        }
         this.optionsOverlay.soundToggle.checked = state.soundEnabled;
         this.optionsOverlay.soundVolumeSlider.disabled = !state.soundEnabled;
         this.optionsOverlay.soundVolumeSlider.setAttribute("aria-disabled", state.soundEnabled ? "false" : "true");
@@ -2828,6 +2956,11 @@ export class HudView {
             this.optionsOverlay.uiSoundLibraryButton.disabled = audioLibrariesDisabled;
             this.optionsOverlay.uiSoundLibraryButton.setAttribute("aria-disabled", audioLibrariesDisabled ? "true" : "false");
             this.optionsOverlay.uiSoundLibraryButton.tabIndex = audioLibrariesDisabled ? -1 : 0;
+        }
+        if (this.optionsOverlay.uiSoundPreviewButton) {
+            this.optionsOverlay.uiSoundPreviewButton.disabled = audioLibrariesDisabled;
+            this.optionsOverlay.uiSoundPreviewButton.setAttribute("aria-disabled", audioLibrariesDisabled ? "true" : "false");
+            this.optionsOverlay.uiSoundPreviewButton.tabIndex = audioLibrariesDisabled ? -1 : 0;
         }
         if (this.optionsOverlay.sfxLibraryButton) {
             this.optionsOverlay.sfxLibraryButton.disabled = audioLibrariesDisabled;
@@ -2875,6 +3008,9 @@ export class HudView {
             this.optionsOverlay.hapticsToggle.checked = state.hapticsEnabled;
         }
         this.optionsOverlay.reducedMotionToggle.checked = state.reducedMotionEnabled;
+        if (this.optionsOverlay.audioNarrationToggle && state.audioNarrationEnabled !== undefined) {
+            this.optionsOverlay.audioNarrationToggle.checked = state.audioNarrationEnabled;
+        }
         if (this.optionsOverlay.latencySparklineToggle && state.latencySparklineEnabled !== undefined) {
             this.optionsOverlay.latencySparklineToggle.checked = state.latencySparklineEnabled;
         }
@@ -2896,6 +3032,11 @@ export class HudView {
         this.optionsOverlay.colorblindPaletteToggle.checked = state.colorblindPaletteEnabled;
         if (this.optionsOverlay.colorblindPaletteSelect) {
             this.setSelectValue(this.optionsOverlay.colorblindPaletteSelect, state.colorblindPaletteMode ?? (state.colorblindPaletteEnabled ? "deuteran" : "off"));
+        }
+        const focusOutline = (state.focusOutlinePreset ?? this.focusOutlinePreset);
+        this.focusOutlinePreset = focusOutline;
+        if (this.optionsOverlay.focusOutlineSelect) {
+            this.setSelectValue(this.optionsOverlay.focusOutlineSelect, focusOutline);
         }
         const castleSkin = state.castleSkin ?? this.castleSkin ?? "classic";
         if (this.optionsOverlay.castleSkinSelect) {
@@ -2921,6 +3062,7 @@ export class HudView {
         this.setSelectValue(this.optionsOverlay.fontScaleSelect, state.hudFontScale.toString());
         this.setSelectValue(this.optionsOverlay.defeatAnimationSelect, state.defeatAnimationMode ?? "auto");
         this.setHudLayoutSide(state.hudLayout ?? "right");
+        this.updatePostureSummary();
         this.applyTelemetryOptionState(state.telemetry);
         if (this.optionsOverlay.crystalPulseToggle) {
             const toggle = this.optionsOverlay.crystalPulseToggle;
@@ -5676,6 +5818,25 @@ export class HudView {
         this.readabilityOverlay.container.dataset.visible = "false";
         this.readabilityOverlay.container.setAttribute("aria-hidden", "true");
     }
+    showPostureOverlay() {
+        if (!this.postureOverlay)
+            return;
+        this.postureOverlay.container.dataset.visible = "true";
+        this.postureOverlay.container.setAttribute("aria-hidden", "false");
+        this.renderPostureOverlay();
+        const focusable = this.getFocusableElements(this.postureOverlay.container);
+        focusable[0]?.focus();
+    }
+    hidePostureOverlay() {
+        if (!this.postureOverlay)
+            return;
+        this.postureOverlay.container.dataset.visible = "false";
+        this.postureOverlay.container.setAttribute("aria-hidden", "true");
+    }
+    renderPostureOverlay() {
+        this.updatePostureOverlayStatus();
+        this.updatePostureSummary();
+    }
     showStickerBookOverlay() {
         if (!this.stickerBookOverlay)
             return;
@@ -5693,6 +5854,114 @@ export class HudView {
             return;
         this.stickerBookOverlay.container.dataset.visible = "false";
         this.stickerBookOverlay.container.setAttribute("aria-hidden", "true");
+    }
+    markPostureReviewed() {
+        this.postureLastReviewed = Date.now();
+        this.clearPostureReminder();
+        this.updatePostureOverlayStatus("Reviewed just now.");
+        this.updatePostureSummary();
+        this.appendLog("Posture checklist reviewed.");
+    }
+    startPostureReminder(minutes = 5) {
+        const durationMs = Math.max(1, minutes) * 60_000;
+        this.clearPostureReminder();
+        this.postureReminderTarget = Date.now() + durationMs;
+        this.postureReminderTimeout = window.setTimeout(() => this.handlePostureReminderFired(), durationMs);
+        this.postureReminderInterval = window.setInterval(() => this.updatePostureOverlayStatus(), 1000);
+        const minutesLabel = Math.round(durationMs / 60_000);
+        this.updatePostureOverlayStatus(`Reminder in ${this.formatPostureCountdown(this.postureReminderTarget)}.`);
+        this.updatePostureSummary();
+        this.appendLog(`Posture reminder set for ${minutesLabel} minute${minutesLabel === 1 ? "" : "s"}.`);
+    }
+    handlePostureReminderFired() {
+        this.postureReminderTarget = null;
+        if (this.postureReminderInterval) {
+            clearInterval(this.postureReminderInterval);
+            this.postureReminderInterval = null;
+        }
+        this.showPostureReminder("Quick posture reset: feet flat, wrists lifted, shoulders relaxed, screen at eye height.");
+        this.updatePostureOverlayStatus("Reminder ready now.");
+        this.updatePostureSummary();
+    }
+    clearPostureReminder(hideToast = true) {
+        if (this.postureReminderTimeout) {
+            clearTimeout(this.postureReminderTimeout);
+            this.postureReminderTimeout = null;
+        }
+        if (this.postureReminderInterval) {
+            clearInterval(this.postureReminderInterval);
+            this.postureReminderInterval = null;
+        }
+        this.postureReminderTarget = null;
+        if (hideToast && this.postureReminder) {
+            this.postureReminder.container.dataset.visible = "false";
+            this.postureReminder.container.setAttribute("aria-hidden", "true");
+        }
+        this.updatePostureOverlayStatus();
+        this.updatePostureSummary();
+    }
+    updatePostureOverlayStatus(message) {
+        if (this.postureOverlay?.status) {
+            if (message) {
+                this.postureOverlay.status.textContent = message;
+            }
+            else if (this.postureReminderTarget) {
+                this.postureOverlay.status.textContent = `Reminder in ${this.formatPostureCountdown(this.postureReminderTarget)}.`;
+            }
+            else if (this.postureLastReviewed) {
+                this.postureOverlay.status.textContent = `Last reviewed ${this.describeElapsedTime(this.postureLastReviewed)}.`;
+            }
+            else {
+                this.postureOverlay.status.textContent = "No reminder active.";
+            }
+        }
+    }
+    updatePostureSummary() {
+        const summary = this.optionsOverlay?.postureChecklistSummary;
+        if (!summary)
+            return;
+        if (this.postureReminderTarget) {
+            summary.textContent = `Posture reminder in ${this.formatPostureCountdown(this.postureReminderTarget)}.`;
+            return;
+        }
+        if (this.postureLastReviewed) {
+            summary.textContent = `Last checked ${this.describeElapsedTime(this.postureLastReviewed)}.`;
+            return;
+        }
+        summary.textContent = "Quick posture review and 5-minute micro-reminder.";
+    }
+    showPostureReminder(message) {
+        if (!this.postureReminder)
+            return;
+        if (message && this.postureReminder.tip) {
+            this.postureReminder.tip.textContent = message;
+        }
+        this.postureReminder.container.dataset.visible = "true";
+        this.postureReminder.container.setAttribute("aria-hidden", "false");
+    }
+    describeElapsedTime(timestamp) {
+        if (!timestamp || Number.isNaN(timestamp))
+            return "just now";
+        const deltaMs = Date.now() - timestamp;
+        if (deltaMs < 30_000)
+            return "just now";
+        const minutes = Math.floor(deltaMs / 60_000);
+        if (minutes < 60)
+            return `${minutes}m ago`;
+        const hours = Math.floor(minutes / 60);
+        if (hours < 24)
+            return `${hours}h ago`;
+        const days = Math.floor(hours / 24);
+        return `${days}d ago`;
+    }
+    formatPostureCountdown(target) {
+        if (!target)
+            return "00:00";
+        const remaining = Math.max(0, target - Date.now());
+        const totalSeconds = Math.floor(remaining / 1000);
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+        return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
     }
     showSeasonTrackOverlay() {
         if (!this.seasonTrackOverlay)
@@ -8813,8 +9082,10 @@ export class HudView {
                 this.optionsOverlay.mainColumn.scrollTop = 0;
             }
             this.optionsOverlay.resumeButton.focus();
+            this.narration.speak("Options open. Tab through panels or press Escape to resume.", { interrupt: true });
         }
         else {
+            this.narration.speak("Options closed. Resuming play.", { interrupt: true });
             this.focusTypingInput();
         }
     }

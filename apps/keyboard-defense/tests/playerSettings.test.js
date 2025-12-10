@@ -62,6 +62,32 @@ test("latency sparkline preference round-trips via player settings", () => {
   assert.equal(loaded.latencySparklineEnabled, false);
 });
 
+test("focus outline preset persists and normalizes", () => {
+  const storage = createMemoryStorage();
+  const defaults = createDefaultPlayerSettings();
+  assert.equal(defaults.focusOutlinePreset, "system");
+
+  const patched = withPatchedPlayerSettings(defaults, { focusOutlinePreset: "glow" });
+  writePlayerSettings(storage, patched);
+
+  const loaded = readPlayerSettings(storage);
+  assert.equal(loaded.focusOutlinePreset, "glow");
+
+  const invalid = withPatchedPlayerSettings(defaults, { focusOutlinePreset: "neon" });
+  assert.equal(invalid.focusOutlinePreset, "system");
+});
+
+test("audio narration preference persists", () => {
+  const storage = createMemoryStorage();
+  const defaults = createDefaultPlayerSettings();
+  assert.equal(defaults.audioNarrationEnabled, false);
+
+  const patched = withPatchedPlayerSettings(defaults, { audioNarrationEnabled: true });
+  writePlayerSettings(storage, patched);
+  const loaded = readPlayerSettings(storage);
+  assert.equal(loaded.audioNarrationEnabled, true);
+});
+
 test("accessibility self-test state persists confirmations and timestamps", () => {
   const storage = createMemoryStorage();
   const defaults = createDefaultPlayerSettings();

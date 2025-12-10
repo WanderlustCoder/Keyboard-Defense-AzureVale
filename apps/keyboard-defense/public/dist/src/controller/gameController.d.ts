@@ -6,6 +6,7 @@ import { type UiSchemeId } from "../utils/uiSoundScheme.js";
 import { type MusicStemId } from "../utils/musicStems.js";
 import { type DayNightMode } from "../utils/dayNightTheme.js";
 import { type ParallaxScene } from "../utils/parallaxBackground.js";
+import { type FocusOutlinePreset } from "../utils/focusOutlines.js";
 import { type BiomeId } from "../utils/biomeGallery.js";
 import { type EnemyBiography } from "../data/bestiary.js";
 export declare class GameController {
@@ -95,7 +96,9 @@ export declare class GameController {
     updateAmbientTrack(state: any): void;
     handleGameStatusAudio(status: any): void;
     setColorblindPaletteEnabled(enabled: any, options?: {}): boolean;
+    setAudioNarrationEnabled(enabled: any, options?: {}): any;
     setColorblindPaletteMode(mode: any, options?: {}): boolean;
+    setFocusOutlinePreset(preset: FocusOutlinePreset, options?: {}): boolean;
     setDefeatAnimationMode(mode: any, options?: {}): void;
     setStarfieldScene(scene: any): any;
     syncDefeatAnimationPreferences(): void;
@@ -132,6 +135,8 @@ export declare class GameController {
     applyDyslexiaFontSetting(enabled: any): void;
     applyDyslexiaSpacingSetting(enabled: any): void;
     applyCognitiveLoadSetting(enabled: any): void;
+    applyAudioNarrationSetting(enabled: any): void;
+    applyFocusOutlinePreset(preset: FocusOutlinePreset): void;
     applyBackgroundBrightnessSetting(value: any): void;
     normalizeColorblindMode(mode: any): string;
     applyColorblindPaletteSetting(mode: any): void;

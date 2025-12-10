@@ -8,6 +8,7 @@ import { type BiomeGalleryViewState } from "../utils/biomeGallery.js";
 import { type TrainingCalendarViewState } from "../utils/trainingCalendar.js";
 import { type DayNightMode } from "../utils/dayNightTheme.js";
 import { type ParallaxScene } from "../utils/parallaxBackground.js";
+import { type FocusOutlinePreset } from "../utils/focusOutlines.js";
 import { type SfxLibraryViewState } from "../utils/sfxLibrary.js";
 import { type MusicStemViewState } from "../utils/musicStems.js";
 import { type UiSchemeViewState } from "../utils/uiSoundScheme.js";
@@ -78,6 +79,7 @@ export interface HudCallbacks {
     onMusicLevelChange?: (level: number) => void;
     onMusicLibrarySelect?: (suiteId: string) => void;
     onMusicLibraryPreview?: (suiteId: string) => void;
+    onUiSoundPreview?: () => void;
     onUiSoundSchemeSelect?: (schemeId: string) => void;
     onUiSoundSchemePreview?: (schemeId: string) => void;
     onSfxLibrarySelect?: (libraryId: string) => void;
@@ -107,8 +109,10 @@ export interface HudCallbacks {
     onDyslexiaSpacingToggle?: (enabled: boolean) => void;
     onLatencySparklineToggle?: (enabled: boolean) => void;
     onCognitiveLoadToggle?: (enabled: boolean) => void;
+    onAudioNarrationToggle?: (enabled: boolean) => void;
     onColorblindPaletteToggle(enabled: boolean): void;
     onColorblindPaletteModeChange?: (mode: string) => void;
+    onFocusOutlineChange?: (preset: FocusOutlinePreset) => void;
     onHotkeyPauseChange?: (key: string) => void;
     onHotkeyShortcutsChange?: (key: string) => void;
     onBackgroundBrightnessChange?: (value: number) => void;
@@ -203,6 +207,7 @@ type OptionsOverlayElements = {
     musicLibrarySummary?: string;
     uiSoundLibraryButton?: string;
     uiSoundLibrarySummary?: string;
+    uiSoundPreviewButton?: string;
     screenShakeToggle?: string;
     screenShakeSlider?: string;
     screenShakeValue?: string;
@@ -232,8 +237,12 @@ type OptionsOverlayElements = {
     dyslexiaFontToggle: string;
     dyslexiaSpacingToggle?: string;
     cognitiveLoadToggle?: string;
+    audioNarrationToggle?: string;
     colorblindPaletteToggle: string;
     colorblindPaletteSelect?: string;
+    focusOutlineSelect?: string;
+    postureChecklistButton?: string;
+    postureChecklistSummary?: string;
     hotkeyPauseSelect?: string;
     hotkeyShortcutsSelect?: string;
     backgroundBrightnessSlider?: string;
@@ -325,6 +334,15 @@ type ContrastOverlayElements = {
     summary: string;
     closeButton: string;
     markers: string;
+};
+type PostureOverlayElements = {
+    container: string;
+    list: string;
+    summary?: string;
+    status?: string;
+    closeButton: string;
+    startButton: string;
+    reviewButton: string;
 };
 type StickerBookOverlayElements = {
     container: string;
@@ -521,6 +539,7 @@ export declare class HudView {
     private readonly uiSoundOverlay?;
     private readonly sfxOverlay?;
     private readonly readabilityOverlay?;
+    private readonly postureOverlay?;
     private readonly stickerBookOverlay?;
     private stickerBookEntries;
     private readonly loreScrollOverlay?;
@@ -616,6 +635,14 @@ export declare class HudView {
     private sfxActiveLabel?;
     private uiSoundActiveLabel?;
     private musicActiveLabel?;
+    private postureReminder?;
+    private postureReminderTimeout;
+    private postureReminderInterval;
+    private postureReminderTarget;
+    private postureLastReviewed;
+    private audioNarrationEnabled;
+    private narration;
+    private focusOutlinePreset;
     private dayNightTheme;
     private parallaxSceneChoice;
     private parallaxSceneResolved;
@@ -670,6 +697,7 @@ export declare class HudView {
         roadmapLaunch?: string;
         parentalOverlay?: ParentalOverlayElements;
         contrastOverlay?: ContrastOverlayElements;
+        postureOverlay?: PostureOverlayElements;
         musicOverlay?: MusicOverlayElements;
         uiSoundOverlay?: UiSoundOverlayElements;
         sfxOverlay?: SfxOverlayElements;
@@ -713,6 +741,7 @@ export declare class HudView {
         soundEnabled: boolean;
         soundVolume: number;
         soundIntensity: number;
+        audioNarrationEnabled?: boolean;
         musicEnabled?: boolean;
         musicLevel?: number;
         screenShakeEnabled: boolean;
@@ -738,6 +767,7 @@ export declare class HudView {
         backgroundBrightness?: number;
         colorblindPaletteEnabled: boolean;
         colorblindPaletteMode?: string;
+        focusOutlinePreset?: FocusOutlinePreset;
         castleSkin?: CastleSkinId;
         parallaxScene?: ParallaxScene;
         hudZoom: number;
@@ -917,8 +947,20 @@ export declare class HudView {
     hideSfxOverlay(): void;
     showReadabilityOverlay(): void;
     hideReadabilityOverlay(): void;
+    showPostureOverlay(): void;
+    hidePostureOverlay(): void;
+    private renderPostureOverlay;
     showStickerBookOverlay(): void;
     hideStickerBookOverlay(): void;
+    private markPostureReviewed;
+    private startPostureReminder;
+    private handlePostureReminderFired;
+    private clearPostureReminder;
+    private updatePostureOverlayStatus;
+    private updatePostureSummary;
+    private showPostureReminder;
+    private describeElapsedTime;
+    private formatPostureCountdown;
     showSeasonTrackOverlay(): void;
     hideSeasonTrackOverlay(): void;
     showParentSummary(): void;

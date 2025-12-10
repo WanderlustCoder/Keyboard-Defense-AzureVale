@@ -21,6 +21,8 @@ const SCREEN_SHAKE_INTENSITY_MAX = 1.2;
 const DEFAULT_SCREEN_SHAKE_INTENSITY = 0.65;
 const CASTLE_SKINS = new Set(["classic", "dusk", "aurora", "ember"]);
 const DEFAULT_CASTLE_SKIN = "classic";
+const FOCUS_OUTLINE_PRESETS = new Set(["system", "contrast", "glow"]);
+const DEFAULT_FOCUS_OUTLINE = "system";
 const ACCESSIBILITY_SELF_TEST_DEFAULT = {
     lastRunAt: null,
     soundConfirmed: false,
@@ -51,8 +53,10 @@ const BASE_DEFAULT_SETTINGS = {
     dyslexiaFontEnabled: false,
     dyslexiaSpacingEnabled: false,
     reducedCognitiveLoadEnabled: false,
+    audioNarrationEnabled: false,
     backgroundBrightness: 1,
     colorblindPaletteEnabled: false,
+    focusOutlinePreset: DEFAULT_FOCUS_OUTLINE,
     audioIntensity: DEFAULT_AUDIO_INTENSITY,
     musicEnabled: true,
     musicLevel: DEFAULT_MUSIC_LEVEL,
@@ -153,12 +157,16 @@ export function readPlayerSettings(storage) {
         const reducedCognitiveLoadEnabled = typeof parsed.reducedCognitiveLoadEnabled === "boolean"
             ? parsed.reducedCognitiveLoadEnabled
             : fallback.reducedCognitiveLoadEnabled;
+        const audioNarrationEnabled = typeof parsed.audioNarrationEnabled === "boolean"
+            ? parsed.audioNarrationEnabled
+            : fallback.audioNarrationEnabled;
         const backgroundBrightness = typeof parsed.backgroundBrightness === "number"
             ? parsed.backgroundBrightness
             : fallback.backgroundBrightness;
         const colorblindPaletteEnabled = typeof parsed.colorblindPaletteEnabled === "boolean"
             ? parsed.colorblindPaletteEnabled
             : fallback.colorblindPaletteEnabled;
+        const focusOutlinePreset = normalizeFocusOutlinePreset(parsed.focusOutlinePreset);
         const textSizeScale = typeof parsed.textSizeScale === "number"
             ? normalizeTextSizeScale(parsed.textSizeScale)
             : fallback.textSizeScale;
@@ -227,8 +235,10 @@ export function readPlayerSettings(storage) {
             dyslexiaFontEnabled,
             dyslexiaSpacingEnabled,
             reducedCognitiveLoadEnabled,
+            audioNarrationEnabled,
             backgroundBrightness,
             colorblindPaletteEnabled,
+            focusOutlinePreset,
             audioIntensity,
             musicEnabled,
             musicLevel,
@@ -314,12 +324,18 @@ export function withPatchedPlayerSettings(current, patch) {
         reducedCognitiveLoadEnabled: typeof patch.reducedCognitiveLoadEnabled === "boolean"
             ? patch.reducedCognitiveLoadEnabled
             : current.reducedCognitiveLoadEnabled,
+        audioNarrationEnabled: typeof patch.audioNarrationEnabled === "boolean"
+            ? patch.audioNarrationEnabled
+            : current.audioNarrationEnabled,
         backgroundBrightness: typeof patch.backgroundBrightness === "number"
             ? patch.backgroundBrightness
             : current.backgroundBrightness,
         colorblindPaletteEnabled: typeof patch.colorblindPaletteEnabled === "boolean"
             ? patch.colorblindPaletteEnabled
             : current.colorblindPaletteEnabled,
+        focusOutlinePreset: normalizeFocusOutlinePreset(patch.focusOutlinePreset !== undefined
+            ? patch.focusOutlinePreset
+            : current.focusOutlinePreset ?? DEFAULT_FOCUS_OUTLINE),
         audioIntensity: typeof patch.audioIntensity === "number"
             ? normalizeAudioIntensity(patch.audioIntensity)
             : current.audioIntensity,
@@ -616,6 +632,13 @@ function normalizeHudLayoutPreference(value) {
         return value;
     }
     return null;
+}
+function normalizeFocusOutlinePreset(value) {
+    if (typeof value !== "string") {
+        return DEFAULT_FOCUS_OUTLINE;
+    }
+    const normalized = value.trim().toLowerCase();
+    return FOCUS_OUTLINE_PRESETS.has(normalized) ? normalized : DEFAULT_FOCUS_OUTLINE;
 }
 function normalizeTextSizeScale(value) {
     if (typeof value !== "number" || !Number.isFinite(value)) {

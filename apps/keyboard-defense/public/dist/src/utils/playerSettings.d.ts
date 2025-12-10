@@ -5,6 +5,7 @@ export declare const TURRET_PRESET_IDS: readonly ["preset-a", "preset-b", "prese
 declare const ALLOWED_TURRET_PRESET_IDS: readonly ["preset-a", "preset-b", "preset-c"];
 export type DiagnosticsSectionId = "gold-events" | "castle-passives" | "turret-dps";
 export type CastleSkinId = "classic" | "dusk" | "aurora" | "ember";
+export type FocusOutlinePreset = "system" | "contrast" | "glow";
 type MaybeStorage = Pick<Storage, "getItem" | "setItem" | "removeItem"> | null | undefined;
 export type TurretTargetingPreferences = Record<string, TurretTargetPriority>;
 export type TurretLoadoutPresetId = (typeof ALLOWED_TURRET_PRESET_IDS)[number];
@@ -42,8 +43,10 @@ export interface PlayerSettings {
     dyslexiaFontEnabled: boolean;
     dyslexiaSpacingEnabled: boolean;
     reducedCognitiveLoadEnabled: boolean;
+    audioNarrationEnabled: boolean;
     backgroundBrightness: number;
     colorblindPaletteEnabled: boolean;
+    focusOutlinePreset: FocusOutlinePreset;
     audioIntensity: number;
     musicEnabled: boolean;
     musicLevel: number;

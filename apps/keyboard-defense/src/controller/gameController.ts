@@ -107,6 +107,10 @@ import {
   type ParallaxScene
 } from "../utils/parallaxBackground.js";
 import {
+  normalizeFocusOutlinePreset,
+  type FocusOutlinePreset
+} from "../utils/focusOutlines.js";
+import {
   buildBiomeGalleryView,
   readBiomeGallery,
   recordBiomeRun,
@@ -172,6 +176,7 @@ const HUD_ZOOM_MIN = 0.9;
 const HUD_ZOOM_MAX = 1.2;
 const HUD_ZOOM_DEFAULT = 1;
 const HUD_LAYOUT_DEFAULT = "right";
+const FOCUS_OUTLINE_DEFAULT: FocusOutlinePreset = "system";
 const INPUT_LATENCY_SAMPLE_MS = 500;
 const INPUT_LATENCY_WINDOW = 8;
 const INPUT_LATENCY_WARN_MS = 40;
@@ -311,10 +316,12 @@ export class GameController {
     this.dyslexiaFontEnabled = false;
     this.dyslexiaSpacingEnabled = false;
     this.reducedCognitiveLoadEnabled = false;
+    this.audioNarrationEnabled = false;
     this.backgroundBrightness = BG_BRIGHTNESS_DEFAULT;
     this.colorblindPaletteEnabled = false;
     this.colorblindPaletteMode = "off";
     this.lastColorblindMode = "deuteran";
+    this.focusOutlinePreset = FOCUS_OUTLINE_DEFAULT;
     this.dayNightTheme = "night";
     this.parallaxScene = "auto";
     this.latencyIndicator = null;
@@ -678,8 +685,12 @@ export class GameController {
           dyslexiaFontToggle: "options-dyslexia-font-toggle",
           dyslexiaSpacingToggle: "options-dyslexia-spacing-toggle",
           cognitiveLoadToggle: "options-cognitive-load",
+          audioNarrationToggle: "options-audio-narration",
           colorblindPaletteToggle: "options-colorblind-toggle",
           colorblindPaletteSelect: "options-colorblind-mode",
+          focusOutlineSelect: "options-focus-outline",
+          postureChecklistButton: "options-posture-checklist",
+          postureChecklistSummary: "options-posture-summary",
           backgroundBrightnessSlider: "options-bg-brightness",
           backgroundBrightnessValue: "options-bg-brightness-value",
           hudZoomSelect: "options-hud-zoom",
@@ -764,6 +775,15 @@ export class GameController {
           summary: "contrast-overlay-summary",
           closeButton: "contrast-overlay-close",
           markers: "contrast-overlay-markers"
+        },
+        postureOverlay: {
+          container: "posture-overlay",
+          list: "posture-overlay-list",
+          summary: "posture-overlay-summary",
+          status: "posture-overlay-status",
+          closeButton: "posture-overlay-close",
+          startButton: "posture-overlay-start",
+          reviewButton: "posture-overlay-review"
         },
         musicOverlay: {
           container: "music-overlay",
@@ -948,15 +968,18 @@ export class GameController {
             toastMessage: options?.hint ?? "Replay a drill to chase the next medal tier."
           });
         },
-        onReducedMotionToggle: (enabled) => this.setReducedMotionEnabled(enabled),
-        onCheckeredBackgroundToggle: (enabled) => this.setCheckeredBackgroundEnabled(enabled),
-        onLatencySparklineToggle: (enabled) => this.setLatencySparklineEnabled(enabled),
+  onReducedMotionToggle: (enabled) => this.setReducedMotionEnabled(enabled),
+  onCheckeredBackgroundToggle: (enabled) => this.setCheckeredBackgroundEnabled(enabled),
+        onAudioNarrationToggle: (enabled) => this.setAudioNarrationEnabled(enabled),
+  onLatencySparklineToggle: (enabled) => this.setLatencySparklineEnabled(enabled),
         onReadableFontToggle: (enabled) => this.setReadableFontEnabled(enabled),
         onDyslexiaFontToggle: (enabled) => this.setDyslexiaFontEnabled(enabled),
         onDyslexiaSpacingToggle: (enabled) => this.setDyslexiaSpacingEnabled(enabled),
         onCognitiveLoadToggle: (enabled) => this.setReducedCognitiveLoadEnabled(enabled),
         onColorblindPaletteToggle: (enabled) => this.setColorblindPaletteEnabled(enabled),
         onColorblindPaletteModeChange: (mode) => this.setColorblindPaletteMode(mode),
+        onFocusOutlineChange: (preset) =>
+          this.setFocusOutlinePreset(preset as FocusOutlinePreset),
         onBackgroundBrightnessChange: (value) => this.setBackgroundBrightness(value),
         onCastleSkinChange: (skin) => this.setCastleSkin(skin, { updateOptions: false }),
         onDayNightThemeChange: (mode) => this.setDayNightTheme(mode as DayNightMode),
@@ -2431,6 +2454,25 @@ export class GameController {
     return this.setColorblindPaletteMode(nextMode, options);
   }
 
+  setAudioNarrationEnabled(enabled, options = {}) {
+    const next = Boolean(enabled);
+    if (this.audioNarrationEnabled === next) {
+      return this.audioNarrationEnabled;
+    }
+    this.audioNarrationEnabled = next;
+    this.applyAudioNarrationSetting(next);
+    if (!options.silent) {
+      this.hud.appendLog(`Audio narration ${next ? "enabled" : "disabled"}.`);
+    }
+    if (options.persist !== false) {
+      this.persistPlayerSettings({ audioNarrationEnabled: next });
+    }
+    if (options.render !== false) {
+      this.updateOptionsOverlayState();
+    }
+    return this.audioNarrationEnabled;
+  }
+
   setColorblindPaletteMode(mode, options = {}) {
     const normalized = this.normalizeColorblindMode(mode);
     const enabled = normalized !== "off";
@@ -2464,6 +2506,29 @@ export class GameController {
       this.render();
     }
     return changedMode || changedEnabled;
+  }
+
+  setFocusOutlinePreset(preset: FocusOutlinePreset, options = {}) {
+    const normalized = normalizeFocusOutlinePreset(preset);
+    const changed = this.focusOutlinePreset !== normalized;
+    this.focusOutlinePreset = normalized;
+    this.applyFocusOutlinePreset(normalized);
+    if (!options.silent && changed) {
+      const label =
+        normalized === "contrast"
+          ? "high-contrast ring"
+          : normalized === "glow"
+            ? "glow halo"
+            : "panel defaults";
+      this.hud.appendLog?.(`Focus outline set to ${label}`);
+    }
+    if (options.persist !== false && changed) {
+      this.persistPlayerSettings({ focusOutlinePreset: normalized });
+    }
+    if (options.render !== false) {
+      this.updateOptionsOverlayState();
+    }
+    return changed;
   }
 
   setDefeatAnimationMode(mode, options = {}) {
@@ -2721,6 +2786,7 @@ export class GameController {
       soundEnabled: this.soundEnabled,
       soundVolume: this.soundVolume,
       soundIntensity: this.audioIntensity,
+      audioNarrationEnabled: this.audioNarrationEnabled,
       musicEnabled: this.musicEnabled,
       musicLevel: this.musicLevel,
       screenShakeEnabled: this.screenShakeEnabled,
@@ -2740,6 +2806,7 @@ export class GameController {
       backgroundBrightness: this.backgroundBrightness,
       colorblindPaletteEnabled: this.colorblindPaletteEnabled,
       colorblindPaletteMode: this.colorblindPaletteMode,
+      focusOutlinePreset: this.focusOutlinePreset,
       castleSkin: this.castleSkin,
       parallaxScene: this.parallaxScene,
       selfTest: selfTestState,
@@ -2849,6 +2916,46 @@ export class GameController {
         hud.dataset.cognitiveMode = modeValue;
       } else {
         hud.removeAttribute("data-cognitive-mode");
+      }
+    }
+  }
+  applyAudioNarrationSetting(enabled) {
+    if (typeof document === "undefined") return;
+    const root = document.documentElement;
+    const body = document.body;
+    if (root) {
+      if (enabled) {
+        root.dataset.audioNarration = "true";
+      } else {
+        delete root.dataset.audioNarration;
+      }
+    }
+    if (body) {
+      if (enabled) {
+        body.dataset.audioNarration = "true";
+      } else {
+        delete body.dataset.audioNarration;
+      }
+    }
+  }
+  applyFocusOutlinePreset(preset: FocusOutlinePreset) {
+    if (typeof document === "undefined") return;
+    const normalized = normalizeFocusOutlinePreset(preset);
+    const root = document.documentElement;
+    const body = document.body;
+    const value = normalized === "system" ? null : normalized;
+    if (root) {
+      if (value) {
+        root.dataset.focusOutline = value;
+      } else {
+        delete root.dataset.focusOutline;
+      }
+    }
+    if (body) {
+      if (value) {
+        body.dataset.focusOutline = value;
+      } else {
+        delete body.dataset.focusOutline;
       }
     }
   }
@@ -3808,6 +3915,15 @@ export class GameController {
     const colorblindUnchanged =
       patch.colorblindPaletteEnabled === undefined ||
       patch.colorblindPaletteEnabled === this.playerSettings.colorblindPaletteEnabled;
+    const previousFocusOutline =
+      (this.playerSettings as Record<string, unknown>).focusOutlinePreset ?? FOCUS_OUTLINE_DEFAULT;
+    const focusOutlineUnchanged =
+      patch.focusOutlinePreset === undefined ||
+      normalizeFocusOutlinePreset(patch.focusOutlinePreset) ===
+        normalizeFocusOutlinePreset(previousFocusOutline);
+    const audioNarrationUnchanged =
+      patch.audioNarrationEnabled === undefined ||
+      patch.audioNarrationEnabled === this.audioNarrationEnabled;
     const textSizeUnchanged =
       patch.textSizeScale === undefined ||
       Math.abs(this.normalizeTextSizeScale(patch.textSizeScale) - this.playerSettings.textSizeScale) <=
@@ -3889,6 +4005,8 @@ export class GameController {
       dyslexiaFontUnchanged &&
       cognitiveLoadUnchanged &&
       colorblindUnchanged &&
+      audioNarrationUnchanged &&
+      focusOutlineUnchanged &&
       textSizeUnchanged &&
       hapticsUnchanged &&
       screenShakeEnabledUnchanged &&
@@ -5021,6 +5139,11 @@ export class GameController {
       persist: false,
       render: false
     });
+    this.setAudioNarrationEnabled(stored.audioNarrationEnabled ?? false, {
+      silent: true,
+      persist: false,
+      render: false
+    });
     const legacySparkline = this.loadLatencySparklineEnabled();
     const storedSparkline =
       typeof stored.latencySparklineEnabled === "boolean"
@@ -5075,9 +5198,14 @@ export class GameController {
         : this.colorblindPaletteMode !== "off"
           ? this.colorblindPaletteMode
           : this.lastColorblindMode ?? "deuteran";
-    this.setColorblindPaletteMode(initialColorblindMode, {
+      this.setColorblindPaletteMode(initialColorblindMode, {
       silent: true,
       persist: false,
+      render: false
+    });
+    this.setFocusOutlinePreset(stored.focusOutlinePreset ?? FOCUS_OUTLINE_DEFAULT, {
+      persist: false,
+      silent: true,
       render: false
     });
     this.setDefeatAnimationMode(stored.defeatAnimationMode ?? "auto", {
@@ -5100,6 +5228,11 @@ export class GameController {
       render: false
     });
     this.setReducedCognitiveLoadEnabled(stored.reducedCognitiveLoadEnabled ?? false, {
+      silent: true,
+      persist: false,
+      render: false
+    });
+    this.setAudioNarrationEnabled(stored.audioNarrationEnabled ?? false, {
       silent: true,
       persist: false,
       render: false

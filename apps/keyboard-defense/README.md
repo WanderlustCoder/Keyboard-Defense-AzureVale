@@ -18,7 +18,9 @@ Keyboard Defense is a typing-driven castle defense game where fast, accurate inp
 - Dynamic music suites that layer stems by castle danger with an options overlay picker/preview.
 - Refreshed SFX library with selectable palettes and an options overlay preview.
 - Procedural enemy defeat bursts with easing-driven gradients so kills feel readable even before bespoke sprites ship.
-- Accessibility and comfort toggles for reduced motion, readable fonts, adjustable HUD scale, an audio intensity slider, and a colorblind-friendly palette.
+- Accessibility and comfort toggles for reduced motion, readable fonts, adjustable HUD scale, an audio intensity slider, an audio narration toggle for spoken cues, and a colorblind-friendly palette.
+- Focus outline presets (system, high-contrast ring, glow halo) for clearer keyboard navigation, saved per profile.
+- Posture checklist overlay with a 5-minute micro reminder toast so players can reset posture between waves.
 - Endless practice mode accessible from the main menu, looping waves indefinitely for warm-up runs.
 - Typing drills overlay (Burst, Endurance, Shield Breaker) that lets players warm up combos and accuracy without risking the castle.
 - Personal WPM ladder that records per-mode best runs with a HUD card, options shortcut, and local-only overlay.
