@@ -8761,13 +8761,16 @@ export class HudView {
         if (typeof document !== "undefined") {
             if (document.documentElement) {
                 document.documentElement.dataset.reducedMotion = enabled ? "true" : "false";
+                document.documentElement.dataset.vfxMode = enabled ? "reduced" : "full";
             }
             if (document.body) {
                 document.body.dataset.reducedMotion = enabled ? "true" : "false";
+                document.body.dataset.vfxMode = enabled ? "reduced" : "full";
             }
         }
         if (this.hudRoot) {
             this.hudRoot.dataset.reducedMotion = enabled ? "true" : "false";
+            this.hudRoot.dataset.vfxMode = enabled ? "reduced" : "full";
         }
         this.setParallaxMotionPaused(enabled);
     }

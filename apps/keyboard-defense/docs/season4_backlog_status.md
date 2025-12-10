@@ -87,7 +87,7 @@ Quick status snapshot for items in `season4_backlog.md`. All items start as Not 
 | 81 | Dynamic music stems | Done | Dynamic music suites layer stems that react to wave danger/health with an options picker and local persistence. |
 | 82 | UI sound scheme selector | Done | UI sound scheme picker with overlay previews and inline apply/preview controls; persists chosen scheme per profile. |
 | 83 | Voice pack stubs | Done | Voice pack selector with text-based stubs for narration styles; persists choice per profile. |
-| 84 | Reduced-motion VFX variants | Not Started | - |
+| 84 | Reduced-motion VFX variants | Done | Reduced-motion mode now swaps to softened VFX: particle systems render low-motion fades and a global `data-vfx-mode` toggle gates motion-heavy effects. |
 | 85 | Sprite batching/atlas plan | Not Started | - |
 | 86 | Session timeline export | Not Started | - |
 | 87 | Keystroke timing histograms | Not Started | - |

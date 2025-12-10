@@ -26,6 +26,7 @@ Keyboard Defense is a typing-driven castle defense game where fast, accurate inp
 - Profile-bound accessibility preset toggle that bundles reduced motion, narration, readable/dyslexia fonts, spaced letters, large subtitles, and a simplified HUD.
 - UI sound scheme picker with preview/apply controls to switch between refreshed interface sound sets.
 - Voice pack selector with text-based stubs so players can pick a narration style per profile.
+- Reduced-motion VFX variants: particle systems switch to low-motion fades and a global `data-vfx-mode` attribute gates motion-heavy effects when reduced motion is on.
 - Posture checklist overlay with a 5-minute micro reminder toast so players can reset posture between waves.
 - Endless practice mode accessible from the main menu, looping waves indefinitely for warm-up runs.
 - Typing drills overlay (Burst, Endurance, Shield Breaker) that lets players warm up combos and accuracy without risking the castle.

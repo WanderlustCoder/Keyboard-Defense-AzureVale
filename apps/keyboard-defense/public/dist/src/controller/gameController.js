@@ -2831,10 +2831,12 @@ export class GameController {
         const root = document.documentElement;
         if (root) {
             root.dataset.reducedMotion = enabled ? "true" : "false";
+            root.dataset.vfxMode = enabled ? "reduced" : "full";
         }
         const body = document.body;
         if (body) {
             body.dataset.reducedMotion = enabled ? "true" : "false";
+            body.dataset.vfxMode = enabled ? "reduced" : "full";
         }
     }
     applyCheckeredBackgroundSetting(enabled) {

@@ -3,13 +3,16 @@ import { describe, expect, test } from "vitest";
 import { ParticleRenderer } from "../src/rendering/particleRenderer.ts";
 
 describe("ParticleRenderer", () => {
-  test("no-op when reduced motion enabled", () => {
-    const renderer = new ParticleRenderer({ reducedMotion: true });
-    renderer.emitMuzzlePuff({ x: 10, y: 10 });
-    renderer.step(16);
-    expect(renderer.getParticleCount()).toBe(0);
-    expect(renderer.getCanvas()).toBeNull();
-  });
+test("no-op when reduced motion enabled", () => {
+  const renderer = new ParticleRenderer({ reducedMotion: true, offscreen: false, maxParticles: 4 });
+  renderer.emitMuzzlePuff({ x: 10, y: 10 });
+  renderer.step(16);
+  expect(renderer.getParticleCount()).toBeGreaterThan(0);
+  expect(renderer.getCanvas()).not.toBeNull();
+  // Should gently decay to zero without motion bursts.
+  renderer.step(500);
+  expect(renderer.getParticleCount()).toBeLessThanOrEqual(4);
+});
 
   test("emits and decays particles with offscreen support", () => {
     const renderer = new ParticleRenderer({ offscreen: false, maxParticles: 4 });

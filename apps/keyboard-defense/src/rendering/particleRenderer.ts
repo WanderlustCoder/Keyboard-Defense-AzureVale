@@ -24,13 +24,8 @@ export class ParticleRenderer {
 
   constructor(options: ParticleRendererOptions = {}) {
     this.reducedMotion = Boolean(options.reducedMotion);
-    this.maxParticles = Math.max(1, options.maxParticles ?? 256);
-
-    if (this.reducedMotion) {
-      this.ctx = null;
-      this.canvas = null;
-      return;
-    }
+    const baseMax = Math.max(1, options.maxParticles ?? 256);
+    this.maxParticles = this.reducedMotion ? Math.min(baseMax, 48) : baseMax;
 
     if (options.offscreen !== false && typeof OffscreenCanvas !== "undefined") {
       this.canvas = new OffscreenCanvas(256, 256);
@@ -44,7 +39,8 @@ export class ParticleRenderer {
     } else {
       // Headless fallback so tests can exercise decay without a DOM.
       const ctx = createHeadlessContext();
-      this.canvas = null;
+      // Preserve a stub canvas so callers still see a render target.
+      this.canvas = (ctx as { canvas?: OffscreenCanvas | HTMLCanvasElement }).canvas ?? null;
       this.ctx = ctx;
     }
   }
@@ -54,12 +50,19 @@ export class ParticleRenderer {
     if (this.particles.length >= this.maxParticles) {
       this.particles.shift();
     }
+    const velocityScale = this.reducedMotion ? 0 : 1;
+    const radius = this.reducedMotion ? 4 + Math.random() * 1.5 : 6 + Math.random() * 4;
+    const decay = this.reducedMotion ? 0.05 + Math.random() * 0.02 : 0.02 + Math.random() * 0.01;
+    const jitter = this.reducedMotion ? 0 : 1;
     this.particles.push({
       position: { ...position },
-      radius: 6 + Math.random() * 4,
-      velocity: { x: (Math.random() - 0.5) * 10, y: (Math.random() - 0.5) * 6 },
+      radius,
+      velocity: {
+        x: (Math.random() - 0.5) * 10 * velocityScale * jitter,
+        y: (Math.random() - 0.5) * 6 * velocityScale * jitter
+      },
       alpha: 1,
-      decay: 0.02 + Math.random() * 0.01,
+      decay,
       color
     });
   }
@@ -75,10 +78,12 @@ export class ParticleRenderer {
     const dt = deltaMs / 16.67; // normalize to ~60fps
     const remaining: Particle[] = [];
     for (const p of this.particles) {
-      p.position.x += p.velocity.x * dt * 0.1;
-      p.position.y += p.velocity.y * dt * 0.1;
+      const velocityScale = this.reducedMotion ? 0.02 : 0.1;
+      p.position.x += p.velocity.x * dt * velocityScale;
+      p.position.y += p.velocity.y * dt * velocityScale;
       p.alpha = Math.max(0, p.alpha - p.decay * dt);
-      p.radius = Math.max(0, p.radius - 0.25 * dt);
+      const shrinkRate = this.reducedMotion ? 0.1 : 0.25;
+      p.radius = Math.max(0, p.radius - shrinkRate * dt);
       if (p.alpha <= 0 || p.radius <= 0) continue;
       ctx.globalAlpha = p.alpha;
       ctx.fillStyle = p.color;
