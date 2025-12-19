@@ -5921,6 +5921,7 @@ details {
 .slot-hazard {
   display: inline-flex;
   align-items: center;
+  gap: 4px;
   padding: 2px 6px;
   border-radius: 999px;
   font-size: 0.65rem;
@@ -5942,10 +5943,22 @@ details {
   color: #e0f2fe;
 }
 
+.slot-hazard[data-hazard="storm"]::before {
+  content: "⚡";
+  font-size: 0.9em;
+  line-height: 1;
+}
+
 .slot-hazard[data-hazard="fog"] {
   background: rgba(148, 163, 184, 0.22);
   border-color: rgba(148, 163, 184, 0.5);
   color: #f1f5f9;
+}
+
+.slot-hazard[data-hazard="fog"]::before {
+  content: "~";
+  font-size: 0.9em;
+  line-height: 1;
 }
 
 .slot-status {
@@ -6781,6 +6794,12 @@ details {
   color: #f1f5f9;
 }
 
+.summary-pill[data-hazard="fog"] .summary-hazard::before {
+  content: "~";
+  font-size: 0.85em;
+  line-height: 1;
+}
+
 .summary-pill[data-threat-level="medium"] {
   background: rgba(250, 204, 21, 0.18);
   color: #fde68a;
@@ -6951,6 +6970,12 @@ details {
 
 .preview-badge.hazard[data-hazard="storm"]::before {
   content: "⚡";
+  font-size: 0.9em;
+  line-height: 1;
+}
+
+.preview-badge.hazard[data-hazard="fog"]::before {
+  content: "~";
   font-size: 0.9em;
   line-height: 1;
 }
