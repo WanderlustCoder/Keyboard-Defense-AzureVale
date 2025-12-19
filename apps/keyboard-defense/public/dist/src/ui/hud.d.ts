@@ -699,6 +699,8 @@ export declare class HudView {
     private lastWavePreviewColorBlind;
     private lastWavePreviewLaneHazards;
     private lastWavePreviewEmptyMessage;
+    private wavePreviewFreezeUntil;
+    private pendingWavePreviewState;
     private wavePreviewThreatIndicatorsEnabled;
     private lastGold;
     private maxCombo;
@@ -974,6 +976,7 @@ export declare class HudView {
     announceEnemyTaunt(message: string, options?: {
         durationMs?: number;
     }): boolean;
+    flashWavePreviewLane(lane: number): void;
     private renderWavePreview;
     private handleEnemyBioSelect;
     private syncEnemyBioSelection;

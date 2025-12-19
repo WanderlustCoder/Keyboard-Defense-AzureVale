@@ -8612,6 +8612,7 @@ export class GameController {
     });
     this.engine.events.on("enemy:escaped", ({ enemy }) => {
       this.hud.appendLog(`Enemy breached gates! -${enemy.damage} HP`, "breach");
+      this.hud.flashWavePreviewLane(enemy.lane);
       this.playSound("impact-breach");
       this.addImpactEffect(enemy.lane, 1, "breach");
       this.tutorialManager?.notify({ type: "castle:breach" });

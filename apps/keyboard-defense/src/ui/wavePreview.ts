@@ -48,6 +48,7 @@ export class WavePreviewPanel {
   private affixNext = false;
   private colorBlindFriendly = false;
   private iconCache = new Map<string, string>();
+  private laneFlashTimeouts = new Map<number, number>();
 
   constructor(
     private readonly container: HTMLElement,
@@ -111,6 +112,7 @@ export class WavePreviewPanel {
       for (const [lane, stats] of sorted) {
         const pill = document.createElement("span");
         pill.className = "summary-pill";
+        pill.dataset.lane = String(lane);
         const laneLabel = LANE_LABELS[lane] ?? String(lane + 1);
         if (options.showThreatIndicators) {
           const roundedDamage = Math.round(stats.damage);
@@ -174,6 +176,7 @@ export class WavePreviewPanel {
     for (const entry of entries) {
       const row = document.createElement("div");
       row.className = "wave-preview-row";
+      row.dataset.lane = String(entry.lane);
       row.dataset.tierId = entry.tierId;
       const activeHazard = activeHazards.get(entry.lane);
       if (activeHazard) {
@@ -196,6 +199,7 @@ export class WavePreviewPanel {
       }
       const lane = document.createElement("span");
       lane.className = "preview-lane";
+      lane.dataset.lane = String(entry.lane);
       const laneLabel = LANE_LABELS[entry.lane] ?? String(entry.lane + 1);
       lane.textContent = laneLabel;
       row.appendChild(lane);
@@ -347,6 +351,33 @@ export class WavePreviewPanel {
     } else {
       delete this.container.dataset.affixNext;
     }
+  }
+
+  flashLane(lane: number, options: { durationMs?: number } = {}): void {
+    if (!Number.isFinite(lane)) return;
+    const targetLane = Math.max(0, Math.floor(lane));
+    const duration = Math.max(150, options.durationMs ?? 650);
+    const selector = `[data-lane="${targetLane}"]`;
+    const targets = Array.from(
+      this.container.querySelectorAll<HTMLElement>(`.preview-lane${selector}, .summary-pill${selector}`)
+    );
+    if (targets.length === 0) {
+      return;
+    }
+    const existing = this.laneFlashTimeouts.get(targetLane);
+    if (existing) {
+      window.clearTimeout(existing);
+    }
+    for (const target of targets) {
+      target.dataset.breach = "true";
+    }
+    const timeout = window.setTimeout(() => {
+      for (const target of targets) {
+        delete target.dataset.breach;
+      }
+      this.laneFlashTimeouts.delete(targetLane);
+    }, duration);
+    this.laneFlashTimeouts.set(targetLane, timeout);
   }
 
   private getIconDataUri(tierId: string): string {

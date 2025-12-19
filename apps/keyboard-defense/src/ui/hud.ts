@@ -61,6 +61,12 @@ type BattleLogSummaryItem = {
   count: HTMLElement;
   last: HTMLElement;
 };
+type WavePreviewSnapshot = {
+  entries: WaveSpawnPreview[];
+  colorBlindFriendly: boolean;
+  laneHazards: LaneHazardState[];
+  emptyMessage: string | null;
+};
 
 const BATTLE_LOG_FILTERS: BattleLogFilterCategory[] = [
   "breach",
@@ -1403,6 +1409,8 @@ export class HudView {
   private lastWavePreviewColorBlind = false;
   private lastWavePreviewLaneHazards: LaneHazardState[] = [];
   private lastWavePreviewEmptyMessage: string | null = null;
+  private wavePreviewFreezeUntil = 0;
+  private pendingWavePreviewState: WavePreviewSnapshot | null = null;
   private wavePreviewThreatIndicatorsEnabled = false;
   private lastGold = 0;
   private maxCombo = 0;
@@ -6149,18 +6157,38 @@ export class HudView {
     return true;
   }
 
+  flashWavePreviewLane(lane: number): void {
+    if (!Number.isFinite(lane)) return;
+    const targetLane = Math.max(0, Math.floor(lane));
+    const duration = 650;
+    this.wavePreviewFreezeUntil = Date.now() + duration;
+    this.wavePreview.flashLane(targetLane, { durationMs: duration });
+  }
+
   private renderWavePreview(
     entries: WaveSpawnPreview[],
     colorBlindFriendly: boolean | undefined,
     laneHazards: LaneHazardState[] | undefined,
     emptyMessage: string | null
   ): void {
-    this.lastWavePreviewEntries = entries;
-    this.lastWavePreviewColorBlind = Boolean(colorBlindFriendly);
-    this.lastWavePreviewLaneHazards = Array.isArray(laneHazards) ? laneHazards : [];
-    this.lastWavePreviewEmptyMessage = typeof emptyMessage === "string" ? emptyMessage : null;
-    const selected = this.syncEnemyBioSelection(entries);
-    this.wavePreview.render(entries, {
+    const snapshot: WavePreviewSnapshot = {
+      entries,
+      colorBlindFriendly: Boolean(colorBlindFriendly),
+      laneHazards: Array.isArray(laneHazards) ? laneHazards : [],
+      emptyMessage: typeof emptyMessage === "string" ? emptyMessage : null
+    };
+    if (Date.now() < this.wavePreviewFreezeUntil) {
+      this.pendingWavePreviewState = snapshot;
+      return;
+    }
+    const nextSnapshot = this.pendingWavePreviewState ?? snapshot;
+    this.pendingWavePreviewState = null;
+    this.lastWavePreviewEntries = nextSnapshot.entries;
+    this.lastWavePreviewColorBlind = nextSnapshot.colorBlindFriendly;
+    this.lastWavePreviewLaneHazards = nextSnapshot.laneHazards;
+    this.lastWavePreviewEmptyMessage = nextSnapshot.emptyMessage;
+    const selected = this.syncEnemyBioSelection(nextSnapshot.entries);
+    this.wavePreview.render(nextSnapshot.entries, {
       colorBlindFriendly: this.lastWavePreviewColorBlind,
       selectedTierId: selected,
       onSelect: (tierId) => this.handleEnemyBioSelect(tierId),
