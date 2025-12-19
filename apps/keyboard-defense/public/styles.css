@@ -747,11 +747,31 @@ textarea {
   overflow: hidden;
 }
 
+.playfield-health .bar[data-error-flash="true"] {
+  animation: castle-health-error-flash 0.5s ease-out;
+  box-shadow: 0 0 0 2px rgba(248, 113, 113, 0.4);
+}
+
 .playfield-health .fill {
   height: 100%;
   width: 100%;
   background: var(--castle-health-fill);
   transition: width 120ms linear;
+}
+
+@keyframes castle-health-error-flash {
+  0% {
+    box-shadow: 0 0 0 0 rgba(248, 113, 113, 0);
+    filter: brightness(1);
+  }
+  40% {
+    box-shadow: 0 0 0 4px rgba(248, 113, 113, 0.55);
+    filter: brightness(1.25);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(248, 113, 113, 0);
+    filter: brightness(1);
+  }
 }
 
 .wave-rail {
@@ -5241,6 +5261,23 @@ body[data-checkered-background="true"] #wave-scorecard-stats li {
     background-color 0.2s ease, border-color 0.2s ease;
 }
 
+#combo-accuracy-delta::before {
+  display: none;
+  font-size: 0.85em;
+  line-height: 1;
+  opacity: 0.85;
+}
+
+#combo-accuracy-delta[data-trend="up"]::before {
+  display: inline-block;
+  content: "▲";
+}
+
+#combo-accuracy-delta[data-trend="down"]::before {
+  display: inline-block;
+  content: "▼";
+}
+
 #combo-accuracy-delta[data-visible="true"] {
   opacity: 1;
   transform: translateY(-1px);
@@ -5919,6 +5956,7 @@ details {
 }
 
 .slot-hazard {
+  --hazard-pulse: rgba(226, 232, 240, 0.45);
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -5938,6 +5976,7 @@ details {
 }
 
 .slot-hazard[data-hazard="storm"] {
+  --hazard-pulse: rgba(56, 189, 248, 0.55);
   background: rgba(56, 189, 248, 0.22);
   border-color: rgba(56, 189, 248, 0.5);
   color: #e0f2fe;
@@ -5950,6 +5989,7 @@ details {
 }
 
 .slot-hazard[data-hazard="fog"] {
+  --hazard-pulse: rgba(148, 163, 184, 0.55);
   background: rgba(148, 163, 184, 0.22);
   border-color: rgba(148, 163, 184, 0.5);
   color: #f1f5f9;
@@ -5959,6 +5999,25 @@ details {
   content: "~";
   font-size: 0.9em;
   line-height: 1;
+}
+
+.slot-hazard[data-pulse="true"] {
+  animation: hazard-chip-pulse 0.7s ease-out;
+}
+
+@keyframes hazard-chip-pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(15, 23, 42, 0);
+  }
+  40% {
+    transform: scale(1.06);
+    box-shadow: 0 0 0 6px var(--hazard-pulse);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(15, 23, 42, 0);
+  }
 }
 
 .slot-status {

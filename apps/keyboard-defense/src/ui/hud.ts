@@ -962,6 +962,11 @@ interface CondensedSection {
 
 export class HudView {
   private readonly healthBar: HTMLElement;
+  private readonly healthBarShell: HTMLElement | null = null;
+  private castleHealthFlashTimeout: number | null = null;
+  private reducedMotionEnabled = false;
+  private readonly hazardPulseTimeouts = new Map<string, number>();
+  private readonly lastLaneHazardKinds = new Map<number, string>();
   private readonly goldLabel: HTMLElement;
   private readonly goldDelta: HTMLElement;
   private readonly activeWord: HTMLElement;
@@ -1794,6 +1799,8 @@ export class HudView {
     }
 
     this.healthBar = this.getElement(rootIds.healthBar);
+    this.healthBarShell =
+      this.healthBar.parentElement instanceof HTMLElement ? this.healthBar.parentElement : null;
     this.goldLabel = this.getElement(rootIds.goldLabel);
     this.goldDelta = this.getElement(rootIds.goldDelta);
     this.activeWord = this.getElement(rootIds.activeWord);
@@ -5817,6 +5824,26 @@ export class HudView {
       enemyId: hint.enemyId,
       timestamp: typeof performance !== "undefined" ? performance.now() : Date.now()
     };
+    this.flashCastleHealthOnError();
+  }
+
+  private flashCastleHealthOnError(): void {
+    const bar = this.healthBarShell;
+    if (!bar || this.reducedMotionEnabled || typeof window === "undefined") {
+      return;
+    }
+    if (bar.dataset.errorFlash === "true") {
+      delete bar.dataset.errorFlash;
+      void bar.offsetWidth;
+    }
+    bar.dataset.errorFlash = "true";
+    if (this.castleHealthFlashTimeout !== null) {
+      window.clearTimeout(this.castleHealthFlashTimeout);
+    }
+    this.castleHealthFlashTimeout = window.setTimeout(() => {
+      delete bar.dataset.errorFlash;
+      this.castleHealthFlashTimeout = null;
+    }, 520);
   }
 
   private renderFingerHint(targetChar: string | null): void {
@@ -7050,8 +7077,12 @@ export class HudView {
 
   private updateTurretControls(state: GameState): void {
     const hazardsByLane = new Map<number, LaneHazardState>();
+    const nextHazardKinds = new Map<number, string>();
     for (const hazard of state.laneHazards ?? []) {
       hazardsByLane.set(hazard.lane, hazard);
+      if (typeof hazard.kind === "string" && hazard.kind.length > 0) {
+        nextHazardKinds.set(hazard.lane, hazard.kind);
+      }
     }
     for (const slot of state.turrets) {
       const controls = this.slotControls.get(slot.id);
@@ -7060,6 +7091,11 @@ export class HudView {
       controls.titleText.textContent = `Slot ${slot.id.replace("slot-", "")} (Lane ${slot.lane + 1})`;
 
       const laneHazard = hazardsByLane.get(slot.lane);
+      const previousHazardKind = this.lastLaneHazardKinds.get(slot.lane) ?? null;
+      const nextHazardKind =
+        laneHazard && typeof laneHazard.kind === "string" && laneHazard.kind.length > 0
+          ? laneHazard.kind
+          : null;
       if (laneHazard && typeof laneHazard.kind === "string" && laneHazard.kind.length > 0) {
         const hazardLabel = this.formatTitleLabel(laneHazard.kind);
         const remainingLabel = this.formatSeconds(Math.max(0, laneHazard.remaining));
@@ -7073,6 +7109,9 @@ export class HudView {
         controls.hazardBadge.textContent = hazardLabel;
         controls.hazardBadge.title = detail;
         controls.hazardBadge.setAttribute("aria-label", detail);
+        if (nextHazardKind && nextHazardKind !== previousHazardKind) {
+          this.pulseHazardBadge(slot.id, controls.hazardBadge);
+        }
       } else {
         controls.hazardBadge.dataset.visible = "false";
         controls.hazardBadge.setAttribute("aria-hidden", "true");
@@ -7238,6 +7277,30 @@ export class HudView {
         }
       }
     }
+    this.lastLaneHazardKinds.clear();
+    for (const [lane, kind] of nextHazardKinds) {
+      this.lastLaneHazardKinds.set(lane, kind);
+    }
+  }
+
+  private pulseHazardBadge(slotId: string, badge: HTMLElement): void {
+    if (!badge || this.reducedMotionEnabled || typeof window === "undefined") {
+      return;
+    }
+    if (badge.dataset.pulse === "true") {
+      delete badge.dataset.pulse;
+      void badge.offsetWidth;
+    }
+    badge.dataset.pulse = "true";
+    const existing = this.hazardPulseTimeouts.get(slotId);
+    if (existing) {
+      window.clearTimeout(existing);
+    }
+    const timeout = window.setTimeout(() => {
+      delete badge.dataset.pulse;
+      this.hazardPulseTimeouts.delete(slotId);
+    }, 720);
+    this.hazardPulseTimeouts.set(slotId, timeout);
   }
 
   updateTurretPresets(presets: HudTurretPresetData[]): void {
@@ -12240,6 +12303,7 @@ export class HudView {
   }
 
   setReducedMotionEnabled(enabled: boolean): void {
+    this.reducedMotionEnabled = enabled;
     if (typeof document !== "undefined") {
       if (document.documentElement) {
         document.documentElement.dataset.reducedMotion = enabled ? "true" : "false";

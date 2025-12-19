@@ -228,6 +228,11 @@ export class HudView {
     config;
     callbacks;
     healthBar;
+    healthBarShell = null;
+    castleHealthFlashTimeout = null;
+    reducedMotionEnabled = false;
+    hazardPulseTimeouts = new Map();
+    lastLaneHazardKinds = new Map();
     goldLabel;
     goldDelta;
     activeWord;
@@ -542,6 +547,8 @@ export class HudView {
             this.supportBoostBanner = { container: supportBanner, label: supportLabel, timer: supportTimer };
         }
         this.healthBar = this.getElement(rootIds.healthBar);
+        this.healthBarShell =
+            this.healthBar.parentElement instanceof HTMLElement ? this.healthBar.parentElement : null;
         this.goldLabel = this.getElement(rootIds.goldLabel);
         this.goldDelta = this.getElement(rootIds.goldDelta);
         this.activeWord = this.getElement(rootIds.activeWord);
@@ -4194,6 +4201,25 @@ export class HudView {
             enemyId: hint.enemyId,
             timestamp: typeof performance !== "undefined" ? performance.now() : Date.now()
         };
+        this.flashCastleHealthOnError();
+    }
+    flashCastleHealthOnError() {
+        const bar = this.healthBarShell;
+        if (!bar || this.reducedMotionEnabled || typeof window === "undefined") {
+            return;
+        }
+        if (bar.dataset.errorFlash === "true") {
+            delete bar.dataset.errorFlash;
+            void bar.offsetWidth;
+        }
+        bar.dataset.errorFlash = "true";
+        if (this.castleHealthFlashTimeout !== null) {
+            window.clearTimeout(this.castleHealthFlashTimeout);
+        }
+        this.castleHealthFlashTimeout = window.setTimeout(() => {
+            delete bar.dataset.errorFlash;
+            this.castleHealthFlashTimeout = null;
+        }, 520);
     }
     renderFingerHint(targetChar) {
         if (!this.fingerHint)
@@ -5317,8 +5343,12 @@ export class HudView {
     }
     updateTurretControls(state) {
         const hazardsByLane = new Map();
+        const nextHazardKinds = new Map();
         for (const hazard of state.laneHazards ?? []) {
             hazardsByLane.set(hazard.lane, hazard);
+            if (typeof hazard.kind === "string" && hazard.kind.length > 0) {
+                nextHazardKinds.set(hazard.lane, hazard.kind);
+            }
         }
         for (const slot of state.turrets) {
             const controls = this.slotControls.get(slot.id);
@@ -5326,6 +5356,10 @@ export class HudView {
                 continue;
             controls.titleText.textContent = `Slot ${slot.id.replace("slot-", "")} (Lane ${slot.lane + 1})`;
             const laneHazard = hazardsByLane.get(slot.lane);
+            const previousHazardKind = this.lastLaneHazardKinds.get(slot.lane) ?? null;
+            const nextHazardKind = laneHazard && typeof laneHazard.kind === "string" && laneHazard.kind.length > 0
+                ? laneHazard.kind
+                : null;
             if (laneHazard && typeof laneHazard.kind === "string" && laneHazard.kind.length > 0) {
                 const hazardLabel = this.formatTitleLabel(laneHazard.kind);
                 const remainingLabel = this.formatSeconds(Math.max(0, laneHazard.remaining));
@@ -5339,6 +5373,9 @@ export class HudView {
                 controls.hazardBadge.textContent = hazardLabel;
                 controls.hazardBadge.title = detail;
                 controls.hazardBadge.setAttribute("aria-label", detail);
+                if (nextHazardKind && nextHazardKind !== previousHazardKind) {
+                    this.pulseHazardBadge(slot.id, controls.hazardBadge);
+                }
             }
             else {
                 controls.hazardBadge.dataset.visible = "false";
@@ -5504,6 +5541,29 @@ export class HudView {
                 }
             }
         }
+        this.lastLaneHazardKinds.clear();
+        for (const [lane, kind] of nextHazardKinds) {
+            this.lastLaneHazardKinds.set(lane, kind);
+        }
+    }
+    pulseHazardBadge(slotId, badge) {
+        if (!badge || this.reducedMotionEnabled || typeof window === "undefined") {
+            return;
+        }
+        if (badge.dataset.pulse === "true") {
+            delete badge.dataset.pulse;
+            void badge.offsetWidth;
+        }
+        badge.dataset.pulse = "true";
+        const existing = this.hazardPulseTimeouts.get(slotId);
+        if (existing) {
+            window.clearTimeout(existing);
+        }
+        const timeout = window.setTimeout(() => {
+            delete badge.dataset.pulse;
+            this.hazardPulseTimeouts.delete(slotId);
+        }, 720);
+        this.hazardPulseTimeouts.set(slotId, timeout);
     }
     updateTurretPresets(presets) {
         if (!this.presetList) {
@@ -10186,6 +10246,7 @@ export class HudView {
         return Math.max(0, Math.round((state.typing.correctInputs / 5) / minutes));
     }
     setReducedMotionEnabled(enabled) {
+        this.reducedMotionEnabled = enabled;
         if (typeof document !== "undefined") {
             if (document.documentElement) {
                 document.documentElement.dataset.reducedMotion = enabled ? "true" : "false";

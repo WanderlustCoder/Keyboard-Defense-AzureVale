@@ -567,6 +567,11 @@ export declare class HudView {
     private readonly config;
     private readonly callbacks;
     private readonly healthBar;
+    private readonly healthBarShell;
+    private castleHealthFlashTimeout;
+    private reducedMotionEnabled;
+    private readonly hazardPulseTimeouts;
+    private readonly lastLaneHazardKinds;
     private readonly goldLabel;
     private readonly goldDelta;
     private readonly activeWord;
@@ -956,6 +961,7 @@ export declare class HudView {
         received: string | null;
         enemyId: string | null;
     }): void;
+    private flashCastleHealthOnError;
     private renderFingerHint;
     private getFingerMapping;
     private normalizeFingerKey;
@@ -1018,6 +1024,7 @@ export declare class HudView {
     private updateCastleControls;
     private updateCastleRepair;
     private updateTurretControls;
+    private pulseHazardBadge;
     updateTurretPresets(presets: HudTurretPresetData[]): void;
     private ensurePresetControl;
     private applyTutorialSlotLock;
