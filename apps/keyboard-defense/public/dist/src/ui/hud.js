@@ -4219,7 +4219,7 @@ export class HudView {
         this.castleHealthFlashTimeout = window.setTimeout(() => {
             delete bar.dataset.errorFlash;
             this.castleHealthFlashTimeout = null;
-        }, 520);
+        }, 450);
     }
     renderFingerHint(targetChar) {
         if (!this.fingerHint)
@@ -5562,7 +5562,7 @@ export class HudView {
         const timeout = window.setTimeout(() => {
             delete badge.dataset.pulse;
             this.hazardPulseTimeouts.delete(slotId);
-        }, 720);
+        }, 560);
         this.hazardPulseTimeouts.set(slotId, timeout);
     }
     updateTurretPresets(presets) {

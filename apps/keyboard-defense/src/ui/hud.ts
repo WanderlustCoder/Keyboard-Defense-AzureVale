@@ -5843,7 +5843,7 @@ export class HudView {
     this.castleHealthFlashTimeout = window.setTimeout(() => {
       delete bar.dataset.errorFlash;
       this.castleHealthFlashTimeout = null;
-    }, 520);
+    }, 450);
   }
 
   private renderFingerHint(targetChar: string | null): void {
@@ -7299,7 +7299,7 @@ export class HudView {
     const timeout = window.setTimeout(() => {
       delete badge.dataset.pulse;
       this.hazardPulseTimeouts.delete(slotId);
-    }, 720);
+    }, 560);
     this.hazardPulseTimeouts.set(slotId, timeout);
   }
 

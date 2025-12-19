@@ -748,8 +748,8 @@ textarea {
 }
 
 .playfield-health .bar[data-error-flash="true"] {
-  animation: castle-health-error-flash 0.5s ease-out;
-  box-shadow: 0 0 0 2px rgba(248, 113, 113, 0.4);
+  animation: castle-health-error-flash 0.45s ease-out;
+  box-shadow: 0 0 0 1px rgba(248, 113, 113, 0.35);
 }
 
 .playfield-health .fill {
@@ -765,8 +765,8 @@ textarea {
     filter: brightness(1);
   }
   40% {
-    box-shadow: 0 0 0 4px rgba(248, 113, 113, 0.55);
-    filter: brightness(1.25);
+    box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.45);
+    filter: brightness(1.15);
   }
   100% {
     box-shadow: 0 0 0 0 rgba(248, 113, 113, 0);
@@ -5956,7 +5956,7 @@ details {
 }
 
 .slot-hazard {
-  --hazard-pulse: rgba(226, 232, 240, 0.45);
+  --hazard-pulse: rgba(226, 232, 240, 0.35);
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -5976,7 +5976,7 @@ details {
 }
 
 .slot-hazard[data-hazard="storm"] {
-  --hazard-pulse: rgba(56, 189, 248, 0.55);
+  --hazard-pulse: rgba(56, 189, 248, 0.45);
   background: rgba(56, 189, 248, 0.22);
   border-color: rgba(56, 189, 248, 0.5);
   color: #e0f2fe;
@@ -5989,7 +5989,7 @@ details {
 }
 
 .slot-hazard[data-hazard="fog"] {
-  --hazard-pulse: rgba(148, 163, 184, 0.55);
+  --hazard-pulse: rgba(148, 163, 184, 0.4);
   background: rgba(148, 163, 184, 0.22);
   border-color: rgba(148, 163, 184, 0.5);
   color: #f1f5f9;
@@ -6002,7 +6002,7 @@ details {
 }
 
 .slot-hazard[data-pulse="true"] {
-  animation: hazard-chip-pulse 0.7s ease-out;
+  animation: hazard-chip-pulse 0.55s ease-out;
 }
 
 @keyframes hazard-chip-pulse {
@@ -6011,8 +6011,8 @@ details {
     box-shadow: 0 0 0 0 rgba(15, 23, 42, 0);
   }
   40% {
-    transform: scale(1.06);
-    box-shadow: 0 0 0 6px var(--hazard-pulse);
+    transform: scale(1.04);
+    box-shadow: 0 0 0 4px var(--hazard-pulse);
   }
   100% {
     transform: scale(1);
