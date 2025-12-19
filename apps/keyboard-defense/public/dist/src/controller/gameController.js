@@ -57,6 +57,7 @@ import { buildSeasonTrackProgress, listSeasonTrack } from "../data/seasonTrack.j
 import { selectAmbientProfile } from "../audio/ambientProfiles.js";
 import { getEnemyBiography } from "../data/bestiary.js";
 const FRAME_DURATION = 1 / 60;
+const BUILD_MENU_TIME_SCALE = 0.35;
 const TUTORIAL_VERSION = "v2";
 const SOUND_VOLUME_MIN = 0;
 const SOUND_VOLUME_MAX = 1;
@@ -214,6 +215,8 @@ export class GameController {
         this.updateCanvasResolution(true, "initial");
         this.running = false;
         this.speedMultiplier = 1;
+        this.uiTimeScaleMultiplier = 1;
+        this.sessionWallTimeSeconds = 0;
         this.lastTimestamp = null;
         this.rafId = null;
         this.soundEnabled = true;
@@ -952,6 +955,7 @@ export class GameController {
             onUpgradeTurret: (slotId) => this.handleUpgradeTurret(slotId),
             onDowngradeTurret: (slotId) => this.handleDowngradeTurret(slotId),
             onTurretPriorityChange: (slotId, priority) => this.handleTurretPriorityChange(slotId, priority),
+            onBuildMenuToggle: (open) => this.handleBuildMenuToggle(open),
             onAnalyticsExport: this.analyticsExportEnabled ? () => this.exportAnalytics() : undefined,
             onSessionTimelineExport: () => this.exportSessionTimeline(),
             onKeystrokeTimingExport: () => this.exportKeystrokeTiming(),
@@ -5570,7 +5574,17 @@ export class GameController {
         if (this.lastTimestamp === null) {
             this.lastTimestamp = timestamp;
         }
-        const deltaSeconds = ((timestamp - this.lastTimestamp) / 1000) * this.speedMultiplier;
+        const rawDeltaSeconds = (timestamp - this.lastTimestamp) / 1000;
+        if (typeof this.sessionWallTimeSeconds !== "number" || !Number.isFinite(this.sessionWallTimeSeconds)) {
+            this.sessionWallTimeSeconds = 0;
+        }
+        if (Number.isFinite(rawDeltaSeconds) && rawDeltaSeconds > 0) {
+            this.sessionWallTimeSeconds += rawDeltaSeconds;
+        }
+        const uiScale = typeof this.uiTimeScaleMultiplier === "number" && Number.isFinite(this.uiTimeScaleMultiplier)
+            ? this.uiTimeScaleMultiplier
+            : 1;
+        const deltaSeconds = rawDeltaSeconds * this.speedMultiplier * uiScale;
         this.lastTimestamp = timestamp;
         this.updateKeystrokeTimingGate(timestamp);
         this.tutorialManager?.update(deltaSeconds);
@@ -5704,6 +5718,7 @@ export class GameController {
             tutorialCompleted: this.tutorialCompleted,
             loreUnlocked: this.unlockedLore?.size ?? 0,
             lessonsCompleted: this.lessonProgress?.lessonsCompleted ?? 0,
+            wallTimeSeconds: this.sessionWallTimeSeconds ?? 0,
             wavePreviewEmptyMessage: fogOfWar ? "Fog of war: intel hidden." : undefined
         });
         const sessionGoalsFinalized = this.maybeFinalizeSessionGoals(this.currentState);
@@ -5931,6 +5946,22 @@ export class GameController {
                 return;
             }
             if (this.handleTypoRecoveryShortcut(event)) {
+                return;
+            }
+            if (event.key === "Tab" &&
+                !event.repeat &&
+                !event.ctrlKey &&
+                !event.metaKey &&
+                !event.altKey &&
+                this.running &&
+                !this.manualTick &&
+                !this.menuActive &&
+                !this.optionsOverlayActive &&
+                !this.waveScorecardActive &&
+                !this.tutorialHoldLoop &&
+                !this.tutorialManager?.getState?.().active) {
+                event.preventDefault();
+                this.hud?.toggleBuildMenu?.();
                 return;
             }
             if (event.key === "Enter") {
@@ -6738,6 +6769,14 @@ export class GameController {
             });
         }
     }
+    handleBuildMenuToggle(open) {
+        const active = Boolean(open);
+        this.uiTimeScaleMultiplier = active ? BUILD_MENU_TIME_SCALE : 1;
+        if (active) {
+            const pct = Math.round(BUILD_MENU_TIME_SCALE * 100);
+            this.hud?.showCastleMessage?.(`Build menu open: slow-mo ${pct}%.`);
+        }
+    }
     handleTurretPresetSave(presetId) {
         if (!this.isValidPresetId(presetId)) {
             this.hud.showCastleMessage(`Unknown preset "${presetId}".`);
@@ -6948,6 +6987,7 @@ export class GameController {
         this.tutorialManager.reset();
         if (forceReplay) {
             this.engine.reset();
+            this.sessionWallTimeSeconds = 0;
             this.bestCombo = 0;
             this.impactEffects = [];
             this.screenShakeBursts = [];
@@ -7148,6 +7188,7 @@ export class GameController {
         this.tutorialCompleted = true;
         this.hud.setTutorialMessage(null);
         this.engine.reset();
+        this.sessionWallTimeSeconds = 0;
         this.bestCombo = 0;
         this.impactEffects = [];
         this.screenShakeBursts = [];
@@ -7203,6 +7244,7 @@ export class GameController {
         this.engine.setLaneFocus(null);
         this.engine.setLoopWaves(false);
         this.engine.reset();
+        this.sessionWallTimeSeconds = 0;
         this.engine.setMode("practice");
         const challenge = this.applyChallengeModifiersToEngine();
         this.closeOptionsOverlay({ resume: false });
@@ -7263,6 +7305,7 @@ export class GameController {
         this.pendingTutorialSummary = null;
         this.tutorialHoldLoop = false;
         this.engine.reset();
+        this.sessionWallTimeSeconds = 0;
         this.bestCombo = 0;
         this.impactEffects = [];
         this.screenShakeBursts = [];

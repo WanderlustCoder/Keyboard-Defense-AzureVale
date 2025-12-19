@@ -66,6 +66,7 @@ export interface HudCallbacks {
     onUpgradeTurret(slotId: string): void;
     onDowngradeTurret?: (slotId: string) => void;
     onTurretPriorityChange(slotId: string, priority: TurretTargetPriority): void;
+    onBuildMenuToggle?: (open: boolean) => void;
     onTurretPresetSave?: (presetId: string) => void;
     onTurretPresetApply?: (presetId: string) => void;
     onTurretPresetClear?: (presetId: string) => void;
@@ -757,6 +758,13 @@ export declare class HudView {
     private lastAccuracy;
     private hudRoot;
     private hudLayoutSide;
+    private setHudDockPane;
+    private setBuildDrawerOpen;
+    private buildDrawer;
+    private buildDrawerToggle;
+    private buildCommandInput;
+    private buildCommandStatus;
+    private buildCommandStatusTimeout;
     private evacBanner?;
     private supportBoostBanner?;
     private evacHideTimeout;
@@ -818,6 +826,8 @@ export declare class HudView {
         parentSummaryOverlay?: ParentSummaryOverlayElements;
     }, callbacks: HudCallbacks);
     focusTypingInput(): void;
+    isBuildMenuOpen(): boolean;
+    toggleBuildMenu(open?: boolean): boolean;
     setCapsLockWarning(visible: boolean): void;
     setLockIndicators(options: {
         capsOn: boolean;
@@ -922,9 +932,15 @@ export declare class HudView {
         loreUnlocked?: number;
         lessonsCompleted?: number;
         wavePreviewEmptyMessage?: string;
+        wallTimeSeconds?: number;
     }): void;
     showCastleMessage(message: string): void;
     showSlotMessage(slotId: string, message: string): void;
+    private setBuildCommandStatus;
+    private resolveBuildSlotId;
+    private resolveBuildTurretTypeId;
+    private normalizeBuildPriority;
+    private executeBuildCommand;
     showTypingErrorHint(hint: {
         expected: string | null;
         received: string | null;

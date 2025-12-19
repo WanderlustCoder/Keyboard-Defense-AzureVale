@@ -371,6 +371,7 @@ export declare class GameController {
     handleUpgradeTurret(slotId: any): void;
     handleDowngradeTurret(slotId: any): void;
     handleTurretPriorityChange(slotId: any, priority: any): void;
+    handleBuildMenuToggle(open: any): void;
     handleTurretPresetSave(presetId: any): void;
     handleTurretPresetApply(presetId: any): void;
     handleTurretPresetClear(presetId: any): void;

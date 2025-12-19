@@ -408,6 +408,13 @@ export class HudView {
     lastAccuracy = 1;
     hudRoot = null;
     hudLayoutSide = "right";
+    setHudDockPane = null;
+    setBuildDrawerOpen = null;
+    buildDrawer = null;
+    buildDrawerToggle = null;
+    buildCommandInput = null;
+    buildCommandStatus = null;
+    buildCommandStatusTimeout = null;
     evacBanner;
     supportBoostBanner;
     evacHideTimeout = null;
@@ -563,7 +570,58 @@ export class HudView {
         if (buildDrawer instanceof HTMLElement &&
             buildContent instanceof HTMLElement &&
             buildToggle instanceof HTMLButtonElement) {
+            this.buildDrawer = buildDrawer;
+            this.buildDrawerToggle = buildToggle;
+            if (!document.getElementById("build-command-input")) {
+                const commandPanel = document.createElement("div");
+                commandPanel.className = "build-command-panel";
+                commandPanel.setAttribute("role", "group");
+                commandPanel.setAttribute("aria-label", "Build command line");
+                const commandLabel = document.createElement("label");
+                commandLabel.className = "build-command-label";
+                commandLabel.textContent = "Command line";
+                commandLabel.setAttribute("for", "build-command-input");
+                const commandInput = document.createElement("input");
+                commandInput.id = "build-command-input";
+                commandInput.className = "build-command-input";
+                commandInput.type = "text";
+                commandInput.autocomplete = "off";
+                commandInput.autocapitalize = "off";
+                commandInput.spellcheck = false;
+                commandInput.placeholder = 'Try: "s0 arrow", "s0 upgrade", "castle repair"';
+                const commandHelp = document.createElement("div");
+                commandHelp.className = "build-command-help";
+                commandHelp.textContent = 'Enter: run command. Tab/Esc: close menu. Type "help" for examples.';
+                const commandStatus = document.createElement("div");
+                commandStatus.className = "build-command-status";
+                commandStatus.setAttribute("role", "status");
+                commandStatus.setAttribute("aria-live", "polite");
+                commandStatus.textContent = "";
+                commandPanel.append(commandLabel, commandInput, commandHelp, commandStatus);
+                buildContent.prepend(commandPanel);
+                this.buildCommandInput = commandInput;
+                this.buildCommandStatus = commandStatus;
+                commandInput.addEventListener("keydown", (event) => {
+                    if (event.key === "Enter") {
+                        event.preventDefault();
+                        const raw = commandInput.value;
+                        commandInput.value = "";
+                        this.executeBuildCommand(raw);
+                        commandInput.focus();
+                        return;
+                    }
+                    if (event.key === "Escape" || event.key === "Tab") {
+                        event.preventDefault();
+                        this.toggleBuildMenu(false);
+                    }
+                });
+            }
+            else {
+                const existing = document.getElementById("build-command-input");
+                this.buildCommandInput = existing instanceof HTMLInputElement ? existing : null;
+            }
             const setOpen = (open) => {
+                const wasOpen = buildDrawer.dataset.open === "true";
                 buildDrawer.dataset.open = open ? "true" : "false";
                 buildContent.setAttribute("aria-hidden", open ? "false" : "true");
                 buildContent.hidden = !open;
@@ -572,8 +630,18 @@ export class HudView {
                 if (open) {
                     buildDrawerOpenedOnce = true;
                 }
+                if (open !== wasOpen) {
+                    this.callbacks.onBuildMenuToggle?.(open);
+                }
+                if (open) {
+                    this.buildCommandInput?.focus?.();
+                }
+                else {
+                    this.focusTypingInput();
+                }
             };
             openBuildDrawer = setOpen;
+            this.setBuildDrawerOpen = setOpen;
             setOpen(false);
             buildToggle.addEventListener("click", () => {
                 this.hideMilestoneCelebration();
@@ -598,6 +666,7 @@ export class HudView {
                     openBuildDrawer(true);
                 }
             };
+            this.setHudDockPane = setActivePane;
             setActivePane("build");
             hudDockTabs.forEach((tab) => {
                 tab.addEventListener("click", () => {
@@ -3312,6 +3381,20 @@ export class HudView {
     focusTypingInput() {
         this.typingInput.focus();
     }
+    isBuildMenuOpen() {
+        return this.buildDrawer?.dataset.open === "true";
+    }
+    toggleBuildMenu(open) {
+        if (!this.buildDrawer || !this.setBuildDrawerOpen) {
+            return false;
+        }
+        const next = typeof open === "boolean" ? open : this.buildDrawer.dataset.open !== "true";
+        if (next) {
+            this.setHudDockPane?.("build");
+        }
+        this.setBuildDrawerOpen(next);
+        return next;
+    }
     setCapsLockWarning(visible) {
         if (!this.capsLockWarning)
             return;
@@ -3754,13 +3837,17 @@ export class HudView {
         const previousStatus = this.lastGameStatus;
         this.lastGameStatus = state.status;
         this.lastState = state;
-        const wpm = this.computeWpm(state);
+        const wallTimeSeconds = typeof options.wallTimeSeconds === "number" && Number.isFinite(options.wallTimeSeconds)
+            ? Math.max(0, options.wallTimeSeconds)
+            : null;
+        const timeSecondsForStats = wallTimeSeconds !== null ? wallTimeSeconds : Math.max(0, state.time ?? 0);
+        const wpm = this.computeWpm(state, timeSecondsForStats);
         if (typeof options.lessonsCompleted === "number") {
             this.lessonsCompletedCount = Math.max(0, Math.floor(options.lessonsCompleted));
         }
         this.updateCastleBonusHint(state);
-        this.refreshParentSummary(state);
-        this.refreshMasteryCertificate(state, options.lessonsCompleted ?? 0, previousStatus);
+        this.refreshParentSummary(state, timeSecondsForStats);
+        this.refreshMasteryCertificate(state, options.lessonsCompleted ?? 0, previousStatus, timeSecondsForStats);
         this.maybeCelebrateLessonMilestone(options.lessonsCompleted ?? 0);
         this.updateMentorDialogue(state, wpm);
         this.renderMuseumPanel();
@@ -3881,6 +3968,193 @@ export class HudView {
             slot.status.textContent = "";
             delete slot.status.dataset.messageActive;
         }, 2000);
+    }
+    setBuildCommandStatus(message, options = {}) {
+        if (!this.buildCommandStatus)
+            return;
+        const tone = options.tone ?? "info";
+        const timeoutMs = typeof options.timeoutMs === "number" && Number.isFinite(options.timeoutMs)
+            ? Math.max(0, options.timeoutMs)
+            : 2800;
+        this.buildCommandStatus.textContent = message;
+        this.buildCommandStatus.dataset.tone = tone;
+        if (this.buildCommandStatusTimeout) {
+            clearTimeout(this.buildCommandStatusTimeout);
+            this.buildCommandStatusTimeout = null;
+        }
+        if (timeoutMs > 0) {
+            this.buildCommandStatusTimeout = setTimeout(() => {
+                if (!this.buildCommandStatus)
+                    return;
+                this.buildCommandStatus.textContent = "";
+                delete this.buildCommandStatus.dataset.tone;
+                this.buildCommandStatusTimeout = null;
+            }, timeoutMs);
+        }
+    }
+    resolveBuildSlotId(token) {
+        const raw = token?.trim?.() ?? "";
+        if (!raw)
+            return null;
+        const normalized = raw.toLowerCase();
+        let slotId = null;
+        if (/^slot-\d+$/.test(normalized)) {
+            slotId = normalized;
+        }
+        else if (/^slot\d+$/.test(normalized)) {
+            slotId = `slot-${normalized.slice(4)}`;
+        }
+        else if (/^s\d+$/.test(normalized)) {
+            slotId = `slot-${normalized.slice(1)}`;
+        }
+        else if (/^\d+$/.test(normalized)) {
+            slotId = `slot-${normalized}`;
+        }
+        if (!slotId)
+            return null;
+        const exists = this.config.turretSlots.some((slot) => slot.id === slotId);
+        return exists ? slotId : null;
+    }
+    resolveBuildTurretTypeId(token) {
+        const raw = token?.trim?.() ?? "";
+        if (!raw)
+            return null;
+        const normalized = raw.toLowerCase();
+        const candidates = Object.keys(this.config.turretArchetypes);
+        for (const typeId of candidates) {
+            const archetype = this.config.turretArchetypes[typeId];
+            const label = (archetype?.name ?? typeId).toLowerCase();
+            if (normalized === typeId || normalized === label) {
+                return typeId;
+            }
+        }
+        if (normalized.length < 2) {
+            return null;
+        }
+        const matches = [];
+        for (const typeId of candidates) {
+            const archetype = this.config.turretArchetypes[typeId];
+            const label = (archetype?.name ?? typeId).toLowerCase();
+            if (typeId.startsWith(normalized) || label.startsWith(normalized)) {
+                matches.push(typeId);
+            }
+        }
+        return matches.length === 1 ? matches[0] : null;
+    }
+    normalizeBuildPriority(token) {
+        const raw = token?.trim?.() ?? "";
+        const normalized = raw.toLowerCase();
+        if (!normalized)
+            return null;
+        if (normalized === "first" || normalized === "f")
+            return "first";
+        if (normalized === "strongest" || normalized === "strong" || normalized === "s")
+            return "strongest";
+        if (normalized === "weakest" || normalized === "weak" || normalized === "w")
+            return "weakest";
+        return null;
+    }
+    executeBuildCommand(raw) {
+        const text = raw?.trim?.() ?? "";
+        if (!text) {
+            this.setBuildCommandStatus('Type "help" for examples.', { tone: "info" });
+            return;
+        }
+        const tokens = text.split(/\s+/g).filter(Boolean);
+        const head = (tokens[0] ?? "").toLowerCase();
+        if (head === "help" || head === "?") {
+            this.setBuildCommandStatus('Examples: "s0 arrow", "s0 upgrade", "s0 priority strongest", "castle repair".', { tone: "info", timeoutMs: 5200 });
+            return;
+        }
+        if (head === "castle" || head === "keep") {
+            const action = (tokens[1] ?? "").toLowerCase();
+            if (action === "upgrade" || action === "up") {
+                this.callbacks.onCastleUpgrade();
+                this.setBuildCommandStatus("Command sent: castle upgrade.", { tone: "success" });
+                return;
+            }
+            if (action === "repair" || action === "heal") {
+                this.callbacks.onCastleRepair();
+                this.setBuildCommandStatus("Command sent: castle repair.", { tone: "success" });
+                return;
+            }
+            this.setBuildCommandStatus('Try: "castle upgrade" or "castle repair".', { tone: "error" });
+            return;
+        }
+        if (head === "upgrade" || head === "up") {
+            const slotId = this.resolveBuildSlotId(tokens[1] ?? "");
+            if (slotId) {
+                this.callbacks.onUpgradeTurret(slotId);
+                this.setBuildCommandStatus(`Command sent: ${this.formatSlotLabel(slotId)} upgrade.`, {
+                    tone: "success"
+                });
+            }
+            else {
+                this.callbacks.onCastleUpgrade();
+                this.setBuildCommandStatus("Command sent: castle upgrade.", { tone: "success" });
+            }
+            return;
+        }
+        if (head === "repair" || head === "heal") {
+            this.callbacks.onCastleRepair();
+            this.setBuildCommandStatus("Command sent: castle repair.", { tone: "success" });
+            return;
+        }
+        const slotId = this.resolveBuildSlotId(tokens[0] ?? "");
+        if (!slotId) {
+            this.setBuildCommandStatus(`Unknown command "${text}". Type "help".`, { tone: "error" });
+            return;
+        }
+        const slotState = this.lastState?.turrets?.find((slot) => slot.id === slotId) ?? null;
+        if (slotState && !slotState.unlocked) {
+            this.showSlotMessage(slotId, "Slot locked.");
+            this.setBuildCommandStatus(`${this.formatSlotLabel(slotId)} is locked.`, { tone: "error" });
+            return;
+        }
+        const action = (tokens[1] ?? "").toLowerCase();
+        if (!action) {
+            this.setBuildCommandStatus(`Missing action for ${this.formatSlotLabel(slotId)}. Type "help".`, {
+                tone: "error"
+            });
+            return;
+        }
+        if (action === "upgrade" || action === "up") {
+            this.callbacks.onUpgradeTurret(slotId);
+            this.setBuildCommandStatus(`Command sent: ${this.formatSlotLabel(slotId)} upgrade.`, {
+                tone: "success"
+            });
+            return;
+        }
+        if (action === "downgrade" || action === "down" || action === "remove") {
+            if (!this.callbacks.onDowngradeTurret) {
+                this.setBuildCommandStatus("Downgrade unavailable in this mode.", { tone: "error" });
+                return;
+            }
+            this.callbacks.onDowngradeTurret(slotId);
+            this.setBuildCommandStatus(`Command sent: ${this.formatSlotLabel(slotId)} downgrade.`, {
+                tone: "success"
+            });
+            return;
+        }
+        if (action === "priority" || action === "target") {
+            const priority = this.normalizeBuildPriority(tokens[2] ?? "");
+            if (!priority) {
+                this.setBuildCommandStatus('Priority must be "first", "strongest", or "weakest".', {
+                    tone: "error"
+                });
+                return;
+            }
+            this.callbacks.onTurretPriorityChange(slotId, priority);
+            this.setBuildCommandStatus(`Command sent: ${this.formatSlotLabel(slotId)} targeting ${this.describePriority(priority)}.`, { tone: "success" });
+            return;
+        }
+        const typeId = this.resolveBuildTurretTypeId(action);
+        if (!typeId) {
+            this.setBuildCommandStatus(`Unknown turret "${action}". Type "help".`, { tone: "error" });
+            return;
+        }
+        this.callbacks.onPlaceTurret(slotId, typeId);
+        this.setBuildCommandStatus(`Command sent: ${this.formatSlotLabel(slotId)} deploy ${this.getTurretDisplayName(typeId)}.`, { tone: "success" });
     }
     showTypingErrorHint(hint) {
         this.typingErrorHint = {
@@ -8872,8 +9146,8 @@ export class HudView {
             }
         }
     }
-    refreshParentSummary(state) {
-        const timeMinutes = Math.max(0, (state.time ?? 0) / 60);
+    refreshParentSummary(state, timeSeconds) {
+        const timeMinutes = Math.max(0, (timeSeconds ?? 0) / 60);
         const accuracyPct = Math.round(Math.max(0, Math.min(100, (state.typing?.accuracy ?? 0) * 100)));
         const wpm = timeMinutes > 0
             ? Math.max(0, Math.round((state.typing?.correctInputs ?? 0) / 5 / timeMinutes))
@@ -8900,13 +9174,13 @@ export class HudView {
         };
         this.renderParentSummary();
     }
-    refreshMasteryCertificate(state, lessonsCompleted, previousStatus) {
+    refreshMasteryCertificate(state, lessonsCompleted, previousStatus, timeSeconds) {
         const sessionComplete = state.status === "defeat" || state.status === "victory";
         const previousComplete = previousStatus === "defeat" || previousStatus === "victory";
         if (!sessionComplete || previousComplete) {
             return;
         }
-        const timeMinutes = Math.max(0, (state.time ?? 0) / 60);
+        const timeMinutes = Math.max(0, (timeSeconds ?? 0) / 60);
         const accuracyPct = Math.round(Math.max(0, Math.min(100, (state.typing?.accuracy ?? 0) * 100)));
         const wpm = timeMinutes > 0
             ? Math.max(0, Math.round((state.typing?.correctInputs ?? 0) / 5 / timeMinutes))
@@ -9721,8 +9995,11 @@ export class HudView {
             return;
         document.documentElement.style.setProperty("--hud-font-scale", scale.toString());
     }
-    computeWpm(state) {
-        const minutes = Math.max(state.time / 60, 0.1);
+    computeWpm(state, timeSecondsOverride) {
+        const timeSeconds = typeof timeSecondsOverride === "number" && Number.isFinite(timeSecondsOverride)
+            ? Math.max(0, timeSecondsOverride)
+            : Math.max(0, state.time ?? 0);
+        const minutes = Math.max(timeSeconds / 60, 0.1);
         return Math.max(0, Math.round((state.typing.correctInputs / 5) / minutes));
     }
     setReducedMotionEnabled(enabled) {
