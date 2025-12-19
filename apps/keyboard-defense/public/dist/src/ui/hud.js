@@ -6,6 +6,29 @@ import { getEnemyBiography } from "../data/bestiary.js";
 import { DEFAULT_ROADMAP_PREFERENCES, mergeRoadmapPreferences, readRoadmapPreferences, writeRoadmapPreferences } from "../utils/roadmapPreferences.js";
 import { VirtualKeyboard } from "./virtualKeyboard.js";
 let hudInstanceCounter = 0;
+const BATTLE_LOG_FILTERS = [
+    "breach",
+    "perfect",
+    "medal",
+    "quest",
+    "upgrade"
+];
+const BATTLE_LOG_EMPTY_LABELS = {
+    breach: "No breaches yet.",
+    perfect: "No perfect words yet.",
+    medal: "No medals earned yet.",
+    quest: "No quest updates yet.",
+    upgrade: "No upgrades yet."
+};
+const createBattleLogSummaryState = () => ({
+    breach: { count: 0, lastMessage: null },
+    perfect: { count: 0, lastMessage: null },
+    medal: { count: 0, lastMessage: null },
+    quest: { count: 0, lastMessage: null },
+    upgrade: { count: 0, lastMessage: null },
+    system: { count: 0, lastMessage: null }
+});
+const isBattleLogFilterCategory = (value) => BATTLE_LOG_FILTERS.includes(value);
 const PASSIVE_ICON_MAP = {
     regen: { label: "Regen passive icon" },
     armor: { label: "Armor passive icon" },
@@ -355,6 +378,11 @@ export class HudView {
     typingAccuracyLabel = null;
     typingWpmLabel = null;
     logEntries = [];
+    logSummary = createBattleLogSummaryState();
+    logSummaryItems = new Map();
+    logFilterButtons = new Map();
+    logFilterState = new Set();
+    logFilterClearButton;
     typingErrorHint = null;
     logLimit = 6;
     tutorialSlotLock = null;
@@ -693,6 +721,7 @@ export class HudView {
         this.comboAccuracyDelta = this.getElement(rootIds.comboAccuracyDelta);
         this.hideComboAccuracyDelta();
         this.logList = this.getElement(rootIds.eventLog);
+        this.initializeBattleLogControls(rootIds);
         if (rootIds.virtualKeyboard) {
             const virtualKeyboardEl = document.getElementById(rootIds.virtualKeyboard);
             if (virtualKeyboardEl instanceof HTMLElement) {
@@ -4231,11 +4260,128 @@ export class HudView {
         }
         return char;
     }
-    appendLog(message) {
-        this.logEntries.unshift(message);
+    initializeBattleLogControls(rootIds) {
+        if (typeof document === "undefined")
+            return;
+        const summaryId = rootIds.eventLogSummary ?? "battle-log-summary";
+        const summaryElement = document.getElementById(summaryId);
+        if (summaryElement instanceof HTMLElement) {
+            const summaryButtons = Array.from(summaryElement.querySelectorAll("[data-category]"));
+            for (const button of summaryButtons) {
+                const category = button.dataset.category;
+                if (!isBattleLogFilterCategory(category))
+                    continue;
+                const count = button.querySelector(".battle-log-summary-count");
+                const last = button.querySelector(".battle-log-summary-last");
+                if (!count || !last)
+                    continue;
+                this.logSummaryItems.set(category, { button, count, last });
+                button.setAttribute("aria-pressed", "false");
+                button.addEventListener("click", () => {
+                    this.toggleLogFilter(category, { exclusive: true });
+                });
+            }
+        }
+        const filtersId = rootIds.eventLogFilters ?? "battle-log-filters";
+        const filtersElement = document.getElementById(filtersId);
+        if (filtersElement instanceof HTMLElement) {
+            const filterButtons = Array.from(filtersElement.querySelectorAll("[data-category]"));
+            for (const button of filterButtons) {
+                const category = button.dataset.category;
+                if (!isBattleLogFilterCategory(category))
+                    continue;
+                this.logFilterButtons.set(category, button);
+                button.setAttribute("aria-pressed", "false");
+                button.addEventListener("click", () => {
+                    this.toggleLogFilter(category);
+                });
+            }
+            const clearButton = filtersElement.querySelector("[data-action='clear']");
+            if (clearButton) {
+                this.logFilterClearButton = clearButton;
+                clearButton.addEventListener("click", () => {
+                    this.clearLogFilters();
+                });
+            }
+        }
+        this.syncBattleLogFilters();
+        this.updateBattleLogSummary();
+    }
+    toggleLogFilter(category, options = {}) {
+        const isActive = this.logFilterState.has(category);
+        if (options.exclusive) {
+            if (isActive && this.logFilterState.size === 1) {
+                this.logFilterState.clear();
+            }
+            else {
+                this.logFilterState.clear();
+                this.logFilterState.add(category);
+            }
+        }
+        else if (isActive) {
+            this.logFilterState.delete(category);
+        }
+        else {
+            this.logFilterState.add(category);
+        }
+        this.syncBattleLogFilters();
+        this.renderLog();
+    }
+    clearLogFilters() {
+        if (this.logFilterState.size === 0) {
+            return;
+        }
+        this.logFilterState.clear();
+        this.syncBattleLogFilters();
+        this.renderLog();
+    }
+    syncBattleLogFilters() {
+        const hasFilters = this.logFilterState.size > 0;
+        for (const [category, button] of this.logFilterButtons.entries()) {
+            const active = this.logFilterState.has(category);
+            button.dataset.active = active ? "true" : "false";
+            button.setAttribute("aria-pressed", active ? "true" : "false");
+        }
+        for (const [category, summary] of this.logSummaryItems.entries()) {
+            const active = this.logFilterState.has(category);
+            summary.button.dataset.active = active ? "true" : "false";
+            summary.button.setAttribute("aria-pressed", active ? "true" : "false");
+        }
+        if (this.logFilterClearButton) {
+            this.logFilterClearButton.disabled = !hasFilters;
+            this.logFilterClearButton.setAttribute("aria-disabled", hasFilters ? "false" : "true");
+        }
+    }
+    updateBattleLogSummary(category) {
+        const categories = category ? [category] : BATTLE_LOG_FILTERS;
+        for (const key of categories) {
+            const summary = this.logSummary[key];
+            const item = this.logSummaryItems.get(key);
+            if (!item)
+                continue;
+            item.count.textContent = String(summary.count);
+            item.last.textContent = summary.lastMessage ?? BATTLE_LOG_EMPTY_LABELS[key];
+            item.last.dataset.empty = summary.lastMessage ? "false" : "true";
+        }
+    }
+    recordLogSummary(entry) {
+        const summary = this.logSummary[entry.category];
+        summary.count += 1;
+        summary.lastMessage = entry.message;
+        if (isBattleLogFilterCategory(entry.category)) {
+            this.updateBattleLogSummary(entry.category);
+        }
+    }
+    appendLog(message, category = "system") {
+        this.logEntries.unshift({
+            message,
+            category,
+            timestamp: Date.now()
+        });
         if (this.logEntries.length > this.logLimit) {
             this.logEntries.length = this.logLimit;
         }
+        this.recordLogSummary(this.logEntries[0]);
         this.renderLog();
     }
     setTutorialMessage(message, highlight) {
@@ -5965,10 +6111,25 @@ export class HudView {
         this.comboAccuracyDelta.textContent = "";
     }
     renderLog() {
+        const hasFilters = this.logFilterState.size > 0;
+        const entries = hasFilters
+            ? this.logEntries.filter((entry) => isBattleLogFilterCategory(entry.category) && this.logFilterState.has(entry.category))
+            : this.logEntries;
         this.logList.replaceChildren();
-        for (const entry of this.logEntries) {
+        if (entries.length === 0) {
+            const empty = document.createElement("li");
+            empty.className = "battle-log-empty";
+            empty.textContent =
+                this.logEntries.length === 0
+                    ? "No battle log entries yet."
+                    : "No events match the current filters.";
+            this.logList.appendChild(empty);
+            return;
+        }
+        for (const entry of entries) {
             const item = document.createElement("li");
-            item.textContent = entry;
+            item.textContent = entry.message;
+            item.dataset.category = entry.category;
             this.logList.appendChild(item);
         }
     }

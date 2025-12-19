@@ -160,6 +160,8 @@ const initializeHud = (options = {}) => {
   const trainingCalendarStats = get("training-calendar-stats");
   const trainingCalendarOpen = get("training-calendar-open");
   const logList = get("battle-log");
+  const battleLogSummary = get("battle-log-summary");
+  const battleLogFilters = get("battle-log-filters");
   const wavePreview = get("wave-preview-list");
   const wavePreviewHint = get("wave-preview-hint");
   const tutorialBanner = get("tutorial-banner");
@@ -767,6 +769,8 @@ const initializeHud = (options = {}) => {
       comboAccuracyDelta: comboAccuracyDeltaRef,
       goldDelta,
       logList,
+      battleLogSummary,
+      battleLogFilters,
       buildDrawer,
       buildContent,
       buildToggle,
@@ -1336,6 +1340,49 @@ test("HudView highlights combos and accuracy delta during warnings", () => {
   assert.equal(tutorialBannerMessage.textContent, "Practice typing");
   hud.setTutorialMessage(null);
   assert.equal(tutorialBanner.dataset.visible, "false");
+
+  cleanup();
+});
+
+test("HudView battle log summary updates and filters entries", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  const { logList, battleLogSummary, battleLogFilters } = elements;
+
+  const breachSummary = battleLogSummary.querySelector('[data-category="breach"]');
+  const questSummary = battleLogSummary.querySelector('[data-category="quest"]');
+  assert.ok(breachSummary);
+  assert.ok(questSummary);
+
+  const breachCount = breachSummary.querySelector(".battle-log-summary-count");
+  const breachLast = breachSummary.querySelector(".battle-log-summary-last");
+  const questCount = questSummary.querySelector(".battle-log-summary-count");
+  assert.ok(breachCount);
+  assert.ok(breachLast);
+  assert.ok(questCount);
+
+  const breachFilter = battleLogFilters.querySelector('[data-category="breach"]');
+  const questFilter = battleLogFilters.querySelector('[data-category="quest"]');
+  const clearFilter = battleLogFilters.querySelector('[data-action="clear"]');
+  assert.ok(breachFilter);
+  assert.ok(questFilter);
+  assert.ok(clearFilter);
+
+  hud.appendLog("Enemy breached gates! -2 HP", "breach");
+  hud.appendLog("Weekly Trial unlocked! Open Mission Control to start it.", "quest");
+
+  assert.equal(breachCount.textContent, "1");
+  assert.ok(breachLast.textContent.includes("Enemy breached"));
+  assert.equal(questCount.textContent, "1");
+
+  dispatchDomEvent(breachFilter, "click");
+  assert.equal(logList.children.length, 1);
+  assert.equal(logList.children[0].textContent, "Enemy breached gates! -2 HP");
+
+  dispatchDomEvent(questFilter, "click");
+  assert.equal(logList.children.length, 2);
+
+  dispatchDomEvent(clearFilter, "click");
+  assert.equal(logList.children.length, 2);
 
   cleanup();
 });

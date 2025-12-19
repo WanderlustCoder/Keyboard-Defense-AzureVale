@@ -772,6 +772,8 @@ export class GameController {
       comboLabel: "combo-stats",
       comboAccuracyDelta: "combo-accuracy-delta",
       eventLog: "battle-log",
+      eventLogSummary: "battle-log-summary",
+      eventLogFilters: "battle-log-filters",
         wavePreview: "wave-preview-list",
         wavePreviewHint: "wave-preview-hint",
         tutorialBanner: "tutorial-banner",
@@ -7696,7 +7698,7 @@ export class GameController {
         view.trial.status === "completed"
           ? "Weekly Trial already completed this week."
           : "Weekly Trial locked: complete the weekly quests first.";
-      this.hud.appendLog(message);
+      this.hud.appendLog(message, "quest");
       this.syncWeeklyQuestBoardToHud();
       return;
     }
@@ -7742,7 +7744,7 @@ export class GameController {
     this.impactEffects = [];
     this.screenShakeBursts = [];
     this.currentState = this.engine.getState();
-    this.hud.appendLog("Weekly Trial started: defend through the bespoke challenge wave.");
+    this.hud.appendLog("Weekly Trial started: defend through the bespoke challenge wave.", "quest");
     if (challenge?.active?.length) {
       this.hud.appendLog(`Challenge modifiers active: ${challenge.summary}`);
     }
@@ -8153,7 +8155,7 @@ export class GameController {
         this.weeklyQuestBoard = writeWeeklyQuestBoard(questStorage, this.weeklyQuestBoard);
       }
       if (!weeklyWasUnlocked && this.weeklyQuestBoard?.trial?.unlockedAt) {
-        this.hud?.appendLog?.("Weekly Trial unlocked! Open Mission Control to start it.");
+        this.hud?.appendLog?.("Weekly Trial unlocked! Open Mission Control to start it.", "quest");
       }
       this.syncWeeklyQuestBoardToHud();
     }
@@ -8171,11 +8173,11 @@ export class GameController {
       }
       this.syncWeeklyQuestBoardToHud();
       if (!wasCompleted && this.weeklyQuestBoard?.trial?.completedAt) {
-        this.hud?.appendLog?.("Weekly Trial complete! Great defense.");
+        this.hud?.appendLog?.("Weekly Trial complete! Great defense.", "quest");
       } else if (trialOutcome === "victory") {
-        this.hud?.appendLog?.("Weekly Trial victory recorded.");
+        this.hud?.appendLog?.("Weekly Trial victory recorded.", "quest");
       } else {
-        this.hud?.appendLog?.("Weekly Trial attempt recorded. You can try again anytime.");
+        this.hud?.appendLog?.("Weekly Trial attempt recorded. You can try again anytime.", "quest");
       }
       this.restoreWeeklyTrialConfig();
       this.weeklyTrialActive = false;
@@ -8192,7 +8194,7 @@ export class GameController {
       ? Object.values(this.sessionGoals.lastRun.results).filter((entry) => entry !== "pending").length
       : 0;
     const totalLabel = total > 0 ? total : 3;
-    this.hud?.appendLog?.(`Session goals updated: ${met}/${totalLabel} goals met.`);
+    this.hud?.appendLog?.(`Session goals updated: ${met}/${totalLabel} goals met.`, "quest");
     return true;
   }
 
@@ -8362,7 +8364,7 @@ export class GameController {
     const medalLabel =
       medalResult.record.tier.charAt(0).toUpperCase() + medalResult.record.tier.slice(1);
     const modeLabel = this.getTypingDrillModeLabel(medalResult.record.mode);
-    this.hud?.appendLog?.(`${medalLabel} medal earned in ${modeLabel}.`);
+    this.hud?.appendLog?.(`${medalLabel} medal earned in ${modeLabel}.`, "medal");
     if (typeof window !== "undefined" && window.localStorage) {
       writeLessonMedalProgress(window.localStorage, medalResult.progress);
     }
@@ -8609,22 +8611,22 @@ export class GameController {
       }
     });
     this.engine.events.on("enemy:escaped", ({ enemy }) => {
-      this.hud.appendLog(`Enemy breached gates! -${enemy.damage} HP`);
+      this.hud.appendLog(`Enemy breached gates! -${enemy.damage} HP`, "breach");
       this.playSound("impact-breach");
       this.addImpactEffect(enemy.lane, 1, "breach");
       this.tutorialManager?.notify({ type: "castle:breach" });
     });
     this.engine.events.on("castle:damaged", ({ amount, health }) => {
-      this.hud.appendLog(`Castle hit for ${amount} (HP ${Math.ceil(health)})`);
+      this.hud.appendLog(`Castle hit for ${amount} (HP ${Math.ceil(health)})`, "breach");
       this.triggerHaptics([0, 30]);
     });
     this.engine.events.on("castle:upgraded", ({ level }) => {
-      this.hud.appendLog(`Castle upgraded to level ${level}`);
+      this.hud.appendLog(`Castle upgraded to level ${level}`, "upgrade");
       this.playSound("upgrade");
     });
     this.engine.events.on("castle:passive-unlocked", ({ passive }) => {
       const description = this.describeCastlePassive(passive);
-      this.hud.appendLog(`Passive unlocked: ${description}`);
+      this.hud.appendLog(`Passive unlocked: ${description}`, "upgrade");
       this.hud.showCastleMessage(description);
       this.playSound("upgrade", 48);
       this.tutorialManager?.notify({
@@ -8646,19 +8648,20 @@ export class GameController {
         logPieces.push(`HP ${remaining}`);
       }
       const detail = logPieces.length > 0 ? ` ${logPieces.join(" ")}` : "";
-      this.hud.appendLog(`Castle repaired${detail}`);
+      this.hud.appendLog(`Castle repaired${detail}`, "upgrade");
       this.playSound("upgrade", 24);
     });
     this.engine.events.on("turret:placed", (slot) => {
       this.hud.appendLog(
-        `Turret deployed in ${slot.id.toUpperCase()} (${slot.turret?.typeId ?? "unknown"})`
+        `Turret deployed in ${slot.id.toUpperCase()} (${slot.turret?.typeId ?? "unknown"})`,
+        "upgrade"
       );
       this.playSound("upgrade", 80);
     });
     this.engine.events.on("turret:upgraded", (slot) => {
       const turret = slot.turret;
       if (turret) {
-        this.hud.appendLog(`Turret ${slot.id.toUpperCase()} -> Lv.${turret.level}`);
+        this.hud.appendLog(`Turret ${slot.id.toUpperCase()} -> Lv.${turret.level}`, "upgrade");
         this.playSound("upgrade", 120);
       }
     });
@@ -8727,7 +8730,7 @@ export class GameController {
       }
     });
     this.engine.events.on("typing:perfect-word", ({ word }) => {
-      this.hud.appendLog(`Perfect word: ${word.toUpperCase()}!`);
+      this.hud.appendLog(`Perfect word: ${word.toUpperCase()}!`, "perfect");
     });
     this.engine.events.on("wave:bonus", ({ waveIndex, count, gold }) => {
       const bonusMessage = `Wave ${waveIndex + 1} bonus: ${count} perfect words (+${gold}g)`;

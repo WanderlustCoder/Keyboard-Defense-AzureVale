@@ -736,6 +736,60 @@
               ×
             </button>
           </div>
+          <div class="battle-log-controls">
+            <div id="battle-log-summary" class="battle-log-summary" role="group" aria-label="Battle log summary">
+              <button type="button" class="battle-log-summary-item" data-category="breach" aria-pressed="false">
+                <span class="battle-log-summary-label">Breaches</span>
+                <span class="battle-log-summary-count" id="battle-log-count-breach">0</span>
+                <span class="battle-log-summary-last" id="battle-log-last-breach">No breaches yet.</span>
+              </button>
+              <button type="button" class="battle-log-summary-item" data-category="perfect" aria-pressed="false">
+                <span class="battle-log-summary-label">Perfects</span>
+                <span class="battle-log-summary-count" id="battle-log-count-perfect">0</span>
+                <span class="battle-log-summary-last" id="battle-log-last-perfect">No perfect words yet.</span>
+              </button>
+              <button type="button" class="battle-log-summary-item" data-category="medal" aria-pressed="false">
+                <span class="battle-log-summary-label">Medals</span>
+                <span class="battle-log-summary-count" id="battle-log-count-medal">0</span>
+                <span class="battle-log-summary-last" id="battle-log-last-medal">No medals earned yet.</span>
+              </button>
+              <button type="button" class="battle-log-summary-item" data-category="quest" aria-pressed="false">
+                <span class="battle-log-summary-label">Quests</span>
+                <span class="battle-log-summary-count" id="battle-log-count-quest">0</span>
+                <span class="battle-log-summary-last" id="battle-log-last-quest">No quest updates yet.</span>
+              </button>
+              <button type="button" class="battle-log-summary-item" data-category="upgrade" aria-pressed="false">
+                <span class="battle-log-summary-label">Upgrades</span>
+                <span class="battle-log-summary-count" id="battle-log-count-upgrade">0</span>
+                <span class="battle-log-summary-last" id="battle-log-last-upgrade">No upgrades yet.</span>
+              </button>
+            </div>
+            <div id="battle-log-filters" class="battle-log-filters" role="group" aria-label="Battle log filters">
+              <button type="button" class="battle-log-filter" data-category="breach">
+                <span class="battle-log-keycap">B</span>
+                Breaches
+              </button>
+              <button type="button" class="battle-log-filter" data-category="perfect">
+                <span class="battle-log-keycap">P</span>
+                Perfects
+              </button>
+              <button type="button" class="battle-log-filter" data-category="medal">
+                <span class="battle-log-keycap">M</span>
+                Medals
+              </button>
+              <button type="button" class="battle-log-filter" data-category="quest">
+                <span class="battle-log-keycap">Q</span>
+                Quests
+              </button>
+              <button type="button" class="battle-log-filter" data-category="upgrade">
+                <span class="battle-log-keycap">U</span>
+                Upgrades
+              </button>
+              <button type="button" class="battle-log-filter battle-log-filter--clear" data-action="clear">
+                Clear
+              </button>
+            </div>
+          </div>
           <ul id="battle-log"></ul>
         </section>
         <section class="debug">

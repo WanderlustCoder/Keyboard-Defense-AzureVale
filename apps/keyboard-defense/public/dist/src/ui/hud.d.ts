@@ -16,6 +16,7 @@ import { type SfxLibraryViewState } from "../utils/sfxLibrary.js";
 import { type MusicStemViewState } from "../utils/musicStems.js";
 import { type UiSchemeViewState } from "../utils/uiSoundScheme.js";
 type ResolvedParallaxScene = Exclude<ParallaxScene, "auto">;
+type BattleLogCategory = "breach" | "perfect" | "medal" | "quest" | "upgrade" | "system";
 type CastleSkinId = "classic" | "dusk" | "aurora" | "ember";
 type ContrastAuditResult = {
     label: string;
@@ -705,6 +706,11 @@ export declare class HudView {
     private typingAccuracyLabel;
     private typingWpmLabel;
     private readonly logEntries;
+    private readonly logSummary;
+    private readonly logSummaryItems;
+    private readonly logFilterButtons;
+    private logFilterState;
+    private logFilterClearButton?;
     private typingErrorHint;
     private readonly logLimit;
     private tutorialSlotLock;
@@ -782,6 +788,8 @@ export declare class HudView {
         comboLabel: string;
         comboAccuracyDelta: string;
         eventLog: string;
+        eventLogSummary?: string;
+        eventLogFilters?: string;
         fullscreenButton?: string;
         companionPet?: string;
         companionMoodLabel?: string;
@@ -950,7 +958,13 @@ export declare class HudView {
     private getFingerMapping;
     private normalizeFingerKey;
     private formatFingerKeyLabel;
-    appendLog(message: string): void;
+    private initializeBattleLogControls;
+    private toggleLogFilter;
+    private clearLogFilters;
+    private syncBattleLogFilters;
+    private updateBattleLogSummary;
+    private recordLogSummary;
+    appendLog(message: string, category?: BattleLogCategory): void;
     setTutorialMessage(message: string | null, highlight?: boolean): void;
     private updateCastleBonusHint;
     private clearWavePreviewHintTimeout;
