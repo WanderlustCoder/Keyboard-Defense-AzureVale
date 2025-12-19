@@ -21,4 +21,28 @@ describe("lane hazards", () => {
     const multiplier = turretSystem.resolveLaneFireRateMultiplier(state, 0);
     expect(multiplier).toBeLessThan(1);
   });
+
+  it("assigns a default turret fire rate debuff for fog hazards", () => {
+    const engine = new GameEngine({ seed: 1 });
+    let nextCalls = 0;
+    const rng = {
+      next() {
+        nextCalls += 1;
+        // First call: ensure hazardCount=1. Second call: choose fog.
+        return nextCalls === 1 ? 0.9 : 0.4;
+      },
+      pick(values) {
+        return values[0];
+      },
+      range(min) {
+        return min;
+      }
+    };
+
+    engine["buildLaneHazardsForWave"](1, rng);
+    const hazardEvents = engine["hazardEvents"] ?? [];
+    expect(hazardEvents.length).toBe(1);
+    expect(hazardEvents[0].kind).toBe("fog");
+    expect(hazardEvents[0].fireRateMultiplier).toBe(0.9);
+  });
 });

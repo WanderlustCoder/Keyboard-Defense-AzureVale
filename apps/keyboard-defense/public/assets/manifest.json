@@ -1,12 +1,70 @@
 {
   "version": "1.1",
   "images": {
+    "lane-overlay-day": "backgrounds/lane-overlay-day.png",
+    "lane-overlay-night": "backgrounds/lane-overlay-night.png",
+    "lane-overlay-storm": "backgrounds/lane-overlay-storm.png",
+    "parallax-day-far": "backgrounds/parallax-day-far.png",
+    "parallax-day-mid": "backgrounds/parallax-day-mid.png",
+    "parallax-day-near": "backgrounds/parallax-day-near.png",
+    "parallax-night-far": "backgrounds/parallax-night-far.png",
+    "parallax-night-mid": "backgrounds/parallax-night-mid.png",
+    "parallax-night-near": "backgrounds/parallax-night-near.png",
+    "parallax-storm-far": "backgrounds/parallax-storm-far.png",
+    "parallax-storm-mid": "backgrounds/parallax-storm-mid.png",
+    "parallax-storm-near": "backgrounds/parallax-storm-near.png",
+    "castle-level-1": "castle/castle-level-1.png",
+    "castle-level-2": "castle/castle-level-2.png",
+    "castle-level-3": "castle/castle-level-3.png",
+    "castle-level-4": "castle/castle-level-4.png",
     "atlas": "defeat/atlas.json",
+    "defeat-archivist-01": "defeat/defeat-archivist-01.png",
+    "defeat-archivist-02": "defeat/defeat-archivist-02.png",
+    "defeat-archivist-03": "defeat/defeat-archivist-03.png",
     "defeat-brute-01": "defeat/defeat-brute-01.png",
     "defeat-brute-02": "defeat/defeat-brute-02.png",
+    "defeat-brute-03": "defeat/defeat-brute-03.png",
+    "defeat-brute-04": "defeat/defeat-brute-04.png",
     "defeat-default-01": "defeat/defeat-default-01.png",
     "defeat-default-02": "defeat/defeat-default-02.png",
-    "defeat-default-03": "defeat/defeat-default-03.png"
+    "defeat-default-03": "defeat/defeat-default-03.png",
+    "defeat-dummy-01": "defeat/defeat-dummy-01.png",
+    "defeat-dummy-02": "defeat/defeat-dummy-02.png",
+    "defeat-dummy-03": "defeat/defeat-dummy-03.png",
+    "defeat-embermancer-01": "defeat/defeat-embermancer-01.png",
+    "defeat-embermancer-02": "defeat/defeat-embermancer-02.png",
+    "defeat-embermancer-03": "defeat/defeat-embermancer-03.png",
+    "defeat-evac-transport-01": "defeat/defeat-evac-transport-01.png",
+    "defeat-evac-transport-02": "defeat/defeat-evac-transport-02.png",
+    "defeat-evac-transport-03": "defeat/defeat-evac-transport-03.png",
+    "defeat-vanguard-01": "defeat/defeat-vanguard-01.png",
+    "defeat-vanguard-02": "defeat/defeat-vanguard-02.png",
+    "defeat-vanguard-03": "defeat/defeat-vanguard-03.png",
+    "enemy-archivist": "enemies/enemy-archivist.png",
+    "enemy-brute": "enemies/enemy-brute.png",
+    "enemy-dummy": "enemies/enemy-dummy.png",
+    "enemy-embermancer": "enemies/enemy-embermancer.png",
+    "enemy-evac-transport": "enemies/enemy-evac-transport.png",
+    "enemy-grunt": "enemies/enemy-grunt.png",
+    "enemy-runner": "enemies/enemy-runner.png",
+    "enemy-vanguard": "enemies/enemy-vanguard.png",
+    "enemy-witch": "enemies/enemy-witch.png",
+    "turret-arcane": "turrets/turret-arcane.png",
+    "turret-arrow": "turrets/turret-arrow.png",
+    "turret-crystal": "turrets/turret-crystal.png",
+    "turret-flame": "turrets/turret-flame.png",
+    "passive-armor": "ui/passive-armor.png",
+    "passive-generic": "ui/passive-generic.png",
+    "passive-gold": "ui/passive-gold.png",
+    "passive-regen": "ui/passive-regen.png",
+    "ui-sticker-calm": "ui/ui-sticker-calm.png",
+    "ui-sticker-castle": "ui/ui-sticker-castle.png",
+    "ui-sticker-combo": "ui/ui-sticker-combo.png",
+    "ui-sticker-drill": "ui/ui-sticker-drill.png",
+    "ui-sticker-perfect": "ui/ui-sticker-perfect.png",
+    "ui-sticker-scroll": "ui/ui-sticker-scroll.png",
+    "ui-sticker-shield": "ui/ui-sticker-shield.png",
+    "ui-sticker-treasure": "ui/ui-sticker-treasure.png"
   },
   "defeatAnimations": [
     {
@@ -58,16 +116,215 @@
           "durationMs": 120,
           "size": 118,
           "offsetY": -4
+        },
+        {
+          "key": "defeat-brute-03",
+          "durationMs": 160,
+          "size": 128,
+          "offsetY": -6
+        },
+        {
+          "key": "defeat-brute-04",
+          "durationMs": 220,
+          "size": 140,
+          "offsetY": -8
+        }
+      ]
+    },
+    {
+      "id": "dummy",
+      "fallback": "default",
+      "frames": [
+        {
+          "key": "defeat-dummy-01",
+          "durationMs": 90,
+          "size": 84,
+          "offsetY": -2
+        },
+        {
+          "key": "defeat-dummy-02",
+          "durationMs": 120,
+          "size": 104,
+          "offsetY": -4
+        },
+        {
+          "key": "defeat-dummy-03",
+          "durationMs": 160,
+          "size": 118,
+          "offsetY": -6
+        }
+      ]
+    },
+    {
+      "id": "vanguard",
+      "match": [
+        "elite-vanguard"
+      ],
+      "fallback": "default",
+      "frames": [
+        {
+          "key": "defeat-vanguard-01",
+          "durationMs": 90,
+          "size": 96,
+          "offsetY": -2
+        },
+        {
+          "key": "defeat-vanguard-02",
+          "durationMs": 120,
+          "size": 118,
+          "offsetY": -4
+        },
+        {
+          "key": "defeat-vanguard-03",
+          "durationMs": 160,
+          "size": 132,
+          "offsetY": -6
+        }
+      ]
+    },
+    {
+      "id": "embermancer",
+      "match": [
+        "elite-embermancer"
+      ],
+      "fallback": "default",
+      "frames": [
+        {
+          "key": "defeat-embermancer-01",
+          "durationMs": 90,
+          "size": 96,
+          "offsetY": -2
+        },
+        {
+          "key": "defeat-embermancer-02",
+          "durationMs": 120,
+          "size": 120,
+          "offsetY": -4
+        },
+        {
+          "key": "defeat-embermancer-03",
+          "durationMs": 160,
+          "size": 134,
+          "offsetY": -6
+        }
+      ]
+    },
+    {
+      "id": "evac-transport",
+      "fallback": "default",
+      "frames": [
+        {
+          "key": "defeat-evac-transport-01",
+          "durationMs": 90,
+          "size": 92,
+          "offsetY": -2
+        },
+        {
+          "key": "defeat-evac-transport-02",
+          "durationMs": 120,
+          "size": 114,
+          "offsetY": -4
+        },
+        {
+          "key": "defeat-evac-transport-03",
+          "durationMs": 160,
+          "size": 126,
+          "offsetY": -6
+        }
+      ]
+    },
+    {
+      "id": "archivist",
+      "match": [
+        "boss-archivist"
+      ],
+      "fallback": "default",
+      "frames": [
+        {
+          "key": "defeat-archivist-01",
+          "durationMs": 100,
+          "size": 112,
+          "offsetY": -2
+        },
+        {
+          "key": "defeat-archivist-02",
+          "durationMs": 140,
+          "size": 136,
+          "offsetY": -4
+        },
+        {
+          "key": "defeat-archivist-03",
+          "durationMs": 190,
+          "size": 152,
+          "offsetY": -6
         }
       ]
     }
   ],
   "integrity": {
+    "lane-overlay-day": "sha256-xI2Jy6qe6c0om6xEdC6udo47PSJUx2g8/WAWb7Rz/AY=",
+    "lane-overlay-night": "sha256-FV9vATbikcmvvfpz8HMiUE4R2CKq7Beq2EExr3QXbX0=",
+    "lane-overlay-storm": "sha256-cFV+bSwf/m5LCmL8j6rVY+7F06nAwMOyxm0hzbLNQag=",
+    "parallax-day-far": "sha256-IkIzWTgHqtMAzqCWSj23+9ID6Ce+KJh0EYvADi5+2Fk=",
+    "parallax-day-mid": "sha256-sS5d4ZHcBLN2dJlaP07j4RFOrDb8MUp0FWFf7BaL/XI=",
+    "parallax-day-near": "sha256-/Zbij+dhprTwTbr7oivNYF5fNnCuntvG+tvPBWM9G5s=",
+    "parallax-night-far": "sha256-AEl8dZJt6cs5nG//IIHuFPErGjRWCLvNGVj6ViWfAOw=",
+    "parallax-night-mid": "sha256-8nsdxBlUzGGz/jAr7+xgSrCNuVeUBah8V+iQWSgJb7w=",
+    "parallax-night-near": "sha256-bYJUdpQnM46ph9tmamPJ2IppKaUr99awBfEXtPbWRO0=",
+    "parallax-storm-far": "sha256-fNw0i/B/QIX4Mju+tao1jeAD3A8ohKTfrq4MaA+lHqU=",
+    "parallax-storm-mid": "sha256-gRblJ68O+IxqaELCGDSDM6tv5RUrP3rLC1P1WiWdCN4=",
+    "parallax-storm-near": "sha256-yQL1+tAmVGgpbNURtD4ponnie8lBq6qDibCwEoA2aS8=",
+    "castle-level-1": "sha256-Zs+GQPG+JnC/7+BeMkUg0enRNbW/hxiObi6KCpAdvnc=",
+    "castle-level-2": "sha256-vIO8YybcNSJ8m1Ww8fdhWYKpvD3dWOoKqAofqE/VpVk=",
+    "castle-level-3": "sha256-vWAuSfg0qID4tKttqLuLFwHSjHHOHfzRNNbdB8sLaoo=",
+    "castle-level-4": "sha256-SUiAZ/pwnW0OIhgd/W80AyrfHc2Ohzrjn+1wtmBz/IY=",
     "atlas": "sha256-MsANhlcsl+g+BISeJDJqhX9DqtH6jLl3/xBh0Fmgi/U=",
-    "defeat-brute-01": "sha256-HS3cm9AIDCKDrYlKI2Jykr34xU9Gu/Lw6OqW97H7nQg=",
-    "defeat-brute-02": "sha256-HS3cm9AIDCKDrYlKI2Jykr34xU9Gu/Lw6OqW97H7nQg=",
-    "defeat-default-01": "sha256-HS3cm9AIDCKDrYlKI2Jykr34xU9Gu/Lw6OqW97H7nQg=",
-    "defeat-default-02": "sha256-HS3cm9AIDCKDrYlKI2Jykr34xU9Gu/Lw6OqW97H7nQg=",
-    "defeat-default-03": "sha256-HS3cm9AIDCKDrYlKI2Jykr34xU9Gu/Lw6OqW97H7nQg="
+    "defeat-archivist-01": "sha256-ta6eUgJlQulqq5lCM8ZnhpfUGXeQo95nB+ZSBWH7WUg=",
+    "defeat-archivist-02": "sha256-kkI/POt+ATCwQ0uP4GMAR20rdHcLCUmWB/oo8D5LUPI=",
+    "defeat-archivist-03": "sha256-/kcmcJda9dB2iPeAafY09G4u//qsIPE72zZgq5oU4hk=",
+    "defeat-brute-01": "sha256-TuQWeQNBdPfWRoud5breuU7URxy8xoNL3IkkMqexRZY=",
+    "defeat-brute-02": "sha256-GLvF83ffPzGGyeUhYWA06tQjhKopL3oDuyYznstPY5o=",
+    "defeat-brute-03": "sha256-lqJJbA9dqxoSN50AyDbVSHIyltmFe/bEEYnL40EjfB8=",
+    "defeat-brute-04": "sha256-XVpGvdpz16ALf+gymw6vc0uQp1dWOAlZMl/laj1uZhY=",
+    "defeat-default-01": "sha256-/8Lefz4ePppuMn1rcknoCYgD1KZsppdN9KCwj8lhW9s=",
+    "defeat-default-02": "sha256-gGvLcKl/+Ub9jA5U2Cex7vWB9mSxSfWTQWADbX1PWmQ=",
+    "defeat-default-03": "sha256-P3T9vsDo8ZqSd98U4Mhl51uQU6B2Ax2nAAruNzRAIQw=",
+    "defeat-dummy-01": "sha256-64i3QPNkHrd3Ep2UywJPO50Dex1m/MOEF8vrNkqgstE=",
+    "defeat-dummy-02": "sha256-S8s9hf2cE4zgs4bHz0jV6OrQngqAlB5kxuSRe6HNsoM=",
+    "defeat-dummy-03": "sha256-sVVwA3fCJUqWZolStUfyjSNExJax/dpbXoeUfzePtrw=",
+    "defeat-embermancer-01": "sha256-UAk2ERHGH8A3ZklnX1Uhuyk6glzh7nZ5UF2BHzJd85g=",
+    "defeat-embermancer-02": "sha256-xfhep2vJmPifFl2iW+YeLTLqjD7JmRAneqoRLUMFvdI=",
+    "defeat-embermancer-03": "sha256-tBc6JVogX94uDwUMKhLzNlUU+5DsXWHrEydNlZD0Qak=",
+    "defeat-evac-transport-01": "sha256-fd3ib8tFX+ry6X2G5NOIUgjr21A8qroNogNtkVw8kck=",
+    "defeat-evac-transport-02": "sha256-YAMkInbOmwEs1Swh0Y1lLXIyg74iAG+073WG82VZNi8=",
+    "defeat-evac-transport-03": "sha256-TATN5fe3D+duKQdWvjDwL8mtUP0HAmKKRcCdQkYbRVo=",
+    "defeat-vanguard-01": "sha256-R6k9RO+p4zwDyJDrvIcRMF03Asm/bom+whksNiJ2Qug=",
+    "defeat-vanguard-02": "sha256-vA4t/NvnU+mk4s2aDQQK1NJJmp8wewR9CUxg62K7Jn8=",
+    "defeat-vanguard-03": "sha256-2irqOq0BZexEzINnoI7g4pkfw6iPslDOQrUgytiaygA=",
+    "enemy-archivist": "sha256-wGajtUXwkQRuSuRre3rP01rkMdKR0xM1t7xlwXMXusc=",
+    "enemy-brute": "sha256-L1ZWyZtrB3hubDiAdpa8msRfpRN6rkrS3o640oIAO4k=",
+    "enemy-dummy": "sha256-gZIj9PUMGh/JNeeJjZmZhrMBz2UkyZUhk0OSuy+NXB8=",
+    "enemy-embermancer": "sha256-pL4c4pR12+pyaoZrrOpJiMt/3AxUyQx7aBdaX4VQ1L8=",
+    "enemy-evac-transport": "sha256-V8uVZM4UDhLMRd232rlfoPljCoHCbRYmJbqe1WNitmY=",
+    "enemy-grunt": "sha256-jJEp/XwFlBXKeOxunywrVhstbu6ghhMPngrbCk9OwCY=",
+    "enemy-runner": "sha256-gIN+lttaraanqqIv3v/sMhe3dp2GdPc9BH8cyhuyblk=",
+    "enemy-vanguard": "sha256-+idq36KabAgqBWS5vOUBZy+zveUWEJdhxa+j7g03JaU=",
+    "enemy-witch": "sha256-cCzfhz6cxRm+AS8j1kNhNQHIffn6qCGS7Is7mLXGVic=",
+    "turret-arcane": "sha256-IZmvWw5Z/yk22ySQBFtRIEhBzfV42vGbqMuI9j+7/Ig=",
+    "turret-arrow": "sha256-f/IrSRjtE3YJwkVWUbMJfzii1O6DW2hP5qx4KJxRwD0=",
+    "turret-crystal": "sha256-5ZPgKHe0F5GGD8DIpyOG4MNOxci9gL6oPxcjwfhj6lw=",
+    "turret-flame": "sha256-Uzil8CEFAfzeKgbTZ39ka0vCPDO89tqmtbjINoI8KCU=",
+    "passive-armor": "sha256-H40b0EAKuxHte7QXuEFQK7Dk0imVW7XbMMh6++72LYo=",
+    "passive-generic": "sha256-rqYTFUzF8E4tyEn2aKNdy8WwCZcK0Ql1yLeqZhlwq6w=",
+    "passive-gold": "sha256-pUEsVssvHpmFiQAmGsWz2TdUviSXsRKO+U0mltqmWcQ=",
+    "passive-regen": "sha256-JqgtP3P+tJtVASWRHryeFvfRuS2VVZA2xkVl68ruRoI=",
+    "ui-sticker-calm": "sha256-EMu87Yom22yKcJj5wsCbOJBdnw+Ml9lmo+k+f0dHx2k=",
+    "ui-sticker-castle": "sha256-Przjs+QvxYQugrJi53shga2le88KSjnHO6mJQQiS0Vs=",
+    "ui-sticker-combo": "sha256-mXZIwYU2NIw1WM52vqRjUCuu38kzU6L9blPO2gF+4Eo=",
+    "ui-sticker-drill": "sha256-kFAOfSDEKWzeYRtRog98bLH5Foz6IhSVDbASdVfuGLk=",
+    "ui-sticker-perfect": "sha256-hEa1U0G+P6bGQuljUfFoNZbP4wrgysixsnuomu2b/1Q=",
+    "ui-sticker-scroll": "sha256-YaxbyAaHAfcovcAWLKVmT7cR9nyimMPDwnDk8Q+e2Og=",
+    "ui-sticker-shield": "sha256-n1WryzXoNsHDy7gIGaRSzwSO5GdG+GSADa3VGaROO4A=",
+    "ui-sticker-treasure": "sha256-RNFUMwsj2UtwzNUTLvGTy6X11Ccf/A5LY8be0SuOfOE="
   }
 }

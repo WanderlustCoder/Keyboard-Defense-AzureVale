@@ -1,9 +1,11 @@
 import { type CastleLevelConfig, type GameConfig } from "../core/config.js";
 import {
   type CastlePassive,
+  type GameStatus,
   type GameMode,
   type GameState,
   type GoldEvent,
+  type LaneHazardState,
   type DefeatAnimationPreference,
   type TypingDrillMode,
   type TurretTargetPriority,
@@ -23,6 +25,9 @@ import { type LessonMedalTier, type LessonMedalViewState } from "../utils/lesson
 import { type WpmLadderViewState } from "../utils/wpmLadder.js";
 import { type BiomeGalleryViewState } from "../utils/biomeGallery.js";
 import { type TrainingCalendarViewState } from "../utils/trainingCalendar.js";
+import { type SessionGoalsViewState } from "../utils/sessionGoals.js";
+import { type DailyQuestBoardViewState } from "../utils/dailyQuests.js";
+import { type WeeklyQuestBoardViewState } from "../utils/weeklyQuest.js";
 import { type DayNightMode } from "../utils/dayNightTheme.js";
 import { type ParallaxScene } from "../utils/parallaxBackground.js";
 import { type FocusOutlinePreset } from "../utils/focusOutlines.js";
@@ -80,7 +85,7 @@ const FINGER_SHIFTED_KEY_MAP: Record<string, string> = {
   "~": "`"
 };
 
-const FINGER_LOOKUP: Record<string, string> = (() => {
+const PHYSICAL_FINGER_LOOKUP: Record<string, string> = (() => {
   const zones: Array<[string, string[]]> = [
     ["Left pinky", ["`", "1", "q", "a", "z"]],
     ["Left ring", ["2", "w", "s", "x"]],
@@ -100,6 +105,47 @@ const FINGER_LOOKUP: Record<string, string> = (() => {
     }
   }
   return map;
+})();
+
+const VIRTUAL_KEYBOARD_LAYOUT_ROWS: Record<string, string[][]> = {
+  qwerty: [
+    ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
+    ["a", "s", "d", "f", "g", "h", "j", "k", "l", ";"],
+    ["z", "x", "c", "v", "b", "n", "m"]
+  ],
+  qwertz: [
+    ["q", "w", "e", "r", "t", "z", "u", "i", "o", "p"],
+    ["a", "s", "d", "f", "g", "h", "j", "k", "l", ";"],
+    ["y", "x", "c", "v", "b", "n", "m"]
+  ],
+  azerty: [
+    ["a", "z", "e", "r", "t", "y", "u", "i", "o", "p"],
+    ["q", "s", "d", "f", "g", "h", "j", "k", "l", "m"],
+    ["w", "x", "c", "v", "b", "n", ";"]
+  ]
+};
+
+const FINGER_LOOKUP_BY_LAYOUT: Record<string, Record<string, string>> = (() => {
+  const physicalRows = VIRTUAL_KEYBOARD_LAYOUT_ROWS.qwerty;
+  const maps: Record<string, Record<string, string>> = {};
+  for (const [layoutId, rows] of Object.entries(VIRTUAL_KEYBOARD_LAYOUT_ROWS)) {
+    const map: Record<string, string> = { ...PHYSICAL_FINGER_LOOKUP };
+    for (let rowIndex = 0; rowIndex < rows.length; rowIndex += 1) {
+      const layoutRow = rows[rowIndex];
+      const physicalRow = physicalRows[rowIndex] ?? [];
+      for (let colIndex = 0; colIndex < layoutRow.length; colIndex += 1) {
+        const physicalKey = physicalRow[colIndex];
+        const label = layoutRow[colIndex];
+        const finger = physicalKey ? PHYSICAL_FINGER_LOOKUP[physicalKey] : undefined;
+        if (!label || !finger) continue;
+        map[label] = finger;
+        map[label.toLowerCase()] = finger;
+        map[label.toUpperCase()] = finger;
+      }
+    }
+    maps[layoutId] = map;
+  }
+  return maps;
 })();
 
 type ReadabilityTier = "base" | "fast" | "heavy" | "shield" | "caster" | "boss";
@@ -216,6 +262,9 @@ const ACCESSIBILITY_SELF_TEST_DEFAULT = {
   motionConfirmed: false
 };
 const CERTIFICATE_NAME_KEY = "keyboard-defense:certificate-name";
+const MASTERY_CERTIFICATE_MILESTONE_SHOWN_KEY =
+  "keyboard-defense:mastery-certificate-milestone-shown";
+const MILESTONE_CELEBRATIONS_DISABLED_KEY = "keyboard-defense:milestone-celebrations-disabled";
 
 type CastleSkinId = "classic" | "dusk" | "aurora" | "ember";
 type CompanionMood = "calm" | "happy" | "cheer" | "sad";
@@ -271,11 +320,23 @@ export interface HudCallbacks {
   onUpgradeTurret(slotId: string): void;
   onDowngradeTurret?: (slotId: string) => void;
   onTurretPriorityChange(slotId: string, priority: TurretTargetPriority): void;
+  onBuildMenuToggle?: (open: boolean) => void;
   onTurretPresetSave?: (presetId: string) => void;
   onTurretPresetApply?: (presetId: string) => void;
   onTurretPresetClear?: (presetId: string) => void;
   onAnalyticsExport?: () => void;
+  onSessionTimelineExport?: () => void;
+  onKeystrokeTimingExport?: () => void;
+  onBreakReminderIntervalChange?: (minutes: number) => void;
+  onScreenTimeGoalChange?: (minutes: number) => void;
+  onScreenTimeLockoutModeChange?: (mode: string) => void;
+  onScreenTimeReset?: () => void;
+  onProgressExport?: () => void;
+  onProgressImport?: () => void;
+  onDropoffReasonSelected?: (reasonId: string) => void;
   onTelemetryToggle?: (enabled: boolean) => void;
+  onTelemetryQueueDownload?: () => void;
+  onTelemetryQueueClear?: () => void;
   onCrystalPulseToggle?: (enabled: boolean) => void;
   onEliteAffixesToggle?: (enabled: boolean) => void;
   onPauseRequested(): void;
@@ -305,10 +366,12 @@ export interface HudCallbacks {
   ) => void;
   onDiagnosticsToggle(visible: boolean): void;
   onVirtualKeyboardToggle?: (enabled: boolean) => void;
+  onVirtualKeyboardLayoutChange?: (layout: string) => void;
   onLowGraphicsToggle?: (enabled: boolean) => void;
   onTextSizeChange?: (scale: number) => void;
   onHapticsToggle?: (enabled: boolean) => void;
   onWaveScorecardContinue(): void;
+  onWaveScorecardSuggestedDrill?: (drill: WaveScorecardCoachDrill) => void;
   onLessonMedalReplay?: (options?: { mode?: TypingDrillMode; hint?: string }) => void;
   onReducedMotionToggle(enabled: boolean): void;
   onCheckeredBackgroundToggle(enabled: boolean): void;
@@ -345,6 +408,8 @@ export interface HudCallbacks {
 interface SlotControls {
   container: HTMLDivElement;
   title: HTMLDivElement;
+  titleText: HTMLSpanElement;
+  hazardBadge: HTMLSpanElement;
   status: HTMLDivElement;
   action: HTMLButtonElement;
   downgradeButton?: HTMLButtonElement;
@@ -485,18 +550,25 @@ type OptionsOverlayElements = {
   selfTestMotionIndicator?: string;
   diagnosticsToggle: string;
   virtualKeyboardToggle?: string;
+  virtualKeyboardLayoutSelect?: string;
   lowGraphicsToggle: string;
   textSizeSelect?: string;
   hapticsToggle?: string;
   reducedMotionToggle: string;
   checkeredBackgroundToggle: string;
   accessibilityPresetToggle?: string;
+  breakReminderIntervalSelect?: string;
+  screenTimeGoalSelect?: string;
+  screenTimeLockoutSelect?: string;
+  screenTimeStatus?: string;
+  screenTimeResetButton?: string;
   voicePackSelect?: string;
   latencySparklineToggle?: string;
   readableFontToggle: string;
   dyslexiaFontToggle: string;
   dyslexiaSpacingToggle?: string;
   cognitiveLoadToggle?: string;
+  milestonePopupsToggle?: string;
   audioNarrationToggle?: string;
   tutorialPacingSlider?: string;
   tutorialPacingValue?: string;
@@ -531,13 +603,20 @@ type OptionsOverlayElements = {
   masteryCertificateButton?: string;
   loreScrollsButton?: string;
   parentSummaryButton?: string;
+  endSessionButton?: string;
   telemetryToggle?: string;
   telemetryToggleWrapper?: string;
+  telemetryQueueDownloadButton?: string;
+  telemetryQueueClearButton?: string;
   crystalPulseToggle?: string;
   crystalPulseToggleWrapper?: string;
   eliteAffixToggle?: string;
   eliteAffixToggleWrapper?: string;
   analyticsExportButton?: string;
+  sessionTimelineExportButton?: string;
+  keystrokeTimingExportButton?: string;
+  progressExportButton?: string;
+  progressImportButton?: string;
 };
 
 type AnalyticsViewerElements = {
@@ -568,6 +647,9 @@ type WaveScorecardElements = {
   stats: string;
   continue: string;
   tip?: string;
+  coach?: string;
+  coachList?: string;
+  drill?: string;
 };
 
 type RoadmapOverlayElements = {
@@ -599,6 +681,13 @@ type RoadmapGlanceElements = {
 type ParentalOverlayElements = {
   container: string;
   closeButton: string;
+};
+
+type DropoffOverlayElements = {
+  container: string;
+  closeButton: string;
+  cancelButton?: string;
+  skipButton?: string;
 };
 
 type SubtitleOverlayElements = {
@@ -753,6 +842,18 @@ type ParentSummaryOverlayElements = {
 
 type AnalyticsViewerFilter = "all" | "last-5" | "last-10" | "breaches" | "shielded";
 
+export type WaveScorecardCoachDrill = {
+  mode: TypingDrillMode;
+  label: string;
+  reason: string;
+};
+
+export type WaveScorecardCoachSummary = {
+  win: string;
+  gap: string;
+  drill: WaveScorecardCoachDrill | null;
+};
+
 export interface WaveScorecardData {
   waveIndex: number;
   waveTotal: number;
@@ -777,6 +878,7 @@ export interface WaveScorecardData {
   castleBonusGold: number;
   bonusGold: number;
   microTip?: string | null;
+  coach?: WaveScorecardCoachSummary | null;
 }
 
 const DEFAULT_WAVE_PREVIEW_HINT =
@@ -833,6 +935,7 @@ export class HudView {
   private tutorialBannerExpanded = true;
   private readonly virtualKeyboard?: VirtualKeyboard;
   private virtualKeyboardEnabled = false;
+  private virtualKeyboardLayout = "qwerty";
   private readonly focusTraps = new Map<HTMLElement, (event: KeyboardEvent) => void>();
   private readonly castleButton: HTMLButtonElement;
   private readonly castleRepairButton: HTMLButtonElement;
@@ -909,6 +1012,13 @@ export class HudView {
   private readonly parentalOverlay?: {
     container: HTMLElement;
     closeButton: HTMLButtonElement;
+  };
+  private readonly dropoffOverlay?: {
+    container: HTMLElement;
+    closeButton: HTMLButtonElement;
+    cancelButton?: HTMLButtonElement;
+    skipButton?: HTMLButtonElement;
+    reasonButtons: HTMLButtonElement[];
   };
   private readonly layoutOverlay?: {
     container: HTMLElement;
@@ -1121,6 +1231,25 @@ export class HudView {
     stats?: HTMLElement;
     openButton?: HTMLButtonElement;
   };
+  private dailyQuestBoardState?: DailyQuestBoardViewState;
+  private readonly dailyQuestPanel?: {
+    container?: HTMLElement;
+    summary?: HTMLElement;
+    list?: HTMLElement;
+  };
+  private weeklyQuestBoardState?: WeeklyQuestBoardViewState;
+  private readonly weeklyQuestPanel?: {
+    container?: HTMLElement;
+    summary?: HTMLElement;
+    list?: HTMLElement;
+    trialButton?: HTMLButtonElement;
+  };
+  private sessionGoalsState?: SessionGoalsViewState;
+  private readonly sessionGoalsPanel?: {
+    container?: HTMLElement;
+    summary?: HTMLElement;
+    list?: HTMLElement;
+  };
   private readonly sideQuestOverlay?: {
     container: HTMLElement;
     closeButton: HTMLButtonElement;
@@ -1189,9 +1318,12 @@ export class HudView {
   private milestoneCelebrationHideTimeout: number | null = null;
   private lastMilestoneKey: string | null = null;
   private lastMilestoneAt = 0;
+  private milestoneCelebrationsDisabled = false;
   private lastLessonMedalCelebratedId: string | null = null;
   private lastLessonMilestoneCelebrated = 0;
+  private lessonMilestoneTrackingInitialized = false;
   private lastCertificateCelebratedAt: string | null = null;
+  private masteryCertificateMilestoneShown = false;
   private readonly parentSummaryOverlay?: {
     container: HTMLElement;
     closeButton: HTMLButtonElement;
@@ -1222,10 +1354,14 @@ export class HudView {
   };
   private castleSkin: CastleSkinId = "classic";
   private parentalOverlayTrigger?: HTMLElement | null;
+  private dropoffOverlayTrigger?: HTMLElement | null;
   private lastShieldTelemetry = { current: false, next: false };
   private lastAffixTelemetry = { current: false, next: false };
   private lastWavePreviewEntries: WaveSpawnPreview[] = [];
   private lastWavePreviewColorBlind = false;
+  private lastWavePreviewLaneHazards: LaneHazardState[] = [];
+  private lastWavePreviewEmptyMessage: string | null = null;
+  private wavePreviewThreatIndicatorsEnabled = false;
   private lastGold = 0;
   private maxCombo = 0;
   private goldTimeout: number | null = null;
@@ -1239,6 +1375,7 @@ export class HudView {
   private tutorialSlotLock: TutorialSlotLock | null = null;
   private passiveHighlightId: string | null = null;
   private lastState: GameState | null = null;
+  private lastGameStatus: GameStatus | null = null;
   private availableTurretTypes: Record<string, boolean> = {};
   private turretDowngradeEnabled = false;
   private readonly tutorialSummary?: TutorialSummaryElements;
@@ -1343,18 +1480,25 @@ export class HudView {
     selfTestMotionIndicator?: HTMLElement;
     diagnosticsToggle: HTMLInputElement;
     virtualKeyboardToggle?: HTMLInputElement;
+    virtualKeyboardLayoutSelect?: HTMLSelectElement;
     lowGraphicsToggle?: HTMLInputElement;
     textSizeSelect?: HTMLSelectElement;
     hapticsToggle?: HTMLInputElement;
     reducedMotionToggle: HTMLInputElement;
     checkeredBackgroundToggle: HTMLInputElement;
     accessibilityPresetToggle?: HTMLInputElement;
+    breakReminderIntervalSelect?: HTMLSelectElement;
+    screenTimeGoalSelect?: HTMLSelectElement;
+    screenTimeLockoutSelect?: HTMLSelectElement;
+    screenTimeStatus?: HTMLElement;
+    screenTimeResetButton?: HTMLButtonElement;
     voicePackSelect?: HTMLSelectElement;
     latencySparklineToggle?: HTMLInputElement;
     readableFontToggle: HTMLInputElement;
     dyslexiaFontToggle: HTMLInputElement;
     dyslexiaSpacingToggle?: HTMLInputElement;
     cognitiveLoadToggle?: HTMLInputElement;
+    milestonePopupsToggle?: HTMLInputElement;
     audioNarrationToggle?: HTMLInputElement;
     tutorialPacingSlider?: HTMLInputElement;
     tutorialPacingValue?: HTMLElement;
@@ -1379,12 +1523,19 @@ export class HudView {
     defeatAnimationSelect: HTMLSelectElement;
     telemetryToggle?: HTMLInputElement;
     telemetryWrapper?: HTMLElement;
+    telemetryQueueDownloadButton?: HTMLButtonElement;
+    telemetryQueueClearButton?: HTMLButtonElement;
     crystalPulseToggle?: HTMLInputElement;
     crystalPulseWrapper?: HTMLElement;
     eliteAffixToggle?: HTMLInputElement;
     eliteAffixWrapper?: HTMLElement;
     analyticsExportButton?: HTMLButtonElement;
+    sessionTimelineExportButton?: HTMLButtonElement;
+    keystrokeTimingExportButton?: HTMLButtonElement;
+    progressExportButton?: HTMLButtonElement;
+    progressImportButton?: HTMLButtonElement;
     parentSummaryButton?: HTMLButtonElement;
+    endSessionButton?: HTMLButtonElement;
     panelContainer?: HTMLElement;
     panels?: HTMLElement[];
     mainColumn?: HTMLElement;
@@ -1395,12 +1546,23 @@ export class HudView {
     statsList: HTMLUListElement;
     continueBtn: HTMLButtonElement;
     tip?: HTMLElement;
+    coach?: HTMLElement;
+    coachList?: HTMLUListElement;
+    drillBtn?: HTMLButtonElement;
+    suggestedDrill?: WaveScorecardCoachDrill | null;
   };
   private syncingOptionToggles = false;
   private comboBaselineAccuracy = 1;
   private lastAccuracy = 1;
   private hudRoot: HTMLElement | null = null;
   private hudLayoutSide: "left" | "right" = "right";
+  private setHudDockPane: ((paneId: string) => void) | null = null;
+  private setBuildDrawerOpen: ((open: boolean) => void) | null = null;
+  private buildDrawer: HTMLElement | null = null;
+  private buildDrawerToggle: HTMLButtonElement | null = null;
+  private buildCommandInput: HTMLInputElement | null = null;
+  private buildCommandStatus: HTMLElement | null = null;
+  private buildCommandStatusTimeout: ReturnType<typeof setTimeout> | null = null;
   private evacBanner?:
     | {
         container: HTMLElement;
@@ -1408,6 +1570,13 @@ export class HudView {
         timer: HTMLElement;
         progress: HTMLElement;
         status: HTMLElement;
+      }
+    | undefined;
+  private supportBoostBanner?:
+    | {
+        container: HTMLElement;
+        label: HTMLElement;
+        timer: HTMLElement;
       }
     | undefined;
   private evacHideTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -1450,6 +1619,7 @@ export class HudView {
       roadmapGlance?: RoadmapGlanceElements;
       roadmapLaunch?: string;
       parentalOverlay?: ParentalOverlayElements;
+      dropoffOverlay?: DropoffOverlayElements;
       subtitleOverlay?: SubtitleOverlayElements;
       layoutOverlay?: LayoutOverlayElements;
       contrastOverlay?: ContrastOverlayElements;
@@ -1473,6 +1643,8 @@ export class HudView {
     private readonly callbacks: HudCallbacks
   ) {
     this.certificateName = this.readCertificateName();
+    this.masteryCertificateMilestoneShown = this.readMasteryCertificateMilestoneShown();
+    this.milestoneCelebrationsDisabled = this.readMilestoneCelebrationsDisabled();
     this.hudRoot = document.getElementById("hud");
     this.parallaxShell = document.getElementById("parallax-shell");
     if (this.hudRoot && !this.hudRoot.dataset.canvasTransition) {
@@ -1528,6 +1700,40 @@ export class HudView {
       banner.appendChild(barOuter);
       this.hudRoot.prepend(banner);
       this.evacBanner = { container: banner, title, timer, progress: barInner, status };
+
+      const supportBanner = document.createElement("div");
+      supportBanner.className = "support-boost-banner";
+      supportBanner.dataset.visible = "false";
+      supportBanner.style.display = "none";
+      supportBanner.style.background = "rgba(15, 23, 42, 0.9)";
+      supportBanner.style.color = "#e0f2fe";
+      supportBanner.style.border = "1px solid rgba(56, 189, 248, 0.65)";
+      supportBanner.style.borderRadius = "999px";
+      supportBanner.style.padding = "6px 10px";
+      supportBanner.style.gap = "10px";
+      supportBanner.style.alignItems = "center";
+      supportBanner.style.justifyContent = "space-between";
+      supportBanner.style.boxShadow = "0 6px 14px rgba(0,0,0,0.2)";
+      supportBanner.style.fontSize = "12px";
+      supportBanner.style.fontVariantNumeric = "tabular-nums";
+      supportBanner.style.lineHeight = "1.2";
+      supportBanner.style.flexWrap = "wrap";
+      supportBanner.style.position = "sticky";
+      supportBanner.style.top = "6px";
+      supportBanner.style.zIndex = "6";
+      supportBanner.style.pointerEvents = "none";
+
+      const supportLabel = document.createElement("div");
+      supportLabel.style.fontWeight = "650";
+      const supportTimer = document.createElement("div");
+      supportTimer.style.opacity = "0.85";
+      supportTimer.setAttribute("aria-hidden", "true");
+
+      supportBanner.appendChild(supportLabel);
+      supportBanner.appendChild(supportTimer);
+
+      banner.after(supportBanner);
+      this.supportBoostBanner = { container: supportBanner, label: supportLabel, timer: supportTimer };
     }
 
     this.healthBar = this.getElement(rootIds.healthBar);
@@ -1590,7 +1796,66 @@ export class HudView {
       buildContent instanceof HTMLElement &&
       buildToggle instanceof HTMLButtonElement
     ) {
+      this.buildDrawer = buildDrawer;
+      this.buildDrawerToggle = buildToggle;
+
+      if (!document.getElementById("build-command-input")) {
+        const commandPanel = document.createElement("div");
+        commandPanel.className = "build-command-panel";
+        commandPanel.setAttribute("role", "group");
+        commandPanel.setAttribute("aria-label", "Build command line");
+
+        const commandLabel = document.createElement("label");
+        commandLabel.className = "build-command-label";
+        commandLabel.textContent = "Command line";
+        commandLabel.setAttribute("for", "build-command-input");
+
+        const commandInput = document.createElement("input");
+        commandInput.id = "build-command-input";
+        commandInput.className = "build-command-input";
+        commandInput.type = "text";
+        commandInput.autocomplete = "off";
+        commandInput.autocapitalize = "off";
+        commandInput.spellcheck = false;
+        commandInput.placeholder = 'Try: "s0 arrow", "s0 upgrade", "castle repair"';
+
+        const commandHelp = document.createElement("div");
+        commandHelp.className = "build-command-help";
+        commandHelp.textContent = 'Enter: run command. Tab/Esc: close menu. Type "help" for examples.';
+
+        const commandStatus = document.createElement("div");
+        commandStatus.className = "build-command-status";
+        commandStatus.setAttribute("role", "status");
+        commandStatus.setAttribute("aria-live", "polite");
+        commandStatus.textContent = "";
+
+        commandPanel.append(commandLabel, commandInput, commandHelp, commandStatus);
+        buildContent.prepend(commandPanel);
+
+        this.buildCommandInput = commandInput;
+        this.buildCommandStatus = commandStatus;
+
+        commandInput.addEventListener("keydown", (event) => {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            const raw = commandInput.value;
+            commandInput.value = "";
+            this.executeBuildCommand(raw);
+            commandInput.focus();
+            return;
+          }
+          if (event.key === "Escape" || event.key === "Tab") {
+            event.preventDefault();
+            this.toggleBuildMenu(false);
+          }
+        });
+      } else {
+        const existing = document.getElementById("build-command-input");
+        this.buildCommandInput = existing instanceof HTMLInputElement ? existing : null;
+      }
+
       const setOpen = (open: boolean) => {
+        const wasOpen = buildDrawer.dataset.open === "true";
         buildDrawer.dataset.open = open ? "true" : "false";
         buildContent.setAttribute("aria-hidden", open ? "false" : "true");
         buildContent.hidden = !open;
@@ -1599,8 +1864,17 @@ export class HudView {
         if (open) {
           buildDrawerOpenedOnce = true;
         }
+        if (open !== wasOpen) {
+          this.callbacks.onBuildMenuToggle?.(open);
+        }
+        if (open) {
+          this.buildCommandInput?.focus?.();
+        } else {
+          this.focusTypingInput();
+        }
       };
       openBuildDrawer = setOpen;
+      this.setBuildDrawerOpen = setOpen;
       setOpen(false);
       buildToggle.addEventListener("click", () => {
         this.hideMilestoneCelebration();
@@ -1627,6 +1901,7 @@ export class HudView {
           openBuildDrawer(true);
         }
       };
+      this.setHudDockPane = setActivePane;
       setActivePane("build");
       hudDockTabs.forEach((tab) => {
         tab.addEventListener("click", () => {
@@ -1918,6 +2193,9 @@ export class HudView {
       const parentSummaryButton = rootIds.optionsOverlay.parentSummaryButton
         ? document.getElementById(rootIds.optionsOverlay.parentSummaryButton)
         : null;
+      const endSessionButton = rootIds.optionsOverlay.endSessionButton
+        ? document.getElementById(rootIds.optionsOverlay.endSessionButton)
+        : null;
       const selfTestContainer = rootIds.optionsOverlay.selfTestContainer
         ? document.getElementById(rootIds.optionsOverlay.selfTestContainer)
         : null;
@@ -1949,6 +2227,9 @@ export class HudView {
       const virtualKeyboardToggle = rootIds.optionsOverlay.virtualKeyboardToggle
         ? document.getElementById(rootIds.optionsOverlay.virtualKeyboardToggle)
         : null;
+      const virtualKeyboardLayoutSelect = rootIds.optionsOverlay.virtualKeyboardLayoutSelect
+        ? document.getElementById(rootIds.optionsOverlay.virtualKeyboardLayoutSelect)
+        : null;
       const lowGraphicsToggle = document.getElementById(rootIds.optionsOverlay.lowGraphicsToggle);
       const textSizeSelect = document.getElementById(rootIds.optionsOverlay.textSizeSelect);
       const hapticsToggle = rootIds.optionsOverlay.hapticsToggle
@@ -1963,6 +2244,21 @@ export class HudView {
       const accessibilityPresetToggle = rootIds.optionsOverlay.accessibilityPresetToggle
         ? document.getElementById(rootIds.optionsOverlay.accessibilityPresetToggle)
         : null;
+      const breakReminderIntervalSelect = rootIds.optionsOverlay.breakReminderIntervalSelect
+        ? document.getElementById(rootIds.optionsOverlay.breakReminderIntervalSelect)
+        : null;
+      const screenTimeGoalSelect = rootIds.optionsOverlay.screenTimeGoalSelect
+        ? document.getElementById(rootIds.optionsOverlay.screenTimeGoalSelect)
+        : null;
+      const screenTimeLockoutSelect = rootIds.optionsOverlay.screenTimeLockoutSelect
+        ? document.getElementById(rootIds.optionsOverlay.screenTimeLockoutSelect)
+        : null;
+      const screenTimeStatus = rootIds.optionsOverlay.screenTimeStatus
+        ? document.getElementById(rootIds.optionsOverlay.screenTimeStatus)
+        : null;
+      const screenTimeResetButton = rootIds.optionsOverlay.screenTimeResetButton
+        ? document.getElementById(rootIds.optionsOverlay.screenTimeResetButton)
+        : null;
       const voicePackSelect = rootIds.optionsOverlay.voicePackSelect
         ? document.getElementById(rootIds.optionsOverlay.voicePackSelect)
         : null;
@@ -1976,6 +2272,9 @@ export class HudView {
         : null;
       const cognitiveLoadToggle = rootIds.optionsOverlay.cognitiveLoadToggle
         ? document.getElementById(rootIds.optionsOverlay.cognitiveLoadToggle)
+        : null;
+      const milestonePopupsToggle = rootIds.optionsOverlay.milestonePopupsToggle
+        ? document.getElementById(rootIds.optionsOverlay.milestonePopupsToggle)
         : null;
       const audioNarrationToggle = rootIds.optionsOverlay.audioNarrationToggle
         ? document.getElementById(rootIds.optionsOverlay.audioNarrationToggle)
@@ -2039,6 +2338,12 @@ export class HudView {
       const telemetryToggleWrapper = rootIds.optionsOverlay.telemetryToggleWrapper
         ? document.getElementById(rootIds.optionsOverlay.telemetryToggleWrapper)
         : null;
+      const telemetryQueueDownloadButton = rootIds.optionsOverlay.telemetryQueueDownloadButton
+        ? document.getElementById(rootIds.optionsOverlay.telemetryQueueDownloadButton)
+        : null;
+      const telemetryQueueClearButton = rootIds.optionsOverlay.telemetryQueueClearButton
+        ? document.getElementById(rootIds.optionsOverlay.telemetryQueueClearButton)
+        : null;
       const crystalPulseToggle = rootIds.optionsOverlay.crystalPulseToggle
         ? document.getElementById(rootIds.optionsOverlay.crystalPulseToggle)
         : null;
@@ -2053,6 +2358,18 @@ export class HudView {
         : null;
       const analyticsExportButton = rootIds.optionsOverlay.analyticsExportButton
         ? document.getElementById(rootIds.optionsOverlay.analyticsExportButton)
+        : null;
+      const sessionTimelineExportButton = rootIds.optionsOverlay.sessionTimelineExportButton
+        ? document.getElementById(rootIds.optionsOverlay.sessionTimelineExportButton)
+        : null;
+      const keystrokeTimingExportButton = rootIds.optionsOverlay.keystrokeTimingExportButton
+        ? document.getElementById(rootIds.optionsOverlay.keystrokeTimingExportButton)
+        : null;
+      const progressExportButton = rootIds.optionsOverlay.progressExportButton
+        ? document.getElementById(rootIds.optionsOverlay.progressExportButton)
+        : null;
+      const progressImportButton = rootIds.optionsOverlay.progressImportButton
+        ? document.getElementById(rootIds.optionsOverlay.progressImportButton)
         : null;
 
       if (
@@ -2102,12 +2419,19 @@ export class HudView {
         reducedMotionToggle instanceof HTMLInputElement &&
         checkeredBackgroundToggle instanceof HTMLInputElement &&
         (accessibilityPresetToggle === null || accessibilityPresetToggle instanceof HTMLInputElement) &&
+        (breakReminderIntervalSelect === null ||
+          breakReminderIntervalSelect instanceof HTMLSelectElement) &&
+        (screenTimeGoalSelect === null || screenTimeGoalSelect instanceof HTMLSelectElement) &&
+        (screenTimeLockoutSelect === null || screenTimeLockoutSelect instanceof HTMLSelectElement) &&
+        (screenTimeStatus === null || screenTimeStatus instanceof HTMLElement) &&
+        (screenTimeResetButton === null || screenTimeResetButton instanceof HTMLButtonElement) &&
         (voicePackSelect === null || voicePackSelect instanceof HTMLSelectElement) &&
         (latencySparklineToggle === null || latencySparklineToggle instanceof HTMLInputElement) &&
         readableFontToggle instanceof HTMLInputElement &&
         dyslexiaFontToggle instanceof HTMLInputElement &&
         (dyslexiaSpacingToggle === null || dyslexiaSpacingToggle instanceof HTMLInputElement) &&
         (cognitiveLoadToggle === null || cognitiveLoadToggle instanceof HTMLInputElement) &&
+        (milestonePopupsToggle === null || milestonePopupsToggle instanceof HTMLInputElement) &&
         (audioNarrationToggle === null || audioNarrationToggle instanceof HTMLInputElement) &&
         (subtitleLargeToggle === null || subtitleLargeToggle instanceof HTMLInputElement) &&
         (subtitlePreviewButton === null || subtitlePreviewButton instanceof HTMLButtonElement) &&
@@ -2211,6 +2535,10 @@ export class HudView {
           diagnosticsToggle,
           virtualKeyboardToggle:
             virtualKeyboardToggle instanceof HTMLInputElement ? virtualKeyboardToggle : undefined,
+          virtualKeyboardLayoutSelect:
+            virtualKeyboardLayoutSelect instanceof HTMLSelectElement
+              ? virtualKeyboardLayoutSelect
+              : undefined,
           lowGraphicsToggle:
             lowGraphicsToggle instanceof HTMLInputElement ? lowGraphicsToggle : undefined,
           textSizeSelect:
@@ -2222,6 +2550,17 @@ export class HudView {
             accessibilityPresetToggle instanceof HTMLInputElement
               ? accessibilityPresetToggle
               : undefined,
+          breakReminderIntervalSelect:
+            breakReminderIntervalSelect instanceof HTMLSelectElement
+              ? breakReminderIntervalSelect
+              : undefined,
+          screenTimeGoalSelect:
+            screenTimeGoalSelect instanceof HTMLSelectElement ? screenTimeGoalSelect : undefined,
+          screenTimeLockoutSelect:
+            screenTimeLockoutSelect instanceof HTMLSelectElement ? screenTimeLockoutSelect : undefined,
+          screenTimeStatus: screenTimeStatus instanceof HTMLElement ? screenTimeStatus : undefined,
+          screenTimeResetButton:
+            screenTimeResetButton instanceof HTMLButtonElement ? screenTimeResetButton : undefined,
           voicePackSelect: voicePackSelect instanceof HTMLSelectElement ? voicePackSelect : undefined,
           latencySparklineToggle:
             latencySparklineToggle instanceof HTMLInputElement ? latencySparklineToggle : undefined,
@@ -2231,6 +2570,8 @@ export class HudView {
             dyslexiaSpacingToggle instanceof HTMLInputElement ? dyslexiaSpacingToggle : undefined,
           cognitiveLoadToggle:
             cognitiveLoadToggle instanceof HTMLInputElement ? cognitiveLoadToggle : undefined,
+          milestonePopupsToggle:
+            milestonePopupsToggle instanceof HTMLInputElement ? milestonePopupsToggle : undefined,
           audioNarrationToggle:
             audioNarrationToggle instanceof HTMLInputElement ? audioNarrationToggle : undefined,
           tutorialPacingSlider:
@@ -2270,6 +2611,12 @@ export class HudView {
           telemetryToggle: telemetryToggle instanceof HTMLInputElement ? telemetryToggle : undefined,
           telemetryWrapper:
             telemetryToggleWrapper instanceof HTMLElement ? telemetryToggleWrapper : undefined,
+          telemetryQueueDownloadButton:
+            telemetryQueueDownloadButton instanceof HTMLButtonElement
+              ? telemetryQueueDownloadButton
+              : undefined,
+          telemetryQueueClearButton:
+            telemetryQueueClearButton instanceof HTMLButtonElement ? telemetryQueueClearButton : undefined,
           crystalPulseToggle:
             crystalPulseToggle instanceof HTMLInputElement ? crystalPulseToggle : undefined,
           crystalPulseWrapper:
@@ -2281,8 +2628,22 @@ export class HudView {
             eliteAffixToggleWrapper instanceof HTMLElement ? eliteAffixToggleWrapper : undefined,
           parentSummaryButton:
             parentSummaryButton instanceof HTMLButtonElement ? parentSummaryButton : undefined,
+          endSessionButton:
+            endSessionButton instanceof HTMLButtonElement ? endSessionButton : undefined,
           analyticsExportButton:
-            analyticsExportButton instanceof HTMLButtonElement ? analyticsExportButton : undefined
+            analyticsExportButton instanceof HTMLButtonElement ? analyticsExportButton : undefined,
+          sessionTimelineExportButton:
+            sessionTimelineExportButton instanceof HTMLButtonElement
+              ? sessionTimelineExportButton
+              : undefined,
+          keystrokeTimingExportButton:
+            keystrokeTimingExportButton instanceof HTMLButtonElement
+              ? keystrokeTimingExportButton
+              : undefined,
+          progressExportButton:
+            progressExportButton instanceof HTMLButtonElement ? progressExportButton : undefined,
+          progressImportButton:
+            progressImportButton instanceof HTMLButtonElement ? progressImportButton : undefined
         };
         this.addFocusTrap(optionsContainer);
         this.sfxActiveLabel = this.optionsOverlay.sfxLibrarySummary;
@@ -2497,6 +2858,11 @@ export class HudView {
             this.showParentSummary();
           });
         }
+        if (this.optionsOverlay.endSessionButton) {
+          this.optionsOverlay.endSessionButton.addEventListener("click", () => {
+            this.showDropoffOverlay(this.optionsOverlay!.endSessionButton);
+          });
+        }
         if (this.optionsOverlay.selfTestRun) {
           this.optionsOverlay.selfTestRun.addEventListener("click", () => {
             this.playAccessibilitySelfTestCues({
@@ -2545,6 +2911,15 @@ export class HudView {
             );
           });
         }
+        if (this.optionsOverlay.virtualKeyboardLayoutSelect) {
+          this.optionsOverlay.virtualKeyboardLayoutSelect.addEventListener("change", () => {
+            if (this.syncingOptionToggles) return;
+            const layout = this.getSelectValue(this.optionsOverlay!.virtualKeyboardLayoutSelect);
+            if (layout) {
+              this.callbacks.onVirtualKeyboardLayoutChange?.(layout);
+            }
+          });
+        }
         if (this.optionsOverlay.lowGraphicsToggle) {
           this.optionsOverlay.lowGraphicsToggle.addEventListener("change", () => {
             if (this.syncingOptionToggles) return;
@@ -2581,6 +2956,38 @@ export class HudView {
             this.callbacks.onAccessibilityPresetToggle?.(
               this.optionsOverlay!.accessibilityPresetToggle!.checked
             );
+          });
+        }
+        if (this.optionsOverlay.breakReminderIntervalSelect) {
+          this.optionsOverlay.breakReminderIntervalSelect.addEventListener("change", () => {
+            if (this.syncingOptionToggles) return;
+            const rawValue = this.getSelectValue(this.optionsOverlay!.breakReminderIntervalSelect);
+            const parsed = rawValue === "off" ? 0 : Number.parseInt(rawValue ?? "", 10);
+            if (!Number.isFinite(parsed)) return;
+            this.callbacks.onBreakReminderIntervalChange?.(Math.max(0, Math.floor(parsed)));
+          });
+        }
+        if (this.optionsOverlay.screenTimeGoalSelect) {
+          this.optionsOverlay.screenTimeGoalSelect.addEventListener("change", () => {
+            if (this.syncingOptionToggles) return;
+            const rawValue = this.getSelectValue(this.optionsOverlay!.screenTimeGoalSelect);
+            const parsed = rawValue === "off" ? 0 : Number.parseInt(rawValue ?? "", 10);
+            if (!Number.isFinite(parsed)) return;
+            this.callbacks.onScreenTimeGoalChange?.(Math.max(0, Math.floor(parsed)));
+          });
+        }
+        if (this.optionsOverlay.screenTimeLockoutSelect) {
+          this.optionsOverlay.screenTimeLockoutSelect.addEventListener("change", () => {
+            if (this.syncingOptionToggles) return;
+            const mode = this.getSelectValue(this.optionsOverlay!.screenTimeLockoutSelect);
+            if (mode) {
+              this.callbacks.onScreenTimeLockoutModeChange?.(mode);
+            }
+          });
+        }
+        if (this.optionsOverlay.screenTimeResetButton) {
+          this.optionsOverlay.screenTimeResetButton.addEventListener("click", () => {
+            this.callbacks.onScreenTimeReset?.();
           });
         }
         if (this.optionsOverlay.latencySparklineToggle) {
@@ -2671,6 +3078,19 @@ export class HudView {
             this.callbacks.onCognitiveLoadToggle?.(
               this.optionsOverlay!.cognitiveLoadToggle!.checked
             );
+          });
+        }
+        if (this.optionsOverlay.milestonePopupsToggle) {
+          this.optionsOverlay.milestonePopupsToggle.checked = !this.milestoneCelebrationsDisabled;
+          this.optionsOverlay.milestonePopupsToggle.addEventListener("change", () => {
+            if (this.syncingOptionToggles) return;
+            const enabled = this.optionsOverlay!.milestonePopupsToggle!.checked;
+            this.milestoneCelebrationsDisabled = !enabled;
+            this.persistMilestoneCelebrationsDisabled(this.milestoneCelebrationsDisabled);
+            if (!enabled) {
+              this.hideMilestoneCelebration();
+            }
+            this.appendLog(`Milestone popups ${enabled ? "enabled" : "disabled"}.`);
           });
         }
         colorblindPaletteToggle.addEventListener("change", () => {
@@ -2778,6 +3198,16 @@ export class HudView {
             this.callbacks.onTelemetryToggle?.(this.optionsOverlay!.telemetryToggle!.checked);
           });
         }
+        if (this.optionsOverlay.telemetryQueueDownloadButton) {
+          this.optionsOverlay.telemetryQueueDownloadButton.addEventListener("click", () => {
+            this.callbacks.onTelemetryQueueDownload?.();
+          });
+        }
+        if (this.optionsOverlay.telemetryQueueClearButton) {
+          this.optionsOverlay.telemetryQueueClearButton.addEventListener("click", () => {
+            this.callbacks.onTelemetryQueueClear?.();
+          });
+        }
         if (this.optionsOverlay.eliteAffixToggle) {
           this.optionsOverlay.eliteAffixToggle.addEventListener("change", () => {
             if (this.syncingOptionToggles) return;
@@ -2793,6 +3223,26 @@ export class HudView {
         if (this.optionsOverlay.analyticsExportButton) {
           this.optionsOverlay.analyticsExportButton.addEventListener("click", () => {
             this.callbacks.onAnalyticsExport?.();
+          });
+        }
+        if (this.optionsOverlay.sessionTimelineExportButton) {
+          this.optionsOverlay.sessionTimelineExportButton.addEventListener("click", () => {
+            this.callbacks.onSessionTimelineExport?.();
+          });
+        }
+        if (this.optionsOverlay.keystrokeTimingExportButton) {
+          this.optionsOverlay.keystrokeTimingExportButton.addEventListener("click", () => {
+            this.callbacks.onKeystrokeTimingExport?.();
+          });
+        }
+        if (this.optionsOverlay.progressExportButton) {
+          this.optionsOverlay.progressExportButton.addEventListener("click", () => {
+            this.callbacks.onProgressExport?.();
+          });
+        }
+        if (this.optionsOverlay.progressImportButton) {
+          this.optionsOverlay.progressImportButton.addEventListener("click", () => {
+            this.callbacks.onProgressImport?.();
           });
         }
         const parentalButton = document.getElementById("options-parental-info");
@@ -2880,6 +3330,15 @@ export class HudView {
       const scorecardTip = rootIds.waveScorecard.tip
         ? document.getElementById(rootIds.waveScorecard.tip)
         : null;
+      const scorecardCoach = rootIds.waveScorecard.coach
+        ? document.getElementById(rootIds.waveScorecard.coach)
+        : null;
+      const scorecardCoachList = rootIds.waveScorecard.coachList
+        ? document.getElementById(rootIds.waveScorecard.coachList)
+        : null;
+      const scorecardDrill = rootIds.waveScorecard.drill
+        ? document.getElementById(rootIds.waveScorecard.drill)
+        : null;
       if (
         scorecardContainer instanceof HTMLElement &&
         isElementWithTag<HTMLUListElement>(scorecardStats, "ul") &&
@@ -2889,10 +3348,23 @@ export class HudView {
           container: scorecardContainer,
           statsList: scorecardStats,
           continueBtn: scorecardContinue,
-          tip: scorecardTip instanceof HTMLElement ? scorecardTip : undefined
+          tip: scorecardTip instanceof HTMLElement ? scorecardTip : undefined,
+          coach: scorecardCoach instanceof HTMLElement ? scorecardCoach : undefined,
+          coachList: isElementWithTag<HTMLUListElement>(scorecardCoachList, "ul")
+            ? scorecardCoachList
+            : undefined,
+          drillBtn: scorecardDrill instanceof HTMLButtonElement ? scorecardDrill : undefined,
+          suggestedDrill: null
         };
         this.addFocusTrap(scorecardContainer);
         scorecardContinue.addEventListener("click", () => this.callbacks.onWaveScorecardContinue());
+        if (scorecardDrill instanceof HTMLButtonElement) {
+          scorecardDrill.addEventListener("click", () => {
+            const suggestion = this.waveScorecard?.suggestedDrill ?? null;
+            if (!suggestion) return;
+            this.callbacks.onWaveScorecardSuggestedDrill?.(suggestion);
+          });
+        }
       } else {
         console.warn("Wave scorecard elements missing; wave summary overlay disabled.");
       }
@@ -3161,6 +3633,61 @@ export class HudView {
         parentalClose.addEventListener("click", () => this.hideParentalOverlay());
       } else {
         console.warn("Parental info overlay missing; parental info dialog disabled.");
+      }
+    }
+
+    if (rootIds.dropoffOverlay) {
+      const dropoffContainer = document.getElementById(rootIds.dropoffOverlay.container);
+      const dropoffClose = document.getElementById(rootIds.dropoffOverlay.closeButton);
+      const dropoffCancel = rootIds.dropoffOverlay.cancelButton
+        ? document.getElementById(rootIds.dropoffOverlay.cancelButton)
+        : null;
+      const dropoffSkip = rootIds.dropoffOverlay.skipButton
+        ? document.getElementById(rootIds.dropoffOverlay.skipButton)
+        : null;
+
+      if (dropoffContainer instanceof HTMLElement && dropoffClose instanceof HTMLButtonElement) {
+        const reasonButtons = Array.from(
+          dropoffContainer.querySelectorAll<HTMLButtonElement>("button[data-dropoff-reason]")
+        ).filter((btn): btn is HTMLButtonElement => btn instanceof HTMLButtonElement);
+
+        this.dropoffOverlay = {
+          container: dropoffContainer,
+          closeButton: dropoffClose,
+          cancelButton: dropoffCancel instanceof HTMLButtonElement ? dropoffCancel : undefined,
+          skipButton: dropoffSkip instanceof HTMLButtonElement ? dropoffSkip : undefined,
+          reasonButtons
+        };
+        this.dropoffOverlay.container.dataset.visible =
+          this.dropoffOverlay.container.dataset.visible ?? "false";
+        this.dropoffOverlay.container.setAttribute("aria-hidden", "true");
+        this.addFocusTrap(dropoffContainer);
+
+        dropoffContainer.addEventListener("keydown", (event) => {
+          if (event.key !== "Escape") return;
+          event.preventDefault();
+          event.stopPropagation();
+          this.hideDropoffOverlay();
+        });
+
+        const hideOverlay = () => this.hideDropoffOverlay();
+        dropoffClose.addEventListener("click", hideOverlay);
+        this.dropoffOverlay.cancelButton?.addEventListener("click", hideOverlay);
+        this.dropoffOverlay.skipButton?.addEventListener("click", () => {
+          this.callbacks.onDropoffReasonSelected?.("skip");
+          this.hideDropoffOverlay();
+        });
+
+        for (const button of reasonButtons) {
+          button.addEventListener("click", () => {
+            const reasonId = button.dataset.dropoffReason;
+            if (!reasonId) return;
+            this.callbacks.onDropoffReasonSelected?.(reasonId);
+            this.hideDropoffOverlay();
+          });
+        }
+      } else {
+        console.warn("Drop-off overlay missing; drop-off prompt disabled.");
       }
     }
     if (rootIds.contrastOverlay) {
@@ -3904,6 +4431,35 @@ export class HudView {
       this.sideQuestPanel.openButton.addEventListener("click", () => this.showSideQuestOverlay());
     }
 
+    const dailyQuestPanel = document.getElementById("daily-quest-panel");
+    const dailyQuestSummary = document.getElementById("daily-quest-summary");
+    const dailyQuestList = document.getElementById("daily-quest-list");
+    this.dailyQuestPanel = {
+      container: dailyQuestPanel instanceof HTMLElement ? dailyQuestPanel : undefined,
+      summary: dailyQuestSummary instanceof HTMLElement ? dailyQuestSummary : undefined,
+      list: dailyQuestList instanceof HTMLElement ? dailyQuestList : undefined
+    };
+
+    const weeklyQuestPanel = document.getElementById("weekly-quest-panel");
+    const weeklyQuestSummary = document.getElementById("weekly-quest-summary");
+    const weeklyQuestList = document.getElementById("weekly-quest-list");
+    const weeklyQuestTrialStart = document.getElementById("weekly-quest-trial-start");
+    this.weeklyQuestPanel = {
+      container: weeklyQuestPanel instanceof HTMLElement ? weeklyQuestPanel : undefined,
+      summary: weeklyQuestSummary instanceof HTMLElement ? weeklyQuestSummary : undefined,
+      list: weeklyQuestList instanceof HTMLElement ? weeklyQuestList : undefined,
+      trialButton: weeklyQuestTrialStart instanceof HTMLButtonElement ? weeklyQuestTrialStart : undefined
+    };
+
+    const sessionGoalsPanel = document.getElementById("session-goals-panel");
+    const sessionGoalsSummary = document.getElementById("session-goals-summary");
+    const sessionGoalsList = document.getElementById("session-goals-list");
+    this.sessionGoalsPanel = {
+      container: sessionGoalsPanel instanceof HTMLElement ? sessionGoalsPanel : undefined,
+      summary: sessionGoalsSummary instanceof HTMLElement ? sessionGoalsSummary : undefined,
+      list: sessionGoalsList instanceof HTMLElement ? sessionGoalsList : undefined
+    };
+
     const seasonTrackPanel = document.getElementById("season-track-panel");
     const seasonTrackSummary = document.getElementById("season-track-summary");
     const seasonTrackProgress = document.getElementById("season-track-progress-pill");
@@ -4215,6 +4771,23 @@ export class HudView {
     this.typingInput.focus();
   }
 
+  isBuildMenuOpen(): boolean {
+    return this.buildDrawer?.dataset.open === "true";
+  }
+
+  toggleBuildMenu(open?: boolean): boolean {
+    if (!this.buildDrawer || !this.setBuildDrawerOpen) {
+      return false;
+    }
+    const next =
+      typeof open === "boolean" ? open : this.buildDrawer.dataset.open !== "true";
+    if (next) {
+      this.setHudDockPane?.("build");
+    }
+    this.setBuildDrawerOpen(next);
+    return next;
+  }
+
   setCapsLockWarning(visible: boolean): void {
     if (!this.capsLockWarning) return;
     this.capsLockWarning.dataset.visible = visible ? "true" : "false";
@@ -4315,6 +4888,17 @@ export class HudView {
     }
   }
 
+  setVirtualKeyboardLayout(layout: string): void {
+    const normalized = typeof layout === "string" ? layout.toLowerCase() : "qwerty";
+    if (this.virtualKeyboardLayout === normalized) {
+      return;
+    }
+    this.virtualKeyboardLayout = normalized;
+    if (this.virtualKeyboard && typeof this.virtualKeyboard.setLayout === "function") {
+      this.virtualKeyboard.setLayout(normalized);
+    }
+  }
+
   toggleShortcutOverlay(): void {
     this.setShortcutOverlayVisible(!this.isShortcutOverlayVisible());
   }
@@ -4376,6 +4960,7 @@ export class HudView {
     diagnosticsVisible: boolean;
     lowGraphicsEnabled: boolean;
     virtualKeyboardEnabled?: boolean;
+    virtualKeyboardLayout?: string;
     hapticsEnabled?: boolean;
     textSizeScale?: number;
     reducedMotionEnabled: boolean;
@@ -4395,6 +4980,14 @@ export class HudView {
     hudLayout: "left" | "right";
     hudFontScale: number;
     defeatAnimationMode: DefeatAnimationPreference;
+    breakReminderIntervalMinutes?: number;
+    screenTime?: {
+      goalMinutes: number;
+      lockoutMode: string;
+      minutesToday: number;
+      locked: boolean;
+      lockoutRemainingMs?: number;
+    };
     hotkeys?: { pause?: string; shortcuts?: string };
     telemetry?: {
       available: boolean;
@@ -4530,6 +5123,22 @@ export class HudView {
     if (this.optionsOverlay.virtualKeyboardToggle && state.virtualKeyboardEnabled !== undefined) {
       this.optionsOverlay.virtualKeyboardToggle.checked = state.virtualKeyboardEnabled;
     }
+    if (state.virtualKeyboardLayout) {
+      this.setVirtualKeyboardLayout(state.virtualKeyboardLayout);
+      if (this.optionsOverlay.virtualKeyboardLayoutSelect) {
+        this.setSelectValue(
+          this.optionsOverlay.virtualKeyboardLayoutSelect,
+          state.virtualKeyboardLayout
+        );
+        const disabled = state.virtualKeyboardEnabled === false;
+        this.optionsOverlay.virtualKeyboardLayoutSelect.disabled = disabled;
+        this.optionsOverlay.virtualKeyboardLayoutSelect.setAttribute(
+          "aria-disabled",
+          disabled ? "true" : "false"
+        );
+        this.optionsOverlay.virtualKeyboardLayoutSelect.tabIndex = disabled ? -1 : 0;
+      }
+    }
     if (this.optionsOverlay.lowGraphicsToggle) {
       this.optionsOverlay.lowGraphicsToggle.checked = state.lowGraphicsEnabled;
     }
@@ -4546,6 +5155,60 @@ export class HudView {
     ) {
       this.accessibilityPresetEnabled = Boolean(state.accessibilityPresetEnabled);
       this.optionsOverlay.accessibilityPresetToggle.checked = this.accessibilityPresetEnabled;
+    }
+    if (
+      this.optionsOverlay.breakReminderIntervalSelect &&
+      state.breakReminderIntervalMinutes !== undefined
+    ) {
+      const minutes = Math.max(0, Math.floor(state.breakReminderIntervalMinutes));
+      this.setSelectValue(
+        this.optionsOverlay.breakReminderIntervalSelect,
+        minutes <= 0 ? "off" : minutes.toString()
+      );
+    }
+    if (state.screenTime) {
+      const screenTime = state.screenTime;
+      const locked = Boolean(screenTime.locked);
+      this.optionsOverlay.resumeButton.disabled = locked;
+      this.optionsOverlay.resumeButton.setAttribute("aria-disabled", locked ? "true" : "false");
+      this.optionsOverlay.resumeButton.tabIndex = locked ? -1 : 0;
+
+      if (this.optionsOverlay.screenTimeGoalSelect) {
+        const goalMinutes = Math.max(0, Math.floor(screenTime.goalMinutes ?? 0));
+        this.setSelectValue(
+          this.optionsOverlay.screenTimeGoalSelect,
+          goalMinutes <= 0 ? "off" : goalMinutes.toString()
+        );
+      }
+      if (this.optionsOverlay.screenTimeLockoutSelect) {
+        this.setSelectValue(this.optionsOverlay.screenTimeLockoutSelect, screenTime.lockoutMode);
+      }
+      if (this.optionsOverlay.screenTimeStatus) {
+        const minutesToday = Math.max(0, Math.floor(screenTime.minutesToday ?? 0));
+        const goalMinutes = Math.max(0, Math.floor(screenTime.goalMinutes ?? 0));
+        const base =
+          goalMinutes > 0 ? `Today: ${minutesToday}/${goalMinutes} minutes` : `Today: ${minutesToday} minutes`;
+        if (locked) {
+          const remainingMs = Math.max(0, screenTime.lockoutRemainingMs ?? 0);
+          const remainingMinutes = Math.max(1, Math.ceil(remainingMs / 60_000));
+          this.optionsOverlay.screenTimeStatus.textContent = `${base}. Lockout: ${remainingMinutes}m remaining.`;
+        } else {
+          this.optionsOverlay.screenTimeStatus.textContent = base;
+        }
+      }
+      if (this.optionsOverlay.screenTimeResetButton) {
+        const minutesToday = Math.max(0, Math.floor(screenTime.minutesToday ?? 0));
+        this.optionsOverlay.screenTimeResetButton.disabled = minutesToday <= 0;
+        this.optionsOverlay.screenTimeResetButton.setAttribute(
+          "aria-disabled",
+          minutesToday <= 0 ? "true" : "false"
+        );
+        this.optionsOverlay.screenTimeResetButton.tabIndex = minutesToday <= 0 ? -1 : 0;
+      }
+    } else {
+      this.optionsOverlay.resumeButton.disabled = false;
+      this.optionsOverlay.resumeButton.setAttribute("aria-disabled", "false");
+      this.optionsOverlay.resumeButton.tabIndex = 0;
     }
     if (this.optionsOverlay.audioNarrationToggle && state.audioNarrationEnabled !== undefined) {
       this.optionsOverlay.audioNarrationToggle.checked = state.audioNarrationEnabled;
@@ -4720,17 +5383,32 @@ export class HudView {
       tutorialCompleted?: boolean;
       loreUnlocked?: number;
       lessonsCompleted?: number;
+      wavePreviewEmptyMessage?: string;
+      wallTimeSeconds?: number;
     } = {}
   ): void {
     const now = typeof performance !== "undefined" ? performance.now() : Date.now();
+    const previousStatus = this.lastGameStatus;
+    this.lastGameStatus = state.status;
     this.lastState = state;
-    const wpm = this.computeWpm(state);
+    const wallTimeSeconds =
+      typeof options.wallTimeSeconds === "number" && Number.isFinite(options.wallTimeSeconds)
+        ? Math.max(0, options.wallTimeSeconds)
+        : null;
+    const timeSecondsForStats =
+      wallTimeSeconds !== null ? wallTimeSeconds : Math.max(0, state.time ?? 0);
+    const wpm = this.computeWpm(state, timeSecondsForStats);
     if (typeof options.lessonsCompleted === "number") {
       this.lessonsCompletedCount = Math.max(0, Math.floor(options.lessonsCompleted));
     }
     this.updateCastleBonusHint(state);
-    this.refreshParentSummary(state);
-    this.refreshMasteryCertificate(state, options.lessonsCompleted ?? 0);
+    this.refreshParentSummary(state, timeSecondsForStats);
+    this.refreshMasteryCertificate(
+      state,
+      options.lessonsCompleted ?? 0,
+      previousStatus,
+      timeSecondsForStats
+    );
     this.maybeCelebrateLessonMilestone(options.lessonsCompleted ?? 0);
     this.updateMentorDialogue(state, wpm);
     this.renderMuseumPanel();
@@ -4823,8 +5501,14 @@ export class HudView {
       state.typing.comboTimer,
       state.typing.accuracy
     );
+    this.updateSupportBoost(state);
     this.updateEvacuation(state);
-    this.renderWavePreview(upcoming, options.colorBlindFriendly);
+    this.renderWavePreview(
+      upcoming,
+      options.colorBlindFriendly,
+      state.laneHazards ?? [],
+      options.wavePreviewEmptyMessage ?? null
+    );
     this.applyTutorialSlotLock(state);
     const history = state.analytics.waveHistory?.length
       ? state.analytics.waveHistory
@@ -4857,6 +5541,215 @@ export class HudView {
       slot.status.textContent = "";
       delete slot.status.dataset.messageActive;
     }, 2000);
+  }
+
+  private setBuildCommandStatus(
+    message: string,
+    options: { tone?: "info" | "success" | "error"; timeoutMs?: number } = {}
+  ): void {
+    if (!this.buildCommandStatus) return;
+    const tone = options.tone ?? "info";
+    const timeoutMs =
+      typeof options.timeoutMs === "number" && Number.isFinite(options.timeoutMs)
+        ? Math.max(0, options.timeoutMs)
+        : 2800;
+
+    this.buildCommandStatus.textContent = message;
+    this.buildCommandStatus.dataset.tone = tone;
+    if (this.buildCommandStatusTimeout) {
+      clearTimeout(this.buildCommandStatusTimeout);
+      this.buildCommandStatusTimeout = null;
+    }
+    if (timeoutMs > 0) {
+      this.buildCommandStatusTimeout = setTimeout(() => {
+        if (!this.buildCommandStatus) return;
+        this.buildCommandStatus.textContent = "";
+        delete this.buildCommandStatus.dataset.tone;
+        this.buildCommandStatusTimeout = null;
+      }, timeoutMs);
+    }
+  }
+
+  private resolveBuildSlotId(token: string): string | null {
+    const raw = token?.trim?.() ?? "";
+    if (!raw) return null;
+    const normalized = raw.toLowerCase();
+
+    let slotId: string | null = null;
+    if (/^slot-\d+$/.test(normalized)) {
+      slotId = normalized;
+    } else if (/^slot\d+$/.test(normalized)) {
+      slotId = `slot-${normalized.slice(4)}`;
+    } else if (/^s\d+$/.test(normalized)) {
+      slotId = `slot-${normalized.slice(1)}`;
+    } else if (/^\d+$/.test(normalized)) {
+      slotId = `slot-${normalized}`;
+    }
+
+    if (!slotId) return null;
+    const exists = this.config.turretSlots.some((slot) => slot.id === slotId);
+    return exists ? slotId : null;
+  }
+
+  private resolveBuildTurretTypeId(token: string): TurretTypeId | null {
+    const raw = token?.trim?.() ?? "";
+    if (!raw) return null;
+    const normalized = raw.toLowerCase();
+
+    const candidates = Object.keys(this.config.turretArchetypes) as TurretTypeId[];
+    for (const typeId of candidates) {
+      const archetype = this.config.turretArchetypes[typeId];
+      const label = (archetype?.name ?? typeId).toLowerCase();
+      if (normalized === typeId || normalized === label) {
+        return typeId;
+      }
+    }
+
+    if (normalized.length < 2) {
+      return null;
+    }
+    const matches: TurretTypeId[] = [];
+    for (const typeId of candidates) {
+      const archetype = this.config.turretArchetypes[typeId];
+      const label = (archetype?.name ?? typeId).toLowerCase();
+      if (typeId.startsWith(normalized) || label.startsWith(normalized)) {
+        matches.push(typeId);
+      }
+    }
+    return matches.length === 1 ? matches[0] : null;
+  }
+
+  private normalizeBuildPriority(token: string): TurretTargetPriority | null {
+    const raw = token?.trim?.() ?? "";
+    const normalized = raw.toLowerCase();
+    if (!normalized) return null;
+    if (normalized === "first" || normalized === "f") return "first";
+    if (normalized === "strongest" || normalized === "strong" || normalized === "s") return "strongest";
+    if (normalized === "weakest" || normalized === "weak" || normalized === "w") return "weakest";
+    return null;
+  }
+
+  private executeBuildCommand(raw: string): void {
+    const text = raw?.trim?.() ?? "";
+    if (!text) {
+      this.setBuildCommandStatus('Type "help" for examples.', { tone: "info" });
+      return;
+    }
+
+    const tokens = text.split(/\s+/g).filter(Boolean);
+    const head = (tokens[0] ?? "").toLowerCase();
+
+    if (head === "help" || head === "?") {
+      this.setBuildCommandStatus(
+        'Examples: "s0 arrow", "s0 upgrade", "s0 priority strongest", "castle repair".',
+        { tone: "info", timeoutMs: 5200 }
+      );
+      return;
+    }
+
+    if (head === "castle" || head === "keep") {
+      const action = (tokens[1] ?? "").toLowerCase();
+      if (action === "upgrade" || action === "up") {
+        this.callbacks.onCastleUpgrade();
+        this.setBuildCommandStatus("Command sent: castle upgrade.", { tone: "success" });
+        return;
+      }
+      if (action === "repair" || action === "heal") {
+        this.callbacks.onCastleRepair();
+        this.setBuildCommandStatus("Command sent: castle repair.", { tone: "success" });
+        return;
+      }
+      this.setBuildCommandStatus('Try: "castle upgrade" or "castle repair".', { tone: "error" });
+      return;
+    }
+
+    if (head === "upgrade" || head === "up") {
+      const slotId = this.resolveBuildSlotId(tokens[1] ?? "");
+      if (slotId) {
+        this.callbacks.onUpgradeTurret(slotId);
+        this.setBuildCommandStatus(`Command sent: ${this.formatSlotLabel(slotId)} upgrade.`, {
+          tone: "success"
+        });
+      } else {
+        this.callbacks.onCastleUpgrade();
+        this.setBuildCommandStatus("Command sent: castle upgrade.", { tone: "success" });
+      }
+      return;
+    }
+
+    if (head === "repair" || head === "heal") {
+      this.callbacks.onCastleRepair();
+      this.setBuildCommandStatus("Command sent: castle repair.", { tone: "success" });
+      return;
+    }
+
+    const slotId = this.resolveBuildSlotId(tokens[0] ?? "");
+    if (!slotId) {
+      this.setBuildCommandStatus(`Unknown command "${text}". Type "help".`, { tone: "error" });
+      return;
+    }
+
+    const slotState = this.lastState?.turrets?.find((slot) => slot.id === slotId) ?? null;
+    if (slotState && !slotState.unlocked) {
+      this.showSlotMessage(slotId, "Slot locked.");
+      this.setBuildCommandStatus(`${this.formatSlotLabel(slotId)} is locked.`, { tone: "error" });
+      return;
+    }
+
+    const action = (tokens[1] ?? "").toLowerCase();
+    if (!action) {
+      this.setBuildCommandStatus(`Missing action for ${this.formatSlotLabel(slotId)}. Type "help".`, {
+        tone: "error"
+      });
+      return;
+    }
+
+    if (action === "upgrade" || action === "up") {
+      this.callbacks.onUpgradeTurret(slotId);
+      this.setBuildCommandStatus(`Command sent: ${this.formatSlotLabel(slotId)} upgrade.`, {
+        tone: "success"
+      });
+      return;
+    }
+
+    if (action === "downgrade" || action === "down" || action === "remove") {
+      if (!this.callbacks.onDowngradeTurret) {
+        this.setBuildCommandStatus("Downgrade unavailable in this mode.", { tone: "error" });
+        return;
+      }
+      this.callbacks.onDowngradeTurret(slotId);
+      this.setBuildCommandStatus(`Command sent: ${this.formatSlotLabel(slotId)} downgrade.`, {
+        tone: "success"
+      });
+      return;
+    }
+
+    if (action === "priority" || action === "target") {
+      const priority = this.normalizeBuildPriority(tokens[2] ?? "");
+      if (!priority) {
+        this.setBuildCommandStatus('Priority must be "first", "strongest", or "weakest".', {
+          tone: "error"
+        });
+        return;
+      }
+      this.callbacks.onTurretPriorityChange(slotId, priority);
+      this.setBuildCommandStatus(
+        `Command sent: ${this.formatSlotLabel(slotId)} targeting ${this.describePriority(priority)}.`,
+        { tone: "success" }
+      );
+      return;
+    }
+
+    const typeId = this.resolveBuildTurretTypeId(action);
+    if (!typeId) {
+      this.setBuildCommandStatus(`Unknown turret "${action}". Type "help".`, { tone: "error" });
+      return;
+    }
+    this.callbacks.onPlaceTurret(slotId, typeId);
+    this.setBuildCommandStatus(
+      `Command sent: ${this.formatSlotLabel(slotId)} deploy ${this.getTurretDisplayName(typeId)}.`,
+      { tone: "success" }
+    );
   }
 
   showTypingErrorHint(hint: { expected: string | null; received: string | null; enemyId: string | null }): void {
@@ -4902,7 +5795,12 @@ export class HudView {
       return { finger: "Right pinky", keyLabel: "Enter" };
     }
     const normalizedKey = this.normalizeFingerKey(char);
-    const finger = FINGER_LOOKUP[normalizedKey];
+    const layoutId =
+      typeof this.virtualKeyboardLayout === "string" && this.virtualKeyboardLayout.length > 0
+        ? this.virtualKeyboardLayout.toLowerCase()
+        : "qwerty";
+    const lookup = FINGER_LOOKUP_BY_LAYOUT[layoutId] ?? FINGER_LOOKUP_BY_LAYOUT.qwerty;
+    const finger = lookup[normalizedKey];
     if (!finger) {
       return null;
     }
@@ -5035,6 +5933,24 @@ export class HudView {
     this.updateWavePreviewHint(active, message ?? null);
   }
 
+  setWavePreviewThreatIndicatorsEnabled(enabled: boolean): void {
+    const next = Boolean(enabled);
+    if (this.wavePreviewThreatIndicatorsEnabled === next) {
+      return;
+    }
+    this.wavePreviewThreatIndicatorsEnabled = next;
+    if (this.lastWavePreviewEntries.length > 0) {
+      this.wavePreview.render(this.lastWavePreviewEntries, {
+        colorBlindFriendly: this.lastWavePreviewColorBlind,
+        selectedTierId: this.selectedEnemyBioId,
+        onSelect: (tierId) => this.handleEnemyBioSelect(tierId),
+        showThreatIndicators: this.wavePreviewThreatIndicatorsEnabled,
+        laneHazards: this.lastWavePreviewLaneHazards,
+        emptyMessage: this.lastWavePreviewEmptyMessage
+      });
+    }
+  }
+
   announceEnemyTaunt(message: string, options?: { durationMs?: number }): boolean {
     if (!this.wavePreviewHint || this.wavePreviewHintPinned) {
       return false;
@@ -5059,15 +5975,22 @@ export class HudView {
 
   private renderWavePreview(
     entries: WaveSpawnPreview[],
-    colorBlindFriendly: boolean | undefined
+    colorBlindFriendly: boolean | undefined,
+    laneHazards: LaneHazardState[] | undefined,
+    emptyMessage: string | null
   ): void {
     this.lastWavePreviewEntries = entries;
     this.lastWavePreviewColorBlind = Boolean(colorBlindFriendly);
+    this.lastWavePreviewLaneHazards = Array.isArray(laneHazards) ? laneHazards : [];
+    this.lastWavePreviewEmptyMessage = typeof emptyMessage === "string" ? emptyMessage : null;
     const selected = this.syncEnemyBioSelection(entries);
     this.wavePreview.render(entries, {
       colorBlindFriendly: this.lastWavePreviewColorBlind,
       selectedTierId: selected,
-      onSelect: (tierId) => this.handleEnemyBioSelect(tierId)
+      onSelect: (tierId) => this.handleEnemyBioSelect(tierId),
+      showThreatIndicators: this.wavePreviewThreatIndicatorsEnabled,
+      laneHazards: this.lastWavePreviewLaneHazards,
+      emptyMessage: this.lastWavePreviewEmptyMessage
     });
     this.renderEnemyBiography(selected);
   }
@@ -5080,7 +6003,10 @@ export class HudView {
       this.wavePreview.render(this.lastWavePreviewEntries, {
         colorBlindFriendly: this.lastWavePreviewColorBlind,
         selectedTierId: this.selectedEnemyBioId,
-        onSelect: (nextTier) => this.handleEnemyBioSelect(nextTier)
+        onSelect: (nextTier) => this.handleEnemyBioSelect(nextTier),
+        showThreatIndicators: this.wavePreviewThreatIndicatorsEnabled,
+        laneHazards: this.lastWavePreviewLaneHazards,
+        emptyMessage: this.lastWavePreviewEmptyMessage
       });
     }
   }
@@ -5919,13 +6845,40 @@ export class HudView {
   }
 
   private updateTurretControls(state: GameState): void {
+    const hazardsByLane = new Map<number, LaneHazardState>();
+    for (const hazard of state.laneHazards ?? []) {
+      hazardsByLane.set(hazard.lane, hazard);
+    }
     for (const slot of state.turrets) {
       const controls = this.slotControls.get(slot.id);
       if (!controls) continue;
 
-      controls.title.textContent = `Slot ${slot.id.replace("slot-", "")} (Lane ${slot.lane + 1})`;
+      controls.titleText.textContent = `Slot ${slot.id.replace("slot-", "")} (Lane ${slot.lane + 1})`;
+
+      const laneHazard = hazardsByLane.get(slot.lane);
+      if (laneHazard && typeof laneHazard.kind === "string" && laneHazard.kind.length > 0) {
+        const hazardLabel = this.formatTitleLabel(laneHazard.kind);
+        const remainingLabel = this.formatSeconds(Math.max(0, laneHazard.remaining));
+        const fireRateEffect = this.formatFireRateEffect(laneHazard.fireRateMultiplier);
+        const detail = fireRateEffect
+          ? `${hazardLabel} active (${remainingLabel} left, ${fireRateEffect})`
+          : `${hazardLabel} active (${remainingLabel} left)`;
+        controls.hazardBadge.dataset.visible = "true";
+        controls.hazardBadge.setAttribute("aria-hidden", "false");
+        controls.hazardBadge.dataset.hazard = laneHazard.kind;
+        controls.hazardBadge.textContent = hazardLabel;
+        controls.hazardBadge.title = detail;
+        controls.hazardBadge.setAttribute("aria-label", detail);
+      } else {
+        controls.hazardBadge.dataset.visible = "false";
+        controls.hazardBadge.setAttribute("aria-hidden", "true");
+        delete controls.hazardBadge.dataset.hazard;
+        controls.hazardBadge.textContent = "";
+        controls.hazardBadge.removeAttribute("title");
+        controls.hazardBadge.removeAttribute("aria-label");
+      }
       const priority = this.normalizePriority(slot.targetingPriority) ?? "first";
-    this.setSelectValue(controls.prioritySelect, priority);
+      this.setSelectValue(controls.prioritySelect, priority);
 
       if (!slot.unlocked) {
         controls.action.disabled = true;
@@ -6391,6 +7344,15 @@ export class HudView {
 
       const title = document.createElement("div");
       title.className = "slot-title";
+      const titleText = document.createElement("span");
+      titleText.className = "slot-title-text";
+      titleText.textContent = `Slot ${slot.id.replace("slot-", "")} (Lane ${slot.lane + 1})`;
+      title.appendChild(titleText);
+      const hazardBadge = document.createElement("span");
+      hazardBadge.className = "slot-hazard";
+      hazardBadge.dataset.visible = "false";
+      hazardBadge.setAttribute("aria-hidden", "true");
+      title.appendChild(hazardBadge);
       container.appendChild(title);
 
       const select = document.createElement("select");
@@ -6493,6 +7455,8 @@ export class HudView {
       this.slotControls.set(slot.id, {
         container,
         title,
+        titleText,
+        hazardBadge,
         status,
         action,
         downgradeButton: downgrade,
@@ -6908,6 +7872,47 @@ export class HudView {
     for (const entry of entries) {
       this.setWaveScorecardField(entry.field, entry.label, entry.value);
     }
+
+    const coach = data.coach ?? null;
+    const coachContainer = this.waveScorecard.coach;
+    const drillSuggestion = coach?.drill ?? null;
+    if (coachContainer && this.waveScorecard.coachList) {
+      if (coach && typeof coach.win === "string" && typeof coach.gap === "string") {
+        coachContainer.dataset.visible = "true";
+        coachContainer.setAttribute("aria-hidden", "false");
+        this.setWaveScorecardCoachField("win", "Biggest Win", coach.win);
+        this.setWaveScorecardCoachField("gap", "Biggest Gap", coach.gap);
+        const drillLine = drillSuggestion
+          ? `${drillSuggestion.label}: ${drillSuggestion.reason}`
+          : "No drill suggestion available.";
+        this.setWaveScorecardCoachField("drill", "Suggested Drill", drillLine);
+      } else {
+        coachContainer.dataset.visible = "false";
+        coachContainer.setAttribute("aria-hidden", "true");
+        for (const item of Array.from(this.waveScorecard.coachList.children)) {
+          item.textContent = "";
+        }
+      }
+    }
+
+    if (this.waveScorecard.drillBtn) {
+      this.waveScorecard.suggestedDrill = drillSuggestion;
+      if (drillSuggestion) {
+        this.waveScorecard.drillBtn.textContent = `Run ${drillSuggestion.label}`;
+        this.waveScorecard.drillBtn.dataset.visible = "true";
+        this.waveScorecard.drillBtn.setAttribute("aria-hidden", "false");
+        this.waveScorecard.drillBtn.disabled = false;
+        this.waveScorecard.drillBtn.tabIndex = 0;
+      } else {
+        this.waveScorecard.drillBtn.textContent = "Run Suggested Drill";
+        this.waveScorecard.drillBtn.dataset.visible = "false";
+        this.waveScorecard.drillBtn.setAttribute("aria-hidden", "true");
+        this.waveScorecard.drillBtn.disabled = true;
+        this.waveScorecard.drillBtn.tabIndex = -1;
+      }
+    } else if (this.waveScorecard) {
+      this.waveScorecard.suggestedDrill = drillSuggestion;
+    }
     if (this.waveScorecard.tip) {
       const text = (data.microTip ?? "").trim();
       if (text) {
@@ -7217,6 +8222,19 @@ export class HudView {
     target.replaceChildren(labelSpan, valueSpan);
   }
 
+  private setWaveScorecardCoachField(field: string, label: string, value: string): void {
+    if (!this.waveScorecard?.coachList) return;
+    const items = Array.from(this.waveScorecard.coachList.children) as HTMLElement[];
+    const target = items.find((element) => element.dataset.field === field);
+    if (!target) return;
+
+    const labelSpan = document.createElement("span");
+    labelSpan.textContent = label;
+    const valueSpan = document.createElement("span");
+    valueSpan.textContent = value;
+    target.replaceChildren(labelSpan, valueSpan);
+  }
+
   private setWaveScorecardVisible(visible: boolean): void {
     if (!this.waveScorecard) return;
     this.waveScorecard.container.dataset.visible = visible ? "true" : "false";
@@ -7270,6 +8288,27 @@ export class HudView {
     }
   }
 
+  private showDropoffOverlay(trigger?: HTMLElement): void {
+    if (!this.dropoffOverlay) return;
+    this.dropoffOverlayTrigger = trigger ?? null;
+    this.dropoffOverlay.container.dataset.visible = "true";
+    this.dropoffOverlay.container.setAttribute("aria-hidden", "false");
+    this.dropoffOverlay.closeButton.focus();
+  }
+
+  private hideDropoffOverlay(): void {
+    if (!this.dropoffOverlay) return;
+    this.dropoffOverlay.container.dataset.visible = "false";
+    this.dropoffOverlay.container.setAttribute("aria-hidden", "true");
+    const target = this.dropoffOverlayTrigger;
+    this.dropoffOverlayTrigger = null;
+    if (target instanceof HTMLElement) {
+      target.focus();
+    } else {
+      this.focusTypingInput();
+    }
+  }
+
   private applyTelemetryOptionState(state?: {
     available: boolean;
     checked: boolean;
@@ -7280,6 +8319,8 @@ export class HudView {
     const wrapper =
       this.optionsOverlay.telemetryWrapper ??
       (toggle.parentElement instanceof HTMLElement ? toggle.parentElement : undefined);
+    const queueDownloadButton = this.optionsOverlay.telemetryQueueDownloadButton;
+    const queueClearButton = this.optionsOverlay.telemetryQueueClearButton;
     const available = Boolean(state?.available);
 
     if (!available) {
@@ -7293,6 +8334,18 @@ export class HudView {
       toggle.disabled = true;
       toggle.setAttribute("aria-hidden", "true");
       toggle.tabIndex = -1;
+      if (queueDownloadButton) {
+        queueDownloadButton.style.display = "none";
+        queueDownloadButton.disabled = true;
+        queueDownloadButton.tabIndex = -1;
+        queueDownloadButton.setAttribute("aria-hidden", "true");
+      }
+      if (queueClearButton) {
+        queueClearButton.style.display = "none";
+        queueClearButton.disabled = true;
+        queueClearButton.tabIndex = -1;
+        queueClearButton.setAttribute("aria-hidden", "true");
+      }
       return;
     }
 
@@ -7306,6 +8359,18 @@ export class HudView {
     toggle.disabled = Boolean(state?.disabled);
     toggle.tabIndex = toggle.disabled ? -1 : 0;
     toggle.checked = Boolean(state?.checked);
+    if (queueDownloadButton) {
+      queueDownloadButton.style.display = "";
+      queueDownloadButton.disabled = false;
+      queueDownloadButton.tabIndex = 0;
+      queueDownloadButton.setAttribute("aria-hidden", "false");
+    }
+    if (queueClearButton) {
+      queueClearButton.style.display = "";
+      queueClearButton.disabled = false;
+      queueClearButton.tabIndex = 0;
+      queueClearButton.setAttribute("aria-hidden", "false");
+    }
   }
 
   private updateSoundVolumeDisplay(volume: number): void {
@@ -8004,6 +9069,29 @@ export class HudView {
     }
   }
 
+  private readMasteryCertificateMilestoneShown(): boolean {
+    if (typeof window === "undefined" || !window.localStorage) return false;
+    try {
+      return window.localStorage.getItem(MASTERY_CERTIFICATE_MILESTONE_SHOWN_KEY) === "true";
+    } catch {
+      return false;
+    }
+  }
+
+  private readMilestoneCelebrationsDisabled(): boolean {
+    if (typeof window === "undefined") return false;
+    const read = (storage: Storage | undefined | null): boolean => {
+      if (!storage) return false;
+      try {
+        return storage.getItem(MILESTONE_CELEBRATIONS_DISABLED_KEY) === "true";
+      } catch {
+        return false;
+      }
+    };
+
+    return read(window.localStorage) || read(window.sessionStorage);
+  }
+
   private persistCertificateName(name: string): void {
     if (typeof window === "undefined" || !window.localStorage) return;
     try {
@@ -8011,6 +9099,33 @@ export class HudView {
     } catch {
       // ignore storage write failures
     }
+  }
+
+  private persistMasteryCertificateMilestoneShown(shown: boolean): void {
+    if (typeof window === "undefined" || !window.localStorage) return;
+    try {
+      window.localStorage.setItem(
+        MASTERY_CERTIFICATE_MILESTONE_SHOWN_KEY,
+        shown ? "true" : "false"
+      );
+    } catch {
+      // ignore storage write failures
+    }
+  }
+
+  private persistMilestoneCelebrationsDisabled(disabled: boolean): void {
+    if (typeof window === "undefined") return;
+    const write = (storage: Storage | undefined | null): void => {
+      if (!storage) return;
+      try {
+        storage.setItem(MILESTONE_CELEBRATIONS_DISABLED_KEY, disabled ? "true" : "false");
+      } catch {
+        // ignore storage write failures
+      }
+    };
+
+    write(window.localStorage);
+    write(window.sessionStorage);
   }
 
   private setCertificateName(name: string): void {
@@ -8090,6 +9205,11 @@ export class HudView {
     force?: boolean;
   }): void {
     if (!this.milestoneCelebration) return;
+    if (this.milestoneCelebrationsDisabled) return;
+    const reducedCognitiveLoad =
+      this.hudRoot?.dataset.cognitiveMode === "reduced" ||
+      (typeof document !== "undefined" && document.body?.dataset.cognitiveMode === "reduced");
+    if (reducedCognitiveLoad) return;
     const now = Date.now();
     const key = `${options.tone ?? "default"}|${options.title}|${options.detail}`;
     const tooSoon = !options.force && this.lastMilestoneKey === key && now - this.lastMilestoneAt < 8000;
@@ -8423,6 +9543,184 @@ export class HudView {
     }
   }
 
+  setSessionGoals(state: SessionGoalsViewState): void {
+    this.sessionGoalsState = state;
+    if (this.sessionGoalsPanel?.summary) {
+      this.sessionGoalsPanel.summary.textContent =
+        typeof state.summary === "string" && state.summary.length > 0
+          ? state.summary
+          : "Adaptive session goals tune after each run.";
+    }
+    if (!this.sessionGoalsPanel?.list) return;
+    const existing = this.sessionGoalsPanel.list.querySelectorAll("li");
+    const nextGoals = Array.isArray(state.goals) ? state.goals : [];
+    const shouldReplace = existing.length !== nextGoals.length;
+    if (shouldReplace) {
+      this.sessionGoalsPanel.list.replaceChildren();
+    }
+    const items: HTMLLIElement[] = shouldReplace
+      ? []
+      : Array.from(this.sessionGoalsPanel.list.querySelectorAll("li")).filter(
+          (node): node is HTMLLIElement => node instanceof HTMLLIElement
+        );
+
+    for (let idx = 0; idx < nextGoals.length; idx += 1) {
+      const goal = nextGoals[idx];
+      const label = typeof goal?.label === "string" ? goal.label : "";
+      const status = typeof goal?.status === "string" ? goal.status : "pending";
+      const li =
+        items[idx] ??
+        (() => {
+          const node = document.createElement("li");
+          const marker = document.createElement("span");
+          marker.className = "session-goals-panel__marker";
+          marker.setAttribute("aria-hidden", "true");
+          const text = document.createElement("span");
+          text.className = "session-goals-panel__text";
+          node.append(marker, text);
+          this.sessionGoalsPanel!.list!.appendChild(node);
+          items.push(node);
+          return node;
+        })();
+      li.dataset.status = status;
+      const text = li.querySelector(".session-goals-panel__text");
+      if (text instanceof HTMLElement) {
+        text.textContent = label;
+      } else {
+        li.textContent = label;
+      }
+    }
+
+    for (let idx = nextGoals.length; idx < items.length; idx += 1) {
+      items[idx]?.remove();
+    }
+  }
+
+  setDailyQuestBoard(state: DailyQuestBoardViewState): void {
+    this.dailyQuestBoardState = state;
+    if (this.dailyQuestPanel?.summary) {
+      this.dailyQuestPanel.summary.textContent =
+        typeof state.summary === "string" && state.summary.length > 0
+          ? state.summary
+          : "Daily quests refresh each day.";
+    }
+    if (!this.dailyQuestPanel?.list) return;
+    const existing = this.dailyQuestPanel.list.querySelectorAll("li");
+    const nextEntries = Array.isArray(state.entries) ? state.entries : [];
+    const shouldReplace = existing.length !== nextEntries.length;
+    if (shouldReplace) {
+      this.dailyQuestPanel.list.replaceChildren();
+    }
+    const items: HTMLLIElement[] = shouldReplace
+      ? []
+      : Array.from(this.dailyQuestPanel.list.querySelectorAll("li")).filter(
+          (node): node is HTMLLIElement => node instanceof HTMLLIElement
+        );
+
+    for (let idx = 0; idx < nextEntries.length; idx += 1) {
+      const entry = nextEntries[idx];
+      const title = typeof entry?.title === "string" ? entry.title : "";
+      const meta = typeof entry?.meta === "string" ? entry.meta : "";
+      const progress = typeof entry?.progress === "number" ? entry.progress : 0;
+      const isComplete = entry?.status === "completed";
+      const status = isComplete ? "met" : progress > 0 ? "in-progress" : "pending";
+      const label = meta ? `${title} (${meta})` : title;
+      const li =
+        items[idx] ??
+        (() => {
+          const node = document.createElement("li");
+          const marker = document.createElement("span");
+          marker.className = "session-goals-panel__marker";
+          marker.setAttribute("aria-hidden", "true");
+          const text = document.createElement("span");
+          text.className = "session-goals-panel__text";
+          node.append(marker, text);
+          this.dailyQuestPanel!.list!.appendChild(node);
+          items.push(node);
+          return node;
+        })();
+      li.dataset.status = status;
+      const text = li.querySelector(".session-goals-panel__text");
+      if (text instanceof HTMLElement) {
+        text.textContent = label;
+      } else {
+        li.textContent = label;
+      }
+    }
+
+    for (let idx = nextEntries.length; idx < items.length; idx += 1) {
+      items[idx]?.remove();
+    }
+  }
+
+  setWeeklyQuestBoard(state: WeeklyQuestBoardViewState): void {
+    this.weeklyQuestBoardState = state;
+    if (this.weeklyQuestPanel?.summary) {
+      const baseSummary =
+        typeof state.summary === "string" && state.summary.length > 0
+          ? state.summary
+          : "Weekly quests refresh each Monday.";
+      const attempts = typeof state.trial?.attempts === "number" ? state.trial.attempts : 0;
+      const summary =
+        state.trial?.status === "ready" && attempts > 0
+          ? `${baseSummary} • ${attempts} attempt${attempts === 1 ? "" : "s"}`
+          : baseSummary;
+      this.weeklyQuestPanel.summary.textContent = summary;
+    }
+    if (this.weeklyQuestPanel?.trialButton) {
+      const ready = state.trial?.status === "ready";
+      this.weeklyQuestPanel.trialButton.dataset.visible = ready ? "true" : "false";
+      this.weeklyQuestPanel.trialButton.disabled = !ready;
+    }
+    if (!this.weeklyQuestPanel?.list) return;
+    const existing = this.weeklyQuestPanel.list.querySelectorAll("li");
+    const nextEntries = Array.isArray(state.entries) ? state.entries : [];
+    const shouldReplace = existing.length !== nextEntries.length;
+    if (shouldReplace) {
+      this.weeklyQuestPanel.list.replaceChildren();
+    }
+    const items: HTMLLIElement[] = shouldReplace
+      ? []
+      : Array.from(this.weeklyQuestPanel.list.querySelectorAll("li")).filter(
+          (node): node is HTMLLIElement => node instanceof HTMLLIElement
+        );
+
+    for (let idx = 0; idx < nextEntries.length; idx += 1) {
+      const entry = nextEntries[idx];
+      const title = typeof entry?.title === "string" ? entry.title : "";
+      const meta = typeof entry?.meta === "string" ? entry.meta : "";
+      const progress = typeof entry?.progress === "number" ? entry.progress : 0;
+      const isComplete = entry?.status === "completed";
+      const status = isComplete ? "met" : progress > 0 ? "in-progress" : "pending";
+      const label = meta ? `${title} (${meta})` : title;
+      const li =
+        items[idx] ??
+        (() => {
+          const node = document.createElement("li");
+          const marker = document.createElement("span");
+          marker.className = "session-goals-panel__marker";
+          marker.setAttribute("aria-hidden", "true");
+          const text = document.createElement("span");
+          text.className = "session-goals-panel__text";
+          node.append(marker, text);
+          this.weeklyQuestPanel!.list!.appendChild(node);
+          items.push(node);
+          return node;
+        })();
+      li.dataset.status = status;
+      const text = li.querySelector(".session-goals-panel__text");
+      if (text instanceof HTMLElement) {
+        text.textContent = label;
+      } else {
+        li.textContent = label;
+      }
+    }
+
+    for (let idx = nextEntries.length; idx < items.length; idx += 1) {
+      items[idx]?.remove();
+    }
+  }
+
   private renderSideQuestOverlay(): void {
     if (!this.sideQuestOverlay) return;
     this.sideQuestEntries = this.buildSideQuestEntries();
@@ -8488,20 +9786,26 @@ export class HudView {
 
   private maybeCelebrateLessonMilestone(lessonsCompleted: number): void {
     if (!Number.isFinite(lessonsCompleted)) return;
+    const safeLessons = Math.max(0, Math.floor(lessonsCompleted));
+    if (!this.lessonMilestoneTrackingInitialized) {
+      this.lessonMilestoneTrackingInitialized = true;
+      this.lastLessonMilestoneCelebrated = safeLessons;
+      return;
+    }
     const thresholds = [5, 10, 20, 30, 50, 75, 100];
     const nextThreshold = thresholds.find(
-      (value) => lessonsCompleted >= value && this.lastLessonMilestoneCelebrated < value
+      (value) => safeLessons >= value && this.lastLessonMilestoneCelebrated < value
     );
     if (!nextThreshold) {
-      if (lessonsCompleted < this.lastLessonMilestoneCelebrated) {
-        this.lastLessonMilestoneCelebrated = lessonsCompleted;
+      if (safeLessons < this.lastLessonMilestoneCelebrated) {
+        this.lastLessonMilestoneCelebrated = safeLessons;
       }
       return;
     }
     this.lastLessonMilestoneCelebrated = nextThreshold;
     this.celebrateMilestone({
       title: `${nextThreshold} lessons completed!`,
-      detail: `You have completed ${lessonsCompleted} lessons—hydrate, stretch, then tackle the next challenge.`,
+      detail: `You have completed ${safeLessons} lessons-hydrate, stretch, then tackle the next challenge.`,
       tone: "lesson",
       eyebrow: "Lesson milestone"
     });
@@ -8521,8 +9825,12 @@ export class HudView {
     }
   }
 
-  setLessonMedalProgress(state: LessonMedalViewState): void {
-    const previousLast = this.lessonMedalState?.last ?? null;
+  setLessonMedalProgress(
+    state: LessonMedalViewState,
+    options: { celebrate?: boolean } = {}
+  ): void {
+    const previousState = this.lessonMedalState ?? null;
+    const previousLast = previousState?.last ?? null;
     const previousTimestamp =
       typeof previousLast?.timestamp === "number" && Number.isFinite(previousLast.timestamp)
         ? previousLast.timestamp
@@ -8532,6 +9840,7 @@ export class HudView {
     if (this.lessonMedalOverlay?.container.dataset.visible === "true") {
       this.renderLessonMedalOverlay(state);
     }
+    const celebrate = options.celebrate !== false;
     const last = state.last ?? null;
     const lastId = typeof last?.id === "string" && last.id.length > 0 ? last.id : null;
     const lastTimestamp =
@@ -8544,22 +9853,49 @@ export class HudView {
           previousLast.tier !== last.tier ||
           lastTimestamp > previousTimestamp));
     const alreadyCelebrated = !!lastId && this.lastLessonMedalCelebratedId === lastId;
-    if (isNewResult && !alreadyCelebrated) {
-      if (last.tier === "gold" || last.tier === "platinum") {
-        const tierLabel = last.tier.charAt(0).toUpperCase() + last.tier.slice(1).toLowerCase();
-        const modeLabel =
-          last.mode === "burst" ? "Burst" : last.mode === "endurance" ? "Endurance" : "Precision";
-        const accuracy = Number.isFinite(last.accuracy)
-          ? `${Math.round(Math.max(0, Math.min(1, last.accuracy)) * 100)}% accuracy`
-          : "Great accuracy";
-        this.celebrateMilestone({
-          title: `${tierLabel} medal earned!`,
-          detail: `${modeLabel} drill completed with ${accuracy}.`,
-          tone: last.tier === "platinum" ? "platinum" : "gold",
-          eyebrow: "Lesson milestone"
-        });
+    if (celebrate && isNewResult && !alreadyCelebrated) {
+      const rankTier = (tier: LessonMedalTier): number => {
+        if (tier === "platinum") return 3;
+        if (tier === "gold") return 2;
+        if (tier === "silver") return 1;
+        return 0;
+      };
+      const mode = last?.mode ?? null;
+      const previousBestForMode =
+        mode && previousState?.bestByMode ? previousState.bestByMode[mode] ?? null : null;
+      const previousModeBest =
+        previousBestForMode ?? (previousLast?.mode === mode ? previousLast : null);
+      const isTierUpgrade =
+        !!last && (!previousModeBest || rankTier(last.tier) > rankTier(previousModeBest.tier));
+      if (isTierUpgrade) {
+        if (last.tier === "gold" || last.tier === "platinum") {
+          const tierLabel = last.tier.charAt(0).toUpperCase() + last.tier.slice(1).toLowerCase();
+          const modeLabel =
+            last.mode === "burst"
+              ? "Burst"
+              : last.mode === "endurance"
+                ? "Endurance"
+                : last.mode === "sprint"
+                  ? "Time Attack"
+                  : last.mode === "sentences"
+                    ? "Sentence Builder"
+                    : last.mode === "rhythm"
+                      ? "Rhythm Drill"
+                : last.mode === "symbols"
+                  ? "Symbols"
+                  : "Precision";
+          const accuracy = Number.isFinite(last.accuracy)
+            ? `${Math.round(Math.max(0, Math.min(1, last.accuracy)) * 100)}% accuracy`
+            : "Great accuracy";
+          this.celebrateMilestone({
+            title: `${tierLabel} medal earned!`,
+            detail: `${modeLabel} drill completed with ${accuracy}.`,
+            tone: last.tier === "platinum" ? "platinum" : "gold",
+            eyebrow: "Lesson milestone"
+          });
+        }
+        this.flashLessonMedalHighlight();
       }
-      this.flashLessonMedalHighlight();
     }
     if (lastId) {
       this.lastLessonMedalCelebratedId = lastId;
@@ -8570,7 +9906,25 @@ export class HudView {
     return {
       last: null,
       recent: [],
-      bestByMode: { burst: null, endurance: null, precision: null },
+      bestByMode: {
+        burst: null,
+        warmup: null,
+        endurance: null,
+        sprint: null,
+        sentences: null,
+        reading: null,
+        rhythm: null,
+        reaction: null,
+        combo: null,
+        precision: null,
+        symbols: null,
+        placement: null,
+        hand: null,
+        support: null,
+        shortcuts: null,
+        shift: null,
+        focus: null
+      },
       totals: { bronze: 0, silver: 0, gold: 0, platinum: 0 },
       nextTarget: null
     };
@@ -8639,7 +9993,12 @@ export class HudView {
       const modes: Array<{ id: TypingDrillMode; label: string }> = [
         { id: "burst", label: "Burst Warmup" },
         { id: "endurance", label: "Endurance" },
-        { id: "precision", label: "Shield Breaker" }
+        { id: "hand", label: "Hand Isolation" },
+        { id: "sentences", label: "Sentence Builder" },
+        { id: "rhythm", label: "Rhythm Drill" },
+        { id: "sprint", label: "Time Attack" },
+        { id: "precision", label: "Shield Breaker" },
+        { id: "symbols", label: "Numbers & Symbols" }
       ];
       this.lessonMedalOverlay.bestList.replaceChildren();
       for (const mode of modes) {
@@ -8704,10 +10063,38 @@ export class HudView {
 
   private formatTypingDrillMode(mode: TypingDrillMode): string {
     switch (mode) {
+      case "placement":
+        return "Placement Test";
+      case "hand":
+        return "Hand Isolation";
+      case "support":
+        return "Lane Support";
+      case "shortcuts":
+        return "Shortcut Practice";
+      case "shift":
+        return "Shift Timing";
+      case "focus":
+        return "Focus Drill";
+      case "warmup":
+        return "5-Min Warm-up";
+      case "reaction":
+        return "Reaction Challenge";
+      case "combo":
+        return "Combo Preservation";
+      case "reading":
+        return "Reading Quiz";
       case "precision":
         return "Shield Breaker";
+      case "sprint":
+        return "Time Attack";
+      case "sentences":
+        return "Sentence Builder";
+      case "rhythm":
+        return "Rhythm Drill";
       case "endurance":
         return "Endurance";
+      case "symbols":
+        return "Numbers & Symbols";
       case "burst":
       default:
         return "Burst Warmup";
@@ -8719,7 +10106,12 @@ export class HudView {
     const modes: Array<{ id: TypingDrillMode; label: string }> = [
       { id: "burst", label: "Burst" },
       { id: "endurance", label: "Endurance" },
-      { id: "precision", label: "Precision" }
+      { id: "hand", label: "Hand" },
+      { id: "sprint", label: "Time Attack" },
+      { id: "sentences", label: "Sentences" },
+      { id: "rhythm", label: "Rhythm" },
+      { id: "precision", label: "Precision" },
+      { id: "symbols", label: "Symbols" }
     ];
     for (const mode of modes) {
       const entry = state.bestByMode[mode.id];
@@ -8809,7 +10201,16 @@ export class HudView {
       this.renderWpmLadderOverlay(state);
     }
     if (previous) {
-      const modes: TypingDrillMode[] = ["burst", "endurance", "precision"];
+      const modes: TypingDrillMode[] = [
+        "burst",
+        "endurance",
+        "hand",
+        "sprint",
+        "sentences",
+        "rhythm",
+        "precision",
+        "symbols"
+      ];
       const improved = modes.some((mode) => {
         const before = previous.bestByMode?.[mode];
         const after = state.bestByMode?.[mode];
@@ -8854,8 +10255,44 @@ export class HudView {
       totalRuns: 0,
       updatedAt: null,
       lastRun: null,
-      bestByMode: { burst: null, endurance: null, precision: null },
-      ladderByMode: { burst: [], endurance: [], precision: [] },
+      bestByMode: {
+        burst: null,
+        warmup: null,
+        endurance: null,
+        sprint: null,
+        sentences: null,
+        reading: null,
+        rhythm: null,
+        reaction: null,
+        combo: null,
+        precision: null,
+        symbols: null,
+        placement: null,
+        hand: null,
+        support: null,
+        shortcuts: null,
+        shift: null,
+        focus: null
+      },
+      ladderByMode: {
+        burst: [],
+        warmup: [],
+        endurance: [],
+        sprint: [],
+        sentences: [],
+        reading: [],
+        rhythm: [],
+        reaction: [],
+        combo: [],
+        precision: [],
+        symbols: [],
+        placement: [],
+        hand: [],
+        support: [],
+        shortcuts: [],
+        shift: [],
+        focus: []
+      },
       topRuns: []
     };
   }
@@ -8891,7 +10328,11 @@ export class HudView {
       this.wpmLadderPanel.stats.textContent = [
         `Burst: ${formatEntry(safeState.bestByMode.burst)}`,
         `Endurance: ${formatEntry(safeState.bestByMode.endurance)}`,
-        `Precision: ${formatEntry(safeState.bestByMode.precision)}`
+        `Time Attack: ${formatEntry(safeState.bestByMode.sprint)}`,
+        `Sentences: ${formatEntry(safeState.bestByMode.sentences)}`,
+        `Rhythm: ${formatEntry(safeState.bestByMode.rhythm)}`,
+        `Precision: ${formatEntry(safeState.bestByMode.precision)}`,
+        `Symbols: ${formatEntry(safeState.bestByMode.symbols)}`
       ].join(" · ");
     }
     if (this.wpmLadderPanel.top) {
@@ -8926,7 +10367,12 @@ export class HudView {
     const modes: Array<{ id: TypingDrillMode; label: string }> = [
       { id: "burst", label: "Burst Warmup" },
       { id: "endurance", label: "Endurance" },
-      { id: "precision", label: "Shield Breaker" }
+      { id: "hand", label: "Hand Isolation" },
+      { id: "sprint", label: "Time Attack" },
+      { id: "sentences", label: "Sentence Builder" },
+      { id: "rhythm", label: "Rhythm Drill" },
+      { id: "precision", label: "Shield Breaker" },
+      { id: "symbols", label: "Numbers & Symbols" }
     ];
     for (const mode of modes) {
       const column = document.createElement("div");
@@ -9301,7 +10747,9 @@ export class HudView {
     this.certificateStats = state;
     if (isNewCertificate) {
       this.lastCertificateCelebratedAt = state.recordedAt;
-      if (state.accuracyPct >= 95) {
+      if (!this.masteryCertificateMilestoneShown && state.accuracyPct >= 95) {
+        this.masteryCertificateMilestoneShown = true;
+        this.persistMasteryCertificateMilestoneShown(true);
         const name = this.certificateName || "Learner";
         this.celebrateMilestone({
           title: "Mastery certificate earned",
@@ -9635,8 +11083,8 @@ export class HudView {
     }
   }
 
-  private refreshParentSummary(state: GameState): void {
-    const timeMinutes = Math.max(0, (state.time ?? 0) / 60);
+  private refreshParentSummary(state: GameState, timeSeconds: number): void {
+    const timeMinutes = Math.max(0, (timeSeconds ?? 0) / 60);
     const accuracyPct = Math.round(Math.max(0, Math.min(100, (state.typing?.accuracy ?? 0) * 100)));
     const wpm =
       timeMinutes > 0
@@ -9670,8 +11118,20 @@ export class HudView {
     this.renderParentSummary();
   }
 
-  private refreshMasteryCertificate(state: GameState, lessonsCompleted: number): void {
-    const timeMinutes = Math.max(0, (state.time ?? 0) / 60);
+  private refreshMasteryCertificate(
+    state: GameState,
+    lessonsCompleted: number,
+    previousStatus: GameStatus | null,
+    timeSeconds: number
+  ): void {
+    const sessionComplete = state.status === "defeat" || state.status === "victory";
+    const previousComplete =
+      previousStatus === "defeat" || previousStatus === "victory";
+    if (!sessionComplete || previousComplete) {
+      return;
+    }
+
+    const timeMinutes = Math.max(0, (timeSeconds ?? 0) / 60);
     const accuracyPct = Math.round(Math.max(0, Math.min(100, (state.typing?.accuracy ?? 0) * 100)));
     const wpm =
       timeMinutes > 0
@@ -10548,8 +12008,12 @@ export class HudView {
     document.documentElement.style.setProperty("--hud-font-scale", scale.toString());
   }
 
-  private computeWpm(state: GameState): number {
-    const minutes = Math.max(state.time / 60, 0.1);
+  private computeWpm(state: GameState, timeSecondsOverride?: number): number {
+    const timeSeconds =
+      typeof timeSecondsOverride === "number" && Number.isFinite(timeSecondsOverride)
+        ? Math.max(0, timeSecondsOverride)
+        : Math.max(0, state.time ?? 0);
+    const minutes = Math.max(timeSeconds / 60, 0.1);
     return Math.max(0, Math.round((state.typing.correctInputs / 5) / minutes));
   }
 
@@ -11241,6 +12705,44 @@ export class HudView {
     }
   }
 
+  private updateSupportBoost(state: GameState): void {
+    if (!this.supportBoostBanner) return;
+    const boost =
+      state.supportBoost ??
+      ({
+        lane: null,
+        remaining: 0,
+        duration: 0,
+        multiplier: 1,
+        cooldownRemaining: 0
+      } satisfies GameState["supportBoost"]);
+
+    const active = boost.remaining > 0 && Number.isFinite(boost.lane);
+    const container = this.supportBoostBanner.container;
+
+    if (!active) {
+      container.dataset.visible = "false";
+      container.style.display = "none";
+      return;
+    }
+
+    container.dataset.visible = "true";
+    container.style.display = "flex";
+
+    const laneLabel = this.formatLaneLabel(boost.lane);
+    const percentDelta =
+      typeof boost.multiplier === "number" && Number.isFinite(boost.multiplier)
+        ? Math.round((boost.multiplier - 1) * 100)
+        : 0;
+    const effectLabel =
+      percentDelta !== 0
+        ? `${percentDelta > 0 ? "+" : ""}${percentDelta}% fire rate`
+        : `x${(boost.multiplier ?? 1).toFixed(2)}`;
+
+    this.supportBoostBanner.label.textContent = `Support Surge: ${laneLabel} ${effectLabel}`;
+    this.supportBoostBanner.timer.textContent = this.formatSeconds(boost.remaining);
+  }
+
   private updateEvacuation(state: GameState): void {
     if (!this.evacBanner) return;
     const evac =
@@ -11338,5 +12840,34 @@ export class HudView {
     const index = Math.max(0, Math.floor(lane ?? 0));
     const letter = String.fromCharCode(65 + (index % 26));
     return `Lane ${letter}`;
+  }
+
+  private formatSeconds(value: number): string {
+    if (!Number.isFinite(value)) {
+      return "-";
+    }
+    return `${value <= 9.95 ? value.toFixed(1) : Math.round(value)}s`;
+  }
+
+  private formatTitleLabel(value: string | null | undefined): string {
+    if (!value) {
+      return "";
+    }
+    return value
+      .split(/[-_]/g)
+      .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
+      .join(" ");
+  }
+
+  private formatFireRateEffect(multiplier: number | null | undefined): string | null {
+    if (typeof multiplier !== "number" || !Number.isFinite(multiplier) || multiplier <= 0) {
+      return null;
+    }
+    const deltaPercent = Math.round((multiplier - 1) * 100);
+    if (deltaPercent === 0) {
+      return null;
+    }
+    const sign = deltaPercent > 0 ? "+" : "";
+    return `${sign}${deltaPercent}% turret fire rate`;
   }
 }

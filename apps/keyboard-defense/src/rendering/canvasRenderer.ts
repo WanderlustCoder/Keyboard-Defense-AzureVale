@@ -67,6 +67,7 @@ export class CanvasRenderer {
   private readonly starfield: StarParticle[];
   private lastResizeCause: CanvasResizeCause = "initial";
   private defeatAnimationMode: DefeatAnimationPreference = "auto";
+  private challengeFog = false;
 
   constructor(
     private readonly canvas: HTMLCanvasElement,
@@ -96,6 +97,7 @@ export class CanvasRenderer {
       turretRange?: TurretRangeRenderOptions | null;
       starfield?: StarfieldParallaxState | null;
       screenShake?: { x: number; y: number } | null;
+      challengeFog?: boolean;
     }
   ): void {
     this.reducedMotion = Boolean(options?.reducedMotion);
@@ -106,6 +108,7 @@ export class CanvasRenderer {
     this.checkeredBackground = nextCheckered;
     this.spriteRenderer.setColorBlindFriendly(this.checkeredBackground);
     this.starfieldState = options?.starfield ?? null;
+    this.challengeFog = Boolean(options?.challengeFog);
     const shake = !this.reducedMotion ? options?.screenShake : null;
     const applyShake =
       Boolean(shake) && (Math.abs(shake?.x ?? 0) > 0.01 || Math.abs(shake?.y ?? 0) > 0.01);
@@ -118,6 +121,7 @@ export class CanvasRenderer {
     this.drawBackground();
     this.drawStarfield(state.time, this.starfieldState);
     this.drawLanes();
+    this.drawChallengeFogOverlay();
     this.drawTurretRangeHighlight(state, options?.turretRange ?? null);
     this.drawTurretSlots(state);
     this.drawEnemies(state);
@@ -291,6 +295,32 @@ export class CanvasRenderer {
       this.ctx.lineTo(this.width * 0.85, y);
       this.ctx.stroke();
     }
+  }
+
+  private drawChallengeFogOverlay(): void {
+    if (!this.challengeFog) {
+      return;
+    }
+    const margin = this.height * 0.15;
+    const startX = this.width * 0.1;
+    const endX = this.width * 0.85;
+    const rectWidth = Math.max(0, endX - startX);
+    const rectHeight = Math.max(0, this.height - margin * 2);
+    if (rectWidth <= 0 || rectHeight <= 0) {
+      return;
+    }
+    const gradient = this.ctx.createLinearGradient(startX, margin, endX, margin + rectHeight);
+    if (this.checkeredBackground) {
+      gradient.addColorStop(0, "rgba(226, 232, 240, 0.06)");
+      gradient.addColorStop(0.55, "rgba(148, 163, 184, 0.03)");
+      gradient.addColorStop(1, "rgba(226, 232, 240, 0.05)");
+    } else {
+      gradient.addColorStop(0, "rgba(148, 163, 184, 0.09)");
+      gradient.addColorStop(0.55, "rgba(226, 232, 240, 0.05)");
+      gradient.addColorStop(1, "rgba(148, 163, 184, 0.08)");
+    }
+    this.ctx.fillStyle = gradient;
+    this.ctx.fillRect(startX, margin, rectWidth, rectHeight);
   }
 
   private drawTurretSlots(state: GameState): void {

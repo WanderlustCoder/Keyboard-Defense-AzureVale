@@ -1,17 +1,263 @@
 import { defaultWordBank, type WordBank, type WordDifficulty } from "../core/wordBank.js";
 import { type TypingDrillMode, type TypingDrillSummary } from "../core/types.js";
 import { evaluateLessonMedal, type LessonMedalTier } from "../utils/lessonMedals.js";
+import {
+  createPlacementTestResult,
+  writePlacementTestResult,
+  type PlacementTestResult
+} from "../utils/placementTest.js";
+import { readPlayerSettings } from "../utils/playerSettings.js";
+
+type DrillSegmentConfig = {
+  label: string;
+  durationMs: number;
+  targets: string[];
+  mistakesAllowed?: number;
+};
+
+type ShortcutChordConfig = {
+  key: string;
+  primary?: boolean;
+  shift?: boolean;
+  alt?: boolean;
+};
+
+type ShortcutStepConfig = {
+  label: string;
+  comboLabel: string;
+  chords: ShortcutChordConfig[];
+};
+
+type ShiftStepConfig = {
+  label: string;
+  key: string;
+};
+
+type ReadingQuizQuestion = {
+  prompt: string;
+  options: Array<{ key: string; text: string }>;
+  correct: string;
+  explanation?: string;
+};
+
+type ReadingQuizPassage = {
+  title: string;
+  text: string;
+  questions: ReadingQuizQuestion[];
+};
 
 type DrillConfig = {
   label: string;
   description: string;
   wordCount?: number;
   timerMs?: number;
-  difficulties: WordDifficulty[];
+  difficulties?: WordDifficulty[];
+  targets?: string[];
+  advancedTargets?: string[];
   penalizeErrors?: boolean;
+  metronomeBpm?: number;
+  metronomeAccentEvery?: number;
+  segments?: DrillSegmentConfig[];
+  shortcutSteps?: ShortcutStepConfig[];
+  shiftSteps?: ShiftStepConfig[];
 };
 
-type DrillSummary = TypingDrillSummary & { tip: string };
+type DrillSummary = TypingDrillSummary & { tip: string; placementResult?: PlacementTestResult | null };
+
+const TYPING_DRILL_GHOST_STORAGE_KEY = "keyboard-defense:typing-drill-ghosts";
+const SPRINT_GHOST_TIMER_MS = 60000;
+
+type SprintGhostTimelinePoint = {
+  tMs: number;
+  words: number;
+};
+
+type SprintGhostRun = {
+  mode: "sprint";
+  timerMs: number;
+  words: number;
+  accuracy: number;
+  bestCombo: number;
+  wpm: number;
+  createdAt: number;
+  timeline: SprintGhostTimelinePoint[];
+};
+
+type TypingDrillGhostStore = {
+  version: 1;
+  sprint?: SprintGhostRun;
+};
+
+const READING_PASSAGES: ReadingQuizPassage[] = [
+  {
+    title: "The Lantern Note",
+    text: "Mira found a lantern on the library steps with a note tied to it.\n\nThe note said: \"Please bring this to the garden at sunset.\" Mira packed a small snack and walked carefully so the lantern would not tip over.",
+    questions: [
+      {
+        prompt: "Where did Mira find the lantern?",
+        options: [
+          { key: "a", text: "On the library steps" },
+          { key: "b", text: "At the garden gate" },
+          { key: "c", text: "By the river dock" }
+        ],
+        correct: "a",
+        explanation: "The passage says the lantern was on the library steps."
+      },
+      {
+        prompt: "When was Mira asked to go to the garden?",
+        options: [
+          { key: "a", text: "At noon" },
+          { key: "b", text: "At sunset" },
+          { key: "c", text: "At midnight" }
+        ],
+        correct: "b",
+        explanation: "The note said to bring it to the garden at sunset."
+      }
+    ]
+  },
+  {
+    title: "The Quiet Bridge",
+    text: "Noah crossed the small bridge every morning to feed the ducks.\n\nOne day, the bridge was covered with leaves. Noah walked slowly, held the railing, and kept his bucket steady.",
+    questions: [
+      {
+        prompt: "Why did Noah cross the bridge each morning?",
+        options: [
+          { key: "a", text: "To feed the ducks" },
+          { key: "b", text: "To buy bread" },
+          { key: "c", text: "To visit a shop" }
+        ],
+        correct: "a",
+        explanation: "The passage says he crossed to feed the ducks."
+      },
+      {
+        prompt: "What covered the bridge on the unusual day?",
+        options: [
+          { key: "a", text: "Snow" },
+          { key: "b", text: "Water" },
+          { key: "c", text: "Leaves" }
+        ],
+        correct: "c",
+        explanation: "It says the bridge was covered with leaves."
+      }
+    ]
+  },
+  {
+    title: "Team Plan",
+    text: "Zara and Leon were building a tiny kite for the park.\n\nZara cut the paper while Leon tied the string. They tested it once, fixed a loose knot, and tried again.",
+    questions: [
+      {
+        prompt: "What did Zara do?",
+        options: [
+          { key: "a", text: "Tied the string" },
+          { key: "b", text: "Cut the paper" },
+          { key: "c", text: "Drew the map" }
+        ],
+        correct: "b",
+        explanation: "Zara cut the paper."
+      },
+      {
+        prompt: "Why did they stop after the first test?",
+        options: [
+          { key: "a", text: "A knot was loose" },
+          { key: "b", text: "The wind stopped" },
+          { key: "c", text: "They ran out of paper" }
+        ],
+        correct: "a",
+        explanation: "They fixed a loose knot."
+      }
+    ]
+  }
+];
+
+const HAND_ISOLATION_WORDS: Record<"left" | "right", string[]> = {
+  left: [
+    "rest",
+    "tree",
+    "east",
+    "vast",
+    "craft",
+    "brave",
+    "grave",
+    "zest",
+    "wrest",
+    "caves",
+    "weaver",
+    "sweater",
+    "stare",
+    "reset",
+    "treat",
+    "tease",
+    "water",
+    "wear",
+    "sear",
+    "rate",
+    "tear",
+    "rare",
+    "weave",
+    "stew",
+    "steward",
+    "faster",
+    "after",
+    "easter",
+    "sewage",
+    "cafe",
+    "caste",
+    "waste",
+    "save",
+    "safe",
+    "star",
+    "sweat",
+    "trace",
+    "crater",
+    "crates",
+    "staves",
+    "seafarer"
+  ],
+  right: [
+    "lion",
+    "milk",
+    "join",
+    "mono",
+    "pink",
+    "holy",
+    "yummy",
+    "kilo",
+    "poll",
+    "noon",
+    "null",
+    "look",
+    "hook",
+    "mop",
+    "mom",
+    "my",
+    "huh",
+    "pup",
+    "lull",
+    "yolk",
+    "jolly",
+    "only",
+    "pony",
+    "loom",
+    "moon",
+    "mini",
+    "hulk",
+    "plum",
+    "jumpy",
+    "jimmy",
+    "hilly",
+    "lily",
+    "milky",
+    "monk",
+    "kim",
+    "pin",
+    "hip",
+    "hop",
+    "pop",
+    "honk",
+    "kiln",
+    "imply"
+  ]
+};
 
 const DRILL_CONFIGS: Record<TypingDrillMode, DrillConfig> = {
   burst: {
@@ -20,11 +266,87 @@ const DRILL_CONFIGS: Record<TypingDrillMode, DrillConfig> = {
     wordCount: 5,
     difficulties: ["easy", "easy", "medium", "medium", "hard"]
   },
+  warmup: {
+    label: "5-Min Warm-up",
+    description: "A five-minute warm-up plan built from your recent mistakes.",
+    timerMs: 300000
+  },
   endurance: {
     label: "Endurance",
     description: "Stay consistent for thirty seconds; cadence matters more than speed.",
     timerMs: 30000,
     difficulties: ["easy", "medium", "medium", "hard"]
+  },
+  sprint: {
+    label: "Time Attack",
+    description: "A 60-second sprint. Chase speed while keeping accuracy high.",
+    timerMs: 60000,
+    difficulties: ["easy", "easy", "medium", "medium", "hard"]
+  },
+  sentences: {
+    label: "Sentence Builder",
+    description: "Practice punctuation and flow with full sentences.",
+    timerMs: 45000,
+    targets: [
+      "ready, set, defend!",
+      "slow is smooth; smooth is fast.",
+      "keep your eyes up, then type clean.",
+      "when the gate shakes, stay calm.",
+      "i can type this, one key at a time.",
+      "the scout said, \"hold the line.\"",
+      "breathe in, breathe out, keep typing.",
+      "if you miss a key, reset and try again.",
+      "tap, tap, tap, then pause.",
+      "watch the lane, then strike fast!",
+      "today i practice commas, quotes, and calm.",
+      "can you keep rhythm, even when it is hard?",
+      "after wave 3, take a short break.",
+      "we're ready; we're steady.",
+      "don't rush; hit the right key.",
+      "type the whole sentence, not just one word.",
+      "left hand, right hand, keep it even.",
+      "a clean run beats a fast miss."
+    ]
+  },
+  reading: {
+    label: "Reading Quiz",
+    description: "Read a short passage, then answer quick questions (type A/B/C).",
+    timerMs: 90000
+  },
+  rhythm: {
+    label: "Rhythm Drill",
+    description: "Alternate hands to a steady beat. Smooth rhythm beats rushed speed.",
+    timerMs: 30000,
+    metronomeBpm: 84,
+    metronomeAccentEvery: 4,
+    targets: [
+      "fjfjfjfjfj",
+      "jfjfjfjfjf",
+      "dkdkdkdkdk",
+      "kdkdkdkdkd",
+      "slslslslsl",
+      "lslslslsls",
+      "gugugugugu",
+      "ugugugugug",
+      "hehehehehe",
+      "eheheheheh",
+      "f j f j f j",
+      "d k d k d k",
+      "a p a p a p",
+      "q p q p q p",
+      "1 6 1 6 1 6"
+    ]
+  },
+  reaction: {
+    label: "Reaction Challenge",
+    description: "Wait for the cue, then hit the key fast. False starts count as errors.",
+    timerMs: 30000,
+    targets: ["a", "s", "d", "f", "j", "k", "l", ";"]
+  },
+  combo: {
+    label: "Combo Preservation",
+    description: "Keep your combo alive across segments. Each segment grants limited mistakes.",
+    timerMs: 45000
   },
   precision: {
     label: "Shield Breaker",
@@ -32,6 +354,170 @@ const DRILL_CONFIGS: Record<TypingDrillMode, DrillConfig> = {
     wordCount: 8,
     difficulties: ["medium", "medium", "hard", "hard"],
     penalizeErrors: true
+  },
+  symbols: {
+    label: "Numbers & Symbols",
+    description:
+      "Quick strings with digits, punctuation, and number-row symbols. Earn a silver medal to unlock advanced symbols.",
+    wordCount: 10,
+    targets: [
+      "1-2-3",
+      "3.14",
+      "10/10",
+      "a,b,c",
+      "x/y",
+      "go!",
+      "why?",
+      "we're",
+      "can't",
+      "semi;colon",
+      "mix:1/2",
+      "under_score"
+    ],
+    advancedTargets: [
+      "email@me",
+      "bug#42",
+      "cost$5",
+      "save%20",
+      "x^2",
+      "rock&roll",
+      "*star*",
+      "(paren)"
+    ]
+  },
+  placement: {
+    label: "Placement Test",
+    description:
+      "A short diagnostic that checks left/right hand accuracy and recommends a tutorial pace.",
+    timerMs: 45000,
+    segments: [
+      {
+        label: "Left Hand",
+        durationMs: 15000,
+        targets: [
+          "rest",
+          "tree",
+          "east",
+          "vast",
+          "craft",
+          "brave",
+          "grave",
+          "zest",
+          "wrest",
+          "caves",
+          "sweater",
+          "weaver"
+        ]
+      },
+      {
+        label: "Right Hand",
+        durationMs: 15000,
+        targets: [
+          "lion",
+          "milk",
+          "join",
+          "mono",
+          "pink",
+          "holy",
+          "yummy",
+          "kilo",
+          "poll",
+          "noon",
+          "null",
+          "hollow"
+        ]
+      },
+      {
+        label: "Mixed",
+        durationMs: 15000,
+        targets: [
+          "sail",
+          "gold",
+          "storm",
+          "guard",
+          "castle",
+          "tower",
+          "arrow",
+          "shield",
+          "flame",
+          "stone",
+          "river",
+          "march"
+        ]
+      }
+    ]
+  },
+  hand: {
+    label: "Hand Isolation",
+    description: "Practice one hand at a time using single-hand word pools.",
+    timerMs: 45000
+  },
+  support: {
+    label: "Lane Support",
+    description: "Press 1/2/3 to route support to the correct lane.",
+    timerMs: 45000
+  },
+  shortcuts: {
+    label: "Shortcut Practice",
+    description: "Practice helpful shortcuts like copy, paste, and undo (Ctrl/Cmd).",
+    timerMs: 45000,
+    shortcutSteps: [
+      {
+        label: "Select All",
+        comboLabel: "Ctrl/Cmd + A",
+        chords: [{ key: "a", primary: true }]
+      },
+      {
+        label: "Copy",
+        comboLabel: "Ctrl/Cmd + C",
+        chords: [{ key: "c", primary: true }]
+      },
+      {
+        label: "Cut",
+        comboLabel: "Ctrl/Cmd + X",
+        chords: [{ key: "x", primary: true }]
+      },
+      {
+        label: "Paste",
+        comboLabel: "Ctrl/Cmd + V",
+        chords: [{ key: "v", primary: true }]
+      },
+      {
+        label: "Undo",
+        comboLabel: "Ctrl/Cmd + Z",
+        chords: [{ key: "z", primary: true, shift: false }]
+      },
+      {
+        label: "Redo",
+        comboLabel: "Ctrl/Cmd + Y (or Ctrl/Cmd + Shift + Z)",
+        chords: [
+          { key: "y", primary: true, shift: false },
+          { key: "z", primary: true, shift: true }
+        ]
+      }
+    ]
+  },
+  shift: {
+    label: "Shift Timing",
+    description:
+      "Capital letters on cue: hold Shift, tap the letter, and release. Toggle slow-mo for extra time and clearer hold vs tap cues.",
+    timerMs: 45000,
+    shiftSteps: [
+      { label: "Capital A", key: "a" },
+      { label: "Capital L", key: "l" },
+      { label: "Capital Q", key: "q" },
+      { label: "Capital P", key: "p" },
+      { label: "Capital T", key: "t" },
+      { label: "Capital Y", key: "y" },
+      { label: "Capital V", key: "v" },
+      { label: "Capital M", key: "m" }
+    ]
+  },
+  focus: {
+    label: "Focus Drill",
+    description:
+      "Auto-built micro-drills from your recent mistakes. Each segment spotlights a trouble key.",
+    timerMs: 30000
   }
 };
 
@@ -50,6 +536,10 @@ type TypingDrillState = {
   correctInputs: number;
   totalInputs: number;
   errors: number;
+  leftCorrectInputs: number;
+  leftTotalInputs: number;
+  rightCorrectInputs: number;
+  rightTotalInputs: number;
   wordsCompleted: number;
   combo: number;
   bestCombo: number;
@@ -57,6 +547,11 @@ type TypingDrillState = {
   startTime: number;
   elapsedMs: number;
   timerEndsAt: number | null;
+  segmentIndex: number;
+  shortcutStepIndex: number;
+  shiftStepIndex: number;
+  shiftHeld: boolean;
+  shiftLastDownAt: number | null;
 };
 
 export class TypingDrillsOverlay {
@@ -72,6 +567,9 @@ export class TypingDrillsOverlay {
   private readonly input?: HTMLInputElement | null;
   private readonly startBtn?: HTMLButtonElement | null;
   private readonly resetBtn?: HTMLButtonElement | null;
+  private readonly slowMoBtn?: HTMLButtonElement | null;
+  private readonly metronomeBtn?: HTMLButtonElement | null;
+  private readonly handBtn?: HTMLButtonElement | null;
   private readonly accuracyEl?: HTMLElement | null;
   private readonly comboEl?: HTMLElement | null;
   private readonly wpmEl?: HTMLElement | null;
@@ -82,6 +580,9 @@ export class TypingDrillsOverlay {
   private readonly summaryCombo?: HTMLElement | null;
   private readonly summaryWords?: HTMLElement | null;
   private readonly summaryErrors?: HTMLElement | null;
+  private readonly summaryLeft?: HTMLElement | null;
+  private readonly summaryRight?: HTMLElement | null;
+  private readonly summaryPacing?: HTMLElement | null;
   private readonly summaryTip?: HTMLElement | null;
   private readonly summaryMedal?: HTMLElement | null;
   private readonly summaryMedalLabel?: HTMLElement | null;
@@ -98,7 +599,58 @@ export class TypingDrillsOverlay {
   private isCondensedLayout: boolean = false;
   private cleanupTimer?: () => void;
   private recommendationMode: TypingDrillMode | null = null;
+  private advancedSymbolsUnlocked: boolean = false;
   private toastTimeout?: number | null;
+  private shiftTutorSlowMo: boolean = true;
+  private metronomeEnabled: boolean = true;
+  private handIsolationSide: "left" | "right" = "left";
+  private metronomeSoundLevel: number = 0;
+  private metronomeHapticsAllowed: boolean = false;
+  private metronomeBeatTimeout?: number | null;
+  private metronomeLoopTimeout?: number | null;
+  private metronomeNextBeatAt: number | null = null;
+  private metronomeBeatIndex: number = 0;
+  private metronomeAudio:
+    | {
+        ctx: AudioContext;
+        gain: GainNode;
+      }
+    | null = null;
+  private reactionPromptTimeout?: number | null;
+  private reactionPromptAt: number | null = null;
+  private reactionPromptKey: string | null = null;
+  private reactionLatenciesMs: number[] = [];
+  private reactionLastLatencyMs: number | null = null;
+  private supportPromptLane: number | null = null;
+  private supportPromptAction: string | null = null;
+  private supportPromptAt: number | null = null;
+  private supportLatenciesMs: number[] = [];
+  private supportLastLatencyMs: number | null = null;
+  private supportPreviousLane: number | null = null;
+  private sprintGhostRun: SprintGhostRun | null = null;
+  private sprintGhostWordsBySecond: number[] | null = null;
+  private sprintGhostRecordingWordsBySecond: number[] = [];
+  private sprintGhostLastSecondRecorded: number = -1;
+  private readingQueue: ReadingQuizPassage[] = [];
+  private readingPassageIndex: number = 0;
+  private readingQuestionIndex: number = 0;
+  private readingStage: "passage" | "question" = "passage";
+  private readingTotalQuestions: number = 0;
+  private focusKeys: string[] = [];
+  private focusSegments: DrillSegmentConfig[] = [];
+  private warmupKeys: string[] = [];
+  private warmupSegments: DrillSegmentConfig[] = [];
+  private comboSegments: DrillSegmentConfig[] = [];
+  private comboMistakeBudget: number = 0;
+  private comboMistakesRemaining: number = 0;
+  private comboUnshieldedErrorsThisWord: number = 0;
+  private patternStats: {
+    keys: Map<string, { attempts: number; errors: number }>;
+    digraphs: Map<string, { attempts: number; errors: number }>;
+  } = {
+    keys: new Map(),
+    digraphs: new Map()
+  };
   private state: TypingDrillState = {
     mode: "burst",
     active: false,
@@ -108,13 +660,22 @@ export class TypingDrillsOverlay {
     correctInputs: 0,
     totalInputs: 0,
     errors: 0,
+    leftCorrectInputs: 0,
+    leftTotalInputs: 0,
+    rightCorrectInputs: 0,
+    rightTotalInputs: 0,
     wordsCompleted: 0,
     combo: 0,
     bestCombo: 0,
     wordErrors: 0,
     startTime: 0,
     elapsedMs: 0,
-    timerEndsAt: null
+    timerEndsAt: null,
+    segmentIndex: 0,
+    shortcutStepIndex: 0,
+    shiftStepIndex: 0,
+    shiftHeld: false,
+    shiftLastDownAt: null
   };
 
   constructor(options: { root: HTMLElement; wordBank?: WordBank; callbacks?: TypingDrillCallbacks }) {
@@ -130,6 +691,9 @@ export class TypingDrillsOverlay {
     this.input = document.getElementById("typing-drill-input") as HTMLInputElement | null;
     this.startBtn = document.getElementById("typing-drill-start") as HTMLButtonElement | null;
     this.resetBtn = document.getElementById("typing-drill-reset") as HTMLButtonElement | null;
+    this.slowMoBtn = document.getElementById("typing-drill-slowmo") as HTMLButtonElement | null;
+    this.metronomeBtn = document.getElementById("typing-drill-metronome") as HTMLButtonElement | null;
+    this.handBtn = document.getElementById("typing-drill-hand") as HTMLButtonElement | null;
     this.accuracyEl = document.getElementById("typing-drill-accuracy");
     this.comboEl = document.getElementById("typing-drill-combo");
     this.wpmEl = document.getElementById("typing-drill-wpm");
@@ -140,6 +704,9 @@ export class TypingDrillsOverlay {
     this.summaryCombo = document.getElementById("typing-drill-summary-combo");
     this.summaryWords = document.getElementById("typing-drill-summary-words");
     this.summaryErrors = document.getElementById("typing-drill-summary-errors");
+    this.summaryLeft = document.getElementById("typing-drill-summary-left");
+    this.summaryRight = document.getElementById("typing-drill-summary-right");
+    this.summaryPacing = document.getElementById("typing-drill-summary-pacing");
     this.summaryTip = document.getElementById("typing-drill-summary-tip");
     this.summaryMedal = document.getElementById("typing-drill-summary-medal");
     this.summaryMedalLabel = document.getElementById("typing-drill-summary-medal-label");
@@ -186,6 +753,10 @@ export class TypingDrillsOverlay {
   close(): void {
     this.cleanupTimer?.();
     this.cleanupTimer = undefined;
+    this.stopMetronome();
+    this.stopReactionPrompt();
+    this.stopSupport();
+    this.stopReading();
     if (this.toastEl) {
       this.toastEl.dataset.visible = "false";
       this.toastEl.textContent = "";
@@ -212,6 +783,10 @@ export class TypingDrillsOverlay {
 
   start(mode?: TypingDrillMode): void {
     const nextMode = mode ?? this.state.mode;
+    this.stopMetronome();
+    this.stopReactionPrompt();
+    this.stopSupport();
+    this.stopReading();
     this.state = {
       ...this.state,
       mode: nextMode,
@@ -222,29 +797,110 @@ export class TypingDrillsOverlay {
       correctInputs: 0,
       totalInputs: 0,
       errors: 0,
+      leftCorrectInputs: 0,
+      leftTotalInputs: 0,
+      rightCorrectInputs: 0,
+      rightTotalInputs: 0,
       wordsCompleted: 0,
       combo: 0,
       bestCombo: 0,
       wordErrors: 0,
       startTime: performance.now(),
       elapsedMs: 0,
-      timerEndsAt: null
+      timerEndsAt: null,
+      segmentIndex: 0,
+      shortcutStepIndex: 0,
+      shiftStepIndex: 0,
+      shiftHeld: false,
+      shiftLastDownAt: null
     };
+    this.reactionLatenciesMs = [];
+    this.reactionLastLatencyMs = null;
+    this.supportLatenciesMs = [];
+    this.supportLastLatencyMs = null;
+    this.supportPreviousLane = null;
+    this.stopSupport();
+    this.resetPatternStats();
+    this.prepareSprintGhost(nextMode);
+    if (nextMode === "focus") {
+      this.ensureFocusSegments();
+    }
+    if (nextMode === "warmup") {
+      this.ensureWarmupSegments();
+    }
+    if (nextMode === "combo") {
+      this.ensureComboSegments();
+      this.resetComboSegmentBudget(0);
+    }
     this.summaryEl?.setAttribute("data-visible", "false");
     this.updateMode(nextMode);
     this.state.target = this.pickWord(nextMode);
     const config = DRILL_CONFIGS[nextMode];
     if (typeof config.timerMs === "number" && config.timerMs > 0) {
-      const endsAt = performance.now() + config.timerMs;
+      let timerMs = config.timerMs;
+      if (nextMode === "shift" && this.shiftTutorSlowMo) {
+        timerMs = config.timerMs * 1.75;
+      }
+      if (nextMode === "focus") {
+        const totalMs = this.focusSegments.reduce(
+          (sum, segment) => sum + Math.max(0, segment?.durationMs ?? 0),
+          0
+        );
+        if (totalMs > 0) {
+          timerMs = totalMs;
+        }
+      }
+      if (nextMode === "warmup") {
+        const totalMs = this.warmupSegments.reduce(
+          (sum, segment) => sum + Math.max(0, segment?.durationMs ?? 0),
+          0
+        );
+        if (totalMs > 0) {
+          timerMs = totalMs;
+        }
+      }
+      if (nextMode === "combo") {
+        this.ensureComboSegments();
+        const totalMs = this.comboSegments.reduce(
+          (sum, segment) => sum + Math.max(0, segment?.durationMs ?? 0),
+          0
+        );
+        if (totalMs > 0) {
+          timerMs = totalMs;
+        }
+      }
+      const endsAt = this.state.startTime + timerMs;
       this.state.timerEndsAt = endsAt;
       this.cleanupTimer = this.startTimer(endsAt);
     }
     this.updateTarget();
     this.updateMetrics();
     this.updateTimer();
+    this.startMetronome(nextMode);
+    this.startReaction(nextMode);
+    this.startSupport(nextMode);
+    this.startReading(nextMode);
     this.callbacks.onStart?.(nextMode, this.state.startSource);
     if (this.statusLabel) {
-      this.statusLabel.textContent = config.label;
+      if (nextMode === "shift" && this.shiftTutorSlowMo) {
+        this.statusLabel.textContent = `${config.label} (Slow)`;
+      } else if (nextMode === "rhythm" && typeof config.metronomeBpm === "number" && config.metronomeBpm > 0) {
+        this.statusLabel.textContent = `${config.label} (${Math.round(config.metronomeBpm)} BPM)`;
+      } else if (nextMode === "reaction") {
+        this.statusLabel.textContent = `${config.label} (30s)`;
+      } else if (nextMode === "hand") {
+        this.statusLabel.textContent = `${config.label} (${this.handIsolationSide === "left" ? "Left" : "Right"})`;
+      } else if (nextMode === "focus" && this.focusKeys.length > 0) {
+        this.statusLabel.textContent = `${config.label} (${this.focusKeys
+          .map((key) => key.toUpperCase())
+          .join(", ")})`;
+      } else if (nextMode === "warmup" && this.warmupKeys.length > 0) {
+        this.statusLabel.textContent = `${config.label} (${this.warmupKeys
+          .map((key) => key.toUpperCase())
+          .join(", ")})`;
+      } else {
+        this.statusLabel.textContent = config.label;
+      }
     }
     if (this.startBtn) {
       this.startBtn.textContent = "Restart";
@@ -253,25 +909,56 @@ export class TypingDrillsOverlay {
 
   reset(mode?: TypingDrillMode): void {
     const nextMode = mode ?? this.state.mode;
+    this.stopMetronome();
+    this.stopReactionPrompt();
+    this.stopSupport();
+    this.stopReading();
     this.cleanupTimer?.();
     this.cleanupTimer = undefined;
+    const startSource = this.state.startSource;
+    if (nextMode === "focus") {
+      this.ensureFocusSegments();
+    }
+    if (nextMode === "warmup") {
+      this.ensureWarmupSegments();
+    }
+    if (nextMode === "combo") {
+      this.ensureComboSegments();
+      this.resetComboSegmentBudget(0);
+    }
     this.state = {
       mode: nextMode,
       active: false,
-      startSource: this.state.startSource,
+      startSource,
       buffer: "",
-      target: this.pickWord(nextMode),
+      target: "",
       correctInputs: 0,
       totalInputs: 0,
       errors: 0,
+      leftCorrectInputs: 0,
+      leftTotalInputs: 0,
+      rightCorrectInputs: 0,
+      rightTotalInputs: 0,
       wordsCompleted: 0,
       combo: 0,
       bestCombo: 0,
       wordErrors: 0,
       startTime: 0,
       elapsedMs: 0,
-      timerEndsAt: null
+      timerEndsAt: null,
+      segmentIndex: 0,
+      shortcutStepIndex: 0,
+      shiftStepIndex: 0,
+      shiftHeld: false,
+      shiftLastDownAt: null
     };
+    this.reactionLatenciesMs = [];
+    this.reactionLastLatencyMs = null;
+    this.supportLatenciesMs = [];
+    this.supportLastLatencyMs = null;
+    this.supportPreviousLane = null;
+    this.stopSupport();
+    this.resetPatternStats();
     this.updateMode(nextMode);
     this.updateTarget();
     this.updateMetrics();
@@ -286,6 +973,326 @@ export class TypingDrillsOverlay {
     if (this.startBtn) {
       this.startBtn.textContent = "Start Drill";
     }
+  }
+
+  setAdvancedSymbolsUnlocked(unlocked: boolean): void {
+    this.advancedSymbolsUnlocked = Boolean(unlocked);
+  }
+
+  setFocusKeys(keys: string[]): void {
+    const normalized: string[] = [];
+    const seen = new Set<string>();
+    for (const raw of keys ?? []) {
+      if (typeof raw !== "string") continue;
+      const value = raw.trim().toLowerCase();
+      if (!(value.length === 1 || value.length === 2) || !/^[a-z]+$/.test(value)) continue;
+      if (seen.has(value)) continue;
+      seen.add(value);
+      normalized.push(value);
+      if (normalized.length >= 3) break;
+    }
+    const nextKeys = normalized.length > 0 ? normalized : ["a", "s", "l"];
+    this.focusKeys = nextKeys;
+    const segmentMs = 10000;
+    this.focusSegments = nextKeys.map((key) => {
+      const label = key.length === 2 ? `Digraph ${key.toUpperCase()}` : `Key ${key.toUpperCase()}`;
+      return {
+        label,
+        durationMs: segmentMs,
+        targets: this.buildFocusTargetsForKey(key)
+      };
+    });
+    if (this.state.mode === "focus" && !this.state.active) {
+      this.state.segmentIndex = 0;
+      this.state.target = this.pickWord("focus");
+      this.updateTarget();
+      this.updateMetrics();
+    }
+  }
+
+  private ensureFocusSegments(): void {
+    if (this.focusSegments.length > 0) return;
+    this.setFocusKeys([]);
+  }
+
+  setWarmupKeys(keys: string[]): void {
+    const normalized: string[] = [];
+    const seen = new Set<string>();
+    for (const raw of keys ?? []) {
+      if (typeof raw !== "string") continue;
+      const value = raw.trim().toLowerCase();
+      if (!(value.length === 1 || value.length === 2) || !/^[a-z]+$/.test(value)) continue;
+      if (seen.has(value)) continue;
+      seen.add(value);
+      normalized.push(value);
+      if (normalized.length >= 3) break;
+    }
+
+    const fallbackCandidates = [
+      ...(this.focusKeys ?? []),
+      "a",
+      "s",
+      "l",
+      "e",
+      "t",
+      "n",
+      "r",
+      "i",
+      "o"
+    ];
+    for (const candidate of fallbackCandidates) {
+      if (normalized.length >= 3) break;
+      if (!candidate || !(candidate.length === 1 || candidate.length === 2)) continue;
+      const value = candidate.toLowerCase();
+      if (!/^[a-z]+$/.test(value)) continue;
+      if (seen.has(value)) continue;
+      seen.add(value);
+      normalized.push(value);
+    }
+
+    this.warmupKeys = normalized.length > 0 ? normalized.slice(0, 3) : ["a", "s", "l"];
+
+    if (this.state.mode === "warmup" && this.state.active) {
+      return;
+    }
+
+    const segmentMs = 60000;
+    this.warmupSegments = [
+      {
+        label: "Accuracy Reset",
+        durationMs: segmentMs,
+        targets: this.buildWarmupBaselineTargets()
+      },
+      ...this.warmupKeys.map((key) => {
+        const label = key.length === 2 ? `Digraph ${key.toUpperCase()}` : `Key ${key.toUpperCase()}`;
+        return {
+          label,
+          durationMs: segmentMs,
+          targets: this.buildFocusTargetsForKey(key)
+        };
+      }),
+      {
+        label: "Cadence Push",
+        durationMs: segmentMs,
+        targets: this.buildWarmupCadenceTargets()
+      }
+    ];
+
+    if (this.state.mode === "warmup" && !this.state.active) {
+      this.state.segmentIndex = 0;
+      this.state.target = this.pickWord("warmup");
+      this.updateTarget();
+      this.updateMetrics();
+    }
+  }
+
+  private ensureWarmupSegments(): void {
+    if (this.warmupSegments.length > 0) return;
+    this.setWarmupKeys([]);
+  }
+
+  private ensureComboSegments(): void {
+    if (this.comboSegments.length > 0) return;
+    const segmentMs = 15000;
+    this.comboSegments = [
+      {
+        label: "Shield x3",
+        durationMs: segmentMs,
+        mistakesAllowed: 3,
+        targets: this.sampleWordBank(["easy"], 24)
+      },
+      {
+        label: "Shield x2",
+        durationMs: segmentMs,
+        mistakesAllowed: 2,
+        targets: this.sampleWordBank(["medium"], 24)
+      },
+      {
+        label: "Shield x1",
+        durationMs: segmentMs,
+        mistakesAllowed: 1,
+        targets: this.sampleWordBank(["hard"], 24)
+      }
+    ];
+  }
+
+  private resetComboSegmentBudget(index: number): void {
+    this.ensureComboSegments();
+    const segments = this.comboSegments;
+    if (segments.length === 0) {
+      this.comboMistakeBudget = 0;
+      this.comboMistakesRemaining = 0;
+      this.comboUnshieldedErrorsThisWord = 0;
+      return;
+    }
+    const safeIndex = Math.max(0, Math.min(segments.length - 1, index));
+    const segment = segments[safeIndex] ?? null;
+    const budget =
+      typeof segment?.mistakesAllowed === "number"
+        ? Math.max(0, Math.floor(segment.mistakesAllowed))
+        : 0;
+    this.comboMistakeBudget = budget;
+    this.comboMistakesRemaining = budget;
+    this.comboUnshieldedErrorsThisWord = 0;
+  }
+
+  private buildWarmupBaselineTargets(): string[] {
+    const targets: string[] = [];
+    targets.push(...this.sampleWordBank(["easy"], 14));
+    targets.push(...this.sampleWordBank(["medium"], 8));
+    targets.push(...this.sampleWordBank(["hard"], 4));
+    return targets;
+  }
+
+  private buildWarmupCadenceTargets(): string[] {
+    const targets: string[] = [];
+    targets.push(...this.sampleWordBank(["medium"], 12));
+    targets.push(...this.sampleWordBank(["hard"], 8));
+    return targets;
+  }
+
+  private sampleWordBank(difficulties: WordDifficulty[], limit: number): string[] {
+    const results: string[] = [];
+    const seen = new Set<string>();
+    const sources = this.wordBank ?? defaultWordBank;
+    for (const difficulty of difficulties) {
+      const pool = sources[difficulty] ?? defaultWordBank[difficulty];
+      if (!Array.isArray(pool)) continue;
+      for (const raw of pool) {
+        if (typeof raw !== "string") continue;
+        const value = raw.trim().toLowerCase();
+        if (!value) continue;
+        if (value.length < 3 || value.length > 14) continue;
+        if (!/^[a-z]+$/.test(value)) continue;
+        if (seen.has(value)) continue;
+        seen.add(value);
+        results.push(value);
+        if (results.length >= limit) {
+          return results;
+        }
+      }
+    }
+    return results;
+  }
+
+  private buildFocusTargetsForKey(key: string): string[] {
+    const normalized = key.trim().toLowerCase();
+    if (normalized.length === 2 && /^[a-z]{2}$/.test(normalized)) {
+      const digraph = normalized;
+      const targets: string[] = [];
+      targets.push(`${digraph} ${digraph} ${digraph} ${digraph}`);
+      targets.push(`${digraph}${digraph}${digraph}`);
+
+      const vowels = ["a", "e", "i", "o", "u"];
+      targets.push(vowels.map((vowel) => `${digraph}${vowel}`).join(" "));
+      targets.push(vowels.map((vowel) => `${vowel}${digraph}`).join(" "));
+
+      const candidateWords: string[] = [];
+      const pools = [this.wordBank.easy, this.wordBank.medium, this.wordBank.hard];
+      for (const pool of pools) {
+        if (!Array.isArray(pool)) continue;
+        for (const word of pool) {
+          if (typeof word !== "string" || word.length < 3 || word.length > 12) continue;
+          const lower = word.toLowerCase();
+          if (!/^[a-z]+$/.test(lower)) continue;
+          if (!lower.includes(digraph)) continue;
+          candidateWords.push(lower);
+        }
+      }
+      const uniqueWords = Array.from(new Set(candidateWords));
+      targets.push(...uniqueWords.slice(0, 10));
+
+      const uniqueTargets: string[] = [];
+      const seenTargets = new Set<string>();
+      for (const target of targets) {
+        const value = typeof target === "string" ? target.trim() : "";
+        if (!value) continue;
+        if (seenTargets.has(value)) continue;
+        seenTargets.add(value);
+        uniqueTargets.push(value);
+      }
+      return uniqueTargets;
+    }
+    const letter = normalized.length === 1 ? normalized : "a";
+    const targets: string[] = [];
+    targets.push(letter.repeat(5));
+    targets.push(Array.from({ length: 5 }, () => letter).join(" "));
+
+    const vowels = ["a", "e", "i", "o", "u"];
+    targets.push(vowels.map((vowel) => `${letter}${vowel}`).join(" "));
+    targets.push(vowels.map((vowel) => `${vowel}${letter}`).join(" "));
+
+    const candidateWords: string[] = [];
+    const pools = [this.wordBank.easy, this.wordBank.medium, this.wordBank.hard];
+    for (const pool of pools) {
+      if (!Array.isArray(pool)) continue;
+      for (const word of pool) {
+        if (typeof word !== "string" || word.length < 3 || word.length > 10) continue;
+        const lower = word.toLowerCase();
+        if (!/^[a-z]+$/.test(lower)) continue;
+        if (!lower.includes(letter)) continue;
+        candidateWords.push(lower);
+      }
+    }
+    const uniqueWords = Array.from(new Set(candidateWords));
+    targets.push(...uniqueWords.slice(0, 8));
+
+    if (targets.length <= 4) {
+      targets.push(`${letter}a${letter}`, `${letter}e${letter}`, `${letter}o${letter}`);
+    }
+
+    const uniqueTargets: string[] = [];
+    const seenTargets = new Set<string>();
+    for (const target of targets) {
+      const value = typeof target === "string" ? target.trim() : "";
+      if (!value) continue;
+      if (seenTargets.has(value)) continue;
+      seenTargets.add(value);
+      uniqueTargets.push(value);
+    }
+    return uniqueTargets;
+  }
+
+  private resetPatternStats(): void {
+    this.patternStats.keys.clear();
+    this.patternStats.digraphs.clear();
+  }
+
+  private recordPatternAttempt(kind: "key" | "digraph", pattern: string, isError: boolean): void {
+    const normalized = pattern.trim().toLowerCase();
+    if (kind === "key") {
+      if (normalized.length !== 1 || !/^[a-z]$/.test(normalized)) return;
+      const entry = this.patternStats.keys.get(normalized) ?? { attempts: 0, errors: 0 };
+      entry.attempts += 1;
+      if (isError) entry.errors += 1;
+      this.patternStats.keys.set(normalized, entry);
+      return;
+    }
+    if (normalized.length !== 2 || !/^[a-z]{2}$/.test(normalized)) return;
+    const entry = this.patternStats.digraphs.get(normalized) ?? { attempts: 0, errors: 0 };
+    entry.attempts += 1;
+    if (isError) entry.errors += 1;
+    this.patternStats.digraphs.set(normalized, entry);
+  }
+
+  private buildPatternStatsPayload(): TypingDrillSummary["patterns"] | undefined {
+    const keys: Record<string, { attempts: number; errors: number }> = {};
+    for (const [pattern, entry] of this.patternStats.keys.entries()) {
+      if (entry.attempts < 3 && entry.errors === 0) continue;
+      keys[pattern] = { attempts: entry.attempts, errors: entry.errors };
+    }
+    const digraphs: Record<string, { attempts: number; errors: number }> = {};
+    for (const [pattern, entry] of this.patternStats.digraphs.entries()) {
+      if (entry.attempts < 2 && entry.errors === 0) continue;
+      digraphs[pattern] = { attempts: entry.attempts, errors: entry.errors };
+    }
+    if (Object.keys(keys).length === 0 && Object.keys(digraphs).length === 0) {
+      return undefined;
+    }
+    return {
+      keys: Object.keys(keys).length > 0 ? keys : undefined,
+      digraphs: Object.keys(digraphs).length > 0 ? digraphs : undefined
+    };
   }
 
   private updateLayoutMode(): void {
@@ -334,6 +1341,43 @@ export class TypingDrillsOverlay {
     if (this.resetBtn) {
       this.resetBtn.addEventListener("click", () => this.reset());
     }
+    if (this.slowMoBtn) {
+      this.slowMoBtn.addEventListener("click", () => {
+        if (this.state.active) return;
+        this.shiftTutorSlowMo = !this.shiftTutorSlowMo;
+        this.updateShiftTutorControls();
+        if (this.state.mode === "shift") {
+          this.updateTarget();
+          this.updateMetrics();
+        }
+      });
+    }
+    if (this.metronomeBtn) {
+      this.metronomeBtn.addEventListener("click", () => {
+        this.metronomeEnabled = !this.metronomeEnabled;
+        this.updateMetronomeControls();
+        if (this.state.active && this.state.mode === "rhythm") {
+          if (this.metronomeEnabled) {
+            this.startMetronome("rhythm");
+          } else {
+            this.stopMetronome();
+          }
+        }
+      });
+    }
+    if (this.handBtn) {
+      this.handBtn.addEventListener("click", () => {
+        if (this.state.active) return;
+        this.handIsolationSide = this.handIsolationSide === "left" ? "right" : "left";
+        this.updateHandIsolationControls();
+        if (this.state.mode === "hand") {
+          this.state.buffer = "";
+          this.state.target = this.pickWord("hand");
+          this.updateTarget();
+          this.updateMetrics();
+        }
+      });
+    }
     this.modeButtons.forEach((btn) =>
       btn.addEventListener("click", () => {
         const mode = btn.dataset.mode as TypingDrillMode | undefined;
@@ -376,6 +1420,31 @@ export class TypingDrillsOverlay {
       return;
     }
 
+    if (this.state.mode === "shortcuts") {
+      this.handleShortcutKey(event);
+      return;
+    }
+
+    if (this.state.mode === "shift") {
+      this.handleShiftTutorKey(event);
+      return;
+    }
+
+    if (this.state.mode === "reaction") {
+      this.handleReactionKey(event);
+      return;
+    }
+
+    if (this.state.mode === "support") {
+      this.handleSupportKey(event);
+      return;
+    }
+
+    if (this.state.mode === "reading") {
+      this.handleReadingKey(event);
+      return;
+    }
+
     if (event.key === "Backspace") {
       event.preventDefault();
       this.state.buffer = this.state.buffer.slice(0, -1);
@@ -389,26 +1458,520 @@ export class TypingDrillsOverlay {
       return;
     }
 
-    if (event.key.length === 1 && /^[a-zA-Z]$/.test(event.key)) {
+    if (event.key.length === 1 && /^[a-zA-Z0-9\-;',./!?:"_@#$%^&*() ]$/.test(event.key)) {
       event.preventDefault();
       const char = event.key.toLowerCase();
+      const cursor = this.state.buffer.length;
+      const expected = this.state.target[cursor] ?? "";
+      const expectedLower = expected.toLowerCase();
+      const isExpectedLetter = expectedLower.length === 1 && /^[a-z]$/.test(expectedLower);
+      const isError = char !== expectedLower;
+      if (isExpectedLetter) {
+        this.recordPatternAttempt("key", expectedLower, isError);
+        if (cursor > 0) {
+          const prevTyped = this.state.buffer[cursor - 1]?.toLowerCase?.() ?? "";
+          const prevExpected = this.state.target[cursor - 1]?.toLowerCase?.() ?? "";
+          const prevMatches = prevTyped.length === 1 && prevTyped === prevExpected && /^[a-z]$/.test(prevTyped);
+          if (prevMatches) {
+            this.recordPatternAttempt("digraph", `${prevExpected}${expectedLower}`, isError);
+          }
+        }
+      }
       this.state.buffer += char;
       this.state.totalInputs += 1;
-      const expected = this.state.target[this.state.buffer.length - 1] ?? "";
       if (char === expected) {
         this.state.correctInputs += 1;
       } else {
         this.state.errors += 1;
         this.state.wordErrors += 1;
+        if (this.state.mode === "combo") {
+          if (this.comboMistakesRemaining > 0) {
+            this.comboMistakesRemaining = Math.max(0, this.comboMistakesRemaining - 1);
+            if (this.comboMistakesRemaining === 0) {
+              this.showToast("No mistakes left — next miss breaks combo.");
+            }
+          } else {
+            if (this.comboUnshieldedErrorsThisWord === 0 && this.state.combo > 0) {
+              this.state.combo = 0;
+              this.showToast("Combo broken.");
+            }
+            this.comboUnshieldedErrorsThisWord += 1;
+          }
+        }
         if (DRILL_CONFIGS[this.state.mode].penalizeErrors) {
           this.state.combo = 0;
           this.state.buffer = "";
+        }
+      }
+      if (this.state.mode === "placement") {
+        const hand = this.classifyHand(expected);
+        if (hand === "left") {
+          this.state.leftTotalInputs += 1;
+          if (char === expected) {
+            this.state.leftCorrectInputs += 1;
+          }
+        } else if (hand === "right") {
+          this.state.rightTotalInputs += 1;
+          if (char === expected) {
+            this.state.rightCorrectInputs += 1;
+          }
         }
       }
       this.updateTarget();
       this.updateMetrics();
       this.evaluateCompletion();
     }
+  }
+
+  private handleShortcutKey(event: KeyboardEvent): void {
+    event.preventDefault();
+    event.stopPropagation?.();
+    event.stopImmediatePropagation?.();
+
+    const config = DRILL_CONFIGS.shortcuts;
+    const steps = Array.isArray(config.shortcutSteps) ? config.shortcutSteps : [];
+    const step = steps[this.state.shortcutStepIndex] ?? null;
+    if (!step) {
+      this.finish("complete");
+      return;
+    }
+    if (event.repeat) {
+      return;
+    }
+    if (event.key === "Enter") {
+      this.state.totalInputs += 1;
+      this.state.errors += 1;
+      this.state.combo = 0;
+      this.state.shortcutStepIndex += 1;
+      const next = steps[this.state.shortcutStepIndex] ?? null;
+      if (!next) {
+        this.finish("complete");
+        return;
+      }
+      this.state.target = this.pickWord("shortcuts");
+      this.showToast(`Skipped. Next: ${next.label}`);
+      this.updateTarget();
+      this.updateMetrics();
+      return;
+    }
+
+    if (event.key === "Control" || event.key === "Shift" || event.key === "Alt" || event.key === "Meta") {
+      return;
+    }
+
+    this.state.totalInputs += 1;
+    const matched = step.chords.some((chord) => this.matchesShortcutChord(chord, event));
+    if (!matched) {
+      this.state.errors += 1;
+      this.state.combo = 0;
+      this.showToast(`Try: ${step.comboLabel}`);
+      this.updateTarget();
+      this.updateMetrics();
+      return;
+    }
+
+    this.state.correctInputs += 1;
+    this.state.wordsCompleted += 1;
+    this.state.combo += 1;
+    this.state.bestCombo = Math.max(this.state.bestCombo, this.state.combo);
+    this.state.shortcutStepIndex += 1;
+    const next = steps[this.state.shortcutStepIndex] ?? null;
+    if (!next) {
+      this.finish("complete");
+      return;
+    }
+    this.state.target = this.pickWord("shortcuts");
+    this.showToast(`${step.label} cleared. Next: ${next.label}`);
+    this.updateTarget();
+    this.updateMetrics();
+  }
+
+  private handleShiftTutorKey(event: KeyboardEvent): void {
+    event.preventDefault();
+    event.stopPropagation?.();
+    event.stopImmediatePropagation?.();
+
+    const config = DRILL_CONFIGS.shift;
+    const steps = Array.isArray(config.shiftSteps) ? config.shiftSteps : [];
+    const step = steps[this.state.shiftStepIndex] ?? null;
+    if (!step) {
+      this.finish("complete");
+      return;
+    }
+    if (event.repeat) {
+      return;
+    }
+    if (event.key === "Enter") {
+      this.state.totalInputs += 1;
+      this.state.errors += 1;
+      this.state.combo = 0;
+      this.state.shiftStepIndex += 1;
+      this.state.shiftHeld = false;
+      this.state.shiftLastDownAt = null;
+      const next = steps[this.state.shiftStepIndex] ?? null;
+      if (!next) {
+        this.finish("complete");
+        return;
+      }
+      this.state.target = this.pickWord("shift");
+      this.showToast(`Skipped. Next: ${next.label}`);
+      this.updateTarget();
+      this.updateMetrics();
+      return;
+    }
+
+    if (event.key === "Shift") {
+      this.state.shiftHeld = true;
+      this.state.shiftLastDownAt = performance.now();
+      this.updateTarget();
+      return;
+    }
+
+    if (event.key === "Control" || event.key === "Alt" || event.key === "Meta") {
+      return;
+    }
+
+    if (event.key.length !== 1 || !/^[a-zA-Z]$/.test(event.key)) {
+      return;
+    }
+
+    const expectedKey = step.key.toLowerCase();
+    const actualKey = event.key.toLowerCase();
+    this.state.totalInputs += 1;
+    this.state.shiftHeld = Boolean(event.shiftKey);
+
+    if (actualKey !== expectedKey) {
+      this.state.errors += 1;
+      this.state.combo = 0;
+      this.showToast(`Target: Shift + ${expectedKey.toUpperCase()}`);
+      this.updateTarget();
+      this.updateMetrics();
+      return;
+    }
+
+    if (!event.shiftKey) {
+      this.state.errors += 1;
+      this.state.combo = 0;
+      const recentlyShifted =
+        typeof this.state.shiftLastDownAt === "number" &&
+        performance.now() - this.state.shiftLastDownAt < 900;
+      this.showToast(
+        recentlyShifted
+          ? "Hold Shift down - don't tap and release before the letter."
+          : `Hold Shift while tapping ${expectedKey.toUpperCase()}.`
+      );
+      this.state.shiftHeld = false;
+      this.state.shiftLastDownAt = null;
+      this.updateTarget();
+      this.updateMetrics();
+      return;
+    }
+
+    this.state.correctInputs += 1;
+    this.state.wordsCompleted += 1;
+    this.state.combo += 1;
+    this.state.bestCombo = Math.max(this.state.bestCombo, this.state.combo);
+    this.state.shiftStepIndex += 1;
+    this.state.shiftLastDownAt = null;
+    const next = steps[this.state.shiftStepIndex] ?? null;
+    if (!next) {
+      this.finish("complete");
+      return;
+    }
+    this.state.target = this.pickWord("shift");
+    this.showToast(`${step.label} cleared. Next: ${next.label}`);
+    this.updateTarget();
+    this.updateMetrics();
+  }
+
+  private handleReactionKey(event: KeyboardEvent): void {
+    if (event.key === "Tab") {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation?.();
+    event.stopImmediatePropagation?.();
+
+    if (event.repeat) {
+      return;
+    }
+
+    if (event.key === "Control" || event.key === "Alt" || event.key === "Meta" || event.key === "Shift") {
+      return;
+    }
+
+    if (event.key === "Backspace" || event.key === "Enter") {
+      return;
+    }
+
+    if (event.key.length !== 1) {
+      return;
+    }
+
+    const pressed = event.key.toLowerCase();
+    const now = performance.now();
+    this.state.elapsedMs =
+      this.state.startTime > 0 ? Math.max(0, now - this.state.startTime) : this.state.elapsedMs;
+
+    if (!this.reactionPromptKey) {
+      this.state.totalInputs += 1;
+      this.state.errors += 1;
+      this.state.combo = 0;
+      this.showToast("Too soon — wait for the cue.");
+      this.updateTarget();
+      this.updateMetrics();
+      this.queueReactionPrompt({ penalty: true });
+      return;
+    }
+
+    const expected = this.reactionPromptKey.toLowerCase();
+    const isError = pressed !== expected;
+    this.state.totalInputs += 1;
+    if (expected.length === 1 && /^[a-z]$/.test(expected)) {
+      this.recordPatternAttempt("key", expected, isError);
+    }
+
+    if (!isError) {
+      this.state.correctInputs += 1;
+      this.state.wordsCompleted += 1;
+      this.state.combo += 1;
+      this.state.bestCombo = Math.max(this.state.bestCombo, this.state.combo);
+      const latencyMs =
+        typeof this.reactionPromptAt === "number" ? Math.max(0, now - this.reactionPromptAt) : 0;
+      this.reactionLatenciesMs.push(latencyMs);
+      this.reactionLastLatencyMs = latencyMs;
+      this.showToast(`Hit! ${Math.round(latencyMs)}ms`);
+    } else {
+      this.state.errors += 1;
+      this.state.combo = 0;
+      this.showToast(`Miss. Target: ${this.formatReactionKey(this.reactionPromptKey)}`);
+    }
+
+    this.reactionPromptKey = null;
+    this.reactionPromptAt = null;
+    this.state.buffer = "";
+    this.state.target = "";
+    this.updateTarget();
+    this.updateMetrics();
+
+    this.queueReactionPrompt();
+  }
+
+  private handleSupportKey(event: KeyboardEvent): void {
+    if (event.key === "Tab") {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation?.();
+    event.stopImmediatePropagation?.();
+
+    if (event.repeat) {
+      return;
+    }
+
+    if (event.key === "Control" || event.key === "Alt" || event.key === "Meta" || event.key === "Shift") {
+      return;
+    }
+
+    if (event.key === "Backspace") {
+      return;
+    }
+
+    const now = performance.now();
+    this.state.elapsedMs =
+      this.state.startTime > 0 ? Math.max(0, now - this.state.startTime) : this.state.elapsedMs;
+
+    if (event.key === "Enter") {
+      this.state.totalInputs += 1;
+      this.state.errors += 1;
+      this.state.combo = 0;
+      this.showToast("Skipped. Next route.");
+      this.setNextSupportPrompt();
+      return;
+    }
+
+    if (event.key.length !== 1) {
+      return;
+    }
+
+    const pressed = event.key.toLowerCase();
+    if (
+      pressed !== "a" &&
+      pressed !== "b" &&
+      pressed !== "c" &&
+      pressed !== "1" &&
+      pressed !== "2" &&
+      pressed !== "3"
+    ) {
+      return;
+    }
+
+    if (this.supportPromptLane === null) {
+      this.setNextSupportPrompt();
+    }
+
+    const lane =
+      typeof this.supportPromptLane === "number"
+        ? Math.max(0, Math.min(2, Math.floor(this.supportPromptLane)))
+        : 0;
+    const expectedLetter = this.supportLaneLetter(lane);
+    const expectedNumber = this.supportLaneNumber(lane);
+    const isError = pressed !== expectedLetter && pressed !== expectedNumber;
+
+    this.state.totalInputs += 1;
+    this.recordPatternAttempt("key", expectedLetter, isError);
+
+    if (!isError) {
+      this.state.correctInputs += 1;
+      this.state.wordsCompleted += 1;
+      this.state.combo += 1;
+      this.state.bestCombo = Math.max(this.state.bestCombo, this.state.combo);
+      const latencyMs =
+        typeof this.supportPromptAt === "number" ? Math.max(0, now - this.supportPromptAt) : 0;
+      this.supportLatenciesMs.push(latencyMs);
+      this.supportLastLatencyMs = latencyMs;
+      const action = this.supportPromptAction ? `${this.supportPromptAction} ` : "";
+      this.showToast(`${action}routed to ${this.formatSupportLane(lane)} (${Math.round(latencyMs)}ms).`);
+    } else {
+      this.state.errors += 1;
+      this.state.combo = 0;
+      this.showToast(`Miss. Target: ${this.formatSupportLane(lane)}.`);
+    }
+
+    this.state.buffer = "";
+    this.state.target = "";
+    this.setNextSupportPrompt();
+  }
+
+  private handleReadingKey(event: KeyboardEvent): void {
+    if (event.key === "Tab") {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation?.();
+    event.stopImmediatePropagation?.();
+
+    if (event.repeat) {
+      return;
+    }
+
+    if (this.readingQueue.length === 0) {
+      this.startReading("reading");
+    }
+
+    const passageCount = this.readingQueue.length;
+    const passage = this.readingQueue[this.readingPassageIndex] ?? null;
+    if (!passage || passageCount === 0) {
+      this.finish("complete");
+      return;
+    }
+
+    if (this.readingStage === "passage") {
+      if (event.key === "Enter") {
+        this.readingStage = "question";
+        this.readingQuestionIndex = 0;
+        this.state.buffer = "";
+        this.state.target = "";
+        this.showToast("Quiz time: type A, B, or C.");
+        this.updateTarget();
+        this.updateMetrics();
+      }
+      return;
+    }
+
+    if (event.key.length !== 1) {
+      return;
+    }
+
+    const answer = event.key.toLowerCase();
+    if (!/^[a-z]$/.test(answer)) {
+      return;
+    }
+
+    const question = passage.questions?.[this.readingQuestionIndex] ?? null;
+    if (!question) {
+      this.finish("complete");
+      return;
+    }
+
+    const optionKeys = new Set(
+      (question.options ?? []).map((opt) => (typeof opt.key === "string" ? opt.key.toLowerCase() : ""))
+    );
+    if (optionKeys.size > 0 && !optionKeys.has(answer)) {
+      this.showToast("Type A, B, or C.");
+      return;
+    }
+
+    this.state.totalInputs += 1;
+    const correctKey = (question.correct ?? "").toLowerCase();
+    const correct = answer === correctKey;
+    if (correct) {
+      this.state.correctInputs += 1;
+      this.state.wordsCompleted += 1;
+      this.state.combo += 1;
+      this.state.bestCombo = Math.max(this.state.bestCombo, this.state.combo);
+      this.showToast("Correct!");
+    } else {
+      this.state.errors += 1;
+      this.state.combo = 0;
+      const correctLabel = correctKey ? correctKey.toUpperCase() : "?";
+      const explanation = typeof question.explanation === "string" ? question.explanation.trim() : "";
+      this.showToast(explanation ? `Not quite. ${correctLabel}. ${explanation}` : `Not quite. Correct: ${correctLabel}.`);
+    }
+
+    this.state.buffer = "";
+    this.state.target = "";
+
+    const hasNextQuestion = this.readingQuestionIndex + 1 < (passage.questions?.length ?? 0);
+    if (hasNextQuestion) {
+      this.readingQuestionIndex += 1;
+      this.updateTarget();
+      this.updateMetrics();
+      return;
+    }
+
+    const hasNextPassage = this.readingPassageIndex + 1 < passageCount;
+    if (hasNextPassage) {
+      this.readingPassageIndex += 1;
+      this.readingStage = "passage";
+      this.readingQuestionIndex = 0;
+      this.showToast("Next passage. Press Enter when ready.");
+      this.updateTarget();
+      this.updateMetrics();
+      return;
+    }
+
+    this.finish("complete");
+  }
+
+  private matchesShortcutChord(chord: ShortcutChordConfig, event: KeyboardEvent): boolean {
+    const expectedKey = chord.key.length === 1 ? chord.key.toLowerCase() : chord.key;
+    const actualKey =
+      event.key.length === 1 ? event.key.toLowerCase() : event.key;
+    if (actualKey !== expectedKey) {
+      return false;
+    }
+    const primary = Boolean(event.ctrlKey || event.metaKey);
+    if (typeof chord.primary === "boolean" && chord.primary !== primary) {
+      return false;
+    }
+    if (typeof chord.shift === "boolean" && chord.shift !== Boolean(event.shiftKey)) {
+      return false;
+    }
+    if (typeof chord.alt === "boolean" && chord.alt !== Boolean(event.altKey)) {
+      return false;
+    }
+    return true;
+  }
+
+  private classifyHand(char: string): "left" | "right" | "neutral" {
+    const normalized = char.toLowerCase();
+    if ("qwertasdfgzxcvb12345".includes(normalized)) return "left";
+    if ("yuiophjklnm67890".includes(normalized)) return "right";
+    return "neutral";
   }
 
   private evaluateCompletion(): void {
@@ -423,7 +1986,19 @@ export class TypingDrillsOverlay {
   private commitWord(skipped: boolean): void {
     const config = DRILL_CONFIGS[this.state.mode];
     const flawless = this.state.wordErrors === 0 && !skipped;
-    if (flawless) {
+    if (this.state.mode === "combo") {
+      if (skipped) {
+        this.state.combo = Math.max(0, this.state.combo - 1);
+        this.state.errors += 1;
+      } else if (flawless) {
+        this.state.combo += 1;
+      } else if (this.comboUnshieldedErrorsThisWord === 0) {
+        // Mistakes happened, but the segment shield protected the combo.
+      } else {
+        this.state.combo = 0;
+      }
+      this.comboUnshieldedErrorsThisWord = 0;
+    } else if (flawless) {
       this.state.combo += 1;
     } else if (!skipped) {
       this.state.combo = Math.max(0, Math.floor(this.state.combo * 0.5));
@@ -453,6 +2028,9 @@ export class TypingDrillsOverlay {
   private finish(reason: "complete" | "timeout"): void {
     this.cleanupTimer?.();
     this.cleanupTimer = undefined;
+    this.stopMetronome();
+    this.stopReactionPrompt();
+    this.stopSupport();
     const now = performance.now();
     this.state.active = false;
     this.state.elapsedMs =
@@ -464,9 +2042,20 @@ export class TypingDrillsOverlay {
       this.statusLabel.textContent = reason === "timeout" ? "Time" : "Complete";
     }
     const summary = this.buildSummary();
+    this.maybeUpdateSprintGhost(summary);
     const analyticsSummary = this.toAnalyticsSummary(summary);
     this.renderSummary(summary, analyticsSummary);
-    this.callbacks.onSummary?.(analyticsSummary);
+    if (summary.placementResult) {
+      const storage = typeof window !== "undefined" ? window.localStorage : null;
+      writePlacementTestResult(storage, summary.placementResult);
+    }
+    if (
+      analyticsSummary.mode !== "placement" &&
+      analyticsSummary.mode !== "shortcuts" &&
+      analyticsSummary.mode !== "shift"
+    ) {
+      this.callbacks.onSummary?.(analyticsSummary);
+    }
     if (this.startBtn) {
       this.startBtn.textContent = "Run again";
     }
@@ -474,10 +2063,35 @@ export class TypingDrillsOverlay {
 
   private buildSummary(): DrillSummary {
     const elapsedMs = this.state.elapsedMs > 0 ? this.state.elapsedMs : 1;
-    const accuracy =
+    let accuracy =
       this.state.totalInputs > 0 ? this.state.correctInputs / this.state.totalInputs : 1;
+    if (this.state.mode === "reading") {
+      const totalQuestions =
+        this.readingTotalQuestions > 0 ? this.readingTotalQuestions : this.state.totalInputs;
+      accuracy = totalQuestions > 0 ? this.state.correctInputs / totalQuestions : 0;
+    }
     const minutes = elapsedMs / 60000;
-    const wpm = minutes > 0 ? (this.state.correctInputs / 5) / minutes : 0;
+    const wpmUnit =
+      this.state.mode === "shortcuts" || this.state.mode === "shift" || this.state.mode === "support"
+        ? 1
+        : 5;
+    const wpm = minutes > 0 ? (this.state.correctInputs / wpmUnit) / minutes : 0;
+    let placementResult: PlacementTestResult | null = null;
+    if (this.state.mode === "placement") {
+      placementResult = createPlacementTestResult({
+        elapsedMs,
+        accuracy,
+        wpm,
+        leftCorrect: this.state.leftCorrectInputs,
+        leftTotal: this.state.leftTotalInputs,
+        rightCorrect: this.state.rightCorrectInputs,
+        rightTotal: this.state.rightTotalInputs
+      });
+    }
+    const tip =
+      placementResult?.recommendation?.note?.length > 0
+        ? placementResult.recommendation.note
+        : this.buildTip(accuracy, wpm);
     return {
       mode: this.state.mode,
       source: (this.state.startSource as TypingDrillSummary["source"]) ?? "cta",
@@ -488,11 +2102,13 @@ export class TypingDrillsOverlay {
       words: this.state.wordsCompleted,
       errors: this.state.errors,
       wpm,
-      tip: this.buildTip(accuracy, wpm)
+      tip,
+      placementResult
     };
   }
 
   private toAnalyticsSummary(summary: DrillSummary): TypingDrillSummary {
+    const patterns = this.buildPatternStatsPayload();
     return {
       mode: summary.mode,
       source: summary.source,
@@ -502,11 +2118,112 @@ export class TypingDrillsOverlay {
       words: summary.words,
       errors: summary.errors,
       wpm: summary.wpm,
+      patterns,
       timestamp: summary.timestamp
     };
   }
 
   private buildTip(accuracy: number, wpm: number): string {
+    if (this.state.mode === "hand") {
+      const sideLabel = this.handIsolationSide === "left" ? "left" : "right";
+      if (accuracy < 0.85) {
+        return `Slow down and focus on clean hits with your ${sideLabel} hand.`;
+      }
+      if (wpm >= 55) {
+        return `Great pace. Swap hands and see if you can match ${Math.round(wpm)} WPM with the other side.`;
+      }
+      return `Nice work. Keep the non-typing hand relaxed while your ${sideLabel} hand stays steady.`;
+    }
+    if (this.state.mode === "support") {
+      const routes = this.state.wordsCompleted;
+      if (routes <= 0) {
+        return "Press 1/2/3 to route support to the highlighted lane. In combat, press 1-3 for Support Surge.";
+      }
+      const average = this.getSupportAverageMs();
+      const best = this.getSupportBestMs();
+      const averageLabel = typeof average === "number" ? `${Math.round(average)}ms` : "-";
+      const bestLabel = typeof best === "number" ? `${Math.round(best)}ms` : "-";
+      if (accuracy < 0.85) {
+        return `Aim for clean lane calls. Average ${averageLabel}. In combat, press 1-3 for Support Surge.`;
+      }
+      return `Average route ${averageLabel} (best ${bestLabel}). Keep your eyes on the lane, then tap the number. In combat, press 1-3 for Support Surge.`;
+    }
+    if (this.state.mode === "reaction") {
+      const hitCount = this.reactionLatenciesMs.length;
+      if (hitCount === 0) {
+        return "Wait for the cue, then tap the key. False starts cost accuracy.";
+      }
+      const average = this.getReactionAverageMs();
+      const best = this.getReactionBestMs();
+      const averageLabel = typeof average === "number" ? `${Math.round(average)}ms` : "—";
+      const bestLabel = typeof best === "number" ? `${Math.round(best)}ms` : "—";
+      return `Average reaction ${averageLabel} (best ${bestLabel}). Stay relaxed and watch the cue.`;
+    }
+    if (this.state.mode === "combo") {
+      if (accuracy < 0.85) {
+        return "Slow down and protect your mistake pool; once it's empty, the next miss breaks combo.";
+      }
+      if (this.state.bestCombo >= 8) {
+        return "Great streak. Try the next run with fewer than three mistakes total.";
+      }
+      return "Stay smooth. Fix errors quickly and keep enough mistakes for the harder segments.";
+    }
+    if (this.state.mode === "reading") {
+      const total = this.readingTotalQuestions;
+      const score = this.state.correctInputs;
+      if (total > 0 && score >= total) {
+        return `Perfect score ${score}/${total}. Great job staying focused.`;
+      }
+      if (total > 0 && this.state.totalInputs === 0) {
+        return `Read the passage, press Enter, then type A/B/C. Score ${score}/${total}.`;
+      }
+      if (total > 0) {
+        return `Score ${score}/${total}. Best streak x${this.state.bestCombo}. Replay to improve.`;
+      }
+      return "Read the passage, then type A/B/C to answer the questions.";
+    }
+    if (this.state.mode === "shortcuts") {
+      if (accuracy < 0.85) {
+        return "Slow down and find Ctrl/Cmd first, then tap the letter key.";
+      }
+      if (this.state.bestCombo >= 3) {
+        return "Nice streak. Shortcuts save time in docs, email, and code editors.";
+      }
+      return "Great work. Keep your fingers relaxed and use shortcuts in your next writing session.";
+    }
+    if (this.state.mode === "shift") {
+      if (accuracy < 0.85) {
+        return "Hold Shift until the letter lands. Try the opposite Shift key for better reach.";
+      }
+      if (this.state.bestCombo >= 4) {
+        return "Nice timing. Use left Shift for right-hand letters and right Shift for left-hand letters.";
+      }
+      return "Good work. Keep Shift held lightly and release after each capital letter.";
+    }
+    if (this.state.mode === "focus") {
+      const keyLabel =
+        this.focusKeys.length > 0 ? this.focusKeys.map((key) => key.toUpperCase()).join(", ") : "";
+      if (accuracy < 0.85) {
+        return keyLabel
+          ? `Slow down on ${keyLabel}. Clean hits first, speed second.`
+          : "Slow down and rebuild accuracy one clean stroke at a time.";
+      }
+      return keyLabel
+        ? `Keep your eyes on the focus keys: ${keyLabel}.`
+        : "Great work. Keep your eyes on the focus keys and stay relaxed.";
+    }
+    if (this.state.mode === "warmup") {
+      const keyLabel =
+        this.warmupKeys.length > 0 ? this.warmupKeys.map((key) => key.toUpperCase()).join(", ") : "";
+      if (accuracy < 0.85) {
+        return keyLabel
+          ? `Slow down on ${keyLabel}. Clean hits first, speed second.`
+          : "Slow down and rebuild accuracy one clean stroke at a time.";
+      }
+      return keyLabel
+        ? `Stay smooth through the warm-up keys: ${keyLabel}.`
+        : "Great work. Stay smooth and keep your shoulders relaxed.";
+    }
     if (accuracy < 0.85) {
       return "Slow the first three letters and reset on mistakes to rebuild accuracy.";
     }
@@ -540,11 +2257,58 @@ export class TypingDrillsOverlay {
     if (this.summaryErrors) {
       this.summaryErrors.textContent = `${summary.errors}`;
     }
+    const showPlacement = summary.mode === "placement" && Boolean(summary.placementResult);
+    if (this.summaryLeft) {
+      const row = this.summaryLeft.parentElement;
+      row?.toggleAttribute("hidden", !showPlacement);
+      if (showPlacement && summary.placementResult) {
+        const pct = Math.round(summary.placementResult.leftAccuracy * 100);
+        this.summaryLeft.textContent = `${pct}% (${summary.placementResult.leftSamples})`;
+      } else {
+        this.summaryLeft.textContent = "";
+      }
+    }
+    if (this.summaryRight) {
+      const row = this.summaryRight.parentElement;
+      row?.toggleAttribute("hidden", !showPlacement);
+      if (showPlacement && summary.placementResult) {
+        const pct = Math.round(summary.placementResult.rightAccuracy * 100);
+        this.summaryRight.textContent = `${pct}% (${summary.placementResult.rightSamples})`;
+      } else {
+        this.summaryRight.textContent = "";
+      }
+    }
+    if (this.summaryPacing) {
+      const row = this.summaryPacing.parentElement;
+      row?.toggleAttribute("hidden", !showPlacement);
+      if (showPlacement && summary.placementResult) {
+        this.summaryPacing.textContent = `${Math.round(
+          summary.placementResult.recommendation.tutorialPacing * 100
+        )}%`;
+      } else {
+        this.summaryPacing.textContent = "";
+      }
+    }
     if (this.summaryTip) {
       this.summaryTip.textContent = summary.tip;
     }
-    const medalResult = evaluateLessonMedal(analyticsSummary ?? this.toAnalyticsSummary(summary));
-    this.renderMedalResult(medalResult.tier, medalResult.nextTarget);
+    const hideMedal =
+      showPlacement ||
+      summary.mode === "shortcuts" ||
+      summary.mode === "shift" ||
+      summary.mode === "focus" ||
+      summary.mode === "warmup" ||
+      summary.mode === "reaction" ||
+      summary.mode === "support" ||
+      summary.mode === "combo" ||
+      summary.mode === "reading";
+    if (this.summaryMedal) {
+      this.summaryMedal.toggleAttribute("hidden", hideMedal);
+    }
+    if (!hideMedal) {
+      const medalResult = evaluateLessonMedal(analyticsSummary ?? this.toAnalyticsSummary(summary));
+      this.renderMedalResult(medalResult.tier, medalResult.nextTarget);
+    }
   }
 
   private renderMedalResult(
@@ -572,19 +2336,269 @@ export class TypingDrillsOverlay {
 
   private updateMode(mode: TypingDrillMode, options: { silent?: boolean } = {}): void {
     this.state.mode = mode;
+    if (!this.state.active) {
+      this.prepareSprintGhost(mode);
+    }
     for (const btn of this.modeButtons) {
       const selected = btn.dataset.mode === mode;
       btn.setAttribute("aria-selected", selected ? "true" : "false");
     }
+    this.updateShiftTutorControls(mode);
+    this.updateMetronomeControls(mode);
+    this.updateHandIsolationControls(mode);
     if (!options.silent) {
       this.state.target = this.pickWord(mode);
       this.updateTarget();
     }
   }
 
+  private updateShiftTutorControls(mode: TypingDrillMode = this.state.mode): void {
+    if (!this.slowMoBtn) return;
+    const visible = mode === "shift";
+    this.slowMoBtn.dataset.visible = visible ? "true" : "false";
+    this.slowMoBtn.disabled = this.state.active && visible;
+    this.slowMoBtn.setAttribute("aria-pressed", this.shiftTutorSlowMo ? "true" : "false");
+    this.slowMoBtn.textContent = this.shiftTutorSlowMo ? "Slow-mo: On" : "Slow-mo: Off";
+  }
+
+  private updateMetronomeControls(mode: TypingDrillMode = this.state.mode): void {
+    if (!this.metronomeBtn) return;
+    const visible = mode === "rhythm";
+    this.metronomeBtn.dataset.visible = visible ? "true" : "false";
+    if (!visible) {
+      delete this.metronomeBtn.dataset.beat;
+      return;
+    }
+    this.metronomeBtn.setAttribute("aria-pressed", this.metronomeEnabled ? "true" : "false");
+    this.metronomeBtn.textContent = this.metronomeEnabled ? "Metronome: On" : "Metronome: Off";
+  }
+
+  private updateHandIsolationControls(mode: TypingDrillMode = this.state.mode): void {
+    if (!this.handBtn) return;
+    const visible = mode === "hand";
+    this.handBtn.dataset.visible = visible ? "true" : "false";
+    if (!visible) return;
+    this.handBtn.disabled = this.state.active;
+    const label = this.handIsolationSide === "left" ? "Left" : "Right";
+    this.handBtn.textContent = `Hand: ${label}`;
+    this.handBtn.setAttribute("aria-pressed", this.handIsolationSide === "left" ? "true" : "false");
+  }
+
+  private stopMetronome(): void {
+    if (this.metronomeBeatTimeout) {
+      window.clearTimeout(this.metronomeBeatTimeout);
+      this.metronomeBeatTimeout = null;
+    }
+    if (this.metronomeLoopTimeout) {
+      window.clearTimeout(this.metronomeLoopTimeout);
+      this.metronomeLoopTimeout = null;
+    }
+    this.metronomeNextBeatAt = null;
+    this.metronomeBeatIndex = 0;
+    if (this.metronomeBtn) {
+      delete this.metronomeBtn.dataset.beat;
+    }
+  }
+
+  private startMetronome(mode: TypingDrillMode = this.state.mode): void {
+    if (!this.metronomeEnabled) return;
+    if (!this.state.active) return;
+    if (mode !== "rhythm") return;
+
+    const config = DRILL_CONFIGS[mode];
+    const bpm = typeof config.metronomeBpm === "number" ? Math.floor(config.metronomeBpm) : 0;
+    if (!Number.isFinite(bpm) || bpm <= 0) return;
+    const accentEvery =
+      typeof config.metronomeAccentEvery === "number" ? Math.max(0, Math.floor(config.metronomeAccentEvery)) : 0;
+    const periodMs = 60000 / Math.max(1, bpm);
+
+    this.stopMetronome();
+
+    const storage = typeof window !== "undefined" ? window.localStorage : null;
+    const settings = readPlayerSettings(storage);
+    const soundVolume = typeof settings.soundVolume === "number" ? settings.soundVolume : 0;
+    const audioIntensity = typeof settings.audioIntensity === "number" ? settings.audioIntensity : 1;
+    const soundEnabled = Boolean(settings.soundEnabled) && soundVolume > 0;
+    this.metronomeSoundLevel = soundEnabled
+      ? Math.max(0, Math.min(1, soundVolume)) * Math.max(0, Math.min(1, audioIntensity))
+      : 0;
+    this.metronomeHapticsAllowed =
+      Boolean(settings.hapticsEnabled) &&
+      typeof navigator !== "undefined" &&
+      typeof navigator.vibrate === "function";
+
+    this.metronomeNextBeatAt = performance.now() + 200;
+    this.metronomeBeatIndex = 0;
+
+    const loop = () => {
+      if (!this.state.active || this.state.mode !== "rhythm" || !this.metronomeEnabled) {
+        this.stopMetronome();
+        return;
+      }
+      const nextBeatAt = this.metronomeNextBeatAt ?? performance.now();
+      const delayMs = Math.max(0, nextBeatAt - performance.now());
+      this.metronomeLoopTimeout = window.setTimeout(() => {
+        this.metronomeBeatIndex += 1;
+        const accent =
+          accentEvery > 0 ? (this.metronomeBeatIndex - 1) % accentEvery === 0 : this.metronomeBeatIndex === 1;
+        this.pulseMetronomeIndicator(accent);
+        this.playMetronomeClick(accent);
+        this.playMetronomeHaptic(accent);
+        this.metronomeNextBeatAt = nextBeatAt + periodMs;
+        loop();
+      }, delayMs);
+    };
+
+    loop();
+  }
+
+  private pulseMetronomeIndicator(accent: boolean): void {
+    if (!this.metronomeBtn) return;
+    this.metronomeBtn.dataset.beat = accent ? "accent" : "true";
+    if (this.metronomeBeatTimeout) {
+      window.clearTimeout(this.metronomeBeatTimeout);
+    }
+    this.metronomeBeatTimeout = window.setTimeout(() => {
+      if (this.metronomeBtn) {
+        delete this.metronomeBtn.dataset.beat;
+      }
+      this.metronomeBeatTimeout = null;
+    }, 110);
+  }
+
+  private playMetronomeClick(accent: boolean): void {
+    const volume = this.metronomeSoundLevel;
+    if (volume <= 0) return;
+    if (typeof window === "undefined") return;
+
+    try {
+      const AudioContextCtor =
+        (window as unknown as { AudioContext?: typeof AudioContext; webkitAudioContext?: typeof AudioContext })
+          .AudioContext ??
+        (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+      if (!AudioContextCtor) return;
+
+      if (!this.metronomeAudio) {
+        const ctx = new AudioContextCtor();
+        const gain = ctx.createGain();
+        gain.gain.value = 0;
+        gain.connect(ctx.destination);
+        this.metronomeAudio = { ctx, gain };
+      }
+
+      const ctx = this.metronomeAudio.ctx;
+      void ctx.resume?.();
+      const gain = this.metronomeAudio.gain;
+      const osc = ctx.createOscillator();
+      osc.type = "square";
+      osc.frequency.value = accent ? 880 : 660;
+      osc.connect(gain);
+
+      const now = ctx.currentTime;
+      const clickGain = 0.03 * Math.max(0, Math.min(1, volume)) * (accent ? 1.1 : 0.9);
+      gain.gain.cancelScheduledValues(now);
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(clickGain, now + 0.006);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.05);
+
+      osc.start(now);
+      osc.stop(now + 0.055);
+      osc.onended = () => {
+        try {
+          osc.disconnect();
+        } catch {
+          // ignore disconnect issues
+        }
+      };
+    } catch {
+      // ignore audio failures
+    }
+  }
+
+  private playMetronomeHaptic(accent: boolean): void {
+    if (!this.metronomeHapticsAllowed) return;
+    try {
+      navigator.vibrate(accent ? 16 : 10);
+    } catch {
+      // ignore haptic failures
+    }
+  }
+
   private pickWord(mode: TypingDrillMode): string {
     const config = DRILL_CONFIGS[mode];
-    const pool = [...config.difficulties];
+    if (mode === "reaction") {
+      return "";
+    }
+    if (mode === "reading") {
+      return "";
+    }
+    if (mode === "support") {
+      return "";
+    }
+    if (mode === "hand") {
+      const pool = HAND_ISOLATION_WORDS[this.handIsolationSide] ?? HAND_ISOLATION_WORDS.left;
+      return pool[Math.floor(Math.random() * pool.length)] ?? "hand";
+    }
+    if (mode === "shortcuts") {
+      const steps = Array.isArray(config.shortcutSteps) ? config.shortcutSteps : [];
+      const step = steps[this.state.shortcutStepIndex] ?? null;
+      return step?.label ?? "shortcuts";
+    }
+    if (mode === "shift") {
+      const steps = Array.isArray(config.shiftSteps) ? config.shiftSteps : [];
+      const step = steps[this.state.shiftStepIndex] ?? null;
+      return step?.label ?? "shift";
+    }
+    if (mode === "focus") {
+      this.ensureFocusSegments();
+      const segments = this.focusSegments;
+      const index = Math.max(0, Math.min(segments.length - 1, this.state.segmentIndex));
+      const segment = segments[index] ?? null;
+      const pool = Array.isArray(segment?.targets) ? segment.targets : [];
+      if (pool.length > 0) {
+        return pool[Math.floor(Math.random() * pool.length)] ?? pool[0] ?? "focus";
+      }
+      return segment?.label ?? "focus";
+    }
+    if (mode === "warmup") {
+      this.ensureWarmupSegments();
+      const segments = this.warmupSegments;
+      const index = Math.max(0, Math.min(segments.length - 1, this.state.segmentIndex));
+      const segment = segments[index] ?? null;
+      const pool = Array.isArray(segment?.targets) ? segment.targets : [];
+      if (pool.length > 0) {
+        return pool[Math.floor(Math.random() * pool.length)] ?? pool[0] ?? "warmup";
+      }
+      return segment?.label ?? "warmup";
+    }
+    if (mode === "combo") {
+      this.ensureComboSegments();
+      const segments = this.comboSegments;
+      const index = Math.max(0, Math.min(segments.length - 1, this.state.segmentIndex));
+      const segment = segments[index] ?? null;
+      const pool = Array.isArray(segment?.targets) ? segment.targets : [];
+      if (pool.length > 0) {
+        return pool[Math.floor(Math.random() * pool.length)] ?? pool[0] ?? "combo";
+      }
+      return segment?.label ?? "combo";
+    }
+    if (mode === "placement" && Array.isArray(config.segments) && config.segments.length > 0) {
+      const segment = config.segments[Math.max(0, Math.min(config.segments.length - 1, this.state.segmentIndex))];
+      const pool = Array.isArray(segment?.targets) ? segment.targets : [];
+      if (pool.length > 0) {
+        return pool[Math.floor(Math.random() * pool.length)] ?? "defend";
+      }
+    }
+    const customPool = config.targets;
+    if (Array.isArray(customPool) && customPool.length > 0) {
+      const advancedPool = mode === "symbols" && this.advancedSymbolsUnlocked ? config.advancedTargets : null;
+      const pool =
+        Array.isArray(advancedPool) && advancedPool.length > 0
+          ? [...customPool, ...advancedPool]
+          : customPool;
+      return pool[Math.floor(Math.random() * pool.length)] ?? "defend";
+    }
+    const pool = [...(config.difficulties ?? [])];
     const difficulty =
       pool.length > 0 ? pool[Math.floor(Math.random() * pool.length)] : ("easy" as WordDifficulty);
     const source = this.wordBank[difficulty] ?? defaultWordBank[difficulty];
@@ -596,6 +2610,233 @@ export class TypingDrillsOverlay {
 
   private updateTarget(): void {
     if (!this.targetEl) return;
+    if (this.state.mode === "support") {
+      const container = document.createElement("div");
+      container.className = "typing-drill-support";
+
+      const header = document.createElement("p");
+      header.className = "typing-drill-support__kicker";
+
+      const title = document.createElement("p");
+      title.className = "typing-drill-support__title";
+
+      const body = document.createElement("div");
+      body.className = "typing-drill-support__body";
+
+      const hint = document.createElement("p");
+      hint.className = "typing-drill-support__hint";
+
+      header.textContent = "Lane Support";
+      if (!this.state.active) {
+        title.textContent = "Route support fast";
+        const desc = document.createElement("p");
+        desc.textContent = "Press 1, 2, or 3 to route support to Lane A/B/C on cue.";
+        body.appendChild(desc);
+        hint.textContent = "Press Start (or Enter) when ready.";
+      } else {
+        const lane = typeof this.supportPromptLane === "number" ? this.supportPromptLane : null;
+        const laneLetter = typeof lane === "number" ? String.fromCharCode(65 + lane) : "?";
+        const action = this.supportPromptAction ?? "Support";
+        title.textContent =
+          typeof lane === "number" ? `Route ${action} to Lane ${laneLetter}` : "Route incoming support";
+
+        const lanes = document.createElement("div");
+        lanes.className = "typing-drill-support__lanes";
+        for (let index = 0; index < 3; index += 1) {
+          const card = document.createElement("div");
+          card.className = "typing-drill-support__lane";
+          card.dataset.target = lane === index ? "true" : "false";
+          const key = document.createElement("span");
+          key.className = "typing-drill-support__lane-key";
+          key.textContent = String(index + 1);
+          const label = document.createElement("span");
+          label.className = "typing-drill-support__lane-label";
+          label.textContent = `Lane ${String.fromCharCode(65 + index)}`;
+          card.append(key, label);
+          lanes.appendChild(card);
+        }
+        body.appendChild(lanes);
+
+        hint.textContent = "Press 1, 2, or 3 (Enter skips).";
+      }
+
+      container.append(header, title, body, hint);
+      this.targetEl.replaceChildren(container);
+      return;
+    }
+    if (this.state.mode === "reading") {
+      const container = document.createElement("div");
+      container.className = "typing-drill-reading";
+
+      const header = document.createElement("p");
+      header.className = "typing-drill-reading__kicker";
+
+      const title = document.createElement("p");
+      title.className = "typing-drill-reading__title";
+
+      const body = document.createElement("div");
+      body.className = "typing-drill-reading__body";
+
+      const hint = document.createElement("p");
+      hint.className = "typing-drill-reading__hint";
+
+      if (!this.state.active) {
+        header.textContent = "Reading Quiz";
+        title.textContent = "Read, then answer";
+        const desc = document.createElement("p");
+        desc.textContent = "Press Start, read the passage, then type A/B/C for each question.";
+        body.appendChild(desc);
+        hint.textContent = "Tip: Press Enter to move from the passage to the quiz.";
+      } else {
+        if (this.readingQueue.length === 0) {
+          header.textContent = "Reading Quiz";
+          title.textContent = "Loading passage...";
+          hint.textContent = "One moment.";
+        } else {
+          const passageCount = this.readingQueue.length;
+          const passageNumber = Math.max(1, Math.min(passageCount, this.readingPassageIndex + 1));
+          const totalQuestions = this.readingTotalQuestions;
+          const score = this.state.correctInputs;
+
+          if (this.readingStage === "passage") {
+            const passage = this.readingQueue[this.readingPassageIndex];
+            header.textContent =
+              totalQuestions > 0
+                ? `Passage ${passageNumber}/${passageCount} • Score ${score}/${totalQuestions}`
+                : `Passage ${passageNumber}/${passageCount}`;
+            title.textContent = passage?.title ?? "Passage";
+
+            const rawText = passage?.text ?? "";
+            const paragraphs = rawText.split(/\n\n+/).map((part) => part.trim()).filter(Boolean);
+            for (const paragraph of paragraphs) {
+              const p = document.createElement("p");
+              p.textContent = paragraph;
+              body.appendChild(p);
+            }
+
+            hint.textContent = "Press Enter when you're ready for questions.";
+          } else {
+            const passage = this.readingQueue[this.readingPassageIndex];
+            const question = passage?.questions?.[this.readingQuestionIndex] ?? null;
+            const questionNumber = this.getReadingQuestionNumber();
+
+            header.textContent =
+              totalQuestions > 0
+                ? `Question ${questionNumber}/${totalQuestions} • Score ${score}/${totalQuestions}`
+                : `Question ${questionNumber}`;
+            title.textContent = question?.prompt ?? "Question";
+
+            const list = document.createElement("ul");
+            list.className = "typing-drill-reading__options";
+            for (const option of question?.options ?? []) {
+              const li = document.createElement("li");
+              const key = typeof option.key === "string" ? option.key.toUpperCase() : "?";
+              li.textContent = `${key}) ${option.text}`;
+              list.appendChild(li);
+            }
+            body.appendChild(list);
+
+            hint.textContent = "Type A, B, or C.";
+          }
+        }
+      }
+
+      container.appendChild(header);
+      container.appendChild(title);
+      container.appendChild(body);
+      container.appendChild(hint);
+      this.targetEl.replaceChildren(container);
+      if (this.input) {
+        this.input.value = "";
+      }
+      return;
+    }
+    if (this.state.mode === "reaction") {
+      const typedSpan = document.createElement("span");
+      typedSpan.className = "typed";
+      typedSpan.textContent = this.state.active ? (this.reactionPromptKey ? "GO!" : "Wait...") : "Ready";
+
+      const remainingSpan = document.createElement("span");
+      remainingSpan.className = "target-remaining";
+      if (!this.state.active) {
+        remainingSpan.textContent = "Press Start";
+      } else if (this.reactionPromptKey) {
+        const keycaps = document.createElement("span");
+        keycaps.className = "typing-drill-keycaps";
+        const cap = document.createElement("span");
+        cap.className = "typing-drill-keycap typing-drill-keycap--letter";
+        cap.textContent = this.formatReactionKey(this.reactionPromptKey);
+        keycaps.appendChild(cap);
+        remainingSpan.appendChild(keycaps);
+      } else {
+        remainingSpan.textContent = "...";
+      }
+
+      this.targetEl.replaceChildren(typedSpan, remainingSpan);
+      if (this.input) {
+        this.input.value = "";
+      }
+      return;
+    }
+    if (this.state.mode === "shortcuts") {
+      const config = DRILL_CONFIGS.shortcuts;
+      const steps = Array.isArray(config.shortcutSteps) ? config.shortcutSteps : [];
+      const step = steps[this.state.shortcutStepIndex] ?? null;
+      const typedSpan = document.createElement("span");
+      typedSpan.className = "typed";
+      typedSpan.textContent = step?.label ?? "Shortcut Practice";
+      const remainingSpan = document.createElement("span");
+      remainingSpan.className = "target-remaining";
+      remainingSpan.textContent = step?.comboLabel ?? " ";
+      this.targetEl.replaceChildren(typedSpan, remainingSpan);
+      if (this.input) {
+        this.input.value = "";
+      }
+      return;
+    }
+    if (this.state.mode === "shift") {
+      const config = DRILL_CONFIGS.shift;
+      const steps = Array.isArray(config.shiftSteps) ? config.shiftSteps : [];
+      const step = steps[this.state.shiftStepIndex] ?? null;
+      const typedSpan = document.createElement("span");
+      typedSpan.className = "typed";
+      typedSpan.textContent = step?.label ?? "Shift Timing";
+      const remainingSpan = document.createElement("span");
+      remainingSpan.className = "target-remaining";
+
+      const keycaps = document.createElement("span");
+      keycaps.className = "typing-drill-keycaps";
+      keycaps.dataset.slowmo = this.shiftTutorSlowMo ? "true" : "false";
+
+      const shiftCap = document.createElement("span");
+      shiftCap.className = "typing-drill-keycap typing-drill-keycap--modifier";
+      shiftCap.dataset.active = this.state.shiftHeld ? "true" : "false";
+      shiftCap.textContent = "Shift";
+
+      const plus = document.createElement("span");
+      plus.className = "typing-drill-keycaps-plus";
+      plus.textContent = "+";
+
+      const letterCap = document.createElement("span");
+      letterCap.className = "typing-drill-keycap typing-drill-keycap--letter";
+      letterCap.textContent = step ? step.key.toUpperCase() : "?";
+
+      keycaps.replaceChildren(shiftCap, plus, letterCap);
+      remainingSpan.appendChild(keycaps);
+
+      if (this.shiftTutorSlowMo) {
+        const hint = document.createElement("span");
+        hint.className = "typing-drill-shift-hint";
+        hint.textContent = "Hold vs tap: press and hold Shift, then tap the letter.";
+        remainingSpan.appendChild(hint);
+      }
+
+      this.targetEl.replaceChildren(typedSpan, remainingSpan);
+      if (this.input) {
+        this.input.value = "";
+      }
+      return;
+    }
     const typed = this.state.buffer;
     const remaining = (this.state.target ?? "").slice(typed.length);
     const typedSpan = document.createElement("span");
@@ -610,11 +2851,183 @@ export class TypingDrillsOverlay {
     }
   }
 
+  private getGhostStorage(): Storage | null {
+    return typeof window !== "undefined" ? window.localStorage : null;
+  }
+
+  private readTypingDrillGhostStore(storage: Storage | null): TypingDrillGhostStore | null {
+    if (!storage) return null;
+    try {
+      const raw = storage.getItem(TYPING_DRILL_GHOST_STORAGE_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw) as TypingDrillGhostStore;
+      if (!parsed || parsed.version !== 1) return null;
+      return parsed;
+    } catch {
+      return null;
+    }
+  }
+
+  private writeTypingDrillGhostStore(storage: Storage | null, store: TypingDrillGhostStore): void {
+    if (!storage) return;
+    try {
+      storage.setItem(TYPING_DRILL_GHOST_STORAGE_KEY, JSON.stringify(store));
+    } catch {
+      // ignore storage errors
+    }
+  }
+
+  private readSprintGhostRun(storage: Storage | null): SprintGhostRun | null {
+    const store = this.readTypingDrillGhostStore(storage);
+    const run = store?.sprint;
+    if (!run) return null;
+    if (run.mode !== "sprint") return null;
+    if (typeof run.timerMs !== "number" || !Number.isFinite(run.timerMs) || run.timerMs <= 0) return null;
+    if (typeof run.words !== "number" || !Number.isFinite(run.words) || run.words < 0) return null;
+    if (
+      typeof run.accuracy !== "number" ||
+      !Number.isFinite(run.accuracy) ||
+      run.accuracy < 0 ||
+      run.accuracy > 1
+    ) {
+      return null;
+    }
+    if (typeof run.bestCombo !== "number" || !Number.isFinite(run.bestCombo) || run.bestCombo < 0) return null;
+    if (typeof run.wpm !== "number" || !Number.isFinite(run.wpm) || run.wpm < 0) return null;
+    if (typeof run.createdAt !== "number" || !Number.isFinite(run.createdAt)) return null;
+    if (!Array.isArray(run.timeline)) return null;
+    return run;
+  }
+
+  private buildSprintGhostWordsBySecond(run: SprintGhostRun): number[] {
+    const maxSecond = Math.max(0, Math.round(Math.max(0, run.timerMs) / 1000));
+    const wordsBySecond = new Array(maxSecond + 1).fill(0);
+    for (const point of run.timeline) {
+      if (!point || typeof point !== "object") continue;
+      const tMs = (point as SprintGhostTimelinePoint).tMs;
+      const words = (point as SprintGhostTimelinePoint).words;
+      if (typeof tMs !== "number" || !Number.isFinite(tMs) || tMs < 0) continue;
+      if (typeof words !== "number" || !Number.isFinite(words) || words < 0) continue;
+      const second = Math.max(0, Math.min(maxSecond, Math.floor(tMs / 1000)));
+      wordsBySecond[second] = Math.max(wordsBySecond[second], Math.floor(words));
+    }
+    for (let i = 1; i < wordsBySecond.length; i += 1) {
+      wordsBySecond[i] = Math.max(wordsBySecond[i - 1], wordsBySecond[i]);
+    }
+    return wordsBySecond;
+  }
+
+  private prepareSprintGhost(mode: TypingDrillMode): void {
+    this.sprintGhostRecordingWordsBySecond = [];
+    this.sprintGhostLastSecondRecorded = -1;
+    if (mode !== "sprint") {
+      this.sprintGhostRun = null;
+      this.sprintGhostWordsBySecond = null;
+      return;
+    }
+
+    const storage = this.getGhostStorage();
+    const run = this.readSprintGhostRun(storage);
+    this.sprintGhostRun = run;
+    this.sprintGhostWordsBySecond = run ? this.buildSprintGhostWordsBySecond(run) : null;
+  }
+
+  private recordSprintGhostProgress(): void {
+    if (this.state.mode !== "sprint") return;
+    const timerMs = DRILL_CONFIGS.sprint.timerMs ?? SPRINT_GHOST_TIMER_MS;
+    if (typeof timerMs !== "number" || !Number.isFinite(timerMs) || timerMs <= 0) return;
+
+    const maxSecond = Math.max(0, Math.round(timerMs / 1000));
+    const elapsedMs = Math.max(0, Math.min(timerMs, this.state.elapsedMs));
+    const second = Math.max(0, Math.min(maxSecond, Math.floor(elapsedMs / 1000)));
+    const words = Math.max(0, Math.floor(this.state.wordsCompleted));
+
+    const startSecond = this.sprintGhostLastSecondRecorded + 1;
+    if (second < startSecond) return;
+    for (let s = startSecond; s <= second; s += 1) {
+      this.sprintGhostRecordingWordsBySecond[s] = words;
+    }
+    this.sprintGhostLastSecondRecorded = second;
+  }
+
+  private getSprintGhostWordsAtSecond(second: number): number | null {
+    const wordsBySecond = this.sprintGhostWordsBySecond;
+    if (!wordsBySecond || wordsBySecond.length === 0) return null;
+    const index = Math.max(0, Math.min(wordsBySecond.length - 1, Math.floor(second)));
+    const value = wordsBySecond[index];
+    return typeof value === "number" && Number.isFinite(value) ? Math.max(0, Math.floor(value)) : null;
+  }
+
+  private isBetterSprintGhost(candidate: SprintGhostRun, current: SprintGhostRun | null): boolean {
+    if (!current) return true;
+    if (candidate.words !== current.words) return candidate.words > current.words;
+    if (candidate.accuracy !== current.accuracy) return candidate.accuracy > current.accuracy;
+    if (candidate.wpm !== current.wpm) return candidate.wpm > current.wpm;
+    return candidate.bestCombo > current.bestCombo;
+  }
+
+  private maybeUpdateSprintGhost(summary: DrillSummary): void {
+    if (summary.mode !== "sprint") return;
+
+    const timerMs = DRILL_CONFIGS.sprint.timerMs ?? SPRINT_GHOST_TIMER_MS;
+    if (typeof timerMs !== "number" || !Number.isFinite(timerMs) || timerMs <= 0) return;
+
+    const maxSecond = Math.max(0, Math.round(timerMs / 1000));
+    this.recordSprintGhostProgress();
+
+    const wordsBySecond: number[] = new Array(maxSecond + 1).fill(0);
+    let last = 0;
+    for (let second = 0; second <= maxSecond; second += 1) {
+      const recorded = this.sprintGhostRecordingWordsBySecond[second];
+      const value = typeof recorded === "number" && Number.isFinite(recorded) ? Math.max(0, Math.floor(recorded)) : last;
+      last = Math.max(last, value);
+      wordsBySecond[second] = last;
+    }
+    wordsBySecond[maxSecond] = Math.max(wordsBySecond[maxSecond], Math.max(0, Math.floor(summary.words)));
+
+    const candidate: SprintGhostRun = {
+      mode: "sprint",
+      timerMs,
+      words: Math.max(0, Math.floor(summary.words)),
+      accuracy: Math.max(0, Math.min(1, summary.accuracy)),
+      bestCombo: Math.max(0, Math.floor(summary.bestCombo)),
+      wpm: Math.max(0, summary.wpm),
+      createdAt: summary.timestamp,
+      timeline: wordsBySecond.map((words, second) => ({ tMs: second * 1000, words }))
+    };
+
+    const current = this.sprintGhostRun;
+    if (!this.isBetterSprintGhost(candidate, current)) return;
+
+    const storage = this.getGhostStorage();
+    const store = this.readTypingDrillGhostStore(storage) ?? { version: 1 };
+    store.sprint = candidate;
+    this.writeTypingDrillGhostStore(storage, store);
+    this.sprintGhostRun = candidate;
+    this.sprintGhostWordsBySecond = wordsBySecond;
+
+    const deltaWords = current ? candidate.words - current.words : null;
+    const note =
+      typeof deltaWords === "number" && Number.isFinite(deltaWords) && deltaWords > 0
+        ? `New best ghost: +${deltaWords} words.`
+        : "New best ghost saved.";
+    summary.tip = summary.tip ? `${summary.tip} ${note}` : note;
+  }
+
   private updateMetrics(): void {
-    const accuracy =
+    let accuracy =
       this.state.totalInputs > 0 ? this.state.correctInputs / this.state.totalInputs : 1;
+    if (this.state.mode === "reading") {
+      const totalQuestions =
+        this.readingTotalQuestions > 0 ? this.readingTotalQuestions : this.state.totalInputs;
+      accuracy = totalQuestions > 0 ? this.state.correctInputs / totalQuestions : 0;
+    }
     const minutes = this.state.elapsedMs / 60000;
-    const wpm = minutes > 0 ? (this.state.correctInputs / 5) / minutes : 0;
+    const wpmUnit =
+      this.state.mode === "shortcuts" || this.state.mode === "shift" || this.state.mode === "support"
+        ? 1
+        : 5;
+    const wpm = minutes > 0 ? (this.state.correctInputs / wpmUnit) / minutes : 0;
     if (this.accuracyEl) {
       this.accuracyEl.textContent = `${Math.round(accuracy * 100)}%`;
     }
@@ -629,7 +3042,124 @@ export class TypingDrillsOverlay {
     }
     if (this.progressLabel) {
       const config = DRILL_CONFIGS[this.state.mode];
-      if (typeof config.wordCount === "number") {
+      if (this.state.mode === "reading") {
+        if (!this.state.active) {
+          this.progressLabel.textContent = "";
+          return;
+        }
+        const totalQuestions = this.readingTotalQuestions;
+        const scoreLabel = totalQuestions > 0 ? `Score ${this.state.correctInputs}/${totalQuestions}` : `Score ${this.state.correctInputs}`;
+        const passageCount = this.readingQueue.length > 0 ? this.readingQueue.length : 1;
+        const passageNumber = Math.max(1, Math.min(passageCount, this.readingPassageIndex + 1));
+        if (this.readingStage === "passage") {
+          this.progressLabel.textContent = `Passage ${passageNumber}/${passageCount} • ${scoreLabel}`;
+          return;
+        }
+        const questionNumber = this.getReadingQuestionNumber();
+        const questionLabel = totalQuestions > 0 ? `Question ${questionNumber}/${totalQuestions}` : `Question ${questionNumber}`;
+        this.progressLabel.textContent = `${questionLabel} • ${scoreLabel}`;
+        return;
+      }
+      if (this.state.mode === "reaction") {
+        const average = this.getReactionAverageMs();
+        const last = this.reactionLastLatencyMs;
+        const parts: string[] = [`Hits: ${this.state.wordsCompleted}`];
+        if (typeof average === "number") {
+          parts.push(`avg ${Math.round(average)}ms`);
+        }
+        if (typeof last === "number") {
+          parts.push(`last ${Math.round(last)}ms`);
+        }
+        this.progressLabel.textContent = parts.join(" / ");
+        return;
+      }
+      if (this.state.mode === "support") {
+        const average = this.getSupportAverageMs();
+        const best = this.getSupportBestMs();
+        const last = this.supportLastLatencyMs;
+        const parts: string[] = [`Routes: ${this.state.wordsCompleted}`];
+        if (typeof average === "number") {
+          parts.push(`avg ${Math.round(average)}ms`);
+        }
+        if (typeof best === "number") {
+          parts.push(`best ${Math.round(best)}ms`);
+        }
+        if (typeof last === "number") {
+          parts.push(`last ${Math.round(last)}ms`);
+        }
+        this.progressLabel.textContent = parts.join(" / ");
+        return;
+      }
+      if (this.state.mode === "sprint") {
+        if (this.state.active) {
+          this.recordSprintGhostProgress();
+          const elapsedSecond = Math.floor(Math.max(0, this.state.elapsedMs) / 1000);
+          const ghostWords = this.getSprintGhostWordsAtSecond(elapsedSecond);
+          if (typeof ghostWords === "number") {
+            const delta = Math.max(0, Math.floor(this.state.wordsCompleted)) - ghostWords;
+            const deltaLabel = delta > 0 ? `+${delta}` : `${delta}`;
+            this.progressLabel.textContent = `Words: ${this.state.wordsCompleted} / Ghost: ${ghostWords} (${deltaLabel})`;
+            return;
+          }
+          this.progressLabel.textContent = `Words: ${this.state.wordsCompleted}`;
+          return;
+        }
+        if (this.sprintGhostRun) {
+          this.progressLabel.textContent = `Best: ${this.sprintGhostRun.words} words`;
+          return;
+        }
+      }
+      if (this.state.mode === "placement" && Array.isArray(config.segments) && config.segments.length > 0) {
+        const segment = config.segments[this.state.segmentIndex];
+        this.progressLabel.textContent = segment
+          ? `${segment.label} (${this.state.segmentIndex + 1}/${config.segments.length})`
+          : "";
+      } else if (this.state.mode === "focus" && this.focusSegments.length > 0) {
+        const total = this.focusSegments.length;
+        const segmentNumber = Math.max(1, Math.min(total, this.state.segmentIndex + 1));
+        const segment = this.focusSegments[this.state.segmentIndex];
+        this.progressLabel.textContent = segment
+          ? `${segment.label} (${segmentNumber}/${total})`
+          : `${total}/${total}`;
+      } else if (this.state.mode === "warmup" && this.warmupSegments.length > 0) {
+        const total = this.warmupSegments.length;
+        const segmentNumber = Math.max(1, Math.min(total, this.state.segmentIndex + 1));
+        const segment = this.warmupSegments[this.state.segmentIndex];
+        this.progressLabel.textContent = segment
+          ? `${segment.label} (${segmentNumber}/${total})`
+          : `${total}/${total}`;
+      } else if (this.state.mode === "combo" && this.comboSegments.length > 0) {
+        const total = this.comboSegments.length;
+        const segmentNumber = Math.max(1, Math.min(total, this.state.segmentIndex + 1));
+        const segment = this.comboSegments[this.state.segmentIndex];
+        const budget = Math.max(0, Math.floor(this.comboMistakeBudget));
+        const remaining = Math.max(0, Math.floor(this.comboMistakesRemaining));
+        const suffix = budget > 0 ? ` / mistakes ${remaining}/${budget}` : " / no mistakes";
+        this.progressLabel.textContent = segment
+          ? `${segment.label} (${segmentNumber}/${total})${suffix}`
+          : `${total}/${total}`;
+      } else if (
+        this.state.mode === "shortcuts" &&
+        Array.isArray(config.shortcutSteps) &&
+        config.shortcutSteps.length > 0
+      ) {
+        const total = config.shortcutSteps.length;
+        const stepNumber = Math.max(1, Math.min(total, this.state.shortcutStepIndex + 1));
+        const step = config.shortcutSteps[this.state.shortcutStepIndex];
+        this.progressLabel.textContent = step ? `${step.label} (${stepNumber}/${total})` : `${total}/${total}`;
+      } else if (
+        this.state.mode === "shift" &&
+        Array.isArray(config.shiftSteps) &&
+        config.shiftSteps.length > 0
+      ) {
+        const total = config.shiftSteps.length;
+        const stepNumber = Math.max(1, Math.min(total, this.state.shiftStepIndex + 1));
+        const step = config.shiftSteps[this.state.shiftStepIndex];
+        const suffix = this.shiftTutorSlowMo ? " slow-mo" : "";
+        this.progressLabel.textContent = step
+          ? `${step.label} (${stepNumber}/${total})${suffix}`
+          : `${total}/${total}`;
+      } else if (typeof config.wordCount === "number") {
         this.progressLabel.textContent = `${this.state.wordsCompleted}/${config.wordCount}`;
       } else {
         this.progressLabel.textContent = `Words: ${this.state.wordsCompleted}`;
@@ -664,6 +3194,7 @@ export class TypingDrillsOverlay {
     const interval = window.setInterval(() => {
       this.state.elapsedMs =
         this.state.startTime > 0 ? Math.max(0, performance.now() - this.state.startTime) : 0;
+      this.updateTimedSegment();
       this.updateMetrics();
       this.updateTimer();
       if (performance.now() >= endsAt) {
@@ -671,6 +3202,67 @@ export class TypingDrillsOverlay {
       }
     }, 120);
     return () => window.clearInterval(interval);
+  }
+
+  private updateTimedSegment(): void {
+    if (!this.state.active) return;
+    const mode = this.state.mode;
+    if (mode === "focus") {
+      this.ensureFocusSegments();
+    }
+    if (mode === "warmup") {
+      this.ensureWarmupSegments();
+    }
+    if (mode === "combo") {
+      this.ensureComboSegments();
+    }
+    const segments =
+      mode === "placement"
+        ? DRILL_CONFIGS.placement.segments
+        : mode === "focus"
+          ? this.focusSegments
+          : mode === "warmup"
+            ? this.warmupSegments
+            : mode === "combo"
+              ? this.comboSegments
+          : null;
+    if (!Array.isArray(segments) || segments.length === 0) return;
+    const startTime = this.state.startTime;
+    if (startTime <= 0) return;
+    const elapsedMs = Math.max(0, performance.now() - startTime);
+    let cumulative = 0;
+    let nextIndex = 0;
+    for (let i = 0; i < segments.length; i += 1) {
+      cumulative += Math.max(0, segments[i]?.durationMs ?? 0);
+      if (elapsedMs < cumulative) {
+        nextIndex = i;
+        break;
+      }
+      nextIndex = i;
+    }
+    nextIndex = Math.max(0, Math.min(segments.length - 1, nextIndex));
+    if (nextIndex !== this.state.segmentIndex) {
+      this.state.segmentIndex = nextIndex;
+      this.state.buffer = "";
+      this.state.wordErrors = 0;
+      if (mode === "combo") {
+        this.resetComboSegmentBudget(nextIndex);
+      }
+      this.state.target = this.pickWord(mode);
+      this.updateTarget();
+      const label = segments[nextIndex]?.label;
+      if (label) {
+        this.showToast(
+          mode === "focus"
+            ? `Focus: ${label}`
+            : mode === "warmup"
+              ? `Warm-up: ${label}`
+              : mode === "combo"
+                ? `Combo: ${label}`
+              : `Segment: ${label}`
+        );
+      }
+    }
   }
 
   setRecommendation(mode: TypingDrillMode, reason: string): void {
@@ -684,7 +3276,35 @@ export class TypingDrillsOverlay {
     });
     if (this.recommendationEl && this.recommendationBadge && this.recommendationReason) {
       this.recommendationBadge.textContent =
-        mode === "burst" ? "Warmup" : mode === "endurance" ? "Cadence" : "Accuracy";
+        mode === "burst"
+          ? "Warmup"
+          : mode === "warmup"
+            ? "Plan"
+          : mode === "endurance"
+            ? "Cadence"
+            : mode === "sprint"
+              ? "Sprint"
+              : mode === "sentences"
+                  ? "Sentences"
+                  : mode === "reading"
+                    ? "Reading"
+                  : mode === "rhythm"
+                    ? "Rhythm"
+                    : mode === "reaction"
+                      ? "Reaction"
+                      : mode === "combo"
+                        ? "Combo"
+            : mode === "symbols"
+              ? "Symbols"
+              : mode === "placement"
+                ? "Placement"
+                : mode === "shortcuts"
+                  ? "Shortcuts"
+                  : mode === "shift"
+                    ? "Shift"
+                    : mode === "focus"
+                      ? "Focus"
+              : "Accuracy";
       this.recommendationReason.textContent = reason;
       this.recommendationEl.dataset.visible = "true";
     }
@@ -709,12 +3329,248 @@ export class TypingDrillsOverlay {
     }
   }
 
+  private formatReactionKey(key: string): string {
+    if (key === " ") return "Space";
+    return key.length === 1 ? key.toUpperCase() : key;
+  }
+
+  private getReactionAverageMs(): number | null {
+    if (this.reactionLatenciesMs.length === 0) return null;
+    let sum = 0;
+    let count = 0;
+    for (const value of this.reactionLatenciesMs) {
+      if (typeof value !== "number" || !Number.isFinite(value)) continue;
+      sum += value;
+      count += 1;
+    }
+    if (count === 0) return null;
+    return sum / count;
+  }
+
+  private getReactionBestMs(): number | null {
+    if (this.reactionLatenciesMs.length === 0) return null;
+    let best = Number.POSITIVE_INFINITY;
+    for (const value of this.reactionLatenciesMs) {
+      if (typeof value !== "number" || !Number.isFinite(value)) continue;
+      best = Math.min(best, value);
+    }
+    return Number.isFinite(best) ? best : null;
+  }
+
+  private supportLaneLetter(lane: number): "a" | "b" | "c" {
+    return lane === 1 ? "b" : lane === 2 ? "c" : "a";
+  }
+
+  private supportLaneNumber(lane: number): "1" | "2" | "3" {
+    return lane === 1 ? "2" : lane === 2 ? "3" : "1";
+  }
+
+  private formatSupportLane(lane: number): string {
+    const normalized = Math.max(0, Math.min(2, Math.floor(lane)));
+    return `Lane ${String.fromCharCode(65 + normalized)}`;
+  }
+
+  private getSupportAverageMs(): number | null {
+    if (this.supportLatenciesMs.length === 0) return null;
+    let sum = 0;
+    let count = 0;
+    for (const value of this.supportLatenciesMs) {
+      if (typeof value !== "number" || !Number.isFinite(value)) continue;
+      sum += value;
+      count += 1;
+    }
+    if (count === 0) return null;
+    return sum / count;
+  }
+
+  private getSupportBestMs(): number | null {
+    if (this.supportLatenciesMs.length === 0) return null;
+    let best = Number.POSITIVE_INFINITY;
+    for (const value of this.supportLatenciesMs) {
+      if (typeof value !== "number" || !Number.isFinite(value)) continue;
+      best = Math.min(best, value);
+    }
+    return Number.isFinite(best) ? best : null;
+  }
+
+  private startSupport(mode: TypingDrillMode = this.state.mode): void {
+    this.stopSupport();
+    if (!this.state.active) return;
+    if (mode !== "support") return;
+    this.supportPreviousLane = null;
+    this.setNextSupportPrompt();
+  }
+
+  private stopSupport(): void {
+    this.supportPromptLane = null;
+    this.supportPromptAction = null;
+    this.supportPromptAt = null;
+  }
+
+  private setNextSupportPrompt(): void {
+    if (!this.state.active || this.state.mode !== "support") {
+      this.stopSupport();
+      this.updateTarget();
+      this.updateMetrics();
+      return;
+    }
+
+    const lanes = [0, 1, 2];
+    const previousLane = this.supportPreviousLane;
+    if (typeof previousLane === "number" && lanes.length > 1) {
+      const index = lanes.indexOf(previousLane);
+      if (index >= 0) {
+        lanes.splice(index, 1);
+      }
+    }
+    const lane = lanes[Math.floor(Math.random() * lanes.length)] ?? 0;
+    this.supportPreviousLane = lane;
+
+    const actions = ["Shield", "Repair", "Boost"];
+    const action = actions[Math.floor(Math.random() * actions.length)] ?? "Support";
+
+    this.supportPromptLane = lane;
+    this.supportPromptAction = action;
+    this.supportPromptAt = performance.now();
+    this.state.buffer = "";
+    this.state.target = "";
+    this.updateTarget();
+    this.updateMetrics();
+  }
+
+  private startReaction(mode: TypingDrillMode = this.state.mode): void {
+    if (!this.state.active) return;
+    if (mode !== "reaction") return;
+    this.reactionPromptKey = null;
+    this.reactionPromptAt = null;
+    this.state.buffer = "";
+    this.state.target = "";
+    this.queueReactionPrompt();
+  }
+
+  private stopReactionPrompt(): void {
+    if (this.reactionPromptTimeout) {
+      window.clearTimeout(this.reactionPromptTimeout);
+      this.reactionPromptTimeout = null;
+    }
+    this.reactionPromptKey = null;
+    this.reactionPromptAt = null;
+    if (this.state.mode === "reaction") {
+      this.state.buffer = "";
+      this.state.target = "";
+    }
+  }
+
+  private queueReactionPrompt(options: { penalty?: boolean } = {}): void {
+    this.stopReactionPrompt();
+    if (!this.state.active || this.state.mode !== "reaction") {
+      return;
+    }
+
+    const minMs = 450;
+    const maxMs = 1600;
+    const jitter = minMs + Math.random() * (maxMs - minMs);
+    const delayMs = Math.round(jitter + (options.penalty ? 650 : 0));
+    this.reactionPromptTimeout = window.setTimeout(() => {
+      this.reactionPromptTimeout = null;
+      if (!this.state.active || this.state.mode !== "reaction") return;
+      const config = DRILL_CONFIGS.reaction;
+      const pool = Array.isArray(config.targets)
+        ? config.targets.filter((value) => typeof value === "string" && value.length > 0)
+        : [];
+      const key =
+        pool.length > 0 ? (pool[Math.floor(Math.random() * pool.length)] ?? pool[0]) : "f";
+      this.reactionPromptKey = key;
+      this.reactionPromptAt = performance.now();
+      this.state.target = key;
+      this.updateTarget();
+    }, Math.max(0, delayMs));
+    this.updateTarget();
+  }
+
+  private stopReading(): void {
+    this.readingQueue = [];
+    this.readingPassageIndex = 0;
+    this.readingQuestionIndex = 0;
+    this.readingStage = "passage";
+    this.readingTotalQuestions = 0;
+  }
+
+  private buildReadingQueue(): ReadingQuizPassage[] {
+    const pool = [...READING_PASSAGES];
+    const selected: ReadingQuizPassage[] = [];
+    const targetCount = Math.min(2, pool.length);
+    for (let i = 0; i < targetCount; i += 1) {
+      const index = Math.max(0, Math.min(pool.length - 1, Math.floor(Math.random() * pool.length)));
+      const [picked] = pool.splice(index, 1);
+      if (picked) {
+        selected.push(picked);
+      }
+    }
+    return selected;
+  }
+
+  private startReading(mode: TypingDrillMode = this.state.mode): void {
+    this.stopReading();
+    if (!this.state.active) return;
+    if (mode !== "reading") return;
+    this.readingQueue = this.buildReadingQueue();
+    this.readingTotalQuestions = this.readingQueue.reduce(
+      (sum, passage) => sum + (Array.isArray(passage.questions) ? passage.questions.length : 0),
+      0
+    );
+    this.readingPassageIndex = 0;
+    this.readingQuestionIndex = 0;
+    this.readingStage = "passage";
+    this.state.buffer = "";
+    this.state.target = "";
+    this.updateTarget();
+    this.updateMetrics();
+  }
+
+  private getReadingQuestionNumber(): number {
+    let offset = 0;
+    for (let i = 0; i < this.readingPassageIndex; i += 1) {
+      const passage = this.readingQueue[i];
+      offset += Array.isArray(passage?.questions) ? passage.questions.length : 0;
+    }
+    return offset + this.readingQuestionIndex + 1;
+  }
+
   private getModeLabel(mode: TypingDrillMode): string {
     switch (mode) {
+      case "placement":
+        return "Placement Test";
+      case "hand":
+        return "Hand Isolation";
+      case "support":
+        return "Lane Support";
+      case "shortcuts":
+        return "Shortcut Practice";
+      case "shift":
+        return "Shift Timing";
+      case "focus":
+        return "Focus Drill";
+      case "warmup":
+        return "5-Min Warm-up";
+      case "reaction":
+        return "Reaction Challenge";
+      case "combo":
+        return "Combo Preservation";
+      case "reading":
+        return "Reading Quiz";
       case "precision":
         return "Shield Breaker";
+      case "sprint":
+        return "Time Attack";
+      case "sentences":
+        return "Sentence Builder";
+      case "rhythm":
+        return "Rhythm Drill";
       case "endurance":
         return "Endurance";
+      case "symbols":
+        return "Numbers & Symbols";
       case "burst":
       default:
         return "Burst Warmup";

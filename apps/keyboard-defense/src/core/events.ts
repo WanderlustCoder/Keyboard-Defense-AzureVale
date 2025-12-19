@@ -39,6 +39,7 @@ export interface GameEvents extends Record<string, unknown> {
   "wave:bonus": { waveIndex: number; type: "perfect-words"; count: number; gold: number };
   "analytics:wave-summary": WaveSummary;
   "analytics:typing-drill": TypingDrillSummary;
+  "challenge:mistake-limit": { waveIndex: number; limit: number; errors: number };
   "state:snapshot": GameState;
   "tutorial:event": { stepId: string | null; event: string; timeInStep: number };
   "combat:defeat-burst": { enemy: EnemyState; mode: DefeatBurstMode };

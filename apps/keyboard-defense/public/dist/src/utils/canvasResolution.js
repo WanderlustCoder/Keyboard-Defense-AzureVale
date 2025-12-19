@@ -1,9 +1,13 @@
 const MIN_CANVAS_WIDTH = 320;
 export function calculateCanvasResolution(input) {
-    const { baseWidth, baseHeight, availableWidth, devicePixelRatio = 1, minWidth = MIN_CANVAS_WIDTH } = input;
+    const { baseWidth, baseHeight, availableWidth, availableHeight, devicePixelRatio = 1, minWidth = MIN_CANVAS_WIDTH } = input;
     const safeWidth = Number.isFinite(availableWidth) && availableWidth > 0 ? availableWidth : baseWidth;
-    const boundedCssWidth = clamp(Math.round(safeWidth), minWidth, baseWidth);
     const aspectRatio = baseHeight / baseWidth;
+    let boundedCssWidth = clamp(Math.round(safeWidth), minWidth, baseWidth);
+    if (typeof availableHeight === "number" && Number.isFinite(availableHeight) && availableHeight > 0) {
+        const maxWidthFromHeight = Math.max(1, Math.floor(availableHeight / aspectRatio));
+        boundedCssWidth = Math.min(boundedCssWidth, maxWidthFromHeight);
+    }
     const cssHeight = Math.round(boundedCssWidth * aspectRatio);
     const dpr = Math.max(1, devicePixelRatio);
     const renderWidth = Math.max(1, Math.round(boundedCssWidth * dpr));

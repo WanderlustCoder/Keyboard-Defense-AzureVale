@@ -29,6 +29,9 @@ const initializeHud = (options = {}) => {
   const { window } = parseHTML(htmlSource);
   const { document } = window;
 
+  const hadLocalStorage = Object.prototype.hasOwnProperty.call(global, "localStorage");
+  const originalLocalStorage = global.localStorage;
+
   const originalGlobals = {
     document: global.document,
     window: global.window,
@@ -72,6 +75,11 @@ const initializeHud = (options = {}) => {
       ? options.matchMedia
       : window.matchMedia ?? createMatchMediaStub(options.matchMediaState ?? {});
 
+  if (options.localStorage) {
+    global.localStorage = options.localStorage;
+    window.localStorage = options.localStorage;
+  }
+
   const get = (id) => {
     const el = document.getElementById(id);
     if (!el) {
@@ -86,6 +94,7 @@ const initializeHud = (options = {}) => {
   const hudRoot = get("hud");
   const goldDelta = get("resource-delta");
   const activeWord = get("active-word");
+  const fingerHint = get("finger-hint");
   const upgradePanel = get("upgrade-panel");
   const comboLabel = get("combo-stats");
   const comboAccuracyDelta = get("combo-accuracy-delta");
@@ -120,6 +129,9 @@ const initializeHud = (options = {}) => {
   const sideQuestSummary = get("side-quest-summary");
   const sideQuestStats = get("side-quest-stats");
   const sideQuestOpen = get("side-quest-open");
+  const dailyQuestPanel = get("daily-quest-panel");
+  const dailyQuestSummary = get("daily-quest-summary");
+  const dailyQuestList = get("daily-quest-list");
   const mentorDialogue = get("mentor-dialogue");
   const mentorDialogueText = get("mentor-dialogue-text");
   const mentorDialogueFocus = get("mentor-dialogue-focus");
@@ -181,8 +193,11 @@ const initializeHud = (options = {}) => {
   const screenShakeValue = get("options-screen-shake-intensity-value");
   const screenShakePreview = get("options-screen-shake-preview");
   const diagnosticsToggle = get("options-diagnostics-toggle");
+  const virtualKeyboardToggle = get("options-virtual-keyboard-toggle");
+  const virtualKeyboardLayoutSelect = get("options-virtual-keyboard-layout");
   const reducedMotionToggle = get("options-reduced-motion-toggle");
   const checkeredBackgroundToggle = get("options-checkered-bg-toggle");
+  const breakReminderIntervalSelect = get("options-break-reminder-interval");
   const readableFontToggle = get("options-readable-font-toggle");
   const dyslexiaFontToggle = get("options-dyslexia-font-toggle");
   const dyslexiaSpacingToggle = get("options-dyslexia-spacing-toggle");
@@ -190,6 +205,8 @@ const initializeHud = (options = {}) => {
   const colorblindPaletteToggle = get("options-colorblind-toggle");
   const telemetryToggle = get("options-telemetry-toggle");
   const telemetryToggleWrapper = get("options-telemetry-toggle-wrapper");
+  const telemetryQueueDownloadButton = get("options-telemetry-queue-download");
+  const telemetryQueueClearButton = get("options-telemetry-queue-clear");
   const hudZoomSelect = get("options-hud-zoom");
   const hudLayoutToggle = get("options-hud-left");
   const fontScaleSelect = get("options-font-scale");
@@ -227,6 +244,11 @@ const initializeHud = (options = {}) => {
   const optionsTrainingCalendarButton = get("options-training-calendar");
   const optionsParentSummaryButton = get("options-parent-summary");
   const optionsLoreScrollsButton = get("options-lore-scrolls");
+  const optionsEndSessionButton = get("options-end-session");
+  const dropoffOverlay = get("dropoff-overlay");
+  const dropoffOverlayClose = get("dropoff-overlay-close");
+  const dropoffOverlayCancel = get("dropoff-overlay-cancel");
+  const dropoffOverlaySkip = get("dropoff-overlay-skip");
   const contrastOverlay = get("contrast-overlay");
   const contrastOverlayList = get("contrast-overlay-list");
   const contrastOverlaySummary = get("contrast-overlay-summary");
@@ -257,7 +279,7 @@ const initializeHud = (options = {}) => {
   const masteryCertificateStatsList = get("mastery-certificate-stats-list");
   const masteryCertificateDownload = get("mastery-certificate-download");
   const masteryCertificateOverlaySummary = get("mastery-certificate-overlay-summary");
-  const masteryCertificateOverlayDate = get("mastery-certificate-date");
+  const masteryCertificateOverlayDate = get("mastery-certificate-overlay-date");
   const masteryCertificateOverlayClose = get("mastery-certificate-close");
   const masteryCertificateStatLessons = get("mastery-certificate-stat-lessons");
   const masteryCertificateStatAccuracy = get("mastery-certificate-stat-accuracy");
@@ -313,6 +335,7 @@ const initializeHud = (options = {}) => {
   const optionsPanelContainer = get("options-panels");
   const optionsPanels = optionsPanelContainer.querySelectorAll(".options-panel");
   const analyticsExportButton = get("options-analytics-export");
+  const keystrokeTimingExportButton = get("options-keystroke-timing-export");
   const analyticsViewerContainer = get("debug-analytics-viewer");
   const analyticsViewerBody = get("debug-analytics-viewer-body");
   const analyticsFilterSelect = get("debug-analytics-viewer-filter");
@@ -330,12 +353,22 @@ const initializeHud = (options = {}) => {
   const analyticsExportNote = get("debug-analytics-export-note");
   const waveScorecard = get("wave-scorecard");
   const waveScorecardStats = get("wave-scorecard-stats");
+  const waveScorecardCoach = get("wave-scorecard-coach");
+  const waveScorecardCoachList = get("wave-scorecard-coach-list");
+  const waveScorecardDrill = get("wave-scorecard-drill");
   const waveScorecardContinue = get("wave-scorecard-continue");
 
   let scorecardContinues = 0;
+  let scorecardSuggestedDrills = 0;
+  let lastScorecardSuggestedDrill = null;
   const reducedMotionToggleEvents = [];
+  const virtualKeyboardToggleEvents = [];
+  const virtualKeyboardLayoutEvents = [];
   const analyticsExportEvents = [];
+  const keystrokeTimingExportEvents = [];
   const checkeredBackgroundToggleEvents = [];
+  const breakReminderIntervalEvents = [];
+  const dropoffReasonEvents = [];
   const readableFontToggleEvents = [];
   const dyslexiaFontToggleEvents = [];
   const cognitiveLoadToggleEvents = [];
@@ -343,6 +376,8 @@ const initializeHud = (options = {}) => {
   const castleSkinEvents = [];
   const contrastAuditEvents = [];
   const telemetryToggleEvents = [];
+  const telemetryQueueDownloadEvents = [];
+  const telemetryQueueClearEvents = [];
   const soundVolumeEvents = [];
   const soundIntensityEvents = [];
   const musicToggleEvents = [];
@@ -422,6 +457,7 @@ const initializeHud = (options = {}) => {
         stickerBookButton: "options-sticker-book",
         parentSummaryButton: "options-parent-summary",
         loreScrollsButton: "options-lore-scrolls",
+        endSessionButton: "options-end-session",
         wpmLadderButton: "options-wpm-ladder",
         biomeGalleryButton: "options-biome-gallery",
         trainingCalendarButton: "options-training-calendar",
@@ -436,8 +472,11 @@ const initializeHud = (options = {}) => {
         selfTestVisualIndicator: "options-self-test-visual-indicator",
         selfTestMotionIndicator: "options-self-test-motion-indicator",
         diagnosticsToggle: "options-diagnostics-toggle",
+        virtualKeyboardToggle: "options-virtual-keyboard-toggle",
+        virtualKeyboardLayoutSelect: "options-virtual-keyboard-layout",
         reducedMotionToggle: "options-reduced-motion-toggle",
         checkeredBackgroundToggle: "options-checkered-bg-toggle",
+        breakReminderIntervalSelect: "options-break-reminder-interval",
         readableFontToggle: "options-readable-font-toggle",
         dyslexiaFontToggle: "options-dyslexia-font-toggle",
         dyslexiaSpacingToggle: "options-dyslexia-spacing-toggle",
@@ -449,20 +488,33 @@ const initializeHud = (options = {}) => {
         defeatAnimationSelect: "options-defeat-animation",
         telemetryToggle: "options-telemetry-toggle",
         telemetryToggleWrapper: "options-telemetry-toggle-wrapper",
+        telemetryQueueDownloadButton: "options-telemetry-queue-download",
+        telemetryQueueClearButton: "options-telemetry-queue-clear",
         hudZoomSelect: "options-hud-zoom",
         hudLayoutToggle: "options-hud-left",
         fontScaleSelect: "options-font-scale",
         analyticsExportButton: "options-analytics-export",
+        keystrokeTimingExportButton: "options-keystroke-timing-export",
         seasonTrackButton: "options-season-track",
         sideQuestButton: "options-side-quests",
         museumButton: "options-museum",
         masteryCertificateButton: "options-mastery-certificate",
         lessonMedalButton: "options-lesson-medals"
       },
+      dropoffOverlay: {
+        container: "dropoff-overlay",
+        closeButton: "dropoff-overlay-close",
+        cancelButton: "dropoff-overlay-cancel",
+        skipButton: "dropoff-overlay-skip"
+      },
       waveScorecard: {
         container: "wave-scorecard",
         stats: "wave-scorecard-stats",
-        continue: "wave-scorecard-continue"
+        continue: "wave-scorecard-continue",
+        tip: "wave-scorecard-tip",
+        coach: "wave-scorecard-coach",
+        coachList: "wave-scorecard-coach-list",
+        drill: "wave-scorecard-drill"
       },
       analyticsViewer: {
         container: "debug-analytics-viewer",
@@ -551,7 +603,7 @@ const initializeHud = (options = {}) => {
         nameInput: "mastery-certificate-name",
         summary: "mastery-certificate-overlay-summary",
         statsList: "mastery-certificate-stats-list",
-        date: "mastery-certificate-date",
+        date: "mastery-certificate-overlay-date",
         statLessons: "mastery-certificate-stat-lessons",
         statAccuracy: "mastery-certificate-stat-accuracy",
         statWpm: "mastery-certificate-stat-wpm",
@@ -654,15 +706,26 @@ const initializeHud = (options = {}) => {
       onAccessibilitySelfTestConfirm: (kind, confirmed) =>
         selfTestConfirmEvents.push({ kind, confirmed }),
       onDiagnosticsToggle: () => {},
+      onVirtualKeyboardToggle: (enabled) => virtualKeyboardToggleEvents.push(enabled),
+      onVirtualKeyboardLayoutChange: (layout) => virtualKeyboardLayoutEvents.push(layout),
       onWaveScorecardContinue: () => scorecardContinues++,
+      onWaveScorecardSuggestedDrill: (drill) => {
+        scorecardSuggestedDrills += 1;
+        lastScorecardSuggestedDrill = drill;
+      },
       onReducedMotionToggle: (enabled) => reducedMotionToggleEvents.push(enabled),
       onCheckeredBackgroundToggle: (enabled) => checkeredBackgroundToggleEvents.push(enabled),
+      onBreakReminderIntervalChange: (minutes) => breakReminderIntervalEvents.push(minutes),
+      onDropoffReasonSelected: (reasonId) => dropoffReasonEvents.push(reasonId),
       onReadableFontToggle: (enabled) => readableFontToggleEvents.push(enabled),
       onDyslexiaFontToggle: (enabled) => dyslexiaFontToggleEvents.push(enabled),
       onCognitiveLoadToggle: (enabled) => cognitiveLoadToggleEvents.push(enabled),
       onColorblindPaletteToggle: (enabled) => colorblindToggleEvents.push(enabled),
       onTelemetryToggle: (enabled) => telemetryToggleEvents.push(enabled),
+      onTelemetryQueueDownload: () => telemetryQueueDownloadEvents.push(true),
+      onTelemetryQueueClear: () => telemetryQueueClearEvents.push(true),
       onAnalyticsExport: () => analyticsExportEvents.push(true),
+      onKeystrokeTimingExport: () => keystrokeTimingExportEvents.push(true),
       onHudZoomChange: (scale) => hudZoomChangeEvents.push(scale),
       onHudLayoutToggle: (left) => hudLayoutEvents.push(left),
       onHudFontScaleChange: (scale) => fontScaleChangeEvents.push(scale),
@@ -684,6 +747,12 @@ const initializeHud = (options = {}) => {
 
   const cleanup = () => {
     Object.assign(global, originalGlobals);
+    if (hadLocalStorage) {
+      global.localStorage = originalLocalStorage;
+    } else {
+      // eslint-disable-next-line no-delete-var
+      delete global.localStorage;
+    }
   };
 
   return {
@@ -691,6 +760,7 @@ const initializeHud = (options = {}) => {
     cleanup,
     elements: {
       activeWord,
+      fingerHint,
       wavePreview,
       wavePreviewHint,
       comboLabel,
@@ -728,6 +798,9 @@ const initializeHud = (options = {}) => {
       sideQuestSummary,
       sideQuestStats,
       sideQuestOpen,
+      dailyQuestPanel,
+      dailyQuestSummary,
+      dailyQuestList,
       museumOverlay,
       museumList,
       museumSubtitle,
@@ -770,6 +843,7 @@ const initializeHud = (options = {}) => {
       optionsPanelContainer,
       optionsPanels,
       analyticsExportButton,
+      keystrokeTimingExportButton,
       soundToggle,
       soundVolumeSlider,
       soundVolumeValue,
@@ -819,6 +893,11 @@ const initializeHud = (options = {}) => {
       optionsTrainingCalendarButton,
       optionsParentSummaryButton,
       optionsLoreScrollsButton,
+      optionsEndSessionButton,
+      dropoffOverlay,
+      dropoffOverlayClose,
+      dropoffOverlayCancel,
+      dropoffOverlaySkip,
       contrastOverlay,
       contrastOverlayList,
       contrastOverlaySummary,
@@ -897,8 +976,11 @@ const initializeHud = (options = {}) => {
       selfTestVisualIndicator,
       selfTestMotionIndicator,
       diagnosticsToggle,
+      virtualKeyboardToggle,
+      virtualKeyboardLayoutSelect,
       reducedMotionToggle,
       checkeredBackgroundToggle,
+      breakReminderIntervalSelect,
       readableFontToggle,
       dyslexiaFontToggle,
       dyslexiaSpacingToggle,
@@ -906,6 +988,8 @@ const initializeHud = (options = {}) => {
       colorblindPaletteToggle,
       telemetryToggle,
       telemetryToggleWrapper,
+      telemetryQueueDownloadButton,
+      telemetryQueueClearButton,
       hudZoomSelect,
       hudLayoutToggle,
       fontScaleSelect,
@@ -921,6 +1005,9 @@ const initializeHud = (options = {}) => {
       castleGoldEvents: castleGoldEventsRef,
       waveScorecard,
       waveScorecardStats,
+      waveScorecardCoach,
+      waveScorecardCoachList,
+      waveScorecardDrill,
       waveScorecardContinue,
       analyticsViewerContainer,
       analyticsViewerBody,
@@ -941,9 +1028,15 @@ const initializeHud = (options = {}) => {
       parallaxShell,
       body: document.body,
       getScorecardContinueCount: () => scorecardContinues,
+      getScorecardSuggestedDrillCount: () => scorecardSuggestedDrills,
+      getLastScorecardSuggestedDrill: () => lastScorecardSuggestedDrill,
       getReducedMotionToggleEvents: () => [...reducedMotionToggleEvents],
+      getVirtualKeyboardToggleEvents: () => [...virtualKeyboardToggleEvents],
+      getVirtualKeyboardLayoutEvents: () => [...virtualKeyboardLayoutEvents],
       upgradePanel,
       getCheckeredBackgroundToggleEvents: () => [...checkeredBackgroundToggleEvents],
+      getBreakReminderIntervalEvents: () => [...breakReminderIntervalEvents],
+      getDropoffReasonEvents: () => [...dropoffReasonEvents],
       getReadableFontToggleEvents: () => [...readableFontToggleEvents],
       getDyslexiaFontToggleEvents: () => [...dyslexiaFontToggleEvents],
       getCognitiveLoadToggleEvents: () => [...cognitiveLoadToggleEvents],
@@ -971,6 +1064,8 @@ const initializeHud = (options = {}) => {
       getOptionsPanel: (key) =>
         document.querySelector(`.options-panel[data-panel="${key}"]`) ?? undefined,
       getTelemetryToggleEvents: () => [...telemetryToggleEvents],
+      getTelemetryQueueDownloadEvents: () => [...telemetryQueueDownloadEvents],
+      getTelemetryQueueClearEvents: () => [...telemetryQueueClearEvents],
       getHudZoomEvents: () => [...hudZoomChangeEvents],
       getHudLayoutEvents: () => [...hudLayoutEvents],
       getFontScaleEvents: () => [...fontScaleChangeEvents],
@@ -982,6 +1077,7 @@ const initializeHud = (options = {}) => {
       getCollapseEvents: () => [...collapseEvents]
     },
     getAnalyticsExportEvents: () => [...analyticsExportEvents],
+    getKeystrokeTimingExportEvents: () => [...keystrokeTimingExportEvents],
     getCollapseEvents: () => [...collapseEvents],
     getMusicLibrarySelectEvents: () => [...musicLibrarySelectEvents],
     getMusicLibraryPreviewEvents: () => [...musicLibraryPreviewEvents],
@@ -1061,6 +1157,7 @@ const buildInitialState = () => {
     turrets: turretStates,
     enemies: [],
     projectiles: [],
+    laneHazards: [],
     wave: {
       index: 0,
       total: defaultConfig.waves.length,
@@ -1243,6 +1340,92 @@ test("HudView highlights combos and accuracy delta during warnings", () => {
   cleanup();
 });
 
+test("HudView shows lane threat indicators in wave preview summary when enabled", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  const { wavePreview } = elements;
+
+  const state = buildInitialState();
+  const upcoming = [
+    { waveIndex: 0, lane: 0, tierId: "grunt", timeUntil: 1, scheduledTime: 1, isNextWave: false },
+    {
+      waveIndex: 0,
+      lane: 0,
+      tierId: "witch",
+      timeUntil: 1.5,
+      scheduledTime: 1.5,
+      isNextWave: false
+    },
+    { waveIndex: 0, lane: 1, tierId: "grunt", timeUntil: 2, scheduledTime: 2, isNextWave: false }
+  ];
+
+  hud.setWavePreviewThreatIndicatorsEnabled(true);
+  hud.update(state, upcoming);
+
+  const summary = wavePreview.children[0];
+  assert.ok(summary.textContent.includes("A: x2"));
+  assert.ok(summary.textContent.includes("dmg"));
+
+  cleanup();
+});
+
+test("HudView shows active lane hazards in wave preview summary", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  const { wavePreview } = elements;
+
+  const state = buildInitialState();
+  state.laneHazards = [
+    { lane: 0, kind: "storm", remaining: 4, duration: 5, fireRateMultiplier: 0.85 },
+    { lane: 2, kind: "fog", remaining: 3, duration: 3 }
+  ];
+  const upcoming = [
+    { waveIndex: 0, lane: 0, tierId: "grunt", timeUntil: 1, scheduledTime: 1, isNextWave: false }
+  ];
+
+  hud.update(state, upcoming);
+
+  const summary = wavePreview.children[0];
+  const stormPill = summary.children[0];
+  const fogPill = summary.children[1];
+  assert.equal(stormPill.dataset.hazard, "storm");
+  assert.ok(stormPill.textContent.includes("Storm"));
+  assert.equal(fogPill.dataset.hazard, "fog");
+  assert.ok(fogPill.textContent.includes("Fog"));
+
+  const stormRow = wavePreview.children[1];
+  assert.equal(stormRow.dataset.hazard, "storm");
+  const rowHazard = stormRow.querySelector(".preview-badge.hazard");
+  assert.ok(rowHazard, "expected hazard badge on row");
+  assert.equal(rowHazard.dataset.hazard, "storm");
+  assert.ok((rowHazard.getAttribute("title") ?? "").includes("4.0s"));
+  assert.ok((rowHazard.getAttribute("title") ?? "").includes("-15%"));
+
+  cleanup();
+});
+
+test("HudView shows active lane hazards on turret slot titles", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  const { upgradePanel } = elements;
+
+  const state = buildInitialState();
+  state.laneHazards = [
+    { lane: state.turrets[0].lane, kind: "storm", remaining: 4, duration: 5, fireRateMultiplier: 0.85 }
+  ];
+
+  hud.update(state, []);
+
+  const badges = Array.from(upgradePanel.querySelectorAll(".slot-hazard"));
+  assert.ok(badges.length > 0, "expected turret hazard badge nodes");
+  const visibleStorm = badges.filter(
+    (badge) => badge.dataset.visible === "true" && badge.dataset.hazard === "storm"
+  );
+  assert.ok(visibleStorm.length > 0, "expected visible storm turret hazard badge");
+  assert.ok(visibleStorm[0].textContent.includes("Storm"));
+  assert.ok((visibleStorm[0].getAttribute("title") ?? "").includes("4.0s"));
+  assert.ok((visibleStorm[0].getAttribute("title") ?? "").includes("-15%"));
+
+  cleanup();
+});
+
 test("HudView condenses tutorial banner on compact heights", () => {
   const matchMediaState = { "(max-height: 540px)": true };
   const { hud, cleanup, elements } = initializeHud({ matchMediaState });
@@ -1333,6 +1516,58 @@ test("HudView surfaces shielded status for active enemy", () => {
   hud.update(state, []);
   assert.ok(!("shielded" in activeWord.dataset));
   assert.ok(!activeWord.innerHTML.includes("Shielded"));
+
+  cleanup();
+});
+
+test("HudView finger hint respects keyboard layout selection", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  const state = buildInitialState();
+  const enemy = {
+    id: "enemy-1",
+    tierId: "witch",
+    word: "yeti",
+    typed: 0,
+    maxHealth: 52,
+    health: 52,
+    shield: { current: 0, max: 0 },
+    speed: 0.04,
+    baseSpeed: 0.04,
+    distance: 0.35,
+    lane: 1,
+    damage: 12,
+    reward: 18,
+    status: "alive",
+    effects: [],
+    spawnedAt: 0,
+    waveIndex: 0
+  };
+
+  state.enemies.push(enemy);
+  state.typing.activeEnemyId = enemy.id;
+
+  hud.setVirtualKeyboardLayout("qwerty");
+  hud.update(state, []);
+  let finger = elements.fingerHint.querySelector(".finger-finger")?.textContent;
+  let keyLabel = elements.fingerHint.querySelector(".finger-key")?.textContent;
+  assert.equal(finger, "Right index");
+  assert.equal(keyLabel, "Y");
+
+  hud.setVirtualKeyboardLayout("qwertz");
+  hud.update(state, []);
+  finger = elements.fingerHint.querySelector(".finger-finger")?.textContent;
+  keyLabel = elements.fingerHint.querySelector(".finger-key")?.textContent;
+  assert.equal(finger, "Left pinky");
+  assert.equal(keyLabel, "Y");
+
+  enemy.word = "moss";
+  enemy.typed = 0;
+  hud.setVirtualKeyboardLayout("azerty");
+  hud.update(state, []);
+  finger = elements.fingerHint.querySelector(".finger-finger")?.textContent;
+  keyLabel = elements.fingerHint.querySelector(".finger-key")?.textContent;
+  assert.equal(finger, "Right pinky");
+  assert.equal(keyLabel, "M");
 
   cleanup();
 });
@@ -1996,6 +2231,7 @@ test("HudView options overlay syncs controls and visibility", () => {
     diagnosticsToggle,
     reducedMotionToggle,
     checkeredBackgroundToggle,
+    breakReminderIntervalSelect,
     readableFontToggle,
     dyslexiaFontToggle,
     dyslexiaSpacingToggle,
@@ -2003,12 +2239,15 @@ test("HudView options overlay syncs controls and visibility", () => {
     colorblindPaletteToggle,
     telemetryToggle,
     telemetryToggleWrapper,
+    telemetryQueueDownloadButton,
+    telemetryQueueClearButton,
     hudLayoutToggle,
     hudZoomSelect,
     fontScaleSelect,
     castleSkinSelect,
     getReducedMotionToggleEvents,
     getCheckeredBackgroundToggleEvents,
+    getBreakReminderIntervalEvents,
     getReadableFontToggleEvents,
     getDyslexiaFontToggleEvents,
     getCognitiveLoadToggleEvents,
@@ -2017,6 +2256,8 @@ test("HudView options overlay syncs controls and visibility", () => {
     getSoundVolumeEvents,
     getSoundIntensityEvents,
     getTelemetryToggleEvents,
+    getTelemetryQueueDownloadEvents,
+    getTelemetryQueueClearEvents,
     getHudZoomEvents,
     getHudLayoutEvents,
     getFontScaleEvents
@@ -2051,6 +2292,7 @@ test("HudView options overlay syncs controls and visibility", () => {
     diagnosticsVisible: false,
     reducedMotionEnabled: true,
     checkeredBackgroundEnabled: false,
+    breakReminderIntervalMinutes: 20,
     readableFontEnabled: false,
     dyslexiaFontEnabled: false,
     dyslexiaSpacingEnabled: false,
@@ -2086,6 +2328,14 @@ test("HudView options overlay syncs controls and visibility", () => {
   assert.equal(telemetryToggle.checked, false);
   assert.equal(telemetryToggle.disabled, true);
   assert.equal(telemetryToggleWrapper.style.display, "none");
+  assert.equal(telemetryQueueDownloadButton.style.display, "none");
+  assert.equal(telemetryQueueDownloadButton.disabled, true);
+  assert.equal(telemetryQueueDownloadButton.getAttribute("aria-hidden"), "true");
+  assert.equal(telemetryQueueDownloadButton.getAttribute("tabindex"), "-1");
+  assert.equal(telemetryQueueClearButton.style.display, "none");
+  assert.equal(telemetryQueueClearButton.disabled, true);
+  assert.equal(telemetryQueueClearButton.getAttribute("aria-hidden"), "true");
+  assert.equal(telemetryQueueClearButton.getAttribute("tabindex"), "-1");
   assert.equal(readSelectValue(hudZoomSelect), "1");
   assert.equal(hudLayoutToggle.checked, false);
   assert.equal(readSelectValue(fontScaleSelect), "1");
@@ -2102,6 +2352,7 @@ test("HudView options overlay syncs controls and visibility", () => {
     diagnosticsVisible: false,
     reducedMotionEnabled: true,
     checkeredBackgroundEnabled: false,
+    breakReminderIntervalMinutes: 20,
     readableFontEnabled: false,
     dyslexiaFontEnabled: false,
     dyslexiaSpacingEnabled: false,
@@ -2130,6 +2381,7 @@ test("HudView options overlay syncs controls and visibility", () => {
     diagnosticsVisible: false,
     reducedMotionEnabled: true,
     checkeredBackgroundEnabled: false,
+    breakReminderIntervalMinutes: 20,
     readableFontEnabled: false,
     dyslexiaFontEnabled: true,
     dyslexiaSpacingEnabled: true,
@@ -2151,14 +2403,27 @@ test("HudView options overlay syncs controls and visibility", () => {
   assert.equal(telemetryToggleWrapper.style.display, "");
   assert.equal(telemetryToggle.disabled, false);
   assert.equal(telemetryToggle.checked, true);
+  assert.equal(telemetryQueueDownloadButton.style.display, "");
+  assert.equal(telemetryQueueDownloadButton.disabled, false);
+  assert.equal(telemetryQueueDownloadButton.getAttribute("aria-hidden"), "false");
+  assert.equal(telemetryQueueDownloadButton.getAttribute("tabindex"), "0");
+  assert.equal(telemetryQueueClearButton.style.display, "");
+  assert.equal(telemetryQueueClearButton.disabled, false);
+  assert.equal(telemetryQueueClearButton.getAttribute("aria-hidden"), "false");
+  assert.equal(telemetryQueueClearButton.getAttribute("tabindex"), "0");
   assert.equal(dyslexiaSpacingToggle.checked, true);
   assert.equal(cognitiveLoadToggle.checked, true);
   assert.equal(readSelectValue(hudZoomSelect), "1.1");
   assert.equal(hudLayoutToggle.checked, true);
+  assert.equal(readSelectValue(breakReminderIntervalSelect), "20");
 
   hud.showOptionsOverlay();
   assert.equal(optionsOverlay.dataset.visible, "true");
   assert.equal(hud.isOptionsOverlayVisible(), true);
+
+  setSelectValueForElement(breakReminderIntervalSelect, "off");
+  dispatchDomEvent(breakReminderIntervalSelect, "change");
+  assert.deepEqual(getBreakReminderIntervalEvents(), [0]);
 
   reducedMotionToggle.checked = false;
   dispatchDomEvent(reducedMotionToggle, "change");
@@ -2172,6 +2437,7 @@ test("HudView options overlay syncs controls and visibility", () => {
     diagnosticsVisible: false,
     reducedMotionEnabled: false,
     checkeredBackgroundEnabled: false,
+    breakReminderIntervalMinutes: 20,
     readableFontEnabled: false,
     dyslexiaFontEnabled: true,
     dyslexiaSpacingEnabled: true,
@@ -2222,6 +2488,11 @@ test("HudView options overlay syncs controls and visibility", () => {
   dispatchDomEvent(telemetryToggle, "change");
   assert.deepEqual(getTelemetryToggleEvents(), [false]);
 
+  dispatchDomEvent(telemetryQueueDownloadButton, "click");
+  dispatchDomEvent(telemetryQueueClearButton, "click");
+  assert.equal(getTelemetryQueueDownloadEvents().length, 1);
+  assert.equal(getTelemetryQueueClearEvents().length, 1);
+
   setSelectValueForElement(castleSkinSelect, "dusk");
   dispatchDomEvent(castleSkinSelect, "change");
   assert.deepEqual(getCastleSkinEvents(), ["dusk"]);
@@ -2248,6 +2519,30 @@ test("HudView options overlay syncs controls and visibility", () => {
   hud.hideOptionsOverlay();
   assert.equal(optionsOverlay.dataset.visible, "false");
   assert.equal(hud.isOptionsOverlayVisible(), false);
+
+  cleanup();
+});
+
+test("Drop-off overlay reports end-session reason selections", () => {
+  const { cleanup, elements } = initializeHud();
+  const { optionsEndSessionButton, dropoffOverlay, dropoffOverlaySkip, getDropoffReasonEvents } =
+    elements;
+
+  assert.equal(dropoffOverlay.dataset.visible, "false");
+  optionsEndSessionButton.click();
+  assert.equal(dropoffOverlay.dataset.visible, "true");
+  assert.equal(dropoffOverlay.getAttribute("aria-hidden"), "false");
+
+  const tiredButton = dropoffOverlay.querySelector("button[data-dropoff-reason='tired']");
+  assert.ok(tiredButton, "dropoff reason button exists");
+  tiredButton.click();
+
+  assert.deepEqual(getDropoffReasonEvents(), ["tired"]);
+  assert.equal(dropoffOverlay.dataset.visible, "false");
+
+  optionsEndSessionButton.click();
+  dropoffOverlaySkip.click();
+  assert.deepEqual(getDropoffReasonEvents(), ["tired", "skip"]);
 
   cleanup();
 });
@@ -2411,6 +2706,81 @@ test("HudView accessibility self-test emits callbacks and plays cues", () => {
   ]);
   assert.equal(elements.selfTestSoundIndicator.dataset.active, "true");
   assert.equal(elements.selfTestMotionIndicator.dataset.active, "true");
+
+  cleanup();
+});
+
+test("HudView virtual keyboard toggle syncs and emits callbacks", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  const baseState = {
+    soundEnabled: true,
+    soundVolume: 0.8,
+    soundIntensity: 1,
+    screenShakeEnabled: false,
+    screenShakeIntensity: 0.65,
+    diagnosticsVisible: false,
+    lowGraphicsEnabled: false,
+    virtualKeyboardEnabled: false,
+    reducedMotionEnabled: false,
+    checkeredBackgroundEnabled: false,
+    readableFontEnabled: false,
+    dyslexiaFontEnabled: false,
+    dyslexiaSpacingEnabled: false,
+    reducedCognitiveLoadEnabled: false,
+    backgroundBrightness: 1,
+    colorblindPaletteEnabled: false,
+    colorblindPaletteMode: "off",
+    hudZoom: 1,
+    hudLayout: "right",
+    hudFontScale: 1,
+    defeatAnimationMode: "auto",
+    telemetry: { available: false, checked: false, disabled: true }
+  };
+
+  hud.syncOptionsOverlayState(baseState);
+  assert.equal(elements.virtualKeyboardToggle.checked, false);
+
+  elements.virtualKeyboardToggle.checked = true;
+  dispatchDomEvent(elements.virtualKeyboardToggle, "change");
+  assert.deepEqual(elements.getVirtualKeyboardToggleEvents(), [true]);
+
+  cleanup();
+});
+
+test("HudView virtual keyboard layout select syncs and emits callbacks", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  const baseState = {
+    soundEnabled: true,
+    soundVolume: 0.8,
+    soundIntensity: 1,
+    screenShakeEnabled: false,
+    screenShakeIntensity: 0.65,
+    diagnosticsVisible: false,
+    lowGraphicsEnabled: false,
+    virtualKeyboardEnabled: true,
+    virtualKeyboardLayout: "qwertz",
+    reducedMotionEnabled: false,
+    checkeredBackgroundEnabled: false,
+    readableFontEnabled: false,
+    dyslexiaFontEnabled: false,
+    dyslexiaSpacingEnabled: false,
+    reducedCognitiveLoadEnabled: false,
+    backgroundBrightness: 1,
+    colorblindPaletteEnabled: false,
+    colorblindPaletteMode: "off",
+    hudZoom: 1,
+    hudLayout: "right",
+    hudFontScale: 1,
+    defeatAnimationMode: "auto",
+    telemetry: { available: false, checked: false, disabled: true }
+  };
+
+  hud.syncOptionsOverlayState(baseState);
+  assert.equal(elements.virtualKeyboardLayoutSelect.getAttribute("value"), "qwertz");
+
+  elements.virtualKeyboardLayoutSelect.setAttribute("value", "azerty");
+  dispatchDomEvent(elements.virtualKeyboardLayoutSelect, "change");
+  assert.deepEqual(elements.getVirtualKeyboardLayoutEvents(), ["azerty"]);
 
   cleanup();
 });
@@ -2683,7 +3053,7 @@ test("HudView milestone celebration fires for gold medals and lesson milestones"
       timestamp: 10
     },
     recent: [],
-    bestByMode: { burst: null, endurance: null, precision: null },
+    bestByMode: { burst: null, endurance: null, precision: null, symbols: null },
     totals: { bronze: 0, silver: 0, gold: 1, platinum: 0 },
     nextTarget: null
   });
@@ -2693,9 +3063,243 @@ test("HudView milestone celebration fires for gold medals and lesson milestones"
   assert.equal(elements.milestoneCelebration.dataset.visible, "false");
 
   const state = buildInitialState();
+  hud.update(state, [], { lessonsCompleted: 4 });
+  assert.equal(elements.milestoneCelebration.dataset.visible, "false");
+
   hud.update(state, [], { lessonsCompleted: 5 });
   assert.equal(elements.milestoneCelebration.dataset.visible, "true");
   assert.ok(elements.milestoneCelebrationBadge.textContent.length > 0);
+  cleanup();
+});
+
+test("HudView daily quest board renders quest statuses", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  hud.setDailyQuestBoard({
+    day: "2025-01-01",
+    completed: 1,
+    total: 3,
+    summary: "Daily quests are live.",
+    updatedAt: null,
+    entries: [
+      {
+        id: "drills",
+        title: "Complete 2 drills",
+        description: "Finish typing drills to keep your streak alive.",
+        progress: 1,
+        target: 2,
+        meta: "1/2",
+        status: "active",
+        completedAt: null
+      },
+      {
+        id: "gold-medal",
+        title: "Earn a Gold medal",
+        description: "Hit Gold or Platinum in any lesson drill.",
+        progress: 1,
+        target: 1,
+        meta: "Complete",
+        status: "completed",
+        completedAt: "2025-01-01T00:00:00.000Z"
+      },
+      {
+        id: "campaign-waves",
+        title: "Reach wave 3",
+        description: "Finish a campaign run with defenses holding steady.",
+        progress: 0,
+        target: 3,
+        meta: "0/3",
+        status: "active",
+        completedAt: null
+      }
+    ]
+  });
+
+  assert.equal(elements.dailyQuestSummary.textContent, "Daily quests are live.");
+  const items = elements.dailyQuestList.querySelectorAll("li");
+  assert.equal(items.length, 3);
+  assert.equal(items[0].dataset.status, "in-progress");
+  assert.equal(items[1].dataset.status, "met");
+  assert.equal(items[2].dataset.status, "pending");
+  cleanup();
+});
+
+test("HudView can suppress lesson medal milestone celebrations when hydrating progress", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  hud.setLessonMedalProgress(
+    {
+      last: {
+        id: "medal-11",
+        tier: "platinum",
+        mode: "burst",
+        accuracy: 0.99,
+        wpm: 72,
+        bestCombo: 12,
+        errors: 0,
+        words: 15,
+        elapsedMs: 18000,
+        timestamp: 11
+      },
+      recent: [],
+      bestByMode: { burst: null, endurance: null, precision: null, symbols: null },
+      totals: { bronze: 0, silver: 0, gold: 0, platinum: 1 },
+      nextTarget: null
+    },
+    { celebrate: false }
+  );
+  assert.equal(elements.milestoneCelebration.dataset.visible, "false");
+  cleanup();
+});
+
+test("HudView does not re-celebrate repeated platinum medals", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  const medal1 = {
+    id: "medal-20",
+    tier: "platinum",
+    mode: "burst",
+    accuracy: 0.99,
+    wpm: 70,
+    bestCombo: 12,
+    errors: 0,
+    words: 15,
+    elapsedMs: 18000,
+    timestamp: 20
+  };
+  hud.setLessonMedalProgress({
+    last: medal1,
+    recent: [],
+    bestByMode: { burst: medal1, endurance: null, precision: null, symbols: null },
+    totals: { bronze: 0, silver: 0, gold: 0, platinum: 1 },
+    nextTarget: null
+  });
+  assert.equal(elements.milestoneCelebration.dataset.visible, "true");
+
+  hud.hideMilestoneCelebration();
+  assert.equal(elements.milestoneCelebration.dataset.visible, "false");
+
+  const medal2 = { ...medal1, id: "medal-21", wpm: 74, timestamp: 21 };
+  hud.setLessonMedalProgress({
+    last: medal2,
+    recent: [],
+    bestByMode: { burst: medal2, endurance: null, precision: null, symbols: null },
+    totals: { bronze: 0, silver: 0, gold: 0, platinum: 2 },
+    nextTarget: null
+  });
+
+  assert.equal(elements.milestoneCelebration.dataset.visible, "false");
+  cleanup();
+});
+
+test("HudView mastery certificate milestone only fires on session completion", () => {
+  const { hud, cleanup, elements } = initializeHud();
+
+  const runningState = buildInitialState();
+  runningState.time = 120;
+  runningState.typing.totalInputs = 120;
+  runningState.typing.correctInputs = 118;
+  runningState.typing.accuracy = 0.98;
+
+  hud.update(runningState, [], { lessonsCompleted: 0 });
+  assert.equal(elements.milestoneCelebration.dataset.visible, "false");
+
+  const endState = structuredClone(runningState);
+  endState.status = "defeat";
+
+  hud.update(endState, [], { lessonsCompleted: 0 });
+  assert.equal(elements.milestoneCelebration.dataset.visible, "true");
+  assert.ok(elements.milestoneCelebrationTitle.textContent.includes("Mastery certificate"));
+
+  hud.hideMilestoneCelebration();
+  assert.equal(elements.milestoneCelebration.dataset.visible, "false");
+
+  hud.update(endState, [], { lessonsCompleted: 0 });
+  assert.equal(elements.milestoneCelebration.dataset.visible, "false");
+
+  cleanup();
+});
+
+test("HudView mastery certificate milestone persists across reloads", () => {
+  class MemoryStorage {
+    constructor(entries = {}) {
+      this.entries = new Map(Object.entries(entries));
+    }
+
+    getItem(key) {
+      return this.entries.has(key) ? this.entries.get(key) : null;
+    }
+
+    setItem(key, value) {
+      this.entries.set(key, String(value));
+    }
+
+    removeItem(key) {
+      this.entries.delete(key);
+    }
+  }
+
+  const storageKey = "keyboard-defense:mastery-certificate-milestone-shown";
+  const storage = new MemoryStorage();
+
+  const first = initializeHud({ localStorage: storage });
+  const runningState = buildInitialState();
+  runningState.time = 120;
+  runningState.typing.totalInputs = 120;
+  runningState.typing.correctInputs = 118;
+  runningState.typing.accuracy = 0.98;
+  first.hud.update(runningState, [], { lessonsCompleted: 0 });
+
+  const endState = structuredClone(runningState);
+  endState.status = "defeat";
+  first.hud.update(endState, [], { lessonsCompleted: 0 });
+  assert.equal(first.elements.milestoneCelebration.dataset.visible, "true");
+  assert.equal(storage.getItem(storageKey), "true");
+  first.cleanup();
+
+  const second = initializeHud({ localStorage: storage });
+  const runningState2 = buildInitialState();
+  runningState2.time = 120;
+  runningState2.typing.totalInputs = 120;
+  runningState2.typing.correctInputs = 118;
+  runningState2.typing.accuracy = 0.98;
+  second.hud.update(runningState2, [], { lessonsCompleted: 0 });
+  const endState2 = structuredClone(runningState2);
+  endState2.status = "defeat";
+  second.hud.update(endState2, [], { lessonsCompleted: 0 });
+  assert.equal(second.elements.milestoneCelebration.dataset.visible, "false");
+  second.cleanup();
+});
+
+test("HudView renders a compact Support Surge indicator during active boosts", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  const banner = elements.hudRoot.querySelector(".support-boost-banner");
+  assert.ok(banner, "support boost banner should exist");
+  assert.equal(banner.dataset.visible, "false");
+
+  const state = buildInitialState();
+  hud.update(state, [], { lessonsCompleted: 0 });
+  assert.equal(banner.dataset.visible, "false");
+
+  const boosted = structuredClone(state);
+  boosted.supportBoost = {
+    lane: 1,
+    remaining: 3.2,
+    duration: 4,
+    multiplier: 1.15,
+    cooldownRemaining: 0
+  };
+  hud.update(boosted, [], { lessonsCompleted: 0 });
+  assert.equal(banner.dataset.visible, "true");
+  assert.equal(banner.style.display, "flex");
+  assert.ok(banner.textContent.includes("Support Surge"));
+  assert.ok(banner.textContent.includes("Lane B"));
+  assert.ok(banner.textContent.includes("+15%"));
+  assert.ok(banner.textContent.includes("3.2s"));
+
+  const expired = structuredClone(boosted);
+  expired.supportBoost.remaining = 0;
+  hud.update(expired, [], { lessonsCompleted: 0 });
+  assert.equal(banner.dataset.visible, "false");
+  assert.equal(banner.style.display, "none");
+
   cleanup();
 });
 
@@ -2803,7 +3407,7 @@ test("HudView museum overlay renders entries and toggles visibility", () => {
       timestamp: 10
     },
     recent: [],
-    bestByMode: { burst: null, endurance: null, precision: null },
+    bestByMode: { burst: null, endurance: null, precision: null, symbols: null },
     totals: { bronze: 0, silver: 0, gold: 1, platinum: 0 },
     nextTarget: null
   });
@@ -2843,7 +3447,7 @@ test("HudView museum overlay filters locked and unlocked entries", () => {
   hud.setLessonMedalProgress({
     last: null,
     recent: [],
-    bestByMode: { burst: null, endurance: null, precision: null },
+    bestByMode: { burst: null, endurance: null, precision: null, symbols: null },
     totals: { bronze: 0, silver: 0, gold: 0, platinum: 0 },
     nextTarget: null
   });
@@ -2943,7 +3547,7 @@ test("HudView side quest overlay renders quests and toggles visibility", () => {
         timestamp: 304
       }
     ],
-    bestByMode: { burst: null, endurance: null, precision: null },
+    bestByMode: { burst: null, endurance: null, precision: null, symbols: null },
     totals: { bronze: 1, silver: 2, gold: 1, platinum: 0 },
     nextTarget: null
   });
@@ -2981,7 +3585,7 @@ test("Side quest overlay filters between active and completed quests", () => {
       timestamp: 456
     },
     recent: [],
-    bestByMode: { burst: null, endurance: null, precision: null },
+    bestByMode: { burst: null, endurance: null, precision: null, symbols: null },
     totals: { bronze: 0, silver: 0, gold: 1, platinum: 0 },
     nextTarget: null
   });
@@ -3055,7 +3659,8 @@ test("HudView lesson medals overlay renders and toggles visibility", () => {
         words: 8,
         elapsedMs: 25000,
         timestamp: 1234
-      }
+      },
+      symbols: null
     },
     totals: { bronze: 0, silver: 1, gold: 1, platinum: 0 },
     nextTarget: { tier: "platinum", hint: "Replay for Platinum: hold 98% accuracy and combo x7." }
@@ -3069,7 +3674,7 @@ test("HudView lesson medals overlay renders and toggles visibility", () => {
   assert.equal(elements.lessonMedalOverlay.dataset.visible, "true");
   assert.ok(elements.lessonMedalOverlayLast.textContent.includes("Shield Breaker"));
   assert.ok(elements.lessonMedalOverlayNext.textContent.includes("Platinum"));
-  assert.equal(elements.lessonMedalList.children.length, 3);
+  assert.equal(elements.lessonMedalList.children.length, 8);
   assert.ok(elements.lessonMedalHistory.children.length >= 1);
   hud.hideLessonMedalOverlay();
   assert.equal(elements.lessonMedalOverlay.dataset.visible, "false");
@@ -3122,7 +3727,8 @@ test("HudView WPM ladder overlay renders and toggles visibility", () => {
         errors: 0,
         elapsedMs: 26000,
         timestamp: Date.parse(updatedAt) - 2000
-      }
+      },
+      symbols: null
     },
     ladderByMode: {
       burst: [
@@ -3170,7 +3776,8 @@ test("HudView WPM ladder overlay renders and toggles visibility", () => {
           elapsedMs: 26000,
           timestamp: Date.parse(updatedAt) - 2000
         }
-      ]
+      ],
+      symbols: []
     },
     topRuns: [
       {
@@ -3536,6 +4143,16 @@ test("HudView toggles analytics export availability", () => {
   cleanup();
 });
 
+test("HudView emits keystroke timing export callback", () => {
+  const { cleanup, elements, getKeystrokeTimingExportEvents } = initializeHud();
+  const { keystrokeTimingExportButton } = elements;
+
+  dispatchDomEvent(keystrokeTimingExportButton, "click");
+  assert.equal(getKeystrokeTimingExportEvents().length, 1);
+
+  cleanup();
+});
+
 test("HudView analytics viewer toggles visibility", () => {
   const { hud, cleanup, elements } = initializeHud();
   const { analyticsViewerContainer } = elements;
@@ -3704,8 +4321,17 @@ test("HudView analytics viewer switches tabs and renders traces/export meta", ()
 
 test("HudView wave scorecard renders summary details", () => {
   const { hud, cleanup, elements } = initializeHud();
-  const { waveScorecard, waveScorecardStats, waveScorecardContinue, getScorecardContinueCount } =
-    elements;
+  const {
+    waveScorecard,
+    waveScorecardStats,
+    waveScorecardCoach,
+    waveScorecardCoachList,
+    waveScorecardDrill,
+    waveScorecardContinue,
+    getScorecardContinueCount,
+    getScorecardSuggestedDrillCount,
+    getLastScorecardSuggestedDrill
+  } = elements;
 
   assert.equal(hud.isWaveScorecardVisible(), false);
 
@@ -3730,7 +4356,16 @@ test("HudView wave scorecard renders summary details", () => {
     bonusGold: 45,
     goldEarned: 132,
     bestCombo: 6,
-    sessionBestCombo: 9
+    sessionBestCombo: 9,
+    coach: {
+      win: "Zero breaches. You held the wall.",
+      gap: "Push your combo past x6 without mistakes.",
+      drill: {
+        mode: "precision",
+        label: "Shield Breaker",
+        reason: "Tighten accuracy after recent drops."
+      }
+    }
   });
 
   assert.equal(waveScorecard.dataset.visible, "true");
@@ -3775,6 +4410,33 @@ test("HudView wave scorecard renders summary details", () => {
   const sessionComboRow = statRows.find((child) => child.dataset.field === "session-combo");
   assert.ok(sessionComboRow, "expected session combo row to exist");
   assert.equal(sessionComboRow.children[1].textContent, "x9");
+
+  assert.equal(waveScorecardCoach.dataset.visible, "true");
+  const coachRows = Array.from(waveScorecardCoachList.children);
+  const winRow = coachRows.find((child) => child.dataset.field === "win");
+  assert.ok(winRow, "expected win coach row to exist");
+  assert.equal(winRow.children[0].textContent, "Biggest Win");
+  assert.equal(winRow.children[1].textContent, "Zero breaches. You held the wall.");
+  const gapRow = coachRows.find((child) => child.dataset.field === "gap");
+  assert.ok(gapRow, "expected gap coach row to exist");
+  assert.equal(gapRow.children[0].textContent, "Biggest Gap");
+  assert.equal(gapRow.children[1].textContent, "Push your combo past x6 without mistakes.");
+  const drillRow = coachRows.find((child) => child.dataset.field === "drill");
+  assert.ok(drillRow, "expected drill coach row to exist");
+  assert.equal(drillRow.children[0].textContent, "Suggested Drill");
+  assert.equal(
+    drillRow.children[1].textContent,
+    "Shield Breaker: Tighten accuracy after recent drops."
+  );
+  assert.equal(waveScorecardDrill.dataset.visible, "true");
+
+  dispatchDomEvent(waveScorecardDrill, "click");
+  assert.equal(getScorecardSuggestedDrillCount(), 1);
+  assert.deepEqual(getLastScorecardSuggestedDrill(), {
+    mode: "precision",
+    label: "Shield Breaker",
+    reason: "Tighten accuracy after recent drops."
+  });
 
   dispatchDomEvent(waveScorecardContinue, "click");
   assert.equal(getScorecardContinueCount(), 1);

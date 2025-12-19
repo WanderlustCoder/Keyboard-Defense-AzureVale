@@ -7,6 +7,7 @@ Use this list before publishing builds or sharing milestones. Audience ages 8-16
 - `npm run build` (regenerates dist + type checks).
 - `npm test` (vitest suite) and, when art/UI changed, `npm run test:visual` (update baselines intentionally).
 - `npm run assets:manifest:verify` and `npm run assets:integrity -- --check` for sprite/hash drift.
+- `npm run assets:licensing -- --check` to ensure shipped assets have licensing/source metadata.
 - `npm run serve:smoke` to ensure the dev server boots cleanly.
 
 ## Browser Smoke (Edge + Chrome)
@@ -16,6 +17,7 @@ Use this list before publishing builds or sharing milestones. Audience ages 8-16
 - Game loop: start a wave, defeat an enemy, pause/resume, and confirm lives/gold update.
 - Local storage: profile/tutorial flags persist across reload; clear storage and verify first-run tutorial appears.
 - Assets: castle/enemy sprites render (no SVG fallbacks unless expected), SFX play on hits/defeat.
+- Offline/PWA: load once online (service worker installs), toggle DevTools to Offline, then reload and confirm the game shell loads.
 
 ## Accessibility & Performance
 - Keyboard-only navigation through main controls (options, fullscreen, audio).

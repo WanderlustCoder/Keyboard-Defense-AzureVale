@@ -266,6 +266,10 @@ function collectMetrics() {
       path.join("artifacts", "castle-breach.ci.json"),
       path.join("artifacts", "castle-breach.json"),
       path.join("artifacts", "summaries", "castle-breach.e2e.json")
+    ]),
+    perf: loadArtifact([
+      path.join("artifacts", "perf", "perf-smoke-summary.ci.json"),
+      path.join("artifacts", "perf", "perf-smoke-summary.json")
     ])
   };
 
@@ -357,6 +361,20 @@ function collectMetrics() {
       entry.data.timeToBreachMs ?? entry.data.durationMs ?? null,
       entry.path
     );
+  }
+
+  if (artifacts.perf) {
+    const entry = artifacts.perf;
+    const metrics = entry.data?.metrics ?? entry.data ?? {};
+    setMetric("perf.status", entry.data.status ?? null, entry.path);
+    setMetric("perf.durationMs", metrics.durationMs ?? null, entry.path);
+    setMetric("perf.fps", metrics.fps ?? null, entry.path);
+    setMetric("perf.frameMsP50", metrics.frameMs?.p50 ?? null, entry.path);
+    setMetric("perf.frameMsP95", metrics.frameMs?.p95 ?? null, entry.path);
+    setMetric("perf.frameMsMax", metrics.frameMs?.max ?? null, entry.path);
+    setMetric("perf.longFramesOver100", metrics.longFrames?.over100 ?? null, entry.path);
+    setMetric("perf.heapUsedEndMB", metrics.heapUsedMB?.end ?? null, entry.path);
+    setMetric("perf.heapUsedMaxMB", metrics.heapUsedMB?.max ?? null, entry.path);
   }
 
   return { metrics, sources };

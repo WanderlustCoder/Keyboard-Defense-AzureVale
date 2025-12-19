@@ -34,6 +34,14 @@ export interface EvacuationState {
   failed: boolean;
 }
 
+export interface SupportBoostState {
+  lane: number | null;
+  remaining: number;
+  duration: number;
+  multiplier: number;
+  cooldownRemaining: number;
+}
+
 export type BossPhase = "intro" | "phase-one" | "phase-two" | "finale";
 
 export type BossEventType =
@@ -279,7 +287,24 @@ export interface TypingState {
   lastInputAtMs?: number | null;
 }
 
-export type TypingDrillMode = "burst" | "endurance" | "precision";
+export type TypingDrillMode =
+  | "burst"
+  | "warmup"
+  | "endurance"
+  | "sprint"
+  | "sentences"
+  | "reading"
+  | "rhythm"
+  | "reaction"
+  | "combo"
+  | "precision"
+  | "symbols"
+  | "placement"
+  | "hand"
+  | "support"
+  | "shortcuts"
+  | "shift"
+  | "focus";
 export type TypingDrillSource =
   | "menu"
   | "options"
@@ -297,6 +322,10 @@ export interface TypingDrillSummary {
   words: number;
   errors: number;
   wpm: number;
+  patterns?: {
+    keys?: Record<string, { attempts: number; errors: number }>;
+    digraphs?: Record<string, { attempts: number; errors: number }>;
+  };
   timestamp: number;
 }
 
@@ -387,6 +416,7 @@ export interface GameState {
   projectiles: ProjectileState[];
   laneHazards: LaneHazardState[];
   evacuation: EvacuationState;
+  supportBoost: SupportBoostState;
   boss: BossRuntimeState;
   wave: WaveRuntimeState;
   typing: TypingState;

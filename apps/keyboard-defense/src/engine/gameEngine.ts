@@ -57,6 +57,8 @@ const BOSS_SHOCKWAVE_SLOW = 0.65;
 const EVAC_REWARD_FALLBACK = 80;
 const EVAC_PENALTY_FALLBACK = 40;
 const EVAC_DYNAMIC_BUFFER = 4;
+const SPAWN_SPEED_GATE_MIN = 0.85;
+const FAST_SPAWNS_TIME_SCALE = 1.35;
 
 type DynamicSpawnEvent = {
   time: number;
@@ -102,6 +104,14 @@ export interface GameEngineOptions {
   seed?: number;
   events?: EventBus<GameEvents>;
   telemetryClient?: TelemetryClient;
+}
+
+export interface ChallengeModifiersRuntime {
+  fog: boolean;
+  fastSpawns: boolean;
+  limitedMistakes: boolean;
+  mistakeBudget: number;
+  scoreMultiplier: number;
 }
 
 export interface RuntimeMetrics {
@@ -197,12 +207,17 @@ export class GameEngine {
   private readonly difficultyBands: DifficultyBand[];
   private currentDifficultyBand: DifficultyBand;
   private defeatBurstModeResolver: ((enemy: EnemyState) => DefeatBurstMode) | null = null;
+  private spawnSpeedGateMultiplier = 1;
+  private laneFocus: number | null = null;
   private dynamicEvents: DynamicSpawnEvent[] = [];
   private dynamicEventIndex = 0;
   private hazardEvents: LaneHazardEvent[] = [];
   private hazardEventIndex = 0;
   private evacuationEvent: { time: number; lane: number; duration: number; word?: string | null } | null =
     null;
+  private challengeModifiers: ChallengeModifiersRuntime | null = null;
+  private limitedMistakesWaveBaselineErrors = 0;
+  private limitedMistakesWaveIndex: number | null = null;
 
   private recalculateAverageDps(): void {
     const analytics = this.state.analytics;
@@ -249,9 +264,12 @@ export class GameEngine {
       (a, b) => a - b
     );
     if (lanes.length === 0) return;
+    const focusLane = this.getActiveLaneFocus();
+    const laneChoices =
+      typeof focusLane === "number" && lanes.includes(focusLane) ? [focusLane] : lanes;
     const midWindowStart = Math.max(6, wave.duration * 0.4);
     const midWindowEnd = Math.max(midWindowStart + 2, wave.duration * 0.65);
-    const candidateLanes = [...lanes];
+    const candidateLanes = [...laneChoices];
     for (let i = candidateLanes.length - 1; i > 0; i -= 1) {
       const j = Math.floor(rng.next() * (i + 1));
       [candidateLanes[i], candidateLanes[j]] = [candidateLanes[j], candidateLanes[i]];
@@ -351,6 +369,9 @@ export class GameEngine {
     if (lanes.length === 0) {
       return;
     }
+    const focusLane = this.getActiveLaneFocus();
+    const laneChoices =
+      typeof focusLane === "number" && lanes.includes(focusLane) ? [focusLane] : lanes;
     const rng = new PRNG(this.seed ^ Math.imul(waveIndex + 1, 0x9e3779b1));
     const count = Math.max(1, Math.min(3, Math.round(rng.range(1, 2.4)) + (waveIndex > 0 ? 1 : 0)));
     const events: DynamicSpawnEvent[] = [];
@@ -359,7 +380,7 @@ export class GameEngine {
       const timeWindowStart = 4;
       const timeWindowEnd = Math.max(timeWindowStart + 2, waveConfig.duration - 4);
       const time = rng.range(timeWindowStart, timeWindowEnd);
-      const lane = rng.pick(lanes);
+      const lane = rng.pick(laneChoices);
       const kind = rng.pick<"skirmish" | "gold-runner" | "shield-carrier">([
         "skirmish",
         "gold-runner",
@@ -388,13 +409,16 @@ export class GameEngine {
       (a, b) => a - b
     );
     if (lanes.length === 0) return;
+    const focusLane = this.getActiveLaneFocus();
+    const laneChoices =
+      typeof focusLane === "number" && lanes.includes(focusLane) ? [focusLane] : lanes;
     const hazardCount = rng.next() > 0.55 ? 1 : 0;
     const events: LaneHazardEvent[] = [];
     for (let i = 0; i < hazardCount; i++) {
       const kind = rng.next() > 0.5 ? "storm" : "fog";
-      const lane = rng.pick(lanes);
+      const lane = rng.pick(laneChoices);
       const duration = kind === "storm" ? rng.range(8, 14) : rng.range(10, 18);
-      const fireRateMultiplier = kind === "storm" ? 0.85 : undefined;
+      const fireRateMultiplier = kind === "storm" ? 0.85 : 0.9;
       const time = rng.range(6, Math.max(8, this.config.waves[waveIndex].duration - 6));
       events.push({ time, lane, kind, duration, fireRateMultiplier });
     }
@@ -408,11 +432,16 @@ export class GameEngine {
     if (!this.config.featureToggles.dynamicSpawns || this.dynamicEvents.length === 0) {
       return requests;
     }
+    const focusLane = this.getActiveLaneFocus();
     while (
       this.dynamicEventIndex < this.dynamicEvents.length &&
       this.dynamicEvents[this.dynamicEventIndex].time <= currentTime
     ) {
       const event = this.dynamicEvents[this.dynamicEventIndex];
+      this.dynamicEventIndex += 1;
+      if (typeof focusLane === "number" && event.lane !== focusLane) {
+        continue;
+      }
       requests.push({
         tierId: event.tierId,
         lane: event.lane,
@@ -420,7 +449,6 @@ export class GameEngine {
         taunt: event.taunt,
         order: event.order
       });
-      this.dynamicEventIndex += 1;
     }
     return requests;
   }
@@ -429,11 +457,16 @@ export class GameEngine {
     if (!this.config.featureToggles.dynamicSpawns || this.hazardEvents.length === 0) {
       return;
     }
+    const focusLane = this.getActiveLaneFocus();
     while (
       this.hazardEventIndex < this.hazardEvents.length &&
       this.hazardEvents[this.hazardEventIndex].time <= currentTime
     ) {
       const event = this.hazardEvents[this.hazardEventIndex];
+      this.hazardEventIndex += 1;
+      if (typeof focusLane === "number" && event.lane !== focusLane) {
+        continue;
+      }
       const existing = this.state.laneHazards.find((h) => h.lane === event.lane);
       const hazardState = {
         lane: event.lane,
@@ -447,12 +480,12 @@ export class GameEngine {
       } else {
         this.state.laneHazards.push(hazardState);
       }
-      this.hazardEventIndex += 1;
       const laneLabel = ["A", "B", "C", "D", "E"][event.lane] ?? `Lane ${event.lane + 1}`;
       this.events.emit("hazard:started", {
         lane: event.lane,
         kind: event.kind,
         remaining: event.duration,
+        fireRateMultiplier: event.fireRateMultiplier,
         label: `${event.kind} in ${laneLabel}`
       });
     }
@@ -733,10 +766,12 @@ export class GameEngine {
       return null;
     }
     const event = this.evacuationEvent;
-    const word = event.word ?? this.pickEvacuationWord(event.lane, this.state.wave.index, this.rng);
+    const focusLane = this.getActiveLaneFocus();
+    const lane = typeof focusLane === "number" ? focusLane : event.lane;
+    const word = event.word ?? this.pickEvacuationWord(lane, this.state.wave.index, this.rng);
     this.state.evacuation = {
       active: true,
-      lane: event.lane,
+      lane,
       remaining: event.duration,
       duration: event.duration,
       enemyId: null,
@@ -747,17 +782,17 @@ export class GameEngine {
     this.state.analytics.evacuationAttempts += 1;
     this.events.emit("evac:start", {
       waveIndex: this.state.wave.index,
-      lane: event.lane,
+      lane,
       word,
       duration: event.duration
     });
     return {
       tierId: "evac-transport",
-      lane: event.lane,
+      lane,
       order: DYNAMIC_EVENT_ORDER_START + 200,
       word,
       waveIndex: this.state.wave.index,
-      taunt: "Civilians inbound—cover their escape!"
+      taunt: "Civilians inbound-cover their escape!"
     };
   }
 
@@ -844,6 +879,7 @@ export class GameEngine {
     this.waveSystem.setLoopWaves(Boolean(this.config.loopWaves));
     this.resetAnalytics();
     this.registerEventListeners();
+    this.resetLimitedMistakesWaveBaseline();
   }
 
   reset(): void {
@@ -858,6 +894,7 @@ export class GameEngine {
     this.resetBossState();
     this.currentDifficultyBand = this.resolveDifficulty(this.state.wave.index);
     this.resetAnalytics();
+    this.resetLimitedMistakesWaveBaseline();
   }
 
   getState(): GameState {
@@ -866,6 +903,91 @@ export class GameEngine {
 
   getStatus(): GameStatus {
     return this.state.status;
+  }
+
+  setChallengeModifiers(modifiers: ChallengeModifiersRuntime | null): void {
+    if (!modifiers) {
+      this.challengeModifiers = null;
+      this.resetLimitedMistakesWaveBaseline();
+      return;
+    }
+    const scoreMultiplierRaw = modifiers.scoreMultiplier;
+    const scoreMultiplier =
+      typeof scoreMultiplierRaw === "number" && Number.isFinite(scoreMultiplierRaw) && scoreMultiplierRaw >= 1
+        ? scoreMultiplierRaw
+        : 1;
+    const mistakeBudgetRaw = modifiers.mistakeBudget;
+    const mistakeBudget =
+      typeof mistakeBudgetRaw === "number" && Number.isFinite(mistakeBudgetRaw)
+        ? Math.max(1, Math.min(99, Math.floor(mistakeBudgetRaw)))
+        : 10;
+    this.challengeModifiers = {
+      fog: Boolean(modifiers.fog),
+      fastSpawns: Boolean(modifiers.fastSpawns),
+      limitedMistakes: Boolean(modifiers.limitedMistakes),
+      mistakeBudget,
+      scoreMultiplier
+    };
+    this.resetLimitedMistakesWaveBaseline();
+  }
+
+  private resetLimitedMistakesWaveBaseline(): void {
+    this.limitedMistakesWaveBaselineErrors = this.state?.typing?.errors ?? 0;
+    this.limitedMistakesWaveIndex = this.state?.wave?.index ?? null;
+  }
+
+  private applyChallengeScoreMultiplier(amount: number): number {
+    if (typeof amount !== "number" || !Number.isFinite(amount) || amount === 0) {
+      return 0;
+    }
+    if (this.state.mode !== "practice") {
+      return amount;
+    }
+    const multiplier = this.challengeModifiers?.scoreMultiplier ?? 1;
+    if (typeof multiplier !== "number" || !Number.isFinite(multiplier) || multiplier <= 1.0001) {
+      return amount;
+    }
+    const boosted = amount * multiplier;
+    if (!Number.isFinite(boosted)) {
+      return amount;
+    }
+    const rounded = Math.round(boosted);
+    return Math.max(amount, rounded);
+  }
+
+  private enforceLimitedMistakesBudget(): void {
+    if (this.state.mode !== "practice") {
+      return;
+    }
+    if (this.state.wave.inCountdown) {
+      return;
+    }
+    const challenge = this.challengeModifiers;
+    if (!challenge || !challenge.limitedMistakes) {
+      return;
+    }
+    const budget = challenge.mistakeBudget;
+    if (!Number.isFinite(budget) || budget <= 0) {
+      return;
+    }
+    const waveIndex = this.state.wave.index;
+    if (this.limitedMistakesWaveIndex !== waveIndex) {
+      this.resetLimitedMistakesWaveBaseline();
+    }
+    const totalErrors = this.state.typing.errors ?? 0;
+    const errorsThisWave = Math.max(0, totalErrors - this.limitedMistakesWaveBaselineErrors);
+    if (errorsThisWave <= budget) {
+      return;
+    }
+    if (this.state.status !== "running") {
+      return;
+    }
+    this.state.status = "defeat";
+    this.events.emit("challenge:mistake-limit", {
+      waveIndex,
+      limit: budget,
+      errors: errorsThisWave
+    });
   }
 
   update(deltaSeconds: number): void {
@@ -880,7 +1002,18 @@ export class GameEngine {
 
     this.state.time += deltaSeconds;
 
-    const spawnRequests = this.waveSystem.update(this.state, deltaSeconds);
+    const focusLane = this.getActiveLaneFocus();
+    const waveDeltaSeconds =
+      this.state.mode === "practice" &&
+      Boolean(this.challengeModifiers?.fastSpawns) &&
+      !this.state.wave.inCountdown
+        ? deltaSeconds * FAST_SPAWNS_TIME_SCALE
+        : deltaSeconds;
+    const spawnRequestsBase = this.waveSystem.update(this.state, waveDeltaSeconds);
+    const spawnRequests =
+      typeof focusLane === "number"
+        ? spawnRequestsBase.filter((request) => request.lane === focusLane)
+        : spawnRequestsBase;
     const dynamicRequests = this.collectDynamicSpawnRequests(this.state.wave.timeInWave);
     const evacRequest = this.collectEvacuationSpawnRequest(this.state.wave.timeInWave);
     const allRequests = [...spawnRequests, ...dynamicRequests];
@@ -888,9 +1021,11 @@ export class GameEngine {
       allRequests.push(evacRequest);
     }
     this.activateLaneHazards(this.state.wave.timeInWave, deltaSeconds);
+
+    const baseDifficulty = this.resolveDifficulty(this.state.wave.index);
+    const difficulty = this.applySpawnSpeedGate(baseDifficulty);
+    this.currentDifficultyBand = difficulty;
     for (const request of allRequests) {
-      const difficulty = this.resolveDifficulty(this.state.wave.index);
-      this.currentDifficultyBand = difficulty;
       const affixes = this.resolveSpawnAffixes(request, this.state.wave.index);
       const spawned = this.enemySystem.spawn(this.state, {
         ...request,
@@ -902,6 +1037,14 @@ export class GameEngine {
         this.handleBossSpawn(spawned);
         this.handleEvacuationSpawn(spawned);
       }
+    }
+
+    const waveChanged = this.state.wave.index !== prevWaveIndex;
+    const waveStarted =
+      (prevInCountdown && !this.state.wave.inCountdown) || (waveChanged && !this.state.wave.inCountdown);
+
+    if (waveStarted) {
+      this.resetLimitedMistakesWaveBaseline();
     }
 
     if (prevInCountdown && !this.state.wave.inCountdown && this.state.status === "running") {
@@ -925,9 +1068,9 @@ export class GameEngine {
     this.updateBoss(deltaSeconds);
     this.projectileSystem.update(this.state, deltaSeconds);
     this.turretSystem.update(this.state, deltaSeconds, this.projectileSystem);
+    this.tickSupportBoost(deltaSeconds);
     this.tickComboTimer(deltaSeconds);
 
-    const waveChanged = this.state.wave.index !== prevWaveIndex;
     if (waveChanged && !prevInCountdown) {
       this.finalizeWaveAnalytics(prevWaveIndex);
     }
@@ -945,7 +1088,14 @@ export class GameEngine {
   }
 
   inputCharacter(character: string): InputResult {
+    const status = this.state.status as GameStatus;
+    if (status === "defeat" || status === "victory") {
+      return { status: "ignored", buffer: this.state.typing.buffer };
+    }
     const result = this.typingSystem.inputCharacter(this.state, character, this.enemySystem);
+    if (result.status === "error") {
+      this.enforceLimitedMistakesBudget();
+    }
     return {
       status: result.status,
       buffer: result.buffer,
@@ -956,6 +1106,10 @@ export class GameEngine {
   }
 
   handleBackspace(): InputResult {
+    const status = this.state.status as GameStatus;
+    if (status === "defeat" || status === "victory") {
+      return { status: "ignored", buffer: this.state.typing.buffer };
+    }
     const result = this.typingSystem.handleBackspace(this.state);
     return {
       status: result.status,
@@ -965,11 +1119,32 @@ export class GameEngine {
   }
 
   purgeTypingBuffer(): InputResult {
+    const status = this.state.status as GameStatus;
+    if (status === "defeat" || status === "victory") {
+      return { status: "ignored", buffer: this.state.typing.buffer };
+    }
     const result = this.typingSystem.purgeBuffer(this.state);
     return {
       status: result.status,
       buffer: result.buffer
     };
+  }
+
+  recoverCombo(combo: number): void {
+    const safeCombo =
+      typeof combo === "number" && Number.isFinite(combo) ? Math.max(0, Math.floor(combo)) : 0;
+    const typing = this.state.typing;
+    typing.combo = safeCombo;
+    if (safeCombo > 0) {
+      typing.comboTimer = this.config.comboDecaySeconds;
+      typing.comboWarning = false;
+      const analytics = this.state.analytics;
+      analytics.waveMaxCombo = Math.max(analytics.waveMaxCombo ?? 0, safeCombo);
+      analytics.sessionBestCombo = Math.max(analytics.sessionBestCombo ?? 0, safeCombo);
+    } else {
+      typing.comboTimer = 0;
+      typing.comboWarning = false;
+    }
   }
 
   upgradeCastle(): UpgradeResult {
@@ -1387,8 +1562,9 @@ export class GameEngine {
   }
 
   spawnEnemy(request: SpawnEnemyInput): EnemyState | null {
-    const difficulty =
+    const baseDifficulty =
       request.difficulty ?? this.resolveDifficulty(request.waveIndex ?? this.state.wave.index);
+    const difficulty = this.applySpawnSpeedGate(baseDifficulty);
     this.currentDifficultyBand = difficulty;
     const waveIndex = request.waveIndex ?? this.state.wave.index;
     const affixes = this.resolveSpawnAffixes(request, waveIndex);
@@ -1435,6 +1611,79 @@ export class GameEngine {
     this.state.analytics.mode = mode;
   }
 
+  setLaneFocus(lane: number | null): void {
+    if (lane === null || lane === undefined) {
+      this.laneFocus = null;
+      return;
+    }
+    if (typeof lane !== "number" || !Number.isFinite(lane) || !Number.isInteger(lane)) {
+      this.laneFocus = null;
+      return;
+    }
+    const lanes = new Set(this.config.turretSlots.map((slot) => slot.lane));
+    if (!lanes.has(lane)) {
+      this.laneFocus = null;
+      return;
+    }
+    this.laneFocus = lane;
+  }
+
+  getLaneFocus(): number | null {
+    return this.laneFocus;
+  }
+
+  activateSupportBoost(
+    lane: number,
+    options: { duration?: number; multiplier?: number; cooldown?: number } = {}
+  ): boolean {
+    if (this.state.status !== "running") {
+      return false;
+    }
+    if (this.state.wave.inCountdown) {
+      return false;
+    }
+    if (typeof lane !== "number" || !Number.isFinite(lane) || !Number.isInteger(lane)) {
+      return false;
+    }
+    const lanes = new Set(this.config.turretSlots.map((slot) => slot.lane));
+    if (!lanes.has(lane)) {
+      return false;
+    }
+    const boost = this.state.supportBoost;
+    if (boost.cooldownRemaining > 0) {
+      return false;
+    }
+    const durationRaw = options.duration ?? 3.5;
+    const duration =
+      typeof durationRaw === "number" && Number.isFinite(durationRaw)
+        ? Math.max(1, Math.min(10, durationRaw))
+        : 3.5;
+    const multiplierRaw = options.multiplier ?? 1.12;
+    const multiplier =
+      typeof multiplierRaw === "number" && Number.isFinite(multiplierRaw)
+        ? Math.max(1, Math.min(2, multiplierRaw))
+        : 1.12;
+    const cooldownRaw = options.cooldown ?? 18;
+    const cooldown =
+      typeof cooldownRaw === "number" && Number.isFinite(cooldownRaw)
+        ? Math.max(1, Math.min(60, cooldownRaw))
+        : 18;
+    boost.lane = lane;
+    boost.remaining = duration;
+    boost.duration = duration;
+    boost.multiplier = multiplier;
+    boost.cooldownRemaining = cooldown;
+    this.events.emit("support:boost", { lane, duration, multiplier, cooldown });
+    return true;
+  }
+
+  private getActiveLaneFocus(): number | null {
+    if (this.state.mode !== "practice") {
+      return null;
+    }
+    return typeof this.laneFocus === "number" ? this.laneFocus : null;
+  }
+
   setStarfieldAnalytics(state: StarfieldAnalyticsState | null): void {
     if (!state) {
       this.state.analytics.starfield = null;
@@ -1473,6 +1722,34 @@ export class GameEngine {
 
   getCurrentDifficultyBand(): DifficultyBand {
     return this.currentDifficultyBand;
+  }
+
+  setSpawnSpeedGateMultiplier(multiplier: number): void {
+    if (typeof multiplier !== "number" || !Number.isFinite(multiplier)) {
+      this.spawnSpeedGateMultiplier = 1;
+      return;
+    }
+    this.spawnSpeedGateMultiplier = Math.max(SPAWN_SPEED_GATE_MIN, Math.min(1, multiplier));
+  }
+
+  getSpawnSpeedGateMultiplier(): number {
+    return this.spawnSpeedGateMultiplier;
+  }
+
+  private applySpawnSpeedGate(difficulty: DifficultyBand): DifficultyBand {
+    const gate = this.spawnSpeedGateMultiplier;
+    if (!Number.isFinite(gate) || Math.abs(gate - 1) < 0.0001) {
+      return difficulty;
+    }
+    const baseSpeed = difficulty.enemySpeedMultiplier ?? 1;
+    const gatedSpeed = baseSpeed * gate;
+    if (!Number.isFinite(gatedSpeed) || Math.abs(gatedSpeed - baseSpeed) < 0.0001) {
+      return difficulty;
+    }
+    return {
+      ...difficulty,
+      enemySpeedMultiplier: gatedSpeed
+    };
   }
 
   getRuntimeMetrics(): RuntimeMetrics {
@@ -1633,13 +1910,34 @@ export class GameEngine {
   }
 
   getUpcomingSpawns(limit = 6): WaveSpawnPreview[] {
-    const previews = this.waveSystem.getUpcomingSpawns(this.state, limit);
+    const focusLane = this.getActiveLaneFocus();
+    let previews: WaveSpawnPreview[] = [];
+    if (typeof focusLane === "number") {
+      const maxSearch = 200;
+      let searchLimit = Math.max(limit, 12);
+      while (searchLimit <= maxSearch) {
+        const previewsBase = this.waveSystem.getUpcomingSpawns(this.state, searchLimit);
+        previews = previewsBase.filter((entry) => entry.lane === focusLane);
+        if (previews.length >= limit || previewsBase.length < searchLimit) {
+          break;
+        }
+        if (searchLimit >= maxSearch) {
+          break;
+        }
+        searchLimit = Math.min(maxSearch, searchLimit * 2);
+      }
+    } else {
+      previews = this.waveSystem.getUpcomingSpawns(this.state, limit);
+    }
     const dynamicPreviews: WaveSpawnPreview[] = [];
     if (this.config.featureToggles.dynamicSpawns && this.dynamicEvents.length > 0) {
       const waveTime = this.state.wave.inCountdown ? 0 : this.state.wave.timeInWave;
       const countdown = this.state.wave.inCountdown ? this.state.wave.countdownRemaining : 0;
       for (let i = this.dynamicEventIndex; i < this.dynamicEvents.length; i++) {
         const event = this.dynamicEvents[i];
+        if (typeof focusLane === "number" && event.lane !== focusLane) {
+          continue;
+        }
         const timeUntil = this.state.wave.inCountdown
           ? countdown + event.time
           : Math.max(0, event.time - waveTime);
@@ -1754,7 +2052,7 @@ export class GameEngine {
     ) {
       bonusGold = bonusConfig.gold;
       this.grantGold(bonusGold);
-      this.state.resources.score += bonusGold;
+      this.state.resources.score += this.applyChallengeScoreMultiplier(bonusGold);
       analytics.totalBonusGold += bonusGold;
       analytics.waveBonusGold = bonusGold;
       this.events.emit("wave:bonus", {
@@ -1878,7 +2176,7 @@ export class GameEngine {
       const castleBonus = Math.round(baseReward * castleBonusPercent);
       const totalGold = baseReward + castleBonus;
       this.grantGold(totalGold);
-      this.state.resources.score += totalGold;
+      this.state.resources.score += this.applyChallengeScoreMultiplier(totalGold);
       if (castleBonus > 0) {
         this.state.analytics.totalCastleBonusGold += castleBonus;
         this.state.analytics.waveCastleBonusGold += castleBonus;
@@ -2009,6 +2307,26 @@ export class GameEngine {
 
     if (!typing.comboWarning) {
       this.updateComboWarningBaseline();
+    }
+  }
+
+  private tickSupportBoost(dt: number): void {
+    const boost = this.state.supportBoost;
+    if (!boost) {
+      return;
+    }
+    if (boost.cooldownRemaining > 0) {
+      boost.cooldownRemaining = Math.max(0, boost.cooldownRemaining - dt);
+    }
+    if (boost.remaining <= 0) {
+      boost.remaining = 0;
+      return;
+    }
+    boost.remaining = Math.max(0, boost.remaining - dt);
+    if (boost.remaining <= 0) {
+      boost.lane = null;
+      boost.duration = 0;
+      boost.multiplier = 1;
     }
   }
 

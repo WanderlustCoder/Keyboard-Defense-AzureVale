@@ -1,6 +1,6 @@
 import { TurretTargetPriority, TurretTypeId } from "../core/types.js";
 export declare const PLAYER_SETTINGS_STORAGE_KEY = "keyboard-defense:player-settings";
-export declare const PLAYER_SETTINGS_VERSION = 31;
+export declare const PLAYER_SETTINGS_VERSION = 33;
 export declare const VOICE_PACK_IDS: readonly ["mentor-classic", "mentor-calm", "mentor-arcade"];
 export declare const TUTORIAL_PACING_MIN = 0.75;
 export declare const TUTORIAL_PACING_MAX = 1.25;
@@ -9,6 +9,7 @@ declare const ALLOWED_TURRET_PRESET_IDS: readonly ["preset-a", "preset-b", "pres
 export type DiagnosticsSectionId = "gold-events" | "castle-passives" | "turret-dps";
 export type CastleSkinId = "classic" | "dusk" | "aurora" | "ember";
 export type FocusOutlinePreset = "system" | "contrast" | "glow";
+export type VirtualKeyboardLayoutId = "qwerty" | "qwertz" | "azerty";
 type MaybeStorage = Pick<Storage, "getItem" | "setItem" | "removeItem"> | null | undefined;
 export type TurretTargetingPreferences = Record<string, TurretTargetPriority>;
 export type TurretLoadoutPresetId = (typeof ALLOWED_TURRET_PRESET_IDS)[number];
@@ -39,6 +40,7 @@ export interface PlayerSettings {
     reducedMotionEnabled: boolean;
     lowGraphicsEnabled: boolean;
     virtualKeyboardEnabled: boolean;
+    virtualKeyboardLayout: VirtualKeyboardLayoutId;
     hapticsEnabled: boolean;
     textSizeScale: number;
     checkeredBackgroundEnabled: boolean;

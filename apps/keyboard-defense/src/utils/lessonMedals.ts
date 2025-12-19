@@ -66,7 +66,24 @@ function clampInteger(value: unknown): number {
 }
 
 function normalizeMode(value: unknown): TypingDrillMode {
-  return value === "endurance" || value === "precision" ? value : "burst";
+  return value === "endurance" ||
+    value === "sprint" ||
+    value === "sentences" ||
+    value === "reading" ||
+    value === "rhythm" ||
+    value === "reaction" ||
+    value === "combo" ||
+    value === "precision" ||
+    value === "warmup" ||
+    value === "symbols" ||
+    value === "placement" ||
+    value === "hand" ||
+    value === "support" ||
+    value === "shortcuts" ||
+    value === "shift" ||
+    value === "focus"
+    ? value
+    : "burst";
 }
 
 function normalizeTier(value: unknown): LessonMedalTier {
@@ -273,8 +290,22 @@ export function buildLessonMedalViewState(progress: LessonMedalProgress): Lesson
   const recent = history.slice(-5).reverse();
   const bestByMode: Record<TypingDrillMode, LessonMedalRecord | null> = {
     burst: null,
+    warmup: null,
     endurance: null,
-    precision: null
+    sprint: null,
+    sentences: null,
+    reading: null,
+    rhythm: null,
+    reaction: null,
+    combo: null,
+    precision: null,
+    symbols: null,
+    placement: null,
+    hand: null,
+    support: null,
+    shortcuts: null,
+    shift: null,
+    focus: null
   };
   const totals: Record<LessonMedalTier, number> = {
     bronze: 0,

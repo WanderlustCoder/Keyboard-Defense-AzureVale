@@ -2,6 +2,7 @@ export interface CanvasResolutionInput {
     baseWidth: number;
     baseHeight: number;
     availableWidth: number;
+    availableHeight?: number;
     devicePixelRatio?: number;
     minWidth?: number;
 }

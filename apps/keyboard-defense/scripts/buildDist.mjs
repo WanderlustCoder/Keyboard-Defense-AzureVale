@@ -7,6 +7,8 @@ import { cp, mkdir, rm } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { writePwaCacheManifest } from "./pwaCacheManifest.mjs";
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const APP_ROOT = path.resolve(__dirname, "..");
 const TEMP_ROOT_BASE = path.join(APP_ROOT, "temp", "dist-build");
@@ -69,6 +71,14 @@ async function copyArtifacts() {
 async function main() {
   await runTsc();
   await copyArtifacts();
+  try {
+    await writePwaCacheManifest({ publicDir: path.join(APP_ROOT, "public") });
+  } catch (error) {
+    console.warn(
+      "Warning: failed to generate PWA cache manifest",
+      error instanceof Error ? error.message : String(error)
+    );
+  }
   console.log("Dist sources updated from TypeScript.");
 }
 

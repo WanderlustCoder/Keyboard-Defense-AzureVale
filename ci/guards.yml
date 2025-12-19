@@ -57,3 +57,13 @@ breach:
     max: 20000
     severity: warn
     allowMissing: true
+
+perf:
+  status:
+    eq: success
+  fps:
+    min: 8
+  frameMsP95:
+    max: 150
+  heapUsedMaxMB:
+    max: 512

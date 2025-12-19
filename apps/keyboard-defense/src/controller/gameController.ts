@@ -66,6 +66,65 @@ import {
   writeLessonMedalProgress
 } from "../utils/lessonMedals.js";
 import {
+  exportProgressTransferPayload,
+  importProgressTransferPayload
+} from "../utils/progressTransfer.js";
+import { recordDropoffReason } from "../utils/dropoffReasons.js";
+import {
+  computeLockoutUntilMs,
+  getLockoutRemainingMs,
+  getLocalDayKey,
+  isLockoutActive,
+  readScreenTimeSettings,
+  readScreenTimeUsage,
+  writeScreenTimeSettings,
+  writeScreenTimeUsage
+} from "../utils/screenTimeGoals.js";
+import { buildSessionTimelineCsv } from "../utils/sessionTimelineReport.js";
+import {
+  buildKeystrokeTimingHistogramCsv,
+  summarizeKeystrokeTimings
+} from "../utils/keystrokeTimingReport.js";
+import {
+  buildKeystrokeTimingGate,
+  createDefaultKeystrokeTimingProfileState,
+  readKeystrokeTimingProfile,
+  recordKeystrokeTimingProfileRun,
+  writeKeystrokeTimingProfile
+} from "../utils/keystrokeTimingProfile.js";
+import {
+  createDefaultSpacedRepetitionState,
+  listDueSpacedRepetitionPatterns,
+  readSpacedRepetitionState,
+  recordSpacedRepetitionObservedStats,
+  writeSpacedRepetitionState
+} from "../utils/spacedRepetition.js";
+import {
+  createStuckKeyDetectorState,
+  updateStuckKeyDetector
+} from "../utils/inputAnomalies.js";
+import {
+  createFatigueDetectorState,
+  snoozeFatigueDetector,
+  updateFatigueDetector
+} from "../utils/fatigueDetector.js";
+import {
+  buildSessionGoalsMetrics,
+  buildSessionGoalsView,
+  createDefaultSessionGoalsState,
+  readSessionGoals,
+  recordSessionGoalsRun,
+  seedSessionGoalsFromPlacement,
+  writeSessionGoals
+} from "../utils/sessionGoals.js";
+import {
+  getTopExpectedKeys,
+  readErrorClusterProgress,
+  recordErrorClusterEntry,
+  writeErrorClusterProgress
+} from "../utils/errorClusters.js";
+import { readPlacementTestResult } from "../utils/placementTest.js";
+import {
   buildWpmLadderView,
   readWpmLadderProgress,
   recordWpmLadderRun,
@@ -100,6 +159,15 @@ import {
   type MusicStemId
 } from "../utils/musicStems.js";
 import { readDayNightTheme, writeDayNightTheme, type DayNightMode } from "../utils/dayNightTheme.js";
+import { readPracticeLaneFocus, writePracticeLaneFocus } from "../utils/practiceLaneFocus.js";
+import {
+  CHALLENGE_MODIFIERS_VERSION,
+  buildChallengeModifiersViewState,
+  getDefaultChallengeModifiersSelection,
+  normalizeChallengeModifiersSelection,
+  readChallengeModifiers,
+  writeChallengeModifiers
+} from "../utils/challengeModifiers.js";
 import {
   readParallaxScene,
   resolveParallaxScene,
@@ -131,10 +199,27 @@ import {
   recordTrainingDay,
   writeTrainingCalendar
 } from "../utils/trainingCalendar.js";
+import {
+  buildDailyQuestBoardView,
+  readDailyQuestBoard,
+  recordDailyQuestCampaignRun,
+  recordDailyQuestDrill,
+  writeDailyQuestBoard
+} from "../utils/dailyQuests.js";
+import {
+  buildWeeklyQuestBoardView,
+  buildWeeklyTrialWaveConfig,
+  readWeeklyQuestBoard,
+  recordWeeklyQuestCampaignRun,
+  recordWeeklyQuestDrill,
+  recordWeeklyQuestTrialAttempt,
+  writeWeeklyQuestBoard
+} from "../utils/weeklyQuest.js";
 import { buildSeasonTrackProgress, listSeasonTrack } from "../data/seasonTrack.js";
 import { selectAmbientProfile } from "../audio/ambientProfiles.js";
 import { getEnemyBiography, type EnemyBiography } from "../data/bestiary.js";
 const FRAME_DURATION = 1 / 60;
+const BUILD_MENU_TIME_SCALE = 0.35;
 const TUTORIAL_VERSION = "v2";
 const SOUND_VOLUME_MIN = 0;
 const SOUND_VOLUME_MAX = 1;
@@ -172,7 +257,7 @@ const CANVAS_BASE_HEIGHT = 540;
 const BG_BRIGHTNESS_MIN = 0.9;
 const BG_BRIGHTNESS_MAX = 1.1;
 const BG_BRIGHTNESS_DEFAULT = 1;
-const HUD_ZOOM_MIN = 0.9;
+const HUD_ZOOM_MIN = 0.8;
 const HUD_ZOOM_MAX = 1.2;
 const HUD_ZOOM_DEFAULT = 1;
 const HUD_LAYOUT_DEFAULT = "right";
@@ -184,13 +269,22 @@ const INPUT_LATENCY_BAD_MS = 75;
 const INPUT_LATENCY_SPARKLINE_WIDTH = 80;
 const INPUT_LATENCY_SPARKLINE_HEIGHT = 18;
 const INPUT_LATENCY_SPARKLINE_CAP_MS = 120;
+const KEYSTROKE_TIMING_MAX_SAMPLES = 1500;
+const KEYSTROKE_TIMING_MIN_GAP_MS = 20;
+const KEYSTROKE_TIMING_MAX_GAP_MS = 2000;
+const KEYSTROKE_TIMING_GATE_WINDOW_SAMPLES = 220;
+const KEYSTROKE_TIMING_GATE_UPDATE_MS = 850;
+const KEYSTROKE_TIMING_GATE_SMOOTHING_ALPHA = 0.2;
 const LATENCY_SPARKLINE_KEY = "keyboard-defense:latency-sparkline";
 const HUD_VISIBILITY_KEY = "keyboard-defense:hud-visibility";
+const WAVE_PREVIEW_THREAT_KEY = "keyboard-defense:wave-preview-threat";
 const COLORBLIND_MODE_KEY = "keyboard-defense:colorblind-mode";
 const CONTEXTUAL_HINTS_KEY = "keyboard-defense:contextual-hints";
 const HOTKEY_STORAGE_KEY = "keyboard-defense:hotkeys";
+const VIRTUAL_KEYBOARD_LAYOUTS = new Set(["qwerty", "qwertz", "azerty"]);
+const DEFAULT_VIRTUAL_KEYBOARD_LAYOUT = "qwerty";
 const WAVE_MICRO_TIPS = [
-  "Keep wrists lifted and let fingers hover over home row—no desk planting.",
+  "Keep wrists lifted and let fingers hover over home row-no desk planting.",
   "Aim for light taps. If keys feel loud, ease up and keep rhythm steady.",
   "Reset posture: shoulders relaxed, elbows at 90°, screen at eye height.",
   "Eyes on the words, not the keys; touch typing keeps accuracy higher.",
@@ -208,7 +302,9 @@ const STARFIELD_PRESETS = {
 };
 const LORE_VERSION = "v1";
 const SESSION_TIMER_TICK_MS = 1000;
-const BREAK_REMINDER_INTERVAL_MS = 20 * 60 * 1000;
+const BREAK_REMINDER_INTERVAL_DEFAULT_MINUTES = 20;
+const BREAK_REMINDER_INTERVAL_ALLOWED_MINUTES = new Set([0, 10, 20, 30, 45]);
+const BREAK_REMINDER_INTERVAL_STORAGE_KEY = "keyboard-defense:break-reminder-interval";
 const BREAK_REMINDER_SNOOZE_MS = 10 * 60 * 1000;
 const ASSET_PREWARM_BATCH = 32;
 const ASSET_PREWARM_TIMEOUT_MS = 300;
@@ -286,6 +382,8 @@ export class GameController {
     this.updateCanvasResolution(true, "initial");
     this.running = false;
     this.speedMultiplier = 1;
+    this.uiTimeScaleMultiplier = 1;
+    this.sessionWallTimeSeconds = 0;
     this.lastTimestamp = null;
     this.rafId = null;
     this.soundEnabled = true;
@@ -310,6 +408,7 @@ export class GameController {
     this.reducedMotionEnabled = false;
     this.checkeredBackgroundEnabled = false;
     this.virtualKeyboardEnabled = false;
+    this.virtualKeyboardLayout = DEFAULT_VIRTUAL_KEYBOARD_LAYOUT;
     this.hapticsEnabled = false;
     this.textSizeScale = 1;
     this.readableFontEnabled = false;
@@ -333,9 +432,28 @@ export class GameController {
     this.latencySparkline = null;
     this.latencySamples = [];
     this.latencyMonitorTimeout = null;
+    this.keystrokeTimingSamples = [];
+    this.lastKeystrokeTimingAt = null;
+    this.fatigueWaveTimingSamples = [];
+    this.fatigueDetectorState = createFatigueDetectorState();
+    this.sessionGoals = createDefaultSessionGoalsState();
+    this.sessionGoalsFinalized = false;
+    this.sessionGoalsNextUpdateAt = 0;
+    this.keystrokeTimingProfile = createDefaultKeystrokeTimingProfileState();
+    this.keystrokeTimingProfileFinalized = false;
+    this.keystrokeTimingGateSnapshot = null;
+    this.keystrokeTimingGateMultiplier = 1;
+    this.keystrokeTimingGateNextUpdateAt = 0;
+    this.spacedRepetition = createDefaultSpacedRepetitionState();
+    this.spacedRepetitionLastSavedAt = 0;
+    this.spacedRepetitionWaveStats = { keys: {}, digraphs: {} };
+    this.spacedRepetitionLastProgress = { enemyId: null, buffer: "" };
+    this.errorClusterProgress = null;
+    this.errorClusterLastSavedAt = null;
     this.waveMicroTipIndex =
       Math.floor((typeof Math !== "undefined" ? Math.random() : 0) * WAVE_MICRO_TIPS.length) % WAVE_MICRO_TIPS.length;
     this.hudVisibility = this.loadHudVisibilityPrefs();
+    this.wavePreviewThreatIndicatorsEnabled = this.loadWavePreviewThreatIndicatorsEnabled();
     this.contextualHintsSeen = this.loadContextualHintsSeen();
     this.hotkeys = this.loadHotkeys();
     this.accessibilityOnboardingSeen = this.loadAccessibilitySeen();
@@ -373,10 +491,26 @@ export class GameController {
     this.turretRangePreviewLevel = null;
     this.bestCombo = 0;
     this.sessionStartMs = typeof performance !== "undefined" ? performance.now() : 0;
+    this.breakReminderIntervalMinutes = this.loadBreakReminderIntervalMinutes();
     this.sessionWellness = null;
     this.sessionTimerInterval = null;
-    this.sessionNextReminderMs = BREAK_REMINDER_INTERVAL_MS;
+    this.sessionNextReminderMs =
+      this.breakReminderIntervalMinutes > 0
+        ? this.breakReminderIntervalMinutes * 60 * 1000
+        : Number.POSITIVE_INFINITY;
     this.sessionReminderActive = false;
+    const screenTimeStorage =
+      typeof window !== "undefined" && window.localStorage ? window.localStorage : null;
+    this.screenTimeSettings = readScreenTimeSettings(screenTimeStorage);
+    this.screenTimeUsage = readScreenTimeUsage(screenTimeStorage);
+    this.screenTimeLastTickWallMs = Date.now();
+    this.screenTimeNextPersistAtMs = 0;
+    this.screenTimeLastTotalMs = this.screenTimeUsage.totalMs;
+    this.screenTimeWarned = false;
+    this.screenTimeGoalReached = false;
+    this.screenTimeLockoutStarted = false;
+    this.screenTimeTodayBadge =
+      typeof document !== "undefined" ? document.getElementById("screen-time-today") : null;
     this.playerSettings = createDefaultPlayerSettings();
     this.lastAmbientProfile = null;
     this.lastGameStatus = null;
@@ -406,6 +540,8 @@ export class GameController {
     this.typingDrillsOverlayActive = false;
     this.shouldResumeAfterDrills = false;
     this.reopenOptionsAfterDrills = false;
+    this.reopenWaveScorecardAfterDrills = false;
+    this.lastWaveScorecardData = null;
     this.typingDrillCta = document.getElementById("typing-drills-cta-reco");
     this.typingDrillCtaMode =
       this.typingDrillCta?.querySelector?.(".typing-drills-cta-reco-mode") ?? null;
@@ -416,6 +552,20 @@ export class GameController {
     this.typingDrillMenuRecoLastRecommendation = null;
     this.typingDrillMenuRunButton = document.getElementById("main-menu-typing-drill-run");
     this.practiceMode = false;
+    this.practiceLaneFocusLane = null;
+    this.challengeModifiers = null;
+    this.lastTypingInputContext = null;
+    this.typoRecoveryActive = false;
+    this.typoRecoveryStep = 0;
+    this.typoRecoveryDeadlineAtMs = 0;
+    this.typoRecoveryWaveIndex = null;
+    this.typoRecoveryComboBeforeError = 0;
+    this.typoRecoveryCooldownUntilMs = 0;
+    this.weeklyQuestBoard = null;
+    this.weeklyTrialActive = false;
+    this.weeklyTrialFinalized = false;
+    this.weeklyTrialReturnPending = false;
+    this.weeklyTrialBackup = null;
     this.allTurretArchetypes = Object.create(null);
     this.enabledTurretTypes = new Set();
     this.featureToggles = { ...defaultConfig.featureToggles };
@@ -481,6 +631,10 @@ export class GameController {
     this.initializeMusicStems();
     this.initializeWpmLadder();
     this.initializeTrainingCalendar();
+    this.initializeDailyQuestBoard();
+    this.initializeWeeklyQuestBoard();
+    this.initializePracticeLaneFocus();
+    this.initializeChallengeModifiers();
     this.initializeStreakTokens();
     this.initializeBiomeGallery();
     this.initializeDayNightTheme();
@@ -668,6 +822,7 @@ export class GameController {
           trainingCalendarButton: "options-training-calendar",
           biomeGalleryButton: "options-biome-gallery",
           parentSummaryButton: "options-parent-summary",
+          endSessionButton: "options-end-session",
           selfTestContainer: "options-self-test",
           selfTestRun: "options-self-test-run",
           selfTestStatus: "options-self-test-status",
@@ -679,18 +834,25 @@ export class GameController {
           selfTestMotionIndicator: "options-self-test-motion-indicator",
           diagnosticsToggle: "options-diagnostics-toggle",
           virtualKeyboardToggle: "options-virtual-keyboard-toggle",
+          virtualKeyboardLayoutSelect: "options-virtual-keyboard-layout",
           lowGraphicsToggle: "options-low-graphics-toggle",
           hapticsToggle: "options-haptics-toggle",
           textSizeSelect: "options-text-size",
           reducedMotionToggle: "options-reduced-motion-toggle",
           checkeredBackgroundToggle: "options-checkered-bg-toggle",
           accessibilityPresetToggle: "options-accessibility-preset",
+          breakReminderIntervalSelect: "options-break-reminder-interval",
+          screenTimeGoalSelect: "options-screen-time-goal",
+          screenTimeLockoutSelect: "options-screen-time-lockout",
+          screenTimeStatus: "options-screen-time-status",
+          screenTimeResetButton: "options-screen-time-reset",
           voicePackSelect: "options-voice-pack",
           latencySparklineToggle: "options-latency-sparkline",
           readableFontToggle: "options-readable-font-toggle",
           dyslexiaFontToggle: "options-dyslexia-font-toggle",
           dyslexiaSpacingToggle: "options-dyslexia-spacing-toggle",
           cognitiveLoadToggle: "options-cognitive-load",
+          milestonePopupsToggle: "options-milestone-popups",
           audioNarrationToggle: "options-audio-narration",
           subtitleLargeToggle: "options-subtitle-large",
           subtitlePreviewButton: "options-subtitle-preview",
@@ -713,19 +875,28 @@ export class GameController {
           defeatAnimationSelect: "options-defeat-animation",
           telemetryToggle: "options-telemetry-toggle",
           telemetryToggleWrapper: "options-telemetry-toggle-wrapper",
+          telemetryQueueDownloadButton: "options-telemetry-queue-download",
+          telemetryQueueClearButton: "options-telemetry-queue-clear",
           eliteAffixToggle: "options-elite-affix-toggle",
           eliteAffixToggleWrapper: "options-elite-affix-toggle-wrapper",
           crystalPulseToggle: "options-crystal-toggle",
           crystalPulseToggleWrapper: "options-crystal-toggle-wrapper",
           readabilityGuideButton: "options-readability-guide",
           loreScrollsButton: "options-lore-scrolls",
-          analyticsExportButton: "options-analytics-export"
+          analyticsExportButton: "options-analytics-export",
+          sessionTimelineExportButton: "options-session-timeline-export",
+          keystrokeTimingExportButton: "options-keystroke-timing-export",
+          progressExportButton: "options-progress-export",
+          progressImportButton: "options-progress-import"
         },
         waveScorecard: {
           container: "wave-scorecard",
           stats: "wave-scorecard-stats",
           continue: "wave-scorecard-continue",
-          tip: "wave-scorecard-tip"
+          tip: "wave-scorecard-tip",
+          coach: "wave-scorecard-coach",
+          coachList: "wave-scorecard-coach-list",
+          drill: "wave-scorecard-drill"
         },
         analyticsViewer: {
           container: "debug-analytics-viewer",
@@ -779,6 +950,12 @@ export class GameController {
         parentalOverlay: {
           container: "parental-overlay",
           closeButton: "parental-overlay-close"
+        },
+        dropoffOverlay: {
+          container: "dropoff-overlay",
+          closeButton: "dropoff-overlay-close",
+          cancelButton: "dropoff-overlay-cancel",
+          skipButton: "dropoff-overlay-skip"
         },
         subtitleOverlay: {
           container: "subtitle-overlay",
@@ -887,7 +1064,7 @@ export class GameController {
           nameInput: "mastery-certificate-name-input",
           summary: "mastery-certificate-overlay-summary",
           statsList: "mastery-certificate-stats-list",
-          date: "mastery-certificate-date",
+          date: "mastery-certificate-overlay-date",
           statLessons: "mastery-certificate-stat-lessons",
           statAccuracy: "mastery-certificate-stat-accuracy",
           statWpm: "mastery-certificate-stat-wpm",
@@ -950,8 +1127,16 @@ export class GameController {
         onDowngradeTurret: (slotId) => this.handleDowngradeTurret(slotId),
         onTurretPriorityChange: (slotId, priority) =>
           this.handleTurretPriorityChange(slotId, priority),
+        onBuildMenuToggle: (open) => this.handleBuildMenuToggle(open),
         onAnalyticsExport: this.analyticsExportEnabled ? () => this.exportAnalytics() : undefined,
+        onSessionTimelineExport: () => this.exportSessionTimeline(),
+        onKeystrokeTimingExport: () => this.exportKeystrokeTiming(),
+        onProgressExport: () => this.exportProgress(),
+        onProgressImport: () => this.importProgress(),
+        onDropoffReasonSelected: (reasonId) => this.handleDropoffReasonSelected(reasonId),
         onTelemetryToggle: (enabled) => this.setTelemetryEnabled(enabled),
+        onTelemetryQueueDownload: () => this.exportTelemetryQueue(),
+        onTelemetryQueueClear: () => this.purgeTelemetryQueue(),
         onCrystalPulseToggle: (enabled) => this.setCrystalPulseEnabled(enabled),
         onEliteAffixesToggle: (enabled) => this.setEliteAffixesEnabled(enabled),
         onPauseRequested: () => this.openOptionsOverlay(),
@@ -981,9 +1166,11 @@ export class GameController {
         onDiagnosticsToggle: (visible) => this.setDiagnosticsVisible(visible),
         onLowGraphicsToggle: (enabled) => this.setLowGraphicsEnabled(enabled),
         onVirtualKeyboardToggle: (enabled) => this.setVirtualKeyboardEnabled(enabled),
+        onVirtualKeyboardLayoutChange: (layout) => this.setVirtualKeyboardLayout(layout),
         onTextSizeChange: (scale) => this.setTextSizeScale(scale),
         onHapticsToggle: (enabled) => this.setHapticsEnabled(enabled),
         onWaveScorecardContinue: () => this.handleWaveScorecardContinue(),
+        onWaveScorecardSuggestedDrill: (drill) => this.handleWaveScorecardSuggestedDrill(drill),
         onLessonMedalReplay: (options) => {
           const lastMedal = this.lessonMedalProgress?.history?.[
             (this.lessonMedalProgress?.history?.length ?? 1) - 1
@@ -1001,6 +1188,10 @@ export class GameController {
         onLargeSubtitlesToggle: (enabled) => this.setLargeSubtitlesEnabled(enabled),
         onTutorialPacingChange: (value) => this.setTutorialPacing(value),
         onAudioNarrationToggle: (enabled) => this.setAudioNarrationEnabled(enabled),
+        onBreakReminderIntervalChange: (minutes) => this.setBreakReminderIntervalMinutes(minutes),
+        onScreenTimeGoalChange: (minutes) => this.setScreenTimeGoalMinutes(minutes),
+        onScreenTimeLockoutModeChange: (mode) => this.setScreenTimeLockoutMode(mode),
+        onScreenTimeReset: () => this.resetScreenTimeForToday(),
         onVoicePackChange: (packId) => this.setVoicePack(packId),
         onLatencySparklineToggle: (enabled) => this.setLatencySparklineEnabled(enabled),
         onReadableFontToggle: (enabled) => this.setReadableFontEnabled(enabled),
@@ -1076,10 +1267,15 @@ export class GameController {
       this.soundManager.setIntensity(this.audioIntensity);
     }
     this.initializePlayerSettings();
+    this.initializeSessionGoals();
+    this.initializeKeystrokeTimingProfile();
+    this.initializeSpacedRepetition();
     this.hud.setAnalyticsExportEnabled(this.analyticsExportEnabled);
     this.syncLoreScrollsToHud();
     this.syncSeasonTrackToHud();
-    this.syncLessonMedalsToHud();
+    this.syncDailyQuestBoardToHud();
+    this.syncWeeklyQuestBoardToHud();
+    this.syncLessonMedalsToHud(undefined, { celebrate: false });
     this.syncWpmLadderToHud();
     this.syncTrainingCalendarToHud();
     this.syncBiomeGalleryToHud();
@@ -1092,6 +1288,7 @@ export class GameController {
     this.hud.setFullscreenAvailable(this.fullscreenSupported);
     this.attachInputHandlers(options.typingInput);
     this.attachTypingDrillHooks();
+    this.attachWeeklyQuestHooks();
     this.attachDebugButtons();
     this.attachGlobalShortcuts();
     this.attachHudVisibilityToggles();
@@ -1299,6 +1496,7 @@ export class GameController {
     const crystalToggle = document.getElementById("main-menu-crystal-toggle");
     const eliteWrapper = document.getElementById("main-menu-elite-toggle-wrapper");
     const eliteToggle = document.getElementById("main-menu-elite-toggle");
+    const laneFocusSelect = document.getElementById("main-menu-practice-lane-focus");
     if (!overlay || !copy || !skipBtn) {
       this.menuActive = false;
       if (!shouldSkipTutorial) {
@@ -1344,6 +1542,68 @@ export class GameController {
     } else {
       this.mainMenuEliteToggle = null;
     }
+    if (laneFocusSelect instanceof HTMLSelectElement) {
+      laneFocusSelect.value =
+        typeof this.practiceLaneFocusLane === "number" ? String(this.practiceLaneFocusLane) : "all";
+      laneFocusSelect.addEventListener("change", () => {
+        const storage =
+          typeof window !== "undefined" && window.localStorage ? window.localStorage : null;
+        const nextLaneValue = laneFocusSelect.value;
+        const parsedLane =
+          nextLaneValue === "all" ? null : Number.parseInt(nextLaneValue, 10);
+        const normalized = writePracticeLaneFocus(
+          storage,
+          typeof parsedLane === "number" && Number.isFinite(parsedLane) ? parsedLane : null
+        );
+        this.practiceLaneFocusLane = normalized;
+        this.engine.setLaneFocus(normalized);
+      });
+    }
+
+    const challengeEnabledToggle = document.getElementById("main-menu-challenge-enabled");
+    const challengeFogToggle = document.getElementById("main-menu-challenge-fog");
+    const challengeFastSpawnsToggle = document.getElementById("main-menu-challenge-fast-spawns");
+    const challengeLimitedMistakesToggle = document.getElementById(
+      "main-menu-challenge-limited-mistakes"
+    );
+    const challengeMistakeBudget = document.getElementById("main-menu-challenge-mistake-budget");
+    if (challengeEnabledToggle instanceof HTMLInputElement) {
+      challengeEnabledToggle.addEventListener("change", () => {
+        this.persistChallengeModifiersSelection({ enabled: challengeEnabledToggle.checked });
+      });
+    }
+    if (challengeFogToggle instanceof HTMLInputElement) {
+      challengeFogToggle.addEventListener("change", () => {
+        this.persistChallengeModifiersSelection({ fog: challengeFogToggle.checked, enabled: true });
+      });
+    }
+    if (challengeFastSpawnsToggle instanceof HTMLInputElement) {
+      challengeFastSpawnsToggle.addEventListener("change", () => {
+        this.persistChallengeModifiersSelection({
+          fastSpawns: challengeFastSpawnsToggle.checked,
+          enabled: true
+        });
+      });
+    }
+    if (challengeLimitedMistakesToggle instanceof HTMLInputElement) {
+      challengeLimitedMistakesToggle.addEventListener("change", () => {
+        this.persistChallengeModifiersSelection({
+          limitedMistakes: challengeLimitedMistakesToggle.checked,
+          enabled: true
+        });
+      });
+    }
+    if (challengeMistakeBudget instanceof HTMLSelectElement) {
+      challengeMistakeBudget.addEventListener("change", () => {
+        const budget = Number.parseInt(challengeMistakeBudget.value, 10);
+        if (!Number.isFinite(budget)) {
+          return;
+        }
+        this.persistChallengeModifiersSelection({ mistakeBudget: budget, enabled: true });
+      });
+    }
+    this.syncChallengeModifiersMainMenu();
+
     const show = (el, visible) => {
       if (!el) return;
       el.style.display = visible ? "inline-flex" : "none";
@@ -1375,6 +1635,16 @@ export class GameController {
           reason: resolved.reason,
           autoStart: true,
           toastMessage: `${prefix}: ${label}`
+        });
+      });
+    }
+    const warmupBtn = document.getElementById("main-menu-typing-warmup");
+    if (warmupBtn instanceof HTMLButtonElement) {
+      warmupBtn.addEventListener("click", () => {
+        this.openTypingDrills("menu-warmup", {
+          mode: "warmup",
+          autoStart: true,
+          toastMessage: "Starting 5-Min Warm-up"
         });
       });
     }
@@ -1478,6 +1748,12 @@ export class GameController {
     if (this.typingDrillsOverlayActive) {
       this.running = false;
       this.lastTimestamp = null;
+      return;
+    }
+    if (this.isScreenTimeLockoutActive()) {
+      this.running = false;
+      this.lastTimestamp = null;
+      this.handleScreenTimeLockoutAttempt("start");
       return;
     }
     if (!this.assetReady) {
@@ -2087,6 +2363,29 @@ export class GameController {
     if (options.render !== false) {
       this.render();
     }
+  }
+  normalizeVirtualKeyboardLayout(layout) {
+    const normalized = typeof layout === "string" ? layout.toLowerCase() : "";
+    return VIRTUAL_KEYBOARD_LAYOUTS.has(normalized)
+      ? normalized
+      : DEFAULT_VIRTUAL_KEYBOARD_LAYOUT;
+  }
+  setVirtualKeyboardLayout(layout, options = {}) {
+    const normalized = this.normalizeVirtualKeyboardLayout(layout);
+    if (this.virtualKeyboardLayout === normalized && options.force !== true) {
+      return;
+    }
+    this.virtualKeyboardLayout = normalized;
+    if (typeof this.hud?.setVirtualKeyboardLayout === "function") {
+      this.hud.setVirtualKeyboardLayout(normalized);
+    }
+    if (!options.silent) {
+      this.hud.appendLog(`Keyboard layout set to ${normalized.toUpperCase()}.`);
+    }
+    if (options.persist !== false) {
+      this.persistPlayerSettings({ virtualKeyboardLayout: normalized });
+    }
+    this.updateOptionsOverlayState();
   }
   setHapticsEnabled(enabled, options = {}) {
     const next = Boolean(enabled);
@@ -2934,12 +3233,33 @@ export class GameController {
     if (!this.diagnostics) return;
     const selfTestState =
       this.playerSettings?.accessibilitySelfTest ?? ACCESSIBILITY_SELF_TEST_DEFAULT;
+    const screenTimeStorage =
+      typeof window !== "undefined" && window.localStorage ? window.localStorage : null;
+    const nowWallMs = Date.now();
+    const todayKey = getLocalDayKey(nowWallMs);
+    if (!this.screenTimeSettings) {
+      this.screenTimeSettings = readScreenTimeSettings(screenTimeStorage);
+    }
+    if (!this.screenTimeUsage || this.screenTimeUsage.day !== todayKey) {
+      this.screenTimeUsage = readScreenTimeUsage(screenTimeStorage, nowWallMs);
+    }
+    const screenTimeGoalMinutes = Math.max(0, Math.floor(this.screenTimeSettings.goalMinutes ?? 0));
+    const screenTimeMinutesToday = this.getScreenTimeMinutesToday(this.screenTimeUsage.totalMs);
+    const screenTimeLocked = isLockoutActive(this.screenTimeUsage, nowWallMs);
     this.hud.syncOptionsOverlayState({
       soundEnabled: this.soundEnabled,
       soundVolume: this.soundVolume,
       soundIntensity: this.audioIntensity,
       audioNarrationEnabled: this.audioNarrationEnabled,
       accessibilityPresetEnabled: this.accessibilityPresetEnabled,
+      breakReminderIntervalMinutes: this.breakReminderIntervalMinutes,
+      screenTime: {
+        goalMinutes: screenTimeGoalMinutes,
+        lockoutMode: this.screenTimeSettings.lockoutMode ?? "off",
+        minutesToday: screenTimeMinutesToday,
+        locked: screenTimeLocked,
+        lockoutRemainingMs: getLockoutRemainingMs(this.screenTimeUsage, nowWallMs)
+      },
       voicePackId: this.voicePackId,
       tutorialPacing: this.tutorialPacing,
       largeSubtitlesEnabled: this.largeSubtitlesEnabled,
@@ -2950,6 +3270,7 @@ export class GameController {
       diagnosticsVisible: this.diagnostics.isVisible(),
       lowGraphicsEnabled: this.lowGraphicsEnabled,
       virtualKeyboardEnabled: this.virtualKeyboardEnabled,
+      virtualKeyboardLayout: this.virtualKeyboardLayout,
       hapticsEnabled: this.hapticsEnabled,
       textSizeScale: this.textSizeScale,
       reducedMotionEnabled: this.reducedMotionEnabled,
@@ -3175,24 +3496,390 @@ export class GameController {
   isColorblindPaletteActive() {
     return this.colorblindPaletteMode !== "off";
   }
-  updateSessionWellness() {
-    if (!this.sessionWellness) return;
-    const now = typeof performance !== "undefined" ? performance.now() : Date.now();
-    const elapsed = Math.max(0, now - this.sessionStartMs);
-    this.sessionWellness.setElapsed(elapsed);
-    if (!this.sessionReminderActive && elapsed >= this.sessionNextReminderMs) {
-      this.showBreakReminder(elapsed);
+  loadBreakReminderIntervalMinutes() {
+    if (typeof window === "undefined" || !window.localStorage) {
+      return BREAK_REMINDER_INTERVAL_DEFAULT_MINUTES;
+    }
+    try {
+      const raw = window.localStorage.getItem(BREAK_REMINDER_INTERVAL_STORAGE_KEY);
+      if (!raw) return BREAK_REMINDER_INTERVAL_DEFAULT_MINUTES;
+      if (raw === "off") return 0;
+      const parsed = Number.parseInt(raw, 10);
+      if (!Number.isFinite(parsed)) return BREAK_REMINDER_INTERVAL_DEFAULT_MINUTES;
+      const minutes = Math.max(0, Math.floor(parsed));
+      if (!BREAK_REMINDER_INTERVAL_ALLOWED_MINUTES.has(minutes)) {
+        return BREAK_REMINDER_INTERVAL_DEFAULT_MINUTES;
+      }
+      return minutes;
+    } catch {
+      return BREAK_REMINDER_INTERVAL_DEFAULT_MINUTES;
     }
   }
+
+  persistBreakReminderIntervalMinutes(minutes) {
+    if (typeof window === "undefined" || !window.localStorage) return;
+    try {
+      window.localStorage.setItem(BREAK_REMINDER_INTERVAL_STORAGE_KEY, minutes.toString());
+    } catch {
+      // best effort
+    }
+  }
+
+  setBreakReminderIntervalMinutes(minutes, options = {}) {
+    const parsed = Number.isFinite(minutes) ? Math.floor(minutes) : BREAK_REMINDER_INTERVAL_DEFAULT_MINUTES;
+    const next = BREAK_REMINDER_INTERVAL_ALLOWED_MINUTES.has(parsed)
+      ? parsed
+      : BREAK_REMINDER_INTERVAL_DEFAULT_MINUTES;
+    if (this.breakReminderIntervalMinutes === next && options.force !== true) {
+      return;
+    }
+    this.breakReminderIntervalMinutes = next;
+
+    const now = typeof performance !== "undefined" ? performance.now() : Date.now();
+    const elapsed = Math.max(0, now - this.sessionStartMs);
+    this.sessionReminderActive = false;
+    this.sessionWellness?.hideReminder?.();
+    this.sessionNextReminderMs =
+      next > 0 ? elapsed + next * 60 * 1000 : Number.POSITIVE_INFINITY;
+
+    if (!options.silent) {
+      if (next > 0) {
+        this.hud?.appendLog?.(`Break reminders set to every ${next} minutes.`);
+      } else {
+        this.hud?.appendLog?.("Break reminders disabled.");
+      }
+    }
+    if (options.persist !== false) {
+      this.persistBreakReminderIntervalMinutes(next);
+    }
+    this.updateOptionsOverlayState();
+  }
+
+  getScreenTimeMinutesToday(totalMs) {
+    if (!Number.isFinite(totalMs)) return 0;
+    return Math.max(0, Math.floor(totalMs / 60_000));
+  }
+
+  syncScreenTimeUi(nowMs = Date.now(), options = {}) {
+    const badge = this.screenTimeTodayBadge;
+    const settings = this.screenTimeSettings ?? { goalMinutes: 0, lockoutMode: "off" };
+    const usage =
+      this.screenTimeUsage ??
+      ({ day: getLocalDayKey(nowMs), totalMs: 0, lockoutUntilMs: null } as const);
+    const minutesToday = this.getScreenTimeMinutesToday(usage.totalMs);
+    const goalMinutes = Math.max(0, Math.floor(settings.goalMinutes ?? 0));
+    const locked = isLockoutActive(usage, nowMs);
+
+    let state = "ok";
+    if (locked) {
+      state = "locked";
+    } else if (goalMinutes > 0) {
+      if (minutesToday >= goalMinutes) {
+        state = "limit";
+      } else {
+        const remaining = goalMinutes - minutesToday;
+        const ratio = goalMinutes > 0 ? minutesToday / goalMinutes : 0;
+        if (remaining <= 5 || ratio >= 0.8) {
+          state = "warn";
+        }
+      }
+    }
+
+    const force = options.force === true;
+    if (badge instanceof HTMLElement) {
+      const nextText = `${minutesToday}m`;
+      if (force || badge.textContent !== nextText) {
+        badge.textContent = nextText;
+      }
+      if (force || badge.dataset.state !== state) {
+        badge.dataset.state = state;
+      }
+
+      let aria = "";
+      if (locked) {
+        const remainingMs = getLockoutRemainingMs(usage, nowMs);
+        const remainingMinutes = Math.max(1, Math.ceil(remainingMs / 60_000));
+        aria = `Screen time lockout active, ${remainingMinutes} minutes remaining.`;
+      } else if (goalMinutes > 0) {
+        aria = `Screen time today ${minutesToday} of ${goalMinutes} minutes.`;
+      } else {
+        aria = `Screen time today ${minutesToday} minutes.`;
+      }
+      if (force || badge.getAttribute("aria-label") !== aria) {
+        badge.setAttribute("aria-label", aria);
+      }
+    }
+
+    if (this.optionsOverlayActive) {
+      this.updateOptionsOverlayState();
+    }
+  }
+
+  tickScreenTimeGoals(nowMs = Date.now()) {
+    const storage =
+      typeof window !== "undefined" && window.localStorage ? window.localStorage : null;
+    const day = getLocalDayKey(nowMs);
+
+    if (!this.screenTimeSettings) {
+      this.screenTimeSettings = readScreenTimeSettings(storage);
+    }
+    if (!this.screenTimeUsage) {
+      this.screenTimeUsage = readScreenTimeUsage(storage, nowMs);
+    }
+
+    if (this.screenTimeUsage.day !== day) {
+      this.screenTimeUsage = { day, totalMs: 0, lockoutUntilMs: null };
+      this.screenTimeLastTotalMs = 0;
+      this.screenTimeWarned = false;
+      this.screenTimeGoalReached = false;
+      this.screenTimeLockoutStarted = false;
+      this.screenTimeLastTickWallMs = nowMs;
+      writeScreenTimeUsage(storage, this.screenTimeUsage);
+    }
+
+    const hidden = typeof document !== "undefined" ? Boolean(document.hidden) : false;
+    const lastTick = Number.isFinite(this.screenTimeLastTickWallMs)
+      ? this.screenTimeLastTickWallMs
+      : nowMs;
+    const deltaMs = nowMs - lastTick;
+    this.screenTimeLastTickWallMs = nowMs;
+
+    let mutated = false;
+    const gapThresholdMs = 15_000;
+    if (!hidden && Number.isFinite(deltaMs) && deltaMs > 0 && deltaMs <= gapThresholdMs) {
+      this.screenTimeUsage.totalMs = Math.max(0, this.screenTimeUsage.totalMs + deltaMs);
+      mutated = true;
+    }
+
+    const goalMinutes = Math.max(0, Math.floor(this.screenTimeSettings.goalMinutes ?? 0));
+    const goalMs = goalMinutes > 0 ? goalMinutes * 60_000 : 0;
+    const totalMs = Math.max(0, this.screenTimeUsage.totalMs);
+
+    const warnThresholdMs =
+      goalMs > 0 ? Math.max(goalMs * 0.8, goalMs - 5 * 60_000) : Number.POSITIVE_INFINITY;
+    if (!this.screenTimeWarned && goalMs > 0 && totalMs >= warnThresholdMs && totalMs < goalMs) {
+      this.screenTimeWarned = true;
+      const minutesToday = this.getScreenTimeMinutesToday(totalMs);
+      this.hud?.appendLog?.(
+        `Screen time: ${minutesToday}/${goalMinutes} minutes. Almost at your daily goal.`
+      );
+    }
+
+    const reached = goalMs > 0 && totalMs >= goalMs;
+    if (reached && !this.screenTimeGoalReached) {
+      this.screenTimeGoalReached = true;
+      const minutesToday = this.getScreenTimeMinutesToday(totalMs);
+      this.hud?.appendLog?.(
+        `Daily screen-time goal reached (${minutesToday}/${goalMinutes} minutes).`
+      );
+    }
+
+    const lockoutMode = this.screenTimeSettings.lockoutMode ?? "off";
+    if (reached && lockoutMode !== "off" && this.screenTimeUsage.lockoutUntilMs === null) {
+      const until = computeLockoutUntilMs(lockoutMode, nowMs);
+      if (until) {
+        this.screenTimeUsage.lockoutUntilMs = until;
+        mutated = true;
+      }
+    }
+
+    const locked = isLockoutActive(this.screenTimeUsage, nowMs);
+    if (locked && !this.screenTimeLockoutStarted) {
+      this.screenTimeLockoutStarted = true;
+      const remainingMs = getLockoutRemainingMs(this.screenTimeUsage, nowMs);
+      const remainingMinutes = Math.max(1, Math.ceil(remainingMs / 60_000));
+      const noun = remainingMinutes === 1 ? "minute" : "minutes";
+      const message =
+        lockoutMode === "today"
+          ? "Screen time lockout active until tomorrow."
+          : `Screen time lockout active: ${remainingMinutes} ${noun} remaining.`;
+      this.hud?.appendLog?.(message);
+      if (this.running && !this.manualTick) {
+        this.pause();
+      }
+      if (this.typingDrillsOverlayActive) {
+        this.closeTypingDrills();
+      } else if (!this.optionsOverlayActive && !this.menuActive && !this.waveScorecardActive) {
+        this.openOptionsOverlay();
+      }
+    }
+
+    if (mutated) {
+      const persistAt =
+        typeof this.screenTimeNextPersistAtMs === "number" ? this.screenTimeNextPersistAtMs : 0;
+      if (storage && (this.screenTimeUsage.lockoutUntilMs !== null || nowMs >= persistAt)) {
+        writeScreenTimeUsage(storage, this.screenTimeUsage);
+        this.screenTimeNextPersistAtMs = nowMs + 10_000;
+      }
+    }
+
+    this.syncScreenTimeUi(nowMs);
+    this.screenTimeLastTotalMs = totalMs;
+  }
+
+  isScreenTimeLockoutActive(nowMs = Date.now()) {
+    const storage =
+      typeof window !== "undefined" && window.localStorage ? window.localStorage : null;
+    const day = getLocalDayKey(nowMs);
+    if (!this.screenTimeUsage || this.screenTimeUsage.day !== day) {
+      this.screenTimeUsage = readScreenTimeUsage(storage, nowMs);
+    }
+    return isLockoutActive(this.screenTimeUsage, nowMs);
+  }
+
+  handleScreenTimeLockoutAttempt(source = "start") {
+    const nowMs = Date.now();
+    const remainingMs = this.screenTimeUsage
+      ? getLockoutRemainingMs(this.screenTimeUsage, nowMs)
+      : 0;
+    const remainingMinutes = Math.max(1, Math.ceil(Math.max(0, remainingMs) / 60_000));
+    const noun = remainingMinutes === 1 ? "minute" : "minutes";
+    if (this.menuActive && typeof document !== "undefined") {
+      const copy = document.getElementById("main-menu-copy");
+      if (copy instanceof HTMLElement) {
+        copy.textContent = `Screen time lockout: ${remainingMinutes} ${noun} remaining. Take a break, then come back.`;
+      }
+    }
+    this.hud?.appendLog?.(
+      `Screen time lockout (${source} blocked): ${remainingMinutes} ${noun} remaining.`
+    );
+    if (this.running && !this.manualTick) {
+      this.pause();
+    }
+    if (!this.optionsOverlayActive && !this.menuActive && !this.waveScorecardActive) {
+      this.openOptionsOverlay();
+    } else if (this.optionsOverlayActive) {
+      this.updateOptionsOverlayState();
+    }
+  }
+
+  setScreenTimeGoalMinutes(minutes) {
+    const storage =
+      typeof window !== "undefined" && window.localStorage ? window.localStorage : null;
+    const nowMs = Date.now();
+    this.screenTimeLastTickWallMs = nowMs;
+    this.screenTimeSettings = writeScreenTimeSettings(storage, { goalMinutes: minutes });
+    this.screenTimeUsage = readScreenTimeUsage(storage, nowMs);
+    this.screenTimeWarned = false;
+    this.screenTimeGoalReached = false;
+    this.screenTimeLockoutStarted = false;
+
+    const goalMinutes = Math.max(0, Math.floor(this.screenTimeSettings.goalMinutes ?? 0));
+    const goalMs = goalMinutes > 0 ? goalMinutes * 60_000 : 0;
+    const reached = goalMs > 0 && this.screenTimeUsage.totalMs >= goalMs;
+    const mode = this.screenTimeSettings.lockoutMode ?? "off";
+
+    if (goalMinutes <= 0 || mode === "off") {
+      if (this.screenTimeUsage.lockoutUntilMs !== null) {
+        this.screenTimeUsage.lockoutUntilMs = null;
+        writeScreenTimeUsage(storage, this.screenTimeUsage);
+      }
+    } else if (reached) {
+      const until = computeLockoutUntilMs(mode, nowMs);
+      this.screenTimeUsage.lockoutUntilMs = until;
+      writeScreenTimeUsage(storage, this.screenTimeUsage);
+    } else if (this.screenTimeUsage.lockoutUntilMs !== null) {
+      this.screenTimeUsage.lockoutUntilMs = null;
+      writeScreenTimeUsage(storage, this.screenTimeUsage);
+    }
+
+    if (goalMinutes > 0) {
+      this.hud?.appendLog?.(`Daily screen-time goal set to ${goalMinutes} minutes.`);
+    } else {
+      this.hud?.appendLog?.("Daily screen-time goal disabled.");
+    }
+
+    this.syncScreenTimeUi(nowMs, { force: true });
+  }
+
+  setScreenTimeLockoutMode(mode) {
+    const storage =
+      typeof window !== "undefined" && window.localStorage ? window.localStorage : null;
+    const nowMs = Date.now();
+    this.screenTimeLastTickWallMs = nowMs;
+    this.screenTimeSettings = writeScreenTimeSettings(storage, { lockoutMode: mode });
+    this.screenTimeUsage = readScreenTimeUsage(storage, nowMs);
+    this.screenTimeWarned = false;
+    this.screenTimeGoalReached = false;
+    this.screenTimeLockoutStarted = false;
+
+    const goalMinutes = Math.max(0, Math.floor(this.screenTimeSettings.goalMinutes ?? 0));
+    const goalMs = goalMinutes > 0 ? goalMinutes * 60_000 : 0;
+    const reached = goalMs > 0 && this.screenTimeUsage.totalMs >= goalMs;
+    const resolvedMode = this.screenTimeSettings.lockoutMode ?? "off";
+
+    if (resolvedMode === "off" || goalMinutes <= 0) {
+      if (this.screenTimeUsage.lockoutUntilMs !== null) {
+        this.screenTimeUsage.lockoutUntilMs = null;
+        writeScreenTimeUsage(storage, this.screenTimeUsage);
+      }
+    } else if (reached) {
+      const until = computeLockoutUntilMs(resolvedMode, nowMs);
+      this.screenTimeUsage.lockoutUntilMs = until;
+      writeScreenTimeUsage(storage, this.screenTimeUsage);
+    } else if (this.screenTimeUsage.lockoutUntilMs !== null) {
+      this.screenTimeUsage.lockoutUntilMs = null;
+      writeScreenTimeUsage(storage, this.screenTimeUsage);
+    }
+
+    const label =
+      resolvedMode === "off"
+        ? "off"
+        : resolvedMode === "today"
+          ? "until tomorrow"
+          : resolvedMode.replace("rest-", "rest ");
+    this.hud?.appendLog?.(`Screen time lockout set to ${label}.`);
+
+    this.syncScreenTimeUi(nowMs, { force: true });
+  }
+
+  resetScreenTimeForToday() {
+    const storage =
+      typeof window !== "undefined" && window.localStorage ? window.localStorage : null;
+    const nowMs = Date.now();
+    const day = getLocalDayKey(nowMs);
+    this.screenTimeUsage = { day, totalMs: 0, lockoutUntilMs: null };
+    this.screenTimeLastTickWallMs = nowMs;
+    this.screenTimeNextPersistAtMs = 0;
+    this.screenTimeLastTotalMs = 0;
+    this.screenTimeWarned = false;
+    this.screenTimeGoalReached = false;
+    this.screenTimeLockoutStarted = false;
+    writeScreenTimeUsage(storage, this.screenTimeUsage);
+    this.hud?.appendLog?.("Screen time reset for today.");
+    this.syncScreenTimeUi(nowMs, { force: true });
+  }
+  updateSessionWellness() {
+    const now = typeof performance !== "undefined" ? performance.now() : Date.now();
+    const elapsed = Math.max(0, now - this.sessionStartMs);
+    if (this.sessionWellness) {
+      this.sessionWellness.setElapsed(elapsed);
+      if (!this.sessionReminderActive && elapsed >= this.sessionNextReminderMs) {
+        this.showBreakReminder(elapsed);
+      }
+    }
+    this.tickScreenTimeGoals();
+  }
   showBreakReminder(elapsedMs) {
+    if (!Number.isFinite(this.breakReminderIntervalMinutes) || this.breakReminderIntervalMinutes <= 0) {
+      this.sessionReminderActive = false;
+      this.sessionNextReminderMs = Number.POSITIVE_INFINITY;
+      this.sessionWellness?.hideReminder?.();
+      return;
+    }
     this.sessionReminderActive = true;
-    this.sessionNextReminderMs = elapsedMs + BREAK_REMINDER_INTERVAL_MS;
+    this.sessionNextReminderMs = elapsedMs + this.breakReminderIntervalMinutes * 60 * 1000;
     this.sessionWellness?.showReminder(elapsedMs);
     this.hud?.appendLog?.("Break reminder: stretch, breathe, and rest your hands.");
   }
   handleBreakReminderSnooze() {
     const now = typeof performance !== "undefined" ? performance.now() : Date.now();
     const elapsed = Math.max(0, now - this.sessionStartMs);
+    this.fatigueDetectorState = snoozeFatigueDetector(
+      this.fatigueDetectorState ?? createFatigueDetectorState(),
+      elapsed,
+      BREAK_REMINDER_SNOOZE_MS
+    );
     this.sessionNextReminderMs = elapsed + BREAK_REMINDER_SNOOZE_MS;
     this.sessionReminderActive = false;
     this.sessionWellness?.hideReminder();
@@ -3200,7 +3887,12 @@ export class GameController {
   }
   handleBreakReset() {
     this.sessionStartMs = typeof performance !== "undefined" ? performance.now() : Date.now();
-    this.sessionNextReminderMs = BREAK_REMINDER_INTERVAL_MS;
+    this.sessionNextReminderMs =
+      this.breakReminderIntervalMinutes > 0
+        ? this.breakReminderIntervalMinutes * 60 * 1000
+        : Number.POSITIVE_INFINITY;
+    this.fatigueDetectorState = createFatigueDetectorState();
+    this.fatigueWaveTimingSamples = [];
     this.sessionReminderActive = false;
     this.sessionWellness?.hideReminder();
     this.hud?.appendLog?.("Session timer reset after a break.");
@@ -3323,6 +4015,22 @@ export class GameController {
       this.syncTelemetryDebugControls();
       return [];
     }
+    const endpoint = this.telemetryEndpoint ?? this.telemetryClient.getEndpoint?.() ?? null;
+    if (!endpoint) {
+      if (!options.silent) {
+        const queued = this.telemetryClient.getQueue().length;
+        if (queued > 0) {
+          const noun = queued === 1 ? "event" : "events";
+          this.hud.appendLog(
+            `Telemetry endpoint not set; queue holds ${queued} ${noun}. Set an endpoint or download the queue instead.`
+          );
+        } else {
+          this.hud.appendLog("Telemetry endpoint not set; nothing to flush.");
+        }
+      }
+      this.syncTelemetryDebugControls();
+      return [];
+    }
     const batch = this.telemetryClient.flush();
     if (!options.silent) {
       if (batch.length === 0) {
@@ -3334,6 +4042,26 @@ export class GameController {
     }
     this.syncTelemetryDebugControls();
     return batch;
+  }
+  purgeTelemetryQueue(options = {}) {
+    if (!this.telemetryClient) {
+      if (!options.silent) {
+        this.hud.appendLog("Telemetry unavailable (feature toggle disabled).");
+      }
+      return 0;
+    }
+    const purged =
+      typeof this.telemetryClient.purge === "function" ? this.telemetryClient.purge() : 0;
+    if (!options.silent) {
+      if (purged === 0) {
+        this.hud.appendLog("Telemetry queue already empty.");
+      } else {
+        const noun = purged === 1 ? "event" : "events";
+        this.hud.appendLog(`Telemetry queue cleared (${purged} ${noun})`);
+      }
+    }
+    this.syncTelemetryDebugControls();
+    return purged;
   }
   exportTelemetryQueue(options = {}) {
     if (!this.telemetryClient) {
@@ -3446,6 +4174,9 @@ export class GameController {
       typeof client.isEnabled === "function" ? client.isEnabled() : Boolean(this.telemetryEnabled);
     this.telemetryEnabled = enabled;
     const queueLength = client.getQueue().length;
+    const endpoint = this.telemetryEndpoint ?? client.getEndpoint?.() ?? null;
+    this.telemetryEndpoint = endpoint;
+    const hasEndpoint = Boolean(endpoint && endpoint.trim().length > 0);
     if (container) {
       container.style.display = "";
       container.setAttribute("aria-hidden", "false");
@@ -3459,8 +4190,11 @@ export class GameController {
       controls.toggleButton.setAttribute("aria-disabled", "false");
     }
     if (controls.flushButton) {
-      controls.flushButton.disabled = !enabled || queueLength === 0;
+      controls.flushButton.disabled = !enabled || queueLength === 0 || !hasEndpoint;
       controls.flushButton.textContent = `Flush Telemetry (${queueLength})`;
+      controls.flushButton.title = hasEndpoint
+        ? ""
+        : "Set a telemetry endpoint before flushing queued events.";
       controls.flushButton.setAttribute("aria-hidden", "false");
       controls.flushButton.setAttribute(
         "aria-disabled",
@@ -3602,6 +4336,12 @@ export class GameController {
     }
   ) {
     if (!this.typingDrills) return;
+    if (this.isScreenTimeLockoutActive()) {
+      this.handleScreenTimeLockoutAttempt("typing-drills");
+      return;
+    }
+    this.syncTypingDrillUnlocksToOverlay();
+    this.syncErrorClustersToOverlay();
     if (this.typingDrillsOverlayActive && this.typingDrills.isVisible()) {
       this.typingDrills.reset(options?.mode);
       return;
@@ -3647,11 +4387,25 @@ export class GameController {
   }
   handleTypingDrillsClosed() {
     this.typingDrillsOverlayActive = false;
+    if (this.isScreenTimeLockoutActive()) {
+      this.reopenOptionsAfterDrills = false;
+      this.reopenWaveScorecardAfterDrills = false;
+      this.shouldResumeAfterDrills = false;
+      this.openOptionsOverlay();
+      this.resumeAfterOptions = false;
+      return;
+    }
     const shouldReopenOptions = this.reopenOptionsAfterDrills;
     this.reopenOptionsAfterDrills = false;
     if (shouldReopenOptions) {
       this.openOptionsOverlay();
       this.resumeAfterOptions = false;
+      return;
+    }
+    const shouldReopenWaveScorecard = this.reopenWaveScorecardAfterDrills;
+    this.reopenWaveScorecardAfterDrills = false;
+    if (shouldReopenWaveScorecard && this.waveScorecardActive && this.lastWaveScorecardData) {
+      this.hud.showWaveScorecard(this.lastWaveScorecardData);
       return;
     }
     const shouldResume =
@@ -3669,17 +4423,132 @@ export class GameController {
   }
   recordTypingDrillSummary(summary: TypingDrillSummary) {
     try {
-      const entry = this.engine.recordTypingDrill(summary);
+      const { patterns, ...entrySummary } = summary;
+      const storage = typeof window !== "undefined" ? window.localStorage : null;
+      if (patterns && storage) {
+        this.spacedRepetition = recordSpacedRepetitionObservedStats(
+          this.spacedRepetition ?? readSpacedRepetitionState(storage),
+          patterns,
+          { nowMs: Date.now() }
+        );
+        this.spacedRepetition = writeSpacedRepetitionState(storage, this.spacedRepetition);
+        this.syncErrorClustersToOverlay();
+      }
+
+      if (
+        summary.mode === "focus" ||
+        summary.mode === "warmup" ||
+        summary.mode === "reaction" ||
+        summary.mode === "combo" ||
+        summary.mode === "reading"
+      ) {
+        const drillLabel = this.getTypingDrillModeLabel(summary.mode);
+        const percent = Math.round(Math.max(0, Math.min(100, (summary.accuracy ?? 0) * 100)));
+        const metricLabel = summary.mode === "reading" ? "score" : "acc";
+        let detail = `${summary.words} words`;
+        if (summary.mode === "reaction") {
+          detail = `${summary.words} hits`;
+        } else if (summary.mode === "reading") {
+          const attempted = summary.words + summary.errors;
+          detail = attempted > 0 ? `${summary.words}/${attempted} correct` : "0 answered";
+        }
+        this.hud.appendLog(
+          `Practice (${drillLabel}) ${percent}% ${metricLabel}, ${detail}, best combo x${summary.bestCombo}`
+        );
+        if (
+          this.shouldResumeAfterDrills &&
+          (summary.mode === "warmup" || summary.mode === "focus" || summary.mode === "combo") &&
+          typeof this.engine.recoverCombo === "function"
+        ) {
+          const bestCombo =
+            typeof summary.bestCombo === "number" && Number.isFinite(summary.bestCombo)
+              ? Math.max(0, summary.bestCombo)
+              : 0;
+          const accuracy =
+            typeof summary.accuracy === "number" && Number.isFinite(summary.accuracy)
+              ? Math.max(0, Math.min(1, summary.accuracy))
+              : 0;
+          const carryover = Math.min(12, Math.floor(bestCombo * 0.4));
+          const currentCombo = Math.max(0, Math.floor(this.currentState?.typing?.combo ?? 0));
+          if (carryover > currentCombo && accuracy >= 0.85) {
+            this.engine.recoverCombo(carryover);
+            this.hud.appendLog(`Practice boost: combo seeded to x${carryover}.`);
+            this.currentState = this.engine.getState();
+            this.render();
+          }
+        }
+        this.syncTypingDrillUnlocksToOverlay();
+        this.setTypingDrillCtaRecommendation(this.buildTypingDrillRecommendation());
+        return;
+      }
+
+      const entry = this.engine.recordTypingDrill(entrySummary);
+      const drillLabel = this.getTypingDrillModeLabel(entry.mode);
       const percent = Math.round(Math.max(0, Math.min(100, entry.accuracy * 100)));
       this.hud.appendLog(
-        `Drill (${entry.mode}) ${percent}% acc, ${entry.words} words, best combo x${entry.bestCombo}`
+        `Drill (${drillLabel}) ${percent}% acc, ${entry.words} words, best combo x${entry.bestCombo}`
       );
       this.trackTypingDrillCompleted(entry);
       this.handleLessonCompletion(entry);
+      this.syncTypingDrillUnlocksToOverlay();
       this.setTypingDrillCtaRecommendation(this.buildTypingDrillRecommendation());
     } catch (error) {
       console.warn("[analytics] failed to record typing drill", error);
     }
+  }
+  isAdvancedSymbolsUnlocked() {
+    if (!this.lessonMedalProgress) return false;
+    const viewState = buildLessonMedalViewState(this.lessonMedalProgress);
+    const symbolsBest = viewState.bestByMode?.symbols ?? null;
+    if (!symbolsBest) return false;
+    return (
+      symbolsBest.tier === "silver" || symbolsBest.tier === "gold" || symbolsBest.tier === "platinum"
+    );
+  }
+  syncTypingDrillUnlocksToOverlay() {
+    if (!this.typingDrills) return;
+    this.typingDrills.setAdvancedSymbolsUnlocked(this.isAdvancedSymbolsUnlocked());
+  }
+  syncErrorClustersToOverlay() {
+    if (!this.typingDrills) return;
+    const storage = typeof window !== "undefined" ? window.localStorage : null;
+    this.errorClusterProgress =
+      this.errorClusterProgress ?? readErrorClusterProgress(storage);
+    const nowMs = Date.now();
+    this.spacedRepetition =
+      this.spacedRepetition ?? readSpacedRepetitionState(storage);
+    const duePatterns = listDueSpacedRepetitionPatterns(this.spacedRepetition, {
+      nowMs: nowMs + 1000 * 60 * 15,
+      limit: 4
+    });
+    const focusKeys = getTopExpectedKeys(this.errorClusterProgress, {
+      nowMs,
+      windowMs: 1000 * 60 * 10,
+      limit: 3
+    }).map((entry) => entry.key);
+    const warmupKeys = getTopExpectedKeys(this.errorClusterProgress, {
+      nowMs,
+      windowMs: 1000 * 60 * 60 * 24,
+      limit: 3
+    }).map((entry) => entry.key);
+
+    const merge = (primary: string[], secondary: string[]): string[] => {
+      const seen = new Set<string>();
+      const merged: string[] = [];
+      for (const value of [...primary, ...secondary]) {
+        if (typeof value !== "string") continue;
+        const normalized = value.trim().toLowerCase();
+        if (!normalized) continue;
+        if (seen.has(normalized)) continue;
+        seen.add(normalized);
+        merged.push(normalized);
+        if (merged.length >= 3) break;
+      }
+      return merged;
+    };
+
+    this.typingDrills.setFocusKeys(merge(duePatterns, focusKeys));
+    this.typingDrills.setWarmupKeys(merge(duePatterns, warmupKeys));
   }
   handleTypingDrillStarted(mode: TypingDrillMode, source: string | undefined) {
     if (!this.telemetryClient?.track) return;
@@ -3718,10 +4587,38 @@ export class GameController {
   }
   getTypingDrillModeLabel(mode: TypingDrillMode): string {
     switch (mode) {
+      case "placement":
+        return "Placement Test";
+      case "hand":
+        return "Hand Isolation";
+      case "support":
+        return "Lane Support";
+      case "shortcuts":
+        return "Shortcut Practice";
+      case "shift":
+        return "Shift Timing";
+      case "focus":
+        return "Focus Drill";
+      case "warmup":
+        return "5-Min Warm-up";
+      case "reaction":
+        return "Reaction Challenge";
+      case "combo":
+        return "Combo Preservation";
+      case "reading":
+        return "Reading Quiz";
       case "precision":
         return "Shield Breaker";
+      case "sprint":
+        return "Time Attack";
+      case "sentences":
+        return "Sentence Builder";
+      case "rhythm":
+        return "Rhythm Drill";
       case "endurance":
         return "Endurance";
+      case "symbols":
+        return "Numbers & Symbols";
       case "burst":
       default:
         return "Burst Warmup";
@@ -3872,8 +4769,40 @@ export class GameController {
     const combo = typeof state.typing?.combo === "number" ? state.typing.combo : 0;
     const warnings = state.analytics?.comboWarning?.count ?? 0;
     const lastDrill = state.analytics?.typingDrills?.at?.(-1) ?? null;
+    const nowMs = Date.now();
+    const storage = typeof window !== "undefined" ? window.localStorage : null;
+    this.errorClusterProgress =
+      this.errorClusterProgress ?? readErrorClusterProgress(storage);
+    this.spacedRepetition =
+      this.spacedRepetition ?? readSpacedRepetitionState(storage);
+    const duePatterns = listDueSpacedRepetitionPatterns(this.spacedRepetition, {
+      nowMs: nowMs + 1000 * 60 * 15,
+      limit: 3
+    });
+    const focusWindowMs = 1000 * 60 * 8;
+    const focusCutoff = nowMs - focusWindowMs;
+    const recentErrorCount = (this.errorClusterProgress.history ?? []).filter(
+      (entry) => (entry?.timestamp ?? 0) >= focusCutoff
+    ).length;
+    const focusKeys = getTopExpectedKeys(this.errorClusterProgress, {
+      nowMs,
+      windowMs: focusWindowMs,
+      limit: 3
+    });
     if (accuracy < 0.9 || warnings > 1) {
       return { mode: "precision", reason: "Tighten accuracy after recent drops." };
+    }
+    if (duePatterns.length >= 3) {
+      const label = duePatterns.map((pattern) => pattern.toUpperCase()).join(", ");
+      return { mode: "warmup", reason: `Spaced repetition: ${label} are due. Run a warm-up plan.` };
+    }
+    if (recentErrorCount >= 6 && (focusKeys[0]?.count ?? 0) >= 3) {
+      const keyLabel = focusKeys.map((entry) => entry.key.toUpperCase()).join(", ");
+      return { mode: "focus", reason: `Micro-drill your trouble keys: ${keyLabel}.` };
+    }
+    if (duePatterns.length > 0) {
+      const label = duePatterns.map((pattern) => pattern.toUpperCase()).join(", ");
+      return { mode: "focus", reason: `Spaced repetition: review ${label}.` };
     }
     if (combo >= 6 && accuracy >= 0.97) {
       return { mode: "endurance", reason: "Hold cadence and combo for longer strings." };
@@ -3883,7 +4812,56 @@ export class GameController {
     }
     return { mode: "burst", reason: "Warm up with five quick clears before rejoining." };
   }
-  presentWaveScorecard(summary) {
+  buildWaveCoachSummary(scorecard) {
+    const accuracyRaw = typeof scorecard?.accuracy === "number" ? scorecard.accuracy : 0;
+    const accuracyPct = Math.max(0, Math.min(100, Math.round(accuracyRaw * 1000) / 10));
+    const breaches = Math.max(0, Math.floor(scorecard?.breaches ?? 0));
+    const bestCombo = Math.max(0, Math.floor(scorecard?.bestCombo ?? 0));
+    const perfectWords = Math.max(0, Math.floor(scorecard?.perfectWords ?? 0));
+    const enemiesDefeated = Math.max(0, Math.floor(scorecard?.enemiesDefeated ?? 0));
+    const averageReaction =
+      typeof scorecard?.averageReaction === "number" ? scorecard.averageReaction : 0;
+
+    let win = "Steady wave. Keep going.";
+    if (breaches === 0) {
+      win = "Zero breaches. You held the wall.";
+    } else if (accuracyPct >= 97) {
+      win = `${accuracyPct.toFixed(1)}% accuracy. Super clean typing.`;
+    } else if (bestCombo >= 10) {
+      win = `Wave combo hit x${bestCombo}.`;
+    } else if (perfectWords >= 6) {
+      win = `${perfectWords} perfect words.`;
+    } else if (enemiesDefeated >= 20) {
+      win = `${enemiesDefeated} enemies defeated.`;
+    }
+
+    let gap = "Aim for fewer mistakes next wave.";
+    if (breaches > 0) {
+      gap = `${breaches} breach${breaches === 1 ? "" : "es"}. Try typing the closest enemy first.`;
+    } else if (accuracyPct < 93) {
+      gap = `${accuracyPct.toFixed(1)}% accuracy. Slow down for clean hits.`;
+    } else if (averageReaction > 1.6) {
+      gap = `Avg reaction ${averageReaction.toFixed(2)}s. Lock in the first letter sooner.`;
+    } else if (bestCombo < 6) {
+      gap = "Push your combo past x6 without mistakes.";
+    }
+
+    const recommendation = this.buildTypingDrillRecommendation();
+    const drill = recommendation
+      ? {
+          mode: recommendation.mode,
+          label: this.getTypingDrillModeLabel(recommendation.mode),
+          reason: recommendation.reason
+        }
+      : null;
+
+    return {
+      win,
+      gap,
+      drill
+    };
+  }
+  presentWaveScorecard(summary, options = {}) {
     if (this.menuActive) return;
     if (this.tutorialManager?.getState().active) return;
     if (this.waveScorecardActive) return;
@@ -3893,6 +4871,11 @@ export class GameController {
     const totalWaves = Array.isArray(this.engine.config?.waves)
       ? this.engine.config.waves.length
       : 0;
+    const tipOverride =
+      typeof options?.tipOverride === "string" && options.tipOverride.trim().length > 0
+        ? options.tipOverride.trim()
+        : null;
+
     const data = {
       waveIndex: summary.index ?? 0,
       waveTotal: totalWaves,
@@ -3916,8 +4899,10 @@ export class GameController {
       castleBonusGold: summary.castleBonusGold ?? 0,
       bestCombo: summary.maxCombo ?? 0,
       sessionBestCombo: summary.sessionBestCombo ?? this.bestCombo,
-      microTip: this.getNextWaveMicroTip()
+      microTip: tipOverride ?? this.getNextWaveMicroTip()
     };
+    data.coach = this.buildWaveCoachSummary(data);
+    this.lastWaveScorecardData = data;
     this.hud.showWaveScorecard(data);
     this.waveScorecardActive = true;
     if (this.manualTick) {
@@ -3985,7 +4970,7 @@ export class GameController {
         summary.sessionBestCombo ?? defaultSummary.sessionBestCombo ?? this.bestCombo,
       microTip: this.getNextWaveMicroTip()
     };
-    this.hud.showWaveScorecard({
+    const scorecardData = {
       waveIndex: payload.waveIndex ?? 0,
       waveTotal: payload.waveTotal ?? 0,
       mode: payload.mode ?? this.engine.getMode(),
@@ -4007,12 +4992,33 @@ export class GameController {
       bonusGold: payload.bonusGold ?? 0,
       castleBonusGold: payload.castleBonusGold ?? 0,
       bestCombo: payload.bestCombo ?? 0,
-      sessionBestCombo: payload.sessionBestCombo ?? this.bestCombo
-    });
+      sessionBestCombo: payload.sessionBestCombo ?? this.bestCombo,
+      microTip: payload.microTip ?? null
+    };
+    scorecardData.coach = this.buildWaveCoachSummary(scorecardData);
+    this.lastWaveScorecardData = scorecardData;
+    this.hud.showWaveScorecard(scorecardData);
   }
 
   debugHideWaveScorecard() {
     this.hud.hideWaveScorecard();
+  }
+  handleWaveScorecardSuggestedDrill(drill) {
+    if (!drill || !drill.mode || !this.typingDrills) {
+      return;
+    }
+    if (this.isScreenTimeLockoutActive()) {
+      this.handleScreenTimeLockoutAttempt("typing-drills");
+      return;
+    }
+    this.reopenWaveScorecardAfterDrills = true;
+    this.hud.hideWaveScorecard();
+    this.openTypingDrills("wave-scorecard", {
+      mode: drill.mode,
+      autoStart: true,
+      reason: drill.reason,
+      toastMessage: `Coach drill: ${drill.label}`
+    });
   }
   handleWaveScorecardContinue() {
     this.closeWaveScorecard({ resume: true });
@@ -4023,6 +5029,8 @@ export class GameController {
       return;
     }
     this.waveScorecardActive = false;
+    this.reopenWaveScorecardAfterDrills = false;
+    this.lastWaveScorecardData = null;
     this.hud.hideWaveScorecard();
     const shouldResume =
       options.resume !== false &&
@@ -4032,6 +5040,10 @@ export class GameController {
       !this.optionsOverlayActive &&
       !this.tutorialHoldLoop;
     this.resumeAfterWaveScorecard = false;
+    if (this.weeklyTrialReturnPending) {
+      this.completeWeeklyTrialReturn();
+      return;
+    }
     if (shouldResume) {
       this.resume();
     }
@@ -4075,6 +5087,12 @@ export class GameController {
     const virtualKeyboardUnchanged =
       patch.virtualKeyboardEnabled === undefined ||
       patch.virtualKeyboardEnabled === this.playerSettings.virtualKeyboardEnabled;
+    const virtualKeyboardLayoutUnchanged =
+      patch.virtualKeyboardLayout === undefined ||
+      this.normalizeVirtualKeyboardLayout(patch.virtualKeyboardLayout) ===
+        this.normalizeVirtualKeyboardLayout(
+          this.playerSettings.virtualKeyboardLayout ?? DEFAULT_VIRTUAL_KEYBOARD_LAYOUT
+        );
     const lowGraphicsUnchanged =
       patch.lowGraphicsEnabled === undefined ||
       patch.lowGraphicsEnabled === this.playerSettings.lowGraphicsEnabled;
@@ -4209,6 +5227,7 @@ export class GameController {
       screenShakeIntensityUnchanged &&
       latencySparklineUnchanged &&
       virtualKeyboardUnchanged &&
+      virtualKeyboardLayoutUnchanged &&
       lowGraphicsUnchanged &&
       defeatAnimationModeUnchanged &&
       hudZoomUnchanged &&
@@ -4693,6 +5712,211 @@ export class GameController {
       URL.revokeObjectURL(url);
     }
   }
+  exportSessionTimeline() {
+    const snapshot = this.engine.getAnalyticsSnapshot();
+    const waveHistory = snapshot.analytics?.waveHistory;
+    const waveSummaries = snapshot.analytics?.waveSummaries;
+    const waves = Array.isArray(waveHistory)
+      ? waveHistory
+      : Array.isArray(waveSummaries)
+        ? waveSummaries
+        : [];
+    if (waves.length === 0) {
+      this.hud.appendLog("Session timeline export unavailable (no completed waves yet).");
+      return;
+    }
+    if (typeof document === "undefined" || !document.body) {
+      console.warn("Session timeline export skipped: document context unavailable.");
+      this.hud.appendLog("Session timeline export failed (no active document context).");
+      return;
+    }
+    const filename = `keyboard-defense-session-timeline-${snapshot.capturedAt.replace(/[:.]/g, "-")}.csv`;
+    const blob = new Blob([buildSessionTimelineCsv(waves)], {
+      type: "text/csv"
+    });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    try {
+      link.click();
+      const noun = waves.length === 1 ? "wave" : "waves";
+      this.hud.appendLog(`Session timeline exported (${waves.length} ${noun}) to ${filename}`);
+    } finally {
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+  }
+  exportKeystrokeTiming() {
+    const samples = Array.isArray(this.keystrokeTimingSamples)
+      ? this.keystrokeTimingSamples.slice()
+      : [];
+    if (samples.length === 0) {
+      this.hud.appendLog("Keystroke timing export unavailable (no samples yet).");
+      return;
+    }
+    if (typeof document === "undefined" || !document.body) {
+      console.warn("Keystroke timing export skipped: document context unavailable.");
+      this.hud.appendLog("Keystroke timing export failed (no active document context).");
+      return;
+    }
+
+    const snapshot = this.engine.getAnalyticsSnapshot();
+    const filename = `keyboard-defense-keystroke-timing-${snapshot.capturedAt.replace(/[:.]/g, "-")}.csv`;
+    const blob = new Blob([buildKeystrokeTimingHistogramCsv(samples)], {
+      type: "text/csv"
+    });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    try {
+      link.click();
+      const summary = summarizeKeystrokeTimings(samples);
+      const medianNote =
+        typeof summary.p50Ms === "number" ? `, median ${Math.round(summary.p50Ms)}ms` : "";
+      const p90Note = typeof summary.p90Ms === "number" ? `, p90 ${Math.round(summary.p90Ms)}ms` : "";
+      this.hud.appendLog(
+        `Keystroke timing exported (${samples.length} samples${medianNote}${p90Note}) to ${filename}`
+      );
+    } finally {
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+  }
+  exportProgress() {
+    if (typeof window === "undefined" || !window.localStorage) {
+      this.hud.appendLog("Progress export unavailable (local storage missing).");
+      return;
+    }
+    const payload = exportProgressTransferPayload(window.localStorage);
+    const keyCount = Object.keys(payload.entries ?? {}).length;
+
+    if (typeof document === "undefined" || !document.body) {
+      console.warn("Progress export skipped: document context unavailable.");
+      this.hud.appendLog("Progress export failed (no active document context).");
+      return;
+    }
+    const filename = `keyboard-defense-progress-${payload.exportedAt.replace(/[:.]/g, "-")}.json`;
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {
+      type: "application/json"
+    });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    try {
+      link.click();
+      this.hud.appendLog(
+        keyCount === 1 ? `Progress exported (1 key) to ${filename}` : `Progress exported (${keyCount} keys) to ${filename}`
+      );
+    } finally {
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+  }
+  importProgress() {
+    if (typeof window === "undefined" || !window.localStorage) {
+      this.hud.appendLog("Progress import unavailable (local storage missing).");
+      return;
+    }
+    if (typeof document === "undefined" || !document.body) {
+      console.warn("Progress import skipped: document context unavailable.");
+      this.hud.appendLog("Progress import failed (no active document context).");
+      return;
+    }
+
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "application/json";
+    input.style.position = "fixed";
+    input.style.left = "-9999px";
+    input.style.width = "1px";
+    input.style.height = "1px";
+    document.body.appendChild(input);
+
+    const cleanup = () => {
+      input.value = "";
+      document.body.removeChild(input);
+    };
+
+    input.addEventListener("change", () => {
+      const file = input.files?.[0] ?? null;
+      if (!file) {
+        cleanup();
+        return;
+      }
+      file
+        .text()
+        .then((raw) => {
+          let parsed;
+          try {
+            parsed = JSON.parse(raw);
+          } catch (error) {
+            this.hud.appendLog("Progress import failed (invalid JSON).");
+            console.warn("[progress] import failed: invalid JSON", error);
+            return;
+          }
+          const shouldApply =
+            typeof window.confirm === "function"
+              ? window.confirm("Import progress will overwrite your current local data and reload the game. Continue?")
+              : true;
+          if (!shouldApply) {
+            this.hud.appendLog("Progress import cancelled.");
+            return;
+          }
+          const result = importProgressTransferPayload(window.localStorage, parsed);
+          if (result.errors.length > 0) {
+            this.hud.appendLog(`Progress import failed: ${result.errors[0]}`);
+            console.warn("[progress] import failed", result.errors);
+            return;
+          }
+          const noun = result.applied === 1 ? "key" : "keys";
+          const removedLabel = result.removed > 0 ? `, removed ${result.removed}` : "";
+          this.hud.appendLog(`Progress imported (${result.applied} ${noun}${removedLabel}). Reloading...`);
+          window.location?.reload?.();
+        })
+        .finally(() => {
+          cleanup();
+        });
+    });
+
+    input.click();
+  }
+  handleDropoffReasonSelected(reasonId) {
+    const reason = typeof reasonId === "string" ? reasonId.trim() : "";
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    if (!window.localStorage) {
+      this.hud.appendLog("Drop-off prompt unavailable (local storage missing). Reloading...");
+      window.location?.reload?.();
+      return;
+    }
+
+    const snapshot = this.engine.getAnalyticsSnapshot();
+    try {
+      recordDropoffReason(window.localStorage, {
+        capturedAt: snapshot.capturedAt,
+        reasonId: reason || "skip",
+        mode: snapshot.mode,
+        waveIndex: snapshot.wave?.index ?? 0,
+        wavesCompleted: snapshot.analytics?.waveSummaries?.length ?? 0,
+        breaches: snapshot.analytics?.sessionBreaches ?? 0,
+        accuracy: snapshot.typing?.accuracy ?? 0,
+        wpm: snapshot.typing?.wpm ?? 0
+      });
+    } catch (error) {
+      console.warn("[dropoff] failed to record drop-off reason", error);
+    }
+
+    this.hud.appendLog("Ending session... Reloading.");
+    window.location?.reload?.();
+  }
   async copyAnalyticsRecap() {
     const clipboard = typeof navigator !== "undefined" ? navigator.clipboard : undefined;
     if (!clipboard || typeof clipboard.writeText !== "function") {
@@ -4740,13 +5964,52 @@ export class GameController {
     if (this.lastTimestamp === null) {
       this.lastTimestamp = timestamp;
     }
-    const deltaSeconds = ((timestamp - this.lastTimestamp) / 1000) * this.speedMultiplier;
+    const rawDeltaSeconds = (timestamp - this.lastTimestamp) / 1000;
+    if (typeof this.sessionWallTimeSeconds !== "number" || !Number.isFinite(this.sessionWallTimeSeconds)) {
+      this.sessionWallTimeSeconds = 0;
+    }
+    if (Number.isFinite(rawDeltaSeconds) && rawDeltaSeconds > 0) {
+      this.sessionWallTimeSeconds += rawDeltaSeconds;
+    }
+    const uiScale =
+      typeof this.uiTimeScaleMultiplier === "number" && Number.isFinite(this.uiTimeScaleMultiplier)
+        ? this.uiTimeScaleMultiplier
+        : 1;
+    const deltaSeconds = rawDeltaSeconds * this.speedMultiplier * uiScale;
     this.lastTimestamp = timestamp;
+    this.updateKeystrokeTimingGate(timestamp);
     this.tutorialManager?.update(deltaSeconds);
     this.engine.update(deltaSeconds);
     this.render();
     this.rafId = requestAnimationFrame((time) => this.tick(time));
   }
+
+  updateKeystrokeTimingGate(nowMs) {
+    const now = typeof nowMs === "number" && Number.isFinite(nowMs) ? nowMs : performance.now();
+    if (!Number.isFinite(now)) return;
+    if (now < (this.keystrokeTimingGateNextUpdateAt ?? 0)) {
+      return;
+    }
+    this.keystrokeTimingGateNextUpdateAt = now + KEYSTROKE_TIMING_GATE_UPDATE_MS;
+
+    const samples = Array.isArray(this.keystrokeTimingSamples)
+      ? this.keystrokeTimingSamples.slice(-KEYSTROKE_TIMING_GATE_WINDOW_SAMPLES)
+      : [];
+    const gate = buildKeystrokeTimingGate({ samples, profile: this.keystrokeTimingProfile });
+    const previous =
+      typeof this.keystrokeTimingGateMultiplier === "number" &&
+      Number.isFinite(this.keystrokeTimingGateMultiplier)
+        ? this.keystrokeTimingGateMultiplier
+        : 1;
+    const blended =
+      previous * (1 - KEYSTROKE_TIMING_GATE_SMOOTHING_ALPHA) +
+      gate.multiplier * KEYSTROKE_TIMING_GATE_SMOOTHING_ALPHA;
+    const clamped = Math.max(0.85, Math.min(1, blended));
+    this.keystrokeTimingGateMultiplier = clamped;
+    this.keystrokeTimingGateSnapshot = { ...gate, multiplier: clamped };
+    this.engine.setSpawnSpeedGateMultiplier(clamped);
+  }
+
   replayTutorial() {
     this.replayTutorialFromDebug();
   }
@@ -4806,6 +6069,7 @@ export class GameController {
   }
   render() {
     this.currentState = this.engine.getState();
+    this.tickTypoRecoveryChallenge();
     const turretSignature = this.computeTurretSignature(this.currentState);
     if (turretSignature !== this.lastTurretSignature) {
       this.lastTurretSignature = turretSignature;
@@ -4825,23 +6089,37 @@ export class GameController {
     const starfieldAnalytics = this.buildStarfieldAnalyticsSummary(starfieldState);
     this.engine.setStarfieldAnalytics(starfieldAnalytics);
     this.handleStarfieldStateChange(starfieldAnalytics);
+    const challengeSelection = this.getChallengeModifiersSelection();
+    const challengeActive =
+      this.currentState.mode === "practice" &&
+      Boolean(challengeSelection.enabled) &&
+      (Boolean(challengeSelection.fog) ||
+        Boolean(challengeSelection.fastSpawns) ||
+        Boolean(challengeSelection.limitedMistakes));
+    const fogOfWar = challengeActive && Boolean(challengeSelection.fog);
     this.renderer.render(this.currentState, impactRenders, {
       reducedMotion: this.reducedMotionEnabled,
       checkeredBackground: this.checkeredBackgroundEnabled,
       turretRange,
       starfield: starfieldState,
-      screenShake: this.getScreenShakeOffset()
+      screenShake: this.getScreenShakeOffset(),
+      challengeFog: fogOfWar
     });
     this.updateAmbientTrack(this.currentState);
     this.handleGameStatusAudio(this.currentState.status);
     this.syncCanvasResizeCause();
-    const upcoming = this.engine.getUpcomingSpawns();
+    const upcoming = fogOfWar ? [] : this.engine.getUpcomingSpawns();
     this.hud.update(this.currentState, upcoming, {
       colorBlindFriendly: this.isColorblindPaletteActive() || this.checkeredBackgroundEnabled,
       tutorialCompleted: this.tutorialCompleted,
       loreUnlocked: this.unlockedLore?.size ?? 0,
-      lessonsCompleted: this.lessonProgress?.lessonsCompleted ?? 0
+      lessonsCompleted: this.lessonProgress?.lessonsCompleted ?? 0,
+      wallTimeSeconds: this.sessionWallTimeSeconds ?? 0,
+      wavePreviewEmptyMessage: fogOfWar ? "Fog of war: intel hidden." : undefined
     });
+    const sessionGoalsFinalized = this.maybeFinalizeSessionGoals(this.currentState);
+    this.syncSessionGoalsToHud(this.currentState, { force: sessionGoalsFinalized });
+    this.maybeFinalizeKeystrokeTimingProfile(this.currentState);
     const typingDrillRecommendation = this.buildTypingDrillRecommendation(this.currentState);
     this.setTypingDrillCtaRecommendation(typingDrillRecommendation);
     this.setTypingDrillMenuRecommendation(typingDrillRecommendation);
@@ -4885,7 +6163,8 @@ export class GameController {
       lastSummary: summaries.length > 0 ? summaries[summaries.length - 1] : undefined,
       assetIntegrity: this.assetIntegritySummary ?? undefined,
       lastCanvasResizeCause: this.renderer?.getLastResizeCause?.() ?? null,
-      starfield: starfieldState ?? undefined
+      starfield: starfieldState ?? undefined,
+      keystrokeTimingGate: this.keystrokeTimingGateSnapshot ?? undefined
     });
     this.checkFirstEncounterOverlay();
   }
@@ -5010,6 +6289,8 @@ export class GameController {
           onSummary: (summary) => this.recordTypingDrillSummary(summary)
         }
       });
+      this.syncTypingDrillUnlocksToOverlay();
+      this.syncErrorClustersToOverlay();
     }
     const ctaButton = document.getElementById("typing-drills-open");
     if (ctaButton instanceof HTMLButtonElement) {
@@ -5020,6 +6301,14 @@ export class GameController {
       optionsButton.addEventListener("click", () => this.openTypingDrills("options"));
     }
   }
+
+  attachWeeklyQuestHooks() {
+    const trialButton = document.getElementById("weekly-quest-trial-start");
+    if (trialButton instanceof HTMLButtonElement) {
+      trialButton.addEventListener("click", () => this.startWeeklyTrial());
+    }
+  }
+
   attachInputHandlers(typingInput) {
     const syncLockIndicators = (event) => {
       const capsOn = Boolean(event?.getModifierState?.("CapsLock"));
@@ -5027,9 +6316,61 @@ export class GameController {
       this.hud.setCapsLockWarning(capsOn);
       this.hud.setLockIndicators({ capsOn, numOn });
     };
+    const recordKeystrokeTiming = (event) => {
+      if (!event || event.repeat) return;
+      const nowMs =
+        typeof performance !== "undefined" && typeof performance.now === "function"
+          ? performance.now()
+          : Date.now();
+      if (!Number.isFinite(nowMs) || nowMs < 0) return;
+      const previous = this.lastKeystrokeTimingAt;
+      this.lastKeystrokeTimingAt = nowMs;
+      if (typeof previous !== "number" || !Number.isFinite(previous)) {
+        return;
+      }
+      const deltaMs = nowMs - previous;
+      if (deltaMs < KEYSTROKE_TIMING_MIN_GAP_MS || deltaMs > KEYSTROKE_TIMING_MAX_GAP_MS) {
+        return;
+      }
+      if (!Array.isArray(this.keystrokeTimingSamples)) {
+        this.keystrokeTimingSamples = [];
+      }
+      this.keystrokeTimingSamples.push(Math.round(deltaMs));
+      if (this.keystrokeTimingSamples.length > KEYSTROKE_TIMING_MAX_SAMPLES) {
+        this.keystrokeTimingSamples.shift();
+      }
+      if (!Array.isArray(this.fatigueWaveTimingSamples)) {
+        this.fatigueWaveTimingSamples = [];
+      }
+      this.fatigueWaveTimingSamples.push(Math.round(deltaMs));
+      if (this.fatigueWaveTimingSamples.length > KEYSTROKE_TIMING_MAX_SAMPLES) {
+        this.fatigueWaveTimingSamples.shift();
+      }
+    };
     const handler = (event) => {
       syncLockIndicators(event);
       if (this.typingDrillsOverlayActive) {
+        return;
+      }
+      if (this.handleTypoRecoveryShortcut(event)) {
+        return;
+      }
+      if (
+        event.key === "Tab" &&
+        !event.repeat &&
+        !event.ctrlKey &&
+        !event.metaKey &&
+        !event.altKey &&
+        this.running &&
+        !this.manualTick &&
+        !this.menuActive &&
+        !this.optionsOverlayActive &&
+        !this.waveScorecardActive &&
+        !this.tutorialHoldLoop &&
+        !this.tutorialManager?.getState?.().active
+      ) {
+        event.preventDefault();
+        this.hud?.toggleBuildMenu?.();
         return;
       }
       if (event.key === "Enter") {
@@ -5051,14 +6392,80 @@ export class GameController {
         const result = this.engine.handleBackspace();
         if (result.status !== "ignored") {
           event.preventDefault();
+          recordKeystrokeTiming(event);
           this.render();
         }
         return;
       }
+      if (
+        !event.repeat &&
+        !event.ctrlKey &&
+        !event.metaKey &&
+        !event.altKey &&
+        event.key.length === 1 &&
+        /^[1-5]$/.test(event.key) &&
+        this.running &&
+        !this.manualTick &&
+        !this.menuActive &&
+        !this.optionsOverlayActive &&
+        !this.waveScorecardActive &&
+        !this.tutorialHoldLoop &&
+        !this.tutorialManager?.getState?.().active
+      ) {
+        const lane = Math.max(0, Number(event.key) - 1);
+        const lanes = new Set((this.engine?.config?.turretSlots ?? []).map((slot) => slot.lane));
+        if (!lanes.has(lane)) {
+          event.preventDefault();
+          return;
+        }
+        const storage = typeof window !== "undefined" ? window.localStorage : null;
+        const medalProgress = this.lessonMedalProgress ?? readLessonMedalProgress(storage);
+        const bestSupport = buildLessonMedalViewState(medalProgress).bestByMode?.support ?? null;
+        const tier = bestSupport?.tier ?? null;
+        const configByTier =
+          tier === "platinum"
+            ? { multiplier: 1.2, duration: 4.5, cooldown: 14, label: "Platinum" }
+            : tier === "gold"
+              ? { multiplier: 1.16, duration: 4.0, cooldown: 16, label: "Gold" }
+              : tier === "silver"
+                ? { multiplier: 1.12, duration: 3.5, cooldown: 18, label: "Silver" }
+                : tier === "bronze"
+                  ? { multiplier: 1.08, duration: 3.0, cooldown: 20, label: "Bronze" }
+                  : { multiplier: 1.06, duration: 2.5, cooldown: 22, label: "Unranked" };
+        const applied = this.engine.activateSupportBoost(lane, configByTier);
+        event.preventDefault();
+        recordKeystrokeTiming(event);
+        this.currentState = this.engine.getState();
+        const support = this.currentState.supportBoost ?? null;
+        const laneLabel = ["A", "B", "C", "D", "E"][lane] ?? `${lane + 1}`;
+        if (applied) {
+          this.hud?.appendLog?.(
+            `Support surge (${configByTier.label}): lane ${laneLabel} x${configByTier.multiplier.toFixed(2)} for ${configByTier.duration.toFixed(1)}s.`
+          );
+          this.hud?.showCastleMessage?.(`Support surge: lane ${laneLabel}.`);
+          this.render();
+          return;
+        }
+        const cooldown = Math.max(0, support?.cooldownRemaining ?? 0);
+        if (cooldown > 0.05) {
+          this.hud?.showCastleMessage?.(`Support surge cooling down (${cooldown.toFixed(1)}s).`);
+          return;
+        }
+        this.hud?.showCastleMessage?.("Support surge unavailable right now.");
+        return;
+      }
       if (event.key.length === 1 && /^[a-zA-Z]$/.test(event.key)) {
-        const result = this.engine.inputCharacter(event.key);
+        const comboBefore = this.currentState?.typing?.combo ?? 0;
+        this.lastTypingInputContext = { comboBefore };
+        let result;
+        try {
+          result = this.engine.inputCharacter(event.key);
+        } finally {
+          this.lastTypingInputContext = null;
+        }
         if (result.status !== "ignored") {
           event.preventDefault();
+          recordKeystrokeTiming(event);
           this.render();
           if (result.status === "completed") {
             this.tutorialManager?.notify({
@@ -5073,10 +6480,12 @@ export class GameController {
     typingInput.addEventListener("keyup", syncLockIndicators);
     typingInput.addEventListener("focus", () => {
       typingInput.select();
+      this.lastKeystrokeTimingAt = null;
       this.hud.setCapsLockWarning(false);
       this.hud.setLockIndicators({ capsOn: false, numOn: false });
     });
     typingInput.addEventListener("blur", () => {
+      this.lastKeystrokeTimingAt = null;
       this.hud.setCapsLockWarning(false);
       this.hud.setLockIndicators({ capsOn: false, numOn: false });
     });
@@ -5392,6 +6801,10 @@ export class GameController {
       persist: false,
       render: false
     });
+    this.setVirtualKeyboardLayout(
+      stored.virtualKeyboardLayout ?? DEFAULT_VIRTUAL_KEYBOARD_LAYOUT,
+      { silent: true, persist: false, render: false }
+    );
     this.setHapticsEnabled(stored.hapticsEnabled ?? false, {
       silent: true,
       persist: false,
@@ -5588,15 +7001,29 @@ export class GameController {
     if (clearDummiesButton instanceof HTMLButtonElement) {
       clearDummiesButton.addEventListener("click", () => this.clearPracticeDummies());
     }
+    const readWavePreviewUrlFromStorage = () => {
+      try {
+        return window.localStorage?.getItem("wavePreviewUrl") ?? "";
+      } catch {
+        return "";
+      }
+    };
+    const writeWavePreviewUrlToStorage = (url) => {
+      try {
+        window.localStorage?.setItem("wavePreviewUrl", url);
+      } catch {
+        // ignore
+      }
+    };
     const resolveWavePreviewUrl = () => {
-      const storedUrl = safeWindow().localStorage?.getItem("wavePreviewUrl")?.trim() ?? "";
+      const storedUrl = readWavePreviewUrlFromStorage().trim();
       const inputUrl =
         wavePreviewUrlInput instanceof HTMLInputElement ? wavePreviewUrlInput.value.trim() : "";
       const candidate = inputUrl || storedUrl;
       return candidate && candidate.startsWith("http") ? candidate : "http://localhost:4179/";
     };
     if (wavePreviewUrlInput instanceof HTMLInputElement) {
-      const storedUrl = safeWindow().localStorage?.getItem("wavePreviewUrl");
+      const storedUrl = readWavePreviewUrlFromStorage();
       if (storedUrl && storedUrl.startsWith("http")) {
         wavePreviewUrlInput.value = storedUrl;
       }
@@ -5604,13 +7031,13 @@ export class GameController {
     if (wavePreviewSaveButton instanceof HTMLButtonElement && wavePreviewUrlInput) {
       wavePreviewSaveButton.addEventListener("click", () => {
         const url = resolveWavePreviewUrl();
-        safeWindow().localStorage?.setItem("wavePreviewUrl", url);
+        writeWavePreviewUrlToStorage(url);
       });
     }
     if (wavePreviewButton instanceof HTMLButtonElement) {
       wavePreviewButton.addEventListener("click", () => {
         const url = resolveWavePreviewUrl();
-        safeWindow().localStorage?.setItem("wavePreviewUrl", url);
+        writeWavePreviewUrlToStorage(url);
         try {
           window.open(url, "_blank", "noopener,noreferrer");
         } catch {
@@ -5768,6 +7195,14 @@ export class GameController {
         type: "turret:targeting",
         payload: { slotId, priority }
       });
+    }
+  }
+  handleBuildMenuToggle(open) {
+    const active = Boolean(open);
+    this.uiTimeScaleMultiplier = active ? BUILD_MENU_TIME_SCALE : 1;
+    if (active) {
+      const pct = Math.round(BUILD_MENU_TIME_SCALE * 100);
+      this.hud?.showCastleMessage?.(`Build menu open: slow-mo ${pct}%.`);
     }
   }
   handleTurretPresetSave(presetId) {
@@ -5992,6 +7427,7 @@ export class GameController {
     this.tutorialManager.reset();
     if (forceReplay) {
       this.engine.reset();
+      this.sessionWallTimeSeconds = 0;
       this.bestCombo = 0;
       this.impactEffects = [];
       this.screenShakeBursts = [];
@@ -6007,8 +7443,214 @@ export class GameController {
     this.engine.setMode(enabled ? "practice" : "campaign");
   }
 
+  applyChallengeModifiersToEngine() {
+    if (!this.engine || typeof this.engine.setChallengeModifiers !== "function") {
+      return null;
+    }
+    const selection = this.getChallengeModifiersSelection();
+    const anyEnabled =
+      Boolean(selection.enabled) &&
+      (Boolean(selection.fog) || Boolean(selection.fastSpawns) || Boolean(selection.limitedMistakes));
+    if (!anyEnabled) {
+      this.engine.setChallengeModifiers(null);
+      return null;
+    }
+
+    const view = buildChallengeModifiersViewState({
+      version: CHALLENGE_MODIFIERS_VERSION,
+      selection,
+      updatedAt: new Date().toISOString()
+    });
+
+    this.engine.setChallengeModifiers({
+      fog: Boolean(selection.fog),
+      fastSpawns: Boolean(selection.fastSpawns),
+      limitedMistakes: Boolean(selection.limitedMistakes),
+      mistakeBudget: selection.mistakeBudget,
+      scoreMultiplier: view.scoreMultiplier
+    });
+
+    return view;
+  }
+
+  getTypoRecoveryNowMs() {
+    return typeof performance !== "undefined" && typeof performance.now === "function"
+      ? performance.now()
+      : Date.now();
+  }
+
+  cancelTypoRecoveryChallenge() {
+    this.typoRecoveryActive = false;
+    this.typoRecoveryStep = 0;
+    this.typoRecoveryDeadlineAtMs = 0;
+    this.typoRecoveryComboBeforeError = 0;
+  }
+
+  tickTypoRecoveryChallenge(nowMs) {
+    if (!this.typoRecoveryActive) {
+      return;
+    }
+    const now = typeof nowMs === "number" && Number.isFinite(nowMs) ? nowMs : this.getTypoRecoveryNowMs();
+    const state = this.currentState ?? this.engine.getState();
+    if (!state || state.status !== "running" || state.wave?.inCountdown) {
+      this.cancelTypoRecoveryChallenge();
+      return;
+    }
+    const deadline =
+      typeof this.typoRecoveryDeadlineAtMs === "number" ? this.typoRecoveryDeadlineAtMs : 0;
+    if (deadline && now > deadline) {
+      this.cancelTypoRecoveryChallenge();
+    }
+  }
+
+  maybeStartTypoRecoveryChallenge(options = {}) {
+    if (this.typoRecoveryActive) {
+      return false;
+    }
+    if (this.tutorialManager?.getState?.().active) {
+      return false;
+    }
+    const state = this.engine.getState();
+    if (!state || state.status !== "running" || state.wave?.inCountdown) {
+      return false;
+    }
+    const now = this.getTypoRecoveryNowMs();
+    if (now < (this.typoRecoveryCooldownUntilMs ?? 0)) {
+      return false;
+    }
+    const waveIndex = typeof state.wave?.index === "number" ? state.wave.index : null;
+    if (typeof waveIndex === "number" && this.typoRecoveryWaveIndex === waveIndex) {
+      return false;
+    }
+    const comboBefore =
+      typeof options.comboBefore === "number" && Number.isFinite(options.comboBefore)
+        ? Math.max(0, Math.floor(options.comboBefore))
+        : 0;
+    if (comboBefore < 3) {
+      return false;
+    }
+
+    this.typoRecoveryActive = true;
+    this.typoRecoveryStep = 0;
+    this.typoRecoveryWaveIndex = waveIndex;
+    this.typoRecoveryComboBeforeError = comboBefore;
+    this.typoRecoveryDeadlineAtMs = now + 5200;
+
+    const displayed = this.hud?.announceEnemyTaunt?.("Typo recovery: Ctrl/Cmd + Z (Undo)", {
+      durationMs: 5200
+    });
+    if (!displayed) {
+      this.hud?.showCastleMessage?.("Typo recovery: Ctrl/Cmd + Z (Undo)");
+    }
+    this.hud?.appendLog?.("Typo recovery prompt: Ctrl/Cmd+Z then redo to restore combo.");
+    return true;
+  }
+
+  matchesShortcutChord(chord, event) {
+    if (!chord || !event) {
+      return false;
+    }
+    const expectedKey =
+      typeof chord.key === "string" && chord.key.length === 1 ? chord.key.toLowerCase() : chord.key;
+    const actualKey = event.key.length === 1 ? event.key.toLowerCase() : event.key;
+    if (actualKey !== expectedKey) {
+      return false;
+    }
+    const primary = Boolean(event.ctrlKey || event.metaKey);
+    if (typeof chord.primary === "boolean" && chord.primary !== primary) {
+      return false;
+    }
+    if (typeof chord.shift === "boolean" && chord.shift !== Boolean(event.shiftKey)) {
+      return false;
+    }
+    if (typeof chord.alt === "boolean" && chord.alt !== Boolean(event.altKey)) {
+      return false;
+    }
+    return true;
+  }
+
+  handleTypoRecoveryShortcut(event) {
+    if (!event || event.repeat) {
+      return false;
+    }
+    const primary = Boolean(event.ctrlKey || event.metaKey);
+    if (!primary) {
+      return false;
+    }
+    const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
+    if (key !== "z" && key !== "y") {
+      return false;
+    }
+
+    event.preventDefault();
+    event.stopPropagation?.();
+    event.stopImmediatePropagation?.();
+
+    if (!this.typoRecoveryActive) {
+      return true;
+    }
+
+    const now = this.getTypoRecoveryNowMs();
+    const deadline =
+      typeof this.typoRecoveryDeadlineAtMs === "number" ? this.typoRecoveryDeadlineAtMs : 0;
+    if (deadline && now > deadline) {
+      this.cancelTypoRecoveryChallenge();
+      return true;
+    }
+
+    const step = typeof this.typoRecoveryStep === "number" ? this.typoRecoveryStep : 0;
+    if (step <= 0) {
+      const matched = this.matchesShortcutChord(
+        { key: "z", primary: true, shift: false },
+        event
+      );
+      if (!matched) {
+        this.hud?.showCastleMessage?.("Recovery: press Ctrl/Cmd + Z.");
+        return true;
+      }
+      this.typoRecoveryStep = 1;
+      this.typoRecoveryDeadlineAtMs = now + 5200;
+      this.hud?.announceEnemyTaunt?.(
+        "Typo recovery: Ctrl/Cmd + Y (Redo) or Ctrl/Cmd + Shift + Z",
+        { durationMs: 5200 }
+      );
+      return true;
+    }
+
+    const redoMatched =
+      this.matchesShortcutChord({ key: "y", primary: true, shift: false }, event) ||
+      this.matchesShortcutChord({ key: "z", primary: true, shift: true }, event);
+    if (!redoMatched) {
+      this.hud?.showCastleMessage?.("Recovery: press Ctrl/Cmd + Y.");
+      return true;
+    }
+    this.completeTypoRecoveryChallenge();
+    return true;
+  }
+
+  completeTypoRecoveryChallenge() {
+    const combo =
+      typeof this.typoRecoveryComboBeforeError === "number" && Number.isFinite(this.typoRecoveryComboBeforeError)
+        ? Math.max(0, Math.floor(this.typoRecoveryComboBeforeError))
+        : 0;
+    this.cancelTypoRecoveryChallenge();
+    this.typoRecoveryCooldownUntilMs = this.getTypoRecoveryNowMs() + 15000;
+    if (combo > 0 && typeof this.engine.recoverCombo === "function") {
+      this.engine.recoverCombo(combo);
+    }
+    this.hud?.appendLog?.("Typo recovery complete: combo restored.");
+    this.hud?.showCastleMessage?.("Recovery complete: combo restored.");
+    this.hud?.announceEnemyTaunt?.("Recovery complete: combo restored.", { durationMs: 1400 });
+    this.render();
+  }
+
   startPracticeMode() {
+    if (this.isScreenTimeLockoutActive()) {
+      this.handleScreenTimeLockoutAttempt("practice-mode");
+      return;
+    }
     this.setPracticeMode(true);
+    const challenge = this.applyChallengeModifiersToEngine();
     this.closeOptionsOverlay({ resume: false });
     this.closeWaveScorecard({ resume: false });
     this.pause();
@@ -6019,13 +7661,149 @@ export class GameController {
     this.tutorialCompleted = true;
     this.hud.setTutorialMessage(null);
     this.engine.reset();
+    this.sessionWallTimeSeconds = 0;
     this.bestCombo = 0;
     this.impactEffects = [];
     this.screenShakeBursts = [];
     this.currentState = this.engine.getState();
-    this.hud.appendLog("Practice mode engaged: waves now loop endlessly.");
+    const focusLane = this.engine.getLaneFocus();
+    const laneLabel =
+      typeof focusLane === "number"
+        ? `Lane ${["A", "B", "C", "D", "E"][focusLane] ?? focusLane + 1}`
+        : "All lanes";
+    this.hud.appendLog(
+      `Practice mode engaged: waves now loop endlessly. Focus lane: ${laneLabel}.`
+    );
+    if (challenge?.active?.length) {
+      this.hud.appendLog(`Challenge modifiers active: ${challenge.summary}`);
+    }
     this.render();
     this.start();
+  }
+
+  startWeeklyTrial() {
+    if (this.isScreenTimeLockoutActive()) {
+      this.handleScreenTimeLockoutAttempt("weekly-trial");
+      return;
+    }
+
+    const storage =
+      typeof window !== "undefined" && window.localStorage ? window.localStorage : null;
+    this.weeklyQuestBoard = this.weeklyQuestBoard ?? readWeeklyQuestBoard(storage);
+    const view = buildWeeklyQuestBoardView(this.weeklyQuestBoard);
+    if (view.trial.status !== "ready") {
+      const message =
+        view.trial.status === "completed"
+          ? "Weekly Trial already completed this week."
+          : "Weekly Trial locked: complete the weekly quests first.";
+      this.hud.appendLog(message);
+      this.syncWeeklyQuestBoardToHud();
+      return;
+    }
+
+    if (!this.weeklyTrialBackup) {
+      this.weeklyTrialBackup = {
+        waves: this.engine.config.waves,
+        prepCountdownSeconds: this.engine.config.prepCountdownSeconds,
+        dynamicSpawns: Boolean(this.engine.config.featureToggles?.dynamicSpawns),
+        evacuationEvents: Boolean(this.engine.config.featureToggles?.evacuationEvents),
+        loopWaves: this.engine.isLoopingWaves(),
+        mode: this.engine.getMode(),
+        laneFocus: this.engine.getLaneFocus()
+      };
+    }
+
+    this.weeklyTrialActive = true;
+    this.weeklyTrialFinalized = false;
+    this.weeklyTrialReturnPending = false;
+
+    const trialWave = buildWeeklyTrialWaveConfig(this.weeklyQuestBoard.week);
+    this.engine.config.waves = [trialWave];
+    this.engine.config.prepCountdownSeconds = 0;
+    if (this.engine.config.featureToggles) {
+      this.engine.config.featureToggles.dynamicSpawns = false;
+      this.engine.config.featureToggles.evacuationEvents = false;
+    }
+    this.engine.setLaneFocus(null);
+    this.engine.setLoopWaves(false);
+    this.engine.reset();
+    this.sessionWallTimeSeconds = 0;
+    this.engine.setMode("practice");
+    const challenge = this.applyChallengeModifiersToEngine();
+
+    this.closeOptionsOverlay({ resume: false });
+    this.closeWaveScorecard({ resume: false });
+    this.pause();
+    this.menuActive = false;
+    this.pendingTutorialSummary = null;
+    this.tutorialHoldLoop = false;
+
+    this.bestCombo = 0;
+    this.impactEffects = [];
+    this.screenShakeBursts = [];
+    this.currentState = this.engine.getState();
+    this.hud.appendLog("Weekly Trial started: defend through the bespoke challenge wave.");
+    if (challenge?.active?.length) {
+      this.hud.appendLog(`Challenge modifiers active: ${challenge.summary}`);
+    }
+    this.render();
+    this.start();
+  }
+
+  restoreWeeklyTrialConfig() {
+    const backup = this.weeklyTrialBackup;
+    if (!backup) return;
+    this.engine.config.waves = backup.waves;
+    this.engine.config.prepCountdownSeconds = backup.prepCountdownSeconds;
+    if (this.engine.config.featureToggles) {
+      this.engine.config.featureToggles.dynamicSpawns = backup.dynamicSpawns;
+      this.engine.config.featureToggles.evacuationEvents = backup.evacuationEvents;
+    }
+    this.engine.setLaneFocus(backup.laneFocus);
+    this.engine.setLoopWaves(backup.loopWaves);
+    this.engine.setMode(backup.mode);
+  }
+
+  completeWeeklyTrialReturn() {
+    if (!this.weeklyTrialReturnPending) {
+      return false;
+    }
+    this.weeklyTrialReturnPending = false;
+    const backup = this.weeklyTrialBackup;
+    if (!backup) {
+      return false;
+    }
+
+    this.restoreWeeklyTrialConfig();
+    this.weeklyTrialBackup = null;
+
+    const returnToPractice = Boolean(backup.loopWaves || backup.mode === "practice");
+    if (returnToPractice) {
+      this.startPracticeMode();
+      return true;
+    }
+
+    if (this.isScreenTimeLockoutActive()) {
+      this.handleScreenTimeLockoutAttempt("campaign");
+      return false;
+    }
+
+    this.setPracticeMode(false);
+    this.closeOptionsOverlay({ resume: false });
+    this.pause();
+    this.menuActive = false;
+    this.pendingTutorialSummary = null;
+    this.tutorialHoldLoop = false;
+    this.engine.reset();
+    this.sessionWallTimeSeconds = 0;
+    this.bestCombo = 0;
+    this.impactEffects = [];
+    this.screenShakeBursts = [];
+    this.currentState = this.engine.getState();
+    this.hud.appendLog("Returning to Campaign...");
+    this.render();
+    this.start();
+    return true;
   }
 
   initializeLessonProgress() {
@@ -6050,6 +7828,44 @@ export class GameController {
     const storage =
       typeof window !== "undefined" && window.localStorage ? window.localStorage : null;
     this.wpmLadderProgress = readWpmLadderProgress(storage);
+  }
+
+  initializeSessionGoals() {
+    const storage =
+      typeof window !== "undefined" && window.localStorage ? window.localStorage : null;
+    this.sessionGoals = readSessionGoals(storage);
+    const placement = readPlacementTestResult(storage);
+    this.sessionGoals = seedSessionGoalsFromPlacement(this.sessionGoals, placement);
+    this.sessionGoals = writeSessionGoals(storage, this.sessionGoals);
+    this.sessionGoalsFinalized = false;
+    this.sessionGoalsNextUpdateAt = 0;
+  }
+
+  initializeKeystrokeTimingProfile() {
+    const storage =
+      typeof window !== "undefined" && window.localStorage ? window.localStorage : null;
+    this.keystrokeTimingProfile = readKeystrokeTimingProfile(storage);
+    this.keystrokeTimingProfile = writeKeystrokeTimingProfile(storage, this.keystrokeTimingProfile);
+    this.keystrokeTimingProfileFinalized = false;
+    this.keystrokeTimingGateMultiplier = 1;
+    this.keystrokeTimingGateNextUpdateAt = 0;
+    this.keystrokeTimingGateSnapshot = buildKeystrokeTimingGate({
+      samples: [],
+      profile: this.keystrokeTimingProfile
+    });
+    this.keystrokeTimingGateMultiplier =
+      this.keystrokeTimingGateSnapshot?.multiplier ?? this.keystrokeTimingGateMultiplier;
+    this.engine.setSpawnSpeedGateMultiplier(this.keystrokeTimingGateMultiplier);
+  }
+
+  initializeSpacedRepetition() {
+    const storage =
+      typeof window !== "undefined" && window.localStorage ? window.localStorage : null;
+    this.spacedRepetition = readSpacedRepetitionState(storage);
+    this.spacedRepetition = writeSpacedRepetitionState(storage, this.spacedRepetition);
+    this.spacedRepetitionLastSavedAt = 0;
+    this.spacedRepetitionWaveStats = { keys: {}, digraphs: {} };
+    this.spacedRepetitionLastProgress = { enemyId: null, buffer: "" };
   }
 
   initializeSfxLibrary() {
@@ -6093,6 +7909,110 @@ export class GameController {
     const storage =
       typeof window !== "undefined" && window.localStorage ? window.localStorage : null;
     this.trainingCalendar = readTrainingCalendar(storage);
+  }
+
+  initializeDailyQuestBoard() {
+    const storage =
+      typeof window !== "undefined" && window.localStorage ? window.localStorage : null;
+    this.dailyQuestBoard = readDailyQuestBoard(storage);
+  }
+
+  initializeWeeklyQuestBoard() {
+    const storage =
+      typeof window !== "undefined" && window.localStorage ? window.localStorage : null;
+    this.weeklyQuestBoard = readWeeklyQuestBoard(storage);
+  }
+
+  initializePracticeLaneFocus() {
+    const storage =
+      typeof window !== "undefined" && window.localStorage ? window.localStorage : null;
+    const lane = readPracticeLaneFocus(storage);
+    this.practiceLaneFocusLane = writePracticeLaneFocus(storage, lane);
+    this.engine.setLaneFocus(this.practiceLaneFocusLane);
+  }
+
+  initializeChallengeModifiers() {
+    const storage =
+      typeof window !== "undefined" && window.localStorage ? window.localStorage : null;
+    this.challengeModifiers = readChallengeModifiers(storage);
+    if (storage) {
+      this.challengeModifiers = writeChallengeModifiers(storage, this.challengeModifiers);
+    }
+  }
+
+  getChallengeModifiersSelection() {
+    const current = this.challengeModifiers?.selection ?? getDefaultChallengeModifiersSelection();
+    return normalizeChallengeModifiersSelection(current);
+  }
+
+  persistChallengeModifiersSelection(patch = {}) {
+    const storage =
+      typeof window !== "undefined" && window.localStorage ? window.localStorage : null;
+    const current = this.getChallengeModifiersSelection();
+    const nextSelection = normalizeChallengeModifiersSelection({ ...current, ...patch });
+    const nextState = {
+      ...(this.challengeModifiers ?? {
+        version: CHALLENGE_MODIFIERS_VERSION,
+        selection: nextSelection,
+        updatedAt: new Date().toISOString()
+      }),
+      version: CHALLENGE_MODIFIERS_VERSION,
+      selection: nextSelection,
+      updatedAt: new Date().toISOString()
+    };
+    this.challengeModifiers = writeChallengeModifiers(storage, nextState);
+    this.syncChallengeModifiersMainMenu();
+    return nextSelection;
+  }
+
+  syncChallengeModifiersMainMenu() {
+    const enabledToggle = document.getElementById("main-menu-challenge-enabled");
+    const fogToggle = document.getElementById("main-menu-challenge-fog");
+    const fastSpawnsToggle = document.getElementById("main-menu-challenge-fast-spawns");
+    const limitedMistakesToggle = document.getElementById("main-menu-challenge-limited-mistakes");
+    const mistakeBudgetSelect = document.getElementById("main-menu-challenge-mistake-budget");
+    const multiplierPill = document.getElementById("main-menu-challenge-multiplier");
+    const summary = document.getElementById("main-menu-challenge-summary");
+    const grid = document.getElementById("main-menu-challenge-grid");
+
+    const selection = this.getChallengeModifiersSelection();
+    const view = buildChallengeModifiersViewState(
+      this.challengeModifiers ?? {
+        version: CHALLENGE_MODIFIERS_VERSION,
+        selection,
+        updatedAt: new Date().toISOString()
+      }
+    );
+
+    if (enabledToggle instanceof HTMLInputElement) {
+      enabledToggle.checked = Boolean(selection.enabled);
+    }
+    if (fogToggle instanceof HTMLInputElement) {
+      fogToggle.checked = Boolean(selection.fog);
+      fogToggle.disabled = !selection.enabled;
+    }
+    if (fastSpawnsToggle instanceof HTMLInputElement) {
+      fastSpawnsToggle.checked = Boolean(selection.fastSpawns);
+      fastSpawnsToggle.disabled = !selection.enabled;
+    }
+    if (limitedMistakesToggle instanceof HTMLInputElement) {
+      limitedMistakesToggle.checked = Boolean(selection.limitedMistakes);
+      limitedMistakesToggle.disabled = !selection.enabled;
+    }
+    if (mistakeBudgetSelect instanceof HTMLSelectElement) {
+      mistakeBudgetSelect.value = String(selection.mistakeBudget);
+      mistakeBudgetSelect.disabled = !selection.enabled;
+    }
+
+    if (grid instanceof HTMLElement) {
+      grid.dataset.disabled = selection.enabled ? "false" : "true";
+    }
+    if (multiplierPill instanceof HTMLElement) {
+      multiplierPill.textContent = `Score x${view.scoreMultiplier.toFixed(2)}`;
+    }
+    if (summary instanceof HTMLElement) {
+      summary.textContent = view.summary;
+    }
   }
 
   initializeStreakTokens() {
@@ -6151,18 +8071,205 @@ export class GameController {
     this.hud.setSeasonTrackProgress(this.buildSeasonTrackViewState());
   }
 
-  syncLessonMedalsToHud(nextTarget) {
+  syncDailyQuestBoardToHud() {
+    if (!this.hud || !this.dailyQuestBoard) return;
+    this.hud.setDailyQuestBoard(buildDailyQuestBoardView(this.dailyQuestBoard));
+  }
+
+  syncWeeklyQuestBoardToHud() {
+    if (!this.hud || !this.weeklyQuestBoard) return;
+    this.hud.setWeeklyQuestBoard(buildWeeklyQuestBoardView(this.weeklyQuestBoard));
+  }
+
+  syncLessonMedalsToHud(nextTarget, options = {}) {
     if (!this.hud || !this.lessonMedalProgress) return;
     const state = buildLessonMedalViewState(this.lessonMedalProgress);
     if (nextTarget) {
       state.nextTarget = nextTarget;
     }
-    this.hud.setLessonMedalProgress(state);
+    this.hud.setLessonMedalProgress(state, options);
   }
 
   syncWpmLadderToHud() {
     if (!this.hud || !this.wpmLadderProgress) return;
     this.hud.setWpmLadder(buildWpmLadderView(this.wpmLadderProgress));
+  }
+
+  maybeFinalizeSessionGoals(state) {
+    if (!state || !this.sessionGoals) return false;
+    const ended = state.status === "victory" || state.status === "defeat";
+    if (!ended) {
+      this.sessionGoalsFinalized = false;
+      return false;
+    }
+    if (this.sessionGoalsFinalized) {
+      return false;
+    }
+    this.sessionGoalsFinalized = true;
+
+    const history =
+      state.analytics?.waveHistory && state.analytics.waveHistory.length > 0
+        ? state.analytics.waveHistory
+        : state.analytics?.waveSummaries ?? [];
+    const metrics = buildSessionGoalsMetrics({
+      mode: state.mode ?? "campaign",
+      status: state.status,
+      elapsedSeconds: state.time ?? 0,
+      correctInputs: state.typing?.correctInputs ?? 0,
+      accuracy: state.typing?.accuracy ?? 0,
+      waveSummaries: history
+    });
+    const capturedAt = new Date().toISOString();
+    const outcome = state.status === "victory" ? "victory" : "defeat";
+    this.sessionGoals = recordSessionGoalsRun(this.sessionGoals, {
+      capturedAt,
+      mode: state.mode ?? "campaign",
+      outcome,
+      metrics,
+      status: state.status
+    });
+    if (typeof window !== "undefined" && window.localStorage) {
+      this.sessionGoals = writeSessionGoals(window.localStorage, this.sessionGoals);
+    }
+    if (state.mode !== "practice") {
+      const questStorage =
+        typeof window !== "undefined" && window.localStorage ? window.localStorage : null;
+      this.dailyQuestBoard = this.dailyQuestBoard ?? readDailyQuestBoard(questStorage);
+      this.dailyQuestBoard = recordDailyQuestCampaignRun(this.dailyQuestBoard, {
+        wavesCompleted: metrics.wavesCompleted,
+        accuracyPct: metrics.accuracyPct
+      });
+      if (questStorage) {
+        this.dailyQuestBoard = writeDailyQuestBoard(questStorage, this.dailyQuestBoard);
+      }
+      this.syncDailyQuestBoardToHud();
+      const weeklyWasUnlocked = Boolean(this.weeklyQuestBoard?.trial?.unlockedAt);
+      this.weeklyQuestBoard = this.weeklyQuestBoard ?? readWeeklyQuestBoard(questStorage);
+      this.weeklyQuestBoard = recordWeeklyQuestCampaignRun(this.weeklyQuestBoard, {
+        wavesCompleted: metrics.wavesCompleted,
+        accuracyPct: metrics.accuracyPct
+      });
+      if (questStorage) {
+        this.weeklyQuestBoard = writeWeeklyQuestBoard(questStorage, this.weeklyQuestBoard);
+      }
+      if (!weeklyWasUnlocked && this.weeklyQuestBoard?.trial?.unlockedAt) {
+        this.hud?.appendLog?.("Weekly Trial unlocked! Open Mission Control to start it.");
+      }
+      this.syncWeeklyQuestBoardToHud();
+    }
+
+    if (this.weeklyTrialActive && !this.weeklyTrialFinalized) {
+      this.weeklyTrialFinalized = true;
+      const trialOutcome = outcome === "victory" ? "victory" : "defeat";
+      const questStorage =
+        typeof window !== "undefined" && window.localStorage ? window.localStorage : null;
+      const wasCompleted = Boolean(this.weeklyQuestBoard?.trial?.completedAt);
+      this.weeklyQuestBoard = this.weeklyQuestBoard ?? readWeeklyQuestBoard(questStorage);
+      this.weeklyQuestBoard = recordWeeklyQuestTrialAttempt(this.weeklyQuestBoard, trialOutcome);
+      if (questStorage) {
+        this.weeklyQuestBoard = writeWeeklyQuestBoard(questStorage, this.weeklyQuestBoard);
+      }
+      this.syncWeeklyQuestBoardToHud();
+      if (!wasCompleted && this.weeklyQuestBoard?.trial?.completedAt) {
+        this.hud?.appendLog?.("Weekly Trial complete! Great defense.");
+      } else if (trialOutcome === "victory") {
+        this.hud?.appendLog?.("Weekly Trial victory recorded.");
+      } else {
+        this.hud?.appendLog?.("Weekly Trial attempt recorded. You can try again anytime.");
+      }
+      this.restoreWeeklyTrialConfig();
+      this.weeklyTrialActive = false;
+      this.weeklyTrialReturnPending = true;
+      if (!this.waveScorecardActive) {
+        this.completeWeeklyTrialReturn();
+      }
+    }
+
+    const met = this.sessionGoals.lastRun
+      ? Object.values(this.sessionGoals.lastRun.results).filter((entry) => entry === "met").length
+      : 0;
+    const total = this.sessionGoals.lastRun
+      ? Object.values(this.sessionGoals.lastRun.results).filter((entry) => entry !== "pending").length
+      : 0;
+    const totalLabel = total > 0 ? total : 3;
+    this.hud?.appendLog?.(`Session goals updated: ${met}/${totalLabel} goals met.`);
+    return true;
+  }
+
+  maybeFinalizeKeystrokeTimingProfile(state) {
+    if (!state || !this.keystrokeTimingProfile) return false;
+    const ended = state.status === "victory" || state.status === "defeat";
+    if (!ended) {
+      this.keystrokeTimingProfileFinalized = false;
+      return false;
+    }
+    if (this.keystrokeTimingProfileFinalized) {
+      return false;
+    }
+    this.keystrokeTimingProfileFinalized = true;
+
+    const samples = Array.isArray(this.keystrokeTimingSamples)
+      ? this.keystrokeTimingSamples.slice(-600)
+      : [];
+    const capturedAt = new Date().toISOString();
+    const outcome = state.status === "victory" ? "victory" : "defeat";
+    this.keystrokeTimingProfile = recordKeystrokeTimingProfileRun(this.keystrokeTimingProfile, {
+      capturedAt,
+      outcome,
+      samples
+    });
+    if (typeof window !== "undefined" && window.localStorage) {
+      this.keystrokeTimingProfile = writeKeystrokeTimingProfile(
+        window.localStorage,
+        this.keystrokeTimingProfile
+      );
+    }
+
+    const last = this.keystrokeTimingProfile.lastRun;
+    if (
+      last &&
+      last.sampleCount >= 30 &&
+      typeof last.tempoWpm === "number" &&
+      typeof last.jitterMs === "number"
+    ) {
+      const bandNote = last.band ? ` (${last.band})` : "";
+      this.hud?.appendLog?.(
+        `Keystroke timing profile updated: ${Math.round(last.tempoWpm)} WPM${bandNote}, jitter ${Math.round(last.jitterMs)}ms.`
+      );
+    } else if (last) {
+      this.hud?.appendLog?.(`Keystroke timing profile captured (${last.sampleCount} samples).`);
+    }
+
+    this.keystrokeTimingGateNextUpdateAt = 0;
+    this.updateKeystrokeTimingGate(
+      typeof performance !== "undefined" ? performance.now() : Date.now()
+    );
+
+    return true;
+  }
+
+  syncSessionGoalsToHud(state, options = {}) {
+    if (!this.hud || !state || !this.sessionGoals) return;
+    const now = typeof performance !== "undefined" ? performance.now() : Date.now();
+    const force = options.force === true;
+    if (!force && now < (this.sessionGoalsNextUpdateAt ?? 0)) {
+      return;
+    }
+    this.sessionGoalsNextUpdateAt = now + 900;
+
+    const history =
+      state.analytics?.waveHistory && state.analytics.waveHistory.length > 0
+        ? state.analytics.waveHistory
+        : state.analytics?.waveSummaries ?? [];
+    const metrics = buildSessionGoalsMetrics({
+      mode: state.mode ?? "campaign",
+      status: state.status,
+      elapsedSeconds: state.time ?? 0,
+      correctInputs: state.typing?.correctInputs ?? 0,
+      accuracy: state.typing?.accuracy ?? 0,
+      waveSummaries: history
+    });
+    this.hud.setSessionGoals(buildSessionGoalsView(this.sessionGoals, metrics, state.status));
   }
 
   syncBiomeGalleryToHud() {
@@ -6259,6 +8366,28 @@ export class GameController {
     if (typeof window !== "undefined" && window.localStorage) {
       writeLessonMedalProgress(window.localStorage, medalResult.progress);
     }
+    const questStorage =
+      typeof window !== "undefined" && window.localStorage ? window.localStorage : null;
+    this.dailyQuestBoard = this.dailyQuestBoard ?? readDailyQuestBoard(questStorage);
+    this.dailyQuestBoard = recordDailyQuestDrill(this.dailyQuestBoard, {
+      medalTier: medalResult.record.tier
+    });
+    if (questStorage) {
+      this.dailyQuestBoard = writeDailyQuestBoard(questStorage, this.dailyQuestBoard);
+    }
+    this.syncDailyQuestBoardToHud();
+    const weeklyWasUnlocked = Boolean(this.weeklyQuestBoard?.trial?.unlockedAt);
+    this.weeklyQuestBoard = this.weeklyQuestBoard ?? readWeeklyQuestBoard(questStorage);
+    this.weeklyQuestBoard = recordWeeklyQuestDrill(this.weeklyQuestBoard, {
+      medalTier: medalResult.record.tier
+    });
+    if (questStorage) {
+      this.weeklyQuestBoard = writeWeeklyQuestBoard(questStorage, this.weeklyQuestBoard);
+    }
+    if (!weeklyWasUnlocked && this.weeklyQuestBoard?.trial?.unlockedAt) {
+      this.hud?.appendLog?.("Weekly Trial unlocked! Open Mission Control to start it.");
+    }
+    this.syncWeeklyQuestBoardToHud();
     const calendarDelta = drillSummaryToCalendarDelta(summary);
     this.recordWpmLadderEntry(summary);
     this.recordTrainingCalendarEntry(summary, calendarDelta);
@@ -6413,6 +8542,50 @@ export class GameController {
         this.hud.showCastleMessage(enemy.taunt);
       }
     });
+    this.engine.events.on("hazard:started", ({ lane, kind, remaining, fireRateMultiplier }) => {
+      const hazardName =
+        typeof kind === "string" && kind.length > 0 ? this.describeEnemyTier(kind) : "Hazard";
+      const laneLabel = this.describeLane(lane);
+      const durationLabel =
+        typeof remaining === "number" && Number.isFinite(remaining)
+          ? `${remaining <= 9.95 ? remaining.toFixed(1) : Math.round(remaining)}s`
+          : null;
+      const fireRateEffect =
+        typeof fireRateMultiplier === "number" &&
+        Number.isFinite(fireRateMultiplier) &&
+        fireRateMultiplier > 0
+          ? (() => {
+              const deltaPercent = Math.round((fireRateMultiplier - 1) * 100);
+              if (deltaPercent === 0) {
+                return null;
+              }
+              const sign = deltaPercent > 0 ? "+" : "";
+              return `${sign}${deltaPercent}% turret fire rate`;
+            })()
+          : null;
+      const detailParts = [durationLabel, fireRateEffect].filter((value) => value);
+      const detail = detailParts.length > 0 ? ` (${detailParts.join(", ")})` : "";
+      const message = `${hazardName} in ${laneLabel}${detail}`;
+      this.hud.appendLog(message);
+      this.hud.showCastleMessage(message);
+    });
+    this.engine.events.on("hazard:ended", ({ lane, kind }) => {
+      const hazardName =
+        typeof kind === "string" && kind.length > 0 ? this.describeEnemyTier(kind) : "Hazard";
+      const laneLabel = this.describeLane(lane);
+      this.hud.appendLog(`${hazardName} cleared from ${laneLabel}`);
+    });
+    this.engine.events.on("challenge:mistake-limit", ({ limit, errors }) => {
+      const limitLabel = typeof limit === "number" && Number.isFinite(limit) ? limit : null;
+      const errorsLabel = typeof errors === "number" && Number.isFinite(errors) ? errors : null;
+      const detail =
+        typeof errorsLabel === "number" && typeof limitLabel === "number"
+          ? ` (${errorsLabel}/${limitLabel})`
+          : "";
+      const message = `Mistake limit reached${detail}!`;
+      this.hud.appendLog(message);
+      this.hud.showCastleMessage(message);
+    });
     this.engine.events.on("enemy:defeated", ({ enemy, by, reward }) => {
       const source = by === "typing" ? "typed" : "turret";
       this.hud.appendLog(`Defeated ${enemy.word} (${source}) ${toGold(reward)}`);
@@ -6534,6 +8707,25 @@ export class GameController {
         }
       }
     });
+    this.engine.events.on("typing:progress", ({ enemyId, buffer }) => {
+      const text = typeof buffer === "string" ? buffer.toLowerCase() : "";
+      this.spacedRepetitionLastProgress = { enemyId: enemyId ?? null, buffer: text };
+      if (!text) return;
+      const lastChar = text.slice(-1);
+      if (/^[a-z]$/.test(lastChar)) {
+        const current = this.spacedRepetitionWaveStats?.keys?.[lastChar] ?? { attempts: 0, errors: 0 };
+        current.attempts += 1;
+        this.spacedRepetitionWaveStats.keys[lastChar] = current;
+      }
+      if (text.length >= 2) {
+        const digraph = text.slice(-2);
+        if (/^[a-z]{2}$/.test(digraph)) {
+          const current = this.spacedRepetitionWaveStats?.digraphs?.[digraph] ?? { attempts: 0, errors: 0 };
+          current.attempts += 1;
+          this.spacedRepetitionWaveStats.digraphs[digraph] = current;
+        }
+      }
+    });
     this.engine.events.on("typing:perfect-word", ({ word }) => {
       this.hud.appendLog(`Perfect word: ${word.toUpperCase()}!`);
     });
@@ -6543,6 +8735,37 @@ export class GameController {
       this.hud.showCastleMessage(`Bonus +${gold}g for ${count} perfect words!`);
     });
     this.engine.events.on("analytics:wave-summary", (summary) => {
+      if (typeof window !== "undefined" && window.localStorage) {
+        this.spacedRepetition = recordSpacedRepetitionObservedStats(
+          this.spacedRepetition ?? readSpacedRepetitionState(window.localStorage),
+          this.spacedRepetitionWaveStats ?? {},
+          { nowMs: Date.now() }
+        );
+        this.spacedRepetition = writeSpacedRepetitionState(window.localStorage, this.spacedRepetition);
+        this.spacedRepetitionWaveStats = { keys: {}, digraphs: {} };
+        this.spacedRepetitionLastProgress = { enemyId: null, buffer: "" };
+        this.syncErrorClustersToOverlay();
+      }
+      const nowMs = typeof performance !== "undefined" ? performance.now() : Date.now();
+      const elapsedMs = Math.max(0, nowMs - this.sessionStartMs);
+      const waveTimingSamples = Array.isArray(this.fatigueWaveTimingSamples)
+        ? this.fatigueWaveTimingSamples.slice()
+        : [];
+      const waveTimingSummary = summarizeKeystrokeTimings(waveTimingSamples);
+      const fatigueUpdate = updateFatigueDetector(
+        this.fatigueDetectorState ?? createFatigueDetectorState(),
+        {
+          waveIndex: summary.index ?? 0,
+          capturedAtMs: elapsedMs,
+          accuracy: summary.accuracy,
+          p50Ms: waveTimingSummary.p50Ms,
+          p90Ms: waveTimingSummary.p90Ms
+        }
+      );
+      this.fatigueDetectorState = fatigueUpdate.state;
+      this.fatigueWaveTimingSamples = [];
+      const fatigueTip = fatigueUpdate.prompt?.message ?? null;
+
       const comboNote = `combo x${Math.max(0, summary.maxCombo ?? 0)}`;
       const goldNote = `${summary.goldEarned >= 0 ? "+" : ""}${Math.round(summary.goldEarned ?? 0)}g`;
       const turretDamage = Math.round(summary.turretDamage ?? 0);
@@ -6563,7 +8786,7 @@ export class GameController {
         ).toFixed(1)}% accuracy, ${summary.breaches} breaches, ${notes.join(", ")}`
       );
       this.render();
-      this.presentWaveScorecard(summary);
+      this.presentWaveScorecard(summary, { tipOverride: fatigueTip });
       this.unlockLoreForWave(summary.index + 1);
     });
     this.engine.events.on("typing:error", ({ enemyId, expected, received, totalErrors }) => {
@@ -6572,12 +8795,75 @@ export class GameController {
         expected: expected ?? null,
         received: received ?? null
       });
+      const expectedLetter =
+        typeof expected === "string" && expected.length === 1 ? expected.toLowerCase() : null;
+      if (expectedLetter && /^[a-z]$/.test(expectedLetter)) {
+        const current = this.spacedRepetitionWaveStats?.keys?.[expectedLetter] ?? { attempts: 0, errors: 0 };
+        current.attempts += 1;
+        current.errors += 1;
+        this.spacedRepetitionWaveStats.keys[expectedLetter] = current;
+
+        const lastProgress = this.spacedRepetitionLastProgress ?? null;
+        const lastBuffer =
+          lastProgress && lastProgress.enemyId === enemyId && typeof lastProgress.buffer === "string"
+            ? lastProgress.buffer
+            : "";
+        const prevChar = lastBuffer.length > 0 ? lastBuffer.slice(-1) : "";
+        if (/^[a-z]$/.test(prevChar)) {
+          const digraph = `${prevChar}${expectedLetter}`;
+          const currentDigraph =
+            this.spacedRepetitionWaveStats?.digraphs?.[digraph] ?? { attempts: 0, errors: 0 };
+          currentDigraph.attempts += 1;
+          currentDigraph.errors += 1;
+          this.spacedRepetitionWaveStats.digraphs[digraph] = currentDigraph;
+        }
+      }
+      const errorClusterStorage = typeof window !== "undefined" ? window.localStorage : null;
+      this.errorClusterProgress =
+        this.errorClusterProgress ?? readErrorClusterProgress(errorClusterStorage);
+      this.errorClusterProgress = recordErrorClusterEntry(this.errorClusterProgress, {
+        expected,
+        received,
+        timestamp: Date.now()
+      });
+      const nowWallMs = Date.now();
+      const lastSavedAt = typeof this.errorClusterLastSavedAt === "number" ? this.errorClusterLastSavedAt : 0;
+      if (!lastSavedAt || nowWallMs - lastSavedAt > 1250) {
+        writeErrorClusterProgress(errorClusterStorage, this.errorClusterProgress);
+        this.errorClusterLastSavedAt = nowWallMs;
+      }
+      this.syncErrorClustersToOverlay();
+      this.stuckKeyDetector = this.stuckKeyDetector ?? createStuckKeyDetectorState();
+      const nowMs = typeof performance !== "undefined" ? performance.now() : Date.now();
+      const anomaly = updateStuckKeyDetector(
+        this.stuckKeyDetector,
+        { expected, received },
+        nowMs
+      );
+      this.stuckKeyDetector = anomaly.state;
+      if (anomaly.warning?.kind === "stuck-key") {
+        const keyLabel =
+          anomaly.warning.key === " "
+            ? "Space"
+            : anomaly.warning.key.length === 1
+              ? anomaly.warning.key.toUpperCase()
+              : anomaly.warning.key;
+        const message = `Seeing lots of "${keyLabel}" presses. If a key is stuck, try tapping it once or using a different keyboard.`;
+        this.hud.appendLog(message);
+        this.hud.showCastleMessage(message);
+      }
       if (this.tutorialManager?.getState().active) {
         this.tutorialManager.notify({
           type: "typing:error",
           payload: { enemyId: enemyId ?? null, expected: expected ?? null, received, totalErrors }
         });
       }
+      const context = this.lastTypingInputContext;
+      const comboBefore =
+        context && typeof context.comboBefore === "number" && Number.isFinite(context.comboBefore)
+          ? context.comboBefore
+          : 0;
+      this.maybeStartTypoRecoveryChallenge({ comboBefore });
     });
   }
   describeCastlePassive(passive) {
@@ -6754,6 +9040,7 @@ export class GameController {
 
   computeCanvasResolution() {
     const availableWidth = this.measureCanvasAvailableWidth();
+    const availableHeight = this.measureCanvasAvailableHeight();
     if (!availableWidth || !Number.isFinite(availableWidth)) {
       return {
         cssWidth: CANVAS_BASE_WIDTH,
@@ -6768,6 +9055,7 @@ export class GameController {
       baseWidth: CANVAS_BASE_WIDTH,
       baseHeight: CANVAS_BASE_HEIGHT,
       availableWidth,
+      availableHeight,
       devicePixelRatio
     });
   }
@@ -6892,6 +9180,45 @@ export class GameController {
       }
     }
     return CANVAS_BASE_WIDTH;
+  }
+
+  measureCanvasAvailableHeight() {
+    if (typeof document === "undefined") {
+      return CANVAS_BASE_HEIGHT;
+    }
+    const shell = document.getElementById("playfield-shell");
+    if (!shell) {
+      if (typeof window !== "undefined" && window.innerHeight > 0) {
+        return Math.max(1, Math.min(window.innerHeight - 200, CANVAS_BASE_HEIGHT));
+      }
+      return CANVAS_BASE_HEIGHT;
+    }
+
+    const shellHeight = shell.clientHeight > 0 ? shell.clientHeight : shell.getBoundingClientRect?.().height ?? 0;
+    if (!Number.isFinite(shellHeight) || shellHeight <= 0) {
+      return CANVAS_BASE_HEIGHT;
+    }
+
+    const topbar = shell.querySelector(".playfield-topbar");
+    const footer = shell.querySelector(".playfield-footer");
+    const topbarHeight = topbar instanceof HTMLElement ? topbar.offsetHeight : 0;
+    const footerHeight = footer instanceof HTMLElement ? footer.offsetHeight : 0;
+
+    let rowGap = 0;
+    if (typeof window !== "undefined" && typeof window.getComputedStyle === "function") {
+      try {
+        const styles = window.getComputedStyle(shell);
+        const raw = styles.rowGap || styles.gap;
+        const parsed = typeof raw === "string" ? Number.parseFloat(raw) : 0;
+        rowGap = Number.isFinite(parsed) ? parsed : 0;
+      } catch {
+        rowGap = 0;
+      }
+    }
+
+    const reserved = topbarHeight + footerHeight + rowGap * 2;
+    const available = Math.max(1, Math.floor(shellHeight - reserved));
+    return available;
   }
 
   triggerCanvasResizeFade() {
@@ -7106,10 +9433,55 @@ export class GameController {
     }
   }
 
+  loadWavePreviewThreatIndicatorsEnabled() {
+    if (typeof window === "undefined" || !window.localStorage) {
+      return false;
+    }
+    try {
+      const raw = window.localStorage.getItem(WAVE_PREVIEW_THREAT_KEY);
+      if (!raw) return false;
+      return raw === "true" || raw === "1" || raw === "enabled";
+    } catch {
+      return false;
+    }
+  }
+
+  persistWavePreviewThreatIndicatorsEnabled(enabled) {
+    if (typeof window === "undefined" || !window.localStorage) {
+      return;
+    }
+    try {
+      window.localStorage.setItem(WAVE_PREVIEW_THREAT_KEY, enabled ? "true" : "false");
+    } catch {
+      // best effort
+    }
+  }
+
+  setWavePreviewThreatIndicatorsEnabled(enabled, options = {}) {
+    const next = Boolean(enabled);
+    if (this.wavePreviewThreatIndicatorsEnabled === next && options.force !== true) {
+      return;
+    }
+    this.wavePreviewThreatIndicatorsEnabled = next;
+    if (typeof this.hud?.setWavePreviewThreatIndicatorsEnabled === "function") {
+      this.hud.setWavePreviewThreatIndicatorsEnabled(next);
+    }
+    this.syncHudVisibilityToggles();
+    if (!options.silent) {
+      this.hud?.appendLog?.(
+        `Wave preview threat indicators ${next ? "enabled" : "disabled"}.`
+      );
+    }
+    if (options.persist !== false) {
+      this.persistWavePreviewThreatIndicatorsEnabled(next);
+    }
+  }
+
   attachHudVisibilityToggles() {
     if (typeof document === "undefined") return;
     const metricsToggle = document.getElementById("options-toggle-metrics");
     const wavePreviewToggle = document.getElementById("options-toggle-wave-preview");
+    const wavePreviewThreatToggle = document.getElementById("options-toggle-wave-preview-threat");
     const battleLogToggle = document.getElementById("options-toggle-battle-log");
     const applyState = () => {
       this.applyHudVisibility();
@@ -7137,14 +9509,26 @@ export class GameController {
         applyState();
       });
     }
+    if (wavePreviewThreatToggle instanceof HTMLInputElement) {
+      wavePreviewThreatToggle.checked = this.wavePreviewThreatIndicatorsEnabled;
+      wavePreviewThreatToggle.addEventListener("change", () => {
+        this.setWavePreviewThreatIndicatorsEnabled(
+          Boolean(wavePreviewThreatToggle.checked)
+        );
+      });
+    }
     this.applyHudVisibility();
     this.syncHudVisibilityToggles();
+    if (typeof this.hud?.setWavePreviewThreatIndicatorsEnabled === "function") {
+      this.hud.setWavePreviewThreatIndicatorsEnabled(this.wavePreviewThreatIndicatorsEnabled);
+    }
   }
 
   syncHudVisibilityToggles() {
     if (typeof document === "undefined") return;
     const metricsToggle = document.getElementById("options-toggle-metrics");
     const wavePreviewToggle = document.getElementById("options-toggle-wave-preview");
+    const wavePreviewThreatToggle = document.getElementById("options-toggle-wave-preview-threat");
     const battleLogToggle = document.getElementById("options-toggle-battle-log");
     const reduced = this.reducedCognitiveLoadEnabled;
     const prefs = this.hudVisibility ?? { metrics: true, battleLog: true, wavePreview: true };
@@ -7162,6 +9546,12 @@ export class GameController {
       wavePreviewToggle.disabled = reduced;
       wavePreviewToggle.setAttribute("aria-disabled", reduced ? "true" : "false");
       wavePreviewToggle.title = disabledTitle;
+    }
+    if (wavePreviewThreatToggle instanceof HTMLInputElement) {
+      wavePreviewThreatToggle.checked = reduced ? false : this.wavePreviewThreatIndicatorsEnabled;
+      wavePreviewThreatToggle.disabled = reduced;
+      wavePreviewThreatToggle.setAttribute("aria-disabled", reduced ? "true" : "false");
+      wavePreviewThreatToggle.title = disabledTitle;
     }
     if (battleLogToggle instanceof HTMLInputElement) {
       battleLogToggle.checked = reduced ? false : prefs.battleLog;
@@ -7377,6 +9767,10 @@ export class GameController {
     const reducedMotionToggle = document.getElementById("accessibility-reduced-motion");
     const dyslexiaSpacingToggle = document.getElementById("accessibility-dyslexia-spacing");
     const colorblindToggle = document.getElementById("accessibility-colorblind");
+    const virtualKeyboardToggle = document.getElementById("accessibility-virtual-keyboard");
+    const virtualKeyboardLayoutSelect = document.getElementById(
+      "accessibility-virtual-keyboard-layout"
+    );
     const brightnessSlider = document.getElementById("accessibility-bg-brightness");
     const brightnessValue = document.getElementById("accessibility-bg-brightness-value");
     const dyslexiaPresetButton = document.getElementById("accessibility-dyslexia-preset");
@@ -7393,16 +9787,46 @@ export class GameController {
     ) {
       return;
     }
+    const virtualKeyboardToggleEl =
+      virtualKeyboardToggle instanceof HTMLInputElement ? virtualKeyboardToggle : null;
+    const virtualKeyboardLayoutSelectEl =
+      virtualKeyboardLayoutSelect instanceof HTMLSelectElement ? virtualKeyboardLayoutSelect : null;
+
+    const getSelectValue = (select: HTMLSelectElement): string => {
+      const direct = select.value;
+      if (typeof direct === "string" && direct !== "") {
+        return direct;
+      }
+      return select.getAttribute("value") ?? "";
+    };
+
+    const syncVirtualKeyboardLayoutDisabled = () => {
+      if (!virtualKeyboardLayoutSelectEl) return;
+      const enabled = virtualKeyboardToggleEl ? Boolean(virtualKeyboardToggleEl.checked) : true;
+      virtualKeyboardLayoutSelectEl.disabled = !enabled;
+      virtualKeyboardLayoutSelectEl.setAttribute("aria-disabled", enabled ? "false" : "true");
+      virtualKeyboardLayoutSelectEl.tabIndex = enabled ? 0 : -1;
+    };
     const syncBrightnessLabel = () => {
       const normalized = this.normalizeBackgroundBrightness(Number(brightnessSlider.value));
       brightnessSlider.value = String(normalized);
       brightnessValue.textContent = `${Math.round(normalized * 100)}%`;
     };
     brightnessSlider.addEventListener("input", syncBrightnessLabel);
+    if (virtualKeyboardToggleEl) {
+      virtualKeyboardToggleEl.addEventListener("change", syncVirtualKeyboardLayoutDisabled);
+    }
     const applyPreferences = () => {
       this.setReducedMotionEnabled(Boolean(reducedMotionToggle.checked));
       this.setDyslexiaSpacingEnabled(Boolean(dyslexiaSpacingToggle.checked));
       this.setColorblindPaletteEnabled(Boolean(colorblindToggle.checked));
+      if (virtualKeyboardToggleEl) {
+        this.setVirtualKeyboardEnabled(Boolean(virtualKeyboardToggleEl.checked));
+      }
+      if (virtualKeyboardLayoutSelectEl) {
+        const rawLayout = getSelectValue(virtualKeyboardLayoutSelectEl);
+        this.setVirtualKeyboardLayout(rawLayout);
+      }
       const brightness = this.normalizeBackgroundBrightness(Number(brightnessSlider.value));
       this.setBackgroundBrightness(brightness);
       this.persistAccessibilitySeen();
@@ -7439,9 +9863,12 @@ export class GameController {
       colorblindToggle,
       brightnessSlider,
       brightnessValue,
+      virtualKeyboardToggle: virtualKeyboardToggleEl ?? undefined,
+      virtualKeyboardLayoutSelect: virtualKeyboardLayoutSelectEl ?? undefined,
       visible: false
     };
     this.syncAccessibilityOverlay();
+    syncVirtualKeyboardLayoutDisabled();
   }
 
   syncAccessibilityOverlay() {
@@ -7449,6 +9876,28 @@ export class GameController {
     this.accessibilityOverlay.reducedMotionToggle.checked = Boolean(this.reducedMotionEnabled);
     this.accessibilityOverlay.dyslexiaSpacingToggle.checked = Boolean(this.dyslexiaSpacingEnabled);
     this.accessibilityOverlay.colorblindToggle.checked = Boolean(this.colorblindPaletteEnabled);
+    if (this.accessibilityOverlay.virtualKeyboardToggle) {
+      this.accessibilityOverlay.virtualKeyboardToggle.checked = Boolean(this.virtualKeyboardEnabled);
+    }
+    if (this.accessibilityOverlay.virtualKeyboardLayoutSelect) {
+      const normalized = this.normalizeVirtualKeyboardLayout(
+        this.virtualKeyboardLayout ?? DEFAULT_VIRTUAL_KEYBOARD_LAYOUT
+      );
+      try {
+        this.accessibilityOverlay.virtualKeyboardLayoutSelect.value = normalized;
+      } catch {
+        this.accessibilityOverlay.virtualKeyboardLayoutSelect.setAttribute("value", normalized);
+      }
+      const enabled = this.accessibilityOverlay.virtualKeyboardToggle
+        ? Boolean(this.accessibilityOverlay.virtualKeyboardToggle.checked)
+        : true;
+      this.accessibilityOverlay.virtualKeyboardLayoutSelect.disabled = !enabled;
+      this.accessibilityOverlay.virtualKeyboardLayoutSelect.setAttribute(
+        "aria-disabled",
+        enabled ? "false" : "true"
+      );
+      this.accessibilityOverlay.virtualKeyboardLayoutSelect.tabIndex = enabled ? 0 : -1;
+    }
     const normalized = this.normalizeBackgroundBrightness(this.backgroundBrightness);
     this.accessibilityOverlay.brightnessSlider.value = String(normalized);
     this.accessibilityOverlay.brightnessValue.textContent = `${Math.round(normalized * 100)}%`;

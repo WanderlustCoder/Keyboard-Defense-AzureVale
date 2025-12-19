@@ -62,6 +62,10 @@ const DEFAULTS = {
   condensedAudit: [
     path.join("artifacts", "summaries", "condensed-audit.ci.json"),
     path.join("artifacts", "summaries", "condensed-audit.json")
+  ],
+  perf: [
+    path.join("artifacts", "perf", "perf-smoke-summary.ci.json"),
+    path.join("artifacts", "perf", "perf-smoke-summary.json")
   ]
 };
 
@@ -74,7 +78,8 @@ const FLAG_MAP = {
   breach: "breach",
   "start-smoke": "startSmoke",
   "audio-intensity": "audioIntensity",
-  "condensed-audit": "condensedAudit"
+  "condensed-audit": "condensedAudit",
+  perf: "perf"
 };
 
 function parseArgs(argv) {
@@ -301,6 +306,10 @@ function main() {
     condensedAudit: resolveFirst([
       parsed.overrides.condensedAudit,
       ...DEFAULTS.condensedAudit
+    ]),
+    perf: resolveFirst([
+      parsed.overrides.perf,
+      ...DEFAULTS.perf
     ])
   };
 
@@ -316,6 +325,7 @@ function main() {
   const breach = readJSON(resolvedFiles.breach) || null;
   const audioSummary = readJSON(resolvedFiles.audioIntensity) || null;
   const condensedSummary = readJSON(resolvedFiles.condensedAudit) || null;
+  const perfSummary = readJSON(resolvedFiles.perf) || null;
 
   const rows = [];
 
@@ -586,6 +596,21 @@ function main() {
         linkOrDash("start-smoke", resolvedFiles.startSmoke)
       ]);
     }
+
+  const perfMetrics = perfSummary?.metrics ?? null;
+  rows.push(["Perf smoke", "status", perfSummary?.status ?? "-"]);
+  rows.push(["Perf smoke", "fps", perfMetrics?.fps !== undefined ? String(perfMetrics.fps) : "-"]);
+  rows.push([
+    "Perf smoke",
+    "frameMsP95",
+    perfMetrics?.frameMs?.p95 !== undefined ? formatMetric(perfMetrics.frameMs.p95, "ms") : "-"
+  ]);
+  rows.push([
+    "Perf smoke",
+    "heapMax",
+    perfMetrics?.heapUsedMB?.max !== undefined ? formatMetric(perfMetrics.heapUsedMB.max, "MB") : "-"
+  ]);
+  rows.push(["Perf smoke", "artifact", linkOrDash("perf-smoke", resolvedFiles.perf)]);
 
   rows.push([
     "Gold summary",

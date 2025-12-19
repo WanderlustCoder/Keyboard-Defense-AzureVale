@@ -4,34 +4,34 @@ Quick status snapshot for items in `season4_backlog.md`. All items start as Not 
 
 | ID | Title | Status | Notes |
 | --- | --- | --- | --- |
-| 1 | Diagnostic placement test | Not Started | - |
+| 1 | Diagnostic placement test | Done | Added a Placement Test mode in Typing Drills: left/right segments + mixed strings, hand-specific accuracy scores, tutorial pacing suggestion, and local persistence (`keyboard-defense:placement-test`). |
 | 2 | Per-finger mastery tree | Not Started | - |
-| 3 | Adaptive session goals | Not Started | - |
-| 4 | Spaced-repetition scheduler | Not Started | - |
-| 5 | Error-cluster detection | Not Started | - |
-| 6 | Keystroke timing profile | Not Started | - |
-| 7 | Fatigue detector | Not Started | - |
-| 8 | Personalized warm-up generator | Not Started | - |
-| 9 | Post-run coach summary | Not Started | - |
-| 10 | Shortcut practice drills | Not Started | - |
-| 11 | Shift timing tutor | Not Started | - |
-| 12 | Number/symbol modules | Not Started | - |
-| 13 | Sentence construction drills | Not Started | - |
-| 14 | Reading-comprehension passages | Not Started | - |
-| 15 | Alternating-hand rhythm drills | Not Started | - |
-| 16 | Daily quest board | Not Started | - |
-| 17 | Weekly mastery quest | Not Started | - |
-| 18 | Time-attack sprint mode | Not Started | - |
-| 19 | Calm focus lane mode | Not Started | - |
-| 20 | Ghost race vs self | Not Started | - |
-| 21 | Challenge modifiers | Not Started | - |
+| 3 | Adaptive session goals | Done | Adds local-only adaptive session goals (accuracy/WPM/consistency) with a HUD panel that tracks live progress and tunes targets after each defeat/victory run. |
+| 4 | Spaced-repetition scheduler | Done | Adds a local spaced-repetition scheduler for weak keys/digraphs, updated from wave + drill typing stats and blended into Focus/Warm-up targets + drill recommendations. |
+| 5 | Error-cluster detection | Done | Tracks recent typing-error clusters (top expected keys) in local storage (`keyboard-defense:error-clusters`) and adds a Focus Drill mode that micro-drills trouble keys; drill recommendations can now surface Focus Drill when clusters are strong. |
+| 6 | Keystroke timing profile | Done | Builds a local keystroke timing profile (tempo WPM band + jitter) and applies a spawn speed gate so enemy speed ramps wait for steadier typing; surfaced in Diagnostics. |
+| 7 | Fatigue detector | Done | Detects sustained accuracy drops plus slowing keystroke timing across recent waves and surfaces a "Fatigue check" break suggestion in the wave scorecard; respects cooldown and break-reminder snooze/reset. |
+| 8 | Personalized warm-up generator | Done | Added a 5-Min Warm-up drill mode that builds timed segments from recent error-cluster keys (plus cadence/accuracy segments) and can be started from the main menu. |
+| 9 | Post-run coach summary | Done | Wave scorecard now includes a Coach Summary (biggest win + biggest gap) plus a suggested drill CTA that opens Typing Drills and auto-starts the recommended mode. |
+| 10 | Shortcut practice drills | Done | Added a Shortcut Practice drill mode (Ctrl/Cmd combos for select-all/copy/cut/paste/undo/redo) with step-by-step prompts and Enter-to-skip. |
+| 11 | Shift timing tutor | Done | Added a Shift Timing drill mode that practices capital letters (Shift + letter) with hold vs tap feedback and a slow-mo toggle for extra time + clearer cues. |
+| 12 | Number/symbol modules | Done | Added a Numbers & Symbols drill mode plus progressive advanced symbol unlocks (Silver medal in Symbols) and persistence via existing lesson medal tracking. |
+| 13 | Sentence construction drills | Done | Added a Sentence Builder typing drill (45s) with punctuation-focused sentences and medal/WPM ladder tracking. |
+| 14 | Reading-comprehension passages | Done | Added a Reading Quiz typing drill (practice): read short passages, then answer A/B/C questions with score progress + summary. |
+| 15 | Alternating-hand rhythm drills | Done | Added a Rhythm Drill mode (30s) with alternating-hand targets and an in-drill metronome toggle (visual + optional audio/haptics). |
+| 16 | Daily quest board | Done | Added a Daily Quest Board panel (Mission Control) with three rotating quests (drills, Gold medal, campaign waves/accuracy) persisted locally under `keyboard-defense:daily-quests`. |
+| 17 | Weekly mastery quest | Done | Adds a weekly quest panel (Mission Control) with local persistence, progress from drills/campaign runs, and a Weekly Trial button that launches a bespoke single-wave challenge. |
+| 18 | Time-attack sprint mode | Done | Added a Time Attack typing drill (60s sprint) with tiered medals and WPM ladder/medal integrations. |
+| 19 | Calm focus lane mode | Done | Adds a Practice Mode lane focus selector (All / A / B / C) that constrains spawns, hazards, bonus events, and wave previews to a single lane. |
+| 20 | Ghost race vs self | Done | Time Attack sprint now loads/saves a local ghost run (per-second words timeline) under `keyboard-defense:typing-drill-ghosts` and shows an in-run Ghost pace delta in the progress label. |
+| 21 | Challenge modifiers | Done | Adds opt-in challenge modifiers (fog of war, fast spawns, limited mistakes) with local persistence, score multipliers, and practice/trial-only enforcement. |
 | 22 | Checkpointed runs with upgrades | Not Started | - |
 | 23 | Boss practice lab | Not Started | - |
-| 24 | Reaction challenge mini-game | Not Started | - |
-| 25 | Combo preservation challenge | Not Started | - |
-| 26 | Typo recovery drills mid-wave | Not Started | - |
-| 27 | Lane support selection drills | Not Started | - |
-| 28 | Hand isolation practice mode | Not Started | - |
+| 24 | Reaction challenge mini-game | Done | Added a Reaction Challenge typing drill mode (30s) with random cue delays, hit/miss tracking, and reaction time stats in-drill + summary tip. |
+| 25 | Combo preservation challenge | Done | Added a Combo Preservation typing drill mode (45s) with 3 timed segments and a per-segment mistake budget that protects combo until depleted. |
+| 26 | Typo recovery drills mid-wave | Done | After a mid-wave typing error (combo >= 3), prompts Undo → Redo (Ctrl/Cmd+Z then Ctrl/Cmd+Y / Ctrl/Cmd+Shift+Z); restores combo once per wave with cooldown. |
+| 27 | Lane support selection drills | Done | Adds a Lane Support typing drill (45s): type A/B/C to route support to the highlighted lane, with timing stats (avg/best/last). |
+| 28 | Hand isolation practice mode | Done | Adds a Hand Isolation typing drill (45s) with a left/right hand toggle and curated single-hand word pools. |
 | 29 | Endurance marathon with breaks | Not Started | - |
 | 30 | Seasonal event playlists | Not Started | - |
 | 31 | Modular castle rooms | Not Started | - |
@@ -89,18 +89,18 @@ Quick status snapshot for items in `season4_backlog.md`. All items start as Not 
 | 83 | Voice pack stubs | Done | Voice pack selector with text-based stubs for narration styles; persists choice per profile. |
 | 84 | Reduced-motion VFX variants | Done | Reduced-motion mode now swaps to softened VFX: particle systems render low-motion fades and a global `data-vfx-mode` toggle gates motion-heavy effects. |
 | 85 | Sprite batching/atlas plan | Not Started | - |
-| 86 | Session timeline export | Not Started | - |
-| 87 | Keystroke timing histograms | Not Started | - |
-| 88 | Stuck-key anomaly detection | Not Started | - |
-| 89 | Parental session reminders | Not Started | - |
-| 90 | Progress export/import | Not Started | - |
-| 91 | Safety/content audit checklist | Not Started | - |
-| 92 | Offline-first telemetry queue | Not Started | - |
-| 93 | Drop-off reason prompt | Not Started | - |
-| 94 | Privacy explainer update | Not Started | - |
-| 95 | Screen-time goals/lockout | Not Started | - |
-| 96 | Wordlist readability grader | Not Started | - |
-| 97 | Automated ARIA audit | Not Started | - |
-| 98 | Throttled-device perf smoke | Not Started | - |
-| 99 | Offline/PWA cache verification | Not Started | - |
-| 100 | Asset licensing manifest checker | Not Started | - |
+| 86 | Session timeline export | Done | Options → Diagnostics adds a Session Timeline (CSV) export that downloads per-wave stats from the current run. |
+| 87 | Keystroke timing histograms | Done | Records inter-key timings during battle and adds a Diagnostics export that downloads a histogram CSV for cadence analysis. |
+| 88 | Stuck-key anomaly detection | Done | Detects repeated identical typing errors (likely stuck key) and surfaces a friendly troubleshooting prompt in the HUD/battle log with per-key throttling. |
+| 89 | Parental session reminders | Done | Options → Accessibility adds a Break Reminders interval selector (off/10/20/30/45 min) that tunes the existing in-session stretch reminder and persists locally. |
+| 90 | Progress export/import | Done | Options menu adds Export/Import Progress buttons that package local-only progress/settings into JSON and restore them safely (key whitelist) with a reload prompt. |
+| 91 | Safety/content audit checklist | Done | Added a vitest content safety audit that scans user-facing HTML + content catalogs against `data/wordlists/denylist.txt`. |
+| 92 | Offline-first telemetry queue | Done | Implemented localStorage-backed telemetry queue client with endpoint-gated flush + new Diagnostics panel buttons to download/clear the queue. |
+| 93 | Drop-off reason prompt | Done | Pause/options menu adds End Session + a local-only reason prompt stored under `keyboard-defense:dropoff-reasons` for coaching. |
+| 94 | Privacy explainer update | Done | Updated the in-game parental privacy overlay to reflect progress export/import, drop-off reasons, diagnostics exports, and the local-only telemetry queue/flush controls. |
+| 95 | Screen-time goals/lockout | Done | Added a daily screen-time badge + options controls (goal + lockout), local-only persistence, lockout enforcement (blocks resume/start), and vitest coverage. |
+| 96 | Wordlist readability grader | Done | Added a readability/typing-complexity grader (script + vitest audit) that scores wordlists + the default word bank and gates extreme punctuation/phrase complexity in CI. |
+| 97 | Automated ARIA audit | Done | Added a unit test that enforces unique IDs + valid `aria-labelledby`/`aria-describedby`/`aria-controls` references for `public/index.html`. |
+| 98 | Throttled-device perf smoke | Done | Added a Playwright-based perf smoke (`scripts/ci/perfSmoke.mjs`) that applies CPU throttling and records FPS/frame-time + heap metrics, plus CI guard thresholds + workflow wiring. |
+| 99 | Offline/PWA cache verification | Done | Added a service worker + cache manifest with a vitest audit to ensure core assets are precached for offline reloads. |
+| 100 | Asset licensing manifest checker | Done | Added `docs/asset_licensing_manifest.json` + `scripts/assetLicensing.mjs` checker, enforced via `lint:assets:licensing` and a vitest audit. |

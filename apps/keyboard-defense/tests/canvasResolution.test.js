@@ -35,6 +35,18 @@ describe("calculateCanvasResolution", () => {
     expect(result.cssWidth).toBeGreaterThanOrEqual(320);
     expect(result.renderWidth).toBeGreaterThanOrEqual(320);
   });
+
+  it("caps css width based on available height", () => {
+    const result = calculateCanvasResolution({
+      baseWidth: 960,
+      baseHeight: 540,
+      availableWidth: 960,
+      availableHeight: 270,
+      devicePixelRatio: 1
+    });
+    expect(result.cssWidth).toBe(480);
+    expect(result.cssHeight).toBe(270);
+  });
 });
 
 describe("createDprListener", () => {

@@ -1,0 +1,780 @@
+{
+  "version": 1,
+  "assets": [
+    {
+      "path": "public/assets/defeat/atlas.json",
+      "kind": "data",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Frame metadata for the defeat VFX sprites."
+    },
+    {
+      "path": "public/assets/defeat/defeat-brute-01.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Defeat VFX frame (brute)."
+    },
+    {
+      "path": "public/assets/defeat/defeat-brute-02.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Defeat VFX frame (brute)."
+    },
+    {
+      "path": "public/assets/defeat/defeat-brute-03.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Defeat VFX frame (brute)."
+    },
+    {
+      "path": "public/assets/defeat/defeat-brute-04.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Defeat VFX frame (brute)."
+    },
+    {
+      "path": "public/assets/defeat/defeat-default-01.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Defeat VFX frame (default)."
+    },
+    {
+      "path": "public/assets/defeat/defeat-default-02.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Defeat VFX frame (default)."
+    },
+    {
+      "path": "public/assets/defeat/defeat-default-03.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Defeat VFX frame (default)."
+    },
+    {
+      "path": "public/assets/castle/castle-level-1.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Castle sprite (level 1)."
+    },
+    {
+      "path": "public/assets/castle/castle-level-2.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Castle sprite (level 2)."
+    },
+    {
+      "path": "public/assets/castle/castle-level-3.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Castle sprite (level 3)."
+    },
+    {
+      "path": "public/assets/castle/castle-level-4.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Castle sprite (level 4)."
+    },
+    {
+      "path": "public/assets/enemies/enemy-grunt.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Enemy sprite (grunt)."
+    },
+    {
+      "path": "public/assets/enemies/enemy-runner.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Enemy sprite (runner)."
+    },
+    {
+      "path": "public/assets/enemies/enemy-brute.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Enemy sprite (brute)."
+    },
+    {
+      "path": "public/assets/enemies/enemy-witch.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Enemy sprite (witch)."
+    },
+    {
+      "path": "public/assets/turrets/turret-arrow.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Turret sprite (arrow)."
+    },
+    {
+      "path": "public/assets/turrets/turret-flame.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Turret sprite (flame)."
+    },
+    {
+      "path": "public/assets/turrets/turret-crystal.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Turret sprite (crystal)."
+    },
+    {
+      "path": "public/assets/turrets/turret-arcane.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Turret sprite (arcane)."
+    },
+    {
+      "path": "public/assets/manifest.json",
+      "kind": "data",
+      "origin": "generated",
+      "generatedBy": "scripts/assets/generateManifest.mjs",
+      "notes": "Generated asset manifest (paths + integrity hashes)."
+    },
+    {
+      "path": "public/assets/defeat/defeat-archivist-01.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Defeat VFX frame (archivist)."
+    },
+    {
+      "path": "public/assets/defeat/defeat-archivist-02.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Defeat VFX frame (archivist)."
+    },
+    {
+      "path": "public/assets/defeat/defeat-archivist-03.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Defeat VFX frame (archivist)."
+    },
+    {
+      "path": "public/assets/defeat/defeat-dummy-01.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Defeat VFX frame (dummy)."
+    },
+    {
+      "path": "public/assets/defeat/defeat-dummy-02.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Defeat VFX frame (dummy)."
+    },
+    {
+      "path": "public/assets/defeat/defeat-dummy-03.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Defeat VFX frame (dummy)."
+    },
+    {
+      "path": "public/assets/defeat/defeat-embermancer-01.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Defeat VFX frame (embermancer)."
+    },
+    {
+      "path": "public/assets/defeat/defeat-embermancer-02.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Defeat VFX frame (embermancer)."
+    },
+    {
+      "path": "public/assets/defeat/defeat-embermancer-03.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Defeat VFX frame (embermancer)."
+    },
+    {
+      "path": "public/assets/defeat/defeat-evac-transport-01.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Defeat VFX frame (evac-transport)."
+    },
+    {
+      "path": "public/assets/defeat/defeat-evac-transport-02.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Defeat VFX frame (evac-transport)."
+    },
+    {
+      "path": "public/assets/defeat/defeat-evac-transport-03.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Defeat VFX frame (evac-transport)."
+    },
+    {
+      "path": "public/assets/defeat/defeat-vanguard-01.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Defeat VFX frame (vanguard)."
+    },
+    {
+      "path": "public/assets/defeat/defeat-vanguard-02.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Defeat VFX frame (vanguard)."
+    },
+    {
+      "path": "public/assets/defeat/defeat-vanguard-03.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Defeat VFX frame (vanguard)."
+    },
+    {
+      "path": "public/assets/enemies/enemy-archivist.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Enemy sprite (archivist)."
+    },
+    {
+      "path": "public/assets/enemies/enemy-dummy.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Enemy sprite (dummy)."
+    },
+    {
+      "path": "public/assets/enemies/enemy-embermancer.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Enemy sprite (embermancer)."
+    },
+    {
+      "path": "public/assets/enemies/enemy-evac-transport.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Enemy sprite (evac-transport)."
+    },
+    {
+      "path": "public/assets/enemies/enemy-vanguard.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Enemy sprite (vanguard)."
+    },
+    {
+      "path": "public/assets/backgrounds/parallax-day-far.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Parallax background layer (day, far)."
+    },
+    {
+      "path": "public/assets/backgrounds/parallax-day-mid.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Parallax background layer (day, mid)."
+    },
+    {
+      "path": "public/assets/backgrounds/parallax-day-near.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Parallax background layer (day, near)."
+    },
+    {
+      "path": "public/assets/backgrounds/parallax-night-far.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Parallax background layer (night, far)."
+    },
+    {
+      "path": "public/assets/backgrounds/parallax-night-mid.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Parallax background layer (night, mid)."
+    },
+    {
+      "path": "public/assets/backgrounds/parallax-night-near.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Parallax background layer (night, near)."
+    },
+    {
+      "path": "public/assets/backgrounds/parallax-storm-far.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Parallax background layer (storm, far)."
+    },
+    {
+      "path": "public/assets/backgrounds/parallax-storm-mid.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Parallax background layer (storm, mid)."
+    },
+    {
+      "path": "public/assets/backgrounds/parallax-storm-near.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Parallax background layer (storm, near)."
+    },
+    {
+      "path": "public/assets/backgrounds/lane-overlay-day.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Playfield lane overlay (day)."
+    },
+    {
+      "path": "public/assets/backgrounds/lane-overlay-night.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Playfield lane overlay (night)."
+    },
+    {
+      "path": "public/assets/backgrounds/lane-overlay-storm.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Playfield lane overlay (storm)."
+    },
+    {
+      "path": "public/assets/ui/ui-sticker-calm.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Sticker icon (calm)."
+    },
+    {
+      "path": "public/assets/ui/ui-sticker-castle.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Sticker icon (castle)."
+    },
+    {
+      "path": "public/assets/ui/ui-sticker-combo.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Sticker icon (combo)."
+    },
+    {
+      "path": "public/assets/ui/ui-sticker-drill.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Sticker icon (drill)."
+    },
+    {
+      "path": "public/assets/ui/ui-sticker-perfect.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Sticker icon (perfect)."
+    },
+    {
+      "path": "public/assets/ui/ui-sticker-scroll.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Sticker icon (scroll)."
+    },
+    {
+      "path": "public/assets/ui/ui-sticker-shield.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Sticker icon (shield)."
+    },
+    {
+      "path": "public/assets/ui/ui-sticker-treasure.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "Sticker icon (treasure)."
+    },
+    {
+      "path": "public/assets/ui/passive-armor.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "HUD passive icon (armor)."
+    },
+    {
+      "path": "public/assets/ui/passive-generic.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "HUD passive icon (generic)."
+    },
+    {
+      "path": "public/assets/ui/passive-gold.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "HUD passive icon (gold)."
+    },
+    {
+      "path": "public/assets/ui/passive-regen.png",
+      "kind": "image",
+      "origin": "project",
+      "license": {
+        "name": "Project asset"
+      },
+      "source": {
+        "author": "Keyboard Defense project"
+      },
+      "notes": "HUD passive icon (regen)."
+    }
+  ]
+}

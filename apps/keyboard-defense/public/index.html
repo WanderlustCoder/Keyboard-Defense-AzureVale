@@ -3,8 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0e1030" />
     <title>Keyboard Defense</title>
     <link rel="stylesheet" href="styles.css" />
+    <link rel="manifest" href="manifest.webmanifest" />
   </head>
   <body>
     <div id="parallax-shell" aria-hidden="true" role="presentation">
@@ -124,6 +126,17 @@
             <div class="session-inline">
               <span class="session-label">Session</span>
               <span id="session-timer" class="session-time session-time--inline">00:00</span>
+            </div>
+            <div class="session-inline">
+              <span class="session-label">Today</span>
+              <span
+                id="screen-time-today"
+                class="session-time session-time--inline"
+                data-state="ok"
+                aria-label="Screen time today 0 minutes"
+              >
+                0m
+              </span>
             </div>
             <div
               id="latency-indicator"
@@ -355,6 +368,62 @@
                     <p class="quest-panel__stats" id="side-quest-stats">0 active ú 0 completed</p>
                   </div>
                   <button id="side-quest-open" type="button" class="secondary">Open Quest Log</button>
+                </div>
+              </section>
+              <section
+                class="quest-panel"
+                id="daily-quest-panel"
+                aria-live="polite"
+                aria-label="Daily quest board"
+              >
+                <div class="session-goals-panel__content">
+                  <div>
+                    <p class="daily-quest-panel__kicker">Daily quests</p>
+                    <p class="daily-quest-panel__summary" id="daily-quest-summary">
+                      New quests arrive every day.
+                    </p>
+                    <ul class="session-goals-panel__list" id="daily-quest-list"></ul>
+                  </div>
+                </div>
+              </section>
+              <section
+                class="quest-panel"
+                id="weekly-quest-panel"
+                aria-live="polite"
+                aria-label="Weekly mastery quest"
+              >
+                <div class="session-goals-panel__content">
+                  <div>
+                    <p class="weekly-quest-panel__kicker">Weekly mastery quest</p>
+                    <p class="weekly-quest-panel__summary" id="weekly-quest-summary">
+                      Weekly quests culminate in a Trial wave.
+                    </p>
+                    <ul class="session-goals-panel__list" id="weekly-quest-list"></ul>
+                  </div>
+                  <button
+                    id="weekly-quest-trial-start"
+                    type="button"
+                    class="secondary"
+                    data-visible="false"
+                  >
+                    Start Weekly Trial
+                  </button>
+                </div>
+              </section>
+              <section
+                class="quest-panel session-goals-panel"
+                id="session-goals-panel"
+                aria-live="polite"
+                aria-label="Session goals"
+              >
+                <div class="session-goals-panel__content">
+                  <div>
+                    <p class="session-goals-panel__kicker">Session goals</p>
+                    <p class="session-goals-panel__summary" id="session-goals-summary">
+                      Adaptive targets tune after each run.
+                    </p>
+                    <ul class="session-goals-panel__list" id="session-goals-list"></ul>
+                  </div>
                 </div>
               </section>
             </div>
@@ -974,6 +1043,71 @@
               Allow armored, shielded, or aura elites to appear for greater rewards.
             </span>
           </label>
+          <label class="option-toggle option-select" id="main-menu-practice-lane-focus-wrapper">
+            <span class="option-toggle-label">Practice Lane Focus</span>
+            <select id="main-menu-practice-lane-focus" aria-label="Practice lane focus">
+              <option value="all">All lanes</option>
+              <option value="0">Lane A only</option>
+              <option value="1">Lane B only</option>
+              <option value="2">Lane C only</option>
+            </select>
+            <span class="option-toggle-help">
+              Practice mode only: limits spawns, hazards, and bonus events to a single lane for calmer
+              targeted runs.
+            </span>
+          </label>
+          <details class="option-details" id="main-menu-challenge-modifiers">
+            <summary class="option-details-summary">
+              <span>Challenge modifiers</span>
+              <span class="option-details-pill" id="main-menu-challenge-multiplier">Score x1.00</span>
+            </summary>
+            <div class="option-details-body">
+              <label class="option-toggle" id="main-menu-challenge-enabled-wrapper">
+                <input id="main-menu-challenge-enabled" type="checkbox" />
+                <span class="option-toggle-label">Enable challenge modifiers (Practice/Trial)</span>
+                <span class="option-toggle-help">
+                  Opt-in difficulty tweaks with a clear score multiplier.
+                </span>
+              </label>
+              <div class="option-details-grid" id="main-menu-challenge-grid" data-disabled="true">
+                <label class="option-toggle" id="main-menu-challenge-fog-wrapper">
+                  <input id="main-menu-challenge-fog" type="checkbox" />
+                  <span class="option-toggle-label">Fog of War (Score x1.15)</span>
+                  <span class="option-toggle-help">Hide upcoming spawns and add lane fog.</span>
+                </label>
+                <label class="option-toggle" id="main-menu-challenge-fast-spawns-wrapper">
+                  <input id="main-menu-challenge-fast-spawns" type="checkbox" />
+                  <span class="option-toggle-label">Fast spawns (Score x1.25)</span>
+                  <span class="option-toggle-help">Shorter, more intense waves.</span>
+                </label>
+                <label class="option-toggle" id="main-menu-challenge-limited-mistakes-wrapper">
+                  <input id="main-menu-challenge-limited-mistakes" type="checkbox" />
+                  <span class="option-toggle-label">Limited mistakes (Score x1.20)</span>
+                  <span class="option-toggle-help">Hit the mistake limit and the wave ends.</span>
+                </label>
+                <label
+                  class="option-toggle option-select"
+                  id="main-menu-challenge-mistake-budget-wrapper"
+                >
+                  <span class="option-toggle-label">Mistake limit (per wave)</span>
+                  <select
+                    id="main-menu-challenge-mistake-budget"
+                    aria-label="Mistake limit per wave"
+                  >
+                    <option value="5">5 mistakes</option>
+                    <option value="8">8 mistakes</option>
+                    <option value="10">10 mistakes</option>
+                    <option value="12">12 mistakes</option>
+                    <option value="15">15 mistakes</option>
+                  </select>
+                  <span class="option-toggle-help">Used only when Limited mistakes is enabled.</span>
+                </label>
+              </div>
+              <p class="option-details-help" id="main-menu-challenge-summary">
+                No challenge modifiers active.
+              </p>
+            </div>
+          </details>
         </div>
         <div class="main-menu-actions">
           <button id="main-menu-start-tutorial">Begin Tutorial</button>
@@ -985,6 +1119,9 @@
           </p>
           <button id="main-menu-typing-drill-run" type="button" class="secondary">
             Run Recommended Drill
+          </button>
+          <button id="main-menu-typing-warmup" type="button" class="secondary">
+            Start 5-Min Warm-up
           </button>
           <button id="main-menu-replay-tutorial">Replay Tutorial</button>
         </div>
@@ -1050,6 +1187,20 @@
               <li data-field="castle-bonus"></li>
               <li data-field="gold"></li>
             </ul>
+            <div
+              id="wave-scorecard-coach"
+              class="wave-scorecard-coach"
+              data-visible="false"
+              aria-labelledby="wave-scorecard-coach-title"
+              aria-hidden="true"
+            >
+              <h3 id="wave-scorecard-coach-title">Coach Summary</h3>
+              <ul id="wave-scorecard-coach-list" class="wave-scorecard-coach-list">
+                <li data-field="win"></li>
+                <li data-field="gap"></li>
+                <li data-field="drill"></li>
+              </ul>
+            </div>
             <p
               id="wave-scorecard-tip"
               class="wave-scorecard-tip"
@@ -1059,6 +1210,15 @@
               aria-hidden="true"
             ></p>
             <div class="wave-scorecard-actions">
+              <button
+                id="wave-scorecard-drill"
+                type="button"
+                class="secondary"
+                data-visible="false"
+                aria-hidden="true"
+              >
+                Run Suggested Drill
+              </button>
               <button id="wave-scorecard-continue" type="button" class="primary">
                 Ready the Next Wave
               </button>
@@ -1124,7 +1284,7 @@
             <input id="accessibility-reduced-motion" type="checkbox" />
             <span class="option-toggle-label">Reduced Motion</span>
             <span class="option-toggle-help">
-              Disable heavy death effects and UI transitions.
+              Disable heavy defeat effects and UI transitions.
             </span>
           </label>
           <label class="option-toggle">
@@ -1139,6 +1299,24 @@
             <span class="option-toggle-label">Colorblind Palette</span>
             <span class="option-toggle-help">
               Swaps UI accents for higher separation.
+            </span>
+          </label>
+          <label class="option-toggle">
+            <input id="accessibility-virtual-keyboard" type="checkbox" />
+            <span class="option-toggle-label">On-screen Keyboard</span>
+            <span class="option-toggle-help">
+              Shows an on-screen keyboard that highlights the next key while typing.
+            </span>
+          </label>
+          <label class="option-toggle option-select">
+            <span class="option-toggle-label">Keyboard Layout</span>
+            <select id="accessibility-virtual-keyboard-layout" aria-label="Keyboard layout">
+              <option value="qwerty">QWERTY</option>
+              <option value="qwertz">QWERTZ</option>
+              <option value="azerty">AZERTY</option>
+            </select>
+            <span class="option-toggle-help">
+              Match the on-screen keyboard to your physical layout.
             </span>
           </label>
           <label class="option-toggle option-range">
@@ -1573,7 +1751,25 @@
                             <input id="options-reduced-motion-toggle" type="checkbox" />
                             <span class="option-toggle-label">Reduced Motion</span>
                             <span class="option-toggle-help">
-                              Disables enemy death splashes and UI transitions; keeps essential cues only.
+                              Disables enemy defeat splashes and UI transitions; keeps essential cues only.
+                            </span>
+                          </label>
+                          <label class="option-toggle">
+                            <input id="options-virtual-keyboard-toggle" type="checkbox" />
+                            <span class="option-toggle-label">On-screen Keyboard</span>
+                            <span class="option-toggle-help">
+                              Shows an on-screen keyboard that highlights the next key while typing.
+                            </span>
+                          </label>
+                          <label class="option-toggle option-select">
+                            <span class="option-toggle-label">Keyboard Layout</span>
+                            <select id="options-virtual-keyboard-layout" aria-label="Keyboard layout">
+                              <option value="qwerty">QWERTY</option>
+                              <option value="qwertz">QWERTZ</option>
+                              <option value="azerty">AZERTY</option>
+                            </select>
+                            <span class="option-toggle-help">
+                              Match the on-screen keyboard to your physical layout.
                             </span>
                           </label>
                           <label class="option-toggle">
@@ -1748,6 +1944,13 @@
               </span>
             </label>
             <label class="option-toggle">
+              <input id="options-milestone-popups" type="checkbox" checked />
+              <span class="option-toggle-label">Milestone Popups</span>
+              <span class="option-toggle-help">
+                Shows celebration popups for medals, certificates, and other progress beats.
+              </span>
+            </label>
+            <label class="option-toggle">
               <input id="options-audio-narration" type="checkbox" />
               <span class="option-toggle-label">Audio Narration</span>
               <span class="option-toggle-help">
@@ -1825,6 +2028,51 @@
                 use a soft glow halo.
               </span>
             </label>
+            <label class="option-toggle option-select">
+              <span class="option-toggle-label">Break Reminders</span>
+              <select id="options-break-reminder-interval" aria-label="Break reminder interval">
+                <option value="off">Off</option>
+                <option value="10">Every 10 minutes</option>
+                <option value="20">Every 20 minutes (default)</option>
+                <option value="30">Every 30 minutes</option>
+                <option value="45">Every 45 minutes</option>
+              </select>
+              <span class="option-toggle-help">
+                Shows a gentle stretch reminder during longer sessions.
+              </span>
+            </label>
+            <label class="option-toggle option-select">
+              <span class="option-toggle-label">Daily Screen-Time Goal</span>
+              <select id="options-screen-time-goal" aria-label="Daily screen time goal">
+                <option value="off">Off</option>
+                <option value="15">15 minutes</option>
+                <option value="20">20 minutes</option>
+                <option value="30">30 minutes</option>
+                <option value="45">45 minutes</option>
+                <option value="60">60 minutes</option>
+                <option value="90">90 minutes</option>
+              </select>
+              <span class="option-toggle-help">
+                Shows gentle reminders as you reach your goal. Stored only on this device.
+                <span id="options-screen-time-status">Today: 0 minutes</span>
+              </span>
+            </label>
+            <label class="option-toggle option-select">
+              <span class="option-toggle-label">Lockout After Goal</span>
+              <select id="options-screen-time-lockout" aria-label="Screen time lockout setting">
+                <option value="off">Off</option>
+                <option value="rest-15">Rest for 15 minutes</option>
+                <option value="rest-30">Rest for 30 minutes</option>
+                <option value="rest-60">Rest for 60 minutes</option>
+                <option value="today">Lock until tomorrow</option>
+              </select>
+              <span class="option-toggle-help">
+                Optional lockout once the goal is reached (local-only).
+              </span>
+            </label>
+            <button id="options-screen-time-reset" type="button" class="ghost option-inline-button">
+              Reset screen time for today
+            </button>
             <div class="options-audio-library">
               <button id="options-posture-checklist" type="button" class="secondary">
                 Posture Checklist
@@ -1923,6 +2171,7 @@
             <label class="option-toggle option-select">
               <span class="option-toggle-label">HUD Zoom</span>
               <select id="options-hud-zoom" aria-label="HUD zoom">
+                <option value="0.8">80% (tiny)</option>
                 <option value="0.9">90% (compact)</option>
                 <option value="1">100% (default)</option>
                 <option value="1.1">110% (comfortable)</option>
@@ -2010,6 +2259,13 @@
                               </span>
                             </label>
                             <label class="option-toggle">
+                              <input id="options-toggle-wave-preview-threat" type="checkbox" />
+                              <span class="option-toggle-label">Show Lane Threat Summary</span>
+                              <span class="option-toggle-help">
+                                Adds damage and priority hints to the lane summary above Upcoming Enemies.
+                              </span>
+                            </label>
+                            <label class="option-toggle">
                               <input id="options-toggle-battle-log" type="checkbox" />
                               <span class="option-toggle-label">Show Battle Log</span>
                               <span class="option-toggle-help">
@@ -2060,6 +2316,9 @@
                             <button id="options-typing-drills" type="button" class="secondary">
                               Open Typing Drills
                             </button>
+                            <button id="options-end-session" type="button" class="secondary">
+                              End Session
+                            </button>
                             <p class="options-hint">
                               Tip: Press Shift + R to launch the recommended drill instantly.
                             </p>
@@ -2103,8 +2362,38 @@
                             <input id="options-telemetry-toggle" type="checkbox" />
                             <span class="option-toggle-label">Send Telemetry</span>
                           </label>
+                          <button
+                            id="options-telemetry-queue-download"
+                            type="button"
+                            class="secondary"
+                          >
+                            Download Telemetry Queue
+                          </button>
+                          <button id="options-telemetry-queue-clear" type="button" class="secondary">
+                            Clear Telemetry Queue
+                          </button>
                           <button id="options-analytics-export" type="button" class="secondary">
                             Download Analytics
+                          </button>
+                          <button
+                            id="options-session-timeline-export"
+                            type="button"
+                            class="secondary"
+                          >
+                            Download Session Timeline (CSV)
+                          </button>
+                          <button
+                            id="options-keystroke-timing-export"
+                            type="button"
+                            class="secondary"
+                          >
+                            Download Keystroke Timing (CSV)
+                          </button>
+                          <button id="options-progress-export" type="button" class="secondary">
+                            Export Progress
+                          </button>
+                          <button id="options-progress-import" type="button" class="secondary">
+                            Import Progress
                           </button>
                         </div>
                       </section>
@@ -2135,8 +2424,8 @@
             <p class="info-overlay-kicker">For parents & guardians</p>
             <h2 id="parental-overlay-title">Privacy & Safety Notes</h2>
             <p id="parental-overlay-desc" class="info-overlay-subtitle">
-              Keyboard Defense is local-first: no accounts, no online tracking, and everything is
-              built for ages 8-16 on Edge/Chrome.
+              Keyboard Defense is local-first: no accounts, no ads, and no online tracking by default.
+              Everything is built for ages 8-16 on Edge/Chrome.
             </p>
           </div>
           <button
@@ -2149,16 +2438,67 @@
           </button>
         </header>
         <ul class="info-overlay-list">
-          <li>All progress/settings stay in local storage; nothing is sent online.</li>
-          <li>Telemetry is opt-in only and off by default; exports are manual.</li>
-          <li>No accounts, chat, ads, or payment flows are present.</li>
-          <li>Word lists and UI copy follow kid-safe language guidelines.</li>
-          <li>You can clear data anytime via browser storage or by resetting progress.</li>
+          <li>Progress and settings stay in browser storage (local-only) unless you export them.</li>
+          <li>
+            Exports are manual downloads (progress, analytics, diagnostics like session timelines and keystroke
+            timing).
+          </li>
+          <li>
+            Telemetry is opt-in and off by default; events queue locally and only send if you set an endpoint and
+            flush (you can also download or clear the queue in Diagnostics).
+          </li>
+          <li>Coach prompts like “Why did you stop?” store local notes to help recommend drills.</li>
+          <li>No accounts, chat, social features, ads, or payment flows are present.</li>
+          <li>You can clear everything anytime via browser storage or by resetting progress.</li>
         </ul>
         <p class="info-overlay-footer">
-          Questions about data? Check the pause menu toggles (Telemetry/Analytics) or export locally
-          for your own review.
+          Questions about data? Open the pause menu, then Diagnostics, to review and download local-only reports.
         </p>
+      </div>
+    </div>
+    <div
+      id="dropoff-overlay"
+      data-visible="false"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="dropoff-overlay-title"
+      aria-describedby="dropoff-overlay-desc"
+      aria-hidden="true"
+    >
+      <div class="info-overlay-card dropoff-overlay-card">
+        <header class="info-overlay-header">
+          <div>
+            <p class="info-overlay-kicker">Coach Mode</p>
+            <h2 id="dropoff-overlay-title">Why did you stop?</h2>
+            <p id="dropoff-overlay-desc" class="info-overlay-subtitle">
+              Pick a reason so we can recommend the next best drill. This stays on your device.
+            </p>
+          </div>
+          <button
+            id="dropoff-overlay-close"
+            class="icon-button"
+            type="button"
+            aria-label="Close drop-off prompt"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </header>
+        <div class="options-actions dropoff-overlay-actions">
+          <button type="button" class="secondary" data-dropoff-reason="done">I'm done for now</button>
+          <button type="button" class="secondary" data-dropoff-reason="break">Taking a break</button>
+          <button type="button" class="secondary" data-dropoff-reason="tired">I'm tired</button>
+          <button type="button" class="secondary" data-dropoff-reason="frustrated">I'm frustrated</button>
+          <button type="button" class="secondary" data-dropoff-reason="too-hard">It felt too hard</button>
+          <button type="button" class="secondary" data-dropoff-reason="too-easy">It felt too easy</button>
+          <button type="button" class="secondary" data-dropoff-reason="keyboard">
+            Keyboard problems
+          </button>
+          <button type="button" class="secondary" data-dropoff-reason="other">Other</button>
+        </div>
+        <div class="options-actions dropoff-overlay-footer">
+          <button id="dropoff-overlay-skip" type="button" class="secondary">Skip</button>
+          <button id="dropoff-overlay-cancel" type="button" class="secondary">Cancel</button>
+        </div>
       </div>
     </div>
     <div
@@ -2244,12 +2584,82 @@
               <button
                 type="button"
                 class="typing-drill-mode"
+                data-mode="warmup"
+                aria-selected="false"
+                role="tab"
+              >
+                <span class="mode-label">5-Min Warm-up</span>
+                <span class="mode-meta">Personal plan</span>
+              </button>
+              <button
+                type="button"
+                class="typing-drill-mode"
                 data-mode="endurance"
                 aria-selected="false"
                 role="tab"
               >
                 <span class="mode-label">Endurance</span>
                 <span class="mode-meta">30s cadence</span>
+              </button>
+              <button
+                type="button"
+                class="typing-drill-mode"
+                data-mode="sprint"
+                aria-selected="false"
+                role="tab"
+              >
+                <span class="mode-label">Time Attack</span>
+                <span class="mode-meta">60s sprint</span>
+              </button>
+              <button
+                type="button"
+                class="typing-drill-mode"
+                data-mode="sentences"
+                aria-selected="false"
+                role="tab"
+              >
+                <span class="mode-label">Sentence Builder</span>
+                <span class="mode-meta">Punctuation flow</span>
+              </button>
+              <button
+                type="button"
+                class="typing-drill-mode"
+                data-mode="reading"
+                aria-selected="false"
+                role="tab"
+              >
+                <span class="mode-label">Reading Quiz</span>
+                <span class="mode-meta">Passage + quick quiz</span>
+              </button>
+              <button
+                type="button"
+                class="typing-drill-mode"
+                data-mode="rhythm"
+                aria-selected="false"
+                role="tab"
+              >
+                <span class="mode-label">Rhythm Drill</span>
+                <span class="mode-meta">Alternating beat</span>
+              </button>
+              <button
+                type="button"
+                class="typing-drill-mode"
+                data-mode="reaction"
+                aria-selected="false"
+                role="tab"
+              >
+                <span class="mode-label">Reaction Challenge</span>
+                <span class="mode-meta">Random cues</span>
+              </button>
+              <button
+                type="button"
+                class="typing-drill-mode"
+                data-mode="combo"
+                aria-selected="false"
+                role="tab"
+              >
+                <span class="mode-label">Combo Preservation</span>
+                <span class="mode-meta">Limited mistakes</span>
               </button>
               <button
                 type="button"
@@ -2261,11 +2671,108 @@
                 <span class="mode-label">Shield Breaker</span>
                 <span class="mode-meta">Hard-focus strings</span>
               </button>
+              <button
+                type="button"
+                class="typing-drill-mode"
+                data-mode="symbols"
+                aria-selected="false"
+                role="tab"
+              >
+                <span class="mode-label">Numbers &amp; Symbols</span>
+                <span class="mode-meta">Digits + punctuation</span>
+              </button>
+              <button
+                type="button"
+                class="typing-drill-mode"
+                data-mode="placement"
+                aria-selected="false"
+                role="tab"
+              >
+                <span class="mode-label">Placement Test</span>
+                <span class="mode-meta">Left/right diagnostic</span>
+              </button>
+              <button
+                type="button"
+                class="typing-drill-mode"
+                data-mode="hand"
+                aria-selected="false"
+                role="tab"
+              >
+                <span class="mode-label">Hand Isolation</span>
+                <span class="mode-meta">One hand at a time</span>
+              </button>
+              <button
+                type="button"
+                class="typing-drill-mode"
+                data-mode="support"
+                aria-selected="false"
+                role="tab"
+              >
+                <span class="mode-label">Lane Support</span>
+                <span class="mode-meta">Type A/B/C fast</span>
+              </button>
+              <button
+                type="button"
+                class="typing-drill-mode"
+                data-mode="shortcuts"
+                aria-selected="false"
+                role="tab"
+              >
+                <span class="mode-label">Shortcut Practice</span>
+                <span class="mode-meta">Ctrl/Cmd combos</span>
+              </button>
+              <button
+                type="button"
+                class="typing-drill-mode"
+                data-mode="shift"
+                aria-selected="false"
+                role="tab"
+              >
+                <span class="mode-label">Shift Timing</span>
+                <span class="mode-meta">Hold vs tap cues</span>
+              </button>
+              <button
+                type="button"
+                class="typing-drill-mode"
+                data-mode="focus"
+                aria-selected="false"
+                role="tab"
+              >
+                <span class="mode-label">Focus Drill</span>
+                <span class="mode-meta">Trouble keys</span>
+              </button>
             </div>
             <div class="typing-drill-stage">
               <div class="typing-drill-status">
                 <span class="typing-drill-status-label" id="typing-drill-status-label">Ready</span>
                 <span class="typing-drill-progress" id="typing-drill-progress"></span>
+                <button
+                  id="typing-drill-slowmo"
+                  class="ghost typing-drill-slowmo"
+                  type="button"
+                  data-visible="false"
+                  aria-pressed="true"
+                >
+                  Slow-mo: On
+                </button>
+                <button
+                  id="typing-drill-metronome"
+                  class="ghost typing-drill-slowmo typing-drill-metronome"
+                  type="button"
+                  data-visible="false"
+                  aria-pressed="true"
+                >
+                  Metronome: On
+                </button>
+                <button
+                  id="typing-drill-hand"
+                  class="ghost typing-drill-slowmo typing-drill-hand"
+                  type="button"
+                  data-visible="false"
+                  aria-pressed="true"
+                >
+                  Hand: Left
+                </button>
                 <span class="typing-drill-timer" id="typing-drill-timer">00:00</span>
               </div>
               <div class="typing-drill-target" id="typing-drill-target"></div>
@@ -2320,6 +2827,15 @@
                   </li>
                   <li>
                     <span>Errors</span><span id="typing-drill-summary-errors">0</span>
+                  </li>
+                  <li hidden>
+                    <span>Left Hand</span><span id="typing-drill-summary-left"></span>
+                  </li>
+                  <li hidden>
+                    <span>Right Hand</span><span id="typing-drill-summary-right"></span>
+                  </li>
+                  <li hidden>
+                    <span>Suggested Pace</span><span id="typing-drill-summary-pacing"></span>
                   </li>
                 </ul>
                 <div class="summary-medal" id="typing-drill-summary-medal" data-tier="bronze">
@@ -2848,7 +3364,7 @@
               <p class="mastery-cert-stat__value" id="mastery-certificate-stat-time">0m</p>
             </div>
           </div>
-          <p id="mastery-certificate-date" class="mastery-cert-date"></p>
+          <p id="mastery-certificate-overlay-date" class="mastery-cert-date"></p>
           <section class="mastery-cert-details" id="mastery-cert-details" data-collapsed="true">
             <div class="mastery-cert-details-header">
               <div class="mastery-cert-details-copy">
@@ -3231,5 +3747,12 @@
       </div>
     </div>
     <script type="module" src="../dist/src/index.js"></script>
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("sw.js").catch(() => {});
+        });
+      }
+    </script>
   </body>
 </html>

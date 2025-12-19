@@ -6,6 +6,9 @@ import { type LessonMedalViewState } from "../utils/lessonMedals.js";
 import { type WpmLadderViewState } from "../utils/wpmLadder.js";
 import { type BiomeGalleryViewState } from "../utils/biomeGallery.js";
 import { type TrainingCalendarViewState } from "../utils/trainingCalendar.js";
+import { type SessionGoalsViewState } from "../utils/sessionGoals.js";
+import { type DailyQuestBoardViewState } from "../utils/dailyQuests.js";
+import { type WeeklyQuestBoardViewState } from "../utils/weeklyQuest.js";
 import { type DayNightMode } from "../utils/dayNightTheme.js";
 import { type ParallaxScene } from "../utils/parallaxBackground.js";
 import { type FocusOutlinePreset } from "../utils/focusOutlines.js";
@@ -67,7 +70,18 @@ export interface HudCallbacks {
     onTurretPresetApply?: (presetId: string) => void;
     onTurretPresetClear?: (presetId: string) => void;
     onAnalyticsExport?: () => void;
+    onSessionTimelineExport?: () => void;
+    onKeystrokeTimingExport?: () => void;
+    onBreakReminderIntervalChange?: (minutes: number) => void;
+    onScreenTimeGoalChange?: (minutes: number) => void;
+    onScreenTimeLockoutModeChange?: (mode: string) => void;
+    onScreenTimeReset?: () => void;
+    onProgressExport?: () => void;
+    onProgressImport?: () => void;
+    onDropoffReasonSelected?: (reasonId: string) => void;
     onTelemetryToggle?: (enabled: boolean) => void;
+    onTelemetryQueueDownload?: () => void;
+    onTelemetryQueueClear?: () => void;
     onCrystalPulseToggle?: (enabled: boolean) => void;
     onEliteAffixesToggle?: (enabled: boolean) => void;
     onPauseRequested(): void;
@@ -94,10 +108,12 @@ export interface HudCallbacks {
     onAccessibilitySelfTestConfirm?: (kind: "sound" | "visual" | "motion", confirmed: boolean) => void;
     onDiagnosticsToggle(visible: boolean): void;
     onVirtualKeyboardToggle?: (enabled: boolean) => void;
+    onVirtualKeyboardLayoutChange?: (layout: string) => void;
     onLowGraphicsToggle?: (enabled: boolean) => void;
     onTextSizeChange?: (scale: number) => void;
     onHapticsToggle?: (enabled: boolean) => void;
     onWaveScorecardContinue(): void;
+    onWaveScorecardSuggestedDrill?: (drill: WaveScorecardCoachDrill) => void;
     onLessonMedalReplay?: (options?: {
         mode?: TypingDrillMode;
         hint?: string;
@@ -231,18 +247,25 @@ type OptionsOverlayElements = {
     selfTestMotionIndicator?: string;
     diagnosticsToggle: string;
     virtualKeyboardToggle?: string;
+    virtualKeyboardLayoutSelect?: string;
     lowGraphicsToggle: string;
     textSizeSelect?: string;
     hapticsToggle?: string;
     reducedMotionToggle: string;
     checkeredBackgroundToggle: string;
     accessibilityPresetToggle?: string;
+    breakReminderIntervalSelect?: string;
+    screenTimeGoalSelect?: string;
+    screenTimeLockoutSelect?: string;
+    screenTimeStatus?: string;
+    screenTimeResetButton?: string;
     voicePackSelect?: string;
     latencySparklineToggle?: string;
     readableFontToggle: string;
     dyslexiaFontToggle: string;
     dyslexiaSpacingToggle?: string;
     cognitiveLoadToggle?: string;
+    milestonePopupsToggle?: string;
     audioNarrationToggle?: string;
     tutorialPacingSlider?: string;
     tutorialPacingValue?: string;
@@ -277,13 +300,20 @@ type OptionsOverlayElements = {
     masteryCertificateButton?: string;
     loreScrollsButton?: string;
     parentSummaryButton?: string;
+    endSessionButton?: string;
     telemetryToggle?: string;
     telemetryToggleWrapper?: string;
+    telemetryQueueDownloadButton?: string;
+    telemetryQueueClearButton?: string;
     crystalPulseToggle?: string;
     crystalPulseToggleWrapper?: string;
     eliteAffixToggle?: string;
     eliteAffixToggleWrapper?: string;
     analyticsExportButton?: string;
+    sessionTimelineExportButton?: string;
+    keystrokeTimingExportButton?: string;
+    progressExportButton?: string;
+    progressImportButton?: string;
 };
 type AnalyticsViewerElements = {
     container: string;
@@ -310,6 +340,9 @@ type WaveScorecardElements = {
     stats: string;
     continue: string;
     tip?: string;
+    coach?: string;
+    coachList?: string;
+    drill?: string;
 };
 type RoadmapOverlayElements = {
     container: string;
@@ -338,6 +371,12 @@ type RoadmapGlanceElements = {
 type ParentalOverlayElements = {
     container: string;
     closeButton: string;
+};
+type DropoffOverlayElements = {
+    container: string;
+    closeButton: string;
+    cancelButton?: string;
+    skipButton?: string;
 };
 type SubtitleOverlayElements = {
     container: string;
@@ -472,6 +511,16 @@ type ParentSummaryOverlayElements = {
     repairs?: string;
     download?: string;
 };
+export type WaveScorecardCoachDrill = {
+    mode: TypingDrillMode;
+    label: string;
+    reason: string;
+};
+export type WaveScorecardCoachSummary = {
+    win: string;
+    gap: string;
+    drill: WaveScorecardCoachDrill | null;
+};
 export interface WaveScorecardData {
     waveIndex: number;
     waveTotal: number;
@@ -496,6 +545,7 @@ export interface WaveScorecardData {
     castleBonusGold: number;
     bonusGold: number;
     microTip?: string | null;
+    coach?: WaveScorecardCoachSummary | null;
 }
 export type HudCollapsePreferenceUpdate = {
     hudCastlePassivesCollapsed?: boolean | null;
@@ -536,6 +586,7 @@ export declare class HudView {
     private tutorialBannerExpanded;
     private readonly virtualKeyboard?;
     private virtualKeyboardEnabled;
+    private virtualKeyboardLayout;
     private readonly focusTraps;
     private readonly castleButton;
     private readonly castleRepairButton;
@@ -561,6 +612,7 @@ export declare class HudView {
     private readonly roadmapOverlay?;
     private readonly roadmapGlance?;
     private readonly parentalOverlay?;
+    private readonly dropoffOverlay?;
     private readonly layoutOverlay?;
     private readonly contrastOverlay?;
     private readonly musicOverlay?;
@@ -603,6 +655,12 @@ export declare class HudView {
     private readonly masteryCertificatePanel?;
     private readonly masteryCertificate?;
     private readonly sideQuestPanel?;
+    private dailyQuestBoardState?;
+    private readonly dailyQuestPanel?;
+    private weeklyQuestBoardState?;
+    private readonly weeklyQuestPanel?;
+    private sessionGoalsState?;
+    private readonly sessionGoalsPanel?;
     private readonly sideQuestOverlay?;
     private sideQuestFilter;
     private sideQuestEntries;
@@ -622,17 +680,24 @@ export declare class HudView {
     private milestoneCelebrationHideTimeout;
     private lastMilestoneKey;
     private lastMilestoneAt;
+    private milestoneCelebrationsDisabled;
     private lastLessonMedalCelebratedId;
     private lastLessonMilestoneCelebrated;
+    private lessonMilestoneTrackingInitialized;
     private lastCertificateCelebratedAt;
+    private masteryCertificateMilestoneShown;
     private readonly parentSummaryOverlay?;
     private parentSummary?;
     private castleSkin;
     private parentalOverlayTrigger?;
+    private dropoffOverlayTrigger?;
     private lastShieldTelemetry;
     private lastAffixTelemetry;
     private lastWavePreviewEntries;
     private lastWavePreviewColorBlind;
+    private lastWavePreviewLaneHazards;
+    private lastWavePreviewEmptyMessage;
+    private wavePreviewThreatIndicatorsEnabled;
     private lastGold;
     private maxCombo;
     private goldTimeout;
@@ -644,6 +709,7 @@ export declare class HudView {
     private tutorialSlotLock;
     private passiveHighlightId;
     private lastState;
+    private lastGameStatus;
     private availableTurretTypes;
     private turretDowngradeEnabled;
     private readonly tutorialSummary?;
@@ -692,6 +758,7 @@ export declare class HudView {
     private hudRoot;
     private hudLayoutSide;
     private evacBanner?;
+    private supportBoostBanner?;
     private evacHideTimeout;
     private evacResolvedState;
     constructor(config: GameConfig, rootIds: {
@@ -729,6 +796,7 @@ export declare class HudView {
         roadmapGlance?: RoadmapGlanceElements;
         roadmapLaunch?: string;
         parentalOverlay?: ParentalOverlayElements;
+        dropoffOverlay?: DropoffOverlayElements;
         subtitleOverlay?: SubtitleOverlayElements;
         layoutOverlay?: LayoutOverlayElements;
         contrastOverlay?: ContrastOverlayElements;
@@ -763,6 +831,7 @@ export declare class HudView {
     showShortcutOverlay(): void;
     hideShortcutOverlay(): void;
     setVirtualKeyboardEnabled(enabled: boolean): void;
+    setVirtualKeyboardLayout(layout: string): void;
     toggleShortcutOverlay(): void;
     isShortcutOverlayVisible(): boolean;
     showRoadmapOverlay(): void;
@@ -794,6 +863,7 @@ export declare class HudView {
         diagnosticsVisible: boolean;
         lowGraphicsEnabled: boolean;
         virtualKeyboardEnabled?: boolean;
+        virtualKeyboardLayout?: string;
         hapticsEnabled?: boolean;
         textSizeScale?: number;
         reducedMotionEnabled: boolean;
@@ -813,6 +883,14 @@ export declare class HudView {
         hudLayout: "left" | "right";
         hudFontScale: number;
         defeatAnimationMode: DefeatAnimationPreference;
+        breakReminderIntervalMinutes?: number;
+        screenTime?: {
+            goalMinutes: number;
+            lockoutMode: string;
+            minutesToday: number;
+            locked: boolean;
+            lockoutRemainingMs?: number;
+        };
         hotkeys?: {
             pause?: string;
             shortcuts?: string;
@@ -843,6 +921,7 @@ export declare class HudView {
         tutorialCompleted?: boolean;
         loreUnlocked?: number;
         lessonsCompleted?: number;
+        wavePreviewEmptyMessage?: string;
     }): void;
     showCastleMessage(message: string): void;
     showSlotMessage(slotId: string, message: string): void;
@@ -861,6 +940,7 @@ export declare class HudView {
     private clearWavePreviewHintTimeout;
     private updateWavePreviewHint;
     setWavePreviewHighlight(active: boolean, message?: string | null): void;
+    setWavePreviewThreatIndicatorsEnabled(enabled: boolean): void;
     announceEnemyTaunt(message: string, options?: {
         durationMs?: number;
     }): boolean;
@@ -952,11 +1032,14 @@ export declare class HudView {
     private clearRoadmapTracking;
     private persistRoadmapPreferences;
     private setWaveScorecardField;
+    private setWaveScorecardCoachField;
     private setWaveScorecardVisible;
     private setShortcutOverlayVisible;
     private setRoadmapOverlayVisible;
     private showParentalOverlay;
     private hideParentalOverlay;
+    private showDropoffOverlay;
+    private hideDropoffOverlay;
     private applyTelemetryOptionState;
     private updateSoundVolumeDisplay;
     private updateSoundIntensityDisplay;
@@ -1016,7 +1099,11 @@ export declare class HudView {
     setStickerBookEntries(entries: StickerBookEntry[]): void;
     setSeasonTrackProgress(state: SeasonTrackViewState): void;
     private readCertificateName;
+    private readMasteryCertificateMilestoneShown;
+    private readMilestoneCelebrationsDisabled;
     private persistCertificateName;
+    private persistMasteryCertificateMilestoneShown;
+    private persistMilestoneCelebrationsDisabled;
     private setCertificateName;
     showLessonMedalOverlay(): void;
     hideLessonMedalOverlay(): void;
@@ -1043,10 +1130,15 @@ export declare class HudView {
     private renderMuseumOverlay;
     private buildSideQuestEntries;
     private renderSideQuestPanel;
+    setSessionGoals(state: SessionGoalsViewState): void;
+    setDailyQuestBoard(state: DailyQuestBoardViewState): void;
+    setWeeklyQuestBoard(state: WeeklyQuestBoardViewState): void;
     private renderSideQuestOverlay;
     private maybeCelebrateLessonMilestone;
     downloadMasteryCertificate(): void;
-    setLessonMedalProgress(state: LessonMedalViewState): void;
+    setLessonMedalProgress(state: LessonMedalViewState, options?: {
+        celebrate?: boolean;
+    }): void;
     private getEmptyLessonMedalState;
     private flashLessonMedalHighlight;
     private updateLessonMedalPanel;
@@ -1155,9 +1247,13 @@ export declare class HudView {
     private renderAnalyticsExportMeta;
     private refreshAnalyticsViewer;
     private setOptionsOverlayVisible;
+    private updateSupportBoost;
     private updateEvacuation;
     private scheduleEvacHide;
     private formatLaneLabel;
+    private formatSeconds;
+    private formatTitleLabel;
+    private formatFireRateEffect;
 }
 export {};
 //# sourceMappingURL=hud.d.ts.map

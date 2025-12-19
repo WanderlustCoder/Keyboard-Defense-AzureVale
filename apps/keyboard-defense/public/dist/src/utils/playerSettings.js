@@ -1,9 +1,9 @@
 export const PLAYER_SETTINGS_STORAGE_KEY = "keyboard-defense:player-settings";
-export const PLAYER_SETTINGS_VERSION = 32;
+export const PLAYER_SETTINGS_VERSION = 33;
 const DEFAULT_UPDATED_AT = "1970-01-01T00:00:00.000Z";
 const HUD_FONT_SCALE_MIN = 0.85;
 const HUD_FONT_SCALE_MAX = 1.3;
-const HUD_ZOOM_MIN = 0.9;
+const HUD_ZOOM_MIN = 0.8;
 const HUD_ZOOM_MAX = 1.2;
 const HUD_ZOOM_DEFAULT = 1;
 const HUD_LAYOUT_DEFAULT = "right";
@@ -38,6 +38,8 @@ const DEFAULT_PRESET_SAVED_AT = "1970-01-01T00:00:00.000Z";
 const MAX_TURRET_LEVEL = 10;
 const TEXT_SIZE_MIN = 0.9;
 const TEXT_SIZE_MAX = 1.1;
+const VIRTUAL_KEYBOARD_LAYOUTS = new Set(["qwerty", "qwertz", "azerty"]);
+const DEFAULT_VIRTUAL_KEYBOARD_LAYOUT = "qwerty";
 export const TURRET_PRESET_IDS = ["preset-a", "preset-b", "preset-c"];
 const ALLOWED_TURRET_PRESET_IDS = TURRET_PRESET_IDS;
 const DIAGNOSTICS_SECTION_IDS = ["gold-events", "castle-passives", "turret-dps"];
@@ -51,6 +53,7 @@ const BASE_DEFAULT_SETTINGS = {
     reducedMotionEnabled: false,
     lowGraphicsEnabled: false,
     virtualKeyboardEnabled: false,
+    virtualKeyboardLayout: DEFAULT_VIRTUAL_KEYBOARD_LAYOUT,
     hapticsEnabled: false,
     textSizeScale: 1,
     checkeredBackgroundEnabled: false,
@@ -154,6 +157,9 @@ export function readPlayerSettings(storage) {
         const virtualKeyboardEnabled = typeof parsed.virtualKeyboardEnabled === "boolean"
             ? parsed.virtualKeyboardEnabled
             : fallback.virtualKeyboardEnabled;
+        const virtualKeyboardLayout = typeof parsed.virtualKeyboardLayout === "string"
+            ? normalizeVirtualKeyboardLayout(parsed.virtualKeyboardLayout)
+            : fallback.virtualKeyboardLayout;
         const readableFontEnabled = typeof parsed.readableFontEnabled === "boolean"
             ? parsed.readableFontEnabled
             : fallback.readableFontEnabled;
@@ -249,6 +255,7 @@ export function readPlayerSettings(storage) {
             reducedMotionEnabled,
             lowGraphicsEnabled,
             virtualKeyboardEnabled,
+            virtualKeyboardLayout,
             hapticsEnabled,
             textSizeScale,
             checkeredBackgroundEnabled,
@@ -334,6 +341,9 @@ export function withPatchedPlayerSettings(current, patch) {
         virtualKeyboardEnabled: typeof patch.virtualKeyboardEnabled === "boolean"
             ? patch.virtualKeyboardEnabled
             : current.virtualKeyboardEnabled,
+        virtualKeyboardLayout: typeof patch.virtualKeyboardLayout === "string"
+            ? normalizeVirtualKeyboardLayout(patch.virtualKeyboardLayout)
+            : current.virtualKeyboardLayout ?? DEFAULT_VIRTUAL_KEYBOARD_LAYOUT,
         checkeredBackgroundEnabled: typeof patch.checkeredBackgroundEnabled === "boolean"
             ? patch.checkeredBackgroundEnabled
             : current.checkeredBackgroundEnabled,
@@ -607,6 +617,15 @@ function normalizeTutorialPacing(value) {
 function normalizeHudLayout(value) {
     if (value === "left") return "left";
     return HUD_LAYOUT_DEFAULT;
+}
+function normalizeVirtualKeyboardLayout(value) {
+    if (typeof value !== "string") {
+        return DEFAULT_VIRTUAL_KEYBOARD_LAYOUT;
+    }
+    const normalized = value.toLowerCase();
+    return VIRTUAL_KEYBOARD_LAYOUTS.has(normalized)
+        ? normalized
+        : DEFAULT_VIRTUAL_KEYBOARD_LAYOUT;
 }
 function normalizeHudFontScale(value) {
     if (typeof value !== "number" || !Number.isFinite(value)) {

@@ -51,6 +51,13 @@ export function createInitialState(config: GameConfig): GameState {
       succeeded: false,
       failed: false
     },
+    supportBoost: {
+      lane: null,
+      remaining: 0,
+      duration: 0,
+      multiplier: 1,
+      cooldownRemaining: 0
+    },
     boss: {
       active: false,
       enemyId: null,

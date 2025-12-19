@@ -130,6 +130,17 @@ export class DiagnosticsOverlay {
             `Rolling accuracy (${metrics.typing.recentSampleSize} inputs): ${(metrics.typing.recentAccuracy * 100).toFixed(1)}%`,
             `Difficulty bias: ${metrics.typing.difficultyBias >= 0 ? "+" : ""}${metrics.typing.difficultyBias.toFixed(2)}`
         ];
+        const keystrokeGate = session?.keystrokeTimingGate ?? null;
+        if (keystrokeGate) {
+            const tempoLabel = typeof keystrokeGate.tempoWpm === "number" ? `${Math.round(keystrokeGate.tempoWpm)} WPM` : "n/a";
+            const bandLabel = keystrokeGate.band ?? "unknown";
+            const medianLabel = typeof keystrokeGate.medianMs === "number" ? `${Math.round(keystrokeGate.medianMs)}ms` : "n/a";
+            const p90Label = typeof keystrokeGate.p90Ms === "number" ? `${Math.round(keystrokeGate.p90Ms)}ms` : "n/a";
+            const jitterLabel = typeof keystrokeGate.jitterMs === "number" ? `${Math.round(keystrokeGate.jitterMs)}ms` : "n/a";
+            const sourceNote = keystrokeGate.source && keystrokeGate.source !== "live" ? ` (${keystrokeGate.source})` : "";
+            lines.push(`Keystroke tempo: ${tempoLabel} [${bandLabel}] | jitter ${jitterLabel} (p50 ${medianLabel}, p90 ${p90Label})`);
+            lines.push(`Spawn speed gate: x${keystrokeGate.multiplier.toFixed(2)}${sourceNote}`);
+        }
         if (memoryLine) {
             lines.push(memoryLine);
         }

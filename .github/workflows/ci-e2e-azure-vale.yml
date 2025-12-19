@@ -125,6 +125,10 @@ jobs:
         run: npm run serve:smoke -- --ci --json
         working-directory: apps/keyboard-defense
 
+      - name: Throttled perf smoke
+        run: node scripts/ci/perfSmoke.mjs --ci --no-build
+        working-directory: apps/keyboard-defense
+
       - name: Publish audio intensity summary
         if: always()
         shell: bash
@@ -219,21 +223,18 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-test-artifacts-linux-node${{ matrix.node }}
-            path: |
-              apps/keyboard-defense/artifacts/build
-              apps/keyboard-defense/artifacts/unit
-              apps/keyboard-defense/artifacts/integration
-              apps/keyboard-defense/artifacts/smoke/devserver-smoke-summary.json
-              apps/keyboard-defense/baselines
-              apps/keyboard-defense/artifacts/monitor
-              apps/keyboard-defense/monitor-artifacts
-              apps/keyboard-defense/artifacts/monitor
-              apps/keyboard-defense/monitor-artifacts
-              apps/keyboard-defense/artifacts/summaries/analytics-validate-node${{ matrix.node }}.json
-            apps/keyboard-defense/artifacts/summaries/analytics-validate-node${{ matrix.node }}.md
-            apps/keyboard-defense/artifacts/summaries/vitest-summary-node${{ matrix.node }}.json
+          path: |
+            apps/keyboard-defense/artifacts/build
+            apps/keyboard-defense/artifacts/unit
+            apps/keyboard-defense/artifacts/integration
+            apps/keyboard-defense/artifacts/smoke/devserver-smoke-summary.json
+            apps/keyboard-defense/artifacts/perf
+            apps/keyboard-defense/baselines
+            apps/keyboard-defense/artifacts/monitor
+            apps/keyboard-defense/monitor-artifacts
             apps/keyboard-defense/artifacts/summaries/analytics-validate-node${{ matrix.node }}.json
             apps/keyboard-defense/artifacts/summaries/analytics-validate-node${{ matrix.node }}.md
+            apps/keyboard-defense/artifacts/summaries/vitest-summary-node${{ matrix.node }}.json
 
       - name: Upload traceability summaries
         if: ${{ always() && matrix.node == 20 }}
@@ -253,7 +254,7 @@ jobs:
       - name: Validate CI guards (build-test linux)
         if: always()
         working-directory: apps/keyboard-defense
-        run: node scripts/ci/validate.mjs --sections smoke,monitor
+        run: node scripts/ci/validate.mjs --sections smoke,monitor,perf
 
       - name: Upload Playwright artifacts (linux)
         if: always()

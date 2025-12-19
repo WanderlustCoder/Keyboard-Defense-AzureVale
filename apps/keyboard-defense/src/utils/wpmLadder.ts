@@ -41,7 +41,24 @@ function clampNonNegative(value: unknown): number {
 }
 
 function normalizeMode(value: unknown): TypingDrillMode {
-  return value === "precision" || value === "endurance" ? value : "burst";
+  return value === "precision" ||
+    value === "endurance" ||
+    value === "sprint" ||
+    value === "sentences" ||
+    value === "reading" ||
+    value === "rhythm" ||
+    value === "reaction" ||
+    value === "combo" ||
+    value === "warmup" ||
+    value === "symbols" ||
+    value === "placement" ||
+    value === "hand" ||
+    value === "support" ||
+    value === "shortcuts" ||
+    value === "shift" ||
+    value === "focus"
+    ? value
+    : "burst";
 }
 
 function normalizeRun(raw: unknown): WpmLadderRun | null {
@@ -180,21 +197,63 @@ export function buildWpmLadderView(progress: WpmLadderProgress): WpmLadderViewSt
   const runs = progress.runs ?? [];
   const byMode: Record<TypingDrillMode, WpmLadderRun[]> = {
     burst: [],
+    warmup: [],
     endurance: [],
-    precision: []
+    sprint: [],
+    sentences: [],
+    reading: [],
+    rhythm: [],
+    reaction: [],
+    combo: [],
+    precision: [],
+    symbols: [],
+    placement: [],
+    hand: [],
+    support: [],
+    shortcuts: [],
+    shift: [],
+    focus: []
   };
   for (const run of runs) {
     byMode[run.mode]?.push(run);
   }
   const ladderByMode: WpmLadderViewState["ladderByMode"] = {
     burst: (byMode.burst ?? []).sort(sortRuns).slice(0, 5),
+    warmup: (byMode.warmup ?? []).sort(sortRuns).slice(0, 5),
     endurance: (byMode.endurance ?? []).sort(sortRuns).slice(0, 5),
-    precision: (byMode.precision ?? []).sort(sortRuns).slice(0, 5)
+    sprint: (byMode.sprint ?? []).sort(sortRuns).slice(0, 5),
+    sentences: (byMode.sentences ?? []).sort(sortRuns).slice(0, 5),
+    reading: (byMode.reading ?? []).sort(sortRuns).slice(0, 5),
+    rhythm: (byMode.rhythm ?? []).sort(sortRuns).slice(0, 5),
+    reaction: (byMode.reaction ?? []).sort(sortRuns).slice(0, 5),
+    combo: (byMode.combo ?? []).sort(sortRuns).slice(0, 5),
+    precision: (byMode.precision ?? []).sort(sortRuns).slice(0, 5),
+    symbols: (byMode.symbols ?? []).sort(sortRuns).slice(0, 5),
+    placement: (byMode.placement ?? []).sort(sortRuns).slice(0, 5),
+    hand: (byMode.hand ?? []).sort(sortRuns).slice(0, 5),
+    support: (byMode.support ?? []).sort(sortRuns).slice(0, 5),
+    shortcuts: (byMode.shortcuts ?? []).sort(sortRuns).slice(0, 5),
+    shift: (byMode.shift ?? []).sort(sortRuns).slice(0, 5),
+    focus: (byMode.focus ?? []).sort(sortRuns).slice(0, 5)
   };
   const bestByMode: Record<TypingDrillMode, WpmLadderRun | null> = {
     burst: ladderByMode.burst[0] ?? null,
+    warmup: ladderByMode.warmup[0] ?? null,
     endurance: ladderByMode.endurance[0] ?? null,
-    precision: ladderByMode.precision[0] ?? null
+    sprint: ladderByMode.sprint[0] ?? null,
+    sentences: ladderByMode.sentences[0] ?? null,
+    reading: ladderByMode.reading[0] ?? null,
+    rhythm: ladderByMode.rhythm[0] ?? null,
+    reaction: ladderByMode.reaction[0] ?? null,
+    combo: ladderByMode.combo[0] ?? null,
+    precision: ladderByMode.precision[0] ?? null,
+    symbols: ladderByMode.symbols[0] ?? null,
+    placement: ladderByMode.placement[0] ?? null,
+    hand: ladderByMode.hand[0] ?? null,
+    support: ladderByMode.support[0] ?? null,
+    shortcuts: ladderByMode.shortcuts[0] ?? null,
+    shift: ladderByMode.shift[0] ?? null,
+    focus: ladderByMode.focus[0] ?? null
   };
   const topRuns = [...runs].sort(sortRuns).slice(0, 6);
   const lastRun = runs.length > 0 ? runs[runs.length - 1] : null;
