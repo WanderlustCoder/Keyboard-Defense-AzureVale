@@ -6737,6 +6737,9 @@ details {
 }
 
 .summary-hazard {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   padding: 0 4px;
   border-radius: 8px;
   font-size: 0.7rem;
@@ -6750,6 +6753,12 @@ details {
 .summary-pill[data-hazard="storm"] .summary-hazard {
   background: rgba(56, 189, 248, 0.25);
   color: #e0f2fe;
+}
+
+.summary-pill[data-hazard="storm"] .summary-hazard::before {
+  content: "⚡";
+  font-size: 0.85em;
+  line-height: 1;
 }
 
 .summary-pill[data-hazard="fog"] .summary-hazard {
@@ -6917,9 +6926,18 @@ details {
 }
 
 .preview-badge.hazard {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   background: rgba(148, 163, 184, 0.2);
   border-color: rgba(148, 163, 184, 0.45);
   color: #e2e8f0;
+}
+
+.preview-badge.hazard[data-hazard="storm"]::before {
+  content: "⚡";
+  font-size: 0.9em;
+  line-height: 1;
 }
 
 .preview-badge.hazard[data-hazard="storm"] {
