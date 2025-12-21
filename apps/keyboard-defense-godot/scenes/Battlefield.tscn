@@ -31,11 +31,57 @@ horizontal_alignment = 2
 [node name="ExitButton" type="Button" parent="TopBar"]
 text = "Retreat"
 
-[node name="StatusPanel" type="PanelContainer" parent="."]
+[node name="PlayField" type="PanelContainer" parent="."]
 anchor_left = 0.05
 anchor_top = 0.18
-anchor_right = 0.55
-anchor_bottom = 0.56
+anchor_right = 0.95
+anchor_bottom = 0.64
+
+[node name="FieldSurface" type="ColorRect" parent="PlayField"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.09, 0.08, 0.16, 1)
+
+[node name="DrillHud" type="VBoxContainer" parent="PlayField"]
+anchor_left = 0.1
+anchor_top = 0.12
+anchor_right = 0.9
+anchor_bottom = 0.88
+alignment = 1
+theme_override_constants/separation = 6
+
+[node name="DrillTitle" type="Label" parent="PlayField/DrillHud"]
+text = "Drill"
+horizontal_alignment = 1
+
+[node name="DrillTarget" type="RichTextLabel" parent="PlayField/DrillHud"]
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = ""
+autowrap_mode = 3
+
+[node name="DrillProgress" type="Label" parent="PlayField/DrillHud"]
+text = "Targets: 0/0"
+horizontal_alignment = 1
+
+[node name="DrillHint" type="Label" parent="PlayField/DrillHud"]
+text = "Type the runes to defend the castle."
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="CastleMarker" type="Label" parent="PlayField"]
+anchor_left = 0.02
+anchor_top = 0.75
+anchor_right = 0.4
+anchor_bottom = 0.95
+text = "Castle: Eldenwatch"
+
+[node name="StatusPanel" type="PanelContainer" parent="."]
+anchor_left = 0.05
+anchor_top = 0.66
+anchor_right = 0.45
+anchor_bottom = 0.82
 
 [node name="Content" type="VBoxContainer" parent="StatusPanel"]
 anchor_right = 1.0
@@ -46,7 +92,7 @@ offset_right = -12
 offset_bottom = -12
 
 [node name="WordLabel" type="Label" parent="StatusPanel/Content"]
-text = "Word:"
+text = "Target:"
 
 [node name="TypedLabel" type="Label" parent="StatusPanel/Content"]
 text = "Typed:"
@@ -60,11 +106,27 @@ text = "WPM: 0"
 [node name="MistakesLabel" type="Label" parent="StatusPanel/Content"]
 text = "Errors: 0"
 
+[node name="BonusPanel" type="PanelContainer" parent="."]
+anchor_left = 0.55
+anchor_top = 0.66
+anchor_right = 0.95
+anchor_bottom = 0.82
+
+[node name="BonusLabel" type="Label" parent="BonusPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12
+offset_top = 12
+offset_right = -12
+offset_bottom = -12
+text = "Bonuses: None"
+autowrap_mode = 3
+
 [node name="ThreatPanel" type="PanelContainer" parent="."]
 anchor_left = 0.05
-anchor_top = 0.58
+anchor_top = 0.84
 anchor_right = 0.95
-anchor_bottom = 0.72
+anchor_bottom = 0.96
 
 [node name="ThreatBar" type="ProgressBar" parent="ThreatPanel"]
 anchor_left = 0.03
@@ -81,22 +143,6 @@ anchor_top = 0.58
 anchor_right = 0.97
 anchor_bottom = 0.9
 text = "Castle Health: 3"
-
-[node name="BonusPanel" type="PanelContainer" parent="."]
-anchor_left = 0.58
-anchor_top = 0.18
-anchor_right = 0.95
-anchor_bottom = 0.56
-
-[node name="BonusLabel" type="Label" parent="BonusPanel"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 12
-offset_top = 12
-offset_right = -12
-offset_bottom = -12
-text = "Bonuses: None"
-autowrap_mode = 3
 
 [node name="ResultPanel" type="PanelContainer" parent="."]
 anchor_left = 0.2

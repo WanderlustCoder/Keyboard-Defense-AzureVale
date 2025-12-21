@@ -2,6 +2,7 @@ extends Node
 
 const LESSONS_PATH := "res://data/lessons.json"
 const MAP_PATH := "res://data/map.json"
+const DRILLS_PATH := "res://data/drills.json"
 const KINGDOM_UPGRADES_PATH := "res://data/kingdom_upgrades.json"
 const UNIT_UPGRADES_PATH := "res://data/unit_upgrades.json"
 const SAVE_PATH := "user://typing_kingdom_save.json"
@@ -21,6 +22,7 @@ const DEFAULT_MASTERY := {
 var lessons: Dictionary = {}
 var map_nodes: Dictionary = {}
 var map_order: Array = []
+var drill_templates: Dictionary = {}
 var kingdom_upgrades: Dictionary = {}
 var kingdom_order: Array = []
 var unit_upgrades: Dictionary = {}
@@ -42,6 +44,7 @@ func _load_static_data() -> void:
 	lessons.clear()
 	map_nodes.clear()
 	map_order.clear()
+	drill_templates.clear()
 	kingdom_upgrades.clear()
 	kingdom_order.clear()
 	unit_upgrades.clear()
@@ -59,6 +62,12 @@ func _load_static_data() -> void:
 		if node_id != "":
 			map_nodes[node_id] = node
 			map_order.append(node_id)
+
+	var drills_data = _load_json(DRILLS_PATH)
+	for entry in drills_data.get("templates", []):
+		var template_id := str(entry.get("id", ""))
+		if template_id != "":
+			drill_templates[template_id] = entry
 
 	var kingdom_data = _load_json(KINGDOM_UPGRADES_PATH)
 	for upgrade in kingdom_data.get("upgrades", []):
@@ -95,6 +104,9 @@ func get_map_nodes() -> Array:
 		if map_nodes.has(node_id):
 			result.append(map_nodes[node_id])
 	return result
+
+func get_drill_template(template_id: String) -> Dictionary:
+	return drill_templates.get(template_id, {})
 
 func is_node_unlocked(node_id: String) -> bool:
 	var node = map_nodes.get(node_id)

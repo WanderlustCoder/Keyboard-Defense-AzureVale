@@ -27,4 +27,16 @@ func run() -> Dictionary:
 	helper.assert_eq(typing.errors, 1, "error count increments")
 	helper.assert_true(typing.get_accuracy() < 0.5, "accuracy drops on error")
 
+	typing.start(["go!"])
+	typing.input_char("g")
+	typing.input_char("o")
+	result = typing.input_char("!")
+	helper.assert_eq(result.get("status"), "lesson_complete", "punctuation completes target")
+
+	typing.start(["hold the line"])
+	var sentence = "hold the line"
+	for i in range(sentence.length()):
+		result = typing.input_char(sentence.substr(i, 1))
+	helper.assert_eq(result.get("status"), "lesson_complete", "spaces are accepted when in target")
+
 	return helper.summary()

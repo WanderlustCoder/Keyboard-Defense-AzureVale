@@ -5,28 +5,32 @@
       "label": "Forest Gate",
       "lesson_id": "home-row-1",
       "requires": [],
-      "reward_gold": 10
+      "reward_gold": 10,
+      "drill_template": "forest-gate"
     },
     {
       "id": "whisper-grove",
       "label": "Whisper Grove",
       "lesson_id": "home-row-2",
       "requires": ["forest-gate"],
-      "reward_gold": 12
+      "reward_gold": 12,
+      "drill_template": "whisper-grove"
     },
     {
       "id": "ember-bridge",
       "label": "Ember Bridge",
       "lesson_id": "reach-row-1",
       "requires": ["whisper-grove"],
-      "reward_gold": 14
+      "reward_gold": 14,
+      "drill_template": "ember-bridge"
     },
     {
       "id": "citadel-rise",
       "label": "Citadel Rise",
       "lesson_id": "reach-row-2",
       "requires": ["ember-bridge"],
-      "reward_gold": 18
+      "reward_gold": 18,
+      "drill_template": "citadel-rise"
     }
   ]
 }

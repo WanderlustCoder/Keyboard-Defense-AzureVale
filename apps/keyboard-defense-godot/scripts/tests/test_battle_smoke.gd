@@ -100,6 +100,10 @@ func _wire_battle_nodes(battle, progression, game_controller) -> void:
 	battle.lesson_label = battle.get_node("TopBar/LessonLabel")
 	battle.gold_label = battle.get_node("TopBar/GoldLabel")
 	battle.exit_button = battle.get_node("TopBar/ExitButton")
+	battle.drill_title_label = battle.get_node("PlayField/DrillHud/DrillTitle")
+	battle.drill_target_label = battle.get_node("PlayField/DrillHud/DrillTarget")
+	battle.drill_progress_label = battle.get_node("PlayField/DrillHud/DrillProgress")
+	battle.drill_hint_label = battle.get_node("PlayField/DrillHud/DrillHint")
 	battle.word_label = battle.get_node("StatusPanel/Content/WordLabel")
 	battle.typed_label = battle.get_node("StatusPanel/Content/TypedLabel")
 	battle.accuracy_label = battle.get_node("StatusPanel/Content/AccuracyLabel")
@@ -113,19 +117,32 @@ func _wire_battle_nodes(battle, progression, game_controller) -> void:
 	battle.result_button = battle.get_node("ResultPanel/Content/ResultButton")
 
 func _type_lesson_words(battle) -> void:
-	var words: Array = battle.words
-	for word in words:
-		var text = str(word)
-		for i in range(text.length()):
-			if not battle.active:
-				return
-			var letter = text.substr(i, 1)
+	var guard = 0
+	while battle.active and guard < 120:
+		if battle.drill_mode == "intermission":
+			battle._process(1.0)
+			guard += 1
+			continue
+		var current_word: String = battle.typing_system.get_current_word()
+		if current_word == "":
+			battle._process(0.1)
+			guard += 1
+			continue
+		for i in range(current_word.length()):
+			if not battle.active or battle.drill_mode == "intermission":
+				break
+			var letter = current_word.substr(i, 1)
 			var result: Dictionary = battle.typing_system.input_char(letter)
 			battle._handle_typing_result(result)
+		guard += 1
 
 func _force_defeat(battle) -> void:
 	var guard = 0
 	while battle.active and guard < 6:
+		if battle.drill_mode == "intermission":
+			battle._process(1.0)
+			guard += 1
+			continue
 		var current_word = battle.typing_system.get_current_word()
 		var wrong_letter = "x"
 		if current_word.begins_with(wrong_letter):
