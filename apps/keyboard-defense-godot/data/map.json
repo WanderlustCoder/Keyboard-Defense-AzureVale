@@ -6,7 +6,25 @@
       "lesson_id": "home-row-1",
       "requires": [],
       "reward_gold": 10,
-      "drill_template": "forest-gate"
+      "drill_template": "forest-gate",
+      "drill_overrides": {
+        "steps": [
+          {
+            "index": 0,
+            "data": {
+              "word_count": 3,
+              "hint": "Warm up the keys with short bursts."
+            }
+          },
+          {
+            "index": 2,
+            "data": {
+              "targets": ["1-2-3", "go!", "ward+1", "x^2"],
+              "hint": "Reinforce the gate seals."
+            }
+          }
+        ]
+      }
     },
     {
       "id": "whisper-grove",

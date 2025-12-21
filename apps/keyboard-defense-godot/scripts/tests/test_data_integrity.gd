@@ -35,10 +35,12 @@ func run() -> Dictionary:
 	var drills_data: Dictionary = _load_json(DRILLS_PATH)
 	var templates: Array = drills_data.get("templates", [])
 	var template_ids: Dictionary = {}
+	var template_lookup: Dictionary = {}
 	for template in templates:
 		var template_id := str(template.get("id", ""))
 		helper.assert_true(template_id != "", "drill template id exists")
 		template_ids[template_id] = true
+		template_lookup[template_id] = template
 		var plan: Array = template.get("plan", [])
 		helper.assert_true(plan.size() > 0, "drill template plan present")
 		for step in plan:
@@ -65,10 +67,12 @@ func run() -> Dictionary:
 		var template_id := str(node.get("drill_template", ""))
 		if template_id != "":
 			helper.assert_true(template_ids.has(template_id), "map node drill template exists")
+		var base_count: int = 4
 		if node.has("drill_plan"):
 			var drill_plan = node.get("drill_plan", [])
 			helper.assert_true(drill_plan is Array, "drill plan is array")
 			if drill_plan is Array:
+				base_count = drill_plan.size()
 				for step in drill_plan:
 					helper.assert_true(step is Dictionary, "drill step is dictionary")
 					if not step is Dictionary:
@@ -87,6 +91,53 @@ func run() -> Dictionary:
 					if mode == "intermission":
 						var duration := float(step.get("duration", 0.0))
 						helper.assert_true(duration > 0.0, "drill intermission duration positive")
+		elif template_id != "" and template_lookup.has(template_id):
+			var template = template_lookup.get(template_id, {})
+			if template is Dictionary:
+				var plan: Array = template.get("plan", [])
+				if plan is Array:
+					base_count = plan.size()
+		if node.has("drill_overrides"):
+			var overrides = node.get("drill_overrides", {})
+			helper.assert_true(overrides is Dictionary, "drill overrides dictionary")
+			if overrides is Dictionary:
+				var override_steps: Array = overrides.get("steps", [])
+				if override_steps is Array:
+					for entry in override_steps:
+						helper.assert_true(entry is Dictionary, "drill override step dictionary")
+						if not entry is Dictionary:
+							continue
+						var index := int(entry.get("index", -1))
+						helper.assert_true(index >= 0, "drill override index non-negative")
+						if base_count > 0:
+							helper.assert_true(index < base_count, "drill override index in range")
+				var replace_steps: Array = overrides.get("replace", [])
+				if replace_steps is Array:
+					for entry in replace_steps:
+						helper.assert_true(entry is Dictionary, "drill replace entry dictionary")
+						if not entry is Dictionary:
+							continue
+						var index := int(entry.get("index", -1))
+						helper.assert_true(index >= 0, "drill replace index non-negative")
+						if base_count > 0:
+							helper.assert_true(index < base_count, "drill replace index in range")
+						var step = entry.get("step", {})
+						helper.assert_true(step is Dictionary, "drill replace step dictionary")
+				var remove_indices: Array = overrides.get("remove", [])
+				if remove_indices is Array:
+					for raw_index in remove_indices:
+						var index := int(raw_index)
+						helper.assert_true(index >= 0, "drill remove index non-negative")
+						if base_count > 0:
+							helper.assert_true(index < base_count, "drill remove index in range")
+				var append_steps: Array = overrides.get("append", [])
+				if append_steps is Array:
+					for step in append_steps:
+						helper.assert_true(step is Dictionary, "drill append step dictionary")
+				var prepend_steps: Array = overrides.get("prepend", [])
+				if prepend_steps is Array:
+					for step in prepend_steps:
+						helper.assert_true(step is Dictionary, "drill prepend step dictionary")
 
 	var kingdom_data: Dictionary = _load_json(KINGDOM_UPGRADES_PATH)
 	var kingdom_upgrades: Array = kingdom_data.get("upgrades", [])

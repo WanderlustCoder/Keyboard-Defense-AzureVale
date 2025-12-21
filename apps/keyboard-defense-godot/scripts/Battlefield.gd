@@ -243,16 +243,75 @@ func _collect_battle_stats(include_current: bool) -> Dictionary:
 	}
 
 func _build_drill_plan(node: Dictionary, lesson: Dictionary) -> Array:
-	var plan = node.get("drill_plan", [])
-	if plan is Array and plan.size() > 0:
-		return plan
+	var base_plan: Array = []
+	var inline_plan = node.get("drill_plan", [])
+	if inline_plan is Array and inline_plan.size() > 0:
+		base_plan = inline_plan
 	var template_id := str(node.get("drill_template", ""))
-	if template_id != "":
+	if base_plan.is_empty() and template_id != "":
 		var template: Dictionary = progression.get_drill_template(template_id)
 		var template_plan = template.get("plan", [])
 		if template_plan is Array and template_plan.size() > 0:
-			return template_plan
-	return _build_default_drill_plan(node, lesson)
+			base_plan = template_plan
+	if base_plan.is_empty():
+		base_plan = _build_default_drill_plan(node, lesson)
+	var resolved: Array = base_plan.duplicate(true)
+	var overrides = node.get("drill_overrides", {})
+	if overrides is Dictionary:
+		resolved = _apply_drill_overrides(resolved, overrides)
+	return resolved
+
+func _apply_drill_overrides(base_plan: Array, overrides: Dictionary) -> Array:
+	var plan: Array = base_plan.duplicate(true)
+	if overrides.is_empty():
+		return plan
+	var replace_list: Array = overrides.get("replace", [])
+	if replace_list is Array:
+		for entry in replace_list:
+			if entry is Dictionary:
+				var index: int = int(entry.get("index", -1))
+				if index >= 0 and index < plan.size():
+					var step = entry.get("step", {})
+					if step is Dictionary:
+						plan[index] = step
+	var step_overrides: Array = overrides.get("steps", [])
+	if step_overrides is Array:
+		for entry in step_overrides:
+			if entry is Dictionary:
+				var index: int = int(entry.get("index", -1))
+				if index < 0 or index >= plan.size():
+					continue
+				var data = entry.get("data", {})
+				if data is Dictionary:
+					var base_step = plan[index]
+					if base_step is Dictionary:
+						var merged: Dictionary = base_step.duplicate(true)
+						for key in data.keys():
+							merged[key] = data[key]
+						plan[index] = merged
+	var remove_list: Array = overrides.get("remove", [])
+	if remove_list is Array and remove_list.size() > 0:
+		var remove_sorted: Array = []
+		for raw in remove_list:
+			remove_sorted.append(int(raw))
+		remove_sorted.sort()
+		for i in range(remove_sorted.size() - 1, -1, -1):
+			var index: int = int(remove_sorted[i])
+			if index >= 0 and index < plan.size():
+				plan.remove_at(index)
+	var prepend_steps: Array = overrides.get("prepend", [])
+	if prepend_steps is Array and prepend_steps.size() > 0:
+		var new_plan: Array = []
+		for step in prepend_steps:
+			new_plan.append(step)
+		for step in plan:
+			new_plan.append(step)
+		plan = new_plan
+	var append_steps: Array = overrides.get("append", [])
+	if append_steps is Array and append_steps.size() > 0:
+		for step in append_steps:
+			plan.append(step)
+	return plan
 
 func _build_default_drill_plan(node: Dictionary, lesson: Dictionary) -> Array:
 	var warmup_count: int = min(4, lesson_words.size())

@@ -12,8 +12,14 @@ The typing loop drives all defense outcomes; map progression and kingdom upgrade
 ## Data
 
 - `data/lessons.json`: lesson word lists for battles.
-- `data/map.json`: campaign nodes, unlock requirements, and drill template references.
+- `data/map.json`: campaign nodes, unlock requirements, drill template references, and optional `drill_overrides`.
 - `data/drills.json`: shared drill templates referenced by the map.
+
+`drill_overrides` supports:
+- `steps`: array of `{ "index": 0, "data": { ... } }` to merge into a step.
+- `replace`: array of `{ "index": 0, "step": { ... } }` to replace a step.
+- `remove`: array of step indices to remove.
+- `prepend`/`append`: arrays of step objects to insert.
 - `data/kingdom_upgrades.json`: kingdom upgrade definitions.
 - `data/unit_upgrades.json`: unit upgrade definitions.
 
