@@ -20,6 +20,10 @@ The typing loop drives all defense outcomes; map progression and kingdom upgrade
 - `replace`: array of `{ "index": 0, "step": { ... } }` to replace a step.
 - `remove`: array of step indices to remove.
 - `prepend`/`append`: arrays of step objects to insert.
+
+## Debug Drill Editor
+
+Press `F1` in a battle to open the debug panel. Paste `drill_overrides` JSON, hit Apply to reload the drills, and use Copy JSON to export the overrides.
 - `data/kingdom_upgrades.json`: kingdom upgrade definitions.
 - `data/unit_upgrades.json`: unit upgrade definitions.
 

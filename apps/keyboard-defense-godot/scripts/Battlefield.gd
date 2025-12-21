@@ -24,6 +24,14 @@ const DEFAULT_RUNE_TARGETS := ["1-2-3", "x^2", "go!", "rune+1", "shield+2"]
 @onready var progression = get_node("/root/ProgressionState")
 @onready var game_controller = get_node("/root/GameController")
 
+var debug_panel: PanelContainer = null
+var debug_text: TextEdit = null
+var debug_status_label: Label = null
+var debug_apply_button: Button = null
+var debug_copy_button: Button = null
+var debug_close_button: Button = null
+var debug_overrides: Dictionary = {}
+
 var typing_system: TypingSystem = TypingSystem.new()
 var node_id: String = ""
 var node_label: String = ""
@@ -59,6 +67,7 @@ func _ready() -> void:
 	exit_button.pressed.connect(_on_exit_pressed)
 	result_button.pressed.connect(_on_result_pressed)
 	result_panel.visible = false
+	_setup_debug_panel()
 	_initialize_battle()
 
 func _initialize_battle() -> void:
@@ -100,6 +109,8 @@ func _initialize_battle() -> void:
 func _process(delta: float) -> void:
 	if not active:
 		return
+	if debug_panel != null and debug_panel.visible:
+		return
 	if drill_mode == "intermission":
 		drill_timer = max(0.0, drill_timer - delta)
 		threat = max(0.0, threat - delta * threat_relief * 0.4)
@@ -119,6 +130,12 @@ func _process(delta: float) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not active:
+		return
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == KEY_F1:
+			_toggle_debug_panel()
+			return
+	if debug_panel != null and debug_panel.visible:
 		return
 	if not drill_input_enabled:
 		return
@@ -452,3 +469,72 @@ func _format_bonus_text(modifiers: Dictionary) -> String:
 	if parts.is_empty():
 		return "Bonuses: None"
 	return "Bonuses: " + ", ".join(parts)
+
+func _setup_debug_panel() -> void:
+	debug_panel = get_node_or_null("DebugPanel") as PanelContainer
+	if debug_panel == null:
+		return
+	debug_panel.visible = false
+	debug_text = debug_panel.get_node("Content/OverridesText") as TextEdit
+	debug_status_label = debug_panel.get_node("Content/StatusLabel") as Label
+	debug_apply_button = debug_panel.get_node("Content/ButtonRow/ApplyButton") as Button
+	debug_copy_button = debug_panel.get_node("Content/ButtonRow/CopyButton") as Button
+	debug_close_button = debug_panel.get_node("Content/ButtonRow/CloseButton") as Button
+	debug_apply_button.pressed.connect(_on_debug_apply_pressed)
+	debug_copy_button.pressed.connect(_on_debug_copy_pressed)
+	debug_close_button.pressed.connect(_on_debug_close_pressed)
+
+func _toggle_debug_panel() -> void:
+	if debug_panel == null:
+		return
+	debug_panel.visible = not debug_panel.visible
+	if debug_panel.visible:
+		_sync_debug_text_from_node()
+		debug_panel.raise()
+
+func _sync_debug_text_from_node() -> void:
+	if debug_text == null:
+		return
+	var node: Dictionary = progression.map_nodes.get(node_id, {})
+	var overrides = node.get("drill_overrides", {})
+	if overrides is Dictionary:
+		debug_overrides = overrides
+	else:
+		debug_overrides = {}
+	debug_text.text = JSON.stringify(debug_overrides, "\t")
+	if debug_status_label != null:
+		debug_status_label.text = "Editing overrides for %s." % node_id
+
+func _on_debug_apply_pressed() -> void:
+	if debug_text == null:
+		return
+	var parsed = JSON.parse_string(debug_text.text)
+	if parsed == null or typeof(parsed) != TYPE_DICTIONARY:
+		if debug_status_label != null:
+			debug_status_label.text = "Invalid JSON. Expected an object."
+		return
+	debug_overrides = parsed
+	_apply_debug_overrides(debug_overrides)
+	if debug_status_label != null:
+		debug_status_label.text = "Overrides applied to %s." % node_id
+
+func _apply_debug_overrides(overrides: Dictionary) -> void:
+	var node: Dictionary = progression.map_nodes.get(node_id, {})
+	var updated: Dictionary = node.duplicate(true)
+	updated["drill_overrides"] = overrides
+	progression.map_nodes[node_id] = updated
+	active = true
+	result_panel.visible = false
+	_initialize_battle()
+
+func _on_debug_copy_pressed() -> void:
+	if debug_overrides.is_empty():
+		_sync_debug_text_from_node()
+	var payload := JSON.stringify(debug_overrides, "\t")
+	DisplayServer.clipboard_set(payload)
+	if debug_status_label != null:
+		debug_status_label.text = "Overrides copied to clipboard."
+
+func _on_debug_close_pressed() -> void:
+	if debug_panel != null:
+		debug_panel.visible = false
