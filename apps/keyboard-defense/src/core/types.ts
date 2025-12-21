@@ -289,6 +289,7 @@ export interface TypingState {
 
 export type TypingDrillMode =
   | "burst"
+  | "lesson"
   | "warmup"
   | "endurance"
   | "sprint"
@@ -316,6 +317,7 @@ export type TypingDrillSource =
 export interface TypingDrillSummary {
   mode: TypingDrillMode;
   source: TypingDrillSource;
+  lessonId?: string;
   elapsedMs: number;
   accuracy: number;
   bestCombo: number;

@@ -1381,6 +1381,12 @@ section {
   color: #e2e8f0;
 }
 
+.lesson-medal__path {
+  margin: 0;
+  color: #c7d2fe;
+  font-size: 0.92rem;
+}
+
 .lesson-medal__best {
   margin: 0;
   color: #cbd5e1;
@@ -8451,6 +8457,60 @@ body[data-compact-height="true"] .tutorial-banner {
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 8px;
   margin-bottom: 10px;
+}
+
+.typing-drill-lesson-picker {
+  display: none;
+  gap: 6px;
+  margin-bottom: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  background: rgba(15, 23, 42, 0.55);
+}
+
+.typing-drill-lesson-picker[data-visible="true"] {
+  display: grid;
+}
+
+.typing-drill-lesson-header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.typing-drill-lesson-kicker {
+  font-weight: 700;
+  color: #5eead4;
+  letter-spacing: 0.03em;
+}
+
+.typing-drill-lesson-meta {
+  font-size: 0.85rem;
+  color: #cbd5e1;
+}
+
+.typing-drill-lesson-label {
+  font-size: 0.85rem;
+  color: #e2e8f0;
+  font-weight: 600;
+}
+
+.typing-drill-lesson-select {
+  width: min(360px, 100%);
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  color: #e2e8f0;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 0.9rem;
+}
+
+.typing-drill-lesson-description {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #cbd5e1;
 }
 
 .typing-drill-mode {

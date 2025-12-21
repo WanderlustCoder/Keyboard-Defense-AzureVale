@@ -41,7 +41,8 @@ function clampNonNegative(value: unknown): number {
 }
 
 function normalizeMode(value: unknown): TypingDrillMode {
-  return value === "precision" ||
+  return value === "lesson" ||
+    value === "precision" ||
     value === "endurance" ||
     value === "sprint" ||
     value === "sentences" ||
@@ -197,6 +198,7 @@ export function buildWpmLadderView(progress: WpmLadderProgress): WpmLadderViewSt
   const runs = progress.runs ?? [];
   const byMode: Record<TypingDrillMode, WpmLadderRun[]> = {
     burst: [],
+    lesson: [],
     warmup: [],
     endurance: [],
     sprint: [],
@@ -219,6 +221,7 @@ export function buildWpmLadderView(progress: WpmLadderProgress): WpmLadderViewSt
   }
   const ladderByMode: WpmLadderViewState["ladderByMode"] = {
     burst: (byMode.burst ?? []).sort(sortRuns).slice(0, 5),
+    lesson: (byMode.lesson ?? []).sort(sortRuns).slice(0, 5),
     warmup: (byMode.warmup ?? []).sort(sortRuns).slice(0, 5),
     endurance: (byMode.endurance ?? []).sort(sortRuns).slice(0, 5),
     sprint: (byMode.sprint ?? []).sort(sortRuns).slice(0, 5),
@@ -238,6 +241,7 @@ export function buildWpmLadderView(progress: WpmLadderProgress): WpmLadderViewSt
   };
   const bestByMode: Record<TypingDrillMode, WpmLadderRun | null> = {
     burst: ladderByMode.burst[0] ?? null,
+    lesson: ladderByMode.lesson[0] ?? null,
     warmup: ladderByMode.warmup[0] ?? null,
     endurance: ladderByMode.endurance[0] ?? null,
     sprint: ladderByMode.sprint[0] ?? null,

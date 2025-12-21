@@ -45,6 +45,9 @@ export declare class TypingDrillsOverlay {
     private readonly recommendationBadge?;
     private readonly recommendationReason?;
     private readonly recommendationRun?;
+    private readonly lessonPicker?;
+    private readonly lessonSelect?;
+    private readonly lessonDescription?;
     private resizeHandler?;
     private layoutPulseTimeout?;
     private isCondensedLayout;
@@ -52,6 +55,10 @@ export declare class TypingDrillsOverlay {
     private recommendationMode;
     private advancedSymbolsUnlocked;
     private toastTimeout?;
+    private lessonCatalog;
+    private lessonId;
+    private lessonWords;
+    private lessonSelectionTouched;
     private shiftTutorSlowMo;
     private metronomeEnabled;
     private handIsolationSide;
@@ -101,6 +108,7 @@ export declare class TypingDrillsOverlay {
     close(): void;
     isVisible(): boolean;
     isActive(): boolean;
+    getLessonId(): string | null;
     start(mode?: TypingDrillMode): void;
     reset(mode?: TypingDrillMode): void;
     setAdvancedSymbolsUnlocked(unlocked: boolean): void;
@@ -119,6 +127,10 @@ export declare class TypingDrillsOverlay {
     private buildPatternStatsPayload;
     private updateLayoutMode;
     private attachEvents;
+    private initializeLessonPicker;
+    private syncLessonSelectionFromProgress;
+    private setLessonId;
+    private applyLessonSelection;
     private handleKey;
     private handleShortcutKey;
     private handleShiftTutorKey;
@@ -139,11 +151,13 @@ export declare class TypingDrillsOverlay {
     private updateShiftTutorControls;
     private updateMetronomeControls;
     private updateHandIsolationControls;
+    private updateLessonControls;
     private stopMetronome;
     private startMetronome;
     private pulseMetronomeIndicator;
     private playMetronomeClick;
     private playMetronomeHaptic;
+    private ensureLessonWordPool;
     private pickWord;
     private updateTarget;
     private getGhostStorage;
@@ -180,6 +194,7 @@ export declare class TypingDrillsOverlay {
     private buildReadingQueue;
     private startReading;
     private getReadingQuestionNumber;
+    private getLessonLabel;
     private getModeLabel;
     showToast(message: string): void;
 }

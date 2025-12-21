@@ -85,6 +85,7 @@
     "dist/src/data/bestiary.js",
     "dist/src/data/dialogue.js",
     "dist/src/data/eliteAffixes.js",
+    "dist/src/data/lessons.js",
     "dist/src/data/loadingTips.js",
     "dist/src/data/lore.js",
     "dist/src/data/loreScrolls.js",

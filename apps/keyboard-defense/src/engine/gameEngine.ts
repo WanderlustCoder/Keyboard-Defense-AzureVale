@@ -208,6 +208,8 @@ export class GameEngine {
   private currentDifficultyBand: DifficultyBand;
   private defeatBurstModeResolver: ((enemy: EnemyState) => DefeatBurstMode) | null = null;
   private spawnSpeedGateMultiplier = 1;
+  private waveHoldActive = false;
+  private combatHoldActive = false;
   private laneFocus: number | null = null;
   private dynamicEvents: DynamicSpawnEvent[] = [];
   private dynamicEventIndex = 0;
@@ -884,6 +886,8 @@ export class GameEngine {
 
   reset(): void {
     this.state = createInitialState(this.config);
+    this.waveHoldActive = false;
+    this.combatHoldActive = false;
     this.state.mode = this.config.loopWaves ? "practice" : "campaign";
     this.state.analytics.mode = this.state.mode;
     this.lastWaveIndex = this.state.wave.index;
@@ -1000,7 +1004,10 @@ export class GameEngine {
     const prevInCountdown = this.state.wave.inCountdown;
     const prevStatus = this.state.status;
 
-    this.state.time += deltaSeconds;
+    const combatHoldActive = this.combatHoldActive;
+    if (!combatHoldActive) {
+      this.state.time += deltaSeconds;
+    }
 
     const focusLane = this.getActiveLaneFocus();
     const waveDeltaSeconds =
@@ -1009,33 +1016,44 @@ export class GameEngine {
       !this.state.wave.inCountdown
         ? deltaSeconds * FAST_SPAWNS_TIME_SCALE
         : deltaSeconds;
-    const spawnRequestsBase = this.waveSystem.update(this.state, waveDeltaSeconds);
+    const waveHoldActive = this.waveHoldActive || combatHoldActive;
+    const waveUpdateSeconds = waveHoldActive ? 0 : waveDeltaSeconds;
+    const spawnRequestsBase = this.waveSystem.update(this.state, waveUpdateSeconds);
     const spawnRequests =
       typeof focusLane === "number"
         ? spawnRequestsBase.filter((request) => request.lane === focusLane)
         : spawnRequestsBase;
-    const dynamicRequests = this.collectDynamicSpawnRequests(this.state.wave.timeInWave);
-    const evacRequest = this.collectEvacuationSpawnRequest(this.state.wave.timeInWave);
+    const dynamicRequests = combatHoldActive
+      ? []
+      : this.collectDynamicSpawnRequests(this.state.wave.timeInWave);
+    const evacRequest = combatHoldActive
+      ? null
+      : this.collectEvacuationSpawnRequest(this.state.wave.timeInWave);
     const allRequests = [...spawnRequests, ...dynamicRequests];
     if (evacRequest) {
       allRequests.push(evacRequest);
     }
-    this.activateLaneHazards(this.state.wave.timeInWave, deltaSeconds);
+    const hazardDeltaSeconds = waveHoldActive ? 0 : deltaSeconds;
+    if (!combatHoldActive) {
+      this.activateLaneHazards(this.state.wave.timeInWave, hazardDeltaSeconds);
+    }
 
     const baseDifficulty = this.resolveDifficulty(this.state.wave.index);
     const difficulty = this.applySpawnSpeedGate(baseDifficulty);
     this.currentDifficultyBand = difficulty;
-    for (const request of allRequests) {
-      const affixes = this.resolveSpawnAffixes(request, this.state.wave.index);
-      const spawned = this.enemySystem.spawn(this.state, {
-        ...request,
-        waveIndex: this.state.wave.index,
-        difficulty,
-        affixes
-      });
-      if (spawned) {
-        this.handleBossSpawn(spawned);
-        this.handleEvacuationSpawn(spawned);
+    if (!combatHoldActive) {
+      for (const request of allRequests) {
+        const affixes = this.resolveSpawnAffixes(request, this.state.wave.index);
+        const spawned = this.enemySystem.spawn(this.state, {
+          ...request,
+          waveIndex: this.state.wave.index,
+          difficulty,
+          affixes
+        });
+        if (spawned) {
+          this.handleBossSpawn(spawned);
+          this.handleEvacuationSpawn(spawned);
+        }
       }
     }
 
@@ -1063,13 +1081,16 @@ export class GameEngine {
       this.resetBossState();
     }
 
-    this.enemySystem.update(this.state, deltaSeconds);
-    this.tickEvacuation(deltaSeconds);
-    this.updateBoss(deltaSeconds);
-    this.projectileSystem.update(this.state, deltaSeconds);
-    this.turretSystem.update(this.state, deltaSeconds, this.projectileSystem);
-    this.tickSupportBoost(deltaSeconds);
-    this.tickComboTimer(deltaSeconds);
+    if (!combatHoldActive) {
+      this.enemySystem.update(this.state, deltaSeconds);
+      const evacDeltaSeconds = waveHoldActive ? 0 : deltaSeconds;
+      this.tickEvacuation(evacDeltaSeconds);
+      this.updateBoss(deltaSeconds);
+      this.projectileSystem.update(this.state, deltaSeconds);
+      this.turretSystem.update(this.state, deltaSeconds, this.projectileSystem);
+      this.tickSupportBoost(deltaSeconds);
+      this.tickComboTimer(deltaSeconds);
+    }
 
     if (waveChanged && !prevInCountdown) {
       this.finalizeWaveAnalytics(prevWaveIndex);
@@ -1078,8 +1099,10 @@ export class GameEngine {
       this.finalizeWaveAnalytics(prevWaveIndex);
     }
 
-    this.tickCastleRepairCooldown(deltaSeconds);
-    this.applyCastleRegen(deltaSeconds);
+    if (!combatHoldActive) {
+      this.tickCastleRepairCooldown(deltaSeconds);
+      this.applyCastleRegen(deltaSeconds);
+    }
     this.state.analytics.lastSnapshotTime = this.state.time;
 
     if (this.state.castle.health <= 0 && this.state.status !== "defeat") {
@@ -1581,6 +1604,36 @@ export class GameEngine {
     return before - this.state.enemies.length;
   }
 
+  stashEnemies(predicate: (enemy: EnemyState) => boolean): EnemyState[] {
+    if (typeof predicate !== "function") {
+      return [];
+    }
+    const kept: EnemyState[] = [];
+    const removed: EnemyState[] = [];
+    for (const enemy of this.state.enemies) {
+      if (predicate(enemy)) {
+        removed.push(enemy);
+      } else {
+        kept.push(enemy);
+      }
+    }
+    if (removed.length > 0) {
+      this.state.enemies = kept;
+    }
+    return removed;
+  }
+
+  restoreEnemies(enemies: EnemyState[]): void {
+    if (!Array.isArray(enemies) || enemies.length === 0) {
+      return;
+    }
+    this.state.enemies = [...this.state.enemies, ...enemies];
+  }
+
+  clearProjectiles(): void {
+    this.state.projectiles = [];
+  }
+
   damageCastle(amount: number): void {
     const mitigated = Math.max(1, amount - this.state.castle.armor);
     this.state.castle.health = Math.max(0, this.state.castle.health - mitigated);
@@ -1677,6 +1730,42 @@ export class GameEngine {
     return true;
   }
 
+  forceSupportBoost(
+    lane: number,
+    options: { duration?: number; multiplier?: number; cooldown?: number } = {}
+  ): boolean {
+    if (typeof lane !== "number" || !Number.isFinite(lane) || !Number.isInteger(lane)) {
+      return false;
+    }
+    const lanes = new Set(this.config.turretSlots.map((slot) => slot.lane));
+    if (!lanes.has(lane)) {
+      return false;
+    }
+    const boost = this.state.supportBoost;
+    const durationRaw = options.duration ?? 3.5;
+    const duration =
+      typeof durationRaw === "number" && Number.isFinite(durationRaw)
+        ? Math.max(1, Math.min(12, durationRaw))
+        : 3.5;
+    const multiplierRaw = options.multiplier ?? 1.12;
+    const multiplier =
+      typeof multiplierRaw === "number" && Number.isFinite(multiplierRaw)
+        ? Math.max(1, Math.min(2, multiplierRaw))
+        : 1.12;
+    const cooldownRaw = options.cooldown ?? 0;
+    const cooldown =
+      typeof cooldownRaw === "number" && Number.isFinite(cooldownRaw)
+        ? Math.max(0, Math.min(60, cooldownRaw))
+        : 0;
+    boost.lane = lane;
+    boost.remaining = duration;
+    boost.duration = duration;
+    boost.multiplier = multiplier;
+    boost.cooldownRemaining = cooldown;
+    this.events.emit("support:boost", { lane, duration, multiplier, cooldown });
+    return true;
+  }
+
   private getActiveLaneFocus(): number | null {
     if (this.state.mode !== "practice") {
       return null;
@@ -1734,6 +1823,22 @@ export class GameEngine {
 
   getSpawnSpeedGateMultiplier(): number {
     return this.spawnSpeedGateMultiplier;
+  }
+
+  setWaveHoldActive(active: boolean): void {
+    this.waveHoldActive = Boolean(active);
+  }
+
+  isWaveHoldActive(): boolean {
+    return this.waveHoldActive;
+  }
+
+  setCombatHoldActive(active: boolean): void {
+    this.combatHoldActive = Boolean(active);
+  }
+
+  isCombatHoldActive(): boolean {
+    return this.combatHoldActive;
   }
 
   private applySpawnSpeedGate(difficulty: DifficultyBand): DifficultyBand {

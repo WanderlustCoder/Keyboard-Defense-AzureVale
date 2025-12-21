@@ -24,6 +24,7 @@ import { deriveStarfieldState } from "../utils/starfield.js";
 import { defaultStarfieldConfig } from "../config/starfield.js";
 import { listNewLoreForWave } from "../data/lore.js";
 import { buildLoreScrollProgress, listNewLoreScrollsForLessons } from "../data/loreScrolls.js";
+import { buildLessonPathViewState, getTypingLesson, listLessonWordlists } from "../data/lessons.js";
 import { readLoreProgress, writeLoreProgress } from "../utils/lorePersistence.js";
 import { readLessonProgress, writeLessonProgress, LESSON_PROGRESS_VERSION } from "../utils/lessonProgress.js";
 import { buildLessonMedalViewState, readLessonMedalProgress, recordLessonMedal, writeLessonMedalProgress } from "../utils/lessonMedals.js";
@@ -128,6 +129,42 @@ const WAVE_MICRO_TIPS = [
     "Eyes on the words, not the keys; touch typing keeps accuracy higher.",
     "Short breaths between waves keep hands loose and reduce errors.",
     "If accuracy dips, slow two beats, rebuild clean strokes, then speed up."
+];
+const INTERMISSION_DRILLS_ENABLED = true;
+const FIELD_DRILL_WORD_COUNT = 12;
+const INTERMISSION_DRILL_WORD_COUNT = 5;
+const FIELD_DRILL_SPAWN_DISTANCE = 0.66;
+const FIELD_DRILL_MIN_WORD_LENGTH = 2;
+const FIELD_DRILL_WORD_REGEX = /^[a-z]+$/;
+const INTERMISSION_DRILL_REWARD_SCALE = 0.7;
+const FIELD_DRILL_REWARD_TIERS = [
+    {
+        tier: "gold",
+        minAccuracy: 0.97,
+        spawnGateMultiplier: 0.9,
+        spawnGateSeconds: 10,
+        supportMultiplier: 1.16,
+        supportSeconds: 5,
+        gold: 25
+    },
+    {
+        tier: "silver",
+        minAccuracy: 0.92,
+        spawnGateMultiplier: 0.93,
+        spawnGateSeconds: 8,
+        supportMultiplier: 1.12,
+        supportSeconds: 4,
+        gold: 15
+    },
+    {
+        tier: "bronze",
+        minAccuracy: 0,
+        spawnGateMultiplier: 0.96,
+        spawnGateSeconds: 6,
+        supportMultiplier: 1.08,
+        supportSeconds: 3.5,
+        gold: 8
+    }
 ];
 const LANE_LABELS = ["A", "B", "C", "D", "E"];
 const CANVAS_RESIZE_FADE_MS = 250;
@@ -350,7 +387,8 @@ export class GameController {
         this.seasonTrackRewards = listSeasonTrack();
         this.lessonProgress = {
             lessonsCompleted: 0,
-            unlockedScrolls: new Set()
+            unlockedScrolls: new Set(),
+            lessonCompletions: {}
         };
         this.turretLoadoutPresets = Object.create(null);
         this.activeTurretPresetId = null;
@@ -374,6 +412,12 @@ export class GameController {
         this.reopenOptionsAfterDrills = false;
         this.reopenWaveScorecardAfterDrills = false;
         this.lastWaveScorecardData = null;
+        this.fieldDrill = null;
+        this.fieldDrillResumeAfter = false;
+        this.fieldDrillTurretFiring = new Map();
+        this.fieldDrillSpawnGateMultiplier = 1;
+        this.fieldDrillSpawnGateExpiresAt = null;
+        this.fieldDrillHeldEnemies = null;
         this.typingDrillCta = document.getElementById("typing-drills-cta-reco");
         this.typingDrillCtaMode =
             this.typingDrillCta?.querySelector?.(".typing-drills-cta-reco-mode") ?? null;
@@ -1092,6 +1136,7 @@ export class GameController {
         this.hud.setAnalyticsExportEnabled(this.analyticsExportEnabled);
         this.syncLoreScrollsToHud();
         this.syncSeasonTrackToHud();
+        this.syncLessonPathToHud();
         this.syncDailyQuestBoardToHud();
         this.syncWeeklyQuestBoardToHud();
         this.syncLessonMedalsToHud(undefined, { celebrate: false });
@@ -4061,8 +4106,9 @@ export class GameController {
         }
         this.syncTypingDrillUnlocksToOverlay();
         this.syncErrorClustersToOverlay();
+        const resolvedMode = options?.mode ?? "lesson";
         if (this.typingDrillsOverlayActive && this.typingDrills.isVisible()) {
-            this.typingDrills.reset(options?.mode);
+            this.typingDrills.reset(resolvedMode);
             return;
         }
         const fromOptions = this.optionsOverlayActive;
@@ -4091,7 +4137,7 @@ export class GameController {
         this.shouldResumeAfterDrills =
             wasRunning && !this.menuActive && !this.waveScorecardActive && !fromOptions;
         this.typingDrillsOverlayActive = true;
-        this.typingDrills.open(options?.mode, source, options?.toastMessage);
+        this.typingDrills.open(resolvedMode, source, options?.toastMessage);
         if (options?.autoStart && options.mode) {
             this.typingDrills.start(options.mode);
         }
@@ -4258,12 +4304,30 @@ export class GameController {
         this.typingDrills.setWarmupKeys(merge(duePatterns, warmupKeys));
     }
     handleTypingDrillStarted(mode, source) {
+        const resolvedSource = source ?? "cta";
+        if (mode === "lesson") {
+            const lessonId = this.typingDrills?.getLessonId?.() ?? null;
+            const plan = this.buildFieldDrillPlan({
+                kind: "lesson",
+                lessonId,
+                source: resolvedSource,
+                allowActiveEnemies: true
+            });
+            if (plan) {
+                const resumeAfter = this.shouldResumeAfterDrills || this.menuActive;
+                this.shouldResumeAfterDrills = false;
+                this.reopenOptionsAfterDrills = false;
+                this.reopenWaveScorecardAfterDrills = false;
+                this.closeTypingDrills();
+                this.startFieldDrill(plan, { resumeAfter });
+            }
+        }
         if (!this.telemetryClient?.track)
             return;
         try {
             this.telemetryClient.track("typing-drill.started", {
                 mode,
-                source: source ?? "cta",
+                source: resolvedSource,
                 timestamp: Date.now(),
                 telemetryEnabled: Boolean(this.telemetryEnabled),
                 menu: this.menuActive,
@@ -4273,6 +4337,428 @@ export class GameController {
         }
         catch (error) {
             console.warn("[telemetry] failed to track typing drill start", error);
+        }
+    }
+    buildFieldDrillPlan(options) {
+        const kind = options?.kind === "lesson" ? "lesson" : "intermission";
+        const silent = Boolean(options?.silent);
+        const allowActiveEnemies = Boolean(options?.allowActiveEnemies);
+        const state = this.engine.getState();
+        const hasEnemies = Array.isArray(state.enemies)
+            ? state.enemies.some((enemy) => enemy?.tierId && enemy.tierId !== "dummy")
+            : false;
+        if (hasEnemies && !allowActiveEnemies) {
+            if (!silent) {
+                this.hud.showCastleMessage("Finish the wave before starting a lesson drill.");
+            }
+            return null;
+        }
+        const lessonId = typeof options?.lessonId === "string" ? options.lessonId : null;
+        let label = kind === "lesson" ? "Lesson Drill" : "Intermission Drill";
+        let words = [];
+        let usedFallback = false;
+        if (kind === "lesson") {
+            const lesson = lessonId ? getTypingLesson(lessonId) : null;
+            if (lesson) {
+                label = `Lesson ${lesson.order}: ${lesson.label}`;
+            }
+            const built = this.buildLessonFieldDrillWords(lessonId);
+            words = built.words;
+            usedFallback = built.usedFallback;
+        }
+        else {
+            words = this.buildIntermissionFieldDrillWords().words;
+        }
+        if (!Array.isArray(words) || words.length === 0) {
+            if (!silent) {
+                this.hud.appendLog("No drill words available right now.");
+                this.hud.showCastleMessage("No drill words available.");
+            }
+            return null;
+        }
+        return {
+            kind,
+            lessonId,
+            source: typeof options?.source === "string" ? options.source : "drill",
+            label,
+            words,
+            lanes: this.getFieldDrillLanes(),
+            usedFallback
+        };
+    }
+    getFieldDrillLanes() {
+        const slots = this.engine?.config?.turretSlots ?? [];
+        const laneSet = new Set(slots.map((slot) => slot.lane));
+        const lanes = Array.from(laneSet).sort((a, b) => a - b);
+        return lanes.length > 0 ? lanes : [0];
+    }
+    normalizeFieldDrillWord(word) {
+        if (typeof word !== "string")
+            return null;
+        const trimmed = word.trim().toLowerCase();
+        if (!trimmed || trimmed.length < FIELD_DRILL_MIN_WORD_LENGTH)
+            return null;
+        if (!FIELD_DRILL_WORD_REGEX.test(trimmed))
+            return null;
+        return trimmed;
+    }
+    pickFieldDrillWords(pool, count) {
+        if (!Array.isArray(pool))
+            return [];
+        const normalized = [];
+        for (const word of pool) {
+            const clean = this.normalizeFieldDrillWord(word);
+            if (clean) {
+                normalized.push(clean);
+            }
+        }
+        if (!Number.isFinite(count) || count <= 0 || normalized.length === 0) {
+            return [];
+        }
+        const picks = [];
+        for (let i = 0; i < count; i += 1) {
+            const word = normalized[Math.floor(Math.random() * normalized.length)];
+            if (word) {
+                picks.push(word);
+            }
+        }
+        return picks;
+    }
+    buildLessonFieldDrillWords(lessonId) {
+        const wordlists = lessonId ? listLessonWordlists(lessonId) : [];
+        const pool = new Set();
+        for (const list of wordlists) {
+            for (const word of list?.words ?? []) {
+                const clean = this.normalizeFieldDrillWord(word);
+                if (clean) {
+                    pool.add(clean);
+                }
+            }
+        }
+        let usedFallback = false;
+        let words = this.pickFieldDrillWords(Array.from(pool), FIELD_DRILL_WORD_COUNT);
+        if (words.length === 0) {
+            usedFallback = true;
+            const fallbackPool = [...defaultWordBank.easy, ...defaultWordBank.medium];
+            words = this.pickFieldDrillWords(fallbackPool, FIELD_DRILL_WORD_COUNT);
+        }
+        return { words, usedFallback };
+    }
+    buildIntermissionFieldDrillWords() {
+        const pool = [...defaultWordBank.easy, ...defaultWordBank.medium];
+        const words = this.pickFieldDrillWords(pool, INTERMISSION_DRILL_WORD_COUNT);
+        return { words };
+    }
+    getFieldDrillClockMs() {
+        if (typeof performance !== "undefined" && typeof performance.now === "function") {
+            return performance.now();
+        }
+        return Date.now();
+    }
+    startFieldDrill(plan, options = {}) {
+        if (!plan || this.fieldDrill)
+            return false;
+        const menuWasActive = this.menuActive;
+        if (this.menuActive) {
+            const overlay = document.getElementById("main-menu-overlay");
+            if (overlay instanceof HTMLElement) {
+                overlay.dataset.visible = "false";
+            }
+            this.menuActive = false;
+        }
+        if (this.optionsOverlayActive) {
+            this.closeOptionsOverlay({ resume: false });
+        }
+        if (this.waveScorecardActive) {
+            this.closeWaveScorecard({ resume: false });
+        }
+        const state = this.engine.getState();
+        const heldEnemies = typeof this.engine.stashEnemies === "function"
+            ? this.engine.stashEnemies((enemy) => enemy?.tierId && enemy.tierId !== "dummy")
+            : [];
+        this.fieldDrillHeldEnemies = Array.isArray(heldEnemies) && heldEnemies.length > 0 ? heldEnemies : null;
+        this.engine.removeEnemiesByTier("dummy");
+        this.engine.clearProjectiles?.();
+        this.engine.purgeTypingBuffer();
+        this.engine.setWaveHoldActive(true);
+        this.engine.setCombatHoldActive(true);
+        const turretSnapshot = new Map();
+        for (const slot of state.turrets ?? []) {
+            if (!slot?.turret)
+                continue;
+            const wasEnabled = !slot.turret.firingDisabled;
+            turretSnapshot.set(slot.id, wasEnabled);
+            if (wasEnabled) {
+                this.engine.setTurretFiringEnabled(slot.id, false);
+            }
+        }
+        this.fieldDrillTurretFiring = turretSnapshot;
+        const typing = state.typing ?? { totalInputs: 0, correctInputs: 0, errors: 0, combo: 0 };
+        const startClockMs = this.getFieldDrillClockMs();
+        this.fieldDrill = {
+            kind: plan.kind,
+            lessonId: plan.lessonId ?? null,
+            source: plan.source ?? "drill",
+            label: plan.label ?? "Drill",
+            words: plan.words ?? [],
+            totalWords: plan.words?.length ?? 0,
+            wordIndex: 0,
+            wordsCompleted: 0,
+            lanes: plan.lanes ?? this.getFieldDrillLanes(),
+            startTime: state.time ?? 0,
+            startClockMs,
+            startTotalInputs: typing.totalInputs ?? 0,
+            startCorrectInputs: typing.correctInputs ?? 0,
+            startErrors: typing.errors ?? 0,
+            bestCombo: typing.combo ?? 0,
+            usedFallback: Boolean(plan.usedFallback)
+        };
+        this.fieldDrillResumeAfter = Boolean(options.resumeAfter || menuWasActive);
+        this.spawnNextFieldDrillEnemy();
+        const kindLabel = plan.kind === "lesson" ? "Lesson drill" : "Intermission drill";
+        this.hud.appendLog(`${kindLabel} started: ${plan.label}.`);
+        if (plan.usedFallback) {
+            this.hud.appendLog("Lesson uses symbols; running letter-only drill in the field.");
+        }
+        this.hud.showCastleMessage(`${plan.label} in progress...`);
+        this.hud.focusTypingInput();
+        if (!this.running && !this.manualTick) {
+            this.start();
+        }
+        return true;
+    }
+    spawnNextFieldDrillEnemy() {
+        const drill = this.fieldDrill;
+        if (!drill)
+            return;
+        if (drill.wordIndex >= drill.totalWords) {
+            this.finishFieldDrill();
+            return;
+        }
+        const word = drill.words[drill.wordIndex];
+        const lanes = Array.isArray(drill.lanes) && drill.lanes.length > 0 ? drill.lanes : [0];
+        const lane = lanes[drill.wordIndex % lanes.length] ?? 0;
+        const enemy = this.engine.spawnEnemy({
+            tierId: "dummy",
+            lane,
+            word,
+            order: 9000 + drill.wordIndex
+        });
+        drill.wordIndex += 1;
+        if (!enemy) {
+            this.finishFieldDrill();
+            return;
+        }
+        enemy.distance = FIELD_DRILL_SPAWN_DISTANCE;
+        enemy.speed = 0;
+        enemy.baseSpeed = 0;
+        enemy.damage = 0;
+        enemy.reward = 0;
+        this.render();
+    }
+    handleFieldDrillEnemyDefeated(enemy) {
+        const drill = this.fieldDrill;
+        if (!drill)
+            return;
+        if (!enemy || enemy.tierId !== "dummy")
+            return;
+        drill.wordsCompleted += 1;
+        if (drill.wordsCompleted >= drill.totalWords) {
+            this.finishFieldDrill();
+        }
+        else {
+            this.spawnNextFieldDrillEnemy();
+        }
+    }
+    finishFieldDrill() {
+        const drill = this.fieldDrill;
+        if (!drill)
+            return;
+        const resumeAfter = this.fieldDrillResumeAfter;
+        const state = this.engine.getState();
+        const stats = this.computeFieldDrillStats(state);
+        if (stats) {
+            const summary = {
+                mode: drill.kind === "lesson" ? "lesson" : "burst",
+                source: drill.source ?? "practice",
+                lessonId: drill.lessonId ?? undefined,
+                elapsedMs: Math.round(stats.elapsedSeconds * 1000),
+                accuracy: stats.accuracy,
+                bestCombo: stats.bestCombo,
+                words: stats.words,
+                errors: stats.errors,
+                wpm: stats.wpm,
+                timestamp: Date.now()
+            };
+            this.recordTypingDrillSummary(summary);
+            this.applyFieldDrillRewards(drill, stats);
+        }
+        this.engine.removeEnemiesByTier("dummy");
+        const heldEnemies = this.fieldDrillHeldEnemies;
+        this.fieldDrillHeldEnemies = null;
+        if (Array.isArray(heldEnemies) && heldEnemies.length > 0) {
+            this.engine.restoreEnemies?.(heldEnemies);
+        }
+        this.engine.setWaveHoldActive(false);
+        this.engine.setCombatHoldActive(false);
+        for (const [slotId, wasEnabled] of this.fieldDrillTurretFiring.entries()) {
+            this.engine.setTurretFiringEnabled(slotId, wasEnabled);
+        }
+        this.fieldDrillTurretFiring.clear();
+        this.fieldDrill = null;
+        this.fieldDrillResumeAfter = false;
+        this.hud.setFieldDrillStatus({ active: false });
+        if (resumeAfter &&
+            !this.menuActive &&
+            !this.optionsOverlayActive &&
+            !this.waveScorecardActive &&
+            !this.manualTick &&
+            !this.tutorialHoldLoop) {
+            this.resume();
+        }
+        else if (!this.menuActive) {
+            this.hud.focusTypingInput();
+        }
+    }
+    computeFieldDrillStats(state) {
+        const drill = this.fieldDrill;
+        if (!drill)
+            return null;
+        const typing = state?.typing ?? {};
+        const totalInputs = Math.max(0, (typing.totalInputs ?? 0) - drill.startTotalInputs);
+        const correctInputs = Math.max(0, (typing.correctInputs ?? 0) - drill.startCorrectInputs);
+        const errors = Math.max(0, (typing.errors ?? 0) - drill.startErrors);
+        const accuracy = totalInputs > 0 ? correctInputs / totalInputs : 1;
+        const nowMs = this.getFieldDrillClockMs();
+        const startClockMs = typeof drill.startClockMs === "number" && Number.isFinite(drill.startClockMs)
+            ? drill.startClockMs
+            : nowMs;
+        const elapsedSeconds = Math.max(0.001, (nowMs - startClockMs) / 1000);
+        const words = Math.max(0, drill.wordsCompleted);
+        const wpm = words > 0 ? words / (elapsedSeconds / 60) : 0;
+        const bestCombo = Math.max(drill.bestCombo ?? 0, typing.combo ?? 0);
+        drill.bestCombo = bestCombo;
+        return {
+            accuracy,
+            errors,
+            elapsedSeconds,
+            words,
+            wpm,
+            bestCombo
+        };
+    }
+    pickFieldDrillRewardTier(accuracy) {
+        const score = typeof accuracy === "number" && Number.isFinite(accuracy) ? accuracy : 0;
+        for (const tier of FIELD_DRILL_REWARD_TIERS) {
+            if (score >= tier.minAccuracy) {
+                return tier;
+            }
+        }
+        return FIELD_DRILL_REWARD_TIERS[FIELD_DRILL_REWARD_TIERS.length - 1];
+    }
+    applyFieldDrillRewards(drill, stats) {
+        if (!drill || !stats)
+            return;
+        const tier = this.pickFieldDrillRewardTier(stats.accuracy);
+        const scale = drill.kind === "lesson" ? 1 : INTERMISSION_DRILL_REWARD_SCALE;
+        const gold = Math.round(Math.max(0, tier.gold * scale));
+        if (gold > 0) {
+            this.engine.grantGold(gold);
+        }
+        const spawnGateSeconds = Math.max(1, tier.spawnGateSeconds * scale);
+        const spawnGateMultiplier = 1 - (1 - tier.spawnGateMultiplier) * scale;
+        if (spawnGateSeconds > 0 && spawnGateMultiplier < 0.999) {
+            this.fieldDrillSpawnGateMultiplier = spawnGateMultiplier;
+            this.fieldDrillSpawnGateExpiresAt = (this.engine.getState().time ?? 0) + spawnGateSeconds;
+            this.applySpawnSpeedGate();
+        }
+        let supportApplied = false;
+        let supportLane = null;
+        const supportSeconds = Math.max(1, tier.supportSeconds * scale);
+        const supportMultiplier = 1 + (tier.supportMultiplier - 1) * scale;
+        if (supportSeconds > 0 && supportMultiplier > 1.001) {
+            supportLane = this.pickFieldDrillSupportLane();
+            if (typeof supportLane === "number") {
+                const cooldown = Math.max(6, supportSeconds + 6);
+                supportApplied = this.engine.forceSupportBoost(supportLane, {
+                    duration: supportSeconds,
+                    multiplier: supportMultiplier,
+                    cooldown
+                });
+            }
+        }
+        const rewardParts = [];
+        if (gold > 0) {
+            rewardParts.push(`+${gold}g`);
+        }
+        if (spawnGateSeconds > 0 && spawnGateMultiplier < 0.999) {
+            const slowPercent = Math.round((1 - spawnGateMultiplier) * 100);
+            rewardParts.push(`spawns -${slowPercent}% for ${spawnGateSeconds.toFixed(1)}s`);
+        }
+        if (supportApplied && typeof supportLane === "number") {
+            const laneLabel = LANE_LABELS[supportLane] ?? `${supportLane + 1}`;
+            const boostPercent = Math.round((supportMultiplier - 1) * 100);
+            rewardParts.push(`support lane ${laneLabel} +${boostPercent}% for ${supportSeconds.toFixed(1)}s`);
+        }
+        if (rewardParts.length > 0) {
+            const tierLabel = `${tier.tier.charAt(0).toUpperCase()}${tier.tier.slice(1)}`;
+            this.hud.appendLog(`Drill reward (${tierLabel}): ${rewardParts.join(", ")}.`, "upgrade");
+            this.hud.showCastleMessage(`Drill reward: ${rewardParts[0]}.`);
+        }
+    }
+    pickFieldDrillSupportLane() {
+        const state = this.engine.getState();
+        const laneScores = new Map();
+        for (const slot of state.turrets ?? []) {
+            if (!slot?.turret)
+                continue;
+            const current = laneScores.get(slot.lane) ?? 0;
+            const level = slot.turret?.level ?? 1;
+            laneScores.set(slot.lane, current + level);
+        }
+        if (laneScores.size === 0) {
+            return null;
+        }
+        let bestLane = null;
+        let bestScore = -Infinity;
+        for (const [lane, score] of laneScores.entries()) {
+            if (score > bestScore) {
+                bestScore = score;
+                bestLane = lane;
+            }
+        }
+        return bestLane;
+    }
+    updateFieldDrillStatus(state) {
+        if (!this.fieldDrill) {
+            this.hud.setFieldDrillStatus({ active: false });
+            return;
+        }
+        const stats = this.computeFieldDrillStats(state);
+        if (!stats)
+            return;
+        const accuracyPct = Math.round(Math.max(0, Math.min(100, stats.accuracy * 100)));
+        const wpm = Math.round(Math.max(0, stats.wpm));
+        const progress = `Words ${this.fieldDrill.wordsCompleted}/${this.fieldDrill.totalWords} | Acc ${accuracyPct}% | WPM ${wpm}`;
+        const hint = this.fieldDrill.kind === "lesson"
+            ? "Lesson runs inside the battlefield. Finish to fuel the next wave."
+            : "Intermission drill powers the next wave.";
+        this.hud.setFieldDrillStatus({
+            active: true,
+            title: this.fieldDrill.label,
+            progress,
+            hint,
+            tone: this.fieldDrill.kind
+        });
+    }
+    updateFieldDrillBuffs(state) {
+        if (this.fieldDrillSpawnGateExpiresAt === null)
+            return;
+        const now = state?.time ?? 0;
+        if (now >= this.fieldDrillSpawnGateExpiresAt) {
+            this.fieldDrillSpawnGateExpiresAt = null;
+            this.fieldDrillSpawnGateMultiplier = 1;
+            this.applySpawnSpeedGate();
         }
     }
     trackTypingDrillCompleted(entry) {
@@ -4330,6 +4816,8 @@ export class GameController {
                 return "Endurance";
             case "symbols":
                 return "Numbers & Symbols";
+            case "lesson":
+                return "Lesson";
             case "burst":
             default:
                 return "Burst Warmup";
@@ -4466,6 +4954,13 @@ export class GameController {
         const combo = typeof state.typing?.combo === "number" ? state.typing.combo : 0;
         const warnings = state.analytics?.comboWarning?.count ?? 0;
         const lastDrill = state.analytics?.typingDrills?.at?.(-1) ?? null;
+        const lessonPath = buildLessonPathViewState(this.lessonProgress?.lessonCompletions ?? {});
+        if (lessonPath.next) {
+            return {
+                mode: "lesson",
+                reason: `Next up: Lesson ${lessonPath.next.order} - ${lessonPath.next.label}.`
+            };
+        }
         const nowMs = Date.now();
         const storage = typeof window !== "undefined" ? window.localStorage : null;
         this.errorClusterProgress =
@@ -4715,6 +5210,24 @@ export class GameController {
         });
     }
     handleWaveScorecardContinue() {
+        const resumeAfter = this.resumeAfterWaveScorecard;
+        const tutorialActive = this.tutorialManager?.getState?.().active;
+        if (INTERMISSION_DRILLS_ENABLED &&
+            !this.fieldDrill &&
+            !tutorialActive &&
+            !this.tutorialHoldLoop &&
+            !this.isScreenTimeLockoutActive()) {
+            const plan = this.buildFieldDrillPlan({
+                kind: "intermission",
+                source: "intermission",
+                silent: true
+            });
+            if (plan) {
+                this.closeWaveScorecard({ resume: false });
+                this.startFieldDrill(plan, { resumeAfter });
+                return;
+            }
+        }
         this.closeWaveScorecard({ resume: true });
     }
     closeWaveScorecard(options = {}) {
@@ -5615,7 +6128,19 @@ export class GameController {
         const clamped = Math.max(0.85, Math.min(1, blended));
         this.keystrokeTimingGateMultiplier = clamped;
         this.keystrokeTimingGateSnapshot = { ...gate, multiplier: clamped };
-        this.engine.setSpawnSpeedGateMultiplier(clamped);
+        this.applySpawnSpeedGate();
+    }
+    applySpawnSpeedGate() {
+        const base = typeof this.keystrokeTimingGateMultiplier === "number" &&
+            Number.isFinite(this.keystrokeTimingGateMultiplier)
+            ? this.keystrokeTimingGateMultiplier
+            : 1;
+        const drill = typeof this.fieldDrillSpawnGateMultiplier === "number" &&
+            Number.isFinite(this.fieldDrillSpawnGateMultiplier)
+            ? this.fieldDrillSpawnGateMultiplier
+            : 1;
+        const combined = Math.max(0.1, Math.min(1, base * drill));
+        this.engine.setSpawnSpeedGateMultiplier(combined);
     }
     replayTutorial() {
         this.replayTutorialFromDebug();
@@ -5723,6 +6248,8 @@ export class GameController {
             wallTimeSeconds: this.sessionWallTimeSeconds ?? 0,
             wavePreviewEmptyMessage: fogOfWar ? "Fog of war: intel hidden." : undefined
         });
+        this.updateFieldDrillStatus(this.currentState);
+        this.updateFieldDrillBuffs(this.currentState);
         const sessionGoalsFinalized = this.maybeFinalizeSessionGoals(this.currentState);
         this.syncSessionGoalsToHud(this.currentState, { force: sessionGoalsFinalized });
         this.maybeFinalizeKeystrokeTimingProfile(this.currentState);
@@ -7319,13 +7846,14 @@ export class GameController {
     }
     initializeLessonProgress() {
         if (typeof window === "undefined" || !window.localStorage) {
-            this.lessonProgress = { lessonsCompleted: 0, unlockedScrolls: new Set() };
+            this.lessonProgress = { lessonsCompleted: 0, unlockedScrolls: new Set(), lessonCompletions: {} };
             return;
         }
         const stored = readLessonProgress(window.localStorage);
         this.lessonProgress = {
             lessonsCompleted: Math.max(0, stored.lessonsCompleted ?? 0),
-            unlockedScrolls: new Set(stored.unlockedScrolls ?? [])
+            unlockedScrolls: new Set(stored.unlockedScrolls ?? []),
+            lessonCompletions: stored.lessonCompletions ?? {}
         };
     }
     initializeLessonMedals() {
@@ -7533,6 +8061,12 @@ export class GameController {
         if (!this.hud)
             return;
         this.hud.setSeasonTrackProgress(this.buildSeasonTrackViewState());
+    }
+    syncLessonPathToHud() {
+        if (!this.hud)
+            return;
+        const completions = this.lessonProgress?.lessonCompletions ?? {};
+        this.hud.setLessonPathProgress(buildLessonPathViewState(completions));
     }
     syncDailyQuestBoardToHud() {
         if (!this.hud || !this.dailyQuestBoard)
@@ -7783,6 +8317,16 @@ export class GameController {
             return;
         const previousLessons = this.lessonProgress?.lessonsCompleted ?? 0;
         const previousUnlocked = new Set(this.lessonProgress?.unlockedScrolls ?? []);
+        const previousCompletions = this.lessonProgress?.lessonCompletions ?? {};
+        const lessonId = summary?.mode === "lesson" && typeof summary.lessonId === "string" && summary.lessonId.length > 0
+            ? summary.lessonId
+            : null;
+        const nextCompletions = lessonId
+            ? {
+                ...previousCompletions,
+                [lessonId]: Math.max(0, Math.floor(previousCompletions[lessonId] ?? 0)) + 1
+            }
+            : { ...previousCompletions };
         const nextLessons = previousLessons + 1;
         const newlyUnlocked = listNewLoreScrollsForLessons(nextLessons, previousUnlocked);
         const unlocked = new Set(previousUnlocked);
@@ -7792,13 +8336,15 @@ export class GameController {
         }
         this.lessonProgress = {
             lessonsCompleted: nextLessons,
-            unlockedScrolls: unlocked
+            unlockedScrolls: unlocked,
+            lessonCompletions: nextCompletions
         };
         if (typeof window !== "undefined" && window.localStorage) {
             writeLessonProgress(window.localStorage, {
                 version: LESSON_PROGRESS_VERSION,
                 lessonsCompleted: nextLessons,
                 unlockedScrolls: Array.from(unlocked),
+                lessonCompletions: nextCompletions,
                 updatedAt: new Date().toISOString()
             });
         }
@@ -7839,6 +8385,7 @@ export class GameController {
         this.syncStreakTokensToHud();
         this.syncLoreScrollsToHud();
         this.syncSeasonTrackToHud();
+        this.syncLessonPathToHud();
         this.syncLessonMedalsToHud(medalResult.nextTarget);
     }
     recordWpmLadderEntry(summary) {
@@ -8010,6 +8557,7 @@ export class GameController {
             this.hud.showCastleMessage(message);
         });
         this.engine.events.on("enemy:defeated", ({ enemy, by, reward }) => {
+            this.handleFieldDrillEnemyDefeated(enemy);
             const source = by === "typing" ? "typed" : "turret";
             this.hud.appendLog(`Defeated ${enemy.word} (${source}) ${toGold(reward)}`);
             this.playSound(by === "typing" ? "impact-hit" : "projectile-arrow");

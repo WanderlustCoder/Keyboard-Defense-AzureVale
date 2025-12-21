@@ -1,0 +1,56 @@
+[gd_scene format=3 load_steps=2]
+
+[ext_resource type="Script" path="res://scripts/KingdomHub.gd" id=1]
+
+[node name="KingdomHub" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource(1)
+
+[node name="Background" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.07, 0.06, 0.13, 1)
+
+[node name="TopBar" type="HBoxContainer" parent="."]
+anchor_right = 1.0
+custom_minimum_size = Vector2(0, 46)
+offset_left = 16
+offset_top = 12
+offset_right = -16
+
+[node name="TitleLabel" type="Label" parent="TopBar"]
+text = "Kingdom Management"
+size_flags_horizontal = 3
+
+[node name="GoldLabel" type="Label" parent="TopBar"]
+text = "Gold: 0"
+size_flags_horizontal = 3
+horizontal_alignment = 2
+
+[node name="BackButton" type="Button" parent="TopBar"]
+text = "Map"
+
+[node name="Scroll" type="ScrollContainer" parent="."]
+anchor_left = 0.05
+anchor_top = 0.18
+anchor_right = 0.95
+anchor_bottom = 0.92
+
+[node name="Content" type="VBoxContainer" parent="Scroll"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8
+offset_top = 8
+offset_right = -8
+offset_bottom = -8
+
+[node name="KingdomHeader" type="Label" parent="Scroll/Content"]
+text = "Kingdom Upgrades"
+
+[node name="KingdomList" type="VBoxContainer" parent="Scroll/Content"]
+
+[node name="UnitHeader" type="Label" parent="Scroll/Content"]
+text = "Unit Upgrades"
+
+[node name="UnitList" type="VBoxContainer" parent="Scroll/Content"]

@@ -21,6 +21,7 @@ import {
   type RoadmapEntryState
 } from "../data/roadmap.js";
 import { type SeasonTrackViewState } from "../data/seasonTrack.js";
+import { type LessonPathViewState } from "../data/lessons.js";
 import { type LessonMedalTier, type LessonMedalViewState } from "../utils/lessonMedals.js";
 import { type WpmLadderViewState } from "../utils/wpmLadder.js";
 import { type BiomeGalleryViewState } from "../utils/biomeGallery.js";
@@ -1189,11 +1190,13 @@ export class HudView {
     container?: HTMLElement;
     badge?: HTMLElement;
     summary?: HTMLElement;
+    path?: HTMLElement;
     best?: HTMLElement;
     next?: HTMLElement;
     openButton?: HTMLButtonElement;
   };
   private lessonMedalState?: LessonMedalViewState;
+  private lessonPathState?: LessonPathViewState;
   private lessonMedalHighlightTimeout: number | null = null;
   private readonly wpmLadderPanel?: {
     container?: HTMLElement;
@@ -1639,6 +1642,14 @@ export class HudView {
         timer: HTMLElement;
       }
     | undefined;
+  private fieldDrillBanner?:
+    | {
+        container: HTMLElement;
+        title: HTMLElement;
+        progress: HTMLElement;
+        hint: HTMLElement;
+      }
+    | undefined;
   private evacHideTimeout: ReturnType<typeof setTimeout> | null = null;
   private evacResolvedState: "idle" | "success" | "fail" = "idle";
 
@@ -1796,6 +1807,47 @@ export class HudView {
 
       banner.after(supportBanner);
       this.supportBoostBanner = { container: supportBanner, label: supportLabel, timer: supportTimer };
+
+      const drillBanner = document.createElement("div");
+      drillBanner.className = "field-drill-banner";
+      drillBanner.dataset.visible = "false";
+      drillBanner.setAttribute("role", "status");
+      drillBanner.setAttribute("aria-live", "polite");
+      drillBanner.style.display = "none";
+      drillBanner.style.background = "linear-gradient(90deg, rgba(15, 23, 42, 0.94), rgba(14, 116, 144, 0.5))";
+      drillBanner.style.color = "#e2e8f0";
+      drillBanner.style.border = "1px solid rgba(14, 165, 233, 0.65)";
+      drillBanner.style.borderRadius = "10px";
+      drillBanner.style.padding = "8px 10px";
+      drillBanner.style.gap = "4px";
+      drillBanner.style.display = "none";
+      drillBanner.style.flexDirection = "column";
+      drillBanner.style.boxShadow = "0 6px 12px rgba(0,0,0,0.2)";
+      drillBanner.style.fontSize = "12px";
+      drillBanner.style.lineHeight = "1.3";
+      drillBanner.style.position = "sticky";
+      drillBanner.style.top = "38px";
+      drillBanner.style.zIndex = "5";
+      drillBanner.style.pointerEvents = "none";
+
+      const drillTitle = document.createElement("div");
+      drillTitle.style.fontWeight = "650";
+      const drillProgress = document.createElement("div");
+      drillProgress.style.fontVariantNumeric = "tabular-nums";
+      const drillHint = document.createElement("div");
+      drillHint.style.opacity = "0.75";
+
+      drillBanner.appendChild(drillTitle);
+      drillBanner.appendChild(drillProgress);
+      drillBanner.appendChild(drillHint);
+
+      supportBanner.after(drillBanner);
+      this.fieldDrillBanner = {
+        container: drillBanner,
+        title: drillTitle,
+        progress: drillProgress,
+        hint: drillHint
+      };
     }
 
     this.healthBar = this.getElement(rootIds.healthBar);
@@ -4548,6 +4600,7 @@ export class HudView {
     const lessonMedalPanel = document.getElementById("lesson-medal-panel");
     const lessonMedalBadge = document.getElementById("lesson-medal-badge");
     const lessonMedalSummary = document.getElementById("lesson-medal-summary");
+    const lessonMedalPath = document.getElementById("lesson-medal-path");
     const lessonMedalBest = document.getElementById("lesson-medal-best");
     const lessonMedalNext = document.getElementById("lesson-medal-next");
     const lessonMedalOpen = document.getElementById("lesson-medal-open");
@@ -4555,6 +4608,7 @@ export class HudView {
       container: lessonMedalPanel instanceof HTMLElement ? lessonMedalPanel : undefined,
       badge: lessonMedalBadge instanceof HTMLElement ? lessonMedalBadge : undefined,
       summary: lessonMedalSummary instanceof HTMLElement ? lessonMedalSummary : undefined,
+      path: lessonMedalPath instanceof HTMLElement ? lessonMedalPath : undefined,
       best: lessonMedalBest instanceof HTMLElement ? lessonMedalBest : undefined,
       next: lessonMedalNext instanceof HTMLElement ? lessonMedalNext : undefined,
       openButton: lessonMedalOpen instanceof HTMLButtonElement ? lessonMedalOpen : undefined
@@ -10110,6 +10164,24 @@ export class HudView {
     }
   }
 
+  setLessonPathProgress(state: LessonPathViewState): void {
+    this.lessonPathState = state;
+    if (!this.lessonMedalPanel?.path) return;
+    const total = Math.max(0, Math.floor(state.totalLessons ?? 0));
+    const completed = Math.max(0, Math.min(total, Math.floor(state.completedLessons ?? 0)));
+    if (state.next) {
+      const progressLabel = total > 0 ? ` (${completed}/${total} complete)` : "";
+      this.lessonMedalPanel.path.textContent = `Next lesson: Lesson ${state.next.order} - ${state.next.label}${progressLabel}`;
+      return;
+    }
+    if (total > 0) {
+      this.lessonMedalPanel.path.textContent =
+        "All lessons complete - revisit any lesson to stay sharp.";
+      return;
+    }
+    this.lessonMedalPanel.path.textContent = "Lesson path unavailable.";
+  }
+
   setLessonMedalProgress(
     state: LessonMedalViewState,
     options: { celebrate?: boolean } = {}
@@ -10193,6 +10265,7 @@ export class HudView {
       recent: [],
       bestByMode: {
         burst: null,
+        lesson: null,
         warmup: null,
         endurance: null,
         sprint: null,
@@ -10380,6 +10453,8 @@ export class HudView {
         return "Endurance";
       case "symbols":
         return "Numbers & Symbols";
+      case "lesson":
+        return "Lesson";
       case "burst":
       default:
         return "Burst Warmup";
@@ -10542,6 +10617,7 @@ export class HudView {
       lastRun: null,
       bestByMode: {
         burst: null,
+        lesson: null,
         warmup: null,
         endurance: null,
         sprint: null,
@@ -10561,6 +10637,7 @@ export class HudView {
       },
       ladderByMode: {
         burst: [],
+        lesson: [],
         warmup: [],
         endurance: [],
         sprint: [],
@@ -12989,6 +13066,36 @@ export class HudView {
       this.narration.speak("Options closed. Resuming play.", { interrupt: true });
       this.focusTypingInput();
     }
+  }
+
+  setFieldDrillStatus(status: {
+    active: boolean;
+    title?: string;
+    progress?: string;
+    hint?: string;
+    tone?: "lesson" | "intermission";
+  }): void {
+    if (!this.fieldDrillBanner) return;
+    const { container, title, progress, hint } = this.fieldDrillBanner;
+    if (!status.active) {
+      container.dataset.visible = "false";
+      container.style.display = "none";
+      delete container.dataset.kind;
+      title.textContent = "";
+      progress.textContent = "";
+      hint.textContent = "";
+      return;
+    }
+    container.dataset.visible = "true";
+    container.style.display = "flex";
+    if (status.tone) {
+      container.dataset.kind = status.tone;
+    } else {
+      delete container.dataset.kind;
+    }
+    title.textContent = status.title ?? "";
+    progress.textContent = status.progress ?? "";
+    hint.textContent = status.hint ?? "";
   }
 
   private updateSupportBoost(state: GameState): void {

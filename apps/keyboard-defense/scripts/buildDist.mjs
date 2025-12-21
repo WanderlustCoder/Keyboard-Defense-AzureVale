@@ -21,6 +21,9 @@ const DIST_OUT = path.join(APP_ROOT, "public", "dist", "src");
 const DOCS_SRC = path.join(APP_ROOT, "docs");
 const DOCS_OUT = path.join(APP_ROOT, "public", "dist", "docs");
 const DOC_FOLDERS = ["lore", "enemies", "roadmap", "taunts", "dialogue"];
+const DATA_SRC = path.join(APP_ROOT, "data");
+const DATA_OUT = path.join(APP_ROOT, "public", "dist", "data");
+const DATA_FOLDERS = ["wordlists"];
 
 async function runTsc() {
   await mkdir(TEMP_ROOT, { recursive: true });
@@ -57,6 +60,19 @@ async function copyArtifacts() {
     } catch (error) {
       console.warn(
         `Warning: failed to copy docs folder ${folder}; existing files may be locked`,
+        error instanceof Error ? error.message : String(error)
+      );
+    }
+  }
+  await mkdir(DATA_OUT, { recursive: true });
+  for (const folder of DATA_FOLDERS) {
+    const from = path.join(DATA_SRC, folder);
+    const to = path.join(DATA_OUT, folder);
+    try {
+      await cp(from, to, { recursive: true, force: true });
+    } catch (error) {
+      console.warn(
+        `Warning: failed to copy data folder ${folder}; existing files may be locked`,
         error instanceof Error ? error.message : String(error)
       );
     }

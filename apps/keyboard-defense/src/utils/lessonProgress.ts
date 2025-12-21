@@ -5,6 +5,7 @@ export interface LessonProgress {
   version: string;
   lessonsCompleted: number;
   unlockedScrolls: string[];
+  lessonCompletions: Record<string, number>;
   updatedAt: string;
 }
 
@@ -14,6 +15,7 @@ const DEFAULT_PROGRESS: LessonProgress = {
   version: LESSON_PROGRESS_VERSION,
   lessonsCompleted: 0,
   unlockedScrolls: [],
+  lessonCompletions: {},
   updatedAt: EPOCH
 };
 
@@ -33,6 +35,20 @@ function normalizeScrollIds(ids: unknown): string[] {
   return Array.from(set);
 }
 
+function normalizeLessonCompletions(value: unknown): Record<string, number> {
+  if (!value || typeof value !== "object") return {};
+  const normalized: Record<string, number> = {};
+  for (const [key, raw] of Object.entries(value)) {
+    if (typeof key !== "string" || key.trim().length === 0) continue;
+    if (typeof raw !== "number" || !Number.isFinite(raw)) continue;
+    const count = Math.max(0, Math.floor(raw));
+    if (count > 0) {
+      normalized[key] = count;
+    }
+  }
+  return normalized;
+}
+
 export function readLessonProgress(storage: Storage | null | undefined): LessonProgress {
   const fallback: LessonProgress = { ...DEFAULT_PROGRESS, updatedAt: new Date().toISOString() };
   if (!storage) return fallback;
@@ -48,6 +64,7 @@ export function readLessonProgress(storage: Storage | null | undefined): LessonP
     }
     const lessonsCompleted = clampLessons(parsed.lessonsCompleted);
     const unlockedScrolls = normalizeScrollIds(parsed.unlockedScrolls ?? parsed.unlocked ?? []);
+    const lessonCompletions = normalizeLessonCompletions(parsed.lessonCompletions ?? {});
     const updatedAt =
       typeof parsed.updatedAt === "string" && parsed.updatedAt.length > 0
         ? parsed.updatedAt
@@ -56,6 +73,7 @@ export function readLessonProgress(storage: Storage | null | undefined): LessonP
       version: LESSON_PROGRESS_VERSION,
       lessonsCompleted,
       unlockedScrolls,
+      lessonCompletions,
       updatedAt
     };
   } catch {
@@ -69,6 +87,7 @@ export function writeLessonProgress(storage: Storage | null | undefined, progres
     version: LESSON_PROGRESS_VERSION,
     lessonsCompleted: clampLessons(progress.lessonsCompleted),
     unlockedScrolls: normalizeScrollIds(progress.unlockedScrolls),
+    lessonCompletions: normalizeLessonCompletions(progress.lessonCompletions),
     updatedAt: progress.updatedAt ?? new Date().toISOString()
   };
   try {
@@ -88,6 +107,7 @@ export function incrementLessonCompletions(
     version: LESSON_PROGRESS_VERSION,
     lessonsCompleted: nextLessons,
     unlockedScrolls: normalizeScrollIds(progress.unlockedScrolls),
+    lessonCompletions: normalizeLessonCompletions(progress.lessonCompletions),
     updatedAt: new Date().toISOString()
   };
 }

@@ -1,6 +1,13 @@
 import { defaultWordBank, type WordBank, type WordDifficulty } from "../core/wordBank.js";
 import { type TypingDrillMode, type TypingDrillSummary } from "../core/types.js";
+import {
+  buildLessonPathViewState,
+  listLessonWordlists,
+  listTypingLessons,
+  type TypingLesson
+} from "../data/lessons.js";
 import { evaluateLessonMedal, type LessonMedalTier } from "../utils/lessonMedals.js";
+import { readLessonProgress } from "../utils/lessonProgress.js";
 import {
   createPlacementTestResult,
   writePlacementTestResult,
@@ -265,6 +272,11 @@ const DRILL_CONFIGS: Record<TypingDrillMode, DrillConfig> = {
     description: "Clear five snappy words to warm up before battle.",
     wordCount: 5,
     difficulties: ["easy", "easy", "medium", "medium", "hard"]
+  },
+  lesson: {
+    label: "Lesson",
+    description: "Follow the curriculum with focused word lists.",
+    wordCount: 12
   },
   warmup: {
     label: "5-Min Warm-up",
@@ -594,6 +606,9 @@ export class TypingDrillsOverlay {
   private readonly recommendationBadge?: HTMLElement | null;
   private readonly recommendationReason?: HTMLElement | null;
   private readonly recommendationRun?: HTMLButtonElement | null;
+  private readonly lessonPicker?: HTMLElement | null;
+  private readonly lessonSelect?: HTMLSelectElement | null;
+  private readonly lessonDescription?: HTMLElement | null;
   private resizeHandler?: () => void;
   private layoutPulseTimeout?: number | null;
   private isCondensedLayout: boolean = false;
@@ -601,6 +616,10 @@ export class TypingDrillsOverlay {
   private recommendationMode: TypingDrillMode | null = null;
   private advancedSymbolsUnlocked: boolean = false;
   private toastTimeout?: number | null;
+  private lessonCatalog: TypingLesson[] = [];
+  private lessonId: string | null = null;
+  private lessonWords: string[] = [];
+  private lessonSelectionTouched = false;
   private shiftTutorSlowMo: boolean = true;
   private metronomeEnabled: boolean = true;
   private handIsolationSide: "left" | "right" = "left";
@@ -652,7 +671,7 @@ export class TypingDrillsOverlay {
     digraphs: new Map()
   };
   private state: TypingDrillState = {
-    mode: "burst",
+    mode: "lesson",
     active: false,
     startSource: "cta",
     buffer: "",
@@ -722,12 +741,16 @@ export class TypingDrillsOverlay {
     this.recommendationRun = document.getElementById(
       "typing-drill-recommendation-run"
     ) as HTMLButtonElement | null;
+    this.lessonPicker = document.getElementById("typing-drill-lesson-picker");
+    this.lessonSelect = document.getElementById("typing-drill-lesson-select") as HTMLSelectElement | null;
+    this.lessonDescription = document.getElementById("typing-drill-lesson-description");
 
     const modeButtons = Array.from(
       this.root.querySelectorAll<HTMLButtonElement>(".typing-drill-mode")
     );
     this.modeButtons.push(...modeButtons);
 
+    this.initializeLessonPicker();
     this.attachEvents();
     this.updateLayoutMode();
     if (typeof window !== "undefined") {
@@ -743,6 +766,7 @@ export class TypingDrillsOverlay {
   open(mode?: TypingDrillMode, source?: string, toastMessage?: string): void {
     this.root.dataset.visible = "true";
     this.state.startSource = source ?? this.state.startSource ?? "cta";
+    this.lessonSelectionTouched = false;
     this.reset(mode);
     this.input?.focus();
     if (toastMessage) {
@@ -779,6 +803,10 @@ export class TypingDrillsOverlay {
 
   isActive(): boolean {
     return this.state.active;
+  }
+
+  getLessonId(): string | null {
+    return typeof this.lessonId === "string" && this.lessonId.length > 0 ? this.lessonId : null;
   }
 
   start(mode?: TypingDrillMode): void {
@@ -890,6 +918,8 @@ export class TypingDrillsOverlay {
         this.statusLabel.textContent = `${config.label} (30s)`;
       } else if (nextMode === "hand") {
         this.statusLabel.textContent = `${config.label} (${this.handIsolationSide === "left" ? "Left" : "Right"})`;
+      } else if (nextMode === "lesson") {
+        this.statusLabel.textContent = this.getLessonLabel() ?? config.label;
       } else if (nextMode === "focus" && this.focusKeys.length > 0) {
         this.statusLabel.textContent = `${config.label} (${this.focusKeys
           .map((key) => key.toUpperCase())
@@ -903,7 +933,7 @@ export class TypingDrillsOverlay {
       }
     }
     if (this.startBtn) {
-      this.startBtn.textContent = "Restart";
+      this.startBtn.textContent = nextMode === "lesson" ? "Restart Lesson" : "Restart";
     }
   }
 
@@ -971,7 +1001,7 @@ export class TypingDrillsOverlay {
       this.statusLabel.textContent = "Ready";
     }
     if (this.startBtn) {
-      this.startBtn.textContent = "Start Drill";
+      this.startBtn.textContent = nextMode === "lesson" ? "Start Lesson" : "Start Drill";
     }
   }
 
@@ -1403,6 +1433,95 @@ export class TypingDrillsOverlay {
         this.reset(this.state.mode);
         this.start(this.state.mode);
       });
+    }
+  }
+
+  private initializeLessonPicker(): void {
+    this.lessonCatalog = listTypingLessons();
+    const fallback = this.lessonCatalog[0] ?? null;
+    if (!this.lessonId && fallback) {
+      this.lessonId = fallback.id;
+    }
+    if (this.lessonSelect) {
+      this.lessonSelect.replaceChildren();
+      for (const lesson of this.lessonCatalog) {
+        const option = document.createElement("option");
+        option.value = lesson.id;
+        option.textContent = `Lesson ${lesson.order}: ${lesson.label}`;
+        this.lessonSelect.appendChild(option);
+      }
+      if (this.lessonId) {
+        this.applyLessonSelection(this.lessonId);
+      }
+      this.lessonSelect.addEventListener("change", () => {
+        this.lessonSelectionTouched = true;
+        this.setLessonId(this.lessonSelect?.value ?? "");
+      });
+    }
+    if (this.lessonId) {
+      this.setLessonId(this.lessonId);
+    }
+  }
+
+  private syncLessonSelectionFromProgress(): void {
+    if (this.lessonSelectionTouched) return;
+    if (typeof window === "undefined" || !window.localStorage) return;
+    const progress = readLessonProgress(window.localStorage);
+    const pathState = buildLessonPathViewState(progress.lessonCompletions ?? {});
+    const nextLessonId = pathState.next?.id ?? null;
+    if (nextLessonId && nextLessonId !== this.lessonId) {
+      this.setLessonId(nextLessonId);
+    }
+  }
+
+  private setLessonId(lessonId: string): void {
+    const lesson =
+      this.lessonCatalog.find((entry) => entry.id === lessonId) ?? this.lessonCatalog[0] ?? null;
+    this.lessonId = lesson?.id ?? null;
+    if (this.lessonSelect && lesson) {
+      this.applyLessonSelection(lesson.id);
+    }
+    const wordlists = lesson ? listLessonWordlists(lesson.id) : [];
+    const pool = new Set<string>();
+    for (const list of wordlists) {
+      for (const word of list.words ?? []) {
+        if (typeof word === "string" && word.length > 0) {
+          pool.add(word);
+        }
+      }
+    }
+    this.lessonWords = Array.from(pool);
+    if (this.lessonDescription) {
+      if (!lesson) {
+        this.lessonDescription.textContent = "Select a lesson to load a word list.";
+      } else {
+        const listCount = wordlists.length;
+        const wordCount = this.lessonWords.length;
+        const listLabel = listCount === 1 ? "list" : "lists";
+        const wordLabel = wordCount === 1 ? "word" : "words";
+        this.lessonDescription.textContent = `${lesson.description} (${listCount} ${listLabel}, ${wordCount} ${wordLabel}).`;
+      }
+    }
+    if (this.state.mode === "lesson" && !this.state.active) {
+      this.state.target = this.pickWord("lesson");
+      this.updateTarget();
+      this.updateMetrics();
+    }
+  }
+
+  private applyLessonSelection(value: string): void {
+    if (!this.lessonSelect) return;
+    try {
+      this.lessonSelect.value = value;
+      return;
+    } catch {
+      // Some DOM shims expose read-only select values; fall back to option selection.
+    }
+    const options: Array<HTMLOptionElement> = this.lessonSelect.options
+      ? Array.from(this.lessonSelect.options)
+      : Array.from(this.lessonSelect.querySelectorAll("option") as NodeListOf<HTMLOptionElement>);
+    for (const option of options) {
+      option.selected = option.value === value;
     }
   }
 
@@ -2038,6 +2157,7 @@ export class TypingDrillsOverlay {
     this.state.buffer = "";
     this.updateTarget();
     this.updateMetrics();
+    this.updateLessonControls();
     if (this.statusLabel) {
       this.statusLabel.textContent = reason === "timeout" ? "Time" : "Complete";
     }
@@ -2057,7 +2177,7 @@ export class TypingDrillsOverlay {
       this.callbacks.onSummary?.(analyticsSummary);
     }
     if (this.startBtn) {
-      this.startBtn.textContent = "Run again";
+      this.startBtn.textContent = this.state.mode === "lesson" ? "Repeat Lesson" : "Run again";
     }
   }
 
@@ -2076,6 +2196,10 @@ export class TypingDrillsOverlay {
         ? 1
         : 5;
     const wpm = minutes > 0 ? (this.state.correctInputs / wpmUnit) / minutes : 0;
+    const lessonId =
+      this.state.mode === "lesson" && typeof this.lessonId === "string" && this.lessonId.length > 0
+        ? this.lessonId
+        : undefined;
     let placementResult: PlacementTestResult | null = null;
     if (this.state.mode === "placement") {
       placementResult = createPlacementTestResult({
@@ -2096,6 +2220,7 @@ export class TypingDrillsOverlay {
       mode: this.state.mode,
       source: (this.state.startSource as TypingDrillSummary["source"]) ?? "cta",
       timestamp: Date.now(),
+      lessonId,
       elapsedMs,
       accuracy,
       bestCombo: this.state.bestCombo,
@@ -2112,6 +2237,7 @@ export class TypingDrillsOverlay {
     return {
       mode: summary.mode,
       source: summary.source,
+      lessonId: summary.lessonId,
       elapsedMs: summary.elapsedMs,
       accuracy: summary.accuracy,
       bestCombo: summary.bestCombo,
@@ -2346,6 +2472,10 @@ export class TypingDrillsOverlay {
     this.updateShiftTutorControls(mode);
     this.updateMetronomeControls(mode);
     this.updateHandIsolationControls(mode);
+    this.updateLessonControls(mode);
+    if (mode === "lesson" && !this.state.active) {
+      this.syncLessonSelectionFromProgress();
+    }
     if (!options.silent) {
       this.state.target = this.pickWord(mode);
       this.updateTarget();
@@ -2382,6 +2512,16 @@ export class TypingDrillsOverlay {
     const label = this.handIsolationSide === "left" ? "Left" : "Right";
     this.handBtn.textContent = `Hand: ${label}`;
     this.handBtn.setAttribute("aria-pressed", this.handIsolationSide === "left" ? "true" : "false");
+  }
+
+  private updateLessonControls(mode: TypingDrillMode = this.state.mode): void {
+    if (!this.lessonPicker) return;
+    const visible = mode === "lesson";
+    this.lessonPicker.dataset.visible = visible ? "true" : "false";
+    this.lessonPicker.setAttribute("aria-hidden", visible ? "false" : "true");
+    if (this.lessonSelect) {
+      this.lessonSelect.disabled = Boolean(this.state.active && visible);
+    }
   }
 
   private stopMetronome(): void {
@@ -2524,6 +2664,12 @@ export class TypingDrillsOverlay {
     }
   }
 
+  private ensureLessonWordPool(): void {
+    if (this.lessonWords.length > 0) return;
+    const fallback = this.lessonCatalog[0]?.id ?? "";
+    this.setLessonId(this.lessonId ?? fallback);
+  }
+
   private pickWord(mode: TypingDrillMode): string {
     const config = DRILL_CONFIGS[mode];
     if (mode === "reaction") {
@@ -2534,6 +2680,15 @@ export class TypingDrillsOverlay {
     }
     if (mode === "support") {
       return "";
+    }
+    if (mode === "lesson") {
+      this.ensureLessonWordPool();
+      const pool = this.lessonWords;
+      if (pool.length > 0) {
+        return pool[Math.floor(Math.random() * pool.length)] ?? "lesson";
+      }
+      const fallback = this.wordBank.easy ?? defaultWordBank.easy;
+      return fallback[Math.floor(Math.random() * fallback.length)] ?? "lesson";
     }
     if (mode === "hand") {
       const pool = HAND_ISOLATION_WORDS[this.handIsolationSide] ?? HAND_ISOLATION_WORDS.left;
@@ -3276,8 +3431,10 @@ export class TypingDrillsOverlay {
     });
     if (this.recommendationEl && this.recommendationBadge && this.recommendationReason) {
       this.recommendationBadge.textContent =
-        mode === "burst"
-          ? "Warmup"
+        mode === "lesson"
+          ? "Lesson"
+          : mode === "burst"
+            ? "Warmup"
           : mode === "warmup"
             ? "Plan"
           : mode === "endurance"
@@ -3537,8 +3694,16 @@ export class TypingDrillsOverlay {
     return offset + this.readingQuestionIndex + 1;
   }
 
+  private getLessonLabel(): string | null {
+    const lesson = this.lessonCatalog.find((entry) => entry.id === this.lessonId) ?? null;
+    if (!lesson) return null;
+    return `Lesson ${lesson.order}: ${lesson.label}`;
+  }
+
   private getModeLabel(mode: TypingDrillMode): string {
     switch (mode) {
+      case "lesson":
+        return "Lesson";
       case "placement":
         return "Placement Test";
       case "hand":

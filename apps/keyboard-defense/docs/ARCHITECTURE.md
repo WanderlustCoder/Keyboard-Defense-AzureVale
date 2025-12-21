@@ -1,7 +1,7 @@
 # Keyboard Defense Architecture
 
 ## Vision
-- Merge a fast-paced typing trainer with a lane-based castle defense experience.
+- Prioritize typing education (accuracy, speed, consistency) and use the lane-based castle defense layer as a feedback backdrop.
 - Keep core simulation deterministic and testable by separating logic from rendering and input.
 - Expose debug hooks so automated tests and manual QA can manipulate live state.
 

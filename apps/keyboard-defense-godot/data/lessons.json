@@ -1,0 +1,72 @@
+{
+  "lessons": [
+    {
+      "id": "home-row-1",
+      "order": 1,
+      "label": "Home Row Foundations",
+      "words": [
+        "as",
+        "sad",
+        "lad",
+        "fall",
+        "ask",
+        "dad",
+        "lass",
+        "flask",
+        "sass",
+        "all"
+      ]
+    },
+    {
+      "id": "home-row-2",
+      "order": 2,
+      "label": "Home Row Flow",
+      "words": [
+        "jkl",
+        "jail",
+        "lake",
+        "leaf",
+        "fake",
+        "flak",
+        "safe",
+        "flail",
+        "flake",
+        "kale"
+      ]
+    },
+    {
+      "id": "reach-row-1",
+      "order": 3,
+      "label": "Reach Row Warmup",
+      "words": [
+        "read",
+        "rest",
+        "tale",
+        "gate",
+        "rage",
+        "shade",
+        "trade",
+        "stage",
+        "great",
+        "thread"
+      ]
+    },
+    {
+      "id": "reach-row-2",
+      "order": 4,
+      "label": "Reach Row Rhythm",
+      "words": [
+        "grace",
+        "trace",
+        "stone",
+        "storm",
+        "armor",
+        "torch",
+        "warden",
+        "banner",
+        "castle",
+        "legend"
+      ]
+    }
+  ]
+}

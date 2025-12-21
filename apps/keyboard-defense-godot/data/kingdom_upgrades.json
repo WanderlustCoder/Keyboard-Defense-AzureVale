@@ -1,0 +1,31 @@
+{
+  "upgrades": [
+    {
+      "id": "scribe-hall",
+      "label": "Scribe Hall",
+      "cost": 20,
+      "description": "Letters strike with greater force.",
+      "effects": {
+        "typing_power": 0.15
+      }
+    },
+    {
+      "id": "watchtower-bells",
+      "label": "Watchtower Bells",
+      "cost": 25,
+      "description": "Slows incoming pressure between letters.",
+      "effects": {
+        "threat_rate_multiplier": -0.1
+      }
+    },
+    {
+      "id": "granary",
+      "label": "Royal Granary",
+      "cost": 18,
+      "description": "Improves recovery after mistakes.",
+      "effects": {
+        "mistake_forgiveness": 0.1
+      }
+    }
+  ]
+}

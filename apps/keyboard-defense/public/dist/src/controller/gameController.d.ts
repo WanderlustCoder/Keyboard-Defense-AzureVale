@@ -196,6 +196,51 @@ export declare class GameController {
     syncTypingDrillUnlocksToOverlay(): void;
     syncErrorClustersToOverlay(): void;
     handleTypingDrillStarted(mode: TypingDrillMode, source: string | undefined): void;
+    buildFieldDrillPlan(options: any): {
+        kind: string;
+        lessonId: any;
+        source: any;
+        label: string;
+        words: any[];
+        lanes: unknown[];
+        usedFallback: boolean;
+    };
+    getFieldDrillLanes(): unknown[];
+    normalizeFieldDrillWord(word: any): string;
+    pickFieldDrillWords(pool: any, count: any): any[];
+    buildLessonFieldDrillWords(lessonId: any): {
+        words: any[];
+        usedFallback: boolean;
+    };
+    buildIntermissionFieldDrillWords(): {
+        words: any[];
+    };
+    getFieldDrillClockMs(): number;
+    startFieldDrill(plan: any, options?: {}): boolean;
+    spawnNextFieldDrillEnemy(): void;
+    handleFieldDrillEnemyDefeated(enemy: any): void;
+    finishFieldDrill(): void;
+    computeFieldDrillStats(state: any): {
+        accuracy: number;
+        errors: number;
+        elapsedSeconds: number;
+        words: number;
+        wpm: number;
+        bestCombo: number;
+    };
+    pickFieldDrillRewardTier(accuracy: any): {
+        tier: string;
+        minAccuracy: number;
+        spawnGateMultiplier: number;
+        spawnGateSeconds: number;
+        supportMultiplier: number;
+        supportSeconds: number;
+        gold: number;
+    };
+    applyFieldDrillRewards(drill: any, stats: any): void;
+    pickFieldDrillSupportLane(): any;
+    updateFieldDrillStatus(state: any): void;
+    updateFieldDrillBuffs(state: any): void;
     trackTypingDrillCompleted(entry: TypingDrillSummary): void;
     getTypingDrillModeLabel(mode: TypingDrillMode): string;
     setTypingDrillCtaRecommendation(recommendation: {
@@ -333,6 +378,7 @@ export declare class GameController {
     resumeFromTutorial(): void;
     tick(timestamp: any): void;
     updateKeystrokeTimingGate(nowMs: any): void;
+    applySpawnSpeedGate(): void;
     replayTutorial(): void;
     skipTutorial(): void;
     getTutorialAnalyticsSummary(): any;
@@ -448,6 +494,7 @@ export declare class GameController {
     };
     buildSeasonTrackViewState(): import("../data/seasonTrack.js").SeasonTrackViewState;
     syncSeasonTrackToHud(): void;
+    syncLessonPathToHud(): void;
     syncDailyQuestBoardToHud(): void;
     syncWeeklyQuestBoardToHud(): void;
     syncLessonMedalsToHud(nextTarget: any, options?: {}): void;

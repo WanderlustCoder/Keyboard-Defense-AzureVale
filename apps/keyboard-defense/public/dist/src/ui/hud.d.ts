@@ -2,6 +2,7 @@ import { type GameConfig } from "../core/config.js";
 import { type GameMode, type GameState, type DefeatAnimationPreference, type TypingDrillMode, type TurretTargetPriority, type TurretTypeId, type WaveSpawnPreview } from "../core/types.js";
 import type { ResolutionTransitionState } from "./ResolutionTransitionController.js";
 import { type SeasonTrackViewState } from "../data/seasonTrack.js";
+import { type LessonPathViewState } from "../data/lessons.js";
 import { type LessonMedalViewState } from "../utils/lessonMedals.js";
 import { type WpmLadderViewState } from "../utils/wpmLadder.js";
 import { type BiomeGalleryViewState } from "../utils/biomeGallery.js";
@@ -642,6 +643,7 @@ export declare class HudView {
     private readonly lessonMedalOverlay?;
     private readonly lessonMedalPanel?;
     private lessonMedalState?;
+    private lessonPathState?;
     private lessonMedalHighlightTimeout;
     private readonly wpmLadderPanel?;
     private readonly wpmLadderOverlay?;
@@ -780,6 +782,7 @@ export declare class HudView {
     private buildCommandStatusTimeout;
     private evacBanner?;
     private supportBoostBanner?;
+    private fieldDrillBanner?;
     private evacHideTimeout;
     private evacResolvedState;
     constructor(config: GameConfig, rootIds: {
@@ -1176,6 +1179,7 @@ export declare class HudView {
     private renderSideQuestOverlay;
     private maybeCelebrateLessonMilestone;
     downloadMasteryCertificate(): void;
+    setLessonPathProgress(state: LessonPathViewState): void;
     setLessonMedalProgress(state: LessonMedalViewState, options?: {
         celebrate?: boolean;
     }): void;
@@ -1287,6 +1291,13 @@ export declare class HudView {
     private renderAnalyticsExportMeta;
     private refreshAnalyticsViewer;
     private setOptionsOverlayVisible;
+    setFieldDrillStatus(status: {
+        active: boolean;
+        title?: string;
+        progress?: string;
+        hint?: string;
+        tone?: "lesson" | "intermission";
+    }): void;
     private updateSupportBoost;
     private updateEvacuation;
     private scheduleEvacHide;

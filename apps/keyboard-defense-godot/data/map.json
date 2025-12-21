@@ -1,0 +1,32 @@
+{
+  "nodes": [
+    {
+      "id": "forest-gate",
+      "label": "Forest Gate",
+      "lesson_id": "home-row-1",
+      "requires": [],
+      "reward_gold": 10
+    },
+    {
+      "id": "whisper-grove",
+      "label": "Whisper Grove",
+      "lesson_id": "home-row-2",
+      "requires": ["forest-gate"],
+      "reward_gold": 12
+    },
+    {
+      "id": "ember-bridge",
+      "label": "Ember Bridge",
+      "lesson_id": "reach-row-1",
+      "requires": ["whisper-grove"],
+      "reward_gold": 14
+    },
+    {
+      "id": "citadel-rise",
+      "label": "Citadel Rise",
+      "lesson_id": "reach-row-2",
+      "requires": ["ember-bridge"],
+      "reward_gold": 18
+    }
+  ]
+}

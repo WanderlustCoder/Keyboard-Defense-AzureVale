@@ -1,9 +1,10 @@
 # Keyboard Defense
 
-Keyboard Defense is a typing-driven castle defense game where fast, accurate input powers both direct attacks and turret support. The playable app lives under `apps/keyboard-defense/` and is written in TypeScript, compiled to an ES module bundle for the browser.
+Keyboard Defense is a typing program inspired by classic edutainment (think Mavis Beacon). The castle defense layer is a playful backdrop that helps gauge typing performance; the core goal is to build accuracy, speed, and consistency. The playable app lives under `apps/keyboard-defense/` and is written in TypeScript, compiled to an ES module bundle for the browser.
 
 ## Features
 
+- Typing-first training loop with drills and practice modes; the castle defense layer is a progress gauge, not the end goal.
 - Deterministic game engine for repeatable playtests and automation.
 - Upgradeable castle and turret archetypes (arrow, arcane, flame) with unique behaviors.
 - Passive castle buffs (regen, armor, gold bonus) unlock as you upgrade and surface in HUD/options overlays.

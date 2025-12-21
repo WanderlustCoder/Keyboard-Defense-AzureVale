@@ -171,9 +171,9 @@
             </div>
             <div class="typing-drills-cta" id="typing-drills-cta">
               <div class="typing-drills-cta-text">
-                <p class="typing-drills-cta-title">Need a warmup?</p>
+                <p class="typing-drills-cta-title">Ready for a lesson?</p>
                 <p class="typing-drills-cta-copy">
-                  Run quick drills to lock in rhythm without risking the castle.
+                  Follow the curriculum to build accuracy before the next wave.
                 </p>
                 <p class="typing-drills-cta-hint">Shortcut: Shift + R to launch recommended drill</p>
                 <p id="typing-drills-cta-reco" class="typing-drills-cta-reco" data-visible="false">
@@ -181,7 +181,7 @@
                 </p>
               </div>
               <button id="typing-drills-open" class="typing-drills-cta-button" type="button">
-                Launch drills
+                Open lessons
               </button>
             </div>
           </div>
@@ -467,6 +467,9 @@
                     <p class="lesson-medal__kicker">Lesson medals</p>
                     <p class="lesson-medal__summary" id="lesson-medal-summary">
                       Complete a typing drill to start earning medals.
+                    </p>
+                    <p class="lesson-medal__path" id="lesson-medal-path">
+                      Next lesson: Lesson 1 - Home Row Foundations (0/6 complete)
                     </p>
                     <p class="lesson-medal__best" id="lesson-medal-best">
                       Burst: None ú Endurance: None ú Precision: None
@@ -2568,8 +2571,8 @@
             <p class="typing-drills-kicker">Training Grounds</p>
             <h2 id="typing-drills-title">Typing Drills</h2>
             <p class="typing-drills-subtitle">
-              Build muscle memory without risking the gate. Pick a drill, then type until you clear
-              the stack or the timer runs out.
+              Follow the lesson path to build fundamentals. Use drills to target weak spots without
+              risking the gate.
             </p>
             <p
               id="typing-drill-fallback"
@@ -2628,8 +2631,18 @@
               <button
                 type="button"
                 class="typing-drill-mode"
-                data-mode="burst"
+                data-mode="lesson"
                 aria-selected="true"
+                role="tab"
+              >
+                <span class="mode-label">Lesson</span>
+                <span class="mode-meta">Curriculum step</span>
+              </button>
+              <button
+                type="button"
+                class="typing-drill-mode"
+                data-mode="burst"
+                aria-selected="false"
                 role="tab"
               >
                 <span class="mode-label">Burst Warmup</span>
@@ -2795,6 +2808,22 @@
                 <span class="mode-label">Focus Drill</span>
                 <span class="mode-meta">Trouble keys</span>
               </button>
+            </div>
+            <div
+              id="typing-drill-lesson-picker"
+              class="typing-drill-lesson-picker"
+              data-visible="false"
+              aria-hidden="true"
+            >
+              <div class="typing-drill-lesson-header">
+                <span class="typing-drill-lesson-kicker">Lesson Focus</span>
+                <span class="typing-drill-lesson-meta">Follow the core progression.</span>
+              </div>
+              <label class="typing-drill-lesson-label" for="typing-drill-lesson-select">
+                Choose lesson
+              </label>
+              <select id="typing-drill-lesson-select" class="typing-drill-lesson-select"></select>
+              <p id="typing-drill-lesson-description" class="typing-drill-lesson-description"></p>
             </div>
             <div class="typing-drill-stage">
               <div class="typing-drill-status">

@@ -249,11 +249,12 @@ export interface TypingState {
     lastInputChar?: string | null;
     lastInputAtMs?: number | null;
 }
-export type TypingDrillMode = "burst" | "warmup" | "endurance" | "sprint" | "sentences" | "reading" | "rhythm" | "reaction" | "combo" | "precision" | "symbols" | "placement" | "hand" | "support" | "shortcuts" | "shift" | "focus";
+export type TypingDrillMode = "burst" | "lesson" | "warmup" | "endurance" | "sprint" | "sentences" | "reading" | "rhythm" | "reaction" | "combo" | "precision" | "symbols" | "placement" | "hand" | "support" | "shortcuts" | "shift" | "focus";
 export type TypingDrillSource = "menu" | "options" | "cta" | "practice" | "debug" | (string & Record<string, never>);
 export interface TypingDrillSummary {
     mode: TypingDrillMode;
     source: TypingDrillSource;
+    lessonId?: string;
     elapsedMs: number;
     accuracy: number;
     bestCombo: number;

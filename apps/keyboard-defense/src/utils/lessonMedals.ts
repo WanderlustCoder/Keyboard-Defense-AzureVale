@@ -66,7 +66,8 @@ function clampInteger(value: unknown): number {
 }
 
 function normalizeMode(value: unknown): TypingDrillMode {
-  return value === "endurance" ||
+  return value === "lesson" ||
+    value === "endurance" ||
     value === "sprint" ||
     value === "sentences" ||
     value === "reading" ||
@@ -290,6 +291,7 @@ export function buildLessonMedalViewState(progress: LessonMedalProgress): Lesson
   const recent = history.slice(-5).reverse();
   const bestByMode: Record<TypingDrillMode, LessonMedalRecord | null> = {
     burst: null,
+    lesson: null,
     warmup: null,
     endurance: null,
     sprint: null,

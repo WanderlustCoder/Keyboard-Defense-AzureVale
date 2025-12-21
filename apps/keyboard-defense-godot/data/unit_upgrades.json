@@ -1,0 +1,31 @@
+{
+  "upgrades": [
+    {
+      "id": "archer-volley",
+      "label": "Archer Volley",
+      "cost": 16,
+      "description": "Boosts tower volley strength.",
+      "effects": {
+        "typing_power": 0.1
+      }
+    },
+    {
+      "id": "shield-smith",
+      "label": "Shield Smith",
+      "cost": 22,
+      "description": "Adds resilience when errors occur.",
+      "effects": {
+        "castle_health_bonus": 1
+      }
+    },
+    {
+      "id": "rune-engine",
+      "label": "Rune Engine",
+      "cost": 28,
+      "description": "Typing rhythm slows enemy pressure.",
+      "effects": {
+        "threat_rate_multiplier": -0.08
+      }
+    }
+  ]
+}
