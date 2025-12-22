@@ -8,6 +8,8 @@ extends Control
 @onready var progression = get_node("/root/ProgressionState")
 @onready var game_controller = get_node("/root/GameController")
 
+var icon_cache: Dictionary = {}
+
 func _ready() -> void:
 	back_button.pressed.connect(_on_back_pressed)
 	_refresh()
@@ -39,43 +41,39 @@ func _format_modifiers(modifiers: Dictionary) -> String:
 func _get_upgrade_tags(effects: Dictionary) -> Array:
 	var tags: Array = []
 	if float(effects.get("typing_power", 0.0)) != 0.0:
-		tags.append(_make_tag("TP", "Typing Power", Color(0.29, 0.45, 0.86)))
+		tags.append(_make_tag("res://assets/icons/typing_power.png", "Typing Power"))
 	if float(effects.get("threat_rate_multiplier", 0.0)) != 0.0:
-		tags.append(_make_tag("Slow", "Threat Slow", Color(0.16, 0.62, 0.53)))
+		tags.append(_make_tag("res://assets/icons/threat_slow.png", "Threat Slow"))
 	if float(effects.get("mistake_forgiveness", 0.0)) != 0.0:
-		tags.append(_make_tag("Forgive", "Mistake Forgiveness", Color(0.84, 0.62, 0.19)))
+		tags.append(_make_tag("res://assets/icons/mistake_forgiveness.png", "Mistake Forgiveness"))
 	if int(effects.get("castle_health_bonus", 0)) != 0:
-		tags.append(_make_tag("HP", "Castle Health", Color(0.69, 0.24, 0.24)))
+		tags.append(_make_tag("res://assets/icons/castle_health.png", "Castle Health"))
 	return tags
 
-func _make_tag(label_text: String, tooltip: String, color: Color) -> Dictionary:
-	return {"label": label_text, "tooltip": tooltip, "color": color}
+func _make_tag(icon_path: String, tooltip: String) -> Dictionary:
+	return {"icon_path": icon_path, "tooltip": tooltip}
 
-func _build_tag_badge(tag: Dictionary) -> PanelContainer:
-	var badge = PanelContainer.new()
-	var style = StyleBoxFlat.new()
-	style.bg_color = tag.get("color", Color(0.2, 0.2, 0.2))
-	style.corner_radius_top_left = 6
-	style.corner_radius_top_right = 6
-	style.corner_radius_bottom_left = 6
-	style.corner_radius_bottom_right = 6
-	style.content_margin_left = 6
-	style.content_margin_right = 6
-	style.content_margin_top = 2
-	style.content_margin_bottom = 2
-	badge.add_theme_stylebox_override("panel", style)
-	badge.tooltip_text = str(tag.get("tooltip", ""))
-	badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+func _load_icon(path: String) -> Texture2D:
+	if icon_cache.has(path):
+		return icon_cache[path]
+	var image = Image.new()
+	if image.load(path) != OK:
+		return null
+	var texture = ImageTexture.create_from_image(image)
+	icon_cache[path] = texture
+	return texture
 
-	var label = Label.new()
-	label.text = str(tag.get("label", ""))
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	label.add_theme_color_override("font_color", Color(0.96, 0.96, 0.96))
-	label.add_theme_font_size_override("font_size", 12)
-	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	badge.add_child(label)
-	return badge
+func _build_tag_badge(tag: Dictionary) -> TextureRect:
+	var icon = TextureRect.new()
+	var icon_path = str(tag.get("icon_path", ""))
+	icon.texture = _load_icon(icon_path)
+	icon.custom_minimum_size = Vector2(20, 20)
+	icon.expand_mode = TextureRect.EXPAND_KEEP_SIZE
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
+	icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	icon.tooltip_text = str(tag.get("tooltip", ""))
+	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return icon
 
 func _build_upgrade_section(container: VBoxContainer, upgrades: Array) -> void:
 	for child in container.get_children():
@@ -106,7 +104,7 @@ func _build_upgrade_section(container: VBoxContainer, upgrades: Array) -> void:
 		var tags = _get_upgrade_tags(effects)
 		if not tags.is_empty():
 			var tag_row = HBoxContainer.new()
-			tag_row.add_theme_constant_override("separation", 6)
+			tag_row.add_theme_constant_override("separation", 8)
 			for tag in tags:
 				tag_row.add_child(_build_tag_badge(tag))
 			box.add_child(tag_row)

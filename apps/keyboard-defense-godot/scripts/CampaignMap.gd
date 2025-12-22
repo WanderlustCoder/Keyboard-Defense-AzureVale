@@ -60,10 +60,10 @@ func _build_map() -> void:
 		content.anchor_right = 1.0
 		content.anchor_bottom = 1.0
 		content.offset_left = 8
-		content.offset_top = 6
+		content.offset_top = 8
 		content.offset_right = -8
-		content.offset_bottom = -6
-		content.add_theme_constant_override("separation", 2)
+		content.offset_bottom = -8
+		content.add_theme_constant_override("separation", 4)
 		content.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		button.add_child(content)
 
@@ -72,6 +72,9 @@ func _build_map() -> void:
 		title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		title.autowrap_mode = TextServer.AUTOWRAP_WORD
+		title.max_lines_visible = 2
+		title.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		title.add_theme_font_size_override("font_size", 16)
 		title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		content.add_child(title)
 
@@ -80,6 +83,9 @@ func _build_map() -> void:
 		lesson_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		lesson_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		lesson_label.autowrap_mode = TextServer.AUTOWRAP_WORD
+		lesson_label.max_lines_visible = 2
+		lesson_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		lesson_label.add_theme_font_size_override("font_size", 14)
 		lesson_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		content.add_child(lesson_label)
 
@@ -90,6 +96,9 @@ func _build_map() -> void:
 			reward_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			reward_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			reward_label.autowrap_mode = TextServer.AUTOWRAP_WORD
+			reward_label.max_lines_visible = 1
+			reward_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+			reward_label.add_theme_font_size_override("font_size", 12)
 			reward_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			content.add_child(reward_label)
 		map_grid.add_child(button)
