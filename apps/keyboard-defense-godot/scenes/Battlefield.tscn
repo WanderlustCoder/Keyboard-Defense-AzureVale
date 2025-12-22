@@ -77,6 +77,18 @@ theme_override_constants/separation = 6
 text = "Drill"
 horizontal_alignment = 1
 
+[node name="TypingReadout" type="VBoxContainer" parent="PlayField/DrillHud"]
+alignment = 1
+theme_override_constants/separation = 2
+
+[node name="WordLabel" type="Label" parent="PlayField/DrillHud/TypingReadout"]
+text = "Target:"
+horizontal_alignment = 1
+
+[node name="TypedLabel" type="Label" parent="PlayField/DrillHud/TypingReadout"]
+text = "Typed:"
+horizontal_alignment = 1
+
 [node name="DrillTarget" type="RichTextLabel" parent="PlayField/DrillHud"]
 bbcode_enabled = true
 fit_content = true
@@ -152,9 +164,9 @@ text = "Castle: Eldenwatch"
 
 [node name="StatusPanel" type="PanelContainer" parent="."]
 anchor_left = 0.05
-anchor_top = 0.66
+anchor_top = 0.68
 anchor_right = 0.45
-anchor_bottom = 0.82
+anchor_bottom = 0.8
 
 [node name="Content" type="VBoxContainer" parent="StatusPanel"]
 anchor_right = 1.0
@@ -163,12 +175,6 @@ offset_left = 12
 offset_top = 12
 offset_right = -12
 offset_bottom = -12
-
-[node name="WordLabel" type="Label" parent="StatusPanel/Content"]
-text = "Target:"
-
-[node name="TypedLabel" type="Label" parent="StatusPanel/Content"]
-text = "Typed:"
 
 [node name="AccuracyLabel" type="Label" parent="StatusPanel/Content"]
 text = "Accuracy: 100%"
@@ -181,9 +187,9 @@ text = "Errors: 0"
 
 [node name="BonusPanel" type="PanelContainer" parent="."]
 anchor_left = 0.55
-anchor_top = 0.66
+anchor_top = 0.68
 anchor_right = 0.95
-anchor_bottom = 0.82
+anchor_bottom = 0.8
 
 [node name="BonusLabel" type="Label" parent="BonusPanel"]
 anchor_right = 1.0
