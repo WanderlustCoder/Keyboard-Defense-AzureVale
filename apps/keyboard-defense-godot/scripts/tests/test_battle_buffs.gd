@@ -65,6 +65,7 @@ func _wire_battle_nodes(battle, progression, game_controller) -> void:
 	battle.lesson_label = battle.get_node("TopBar/LessonLabel")
 	battle.gold_label = battle.get_node("TopBar/GoldLabel")
 	battle.exit_button = battle.get_node("TopBar/ExitButton")
+	battle.battle_stage = battle.get_node("PlayField/BattleStage")
 	battle.drill_title_label = battle.get_node("PlayField/DrillHud/DrillTitle")
 	battle.drill_target_label = battle.get_node("PlayField/DrillHud/DrillTarget")
 	battle.drill_progress_label = battle.get_node("PlayField/DrillHud/DrillProgress")

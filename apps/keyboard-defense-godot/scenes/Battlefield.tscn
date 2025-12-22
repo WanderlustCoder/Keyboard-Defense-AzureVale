@@ -1,6 +1,7 @@
-[gd_scene format=3 load_steps=2]
+[gd_scene format=3 load_steps=3]
 
 [ext_resource type="Script" path="res://scripts/Battlefield.gd" id=1]
+[ext_resource type="Script" path="res://scripts/BattleStage.gd" id=2]
 
 [node name="Battlefield" type="Control"]
 anchor_right = 1.0
@@ -44,6 +45,25 @@ anchor_bottom = 0.64
 anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color(0.09, 0.08, 0.16, 1)
+
+[node name="BattleStage" type="Control" parent="PlayField"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+script = ExtResource(2)
+
+[node name="Castle" type="ColorRect" parent="PlayField/BattleStage"]
+size = Vector2(80, 70)
+color = Color(0.22, 0.18, 0.26, 1)
+
+[node name="Enemy" type="ColorRect" parent="PlayField/BattleStage"]
+size = Vector2(60, 44)
+color = Color(0.63, 0.22, 0.26, 1)
+
+[node name="ProjectileLayer" type="Control" parent="PlayField/BattleStage"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
 
 [node name="DrillHud" type="VBoxContainer" parent="PlayField"]
 anchor_left = 0.1

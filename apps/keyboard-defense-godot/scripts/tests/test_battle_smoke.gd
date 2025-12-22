@@ -100,6 +100,7 @@ func _wire_battle_nodes(battle, progression, game_controller) -> void:
 	battle.lesson_label = battle.get_node("TopBar/LessonLabel")
 	battle.gold_label = battle.get_node("TopBar/GoldLabel")
 	battle.exit_button = battle.get_node("TopBar/ExitButton")
+	battle.battle_stage = battle.get_node("PlayField/BattleStage")
 	battle.drill_title_label = battle.get_node("PlayField/DrillHud/DrillTitle")
 	battle.drill_target_label = battle.get_node("PlayField/DrillHud/DrillTarget")
 	battle.drill_progress_label = battle.get_node("PlayField/DrillHud/DrillProgress")
@@ -149,7 +150,10 @@ func _force_defeat(battle) -> void:
 			wrong_letter = "z"
 		var result: Dictionary = battle.typing_system.input_char(wrong_letter)
 		battle._handle_typing_result(result)
-		battle.threat = 100.0
+		if battle.battle_stage != null:
+			battle.battle_stage.set_progress_percent(100.0)
+		else:
+			battle.threat = 100.0
 		battle._process(0.0)
 		guard += 1
 	if battle.active:

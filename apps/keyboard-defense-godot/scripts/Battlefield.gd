@@ -30,8 +30,9 @@ const BUFF_INPUT_STREAK := 24
 @onready var bonus_label: Label = $BonusPanel/BonusLabel
 @onready var drill_title_label: Label = $PlayField/DrillHud/DrillTitle
 @onready var drill_target_label: RichTextLabel = $PlayField/DrillHud/DrillTarget
-@onready var drill_progress_label: Label = $PlayField/DrillHud/DrillProgress
+@onready var drill_progress_label: Label = $PlayField/DrillHud/DrillProgress    
 @onready var drill_hint_label: Label = $PlayField/DrillHud/DrillHint
+@onready var battle_stage: Control = $PlayField/BattleStage
 @onready var buff_hud: PanelContainer = $PlayField/BuffHud
 @onready var buff_focus_row: HBoxContainer = $PlayField/BuffHud/Content/FocusRow
 @onready var buff_focus_label: Label = $PlayField/BuffHud/Content/FocusRow/FocusLabel
@@ -76,6 +77,7 @@ var current_drill: Dictionary = {}
 
 var tutorial_mode: bool = false
 var paused: bool = false
+var syncing_threat: bool = false
 
 var threat: float = 0.0
 var threat_rate: float = 8.0
@@ -141,10 +143,13 @@ func _initialize_battle() -> void:
 	base_threat_relief = 12.0
 	base_mistake_penalty = 18.0
 	castle_health = base_castle_health
+	_set_threat(0.0)
 	active_buffs.clear()
 	_reset_streaks()
 	_recompute_buff_modifiers()
 	_recompute_combat_values()
+	if battle_stage != null:
+		battle_stage.reset()
 	tutorial_mode = progression.completed_nodes.size() == 0
 
 	battle_start_time_ms = Time.get_ticks_msec()
@@ -172,19 +177,34 @@ func _process(delta: float) -> void:
 	_update_buffs(delta)
 	if drill_mode == "intermission":
 		drill_timer = max(0.0, drill_timer - delta)
-		threat = max(0.0, threat - delta * threat_relief * 0.4)
+		if battle_stage != null:
+			battle_stage.advance(delta, 0.0)
+			battle_stage.apply_relief(threat_relief * 0.4 * delta)
+			_sync_threat_from_stage()
+		else:
+			_set_threat(max(0.0, threat - delta * threat_relief * 0.4))
 		_update_threat()
 		_update_drill_status()
 		if drill_timer <= 0.0:
 			_start_next_drill()
 		return
-	threat = min(100.0, threat + delta * threat_rate)
-	if threat >= 100.0:
-		castle_health -= 1
-		threat = 25.0
-		if castle_health <= 0:
-			_finish_battle(false)
-			return
+	if battle_stage != null:
+		battle_stage.advance(delta, threat_rate)
+		if battle_stage.consume_breach():
+			castle_health -= 1
+			battle_stage.reset_after_breach()
+			if castle_health <= 0:
+				_finish_battle(false)
+				return
+		_sync_threat_from_stage()
+	else:
+		_set_threat(min(100.0, threat + delta * threat_rate))
+		if threat >= 100.0:
+			castle_health -= 1
+			_set_threat(25.0)
+			if castle_health <= 0:
+				_finish_battle(false)
+				return
 	_update_threat()
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -227,14 +247,8 @@ func _handle_typing_result(result: Dictionary) -> void:
 	else:
 		_advance_streaks(status)
 	_check_buff_triggers()
-	if status == "error":
-		threat = min(100.0, threat + mistake_penalty)
-	if status == "progress" or status == "error":
-		threat = max(0.0, threat - threat_relief * 0.2)
-	if status == "word_complete":
-		threat = max(0.0, threat - threat_relief)
+	_apply_typing_combat(status)
 	if status == "lesson_complete":
-		threat = max(0.0, threat - threat_relief)
 		_complete_drill()
 		return
 	_update_word_display()
@@ -265,6 +279,44 @@ func _update_stats() -> void:
 func _update_threat() -> void:
 	threat_bar.value = threat
 	castle_label.text = "Castle Health: %d" % castle_health
+
+func _set_threat(value: float, sync_stage: bool = true) -> void:
+	var clamped = clamp(value, 0.0, 100.0)
+	threat = clamped
+	if sync_stage and not syncing_threat and battle_stage != null:
+		battle_stage.set_progress_percent(clamped)
+
+func _sync_threat_from_stage() -> void:
+	if battle_stage == null:
+		return
+	syncing_threat = true
+	_set_threat(battle_stage.get_progress_percent(), false)
+	syncing_threat = false
+
+func _apply_typing_combat(status: String) -> void:
+	if battle_stage == null:
+		_apply_typing_threat_fallback(status)
+		return
+	if status == "error":
+		battle_stage.apply_penalty(mistake_penalty)
+		battle_stage.apply_relief(threat_relief * 0.2)
+	elif status == "progress":
+		battle_stage.apply_relief(threat_relief * 0.2)
+	elif status == "word_complete":
+		battle_stage.apply_relief(threat_relief)
+		battle_stage.spawn_projectile(false)
+	elif status == "lesson_complete":
+		battle_stage.apply_relief(threat_relief)
+		battle_stage.spawn_projectile(true)
+	_sync_threat_from_stage()
+
+func _apply_typing_threat_fallback(status: String) -> void:
+	if status == "error":
+		_set_threat(min(100.0, threat + mistake_penalty))
+	if status == "progress" or status == "error":
+		_set_threat(max(0.0, threat - threat_relief * 0.2))
+	if status == "word_complete" or status == "lesson_complete":
+		_set_threat(max(0.0, threat - threat_relief))
 
 func _start_next_drill() -> void:
 	drill_index += 1
