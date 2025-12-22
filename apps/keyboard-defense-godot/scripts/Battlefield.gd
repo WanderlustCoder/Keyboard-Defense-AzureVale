@@ -16,6 +16,7 @@ const BUFF_DEFS := {
 }
 const BUFF_WORD_STREAK := 4
 const BUFF_INPUT_STREAK := 24
+const FEEDBACK_DURATION := 0.8
 
 @onready var lesson_label: Label = $TopBar/LessonLabel
 @onready var gold_label: Label = $TopBar/GoldLabel
@@ -30,6 +31,7 @@ const BUFF_INPUT_STREAK := 24
 @onready var bonus_label: Label = $BonusPanel/BonusLabel
 @onready var drill_title_label: Label = $PlayField/DrillHud/DrillTitle
 @onready var drill_target_label: RichTextLabel = $TypingPanel/Content/DrillTarget
+@onready var feedback_label: Label = $TypingPanel/Content/FeedbackLabel
 @onready var drill_progress_label: Label = $PlayField/DrillHud/DrillProgress    
 @onready var drill_hint_label: Label = $PlayField/DrillHud/DrillHint
 @onready var battle_stage: Control = $PlayField/BattleStage
@@ -102,6 +104,7 @@ var buff_modifiers := {
 }
 var input_streak: int = 0
 var word_streak: int = 0
+var feedback_timer: float = 0.0
 
 var battle_start_time_ms: int = 0
 var battle_total_inputs: int = 0
@@ -146,6 +149,7 @@ func _initialize_battle() -> void:
 	_set_threat(0.0)
 	active_buffs.clear()
 	_reset_streaks()
+	_clear_feedback()
 	_recompute_buff_modifiers()
 	_recompute_combat_values()
 	if battle_stage != null:
@@ -175,6 +179,7 @@ func _process(delta: float) -> void:
 	if debug_panel != null and debug_panel.visible:
 		return
 	_update_buffs(delta)
+	_update_feedback(delta)
 	if drill_mode == "intermission":
 		drill_timer = max(0.0, drill_timer - delta)
 		if battle_stage != null:
@@ -247,6 +252,7 @@ func _handle_typing_result(result: Dictionary) -> void:
 	else:
 		_advance_streaks(status)
 	_check_buff_triggers()
+	_update_feedback_for_status(status)
 	_apply_typing_combat(status)
 	if status == "lesson_complete":
 		_complete_drill()
@@ -277,11 +283,41 @@ func _update_stats() -> void:
 	mistakes_label.text = "Errors: %d" % errors
 
 func _update_threat() -> void:
-	threat_bar.value = threat
-	castle_label.text = "Castle Health: %d" % castle_health
+        threat_bar.value = threat
+        castle_label.text = "Castle Health: %d" % castle_health
+
+func _update_feedback(delta: float) -> void:
+        if feedback_label == null or feedback_timer <= 0.0:
+                return
+        feedback_timer = max(0.0, feedback_timer - delta)
+        if feedback_timer <= 0.0:
+                feedback_label.text = ""
+                feedback_label.visible = false
+
+func _clear_feedback() -> void:
+        feedback_timer = 0.0
+        if feedback_label != null:
+                feedback_label.text = ""
+                feedback_label.visible = false
+
+func _update_feedback_for_status(status: String) -> void:
+        if status == "error":
+                _show_feedback("Mistake!", Color(0.96, 0.45, 0.45, 1))
+        elif status == "word_complete":
+                _show_feedback("Hit!", Color(0.98, 0.84, 0.44, 1))
+        elif status == "lesson_complete":
+                _show_feedback("Wave Clear!", Color(0.65, 0.86, 1, 1))
+
+func _show_feedback(message: String, color: Color) -> void:
+        if feedback_label == null:
+                return
+        feedback_label.text = message
+        feedback_label.visible = message != ""
+        feedback_label.modulate = color
+        feedback_timer = FEEDBACK_DURATION
 
 func _set_threat(value: float, sync_stage: bool = true) -> void:
-	var clamped = clamp(value, 0.0, 100.0)
+        var clamped = clamp(value, 0.0, 100.0)
 	threat = clamped
 	if sync_stage and not syncing_threat and battle_stage != null:
 		battle_stage.set_progress_percent(clamped)

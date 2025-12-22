@@ -178,6 +178,12 @@ text = ""
 autowrap_mode = 3
 theme_override_colors/default_color = Color(0.92, 0.95, 1, 1)
 
+[node name="FeedbackLabel" type="Label" parent="TypingPanel/Content"]
+text = ""
+horizontal_alignment = 1
+visible = false
+theme_override_colors/font_color = Color(0.82, 0.9, 0.62, 1)
+
 [node name="TypingReadout" type="VBoxContainer" parent="TypingPanel/Content"]
 alignment = 1
 theme_override_constants/separation = 2
