@@ -2,7 +2,8 @@ extends Control
 
 @onready var map_grid: GridContainer = $MapPanel/MapGrid
 @onready var gold_label: Label = $TopBar/GoldLabel
-@onready var summary_label: Label = $SummaryPanel/SummaryLabel
+@onready var summary_label: Label = $SummaryPanel/Content/SummaryLabel
+@onready var modifiers_label: Label = $SummaryPanel/Content/ModifiersLabel
 @onready var back_button: Button = $TopBar/BackButton
 @onready var kingdom_button: Button = $TopBar/KingdomButton
 @onready var progression = get_node("/root/ProgressionState")
@@ -15,8 +16,27 @@ func _ready() -> void:
 
 func _refresh() -> void:
 	gold_label.text = "Gold: %d" % progression.gold
+	modifiers_label.text = _format_modifiers(progression.get_combat_modifiers())
 	_build_map()
 	_update_summary()
+
+func _format_modifiers(modifiers: Dictionary) -> String:
+	var parts: Array = []
+	var typing_bonus = int(round((float(modifiers.get("typing_power", 1.0)) - 1.0) * 100.0))
+	if typing_bonus != 0:
+		parts.append("Typing Power %+d%%" % typing_bonus)
+	var threat_bonus = int(round((1.0 - float(modifiers.get("threat_rate_multiplier", 1.0))) * 100.0))
+	if threat_bonus != 0:
+		parts.append("Threat Slow %+d%%" % threat_bonus)
+	var forgiveness = int(round(float(modifiers.get("mistake_forgiveness", 0.0)) * 100.0))
+	if forgiveness != 0:
+		parts.append("Mistake Forgiveness %+d%%" % forgiveness)
+	var castle_bonus = int(modifiers.get("castle_health_bonus", 0))
+	if castle_bonus != 0:
+		parts.append("Castle +%d" % castle_bonus)
+	if parts.is_empty():
+		return "Training bonuses: None yet. Upgrade to boost your typing impact."
+	return "Training bonuses: " + ", ".join(parts)
 
 func _build_map() -> void:
 	for child in map_grid.get_children():

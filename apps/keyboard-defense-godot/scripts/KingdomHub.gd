@@ -2,6 +2,7 @@ extends Control
 
 @onready var gold_label: Label = $TopBar/GoldLabel
 @onready var back_button: Button = $TopBar/BackButton
+@onready var modifiers_label: Label = $Scroll/Content/ModifiersLabel
 @onready var kingdom_list: VBoxContainer = $Scroll/Content/KingdomList
 @onready var unit_list: VBoxContainer = $Scroll/Content/UnitList
 @onready var progression = get_node("/root/ProgressionState")
@@ -13,8 +14,41 @@ func _ready() -> void:
 
 func _refresh() -> void:
 	gold_label.text = "Gold: %d" % progression.gold
+	modifiers_label.text = _format_modifiers(progression.get_combat_modifiers())
 	_build_upgrade_section(kingdom_list, progression.get_kingdom_upgrades())
 	_build_upgrade_section(unit_list, progression.get_unit_upgrades())
+
+func _format_modifiers(modifiers: Dictionary) -> String:
+	var parts: Array = []
+	var typing_bonus = int(round((float(modifiers.get("typing_power", 1.0)) - 1.0) * 100.0))
+	if typing_bonus != 0:
+		parts.append("Typing Power %+d%%" % typing_bonus)
+	var threat_bonus = int(round((1.0 - float(modifiers.get("threat_rate_multiplier", 1.0))) * 100.0))
+	if threat_bonus != 0:
+		parts.append("Threat Slow %+d%%" % threat_bonus)
+	var forgiveness = int(round(float(modifiers.get("mistake_forgiveness", 0.0)) * 100.0))
+	if forgiveness != 0:
+		parts.append("Mistake Forgiveness %+d%%" % forgiveness)
+	var castle_bonus = int(modifiers.get("castle_health_bonus", 0))
+	if castle_bonus != 0:
+		parts.append("Castle +%d" % castle_bonus)
+	if parts.is_empty():
+		return "Training bonuses: None yet. Upgrade to boost your typing impact."
+	return "Training bonuses: " + ", ".join(parts)
+
+func _format_upgrade_tags(effects: Dictionary) -> String:
+	var tags: Array = []
+	if float(effects.get("typing_power", 0.0)) != 0.0:
+		tags.append("Typing Power")
+	if float(effects.get("threat_rate_multiplier", 0.0)) != 0.0:
+		tags.append("Threat Slow")
+	if float(effects.get("mistake_forgiveness", 0.0)) != 0.0:
+		tags.append("Mistake Forgiveness")
+	if int(effects.get("castle_health_bonus", 0)) != 0:
+		tags.append("Castle Health")
+	if tags.is_empty():
+		return ""
+	return "Tags: " + ", ".join(tags)
 
 func _build_upgrade_section(container: VBoxContainer, upgrades: Array) -> void:
 	for child in container.get_children():
@@ -25,6 +59,7 @@ func _build_upgrade_section(container: VBoxContainer, upgrades: Array) -> void:
 		var cost = int(upgrade.get("cost", 0))
 		var owned = progression.is_upgrade_owned(upgrade_id)
 		var description = str(upgrade.get("description", ""))
+		var effects: Dictionary = upgrade.get("effects", {})
 
 		var panel = PanelContainer.new()
 		panel.custom_minimum_size = Vector2(0, 120)
@@ -40,6 +75,13 @@ func _build_upgrade_section(container: VBoxContainer, upgrades: Array) -> void:
 		desc.text = description
 		desc.autowrap_mode = TextServer.AUTOWRAP_WORD
 		box.add_child(desc)
+
+		var tags_text = _format_upgrade_tags(effects)
+		if tags_text != "":
+			var tags_label = Label.new()
+			tags_label.text = tags_text
+			tags_label.autowrap_mode = TextServer.AUTOWRAP_WORD
+			box.add_child(tags_label)
 
 		var button = Button.new()
 		button.custom_minimum_size = Vector2(0, 44)

@@ -47,6 +47,10 @@ offset_top = 8
 offset_right = -8
 offset_bottom = -8
 
+[node name="ModifiersLabel" type="Label" parent="Scroll/Content"]
+text = "Training bonuses: None yet. Upgrade to boost your typing impact."
+autowrap_mode = 3
+
 [node name="KingdomHeader" type="Label" parent="Scroll/Content"]
 text = "Kingdom Upgrades"
 
