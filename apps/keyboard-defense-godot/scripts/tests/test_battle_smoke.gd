@@ -110,7 +110,7 @@ func _wire_battle_nodes(battle, progression, game_controller) -> void:
 	battle.accuracy_label = battle.get_node("StatusPanel/Content/AccuracyLabel")
 	battle.wpm_label = battle.get_node("StatusPanel/Content/WpmLabel")
 	battle.mistakes_label = battle.get_node("StatusPanel/Content/MistakesLabel")
-	battle.threat_bar = battle.get_node("ThreatPanel/ThreatBar")
+	battle.threat_bar = battle.get_node("StatusPanel/Content/ThreatBar")
 	battle.castle_label = battle.get_node("StatusPanel/Content/CastleLabel")
 	battle.bonus_label = battle.get_node("BonusPanel/BonusLabel")
 	battle.result_panel = battle.get_node("ResultPanel")
