@@ -51,21 +51,41 @@ func _build_map() -> void:
 		var reward_gold = int(node.get("reward_gold", 0))
 		var unlocked = progression.is_node_unlocked(node_id)
 		var completed = progression.is_node_completed(node_id)
-		var button = Button.new()
-		button.text = ""
-		button.disabled = not unlocked
-		button.custom_minimum_size = Vector2(260, 96)
-		button.pressed.connect(_on_node_pressed.bind(node_id))
+		var text_color = Color(0.94, 0.94, 0.98)
+		if not unlocked:
+			text_color.a = 0.55
+		var card = Control.new()
+		card.custom_minimum_size = Vector2(260, 96)
+		card.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var card_style = StyleBoxFlat.new()
+		card_style.bg_color = Color(0.14, 0.12, 0.22) if unlocked else Color(0.11, 0.1, 0.17)
+		card_style.border_color = Color(0.35, 0.32, 0.52) if completed else Color(0.24, 0.22, 0.36)
+		card_style.border_width_left = 2
+		card_style.border_width_right = 2
+		card_style.border_width_top = 2
+		card_style.border_width_bottom = 2
+		card_style.corner_radius_top_left = 6
+		card_style.corner_radius_top_right = 6
+		card_style.corner_radius_bottom_left = 6
+		card_style.corner_radius_bottom_right = 6
+		card_style.content_margin_left = 4
+		card_style.content_margin_right = 4
+		card_style.content_margin_top = 4
+		card_style.content_margin_bottom = 4
+		var card_panel = Panel.new()
+		card_panel.set_anchors_preset(Control.PRESET_FULL_RECT)
+		card_panel.add_theme_stylebox_override("panel", card_style)
+		card_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(card_panel)
 		var content = VBoxContainer.new()
-		content.anchor_right = 1.0
-		content.anchor_bottom = 1.0
+		content.set_anchors_preset(Control.PRESET_FULL_RECT)
 		content.offset_left = 8
 		content.offset_top = 8
 		content.offset_right = -8
 		content.offset_bottom = -8
 		content.add_theme_constant_override("separation", 4)
 		content.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		button.add_child(content)
+		card.add_child(content)
 
 		var title = Label.new()
 		title.text = label + (" (cleared)" if completed else "")
@@ -75,6 +95,7 @@ func _build_map() -> void:
 		title.max_lines_visible = 2
 		title.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		title.add_theme_font_size_override("font_size", 16)
+		title.add_theme_color_override("font_color", text_color)
 		title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		content.add_child(title)
 
@@ -86,6 +107,7 @@ func _build_map() -> void:
 		lesson_label.max_lines_visible = 2
 		lesson_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		lesson_label.add_theme_font_size_override("font_size", 14)
+		lesson_label.add_theme_color_override("font_color", text_color)
 		lesson_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		content.add_child(lesson_label)
 
@@ -99,9 +121,26 @@ func _build_map() -> void:
 			reward_label.max_lines_visible = 1
 			reward_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 			reward_label.add_theme_font_size_override("font_size", 12)
+			reward_label.add_theme_color_override("font_color", text_color)
 			reward_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			content.add_child(reward_label)
-		map_grid.add_child(button)
+		var action_button = Button.new()
+		action_button.text = ""
+		action_button.flat = true
+		action_button.focus_mode = Control.FOCUS_NONE
+		var empty_style = StyleBoxEmpty.new()
+		action_button.add_theme_stylebox_override("normal", empty_style)
+		action_button.add_theme_stylebox_override("hover", empty_style)
+		action_button.add_theme_stylebox_override("pressed", empty_style)
+		action_button.add_theme_stylebox_override("disabled", empty_style)
+		action_button.add_theme_stylebox_override("focus", empty_style)
+		action_button.set_anchors_preset(Control.PRESET_FULL_RECT)
+		action_button.mouse_filter = Control.MOUSE_FILTER_STOP
+		action_button.disabled = not unlocked
+		if unlocked:
+			action_button.pressed.connect(_on_node_pressed.bind(node_id))
+		card.add_child(action_button)
+		map_grid.add_child(card)
 
 func _update_summary() -> void:
 	var summary = progression.get_last_summary()
