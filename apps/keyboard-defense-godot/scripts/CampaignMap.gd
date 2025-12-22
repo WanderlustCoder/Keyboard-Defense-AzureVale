@@ -45,13 +45,53 @@ func _build_map() -> void:
 	for node in nodes:
 		var node_id = str(node.get("id", ""))
 		var label = str(node.get("label", ""))
+		var lesson_id = str(node.get("lesson_id", ""))
+		var lesson = progression.get_lesson(lesson_id)
+		var lesson_label_text = str(lesson.get("label", "Training Drill"))
+		var reward_gold = int(node.get("reward_gold", 0))
 		var unlocked = progression.is_node_unlocked(node_id)
 		var completed = progression.is_node_completed(node_id)
 		var button = Button.new()
-		button.text = label + (" (cleared)" if completed else "")
+		button.text = ""
 		button.disabled = not unlocked
-		button.custom_minimum_size = Vector2(260, 64)
+		button.custom_minimum_size = Vector2(260, 96)
 		button.pressed.connect(_on_node_pressed.bind(node_id))
+		var content = VBoxContainer.new()
+		content.anchor_right = 1.0
+		content.anchor_bottom = 1.0
+		content.offset_left = 8
+		content.offset_top = 6
+		content.offset_right = -8
+		content.offset_bottom = -6
+		content.add_theme_constant_override("separation", 2)
+		content.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		button.add_child(content)
+
+		var title = Label.new()
+		title.text = label + (" (cleared)" if completed else "")
+		title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		title.autowrap_mode = TextServer.AUTOWRAP_WORD
+		title.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		content.add_child(title)
+
+		var lesson_label = Label.new()
+		lesson_label.text = "Lesson: %s" % lesson_label_text
+		lesson_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		lesson_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		lesson_label.autowrap_mode = TextServer.AUTOWRAP_WORD
+		lesson_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		content.add_child(lesson_label)
+
+		var reward_text = _format_reward_preview(reward_gold, completed)
+		if reward_text != "":
+			var reward_label = Label.new()
+			reward_label.text = reward_text
+			reward_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			reward_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			reward_label.autowrap_mode = TextServer.AUTOWRAP_WORD
+			reward_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			content.add_child(reward_label)
 		map_grid.add_child(button)
 
 func _update_summary() -> void:
@@ -72,6 +112,13 @@ func _update_summary() -> void:
 	if bonus > 0:
 		bonus_text = " (+%dg bonus)" % bonus
 	summary_label.text = "%s%s: %d%% acc, %d WPM, +%dg%s" % [node_label, tier_text, accuracy, wpm, gold_awarded, bonus_text]
+
+func _format_reward_preview(reward_gold: int, completed: bool) -> String:
+	if reward_gold <= 0:
+		return ""
+	if completed:
+		return "Reward: %dg (first clear)" % reward_gold
+	return "Reward: %dg" % reward_gold
 
 func _on_node_pressed(node_id: String) -> void:
 	game_controller.go_to_battle(node_id)

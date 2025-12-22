@@ -36,19 +36,46 @@ func _format_modifiers(modifiers: Dictionary) -> String:
 		return "Training bonuses: None yet. Upgrade to boost your typing impact."
 	return "Training bonuses: " + ", ".join(parts)
 
-func _format_upgrade_tags(effects: Dictionary) -> String:
+func _get_upgrade_tags(effects: Dictionary) -> Array:
 	var tags: Array = []
 	if float(effects.get("typing_power", 0.0)) != 0.0:
-		tags.append("Typing Power")
+		tags.append(_make_tag("TP", "Typing Power", Color(0.29, 0.45, 0.86)))
 	if float(effects.get("threat_rate_multiplier", 0.0)) != 0.0:
-		tags.append("Threat Slow")
+		tags.append(_make_tag("Slow", "Threat Slow", Color(0.16, 0.62, 0.53)))
 	if float(effects.get("mistake_forgiveness", 0.0)) != 0.0:
-		tags.append("Mistake Forgiveness")
+		tags.append(_make_tag("Forgive", "Mistake Forgiveness", Color(0.84, 0.62, 0.19)))
 	if int(effects.get("castle_health_bonus", 0)) != 0:
-		tags.append("Castle Health")
-	if tags.is_empty():
-		return ""
-	return "Tags: " + ", ".join(tags)
+		tags.append(_make_tag("HP", "Castle Health", Color(0.69, 0.24, 0.24)))
+	return tags
+
+func _make_tag(label_text: String, tooltip: String, color: Color) -> Dictionary:
+	return {"label": label_text, "tooltip": tooltip, "color": color}
+
+func _build_tag_badge(tag: Dictionary) -> PanelContainer:
+	var badge = PanelContainer.new()
+	var style = StyleBoxFlat.new()
+	style.bg_color = tag.get("color", Color(0.2, 0.2, 0.2))
+	style.corner_radius_top_left = 6
+	style.corner_radius_top_right = 6
+	style.corner_radius_bottom_left = 6
+	style.corner_radius_bottom_right = 6
+	style.content_margin_left = 6
+	style.content_margin_right = 6
+	style.content_margin_top = 2
+	style.content_margin_bottom = 2
+	badge.add_theme_stylebox_override("panel", style)
+	badge.tooltip_text = str(tag.get("tooltip", ""))
+	badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	var label = Label.new()
+	label.text = str(tag.get("label", ""))
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.add_theme_color_override("font_color", Color(0.96, 0.96, 0.96))
+	label.add_theme_font_size_override("font_size", 12)
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	badge.add_child(label)
+	return badge
 
 func _build_upgrade_section(container: VBoxContainer, upgrades: Array) -> void:
 	for child in container.get_children():
@@ -76,12 +103,13 @@ func _build_upgrade_section(container: VBoxContainer, upgrades: Array) -> void:
 		desc.autowrap_mode = TextServer.AUTOWRAP_WORD
 		box.add_child(desc)
 
-		var tags_text = _format_upgrade_tags(effects)
-		if tags_text != "":
-			var tags_label = Label.new()
-			tags_label.text = tags_text
-			tags_label.autowrap_mode = TextServer.AUTOWRAP_WORD
-			box.add_child(tags_label)
+		var tags = _get_upgrade_tags(effects)
+		if not tags.is_empty():
+			var tag_row = HBoxContainer.new()
+			tag_row.add_theme_constant_override("separation", 6)
+			for tag in tags:
+				tag_row.add_child(_build_tag_badge(tag))
+			box.add_child(tag_row)
 
 		var button = Button.new()
 		button.custom_minimum_size = Vector2(0, 44)
