@@ -537,7 +537,7 @@ func _format_target_bbcode(target: String, typed_text: String) -> String:
 		remaining = target.substr(typed_text.length())
 	var safe_typed = _escape_bbcode(typed_text)
 	var safe_remaining = _escape_bbcode(remaining)
-	return "[color=#f6d37a]" + safe_typed + "[/color][color=#9aa0b4]" + safe_remaining + "[/color]"
+	return "[center][color=#ffd27a]" + safe_typed + "[/color][color=#e6ecff]" + safe_remaining + "[/color][/center]"
 
 func _escape_bbcode(text: String) -> String:
 	var escaped := text.replace("[", "\\[")

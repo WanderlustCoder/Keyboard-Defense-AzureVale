@@ -60,10 +60,18 @@ color = Color(0.22, 0.18, 0.26, 1)
 size = Vector2(60, 44)
 color = Color(0.63, 0.22, 0.26, 1)
 
-[node name="ProjectileLayer" type="Control" parent="PlayField/BattleStage"]
+[node name="ProjectileLayer" type="Control" parent="PlayField/BattleStage"]     
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
+
+[node name="DrillBackdrop" type="ColorRect" parent="PlayField"]
+anchor_left = 0.1
+anchor_top = 0.12
+anchor_right = 0.9
+anchor_bottom = 0.88
+mouse_filter = 2
+color = Color(0.03, 0.03, 0.06, 0.65)
 
 [node name="DrillHud" type="VBoxContainer" parent="PlayField"]
 anchor_left = 0.1
@@ -76,34 +84,40 @@ theme_override_constants/separation = 6
 [node name="DrillTitle" type="Label" parent="PlayField/DrillHud"]
 text = "Drill"
 horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.96, 0.88, 0.68, 1)
 
 [node name="TypingReadout" type="VBoxContainer" parent="PlayField/DrillHud"]
 alignment = 1
 theme_override_constants/separation = 2
 
-[node name="WordLabel" type="Label" parent="PlayField/DrillHud/TypingReadout"]
+[node name="WordLabel" type="Label" parent="PlayField/DrillHud/TypingReadout"]  
 text = "Target:"
 horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.9, 0.94, 1, 1)
 
-[node name="TypedLabel" type="Label" parent="PlayField/DrillHud/TypingReadout"]
+[node name="TypedLabel" type="Label" parent="PlayField/DrillHud/TypingReadout"] 
 text = "Typed:"
 horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.9, 0.94, 1, 1)
 
-[node name="DrillTarget" type="RichTextLabel" parent="PlayField/DrillHud"]
+[node name="DrillTarget" type="RichTextLabel" parent="PlayField/DrillHud"]      
 bbcode_enabled = true
 fit_content = true
 scroll_active = false
 text = ""
 autowrap_mode = 3
+theme_override_colors/default_color = Color(0.92, 0.95, 1, 1)
 
 [node name="DrillProgress" type="Label" parent="PlayField/DrillHud"]
 text = "Targets: 0/0"
 horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.76, 0.82, 0.94, 1)
 
 [node name="DrillHint" type="Label" parent="PlayField/DrillHud"]
 text = "Type the runes to defend the castle."
 horizontal_alignment = 1
 autowrap_mode = 3
+theme_override_colors/font_color = Color(0.7, 0.74, 0.86, 1)
 
 [node name="BuffHud" type="PanelContainer" parent="PlayField"]
 anchor_left = 0.68
