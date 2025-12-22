@@ -5,6 +5,8 @@ const EXTRA_SCALE := 1.5
 const MIN_GAP_PLAYFIELD_TYPING := 12.0
 const MIN_GAP_TYPING_STATUS := 12.0
 const MIN_BOTTOM_MARGIN := 16.0
+const MIN_GAP_TOPBAR_TARGETS := 6.0
+const MIN_GAP_TARGETS_PLAYFIELD := 12.0
 
 func run_with_tree(tree: SceneTree) -> Dictionary:
 	var helper = TestHelper.new()
@@ -58,12 +60,16 @@ func _assert_layout(helper: TestHelper, battle: Control, viewport_size: Vector2,
 	var status_panel := battle.get_node("StatusPanel") as Control
 	var bonus_panel := battle.get_node("BonusPanel") as Control
 	var threat_bar := battle.get_node("StatusPanel/Content/ThreatBar") as Control
+	var top_bar := battle.get_node("TopBar") as Control
+	var targets_label := battle.get_node("TargetsLabel") as Control
 
 	helper.assert_true(playfield != null, "PlayField exists (%s)" % size_label)
 	helper.assert_true(typing_panel != null, "TypingPanel exists (%s)" % size_label)
 	helper.assert_true(status_panel != null, "StatusPanel exists (%s)" % size_label)
 	helper.assert_true(bonus_panel != null, "BonusPanel exists (%s)" % size_label)
 	helper.assert_true(threat_bar != null, "Threat bar exists (%s)" % size_label)
+	helper.assert_true(top_bar != null, "TopBar exists (%s)" % size_label)
+	helper.assert_true(targets_label != null, "Targets label exists (%s)" % size_label)
 
 	helper.assert_true(playfield.anchor_bottom <= typing_panel.anchor_top, "PlayField above TypingPanel (%s)" % size_label)
 	helper.assert_true(typing_panel.anchor_bottom <= status_panel.anchor_top, "TypingPanel above StatusPanel (%s)" % size_label)
@@ -80,6 +86,16 @@ func _assert_layout(helper: TestHelper, battle: Control, viewport_size: Vector2,
 	helper.assert_true(gap_typing_bonus >= MIN_GAP_TYPING_STATUS, "Gap Typing->Bonus >= %.1f (%s)" % [MIN_GAP_TYPING_STATUS, size_label])
 	helper.assert_true(bottom_margin_status >= MIN_BOTTOM_MARGIN, "Status bottom margin >= %.1f (%s)" % [MIN_BOTTOM_MARGIN, size_label])
 	helper.assert_true(bottom_margin_bonus >= MIN_BOTTOM_MARGIN, "Bonus bottom margin >= %.1f (%s)" % [MIN_BOTTOM_MARGIN, size_label])
+	if top_bar != null and targets_label != null:
+		var top_bar_height = max(top_bar.custom_minimum_size.y, top_bar.get_combined_minimum_size().y)
+		var top_bar_bottom = top_bar.offset_top + top_bar_height
+		var targets_top = targets_label.anchor_top * viewport_size.y
+		var targets_bottom = targets_label.anchor_bottom * viewport_size.y
+		var playfield_top = playfield.anchor_top * viewport_size.y
+		var gap_topbar_targets = targets_top - top_bar_bottom
+		var gap_targets_playfield = playfield_top - targets_bottom
+		helper.assert_true(gap_topbar_targets >= MIN_GAP_TOPBAR_TARGETS, "Gap TopBar->Targets >= %.1f (%s)" % [MIN_GAP_TOPBAR_TARGETS, size_label])
+		helper.assert_true(gap_targets_playfield >= MIN_GAP_TARGETS_PLAYFIELD, "Gap Targets->PlayField >= %.1f (%s)" % [MIN_GAP_TARGETS_PLAYFIELD, size_label])
 
 	_assert_fits_panel(helper, typing_panel, "TypingPanel", viewport_size, size_label)
 	_assert_fits_panel(helper, status_panel, "StatusPanel", viewport_size, size_label)
