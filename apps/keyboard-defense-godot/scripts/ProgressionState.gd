@@ -18,6 +18,32 @@ const DEFAULT_MASTERY := {
 	"last_accuracy": 0.0,
 	"last_wpm": 0.0
 }
+const PERFORMANCE_TIERS := [
+	{
+		"id": "S",
+		"accuracy": 0.96,
+		"wpm": 32.0,
+		"bonus_gold": 6
+	},
+	{
+		"id": "A",
+		"accuracy": 0.93,
+		"wpm": 26.0,
+		"bonus_gold": 4
+	},
+	{
+		"id": "B",
+		"accuracy": 0.88,
+		"wpm": 18.0,
+		"bonus_gold": 2
+	},
+	{
+		"id": "C",
+		"accuracy": 0.0,
+		"wpm": 0.0,
+		"bonus_gold": 0
+	}
+]
 
 var lessons: Dictionary = {}
 var map_nodes: Dictionary = {}
@@ -121,22 +147,29 @@ func is_node_unlocked(node_id: String) -> bool:
 func is_node_completed(node_id: String) -> bool:
 	return completed_nodes.has(node_id)
 
-func complete_node(node_id: String, summary: Dictionary) -> void:
+func complete_node(node_id: String, summary: Dictionary) -> Dictionary:
 	var node = map_nodes.get(node_id)
 	if node == null:
-		return
+		return summary
 	var is_first := not completed_nodes.has(node_id)
 	completed_nodes[node_id] = true
 	var reward_gold := int(node.get("reward_gold", 0))
 	var practice_gold := 3
-	var gold_awarded := practice_gold
+	var performance := _evaluate_performance(summary)
+	var performance_bonus := int(performance.get("bonus_gold", 0))
+	var gold_awarded := practice_gold + performance_bonus
 	if is_first:
 		gold_awarded += reward_gold
 	gold += gold_awarded
 	last_summary = summary.duplicate()
 	last_summary["gold_awarded"] = gold_awarded
+	last_summary["reward_gold"] = reward_gold
+	last_summary["practice_gold"] = practice_gold
+	last_summary["performance_tier"] = performance.get("id", "")
+	last_summary["performance_bonus"] = performance_bonus
 	_update_mastery(summary)
 	_save()
+	return last_summary
 
 func _update_mastery(summary: Dictionary) -> void:
 	var accuracy := float(summary.get("accuracy", 0.0))
@@ -153,6 +186,16 @@ func record_attempt(summary: Dictionary) -> void:
 	last_summary = summary.duplicate()
 	_update_mastery(summary)
 	_save()
+
+func _evaluate_performance(summary: Dictionary) -> Dictionary:
+	var accuracy := float(summary.get("accuracy", 0.0))
+	var wpm := float(summary.get("wpm", 0.0))
+	for tier in PERFORMANCE_TIERS:
+		if not tier is Dictionary:
+			continue
+		if accuracy >= float(tier.get("accuracy", 0.0)) and wpm >= float(tier.get("wpm", 0.0)):
+			return tier
+	return PERFORMANCE_TIERS[PERFORMANCE_TIERS.size() - 1]
 
 func get_combat_modifiers() -> Dictionary:
 	var typing_power: float = clamp(float(modifiers.get("typing_power", 1.0)), 0.6, 2.5)

@@ -17,10 +17,17 @@
             }
           },
           {
-            "index": 2,
+            "index": 1,
             "data": {
-              "targets": ["as", "sad", "dad", "lad", "sass", "all"],
-              "hint": "Tap each sigil cleanly before the next wave."
+              "targets": ["as", "sad", "dad", "lad", "sass"],
+              "hint": "Tap the short bursts cleanly before the waves arrive."
+            }
+          },
+          {
+            "index": 3,
+            "data": {
+              "targets": ["flask", "lass", "fall", "ask", "salad", "flak"],
+              "hint": "Reinforce the longer sigils with steady rhythm."
             }
           }
         ]
@@ -32,7 +39,32 @@
       "lesson_id": "home-row-2",
       "requires": ["forest-gate"],
       "reward_gold": 12,
-      "drill_template": "whisper-grove"
+      "drill_template": "whisper-grove",
+      "drill_overrides": {
+        "steps": [
+          {
+            "index": 1,
+            "data": {
+              "targets": ["jkl", "jail", "lake", "kale", "jake"],
+              "hint": "Keep the right-hand taps light and even."
+            }
+          },
+          {
+            "index": 3,
+            "data": {
+              "targets": ["flake", "flail", "leaf", "safe", "lake", "flak"],
+              "hint": "Hold the grove line with calm accuracy."
+            }
+          },
+          {
+            "index": 4,
+            "data": {
+              "word_count": 9,
+              "hint": "Stay relaxed as the pace rises."
+            }
+          }
+        ]
+      }
     },
     {
       "id": "ember-bridge",
@@ -40,7 +72,32 @@
       "lesson_id": "reach-row-1",
       "requires": ["whisper-grove"],
       "reward_gold": 14,
-      "drill_template": "ember-bridge"
+      "drill_template": "ember-bridge",
+      "drill_overrides": {
+        "steps": [
+          {
+            "index": 1,
+            "data": {
+              "targets": ["read", "rest", "tale", "gate", "tread"],
+              "hint": "Reach up and return without rushing."
+            }
+          },
+          {
+            "index": 3,
+            "data": {
+              "targets": ["trade", "stage", "thread", "great", "shade", "stare"],
+              "hint": "Stretch cleanly across the reach row."
+            }
+          },
+          {
+            "index": 4,
+            "data": {
+              "word_count": 10,
+              "hint": "Lock in accuracy as the bridge heats up."
+            }
+          }
+        ]
+      }
     },
     {
       "id": "citadel-rise",
@@ -48,7 +105,48 @@
       "lesson_id": "reach-row-2",
       "requires": ["ember-bridge"],
       "reward_gold": 18,
-      "drill_template": "citadel-rise"
+      "drill_template": "citadel-rise",
+      "drill_overrides": {
+        "steps": [
+          {
+            "index": 1,
+            "data": {
+              "targets": ["banner", "warden", "torch", "storm", "armor"],
+              "hint": "Call the commands with measured control."
+            }
+          },
+          {
+            "index": 3,
+            "data": {
+              "targets": ["castle", "legend", "armor", "grace", "trace", "banner"],
+              "hint": "Keep the keep steady under pressure."
+            }
+          },
+          {
+            "index": 4,
+            "data": {
+              "word_count": 12,
+              "hint": "Maintain form through the final surge."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "skywatch-pass",
+      "label": "Skywatch Pass",
+      "lesson_id": "upper-row-1",
+      "requires": ["citadel-rise"],
+      "reward_gold": 20,
+      "drill_template": "skywatch-pass"
+    },
+    {
+      "id": "frost-crown",
+      "label": "Frost Crown",
+      "lesson_id": "upper-row-2",
+      "requires": ["skywatch-pass"],
+      "reward_gold": 24,
+      "drill_template": "frost-crown"
     }
   ]
 }

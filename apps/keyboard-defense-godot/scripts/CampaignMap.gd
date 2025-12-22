@@ -42,8 +42,16 @@ func _update_summary() -> void:
 	var accuracy = int(round(float(summary.get("accuracy", 0.0)) * 100.0))
 	var wpm = int(round(float(summary.get("wpm", 0.0))))
 	var gold_awarded = int(summary.get("gold_awarded", 0))
+	var tier := str(summary.get("performance_tier", ""))
+	var bonus := int(summary.get("performance_bonus", 0))
 	var node_label = str(summary.get("node_label", "Last Battle"))
-	summary_label.text = "%s: %d%% acc, %d WPM, +%dg" % [node_label, accuracy, wpm, gold_awarded]
+	var tier_text := ""
+	if tier != "":
+		tier_text = " [%s]" % tier
+	var bonus_text := ""
+	if bonus > 0:
+		bonus_text = " (+%dg bonus)" % bonus
+	summary_label.text = "%s%s: %d%% acc, %d WPM, +%dg%s" % [node_label, tier_text, accuracy, wpm, gold_awarded, bonus_text]
 
 func _on_node_pressed(node_id: String) -> void:
 	game_controller.go_to_battle(node_id)

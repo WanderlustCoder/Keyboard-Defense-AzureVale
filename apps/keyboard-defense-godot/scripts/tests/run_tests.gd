@@ -6,7 +6,8 @@ const TESTS := [
 	"res://scripts/tests/test_progression_state.gd",
 	"res://scripts/tests/test_scene_load.gd",
 	"res://scripts/tests/test_battle_smoke.gd",
-	"res://scripts/tests/test_battle_autoplay.gd"
+	"res://scripts/tests/test_battle_autoplay.gd",
+	"res://scripts/tests/test_battle_buffs.gd"
 ]
 
 func _init() -> void:

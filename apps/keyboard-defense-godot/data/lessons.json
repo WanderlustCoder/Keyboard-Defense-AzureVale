@@ -14,7 +14,11 @@
         "lass",
         "flask",
         "sass",
-        "all"
+        "all",
+        "salad",
+        "flak",
+        "dallas",
+        "alfalfa"
       ]
     },
     {
@@ -31,7 +35,10 @@
         "safe",
         "flail",
         "flake",
-        "kale"
+        "kale",
+        "leak",
+        "jake",
+        "flea"
       ]
     },
     {
@@ -48,7 +55,11 @@
         "trade",
         "stage",
         "great",
-        "thread"
+        "thread",
+        "stare",
+        "tread",
+        "raged",
+        "treat"
       ]
     },
     {
@@ -65,7 +76,45 @@
         "warden",
         "banner",
         "castle",
-        "legend"
+        "legend",
+        "charge",
+        "strong",
+        "rampart",
+        "bastion"
+      ]
+    },
+    {
+      "id": "upper-row-1",
+      "order": 5,
+      "label": "Upper Row Warmup",
+      "words": [
+        "we",
+        "tree",
+        "tier",
+        "type",
+        "quip",
+        "wire",
+        "tour",
+        "quiet",
+        "power",
+        "prime"
+      ]
+    },
+    {
+      "id": "upper-row-2",
+      "order": 6,
+      "label": "Upper Row Flow",
+      "words": [
+        "quest",
+        "tower",
+        "owner",
+        "proud",
+        "equip",
+        "quote",
+        "write",
+        "pivot",
+        "route",
+        "trope"
       ]
     }
   ]

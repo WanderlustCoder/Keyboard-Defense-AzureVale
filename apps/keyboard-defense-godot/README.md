@@ -27,6 +27,18 @@ Press `F1` in a battle to open the debug panel. Paste `drill_overrides` JSON, hi
 - `data/kingdom_upgrades.json`: kingdom upgrade definitions.
 - `data/unit_upgrades.json`: unit upgrade definitions.
 
+## Battle Buffs and Pause
+
+- Typing streaks trigger short buffs that boost typing power or slow threat.
+- Press `Esc` (or the Pause button) to open the pause menu; it freezes drills and buff timers.
+- Intermission steps can be skipped during the tutorial (first battle) with `Space`.
+- Active buffs appear as timers and bars inside the playfield HUD.
+
+## Performance Rewards
+
+- Battle rewards include a performance tier (C/B/A/S) based on accuracy + WPM.
+- Higher tiers grant bonus gold on top of the base reward and practice gold.
+
 ## Notes
 
 - Save data is stored at `user://typing_kingdom_save.json`.

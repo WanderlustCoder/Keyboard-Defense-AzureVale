@@ -12,6 +12,12 @@
           "hint": "Anchor fingers on home row and keep a steady pace."
         },
         {
+          "mode": "targets",
+          "label": "Home Row Beats",
+          "targets": ["as", "sad", "dad", "lad"],
+          "hint": "Hit each beat cleanly to build rhythm."
+        },
+        {
           "mode": "intermission",
           "label": "Reset the Guard",
           "duration": 2.0,
@@ -20,7 +26,7 @@
         {
           "mode": "targets",
           "label": "Gate Sigils",
-          "targets": ["as", "sad", "dad", "lad", "lass", "all"],
+          "targets": ["flask", "lass", "fall", "ask", "salad"],
           "hint": "Strike each sigil cleanly before moving on."
         },
         {
@@ -44,6 +50,12 @@
           "hint": "Keep the right hand loose and return to home row."
         },
         {
+          "mode": "targets",
+          "label": "Grove Beats",
+          "targets": ["jkl", "jail", "lake", "kale"],
+          "hint": "Tap the right-hand chords evenly."
+        },
+        {
           "mode": "intermission",
           "label": "Grove Breath",
           "duration": 2.0,
@@ -52,7 +64,7 @@
         {
           "mode": "targets",
           "label": "Whisper Sigils",
-          "targets": ["jkl", "lake", "leaf", "kale", "flake", "safe"],
+          "targets": ["flake", "flail", "leaf", "safe", "lake"],
           "hint": "Light taps, even spacing."
         },
         {
@@ -76,6 +88,12 @@
           "hint": "Reach up, then return to home row."
         },
         {
+          "mode": "targets",
+          "label": "Reach Sparks",
+          "targets": ["read", "rest", "tale", "gate"],
+          "hint": "Keep the reach row smooth and relaxed."
+        },
+        {
           "mode": "intermission",
           "label": "Ember Lull",
           "duration": 2.5,
@@ -84,7 +102,7 @@
         {
           "mode": "targets",
           "label": "Bridge Runes",
-          "targets": ["read", "rest", "tale", "gate", "trade", "stage"],
+          "targets": ["trade", "stage", "thread", "great", "shade"],
           "hint": "Stretch to the reach row with control."
         },
         {
@@ -108,6 +126,12 @@
           "hint": "Warm the full row before the siege."
         },
         {
+          "mode": "targets",
+          "label": "Command Beats",
+          "targets": ["banner", "warden", "torch", "storm"],
+          "hint": "Command each beat with steady hands."
+        },
+        {
           "mode": "intermission",
           "label": "Citadel Muster",
           "duration": 2.5,
@@ -116,7 +140,7 @@
         {
           "mode": "targets",
           "label": "Citadel Commands",
-          "targets": ["banner", "castle", "warden", "storm", "torch", "legend"],
+          "targets": ["castle", "legend", "armor", "grace", "trace"],
           "hint": "Commit each command with clean keystrokes."
         },
         {
@@ -125,6 +149,82 @@
           "word_count": 10,
           "shuffle": true,
           "hint": "Maintain form as the pace builds."
+        }
+      ]
+    },
+    {
+      "id": "skywatch-pass",
+      "label": "Skywatch Pass Drill",
+      "plan": [
+        {
+          "mode": "lesson",
+          "label": "Upper Row Warmup",
+          "word_count": 6,
+          "shuffle": false,
+          "hint": "Reach to the upper row with light taps."
+        },
+        {
+          "mode": "targets",
+          "label": "Skywatch Beats",
+          "targets": ["we", "tree", "tier", "type"],
+          "hint": "Settle into the upper row rhythm."
+        },
+        {
+          "mode": "intermission",
+          "label": "Wind Shift",
+          "duration": 2.5,
+          "message": "The wind shifts across the pass."
+        },
+        {
+          "mode": "targets",
+          "label": "Pass Signals",
+          "targets": ["quiet", "power", "tower", "quest", "route"],
+          "hint": "Hold the pass with steady reach."
+        },
+        {
+          "mode": "lesson",
+          "label": "Skywatch Defense",
+          "word_count": 11,
+          "shuffle": true,
+          "hint": "Keep wrists loose as the pace climbs."
+        }
+      ]
+    },
+    {
+      "id": "frost-crown",
+      "label": "Frost Crown Drill",
+      "plan": [
+        {
+          "mode": "lesson",
+          "label": "Crown Warmup",
+          "word_count": 7,
+          "shuffle": false,
+          "hint": "Blend upper row reach with steady control."
+        },
+        {
+          "mode": "targets",
+          "label": "Crown Beats",
+          "targets": ["quest", "quote", "write", "pivot"],
+          "hint": "Keep the beats even and precise."
+        },
+        {
+          "mode": "intermission",
+          "label": "Frost Lull",
+          "duration": 2.5,
+          "message": "The frost settles before the final push."
+        },
+        {
+          "mode": "targets",
+          "label": "Crown Commands",
+          "targets": ["tower", "owner", "proud", "equip", "route", "trope"],
+          "hint": "Lock each command with calm control."
+        },
+        {
+          "mode": "lesson",
+          "label": "Frost Crown Defense",
+          "word_count": 12,
+          "shuffle": true,
+          "hint": "Stay precise under the chill."
         }
       ]
     }

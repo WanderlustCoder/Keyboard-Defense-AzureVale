@@ -2,6 +2,20 @@ extends Control
 
 const TypingSystem = preload("res://scripts/TypingSystem.gd")
 const DEFAULT_RUNE_TARGETS := ["1-2-3", "x^2", "go!", "rune+1", "shield+2"]
+const BUFF_DEFS := {
+	"focus": {
+		"label": "Focus Surge",
+		"duration": 8.0,
+		"typing_power_multiplier": 1.25
+	},
+	"ward": {
+		"label": "Ward of Calm",
+		"duration": 8.0,
+		"threat_rate_multiplier": 0.75
+	}
+}
+const BUFF_WORD_STREAK := 4
+const BUFF_INPUT_STREAK := 24
 
 @onready var lesson_label: Label = $TopBar/LessonLabel
 @onready var gold_label: Label = $TopBar/GoldLabel
@@ -18,11 +32,24 @@ const DEFAULT_RUNE_TARGETS := ["1-2-3", "x^2", "go!", "rune+1", "shield+2"]
 @onready var drill_target_label: RichTextLabel = $PlayField/DrillHud/DrillTarget
 @onready var drill_progress_label: Label = $PlayField/DrillHud/DrillProgress
 @onready var drill_hint_label: Label = $PlayField/DrillHud/DrillHint
+@onready var buff_hud: PanelContainer = $PlayField/BuffHud
+@onready var buff_focus_row: HBoxContainer = $PlayField/BuffHud/Content/FocusRow
+@onready var buff_focus_label: Label = $PlayField/BuffHud/Content/FocusRow/FocusLabel
+@onready var buff_focus_bar: ProgressBar = $PlayField/BuffHud/Content/FocusRow/FocusBar
+@onready var buff_ward_row: HBoxContainer = $PlayField/BuffHud/Content/WardRow
+@onready var buff_ward_label: Label = $PlayField/BuffHud/Content/WardRow/WardLabel
+@onready var buff_ward_bar: ProgressBar = $PlayField/BuffHud/Content/WardRow/WardBar
 @onready var result_panel: PanelContainer = $ResultPanel
 @onready var result_label: Label = $ResultPanel/Content/ResultLabel
 @onready var result_button: Button = $ResultPanel/Content/ResultButton
 @onready var progression = get_node("/root/ProgressionState")
 @onready var game_controller = get_node("/root/GameController")
+
+var pause_panel: PanelContainer = null
+var pause_label: Label = null
+var pause_resume_button: Button = null
+var pause_retreat_button: Button = null
+var pause_button: Button = null
 
 var debug_panel: PanelContainer = null
 var debug_text: TextEdit = null
@@ -47,6 +74,9 @@ var drill_word_goal: int = 0
 var drill_input_enabled: bool = true
 var current_drill: Dictionary = {}
 
+var tutorial_mode: bool = false
+var paused: bool = false
+
 var threat: float = 0.0
 var threat_rate: float = 8.0
 var threat_relief: float = 12.0
@@ -54,6 +84,23 @@ var mistake_penalty: float = 18.0
 var castle_health: int = 3
 var typing_power: float = 1.0
 var mistake_forgiveness: float = 0.0
+var base_typing_power: float = 1.0
+var base_threat_rate_multiplier: float = 1.0
+var base_mistake_forgiveness: float = 0.0
+var base_castle_health: int = 3
+var base_threat_rate: float = 8.0
+var base_threat_relief: float = 12.0
+var base_mistake_penalty: float = 18.0
+var base_modifiers: Dictionary = {}
+var active_buffs: Array = []
+var buff_modifiers := {
+	"typing_power_multiplier": 1.0,
+	"threat_rate_multiplier": 1.0,
+	"mistake_forgiveness_bonus": 0.0
+}
+var input_streak: int = 0
+var word_streak: int = 0
+
 var battle_start_time_ms: int = 0
 var battle_total_inputs: int = 0
 var battle_correct_inputs: int = 0
@@ -67,6 +114,7 @@ func _ready() -> void:
 	exit_button.pressed.connect(_on_exit_pressed)
 	result_button.pressed.connect(_on_result_pressed)
 	result_panel.visible = false
+	_setup_pause_panel()
 	_setup_debug_panel()
 	_initialize_battle()
 
@@ -84,13 +132,20 @@ func _initialize_battle() -> void:
 		lesson_words = ["guard", "tower", "shield", "banner", "castle"]
 
 	var modifiers: Dictionary = progression.get_combat_modifiers()
-	typing_power = float(modifiers.get("typing_power", 1.0))
-	var threat_rate_multiplier: float = float(modifiers.get("threat_rate_multiplier", 1.0))
-	mistake_forgiveness = float(modifiers.get("mistake_forgiveness", 0.0))
-	castle_health = 3 + int(modifiers.get("castle_health_bonus", 0))
-	threat_rate = 8.0 * threat_rate_multiplier
-	threat_relief = 12.0 * typing_power
-	mistake_penalty = 18.0 * (1.0 - mistake_forgiveness)
+	base_modifiers = modifiers.duplicate(true)
+	base_typing_power = float(modifiers.get("typing_power", 1.0))
+	base_threat_rate_multiplier = float(modifiers.get("threat_rate_multiplier", 1.0))
+	base_mistake_forgiveness = float(modifiers.get("mistake_forgiveness", 0.0))
+	base_castle_health = 3 + int(modifiers.get("castle_health_bonus", 0))
+	base_threat_rate = 8.0
+	base_threat_relief = 12.0
+	base_mistake_penalty = 18.0
+	castle_health = base_castle_health
+	active_buffs.clear()
+	_reset_streaks()
+	_recompute_buff_modifiers()
+	_recompute_combat_values()
+	tutorial_mode = progression.completed_nodes.size() == 0
 
 	battle_start_time_ms = Time.get_ticks_msec()
 	battle_total_inputs = 0
@@ -102,15 +157,19 @@ func _initialize_battle() -> void:
 
 	lesson_label.text = "%s - %s" % [node_label, lesson.get("label", "Lesson")]
 	gold_label.text = "Gold: %d" % progression.gold
-	bonus_label.text = _format_bonus_text(modifiers)
+	_refresh_bonus_label(base_modifiers)
+	_update_buff_hud()
 	_start_next_drill()
 	_update_threat()
 
 func _process(delta: float) -> void:
 	if not active:
 		return
+	if paused:
+		return
 	if debug_panel != null and debug_panel.visible:
 		return
+	_update_buffs(delta)
 	if drill_mode == "intermission":
 		drill_timer = max(0.0, drill_timer - delta)
 		threat = max(0.0, threat - delta * threat_relief * 0.4)
@@ -132,8 +191,17 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not active:
 		return
 	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == KEY_ESCAPE:
+			_toggle_pause()
+			return
 		if event.keycode == KEY_F1:
 			_toggle_debug_panel()
+			return
+	if paused:
+		return
+	if event is InputEventKey and event.pressed and not event.echo:
+		if tutorial_mode and drill_mode == "intermission" and (event.keycode == KEY_SPACE or event.keycode == KEY_ENTER or event.keycode == KEY_KP_ENTER):
+			_skip_intermission()
 			return
 	if debug_panel != null and debug_panel.visible:
 		return
@@ -154,6 +222,11 @@ func _handle_typing_result(result: Dictionary) -> void:
 	var status: String = str(result.get("status", ""))
 	if status == "ignored":
 		return
+	if status == "error":
+		_reset_streaks()
+	else:
+		_advance_streaks(status)
+	_check_buff_triggers()
 	if status == "error":
 		threat = min(100.0, threat + mistake_penalty)
 	if status == "progress" or status == "error":
@@ -199,6 +272,7 @@ func _start_next_drill() -> void:
 		_finish_battle(true)
 		return
 	current_drill = drill_plan[drill_index]
+	_reset_streaks()
 	drill_mode = str(current_drill.get("mode", "lesson"))
 	drill_label = str(current_drill.get("label", "Drill"))
 	drill_input_enabled = drill_mode != "intermission"
@@ -396,7 +470,10 @@ func _update_drill_status() -> void:
 	drill_title_label.text = title_text
 	if drill_mode == "intermission":
 		drill_progress_label.text = "Resuming in %.1fs" % drill_timer
-		drill_hint_label.text = str(current_drill.get("message", "Scouts regroup."))
+		var hint_text := str(current_drill.get("message", "Scouts regroup."))
+		if tutorial_mode:
+			hint_text += " Press Space to skip."
+		drill_hint_label.text = hint_text
 		return
 	var words_completed: int = typing_system.get_words_completed()
 	drill_progress_label.text = "Targets: %d/%d" % [words_completed, drill_word_goal]
@@ -417,6 +494,9 @@ func _escape_bbcode(text: String) -> String:
 
 func _finish_battle(success: bool) -> void:
 	active = false
+	paused = false
+	if pause_panel != null:
+		pause_panel.visible = false
 	var stats: Dictionary = _collect_battle_stats(true)
 	var accuracy: float = float(stats.get("accuracy", 1.0))
 	var wpm: float = float(stats.get("wpm", 0.0))
@@ -435,8 +515,16 @@ func _finish_battle(success: bool) -> void:
 		"drill_total": drill_plan.size()
 	}
 	if success:
-		progression.complete_node(node_id, summary)
-		result_label.text = "Victory! The castle stands strong."
+		var completed_summary: Dictionary = progression.complete_node(node_id, summary)
+		var tier := str(completed_summary.get("performance_tier", ""))
+		var bonus := int(completed_summary.get("performance_bonus", 0))
+		var tier_text := ""
+		if tier != "":
+			tier_text = " Rank %s" % tier
+		var bonus_text := ""
+		if bonus > 0:
+			bonus_text = " (+%dg)" % bonus
+		result_label.text = "Victory! The castle stands strong.%s%s" % [tier_text, bonus_text]
 		result_action = "map"
 		result_button.text = "Return to Map"
 	else:
@@ -454,6 +542,8 @@ func _on_result_pressed() -> void:
 		game_controller.go_to_map()
 
 func _on_exit_pressed() -> void:
+	if paused:
+		return
 	game_controller.go_to_map()
 
 func _format_bonus_text(modifiers: Dictionary) -> String:
@@ -469,6 +559,203 @@ func _format_bonus_text(modifiers: Dictionary) -> String:
 	if parts.is_empty():
 		return "Bonuses: None"
 	return "Bonuses: " + ", ".join(parts)
+
+func _format_buffs_text() -> String:
+	if active_buffs.is_empty():
+		return "Buffs: None"
+	var entries: Array = []
+	for buff in active_buffs:
+		if buff is Dictionary:
+			var buff_id := str(buff.get("id", ""))
+			var remaining: float = float(buff.get("remaining", 0.0))
+			var label := _get_buff_label(buff_id)
+			entries.append("%s (%.1fs)" % [label, max(0.0, remaining)])
+	return "Buffs: " + ", ".join(entries)
+
+func _refresh_bonus_label(modifiers: Dictionary) -> void:
+	if bonus_label == null:
+		return
+	var base_text := _format_bonus_text(modifiers)
+	var buff_text := _format_buffs_text()
+	bonus_label.text = "%s\n%s" % [base_text, buff_text]
+
+func _setup_pause_panel() -> void:
+	pause_panel = get_node_or_null("PausePanel") as PanelContainer
+	if pause_panel == null:
+		return
+	pause_panel.visible = false
+	pause_label = pause_panel.get_node("Content/PauseLabel") as Label
+	pause_resume_button = pause_panel.get_node("Content/ButtonRow/ResumeButton") as Button
+	pause_retreat_button = pause_panel.get_node("Content/ButtonRow/RetreatButton") as Button
+	pause_button = get_node_or_null("TopBar/PauseButton") as Button
+	if pause_resume_button != null:
+		pause_resume_button.pressed.connect(_on_pause_resume_pressed)
+	if pause_retreat_button != null:
+		pause_retreat_button.pressed.connect(_on_pause_retreat_pressed)
+	if pause_button != null:
+		pause_button.pressed.connect(_on_pause_pressed)
+
+func _on_pause_pressed() -> void:
+	_toggle_pause()
+
+func _on_pause_resume_pressed() -> void:
+	_set_paused(false)
+
+func _on_pause_retreat_pressed() -> void:
+	game_controller.go_to_map()
+
+func _toggle_pause() -> void:
+	if not active or result_panel.visible:
+		return
+	_set_paused(not paused)
+
+func _set_paused(value: bool) -> void:
+	paused = value
+	if pause_panel != null:
+		pause_panel.visible = paused
+
+func _skip_intermission() -> void:
+	if drill_mode != "intermission":
+		return
+	_start_next_drill()
+
+func _reset_streaks() -> void:
+	input_streak = 0
+	word_streak = 0
+
+func _advance_streaks(status: String) -> void:
+	if status == "progress" or status == "word_complete" or status == "lesson_complete":
+		input_streak += 1
+	if status == "word_complete" or status == "lesson_complete":
+		word_streak += 1
+
+func _check_buff_triggers() -> void:
+	if word_streak >= BUFF_WORD_STREAK:
+		_activate_buff("focus")
+		word_streak = 0
+	if input_streak >= BUFF_INPUT_STREAK:
+		_activate_buff("ward")
+		input_streak = 0
+
+func _activate_buff(buff_id: String) -> void:
+	if not BUFF_DEFS.has(buff_id):
+		return
+	var definition: Dictionary = BUFF_DEFS[buff_id]
+	var duration: float = float(definition.get("duration", 0.0))
+	var refreshed := false
+	for buff in active_buffs:
+		if buff is Dictionary and str(buff.get("id", "")) == buff_id:
+			buff["remaining"] = duration
+			refreshed = true
+			break
+	if not refreshed:
+		active_buffs.append({"id": buff_id, "remaining": duration})
+	_apply_buff_changes()
+
+func _update_buffs(delta: float) -> void:
+	if active_buffs.is_empty():
+		return
+	var changed := false
+	for i in range(active_buffs.size() - 1, -1, -1):
+		var buff = active_buffs[i]
+		if not buff is Dictionary:
+			active_buffs.remove_at(i)
+			changed = true
+			continue
+		var remaining: float = float(buff.get("remaining", 0.0))
+		remaining -= delta
+		if remaining <= 0.0:
+			active_buffs.remove_at(i)
+			changed = true
+		else:
+			buff["remaining"] = remaining
+	if changed:
+		_apply_buff_changes()
+	else:
+		_refresh_bonus_label(base_modifiers)
+	_update_buff_hud()
+
+func _recompute_buff_modifiers() -> void:
+	buff_modifiers = {
+		"typing_power_multiplier": 1.0,
+		"threat_rate_multiplier": 1.0,
+		"mistake_forgiveness_bonus": 0.0
+	}
+	for buff in active_buffs:
+		if not buff is Dictionary:
+			continue
+		var buff_id := str(buff.get("id", ""))
+		if not BUFF_DEFS.has(buff_id):
+			continue
+		var definition: Dictionary = BUFF_DEFS[buff_id]
+		for key in buff_modifiers.keys():
+			if not definition.has(key):
+				continue
+			var value: float = float(definition.get(key, 0.0))
+			if key == "mistake_forgiveness_bonus":
+				buff_modifiers[key] = float(buff_modifiers[key]) + value
+			else:
+				buff_modifiers[key] = float(buff_modifiers[key]) * value
+
+func _apply_buff_changes() -> void:
+	_recompute_buff_modifiers()
+	_recompute_combat_values()
+	_refresh_bonus_label(base_modifiers)
+	_update_buff_hud()
+
+func _update_buff_hud() -> void:
+	if buff_hud == null:
+		return
+	if active_buffs.is_empty():
+		buff_hud.visible = false
+		if buff_focus_row != null:
+			buff_focus_row.visible = false
+		if buff_ward_row != null:
+			buff_ward_row.visible = false
+		return
+	buff_hud.visible = true
+	_update_single_buff_row("focus", buff_focus_row, buff_focus_label, buff_focus_bar)
+	_update_single_buff_row("ward", buff_ward_row, buff_ward_label, buff_ward_bar)
+
+func _update_single_buff_row(buff_id: String, row, label, bar) -> void:
+	if row == null or label == null or bar == null:
+		return
+	var buff := _get_active_buff(buff_id)
+	if buff.is_empty():
+		row.visible = false
+		bar.value = 0.0
+		return
+	var definition: Dictionary = BUFF_DEFS.get(buff_id, {})
+	var duration: float = float(definition.get("duration", 1.0))
+	var remaining: float = float(buff.get("remaining", 0.0))
+	var ratio: float = 0.0
+	if duration > 0.0:
+		ratio = clamp(remaining / duration, 0.0, 1.0)
+	row.visible = true
+	bar.value = ratio
+	label.text = "%s %.1fs" % [_get_buff_label(buff_id), max(0.0, remaining)]
+
+func _get_active_buff(buff_id: String) -> Dictionary:
+	for buff in active_buffs:
+		if buff is Dictionary and str(buff.get("id", "")) == buff_id:
+			return buff
+	return {}
+
+func _recompute_combat_values() -> void:
+	var typing_multiplier: float = float(buff_modifiers.get("typing_power_multiplier", 1.0))
+	var threat_multiplier: float = float(buff_modifiers.get("threat_rate_multiplier", 1.0))
+	var forgiveness_bonus: float = float(buff_modifiers.get("mistake_forgiveness_bonus", 0.0))
+	typing_power = base_typing_power * typing_multiplier
+	mistake_forgiveness = clamp(base_mistake_forgiveness + forgiveness_bonus, 0.0, 0.8)
+	threat_rate = base_threat_rate * base_threat_rate_multiplier * threat_multiplier
+	threat_relief = base_threat_relief * typing_power
+	mistake_penalty = base_mistake_penalty * (1.0 - mistake_forgiveness)
+
+func _get_buff_label(buff_id: String) -> String:
+	if BUFF_DEFS.has(buff_id):
+		var definition: Dictionary = BUFF_DEFS[buff_id]
+		return str(definition.get("label", buff_id))
+	return buff_id
 
 func _setup_debug_panel() -> void:
 	debug_panel = get_node_or_null("DebugPanel") as PanelContainer
