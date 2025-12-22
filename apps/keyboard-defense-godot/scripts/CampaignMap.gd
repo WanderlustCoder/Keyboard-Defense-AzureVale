@@ -30,7 +30,7 @@ func _build_map() -> void:
 		var button = Button.new()
 		button.text = label + (" (cleared)" if completed else "")
 		button.disabled = not unlocked
-		button.custom_minimum_size = Vector2(220, 48)
+		button.custom_minimum_size = Vector2(260, 64)
 		button.pressed.connect(_on_node_pressed.bind(node_id))
 		map_grid.add_child(button)
 

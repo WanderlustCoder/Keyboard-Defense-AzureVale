@@ -27,8 +27,9 @@ func _build_upgrade_section(container: VBoxContainer, upgrades: Array) -> void:
 		var description = str(upgrade.get("description", ""))
 
 		var panel = PanelContainer.new()
-		panel.custom_minimum_size = Vector2(0, 86)
+		panel.custom_minimum_size = Vector2(0, 120)
 		var box = VBoxContainer.new()
+		box.add_theme_constant_override("separation", 6)
 		panel.add_child(box)
 
 		var title = Label.new()
@@ -41,6 +42,7 @@ func _build_upgrade_section(container: VBoxContainer, upgrades: Array) -> void:
 		box.add_child(desc)
 
 		var button = Button.new()
+		button.custom_minimum_size = Vector2(0, 44)
 		if owned:
 			button.text = "Owned"
 			button.disabled = true
