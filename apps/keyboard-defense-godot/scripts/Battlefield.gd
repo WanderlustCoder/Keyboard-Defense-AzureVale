@@ -593,6 +593,10 @@ func _finish_battle(success: bool) -> void:
 	var wpm: float = float(stats.get("wpm", 0.0))
 	var errors: int = int(stats.get("errors", 0))
 	var words_completed: int = int(stats.get("words_completed", 0))
+	var accuracy_percent = int(round(accuracy * 100.0))
+	var wpm_value = int(round(wpm))
+	var stats_line = "Accuracy: %d%% | WPM: %d | Errors: %d" % [accuracy_percent, wpm_value, errors]
+	var words_line = "Words: %d" % words_completed
 	var summary: Dictionary = {
 		"node_id": node_id,
 		"node_label": node_label,
@@ -609,18 +613,33 @@ func _finish_battle(success: bool) -> void:
 		var completed_summary: Dictionary = progression.complete_node(node_id, summary)
 		var tier := str(completed_summary.get("performance_tier", ""))
 		var bonus := int(completed_summary.get("performance_bonus", 0))
-		var tier_text := ""
+		var practice_gold = int(completed_summary.get("practice_gold", 0))
+		var reward_gold = int(completed_summary.get("reward_gold", 0))
+		var gold_awarded = int(completed_summary.get("gold_awarded", 0))
+		var lines: Array = ["Victory! The castle stands strong."]
 		if tier != "":
-			tier_text = " Rank %s" % tier
-		var bonus_text := ""
+			lines.append("Rank: %s" % tier)
+		lines.append(stats_line)
+		lines.append(words_line)
+		var gold_parts: Array = []
+		if reward_gold > 0:
+			gold_parts.append("Node %dg" % reward_gold)
+		if practice_gold > 0:
+			gold_parts.append("Practice %dg" % practice_gold)
 		if bonus > 0:
-			bonus_text = " (+%dg)" % bonus
-		result_label.text = "Victory! The castle stands strong.%s%s" % [tier_text, bonus_text]
+			gold_parts.append("Bonus %dg" % bonus)
+		if gold_awarded > 0:
+			if gold_parts.is_empty():
+				lines.append("Gold: +%dg" % gold_awarded)
+			else:
+				lines.append("Gold: +%dg (%s)" % [gold_awarded, ", ".join(gold_parts)])
+		result_label.text = "\n".join(lines)
 		result_action = "map"
 		result_button.text = "Return to Map"
 	else:
 		progression.record_attempt(summary)
-		result_label.text = "Defeat. The walls fell."
+		var lines: Array = ["Defeat. The walls fell.", stats_line, words_line]
+		result_label.text = "\n".join(lines)
 		result_action = "retry"
 		result_button.text = "Retry Battle"
 	result_panel.visible = true
@@ -640,11 +659,14 @@ func _on_exit_pressed() -> void:
 func _format_bonus_text(modifiers: Dictionary) -> String:
 	var typing_power_bonus: int = int(round((float(modifiers.get("typing_power", 1.0)) - 1.0) * 100.0))
 	var threat_rate_bonus: int = int(round((1.0 - float(modifiers.get("threat_rate_multiplier", 1.0))) * 100.0))
+	var forgiveness_bonus: int = int(round(float(modifiers.get("mistake_forgiveness", 0.0)) * 100.0))
 	var parts: Array = []
 	if typing_power_bonus != 0:
 		parts.append("Typing Power %+d%%" % typing_power_bonus)
 	if threat_rate_bonus != 0:
 		parts.append("Threat Slow %+d%%" % threat_rate_bonus)
+	if forgiveness_bonus != 0:
+		parts.append("Mistake Forgiveness %+d%%" % forgiveness_bonus)
 	if int(modifiers.get("castle_health_bonus", 0)) > 0:
 		parts.append("Castle +%d" % int(modifiers.get("castle_health_bonus", 0)))
 	if parts.is_empty():
