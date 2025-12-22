@@ -48,6 +48,10 @@ export declare class TypingDrillsOverlay {
     private readonly lessonPicker?;
     private readonly lessonSelect?;
     private readonly lessonDescription?;
+    private readonly masteryTarget?;
+    private readonly masteryNodes;
+    private readonly masteryUnlocks;
+    private readonly modeMetaDefaults;
     private resizeHandler?;
     private layoutPulseTimeout?;
     private isCondensedLayout;
@@ -98,6 +102,10 @@ export declare class TypingDrillsOverlay {
     private comboMistakesRemaining;
     private comboUnshieldedErrorsThisWord;
     private patternStats;
+    private fingerMasteryState;
+    private fingerRunStats;
+    private lastFingerTimingAt;
+    private fingerLookup;
     private state;
     constructor(options: {
         root: HTMLElement;
@@ -125,6 +133,20 @@ export declare class TypingDrillsOverlay {
     private resetPatternStats;
     private recordPatternAttempt;
     private buildPatternStatsPayload;
+    private getStorage;
+    private updateFingerLookup;
+    private resetFingerMasteryRun;
+    private normalizeFingerKey;
+    private getFingerId;
+    private recordFingerMasteryAttempt;
+    private commitFingerMasteryRun;
+    private refreshFingerMasteryState;
+    private updateMasteryTree;
+    private updateLockedModes;
+    private getModeLockReason;
+    private isModeLocked;
+    private getFirstUnlockedMode;
+    private resolveMode;
     private updateLayoutMode;
     private attachEvents;
     private initializeLessonPicker;

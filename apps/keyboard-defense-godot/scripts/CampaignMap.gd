@@ -15,10 +15,22 @@ func _ready() -> void:
 	_refresh()
 
 func _refresh() -> void:
+	_ensure_map_grid_layout()
 	gold_label.text = "Gold: %d" % progression.gold
 	modifiers_label.text = _format_modifiers(progression.get_combat_modifiers())
 	_build_map()
 	_update_summary()
+
+func _ensure_map_grid_layout() -> void:
+	map_grid.layout_mode = 0
+	map_grid.anchor_left = 0.0
+	map_grid.anchor_top = 0.0
+	map_grid.anchor_right = 1.0
+	map_grid.anchor_bottom = 1.0
+	map_grid.offset_left = 0.0
+	map_grid.offset_top = 0.0
+	map_grid.offset_right = 0.0
+	map_grid.offset_bottom = 0.0
 
 func _format_modifiers(modifiers: Dictionary) -> String:
 	var parts: Array = []
@@ -56,6 +68,9 @@ func _build_map() -> void:
 			text_color.a = 0.55
 		var card = Control.new()
 		card.custom_minimum_size = Vector2(260, 96)
+		card.size = card.custom_minimum_size
+		card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		card.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		card.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND if unlocked else Control.CURSOR_ARROW
 		if unlocked:
 			card.mouse_filter = Control.MOUSE_FILTER_STOP
@@ -85,15 +100,15 @@ func _build_map() -> void:
 		var lesson_height = 22.0
 		var reward_height = 18.0
 		var y = padding
+		var card_width = card.custom_minimum_size.x
+		if card_width <= 0.0:
+			card_width = card.size.x
+		var content_width = max(card_width - padding * 2.0, 0.0)
 
 		var title = Label.new()
 		title.text = label + (" (cleared)" if completed else "")
-		title.anchor_left = 0.0
-		title.anchor_right = 1.0
-		title.offset_left = padding
-		title.offset_right = -padding
-		title.offset_top = y
-		title.offset_bottom = y + title_height
+		title.position = Vector2(padding, y)
+		title.size = Vector2(content_width, title_height)
 		title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		title.autowrap_mode = TextServer.AUTOWRAP_WORD
@@ -109,12 +124,8 @@ func _build_map() -> void:
 
 		var lesson_label = Label.new()
 		lesson_label.text = "Lesson: %s" % lesson_label_text
-		lesson_label.anchor_left = 0.0
-		lesson_label.anchor_right = 1.0
-		lesson_label.offset_left = padding
-		lesson_label.offset_right = -padding
-		lesson_label.offset_top = y
-		lesson_label.offset_bottom = y + lesson_height
+		lesson_label.position = Vector2(padding, y)
+		lesson_label.size = Vector2(content_width, lesson_height)
 		lesson_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		lesson_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		lesson_label.autowrap_mode = TextServer.AUTOWRAP_WORD
@@ -129,15 +140,12 @@ func _build_map() -> void:
 		y += lesson_height + spacing
 
 		var reward_text = _format_reward_preview(reward_gold, completed)
+		var reward_label: Label = null
 		if reward_text != "":
-			var reward_label = Label.new()
+			reward_label = Label.new()
 			reward_label.text = reward_text
-			reward_label.anchor_left = 0.0
-			reward_label.anchor_right = 1.0
-			reward_label.offset_left = padding
-			reward_label.offset_right = -padding
-			reward_label.offset_top = y
-			reward_label.offset_bottom = y + reward_height
+			reward_label.position = Vector2(padding, y)
+			reward_label.size = Vector2(content_width, reward_height)
 			reward_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			reward_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 			reward_label.autowrap_mode = TextServer.AUTOWRAP_WORD
@@ -148,6 +156,14 @@ func _build_map() -> void:
 			reward_label.clip_text = true
 			reward_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			card.add_child(reward_label)
+
+		var update_text_layout = func() -> void:
+			var next_width = max(card.size.x - padding * 2.0, 0.0)
+			title.size.x = next_width
+			lesson_label.size.x = next_width
+			if reward_label != null:
+				reward_label.size.x = next_width
+		card.resized.connect(update_text_layout)
 
 		map_grid.add_child(card)
 
@@ -184,9 +200,7 @@ func _on_node_pressed(node_id: String) -> void:
 func _on_card_input(event: InputEvent, node_id: String) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		_on_node_pressed(node_id)
-		var viewport = get_viewport()
-		if viewport != null:
-			viewport.set_input_as_handled()
+		accept_event()
 
 func _on_back_pressed() -> void:
 	game_controller.go_to_menu()

@@ -120,7 +120,7 @@ func _has_visible_text(node: Node) -> bool:
 	return false
 
 func _is_visible_control(control: Control) -> bool:
-	if not control.is_visible_in_tree():
+	if not control.visible:
 		return false
 	if control.size.x <= 0.5 or control.size.y <= 0.5:
 		return false

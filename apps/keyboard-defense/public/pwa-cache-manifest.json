@@ -135,6 +135,7 @@
     "dist/src/utils/dynamicDifficulty.js",
     "dist/src/utils/errorClusters.js",
     "dist/src/utils/fatigueDetector.js",
+    "dist/src/utils/fingerMastery.js",
     "dist/src/utils/focusOutlines.js",
     "dist/src/utils/inputAnomalies.js",
     "dist/src/utils/keystrokeTimingProfile.js",

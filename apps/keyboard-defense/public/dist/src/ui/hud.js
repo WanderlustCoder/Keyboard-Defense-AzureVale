@@ -252,6 +252,15 @@ export class HudView {
     logList;
     tutorialBanner;
     tutorialBannerExpanded = true;
+    tutorialProgressKey = null;
+    tutorialHintDismissed = false;
+    lastTutorialMessage = null;
+    tutorialDock;
+    tutorialDockStorageKey = "keyboard-defense:tutorial-dock-collapsed";
+    tutorialDockCollapsed = false;
+    tutorialDockStateKey = null;
+    tutorialDockLabels = new Map();
+    tutorialDockModal;
     virtualKeyboard;
     virtualKeyboardEnabled = false;
     virtualKeyboardLayout = "qwerty";
@@ -847,6 +856,9 @@ export class HudView {
             const messageElement = tutorialBannerElement.querySelector("[data-role='tutorial-message']") ??
                 tutorialBannerElement;
             const toggleElement = tutorialBannerElement.querySelector("[data-role='tutorial-toggle']");
+            const progressElement = tutorialBannerElement.querySelector("[data-role='tutorial-progress']");
+            const closeElement = tutorialBannerElement.querySelector("[data-role='tutorial-close']");
+            const skipElement = tutorialBannerElement.querySelector("[data-role='tutorial-skip']");
             if (toggleElement) {
                 toggleElement.addEventListener("click", () => {
                     if (tutorialBannerElement.dataset.visible !== "true") {
@@ -856,14 +868,95 @@ export class HudView {
                     this.refreshTutorialBannerLayout();
                 });
             }
+            if (progressElement) {
+                progressElement.addEventListener("click", () => {
+                    if (toggleElement && !toggleElement.hidden) {
+                        toggleElement.focus();
+                    }
+                    else {
+                        tutorialBannerElement.focus();
+                    }
+                });
+            }
+            if (closeElement) {
+                closeElement.addEventListener("click", () => this.dismissTutorialHint());
+            }
+            if (skipElement) {
+                skipElement.addEventListener("click", () => this.callbacks.onTutorialSkip?.());
+            }
             this.tutorialBanner = {
                 container: tutorialBannerElement,
                 message: messageElement,
-                toggle: toggleElement ?? undefined
+                toggle: toggleElement ?? undefined,
+                progress: progressElement ?? undefined,
+                close: closeElement ?? undefined,
+                skip: skipElement ?? undefined
             };
         }
         else {
             this.tutorialBanner = undefined;
+        }
+        if (rootIds.tutorialDock) {
+            const dockContainer = document.getElementById(rootIds.tutorialDock.container);
+            const dockToggle = document.getElementById(rootIds.tutorialDock.toggle);
+            const dockSteps = document.getElementById(rootIds.tutorialDock.steps);
+            const dockSummary = rootIds.tutorialDock.summary
+                ? document.getElementById(rootIds.tutorialDock.summary)
+                : null;
+            if (dockContainer instanceof HTMLElement &&
+                dockToggle instanceof HTMLButtonElement &&
+                dockSteps instanceof HTMLElement) {
+                this.tutorialDockCollapsed = this.readTutorialDockCollapsed();
+                dockToggle.addEventListener("click", () => {
+                    this.tutorialDockCollapsed = !this.tutorialDockCollapsed;
+                    this.persistTutorialDockCollapsed();
+                    this.refreshTutorialDockLayout();
+                });
+                dockSteps.addEventListener("click", (event) => {
+                    const target = event.target;
+                    const button = target?.closest("button[data-step-id]");
+                    const stepId = button?.dataset.stepId ?? null;
+                    if (stepId) {
+                        this.showTutorialDockModal(stepId);
+                    }
+                });
+                this.tutorialDock = {
+                    container: dockContainer,
+                    toggle: dockToggle,
+                    steps: dockSteps,
+                    summary: dockSummary
+                };
+            }
+        }
+        if (rootIds.tutorialDock?.modal) {
+            const modalContainer = document.getElementById(rootIds.tutorialDock.modal.container);
+            const modalTitle = document.getElementById(rootIds.tutorialDock.modal.title);
+            const modalCopy = document.getElementById(rootIds.tutorialDock.modal.copy);
+            const modalConfirm = document.getElementById(rootIds.tutorialDock.modal.confirm);
+            const modalCancel = document.getElementById(rootIds.tutorialDock.modal.cancel);
+            if (modalContainer instanceof HTMLElement &&
+                modalTitle instanceof HTMLElement &&
+                modalCopy instanceof HTMLElement &&
+                modalConfirm instanceof HTMLButtonElement &&
+                modalCancel instanceof HTMLButtonElement) {
+                this.tutorialDockModal = {
+                    container: modalContainer,
+                    title: modalTitle,
+                    copy: modalCopy,
+                    confirm: modalConfirm,
+                    cancel: modalCancel,
+                    stepId: null
+                };
+                this.addFocusTrap(modalContainer);
+                modalConfirm.addEventListener("click", () => this.confirmTutorialDockModal());
+                modalCancel.addEventListener("click", () => this.hideTutorialDockModal());
+                modalContainer.addEventListener("keydown", (event) => {
+                    if (event.key === "Escape") {
+                        event.preventDefault();
+                        this.hideTutorialDockModal();
+                    }
+                });
+            }
         }
         const summaryContainer = document.getElementById(rootIds.tutorialSummary.container) ?? undefined;
         const summaryStats = document.getElementById(rootIds.tutorialSummary.stats);
@@ -4461,14 +4554,20 @@ export class HudView {
         const condensed = this.shouldCondenseTutorialBanner();
         const wasVisible = container.dataset.visible === "true";
         if (!message) {
+            this.lastTutorialMessage = null;
+            this.tutorialHintDismissed = false;
             container.dataset.visible = "false";
+            container.setAttribute("aria-hidden", "true");
             content.textContent = "";
             delete container.dataset.highlight;
             this.tutorialBannerExpanded = condensed ? false : true;
             this.refreshTutorialBannerLayout();
             return;
         }
-        container.dataset.visible = "true";
+        if (message !== this.lastTutorialMessage) {
+            this.lastTutorialMessage = message;
+            this.tutorialHintDismissed = false;
+        }
         if (highlight) {
             container.dataset.highlight = "true";
         }
@@ -4476,13 +4575,147 @@ export class HudView {
             delete container.dataset.highlight;
         }
         content.textContent = message;
-        if (!wasVisible) {
+        const visible = !this.tutorialHintDismissed;
+        container.dataset.visible = visible ? "true" : "false";
+        container.setAttribute("aria-hidden", visible ? "false" : "true");
+        if (visible && !wasVisible) {
             this.tutorialBannerExpanded = condensed ? false : true;
         }
-        else if (!condensed) {
+        else if (visible && !condensed) {
             this.tutorialBannerExpanded = true;
         }
         this.refreshTutorialBannerLayout();
+    }
+    setTutorialProgress(progress) {
+        const banner = this.tutorialBanner;
+        if (!banner || !banner.progress)
+            return;
+        const progressButton = banner.progress;
+        if (!progress) {
+            progressButton.hidden = true;
+            progressButton.textContent = "";
+            progressButton.removeAttribute("aria-label");
+            progressButton.removeAttribute("title");
+            this.tutorialProgressKey = null;
+            if (banner.container) {
+                delete banner.container.dataset.anchor;
+            }
+            this.refreshTutorialDockLayout();
+            return;
+        }
+        const label = progress.label?.trim() || "Tutorial";
+        const text = `Step ${progress.index}/${progress.total} - ${label}`;
+        if (this.tutorialProgressKey === text) {
+            progressButton.hidden = false;
+            if (progress.anchor) {
+                banner.container.dataset.anchor = progress.anchor;
+            }
+            return;
+        }
+        this.tutorialProgressKey = text;
+        progressButton.hidden = false;
+        progressButton.textContent = text;
+        progressButton.setAttribute("aria-label", `Tutorial progress: ${text}`);
+        progressButton.title = text;
+        if (progress.anchor) {
+            banner.container.dataset.anchor = progress.anchor;
+        }
+        this.refreshTutorialDockLayout();
+    }
+    setTutorialDock(state) {
+        const dock = this.tutorialDock;
+        if (!dock)
+            return;
+        if (!state || !state.active || state.steps.length === 0) {
+            dock.container.hidden = true;
+            this.tutorialDockStateKey = null;
+            return;
+        }
+        dock.container.hidden = false;
+        this.tutorialDockLabels = new Map(state.steps.map((step) => [step.id, step.label]));
+        const nextKey = state.steps.map((step) => `${step.id}:${step.status}`).join("|");
+        if (nextKey !== this.tutorialDockStateKey) {
+            dock.steps.replaceChildren();
+            for (const step of state.steps) {
+                const item = document.createElement("li");
+                item.dataset.status = step.status;
+                const button = document.createElement("button");
+                button.type = "button";
+                button.dataset.stepId = step.id;
+                button.textContent = step.label;
+                if (step.status === "active") {
+                    button.setAttribute("aria-current", "step");
+                }
+                item.appendChild(button);
+                dock.steps.appendChild(item);
+            }
+            this.tutorialDockStateKey = nextKey;
+        }
+        this.refreshTutorialDockLayout();
+    }
+    dismissTutorialHint() {
+        if (!this.tutorialBanner)
+            return;
+        this.tutorialHintDismissed = true;
+        this.tutorialBanner.container.dataset.visible = "false";
+        this.tutorialBanner.container.setAttribute("aria-hidden", "true");
+        this.refreshTutorialBannerLayout();
+    }
+    readTutorialDockCollapsed() {
+        if (typeof window === "undefined" || !window.localStorage)
+            return false;
+        try {
+            return window.localStorage.getItem(this.tutorialDockStorageKey) === "true";
+        }
+        catch {
+            return false;
+        }
+    }
+    persistTutorialDockCollapsed() {
+        if (typeof window === "undefined" || !window.localStorage)
+            return;
+        try {
+            window.localStorage.setItem(this.tutorialDockStorageKey, this.tutorialDockCollapsed ? "true" : "false");
+        }
+        catch {
+            // ignore storage failures
+        }
+    }
+    refreshTutorialDockLayout() {
+        const dock = this.tutorialDock;
+        if (!dock || dock.container.hidden)
+            return;
+        dock.container.dataset.collapsed = this.tutorialDockCollapsed ? "true" : "false";
+        dock.toggle.setAttribute("aria-expanded", this.tutorialDockCollapsed ? "false" : "true");
+        if (dock.summary) {
+            dock.summary.textContent = this.tutorialProgressKey ?? "";
+        }
+    }
+    showTutorialDockModal(stepId) {
+        if (!this.tutorialDockModal)
+            return;
+        const label = this.tutorialDockLabels.get(stepId) ?? "Tutorial step";
+        this.tutorialDockModal.stepId = stepId;
+        this.tutorialDockModal.copy.textContent = `Replay "${label}" now? Your current step progress will reset.`;
+        this.tutorialDockModal.container.dataset.visible = "true";
+        this.tutorialDockModal.container.setAttribute("aria-hidden", "false");
+        this.tutorialDockModal.confirm.focus();
+    }
+    confirmTutorialDockModal() {
+        if (!this.tutorialDockModal)
+            return;
+        const stepId = this.tutorialDockModal.stepId;
+        if (stepId) {
+            this.callbacks.onTutorialStepReplay?.(stepId);
+        }
+        this.hideTutorialDockModal();
+    }
+    hideTutorialDockModal() {
+        if (!this.tutorialDockModal)
+            return;
+        this.tutorialDockModal.container.dataset.visible = "false";
+        this.tutorialDockModal.container.setAttribute("aria-hidden", "true");
+        this.tutorialDockModal.stepId = null;
     }
     updateCastleBonusHint(state) {
         if (!this.optionsCastleBonus)

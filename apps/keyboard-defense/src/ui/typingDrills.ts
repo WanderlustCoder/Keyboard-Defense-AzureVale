@@ -13,6 +13,19 @@ import {
   writePlacementTestResult,
   type PlacementTestResult
 } from "../utils/placementTest.js";
+import {
+  applyFingerMasteryDelta,
+  buildFingerMasteryProgress,
+  createDefaultFingerMasteryState,
+  FINGER_IDS,
+  FINGER_MASTERY_TARGET,
+  isModeUnlocked,
+  readFingerMastery,
+  writeFingerMastery,
+  type FingerId,
+  type FingerMasteryEntry,
+  type FingerMasteryState
+} from "../utils/fingerMastery.js";
 import { readPlayerSettings } from "../utils/playerSettings.js";
 
 type DrillSegmentConfig = {
@@ -264,6 +277,117 @@ const HAND_ISOLATION_WORDS: Record<"left" | "right", string[]> = {
     "kiln",
     "imply"
   ]
+};
+
+const FINGER_SHIFTED_KEY_MAP: Record<string, string> = {
+  "!": "1",
+  "@": "2",
+  "#": "3",
+  $: "4",
+  "%": "5",
+  "^": "6",
+  "&": "7",
+  "*": "8",
+  "(": "9",
+  ")": "0",
+  _: "-",
+  "+": "=",
+  "{": "[",
+  "}": "]",
+  ":": ";",
+  '"': "'",
+  "|": "\\",
+  "<": ",",
+  ">": ".",
+  "?": "/",
+  "~": "`"
+};
+
+const PHYSICAL_FINGER_LOOKUP: Record<string, FingerId> = (() => {
+  const zones: Array<[FingerId, string[]]> = [
+    ["left-pinky", ["`", "1", "q", "a", "z"]],
+    ["left-ring", ["2", "w", "s", "x"]],
+    ["left-middle", ["3", "e", "d", "c"]],
+    ["left-index", ["4", "5", "r", "t", "f", "g", "v", "b"]],
+    ["right-index", ["6", "7", "y", "u", "h", "j", "n", "m"]],
+    ["right-middle", ["8", "i", "k", ","]],
+    ["right-ring", ["9", "o", "l", "."]],
+    ["right-pinky", ["0", "-", "=", "p", "[", "]", ";", "'", "/", "\\"]]
+  ];
+  const map: Record<string, FingerId> = {};
+  for (const [finger, keys] of zones) {
+    for (const key of keys) {
+      map[key] = finger;
+      map[key.toLowerCase()] = finger;
+      map[key.toUpperCase()] = finger;
+    }
+  }
+  return map;
+})();
+
+const VIRTUAL_KEYBOARD_LAYOUT_ROWS: Record<string, string[][]> = {
+  qwerty: [
+    ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
+    ["a", "s", "d", "f", "g", "h", "j", "k", "l", ";"],
+    ["z", "x", "c", "v", "b", "n", "m"]
+  ],
+  qwertz: [
+    ["q", "w", "e", "r", "t", "z", "u", "i", "o", "p"],
+    ["a", "s", "d", "f", "g", "h", "j", "k", "l", ";"],
+    ["y", "x", "c", "v", "b", "n", "m"]
+  ],
+  azerty: [
+    ["a", "z", "e", "r", "t", "y", "u", "i", "o", "p"],
+    ["q", "s", "d", "f", "g", "h", "j", "k", "l", "m"],
+    ["w", "x", "c", "v", "b", "n", ";"]
+  ]
+};
+
+const FINGER_LOOKUP_BY_LAYOUT: Record<string, Record<string, FingerId>> = (() => {
+  const physicalRows = VIRTUAL_KEYBOARD_LAYOUT_ROWS.qwerty;
+  const maps: Record<string, Record<string, FingerId>> = {};
+  for (const [layoutId, rows] of Object.entries(VIRTUAL_KEYBOARD_LAYOUT_ROWS)) {
+    const map: Record<string, FingerId> = { ...PHYSICAL_FINGER_LOOKUP };
+    for (let rowIndex = 0; rowIndex < rows.length; rowIndex += 1) {
+      const layoutRow = rows[rowIndex];
+      const physicalRow = physicalRows[rowIndex] ?? [];
+      for (let colIndex = 0; colIndex < layoutRow.length; colIndex += 1) {
+        const physicalKey = physicalRow[colIndex];
+        const label = layoutRow[colIndex];
+        const finger = physicalKey ? PHYSICAL_FINGER_LOOKUP[physicalKey] : undefined;
+        if (!label || !finger) continue;
+        map[label] = finger;
+        map[label.toLowerCase()] = finger;
+        map[label.toUpperCase()] = finger;
+      }
+    }
+    maps[layoutId] = map;
+  }
+  return maps;
+})();
+
+const FINGER_MODE_LOCK_REASON: Partial<Record<TypingDrillMode, string>> = {
+  reaction: "Index fingers steady",
+  rhythm: "Middle fingers steady",
+  combo: "Ring fingers steady",
+  symbols: "Pinky fingers steady",
+  precision: "All fingers steady"
+};
+
+const FINGER_TIMING_MIN_MS = 40;
+const FINGER_TIMING_MAX_MS = 1200;
+
+const createEmptyFingerStats = (): Record<FingerId, FingerMasteryEntry> => {
+  const stats = Object.create(null) as Record<FingerId, FingerMasteryEntry>;
+  for (const finger of FINGER_IDS) {
+    stats[finger] = {
+      attempts: 0,
+      errors: 0,
+      timingSamples: 0,
+      timingTotalMs: 0
+    };
+  }
+  return stats;
 };
 
 const DRILL_CONFIGS: Record<TypingDrillMode, DrillConfig> = {
@@ -609,6 +733,13 @@ export class TypingDrillsOverlay {
   private readonly lessonPicker?: HTMLElement | null;
   private readonly lessonSelect?: HTMLSelectElement | null;
   private readonly lessonDescription?: HTMLElement | null;
+  private readonly masteryTarget?: HTMLElement | null;
+  private readonly masteryNodes: Map<
+    FingerId,
+    { node: HTMLElement; ring: HTMLElement; stats: HTMLElement }
+  > = new Map();
+  private readonly masteryUnlocks: Map<TypingDrillMode, HTMLElement> = new Map();
+  private readonly modeMetaDefaults: Map<TypingDrillMode, string> = new Map();
   private resizeHandler?: () => void;
   private layoutPulseTimeout?: number | null;
   private isCondensedLayout: boolean = false;
@@ -670,6 +801,10 @@ export class TypingDrillsOverlay {
     keys: new Map(),
     digraphs: new Map()
   };
+  private fingerMasteryState: FingerMasteryState = createDefaultFingerMasteryState();
+  private fingerRunStats: Record<FingerId, FingerMasteryEntry> = createEmptyFingerStats();
+  private lastFingerTimingAt: number | null = null;
+  private fingerLookup: Record<string, FingerId> = FINGER_LOOKUP_BY_LAYOUT.qwerty;
   private state: TypingDrillState = {
     mode: "lesson",
     active: false,
@@ -744,12 +879,47 @@ export class TypingDrillsOverlay {
     this.lessonPicker = document.getElementById("typing-drill-lesson-picker");
     this.lessonSelect = document.getElementById("typing-drill-lesson-select") as HTMLSelectElement | null;
     this.lessonDescription = document.getElementById("typing-drill-lesson-description");
+    this.masteryTarget = document.getElementById("typing-drill-mastery-target");
+
+    const masteryNodes = Array.from(
+      this.root.querySelectorAll<HTMLElement>(".typing-drill-mastery-node")
+    );
+    for (const node of masteryNodes) {
+      const finger = node.dataset.finger as FingerId | undefined;
+      if (!finger) continue;
+      const ring = node.querySelector<HTMLElement>(".typing-drill-mastery-ring");
+      const stats = node.querySelector<HTMLElement>(".typing-drill-mastery-stats");
+      if (!ring || !stats) continue;
+      this.masteryNodes.set(finger, { node, ring, stats });
+    }
+
+    const masteryUnlocks = Array.from(
+      this.root.querySelectorAll<HTMLElement>(".typing-drill-mastery-unlock")
+    );
+    for (const card of masteryUnlocks) {
+      const mode = card.dataset.mode as TypingDrillMode | undefined;
+      if (!mode) continue;
+      this.masteryUnlocks.set(mode, card);
+    }
 
     const modeButtons = Array.from(
       this.root.querySelectorAll<HTMLButtonElement>(".typing-drill-mode")
     );
     this.modeButtons.push(...modeButtons);
+    for (const button of this.modeButtons) {
+      const mode = button.dataset.mode as TypingDrillMode | undefined;
+      const meta = button.querySelector<HTMLElement>(".mode-meta");
+      if (!mode || !meta) continue;
+      this.modeMetaDefaults.set(mode, meta.textContent ?? "");
+    }
 
+    if (this.masteryTarget) {
+      const accuracyPct = Math.round(FINGER_MASTERY_TARGET.accuracy * 100);
+      const timingMs = Math.round(FINGER_MASTERY_TARGET.timingMs);
+      this.masteryTarget.textContent = `Targets: ${accuracyPct}% accuracy, ${timingMs}ms tempo.`;
+    }
+    this.updateFingerLookup();
+    this.refreshFingerMasteryState();
     this.initializeLessonPicker();
     this.attachEvents();
     this.updateLayoutMode();
@@ -767,6 +937,8 @@ export class TypingDrillsOverlay {
     this.root.dataset.visible = "true";
     this.state.startSource = source ?? this.state.startSource ?? "cta";
     this.lessonSelectionTouched = false;
+    this.updateFingerLookup();
+    this.refreshFingerMasteryState();
     this.reset(mode);
     this.input?.focus();
     if (toastMessage) {
@@ -810,7 +982,7 @@ export class TypingDrillsOverlay {
   }
 
   start(mode?: TypingDrillMode): void {
-    const nextMode = mode ?? this.state.mode;
+    const nextMode = this.resolveMode(mode);
     this.stopMetronome();
     this.stopReactionPrompt();
     this.stopSupport();
@@ -849,6 +1021,7 @@ export class TypingDrillsOverlay {
     this.supportPreviousLane = null;
     this.stopSupport();
     this.resetPatternStats();
+    this.resetFingerMasteryRun();
     this.prepareSprintGhost(nextMode);
     if (nextMode === "focus") {
       this.ensureFocusSegments();
@@ -938,7 +1111,7 @@ export class TypingDrillsOverlay {
   }
 
   reset(mode?: TypingDrillMode): void {
-    const nextMode = mode ?? this.state.mode;
+    const nextMode = this.resolveMode(mode);
     this.stopMetronome();
     this.stopReactionPrompt();
     this.stopSupport();
@@ -989,6 +1162,7 @@ export class TypingDrillsOverlay {
     this.supportPreviousLane = null;
     this.stopSupport();
     this.resetPatternStats();
+    this.resetFingerMasteryRun();
     this.updateMode(nextMode);
     this.updateTarget();
     this.updateMetrics();
@@ -1325,6 +1499,183 @@ export class TypingDrillsOverlay {
     };
   }
 
+  private getStorage(): Storage | null {
+    if (typeof window !== "undefined" && window.localStorage) {
+      return window.localStorage;
+    }
+    if (typeof globalThis !== "undefined" && "localStorage" in globalThis) {
+      const storage = (globalThis as { localStorage?: Storage }).localStorage;
+      return storage ?? null;
+    }
+    return null;
+  }
+
+  private updateFingerLookup(): void {
+    const storage = this.getStorage();
+    const settings = readPlayerSettings(storage);
+    const layout =
+      typeof settings.virtualKeyboardLayout === "string" && settings.virtualKeyboardLayout.length > 0
+        ? settings.virtualKeyboardLayout.toLowerCase()
+        : "qwerty";
+    this.fingerLookup = FINGER_LOOKUP_BY_LAYOUT[layout] ?? FINGER_LOOKUP_BY_LAYOUT.qwerty;
+  }
+
+  private resetFingerMasteryRun(): void {
+    this.fingerRunStats = createEmptyFingerStats();
+    this.lastFingerTimingAt = null;
+  }
+
+  private normalizeFingerKey(char: string): string {
+    const mapped = FINGER_SHIFTED_KEY_MAP[char] ?? char;
+    if (!mapped || mapped.length === 0) return "";
+    return mapped.charAt(0).toLowerCase();
+  }
+
+  private getFingerId(char: string | null | undefined): FingerId | null {
+    if (!char || char.length === 0) return null;
+    const normalized = this.normalizeFingerKey(char);
+    if (!normalized) return null;
+    return this.fingerLookup[normalized] ?? null;
+  }
+
+  private recordFingerMasteryAttempt(expectedChar: string, isError: boolean): void {
+    const finger = this.getFingerId(expectedChar);
+    if (!finger) {
+      if (isError) {
+        this.lastFingerTimingAt = null;
+      }
+      return;
+    }
+    const entry = this.fingerRunStats[finger];
+    entry.attempts += 1;
+    if (isError) {
+      entry.errors += 1;
+      this.lastFingerTimingAt = null;
+      return;
+    }
+    const now = performance.now();
+    if (this.lastFingerTimingAt !== null) {
+      const delta = now - this.lastFingerTimingAt;
+      if (delta >= FINGER_TIMING_MIN_MS && delta <= FINGER_TIMING_MAX_MS) {
+        entry.timingSamples += 1;
+        entry.timingTotalMs += delta;
+      }
+    }
+    this.lastFingerTimingAt = now;
+  }
+
+  private commitFingerMasteryRun(): void {
+    const hasActivity = Object.values(this.fingerRunStats).some(
+      (entry) => entry.attempts > 0 || entry.timingSamples > 0
+    );
+    if (!hasActivity) return;
+    const storage = this.getStorage();
+    const updated = applyFingerMasteryDelta(readFingerMastery(storage), this.fingerRunStats);
+    writeFingerMastery(storage, updated);
+    this.fingerMasteryState = updated;
+    this.updateMasteryTree(updated);
+    this.updateLockedModes();
+  }
+
+  private refreshFingerMasteryState(): void {
+    const storage = this.getStorage();
+    this.fingerMasteryState = readFingerMastery(storage);
+    this.updateMasteryTree(this.fingerMasteryState);
+    this.updateLockedModes();
+    if (this.isModeLocked(this.state.mode)) {
+      const fallback = this.getFirstUnlockedMode();
+      if (fallback && fallback !== this.state.mode) {
+        this.updateMode(fallback, { silent: true });
+      }
+    }
+  }
+
+  private updateMasteryTree(state: FingerMasteryState): void {
+    for (const finger of FINGER_IDS) {
+      const node = this.masteryNodes.get(finger);
+      if (!node) continue;
+      const progress = buildFingerMasteryProgress(state.fingers[finger]);
+      node.node.dataset.mastered = progress.mastered ? "true" : "false";
+      node.ring.style.setProperty("--progress", `${Math.round(progress.progress * 100)}%`);
+      const accuracyLabel = progress.attempts > 0 ? `${Math.round(progress.accuracy * 100)}%` : "--";
+      const tempoLabel =
+        progress.avgTimingMs !== null && progress.timingSamples >= FINGER_MASTERY_TARGET.minTimingSamples
+          ? `${Math.round(progress.avgTimingMs)}ms`
+          : "--";
+      node.stats.textContent = `Acc ${accuracyLabel} / Tempo ${tempoLabel}`;
+    }
+  }
+
+  private updateLockedModes(): void {
+    for (const button of this.modeButtons) {
+      const mode = button.dataset.mode as TypingDrillMode | undefined;
+      if (!mode) continue;
+      const locked = this.isModeLocked(mode);
+      const meta = button.querySelector<HTMLElement>(".mode-meta");
+      if (locked) {
+        button.dataset.locked = "true";
+        button.disabled = true;
+        button.setAttribute("aria-disabled", "true");
+        if (meta) {
+          const reason = this.getModeLockReason(mode);
+          meta.textContent = reason ? `Unlock: ${reason}` : "Unlock the mastery tree";
+        }
+      } else {
+        delete button.dataset.locked;
+        button.disabled = false;
+        button.setAttribute("aria-disabled", "false");
+        if (meta) {
+          const fallback = this.modeMetaDefaults.get(mode);
+          if (typeof fallback === "string") {
+            meta.textContent = fallback;
+          }
+        }
+      }
+    }
+
+    for (const [mode, card] of this.masteryUnlocks.entries()) {
+      const unlocked = !this.isModeLocked(mode);
+      card.dataset.unlocked = unlocked ? "true" : "false";
+      const meta = card.querySelector<HTMLElement>(".typing-drill-mastery-unlock-meta");
+      if (!meta) continue;
+      if (unlocked) {
+        meta.textContent = "Unlocked";
+      } else {
+        meta.textContent = this.getModeLockReason(mode) ?? "Locked";
+      }
+    }
+  }
+
+  private getModeLockReason(mode: TypingDrillMode): string | null {
+    return FINGER_MODE_LOCK_REASON[mode] ?? null;
+  }
+
+  private isModeLocked(mode: TypingDrillMode): boolean {
+    return !isModeUnlocked(mode, this.fingerMasteryState);
+  }
+
+  private getFirstUnlockedMode(): TypingDrillMode | null {
+    for (const button of this.modeButtons) {
+      const mode = button.dataset.mode as TypingDrillMode | undefined;
+      if (!mode) continue;
+      if (!this.isModeLocked(mode)) {
+        return mode;
+      }
+    }
+    return null;
+  }
+
+  private resolveMode(mode?: TypingDrillMode): TypingDrillMode {
+    const candidate = mode ?? this.state.mode;
+    if (!candidate) {
+      return this.getFirstUnlockedMode() ?? "lesson";
+    }
+    if (!this.isModeLocked(candidate)) {
+      return candidate;
+    }
+    return this.getFirstUnlockedMode() ?? "lesson";
+  }
+
   private updateLayoutMode(): void {
     const body = this.body;
     if (!body) return;
@@ -1412,6 +1763,15 @@ export class TypingDrillsOverlay {
       btn.addEventListener("click", () => {
         const mode = btn.dataset.mode as TypingDrillMode | undefined;
         if (!mode) return;
+        if (btn.disabled || this.isModeLocked(mode)) {
+          const reason = this.getModeLockReason(mode);
+          this.showToast(
+            reason
+              ? `${this.getModeLabel(mode)} locked. ${reason}.`
+              : "This drill is locked. Visit the mastery tree."
+          );
+          return;
+        }
         this.reset(mode);
         if (this.state.active) {
           this.start(mode);
@@ -1423,6 +1783,15 @@ export class TypingDrillsOverlay {
     if (this.recommendationRun) {
       this.recommendationRun.addEventListener("click", () => {
         if (this.recommendationMode) {
+          if (this.isModeLocked(this.recommendationMode)) {
+            const reason = this.getModeLockReason(this.recommendationMode);
+            this.showToast(
+              reason
+                ? `${this.getModeLabel(this.recommendationMode)} locked. ${reason}.`
+                : "This drill is locked. Visit the mastery tree."
+            );
+            return;
+          }
           this.reset(this.recommendationMode);
           this.start(this.recommendationMode);
         }
@@ -1596,6 +1965,7 @@ export class TypingDrillsOverlay {
           }
         }
       }
+      this.recordFingerMasteryAttempt(expectedLower, isError);
       this.state.buffer += char;
       this.state.totalInputs += 1;
       if (char === expected) {
@@ -2161,6 +2531,7 @@ export class TypingDrillsOverlay {
     if (this.statusLabel) {
       this.statusLabel.textContent = reason === "timeout" ? "Time" : "Complete";
     }
+    this.commitFingerMasteryRun();
     const summary = this.buildSummary();
     this.maybeUpdateSprintGhost(summary);
     const analyticsSummary = this.toAnalyticsSummary(summary);
@@ -3421,6 +3792,15 @@ export class TypingDrillsOverlay {
   }
 
   setRecommendation(mode: TypingDrillMode, reason: string): void {
+    if (this.isModeLocked(mode)) {
+      const lockReason = this.getModeLockReason(mode);
+      this.showNoRecommendation(
+        lockReason
+          ? `Unlock ${this.getModeLabel(mode)}: ${lockReason}.`
+          : "Unlock more drills in the mastery tree."
+      );
+      return;
+    }
     if (this.fallbackEl) {
       this.fallbackEl.dataset.visible = "false";
     }

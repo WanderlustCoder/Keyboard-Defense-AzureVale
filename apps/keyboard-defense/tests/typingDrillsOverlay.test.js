@@ -2,8 +2,60 @@ import { test, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import { parseHTML } from "linkedom";
 import { TypingDrillsOverlay } from "../src/ui/typingDrills.ts";
+import {
+  FINGER_IDS,
+  FINGER_MASTERY_STORAGE_KEY,
+  FINGER_MASTERY_TARGET
+} from "../src/utils/fingerMastery.ts";
 
 const htmlSource = readFileSync(new URL("../public/index.html", import.meta.url), "utf8");
+
+class MemoryStorage {
+  constructor(entries = {}) {
+    this.entries = new Map(Object.entries(entries));
+  }
+
+  getItem(key) {
+    return this.entries.has(key) ? this.entries.get(key) : null;
+  }
+
+  setItem(key, value) {
+    this.entries.set(key, String(value));
+  }
+
+  removeItem(key) {
+    this.entries.delete(key);
+  }
+}
+
+const buildMasteryState = () => {
+  const timingSamples = FINGER_MASTERY_TARGET.minTimingSamples;
+  const timingTotalMs = FINGER_MASTERY_TARGET.timingMs * timingSamples;
+  const fingers = Object.fromEntries(
+    FINGER_IDS.map((finger) => [
+      finger,
+      {
+        attempts: FINGER_MASTERY_TARGET.minAttempts,
+        errors: 0,
+        timingSamples,
+        timingTotalMs
+      }
+    ])
+  );
+  return {
+    version: "v1",
+    updatedAt: new Date().toISOString(),
+    fingers
+  };
+};
+
+const masteryStorage = new MemoryStorage({
+  [FINGER_MASTERY_STORAGE_KEY]: JSON.stringify(buildMasteryState())
+});
+
+if (!("localStorage" in globalThis)) {
+  globalThis.localStorage = masteryStorage;
+}
 
 test("TypingDrillsOverlay symbols mode accepts digits and punctuation", () => {
   const { window } = parseHTML(htmlSource);
@@ -118,6 +170,51 @@ test("TypingDrillsOverlay symbols mode gates advanced targets until unlocked", (
   }
 });
 
+test("TypingDrillsOverlay locks mastery-gated drills without progress", () => {
+  const { window } = parseHTML(htmlSource);
+  const { document } = window;
+
+  const originalGlobals = {
+    document: global.document,
+    window: global.window,
+    HTMLElement: global.HTMLElement,
+    HTMLInputElement: global.HTMLInputElement,
+    HTMLButtonElement: global.HTMLButtonElement,
+    setTimeout: global.setTimeout,
+    clearTimeout: global.clearTimeout,
+    performance: global.performance,
+    localStorage: global.localStorage
+  };
+
+  const emptyStorage = new MemoryStorage();
+  Object.assign(global, {
+    document,
+    window,
+    HTMLElement: window.HTMLElement,
+    HTMLInputElement: window.HTMLInputElement,
+    HTMLButtonElement: window.HTMLButtonElement,
+    setTimeout: window.setTimeout?.bind(window) ?? global.setTimeout,
+    clearTimeout: window.clearTimeout?.bind(window) ?? global.clearTimeout,
+    performance: window.performance ?? global.performance,
+    localStorage: emptyStorage
+  });
+
+  window.localStorage = emptyStorage;
+
+  const root = document.getElementById("typing-drills-overlay");
+  expect(root).toBeTruthy();
+
+  try {
+    const overlay = new TypingDrillsOverlay({ root });
+    overlay.open("reaction", "test");
+    const reactionButton = root.querySelector("[data-mode=\"reaction\"]");
+    expect(reactionButton?.disabled).toBe(true);
+    expect(overlay["state"].mode).not.toBe("reaction");
+  } finally {
+    Object.assign(global, originalGlobals);
+  }
+});
+
 test("TypingDrillsOverlay sprint mode starts a 60s timer", () => {
   const { window } = parseHTML(htmlSource);
   const { document } = window;
@@ -169,24 +266,6 @@ test("TypingDrillsOverlay sprint mode starts a 60s timer", () => {
 test("TypingDrillsOverlay sprint ghost shows pace and saves best run", () => {
   const { window } = parseHTML(htmlSource);
   const { document } = window;
-
-  class MemoryStorage {
-    constructor(entries = {}) {
-      this.entries = new Map(Object.entries(entries));
-    }
-
-    getItem(key) {
-      return this.entries.has(key) ? this.entries.get(key) : null;
-    }
-
-    setItem(key, value) {
-      this.entries.set(key, String(value));
-    }
-
-    removeItem(key) {
-      this.entries.delete(key);
-    }
-  }
 
   const storageKey = "keyboard-defense:typing-drill-ghosts";
   const storage = new MemoryStorage({

@@ -167,10 +167,21 @@ const initializeHud = (options = {}) => {
   const tutorialBanner = get("tutorial-banner");
   const tutorialBannerMessage =
     tutorialBanner.querySelector("[data-role='tutorial-message']") ?? tutorialBanner;
+  const tutorialBannerProgress = tutorialBanner.querySelector("[data-role='tutorial-progress']");
+  const tutorialBannerClose = tutorialBanner.querySelector("[data-role='tutorial-close']");
+  const tutorialBannerSkip = tutorialBanner.querySelector("[data-role='tutorial-skip']");
   const tutorialBannerToggle = tutorialBanner.querySelector("[data-role='tutorial-toggle']");
   const summaryContainer = get("tutorial-summary");
   const summaryContinue = get("tutorial-summary-continue");
   const summaryReplay = get("tutorial-summary-replay");
+  const tutorialDock = get("tutorial-dock");
+  const tutorialDockToggle = get("tutorial-dock-toggle");
+  const tutorialDockSteps = get("tutorial-dock-steps");
+  const tutorialDockSummary = tutorialDock.querySelector("[data-role='tutorial-dock-summary']");
+  const tutorialDockModal = get("tutorial-dock-modal");
+  const tutorialDockModalCopy = get("tutorial-dock-modal-copy");
+  const tutorialDockModalConfirm = get("tutorial-dock-modal-confirm");
+  const tutorialDockModalCancel = get("tutorial-dock-modal-cancel");
   const optionsCastleBonus = get("options-castle-bonus");
   const optionsCastleBenefits = get("options-castle-benefits");
   const optionsCastlePassives = get("options-castle-passives");
@@ -429,6 +440,19 @@ const initializeHud = (options = {}) => {
         stats: "tutorial-summary-stats",
         continue: "tutorial-summary-continue",
         replay: "tutorial-summary-replay"
+      },
+      tutorialDock: {
+        container: "tutorial-dock",
+        toggle: "tutorial-dock-toggle",
+        steps: "tutorial-dock-steps",
+        summary: "tutorial-dock-summary",
+        modal: {
+          container: "tutorial-dock-modal",
+          title: "tutorial-dock-modal-title",
+          copy: "tutorial-dock-modal-copy",
+          confirm: "tutorial-dock-modal-confirm",
+          cancel: "tutorial-dock-modal-cancel"
+        }
       },
       pauseButton: "pause-button",
       optionsOverlay: {
@@ -837,10 +861,21 @@ const initializeHud = (options = {}) => {
       milestoneCelebrationClose,
       tutorialBanner,
       tutorialBannerMessage,
+      tutorialBannerProgress,
+      tutorialBannerClose,
+      tutorialBannerSkip,
       tutorialBannerToggle,
       summaryContainer,
       summaryContinue,
       summaryReplay,
+      tutorialDock,
+      tutorialDockToggle,
+      tutorialDockSteps,
+      tutorialDockSummary,
+      tutorialDockModal,
+      tutorialDockModalCopy,
+      tutorialDockModalConfirm,
+      tutorialDockModalCancel,
       optionsOverlay,
       optionsResume,
       optionsMainColumn,
@@ -1341,6 +1376,79 @@ test("HudView highlights combos and accuracy delta during warnings", () => {
   hud.setTutorialMessage(null);
   assert.equal(tutorialBanner.dataset.visible, "false");
 
+  cleanup();
+});
+
+test("HudView tutorial progress capsule updates", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  const { tutorialBannerProgress } = elements;
+
+  assert.ok(tutorialBannerProgress);
+  hud.setTutorialProgress({
+    index: 2,
+    total: 9,
+    label: "Teach typing combat basics"
+  });
+  assert.equal(tutorialBannerProgress.hidden, false);
+  assert.equal(
+    tutorialBannerProgress.textContent,
+    "Step 2/9 - Teach typing combat basics"
+  );
+
+  hud.setTutorialProgress(null);
+  assert.equal(tutorialBannerProgress.hidden, true);
+  cleanup();
+});
+
+test("HudView tutorial hint dismiss hides banner", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  const { tutorialBanner, tutorialBannerClose } = elements;
+
+  assert.ok(tutorialBannerClose);
+  hud.setTutorialMessage("Practice typing", true);
+  assert.equal(tutorialBanner.dataset.visible, "true");
+  dispatchDomEvent(tutorialBannerClose, "click");
+  assert.equal(tutorialBanner.dataset.visible, "false");
+  cleanup();
+});
+
+test("HudView tutorial dock renders steps and toggles collapse", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  const { tutorialDock, tutorialDockToggle, tutorialDockSteps } = elements;
+
+  hud.setTutorialDock({
+    active: true,
+    currentStepId: "typing-basic",
+    steps: [
+      { id: "intro", label: "Season intro overlay", status: "done" },
+      { id: "typing-basic", label: "Teach typing combat basics", status: "active" },
+      { id: "combo-diagnostics", label: "Explain combos", status: "pending" }
+    ]
+  });
+
+  assert.equal(tutorialDock.hidden, false);
+  assert.equal(tutorialDockSteps.children.length, 3);
+  assert.equal(tutorialDock.dataset.collapsed, "false");
+  dispatchDomEvent(tutorialDockToggle, "click");
+  assert.equal(tutorialDock.dataset.collapsed, "true");
+  cleanup();
+});
+
+test("HudView tutorial dock opens replay modal", () => {
+  const { hud, cleanup, elements } = initializeHud();
+  const { tutorialDockSteps, tutorialDockModal, tutorialDockModalCopy } = elements;
+
+  hud.setTutorialDock({
+    active: true,
+    currentStepId: "intro",
+    steps: [{ id: "intro", label: "Season intro overlay", status: "active" }]
+  });
+
+  const stepButton = tutorialDockSteps.querySelector('button[data-step-id="intro"]');
+  assert.ok(stepButton);
+  dispatchDomEvent(stepButton, "click");
+  assert.equal(tutorialDockModal.dataset.visible, "true");
+  assert.ok(tutorialDockModalCopy.textContent?.includes("Replay"));
   cleanup();
 });
 

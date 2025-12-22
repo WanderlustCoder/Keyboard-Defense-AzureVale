@@ -5,7 +5,7 @@ Quick status snapshot for items in `season4_backlog.md`. All items start as Not 
 | ID | Title | Status | Notes |
 | --- | --- | --- | --- |
 | 1 | Diagnostic placement test | Done | Added a Placement Test mode in Typing Drills: left/right segments + mixed strings, hand-specific accuracy scores, tutorial pacing suggestion, and local persistence (`keyboard-defense:placement-test`). |
-| 2 | Per-finger mastery tree | Not Started | - |
+| 2 | Per-finger mastery tree | Done | Typing drills now track per-finger accuracy/tempo, render a mastery tree, and unlock advanced drills (reaction/rhythm/combo/symbols/precision) once fingers hit target stats; stored in `keyboard-defense:finger-mastery`. |
 | 3 | Adaptive session goals | Done | Adds local-only adaptive session goals (accuracy/WPM/consistency) with a HUD panel that tracks live progress and tunes targets after each defeat/victory run. |
 | 4 | Spaced-repetition scheduler | Done | Adds a local spaced-repetition scheduler for weak keys/digraphs, updated from wave + drill typing stats and blended into Focus/Warm-up targets + drill recommendations. |
 | 5 | Error-cluster detection | Done | Tracks recent typing-error clusters (top expected keys) in local storage (`keyboard-defense:error-clusters`) and adds a Focus Drill mode that micro-drills trouble keys; drill recommendations can now surface Focus Drill when clusters are strong. |

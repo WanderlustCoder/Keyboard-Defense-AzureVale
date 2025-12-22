@@ -161,7 +161,82 @@
             </div>
           </div>
         </div>
-        <canvas id="game-surface" width="960" height="540"></canvas>
+        <div class="playfield-stage">
+          <canvas id="game-surface" width="960" height="540"></canvas>
+          <div class="playfield-overlay">
+            <section
+              class="tutorial-banner"
+              id="tutorial-banner"
+              data-visible="false"
+              data-anchor="left"
+              aria-live="polite"
+              aria-hidden="true"
+              tabindex="-1"
+            >
+              <div class="tutorial-banner__header">
+                <button
+                  type="button"
+                  class="tutorial-banner__progress"
+                  data-role="tutorial-progress"
+                  hidden
+                ></button>
+                <button
+                  type="button"
+                  class="tutorial-banner__close"
+                  data-role="tutorial-close"
+                  aria-label="Dismiss tutorial hint"
+                >
+                  ✕
+                </button>
+              </div>
+              <div class="tutorial-banner__content" data-role="tutorial-message"></div>
+              <div class="tutorial-banner__meta">
+                <div class="tutorial-banner__keycaps" aria-hidden="true">
+                  <span class="tutorial-banner__key-label">Continue</span>
+                  <span class="tutorial-banner__keycap">Enter</span>
+                </div>
+                <button
+                  type="button"
+                  class="tutorial-banner__skip"
+                  data-role="tutorial-skip"
+                >
+                  Skip tutorial
+                </button>
+                <button
+                  type="button"
+                  class="tutorial-banner__toggle"
+                  data-role="tutorial-toggle"
+                  aria-expanded="false"
+                >
+                  Show full tip
+                </button>
+              </div>
+            </section>
+            <section
+              class="tutorial-dock"
+              id="tutorial-dock"
+              data-collapsed="true"
+              hidden
+              aria-label="Tutorial dock"
+            >
+              <button
+                type="button"
+                class="tutorial-dock__toggle"
+                id="tutorial-dock-toggle"
+                data-role="tutorial-dock-toggle"
+                aria-expanded="false"
+              >
+                Tutorial dock
+                <span
+                  class="tutorial-dock__summary"
+                  id="tutorial-dock-summary"
+                  data-role="tutorial-dock-summary"
+                ></span>
+              </button>
+              <ol class="tutorial-dock__steps" id="tutorial-dock-steps" data-role="tutorial-dock-steps"></ol>
+            </section>
+          </div>
+        </div>
         <div class="playfield-footer">
           <div class="playfield-footer-left">
             <div class="playfield-gold">
@@ -243,22 +318,6 @@
         </div>
       </div>
       <aside id="hud">
-        <section
-          class="tutorial-banner"
-          id="tutorial-banner"
-          data-visible="false"
-          aria-live="polite"
-        >
-          <div class="tutorial-banner__content" data-role="tutorial-message"></div>
-          <button
-            type="button"
-            class="tutorial-banner__toggle"
-            data-role="tutorial-toggle"
-            aria-expanded="false"
-          >
-            Show full tip
-          </button>
-        </section>
         <section class="castle">
         </section>
         <section class="hud-dock" id="hud-dock">
@@ -1205,6 +1264,26 @@
         <div class="tutorial-summary-actions">
           <button id="tutorial-summary-continue">Proceed to Campaign</button>
           <button id="tutorial-summary-replay">Replay Tutorial</button>
+        </div>
+      </div>
+    </div>
+    <div
+      id="tutorial-dock-modal"
+      class="tutorial-dock-modal"
+      data-visible="false"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="tutorial-dock-modal-title"
+      aria-describedby="tutorial-dock-modal-copy"
+    >
+      <div class="tutorial-dock-modal__card">
+        <h3 id="tutorial-dock-modal-title">Replay tutorial step?</h3>
+        <p id="tutorial-dock-modal-copy"></p>
+        <div class="tutorial-dock-modal__actions">
+          <button id="tutorial-dock-modal-confirm" type="button">Replay step</button>
+          <button id="tutorial-dock-modal-cancel" type="button" class="secondary">
+            Cancel
+          </button>
         </div>
       </div>
     </div>
@@ -2808,6 +2887,113 @@
                 <span class="mode-label">Focus Drill</span>
                 <span class="mode-meta">Trouble keys</span>
               </button>
+            </div>
+            <div class="typing-drill-mastery" aria-label="Finger mastery tree">
+              <div class="typing-drill-mastery-header">
+                <div>
+                  <span class="typing-drill-mastery-kicker">Finger mastery tree</span>
+                  <span id="typing-drill-mastery-target" class="typing-drill-mastery-target"></span>
+                </div>
+                <p class="typing-drill-mastery-note">
+                  Unlock new drills by keeping each finger accurate and steady.
+                </p>
+              </div>
+              <div class="typing-drill-mastery-tree" role="list">
+                <div class="typing-drill-mastery-node" data-finger="left-pinky" role="listitem">
+                  <div class="typing-drill-mastery-ring">
+                    <span class="typing-drill-mastery-tag">LP</span>
+                  </div>
+                  <div class="typing-drill-mastery-info">
+                    <span class="typing-drill-mastery-label">Left Pinky</span>
+                    <span class="typing-drill-mastery-stats">Acc -- / Tempo --</span>
+                  </div>
+                </div>
+                <div class="typing-drill-mastery-node" data-finger="left-ring" role="listitem">
+                  <div class="typing-drill-mastery-ring">
+                    <span class="typing-drill-mastery-tag">LR</span>
+                  </div>
+                  <div class="typing-drill-mastery-info">
+                    <span class="typing-drill-mastery-label">Left Ring</span>
+                    <span class="typing-drill-mastery-stats">Acc -- / Tempo --</span>
+                  </div>
+                </div>
+                <div class="typing-drill-mastery-node" data-finger="left-middle" role="listitem">
+                  <div class="typing-drill-mastery-ring">
+                    <span class="typing-drill-mastery-tag">LM</span>
+                  </div>
+                  <div class="typing-drill-mastery-info">
+                    <span class="typing-drill-mastery-label">Left Middle</span>
+                    <span class="typing-drill-mastery-stats">Acc -- / Tempo --</span>
+                  </div>
+                </div>
+                <div class="typing-drill-mastery-node" data-finger="left-index" role="listitem">
+                  <div class="typing-drill-mastery-ring">
+                    <span class="typing-drill-mastery-tag">LI</span>
+                  </div>
+                  <div class="typing-drill-mastery-info">
+                    <span class="typing-drill-mastery-label">Left Index</span>
+                    <span class="typing-drill-mastery-stats">Acc -- / Tempo --</span>
+                  </div>
+                </div>
+                <div class="typing-drill-mastery-node" data-finger="right-index" role="listitem">
+                  <div class="typing-drill-mastery-ring">
+                    <span class="typing-drill-mastery-tag">RI</span>
+                  </div>
+                  <div class="typing-drill-mastery-info">
+                    <span class="typing-drill-mastery-label">Right Index</span>
+                    <span class="typing-drill-mastery-stats">Acc -- / Tempo --</span>
+                  </div>
+                </div>
+                <div class="typing-drill-mastery-node" data-finger="right-middle" role="listitem">
+                  <div class="typing-drill-mastery-ring">
+                    <span class="typing-drill-mastery-tag">RM</span>
+                  </div>
+                  <div class="typing-drill-mastery-info">
+                    <span class="typing-drill-mastery-label">Right Middle</span>
+                    <span class="typing-drill-mastery-stats">Acc -- / Tempo --</span>
+                  </div>
+                </div>
+                <div class="typing-drill-mastery-node" data-finger="right-ring" role="listitem">
+                  <div class="typing-drill-mastery-ring">
+                    <span class="typing-drill-mastery-tag">RR</span>
+                  </div>
+                  <div class="typing-drill-mastery-info">
+                    <span class="typing-drill-mastery-label">Right Ring</span>
+                    <span class="typing-drill-mastery-stats">Acc -- / Tempo --</span>
+                  </div>
+                </div>
+                <div class="typing-drill-mastery-node" data-finger="right-pinky" role="listitem">
+                  <div class="typing-drill-mastery-ring">
+                    <span class="typing-drill-mastery-tag">RP</span>
+                  </div>
+                  <div class="typing-drill-mastery-info">
+                    <span class="typing-drill-mastery-label">Right Pinky</span>
+                    <span class="typing-drill-mastery-stats">Acc -- / Tempo --</span>
+                  </div>
+                </div>
+              </div>
+              <div class="typing-drill-mastery-unlocks" role="list" aria-label="Drill unlocks">
+                <div class="typing-drill-mastery-unlock" data-mode="reaction" role="listitem">
+                  <span class="typing-drill-mastery-unlock-label">Reaction Challenge</span>
+                  <span class="typing-drill-mastery-unlock-meta">Index fingers steady</span>
+                </div>
+                <div class="typing-drill-mastery-unlock" data-mode="rhythm" role="listitem">
+                  <span class="typing-drill-mastery-unlock-label">Rhythm Drill</span>
+                  <span class="typing-drill-mastery-unlock-meta">Middle fingers steady</span>
+                </div>
+                <div class="typing-drill-mastery-unlock" data-mode="combo" role="listitem">
+                  <span class="typing-drill-mastery-unlock-label">Combo Preservation</span>
+                  <span class="typing-drill-mastery-unlock-meta">Ring fingers steady</span>
+                </div>
+                <div class="typing-drill-mastery-unlock" data-mode="symbols" role="listitem">
+                  <span class="typing-drill-mastery-unlock-label">Numbers &amp; Symbols</span>
+                  <span class="typing-drill-mastery-unlock-meta">Pinky fingers steady</span>
+                </div>
+                <div class="typing-drill-mastery-unlock" data-mode="precision" role="listitem">
+                  <span class="typing-drill-mastery-unlock-label">Shield Breaker</span>
+                  <span class="typing-drill-mastery-unlock-meta">All fingers steady</span>
+                </div>
+              </div>
             </div>
             <div
               id="typing-drill-lesson-picker"

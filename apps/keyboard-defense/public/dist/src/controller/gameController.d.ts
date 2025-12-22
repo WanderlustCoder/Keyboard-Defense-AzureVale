@@ -193,6 +193,8 @@ export declare class GameController {
     handleTypingDrillsClosed(): void;
     recordTypingDrillSummary(summary: TypingDrillSummary): void;
     isAdvancedSymbolsUnlocked(): boolean;
+    isTypingDrillUnlocked(mode: any): boolean;
+    ensureTypingDrillRecommendationUnlocked(recommendation: any): any;
     syncTypingDrillUnlocksToOverlay(): void;
     syncErrorClustersToOverlay(): void;
     handleTypingDrillStarted(mode: TypingDrillMode, source: string | undefined): void;
@@ -435,6 +437,7 @@ export declare class GameController {
     };
     handleTutorialContinue(): void;
     handleTutorialReplay(): void;
+    replayTutorialStep(stepId: string): void;
     startTutorial(forceReplay?: boolean): void;
     setPracticeMode(enabled: any): void;
     applyChallengeModifiersToEngine(): import("../utils/challengeModifiers.js").ChallengeModifiersViewState;

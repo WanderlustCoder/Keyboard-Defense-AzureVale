@@ -38,9 +38,26 @@ export declare class TutorialManager {
     start(): void;
     skip(): void;
     reset(): void;
+    replayStep(stepId: TutorialStepId): void;
     completeStep(stepId: TutorialStepId): void;
     getState(): TutorialState;
     getCurrentStepId(): TutorialStepId | null;
+    getStepProgress(): {
+        index: number;
+        total: number;
+        label: string;
+        stepId: TutorialStepId;
+        anchor: "left" | "right";
+    } | null;
+    getDockState(): {
+        active: boolean;
+        currentStepId: TutorialStepId;
+        steps: Array<{
+            id: TutorialStepId;
+            label: string;
+            status: "done" | "active" | "pending";
+        }>;
+    } | null;
     update(deltaSeconds: number): void;
     setPacingMultiplier(pacing: number): number;
     notify(event: TutorialEvent): void;

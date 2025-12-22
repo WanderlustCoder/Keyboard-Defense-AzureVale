@@ -43,6 +43,7 @@ import {
   type TurretLoadoutPresetMap,
   type TurretLoadoutSlot
 } from "../utils/playerSettings.js";
+import { isModeUnlocked, readFingerMastery } from "../utils/fingerMastery.js";
 import { TelemetryClient } from "../telemetry/telemetryClient.js";
 import { calculateCanvasResolution, createDprListener } from "../utils/canvasResolution.js";
 import { buildResolutionChangeEntry } from "../utils/canvasTransition.js";
@@ -831,6 +832,19 @@ export class GameController {
           continue: "tutorial-summary-continue",
           replay: "tutorial-summary-replay"
         },
+        tutorialDock: {
+          container: "tutorial-dock",
+          toggle: "tutorial-dock-toggle",
+          steps: "tutorial-dock-steps",
+          summary: "tutorial-dock-summary",
+          modal: {
+            container: "tutorial-dock-modal",
+            title: "tutorial-dock-modal-title",
+            copy: "tutorial-dock-modal-copy",
+            confirm: "tutorial-dock-modal-confirm",
+            cancel: "tutorial-dock-modal-cancel"
+          }
+        },
         pauseButton: "pause-button",
         shortcutOverlay: {
           container: "shortcut-overlay",
@@ -1236,6 +1250,8 @@ export class GameController {
         onCheckeredBackgroundToggle: (enabled) => this.setCheckeredBackgroundEnabled(enabled),
         onAccessibilityPresetToggle: (enabled) => this.setAccessibilityPresetEnabled(enabled),
         onLargeSubtitlesToggle: (enabled) => this.setLargeSubtitlesEnabled(enabled),
+        onTutorialSkip: () => this.skipTutorial(),
+        onTutorialStepReplay: (stepId) => this.replayTutorialStep(stepId),
         onTutorialPacingChange: (value) => this.setTutorialPacing(value),
         onAudioNarrationToggle: (enabled) => this.setAudioNarrationEnabled(enabled),
         onBreakReminderIntervalChange: (minutes) => this.setBreakReminderIntervalMinutes(minutes),
@@ -4557,6 +4573,21 @@ export class GameController {
       symbolsBest.tier === "silver" || symbolsBest.tier === "gold" || symbolsBest.tier === "platinum"
     );
   }
+  isTypingDrillUnlocked(mode) {
+    const storage = typeof window !== "undefined" ? window.localStorage : null;
+    return isModeUnlocked(mode, readFingerMastery(storage));
+  }
+  ensureTypingDrillRecommendationUnlocked(recommendation) {
+    if (!recommendation) return null;
+    if (this.isTypingDrillUnlocked(recommendation.mode)) {
+      return recommendation;
+    }
+    const fallback = "burst";
+    return {
+      mode: fallback,
+      reason: "Warm up with a quick burst while you unlock new drills."
+    };
+  }
   syncTypingDrillUnlocksToOverlay() {
     if (!this.typingDrills) return;
     this.typingDrills.setAdvancedSymbolsUnlocked(this.isAdvancedSymbolsUnlocked());
@@ -5255,10 +5286,10 @@ export class GameController {
     const lastDrill = state.analytics?.typingDrills?.at?.(-1) ?? null;
     const lessonPath = buildLessonPathViewState(this.lessonProgress?.lessonCompletions ?? {});
     if (lessonPath.next) {
-      return {
+      return this.ensureTypingDrillRecommendationUnlocked({
         mode: "lesson",
         reason: `Next up: Lesson ${lessonPath.next.order} - ${lessonPath.next.label}.`
-      };
+      });
     }
     const nowMs = Date.now();
     const storage = typeof window !== "undefined" ? window.localStorage : null;
@@ -5281,27 +5312,48 @@ export class GameController {
       limit: 3
     });
     if (accuracy < 0.9 || warnings > 1) {
-      return { mode: "precision", reason: "Tighten accuracy after recent drops." };
+      return this.ensureTypingDrillRecommendationUnlocked({
+        mode: "precision",
+        reason: "Tighten accuracy after recent drops."
+      });
     }
     if (duePatterns.length >= 3) {
       const label = duePatterns.map((pattern) => pattern.toUpperCase()).join(", ");
-      return { mode: "warmup", reason: `Spaced repetition: ${label} are due. Run a warm-up plan.` };
+      return this.ensureTypingDrillRecommendationUnlocked({
+        mode: "warmup",
+        reason: `Spaced repetition: ${label} are due. Run a warm-up plan.`
+      });
     }
     if (recentErrorCount >= 6 && (focusKeys[0]?.count ?? 0) >= 3) {
       const keyLabel = focusKeys.map((entry) => entry.key.toUpperCase()).join(", ");
-      return { mode: "focus", reason: `Micro-drill your trouble keys: ${keyLabel}.` };
+      return this.ensureTypingDrillRecommendationUnlocked({
+        mode: "focus",
+        reason: `Micro-drill your trouble keys: ${keyLabel}.`
+      });
     }
     if (duePatterns.length > 0) {
       const label = duePatterns.map((pattern) => pattern.toUpperCase()).join(", ");
-      return { mode: "focus", reason: `Spaced repetition: review ${label}.` };
+      return this.ensureTypingDrillRecommendationUnlocked({
+        mode: "focus",
+        reason: `Spaced repetition: review ${label}.`
+      });
     }
     if (combo >= 6 && accuracy >= 0.97) {
-      return { mode: "endurance", reason: "Hold cadence and combo for longer strings." };
+      return this.ensureTypingDrillRecommendationUnlocked({
+        mode: "endurance",
+        reason: "Hold cadence and combo for longer strings."
+      });
     }
     if (lastDrill?.mode === "precision" && lastDrill.accuracy >= 0.97) {
-      return { mode: "burst", reason: "Reset rhythm with a quick burst between waves." };
+      return this.ensureTypingDrillRecommendationUnlocked({
+        mode: "burst",
+        reason: "Reset rhythm with a quick burst between waves."
+      });
     }
-    return { mode: "burst", reason: "Warm up with five quick clears before rejoining." };
+    return this.ensureTypingDrillRecommendationUnlocked({
+      mode: "burst",
+      reason: "Warm up with five quick clears before rejoining."
+    });
   }
   buildWaveCoachSummary(scorecard) {
     const accuracyRaw = typeof scorecard?.accuracy === "number" ? scorecard.accuracy : 0;
@@ -6643,6 +6695,10 @@ export class GameController {
       wallTimeSeconds: this.sessionWallTimeSeconds ?? 0,
       wavePreviewEmptyMessage: fogOfWar ? "Fog of war: intel hidden." : undefined
     });
+    const tutorialProgress = this.tutorialManager?.getStepProgress?.() ?? null;
+    this.hud.setTutorialProgress(tutorialProgress);
+    const tutorialDock = this.tutorialManager?.getDockState?.() ?? null;
+    this.hud.setTutorialDock(tutorialDock);
     this.updateFieldDrillStatus(this.currentState);
     this.updateFieldDrillBuffs(this.currentState);
     const sessionGoalsFinalized = this.maybeFinalizeSessionGoals(this.currentState);
@@ -7943,6 +7999,15 @@ export class GameController {
     this.tutorialManager?.notify({ type: "summary:dismissed" });
     this.clearTutorialProgress();
     this.startTutorial(true);
+  }
+  replayTutorialStep(stepId: string) {
+    if (!this.tutorialManager || !stepId) return;
+    this.hud.hideTutorialSummary();
+    this.pendingTutorialSummary = null;
+    this.tutorialHoldLoop = false;
+    this.tutorialCompleted = false;
+    this.tutorialManager.replayStep?.(stepId);
+    this.render();
   }
   startTutorial(forceReplay = false) {
     if (!this.tutorialManager) return;

@@ -129,6 +129,8 @@ export interface HudCallbacks {
     onDyslexiaSpacingToggle?: (enabled: boolean) => void;
     onLatencySparklineToggle?: (enabled: boolean) => void;
     onLargeSubtitlesToggle?: (enabled: boolean) => void;
+    onTutorialSkip?: () => void;
+    onTutorialStepReplay?: (stepId: string) => void;
     onTutorialPacingChange?: (value: number) => void;
     onCognitiveLoadToggle?: (enabled: boolean) => void;
     onAudioNarrationToggle?: (enabled: boolean) => void;
@@ -181,6 +183,23 @@ export interface TutorialSummaryData {
     breaches: number;
     gold: number;
 }
+type TutorialProgress = {
+    index: number;
+    total: number;
+    label: string;
+    stepId?: string;
+    anchor?: "left" | "right";
+};
+type TutorialDockStep = {
+    id: string;
+    label: string;
+    status: "done" | "active" | "pending";
+};
+type TutorialDockState = {
+    active: boolean;
+    steps: TutorialDockStep[];
+    currentStepId?: string | null;
+};
 type TutorialSummaryHandlers = {
     onContinue: () => void;
     onReplay: () => void;
@@ -592,6 +611,15 @@ export declare class HudView {
     private readonly logList;
     private readonly tutorialBanner?;
     private tutorialBannerExpanded;
+    private tutorialProgressKey;
+    private tutorialHintDismissed;
+    private lastTutorialMessage;
+    private tutorialDock?;
+    private readonly tutorialDockStorageKey;
+    private tutorialDockCollapsed;
+    private tutorialDockStateKey;
+    private tutorialDockLabels;
+    private tutorialDockModal?;
     private readonly virtualKeyboard?;
     private virtualKeyboardEnabled;
     private virtualKeyboardLayout;
@@ -813,6 +841,19 @@ export declare class HudView {
             continue: string;
             replay: string;
         };
+        tutorialDock?: {
+            container: string;
+            toggle: string;
+            steps: string;
+            summary?: string;
+            modal?: {
+                container: string;
+                title: string;
+                copy: string;
+                confirm: string;
+                cancel: string;
+            };
+        };
         pauseButton?: string;
         shortcutOverlay?: ShortcutOverlayElements;
         optionsOverlay?: OptionsOverlayElements;
@@ -977,6 +1018,15 @@ export declare class HudView {
     private recordLogSummary;
     appendLog(message: string, category?: BattleLogCategory): void;
     setTutorialMessage(message: string | null, highlight?: boolean): void;
+    setTutorialProgress(progress: TutorialProgress | null): void;
+    setTutorialDock(state: TutorialDockState | null): void;
+    private dismissTutorialHint;
+    private readTutorialDockCollapsed;
+    private persistTutorialDockCollapsed;
+    private refreshTutorialDockLayout;
+    private showTutorialDockModal;
+    private confirmTutorialDockModal;
+    private hideTutorialDockModal;
     private updateCastleBonusHint;
     private clearWavePreviewHintTimeout;
     private updateWavePreviewHint;

@@ -430,6 +430,8 @@ export interface HudCallbacks {
   onDyslexiaSpacingToggle?: (enabled: boolean) => void;
   onLatencySparklineToggle?: (enabled: boolean) => void;
   onLargeSubtitlesToggle?: (enabled: boolean) => void;
+  onTutorialSkip?: () => void;
+  onTutorialStepReplay?: (stepId: string) => void;
   onTutorialPacingChange?: (value: number) => void;
   onCognitiveLoadToggle?: (enabled: boolean) => void;
   onAudioNarrationToggle?: (enabled: boolean) => void;
@@ -511,6 +513,26 @@ export interface TutorialSummaryData {
   gold: number;
 }
 
+type TutorialProgress = {
+  index: number;
+  total: number;
+  label: string;
+  stepId?: string;
+  anchor?: "left" | "right";
+};
+
+type TutorialDockStep = {
+  id: string;
+  label: string;
+  status: "done" | "active" | "pending";
+};
+
+type TutorialDockState = {
+  active: boolean;
+  steps: TutorialDockStep[];
+  currentStepId?: string | null;
+};
+
 type TutorialSummaryHandlers = {
   onContinue: () => void;
   onReplay: () => void;
@@ -527,6 +549,24 @@ type TutorialBannerElements = {
   container: HTMLElement;
   message: HTMLElement;
   toggle?: HTMLButtonElement | null;
+  progress?: HTMLButtonElement | null;
+  close?: HTMLButtonElement | null;
+  skip?: HTMLButtonElement | null;
+};
+
+type TutorialDockElements = {
+  container: HTMLElement;
+  toggle: HTMLButtonElement;
+  steps: HTMLOListElement;
+  summary?: HTMLElement | null;
+};
+
+type TutorialDockModalElements = {
+  container: HTMLElement;
+  title: HTMLElement;
+  copy: HTMLElement;
+  confirm: HTMLButtonElement;
+  cancel: HTMLButtonElement;
 };
 
 type ShortcutOverlayElements = {
@@ -987,6 +1027,19 @@ export class HudView {
   private readonly logList: HTMLUListElement;
   private readonly tutorialBanner?: TutorialBannerElements;
   private tutorialBannerExpanded = true;
+  private tutorialProgressKey: string | null = null;
+  private tutorialHintDismissed = false;
+  private lastTutorialMessage: string | null = null;
+  private tutorialDock?: TutorialDockElements;
+  private readonly tutorialDockStorageKey = "keyboard-defense:tutorial-dock-collapsed";
+  private tutorialDockCollapsed = false;
+  private tutorialDockStateKey: string | null = null;
+  private tutorialDockLabels = new Map<string, string>();
+  private tutorialDockModal?:
+    | (TutorialDockModalElements & {
+        stepId: string | null;
+      })
+    | undefined;
   private readonly virtualKeyboard?: VirtualKeyboard;
   private virtualKeyboardEnabled = false;
   private virtualKeyboardLayout = "qwerty";
@@ -1683,6 +1736,19 @@ export class HudView {
         continue: string;
         replay: string;
       };
+      tutorialDock?: {
+        container: string;
+        toggle: string;
+        steps: string;
+        summary?: string;
+        modal?: {
+          container: string;
+          title: string;
+          copy: string;
+          confirm: string;
+          cancel: string;
+        };
+      };
       pauseButton?: string;
       shortcutOverlay?: ShortcutOverlayElements;
       optionsOverlay?: OptionsOverlayElements;
@@ -2126,6 +2192,15 @@ export class HudView {
       const toggleElement = tutorialBannerElement.querySelector<HTMLButtonElement>(
         "[data-role='tutorial-toggle']"
       );
+      const progressElement = tutorialBannerElement.querySelector<HTMLButtonElement>(
+        "[data-role='tutorial-progress']"
+      );
+      const closeElement = tutorialBannerElement.querySelector<HTMLButtonElement>(
+        "[data-role='tutorial-close']"
+      );
+      const skipElement = tutorialBannerElement.querySelector<HTMLButtonElement>(
+        "[data-role='tutorial-skip']"
+      );
       if (toggleElement) {
         toggleElement.addEventListener("click", () => {
           if (tutorialBannerElement.dataset.visible !== "true") {
@@ -2135,13 +2210,97 @@ export class HudView {
           this.refreshTutorialBannerLayout();
         });
       }
+      if (progressElement) {
+        progressElement.addEventListener("click", () => {
+          if (toggleElement && !toggleElement.hidden) {
+            toggleElement.focus();
+          } else {
+            tutorialBannerElement.focus();
+          }
+        });
+      }
+      if (closeElement) {
+        closeElement.addEventListener("click", () => this.dismissTutorialHint());
+      }
+      if (skipElement) {
+        skipElement.addEventListener("click", () => this.callbacks.onTutorialSkip?.());
+      }
       this.tutorialBanner = {
         container: tutorialBannerElement,
         message: messageElement,
-        toggle: toggleElement ?? undefined
+        toggle: toggleElement ?? undefined,
+        progress: progressElement ?? undefined,
+        close: closeElement ?? undefined,
+        skip: skipElement ?? undefined
       };
     } else {
       this.tutorialBanner = undefined;
+    }
+    if (rootIds.tutorialDock) {
+      const dockContainer = document.getElementById(rootIds.tutorialDock.container);
+      const dockToggle = document.getElementById(rootIds.tutorialDock.toggle);
+      const dockSteps = document.getElementById(rootIds.tutorialDock.steps);
+      const dockSummary = rootIds.tutorialDock.summary
+        ? document.getElementById(rootIds.tutorialDock.summary)
+        : null;
+      if (
+        dockContainer instanceof HTMLElement &&
+        dockToggle instanceof HTMLButtonElement &&
+        dockSteps instanceof HTMLElement
+      ) {
+        this.tutorialDockCollapsed = this.readTutorialDockCollapsed();
+        dockToggle.addEventListener("click", () => {
+          this.tutorialDockCollapsed = !this.tutorialDockCollapsed;
+          this.persistTutorialDockCollapsed();
+          this.refreshTutorialDockLayout();
+        });
+        dockSteps.addEventListener("click", (event) => {
+          const target = event.target as HTMLElement | null;
+          const button = target?.closest<HTMLButtonElement>("button[data-step-id]");
+          const stepId = button?.dataset.stepId ?? null;
+          if (stepId) {
+            this.showTutorialDockModal(stepId);
+          }
+        });
+        this.tutorialDock = {
+          container: dockContainer,
+          toggle: dockToggle,
+          steps: dockSteps as HTMLOListElement,
+          summary: dockSummary
+        };
+      }
+    }
+    if (rootIds.tutorialDock?.modal) {
+      const modalContainer = document.getElementById(rootIds.tutorialDock.modal.container);
+      const modalTitle = document.getElementById(rootIds.tutorialDock.modal.title);
+      const modalCopy = document.getElementById(rootIds.tutorialDock.modal.copy);
+      const modalConfirm = document.getElementById(rootIds.tutorialDock.modal.confirm);
+      const modalCancel = document.getElementById(rootIds.tutorialDock.modal.cancel);
+      if (
+        modalContainer instanceof HTMLElement &&
+        modalTitle instanceof HTMLElement &&
+        modalCopy instanceof HTMLElement &&
+        modalConfirm instanceof HTMLButtonElement &&
+        modalCancel instanceof HTMLButtonElement
+      ) {
+        this.tutorialDockModal = {
+          container: modalContainer,
+          title: modalTitle,
+          copy: modalCopy,
+          confirm: modalConfirm,
+          cancel: modalCancel,
+          stepId: null
+        };
+        this.addFocusTrap(modalContainer);
+        modalConfirm.addEventListener("click", () => this.confirmTutorialDockModal());
+        modalCancel.addEventListener("click", () => this.hideTutorialDockModal());
+        modalContainer.addEventListener("keydown", (event) => {
+          if (event.key === "Escape") {
+            event.preventDefault();
+            this.hideTutorialDockModal();
+          }
+        });
+      }
     }
     const summaryContainer =
       document.getElementById(rootIds.tutorialSummary.container) ?? undefined;
@@ -6108,26 +6267,167 @@ export class HudView {
     const condensed = this.shouldCondenseTutorialBanner();
     const wasVisible = container.dataset.visible === "true";
     if (!message) {
+      this.lastTutorialMessage = null;
+      this.tutorialHintDismissed = false;
       container.dataset.visible = "false";
+      container.setAttribute("aria-hidden", "true");
       content.textContent = "";
       delete container.dataset.highlight;
       this.tutorialBannerExpanded = condensed ? false : true;
       this.refreshTutorialBannerLayout();
       return;
     }
-    container.dataset.visible = "true";
+    if (message !== this.lastTutorialMessage) {
+      this.lastTutorialMessage = message;
+      this.tutorialHintDismissed = false;
+    }
     if (highlight) {
       container.dataset.highlight = "true";
     } else {
       delete container.dataset.highlight;
     }
     content.textContent = message;
-    if (!wasVisible) {
+    const visible = !this.tutorialHintDismissed;
+    container.dataset.visible = visible ? "true" : "false";
+    container.setAttribute("aria-hidden", visible ? "false" : "true");
+    if (visible && !wasVisible) {
       this.tutorialBannerExpanded = condensed ? false : true;
-    } else if (!condensed) {
+    } else if (visible && !condensed) {
       this.tutorialBannerExpanded = true;
     }
     this.refreshTutorialBannerLayout();
+  }
+
+  setTutorialProgress(progress: TutorialProgress | null): void {
+    const banner = this.tutorialBanner;
+    if (!banner || !banner.progress) return;
+    const progressButton = banner.progress;
+    if (!progress) {
+      progressButton.hidden = true;
+      progressButton.textContent = "";
+      progressButton.removeAttribute("aria-label");
+      progressButton.removeAttribute("title");
+      this.tutorialProgressKey = null;
+      if (banner.container) {
+        delete banner.container.dataset.anchor;
+      }
+      this.refreshTutorialDockLayout();
+      return;
+    }
+    const label = progress.label?.trim() || "Tutorial";
+    const text = `Step ${progress.index}/${progress.total} - ${label}`;
+    if (this.tutorialProgressKey === text) {
+      progressButton.hidden = false;
+      if (progress.anchor) {
+        banner.container.dataset.anchor = progress.anchor;
+      }
+      return;
+    }
+    this.tutorialProgressKey = text;
+    progressButton.hidden = false;
+    progressButton.textContent = text;
+    progressButton.setAttribute("aria-label", `Tutorial progress: ${text}`);
+    progressButton.title = text;
+    if (progress.anchor) {
+      banner.container.dataset.anchor = progress.anchor;
+    }
+    this.refreshTutorialDockLayout();
+  }
+
+  setTutorialDock(state: TutorialDockState | null): void {
+    const dock = this.tutorialDock;
+    if (!dock) return;
+    if (!state || !state.active || state.steps.length === 0) {
+      dock.container.hidden = true;
+      this.tutorialDockStateKey = null;
+      return;
+    }
+    dock.container.hidden = false;
+    this.tutorialDockLabels = new Map(state.steps.map((step) => [step.id, step.label]));
+    const nextKey = state.steps.map((step) => `${step.id}:${step.status}`).join("|");
+    if (nextKey !== this.tutorialDockStateKey) {
+      dock.steps.replaceChildren();
+      for (const step of state.steps) {
+        const item = document.createElement("li");
+        item.dataset.status = step.status;
+        const button = document.createElement("button");
+        button.type = "button";
+        button.dataset.stepId = step.id;
+        button.textContent = step.label;
+        if (step.status === "active") {
+          button.setAttribute("aria-current", "step");
+        }
+        item.appendChild(button);
+        dock.steps.appendChild(item);
+      }
+      this.tutorialDockStateKey = nextKey;
+    }
+    this.refreshTutorialDockLayout();
+  }
+
+  private dismissTutorialHint(): void {
+    if (!this.tutorialBanner) return;
+    this.tutorialHintDismissed = true;
+    this.tutorialBanner.container.dataset.visible = "false";
+    this.tutorialBanner.container.setAttribute("aria-hidden", "true");
+    this.refreshTutorialBannerLayout();
+  }
+
+  private readTutorialDockCollapsed(): boolean {
+    if (typeof window === "undefined" || !window.localStorage) return false;
+    try {
+      return window.localStorage.getItem(this.tutorialDockStorageKey) === "true";
+    } catch {
+      return false;
+    }
+  }
+
+  private persistTutorialDockCollapsed(): void {
+    if (typeof window === "undefined" || !window.localStorage) return;
+    try {
+      window.localStorage.setItem(
+        this.tutorialDockStorageKey,
+        this.tutorialDockCollapsed ? "true" : "false"
+      );
+    } catch {
+      // ignore storage failures
+    }
+  }
+
+  private refreshTutorialDockLayout(): void {
+    const dock = this.tutorialDock;
+    if (!dock || dock.container.hidden) return;
+    dock.container.dataset.collapsed = this.tutorialDockCollapsed ? "true" : "false";
+    dock.toggle.setAttribute("aria-expanded", this.tutorialDockCollapsed ? "false" : "true");
+    if (dock.summary) {
+      dock.summary.textContent = this.tutorialProgressKey ?? "";
+    }
+  }
+
+  private showTutorialDockModal(stepId: string): void {
+    if (!this.tutorialDockModal) return;
+    const label = this.tutorialDockLabels.get(stepId) ?? "Tutorial step";
+    this.tutorialDockModal.stepId = stepId;
+    this.tutorialDockModal.copy.textContent = `Replay "${label}" now? Your current step progress will reset.`;
+    this.tutorialDockModal.container.dataset.visible = "true";
+    this.tutorialDockModal.container.setAttribute("aria-hidden", "false");
+    this.tutorialDockModal.confirm.focus();
+  }
+
+  private confirmTutorialDockModal(): void {
+    if (!this.tutorialDockModal) return;
+    const stepId = this.tutorialDockModal.stepId;
+    if (stepId) {
+      this.callbacks.onTutorialStepReplay?.(stepId);
+    }
+    this.hideTutorialDockModal();
+  }
+
+  private hideTutorialDockModal(): void {
+    if (!this.tutorialDockModal) return;
+    this.tutorialDockModal.container.dataset.visible = "false";
+    this.tutorialDockModal.container.setAttribute("aria-hidden", "true");
+    this.tutorialDockModal.stepId = null;
   }
 
   private updateCastleBonusHint(state: GameState): void {

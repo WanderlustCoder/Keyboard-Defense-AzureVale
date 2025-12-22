@@ -9,6 +9,17 @@ const DEFAULT_STEPS = [
     { id: "castle-passives", description: "Introduce castle passive buffs" },
     { id: "wrap-up", description: "Show summary and exit path" }
 ];
+const STEP_ANCHORS = {
+    intro: "left",
+    "typing-basic": "left",
+    "combo-diagnostics": "right",
+    "shielded-enemy": "right",
+    "turret-placement": "right",
+    "turret-upgrade": "right",
+    "castle-health": "left",
+    "castle-passives": "left",
+    "wrap-up": "left"
+};
 const WAVE_PREVIEW_MESSAGES = {
     combo: "Upcoming enemies queue here—watch the lanes to keep your combo alive.",
     placement: "Use the preview to place a turret where enemies are about to strike.",
@@ -100,6 +111,32 @@ export class TutorialManager {
         this.options.hud.setWavePreviewHighlight(false);
         this.logTransition("reset");
     }
+    replayStep(stepId) {
+        if (!stepId)
+            return;
+        const targetIndex = this.steps.findIndex((step) => step.id === stepId);
+        if (targetIndex < 0)
+            return;
+        if (this.state.active) {
+            const current = this.activeStep();
+            if (current) {
+                this.handlers[current.id]?.onExit?.();
+            }
+        }
+        this.clearCastleBreachTimer();
+        this.clearPassiveAnnouncementTimer();
+        this.errorsInStep = 0;
+        this.assistHintShown = false;
+        this.state.active = true;
+        this.state.currentStepIndex = targetIndex;
+        this.state.completedSteps = this.steps.slice(0, targetIndex).map((step) => step.id);
+        this.state.stepStartedAt = performance.now() / 1000;
+        this.timeInStep = 0;
+        this.resetShieldLessonState();
+        const step = this.activeStep();
+        this.applyStep(step);
+        this.logTransition("replay", step?.id);
+    }
     completeStep(stepId) {
         if (!this.state.active)
             return;
@@ -132,6 +169,43 @@ export class TutorialManager {
     getCurrentStepId() {
         const current = this.activeStep();
         return current ? current.id : null;
+    }
+    getStepProgress() {
+        const current = this.activeStep();
+        if (!current) {
+            return null;
+        }
+        return {
+            index: this.state.currentStepIndex + 1,
+            total: this.steps.length,
+            label: current.description ?? current.id,
+            stepId: current.id,
+            anchor: STEP_ANCHORS[current.id] ?? "left"
+        };
+    }
+    getDockState() {
+        if (!this.state.active) {
+            return null;
+        }
+        const current = this.activeStep();
+        if (!current) {
+            return null;
+        }
+        const completed = new Set(this.state.completedSteps);
+        const steps = this.steps.map((step, index) => ({
+            id: step.id,
+            label: step.description ?? step.id,
+            status: completed.has(step.id)
+                ? "done"
+                : index === this.state.currentStepIndex
+                    ? "active"
+                    : "pending"
+        }));
+        return {
+            active: true,
+            currentStepId: current.id,
+            steps
+        };
     }
     update(deltaSeconds) {
         if (!this.state.active)
