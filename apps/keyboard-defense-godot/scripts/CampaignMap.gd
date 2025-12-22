@@ -54,9 +54,15 @@ func _build_map() -> void:
 		var text_color = Color(0.94, 0.94, 0.98)
 		if not unlocked:
 			text_color.a = 0.55
-		var card = Control.new()
-		card.custom_minimum_size = Vector2(260, 96)
-		card.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var button = Button.new()
+		button.custom_minimum_size = Vector2(260, 96)
+		button.focus_mode = Control.FOCUS_NONE
+		button.disabled = not unlocked
+		button.text = ""
+		button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND if unlocked else Control.CURSOR_ARROW
+		if unlocked:
+			button.pressed.connect(_on_node_pressed.bind(node_id))
+
 		var card_style = StyleBoxFlat.new()
 		card_style.bg_color = Color(0.14, 0.12, 0.22) if unlocked else Color(0.11, 0.1, 0.17)
 		card_style.border_color = Color(0.35, 0.32, 0.52) if completed else Color(0.24, 0.22, 0.36)
@@ -68,24 +74,26 @@ func _build_map() -> void:
 		card_style.corner_radius_top_right = 6
 		card_style.corner_radius_bottom_left = 6
 		card_style.corner_radius_bottom_right = 6
-		card_style.content_margin_left = 4
-		card_style.content_margin_right = 4
-		card_style.content_margin_top = 4
-		card_style.content_margin_bottom = 4
-		var card_panel = Panel.new()
-		card_panel.set_anchors_preset(Control.PRESET_FULL_RECT)
-		card_panel.add_theme_stylebox_override("panel", card_style)
-		card_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		card.add_child(card_panel)
+		button.add_theme_stylebox_override("normal", card_style)
+		button.add_theme_stylebox_override("hover", card_style)
+		button.add_theme_stylebox_override("pressed", card_style)
+		button.add_theme_stylebox_override("disabled", card_style)
+
+		var padding = MarginContainer.new()
+		padding.set_anchors_preset(Control.PRESET_FULL_RECT)
+		padding.offset_left = 8
+		padding.offset_top = 6
+		padding.offset_right = -8
+		padding.offset_bottom = -6
+		padding.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		button.add_child(padding)
+
 		var content = VBoxContainer.new()
-		content.set_anchors_preset(Control.PRESET_FULL_RECT)
-		content.offset_left = 8
-		content.offset_top = 8
-		content.offset_right = -8
-		content.offset_bottom = -8
 		content.add_theme_constant_override("separation", 4)
+		content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		content.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		content.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		card.add_child(content)
+		padding.add_child(content)
 
 		var title = Label.new()
 		title.text = label + (" (cleared)" if completed else "")
@@ -124,23 +132,8 @@ func _build_map() -> void:
 			reward_label.add_theme_color_override("font_color", text_color)
 			reward_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			content.add_child(reward_label)
-		var action_button = Button.new()
-		action_button.text = ""
-		action_button.flat = true
-		action_button.focus_mode = Control.FOCUS_NONE
-		var empty_style = StyleBoxEmpty.new()
-		action_button.add_theme_stylebox_override("normal", empty_style)
-		action_button.add_theme_stylebox_override("hover", empty_style)
-		action_button.add_theme_stylebox_override("pressed", empty_style)
-		action_button.add_theme_stylebox_override("disabled", empty_style)
-		action_button.add_theme_stylebox_override("focus", empty_style)
-		action_button.set_anchors_preset(Control.PRESET_FULL_RECT)
-		action_button.mouse_filter = Control.MOUSE_FILTER_STOP
-		action_button.disabled = not unlocked
-		if unlocked:
-			action_button.pressed.connect(_on_node_pressed.bind(node_id))
-		card.add_child(action_button)
-		map_grid.add_child(card)
+
+		map_grid.add_child(button)
 
 func _update_summary() -> void:
 	var summary = progression.get_last_summary()
@@ -167,6 +160,7 @@ func _format_reward_preview(reward_gold: int, completed: bool) -> String:
 	if completed:
 		return "Reward: %dg (first clear)" % reward_gold
 	return "Reward: %dg" % reward_gold
+
 
 func _on_node_pressed(node_id: String) -> void:
 	game_controller.go_to_battle(node_id)

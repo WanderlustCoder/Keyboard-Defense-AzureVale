@@ -98,8 +98,27 @@ func _assert_map_layout(helper: TestHelper, map: Control, viewport_size: Vector2
 		var target_height = max(button.custom_minimum_size.y, min_size.y)
 		helper.assert_true(target_width <= cell_width + 0.5, "Map card fits width (%s)" % size_label)
 		helper.assert_true(target_height <= cell_height + 0.5, "Map card fits height (%s)" % size_label)
+		helper.assert_true(_has_visible_text(button), "Map card has text (%s)" % size_label)
 
 func _resolve_control_size(control: Control, parent_size: Vector2) -> Vector2:
 	var width = (control.anchor_right - control.anchor_left) * parent_size.x + control.offset_right - control.offset_left
 	var height = (control.anchor_bottom - control.anchor_top) * parent_size.y + control.offset_bottom - control.offset_top
 	return Vector2(width, height)
+
+func _has_visible_text(node: Node) -> bool:
+	if node is Button:
+		var button := node as Button
+		if button.text.strip_edges() != "":
+			return true
+	if node is Label:
+		var label := node as Label
+		if label.text.strip_edges() != "":
+			return true
+	if node is RichTextLabel:
+		var rich := node as RichTextLabel
+		if rich.text.strip_edges() != "":
+			return true
+	for child in node.get_children():
+		if _has_visible_text(child):
+			return true
+	return false
