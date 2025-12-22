@@ -16,7 +16,10 @@ const BUFF_DEFS := {
 }
 const BUFF_WORD_STREAK := 4
 const BUFF_INPUT_STREAK := 24
-const FEEDBACK_DURATION := 0.8
+const FEEDBACK_DURATION := 0.75
+const FEEDBACK_ERROR_DURATION := 0.6
+const FEEDBACK_WAVE_DURATION := 1.1
+const FEEDBACK_BUFF_DURATION := 0.9
 
 @onready var lesson_label: Label = $TopBar/LessonLabel
 @onready var gold_label: Label = $TopBar/GoldLabel
@@ -283,41 +286,41 @@ func _update_stats() -> void:
 	mistakes_label.text = "Errors: %d" % errors
 
 func _update_threat() -> void:
-        threat_bar.value = threat
-        castle_label.text = "Castle Health: %d" % castle_health
+	threat_bar.value = threat
+	castle_label.text = "Castle Health: %d" % castle_health
 
 func _update_feedback(delta: float) -> void:
-        if feedback_label == null or feedback_timer <= 0.0:
-                return
-        feedback_timer = max(0.0, feedback_timer - delta)
-        if feedback_timer <= 0.0:
-                feedback_label.text = ""
-                feedback_label.visible = false
+	if feedback_label == null or feedback_timer <= 0.0:
+		return
+	feedback_timer = max(0.0, feedback_timer - delta)
+	if feedback_timer <= 0.0:
+		feedback_label.text = ""
+		feedback_label.visible = false
 
 func _clear_feedback() -> void:
-        feedback_timer = 0.0
-        if feedback_label != null:
-                feedback_label.text = ""
-                feedback_label.visible = false
+	feedback_timer = 0.0
+	if feedback_label != null:
+		feedback_label.text = ""
+		feedback_label.visible = false
 
 func _update_feedback_for_status(status: String) -> void:
-        if status == "error":
-                _show_feedback("Mistake!", Color(0.96, 0.45, 0.45, 1))
-        elif status == "word_complete":
-                _show_feedback("Hit!", Color(0.98, 0.84, 0.44, 1))
-        elif status == "lesson_complete":
-                _show_feedback("Wave Clear!", Color(0.65, 0.86, 1, 1))
+	if status == "error":
+		_show_feedback("Missed!", Color(0.96, 0.45, 0.45, 1), FEEDBACK_ERROR_DURATION)
+	elif status == "word_complete":
+		_show_feedback("Strike!", Color(0.98, 0.84, 0.44, 1))
+	elif status == "lesson_complete":
+		_show_feedback("Wave Cleared!", Color(0.65, 0.86, 1, 1), FEEDBACK_WAVE_DURATION)
 
-func _show_feedback(message: String, color: Color) -> void:
-        if feedback_label == null:
-                return
-        feedback_label.text = message
-        feedback_label.visible = message != ""
-        feedback_label.modulate = color
-        feedback_timer = FEEDBACK_DURATION
+func _show_feedback(message: String, color: Color, duration: float = FEEDBACK_DURATION) -> void:
+	if feedback_label == null:
+		return
+	feedback_label.text = message
+	feedback_label.visible = message != ""
+	feedback_label.modulate = color
+	feedback_timer = max(0.0, duration)
 
 func _set_threat(value: float, sync_stage: bool = true) -> void:
-        var clamped = clamp(value, 0.0, 100.0)
+	var clamped = clamp(value, 0.0, 100.0)
 	threat = clamped
 	if sync_stage and not syncing_threat and battle_stage != null:
 		battle_stage.set_progress_percent(clamped)
@@ -739,6 +742,10 @@ func _activate_buff(buff_id: String) -> void:
 	if not refreshed:
 		active_buffs.append({"id": buff_id, "remaining": duration})
 	_apply_buff_changes()
+	var buff_color := Color(0.98, 0.84, 0.44, 1)
+	if buff_id == "ward":
+		buff_color = Color(0.65, 0.86, 1, 1)
+	_show_feedback("%s!" % _get_buff_label(buff_id), buff_color, FEEDBACK_BUFF_DURATION)
 
 func _update_buffs(delta: float) -> void:
 	if active_buffs.is_empty():
