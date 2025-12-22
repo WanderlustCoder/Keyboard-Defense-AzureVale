@@ -86,28 +86,6 @@ text = "Drill"
 horizontal_alignment = 1
 theme_override_colors/font_color = Color(0.96, 0.88, 0.68, 1)
 
-[node name="TypingReadout" type="VBoxContainer" parent="PlayField/DrillHud"]
-alignment = 1
-theme_override_constants/separation = 2
-
-[node name="WordLabel" type="Label" parent="PlayField/DrillHud/TypingReadout"]  
-text = "Target:"
-horizontal_alignment = 1
-theme_override_colors/font_color = Color(0.9, 0.94, 1, 1)
-
-[node name="TypedLabel" type="Label" parent="PlayField/DrillHud/TypingReadout"] 
-text = "Typed:"
-horizontal_alignment = 1
-theme_override_colors/font_color = Color(0.9, 0.94, 1, 1)
-
-[node name="DrillTarget" type="RichTextLabel" parent="PlayField/DrillHud"]      
-bbcode_enabled = true
-fit_content = true
-scroll_active = false
-text = ""
-autowrap_mode = 3
-theme_override_colors/default_color = Color(0.92, 0.95, 1, 1)
-
 [node name="DrillProgress" type="Label" parent="PlayField/DrillHud"]
 text = "Targets: 0/0"
 horizontal_alignment = 1
@@ -176,11 +154,49 @@ anchor_right = 0.4
 anchor_bottom = 0.95
 text = "Castle: Eldenwatch"
 
+[node name="TypingPanel" type="PanelContainer" parent="."]
+anchor_left = 0.05
+anchor_top = 0.64
+anchor_right = 0.95
+anchor_bottom = 0.72
+
+[node name="Content" type="VBoxContainer" parent="TypingPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12
+offset_top = 8
+offset_right = -12
+offset_bottom = -8
+alignment = 1
+theme_override_constants/separation = 4
+
+[node name="DrillTarget" type="RichTextLabel" parent="TypingPanel/Content"]
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = ""
+autowrap_mode = 3
+theme_override_colors/default_color = Color(0.92, 0.95, 1, 1)
+
+[node name="TypingReadout" type="VBoxContainer" parent="TypingPanel/Content"]
+alignment = 1
+theme_override_constants/separation = 2
+
+[node name="WordLabel" type="Label" parent="TypingPanel/Content/TypingReadout"]
+text = "Target:"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.9, 0.94, 1, 1)
+
+[node name="TypedLabel" type="Label" parent="TypingPanel/Content/TypingReadout"]
+text = "Typed:"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.9, 0.94, 1, 1)
+
 [node name="StatusPanel" type="PanelContainer" parent="."]
 anchor_left = 0.05
-anchor_top = 0.68
+anchor_top = 0.72
 anchor_right = 0.45
-anchor_bottom = 0.8
+anchor_bottom = 0.82
 
 [node name="Content" type="VBoxContainer" parent="StatusPanel"]
 anchor_right = 1.0
@@ -201,9 +217,9 @@ text = "Errors: 0"
 
 [node name="BonusPanel" type="PanelContainer" parent="."]
 anchor_left = 0.55
-anchor_top = 0.68
+anchor_top = 0.72
 anchor_right = 0.95
-anchor_bottom = 0.8
+anchor_bottom = 0.82
 
 [node name="BonusLabel" type="Label" parent="BonusPanel"]
 anchor_right = 1.0
