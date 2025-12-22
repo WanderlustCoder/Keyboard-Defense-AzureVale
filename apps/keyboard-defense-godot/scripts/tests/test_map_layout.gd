@@ -106,19 +106,22 @@ func _resolve_control_size(control: Control, parent_size: Vector2) -> Vector2:
 	return Vector2(width, height)
 
 func _has_visible_text(node: Node) -> bool:
-	if node is Button:
-		var button := node as Button
-		if button.text.strip_edges() != "":
-			return true
 	if node is Label:
 		var label := node as Label
-		if label.text.strip_edges() != "":
+		if _is_visible_control(label) and label.text.strip_edges() != "":
 			return true
 	if node is RichTextLabel:
 		var rich := node as RichTextLabel
-		if rich.text.strip_edges() != "":
+		if _is_visible_control(rich) and rich.text.strip_edges() != "":
 			return true
 	for child in node.get_children():
 		if _has_visible_text(child):
 			return true
 	return false
+
+func _is_visible_control(control: Control) -> bool:
+	if not control.is_visible_in_tree():
+		return false
+	if control.size.x <= 0.5 or control.size.y <= 0.5:
+		return false
+	return true

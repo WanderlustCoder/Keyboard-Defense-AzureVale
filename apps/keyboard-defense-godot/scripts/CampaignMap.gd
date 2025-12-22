@@ -54,15 +54,14 @@ func _build_map() -> void:
 		var text_color = Color(0.94, 0.94, 0.98)
 		if not unlocked:
 			text_color.a = 0.55
-		var button = Button.new()
-		button.custom_minimum_size = Vector2(260, 96)
-		button.focus_mode = Control.FOCUS_NONE
-		button.disabled = not unlocked
-		button.text = ""
-		button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND if unlocked else Control.CURSOR_ARROW
+		var card = Control.new()
+		card.custom_minimum_size = Vector2(260, 96)
+		card.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND if unlocked else Control.CURSOR_ARROW
 		if unlocked:
-			button.pressed.connect(_on_node_pressed.bind(node_id))
-
+			card.mouse_filter = Control.MOUSE_FILTER_STOP
+			card.gui_input.connect(_on_card_input.bind(node_id))
+		else:
+			card.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		var card_style = StyleBoxFlat.new()
 		card_style.bg_color = Color(0.14, 0.12, 0.22) if unlocked else Color(0.11, 0.1, 0.17)
 		card_style.border_color = Color(0.35, 0.32, 0.52) if completed else Color(0.24, 0.22, 0.36)
@@ -74,66 +73,83 @@ func _build_map() -> void:
 		card_style.corner_radius_top_right = 6
 		card_style.corner_radius_bottom_left = 6
 		card_style.corner_radius_bottom_right = 6
-		button.add_theme_stylebox_override("normal", card_style)
-		button.add_theme_stylebox_override("hover", card_style)
-		button.add_theme_stylebox_override("pressed", card_style)
-		button.add_theme_stylebox_override("disabled", card_style)
+		var card_panel = Panel.new()
+		card_panel.set_anchors_preset(Control.PRESET_FULL_RECT)
+		card_panel.add_theme_stylebox_override("panel", card_style)
+		card_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(card_panel)
 
-		var padding = MarginContainer.new()
-		padding.set_anchors_preset(Control.PRESET_FULL_RECT)
-		padding.offset_left = 8
-		padding.offset_top = 6
-		padding.offset_right = -8
-		padding.offset_bottom = -6
-		padding.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		button.add_child(padding)
-
-		var content = VBoxContainer.new()
-		content.add_theme_constant_override("separation", 4)
-		content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		content.size_flags_vertical = Control.SIZE_EXPAND_FILL
-		content.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		padding.add_child(content)
+		var padding = 8.0
+		var spacing = 4.0
+		var title_height = 28.0
+		var lesson_height = 22.0
+		var reward_height = 18.0
+		var y = padding
 
 		var title = Label.new()
 		title.text = label + (" (cleared)" if completed else "")
-		title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		title.anchor_left = 0.0
+		title.anchor_right = 1.0
+		title.offset_left = padding
+		title.offset_right = -padding
+		title.offset_top = y
+		title.offset_bottom = y + title_height
 		title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		title.autowrap_mode = TextServer.AUTOWRAP_WORD
 		title.max_lines_visible = 2
 		title.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		title.add_theme_font_size_override("font_size", 16)
 		title.add_theme_color_override("font_color", text_color)
+		title.clip_text = true
 		title.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		content.add_child(title)
+		card.add_child(title)
+
+		y += title_height + spacing
 
 		var lesson_label = Label.new()
 		lesson_label.text = "Lesson: %s" % lesson_label_text
-		lesson_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		lesson_label.anchor_left = 0.0
+		lesson_label.anchor_right = 1.0
+		lesson_label.offset_left = padding
+		lesson_label.offset_right = -padding
+		lesson_label.offset_top = y
+		lesson_label.offset_bottom = y + lesson_height
 		lesson_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		lesson_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		lesson_label.autowrap_mode = TextServer.AUTOWRAP_WORD
 		lesson_label.max_lines_visible = 2
 		lesson_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		lesson_label.add_theme_font_size_override("font_size", 14)
 		lesson_label.add_theme_color_override("font_color", text_color)
+		lesson_label.clip_text = true
 		lesson_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		content.add_child(lesson_label)
+		card.add_child(lesson_label)
+
+		y += lesson_height + spacing
 
 		var reward_text = _format_reward_preview(reward_gold, completed)
 		if reward_text != "":
 			var reward_label = Label.new()
 			reward_label.text = reward_text
-			reward_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			reward_label.anchor_left = 0.0
+			reward_label.anchor_right = 1.0
+			reward_label.offset_left = padding
+			reward_label.offset_right = -padding
+			reward_label.offset_top = y
+			reward_label.offset_bottom = y + reward_height
 			reward_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			reward_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 			reward_label.autowrap_mode = TextServer.AUTOWRAP_WORD
 			reward_label.max_lines_visible = 1
 			reward_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 			reward_label.add_theme_font_size_override("font_size", 12)
 			reward_label.add_theme_color_override("font_color", text_color)
+			reward_label.clip_text = true
 			reward_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			content.add_child(reward_label)
+			card.add_child(reward_label)
 
-		map_grid.add_child(button)
+		map_grid.add_child(card)
 
 func _update_summary() -> void:
 	var summary = progression.get_last_summary()
@@ -164,6 +180,13 @@ func _format_reward_preview(reward_gold: int, completed: bool) -> String:
 
 func _on_node_pressed(node_id: String) -> void:
 	game_controller.go_to_battle(node_id)
+
+func _on_card_input(event: InputEvent, node_id: String) -> void:
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		_on_node_pressed(node_id)
+		var viewport = get_viewport()
+		if viewport != null:
+			viewport.set_input_as_handled()
 
 func _on_back_pressed() -> void:
 	game_controller.go_to_menu()
