@@ -1,0 +1,48 @@
+name: godot-headless-tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  godot-tests:
+    name: Godot Headless Tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      GODOT_VERSION: "4.2.2"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Cache Godot
+        uses: actions/cache@v4
+        with:
+          path: .godot
+          key: godot-${{ env.GODOT_VERSION }}-linux-x86_64
+
+      - name: Download Godot
+        shell: bash
+        run: |
+          set -euo pipefail
+          GODOT_BIN=".godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64"
+          if [ -x "$GODOT_BIN" ]; then
+            echo "Using cached Godot at $GODOT_BIN"
+            exit 0
+          fi
+          GODOT_ZIP="Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          GODOT_URL="https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/${GODOT_ZIP}"
+          mkdir -p .godot
+          curl -L "$GODOT_URL" -o ".godot/$GODOT_ZIP"
+          unzip -q ".godot/$GODOT_ZIP" -d .godot
+          chmod +x "$GODOT_BIN"
+
+      - name: Run headless test suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./.godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64 \
+            --headless \
+            --path apps/keyboard-defense-godot \
+            --script res://scripts/tests/run_tests.gd

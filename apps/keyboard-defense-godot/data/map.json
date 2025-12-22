@@ -12,15 +12,15 @@
           {
             "index": 0,
             "data": {
-              "word_count": 3,
-              "hint": "Warm up the keys with short bursts."
+              "word_count": 4,
+              "hint": "Start slow and keep fingers anchored."
             }
           },
           {
             "index": 2,
             "data": {
-              "targets": ["1-2-3", "go!", "ward+1", "x^2"],
-              "hint": "Reinforce the gate seals."
+              "targets": ["as", "sad", "dad", "lad", "sass", "all"],
+              "hint": "Tap each sigil cleanly before the next wave."
             }
           }
         ]

@@ -6,29 +6,29 @@
       "plan": [
         {
           "mode": "lesson",
-          "label": "Warmup Runes",
-          "word_count": 4,
-          "shuffle": true,
-          "hint": "Settle into home row rhythm."
+          "label": "Home Row Warmup",
+          "word_count": 5,
+          "shuffle": false,
+          "hint": "Anchor fingers on home row and keep a steady pace."
         },
         {
           "mode": "intermission",
-          "label": "Scouts Regroup",
-          "duration": 2.5,
-          "message": "Scouts regroup and the ward recharges."
+          "label": "Reset the Guard",
+          "duration": 2.0,
+          "message": "Reset your fingers on home row and breathe."
         },
         {
           "mode": "targets",
           "label": "Gate Sigils",
-          "targets": ["1-2-3", "go!", "x^2", "rune+1"],
-          "hint": "Strike the sigils to reinforce the gate."
+          "targets": ["as", "sad", "dad", "lad", "lass", "all"],
+          "hint": "Strike each sigil cleanly before moving on."
         },
         {
           "mode": "lesson",
-          "label": "Forest Gate Drill",
-          "word_count": 6,
+          "label": "Forest Gate Defense",
+          "word_count": 8,
           "shuffle": true,
-          "hint": "Hold the gate with steady hits."
+          "hint": "Accuracy first; let the rhythm build."
         }
       ]
     },
@@ -38,29 +38,29 @@
       "plan": [
         {
           "mode": "lesson",
-          "label": "Grove Warmup",
-          "word_count": 4,
-          "shuffle": true,
-          "hint": "Let the keys flow evenly."
+          "label": "Right Hand Flow",
+          "word_count": 5,
+          "shuffle": false,
+          "hint": "Keep the right hand loose and return to home row."
         },
         {
           "mode": "intermission",
           "label": "Grove Breath",
-          "duration": 2.5,
-          "message": "Breathe in the grove's hush."
+          "duration": 2.0,
+          "message": "Breathe and reset your reach."
         },
         {
           "mode": "targets",
           "label": "Whisper Sigils",
-          "targets": ["(veil)", "mist-2", "oak+1", "glow!"],
-          "hint": "Keep the sigils quiet and clean."
+          "targets": ["jkl", "lake", "leaf", "kale", "flake", "safe"],
+          "hint": "Light taps, even spacing."
         },
         {
           "mode": "lesson",
-          "label": "Whisper Grove Drill",
-          "word_count": 7,
+          "label": "Whisper Grove Defense",
+          "word_count": 8,
           "shuffle": true,
-          "hint": "Guard the grove with calm tempo."
+          "hint": "Smooth motion beats speed."
         }
       ]
     },
@@ -70,10 +70,10 @@
       "plan": [
         {
           "mode": "lesson",
-          "label": "Bridge Warmup",
-          "word_count": 5,
-          "shuffle": true,
-          "hint": "Reach with steady control."
+          "label": "Reach Row Warmup",
+          "word_count": 6,
+          "shuffle": false,
+          "hint": "Reach up, then return to home row."
         },
         {
           "mode": "intermission",
@@ -83,16 +83,16 @@
         },
         {
           "mode": "targets",
-          "label": "Ember Runes",
-          "targets": ["ember-1", "torch+2", "bridge#3", "spark!"],
-          "hint": "Ignite the runes to seal the bridge."
+          "label": "Bridge Runes",
+          "targets": ["read", "rest", "tale", "gate", "trade", "stage"],
+          "hint": "Stretch to the reach row with control."
         },
         {
           "mode": "lesson",
-          "label": "Ember Bridge Drill",
-          "word_count": 8,
+          "label": "Ember Bridge Defense",
+          "word_count": 9,
           "shuffle": true,
-          "hint": "Keep your reach steady under pressure."
+          "hint": "Keep shoulders relaxed and stay precise."
         }
       ]
     },
@@ -103,9 +103,9 @@
         {
           "mode": "lesson",
           "label": "Citadel Warmup",
-          "word_count": 5,
-          "shuffle": true,
-          "hint": "Sharpen your reach."
+          "word_count": 6,
+          "shuffle": false,
+          "hint": "Warm the full row before the siege."
         },
         {
           "mode": "intermission",
@@ -115,16 +115,16 @@
         },
         {
           "mode": "targets",
-          "label": "Citadel Sigils",
-          "targets": ["ward+3", "spire-2", "aegis!", "rampart#1"],
-          "hint": "Lock each sigil before the siege."
+          "label": "Citadel Commands",
+          "targets": ["banner", "castle", "warden", "storm", "torch", "legend"],
+          "hint": "Commit each command with clean keystrokes."
         },
         {
           "mode": "lesson",
-          "label": "Citadel Rise Drill",
-          "word_count": 9,
+          "label": "Citadel Rise Defense",
+          "word_count": 10,
           "shuffle": true,
-          "hint": "Defend the keep with precision."
+          "hint": "Maintain form as the pace builds."
         }
       ]
     }
