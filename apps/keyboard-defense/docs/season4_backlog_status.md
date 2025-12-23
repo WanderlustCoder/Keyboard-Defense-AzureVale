@@ -47,7 +47,7 @@ Quick status snapshot for items in `season4_backlog.md`. All items start as Not 
 | 41 | Hazard tiles | Not Started | - |
 | 42 | Lane-priority macros | Not Started | - |
 | 43 | Spawnable training dummy | Done | Added a HUD "Practice Dummy" panel to spawn or clear dummies mid-run for turret DPS checks. |
-| 44 | Power phrase overdrive | Not Started | - |
+| 44 | Power phrase overdrive | Done | Added a Power Phrase HUD card to type a short phrase and trigger a lane fire-rate overdrive with cooldown feedback. |
 | 45 | Defensive rune sockets | Not Started | - |
 | 46 | HUD zoom control | Done | Options overlay adds a HUD zoom selector (90-120%) that scales the entire HUD and persists per profile. |
 | 47 | Left-handed layout | Done | Options toggle flips HUD to the left side; persists per profile with body data attribute for layout. |

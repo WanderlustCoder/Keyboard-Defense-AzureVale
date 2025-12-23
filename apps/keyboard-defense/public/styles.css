@@ -6024,6 +6024,93 @@ details {
   color: #22d3ee;
 }
 
+.power-phrase {
+  border: 1px solid #1e293b;
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 10px;
+  background: rgba(15, 23, 42, 0.6);
+  display: grid;
+  gap: 6px;
+}
+
+.power-phrase-header {
+  display: grid;
+  gap: 2px;
+}
+
+.power-phrase-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.power-phrase-copy {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.power-phrase-phrase {
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+
+.power-phrase-typed {
+  color: #fbbf24;
+}
+
+.power-phrase-remaining {
+  color: #e2e8f0;
+}
+
+.power-phrase-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.power-phrase-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #94a3b8;
+}
+
+.power-phrase-select,
+.power-phrase-input {
+  padding: 4px 6px;
+  border-radius: 4px;
+  border: 1px solid #334155;
+  background: #0f172a;
+  color: inherit;
+  font-size: 0.8rem;
+}
+
+.power-phrase-charge {
+  font-size: 0.75rem;
+}
+
+.power-phrase-status {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #a5b4fc;
+}
+
+.power-phrase[data-active="true"] .power-phrase-status {
+  color: #22d3ee;
+}
+
+.power-phrase[data-available="false"] {
+  opacity: 0.65;
+}
+
 .turret-slot[data-tutorial-highlight="true"] {
   border-color: #fbbf24;
   box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.35);

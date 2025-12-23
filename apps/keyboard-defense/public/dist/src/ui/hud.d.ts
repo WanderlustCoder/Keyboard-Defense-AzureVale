@@ -18,6 +18,12 @@ import { type MusicStemViewState } from "../utils/musicStems.js";
 import { type UiSchemeViewState } from "../utils/uiSoundScheme.js";
 type ResolvedParallaxScene = Exclude<ParallaxScene, "auto">;
 type BattleLogCategory = "breach" | "perfect" | "medal" | "quest" | "upgrade" | "system";
+type PowerPhraseInputEvent = {
+    type: "character";
+    value: string;
+} | {
+    type: "backspace";
+};
 type CastleSkinId = "classic" | "dusk" | "aurora" | "ember";
 type ContrastAuditResult = {
     label: string;
@@ -69,6 +75,9 @@ export interface HudCallbacks {
     onDowngradeTurret?: (slotId: string) => void;
     onPracticeDummySpawn?: (lane: number) => void;
     onPracticeDummyClear?: () => void;
+    onPowerPhraseFocus?: () => void;
+    onPowerPhraseCancel?: () => void;
+    onPowerPhraseInput?: (input: PowerPhraseInputEvent) => void;
     onTurretPriorityChange(slotId: string, priority: TurretTargetPriority): void;
     onBuildMenuToggle?: (open: boolean) => void;
     onTurretPresetSave?: (presetId: string) => void;
@@ -613,6 +622,13 @@ export declare class HudView {
     private practiceDummyLaneSelect;
     private practiceDummySpawnButton;
     private practiceDummyClearButton;
+    private powerPhrasePanel;
+    private powerPhraseTyped;
+    private powerPhraseRemaining;
+    private powerPhraseStatus;
+    private powerPhraseLaneSelect;
+    private powerPhraseChargeButton;
+    private powerPhraseInput;
     private readonly comboLabel;
     private readonly comboAccuracyDelta;
     private readonly logList;
@@ -1085,6 +1101,14 @@ export declare class HudView {
     private updateCastleRepair;
     private updateTurretControls;
     private updatePracticeDummyControls;
+    updatePowerPhrase(state: {
+        phrase: string;
+        progress: number;
+        active: boolean;
+        available: boolean;
+        cooldownRemaining: number;
+        status: string;
+    }): void;
     private pulseHazardBadge;
     updateTurretPresets(presets: HudTurretPresetData[]): void;
     private ensurePresetControl;
@@ -1097,6 +1121,10 @@ export declare class HudView {
     private getSelectOptionNodes;
     private createTurretControls;
     private createPracticeDummyControls;
+    private createPowerPhraseControls;
+    getPowerPhraseLane(): number | null;
+    focusPowerPhraseInput(): void;
+    blurPowerPhraseInput(): void;
     private populatePrioritySelect;
     private normalizePriority;
     private applyTurretAvailabilityToControls;
@@ -1342,6 +1370,7 @@ export declare class HudView {
     private describeAnalyticsViewerFilter;
     private applyAnalyticsViewerFilter;
     private setSelectValue;
+    private setInputValue;
     private getSelectValue;
     setAnalyticsViewerVisible(visible: boolean): boolean;
     isAnalyticsViewerVisible(): boolean;

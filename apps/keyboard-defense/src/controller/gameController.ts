@@ -297,6 +297,16 @@ const WAVE_MICRO_TIPS = [
   "Short breaths between waves keep hands loose and reduce errors.",
   "If accuracy dips, slow two beats, rebuild clean strokes, then speed up."
 ];
+const POWER_PHRASE_POOL = [
+  "overdrive",
+  "firestorm",
+  "rapidfire",
+  "skyforge",
+  "sparkshield",
+  "emberline",
+  "stormbreak",
+  "ironpulse"
+];
 const INTERMISSION_DRILLS_ENABLED = true;
 const FIELD_DRILL_WORD_COUNT = 12;
 const INTERMISSION_DRILL_WORD_COUNT = 5;
@@ -498,6 +508,11 @@ export class GameController {
     this.wavePreviewThreatIndicatorsEnabled = this.loadWavePreviewThreatIndicatorsEnabled();
     this.contextualHintsSeen = this.loadContextualHintsSeen();
     this.hotkeys = this.loadHotkeys();
+    this.powerPhrasePhrase = this.pickPowerPhrase();
+    this.powerPhraseProgress = 0;
+    this.powerPhraseActive = false;
+    this.powerPhraseMessage = null;
+    this.powerPhraseMessageUntil = 0;
     this.accessibilityOnboardingSeen = this.loadAccessibilitySeen();
     this.accessibilityOverlay = null;
     this.resumeAfterAccessibility = false;
@@ -1191,6 +1206,9 @@ export class GameController {
         onDowngradeTurret: (slotId) => this.handleDowngradeTurret(slotId),
         onPracticeDummySpawn: (lane) => this.spawnPracticeDummy(lane),
         onPracticeDummyClear: () => this.clearPracticeDummies(),
+        onPowerPhraseFocus: () => this.handlePowerPhraseFocus(),
+        onPowerPhraseCancel: () => this.handlePowerPhraseCancel(),
+        onPowerPhraseInput: (input) => this.handlePowerPhraseInput(input),
         onTurretPriorityChange: (slotId, priority) =>
           this.handleTurretPriorityChange(slotId, priority),
         onBuildMenuToggle: (open) => this.handleBuildMenuToggle(open),
@@ -5081,6 +5099,160 @@ export class GameController {
       this.applySpawnSpeedGate();
     }
   }
+  pickPowerPhrase(previous = "") {
+    if (!Array.isArray(POWER_PHRASE_POOL) || POWER_PHRASE_POOL.length === 0) {
+      return "overdrive";
+    }
+    if (POWER_PHRASE_POOL.length === 1) {
+      return POWER_PHRASE_POOL[0];
+    }
+    let next = POWER_PHRASE_POOL[Math.floor(Math.random() * POWER_PHRASE_POOL.length)];
+    if (previous) {
+      for (let i = 0; i < 4 && next === previous; i += 1) {
+        next = POWER_PHRASE_POOL[Math.floor(Math.random() * POWER_PHRASE_POOL.length)];
+      }
+    }
+    return next;
+  }
+  setPowerPhraseMessage(message, durationSeconds = 2) {
+    const now = this.currentState?.time ?? this.engine.getState().time ?? 0;
+    this.powerPhraseMessage = message;
+    this.powerPhraseMessageUntil = now + Math.max(0.5, durationSeconds);
+  }
+  handlePowerPhraseFocus() {
+    this.powerPhraseActive = true;
+    this.powerPhraseProgress = 0;
+  }
+  handlePowerPhraseCancel() {
+    this.powerPhraseActive = false;
+    this.powerPhraseProgress = 0;
+  }
+  handlePowerPhraseInput(input) {
+    if (!input || !this.powerPhrasePhrase) return;
+    if (input.type === "backspace") {
+      this.powerPhraseProgress = Math.max(0, this.powerPhraseProgress - 1);
+      return;
+    }
+    if (input.type !== "character") {
+      return;
+    }
+    const value =
+      typeof input.value === "string" && input.value.length === 1
+        ? input.value.toLowerCase()
+        : "";
+    if (!value) {
+      return;
+    }
+    const state = this.engine.getState();
+    const boost = state.supportBoost ?? { cooldownRemaining: 0, remaining: 0, lane: null, multiplier: 1 };
+    const cooldown = Math.max(0, boost.cooldownRemaining ?? 0);
+    const running = state.status === "running" && !state.wave?.inCountdown;
+    const uiLocked =
+      this.menuActive ||
+      this.optionsOverlayActive ||
+      this.waveScorecardActive ||
+      this.tutorialHoldLoop;
+    if (!running || uiLocked || cooldown > 0) {
+      if (!running) {
+        this.setPowerPhraseMessage("Start a wave to charge overdrive.", 2);
+      } else if (cooldown > 0) {
+        this.setPowerPhraseMessage(`Overdrive recharging (${cooldown.toFixed(1)}s).`, 2);
+      } else {
+        this.setPowerPhraseMessage("Overdrive unavailable right now.", 2);
+      }
+      this.powerPhraseProgress = 0;
+      return;
+    }
+    const expected = this.powerPhrasePhrase[this.powerPhraseProgress] ?? "";
+    if (value !== expected) {
+      this.powerPhraseProgress = 0;
+      this.setPowerPhraseMessage("Phrase reset. Try again.", 1.5);
+      return;
+    }
+    this.powerPhraseProgress += 1;
+    if (this.powerPhraseProgress < this.powerPhrasePhrase.length) {
+      return;
+    }
+    const lane =
+      typeof this.hud?.getPowerPhraseLane === "function"
+        ? this.hud.getPowerPhraseLane()
+        : null;
+    const resolvedLane =
+      typeof lane === "number" && Number.isFinite(lane)
+        ? lane
+        : this.engine.config.turretSlots[0]?.lane ?? 0;
+    const powerConfig = { multiplier: 1.32, duration: 5, cooldown: 24 };
+    const applied = this.engine.activateSupportBoost(resolvedLane, powerConfig);
+    this.currentState = this.engine.getState();
+    if (applied) {
+      const laneLabel = LANE_LABELS[resolvedLane] ?? `${resolvedLane + 1}`;
+      const boostPct = Math.round((powerConfig.multiplier - 1) * 100);
+      this.hud?.appendLog?.(
+        `Power phrase charged: lane ${laneLabel} +${boostPct}% for ${powerConfig.duration}s.`,
+        "upgrade"
+      );
+      this.hud?.showCastleMessage?.(`Overdrive ready: lane ${laneLabel}.`);
+      this.powerPhrasePhrase = this.pickPowerPhrase(this.powerPhrasePhrase);
+      this.powerPhraseProgress = 0;
+      this.powerPhraseActive = false;
+      this.hud?.blurPowerPhraseInput?.();
+      this.setPowerPhraseMessage(`Overdrive engaged: lane ${laneLabel}.`, 2);
+      this.render();
+      return;
+    }
+    const updatedBoost = this.currentState.supportBoost ?? { cooldownRemaining: 0 };
+    const updatedCooldown = Math.max(0, updatedBoost.cooldownRemaining ?? 0);
+    if (updatedCooldown > 0) {
+      this.setPowerPhraseMessage(`Overdrive cooling down (${updatedCooldown.toFixed(1)}s).`, 2);
+    } else {
+      this.setPowerPhraseMessage("Overdrive unavailable right now.", 2);
+    }
+    this.powerPhraseProgress = 0;
+  }
+  updatePowerPhraseHud(state) {
+    if (!this.hud?.updatePowerPhrase || !state) return;
+    if (this.powerPhraseMessage && state.time >= this.powerPhraseMessageUntil) {
+      this.powerPhraseMessage = null;
+    }
+    const boost = state.supportBoost ?? { cooldownRemaining: 0, remaining: 0, lane: null, multiplier: 1 };
+    const cooldown = Math.max(0, boost.cooldownRemaining ?? 0);
+    const running = state.status === "running" && !state.wave?.inCountdown;
+    const uiLocked =
+      this.menuActive ||
+      this.optionsOverlayActive ||
+      this.waveScorecardActive ||
+      this.tutorialHoldLoop;
+    const available = running && !uiLocked && cooldown <= 0;
+    if (!available && this.powerPhraseActive) {
+      this.powerPhraseActive = false;
+      this.powerPhraseProgress = 0;
+      this.hud?.blurPowerPhraseInput?.();
+    }
+    const boostActive = (boost.remaining ?? 0) > 0 && (boost.multiplier ?? 1) > 1;
+    let status = "Ready to charge.";
+    if (this.powerPhraseMessage && state.time < this.powerPhraseMessageUntil) {
+      status = this.powerPhraseMessage;
+    } else if (boostActive) {
+      const laneLabel =
+        typeof boost.lane === "number" ? LANE_LABELS[boost.lane] ?? `${boost.lane + 1}` : "a lane";
+      const boostPct = Math.round(((boost.multiplier ?? 1) - 1) * 100);
+      status = `Overdrive active: lane ${laneLabel} +${boostPct}%`;
+    } else if (!running) {
+      status = "Start a wave to charge overdrive.";
+    } else if (cooldown > 0) {
+      status = `Recharging: ${cooldown.toFixed(1)}s`;
+    } else if (this.powerPhraseActive) {
+      status = "Type the phrase to charge overdrive.";
+    }
+    this.hud.updatePowerPhrase({
+      phrase: this.powerPhrasePhrase,
+      progress: this.powerPhraseActive ? this.powerPhraseProgress : 0,
+      active: this.powerPhraseActive,
+      available,
+      cooldownRemaining: cooldown,
+      status
+    });
+  }
   trackTypingDrillCompleted(entry: TypingDrillSummary) {
     if (!this.telemetryClient?.track) return;
     try {
@@ -6701,6 +6873,7 @@ export class GameController {
     this.hud.setTutorialProgress(tutorialProgress);
     const tutorialDock = this.tutorialManager?.getDockState?.() ?? null;
     this.hud.setTutorialDock(tutorialDock);
+    this.updatePowerPhraseHud(this.currentState);
     this.updateFieldDrillStatus(this.currentState);
     this.updateFieldDrillBuffs(this.currentState);
     const sessionGoalsFinalized = this.maybeFinalizeSessionGoals(this.currentState);

@@ -68,6 +68,9 @@ type WavePreviewSnapshot = {
   laneHazards: LaneHazardState[];
   emptyMessage: string | null;
 };
+type PowerPhraseInputEvent =
+  | { type: "character"; value: string }
+  | { type: "backspace" };
 
 const BATTLE_LOG_FILTERS: BattleLogFilterCategory[] = [
   "breach",
@@ -370,6 +373,9 @@ export interface HudCallbacks {
   onDowngradeTurret?: (slotId: string) => void;
   onPracticeDummySpawn?: (lane: number) => void;
   onPracticeDummyClear?: () => void;
+  onPowerPhraseFocus?: () => void;
+  onPowerPhraseCancel?: () => void;
+  onPowerPhraseInput?: (input: PowerPhraseInputEvent) => void;
   onTurretPriorityChange(slotId: string, priority: TurretTargetPriority): void;
   onBuildMenuToggle?: (open: boolean) => void;
   onTurretPresetSave?: (presetId: string) => void;
@@ -1029,6 +1035,13 @@ export class HudView {
   private practiceDummyLaneSelect: HTMLSelectElement | null = null;
   private practiceDummySpawnButton: HTMLButtonElement | null = null;
   private practiceDummyClearButton: HTMLButtonElement | null = null;
+  private powerPhrasePanel: HTMLDivElement | null = null;
+  private powerPhraseTyped: HTMLSpanElement | null = null;
+  private powerPhraseRemaining: HTMLSpanElement | null = null;
+  private powerPhraseStatus: HTMLElement | null = null;
+  private powerPhraseLaneSelect: HTMLSelectElement | null = null;
+  private powerPhraseChargeButton: HTMLButtonElement | null = null;
+  private powerPhraseInput: HTMLInputElement | null = null;
   private readonly comboLabel: HTMLElement;
   private readonly comboAccuracyDelta: HTMLElement;
   private readonly logList: HTMLUListElement;
@@ -7692,6 +7705,42 @@ export class HudView {
     this.practiceDummyPanel.dataset.active = "false";
   }
 
+  updatePowerPhrase(state: {
+    phrase: string;
+    progress: number;
+    active: boolean;
+    available: boolean;
+    cooldownRemaining: number;
+    status: string;
+  }): void {
+    if (!this.powerPhrasePanel || !this.powerPhraseTyped || !this.powerPhraseRemaining) {
+      return;
+    }
+    const phrase = state.phrase ?? "";
+    const clampedProgress = Math.max(0, Math.min(phrase.length, Math.floor(state.progress ?? 0)));
+    this.powerPhraseTyped.textContent = phrase.slice(0, clampedProgress);
+    this.powerPhraseRemaining.textContent = phrase.slice(clampedProgress);
+    if (this.powerPhraseStatus) {
+      this.powerPhraseStatus.textContent = state.status;
+    }
+    const available = Boolean(state.available && phrase);
+    this.powerPhrasePanel.dataset.active = state.active ? "true" : "false";
+    this.powerPhrasePanel.dataset.available = available ? "true" : "false";
+    if (state.cooldownRemaining > 0) {
+      this.powerPhrasePanel.dataset.cooldown = state.cooldownRemaining.toFixed(1);
+    } else {
+      delete this.powerPhrasePanel.dataset.cooldown;
+    }
+    if (this.powerPhraseChargeButton) {
+      this.powerPhraseChargeButton.disabled = !available;
+      this.powerPhraseChargeButton.setAttribute("aria-disabled", available ? "false" : "true");
+    }
+    if (this.powerPhraseInput) {
+      this.powerPhraseInput.disabled = !available;
+      this.powerPhraseInput.setAttribute("aria-disabled", available ? "false" : "true");
+    }
+  }
+
   private pulseHazardBadge(slotId: string, badge: HTMLElement): void {
     if (!badge || this.reducedMotionEnabled || typeof window === "undefined") {
       return;
@@ -8142,6 +8191,7 @@ export class HudView {
       });
     }
     this.createPracticeDummyControls();
+    this.createPowerPhraseControls();
   }
 
   private createPracticeDummyControls(): void {
@@ -8211,6 +8261,145 @@ export class HudView {
     this.practiceDummySpawnButton = spawnButton;
     this.practiceDummyClearButton = clearButton;
     this.upgradePanel.appendChild(container);
+  }
+
+  private createPowerPhraseControls(): void {
+    if (this.powerPhrasePanel) {
+      return;
+    }
+    const container = document.createElement("div");
+    container.className = "power-phrase";
+    container.dataset.available = "false";
+    container.dataset.active = "false";
+
+    const header = document.createElement("div");
+    header.className = "power-phrase-header";
+    const title = document.createElement("h3");
+    title.className = "power-phrase-title";
+    title.textContent = "Power Phrase";
+    const copy = document.createElement("p");
+    copy.className = "power-phrase-copy";
+    copy.textContent = "Type the phrase to overdrive a lane's fire rate.";
+    header.append(title, copy);
+
+    const phrase = document.createElement("div");
+    phrase.className = "power-phrase-phrase";
+    const typed = document.createElement("span");
+    typed.className = "power-phrase-typed";
+    const remaining = document.createElement("span");
+    remaining.className = "power-phrase-remaining";
+    phrase.append(typed, remaining);
+
+    const controls = document.createElement("div");
+    controls.className = "power-phrase-controls";
+    const label = document.createElement("label");
+    label.className = "power-phrase-label";
+    label.textContent = "Lane";
+    const select = document.createElement("select");
+    select.className = "power-phrase-select";
+    select.id = `power-phrase-lane-${++hudInstanceCounter}`;
+    label.htmlFor = select.id;
+    const lanes = Array.from(
+      new Set(this.config.turretSlots.map((slot) => slot.lane))
+    ).sort((a, b) => a - b);
+    for (const lane of lanes) {
+      const option = document.createElement("option");
+      option.value = String(lane);
+      option.textContent = `Lane ${String.fromCharCode(65 + lane)}`;
+      select.appendChild(option);
+    }
+    const defaultLane = lanes.includes(1) ? 1 : lanes[0] ?? 0;
+    this.setSelectValue(select, String(defaultLane));
+
+    const chargeButton = document.createElement("button");
+    chargeButton.type = "button";
+    chargeButton.className = "power-phrase-charge";
+    chargeButton.textContent = "Charge Overdrive";
+    chargeButton.addEventListener("click", () => {
+      this.focusPowerPhraseInput();
+      this.callbacks.onPowerPhraseFocus?.();
+    });
+
+    controls.append(label, select, chargeButton);
+
+    const input = document.createElement("input");
+    input.type = "text";
+    input.className = "power-phrase-input";
+    input.setAttribute("aria-label", "Power phrase input");
+    input.autocomplete = "off";
+    input.autocapitalize = "off";
+    input.spellcheck = false;
+    input.addEventListener("focus", () => {
+      this.callbacks.onPowerPhraseFocus?.();
+    });
+    input.addEventListener("blur", () => {
+      this.callbacks.onPowerPhraseCancel?.();
+    });
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        event.stopPropagation();
+        this.callbacks.onPowerPhraseCancel?.();
+        input.blur();
+        this.setInputValue(input, "");
+        return;
+      }
+      if (event.key === "Backspace") {
+        event.preventDefault();
+        event.stopPropagation();
+        this.callbacks.onPowerPhraseInput?.({ type: "backspace" });
+        this.setInputValue(input, "");
+        return;
+      }
+      if (event.key.length === 1 && /[a-zA-Z]/.test(event.key)) {
+        const value = event.key.toLowerCase();
+        event.preventDefault();
+        event.stopPropagation();
+        this.callbacks.onPowerPhraseInput?.({ type: "character", value });
+        this.setInputValue(input, "");
+      }
+    });
+
+    const status = document.createElement("p");
+    status.className = "power-phrase-status";
+    status.setAttribute("role", "status");
+    status.setAttribute("aria-live", "polite");
+    status.textContent = "Ready to charge.";
+
+    container.append(header, phrase, controls, input, status);
+    this.powerPhrasePanel = container;
+    this.powerPhraseTyped = typed;
+    this.powerPhraseRemaining = remaining;
+    this.powerPhraseStatus = status;
+    this.powerPhraseLaneSelect = select;
+    this.powerPhraseChargeButton = chargeButton;
+    this.powerPhraseInput = input;
+    this.upgradePanel.appendChild(container);
+  }
+
+  getPowerPhraseLane(): number | null {
+    const value = this.getSelectValue(this.powerPhraseLaneSelect);
+    if (typeof value !== "string") {
+      return null;
+    }
+    const lane = Number.parseInt(value, 10);
+    return Number.isFinite(lane) ? lane : null;
+  }
+
+  focusPowerPhraseInput(): void {
+    if (!this.powerPhraseInput) {
+      return;
+    }
+    this.setInputValue(this.powerPhraseInput, "");
+    this.powerPhraseInput.focus();
+  }
+
+  blurPowerPhraseInput(): void {
+    if (!this.powerPhraseInput) {
+      return;
+    }
+    this.powerPhraseInput.blur();
+    this.setInputValue(this.powerPhraseInput, "");
   }
 
   private populatePrioritySelect(select: HTMLSelectElement): void {
@@ -12914,6 +13103,15 @@ export class HudView {
       select.value = value;
     } catch {
       select.setAttribute("value", value);
+    }
+  }
+
+  private setInputValue(input: HTMLInputElement | undefined, value: string): void {
+    if (!input) return;
+    try {
+      input.value = value;
+    } catch {
+      input.setAttribute("value", value);
     }
   }
 

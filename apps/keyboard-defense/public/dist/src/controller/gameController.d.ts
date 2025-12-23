@@ -243,6 +243,12 @@ export declare class GameController {
     pickFieldDrillSupportLane(): any;
     updateFieldDrillStatus(state: any): void;
     updateFieldDrillBuffs(state: any): void;
+    pickPowerPhrase(previous?: string): string;
+    setPowerPhraseMessage(message: any, durationSeconds?: number): void;
+    handlePowerPhraseFocus(): void;
+    handlePowerPhraseCancel(): void;
+    handlePowerPhraseInput(input: any): void;
+    updatePowerPhraseHud(state: any): void;
     trackTypingDrillCompleted(entry: TypingDrillSummary): void;
     getTypingDrillModeLabel(mode: TypingDrillMode): string;
     setTypingDrillCtaRecommendation(recommendation: {
