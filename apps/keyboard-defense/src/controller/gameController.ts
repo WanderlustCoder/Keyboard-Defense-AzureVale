@@ -1189,6 +1189,8 @@ export class GameController {
         onPlaceTurret: (slotId, typeId) => this.handlePlaceTurret(slotId, typeId),
         onUpgradeTurret: (slotId) => this.handleUpgradeTurret(slotId),
         onDowngradeTurret: (slotId) => this.handleDowngradeTurret(slotId),
+        onPracticeDummySpawn: (lane) => this.spawnPracticeDummy(lane),
+        onPracticeDummyClear: () => this.clearPracticeDummies(),
         onTurretPriorityChange: (slotId, priority) =>
           this.handleTurretPriorityChange(slotId, priority),
         onBuildMenuToggle: (open) => this.handleBuildMenuToggle(open),

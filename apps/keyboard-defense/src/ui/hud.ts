@@ -368,6 +368,8 @@ export interface HudCallbacks {
   onPlaceTurret(slotId: string, typeId: TurretTypeId): void;
   onUpgradeTurret(slotId: string): void;
   onDowngradeTurret?: (slotId: string) => void;
+  onPracticeDummySpawn?: (lane: number) => void;
+  onPracticeDummyClear?: () => void;
   onTurretPriorityChange(slotId: string, priority: TurretTargetPriority): void;
   onBuildMenuToggle?: (open: boolean) => void;
   onTurretPresetSave?: (presetId: string) => void;
@@ -1022,6 +1024,11 @@ export class HudView {
   private readonly lockIndicatorCaps: HTMLElement | null = null;
   private readonly lockIndicatorNum: HTMLElement | null = null;
   private readonly upgradePanel: HTMLElement;
+  private practiceDummyPanel: HTMLDivElement | null = null;
+  private practiceDummyStatus: HTMLElement | null = null;
+  private practiceDummyLaneSelect: HTMLSelectElement | null = null;
+  private practiceDummySpawnButton: HTMLButtonElement | null = null;
+  private practiceDummyClearButton: HTMLButtonElement | null = null;
   private readonly comboLabel: HTMLElement;
   private readonly comboAccuracyDelta: HTMLElement;
   private readonly logList: HTMLUListElement;
@@ -5773,6 +5780,7 @@ export class HudView {
 
     this.updateCastleControls(state);
     this.updateTurretControls(state);
+    this.updatePracticeDummyControls(state);
     this.updateCombo(
       state.typing.combo,
       state.typing.comboWarning,
@@ -7637,6 +7645,53 @@ export class HudView {
     }
   }
 
+  private updatePracticeDummyControls(state: GameState): void {
+    if (!this.practiceDummyPanel || !this.practiceDummyStatus) {
+      return;
+    }
+    const dummies = Array.isArray(state.enemies)
+      ? state.enemies.filter((enemy) => enemy?.tierId === "dummy")
+      : [];
+    const hasDummy = dummies.length > 0;
+    const running = state.status === "running";
+    const spawnAvailable =
+      running && !hasDummy && typeof this.callbacks.onPracticeDummySpawn === "function";
+    const clearAvailable = hasDummy && typeof this.callbacks.onPracticeDummyClear === "function";
+
+    if (this.practiceDummyLaneSelect) {
+      this.practiceDummyLaneSelect.disabled = !spawnAvailable;
+      this.practiceDummyLaneSelect.setAttribute("aria-disabled", spawnAvailable ? "false" : "true");
+    }
+    if (this.practiceDummySpawnButton) {
+      this.practiceDummySpawnButton.disabled = !spawnAvailable;
+      this.practiceDummySpawnButton.setAttribute(
+        "aria-disabled",
+        spawnAvailable ? "false" : "true"
+      );
+    }
+    if (this.practiceDummyClearButton) {
+      this.practiceDummyClearButton.disabled = !clearAvailable;
+      this.practiceDummyClearButton.setAttribute("aria-disabled", clearAvailable ? "false" : "true");
+    }
+
+    if (hasDummy) {
+      const laneValue = dummies[0]?.lane;
+      const laneLabel =
+        typeof laneValue === "number" ? `Lane ${String.fromCharCode(65 + laneValue)}` : "a lane";
+      const countLabel = dummies.length > 1 ? ` (${dummies.length} targets)` : "";
+      this.practiceDummyStatus.textContent = `Dummy active in ${laneLabel}${countLabel}.`;
+      this.practiceDummyPanel.dataset.active = "true";
+      return;
+    }
+
+    if (!running) {
+      this.practiceDummyStatus.textContent = "Start a wave to spawn a practice dummy.";
+    } else {
+      this.practiceDummyStatus.textContent = "Spawn a dummy to check turret DPS.";
+    }
+    this.practiceDummyPanel.dataset.active = "false";
+  }
+
   private pulseHazardBadge(slotId: string, badge: HTMLElement): void {
     if (!badge || this.reducedMotionEnabled || typeof window === "undefined") {
       return;
@@ -8086,6 +8141,76 @@ export class HudView {
         prioritySelect
       });
     }
+    this.createPracticeDummyControls();
+  }
+
+  private createPracticeDummyControls(): void {
+    if (this.practiceDummyPanel) {
+      return;
+    }
+    const container = document.createElement("div");
+    container.className = "practice-dummy";
+
+    const header = document.createElement("div");
+    header.className = "practice-dummy-header";
+    const title = document.createElement("h3");
+    title.className = "practice-dummy-title";
+    title.textContent = "Practice Dummy";
+    const copy = document.createElement("p");
+    copy.className = "practice-dummy-copy";
+    copy.textContent = "Spawn a harmless target to check turret DPS mid-wave.";
+    header.append(title, copy);
+
+    const controls = document.createElement("div");
+    controls.className = "practice-dummy-controls";
+    const label = document.createElement("label");
+    label.className = "practice-dummy-label";
+    const select = document.createElement("select");
+    select.className = "practice-dummy-select";
+    select.id = `practice-dummy-lane-${++hudInstanceCounter}`;
+    label.htmlFor = select.id;
+    label.textContent = "Lane";
+    const laneLabels = ["Lane A", "Lane B", "Lane C"];
+    laneLabels.forEach((laneLabel, index) => {
+      const option = document.createElement("option");
+      option.value = String(index);
+      option.textContent = laneLabel;
+      select.appendChild(option);
+    });
+    this.setSelectValue(select, "1");
+
+    const spawnButton = document.createElement("button");
+    spawnButton.type = "button";
+    spawnButton.className = "practice-dummy-spawn";
+    spawnButton.textContent = "Spawn Dummy";
+    spawnButton.addEventListener("click", () => {
+      const laneValue = Number.parseInt(select.value, 10);
+      const lane = Number.isFinite(laneValue) ? laneValue : 1;
+      this.callbacks.onPracticeDummySpawn?.(lane);
+    });
+
+    const clearButton = document.createElement("button");
+    clearButton.type = "button";
+    clearButton.className = "practice-dummy-clear";
+    clearButton.textContent = "Clear Dummies";
+    clearButton.addEventListener("click", () => {
+      this.callbacks.onPracticeDummyClear?.();
+    });
+
+    const status = document.createElement("p");
+    status.className = "practice-dummy-status";
+    status.setAttribute("role", "status");
+    status.setAttribute("aria-live", "polite");
+    status.textContent = "No dummy active.";
+
+    controls.append(label, select, spawnButton, clearButton);
+    container.append(header, controls, status);
+    this.practiceDummyPanel = container;
+    this.practiceDummyStatus = status;
+    this.practiceDummyLaneSelect = select;
+    this.practiceDummySpawnButton = spawnButton;
+    this.practiceDummyClearButton = clearButton;
+    this.upgradePanel.appendChild(container);
   }
 
   private populatePrioritySelect(select: HTMLSelectElement): void {

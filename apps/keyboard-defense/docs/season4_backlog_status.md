@@ -32,7 +32,7 @@ Quick status snapshot for items in `season4_backlog.md`. All items start as Not 
 | 26 | Typo recovery drills mid-wave | Done | After a mid-wave typing error (combo >= 3), prompts Undo → Redo (Ctrl/Cmd+Z then Ctrl/Cmd+Y / Ctrl/Cmd+Shift+Z); restores combo once per wave with cooldown. |
 | 27 | Lane support selection drills | Done | Adds a Lane Support typing drill (45s): type A/B/C to route support to the highlighted lane, with timing stats (avg/best/last). |
 | 28 | Hand isolation practice mode | Done | Adds a Hand Isolation typing drill (45s) with a left/right hand toggle and curated single-hand word pools. |
-| 29 | Endurance marathon with breaks | Not Started | - |
+| 29 | Endurance marathon with breaks | Done | Endurance drill now runs a multi-segment marathon with break segments and an auto-pause toggle. |
 | 30 | Seasonal event playlists | Not Started | - |
 | 31 | Modular castle rooms | Not Started | - |
 | 32 | Typed barricade building | Not Started | - |
@@ -46,7 +46,7 @@ Quick status snapshot for items in `season4_backlog.md`. All items start as Not 
 | 40 | Sneak enemies with reveal | Not Started | - |
 | 41 | Hazard tiles | Not Started | - |
 | 42 | Lane-priority macros | Not Started | - |
-| 43 | Spawnable training dummy | Not Started | - |
+| 43 | Spawnable training dummy | Done | Added a HUD "Practice Dummy" panel to spawn or clear dummies mid-run for turret DPS checks. |
 | 44 | Power phrase overdrive | Not Started | - |
 | 45 | Defensive rune sockets | Not Started | - |
 | 46 | HUD zoom control | Done | Options overlay adds a HUD zoom selector (90-120%) that scales the entire HUD and persists per profile. |

@@ -300,9 +300,18 @@ const DRILL_CONFIGS = {
     },
     endurance: {
         label: "Endurance",
-        description: "Stay consistent for thirty seconds; cadence matters more than speed.",
-        timerMs: 30000,
-        difficulties: ["easy", "medium", "medium", "hard"]
+        description: "A long-form cadence run with scheduled stretch and water breaks. Toggle auto-pause to stop during breaks.",
+        timerMs: 285000,
+        difficulties: ["easy", "medium", "medium", "hard"],
+        segments: [
+            { label: "Warm stride", durationMs: 60000, targets: [], kind: "typing" },
+            { label: "Hydrate break", durationMs: 15000, targets: [], kind: "break" },
+            { label: "Steady pace", durationMs: 60000, targets: [], kind: "typing" },
+            { label: "Stretch break", durationMs: 15000, targets: [], kind: "break" },
+            { label: "Long push", durationMs: 60000, targets: [], kind: "typing" },
+            { label: "Water break", durationMs: 15000, targets: [], kind: "break" },
+            { label: "Finish strong", durationMs: 60000, targets: [], kind: "typing" }
+        ]
     },
     sprint: {
         label: "Time Attack",
@@ -559,6 +568,7 @@ export class TypingDrillsOverlay {
     slowMoBtn;
     metronomeBtn;
     handBtn;
+    breakAutoPauseBtn;
     accuracyEl;
     comboEl;
     wpmEl;
@@ -604,6 +614,7 @@ export class TypingDrillsOverlay {
     shiftTutorSlowMo = true;
     metronomeEnabled = true;
     handIsolationSide = "left";
+    breakAutoPauseEnabled = true;
     metronomeSoundLevel = 0;
     metronomeHapticsAllowed = false;
     metronomeBeatTimeout;
@@ -650,6 +661,8 @@ export class TypingDrillsOverlay {
     state = {
         mode: "lesson",
         active: false,
+        paused: false,
+        pauseStartedAt: null,
         startSource: "cta",
         buffer: "",
         target: "",
@@ -688,6 +701,7 @@ export class TypingDrillsOverlay {
         this.slowMoBtn = document.getElementById("typing-drill-slowmo");
         this.metronomeBtn = document.getElementById("typing-drill-metronome");
         this.handBtn = document.getElementById("typing-drill-hand");
+        this.breakAutoPauseBtn = document.getElementById("typing-drill-breaks");
         this.accuracyEl = document.getElementById("typing-drill-accuracy");
         this.comboEl = document.getElementById("typing-drill-combo");
         this.wpmEl = document.getElementById("typing-drill-wpm");
@@ -790,8 +804,14 @@ export class TypingDrillsOverlay {
             this.toastTimeout = null;
         }
         this.state.active = false;
+        this.state.paused = false;
+        this.state.pauseStartedAt = null;
         this.state.buffer = "";
         this.state.target = "";
+        if (this.input) {
+            this.input.disabled = false;
+            this.input.removeAttribute("aria-disabled");
+        }
         this.root.dataset.visible = "false";
         this.summaryEl?.setAttribute("data-visible", "false");
         this.callbacks.onClose?.();
@@ -815,6 +835,8 @@ export class TypingDrillsOverlay {
             ...this.state,
             mode: nextMode,
             active: true,
+            paused: false,
+            pauseStartedAt: null,
             startSource: this.state.startSource,
             buffer: "",
             target: "",
@@ -881,6 +903,12 @@ export class TypingDrillsOverlay {
             if (nextMode === "combo") {
                 this.ensureComboSegments();
                 const totalMs = this.comboSegments.reduce((sum, segment) => sum + Math.max(0, segment?.durationMs ?? 0), 0);
+                if (totalMs > 0) {
+                    timerMs = totalMs;
+                }
+            }
+            if (nextMode === "endurance" && Array.isArray(config.segments)) {
+                const totalMs = config.segments.reduce((sum, segment) => sum + Math.max(0, segment?.durationMs ?? 0), 0);
                 if (totalMs > 0) {
                     timerMs = totalMs;
                 }
@@ -953,6 +981,8 @@ export class TypingDrillsOverlay {
         this.state = {
             mode: nextMode,
             active: false,
+            paused: false,
+            pauseStartedAt: null,
             startSource,
             buffer: "",
             target: "",
@@ -1534,6 +1564,10 @@ export class TypingDrillsOverlay {
         }
         if (this.startBtn) {
             this.startBtn.addEventListener("click", () => {
+                if (this.state.paused) {
+                    this.resumeFromPause();
+                    return;
+                }
                 if (!this.state.active) {
                     this.start();
                 }
@@ -1584,6 +1618,15 @@ export class TypingDrillsOverlay {
                     this.updateTarget();
                     this.updateMetrics();
                 }
+            });
+        }
+        if (this.breakAutoPauseBtn) {
+            this.breakAutoPauseBtn.addEventListener("click", () => {
+                this.breakAutoPauseEnabled = !this.breakAutoPauseEnabled;
+                this.updateBreakControls();
+                this.showToast(this.breakAutoPauseEnabled
+                    ? "Auto-pause enabled for breaks."
+                    : "Auto-pause disabled for breaks.");
             });
         }
         this.modeButtons.forEach((btn) => btn.addEventListener("click", () => {
@@ -1721,11 +1764,22 @@ export class TypingDrillsOverlay {
             this.close();
             return;
         }
+        if (this.state.paused) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                this.resumeFromPause();
+            }
+            return;
+        }
         if (!this.state.active) {
             if (event.key === "Enter") {
                 event.preventDefault();
                 this.start();
             }
+            return;
+        }
+        if (this.isBreakActive()) {
+            event.preventDefault();
             return;
         }
         if (this.state.mode === "shortcuts") {
@@ -2275,9 +2329,15 @@ export class TypingDrillsOverlay {
         this.stopSupport();
         const now = performance.now();
         this.state.active = false;
+        this.state.paused = false;
+        this.state.pauseStartedAt = null;
         this.state.elapsedMs =
             this.state.startTime > 0 && now > this.state.startTime ? now - this.state.startTime : 0;
         this.state.buffer = "";
+        if (this.input) {
+            this.input.disabled = false;
+            this.input.removeAttribute("aria-disabled");
+        }
         this.updateTarget();
         this.updateMetrics();
         this.updateLessonControls();
@@ -2579,6 +2639,7 @@ export class TypingDrillsOverlay {
         this.updateShiftTutorControls(mode);
         this.updateMetronomeControls(mode);
         this.updateHandIsolationControls(mode);
+        this.updateBreakControls(mode);
         this.updateLessonControls(mode);
         if (mode === "lesson" && !this.state.active) {
             this.syncLessonSelectionFromProgress();
@@ -2621,6 +2682,18 @@ export class TypingDrillsOverlay {
         this.handBtn.textContent = `Hand: ${label}`;
         this.handBtn.setAttribute("aria-pressed", this.handIsolationSide === "left" ? "true" : "false");
     }
+    updateBreakControls(mode = this.state.mode) {
+        if (!this.breakAutoPauseBtn)
+            return;
+        const visible = mode === "endurance";
+        this.breakAutoPauseBtn.dataset.visible = visible ? "true" : "false";
+        if (!visible)
+            return;
+        this.breakAutoPauseBtn.setAttribute("aria-pressed", this.breakAutoPauseEnabled ? "true" : "false");
+        this.breakAutoPauseBtn.textContent = this.breakAutoPauseEnabled
+            ? "Auto-pause: On"
+            : "Auto-pause: Off";
+    }
     updateLessonControls(mode = this.state.mode) {
         if (!this.lessonPicker)
             return;
@@ -2630,6 +2703,77 @@ export class TypingDrillsOverlay {
         if (this.lessonSelect) {
             this.lessonSelect.disabled = Boolean(this.state.active && visible);
         }
+    }
+    getModeSegments(mode) {
+        if (mode === "focus") {
+            this.ensureFocusSegments();
+            return this.focusSegments;
+        }
+        if (mode === "warmup") {
+            this.ensureWarmupSegments();
+            return this.warmupSegments;
+        }
+        if (mode === "combo") {
+            this.ensureComboSegments();
+            return this.comboSegments;
+        }
+        if (mode === "placement" || mode === "endurance") {
+            const config = DRILL_CONFIGS[mode];
+            return Array.isArray(config.segments) ? config.segments : null;
+        }
+        return null;
+    }
+    getActiveSegment(mode = this.state.mode) {
+        const segments = this.getModeSegments(mode);
+        if (!Array.isArray(segments) || segments.length === 0)
+            return null;
+        const index = Math.max(0, Math.min(segments.length - 1, this.state.segmentIndex));
+        return segments[index] ?? null;
+    }
+    isBreakSegment(segment) {
+        return segment?.kind === "break";
+    }
+    isBreakActive(mode = this.state.mode) {
+        if (!this.state.active)
+            return false;
+        return this.isBreakSegment(this.getActiveSegment(mode));
+    }
+    pauseForBreak() {
+        if (!this.state.active || this.state.paused)
+            return;
+        this.state.paused = true;
+        this.state.pauseStartedAt = performance.now();
+        this.cleanupTimer?.();
+        this.cleanupTimer = undefined;
+        if (this.startBtn) {
+            this.startBtn.textContent = "Resume Break";
+        }
+    }
+    resumeFromPause() {
+        if (!this.state.paused)
+            return;
+        const now = performance.now();
+        const pausedFor = this.state.pauseStartedAt && now > this.state.pauseStartedAt
+            ? now - this.state.pauseStartedAt
+            : 0;
+        if (pausedFor > 0 && this.state.startTime > 0) {
+            this.state.startTime += pausedFor;
+        }
+        if (pausedFor > 0 && this.state.timerEndsAt) {
+            this.state.timerEndsAt += pausedFor;
+        }
+        this.state.paused = false;
+        this.state.pauseStartedAt = null;
+        if (this.state.timerEndsAt && this.state.active) {
+            this.cleanupTimer?.();
+            this.cleanupTimer = this.startTimer(this.state.timerEndsAt);
+        }
+        if (this.startBtn) {
+            this.startBtn.textContent = this.state.mode === "lesson" ? "Restart Lesson" : "Restart";
+        }
+        this.updateTarget();
+        this.updateMetrics();
+        this.updateTimer();
     }
     stopMetronome() {
         if (this.metronomeBeatTimeout) {
@@ -2772,6 +2916,9 @@ export class TypingDrillsOverlay {
     }
     pickWord(mode) {
         const config = DRILL_CONFIGS[mode];
+        if (this.isBreakSegment(this.getActiveSegment(mode))) {
+            return "";
+        }
         if (mode === "reaction") {
             return "";
         }
@@ -2863,6 +3010,34 @@ export class TypingDrillsOverlay {
     updateTarget() {
         if (!this.targetEl)
             return;
+        const activeSegment = this.getActiveSegment();
+        if (this.isBreakSegment(activeSegment)) {
+            const container = document.createElement("div");
+            container.className = "typing-drill-break";
+            const kicker = document.createElement("p");
+            kicker.className = "typing-drill-break__kicker";
+            kicker.textContent = "Break";
+            const title = document.createElement("p");
+            title.className = "typing-drill-break__title";
+            title.textContent = activeSegment?.label ?? "Stretch and hydrate";
+            const hint = document.createElement("p");
+            hint.className = "typing-drill-break__hint";
+            hint.textContent = this.state.paused
+                ? "Auto-pause active. Press Enter or Resume to continue."
+                : "Relax your hands, roll your shoulders, and breathe.";
+            container.append(kicker, title, hint);
+            this.targetEl.replaceChildren(container);
+            if (this.input) {
+                this.input.value = "";
+                this.input.disabled = true;
+                this.input.setAttribute("aria-disabled", "true");
+            }
+            return;
+        }
+        if (this.input && this.input.disabled) {
+            this.input.disabled = false;
+            this.input.removeAttribute("aria-disabled");
+        }
         if (this.state.mode === "support") {
             const container = document.createElement("div");
             container.className = "typing-drill-support";
@@ -3373,6 +3548,17 @@ export class TypingDrillsOverlay {
                     ? `${segment.label} (${segmentNumber}/${total})${suffix}`
                     : `${total}/${total}`;
             }
+            else if (this.state.mode === "endurance" &&
+                Array.isArray(config.segments) &&
+                config.segments.length > 0) {
+                const total = config.segments.length;
+                const segmentNumber = Math.max(1, Math.min(total, this.state.segmentIndex + 1));
+                const segment = config.segments[this.state.segmentIndex];
+                const fallbackLabel = this.isBreakSegment(segment) ? "Break" : "Segment";
+                this.progressLabel.textContent = segment
+                    ? `${segment.label} (${segmentNumber}/${total})`
+                    : `${fallbackLabel} (${segmentNumber}/${total})`;
+            }
             else if (this.state.mode === "shortcuts" &&
                 Array.isArray(config.shortcutSteps) &&
                 config.shortcutSteps.length > 0) {
@@ -3405,6 +3591,16 @@ export class TypingDrillsOverlay {
         if (!label)
             return;
         if (this.state.timerEndsAt && this.state.active) {
+            if (this.state.paused) {
+                const pauseAnchor = this.state.pauseStartedAt ?? performance.now();
+                const remainingMs = Math.max(0, this.state.timerEndsAt - pauseAnchor);
+                const minutes = Math.floor(remainingMs / 60000);
+                const seconds = Math.floor((remainingMs % 60000) / 1000);
+                label.textContent = `${minutes.toString().padStart(2, "0")}:${seconds
+                    .toString()
+                    .padStart(2, "0")}`;
+                return;
+            }
             const remainingMs = Math.max(0, this.state.timerEndsAt - performance.now());
             const minutes = Math.floor(remainingMs / 60000);
             const seconds = Math.floor((remainingMs % 60000) / 1000);
@@ -3437,27 +3633,10 @@ export class TypingDrillsOverlay {
         return () => window.clearInterval(interval);
     }
     updateTimedSegment() {
-        if (!this.state.active)
+        if (!this.state.active || this.state.paused)
             return;
         const mode = this.state.mode;
-        if (mode === "focus") {
-            this.ensureFocusSegments();
-        }
-        if (mode === "warmup") {
-            this.ensureWarmupSegments();
-        }
-        if (mode === "combo") {
-            this.ensureComboSegments();
-        }
-        const segments = mode === "placement"
-            ? DRILL_CONFIGS.placement.segments
-            : mode === "focus"
-                ? this.focusSegments
-                : mode === "warmup"
-                    ? this.warmupSegments
-                    : mode === "combo"
-                        ? this.comboSegments
-                        : null;
+        const segments = this.getModeSegments(mode);
         if (!Array.isArray(segments) || segments.length === 0)
             return;
         const startTime = this.state.startTime;
@@ -3476,23 +3655,33 @@ export class TypingDrillsOverlay {
         }
         nextIndex = Math.max(0, Math.min(segments.length - 1, nextIndex));
         if (nextIndex !== this.state.segmentIndex) {
+            const segment = segments[nextIndex] ?? null;
+            const isBreak = this.isBreakSegment(segment);
             this.state.segmentIndex = nextIndex;
             this.state.buffer = "";
             this.state.wordErrors = 0;
             if (mode === "combo") {
                 this.resetComboSegmentBudget(nextIndex);
             }
-            this.state.target = this.pickWord(mode);
+            this.state.target = isBreak ? "" : this.pickWord(mode);
+            if (isBreak && this.breakAutoPauseEnabled) {
+                this.pauseForBreak();
+            }
             this.updateTarget();
-            const label = segments[nextIndex]?.label;
+            const label = segment?.label;
             if (label) {
-                this.showToast(mode === "focus"
-                    ? `Focus: ${label}`
-                    : mode === "warmup"
-                        ? `Warm-up: ${label}`
-                        : mode === "combo"
-                            ? `Combo: ${label}`
-                            : `Segment: ${label}`);
+                if (isBreak) {
+                    this.showToast(`Break: ${label}`);
+                }
+                else {
+                    this.showToast(mode === "focus"
+                        ? `Focus: ${label}`
+                        : mode === "warmup"
+                            ? `Warm-up: ${label}`
+                            : mode === "combo"
+                                ? `Combo: ${label}`
+                                : `Segment: ${label}`);
+                }
             }
         }
     }
@@ -3521,7 +3710,7 @@ export class TypingDrillsOverlay {
                         : mode === "warmup"
                             ? "Plan"
                             : mode === "endurance"
-                                ? "Cadence"
+                                ? "Marathon"
                                 : mode === "sprint"
                                     ? "Sprint"
                                     : mode === "sentences"

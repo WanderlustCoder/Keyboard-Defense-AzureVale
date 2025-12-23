@@ -21,6 +21,7 @@ export declare class TypingDrillsOverlay {
     private readonly slowMoBtn?;
     private readonly metronomeBtn?;
     private readonly handBtn?;
+    private readonly breakAutoPauseBtn?;
     private readonly accuracyEl?;
     private readonly comboEl?;
     private readonly wpmEl?;
@@ -66,6 +67,7 @@ export declare class TypingDrillsOverlay {
     private shiftTutorSlowMo;
     private metronomeEnabled;
     private handIsolationSide;
+    private breakAutoPauseEnabled;
     private metronomeSoundLevel;
     private metronomeHapticsAllowed;
     private metronomeBeatTimeout?;
@@ -173,7 +175,14 @@ export declare class TypingDrillsOverlay {
     private updateShiftTutorControls;
     private updateMetronomeControls;
     private updateHandIsolationControls;
+    private updateBreakControls;
     private updateLessonControls;
+    private getModeSegments;
+    private getActiveSegment;
+    private isBreakSegment;
+    private isBreakActive;
+    private pauseForBreak;
+    private resumeFromPause;
     private stopMetronome;
     private startMetronome;
     private pulseMetronomeIndicator;

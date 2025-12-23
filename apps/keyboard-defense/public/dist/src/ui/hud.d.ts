@@ -67,6 +67,8 @@ export interface HudCallbacks {
     onPlaceTurret(slotId: string, typeId: TurretTypeId): void;
     onUpgradeTurret(slotId: string): void;
     onDowngradeTurret?: (slotId: string) => void;
+    onPracticeDummySpawn?: (lane: number) => void;
+    onPracticeDummyClear?: () => void;
     onTurretPriorityChange(slotId: string, priority: TurretTargetPriority): void;
     onBuildMenuToggle?: (open: boolean) => void;
     onTurretPresetSave?: (presetId: string) => void;
@@ -606,6 +608,11 @@ export declare class HudView {
     private readonly lockIndicatorCaps;
     private readonly lockIndicatorNum;
     private readonly upgradePanel;
+    private practiceDummyPanel;
+    private practiceDummyStatus;
+    private practiceDummyLaneSelect;
+    private practiceDummySpawnButton;
+    private practiceDummyClearButton;
     private readonly comboLabel;
     private readonly comboAccuracyDelta;
     private readonly logList;
@@ -1077,6 +1084,7 @@ export declare class HudView {
     private updateCastleControls;
     private updateCastleRepair;
     private updateTurretControls;
+    private updatePracticeDummyControls;
     private pulseHazardBadge;
     updateTurretPresets(presets: HudTurretPresetData[]): void;
     private ensurePresetControl;
@@ -1088,6 +1096,7 @@ export declare class HudView {
     private elementContains;
     private getSelectOptionNodes;
     private createTurretControls;
+    private createPracticeDummyControls;
     private populatePrioritySelect;
     private normalizePriority;
     private applyTurretAvailabilityToControls;
