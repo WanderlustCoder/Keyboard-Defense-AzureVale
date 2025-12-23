@@ -6111,6 +6111,152 @@ details {
   opacity: 0.65;
 }
 
+.lane-macro {
+  border: 1px solid #1e293b;
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 10px;
+  background: rgba(15, 23, 42, 0.6);
+  display: grid;
+  gap: 6px;
+}
+
+.lane-macro-header {
+  display: grid;
+  gap: 2px;
+}
+
+.lane-macro-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.lane-macro-copy {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.lane-macro-summary {
+  display: grid;
+  gap: 4px;
+}
+
+.lane-macro-active-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.lane-macro-active-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #94a3b8;
+}
+
+.lane-macro-active {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.lane-macro-lanes {
+  display: grid;
+  gap: 4px;
+}
+
+.lane-macro-lane {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  color: #cbd5f5;
+}
+
+.lane-macro-lane-label {
+  color: #94a3b8;
+}
+
+.lane-macro-lane-priority[data-priority="strongest"] {
+  color: #fb923c;
+}
+
+.lane-macro-lane-priority[data-priority="weakest"] {
+  color: #38bdf8;
+}
+
+.lane-macro-lane-priority[data-priority="mixed"] {
+  color: #facc15;
+}
+
+.lane-macro-lane-priority[data-priority="locked"] {
+  color: #64748b;
+}
+
+.lane-macro-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.lane-macro-preset {
+  padding: 4px 6px;
+  border-radius: 4px;
+  border: 1px solid #334155;
+  background: #0f172a;
+  color: inherit;
+  font-size: 0.72rem;
+}
+
+.lane-macro-preset[data-active="true"] {
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.4);
+}
+
+.lane-macro-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.lane-macro-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #94a3b8;
+}
+
+.lane-macro-input {
+  padding: 4px 6px;
+  border-radius: 4px;
+  border: 1px solid #334155;
+  background: #0f172a;
+  color: inherit;
+  font-size: 0.8rem;
+}
+
+.lane-macro-apply {
+  font-size: 0.75rem;
+}
+
+.lane-macro-status {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #a5b4fc;
+}
+
+.lane-macro-status[data-tone="success"] {
+  color: #22d3ee;
+}
+
+.lane-macro-status[data-tone="error"] {
+  color: #f87171;
+}
+
 .turret-slot[data-tutorial-highlight="true"] {
   border-color: #fbbf24;
   box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.35);

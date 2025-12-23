@@ -1,5 +1,6 @@
 import { WavePreviewPanel } from "./wavePreview.js";
 import { SEASON_ROADMAP, evaluateRoadmap } from "../data/roadmap.js";
+import { LANE_MACRO_PRESETS } from "../utils/laneMacros.js";
 import { NarrationManager } from "../utils/narration.js";
 import { getUiSchemeDefinition } from "../utils/uiSoundScheme.js";
 import { getEnemyBiography } from "../data/bestiary.js";
@@ -259,6 +260,13 @@ export class HudView {
     powerPhraseLaneSelect = null;
     powerPhraseChargeButton = null;
     powerPhraseInput = null;
+    laneMacroPanel = null;
+    laneMacroActiveLabel = null;
+    laneMacroStatus = null;
+    laneMacroInput = null;
+    laneMacroApplyButton = null;
+    laneMacroLaneRows = new Map();
+    laneMacroPresetButtons = new Map();
     comboLabel;
     comboAccuracyDelta;
     logList;
@@ -685,10 +693,12 @@ export class HudView {
                 commandInput.autocomplete = "off";
                 commandInput.autocapitalize = "off";
                 commandInput.spellcheck = false;
-                commandInput.placeholder = 'Try: "s0 arrow", "s0 upgrade", "castle repair"';
+                commandInput.placeholder =
+                    'Try: "s0 arrow", "s0 upgrade", "castle repair", "macro guard"';
                 const commandHelp = document.createElement("div");
                 commandHelp.className = "build-command-help";
-                commandHelp.textContent = 'Enter: run command. Tab/Esc: close menu. Type "help" for examples.';
+                commandHelp.textContent =
+                    'Enter: run command. Tab/Esc: close menu. Type "help" for examples.';
                 const commandStatus = document.createElement("div");
                 commandStatus.className = "build-command-status";
                 commandStatus.setAttribute("role", "status");
@@ -4239,6 +4249,23 @@ export class HudView {
             return "weakest";
         return null;
     }
+    tryHandleLaneMacroCommand(text, head) {
+        const normalized = head.toLowerCase();
+        const isMacroHead = normalized === "macro" ||
+            normalized === "preset" ||
+            normalized === "lane" ||
+            normalized === "lanes" ||
+            normalized === "all" ||
+            LANE_MACRO_PRESETS.some((preset) => preset.id === normalized);
+        if (!isMacroHead) {
+            return null;
+        }
+        const handler = this.callbacks.onLaneMacroCommand;
+        if (!handler) {
+            return { status: "error", message: "Lane macros unavailable." };
+        }
+        return handler(text) ?? { status: "error", message: "Lane macros unavailable." };
+    }
     executeBuildCommand(raw) {
         const text = raw?.trim?.() ?? "";
         if (!text) {
@@ -4248,7 +4275,12 @@ export class HudView {
         const tokens = text.split(/\s+/g).filter(Boolean);
         const head = (tokens[0] ?? "").toLowerCase();
         if (head === "help" || head === "?") {
-            this.setBuildCommandStatus('Examples: "s0 arrow", "s0 upgrade", "s0 priority strongest", "castle repair".', { tone: "info", timeoutMs: 5200 });
+            this.setBuildCommandStatus('Examples: "s0 arrow", "s0 upgrade", "s0 priority strongest", "macro guard".', { tone: "info", timeoutMs: 5200 });
+            return;
+        }
+        const macroResult = this.tryHandleLaneMacroCommand(text, head);
+        if (macroResult) {
+            this.setBuildCommandStatus(macroResult.message, { tone: macroResult.status });
             return;
         }
         if (head === "castle" || head === "keep") {
@@ -5901,6 +5933,37 @@ export class HudView {
             this.powerPhraseInput.setAttribute("aria-disabled", available ? "false" : "true");
         }
     }
+    updateLaneMacros(state) {
+        if (!this.laneMacroPanel) {
+            return;
+        }
+        this.laneMacroPanel.dataset.active = state.active ? "true" : "false";
+        if (this.laneMacroActiveLabel) {
+            this.laneMacroActiveLabel.textContent = state.activeLabel;
+        }
+        this.setLaneMacroStatus(state.status, state.statusTone);
+        for (const laneState of state.lanes) {
+            const row = this.laneMacroLaneRows.get(laneState.lane);
+            if (!row)
+                continue;
+            row.priority.textContent = laneState.priorityLabel;
+            const priorityId = laneState.priorityId ?? null;
+            if (priorityId) {
+                row.priority.dataset.priority = String(priorityId);
+            }
+            else {
+                delete row.priority.dataset.priority;
+            }
+        }
+        for (const [presetId, button] of this.laneMacroPresetButtons.entries()) {
+            if (state.presetId && presetId === state.presetId) {
+                button.dataset.active = "true";
+            }
+            else {
+                delete button.dataset.active;
+            }
+        }
+    }
     pulseHazardBadge(slotId, badge) {
         if (!badge || this.reducedMotionEnabled || typeof window === "undefined") {
             return;
@@ -6298,6 +6361,7 @@ export class HudView {
         }
         this.createPracticeDummyControls();
         this.createPowerPhraseControls();
+        this.createLaneMacroControls();
     }
     createPracticeDummyControls() {
         if (this.practiceDummyPanel) {
@@ -6462,6 +6526,151 @@ export class HudView {
         this.powerPhraseLaneSelect = select;
         this.powerPhraseChargeButton = chargeButton;
         this.powerPhraseInput = input;
+        this.upgradePanel.appendChild(container);
+    }
+    setLaneMacroStatus(message, tone = "info") {
+        if (!this.laneMacroStatus)
+            return;
+        this.laneMacroStatus.textContent = message;
+        this.laneMacroStatus.dataset.tone = tone;
+    }
+    applyLaneMacroCommand(raw) {
+        const handler = this.callbacks.onLaneMacroCommand;
+        if (!handler) {
+            this.setLaneMacroStatus("Lane macros unavailable.", "error");
+            return null;
+        }
+        const result = handler(raw?.trim?.() ?? "");
+        if (!result) {
+            this.setLaneMacroStatus("Lane macros unavailable.", "error");
+            return null;
+        }
+        this.setLaneMacroStatus(result.message, result.status);
+        return result;
+    }
+    createLaneMacroControls() {
+        if (this.laneMacroPanel) {
+            return;
+        }
+        const container = document.createElement("div");
+        container.className = "lane-macro";
+        container.dataset.active = "false";
+        const header = document.createElement("div");
+        header.className = "lane-macro-header";
+        const title = document.createElement("h3");
+        title.className = "lane-macro-title";
+        title.textContent = "Lane Macros";
+        const copy = document.createElement("p");
+        copy.className = "lane-macro-copy";
+        copy.textContent = "Type a macro to set lane targeting priorities.";
+        header.append(title, copy);
+        const summary = document.createElement("div");
+        summary.className = "lane-macro-summary";
+        const summaryRow = document.createElement("div");
+        summaryRow.className = "lane-macro-active-row";
+        const summaryLabel = document.createElement("span");
+        summaryLabel.className = "lane-macro-active-label";
+        summaryLabel.textContent = "Active macro";
+        const activeLabel = document.createElement("span");
+        activeLabel.className = "lane-macro-active";
+        activeLabel.textContent = "None";
+        summaryRow.append(summaryLabel, activeLabel);
+        const laneList = document.createElement("div");
+        laneList.className = "lane-macro-lanes";
+        const lanes = Array.from(new Set(this.config.turretSlots.map((slot) => slot.lane))).sort((a, b) => a - b);
+        for (const lane of lanes) {
+            const row = document.createElement("div");
+            row.className = "lane-macro-lane";
+            const laneLabel = document.createElement("span");
+            laneLabel.className = "lane-macro-lane-label";
+            laneLabel.textContent = `Lane ${String.fromCharCode(65 + lane)}`;
+            const lanePriority = document.createElement("span");
+            lanePriority.className = "lane-macro-lane-priority";
+            lanePriority.textContent = "First";
+            row.append(laneLabel, lanePriority);
+            laneList.appendChild(row);
+            this.laneMacroLaneRows.set(lane, { priority: lanePriority });
+        }
+        summary.append(summaryRow, laneList);
+        const presets = document.createElement("div");
+        presets.className = "lane-macro-presets";
+        for (const preset of LANE_MACRO_PRESETS) {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "lane-macro-preset";
+            button.textContent = preset.label;
+            button.dataset.macro = preset.id;
+            button.title = preset.description;
+            button.addEventListener("click", () => {
+                const result = this.applyLaneMacroCommand(preset.id);
+                if (result && this.laneMacroInput) {
+                    this.setInputValue(this.laneMacroInput, "");
+                    this.laneMacroInput.focus();
+                }
+            });
+            presets.appendChild(button);
+            this.laneMacroPresetButtons.set(preset.id, button);
+        }
+        const controls = document.createElement("div");
+        controls.className = "lane-macro-controls";
+        const label = document.createElement("label");
+        label.className = "lane-macro-label";
+        label.textContent = "Macro";
+        const input = document.createElement("input");
+        input.type = "text";
+        input.className = "lane-macro-input";
+        input.id = `lane-macro-input-${++hudInstanceCounter}`;
+        input.autocomplete = "off";
+        input.autocapitalize = "off";
+        input.spellcheck = false;
+        input.placeholder = 'Try "guard" or "lane A strongest"';
+        label.htmlFor = input.id;
+        const applyButton = document.createElement("button");
+        applyButton.type = "button";
+        applyButton.className = "lane-macro-apply";
+        applyButton.textContent = "Apply";
+        const applyMacro = () => {
+            const value = input.value;
+            const result = this.applyLaneMacroCommand(value);
+            if (result) {
+                this.setInputValue(input, "");
+                input.focus();
+            }
+        };
+        applyButton.addEventListener("click", () => applyMacro());
+        input.addEventListener("keydown", (event) => {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                applyMacro();
+                return;
+            }
+            if (event.key === "Escape") {
+                event.preventDefault();
+                this.setInputValue(input, "");
+                input.blur();
+            }
+        });
+        const status = document.createElement("p");
+        status.className = "lane-macro-status";
+        status.setAttribute("role", "status");
+        status.setAttribute("aria-live", "polite");
+        status.textContent = "No macro active.";
+        const hasHandler = Boolean(this.callbacks.onLaneMacroCommand);
+        input.disabled = !hasHandler;
+        input.setAttribute("aria-disabled", hasHandler ? "false" : "true");
+        applyButton.disabled = !hasHandler;
+        applyButton.setAttribute("aria-disabled", hasHandler ? "false" : "true");
+        for (const button of this.laneMacroPresetButtons.values()) {
+            button.disabled = !hasHandler;
+            button.setAttribute("aria-disabled", hasHandler ? "false" : "true");
+        }
+        controls.append(label, input, applyButton);
+        container.append(header, summary, presets, controls, status);
+        this.laneMacroPanel = container;
+        this.laneMacroActiveLabel = activeLabel;
+        this.laneMacroStatus = status;
+        this.laneMacroInput = input;
+        this.laneMacroApplyButton = applyButton;
         this.upgradePanel.appendChild(container);
     }
     getPowerPhraseLane() {

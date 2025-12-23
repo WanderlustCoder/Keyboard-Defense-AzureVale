@@ -35,7 +35,7 @@ export declare class GameController {
     damageCastle(amount: any): void;
     upgradeCastle(): void;
     repairCastle(): void;
-    placeTurret(slotId: any, type: any): void;
+    placeTurret(slotId: any, type: any, options?: {}): void;
     upgradeTurret(slotId: any): void;
     downgradeTurret(slotId: any): void;
     setTurretTargetingPriority(slotId: any, priority: any, options?: {}): boolean;
@@ -249,6 +249,28 @@ export declare class GameController {
     handlePowerPhraseCancel(): void;
     handlePowerPhraseInput(input: any): void;
     updatePowerPhraseHud(state: any): void;
+    setLaneMacroStatus(message: any, tone?: string): void;
+    getLaneMacroLanes(): unknown[];
+    normalizeLaneMacroPriority(token: any): "first" | "strongest" | "weakest";
+    resolveLaneMacroLaneToken(token: any, lanes: any): number;
+    normalizeLaneMacroMap(map: any, lanes: any): any;
+    areLaneMacroMapsEqual(a: any, b: any, lanes: any): boolean;
+    resolveLaneMacroPresetId(map: any, lanes: any): string;
+    applyLaneMacroMap(map: any, options?: {}): {
+        changed: boolean;
+        presetId: any;
+    };
+    clearLaneMacroState(): void;
+    handleLaneMacroCommand(command: any): {
+        status: any;
+        message: any;
+    };
+    updateLaneMacroForLane(lane: any, priority: any): void;
+    getLanePrioritySummary(state: any, lane: any): {
+        priorityId: any;
+        priorityLabel: string;
+    };
+    updateLaneMacroHud(state: any): void;
     trackTypingDrillCompleted(entry: TypingDrillSummary): void;
     getTypingDrillModeLabel(mode: TypingDrillMode): string;
     setTypingDrillCtaRecommendation(recommendation: {

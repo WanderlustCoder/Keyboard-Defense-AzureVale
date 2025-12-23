@@ -17,6 +17,7 @@ import { AssetLoader, toSvgDataUri } from "../assets/assetLoader.js";
 import { TutorialManager } from "../tutorial/tutorialManager.js";
 import { clearTutorialCompletion, readTutorialCompletion, writeTutorialCompletion } from "../tutorial/tutorialPersistence.js";
 import { createDefaultPlayerSettings, readPlayerSettings as loadPlayerSettingsFromStorage, withPatchedPlayerSettings, writePlayerSettings, TURRET_PRESET_IDS } from "../utils/playerSettings.js";
+import { LANE_MACRO_PRESETS, buildLanePriorityMap, getLaneMacroPreset } from "../utils/laneMacros.js";
 import { isModeUnlocked, readFingerMastery } from "../utils/fingerMastery.js";
 import { TelemetryClient } from "../telemetry/telemetryClient.js";
 import { calculateCanvasResolution, createDprListener } from "../utils/canvasResolution.js";
@@ -342,6 +343,11 @@ export class GameController {
         this.powerPhraseActive = false;
         this.powerPhraseMessage = null;
         this.powerPhraseMessageUntil = 0;
+        this.laneMacroActive = false;
+        this.laneMacroPresetId = null;
+        this.laneMacroPriorityMap = Object.create(null);
+        this.laneMacroStatus = "No macro active.";
+        this.laneMacroStatusTone = "info";
         this.accessibilityOnboardingSeen = this.loadAccessibilitySeen();
         this.accessibilityOverlay = null;
         this.resumeAfterAccessibility = false;
@@ -1034,6 +1040,7 @@ export class GameController {
             onPowerPhraseFocus: () => this.handlePowerPhraseFocus(),
             onPowerPhraseCancel: () => this.handlePowerPhraseCancel(),
             onPowerPhraseInput: (input) => this.handlePowerPhraseInput(input),
+            onLaneMacroCommand: (command) => this.handleLaneMacroCommand(command),
             onTurretPriorityChange: (slotId, priority) => this.handleTurretPriorityChange(slotId, priority),
             onBuildMenuToggle: (open) => this.handleBuildMenuToggle(open),
             onAnalyticsExport: this.analyticsExportEnabled ? () => this.exportAnalytics() : undefined,
@@ -1790,7 +1797,7 @@ export class GameController {
         }
         this.render();
     }
-    placeTurret(slotId, type) {
+    placeTurret(slotId, type, options = {}) {
         if (!this.isTurretTypeEnabled(type)) {
             const label = this.getTurretArchetypeLabel(type);
             this.hud.showSlotMessage(slotId, `${label} is currently disabled.`);
@@ -1803,7 +1810,9 @@ export class GameController {
         else {
             this.hud.showSlotMessage(slotId, "Turret placed!");
         }
-        this.render();
+        if (options.render !== false) {
+            this.render();
+        }
     }
     upgradeTurret(slotId) {
         const result = this.engine.upgradeTurret(slotId);
@@ -4967,6 +4976,258 @@ export class GameController {
             status
         });
     }
+    setLaneMacroStatus(message, tone = "info") {
+        this.laneMacroStatus = message;
+        this.laneMacroStatusTone = tone;
+    }
+    getLaneMacroLanes() {
+        const slots = this.engine?.config?.turretSlots ?? [];
+        return Array.from(new Set(slots.map((slot) => slot.lane))).sort((a, b) => a - b);
+    }
+    normalizeLaneMacroPriority(token) {
+        const raw = token?.trim?.() ?? "";
+        const normalized = raw.toLowerCase();
+        if (!normalized)
+            return null;
+        if (normalized === "first" || normalized === "f")
+            return "first";
+        if (normalized === "strongest" || normalized === "strong" || normalized === "s") {
+            return "strongest";
+        }
+        if (normalized === "weakest" || normalized === "weak" || normalized === "w") {
+            return "weakest";
+        }
+        return null;
+    }
+    resolveLaneMacroLaneToken(token, lanes) {
+        const raw = token?.trim?.() ?? "";
+        const normalized = raw.toLowerCase();
+        if (!normalized)
+            return null;
+        const laneSet = new Set(lanes);
+        if (normalized.length === 1) {
+            const code = normalized.charCodeAt(0);
+            if (code >= 97 && code <= 122) {
+                const lane = code - 97;
+                if (laneSet.has(lane))
+                    return lane;
+            }
+        }
+        const numeric = Number.parseInt(normalized, 10);
+        if (Number.isFinite(numeric)) {
+            if (laneSet.has(numeric))
+                return numeric;
+            const zeroBased = numeric - 1;
+            if (laneSet.has(zeroBased))
+                return zeroBased;
+        }
+        return null;
+    }
+    normalizeLaneMacroMap(map, lanes) {
+        const normalized = Object.create(null);
+        for (const lane of lanes) {
+            const value = map?.[lane];
+            normalized[lane] = value ?? "first";
+        }
+        return normalized;
+    }
+    areLaneMacroMapsEqual(a, b, lanes) {
+        for (const lane of lanes) {
+            const left = a?.[lane] ?? "first";
+            const right = b?.[lane] ?? "first";
+            if (left !== right) {
+                return false;
+            }
+        }
+        return true;
+    }
+    resolveLaneMacroPresetId(map, lanes) {
+        for (const preset of LANE_MACRO_PRESETS) {
+            const candidate = preset.apply(lanes);
+            if (this.areLaneMacroMapsEqual(map, candidate, lanes)) {
+                return preset.id;
+            }
+        }
+        return null;
+    }
+    applyLaneMacroMap(map, options = {}) {
+        const lanes = this.getLaneMacroLanes();
+        if (lanes.length === 0) {
+            return { changed: false, presetId: null };
+        }
+        const normalized = this.normalizeLaneMacroMap(map, lanes);
+        const presetId = typeof options.presetId === "string" && options.presetId.length > 0
+            ? options.presetId
+            : this.resolveLaneMacroPresetId(normalized, lanes);
+        this.laneMacroActive = true;
+        this.laneMacroPresetId = presetId;
+        this.laneMacroPriorityMap = normalized;
+        let changed = false;
+        const state = this.engine.getState();
+        for (const slot of state.turrets ?? []) {
+            const desired = normalized[slot.lane] ?? "first";
+            const current = slot.targetingPriority ?? "first";
+            if (desired === current) {
+                continue;
+            }
+            const updated = this.setTurretTargetingPriority(slot.id, desired, {
+                silent: true,
+                render: false
+            });
+            if (updated) {
+                changed = true;
+            }
+        }
+        this.currentState = this.engine.getState();
+        return { changed, presetId };
+    }
+    clearLaneMacroState() {
+        this.laneMacroActive = false;
+        this.laneMacroPresetId = null;
+        this.laneMacroPriorityMap = Object.create(null);
+    }
+    handleLaneMacroCommand(command) {
+        const text = command?.trim?.() ?? "";
+        const lanes = this.getLaneMacroLanes();
+        const macroNames = LANE_MACRO_PRESETS.map((preset) => preset.id).join(", ");
+        const macroHelp = macroNames.length > 0
+            ? `Macros: ${macroNames}. Try "macro guard" or "lane A strongest".`
+            : 'Try "lane A strongest".';
+        if (!text) {
+            this.setLaneMacroStatus(macroHelp, "info");
+            this.updateLaneMacroHud(this.currentState ?? this.engine.getState());
+            return { status: "info", message: macroHelp };
+        }
+        if (lanes.length === 0) {
+            const message = "No turret lanes available for macros.";
+            this.setLaneMacroStatus(message, "error");
+            this.updateLaneMacroHud(this.currentState ?? this.engine.getState());
+            return { status: "error", message };
+        }
+        const tokens = text.split(/\s+/g).filter(Boolean);
+        const head = (tokens[0] ?? "").toLowerCase();
+        const respond = (status, message, shouldRender) => {
+            this.setLaneMacroStatus(message, status);
+            if (shouldRender) {
+                this.render();
+            }
+            else {
+                this.updateLaneMacroHud(this.currentState ?? this.engine.getState());
+            }
+            return { status, message };
+        };
+        const applyMacro = (map, presetId, message) => {
+            const result = this.applyLaneMacroMap(map, { presetId });
+            const tone = result.changed ? "success" : "info";
+            const finalMessage = result.changed ? message : `${message} (already set).`;
+            return respond(tone, finalMessage, result.changed);
+        };
+        if (head === "macro" || head === "preset") {
+            const action = (tokens[1] ?? "").toLowerCase();
+            if (!action || action === "list" || action === "help" || action === "?") {
+                return respond("info", macroHelp, false);
+            }
+            if (action === "clear" || action === "off" || action === "reset") {
+                this.clearLaneMacroState();
+                const message = "Lane macros cleared. Priorities remain unchanged.";
+                return respond("info", message, false);
+            }
+            const preset = getLaneMacroPreset(action);
+            if (!preset) {
+                return respond("error", `Unknown macro "${action}". ${macroHelp}`, false);
+            }
+            const map = preset.apply(lanes);
+            return applyMacro(map, preset.id, `Macro ${preset.label} applied.`);
+        }
+        if (head === "lane") {
+            const laneToken = tokens[1] ?? "";
+            const priorityToken = tokens[2] ?? "";
+            const lane = this.resolveLaneMacroLaneToken(laneToken, lanes);
+            if (lane === null) {
+                return respond("error", `Pick a lane like A/B/C or 1/2/3. ${macroHelp}`, false);
+            }
+            const priority = this.normalizeLaneMacroPriority(priorityToken);
+            if (!priority) {
+                return respond("error", 'Priority must be "first", "strongest", or "weakest".', false);
+            }
+            const nextMap = this.normalizeLaneMacroMap(this.laneMacroPriorityMap, lanes);
+            nextMap[lane] = priority;
+            const presetId = this.resolveLaneMacroPresetId(nextMap, lanes);
+            const laneLabel = this.describeLane(lane);
+            return applyMacro(nextMap, presetId, `${laneLabel} set to ${this.describeTargetingPriority(priority)}.`);
+        }
+        if (head === "lanes" || head === "all") {
+            const priorityToken = tokens[1] ?? "";
+            const priority = this.normalizeLaneMacroPriority(priorityToken);
+            if (!priority) {
+                return respond("error", 'Priority must be "first", "strongest", or "weakest".', false);
+            }
+            const map = buildLanePriorityMap(lanes, priority);
+            const presetId = this.resolveLaneMacroPresetId(map, lanes);
+            return applyMacro(map, presetId, `All lanes set to ${this.describeTargetingPriority(priority)}.`);
+        }
+        const preset = getLaneMacroPreset(head);
+        if (preset) {
+            const map = preset.apply(lanes);
+            return applyMacro(map, preset.id, `Macro ${preset.label} applied.`);
+        }
+        return respond("error", `Unknown macro command "${text}". ${macroHelp}`, false);
+    }
+    updateLaneMacroForLane(lane, priority) {
+        if (!this.laneMacroActive) {
+            return;
+        }
+        const lanes = this.getLaneMacroLanes();
+        if (lanes.length === 0) {
+            return;
+        }
+        const nextMap = this.normalizeLaneMacroMap(this.laneMacroPriorityMap, lanes);
+        nextMap[lane] = priority;
+        this.laneMacroPriorityMap = nextMap;
+        this.laneMacroPresetId = this.resolveLaneMacroPresetId(nextMap, lanes);
+    }
+    getLanePrioritySummary(state, lane) {
+        const slots = (state?.turrets ?? []).filter((slot) => slot.lane === lane && slot.unlocked);
+        if (slots.length === 0) {
+            return { priorityId: "locked", priorityLabel: "Locked" };
+        }
+        const priorities = new Set(slots.map((slot) => slot.targetingPriority ?? "first"));
+        if (priorities.size === 1) {
+            const priority = priorities.values().next().value ?? "first";
+            return {
+                priorityId: priority,
+                priorityLabel: this.describeTargetingPriority(priority)
+            };
+        }
+        return { priorityId: "mixed", priorityLabel: "Mixed" };
+    }
+    updateLaneMacroHud(state) {
+        if (!this.hud?.updateLaneMacros || !state)
+            return;
+        const lanes = this.getLaneMacroLanes();
+        const presetLabel = this.laneMacroPresetId
+            ? getLaneMacroPreset(this.laneMacroPresetId)?.label ?? "Custom"
+            : this.laneMacroActive
+                ? "Custom"
+                : "None";
+        const laneStates = lanes.map((lane) => {
+            const summary = this.getLanePrioritySummary(state, lane);
+            return {
+                lane,
+                label: this.describeLane(lane),
+                priorityLabel: summary.priorityLabel,
+                priorityId: summary.priorityId
+            };
+        });
+        this.hud.updateLaneMacros({
+            active: this.laneMacroActive,
+            activeLabel: presetLabel,
+            presetId: this.laneMacroPresetId,
+            status: this.laneMacroStatus ?? "No macro active.",
+            statusTone: this.laneMacroStatusTone ?? "info",
+            lanes: laneStates
+        });
+    }
     trackTypingDrillCompleted(entry) {
         if (!this.telemetryClient?.track)
             return;
@@ -6480,6 +6741,7 @@ export class GameController {
         const tutorialDock = this.tutorialManager?.getDockState?.() ?? null;
         this.hud.setTutorialDock(tutorialDock);
         this.updatePowerPhraseHud(this.currentState);
+        this.updateLaneMacroHud(this.currentState);
         this.updateFieldDrillStatus(this.currentState);
         this.updateFieldDrillBuffs(this.currentState);
         const sessionGoalsFinalized = this.maybeFinalizeSessionGoals(this.currentState);
@@ -7501,15 +7763,26 @@ export class GameController {
         this.repairCastle();
     }
     handlePlaceTurret(slotId, typeId) {
-        this.placeTurret(slotId, typeId);
+        this.placeTurret(slotId, typeId, { render: false });
         const state = this.engine.getState();
         const slot = state.turrets.find((s) => s.id === slotId);
+        if (slot?.turret && this.laneMacroActive) {
+            const desired = this.laneMacroPriorityMap?.[slot.lane] ?? null;
+            const current = slot.targetingPriority ?? "first";
+            if (desired && desired !== current) {
+                this.setTurretTargetingPriority(slotId, desired, {
+                    silent: true,
+                    render: false
+                });
+            }
+        }
         if (slot?.turret) {
             this.tutorialManager?.notify({
                 type: "turret:placed",
                 payload: { slotId, typeId: slot.turret.typeId }
             });
         }
+        this.render();
     }
     handleUpgradeTurret(slotId) {
         this.upgradeTurret(slotId);
@@ -7524,6 +7797,11 @@ export class GameController {
     handleTurretPriorityChange(slotId, priority) {
         const changed = this.setTurretTargetingPriority(slotId, priority);
         if (changed) {
+            const state = this.currentState ?? this.engine.getState();
+            const slot = state.turrets.find((entry) => entry.id === slotId);
+            if (slot) {
+                this.updateLaneMacroForLane(slot.lane, priority);
+            }
             this.tutorialManager?.notify({
                 type: "turret:targeting",
                 payload: { slotId, priority }

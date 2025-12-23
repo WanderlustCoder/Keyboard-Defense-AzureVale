@@ -45,7 +45,7 @@ Quick status snapshot for items in `season4_backlog.md`. All items start as Not 
 | 39 | Siege engine miniboss | Not Started | - |
 | 40 | Sneak enemies with reveal | Not Started | - |
 | 41 | Hazard tiles | Not Started | - |
-| 42 | Lane-priority macros | Not Started | - |
+| 42 | Lane-priority macros | Done | Added a Lane Macros HUD card plus build-command support to apply lane targeting presets and typed lane commands. |
 | 43 | Spawnable training dummy | Done | Added a HUD "Practice Dummy" panel to spawn or clear dummies mid-run for turret DPS checks. |
 | 44 | Power phrase overdrive | Done | Added a Power Phrase HUD card to type a short phrase and trigger a lane fire-rate overdrive with cooldown feedback. |
 | 45 | Defensive rune sockets | Not Started | - |

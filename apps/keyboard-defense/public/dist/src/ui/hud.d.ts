@@ -24,6 +24,24 @@ type PowerPhraseInputEvent = {
 } | {
     type: "backspace";
 };
+type LaneMacroCommandResult = {
+    status: "success" | "error" | "info";
+    message: string;
+};
+type LaneMacroLaneState = {
+    lane: number;
+    label: string;
+    priorityLabel: string;
+    priorityId?: TurretTargetPriority | "mixed" | "locked" | null;
+};
+type LaneMacroViewState = {
+    active: boolean;
+    activeLabel: string;
+    presetId: string | null;
+    status: string;
+    statusTone: "success" | "error" | "info";
+    lanes: LaneMacroLaneState[];
+};
 type CastleSkinId = "classic" | "dusk" | "aurora" | "ember";
 type ContrastAuditResult = {
     label: string;
@@ -78,6 +96,7 @@ export interface HudCallbacks {
     onPowerPhraseFocus?: () => void;
     onPowerPhraseCancel?: () => void;
     onPowerPhraseInput?: (input: PowerPhraseInputEvent) => void;
+    onLaneMacroCommand?: (command: string) => LaneMacroCommandResult | null;
     onTurretPriorityChange(slotId: string, priority: TurretTargetPriority): void;
     onBuildMenuToggle?: (open: boolean) => void;
     onTurretPresetSave?: (presetId: string) => void;
@@ -629,6 +648,13 @@ export declare class HudView {
     private powerPhraseLaneSelect;
     private powerPhraseChargeButton;
     private powerPhraseInput;
+    private laneMacroPanel;
+    private laneMacroActiveLabel;
+    private laneMacroStatus;
+    private laneMacroInput;
+    private laneMacroApplyButton;
+    private readonly laneMacroLaneRows;
+    private readonly laneMacroPresetButtons;
     private readonly comboLabel;
     private readonly comboAccuracyDelta;
     private readonly logList;
@@ -1022,6 +1048,7 @@ export declare class HudView {
     private resolveBuildSlotId;
     private resolveBuildTurretTypeId;
     private normalizeBuildPriority;
+    private tryHandleLaneMacroCommand;
     private executeBuildCommand;
     showTypingErrorHint(hint: {
         expected: string | null;
@@ -1109,6 +1136,7 @@ export declare class HudView {
         cooldownRemaining: number;
         status: string;
     }): void;
+    updateLaneMacros(state: LaneMacroViewState): void;
     private pulseHazardBadge;
     updateTurretPresets(presets: HudTurretPresetData[]): void;
     private ensurePresetControl;
@@ -1122,6 +1150,9 @@ export declare class HudView {
     private createTurretControls;
     private createPracticeDummyControls;
     private createPowerPhraseControls;
+    private setLaneMacroStatus;
+    private applyLaneMacroCommand;
+    private createLaneMacroControls;
     getPowerPhraseLane(): number | null;
     focusPowerPhraseInput(): void;
     blurPowerPhraseInput(): void;

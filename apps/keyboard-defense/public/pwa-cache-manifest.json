@@ -140,6 +140,7 @@
     "dist/src/utils/inputAnomalies.js",
     "dist/src/utils/keystrokeTimingProfile.js",
     "dist/src/utils/keystrokeTimingReport.js",
+    "dist/src/utils/laneMacros.js",
     "dist/src/utils/lessonMedals.js",
     "dist/src/utils/lessonProgress.js",
     "dist/src/utils/lorePersistence.js",
