@@ -12,6 +12,7 @@ backlog_refs:
   - "#53"
   - "#58"
 ---
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 **Context**  
 Responsive HUD work (2025-11-17 notes) added collapsible castle passives and gold events, plus coarse
@@ -82,3 +83,9 @@ captured by automation.
 - npm run codex:validate-pack
 - npm run codex:validate-links
 - npm run codex:status
+
+
+
+
+
+

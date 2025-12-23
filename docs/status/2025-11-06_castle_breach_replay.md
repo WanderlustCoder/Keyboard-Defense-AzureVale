@@ -1,4 +1,5 @@
 # Castle Breach Replay CLI - 2025-11-06
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Context
 - Backlog **#99** requested a deterministic castle-breach drill to guard the tutorial sequence.
@@ -17,3 +18,4 @@
 
 ## Follow-up
 - `docs/codex_pack/tasks/29-castle-breach-analytics.md`
+

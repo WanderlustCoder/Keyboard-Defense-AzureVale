@@ -1,4 +1,5 @@
 # Typing Drills HUD CTA & Responsive Layout - 2025-12-02
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - HUD CTA now surfaces the recommended typing drill inline, with aria labels/tooltips fed by the live heuristic so players see the suggested mode without opening the overlay.
@@ -16,3 +17,4 @@
 ## Related Work
 - `apps/keyboard-defense/public/styles.css`
 - `apps/keyboard-defense/src/ui/typingDrills.ts`
+

@@ -1,4 +1,5 @@
 # Gold Analytics Baseline Drift - 2025-11-28
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - Propagated timeline baseline variance from `goldTimelineDashboard` into the gold analytics board JSON so per-scenario rows now carry `timelineBaselineVariance`.
@@ -15,3 +16,4 @@
 ## Next Steps
 1. Wire the nightly dashboard workflow to pass a baseline path (if not already present) so the new column stays populated on scheduled runs.
 2. After the next CI artifact drop, rerun `node scripts/ci/goldTimelineDashboard.mjs ... --baseline <latest>` + `npm run codex:dashboard` to publish live baseline drift values.***
+

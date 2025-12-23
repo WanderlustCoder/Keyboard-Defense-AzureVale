@@ -1,3 +1,5 @@
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
+
 ## Semantic Release Automation - 2025-11-21
 
 **Summary**
@@ -12,3 +14,4 @@
 
 ## Follow-up
 - `docs/codex_pack/tasks/06-semantic-release.md`
+

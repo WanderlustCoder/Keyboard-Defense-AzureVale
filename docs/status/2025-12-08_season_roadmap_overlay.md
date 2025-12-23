@@ -1,4 +1,5 @@
 # Season Roadmap Overlay - 2025-12-08
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - Added a Season 1 roadmap catalog (`apps/keyboard-defense/docs/roadmap/season1.json`) plus an evaluator that scores each milestone by wave, castle level, tutorial completion, and lore unlocks.
@@ -16,3 +17,4 @@
 - `apps/keyboard-defense/src/utils/roadmapPreferences.ts`
 - `apps/keyboard-defense/tests/seasonRoadmap.test.js`
 - Backlog #86
+

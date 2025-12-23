@@ -1,4 +1,5 @@
 # Gold Analytics Board Spark Bars - 2025-11-27
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - Added compact ASCII spark bars to the gold analytics board rows in both the Codex dashboard and portal tiles. Each scenario now shows the `delta@t` sequence plus a bar glyph strip that scales to the largest recent delta, staying ASCII-only for CI summaries.
@@ -7,3 +8,4 @@
 
 ## Next Steps
 1. Consider a denser spark bar legend or tooltip snippet if reviewers need clearer glyph scaling.
+

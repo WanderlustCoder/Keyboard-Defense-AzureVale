@@ -1,4 +1,5 @@
 # Episode 1 Boss Mechanics – Archivist (2025-12-02)
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## What shipped
 - Added a `featureToggles.bossMechanics` gate (default **on**). Archivist spawns on wave 3 with bespoke scripting instead of a vanilla elite.
@@ -22,3 +23,4 @@
 ## Next follow-ups
 - HUD polish: segmented boss bar, vulnerability/shockwave banners, and debug skip-to-phase control.
 - Optional boss-only taunt cadence per phase for narrative hooks.
+

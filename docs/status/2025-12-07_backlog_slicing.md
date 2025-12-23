@@ -1,4 +1,5 @@
 # Backlog Slicing Plan - 2025-12-07
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Scope
 Outlined manageable sub-tasks for remaining “Not Started” backlog items to enable incremental delivery.
@@ -52,3 +53,4 @@ Outlined manageable sub-tasks for remaining “Not Started” backlog items to e
 
 ## Next Action
 - Victory/defeat stingers (#90) shipped. Next priority: #91 enemy biography cards are done; proceed to #92 or other open items per backlog.
+

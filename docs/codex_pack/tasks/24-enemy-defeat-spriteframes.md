@@ -12,6 +12,7 @@ status_note: docs/status/2025-11-07_enemy_defeat_animation.md
 backlog_refs:
   - "#66"
 ---
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 **Context**  
 We currently render enemy defeat bursts procedurally. Once art lands, we want an
@@ -76,3 +77,9 @@ easy path to layer sprite-based frames while keeping the procedural fallback.
 - npm run codex:validate-links
 - npm run codex:status
 - Local manual test: drop sample sprites and confirm they display on defeat.
+
+
+
+
+
+

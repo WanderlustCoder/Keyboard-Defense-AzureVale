@@ -1,4 +1,5 @@
 # HUD Zoom Control - 2025-12-12
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - Added a HUD zoom selector (90–120%) in the Options overlay to scale the entire HUD for small displays or low-vision comfort; persisted per profile and logged in HUD history.
@@ -16,3 +17,4 @@
 - apps/keyboard-defense/public/styles.css
 - apps/keyboard-defense/public/dist/src/utils/playerSettings.{js,d.ts}
 - docs/season4_backlog_status.md (item 46 marked Done)
+

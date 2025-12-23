@@ -1,4 +1,5 @@
 # Remaining Backlog Slices (Not Started Items)
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 Context: Break down the remaining "Not Started" Season 1 backlog items (31, 32, 35, 36, 37, 38, 40) into shippable slices with clear outputs, toggles, and test hooks.
 
@@ -40,3 +41,4 @@ Context: Break down the remaining "Not Started" Season 1 backlog items (31, 32, 
 
 ## Next Action
 - Implement #31 elite affixes first under the new toggle, then iterate through remaining slices.
+

@@ -1,4 +1,5 @@
 # HUD Screenshot Expansion - 2025-11-28
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - Added `diagnostics-overlay` and `shortcut-overlay` targets to `scripts/hudScreenshots.mjs`, opening/closing overlays deterministically and emitting metadata sidecars for both.
@@ -11,3 +12,4 @@
 
 ## Follow-up
 - `docs/codex_pack/tasks/40-hud-screenshot-expansion.md`
+

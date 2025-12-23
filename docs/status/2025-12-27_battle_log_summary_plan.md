@@ -1,3 +1,5 @@
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
+
 ## 2025-12-27 - Battle log summary & filters plan
 
 Goal: Make the battle log easier to skim without scrolling, surfacing the most important events (breaches, perfect streaks, medals, quests) with keyboard-friendly filters and castle/typing flavor.
@@ -19,3 +21,4 @@ Goal: Make the battle log easier to skim without scrolling, surfacing the most i
 ### Testing
 - DOM/unit: filter toggles, pinned list, jump-to-entry, summary counts update, reduced-motion guard, aria-pressed/live throttling.
 - Visual/snapshot: summary strip and filters on wide/short viewports; ensure log height stays capped and doesn’t push playfield.
+

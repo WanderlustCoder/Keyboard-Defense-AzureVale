@@ -20,6 +20,7 @@ traceability:
   commands:
     - npm run monitor:dev -- --wait-ready --artifact artifacts/monitor/dev-monitor.json
 ---
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 **Context**  
 Dev server automation returned (`scripts/devServer.mjs`, `devMonitor.mjs`), but we
@@ -138,3 +139,9 @@ monitor artifacts.
 - Locally run `node scripts/devServer.mjs start --no-build` and
   `node scripts/devServer.mjs start --force-restart` to confirm behavior.
 - Run the monitor summary step (`npm run codex:dashboard` already runs after CI).
+
+
+
+
+
+

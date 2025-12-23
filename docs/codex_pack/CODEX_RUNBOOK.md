@@ -1,4 +1,5 @@
 # Codex Automation Runbook
+> Note: This runbook targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 Codex acts as the sole developer for automation tasks. Follow this loop every
 time you touch the project.

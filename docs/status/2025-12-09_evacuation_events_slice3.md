@@ -1,4 +1,5 @@
 # Evacuation Events - Slice 3 (2025-12-09)
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## What shipped
 - Evacuation scheduling now respects lane reservation: the event avoids lanes already booked for hazards or dynamic spawns and skips entirely when every lane is occupied, preventing double-booked events.
@@ -13,3 +14,4 @@
 
 ## Backlog
 - #36 Evacuation Event (Slice 3 complete)
+

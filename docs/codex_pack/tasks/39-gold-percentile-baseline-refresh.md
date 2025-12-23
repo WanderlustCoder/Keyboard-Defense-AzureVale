@@ -15,6 +15,7 @@ backlog_refs:
   - "#101"
   - "#79"
 ---
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 **Context**\
 Percentile alerts now run inside GitHub Actions and rely on manually curated
@@ -75,3 +76,9 @@ percentiles or missing documentation steps.
 - npm run codex:validate-pack
 - npm run codex:validate-links
 - npm run codex:status
+
+
+
+
+
+

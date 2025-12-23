@@ -1,3 +1,5 @@
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
+
 ## 2025-12-27 - Tutorial surface refresh plan
 
 Goal: Make tutorial hints/overlays faster to consume without covering the playfield, with castle/typing flavor and strong keyboard accessibility.
@@ -18,3 +20,4 @@ Goal: Make tutorial hints/overlays faster to consume without covering the playfi
 ### Testing
 - DOM/unit: dock collapse/expand, hint visibility, aria-live throttle, keyshortcuts present, progress capsule link, reduced-motion guard.
 - Visual/snapshot: short/wide viewports with hint anchors and dock; ensure no overlap with playfield text.
+

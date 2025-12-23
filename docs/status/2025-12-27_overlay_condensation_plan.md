@@ -1,3 +1,5 @@
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
+
 ## 2025-12-27 - Overlay condensation & layering plan
 
 Goal: Make large overlays (quests, museum, lore, certificates, analytics) faster to scan and less overwhelming, while keeping castle/typing flavor and accessibility.
@@ -25,3 +27,4 @@ Goal: Make large overlays (quests, museum, lore, certificates, analytics) faster
 - DOM/unit: tab switching updates panels, aria state on tabs/collapsibles, filters hide/show entries, sticky bar exists, reduced-motion guard.
 - Visual/snapshot: condensed museum/quest/lore/cert overlays in wide and short viewports; verify pinned controls remain visible.
 - Regression: ensure existing overlay entry points still open the right default tab, and keyboard navigation sequences remain consistent.
+

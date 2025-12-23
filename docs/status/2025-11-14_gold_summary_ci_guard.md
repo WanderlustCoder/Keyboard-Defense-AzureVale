@@ -1,3 +1,5 @@
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
+
 ## Gold Summary CI Guard - 2025-11-14
 
 **Summary**
@@ -9,3 +11,4 @@
 Broader guard orchestration (screenshots, monitor stats, breach drill) is owned by
 `docs/codex_pack/tasks/02-ci-guards.md`; this status note intentionally avoids duplicating the task
 steps or acceptance criteria.
+

@@ -12,6 +12,7 @@ backlog_refs:
   - "#54"
   - "#79"
 ---
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 **Context**  
 Players can now adjust audio intensity, but our smoke artifacts/telemetry don’t
@@ -92,3 +93,9 @@ and session length.
 - npm run codex:validate-links
 - npm run codex:status
 - Run `npm run serve:smoke -- --ci --json` and check the JSON contains intensity data.
+
+
+
+
+
+

@@ -1,5 +1,7 @@
 # HUD Screenshot Gallery
 
+> Note: This gallery is for the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`.
+
 Generated via `npm run docs:gallery` (wraps `node scripts/docs/renderHudGallery.mjs --input artifacts/screenshots --meta artifacts/screenshots --meta ../../docs/codex_pack/fixtures/ui-snapshot --json artifacts/summaries/ui-snapshot-gallery.json --verify`). Use `node scripts/docs/renderHudGallery.mjs --help` for additional options.
 
 | Shot | Screenshot | Starfield | Badges | Summary | UI Snapshot |

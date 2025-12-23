@@ -1,3 +1,5 @@
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
+
 ## 2025-12-24 — Adaptive mentor dialogue (Season 4 backlog #70)
 
 ### What changed
@@ -7,3 +9,4 @@
 ### Verification
 - Ran `npm test` (full suite) after wiring the new HUD card and focus logic.
 - Added HUD unit test to assert focus flips from accuracy to speed when stats change.
+

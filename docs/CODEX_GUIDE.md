@@ -1,5 +1,7 @@
 # Codex Development Guide
 
+> Note: The web version (`apps/keyboard-defense`) has been retired. This guide is legacy for the old web app. Use `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for the current Godot project.
+
 This project is built primarily by Codex. Use this guide as the single entry
 point for finding work, running commands, and updating documentation. For
 domain-specific checklists (automation, gameplay/UI, analytics), see

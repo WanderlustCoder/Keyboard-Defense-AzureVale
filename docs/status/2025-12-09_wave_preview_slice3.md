@@ -1,4 +1,5 @@
 # Wave Preview UI - Slice 3 (2025-12-09)
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## What shipped
 - `npm run wave:preview` now serves a designer-focused HTML preview with lane filters, event-type toggles (spawns/hazards/dynamic/evac/boss), and per-wave timelines that highlight spawns, hazards, dynamic events, evacuations, and boss markers.
@@ -14,3 +15,4 @@
 
 ## Backlog
 - #38 Wave Config Schema/Editor (slice 3 complete)
+

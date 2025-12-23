@@ -12,6 +12,7 @@ backlog_refs:
   - "#101"
   - "#79"
 ---
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 **Context**  
 Gold summary CLI now exists and runs in CI, but the artifact is not surfaced
@@ -87,3 +88,9 @@ publish metrics (percentiles, anomalies) automatically.
 - npm run codex:validate-links
 - npm run codex:status
 - node scripts/ci/goldSummaryReport.mjs docs/codex_pack/fixtures/gold-summary.json --summary temp/gold-summary-report.fixture.json --mode warn
+
+
+
+
+
+

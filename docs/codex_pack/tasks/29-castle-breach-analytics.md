@@ -12,6 +12,7 @@ backlog_refs:
   - "#99"
   - "#41"
 ---
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 **Context**  
 `scripts/castleBreachReplay.mjs` gives us deterministic drills, but the JSON it
@@ -184,3 +185,9 @@ generation, dashboards, and docs so breach regressions surface automatically.
 - npm run codex:validate-pack
 - npm run codex:validate-links
 - npm run codex:status
+
+
+
+
+
+

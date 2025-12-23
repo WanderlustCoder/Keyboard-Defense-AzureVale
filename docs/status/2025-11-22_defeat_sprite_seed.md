@@ -1,3 +1,5 @@
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
+
 ## Defeat Sprite Seed - 2025-11-22
 
 **Summary**
@@ -10,3 +12,4 @@
 
 ## Follow-up
 - Replace placeholders with production defeat sprites per backlog #66 / Codex task `docs/codex_pack/tasks/24-enemy-defeat-spriteframes.md`, then regenerate integrity and preview outputs for CI.
+

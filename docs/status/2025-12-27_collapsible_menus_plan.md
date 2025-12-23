@@ -1,3 +1,5 @@
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
+
 ## 2025-12-27 - Collapsible menus plan
 
 Context: Options/HUD overlays currently require scrolling below the playfield to reach many settings. Goal is to make menus collapsible, faster to navigate, and more accessible without vertical scrolling, especially on shorter viewports.
@@ -37,3 +39,4 @@ Context: Options/HUD overlays currently require scrolling below the playfield to
 - Options overlay fits above the playfield on common laptop viewports without manual scrolling for primary controls.
 - Keyboard users can toggle sections and jump between them without losing focus context.
 - Collapse/expand state persists per profile and respects reduced-motion preferences.
+

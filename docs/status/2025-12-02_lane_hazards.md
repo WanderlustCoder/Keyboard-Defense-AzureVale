@@ -1,4 +1,5 @@
 # Lane Hazards - Fog & Storm (Backlog #37)
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - Added deterministic lane hazards (fog/storm) gated by `featureToggles.dynamicSpawns` (on by default).
@@ -13,3 +14,4 @@
 ## Next Steps
 - Add lane overlay visuals and diagnostics panel badges for active hazards.
 - Track hazard analytics (uptime, affected lanes) and surface in roadmap/scorecards.
+

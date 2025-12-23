@@ -12,6 +12,7 @@ status_note: docs/status/2025-12-01_typing_drills.md
 backlog_refs:
   - "#19"
 ---
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 **Context**  
 Players need a warm-up lane that doesn't risk the castle. We want a dedicated drills overlay (Burst/Endurance/Shield Breaker) that pauses the run, resumes cleanly, and emits analytics so dashboards can show drill usage and outcomes.
@@ -33,3 +34,9 @@ Players need a warm-up lane that doesn't risk the castle. We want a dedicated dr
 - `npm run build`
 - `npx vitest tests/analyticsAggregate.test.js`
 - `npm run test`
+
+
+
+
+
+

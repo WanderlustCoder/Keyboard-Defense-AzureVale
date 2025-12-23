@@ -1,4 +1,5 @@
 # Castle Passive Buffs - 2025-11-06
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Context
 - Backlog **#30** called for surfacing castle passive buffs (regen/armor/gold) that unlock at higher levels.
@@ -15,3 +16,4 @@
 
 ## Next Steps
 - Complete (passive analytics exports now land via `analyticsAggregate --passive-summary`).
+

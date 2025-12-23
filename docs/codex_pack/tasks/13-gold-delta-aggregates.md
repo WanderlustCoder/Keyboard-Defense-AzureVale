@@ -12,6 +12,7 @@ status_note: docs/status/2025-11-06_gold_event_delta.md
 backlog_refs:
   - "#79"
 ---
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 **Context**  
 Gold events already include `{ delta, timestamp }`, but we lack a summarized view
@@ -97,3 +98,9 @@ gold delta aggregates and surface them in automation artifacts.
 - npm run codex:validate-links
 - npm run codex:status
 - node scripts/analytics/goldDeltaAggregator.mjs --input docs/codex_pack/fixtures/gold-delta-aggregates.json --output /tmp/gold-delta.json (adjust path)
+
+
+
+
+
+

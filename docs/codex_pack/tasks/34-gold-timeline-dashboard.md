@@ -12,6 +12,7 @@ backlog_refs:
   - "#45"
   - "#79"
 ---
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 **Context**  
 `scripts/goldTimeline.mjs` already emits CSV/JSON economy timelines and can merge
@@ -120,3 +121,9 @@ derived metrics (rolling sums, averages) that would make alerts meaningful.
 - npm run codex:validate-pack
 - npm run codex:validate-links
 - npm run codex:status
+
+
+
+
+
+

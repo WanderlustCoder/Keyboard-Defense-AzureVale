@@ -1,3 +1,5 @@
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
+
 ## Responsive HUD Layout & Touch Targets - 2025-11-17
 
 **Summary**
@@ -13,3 +15,4 @@
 ## Follow-up
 - `docs/codex_pack/tasks/37-responsive-condensed-audit.md`
 - `docs/codex_pack/tasks/21-canvas-dpr-monitor.md`
+

@@ -1,4 +1,5 @@
 # CI Matrix Nightly - 2025-11-29
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - Added `ci-matrix-nightly` workflow to run the tutorial/breach scenario matrix every day at 06:00 UTC (or on dispatch) using the existing `scripts/ci/run-matrix.mjs` harness.
@@ -12,3 +13,4 @@
 ## Follow-up
 - `docs/codex_pack/tasks/04-scenario-matrix.md`
 - `docs/codex_pack/tasks/37-responsive-condensed-audit.md`
+

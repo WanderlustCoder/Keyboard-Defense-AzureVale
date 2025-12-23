@@ -14,6 +14,7 @@ backlog_refs:
   - "#105"
   - "#106"
 ---
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 **Context**  
 Percentile flags/metadata now exist across `goldSummary.mjs`, smoke runs, and the standalone
@@ -85,3 +86,9 @@ blocks ingestion when they diverge.
 - npm run codex:validate-pack
 - npm run codex:validate-links
 - npm run codex:status
+
+
+
+
+
+

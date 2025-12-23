@@ -1,4 +1,5 @@
 # Turret Flavor Tooltips - 2025-12-06
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - Added flavor blurbs to Arrow, Arcane, Flame, and Crystal Pulse turrets and surfaced them in the HUD selector/status tooltips to give players narrative texture while choosing defenses.
@@ -12,3 +13,4 @@
 - `apps/keyboard-defense/src/ui/hud.ts` (tooltip wiring)
 - `apps/keyboard-defense/tests/hud.test.js`
 - Backlog #85
+

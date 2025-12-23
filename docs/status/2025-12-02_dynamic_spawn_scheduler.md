@@ -1,4 +1,5 @@
 # Dynamic Spawn Scheduler (Backlog #35)
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - Added a lightweight dynamic spawn scheduler gated by `featureToggles.dynamicSpawns` (on by default).
@@ -13,3 +14,4 @@
 ## Next Steps
 - Pipe dynamic event metadata into diagnostics overlay and roadmap for better visibility.
 - Consider reward bumps for gold-runners and analytics counters for injected events.
+

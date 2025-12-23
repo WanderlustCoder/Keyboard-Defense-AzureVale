@@ -1,4 +1,5 @@
 # Lore Codex Entries - 2025-12-07
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - Added lore codex catalog (`apps/keyboard-defense/docs/lore/codex.json`) with wave-based unlocks for Episode 1.
@@ -15,3 +16,4 @@
 - `apps/keyboard-defense/src/controller/gameController.ts` (unlock hook)
 - `apps/keyboard-defense/tests/lorePersistence.test.js`
 - Backlog #84
+

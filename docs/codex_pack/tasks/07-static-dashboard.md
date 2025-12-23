@@ -10,6 +10,7 @@ status_note: docs/status/2025-11-18_devserver_smoke_ci.md
 backlog_refs:
   - "#79"
 ---
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 **Steps (sketch)**
 
@@ -23,4 +24,10 @@ backlog_refs:
 - npm run test
 - npm run codex:validate-pack
 - Build the static dashboard locally and open index.html to confirm charts load
+
+
+
+
+
+
 

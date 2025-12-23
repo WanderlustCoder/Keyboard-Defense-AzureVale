@@ -1,3 +1,5 @@
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
+
 ## Diagnostics Overlay Compact Mode - 2025-11-18
 
 **Summary**
@@ -14,3 +16,4 @@
 **Next Steps**
 1. Promote the condensed Playwright spec + HUD metadata verification into CI so PRs fail fast when diagnostics regress.
 2. Expand the responsive checklist (`docs/codex_pack/fixtures/responsive/condensed-matrix.yml`) before surfacing analytics deltas, covering the options overlay + wave scorecard panels.
+

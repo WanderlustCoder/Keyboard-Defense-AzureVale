@@ -1,4 +1,5 @@
 # Mastery Certificates - 2025-12-22
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - Added a print-ready Mastery Certificate overlay with learner name field (persisted), session stats (lessons, accuracy, WPM, best combo, drills, minutes), and a download/print button.
@@ -15,3 +16,4 @@
 - apps/keyboard-defense/src/controller/gameController.ts
 - apps/keyboard-defense/public/index.html, apps/keyboard-defense/public/styles.css
 - apps/keyboard-defense/tests/hud.test.js
+

@@ -1,3 +1,5 @@
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
+
 ## Asset Integrity Enforcement - 2025-11-08
 
 **Summary**
@@ -18,3 +20,4 @@
 
 ## Follow-up
 - `docs/codex_pack/tasks/31-asset-integrity-telemetry.md`
+

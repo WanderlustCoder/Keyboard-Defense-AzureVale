@@ -1,4 +1,5 @@
 # Backlog Slicing - Remaining Not-Started Items (2025-12-02)
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 Context: Only #32, #36, and #38 remain in "Not Started". Each slice below is scoped to ship inside a single session with clear toggles, deliverables, and test hooks.
 
@@ -42,3 +43,4 @@ Update 2025-12-09: #38 slice 3 shipped (`2025-12-09_wave_preview_slice3.md`); #3
 - **Slice 3: Editor preview integration**
   - Add `npm run wave:preview` (or flag on existing dev server) that hot-reloads configs and renders upcoming spawns/hazards/affixes for designers.
   - Tests: preview render uses new schema fields, rejects invalid config with actionable error, respects feature toggles for hazards/affixes.
+

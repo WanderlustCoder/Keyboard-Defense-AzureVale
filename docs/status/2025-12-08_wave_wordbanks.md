@@ -1,4 +1,5 @@
 # Wave-Themed Word Banks - 2025-12-08
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - Introduced wave-specific vocab packs layered onto the base and lane vocabularies: scouts/ambush terms for Wave 1, shield/brute themes for Wave 2, and archivist/arcane terms for Wave 3.
@@ -13,3 +14,4 @@
 - `apps/keyboard-defense/public/dist/src/systems/enemySystem.js`
 - `apps/keyboard-defense/tests/waveWordBank.test.js`
 - Backlog #89
+

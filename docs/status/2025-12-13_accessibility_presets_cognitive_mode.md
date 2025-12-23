@@ -1,4 +1,5 @@
 # Accessibility Presets & Cognitive Load Mode - 2025-12-13
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - Added a dyslexia-friendly preset button to the accessibility onboarding that enables the dyslexia font and wider spacing in one click, marking onboarding as complete (Season 4 backlog #48).
@@ -18,3 +19,4 @@
 - apps/keyboard-defense/tests/hud.test.js
 - apps/keyboard-defense/tests/playerSettings.test.js
 - apps/keyboard-defense/docs/season4_backlog_status.md
+

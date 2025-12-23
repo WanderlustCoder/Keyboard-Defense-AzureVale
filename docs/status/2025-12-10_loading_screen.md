@@ -1,4 +1,5 @@
 # Loading Screen with Tips - 2025-12-10
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - Added a full-screen loading screen that appears while assets initialize, with a pixelated bobbing sprite and rotating typing tips tailored for ages 8–16. Status text updates as the atlas/manifest load and the overlay dismisses once assets are ready (or if fallbacks are used).
@@ -13,3 +14,4 @@
 - `apps/keyboard-defense/public/styles.css`
 - `apps/keyboard-defense/src/ui/loadingScreen.ts`
 - `apps/keyboard-defense/src/controller/gameController.ts`
+

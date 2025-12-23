@@ -1,4 +1,5 @@
 # Gold Analytics Board Sparkline - 2025-11-26
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - Added a timeline sparkline payload to `scripts/ci/goldAnalyticsBoard.mjs` so each scenario now emits `timelineSparkline` (up to 8 latest events with `delta`, `timestamp`, `gold`) alongside the existing snapshot rows. This keeps the board JSON ASCII-only and ready for lightweight charts in dashboards/portal without re-reading the timeline artifact.
@@ -15,3 +16,4 @@
 
 ## Next Steps
 1. Add percentile baselines per scenario once global baselines are emitted, so variance can compare against known targets instead of the current run’s global medians.
+

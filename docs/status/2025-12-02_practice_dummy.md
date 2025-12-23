@@ -1,4 +1,5 @@
 # Practice Dummy Target (Backlog #40)
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - Added a stationary "practice dummy" enemy tier for turret DPS testing.
@@ -12,3 +13,4 @@
 
 ## Next Steps
 - Optionally add HUD badge when a dummy is active and track per-slot DPS accumulation for practice sessions.
+

@@ -19,6 +19,7 @@ traceability:
   commands:
     - node scripts/ci/traceabilityReport.mjs --test-report docs/codex_pack/fixtures/traceability-tests.json --out-json temp/traceability.fixture.json --mode warn
 ---
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 **Context**  
 CI already runs tutorial smoke + e2e suites and uploads artifacts, but reviewers
@@ -135,3 +136,9 @@ an automated traceability report summarizing which scripts back which backlog ID
 - npm run codex:validate-links
 - npm run codex:status
 - node scripts/ci/traceabilityReport.mjs --manifest docs/codex_pack/manifest.yml --backlog apps/keyboard-defense/docs/season1_backlog.md --test-report docs/codex_pack/fixtures/traceability-tests.json --out-json docs/codex_pack/fixtures/traceability-report.json --out-md docs/codex_pack/fixtures/traceability-report.md
+
+
+
+
+
+

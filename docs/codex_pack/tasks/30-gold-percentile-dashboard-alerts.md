@@ -12,6 +12,7 @@ backlog_refs:
   - "#101"
   - "#79"
 ---
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 **Context**  
 Gold summary CLI now emits `median`/`p90` gain and spend metrics, but CI simply writes
@@ -100,3 +101,9 @@ fail or warn CI when percentiles escape a configured band.
 - npm run codex:validate-pack
 - npm run codex:validate-links
 - npm run codex:status
+
+
+
+
+
+

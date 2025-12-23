@@ -1,5 +1,7 @@
 # Codex Playbooks
 
+> Note: The web version (`apps/keyboard-defense`) has been retired. These playbooks target the old web app. Use `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for the current Godot project.
+
 Use these playbooks when tackling new work. Each section maps a type of work to
 the relevant docs, Codex tasks, verification commands, and documentation
 expectations.

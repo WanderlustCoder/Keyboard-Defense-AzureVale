@@ -1,4 +1,5 @@
 # Input Stress Test Harness - 2025-12-10
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - Added `scripts/ci/inputStressTest.mjs` and npm alias `npm run input:stress` to hammer TypingSystem with rapid bursts of correct keys, wrong keys, holds, and backspaces while asserting buffer bounds and reporting throughput.
@@ -14,3 +15,4 @@
 - apps/keyboard-defense/package.json
 - apps/keyboard-defense/README.md
 - apps/keyboard-defense/docs/season3_backlog_status.md
+

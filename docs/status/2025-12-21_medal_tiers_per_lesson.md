@@ -1,4 +1,5 @@
 # Lesson Medal Tiers - 2025-12-21
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - Added bronze/silver/gold/platinum medals to typing drills using accuracy/WPM/combo/error thresholds, with local history storage and per-mode best tracking.
@@ -15,3 +16,4 @@
 - apps/keyboard-defense/src/ui/hud.ts
 - apps/keyboard-defense/public/index.html, apps/keyboard-defense/public/styles.css
 - apps/keyboard-defense/tests/lessonMedals.test.js, apps/keyboard-defense/tests/hud.test.js
+

@@ -13,6 +13,7 @@ backlog_refs:
   - "#1"
   - "#30"
 ---
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 **Context**  
 Castle passives are introduced later, but the tutorial still doesn't explicitly
@@ -84,3 +85,9 @@ telemetry so onboarding captures passive unlock awareness.
 - npm run codex:validate-links
 - npm run codex:status
 - Run tutorial smoke (`node scripts/smokeTutorialFull.mjs` when available) to confirm messaging triggers.
+
+
+
+
+
+

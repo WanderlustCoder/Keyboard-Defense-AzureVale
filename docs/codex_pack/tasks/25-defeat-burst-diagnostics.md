@@ -11,6 +11,7 @@ status_note: docs/status/2025-11-07_enemy_defeat_animation.md
 backlog_refs:
   - "#41"
 ---
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 **Context**  
 We added defeat bursts but have no diagnostics metrics to ensure they keep
@@ -69,3 +70,9 @@ firing. Exposing counts in the overlay + smoke artifacts helps visual regression
 - npm run codex:validate-links
 - npm run codex:status
 - Run diagnostics overlay locally to confirm metrics display.
+
+
+
+
+
+

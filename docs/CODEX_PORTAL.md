@@ -1,5 +1,7 @@
 # Codex Portal
 
+> Note: The web version (`apps/keyboard-defense`) has been retired. This portal is legacy for the old web app. Use `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for the current Godot project.
+
 This portal consolidates every instruction set, script, and artifact Codex needs
 to develop Keyboard Defense end-to-end. Use it as your starting point each time
 you work on the project.

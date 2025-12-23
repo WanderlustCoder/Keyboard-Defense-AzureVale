@@ -1,3 +1,5 @@
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
+
 ## 2025-12-27 - Typing lane & hotkey UX plan
 
 Goal: Make lane/turret controls and typing helpers faster to reach without scrolling, leaning into the keyboard mastery + castle defense fantasy.
@@ -18,3 +20,4 @@ Goal: Make lane/turret controls and typing helpers faster to reach without scrol
 ### Testing
 - DOM/unit: hotkey rail renders with correct bindings, aria-keyshortcuts set, hints throttle and dismiss, reduced-motion guard, toggle persistence per profile.
 - UX/manual: short viewport check (rail wraps or scrolls horizontally if needed), confirm no overlap with playfield text, verify disabled/cooldown visuals.
+

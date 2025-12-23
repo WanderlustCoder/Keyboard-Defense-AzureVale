@@ -12,6 +12,7 @@ backlog_refs:
   - "#69"
   - "#41"
 ---
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 **Context**  
 Asset checksum enforcement now guards sprite corruption, but failures stay local to
@@ -94,3 +95,9 @@ an opt-in strict mode so Codex can detect drift automatically.
 - npm run codex:validate-pack
 - npm run codex:validate-links
 - npm run codex:status
+
+
+
+
+
+

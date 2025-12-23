@@ -1,3 +1,5 @@
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
+
 ## 2025-12-27 - Mobile/short-viewport HUD compact plan
 
 Goal: Ensure the HUD/options remain usable without scrolling on short viewports (small laptops, tablets in landscape), preserving the castle/typing feel and accessibility.
@@ -20,3 +22,4 @@ Goal: Ensure the HUD/options remain usable without scrolling on short viewports 
 - DOM/unit: `data-viewport` toggling, compact class application, auto-collapse of secondary sections, sticky header presence, FAB visibility and labels.
 - Visual/snapshot: short viewport baseline, ensuring no overflow beyond playfield; check FAB placement doesn’t overlap text.
 - Accessibility: verify aria labels on FABs, `aria-expanded` on collapsed sections, and that tab order skips hidden content.
+

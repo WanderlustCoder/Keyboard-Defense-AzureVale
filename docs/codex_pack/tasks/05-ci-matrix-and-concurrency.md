@@ -10,6 +10,7 @@ status_note: docs/status/2025-11-18_devserver_bin_resolution.md
 backlog_refs:
   - "#82"
 ---
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 **Context**  
 Docs mention Windows `http-server` bin resolution fixes. Lock it in with CI coverage and cancel redundant runs.
@@ -30,3 +31,9 @@ Docs mention Windows `http-server` bin resolution fixes. Lock it in with CI cove
 ## Snippet
 
 See `snippets/workflow.patch.yaml`.
+
+
+
+
+
+

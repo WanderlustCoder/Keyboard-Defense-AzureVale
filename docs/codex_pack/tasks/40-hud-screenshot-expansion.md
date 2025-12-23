@@ -11,6 +11,7 @@ status_note: docs/status/2025-11-28_hud_screenshot_expansion.md
 backlog_refs:
   - "#72"
 ---
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 **Context**  
 Backlog #72 calls for broader automated HUD screenshots beyond the initial set so docs/regression sweeps cover the diagnostics overlay and keyboard shortcut reference. The gallery + guards should accept fixture metadata when Playwright isn't available while still requiring the extra shots.
@@ -34,3 +35,9 @@ Backlog #72 calls for broader automated HUD screenshots beyond the initial set s
 - `npm run docs:verify-hud-snapshots -- --meta artifacts/screenshots ../../docs/codex_pack/fixtures/ui-snapshot`
 - `npm run docs:gallery`
 - `node scripts/hudScreenshots.mjs --ci --out artifacts/screenshots --starfield-scene warning` (optional live refresh)
+
+
+
+
+
+

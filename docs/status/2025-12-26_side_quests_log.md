@@ -1,3 +1,5 @@
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
+
 ## 2025-12-26 - Side-mission quest log (Season 4 backlog #72)
 
 ### What changed
@@ -7,3 +9,4 @@
 
 ### Verification
 - Ran `npx vitest run tests/hud.test.js` to cover HUD behavior including the side-quest overlay render/toggle path.
+

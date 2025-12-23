@@ -1,3 +1,5 @@
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
+
 ## 2025-12-27 - UI navigation & quick-access plan
 
 Context: Menus and HUD overlays require too much vertical scrolling and scatter controls. This plan complements the collapsible menu work by adding navigation aids, pinned quick controls, and responsive layouts so players reach key settings without leaving the playfield view.
@@ -22,3 +24,4 @@ Context: Menus and HUD overlays require too much vertical scrolling and scatter 
 - Sticky bar overlap: ensure top padding for underlying content and z-index audit; add reduced-motion-safe reveal.
 - Focus jumps causing confusion: announce section jumps with `aria-live="polite"` hint; move focus to section header after jump.
 - Persistence conflicts: normalize stored state on first run to avoid broken positions after release.
+

@@ -12,6 +12,7 @@ status_note: docs/status/2025-12-04_runtime_log_summary.md
 backlog_refs:
   - "#79"
 ---
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 **Context**  
 CI and local smoke runs emit monitor/dev-server logs but we lack an aggregated view of breaches and accuracy. A lightweight log summarizer should scan log files, extract breach/accuracy metrics, and emit JSON/Markdown for dashboards.
@@ -34,3 +35,9 @@ CI and local smoke runs emit monitor/dev-server logs but we lack an aggregated v
 - `npm run logs:summary -- --input ./artifacts/monitor --out-json temp/log-summary.json --out-md temp/log-summary.md`
 - `npm test`
 - `npm run codex:dashboard`
+
+
+
+
+
+

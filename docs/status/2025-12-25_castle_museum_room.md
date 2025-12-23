@@ -1,3 +1,5 @@
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
+
 ## 2025-12-25 — Castle Museum room (Season 4 backlog #71)
 
 ### What changed
@@ -8,3 +10,4 @@
 ### Verification
 - Ran `npm test` (full suite) after wiring museum overlay/panel logic and HUD test coverage.
 - Manual HUD test asserts museum overlay visibility and entry rendering.
+

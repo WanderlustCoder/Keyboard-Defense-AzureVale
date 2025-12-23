@@ -13,6 +13,7 @@ backlog_refs:
   - "#41"
   - "#79"
 ---
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 **Context**  
 Castle passive unlocks are visible in HUD/log and diagnostics, but analytics
@@ -94,3 +95,9 @@ includes per-wave passive state plus unlock deltas.
 - npm run codex:validate-links
 - npm run codex:status
 - Run analytics CLI against a fixture to ensure passive fields populate.
+
+
+
+
+
+

@@ -1,3 +1,5 @@
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
+
 ## Gold Timeline Summary CLI - 2025-11-08
 
 **Summary**
@@ -17,3 +19,4 @@
 ## Follow-up
 - `docs/codex_pack/tasks/27-gold-summary-dashboard-integration.md`
 - `docs/status/2025-11-20_gold_summary_dashboard.md`
+

@@ -1,3 +1,5 @@
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
+
 ## Dev Server http-server Resolution - 2025-11-18
 
 **Summary**
@@ -9,3 +11,4 @@
 **Next Steps**
 1. Feed the start-smoke summary into the Codex dashboard/static site so non-engineers can see the latest readiness metrics without opening CI.
 2. Consider adding Playwright smoke coverage that reuses the new start-smoke artifact so UI regressions share the same log bundle.
+

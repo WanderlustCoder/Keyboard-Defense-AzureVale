@@ -11,6 +11,7 @@ status_note: docs/status/2025-11-16_devserver_monitor_refresh.md
 backlog_refs:
   - "#82"
 ---
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 **Steps (sketch)**
 
@@ -22,4 +23,10 @@ backlog_refs:
 - npm run test
 - npm run codex:validate-pack
 - Docker build ./ci/Dockerfile-playwright
+
+
+
+
+
+
 

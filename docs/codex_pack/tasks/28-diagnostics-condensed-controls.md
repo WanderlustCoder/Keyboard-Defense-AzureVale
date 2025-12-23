@@ -11,6 +11,7 @@ status_note: docs/status/2025-11-18_diagnostics_overlay_condensed.md
 backlog_refs:
   - "#41"
 ---
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 **Context**  
 Diagnostics overlay now has a condensed mode, but there are outstanding next steps:
@@ -98,3 +99,9 @@ automation.
 - npm run codex:validate-links
 - npm run codex:status
 - Manual test: toggle condensed sections and reload to ensure settings persist.
+
+
+
+
+
+

@@ -12,6 +12,7 @@ backlog_refs:
   - "#14"
   - "#41"
 ---
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 **Context**  
 Players now see an accuracy delta badge during combo warnings. We’d like to track
@@ -81,3 +82,9 @@ swings.
 - npm run codex:validate-links
 - npm run codex:status
 - Run analytics CLI on a fixture with combo warnings to confirm the fields populate.
+
+
+
+
+
+

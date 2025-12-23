@@ -1,4 +1,5 @@
 # Castle Visual Morphing - 2025-12-07
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - Castle levels now include sprite keys plus visual palettes; renderer swaps level-specific sprites (atlas or fallback SVG) with HP overlay as the keep upgrades.
@@ -17,3 +18,4 @@
 - `apps/keyboard-defense/src/ui/diagnostics.ts`
 - `apps/keyboard-defense/tests/castleVisuals.test.js`
 - Backlog #67
+

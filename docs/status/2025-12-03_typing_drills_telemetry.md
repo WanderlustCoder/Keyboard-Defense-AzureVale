@@ -1,4 +1,5 @@
 # Typing Drill Quickstart Telemetry - 2025-12-03
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - Added `npm run telemetry:typing-drills` to summarize `ui.typingDrill.menuQuickstart` + `typing-drill.started/completed` envelopes from exported telemetry JSON, producing JSON/Markdown for dashboards and GH step summaries.
@@ -15,3 +16,4 @@
 - `apps/keyboard-defense/scripts/ci/typingDrillTelemetrySummary.mjs`
 - `apps/keyboard-defense/scripts/generateCodexDashboard.mjs`
 - `docs/codex_pack/fixtures/telemetry/typing-drill-quickstart.json`
+

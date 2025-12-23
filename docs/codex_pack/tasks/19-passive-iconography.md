@@ -12,6 +12,7 @@ status_note: docs/status/2025-11-06_castle_passives.md
 backlog_refs:
   - "#30"
 ---
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 **Context**  
 Castle passives are listed as text only. Designers asked for visual icons so
@@ -78,3 +79,9 @@ players can quickly scan regen/armor/gold buffs in HUD and options overlay.
 - npm run codex:validate-links
 - npm run codex:status
 - Run `node scripts/hudScreenshots.mjs --ci` (or local variant) to ensure icons appear in artifacts.
+
+
+
+
+
+

@@ -1,4 +1,5 @@
 # Gold Analytics Board - 2025-11-20
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - Landed `scripts/ci/goldAnalyticsBoard.mjs`, which ingests the existing gold summary, timeline, passive, guard, and percentile alert artifacts into a single JSON/Markdown bundle (`gold-analytics-board.*`). The CLI normalizes scenario rows, bubbles up guard/alert warnings, and auto-appends the Markdown block to `$GITHUB_STEP_SUMMARY`.
@@ -15,3 +16,4 @@
 
 ## Follow-up
 - `docs/codex_pack/tasks/38-gold-analytics-board.md`
+

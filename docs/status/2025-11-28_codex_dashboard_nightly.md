@@ -1,4 +1,5 @@
 # Codex Dashboard Nightly - 2025-11-28
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - Added `codex-dashboard-nightly` GitHub Actions workflow to refresh the Codex dashboard and portal every day (05:30 UTC) using gold analytics fixtures. The run generates the gold analytics board, rebuilds `docs/codex_dashboard.md` + `docs/CODEX_PORTAL.md`, and uploads the Markdown/JSON artifacts so the portal’s starfield telemetry tile stays current without manual commands.
@@ -10,3 +11,4 @@
 ## Next Steps
 1. Swap fixtures for real nightly artifacts once a CI job produces fresh gold summaries/timelines; then publish the refreshed dashboard to GitHub Pages or commit the Markdown automatically.
 2. Consider adding a portal badge/link to the uploaded artifact so operators can grab the nightly board directly from the Actions run.
+

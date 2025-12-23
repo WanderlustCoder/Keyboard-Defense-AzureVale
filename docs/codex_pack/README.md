@@ -1,4 +1,5 @@
 # Automation Blueprint Pack (for Codex CLI)
+> Note: This pack targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 This pack turns the agreed automation plan into **actionable, bite-sized tasks** with code snippets.
 Point your Codex CLI (or any docs/task runner) at this folder. Each task has YAML front-matter that

@@ -1,4 +1,5 @@
 # Tutorial completion QA metric (2025-12-07)
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - QA/static dashboard now reports tutorial attempt/completion counts and per-session completion rate.
@@ -12,3 +13,4 @@
 
 ## Validation
 - `cd apps/keyboard-defense && npx vitest tests/staticDashboard.test.js`
+

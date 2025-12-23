@@ -1,4 +1,5 @@
 # Elite Enemy Affixes - Slow Aura, Shielded, Armored
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - Added an elite affix catalog (Frost Aura, Armored, Aegis Shield) gated by the existing `featureToggles.eliteAffixes` flag (default on).
@@ -11,3 +12,4 @@
 - Armored applies to turret damage only; typing damage remains unchanged.
 - Shield affix injects 35 bonus barrier HP even when a spawn lacked a shield, with analytics guarded.
 - Tests cover roll determinism, affix application (shield/armor), and lane slow aggregation.
+

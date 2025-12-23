@@ -1,4 +1,5 @@
 # Asset Manifest Generation CLI - 2025-12-07
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - Added `scripts/assets/generateManifest.mjs` to scan sprite assets, emit an `images` map, and compute SHA-256 integrity hashes with optional `--verify-only` mode.
@@ -15,3 +16,4 @@
 - `apps/keyboard-defense/tests/generateManifest.test.js`
 - `apps/keyboard-defense/package.json` (`assets:manifest` script)
 - Backlog #70
+

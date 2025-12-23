@@ -17,6 +17,7 @@ traceability:
   commands:
     - npm run serve:start-smoke -- --artifact temp/start-smoke.fixture.json --log temp/start-smoke.fixture.log --attempts 1
 ---
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 **Context**  
 `devServer.mjs` now resolves `http-server` more reliably, but when resolution still
@@ -91,3 +92,9 @@ minimal `npm run start` smoke to catch regressions automatically.
 - npm run codex:status
 - npm run serve:start-smoke -- --artifact temp/start-smoke.fixture.json --log temp/start-smoke.fixture.log --attempts 1
 - Run the new smoke locally (`node scripts/serveStartSmoke.mjs --ci`) to ensure it exits 0 on success.
+
+
+
+
+
+

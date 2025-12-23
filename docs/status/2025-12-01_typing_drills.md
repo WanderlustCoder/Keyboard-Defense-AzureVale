@@ -1,4 +1,5 @@
 # Typing Drills Overlay - 2025-12-01
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - Added a three-mode typing drills overlay (Burst Warmup, Endurance, Shield Breaker) that opens from the HUD CTA, options overlay, or main menu, pausing the run safely and resuming when closed.
@@ -16,3 +17,4 @@
 - `docs/codex_pack/tasks/42-typing-drills-overlay.md`
 - `apps/keyboard-defense/scripts/analyticsAggregate.mjs`
 - `docs/analytics_schema.md`
+

@@ -12,6 +12,7 @@ status_note: docs/status/2025-11-15_tooling_baseline.md
 backlog_refs:
   - "#80"
 ---
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 **Context**  
 Tooling baseline restored lint/test/format coverage, but we still rely on developers
@@ -55,3 +56,9 @@ lint/tests/docs validators before code ever lands.
 - npm run codex:status
 - Run the installer (`npm run hooks:install`) and manually execute `.git/hooks/pre-commit` to confirm
   the command chain runs successfully.
+
+
+
+
+
+

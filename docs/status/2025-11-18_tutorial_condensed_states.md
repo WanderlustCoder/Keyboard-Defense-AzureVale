@@ -1,3 +1,5 @@
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
+
 ## Tutorial & Castle Panel Condensed States - 2025-11-18
 
 **Summary**
@@ -16,3 +18,4 @@
 ## Follow-up
 - `docs/codex_pack/tasks/33-tutorial-ui-snapshot-publishing.md`
 - `docs/status/2025-11-20_ui_snapshot_gallery.md`
+

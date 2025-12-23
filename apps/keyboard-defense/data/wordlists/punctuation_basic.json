@@ -1,8 +1,0 @@
-{
-  "id": "punctuation-basic",
-  "lesson": 3,
-  "introducedLetters": "abcdefghijklmnopqrstuvwxyz",
-  "allowedCharacters": ".,?!;:'\"- ",
-  "allowProper": false,
-  "words": ["let's go", "ready?", "stay-calm"]
-}

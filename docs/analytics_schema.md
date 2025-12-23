@@ -1,5 +1,7 @@
 # Analytics Snapshot & Export Schema
 
+> Note: This schema applies to the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot` and does not yet ship a matching analytics export.
+
 This reference captures the structure of the JSON snapshots downloaded from the in-game analytics exporter as well as the CSV emitted by `npm run analytics:aggregate`. Use it to build dashboards or to validate downstream tooling when snapshot formats evolve. The canonical JSON Schema lives at `apps/keyboard-defense/schemas/analytics.schema.json`; validate snapshots locally or in CI via `npm run analytics:validate-schema` (which runs `node scripts/analytics/validate-schema.mjs <files>` under the hood).
 
 ## Root Snapshot Fields

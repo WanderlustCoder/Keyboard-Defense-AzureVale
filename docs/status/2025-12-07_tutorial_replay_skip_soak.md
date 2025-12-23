@@ -1,4 +1,5 @@
 # Tutorial Replay/Skip Soak Test - 2025-12-07
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - Added a soak test that alternates tutorial completion writes and skip-driven clears to validate persistence stability under rapid replay/skip cycles.
@@ -13,3 +14,4 @@
 - `apps/keyboard-defense/tests/tutorialReplaySkipSoak.test.js`
 - `apps/keyboard-defense/public/dist/src/tutorial/tutorialPersistence.js`
 - Backlog #98
+

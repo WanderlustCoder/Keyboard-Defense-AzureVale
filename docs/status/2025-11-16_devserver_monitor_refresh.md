@@ -1,3 +1,5 @@
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
+
 ## Dev Server & Monitor Refresh - 2025-11-16
 
 **Summary**
@@ -9,3 +11,4 @@
 **Next Steps**
 1. Add Playwright/tutorial smoke metadata (condensed HUD screenshots, CI tolerances) to the monitor artifact so traceability reports can pair readiness probes with UI captures.
 2. Wire the monitor summary into the static dashboard so non-engineers can review the latest uptime + latency trendlines alongside the rest of the automation tiles.
+

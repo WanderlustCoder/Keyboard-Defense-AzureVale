@@ -1,4 +1,5 @@
 # HUD Gallery Deduplication - 2025-11-28
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - Deduped HUD gallery generation so each shot id renders a single row while retaining all metadata sources. The builder now prefers live artifact captures when both artifact + fixture metadata are present.
@@ -12,3 +13,4 @@
 
 ## Follow-up
 - `docs/codex_pack/tasks/41-hud-gallery-dedupe.md`
+

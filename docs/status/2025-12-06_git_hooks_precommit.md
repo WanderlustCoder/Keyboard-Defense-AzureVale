@@ -1,4 +1,5 @@
 # Git Hook Automation - 2025-12-06
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - Pre-commit hook now delegates to a cross-platform Node runner (`scripts/hooks/runChecks.mjs`) that executes lint, test, Codex pack validation, status link validation, and Codex status generation from repo root.
@@ -16,3 +17,4 @@
 - `apps/keyboard-defense/scripts/hooks/installHooks.mjs`
 - `apps/keyboard-defense/tests/hooks.test.js`
 - Backlog #80 (git hook automation)
+

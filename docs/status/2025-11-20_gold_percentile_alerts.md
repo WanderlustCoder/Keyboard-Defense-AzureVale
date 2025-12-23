@@ -1,3 +1,5 @@
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
+
 ## Gold Percentile Alerts - 2025-11-20
 
 **Summary**
@@ -16,3 +18,4 @@
 - `docs/codex_pack/tasks/30-gold-percentile-dashboard-alerts.md`
 - `docs/codex_pack/tasks/39-gold-percentile-baseline-refresh.md`
 - `docs/codex_pack/tasks/38-gold-analytics-board.md`
+

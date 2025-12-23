@@ -1,4 +1,5 @@
 # Tutorial Assist/Replay/Skip Tests - 2025-12-07
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - Added TutorialManager unit coverage for assist hints after repeated typing errors to ensure the letter-hint cue fires once per step and records telemetry.
@@ -13,3 +14,4 @@
 - `apps/keyboard-defense/tests/tutorialManager.test.js`
 - `apps/keyboard-defense/public/dist/src/tutorial/tutorialManager.js`
 - Backlog #91
+

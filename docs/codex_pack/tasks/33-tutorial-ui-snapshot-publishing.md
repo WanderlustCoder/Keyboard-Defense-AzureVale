@@ -12,6 +12,7 @@ backlog_refs:
   - "#53"
   - "#59"
 ---
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 **Context**  
 Tutorial + castle panels now emit a `uiSnapshot` block describing condensed states,
@@ -81,3 +82,9 @@ and CI summaries so responsive regressions are obvious.
 - npm run codex:validate-pack
 - npm run codex:validate-links
 - npm run codex:status
+
+
+
+
+
+

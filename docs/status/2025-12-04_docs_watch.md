@@ -1,4 +1,5 @@
 # Docs Watch Automation - 2025-12-04
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - Added `npm run docs:watch` (scripts/docs/watchDocs.mjs) to monitor `apps/keyboard-defense/docs` and the root `docs/` tree, debounced by default and with an initial run that regenerates `docs/codex_dashboard.md` + `docs/CODEX_PORTAL.md`.
@@ -16,3 +17,4 @@
 - `docs/codex_pack/tasks/43-docs-watch.md`
 - `apps/keyboard-defense/package.json` (`docs:watch`)
 - `docs/codex_dashboard.md`, `docs/CODEX_PORTAL.md`
+

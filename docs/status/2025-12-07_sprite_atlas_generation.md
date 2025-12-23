@@ -1,4 +1,5 @@
 # Sprite Atlas Generation CLI - 2025-12-07
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - Added `scripts/assets/buildAtlas.mjs` to pack sprite assets into a simple atlas JSON (fixed tile size, row wrapping) with optional dry-run (`npm run assets:atlas` writes `public/assets/atlas.json`).
@@ -15,3 +16,4 @@
 - `apps/keyboard-defense/tests/assetAtlasLoader.test.js`
 - `apps/keyboard-defense/package.json` (`assets:atlas`)
 - Backlog #63
+

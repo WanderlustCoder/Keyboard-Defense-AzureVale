@@ -11,6 +11,7 @@ status_note: docs/status/2025-11-21_semantic_release.md
 backlog_refs:
   - "#80"
 ---
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 **Steps (sketch)**
 
@@ -23,4 +24,10 @@ backlog_refs:
 - npm run test
 - npm run codex:validate-pack
 - npx semantic-release --dry-run (once configured)
+
+
+
+
+
+
 

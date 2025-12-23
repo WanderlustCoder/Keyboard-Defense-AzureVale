@@ -1,4 +1,5 @@
 # HUD Screenshot Automation - 2025-11-06
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Context
 - Backlog **#72** targeted automated HUD captures for docs and regression review.
@@ -21,3 +22,4 @@
 The Playwright visual regression rollout (baseline capture + `toHaveScreenshot` gating) is tracked
 solely in `docs/codex_pack/tasks/03-playwright-visual-diffs.md`. Consult that task for execution
 details to keep this note historical.
+

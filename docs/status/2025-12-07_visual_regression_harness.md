@@ -1,4 +1,5 @@
 # Visual Regression Harness - 2025-12-07
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - Playwright visual project (`tests/visual`) now writes baselines under `baselines/visual/visual/<spec>/` via `snapshotPathTemplate`, removing platform suffixes while keeping one folder per spec.
@@ -15,3 +16,4 @@
 - `apps/keyboard-defense/tests/visual/utils.ts`
 - `apps/keyboard-defense/playwright.config.ts`
 - Backlog #94
+

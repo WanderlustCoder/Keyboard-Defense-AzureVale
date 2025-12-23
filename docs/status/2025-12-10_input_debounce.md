@@ -1,4 +1,5 @@
 # Input Debounce / Forgiveness - 2025-12-10
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - Added a lightweight debounce in `TypingSystem` to ignore rapid repeats of the same wrong key (within ~12ms) so held/ghost inputs no longer stack errors or wipe buffers, while still allowing fast double-letter progress.
@@ -15,3 +16,4 @@
 - apps/keyboard-defense/src/core/gameState.ts
 - apps/keyboard-defense/tests/typingFuzz.test.js
 - apps/keyboard-defense/docs/season2_backlog_status.md
+

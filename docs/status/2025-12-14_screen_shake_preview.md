@@ -1,4 +1,5 @@
 # Screen Shake Preview - 2025-12-14
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - Added a screen shake toggle with an intensity slider and inline preview tile in the Options overlay; the control defaults off, respects Reduced Motion, and persists per profile via player settings v27.
@@ -18,3 +19,4 @@
 - apps/keyboard-defense/tests/hud.test.js
 - apps/keyboard-defense/tests/playerSettings.test.js
 - apps/keyboard-defense/docs/season4_backlog_status.md (#58)
+

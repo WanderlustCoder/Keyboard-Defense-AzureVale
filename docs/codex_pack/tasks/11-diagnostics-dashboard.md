@@ -12,6 +12,7 @@ status_note: docs/status/2025-11-07_diagnostics_passives.md
 backlog_refs:
   - "#79"
 ---
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 **Context**  
 Diagnostics overlays now expose gold deltas and passive unlocks, but the CI/static
@@ -132,3 +133,9 @@ dashboard view so automation reviews trendlines without opening raw JSON.
 - npm run codex:dashboard
 - Run the analytics CLI against sample artifacts to confirm new fields populate
   (e.g., `node scripts/analyticsAggregate.mjs --input artifacts/smoke/*` once data exists).
+
+
+
+
+
+

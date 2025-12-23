@@ -11,6 +11,7 @@ status_note: docs/status/2025-11-28_hud_gallery_dedupe.md
 backlog_refs:
   - "#72"
 ---
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 **Context**  
 The HUD gallery began duplicating rows whenever both live captures and fixtures were present, making the doc noisy and hiding which metadata source was used. We need deterministic deduping that prefers live artifact captures while still listing every metadata source.
@@ -34,3 +35,9 @@ The HUD gallery began duplicating rows whenever both live captures and fixtures 
 - `npm run docs:gallery`
 - `npm run test -- renderHudGallery`
 - `npm run codex:validate-pack`
+
+
+
+
+
+

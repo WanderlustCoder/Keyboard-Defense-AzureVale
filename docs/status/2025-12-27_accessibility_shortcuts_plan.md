@@ -1,3 +1,5 @@
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
+
 ## 2025-12-27 - Accessibility shortcuts & presets plan
 
 Goal: Make accessibility tools instantly reachable from the HUD/options without scrolling, with castle/keyboard flavor and strong screen reader support.
@@ -19,3 +21,4 @@ Goal: Make accessibility tools instantly reachable from the HUD/options without 
 - DOM/unit: aria-keyshortcuts on preset buttons, strip visibility, overlay toggle via shortcut, persistence rehydration, reduced-motion guard, conflict hiding.
 - Visual/snapshot: preset strip on wide and short viewports; confirm no overlap with playfield text and clear contrast on badges.
 - Screen reader/manual: ensure announcements on toggle, focus order remains predictable, and “restore default” works.
+

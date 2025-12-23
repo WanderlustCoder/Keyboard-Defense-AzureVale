@@ -1,3 +1,5 @@
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
+
 ## Canvas Resolution Scaling - 2025-11-18
 
 **Summary**
@@ -21,3 +23,4 @@
 1. Add Vitest coverage around `npm run debug:dpr-transition` so scripted DPR buckets and telemetry payloads stay stable across refactors (consider snapshotting the JSON output for default steps).
 2. Graduate from the current Linkedom/Vitest assertions to a Playwright smoke that zooms the canvas, verifies the fade visualization, and records reduced-motion short-circuit behavior (unit coverage is in place, but we still need an end-to-end proof).
 3. Hook the new `uiResolution*`/`uiHudLayout` columns into the Codex dashboards so responsive regressions show up alongside the passive/telemetry feeds.
+

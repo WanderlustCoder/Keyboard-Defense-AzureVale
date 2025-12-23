@@ -1,3 +1,5 @@
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
+
 ## 2025-12-27 - Castle UI refit plan (keyboard/defense flavored)
 
 Theme: Keep the castle command HUD tight and battle-ready, with quick access to typing/defense controls without scrolling. Lean into the castle defense + keyboard mastery vibe (lanes, turrets, scrolls, quests).
@@ -25,3 +27,4 @@ Theme: Keep the castle command HUD tight and battle-ready, with quick access to 
 - DOM/unit: tab selection via click/keyboard, drawer open/close, aria states, focus management, persistence across reloads, reduced-motion behavior.
 - Snapshot/visual: tall vs short viewports, left/right drawer alignment, command strip overlap checks.
 - Regression: existing overlays (quests, museum, lore scrolls, certificates, medals) open correctly within the tabbed/condensed layout.
+

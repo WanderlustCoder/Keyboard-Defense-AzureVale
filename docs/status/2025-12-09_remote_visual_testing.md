@@ -1,4 +1,5 @@
 # Remote Visual Testing Quickstart - 2025-12-09
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - Documented a minimal workflow for capturing Playwright visual baselines from another device on the same network using the new host/port overrides in `serve:open` and `test:visual:auto`.
@@ -24,3 +25,4 @@ Notes:
 - `apps/keyboard-defense/scripts/runVisualTests.mjs`
 - `apps/keyboard-defense/scripts/openDevServer.mjs`
 - `apps/keyboard-defense/docs/DEVELOPMENT.md`
+

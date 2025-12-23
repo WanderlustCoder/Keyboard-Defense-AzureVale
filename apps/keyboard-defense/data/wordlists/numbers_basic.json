@@ -1,8 +1,0 @@
-{
-  "id": "numbers-basic",
-  "lesson": 4,
-  "introducedLetters": "abcdefghijklmnopqrstuvwxyz",
-  "allowedCharacters": "0123456789 ",
-  "allowProper": false,
-  "words": ["101", "123", "2024", "3030", "404", "505", "606", "707", "808", "909"]
-}

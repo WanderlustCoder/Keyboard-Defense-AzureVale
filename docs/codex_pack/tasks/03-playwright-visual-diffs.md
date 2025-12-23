@@ -19,6 +19,7 @@ traceability:
   commands:
     - npx playwright test --config playwright.config.ts --project=visual
 ---
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 **Context**  
 `hudScreenshots.mjs` captures PNGs. Convert core screens into **diff‑gated** baselines.
@@ -44,3 +45,9 @@ traceability:
 ## Snippet
 
 See `snippets/playwright.config.additions.ts` for minimal config additions.
+
+
+
+
+
+

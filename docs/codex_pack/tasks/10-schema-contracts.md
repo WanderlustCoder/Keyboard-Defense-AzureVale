@@ -11,6 +11,7 @@ status_note: docs/status/2025-11-08_gold_summary_cli.md
 backlog_refs:
   - "#76"
 ---
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 **Context**\
 `analytics_schema.md` documents the telemetry payload, but we still rely on docs +
@@ -132,4 +133,10 @@ CI hooks so analytics exports can’t drift silently.
 - npm run codex:validate-links
 - npm run codex:status
 - node scripts/analytics/validate-schema.mjs --fixture docs/codex_pack/fixtures/analytics/tutorial.json
+
+
+
+
+
+
 

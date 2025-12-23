@@ -11,6 +11,7 @@ status_note: docs/status/2025-11-18_devserver_smoke_ci.md
 backlog_refs:
   - "#79"
 ---
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 **Context**  
 Your CI already emits rich JSON/CSV artifacts (smoke, monitor, screenshots, gold). This task prints a
@@ -38,4 +39,10 @@ human‑scanable Markdown summary to `$GITHUB_STEP_SUMMARY` so reviewers don’t
 ## Snippet
 
 See `snippets/emit-summary.mjs`.
+
+
+
+
+
+
 

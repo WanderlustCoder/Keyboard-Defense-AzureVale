@@ -1,4 +1,5 @@
 # Contrast Audit Overlay - 2025-12-15
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - Added a Contrast Audit overlay to the Options menu that scans common UI regions (HUD, options, scorecards, diagnostics, roadmap) and highlights low-contrast areas with on-screen markers plus a summary list.
@@ -17,3 +18,4 @@
 - apps/keyboard-defense/tests/hud.test.js
 - apps/keyboard-defense/docs/season4_backlog_status.md (#60)
 - apps/keyboard-defense/docs/changelog.md
+

@@ -1,4 +1,5 @@
 # Ambient Music Escalation - 2025-12-08
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - Added ambient profile selector (`calm`, `rising`, `siege`, `dire`) driven by wave index/total and castle health, ensuring intensity ramps with siege progression and drops into “dire” when the castle is low.
@@ -14,3 +15,4 @@
 - `apps/keyboard-defense/src/controller/gameController.ts`
 - `apps/keyboard-defense/tests/ambientProfiles.test.js`
 - Backlog #88
+

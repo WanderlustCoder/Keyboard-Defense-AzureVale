@@ -1,4 +1,5 @@
 # Runtime Log Summary - 2025-12-04
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - Added `scripts/ci/runtimeLogSummary.mjs` to scan monitor/dev-server logs (JSON arrays, JSON lines, and plain text) and extract breach totals/max, last accuracy, warning/error counts, and event volumes.
@@ -16,3 +17,4 @@
 - `apps/keyboard-defense/tests/runtimeLogSummary.test.js`
 - `apps/keyboard-defense/package.json` (`logs:summary`)
 - `docs/codex_pack/tasks/44-runtime-log-summary.md`
+

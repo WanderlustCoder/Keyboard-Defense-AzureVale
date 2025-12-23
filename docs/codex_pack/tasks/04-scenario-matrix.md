@@ -21,6 +21,7 @@ traceability:
     - npm run smoke:tutorial -- --ci
     - node scripts/ci/castleBreachSummary.mjs --mode warn docs/codex_pack/fixtures/castle-breach
 ---
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 **Context**  
 Scale tutorial smoke and breach drills across multiple seeds/variants and aggregate medians/p90s.
@@ -47,4 +48,10 @@ Scale tutorial smoke and breach drills across multiple seeds/variants and aggreg
 - npm run test
 - npm run codex:validate-pack
 - node scripts/ci/run-matrix.mjs --dry-run (or CI job) to ensure summary JSON writes correctly
+
+
+
+
+
+
 

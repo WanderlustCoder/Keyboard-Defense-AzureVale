@@ -12,6 +12,7 @@ backlog_refs:
   - "#41"
   - "#79"
 ---
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 **Context**  
 `scripts/passiveTimeline.mjs` and the new `recentGoldEvents` overlay already emit
@@ -91,3 +92,9 @@ history follow-up from `docs/status/2025-11-08_gold_event_history.md`.
 - npm run codex:validate-pack
 - npm run codex:validate-links
 - npm run codex:status
+
+
+
+
+
+

@@ -1,3 +1,5 @@
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
+
 ## Audio Intensity Slider - 2025-11-16
 
 **Summary**
@@ -16,3 +18,4 @@
 
 **Next Steps**
 1. Extend `combo-accuracy-analytics` (#26) to consume `audioIntensity*` columns, surfacing at-risk ranges directly inside the analytics board.
+

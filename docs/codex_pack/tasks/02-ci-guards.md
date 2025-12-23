@@ -12,6 +12,7 @@ status_note: docs/status/2025-11-14_gold_summary_ci_guard.md
 backlog_refs:
   - "#82"
 ---
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 **Context**  
 You already validate economy percentiles. Generalize this into a declarative guard file that enforces
@@ -45,4 +46,10 @@ thresholds for smoke/monitor/gold/breach/screenshots.
 - npm run test
 - npm run codex:validate-pack
 - node scripts/ci/validate.mjs --dry-run (once implemented) to ensure guard failures report correctly
+
+
+
+
+
+
 

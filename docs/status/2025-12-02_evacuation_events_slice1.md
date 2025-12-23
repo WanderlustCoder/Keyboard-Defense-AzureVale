@@ -1,4 +1,5 @@
 # Evacuation Event – Slice 1 (2025-12-02)
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## What shipped
 - Added `featureToggles.evacuationEvents` (default on, gated by `dynamicSpawns`) and a new enemy tier `evac-transport` (long words, zero damage, bonus reward).
@@ -19,3 +20,4 @@
 ## Next slices (per slicing doc)
 - HUD/flow polish ✅ now added: HUD banner with timer/progress, reward (+80g) and penalty (-40g) applied via engine and HUD messaging.
 - Coexistence/balance: lane reservation with hazards/affixes, reduced-motion visuals, optional penalties on failure.
+

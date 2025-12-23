@@ -1,3 +1,5 @@
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
+
 ## Enemy Taunts & Wave Preview Callouts - 2025-11-19
 
 **Summary**
@@ -12,3 +14,4 @@
 **Next Steps**
 1. Wire the new catalog validator into nightly/PR automation so taunt additions fail CI when metadata drifts.
 2. Add a "Taunt spotlight" panel to the Codex dashboard so reviewers can see the most recent taunt per scenario alongside the screenshot metadata. (Future automation task.)
+

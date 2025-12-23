@@ -1,4 +1,5 @@
 # Parental Info Overlay - 2025-12-11
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - Added a Parental Info dialog in the pause/options menu with clear guardrails: no accounts or ads, progress stays local, telemetry is opt-in/off by default, exports are manual, and language is kid-safe.
@@ -14,3 +15,4 @@
 - apps/keyboard-defense/public/styles.css
 - apps/keyboard-defense/src/ui/hud.ts
 - apps/keyboard-defense/docs/season2_backlog_status.md
+

@@ -13,6 +13,7 @@ backlog_refs:
   - "#41"
   - "#79"
 ---
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 **Context**  
 Taunts now appear in the HUD/log, but automation artifacts (analytics exports,
@@ -91,3 +92,9 @@ captures happen during special callouts.
 - npm run codex:status
 - Run analytics CLI + screenshot script using fixtures to confirm taunt metadata
   appears in the summaries.
+
+
+
+
+
+

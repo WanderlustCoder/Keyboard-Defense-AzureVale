@@ -1,4 +1,5 @@
 # Accessibility Self-Test - 2025-12-15
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - Added an Accessibility Self-Test card in the Options overlay that plays a chime, visual flash, and motion check (screen shake preview) so players can confirm each cue before enabling effects; motion automatically skips when Reduced Motion is enabled.
@@ -19,3 +20,4 @@
 - apps/keyboard-defense/tests/playerSettings.test.js
 - apps/keyboard-defense/docs/season4_backlog_status.md (#59)
 - apps/keyboard-defense/docs/changelog.md
+

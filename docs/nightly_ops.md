@@ -1,5 +1,7 @@
 # Nightly Operations Cheat Sheet
 
+> Note: These workflows were for the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot` and does not use these nightly jobs.
+
 Use this as a fast reference for running or troubleshooting the nightly jobs.
 
 ## Workflows

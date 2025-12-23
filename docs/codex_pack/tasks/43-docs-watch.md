@@ -13,6 +13,7 @@ status_note: docs/status/2025-12-04_docs_watch.md
 backlog_refs:
   - "#77"
 ---
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 **Context**  
 Manual dashboard refreshes slow down doc edits. We need a lightweight watcher that reruns our Codex dashboard/portal generation whenever docs change so the summaries stay current during authoring sessions.
@@ -36,3 +37,9 @@ Manual dashboard refreshes slow down doc edits. We need a lightweight watcher th
 - `npm run docs:watch -- --help`
 - `npm test`
 - `npm run codex:dashboard`
+
+
+
+
+
+

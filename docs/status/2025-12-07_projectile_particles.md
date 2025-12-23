@@ -1,4 +1,5 @@
 # Projectile Particle Stub (Offscreen) - 2025-12-07
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - Implemented a minimal `ParticleRenderer` with optional OffscreenCanvas support to render muzzle-puff style particles and decay them over time.
@@ -13,3 +14,4 @@
 - `apps/keyboard-defense/src/rendering/particleRenderer.ts`
 - `apps/keyboard-defense/tests/particleRenderer.test.js`
 - Backlog #65
+

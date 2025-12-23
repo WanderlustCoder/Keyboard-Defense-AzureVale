@@ -13,6 +13,7 @@ backlog_refs:
   - "#83"
   - "#87"
 ---
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 **Context**  
 Current taunt support only covers a handful of tiers (brutes/witches) and two wave
@@ -95,3 +96,9 @@ analytics/tests have limited coverage.
 - npm run codex:validate-pack
 - npm run codex:validate-links
 - npm run codex:status
+
+
+
+
+
+

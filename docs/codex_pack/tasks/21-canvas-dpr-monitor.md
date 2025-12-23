@@ -12,6 +12,7 @@ status_note: docs/status/2025-11-18_canvas_scaling.md
 backlog_refs:
   - "#53"
 ---
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 **Context**  
 The Nov-18 canvas scaling work normalized render size to flex width + initial
@@ -195,3 +196,9 @@ tests.
 - npm run codex:status
 - Manual: adjust browser zoom / simulate DPR change in devtools and confirm the
   canvas resizes smoothly while the fade plays.
+
+
+
+
+
+

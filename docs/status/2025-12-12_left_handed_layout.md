@@ -1,4 +1,5 @@
 # Left-Handed HUD Layout - 2025-12-12
+> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
 
 ## Summary
 - Added a “Left-Handed HUD Layout” toggle to the Options overlay that flips the HUD to the left of the game canvas (body dataset `hudLayout="left"`), easing reach for left-handed players.
@@ -16,3 +17,4 @@
 - apps/keyboard-defense/src/controller/gameController.ts
 - apps/keyboard-defense/tests/hud.test.js
 - apps/keyboard-defense/docs/season4_backlog_status.md
+
