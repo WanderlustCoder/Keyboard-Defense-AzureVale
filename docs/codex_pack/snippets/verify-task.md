@@ -1,6 +1,4 @@
-## Verification
+# Archived Codex Pack File
 
-- Run `npm run lint`
-- Run `npm run test`
-- Run `npm run codex:validate-pack`
-- Ensure acceptance criteria listed above pass (update screenshots, upload artifacts, etc.)
+This file is archived from a pre-Godot implementation.
+See `docs/GODOT_PROJECT.md` and `docs/keyboard-defense-plans/README.md`.

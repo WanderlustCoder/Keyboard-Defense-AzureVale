@@ -1,16 +1,8 @@
-# Practice Dummy Target (Backlog #40)
-> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
+# Archived Status Note
 
-## Summary
-- Added a stationary "practice dummy" enemy tier for turret DPS testing.
-- Debug panel now exposes buttons to spawn a dummy (lane B by default) and clear all dummies; console API also supports `keyboardDefense.spawnPracticeDummy(lane)` / `clearPracticeDummies()`.
-- Dummy enemies sit mid-lane, never advance or damage the castle, reward 0 gold, and can be typed down or cleared manually.
+This status note is archived from a pre-Godot implementation.
+The current project is the Godot game at `apps/keyboard-defense-godot`.
 
-## Technical Notes
-- New tier `dummy` lives in `defaultConfig.enemyTiers` with high health and zero speed/damage/reward.
-- EnemySystem clamps dummy speed to 0 and distance ~0.6 so turrets can acquire targets immediately without breach risk.
-- GameEngine exposes `removeEnemiesByTier` to clear debug targets; GameController wires UI + debug API.
-
-## Next Steps
-- Optionally add HUD badge when a dummy is active and track per-slot DPS accumulation for practice sessions.
-
+See:
+- `docs/GODOT_PROJECT.md`
+- `docs/keyboard-defense-plans/README.md`

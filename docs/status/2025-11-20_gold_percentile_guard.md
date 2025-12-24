@@ -1,19 +1,8 @@
-> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
+# Archived Status Note
 
-## Gold Percentile Guard - 2025-11-20
+This status note is archived from a pre-Godot implementation.
+The current project is the Godot game at `apps/keyboard-defense-godot`.
 
-**Summary**
-- Added `scripts/ci/goldPercentileGuard.mjs`, a Codex-friendly wrapper around `goldSummaryCheck.mjs` that locates gold summary artifacts, enforces the canonical percentile list, and emits both JSON (`artifacts/summaries/gold-percentile-guard*.json`) and Markdown so CI reviewers see mismatches without downloading artifacts.
-- GitHub Actions `Tutorial Smoke` and `Full E2E` jobs now call the guard immediately after generating their gold summary outputs. Failures block the job (unless `GOLD_GUARD_MODE=warn`), and the produced summary JSON rides alongside the existing smoke/e2e artifact bundles.
-- Updated Codex guide/playbook entries so local dry-runs (`node scripts/ci/goldPercentileGuard.mjs docs/codex_pack/fixtures/gold-summary.json`) stay in sync with CI expectations.
-- `goldAnalyticsBoard.mjs` now ingests the guard summary from both workflows, so percentile failures surface on the consolidated CI tile without visiting multiple dashboard sections.
-
-**Next Steps**
-1. Extend the guard output with percentile deltas when `gold-percentile-dashboard-alerts` lands, so alerting thresholds can reuse the same normalized payload.
-2. Consider exposing guard duration/latency stats inside the JSON to help the analytics board flag stale artifacts when runs omit gold summaries.
-
-## Follow-up
-- `docs/codex_pack/tasks/36-gold-percentile-ingestion-guard.md`
-- `docs/codex_pack/tasks/27-gold-summary-dashboard-integration.md`
-- `docs/codex_pack/tasks/38-gold-analytics-board.md`
-
+See:
+- `docs/GODOT_PROJECT.md`
+- `docs/keyboard-defense-plans/README.md`

@@ -1,6 +1,4 @@
 {
-  "time": 120,
-  "status": "running",
-  "wave": {},
-  "resources": { "gold": 200 }
+  "archived": true,
+  "note": "Legacy artifact from a pre-Godot implementation. See docs/GODOT_PROJECT.md and docs/keyboard-defense-plans/README.md."
 }

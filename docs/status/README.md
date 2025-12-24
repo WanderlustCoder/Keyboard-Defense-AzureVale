@@ -1,5 +1,8 @@
-# Status Notes (Legacy Web)
-> Note: These status notes document the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; use `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
+# Archived Status Note
 
-This folder is retained for historical context. Avoid updating these notes unless
-you are linking new work back to the old web tasks.
+This status note is archived from a pre-Godot implementation.
+The current project is the Godot game at `apps/keyboard-defense-godot`.
+
+See:
+- `docs/GODOT_PROJECT.md`
+- `docs/keyboard-defense-plans/README.md`

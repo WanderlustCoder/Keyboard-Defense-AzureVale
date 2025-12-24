@@ -1,14 +1,4 @@
-```yaml
-- name: Validate Codex Pack
-  working-directory: apps/keyboard-defense
-  run: npm run codex:validate-pack
+# Archived Codex Pack File
 
-- name: Validate Status Links
-  working-directory: apps/keyboard-defense
-  run: npm run codex:validate-links
-
-- name: Codex Task Tracker
-  working-directory: apps/keyboard-defense
-  run: |
-    npm run codex:status
-```
+This file is archived from a pre-Godot implementation.
+See `docs/GODOT_PROJECT.md` and `docs/keyboard-defense-plans/README.md`.

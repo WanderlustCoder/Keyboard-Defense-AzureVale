@@ -11,8 +11,9 @@ config_version=5
 [application]
 
 config/name="Keyboard Defense"
-run/main_scene="res://scenes/MainMenu.tscn"
+run/main_scene="res://scenes/Main.tscn"
 config/features=PackedStringArray("4.2")
+run/flush_stdout_on_print=true
 config/icon="res://icon.svg"
 
 [autoload]
@@ -20,11 +21,24 @@ config/icon="res://icon.svg"
 ProgressionState="*res://scripts/ProgressionState.gd"
 GameController="*res://scripts/GameController.gd"
 
+[debug]
+
+settings/stdout/print=true
+settings/stdout/verbose=true
+
 [display]
 
 window/size/viewport_width=1280
 window/size/viewport_height=720
 window/stretch/mode="canvas_items"
+
+[input]
+
+cycle_goal={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":4194333,"physical_keycode":4194333,"key_label":0,"unicode":0,"echo":false,"script":null)
+]
+}
 
 [rendering]
 

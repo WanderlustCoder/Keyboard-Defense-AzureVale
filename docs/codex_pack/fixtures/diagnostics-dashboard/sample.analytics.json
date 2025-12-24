@@ -1,19 +1,4 @@
 {
-  "capturedAt": "2025-11-20T09:10:11.000Z",
-  "time": 212.5,
-  "mode": "campaign",
-  "analytics": {
-    "mode": "campaign",
-    "goldEvents": [
-      { "timestamp": 30, "gold": 200, "delta": 20 },
-      { "timestamp": 60, "gold": 260, "delta": 60 },
-      { "timestamp": 120, "gold": 220, "delta": -40 },
-      { "timestamp": 150, "gold": 250, "delta": 30 },
-      { "timestamp": 200, "gold": 210, "delta": -40 }
-    ],
-    "castlePassiveUnlocks": [
-      { "id": "regen", "level": 2, "delta": 0.4, "total": 1.2, "time": 80.5 },
-      { "id": "armor", "level": 3, "delta": 2, "total": 5, "time": 140.25 }
-    ]
-  }
+  "archived": true,
+  "note": "Legacy artifact from a pre-Godot implementation. See docs/GODOT_PROJECT.md and docs/keyboard-defense-plans/README.md."
 }

@@ -1,17 +1,4 @@
 {
-  "generatedAt": "2025-11-20T00:10:00.000Z",
-  "mode": "warn",
-  "percentiles": [25, 50, 90],
-  "totals": {
-    "checked": 1,
-    "failures": 0
-  },
-  "files": [
-    {
-      "path": "artifacts/smoke/gold-summary.ci.json",
-      "ok": true,
-      "error": null
-    }
-  ],
-  "summaryPath": "docs/codex_pack/fixtures/gold/percentile-guard.json"
+  "archived": true,
+  "note": "Legacy artifact from a pre-Godot implementation. See docs/GODOT_PROJECT.md and docs/keyboard-defense-plans/README.md."
 }

@@ -1,15 +1,8 @@
-> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
+# Archived Status Note
 
-## Tooling Baseline Refresh - 2025-11-15
+This status note is archived from a pre-Godot implementation.
+The current project is the Godot game at `apps/keyboard-defense-godot`.
 
-**Summary**
-- Restored a project-level ESLint configuration (`.eslintrc.cjs`) so the lint step stops erroring out; TypeScript files use the typed ruleset while automation scripts/tests retain the lighter JS profile.
-- Added `tsconfig.json` that points to `public/dist/src` declarations through `rootDirs` and runs in `noEmit` mode, letting `npm run build` succeed without re-importing the full legacy source drop.
-- Introduced a scoped `.prettierrc.json` (pragma-gated) so `npm run format:check` can run cleanly on Windows/CI without rewriting the entire codebase.
-- Cleaned up the tutorial smoke helper (removed the unused `simulateTyping`) and updated `goldReport` tests to normalize Windows paths, fixing the last Vitest failure called out in the hand-off.
-
-**Next Steps / Follow-up**
-1. Backfill `@format` pragmas on any files we actively want Prettier to own (e.g., scripts/tests) so contributors know which files are auto-formatted.
-2. Fold the new lint/build config into the `scripts/build.mjs` task runner once that file returns to the tree, ensuring CI and local commands stay aligned.
-3. Enforce lint/test/docs verification locally via Git hooks (`docs/codex_pack/tasks/12-git-hooks-lint.md`).
-
+See:
+- `docs/GODOT_PROJECT.md`
+- `docs/keyboard-defense-plans/README.md`

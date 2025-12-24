@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AssetsManifest",
+  "type": "object",
+  "required": ["textures", "audio"],
+  "properties": {
+    "textures": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/texture"}
+    },
+    "audio": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/audio"}
+    }
+  },
+  "$defs": {
+    "texture": {
+      "type": "object",
+      "required": ["id", "path"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z0-9_-]+$"},
+        "path": {"type": "string"},
+        "expected_width": {"type": "integer", "minimum": 1},
+        "expected_height": {"type": "integer", "minimum": 1},
+        "max_width": {"type": "integer", "minimum": 1},
+        "max_height": {"type": "integer", "minimum": 1},
+        "max_kb": {"type": "integer", "minimum": 1},
+        "pixel_art": {"type": "boolean"}
+      },
+      "additionalProperties": false
+    },
+    "audio": {
+      "type": "object",
+      "required": ["id", "path"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z0-9_-]+$"},
+        "path": {"type": "string"},
+        "max_kb": {"type": "integer", "minimum": 1},
+        "min_seconds": {"type": "number", "minimum": 0},
+        "max_seconds": {"type": "number", "minimum": 0},
+        "expected_sample_rate": {"type": "integer", "minimum": 1},
+        "expected_channels": {"type": "integer", "minimum": 1}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

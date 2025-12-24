@@ -1,14 +1,8 @@
-> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
+# Archived Status Note
 
-## Dev Server & Monitor Refresh - 2025-11-16
+This status note is archived from a pre-Godot implementation.
+The current project is the Godot game at `apps/keyboard-defense-godot`.
 
-**Summary**
-- Reintroduced `scripts/devServer.mjs`, giving `npm run start` the documented lifecycle again (build + detached `http-server` launch, `.devserver/state.json`, `.devserver/server.log`, readiness probe, and helper commands for status/check/logs/monitor/stop).
-- Added the standalone `scripts/devMonitor.mjs` CLI so `npm run monitor:dev` can poll any URL, write JSON artifacts, and fail fast when readiness timeouts occur; included targeted Vitest coverage for its argument parser and wait-ready behavior.
-- Shipped `scripts/startMonitored.mjs` so `npm run start:monitored` chains the server launch with the readiness monitor. CLI args after `--` are forwarded to the monitor (e.g., `--timeout 60000 --artifact artifacts/monitor/dev-monitor.json`), while dev-server flags such as `--no-build` / `--force-restart` are now supported and recorded in `.devserver/state.json`.
-- Monitor artifacts moved to `artifacts/monitor/dev-monitor.json`, now embed host/port/log metadata plus last latency + uptime fields, and CI summaries ingest the JSON so reviewers see monitor health without downloading files.
-
-**Next Steps**
-1. Add Playwright/tutorial smoke metadata (condensed HUD screenshots, CI tolerances) to the monitor artifact so traceability reports can pair readiness probes with UI captures.
-2. Wire the monitor summary into the static dashboard so non-engineers can review the latest uptime + latency trendlines alongside the rest of the automation tiles.
-
+See:
+- `docs/GODOT_PROJECT.md`
+- `docs/keyboard-defense-plans/README.md`

@@ -1,31 +1,4 @@
 {
-  "generatedAt": "2025-11-21T12:00:00.000Z",
-  "source": "vitest-json",
-  "tests": [
-    {
-      "path": "apps/keyboard-defense/tests/tutorialSmoke.test.js",
-      "status": "pass",
-      "durationMs": 7400
-    },
-    {
-      "path": "apps/keyboard-defense/tests/castleBreachSummary.test.js",
-      "status": "pass",
-      "durationMs": 1850
-    },
-    {
-      "path": "apps/keyboard-defense/tests/renderHudGallery.test.js",
-      "status": "fail",
-      "durationMs": 9600
-    },
-    {
-      "path": "apps/keyboard-defense/tests/diagnostics.test.js",
-      "status": "pass",
-      "durationMs": 5200
-    },
-    {
-      "path": "apps/keyboard-defense/tests/traceabilityReport.test.js",
-      "status": "pass",
-      "durationMs": 4100
-    }
-  ]
+  "archived": true,
+  "note": "Legacy artifact from a pre-Godot implementation. See docs/GODOT_PROJECT.md and docs/keyboard-defense-plans/README.md."
 }

@@ -1,16 +1,8 @@
-# Fullscreen Toggle - 2025-12-10
-> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
+# Archived Status Note
 
-## Summary
-- Added a fullscreen toggle button in the HUD header. It uses the browser Fullscreen API, updates its label/pressed state, and syncs automatically on `fullscreenchange`.
-- Button disables itself if the Fullscreen API is unavailable to keep the HUD consistent on restricted platforms.
+This status note is archived from a pre-Godot implementation.
+The current project is the Godot game at `apps/keyboard-defense-godot`.
 
-## Verification
-- `cd apps/keyboard-defense && npm run serve:open`; click “Fullscreen” to enter and “Exit Fullscreen” to leave. The button should reflect the current state even if you exit via Esc or browser UI.
-
-## Related Work
-- `apps/keyboard-defense/public/index.html`
-- `apps/keyboard-defense/public/styles.css`
-- `apps/keyboard-defense/src/ui/hud.ts`
-- `apps/keyboard-defense/src/controller/gameController.ts`
-
+See:
+- `docs/GODOT_PROJECT.md`
+- `docs/keyboard-defense-plans/README.md`

@@ -1,0 +1,37 @@
+{
+  "textures": [
+    {
+      "id": "typing_power",
+      "path": "res://assets/icons/typing_power.png",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true
+    },
+    {
+      "id": "threat_slow",
+      "path": "res://assets/icons/threat_slow.png",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true
+    },
+    {
+      "id": "mistake_forgiveness",
+      "path": "res://assets/icons/mistake_forgiveness.png",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true
+    },
+    {
+      "id": "castle_health",
+      "path": "res://assets/icons/castle_health.png",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true
+    }
+  ],
+  "audio": []
+}

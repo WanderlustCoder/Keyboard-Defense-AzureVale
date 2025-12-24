@@ -2,3 +2,5 @@
 .import/
 *.import
 *.uid
+_test.log
+_test_summary.log

@@ -2,6 +2,13 @@
 node_modules/
 apps/**/node_modules/
 
+# Godot
+.godot/
+.import/
+*.import
+*.uid
+.mono/
+
 # Build outputs & artifacts
 apps/**/dist/
 apps/**/.devserver/

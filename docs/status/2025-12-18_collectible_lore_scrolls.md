@@ -1,8 +1,8 @@
-> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
+# Archived Status Note
 
-## 2025-12-18 - Collectible Lore Scrolls
+This status note is archived from a pre-Godot implementation.
+The current project is the Godot game at `apps/keyboard-defense-godot`.
 
-- Added a Lore Scrolls panel + overlay that unlocks short reading snippets whenever lessons/typing drills are completed, with per-profile persistence and unlock logs.
-- HUD sidebar and options menu now surface scroll progress (lessons completed, unlocked/total, next requirement) with a highlight when new scrolls appear.
-- New lesson progress storage + scroll data helpers are covered by tests; Season 4 backlog item #64 marked Done.
-
+See:
+- `docs/GODOT_PROJECT.md`
+- `docs/keyboard-defense-plans/README.md`

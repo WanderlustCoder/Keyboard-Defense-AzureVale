@@ -1,29 +1,4 @@
 {
-  "_meta": {
-    "generatedAt": "2025-11-14T19:35:06.373Z",
-    "metrics": [
-      "medianGain",
-      "p90Gain",
-      "medianSpend",
-      "p90Spend"
-    ]
-  },
-  "artifacts/e2e/campaign.json": {
-    "medianGain": 55,
-    "medianSpend": -30,
-    "p90Gain": 105,
-    "p90Spend": -60
-  },
-  "artifacts/e2e/tutorial-full.json": {
-    "medianGain": 70,
-    "medianSpend": -40,
-    "p90Gain": 125,
-    "p90Spend": -70
-  },
-  "artifacts/smoke/tutorial.skip.json": {
-    "medianGain": 60,
-    "medianSpend": -35,
-    "p90Gain": 110,
-    "p90Spend": -65
-  }
+  "archived": true,
+  "note": "Legacy artifact from a pre-Godot implementation. See docs/GODOT_PROJECT.md and docs/keyboard-defense-plans/README.md."
 }

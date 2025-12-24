@@ -1,18 +1,8 @@
-# Ambient Music Escalation - 2025-12-08
-> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
+# Archived Status Note
 
-## Summary
-- Added ambient profile selector (`calm`, `rising`, `siege`, `dire`) driven by wave index/total and castle health, ensuring intensity ramps with siege progression and drops into “dire” when the castle is low.
-- SoundManager now supports ambient loops (synthesized pads, fade transitions, intensity scaling, stop on mute) via WebAudio with safe guards for non-browser/test environments.
-- GameController feeds the ambient selector each render so wave transitions update music automatically; muting stops ambient playback; intensity slider remaps ambient gain.
+This status note is archived from a pre-Godot implementation.
+The current project is the Godot game at `apps/keyboard-defense-godot`.
 
-## Verification
-- `cd apps/keyboard-defense && npx vitest run ambientProfiles.test.js`
-
-## Related Work
-- `apps/keyboard-defense/src/audio/soundManager.ts`
-- `apps/keyboard-defense/src/audio/ambientProfiles.ts`
-- `apps/keyboard-defense/src/controller/gameController.ts`
-- `apps/keyboard-defense/tests/ambientProfiles.test.js`
-- Backlog #88
-
+See:
+- `docs/GODOT_PROJECT.md`
+- `docs/keyboard-defense-plans/README.md`

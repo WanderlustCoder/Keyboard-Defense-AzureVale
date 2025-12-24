@@ -1,17 +1,8 @@
-# Archivist Lyra Dialogue Blocks - 2025-12-07
-> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
+# Archived Status Note
 
-## Summary
-- Added Episode 1 dialogue catalog for Archivist Lyra (intro, phase shift, pressure call, breach warning, finale, retreat) under `apps/keyboard-defense/docs/dialogue/lyra.json`.
-- New runtime-facing helper (`src/data/dialogue.ts`) exposes ids/stages and speaker metadata; future UI/boss scripting can pull lines by stage.
-- Tests validate catalog shape, stage filters, and unique ids.
+This status note is archived from a pre-Godot implementation.
+The current project is the Godot game at `apps/keyboard-defense-godot`.
 
-## Verification
-- `cd apps/keyboard-defense && npx vitest tests/dialogueCatalog.test.js`
-
-## Related Work
-- `apps/keyboard-defense/docs/dialogue/lyra.json`
-- `apps/keyboard-defense/src/data/dialogue.ts`
-- `apps/keyboard-defense/tests/dialogueCatalog.test.js`
-- Backlog #83
-
+See:
+- `docs/GODOT_PROJECT.md`
+- `docs/keyboard-defense-plans/README.md`

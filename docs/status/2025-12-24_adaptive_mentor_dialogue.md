@@ -1,12 +1,8 @@
-> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
+# Archived Status Note
 
-## 2025-12-24 — Adaptive mentor dialogue (Season 4 backlog #70)
+This status note is archived from a pre-Godot implementation.
+The current project is the Godot game at `apps/keyboard-defense-godot`.
 
-### What changed
-- Added a mentor card to the companion panel that adapts between accuracy, speed, and balanced guidance based on live typing stats (accuracy, total inputs, WPM).
-- Tips rotate per focus with cooldowns to avoid chatter and honor Reduced Motion styling; default text stays balanced until enough input data is present.
-
-### Verification
-- Ran `npm test` (full suite) after wiring the new HUD card and focus logic.
-- Added HUD unit test to assert focus flips from accuracy to speed when stats change.
-
+See:
+- `docs/GODOT_PROJECT.md`
+- `docs/keyboard-defense-plans/README.md`

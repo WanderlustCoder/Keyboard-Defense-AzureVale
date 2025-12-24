@@ -1,17 +1,8 @@
-# Tutorial Assist/Replay/Skip Tests - 2025-12-07
-> Note: This document targets the retired web version (`apps/keyboard-defense`). The current Godot project lives at `apps/keyboard-defense-godot`; see `docs/GODOT_PROJECT.md` and `apps/keyboard-defense-godot/README.md` for active workflows.
+# Archived Status Note
 
-## Summary
-- Added TutorialManager unit coverage for assist hints after repeated typing errors to ensure the letter-hint cue fires once per step and records telemetry.
-- Covered skip flow to confirm HUD messaging clears and the completion callback fires when the tutorial is abandoned mid-step.
-- Exercised reset/replay to verify counters (errors, assists) and progress are cleared between runs, allowing assists to re-arm on a fresh attempt.
-- Backlog #91 is now satisfied with focused tutorial state tests.
+This status note is archived from a pre-Godot implementation.
+The current project is the Godot game at `apps/keyboard-defense-godot`.
 
-## Verification
-- `cd apps/keyboard-defense && npx vitest run tutorialManager.test.js`
-
-## Related Work
-- `apps/keyboard-defense/tests/tutorialManager.test.js`
-- `apps/keyboard-defense/public/dist/src/tutorial/tutorialManager.js`
-- Backlog #91
-
+See:
+- `docs/GODOT_PROJECT.md`
+- `docs/keyboard-defense-plans/README.md`
