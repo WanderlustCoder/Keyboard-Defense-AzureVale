@@ -1,0 +1,70 @@
+[gd_scene load_steps=3 format=3 uid="uid://event_panel_component"]
+
+[ext_resource type="Script" path="res://ui/components/event_panel.gd" id="1_script"]
+[ext_resource type="Theme" path="res://themes/KeyboardDefenseTheme.tres" id="2_theme"]
+
+[node name="EventPanel" type="PanelContainer"]
+custom_minimum_size = Vector2(500, 300)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -250.0
+offset_top = -150.0
+offset_right = 250.0
+offset_bottom = 150.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_theme")
+script = ExtResource("1_script")
+
+[node name="Content" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="Content"]
+layout_mode = 2
+horizontal_alignment = 1
+text = "Event Title"
+
+[node name="Spacer1" type="Control" parent="Content"]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+
+[node name="BodyLabel" type="RichTextLabel" parent="Content"]
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+bbcode_enabled = true
+text = "Event description goes here."
+fit_content = true
+scroll_active = false
+
+[node name="Spacer2" type="Control" parent="Content"]
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+
+[node name="ChoicesContainer" type="VBoxContainer" parent="Content"]
+layout_mode = 2
+
+[node name="InputContainer" type="HBoxContainer" parent="Content"]
+visible = false
+layout_mode = 2
+
+[node name="InputPrompt" type="Label" parent="Content/InputContainer"]
+layout_mode = 2
+text = "Type: "
+
+[node name="InputDisplay" type="Label" parent="Content/InputContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "_"
+
+[node name="Spacer3" type="Control" parent="Content"]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="SkipHint" type="Label" parent="Content"]
+layout_mode = 2
+horizontal_alignment = 1
+text = "Press Escape to skip event"
