@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 8" width="32" height="8">
+  <!-- Impact Particle (32x8) - 4 frame animation -->
+
+  <!-- Frame 1 - initial flash -->
+  <rect x="2" y="2" width="4" height="4" fill="#fdfefe"/>
+  <rect x="3" y="1" width="2" height="6" fill="#fdfefe"/>
+  <rect x="1" y="3" width="6" height="2" fill="#fdfefe"/>
+
+  <!-- Frame 2 - expanding ring -->
+  <rect x="9" y="1" width="6" height="1" fill="#f9e79f"/>
+  <rect x="9" y="6" width="6" height="1" fill="#f9e79f"/>
+  <rect x="8" y="2" width="1" height="4" fill="#f9e79f"/>
+  <rect x="15" y="2" width="1" height="4" fill="#f9e79f"/>
+  <rect x="11" y="3" width="2" height="2" fill="#fdfefe"/>
+
+  <!-- Frame 3 - fragments -->
+  <rect x="17" y="0" width="2" height="2" fill="#f39c12"/>
+  <rect x="21" y="1" width="2" height="2" fill="#f39c12"/>
+  <rect x="18" y="5" width="2" height="2" fill="#f39c12"/>
+  <rect x="22" y="5" width="2" height="2" fill="#f39c12"/>
+  <rect x="19" y="3" width="2" height="2" fill="#f9e79f"/>
+
+  <!-- Frame 4 - fading debris -->
+  <rect x="25" y="0" width="1" height="1" fill="#f39c12" opacity="0.5"/>
+  <rect x="30" y="1" width="1" height="1" fill="#f39c12" opacity="0.5"/>
+  <rect x="26" y="6" width="1" height="1" fill="#f39c12" opacity="0.5"/>
+  <rect x="29" y="5" width="1" height="1" fill="#f39c12" opacity="0.5"/>
+</svg>

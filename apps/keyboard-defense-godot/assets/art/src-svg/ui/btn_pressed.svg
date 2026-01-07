@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 16" width="48" height="16">
+  <!-- Button Pressed State (48x16) - 9-slice, depressed -->
+
+  <!-- No shadow (pressed down) -->
+  <rect x="2" y="3" width="44" height="11" fill="#1a252f"/>
+  <rect x="1" y="4" width="46" height="9" fill="#1a252f"/>
+  <rect x="0" y="5" width="48" height="7" fill="#1a252f"/>
+
+  <!-- Button body (lowered) -->
+  <rect x="2" y="4" width="44" height="10" fill="#2c3e50"/>
+  <rect x="1" y="5" width="46" height="8" fill="#2c3e50"/>
+
+  <!-- Inner surface (darker) -->
+  <rect x="3" y="5" width="42" height="7" fill="#1a252f"/>
+
+  <!-- Top shadow (inverted) -->
+  <rect x="3" y="5" width="42" height="1" fill="#0d1318"/>
+</svg>

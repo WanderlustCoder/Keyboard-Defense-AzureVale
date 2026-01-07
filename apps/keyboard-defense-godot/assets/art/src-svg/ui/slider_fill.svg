@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 4" width="8" height="4">
+  <!-- Slider Fill (8x4) - tileable fill for slider value -->
+
+  <rect x="0" y="0" width="8" height="4" fill="#3498db"/>
+  <rect x="0" y="0" width="8" height="1" fill="#5dade2"/>
+  <rect x="0" y="3" width="8" height="1" fill="#2980b9"/>
+</svg>

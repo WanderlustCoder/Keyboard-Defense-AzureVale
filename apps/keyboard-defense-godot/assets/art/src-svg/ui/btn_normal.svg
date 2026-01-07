@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 16" width="48" height="16">
+  <!-- Button Normal State (48x16) - 9-slice -->
+
+  <!-- Shadow -->
+  <rect x="2" y="3" width="44" height="12" fill="#1a252f"/>
+
+  <!-- Button body -->
+  <rect x="2" y="1" width="44" height="12" fill="#2c3e50"/>
+  <rect x="1" y="2" width="46" height="10" fill="#2c3e50"/>
+  <rect x="0" y="3" width="48" height="8" fill="#2c3e50"/>
+
+  <!-- Top highlight -->
+  <rect x="3" y="2" width="42" height="1" fill="#5d6d7e"/>
+  <rect x="2" y="3" width="44" height="1" fill="#34495e"/>
+
+  <!-- Inner surface -->
+  <rect x="3" y="4" width="42" height="7" fill="#34495e"/>
+
+  <!-- Bottom edge -->
+  <rect x="3" y="11" width="42" height="1" fill="#1a252f"/>
+</svg>

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 8" width="64" height="8">
+  <!-- Slider Track (64x8) - 9-slice horizontal track -->
+
+  <!-- Outer border -->
+  <rect x="0" y="1" width="64" height="6" fill="#2c3e50"/>
+  <rect x="1" y="0" width="62" height="8" fill="#2c3e50"/>
+
+  <!-- Inner track -->
+  <rect x="2" y="2" width="60" height="4" fill="#1a252f"/>
+
+  <!-- Groove -->
+  <rect x="3" y="3" width="58" height="2" fill="#0d1318"/>
+
+  <!-- End caps highlight -->
+  <rect x="1" y="1" width="1" height="1" fill="#5d6d7e"/>
+  <rect x="62" y="1" width="1" height="1" fill="#5d6d7e"/>
+</svg>

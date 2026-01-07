@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 8" width="32" height="8">
+  <!-- Dust Particle (32x8) - 4 frame animation -->
+
+  <!-- Frame 1 - initial puff -->
+  <rect x="2" y="4" width="4" height="3" fill="#aeb6bf"/>
+  <rect x="3" y="3" width="2" height="4" fill="#aeb6bf"/>
+  <rect x="3" y="4" width="2" height="2" fill="#d5d8dc"/>
+
+  <!-- Frame 2 - expanding -->
+  <rect x="9" y="3" width="6" height="4" fill="#aeb6bf" opacity="0.8"/>
+  <rect x="10" y="2" width="4" height="5" fill="#aeb6bf" opacity="0.8"/>
+  <rect x="11" y="3" width="2" height="3" fill="#d5d8dc" opacity="0.8"/>
+
+  <!-- Frame 3 - dispersing -->
+  <rect x="18" y="2" width="4" height="2" fill="#aeb6bf" opacity="0.5"/>
+  <rect x="20" y="4" width="3" height="2" fill="#aeb6bf" opacity="0.5"/>
+  <rect x="17" y="5" width="2" height="2" fill="#aeb6bf" opacity="0.5"/>
+
+  <!-- Frame 4 - fading -->
+  <rect x="26" y="2" width="2" height="1" fill="#aeb6bf" opacity="0.3"/>
+  <rect x="28" y="4" width="2" height="1" fill="#aeb6bf" opacity="0.3"/>
+  <rect x="25" y="5" width="1" height="1" fill="#aeb6bf" opacity="0.3"/>
+</svg>

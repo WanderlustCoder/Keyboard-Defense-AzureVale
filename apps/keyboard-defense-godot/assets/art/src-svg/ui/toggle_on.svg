@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 12" width="24" height="12">
+  <!-- Toggle On (24x12) - switch in on position -->
+
+  <!-- Track (green) -->
+  <rect x="2" y="1" width="20" height="10" fill="#27ae60"/>
+  <rect x="1" y="2" width="22" height="8" fill="#27ae60"/>
+  <rect x="0" y="3" width="24" height="6" fill="#27ae60"/>
+
+  <!-- Inner track -->
+  <rect x="2" y="3" width="20" height="6" fill="#2ecc71"/>
+
+  <!-- Thumb (right position) -->
+  <rect x="12" y="1" width="10" height="10" fill="#fdfefe"/>
+  <rect x="11" y="2" width="12" height="8" fill="#fdfefe"/>
+
+  <!-- Thumb highlight -->
+  <rect x="13" y="2" width="8" height="1" fill="#fdfefe"/>
+  <rect x="12" y="3" width="1" height="6" fill="#fdfefe"/>
+
+  <!-- Thumb shadow -->
+  <rect x="21" y="3" width="1" height="6" fill="#d5d8dc"/>
+  <rect x="13" y="9" width="8" height="1" fill="#d5d8dc"/>
+</svg>
