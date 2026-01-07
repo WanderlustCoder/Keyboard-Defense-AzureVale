@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Bones Tile (16x16) - Skeleton remains in desert -->
+  <!-- Color Palette: #fdfefe, #d5d8dc, #aeb6bf, #f4d03f, #d4a017 -->
+
+  <!-- Sand base -->
+  <rect x="0" y="0" width="16" height="16" fill="#f4d03f"/>
+  <rect x="3" y="2" width="2" height="1" fill="#d4a017"/>
+  <rect x="10" y="11" width="2" height="1" fill="#d4a017"/>
+
+  <!-- Skull -->
+  <rect x="2" y="4" width="5" height="4" fill="#fdfefe"/>
+  <rect x="3" y="3" width="3" height="1" fill="#fdfefe"/>
+  <rect x="3" y="8" width="3" height="1" fill="#d5d8dc"/>
+  <!-- Eye sockets -->
+  <rect x="3" y="5" width="1" height="1" fill="#1a252f"/>
+  <rect x="5" y="5" width="1" height="1" fill="#1a252f"/>
+  <!-- Nose -->
+  <rect x="4" y="6" width="1" height="1" fill="#aeb6bf"/>
+
+  <!-- Rib bones -->
+  <rect x="8" y="6" width="6" height="1" fill="#fdfefe"/>
+  <rect x="9" y="8" width="5" height="1" fill="#d5d8dc"/>
+  <rect x="8" y="10" width="6" height="1" fill="#fdfefe"/>
+
+  <!-- Leg bone -->
+  <rect x="1" y="11" width="5" height="2" fill="#fdfefe"/>
+  <rect x="0" y="12" width="2" height="2" fill="#d5d8dc"/>
+  <rect x="5" y="12" width="2" height="2" fill="#d5d8dc"/>
+
+  <!-- Scattered small bones -->
+  <rect x="12" y="2" width="2" height="1" fill="#d5d8dc"/>
+  <rect x="10" y="14" width="3" height="1" fill="#aeb6bf"/>
+</svg>

@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Pyramid Base Tile (16x16) - Ancient pyramid structure -->
+  <!-- Color Palette: #d4a017, #c4a35a, #8b7355, #5d4e37, #f4d03f -->
+
+  <!-- Sand base -->
+  <rect x="0" y="14" width="16" height="2" fill="#f4d03f"/>
+
+  <!-- Pyramid stone blocks -->
+  <rect x="0" y="0" width="16" height="14" fill="#d4a017"/>
+
+  <!-- Block outlines (horizontal) -->
+  <rect x="0" y="3" width="16" height="1" fill="#8b7355"/>
+  <rect x="0" y="7" width="16" height="1" fill="#8b7355"/>
+  <rect x="0" y="11" width="16" height="1" fill="#8b7355"/>
+
+  <!-- Block outlines (vertical) -->
+  <rect x="4" y="0" width="1" height="4" fill="#8b7355"/>
+  <rect x="10" y="0" width="1" height="4" fill="#8b7355"/>
+  <rect x="2" y="4" width="1" height="4" fill="#8b7355"/>
+  <rect x="8" y="4" width="1" height="4" fill="#8b7355"/>
+  <rect x="14" y="4" width="1" height="4" fill="#8b7355"/>
+  <rect x="5" y="8" width="1" height="4" fill="#8b7355"/>
+  <rect x="11" y="8" width="1" height="4" fill="#8b7355"/>
+
+  <!-- Highlight (sun-lit side) -->
+  <rect x="0" y="0" width="2" height="3" fill="#c4a35a"/>
+  <rect x="0" y="4" width="2" height="3" fill="#c4a35a"/>
+  <rect x="0" y="8" width="2" height="3" fill="#c4a35a"/>
+
+  <!-- Shadow (shaded side) -->
+  <rect x="14" y="0" width="2" height="3" fill="#5d4e37" opacity="0.4"/>
+  <rect x="14" y="4" width="2" height="3" fill="#5d4e37" opacity="0.4"/>
+  <rect x="14" y="8" width="2" height="3" fill="#5d4e37" opacity="0.4"/>
+
+  <!-- Ancient markings -->
+  <rect x="6" y="5" width="1" height="1" fill="#5d4e37"/>
+  <rect x="9" y="5" width="1" height="1" fill="#5d4e37"/>
+  <rect x="7" y="9" width="2" height="1" fill="#5d4e37"/>
+</svg>

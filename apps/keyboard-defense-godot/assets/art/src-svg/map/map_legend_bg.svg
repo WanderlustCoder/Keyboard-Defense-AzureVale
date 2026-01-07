@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 128" width="96" height="128">
+  <!-- Map Legend Background (96x128) - Legend panel for map -->
+  <!-- Color Palette: #f5deb3, #deb887, #8b7355, #5d4e37 -->
+
+  <!-- Parchment background -->
+  <rect x="0" y="0" width="96" height="128" fill="#f5deb3"/>
+
+  <!-- Border -->
+  <rect x="0" y="0" width="96" height="4" fill="#8b7355"/>
+  <rect x="0" y="124" width="96" height="4" fill="#8b7355"/>
+  <rect x="0" y="0" width="4" height="128" fill="#8b7355"/>
+  <rect x="92" y="0" width="4" height="128" fill="#8b7355"/>
+
+  <!-- Inner border -->
+  <rect x="4" y="4" width="88" height="2" fill="#deb887"/>
+  <rect x="4" y="122" width="88" height="2" fill="#deb887"/>
+  <rect x="4" y="4" width="2" height="120" fill="#deb887"/>
+  <rect x="90" y="4" width="2" height="120" fill="#deb887"/>
+
+  <!-- Title area -->
+  <rect x="8" y="8" width="80" height="16" fill="#deb887"/>
+  <rect x="10" y="10" width="76" height="12" fill="#f5deb3"/>
+
+  <!-- Decorative divider -->
+  <rect x="12" y="26" width="72" height="2" fill="#8b7355"/>
+  <rect x="40" y="24" width="16" height="6" fill="#deb887"/>
+  <rect x="44" y="26" width="8" height="2" fill="#5d4e37"/>
+
+  <!-- Legend item rows -->
+  <rect x="8" y="32" width="80" height="16" fill="#deb887" opacity="0.3"/>
+  <rect x="8" y="52" width="80" height="16" fill="#deb887" opacity="0.3"/>
+  <rect x="8" y="72" width="80" height="16" fill="#deb887" opacity="0.3"/>
+  <rect x="8" y="92" width="80" height="16" fill="#deb887" opacity="0.3"/>
+
+  <!-- Icon placeholders -->
+  <rect x="12" y="36" width="12" height="12" fill="#deb887"/>
+  <rect x="12" y="56" width="12" height="12" fill="#deb887"/>
+  <rect x="12" y="76" width="12" height="12" fill="#deb887"/>
+  <rect x="12" y="96" width="12" height="12" fill="#deb887"/>
+
+  <!-- Corner curls -->
+  <rect x="0" y="0" width="8" height="8" fill="#5d4e37"/>
+  <rect x="2" y="2" width="4" height="4" fill="#8b7355"/>
+  <rect x="88" y="0" width="8" height="8" fill="#5d4e37"/>
+  <rect x="90" y="2" width="4" height="4" fill="#8b7355"/>
+  <rect x="0" y="120" width="8" height="8" fill="#5d4e37"/>
+  <rect x="2" y="122" width="4" height="4" fill="#8b7355"/>
+  <rect x="88" y="120" width="8" height="8" fill="#5d4e37"/>
+  <rect x="90" y="122" width="4" height="4" fill="#8b7355"/>
+</svg>

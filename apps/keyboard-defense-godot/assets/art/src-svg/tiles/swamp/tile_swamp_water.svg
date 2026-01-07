@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Swamp Water Tile (16x16) - Murky swamp water -->
+  <!-- Color Palette: #1e8449, #145a32, #0d3b21, #27ae60, #5d6d7e -->
+
+  <!-- Base murky water -->
+  <rect x="0" y="0" width="16" height="16" fill="#145a32"/>
+
+  <!-- Darker depths -->
+  <rect x="4" y="4" width="6" height="6" fill="#0d3b21"/>
+  <rect x="10" y="10" width="4" height="4" fill="#0d3b21"/>
+  <rect x="0" y="8" width="3" height="4" fill="#0d3b21"/>
+
+  <!-- Surface algae/scum -->
+  <rect x="1" y="1" width="3" height="2" fill="#27ae60" opacity="0.5"/>
+  <rect x="8" y="2" width="4" height="1" fill="#27ae60" opacity="0.4"/>
+  <rect x="12" y="6" width="3" height="2" fill="#27ae60" opacity="0.5"/>
+  <rect x="2" y="12" width="4" height="2" fill="#27ae60" opacity="0.4"/>
+
+  <!-- Murky bubbles -->
+  <rect x="6" y="8" width="1" height="1" fill="#5d6d7e" opacity="0.3"/>
+  <rect x="11" y="4" width="1" height="1" fill="#5d6d7e" opacity="0.3"/>
+  <rect x="3" y="6" width="1" height="1" fill="#5d6d7e" opacity="0.3"/>
+
+  <!-- Slight surface reflection -->
+  <rect x="0" y="0" width="2" height="1" fill="#1e8449"/>
+  <rect x="14" y="0" width="2" height="1" fill="#1e8449"/>
+</svg>

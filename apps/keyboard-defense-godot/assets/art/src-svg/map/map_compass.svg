@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Compass Rose (32x32) - Map compass decoration -->
+  <!-- Color Palette: #f4d03f, #e67e22, #c0392b, #1a252f, #fdfefe -->
+
+  <!-- Outer ring -->
+  <rect x="8" y="2" width="16" height="4" fill="#f4d03f"/>
+  <rect x="4" y="6" width="24" height="4" fill="#f4d03f"/>
+  <rect x="2" y="8" width="28" height="16" fill="#f4d03f"/>
+  <rect x="4" y="22" width="24" height="4" fill="#f4d03f"/>
+  <rect x="8" y="26" width="16" height="4" fill="#f4d03f"/>
+
+  <!-- Inner circle -->
+  <rect x="10" y="6" width="12" height="2" fill="#e67e22"/>
+  <rect x="6" y="8" width="20" height="16" fill="#e67e22"/>
+  <rect x="10" y="24" width="12" height="2" fill="#e67e22"/>
+
+  <!-- Center background -->
+  <rect x="10" y="10" width="12" height="12" fill="#fdfefe"/>
+
+  <!-- North pointer (red) -->
+  <rect x="14" y="4" width="4" height="10" fill="#c0392b"/>
+  <rect x="15" y="2" width="2" height="12" fill="#e74c3c"/>
+  <rect x="15" y="6" width="1" height="6" fill="#fdfefe" opacity="0.4"/>
+
+  <!-- South pointer -->
+  <rect x="14" y="18" width="4" height="10" fill="#1a252f"/>
+  <rect x="15" y="18" width="2" height="12" fill="#2c3e50"/>
+
+  <!-- East pointer -->
+  <rect x="18" y="14" width="10" height="4" fill="#1a252f"/>
+  <rect x="18" y="15" width="12" height="2" fill="#2c3e50"/>
+
+  <!-- West pointer -->
+  <rect x="4" y="14" width="10" height="4" fill="#1a252f"/>
+  <rect x="2" y="15" width="12" height="2" fill="#2c3e50"/>
+
+  <!-- Center decoration -->
+  <rect x="14" y="14" width="4" height="4" fill="#f4d03f"/>
+  <rect x="15" y="15" width="2" height="2" fill="#fdfefe"/>
+
+  <!-- N marker -->
+  <rect x="14" y="0" width="4" height="2" fill="#c0392b"/>
+</svg>

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Fog Solid (32x32) - Unexplored fog of war tile -->
+  <!-- Color Palette: #1a252f, #0d1318 -->
+
+  <!-- Solid dark fog -->
+  <rect x="0" y="0" width="32" height="32" fill="#1a252f"/>
+
+  <!-- Subtle texture variation -->
+  <rect x="4" y="4" width="8" height="6" fill="#0d1318" opacity="0.3"/>
+  <rect x="18" y="8" width="10" height="8" fill="#0d1318" opacity="0.2"/>
+  <rect x="6" y="18" width="12" height="6" fill="#0d1318" opacity="0.3"/>
+  <rect x="22" y="22" width="8" height="6" fill="#0d1318" opacity="0.2"/>
+
+  <!-- Mystery sparkle hints -->
+  <rect x="8" y="12" width="2" height="2" fill="#5d6d7e" opacity="0.2"/>
+  <rect x="24" y="16" width="2" height="2" fill="#5d6d7e" opacity="0.2"/>
+</svg>

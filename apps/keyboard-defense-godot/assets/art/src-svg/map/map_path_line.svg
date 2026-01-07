@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 16" width="4" height="16">
+  <!-- Path Line (4x16) - Tileable path segment -->
+  <!-- Color Palette: #8b7355, #a0522d, #c4a35a -->
+
+  <!-- Main path -->
+  <rect x="0" y="0" width="4" height="16" fill="#8b7355"/>
+  <rect x="1" y="0" width="2" height="16" fill="#a0522d"/>
+
+  <!-- Edge highlights -->
+  <rect x="0" y="0" width="1" height="16" fill="#c4a35a" opacity="0.4"/>
+  <rect x="3" y="0" width="1" height="16" fill="#5d4e37" opacity="0.4"/>
+</svg>

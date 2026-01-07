@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Ice Tile (16x16) - Frozen ice surface -->
+  <!-- Color Palette: #85c1e9, #5dade2, #3498db, #2980b9, #fdfefe -->
+
+  <!-- Base ice -->
+  <rect x="0" y="0" width="16" height="16" fill="#5dade2"/>
+
+  <!-- Ice depth variation -->
+  <rect x="0" y="0" width="6" height="6" fill="#85c1e9"/>
+  <rect x="10" y="8" width="6" height="8" fill="#85c1e9"/>
+  <rect x="4" y="10" width="4" height="4" fill="#3498db"/>
+
+  <!-- Ice cracks -->
+  <rect x="6" y="0" width="1" height="8" fill="#2980b9"/>
+  <rect x="6" y="6" width="6" height="1" fill="#2980b9"/>
+  <rect x="11" y="6" width="1" height="6" fill="#2980b9"/>
+  <rect x="0" y="8" width="4" height="1" fill="#2980b9"/>
+  <rect x="3" y="8" width="1" height="5" fill="#2980b9"/>
+
+  <!-- Ice highlights/reflections -->
+  <rect x="1" y="1" width="2" height="1" fill="#fdfefe" opacity="0.6"/>
+  <rect x="3" y="2" width="1" height="2" fill="#fdfefe" opacity="0.4"/>
+  <rect x="12" y="10" width="2" height="1" fill="#fdfefe" opacity="0.5"/>
+  <rect x="14" y="11" width="1" height="2" fill="#fdfefe" opacity="0.3"/>
+
+  <!-- Frozen bubbles -->
+  <rect x="8" y="3" width="1" height="1" fill="#fdfefe" opacity="0.3"/>
+  <rect x="2" y="12" width="1" height="1" fill="#fdfefe" opacity="0.3"/>
+  <rect x="13" y="5" width="1" height="1" fill="#fdfefe" opacity="0.3"/>
+</svg>

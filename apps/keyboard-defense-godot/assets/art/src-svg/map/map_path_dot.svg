@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8" width="8" height="8">
+  <!-- Path Dot (8x8) - Path waypoint marker -->
+  <!-- Color Palette: #8b7355, #a0522d, #c4a35a, #fdfefe -->
+
+  <!-- Outer ring -->
+  <rect x="2" y="0" width="4" height="2" fill="#8b7355"/>
+  <rect x="0" y="2" width="8" height="4" fill="#8b7355"/>
+  <rect x="2" y="6" width="4" height="2" fill="#8b7355"/>
+
+  <!-- Inner circle -->
+  <rect x="2" y="2" width="4" height="4" fill="#a0522d"/>
+
+  <!-- Center highlight -->
+  <rect x="3" y="3" width="2" height="2" fill="#c4a35a"/>
+  <rect x="3" y="3" width="1" height="1" fill="#fdfefe" opacity="0.5"/>
+</svg>

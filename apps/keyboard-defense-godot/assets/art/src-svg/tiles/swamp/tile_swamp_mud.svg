@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Swamp Mud Tile (16x16) - Muddy swamp ground -->
+  <!-- Color Palette: #5d4e37, #8b7355, #4a3c2a, #6b5344, #145a32 -->
+
+  <!-- Base mud -->
+  <rect x="0" y="0" width="16" height="16" fill="#5d4e37"/>
+
+  <!-- Darker mud patches -->
+  <rect x="2" y="3" width="4" height="3" fill="#4a3c2a"/>
+  <rect x="10" y="8" width="5" height="4" fill="#4a3c2a"/>
+  <rect x="0" y="12" width="3" height="4" fill="#4a3c2a"/>
+
+  <!-- Lighter mud patches -->
+  <rect x="8" y="2" width="3" height="2" fill="#6b5344"/>
+  <rect x="4" y="10" width="4" height="2" fill="#6b5344"/>
+  <rect x="12" y="0" width="3" height="2" fill="#6b5344"/>
+
+  <!-- Wet mud shine -->
+  <rect x="5" y="5" width="2" height="1" fill="#8b7355"/>
+  <rect x="12" y="12" width="2" height="1" fill="#8b7355"/>
+  <rect x="1" y="8" width="1" height="1" fill="#8b7355"/>
+
+  <!-- Moss/algae spots -->
+  <rect x="7" y="7" width="2" height="1" fill="#145a32"/>
+  <rect x="14" y="4" width="1" height="2" fill="#145a32"/>
+  <rect x="0" y="1" width="1" height="2" fill="#145a32"/>
+
+  <!-- Mud bubbles -->
+  <rect x="9" y="5" width="1" height="1" fill="#4a3c2a"/>
+  <rect x="3" y="14" width="1" height="1" fill="#4a3c2a"/>
+</svg>

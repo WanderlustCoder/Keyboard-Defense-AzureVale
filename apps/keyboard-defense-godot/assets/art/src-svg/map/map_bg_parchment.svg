@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" width="320" height="180">
+  <!-- Parchment Background (320x180) - World map parchment texture -->
+  <!-- Color Palette: #f5deb3, #deb887, #d2b48c, #c4a35a, #8b7355 -->
+
+  <!-- Base parchment color -->
+  <rect x="0" y="0" width="320" height="180" fill="#f5deb3"/>
+
+  <!-- Aged spots and variations -->
+  <rect x="20" y="15" width="40" height="30" fill="#deb887" opacity="0.5"/>
+  <rect x="100" y="40" width="50" height="35" fill="#d2b48c" opacity="0.4"/>
+  <rect x="200" y="20" width="60" height="40" fill="#deb887" opacity="0.5"/>
+  <rect x="260" y="80" width="45" height="50" fill="#d2b48c" opacity="0.4"/>
+  <rect x="40" y="100" width="55" height="45" fill="#deb887" opacity="0.5"/>
+  <rect x="140" y="120" width="50" height="40" fill="#d2b48c" opacity="0.4"/>
+
+  <!-- Edge darkening (worn edges) -->
+  <rect x="0" y="0" width="320" height="8" fill="#c4a35a" opacity="0.6"/>
+  <rect x="0" y="172" width="320" height="8" fill="#c4a35a" opacity="0.6"/>
+  <rect x="0" y="0" width="8" height="180" fill="#c4a35a" opacity="0.6"/>
+  <rect x="312" y="0" width="8" height="180" fill="#c4a35a" opacity="0.6"/>
+
+  <!-- Corner wear marks -->
+  <rect x="0" y="0" width="20" height="15" fill="#8b7355" opacity="0.4"/>
+  <rect x="300" y="0" width="20" height="15" fill="#8b7355" opacity="0.4"/>
+  <rect x="0" y="165" width="20" height="15" fill="#8b7355" opacity="0.4"/>
+  <rect x="300" y="165" width="20" height="15" fill="#8b7355" opacity="0.4"/>
+
+  <!-- Stain marks -->
+  <rect x="80" y="70" width="25" height="20" fill="#c4a35a" opacity="0.3"/>
+  <rect x="220" y="130" width="30" height="25" fill="#c4a35a" opacity="0.3"/>
+
+  <!-- Texture lines (subtle) -->
+  <rect x="0" y="30" width="320" height="1" fill="#deb887" opacity="0.3"/>
+  <rect x="0" y="60" width="320" height="1" fill="#deb887" opacity="0.3"/>
+  <rect x="0" y="90" width="320" height="1" fill="#deb887" opacity="0.3"/>
+  <rect x="0" y="120" width="320" height="1" fill="#deb887" opacity="0.3"/>
+  <rect x="0" y="150" width="320" height="1" fill="#deb887" opacity="0.3"/>
+</svg>
