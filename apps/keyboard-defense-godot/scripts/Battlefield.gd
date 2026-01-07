@@ -1,6 +1,7 @@
 extends Control
 
 const TypingSystem = preload("res://scripts/TypingSystem.gd")
+const SimWords = preload("res://sim/words.gd")
 const DEFAULT_RUNE_TARGETS := ["1-2-3", "x^2", "go!", "rune+1", "shield+2"]
 const BUFF_DEFS := {
 	"focus": {
@@ -137,7 +138,7 @@ func _initialize_battle() -> void:
 	var lesson: Dictionary = progression.get_lesson(lesson_id)
 	lesson_words = lesson.get("words", [])
 	if lesson_words.is_empty():
-		lesson_words = ["guard", "tower", "shield", "banner", "castle"]
+		lesson_words = _generate_words_from_lesson(lesson, node_id)
 
 	var modifiers: Dictionary = progression.get_combat_modifiers()
 	base_modifiers = modifiers.duplicate(true)
@@ -582,6 +583,34 @@ func _escape_bbcode(text: String) -> String:
 	var escaped := text.replace("[", "\\[")
 	escaped = escaped.replace("]", "\\]")
 	return escaped
+
+func _generate_words_from_lesson(lesson: Dictionary, seed_id: String) -> Array:
+	# Generate words from lesson charset and lengths using SimWords
+	var charset: String = str(lesson.get("charset", "")).to_lower()
+	if charset == "":
+		return ["guard", "tower", "shield", "banner", "castle"]
+
+	var lengths: Dictionary = lesson.get("lengths", {})
+	var words: Array = []
+	var used: Dictionary = {}
+	var word_count: int = 20  # Generate enough words for drills
+
+	# Generate words for each enemy type to cover different lengths
+	var kinds: Array = ["scout", "raider", "armored"]
+	var per_kind: int = ceili(float(word_count) / float(kinds.size()))
+
+	for kind in kinds:
+		for i in range(per_kind):
+			var word: String = SimWords.word_for_enemy(seed_id, 1, kind, i, used, lesson.get("id", ""))
+			if word != "" and not used.has(word):
+				words.append(word)
+				used[word] = true
+
+	# Fallback if generation failed
+	if words.is_empty():
+		return ["guard", "tower", "shield", "banner", "castle"]
+
+	return words
 
 func _finish_battle(success: bool) -> void:
 	active = false

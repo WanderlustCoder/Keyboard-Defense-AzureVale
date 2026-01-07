@@ -59,7 +59,7 @@ func _build_map() -> void:
 		var label = str(node.get("label", ""))
 		var lesson_id = str(node.get("lesson_id", ""))
 		var lesson = progression.get_lesson(lesson_id)
-		var lesson_label_text = str(lesson.get("label", "Training Drill"))
+		var lesson_label_text = str(lesson.get("name", "Training Drill"))
 		var reward_gold = int(node.get("reward_gold", 0))
 		var unlocked = progression.is_node_unlocked(node_id)
 		var completed = progression.is_node_completed(node_id)
