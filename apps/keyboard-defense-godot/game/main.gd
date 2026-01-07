@@ -26,6 +26,9 @@ const MiniTrend = preload("res://game/mini_trend.gd")
 const LessonsSort = preload("res://game/lessons_sort.gd")
 const LessonHealth = preload("res://game/lesson_health.gd")
 const OnboardingFlow = preload("res://game/onboarding_flow.gd")
+const SimEvents = preload("res://sim/events.gd")
+const SimPoi = preload("res://sim/poi.gd")
+const SimEventEffects = preload("res://sim/event_effects.gd")
 
 @onready var stats_label: Label = $CanvasLayer/UIRoot/StatsPanel/StatsLabel     
 @onready var ui_root: Control = $CanvasLayer/UIRoot
@@ -58,6 +61,7 @@ const OnboardingFlow = preload("res://game/onboarding_flow.gd")
 @onready var trend_label: RichTextLabel = $CanvasLayer/UIRoot/TrendPanel/TrendLabel
 @onready var grid_renderer: Node2D = $GridRenderer
 @onready var audio_manager = get_node_or_null("/root/AudioManager")
+@onready var event_panel = $CanvasLayer/UIRoot/EventPanel
 
 var state: GameState
 var preview_type: String = ""
@@ -78,6 +82,7 @@ var tutorial_visible: bool = false
 var awaiting_bind_action: String = ""
 var profile: Dictionary = {}
 var onboarding: Dictionary = {}
+var event_visible: bool = false
 var onboarding_flags: Dictionary = {}
 var typing_history: Array = []
 var lifetime: Dictionary = {}
@@ -140,6 +145,12 @@ func _ready() -> void:
         trend_label.bbcode_enabled = true
     if trend_panel != null:
         trend_panel.visible = false
+    if event_panel != null:
+        event_panel.visible = false
+        if event_panel.has_signal("choice_selected"):
+            event_panel.choice_selected.connect(_on_event_choice_selected)
+        if event_panel.has_signal("event_skipped"):
+            event_panel.event_skipped.connect(_on_event_skipped)
     _load_profile()
     _reset_onboarding_flags()
     _append_log(["Type 'help' to see commands."])
@@ -402,6 +413,7 @@ func _refresh_hud() -> void:
     _refresh_history_panel()
     _refresh_trend_panel()
     _maybe_log_economy_guardrails()
+    _check_pending_event()
 
 func _update_prompt() -> void:
     if state.phase == "night":
@@ -2719,4 +2731,62 @@ func _format_resource_list(values: Dictionary, show_plus: bool) -> String:
     if parts.is_empty():
         return "none"
     return ", ".join(parts)
+
+# --- Event Panel Handlers ---
+
+func _on_event_choice_selected(choice_id: String, input_text: String) -> void:
+    if state.pending_event.is_empty():
+        _hide_event_panel()
+        return
+    var result: Dictionary = SimEvents.resolve_choice(state, choice_id, input_text)
+    var success: bool = result.get("success", false)
+    var message: String = result.get("message", "")
+    if event_panel != null and event_panel.has_method("show_result"):
+        event_panel.show_result(success, message)
+    # Apply effects
+    var effects: Array = result.get("effects", [])
+    for effect in effects:
+        if typeof(effect) == TYPE_DICTIONARY:
+            SimEventEffects.apply_effect(state, effect)
+    # Log result
+    _append_log(["Event: %s" % message])
+    # Clear pending event after short delay to show result
+    await get_tree().create_timer(1.5).timeout
+    state.pending_event = {}
+    _hide_event_panel()
+    _refresh_hud()
+
+func _on_event_skipped() -> void:
+    _append_log(["Event skipped."])
+    state.pending_event = {}
+    _hide_event_panel()
+    _refresh_hud()
+
+func _show_event_panel() -> void:
+    if event_panel == null:
+        return
+    var pending: Dictionary = state.pending_event
+    if pending.is_empty():
+        return
+    event_visible = true
+    if event_panel.has_method("show_event"):
+        event_panel.show_event(pending)
+    else:
+        event_panel.visible = true
+
+func _hide_event_panel() -> void:
+    event_visible = false
+    if event_panel == null:
+        return
+    if event_panel.has_method("hide_panel"):
+        event_panel.hide_panel()
+    else:
+        event_panel.visible = false
+
+func _check_pending_event() -> void:
+    if state.pending_event.is_empty():
+        return
+    if event_visible:
+        return
+    _show_event_panel()
 
