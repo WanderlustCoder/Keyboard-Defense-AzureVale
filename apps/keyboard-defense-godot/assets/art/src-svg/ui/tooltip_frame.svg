@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 24" width="48" height="24">
+  <!-- Tooltip Frame (48x24) - 9-slice tooltip background -->
+  
+  <!-- Outer border -->
+  <rect x="0" y="0" width="48" height="24" fill="#2c3e50"/>
+  
+  <!-- Inner border -->
+  <rect x="1" y="1" width="46" height="22" fill="#34495e"/>
+  
+  <!-- Background -->
+  <rect x="2" y="2" width="44" height="20" fill="#1a252f"/>
+  
+  <!-- Top highlight -->
+  <rect x="2" y="2" width="44" height="1" fill="#5d6d7e"/>
+  
+  <!-- Corner accents -->
+  <rect x="0" y="0" width="3" height="3" fill="#3498db"/>
+  <rect x="45" y="0" width="3" height="3" fill="#3498db"/>
+  <rect x="0" y="21" width="3" height="3" fill="#3498db"/>
+  <rect x="45" y="21" width="3" height="3" fill="#3498db"/>
+</svg>

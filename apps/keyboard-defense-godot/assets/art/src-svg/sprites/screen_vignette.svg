@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Screen Vignette (64x64) - corner darkening effect -->
+  
+  <!-- Corner shadows -->
+  <rect x="0" y="0" width="16" height="16" fill="#000000" opacity="0.4"/>
+  <rect x="48" y="0" width="16" height="16" fill="#000000" opacity="0.4"/>
+  <rect x="0" y="48" width="16" height="16" fill="#000000" opacity="0.4"/>
+  <rect x="48" y="48" width="16" height="16" fill="#000000" opacity="0.4"/>
+  
+  <!-- Edge shadows -->
+  <rect x="16" y="0" width="32" height="8" fill="#000000" opacity="0.2"/>
+  <rect x="16" y="56" width="32" height="8" fill="#000000" opacity="0.2"/>
+  <rect x="0" y="16" width="8" height="32" fill="#000000" opacity="0.2"/>
+  <rect x="56" y="16" width="8" height="32" fill="#000000" opacity="0.2"/>
+  
+  <!-- Gradient steps to corners -->
+  <rect x="8" y="8" width="8" height="8" fill="#000000" opacity="0.25"/>
+  <rect x="48" y="8" width="8" height="8" fill="#000000" opacity="0.25"/>
+  <rect x="8" y="48" width="8" height="8" fill="#000000" opacity="0.25"/>
+  <rect x="48" y="48" width="8" height="8" fill="#000000" opacity="0.25"/>
+</svg>
