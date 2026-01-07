@@ -1,0 +1,208 @@
+extends Node
+class_name BattleTutorial
+## Manages tutorial prompts during the first battle via Lyra dialogue
+
+signal tutorial_step_completed(step_id: String)
+signal tutorial_finished
+
+enum Step {
+	WELCOME,
+	TYPING_TARGET,
+	THREAT_METER,
+	CASTLE_HEALTH,
+	COMBO_BUFFS,
+	VICTORY_HINT,
+	COMPLETE
+}
+
+const LYRA_DIALOGUE_SCENE := preload("res://ui/components/lyra_dialogue.tscn")
+
+const TUTORIAL_STEPS := {
+	Step.WELCOME: {
+		"id": "welcome",
+		"lines": [
+			{"speaker": "Lyra", "text": "Welcome, defender! I'm Lyra, your typing instructor."},
+			{"speaker": "Lyra", "text": "Enemies approach from the right. Type the words above them to deal damage!"},
+			{"speaker": "Lyra", "text": "Let's begin your training. Watch the target word below."}
+		]
+	},
+	Step.TYPING_TARGET: {
+		"id": "typing_target",
+		"lines": [
+			{"speaker": "Lyra", "text": "See the word displayed? Type it exactly as shown."},
+			{"speaker": "Lyra", "text": "Correct letters turn blue. Mistakes show in red."},
+			{"speaker": "Lyra", "text": "Complete words to damage enemies. Try it now!"}
+		],
+		"trigger": "first_word_typed"
+	},
+	Step.THREAT_METER: {
+		"id": "threat_meter",
+		"lines": [
+			{"speaker": "Lyra", "text": "Well done! Notice the Threat bar on the right."},
+			{"speaker": "Lyra", "text": "Threat rises over time. If it fills, enemies attack your castle!"},
+			{"speaker": "Lyra", "text": "Type quickly to keep threat low and protect your home."}
+		],
+		"trigger": "threat_shown"
+	},
+	Step.CASTLE_HEALTH: {
+		"id": "castle_health",
+		"lines": [
+			{"speaker": "Lyra", "text": "Your castle has limited health. Guard it well!"},
+			{"speaker": "Lyra", "text": "If castle health reaches zero, the battle is lost."},
+			{"speaker": "Lyra", "text": "Upgrades can increase your castle's durability later."}
+		],
+		"trigger": "castle_damaged"
+	},
+	Step.COMBO_BUFFS: {
+		"id": "combo_buffs",
+		"lines": [
+			{"speaker": "Lyra", "text": "Excellent typing! Keep up the streak for bonuses."},
+			{"speaker": "Lyra", "text": "Typing accurately in sequence builds combo power."},
+			{"speaker": "Lyra", "text": "Combos grant temporary buffs like Focus Surge!"}
+		],
+		"trigger": "combo_achieved"
+	},
+	Step.VICTORY_HINT: {
+		"id": "victory_hint",
+		"lines": [
+			{"speaker": "Lyra", "text": "You're doing great! Complete all drill targets to win."},
+			{"speaker": "Lyra", "text": "Victory earns gold for kingdom upgrades."},
+			{"speaker": "Lyra", "text": "I believe in you, defender. Show them your skill!"}
+		],
+		"trigger": "near_victory"
+	},
+	Step.COMPLETE: {
+		"id": "complete",
+		"lines": [
+			{"speaker": "Lyra", "text": "Tutorial complete! You've learned the basics."},
+			{"speaker": "Lyra", "text": "Keep practicing to improve your WPM and accuracy."},
+			{"speaker": "Lyra", "text": "Return to the kingdom to spend your gold. Good luck!"}
+		]
+	}
+}
+
+var _current_step: int = Step.WELCOME
+var _dialogue: LyraDialogue = null
+var _active: bool = false
+var _paused: bool = false
+var _triggers_fired: Dictionary = {}
+var _parent_control: Control = null
+
+@onready var progression = get_node_or_null("/root/ProgressionState")
+
+func initialize(parent: Control) -> void:
+	_parent_control = parent
+	if progression != null and not progression.should_show_battle_tutorial():
+		_active = false
+		return
+
+	_active = true
+	_setup_dialogue()
+
+func _setup_dialogue() -> void:
+	if _parent_control == null:
+		return
+
+	_dialogue = LYRA_DIALOGUE_SCENE.instantiate() as LyraDialogue
+	_parent_control.add_child(_dialogue)
+	_dialogue.dialogue_finished.connect(_on_dialogue_finished)
+
+func start() -> void:
+	if not _active or _dialogue == null:
+		return
+
+	_show_step(Step.WELCOME)
+
+func _show_step(step: int) -> void:
+	if not _active or _dialogue == null:
+		return
+
+	_current_step = step
+	var step_data: Dictionary = TUTORIAL_STEPS.get(step, {})
+	var lines: Array = step_data.get("lines", [])
+
+	if lines.is_empty():
+		_advance_step()
+		return
+
+	# Queue all lines
+	for i in range(lines.size()):
+		var line: Dictionary = lines[i]
+		var speaker: String = str(line.get("speaker", "Lyra"))
+		var text: String = str(line.get("text", ""))
+		if i == 0:
+			_dialogue.show_dialogue(speaker, text)
+		else:
+			_dialogue.queue_dialogue(speaker, text)
+
+func _on_dialogue_finished() -> void:
+	var step_data: Dictionary = TUTORIAL_STEPS.get(_current_step, {})
+	var step_id: String = str(step_data.get("id", ""))
+	tutorial_step_completed.emit(step_id)
+
+	# Check if this step has a trigger requirement for next step
+	var next_step := _current_step + 1
+	if next_step < Step.COMPLETE:
+		var next_data: Dictionary = TUTORIAL_STEPS.get(next_step, {})
+		var trigger: String = str(next_data.get("trigger", ""))
+		if trigger != "" and not _triggers_fired.has(trigger):
+			# Wait for trigger before showing next step
+			return
+
+	_advance_step()
+
+func _advance_step() -> void:
+	_current_step += 1
+	if _current_step > Step.COMPLETE:
+		_finish_tutorial()
+		return
+
+	if _current_step == Step.COMPLETE:
+		_show_step(Step.COMPLETE)
+	else:
+		# Check if trigger has been fired
+		var step_data: Dictionary = TUTORIAL_STEPS.get(_current_step, {})
+		var trigger: String = str(step_data.get("trigger", ""))
+		if trigger == "" or _triggers_fired.has(trigger):
+			_show_step(_current_step)
+
+func fire_trigger(trigger_name: String) -> void:
+	if not _active:
+		return
+
+	_triggers_fired[trigger_name] = true
+
+	# Check if we're waiting for this trigger
+	var step_data: Dictionary = TUTORIAL_STEPS.get(_current_step, {})
+	var expected_trigger: String = str(step_data.get("trigger", ""))
+
+	if expected_trigger == trigger_name and not _dialogue.is_active():
+		_show_step(_current_step)
+
+func _finish_tutorial() -> void:
+	_active = false
+	if progression != null:
+		progression.mark_tutorial_completed()
+	tutorial_finished.emit()
+
+func is_active() -> bool:
+	return _active
+
+func is_dialogue_open() -> bool:
+	return _dialogue != null and _dialogue.is_active()
+
+func skip_tutorial() -> void:
+	if _dialogue != null:
+		_dialogue.skip_all()
+	_finish_tutorial()
+
+func pause_tutorial() -> void:
+	_paused = true
+
+func resume_tutorial() -> void:
+	_paused = false
+
+func cleanup() -> void:
+	if _dialogue != null:
+		_dialogue.queue_free()
+		_dialogue = null

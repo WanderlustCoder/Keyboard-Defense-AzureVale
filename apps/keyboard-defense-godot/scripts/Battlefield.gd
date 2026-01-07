@@ -2,6 +2,7 @@ extends Control
 
 const TypingSystem = preload("res://scripts/TypingSystem.gd")
 const SimWords = preload("res://sim/words.gd")
+const BattleTutorial = preload("res://scripts/BattleTutorial.gd")
 const DEFAULT_RUNE_TARGETS := ["1-2-3", "x^2", "go!", "rune+1", "shield+2"]
 const BUFF_DEFS := {
 	"focus": {
@@ -120,6 +121,7 @@ var battle_words_completed: int = 0
 
 var active = true
 var result_action = "map"
+var battle_tutorial: BattleTutorial = null
 
 func _ready() -> void:
 	exit_button.pressed.connect(_on_exit_pressed)
@@ -180,6 +182,30 @@ func _initialize_battle() -> void:
 	if audio_manager != null:
 		audio_manager.switch_to_battle_music(false)
 
+	# Initialize battle tutorial for first-time players
+	_setup_battle_tutorial()
+
+func _setup_battle_tutorial() -> void:
+	if battle_tutorial != null:
+		battle_tutorial.cleanup()
+		battle_tutorial.queue_free()
+		battle_tutorial = null
+
+	battle_tutorial = BattleTutorial.new()
+	add_child(battle_tutorial)
+	battle_tutorial.initialize(self)
+	battle_tutorial.tutorial_finished.connect(_on_tutorial_finished)
+
+	if battle_tutorial.is_active():
+		progression.mark_battle_started()
+		# Delay tutorial start slightly so player sees the battlefield
+		await get_tree().create_timer(0.5).timeout
+		battle_tutorial.start()
+
+func _on_tutorial_finished() -> void:
+	# Tutorial complete, continue normally
+	pass
+
 func _process(delta: float) -> void:
 	if not active:
 		return
@@ -209,6 +235,9 @@ func _process(delta: float) -> void:
 			battle_stage.reset_after_breach()
 			if audio_manager != null:
 				audio_manager.play_hit_player()
+			# Tutorial trigger for castle damage
+			if battle_tutorial != null:
+				battle_tutorial.fire_trigger("castle_damaged")
 			if castle_health <= 0:
 				_finish_battle(false)
 				return
@@ -216,11 +245,17 @@ func _process(delta: float) -> void:
 		# Adjust music intensity based on threat
 		if audio_manager != null:
 			audio_manager.set_battle_intensity(threat >= 70.0)
+		# Tutorial trigger for threat shown
+		if threat > 20.0 and battle_tutorial != null:
+			battle_tutorial.fire_trigger("threat_shown")
 	else:
 		_set_threat(min(100.0, threat + delta * threat_rate))
 		if threat >= 100.0:
 			castle_health -= 1
 			_set_threat(25.0)
+			# Tutorial trigger for castle damage
+			if battle_tutorial != null:
+				battle_tutorial.fire_trigger("castle_damaged")
 			if castle_health <= 0:
 				_finish_battle(false)
 				return
@@ -237,6 +272,9 @@ func _unhandled_input(event: InputEvent) -> void:
 			_toggle_debug_panel()
 			return
 	if paused:
+		return
+	# Block typing input while tutorial dialogue is showing
+	if battle_tutorial != null and battle_tutorial.is_dialogue_open():
 		return
 	if event is InputEventKey and event.pressed and not event.echo:
 		if tutorial_mode and drill_mode == "intermission" and (event.keycode == KEY_SPACE or event.keycode == KEY_ENTER or event.keycode == KEY_KP_ENTER):
@@ -261,7 +299,7 @@ func _handle_typing_result(result: Dictionary) -> void:
 	var status: String = str(result.get("status", ""))
 	if status == "ignored":
 		return
-	var typing_sounds_enabled := settings_manager == null or settings_manager.typing_sounds
+	var typing_sounds_enabled: bool = settings_manager == null or settings_manager.typing_sounds
 	if status == "error":
 		_reset_streaks()
 		if audio_manager != null and typing_sounds_enabled:
@@ -277,6 +315,9 @@ func _handle_typing_result(result: Dictionary) -> void:
 	if status == "lesson_complete":
 		_complete_drill()
 		return
+	# Tutorial trigger for first word typed
+	if status == "word_complete" and battle_tutorial != null:
+		battle_tutorial.fire_trigger("first_word_typed")
 	_update_word_display()
 	_update_stats()
 	_update_threat()
@@ -414,6 +455,9 @@ func _complete_drill() -> void:
 	if drill_index + 1 >= drill_plan.size():
 		_finish_battle(true)
 		return
+	# Tutorial trigger when approaching victory (last drill)
+	if drill_index + 2 >= drill_plan.size() and battle_tutorial != null:
+		battle_tutorial.fire_trigger("near_victory")
 	_record_drill_stats()
 	_start_next_drill()
 
@@ -831,6 +875,9 @@ func _activate_buff(buff_id: String) -> void:
 			break
 	if not refreshed:
 		active_buffs.append({"id": buff_id, "remaining": duration})
+		# Tutorial trigger for combo buff achieved
+		if battle_tutorial != null:
+			battle_tutorial.fire_trigger("combo_achieved")
 	_apply_buff_changes()
 	var buff_color := Color(0.98, 0.84, 0.44, 1)
 	if buff_id == "ward":

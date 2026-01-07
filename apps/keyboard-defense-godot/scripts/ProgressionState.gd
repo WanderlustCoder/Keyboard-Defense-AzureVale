@@ -61,6 +61,8 @@ var purchased_upgrades: Dictionary = {}
 var modifiers := DEFAULT_MODIFIERS.duplicate(true)
 var mastery := DEFAULT_MASTERY.duplicate(true)
 var last_summary: Dictionary = {}
+var tutorial_completed: bool = false
+var battles_played: int = 0
 
 func _ready() -> void:
 	_load_static_data()
@@ -266,6 +268,8 @@ func _load_save() -> void:
 	for key in saved_mastery.keys():
 		mastery[key] = saved_mastery[key]
 	last_summary = data.get("last_summary", {})
+	tutorial_completed = bool(data.get("tutorial_completed", false))
+	battles_played = int(data.get("battles_played", 0))
 
 func _save() -> void:
 	if not persistence_enabled:
@@ -276,9 +280,26 @@ func _save() -> void:
 		"purchased_upgrades": purchased_upgrades,
 		"modifiers": modifiers,
 		"mastery": mastery,
-		"last_summary": last_summary
+		"last_summary": last_summary,
+		"tutorial_completed": tutorial_completed,
+		"battles_played": battles_played
 	}
 	var file = FileAccess.open(SAVE_PATH, FileAccess.WRITE)
 	if file == null:
 		return
 	file.store_string(JSON.stringify(data))
+
+func should_show_battle_tutorial() -> bool:
+	return not tutorial_completed and battles_played == 0
+
+func mark_battle_started() -> void:
+	battles_played += 1
+	_save()
+
+func mark_tutorial_completed() -> void:
+	tutorial_completed = true
+	_save()
+
+func reset_tutorial() -> void:
+	tutorial_completed = false
+	_save()
