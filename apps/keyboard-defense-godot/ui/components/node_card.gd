@@ -46,6 +46,7 @@ const CONTENT_MARGIN := 8
 @onready var title_label: Label = $Content/TitleLabel
 @onready var lesson_label: Label = $Content/LessonLabel
 @onready var reward_label: Label = $Content/RewardLabel
+@onready var audio_manager = get_node_or_null("/root/AudioManager")
 
 var _style_unlocked: StyleBoxFlat
 var _style_locked: StyleBoxFlat
@@ -57,9 +58,11 @@ func _ready() -> void:
 
 	if is_unlocked:
 		mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+		focus_mode = Control.FOCUS_ALL
 		gui_input.connect(_on_gui_input)
 	else:
 		mouse_default_cursor_shape = Control.CURSOR_ARROW
+		focus_mode = Control.FOCUS_NONE
 
 func _create_styles() -> void:
 	_style_unlocked = StyleBoxFlat.new()
@@ -132,8 +135,18 @@ func _update_style() -> void:
 
 func _on_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		pressed.emit(node_id)
+		_activate_card()
 		accept_event()
+	# Handle keyboard activation
+	elif event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == KEY_ENTER or event.keycode == KEY_SPACE:
+			_activate_card()
+			accept_event()
+
+func _activate_card() -> void:
+	if not Engine.is_editor_hint() and audio_manager != null:
+		audio_manager.play_ui_confirm()
+	pressed.emit(node_id)
 
 ## Configure the card with node data
 func setup(data: Dictionary, unlocked: bool, completed: bool) -> void:

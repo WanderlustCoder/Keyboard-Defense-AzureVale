@@ -55,6 +55,7 @@ func add_button(text: String, callback: Callable, primary: bool = false) -> Butt
 	btn.text = text
 	btn.pressed.connect(callback)
 	btn.custom_minimum_size = Vector2(BUTTON_MIN_WIDTH, 0)
+	btn.focus_mode = Control.FOCUS_ALL
 
 	if primary:
 		btn.add_theme_color_override("font_color", ThemeColors.ACCENT)
@@ -71,6 +72,9 @@ func show_modal() -> void:
 	modulate.a = 0.0
 	_modal_tween = create_tween()
 	_modal_tween.tween_property(self, "modulate:a", 1.0, FADE_IN_DURATION)
+	# Focus first button for keyboard navigation
+	if not _buttons.is_empty():
+		_buttons[0].grab_focus()
 
 ## Hide the modal with animation
 func hide_modal() -> void:

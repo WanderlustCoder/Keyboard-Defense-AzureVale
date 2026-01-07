@@ -23,10 +23,21 @@ func _ready() -> void:
 	kingdom_button.pressed.connect(_on_kingdom_pressed)
 	settings_button.pressed.connect(_on_settings_pressed)
 	quit_button.pressed.connect(_on_quit_pressed)
+	_setup_tooltips()
 	_load_version()
 	_setup_help_button()
 	if audio_manager != null:
 		audio_manager.switch_to_menu_music()
+
+func _setup_tooltips() -> void:
+	if start_button:
+		start_button.tooltip_text = "Begin your adventure on the campaign map"
+	if kingdom_button:
+		kingdom_button.tooltip_text = "Upgrade your castle and troops"
+	if settings_button:
+		settings_button.tooltip_text = "Adjust audio and display options"
+	if quit_button:
+		quit_button.tooltip_text = "Exit the game"
 
 func _load_version() -> void:
 	if version_label == null:
@@ -47,6 +58,8 @@ func _setup_help_button() -> void:
 	help_button = Button.new()
 	help_button.text = "How to Play"
 	help_button.custom_minimum_size = Vector2(0, 48)
+	help_button.focus_mode = Control.FOCUS_ALL
+	help_button.tooltip_text = "Learn game mechanics and controls"
 	help_button.pressed.connect(_on_help_pressed)
 	menu_vbox.add_child(help_button)
 	# Move before Settings button (index 4: Title, Subtitle, Spacer, Start, Kingdom, then Help)
