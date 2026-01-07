@@ -2940,6 +2940,191 @@
       "max_kb": 6,
       "pixel_art": true,
       "category": "cursors"
+    },
+    {
+      "id": "key_normal",
+      "path": "res://assets/ui/key_normal.png",
+      "source_svg": "res://assets/art/src-svg/ui/key_normal.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "keyboard"
+    },
+    {
+      "id": "key_highlighted",
+      "path": "res://assets/ui/key_highlighted.png",
+      "source_svg": "res://assets/art/src-svg/ui/key_highlighted.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "keyboard"
+    },
+    {
+      "id": "key_pressed",
+      "path": "res://assets/ui/key_pressed.png",
+      "source_svg": "res://assets/art/src-svg/ui/key_pressed.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "keyboard"
+    },
+    {
+      "id": "key_correct",
+      "path": "res://assets/ui/key_correct.png",
+      "source_svg": "res://assets/art/src-svg/ui/key_correct.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "keyboard"
+    },
+    {
+      "id": "key_wrong",
+      "path": "res://assets/ui/key_wrong.png",
+      "source_svg": "res://assets/art/src-svg/ui/key_wrong.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "keyboard"
+    },
+    {
+      "id": "bar_frame",
+      "path": "res://assets/ui/bar_frame.png",
+      "source_svg": "res://assets/art/src-svg/ui/bar_frame.svg",
+      "expected_width": 32,
+      "expected_height": 8,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "ui",
+      "nineslice": {
+        "margin_left": 3,
+        "margin_right": 3,
+        "margin_top": 2,
+        "margin_bottom": 2
+      }
+    },
+    {
+      "id": "bar_health_fill",
+      "path": "res://assets/ui/bar_health_fill.png",
+      "source_svg": "res://assets/art/src-svg/ui/bar_health_fill.svg",
+      "expected_width": 16,
+      "expected_height": 4,
+      "max_kb": 4,
+      "pixel_art": true,
+      "category": "ui",
+      "tileable": true
+    },
+    {
+      "id": "bar_mana_fill",
+      "path": "res://assets/ui/bar_mana_fill.png",
+      "source_svg": "res://assets/art/src-svg/ui/bar_mana_fill.svg",
+      "expected_width": 16,
+      "expected_height": 4,
+      "max_kb": 4,
+      "pixel_art": true,
+      "category": "ui",
+      "tileable": true
+    },
+    {
+      "id": "bar_xp_fill",
+      "path": "res://assets/ui/bar_xp_fill.png",
+      "source_svg": "res://assets/art/src-svg/ui/bar_xp_fill.svg",
+      "expected_width": 16,
+      "expected_height": 4,
+      "max_kb": 4,
+      "pixel_art": true,
+      "category": "ui",
+      "tileable": true
+    },
+    {
+      "id": "bar_threat_fill",
+      "path": "res://assets/ui/bar_threat_fill.png",
+      "source_svg": "res://assets/art/src-svg/ui/bar_threat_fill.svg",
+      "expected_width": 16,
+      "expected_height": 4,
+      "max_kb": 4,
+      "pixel_art": true,
+      "category": "ui",
+      "tileable": true
+    },
+    {
+      "id": "bar_shield_fill",
+      "path": "res://assets/ui/bar_shield_fill.png",
+      "source_svg": "res://assets/art/src-svg/ui/bar_shield_fill.svg",
+      "expected_width": 16,
+      "expected_height": 4,
+      "max_kb": 4,
+      "pixel_art": true,
+      "category": "ui",
+      "tileable": true
+    },
+    {
+      "id": "tile_grass",
+      "path": "res://assets/tiles/tile_grass.png",
+      "source_svg": "res://assets/art/src-svg/tiles/tile_grass.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles",
+      "tileable": true
+    },
+    {
+      "id": "tile_path",
+      "path": "res://assets/tiles/tile_path.png",
+      "source_svg": "res://assets/art/src-svg/tiles/tile_path.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles",
+      "tileable": true
+    },
+    {
+      "id": "tile_water",
+      "path": "res://assets/tiles/tile_water.png",
+      "source_svg": "res://assets/art/src-svg/tiles/tile_water.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles",
+      "tileable": true
+    },
+    {
+      "id": "tile_stone",
+      "path": "res://assets/tiles/tile_stone.png",
+      "source_svg": "res://assets/art/src-svg/tiles/tile_stone.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles",
+      "tileable": true
+    },
+    {
+      "id": "tile_tower_base",
+      "path": "res://assets/tiles/tile_tower_base.png",
+      "source_svg": "res://assets/art/src-svg/tiles/tile_tower_base.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_tower_base_active",
+      "path": "res://assets/tiles/tile_tower_base_active.png",
+      "source_svg": "res://assets/art/src-svg/tiles/tile_tower_base_active.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles"
     }
   ],
   "audio": [

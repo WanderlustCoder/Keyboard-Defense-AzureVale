@@ -1,17 +1,25 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
-  <!-- Water base tile -->
-  <rect width="16" height="16" fill="#3d7ab8"/>
-  <!-- Darker water depths -->
-  <rect x="0" y="4" width="3" height="2" fill="#1e3a5f"/>
-  <rect x="6" y="2" width="4" height="2" fill="#1e3a5f"/>
-  <rect x="12" y="6" width="3" height="3" fill="#1e3a5f"/>
-  <rect x="2" y="10" width="5" height="2" fill="#1e3a5f"/>
-  <rect x="9" y="12" width="4" height="2" fill="#1e3a5f"/>
-  <!-- Wave highlights -->
-  <rect x="3" y="1" width="2" height="1" fill="#5a9ad0"/>
-  <rect x="11" y="3" width="3" height="1" fill="#5a9ad0"/>
-  <rect x="1" y="7" width="2" height="1" fill="#5a9ad0"/>
-  <rect x="8" y="8" width="2" height="1" fill="#5a9ad0"/>
-  <rect x="5" y="14" width="3" height="1" fill="#5a9ad0"/>
-  <rect x="13" y="11" width="2" height="1" fill="#5a9ad0"/>
+  <!-- Water Tile (16x16) - animated look, tileable -->
+
+  <!-- Base water -->
+  <rect x="0" y="0" width="16" height="16" fill="#3498db"/>
+
+  <!-- Wave patterns -->
+  <rect x="1" y="2" width="4" height="1" fill="#5dade2"/>
+  <rect x="8" y="4" width="5" height="1" fill="#5dade2"/>
+  <rect x="3" y="7" width="4" height="1" fill="#5dade2"/>
+  <rect x="11" y="9" width="4" height="1" fill="#5dade2"/>
+  <rect x="0" y="12" width="5" height="1" fill="#5dade2"/>
+  <rect x="9" y="14" width="4" height="1" fill="#5dade2"/>
+
+  <!-- Deep water accents -->
+  <rect x="6" y="3" width="2" height="1" fill="#2874a6"/>
+  <rect x="12" y="6" width="2" height="1" fill="#2874a6"/>
+  <rect x="2" y="10" width="2" height="1" fill="#2874a6"/>
+  <rect x="7" y="13" width="2" height="1" fill="#2874a6"/>
+
+  <!-- Sparkle/foam -->
+  <rect x="4" y="5" width="1" height="1" fill="#aed6f1"/>
+  <rect x="14" y="1" width="1" height="1" fill="#aed6f1"/>
+  <rect x="8" y="11" width="1" height="1" fill="#aed6f1"/>
 </svg>

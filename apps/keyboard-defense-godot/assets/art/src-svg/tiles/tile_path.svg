@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Path/Road Tile (16x16) - dirt path, tileable -->
+
+  <!-- Base dirt -->
+  <rect x="0" y="0" width="16" height="16" fill="#a67c52"/>
+
+  <!-- Path texture -->
+  <rect x="3" y="2" width="2" height="1" fill="#8b5a2b"/>
+  <rect x="9" y="4" width="2" height="1" fill="#8b5a2b"/>
+  <rect x="1" y="7" width="2" height="1" fill="#8b5a2b"/>
+  <rect x="12" y="9" width="2" height="1" fill="#8b5a2b"/>
+  <rect x="5" y="12" width="2" height="1" fill="#8b5a2b"/>
+  <rect x="10" y="14" width="1" height="1" fill="#8b5a2b"/>
+
+  <!-- Lighter sand patches -->
+  <rect x="6" y="1" width="2" height="1" fill="#c4a35a"/>
+  <rect x="2" y="5" width="2" height="1" fill="#c4a35a"/>
+  <rect x="11" y="6" width="2" height="1" fill="#c4a35a"/>
+  <rect x="4" y="10" width="2" height="1" fill="#c4a35a"/>
+  <rect x="13" y="13" width="2" height="1" fill="#c4a35a"/>
+
+  <!-- Pebbles -->
+  <rect x="7" y="8" width="1" height="1" fill="#7f8c8d"/>
+  <rect x="3" y="14" width="1" height="1" fill="#7f8c8d"/>
+  <rect x="14" y="3" width="1" height="1" fill="#95a5a6"/>
+</svg>

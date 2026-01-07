@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 4" width="16" height="4">
+  <!-- Threat/Danger Bar Fill (16x4) - red gradient, tileable -->
+
+  <!-- Base fill -->
+  <rect x="0" y="0" width="16" height="4" fill="#e74c3c"/>
+
+  <!-- Highlight top -->
+  <rect x="0" y="0" width="16" height="1" fill="#f1948a"/>
+
+  <!-- Shadow bottom -->
+  <rect x="0" y="3" width="16" height="1" fill="#b03a2e"/>
+
+  <!-- Shine effect -->
+  <rect x="1" y="1" width="2" height="1" fill="#fadbd8"/>
+  <rect x="7" y="1" width="2" height="1" fill="#fadbd8"/>
+</svg>
