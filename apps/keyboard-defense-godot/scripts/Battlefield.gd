@@ -166,8 +166,9 @@ var _combo_pulse_timer: float = 0.0
 var _combo_scale: float = 1.0
 const COMBO_PULSE_DURATION := 0.15
 
-# Error shake animation
+# Error shake and feedback animation
 var _error_shake_tween: Tween = null
+var _backspace_feedback_tween: Tween = null
 var _typed_label_base_pos: Vector2 = Vector2.ZERO
 const ERROR_SHAKE_INTENSITY := 4.0
 const ERROR_SHAKE_DURATION := 0.15
@@ -188,6 +189,8 @@ func _ready() -> void:
 func _exit_tree() -> void:
 	if _error_shake_tween != null and _error_shake_tween.is_valid():
 		_error_shake_tween.kill()
+	if _backspace_feedback_tween != null and _backspace_feedback_tween.is_valid():
+		_backspace_feedback_tween.kill()
 
 func _initialize_battle() -> void:
 	node_id = game_controller.next_battle_node_id
@@ -1379,11 +1382,14 @@ func _trigger_backspace_feedback() -> void:
 	# Subtle visual feedback when backspace is pressed
 	if typed_label == null:
 		return
+	# Kill previous tween if running
+	if _backspace_feedback_tween != null and _backspace_feedback_tween.is_valid():
+		_backspace_feedback_tween.kill()
 	# Brief dim flash to indicate character removed
 	var original_color := typed_label.modulate
-	var tween := create_tween()
-	tween.tween_property(typed_label, "modulate", Color(0.6, 0.6, 0.7, 1.0), 0.05)
-	tween.tween_property(typed_label, "modulate", original_color, 0.1)
+	_backspace_feedback_tween = create_tween()
+	_backspace_feedback_tween.tween_property(typed_label, "modulate", Color(0.6, 0.6, 0.7, 1.0), 0.05)
+	_backspace_feedback_tween.tween_property(typed_label, "modulate", original_color, 0.1)
 
 func _trigger_screen_shake(intensity: float, duration: float) -> void:
 	# Check if screen shake is enabled in settings

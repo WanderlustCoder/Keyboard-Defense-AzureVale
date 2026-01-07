@@ -15,6 +15,7 @@ var _visible_chars: int = 0
 var _is_typing: bool = false
 var _can_advance: bool = false
 var _dialogue_queue: Array[Dictionary] = []
+var _auto_advance_pending: bool = false
 
 @onready var portrait: TextureRect = $Content/Portrait
 @onready var name_label: Label = $Content/TextBox/NameLabel
@@ -43,8 +44,11 @@ func _process(delta: float) -> void:
 		_can_advance = true
 		continue_hint.visible = true
 		if auto_advance_delay > 0.0:
+			_auto_advance_pending = true
 			await get_tree().create_timer(auto_advance_delay).timeout
-			_advance()
+			if _auto_advance_pending and visible:
+				_advance()
+			_auto_advance_pending = false
 	dialogue_label.visible_characters = _visible_chars
 
 func _input(event: InputEvent) -> void:
@@ -125,6 +129,7 @@ func hide_dialogue() -> void:
 	_dialogue_queue.clear()
 	_is_typing = false
 	_can_advance = false
+	_auto_advance_pending = false
 
 func is_active() -> bool:
 	return visible

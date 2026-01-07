@@ -34,8 +34,13 @@ func _load_version() -> void:
 	var file := FileAccess.open(VERSION_PATH, FileAccess.READ)
 	if file != null:
 		var version := file.get_as_text().strip_edges()
-		version_label.text = "v%s" % version
+		if version != "":
+			version_label.text = "v%s" % version
+		else:
+			version_label.text = "v0.0.0-dev"
 		file.close()
+	else:
+		version_label.text = "v0.0.0-dev"
 
 func _setup_help_button() -> void:
 	# Insert How to Play button before Settings
