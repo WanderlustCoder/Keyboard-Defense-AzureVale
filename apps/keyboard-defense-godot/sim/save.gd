@@ -6,6 +6,9 @@ const SimMap = preload("res://sim/map.gd")
 const SimBuildings = preload("res://sim/buildings.gd")
 const SimEnemies = preload("res://sim/enemies.gd")
 const SimLessons = preload("res://sim/lessons.gd")
+const SimPoi = preload("res://sim/poi.gd")
+const SimEvents = preload("res://sim/events.gd")
+const SimEventEffects = preload("res://sim/event_effects.gd")
 
 const SAVE_VERSION := 1
 
@@ -44,7 +47,12 @@ static func state_to_dict(state: GameState) -> Dictionary:
         "last_path_open": state.last_path_open,
         "rng_seed": state.rng_seed,
         "rng_state": state.rng_state,
-        "lesson_id": state.lesson_id
+        "lesson_id": state.lesson_id,
+        "active_pois": _serialize_active_pois(state.active_pois),
+        "event_cooldowns": state.event_cooldowns.duplicate(true),
+        "event_flags": state.event_flags.duplicate(true),
+        "pending_event": SimEvents.serialize_pending_event(state.pending_event),
+        "active_buffs": SimEventEffects.serialize_buffs(state.active_buffs)
     }
 
 static func state_from_dict(data: Dictionary) -> Dictionary:
@@ -74,6 +82,13 @@ static func state_from_dict(data: Dictionary) -> Dictionary:
     state.rng_seed = str(data.get("rng_seed", state.rng_seed))
     state.rng_state = int(data.get("rng_state", state.rng_state))
     state.lesson_id = SimLessons.normalize_lesson_id(str(data.get("lesson_id", state.lesson_id)))
+
+    # Event system state
+    state.active_pois = _deserialize_active_pois(data.get("active_pois", {}))
+    state.event_cooldowns = _load_cooldowns(data.get("event_cooldowns", {}))
+    state.event_flags = _load_flags(data.get("event_flags", {}))
+    state.pending_event = SimEvents.deserialize_pending_event(data.get("pending_event", {}))
+    state.active_buffs = SimEventEffects.deserialize_buffs(data.get("active_buffs", []))
 
     SimEnemies.ensure_enemy_words(state)
 
@@ -187,3 +202,37 @@ static func _next_enemy_id(enemies: Array) -> int:
             continue
         max_id = max(max_id, int(enemy.get("id", 0)))
     return max_id + 1
+
+static func _serialize_active_pois(active_pois: Dictionary) -> Dictionary:
+    var result: Dictionary = {}
+    for poi_id in active_pois:
+        var poi_state: Dictionary = active_pois[poi_id]
+        if typeof(poi_state) == TYPE_DICTIONARY:
+            result[str(poi_id)] = SimPoi.serialize_poi_state(poi_state)
+    return result
+
+static func _deserialize_active_pois(raw: Variant) -> Dictionary:
+    var result: Dictionary = {}
+    if typeof(raw) != TYPE_DICTIONARY:
+        return result
+    for poi_id in raw:
+        var poi_data: Variant = raw[poi_id]
+        if typeof(poi_data) == TYPE_DICTIONARY:
+            result[str(poi_id)] = SimPoi.deserialize_poi_state(poi_data)
+    return result
+
+static func _load_cooldowns(raw: Variant) -> Dictionary:
+    var result: Dictionary = {}
+    if typeof(raw) != TYPE_DICTIONARY:
+        return result
+    for event_id in raw:
+        result[str(event_id)] = int(raw[event_id])
+    return result
+
+static func _load_flags(raw: Variant) -> Dictionary:
+    var result: Dictionary = {}
+    if typeof(raw) != TYPE_DICTIONARY:
+        return result
+    for flag in raw:
+        result[str(flag)] = raw[flag]
+    return result

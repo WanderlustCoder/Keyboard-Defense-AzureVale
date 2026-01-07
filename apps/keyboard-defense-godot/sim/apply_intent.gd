@@ -13,6 +13,9 @@ const SimTypingFeedback = preload("res://sim/typing_feedback.gd")
 const SimLessons = preload("res://sim/lessons.gd")
 const SimWords = preload("res://sim/words.gd")
 const SimBalance = preload("res://sim/balance.gd")
+const SimPoi = preload("res://sim/poi.gd")
+const SimEvents = preload("res://sim/events.gd")
+const SimEventEffects = preload("res://sim/event_effects.gd")
 
 static func apply(state: GameState, intent: Dictionary) -> Dictionary:
     var events: Array[String] = []
@@ -87,6 +90,12 @@ static func apply(state: GameState, intent: Dictionary) -> Dictionary:
             events.append("%s overlay: %s (UI-only)." % [overlay_name.capitalize(), state_text])
         "enemies":
             _apply_enemies(new_state, events)
+        "interact_poi":
+            _apply_interact_poi(new_state, events)
+        "event_choice":
+            _apply_event_choice(new_state, intent, events)
+        "event_skip":
+            _apply_event_skip(new_state, events)
         _:
             events.append("Unknown intent: %s" % kind)
 
@@ -790,6 +799,12 @@ static func _copy_state(state: GameState) -> GameState:
     copy.rng_state = state.rng_state
     copy.lesson_id = state.lesson_id
     copy.version = state.version
+    # Event system state
+    copy.active_pois = state.active_pois.duplicate(true)
+    copy.event_cooldowns = state.event_cooldowns.duplicate(true)
+    copy.event_flags = state.event_flags.duplicate(true)
+    copy.pending_event = state.pending_event.duplicate(true)
+    copy.active_buffs = state.active_buffs.duplicate(true)
     return copy
 
 static func _require_day(state: GameState, events: Array[String]) -> bool:
@@ -877,3 +892,96 @@ static func _all_undiscovered(state: GameState) -> Array[int]:
             if not state.discovered.has(index):
                 results.append(index)
     return results
+
+static func _apply_interact_poi(state: GameState, events: Array[String]) -> void:
+    if not _require_day(state, events):
+        return
+    if SimEvents.has_pending_event(state):
+        events.append("Already interacting with an event. Use 'choice' or 'skip'.")
+        return
+    var poi_id: String = SimPoi.get_poi_at(state, state.cursor_pos)
+    if poi_id == "":
+        events.append("No POI at current position.")
+        return
+    var poi_state: Dictionary = state.active_pois.get(poi_id, {})
+    if not poi_state.get("discovered", false):
+        events.append("POI not yet discovered.")
+        return
+    if poi_state.get("interacted", false):
+        events.append("Already interacted with this POI.")
+        return
+    var result: Dictionary = SimEvents.trigger_event_from_poi(state, poi_id)
+    if not result.get("success", false):
+        events.append("No event triggered: %s" % str(result.get("error", "unknown")))
+        return
+    var event_data: Dictionary = result.get("event", {})
+    events.append("Event: %s" % str(event_data.get("title", "Unknown")))
+    events.append(str(event_data.get("body", "")))
+    events.append("Choices:")
+    var choices: Array = event_data.get("choices", [])
+    for i in range(choices.size()):
+        var choice: Dictionary = choices[i]
+        events.append("  [%s] %s" % [str(choice.get("id", "")), str(choice.get("label", ""))])
+    events.append("Use: choice <id> <input text>")
+
+static func _apply_event_choice(state: GameState, intent: Dictionary, events: Array[String]) -> void:
+    if not SimEvents.has_pending_event(state):
+        events.append("No active event.")
+        return
+    var choice_id: String = str(intent.get("choice_id", ""))
+    var input_text: String = str(intent.get("input", ""))
+    if choice_id == "":
+        events.append("Choice id required.")
+        return
+    var result: Dictionary = SimEvents.resolve_choice(state, choice_id, input_text)
+    if not result.get("success", false):
+        var error: String = str(result.get("error", "unknown"))
+        if error == "input_incomplete":
+            var validation: Dictionary = result.get("validation", {})
+            if validation.get("partial_match", false):
+                events.append("Keep typing to complete the input.")
+            else:
+                events.append("Input does not match. Try again.")
+        else:
+            events.append("Choice failed: %s" % error)
+        return
+    events.append("Choice resolved: %s" % choice_id)
+    var effects: Array = result.get("effects_applied", [])
+    for effect in effects:
+        if typeof(effect) != TYPE_DICTIONARY:
+            continue
+        var effect_type: String = str(effect.get("type", ""))
+        match effect_type:
+            "resource_add":
+                var resource: String = str(effect.get("resource", ""))
+                var amount: int = int(effect.get("amount", 0))
+                if amount > 0:
+                    events.append("+%d %s" % [amount, resource])
+                elif amount < 0:
+                    events.append("%d %s" % [amount, resource])
+            "buff_apply":
+                var buff_id: String = str(effect.get("buff_id", ""))
+                var duration: int = int(effect.get("duration", 0))
+                events.append("Buff: %s (%d days)" % [buff_id, duration])
+            "damage_castle":
+                var amount: int = int(effect.get("amount", 0))
+                events.append("Castle damaged: -%d HP" % amount)
+            "set_flag":
+                var flag: String = str(effect.get("flag", ""))
+                events.append("Flag set: %s" % flag)
+    if result.has("chain_event"):
+        var chain: Dictionary = result.get("chain_event", {})
+        if chain.get("success", false):
+            var event_data: Dictionary = chain.get("event", {})
+            events.append("Chain event: %s" % str(event_data.get("title", "Unknown")))
+    events.append(_format_status(state))
+
+static func _apply_event_skip(state: GameState, events: Array[String]) -> void:
+    if not SimEvents.has_pending_event(state):
+        events.append("No active event to skip.")
+        return
+    var result: Dictionary = SimEvents.skip_event(state)
+    if result.get("success", false):
+        events.append("Event skipped.")
+    else:
+        events.append("Failed to skip event: %s" % str(result.get("error", "unknown")))

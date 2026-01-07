@@ -351,6 +351,22 @@ static func parse(command: String) -> Dictionary:
             if tokens.size() > 1:
                 return {"ok": false, "error": "'new' takes no arguments."}
             return {"ok": true, "intent": SimIntents.make("new")}
+        "interact":
+            if tokens.size() > 1:
+                return {"ok": false, "error": "'interact' takes no arguments."}
+            return {"ok": true, "intent": SimIntents.make("interact_poi")}
+        "choice":
+            if tokens.size() < 2:
+                return {"ok": false, "error": "Usage: choice <id> [input text]"}
+            var choice_id: String = tokens[1].to_lower()
+            var input_text: String = ""
+            if trimmed.length() > verb.length() + 1 + tokens[1].length():
+                input_text = trimmed.substr(verb.length() + 1 + tokens[1].length()).strip_edges()
+            return {"ok": true, "intent": SimIntents.make("event_choice", {"choice_id": choice_id, "input": input_text})}
+        "skip":
+            if tokens.size() > 1:
+                return {"ok": false, "error": "'skip' takes no arguments."}
+            return {"ok": true, "intent": SimIntents.make("event_skip")}
         _:
             return {"ok": false, "error": "Unknown command: %s" % verb}
 

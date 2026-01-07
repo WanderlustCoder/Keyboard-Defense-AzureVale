@@ -1,0 +1,43 @@
+{
+  "tables": [
+    {
+      "id": "evergrove_wagon",
+      "entries": [
+        { "event_id": "evt_bent_wheel", "weight": 40 },
+        { "event_id": "evt_herb_patch", "weight": 30 },
+        { "event_id": "evt_scribe_notes", "weight": 20 },
+        { "event_id": "evt_forest_ambush", "weight": 10 }
+      ],
+      "conditions": []
+    },
+    {
+      "id": "evergrove_shrine",
+      "entries": [
+        { "event_id": "evt_shrine_offering", "weight": 50 },
+        { "event_id": "evt_scribe_notes", "weight": 30 },
+        { "event_id": "evt_herb_patch", "weight": 20 }
+      ],
+      "conditions": []
+    },
+    {
+      "id": "evergrove_herbs",
+      "entries": [
+        { "event_id": "evt_herb_patch", "weight": 60 },
+        { "event_id": "evt_scribe_notes", "weight": 25 },
+        { "event_id": "evt_forest_ambush", "weight": 15 }
+      ],
+      "conditions": []
+    },
+    {
+      "id": "evergrove_default",
+      "entries": [
+        { "event_id": "evt_bent_wheel", "weight": 25 },
+        { "event_id": "evt_herb_patch", "weight": 25 },
+        { "event_id": "evt_scribe_notes", "weight": 20 },
+        { "event_id": "evt_shrine_offering", "weight": 15 },
+        { "event_id": "evt_forest_ambush", "weight": 15 }
+      ],
+      "conditions": []
+    }
+  ]
+}

@@ -1,0 +1,166 @@
+{
+  "$schema": "../../docs/keyboard-defense-plans/extended/schemas/event.schema.json",
+  "events": [
+    {
+      "id": "evt_bent_wheel",
+      "title": "Bent Wheel",
+      "body": "An abandoned wagon sits tilted in the path, its wheel badly bent. Salvageable supplies are scattered nearby, but repairing it could yield better rewards.",
+      "tier": 1,
+      "tags": ["salvage", "evergrove"],
+      "cooldown_days": 3,
+      "choices": [
+        {
+          "id": "salvage",
+          "label": "Salvage supplies",
+          "input": { "mode": "phrase", "text": "gather the supplies" },
+          "effects": [
+            { "type": "resource_add", "resource": "wood", "amount": 2 },
+            { "type": "resource_add", "resource": "food", "amount": 1 }
+          ]
+        },
+        {
+          "id": "repair",
+          "label": "Repair the wheel",
+          "input": { "mode": "phrase", "text": "mend the broken wheel" },
+          "effects": [
+            { "type": "resource_add", "resource": "wood", "amount": 4 },
+            { "type": "resource_add", "resource": "stone", "amount": 2 }
+          ],
+          "fail_effects": [
+            { "type": "resource_add", "resource": "wood", "amount": 1 }
+          ]
+        },
+        {
+          "id": "leave",
+          "label": "Leave it",
+          "input": { "mode": "code", "text": "leave" },
+          "effects": []
+        }
+      ]
+    },
+    {
+      "id": "evt_scribe_notes",
+      "title": "Scribe's Notes",
+      "body": "Weathered pages flutter in the breeze, pinned beneath a rock. The handwriting is elegant but faded. These appear to be notes from a traveling scribe.",
+      "tier": 1,
+      "tags": ["lore", "evergrove"],
+      "cooldown_days": 5,
+      "choices": [
+        {
+          "id": "read",
+          "label": "Study the notes",
+          "input": { "mode": "phrase", "text": "read the ancient text" },
+          "effects": [
+            { "type": "set_flag", "flag": "scribe_lore_1", "value": true },
+            { "type": "buff_apply", "buff": "insight", "duration": 2 }
+          ]
+        },
+        {
+          "id": "take",
+          "label": "Take the pages",
+          "input": { "mode": "code", "text": "collect" },
+          "effects": [
+            { "type": "resource_add", "resource": "wood", "amount": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "evt_forest_ambush",
+      "title": "Forest Ambush",
+      "body": "Rustling in the underbrush! Bandits emerge from the treeline, blocking your path. You could fight, flee, or try to negotiate.",
+      "tier": 2,
+      "tags": ["combat", "evergrove", "risk"],
+      "cooldown_days": 4,
+      "choices": [
+        {
+          "id": "fight",
+          "label": "Stand and fight",
+          "input": { "mode": "prompt_burst", "prompts": ["strike", "defend", "counter"] },
+          "effects": [
+            { "type": "resource_add", "resource": "food", "amount": 3 },
+            { "type": "resource_add", "resource": "stone", "amount": 2 }
+          ],
+          "fail_effects": [
+            { "type": "damage_castle", "amount": 2 }
+          ]
+        },
+        {
+          "id": "flee",
+          "label": "Retreat quickly",
+          "input": { "mode": "phrase", "text": "run away fast" },
+          "effects": []
+        },
+        {
+          "id": "bribe",
+          "label": "Offer supplies",
+          "input": { "mode": "code", "text": "bribe" },
+          "effects": [
+            { "type": "resource_add", "resource": "food", "amount": -2 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "evt_herb_patch",
+      "title": "Healing Herbs",
+      "body": "A patch of medicinal herbs grows in a sunny clearing. Their leaves shimmer with morning dew.",
+      "tier": 0,
+      "tags": ["salvage", "evergrove"],
+      "cooldown_days": 2,
+      "choices": [
+        {
+          "id": "harvest",
+          "label": "Harvest herbs",
+          "input": { "mode": "phrase", "text": "pick the herbs" },
+          "effects": [
+            { "type": "resource_add", "resource": "food", "amount": 2 }
+          ]
+        },
+        {
+          "id": "mark",
+          "label": "Mark for later",
+          "input": { "mode": "code", "text": "mark" },
+          "effects": [
+            { "type": "set_flag", "flag": "herb_patch_marked", "value": true }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "evt_shrine_offering",
+      "title": "Quiet Shrine",
+      "body": "A small stone shrine stands in a grove of ancient oaks. Faded offerings rest at its base. The air feels peaceful here.",
+      "tier": 1,
+      "tags": ["lore", "evergrove", "social"],
+      "cooldown_days": 6,
+      "choices": [
+        {
+          "id": "pray",
+          "label": "Offer a prayer",
+          "input": { "mode": "phrase", "text": "speak words of blessing" },
+          "effects": [
+            { "type": "buff_apply", "buff": "blessed", "duration": 3 }
+          ]
+        },
+        {
+          "id": "donate",
+          "label": "Leave an offering",
+          "input": { "mode": "code", "text": "offer" },
+          "effects": [
+            { "type": "resource_add", "resource": "food", "amount": -1 },
+            { "type": "buff_apply", "buff": "fortune", "duration": 5 }
+          ]
+        },
+        {
+          "id": "observe",
+          "label": "Study the shrine",
+          "input": { "mode": "phrase", "text": "examine the ancient stones" },
+          "effects": [
+            { "type": "set_flag", "flag": "shrine_lore_1", "value": true }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -31,6 +31,13 @@ var rng_state: int
 var lesson_id: String
 var version: int
 
+# Event system state
+var active_pois: Dictionary
+var event_cooldowns: Dictionary
+var event_flags: Dictionary
+var pending_event: Dictionary
+var active_buffs: Array
+
 func _init() -> void:
     day = 1
     phase = "day"
@@ -69,6 +76,13 @@ func _init() -> void:
     structure_levels = {}
 
     discovered = {}
+
+    # Event system initialization
+    active_pois = {}
+    event_cooldowns = {}
+    event_flags = {}
+    pending_event = {}
+    active_buffs = []
     discovered[_index(base_pos.x, base_pos.y)] = true
 
 func _index(x: int, y: int) -> int:

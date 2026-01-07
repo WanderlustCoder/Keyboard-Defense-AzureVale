@@ -1,0 +1,38 @@
+{
+  "$schema": "../../../docs/keyboard-defense-plans/extended/schemas/poi.schema.json",
+  "pois": [
+    {
+      "id": "poi_evergrove_wagon",
+      "biome": "Evergrove",
+      "name": "Abandoned Wagon",
+      "icon": "wagon",
+      "event_table_id": "evergrove_wagon",
+      "rarity": 30,
+      "tags": ["salvage", "exploration"],
+      "min_day": 1,
+      "max_day": 10
+    },
+    {
+      "id": "poi_quiet_shrine",
+      "biome": "Evergrove",
+      "name": "Quiet Shrine",
+      "icon": "shrine",
+      "event_table_id": "evergrove_shrine",
+      "rarity": 20,
+      "tags": ["lore", "social"],
+      "min_day": 2,
+      "max_day": 15
+    },
+    {
+      "id": "poi_herb_patch",
+      "biome": "Evergrove",
+      "name": "Herb Patch",
+      "icon": "herbs",
+      "event_table_id": "evergrove_herbs",
+      "rarity": 40,
+      "tags": ["salvage", "healing"],
+      "min_day": 1,
+      "max_day": 20
+    }
+  ]
+}
