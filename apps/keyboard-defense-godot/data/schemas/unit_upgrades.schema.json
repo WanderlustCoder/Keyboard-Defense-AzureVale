@@ -17,7 +17,12 @@
       "properties": {
         "id": {"type": "string", "pattern": "^[a-z0-9-]+$"},
         "label": {"type": "string"},
+        "tier": {"type": "integer", "minimum": 1, "maximum": 3},
         "cost": {"type": "integer", "minimum": 0},
+        "requires": {
+          "type": "array",
+          "items": {"type": "string", "pattern": "^[a-z0-9-]+$"}
+        },
         "description": {"type": "string"},
         "effects": {
           "type": "object",
@@ -25,7 +30,12 @@
             "typing_power": {"type": "number"},
             "threat_rate_multiplier": {"type": "number"},
             "mistake_forgiveness": {"type": "number"},
-            "castle_health_bonus": {"type": "integer"}
+            "castle_health_bonus": {"type": "integer"},
+            "damage_reduction": {"type": "number"},
+            "critical_chance": {"type": "number"},
+            "enemy_armor_reduction": {"type": "integer"},
+            "armor_pierce": {"type": "integer"},
+            "enemy_speed_reduction": {"type": "number"}
           },
           "additionalProperties": false
         }

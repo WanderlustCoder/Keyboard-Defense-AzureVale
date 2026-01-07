@@ -42,7 +42,13 @@ enum SFX {
 	BOSS_APPEAR,
 	BOSS_DEFEATED,
 	VICTORY_FANFARE,
-	DEFEAT_STINGER
+	DEFEAT_STINGER,
+	EVENT_SHOW,
+	EVENT_CHOICE,
+	EVENT_SUCCESS,
+	EVENT_FAIL,
+	EVENT_SKIP,
+	POI_APPEAR
 }
 
 # Music tracks
@@ -80,7 +86,13 @@ var _sfx_files := {
 	SFX.BOSS_APPEAR: "boss_appear.wav",
 	SFX.BOSS_DEFEATED: "boss_defeated.wav",
 	SFX.VICTORY_FANFARE: "victory_fanfare.wav",
-	SFX.DEFEAT_STINGER: "defeat_stinger.wav"
+	SFX.DEFEAT_STINGER: "defeat_stinger.wav",
+	SFX.EVENT_SHOW: "event_show.wav",
+	SFX.EVENT_CHOICE: "event_choice.wav",
+	SFX.EVENT_SUCCESS: "event_success.wav",
+	SFX.EVENT_FAIL: "event_fail.wav",
+	SFX.EVENT_SKIP: "event_skip.wav",
+	SFX.POI_APPEAR: "poi_appear.wav"
 }
 
 # Music file mapping
@@ -379,6 +391,24 @@ func play_level_up() -> void:
 
 func play_upgrade_purchase() -> void:
 	play_sfx(SFX.UPGRADE_PURCHASE)
+
+func play_event_show() -> void:
+	play_sfx(SFX.EVENT_SHOW)
+
+func play_event_choice() -> void:
+	play_sfx(SFX.EVENT_CHOICE)
+
+func play_event_success() -> void:
+	play_sfx(SFX.EVENT_SUCCESS)
+
+func play_event_fail() -> void:
+	play_sfx(SFX.EVENT_FAIL)
+
+func play_event_skip() -> void:
+	play_sfx(SFX.EVENT_SKIP)
+
+func play_poi_appear() -> void:
+	play_sfx(SFX.POI_APPEAR)
 
 ## Music context switching
 func switch_to_menu_music() -> void:
