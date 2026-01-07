@@ -375,6 +375,11 @@ func _apply_result(result: Dictionary, intent_kind: String = "") -> void:
             audio_manager.play_upgrade_purchase()
         elif intent_kind == "end":
             audio_manager.play_wave_start()
+        elif intent_kind == "explore":
+            audio_manager.play_ui_confirm()
+            # Check if we discovered a POI
+            if _event_has_prefix(result.events, "Found:"):
+                audio_manager.play_poi_appear()
         else:
             audio_manager.play_ui_confirm()
     if result.has("request"):
@@ -2738,11 +2743,19 @@ func _on_event_choice_selected(choice_id: String, input_text: String) -> void:
     if state.pending_event.is_empty():
         _hide_event_panel()
         return
+    if audio_manager != null:
+        audio_manager.play_event_choice()
     var result: Dictionary = SimEvents.resolve_choice(state, choice_id, input_text)
     var success: bool = result.get("success", false)
     var message: String = result.get("message", "")
     if event_panel != null and event_panel.has_method("show_result"):
         event_panel.show_result(success, message)
+    # Play success/fail audio
+    if audio_manager != null:
+        if success:
+            audio_manager.play_event_success()
+        else:
+            audio_manager.play_event_fail()
     # Apply effects
     var effects: Array = result.get("effects", [])
     for effect in effects:
@@ -2757,6 +2770,8 @@ func _on_event_choice_selected(choice_id: String, input_text: String) -> void:
     _refresh_hud()
 
 func _on_event_skipped() -> void:
+    if audio_manager != null:
+        audio_manager.play_event_skip()
     _append_log(["Event skipped."])
     state.pending_event = {}
     _hide_event_panel()
@@ -2769,6 +2784,8 @@ func _show_event_panel() -> void:
     if pending.is_empty():
         return
     event_visible = true
+    if audio_manager != null:
+        audio_manager.play_event_show()
     if event_panel.has_method("show_event"):
         event_panel.show_event(pending)
     else:
