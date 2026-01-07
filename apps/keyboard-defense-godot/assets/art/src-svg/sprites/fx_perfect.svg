@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 16" width="64" height="16">
+  <!-- Perfect Effect (64x16) - 4 frame animation -->
+  
+  <!-- Frame 1: Sparkle start -->
+  <rect x="6" y="6" width="4" height="4" fill="#9b59b6"/>
+  
+  <!-- Frame 2: Growing -->
+  <rect x="20" y="4" width="8" height="8" fill="#af7ac5"/>
+  <rect x="22" y="2" width="4" height="12" fill="#d2b4de"/>
+  <rect x="18" y="6" width="12" height="4" fill="#d2b4de"/>
+  
+  <!-- Frame 3: Full bloom -->
+  <rect x="36" y="2" width="8" height="12" fill="#d2b4de"/>
+  <rect x="34" y="4" width="12" height="8" fill="#d2b4de"/>
+  <rect x="38" y="0" width="4" height="16" fill="#e8daef"/>
+  <rect x="32" y="6" width="16" height="4" fill="#e8daef"/>
+  <rect x="39" y="7" width="2" height="2" fill="#fdfefe"/>
+  <rect x="33" y="1" width="2" height="2" fill="#af7ac5"/>
+  <rect x="45" y="1" width="2" height="2" fill="#af7ac5"/>
+  <rect x="33" y="13" width="2" height="2" fill="#af7ac5"/>
+  <rect x="45" y="13" width="2" height="2" fill="#af7ac5"/>
+  
+  <!-- Frame 4: Fade -->
+  <rect x="54" y="4" width="4" height="8" fill="#e8daef" opacity="0.5"/>
+  <rect x="52" y="6" width="8" height="4" fill="#e8daef" opacity="0.5"/>
+</svg>

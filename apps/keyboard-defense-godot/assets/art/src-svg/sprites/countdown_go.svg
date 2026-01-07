@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 32" width="48" height="32">
+  <!-- Countdown GO! (48x32) -->
+  
+  <!-- Glow background -->
+  <rect x="2" y="4" width="44" height="24" fill="#2ecc71" opacity="0.3"/>
+  
+  <!-- Letter G -->
+  <rect x="4" y="6" width="14" height="3" fill="#fdfefe"/>
+  <rect x="4" y="9" width="3" height="14" fill="#fdfefe"/>
+  <rect x="4" y="23" width="14" height="3" fill="#fdfefe"/>
+  <rect x="15" y="14" width="3" height="12" fill="#fdfefe"/>
+  <rect x="10" y="14" width="5" height="3" fill="#fdfefe"/>
+  
+  <!-- Letter O -->
+  <rect x="22" y="6" width="12" height="3" fill="#fdfefe"/>
+  <rect x="22" y="9" width="3" height="14" fill="#fdfefe"/>
+  <rect x="31" y="9" width="3" height="14" fill="#fdfefe"/>
+  <rect x="22" y="23" width="12" height="3" fill="#fdfefe"/>
+  
+  <!-- Exclamation ! -->
+  <rect x="40" y="6" width="4" height="12" fill="#f4d03f"/>
+  <rect x="40" y="21" width="4" height="5" fill="#f4d03f"/>
+  
+  <!-- Sparkle -->
+  <rect x="46" y="4" width="2" height="2" fill="#f9e79f"/>
+</svg>

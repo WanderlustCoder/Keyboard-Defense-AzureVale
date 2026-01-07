@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Lane Warning Indicator (16x16) - yellow pulse -->
+  
+  <rect x="2" y="2" width="12" height="12" fill="#f39c12" opacity="0.3"/>
+  <rect x="4" y="4" width="8" height="8" fill="#f1c40f" opacity="0.5"/>
+  <rect x="6" y="6" width="4" height="4" fill="#f9e79f"/>
+  
+  <!-- Exclamation -->
+  <rect x="7" y="5" width="2" height="4" fill="#2c3e50"/>
+  <rect x="7" y="10" width="2" height="2" fill="#2c3e50"/>
+</svg>

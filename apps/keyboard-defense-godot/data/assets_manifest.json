@@ -4393,6 +4393,248 @@
       "max_kb": 2,
       "pixel_art": true,
       "category": "icons"
+    },
+    {
+      "id": "num_0",
+      "path": "res://assets/sprites/num_0.png",
+      "source_svg": "res://assets/art/src-svg/sprites/num_0.svg",
+      "expected_width": 8,
+      "expected_height": 12,
+      "max_kb": 1,
+      "pixel_art": true,
+      "category": "ui"
+    },
+    {
+      "id": "num_1",
+      "path": "res://assets/sprites/num_1.png",
+      "source_svg": "res://assets/art/src-svg/sprites/num_1.svg",
+      "expected_width": 8,
+      "expected_height": 12,
+      "max_kb": 1,
+      "pixel_art": true,
+      "category": "ui"
+    },
+    {
+      "id": "num_2",
+      "path": "res://assets/sprites/num_2.png",
+      "source_svg": "res://assets/art/src-svg/sprites/num_2.svg",
+      "expected_width": 8,
+      "expected_height": 12,
+      "max_kb": 1,
+      "pixel_art": true,
+      "category": "ui"
+    },
+    {
+      "id": "num_3",
+      "path": "res://assets/sprites/num_3.png",
+      "source_svg": "res://assets/art/src-svg/sprites/num_3.svg",
+      "expected_width": 8,
+      "expected_height": 12,
+      "max_kb": 1,
+      "pixel_art": true,
+      "category": "ui"
+    },
+    {
+      "id": "num_4",
+      "path": "res://assets/sprites/num_4.png",
+      "source_svg": "res://assets/art/src-svg/sprites/num_4.svg",
+      "expected_width": 8,
+      "expected_height": 12,
+      "max_kb": 1,
+      "pixel_art": true,
+      "category": "ui"
+    },
+    {
+      "id": "num_5",
+      "path": "res://assets/sprites/num_5.png",
+      "source_svg": "res://assets/art/src-svg/sprites/num_5.svg",
+      "expected_width": 8,
+      "expected_height": 12,
+      "max_kb": 1,
+      "pixel_art": true,
+      "category": "ui"
+    },
+    {
+      "id": "num_6",
+      "path": "res://assets/sprites/num_6.png",
+      "source_svg": "res://assets/art/src-svg/sprites/num_6.svg",
+      "expected_width": 8,
+      "expected_height": 12,
+      "max_kb": 1,
+      "pixel_art": true,
+      "category": "ui"
+    },
+    {
+      "id": "num_7",
+      "path": "res://assets/sprites/num_7.png",
+      "source_svg": "res://assets/art/src-svg/sprites/num_7.svg",
+      "expected_width": 8,
+      "expected_height": 12,
+      "max_kb": 1,
+      "pixel_art": true,
+      "category": "ui"
+    },
+    {
+      "id": "num_8",
+      "path": "res://assets/sprites/num_8.png",
+      "source_svg": "res://assets/art/src-svg/sprites/num_8.svg",
+      "expected_width": 8,
+      "expected_height": 12,
+      "max_kb": 1,
+      "pixel_art": true,
+      "category": "ui"
+    },
+    {
+      "id": "num_9",
+      "path": "res://assets/sprites/num_9.png",
+      "source_svg": "res://assets/art/src-svg/sprites/num_9.svg",
+      "expected_width": 8,
+      "expected_height": 12,
+      "max_kb": 1,
+      "pixel_art": true,
+      "category": "ui"
+    },
+    {
+      "id": "num_plus",
+      "path": "res://assets/sprites/num_plus.png",
+      "source_svg": "res://assets/art/src-svg/sprites/num_plus.svg",
+      "expected_width": 8,
+      "expected_height": 12,
+      "max_kb": 1,
+      "pixel_art": true,
+      "category": "ui"
+    },
+    {
+      "id": "num_minus",
+      "path": "res://assets/sprites/num_minus.png",
+      "source_svg": "res://assets/art/src-svg/sprites/num_minus.svg",
+      "expected_width": 8,
+      "expected_height": 12,
+      "max_kb": 1,
+      "pixel_art": true,
+      "category": "ui"
+    },
+    {
+      "id": "countdown_3",
+      "path": "res://assets/sprites/countdown_3.png",
+      "source_svg": "res://assets/art/src-svg/sprites/countdown_3.svg",
+      "expected_width": 24,
+      "expected_height": 32,
+      "max_kb": 2,
+      "pixel_art": true,
+      "category": "ui"
+    },
+    {
+      "id": "countdown_2",
+      "path": "res://assets/sprites/countdown_2.png",
+      "source_svg": "res://assets/art/src-svg/sprites/countdown_2.svg",
+      "expected_width": 24,
+      "expected_height": 32,
+      "max_kb": 2,
+      "pixel_art": true,
+      "category": "ui"
+    },
+    {
+      "id": "countdown_1",
+      "path": "res://assets/sprites/countdown_1.png",
+      "source_svg": "res://assets/art/src-svg/sprites/countdown_1.svg",
+      "expected_width": 24,
+      "expected_height": 32,
+      "max_kb": 2,
+      "pixel_art": true,
+      "category": "ui"
+    },
+    {
+      "id": "countdown_go",
+      "path": "res://assets/sprites/countdown_go.png",
+      "source_svg": "res://assets/art/src-svg/sprites/countdown_go.svg",
+      "expected_width": 48,
+      "expected_height": 32,
+      "max_kb": 3,
+      "pixel_art": true,
+      "category": "ui"
+    },
+    {
+      "id": "lane_safe",
+      "path": "res://assets/sprites/lane_safe.png",
+      "source_svg": "res://assets/art/src-svg/sprites/lane_safe.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 2,
+      "pixel_art": true,
+      "category": "ui"
+    },
+    {
+      "id": "lane_warning",
+      "path": "res://assets/sprites/lane_warning.png",
+      "source_svg": "res://assets/art/src-svg/sprites/lane_warning.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 2,
+      "pixel_art": true,
+      "category": "ui"
+    },
+    {
+      "id": "lane_danger",
+      "path": "res://assets/sprites/lane_danger.png",
+      "source_svg": "res://assets/art/src-svg/sprites/lane_danger.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 2,
+      "pixel_art": true,
+      "category": "ui"
+    },
+    {
+      "id": "lane_blocked",
+      "path": "res://assets/sprites/lane_blocked.png",
+      "source_svg": "res://assets/art/src-svg/sprites/lane_blocked.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 2,
+      "pixel_art": true,
+      "category": "ui"
+    },
+    {
+      "id": "fx_crit_hit",
+      "path": "res://assets/sprites/fx_crit_hit.png",
+      "source_svg": "res://assets/art/src-svg/sprites/fx_crit_hit.svg",
+      "expected_width": 64,
+      "expected_height": 24,
+      "max_kb": 4,
+      "pixel_art": true,
+      "category": "effects",
+      "frames": 4,
+      "frame_width": 16,
+      "frame_height": 24,
+      "duration_ms": 300
+    },
+    {
+      "id": "fx_miss",
+      "path": "res://assets/sprites/fx_miss.png",
+      "source_svg": "res://assets/art/src-svg/sprites/fx_miss.svg",
+      "expected_width": 48,
+      "expected_height": 16,
+      "max_kb": 3,
+      "pixel_art": true,
+      "category": "effects",
+      "frames": 3,
+      "frame_width": 16,
+      "frame_height": 16,
+      "duration_ms": 400
+    },
+    {
+      "id": "fx_perfect",
+      "path": "res://assets/sprites/fx_perfect.png",
+      "source_svg": "res://assets/art/src-svg/sprites/fx_perfect.svg",
+      "expected_width": 64,
+      "expected_height": 16,
+      "max_kb": 4,
+      "pixel_art": true,
+      "category": "effects",
+      "frames": 4,
+      "frame_width": 16,
+      "frame_height": 16,
+      "duration_ms": 400
     }
   ],
   "audio": [
