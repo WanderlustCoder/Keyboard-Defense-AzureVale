@@ -3,7 +3,7 @@
     {
       "id": "forest-gate",
       "label": "Forest Gate",
-      "lesson_id": "home-row-1",
+      "lesson_id": "home_row_1",
       "requires": [],
       "reward_gold": 10,
       "drill_template": "forest-gate",
@@ -36,7 +36,7 @@
     {
       "id": "whisper-grove",
       "label": "Whisper Grove",
-      "lesson_id": "home-row-2",
+      "lesson_id": "home_row_2",
       "requires": ["forest-gate"],
       "reward_gold": 12,
       "drill_template": "whisper-grove",
@@ -69,7 +69,7 @@
     {
       "id": "ember-bridge",
       "label": "Ember Bridge",
-      "lesson_id": "reach-row-1",
+      "lesson_id": "reach_row_1",
       "requires": ["whisper-grove"],
       "reward_gold": 14,
       "drill_template": "ember-bridge",
@@ -102,7 +102,7 @@
     {
       "id": "citadel-rise",
       "label": "Citadel Rise",
-      "lesson_id": "reach-row-2",
+      "lesson_id": "reach_row_2",
       "requires": ["ember-bridge"],
       "reward_gold": 18,
       "drill_template": "citadel-rise",
@@ -135,7 +135,7 @@
     {
       "id": "skywatch-pass",
       "label": "Skywatch Pass",
-      "lesson_id": "upper-row-1",
+      "lesson_id": "upper_row_1",
       "requires": ["citadel-rise"],
       "reward_gold": 20,
       "drill_template": "skywatch-pass"
@@ -143,7 +143,7 @@
     {
       "id": "frost-crown",
       "label": "Frost Crown",
-      "lesson_id": "upper-row-2",
+      "lesson_id": "upper_row_2",
       "requires": ["skywatch-pass"],
       "reward_gold": 24,
       "drill_template": "frost-crown"

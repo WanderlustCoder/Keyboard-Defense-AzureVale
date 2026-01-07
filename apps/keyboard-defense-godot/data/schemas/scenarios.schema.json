@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ScenariosFile",
+  "type": "object",
+  "required": ["version", "scenarios"],
+  "properties": {
+    "version": {"type": "integer", "minimum": 1},
+    "scenarios": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/scenario"}
+    }
+  },
+  "$defs": {
+    "scenario": {
+      "type": "object",
+      "required": ["id", "script", "stop"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+        "seed": {"type": "integer"},
+        "description": {"type": "string"},
+        "tags": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "priority": {"type": "string", "pattern": "^P[0-9]$"},
+        "script": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string"}
+        },
+        "stop": {"$ref": "#/$defs/stopCondition"},
+        "expect_baseline": {"$ref": "#/$defs/expectations"},
+        "expect_target": {"$ref": "#/$defs/expectations"}
+      },
+      "additionalProperties": false
+    },
+    "stopCondition": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["after_commands", "until_phase", "until_day"]
+        },
+        "phase": {"type": "string"},
+        "day": {"type": "integer", "minimum": 1},
+        "max_steps": {"type": "integer", "minimum": 1}
+      },
+      "additionalProperties": false
+    },
+    "expectations": {
+      "type": "object",
+      "additionalProperties": {"$ref": "#/$defs/assertion"}
+    },
+    "assertion": {
+      "type": "object",
+      "properties": {
+        "eq": {},
+        "min": {"type": "number"},
+        "max": {"type": "number"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

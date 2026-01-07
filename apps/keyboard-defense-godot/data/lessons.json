@@ -1,121 +1,62 @@
 {
+  "version": 1,
+  "default_lesson": "full_alpha",
   "lessons": [
     {
-      "id": "home-row-1",
-      "order": 1,
-      "label": "Home Row Foundations",
-      "words": [
-        "as",
-        "sad",
-        "lad",
-        "fall",
-        "ask",
-        "dad",
-        "lass",
-        "flask",
-        "sass",
-        "all",
-        "salad",
-        "flak",
-        "dallas",
-        "alfalfa"
-      ]
+      "id": "home_row_1",
+      "name": "Home Row Basics",
+      "description": "ASDF JKL; focused practice.",
+      "mode": "charset",
+      "charset": "asdfjkl",
+      "lengths": { "scout": [3, 4], "raider": [4, 6], "armored": [6, 8] }
     },
     {
-      "id": "home-row-2",
-      "order": 2,
-      "label": "Home Row Flow",
-      "words": [
-        "jkl",
-        "jail",
-        "lake",
-        "leaf",
-        "fake",
-        "flak",
-        "safe",
-        "flail",
-        "flake",
-        "kale",
-        "leak",
-        "jake",
-        "flea"
-      ]
+      "id": "home_row_2",
+      "name": "Home Row Extended",
+      "description": "Full home row with both hands.",
+      "mode": "charset",
+      "charset": "asdfjkl;",
+      "lengths": { "scout": [3, 4], "raider": [4, 6], "armored": [6, 8] }
     },
     {
-      "id": "reach-row-1",
-      "order": 3,
-      "label": "Reach Row Warmup",
-      "words": [
-        "read",
-        "rest",
-        "tale",
-        "gate",
-        "rage",
-        "shade",
-        "trade",
-        "stage",
-        "great",
-        "thread",
-        "stare",
-        "tread",
-        "raged",
-        "treat"
-      ]
+      "id": "reach_row_1",
+      "name": "Reach Row Intro",
+      "description": "Adds E, R, T, G to home row.",
+      "mode": "charset",
+      "charset": "asdfjkl;ertg",
+      "lengths": { "scout": [3, 4], "raider": [4, 6], "armored": [6, 8] }
     },
     {
-      "id": "reach-row-2",
-      "order": 4,
-      "label": "Reach Row Rhythm",
-      "words": [
-        "grace",
-        "trace",
-        "stone",
-        "storm",
-        "armor",
-        "torch",
-        "warden",
-        "banner",
-        "castle",
-        "legend",
-        "charge",
-        "strong",
-        "rampart",
-        "bastion"
-      ]
+      "id": "reach_row_2",
+      "name": "Reach Row Mastery",
+      "description": "Full reach row with home row foundation.",
+      "mode": "charset",
+      "charset": "asdfjkl;ertghyuionm",
+      "lengths": { "scout": [4, 5], "raider": [5, 7], "armored": [7, 9] }
     },
     {
-      "id": "upper-row-1",
-      "order": 5,
-      "label": "Upper Row Warmup",
-      "words": [
-        "we",
-        "tree",
-        "tier",
-        "type",
-        "quip",
-        "wire",
-        "tour",
-        "quiet",
-        "power",
-        "prime"
-      ]
+      "id": "upper_row_1",
+      "name": "Upper Row Intro",
+      "description": "Adds Q, W, P to reach row keys.",
+      "mode": "charset",
+      "charset": "asdfjkl;ertghyuionmqwp",
+      "lengths": { "scout": [4, 5], "raider": [5, 7], "armored": [7, 9] }
     },
     {
-      "id": "upper-row-2",
-      "order": 6,
-      "label": "Upper Row Flow",
-      "words": [
-        "quest",
-        "tower",
-        "owner",
-        "proud",
-        "equip",
-        "quote",
-        "write",
-        "pivot",
-        "route",
-        "trope"
-      ]
+      "id": "upper_row_2",
+      "name": "Upper Row Mastery",
+      "description": "Full keyboard coverage.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [4, 5], "raider": [5, 7], "armored": [7, 10] }
+    },
+    {
+      "id": "full_alpha",
+      "name": "Full Alphabet",
+      "description": "AZ general practice.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [3, 4], "raider": [4, 6], "armored": [6, 9] }
     }
   ]
 }

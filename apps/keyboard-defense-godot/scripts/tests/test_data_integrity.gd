@@ -33,11 +33,14 @@ func run() -> Dictionary:
 		var lesson_id := str(lesson.get("id", ""))
 		helper.assert_true(lesson_id != "", "lesson id exists")
 		lesson_ids[lesson_id] = true
-		var words: Array = lesson.get("words", [])
-		helper.assert_true(words.size() > 0, "lesson words exist")
-		for word in words:
-			var text := str(word)
-			helper.assert_true(text.length() >= 2, "word has length")
+		var charset := str(lesson.get("charset", ""))
+		helper.assert_true(charset.length() > 0, "lesson charset exists")
+		var lengths = lesson.get("lengths", {})
+		helper.assert_true(lengths is Dictionary, "lesson lengths is dictionary")
+		if lengths is Dictionary:
+			helper.assert_true(lengths.has("scout"), "lesson has scout lengths")
+			helper.assert_true(lengths.has("raider"), "lesson has raider lengths")
+			helper.assert_true(lengths.has("armored"), "lesson has armored lengths")
 
 	var map_data: Dictionary = _load_json(MAP_PATH)
 	_validate_schema(helper, map_data, map_schema, "map.json")

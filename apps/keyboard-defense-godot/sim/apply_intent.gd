@@ -10,6 +10,9 @@ const SimMap = preload("res://sim/map.gd")
 const SimRng = preload("res://sim/rng.gd")
 const SimEnemies = preload("res://sim/enemies.gd")
 const SimTypingFeedback = preload("res://sim/typing_feedback.gd")
+const SimLessons = preload("res://sim/lessons.gd")
+const SimWords = preload("res://sim/words.gd")
+const SimBalance = preload("res://sim/balance.gd")
 
 static func apply(state: GameState, intent: Dictionary) -> Dictionary:
     var events: Array[String] = []
@@ -40,6 +43,16 @@ static func apply(state: GameState, intent: Dictionary) -> Dictionary:
             _apply_inspect(new_state, intent, events)
         "map":
             _apply_map(new_state, events)
+        "lesson_show":
+            _apply_lesson_show(new_state, events)
+        "lesson_set":
+            _apply_lesson_set(new_state, intent, events)
+        "lesson_next":
+            _apply_lesson_cycle(new_state, 1, events)
+        "lesson_prev":
+            _apply_lesson_cycle(new_state, -1, events)
+        "lesson_sample":
+            _apply_lesson_sample(new_state, intent, events)
         "demolish":
             _apply_demolish(new_state, intent, events)
         "upgrade":
@@ -62,9 +75,16 @@ static func apply(state: GameState, intent: Dictionary) -> Dictionary:
         "load":
             request = {"kind": "load"}
         "ui_preview":
-            pass
+            var building: String = str(intent.get("building", ""))
+            if building.is_empty():
+                events.append("Build preview cleared.")
+            else:
+                events.append("Build preview set to: %s (UI-only)." % building)
         "ui_overlay":
-            pass
+            var overlay_name: String = str(intent.get("name", ""))
+            var enabled: bool = bool(intent.get("enabled", false))
+            var state_text: String = "ON" if enabled else "OFF"
+            events.append("%s overlay: %s (UI-only)." % [overlay_name.capitalize(), state_text])
         "enemies":
             _apply_enemies(new_state, events)
         _:
@@ -202,12 +222,14 @@ static func _apply_restart(state: GameState, events: Array[String]) -> Dictionar
         return {"state": state, "events": events}
     var seed_value: String = state.rng_seed
     var new_state: GameState = DefaultState.create(seed_value)
+    new_state.lesson_id = state.lesson_id
     events.append("Restarted run with seed '%s'." % seed_value)
     return {"state": new_state, "events": events}
 
 static func _apply_new(state: GameState, events: Array[String]) -> Dictionary:
     var seed_value: String = state.rng_seed
     var new_state: GameState = DefaultState.create(seed_value)
+    new_state.lesson_id = state.lesson_id
     events.append("New run started with seed '%s'." % seed_value)
     return {"state": new_state, "events": events}
 
@@ -454,6 +476,71 @@ static func _apply_inspect(state: GameState, intent: Dictionary, events: Array[S
 static func _apply_map(state: GameState, events: Array[String]) -> void:
     events.append(SimMap.render_ascii(state))
 
+static func _apply_lesson_show(state: GameState, events: Array[String]) -> void:
+    var lesson_ids: PackedStringArray = SimLessons.lesson_ids()
+    var entries: Array[String] = []
+    for lesson_id in lesson_ids:
+        entries.append("%s (%s)" % [SimLessons.lesson_label(str(lesson_id)), str(lesson_id)])
+    events.append("Current lesson: %s (%s)" % [SimLessons.lesson_label(state.lesson_id), state.lesson_id])
+    if entries.is_empty():
+        events.append("Lessons: none available.")
+    else:
+        events.append("Lessons: %s" % ", ".join(entries))
+    events.append("Use: lesson <id> | lesson next | lesson prev | lesson sample [n]")
+
+static func _apply_lesson_set(state: GameState, intent: Dictionary, events: Array[String]) -> void:
+    if not _require_day_or_game_over(state, events):
+        return
+    var lesson_id: String = str(intent.get("lesson_id", "")).strip_edges().to_lower()
+    if lesson_id == "":
+        events.append("Lesson id required.")
+        return
+    if not SimLessons.is_valid(lesson_id):
+        events.append("Unknown lesson: %s." % lesson_id)
+        return
+    state.lesson_id = lesson_id
+    events.append("Lesson set to %s (%s)." % [SimLessons.lesson_label(lesson_id), lesson_id])
+    events.append(_format_status(state))
+
+static func _apply_lesson_cycle(state: GameState, delta: int, events: Array[String]) -> void:
+    if not _require_day_or_game_over(state, events):
+        return
+    var lesson_ids: PackedStringArray = SimLessons.lesson_ids()
+    if lesson_ids.is_empty():
+        events.append("No lessons available.")
+        return
+    var size: int = lesson_ids.size()
+    var current_index: int = lesson_ids.find(state.lesson_id)
+    if current_index < 0:
+        current_index = 0
+    var next_index: int = current_index + delta
+    if next_index < 0:
+        next_index = size - 1
+    elif next_index >= size:
+        next_index = 0
+    var lesson_id: String = str(lesson_ids[next_index])
+    state.lesson_id = lesson_id
+    events.append("Lesson set to %s (%s)." % [SimLessons.lesson_label(lesson_id), lesson_id])
+    events.append(_format_status(state))
+
+static func _apply_lesson_sample(state: GameState, intent: Dictionary, events: Array[String]) -> void:
+    var count: int = int(intent.get("count", 3))
+    if count <= 0:
+        events.append("Sample count must be a positive integer.")
+        return
+    events.append("Lesson samples for %s (%s):" % [SimLessons.lesson_label(state.lesson_id), state.lesson_id])
+    var used: Dictionary = {}
+    for kind in ["scout", "raider", "armored"]:
+        var words: Array[String] = []
+        for i in range(count):
+            var word: String = SimWords.word_for_enemy("lesson-sample", 1, kind, i + 1, used, state.lesson_id)
+            if word == "":
+                word = "n/a"
+            else:
+                used[word] = true
+            words.append(word)
+        events.append("%s: %s" % [kind, ", ".join(words)])
+
 static func _apply_demolish(state: GameState, intent: Dictionary, events: Array[String]) -> void:
     if not _require_day(state, events):
         return
@@ -542,7 +629,7 @@ static func _intent_position(state: GameState, intent: Dictionary) -> Vector2i:
 
 static func _explore_reward(state: GameState, terrain: String) -> Dictionary:
     var choices: Array[String] = []
-    var amount: int = 15
+    var amount: int = 8
     match terrain:
         SimMap.TERRAIN_FOREST:
             choices = ["wood", "wood", "wood", "food", "stone"]
@@ -558,6 +645,10 @@ static func _explore_reward(state: GameState, terrain: String) -> Dictionary:
     var reward_resource: String = str(SimRng.choose(state, choices))
     if reward_resource == "":
         reward_resource = "food"
+    var override_resource: String = SimBalance.maybe_override_explore_reward(state, reward_resource)
+    if override_resource != reward_resource and amount < 8:
+        amount = 8
+    reward_resource = override_resource
     return {"resource": reward_resource, "amount": amount}
 
 static func _format_status(state: GameState) -> String:
@@ -572,6 +663,7 @@ static func _format_status(state: GameState) -> String:
 
     var lines: Array[String] = []
     lines.append("Phase: %s" % state.phase)
+    lines.append("Lesson: %s (%s)" % [SimLessons.lesson_label(state.lesson_id), state.lesson_id])
     lines.append("Day: %d" % state.day)
     lines.append("AP: %d/%d" % [state.ap, state.ap_max])
     lines.append("HP: %d" % state.hp)
@@ -696,12 +788,19 @@ static func _copy_state(state: GameState) -> GameState:
     copy.last_path_open = state.last_path_open
     copy.rng_seed = state.rng_seed
     copy.rng_state = state.rng_state
+    copy.lesson_id = state.lesson_id
     copy.version = state.version
     return copy
 
 static func _require_day(state: GameState, events: Array[String]) -> bool:
     if state.phase != "day":
         events.append("That action is only available during the day.")
+        return false
+    return true
+
+static func _require_day_or_game_over(state: GameState, events: Array[String]) -> bool:
+    if state.phase != "day" and state.phase != "game_over":
+        events.append("Lesson changes are only available during the day or after game over.")
         return false
     return true
 
