@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 24" width="16" height="24">
+  <!-- Skeleton Character (16x24) - Undead enemy -->
+  <!-- Color Palette: #fdfefe, #d5d8dc, #aeb6bf, #1a252f, #e74c3c -->
+
+  <!-- Shadow -->
+  <rect x="4" y="22" width="8" height="2" fill="#1a252f" opacity="0.3"/>
+
+  <!-- Feet bones -->
+  <rect x="4" y="20" width="3" height="2" fill="#d5d8dc"/>
+  <rect x="9" y="20" width="3" height="2" fill="#d5d8dc"/>
+  <rect x="5" y="21" width="2" height="1" fill="#aeb6bf"/>
+  <rect x="10" y="21" width="2" height="1" fill="#aeb6bf"/>
+
+  <!-- Leg bones -->
+  <rect x="5" y="14" width="2" height="6" fill="#fdfefe"/>
+  <rect x="9" y="14" width="2" height="6" fill="#fdfefe"/>
+  <rect x="5" y="14" width="1" height="6" fill="#d5d8dc"/>
+  <rect x="9" y="14" width="1" height="6" fill="#d5d8dc"/>
+
+  <!-- Pelvis -->
+  <rect x="4" y="12" width="8" height="3" fill="#fdfefe"/>
+  <rect x="5" y="12" width="6" height="3" fill="#d5d8dc"/>
+
+  <!-- Ribcage -->
+  <rect x="4" y="6" width="8" height="6" fill="#fdfefe"/>
+  <rect x="5" y="7" width="1" height="4" fill="#1a252f"/>
+  <rect x="7" y="7" width="2" height="4" fill="#1a252f"/>
+  <rect x="10" y="7" width="1" height="4" fill="#1a252f"/>
+  <rect x="6" y="6" width="1" height="5" fill="#d5d8dc"/>
+  <rect x="9" y="6" width="1" height="5" fill="#d5d8dc"/>
+
+  <!-- Arm bones -->
+  <rect x="2" y="6" width="2" height="8" fill="#fdfefe"/>
+  <rect x="12" y="6" width="2" height="8" fill="#fdfefe"/>
+  <rect x="2" y="6" width="1" height="8" fill="#d5d8dc"/>
+  <rect x="13" y="6" width="1" height="8" fill="#d5d8dc"/>
+
+  <!-- Hands -->
+  <rect x="1" y="13" width="2" height="2" fill="#d5d8dc"/>
+  <rect x="13" y="13" width="2" height="2" fill="#d5d8dc"/>
+
+  <!-- Skull -->
+  <rect x="4" y="0" width="8" height="6" fill="#fdfefe"/>
+  <rect x="5" y="0" width="6" height="5" fill="#d5d8dc"/>
+  <rect x="3" y="2" width="1" height="3" fill="#d5d8dc"/>
+  <rect x="12" y="2" width="1" height="3" fill="#d5d8dc"/>
+
+  <!-- Eye sockets -->
+  <rect x="5" y="1" width="2" height="2" fill="#1a252f"/>
+  <rect x="9" y="1" width="2" height="2" fill="#1a252f"/>
+  <!-- Glowing eyes -->
+  <rect x="5" y="2" width="1" height="1" fill="#e74c3c"/>
+  <rect x="10" y="2" width="1" height="1" fill="#e74c3c"/>
+
+  <!-- Nose hole -->
+  <rect x="7" y="3" width="2" height="1" fill="#aeb6bf"/>
+
+  <!-- Jaw/teeth -->
+  <rect x="5" y="4" width="6" height="2" fill="#fdfefe"/>
+  <rect x="6" y="5" width="1" height="1" fill="#1a252f"/>
+  <rect x="8" y="5" width="1" height="1" fill="#1a252f"/>
+  <rect x="10" y="5" width="1" height="1" fill="#1a252f"/>
+</svg>
