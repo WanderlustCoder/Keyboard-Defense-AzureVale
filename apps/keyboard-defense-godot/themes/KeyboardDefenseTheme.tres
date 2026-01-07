@@ -1,95 +1,94 @@
-[gd_resource type="Theme" load_steps=12 format=3]
+[gd_resource type="Theme" load_steps=20 format=3]
 
 # ============================================================================
 # KEYBOARD DEFENSE THEME
-# A dark fantasy theme with purple/blue backgrounds and gold accents
+# A dark fantasy theme with 9-slice textured panels and buttons
 # ============================================================================
 
-# ---------- STYLE BOXES ----------
+# ---------- EXTERNAL TEXTURES ----------
 
-[sub_resource type="StyleBoxFlat" id="panel_dark"]
-bg_color = Color(0.08, 0.07, 0.12, 0.95)
-border_color = Color(0.24, 0.22, 0.36, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_left = 8
-corner_radius_bottom_right = 8
+[ext_resource type="Texture2D" path="res://assets/ui/ui_panel_bg.png" id="tex_panel_bg"]
+[ext_resource type="Texture2D" path="res://assets/ui/ui_button.png" id="tex_button"]
+[ext_resource type="Texture2D" path="res://assets/ui/ui_button_hover.png" id="tex_button_hover"]
+[ext_resource type="Texture2D" path="res://assets/ui/ui_button_pressed.png" id="tex_button_pressed"]
+[ext_resource type="Texture2D" path="res://assets/ui/ui_progress_bar_bg.png" id="tex_progress_bg"]
+[ext_resource type="Texture2D" path="res://assets/ui/ui_progress_bar_fill.png" id="tex_progress_fill"]
+[ext_resource type="Texture2D" path="res://assets/ui/ui_focus_ring.png" id="tex_focus_ring"]
 
-[sub_resource type="StyleBoxFlat" id="panel_card"]
-bg_color = Color(0.14, 0.12, 0.22, 1)
-border_color = Color(0.35, 0.32, 0.52, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_left = 6
-corner_radius_bottom_right = 6
+# ---------- 9-SLICE PANEL STYLES ----------
 
-[sub_resource type="StyleBoxFlat" id="panel_card_disabled"]
-bg_color = Color(0.11, 0.1, 0.17, 1)
-border_color = Color(0.2, 0.18, 0.28, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_left = 6
-corner_radius_bottom_right = 6
+[sub_resource type="StyleBoxTexture" id="panel_texture"]
+texture = ExtResource("tex_panel_bg")
+texture_margin_left = 4.0
+texture_margin_top = 4.0
+texture_margin_right = 4.0
+texture_margin_bottom = 4.0
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
 
-[sub_resource type="StyleBoxFlat" id="button_normal"]
-bg_color = Color(0.18, 0.16, 0.28, 1)
-border_color = Color(0.35, 0.32, 0.52, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-corner_radius_top_left = 4
-corner_radius_top_right = 4
-corner_radius_bottom_left = 4
-corner_radius_bottom_right = 4
-content_margin_left = 16
-content_margin_top = 8
-content_margin_right = 16
-content_margin_bottom = 8
+# ---------- 9-SLICE BUTTON STYLES ----------
 
-[sub_resource type="StyleBoxFlat" id="button_hover"]
-bg_color = Color(0.22, 0.2, 0.35, 1)
-border_color = Color(0.45, 0.42, 0.62, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-corner_radius_top_left = 4
-corner_radius_top_right = 4
-corner_radius_bottom_left = 4
-corner_radius_bottom_right = 4
-content_margin_left = 16
-content_margin_top = 8
-content_margin_right = 16
-content_margin_bottom = 8
+[sub_resource type="StyleBoxTexture" id="button_texture_normal"]
+texture = ExtResource("tex_button")
+texture_margin_left = 4.0
+texture_margin_top = 4.0
+texture_margin_right = 4.0
+texture_margin_bottom = 4.0
+content_margin_left = 12.0
+content_margin_top = 6.0
+content_margin_right = 12.0
+content_margin_bottom = 6.0
 
-[sub_resource type="StyleBoxFlat" id="button_pressed"]
-bg_color = Color(0.25, 0.22, 0.4, 1)
-border_color = Color(0.55, 0.52, 0.72, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-corner_radius_top_left = 4
-corner_radius_top_right = 4
-corner_radius_bottom_left = 4
-corner_radius_bottom_right = 4
-content_margin_left = 16
-content_margin_top = 8
-content_margin_right = 16
-content_margin_bottom = 8
+[sub_resource type="StyleBoxTexture" id="button_texture_hover"]
+texture = ExtResource("tex_button_hover")
+texture_margin_left = 4.0
+texture_margin_top = 4.0
+texture_margin_right = 4.0
+texture_margin_bottom = 4.0
+content_margin_left = 12.0
+content_margin_top = 6.0
+content_margin_right = 12.0
+content_margin_bottom = 6.0
+
+[sub_resource type="StyleBoxTexture" id="button_texture_pressed"]
+texture = ExtResource("tex_button_pressed")
+texture_margin_left = 4.0
+texture_margin_top = 4.0
+texture_margin_right = 4.0
+texture_margin_bottom = 4.0
+content_margin_left = 12.0
+content_margin_top = 6.0
+content_margin_right = 12.0
+content_margin_bottom = 6.0
+
+# ---------- PROGRESS BAR STYLES (9-slice) ----------
+
+[sub_resource type="StyleBoxTexture" id="progress_texture_bg"]
+texture = ExtResource("tex_progress_bg")
+texture_margin_left = 3.0
+texture_margin_top = 2.0
+texture_margin_right = 3.0
+texture_margin_bottom = 2.0
+
+[sub_resource type="StyleBoxTexture" id="progress_texture_fill"]
+texture = ExtResource("tex_progress_fill")
+texture_margin_left = 2.0
+texture_margin_top = 1.0
+texture_margin_right = 2.0
+texture_margin_bottom = 1.0
+
+# ---------- FOCUS RING ----------
+
+[sub_resource type="StyleBoxTexture" id="focus_texture"]
+texture = ExtResource("tex_focus_ring")
+texture_margin_left = 4.0
+texture_margin_top = 4.0
+texture_margin_right = 4.0
+texture_margin_bottom = 4.0
+
+# ---------- FALLBACK FLAT STYLES (for disabled states) ----------
 
 [sub_resource type="StyleBoxFlat" id="button_disabled"]
 bg_color = Color(0.12, 0.11, 0.18, 0.6)
@@ -102,24 +101,10 @@ corner_radius_top_left = 4
 corner_radius_top_right = 4
 corner_radius_bottom_left = 4
 corner_radius_bottom_right = 4
-content_margin_left = 16
-content_margin_top = 8
-content_margin_right = 16
-content_margin_bottom = 8
-
-[sub_resource type="StyleBoxFlat" id="progress_bg"]
-bg_color = Color(0.1, 0.09, 0.15, 1)
-corner_radius_top_left = 3
-corner_radius_top_right = 3
-corner_radius_bottom_left = 3
-corner_radius_bottom_right = 3
-
-[sub_resource type="StyleBoxFlat" id="progress_fill"]
-bg_color = Color(0.45, 0.75, 0.95, 1)
-corner_radius_top_left = 3
-corner_radius_top_right = 3
-corner_radius_bottom_left = 3
-corner_radius_bottom_right = 3
+content_margin_left = 12
+content_margin_top = 6
+content_margin_right = 12
+content_margin_bottom = 6
 
 [sub_resource type="StyleBoxFlat" id="lineedit_normal"]
 bg_color = Color(0.06, 0.055, 0.09, 1)
@@ -165,26 +150,27 @@ Label/colors/font_color = Color(0.94, 0.94, 0.98, 1)
 Label/colors/font_shadow_color = Color(0, 0, 0, 0.3)
 Label/font_sizes/font_size = 16
 
-# Button styles
-Button/styles/normal = SubResource("button_normal")
-Button/styles/hover = SubResource("button_hover")
-Button/styles/pressed = SubResource("button_pressed")
+# Button styles (9-slice textures)
+Button/styles/normal = SubResource("button_texture_normal")
+Button/styles/hover = SubResource("button_texture_hover")
+Button/styles/pressed = SubResource("button_texture_pressed")
 Button/styles/disabled = SubResource("button_disabled")
+Button/styles/focus = SubResource("focus_texture")
 Button/colors/font_color = Color(0.94, 0.94, 0.98, 1)
 Button/colors/font_hover_color = Color(1, 1, 1, 1)
 Button/colors/font_pressed_color = Color(0.98, 0.84, 0.44, 1)
 Button/colors/font_disabled_color = Color(0.5, 0.5, 0.55, 0.6)
 Button/font_sizes/font_size = 16
 
-# Panel styles
-Panel/styles/panel = SubResource("panel_dark")
-PanelContainer/styles/panel = SubResource("panel_dark")
+# Panel styles (9-slice textures)
+Panel/styles/panel = SubResource("panel_texture")
+PanelContainer/styles/panel = SubResource("panel_texture")
 
-# Progress bar styles
-ProgressBar/styles/background = SubResource("progress_bg")
-ProgressBar/styles/fill = SubResource("progress_fill")
+# Progress bar styles (9-slice textures)
+ProgressBar/styles/background = SubResource("progress_texture_bg")
+ProgressBar/styles/fill = SubResource("progress_texture_fill")
 
-# Line edit styles
+# Line edit styles (keep flat for now - can add texture later)
 LineEdit/styles/normal = SubResource("lineedit_normal")
 LineEdit/styles/focus = SubResource("lineedit_focus")
 LineEdit/colors/font_color = Color(0.94, 0.94, 0.98, 1)
