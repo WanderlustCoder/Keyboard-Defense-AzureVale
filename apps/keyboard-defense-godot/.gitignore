@@ -7,3 +7,9 @@ _test_summary.log
 Logs/ScenarioReports/
 Logs/ScenarioReports/*.json
 Logs/ScenarioReports/last_summary.txt
+
+# Generated PNG assets (source SVGs are in assets/art/src-svg/)
+assets/icons/
+assets/sprites/
+assets/tiles/
+assets/ui/
