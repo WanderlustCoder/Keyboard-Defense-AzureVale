@@ -128,8 +128,16 @@ var battle_tutorial: BattleTutorial = null
 # Screen shake state
 var _shake_intensity: float = 0.0
 var _shake_duration: float = 0.0
+var _shake_initial_duration: float = 0.0
 var _shake_offset: Vector2 = Vector2.ZERO
 const SHAKE_DECAY := 5.0
+
+# UI caching to avoid redundant updates
+var _cached_threat: float = -1.0
+var _cached_castle_health: int = -1
+var _cached_accuracy: int = -1
+var _cached_wpm: int = -1
+var _cached_errors: int = -1
 
 # Combo indicator
 var combo_label: Label = null
@@ -185,6 +193,12 @@ func _initialize_battle() -> void:
 	battle_correct_inputs = 0
 	battle_errors = 0
 	battle_words_completed = 0
+	# Reset UI caches to force initial update
+	_cached_threat = -1.0
+	_cached_castle_health = -1
+	_cached_accuracy = -1
+	_cached_wpm = -1
+	_cached_errors = -1
 	drill_plan = _build_drill_plan(node, lesson)
 	drill_index = -1
 
@@ -376,13 +390,25 @@ func _update_stats() -> void:
 	var accuracy: int = int(round(float(stats.get("accuracy", 1.0)) * 100.0))
 	var wpm: int = int(round(float(stats.get("wpm", 0.0))))
 	var errors: int = int(stats.get("errors", 0))
-	accuracy_label.text = "Accuracy: %d%%" % accuracy
-	wpm_label.text = "WPM: %d" % wpm
-	mistakes_label.text = "Errors: %d" % errors
+	# Only update UI if values changed
+	if accuracy != _cached_accuracy:
+		_cached_accuracy = accuracy
+		accuracy_label.text = "Accuracy: %d%%" % accuracy
+	if wpm != _cached_wpm:
+		_cached_wpm = wpm
+		wpm_label.text = "WPM: %d" % wpm
+	if errors != _cached_errors:
+		_cached_errors = errors
+		mistakes_label.text = "Errors: %d" % errors
 
 func _update_threat() -> void:
-	threat_bar.value = threat
-	castle_label.text = "Castle Health: %d" % castle_health
+	# Only update UI if values changed
+	if threat != _cached_threat:
+		_cached_threat = threat
+		threat_bar.value = threat
+	if castle_health != _cached_castle_health:
+		_cached_castle_health = castle_health
+		castle_label.text = "Castle Health: %d" % castle_health
 
 func _update_feedback(delta: float) -> void:
 	if feedback_label == null or feedback_timer <= 0.0:
@@ -692,7 +718,7 @@ func _generate_words_from_lesson(lesson: Dictionary, seed_id: String) -> Array:
 	# Generate words from lesson charset and lengths using SimWords
 	var charset: String = str(lesson.get("charset", "")).to_lower()
 	if charset == "":
-		return ["guard", "tower", "shield", "banner", "castle"]
+		return _generate_fallback_words("")
 
 	var lengths: Dictionary = lesson.get("lengths", {})
 	var words: Array = []
@@ -710,11 +736,62 @@ func _generate_words_from_lesson(lesson: Dictionary, seed_id: String) -> Array:
 				words.append(word)
 				used[word] = true
 
-	# Fallback if generation failed
+	# Fallback if generation failed - use charset-based words
 	if words.is_empty():
-		return ["guard", "tower", "shield", "banner", "castle"]
+		return _generate_fallback_words(charset)
 
 	return words
+
+func _generate_fallback_words(charset: String) -> Array:
+	# Common short words organized by the letters they primarily use
+	const WORD_POOL := {
+		"asdfjkl": ["ask", "lad", "lass", "flask", "salad", "add", "fall", "sad", "jak"],
+		"gh": ["ash", "gash", "hag", "shag", "dash", "flash", "glad", "half"],
+		"qwertyuiop": ["quit", "rope", "type", "wire", "power", "write", "equip", "quiet"],
+		"zxcvbnm": ["mix", "box", "zinc", "climb", "comb", "blank", "calm", "clam"],
+		"": ["guard", "tower", "shield", "banner", "castle", "knight", "sword", "armor"]
+	}
+
+	if charset == "":
+		return WORD_POOL[""]
+
+	var result: Array = []
+	var charset_lower := charset.to_lower()
+
+	# Collect words that match the charset
+	for pool_charset in WORD_POOL.keys():
+		if pool_charset == "":
+			continue
+		# Check if any charset letters match this pool
+		var match_score := 0
+		for c in pool_charset:
+			if c in charset_lower:
+				match_score += 1
+		if match_score > 0:
+			for word in WORD_POOL[pool_charset]:
+				# Verify word only uses charset letters
+				var valid := true
+				for letter in word:
+					if letter not in charset_lower:
+						valid = false
+						break
+				if valid and word not in result:
+					result.append(word)
+
+	# If no matches, generate simple patterns from charset
+	if result.is_empty():
+		var chars := charset_lower.split("")
+		for i in range(min(10, chars.size())):
+			var c: String = chars[i % chars.size()]
+			result.append(c + c)  # Double letter like "aa", "ss"
+			if i + 1 < chars.size():
+				result.append(chars[i] + chars[i + 1])  # Two letter combo
+
+	# Ensure we have at least 5 words
+	if result.size() < 5:
+		result.append_array(WORD_POOL[""])
+
+	return result
 
 func _finish_battle(success: bool) -> void:
 	active = false
@@ -1111,6 +1188,7 @@ func _trigger_screen_shake(intensity: float, duration: float) -> void:
 		return
 	_shake_intensity = intensity
 	_shake_duration = duration
+	_shake_initial_duration = duration
 
 func _update_screen_shake(delta: float) -> void:
 	if _shake_duration <= 0.0:
@@ -1120,7 +1198,9 @@ func _update_screen_shake(delta: float) -> void:
 		return
 
 	_shake_duration -= delta
-	var current_intensity := _shake_intensity * (_shake_duration / 0.3)
+	# Use stored initial duration for consistent decay across different shake durations
+	var decay_factor := _shake_duration / _shake_initial_duration if _shake_initial_duration > 0.0 else 0.0
+	var current_intensity := _shake_intensity * decay_factor
 
 	# Remove previous offset
 	position -= _shake_offset
