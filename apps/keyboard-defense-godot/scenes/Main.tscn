@@ -41,8 +41,19 @@ anchor_bottom = 1.0
 offset_left = 12.0
 offset_top = 10.0
 offset_right = -12.0
-offset_bottom = -88.0
+offset_bottom = -120.0
 text = "Phase: day"
+
+[node name="LessonHealthLabel" type="Label" parent="CanvasLayer/UIRoot/StatsPanel"]
+anchor_left = 0.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = -120.0
+offset_right = -12.0
+offset_bottom = -88.0
+text = "Lesson: -- | Health: --"
 
 [node name="GoalBadge" type="RichTextLabel" parent="CanvasLayer/UIRoot/StatsPanel"]
 anchor_left = 0.0
@@ -82,7 +93,7 @@ offset_top = 252.0
 offset_right = 520.0
 offset_bottom = 304.0
 
-[node name="PromptLabel" type="Label" parent="CanvasLayer/UIRoot/PromptPanel"]  
+[node name="PromptLabel" type="Label" parent="CanvasLayer/UIRoot/PromptPanel"]
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 1.0
@@ -93,7 +104,7 @@ offset_right = -12.0
 offset_bottom = -8.0
 text = ""
 
-[node name="SettingsPanel" type="Panel" parent="CanvasLayer/UIRoot"]
+[node name="TutorialPanel" type="Panel" parent="CanvasLayer/UIRoot"]
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
@@ -101,10 +112,10 @@ anchor_bottom = 0.0
 offset_left = 24.0
 offset_top = 312.0
 offset_right = 520.0
-offset_bottom = 420.0
+offset_bottom = 440.0
 visible = false
 
-[node name="SettingsLabel" type="RichTextLabel" parent="CanvasLayer/UIRoot/SettingsPanel"]
+[node name="TutorialLabel" type="RichTextLabel" parent="CanvasLayer/UIRoot/TutorialPanel"]
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 1.0
@@ -116,7 +127,105 @@ offset_bottom = -8.0
 bbcode_enabled = true
 scroll_active = false
 scroll_following = false
-text = "[b]Settings[/b]\nCycle goal: F2\nType: bind cycle_goal"
+text = "[b]Tutorial[/b]"
+
+[node name="SettingsPanel" type="Panel" parent="CanvasLayer/UIRoot"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 24.0
+offset_top = 312.0
+offset_right = 520.0
+offset_bottom = 600.0
+visible = false
+
+[node name="SettingsLabel" type="RichTextLabel" parent="CanvasLayer/UIRoot/SettingsPanel"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 0.0
+offset_left = 12.0
+offset_top = 8.0
+offset_right = -12.0
+offset_bottom = 88.0
+bbcode_enabled = true
+scroll_active = false
+scroll_following = false
+text = "[b]Settings[/b]\nType: bind <action>"
+
+[node name="ControlsHeader" type="Label" parent="CanvasLayer/UIRoot/SettingsPanel"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 0.0
+offset_left = 12.0
+offset_top = 96.0
+offset_right = -12.0
+offset_bottom = 116.0
+text = "CONTROLS"
+
+[node name="ControlsText" type="RichTextLabel" parent="CanvasLayer/UIRoot/SettingsPanel"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 120.0
+offset_right = -12.0
+offset_bottom = -112.0
+scroll_active = false
+scroll_following = false
+text = "cycle_goal: F2\ntoggle_trend: F3\ntoggle_compact: F4\ntoggle_history: F5"
+
+[node name="LessonsSettingsHeader" type="Label" parent="CanvasLayer/UIRoot/SettingsPanel"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 0.0
+offset_left = 12.0
+offset_top = 184.0
+offset_right = -12.0
+offset_bottom = 204.0
+text = "LESSONS"
+
+[node name="LessonsSettingsText" type="RichTextLabel" parent="CanvasLayer/UIRoot/SettingsPanel"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 208.0
+offset_right = -12.0
+offset_bottom = -8.0
+scroll_active = false
+scroll_following = false
+text = "Lessons sort: default\nSparklines: ON\nUse: lessons sort default|recent|name\nUse: lessons sparkline on|off"
+
+[node name="LessonPanel" type="Panel" parent="CanvasLayer/UIRoot"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 560.0
+offset_top = 24.0
+offset_right = 1040.0
+offset_bottom = 360.0
+visible = false
+
+[node name="LessonLabel" type="RichTextLabel" parent="CanvasLayer/UIRoot/LessonPanel"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 8.0
+offset_right = -12.0
+offset_bottom = -8.0
+bbcode_enabled = true
+scroll_active = true
+scroll_following = false
+text = "[b]Lesson Browser[/b]"
 
 [node name="InspectPanel" type="Panel" parent="CanvasLayer/UIRoot"]
 anchor_left = 0.0

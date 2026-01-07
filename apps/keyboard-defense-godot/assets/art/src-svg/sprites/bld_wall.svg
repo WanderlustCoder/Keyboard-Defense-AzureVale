@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Defensive Wall Segment - 16x16 -->
+
+  <!-- Shadow base -->
+  <rect x="0" y="14" width="16" height="2" fill="#2a2a3a"/>
+
+  <!-- Main wall body -->
+  <rect x="2" y="4" width="12" height="12" fill="#6a6a7a"/>
+
+  <!-- Wall top (walkway) -->
+  <rect x="1" y="2" width="14" height="4" fill="#7a7a8a"/>
+
+  <!-- Battlements -->
+  <rect x="1" y="0" width="3" height="4" fill="#5a5a6a"/>
+  <rect x="6" y="0" width="4" height="4" fill="#5a5a6a"/>
+  <rect x="12" y="0" width="3" height="4" fill="#5a5a6a"/>
+
+  <!-- Crenellations (gaps) -->
+  <rect x="4" y="0" width="2" height="2" fill="#1a1a2e"/>
+  <rect x="10" y="0" width="2" height="2" fill="#1a1a2e"/>
+
+  <!-- Brick lines -->
+  <rect x="2" y="7" width="12" height="1" fill="#5a5a6a"/>
+  <rect x="2" y="11" width="12" height="1" fill="#5a5a6a"/>
+
+  <!-- Highlight -->
+  <rect x="2" y="4" width="1" height="10" fill="#8a8a9a"/>
+  <rect x="1" y="2" width="14" height="1" fill="#9a9aaa"/>
+
+  <!-- Shadow -->
+  <rect x="13" y="4" width="1" height="10" fill="#5a5a6a"/>
+</svg>

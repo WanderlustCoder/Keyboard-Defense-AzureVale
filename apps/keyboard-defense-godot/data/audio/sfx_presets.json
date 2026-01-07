@@ -1,0 +1,432 @@
+{
+  "$schema": "../../docs/keyboard-defense-plans/assets/schemas/sfx-presets.schema.json",
+  "version": "1.0.0",
+  "presets": [
+    {
+      "id": "ui_keytap",
+      "description": "Subtle key press sound, rate-limited",
+      "category": "ui",
+      "oscillator": {
+        "type": "square",
+        "frequency": 800
+      },
+      "envelope": {
+        "attack_ms": 2,
+        "decay_ms": 30,
+        "sustain": 0.0,
+        "release_ms": 20
+      },
+      "volume": 0.15,
+      "duration_ms": 50,
+      "filter": {
+        "type": "lowpass",
+        "cutoff_hz": 2000,
+        "resonance": 0.1
+      }
+    },
+    {
+      "id": "ui_confirm",
+      "description": "Positive confirmation ding",
+      "category": "ui",
+      "oscillator": {
+        "type": "sine",
+        "frequency": 880
+      },
+      "envelope": {
+        "attack_ms": 5,
+        "decay_ms": 60,
+        "sustain": 0.3,
+        "release_ms": 40
+      },
+      "volume": 0.35,
+      "duration_ms": 120,
+      "pitch_slide": {
+        "start_offset": -100,
+        "end_offset": 0,
+        "curve": "exponential"
+      }
+    },
+    {
+      "id": "ui_cancel",
+      "description": "Negative cancel buzz",
+      "category": "ui",
+      "oscillator": {
+        "type": "sawtooth",
+        "frequency": 200
+      },
+      "envelope": {
+        "attack_ms": 5,
+        "decay_ms": 40,
+        "sustain": 0.2,
+        "release_ms": 50
+      },
+      "volume": 0.3,
+      "duration_ms": 100,
+      "pitch_slide": {
+        "start_offset": 50,
+        "end_offset": -30,
+        "curve": "linear"
+      },
+      "filter": {
+        "type": "lowpass",
+        "cutoff_hz": 800,
+        "resonance": 0.3
+      }
+    },
+    {
+      "id": "type_correct",
+      "description": "Correct character/word typed",
+      "category": "typing",
+      "oscillator": {
+        "type": "sine",
+        "frequency": 660
+      },
+      "envelope": {
+        "attack_ms": 3,
+        "decay_ms": 50,
+        "sustain": 0.2,
+        "release_ms": 50
+      },
+      "volume": 0.25,
+      "duration_ms": 100,
+      "pitch_slide": {
+        "start_offset": 0,
+        "end_offset": 220,
+        "curve": "exponential"
+      }
+    },
+    {
+      "id": "type_mistake",
+      "description": "Incorrect character typed",
+      "category": "typing",
+      "oscillator": {
+        "type": "sawtooth",
+        "frequency": 300
+      },
+      "envelope": {
+        "attack_ms": 5,
+        "decay_ms": 60,
+        "sustain": 0.1,
+        "release_ms": 40
+      },
+      "volume": 0.3,
+      "duration_ms": 110,
+      "pitch_slide": {
+        "start_offset": 100,
+        "end_offset": -50,
+        "curve": "linear"
+      },
+      "filter": {
+        "type": "lowpass",
+        "cutoff_hz": 1200,
+        "resonance": 0.4
+      }
+    },
+    {
+      "id": "combo_up",
+      "description": "Combo milestone reached",
+      "category": "typing",
+      "oscillator": {
+        "type": "sine",
+        "frequency": 440
+      },
+      "envelope": {
+        "attack_ms": 5,
+        "decay_ms": 80,
+        "sustain": 0.4,
+        "release_ms": 80
+      },
+      "volume": 0.4,
+      "duration_ms": 180,
+      "pitch_slide": {
+        "start_offset": 0,
+        "end_offset": 440,
+        "curve": "exponential"
+      },
+      "harmonics": [
+        { "ratio": 2.0, "amplitude": 0.3 },
+        { "ratio": 3.0, "amplitude": 0.15 }
+      ]
+    },
+    {
+      "id": "combo_break",
+      "description": "Combo broken",
+      "category": "typing",
+      "oscillator": {
+        "type": "triangle",
+        "frequency": 400
+      },
+      "envelope": {
+        "attack_ms": 10,
+        "decay_ms": 80,
+        "sustain": 0.1,
+        "release_ms": 50
+      },
+      "volume": 0.3,
+      "duration_ms": 140,
+      "pitch_slide": {
+        "start_offset": 200,
+        "end_offset": -150,
+        "curve": "exponential"
+      }
+    },
+    {
+      "id": "build_place",
+      "description": "Building placement snap",
+      "category": "world",
+      "oscillator": {
+        "type": "noise",
+        "frequency": 0
+      },
+      "envelope": {
+        "attack_ms": 2,
+        "decay_ms": 40,
+        "sustain": 0.0,
+        "release_ms": 40
+      },
+      "volume": 0.35,
+      "duration_ms": 90,
+      "filter": {
+        "type": "bandpass",
+        "cutoff_hz": 1500,
+        "resonance": 0.5
+      }
+    },
+    {
+      "id": "build_complete",
+      "description": "Building construction finished",
+      "category": "world",
+      "oscillator": {
+        "type": "sine",
+        "frequency": 523
+      },
+      "envelope": {
+        "attack_ms": 10,
+        "decay_ms": 100,
+        "sustain": 0.3,
+        "release_ms": 80
+      },
+      "volume": 0.4,
+      "duration_ms": 200,
+      "pitch_slide": {
+        "start_offset": 0,
+        "end_offset": 262,
+        "curve": "exponential"
+      },
+      "harmonics": [
+        { "ratio": 1.5, "amplitude": 0.2 },
+        { "ratio": 2.0, "amplitude": 0.15 }
+      ]
+    },
+    {
+      "id": "resource_pickup",
+      "description": "Gold or resource collected",
+      "category": "world",
+      "oscillator": {
+        "type": "sine",
+        "frequency": 1047
+      },
+      "envelope": {
+        "attack_ms": 3,
+        "decay_ms": 60,
+        "sustain": 0.2,
+        "release_ms": 50
+      },
+      "volume": 0.3,
+      "duration_ms": 120,
+      "pitch_slide": {
+        "start_offset": -200,
+        "end_offset": 100,
+        "curve": "exponential"
+      },
+      "harmonics": [
+        { "ratio": 2.0, "amplitude": 0.4 },
+        { "ratio": 4.0, "amplitude": 0.2 }
+      ]
+    },
+    {
+      "id": "unit_spawn",
+      "description": "Friendly unit appears",
+      "category": "world",
+      "oscillator": {
+        "type": "sine",
+        "frequency": 330
+      },
+      "envelope": {
+        "attack_ms": 20,
+        "decay_ms": 100,
+        "sustain": 0.3,
+        "release_ms": 60
+      },
+      "volume": 0.3,
+      "duration_ms": 180,
+      "pitch_slide": {
+        "start_offset": -50,
+        "end_offset": 100,
+        "curve": "linear"
+      },
+      "filter": {
+        "type": "lowpass",
+        "cutoff_hz": 2500,
+        "resonance": 0.2
+      }
+    },
+    {
+      "id": "enemy_spawn",
+      "description": "Enemy unit appears",
+      "category": "world",
+      "oscillator": {
+        "type": "sawtooth",
+        "frequency": 150
+      },
+      "envelope": {
+        "attack_ms": 30,
+        "decay_ms": 120,
+        "sustain": 0.2,
+        "release_ms": 50
+      },
+      "volume": 0.35,
+      "duration_ms": 200,
+      "pitch_slide": {
+        "start_offset": 50,
+        "end_offset": -30,
+        "curve": "exponential"
+      },
+      "filter": {
+        "type": "lowpass",
+        "cutoff_hz": 800,
+        "resonance": 0.5
+      }
+    },
+    {
+      "id": "hit_player",
+      "description": "Player/castle takes damage",
+      "category": "combat",
+      "oscillator": {
+        "type": "noise",
+        "frequency": 0
+      },
+      "envelope": {
+        "attack_ms": 5,
+        "decay_ms": 60,
+        "sustain": 0.1,
+        "release_ms": 40
+      },
+      "volume": 0.45,
+      "duration_ms": 110,
+      "filter": {
+        "type": "bandpass",
+        "cutoff_hz": 400,
+        "resonance": 0.6
+      },
+      "pitch_slide": {
+        "start_offset": 100,
+        "end_offset": -200,
+        "curve": "linear"
+      }
+    },
+    {
+      "id": "hit_enemy",
+      "description": "Enemy takes damage or defeated",
+      "category": "combat",
+      "oscillator": {
+        "type": "square",
+        "frequency": 200
+      },
+      "envelope": {
+        "attack_ms": 3,
+        "decay_ms": 40,
+        "sustain": 0.1,
+        "release_ms": 60
+      },
+      "volume": 0.35,
+      "duration_ms": 100,
+      "pitch_slide": {
+        "start_offset": 50,
+        "end_offset": -100,
+        "curve": "exponential"
+      },
+      "filter": {
+        "type": "lowpass",
+        "cutoff_hz": 1500,
+        "resonance": 0.3
+      }
+    },
+    {
+      "id": "wave_start",
+      "description": "New wave begins",
+      "category": "world",
+      "oscillator": {
+        "type": "sawtooth",
+        "frequency": 220
+      },
+      "envelope": {
+        "attack_ms": 30,
+        "decay_ms": 150,
+        "sustain": 0.4,
+        "release_ms": 100
+      },
+      "volume": 0.5,
+      "duration_ms": 300,
+      "pitch_slide": {
+        "start_offset": 0,
+        "end_offset": 110,
+        "curve": "linear"
+      },
+      "harmonics": [
+        { "ratio": 1.5, "amplitude": 0.3 },
+        { "ratio": 2.0, "amplitude": 0.2 }
+      ],
+      "filter": {
+        "type": "lowpass",
+        "cutoff_hz": 1800,
+        "resonance": 0.2
+      }
+    },
+    {
+      "id": "wave_end",
+      "description": "Wave completed successfully",
+      "category": "world",
+      "oscillator": {
+        "type": "sine",
+        "frequency": 440
+      },
+      "envelope": {
+        "attack_ms": 20,
+        "decay_ms": 100,
+        "sustain": 0.5,
+        "release_ms": 100
+      },
+      "volume": 0.45,
+      "duration_ms": 280,
+      "pitch_slide": {
+        "start_offset": 0,
+        "end_offset": 220,
+        "curve": "exponential"
+      },
+      "harmonics": [
+        { "ratio": 2.0, "amplitude": 0.4 },
+        { "ratio": 3.0, "amplitude": 0.2 },
+        { "ratio": 4.0, "amplitude": 0.1 }
+      ]
+    }
+  ],
+  "mixing": {
+    "master_volume": 0.8,
+    "sfx_volume": 0.7,
+    "music_volume": 0.5,
+    "typing_volume": 0.6,
+    "ducking": {
+      "enabled": true,
+      "typing_active_duck": 0.3,
+      "wave_start_duck": 0.5,
+      "duck_duration_ms": 500
+    },
+    "rate_limits": {
+      "ui_keytap": {
+        "max_per_second": 12,
+        "cooldown_ms": 83
+      }
+    }
+  }
+}

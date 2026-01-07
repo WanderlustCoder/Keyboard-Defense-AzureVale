@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Enemy Flyer - 16x16 flying threat with wings -->
+
+  <!-- Shadow (smaller, elevated) -->
+  <rect x="6" y="14" width="4" height="1" fill="#2a2a3a"/>
+
+  <!-- Wings (spread) -->
+  <rect x="0" y="4" width="5" height="6" fill="#6c3483"/>
+  <rect x="1" y="3" width="4" height="2" fill="#6c3483"/>
+  <rect x="2" y="2" width="3" height="2" fill="#6c3483"/>
+  <!-- Wing membrane -->
+  <rect x="1" y="5" width="3" height="4" fill="#8e44ad"/>
+
+  <rect x="11" y="4" width="5" height="6" fill="#6c3483"/>
+  <rect x="11" y="3" width="4" height="2" fill="#6c3483"/>
+  <rect x="11" y="2" width="3" height="2" fill="#6c3483"/>
+  <!-- Wing membrane -->
+  <rect x="12" y="5" width="3" height="4" fill="#8e44ad"/>
+
+  <!-- Body (compact) -->
+  <rect x="5" y="5" width="6" height="7" fill="#922b21"/>
+  <rect x="6" y="4" width="4" height="2" fill="#922b21"/>
+
+  <!-- Body highlight -->
+  <rect x="5" y="5" width="2" height="5" fill="#c0392b"/>
+
+  <!-- Head -->
+  <rect x="6" y="2" width="4" height="3" fill="#c0392b"/>
+
+  <!-- Eyes (multiple, insect-like) -->
+  <rect x="6" y="3" width="1" height="1" fill="#f4d03f"/>
+  <rect x="8" y="3" width="1" height="1" fill="#f4d03f"/>
+  <rect x="9" y="3" width="1" height="1" fill="#f4d03f"/>
+
+  <!-- Mandibles -->
+  <rect x="6" y="5" width="1" height="1" fill="#1a1a2e"/>
+  <rect x="9" y="5" width="1" height="1" fill="#1a1a2e"/>
+
+  <!-- Tail/stinger -->
+  <rect x="7" y="11" width="2" height="3" fill="#922b21"/>
+  <rect x="7" y="13" width="2" height="1" fill="#1a1a2e"/>
+
+  <!-- Legs (tucked) -->
+  <rect x="5" y="10" width="1" height="2" fill="#6c3483"/>
+  <rect x="10" y="10" width="1" height="2" fill="#6c3483"/>
+</svg>

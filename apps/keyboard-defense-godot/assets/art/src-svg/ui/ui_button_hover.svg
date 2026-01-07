@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 16" width="24" height="16">
+  <!-- UI Button Hover - 24x16 hover state -->
+
+  <!-- Button body (brighter) -->
+  <rect x="2" y="2" width="20" height="12" fill="#2ecc71"/>
+
+  <!-- Border -->
+  <rect x="0" y="2" width="2" height="12" fill="#27ae60"/>
+  <rect x="22" y="2" width="2" height="12" fill="#27ae60"/>
+  <rect x="2" y="0" width="20" height="2" fill="#58d68d"/>
+  <rect x="2" y="14" width="20" height="2" fill="#1e8449"/>
+
+  <!-- Corners -->
+  <rect x="0" y="0" width="4" height="4" fill="#27ae60"/>
+  <rect x="20" y="0" width="4" height="4" fill="#27ae60"/>
+  <rect x="0" y="12" width="4" height="4" fill="#1e8449"/>
+  <rect x="20" y="12" width="4" height="4" fill="#1e8449"/>
+
+  <!-- Top highlight (stronger) -->
+  <rect x="4" y="2" width="16" height="3" fill="#58d68d"/>
+
+  <!-- Glow effect -->
+  <rect x="1" y="1" width="2" height="2" fill="#abebc6"/>
+  <rect x="21" y="1" width="2" height="2" fill="#abebc6"/>
+</svg>

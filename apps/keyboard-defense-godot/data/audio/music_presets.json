@@ -1,0 +1,116 @@
+{
+  "$schema": "../../docs/keyboard-defense-plans/assets/schemas/music-presets.schema.json",
+  "version": "1.0.0",
+  "description": "Music loop generation presets for procedural background music",
+  "presets": [
+    {
+      "id": "day_calm",
+      "description": "Calm daytime ambient loop",
+      "bpm": 72,
+      "bars": 16,
+      "key": "C_major",
+      "instruments": {
+        "pad": {
+          "enabled": true,
+          "type": "sine_pad",
+          "volume": 0.3,
+          "attack_ms": 500,
+          "release_ms": 800
+        },
+        "pluck": {
+          "enabled": true,
+          "type": "soft_pluck",
+          "volume": 0.25,
+          "pattern": "arpeggiated",
+          "notes_per_bar": 4
+        },
+        "bass": {
+          "enabled": false
+        },
+        "percussion": {
+          "enabled": false
+        }
+      },
+      "density": 0.3,
+      "mood": "peaceful"
+    },
+    {
+      "id": "night_tense",
+      "description": "Tense nighttime battle loop",
+      "bpm": 120,
+      "bars": 8,
+      "key": "A_minor",
+      "instruments": {
+        "pad": {
+          "enabled": true,
+          "type": "dark_pad",
+          "volume": 0.25,
+          "attack_ms": 200,
+          "release_ms": 400
+        },
+        "pluck": {
+          "enabled": true,
+          "type": "staccato",
+          "volume": 0.3,
+          "pattern": "rhythmic",
+          "notes_per_bar": 8
+        },
+        "bass": {
+          "enabled": true,
+          "type": "pulse_bass",
+          "volume": 0.35,
+          "pattern": "eighth_notes"
+        },
+        "percussion": {
+          "enabled": true,
+          "type": "light_drums",
+          "volume": 0.2,
+          "pattern": "hi_hat_only"
+        }
+      },
+      "density": 0.6,
+      "mood": "tense"
+    },
+    {
+      "id": "boss_battle",
+      "description": "Intense boss encounter loop",
+      "bpm": 140,
+      "bars": 8,
+      "key": "D_minor",
+      "instruments": {
+        "pad": {
+          "enabled": true,
+          "type": "dark_pad",
+          "volume": 0.2,
+          "attack_ms": 100,
+          "release_ms": 300
+        },
+        "pluck": {
+          "enabled": true,
+          "type": "aggressive",
+          "volume": 0.35,
+          "pattern": "syncopated",
+          "notes_per_bar": 16
+        },
+        "bass": {
+          "enabled": true,
+          "type": "heavy_bass",
+          "volume": 0.4,
+          "pattern": "driving"
+        },
+        "percussion": {
+          "enabled": true,
+          "type": "full_kit",
+          "volume": 0.35,
+          "pattern": "intense"
+        }
+      },
+      "density": 0.8,
+      "mood": "intense"
+    }
+  ],
+  "transitions": {
+    "crossfade_ms": 2000,
+    "beat_sync": true
+  }
+}

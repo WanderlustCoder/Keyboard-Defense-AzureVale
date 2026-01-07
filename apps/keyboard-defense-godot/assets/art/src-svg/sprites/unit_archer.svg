@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Archer Unit - 16x16 arrow-wielding unit -->
+
+  <!-- Shadow -->
+  <rect x="4" y="14" width="8" height="2" fill="#2a2a3a"/>
+
+  <!-- Body (leather armor) -->
+  <rect x="5" y="7" width="6" height="8" fill="#27ae60"/>
+  <rect x="4" y="9" width="8" height="5" fill="#27ae60"/>
+
+  <!-- Armor highlight -->
+  <rect x="5" y="7" width="2" height="6" fill="#2ecc71"/>
+
+  <!-- Head -->
+  <rect x="6" y="2" width="4" height="5" fill="#d4a574"/>
+
+  <!-- Hood -->
+  <rect x="5" y="1" width="6" height="3" fill="#1e8449"/>
+  <rect x="6" y="0" width="4" height="2" fill="#1e8449"/>
+
+  <!-- Eyes -->
+  <rect x="7" y="4" width="1" height="1" fill="#1a1a2e"/>
+  <rect x="9" y="4" width="1" height="1" fill="#1a1a2e"/>
+
+  <!-- Bow (held) -->
+  <rect x="2" y="5" width="1" height="8" fill="#5c3d2e"/>
+  <rect x="1" y="6" width="1" height="1" fill="#5c3d2e"/>
+  <rect x="1" y="11" width="1" height="1" fill="#5c3d2e"/>
+  <!-- Bowstring -->
+  <rect x="3" y="6" width="1" height="6" fill="#a0a0a0"/>
+
+  <!-- Arrow in quiver -->
+  <rect x="12" y="4" width="1" height="8" fill="#5c3d2e"/>
+  <rect x="12" y="3" width="1" height="2" fill="#7a7a7a"/>
+  <rect x="13" y="6" width="1" height="6" fill="#5c3d2e"/>
+  <rect x="13" y="5" width="1" height="2" fill="#7a7a7a"/>
+
+  <!-- Belt with quiver strap -->
+  <rect x="5" y="10" width="6" height="1" fill="#5c3d2e"/>
+  <rect x="10" y="6" width="1" height="5" fill="#5c3d2e"/>
+</svg>

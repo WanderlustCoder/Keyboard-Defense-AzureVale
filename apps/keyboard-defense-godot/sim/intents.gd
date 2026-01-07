@@ -2,6 +2,7 @@ class_name SimIntents
 extends RefCounted
 
 const CommandKeywords = preload("res://sim/command_keywords.gd")
+const RebindableActions = preload("res://game/rebindable_actions.gd")
 static var COMMANDS: Array[String] = CommandKeywords.keywords()
 
 static func make(kind: String, data: Dictionary = {}) -> Dictionary:
@@ -11,9 +12,11 @@ static func make(kind: String, data: Dictionary = {}) -> Dictionary:
     return intent
 
 static func help_lines() -> Array[String]:
+    var bind_hint: String = RebindableActions.format_actions_hint()
     return [
         "Commands:",
         "  help - list commands",
+        "  version - show game and engine versions",
         "  status - show phase and resources",
         "  gather <resource> <amount> - add resources (day only)",
         "  build <type> [x y] - place a building (day only)",
@@ -31,15 +34,41 @@ static func help_lines() -> Array[String]:
         "  enemies - list active enemies",
         "  report - toggle typing report panel",
         "  settings - toggle settings panel",
-        "  bind cycle_goal - set the cycle goal hotkey",
-        "  bind cycle_goal reset - restore default hotkey",
+        "  settings show|hide - show or hide settings panel",
+        "  settings lessons - show lessons prefs and health legend",
+        "  settings prefs - show settings summary",
+        "  settings scale [80|90|100|110|120|130|140|+|-|reset] - adjust UI scale (alias: settings font)",
+        "  settings compact [on|off|toggle] - reduce panel verbosity",
+        "  settings verify - print UI diagnostics",
+        "  settings conflicts - print keybind conflicts only",
+        "  settings resolve [apply] - auto-resolve keybind conflicts",
+        "  settings export [save] - export keybind diagnostics as JSON",
+        "  balance verify - run balance invariant checks",
+        "  balance export [group] - export balance diagnostics as JSON",
+        "  balance export save [group] - save balance diagnostics as JSON",
+        "  balance diff [group] - compare balance diagnostics to saved baseline",
+        "  balance summary [group] - print balance pacing summary (groups: wave, enemies, towers, buildings, midgame)",
+        "  tutorial - toggle onboarding panel",
+        "  tutorial restart - restart tutorial steps",
+        "  tutorial skip - mark tutorial complete",
+        "  bind <action> [key] - set a hotkey. %s" % bind_hint,
+        "  bind <action> reset - restore default hotkey",
         "  history - toggle typing history panel",
         "  history clear - clear typing history",
         "  trend - toggle typing trend panel",
         "  goal - show practice goal and options",
         "  goal <balanced|accuracy|backspace|speed> - set practice goal",
         "  goal next - cycle practice goals",
-        "  Hotkey: F2 cycles goals",
+        "  lesson - show lesson list",
+        "  lesson <id> - set lesson (day/game_over only)",
+        "  lesson next - cycle lessons (day/game_over only)",
+        "  lesson prev - cycle lessons backward (day/game_over only)",
+        "  lesson sample [n] - show sample words",
+        "  lessons - toggle lesson panel",
+        "  lessons reset [all] - reset lesson progress",
+        "  lessons sort [default|recent|name] - sort lesson list",
+        "  lessons sparkline [on|off] - toggle lesson sparklines",
+        "  Hotkeys: see Settings -> Controls or use bind <action>.",
         "  end - finish day and begin night",
         "  seed <string> - set RNG seed",
         "  defend <text> - debug alias for night input",
@@ -47,6 +76,7 @@ static func help_lines() -> Array[String]:
         "  save - write savegame.json",
         "  load - load savegame.json",
         "  new - start a new run",
+        "  Economy guardrails apply midgame; see Settings -> Economy.",
         "Night:",
         "  Type an enemy word and press Enter",
         "Examples:",
@@ -62,9 +92,14 @@ static func help_lines() -> Array[String]:
         "  upgrade",
         "  enemies",
         "  goal",
+        "  lesson",
+        "  lesson sample 3",
+        "  lessons",
         "  report",
         "  history",
         "  trend",
+        "  tutorial",
         "  map",
-        "  seed warmup-run"
+        "  seed warmup-run",
+        "Full command reference: docs/COMMAND_REFERENCE.md"
     ]

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 16" width="24" height="16">
+  <!-- UI Button Pressed - 24x16 pressed state -->
+
+  <!-- Button body (darker, pressed in) -->
+  <rect x="2" y="3" width="20" height="11" fill="#1e8449"/>
+
+  <!-- Border -->
+  <rect x="0" y="3" width="2" height="11" fill="#145a32"/>
+  <rect x="22" y="3" width="2" height="11" fill="#145a32"/>
+  <rect x="2" y="1" width="20" height="2" fill="#145a32"/>
+  <rect x="2" y="14" width="20" height="2" fill="#27ae60"/>
+
+  <!-- Corners -->
+  <rect x="0" y="1" width="4" height="4" fill="#145a32"/>
+  <rect x="20" y="1" width="4" height="4" fill="#145a32"/>
+  <rect x="0" y="12" width="4" height="4" fill="#1e8449"/>
+  <rect x="20" y="12" width="4" height="4" fill="#1e8449"/>
+
+  <!-- Top shadow (inverted lighting) -->
+  <rect x="4" y="3" width="16" height="2" fill="#145a32"/>
+
+  <!-- Bottom highlight -->
+  <rect x="4" y="12" width="16" height="2" fill="#27ae60"/>
+</svg>

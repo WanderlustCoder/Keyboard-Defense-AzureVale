@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Water background -->
+  <rect width="16" height="16" fill="#3d7ab8"/>
+  <!-- Bridge planks (horizontal) -->
+  <rect x="0" y="4" width="16" height="8" fill="#8b5a2b"/>
+  <!-- Plank lines -->
+  <rect x="0" y="4" width="16" height="1" fill="#5c3d2e"/>
+  <rect x="0" y="6" width="16" height="1" fill="#5c3d2e"/>
+  <rect x="0" y="8" width="16" height="1" fill="#5c3d2e"/>
+  <rect x="0" y="10" width="16" height="1" fill="#5c3d2e"/>
+  <!-- Bridge rails -->
+  <rect x="0" y="3" width="16" height="1" fill="#5c3d2e"/>
+  <rect x="0" y="12" width="16" height="1" fill="#5c3d2e"/>
+  <!-- Rail posts -->
+  <rect x="1" y="2" width="2" height="2" fill="#5c3d2e"/>
+  <rect x="7" y="2" width="2" height="2" fill="#5c3d2e"/>
+  <rect x="13" y="2" width="2" height="2" fill="#5c3d2e"/>
+  <rect x="1" y="12" width="2" height="2" fill="#5c3d2e"/>
+  <rect x="7" y="12" width="2" height="2" fill="#5c3d2e"/>
+  <rect x="13" y="12" width="2" height="2" fill="#5c3d2e"/>
+  <!-- Highlight -->
+  <rect x="0" y="5" width="16" height="1" fill="#a0702f"/>
+</svg>

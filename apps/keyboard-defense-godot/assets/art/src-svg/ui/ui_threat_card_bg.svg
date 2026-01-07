@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 40" width="32" height="40">
+  <!-- Threat Card Background - 32x40 -->
+
+  <!-- Card body -->
+  <rect x="2" y="2" width="28" height="36" fill="#16213e"/>
+
+  <!-- Border -->
+  <rect x="0" y="2" width="2" height="36" fill="#c0392b"/>
+  <rect x="30" y="2" width="2" height="36" fill="#c0392b"/>
+  <rect x="2" y="0" width="28" height="2" fill="#c0392b"/>
+  <rect x="2" y="38" width="28" height="2" fill="#c0392b"/>
+
+  <!-- Corners -->
+  <rect x="0" y="0" width="4" height="4" fill="#922b21"/>
+  <rect x="28" y="0" width="4" height="4" fill="#922b21"/>
+  <rect x="0" y="36" width="4" height="4" fill="#922b21"/>
+  <rect x="28" y="36" width="4" height="4" fill="#922b21"/>
+
+  <!-- Corner danger marks -->
+  <rect x="1" y="1" width="2" height="2" fill="#e74c3c"/>
+  <rect x="29" y="1" width="2" height="2" fill="#e74c3c"/>
+  <rect x="1" y="37" width="2" height="2" fill="#e74c3c"/>
+  <rect x="29" y="37" width="2" height="2" fill="#e74c3c"/>
+
+  <!-- Header area -->
+  <rect x="2" y="2" width="28" height="8" fill="#1a1a2e"/>
+  <rect x="2" y="10" width="28" height="1" fill="#c0392b"/>
+
+  <!-- Footer area -->
+  <rect x="2" y="32" width="28" height="6" fill="#1a1a2e"/>
+  <rect x="2" y="31" width="28" height="1" fill="#c0392b"/>
+</svg>

@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Library - 32x32 research/bonus building -->
+
+  <!-- Shadow base -->
+  <rect x="2" y="28" width="28" height="4" fill="#2a2a3a"/>
+
+  <!-- Building base -->
+  <rect x="4" y="14" width="24" height="18" fill="#8b5a2b"/>
+
+  <!-- Roof -->
+  <rect x="2" y="8" width="28" height="8" fill="#5c3d2e"/>
+  <rect x="4" y="6" width="24" height="4" fill="#5c3d2e"/>
+  <rect x="6" y="4" width="20" height="4" fill="#4a3024"/>
+  <rect x="8" y="2" width="16" height="4" fill="#4a3024"/>
+
+  <!-- Roof peak decoration -->
+  <rect x="14" y="0" width="4" height="4" fill="#f4d03f"/>
+
+  <!-- Front columns -->
+  <rect x="6" y="14" width="4" height="14" fill="#7a7a8a"/>
+  <rect x="22" y="14" width="4" height="14" fill="#7a7a8a"/>
+
+  <!-- Column highlights -->
+  <rect x="6" y="14" width="1" height="14" fill="#9a9a9a"/>
+  <rect x="22" y="14" width="1" height="14" fill="#9a9a9a"/>
+
+  <!-- Main entrance -->
+  <rect x="11" y="18" width="10" height="14" fill="#1a1a2e"/>
+  <rect x="12" y="19" width="8" height="13" fill="#16213e"/>
+
+  <!-- Windows above door -->
+  <rect x="10" y="10" width="4" height="4" fill="#1a1a2e"/>
+  <rect x="18" y="10" width="4" height="4" fill="#1a1a2e"/>
+
+  <!-- Book symbol on door -->
+  <rect x="14" y="22" width="4" height="6" fill="#f4d03f"/>
+  <rect x="15" y="23" width="2" height="4" fill="#b7950b"/>
+
+  <!-- Steps -->
+  <rect x="10" y="30" width="12" height="2" fill="#6a6a7a"/>
+
+  <!-- Highlight -->
+  <rect x="4" y="14" width="1" height="14" fill="#a0702f"/>
+</svg>

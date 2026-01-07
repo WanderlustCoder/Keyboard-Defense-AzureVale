@@ -28,6 +28,7 @@ var enemy_next_id: int
 var last_path_open: bool
 var rng_seed: String
 var rng_state: int
+var lesson_id: String
 var version: int
 
 func _init() -> void:
@@ -49,6 +50,7 @@ func _init() -> void:
     last_path_open = true
     rng_seed = "default"
     rng_state = 0
+    lesson_id = "full_alpha"
     version = 1
 
     resources = {}

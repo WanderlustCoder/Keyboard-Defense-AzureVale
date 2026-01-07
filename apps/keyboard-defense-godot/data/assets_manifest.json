@@ -1,4 +1,6 @@
 {
+  "version": "1.0.0",
+  "generated": "2026-01-06",
   "textures": [
     {
       "id": "typing_power",
@@ -6,7 +8,8 @@
       "expected_width": 16,
       "expected_height": 16,
       "max_kb": 8,
-      "pixel_art": true
+      "pixel_art": true,
+      "category": "icons"
     },
     {
       "id": "threat_slow",
@@ -14,7 +17,8 @@
       "expected_width": 16,
       "expected_height": 16,
       "max_kb": 8,
-      "pixel_art": true
+      "pixel_art": true,
+      "category": "icons"
     },
     {
       "id": "mistake_forgiveness",
@@ -22,7 +26,8 @@
       "expected_width": 16,
       "expected_height": 16,
       "max_kb": 8,
-      "pixel_art": true
+      "pixel_art": true,
+      "category": "icons"
     },
     {
       "id": "castle_health",
@@ -30,8 +35,846 @@
       "expected_width": 16,
       "expected_height": 16,
       "max_kb": 8,
-      "pixel_art": true
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_gold",
+      "path": "res://assets/icons/ico_gold.png",
+      "source_svg": "res://assets/art/src-svg/icons/ico_gold.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_accuracy",
+      "path": "res://assets/icons/ico_accuracy.png",
+      "source_svg": "res://assets/art/src-svg/icons/ico_accuracy.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_wpm",
+      "path": "res://assets/icons/ico_wpm.png",
+      "source_svg": "res://assets/art/src-svg/icons/ico_wpm.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_target",
+      "path": "res://assets/icons/ico_target.png",
+      "source_svg": "res://assets/art/src-svg/icons/ico_target.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_wave",
+      "path": "res://assets/icons/ico_wave.png",
+      "source_svg": "res://assets/art/src-svg/icons/ico_wave.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_threat",
+      "path": "res://assets/icons/ico_threat.png",
+      "source_svg": "res://assets/art/src-svg/icons/ico_threat.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_pause",
+      "path": "res://assets/icons/ico_pause.png",
+      "source_svg": "res://assets/art/src-svg/icons/ico_pause.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_resume",
+      "path": "res://assets/icons/ico_resume.png",
+      "source_svg": "res://assets/art/src-svg/icons/ico_resume.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_keyboard",
+      "path": "res://assets/icons/ico_keyboard.png",
+      "source_svg": "res://assets/art/src-svg/icons/ico_keyboard.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_buff",
+      "path": "res://assets/icons/ico_buff.png",
+      "source_svg": "res://assets/art/src-svg/icons/ico_buff.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "tile_grass",
+      "path": "res://assets/tiles/tile_grass.png",
+      "source_svg": "res://assets/art/src-svg/tiles/tile_grass.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_dirt",
+      "path": "res://assets/tiles/tile_dirt.png",
+      "source_svg": "res://assets/art/src-svg/tiles/tile_dirt.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_water",
+      "path": "res://assets/tiles/tile_water.png",
+      "source_svg": "res://assets/art/src-svg/tiles/tile_water.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_bridge",
+      "path": "res://assets/tiles/tile_bridge.png",
+      "source_svg": "res://assets/art/src-svg/tiles/tile_bridge.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_road_straight",
+      "path": "res://assets/tiles/tile_road_straight.png",
+      "source_svg": "res://assets/art/src-svg/tiles/tile_road_straight.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_road_corner",
+      "path": "res://assets/tiles/tile_road_corner.png",
+      "source_svg": "res://assets/art/src-svg/tiles/tile_road_corner.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_road_t",
+      "path": "res://assets/tiles/tile_road_t.png",
+      "source_svg": "res://assets/art/src-svg/tiles/tile_road_t.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_road_cross",
+      "path": "res://assets/tiles/tile_road_cross.png",
+      "source_svg": "res://assets/art/src-svg/tiles/tile_road_cross.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_road_end",
+      "path": "res://assets/tiles/tile_road_end.png",
+      "source_svg": "res://assets/art/src-svg/tiles/tile_road_end.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_wall_straight",
+      "path": "res://assets/tiles/tile_wall_straight.png",
+      "source_svg": "res://assets/art/src-svg/tiles/tile_wall_straight.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_wall_corner",
+      "path": "res://assets/tiles/tile_wall_corner.png",
+      "source_svg": "res://assets/art/src-svg/tiles/tile_wall_corner.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_wall_t",
+      "path": "res://assets/tiles/tile_wall_t.png",
+      "source_svg": "res://assets/art/src-svg/tiles/tile_wall_t.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_wall_cross",
+      "path": "res://assets/tiles/tile_wall_cross.png",
+      "source_svg": "res://assets/art/src-svg/tiles/tile_wall_cross.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_wall_end",
+      "path": "res://assets/tiles/tile_wall_end.png",
+      "source_svg": "res://assets/art/src-svg/tiles/tile_wall_end.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_shore_n",
+      "path": "res://assets/tiles/tile_shore_n.png",
+      "source_svg": "res://assets/art/src-svg/tiles/tile_shore_n.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_shore_s",
+      "path": "res://assets/tiles/tile_shore_s.png",
+      "source_svg": "res://assets/art/src-svg/tiles/tile_shore_s.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_shore_e",
+      "path": "res://assets/tiles/tile_shore_e.png",
+      "source_svg": "res://assets/art/src-svg/tiles/tile_shore_e.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_shore_w",
+      "path": "res://assets/tiles/tile_shore_w.png",
+      "source_svg": "res://assets/art/src-svg/tiles/tile_shore_w.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_shore_ne",
+      "path": "res://assets/tiles/tile_shore_ne.png",
+      "source_svg": "res://assets/art/src-svg/tiles/tile_shore_ne.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_shore_nw",
+      "path": "res://assets/tiles/tile_shore_nw.png",
+      "source_svg": "res://assets/art/src-svg/tiles/tile_shore_nw.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_shore_se",
+      "path": "res://assets/tiles/tile_shore_se.png",
+      "source_svg": "res://assets/art/src-svg/tiles/tile_shore_se.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_shore_sw",
+      "path": "res://assets/tiles/tile_shore_sw.png",
+      "source_svg": "res://assets/art/src-svg/tiles/tile_shore_sw.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "bld_castle",
+      "path": "res://assets/sprites/bld_castle.png",
+      "source_svg": "res://assets/art/src-svg/sprites/bld_castle.svg",
+      "expected_width": 48,
+      "expected_height": 48,
+      "max_kb": 16,
+      "pixel_art": true,
+      "category": "buildings"
+    },
+    {
+      "id": "bld_gate",
+      "path": "res://assets/sprites/bld_gate.png",
+      "source_svg": "res://assets/art/src-svg/sprites/bld_gate.svg",
+      "expected_width": 32,
+      "expected_height": 32,
+      "max_kb": 12,
+      "pixel_art": true,
+      "category": "buildings"
+    },
+    {
+      "id": "bld_wall",
+      "path": "res://assets/sprites/bld_wall.png",
+      "source_svg": "res://assets/art/src-svg/sprites/bld_wall.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "buildings"
+    },
+    {
+      "id": "bld_tower_arrow",
+      "path": "res://assets/sprites/bld_tower_arrow.png",
+      "source_svg": "res://assets/art/src-svg/sprites/bld_tower_arrow.svg",
+      "expected_width": 32,
+      "expected_height": 32,
+      "max_kb": 12,
+      "pixel_art": true,
+      "category": "buildings"
+    },
+    {
+      "id": "bld_tower_slow",
+      "path": "res://assets/sprites/bld_tower_slow.png",
+      "source_svg": "res://assets/art/src-svg/sprites/bld_tower_slow.svg",
+      "expected_width": 32,
+      "expected_height": 32,
+      "max_kb": 12,
+      "pixel_art": true,
+      "category": "buildings"
+    },
+    {
+      "id": "bld_library",
+      "path": "res://assets/sprites/bld_library.png",
+      "source_svg": "res://assets/art/src-svg/sprites/bld_library.svg",
+      "expected_width": 32,
+      "expected_height": 32,
+      "max_kb": 12,
+      "pixel_art": true,
+      "category": "buildings"
+    },
+    {
+      "id": "bld_barracks",
+      "path": "res://assets/sprites/bld_barracks.png",
+      "source_svg": "res://assets/art/src-svg/sprites/bld_barracks.svg",
+      "expected_width": 32,
+      "expected_height": 32,
+      "max_kb": 12,
+      "pixel_art": true,
+      "category": "buildings"
+    },
+    {
+      "id": "unit_scribe",
+      "path": "res://assets/sprites/unit_scribe.png",
+      "source_svg": "res://assets/art/src-svg/sprites/unit_scribe.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "units"
+    },
+    {
+      "id": "unit_archer",
+      "path": "res://assets/sprites/unit_archer.png",
+      "source_svg": "res://assets/art/src-svg/sprites/unit_archer.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "units"
+    },
+    {
+      "id": "unit_scout",
+      "path": "res://assets/sprites/unit_scout.png",
+      "source_svg": "res://assets/art/src-svg/sprites/unit_scout.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "units"
+    },
+    {
+      "id": "enemy_runner",
+      "path": "res://assets/sprites/enemy_runner.png",
+      "source_svg": "res://assets/art/src-svg/sprites/enemy_runner.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "enemies"
+    },
+    {
+      "id": "enemy_brute",
+      "path": "res://assets/sprites/enemy_brute.png",
+      "source_svg": "res://assets/art/src-svg/sprites/enemy_brute.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "enemies"
+    },
+    {
+      "id": "enemy_flyer",
+      "path": "res://assets/sprites/enemy_flyer.png",
+      "source_svg": "res://assets/art/src-svg/sprites/enemy_flyer.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "enemies"
+    },
+    {
+      "id": "fx_build_dust",
+      "path": "res://assets/sprites/fx_build_dust.png",
+      "source_svg": "res://assets/art/src-svg/sprites/fx_build_dust.svg",
+      "expected_width": 48,
+      "expected_height": 16,
+      "max_kb": 12,
+      "pixel_art": true,
+      "category": "effects",
+      "animation": {
+        "frames": 3,
+        "frame_width": 16,
+        "frame_height": 16,
+        "duration_ms": 300
+      }
+    },
+    {
+      "id": "fx_hit_flash",
+      "path": "res://assets/sprites/fx_hit_flash.png",
+      "source_svg": "res://assets/art/src-svg/sprites/fx_hit_flash.svg",
+      "expected_width": 32,
+      "expected_height": 16,
+      "max_kb": 10,
+      "pixel_art": true,
+      "category": "effects",
+      "animation": {
+        "frames": 2,
+        "frame_width": 16,
+        "frame_height": 16,
+        "duration_ms": 100
+      }
+    },
+    {
+      "id": "fx_typing_streak",
+      "path": "res://assets/sprites/fx_typing_streak.png",
+      "source_svg": "res://assets/art/src-svg/sprites/fx_typing_streak.svg",
+      "expected_width": 64,
+      "expected_height": 16,
+      "max_kb": 14,
+      "pixel_art": true,
+      "category": "effects",
+      "animation": {
+        "frames": 4,
+        "frame_width": 16,
+        "frame_height": 16,
+        "duration_ms": 400
+      }
+    },
+    {
+      "id": "fx_reward_sparkle",
+      "path": "res://assets/sprites/fx_reward_sparkle.png",
+      "source_svg": "res://assets/art/src-svg/sprites/fx_reward_sparkle.svg",
+      "expected_width": 64,
+      "expected_height": 16,
+      "max_kb": 14,
+      "pixel_art": true,
+      "category": "effects",
+      "animation": {
+        "frames": 4,
+        "frame_width": 16,
+        "frame_height": 16,
+        "duration_ms": 400
+      }
+    },
+    {
+      "id": "fx_projectile",
+      "path": "res://assets/sprites/fx_projectile.png",
+      "source_svg": "res://assets/art/src-svg/sprites/fx_projectile.svg",
+      "expected_width": 16,
+      "expected_height": 8,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "effects"
+    },
+    {
+      "id": "fx_magic_bolt",
+      "path": "res://assets/sprites/fx_magic_bolt.png",
+      "source_svg": "res://assets/art/src-svg/sprites/fx_magic_bolt.svg",
+      "expected_width": 16,
+      "expected_height": 8,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "effects"
+    },
+    {
+      "id": "ui_panel_bg",
+      "path": "res://assets/ui/ui_panel_bg.png",
+      "source_svg": "res://assets/art/src-svg/ui/ui_panel_bg.svg",
+      "expected_width": 24,
+      "expected_height": 24,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "ui",
+      "nineslice": {
+        "margin_left": 4,
+        "margin_right": 4,
+        "margin_top": 4,
+        "margin_bottom": 4
+      }
+    },
+    {
+      "id": "ui_panel_header",
+      "path": "res://assets/ui/ui_panel_header.png",
+      "source_svg": "res://assets/art/src-svg/ui/ui_panel_header.svg",
+      "expected_width": 24,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "ui",
+      "nineslice": {
+        "margin_left": 4,
+        "margin_right": 4,
+        "margin_top": 4,
+        "margin_bottom": 4
+      }
+    },
+    {
+      "id": "ui_button",
+      "path": "res://assets/ui/ui_button.png",
+      "source_svg": "res://assets/art/src-svg/ui/ui_button.svg",
+      "expected_width": 24,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "ui",
+      "nineslice": {
+        "margin_left": 4,
+        "margin_right": 4,
+        "margin_top": 4,
+        "margin_bottom": 4
+      }
+    },
+    {
+      "id": "ui_button_hover",
+      "path": "res://assets/ui/ui_button_hover.png",
+      "source_svg": "res://assets/art/src-svg/ui/ui_button_hover.svg",
+      "expected_width": 24,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "ui",
+      "nineslice": {
+        "margin_left": 4,
+        "margin_right": 4,
+        "margin_top": 4,
+        "margin_bottom": 4
+      }
+    },
+    {
+      "id": "ui_button_pressed",
+      "path": "res://assets/ui/ui_button_pressed.png",
+      "source_svg": "res://assets/art/src-svg/ui/ui_button_pressed.svg",
+      "expected_width": 24,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "ui",
+      "nineslice": {
+        "margin_left": 4,
+        "margin_right": 4,
+        "margin_top": 4,
+        "margin_bottom": 4
+      }
+    },
+    {
+      "id": "ui_prompt_bg",
+      "path": "res://assets/ui/ui_prompt_bg.png",
+      "source_svg": "res://assets/art/src-svg/ui/ui_prompt_bg.svg",
+      "expected_width": 32,
+      "expected_height": 24,
+      "max_kb": 10,
+      "pixel_art": true,
+      "category": "ui",
+      "nineslice": {
+        "margin_left": 4,
+        "margin_right": 4,
+        "margin_top": 4,
+        "margin_bottom": 4
+      }
+    },
+    {
+      "id": "ui_threat_card_bg",
+      "path": "res://assets/ui/ui_threat_card_bg.png",
+      "source_svg": "res://assets/art/src-svg/ui/ui_threat_card_bg.svg",
+      "expected_width": 32,
+      "expected_height": 40,
+      "max_kb": 12,
+      "pixel_art": true,
+      "category": "ui",
+      "nineslice": {
+        "margin_left": 4,
+        "margin_right": 4,
+        "margin_top": 10,
+        "margin_bottom": 8
+      }
+    },
+    {
+      "id": "ui_tag",
+      "path": "res://assets/ui/ui_tag.png",
+      "source_svg": "res://assets/art/src-svg/ui/ui_tag.svg",
+      "expected_width": 16,
+      "expected_height": 8,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "ui",
+      "nineslice": {
+        "margin_left": 3,
+        "margin_right": 3,
+        "margin_top": 2,
+        "margin_bottom": 2
+      }
+    },
+    {
+      "id": "ui_progress_bar_bg",
+      "path": "res://assets/ui/ui_progress_bar_bg.png",
+      "source_svg": "res://assets/art/src-svg/ui/ui_progress_bar_bg.svg",
+      "expected_width": 32,
+      "expected_height": 8,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "ui",
+      "nineslice": {
+        "margin_left": 3,
+        "margin_right": 3,
+        "margin_top": 2,
+        "margin_bottom": 2
+      }
+    },
+    {
+      "id": "ui_progress_bar_fill",
+      "path": "res://assets/ui/ui_progress_bar_fill.png",
+      "source_svg": "res://assets/art/src-svg/ui/ui_progress_bar_fill.svg",
+      "expected_width": 16,
+      "expected_height": 6,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "ui",
+      "nineslice": {
+        "margin_left": 2,
+        "margin_right": 2,
+        "margin_top": 1,
+        "margin_bottom": 1
+      }
+    },
+    {
+      "id": "ui_cursor",
+      "path": "res://assets/ui/ui_cursor.png",
+      "source_svg": "res://assets/art/src-svg/ui/ui_cursor.svg",
+      "expected_width": 4,
+      "expected_height": 16,
+      "max_kb": 4,
+      "pixel_art": true,
+      "category": "ui"
+    },
+    {
+      "id": "ui_focus_ring",
+      "path": "res://assets/ui/ui_focus_ring.png",
+      "source_svg": "res://assets/art/src-svg/ui/ui_focus_ring.svg",
+      "expected_width": 24,
+      "expected_height": 24,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "ui",
+      "nineslice": {
+        "margin_left": 4,
+        "margin_right": 4,
+        "margin_top": 4,
+        "margin_bottom": 4
+      }
+    },
+    {
+      "id": "ui_mistake_underline",
+      "path": "res://assets/ui/ui_mistake_underline.png",
+      "source_svg": "res://assets/art/src-svg/ui/ui_mistake_underline.svg",
+      "expected_width": 16,
+      "expected_height": 4,
+      "max_kb": 4,
+      "pixel_art": true,
+      "category": "ui",
+      "tileable": true
+    },
+    {
+      "id": "sfk_research_castle_ref",
+      "path": "res://docs/research/super_fantasy_kingdom/pixel_art_castle.png",
+      "expected_width": 1536,
+      "expected_height": 1024,
+      "max_kb": 2300,
+      "pixel_art": true,
+      "category": "reference"
     }
   ],
-  "audio": []
+  "audio": [
+    {
+      "id": "ui_keytap",
+      "preset_ref": "sfx_presets.json#ui_keytap",
+      "category": "ui",
+      "description": "Subtle key press sound"
+    },
+    {
+      "id": "ui_confirm",
+      "preset_ref": "sfx_presets.json#ui_confirm",
+      "category": "ui",
+      "description": "Positive confirmation"
+    },
+    {
+      "id": "ui_cancel",
+      "preset_ref": "sfx_presets.json#ui_cancel",
+      "category": "ui",
+      "description": "Negative cancel"
+    },
+    {
+      "id": "type_correct",
+      "preset_ref": "sfx_presets.json#type_correct",
+      "category": "typing",
+      "description": "Correct character typed"
+    },
+    {
+      "id": "type_mistake",
+      "preset_ref": "sfx_presets.json#type_mistake",
+      "category": "typing",
+      "description": "Incorrect character typed"
+    },
+    {
+      "id": "combo_up",
+      "preset_ref": "sfx_presets.json#combo_up",
+      "category": "typing",
+      "description": "Combo milestone reached"
+    },
+    {
+      "id": "combo_break",
+      "preset_ref": "sfx_presets.json#combo_break",
+      "category": "typing",
+      "description": "Combo broken"
+    },
+    {
+      "id": "build_place",
+      "preset_ref": "sfx_presets.json#build_place",
+      "category": "world",
+      "description": "Building placement"
+    },
+    {
+      "id": "build_complete",
+      "preset_ref": "sfx_presets.json#build_complete",
+      "category": "world",
+      "description": "Building finished"
+    },
+    {
+      "id": "resource_pickup",
+      "preset_ref": "sfx_presets.json#resource_pickup",
+      "category": "world",
+      "description": "Resource collected"
+    },
+    {
+      "id": "unit_spawn",
+      "preset_ref": "sfx_presets.json#unit_spawn",
+      "category": "world",
+      "description": "Friendly unit appears"
+    },
+    {
+      "id": "enemy_spawn",
+      "preset_ref": "sfx_presets.json#enemy_spawn",
+      "category": "world",
+      "description": "Enemy appears"
+    },
+    {
+      "id": "hit_player",
+      "preset_ref": "sfx_presets.json#hit_player",
+      "category": "combat",
+      "description": "Player takes damage"
+    },
+    {
+      "id": "hit_enemy",
+      "preset_ref": "sfx_presets.json#hit_enemy",
+      "category": "combat",
+      "description": "Enemy hit/defeated"
+    },
+    {
+      "id": "wave_start",
+      "preset_ref": "sfx_presets.json#wave_start",
+      "category": "world",
+      "description": "New wave begins"
+    },
+    {
+      "id": "wave_end",
+      "preset_ref": "sfx_presets.json#wave_end",
+      "category": "world",
+      "description": "Wave completed"
+    }
+  ]
 }

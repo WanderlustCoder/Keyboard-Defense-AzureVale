@@ -3,7 +3,9 @@ extends RefCounted
 
 const KEYWORDS: Array[String] = [
     "help",
+    "version",
     "status",
+    "balance",
     "gather",
     "build",
     "explore",
@@ -24,11 +26,14 @@ const KEYWORDS: Array[String] = [
     "demolish",
     "enemies",
     "goal",
+    "lesson",
+    "lessons",
     "settings",
     "bind",
     "report",
     "history",
-    "trend"
+    "trend",
+    "tutorial"
 ]
 
 static func keywords() -> Array[String]:

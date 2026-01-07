@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 16" width="24" height="16">
+  <!-- UI Panel Header - 24x16 for title bars -->
+
+  <!-- Main fill (darker) -->
+  <rect x="2" y="2" width="20" height="12" fill="#1a1a2e"/>
+
+  <!-- Border -->
+  <rect x="0" y="2" width="2" height="12" fill="#0f3460"/>
+  <rect x="22" y="2" width="2" height="12" fill="#0f3460"/>
+  <rect x="2" y="0" width="20" height="2" fill="#3498db"/>
+  <rect x="2" y="14" width="20" height="2" fill="#0a1a30"/>
+
+  <!-- Corners -->
+  <rect x="0" y="0" width="4" height="4" fill="#3498db"/>
+  <rect x="20" y="0" width="4" height="4" fill="#3498db"/>
+  <rect x="0" y="12" width="4" height="4" fill="#0f3460"/>
+  <rect x="20" y="12" width="4" height="4" fill="#0f3460"/>
+
+  <!-- Top accent line -->
+  <rect x="4" y="1" width="16" height="1" fill="#5dade2"/>
+
+  <!-- Decorative dots -->
+  <rect x="2" y="7" width="2" height="2" fill="#3498db"/>
+  <rect x="20" y="7" width="2" height="2" fill="#3498db"/>
+</svg>

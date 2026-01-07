@@ -4,3 +4,6 @@
 *.uid
 _test.log
 _test_summary.log
+Logs/ScenarioReports/
+Logs/ScenarioReports/*.json
+Logs/ScenarioReports/last_summary.txt

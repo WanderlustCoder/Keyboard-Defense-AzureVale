@@ -1,0 +1,57 @@
+name: Balance / tuning issue
+description: Report a balance problem (too easy/hard, resource glut, typing pressure mismatch).
+title: "[Balance]: "
+labels: ["balance", "triage"]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Build / Version
+      placeholder: "0.2.0-alpha+123"
+    validations:
+      required: true
+
+  - type: textarea
+    id: scenario
+    attributes:
+      label: Scenario
+      description: Describe the run context (seed, difficulty settings, unlocks).
+      placeholder: |
+        Seed: 12345
+        Difficulty: Normal
+        Typing time pressure: 1.0
+        Error tolerance: lenient
+        Unlocks: ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What feels off?
+      description: What is too strong/weak and how does it manifest?
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Provide numbers if possible (WPM, accuracy, resources/day, wave #).
+      placeholder: |
+        Day 4: wood=220, stone=10, food=-5
+        Night 4: wave size=45, breached in 12s
+        Player WPM=32, accuracy=91%
+    validations:
+      required: false
+
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested tuning change (optional)
+      placeholder: |
+        - Increase wood cost of tower by +10
+        - Reduce wave scaling by 5% on Normal
+    validations:
+      required: false
+

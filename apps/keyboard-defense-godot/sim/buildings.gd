@@ -7,26 +7,26 @@ const SimMap = preload("res://sim/map.gd")
 const BUILDINGS := {
     "farm": {
         "cost": {"wood": 10},
-        "production": {"food": 2},
+        "production": {"food": 3},
         "defense": 0
     },
     "lumber": {
         "cost": {"wood": 5, "food": 2},
-        "production": {"wood": 2},
+        "production": {"wood": 3},
         "defense": 0
     },
     "quarry": {
         "cost": {"wood": 5, "food": 2},
-        "production": {"stone": 2},
+        "production": {"stone": 3},
         "defense": 0
     },
     "wall": {
-        "cost": {"wood": 5, "stone": 5},
+        "cost": {"wood": 4, "stone": 4},
         "production": {},
         "defense": 1
     },
     "tower": {
-        "cost": {"wood": 5, "stone": 10},
+        "cost": {"wood": 4, "stone": 8},
         "production": {},
         "defense": 2
     }
@@ -34,13 +34,13 @@ const BUILDINGS := {
 
 const TOWER_STATS := {
     1: {"range": 3, "damage": 1, "shots": 1},
-    2: {"range": 4, "damage": 1, "shots": 2},
-    3: {"range": 5, "damage": 2, "shots": 2}
+    2: {"range": 4, "damage": 2, "shots": 2},
+    3: {"range": 5, "damage": 3, "shots": 2}
 }
 
 const TOWER_UPGRADE_COSTS := {
-    1: {"wood": 5, "stone": 10},
-    2: {"wood": 10, "stone": 15}
+    1: {"wood": 4, "stone": 8},
+    2: {"wood": 8, "stone": 12}
 }
 
 static func is_valid(building_type: String) -> bool:

@@ -10,18 +10,59 @@ const ENEMY_KINDS := {
     "scout": {"speed": 2, "armor": 0, "hp_bonus": -1, "glyph": "s"},
     "armored": {"speed": 1, "armor": 1, "hp_bonus": 1, "glyph": "a"}
 }
+const ENEMY_HP_BONUS_BY_DAY := {
+    "armored": [1, 1, 1, 2, 2, 2, 4],
+    "raider": [0, 0, 0, 0, 1, 1, 2],
+    "scout": [-1, -1, -1, 0, 0, 0, 1]
+}
+const ENEMY_ARMOR_BY_DAY := {
+    "armored": [1, 1, 1, 1, 1, 1, 2],
+    "raider": [0, 0, 0, 0, 0, 0, 1],
+    "scout": [0, 0, 0, 0, 0, 0, 1]
+}
+const ENEMY_SPEED_BY_DAY := {
+    "raider": [1, 1, 1, 1, 1, 1, 2],
+    "scout": [2, 2, 2, 2, 2, 2, 3],
+    "armored": [1, 1, 1, 1, 1, 1, 2]
+}
+
+static func hp_bonus_for_day(kind: String, day: int) -> int:
+    var bonuses: Array = ENEMY_HP_BONUS_BY_DAY.get(kind, [])
+    if bonuses.is_empty():
+        var fallback: Dictionary = ENEMY_KINDS.get(kind, ENEMY_KINDS["raider"])
+        return int(fallback.get("hp_bonus", 0))
+    var index: int = int(clamp(day - 1, 0, bonuses.size() - 1))
+    return int(bonuses[index])
+
+static func armor_for_day(kind: String, day: int) -> int:
+    var values: Array = ENEMY_ARMOR_BY_DAY.get(kind, [])
+    if values.is_empty():
+        var fallback: Dictionary = ENEMY_KINDS.get(kind, ENEMY_KINDS["raider"])
+        return int(fallback.get("armor", 0))
+    var index: int = int(clamp(day - 1, 0, values.size() - 1))
+    return int(values[index])
+
+static func speed_for_day(kind: String, day: int) -> int:
+    var values: Array = ENEMY_SPEED_BY_DAY.get(kind, [])
+    if values.is_empty():
+        var fallback: Dictionary = ENEMY_KINDS.get(kind, ENEMY_KINDS["raider"])
+        return int(fallback.get("speed", 1))
+    var index: int = int(clamp(day - 1, 0, values.size() - 1))
+    return int(values[index])
 
 static func make_enemy(state: GameState, kind: String, pos: Vector2i) -> Dictionary:
-    var config: Dictionary = ENEMY_KINDS.get(kind, ENEMY_KINDS["raider"])
     var base_hp: int = 2 + int(state.day / 3) + int(state.threat / 4)
-    var hp: int = max(1, base_hp + int(config.get("hp_bonus", 0)))
+    var hp_bonus: int = hp_bonus_for_day(kind, state.day)
+    var hp: int = max(1, base_hp + hp_bonus)
+    var armor_value: int = armor_for_day(kind, state.day)
+    var speed_value: int = speed_for_day(kind, state.day)
     var enemy := {
         "id": state.enemy_next_id,
         "kind": kind,
         "pos": pos,
         "hp": hp,
-        "armor": int(config.get("armor", 0)),
-        "speed": int(config.get("speed", 1)),
+        "armor": armor_value,
+        "speed": speed_value,
         "word": ""
     }
     return assign_word(state, enemy)
@@ -58,7 +99,7 @@ static func assign_word(state: GameState, enemy: Dictionary) -> Dictionary:
     var used: Dictionary = _used_words(state.enemies)
     var kind: String = str(enemy.get("kind", "raider"))
     var enemy_id: int = int(enemy.get("id", 0))
-    var word: String = SimWords.word_for_enemy(state.rng_seed, state.day, kind, enemy_id, used)
+    var word: String = SimWords.word_for_enemy(state.rng_seed, state.day, kind, enemy_id, used, state.lesson_id)
     enemy["word"] = word.to_lower()
     return enemy
 
@@ -78,7 +119,7 @@ static func ensure_enemy_words(state: GameState) -> void:
         var word: String = str(enemy.get("word", ""))
         if word == "":
             var kind: String = str(enemy.get("kind", "raider"))
-            var assigned: String = SimWords.word_for_enemy(state.rng_seed, state.day, kind, enemy_id, used)
+            var assigned: String = SimWords.word_for_enemy(state.rng_seed, state.day, kind, enemy_id, used, state.lesson_id)
             enemy["word"] = assigned.to_lower()
             used[enemy["word"]] = true
         else:

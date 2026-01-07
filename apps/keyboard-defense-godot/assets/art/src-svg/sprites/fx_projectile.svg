@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 8" width="16" height="8">
+  <!-- Projectile/Arrow Effect - 16x8 -->
+
+  <!-- Arrow shaft -->
+  <rect x="0" y="3" width="12" height="2" fill="#5c3d2e"/>
+
+  <!-- Arrow head -->
+  <rect x="12" y="2" width="2" height="4" fill="#7a7a7a"/>
+  <rect x="14" y="3" width="2" height="2" fill="#7a7a7a"/>
+
+  <!-- Arrow tip -->
+  <rect x="15" y="3" width="1" height="2" fill="#9a9a9a"/>
+
+  <!-- Fletching -->
+  <rect x="0" y="1" width="3" height="2" fill="#c0392b"/>
+  <rect x="0" y="5" width="3" height="2" fill="#c0392b"/>
+
+  <!-- Shaft highlight -->
+  <rect x="3" y="3" width="8" height="1" fill="#8b5a2b"/>
+
+  <!-- Motion blur hint -->
+  <rect x="0" y="3" width="1" height="2" fill="#5c3d2e" fill-opacity="0.5"/>
+</svg>

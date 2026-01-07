@@ -5,6 +5,7 @@ const GameState = preload("res://sim/types.gd")
 const SimMap = preload("res://sim/map.gd")
 const SimBuildings = preload("res://sim/buildings.gd")
 const SimEnemies = preload("res://sim/enemies.gd")
+const SimLessons = preload("res://sim/lessons.gd")
 
 const SAVE_VERSION := 1
 
@@ -42,7 +43,8 @@ static func state_to_dict(state: GameState) -> Dictionary:
         "enemy_next_id": state.enemy_next_id,
         "last_path_open": state.last_path_open,
         "rng_seed": state.rng_seed,
-        "rng_state": state.rng_state
+        "rng_state": state.rng_state,
+        "lesson_id": state.lesson_id
     }
 
 static func state_from_dict(data: Dictionary) -> Dictionary:
@@ -71,6 +73,7 @@ static func state_from_dict(data: Dictionary) -> Dictionary:
     state.last_path_open = bool(data.get("last_path_open", true))
     state.rng_seed = str(data.get("rng_seed", state.rng_seed))
     state.rng_state = int(data.get("rng_state", state.rng_state))
+    state.lesson_id = SimLessons.normalize_lesson_id(str(data.get("lesson_id", state.lesson_id)))
 
     SimEnemies.ensure_enemy_words(state)
 

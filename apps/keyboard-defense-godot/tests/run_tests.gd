@@ -9,13 +9,28 @@ const SimBuildings = preload("res://sim/buildings.gd")
 const SimSave = preload("res://sim/save.gd")
 const SimRng = preload("res://sim/rng.gd")
 const SimEnemies = preload("res://sim/enemies.gd")
+const SimLessons = preload("res://sim/lessons.gd")
 const SimWords = preload("res://sim/words.gd")
 const SimTypingFeedback = preload("res://sim/typing_feedback.gd")
 const CommandKeywords = preload("res://sim/command_keywords.gd")
 const SimTypingStats = preload("res://sim/typing_stats.gd")
 const SimTypingTrends = preload("res://sim/typing_trends.gd")
 const PracticeGoals = preload("res://sim/practice_goals.gd")
+const SimBalanceReport = preload("res://sim/balance_report.gd")
 const GoalTheme = preload("res://game/goal_theme.gd")
+const MainScript = preload("res://game/main.gd")
+const ControlsFormatter = preload("res://game/controls_formatter.gd")
+const TypingProfile = preload("res://game/typing_profile.gd")
+const RebindableActions = preload("res://game/rebindable_actions.gd")
+const KeybindConflicts = preload("res://game/keybind_conflicts.gd")
+const MiniTrend = preload("res://game/mini_trend.gd")
+const LessonsSort = preload("res://game/lessons_sort.gd")
+const LessonHealth = preload("res://game/lesson_health.gd")
+const OnboardingFlow = preload("res://game/onboarding_flow.gd")
+const ScenarioLoader = preload("res://tools/scenario_harness/scenario_loader.gd")
+const ScenarioRunner = preload("res://tools/scenario_harness/scenario_runner.gd")
+const ScenarioEval = preload("res://tools/scenario_harness/scenario_eval.gd")
+const ScenarioTypes = preload("res://tools/scenario_harness/scenario_types.gd")
 
 var total_tests: int = 0
 var total_failed: int = 0
@@ -38,10 +53,28 @@ func _run_all() -> void:
     _run_scene_compile_tests()
     _run_reducer_tests()
     _run_determinism_tests()
+    _run_lessons_tests()
+    _run_docs_tests()
+    _run_export_pipeline_tests()
+    _run_version_tests()
+    _run_version_bump_tests()
+    _run_balance_report_tests()
+    _run_verification_wrapper_tests()
     _run_command_keywords_tests()
     _run_practice_goal_tests()
     _run_goal_theme_tests()
     _run_inputmap_tests()
+    _run_controls_formatter_tests()
+    _run_keybind_conflicts_tests()
+    _run_help_tests()
+    _run_keybind_parsing_tests()
+    _run_keybind_persistence_tests()
+    _run_mini_trend_tests()
+    _run_lesson_health_tests()
+    _run_lessons_sort_tests()
+    _run_onboarding_flow_tests()
+    _run_scenario_harness_tests()
+    _run_typing_profile_tests()
     _run_typing_feedback_tests()
     _run_typing_stats_tests()
     _run_typing_trends_tests()
@@ -79,7 +112,27 @@ func _run_parser_tests() -> void:
     _assert_parse_ok("build farm", "build")
     _assert_parse_ok("build farm 1 2", "build")
     _assert_parse_ok("explore", "explore")
+    _assert_parse_ok("help settings", "help")
+    _assert_parse_ok("help hotkeys", "help")
+    _assert_parse_ok("help topics", "help")
+    _assert_parse_ok("help play", "help")
+    _assert_parse_ok("help accessibility", "help")
+    _assert_parse_ok("version", "ui_version")
     _assert_parse_ok("restart", "restart")
+    _assert_parse_ok("balance verify", "ui_balance_verify")
+    _assert_parse_ok("balance export", "ui_balance_export")
+    _assert_parse_ok("balance export all", "ui_balance_export")
+    _assert_parse_ok("balance export wave", "ui_balance_export")
+    _assert_parse_ok("balance export save", "ui_balance_export")
+    _assert_parse_ok("balance export save wave", "ui_balance_export")
+    _assert_parse_ok("balance diff", "ui_balance_diff")
+    _assert_parse_ok("balance diff wave", "ui_balance_diff")
+    _assert_parse_ok("balance summary", "ui_balance_summary")
+    _assert_parse_ok("balance summary wave", "ui_balance_summary")
+    _assert_parse_ok("balance summary enemies", "ui_balance_summary")
+    _assert_parse_ok("balance summary towers", "ui_balance_summary")
+    _assert_parse_ok("balance summary buildings", "ui_balance_summary")
+    _assert_parse_ok("balance summary midgame", "ui_balance_summary")
     _assert_parse_ok("defend shield", "defend_input")
     _assert_parse_ok("cursor 1 2", "cursor")
     _assert_parse_ok("cursor up", "cursor_move")
@@ -112,9 +165,55 @@ func _run_parser_tests() -> void:
     _assert_parse_ok("goal accuracy", "ui_goal_set")
     _assert_parse_ok("goal next", "ui_goal_next")
     _assert_parse_ok("goal banana", "ui_goal_set")
+    _assert_parse_ok("lessons", "ui_lessons_toggle")
+    _assert_parse_ok("lessons sort recent", "ui_lessons_sort")
+    _assert_parse_ok("lessons sort default", "ui_lessons_sort")
+    _assert_parse_ok("lessons sort name", "ui_lessons_sort")
+    _assert_parse_ok("lessons sparkline on", "ui_lessons_sparkline")
+    _assert_parse_ok("lessons sparkline off", "ui_lessons_sparkline")
+    _assert_parse_ok("lessons sparkline", "ui_lessons_sparkline")
+    _assert_parse_ok("lessons reset", "ui_lessons_reset")
+    _assert_parse_ok("lessons reset all", "ui_lessons_reset")
+    _assert_parse_ok("lesson", "lesson_show")
+    _assert_parse_ok("lesson home_row", "lesson_set")
+    _assert_parse_ok("lesson next", "lesson_next")
+    _assert_parse_ok("lesson prev", "lesson_prev")
+    _assert_parse_ok("lesson sample", "lesson_sample")
+    _assert_parse_ok("lesson sample 4", "lesson_sample")
     _assert_parse_ok("settings", "ui_settings_toggle")
-    _assert_parse_ok("bind cycle_goal", "ui_bind_cycle_goal")
-    _assert_parse_ok("bind cycle_goal reset", "ui_bind_cycle_goal_reset")
+    _assert_parse_ok("settings show", "ui_settings_show")
+    _assert_parse_ok("settings hide", "ui_settings_hide")
+    _assert_parse_ok("settings lessons", "ui_settings_lessons")
+    _assert_parse_ok("settings prefs", "ui_settings_prefs")
+    _assert_parse_ok("settings scale", "ui_settings_scale")
+    _assert_parse_ok("settings scale 120", "ui_settings_scale")
+    _assert_parse_ok("settings scale +", "ui_settings_scale")
+    _assert_parse_ok("settings scale reset", "ui_settings_scale")
+    _assert_parse_ok("settings font 120", "ui_settings_scale")
+    _assert_parse_ok("settings font +", "ui_settings_scale")
+    _assert_parse_ok("settings font reset", "ui_settings_scale")
+    _assert_parse_ok("settings verify", "ui_settings_verify")
+    _assert_parse_ok("settings conflicts", "ui_settings_conflicts")
+    _assert_parse_ok("settings resolve", "ui_settings_resolve")
+    _assert_parse_ok("settings resolve apply", "ui_settings_resolve")
+    _assert_parse_ok("settings export", "ui_settings_export")
+    _assert_parse_ok("settings export save", "ui_settings_export")
+    _assert_parse_ok("settings compact on", "ui_settings_compact")
+    _assert_parse_ok("settings compact toggle", "ui_settings_compact")
+    _assert_parse_ok("tutorial", "ui_tutorial_toggle")
+    _assert_parse_ok("tutorial restart", "ui_tutorial_restart")
+    _assert_parse_ok("tutorial skip", "ui_tutorial_skip")
+    _assert_parse_ok("bind cycle_goal", "ui_bind_action")
+    _assert_parse_ok("bind cycle_goal reset", "ui_bind_action_reset")
+    _assert_parse_ok("bind toggle_settings reset", "ui_bind_action_reset")
+    _assert_parse_ok("bind toggle_lessons F2", "ui_bind_action")
+    _assert_parse_ok("bind toggle_trend", "ui_bind_action")
+    _assert_parse_ok("bind toggle_trend reset", "ui_bind_action_reset")
+    _assert_parse_ok("bind toggle_compact", "ui_bind_action")
+    _assert_parse_ok("bind toggle_compact F4", "ui_bind_action")
+    _assert_parse_ok("bind toggle_compact reset", "ui_bind_action_reset")
+    _assert_parse_ok("bind toggle_history", "ui_bind_action")
+    _assert_parse_ok("bind toggle_history reset", "ui_bind_action_reset")
 
     var invalid_build: Dictionary = CommandParser.parse("build castle")
     _assert_true(not invalid_build.get("ok", false), "reject invalid build type")
@@ -311,6 +410,17 @@ func _run_reducer_tests() -> void:
     _assert_equal(int(demolish_result.state.resources.get("wood", 0)), 2, "demolish refunds wood")
     _assert_equal(int(demolish_result.state.resources.get("stone", 0)), 2, "demolish refunds stone")
 
+    var lesson_ids: PackedStringArray = SimLessons.lesson_ids()
+    if not lesson_ids.is_empty():
+        var target_lesson: String = str(lesson_ids[0])
+        var lesson_state: GameState = DefaultState.create("test-lesson")
+        var lesson_result: Dictionary = IntentApplier.apply(lesson_state, {"kind": "lesson_set", "lesson_id": target_lesson})
+        _assert_equal(str(lesson_result.state.lesson_id), target_lesson, "lesson_set updates lesson id")
+        var lesson_night: GameState = DefaultState.create("test-lesson-night")
+        lesson_night.phase = "night"
+        var lesson_night_result: Dictionary = IntentApplier.apply(lesson_night, {"kind": "lesson_set", "lesson_id": target_lesson})
+        _assert_equal(str(lesson_night_result.state.lesson_id), str(lesson_night.lesson_id), "lesson_set blocked at night")
+
     var demolish_upgrade_state: GameState = _make_flat_state("test-demolish-upgrade")
     demolish_upgrade_state.phase = "day"
     demolish_upgrade_state.ap = 2
@@ -320,8 +430,8 @@ func _run_reducer_tests() -> void:
     demolish_upgrade_state.structure_levels[demolish_upgrade_index] = 3
     demolish_upgrade_state.buildings["tower"] = 1
     var demolish_upgrade_result: Dictionary = IntentApplier.apply(demolish_upgrade_state, {"kind": "demolish", "x": demolish_upgrade_pos.x, "y": demolish_upgrade_pos.y})
-    _assert_equal(int(demolish_upgrade_result.state.resources.get("wood", 0)), 10, "demolish refund includes tower upgrades (wood)")
-    _assert_equal(int(demolish_upgrade_result.state.resources.get("stone", 0)), 17, "demolish refund includes tower upgrades (stone)")
+    _assert_equal(int(demolish_upgrade_result.state.resources.get("wood", 0)), 8, "demolish refund includes tower upgrades (wood)")
+    _assert_equal(int(demolish_upgrade_result.state.resources.get("stone", 0)), 14, "demolish refund includes tower upgrades (stone)")
     _assert_true(not demolish_upgrade_result.state.structure_levels.has(demolish_upgrade_index), "demolish clears tower level")
 
     var prod_state: GameState = DefaultState.create("test-prod")
@@ -334,7 +444,7 @@ func _run_reducer_tests() -> void:
     prod_state.terrain[farm_index] = SimMap.TERRAIN_PLAINS
     prod_state.terrain[water_index_adj] = SimMap.TERRAIN_WATER
     var production: Dictionary = SimBuildings.daily_production(prod_state)
-    _assert_equal(int(production.get("food", 0)), 4, "farm adjacency bonus applied")
+    _assert_equal(int(production.get("food", 0)), 5, "farm adjacency bonus applied")
 
     var preview_state: GameState = DefaultState.create("test-preview")
     preview_state.resources["wood"] = 20
@@ -349,7 +459,7 @@ func _run_reducer_tests() -> void:
     preview_state.terrain[preview_index] = SimMap.TERRAIN_PLAINS
     preview_state.terrain[preview_adj_index] = SimMap.TERRAIN_WATER
     var preview: Dictionary = SimBuildings.get_build_preview(preview_state, preview_pos, "farm")
-    _assert_equal(int(preview.get("production", {}).get("food", 0)), 3, "preview farm adjacency bonus")
+    _assert_equal(int(preview.get("production", {}).get("food", 0)), 4, "preview farm adjacency bonus")
 
     var save_state: GameState = DefaultState.create("test-save")
     save_state.cursor_pos = Vector2i(1, 2)
@@ -406,8 +516,8 @@ func _run_reducer_tests() -> void:
     var upgrade_result: Dictionary = IntentApplier.apply(upgrade_state, {"kind": "upgrade", "x": upgrade_pos.x, "y": upgrade_pos.y})
     _assert_equal(int(upgrade_result.state.structure_levels.get(upgrade_index, 0)), 2, "upgrade increases tower level")
     _assert_equal(upgrade_result.state.ap, upgrade_state.ap - 1, "upgrade consumes AP")
-    _assert_equal(int(upgrade_result.state.resources.get("wood", 0)), 15, "upgrade costs wood")
-    _assert_equal(int(upgrade_result.state.resources.get("stone", 0)), 10, "upgrade costs stone")
+    _assert_equal(int(upgrade_result.state.resources.get("wood", 0)), 16, "upgrade costs wood")
+    _assert_equal(int(upgrade_result.state.resources.get("stone", 0)), 12, "upgrade costs stone")
 
     var tower2_state: GameState = _make_flat_state("test-tower-level2")
     tower2_state.phase = "night"
@@ -461,11 +571,12 @@ func _run_reducer_tests() -> void:
 func _run_determinism_tests() -> void:
     var seed_text: String = "repeatable"
 
-    var word_a: String = SimWords.word_for_enemy(seed_text, 2, "raider", 1, {})
-    var word_b: String = SimWords.word_for_enemy(seed_text, 2, "raider", 1, {})
+    var default_lesson: String = SimLessons.default_lesson_id()
+    var word_a: String = SimWords.word_for_enemy(seed_text, 2, "raider", 1, {}, default_lesson)
+    var word_b: String = SimWords.word_for_enemy(seed_text, 2, "raider", 1, {}, default_lesson)
     _assert_equal(word_a, word_b, "deterministic enemy word assignment")
     var used: Dictionary = {word_a: true}
-    var word_c: String = SimWords.word_for_enemy(seed_text, 2, "raider", 2, used)
+    var word_c: String = SimWords.word_for_enemy(seed_text, 2, "raider", 2, used, default_lesson)
     _assert_true(word_c != word_a, "enemy words remain unique")
 
     var explore_a: GameState = DefaultState.create(seed_text)
@@ -535,19 +646,865 @@ func _run_determinism_tests() -> void:
     _assert_equal(int(refund_step_a.state.resources.get("wood", 0)), int(refund_step_b.state.resources.get("wood", 0)), "deterministic upgrade/demolish wood")
     _assert_equal(int(refund_step_a.state.resources.get("stone", 0)), int(refund_step_b.state.resources.get("stone", 0)), "deterministic upgrade/demolish stone")
 
+func _run_scenario_harness_tests() -> void:
+    var load_result: Dictionary = ScenarioLoader.load_scenarios()
+    _assert_true(load_result.get("ok", false), "scenario loader ok")
+    if load_result.get("ok", false):
+        var data: Dictionary = load_result.get("data", {})
+        var scenarios: Array = data.get("scenarios", [])
+        var ids: Array[String] = []
+        for scenario in scenarios:
+            if typeof(scenario) == TYPE_DICTIONARY:
+                ids.append(str(scenario.get("id", "")))
+        _assert_true(ids.has("determinism_smoke"), "scenario loader finds determinism_smoke")
+        _assert_true(ids.has("day1_baseline"), "scenario loader finds day1_baseline")
+        _assert_true(ids.has("first_night_smoke"), "scenario loader finds first_night_smoke")
+        _assert_true(ids.has("enter_night_stop"), "scenario loader finds enter_night_stop")
+
+        var p0_balance: Array = ScenarioTypes.filter_scenarios(scenarios, ["p0", "balance"], [], "P0")
+        _assert_equal(p0_balance.size(), 17, "scenario filter returns P0 balance suite")
+        var p0_balance_short: Array = ScenarioTypes.filter_scenarios(scenarios, ["p0", "balance"], ["long"], "P0")
+        _assert_equal(p0_balance_short.size(), 13, "scenario filter excludes long tag")
+        var p1_only: Array = ScenarioTypes.filter_scenarios(scenarios, [], [], "P1")
+        _assert_equal(p1_only.size(), 2, "scenario filter returns P1 suite")
+        var has_baseline: bool = false
+        var has_target: bool = false
+        for scenario in scenarios:
+            if typeof(scenario) == TYPE_DICTIONARY:
+                if scenario.has("expect_baseline"):
+                    has_baseline = true
+                if scenario.has("expect_target"):
+                    has_target = true
+        _assert_true(has_baseline, "scenario loader finds expect_baseline")
+        _assert_true(has_target, "scenario loader finds expect_target")
+
+    var range_failures: Array[String] = ScenarioEval.evaluate({"day": 2}, {"day": {"min": 1, "max": 3}})
+    _assert_true(range_failures.is_empty(), "scenario eval range passes")
+    var eq_failures: Array[String] = ScenarioEval.evaluate({"phase": "day"}, {"phase": {"eq": "night"}})
+    _assert_true(eq_failures.size() == 1, "scenario eval eq detects mismatch")
+    var nested_failures: Array[String] = ScenarioEval.evaluate({"resources": {"wood": 5}}, {"resources.wood": {"eq": 5}})
+    _assert_true(nested_failures.is_empty(), "scenario eval nested keys pass")
+    var eval_sets: Dictionary = ScenarioEval.evaluate_sets({"day": 1}, {"day": {"eq": 1}}, {"day": {"eq": 2}})
+    _assert_true(eval_sets.get("baseline_failures", []).is_empty(), "scenario eval baseline set passes")
+    _assert_true(eval_sets.get("target_failures", []).size() == 1, "scenario eval target set fails")
+
+    if load_result.get("ok", false):
+        var scenario_data: Array = load_result.get("data", {}).get("scenarios", [])
+        var determinism: Dictionary = {}
+        var enter_night: Dictionary = {}
+        for entry in scenario_data:
+            if typeof(entry) == TYPE_DICTIONARY and str(entry.get("id", "")) == "determinism_smoke":
+                determinism = entry
+            if typeof(entry) == TYPE_DICTIONARY and str(entry.get("id", "")) == "enter_night_stop":
+                enter_night = entry
+        if determinism.is_empty():
+            _assert_true(false, "determinism_smoke scenario exists")
+        else:
+            var result: Dictionary = ScenarioRunner.run(determinism)
+            _assert_equal(str(result.get("id", "")), "determinism_smoke", "scenario runner id matches")
+            _assert_true(result.get("metrics", {}).has("day"), "scenario runner metrics include day")
+            _assert_true(result.get("metrics", {}).has("phase"), "scenario runner metrics include phase")
+            _assert_true(bool(result.get("pass", false)), "scenario runner passes determinism_smoke")
+            _assert_true(result.get("baseline_failures", []).is_empty(), "scenario runner baseline failures empty")
+            _assert_true(result.get("target_failures", []).is_empty(), "scenario runner target failures empty")
+            var baseline_fail: Dictionary = determinism.duplicate(true)
+            baseline_fail["expect_baseline"] = {"day": {"eq": 99}}
+            var baseline_result: Dictionary = ScenarioRunner.run(baseline_fail)
+            _assert_true(not bool(baseline_result.get("pass", false)), "baseline failures fail scenario")
+            var target_only: Dictionary = determinism.duplicate(true)
+            target_only["expect_baseline"] = {"day": {"eq": 1}}
+            target_only["expect_target"] = {"day": {"eq": 99}}
+            var target_result: Dictionary = ScenarioRunner.run(target_only)
+            _assert_true(bool(target_result.get("pass", false)), "target failures do not fail by default")
+            _assert_true(target_result.get("target_failures", []).size() == 1, "target failures recorded")
+            var target_enforced: Dictionary = ScenarioRunner.run(target_only, {"enforce_targets": true})
+            _assert_true(not bool(target_enforced.get("pass", false)), "enforced target failures fail scenario")
+        if enter_night.is_empty():
+            _assert_true(false, "enter_night_stop scenario exists")
+        else:
+            var night_result: Dictionary = ScenarioRunner.run(enter_night)
+            _assert_true(bool(night_result.get("pass", false)), "scenario runner passes enter_night_stop")
+
+    var cli := load("res://tools/run_scenarios.gd")
+    if cli != null:
+        var parsed: Dictionary = cli.parse_args(PackedStringArray(["--tag", "p0", "--exclude-tag", "long", "--targets", "--print-metrics", "--out-dir", "Logs/ScenarioReports"]))
+        _assert_true(bool(parsed.get("ok", false)), "scenario cli parse ok")
+        _assert_equal(parsed.get("exclude_tags", []).size(), 1, "scenario cli parse exclude tag")
+        _assert_true(bool(parsed.get("targets", false)), "scenario cli parse targets flag")
+        _assert_true(bool(parsed.get("print_metrics", false)), "scenario cli parse print-metrics flag")
+        _assert_equal(str(parsed.get("out_dir", "")), "Logs/ScenarioReports", "scenario cli parse out-dir")
+    _assert_true(FileAccess.file_exists("res://tools/run_scenarios.gd"), "tools: run_scenarios.gd exists")
+    _assert_true(FileAccess.file_exists("res://data/scenarios.json"), "data: scenarios.json exists")
+
+func _run_docs_tests() -> void:
+    _assert_true(FileAccess.file_exists("res://docs/PROJECT_STATUS.md"), "docs: PROJECT_STATUS.md exists")
+    _assert_true(FileAccess.file_exists("res://docs/ROADMAP.md"), "docs: ROADMAP.md exists")
+    _assert_true(FileAccess.file_exists("res://docs/COMMAND_REFERENCE.md"), "docs: COMMAND_REFERENCE.md exists")
+    _assert_true(FileAccess.file_exists("res://docs/ACCESSIBILITY_VERIFICATION.md"), "docs: ACCESSIBILITY_VERIFICATION.md exists")
+    _assert_true(FileAccess.file_exists("res://docs/RESEARCH_SFK_SUMMARY.md"), "docs: RESEARCH_SFK_SUMMARY.md exists")
+    _assert_true(FileAccess.file_exists("res://docs/BALANCE_CONSTANTS.md"), "docs: BALANCE_CONSTANTS.md exists")
+    _assert_true(FileAccess.file_exists("res://docs/QUALITY_GATES.md"), "docs: QUALITY_GATES.md exists")
+    _assert_true(FileAccess.file_exists("res://docs/PLAYTEST_PROTOCOL.md"), "docs: PLAYTEST_PROTOCOL.md exists")
+    _assert_true(FileAccess.file_exists("res://docs/CHANGELOG.md"), "docs: CHANGELOG.md exists")
+    _assert_true(FileAccess.file_exists("res://docs/ONBOARDING_TUTORIAL.md"), "docs: ONBOARDING_TUTORIAL.md exists")
+    _assert_true(FileAccess.file_exists("res://docs/plans/README.md"), "docs: plans README exists")
+    _assert_true(FileAccess.file_exists("res://docs/plans/planpack_2025-12-27_tempPlans/IMPORT_NOTES.md"), "docs: planpack import notes exist")
+    _assert_true(FileAccess.file_exists("res://docs/plans/PLANPACK_TRIAGE.md"), "docs: planpack triage exists")
+    _assert_true(FileAccess.file_exists("res://docs/plans/p0/ONBOARDING_PLAN.md"), "docs: P0 onboarding plan exists")
+    _assert_true(FileAccess.file_exists("res://docs/plans/p0/ONBOARDING_COPY.md"), "docs: P0 onboarding copy exists")
+    _assert_true(FileAccess.file_exists("res://docs/plans/p0/ONBOARDING_IMPLEMENTATION_SPEC.md"), "docs: P0 onboarding implementation spec exists")
+    _assert_true(FileAccess.file_exists("res://docs/plans/p0/BALANCE_PLAN.md"), "docs: P0 balance plan exists")
+    _assert_true(FileAccess.file_exists("res://docs/plans/p0/BALANCE_TARGETS.md"), "docs: P0 balance targets exist")
+    _assert_true(FileAccess.file_exists("res://docs/plans/p0/ACCESSIBILITY_READABILITY_PLAN.md"), "docs: P0 accessibility plan exists")
+    _assert_true(FileAccess.file_exists("res://docs/plans/p0/EXPORT_PIPELINE_PLAN.md"), "docs: P0 export plan exists")
+    _assert_true(FileAccess.file_exists("res://docs/plans/p0/P0_IMPLEMENTATION_BACKLOG.md"), "docs: P0 implementation backlog exists")
+    _assert_true(FileAccess.file_exists("res://docs/plans/p1/CONTENT_EXPANSION_PLAN.md"), "docs: P1 content expansion plan exists")
+    _assert_true(FileAccess.file_exists("res://docs/plans/p1/VISUAL_STYLE_GUIDE_PLAN.md"), "docs: P1 visual style guide plan exists")
+    _assert_true(FileAccess.file_exists("res://docs/plans/p1/MAP_EXPLORATION_PLAN.md"), "docs: P1 map exploration plan exists")
+    _assert_true(FileAccess.file_exists("res://docs/plans/p1/QA_AUTOMATION_PLAN.md"), "docs: P1 QA automation plan exists")
+    _assert_true(FileAccess.file_exists("res://docs/plans/p1/SCENARIO_TEST_HARNESS_PLAN.md"), "docs: P1 scenario test harness plan exists")
+    _assert_true(FileAccess.file_exists("res://docs/plans/p1/SCENARIO_HARNESS_IMPLEMENTATION_SPEC.md"), "docs: P1 scenario harness implementation spec exists")
+    _assert_true(FileAccess.file_exists("res://docs/plans/p1/SCENARIO_CATALOG.md"), "docs: P1 scenario catalog exists")
+    _assert_true(FileAccess.file_exists("res://docs/plans/p1/CI_AUTOMATION_SPEC.md"), "docs: P1 CI automation spec exists")
+    _assert_true(FileAccess.file_exists("res://docs/plans/p1/GDSCRIPT_QUALITY_PLAN.md"), "docs: P1 GDScript quality plan exists")
+    _assert_true(FileAccess.file_exists("res://docs/plans/p2/META_PROGRESSION_PLAN.md"), "docs: P2 meta progression plan exists")
+    _assert_true(FileAccess.file_exists("res://docs/plans/p2/HERO_SYSTEM_PLAN.md"), "docs: P2 hero system plan exists")
+    _assert_true(FileAccess.file_exists("res://docs/plans/p2/LOCALIZATION_PLAN.md"), "docs: P2 localization plan exists")
+    _assert_true(FileAccess.file_exists("res://docs/plans/p2/AUDIO_PLAN.md"), "docs: P2 audio plan exists")
+    _assert_true(FileAccess.file_exists("res://docs/plans/ARCHITECTURE_MAPPING.md"), "docs: architecture mapping plan exists")
+    _assert_true(FileAccess.file_exists("res://docs/plans/SCHEMA_ALIGNMENT_PLAN.md"), "docs: schema alignment plan exists")
+
+func _run_export_pipeline_tests() -> void:
+    var preset_path: String = "res://export_presets.cfg"
+    _assert_true(FileAccess.file_exists(preset_path), "export preset: export_presets.cfg exists")
+    var expected_name: String = "Windows Desktop"
+    var expected_export_path: String = "build/windows/KeyboardDefense.exe"
+    var expected_zip_path: String = "build/windows/KeyboardDefense-win64.zip"   
+    var expected_pck_path: String = "build/windows/KeyboardDefense.pck"
+    var embed_pck: bool = false
+    var product_name: String = ""
+    var product_version: String = ""
+    if FileAccess.file_exists(preset_path):
+        var config := ConfigFile.new()
+        var load_result: int = config.load(preset_path)
+        _assert_equal(load_result, OK, "export preset: config load OK")
+        var found: bool = false
+        var export_path: String = ""
+        var platform: String = ""
+        var matched_section: String = ""
+        for section in config.get_sections():
+            if not str(section).begins_with("preset."):
+                continue
+            var name_value: String = str(config.get_value(section, "name", ""))
+            if name_value == expected_name:
+                found = true
+                export_path = str(config.get_value(section, "export_path", ""))
+                platform = str(config.get_value(section, "platform", ""))
+                matched_section = str(section)
+                break
+        _assert_true(found, "export preset: Windows Desktop preset exists")
+        if found:
+            _assert_equal(platform, expected_name, "export preset: platform matches Windows Desktop")
+            _assert_true(export_path.ends_with(".exe"), "export preset: export_path ends with .exe")
+            _assert_true(export_path.begins_with("build/"), "export preset: export_path under build/")
+            _assert_equal(export_path, expected_export_path, "export preset: export_path matches expected")
+            var options_section: String = "%s.options" % matched_section        
+            _assert_true(config.has_section(options_section), "export preset: options section exists")
+            if config.has_section(options_section):
+                embed_pck = bool(config.get_value(options_section, "binary_format/embed_pck", false))
+                product_name = str(config.get_value(options_section, "application/product_name", ""))
+                product_version = str(config.get_value(options_section, "application/product_version", ""))
+                _assert_true(product_name != "", "export preset: product_name present")
+                _assert_true(product_version != "", "export preset: product_version present")
+
+    var doc_path: String = "res://docs/EXPORT_WINDOWS.md"
+    _assert_true(FileAccess.file_exists(doc_path), "docs: EXPORT_WINDOWS.md exists")
+    if FileAccess.file_exists(doc_path):
+        var doc_text: String = FileAccess.get_file_as_string(doc_path)
+        _assert_true(doc_text.find("scripts/export_windows.ps1") != -1, "docs: export ps1 referenced")
+        _assert_true(doc_text.find("scripts/export_windows.sh") != -1, "docs: export sh referenced")
+        _assert_true(doc_text.find("apply package") != -1, "docs: package usage referenced")
+        _assert_true(doc_text.find("package versioned") != -1, "docs: versioned package referenced")
+        _assert_true(doc_text.find("apply package versioned") != -1, "docs: apply versioned package referenced")
+        _assert_true(doc_text.find(expected_name) != -1, "docs: preset name referenced")
+        _assert_true(doc_text.find(expected_export_path) != -1, "docs: export path matches expected")
+        _assert_true(doc_text.find(expected_zip_path) != -1, "docs: zip path matches expected")
+        _assert_true(doc_text.find("export_manifest.json") != -1, "docs: export manifest referenced")
+        _assert_true(doc_text.find("KeyboardDefense-") != -1, "docs: versioned zip prefix referenced")
+        _assert_true(doc_text.find("-win64.zip") != -1, "docs: versioned zip suffix referenced")
+        _assert_true(doc_text.find("VERSION.txt") != -1, "docs: version file referenced")
+        if not embed_pck:
+            _assert_true(doc_text.find(expected_pck_path) != -1, "docs: pck path referenced when embed_pck is false")
+
+    var ps_path: String = "res://scripts/export_windows.ps1"
+    var sh_path: String = "res://scripts/export_windows.sh"
+    _assert_true(FileAccess.file_exists(ps_path), "scripts: export_windows.ps1 exists")
+    _assert_true(FileAccess.file_exists(sh_path), "scripts: export_windows.sh exists")
+    if FileAccess.file_exists(ps_path):
+        var ps_text: String = FileAccess.get_file_as_string(ps_path)
+        _assert_true(ps_text.find(expected_export_path) != -1, "scripts: export_windows.ps1 uses expected path")
+        _assert_true(ps_text.find(expected_name) != -1, "scripts: export_windows.ps1 uses preset name")
+        _assert_true(ps_text.find(expected_zip_path) != -1, "scripts: export_windows.ps1 uses zip path")
+        _assert_true(ps_text.find("application/product_name") != -1, "scripts: export_windows.ps1 parses product_name")
+        _assert_true(ps_text.find("application/product_version") != -1, "scripts: export_windows.ps1 parses product_version")
+        _assert_true(ps_text.find("application/file_version") != -1, "scripts: export_windows.ps1 parses file_version")
+        _assert_true(ps_text.find("versioned") != -1, "scripts: export_windows.ps1 handles versioned token")
+        _assert_true(ps_text.find("export_manifest.json") != -1, "scripts: export_windows.ps1 writes manifest")
+        _assert_true(ps_text.find("-win64.zip") != -1, "scripts: export_windows.ps1 uses win64 zip suffix")
+        _assert_true(ps_text.find("embed_pck") != -1, "scripts: export_windows.ps1 reads embed_pck")
+        _assert_true(ps_text.find("VERSION.txt") != -1, "scripts: export_windows.ps1 reads VERSION.txt")
+        _assert_true(ps_text.find("Preset file_version:") != -1, "scripts: export_windows.ps1 prints preset file_version")
+        _assert_true(ps_text.find("WARNING: preset file_version") != -1, "scripts: export_windows.ps1 warns on preset file_version mismatch")
+        _assert_true(ps_text.find("ERROR: preset file_version") != -1, "scripts: export_windows.ps1 errors on preset file_version mismatch")
+        _assert_true(ps_text.find("WARNING: VERSION.txt (") != -1, "scripts: export_windows.ps1 warns on VERSION.txt mismatch")
+        _assert_true(ps_text.find("ERROR: VERSION.txt (") != -1, "scripts: export_windows.ps1 errors on VERSION.txt mismatch")
+        _assert_true(ps_text.find("preset file_version") != -1, "scripts: export_windows.ps1 references preset file_version")
+        _assert_true(ps_text.find("WARNING: VERSION.txt") != -1, "scripts: export_windows.ps1 warns on version mismatch")
+        _assert_true(ps_text.find("ERROR: VERSION.txt") != -1, "scripts: export_windows.ps1 errors on version mismatch")
+        if not embed_pck:
+            _assert_true(ps_text.find(".pck") != -1, "scripts: export_windows.ps1 checks for pck output")
+    if FileAccess.file_exists(sh_path):
+        var sh_text: String = FileAccess.get_file_as_string(sh_path)
+        _assert_true(sh_text.find(expected_export_path) != -1, "scripts: export_windows.sh uses expected path")
+        _assert_true(sh_text.find(expected_name) != -1, "scripts: export_windows.sh uses preset name")
+        _assert_true(sh_text.find(expected_zip_path) != -1, "scripts: export_windows.sh uses zip path")
+        _assert_true(sh_text.find("application/product_name") != -1, "scripts: export_windows.sh parses product_name")
+        _assert_true(sh_text.find("application/product_version") != -1, "scripts: export_windows.sh parses product_version")
+        _assert_true(sh_text.find("application/file_version") != -1, "scripts: export_windows.sh parses file_version")
+        _assert_true(sh_text.find("versioned") != -1, "scripts: export_windows.sh handles versioned token")
+        _assert_true(sh_text.find("export_manifest.json") != -1, "scripts: export_windows.sh writes manifest")
+        _assert_true(sh_text.find("-win64.zip") != -1, "scripts: export_windows.sh uses win64 zip suffix")
+        _assert_true(sh_text.find("embed_pck") != -1, "scripts: export_windows.sh reads embed_pck")
+        _assert_true(sh_text.find("VERSION.txt") != -1, "scripts: export_windows.sh reads VERSION.txt")
+        _assert_true(sh_text.find("Preset file_version:") != -1, "scripts: export_windows.sh prints preset file_version")
+        _assert_true(sh_text.find("WARNING: preset file_version") != -1, "scripts: export_windows.sh warns on preset file_version mismatch")
+        _assert_true(sh_text.find("ERROR: preset file_version") != -1, "scripts: export_windows.sh errors on preset file_version mismatch")
+        _assert_true(sh_text.find("WARNING: VERSION.txt (") != -1, "scripts: export_windows.sh warns on VERSION.txt mismatch")
+        _assert_true(sh_text.find("ERROR: VERSION.txt (") != -1, "scripts: export_windows.sh errors on VERSION.txt mismatch")
+        _assert_true(sh_text.find("preset file_version") != -1, "scripts: export_windows.sh references preset file_version")
+        _assert_true(sh_text.find("WARNING: VERSION.txt") != -1, "scripts: export_windows.sh warns on version mismatch")
+        _assert_true(sh_text.find("ERROR: VERSION.txt") != -1, "scripts: export_windows.sh errors on version mismatch")
+        if not embed_pck:
+            _assert_true(sh_text.find(".pck") != -1, "scripts: export_windows.sh checks for pck output")
+
+    var app_root: String = ProjectSettings.globalize_path("res://")
+    var app_root_clean: String = app_root.trim_suffix("/").trim_suffix("\\")
+    var apps_root: String = app_root_clean.get_base_dir()
+    var repo_root: String = apps_root.get_base_dir()
+    var root_ps_path: String = repo_root.path_join("scripts/export_windows.ps1")
+    var root_sh_path: String = repo_root.path_join("scripts/export_windows.sh")
+    _assert_true(FileAccess.file_exists(root_ps_path), "root scripts: export_windows.ps1 exists")
+    _assert_true(FileAccess.file_exists(root_sh_path), "root scripts: export_windows.sh exists")
+    if FileAccess.file_exists(root_ps_path):
+        var root_ps_text: String = FileAccess.get_file_as_string(root_ps_path)
+        _assert_true(root_ps_text.find("apps/keyboard-defense-godot/scripts/export_windows.ps1") != -1, "root scripts: ps1 delegates to app script")
+    if FileAccess.file_exists(root_sh_path):
+        var root_sh_text: String = FileAccess.get_file_as_string(root_sh_path)
+        _assert_true(root_sh_text.find("apps/keyboard-defense-godot/scripts/export_windows.sh") != -1, "root scripts: sh delegates to app script")
+
+func _run_version_tests() -> void:
+    var version_path: String = "res://VERSION.txt"
+    _assert_true(FileAccess.file_exists(version_path), "version file: VERSION.txt exists")
+    var version_text: String = _read_file_text(version_path)
+    if version_text != "":
+        version_text = version_text.split("\n", false)[0].strip_edges()
+    _assert_true(version_text != "", "version file: VERSION.txt not empty")
+    var semver := RegEx.new()
+    var semver_result: int = semver.compile("^\\d+\\.\\d+\\.\\d+$")
+    _assert_equal(semver_result, OK, "version file: regex compiles")
+    if semver_result == OK:
+        _assert_true(semver.search(version_text) != null, "version file: semver format")
+
+    var preset_version: String = ""
+    var preset_path: String = "res://export_presets.cfg"
+    if FileAccess.file_exists(preset_path):
+        var config := ConfigFile.new()
+        var load_result: int = config.load(preset_path)
+        _assert_equal(load_result, OK, "version file: export presets load OK")
+        if load_result == OK:
+            for section in config.get_sections():
+                var section_name: String = str(section)
+                if section_name.begins_with("preset.") and not section_name.ends_with(".options"):
+                    var name_value: String = str(config.get_value(section_name, "name", ""))
+                    if name_value == "Windows Desktop":
+                        var options_section: String = "%s.options" % section_name
+                        preset_version = str(config.get_value(options_section, "application/product_version", ""))
+                if section_name.begins_with("preset.") and section_name.ends_with(".options"):
+                    var product_value: String = str(config.get_value(section_name, "application/product_version", ""))
+                    var file_value: String = str(config.get_value(section_name, "application/file_version", ""))
+                    _assert_true(product_value != "", "export preset: product_version present for %s" % section_name)
+                    _assert_true(file_value != "", "export preset: file_version present for %s" % section_name)
+                    _assert_equal(product_value, version_text, "export preset: product_version matches VERSION.txt for %s" % section_name)
+                    _assert_equal(file_value, version_text, "export preset: file_version matches VERSION.txt for %s" % section_name)
+                    _assert_equal(product_value, file_value, "export preset: product_version matches file_version for %s" % section_name)
+    _assert_equal(preset_version, version_text, "version file: matches preset product_version")
+
+    var parsed: Dictionary = CommandParser.parse("version")
+    _assert_true(parsed.get("ok", false), "version command parse ok")
+    if parsed.get("ok", false):
+        _assert_equal(str(parsed.intent.get("kind", "")), "ui_version", "version command intent kind")
+    var version_lines: Array[String] = MainScript.build_version_lines()
+    _assert_equal(version_lines.size(), 2, "version output has two lines")
+    if version_lines.size() >= 2:
+        _assert_equal(version_lines[0], "Keyboard Defense v%s" % version_text, "version output line 1")
+        _assert_true(version_lines[1].begins_with("Godot v"), "version output line 2 prefix")
+        var engine_re := RegEx.new()
+        var engine_result: int = engine_re.compile("^Godot v\\d+\\.\\d+\\.\\d+$")
+        _assert_equal(engine_result, OK, "version output regex compiles")
+        if engine_result == OK:
+            _assert_true(engine_re.search(version_lines[1]) != null, "version output line 2 format")
+
+func _run_version_bump_tests() -> void:
+    var app_root: String = ProjectSettings.globalize_path("res://")
+    var app_root_clean: String = app_root.trim_suffix("/").trim_suffix("\\")
+    var apps_root: String = app_root_clean.get_base_dir()
+    var repo_root: String = apps_root.get_base_dir()
+    var root_ps_path: String = repo_root.path_join("scripts/bump_version.ps1")
+    var root_sh_path: String = repo_root.path_join("scripts/bump_version.sh")
+    _assert_true(FileAccess.file_exists(root_ps_path), "root scripts: bump_version.ps1 exists")
+    _assert_true(FileAccess.file_exists(root_sh_path), "root scripts: bump_version.sh exists")
+    if FileAccess.file_exists(root_ps_path):
+        var ps_text: String = FileAccess.get_file_as_string(root_ps_path)
+        _assert_true(ps_text.find("set <version>") != -1, "bump scripts: ps1 includes set token")
+        _assert_true(ps_text.find("apply <version>") != -1, "bump scripts: ps1 includes apply token")
+        _assert_true(ps_text.find("bump_version.ps1 patch") != -1, "bump scripts: ps1 includes patch usage")
+        _assert_true(ps_text.find("bump_version.ps1 minor") != -1, "bump scripts: ps1 includes minor usage")
+        _assert_true(ps_text.find("bump_version.ps1 major") != -1, "bump scripts: ps1 includes major usage")
+        _assert_true(ps_text.find("apply patch") != -1, "bump scripts: ps1 includes apply patch usage")
+        _assert_true(ps_text.find("apply minor") != -1, "bump scripts: ps1 includes apply minor usage")
+        _assert_true(ps_text.find("apply major") != -1, "bump scripts: ps1 includes apply major usage")
+        _assert_true(ps_text.find("ERROR: Current VERSION.txt is missing or invalid; use set <version>.") != -1, "bump scripts: ps1 includes invalid current version error")
+        _assert_true(ps_text.find("VERSION.txt") != -1, "bump scripts: ps1 references VERSION.txt")
+        _assert_true(ps_text.find("export_presets.cfg") != -1, "bump scripts: ps1 references export_presets.cfg")
+        _assert_true(ps_text.find("application/product_version") != -1, "bump scripts: ps1 references product_version")
+        _assert_true(ps_text.find("application/file_version") != -1, "bump scripts: ps1 references file_version")
+    if FileAccess.file_exists(root_sh_path):
+        var sh_text: String = FileAccess.get_file_as_string(root_sh_path)       
+        _assert_true(sh_text.find("set <version>") != -1, "bump scripts: sh includes set token")
+        _assert_true(sh_text.find("apply <version>") != -1, "bump scripts: sh includes apply token")
+        _assert_true(sh_text.find("bump_version.sh patch") != -1, "bump scripts: sh includes patch usage")
+        _assert_true(sh_text.find("bump_version.sh minor") != -1, "bump scripts: sh includes minor usage")
+        _assert_true(sh_text.find("bump_version.sh major") != -1, "bump scripts: sh includes major usage")
+        _assert_true(sh_text.find("apply patch") != -1, "bump scripts: sh includes apply patch usage")
+        _assert_true(sh_text.find("apply minor") != -1, "bump scripts: sh includes apply minor usage")
+        _assert_true(sh_text.find("apply major") != -1, "bump scripts: sh includes apply major usage")
+        _assert_true(sh_text.find("ERROR: Current VERSION.txt is missing or invalid; use set <version>.") != -1, "bump scripts: sh includes invalid current version error")
+        _assert_true(sh_text.find("VERSION.txt") != -1, "bump scripts: sh references VERSION.txt")
+        _assert_true(sh_text.find("export_presets.cfg") != -1, "bump scripts: sh references export_presets.cfg")
+        _assert_true(sh_text.find("application/product_version") != -1, "bump scripts: sh references product_version")
+        _assert_true(sh_text.find("application/file_version") != -1, "bump scripts: sh references file_version")
+
+func _run_balance_report_tests() -> void:
+    var verify_text: String = SimBalanceReport.balance_verify_output()
+    var verify_text_again: String = SimBalanceReport.balance_verify_output()
+    _assert_equal(verify_text_again, verify_text, "balance verify deterministic")
+    var verify_clean: String = verify_text
+    if verify_clean.ends_with("\n"):
+        verify_clean = verify_clean.trim_suffix("\n")
+    _assert_equal(verify_clean, "Balance verify: OK", "balance verify output ok")
+
+    var export_json: String = SimBalanceReport.balance_export_json()
+    var export_json_again: String = SimBalanceReport.balance_export_json()
+    _assert_equal(export_json_again, export_json, "balance export deterministic")
+    _assert_true(export_json.begins_with("{"), "balance export outputs JSON object")
+    var export_parsed: Variant = JSON.parse_string(export_json)
+    _assert_true(typeof(export_parsed) == TYPE_DICTIONARY, "balance export JSON parses")
+    var export_dict: Dictionary = export_parsed
+    _assert_equal(str(export_dict.get("schema", "")), "typing-defense.balance-export", "balance export schema id")
+    _assert_equal(int(export_dict.get("schema_version", 0)), 1, "balance export schema version")
+    var export_game: Dictionary = export_dict.get("game", {})
+    _assert_equal(str(export_game.get("name", "")), "Keyboard Defense", "balance export game name")
+    var version_text: String = _read_file_text("res://VERSION.txt")
+    if version_text != "":
+        version_text = version_text.split("\n", false)[0].strip_edges()
+    _assert_equal(str(export_game.get("version", "")), version_text, "balance export game version")
+    var axis_text: String = str(export_dict.get("axis", ""))
+    _assert_true(axis_text != "", "balance export axis non-empty")
+    var metrics: Array = export_dict.get("metrics", [])
+    _assert_true(metrics.size() >= 4, "balance export metrics count")
+    var metrics_normalized: Array[String] = []
+    for entry in metrics:
+        metrics_normalized.append(str(entry))
+    var metrics_sorted: Array[String] = metrics_normalized.duplicate()
+    metrics_sorted.sort()
+    _assert_equal(metrics_sorted, metrics_normalized, "balance export metrics sorted")
+    var samples: Array = export_dict.get("samples", [])
+    _assert_true(samples.size() >= 3, "balance export samples count")
+    var last_id: String = ""
+    for sample in samples:
+        _assert_true(typeof(sample) == TYPE_DICTIONARY, "balance export sample dictionary")
+        if typeof(sample) != TYPE_DICTIONARY:
+            continue
+        var sample_id: String = str(sample.get("id", ""))
+        _assert_true(sample_id != "", "balance export sample id present")
+        if last_id != "":
+            _assert_true(sample_id >= last_id, "balance export sample order")
+        last_id = sample_id
+        var values: Variant = sample.get("values", {})
+        _assert_true(typeof(values) == TYPE_DICTIONARY, "balance export values dictionary")
+        if typeof(values) != TYPE_DICTIONARY:
+            continue
+        for metric_key in metrics:
+            var metric_text: String = str(metric_key)
+            _assert_true(values.has(metric_text), "balance export values include %s" % metric_text)
+            if values.has(metric_text):
+                var value: Variant = values.get(metric_text)
+                var value_type: int = typeof(value)
+                _assert_true(value_type == TYPE_INT or value_type == TYPE_FLOAT, "balance export %s numeric" % metric_text)
+
+    var save_path: String = "user://balance_export.json"
+    _remove_temp_file(save_path)
+    var save_result: Dictionary = SimBalanceReport.save_balance_export()
+    var save_line: String = str(save_result.get("line", ""))
+    _assert_equal(save_line, "Saved to user://balance_export.json", "balance export save output line")
+    _assert_true(FileAccess.file_exists(save_path), "balance export save writes file")
+    var saved_text: String = _read_file_text(save_path)
+    _assert_equal(saved_text, export_json, "balance export save content matches")
+    var saved_parsed: Variant = JSON.parse_string(saved_text)
+    if typeof(saved_parsed) == TYPE_DICTIONARY:
+        _assert_equal(str(saved_parsed.get("schema", "")), "typing-defense.balance-export", "balance export save schema id")
+    _remove_temp_file(save_path)
+
+    var wave_json: String = SimBalanceReport.balance_export_json("wave")
+    var wave_json_again: String = SimBalanceReport.balance_export_json("wave")
+    _assert_equal(wave_json_again, wave_json, "balance export wave deterministic")
+    _assert_true(wave_json.begins_with("{"), "balance export wave outputs JSON object")
+    var wave_parsed: Variant = JSON.parse_string(wave_json)
+    _assert_true(typeof(wave_parsed) == TYPE_DICTIONARY, "balance export wave JSON parses")
+    var wave_dict: Dictionary = wave_parsed
+    var wave_metrics: Array = wave_dict.get("metrics", [])
+    _assert_true(wave_metrics.size() > 0, "balance export wave metrics count")
+    var wave_metrics_text: Array[String] = []
+    for entry in wave_metrics:
+        var metric_text: String = str(entry)
+        wave_metrics_text.append(metric_text)
+        _assert_true(metric_text.begins_with("night_wave_"), "balance export wave metric prefix")
+    _assert_true(wave_metrics_text.has("night_wave_total_base"), "balance export wave includes night_wave_total_base")
+    _assert_true(wave_metrics_text.has("night_wave_total_threat2"), "balance export wave includes night_wave_total_threat2")
+    _assert_true(wave_metrics_text.has("night_wave_total_threat4"), "balance export wave includes night_wave_total_threat4")
+    var wave_samples: Array = wave_dict.get("samples", [])
+    var wave_ids: Dictionary = {}
+    var day7_values: Dictionary = {}
+    for sample in wave_samples:
+        if typeof(sample) != TYPE_DICTIONARY:
+            continue
+        var sample_id: String = str(sample.get("id", ""))
+        wave_ids[sample_id] = true
+        var values: Variant = sample.get("values", {})
+        _assert_true(typeof(values) == TYPE_DICTIONARY, "balance export wave values dictionary")
+        if typeof(values) != TYPE_DICTIONARY:
+            continue
+        var values_dict: Dictionary = values
+        if sample_id == "day_07":
+            day7_values = values_dict
+        _assert_equal(values_dict.size(), wave_metrics_text.size(), "balance export wave values size matches metrics")
+        for metric_key in wave_metrics_text:
+            _assert_true(values_dict.has(metric_key), "balance export wave values include %s" % metric_key)
+        for value_key in values_dict.keys():
+            _assert_true(wave_metrics_text.has(str(value_key)), "balance export wave values only wave metrics")
+    for day in SimBalanceReport.SAMPLE_DAYS:
+        var required_id: String = "day_%02d" % int(day)
+        _assert_true(wave_ids.has(required_id), "balance export wave includes %s" % required_id)
+    _assert_true(day7_values.size() > 0, "balance export wave captures day_07 values")
+    if day7_values.size() > 0:
+        _assert_equal(int(day7_values.get("night_wave_total_base", -1)), 7, "balance export wave day_07 base")
+        _assert_equal(int(day7_values.get("night_wave_total_threat2", -1)), 9, "balance export wave day_07 threat2")
+        _assert_equal(int(day7_values.get("night_wave_total_threat4", -1)), 11, "balance export wave day_07 threat4")
+
+    var enemies_json: String = SimBalanceReport.balance_export_json("enemies")
+    _assert_true(enemies_json.begins_with("{"), "balance export enemies outputs JSON object")
+    var enemies_parsed: Variant = JSON.parse_string(enemies_json)
+    _assert_true(typeof(enemies_parsed) == TYPE_DICTIONARY, "balance export enemies JSON parses")
+    var enemies_dict: Dictionary = enemies_parsed
+    var enemies_samples: Array = enemies_dict.get("samples", [])
+    var enemies_day01_values: Dictionary = {}
+    var enemies_day7_values: Dictionary = {}
+    for sample in enemies_samples:
+        if typeof(sample) != TYPE_DICTIONARY:
+            continue
+        var sample_id: String = str(sample.get("id", ""))
+        if sample_id == "day_01":
+            var values_day1: Variant = sample.get("values", {})
+            if typeof(values_day1) == TYPE_DICTIONARY:
+                enemies_day01_values = values_day1
+        elif sample_id == "day_07":
+            var values_day7: Variant = sample.get("values", {})
+            if typeof(values_day7) == TYPE_DICTIONARY:
+                enemies_day7_values = values_day7
+        if enemies_day01_values.size() > 0 and enemies_day7_values.size() > 0:
+            break
+    _assert_true(enemies_day01_values.size() > 0, "balance export enemies captures day_01 values")
+    _assert_true(enemies_day7_values.size() > 0, "balance export enemies captures day_07 values")
+    if enemies_day01_values.size() > 0:
+        _assert_equal(int(enemies_day01_values.get("enemy_raider_hp_bonus", -1)), 0, "balance export enemies day_01 raider hp bonus")
+        _assert_equal(int(enemies_day01_values.get("enemy_armored_hp_bonus", -1)), 1, "balance export enemies day_01 armored hp bonus")
+        _assert_equal(int(enemies_day01_values.get("enemy_scout_hp_bonus", -2)), -1, "balance export enemies day_01 scout hp bonus")
+        _assert_equal(int(enemies_day01_values.get("enemy_armored_armor", -1)), 1, "balance export enemies day_01 armored armor")
+        _assert_equal(int(enemies_day01_values.get("enemy_raider_armor", -1)), 0, "balance export enemies day_01 raider armor")
+        _assert_equal(int(enemies_day01_values.get("enemy_scout_armor", -1)), 0, "balance export enemies day_01 scout armor")
+        _assert_equal(int(enemies_day01_values.get("enemy_scout_speed", -1)), 2, "balance export enemies day_01 scout speed")
+        _assert_equal(int(enemies_day01_values.get("enemy_raider_speed", -1)), 1, "balance export enemies day_01 raider speed")
+        _assert_equal(int(enemies_day01_values.get("enemy_armored_speed", -1)), 1, "balance export enemies day_01 armored speed")
+    if enemies_day7_values.size() > 0:
+        _assert_equal(int(enemies_day7_values.get("enemy_armored_hp_bonus", -1)), 4, "balance export enemies day_07 armored hp bonus")
+        _assert_equal(int(enemies_day7_values.get("enemy_raider_hp_bonus", -1)), 2, "balance export enemies day_07 raider hp bonus")
+        _assert_equal(int(enemies_day7_values.get("enemy_scout_hp_bonus", -1)), 1, "balance export enemies day_07 scout hp bonus")
+        _assert_equal(int(enemies_day7_values.get("enemy_armored_armor", -1)), 2, "balance export enemies day_07 armored armor")
+        _assert_equal(int(enemies_day7_values.get("enemy_raider_armor", -1)), 1, "balance export enemies day_07 raider armor")
+        _assert_equal(int(enemies_day7_values.get("enemy_scout_armor", -1)), 1, "balance export enemies day_07 scout armor")
+        _assert_equal(int(enemies_day7_values.get("enemy_scout_speed", -1)), 3, "balance export enemies day_07 scout speed")
+        _assert_equal(int(enemies_day7_values.get("enemy_raider_speed", -1)), 2, "balance export enemies day_07 raider speed")
+        _assert_equal(int(enemies_day7_values.get("enemy_armored_speed", -1)), 2, "balance export enemies day_07 armored speed")
+
+    var towers_json: String = SimBalanceReport.balance_export_json("towers")
+    _assert_true(towers_json.begins_with("{"), "balance export towers outputs JSON object")
+    var towers_parsed: Variant = JSON.parse_string(towers_json)
+    _assert_true(typeof(towers_parsed) == TYPE_DICTIONARY, "balance export towers JSON parses")
+    var towers_dict: Dictionary = towers_parsed
+    var towers_samples: Array = towers_dict.get("samples", [])
+    var towers_day7_values: Dictionary = {}
+    for sample in towers_samples:
+        if typeof(sample) != TYPE_DICTIONARY:
+            continue
+        var sample_id: String = str(sample.get("id", ""))
+        if sample_id != "day_07":
+            continue
+        var values: Variant = sample.get("values", {})
+        if typeof(values) == TYPE_DICTIONARY:
+            towers_day7_values = values
+        break
+    _assert_true(towers_day7_values.size() > 0, "balance export towers captures day_07 values")
+    if towers_day7_values.size() > 0:
+        _assert_equal(int(towers_day7_values.get("tower_level1_damage", -1)), 1, "balance export towers day_07 level1 damage")
+        _assert_equal(int(towers_day7_values.get("tower_level2_damage", -1)), 2, "balance export towers day_07 level2 damage")
+        _assert_equal(int(towers_day7_values.get("tower_level3_damage", -1)), 3, "balance export towers day_07 level3 damage")
+        _assert_equal(int(towers_day7_values.get("tower_upgrade1_cost_stone", -1)), 8, "balance export towers day_07 upgrade1 stone")
+        _assert_equal(int(towers_day7_values.get("tower_upgrade1_cost_wood", -1)), 4, "balance export towers day_07 upgrade1 wood")
+        _assert_equal(int(towers_day7_values.get("tower_upgrade2_cost_stone", -1)), 12, "balance export towers day_07 upgrade2 stone")
+        _assert_equal(int(towers_day7_values.get("tower_upgrade2_cost_wood", -1)), 8, "balance export towers day_07 upgrade2 wood")
+
+    var buildings_json: String = SimBalanceReport.balance_export_json("buildings")
+    var buildings_parsed: Variant = JSON.parse_string(buildings_json)
+    _assert_true(typeof(buildings_parsed) == TYPE_DICTIONARY, "balance export buildings JSON parses")
+    var buildings_dict: Dictionary = buildings_parsed
+    var buildings_samples: Array = buildings_dict.get("samples", [])
+    var buildings_day01_values: Dictionary = {}
+    var buildings_day07_values: Dictionary = {}
+    for sample in buildings_samples:
+        if typeof(sample) != TYPE_DICTIONARY:
+            continue
+        var sample_id: String = str(sample.get("id", ""))
+        if sample_id == "day_01":
+            var values_day1: Variant = sample.get("values", {})
+            if typeof(values_day1) == TYPE_DICTIONARY:
+                buildings_day01_values = values_day1
+        elif sample_id == "day_07":
+            var values_day7: Variant = sample.get("values", {})
+            if typeof(values_day7) == TYPE_DICTIONARY:
+                buildings_day07_values = values_day7
+        if buildings_day01_values.size() > 0 and buildings_day07_values.size() > 0:
+            break
+    _assert_true(buildings_day01_values.size() > 0, "balance export buildings captures day_01 values")
+    _assert_true(buildings_day07_values.size() > 0, "balance export buildings captures day_07 values")
+    if buildings_day01_values.size() > 0:
+        _assert_equal(int(buildings_day01_values.get("building_tower_cost_stone", -1)), 8, "balance export buildings day_01 tower stone cost")
+        _assert_equal(int(buildings_day01_values.get("building_tower_cost_wood", -1)), 4, "balance export buildings day_01 tower wood cost")
+        _assert_equal(int(buildings_day01_values.get("building_wall_cost_stone", -1)), 4, "balance export buildings day_01 wall stone cost")
+        _assert_equal(int(buildings_day01_values.get("building_wall_cost_wood", -1)), 4, "balance export buildings day_01 wall wood cost")
+        _assert_equal(int(buildings_day01_values.get("building_farm_production_food", -1)), 3, "balance export buildings day_01 farm food production")
+        _assert_equal(int(buildings_day01_values.get("building_lumber_production_wood", -1)), 3, "balance export buildings day_01 lumber wood production")
+        _assert_equal(int(buildings_day01_values.get("building_quarry_production_stone", -1)), 3, "balance export buildings day_01 quarry stone production")
+    if buildings_day07_values.size() > 0:
+        _assert_equal(int(buildings_day07_values.get("building_tower_cost_stone", -1)), 8, "balance export buildings day_07 tower stone cost")
+        _assert_equal(int(buildings_day07_values.get("building_tower_cost_wood", -1)), 4, "balance export buildings day_07 tower wood cost")
+        _assert_equal(int(buildings_day07_values.get("building_wall_cost_stone", -1)), 4, "balance export buildings day_07 wall stone cost")
+        _assert_equal(int(buildings_day07_values.get("building_wall_cost_wood", -1)), 4, "balance export buildings day_07 wall wood cost")
+        _assert_equal(int(buildings_day07_values.get("building_farm_production_food", -1)), 3, "balance export buildings day_07 farm food production")
+        _assert_equal(int(buildings_day07_values.get("building_lumber_production_wood", -1)), 3, "balance export buildings day_07 lumber wood production")
+        _assert_equal(int(buildings_day07_values.get("building_quarry_production_stone", -1)), 3, "balance export buildings day_07 quarry stone production")
+
+    var midgame_json: String = SimBalanceReport.balance_export_json("midgame")
+    _assert_true(midgame_json.begins_with("{"), "balance export midgame outputs JSON object")
+    var midgame_parsed: Variant = JSON.parse_string(midgame_json)
+    _assert_true(typeof(midgame_parsed) == TYPE_DICTIONARY, "balance export midgame JSON parses")
+    var midgame_dict: Dictionary = midgame_parsed
+    var midgame_samples: Array = midgame_dict.get("samples", [])
+    var midgame_day01_values: Dictionary = {}
+    var midgame_day03_values: Dictionary = {}
+    var midgame_day04_values: Dictionary = {}
+    var midgame_day07_values: Dictionary = {}
+    for sample in midgame_samples:
+        if typeof(sample) != TYPE_DICTIONARY:
+            continue
+        var sample_id: String = str(sample.get("id", ""))
+        if sample_id == "day_01":
+            var values_day1: Variant = sample.get("values", {})
+            if typeof(values_day1) == TYPE_DICTIONARY:
+                midgame_day01_values = values_day1
+        elif sample_id == "day_03":
+            var values: Variant = sample.get("values", {})
+            if typeof(values) == TYPE_DICTIONARY:
+                midgame_day03_values = values
+        elif sample_id == "day_04":
+            var values_day4: Variant = sample.get("values", {})
+            if typeof(values_day4) == TYPE_DICTIONARY:
+                midgame_day04_values = values_day4
+        elif sample_id == "day_07":
+            var values_day7: Variant = sample.get("values", {})
+            if typeof(values_day7) == TYPE_DICTIONARY:
+                midgame_day07_values = values_day7
+        if midgame_day01_values.size() > 0 and midgame_day03_values.size() > 0 and midgame_day04_values.size() > 0 and midgame_day07_values.size() > 0:
+            break
+    _assert_true(midgame_day01_values.size() > 0, "balance export midgame captures day_01 values")
+    _assert_true(midgame_day03_values.size() > 0, "balance export midgame captures day_03 values")
+    _assert_true(midgame_day04_values.size() > 0, "balance export midgame captures day_04 values")
+    _assert_true(midgame_day07_values.size() > 0, "balance export midgame captures day_07 values")
+    if midgame_day01_values.size() > 0:
+        _assert_equal(int(midgame_day01_values.get("midgame_caps_food", -1)), 0, "balance export midgame day_01 food cap")
+    if midgame_day03_values.size() > 0:
+        _assert_equal(int(midgame_day03_values.get("midgame_food_bonus_day", -1)), 4, "balance export midgame day_03 food bonus day")
+        _assert_equal(int(midgame_day03_values.get("midgame_food_bonus", -1)), 0, "balance export midgame day_03 food bonus")
+    if midgame_day04_values.size() > 0:
+        _assert_equal(int(midgame_day04_values.get("midgame_food_bonus_day", -1)), 4, "balance export midgame day_04 food bonus day")
+        _assert_equal(int(midgame_day04_values.get("midgame_food_bonus", -1)), 2, "balance export midgame day_04 food bonus")
+    if midgame_day07_values.size() > 0:
+        _assert_equal(int(midgame_day07_values.get("midgame_caps_food", -1)), 35, "balance export midgame day_07 food cap")
+        _assert_equal(int(midgame_day07_values.get("midgame_caps_stone", -1)), 35, "balance export midgame day_07 stone cap")
+        _assert_equal(int(midgame_day07_values.get("midgame_stone_catchup_min", -1)), 10, "balance export midgame day_07 stone catchup min")
+        _assert_equal(int(midgame_day07_values.get("midgame_food_bonus_day", -1)), 4, "balance export midgame day_07 food bonus day")
+
+    var wave_save_path: String = "user://balance_export_wave.json"
+    _remove_temp_file(wave_save_path)
+    var wave_save_result: Dictionary = SimBalanceReport.save_balance_export("wave")
+    var wave_save_line: String = str(wave_save_result.get("line", ""))
+    _assert_equal(wave_save_line, "Saved to user://balance_export_wave.json", "balance export save wave output line")
+    _assert_true(FileAccess.file_exists(wave_save_path), "balance export save wave writes file")
+    var wave_saved_text: String = _read_file_text(wave_save_path)
+    _assert_equal(wave_saved_text, wave_json, "balance export save wave content matches")
+    var wave_saved_parsed: Variant = JSON.parse_string(wave_saved_text)
+    if typeof(wave_saved_parsed) == TYPE_DICTIONARY:
+        var wave_saved_metrics: Array = wave_saved_parsed.get("metrics", [])
+        for entry in wave_saved_metrics:
+            _assert_true(str(entry).begins_with("night_wave_"), "balance export save wave metrics prefix")
+    _remove_temp_file(wave_save_path)
+
+    var summary_text: String = SimBalanceReport.balance_summary_output()
+    var summary_text_again: String = SimBalanceReport.balance_summary_output()
+    _assert_equal(summary_text_again, summary_text, "balance summary deterministic")
+    var summary_lines: PackedStringArray = summary_text.split("\n", false)
+    _assert_true(summary_lines.size() >= 2, "balance summary lines present")
+    _assert_equal(summary_lines[0], "Balance summary (days):", "balance summary title")
+    _assert_equal(summary_lines[1], "id | night_wave_total_base | night_wave_total_threat2 | night_wave_total_threat4 | enemy_scout_speed | tower_level1_damage", "balance summary header")
+    _assert_true(summary_text.find("day_01 |") != -1, "balance summary includes day_01")
+    _assert_true(summary_text.find("day_07 |") != -1, "balance summary includes day_07")
+
+    var wave_summary_text: String = SimBalanceReport.balance_summary_output("wave")
+    var wave_summary_text_again: String = SimBalanceReport.balance_summary_output("wave")
+    _assert_equal(wave_summary_text_again, wave_summary_text, "balance summary wave deterministic")
+    var wave_lines: PackedStringArray = wave_summary_text.split("\n", false)
+    _assert_true(wave_lines.size() >= 2, "balance summary wave lines present")
+    _assert_equal(wave_lines[0], "Balance summary (days/wave):", "balance summary wave title")
+    _assert_equal(wave_lines[1], "id | night_wave_total_base | night_wave_total_threat2 | night_wave_total_threat4", "balance summary wave header")
+    _assert_true(wave_summary_text.find("day_07 |") != -1, "balance summary wave includes day_07")
+
+    var enemies_summary_text: String = SimBalanceReport.balance_summary_output("enemies")
+    var enemies_summary_text_again: String = SimBalanceReport.balance_summary_output("enemies")
+    _assert_equal(enemies_summary_text_again, enemies_summary_text, "balance summary enemies deterministic")
+    var enemies_lines: PackedStringArray = enemies_summary_text.split("\n", false)
+    _assert_true(enemies_lines.size() >= 2, "balance summary enemies lines present")
+    _assert_equal(enemies_lines[0], "Balance summary (days/enemies):", "balance summary enemies title")
+    _assert_equal(enemies_lines[1], "id | enemy_scout_hp_bonus | enemy_raider_hp_bonus | enemy_armored_hp_bonus | enemy_scout_speed | enemy_raider_speed | enemy_armored_speed", "balance summary enemies header")
+    _assert_true(enemies_summary_text.find("day_07 |") != -1, "balance summary enemies includes day_07")
+    _assert_true(enemies_summary_text.find("day_07 | 1 | 2 | 4 |") != -1, "balance summary enemies day_07 hp bonus trio")
+
+    var towers_summary_text: String = SimBalanceReport.balance_summary_output("towers")
+    var towers_summary_text_again: String = SimBalanceReport.balance_summary_output("towers")
+    _assert_equal(towers_summary_text_again, towers_summary_text, "balance summary towers deterministic")
+    var towers_lines: PackedStringArray = towers_summary_text.split("\n", false)
+    _assert_true(towers_lines.size() >= 2, "balance summary towers lines present")
+    _assert_equal(towers_lines[0], "Balance summary (days/towers):", "balance summary towers title")
+    _assert_equal(towers_lines[1], "id | tower_level1_damage | tower_level1_shots | tower_level2_damage | tower_level2_shots | tower_level3_damage | tower_level3_shots", "balance summary towers header")
+
+    var buildings_summary_text: String = SimBalanceReport.balance_summary_output("buildings")
+    var buildings_summary_text_again: String = SimBalanceReport.balance_summary_output("buildings")
+    _assert_equal(buildings_summary_text_again, buildings_summary_text, "balance summary buildings deterministic")
+    var buildings_lines: PackedStringArray = buildings_summary_text.split("\n", false)
+    _assert_true(buildings_lines.size() >= 2, "balance summary buildings lines present")
+    _assert_equal(buildings_lines[0], "Balance summary (days/buildings):", "balance summary buildings title")
+    _assert_equal(buildings_lines[1], "id | building_farm_cost_wood | building_farm_production_food | building_lumber_cost_food | building_lumber_cost_wood | building_lumber_production_wood | building_quarry_cost_food | building_quarry_cost_wood | building_quarry_production_stone | building_tower_cost_stone | building_tower_cost_wood | building_wall_cost_stone | building_wall_cost_wood", "balance summary buildings header")
+    _assert_true(buildings_summary_text.find("day_07 |") != -1, "balance summary buildings includes day_07")
+
+    var midgame_summary_text: String = SimBalanceReport.balance_summary_output("midgame")
+    var midgame_summary_text_again: String = SimBalanceReport.balance_summary_output("midgame")
+    _assert_equal(midgame_summary_text_again, midgame_summary_text, "balance summary midgame deterministic")
+    var midgame_lines: PackedStringArray = midgame_summary_text.split("\n", false)
+    _assert_true(midgame_lines.size() >= 2, "balance summary midgame lines present")
+    _assert_equal(midgame_lines[0], "Balance summary (days/midgame):", "balance summary midgame title")
+    _assert_equal(midgame_lines[1], "id | midgame_caps_food | midgame_caps_wood | midgame_caps_stone | midgame_food_bonus_day | midgame_food_bonus_amount | midgame_food_bonus_threshold | midgame_food_bonus | midgame_stone_catchup_day | midgame_stone_catchup_min", "balance summary midgame header")
+    _assert_true(midgame_summary_text.find("day_07 |") != -1, "balance summary midgame includes day_07")
+
+    var unknown_summary: String = SimBalanceReport.balance_summary_output("banana")
+    _assert_equal(unknown_summary, "Balance summary: unknown group banana", "balance summary unknown group message")
+
+    var unknown_export: String = SimBalanceReport.balance_export_json("banana")
+    _assert_equal(unknown_export, "Balance export: unknown group banana", "balance export unknown group message")
+    var unknown_save: Dictionary = SimBalanceReport.save_balance_export("banana")
+    _assert_equal(str(unknown_save.get("line", "")), "Balance export save: unknown group banana", "balance export save unknown group message")
+
+    var diff_path: String = "user://balance_export_wave.json"
+    _remove_temp_file(diff_path)
+    var diff_missing: String = SimBalanceReport.balance_diff_output("wave")
+    _assert_equal(diff_missing, "Balance diff: missing baseline user://balance_export_wave.json", "balance diff missing baseline message")
+
+    var diff_save: Dictionary = SimBalanceReport.save_balance_export("wave")
+    _assert_true(diff_save.get("ok", false), "balance diff save baseline ok")
+    var diff_clean: String = SimBalanceReport.balance_diff_output("wave")
+    _assert_equal(diff_clean, "Balance diff: no changes", "balance diff no changes")
+
+    var diff_saved_text: String = _read_file_text(diff_path)
+    var diff_saved_parsed: Variant = JSON.parse_string(diff_saved_text)
+    if typeof(diff_saved_parsed) == TYPE_DICTIONARY:
+        var diff_saved_dict: Dictionary = diff_saved_parsed
+        var diff_samples: Array = diff_saved_dict.get("samples", [])
+        for i in range(diff_samples.size()):
+            var sample: Variant = diff_samples[i]
+            if typeof(sample) != TYPE_DICTIONARY:
+                continue
+            if str(sample.get("id", "")) != "day_07":
+                continue
+            var values_raw: Variant = sample.get("values", {})
+            if typeof(values_raw) != TYPE_DICTIONARY:
+                continue
+            var values_dict: Dictionary = values_raw
+            var current_base: int = int(day7_values.get("night_wave_total_base", 0))
+            values_dict["night_wave_total_base"] = current_base - 1
+            sample["values"] = values_dict
+            diff_samples[i] = sample
+            break
+        diff_saved_dict["samples"] = diff_samples
+        var diff_json: String = SimBalanceReport.format_balance_export_json(diff_saved_dict)
+        var diff_file := FileAccess.open(diff_path, FileAccess.WRITE)
+        if diff_file != null:
+            diff_file.store_string(diff_json)
+            diff_file.close()
+
+    var diff_changed: String = SimBalanceReport.balance_diff_output("wave")
+    var diff_lines: PackedStringArray = diff_changed.split("\n", false)
+    _assert_equal(diff_lines.size(), 2, "balance diff one change lines")
+    _assert_equal(diff_lines[0], "Balance diff: 1 changes", "balance diff one change header")
+    var diff_old: int = int(day7_values.get("night_wave_total_base", 0)) - 1
+    var diff_new: int = int(day7_values.get("night_wave_total_base", 0))
+    _assert_equal(diff_lines[1], "day_07 night_wave_total_base: %d -> %d" % [diff_old, diff_new], "balance diff one change value")
+
+    var diff_unknown: String = SimBalanceReport.balance_diff_output("banana")
+    _assert_equal(diff_unknown, "Balance diff: unknown group banana", "balance diff unknown group message")
+    _remove_temp_file(diff_path)
+
+func _run_verification_wrapper_tests() -> void:
+    var wrapper_specs: Array[Dictionary] = [
+        {"path": "res://scripts/test.ps1", "target": "scripts/test.ps1"},
+        {"path": "res://scripts/test.sh", "target": "scripts/test.sh"},
+        {"path": "res://scripts/scenarios.ps1", "target": "scripts/scenarios.ps1"},
+        {"path": "res://scripts/scenarios.sh", "target": "scripts/scenarios.sh"},
+        {"path": "res://scripts/scenarios_early.ps1", "target": "scripts/scenarios_early.ps1"},
+        {"path": "res://scripts/scenarios_early.sh", "target": "scripts/scenarios_early.sh"},
+        {"path": "res://scripts/scenarios_mid.ps1", "target": "scripts/scenarios_mid.ps1"},
+        {"path": "res://scripts/scenarios_mid.sh", "target": "scripts/scenarios_mid.sh"}
+    ]
+    for spec in wrapper_specs:
+        var path: String = str(spec.get("path", ""))
+        var target: String = str(spec.get("target", ""))
+        _assert_true(FileAccess.file_exists(path), "wrapper scripts: %s exists" % path)
+        if FileAccess.file_exists(path):
+            var text: String = FileAccess.get_file_as_string(path)
+            _assert_true(text.find("Delegating to scripts/") != -1, "wrapper scripts: delegation line in %s" % path)
+            _assert_true(text.find(target) != -1, "wrapper scripts: target reference in %s" % path)
+
+    var app_root: String = ProjectSettings.globalize_path("res://")
+    var app_root_clean: String = app_root.trim_suffix("/").trim_suffix("\\")
+    var apps_root: String = app_root_clean.get_base_dir()
+    var repo_root: String = apps_root.get_base_dir()
+    var root_scripts: Array[String] = [
+        "scripts/test.ps1",
+        "scripts/test.sh",
+        "scripts/scenarios.ps1",
+        "scripts/scenarios.sh",
+        "scripts/scenarios_early.ps1",
+        "scripts/scenarios_early.sh",
+        "scripts/scenarios_mid.ps1",
+        "scripts/scenarios_mid.sh"
+    ]
+    for rel_path in root_scripts:
+        var abs_path: String = repo_root.path_join(rel_path)
+        _assert_true(FileAccess.file_exists(abs_path), "root scripts: %s exists" % rel_path)
+
+func _run_lessons_tests() -> void:
+    var load_result: Dictionary = SimLessons.load_data()
+    _assert_true(load_result.get("ok", false), "lessons load ok")
+    var data: Dictionary = load_result.get("data", {})
+    var lessons: Array = data.get("lessons", [])
+    _assert_true(lessons is Array and lessons.size() > 0, "lessons list non-empty")
+    var default_id: String = str(data.get("default_lesson", ""))
+    _assert_equal(int(data.get("version", 0)), 1, "lessons version is 1")
+    _assert_true(SimLessons.is_valid(default_id), "default lesson valid")
+    _assert_true(SimLessons.lesson_ids().has("full_alpha"), "lessons include full_alpha")
+    for entry in lessons:
+        _assert_true(typeof(entry) == TYPE_DICTIONARY, "lesson entry is dictionary")
+        var lesson: Dictionary = entry
+        _assert_true(str(lesson.get("id", "")) != "", "lesson id present")
+        _assert_true(str(lesson.get("name", "")) != "", "lesson name present")
+        _assert_equal(str(lesson.get("mode", "")), "charset", "lesson mode is charset")
+        var charset: String = str(lesson.get("charset", ""))
+        _assert_true(charset != "", "lesson charset present")
+        var lengths: Dictionary = lesson.get("lengths", {})
+        for kind in ["scout", "raider", "armored"]:
+            var range_value: Variant = lengths.get(kind, [])
+            _assert_true(range_value is Array and range_value.size() >= 2, "lesson lengths include %s" % kind)
+            if range_value is Array and range_value.size() >= 2:
+                var min_len: int = int(range_value[0])
+                var max_len: int = int(range_value[1])
+                _assert_true(min_len > 0, "lesson length min positive for %s" % kind)
+                _assert_true(max_len >= min_len, "lesson length max >= min for %s" % kind)
+    var lesson_id: String = SimLessons.normalize_lesson_id(default_id)
+    var lesson_data: Dictionary = SimLessons.get_lesson(lesson_id)
+    var word: String = SimWords.word_for_enemy("lesson-seed", 1, "scout", 1, {}, lesson_id)
+    _assert_true(word != "", "lesson word generated")
+    var lesson_charset: String = str(lesson_data.get("charset", ""))
+    _assert_true(_word_in_charset(word, lesson_charset), "lesson word uses charset")
+    var scout_range: Variant = lesson_data.get("lengths", {}).get("scout", [])
+    if scout_range is Array and scout_range.size() >= 2:
+        _assert_true(word.length() >= int(scout_range[0]) and word.length() <= int(scout_range[1]), "lesson word length in range")
+    var used: Dictionary = {word: true}
+    var word2: String = SimWords.word_for_enemy("lesson-seed", 1, "scout", 2, used, lesson_id)
+    _assert_true(word2 != word, "lesson words unique")
+
+func _word_in_charset(word: String, charset: String) -> bool:
+    if charset == "":
+        return false
+    for i in range(word.length()):
+        var ch: String = word.substr(i, 1)
+        if charset.find(ch) < 0:
+            return false
+    return true
+
 func _run_command_keywords_tests() -> void:
     var keywords: Array[String] = CommandKeywords.keywords()
     _assert_true(keywords.has("help"), "command keywords include help")
-    _assert_true(keywords.has("status"), "command keywords include status")
-    _assert_true(keywords.has("build"), "command keywords include build")
+    _assert_true(keywords.has("version"), "command keywords include version")
+    _assert_true(keywords.has("status"), "command keywords include status")     
+    _assert_true(keywords.has("balance"), "command keywords include balance")
+    _assert_true(keywords.has("build"), "command keywords include build")       
     _assert_true(keywords.has("defend"), "command keywords include defend")
     _assert_true(keywords.has("wait"), "command keywords include wait")
     _assert_true(keywords.has("report"), "command keywords include report")
     _assert_true(keywords.has("history"), "command keywords include history")
     _assert_true(keywords.has("trend"), "command keywords include trend")
     _assert_true(keywords.has("goal"), "command keywords include goal")
+    _assert_true(keywords.has("lesson"), "command keywords include lesson")
+    _assert_true(keywords.has("lessons"), "command keywords include lessons")
     _assert_true(keywords.has("settings"), "command keywords include settings")
     _assert_true(keywords.has("bind"), "command keywords include bind")
+    _assert_true(keywords.has("tutorial"), "command keywords include tutorial")
 
 func _run_scene_compile_tests() -> void:
     var packed := load("res://scenes/Main.tscn")
@@ -582,19 +1539,1229 @@ func _run_inputmap_tests() -> void:
     _assert_true(InputMap.has_action("cycle_goal"), "InputMap has cycle_goal action")
     var events: Array = InputMap.action_get_events("cycle_goal")
     _assert_true(events.size() > 0, "cycle_goal has at least one binding")
-    var has_f2: bool = false
+    var has_f7: bool = false
     var details: Array[String] = []
     for event in events:
+        if event is InputEventKey and event.keycode == KEY_F7:
+            has_f7 = true
+            break
+        if event is InputEventKey:
+            details.append("key=%d phys=%d" % [event.keycode, event.physical_keycode])
+    if has_f7:
+        _assert_true(true, "cycle_goal includes F7 binding")
+    else:
+        var detail_text: String = ", ".join(details)
+        _assert_true(false, "cycle_goal includes F7 binding (events: %s, KEY_F7=%d)" % [detail_text, KEY_F7])
+
+    _assert_true(InputMap.has_action("toggle_settings"), "InputMap has toggle_settings action")
+    var settings_events: Array = InputMap.action_get_events("toggle_settings")
+    _assert_true(settings_events.size() > 0, "toggle_settings has at least one binding")
+    var has_f1: bool = false
+    var settings_details: Array[String] = []
+    for event in settings_events:
+        if event is InputEventKey and event.keycode == KEY_F1:
+            has_f1 = true
+            break
+        if event is InputEventKey:
+            settings_details.append("key=%d phys=%d" % [event.keycode, event.physical_keycode])
+    if has_f1:
+        _assert_true(true, "toggle_settings includes F1 binding")
+    else:
+        var settings_detail_text: String = ", ".join(settings_details)
+        _assert_true(false, "toggle_settings includes F1 binding (events: %s, KEY_F1=%d)" % [settings_detail_text, KEY_F1])
+
+    _assert_true(InputMap.has_action("toggle_lessons"), "InputMap has toggle_lessons action")
+    var lessons_events: Array = InputMap.action_get_events("toggle_lessons")
+    _assert_true(lessons_events.size() > 0, "toggle_lessons has at least one binding")
+    var has_f2: bool = false
+    var lessons_details: Array[String] = []
+    for event in lessons_events:
         if event is InputEventKey and event.keycode == KEY_F2:
             has_f2 = true
             break
         if event is InputEventKey:
-            details.append("key=%d phys=%d" % [event.keycode, event.physical_keycode])
+            lessons_details.append("key=%d phys=%d" % [event.keycode, event.physical_keycode])
     if has_f2:
-        _assert_true(true, "cycle_goal includes F2 binding")
+        _assert_true(true, "toggle_lessons includes F2 binding")
     else:
-        var detail_text: String = ", ".join(details)
-        _assert_true(false, "cycle_goal includes F2 binding (events: %s, KEY_F2=%d)" % [detail_text, KEY_F2])
+        var lessons_detail_text: String = ", ".join(lessons_details)
+        _assert_true(false, "toggle_lessons includes F2 binding (events: %s, KEY_F2=%d)" % [lessons_detail_text, KEY_F2])
+
+    _assert_true(InputMap.has_action("toggle_trend"), "InputMap has toggle_trend action")
+    var trend_events: Array = InputMap.action_get_events("toggle_trend")
+    _assert_true(trend_events.size() > 0, "toggle_trend has at least one binding")
+    var has_f3: bool = false
+    var trend_details: Array[String] = []
+    for event in trend_events:
+        if event is InputEventKey and event.keycode == KEY_F3:
+            has_f3 = true
+            break
+        if event is InputEventKey:
+            trend_details.append("key=%d phys=%d" % [event.keycode, event.physical_keycode])
+    if has_f3:
+        _assert_true(true, "toggle_trend includes F3 binding")
+    else:
+        var trend_detail_text: String = ", ".join(trend_details)
+        _assert_true(false, "toggle_trend includes F3 binding (events: %s, KEY_F3=%d)" % [trend_detail_text, KEY_F3])
+
+    _assert_true(InputMap.has_action("toggle_history"), "InputMap has toggle_history action")
+    var history_events: Array = InputMap.action_get_events("toggle_history")
+    _assert_true(history_events.size() > 0, "toggle_history has at least one binding")
+    var has_f5: bool = false
+    var history_details: Array[String] = []
+    for event in history_events:
+        if event is InputEventKey and event.keycode == KEY_F5:
+            has_f5 = true
+            break
+        if event is InputEventKey:
+            history_details.append("key=%d phys=%d" % [event.keycode, event.physical_keycode])
+    if has_f5:
+        _assert_true(true, "toggle_history includes F5 binding")
+    else:
+        var history_detail_text: String = ", ".join(history_details)
+        _assert_true(false, "toggle_history includes F5 binding (events: %s, KEY_F5=%d)" % [history_detail_text, KEY_F5])
+
+    _assert_true(InputMap.has_action("toggle_compact"), "InputMap has toggle_compact action")
+    var compact_events: Array = InputMap.action_get_events("toggle_compact")
+    _assert_true(compact_events.size() > 0, "toggle_compact has at least one binding")
+    var has_f4: bool = false
+    var compact_details: Array[String] = []
+    for event in compact_events:
+        if event is InputEventKey and event.keycode == KEY_F4:
+            has_f4 = true
+            break
+        if event is InputEventKey:
+            compact_details.append("key=%d phys=%d" % [event.keycode, event.physical_keycode])
+    if has_f4:
+        _assert_true(true, "toggle_compact includes F4 binding")
+    else:
+        var compact_detail_text: String = ", ".join(compact_details)
+        _assert_true(false, "toggle_compact includes F4 binding (events: %s, KEY_F4=%d)" % [compact_detail_text, KEY_F4])
+
+    _assert_true(InputMap.has_action("toggle_report"), "InputMap has toggle_report action")
+    var report_events: Array = InputMap.action_get_events("toggle_report")
+    _assert_true(report_events.size() > 0, "toggle_report has at least one binding")
+    var has_f6: bool = false
+    var report_details: Array[String] = []
+    for event in report_events:
+        if event is InputEventKey and event.keycode == KEY_F6:
+            has_f6 = true
+            break
+        if event is InputEventKey:
+            report_details.append("key=%d phys=%d" % [event.keycode, event.physical_keycode])
+    if has_f6:
+        _assert_true(true, "toggle_report includes F6 binding")
+    else:
+        var report_detail_text: String = ", ".join(report_details)
+        _assert_true(false, "toggle_report includes F6 binding (events: %s, KEY_F6=%d)" % [report_detail_text, KEY_F6])
+
+func _run_controls_formatter_tests() -> void:
+    _assert_true(RebindableActions.actions().has("toggle_compact"), "actions include toggle_compact")
+    _assert_true(RebindableActions.actions().has("toggle_settings"), "actions include toggle_settings")
+    _assert_true(RebindableActions.actions().has("toggle_lessons"), "actions include toggle_lessons")
+    _assert_true(RebindableActions.actions().has("toggle_report"), "actions include toggle_report")
+    _assert_equal(RebindableActions.display_name("cycle_goal"), "Cycle Goal", "display_name cycle_goal")
+    _assert_equal(RebindableActions.display_name("toggle_settings"), "Toggle Settings Panel", "display_name toggle_settings")
+    _assert_equal(RebindableActions.display_name("toggle_lessons"), "Toggle Lessons Panel", "display_name toggle_lessons")
+    _assert_equal(RebindableActions.display_name("toggle_trend"), "Toggle Trend Panel", "display_name toggle_trend")
+    _assert_equal(RebindableActions.display_name("toggle_compact"), "Toggle Compact Panels", "display_name toggle_compact")
+    _assert_equal(RebindableActions.display_name("toggle_history"), "Toggle History Panel", "display_name toggle_history")
+    _assert_equal(RebindableActions.display_name("toggle_report"), "Toggle Report Panel", "display_name toggle_report")
+    _assert_equal(RebindableActions.display_name("unknown_action"), "unknown_action", "display_name fallback")
+    var hint_text: String = RebindableActions.format_actions_hint()
+    _assert_true(hint_text.find("Actions:") != -1, "actions hint includes prefix")
+    _assert_true(hint_text.find("Cycle Goal (cycle_goal)") != -1, "actions hint includes cycle_goal")
+    _assert_true(hint_text.find("Toggle Settings Panel (toggle_settings)") != -1, "actions hint includes toggle_settings")
+    _assert_true(hint_text.find("Toggle Lessons Panel (toggle_lessons)") != -1, "actions hint includes toggle_lessons")
+    _assert_true(hint_text.find("Toggle Trend Panel (toggle_trend)") != -1, "actions hint includes toggle_trend")
+    _assert_true(hint_text.find("Toggle Compact Panels (toggle_compact)") != -1, "actions hint includes toggle_compact")
+    _assert_true(hint_text.find("Toggle History Panel (toggle_history)") != -1, "actions hint includes toggle_history")
+    _assert_true(hint_text.find("Toggle Report Panel (toggle_report)") != -1, "actions hint includes toggle_report")
+
+    _assert_true(InputMap.has_action("cycle_goal"), "controls formatter uses cycle_goal")
+    var binding_text: String = ControlsFormatter.binding_text_for_action("cycle_goal")
+    _assert_true(binding_text != "", "controls formatter returns binding text")
+    _assert_true(binding_text != "Unbound", "controls formatter binding is not unbound")
+    _assert_true(binding_text != "Missing (InputMap)", "controls formatter binding is not missing")
+    var trend_text: String = ControlsFormatter.binding_text_for_action("toggle_trend")
+    _assert_true(trend_text != "", "controls formatter returns toggle_trend text")
+    _assert_true(trend_text != "Unbound", "controls formatter toggle_trend not unbound")
+    _assert_true(trend_text != "Missing (InputMap)", "controls formatter toggle_trend not missing")
+    var history_text: String = ControlsFormatter.binding_text_for_action("toggle_history")
+    _assert_true(history_text != "", "controls formatter returns toggle_history text")
+    _assert_true(history_text != "Unbound", "controls formatter toggle_history not unbound")
+    _assert_true(history_text != "Missing (InputMap)", "controls formatter toggle_history not missing")
+    var compact_text: String = ControlsFormatter.binding_text_for_action("toggle_compact")
+    _assert_true(compact_text != "", "controls formatter returns toggle_compact text")
+    _assert_true(compact_text != "Unbound", "controls formatter toggle_compact not unbound")
+    _assert_true(compact_text != "Missing (InputMap)", "controls formatter toggle_compact not missing")
+    var settings_text: String = ControlsFormatter.binding_text_for_action("toggle_settings")
+    _assert_true(settings_text != "", "controls formatter returns toggle_settings text")
+    _assert_true(settings_text != "Unbound", "controls formatter toggle_settings not unbound")
+    _assert_true(settings_text != "Missing (InputMap)", "controls formatter toggle_settings not missing")
+    var report_text: String = ControlsFormatter.binding_text_for_action("toggle_report")
+    _assert_true(report_text != "", "controls formatter returns toggle_report text")
+    _assert_true(report_text != "Unbound", "controls formatter toggle_report not unbound")
+    _assert_true(report_text != "Missing (InputMap)", "controls formatter toggle_report not missing")
+
+    InputMap.add_action("tmp_unbound_action")
+    var unbound_text: String = ControlsFormatter.binding_text_for_action("tmp_unbound_action")
+    _assert_equal(unbound_text, "Unbound", "controls formatter handles unbound action")
+    InputMap.erase_action("tmp_unbound_action")
+
+    var missing_text: String = ControlsFormatter.binding_text_for_action("definitely_not_an_action")
+    _assert_equal(missing_text, "Missing (InputMap)", "controls formatter handles missing action")
+
+    var list_text: String = ControlsFormatter.format_controls_list(PackedStringArray(["cycle_goal"]))
+    _assert_true(list_text.find("Cycle Goal") != -1, "controls formatter list includes display name")
+    _assert_true(list_text.find("(cycle_goal)") != -1, "controls formatter list includes action id")
+    var list_full: String = ControlsFormatter.format_controls_list(RebindableActions.actions())
+    _assert_true(list_full.find("Toggle Settings Panel") != -1, "controls formatter list includes toggle_settings")
+    _assert_true(list_full.find("Toggle Lessons Panel") != -1, "controls formatter list includes toggle_lessons")
+    _assert_true(list_full.find("Toggle Trend Panel") != -1, "controls formatter list includes toggle_trend")
+    _assert_true(list_full.find("Toggle Compact Panels") != -1, "controls formatter list includes toggle_compact")
+    _assert_true(list_full.find("Toggle History Panel") != -1, "controls formatter list includes toggle_history")
+    _assert_true(list_full.find("Toggle Report Panel") != -1, "controls formatter list includes toggle_report")
+
+    var formatter_source: String = _read_file_text("res://game/controls_formatter.gd")
+    _assert_true(formatter_source.find("keybind_conflicts") == -1, "controls formatter avoids keybind_conflicts dependency")
+    _assert_true(formatter_source.find("ControlsAliases") != -1, "controls formatter uses ControlsAliases")
+    var conflicts_source: String = _read_file_text("res://game/keybind_conflicts.gd")
+    var uses_shared_aliases: bool = (
+        conflicts_source.find("ControlsAliases") != -1
+        or conflicts_source.find("ControlsFormatter") != -1
+    )
+    _assert_true(uses_shared_aliases, "keybind_conflicts uses shared alias helper")
+
+func _run_keybind_conflicts_tests() -> void:
+    var event_a := InputEventKey.new()
+    event_a.keycode = KEY_F4
+    event_a.shift_pressed = false
+    event_a.ctrl_pressed = false
+    event_a.alt_pressed = false
+    event_a.meta_pressed = false
+    var sig_a: String = KeybindConflicts.key_signature(event_a)
+    var event_b := InputEventKey.new()
+    event_b.keycode = KEY_F4
+    event_b.shift_pressed = false
+    event_b.ctrl_pressed = false
+    event_b.alt_pressed = false
+    event_b.meta_pressed = false
+    var sig_b: String = KeybindConflicts.key_signature(event_b)
+    _assert_equal(sig_a, sig_b, "key_signature stable for same modifiers")
+    var event_c := InputEventKey.new()
+    event_c.keycode = KEY_F4
+    event_c.shift_pressed = true
+    event_c.ctrl_pressed = false
+    event_c.alt_pressed = false
+    event_c.meta_pressed = false
+    var sig_c: String = KeybindConflicts.key_signature(event_c)
+    _assert_true(sig_a != sig_c, "key_signature differs with modifiers")
+
+    var action_a: String = "tmp_exact_action_a"
+    var action_b: String = "tmp_exact_action_b"
+    var had_action_a: bool = InputMap.has_action(action_a)
+    var had_action_b: bool = InputMap.has_action(action_b)
+    var restore_a: Array = []
+    var restore_b: Array = []
+    if had_action_a:
+        restore_a = InputMap.action_get_events(action_a)
+    else:
+        InputMap.add_action(action_a)
+    if had_action_b:
+        restore_b = InputMap.action_get_events(action_b)
+    else:
+        InputMap.add_action(action_b)
+    InputMap.action_erase_events(action_a)
+    InputMap.action_erase_events(action_b)
+    var bind_f1 := InputEventKey.new()
+    bind_f1.keycode = KEY_F1
+    var bind_ctrl_f1 := InputEventKey.new()
+    bind_ctrl_f1.keycode = KEY_F1
+    bind_ctrl_f1.ctrl_pressed = true
+    InputMap.action_add_event(action_a, bind_f1)
+    InputMap.action_add_event(action_b, bind_ctrl_f1)
+    var f1_press := InputEventKey.new()
+    f1_press.keycode = KEY_F1
+    f1_press.pressed = true
+    var ctrl_f1_press := InputEventKey.new()
+    ctrl_f1_press.keycode = KEY_F1
+    ctrl_f1_press.ctrl_pressed = true
+    ctrl_f1_press.pressed = true
+    _assert_true(KeybindConflicts.event_matches_action_exact(ctrl_f1_press, action_b),
+        "exact match accepts Ctrl+F1 for Ctrl+F1 action")
+    _assert_true(not KeybindConflicts.event_matches_action_exact(ctrl_f1_press, action_a),
+        "exact match rejects Ctrl+F1 for F1 action")
+    _assert_true(KeybindConflicts.event_matches_action_exact(f1_press, action_a),
+        "exact match accepts F1 for F1 action")
+    _assert_true(not KeybindConflicts.event_matches_action_exact(f1_press, action_b),
+        "exact match rejects F1 for Ctrl+F1 action")
+    _assert_true(not InputMap.event_is_action(ctrl_f1_press, action_a, true),
+        "InputMap exact match rejects Ctrl+F1 for F1 action")
+    var f1_signature_exact: String = KeybindConflicts.key_signature(f1_press)
+    var ctrl_f1_signature_exact: String = KeybindConflicts.key_signature(ctrl_f1_press)
+    var distinct_conflicts: Dictionary = KeybindConflicts.find_conflicts({
+        "a": [f1_signature_exact],
+        "b": [ctrl_f1_signature_exact]
+    })
+    _assert_true(distinct_conflicts.is_empty(), "conflicts ignore modifier-distinct signatures")
+    InputMap.action_erase_events(action_a)
+    InputMap.action_erase_events(action_b)
+    if had_action_a:
+        for event in restore_a:
+            InputMap.action_add_event(action_a, event)
+    else:
+        InputMap.erase_action(action_a)
+    if had_action_b:
+        for event in restore_b:
+            InputMap.action_add_event(action_b, event)
+    else:
+        InputMap.erase_action(action_b)
+
+    var conflict_signature := "K=65|S=0|C=0|A=0|M=0"
+    var action_sig_map: Dictionary = {
+        "a": [conflict_signature],
+        "b": [conflict_signature]
+    }
+    var conflicts: Dictionary = KeybindConflicts.find_conflicts(action_sig_map)
+    _assert_true(conflicts.has(conflict_signature), "find_conflicts detects conflicts")
+    var conflict_actions: Array = conflicts.get(conflict_signature, [])
+    _assert_equal(conflict_actions, ["a", "b"], "find_conflicts sorts action ids")
+
+    var no_conflicts: Dictionary = KeybindConflicts.find_conflicts({
+        "a": ["K=66|S=0|C=0|A=0|M=0"],
+        "b": ["K=67|S=0|C=0|A=0|M=0"]
+    })
+    _assert_true(no_conflicts.is_empty(), "find_conflicts ignores unique bindings")
+
+    var formatted: Array[String] = KeybindConflicts.format_conflicts(
+        {conflict_signature: ["b", "a"]},
+        Callable(self, "_conflict_signature_label_test")
+    )
+    _assert_equal(formatted.size(), 1, "format_conflicts returns one line")
+    _assert_equal(formatted[0], "CONFLICT: TEST -> a, b", "format_conflicts sorts and formats")
+
+    var f1_signature: String = "K=%d|S=0|C=0|A=0|M=0" % KeybindConflicts.fn_keycode(1)
+    var f2_signature: String = "K=%d|S=0|C=0|A=0|M=0" % KeybindConflicts.fn_keycode(2)
+    var suggestion_map: Dictionary = {
+        "a": [f1_signature],
+        "b": [f2_signature]
+    }
+    var suggestion: String = KeybindConflicts.suggest_unused_safe_key(suggestion_map)
+    _assert_equal(suggestion, "F3", "suggest_unused_safe_key finds first open F-key")
+
+    var safe_signatures: Array[String] = KeybindConflicts.safe_key_pool_signatures()
+    _assert_true(safe_signatures.size() > 12, "safe key pool includes fallback keys")
+    var fallback_signature: String = ""
+    if safe_signatures.size() > 12:
+        fallback_signature = safe_signatures[12]
+    var saturated_map: Dictionary = {
+        "a": [f1_signature],
+        "b": [f1_signature]
+    }
+    for i in range(2, 13):
+        saturated_map["f%d" % i] = ["K=%d|S=0|C=0|A=0|M=0" % KeybindConflicts.fn_keycode(i)]
+    var saturated_plan: Dictionary = KeybindConflicts.build_resolution_plan(saturated_map)
+    var saturated_changes: Variant = saturated_plan.get("changes", [])
+    _assert_true(typeof(saturated_changes) == TYPE_ARRAY and saturated_changes.size() > 0, "resolve plan uses fallback pool when F-keys are saturated")
+    if typeof(saturated_changes) == TYPE_ARRAY and saturated_changes.size() > 0 and fallback_signature != "":
+        var saturated_change: Dictionary = saturated_changes[0]
+        _assert_equal(str(saturated_change.get("to_signature", "")), fallback_signature, "resolve plan chooses first fallback signature")
+
+    var tier0_saturated_map: Dictionary = {
+        "a": [safe_signatures[0]],
+        "b": [safe_signatures[0]]
+    }
+    for i in range(1, safe_signatures.size()):
+        tier0_saturated_map["k%d" % i] = [safe_signatures[i]]
+    var tier1_suggestion: String = KeybindConflicts.suggest_unused_safe_key(tier0_saturated_map)
+    _assert_equal(tier1_suggestion, "Ctrl+F1", "suggest_unused_safe_key falls back to Ctrl tier when tier 0 exhausted")
+    var tier1_plan: Dictionary = KeybindConflicts.build_resolution_plan(tier0_saturated_map)
+    var tier1_changes: Variant = tier1_plan.get("changes", [])
+    _assert_true(typeof(tier1_changes) == TYPE_ARRAY and tier1_changes.size() > 0, "resolve plan uses Ctrl tier when tier 0 exhausted")
+    if typeof(tier1_changes) == TYPE_ARRAY and tier1_changes.size() > 0:
+        var ctrl_f1_event := InputEventKey.new()
+        ctrl_f1_event.keycode = KeybindConflicts.fn_keycode(1)
+        ctrl_f1_event.ctrl_pressed = true
+        var ctrl_f1_signature: String = KeybindConflicts.key_signature(ctrl_f1_event)
+        var tier1_change: Dictionary = tier1_changes[0]
+        _assert_equal(str(tier1_change.get("to_signature", "")), ctrl_f1_signature, "resolve plan chooses first Ctrl safe signature")
+    var tier1_applied: Dictionary = KeybindConflicts.apply_resolution_plan(tier0_saturated_map, tier1_plan)
+    var tier1_conflicts: Dictionary = KeybindConflicts.find_conflicts(tier1_applied)
+    _assert_true(tier1_conflicts.is_empty(), "resolve apply clears conflicts with Ctrl tier")
+
+    var tier0_full_map: Dictionary = {"a": safe_signatures}
+    var tier0_suggestion: String = KeybindConflicts.suggest_unused_safe_key(tier0_full_map)
+    _assert_equal(tier0_suggestion, "Ctrl+F1", "suggest_unused_safe_key uses Ctrl tier when tier 0 occupied")
+    var ctrl_signatures: Array[String] = []
+    for entry in KeybindConflicts.safe_key_pool_entries():
+        var keycode: int = int(entry.get("keycode", 0))
+        if keycode <= 0:
+            continue
+        var ctrl_event := InputEventKey.new()
+        ctrl_event.keycode = keycode
+        ctrl_event.ctrl_pressed = true
+        var ctrl_signature: String = KeybindConflicts.key_signature(ctrl_event)
+        if ctrl_signature != "":
+            ctrl_signatures.append(ctrl_signature)
+    var exhausted_map: Dictionary = {
+        "a": [safe_signatures[0]],
+        "b": [safe_signatures[0]]
+    }
+    for i in range(1, safe_signatures.size()):
+        exhausted_map["k%d" % i] = [safe_signatures[i]]
+    for i in range(ctrl_signatures.size()):
+        exhausted_map["c%d" % i] = [ctrl_signatures[i]]
+    var no_suggestion: String = KeybindConflicts.suggest_unused_safe_key(exhausted_map)
+    _assert_equal(no_suggestion, "", "suggest_unused_safe_key returns empty when safe tiers used")
+
+    var ordered_lines: Array[String] = KeybindConflicts.format_conflicts(
+        {
+            "K=66|S=0|C=0|A=0|M=0": ["b", "a"],
+            "K=65|S=0|C=0|A=0|M=0": ["d", "c"]
+        },
+        Callable(self, "_conflict_signature_identity_test")
+    )
+    _assert_equal(ordered_lines, [
+        "CONFLICT: K=65|S=0|C=0|A=0|M=0 -> c, d",
+        "CONFLICT: K=66|S=0|C=0|A=0|M=0 -> a, b"
+    ], "format_conflicts keeps signatures sorted")
+
+    var no_conflict_map: Dictionary = {
+        "a": ["K=66|S=0|C=0|A=0|M=0"],
+        "b": ["K=67|S=0|C=0|A=0|M=0"]
+    }
+    var no_conflict_plan: Dictionary = KeybindConflicts.build_resolution_plan(no_conflict_map)
+    var no_conflict_lines: Array[String] = KeybindConflicts.format_resolution_plan(
+        no_conflict_plan,
+        Callable(self, "_conflict_action_identity_test"),
+        Callable(self, "_conflict_signature_identity_test")
+    )
+    _assert_equal(no_conflict_lines, [KeybindConflicts.no_conflicts_message()], "resolve plan uses no-conflicts message")
+    var no_conflict_apply: Dictionary = KeybindConflicts.apply_resolution_plan(no_conflict_map, no_conflict_plan)
+    _assert_equal(no_conflict_apply, no_conflict_map, "resolve apply keeps map unchanged")
+
+    var f3_signature: String = "K=%d|S=0|C=0|A=0|M=0" % KeybindConflicts.fn_keycode(3)
+    var conflict_map: Dictionary = {
+        "b": [f1_signature],
+        "a": [f1_signature],
+        "c": [f2_signature]
+    }
+    var resolve_plan: Dictionary = KeybindConflicts.build_resolution_plan(conflict_map)
+    var resolve_lines: Array[String] = KeybindConflicts.format_resolution_plan(
+        resolve_plan,
+        Callable(self, "_conflict_action_identity_test"),
+        Callable(self, "_conflict_signature_identity_test")
+    )
+    _assert_equal(resolve_lines[1], "CHANGE: b %s -> %s" % [f1_signature, f3_signature], "resolve plan change order stable")
+    var changes: Variant = resolve_plan.get("changes", [])
+    _assert_true(typeof(changes) == TYPE_ARRAY and changes.size() > 0, "resolve apply has changes")
+    var resolved_map: Dictionary = KeybindConflicts.apply_resolution_plan(conflict_map, resolve_plan)
+    if typeof(changes) == TYPE_ARRAY:
+        var diff_count: int = 0
+        for action_name in conflict_map.keys():
+            if conflict_map.get(action_name) != resolved_map.get(action_name):
+                diff_count += 1
+        _assert_equal(diff_count, changes.size(), "resolve apply changes count matches plan")
+    var resolved_conflicts: Dictionary = KeybindConflicts.find_conflicts(resolved_map)
+    _assert_true(resolved_conflicts.is_empty(), "resolve apply clears conflicts")
+
+    var unresolvable_map: Dictionary = exhausted_map
+    var unresolvable_plan: Dictionary = KeybindConflicts.build_resolution_plan(unresolvable_map)
+    var unresolved: Variant = unresolvable_plan.get("unresolved", [])
+    _assert_true(typeof(unresolved) == TYPE_ARRAY and unresolved.size() == 1, "resolve plan reports unresolved when no keys available")
+    if typeof(unresolved) == TYPE_ARRAY and unresolved.size() > 0:
+        var entry: Dictionary = unresolved[0]
+        _assert_equal(str(entry.get("action", "")), "b", "resolve plan keeps first action as conflict owner")
+        _assert_true(str(entry.get("reason", "")).find("No unused safe keys") != -1, "resolve plan explains no keys available")
+    var unresolvable_apply: Dictionary = KeybindConflicts.apply_resolution_plan(unresolvable_map, unresolvable_plan)
+    _assert_equal(unresolvable_apply, unresolvable_map, "resolve apply keeps map unchanged when pool exhausted")
+
+    var export_actions: Array[String] = ["b", "a"]
+    var export_signature: String = "K=%d|S=0|C=0|A=0|M=0" % KeybindConflicts.fn_keycode(1)
+    var export_map: Dictionary = {
+        "b": [export_signature],
+        "a": [export_signature]
+    }
+    var export_keybinds: Dictionary = {
+        "b": KeybindConflicts.keybind_from_signature(export_signature),
+        "a": KeybindConflicts.keybind_from_signature(export_signature)
+    }
+    var export_ui: Dictionary = {"scale": 1.25, "compact": true}
+    var version_text: String = _read_file_text("res://VERSION.txt")
+    if version_text != "":
+        version_text = version_text.split("\n", false)[0].strip_edges()
+    var version_info: Dictionary = Engine.get_version_info()
+    var major: int = int(version_info.get("major", 0))
+    var minor: int = int(version_info.get("minor", 0))
+    var patch: int = int(version_info.get("patch", 0))
+    var godot_text: String = ""
+    if major != 0 or minor != 0 or patch != 0:
+        godot_text = "%d.%d.%d" % [major, minor, patch]
+    else:
+        godot_text = str(version_info.get("string", ""))
+    if godot_text == "":
+        godot_text = "0.0.0"
+    var export_engine: Dictionary = {
+        "godot": godot_text,
+        "major": major,
+        "minor": minor,
+        "patch": patch
+    }
+    var export_window: Dictionary = {"width": 0, "height": 0}
+    var export_panels: Dictionary = {
+        "settings": false,
+        "lessons": false,
+        "trend": false,
+        "history": false,
+        "report": false
+    }
+    var export_payload: Dictionary = KeybindConflicts.build_settings_export_payload(
+        export_actions,
+        export_keybinds,
+        export_map,
+        export_ui,
+        export_engine,
+        export_window,
+        export_panels
+    )
+    var export_json: String = KeybindConflicts.format_settings_export_json(export_payload)
+    _assert_true(export_json.begins_with("{"), "settings export outputs JSON object")
+    var export_parsed: Variant = JSON.parse_string(export_json)
+    _assert_true(typeof(export_parsed) == TYPE_DICTIONARY, "settings export JSON parses")
+    var export_dict: Dictionary = export_parsed
+    _assert_equal(str(export_dict.get("schema", "")), "typing-defense.settings-export", "settings export schema id")
+    _assert_equal(int(export_dict.get("schema_version", 0)), 4, "settings export schema version")
+    var export_game_dict: Dictionary = export_dict.get("game", {})
+    _assert_equal(str(export_game_dict.get("name", "")), "Keyboard Defense", "settings export game name")
+    _assert_equal(str(export_game_dict.get("version", "")), version_text, "settings export game version")
+    var export_engine_dict: Dictionary = export_dict.get("engine", {})
+    var export_godot: String = str(export_engine_dict.get("godot", ""))
+    _assert_true(export_godot != "", "settings export engine godot string")
+    var export_window_dict: Dictionary = export_dict.get("window", {})
+    var export_width_type: int = typeof(export_window_dict.get("width"))
+    var export_height_type: int = typeof(export_window_dict.get("height"))
+    _assert_true(
+        export_width_type == TYPE_INT or export_width_type == TYPE_FLOAT,
+        "settings export window width is numeric"
+    )
+    _assert_true(
+        export_height_type == TYPE_INT or export_height_type == TYPE_FLOAT,
+        "settings export window height is numeric"
+    )
+    var export_panels_dict: Dictionary = export_dict.get("panels", {})
+    _assert_true(typeof(export_panels_dict.get("settings")) == TYPE_BOOL, "settings export panels settings bool")
+    _assert_true(typeof(export_panels_dict.get("lessons")) == TYPE_BOOL, "settings export panels lessons bool")
+    _assert_true(typeof(export_panels_dict.get("trend")) == TYPE_BOOL, "settings export panels trend bool")
+    _assert_true(typeof(export_panels_dict.get("history")) == TYPE_BOOL, "settings export panels history bool")
+    _assert_true(typeof(export_panels_dict.get("report")) == TYPE_BOOL, "settings export panels report bool")
+    _assert_true(typeof(export_dict.get("ui")) == TYPE_DICTIONARY, "settings export ui object type")
+    var export_ui_dict: Dictionary = export_dict.get("ui", {})
+    var export_ui_scale: Variant = export_ui_dict.get("scale")
+    _assert_true(
+        typeof(export_ui_scale) == TYPE_FLOAT or typeof(export_ui_scale) == TYPE_INT,
+        "settings export ui scale is numeric"
+    )
+    _assert_approx(float(export_ui_scale), 1.25, 0.0001, "settings export ui scale value")
+    var export_ui_compact: Variant = export_ui_dict.get("compact")
+    _assert_true(typeof(export_ui_compact) == TYPE_BOOL, "settings export ui compact is bool")
+    _assert_equal(export_ui_compact, true, "settings export ui compact value")
+    _assert_true(typeof(export_dict.get("keybinds")) == TYPE_ARRAY, "settings export keybinds array type")
+    _assert_true(typeof(export_dict.get("conflicts")) == TYPE_ARRAY, "settings export conflicts array type")
+    _assert_true(typeof(export_dict.get("resolve_plan")) == TYPE_DICTIONARY, "settings export resolve_plan object type")
+    var export_keybinds_list: Array = export_dict.get("keybinds", [])
+    _assert_true(export_keybinds_list.size() == 2, "settings export keybinds count")
+    if export_keybinds_list.size() >= 2:
+        _assert_equal(str(export_keybinds_list[0].get("action", "")), "a", "settings export keybinds sorted by action")
+        _assert_equal(str(export_keybinds_list[1].get("action", "")), "b", "settings export keybinds sorted by action")
+    var export_conflicts: Array = export_dict.get("conflicts", [])
+    _assert_true(export_conflicts.size() > 0, "settings export includes conflicts")
+    var export_plan: Dictionary = export_dict.get("resolve_plan", {})
+    var export_changes: Array = export_plan.get("changes", [])
+    _assert_true(export_changes.size() > 0, "settings export includes resolve changes")
+    var export_json_again: String = KeybindConflicts.format_settings_export_json(
+        KeybindConflicts.build_settings_export_payload(
+            export_actions,
+            export_keybinds,
+            export_map,
+            export_ui,
+            export_engine,
+            export_window,
+            export_panels
+        )
+    )
+    _assert_equal(export_json_again, export_json, "settings export JSON deterministic")
+    var save_path: String = "user://settings_export.json"
+    _remove_temp_file(save_path)
+    var save_file := FileAccess.open(save_path, FileAccess.WRITE)
+    if save_file != null:
+        save_file.store_string(export_json)
+        save_file.close()
+    var save_line: String = "Saved to user://settings_export.json"
+    _assert_equal(save_line, "Saved to user://settings_export.json", "settings export save output line")
+    _assert_true(FileAccess.file_exists(save_path), "settings export save writes file")
+    var saved_text: String = _read_file_text(save_path)
+    _assert_equal(saved_text, export_json, "settings export save content matches")
+    var saved_parsed: Variant = JSON.parse_string(saved_text)
+    if typeof(saved_parsed) == TYPE_DICTIONARY:
+        _assert_equal(int(saved_parsed.get("schema_version", 0)), 4, "settings export save schema v4")
+    _remove_temp_file(save_path)
+
+func _run_help_tests() -> void:
+    var settings_action: String = "toggle_settings"
+    var lessons_action: String = "toggle_lessons"
+    var trend_action: String = "toggle_trend"
+    var goal_action: String = "cycle_goal"
+    var report_action: String = "toggle_report"
+    var action_ids: Array[String] = [
+        settings_action,
+        lessons_action,
+        trend_action,
+        goal_action,
+        report_action
+    ]
+    var had_actions: Dictionary = {}
+    var restore_events: Dictionary = {}
+    for action_id in action_ids:
+        var had_action: bool = InputMap.has_action(action_id)
+        had_actions[action_id] = had_action
+        if had_action:
+            restore_events[action_id] = InputMap.action_get_events(action_id)
+        else:
+            InputMap.add_action(action_id)
+
+    for action_id in action_ids:
+        InputMap.action_erase_events(action_id)
+    var f1_event := InputEventKey.new()
+    f1_event.keycode = KEY_F1
+    InputMap.action_add_event(settings_action, f1_event)
+    var ctrl_f1_event := InputEventKey.new()
+    ctrl_f1_event.keycode = KEY_F1
+    ctrl_f1_event.ctrl_pressed = true
+    InputMap.action_add_event(lessons_action, ctrl_f1_event)
+    var f7_event := InputEventKey.new()
+    f7_event.keycode = KEY_F7
+    InputMap.action_add_event(goal_action, f7_event)
+
+    var help_actions: Array[String] = []
+    for action_name in RebindableActions.actions():
+        help_actions.append(action_name)
+    var help_lines: Array[String] = MainScript.build_help_lines("", help_actions)
+    var help_text: String = "\n".join(help_lines)
+    var help_text_again: String = "\n".join(MainScript.build_help_lines("", help_actions))
+    _assert_equal(help_text_again, help_text, "help output deterministic")
+    var required_commands: Array[String] = [
+        "settings verify",
+        "settings conflicts",
+        "settings resolve",
+        "settings resolve apply",
+        "settings export",
+        "settings export save",
+        "balance verify",
+        "balance export",
+        "balance export save",
+        "balance diff",
+        "balance summary",
+        "help hotkeys",
+        "help topics"
+    ]
+    for command_text in required_commands:
+        _assert_true(help_text.find(command_text) != -1, "help includes %s" % command_text)
+    _assert_true(
+        help_text.find("Tip: type help hotkeys to list all hotkeys.") != -1,
+        "help includes hotkeys tip"
+    )
+    var hotkeys_tip_index: int = help_text.find("Tip: type help hotkeys to list all hotkeys.")
+    var topics_tip_index: int = help_text.find("Tip: type help topics to see all help topics.")
+    _assert_true(
+        hotkeys_tip_index != -1 and topics_tip_index != -1 and hotkeys_tip_index < topics_tip_index,
+        "help tips ordered"
+    )
+    _assert_true(help_text.find("Current hotkeys:") != -1, "help includes hotkeys section")
+    var settings_binding: String = ControlsFormatter.binding_text_for_action(settings_action)
+    var lessons_binding: String = ControlsFormatter.binding_text_for_action(lessons_action)
+    _assert_true(
+        help_text.find("%s: %s" % [settings_action, settings_binding]) != -1,
+        "help includes toggle_settings binding"
+    )
+    _assert_true(
+        help_text.find("%s: %s" % [lessons_action, lessons_binding]) != -1,
+        "help includes toggle_lessons binding"
+    )
+    var lessons_index: int = help_text.find(lessons_action)
+    var settings_index: int = help_text.find(settings_action)
+    _assert_true(
+        lessons_index != -1 and settings_index != -1 and lessons_index < settings_index,
+        "help hotkeys sorted by action id"
+    )
+
+    var help_hotkeys_lines: Array[String] = MainScript.build_help_lines("hotkeys", help_actions)
+    var help_hotkeys_text: String = "\n".join(help_hotkeys_lines)
+    var help_hotkeys_text_again: String = "\n".join(MainScript.build_help_lines("hotkeys", help_actions))
+    _assert_equal(help_hotkeys_text_again, help_hotkeys_text, "help hotkeys deterministic")
+    _assert_true(
+        help_hotkeys_lines.size() > 0 and help_hotkeys_lines[0] == "Hotkeys:",
+        "help hotkeys header"
+    )
+    var sorted_actions: Array[String] = []
+    for action_name in help_actions:
+        sorted_actions.append(str(action_name))
+    sorted_actions.sort()
+    var last_index: int = -1
+    for action_id in sorted_actions:
+        var line_prefix: String = "  %s:" % action_id
+        var index: int = help_hotkeys_text.find(line_prefix)
+        _assert_true(index != -1, "help hotkeys includes %s" % action_id)
+        _assert_true(index > last_index, "help hotkeys order %s" % action_id)
+        last_index = index
+    _assert_true(
+        help_hotkeys_text.find("  %s: (unbound)" % trend_action) != -1,
+        "help hotkeys prints unbound"
+    )
+    _assert_true(
+        help_hotkeys_text.find("  %s: Ctrl+F1" % lessons_action) != -1,
+        "help hotkeys prints modifier binding"
+    )
+    _assert_true(
+        help_hotkeys_lines[help_hotkeys_lines.size() - 1] == "Conflicts: none",
+        "help hotkeys no conflicts summary"
+    )
+
+    var help_topics_lines: Array[String] = MainScript.build_help_lines("topics", help_actions)
+    var help_topics_text: String = "\n".join(help_topics_lines)
+    var help_topics_text_again: String = "\n".join(MainScript.build_help_lines("topics", help_actions))
+    _assert_equal(help_topics_text_again, help_topics_text, "help topics deterministic")
+    var expected_topics: Array[String] = [
+        "Help topics:",
+        "  settings",
+        "  hotkeys",
+        "  play",
+        "  accessibility",
+        "  topics"
+    ]
+    _assert_equal("\n".join(expected_topics), help_topics_text, "help topics output exact")
+
+    var help_play_lines: Array[String] = MainScript.build_help_lines("play", help_actions)
+    var help_play_text: String = "\n".join(help_play_lines)
+    var help_play_text_again: String = "\n".join(MainScript.build_help_lines("play", help_actions))
+    _assert_equal(help_play_text_again, help_play_text, "help play deterministic")
+    _assert_true(help_play_lines.size() == 7, "help play has header + 6 lines")
+    _assert_true(help_play_text.find("toggle_lessons (Ctrl+F1)") != -1, "help play inserts lessons hotkey")
+    _assert_true(help_play_text.find("toggle_settings (F1)") != -1, "help play inserts settings hotkey")
+    _assert_true(help_play_text.find("cycle_goal (F7)") != -1, "help play inserts goal hotkey")
+    _assert_true(help_play_text.find("toggle_report (unbound)") != -1, "help play inserts unbound report")
+    _assert_true(help_play_text.find("settings verify") != -1, "help play includes settings verify")
+    _assert_true(help_play_text.find("settings conflicts") != -1, "help play includes settings conflicts")
+    _assert_true(help_play_text.find("settings resolve apply") != -1, "help play includes settings resolve apply")
+
+    var help_access_lines: Array[String] = MainScript.build_help_lines("accessibility", help_actions)
+    var help_access_text: String = "\n".join(help_access_lines)
+    _assert_true(help_access_lines.size() > 0 and help_access_lines[0] == "Accessibility:", "help accessibility header")
+    _assert_true(help_access_text.find("settings compact on") != -1, "help accessibility includes compact on")
+    _assert_true(help_access_text.find("settings compact off") != -1, "help accessibility includes compact off")
+    _assert_true(help_access_text.find("settings scale <percent>") != -1, "help accessibility includes scale")
+    _assert_true(help_access_text.find("settings conflicts") != -1, "help accessibility includes conflicts")
+    _assert_true(help_access_text.find("settings resolve apply") != -1, "help accessibility includes resolve apply")
+    _assert_true(help_access_text.find("settings export save") != -1, "help accessibility includes export save")
+    _assert_true(help_access_text.find("docs/ACCESSIBILITY_VERIFICATION.md") != -1, "help accessibility includes doc path")
+    _assert_true(help_access_text.find("toggle_settings (F1)") != -1, "help accessibility inserts settings hotkey")
+    _assert_true(help_access_text.find("toggle_lessons (Ctrl+F1)") != -1, "help accessibility inserts lessons hotkey")
+
+    InputMap.action_erase_events(lessons_action)
+    var hotkeys_conflict_event := InputEventKey.new()
+    hotkeys_conflict_event.keycode = KEY_F1
+    InputMap.action_add_event(lessons_action, hotkeys_conflict_event)
+    var conflict_help_lines: Array[String] = MainScript.build_help_lines("hotkeys", help_actions)
+    _assert_true(
+        conflict_help_lines[conflict_help_lines.size() - 1] == "Conflicts: present (run settings conflicts or settings resolve apply)",
+        "help hotkeys conflict summary"
+    )
+
+    var settings_help_lines: Array[String] = MainScript.build_help_lines("settings", help_actions)
+    var settings_help_text: String = "\n".join(settings_help_lines)
+    var settings_help_text_again: String = "\n".join(MainScript.build_help_lines("settings", help_actions))
+    _assert_equal(settings_help_text_again, settings_help_text, "help settings deterministic")
+    _assert_true(settings_help_text.find("settings verify") != -1, "help settings includes settings verify")
+    _assert_true(settings_help_text.find("settings conflicts") != -1, "help settings includes settings conflicts")
+    _assert_true(settings_help_text.find("settings resolve") != -1, "help settings includes settings resolve")
+    _assert_true(settings_help_text.find("settings export") != -1, "help settings includes settings export")
+
+    var unknown_lines: Array[String] = MainScript.build_help_lines("banana", help_actions)
+    _assert_equal(unknown_lines.size(), 1, "unknown help topic returns single line")
+    if unknown_lines.size() == 1:
+        _assert_equal(
+            unknown_lines[0],
+            "Unknown help topic: banana. Try help.",
+            "unknown help topic message"
+        )
+
+    var panel_states: Dictionary = {
+        "settings": "OFF",
+        "lessons": "OFF",
+        "trend": "OFF",
+        "history": "OFF",
+        "report": "OFF"
+    }
+    var no_conflict_lines: Array[String] = MainScript.build_settings_verify_lines(
+        1280,
+        720,
+        120,
+        false,
+        panel_states,
+        help_actions,
+        {}
+    )
+    var no_conflict_text: String = "\n".join(no_conflict_lines)
+    _assert_true(
+        no_conflict_text.find("Recommendations: settings compact on; settings scale 110") != -1,
+        "settings verify shows recommendations without conflicts"
+    )
+    _assert_true(
+        no_conflict_text.find("Next: type help for a quick start.") != -1,
+        "settings verify success hint shown with no conflicts"
+    )
+    var conflict_event := InputEventKey.new()
+    conflict_event.keycode = KEY_F1
+    var conflict_signature: String = KeybindConflicts.key_signature(conflict_event)
+    var conflict_map: Dictionary = {conflict_signature: [settings_action, lessons_action]}
+    var conflict_lines: Array[String] = MainScript.build_settings_verify_lines(
+        1600,
+        900,
+        100,
+        false,
+        panel_states,
+        help_actions,
+        conflict_map
+    )
+    var conflict_text: String = "\n".join(conflict_lines)
+    _assert_true(
+        conflict_text.find("Tip: run \"settings resolve apply\" to auto-fix conflicts.") != -1,
+        "settings verify retains conflict hint"
+    )
+    _assert_true(
+        conflict_text.find("Next: type help for a quick start.") == -1,
+        "settings verify success hint suppressed on conflicts"
+    )
+
+    for action_id in action_ids:
+        InputMap.action_erase_events(action_id)
+        var had_action: bool = bool(had_actions.get(action_id, false))
+        if had_action:
+            var events: Array = restore_events.get(action_id, [])
+            for event in events:
+                InputMap.action_add_event(action_id, event)
+        else:
+            InputMap.erase_action(action_id)
+
+func _run_keybind_parsing_tests() -> void:
+    var alias_groups: Dictionary = {
+        KEY_INSERT: ["Ins", "Insert"],
+        KEY_DELETE: ["Del", "Delete"],
+        KEY_PAGEUP: ["PgUp", "PageUp", "Page Up"],
+        KEY_PAGEDOWN: ["PgDn", "PageDown", "Page Down"],
+        KEY_PRINT: ["PrtSc", "PrtScn", "PrintScreen", "Print Screen"],
+        KEY_SCROLLLOCK: ["ScrLk", "ScrollLock", "Scroll Lock"],
+        KEY_PAUSE: ["Pause", "PauseBreak", "Break"],
+        KEY_HOME: ["Home"],
+        KEY_END: ["End"]
+    }
+    for keycode in alias_groups.keys():
+        var aliases: Array = alias_groups.get(keycode, [])
+        for alias in aliases:
+            var parsed: Dictionary = KeybindConflicts.parse_key_text(str(alias))
+            _assert_true(parsed.get("ok", false), "keybind alias parses: %s" % alias)
+            var keybind: Dictionary = parsed.get("keybind", {})
+            _assert_equal(int(keybind.get("keycode", 0)), int(keycode), "keybind alias keycode: %s" % alias)
+            var no_mods: bool = (
+                not bool(keybind.get("shift", false))
+                and not bool(keybind.get("alt", false))
+                and not bool(keybind.get("ctrl", false))
+                and not bool(keybind.get("meta", false))
+            )
+            _assert_true(no_mods, "keybind alias modifiers clear: %s" % alias)
+
+    var ctrl_a: Dictionary = KeybindConflicts.parse_key_text("Ctrl+F1")
+    var ctrl_b: Dictionary = KeybindConflicts.parse_key_text("Control+F1")
+    _assert_true(ctrl_a.get("ok", false) and ctrl_b.get("ok", false), "modifier ctrl aliases parse")
+    var ctrl_bind: Dictionary = ctrl_a.get("keybind", {})
+    var ctrl_bind_b: Dictionary = ctrl_b.get("keybind", {})
+    _assert_equal(int(ctrl_bind.get("keycode", 0)), KEY_F1, "modifier ctrl keycode")
+    _assert_true(bool(ctrl_bind.get("ctrl", false)) and bool(ctrl_bind_b.get("ctrl", false)), "modifier ctrl flag set")
+
+    var alt_a: Dictionary = KeybindConflicts.parse_key_text("Alt+F1")
+    var alt_b: Dictionary = KeybindConflicts.parse_key_text("Option+F1")
+    _assert_true(alt_a.get("ok", false) and alt_b.get("ok", false), "modifier alt aliases parse")
+    var alt_bind: Dictionary = alt_a.get("keybind", {})
+    var alt_bind_b: Dictionary = alt_b.get("keybind", {})
+    _assert_equal(int(alt_bind.get("keycode", 0)), KEY_F1, "modifier alt keycode")
+    _assert_true(bool(alt_bind.get("alt", false)) and bool(alt_bind_b.get("alt", false)), "modifier alt flag set")
+
+    var meta_a: Dictionary = KeybindConflicts.parse_key_text("Cmd+F1")
+    var meta_b: Dictionary = KeybindConflicts.parse_key_text("Super+F1")
+    _assert_true(meta_a.get("ok", false) and meta_b.get("ok", false), "modifier meta aliases parse")
+    var meta_bind: Dictionary = meta_a.get("keybind", {})
+    var meta_bind_b: Dictionary = meta_b.get("keybind", {})
+    _assert_equal(int(meta_bind.get("keycode", 0)), KEY_F1, "modifier meta keycode")
+    _assert_true(bool(meta_bind.get("meta", false)) and bool(meta_bind_b.get("meta", false)), "modifier meta flag set")
+
+    var ctrl_f1_event := InputEventKey.new()
+    ctrl_f1_event.keycode = KEY_F1
+    ctrl_f1_event.ctrl_pressed = true
+    var ctrl_f1_text: String = KeybindConflicts.key_text_from_event(ctrl_f1_event)
+    var ctrl_f1_parsed: Dictionary = KeybindConflicts.parse_key_text(ctrl_f1_text)
+    _assert_true(ctrl_f1_parsed.get("ok", false), "round-trip ctrl+F1 parses")
+    var ctrl_f1_keybind: Dictionary = ctrl_f1_parsed.get("keybind", {})
+    _assert_equal(int(ctrl_f1_keybind.get("keycode", 0)), KEY_F1, "round-trip ctrl+F1 keycode")
+    _assert_true(bool(ctrl_f1_keybind.get("ctrl", false)), "round-trip ctrl+F1 modifier")
+
+    var ctrl_insert_event := InputEventKey.new()
+    ctrl_insert_event.keycode = KEY_INSERT
+    ctrl_insert_event.ctrl_pressed = true
+    var ctrl_insert_text: String = KeybindConflicts.key_text_from_event(ctrl_insert_event)
+    var ctrl_insert_parsed: Dictionary = KeybindConflicts.parse_key_text(ctrl_insert_text)
+    _assert_true(ctrl_insert_parsed.get("ok", false), "round-trip ctrl+Insert parses")
+    var ctrl_insert_keybind: Dictionary = ctrl_insert_parsed.get("keybind", {})
+    _assert_equal(int(ctrl_insert_keybind.get("keycode", 0)), KEY_INSERT, "round-trip ctrl+Insert keycode")
+    _assert_true(bool(ctrl_insert_keybind.get("ctrl", false)), "round-trip ctrl+Insert modifier")
+
+    var ctrl_pgdn_event := InputEventKey.new()
+    ctrl_pgdn_event.keycode = KEY_PAGEDOWN
+    ctrl_pgdn_event.ctrl_pressed = true
+    var ctrl_pgdn_text: String = KeybindConflicts.key_text_from_event(ctrl_pgdn_event)
+    var ctrl_pgdn_parsed: Dictionary = KeybindConflicts.parse_key_text(ctrl_pgdn_text)
+    _assert_true(ctrl_pgdn_parsed.get("ok", false), "round-trip ctrl+PageDown parses")
+    var ctrl_pgdn_keybind: Dictionary = ctrl_pgdn_parsed.get("keybind", {})
+    _assert_equal(int(ctrl_pgdn_keybind.get("keycode", 0)), KEY_PAGEDOWN, "round-trip ctrl+PageDown keycode")
+    _assert_true(bool(ctrl_pgdn_keybind.get("ctrl", false)), "round-trip ctrl+PageDown modifier")
+
+    var error_no_key: Dictionary = KeybindConflicts.parse_key_text("Ctrl")
+    _assert_true(not error_no_key.get("ok", false), "parse error on modifier-only")
+    _assert_true(str(error_no_key.get("error", "")).find("Expected") != -1, "error message for missing key")
+
+    var error_multi: Dictionary = KeybindConflicts.parse_key_text("Ctrl+F1+F2")
+    _assert_true(not error_multi.get("ok", false), "parse error on multiple keys")
+    _assert_true(str(error_multi.get("error", "")).find("Multiple") != -1, "error message for multiple keys")
+
+    var error_empty: Dictionary = KeybindConflicts.parse_key_text("")
+    _assert_true(not error_empty.get("ok", false), "parse error on empty text")
+    _assert_true(str(error_empty.get("error", "")).find("Expected") != -1, "error message for empty text")
+
+    var error_bad: Dictionary = KeybindConflicts.parse_key_text("++F1")
+    _assert_true(not error_bad.get("ok", false), "parse error on bad tokens")
+    _assert_true(str(error_bad.get("error", "")).find("Invalid") != -1, "error message for bad tokens")
+
+func _run_keybind_persistence_tests() -> void:
+    var temp_roundtrip: String = "user://tmp_profile_keybind_roundtrip.json"
+    var temp_roundtrip_two: String = "user://tmp_profile_keybind_roundtrip_2.json"
+    var temp_legacy: String = "user://tmp_profile_keybind_legacy.json"
+    _remove_temp_file(temp_roundtrip)
+    _remove_temp_file(temp_roundtrip_two)
+    _remove_temp_file(temp_legacy)
+
+    var profile: Dictionary = TypingProfile.default_profile()
+    if not profile.has("keybinds") or typeof(profile.get("keybinds")) != TYPE_DICTIONARY:
+        profile["keybinds"] = {}
+    var keybinds: Dictionary = profile.get("keybinds")
+    keybinds["toggle_settings"] = {"keycode": KEY_F1, "shift": false, "alt": false, "ctrl": false, "meta": false}
+    keybinds["toggle_lessons"] = {"keycode": KEY_F1, "shift": false, "alt": false, "ctrl": true, "meta": false}
+    profile["keybinds"] = keybinds
+
+    var save_roundtrip: Dictionary = TypingProfile.save_profile(profile, temp_roundtrip)
+    _assert_true(save_roundtrip.get("ok", false), "profile save ok (modifier round-trip)")
+    var load_roundtrip: Dictionary = TypingProfile.load_profile(temp_roundtrip)
+    _assert_true(load_roundtrip.get("ok", false), "profile load ok (modifier round-trip)")
+    var loaded_profile: Dictionary = load_roundtrip.get("profile", {})
+    var settings_keybind: Dictionary = TypingProfile.get_keybind(loaded_profile, "toggle_settings")
+    var lessons_keybind: Dictionary = TypingProfile.get_keybind(loaded_profile, "toggle_lessons")
+    _assert_equal(int(settings_keybind.get("keycode", 0)), KEY_F1, "round-trip restores F1 keycode")
+    _assert_true(not bool(settings_keybind.get("ctrl", false)), "round-trip restores F1 modifiers")
+    _assert_equal(int(lessons_keybind.get("keycode", 0)), KEY_F1, "round-trip restores Ctrl+F1 keycode")
+    _assert_true(bool(lessons_keybind.get("ctrl", false)), "round-trip restores Ctrl modifier")
+    var settings_event: InputEventKey = KeybindConflicts.event_from_keybind(settings_keybind)
+    var lessons_event: InputEventKey = KeybindConflicts.event_from_keybind(lessons_keybind)
+    var action_sig_map: Dictionary = {
+        "toggle_settings": [KeybindConflicts.key_signature(settings_event)],
+        "toggle_lessons": [KeybindConflicts.key_signature(lessons_event)]
+    }
+    var conflicts: Dictionary = KeybindConflicts.find_conflicts(action_sig_map)
+    _assert_true(conflicts.is_empty(), "round-trip preserves modifier-distinct bindings")
+
+    var legacy_payload: Dictionary = {
+        "version": 1,
+        "keybinds": {
+            "toggle_settings": {"keycode": KEY_F1}
+        }
+    }
+    var legacy_text: String = JSON.stringify(legacy_payload, "  ")
+    var legacy_file := FileAccess.open(temp_legacy, FileAccess.WRITE)
+    if legacy_file != null:
+        legacy_file.store_string(legacy_text)
+        legacy_file.close()
+    var legacy_load: Dictionary = TypingProfile.load_profile(temp_legacy)
+    _assert_true(legacy_load.get("ok", false), "legacy profile load ok")
+    var legacy_profile: Dictionary = legacy_load.get("profile", {})
+    var legacy_keybind: Dictionary = TypingProfile.get_keybind(legacy_profile, "toggle_settings")
+    _assert_equal(int(legacy_keybind.get("keycode", 0)), KEY_F1, "legacy keybind restores keycode")
+    _assert_true(not bool(legacy_keybind.get("ctrl", false)), "legacy keybind restores modifiers")
+
+    var save_one: Dictionary = TypingProfile.save_profile(profile, temp_roundtrip)
+    var save_two: Dictionary = TypingProfile.save_profile(profile, temp_roundtrip_two)
+    _assert_true(save_one.get("ok", false) and save_two.get("ok", false), "profile save ok (deterministic ordering)")
+    var text_one: String = _read_file_text(temp_roundtrip)
+    var text_two: String = _read_file_text(temp_roundtrip_two)
+    _assert_equal(text_one, text_two, "profile save ordering stable for keybinds")
+
+    _remove_temp_file(temp_roundtrip)
+    _remove_temp_file(temp_roundtrip_two)
+    _remove_temp_file(temp_legacy)
+
+func _run_mini_trend_tests() -> void:
+    _assert_equal(MiniTrend.arrow_for_delta(0.02), "+", "mini trend arrow positive")
+    _assert_equal(MiniTrend.arrow_for_delta(-0.02), "-", "mini trend arrow negative")
+    _assert_equal(MiniTrend.arrow_for_delta(0.001, 0.01), "=", "mini trend arrow flat")
+
+    var recent: Array = [
+        {"avg_accuracy": 0.8, "hit_rate": 0.6, "backspace_rate": 0.1},
+        {"avg_accuracy": 0.7, "hit_rate": 0.7, "backspace_rate": 0.2}
+    ]
+    var trend: Dictionary = MiniTrend.format_last3_delta(recent)
+    _assert_true(bool(trend.get("has_delta", false)), "mini trend has delta")
+    _assert_equal(str(trend.get("acc_arrow", "")), "+", "mini trend acc arrow")
+    _assert_equal(str(trend.get("hit_arrow", "")), "-", "mini trend hit arrow")
+    _assert_equal(str(trend.get("back_arrow", "")), "-", "mini trend back arrow")
+    var text: String = str(trend.get("text", ""))
+    _assert_true(text.find("acc") != -1, "mini trend text includes acc")
+    _assert_true(text.find("+") != -1, "mini trend text includes plus")
+    _assert_true(text.find("-") != -1, "mini trend text includes minus")
+    _assert_true(text.find("+0.10") != -1, "mini trend text includes accuracy delta")
+    _assert_true(text.find("-10%") != -1, "mini trend text includes rate delta")
+
+    var single: Dictionary = MiniTrend.format_last3_delta([{"avg_accuracy": 0.5}])
+    _assert_true(not bool(single.get("has_delta", true)), "mini trend single has no delta")
+    _assert_true(str(single.get("text", "")) != "", "mini trend single text non-empty")
+
+    var spark: String = MiniTrend.sparkline([0.0, 0.5, 1.0], 3)
+    _assert_true(spark.length() == 3, "sparkline width 3")
+    _assert_true(spark != "", "sparkline not empty")
+    var recent_spark: String = MiniTrend.sparkline_from_recent([
+        {"avg_accuracy": 0.2},
+        {"avg_accuracy": 0.6},
+        {"avg_accuracy": 0.8}
+    ], "avg_accuracy", 3)
+    _assert_true(recent_spark.length() == 3, "sparkline_from_recent width 3")
+    _assert_equal(MiniTrend.sparkline([], 3), "---", "sparkline empty sentinel")
+
+func _run_lesson_health_tests() -> void:
+    var no_delta_recent: Array = [{"avg_accuracy": 0.8, "hit_rate": 0.7, "backspace_rate": 0.1}]
+    var no_delta_text: String = LessonHealth.build_hud_text("Home Row", "home_row", no_delta_recent, true)
+    _assert_true(no_delta_text.find("Health: --") != -1, "lesson health no delta shows --")
+
+    var improve_recent: Array = [
+        {"avg_accuracy": 0.8, "hit_rate": 0.7, "backspace_rate": 0.1},
+        {"avg_accuracy": 0.7, "hit_rate": 0.6, "backspace_rate": 0.2}
+    ]
+    var improve_score: int = LessonHealth.score_recent(improve_recent)
+    _assert_true(improve_score >= 2, "lesson health score improves")
+    var improve_label: String = LessonHealth.label_for_score(improve_score, true)
+    _assert_equal(improve_label, "GOOD", "lesson health label good")
+    var improve_text: String = LessonHealth.build_hud_text("Full Alpha", "full_alpha", improve_recent, false)
+    _assert_true(improve_text.find("acc") != -1, "lesson health text includes acc")
+    _assert_true(improve_text.find("+") != -1 or improve_text.find("=") != -1, "lesson health includes arrows")
+
+    var warn_recent: Array = [
+        {"avg_accuracy": 0.6, "hit_rate": 0.5, "backspace_rate": 0.3},
+        {"avg_accuracy": 0.8, "hit_rate": 0.7, "backspace_rate": 0.1}
+    ]
+    var warn_score: int = LessonHealth.score_recent(warn_recent)
+    var warn_label: String = LessonHealth.label_for_score(warn_score, true)
+    _assert_equal(warn_label, "WARN", "lesson health label warn")
+
+    var legend: String = LessonHealth.legend_line()
+    _assert_true(legend.find("GOOD") != -1, "lesson health legend mentions GOOD")
+    _assert_true(legend.find("OK") != -1, "lesson health legend mentions OK")
+    _assert_true(legend.find("WARN") != -1, "lesson health legend mentions WARN")
+
+func _run_lessons_sort_tests() -> void:
+    var ids: PackedStringArray = PackedStringArray(["a", "b", "c"])
+    var progress: Dictionary = {
+        "a": {
+            "recent": [
+                {"avg_accuracy": 0.65, "hit_rate": 0.4, "backspace_rate": 0.25},
+                {"avg_accuracy": 0.6, "hit_rate": 0.5, "backspace_rate": 0.2}
+            ],
+            "nights": 2
+        },
+        "b": {
+            "recent": [
+                {"avg_accuracy": 0.9, "hit_rate": 0.8, "backspace_rate": 0.05},
+                {"avg_accuracy": 0.6, "hit_rate": 0.5, "backspace_rate": 0.2}
+            ],
+            "nights": 3
+        },
+        "c": {
+            "recent": [
+                {"avg_accuracy": 0.5, "hit_rate": 0.4, "backspace_rate": 0.3},
+                {"avg_accuracy": 0.5, "hit_rate": 0.4, "backspace_rate": 0.3}
+            ],
+            "nights": 1
+        }
+    }
+    var lessons_by_id: Dictionary = {
+        "a": {"name": "Alpha"},
+        "b": {"name": "Beta"},
+        "c": {"name": "Gamma"}
+    }
+    var sorted: PackedStringArray = LessonsSort.sort_ids(ids, progress, "recent", lessons_by_id)
+    _assert_equal(sorted, PackedStringArray(["b", "a", "c"]), "lessons sort recent orders by score")
+    var default_sorted: PackedStringArray = LessonsSort.sort_ids(ids, progress, "default", lessons_by_id)
+    _assert_equal(default_sorted, ids, "lessons sort default preserves order")
+
+    var name_ids: PackedStringArray = PackedStringArray(["b", "a", "c"])
+    var name_sorted: PackedStringArray = LessonsSort.sort_ids(name_ids, progress, "name", lessons_by_id)
+    _assert_equal(name_sorted, PackedStringArray(["a", "b", "c"]), "lessons sort name orders alphabetically")
+
+    var tie_ids: PackedStringArray = PackedStringArray(["b", "a", "c"])
+    var tie_progress: Dictionary = {
+        "a": {"recent": [{"avg_accuracy": 0.5, "hit_rate": 0.5, "backspace_rate": 0.2},
+                         {"avg_accuracy": 0.5, "hit_rate": 0.5, "backspace_rate": 0.2}], "nights": 1},
+        "b": {"recent": [{"avg_accuracy": 0.5, "hit_rate": 0.5, "backspace_rate": 0.2},
+                         {"avg_accuracy": 0.5, "hit_rate": 0.5, "backspace_rate": 0.2}], "nights": 1},
+        "c": {"recent": [{"avg_accuracy": 0.5, "hit_rate": 0.5, "backspace_rate": 0.2},
+                         {"avg_accuracy": 0.5, "hit_rate": 0.5, "backspace_rate": 0.2}], "nights": 1}
+    }
+    var tie_sorted: PackedStringArray = LessonsSort.sort_ids(tie_ids, tie_progress, "recent", lessons_by_id)
+    _assert_equal(tie_sorted, PackedStringArray(["a", "b", "c"]), "lessons sort recent tie-breaks by name")
+
+func _run_onboarding_flow_tests() -> void:
+    var step0_snapshot: Dictionary = {"used_help_or_status": true}
+    _assert_true(OnboardingFlow.is_step_complete(0, step0_snapshot), "onboarding step 1 completes on help/status")
+    var step1_snapshot: Dictionary = {"did_gather": true, "did_build": true, "did_explore": true, "explored_count": 2}
+    _assert_true(OnboardingFlow.is_step_complete(1, step1_snapshot), "onboarding step 2 completes on day actions")
+    var step2_snapshot: Dictionary = {"phase": "night", "entered_night": true}
+    _assert_true(OnboardingFlow.is_step_complete(2, step2_snapshot), "onboarding step 3 completes on entering night")
+    var step3_snapshot: Dictionary = {"hit_enemy": true}
+    _assert_true(OnboardingFlow.is_step_complete(3, step3_snapshot), "onboarding step 4 completes on hit")
+    var advance_step: int = OnboardingFlow.advance(0, step0_snapshot)
+    _assert_equal(advance_step, 1, "onboarding advance increments")
+
+func _run_typing_profile_tests() -> void:
+    var base_profile: Dictionary = TypingProfile.default_profile()
+    var onboarding: Dictionary = TypingProfile.get_onboarding(base_profile)     
+    _assert_true(bool(onboarding.get("enabled", false)), "onboarding enabled default")
+    _assert_true(not bool(onboarding.get("completed", true)), "onboarding not completed default")
+    _assert_equal(int(onboarding.get("step", -1)), 0, "onboarding step default")
+    _assert_true(not bool(onboarding.get("ever_shown", true)), "onboarding ever_shown default false")
+
+    var reset_result: Dictionary = TypingProfile.reset_onboarding(base_profile)
+    var reset_profile: Dictionary = reset_result.get("profile", base_profile)
+    var reset_onboarding: Dictionary = TypingProfile.get_onboarding(reset_profile)
+    _assert_true(bool(reset_onboarding.get("enabled", false)), "onboarding reset enables tutorial")
+    _assert_true(not bool(reset_onboarding.get("completed", true)), "onboarding reset clears completion")
+    _assert_equal(int(reset_onboarding.get("step", -1)), 0, "onboarding reset step 0")
+    _assert_true(bool(reset_onboarding.get("ever_shown", false)), "onboarding reset sets ever_shown")
+
+    var complete_result: Dictionary = TypingProfile.complete_onboarding(reset_profile)
+    var complete_profile: Dictionary = complete_result.get("profile", reset_profile)
+    var complete_onboarding: Dictionary = TypingProfile.get_onboarding(complete_profile)
+    _assert_true(bool(complete_onboarding.get("completed", false)), "onboarding complete sets completed")
+    _assert_true(not bool(complete_onboarding.get("enabled", true)), "onboarding complete disables tutorial")
+    _assert_true(bool(complete_onboarding.get("ever_shown", false)), "onboarding complete sets ever_shown")
+
+    var defaults: Dictionary = TypingProfile.default_keybinds()
+    _assert_true(defaults.has("cycle_goal"), "profile defaults include cycle_goal")
+    _assert_true(defaults.has("toggle_settings"), "profile defaults include toggle_settings")
+    _assert_true(defaults.has("toggle_lessons"), "profile defaults include toggle_lessons")
+    _assert_true(defaults.has("toggle_trend"), "profile defaults include toggle_trend")
+    _assert_true(defaults.has("toggle_compact"), "profile defaults include toggle_compact")
+    _assert_true(defaults.has("toggle_history"), "profile defaults include toggle_history")
+    _assert_true(defaults.has("toggle_report"), "profile defaults include toggle_report")
+    var trend_default: Dictionary = TypingProfile.default_binding_for_action("toggle_trend")
+    _assert_equal(int(trend_default.get("keycode", 0)), KEY_F3, "profile default toggle_trend is F3")
+    var settings_default: Dictionary = TypingProfile.default_binding_for_action("toggle_settings")
+    _assert_equal(int(settings_default.get("keycode", 0)), KEY_F1, "profile default toggle_settings is F1")
+    var lessons_default: Dictionary = TypingProfile.default_binding_for_action("toggle_lessons")
+    _assert_equal(int(lessons_default.get("keycode", 0)), KEY_F2, "profile default toggle_lessons is F2")
+    var history_default: Dictionary = TypingProfile.default_binding_for_action("toggle_history")
+    _assert_equal(int(history_default.get("keycode", 0)), KEY_F5, "profile default toggle_history is F5")
+    var compact_bind_default: Dictionary = TypingProfile.default_binding_for_action("toggle_compact")
+    _assert_equal(int(compact_bind_default.get("keycode", 0)), KEY_F4, "profile default toggle_compact is F4")
+    var report_default: Dictionary = TypingProfile.default_binding_for_action("toggle_report")
+    _assert_equal(int(report_default.get("keycode", 0)), KEY_F6, "profile default toggle_report is F6")
+    var cycle_default: Dictionary = TypingProfile.default_binding_for_action("cycle_goal")
+    _assert_equal(int(cycle_default.get("keycode", 0)), KEY_F7, "profile default cycle_goal is F7")
+    var profile: Dictionary = {"keybinds": {"cycle_goal": defaults.get("cycle_goal", {})}}
+    var toggle_keybind: Dictionary = TypingProfile.get_keybind(profile, "toggle_trend")
+    _assert_equal(int(toggle_keybind.get("keycode", 0)), KEY_F3, "get_keybind falls back to default")
+    var history_keybind: Dictionary = TypingProfile.get_keybind(profile, "toggle_history")
+    _assert_equal(int(history_keybind.get("keycode", 0)), KEY_F5, "get_keybind falls back to default for history")
+    var compact_keybind: Dictionary = TypingProfile.get_keybind(profile, "toggle_compact")
+    _assert_equal(int(compact_keybind.get("keycode", 0)), KEY_F4, "get_keybind falls back to default for compact")
+    var settings_keybind: Dictionary = TypingProfile.get_keybind(profile, "toggle_settings")
+    _assert_equal(int(settings_keybind.get("keycode", 0)), KEY_F1, "get_keybind falls back to default for settings")
+    var lessons_keybind: Dictionary = TypingProfile.get_keybind(profile, "toggle_lessons")
+    _assert_equal(int(lessons_keybind.get("keycode", 0)), KEY_F2, "get_keybind falls back to default for lessons")
+    var report_keybind: Dictionary = TypingProfile.get_keybind(profile, "toggle_report")
+    _assert_equal(int(report_keybind.get("keycode", 0)), KEY_F6, "get_keybind falls back to default for report")
+    var lesson_profile: Dictionary = TypingProfile.default_profile()
+    var preferred_lesson: String = TypingProfile.get_lesson(lesson_profile)
+    _assert_true(SimLessons.is_valid(preferred_lesson), "profile preferred lesson valid")
+    var sort_mode: String = TypingProfile.get_lessons_sort(lesson_profile)
+    _assert_equal(sort_mode, "default", "profile lessons sort default")
+    var name_profile: Dictionary = {"ui_prefs": {"lessons_sort": "name"}}
+    _assert_equal(TypingProfile.get_lessons_sort(name_profile), "name", "profile lessons sort accepts name")
+    var spark_default: bool = TypingProfile.get_lessons_sparkline(lesson_profile)
+    _assert_true(spark_default, "profile lessons sparkline default true")
+    var spark_update: Dictionary = TypingProfile.set_lessons_sparkline(lesson_profile, false)
+    var spark_profile: Dictionary = spark_update.get("profile", lesson_profile)
+    _assert_equal(TypingProfile.get_lessons_sparkline(spark_profile), false, "profile lessons sparkline set false")
+    var economy_default: bool = TypingProfile.get_economy_note_shown(lesson_profile)
+    _assert_true(not economy_default, "profile economy note default false")
+    var economy_update: Dictionary = TypingProfile.set_economy_note_shown(lesson_profile, true)
+    var economy_profile: Dictionary = economy_update.get("profile", lesson_profile)
+    _assert_true(TypingProfile.get_economy_note_shown(economy_profile), "profile economy note set true")
+    var scale_default: int = TypingProfile.get_ui_scale_percent(lesson_profile)
+    _assert_equal(scale_default, 100, "profile ui scale default 100")
+    var scale_profile: Dictionary = {"ui_prefs": {"ui_scale_percent": 115}}
+    _assert_equal(TypingProfile.get_ui_scale_percent(scale_profile), 120, "profile ui scale sanitizes to nearest step")
+    var scale_update: Dictionary = TypingProfile.set_ui_scale_percent(lesson_profile, 140)
+    var scale_updated_profile: Dictionary = scale_update.get("profile", lesson_profile)
+    _assert_equal(TypingProfile.get_ui_scale_percent(scale_updated_profile), 140, "profile ui scale set 140")
+    var compact_default: bool = TypingProfile.get_compact_panels(lesson_profile)
+    _assert_true(not compact_default, "profile compact panels default false")
+    var compact_update: Dictionary = TypingProfile.set_compact_panels(lesson_profile, true)
+    var compact_profile: Dictionary = compact_update.get("profile", lesson_profile)
+    _assert_true(TypingProfile.get_compact_panels(compact_profile), "profile compact panels set true")
+    var progress_map: Dictionary = TypingProfile.get_lesson_progress_map(lesson_profile)
+    _assert_true(progress_map.has(preferred_lesson), "lesson progress includes preferred lesson")
+    var entry: Dictionary = progress_map.get(preferred_lesson, {})
+    _assert_true(entry.has("nights"), "lesson progress has nights")
+    _assert_true(entry.has("sum_accuracy"), "lesson progress has sum_accuracy")
+    _assert_true(entry.has("recent"), "lesson progress has recent")
+    var report := {"avg_accuracy": 0.8, "hit_rate": 0.6, "backspace_rate": 0.1, "incomplete_rate": 0.2, "night_day": 5}
+    var updated: Dictionary = TypingProfile.update_lesson_progress(progress_map, preferred_lesson, report, true)
+    var updated_entry: Dictionary = updated.get(preferred_lesson, {})
+    _assert_equal(int(updated_entry.get("nights", 0)), int(entry.get("nights", 0)) + 1, "lesson progress nights increment")
+    _assert_equal(int(updated_entry.get("goal_passes", 0)), int(entry.get("goal_passes", 0)) + 1, "lesson progress goal passes increment")
+    _assert_true(float(updated_entry.get("best_accuracy", 0.0)) >= 0.8, "lesson progress best accuracy updated")
+    var recent: Array = updated_entry.get("recent", [])
+    _assert_true(recent is Array and recent.size() == 1, "lesson progress recent appends")
+    if recent.size() > 0 and typeof(recent[0]) == TYPE_DICTIONARY:
+        _assert_equal(int(recent[0].get("day", 0)), 5, "lesson progress recent day set")
+        _assert_true(bool(recent[0].get("goal_met", false)), "lesson progress recent goal met set")
+
+    var updated2: Dictionary = TypingProfile.update_lesson_progress(updated, preferred_lesson, {"avg_accuracy": 0.7, "hit_rate": 0.5, "backspace_rate": 0.2, "incomplete_rate": 0.1, "night_day": 6}, false)
+    var updated3: Dictionary = TypingProfile.update_lesson_progress(updated2, preferred_lesson, {"avg_accuracy": 0.9, "hit_rate": 0.7, "backspace_rate": 0.1, "incomplete_rate": 0.05, "night_day": 7}, true)
+    var updated4: Dictionary = TypingProfile.update_lesson_progress(updated3, preferred_lesson, {"avg_accuracy": 0.6, "hit_rate": 0.4, "backspace_rate": 0.3, "incomplete_rate": 0.2, "night_day": 8}, false)
+    var updated_recent: Array = updated4.get(preferred_lesson, {}).get("recent", [])
+    _assert_equal(updated_recent.size(), 3, "lesson progress recent capped at 3")
+    if updated_recent.size() > 0 and typeof(updated_recent[0]) == TYPE_DICTIONARY:
+        _assert_equal(int(updated_recent[0].get("day", 0)), 8, "lesson progress recent keeps most recent first")
+
+    var reset_map: Dictionary = TypingProfile.reset_lesson_progress(updated4, preferred_lesson)
+    var reset_entry: Dictionary = reset_map.get(preferred_lesson, {})
+    _assert_equal(int(reset_entry.get("nights", 0)), 0, "lesson progress reset nights")
+    var reset_recent: Array = reset_entry.get("recent", [])
+    _assert_true(reset_recent is Array and reset_recent.is_empty(), "lesson progress reset recent")
 
 func _run_typing_feedback_tests() -> void:
     _assert_equal(SimTypingFeedback.prefix_len("ap", "apple"), 2, "prefix_len matches partial")
@@ -734,6 +2901,33 @@ func _assert_parse_ok(command: String, expected_kind: String) -> void:
     if result.get("ok", false):
         _assert_equal(str(result.intent.get("kind", "")), expected_kind, "intent kind: %s" % command)
 
+func _conflict_signature_label_test(signature: String) -> String:
+    return "TEST"
+
+func _conflict_signature_identity_test(signature: String) -> String:
+    return signature
+
+func _conflict_action_identity_test(action_name: String) -> String:
+    return action_name
+
+func _read_file_text(path: String) -> String:
+    if not FileAccess.file_exists(path):
+        return ""
+    var file := FileAccess.open(path, FileAccess.READ)
+    if file == null:
+        return ""
+    var text: String = file.get_as_text()
+    file.close()
+    return text
+
+func _remove_temp_file(path: String) -> void:
+    if not FileAccess.file_exists(path):
+        return
+    var absolute: String = ProjectSettings.globalize_path(path)
+    if absolute == "":
+        return
+    DirAccess.remove_absolute(absolute)
+
 func _assert_true(value: bool, name: String) -> void:
     total_tests += 1
     if not value:
@@ -751,3 +2945,5 @@ func _assert_approx(actual: float, expected: float, epsilon: float, name: String
     if abs(actual - expected) > epsilon:
         total_failed += 1
         messages.append("FAIL: %s (expected %s, got %s)" % [name, str(expected), str(actual)])
+
+

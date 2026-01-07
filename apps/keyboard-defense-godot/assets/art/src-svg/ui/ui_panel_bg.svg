@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <!-- UI Panel Background - 24x24 9-slice -->
+  <!-- Margins: 4px corners, 16px stretchable center -->
+
+  <!-- Main fill -->
+  <rect x="2" y="2" width="20" height="20" fill="#16213e"/>
+
+  <!-- Border -->
+  <rect x="0" y="2" width="2" height="20" fill="#0f3460"/>
+  <rect x="22" y="2" width="2" height="20" fill="#0f3460"/>
+  <rect x="2" y="0" width="20" height="2" fill="#0f3460"/>
+  <rect x="2" y="22" width="20" height="2" fill="#0f3460"/>
+
+  <!-- Corners -->
+  <rect x="0" y="0" width="4" height="4" fill="#1a1a2e"/>
+  <rect x="20" y="0" width="4" height="4" fill="#1a1a2e"/>
+  <rect x="0" y="20" width="4" height="4" fill="#1a1a2e"/>
+  <rect x="20" y="20" width="4" height="4" fill="#1a1a2e"/>
+
+  <!-- Corner accents -->
+  <rect x="1" y="1" width="2" height="2" fill="#3498db"/>
+  <rect x="21" y="1" width="2" height="2" fill="#3498db"/>
+  <rect x="1" y="21" width="2" height="2" fill="#3498db"/>
+  <rect x="21" y="21" width="2" height="2" fill="#3498db"/>
+
+  <!-- Highlight line (top) -->
+  <rect x="4" y="2" width="16" height="1" fill="#0f3460"/>
+
+  <!-- Shadow line (bottom) -->
+  <rect x="4" y="21" width="16" height="1" fill="#0a1a30"/>
+</svg>

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Grass background -->
+  <rect width="16" height="16" fill="#4a8c3f"/>
+  <!-- Stone wall corner (NE) -->
+  <rect x="5" y="0" width="6" height="11" fill="#4a4a4a"/>
+  <rect x="5" y="5" width="11" height="6" fill="#4a4a4a"/>
+  <!-- Wall highlight -->
+  <rect x="5" y="0" width="2" height="11" fill="#7a7a7a"/>
+  <rect x="5" y="5" width="11" height="2" fill="#7a7a7a"/>
+  <!-- Wall shadow -->
+  <rect x="9" y="0" width="2" height="5" fill="#3a3a3a"/>
+  <rect x="11" y="9" width="5" height="2" fill="#3a3a3a"/>
+  <!-- Corner tower cap -->
+  <rect x="5" y="5" width="6" height="6" fill="#5a5a5a"/>
+  <rect x="6" y="6" width="4" height="4" fill="#6a6a6a"/>
+  <!-- Top highlight -->
+  <rect x="5" y="0" width="6" height="1" fill="#9a9a9a"/>
+  <rect x="11" y="5" width="5" height="1" fill="#9a9a9a"/>
+</svg>

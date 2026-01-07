@@ -1,8 +1,8 @@
 class_name SimWords
 extends RefCounted
 const CommandKeywords = preload("res://sim/command_keywords.gd")
+const SimLessons = preload("res://sim/lessons.gd")
 static var _reserved_cache: Dictionary = {}
-
 const RESERVED_EXTRA := {}
 
 const SHORT_WORDS: Array[String] = [
@@ -52,15 +52,68 @@ const LONG_WORDS: Array[String] = [
     "wildgrowth"
 ]
 
-static func word_for_enemy(seed: String, day: int, kind: String, enemy_id: int, already_used: Dictionary) -> String:
+static func word_for_enemy(seed: String, day: int, kind: String, enemy_id: int, already_used: Dictionary, lesson_id: String = "") -> String:
+    var resolved_lesson: String = SimLessons.normalize_lesson_id(lesson_id)
+    var lesson: Dictionary = SimLessons.get_lesson(resolved_lesson)
+    if not lesson.is_empty() and str(lesson.get("mode", "")) == "charset":
+        var lesson_word: String = _word_from_lesson(seed, day, kind, enemy_id, resolved_lesson, lesson, already_used)
+        if lesson_word != "":
+            return lesson_word
+    return _fallback_word(seed, day, kind, enemy_id, already_used)
+
+static func _word_from_lesson(seed: String, day: int, kind: String, enemy_id: int, lesson_id: String, lesson: Dictionary, already_used: Dictionary) -> String:
+    var charset: String = str(lesson.get("charset", "")).to_lower()
+    if charset == "":
+        return ""
+    var lengths: Dictionary = lesson.get("lengths", {})
+    var range_value: Variant = lengths.get(kind, [])
+    var min_len: int = 3
+    var max_len: int = 5
+    if range_value is Array and range_value.size() >= 2:
+        min_len = int(range_value[0])
+        max_len = int(range_value[1])
+    if min_len < 1:
+        min_len = 1
+    if max_len < min_len:
+        max_len = min_len
+    var base_key: String = "%s|%d|%s|%d|%s" % [seed, day, kind, enemy_id, lesson_id]
+    var attempts: int = max(16, charset.length() * 2)
+    for attempt in range(attempts):
+        var word: String = _make_word(base_key, charset, min_len, max_len, attempt)
+        if word == "":
+            continue
+        if _reserved_words().has(word):
+            continue
+        if already_used.has(word):
+            continue
+        return word
+    return ""
+
+static func _make_word(base_key: String, charset: String, min_len: int, max_len: int, attempt: int) -> String:
+    if charset == "":
+        return ""
+    var span: int = max(1, max_len - min_len + 1)
+    var length: int = min_len + _hash_index("%s|len|%d" % [base_key, attempt], span)
+    var parts: Array[String] = []
+    for i in range(length):
+        var idx: int = _hash_index("%s|%d|%d" % [base_key, attempt, i], charset.length())
+        parts.append(charset.substr(idx, 1))
+    return "".join(parts)
+
+static func _hash_index(key: String, modulo: int) -> int:
+    if modulo <= 0:
+        return 0
+    var hash_value: int = key.hash()
+    if hash_value == -9223372036854775808:
+        hash_value = 0
+    return abs(hash_value) % modulo
+
+static func _fallback_word(seed: String, day: int, kind: String, enemy_id: int, already_used: Dictionary) -> String:
     var list: Array[String] = _list_for_kind(kind)
     if list.is_empty():
         return "foe%d" % enemy_id
     var key: String = "%s|%d|%s|%d" % [seed, day, kind, enemy_id]
-    var hash_value: int = key.hash()
-    if hash_value == -9223372036854775808:
-        hash_value = 0
-    var index: int = abs(hash_value) % list.size()
+    var index: int = _hash_index(key, list.size())
     for _i in range(list.size()):
         var word: String = str(list[index]).to_lower()
         if not _reserved_words().has(word) and not already_used.has(word):

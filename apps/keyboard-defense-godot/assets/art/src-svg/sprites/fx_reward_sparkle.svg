@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 16" width="64" height="16">
+  <!-- Reward Sparkle Effect - 64x16 (4 frames of 16x16) -->
+
+  <!-- Frame 1: Single sparkle (0-16) -->
+  <rect x="7" y="7" width="2" height="2" fill="#f4d03f"/>
+  <rect x="7" y="5" width="2" height="2" fill="#f9e79f"/>
+  <rect x="7" y="9" width="2" height="2" fill="#f9e79f"/>
+  <rect x="5" y="7" width="2" height="2" fill="#f9e79f"/>
+  <rect x="9" y="7" width="2" height="2" fill="#f9e79f"/>
+
+  <!-- Frame 2: Multiple sparkles appearing (16-32) -->
+  <rect x="22" y="6" width="2" height="2" fill="#f4d03f"/>
+  <rect x="23" y="4" width="1" height="2" fill="#f9e79f"/>
+  <rect x="23" y="8" width="1" height="2" fill="#f9e79f"/>
+  <rect x="20" y="6" width="2" height="1" fill="#f9e79f"/>
+  <rect x="24" y="7" width="2" height="1" fill="#f9e79f"/>
+  <!-- Secondary sparkles -->
+  <rect x="18" y="3" width="1" height="1" fill="#b7950b"/>
+  <rect x="27" y="4" width="1" height="1" fill="#b7950b"/>
+  <rect x="19" y="10" width="1" height="1" fill="#b7950b"/>
+  <rect x="26" y="11" width="1" height="1" fill="#b7950b"/>
+
+  <!-- Frame 3: Sparkles rising (32-48) -->
+  <rect x="38" y="4" width="2" height="2" fill="#f4d03f"/>
+  <rect x="39" y="2" width="1" height="2" fill="#f9e79f"/>
+  <rect x="36" y="5" width="2" height="1" fill="#f9e79f"/>
+  <rect x="40" y="4" width="2" height="1" fill="#f9e79f"/>
+  <!-- Rising secondary sparkles -->
+  <rect x="34" y="1" width="1" height="1" fill="#f4d03f"/>
+  <rect x="43" y="2" width="1" height="1" fill="#f4d03f"/>
+  <rect x="35" y="6" width="1" height="1" fill="#b7950b"/>
+  <rect x="42" y="7" width="1" height="1" fill="#b7950b"/>
+  <rect x="37" y="10" width="1" height="1" fill="#b7950b" fill-opacity="0.5"/>
+  <rect x="41" y="11" width="1" height="1" fill="#b7950b" fill-opacity="0.5"/>
+
+  <!-- Frame 4: Fading away (48-64) -->
+  <rect x="54" y="2" width="1" height="1" fill="#f4d03f" fill-opacity="0.6"/>
+  <rect x="57" y="1" width="1" height="1" fill="#f9e79f" fill-opacity="0.4"/>
+  <rect x="52" y="4" width="1" height="1" fill="#b7950b" fill-opacity="0.4"/>
+  <rect x="59" y="3" width="1" height="1" fill="#b7950b" fill-opacity="0.3"/>
+  <rect x="55" y="6" width="1" height="1" fill="#f4d03f" fill-opacity="0.3"/>
+  <rect x="58" y="7" width="1" height="1" fill="#f9e79f" fill-opacity="0.2"/>
+  <rect x="53" y="9" width="1" height="1" fill="#b7950b" fill-opacity="0.2"/>
+</svg>

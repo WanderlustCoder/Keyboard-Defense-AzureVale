@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 16" width="4" height="16">
+  <!-- Text Input Cursor/Caret - 4x16 -->
+
+  <!-- Cursor body -->
+  <rect x="1" y="0" width="2" height="16" fill="#f4d03f"/>
+
+  <!-- Top cap -->
+  <rect x="0" y="0" width="4" height="2" fill="#f4d03f"/>
+
+  <!-- Bottom cap -->
+  <rect x="0" y="14" width="4" height="2" fill="#f4d03f"/>
+
+  <!-- Highlight -->
+  <rect x="1" y="2" width="1" height="12" fill="#f9e79f"/>
+</svg>

@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://keyboard-defense.local/schemas/poi.schema.json",
+  "title": "Keyboard Defense POI",
+  "type": "object",
+  "required": [
+    "id",
+    "biome",
+    "name",
+    "icon",
+    "event_table_id",
+    "rarity",
+    "tags"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 3
+    },
+    "biome": {
+      "enum": [
+        "Evergrove",
+        "Stonepass",
+        "Mistfen",
+        "Sunfields"
+      ]
+    },
+    "name": {
+      "type": "string"
+    },
+    "icon": {
+      "type": "string"
+    },
+    "event_table_id": {
+      "type": "string"
+    },
+    "rarity": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "min_day": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "max_day": {
+      "type": "integer",
+      "minimum": 1
+    }
+  },
+  "additionalProperties": false
+}

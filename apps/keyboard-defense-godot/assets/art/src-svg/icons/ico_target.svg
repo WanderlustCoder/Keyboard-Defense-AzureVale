@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Target/Focus Icon - 16x16 -->
+
+  <!-- Target brackets (corners) -->
+  <!-- Top-left -->
+  <rect x="1" y="1" width="4" height="2" fill="#e74c3c"/>
+  <rect x="1" y="1" width="2" height="4" fill="#e74c3c"/>
+
+  <!-- Top-right -->
+  <rect x="11" y="1" width="4" height="2" fill="#e74c3c"/>
+  <rect x="13" y="1" width="2" height="4" fill="#e74c3c"/>
+
+  <!-- Bottom-left -->
+  <rect x="1" y="13" width="4" height="2" fill="#e74c3c"/>
+  <rect x="1" y="11" width="2" height="4" fill="#e74c3c"/>
+
+  <!-- Bottom-right -->
+  <rect x="11" y="13" width="4" height="2" fill="#e74c3c"/>
+  <rect x="13" y="11" width="2" height="4" fill="#e74c3c"/>
+
+  <!-- Center crosshair -->
+  <rect x="7" y="4" width="2" height="8" fill="#c0392b"/>
+  <rect x="4" y="7" width="8" height="2" fill="#c0392b"/>
+
+  <!-- Center dot -->
+  <rect x="7" y="7" width="2" height="2" fill="#f4d03f"/>
+</svg>
