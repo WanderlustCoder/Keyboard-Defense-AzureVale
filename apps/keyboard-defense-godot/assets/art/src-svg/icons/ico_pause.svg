@@ -1,20 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
-  <!-- Pause Icon - 16x16 -->
-
+  <!-- Pause Icon (16x16) -->
+  
   <!-- Background circle -->
-  <rect x="3" y="1" width="10" height="14" fill="#3498db"/>
-  <rect x="1" y="3" width="14" height="10" fill="#3498db"/>
-  <rect x="2" y="2" width="12" height="12" fill="#3498db"/>
-
+  <rect x="2" y="2" width="12" height="12" fill="#f39c12"/>
+  <rect x="3" y="3" width="10" height="10" fill="#f1c40f"/>
+  
   <!-- Pause bars -->
-  <rect x="4" y="4" width="3" height="8" fill="#eaeaea"/>
-  <rect x="9" y="4" width="3" height="8" fill="#eaeaea"/>
-
-  <!-- Bar highlights -->
-  <rect x="4" y="4" width="1" height="7" fill="#ffffff"/>
-  <rect x="9" y="4" width="1" height="7" fill="#ffffff"/>
-
-  <!-- Bar shadows -->
-  <rect x="6" y="5" width="1" height="7" fill="#bdc3c7"/>
-  <rect x="11" y="5" width="1" height="7" fill="#bdc3c7"/>
+  <rect x="5" y="4" width="2" height="8" fill="#2c3e50"/>
+  <rect x="9" y="4" width="2" height="8" fill="#2c3e50"/>
 </svg>

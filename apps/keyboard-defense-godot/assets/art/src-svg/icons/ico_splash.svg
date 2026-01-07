@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Splash/AOE Icon (16x16) - explosion -->
+  
+  <!-- Center burst -->
+  <rect x="6" y="6" width="4" height="4" fill="#e74c3c"/>
+  <rect x="7" y="5" width="2" height="6" fill="#e74c3c"/>
+  <rect x="5" y="7" width="6" height="2" fill="#e74c3c"/>
+  
+  <!-- Rays -->
+  <rect x="7" y="2" width="2" height="3" fill="#f39c12"/>
+  <rect x="7" y="11" width="2" height="3" fill="#f39c12"/>
+  <rect x="2" y="7" width="3" height="2" fill="#f39c12"/>
+  <rect x="11" y="7" width="3" height="2" fill="#f39c12"/>
+  
+  <!-- Diagonal rays -->
+  <rect x="3" y="3" width="2" height="2" fill="#f39c12"/>
+  <rect x="11" y="3" width="2" height="2" fill="#f39c12"/>
+  <rect x="3" y="11" width="2" height="2" fill="#f39c12"/>
+  <rect x="11" y="11" width="2" height="2" fill="#f39c12"/>
+  
+  <!-- Core -->
+  <rect x="7" y="7" width="2" height="2" fill="#f4d03f"/>
+</svg>
