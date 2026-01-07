@@ -1615,6 +1615,270 @@
         {"mode": "targets", "label": "Phonetic Commands", "targets": ["articulate", "pronounce", "enunciate", "vocalize"], "hint": "Perfect phonetic control."},
         {"mode": "lesson", "label": "Phonetic Mastery Defense", "word_count": 12, "shuffle": true, "hint": "You speak through your fingers."}
       ]
+    },
+    {
+      "id": "mistfen-approach",
+      "label": "Mistfen Approach Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Fog Entry", "word_count": 6, "shuffle": false, "hint": "The mist parts as you type."},
+        {"mode": "targets", "label": "Marsh Beats", "targets": ["marsh", "foggy", "willow", "heron"], "hint": "Navigate the murky depths."},
+        {"mode": "intermission", "label": "Mist Pause", "duration": 2.5, "message": "The fog settles briefly."},
+        {"mode": "targets", "label": "Fen Commands", "targets": ["swampy", "reeds", "muddy", "misty"], "hint": "Feel your way through."},
+        {"mode": "lesson", "label": "Mistfen Defense", "word_count": 10, "shuffle": true, "hint": "The fen reveals its secrets."}
+      ]
+    },
+    {
+      "id": "foggy-causeway",
+      "label": "Foggy Causeway Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Causeway Entry", "word_count": 6, "shuffle": false, "hint": "The path shimmers."},
+        {"mode": "targets", "label": "Fog Symbols", "targets": ["path...", "step!", "wait?", "go;"], "hint": "Punctuation guides the way."},
+        {"mode": "intermission", "label": "Causeway Rest", "duration": 2.0, "message": "The stones are stable here."},
+        {"mode": "targets", "label": "Symbol Commands", "targets": ["(pause)", "[step]", "{halt}", "<go>"], "hint": "Symbols mark the safe path."},
+        {"mode": "lesson", "label": "Causeway Defense", "word_count": 10, "shuffle": true, "hint": "Navigate with precision."}
+      ]
+    },
+    {
+      "id": "murky-delta",
+      "label": "Murky Delta Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Delta Entry", "word_count": 6, "shuffle": false, "hint": "Waters divide here."},
+        {"mode": "targets", "label": "Delta Beats", "targets": ["stream", "branch", "flow", "delta"], "hint": "Follow the currents."},
+        {"mode": "intermission", "label": "Delta Pause", "duration": 2.5, "message": "The waters calm."},
+        {"mode": "targets", "label": "Water Commands", "targets": ["tributary", "estuary", "wetland", "channel"], "hint": "Master the waterways."},
+        {"mode": "lesson", "label": "Delta Defense", "word_count": 10, "shuffle": true, "hint": "The delta yields."}
+      ]
+    },
+    {
+      "id": "willows-rest",
+      "label": "Willow's Rest Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Willow Entry", "word_count": 6, "shuffle": false, "hint": "The willows sway gently."},
+        {"mode": "targets", "label": "Punctuation Rest", "targets": ["tree's", "don't", "won't", "can't"], "hint": "Apostrophes mark possession."},
+        {"mode": "intermission", "label": "Willow Shade", "duration": 2.5, "message": "Rest under the branches."},
+        {"mode": "targets", "label": "Rest Commands", "targets": ["it's", "we're", "they'd", "you'll"], "hint": "Contractions flow naturally."},
+        {"mode": "lesson", "label": "Willow Defense", "word_count": 10, "shuffle": true, "hint": "The willows protect you."}
+      ]
+    },
+    {
+      "id": "heron-rookery",
+      "label": "Heron Rookery Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Rookery Entry", "word_count": 6, "shuffle": false, "hint": "Herons watch from above."},
+        {"mode": "targets", "label": "Symbol Beats", "targets": ["bird@nest", "wing#flight", "beak$fish"], "hint": "Symbols hide among the reeds."},
+        {"mode": "intermission", "label": "Rookery Rest", "duration": 2.5, "message": "The herons are silent."},
+        {"mode": "targets", "label": "Rookery Commands", "targets": ["fly%high", "nest^tree", "fish&catch"], "hint": "Master special symbols."},
+        {"mode": "lesson", "label": "Rookery Defense", "word_count": 10, "shuffle": true, "hint": "The rookery is secure."}
+      ]
+    },
+    {
+      "id": "reed-maze",
+      "label": "Reed Maze Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Maze Entry", "word_count": 6, "shuffle": false, "hint": "Reeds tower all around."},
+        {"mode": "targets", "label": "Maze Beats", "targets": ["twist", "turn", "weave", "maze"], "hint": "Find the path through."},
+        {"mode": "intermission", "label": "Maze Pause", "duration": 2.5, "message": "A clearing appears."},
+        {"mode": "targets", "label": "Maze Commands", "targets": ["navigate", "explore", "discover", "wander"], "hint": "Every turn teaches."},
+        {"mode": "lesson", "label": "Maze Defense", "word_count": 10, "shuffle": true, "hint": "The maze is mastered."}
+      ]
+    },
+    {
+      "id": "sunken-temple",
+      "label": "Sunken Temple Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Temple Entry", "word_count": 6, "shuffle": false, "hint": "Ancient stones rise from the water."},
+        {"mode": "targets", "label": "Temple Symbols", "targets": ["[rune]", "{glyph}", "(mark)", "<sign>"], "hint": "Decipher the ancient marks."},
+        {"mode": "intermission", "label": "Temple Rest", "duration": 2.5, "message": "The water is still."},
+        {"mode": "targets", "label": "Temple Commands", "targets": ["[[deep]]", "{{hidden}}", "((lost))", "<<found>>"], "hint": "Nested symbols reveal truth."},
+        {"mode": "lesson", "label": "Temple Defense", "word_count": 10, "shuffle": true, "hint": "The temple's secrets are yours."}
+      ]
+    },
+    {
+      "id": "mist-warden-lair",
+      "label": "Mist Warden Lair Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Lair Entry", "word_count": 7, "shuffle": false, "hint": "The warden stirs."},
+        {"mode": "targets", "label": "Warden Beats", "targets": ["shadow", "mist", "guard", "watch"], "hint": "The warden tests you."},
+        {"mode": "intermission", "label": "Warden Pause", "duration": 2.5, "message": "The warden waits."},
+        {"mode": "targets", "label": "Warden Commands", "targets": ["sentinel", "guardian", "protector", "watcher"], "hint": "Prove your worth."},
+        {"mode": "lesson", "label": "Warden Defense", "word_count": 12, "shuffle": true, "hint": "The warden acknowledges you."}
+      ]
+    },
+    {
+      "id": "fens-edge",
+      "label": "Fen's Edge Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Edge Entry", "word_count": 6, "shuffle": false, "hint": "The fen's boundary approaches."},
+        {"mode": "targets", "label": "Edge Punctuation", "targets": ["end.", "stop!", "halt?", "pause;"], "hint": "Punctuation marks the edge."},
+        {"mode": "intermission", "label": "Edge Rest", "duration": 2.0, "message": "The edge is near."},
+        {"mode": "targets", "label": "Edge Commands", "targets": ["boundary.", "limit!", "threshold?", "verge;"], "hint": "Mark each boundary."},
+        {"mode": "lesson", "label": "Edge Defense", "word_count": 10, "shuffle": true, "hint": "The edge is crossed."}
+      ]
+    },
+    {
+      "id": "ancient-pier",
+      "label": "Ancient Pier Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Pier Entry", "word_count": 6, "shuffle": false, "hint": "Weathered stones support you."},
+        {"mode": "targets", "label": "Pier Symbols", "targets": ["dock#1", "pier@2", "quay$3"], "hint": "Numbers mark the moorings."},
+        {"mode": "intermission", "label": "Pier Rest", "duration": 2.5, "message": "The water laps gently."},
+        {"mode": "targets", "label": "Pier Commands", "targets": ["moor%safely", "anchor^deep", "tie&secure"], "hint": "Secure the vessel."},
+        {"mode": "lesson", "label": "Pier Defense", "word_count": 10, "shuffle": true, "hint": "The pier stands eternal."}
+      ]
+    },
+    {
+      "id": "seer-sanctum",
+      "label": "Seer Sanctum Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Sanctum Entry", "word_count": 7, "shuffle": false, "hint": "Visions swirl in the mist."},
+        {"mode": "targets", "label": "Vision Beats", "targets": ["future", "sight", "oracle", "divine"], "hint": "See through the fog."},
+        {"mode": "intermission", "label": "Sanctum Vision", "duration": 3.0, "message": "The seer awaits."},
+        {"mode": "targets", "label": "Sanctum Commands", "targets": ["prophecy", "foresight", "augury", "portent"], "hint": "The future reveals itself."},
+        {"mode": "lesson", "label": "Sanctum Defense", "word_count": 12, "shuffle": true, "hint": "You are ready for the seer."}
+      ]
+    },
+    {
+      "id": "fen-seer-throne",
+      "label": "Fen Seer Throne Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Throne Approach", "word_count": 8, "shuffle": false, "hint": "The Fen Seer awaits."},
+        {"mode": "targets", "label": "Seer Beats", "targets": ["truth!", "vision?", "fate.", "destiny;"], "hint": "The seer speaks in symbols."},
+        {"mode": "intermission", "label": "Throne Pause", "duration": 3.0, "message": "The seer's gaze pierces you."},
+        {"mode": "targets", "label": "Seer Commands", "targets": ["(reveal)", "[predict]", "{foresee}", "<divine>"], "hint": "The seer tests all knowledge."},
+        {"mode": "lesson", "label": "Seer Final Defense", "word_count": 14, "shuffle": true, "hint": "Face the Fen Seer's judgment."}
+      ]
+    },
+    {
+      "id": "sunfields-gateway",
+      "label": "Sunfields Gateway Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Gateway Entry", "word_count": 6, "shuffle": false, "hint": "Golden light washes over you."},
+        {"mode": "targets", "label": "Sun Beats", "targets": ["gold", "dawn", "warm", "bright"], "hint": "Type with the sun's warmth."},
+        {"mode": "intermission", "label": "Gateway Rest", "duration": 2.0, "message": "The sun welcomes you."},
+        {"mode": "targets", "label": "Gateway Commands", "targets": ["sunrise", "morning", "radiant", "shining"], "hint": "Speed rises with the sun."},
+        {"mode": "lesson", "label": "Gateway Defense", "word_count": 10, "shuffle": true, "hint": "The gateway opens."}
+      ]
+    },
+    {
+      "id": "golden-meadow",
+      "label": "Golden Meadow Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Meadow Entry", "word_count": 6, "shuffle": false, "hint": "Golden wheat sways."},
+        {"mode": "targets", "label": "Meadow Beats", "targets": ["wheat", "field", "grain", "crop"], "hint": "Quick fingers harvest."},
+        {"mode": "intermission", "label": "Meadow Rest", "duration": 2.0, "message": "The wind rustles the grain."},
+        {"mode": "targets", "label": "Speed Commands", "targets": ["swift", "fast", "quick", "rapid"], "hint": "Speed is your ally."},
+        {"mode": "lesson", "label": "Meadow Defense", "word_count": 10, "shuffle": true, "hint": "The meadow is harvested."}
+      ]
+    },
+    {
+      "id": "harvest-road",
+      "label": "Harvest Road Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Road Entry", "word_count": 6, "shuffle": false, "hint": "Carts roll toward the horizon."},
+        {"mode": "targets", "label": "Road Beats", "targets": ["cart", "road", "path", "trail"], "hint": "Keep pace with the caravan."},
+        {"mode": "intermission", "label": "Road Rest", "duration": 2.0, "message": "A brief stop for water."},
+        {"mode": "targets", "label": "Road Commands", "targets": ["journey", "voyage", "travel", "passage"], "hint": "The road stretches on."},
+        {"mode": "lesson", "label": "Road Defense", "word_count": 10, "shuffle": true, "hint": "The harvest is delivered."}
+      ]
+    },
+    {
+      "id": "windmill-heights",
+      "label": "Windmill Heights Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Heights Entry", "word_count": 6, "shuffle": false, "hint": "The windmill turns endlessly."},
+        {"mode": "targets", "label": "Wind Beats", "targets": ["spin", "turn", "wind", "blade"], "hint": "Match the windmill's rhythm."},
+        {"mode": "intermission", "label": "Heights Rest", "duration": 2.0, "message": "The blades slow briefly."},
+        {"mode": "targets", "label": "Speed Commands", "targets": ["accelerate", "momentum", "velocity", "swift"], "hint": "Build speed like the wind."},
+        {"mode": "lesson", "label": "Heights Defense", "word_count": 12, "shuffle": true, "hint": "The windmill approves."}
+      ]
+    },
+    {
+      "id": "sunlit-orchard",
+      "label": "Sunlit Orchard Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Orchard Entry", "word_count": 6, "shuffle": false, "hint": "Fruit ripens in the sun."},
+        {"mode": "targets", "label": "Orchard Beats", "targets": ["apple", "pear", "peach", "plum"], "hint": "Harvest the fruit quickly."},
+        {"mode": "intermission", "label": "Orchard Rest", "duration": 2.0, "message": "The trees provide shade."},
+        {"mode": "targets", "label": "Fruit Commands", "targets": ["bountiful", "abundant", "plentiful", "fertile"], "hint": "The orchard overflows."},
+        {"mode": "lesson", "label": "Orchard Defense", "word_count": 10, "shuffle": true, "hint": "The harvest is complete."}
+      ]
+    },
+    {
+      "id": "champions-road",
+      "label": "Champion's Road Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Champion Entry", "word_count": 7, "shuffle": false, "hint": "The road to glory begins."},
+        {"mode": "targets", "label": "Champion Beats", "targets": ["fight", "honor", "glory", "valor"], "hint": "Type with a champion's spirit."},
+        {"mode": "intermission", "label": "Champion Rest", "duration": 2.0, "message": "Gather your strength."},
+        {"mode": "targets", "label": "Glory Commands", "targets": ["victorious", "triumphant", "legendary", "heroic"], "hint": "Champions never slow."},
+        {"mode": "lesson", "label": "Champion Defense", "word_count": 12, "shuffle": true, "hint": "The champion's road is cleared."}
+      ]
+    },
+    {
+      "id": "blazing-arena",
+      "label": "Blazing Arena Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Arena Entry", "word_count": 7, "shuffle": false, "hint": "The crowd roars."},
+        {"mode": "targets", "label": "Arena Beats", "targets": ["clash", "strike", "fight", "duel"], "hint": "Speed wins duels."},
+        {"mode": "intermission", "label": "Arena Pause", "duration": 2.0, "message": "The crowd holds its breath."},
+        {"mode": "targets", "label": "Battle Commands", "targets": ["combat", "battle", "contest", "match"], "hint": "Victory through velocity."},
+        {"mode": "lesson", "label": "Arena Defense", "word_count": 12, "shuffle": true, "hint": "The arena champion emerges."}
+      ]
+    },
+    {
+      "id": "valor-grounds",
+      "label": "Valor Grounds Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Grounds Entry", "word_count": 7, "shuffle": false, "hint": "Heroes train here."},
+        {"mode": "targets", "label": "Valor Beats", "targets": ["brave", "bold", "noble", "true"], "hint": "Type with valor."},
+        {"mode": "intermission", "label": "Valor Rest", "duration": 2.0, "message": "Heroes rest briefly."},
+        {"mode": "targets", "label": "Hero Commands", "targets": ["courageous", "fearless", "valiant", "gallant"], "hint": "Valor increases speed."},
+        {"mode": "lesson", "label": "Valor Defense", "word_count": 12, "shuffle": true, "hint": "Valor is proven."}
+      ]
+    },
+    {
+      "id": "trial-of-dawn",
+      "label": "Trial of Dawn Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Dawn Entry", "word_count": 7, "shuffle": false, "hint": "The first light approaches."},
+        {"mode": "targets", "label": "Dawn Beats", "targets": ["dawn", "rise", "light", "day"], "hint": "Race the sunrise."},
+        {"mode": "intermission", "label": "Dawn Pause", "duration": 2.0, "message": "The horizon glows."},
+        {"mode": "targets", "label": "Time Commands", "targets": ["daybreak", "sunrise", "morning", "aurora"], "hint": "Beat the dawn."},
+        {"mode": "lesson", "label": "Dawn Defense", "word_count": 12, "shuffle": true, "hint": "The dawn trial is complete."}
+      ]
+    },
+    {
+      "id": "pinnacle-field",
+      "label": "Pinnacle Field Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Pinnacle Entry", "word_count": 8, "shuffle": false, "hint": "The highest field awaits."},
+        {"mode": "targets", "label": "Pinnacle Beats", "targets": ["peak", "apex", "summit", "crown"], "hint": "Reach the pinnacle."},
+        {"mode": "intermission", "label": "Pinnacle Rest", "duration": 2.0, "message": "The view is breathtaking."},
+        {"mode": "targets", "label": "Height Commands", "targets": ["pinnacle", "zenith", "acme", "climax"], "hint": "Maximum speed reached."},
+        {"mode": "lesson", "label": "Pinnacle Defense", "word_count": 12, "shuffle": true, "hint": "The pinnacle is conquered."}
+      ]
+    },
+    {
+      "id": "sunlord-approach",
+      "label": "Sunlord Approach Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Approach Entry", "word_count": 8, "shuffle": false, "hint": "The Sunlord's throne blazes."},
+        {"mode": "targets", "label": "Approach Beats", "targets": ["flame", "blaze", "burn", "solar"], "hint": "Withstand the heat."},
+        {"mode": "intermission", "label": "Approach Rest", "duration": 2.5, "message": "Prepare for the final test."},
+        {"mode": "targets", "label": "Sun Commands", "targets": ["scorching", "blazing", "radiant", "incandescent"], "hint": "Speed defeats the heat."},
+        {"mode": "lesson", "label": "Approach Defense", "word_count": 14, "shuffle": true, "hint": "The Sunlord awaits."}
+      ]
+    },
+    {
+      "id": "sunlord-throne",
+      "label": "Sunlord Throne Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Throne Approach", "word_count": 8, "shuffle": false, "hint": "The Sunlord Champion rises."},
+        {"mode": "targets", "label": "Sunlord Beats", "targets": ["champion", "lord", "master", "king"], "hint": "The Sunlord tests your speed."},
+        {"mode": "intermission", "label": "Throne Blaze", "duration": 3.0, "message": "The throne room blazes."},
+        {"mode": "targets", "label": "Final Commands", "targets": ["unstoppable", "invincible", "legendary", "supreme"], "hint": "Maximum speed required."},
+        {"mode": "lesson", "label": "Sunlord Final Defense", "word_count": 16, "shuffle": true, "hint": "Face the Sunlord Champion."}
+      ]
     }
   ]
 }
