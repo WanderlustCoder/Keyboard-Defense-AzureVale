@@ -363,6 +363,8 @@ func _apply_result(result: Dictionary, intent_kind: String = "") -> void:
     var prev_lesson: String = state.lesson_id
     state = result.state
     _append_log(result.events)
+    # Play audio for events
+    _trigger_event_audio(result.events)
     # Play audio feedback for successful commands
     if audio_manager != null and intent_kind != "":
         if intent_kind == "defend_input":
@@ -479,6 +481,41 @@ func _event_has_prefix(events: Array, prefix: String) -> bool:
                 if str(event).begins_with(prefix):
                         return true
         return false
+
+## Trigger audio effects based on game event strings
+func _trigger_event_audio(events: Array) -> void:
+        if audio_manager == null:
+                return
+        for event in events:
+                var text: String = str(event)
+                # Boss events
+                if text.begins_with("BOSS ENCOUNTER:"):
+                        audio_manager.play_sfx(audio_manager.SFX.BOSS_APPEAR)
+                elif text.begins_with("BOSS DEFEATED:"):
+                        audio_manager.play_sfx(audio_manager.SFX.BOSS_DEFEATED)
+                # Combat events
+                elif text.contains("defeated") and text.contains("gold"):
+                        audio_manager.play_hit_enemy()
+                elif text.begins_with("Enemy") and text.contains("hits the base"):
+                        audio_manager.play_hit_player()
+                elif text.contains("blocked!"):
+                        audio_manager.play_sfx(audio_manager.SFX.UI_CONFIRM)
+                # Wave events
+                elif text.begins_with("Dawn breaks"):
+                        audio_manager.play_wave_end()
+                # Victory/defeat
+                elif text.begins_with("VICTORY"):
+                        audio_manager.play_victory()
+                elif text.begins_with("Game over") or text.begins_with("The kingdom has fallen"):
+                        audio_manager.play_defeat()
+                # Upgrades and resources
+                elif text.begins_with("Treasury yields"):
+                        audio_manager.play_sfx(audio_manager.SFX.RESOURCE_PICKUP)
+                elif text.begins_with("Healers restore"):
+                        audio_manager.play_sfx(audio_manager.SFX.LEVEL_UP)
+                # Enemy spawns
+                elif text.begins_with("Enemy spawned:"):
+                        audio_manager.play_sfx(audio_manager.SFX.ENEMY_SPAWN)
 
 func _default_onboarding_flags() -> Dictionary:
         return {

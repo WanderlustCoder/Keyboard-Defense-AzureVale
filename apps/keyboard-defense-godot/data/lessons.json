@@ -585,6 +585,62 @@
       "mode": "wordlist",
       "wordlist": ["test", "rest", "best", "west", "east", "fast", "vast", "cast", "last", "past", "mast", "feast", "beast", "least", "yeast", "waste", "haste", "taste", "paste", "caste", "grass", "brass", "class", "glass", "mass", "bass", "pass", "sass", "jazz", "fizz", "buzz", "fuzz", "huff", "puff", "buff", "cuff", "muff", "stuff", "fluff", "bluff"],
       "lengths": { "scout": [3, 4], "raider": [4, 5], "armored": [5, 6] }
+    },
+    {
+      "id": "bigram_flow",
+      "name": "Bigram Flow",
+      "description": "Common two-letter patterns for typing fluency.",
+      "mode": "wordlist",
+      "wordlist": ["the", "and", "that", "this", "with", "have", "from", "they", "been", "said", "each", "which", "their", "will", "when", "make", "like", "time", "just", "know", "take", "people", "year", "your", "good", "some", "could", "them", "than", "then", "other", "into", "think", "look", "only", "come", "over", "also", "back", "after"],
+      "lengths": { "scout": [3, 4], "raider": [4, 6], "armored": [6, 8] }
+    },
+    {
+      "id": "weak_fingers",
+      "name": "Pinky Power",
+      "description": "Focus on pinky and ring finger strength.",
+      "mode": "charset",
+      "charset": "qazwsxpolm",
+      "lengths": { "scout": [3, 4], "raider": [4, 5], "armored": [5, 7] }
+    },
+    {
+      "id": "weak_fingers_words",
+      "name": "Pinky Words",
+      "description": "Words emphasizing outer finger reach.",
+      "mode": "wordlist",
+      "wordlist": ["plaza", "quiz", "aqua", "zeal", "zone", "zero", "zoom", "zest", "wax", "was", "saw", "paw", "law", "raw", "jaw", "claw", "draw", "straw", "spawn", "prawn", "pawn", "yawn", "lawn", "fawn", "dawn", "brawl", "crawl", "shawl", "awl", "owl", "howl", "growl", "prowl", "scowl", "vowel", "towel", "bowl", "fowl", "jowl", "cowl"],
+      "lengths": { "scout": [3, 4], "raider": [4, 5], "armored": [5, 6] }
+    },
+    {
+      "id": "mixed_case",
+      "name": "CamelCase Challenge",
+      "description": "Practice mixed case typing patterns.",
+      "mode": "wordlist",
+      "wordlist": ["GetUser", "SetName", "RunTest", "AddItem", "DelNode", "MaxSize", "MinVal", "NewFile", "OldData", "TopView", "EndGame", "SubMenu", "PopUp", "LogIn", "LogOut", "SignUp", "OptIn", "OptOut", "BackUp", "DropIn", "TurnOn", "TurnOff", "FadeIn", "FadeOut", "ZoomIn", "ZoomOut", "PlugIn", "TuneUp", "WarmUp", "CoolDown"],
+      "lengths": { "scout": [5, 6], "raider": [6, 7], "armored": [7, 9] }
+    },
+    {
+      "id": "email_patterns",
+      "name": "Email Typing",
+      "description": "Practice @, dots, and underscores.",
+      "mode": "wordlist",
+      "wordlist": ["user@mail", "test@site", "info@web", "help@app", "data.csv", "file.txt", "page.html", "app.js", "main.py", "test.go", "user_id", "max_val", "min_len", "new_item", "old_data", "get_user", "set_name", "run_test", "add_node", "del_file", "api.key", "db.host", "app.port", "user.name", "file.path", "node.js", "react.js", "vue.js", "next.js", "nest.js"],
+      "lengths": { "scout": [6, 8], "raider": [8, 10], "armored": [10, 12] }
+    },
+    {
+      "id": "double_letters",
+      "name": "Double Trouble",
+      "description": "Words with repeated letters.",
+      "mode": "wordlist",
+      "wordlist": ["book", "look", "took", "cook", "hook", "nook", "brook", "crook", "shook", "stood", "good", "wood", "hood", "food", "mood", "brood", "flood", "blood", "cool", "fool", "pool", "tool", "wool", "spool", "drool", "stool", "school", "balloon", "raccoon", "cartoon", "bassoon", "harpoon", "monsoon", "platoon", "festoon", "maroon", "lagoon", "baboon", "buffoon", "tycoon"],
+      "lengths": { "scout": [4, 5], "raider": [5, 7], "armored": [7, 8] }
+    },
+    {
+      "id": "rhythm_words",
+      "name": "Rhythm Builders",
+      "description": "Words with natural typing rhythm.",
+      "mode": "wordlist",
+      "wordlist": ["element", "minimum", "maximum", "premium", "stadium", "medium", "calcium", "sodium", "helium", "uranium", "titanium", "aluminum", "magnesium", "potassium", "chromium", "platinum", "selenium", "germanium", "palladium", "vanadium", "momentum", "symposium", "aquarium", "terrarium", "solarium", "auditorium", "moratorium", "crematorium", "planetarium", "sanitarium"],
+      "lengths": { "scout": [5, 7], "raider": [7, 9], "armored": [9, 12] }
     }
   ]
 }
