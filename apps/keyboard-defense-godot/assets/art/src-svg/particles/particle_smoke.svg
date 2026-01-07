@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8" width="8" height="8">
+  <!-- Smoke Particle (8x8) - Smoke puff -->
+  <!-- Color Palette: #7f8c8d, #95a5a6, #bdc3c7 -->
+
+  <rect x="2" y="2" width="4" height="4" fill="#7f8c8d"/>
+  <rect x="1" y="3" width="1" height="2" fill="#95a5a6"/>
+  <rect x="6" y="3" width="1" height="2" fill="#95a5a6"/>
+  <rect x="3" y="1" width="2" height="1" fill="#95a5a6"/>
+  <rect x="3" y="6" width="2" height="1" fill="#95a5a6"/>
+  <rect x="3" y="3" width="2" height="2" fill="#bdc3c7"/>
+</svg>

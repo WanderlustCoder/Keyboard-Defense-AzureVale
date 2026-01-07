@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8" width="8" height="8">
+  <!-- Star Particle (8x8) - Sparkle/twinkle -->
+  <!-- Color Palette: #fdfefe, #f4d03f, #3498db -->
+
+  <rect x="3" y="0" width="2" height="3" fill="#fdfefe"/>
+  <rect x="3" y="5" width="2" height="3" fill="#fdfefe"/>
+  <rect x="0" y="3" width="3" height="2" fill="#fdfefe"/>
+  <rect x="5" y="3" width="3" height="2" fill="#fdfefe"/>
+  <rect x="3" y="3" width="2" height="2" fill="#f4d03f"/>
+  <rect x="1" y="1" width="1" height="1" fill="#3498db" opacity="0.5"/>
+  <rect x="6" y="1" width="1" height="1" fill="#3498db" opacity="0.5"/>
+  <rect x="1" y="6" width="1" height="1" fill="#3498db" opacity="0.5"/>
+  <rect x="6" y="6" width="1" height="1" fill="#3498db" opacity="0.5"/>
+</svg>

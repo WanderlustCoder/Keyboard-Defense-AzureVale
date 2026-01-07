@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8" width="8" height="8">
+  <!-- Hit Particle (8x8) - Impact/damage indicator -->
+  <!-- Color Palette: #e74c3c, #c0392b, #fdfefe -->
+
+  <rect x="3" y="0" width="2" height="1" fill="#e74c3c"/>
+  <rect x="0" y="3" width="1" height="2" fill="#e74c3c"/>
+  <rect x="7" y="3" width="1" height="2" fill="#e74c3c"/>
+  <rect x="3" y="7" width="2" height="1" fill="#e74c3c"/>
+  <rect x="1" y="1" width="1" height="1" fill="#c0392b"/>
+  <rect x="6" y="1" width="1" height="1" fill="#c0392b"/>
+  <rect x="1" y="6" width="1" height="1" fill="#c0392b"/>
+  <rect x="6" y="6" width="1" height="1" fill="#c0392b"/>
+  <rect x="3" y="3" width="2" height="2" fill="#fdfefe"/>
+</svg>

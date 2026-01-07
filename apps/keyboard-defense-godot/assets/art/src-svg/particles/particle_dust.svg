@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 4" width="4" height="4">
+  <!-- Dust Particle (4x4) - Small dust mote -->
+  <!-- Color Palette: #d4a017, #c4a35a, #fdfefe -->
+
+  <rect x="1" y="1" width="2" height="2" fill="#d4a017"/>
+  <rect x="1" y="1" width="1" height="1" fill="#c4a35a"/>
+  <rect x="0" y="0" width="1" height="1" fill="#fdfefe" opacity="0.3"/>
+</svg>

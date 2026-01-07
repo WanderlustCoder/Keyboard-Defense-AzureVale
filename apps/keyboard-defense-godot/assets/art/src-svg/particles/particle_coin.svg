@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6 6" width="6" height="6">
+  <!-- Coin Particle (6x6) - Gold coin pickup -->
+  <!-- Color Palette: #f4d03f, #e67e22, #fdfefe -->
+
+  <rect x="1" y="0" width="4" height="1" fill="#e67e22"/>
+  <rect x="0" y="1" width="6" height="4" fill="#f4d03f"/>
+  <rect x="1" y="5" width="4" height="1" fill="#e67e22"/>
+  <rect x="2" y="2" width="2" height="2" fill="#e67e22"/>
+  <rect x="2" y="2" width="1" height="1" fill="#fdfefe" opacity="0.5"/>
+  <rect x="1" y="1" width="1" height="1" fill="#fdfefe" opacity="0.4"/>
+</svg>

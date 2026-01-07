@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8" width="8" height="8">
+  <!-- Magic Particle (8x8) - Magical sparkle -->
+  <!-- Color Palette: #9b59b6, #8e44ad, #3498db, #fdfefe -->
+
+  <rect x="2" y="2" width="4" height="4" fill="#9b59b6"/>
+  <rect x="3" y="1" width="2" height="1" fill="#8e44ad"/>
+  <rect x="3" y="6" width="2" height="1" fill="#8e44ad"/>
+  <rect x="1" y="3" width="1" height="2" fill="#8e44ad"/>
+  <rect x="6" y="3" width="1" height="2" fill="#8e44ad"/>
+  <rect x="3" y="3" width="2" height="2" fill="#3498db"/>
+  <rect x="3" y="3" width="1" height="1" fill="#fdfefe"/>
+  <rect x="0" y="0" width="1" height="1" fill="#fdfefe" opacity="0.4"/>
+  <rect x="7" y="7" width="1" height="1" fill="#fdfefe" opacity="0.4"/>
+</svg>
