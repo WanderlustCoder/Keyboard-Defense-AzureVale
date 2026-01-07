@@ -305,6 +305,7 @@ static func _advance_night_step(state: GameState, hit_enemy_index: int, apply_mi
     _spawn_enemy_step(state, events)
     _tower_attack_step(state, dist_field, events)
     _enemy_move_step(state, dist_field, events)
+    _enemy_ability_tick(state, events)
 
     if state.hp <= 0:
         state.phase = "game_over"
@@ -501,8 +502,16 @@ static func _enemy_move_step(state: GameState, dist_field: PackedInt32Array, eve
                 # Apply damage reduction from upgrades
                 var blocked: bool = damage_reduction > 0.0 and float(SimRng.roll_range(state, 1, 100)) / 100.0 <= damage_reduction
                 if not blocked:
-                    state.hp -= 1
-                    events.append("Enemy %s#%d hits the base." % [kind, enemy_id])
+                    # Enraged affix deals extra damage
+                    var base_dmg: int = 1
+                    if enemy.get("enraged", false) or enemy.get("affix", "") == "enraged":
+                        base_dmg = 2
+                    state.hp -= base_dmg
+                    var dmg_text: String = " (enraged!)" if base_dmg > 1 else ""
+                    events.append("Enemy %s#%d hits the base for %d.%s" % [kind, enemy_id, base_dmg, dmg_text])
+                    # Vampiric affix heals a random ally
+                    if enemy.get("vampiric", false) or enemy.get("affix", "") == "vampiric":
+                        _vampiric_heal(state, enemy_index, events)
                 else:
                     events.append("Enemy %s#%d blocked!" % [kind, enemy_id])
                 state.enemies.remove_at(enemy_index)
@@ -526,12 +535,54 @@ static func _enemy_move_step(state: GameState, dist_field: PackedInt32Array, eve
                     # Apply damage reduction from upgrades
                     var blocked: bool = damage_reduction > 0.0 and float(SimRng.roll_range(state, 1, 100)) / 100.0 <= damage_reduction
                     if not blocked:
-                        state.hp -= 1
-                        events.append("Enemy %s#%d hits the base." % [kind, enemy_id])
+                        # Enraged affix deals extra damage
+                        var base_dmg: int = 1
+                        if enemy.get("enraged", false) or enemy.get("affix", "") == "enraged":
+                            base_dmg = 2
+                        state.hp -= base_dmg
+                        var dmg_text: String = " (enraged!)" if base_dmg > 1 else ""
+                        events.append("Enemy %s#%d hits the base for %d.%s" % [kind, enemy_id, base_dmg, dmg_text])
+                        # Vampiric affix heals a random ally
+                        if enemy.get("vampiric", false) or enemy.get("affix", "") == "vampiric":
+                            _vampiric_heal(state, enemy_index, events)
                     else:
                         events.append("Enemy %s#%d blocked!" % [kind, enemy_id])
                     state.enemies.remove_at(enemy_index)
                     break
+
+static func _vampiric_heal(state: GameState, attacker_index: int, events: Array[String]) -> void:
+    if state.enemies.size() <= 1:
+        return
+    # Heal a random other enemy by 1 HP
+    var candidates: Array[int] = []
+    for i in range(state.enemies.size()):
+        if i != attacker_index:
+            candidates.append(i)
+    if candidates.is_empty():
+        return
+    var target_index: int = candidates[SimRng.roll_range(state, 0, candidates.size() - 1)]
+    var target: Dictionary = state.enemies[target_index]
+    target["hp"] = int(target.get("hp", 1)) + 1
+    state.enemies[target_index] = target
+    var target_kind: String = str(target.get("kind", "raider"))
+    var target_id: int = int(target.get("id", 0))
+    events.append("Vampiric drain heals %s#%d." % [target_kind, target_id])
+
+static func _enemy_ability_tick(state: GameState, events: Array[String]) -> void:
+    if state.enemies.is_empty():
+        return
+    # Healer enemies heal nearby allies
+    for i in range(state.enemies.size()):
+        var enemy: Dictionary = state.enemies[i]
+        var kind: String = str(enemy.get("kind", "raider"))
+        if kind == "healer":
+            SimEnemies.apply_healer_tick(state.enemies, i)
+    # Regenerating affix heals self
+    for i in range(state.enemies.size()):
+        var enemy: Dictionary = state.enemies[i]
+        if enemy.get("affix", "") == "regenerating" or enemy.get("regen_rate", 0) > 0:
+            enemy = SimEnemies.apply_regen_tick(enemy)
+            state.enemies[i] = enemy
 
 static func _sorted_enemy_ids(enemies: Array) -> Array[int]:
     var ids: Array[int] = []
