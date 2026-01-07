@@ -52,7 +52,10 @@ static func state_to_dict(state: GameState) -> Dictionary:
         "event_cooldowns": state.event_cooldowns.duplicate(true),
         "event_flags": state.event_flags.duplicate(true),
         "pending_event": SimEvents.serialize_pending_event(state.pending_event),
-        "active_buffs": SimEventEffects.serialize_buffs(state.active_buffs)
+        "active_buffs": SimEventEffects.serialize_buffs(state.active_buffs),
+        "purchased_kingdom_upgrades": state.purchased_kingdom_upgrades.duplicate(),
+        "purchased_unit_upgrades": state.purchased_unit_upgrades.duplicate(),
+        "gold": state.gold
     }
 
 static func state_from_dict(data: Dictionary) -> Dictionary:
@@ -89,6 +92,11 @@ static func state_from_dict(data: Dictionary) -> Dictionary:
     state.event_flags = _load_flags(data.get("event_flags", {}))
     state.pending_event = SimEvents.deserialize_pending_event(data.get("pending_event", {}))
     state.active_buffs = SimEventEffects.deserialize_buffs(data.get("active_buffs", []))
+
+    # Upgrade system state
+    state.purchased_kingdom_upgrades = _deserialize_string_array(data.get("purchased_kingdom_upgrades", []))
+    state.purchased_unit_upgrades = _deserialize_string_array(data.get("purchased_unit_upgrades", []))
+    state.gold = int(data.get("gold", 0))
 
     SimEnemies.ensure_enemy_words(state)
 
@@ -235,4 +243,12 @@ static func _load_flags(raw: Variant) -> Dictionary:
         return result
     for flag in raw:
         result[str(flag)] = raw[flag]
+    return result
+
+static func _deserialize_string_array(raw: Variant) -> Array:
+    var result: Array = []
+    if typeof(raw) != TYPE_ARRAY:
+        return result
+    for item in raw:
+        result.append(str(item))
     return result

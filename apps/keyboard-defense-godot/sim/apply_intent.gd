@@ -16,6 +16,7 @@ const SimBalance = preload("res://sim/balance.gd")
 const SimPoi = preload("res://sim/poi.gd")
 const SimEvents = preload("res://sim/events.gd")
 const SimEventEffects = preload("res://sim/event_effects.gd")
+const SimUpgrades = preload("res://sim/upgrades.gd")
 
 static func apply(state: GameState, intent: Dictionary) -> Dictionary:
     var events: Array[String] = []
@@ -96,6 +97,10 @@ static func apply(state: GameState, intent: Dictionary) -> Dictionary:
             _apply_event_choice(new_state, intent, events)
         "event_skip":
             _apply_event_skip(new_state, events)
+        "buy_upgrade":
+            _apply_buy_upgrade(new_state, intent, events)
+        "ui_upgrades":
+            _apply_ui_upgrades(new_state, intent, events)
         _:
             events.append("Unknown intent: %s" % kind)
 
@@ -305,16 +310,32 @@ static func _apply_player_attack_target(state: GameState, target_index: int, hit
     var base_damage: int = 2
     var armor: int = int(enemy.get("armor", 0))
     var effective: int = max(0, base_damage - armor)
-    enemy = SimEnemies.apply_damage(enemy, base_damage)
+    enemy = SimEnemies.apply_damage(enemy, base_damage, state)
     state.enemies[target_index] = enemy
     var enemy_id: int = int(enemy.get("id", 0))
     var enemy_kind: String = str(enemy.get("kind", "raider"))
     var enemy_word: String = str(enemy.get("word", ""))
     var word_text: String = hit_word if hit_word != "" else enemy_word
     events.append("Hit %s#%d word=%s dmg=%d." % [enemy_kind, enemy_id, word_text, effective])
+    # Berserker rage: speed boost when damaged but not killed
+    if int(enemy.get("hp", 0)) > 0 and enemy_kind == "berserker":
+        if not enemy.get("enraged", false):
+            enemy["enraged"] = true
+            enemy["speed"] = int(enemy.get("speed", 1)) + 1
+            state.enemies[target_index] = enemy
+            events.append("Berserker#%d enters a rage! Speed +1." % enemy_id)
     if int(enemy.get("hp", 0)) <= 0:
+        var enemy_pos: Vector2i = enemy.get("pos", Vector2i.ZERO)
+        # Splitting affix: spawn swarm minions on death
+        if enemy.get("affix", "") == "splitting":
+            _spawn_split_enemies(state, enemy_pos, events)
         state.enemies.remove_at(target_index)
-        events.append("Enemy %s#%d defeated." % [enemy_kind, enemy_id])
+        # Award gold for kill
+        var base_gold: int = SimEnemies.gold_reward(enemy_kind)
+        var gold_mult: float = SimUpgrades.get_gold_multiplier(state)
+        var gold_reward: int = int(float(base_gold) * gold_mult)
+        state.gold += gold_reward
+        events.append("Enemy %s#%d defeated. +%d gold" % [enemy_kind, enemy_id, gold_reward])
 
 static func _spawn_enemy_step(state: GameState, events: Array[String]) -> void:
     if state.night_spawn_remaining <= 0:
@@ -327,16 +348,42 @@ static func _spawn_enemy_step(state: GameState, events: Array[String]) -> void:
     var pos: Vector2i = SimMap.pos_from_index(spawn_index, state.map_w)
     var kind: String = SimEnemies.choose_spawn_kind(state)
     var enemy: Dictionary = SimEnemies.make_enemy(state, kind, pos)
+    enemy = SimEnemies.apply_affix_on_spawn(enemy)
     state.enemy_next_id += 1
     state.enemies.append(enemy)
-    events.append("Enemy spawned: %s#%d at (%d,%d) [hp %d] word=%s." % [
+    var affix_text: String = ""
+    if enemy.has("affix"):
+        affix_text = " [%s]" % str(enemy.get("affix", ""))
+    events.append("Enemy spawned: %s#%d at (%d,%d) [hp %d]%s word=%s." % [
         kind,
         int(enemy.get("id", 0)),
         pos.x,
         pos.y,
         int(enemy.get("hp", 0)),
+        affix_text,
         str(enemy.get("word", ""))
     ])
+    # Swarm multi-spawn: spawn 1-2 extra swarms nearby
+    if kind == "swarm" and state.night_spawn_remaining > 0:
+        var extra_count: int = SimRng.roll_range(state, 1, 2)
+        for _i in range(extra_count):
+            if state.night_spawn_remaining <= 0:
+                break
+            var extra_spawn_index: int = _pick_spawn_tile(state)
+            if extra_spawn_index < 0:
+                break
+            state.night_spawn_remaining -= 1
+            var extra_pos: Vector2i = SimMap.pos_from_index(extra_spawn_index, state.map_w)
+            var extra_enemy: Dictionary = SimEnemies.make_enemy(state, "swarm", extra_pos)
+            state.enemy_next_id += 1
+            state.enemies.append(extra_enemy)
+            events.append("Swarm pack: %s#%d at (%d,%d) word=%s." % [
+                "swarm",
+                int(extra_enemy.get("id", 0)),
+                extra_pos.x,
+                extra_pos.y,
+                str(extra_enemy.get("word", ""))
+            ])
 
 static func _tower_attack_step(state: GameState, dist_field: PackedInt32Array, events: Array[String]) -> void:
     if state.enemies.is_empty():
@@ -362,12 +409,23 @@ static func _tower_attack_step(state: GameState, dist_field: PackedInt32Array, e
             if target_index < 0:
                 break
             var enemy: Dictionary = state.enemies[target_index]
-            enemy = SimEnemies.apply_damage(enemy, damage)
+            enemy = SimEnemies.apply_damage(enemy, damage, state)
             state.enemies[target_index] = enemy
             var enemy_id: int = int(enemy.get("id", 0))
             var enemy_kind: String = str(enemy.get("kind", "raider"))
             events.append("Tower hits %s#%d." % [enemy_kind, enemy_id])
+            # Berserker rage: speed boost when damaged but not killed
+            if int(enemy.get("hp", 0)) > 0 and enemy_kind == "berserker":
+                if not enemy.get("enraged", false):
+                    enemy["enraged"] = true
+                    enemy["speed"] = int(enemy.get("speed", 1)) + 1
+                    state.enemies[target_index] = enemy
+                    events.append("Berserker#%d enters a rage! Speed +1." % enemy_id)
             if int(enemy.get("hp", 0)) <= 0:
+                var enemy_pos: Vector2i = enemy.get("pos", Vector2i.ZERO)
+                # Splitting affix: spawn swarm minions on death
+                if enemy.get("affix", "") == "splitting":
+                    _spawn_split_enemies(state, enemy_pos, events)
                 state.enemies.remove_at(target_index)
                 events.append("Enemy %s#%d destroyed." % [enemy_kind, enemy_id])
 
@@ -446,6 +504,35 @@ static func _find_enemy_index_by_word(state: GameState, text: String) -> int:
             best_id = enemy_id
             best_index = i
     return best_index
+
+static func _spawn_split_enemies(state: GameState, origin_pos: Vector2i, events: Array[String]) -> void:
+    # Spawn 2 swarm enemies near the origin position
+    var offsets: Array[Vector2i] = [
+        Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1),
+        Vector2i(1, 1), Vector2i(-1, -1), Vector2i(1, -1), Vector2i(-1, 1)
+    ]
+    var spawned: int = 0
+    for offset in offsets:
+        if spawned >= 2:
+            break
+        var pos: Vector2i = origin_pos + offset
+        if not SimMap.in_bounds(pos.x, pos.y, state.map_w, state.map_h):
+            continue
+        if pos == state.base_pos:
+            continue
+        SimMap.ensure_tile_generated(state, pos)
+        if not SimMap.is_passable(state, pos):
+            continue
+        var enemy: Dictionary = SimEnemies.make_enemy(state, "swarm", pos)
+        state.enemy_next_id += 1
+        state.enemies.append(enemy)
+        events.append("Split! Swarm#%d spawns at (%d,%d) word=%s." % [
+            int(enemy.get("id", 0)),
+            pos.x,
+            pos.y,
+            str(enemy.get("word", ""))
+        ])
+        spawned += 1
 
 static func _pick_spawn_tile(state: GameState) -> int:
     var candidates: Array[int] = []
@@ -700,6 +787,7 @@ static func _format_status(state: GameState) -> String:
     lines.append("AP: %d/%d" % [state.ap, state.ap_max])
     lines.append("HP: %d" % state.hp)
     lines.append("Threat: %d" % state.threat)
+    lines.append("Gold: %d" % state.gold)
     lines.append("Defense: %d" % defense)
     lines.append("Path open: %s" % path_text)
     lines.append("Cursor: (%d,%d)" % [state.cursor_pos.x, state.cursor_pos.y])
@@ -828,6 +916,10 @@ static func _copy_state(state: GameState) -> GameState:
     copy.event_flags = state.event_flags.duplicate(true)
     copy.pending_event = state.pending_event.duplicate(true)
     copy.active_buffs = state.active_buffs.duplicate(true)
+    # Upgrade system state
+    copy.purchased_kingdom_upgrades = state.purchased_kingdom_upgrades.duplicate()
+    copy.purchased_unit_upgrades = state.purchased_unit_upgrades.duplicate()
+    copy.gold = state.gold
     return copy
 
 static func _require_day(state: GameState, events: Array[String]) -> bool:
@@ -1008,3 +1100,30 @@ static func _apply_event_skip(state: GameState, events: Array[String]) -> void:
         events.append("Event skipped.")
     else:
         events.append("Failed to skip event: %s" % str(result.get("error", "unknown")))
+
+static func _apply_buy_upgrade(state: GameState, intent: Dictionary, events: Array[String]) -> void:
+    var category: String = str(intent.get("category", ""))
+    var upgrade_id: String = str(intent.get("upgrade_id", ""))
+
+    if category == "kingdom":
+        var result: Dictionary = SimUpgrades.purchase_kingdom_upgrade(state, upgrade_id)
+        if result.get("ok", false):
+            events.append(str(result.get("message", "Upgrade purchased")))
+            events.append(_format_status(state))
+        else:
+            events.append("Cannot purchase: %s" % str(result.get("error", "unknown")))
+    elif category == "unit":
+        var result: Dictionary = SimUpgrades.purchase_unit_upgrade(state, upgrade_id)
+        if result.get("ok", false):
+            events.append(str(result.get("message", "Upgrade purchased")))
+            events.append(_format_status(state))
+        else:
+            events.append("Cannot purchase: %s" % str(result.get("error", "unknown")))
+    else:
+        events.append("Unknown upgrade category: %s" % category)
+
+static func _apply_ui_upgrades(state: GameState, intent: Dictionary, events: Array[String]) -> void:
+    var category: String = str(intent.get("category", "kingdom"))
+    var lines: Array[String] = SimUpgrades.format_upgrade_tree(state, category)
+    for line in lines:
+        events.append(line)

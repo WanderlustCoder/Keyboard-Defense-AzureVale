@@ -367,6 +367,21 @@ static func parse(command: String) -> Dictionary:
             if tokens.size() > 1:
                 return {"ok": false, "error": "'skip' takes no arguments."}
             return {"ok": true, "intent": SimIntents.make("event_skip")}
+        "buy":
+            if tokens.size() < 3:
+                return {"ok": false, "error": "Usage: buy <kingdom|unit> <upgrade_id>"}
+            var category: String = tokens[1].to_lower()
+            if category not in ["kingdom", "unit"]:
+                return {"ok": false, "error": "Category must be 'kingdom' or 'unit'"}
+            var upgrade_id: String = tokens[2].to_lower()
+            return {"ok": true, "intent": SimIntents.make("buy_upgrade", {"category": category, "upgrade_id": upgrade_id})}
+        "upgrades":
+            var category: String = "kingdom"
+            if tokens.size() > 1:
+                category = tokens[1].to_lower()
+                if category not in ["kingdom", "unit"]:
+                    return {"ok": false, "error": "Category must be 'kingdom' or 'unit'"}
+            return {"ok": true, "intent": SimIntents.make("ui_upgrades", {"category": category})}
         _:
             return {"ok": false, "error": "Unknown command: %s" % verb}
 

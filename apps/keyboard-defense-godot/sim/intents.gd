@@ -25,6 +25,8 @@ static func help_lines() -> Array[String]:
         "  interact - interact with nearby point of interest (day only)",
         "  choice <id> - select an event choice",
         "  skip - skip the current event",
+        "  upgrades [kingdom|unit] - show upgrade tree",
+        "  buy <kingdom|unit> <id> - purchase an upgrade",
         "  cursor <x> <y> - move cursor",
         "  cursor <dir> [n] - move cursor up/down/left/right",
         "  inspect [x y] - inspect tile at cursor or coords",

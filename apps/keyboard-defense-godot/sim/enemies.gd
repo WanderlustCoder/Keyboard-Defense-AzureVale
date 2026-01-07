@@ -180,6 +180,22 @@ static func apply_regen_tick(enemy: Dictionary) -> Dictionary:
 static func enemy_glyph(kind: String) -> String:
     return str(ENEMY_KINDS.get(kind, ENEMY_KINDS["raider"]).get("glyph", "r"))
 
+## Gold reward for defeating an enemy
+static func gold_reward(kind: String) -> int:
+    var rewards := {
+        "scout": 1,
+        "raider": 2,
+        "armored": 3,
+        "swarm": 1,
+        "tank": 4,
+        "berserker": 3,
+        "phantom": 3,
+        "champion": 5,
+        "healer": 4,
+        "elite": 6
+    }
+    return int(rewards.get(kind, 2))
+
 static func normalize_enemy(enemy: Dictionary) -> Dictionary:
     var kind: String = str(enemy.get("kind", "raider"))
     var config: Dictionary = ENEMY_KINDS.get(kind, ENEMY_KINDS["raider"])

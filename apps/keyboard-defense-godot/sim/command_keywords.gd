@@ -12,6 +12,8 @@ const KEYWORDS: Array[String] = [
     "interact",
     "choice",
     "skip",
+    "buy",
+    "upgrades",
     "end",
     "seed",
     "defend",

@@ -38,6 +38,11 @@ var event_flags: Dictionary
 var pending_event: Dictionary
 var active_buffs: Array
 
+# Upgrade system state
+var purchased_kingdom_upgrades: Array
+var purchased_unit_upgrades: Array
+var gold: int
+
 func _init() -> void:
     day = 1
     phase = "day"
@@ -83,6 +88,12 @@ func _init() -> void:
     event_flags = {}
     pending_event = {}
     active_buffs = []
+
+    # Upgrade system initialization
+    purchased_kingdom_upgrades = []
+    purchased_unit_upgrades = []
+    gold = 0
+
     discovered[_index(base_pos.x, base_pos.y)] = true
 
 func _index(x: int, y: int) -> int:
