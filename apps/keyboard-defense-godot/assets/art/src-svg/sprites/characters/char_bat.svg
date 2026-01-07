@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 12" width="16" height="12">
+  <!-- Bat Enemy (16x12) - Flying enemy -->
+  <!-- Color Palette: #2c3e50, #1a252f, #5d6d7e, #e74c3c, #fdfefe -->
+
+  <!-- Wings spread -->
+  <rect x="0" y="4" width="5" height="4" fill="#2c3e50"/>
+  <rect x="11" y="4" width="5" height="4" fill="#2c3e50"/>
+  <rect x="1" y="3" width="3" height="1" fill="#1a252f"/>
+  <rect x="12" y="3" width="3" height="1" fill="#1a252f"/>
+  <rect x="1" y="8" width="4" height="2" fill="#1a252f"/>
+  <rect x="11" y="8" width="4" height="2" fill="#1a252f"/>
+
+  <!-- Wing membrane -->
+  <rect x="1" y="5" width="4" height="2" fill="#5d6d7e"/>
+  <rect x="11" y="5" width="4" height="2" fill="#5d6d7e"/>
+  <rect x="0" y="6" width="1" height="2" fill="#2c3e50"/>
+  <rect x="15" y="6" width="1" height="2" fill="#2c3e50"/>
+
+  <!-- Body -->
+  <rect x="5" y="3" width="6" height="6" fill="#2c3e50"/>
+  <rect x="6" y="2" width="4" height="1" fill="#1a252f"/>
+  <rect x="6" y="3" width="4" height="5" fill="#1a252f"/>
+
+  <!-- Ears -->
+  <rect x="5" y="1" width="2" height="2" fill="#2c3e50"/>
+  <rect x="9" y="1" width="2" height="2" fill="#2c3e50"/>
+  <rect x="5" y="0" width="1" height="2" fill="#1a252f"/>
+  <rect x="10" y="0" width="1" height="2" fill="#1a252f"/>
+
+  <!-- Eyes (red) -->
+  <rect x="6" y="4" width="1" height="1" fill="#e74c3c"/>
+  <rect x="9" y="4" width="1" height="1" fill="#e74c3c"/>
+
+  <!-- Fangs -->
+  <rect x="7" y="7" width="1" height="2" fill="#fdfefe"/>
+  <rect x="8" y="7" width="1" height="2" fill="#fdfefe"/>
+
+  <!-- Feet -->
+  <rect x="6" y="9" width="1" height="1" fill="#5d6d7e"/>
+  <rect x="9" y="9" width="1" height="1" fill="#5d6d7e"/>
+</svg>
