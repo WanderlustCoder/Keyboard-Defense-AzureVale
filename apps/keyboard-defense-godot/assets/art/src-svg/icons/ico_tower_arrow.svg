@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Arrow Tower Icon (16x16) - For building UI -->
+
+  <!-- Tower base -->
+  <rect x="4" y="10" width="8" height="6" fill="#5c4033"/>
+  <rect x="5" y="12" width="6" height="4" fill="#4a3728"/>
+
+  <!-- Tower body -->
+  <rect x="5" y="4" width="6" height="8" fill="#7a5c4a"/>
+  <rect x="6" y="5" width="4" height="6" fill="#8b6914"/>
+
+  <!-- Tower top (battlements) -->
+  <rect x="4" y="2" width="8" height="3" fill="#5c4033"/>
+  <rect x="4" y="2" width="2" height="2" fill="#4a3728"/>
+  <rect x="10" y="2" width="2" height="2" fill="#4a3728"/>
+
+  <!-- Arrow slit window -->
+  <rect x="7" y="6" width="2" height="4" fill="#1a1a2e"/>
+
+  <!-- Arrow (shot from tower) -->
+  <rect x="11" y="3" width="4" height="1" fill="#8b6914"/>
+  <rect x="14" y="2" width="1" height="3" fill="#5c4033"/>
+
+  <!-- Arrow head -->
+  <rect x="15" y="3" width="1" height="1" fill="#7a7a7a"/>
+</svg>

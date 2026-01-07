@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Wall Icon (16x16) - Defensive structure -->
+
+  <!-- Wall base -->
+  <rect x="0" y="8" width="16" height="8" fill="#5a5a6a"/>
+  <rect x="1" y="10" width="14" height="6" fill="#4a4a5a"/>
+
+  <!-- Brick pattern -->
+  <rect x="0" y="10" width="4" height="3" fill="#6a6a7a"/>
+  <rect x="5" y="10" width="4" height="3" fill="#6a6a7a"/>
+  <rect x="11" y="10" width="4" height="3" fill="#6a6a7a"/>
+
+  <rect x="2" y="13" width="4" height="3" fill="#6a6a7a"/>
+  <rect x="8" y="13" width="4" height="3" fill="#6a6a7a"/>
+  <rect x="14" y="13" width="2" height="3" fill="#6a6a7a"/>
+
+  <!-- Battlements -->
+  <rect x="0" y="4" width="4" height="5" fill="#5a5a6a"/>
+  <rect x="6" y="4" width="4" height="5" fill="#5a5a6a"/>
+  <rect x="12" y="4" width="4" height="5" fill="#5a5a6a"/>
+
+  <!-- Battlement tops -->
+  <rect x="0" y="4" width="4" height="2" fill="#7a7a8a"/>
+  <rect x="6" y="4" width="4" height="2" fill="#7a7a8a"/>
+  <rect x="12" y="4" width="4" height="2" fill="#7a7a8a"/>
+
+  <!-- Battlement highlights -->
+  <rect x="0" y="4" width="1" height="4" fill="#8a8a9a"/>
+  <rect x="6" y="4" width="1" height="4" fill="#8a8a9a"/>
+  <rect x="12" y="4" width="1" height="4" fill="#8a8a9a"/>
+
+  <!-- Gaps between battlements (sky) -->
+  <rect x="4" y="4" width="2" height="4" fill="#1a1a2e"/>
+  <rect x="10" y="4" width="2" height="4" fill="#1a1a2e"/>
+</svg>

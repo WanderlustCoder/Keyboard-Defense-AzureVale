@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Scout Portrait (64x64) - Hooded ranger -->
+
+  <!-- Background frame -->
+  <rect x="0" y="0" width="64" height="64" fill="#1a1a2e"/>
+  <rect x="2" y="2" width="60" height="60" fill="#145214"/>
+  <rect x="4" y="4" width="56" height="56" fill="#0d3d0d"/>
+
+  <!-- Hood outer -->
+  <rect x="6" y="2" width="52" height="28" fill="#1a5a1a"/>
+  <rect x="4" y="10" width="56" height="24" fill="#2d7a2d"/>
+  <rect x="10" y="0" width="44" height="8" fill="#1a5a1a"/>
+
+  <!-- Hood peak -->
+  <rect x="24" y="0" width="16" height="6" fill="#2d7a2d"/>
+  <rect x="28" y="0" width="8" height="4" fill="#3d8a3d"/>
+
+  <!-- Hood shadow interior -->
+  <rect x="12" y="12" width="40" height="20" fill="#0d3d0d"/>
+  <rect x="16" y="8" width="32" height="8" fill="#0a2a0a"/>
+
+  <!-- Face (emerging from shadow) -->
+  <rect x="18" y="16" width="28" height="20" fill="#f5cba7"/>
+  <rect x="20" y="14" width="24" height="6" fill="#e5b898"/>
+
+  <!-- Shadow on upper face -->
+  <rect x="20" y="14" width="24" height="4" fill="#d4a574"/>
+
+  <!-- Eyes (alert, watchful) -->
+  <rect x="22" y="20" width="8" height="8" fill="#fff"/>
+  <rect x="34" y="20" width="8" height="8" fill="#fff"/>
+
+  <!-- Eye color (forest green) -->
+  <rect x="25" y="22" width="4" height="4" fill="#27ae60"/>
+  <rect x="37" y="22" width="4" height="4" fill="#27ae60"/>
+
+  <!-- Pupils -->
+  <rect x="26" y="23" width="2" height="2" fill="#1a1a2e"/>
+  <rect x="38" y="23" width="2" height="2" fill="#1a1a2e"/>
+
+  <!-- Eye highlight -->
+  <rect x="27" y="23" width="1" height="1" fill="#fff"/>
+  <rect x="39" y="23" width="1" height="1" fill="#fff"/>
+
+  <!-- Eyebrows (focused) -->
+  <rect x="22" y="18" width="8" height="2" fill="#5c4033"/>
+  <rect x="34" y="18" width="8" height="2" fill="#5c4033"/>
+
+  <!-- Nose -->
+  <rect x="29" y="26" width="6" height="6" fill="#e5b898"/>
+  <rect x="30" y="30" width="4" height="2" fill="#d4a574"/>
+
+  <!-- Scarf/face covering -->
+  <rect x="12" y="34" width="40" height="12" fill="#1a5a1a"/>
+  <rect x="16" y="36" width="32" height="10" fill="#2d7a2d"/>
+
+  <!-- Scarf folds/texture -->
+  <rect x="18" y="38" width="4" height="6" fill="#1a5a1a"/>
+  <rect x="26" y="38" width="4" height="6" fill="#1a5a1a"/>
+  <rect x="34" y="38" width="4" height="6" fill="#1a5a1a"/>
+  <rect x="42" y="38" width="4" height="6" fill="#1a5a1a"/>
+
+  <!-- Cloak -->
+  <rect x="4" y="44" width="56" height="16" fill="#1a5a1a"/>
+  <rect x="8" y="48" width="48" height="12" fill="#145214"/>
+
+  <!-- Cloak clasp -->
+  <rect x="26" y="44" width="12" height="6" fill="#5c4033"/>
+  <rect x="28" y="45" width="8" height="4" fill="#7a5c4a"/>
+  <rect x="30" y="46" width="4" height="2" fill="#8b6914"/>
+
+  <!-- Shoulder outline -->
+  <rect x="4" y="40" width="12" height="8" fill="#2d7a2d"/>
+  <rect x="48" y="40" width="12" height="8" fill="#2d7a2d"/>
+
+  <!-- Quiver hint -->
+  <rect x="50" y="44" width="6" height="12" fill="#5c4033"/>
+  <rect x="52" y="46" width="2" height="8" fill="#4a3728"/>
+
+  <!-- Arrow tips -->
+  <rect x="51" y="44" width="2" height="2" fill="#7a7a7a"/>
+  <rect x="53" y="45" width="2" height="2" fill="#7a7a7a"/>
+
+  <!-- Frame border (forest green) -->
+  <rect x="0" y="0" width="64" height="2" fill="#2d7a2d"/>
+  <rect x="0" y="62" width="64" height="2" fill="#2d7a2d"/>
+  <rect x="0" y="0" width="2" height="64" fill="#2d7a2d"/>
+  <rect x="62" y="0" width="2" height="64" fill="#2d7a2d"/>
+
+  <!-- Corner leaves -->
+  <rect x="2" y="2" width="6" height="6" fill="#1a5a1a"/>
+  <rect x="56" y="2" width="6" height="6" fill="#1a5a1a"/>
+  <rect x="2" y="56" width="6" height="6" fill="#1a5a1a"/>
+  <rect x="56" y="56" width="6" height="6" fill="#1a5a1a"/>
+  <rect x="3" y="3" width="4" height="4" fill="#3d8a3d"/>
+  <rect x="57" y="3" width="4" height="4" fill="#3d8a3d"/>
+  <rect x="3" y="57" width="4" height="4" fill="#3d8a3d"/>
+  <rect x="57" y="57" width="4" height="4" fill="#3d8a3d"/>
+</svg>

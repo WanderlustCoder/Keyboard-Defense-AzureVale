@@ -199,6 +199,136 @@
       "category": "portraits"
     },
     {
+      "id": "portrait_commander",
+      "path": "res://assets/art/src-svg/portraits/portrait_commander.svg",
+      "source_svg": "res://assets/art/src-svg/portraits/portrait_commander.svg",
+      "expected_width": 64,
+      "expected_height": 64,
+      "max_kb": 16,
+      "pixel_art": true,
+      "category": "portraits"
+    },
+    {
+      "id": "portrait_scholar",
+      "path": "res://assets/art/src-svg/portraits/portrait_scholar.svg",
+      "source_svg": "res://assets/art/src-svg/portraits/portrait_scholar.svg",
+      "expected_width": 64,
+      "expected_height": 64,
+      "max_kb": 16,
+      "pixel_art": true,
+      "category": "portraits"
+    },
+    {
+      "id": "portrait_merchant",
+      "path": "res://assets/art/src-svg/portraits/portrait_merchant.svg",
+      "source_svg": "res://assets/art/src-svg/portraits/portrait_merchant.svg",
+      "expected_width": 64,
+      "expected_height": 64,
+      "max_kb": 16,
+      "pixel_art": true,
+      "category": "portraits"
+    },
+    {
+      "id": "portrait_scout",
+      "path": "res://assets/art/src-svg/portraits/portrait_scout.svg",
+      "source_svg": "res://assets/art/src-svg/portraits/portrait_scout.svg",
+      "expected_width": 64,
+      "expected_height": 64,
+      "max_kb": 16,
+      "pixel_art": true,
+      "category": "portraits"
+    },
+    {
+      "id": "portrait_enemy_runner",
+      "path": "res://assets/art/src-svg/portraits/portrait_enemy_runner.svg",
+      "source_svg": "res://assets/art/src-svg/portraits/portrait_enemy_runner.svg",
+      "expected_width": 64,
+      "expected_height": 64,
+      "max_kb": 16,
+      "pixel_art": true,
+      "category": "portraits"
+    },
+    {
+      "id": "portrait_enemy_brute",
+      "path": "res://assets/art/src-svg/portraits/portrait_enemy_brute.svg",
+      "source_svg": "res://assets/art/src-svg/portraits/portrait_enemy_brute.svg",
+      "expected_width": 64,
+      "expected_height": 64,
+      "max_kb": 16,
+      "pixel_art": true,
+      "category": "portraits"
+    },
+    {
+      "id": "portrait_enemy_flyer",
+      "path": "res://assets/art/src-svg/portraits/portrait_enemy_flyer.svg",
+      "source_svg": "res://assets/art/src-svg/portraits/portrait_enemy_flyer.svg",
+      "expected_width": 64,
+      "expected_height": 64,
+      "max_kb": 16,
+      "pixel_art": true,
+      "category": "portraits"
+    },
+    {
+      "id": "ico_tower_arrow",
+      "path": "res://assets/art/src-svg/icons/ico_tower_arrow.svg",
+      "source_svg": "res://assets/art/src-svg/icons/ico_tower_arrow.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_tower_slow",
+      "path": "res://assets/art/src-svg/icons/ico_tower_slow.svg",
+      "source_svg": "res://assets/art/src-svg/icons/ico_tower_slow.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_barracks",
+      "path": "res://assets/art/src-svg/icons/ico_barracks.svg",
+      "source_svg": "res://assets/art/src-svg/icons/ico_barracks.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_library",
+      "path": "res://assets/art/src-svg/icons/ico_library.svg",
+      "source_svg": "res://assets/art/src-svg/icons/ico_library.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_wall",
+      "path": "res://assets/art/src-svg/icons/ico_wall.svg",
+      "source_svg": "res://assets/art/src-svg/icons/ico_wall.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_castle",
+      "path": "res://assets/art/src-svg/icons/ico_castle.svg",
+      "source_svg": "res://assets/art/src-svg/icons/ico_castle.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
       "id": "poi_abandoned_wagon",
       "path": "res://assets/icons/poi_abandoned_wagon.png",
       "source_svg": "res://assets/art/src-svg/icons/poi_abandoned_wagon.svg",

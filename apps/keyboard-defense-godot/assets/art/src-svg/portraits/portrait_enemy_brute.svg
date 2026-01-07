@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Enemy Brute Portrait (64x64) - Heavy armored warrior -->
+
+  <!-- Background frame -->
+  <rect x="0" y="0" width="64" height="64" fill="#1a1a2e"/>
+  <rect x="2" y="2" width="60" height="60" fill="#2a2a2a"/>
+  <rect x="4" y="4" width="56" height="56" fill="#1a1a1a"/>
+
+  <!-- Helmet -->
+  <rect x="8" y="8" width="48" height="28" fill="#4a4a4a"/>
+  <rect x="6" y="14" width="52" height="20" fill="#5a5a5a"/>
+  <rect x="12" y="4" width="40" height="10" fill="#4a4a4a"/>
+
+  <!-- Helmet highlight -->
+  <rect x="10" y="10" width="8" height="20" fill="#6a6a6a"/>
+
+  <!-- Helmet horns -->
+  <rect x="4" y="2" width="8" height="18" fill="#3a3a3a"/>
+  <rect x="6" y="0" width="6" height="8" fill="#4a4a4a"/>
+  <rect x="52" y="2" width="8" height="18" fill="#3a3a3a"/>
+  <rect x="52" y="0" width="6" height="8" fill="#4a4a4a"/>
+
+  <!-- Horn tips -->
+  <rect x="7" y="0" width="4" height="4" fill="#2a2a2a"/>
+  <rect x="53" y="0" width="4" height="4" fill="#2a2a2a"/>
+
+  <!-- Visor slits -->
+  <rect x="16" y="22" width="12" height="6" fill="#0d0d0d"/>
+  <rect x="36" y="22" width="12" height="6" fill="#0d0d0d"/>
+
+  <!-- Glowing red eyes behind visor -->
+  <rect x="18" y="23" width="8" height="4" fill="#e74c3c"/>
+  <rect x="38" y="23" width="8" height="4" fill="#e74c3c"/>
+
+  <!-- Eye glow center -->
+  <rect x="20" y="24" width="4" height="2" fill="#f1948a"/>
+  <rect x="40" y="24" width="4" height="2" fill="#f1948a"/>
+
+  <!-- Eye flare -->
+  <rect x="26" y="24" width="2" height="1" fill="#e74c3c" opacity="0.5"/>
+  <rect x="36" y="24" width="2" height="1" fill="#e74c3c" opacity="0.5"/>
+
+  <!-- Nose guard -->
+  <rect x="28" y="20" width="8" height="14" fill="#5a5a5a"/>
+  <rect x="30" y="18" width="4" height="4" fill="#4a4a4a"/>
+
+  <!-- Face plate -->
+  <rect x="14" y="30" width="36" height="10" fill="#4a4a4a"/>
+  <rect x="18" y="32" width="28" height="6" fill="#3a3a3a"/>
+
+  <!-- Chin guard -->
+  <rect x="20" y="38" width="24" height="8" fill="#5a5a5a"/>
+  <rect x="24" y="40" width="16" height="4" fill="#4a4a4a"/>
+
+  <!-- Breather holes -->
+  <rect x="22" y="34" width="2" height="2" fill="#0d0d0d"/>
+  <rect x="26" y="34" width="2" height="2" fill="#0d0d0d"/>
+  <rect x="36" y="34" width="2" height="2" fill="#0d0d0d"/>
+  <rect x="40" y="34" width="2" height="2" fill="#0d0d0d"/>
+
+  <!-- Armor collar -->
+  <rect x="6" y="44" width="52" height="16" fill="#4a4a4a"/>
+  <rect x="10" y="48" width="44" height="12" fill="#5a5a5a"/>
+
+  <!-- Armor rivets -->
+  <rect x="14" y="46" width="3" height="3" fill="#6a6a6a"/>
+  <rect x="47" y="46" width="3" height="3" fill="#6a6a6a"/>
+  <rect x="14" y="52" width="3" height="3" fill="#6a6a6a"/>
+  <rect x="47" y="52" width="3" height="3" fill="#6a6a6a"/>
+
+  <!-- Shoulder spikes -->
+  <rect x="2" y="46" width="8" height="14" fill="#3a3a3a"/>
+  <rect x="0" y="50" width="4" height="8" fill="#4a4a4a"/>
+  <rect x="54" y="46" width="8" height="14" fill="#3a3a3a"/>
+  <rect x="60" y="50" width="4" height="8" fill="#4a4a4a"/>
+
+  <!-- Battle damage scratches -->
+  <rect x="42" y="12" width="2" height="8" fill="#3a3a3a"/>
+  <rect x="16" y="48" width="2" height="6" fill="#4a4a4a"/>
+
+  <!-- Red emblem on forehead -->
+  <rect x="28" y="10" width="8" height="6" fill="#922b21"/>
+  <rect x="30" y="11" width="4" height="4" fill="#c0392b"/>
+
+  <!-- Frame border (iron gray) -->
+  <rect x="0" y="0" width="64" height="2" fill="#5a5a5a"/>
+  <rect x="0" y="62" width="64" height="2" fill="#5a5a5a"/>
+  <rect x="0" y="0" width="2" height="64" fill="#5a5a5a"/>
+  <rect x="62" y="0" width="2" height="64" fill="#5a5a5a"/>
+
+  <!-- Corner spikes -->
+  <rect x="2" y="2" width="6" height="6" fill="#3a3a3a"/>
+  <rect x="56" y="2" width="6" height="6" fill="#3a3a3a"/>
+  <rect x="2" y="56" width="6" height="6" fill="#3a3a3a"/>
+  <rect x="56" y="56" width="6" height="6" fill="#3a3a3a"/>
+  <rect x="4" y="4" width="2" height="2" fill="#6a6a6a"/>
+  <rect x="58" y="4" width="2" height="2" fill="#6a6a6a"/>
+  <rect x="4" y="58" width="2" height="2" fill="#6a6a6a"/>
+  <rect x="58" y="58" width="2" height="2" fill="#6a6a6a"/>
+</svg>

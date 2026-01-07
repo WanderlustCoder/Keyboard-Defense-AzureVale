@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Barracks Icon (16x16) - Military building for unit training -->
+
+  <!-- Foundation -->
+  <rect x="1" y="12" width="14" height="4" fill="#5c4033"/>
+  <rect x="2" y="14" width="12" height="2" fill="#4a3728"/>
+
+  <!-- Building body -->
+  <rect x="2" y="6" width="12" height="8" fill="#7a5c4a"/>
+  <rect x="3" y="7" width="10" height="6" fill="#8b6914"/>
+
+  <!-- Roof -->
+  <rect x="1" y="4" width="14" height="3" fill="#922b21"/>
+  <rect x="2" y="3" width="12" height="2" fill="#c0392b"/>
+  <rect x="4" y="2" width="8" height="2" fill="#922b21"/>
+  <rect x="6" y="1" width="4" height="2" fill="#c0392b"/>
+
+  <!-- Door -->
+  <rect x="6" y="9" width="4" height="5" fill="#4a3728"/>
+  <rect x="7" y="10" width="2" height="3" fill="#3d2b1f"/>
+
+  <!-- Windows -->
+  <rect x="3" y="8" width="2" height="2" fill="#f4d03f"/>
+  <rect x="11" y="8" width="2" height="2" fill="#f4d03f"/>
+
+  <!-- Banner/flag -->
+  <rect x="7" y="0" width="1" height="4" fill="#5c4033"/>
+  <rect x="8" y="0" width="3" height="2" fill="#c0392b"/>
+</svg>
