@@ -21,6 +21,7 @@ config/icon="res://icon.svg"
 ProgressionState="*res://scripts/ProgressionState.gd"
 GameController="*res://scripts/GameController.gd"
 AudioManager="*res://game/audio_manager.gd"
+SettingsManager="*res://game/settings_manager.gd"
 
 [debug]
 

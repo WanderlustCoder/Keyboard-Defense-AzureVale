@@ -28,8 +28,7 @@ func _on_kingdom_pressed() -> void:
 func _on_settings_pressed() -> void:
 	if audio_manager != null:
 		audio_manager.play_ui_confirm()
-	# Settings not yet implemented - placeholder
-	push_warning("Settings menu not yet implemented")
+	game_controller.go_to_settings()
 
 func _on_quit_pressed() -> void:
 	if audio_manager != null:

@@ -52,6 +52,7 @@ const FEEDBACK_BUFF_DURATION := 0.9
 @onready var progression = get_node("/root/ProgressionState")
 @onready var game_controller = get_node("/root/GameController")
 @onready var audio_manager = get_node("/root/AudioManager")
+@onready var settings_manager = get_node_or_null("/root/SettingsManager")
 
 var pause_panel: PanelContainer = null
 var pause_label: Label = null
@@ -260,14 +261,15 @@ func _handle_typing_result(result: Dictionary) -> void:
 	var status: String = str(result.get("status", ""))
 	if status == "ignored":
 		return
+	var typing_sounds_enabled := settings_manager == null or settings_manager.typing_sounds
 	if status == "error":
 		_reset_streaks()
-		if audio_manager != null:
+		if audio_manager != null and typing_sounds_enabled:
 			audio_manager.play_type_mistake()
 			audio_manager.play_combo_break()
 	else:
 		_advance_streaks(status)
-		if audio_manager != null:
+		if audio_manager != null and typing_sounds_enabled:
 			audio_manager.play_type_correct()
 	_check_buff_triggers()
 	_update_feedback_for_status(status)
