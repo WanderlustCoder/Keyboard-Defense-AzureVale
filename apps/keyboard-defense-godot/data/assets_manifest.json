@@ -4193,6 +4193,206 @@
       "frame_width": 16,
       "frame_height": 16,
       "duration_ms": 400
+    },
+    {
+      "id": "ico_back",
+      "path": "res://assets/icons/ico_back.png",
+      "source_svg": "res://assets/art/src-svg/icons/ico_back.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 2,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_next",
+      "path": "res://assets/icons/ico_next.png",
+      "source_svg": "res://assets/art/src-svg/icons/ico_next.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 2,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_pause",
+      "path": "res://assets/icons/ico_pause.png",
+      "source_svg": "res://assets/art/src-svg/icons/ico_pause.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 2,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_play",
+      "path": "res://assets/icons/ico_play.png",
+      "source_svg": "res://assets/art/src-svg/icons/ico_play.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 2,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_exit",
+      "path": "res://assets/icons/ico_exit.png",
+      "source_svg": "res://assets/art/src-svg/icons/ico_exit.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 2,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_restart",
+      "path": "res://assets/icons/ico_restart.png",
+      "source_svg": "res://assets/art/src-svg/icons/ico_restart.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 2,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_attack",
+      "path": "res://assets/icons/ico_attack.png",
+      "source_svg": "res://assets/art/src-svg/icons/ico_attack.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 2,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_defense",
+      "path": "res://assets/icons/ico_defense.png",
+      "source_svg": "res://assets/art/src-svg/icons/ico_defense.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 2,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_range",
+      "path": "res://assets/icons/ico_range.png",
+      "source_svg": "res://assets/art/src-svg/icons/ico_range.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 2,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_cooldown",
+      "path": "res://assets/icons/ico_cooldown.png",
+      "source_svg": "res://assets/art/src-svg/icons/ico_cooldown.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 2,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_splash",
+      "path": "res://assets/icons/ico_splash.png",
+      "source_svg": "res://assets/art/src-svg/icons/ico_splash.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 2,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_pierce",
+      "path": "res://assets/icons/ico_pierce.png",
+      "source_svg": "res://assets/art/src-svg/icons/ico_pierce.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 2,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_upgrade",
+      "path": "res://assets/icons/ico_upgrade.png",
+      "source_svg": "res://assets/art/src-svg/icons/ico_upgrade.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 2,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_upgrade_max",
+      "path": "res://assets/icons/ico_upgrade_max.png",
+      "source_svg": "res://assets/art/src-svg/icons/ico_upgrade_max.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 2,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_locked",
+      "path": "res://assets/icons/ico_locked.png",
+      "source_svg": "res://assets/art/src-svg/icons/ico_locked.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 2,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_new",
+      "path": "res://assets/icons/ico_new.png",
+      "source_svg": "res://assets/art/src-svg/icons/ico_new.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 2,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_easy",
+      "path": "res://assets/icons/ico_easy.png",
+      "source_svg": "res://assets/art/src-svg/icons/ico_easy.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 2,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_normal",
+      "path": "res://assets/icons/ico_normal.png",
+      "source_svg": "res://assets/art/src-svg/icons/ico_normal.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 2,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_hard",
+      "path": "res://assets/icons/ico_hard.png",
+      "source_svg": "res://assets/art/src-svg/icons/ico_hard.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 2,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_expert",
+      "path": "res://assets/icons/ico_expert.png",
+      "source_svg": "res://assets/art/src-svg/icons/ico_expert.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 2,
+      "pixel_art": true,
+      "category": "icons"
     }
   ],
   "audio": [

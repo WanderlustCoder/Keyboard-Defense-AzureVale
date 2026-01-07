@@ -3,6 +3,7 @@ extends Control
 const TypingSystem = preload("res://scripts/TypingSystem.gd")
 const SimWords = preload("res://sim/words.gd")
 const BattleTutorial = preload("res://scripts/BattleTutorial.gd")
+const ThemeColors = preload("res://ui/theme_colors.gd")
 const DEFAULT_RUNE_TARGETS := ["1-2-3", "x^2", "go!", "rune+1", "shield+2"]
 const BUFF_DEFS := {
 	"focus": {
@@ -468,13 +469,13 @@ func _clear_feedback() -> void:
 
 func _update_feedback_for_status(status: String) -> void:
 	if status == "error":
-		_show_feedback("Missed!", Color(0.96, 0.45, 0.45, 1), FEEDBACK_ERROR_DURATION)
+		_show_feedback("Missed!", ThemeColors.ERROR, FEEDBACK_ERROR_DURATION)
 	elif status == "word_complete":
-		_show_feedback("Strike!", Color(0.98, 0.84, 0.44, 1))
+		_show_feedback("Strike!", ThemeColors.ACCENT)
 		if audio_manager != null:
 			audio_manager.play_combo_up()
 	elif status == "lesson_complete":
-		_show_feedback("Wave Cleared!", Color(0.65, 0.86, 1, 1), FEEDBACK_WAVE_DURATION)
+		_show_feedback("Wave Cleared!", ThemeColors.ACCENT_BLUE, FEEDBACK_WAVE_DURATION)
 		if audio_manager != null:
 			audio_manager.play_wave_end()
 
@@ -1157,9 +1158,9 @@ func _activate_buff(buff_id: String) -> void:
 		if battle_tutorial != null:
 			battle_tutorial.fire_trigger("combo_achieved")
 	_apply_buff_changes()
-	var buff_color := Color(0.98, 0.84, 0.44, 1)
+	var buff_color := ThemeColors.ACCENT
 	if buff_id == "ward":
-		buff_color = Color(0.65, 0.86, 1, 1)
+		buff_color = ThemeColors.ACCENT_BLUE
 	_show_feedback("%s!" % _get_buff_label(buff_id), buff_color, FEEDBACK_BUFF_DURATION)
 
 func _update_buffs(delta: float) -> void:
@@ -1414,7 +1415,7 @@ func _setup_combo_indicator() -> void:
 	combo_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	combo_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	combo_label.add_theme_font_size_override("font_size", 16)
-	combo_label.add_theme_color_override("font_color", Color(0.98, 0.84, 0.44, 0.9))
+	combo_label.add_theme_color_override("font_color", ThemeColors.accent_alpha(0.9))
 	combo_label.visible = false
 	combo_label.pivot_offset = Vector2(40, 10)  # Center for scaling
 	add_child(combo_label)
@@ -1436,20 +1437,20 @@ func _update_combo_indicator(delta: float) -> void:
 
 	# Determine combo tier and color
 	var combo_text := ""
-	var combo_color := Color(0.98, 0.84, 0.44, 0.9)  # Gold
+	var combo_color := ThemeColors.accent_alpha(0.9)  # Gold
 
 	if total_streak >= 30:
 		combo_text = "BLAZING x%d" % total_streak
-		combo_color = Color(1.0, 0.5, 0.2, 1.0)  # Orange
+		combo_color = Color(1.0, 0.5, 0.2, 1.0)  # Orange (unique)
 	elif total_streak >= 20:
 		combo_text = "HOT x%d" % total_streak
-		combo_color = Color(0.98, 0.84, 0.44, 1.0)  # Gold
+		combo_color = ThemeColors.ACCENT  # Gold
 	elif total_streak >= 10:
 		combo_text = "COMBO x%d" % total_streak
-		combo_color = Color(0.65, 0.86, 1.0, 0.95)  # Cyan
+		combo_color = ThemeColors.accent_alpha(0.95).lerp(ThemeColors.ACCENT_BLUE, 0.85)  # Cyan
 	else:
 		combo_text = "x%d" % total_streak
-		combo_color = Color(0.75, 0.75, 0.82, 0.85)  # Silver
+		combo_color = ThemeColors.text_alpha(0.65)  # Silver/gray
 
 	combo_label.text = combo_text
 	combo_label.add_theme_color_override("font_color", combo_color)
