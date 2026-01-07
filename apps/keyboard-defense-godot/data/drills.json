@@ -797,6 +797,538 @@
           "hint": "You are the eye of the storm."
         }
       ]
+    },
+    {
+      "id": "training-grounds",
+      "label": "Training Grounds Drill",
+      "plan": [
+        {
+          "mode": "lesson",
+          "label": "First Steps",
+          "word_count": 4,
+          "shuffle": false,
+          "hint": "Place your fingers on A S D F."
+        },
+        {
+          "mode": "targets",
+          "label": "Home Keys",
+          "targets": ["as", "ad", "af", "da", "fa", "sa"],
+          "hint": "Feel the home row beneath your fingers."
+        },
+        {
+          "mode": "intermission",
+          "label": "Training Rest",
+          "duration": 2.0,
+          "message": "Good. Let your fingers remember."
+        },
+        {
+          "mode": "targets",
+          "label": "Building Blocks",
+          "targets": ["sad", "fad", "dad", "add"],
+          "hint": "Small words build strong foundations."
+        },
+        {
+          "mode": "lesson",
+          "label": "Training Complete",
+          "word_count": 5,
+          "shuffle": true,
+          "hint": "Your training begins."
+        }
+      ]
+    },
+    {
+      "id": "training-arena",
+      "label": "Training Arena Drill",
+      "plan": [
+        {
+          "mode": "lesson",
+          "label": "Arena Warmup",
+          "word_count": 5,
+          "shuffle": false,
+          "hint": "Both hands join the battle."
+        },
+        {
+          "mode": "targets",
+          "label": "Dual Hand Beats",
+          "targets": ["ask", "lad", "jab", "fad", "all"],
+          "hint": "Left and right work together."
+        },
+        {
+          "mode": "intermission",
+          "label": "Arena Breath",
+          "duration": 2.0,
+          "message": "Feel the rhythm of both hands."
+        },
+        {
+          "mode": "targets",
+          "label": "Arena Patterns",
+          "targets": ["flask", "salad", "falls", "skill"],
+          "hint": "Longer patterns, steady hands."
+        },
+        {
+          "mode": "lesson",
+          "label": "Arena Trial",
+          "word_count": 6,
+          "shuffle": true,
+          "hint": "You are ready for greater challenges."
+        }
+      ]
+    },
+    {
+      "id": "twilight-glade",
+      "label": "Twilight Glade Drill",
+      "plan": [
+        {
+          "mode": "lesson",
+          "label": "Glade Entry",
+          "word_count": 5,
+          "shuffle": false,
+          "hint": "The twilight whispers secrets."
+        },
+        {
+          "mode": "targets",
+          "label": "Shadow Whispers",
+          "targets": ["dusk", "fade", "soft", "dark"],
+          "hint": "Listen to the shadows."
+        },
+        {
+          "mode": "intermission",
+          "label": "Twilight Hush",
+          "duration": 2.5,
+          "message": "The glade grows quiet."
+        },
+        {
+          "mode": "targets",
+          "label": "Glade Secrets",
+          "targets": ["quiet", "shade", "faded", "realm"],
+          "hint": "Secrets hide in the twilight."
+        },
+        {
+          "mode": "lesson",
+          "label": "Twilight Glade Defense",
+          "word_count": 8,
+          "shuffle": true,
+          "hint": "The shadows accept you."
+        }
+      ]
+    },
+    {
+      "id": "twilight-sanctum",
+      "label": "Twilight Sanctum Drill",
+      "plan": [
+        {
+          "mode": "lesson",
+          "label": "Sanctum Entry",
+          "word_count": 6,
+          "shuffle": false,
+          "hint": "The sanctum guards deeper mysteries."
+        },
+        {
+          "mode": "targets",
+          "label": "Shadow Dance",
+          "targets": ["flicker", "shadow", "wander", "silent"],
+          "hint": "Dance between light and dark."
+        },
+        {
+          "mode": "intermission",
+          "label": "Sanctum Silence",
+          "duration": 2.5,
+          "message": "The silence speaks volumes."
+        },
+        {
+          "mode": "targets",
+          "label": "Sanctum Rites",
+          "targets": ["twilight", "phantom", "whisper", "eclipse"],
+          "hint": "The rites require precision."
+        },
+        {
+          "mode": "lesson",
+          "label": "Twilight Sanctum Defense",
+          "word_count": 10,
+          "shuffle": true,
+          "hint": "You have earned the sanctum's trust."
+        }
+      ]
+    },
+    {
+      "id": "twilight-throne",
+      "label": "Twilight Throne Drill",
+      "plan": [
+        {
+          "mode": "lesson",
+          "label": "Throne Approach",
+          "word_count": 7,
+          "shuffle": false,
+          "hint": "The Twilight Lord awaits."
+        },
+        {
+          "mode": "targets",
+          "label": "Lord's Challenge",
+          "targets": ["sovereign", "darkness", "eternal", "dominion"],
+          "hint": "Face the lord's first trial."
+        },
+        {
+          "mode": "intermission",
+          "label": "Throne Judgement",
+          "duration": 3.0,
+          "message": "The lord measures your worth."
+        },
+        {
+          "mode": "targets",
+          "label": "Final Confrontation",
+          "targets": ["shadowlord", "nightfall", "overcome", "ascendant"],
+          "hint": "This is your final test."
+        },
+        {
+          "mode": "lesson",
+          "label": "Twilight Throne Defense",
+          "word_count": 14,
+          "shuffle": true,
+          "hint": "Claim the twilight throne!"
+        }
+      ]
+    },
+    {
+      "id": "grove-guardian",
+      "label": "Grove Guardian Drill",
+      "plan": [
+        {
+          "mode": "lesson",
+          "label": "Guardian Awakens",
+          "word_count": 6,
+          "shuffle": false,
+          "hint": "The ancient one stirs."
+        },
+        {
+          "mode": "targets",
+          "label": "Guardian's Test",
+          "targets": ["ancient", "keeper", "forest", "protect"],
+          "hint": "Prove you mean no harm."
+        },
+        {
+          "mode": "intermission",
+          "label": "Guardian's Gaze",
+          "duration": 2.5,
+          "message": "The guardian studies you."
+        },
+        {
+          "mode": "targets",
+          "label": "Guardian's Challenge",
+          "targets": ["defender", "watcher", "sentinel", "guardian"],
+          "hint": "Show your true strength."
+        },
+        {
+          "mode": "lesson",
+          "label": "Grove Guardian Defense",
+          "word_count": 12,
+          "shuffle": true,
+          "hint": "The guardian acknowledges your skill."
+        }
+      ]
+    },
+    {
+      "id": "citadel-warden",
+      "label": "Citadel Warden Drill",
+      "plan": [
+        {
+          "mode": "lesson",
+          "label": "Warden's Gate",
+          "word_count": 7,
+          "shuffle": false,
+          "hint": "None pass without the warden's leave."
+        },
+        {
+          "mode": "targets",
+          "label": "Warden's Trials",
+          "targets": ["fortress", "bastion", "rampart", "bulwark"],
+          "hint": "Prove your dedication to the citadel."
+        },
+        {
+          "mode": "intermission",
+          "label": "Warden's Deliberation",
+          "duration": 3.0,
+          "message": "The warden weighs your worth."
+        },
+        {
+          "mode": "targets",
+          "label": "Warden's Final Test",
+          "targets": ["commander", "protector", "champion", "resolute"],
+          "hint": "One final challenge remains."
+        },
+        {
+          "mode": "lesson",
+          "label": "Citadel Warden Defense",
+          "word_count": 14,
+          "shuffle": true,
+          "hint": "The warden grants you passage."
+        }
+      ]
+    },
+    {
+      "id": "capital-tower",
+      "label": "Capital Tower Drill",
+      "plan": [
+        {
+          "mode": "lesson",
+          "label": "Tower Ascent",
+          "word_count": 6,
+          "shuffle": false,
+          "hint": "The shift key unlocks new power."
+        },
+        {
+          "mode": "targets",
+          "label": "Capital Beats",
+          "targets": ["Ask", "Sad", "Fall", "Lake"],
+          "hint": "Begin each word with authority."
+        },
+        {
+          "mode": "intermission",
+          "label": "Tower Rest",
+          "duration": 2.5,
+          "message": "Feel the shift beneath your fingers."
+        },
+        {
+          "mode": "targets",
+          "label": "Capital Commands",
+          "targets": ["ASDF", "JKL", "Faded", "AsDf"],
+          "hint": "Capitals command attention."
+        },
+        {
+          "mode": "lesson",
+          "label": "Capital Tower Defense",
+          "word_count": 10,
+          "shuffle": true,
+          "hint": "Shift mastery achieved."
+        }
+      ]
+    },
+    {
+      "id": "royal-court",
+      "label": "Royal Court Drill",
+      "plan": [
+        {
+          "mode": "lesson",
+          "label": "Court Entry",
+          "word_count": 7,
+          "shuffle": false,
+          "hint": "The court demands proper form."
+        },
+        {
+          "mode": "targets",
+          "label": "Royal Decrees",
+          "targets": ["Kingdom", "Majesty", "Sovereign", "Crown"],
+          "hint": "Each decree begins with honor."
+        },
+        {
+          "mode": "intermission",
+          "label": "Court Protocol",
+          "duration": 2.5,
+          "message": "Observe the courtly rituals."
+        },
+        {
+          "mode": "targets",
+          "label": "Royal Commands",
+          "targets": ["ROYAL", "DECREE", "QuEeN", "KiNgDoM"],
+          "hint": "Master all forms of address."
+        },
+        {
+          "mode": "lesson",
+          "label": "Royal Court Defense",
+          "word_count": 12,
+          "shuffle": true,
+          "hint": "The court recognizes your mastery."
+        }
+      ]
+    },
+    {
+      "id": "left-hand-forge",
+      "label": "Left Hand Forge Drill",
+      "plan": [
+        {
+          "mode": "lesson",
+          "label": "Left Warmup",
+          "word_count": 5,
+          "shuffle": false,
+          "hint": "The left hand finds its strength."
+        },
+        {
+          "mode": "targets",
+          "label": "Left Beats",
+          "targets": ["qwert", "asdfg", "zxcvb", "waxed"],
+          "hint": "Pure left-hand patterns."
+        },
+        {
+          "mode": "intermission",
+          "label": "Left Rest",
+          "duration": 2.0,
+          "message": "Feel the left hand's power."
+        },
+        {
+          "mode": "targets",
+          "label": "Left Patterns",
+          "targets": ["grave", "craze", "exact", "aztec"],
+          "hint": "Complex left-hand sequences."
+        },
+        {
+          "mode": "lesson",
+          "label": "Left Hand Defense",
+          "word_count": 8,
+          "shuffle": true,
+          "hint": "The left hand is forged."
+        }
+      ]
+    },
+    {
+      "id": "right-hand-forge",
+      "label": "Right Hand Forge Drill",
+      "plan": [
+        {
+          "mode": "lesson",
+          "label": "Right Warmup",
+          "word_count": 5,
+          "shuffle": false,
+          "hint": "The right hand finds its strength."
+        },
+        {
+          "mode": "targets",
+          "label": "Right Beats",
+          "targets": ["yuiop", "hjkl", "nm", "oink"],
+          "hint": "Pure right-hand patterns."
+        },
+        {
+          "mode": "intermission",
+          "label": "Right Rest",
+          "duration": 2.0,
+          "message": "Feel the right hand's power."
+        },
+        {
+          "mode": "targets",
+          "label": "Right Patterns",
+          "targets": ["million", "opinion", "upon", "join"],
+          "hint": "Complex right-hand sequences."
+        },
+        {
+          "mode": "lesson",
+          "label": "Right Hand Defense",
+          "word_count": 8,
+          "shuffle": true,
+          "hint": "The right hand is forged."
+        }
+      ]
+    },
+    {
+      "id": "harmonic-chamber",
+      "label": "Harmonic Chamber Drill",
+      "plan": [
+        {
+          "mode": "lesson",
+          "label": "Harmonic Entry",
+          "word_count": 6,
+          "shuffle": false,
+          "hint": "Both hands unite in harmony."
+        },
+        {
+          "mode": "targets",
+          "label": "Harmonic Beats",
+          "targets": ["blend", "twist", "flame", "world"],
+          "hint": "Alternate left-right-left."
+        },
+        {
+          "mode": "intermission",
+          "label": "Harmonic Resonance",
+          "duration": 2.5,
+          "message": "The chamber resonates with balance."
+        },
+        {
+          "mode": "targets",
+          "label": "Harmonic Patterns",
+          "targets": ["balance", "rhythm", "flowing", "unified"],
+          "hint": "Perfect alternation creates harmony."
+        },
+        {
+          "mode": "lesson",
+          "label": "Harmonic Chamber Defense",
+          "word_count": 10,
+          "shuffle": true,
+          "hint": "Your hands work as one."
+        }
+      ]
+    },
+    {
+      "id": "word-masters-den",
+      "label": "Word Master's Den Drill",
+      "plan": [
+        {
+          "mode": "lesson",
+          "label": "Den Entry",
+          "word_count": 6,
+          "shuffle": false,
+          "hint": "The word master awaits."
+        },
+        {
+          "mode": "targets",
+          "label": "Common Words",
+          "targets": ["the", "and", "that", "have", "for"],
+          "hint": "The most common words flow easily."
+        },
+        {
+          "mode": "intermission",
+          "label": "Master's Lesson",
+          "duration": 2.5,
+          "message": "Words are the foundation of meaning."
+        },
+        {
+          "mode": "targets",
+          "label": "Master's Challenge",
+          "targets": ["through", "because", "different", "between"],
+          "hint": "Common words with complexity."
+        },
+        {
+          "mode": "lesson",
+          "label": "Word Master Defense",
+          "word_count": 12,
+          "shuffle": true,
+          "hint": "Words bend to your will."
+        }
+      ]
+    },
+    {
+      "id": "eternal-scribe",
+      "label": "Eternal Scribe Drill",
+      "plan": [
+        {
+          "mode": "lesson",
+          "label": "Scribe's Chamber",
+          "word_count": 8,
+          "shuffle": false,
+          "hint": "The Eternal Scribe has waited eons."
+        },
+        {
+          "mode": "targets",
+          "label": "Ancient Texts",
+          "targets": ["eternity.", "knowledge!", "wisdom?", "truth;"],
+          "hint": "Read the ancient manuscripts."
+        },
+        {
+          "mode": "intermission",
+          "label": "Scribe's Revelation",
+          "duration": 3.5,
+          "message": "The scribe reveals the ultimate test."
+        },
+        {
+          "mode": "targets",
+          "label": "Final Manuscript",
+          "targets": ["transcendent!", "omniscient.", "enlightened?", "immortal;"],
+          "hint": "Write the final words."
+        },
+        {
+          "mode": "lesson",
+          "label": "Eternal Scribe Defense",
+          "word_count": 18,
+          "shuffle": true,
+          "hint": "You have become the Eternal Scribe's heir."
+        }
+      ]
     }
   ]
 }

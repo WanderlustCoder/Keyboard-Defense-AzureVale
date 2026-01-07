@@ -177,6 +177,126 @@
       "mode": "charset",
       "charset": "abcdefghijklmnopqrstuvwxyz1234567890.,;:'\"!?-@#$%&*()",
       "lengths": { "scout": [4, 6], "raider": [6, 9], "armored": [9, 13] }
+    },
+    {
+      "id": "training_basics",
+      "name": "Training Basics",
+      "description": "Fundamental finger placement.",
+      "mode": "charset",
+      "charset": "asdf",
+      "lengths": { "scout": [2, 3], "raider": [3, 4], "armored": [4, 5] }
+    },
+    {
+      "id": "training_rhythm",
+      "name": "Training Rhythm",
+      "description": "Building typing rhythm.",
+      "mode": "charset",
+      "charset": "asdfjkl",
+      "lengths": { "scout": [2, 3], "raider": [3, 4], "armored": [4, 6] }
+    },
+    {
+      "id": "capitals_1",
+      "name": "Capital Intro",
+      "description": "Shift key with home row.",
+      "mode": "charset",
+      "charset": "asdfjklASDFJKL",
+      "lengths": { "scout": [3, 4], "raider": [4, 6], "armored": [6, 8] }
+    },
+    {
+      "id": "capitals_2",
+      "name": "Capital Mastery",
+      "description": "Full alphabet with capitals.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+      "lengths": { "scout": [4, 5], "raider": [5, 7], "armored": [7, 10] }
+    },
+    {
+      "id": "twilight_whisper",
+      "name": "Twilight Whisper",
+      "description": "Soft keys in the shadows.",
+      "mode": "charset",
+      "charset": "asdfjklqwer",
+      "lengths": { "scout": [3, 4], "raider": [4, 5], "armored": [5, 7] }
+    },
+    {
+      "id": "twilight_shadow",
+      "name": "Twilight Shadow",
+      "description": "Dancing between light and dark.",
+      "mode": "charset",
+      "charset": "asdfjklqwerzxcv",
+      "lengths": { "scout": [4, 5], "raider": [5, 7], "armored": [7, 9] }
+    },
+    {
+      "id": "twilight_void",
+      "name": "Twilight Void",
+      "description": "The darkness speaks in keystrokes.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [5, 6], "raider": [6, 8], "armored": [8, 11] }
+    },
+    {
+      "id": "boss_grove_guardian",
+      "name": "Grove Guardian",
+      "description": "The ancient protector awakens.",
+      "mode": "charset",
+      "charset": "asdfjkl;ertg",
+      "lengths": { "scout": [4, 5], "raider": [5, 7], "armored": [7, 10] }
+    },
+    {
+      "id": "boss_citadel_warden",
+      "name": "Citadel Warden",
+      "description": "The warden guards the inner keep.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [5, 6], "raider": [6, 8], "armored": [8, 11] }
+    },
+    {
+      "id": "boss_twilight_lord",
+      "name": "Twilight Lord",
+      "description": "Master of shadow and light.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [5, 7], "raider": [7, 9], "armored": [9, 12] }
+    },
+    {
+      "id": "boss_eternal_scribe",
+      "name": "Eternal Scribe",
+      "description": "The keeper of all written knowledge.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz.,;:'\"!?-",
+      "lengths": { "scout": [5, 7], "raider": [7, 9], "armored": [9, 12] }
+    },
+    {
+      "id": "common_words",
+      "name": "Common Words",
+      "description": "Frequently used English words.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [3, 4], "raider": [4, 6], "armored": [6, 8] }
+    },
+    {
+      "id": "finger_gym_left",
+      "name": "Left Hand Gym",
+      "description": "Strengthen the left hand.",
+      "mode": "charset",
+      "charset": "qwertasdfgzxcvb",
+      "lengths": { "scout": [3, 4], "raider": [4, 6], "armored": [6, 8] }
+    },
+    {
+      "id": "finger_gym_right",
+      "name": "Right Hand Gym",
+      "description": "Strengthen the right hand.",
+      "mode": "charset",
+      "charset": "yuiophjklnm",
+      "lengths": { "scout": [3, 4], "raider": [4, 6], "armored": [6, 8] }
+    },
+    {
+      "id": "alternating_hands",
+      "name": "Alternating Hands",
+      "description": "Left-right-left patterns.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [4, 5], "raider": [5, 7], "armored": [7, 9] }
     }
   ]
 }

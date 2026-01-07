@@ -375,6 +375,118 @@
       "requires": ["speed-arena", "endurance-arena"],
       "reward_gold": 100,
       "drill_template": "chaos-arena"
+    },
+    {
+      "id": "training-grounds",
+      "label": "Training Grounds",
+      "lesson_id": "training_basics",
+      "requires": [],
+      "reward_gold": 5,
+      "drill_template": "training-grounds"
+    },
+    {
+      "id": "training-arena",
+      "label": "Training Arena",
+      "lesson_id": "training_rhythm",
+      "requires": ["training-grounds"],
+      "reward_gold": 8,
+      "drill_template": "training-arena"
+    },
+    {
+      "id": "twilight-glade",
+      "label": "Twilight Glade",
+      "lesson_id": "twilight_whisper",
+      "requires": ["whisper-grove"],
+      "reward_gold": 15,
+      "drill_template": "twilight-glade"
+    },
+    {
+      "id": "twilight-sanctum",
+      "label": "Twilight Sanctum",
+      "lesson_id": "twilight_shadow",
+      "requires": ["twilight-glade"],
+      "reward_gold": 20,
+      "drill_template": "twilight-sanctum"
+    },
+    {
+      "id": "twilight-throne",
+      "label": "Twilight Throne",
+      "lesson_id": "boss_twilight_lord",
+      "requires": ["twilight-sanctum"],
+      "reward_gold": 40,
+      "drill_template": "twilight-throne"
+    },
+    {
+      "id": "grove-guardian",
+      "label": "Grove Guardian",
+      "lesson_id": "boss_grove_guardian",
+      "requires": ["ember-bridge"],
+      "reward_gold": 25,
+      "drill_template": "grove-guardian"
+    },
+    {
+      "id": "citadel-warden",
+      "label": "Citadel Warden",
+      "lesson_id": "boss_citadel_warden",
+      "requires": ["frost-crown"],
+      "reward_gold": 35,
+      "drill_template": "citadel-warden"
+    },
+    {
+      "id": "capital-tower",
+      "label": "Capital Tower",
+      "lesson_id": "capitals_1",
+      "requires": ["apex-tower"],
+      "reward_gold": 45,
+      "drill_template": "capital-tower"
+    },
+    {
+      "id": "royal-court",
+      "label": "Royal Court",
+      "lesson_id": "capitals_2",
+      "requires": ["capital-tower"],
+      "reward_gold": 60,
+      "drill_template": "royal-court"
+    },
+    {
+      "id": "left-hand-forge",
+      "label": "Left Hand Forge",
+      "lesson_id": "finger_gym_left",
+      "requires": ["training-arena"],
+      "reward_gold": 12,
+      "drill_template": "left-hand-forge"
+    },
+    {
+      "id": "right-hand-forge",
+      "label": "Right Hand Forge",
+      "lesson_id": "finger_gym_right",
+      "requires": ["training-arena"],
+      "reward_gold": 12,
+      "drill_template": "right-hand-forge"
+    },
+    {
+      "id": "harmonic-chamber",
+      "label": "Harmonic Chamber",
+      "lesson_id": "alternating_hands",
+      "requires": ["left-hand-forge", "right-hand-forge"],
+      "reward_gold": 25,
+      "drill_template": "harmonic-chamber"
+    },
+    {
+      "id": "word-masters-den",
+      "label": "Word Master's Den",
+      "lesson_id": "common_words",
+      "requires": ["harmonic-chamber"],
+      "reward_gold": 30,
+      "drill_template": "word-masters-den"
+    },
+    {
+      "id": "eternal-scribe",
+      "label": "Eternal Scribe",
+      "lesson_id": "boss_eternal_scribe",
+      "requires": ["runeforge-core"],
+      "reward_gold": 150,
+      "drill_template": "eternal-scribe"
     }
   ]
 }
