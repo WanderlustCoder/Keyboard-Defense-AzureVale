@@ -4863,6 +4863,187 @@
       "max_kb": 1,
       "pixel_art": true,
       "category": "icons"
+    },
+    {
+      "id": "overlay_rain",
+      "path": "res://assets/sprites/overlay_rain.png",
+      "source_svg": "res://assets/art/src-svg/sprites/overlay_rain.svg",
+      "expected_width": 32,
+      "expected_height": 32,
+      "max_kb": 2,
+      "pixel_art": true,
+      "category": "effects",
+      "tileable": true
+    },
+    {
+      "id": "overlay_snow",
+      "path": "res://assets/sprites/overlay_snow.png",
+      "source_svg": "res://assets/art/src-svg/sprites/overlay_snow.svg",
+      "expected_width": 32,
+      "expected_height": 32,
+      "max_kb": 2,
+      "pixel_art": true,
+      "category": "effects",
+      "tileable": true
+    },
+    {
+      "id": "overlay_fog",
+      "path": "res://assets/sprites/overlay_fog.png",
+      "source_svg": "res://assets/art/src-svg/sprites/overlay_fog.svg",
+      "expected_width": 32,
+      "expected_height": 32,
+      "max_kb": 2,
+      "pixel_art": true,
+      "category": "effects",
+      "tileable": true
+    },
+    {
+      "id": "overlay_storm",
+      "path": "res://assets/sprites/overlay_storm.png",
+      "source_svg": "res://assets/art/src-svg/sprites/overlay_storm.svg",
+      "expected_width": 32,
+      "expected_height": 32,
+      "max_kb": 2,
+      "pixel_art": true,
+      "category": "effects",
+      "tileable": true
+    },
+    {
+      "id": "screen_flash_white",
+      "path": "res://assets/sprites/screen_flash_white.png",
+      "source_svg": "res://assets/art/src-svg/sprites/screen_flash_white.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 1,
+      "pixel_art": true,
+      "category": "effects",
+      "tileable": true
+    },
+    {
+      "id": "screen_flash_red",
+      "path": "res://assets/sprites/screen_flash_red.png",
+      "source_svg": "res://assets/art/src-svg/sprites/screen_flash_red.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 1,
+      "pixel_art": true,
+      "category": "effects",
+      "tileable": true
+    },
+    {
+      "id": "screen_vignette",
+      "path": "res://assets/sprites/screen_vignette.png",
+      "source_svg": "res://assets/art/src-svg/sprites/screen_vignette.svg",
+      "expected_width": 64,
+      "expected_height": 64,
+      "max_kb": 3,
+      "pixel_art": true,
+      "category": "effects"
+    },
+    {
+      "id": "tooltip_frame",
+      "path": "res://assets/ui/tooltip_frame.png",
+      "source_svg": "res://assets/art/src-svg/ui/tooltip_frame.svg",
+      "expected_width": 48,
+      "expected_height": 24,
+      "max_kb": 2,
+      "pixel_art": true,
+      "category": "ui",
+      "nineslice": true,
+      "margin_left": 4,
+      "margin_right": 4,
+      "margin_top": 4,
+      "margin_bottom": 4
+    },
+    {
+      "id": "tooltip_pointer_up",
+      "path": "res://assets/ui/tooltip_pointer_up.png",
+      "source_svg": "res://assets/art/src-svg/ui/tooltip_pointer_up.svg",
+      "expected_width": 12,
+      "expected_height": 8,
+      "max_kb": 1,
+      "pixel_art": true,
+      "category": "ui"
+    },
+    {
+      "id": "tooltip_pointer_down",
+      "path": "res://assets/ui/tooltip_pointer_down.png",
+      "source_svg": "res://assets/art/src-svg/ui/tooltip_pointer_down.svg",
+      "expected_width": 12,
+      "expected_height": 8,
+      "max_kb": 1,
+      "pixel_art": true,
+      "category": "ui"
+    },
+    {
+      "id": "map_node_locked",
+      "path": "res://assets/icons/map_node_locked.png",
+      "source_svg": "res://assets/art/src-svg/icons/map_node_locked.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 2,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "map_node_available",
+      "path": "res://assets/icons/map_node_available.png",
+      "source_svg": "res://assets/art/src-svg/icons/map_node_available.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 2,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "map_node_complete",
+      "path": "res://assets/icons/map_node_complete.png",
+      "source_svg": "res://assets/art/src-svg/icons/map_node_complete.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 2,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "map_node_current",
+      "path": "res://assets/icons/map_node_current.png",
+      "source_svg": "res://assets/art/src-svg/icons/map_node_current.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 2,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "word_easy",
+      "path": "res://assets/icons/word_easy.png",
+      "source_svg": "res://assets/art/src-svg/icons/word_easy.svg",
+      "expected_width": 8,
+      "expected_height": 8,
+      "max_kb": 1,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "word_medium",
+      "path": "res://assets/icons/word_medium.png",
+      "source_svg": "res://assets/art/src-svg/icons/word_medium.svg",
+      "expected_width": 8,
+      "expected_height": 8,
+      "max_kb": 1,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "word_hard",
+      "path": "res://assets/icons/word_hard.png",
+      "source_svg": "res://assets/art/src-svg/icons/word_hard.svg",
+      "expected_width": 8,
+      "expected_height": 8,
+      "max_kb": 1,
+      "pixel_art": true,
+      "category": "icons"
     }
   ],
   "audio": [

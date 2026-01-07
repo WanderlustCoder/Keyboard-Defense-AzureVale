@@ -8,6 +8,13 @@ signal pressed(node_id: String)
 
 const ThemeColors = preload("res://ui/theme_colors.gd")
 
+const TITLE_FONT_SIZE := 16
+const LESSON_FONT_SIZE := 14
+const REWARD_FONT_SIZE := 12
+const BORDER_WIDTH := 2
+const CORNER_RADIUS := 6
+const CONTENT_MARGIN := 8
+
 @export var node_id: String = ""
 @export var title: String = "Node":
 	set(value):
@@ -58,16 +65,16 @@ func _create_styles() -> void:
 	_style_unlocked = StyleBoxFlat.new()
 	_style_unlocked.bg_color = ThemeColors.BG_CARD
 	_style_unlocked.border_color = ThemeColors.BORDER_HIGHLIGHT
-	_style_unlocked.set_border_width_all(2)
-	_style_unlocked.set_corner_radius_all(6)
-	_style_unlocked.set_content_margin_all(8)
+	_style_unlocked.set_border_width_all(BORDER_WIDTH)
+	_style_unlocked.set_corner_radius_all(CORNER_RADIUS)
+	_style_unlocked.set_content_margin_all(CONTENT_MARGIN)
 
 	_style_locked = StyleBoxFlat.new()
 	_style_locked.bg_color = ThemeColors.BG_CARD_DISABLED
 	_style_locked.border_color = ThemeColors.BORDER_DISABLED
-	_style_locked.set_border_width_all(2)
-	_style_locked.set_corner_radius_all(6)
-	_style_locked.set_content_margin_all(8)
+	_style_locked.set_border_width_all(BORDER_WIDTH)
+	_style_locked.set_corner_radius_all(CORNER_RADIUS)
+	_style_locked.set_content_margin_all(CONTENT_MARGIN)
 
 func _update_display() -> void:
 	if not is_inside_tree():
@@ -81,7 +88,7 @@ func _update_display() -> void:
 			display_title += " (cleared)"
 		title_label.text = display_title
 		title_label.add_theme_color_override("font_color", text_color)
-		title_label.add_theme_font_size_override("font_size", 16)
+		title_label.add_theme_font_size_override("font_size", TITLE_FONT_SIZE)
 
 	if lesson_label:
 		if lesson_name != "":
@@ -90,7 +97,7 @@ func _update_display() -> void:
 		else:
 			lesson_label.visible = false
 		lesson_label.add_theme_color_override("font_color", text_color)
-		lesson_label.add_theme_font_size_override("font_size", 14)
+		lesson_label.add_theme_font_size_override("font_size", LESSON_FONT_SIZE)
 
 	if reward_label:
 		if reward_gold > 0:
@@ -102,7 +109,13 @@ func _update_display() -> void:
 		else:
 			reward_label.visible = false
 		reward_label.add_theme_color_override("font_color", text_color)
-		reward_label.add_theme_font_size_override("font_size", 12)
+		reward_label.add_theme_font_size_override("font_size", REWARD_FONT_SIZE)
+
+	# Set tooltip for accessibility
+	if is_unlocked:
+		tooltip_text = "Click to start battle"
+	else:
+		tooltip_text = "Complete prerequisites to unlock"
 
 func _update_style() -> void:
 	if not is_inside_tree():
