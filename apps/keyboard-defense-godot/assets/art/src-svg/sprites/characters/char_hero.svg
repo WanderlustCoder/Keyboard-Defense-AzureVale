@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 24" width="16" height="24">
+  <!-- Hero Character (16x24) - Main player character -->
+  <!-- Color Palette: #3498db, #2980b9, #f4d03f, #fdfefe, #1a252f, #c0392b -->
+
+  <!-- Shadow -->
+  <rect x="4" y="22" width="8" height="2" fill="#1a252f" opacity="0.3"/>
+
+  <!-- Feet -->
+  <rect x="4" y="20" width="3" height="2" fill="#8b7355"/>
+  <rect x="9" y="20" width="3" height="2" fill="#8b7355"/>
+  <rect x="5" y="20" width="2" height="2" fill="#5d4e37"/>
+  <rect x="10" y="20" width="2" height="2" fill="#5d4e37"/>
+
+  <!-- Legs -->
+  <rect x="5" y="16" width="2" height="4" fill="#3498db"/>
+  <rect x="9" y="16" width="2" height="4" fill="#3498db"/>
+  <rect x="5" y="16" width="1" height="4" fill="#2980b9"/>
+  <rect x="9" y="16" width="1" height="4" fill="#2980b9"/>
+
+  <!-- Body/Torso -->
+  <rect x="4" y="10" width="8" height="6" fill="#3498db"/>
+  <rect x="5" y="10" width="6" height="6" fill="#2980b9"/>
+
+  <!-- Belt -->
+  <rect x="4" y="14" width="8" height="2" fill="#8b7355"/>
+  <rect x="7" y="14" width="2" height="2" fill="#f4d03f"/>
+
+  <!-- Arms -->
+  <rect x="2" y="10" width="2" height="6" fill="#3498db"/>
+  <rect x="12" y="10" width="2" height="6" fill="#3498db"/>
+  <rect x="2" y="10" width="1" height="6" fill="#2980b9"/>
+  <rect x="13" y="10" width="1" height="6" fill="#2980b9"/>
+
+  <!-- Hands -->
+  <rect x="2" y="15" width="2" height="2" fill="#fdfefe"/>
+  <rect x="12" y="15" width="2" height="2" fill="#fdfefe"/>
+
+  <!-- Head -->
+  <rect x="5" y="3" width="6" height="7" fill="#fdfefe"/>
+  <rect x="6" y="2" width="4" height="1" fill="#fdfefe"/>
+
+  <!-- Hair -->
+  <rect x="5" y="2" width="6" height="3" fill="#8b7355"/>
+  <rect x="4" y="3" width="1" height="2" fill="#5d4e37"/>
+  <rect x="11" y="3" width="1" height="2" fill="#5d4e37"/>
+
+  <!-- Face -->
+  <rect x="6" y="5" width="1" height="1" fill="#1a252f"/>
+  <rect x="9" y="5" width="1" height="1" fill="#1a252f"/>
+  <rect x="7" y="7" width="2" height="1" fill="#c0392b" opacity="0.5"/>
+
+  <!-- Cape hint -->
+  <rect x="3" y="10" width="1" height="8" fill="#c0392b"/>
+  <rect x="12" y="10" width="1" height="8" fill="#c0392b"/>
+</svg>

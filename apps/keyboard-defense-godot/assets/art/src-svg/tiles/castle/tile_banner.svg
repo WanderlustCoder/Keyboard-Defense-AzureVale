@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 16" width="8" height="16">
+  <!-- Castle Banner Tile (8x16) - Hanging banner decoration -->
+  <!-- Color Palette: #e74c3c, #c0392b, #f4d03f, #8b7355, #5d4e37 -->
+
+  <!-- Pole -->
+  <rect x="3" y="0" width="2" height="2" fill="#8b7355"/>
+  <rect x="3" y="0" width="1" height="2" fill="#5d4e37"/>
+
+  <!-- Banner fabric -->
+  <rect x="1" y="2" width="6" height="12" fill="#e74c3c"/>
+  <rect x="0" y="3" width="1" height="10" fill="#c0392b"/>
+  <rect x="7" y="3" width="1" height="10" fill="#c0392b"/>
+
+  <!-- Banner tail (forked) -->
+  <rect x="1" y="14" width="2" height="2" fill="#e74c3c"/>
+  <rect x="5" y="14" width="2" height="2" fill="#e74c3c"/>
+  <rect x="3" y="13" width="2" height="1" fill="#c0392b"/>
+
+  <!-- Banner emblem (shield/crown shape) -->
+  <rect x="2" y="4" width="4" height="4" fill="#f4d03f"/>
+  <rect x="3" y="3" width="2" height="1" fill="#f4d03f"/>
+  <rect x="3" y="8" width="2" height="1" fill="#f4d03f"/>
+  <rect x="3" y="5" width="2" height="2" fill="#e67e22"/>
+
+  <!-- Banner shadow fold -->
+  <rect x="5" y="5" width="1" height="6" fill="#c0392b"/>
+  <rect x="2" y="10" width="4" height="1" fill="#c0392b"/>
+</svg>

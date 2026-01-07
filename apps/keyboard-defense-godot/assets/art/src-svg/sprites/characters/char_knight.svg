@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 24" width="16" height="24">
+  <!-- Knight Character (16x24) - Armored melee defender -->
+  <!-- Color Palette: #7f8c8d, #95a5a6, #5d6d7e, #bdc3c7, #f4d03f, #1a252f -->
+
+  <!-- Shadow -->
+  <rect x="4" y="22" width="8" height="2" fill="#1a252f" opacity="0.3"/>
+
+  <!-- Feet (armored boots) -->
+  <rect x="4" y="20" width="3" height="2" fill="#5d6d7e"/>
+  <rect x="9" y="20" width="3" height="2" fill="#5d6d7e"/>
+  <rect x="5" y="21" width="2" height="1" fill="#7f8c8d"/>
+  <rect x="10" y="21" width="2" height="1" fill="#7f8c8d"/>
+
+  <!-- Legs (armored) -->
+  <rect x="5" y="16" width="2" height="4" fill="#7f8c8d"/>
+  <rect x="9" y="16" width="2" height="4" fill="#7f8c8d"/>
+  <rect x="5" y="16" width="1" height="4" fill="#5d6d7e"/>
+  <rect x="9" y="16" width="1" height="4" fill="#5d6d7e"/>
+  <rect x="6" y="17" width="1" height="2" fill="#95a5a6"/>
+  <rect x="10" y="17" width="1" height="2" fill="#95a5a6"/>
+
+  <!-- Body (plate armor) -->
+  <rect x="4" y="10" width="8" height="6" fill="#7f8c8d"/>
+  <rect x="5" y="10" width="6" height="6" fill="#95a5a6"/>
+  <rect x="6" y="11" width="4" height="4" fill="#bdc3c7"/>
+
+  <!-- Belt -->
+  <rect x="4" y="14" width="8" height="2" fill="#5d6d7e"/>
+  <rect x="7" y="14" width="2" height="2" fill="#f4d03f"/>
+
+  <!-- Arms (pauldrons) -->
+  <rect x="2" y="10" width="2" height="6" fill="#7f8c8d"/>
+  <rect x="12" y="10" width="2" height="6" fill="#7f8c8d"/>
+  <rect x="2" y="10" width="2" height="2" fill="#95a5a6"/>
+  <rect x="12" y="10" width="2" height="2" fill="#95a5a6"/>
+
+  <!-- Hands (gauntlets) -->
+  <rect x="2" y="15" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="12" y="15" width="2" height="2" fill="#5d6d7e"/>
+
+  <!-- Sword -->
+  <rect x="0" y="12" width="2" height="8" fill="#bdc3c7"/>
+  <rect x="0" y="11" width="2" height="2" fill="#f4d03f"/>
+  <rect x="0" y="12" width="1" height="6" fill="#95a5a6"/>
+
+  <!-- Helmet -->
+  <rect x="4" y="2" width="8" height="8" fill="#7f8c8d"/>
+  <rect x="5" y="1" width="6" height="1" fill="#95a5a6"/>
+  <rect x="5" y="3" width="6" height="6" fill="#95a5a6"/>
+
+  <!-- Helmet visor -->
+  <rect x="5" y="5" width="6" height="3" fill="#1a252f"/>
+  <rect x="6" y="5" width="1" height="1" fill="#5d6d7e"/>
+  <rect x="9" y="5" width="1" height="1" fill="#5d6d7e"/>
+
+  <!-- Plume -->
+  <rect x="7" y="0" width="2" height="2" fill="#e74c3c"/>
+  <rect x="6" y="1" width="1" height="1" fill="#c0392b"/>
+</svg>

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Battlement Tile (16x16) - Castle parapet/crenellation -->
+  <!-- Color Palette: #7f8c8d, #95a5a6, #5d6d7e, #bdc3c7, #3498db -->
+
+  <!-- Sky background (transparent in game, shown as blue for preview) -->
+  <rect x="4" y="0" width="8" height="6" fill="#3498db" opacity="0.3"/>
+
+  <!-- Merlon (raised part) left -->
+  <rect x="0" y="0" width="4" height="10" fill="#7f8c8d"/>
+  <rect x="0" y="0" width="4" height="2" fill="#95a5a6"/>
+  <rect x="0" y="2" width="1" height="8" fill="#5d6d7e"/>
+
+  <!-- Merlon (raised part) right -->
+  <rect x="12" y="0" width="4" height="10" fill="#7f8c8d"/>
+  <rect x="12" y="0" width="4" height="2" fill="#95a5a6"/>
+  <rect x="15" y="2" width="1" height="8" fill="#5d6d7e"/>
+
+  <!-- Crenel (gap) - middle opening -->
+  <rect x="4" y="6" width="8" height="4" fill="#7f8c8d"/>
+
+  <!-- Wall base -->
+  <rect x="0" y="10" width="16" height="6" fill="#7f8c8d"/>
+
+  <!-- Mortar lines on base -->
+  <rect x="0" y="13" width="16" height="1" fill="#5d6d7e"/>
+  <rect x="4" y="10" width="1" height="3" fill="#5d6d7e"/>
+  <rect x="11" y="10" width="1" height="3" fill="#5d6d7e"/>
+  <rect x="0" y="14" width="1" height="2" fill="#5d6d7e"/>
+  <rect x="7" y="14" width="1" height="2" fill="#5d6d7e"/>
+  <rect x="15" y="14" width="1" height="2" fill="#5d6d7e"/>
+
+  <!-- Stone highlights -->
+  <rect x="1" y="1" width="1" height="1" fill="#bdc3c7"/>
+  <rect x="13" y="1" width="1" height="1" fill="#bdc3c7"/>
+  <rect x="6" y="7" width="1" height="1" fill="#bdc3c7"/>
+</svg>
