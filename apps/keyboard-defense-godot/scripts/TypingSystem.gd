@@ -49,7 +49,10 @@ func get_accuracy() -> float:
 	return float(correct_inputs) / float(total_inputs)
 
 func get_wpm() -> float:
-	return float(get_words_completed()) / (get_elapsed_seconds() / 60.0)
+	var words_done := get_words_completed()
+	if words_done == 0:
+		return 0.0
+	return float(words_done) / (get_elapsed_seconds() / 60.0)
 
 func input_char(char: String) -> Dictionary:
 	if char.length() != 1:

@@ -149,6 +149,8 @@ var _cached_errors: int = -1
 var _cached_current_word: String = ""
 var _cached_typed: String = ""
 var _cached_drill_mode: String = ""
+var _threat_warning_played: bool = false
+const THREAT_WARNING_THRESHOLD := 70.0
 
 # Combo indicator
 var combo_label: Label = null
@@ -296,9 +298,15 @@ func _process(delta: float) -> void:
 				_finish_battle(false)
 				return
 		_sync_threat_from_stage()
-		# Adjust music intensity based on threat
+		# Adjust music intensity and play warning sound when threat gets high
 		if audio_manager != null:
-			audio_manager.set_battle_intensity(threat >= 70.0)
+			var is_high_threat := threat >= THREAT_WARNING_THRESHOLD
+			audio_manager.set_battle_intensity(is_high_threat)
+			if is_high_threat and not _threat_warning_played:
+				_threat_warning_played = true
+				audio_manager.play_sfx(audio_manager.SFX.HIT_PLAYER)
+			elif not is_high_threat and _threat_warning_played:
+				_threat_warning_played = false
 		# Tutorial trigger for threat shown
 		if threat > 20.0 and battle_tutorial != null:
 			battle_tutorial.fire_trigger("threat_shown")
@@ -359,6 +367,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		if event.keycode == KEY_BACKSPACE:
 			typing_system.backspace()
 			_update_word_display()
+			_trigger_backspace_feedback()
 			return
 		if event.unicode == 0:
 			return
@@ -1020,6 +1029,18 @@ func _add_pause_settings() -> void:
 	shake_row.add_child(pause_shake_toggle)
 	pause_settings_container.add_child(shake_row)
 
+	# Keyboard shortcuts hint
+	var shortcuts_sep = HSeparator.new()
+	shortcuts_sep.add_theme_constant_override("separation", 4)
+	pause_settings_container.add_child(shortcuts_sep)
+
+	var shortcuts_label = Label.new()
+	shortcuts_label.text = "ESC: Pause   R: Retry   Enter: Continue"
+	shortcuts_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	shortcuts_label.add_theme_font_size_override("font_size", 11)
+	shortcuts_label.add_theme_color_override("font_color", Color(0.5, 0.55, 0.65, 0.8))
+	pause_settings_container.add_child(shortcuts_label)
+
 	# Insert before button row
 	content.add_child(pause_settings_container)
 	content.move_child(pause_settings_container, content.get_child_count() - 1)
@@ -1342,12 +1363,15 @@ func _trigger_error_shake() -> void:
 	_error_shake_tween.tween_property(typed_label, "position",
 		_typed_label_base_pos, shake_time)
 
-	# Also flash the label red briefly
-	var original_color: Color = typed_label.modulate
-	typed_label.modulate = Color(1.0, 0.5, 0.5, 1.0)
-	await get_tree().create_timer(ERROR_SHAKE_DURATION).timeout
-	if typed_label != null:
-		typed_label.modulate = original_color
+func _trigger_backspace_feedback() -> void:
+	# Subtle visual feedback when backspace is pressed
+	if typed_label == null:
+		return
+	# Brief dim flash to indicate character removed
+	var original_color := typed_label.modulate
+	var tween := create_tween()
+	tween.tween_property(typed_label, "modulate", Color(0.6, 0.6, 0.7, 1.0), 0.05)
+	tween.tween_property(typed_label, "modulate", original_color, 0.1)
 
 func _trigger_screen_shake(intensity: float, duration: float) -> void:
 	# Check if screen shake is enabled in settings
