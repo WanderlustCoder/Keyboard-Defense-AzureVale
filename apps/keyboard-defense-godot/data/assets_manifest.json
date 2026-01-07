@@ -139,6 +139,26 @@
       "category": "icons"
     },
     {
+      "id": "buff_focus",
+      "path": "res://assets/art/src-svg/icons/buff_focus.svg",
+      "source_svg": "res://assets/art/src-svg/icons/buff_focus.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "buff_ward",
+      "path": "res://assets/art/src-svg/icons/buff_ward.svg",
+      "source_svg": "res://assets/art/src-svg/icons/buff_ward.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
       "id": "poi_abandoned_wagon",
       "path": "res://assets/icons/poi_abandoned_wagon.png",
       "source_svg": "res://assets/art/src-svg/icons/poi_abandoned_wagon.svg",

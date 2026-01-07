@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Focus Surge Buff Icon - 16x16 (lightning bolt / power) -->
+
+  <!-- Lightning bolt main shape -->
+  <rect x="9" y="0" width="3" height="2" fill="#f4d03f"/>
+  <rect x="8" y="2" width="3" height="2" fill="#f4d03f"/>
+  <rect x="7" y="4" width="3" height="2" fill="#f4d03f"/>
+  <rect x="6" y="6" width="5" height="2" fill="#f4d03f"/>
+  <rect x="8" y="8" width="3" height="2" fill="#f4d03f"/>
+  <rect x="7" y="10" width="3" height="2" fill="#f4d03f"/>
+  <rect x="6" y="12" width="3" height="2" fill="#f4d03f"/>
+  <rect x="5" y="14" width="3" height="2" fill="#f4d03f"/>
+
+  <!-- Lightning bolt highlight -->
+  <rect x="9" y="0" width="1" height="2" fill="#f7dc6f"/>
+  <rect x="8" y="2" width="1" height="2" fill="#f7dc6f"/>
+  <rect x="7" y="4" width="1" height="2" fill="#f7dc6f"/>
+  <rect x="6" y="6" width="2" height="2" fill="#f7dc6f"/>
+  <rect x="8" y="8" width="1" height="2" fill="#f7dc6f"/>
+  <rect x="7" y="10" width="1" height="2" fill="#f7dc6f"/>
+  <rect x="6" y="12" width="1" height="2" fill="#f7dc6f"/>
+  <rect x="5" y="14" width="1" height="2" fill="#f7dc6f"/>
+
+  <!-- Sparkle accents -->
+  <rect x="2" y="3" width="1" height="1" fill="#fad47a"/>
+  <rect x="1" y="4" width="1" height="1" fill="#fad47a"/>
+  <rect x="3" y="4" width="1" height="1" fill="#fad47a"/>
+
+  <rect x="13" y="9" width="1" height="1" fill="#fad47a"/>
+  <rect x="12" y="10" width="1" height="1" fill="#fad47a"/>
+  <rect x="14" y="10" width="1" height="1" fill="#fad47a"/>
+
+  <!-- Glow outline -->
+  <rect x="10" y="1" width="1" height="1" fill="#c9a227" opacity="0.6"/>
+  <rect x="4" y="13" width="1" height="1" fill="#c9a227" opacity="0.6"/>
+</svg>
