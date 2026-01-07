@@ -489,6 +489,86 @@
       "mode": "charset",
       "charset": "aeiou",
       "lengths": { "scout": [3, 4], "raider": [4, 5], "armored": [5, 7] }
+    },
+    {
+      "id": "bigram_flow",
+      "name": "Bigram Flow",
+      "description": "Common two-letter patterns like TH, ER, ON.",
+      "mode": "wordlist",
+      "wordlist": ["the", "there", "them", "then", "other", "another", "weather", "whether", "rather", "gather", "father", "mother", "brother", "either", "neither", "earth", "worth", "birth", "north", "south", "youth", "truth", "growth", "health", "wealth", "breath", "death", "beneath", "length", "strength", "month", "month", "cloth", "smooth", "tooth", "booth", "soothe", "loathe", "clothe", "bathe"],
+      "lengths": { "scout": [3, 4], "raider": [4, 6], "armored": [6, 8] }
+    },
+    {
+      "id": "weak_fingers",
+      "name": "Weak Finger Training",
+      "description": "Focus on pinky and ring finger keys.",
+      "mode": "charset",
+      "charset": "qazwsxplok",
+      "lengths": { "scout": [3, 4], "raider": [4, 5], "armored": [5, 7] }
+    },
+    {
+      "id": "pinky_power",
+      "name": "Pinky Power",
+      "description": "Intensive pinky finger practice.",
+      "mode": "charset",
+      "charset": "qazp",
+      "lengths": { "scout": [3, 4], "raider": [4, 5], "armored": [5, 6] }
+    },
+    {
+      "id": "ring_finger_focus",
+      "name": "Ring Finger Focus",
+      "description": "Build ring finger dexterity.",
+      "mode": "charset",
+      "charset": "wsxopl",
+      "lengths": { "scout": [3, 4], "raider": [4, 5], "armored": [5, 7] }
+    },
+    {
+      "id": "biome_evergrove",
+      "name": "Evergrove Woods",
+      "description": "Forest-themed vocabulary.",
+      "mode": "wordlist",
+      "wordlist": ["forest", "grove", "tree", "leaf", "branch", "bark", "root", "moss", "fern", "oak", "pine", "maple", "willow", "birch", "cedar", "spruce", "acorn", "sapling", "timber", "lumber", "woodland", "glade", "thicket", "clearing", "canopy", "shade", "foliage", "undergrowth", "bramble", "vine", "shrub", "bush", "hedge", "meadow", "dell", "vale", "hollow", "glen", "copse", "bower"],
+      "lengths": { "scout": [3, 5], "raider": [5, 7], "armored": [7, 10] }
+    },
+    {
+      "id": "biome_stonepass",
+      "name": "Stonepass Mountains",
+      "description": "Mountain-themed vocabulary.",
+      "mode": "wordlist",
+      "wordlist": ["mountain", "peak", "summit", "ridge", "cliff", "rock", "stone", "boulder", "cave", "cavern", "gorge", "canyon", "ravine", "crag", "bluff", "ledge", "slope", "ascent", "descent", "plateau", "granite", "slate", "quarry", "mine", "ore", "crystal", "gem", "iron", "copper", "silver", "gold", "tunnel", "shaft", "vein", "avalanche", "rockslide", "pass", "trail", "path", "alpine"],
+      "lengths": { "scout": [3, 5], "raider": [5, 7], "armored": [7, 10] }
+    },
+    {
+      "id": "biome_mistfen",
+      "name": "Mistfen Swamps",
+      "description": "Swamp-themed vocabulary.",
+      "mode": "wordlist",
+      "wordlist": ["swamp", "marsh", "bog", "fen", "mire", "muck", "mud", "moss", "reed", "cattail", "lily", "pond", "pool", "creek", "stream", "murk", "mist", "fog", "haze", "damp", "humid", "soggy", "wet", "dank", "frog", "toad", "newt", "snake", "heron", "crane", "duck", "goose", "fish", "eel", "crab", "clam", "snail", "slug", "leech", "mosquito"],
+      "lengths": { "scout": [3, 4], "raider": [4, 6], "armored": [6, 9] }
+    },
+    {
+      "id": "biome_sunfields",
+      "name": "Sunfields Plains",
+      "description": "Plains-themed vocabulary.",
+      "mode": "wordlist",
+      "wordlist": ["field", "plain", "prairie", "meadow", "grass", "wheat", "corn", "barley", "oat", "rye", "hay", "straw", "farm", "barn", "mill", "silo", "plow", "harvest", "crop", "seed", "soil", "earth", "dirt", "dust", "sun", "sky", "cloud", "wind", "breeze", "rain", "dew", "mist", "dawn", "dusk", "noon", "horizon", "vista", "expanse", "pasture", "range"],
+      "lengths": { "scout": [3, 5], "raider": [5, 7], "armored": [7, 9] }
+    },
+    {
+      "id": "alternating_hands",
+      "name": "Alternating Hands",
+      "description": "Words that alternate between hands.",
+      "mode": "wordlist",
+      "wordlist": ["their", "world", "which", "would", "right", "might", "sight", "light", "night", "fight", "eight", "height", "weight", "sleigh", "neigh", "leigh", "weigh", "thigh", "sigh", "high", "nigh", "plaid", "maid", "paid", "raid", "braid", "afraid", "laid", "said", "played", "stayed", "prayed", "swayed", "delayed", "dismayed", "betrayed", "portrayed", "surveyed", "conveyed", "displayed"],
+      "lengths": { "scout": [4, 5], "raider": [5, 7], "armored": [7, 9] }
+    },
+    {
+      "id": "same_hand_words",
+      "name": "Same Hand Challenge",
+      "description": "Words typed primarily with one hand.",
+      "mode": "wordlist",
+      "wordlist": ["test", "rest", "best", "west", "east", "fast", "vast", "cast", "last", "past", "mast", "feast", "beast", "least", "yeast", "waste", "haste", "taste", "paste", "caste", "grass", "brass", "class", "glass", "mass", "bass", "pass", "sass", "jazz", "fizz", "buzz", "fuzz", "huff", "puff", "buff", "cuff", "muff", "stuff", "fluff", "bluff"],
+      "lengths": { "scout": [3, 4], "raider": [4, 5], "armored": [5, 6] }
     }
   ]
 }

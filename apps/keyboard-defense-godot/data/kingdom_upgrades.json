@@ -3,6 +3,7 @@
     {
       "id": "scribe-hall",
       "label": "Scribe Hall",
+      "tier": 1,
       "cost": 20,
       "description": "Letters strike with greater force.",
       "effects": {
@@ -12,6 +13,7 @@
     {
       "id": "watchtower-bells",
       "label": "Watchtower Bells",
+      "tier": 1,
       "cost": 25,
       "description": "Slows incoming pressure between letters.",
       "effects": {
@@ -21,10 +23,112 @@
     {
       "id": "granary",
       "label": "Royal Granary",
+      "tier": 1,
       "cost": 18,
       "description": "Improves recovery after mistakes.",
       "effects": {
         "mistake_forgiveness": 0.1
+      }
+    },
+    {
+      "id": "treasury",
+      "label": "Royal Treasury",
+      "tier": 1,
+      "cost": 22,
+      "description": "Increases gold earned from defeats.",
+      "effects": {
+        "gold_multiplier": 0.15
+      }
+    },
+    {
+      "id": "scribe-library",
+      "label": "Scribe Library",
+      "tier": 2,
+      "cost": 40,
+      "requires": ["scribe-hall"],
+      "description": "Advanced texts further amplify typing power.",
+      "effects": {
+        "typing_power": 0.2
+      }
+    },
+    {
+      "id": "signal-tower",
+      "label": "Signal Tower",
+      "tier": 2,
+      "cost": 45,
+      "requires": ["watchtower-bells"],
+      "description": "Early warning reduces threat buildup.",
+      "effects": {
+        "threat_rate_multiplier": -0.15
+      }
+    },
+    {
+      "id": "healer-quarter",
+      "label": "Healer's Quarter",
+      "tier": 2,
+      "cost": 38,
+      "requires": ["granary"],
+      "description": "Healers restore castle after each wave.",
+      "effects": {
+        "wave_heal": 1
+      }
+    },
+    {
+      "id": "merchant-guild",
+      "label": "Merchant Guild",
+      "tier": 2,
+      "cost": 42,
+      "requires": ["treasury"],
+      "description": "Trade networks boost all resource gains.",
+      "effects": {
+        "resource_multiplier": 0.1
+      }
+    },
+    {
+      "id": "arcane-archive",
+      "label": "Arcane Archive",
+      "tier": 3,
+      "cost": 80,
+      "requires": ["scribe-library"],
+      "description": "Ancient knowledge unleashes devastating strikes.",
+      "effects": {
+        "typing_power": 0.3,
+        "critical_chance": 0.1
+      }
+    },
+    {
+      "id": "fortress-walls",
+      "label": "Fortress Walls",
+      "tier": 3,
+      "cost": 85,
+      "requires": ["signal-tower"],
+      "description": "Impenetrable walls reduce all incoming damage.",
+      "effects": {
+        "damage_reduction": 0.2
+      }
+    },
+    {
+      "id": "sanctuary",
+      "label": "Sacred Sanctuary",
+      "tier": 3,
+      "cost": 75,
+      "requires": ["healer-quarter"],
+      "description": "Divine protection heals and shields the castle.",
+      "effects": {
+        "wave_heal": 2,
+        "castle_health_bonus": 2
+      }
+    },
+    {
+      "id": "grand-exchange",
+      "label": "Grand Exchange",
+      "tier": 3,
+      "cost": 90,
+      "requires": ["merchant-guild"],
+      "description": "Global trade networks maximize all gains.",
+      "effects": {
+        "gold_multiplier": 0.25,
+        "resource_multiplier": 0.15
       }
     }
   ]
