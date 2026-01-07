@@ -165,6 +165,72 @@
       "tags": ["lore", "social"],
       "min_day": 10,
       "max_day": 35
+    },
+    {
+      "id": "poi_evergrove_hollow",
+      "biome": "Evergrove",
+      "name": "Ancient Hollow",
+      "icon": "hollow",
+      "event_table_id": "evergrove_hollow",
+      "rarity": 20,
+      "tags": ["lore", "risk"],
+      "min_day": 3,
+      "max_day": 12
+    },
+    {
+      "id": "poi_evergrove_beehives",
+      "biome": "Evergrove",
+      "name": "Wild Beehives",
+      "icon": "beehives",
+      "event_table_id": "evergrove_beehives",
+      "rarity": 35,
+      "tags": ["salvage", "risk"],
+      "min_day": 1,
+      "max_day": 8
+    },
+    {
+      "id": "poi_stonepass_forge",
+      "biome": "Stonepass",
+      "name": "Dwarven Forge",
+      "icon": "forge",
+      "event_table_id": "stonepass_forge",
+      "rarity": 15,
+      "tags": ["salvage", "social"],
+      "min_day": 6,
+      "max_day": 22
+    },
+    {
+      "id": "poi_mistfen_graveyard",
+      "biome": "Mistfen",
+      "name": "Forgotten Graveyard",
+      "icon": "graveyard",
+      "event_table_id": "mistfen_graveyard",
+      "rarity": 20,
+      "tags": ["lore", "combat"],
+      "min_day": 8,
+      "max_day": 28
+    },
+    {
+      "id": "poi_sunfields_market",
+      "biome": "Sunfields",
+      "name": "Traveling Market",
+      "icon": "market",
+      "event_table_id": "sunfields_market",
+      "rarity": 25,
+      "tags": ["social", "salvage"],
+      "min_day": 8,
+      "max_day": 22
+    },
+    {
+      "id": "poi_sunfields_fountain",
+      "biome": "Sunfields",
+      "name": "Blessed Fountain",
+      "icon": "fountain",
+      "event_table_id": "sunfields_fountain",
+      "rarity": 18,
+      "tags": ["healing", "lore"],
+      "min_day": 12,
+      "max_day": 30
     }
   ]
 }
