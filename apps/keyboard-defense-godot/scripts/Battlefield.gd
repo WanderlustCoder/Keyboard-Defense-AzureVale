@@ -32,7 +32,7 @@ const FEEDBACK_BUFF_DURATION := 0.9
 @onready var mistakes_label: Label = $StatusPanel/Content/MistakesLabel
 @onready var threat_bar: ProgressBar = $StatusPanel/Content/ThreatBar
 @onready var castle_label: Label = $StatusPanel/Content/CastleLabel
-@onready var bonus_label: Label = $BonusPanel/BonusLabel
+@onready var bonus_label: Label = $BonusPanel/Content/BonusLabel
 @onready var drill_title_label: Label = $TypingPanel/Content/DrillTitle
 @onready var drill_target_label: RichTextLabel = $TypingPanel/Content/DrillTarget
 @onready var feedback_label: Label = $TypingPanel/Content/FeedbackLabel
@@ -51,6 +51,7 @@ const FEEDBACK_BUFF_DURATION := 0.9
 @onready var result_button: Button = $ResultPanel/Content/ResultButton
 @onready var progression = get_node("/root/ProgressionState")
 @onready var game_controller = get_node("/root/GameController")
+@onready var audio_manager = get_node("/root/AudioManager")
 
 var pause_panel: PanelContainer = null
 var pause_label: Label = null
@@ -174,6 +175,9 @@ func _initialize_battle() -> void:
 	_update_buff_hud()
 	_start_next_drill()
 	_update_threat()
+	# Start battle music
+	if audio_manager != null:
+		audio_manager.switch_to_battle_music(false)
 
 func _process(delta: float) -> void:
 	if not active:
@@ -202,10 +206,15 @@ func _process(delta: float) -> void:
 		if battle_stage.consume_breach():
 			castle_health -= 1
 			battle_stage.reset_after_breach()
+			if audio_manager != null:
+				audio_manager.play_hit_player()
 			if castle_health <= 0:
 				_finish_battle(false)
 				return
 		_sync_threat_from_stage()
+		# Adjust music intensity based on threat
+		if audio_manager != null:
+			audio_manager.set_battle_intensity(threat >= 70.0)
 	else:
 		_set_threat(min(100.0, threat + delta * threat_rate))
 		if threat >= 100.0:
@@ -253,8 +262,13 @@ func _handle_typing_result(result: Dictionary) -> void:
 		return
 	if status == "error":
 		_reset_streaks()
+		if audio_manager != null:
+			audio_manager.play_type_mistake()
+			audio_manager.play_combo_break()
 	else:
 		_advance_streaks(status)
+		if audio_manager != null:
+			audio_manager.play_type_correct()
 	_check_buff_triggers()
 	_update_feedback_for_status(status)
 	_apply_typing_combat(status)
@@ -309,8 +323,12 @@ func _update_feedback_for_status(status: String) -> void:
 		_show_feedback("Missed!", Color(0.96, 0.45, 0.45, 1), FEEDBACK_ERROR_DURATION)
 	elif status == "word_complete":
 		_show_feedback("Strike!", Color(0.98, 0.84, 0.44, 1))
+		if audio_manager != null:
+			audio_manager.play_combo_up()
 	elif status == "lesson_complete":
 		_show_feedback("Wave Cleared!", Color(0.65, 0.86, 1, 1), FEEDBACK_WAVE_DURATION)
+		if audio_manager != null:
+			audio_manager.play_wave_end()
 
 func _show_feedback(message: String, color: Color, duration: float = FEEDBACK_DURATION) -> void:
 	if feedback_label == null:
@@ -383,6 +401,9 @@ func _start_next_drill() -> void:
 		var config: Dictionary = _build_typing_config(current_drill)
 		typing_system.start(targets, config)
 		drill_word_goal = targets.size()
+		# Play wave start sound for new drill
+		if audio_manager != null:
+			audio_manager.play_wave_start()
 	_update_word_display()
 	_update_stats()
 	_update_drill_status()
@@ -645,6 +666,9 @@ func _finish_battle(success: bool) -> void:
 		var practice_gold = int(completed_summary.get("practice_gold", 0))
 		var reward_gold = int(completed_summary.get("reward_gold", 0))
 		var gold_awarded = int(completed_summary.get("gold_awarded", 0))
+		# Play victory sounds
+		if audio_manager != null:
+			audio_manager.play_victory()
 		var lines: Array = ["Victory! The castle stands strong."]
 		if tier != "":
 			lines.append("Rank: %s" % tier)
@@ -667,6 +691,9 @@ func _finish_battle(success: bool) -> void:
 		result_button.text = "Return to Map"
 	else:
 		progression.record_attempt(summary)
+		# Play defeat sounds
+		if audio_manager != null:
+			audio_manager.play_defeat()
 		var lines: Array = ["Defeat. The walls fell.", stats_line, words_line]
 		result_label.text = "\n".join(lines)
 		result_action = "retry"
@@ -675,6 +702,8 @@ func _finish_battle(success: bool) -> void:
 	gold_label.text = "Gold: %d" % progression.gold
 
 func _on_result_pressed() -> void:
+	if audio_manager != null:
+		audio_manager.play_ui_confirm()
 	if result_action == "retry":
 		game_controller.go_to_battle(node_id)
 	else:
@@ -683,6 +712,8 @@ func _on_result_pressed() -> void:
 func _on_exit_pressed() -> void:
 	if paused:
 		return
+	if audio_manager != null:
+		audio_manager.play_ui_cancel()
 	game_controller.go_to_map()
 
 func _format_bonus_text(modifiers: Dictionary) -> String:
@@ -738,12 +769,18 @@ func _setup_pause_panel() -> void:
 		pause_button.pressed.connect(_on_pause_pressed)
 
 func _on_pause_pressed() -> void:
+	if audio_manager != null:
+		audio_manager.play_ui_confirm()
 	_toggle_pause()
 
 func _on_pause_resume_pressed() -> void:
+	if audio_manager != null:
+		audio_manager.play_ui_confirm()
 	_set_paused(false)
 
 func _on_pause_retreat_pressed() -> void:
+	if audio_manager != null:
+		audio_manager.play_ui_cancel()
 	game_controller.go_to_map()
 
 func _toggle_pause() -> void:

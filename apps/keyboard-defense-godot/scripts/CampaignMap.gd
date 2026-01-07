@@ -8,11 +8,15 @@ extends Control
 @onready var kingdom_button: Button = $TopBar/KingdomButton
 @onready var progression = get_node("/root/ProgressionState")
 @onready var game_controller = get_node("/root/GameController")
+@onready var audio_manager = get_node_or_null("/root/AudioManager")
 
 func _ready() -> void:
 	back_button.pressed.connect(_on_back_pressed)
 	kingdom_button.pressed.connect(_on_kingdom_pressed)
 	_refresh()
+	# Play kingdom/map music
+	if audio_manager != null:
+		audio_manager.switch_to_kingdom_music()
 
 func _refresh() -> void:
 	_ensure_map_grid_layout()
@@ -195,6 +199,8 @@ func _format_reward_preview(reward_gold: int, completed: bool) -> String:
 
 
 func _on_node_pressed(node_id: String) -> void:
+	if audio_manager != null:
+		audio_manager.play_ui_confirm()
 	game_controller.go_to_battle(node_id)
 
 func _on_card_input(event: InputEvent, node_id: String) -> void:
@@ -203,7 +209,11 @@ func _on_card_input(event: InputEvent, node_id: String) -> void:
 		accept_event()
 
 func _on_back_pressed() -> void:
+	if audio_manager != null:
+		audio_manager.play_ui_cancel()
 	game_controller.go_to_menu()
 
 func _on_kingdom_pressed() -> void:
+	if audio_manager != null:
+		audio_manager.play_ui_confirm()
 	game_controller.go_to_kingdom()

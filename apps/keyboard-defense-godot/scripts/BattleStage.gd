@@ -11,6 +11,7 @@ const SPRITE_SCALE := 3.0  # Scale 16px sprites to ~48px
 @onready var castle: Sprite2D = $Castle
 @onready var enemy: Sprite2D = $Enemy
 @onready var projectile_layer: Control = $ProjectileLayer
+@onready var audio_manager = get_node_or_null("/root/AudioManager")
 
 var asset_loader: AssetLoader
 var progress: float = 0.0
@@ -215,6 +216,8 @@ func _clear_projectiles() -> void:
 func _flash_enemy() -> void:
 	hit_flash_timer = HIT_FLASH_DURATION
 	_apply_enemy_flash(1.0)
+	if audio_manager != null:
+		audio_manager.play_hit_enemy()
 
 func _update_enemy_flash(delta: float) -> void:
 	if hit_flash_timer <= 0.0:

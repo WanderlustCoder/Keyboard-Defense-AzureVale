@@ -7,12 +7,16 @@ extends Control
 @onready var unit_list: VBoxContainer = $Scroll/Content/UnitList
 @onready var progression = get_node("/root/ProgressionState")
 @onready var game_controller = get_node("/root/GameController")
+@onready var audio_manager = get_node_or_null("/root/AudioManager")
 
 var icon_cache: Dictionary = {}
 
 func _ready() -> void:
 	back_button.pressed.connect(_on_back_pressed)
 	_refresh()
+	# Play kingdom music
+	if audio_manager != null:
+		audio_manager.switch_to_kingdom_music()
 
 func _refresh() -> void:
 	gold_label.text = "Gold: %d" % progression.gold
@@ -126,7 +130,11 @@ func _build_upgrade_section(container: VBoxContainer, upgrades: Array) -> void:
 
 func _on_upgrade_pressed(upgrade_id: String) -> void:
 	if progression.apply_upgrade(upgrade_id):
+		if audio_manager != null:
+			audio_manager.play_upgrade_purchase()
 		_refresh()
 
 func _on_back_pressed() -> void:
+	if audio_manager != null:
+		audio_manager.play_ui_cancel()
 	game_controller.go_to_map()
