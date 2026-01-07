@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 32" width="4" height="32">
+  <!-- Vertical Divider (4x32) - tileable separator -->
+
+  <!-- Shadow line -->
+  <rect x="0" y="0" width="1" height="32" fill="#1a252f"/>
+
+  <!-- Main line -->
+  <rect x="1" y="0" width="2" height="32" fill="#5d6d7e"/>
+
+  <!-- Highlight line -->
+  <rect x="3" y="0" width="1" height="32" fill="#85929e"/>
+</svg>

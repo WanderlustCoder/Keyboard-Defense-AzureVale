@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 8" width="32" height="8">
+  <!-- Horizontal Scroll Track (32x8) - 9-slice horizontal -->
+
+  <!-- Track background -->
+  <rect x="0" y="0" width="32" height="8" fill="#1a252f"/>
+
+  <!-- Inner groove -->
+  <rect x="1" y="1" width="30" height="6" fill="#0d1318"/>
+
+  <!-- Edges -->
+  <rect x="0" y="0" width="32" height="1" fill="#2c3e50"/>
+  <rect x="0" y="7" width="32" height="1" fill="#2c3e50"/>
+</svg>

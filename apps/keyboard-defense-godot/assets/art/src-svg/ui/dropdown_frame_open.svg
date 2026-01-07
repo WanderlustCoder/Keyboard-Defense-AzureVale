@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 16" width="64" height="16">
+  <!-- Dropdown Frame Open (64x16) - 9-slice expanded state -->
+
+  <!-- Outer border (highlighted) -->
+  <rect x="0" y="0" width="64" height="16" fill="#3498db"/>
+
+  <!-- Background -->
+  <rect x="1" y="1" width="62" height="14" fill="#34495e"/>
+
+  <!-- Inner surface -->
+  <rect x="2" y="2" width="60" height="12" fill="#5d6d7e"/>
+
+  <!-- Top highlight -->
+  <rect x="2" y="2" width="60" height="1" fill="#85929e"/>
+
+  <!-- Arrow area separator -->
+  <rect x="50" y="2" width="1" height="12" fill="#34495e"/>
+
+  <!-- Arrow (pointing up) -->
+  <rect x="56" y="5" width="2" height="2" fill="#fdfefe"/>
+  <rect x="55" y="7" width="4" height="2" fill="#fdfefe"/>
+  <rect x="54" y="9" width="6" height="2" fill="#fdfefe"/>
+</svg>

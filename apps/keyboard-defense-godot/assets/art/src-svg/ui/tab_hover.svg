@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 16" width="48" height="16">
+  <!-- Tab Hover (48x16) - 9-slice hovered tab -->
+
+  <!-- Tab body -->
+  <rect x="0" y="3" width="48" height="13" fill="#34495e"/>
+  <rect x="2" y="1" width="44" height="15" fill="#34495e"/>
+
+  <!-- Top rounded corners -->
+  <rect x="1" y="2" width="46" height="1" fill="#34495e"/>
+
+  <!-- Inner surface (brighter) -->
+  <rect x="2" y="3" width="44" height="12" fill="#5d6d7e"/>
+
+  <!-- Top highlight -->
+  <rect x="3" y="2" width="42" height="1" fill="#85929e"/>
+
+  <!-- Hover glow -->
+  <rect x="2" y="1" width="44" height="1" fill="#85929e"/>
+
+  <!-- Bottom separator -->
+  <rect x="0" y="14" width="48" height="2" fill="#1a252f"/>
+</svg>

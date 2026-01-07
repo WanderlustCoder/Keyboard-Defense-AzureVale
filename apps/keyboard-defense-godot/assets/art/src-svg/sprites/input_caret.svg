@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 12" width="4" height="12">
+  <!-- Text Input Caret (4x12) - blinking cursor -->
+
+  <!-- Caret line -->
+  <rect x="1" y="0" width="2" height="12" fill="#fdfefe"/>
+
+  <!-- Top/bottom caps -->
+  <rect x="0" y="0" width="4" height="1" fill="#fdfefe"/>
+  <rect x="0" y="11" width="4" height="1" fill="#fdfefe"/>
+</svg>

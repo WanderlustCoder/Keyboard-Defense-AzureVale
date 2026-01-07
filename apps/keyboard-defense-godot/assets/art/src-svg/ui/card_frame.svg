@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 40" width="32" height="40">
+  <!-- Card Frame (32x40) - 9-slice item/ability card -->
+
+  <!-- Shadow -->
+  <rect x="2" y="3" width="30" height="37" fill="#0d1318"/>
+
+  <!-- Outer border -->
+  <rect x="0" y="0" width="32" height="38" fill="#d4ac0d"/>
+  <rect x="1" y="1" width="30" height="36" fill="#f4d03f"/>
+
+  <!-- Main body -->
+  <rect x="2" y="2" width="28" height="34" fill="#2c3e50"/>
+
+  <!-- Header area -->
+  <rect x="2" y="2" width="28" height="8" fill="#34495e"/>
+  <rect x="3" y="3" width="26" height="1" fill="#5d6d7e"/>
+
+  <!-- Content area -->
+  <rect x="3" y="11" width="26" height="22" fill="#1a252f"/>
+
+  <!-- Divider -->
+  <rect x="4" y="10" width="24" height="1" fill="#f4d03f"/>
+
+  <!-- Corner gems -->
+  <rect x="1" y="1" width="2" height="2" fill="#f9e79f"/>
+  <rect x="29" y="1" width="2" height="2" fill="#f9e79f"/>
+  <rect x="1" y="35" width="2" height="2" fill="#f9e79f"/>
+  <rect x="29" y="35" width="2" height="2" fill="#f9e79f"/>
+</svg>

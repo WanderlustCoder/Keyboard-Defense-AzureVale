@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 6" width="16" height="6">
+  <!-- Horizontal Scroll Thumb (16x6) - 9-slice draggable -->
+
+  <!-- Body -->
+  <rect x="1" y="0" width="14" height="6" fill="#5d6d7e"/>
+  <rect x="0" y="1" width="16" height="4" fill="#5d6d7e"/>
+
+  <!-- Inner surface -->
+  <rect x="2" y="1" width="12" height="4" fill="#85929e"/>
+
+  <!-- Grip lines -->
+  <rect x="5" y="2" width="1" height="2" fill="#5d6d7e"/>
+  <rect x="7" y="2" width="1" height="2" fill="#5d6d7e"/>
+  <rect x="9" y="2" width="1" height="2" fill="#5d6d7e"/>
+
+  <!-- Left highlight -->
+  <rect x="1" y="1" width="1" height="4" fill="#aeb6bf"/>
+</svg>

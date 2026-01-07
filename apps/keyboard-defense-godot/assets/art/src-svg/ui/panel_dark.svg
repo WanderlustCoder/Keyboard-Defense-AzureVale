@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Dark Panel (32x32) - 9-slice background panel -->
+
+  <!-- Outer border -->
+  <rect x="0" y="0" width="32" height="32" fill="#1a252f"/>
+
+  <!-- Main body -->
+  <rect x="1" y="1" width="30" height="30" fill="#2c3e50"/>
+
+  <!-- Inner area -->
+  <rect x="2" y="2" width="28" height="28" fill="#34495e"/>
+
+  <!-- Top/left highlight -->
+  <rect x="2" y="2" width="28" height="1" fill="#5d6d7e"/>
+  <rect x="2" y="2" width="1" height="28" fill="#5d6d7e"/>
+
+  <!-- Bottom/right shadow -->
+  <rect x="2" y="29" width="28" height="1" fill="#1a252f"/>
+  <rect x="29" y="2" width="1" height="28" fill="#1a252f"/>
+
+  <!-- Corner accents -->
+  <rect x="1" y="1" width="1" height="1" fill="#5d6d7e"/>
+  <rect x="30" y="30" width="1" height="1" fill="#0d1318"/>
+</svg>

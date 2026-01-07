@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 16" width="64" height="16">
+  <!-- Input Field Frame Focused (64x16) - 9-slice with highlight -->
+
+  <!-- Glow effect -->
+  <rect x="0" y="0" width="64" height="16" fill="#3498db" opacity="0.3"/>
+
+  <!-- Outer border (blue) -->
+  <rect x="0" y="0" width="64" height="16" fill="#3498db"/>
+
+  <!-- Inner border -->
+  <rect x="1" y="1" width="62" height="14" fill="#1a252f"/>
+
+  <!-- Input background -->
+  <rect x="2" y="2" width="60" height="12" fill="#0d1318"/>
+
+  <!-- Top shadow -->
+  <rect x="2" y="2" width="60" height="1" fill="#000000" opacity="0.3"/>
+
+  <!-- Blue accent line -->
+  <rect x="2" y="13" width="60" height="1" fill="#5dade2"/>
+</svg>
