@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" width="320" height="180">
+  <!-- Pause Overlay (320x180) - Darkened pause screen overlay -->
+  <!-- Color Palette: #0d1318, #1a252f -->
+
+  <!-- Dark overlay -->
+  <rect x="0" y="0" width="320" height="180" fill="#0d1318" opacity="0.85"/>
+
+  <!-- Subtle vignette effect (darker edges) -->
+  <rect x="0" y="0" width="40" height="180" fill="#0d1318" opacity="0.3"/>
+  <rect x="280" y="0" width="40" height="180" fill="#0d1318" opacity="0.3"/>
+  <rect x="0" y="0" width="320" height="30" fill="#0d1318" opacity="0.3"/>
+  <rect x="0" y="150" width="320" height="30" fill="#0d1318" opacity="0.3"/>
+
+  <!-- Corner darkening -->
+  <rect x="0" y="0" width="60" height="40" fill="#0d1318" opacity="0.2"/>
+  <rect x="260" y="0" width="60" height="40" fill="#0d1318" opacity="0.2"/>
+  <rect x="0" y="140" width="60" height="40" fill="#0d1318" opacity="0.2"/>
+  <rect x="260" y="140" width="60" height="40" fill="#0d1318" opacity="0.2"/>
+
+  <!-- Pause symbol hint (very subtle) -->
+  <rect x="150" y="80" width="8" height="20" fill="#fdfefe" opacity="0.05"/>
+  <rect x="162" y="80" width="8" height="20" fill="#fdfefe" opacity="0.05"/>
+</svg>

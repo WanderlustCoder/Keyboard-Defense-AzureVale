@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 20" width="192" height="20">
+  <!-- Stats Row Background (192x20) - Stats row display -->
+  <!-- Color Palette: #1a252f, #2c3e50, #34495e, #5d6d7e -->
+
+  <!-- Row background -->
+  <rect x="0" y="0" width="192" height="20" fill="#2c3e50"/>
+  <rect x="2" y="2" width="188" height="16" fill="#34495e"/>
+
+  <!-- Left edge highlight -->
+  <rect x="0" y="0" width="4" height="20" fill="#5d6d7e"/>
+  <rect x="2" y="2" width="2" height="16" fill="#34495e"/>
+
+  <!-- Alternating stripe hint -->
+  <rect x="4" y="2" width="184" height="1" fill="#5d6d7e" opacity="0.3"/>
+
+  <!-- Icon placeholder -->
+  <rect x="6" y="4" width="12" height="12" fill="#2c3e50"/>
+  <rect x="8" y="6" width="8" height="8" fill="#1a252f"/>
+
+  <!-- Value area -->
+  <rect x="168" y="4" width="20" height="12" fill="#1a252f"/>
+</svg>

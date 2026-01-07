@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" width="320" height="180">
+  <!-- Loading Background (320x180) - Loading screen background -->
+  <!-- Color Palette: #0d1318, #1a252f, #2c3e50, #34495e -->
+
+  <!-- Base dark background -->
+  <rect x="0" y="0" width="320" height="180" fill="#0d1318"/>
+
+  <!-- Subtle gradient layers -->
+  <rect x="0" y="0" width="320" height="40" fill="#1a252f" opacity="0.5"/>
+  <rect x="0" y="140" width="320" height="40" fill="#1a252f" opacity="0.5"/>
+
+  <!-- Decorative border -->
+  <rect x="0" y="0" width="320" height="4" fill="#2c3e50"/>
+  <rect x="0" y="176" width="320" height="4" fill="#2c3e50"/>
+  <rect x="0" y="0" width="4" height="180" fill="#2c3e50"/>
+  <rect x="316" y="0" width="4" height="180" fill="#2c3e50"/>
+
+  <!-- Corner accents -->
+  <rect x="0" y="0" width="20" height="4" fill="#34495e"/>
+  <rect x="0" y="0" width="4" height="20" fill="#34495e"/>
+  <rect x="300" y="0" width="20" height="4" fill="#34495e"/>
+  <rect x="316" y="0" width="4" height="20" fill="#34495e"/>
+  <rect x="0" y="176" width="20" height="4" fill="#34495e"/>
+  <rect x="0" y="160" width="4" height="20" fill="#34495e"/>
+  <rect x="300" y="176" width="20" height="4" fill="#34495e"/>
+  <rect x="316" y="160" width="4" height="20" fill="#34495e"/>
+
+  <!-- Ambient particles -->
+  <rect x="50" y="40" width="2" height="2" fill="#5d6d7e" opacity="0.3"/>
+  <rect x="120" y="60" width="2" height="2" fill="#5d6d7e" opacity="0.4"/>
+  <rect x="200" y="35" width="2" height="2" fill="#5d6d7e" opacity="0.3"/>
+  <rect x="280" y="55" width="2" height="2" fill="#5d6d7e" opacity="0.4"/>
+  <rect x="80" y="120" width="2" height="2" fill="#5d6d7e" opacity="0.3"/>
+  <rect x="160" y="140" width="2" height="2" fill="#5d6d7e" opacity="0.4"/>
+  <rect x="240" y="125" width="2" height="2" fill="#5d6d7e" opacity="0.3"/>
+
+  <!-- Center area for loading content -->
+  <rect x="60" y="60" width="200" height="60" fill="#1a252f" opacity="0.5"/>
+</svg>

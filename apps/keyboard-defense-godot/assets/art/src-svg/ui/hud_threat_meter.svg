@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 16" width="96" height="16">
+  <!-- Threat Meter (96x16) - Threat level bar -->
+  <!-- Color Palette: #1a252f, #2c3e50, #27ae60, #f39c12, #e74c3c -->
+
+  <!-- Background -->
+  <rect x="0" y="0" width="96" height="16" fill="#1a252f"/>
+  <rect x="2" y="2" width="92" height="12" fill="#2c3e50"/>
+
+  <!-- Threat icon (skull) -->
+  <rect x="4" y="3" width="10" height="10" fill="#5d6d7e"/>
+  <rect x="5" y="4" width="8" height="6" fill="#ecf0f1"/>
+  <rect x="6" y="5" width="2" height="2" fill="#1a252f"/>
+  <rect x="10" y="5" width="2" height="2" fill="#1a252f"/>
+  <rect x="7" y="8" width="4" height="1" fill="#1a252f"/>
+  <rect x="6" y="10" width="6" height="2" fill="#ecf0f1"/>
+  <rect x="7" y="11" width="1" height="1" fill="#1a252f"/>
+  <rect x="9" y="11" width="1" height="1" fill="#1a252f"/>
+  <rect x="11" y="11" width="1" height="1" fill="#1a252f"/>
+
+  <!-- Bar background -->
+  <rect x="16" y="4" width="76" height="8" fill="#0d1318"/>
+
+  <!-- Threat level segments -->
+  <rect x="17" y="5" width="24" height="6" fill="#27ae60"/>
+  <rect x="42" y="5" width="24" height="6" fill="#f39c12"/>
+  <rect x="67" y="5" width="16" height="6" fill="#e74c3c"/>
+
+  <!-- Segment dividers -->
+  <rect x="41" y="4" width="1" height="8" fill="#1a252f"/>
+  <rect x="66" y="4" width="1" height="8" fill="#1a252f"/>
+
+  <!-- Highlight on active segment -->
+  <rect x="17" y="5" width="24" height="1" fill="#2ecc71"/>
+  <rect x="42" y="5" width="24" height="1" fill="#f4d03f"/>
+</svg>

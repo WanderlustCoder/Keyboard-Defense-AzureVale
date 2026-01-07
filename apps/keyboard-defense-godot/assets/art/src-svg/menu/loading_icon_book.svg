@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 32" width="128" height="32">
+  <!-- Loading Book Icon (128x32) - 4 frames of 32x32 page flip -->
+  <!-- Color Palette: #8b4513, #a0522d, #fdfefe, #ecf0f1, #f4d03f -->
+
+  <!-- FRAME 1 - Book closed -->
+  <rect x="6" y="6" width="20" height="20" fill="#8b4513"/>
+  <rect x="8" y="8" width="16" height="16" fill="#a0522d"/>
+  <rect x="10" y="10" width="12" height="12" fill="#fdfefe"/>
+  <rect x="12" y="12" width="8" height="8" fill="#ecf0f1"/>
+  <!-- Spine -->
+  <rect x="6" y="6" width="3" height="20" fill="#5d4037"/>
+  <rect x="7" y="8" width="1" height="16" fill="#8b4513"/>
+  <!-- Gold corners -->
+  <rect x="6" y="6" width="4" height="2" fill="#f4d03f"/>
+  <rect x="6" y="24" width="4" height="2" fill="#f4d03f"/>
+
+  <!-- FRAME 2 - Page lifting -->
+  <rect x="38" y="6" width="20" height="20" fill="#8b4513"/>
+  <rect x="40" y="8" width="16" height="16" fill="#a0522d"/>
+  <rect x="42" y="10" width="12" height="12" fill="#fdfefe"/>
+  <rect x="44" y="12" width="8" height="8" fill="#ecf0f1"/>
+  <rect x="38" y="6" width="3" height="20" fill="#5d4037"/>
+  <rect x="39" y="8" width="1" height="16" fill="#8b4513"/>
+  <!-- Lifted page -->
+  <rect x="48" y="8" width="10" height="12" fill="#fdfefe"/>
+  <rect x="50" y="10" width="6" height="8" fill="#ecf0f1"/>
+  <rect x="56" y="6" width="2" height="14" fill="#bdc3c7"/>
+
+  <!-- FRAME 3 - Page turning -->
+  <rect x="70" y="6" width="20" height="20" fill="#8b4513"/>
+  <rect x="72" y="8" width="16" height="16" fill="#a0522d"/>
+  <rect x="74" y="10" width="12" height="12" fill="#fdfefe"/>
+  <rect x="76" y="12" width="8" height="8" fill="#ecf0f1"/>
+  <rect x="70" y="6" width="3" height="20" fill="#5d4037"/>
+  <rect x="71" y="8" width="1" height="16" fill="#8b4513"/>
+  <!-- Turning page (curved effect) -->
+  <rect x="76" y="6" width="8" height="14" fill="#fdfefe"/>
+  <rect x="78" y="8" width="4" height="10" fill="#ecf0f1"/>
+  <rect x="82" y="4" width="4" height="16" fill="#bdc3c7"/>
+  <rect x="84" y="6" width="2" height="12" fill="#fdfefe"/>
+
+  <!-- FRAME 4 - Page settling -->
+  <rect x="102" y="6" width="20" height="20" fill="#8b4513"/>
+  <rect x="104" y="8" width="16" height="16" fill="#a0522d"/>
+  <rect x="106" y="10" width="12" height="12" fill="#fdfefe"/>
+  <rect x="108" y="12" width="8" height="8" fill="#ecf0f1"/>
+  <rect x="102" y="6" width="3" height="20" fill="#5d4037"/>
+  <rect x="103" y="8" width="1" height="16" fill="#8b4513"/>
+  <!-- Settled page -->
+  <rect x="112" y="10" width="6" height="10" fill="#fdfefe"/>
+  <rect x="113" y="11" width="4" height="8" fill="#d5d8dc"/>
+  <rect x="38" y="6" width="4" height="2" fill="#f4d03f"/>
+  <rect x="38" y="24" width="4" height="2" fill="#f4d03f"/>
+</svg>

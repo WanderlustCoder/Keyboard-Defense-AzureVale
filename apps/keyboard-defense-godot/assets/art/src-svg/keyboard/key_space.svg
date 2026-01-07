@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 16" width="64" height="16">
+  <!-- Spacebar (64x16) -->
+  <!-- Color Palette: #2c3e50, #34495e, #5d6d7e -->
+
+  <!-- Key base -->
+  <rect x="1" y="2" width="62" height="13" fill="#2c3e50"/>
+  <!-- Key top surface -->
+  <rect x="2" y="1" width="60" height="12" fill="#34495e"/>
+  <rect x="3" y="2" width="58" height="10" fill="#5d6d7e"/>
+  <!-- Highlight -->
+  <rect x="3" y="2" width="58" height="1" fill="#7f8c8d"/>
+  <rect x="3" y="2" width="1" height="10" fill="#7f8c8d"/>
+  <!-- Shadow -->
+  <rect x="3" y="11" width="58" height="1" fill="#2c3e50"/>
+  <rect x="60" y="2" width="1" height="10" fill="#2c3e50"/>
+  <!-- Center depression line -->
+  <rect x="20" y="6" width="24" height="2" fill="#34495e"/>
+</svg>

@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 32" width="128" height="32">
+  <!-- Options Button (128x32) - Settings/options button -->
+  <!-- Color Palette: #3498db, #5dade2, #1a252f, #fdfefe -->
+
+  <!-- Button base -->
+  <rect x="0" y="0" width="128" height="32" fill="#1a252f"/>
+  <rect x="2" y="2" width="124" height="28" fill="#2980b9"/>
+
+  <!-- Button highlight (top) -->
+  <rect x="2" y="2" width="124" height="4" fill="#3498db"/>
+  <rect x="4" y="4" width="120" height="2" fill="#5dade2"/>
+
+  <!-- Button shadow (bottom) -->
+  <rect x="2" y="26" width="124" height="4" fill="#1f618d"/>
+
+  <!-- Main button face -->
+  <rect x="4" y="6" width="120" height="20" fill="#3498db"/>
+
+  <!-- Gear icon -->
+  <rect x="20" y="8" width="16" height="16" fill="#5dade2"/>
+  <rect x="22" y="10" width="12" height="12" fill="#3498db"/>
+  <rect x="25" y="13" width="6" height="6" fill="#fdfefe"/>
+  <rect x="26" y="14" width="4" height="4" fill="#3498db"/>
+  <!-- Gear teeth -->
+  <rect x="26" y="6" width="4" height="4" fill="#fdfefe"/>
+  <rect x="26" y="22" width="4" height="4" fill="#fdfefe"/>
+  <rect x="18" y="14" width="4" height="4" fill="#fdfefe"/>
+  <rect x="34" y="14" width="4" height="4" fill="#fdfefe"/>
+
+  <!-- "OPTIONS" text area -->
+  <rect x="42" y="10" width="72" height="12" fill="#2980b9"/>
+  <!-- O -->
+  <rect x="44" y="11" width="6" height="2" fill="#fdfefe"/>
+  <rect x="44" y="11" width="2" height="10" fill="#fdfefe"/>
+  <rect x="48" y="11" width="2" height="10" fill="#fdfefe"/>
+  <rect x="44" y="19" width="6" height="2" fill="#fdfefe"/>
+  <!-- P -->
+  <rect x="52" y="11" width="2" height="10" fill="#fdfefe"/>
+  <rect x="52" y="11" width="6" height="2" fill="#fdfefe"/>
+  <rect x="56" y="12" width="2" height="3" fill="#fdfefe"/>
+  <rect x="52" y="15" width="6" height="2" fill="#fdfefe"/>
+  <!-- T -->
+  <rect x="60" y="11" width="8" height="2" fill="#fdfefe"/>
+  <rect x="63" y="11" width="2" height="10" fill="#fdfefe"/>
+  <!-- I -->
+  <rect x="70" y="11" width="2" height="10" fill="#fdfefe"/>
+  <!-- O -->
+  <rect x="74" y="11" width="6" height="2" fill="#fdfefe"/>
+  <rect x="74" y="11" width="2" height="10" fill="#fdfefe"/>
+  <rect x="78" y="11" width="2" height="10" fill="#fdfefe"/>
+  <rect x="74" y="19" width="6" height="2" fill="#fdfefe"/>
+  <!-- N -->
+  <rect x="82" y="11" width="2" height="10" fill="#fdfefe"/>
+  <rect x="84" y="13" width="2" height="2" fill="#fdfefe"/>
+  <rect x="86" y="15" width="2" height="2" fill="#fdfefe"/>
+  <rect x="88" y="11" width="2" height="10" fill="#fdfefe"/>
+  <!-- S -->
+  <rect x="92" y="11" width="6" height="2" fill="#fdfefe"/>
+  <rect x="92" y="11" width="2" height="5" fill="#fdfefe"/>
+  <rect x="92" y="14" width="6" height="2" fill="#fdfefe"/>
+  <rect x="96" y="15" width="2" height="5" fill="#fdfefe"/>
+  <rect x="92" y="19" width="6" height="2" fill="#fdfefe"/>
+
+  <!-- Corner bevels -->
+  <rect x="0" y="0" width="4" height="4" fill="#3498db"/>
+  <rect x="124" y="0" width="4" height="4" fill="#3498db"/>
+  <rect x="0" y="28" width="4" height="4" fill="#1f618d"/>
+  <rect x="124" y="28" width="4" height="4" fill="#1f618d"/>
+</svg>

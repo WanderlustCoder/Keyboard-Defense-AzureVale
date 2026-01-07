@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" width="320" height="180">
+  <!-- Horizontal Wipe Transition (320x180) - Left-to-right wipe -->
+  <!-- Color Palette: #0d1318, #1a252f, #2c3e50 -->
+
+  <!-- Wipe gradient simulation (left side filled) -->
+  <rect x="0" y="0" width="160" height="180" fill="#0d1318"/>
+
+  <!-- Wipe edge (jagged/styled) -->
+  <rect x="160" y="0" width="8" height="20" fill="#0d1318"/>
+  <rect x="164" y="20" width="8" height="25" fill="#0d1318"/>
+  <rect x="160" y="45" width="12" height="20" fill="#0d1318"/>
+  <rect x="164" y="65" width="8" height="25" fill="#0d1318"/>
+  <rect x="160" y="90" width="12" height="20" fill="#0d1318"/>
+  <rect x="164" y="110" width="8" height="25" fill="#0d1318"/>
+  <rect x="160" y="135" width="10" height="20" fill="#0d1318"/>
+  <rect x="164" y="155" width="8" height="25" fill="#0d1318"/>
+
+  <!-- Edge highlight -->
+  <rect x="158" y="0" width="2" height="180" fill="#2c3e50"/>
+  <rect x="168" y="0" width="2" height="20" fill="#1a252f"/>
+  <rect x="172" y="20" width="2" height="25" fill="#1a252f"/>
+  <rect x="170" y="45" width="2" height="20" fill="#1a252f"/>
+  <rect x="172" y="65" width="2" height="25" fill="#1a252f"/>
+  <rect x="170" y="90" width="2" height="20" fill="#1a252f"/>
+  <rect x="172" y="110" width="2" height="25" fill="#1a252f"/>
+  <rect x="168" y="135" width="2" height="20" fill="#1a252f"/>
+  <rect x="172" y="155" width="2" height="25" fill="#1a252f"/>
+</svg>

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 16" width="64" height="16">
+  <!-- Bonus Word Container (64x16) - gold border bonus word -->
+  <!-- Color Palette: #9b59b6, #d2b4de, #f4d03f -->
+
+  <!-- Outer magic border -->
+  <rect x="0" y="0" width="64" height="16" fill="#7d3c98"/>
+  <!-- Purple border -->
+  <rect x="1" y="1" width="62" height="14" fill="#9b59b6"/>
+  <!-- Inner fill -->
+  <rect x="2" y="2" width="60" height="12" fill="#1a252f"/>
+  <!-- Top highlight -->
+  <rect x="2" y="2" width="60" height="1" fill="#4a235a"/>
+  <!-- Gold corner accents -->
+  <rect x="0" y="0" width="4" height="4" fill="#f4d03f"/>
+  <rect x="60" y="0" width="4" height="4" fill="#f4d03f"/>
+  <rect x="0" y="12" width="4" height="4" fill="#f4d03f"/>
+  <rect x="60" y="12" width="4" height="4" fill="#f4d03f"/>
+  <rect x="1" y="1" width="2" height="2" fill="#f9e79f"/>
+  <rect x="61" y="1" width="2" height="2" fill="#f9e79f"/>
+  <rect x="1" y="13" width="2" height="2" fill="#f9e79f"/>
+  <rect x="61" y="13" width="2" height="2" fill="#f9e79f"/>
+  <!-- Sparkle accents -->
+  <rect x="8" y="1" width="1" height="1" fill="#d2b4de"/>
+  <rect x="55" y="1" width="1" height="1" fill="#d2b4de"/>
+</svg>

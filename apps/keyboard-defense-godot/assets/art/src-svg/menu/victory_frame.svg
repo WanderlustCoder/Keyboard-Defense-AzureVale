@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 192" width="256" height="192">
+  <!-- Victory Frame (256x192) - Victory screen container -->
+  <!-- Color Palette: #1a252f, #27ae60, #2ecc71, #f4d03f, #fdfefe -->
+
+  <!-- Outer border (gold) -->
+  <rect x="0" y="0" width="256" height="192" fill="#f39c12"/>
+  <rect x="4" y="4" width="248" height="184" fill="#f4d03f"/>
+
+  <!-- Inner frame -->
+  <rect x="8" y="8" width="240" height="176" fill="#1a252f"/>
+  <rect x="12" y="12" width="232" height="168" fill="#27ae60"/>
+  <rect x="16" y="16" width="224" height="160" fill="#2ecc71"/>
+  <rect x="20" y="20" width="216" height="152" fill="#34495e"/>
+
+  <!-- Content area -->
+  <rect x="24" y="24" width="208" height="144" fill="#2c3e50"/>
+
+  <!-- Trophy placement area -->
+  <rect x="100" y="50" width="56" height="70" fill="#34495e"/>
+  <rect x="104" y="54" width="48" height="62" fill="#1a252f"/>
+
+  <!-- Stats area -->
+  <rect x="32" y="130" width="192" height="32" fill="#34495e"/>
+  <rect x="36" y="134" width="184" height="24" fill="#1a252f"/>
+
+  <!-- Star slots -->
+  <rect x="76" y="136" width="24" height="20" fill="#34495e"/>
+  <rect x="108" y="136" width="24" height="20" fill="#34495e"/>
+  <rect x="140" y="136" width="24" height="20" fill="#34495e"/>
+
+  <!-- Corner flourishes -->
+  <rect x="0" y="0" width="24" height="12" fill="#f4d03f"/>
+  <rect x="0" y="0" width="12" height="24" fill="#f4d03f"/>
+  <rect x="4" y="4" width="16" height="8" fill="#27ae60"/>
+  <rect x="4" y="4" width="8" height="16" fill="#27ae60"/>
+
+  <rect x="232" y="0" width="24" height="12" fill="#f4d03f"/>
+  <rect x="244" y="0" width="12" height="24" fill="#f4d03f"/>
+  <rect x="236" y="4" width="16" height="8" fill="#27ae60"/>
+  <rect x="244" y="4" width="8" height="16" fill="#27ae60"/>
+
+  <rect x="0" y="180" width="24" height="12" fill="#f4d03f"/>
+  <rect x="0" y="168" width="12" height="24" fill="#f4d03f"/>
+  <rect x="4" y="180" width="16" height="8" fill="#27ae60"/>
+  <rect x="4" y="172" width="8" height="16" fill="#27ae60"/>
+
+  <rect x="232" y="180" width="24" height="12" fill="#f4d03f"/>
+  <rect x="244" y="168" width="12" height="24" fill="#f4d03f"/>
+  <rect x="236" y="180" width="16" height="8" fill="#27ae60"/>
+  <rect x="244" y="172" width="8" height="16" fill="#27ae60"/>
+</svg>

@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 288 24" width="288" height="24">
+  <!-- Combo Flames (288x24) - 6 frames of 48x24, combo fire effect -->
+  <!-- Color Palette: #d35400, #e67e22, #f39c12, #f4d03f -->
+
+  <!-- FRAME 1 - Small flames -->
+  <rect x="18" y="16" width="4" height="6" fill="#d35400"/>
+  <rect x="19" y="14" width="3" height="6" fill="#e67e22"/>
+  <rect x="20" y="12" width="2" height="6" fill="#f39c12"/>
+  <rect x="26" y="18" width="3" height="4" fill="#d35400"/>
+  <rect x="27" y="16" width="2" height="4" fill="#e67e22"/>
+
+  <!-- FRAME 2 - Growing flames -->
+  <rect x="64" y="14" width="6" height="8" fill="#d35400"/>
+  <rect x="65" y="12" width="5" height="8" fill="#e67e22"/>
+  <rect x="66" y="10" width="4" height="8" fill="#f39c12"/>
+  <rect x="67" y="8" width="2" height="6" fill="#f4d03f"/>
+  <rect x="74" y="16" width="4" height="6" fill="#d35400"/>
+  <rect x="75" y="14" width="3" height="6" fill="#e67e22"/>
+  <rect x="76" y="12" width="2" height="4" fill="#f39c12"/>
+
+  <!-- FRAME 3 - Medium flames -->
+  <rect x="108" y="10" width="8" height="12" fill="#d35400"/>
+  <rect x="109" y="8" width="7" height="12" fill="#e67e22"/>
+  <rect x="110" y="6" width="6" height="12" fill="#f39c12"/>
+  <rect x="111" y="4" width="4" height="10" fill="#f4d03f"/>
+  <rect x="112" y="2" width="2" height="6" fill="#f9e79f"/>
+  <rect x="122" y="14" width="6" height="8" fill="#d35400"/>
+  <rect x="123" y="12" width="5" height="8" fill="#e67e22"/>
+  <rect x="124" y="10" width="4" height="6" fill="#f39c12"/>
+  <rect x="130" y="16" width="4" height="6" fill="#e67e22"/>
+
+  <!-- FRAME 4 - Large flames -->
+  <rect x="152" y="6" width="10" height="16" fill="#d35400"/>
+  <rect x="153" y="4" width="9" height="16" fill="#e67e22"/>
+  <rect x="154" y="2" width="8" height="16" fill="#f39c12"/>
+  <rect x="155" y="0" width="6" height="14" fill="#f4d03f"/>
+  <rect x="156" y="0" width="4" height="10" fill="#f9e79f"/>
+  <rect x="168" y="10" width="8" height="12" fill="#d35400"/>
+  <rect x="169" y="8" width="7" height="12" fill="#e67e22"/>
+  <rect x="170" y="6" width="6" height="10" fill="#f39c12"/>
+  <rect x="180" y="14" width="6" height="8" fill="#d35400"/>
+  <rect x="181" y="12" width="5" height="8" fill="#e67e22"/>
+
+  <!-- FRAME 5 - Maximum flames -->
+  <rect x="196" y="4" width="12" height="18" fill="#c0392b"/>
+  <rect x="197" y="2" width="11" height="18" fill="#d35400"/>
+  <rect x="198" y="0" width="10" height="18" fill="#e67e22"/>
+  <rect x="199" y="0" width="8" height="16" fill="#f39c12"/>
+  <rect x="200" y="0" width="6" height="12" fill="#f4d03f"/>
+  <rect x="201" y="0" width="4" height="8" fill="#f9e79f"/>
+  <rect x="214" y="8" width="10" height="14" fill="#d35400"/>
+  <rect x="215" y="6" width="9" height="14" fill="#e67e22"/>
+  <rect x="216" y="4" width="8" height="12" fill="#f39c12"/>
+  <rect x="217" y="2" width="6" height="10" fill="#f4d03f"/>
+  <rect x="228" y="12" width="8" height="10" fill="#d35400"/>
+  <rect x="229" y="10" width="7" height="10" fill="#e67e22"/>
+  <rect x="230" y="8" width="6" height="8" fill="#f39c12"/>
+
+  <!-- FRAME 6 - Intense with sparks -->
+  <rect x="244" y="2" width="14" height="20" fill="#922b21"/>
+  <rect x="245" y="0" width="13" height="20" fill="#c0392b"/>
+  <rect x="246" y="0" width="12" height="20" fill="#d35400"/>
+  <rect x="247" y="0" width="10" height="18" fill="#e67e22"/>
+  <rect x="248" y="0" width="8" height="14" fill="#f39c12"/>
+  <rect x="249" y="0" width="6" height="10" fill="#f4d03f"/>
+  <rect x="250" y="0" width="4" height="6" fill="#f9e79f"/>
+  <rect x="262" y="6" width="12" height="16" fill="#d35400"/>
+  <rect x="263" y="4" width="11" height="16" fill="#e67e22"/>
+  <rect x="264" y="2" width="10" height="14" fill="#f39c12"/>
+  <rect x="265" y="0" width="8" height="10" fill="#f4d03f"/>
+  <rect x="278" y="10" width="8" height="12" fill="#e67e22"/>
+  <rect x="279" y="8" width="7" height="10" fill="#f39c12"/>
+  <!-- Sparks -->
+  <rect x="256" y="0" width="2" height="2" fill="#fdfefe"/>
+  <rect x="272" y="2" width="2" height="2" fill="#fdfefe"/>
+  <rect x="284" y="4" width="2" height="2" fill="#f9e79f"/>
+</svg>

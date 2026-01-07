@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 24" width="96" height="24">
+  <!-- Accuracy Ring (96x24) - 4 frames of 24x24, accuracy indicator pulse -->
+  <!-- Color Palette: #27ae60, #2ecc71, #58d68d, #f4d03f -->
+
+  <!-- FRAME 1 - Small ring -->
+  <rect x="9" y="9" width="6" height="6" fill="#27ae60"/>
+  <rect x="10" y="10" width="4" height="4" fill="#1a252f"/>
+  <rect x="11" y="11" width="2" height="2" fill="#2ecc71"/>
+
+  <!-- FRAME 2 - Growing ring -->
+  <rect x="30" y="6" width="12" height="12" fill="#27ae60"/>
+  <rect x="32" y="8" width="8" height="8" fill="#1a252f"/>
+  <rect x="34" y="10" width="4" height="4" fill="#2ecc71"/>
+  <!-- Corner accents -->
+  <rect x="28" y="10" width="2" height="4" fill="#58d68d"/>
+  <rect x="42" y="10" width="2" height="4" fill="#58d68d"/>
+  <rect x="34" y="4" width="4" height="2" fill="#58d68d"/>
+  <rect x="34" y="18" width="4" height="2" fill="#58d68d"/>
+
+  <!-- FRAME 3 - Full ring with glow -->
+  <rect x="52" y="2" width="16" height="20" fill="#27ae60" opacity="0.4"/>
+  <rect x="54" y="4" width="12" height="16" fill="#27ae60"/>
+  <rect x="56" y="6" width="8" height="12" fill="#1a252f"/>
+  <rect x="58" y="8" width="4" height="8" fill="#2ecc71"/>
+  <rect x="59" y="10" width="2" height="4" fill="#58d68d"/>
+  <!-- Sparkle points -->
+  <rect x="48" y="10" width="2" height="4" fill="#f4d03f"/>
+  <rect x="70" y="10" width="2" height="4" fill="#f4d03f"/>
+  <rect x="58" y="0" width="4" height="2" fill="#f4d03f"/>
+  <rect x="58" y="22" width="4" height="2" fill="#f4d03f"/>
+
+  <!-- FRAME 4 - Fading ring -->
+  <rect x="76" y="4" width="12" height="16" fill="#27ae60" opacity="0.5"/>
+  <rect x="78" y="6" width="8" height="12" fill="#1a252f" opacity="0.7"/>
+  <rect x="80" y="8" width="4" height="8" fill="#2ecc71" opacity="0.6"/>
+  <!-- Fading sparkles -->
+  <rect x="74" y="10" width="2" height="4" fill="#58d68d" opacity="0.5"/>
+  <rect x="92" y="10" width="2" height="4" fill="#58d68d" opacity="0.5"/>
+</svg>

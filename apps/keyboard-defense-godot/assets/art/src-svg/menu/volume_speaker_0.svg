@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Volume Muted (16x16) - Muted speaker icon -->
+  <!-- Color Palette: #5d6d7e, #e74c3c, #fdfefe -->
+
+  <!-- Speaker body -->
+  <rect x="2" y="5" width="4" height="6" fill="#5d6d7e"/>
+  <rect x="6" y="3" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="6" y="11" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="8" y="2" width="2" height="12" fill="#5d6d7e"/>
+
+  <!-- Mute X -->
+  <rect x="11" y="5" width="2" height="2" fill="#e74c3c"/>
+  <rect x="13" y="7" width="2" height="2" fill="#e74c3c"/>
+  <rect x="11" y="9" width="2" height="2" fill="#e74c3c"/>
+  <rect x="13" y="5" width="2" height="2" fill="#e74c3c"/>
+  <rect x="11" y="7" width="2" height="2" fill="#c0392b"/>
+  <rect x="13" y="9" width="2" height="2" fill="#e74c3c"/>
+</svg>

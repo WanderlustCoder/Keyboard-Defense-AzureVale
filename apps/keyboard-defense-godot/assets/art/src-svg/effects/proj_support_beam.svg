@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 16" width="32" height="16">
+  <!-- Support Beam (32x16) - 2 frames of 16x16, healing/buff beam -->
+  <!-- Color Palette: #2874a6, #3498db, #5dade2, #85c1e9, #aed6f1, #d4ac0d, #f4d03f -->
+
+  <!-- FRAME 1 - Healing beam -->
+  <rect x="2" y="6" width="12" height="4" fill="#3498db" opacity="0.6"/>
+  <rect x="3" y="7" width="10" height="2" fill="#5dade2" opacity="0.8"/>
+  <rect x="4" y="7" width="8" height="1" fill="#85c1e9"/>
+  <!-- Sparkles along beam -->
+  <rect x="3" y="5" width="1" height="1" fill="#aed6f1"/>
+  <rect x="6" y="4" width="2" height="2" fill="#85c1e9"/>
+  <rect x="7" y="5" width="1" height="1" fill="#aed6f1"/>
+  <rect x="10" y="5" width="1" height="1" fill="#aed6f1"/>
+  <rect x="4" y="9" width="1" height="1" fill="#85c1e9"/>
+  <rect x="8" y="10" width="2" height="2" fill="#5dade2"/>
+  <rect x="9" y="10" width="1" height="1" fill="#aed6f1"/>
+  <rect x="12" y="9" width="1" height="1" fill="#aed6f1"/>
+  <!-- Golden cross particles -->
+  <rect x="5" y="6" width="1" height="3" fill="#f4d03f"/>
+  <rect x="4" y="7" width="3" height="1" fill="#f4d03f"/>
+  <rect x="11" y="6" width="1" height="3" fill="#d4ac0d"/>
+  <rect x="10" y="7" width="3" height="1" fill="#d4ac0d"/>
+
+  <!-- FRAME 2 - Beam pulse -->
+  <rect x="17" y="5" width="14" height="6" fill="#2874a6" opacity="0.5"/>
+  <rect x="18" y="6" width="12" height="4" fill="#3498db" opacity="0.7"/>
+  <rect x="19" y="7" width="10" height="2" fill="#5dade2"/>
+  <rect x="20" y="7" width="8" height="1" fill="#85c1e9"/>
+  <rect x="21" y="7" width="6" height="1" fill="#aed6f1"/>
+  <!-- Brighter sparkles -->
+  <rect x="18" y="4" width="2" height="2" fill="#85c1e9"/>
+  <rect x="19" y="4" width="1" height="1" fill="#d6eaf8"/>
+  <rect x="23" y="3" width="2" height="2" fill="#aed6f1"/>
+  <rect x="24" y="4" width="1" height="1" fill="#d6eaf8"/>
+  <rect x="28" y="4" width="1" height="1" fill="#aed6f1"/>
+  <rect x="19" y="10" width="2" height="2" fill="#5dade2"/>
+  <rect x="20" y="11" width="1" height="1" fill="#85c1e9"/>
+  <rect x="25" y="10" width="2" height="2" fill="#aed6f1"/>
+  <rect x="26" y="10" width="1" height="1" fill="#d6eaf8"/>
+  <rect x="29" y="10" width="1" height="1" fill="#aed6f1"/>
+  <!-- Golden pulses -->
+  <rect x="21" y="6" width="1" height="3" fill="#f4d03f"/>
+  <rect x="20" y="7" width="3" height="1" fill="#f4d03f"/>
+  <rect x="21" y="7" width="1" height="1" fill="#f9e79f"/>
+  <rect x="27" y="6" width="1" height="3" fill="#f4d03f"/>
+  <rect x="26" y="7" width="3" height="1" fill="#f4d03f"/>
+  <rect x="27" y="7" width="1" height="1" fill="#f9e79f"/>
+</svg>

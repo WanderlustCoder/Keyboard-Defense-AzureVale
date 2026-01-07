@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Volume Low (16x16) - Low volume speaker icon -->
+  <!-- Color Palette: #5d6d7e, #85929e, #fdfefe -->
+
+  <!-- Speaker body -->
+  <rect x="2" y="5" width="4" height="6" fill="#fdfefe"/>
+  <rect x="6" y="3" width="2" height="2" fill="#fdfefe"/>
+  <rect x="6" y="11" width="2" height="2" fill="#fdfefe"/>
+  <rect x="8" y="2" width="2" height="12" fill="#fdfefe"/>
+
+  <!-- One sound wave -->
+  <rect x="12" y="6" width="1" height="4" fill="#85929e"/>
+</svg>

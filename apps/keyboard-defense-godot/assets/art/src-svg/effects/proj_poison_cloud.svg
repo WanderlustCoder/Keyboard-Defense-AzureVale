@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 16" width="64" height="16">
+  <!-- Poison Cloud (64x16) - 4 frames of 16x16, AOE poison -->
+  <!-- Color Palette: #0b5345, #145a32, #1e8449, #27ae60, #58d68d, #82e0aa -->
+
+  <!-- FRAME 1 - Cloud forming -->
+  <rect x="3" y="5" width="10" height="8" fill="#145a32" opacity="0.8"/>
+  <rect x="4" y="6" width="8" height="6" fill="#1e8449" opacity="0.7"/>
+  <rect x="5" y="7" width="6" height="4" fill="#27ae60" opacity="0.6"/>
+  <!-- Bubble particles -->
+  <rect x="6" y="4" width="2" height="2" fill="#58d68d"/>
+  <rect x="7" y="5" width="1" height="1" fill="#82e0aa"/>
+  <rect x="9" y="8" width="2" height="2" fill="#58d68d"/>
+  <rect x="4" y="10" width="2" height="2" fill="#27ae60"/>
+  <rect x="11" y="6" width="1" height="1" fill="#82e0aa"/>
+
+  <!-- FRAME 2 - Cloud expanding -->
+  <rect x="18" y="3" width="12" height="10" fill="#0b5345" opacity="0.7"/>
+  <rect x="19" y="4" width="10" height="8" fill="#145a32" opacity="0.6"/>
+  <rect x="20" y="5" width="8" height="6" fill="#1e8449" opacity="0.5"/>
+  <rect x="21" y="6" width="6" height="4" fill="#27ae60" opacity="0.6"/>
+  <!-- More bubbles -->
+  <rect x="20" y="2" width="2" height="2" fill="#58d68d"/>
+  <rect x="21" y="3" width="1" height="1" fill="#82e0aa"/>
+  <rect x="26" y="4" width="2" height="2" fill="#58d68d"/>
+  <rect x="18" y="8" width="2" height="2" fill="#27ae60"/>
+  <rect x="28" y="9" width="2" height="2" fill="#58d68d"/>
+  <rect x="23" y="10" width="2" height="2" fill="#27ae60"/>
+
+  <!-- FRAME 3 - Full cloud -->
+  <rect x="33" y="2" width="14" height="12" fill="#0b5345" opacity="0.6"/>
+  <rect x="34" y="3" width="12" height="10" fill="#145a32" opacity="0.5"/>
+  <rect x="35" y="4" width="10" height="8" fill="#1e8449" opacity="0.4"/>
+  <rect x="36" y="5" width="8" height="6" fill="#27ae60" opacity="0.5"/>
+  <!-- Bubbles throughout -->
+  <rect x="35" y="1" width="2" height="2" fill="#58d68d"/>
+  <rect x="36" y="2" width="1" height="1" fill="#82e0aa"/>
+  <rect x="42" y="3" width="2" height="2" fill="#58d68d"/>
+  <rect x="43" y="4" width="1" height="1" fill="#abebc6"/>
+  <rect x="33" y="7" width="2" height="2" fill="#27ae60"/>
+  <rect x="45" y="8" width="2" height="2" fill="#58d68d"/>
+  <rect x="38" y="11" width="2" height="2" fill="#27ae60"/>
+  <rect x="44" y="12" width="2" height="2" fill="#58d68d"/>
+
+  <!-- FRAME 4 - Cloud dissipating -->
+  <rect x="50" y="3" width="12" height="10" fill="#145a32" opacity="0.4"/>
+  <rect x="51" y="4" width="10" height="8" fill="#1e8449" opacity="0.3"/>
+  <rect x="52" y="5" width="8" height="6" fill="#27ae60" opacity="0.3"/>
+  <!-- Scattered particles -->
+  <rect x="49" y="2" width="1" height="1" fill="#58d68d"/>
+  <rect x="54" y="1" width="2" height="2" fill="#27ae60" opacity="0.5"/>
+  <rect x="60" y="3" width="2" height="2" fill="#58d68d" opacity="0.6"/>
+  <rect x="48" y="8" width="2" height="2" fill="#27ae60" opacity="0.4"/>
+  <rect x="61" y="9" width="2" height="2" fill="#58d68d" opacity="0.5"/>
+  <rect x="52" y="12" width="2" height="2" fill="#27ae60" opacity="0.4"/>
+  <rect x="58" y="13" width="1" height="1" fill="#82e0aa"/>
+  <rect x="63" y="6" width="1" height="1" fill="#58d68d"/>
+</svg>

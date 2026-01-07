@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 24" width="48" height="24">
+  <!-- WPM Display (48x24) - Words per minute indicator -->
+  <!-- Color Palette: #1a252f, #2c3e50, #3498db, #5dade2, #fdfefe -->
+
+  <!-- Background -->
+  <rect x="0" y="0" width="48" height="24" fill="#1a252f"/>
+  <rect x="2" y="2" width="44" height="20" fill="#2c3e50"/>
+
+  <!-- Speed icon (lightning bolt) -->
+  <rect x="4" y="4" width="10" height="16" fill="#34495e"/>
+  <rect x="8" y="4" width="4" height="4" fill="#3498db"/>
+  <rect x="6" y="7" width="4" height="3" fill="#3498db"/>
+  <rect x="7" y="9" width="4" height="4" fill="#5dade2"/>
+  <rect x="8" y="12" width="4" height="4" fill="#3498db"/>
+  <rect x="6" y="14" width="4" height="3" fill="#5dade2"/>
+  <rect x="9" y="5" width="2" height="2" fill="#85c1e9"/>
+
+  <!-- Number display area -->
+  <rect x="16" y="4" width="28" height="16" fill="#34495e"/>
+  <rect x="17" y="5" width="26" height="14" fill="#0d1318"/>
+
+  <!-- Sample WPM (stylized "72") -->
+  <rect x="20" y="8" width="6" height="2" fill="#5dade2"/>
+  <rect x="20" y="8" width="2" height="8" fill="#5dade2"/>
+  <rect x="20" y="14" width="4" height="2" fill="#5dade2"/>
+  <rect x="24" y="10" width="2" height="4" fill="#5dade2"/>
+  <rect x="30" y="8" width="6" height="2" fill="#5dade2"/>
+  <rect x="34" y="8" width="2" height="8" fill="#5dade2"/>
+  <rect x="30" y="11" width="6" height="2" fill="#5dade2"/>
+  <rect x="30" y="14" width="6" height="2" fill="#5dade2"/>
+</svg>

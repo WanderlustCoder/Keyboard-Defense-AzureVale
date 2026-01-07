@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 288 48" width="288" height="48">
+  <!-- Victory Trophy Shine (288x48) - 6 frames of 48x48 trophy with shine -->
+  <!-- Color Palette: #f4d03f, #f39c12, #e67e22, #fdfefe -->
+
+  <!-- FRAME 1 - Trophy base -->
+  <rect x="16" y="8" width="16" height="24" fill="#f39c12"/>
+  <rect x="18" y="10" width="12" height="20" fill="#f4d03f"/>
+  <rect x="8" y="12" width="8" height="8" fill="#f39c12"/>
+  <rect x="32" y="12" width="8" height="8" fill="#f39c12"/>
+  <rect x="18" y="32" width="12" height="4" fill="#f39c12"/>
+  <rect x="14" y="36" width="20" height="4" fill="#e67e22"/>
+  <rect x="12" y="40" width="24" height="4" fill="#f39c12"/>
+
+  <!-- FRAME 2 - Shine starts -->
+  <rect x="64" y="8" width="16" height="24" fill="#f39c12"/>
+  <rect x="66" y="10" width="12" height="20" fill="#f4d03f"/>
+  <rect x="56" y="12" width="8" height="8" fill="#f39c12"/>
+  <rect x="80" y="12" width="8" height="8" fill="#f39c12"/>
+  <rect x="66" y="32" width="12" height="4" fill="#f39c12"/>
+  <rect x="62" y="36" width="20" height="4" fill="#e67e22"/>
+  <rect x="60" y="40" width="24" height="4" fill="#f39c12"/>
+  <!-- Shine -->
+  <rect x="68" y="12" width="2" height="4" fill="#fdfefe"/>
+
+  <!-- FRAME 3 - Shine grows -->
+  <rect x="112" y="8" width="16" height="24" fill="#f39c12"/>
+  <rect x="114" y="10" width="12" height="20" fill="#f4d03f"/>
+  <rect x="104" y="12" width="8" height="8" fill="#f39c12"/>
+  <rect x="128" y="12" width="8" height="8" fill="#f39c12"/>
+  <rect x="114" y="32" width="12" height="4" fill="#f39c12"/>
+  <rect x="110" y="36" width="20" height="4" fill="#e67e22"/>
+  <rect x="108" y="40" width="24" height="4" fill="#f39c12"/>
+  <!-- Bigger shine -->
+  <rect x="116" y="12" width="4" height="8" fill="#fdfefe"/>
+  <rect x="114" y="14" width="8" height="4" fill="#fdfefe" opacity="0.6"/>
+
+  <!-- FRAME 4 - Full shine -->
+  <rect x="160" y="8" width="16" height="24" fill="#f39c12"/>
+  <rect x="162" y="10" width="12" height="20" fill="#f4d03f"/>
+  <rect x="152" y="12" width="8" height="8" fill="#f39c12"/>
+  <rect x="176" y="12" width="8" height="8" fill="#f39c12"/>
+  <rect x="162" y="32" width="12" height="4" fill="#f39c12"/>
+  <rect x="158" y="36" width="20" height="4" fill="#e67e22"/>
+  <rect x="156" y="40" width="24" height="4" fill="#f39c12"/>
+  <!-- Max shine -->
+  <rect x="162" y="10" width="6" height="12" fill="#fdfefe"/>
+  <rect x="160" y="12" width="10" height="8" fill="#fdfefe" opacity="0.5"/>
+  <rect x="158" y="4" width="2" height="6" fill="#fdfefe" opacity="0.3"/>
+  <rect x="180" y="6" width="2" height="4" fill="#fdfefe" opacity="0.3"/>
+
+  <!-- FRAME 5 - Shine fading -->
+  <rect x="208" y="8" width="16" height="24" fill="#f39c12"/>
+  <rect x="210" y="10" width="12" height="20" fill="#f4d03f"/>
+  <rect x="200" y="12" width="8" height="8" fill="#f39c12"/>
+  <rect x="224" y="12" width="8" height="8" fill="#f39c12"/>
+  <rect x="210" y="32" width="12" height="4" fill="#f39c12"/>
+  <rect x="206" y="36" width="20" height="4" fill="#e67e22"/>
+  <rect x="204" y="40" width="24" height="4" fill="#f39c12"/>
+  <!-- Fading shine -->
+  <rect x="218" y="14" width="4" height="6" fill="#fdfefe" opacity="0.6"/>
+
+  <!-- FRAME 6 - Back to base -->
+  <rect x="256" y="8" width="16" height="24" fill="#f39c12"/>
+  <rect x="258" y="10" width="12" height="20" fill="#f4d03f"/>
+  <rect x="248" y="12" width="8" height="8" fill="#f39c12"/>
+  <rect x="272" y="12" width="8" height="8" fill="#f39c12"/>
+  <rect x="258" y="32" width="12" height="4" fill="#f39c12"/>
+  <rect x="254" y="36" width="20" height="4" fill="#e67e22"/>
+  <rect x="252" y="40" width="24" height="4" fill="#f39c12"/>
+  <!-- Tiny shine -->
+  <rect x="268" y="16" width="2" height="2" fill="#fdfefe" opacity="0.4"/>
+</svg>

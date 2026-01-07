@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 16" width="48" height="16">
+  <!-- Video Tab (48x16) - Video settings tab -->
+  <!-- Color Palette: #2c3e50, #34495e, #9b59b6, #fdfefe -->
+
+  <!-- Tab background -->
+  <rect x="0" y="2" width="48" height="14" fill="#2c3e50"/>
+  <rect x="2" y="0" width="44" height="14" fill="#34495e"/>
+  <rect x="2" y="0" width="44" height="2" fill="#9b59b6"/>
+
+  <!-- Monitor icon -->
+  <rect x="6" y="2" width="14" height="10" fill="#fdfefe"/>
+  <rect x="8" y="4" width="10" height="6" fill="#9b59b6"/>
+  <!-- Monitor stand -->
+  <rect x="11" y="12" width="4" height="2" fill="#fdfefe"/>
+  <rect x="9" y="13" width="8" height="1" fill="#bdc3c7"/>
+
+  <!-- "VIDEO" text hint -->
+  <rect x="26" y="5" width="16" height="4" fill="#5d6d7e"/>
+</svg>

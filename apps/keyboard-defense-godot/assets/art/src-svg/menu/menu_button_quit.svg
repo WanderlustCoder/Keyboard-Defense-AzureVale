@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 32" width="128" height="32">
+  <!-- Quit Button (128x32) - Exit/quit button -->
+  <!-- Color Palette: #e74c3c, #c0392b, #1a252f, #fdfefe -->
+
+  <!-- Button base -->
+  <rect x="0" y="0" width="128" height="32" fill="#1a252f"/>
+  <rect x="2" y="2" width="124" height="28" fill="#c0392b"/>
+
+  <!-- Button highlight (top) -->
+  <rect x="2" y="2" width="124" height="4" fill="#e74c3c"/>
+  <rect x="4" y="4" width="120" height="2" fill="#f5b7b1"/>
+
+  <!-- Button shadow (bottom) -->
+  <rect x="2" y="26" width="124" height="4" fill="#922b21"/>
+
+  <!-- Main button face -->
+  <rect x="4" y="6" width="120" height="20" fill="#e74c3c"/>
+
+  <!-- Door/exit icon -->
+  <rect x="20" y="8" width="14" height="16" fill="#c0392b"/>
+  <rect x="22" y="10" width="10" height="12" fill="#fdfefe"/>
+  <rect x="24" y="12" width="6" height="8" fill="#c0392b"/>
+  <!-- Arrow pointing out -->
+  <rect x="30" y="14" width="6" height="4" fill="#fdfefe"/>
+  <rect x="34" y="12" width="2" height="2" fill="#fdfefe"/>
+  <rect x="34" y="18" width="2" height="2" fill="#fdfefe"/>
+  <rect x="36" y="14" width="2" height="4" fill="#fdfefe"/>
+
+  <!-- "QUIT" text area -->
+  <rect x="44" y="10" width="60" height="12" fill="#c0392b"/>
+  <!-- Q -->
+  <rect x="48" y="11" width="8" height="2" fill="#fdfefe"/>
+  <rect x="48" y="11" width="2" height="8" fill="#fdfefe"/>
+  <rect x="54" y="11" width="2" height="8" fill="#fdfefe"/>
+  <rect x="48" y="17" width="8" height="2" fill="#fdfefe"/>
+  <rect x="54" y="17" width="2" height="4" fill="#fdfefe"/>
+  <!-- U -->
+  <rect x="58" y="11" width="2" height="10" fill="#fdfefe"/>
+  <rect x="64" y="11" width="2" height="10" fill="#fdfefe"/>
+  <rect x="58" y="19" width="8" height="2" fill="#fdfefe"/>
+  <!-- I -->
+  <rect x="68" y="11" width="2" height="10" fill="#fdfefe"/>
+  <!-- T -->
+  <rect x="72" y="11" width="10" height="2" fill="#fdfefe"/>
+  <rect x="76" y="11" width="2" height="10" fill="#fdfefe"/>
+
+  <!-- Corner bevels -->
+  <rect x="0" y="0" width="4" height="4" fill="#e74c3c"/>
+  <rect x="124" y="0" width="4" height="4" fill="#e74c3c"/>
+  <rect x="0" y="28" width="4" height="4" fill="#922b21"/>
+  <rect x="124" y="28" width="4" height="4" fill="#922b21"/>
+</svg>

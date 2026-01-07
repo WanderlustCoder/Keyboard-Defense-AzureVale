@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 192" width="256" height="192">
+  <!-- Defeat Frame (256x192) - Defeat screen container -->
+  <!-- Color Palette: #1a252f, #c0392b, #e74c3c, #5d6d7e -->
+
+  <!-- Outer border (dark red) -->
+  <rect x="0" y="0" width="256" height="192" fill="#922b21"/>
+  <rect x="4" y="4" width="248" height="184" fill="#c0392b"/>
+
+  <!-- Inner frame -->
+  <rect x="8" y="8" width="240" height="176" fill="#1a252f"/>
+  <rect x="12" y="12" width="232" height="168" fill="#2c3e50"/>
+  <rect x="16" y="16" width="224" height="160" fill="#34495e"/>
+  <rect x="20" y="20" width="216" height="152" fill="#2c3e50"/>
+
+  <!-- Content area -->
+  <rect x="24" y="24" width="208" height="144" fill="#1a252f"/>
+
+  <!-- Skull placement area -->
+  <rect x="100" y="50" width="56" height="60" fill="#34495e"/>
+  <rect x="104" y="54" width="48" height="52" fill="#2c3e50"/>
+
+  <!-- Stats area -->
+  <rect x="32" y="120" width="192" height="40" fill="#34495e"/>
+  <rect x="36" y="124" width="184" height="32" fill="#1a252f"/>
+
+  <!-- Crack effects on corners -->
+  <rect x="0" y="0" width="20" height="8" fill="#5d6d7e"/>
+  <rect x="0" y="0" width="8" height="20" fill="#5d6d7e"/>
+  <rect x="4" y="8" width="2" height="16" fill="#34495e"/>
+  <rect x="8" y="4" width="16" height="2" fill="#34495e"/>
+
+  <rect x="236" y="0" width="20" height="8" fill="#5d6d7e"/>
+  <rect x="248" y="0" width="8" height="20" fill="#5d6d7e"/>
+  <rect x="250" y="8" width="2" height="16" fill="#34495e"/>
+  <rect x="232" y="4" width="16" height="2" fill="#34495e"/>
+
+  <rect x="0" y="184" width="20" height="8" fill="#5d6d7e"/>
+  <rect x="0" y="172" width="8" height="20" fill="#5d6d7e"/>
+  <rect x="4" y="168" width="2" height="16" fill="#34495e"/>
+  <rect x="8" y="186" width="16" height="2" fill="#34495e"/>
+
+  <rect x="236" y="184" width="20" height="8" fill="#5d6d7e"/>
+  <rect x="248" y="172" width="8" height="20" fill="#5d6d7e"/>
+  <rect x="250" y="168" width="2" height="16" fill="#34495e"/>
+  <rect x="232" y="186" width="16" height="2" fill="#34495e"/>
+
+  <!-- Skull detail in center -->
+  <rect x="112" y="60" width="32" height="24" fill="#fdfefe"/>
+  <rect x="114" y="58" width="28" height="28" fill="#ecf0f1"/>
+  <rect x="118" y="64" width="6" height="6" fill="#1a252f"/>
+  <rect x="132" y="64" width="6" height="6" fill="#1a252f"/>
+  <rect x="124" y="74" width="8" height="4" fill="#1a252f"/>
+  <rect x="116" y="82" width="24" height="8" fill="#ecf0f1"/>
+  <rect x="118" y="84" width="4" height="4" fill="#1a252f"/>
+  <rect x="124" y="84" width="4" height="4" fill="#1a252f"/>
+  <rect x="130" y="84" width="4" height="4" fill="#1a252f"/>
+  <rect x="136" y="84" width="4" height="4" fill="#1a252f"/>
+</svg>

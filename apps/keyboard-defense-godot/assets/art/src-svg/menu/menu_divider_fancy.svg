@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 8" width="128" height="8">
+  <!-- Fancy Divider (128x8) - Decorative menu divider -->
+  <!-- Color Palette: #f4d03f, #f39c12, #5d6d7e, #2c3e50 -->
+
+  <!-- Main line -->
+  <rect x="0" y="3" width="128" height="2" fill="#5d6d7e"/>
+  <rect x="0" y="4" width="128" height="1" fill="#2c3e50"/>
+
+  <!-- Center diamond -->
+  <rect x="58" y="0" width="4" height="2" fill="#f4d03f"/>
+  <rect x="56" y="2" width="8" height="2" fill="#f4d03f"/>
+  <rect x="54" y="3" width="12" height="2" fill="#f39c12"/>
+  <rect x="56" y="4" width="8" height="2" fill="#f4d03f"/>
+  <rect x="58" y="6" width="4" height="2" fill="#f4d03f"/>
+  <rect x="60" y="2" width="2" height="4" fill="#fdfefe" opacity="0.5"/>
+
+  <!-- Left ornament -->
+  <rect x="20" y="2" width="4" height="4" fill="#f39c12"/>
+  <rect x="21" y="3" width="2" height="2" fill="#f4d03f"/>
+
+  <!-- Right ornament -->
+  <rect x="104" y="2" width="4" height="4" fill="#f39c12"/>
+  <rect x="105" y="3" width="2" height="2" fill="#f4d03f"/>
+
+  <!-- Line segments -->
+  <rect x="26" y="3" width="26" height="2" fill="#f39c12" opacity="0.5"/>
+  <rect x="76" y="3" width="26" height="2" fill="#f39c12" opacity="0.5"/>
+
+  <!-- End caps -->
+  <rect x="0" y="2" width="2" height="4" fill="#5d6d7e"/>
+  <rect x="126" y="2" width="2" height="4" fill="#5d6d7e"/>
+</svg>

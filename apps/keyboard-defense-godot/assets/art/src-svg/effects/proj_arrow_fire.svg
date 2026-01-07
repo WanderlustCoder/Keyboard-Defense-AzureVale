@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 8" width="32" height="8">
+  <!-- Flaming Arrow (32x8) - 2 frames of 16x8 -->
+  <!-- Color Palette: #8b4513, #e67e22, #f39c12, #f4d03f -->
+
+  <!-- FRAME 1 - Arrow with flame -->
+  <rect x="0" y="3" width="10" height="2" fill="#8b4513"/>
+  <rect x="1" y="3" width="8" height="1" fill="#a0522d"/>
+  <rect x="10" y="2" width="3" height="4" fill="#7f8c8d"/>
+  <rect x="12" y="3" width="2" height="2" fill="#95a5a6"/>
+  <!-- Fire trail -->
+  <rect x="2" y="1" width="3" height="2" fill="#e67e22"/>
+  <rect x="3" y="2" width="2" height="1" fill="#f39c12"/>
+  <rect x="1" y="4" width="3" height="2" fill="#e67e22"/>
+  <rect x="2" y="5" width="2" height="1" fill="#f4d03f"/>
+  <!-- Sparks -->
+  <rect x="0" y="0" width="1" height="1" fill="#f4d03f"/>
+  <rect x="0" y="6" width="1" height="1" fill="#f39c12"/>
+
+  <!-- FRAME 2 - Arrow with shifted flame -->
+  <rect x="16" y="3" width="10" height="2" fill="#8b4513"/>
+  <rect x="17" y="3" width="8" height="1" fill="#a0522d"/>
+  <rect x="26" y="2" width="3" height="4" fill="#7f8c8d"/>
+  <rect x="28" y="3" width="2" height="2" fill="#bdc3c7"/>
+  <!-- Fire trail shifted -->
+  <rect x="17" y="1" width="4" height="2" fill="#e67e22"/>
+  <rect x="18" y="1" width="2" height="1" fill="#f39c12"/>
+  <rect x="16" y="5" width="4" height="2" fill="#e67e22"/>
+  <rect x="17" y="5" width="2" height="2" fill="#f4d03f"/>
+  <!-- Sparks shifted -->
+  <rect x="16" y="2" width="1" height="1" fill="#f4d03f"/>
+  <rect x="20" y="0" width="1" height="1" fill="#f39c12"/>
+</svg>

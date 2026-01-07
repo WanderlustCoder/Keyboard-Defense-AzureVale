@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8" width="8" height="8">
+  <!-- Hard Word Marker (8x8) - orange dot -->
+  <rect x="2" y="2" width="4" height="4" fill="#d35400"/>
+  <rect x="3" y="3" width="2" height="2" fill="#e67e22"/>
+  <rect x="3" y="3" width="1" height="1" fill="#f5b041"/>
+</svg>

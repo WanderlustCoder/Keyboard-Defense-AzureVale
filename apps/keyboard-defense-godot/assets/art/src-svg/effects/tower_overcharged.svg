@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 24" width="48" height="24">
+  <!-- Tower Overcharged (48x24) - 2 frames of 24x24, boosted glow effect -->
+  <!-- Color Palette: #f4d03f, #f9e79f, #fdfefe, #3498db -->
+
+  <!-- FRAME 1 - Glow pulse out -->
+  <!-- Outer glow -->
+  <rect x="0" y="8" width="4" height="8" fill="#f4d03f" opacity="0.4"/>
+  <rect x="20" y="8" width="4" height="8" fill="#f4d03f" opacity="0.4"/>
+  <rect x="8" y="0" width="8" height="4" fill="#f4d03f" opacity="0.4"/>
+  <rect x="8" y="20" width="8" height="4" fill="#f4d03f" opacity="0.4"/>
+
+  <!-- Inner glow ring -->
+  <rect x="2" y="6" width="4" height="4" fill="#f9e79f" opacity="0.6"/>
+  <rect x="2" y="14" width="4" height="4" fill="#f9e79f" opacity="0.6"/>
+  <rect x="18" y="6" width="4" height="4" fill="#f9e79f" opacity="0.6"/>
+  <rect x="18" y="14" width="4" height="4" fill="#f9e79f" opacity="0.6"/>
+  <rect x="6" y="2" width="4" height="4" fill="#f9e79f" opacity="0.6"/>
+  <rect x="14" y="2" width="4" height="4" fill="#f9e79f" opacity="0.6"/>
+  <rect x="6" y="18" width="4" height="4" fill="#f9e79f" opacity="0.6"/>
+  <rect x="14" y="18" width="4" height="4" fill="#f9e79f" opacity="0.6"/>
+
+  <!-- Energy particles -->
+  <rect x="4" y="4" width="2" height="2" fill="#fdfefe"/>
+  <rect x="18" y="4" width="2" height="2" fill="#fdfefe"/>
+  <rect x="4" y="18" width="2" height="2" fill="#fdfefe"/>
+  <rect x="18" y="18" width="2" height="2" fill="#fdfefe"/>
+  <rect x="10" y="1" width="4" height="2" fill="#fdfefe"/>
+  <rect x="10" y="21" width="4" height="2" fill="#fdfefe"/>
+  <rect x="1" y="10" width="2" height="4" fill="#fdfefe"/>
+  <rect x="21" y="10" width="2" height="4" fill="#fdfefe"/>
+
+  <!-- Blue core sparkles -->
+  <rect x="9" y="9" width="6" height="6" fill="#3498db" opacity="0.3"/>
+  <rect x="10" y="10" width="4" height="4" fill="#5dade2" opacity="0.4"/>
+  <rect x="11" y="11" width="2" height="2" fill="#aed6f1" opacity="0.5"/>
+
+  <!-- FRAME 2 - Glow pulse in -->
+  <!-- Smaller outer glow -->
+  <rect x="26" y="9" width="3" height="6" fill="#f9e79f" opacity="0.5"/>
+  <rect x="43" y="9" width="3" height="6" fill="#f9e79f" opacity="0.5"/>
+  <rect x="33" y="2" width="6" height="3" fill="#f9e79f" opacity="0.5"/>
+  <rect x="33" y="19" width="6" height="3" fill="#f9e79f" opacity="0.5"/>
+
+  <!-- Brighter inner -->
+  <rect x="28" y="7" width="3" height="3" fill="#fdfefe" opacity="0.7"/>
+  <rect x="28" y="14" width="3" height="3" fill="#fdfefe" opacity="0.7"/>
+  <rect x="41" y="7" width="3" height="3" fill="#fdfefe" opacity="0.7"/>
+  <rect x="41" y="14" width="3" height="3" fill="#fdfefe" opacity="0.7"/>
+  <rect x="31" y="4" width="3" height="3" fill="#fdfefe" opacity="0.7"/>
+  <rect x="38" y="4" width="3" height="3" fill="#fdfefe" opacity="0.7"/>
+  <rect x="31" y="17" width="3" height="3" fill="#fdfefe" opacity="0.7"/>
+  <rect x="38" y="17" width="3" height="3" fill="#fdfefe" opacity="0.7"/>
+
+  <!-- Bright corner particles -->
+  <rect x="29" y="5" width="2" height="2" fill="#fdfefe"/>
+  <rect x="41" y="5" width="2" height="2" fill="#fdfefe"/>
+  <rect x="29" y="17" width="2" height="2" fill="#fdfefe"/>
+  <rect x="41" y="17" width="2" height="2" fill="#fdfefe"/>
+
+  <!-- Blue core brighter -->
+  <rect x="32" y="8" width="8" height="8" fill="#3498db" opacity="0.4"/>
+  <rect x="33" y="9" width="6" height="6" fill="#5dade2" opacity="0.5"/>
+  <rect x="34" y="10" width="4" height="4" fill="#85c1e9" opacity="0.6"/>
+  <rect x="35" y="11" width="2" height="2" fill="#aed6f1"/>
+</svg>

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Highlighted Key (16x16) - next key to press -->
+  <!-- Color Palette: #f4d03f, #f9e79f, #fdfefe -->
+
+  <!-- Key base with glow -->
+  <rect x="0" y="1" width="16" height="14" fill="#d4ac0d"/>
+  <!-- Key top surface -->
+  <rect x="1" y="0" width="14" height="13" fill="#f4d03f"/>
+  <rect x="2" y="1" width="12" height="11" fill="#f9e79f"/>
+  <!-- Bright highlight -->
+  <rect x="2" y="1" width="12" height="1" fill="#fdfefe"/>
+  <rect x="2" y="1" width="1" height="11" fill="#fdfefe"/>
+  <!-- Shadow -->
+  <rect x="2" y="11" width="12" height="1" fill="#d4ac0d"/>
+  <rect x="13" y="1" width="1" height="11" fill="#d4ac0d"/>
+  <!-- Center glow -->
+  <rect x="5" y="4" width="6" height="5" fill="#fdfefe" opacity="0.3"/>
+</svg>

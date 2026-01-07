@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 64" width="192" height="64">
+  <!-- Game Logo (192x64) - Main title logo "KEYBOARD DEFENSE" -->
+  <!-- Color Palette: #f4d03f, #f39c12, #e67e22, #2c3e50, #1a252f -->
+
+  <!-- Background banner -->
+  <rect x="0" y="8" width="192" height="48" fill="#2c3e50"/>
+  <rect x="4" y="12" width="184" height="40" fill="#1a252f"/>
+  <rect x="8" y="16" width="176" height="32" fill="#34495e"/>
+
+  <!-- Top decorative edge -->
+  <rect x="0" y="4" width="192" height="6" fill="#f39c12"/>
+  <rect x="8" y="6" width="176" height="2" fill="#f4d03f"/>
+
+  <!-- Bottom decorative edge -->
+  <rect x="0" y="54" width="192" height="6" fill="#f39c12"/>
+  <rect x="8" y="54" width="176" height="2" fill="#e67e22"/>
+
+  <!-- Corner shields -->
+  <rect x="0" y="8" width="12" height="46" fill="#f39c12"/>
+  <rect x="2" y="12" width="8" height="38" fill="#e67e22"/>
+  <rect x="4" y="16" width="4" height="30" fill="#f4d03f"/>
+
+  <rect x="180" y="8" width="12" height="46" fill="#f39c12"/>
+  <rect x="182" y="12" width="8" height="38" fill="#e67e22"/>
+  <rect x="184" y="16" width="4" height="30" fill="#f4d03f"/>
+
+  <!-- "KEYBOARD" text (stylized) -->
+  <rect x="20" y="18" width="152" height="12" fill="#f4d03f"/>
+  <rect x="22" y="20" width="148" height="8" fill="#f39c12"/>
+  <!-- K -->
+  <rect x="24" y="20" width="2" height="8" fill="#fdfefe"/>
+  <rect x="28" y="20" width="2" height="2" fill="#fdfefe"/>
+  <rect x="26" y="22" width="2" height="2" fill="#fdfefe"/>
+  <rect x="28" y="24" width="2" height="4" fill="#fdfefe"/>
+  <!-- E -->
+  <rect x="32" y="20" width="6" height="2" fill="#fdfefe"/>
+  <rect x="32" y="20" width="2" height="8" fill="#fdfefe"/>
+  <rect x="32" y="23" width="4" height="2" fill="#fdfefe"/>
+  <rect x="32" y="26" width="6" height="2" fill="#fdfefe"/>
+  <!-- Y -->
+  <rect x="40" y="20" width="2" height="3" fill="#fdfefe"/>
+  <rect x="44" y="20" width="2" height="3" fill="#fdfefe"/>
+  <rect x="42" y="22" width="2" height="6" fill="#fdfefe"/>
+  <!-- B -->
+  <rect x="48" y="20" width="2" height="8" fill="#fdfefe"/>
+  <rect x="48" y="20" width="6" height="2" fill="#fdfefe"/>
+  <rect x="52" y="21" width="2" height="2" fill="#fdfefe"/>
+  <rect x="48" y="23" width="5" height="2" fill="#fdfefe"/>
+  <rect x="52" y="25" width="2" height="2" fill="#fdfefe"/>
+  <rect x="48" y="26" width="6" height="2" fill="#fdfefe"/>
+  <!-- O -->
+  <rect x="56" y="20" width="6" height="2" fill="#fdfefe"/>
+  <rect x="56" y="20" width="2" height="8" fill="#fdfefe"/>
+  <rect x="60" y="20" width="2" height="8" fill="#fdfefe"/>
+  <rect x="56" y="26" width="6" height="2" fill="#fdfefe"/>
+  <!-- A -->
+  <rect x="64" y="20" width="6" height="2" fill="#fdfefe"/>
+  <rect x="64" y="20" width="2" height="8" fill="#fdfefe"/>
+  <rect x="68" y="20" width="2" height="8" fill="#fdfefe"/>
+  <rect x="64" y="23" width="6" height="2" fill="#fdfefe"/>
+  <!-- R -->
+  <rect x="72" y="20" width="2" height="8" fill="#fdfefe"/>
+  <rect x="72" y="20" width="6" height="2" fill="#fdfefe"/>
+  <rect x="76" y="21" width="2" height="2" fill="#fdfefe"/>
+  <rect x="72" y="23" width="6" height="2" fill="#fdfefe"/>
+  <rect x="76" y="25" width="2" height="3" fill="#fdfefe"/>
+  <!-- D -->
+  <rect x="80" y="20" width="2" height="8" fill="#fdfefe"/>
+  <rect x="80" y="20" width="5" height="2" fill="#fdfefe"/>
+  <rect x="84" y="21" width="2" height="6" fill="#fdfefe"/>
+  <rect x="80" y="26" width="5" height="2" fill="#fdfefe"/>
+
+  <!-- "DEFENSE" text (stylized) -->
+  <rect x="20" y="34" width="152" height="12" fill="#e74c3c"/>
+  <rect x="22" y="36" width="148" height="8" fill="#c0392b"/>
+  <!-- D -->
+  <rect x="44" y="36" width="2" height="8" fill="#fdfefe"/>
+  <rect x="44" y="36" width="6" height="2" fill="#fdfefe"/>
+  <rect x="48" y="37" width="2" height="6" fill="#fdfefe"/>
+  <rect x="44" y="42" width="6" height="2" fill="#fdfefe"/>
+  <!-- E -->
+  <rect x="52" y="36" width="6" height="2" fill="#fdfefe"/>
+  <rect x="52" y="36" width="2" height="8" fill="#fdfefe"/>
+  <rect x="52" y="39" width="4" height="2" fill="#fdfefe"/>
+  <rect x="52" y="42" width="6" height="2" fill="#fdfefe"/>
+  <!-- F -->
+  <rect x="60" y="36" width="6" height="2" fill="#fdfefe"/>
+  <rect x="60" y="36" width="2" height="8" fill="#fdfefe"/>
+  <rect x="60" y="39" width="4" height="2" fill="#fdfefe"/>
+  <!-- E -->
+  <rect x="68" y="36" width="6" height="2" fill="#fdfefe"/>
+  <rect x="68" y="36" width="2" height="8" fill="#fdfefe"/>
+  <rect x="68" y="39" width="4" height="2" fill="#fdfefe"/>
+  <rect x="68" y="42" width="6" height="2" fill="#fdfefe"/>
+  <!-- N -->
+  <rect x="76" y="36" width="2" height="8" fill="#fdfefe"/>
+  <rect x="78" y="38" width="2" height="2" fill="#fdfefe"/>
+  <rect x="80" y="40" width="2" height="2" fill="#fdfefe"/>
+  <rect x="82" y="36" width="2" height="8" fill="#fdfefe"/>
+  <!-- S -->
+  <rect x="86" y="36" width="6" height="2" fill="#fdfefe"/>
+  <rect x="86" y="36" width="2" height="4" fill="#fdfefe"/>
+  <rect x="86" y="39" width="6" height="2" fill="#fdfefe"/>
+  <rect x="90" y="40" width="2" height="4" fill="#fdfefe"/>
+  <rect x="86" y="42" width="6" height="2" fill="#fdfefe"/>
+  <!-- E -->
+  <rect x="94" y="36" width="6" height="2" fill="#fdfefe"/>
+  <rect x="94" y="36" width="2" height="8" fill="#fdfefe"/>
+  <rect x="94" y="39" width="4" height="2" fill="#fdfefe"/>
+  <rect x="94" y="42" width="6" height="2" fill="#fdfefe"/>
+
+  <!-- Keyboard icon accent -->
+  <rect x="104" y="36" width="16" height="8" fill="#5d6d7e"/>
+  <rect x="105" y="37" width="14" height="6" fill="#34495e"/>
+  <rect x="106" y="38" width="3" height="2" fill="#ecf0f1"/>
+  <rect x="110" y="38" width="3" height="2" fill="#ecf0f1"/>
+  <rect x="114" y="38" width="3" height="2" fill="#ecf0f1"/>
+  <rect x="107" y="41" width="8" height="2" fill="#ecf0f1"/>
+
+  <!-- Sword icon accent -->
+  <rect x="124" y="34" width="4" height="12" fill="#7f8c8d"/>
+  <rect x="125" y="36" width="2" height="8" fill="#bdc3c7"/>
+  <rect x="120" y="42" width="12" height="3" fill="#8b4513"/>
+  <rect x="122" y="43" width="8" height="1" fill="#a0522d"/>
+</svg>

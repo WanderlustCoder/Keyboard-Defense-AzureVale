@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <!-- Stats Star Empty (24x24) - Empty rating star -->
+  <!-- Color Palette: #5d6d7e, #34495e, #2c3e50 -->
+
+  <!-- Star outline -->
+  <rect x="10" y="2" width="4" height="6" fill="#5d6d7e"/>
+  <rect x="8" y="6" width="8" height="4" fill="#5d6d7e"/>
+  <rect x="2" y="8" width="20" height="4" fill="#5d6d7e"/>
+  <rect x="4" y="12" width="16" height="4" fill="#5d6d7e"/>
+  <rect x="6" y="16" width="12" height="2" fill="#5d6d7e"/>
+  <rect x="4" y="16" width="4" height="6" fill="#5d6d7e"/>
+  <rect x="16" y="16" width="4" height="6" fill="#5d6d7e"/>
+  <rect x="8" y="18" width="8" height="2" fill="#5d6d7e"/>
+
+  <!-- Inner hollow -->
+  <rect x="10" y="4" width="2" height="4" fill="#34495e"/>
+  <rect x="6" y="10" width="12" height="2" fill="#34495e"/>
+  <rect x="8" y="14" width="8" height="2" fill="#2c3e50"/>
+  <rect x="6" y="18" width="4" height="2" fill="#34495e"/>
+  <rect x="14" y="18" width="4" height="2" fill="#34495e"/>
+</svg>

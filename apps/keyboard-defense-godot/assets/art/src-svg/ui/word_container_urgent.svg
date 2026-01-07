@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 16" width="64" height="16">
+  <!-- Urgent Word Container (64x16) - low time remaining -->
+  <!-- Color Palette: #e74c3c, #c0392b, #1a252f -->
+
+  <!-- Outer danger border -->
+  <rect x="0" y="0" width="64" height="16" fill="#922b21"/>
+  <!-- Red border -->
+  <rect x="1" y="1" width="62" height="14" fill="#e74c3c"/>
+  <!-- Inner fill -->
+  <rect x="2" y="2" width="60" height="12" fill="#1a252f"/>
+  <!-- Top highlight -->
+  <rect x="2" y="2" width="60" height="1" fill="#2c3e50"/>
+  <!-- Pulsing corner accents -->
+  <rect x="0" y="0" width="4" height="4" fill="#f5b7b1"/>
+  <rect x="60" y="0" width="4" height="4" fill="#f5b7b1"/>
+  <rect x="0" y="12" width="4" height="4" fill="#f5b7b1"/>
+  <rect x="60" y="12" width="4" height="4" fill="#f5b7b1"/>
+  <rect x="1" y="1" width="2" height="2" fill="#fdfefe"/>
+  <rect x="61" y="1" width="2" height="2" fill="#fdfefe"/>
+  <rect x="1" y="13" width="2" height="2" fill="#fdfefe"/>
+  <rect x="61" y="13" width="2" height="2" fill="#fdfefe"/>
+</svg>

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 32" width="256" height="32">
+  <!-- Loading Tip Background (256x32) - Tip display background -->
+  <!-- Color Palette: #1a252f, #2c3e50, #34495e, #3498db -->
+
+  <!-- Main background -->
+  <rect x="0" y="0" width="256" height="32" fill="#2c3e50"/>
+  <rect x="4" y="4" width="248" height="24" fill="#1a252f"/>
+
+  <!-- Left icon area -->
+  <rect x="8" y="8" width="16" height="16" fill="#34495e"/>
+  <rect x="10" y="10" width="12" height="12" fill="#3498db"/>
+  <!-- Lightbulb icon hint -->
+  <rect x="13" y="11" width="6" height="6" fill="#f4d03f"/>
+  <rect x="14" y="17" width="4" height="3" fill="#5d6d7e"/>
+
+  <!-- Text area -->
+  <rect x="28" y="8" width="220" height="16" fill="#34495e" opacity="0.5"/>
+
+  <!-- Border accent -->
+  <rect x="0" y="0" width="256" height="2" fill="#3498db"/>
+  <rect x="0" y="30" width="256" height="2" fill="#3498db"/>
+</svg>

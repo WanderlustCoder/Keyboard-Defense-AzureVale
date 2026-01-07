@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 48" width="192" height="48">
+  <!-- Victory Banner (192x48) - Victory text banner -->
+  <!-- Color Palette: #f4d03f, #f39c12, #27ae60, #fdfefe -->
+
+  <!-- Banner ribbon -->
+  <rect x="0" y="12" width="192" height="24" fill="#f39c12"/>
+  <rect x="4" y="14" width="184" height="20" fill="#f4d03f"/>
+  <rect x="8" y="16" width="176" height="16" fill="#f39c12"/>
+
+  <!-- Ribbon folds (left) -->
+  <rect x="0" y="8" width="20" height="8" fill="#e67e22"/>
+  <rect x="0" y="32" width="20" height="8" fill="#e67e22"/>
+  <rect x="0" y="36" width="16" height="8" fill="#d35400"/>
+
+  <!-- Ribbon folds (right) -->
+  <rect x="172" y="8" width="20" height="8" fill="#e67e22"/>
+  <rect x="172" y="32" width="20" height="8" fill="#e67e22"/>
+  <rect x="176" y="36" width="16" height="8" fill="#d35400"/>
+
+  <!-- "VICTORY" text -->
+  <!-- V -->
+  <rect x="40" y="18" width="3" height="8" fill="#fdfefe"/>
+  <rect x="41" y="24" width="2" height="4" fill="#fdfefe"/>
+  <rect x="43" y="26" width="2" height="4" fill="#fdfefe"/>
+  <rect x="45" y="24" width="2" height="4" fill="#fdfefe"/>
+  <rect x="47" y="18" width="3" height="8" fill="#fdfefe"/>
+  <!-- I -->
+  <rect x="54" y="18" width="3" height="12" fill="#fdfefe"/>
+  <!-- C -->
+  <rect x="60" y="18" width="10" height="3" fill="#fdfefe"/>
+  <rect x="60" y="18" width="3" height="12" fill="#fdfefe"/>
+  <rect x="60" y="27" width="10" height="3" fill="#fdfefe"/>
+  <!-- T -->
+  <rect x="74" y="18" width="10" height="3" fill="#fdfefe"/>
+  <rect x="77" y="18" width="4" height="12" fill="#fdfefe"/>
+  <!-- O -->
+  <rect x="88" y="18" width="10" height="3" fill="#fdfefe"/>
+  <rect x="88" y="18" width="3" height="12" fill="#fdfefe"/>
+  <rect x="95" y="18" width="3" height="12" fill="#fdfefe"/>
+  <rect x="88" y="27" width="10" height="3" fill="#fdfefe"/>
+  <!-- R -->
+  <rect x="102" y="18" width="3" height="12" fill="#fdfefe"/>
+  <rect x="102" y="18" width="9" height="3" fill="#fdfefe"/>
+  <rect x="108" y="20" width="3" height="3" fill="#fdfefe"/>
+  <rect x="102" y="22" width="9" height="3" fill="#fdfefe"/>
+  <rect x="108" y="25" width="3" height="5" fill="#fdfefe"/>
+  <!-- Y -->
+  <rect x="116" y="18" width="3" height="5" fill="#fdfefe"/>
+  <rect x="124" y="18" width="3" height="5" fill="#fdfefe"/>
+  <rect x="119" y="22" width="5" height="3" fill="#fdfefe"/>
+  <rect x="120" y="24" width="3" height="6" fill="#fdfefe"/>
+
+  <!-- Star accents -->
+  <rect x="24" y="20" width="6" height="2" fill="#27ae60"/>
+  <rect x="26" y="18" width="2" height="6" fill="#27ae60"/>
+  <rect x="136" y="20" width="6" height="2" fill="#27ae60"/>
+  <rect x="138" y="18" width="2" height="6" fill="#27ae60"/>
+
+  <!-- Laurel hints -->
+  <rect x="148" y="16" width="4" height="8" fill="#27ae60"/>
+  <rect x="150" y="14" width="2" height="12" fill="#2ecc71"/>
+  <rect x="156" y="18" width="4" height="6" fill="#27ae60"/>
+</svg>

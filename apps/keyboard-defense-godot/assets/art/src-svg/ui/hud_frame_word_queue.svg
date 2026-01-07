@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 24" width="192" height="24">
+  <!-- Word Queue Frame (192x24) - Word queue display container -->
+  <!-- Color Palette: #1a252f, #2c3e50, #34495e, #5d6d7e -->
+
+  <!-- Outer border -->
+  <rect x="0" y="0" width="192" height="24" fill="#1a252f"/>
+
+  <!-- Inner border -->
+  <rect x="2" y="2" width="188" height="20" fill="#2c3e50"/>
+  <rect x="2" y="2" width="188" height="1" fill="#5d6d7e"/>
+  <rect x="2" y="2" width="1" height="20" fill="#5d6d7e"/>
+
+  <!-- Content area -->
+  <rect x="3" y="3" width="186" height="18" fill="#34495e"/>
+
+  <!-- Word slots dividers -->
+  <rect x="48" y="5" width="1" height="14" fill="#2c3e50"/>
+  <rect x="96" y="5" width="1" height="14" fill="#2c3e50"/>
+  <rect x="144" y="5" width="1" height="14" fill="#2c3e50"/>
+
+  <!-- Active slot indicator (first slot) -->
+  <rect x="4" y="4" width="42" height="16" fill="#2c3e50" opacity="0.5"/>
+  <rect x="4" y="4" width="42" height="1" fill="#f4d03f" opacity="0.6"/>
+  <rect x="4" y="19" width="42" height="1" fill="#f4d03f" opacity="0.6"/>
+
+  <!-- Corner accents -->
+  <rect x="0" y="0" width="4" height="2" fill="#5d6d7e"/>
+  <rect x="188" y="0" width="4" height="2" fill="#5d6d7e"/>
+  <rect x="0" y="22" width="4" height="2" fill="#5d6d7e"/>
+  <rect x="188" y="22" width="4" height="2" fill="#5d6d7e"/>
+</svg>

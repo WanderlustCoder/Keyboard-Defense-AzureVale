@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 48" width="192" height="48">
+  <!-- Loading Frame (192x48) - Loading bar container -->
+  <!-- Color Palette: #1a252f, #2c3e50, #34495e, #5d6d7e, #f4d03f -->
+
+  <!-- Outer frame -->
+  <rect x="0" y="0" width="192" height="48" fill="#1a252f"/>
+  <rect x="4" y="4" width="184" height="40" fill="#2c3e50"/>
+  <rect x="4" y="4" width="184" height="2" fill="#5d6d7e"/>
+  <rect x="4" y="4" width="2" height="40" fill="#5d6d7e"/>
+
+  <!-- Inner content area -->
+  <rect x="8" y="8" width="176" height="32" fill="#34495e"/>
+
+  <!-- Loading text area -->
+  <rect x="12" y="10" width="168" height="10" fill="#2c3e50"/>
+
+  <!-- Progress bar track -->
+  <rect x="12" y="24" width="168" height="12" fill="#1a252f"/>
+  <rect x="14" y="26" width="164" height="8" fill="#0d1318"/>
+
+  <!-- Progress bar fill (example at 60%) -->
+  <rect x="15" y="27" width="98" height="6" fill="#f39c12"/>
+  <rect x="15" y="27" width="98" height="2" fill="#f4d03f"/>
+
+  <!-- Corner accents -->
+  <rect x="0" y="0" width="8" height="4" fill="#5d6d7e"/>
+  <rect x="184" y="0" width="8" height="4" fill="#5d6d7e"/>
+  <rect x="0" y="44" width="8" height="4" fill="#5d6d7e"/>
+  <rect x="184" y="44" width="8" height="4" fill="#5d6d7e"/>
+</svg>

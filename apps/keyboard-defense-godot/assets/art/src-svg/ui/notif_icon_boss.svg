@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Boss Icon (16x16) - Skull boss warning -->
+  <!-- Color Palette: #9b59b6, #8e44ad, #fdfefe, #e74c3c -->
+
+  <!-- Crown -->
+  <rect x="2" y="0" width="2" height="3" fill="#f4d03f"/>
+  <rect x="7" y="0" width="2" height="3" fill="#f4d03f"/>
+  <rect x="12" y="0" width="2" height="3" fill="#f4d03f"/>
+  <rect x="2" y="3" width="12" height="2" fill="#f4d03f"/>
+  <rect x="3" y="4" width="10" height="1" fill="#e67e22"/>
+
+  <!-- Skull -->
+  <rect x="3" y="5" width="10" height="2" fill="#fdfefe"/>
+  <rect x="2" y="7" width="12" height="4" fill="#fdfefe"/>
+  <rect x="3" y="11" width="10" height="2" fill="#fdfefe"/>
+  <rect x="4" y="13" width="8" height="2" fill="#ecf0f1"/>
+
+  <!-- Eyes (glowing) -->
+  <rect x="4" y="7" width="3" height="3" fill="#9b59b6"/>
+  <rect x="5" y="8" width="1" height="1" fill="#e74c3c"/>
+  <rect x="9" y="7" width="3" height="3" fill="#9b59b6"/>
+  <rect x="10" y="8" width="1" height="1" fill="#e74c3c"/>
+
+  <!-- Nose -->
+  <rect x="7" y="10" width="2" height="2" fill="#1a252f"/>
+
+  <!-- Teeth -->
+  <rect x="5" y="13" width="1" height="2" fill="#1a252f"/>
+  <rect x="7" y="13" width="2" height="2" fill="#1a252f"/>
+  <rect x="10" y="13" width="1" height="2" fill="#1a252f"/>
+
+  <!-- Glow effect -->
+  <rect x="1" y="6" width="1" height="6" fill="#8e44ad" opacity="0.5"/>
+  <rect x="14" y="6" width="1" height="6" fill="#8e44ad" opacity="0.5"/>
+</svg>

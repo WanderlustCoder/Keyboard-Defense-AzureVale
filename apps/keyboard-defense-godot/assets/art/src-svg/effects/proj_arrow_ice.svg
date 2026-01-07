@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 8" width="32" height="8">
+  <!-- Frost Arrow (32x8) - 2 frames of 16x8 -->
+  <!-- Color Palette: #3498db, #5dade2, #85c1e9, #aed6f1 -->
+
+  <!-- FRAME 1 - Arrow with ice -->
+  <rect x="0" y="3" width="10" height="2" fill="#3498db"/>
+  <rect x="1" y="3" width="8" height="1" fill="#5dade2"/>
+  <rect x="10" y="2" width="3" height="4" fill="#85c1e9"/>
+  <rect x="12" y="3" width="2" height="2" fill="#aed6f1"/>
+  <!-- Ice crystals -->
+  <rect x="3" y="1" width="2" height="2" fill="#5dade2"/>
+  <rect x="4" y="1" width="1" height="1" fill="#aed6f1"/>
+  <rect x="2" y="5" width="2" height="2" fill="#5dade2"/>
+  <rect x="3" y="6" width="1" height="1" fill="#aed6f1"/>
+  <!-- Frost particles -->
+  <rect x="0" y="0" width="1" height="1" fill="#d6eaf8"/>
+  <rect x="1" y="6" width="1" height="1" fill="#d6eaf8"/>
+
+  <!-- FRAME 2 - Arrow with shimmer -->
+  <rect x="16" y="3" width="10" height="2" fill="#3498db"/>
+  <rect x="17" y="3" width="8" height="1" fill="#85c1e9"/>
+  <rect x="26" y="2" width="3" height="4" fill="#aed6f1"/>
+  <rect x="28" y="3" width="2" height="2" fill="#d6eaf8"/>
+  <!-- Ice crystals shifted -->
+  <rect x="18" y="0" width="2" height="2" fill="#5dade2"/>
+  <rect x="19" y="0" width="1" height="1" fill="#d6eaf8"/>
+  <rect x="17" y="6" width="2" height="2" fill="#5dade2"/>
+  <rect x="18" y="7" width="1" height="1" fill="#d6eaf8"/>
+  <!-- Frost particles -->
+  <rect x="21" y="1" width="1" height="1" fill="#aed6f1"/>
+  <rect x="16" y="5" width="1" height="1" fill="#aed6f1"/>
+</svg>

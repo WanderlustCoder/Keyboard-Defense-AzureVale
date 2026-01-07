@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 32" width="64" height="32">
+  <!-- Combo Display (64x32) - Combo counter with fire effect -->
+  <!-- Color Palette: #1a252f, #2c3e50, #d35400, #e67e22, #f39c12, #f4d03f -->
+
+  <!-- Background -->
+  <rect x="0" y="8" width="64" height="24" fill="#1a252f"/>
+  <rect x="2" y="10" width="60" height="20" fill="#2c3e50"/>
+
+  <!-- Fire effect (top) -->
+  <rect x="8" y="2" width="6" height="8" fill="#d35400"/>
+  <rect x="9" y="0" width="4" height="8" fill="#e67e22"/>
+  <rect x="10" y="0" width="2" height="6" fill="#f39c12"/>
+  <rect x="18" y="4" width="4" height="6" fill="#d35400"/>
+  <rect x="19" y="2" width="2" height="6" fill="#e67e22"/>
+  <rect x="48" y="2" width="6" height="8" fill="#d35400"/>
+  <rect x="49" y="0" width="4" height="8" fill="#e67e22"/>
+  <rect x="50" y="0" width="2" height="6" fill="#f39c12"/>
+  <rect x="40" y="4" width="4" height="6" fill="#d35400"/>
+  <rect x="41" y="2" width="2" height="6" fill="#e67e22"/>
+
+  <!-- "COMBO" label area -->
+  <rect x="4" y="12" width="56" height="8" fill="#34495e"/>
+  <rect x="5" y="13" width="54" height="6" fill="#0d1318"/>
+
+  <!-- Number display area -->
+  <rect x="4" y="22" width="56" height="8" fill="#34495e"/>
+  <rect x="5" y="23" width="54" height="6" fill="#0d1318"/>
+
+  <!-- Sample combo number (stylized "x15") -->
+  <rect x="18" y="24" width="3" height="1" fill="#f4d03f"/>
+  <rect x="18" y="25" width="1" height="2" fill="#f4d03f"/>
+  <rect x="20" y="25" width="1" height="2" fill="#f4d03f"/>
+  <rect x="19" y="26" width="1" height="1" fill="#f4d03f"/>
+  <rect x="18" y="27" width="1" height="1" fill="#f4d03f"/>
+  <rect x="20" y="27" width="1" height="1" fill="#f4d03f"/>
+  <rect x="24" y="24" width="2" height="4" fill="#f4d03f"/>
+  <rect x="30" y="24" width="4" height="1" fill="#f4d03f"/>
+  <rect x="30" y="24" width="1" height="4" fill="#f4d03f"/>
+  <rect x="30" y="25" width="3" height="1" fill="#f4d03f"/>
+  <rect x="33" y="25" width="1" height="3" fill="#f4d03f"/>
+  <rect x="30" y="27" width="4" height="1" fill="#f4d03f"/>
+  <rect x="38" y="24" width="4" height="1" fill="#f4d03f"/>
+  <rect x="38" y="24" width="1" height="4" fill="#f4d03f"/>
+  <rect x="38" y="25" width="4" height="1" fill="#f4d03f"/>
+  <rect x="38" y="27" width="4" height="1" fill="#f4d03f"/>
+  <rect x="41" y="26" width="1" height="1" fill="#f4d03f"/>
+</svg>

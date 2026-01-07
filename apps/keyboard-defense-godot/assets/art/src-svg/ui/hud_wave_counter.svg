@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 24" width="48" height="24">
+  <!-- Wave Counter (48x24) - Wave number display -->
+  <!-- Color Palette: #1a252f, #2c3e50, #e74c3c, #fdfefe -->
+
+  <!-- Background -->
+  <rect x="0" y="0" width="48" height="24" fill="#1a252f"/>
+  <rect x="2" y="2" width="44" height="20" fill="#2c3e50"/>
+
+  <!-- Wave icon (flag shape) -->
+  <rect x="4" y="4" width="2" height="16" fill="#5d6d7e"/>
+  <rect x="6" y="4" width="10" height="6" fill="#e74c3c"/>
+  <rect x="6" y="5" width="8" height="4" fill="#c0392b"/>
+  <rect x="6" y="10" width="8" height="4" fill="#e74c3c"/>
+  <rect x="7" y="11" width="6" height="2" fill="#c0392b"/>
+
+  <!-- Number display area -->
+  <rect x="18" y="4" width="26" height="16" fill="#34495e"/>
+  <rect x="19" y="5" width="24" height="14" fill="#0d1318"/>
+
+  <!-- Sample wave number (stylized "12") -->
+  <rect x="22" y="8" width="2" height="8" fill="#fdfefe"/>
+  <rect x="28" y="8" width="6" height="2" fill="#fdfefe"/>
+  <rect x="32" y="8" width="2" height="8" fill="#fdfefe"/>
+  <rect x="28" y="11" width="6" height="2" fill="#fdfefe"/>
+  <rect x="28" y="14" width="6" height="2" fill="#fdfefe"/>
+</svg>

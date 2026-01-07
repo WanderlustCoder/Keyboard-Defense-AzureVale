@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 24" width="48" height="24">
+  <!-- Tower Targeting (48x24) - 2 frames of 24x24, lock-on indicator -->
+  <!-- Color Palette: #e74c3c, #c0392b, #f4d03f, #fdfefe -->
+
+  <!-- FRAME 1 - Targeting reticle -->
+  <!-- Outer ring -->
+  <rect x="1" y="10" width="3" height="4" fill="#e74c3c"/>
+  <rect x="20" y="10" width="3" height="4" fill="#e74c3c"/>
+  <rect x="10" y="1" width="4" height="3" fill="#e74c3c"/>
+  <rect x="10" y="20" width="4" height="3" fill="#e74c3c"/>
+
+  <!-- Diagonal markers -->
+  <rect x="4" y="4" width="3" height="3" fill="#e74c3c"/>
+  <rect x="17" y="4" width="3" height="3" fill="#e74c3c"/>
+  <rect x="4" y="17" width="3" height="3" fill="#e74c3c"/>
+  <rect x="17" y="17" width="3" height="3" fill="#e74c3c"/>
+
+  <!-- Inner crosshair -->
+  <rect x="7" y="11" width="4" height="2" fill="#c0392b"/>
+  <rect x="13" y="11" width="4" height="2" fill="#c0392b"/>
+  <rect x="11" y="7" width="2" height="4" fill="#c0392b"/>
+  <rect x="11" y="13" width="2" height="4" fill="#c0392b"/>
+
+  <!-- Center dot -->
+  <rect x="10" y="10" width="4" height="4" fill="#f4d03f"/>
+  <rect x="11" y="11" width="2" height="2" fill="#fdfefe"/>
+
+  <!-- FRAME 2 - Lock-on pulse -->
+  <!-- Pulsed outer ring -->
+  <rect x="25" y="9" width="4" height="6" fill="#c0392b"/>
+  <rect x="43" y="9" width="4" height="6" fill="#c0392b"/>
+  <rect x="33" y="1" width="6" height="4" fill="#c0392b"/>
+  <rect x="33" y="19" width="6" height="4" fill="#c0392b"/>
+
+  <!-- Pulsed diagonal markers -->
+  <rect x="27" y="3" width="4" height="4" fill="#c0392b"/>
+  <rect x="41" y="3" width="4" height="4" fill="#c0392b"/>
+  <rect x="27" y="17" width="4" height="4" fill="#c0392b"/>
+  <rect x="41" y="17" width="4" height="4" fill="#c0392b"/>
+
+  <!-- Bright outer ring -->
+  <rect x="26" y="10" width="3" height="4" fill="#e74c3c"/>
+  <rect x="43" y="10" width="3" height="4" fill="#e74c3c"/>
+  <rect x="34" y="2" width="4" height="3" fill="#e74c3c"/>
+  <rect x="34" y="19" width="4" height="3" fill="#e74c3c"/>
+
+  <!-- Inner crosshair brighter -->
+  <rect x="30" y="11" width="5" height="2" fill="#e74c3c"/>
+  <rect x="37" y="11" width="5" height="2" fill="#e74c3c"/>
+  <rect x="35" y="6" width="2" height="5" fill="#e74c3c"/>
+  <rect x="35" y="13" width="2" height="5" fill="#e74c3c"/>
+
+  <!-- Bright center -->
+  <rect x="33" y="9" width="6" height="6" fill="#f4d03f"/>
+  <rect x="34" y="10" width="4" height="4" fill="#f9e79f"/>
+  <rect x="35" y="11" width="2" height="2" fill="#fdfefe"/>
+
+  <!-- Lock confirmation dots -->
+  <rect x="28" y="5" width="2" height="2" fill="#f4d03f"/>
+  <rect x="42" y="5" width="2" height="2" fill="#f4d03f"/>
+  <rect x="28" y="17" width="2" height="2" fill="#f4d03f"/>
+  <rect x="42" y="17" width="2" height="2" fill="#f4d03f"/>
+</svg>

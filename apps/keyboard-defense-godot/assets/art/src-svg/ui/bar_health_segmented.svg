@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 8" width="64" height="8">
+  <!-- Health Bar Segmented (64x8) - Segmented health display -->
+  <!-- Color Palette: #1a252f, #27ae60, #2ecc71, #e74c3c -->
+
+  <!-- Background -->
+  <rect x="0" y="0" width="64" height="8" fill="#1a252f"/>
+  <rect x="1" y="1" width="62" height="6" fill="#0d1318"/>
+
+  <!-- Health segments (10 segments) -->
+  <rect x="2" y="2" width="5" height="4" fill="#27ae60"/>
+  <rect x="2" y="2" width="5" height="1" fill="#2ecc71"/>
+  <rect x="8" y="2" width="5" height="4" fill="#27ae60"/>
+  <rect x="8" y="2" width="5" height="1" fill="#2ecc71"/>
+  <rect x="14" y="2" width="5" height="4" fill="#27ae60"/>
+  <rect x="14" y="2" width="5" height="1" fill="#2ecc71"/>
+  <rect x="20" y="2" width="5" height="4" fill="#27ae60"/>
+  <rect x="20" y="2" width="5" height="1" fill="#2ecc71"/>
+  <rect x="26" y="2" width="5" height="4" fill="#27ae60"/>
+  <rect x="26" y="2" width="5" height="1" fill="#2ecc71"/>
+  <rect x="32" y="2" width="5" height="4" fill="#27ae60"/>
+  <rect x="32" y="2" width="5" height="1" fill="#2ecc71"/>
+  <rect x="38" y="2" width="5" height="4" fill="#27ae60"/>
+  <rect x="38" y="2" width="5" height="1" fill="#2ecc71"/>
+
+  <!-- Damaged segments (red/empty) -->
+  <rect x="44" y="2" width="5" height="4" fill="#c0392b"/>
+  <rect x="44" y="2" width="5" height="1" fill="#e74c3c"/>
+  <rect x="50" y="2" width="5" height="4" fill="#34495e"/>
+  <rect x="56" y="2" width="5" height="4" fill="#34495e"/>
+
+  <!-- Segment dividers -->
+  <rect x="7" y="1" width="1" height="6" fill="#1a252f"/>
+  <rect x="13" y="1" width="1" height="6" fill="#1a252f"/>
+  <rect x="19" y="1" width="1" height="6" fill="#1a252f"/>
+  <rect x="25" y="1" width="1" height="6" fill="#1a252f"/>
+  <rect x="31" y="1" width="1" height="6" fill="#1a252f"/>
+  <rect x="37" y="1" width="1" height="6" fill="#1a252f"/>
+  <rect x="43" y="1" width="1" height="6" fill="#1a252f"/>
+  <rect x="49" y="1" width="1" height="6" fill="#1a252f"/>
+  <rect x="55" y="1" width="1" height="6" fill="#1a252f"/>
+</svg>

@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 8" width="32" height="8">
+  <!-- Ammo Indicator (32x8) - Ammunition count display -->
+  <!-- Color Palette: #1a252f, #f39c12, #e67e22, #7f8c8d -->
+
+  <!-- Background -->
+  <rect x="0" y="0" width="32" height="8" fill="#1a252f"/>
+
+  <!-- Ammo bullets (6 slots) -->
+  <!-- Bullet 1 (filled) -->
+  <rect x="2" y="1" width="3" height="6" fill="#f39c12"/>
+  <rect x="2" y="1" width="3" height="2" fill="#f4d03f"/>
+  <rect x="3" y="3" width="1" height="3" fill="#e67e22"/>
+
+  <!-- Bullet 2 (filled) -->
+  <rect x="6" y="1" width="3" height="6" fill="#f39c12"/>
+  <rect x="6" y="1" width="3" height="2" fill="#f4d03f"/>
+  <rect x="7" y="3" width="1" height="3" fill="#e67e22"/>
+
+  <!-- Bullet 3 (filled) -->
+  <rect x="10" y="1" width="3" height="6" fill="#f39c12"/>
+  <rect x="10" y="1" width="3" height="2" fill="#f4d03f"/>
+  <rect x="11" y="3" width="1" height="3" fill="#e67e22"/>
+
+  <!-- Bullet 4 (filled) -->
+  <rect x="14" y="1" width="3" height="6" fill="#f39c12"/>
+  <rect x="14" y="1" width="3" height="2" fill="#f4d03f"/>
+  <rect x="15" y="3" width="1" height="3" fill="#e67e22"/>
+
+  <!-- Bullet 5 (empty slot) -->
+  <rect x="18" y="1" width="3" height="6" fill="#5d6d7e"/>
+  <rect x="19" y="2" width="1" height="4" fill="#34495e"/>
+
+  <!-- Bullet 6 (empty slot) -->
+  <rect x="22" y="1" width="3" height="6" fill="#5d6d7e"/>
+  <rect x="23" y="2" width="1" height="4" fill="#34495e"/>
+
+  <!-- Reload indicator -->
+  <rect x="26" y="2" width="4" height="4" fill="#e74c3c" opacity="0.6"/>
+  <rect x="27" y="3" width="2" height="2" fill="#c0392b"/>
+</svg>

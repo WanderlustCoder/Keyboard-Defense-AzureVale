@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 32" width="128" height="32">
+  <!-- Play Button (128x32) - Main play/start button -->
+  <!-- Color Palette: #27ae60, #2ecc71, #1a252f, #fdfefe -->
+
+  <!-- Button base -->
+  <rect x="0" y="0" width="128" height="32" fill="#1a252f"/>
+  <rect x="2" y="2" width="124" height="28" fill="#27ae60"/>
+
+  <!-- Button highlight (top) -->
+  <rect x="2" y="2" width="124" height="4" fill="#2ecc71"/>
+  <rect x="4" y="4" width="120" height="2" fill="#58d68d"/>
+
+  <!-- Button shadow (bottom) -->
+  <rect x="2" y="26" width="124" height="4" fill="#1e8449"/>
+
+  <!-- Main button face -->
+  <rect x="4" y="6" width="120" height="20" fill="#2ecc71"/>
+
+  <!-- Play arrow icon -->
+  <rect x="24" y="10" width="4" height="12" fill="#fdfefe"/>
+  <rect x="28" y="12" width="4" height="8" fill="#fdfefe"/>
+  <rect x="32" y="14" width="4" height="4" fill="#fdfefe"/>
+
+  <!-- "PLAY" text area -->
+  <rect x="44" y="10" width="60" height="12" fill="#27ae60"/>
+  <!-- P -->
+  <rect x="48" y="11" width="2" height="10" fill="#fdfefe"/>
+  <rect x="48" y="11" width="8" height="2" fill="#fdfefe"/>
+  <rect x="54" y="12" width="2" height="3" fill="#fdfefe"/>
+  <rect x="48" y="15" width="8" height="2" fill="#fdfefe"/>
+  <!-- L -->
+  <rect x="58" y="11" width="2" height="10" fill="#fdfefe"/>
+  <rect x="58" y="19" width="8" height="2" fill="#fdfefe"/>
+  <!-- A -->
+  <rect x="68" y="11" width="8" height="2" fill="#fdfefe"/>
+  <rect x="68" y="11" width="2" height="10" fill="#fdfefe"/>
+  <rect x="74" y="11" width="2" height="10" fill="#fdfefe"/>
+  <rect x="68" y="15" width="8" height="2" fill="#fdfefe"/>
+  <!-- Y -->
+  <rect x="78" y="11" width="2" height="4" fill="#fdfefe"/>
+  <rect x="84" y="11" width="2" height="4" fill="#fdfefe"/>
+  <rect x="80" y="14" width="4" height="2" fill="#fdfefe"/>
+  <rect x="81" y="16" width="2" height="5" fill="#fdfefe"/>
+
+  <!-- Corner bevels -->
+  <rect x="0" y="0" width="4" height="4" fill="#2ecc71"/>
+  <rect x="124" y="0" width="4" height="4" fill="#2ecc71"/>
+  <rect x="0" y="28" width="4" height="4" fill="#1e8449"/>
+  <rect x="124" y="28" width="4" height="4" fill="#1e8449"/>
+</svg>

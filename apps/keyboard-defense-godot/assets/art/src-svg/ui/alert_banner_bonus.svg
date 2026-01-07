@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 32" width="256" height="32">
+  <!-- Bonus Alert Banner (256x32) - Full-width bonus event notification -->
+  <!-- Color Palette: #8e44ad, #9b59b6, #f4d03f, #fdfefe -->
+
+  <!-- Background -->
+  <rect x="0" y="0" width="256" height="32" fill="#8e44ad"/>
+  <rect x="0" y="0" width="256" height="4" fill="#9b59b6"/>
+  <rect x="0" y="28" width="256" height="4" fill="#6c3483"/>
+
+  <!-- Border sparkle -->
+  <rect x="0" y="0" width="256" height="2" fill="#f4d03f" opacity="0.5"/>
+  <rect x="0" y="30" width="256" height="2" fill="#1a252f"/>
+
+  <!-- Star decorations (left) -->
+  <rect x="6" y="8" width="4" height="4" fill="#f4d03f"/>
+  <rect x="4" y="10" width="8" height="2" fill="#f4d03f"/>
+  <rect x="7" y="6" width="2" height="10" fill="#f4d03f"/>
+  <rect x="16" y="14" width="4" height="4" fill="#f9e79f"/>
+  <rect x="14" y="16" width="8" height="2" fill="#f9e79f"/>
+
+  <!-- Star decorations (right) -->
+  <rect x="246" y="8" width="4" height="4" fill="#f4d03f"/>
+  <rect x="244" y="10" width="8" height="2" fill="#f4d03f"/>
+  <rect x="247" y="6" width="2" height="10" fill="#f4d03f"/>
+  <rect x="234" y="14" width="4" height="4" fill="#f9e79f"/>
+  <rect x="232" y="16" width="8" height="2" fill="#f9e79f"/>
+
+  <!-- Center content area -->
+  <rect x="28" y="4" width="200" height="24" fill="#9b59b6"/>
+
+  <!-- Coin/bonus icons -->
+  <rect x="36" y="8" width="16" height="16" fill="#f39c12"/>
+  <rect x="38" y="10" width="12" height="12" fill="#f4d03f"/>
+  <rect x="42" y="14" width="4" height="4" fill="#e67e22"/>
+
+  <rect x="204" y="8" width="16" height="16" fill="#f39c12"/>
+  <rect x="206" y="10" width="12" height="12" fill="#f4d03f"/>
+  <rect x="210" y="14" width="4" height="4" fill="#e67e22"/>
+
+  <!-- Text area -->
+  <rect x="60" y="10" width="136" height="12" fill="#8e44ad"/>
+  <rect x="62" y="12" width="132" height="8" fill="#9b59b6" opacity="0.5"/>
+</svg>

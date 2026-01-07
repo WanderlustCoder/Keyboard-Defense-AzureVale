@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 48" width="192" height="48">
+  <!-- Large Notification Frame (192x48) - Expanded notification container -->
+  <!-- Color Palette: #1a252f, #2c3e50, #34495e, #5d6d7e -->
+
+  <!-- Outer border -->
+  <rect x="0" y="0" width="192" height="48" fill="#1a252f"/>
+
+  <!-- Inner frame -->
+  <rect x="2" y="2" width="188" height="44" fill="#2c3e50"/>
+  <rect x="2" y="2" width="188" height="2" fill="#5d6d7e"/>
+  <rect x="2" y="2" width="2" height="44" fill="#5d6d7e"/>
+
+  <!-- Content area -->
+  <rect x="4" y="4" width="184" height="40" fill="#34495e"/>
+
+  <!-- Top highlight -->
+  <rect x="4" y="4" width="184" height="1" fill="#85929e"/>
+
+  <!-- Icon placeholder area -->
+  <rect x="8" y="8" width="24" height="24" fill="#2c3e50"/>
+  <rect x="9" y="9" width="22" height="22" fill="#1a252f"/>
+
+  <!-- Title area -->
+  <rect x="36" y="8" width="148" height="12" fill="#2c3e50" opacity="0.5"/>
+
+  <!-- Message area -->
+  <rect x="36" y="22" width="148" height="18" fill="#2c3e50" opacity="0.3"/>
+
+  <!-- Close button area -->
+  <rect x="176" y="8" width="12" height="12" fill="#5d6d7e"/>
+  <rect x="178" y="10" width="8" height="8" fill="#34495e"/>
+  <rect x="180" y="12" width="4" height="4" fill="#e74c3c" opacity="0.8"/>
+
+  <!-- Corner accents -->
+  <rect x="0" y="0" width="6" height="3" fill="#5d6d7e"/>
+  <rect x="186" y="0" width="6" height="3" fill="#5d6d7e"/>
+  <rect x="0" y="45" width="6" height="3" fill="#5d6d7e"/>
+  <rect x="186" y="45" width="6" height="3" fill="#5d6d7e"/>
+</svg>

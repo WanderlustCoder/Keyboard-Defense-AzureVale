@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 32" width="128" height="32">
+  <!-- Loading Sword Icon (128x32) - 4 frames of 32x32 spinning sword -->
+  <!-- Color Palette: #7f8c8d, #bdc3c7, #8b4513, #f4d03f -->
+
+  <!-- FRAME 1 - Sword pointing up -->
+  <rect x="14" y="4" width="4" height="16" fill="#bdc3c7"/>
+  <rect x="15" y="2" width="2" height="18" fill="#fdfefe"/>
+  <rect x="15" y="20" width="2" height="2" fill="#7f8c8d"/>
+  <rect x="10" y="20" width="12" height="4" fill="#8b4513"/>
+  <rect x="11" y="21" width="10" height="2" fill="#a0522d"/>
+  <rect x="14" y="24" width="4" height="6" fill="#8b4513"/>
+  <rect x="15" y="25" width="2" height="4" fill="#a0522d"/>
+  <rect x="12" y="28" width="8" height="2" fill="#f4d03f"/>
+
+  <!-- FRAME 2 - Sword tilted right -->
+  <rect x="44" y="6" width="16" height="4" fill="#bdc3c7"/>
+  <rect x="42" y="7" width="18" height="2" fill="#fdfefe"/>
+  <rect x="58" y="7" width="2" height="2" fill="#7f8c8d"/>
+  <rect x="58" y="4" width="4" height="10" fill="#8b4513"/>
+  <rect x="59" y="5" width="2" height="8" fill="#a0522d"/>
+  <rect x="62" y="6" width="6" height="4" fill="#8b4513"/>
+  <rect x="63" y="7" width="4" height="2" fill="#a0522d"/>
+  <rect x="66" y="4" width="2" height="8" fill="#f4d03f"/>
+
+  <!-- FRAME 3 - Sword pointing down -->
+  <rect x="78" y="12" width="4" height="16" fill="#bdc3c7"/>
+  <rect x="79" y="12" width="2" height="18" fill="#fdfefe"/>
+  <rect x="79" y="10" width="2" height="2" fill="#7f8c8d"/>
+  <rect x="74" y="6" width="12" height="4" fill="#8b4513"/>
+  <rect x="75" y="7" width="10" height="2" fill="#a0522d"/>
+  <rect x="78" y="2" width="4" height="6" fill="#8b4513"/>
+  <rect x="79" y="3" width="2" height="4" fill="#a0522d"/>
+  <rect x="76" y="2" width="8" height="2" fill="#f4d03f"/>
+
+  <!-- FRAME 4 - Sword tilted left -->
+  <rect x="100" y="14" width="16" height="4" fill="#bdc3c7"/>
+  <rect x="100" y="15" width="18" height="2" fill="#fdfefe"/>
+  <rect x="100" y="15" width="2" height="2" fill="#7f8c8d"/>
+  <rect x="96" y="12" width="4" height="10" fill="#8b4513"/>
+  <rect x="97" y="13" width="2" height="8" fill="#a0522d"/>
+  <rect x="92" y="14" width="6" height="4" fill="#8b4513"/>
+  <rect x="93" y="15" width="4" height="2" fill="#a0522d"/>
+  <rect x="92" y="12" width="2" height="8" fill="#f4d03f"/>
+</svg>

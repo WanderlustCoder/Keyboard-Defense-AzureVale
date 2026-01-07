@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 12" width="8" height="12">
+  <!-- Error Character Indicator (8x12) -->
+  <!-- Color Palette: #e74c3c, #c0392b -->
+
+  <!-- Red underline -->
+  <rect x="0" y="10" width="8" height="2" fill="#e74c3c"/>
+  <!-- X mark overlay -->
+  <rect x="1" y="2" width="2" height="2" fill="#e74c3c"/>
+  <rect x="5" y="2" width="2" height="2" fill="#e74c3c"/>
+  <rect x="3" y="4" width="2" height="2" fill="#c0392b"/>
+  <rect x="1" y="6" width="2" height="2" fill="#e74c3c"/>
+  <rect x="5" y="6" width="2" height="2" fill="#e74c3c"/>
+</svg>

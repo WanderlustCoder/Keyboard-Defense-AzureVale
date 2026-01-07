@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" width="320" height="180">
+  <!-- Diamond Iris Transition (320x180) - Diamond/iris transition -->
+  <!-- Color Palette: #0d1318, #1a252f, #2c3e50 -->
+
+  <!-- Background -->
+  <rect x="0" y="0" width="320" height="180" fill="#0d1318"/>
+
+  <!-- Diamond opening (centered) -->
+  <!-- Clear area in center represented by lighter fill -->
+  <rect x="120" y="50" width="80" height="80" fill="#1a252f"/>
+  <rect x="130" y="40" width="60" height="100" fill="#1a252f"/>
+  <rect x="140" y="35" width="40" height="110" fill="#2c3e50"/>
+
+  <!-- Diamond edges -->
+  <rect x="110" y="85" width="20" height="10" fill="#2c3e50"/>
+  <rect x="190" y="85" width="20" height="10" fill="#2c3e50"/>
+  <rect x="155" y="30" width="10" height="15" fill="#2c3e50"/>
+  <rect x="155" y="135" width="10" height="15" fill="#2c3e50"/>
+
+  <!-- Corner fill blocks -->
+  <rect x="0" y="0" width="110" height="85" fill="#0d1318"/>
+  <rect x="0" y="95" width="110" height="85" fill="#0d1318"/>
+  <rect x="210" y="0" width="110" height="85" fill="#0d1318"/>
+  <rect x="210" y="95" width="110" height="85" fill="#0d1318"/>
+
+  <!-- Top and bottom triangular fill -->
+  <rect x="110" y="0" width="100" height="35" fill="#0d1318"/>
+  <rect x="120" y="35" width="80" height="10" fill="#0d1318"/>
+  <rect x="130" y="35" width="10" height="10" fill="#0d1318"/>
+  <rect x="180" y="35" width="10" height="10" fill="#0d1318"/>
+
+  <rect x="110" y="145" width="100" height="35" fill="#0d1318"/>
+  <rect x="120" y="135" width="80" height="10" fill="#0d1318"/>
+  <rect x="130" y="135" width="10" height="10" fill="#0d1318"/>
+  <rect x="180" y="135" width="10" height="10" fill="#0d1318"/>
+</svg>

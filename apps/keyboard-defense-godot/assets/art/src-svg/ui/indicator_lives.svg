@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 12" width="48" height="12">
+  <!-- Lives Indicator (48x12) - Life/heart counter -->
+  <!-- Color Palette: #1a252f, #e74c3c, #c0392b, #5d6d7e -->
+
+  <!-- Background -->
+  <rect x="0" y="0" width="48" height="12" fill="#1a252f"/>
+
+  <!-- Heart 1 (filled) -->
+  <rect x="2" y="2" width="4" height="3" fill="#e74c3c"/>
+  <rect x="6" y="2" width="4" height="3" fill="#e74c3c"/>
+  <rect x="3" y="5" width="6" height="3" fill="#e74c3c"/>
+  <rect x="4" y="8" width="4" height="2" fill="#e74c3c"/>
+  <rect x="5" y="10" width="2" height="1" fill="#c0392b"/>
+  <rect x="3" y="3" width="2" height="2" fill="#f5b7b1"/>
+
+  <!-- Heart 2 (filled) -->
+  <rect x="14" y="2" width="4" height="3" fill="#e74c3c"/>
+  <rect x="18" y="2" width="4" height="3" fill="#e74c3c"/>
+  <rect x="15" y="5" width="6" height="3" fill="#e74c3c"/>
+  <rect x="16" y="8" width="4" height="2" fill="#e74c3c"/>
+  <rect x="17" y="10" width="2" height="1" fill="#c0392b"/>
+  <rect x="15" y="3" width="2" height="2" fill="#f5b7b1"/>
+
+  <!-- Heart 3 (filled) -->
+  <rect x="26" y="2" width="4" height="3" fill="#e74c3c"/>
+  <rect x="30" y="2" width="4" height="3" fill="#e74c3c"/>
+  <rect x="27" y="5" width="6" height="3" fill="#e74c3c"/>
+  <rect x="28" y="8" width="4" height="2" fill="#e74c3c"/>
+  <rect x="29" y="10" width="2" height="1" fill="#c0392b"/>
+  <rect x="27" y="3" width="2" height="2" fill="#f5b7b1"/>
+
+  <!-- Heart 4 (empty) -->
+  <rect x="38" y="2" width="4" height="3" fill="#5d6d7e"/>
+  <rect x="42" y="2" width="4" height="3" fill="#5d6d7e"/>
+  <rect x="39" y="5" width="6" height="3" fill="#5d6d7e"/>
+  <rect x="40" y="8" width="4" height="2" fill="#5d6d7e"/>
+  <rect x="41" y="10" width="2" height="1" fill="#34495e"/>
+  <rect x="40" y="4" width="4" height="4" fill="#34495e"/>
+</svg>

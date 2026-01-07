@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 20" width="48" height="20">
+  <!-- Timer Display (48x20) - Round timer indicator -->
+  <!-- Color Palette: #1a252f, #2c3e50, #f39c12, #f4d03f, #fdfefe -->
+
+  <!-- Background -->
+  <rect x="0" y="0" width="48" height="20" fill="#1a252f"/>
+  <rect x="2" y="2" width="44" height="16" fill="#2c3e50"/>
+
+  <!-- Clock icon -->
+  <rect x="4" y="4" width="10" height="12" fill="#34495e"/>
+  <rect x="5" y="5" width="8" height="10" fill="#f39c12"/>
+  <rect x="6" y="6" width="6" height="8" fill="#0d1318"/>
+  <!-- Clock hands -->
+  <rect x="8" y="7" width="2" height="4" fill="#f4d03f"/>
+  <rect x="8" y="9" width="3" height="2" fill="#f4d03f"/>
+  <!-- Clock top -->
+  <rect x="7" y="3" width="4" height="2" fill="#f39c12"/>
+  <rect x="8" y="2" width="2" height="2" fill="#e67e22"/>
+
+  <!-- Number display area -->
+  <rect x="16" y="3" width="28" height="14" fill="#34495e"/>
+  <rect x="17" y="4" width="26" height="12" fill="#0d1318"/>
+
+  <!-- Sample time (stylized "2:45") -->
+  <rect x="19" y="7" width="4" height="1" fill="#f4d03f"/>
+  <rect x="21" y="7" width="2" height="6" fill="#f4d03f"/>
+  <rect x="19" y="9" width="4" height="1" fill="#f4d03f"/>
+  <rect x="19" y="12" width="4" height="1" fill="#f4d03f"/>
+  <!-- Colon -->
+  <rect x="25" y="8" width="2" height="2" fill="#f4d03f"/>
+  <rect x="25" y="11" width="2" height="2" fill="#f4d03f"/>
+  <!-- 45 -->
+  <rect x="29" y="7" width="4" height="1" fill="#f4d03f"/>
+  <rect x="29" y="7" width="2" height="6" fill="#f4d03f"/>
+  <rect x="29" y="9" width="4" height="1" fill="#f4d03f"/>
+  <rect x="31" y="9" width="2" height="4" fill="#f4d03f"/>
+  <rect x="35" y="7" width="4" height="1" fill="#f4d03f"/>
+  <rect x="35" y="7" width="2" height="3" fill="#f4d03f"/>
+  <rect x="35" y="9" width="4" height="1" fill="#f4d03f"/>
+  <rect x="37" y="9" width="2" height="4" fill="#f4d03f"/>
+  <rect x="35" y="12" width="4" height="1" fill="#f4d03f"/>
+</svg>

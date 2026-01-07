@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 32" width="128" height="32">
+  <!-- Stats Panel Frame (128x32) - Stats panel container -->
+  <!-- Color Palette: #1a252f, #2c3e50, #34495e, #5d6d7e -->
+
+  <!-- Outer border -->
+  <rect x="0" y="0" width="128" height="32" fill="#1a252f"/>
+
+  <!-- Inner border -->
+  <rect x="2" y="2" width="124" height="28" fill="#2c3e50"/>
+  <rect x="2" y="2" width="124" height="2" fill="#5d6d7e"/>
+  <rect x="2" y="2" width="2" height="28" fill="#5d6d7e"/>
+
+  <!-- Content area -->
+  <rect x="4" y="4" width="120" height="24" fill="#34495e"/>
+
+  <!-- Top highlight -->
+  <rect x="4" y="4" width="120" height="1" fill="#85929e"/>
+
+  <!-- Corner accents -->
+  <rect x="0" y="0" width="4" height="2" fill="#5d6d7e"/>
+  <rect x="124" y="0" width="4" height="2" fill="#5d6d7e"/>
+  <rect x="0" y="30" width="4" height="2" fill="#5d6d7e"/>
+  <rect x="124" y="30" width="4" height="2" fill="#5d6d7e"/>
+</svg>

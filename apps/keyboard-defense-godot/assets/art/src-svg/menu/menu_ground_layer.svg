@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 48" width="320" height="48">
+  <!-- Ground Layer (320x48) - Parallax ground layer for menus -->
+  <!-- Color Palette: #27ae60, #2ecc71, #1e8449, #145a32, #8b4513 -->
+
+  <!-- Base ground -->
+  <rect x="0" y="16" width="320" height="32" fill="#1e8449"/>
+  <rect x="0" y="24" width="320" height="24" fill="#145a32"/>
+
+  <!-- Grass tufts top layer -->
+  <rect x="0" y="12" width="320" height="8" fill="#27ae60"/>
+  <rect x="0" y="14" width="320" height="4" fill="#2ecc71"/>
+
+  <!-- Grass detail -->
+  <rect x="10" y="10" width="4" height="6" fill="#2ecc71"/>
+  <rect x="11" y="8" width="2" height="8" fill="#58d68d"/>
+  <rect x="30" y="11" width="3" height="5" fill="#2ecc71"/>
+  <rect x="50" y="9" width="4" height="7" fill="#2ecc71"/>
+  <rect x="51" y="7" width="2" height="9" fill="#58d68d"/>
+  <rect x="80" y="10" width="3" height="6" fill="#2ecc71"/>
+  <rect x="100" y="11" width="4" height="5" fill="#2ecc71"/>
+  <rect x="120" y="9" width="3" height="7" fill="#2ecc71"/>
+  <rect x="121" y="7" width="1" height="9" fill="#58d68d"/>
+  <rect x="150" y="10" width="4" height="6" fill="#2ecc71"/>
+  <rect x="180" y="11" width="3" height="5" fill="#2ecc71"/>
+  <rect x="200" y="9" width="4" height="7" fill="#2ecc71"/>
+  <rect x="201" y="7" width="2" height="9" fill="#58d68d"/>
+  <rect x="230" y="10" width="3" height="6" fill="#2ecc71"/>
+  <rect x="260" y="11" width="4" height="5" fill="#2ecc71"/>
+  <rect x="290" y="9" width="3" height="7" fill="#2ecc71"/>
+  <rect x="310" y="10" width="4" height="6" fill="#2ecc71"/>
+
+  <!-- Rocks -->
+  <rect x="45" y="28" width="10" height="8" fill="#5d6d7e"/>
+  <rect x="46" y="26" width="8" height="10" fill="#7f8c8d"/>
+  <rect x="48" y="28" width="4" height="4" fill="#85929e"/>
+
+  <rect x="160" y="30" width="8" height="6" fill="#5d6d7e"/>
+  <rect x="161" y="28" width="6" height="8" fill="#7f8c8d"/>
+
+  <rect x="280" y="26" width="12" height="10" fill="#5d6d7e"/>
+  <rect x="282" y="24" width="8" height="12" fill="#7f8c8d"/>
+  <rect x="284" y="26" width="4" height="6" fill="#85929e"/>
+
+  <!-- Small flowers -->
+  <rect x="25" y="14" width="2" height="2" fill="#f4d03f"/>
+  <rect x="70" y="15" width="2" height="2" fill="#e74c3c"/>
+  <rect x="140" y="14" width="2" height="2" fill="#f4d03f"/>
+  <rect x="190" y="15" width="2" height="2" fill="#9b59b6"/>
+  <rect x="250" y="14" width="2" height="2" fill="#e74c3c"/>
+
+  <!-- Path/road hints -->
+  <rect x="140" y="20" width="40" height="28" fill="#8b4513"/>
+  <rect x="145" y="22" width="30" height="26" fill="#a0522d"/>
+  <rect x="150" y="24" width="20" height="24" fill="#8b4513" opacity="0.7"/>
+</svg>

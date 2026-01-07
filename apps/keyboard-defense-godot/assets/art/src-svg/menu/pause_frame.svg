@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 160" width="192" height="160">
+  <!-- Pause Frame (192x160) - Pause menu container -->
+  <!-- Color Palette: #1a252f, #2c3e50, #34495e, #5d6d7e, #f4d03f -->
+
+  <!-- Outer border -->
+  <rect x="0" y="0" width="192" height="160" fill="#1a252f"/>
+
+  <!-- Inner frame -->
+  <rect x="4" y="4" width="184" height="152" fill="#2c3e50"/>
+  <rect x="4" y="4" width="184" height="4" fill="#5d6d7e"/>
+  <rect x="4" y="4" width="4" height="152" fill="#5d6d7e"/>
+
+  <!-- Content area -->
+  <rect x="8" y="8" width="176" height="144" fill="#34495e"/>
+
+  <!-- Header "PAUSED" -->
+  <rect x="12" y="12" width="168" height="28" fill="#2c3e50"/>
+  <rect x="14" y="14" width="164" height="24" fill="#1a252f"/>
+  <rect x="12" y="12" width="168" height="2" fill="#f4d03f"/>
+  <rect x="12" y="38" width="168" height="2" fill="#f39c12"/>
+
+  <!-- Pause icon in header -->
+  <rect x="80" y="18" width="6" height="16" fill="#fdfefe"/>
+  <rect x="90" y="18" width="6" height="16" fill="#fdfefe"/>
+  <rect x="100" y="20" width="12" height="12" fill="#f4d03f"/>
+
+  <!-- Button slots -->
+  <rect x="24" y="52" width="144" height="24" fill="#2c3e50"/>
+  <rect x="26" y="54" width="140" height="20" fill="#34495e" opacity="0.8"/>
+
+  <rect x="24" y="82" width="144" height="24" fill="#2c3e50"/>
+  <rect x="26" y="84" width="140" height="20" fill="#34495e" opacity="0.8"/>
+
+  <rect x="24" y="112" width="144" height="24" fill="#2c3e50"/>
+  <rect x="26" y="114" width="140" height="20" fill="#34495e" opacity="0.8"/>
+
+  <!-- Corner accents -->
+  <rect x="0" y="0" width="12" height="6" fill="#f4d03f"/>
+  <rect x="0" y="0" width="6" height="12" fill="#f4d03f"/>
+  <rect x="180" y="0" width="12" height="6" fill="#f4d03f"/>
+  <rect x="186" y="0" width="6" height="12" fill="#f4d03f"/>
+  <rect x="0" y="154" width="12" height="6" fill="#f4d03f"/>
+  <rect x="0" y="148" width="6" height="12" fill="#f4d03f"/>
+  <rect x="180" y="154" width="12" height="6" fill="#f4d03f"/>
+  <rect x="186" y="148" width="6" height="12" fill="#f4d03f"/>
+
+  <!-- Decorative rivets -->
+  <rect x="16" y="46" width="4" height="4" fill="#5d6d7e"/>
+  <rect x="172" y="46" width="4" height="4" fill="#5d6d7e"/>
+</svg>

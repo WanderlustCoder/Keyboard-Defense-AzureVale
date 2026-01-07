@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 16" width="64" height="16">
+  <!-- Large Fireball (64x16) - 4 frames of 16x16, boss fire attack -->
+  <!-- Color Palette: #922b21, #c0392b, #d35400, #e67e22, #f39c12, #f4d03f -->
+
+  <!-- FRAME 1 - Large fireball -->
+  <rect x="2" y="3" width="12" height="10" fill="#922b21"/>
+  <rect x="3" y="4" width="10" height="8" fill="#c0392b"/>
+  <rect x="4" y="5" width="8" height="6" fill="#d35400"/>
+  <rect x="5" y="6" width="6" height="4" fill="#e67e22"/>
+  <rect x="6" y="7" width="4" height="2" fill="#f39c12"/>
+  <rect x="7" y="7" width="2" height="1" fill="#f4d03f"/>
+  <!-- Flame tendrils -->
+  <rect x="0" y="5" width="3" height="3" fill="#e67e22"/>
+  <rect x="1" y="6" width="2" height="2" fill="#f39c12"/>
+  <rect x="0" y="9" width="3" height="3" fill="#d35400"/>
+  <!-- Sparks -->
+  <rect x="14" y="4" width="1" height="1" fill="#f4d03f"/>
+  <rect x="13" y="10" width="1" height="1" fill="#f39c12"/>
+
+  <!-- FRAME 2 - Pulsing larger -->
+  <rect x="17" y="2" width="14" height="12" fill="#922b21"/>
+  <rect x="18" y="3" width="12" height="10" fill="#c0392b"/>
+  <rect x="19" y="4" width="10" height="8" fill="#d35400"/>
+  <rect x="20" y="5" width="8" height="6" fill="#e67e22"/>
+  <rect x="21" y="6" width="6" height="4" fill="#f39c12"/>
+  <rect x="22" y="7" width="4" height="2" fill="#f4d03f"/>
+  <!-- Big flame tendrils -->
+  <rect x="16" y="4" width="3" height="4" fill="#e67e22"/>
+  <rect x="17" y="5" width="2" height="3" fill="#f39c12"/>
+  <rect x="16" y="9" width="3" height="4" fill="#d35400"/>
+  <rect x="17" y="10" width="2" height="2" fill="#e67e22"/>
+  <!-- Sparks -->
+  <rect x="31" y="3" width="1" height="1" fill="#f4d03f"/>
+  <rect x="30" y="11" width="1" height="1" fill="#f4d03f"/>
+  <rect x="31" y="7" width="1" height="1" fill="#f9e79f"/>
+
+  <!-- FRAME 3 - Intense flame -->
+  <rect x="34" y="2" width="12" height="12" fill="#c0392b"/>
+  <rect x="35" y="3" width="10" height="10" fill="#d35400"/>
+  <rect x="36" y="4" width="8" height="8" fill="#e67e22"/>
+  <rect x="37" y="5" width="6" height="6" fill="#f39c12"/>
+  <rect x="38" y="6" width="4" height="4" fill="#f4d03f"/>
+  <rect x="39" y="7" width="2" height="2" fill="#f9e79f"/>
+  <!-- Intense tendrils -->
+  <rect x="32" y="5" width="3" height="3" fill="#d35400"/>
+  <rect x="33" y="6" width="2" height="2" fill="#e67e22"/>
+  <rect x="32" y="9" width="4" height="4" fill="#c0392b"/>
+  <rect x="33" y="10" width="2" height="2" fill="#d35400"/>
+  <!-- More sparks -->
+  <rect x="46" y="2" width="1" height="1" fill="#f4d03f"/>
+  <rect x="47" y="5" width="1" height="1" fill="#f9e79f"/>
+  <rect x="46" y="12" width="1" height="1" fill="#f39c12"/>
+  <rect x="32" y="3" width="1" height="1" fill="#e67e22"/>
+
+  <!-- FRAME 4 - Maximum intensity -->
+  <rect x="49" y="1" width="14" height="14" fill="#922b21"/>
+  <rect x="50" y="2" width="12" height="12" fill="#c0392b"/>
+  <rect x="51" y="3" width="10" height="10" fill="#d35400"/>
+  <rect x="52" y="4" width="8" height="8" fill="#e67e22"/>
+  <rect x="53" y="5" width="6" height="6" fill="#f39c12"/>
+  <rect x="54" y="6" width="4" height="4" fill="#f4d03f"/>
+  <rect x="55" y="7" width="2" height="2" fill="#fdfefe"/>
+  <!-- Maximum tendrils -->
+  <rect x="48" y="4" width="3" height="4" fill="#d35400"/>
+  <rect x="48" y="9" width="4" height="4" fill="#c0392b"/>
+  <rect x="49" y="10" width="2" height="3" fill="#e67e22"/>
+  <!-- Spark storm -->
+  <rect x="63" y="2" width="1" height="1" fill="#f4d03f"/>
+  <rect x="62" y="6" width="1" height="1" fill="#f9e79f"/>
+  <rect x="63" y="11" width="1" height="1" fill="#f4d03f"/>
+  <rect x="48" y="2" width="1" height="1" fill="#f39c12"/>
+  <rect x="48" y="13" width="1" height="1" fill="#e67e22"/>
+</svg>
