@@ -1,7 +1,7 @@
 extends Control
 
 const AssetLoader = preload("res://game/asset_loader.gd")
-const HitEffects = preload("res://game/hit_effects.gd")
+const HitEffectsScript = preload("res://game/hit_effects.gd")
 
 const DEFAULT_STAGE_SIZE := Vector2(800, 360)
 const BREACH_RESET := 0.25
