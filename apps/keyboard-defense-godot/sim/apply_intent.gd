@@ -297,6 +297,14 @@ static func _advance_night_step(state: GameState, hit_enemy_index: int, apply_mi
         state.night_prompt = ""
         state.night_wave_total = 0
         state.threat = max(0, state.threat - 1)
+        # Wave heal from upgrades
+        var wave_heal: int = SimUpgrades.get_wave_heal(state)
+        if wave_heal > 0:
+            var old_hp: int = state.hp
+            var max_hp: int = 10 + SimUpgrades.get_castle_health_bonus(state)
+            state.hp = min(max_hp, state.hp + wave_heal)
+            if state.hp > old_hp:
+                events.append("Healers restore %d HP." % (state.hp - old_hp))
         events.append("Dawn breaks.")
         return true
 
@@ -307,16 +315,36 @@ static func _apply_player_attack_target(state: GameState, target_index: int, hit
         events.append("No matching targets.")
         return
     var enemy: Dictionary = state.enemies[target_index]
-    var base_damage: int = 2
-    var armor: int = int(enemy.get("armor", 0))
-    var effective: int = max(0, base_damage - armor)
-    enemy = SimEnemies.apply_damage(enemy, base_damage, state)
-    state.enemies[target_index] = enemy
     var enemy_id: int = int(enemy.get("id", 0))
     var enemy_kind: String = str(enemy.get("kind", "raider"))
+
+    # Calculate damage with upgrade effects
+    var base_damage: int = 2
+    var typing_power: float = SimUpgrades.get_typing_power(state)
+    var damage: int = int(float(base_damage) * typing_power)
+
+    # Critical hit check
+    var is_crit: bool = false
+    var crit_chance: float = SimUpgrades.get_critical_chance(state)
+    if crit_chance > 0.0:
+        var roll: float = float(SimRng.roll_range(state, 1, 100)) / 100.0
+        if roll <= crit_chance:
+            is_crit = true
+            damage = damage * 2
+
+    # Apply armor reduction and pierce from upgrades
+    var enemy_armor: int = int(enemy.get("armor", 0))
+    var armor_reduction: int = SimUpgrades.get_enemy_armor_reduction(state)
+    var armor_pierce: int = SimUpgrades.get_armor_pierce(state)
+    var effective_armor: int = max(0, enemy_armor - armor_reduction - armor_pierce)
+    var effective_damage: int = max(1, damage - effective_armor)
+
+    enemy = SimEnemies.apply_damage(enemy, damage, state)
+    state.enemies[target_index] = enemy
     var enemy_word: String = str(enemy.get("word", ""))
     var word_text: String = hit_word if hit_word != "" else enemy_word
-    events.append("Hit %s#%d word=%s dmg=%d." % [enemy_kind, enemy_id, word_text, effective])
+    var crit_text: String = " CRITICAL!" if is_crit else ""
+    events.append("Hit %s#%d word=%s dmg=%d.%s" % [enemy_kind, enemy_id, word_text, effective_damage, crit_text])
     # Berserker rage: speed boost when damaged but not killed
     if int(enemy.get("hp", 0)) > 0 and enemy_kind == "berserker":
         if not enemy.get("enraged", false):
@@ -434,20 +462,30 @@ static func _enemy_move_step(state: GameState, dist_field: PackedInt32Array, eve
         return
     var ids: Array[int] = _sorted_enemy_ids(state.enemies)
     var offsets: Array[Vector2i] = [Vector2i(0, -1), Vector2i(1, 0), Vector2i(0, 1), Vector2i(-1, 0)]
+    var speed_reduction: float = SimUpgrades.get_enemy_speed_reduction(state)
+    var damage_reduction: float = SimUpgrades.get_damage_reduction(state)
     for enemy_id in ids:
         var enemy_index: int = _find_enemy_index(state.enemies, enemy_id)
         if enemy_index < 0:
             continue
         var enemy: Dictionary = SimEnemies.normalize_enemy(state.enemies[enemy_index])
         state.enemies[enemy_index] = enemy
-        var speed: int = max(1, int(enemy.get("speed", 1)))
+        # Apply speed reduction from upgrades
+        var base_speed: int = int(enemy.get("speed", 1))
+        var reduced_speed: float = float(base_speed) * (1.0 - speed_reduction)
+        var speed: int = max(1, int(reduced_speed))
         var kind: String = str(enemy.get("kind", "raider"))
         for _step in range(speed):
             var pos: Vector2i = enemy.get("pos", Vector2i.ZERO)
             if pos == state.base_pos:
-                state.hp -= 1
+                # Apply damage reduction from upgrades
+                var blocked: bool = damage_reduction > 0.0 and float(SimRng.roll_range(state, 1, 100)) / 100.0 <= damage_reduction
+                if not blocked:
+                    state.hp -= 1
+                    events.append("Enemy %s#%d hits the base." % [kind, enemy_id])
+                else:
+                    events.append("Enemy %s#%d blocked!" % [kind, enemy_id])
                 state.enemies.remove_at(enemy_index)
-                events.append("Enemy %s#%d hits the base." % [kind, enemy_id])
                 break
             var current_dist: int = SimEnemies.dist_at(dist_field, pos, state.map_w)
             if current_dist < 0:
@@ -465,9 +503,14 @@ static func _enemy_move_step(state: GameState, dist_field: PackedInt32Array, eve
                 enemy["pos"] = next_pos
                 state.enemies[enemy_index] = enemy
                 if next_pos == state.base_pos:
-                    state.hp -= 1
+                    # Apply damage reduction from upgrades
+                    var blocked: bool = damage_reduction > 0.0 and float(SimRng.roll_range(state, 1, 100)) / 100.0 <= damage_reduction
+                    if not blocked:
+                        state.hp -= 1
+                        events.append("Enemy %s#%d hits the base." % [kind, enemy_id])
+                    else:
+                        events.append("Enemy %s#%d blocked!" % [kind, enemy_id])
                     state.enemies.remove_at(enemy_index)
-                    events.append("Enemy %s#%d hits the base." % [kind, enemy_id])
                     break
 
 static func _sorted_enemy_ids(enemies: Array) -> Array[int]:
