@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 32" width="48" height="32">
+  <!-- Popup/Modal Background (48x32) - 9-slice compatible -->
+
+  <!-- Drop shadow -->
+  <rect x="2" y="2" width="46" height="30" fill="#1a252f"/>
+
+  <!-- Outer border -->
+  <rect x="0" y="0" width="46" height="30" fill="#5d6d7e"/>
+
+  <!-- Inner border -->
+  <rect x="1" y="1" width="44" height="28" fill="#85929e"/>
+
+  <!-- Main fill -->
+  <rect x="2" y="2" width="42" height="26" fill="#d5d8dc"/>
+
+  <!-- Content area -->
+  <rect x="3" y="3" width="40" height="24" fill="#ecf0f1"/>
+
+  <!-- Header area -->
+  <rect x="3" y="3" width="40" height="6" fill="#bdc3c7"/>
+  <rect x="3" y="3" width="40" height="1" fill="#d5d8dc"/>
+
+  <!-- Corner decorations -->
+  <rect x="0" y="0" width="3" height="3" fill="#34495e"/>
+  <rect x="43" y="0" width="3" height="3" fill="#34495e"/>
+  <rect x="0" y="27" width="3" height="3" fill="#34495e"/>
+  <rect x="43" y="27" width="3" height="3" fill="#34495e"/>
+</svg>

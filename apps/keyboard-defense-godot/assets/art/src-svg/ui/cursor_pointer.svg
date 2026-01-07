@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Pointer/Hand Cursor (16x16) -->
+
+  <!-- Hand outline -->
+  <rect x="5" y="0" width="4" height="8" fill="#2c3e50"/>
+  <rect x="4" y="7" width="10" height="8" fill="#2c3e50"/>
+
+  <!-- Index finger -->
+  <rect x="6" y="1" width="2" height="6" fill="#f5cba7"/>
+  <rect x="6" y="1" width="1" height="2" fill="#fdebd0"/>
+
+  <!-- Other fingers -->
+  <rect x="9" y="4" width="2" height="4" fill="#f5cba7"/>
+  <rect x="11" y="5" width="2" height="3" fill="#f5cba7"/>
+  <rect x="4" y="5" width="2" height="3" fill="#f5cba7"/>
+
+  <!-- Palm -->
+  <rect x="5" y="8" width="8" height="6" fill="#f5cba7"/>
+  <rect x="6" y="9" width="6" height="4" fill="#fdebd0"/>
+
+  <!-- Thumb -->
+  <rect x="3" y="9" width="3" height="4" fill="#f5cba7"/>
+</svg>

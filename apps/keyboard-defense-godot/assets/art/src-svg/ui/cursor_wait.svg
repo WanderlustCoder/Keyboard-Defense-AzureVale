@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Wait/Loading Cursor (16x16) - Hourglass -->
+
+  <!-- Top triangle -->
+  <rect x="3" y="1" width="10" height="2" fill="#f4d03f"/>
+  <rect x="4" y="3" width="8" height="1" fill="#f39c12"/>
+  <rect x="5" y="4" width="6" height="1" fill="#f39c12"/>
+  <rect x="6" y="5" width="4" height="1" fill="#e67e22"/>
+  <rect x="7" y="6" width="2" height="1" fill="#d35400"/>
+
+  <!-- Bottom triangle -->
+  <rect x="7" y="9" width="2" height="1" fill="#d35400"/>
+  <rect x="6" y="10" width="4" height="1" fill="#e67e22"/>
+  <rect x="5" y="11" width="6" height="1" fill="#f39c12"/>
+  <rect x="4" y="12" width="8" height="1" fill="#f39c12"/>
+  <rect x="3" y="13" width="10" height="2" fill="#f4d03f"/>
+
+  <!-- Sand -->
+  <rect x="7" y="7" width="2" height="2" fill="#f9e79f"/>
+  <rect x="6" y="11" width="4" height="1" fill="#f9e79f"/>
+  <rect x="5" y="12" width="6" height="1" fill="#fcf3cf"/>
+
+  <!-- Frame -->
+  <rect x="2" y="0" width="12" height="1" fill="#8b4513"/>
+  <rect x="2" y="15" width="12" height="1" fill="#8b4513"/>
+  <rect x="2" y="1" width="1" height="2" fill="#8b4513"/>
+  <rect x="13" y="1" width="1" height="2" fill="#8b4513"/>
+  <rect x="2" y="13" width="1" height="2" fill="#8b4513"/>
+  <rect x="13" y="13" width="1" height="2" fill="#8b4513"/>
+</svg>

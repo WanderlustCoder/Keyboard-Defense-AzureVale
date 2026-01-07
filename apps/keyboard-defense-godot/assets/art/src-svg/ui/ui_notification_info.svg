@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <!-- Info Notification Background (24x24) -->
+
+  <!-- Outer border -->
+  <rect x="0" y="0" width="24" height="24" fill="#2980b9"/>
+
+  <!-- Inner fill -->
+  <rect x="1" y="1" width="22" height="22" fill="#3498db"/>
+
+  <!-- Content area -->
+  <rect x="2" y="2" width="20" height="20" fill="#5dade2"/>
+
+  <!-- Info icon area -->
+  <rect x="3" y="3" width="6" height="18" fill="#3498db"/>
+
+  <!-- i symbol -->
+  <rect x="5" y="5" width="2" height="2" fill="#fff"/>
+  <rect x="5" y="9" width="2" height="8" fill="#fff"/>
+
+  <!-- Top highlight -->
+  <rect x="2" y="2" width="20" height="1" fill="#85c1e9"/>
+</svg>

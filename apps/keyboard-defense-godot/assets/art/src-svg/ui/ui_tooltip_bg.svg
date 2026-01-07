@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 24" width="32" height="24">
+  <!-- Tooltip Background (32x24) - 9-slice compatible -->
+
+  <!-- Outer border -->
+  <rect x="0" y="0" width="32" height="24" fill="#2c3e50"/>
+
+  <!-- Inner fill -->
+  <rect x="1" y="1" width="30" height="22" fill="#34495e"/>
+
+  <!-- Content area -->
+  <rect x="2" y="2" width="28" height="20" fill="#3d566e"/>
+
+  <!-- Top highlight -->
+  <rect x="2" y="2" width="28" height="1" fill="#4a6785"/>
+
+  <!-- Bottom shadow -->
+  <rect x="2" y="21" width="28" height="1" fill="#2c3e50"/>
+
+  <!-- Corner accents -->
+  <rect x="0" y="0" width="2" height="2" fill="#1a252f"/>
+  <rect x="30" y="0" width="2" height="2" fill="#1a252f"/>
+  <rect x="0" y="22" width="2" height="2" fill="#1a252f"/>
+  <rect x="30" y="22" width="2" height="2" fill="#1a252f"/>
+</svg>

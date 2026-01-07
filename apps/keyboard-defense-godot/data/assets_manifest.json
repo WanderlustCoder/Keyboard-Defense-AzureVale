@@ -2734,6 +2734,212 @@
       "max_kb": 2300,
       "pixel_art": true,
       "category": "reference"
+    },
+    {
+      "id": "fx_poison_bolt",
+      "path": "res://assets/sprites/fx_poison_bolt.png",
+      "source_svg": "res://assets/art/src-svg/sprites/fx_poison_bolt.svg",
+      "expected_width": 16,
+      "expected_height": 8,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "projectiles"
+    },
+    {
+      "id": "fx_lightning_bolt",
+      "path": "res://assets/sprites/fx_lightning_bolt.png",
+      "source_svg": "res://assets/art/src-svg/sprites/fx_lightning_bolt.svg",
+      "expected_width": 16,
+      "expected_height": 8,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "projectiles"
+    },
+    {
+      "id": "fx_cannonball",
+      "path": "res://assets/sprites/fx_cannonball.png",
+      "source_svg": "res://assets/art/src-svg/sprites/fx_cannonball.svg",
+      "expected_width": 16,
+      "expected_height": 8,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "projectiles"
+    },
+    {
+      "id": "fx_support_wave",
+      "path": "res://assets/sprites/fx_support_wave.png",
+      "source_svg": "res://assets/art/src-svg/sprites/fx_support_wave.svg",
+      "expected_width": 16,
+      "expected_height": 8,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "projectiles"
+    },
+    {
+      "id": "fx_arrow",
+      "path": "res://assets/sprites/fx_arrow.png",
+      "source_svg": "res://assets/art/src-svg/sprites/fx_arrow.svg",
+      "expected_width": 16,
+      "expected_height": 8,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "projectiles"
+    },
+    {
+      "id": "ui_tooltip_bg",
+      "path": "res://assets/ui/ui_tooltip_bg.png",
+      "source_svg": "res://assets/art/src-svg/ui/ui_tooltip_bg.svg",
+      "expected_width": 32,
+      "expected_height": 24,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "ui",
+      "nineslice": {
+        "margin_left": 4,
+        "margin_right": 4,
+        "margin_top": 4,
+        "margin_bottom": 4
+      }
+    },
+    {
+      "id": "ui_notification_info",
+      "path": "res://assets/ui/ui_notification_info.png",
+      "source_svg": "res://assets/art/src-svg/ui/ui_notification_info.svg",
+      "expected_width": 24,
+      "expected_height": 24,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "ui",
+      "nineslice": {
+        "margin_left": 4,
+        "margin_right": 4,
+        "margin_top": 4,
+        "margin_bottom": 4
+      }
+    },
+    {
+      "id": "ui_notification_success",
+      "path": "res://assets/ui/ui_notification_success.png",
+      "source_svg": "res://assets/art/src-svg/ui/ui_notification_success.svg",
+      "expected_width": 24,
+      "expected_height": 24,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "ui",
+      "nineslice": {
+        "margin_left": 4,
+        "margin_right": 4,
+        "margin_top": 4,
+        "margin_bottom": 4
+      }
+    },
+    {
+      "id": "ui_notification_warning",
+      "path": "res://assets/ui/ui_notification_warning.png",
+      "source_svg": "res://assets/art/src-svg/ui/ui_notification_warning.svg",
+      "expected_width": 24,
+      "expected_height": 24,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "ui",
+      "nineslice": {
+        "margin_left": 4,
+        "margin_right": 4,
+        "margin_top": 4,
+        "margin_bottom": 4
+      }
+    },
+    {
+      "id": "ui_notification_error",
+      "path": "res://assets/ui/ui_notification_error.png",
+      "source_svg": "res://assets/art/src-svg/ui/ui_notification_error.svg",
+      "expected_width": 24,
+      "expected_height": 24,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "ui",
+      "nineslice": {
+        "margin_left": 4,
+        "margin_right": 4,
+        "margin_top": 4,
+        "margin_bottom": 4
+      }
+    },
+    {
+      "id": "ui_popup_bg",
+      "path": "res://assets/ui/ui_popup_bg.png",
+      "source_svg": "res://assets/art/src-svg/ui/ui_popup_bg.svg",
+      "expected_width": 48,
+      "expected_height": 32,
+      "max_kb": 10,
+      "pixel_art": true,
+      "category": "ui",
+      "nineslice": {
+        "margin_left": 6,
+        "margin_right": 6,
+        "margin_top": 8,
+        "margin_bottom": 6
+      }
+    },
+    {
+      "id": "cursor_default",
+      "path": "res://assets/ui/cursor_default.png",
+      "source_svg": "res://assets/art/src-svg/ui/cursor_default.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "cursors"
+    },
+    {
+      "id": "cursor_pointer",
+      "path": "res://assets/ui/cursor_pointer.png",
+      "source_svg": "res://assets/art/src-svg/ui/cursor_pointer.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "cursors"
+    },
+    {
+      "id": "cursor_target",
+      "path": "res://assets/ui/cursor_target.png",
+      "source_svg": "res://assets/art/src-svg/ui/cursor_target.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "cursors"
+    },
+    {
+      "id": "cursor_build",
+      "path": "res://assets/ui/cursor_build.png",
+      "source_svg": "res://assets/art/src-svg/ui/cursor_build.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "cursors"
+    },
+    {
+      "id": "cursor_invalid",
+      "path": "res://assets/ui/cursor_invalid.png",
+      "source_svg": "res://assets/art/src-svg/ui/cursor_invalid.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "cursors"
+    },
+    {
+      "id": "cursor_wait",
+      "path": "res://assets/ui/cursor_wait.png",
+      "source_svg": "res://assets/art/src-svg/ui/cursor_wait.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "cursors"
     }
   ],
   "audio": [
