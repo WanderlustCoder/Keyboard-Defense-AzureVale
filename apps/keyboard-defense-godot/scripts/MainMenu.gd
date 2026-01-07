@@ -79,7 +79,9 @@ func _show_help_panel() -> void:
 	help_panel.set_anchors_preset(Control.PRESET_FULL_RECT)
 
 	var panel_style = StyleBoxFlat.new()
-	panel_style.bg_color = Color(0.04, 0.035, 0.06, 0.95)
+	var bg := ThemeColors.BG_DARK
+	bg.a = 0.95
+	panel_style.bg_color = bg
 	help_panel.add_theme_stylebox_override("panel", panel_style)
 
 	var center = CenterContainer.new()
