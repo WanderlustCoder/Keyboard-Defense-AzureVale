@@ -5,6 +5,7 @@ const ThemeColors = preload("res://ui/theme_colors.gd")
 @onready var gold_label: Label = $TopBar/GoldLabel
 @onready var back_button: Button = $TopBar/BackButton
 @onready var modifiers_label: Label = $ContentPanel/Scroll/Content/ModifiersLabel
+@onready var content_container: VBoxContainer = $ContentPanel/Scroll/Content
 @onready var kingdom_list: VBoxContainer = $ContentPanel/Scroll/Content/KingdomList
 @onready var unit_list: VBoxContainer = $ContentPanel/Scroll/Content/UnitList
 @onready var progression = get_node("/root/ProgressionState")
@@ -12,6 +13,7 @@ const ThemeColors = preload("res://ui/theme_colors.gd")
 @onready var audio_manager = get_node_or_null("/root/AudioManager")
 
 var icon_cache: Dictionary = {}
+var stats_panel: PanelContainer = null
 
 func _ready() -> void:
 	back_button.pressed.connect(_on_back_pressed)
@@ -23,8 +25,78 @@ func _ready() -> void:
 func _refresh() -> void:
 	gold_label.text = "Gold: %d" % progression.gold
 	modifiers_label.text = _format_modifiers(progression.get_combat_modifiers())
+	_build_stats_panel()
 	_build_upgrade_section(kingdom_list, progression.get_kingdom_upgrades())
 	_build_upgrade_section(unit_list, progression.get_unit_upgrades())
+
+func _build_stats_panel() -> void:
+	# Create or update the stats summary panel
+	if stats_panel != null:
+		stats_panel.queue_free()
+		stats_panel = null
+
+	var mastery: Dictionary = progression.mastery
+	var battles_completed: int = progression.completed_nodes.size()
+
+	# Only show if player has some stats
+	if battles_completed == 0:
+		return
+
+	stats_panel = PanelContainer.new()
+	var card_style = StyleBoxFlat.new()
+	card_style.bg_color = ThemeColors.BG_CARD
+	card_style.border_color = ThemeColors.ACCENT_BLUE
+	card_style.set_border_width_all(2)
+	card_style.set_corner_radius_all(6)
+	card_style.set_content_margin_all(12)
+	stats_panel.add_theme_stylebox_override("panel", card_style)
+
+	var box = VBoxContainer.new()
+	box.add_theme_constant_override("separation", 4)
+	stats_panel.add_child(box)
+
+	var title = Label.new()
+	title.text = "📊 Your Mastery"
+	title.add_theme_font_size_override("font_size", 16)
+	title.add_theme_color_override("font_color", ThemeColors.ACCENT_BLUE)
+	box.add_child(title)
+
+	var stats_grid = GridContainer.new()
+	stats_grid.columns = 2
+	stats_grid.add_theme_constant_override("h_separation", 24)
+	stats_grid.add_theme_constant_override("v_separation", 4)
+	box.add_child(stats_grid)
+
+	# Best stats
+	var best_acc = int(round(float(mastery.get("best_accuracy", 0.0)) * 100.0))
+	var best_wpm = int(round(float(mastery.get("best_wpm", 0.0))))
+	_add_stat_row(stats_grid, "Best Accuracy:", "%d%%" % best_acc, ThemeColors.SUCCESS)
+	_add_stat_row(stats_grid, "Best WPM:", "%d" % best_wpm, ThemeColors.SUCCESS)
+
+	# Last battle stats
+	var last_acc = int(round(float(mastery.get("last_accuracy", 0.0)) * 100.0))
+	var last_wpm = int(round(float(mastery.get("last_wpm", 0.0))))
+	_add_stat_row(stats_grid, "Last Battle:", "%d%% / %d WPM" % [last_acc, last_wpm], ThemeColors.TEXT_DIM)
+
+	# Battles completed
+	_add_stat_row(stats_grid, "Battles Won:", "%d" % battles_completed, ThemeColors.TEXT_DIM)
+
+	# Insert after modifiers label (index 0 in content)
+	content_container.add_child(stats_panel)
+	content_container.move_child(stats_panel, 1)
+
+func _add_stat_row(container: GridContainer, label_text: String, value_text: String, value_color: Color) -> void:
+	var label = Label.new()
+	label.text = label_text
+	label.add_theme_font_size_override("font_size", 13)
+	label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	container.add_child(label)
+
+	var value = Label.new()
+	value.text = value_text
+	value.add_theme_font_size_override("font_size", 13)
+	value.add_theme_color_override("font_color", value_color)
+	container.add_child(value)
 
 func _format_modifiers(modifiers: Dictionary) -> String:
 	var parts: Array = []
@@ -55,6 +127,29 @@ func _get_upgrade_tags(effects: Dictionary) -> Array:
 	if int(effects.get("castle_health_bonus", 0)) != 0:
 		tags.append(_make_tag("res://assets/icons/castle_health.png", "Castle Health"))
 	return tags
+
+func _format_effect_preview(effects: Dictionary, owned: bool) -> String:
+	# Show the actual impact of the upgrade
+	var parts: Array = []
+	var typing_power = float(effects.get("typing_power", 0.0))
+	if typing_power != 0.0:
+		var percent = int(round(typing_power * 100.0))
+		parts.append("+%d%% Typing Power" % percent)
+	var threat_mult = float(effects.get("threat_rate_multiplier", 0.0))
+	if threat_mult != 0.0:
+		var percent = int(round((1.0 - threat_mult) * 100.0))
+		parts.append("%+d%% Threat Slow" % percent)
+	var forgiveness = float(effects.get("mistake_forgiveness", 0.0))
+	if forgiveness != 0.0:
+		var percent = int(round(forgiveness * 100.0))
+		parts.append("+%d%% Mistake Forgiveness" % percent)
+	var castle_bonus = int(effects.get("castle_health_bonus", 0))
+	if castle_bonus != 0:
+		parts.append("+%d Castle Health" % castle_bonus)
+	if parts.is_empty():
+		return ""
+	var prefix = "Effect: " if owned else "Grants: "
+	return prefix + ", ".join(parts)
 
 func _make_tag(icon_path: String, tooltip: String) -> Dictionary:
 	return {"icon_path": icon_path, "tooltip": tooltip}
@@ -119,6 +214,16 @@ func _build_upgrade_section(container: VBoxContainer, upgrades: Array) -> void:
 		desc.add_theme_font_size_override("font_size", 14)
 		desc.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
 		box.add_child(desc)
+
+		# Show effect preview with actual numbers
+		var effect_text := _format_effect_preview(effects, owned)
+		if effect_text != "":
+			var effect_label = Label.new()
+			effect_label.text = effect_text
+			effect_label.autowrap_mode = TextServer.AUTOWRAP_WORD
+			effect_label.add_theme_font_size_override("font_size", 13)
+			effect_label.add_theme_color_override("font_color", ThemeColors.SUCCESS if owned else ThemeColors.ACCENT)
+			box.add_child(effect_label)
 
 		var tags = _get_upgrade_tags(effects)
 		if not tags.is_empty():

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 32" width="24" height="32">
+  <!-- Fire Tower (24x32) - flame mage tower -->
+
+  <!-- Base/Foundation -->
+  <rect x="4" y="28" width="16" height="4" fill="#5d4e37"/>
+  <rect x="5" y="29" width="14" height="2" fill="#7f8c8d"/>
+
+  <!-- Tower body -->
+  <rect x="6" y="10" width="12" height="18" fill="#922b21"/>
+  <rect x="7" y="11" width="10" height="16" fill="#c0392b"/>
+
+  <!-- Stone texture -->
+  <rect x="7" y="14" width="5" height="3" fill="#a93226"/>
+  <rect x="12" y="17" width="5" height="3" fill="#a93226"/>
+  <rect x="7" y="20" width="5" height="3" fill="#a93226"/>
+
+  <!-- Flame brazier at top -->
+  <rect x="8" y="4" width="8" height="6" fill="#7f8c8d"/>
+  <rect x="9" y="5" width="6" height="4" fill="#95a5a6"/>
+
+  <!-- Flames -->
+  <rect x="10" y="1" width="4" height="4" fill="#e67e22"/>
+  <rect x="11" y="0" width="2" height="3" fill="#f39c12"/>
+  <rect x="9" y="2" width="2" height="2" fill="#f4d03f"/>
+  <rect x="13" y="2" width="2" height="2" fill="#f4d03f"/>
+
+  <!-- Window with fire glow -->
+  <rect x="9" y="15" width="6" height="8" fill="#2c3e50"/>
+  <rect x="10" y="16" width="4" height="6" fill="#e67e22"/>
+  <rect x="11" y="17" width="2" height="4" fill="#f4d03f"/>
+</svg>

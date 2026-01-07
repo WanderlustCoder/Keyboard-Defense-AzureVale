@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 32" width="24" height="32">
+  <!-- Poison Tower (24x32) - venomous swamp tower -->
+
+  <!-- Base/Foundation with slime -->
+  <rect x="4" y="28" width="16" height="4" fill="#1e8449"/>
+  <rect x="3" y="30" width="3" height="2" fill="#27ae60"/>
+  <rect x="18" y="29" width="3" height="3" fill="#27ae60"/>
+
+  <!-- Tower body -->
+  <rect x="6" y="10" width="12" height="18" fill="#1e8449"/>
+  <rect x="7" y="11" width="10" height="16" fill="#27ae60"/>
+
+  <!-- Mossy/organic texture -->
+  <rect x="7" y="13" width="3" height="2" fill="#2ecc71"/>
+  <rect x="14" y="16" width="3" height="2" fill="#2ecc71"/>
+  <rect x="8" y="21" width="3" height="2" fill="#2ecc71"/>
+
+  <!-- Bubbling vat at top -->
+  <rect x="6" y="4" width="12" height="6" fill="#145a32"/>
+  <rect x="7" y="5" width="10" height="4" fill="#1e8449"/>
+
+  <!-- Poison bubbles -->
+  <rect x="8" y="5" width="2" height="2" fill="#58d68d"/>
+  <rect x="12" y="6" width="3" height="2" fill="#82e0aa"/>
+  <rect x="10" y="4" width="2" height="2" fill="#abebc6"/>
+  <rect x="14" y="5" width="1" height="1" fill="#d5f5e3"/>
+
+  <!-- Dripping poison -->
+  <rect x="9" y="10" width="2" height="3" fill="#58d68d"/>
+  <rect x="13" y="10" width="2" height="2" fill="#82e0aa"/>
+
+  <!-- Window with green glow -->
+  <rect x="9" y="15" width="6" height="8" fill="#0b5345"/>
+  <rect x="10" y="16" width="4" height="6" fill="#27ae60"/>
+  <rect x="11" y="17" width="2" height="4" fill="#58d68d"/>
+</svg>

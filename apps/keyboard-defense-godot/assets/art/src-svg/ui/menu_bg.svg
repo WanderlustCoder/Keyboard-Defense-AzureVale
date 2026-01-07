@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Menu Background Pattern (64x64) - tileable dark panel -->
+
+  <!-- Base dark -->
+  <rect x="0" y="0" width="64" height="64" fill="#1a252f"/>
+
+  <!-- Subtle grid pattern -->
+  <rect x="0" y="0" width="64" height="1" fill="#2c3e50" opacity="0.3"/>
+  <rect x="0" y="16" width="64" height="1" fill="#2c3e50" opacity="0.3"/>
+  <rect x="0" y="32" width="64" height="1" fill="#2c3e50" opacity="0.3"/>
+  <rect x="0" y="48" width="64" height="1" fill="#2c3e50" opacity="0.3"/>
+  <rect x="0" y="0" width="1" height="64" fill="#2c3e50" opacity="0.3"/>
+  <rect x="16" y="0" width="1" height="64" fill="#2c3e50" opacity="0.3"/>
+  <rect x="32" y="0" width="1" height="64" fill="#2c3e50" opacity="0.3"/>
+  <rect x="48" y="0" width="1" height="64" fill="#2c3e50" opacity="0.3"/>
+
+  <!-- Subtle decorative elements -->
+  <rect x="8" y="8" width="2" height="2" fill="#34495e" opacity="0.5"/>
+  <rect x="24" y="24" width="2" height="2" fill="#34495e" opacity="0.5"/>
+  <rect x="40" y="40" width="2" height="2" fill="#34495e" opacity="0.5"/>
+  <rect x="56" y="56" width="2" height="2" fill="#34495e" opacity="0.5"/>
+</svg>

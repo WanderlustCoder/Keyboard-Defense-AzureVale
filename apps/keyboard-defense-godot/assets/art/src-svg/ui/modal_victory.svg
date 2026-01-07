@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 48" width="64" height="48">
+  <!-- Victory Modal (64x48) - gold themed -->
+
+  <!-- Outer border gold -->
+  <rect x="0" y="0" width="64" height="48" fill="#9a7b0a"/>
+
+  <!-- Inner gold panel -->
+  <rect x="2" y="2" width="60" height="44" fill="#d4ac0d"/>
+  <rect x="3" y="3" width="58" height="42" fill="#f4d03f"/>
+
+  <!-- Header with banner -->
+  <rect x="3" y="3" width="58" height="10" fill="#f39c12"/>
+  <rect x="4" y="4" width="56" height="8" fill="#f9e79f"/>
+
+  <!-- Star decorations in header -->
+  <rect x="6" y="6" width="4" height="4" fill="#fff"/>
+  <rect x="54" y="6" width="4" height="4" fill="#fff"/>
+
+  <!-- Content area -->
+  <rect x="4" y="14" width="56" height="30" fill="#fcf3cf"/>
+
+  <!-- Corner ornaments -->
+  <rect x="0" y="0" width="4" height="2" fill="#f9e79f"/>
+  <rect x="0" y="0" width="2" height="4" fill="#f9e79f"/>
+  <rect x="60" y="0" width="4" height="2" fill="#f9e79f"/>
+  <rect x="62" y="0" width="2" height="4" fill="#f9e79f"/>
+  <rect x="0" y="46" width="4" height="2" fill="#b7950b"/>
+  <rect x="0" y="44" width="2" height="4" fill="#b7950b"/>
+  <rect x="60" y="46" width="4" height="2" fill="#b7950b"/>
+  <rect x="62" y="44" width="2" height="4" fill="#b7950b"/>
+</svg>

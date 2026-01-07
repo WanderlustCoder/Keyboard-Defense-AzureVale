@@ -3125,6 +3125,211 @@
       "max_kb": 6,
       "pixel_art": true,
       "category": "tiles"
+    },
+    {
+      "id": "tower_arrow",
+      "path": "res://assets/buildings/tower_arrow.png",
+      "source_svg": "res://assets/art/src-svg/buildings/tower_arrow.svg",
+      "expected_width": 24,
+      "expected_height": 32,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "buildings"
+    },
+    {
+      "id": "tower_fire",
+      "path": "res://assets/buildings/tower_fire.png",
+      "source_svg": "res://assets/art/src-svg/buildings/tower_fire.svg",
+      "expected_width": 24,
+      "expected_height": 32,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "buildings"
+    },
+    {
+      "id": "tower_ice",
+      "path": "res://assets/buildings/tower_ice.png",
+      "source_svg": "res://assets/art/src-svg/buildings/tower_ice.svg",
+      "expected_width": 24,
+      "expected_height": 32,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "buildings"
+    },
+    {
+      "id": "tower_poison",
+      "path": "res://assets/buildings/tower_poison.png",
+      "source_svg": "res://assets/art/src-svg/buildings/tower_poison.svg",
+      "expected_width": 24,
+      "expected_height": 32,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "buildings"
+    },
+    {
+      "id": "tower_lightning",
+      "path": "res://assets/buildings/tower_lightning.png",
+      "source_svg": "res://assets/art/src-svg/buildings/tower_lightning.svg",
+      "expected_width": 24,
+      "expected_height": 32,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "buildings"
+    },
+    {
+      "id": "tower_cannon",
+      "path": "res://assets/buildings/tower_cannon.png",
+      "source_svg": "res://assets/art/src-svg/buildings/tower_cannon.svg",
+      "expected_width": 24,
+      "expected_height": 32,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "buildings"
+    },
+    {
+      "id": "tower_support",
+      "path": "res://assets/buildings/tower_support.png",
+      "source_svg": "res://assets/art/src-svg/buildings/tower_support.svg",
+      "expected_width": 24,
+      "expected_height": 32,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "buildings"
+    },
+    {
+      "id": "mini_player",
+      "path": "res://assets/icons/mini_player.png",
+      "source_svg": "res://assets/art/src-svg/icons/mini_player.svg",
+      "expected_width": 8,
+      "expected_height": 8,
+      "max_kb": 4,
+      "pixel_art": true,
+      "category": "minimap"
+    },
+    {
+      "id": "mini_enemy",
+      "path": "res://assets/icons/mini_enemy.png",
+      "source_svg": "res://assets/art/src-svg/icons/mini_enemy.svg",
+      "expected_width": 8,
+      "expected_height": 8,
+      "max_kb": 4,
+      "pixel_art": true,
+      "category": "minimap"
+    },
+    {
+      "id": "mini_tower",
+      "path": "res://assets/icons/mini_tower.png",
+      "source_svg": "res://assets/art/src-svg/icons/mini_tower.svg",
+      "expected_width": 8,
+      "expected_height": 8,
+      "max_kb": 4,
+      "pixel_art": true,
+      "category": "minimap"
+    },
+    {
+      "id": "mini_castle",
+      "path": "res://assets/icons/mini_castle.png",
+      "source_svg": "res://assets/art/src-svg/icons/mini_castle.svg",
+      "expected_width": 8,
+      "expected_height": 8,
+      "max_kb": 4,
+      "pixel_art": true,
+      "category": "minimap"
+    },
+    {
+      "id": "mini_poi",
+      "path": "res://assets/icons/mini_poi.png",
+      "source_svg": "res://assets/art/src-svg/icons/mini_poi.svg",
+      "expected_width": 8,
+      "expected_height": 8,
+      "max_kb": 4,
+      "pixel_art": true,
+      "category": "minimap"
+    },
+    {
+      "id": "mini_spawn",
+      "path": "res://assets/icons/mini_spawn.png",
+      "source_svg": "res://assets/art/src-svg/icons/mini_spawn.svg",
+      "expected_width": 8,
+      "expected_height": 8,
+      "max_kb": 4,
+      "pixel_art": true,
+      "category": "minimap"
+    },
+    {
+      "id": "modal_small",
+      "path": "res://assets/ui/modal_small.png",
+      "source_svg": "res://assets/art/src-svg/ui/modal_small.svg",
+      "expected_width": 48,
+      "expected_height": 32,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "ui",
+      "nineslice": {
+        "margin_left": 6,
+        "margin_right": 6,
+        "margin_top": 10,
+        "margin_bottom": 6
+      }
+    },
+    {
+      "id": "modal_large",
+      "path": "res://assets/ui/modal_large.png",
+      "source_svg": "res://assets/art/src-svg/ui/modal_large.svg",
+      "expected_width": 64,
+      "expected_height": 48,
+      "max_kb": 10,
+      "pixel_art": true,
+      "category": "ui",
+      "nineslice": {
+        "margin_left": 8,
+        "margin_right": 8,
+        "margin_top": 14,
+        "margin_bottom": 8
+      }
+    },
+    {
+      "id": "modal_victory",
+      "path": "res://assets/ui/modal_victory.png",
+      "source_svg": "res://assets/art/src-svg/ui/modal_victory.svg",
+      "expected_width": 64,
+      "expected_height": 48,
+      "max_kb": 10,
+      "pixel_art": true,
+      "category": "ui",
+      "nineslice": {
+        "margin_left": 8,
+        "margin_right": 8,
+        "margin_top": 14,
+        "margin_bottom": 8
+      }
+    },
+    {
+      "id": "modal_defeat",
+      "path": "res://assets/ui/modal_defeat.png",
+      "source_svg": "res://assets/art/src-svg/ui/modal_defeat.svg",
+      "expected_width": 64,
+      "expected_height": 48,
+      "max_kb": 10,
+      "pixel_art": true,
+      "category": "ui",
+      "nineslice": {
+        "margin_left": 8,
+        "margin_right": 8,
+        "margin_top": 14,
+        "margin_bottom": 8
+      }
+    },
+    {
+      "id": "menu_bg",
+      "path": "res://assets/ui/menu_bg.png",
+      "source_svg": "res://assets/art/src-svg/ui/menu_bg.svg",
+      "expected_width": 64,
+      "expected_height": 64,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "ui",
+      "tileable": true
     }
   ],
   "audio": [

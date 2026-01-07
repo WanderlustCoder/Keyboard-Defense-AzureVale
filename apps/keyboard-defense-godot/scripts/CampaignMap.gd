@@ -56,11 +56,20 @@ func _build_map() -> void:
 		var reward_gold = int(node.get("reward_gold", 0))
 		var unlocked = progression.is_node_unlocked(node_id)
 		var completed = progression.is_node_completed(node_id)
+		var requires: Array = node.get("requires", [])
 
-		var card = _create_node_card(node_id, label, lesson_label_text, reward_gold, unlocked, completed)
+		var card = _create_node_card(node_id, label, lesson_label_text, reward_gold, unlocked, completed, requires)
 		map_grid.add_child(card)
 
-func _create_node_card(node_id: String, label: String, lesson_name: String, reward_gold: int, unlocked: bool, completed: bool) -> Control:
+func _get_missing_requirement(requires: Array) -> String:
+	# Find the first uncompleted requirement and return its label
+	for req_id in requires:
+		if not progression.is_node_completed(req_id):
+			var req_node = progression.map_nodes.get(req_id, {})
+			return str(req_node.get("label", req_id))
+	return ""
+
+func _create_node_card(node_id: String, label: String, lesson_name: String, reward_gold: int, unlocked: bool, completed: bool, requires: Array = []) -> Control:
 	var text_color := ThemeColors.TEXT if unlocked else ThemeColors.TEXT_DIM
 
 	var card = PanelContainer.new()
@@ -111,7 +120,7 @@ func _create_node_card(node_id: String, label: String, lesson_name: String, rewa
 	lesson_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	content.add_child(lesson_label)
 
-	if reward_gold > 0:
+	if reward_gold > 0 and unlocked:
 		var reward_label = Label.new()
 		if completed:
 			reward_label.text = "Reward: %dg (first clear)" % reward_gold
@@ -121,6 +130,20 @@ func _create_node_card(node_id: String, label: String, lesson_name: String, rewa
 		reward_label.add_theme_font_size_override("font_size", 12)
 		reward_label.add_theme_color_override("font_color", ThemeColors.ACCENT if not completed else text_color)
 		content.add_child(reward_label)
+
+	# Show unlock requirement for locked nodes
+	if not unlocked and not requires.is_empty():
+		var missing_req := _get_missing_requirement(requires)
+		if missing_req != "":
+			var unlock_label = Label.new()
+			unlock_label.text = "🔒 Complete: %s" % missing_req
+			unlock_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			unlock_label.add_theme_font_size_override("font_size", 11)
+			unlock_label.add_theme_color_override("font_color", ThemeColors.WARNING)
+			unlock_label.autowrap_mode = TextServer.AUTOWRAP_WORD
+			unlock_label.max_lines_visible = 1
+			unlock_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+			content.add_child(unlock_label)
 
 	return card
 
