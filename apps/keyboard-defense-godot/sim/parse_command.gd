@@ -39,7 +39,7 @@ static func parse(command: String) -> Dictionary:
             if tokens.size() >= 2 and tokens[1].to_lower() == "diff":
                 if tokens.size() > 3:
                     return {"ok": false, "error": "Usage: balance diff [group]"}
-                var group: String = tokens[2] if tokens.size() == 3 else "all"
+                var group: String = tokens[2].to_lower() if tokens.size() == 3 else "all"
                 return {"ok": true, "intent": SimIntents.make("ui_balance_diff", {"group": group})}
             if tokens.size() >= 2 and tokens[1].to_lower() == "export":
                 var group: String = "all"
