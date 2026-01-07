@@ -20,6 +20,9 @@ var accuracy_attempts: int = 0
 var sum_edit_distance: int = 0
 var edit_distance_attempts: int = 0
 var start_msec: int = -1
+var current_combo: int = 0
+var max_combo: int = 0
+var combo_thresholds: Array[int] = [3, 5, 10, 20, 50]
 
 func start_night(day: int, wave_total_value: int, now_msec: int = -1) -> void:
     night_day = day
@@ -39,6 +42,8 @@ func start_night(day: int, wave_total_value: int, now_msec: int = -1) -> void:
     sum_edit_distance = 0
     edit_distance_attempts = 0
     start_msec = now_msec
+    current_combo = 0
+    max_combo = 0
 
 func on_text_changed(prev_text: String, new_text: String) -> void:
     var prev_len: int = prev_text.length()
@@ -75,8 +80,12 @@ func record_defend_attempt(typed_raw: String, enemies: Array) -> void:
             break
     if hit:
         hits += 1
+        current_combo += 1
+        if current_combo > max_combo:
+            max_combo = current_combo
     else:
         misses += 1
+        current_combo = 0
 
     if enemies.is_empty():
         return
@@ -130,12 +139,43 @@ func to_report_dict() -> Dictionary:
         "misses": misses,
         "typed_chars": typed_chars,
         "deleted_chars": deleted_chars,
+        "current_combo": current_combo,
+        "max_combo": max_combo,
         "hit_rate": hit_rate,
         "backspace_rate": backspace_rate,
         "incomplete_rate": incomplete_rate,
         "avg_accuracy": avg_accuracy,
         "avg_edit_distance": avg_edit_distance
     }
+
+## Get current combo tier (0-5) based on thresholds
+func get_combo_tier() -> int:
+    var tier: int = 0
+    for threshold in combo_thresholds:
+        if current_combo >= threshold:
+            tier += 1
+        else:
+            break
+    return tier
+
+## Get combo display text with tier indicator
+func get_combo_display() -> String:
+    if current_combo < 2:
+        return ""
+    var tier: int = get_combo_tier()
+    var flame: String = ""
+    for i in range(tier):
+        flame += "🔥"
+    if flame == "":
+        return "x%d" % current_combo
+    return "%s x%d" % [flame, current_combo]
+
+## Check if combo just reached a new threshold (for audio/visual feedback)
+func did_reach_threshold(prev_combo: int) -> bool:
+    for threshold in combo_thresholds:
+        if current_combo >= threshold and prev_combo < threshold:
+            return true
+    return false
 
 func to_report_text() -> String:
     var report: Dictionary = to_report_dict()

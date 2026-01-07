@@ -212,7 +212,10 @@ func _on_command_submitted(command: String) -> void:
         if is_night and typing_stats != null:
             if intent_kind == "defend_input":
                 typing_stats.record_command_enter(intent_kind, false)
+                var prev_combo: int = typing_stats.current_combo
                 typing_stats.record_defend_attempt(command, state.enemies)
+                if audio_manager != null and typing_stats.did_reach_threshold(prev_combo):
+                    audio_manager.play_sfx(audio_manager.SFX.COMBO_UP)
             else:
                 typing_stats.record_command_enter(intent_kind, intent_kind == "wait")
         if intent_kind == "ui_preview":
@@ -347,7 +350,10 @@ func _on_command_submitted(command: String) -> void:
             return
         if action == "defend":
             if typing_stats != null:
+                var prev_combo: int = typing_stats.current_combo
                 typing_stats.record_defend_attempt(command, state.enemies)
+                if audio_manager != null and typing_stats.did_reach_threshold(prev_combo):
+                    audio_manager.play_sfx(audio_manager.SFX.COMBO_UP)
             command_bar.accept_submission(trimmed)
             var defend_intent: Dictionary = {"kind": "defend_input", "text": command}
             var defend_result: Dictionary = IntentApplier.apply(state, defend_intent)
@@ -2447,6 +2453,11 @@ func _update_typing_label() -> void:
         var expected_text: String = _format_expected_chars(expected)
         if expected_text != "":
             lines.append("Expected next: %s" % expected_text)
+    # Add combo display
+    if typing_stats != null:
+        var combo_text: String = typing_stats.get_combo_display()
+        if combo_text != "":
+            lines.append("[color=yellow]COMBO %s[/color]" % combo_text)
     typing_label.text = "\n".join(lines)
 
 func _format_expected_chars(chars: Array) -> String:
