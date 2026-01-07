@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Flowers Tile (16x16) - Forest flower patch -->
+  <!-- Color Palette: #27ae60, #f4d03f, #e74c3c, #fdfefe, #9b59b6, #3498db -->
+
+  <!-- Grass base -->
+  <rect x="0" y="0" width="16" height="16" fill="#27ae60"/>
+  <rect x="3" y="4" width="2" height="1" fill="#2ecc71"/>
+  <rect x="10" y="8" width="3" height="1" fill="#2ecc71"/>
+  <rect x="5" y="12" width="2" height="1" fill="#1e8449"/>
+
+  <!-- Yellow flower -->
+  <rect x="2" y="2" width="3" height="2" fill="#f4d03f"/>
+  <rect x="3" y="1" width="1" height="1" fill="#f4d03f"/>
+  <rect x="3" y="4" width="1" height="1" fill="#f4d03f"/>
+  <rect x="3" y="2" width="1" height="1" fill="#fdfefe"/>
+  <rect x="3" y="5" width="1" height="3" fill="#1e8449"/>
+
+  <!-- Red flower -->
+  <rect x="10" y="3" width="3" height="2" fill="#e74c3c"/>
+  <rect x="11" y="2" width="1" height="1" fill="#e74c3c"/>
+  <rect x="11" y="5" width="1" height="1" fill="#e74c3c"/>
+  <rect x="11" y="3" width="1" height="1" fill="#f4d03f"/>
+  <rect x="11" y="6" width="1" height="3" fill="#1e8449"/>
+
+  <!-- Purple flower -->
+  <rect x="5" y="8" width="3" height="2" fill="#9b59b6"/>
+  <rect x="6" y="7" width="1" height="1" fill="#9b59b6"/>
+  <rect x="6" y="10" width="1" height="1" fill="#9b59b6"/>
+  <rect x="6" y="8" width="1" height="1" fill="#fdfefe"/>
+  <rect x="6" y="11" width="1" height="2" fill="#1e8449"/>
+
+  <!-- Blue flower -->
+  <rect x="12" y="10" width="2" height="2" fill="#3498db"/>
+  <rect x="13" y="9" width="1" height="1" fill="#3498db"/>
+  <rect x="13" y="10" width="1" height="1" fill="#fdfefe"/>
+  <rect x="13" y="12" width="1" height="2" fill="#1e8449"/>
+</svg>
