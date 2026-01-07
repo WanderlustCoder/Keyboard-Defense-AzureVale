@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Locked Achievement Icon (16x16) -->
+  
+  <!-- Badge body (grayscale) -->
+  <rect x="3" y="2" width="10" height="10" fill="#7f8c8d"/>
+  <rect x="4" y="3" width="8" height="8" fill="#95a5a6"/>
+  
+  <!-- Lock -->
+  <rect x="6" y="5" width="4" height="4" fill="#5d6d7e"/>
+  <rect x="7" y="3" width="2" height="3" fill="#5d6d7e"/>
+  <rect x="6" y="4" width="1" height="2" fill="#5d6d7e"/>
+  <rect x="9" y="4" width="1" height="2" fill="#5d6d7e"/>
+  
+  <!-- Keyhole -->
+  <rect x="7" y="6" width="2" height="1" fill="#34495e"/>
+  <rect x="7" y="7" width="1" height="2" fill="#34495e"/>
+  
+  <!-- Ribbon (grayscale) -->
+  <rect x="4" y="12" width="3" height="3" fill="#5d6d7e"/>
+  <rect x="9" y="12" width="3" height="3" fill="#5d6d7e"/>
+</svg>

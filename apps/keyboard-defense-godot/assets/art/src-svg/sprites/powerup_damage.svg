@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 16" width="64" height="16">
+  <!-- Damage Boost Power-up (64x16) - 4 frame animation -->
+  
+  <!-- Frame 1 - sword/blade -->
+  <rect x="4" y="4" width="8" height="8" fill="#e74c3c"/>
+  <rect x="5" y="5" width="6" height="6" fill="#c0392b"/>
+  <rect x="6" y="2" width="4" height="12" fill="#95a5a6"/>
+  <rect x="7" y="1" width="2" height="2" fill="#ecf0f1"/>
+  <rect x="7" y="3" width="2" height="10" fill="#bdc3c7"/>
+  
+  <!-- Frame 2 - glowing -->
+  <rect x="20" y="4" width="8" height="8" fill="#f1948a"/>
+  <rect x="21" y="5" width="6" height="6" fill="#e74c3c"/>
+  <rect x="22" y="2" width="4" height="12" fill="#bdc3c7"/>
+  <rect x="23" y="1" width="2" height="2" fill="#fdfefe"/>
+  <rect x="23" y="3" width="2" height="10" fill="#ecf0f1"/>
+  <rect x="18" y="6" width="2" height="1" fill="#f5b7b1"/>
+  <rect x="28" y="6" width="2" height="1" fill="#f5b7b1"/>
+  
+  <!-- Frame 3 - bright -->
+  <rect x="34" y="2" width="12" height="12" fill="#f5b7b1" opacity="0.3"/>
+  <rect x="36" y="4" width="8" height="8" fill="#f1948a"/>
+  <rect x="37" y="5" width="6" height="6" fill="#e74c3c"/>
+  <rect x="38" y="2" width="4" height="12" fill="#ecf0f1"/>
+  <rect x="39" y="1" width="2" height="2" fill="#fdfefe"/>
+  <rect x="39" y="3" width="2" height="10" fill="#fdfefe"/>
+  <rect x="34" y="5" width="2" height="2" fill="#fadbd8"/>
+  <rect x="44" y="5" width="2" height="2" fill="#fadbd8"/>
+  <rect x="34" y="9" width="2" height="2" fill="#fadbd8"/>
+  <rect x="44" y="9" width="2" height="2" fill="#fadbd8"/>
+  
+  <!-- Frame 4 -->
+  <rect x="52" y="4" width="8" height="8" fill="#e74c3c"/>
+  <rect x="53" y="5" width="6" height="6" fill="#c0392b"/>
+  <rect x="54" y="2" width="4" height="12" fill="#95a5a6"/>
+  <rect x="55" y="1" width="2" height="2" fill="#ecf0f1"/>
+  <rect x="55" y="3" width="2" height="10" fill="#bdc3c7"/>
+  <rect x="50" y="7" width="2" height="1" fill="#f5b7b1"/>
+  <rect x="60" y="7" width="2" height="1" fill="#f5b7b1"/>
+</svg>

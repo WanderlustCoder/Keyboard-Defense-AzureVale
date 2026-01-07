@@ -1,25 +1,24 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
-  <!-- Scroll/Knowledge Icon (16x16) -->
-
-  <!-- Scroll ends -->
-  <rect x="3" y="2" width="10" height="3" fill="#d4ac6e"/>
-  <rect x="3" y="11" width="10" height="3" fill="#d4ac6e"/>
-
-  <!-- Roll shadows -->
-  <rect x="3" y="4" width="10" height="1" fill="#a67c52"/>
-  <rect x="3" y="11" width="10" height="1" fill="#a67c52"/>
-
+  <!-- Scroll Icon (16x16) -->
+  
+  <!-- Top roll -->
+  <rect x="3" y="1" width="10" height="3" fill="#d4ac0d"/>
+  <rect x="4" y="2" width="8" height="1" fill="#f4d03f"/>
+  
   <!-- Paper body -->
-  <rect x="4" y="4" width="8" height="8" fill="#fef5e7"/>
-
+  <rect x="4" y="3" width="8" height="10" fill="#fdebd0"/>
+  <rect x="5" y="4" width="6" height="8" fill="#fdfefe"/>
+  
+  <!-- Bottom roll -->
+  <rect x="3" y="12" width="10" height="3" fill="#d4ac0d"/>
+  <rect x="4" y="13" width="8" height="1" fill="#f4d03f"/>
+  
   <!-- Text lines -->
-  <rect x="5" y="5" width="6" height="1" fill="#7a7a7a"/>
-  <rect x="5" y="7" width="5" height="1" fill="#7a7a7a"/>
-  <rect x="5" y="9" width="6" height="1" fill="#7a7a7a"/>
-
-  <!-- Roll detail -->
-  <rect x="2" y="2" width="2" height="3" fill="#c9a86c"/>
-  <rect x="12" y="2" width="2" height="3" fill="#c9a86c"/>
-  <rect x="2" y="11" width="2" height="3" fill="#c9a86c"/>
-  <rect x="12" y="11" width="2" height="3" fill="#c9a86c"/>
+  <rect x="6" y="5" width="4" height="1" fill="#bdc3c7"/>
+  <rect x="6" y="7" width="3" height="1" fill="#bdc3c7"/>
+  <rect x="6" y="9" width="4" height="1" fill="#bdc3c7"/>
+  
+  <!-- Roll shadows -->
+  <rect x="3" y="3" width="1" height="1" fill="#b7950b"/>
+  <rect x="12" y="3" width="1" height="1" fill="#b7950b"/>
 </svg>
