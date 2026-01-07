@@ -409,6 +409,225 @@
         { "ratio": 3.0, "amplitude": 0.2 },
         { "ratio": 4.0, "amplitude": 0.1 }
       ]
+    },
+    {
+      "id": "victory_fanfare",
+      "description": "Level/battle won stinger",
+      "category": "stinger",
+      "oscillator": {
+        "type": "sine",
+        "frequency": 523
+      },
+      "envelope": {
+        "attack_ms": 10,
+        "decay_ms": 200,
+        "sustain": 0.6,
+        "release_ms": 300
+      },
+      "volume": 0.55,
+      "duration_ms": 600,
+      "pitch_slide": {
+        "start_offset": 0,
+        "end_offset": 392,
+        "curve": "exponential"
+      },
+      "harmonics": [
+        { "ratio": 1.25, "amplitude": 0.5 },
+        { "ratio": 1.5, "amplitude": 0.4 },
+        { "ratio": 2.0, "amplitude": 0.35 },
+        { "ratio": 3.0, "amplitude": 0.2 }
+      ]
+    },
+    {
+      "id": "defeat_stinger",
+      "description": "Level/battle lost stinger",
+      "category": "stinger",
+      "oscillator": {
+        "type": "sawtooth",
+        "frequency": 220
+      },
+      "envelope": {
+        "attack_ms": 20,
+        "decay_ms": 300,
+        "sustain": 0.3,
+        "release_ms": 400
+      },
+      "volume": 0.5,
+      "duration_ms": 800,
+      "pitch_slide": {
+        "start_offset": 0,
+        "end_offset": -150,
+        "curve": "exponential"
+      },
+      "filter": {
+        "type": "lowpass",
+        "cutoff_hz": 600,
+        "resonance": 0.4
+      },
+      "harmonics": [
+        { "ratio": 0.5, "amplitude": 0.3 },
+        { "ratio": 1.5, "amplitude": 0.2 }
+      ]
+    },
+    {
+      "id": "level_up",
+      "description": "Character/skill level up",
+      "category": "progression",
+      "oscillator": {
+        "type": "sine",
+        "frequency": 440
+      },
+      "envelope": {
+        "attack_ms": 5,
+        "decay_ms": 100,
+        "sustain": 0.5,
+        "release_ms": 150
+      },
+      "volume": 0.5,
+      "duration_ms": 350,
+      "pitch_slide": {
+        "start_offset": 0,
+        "end_offset": 880,
+        "curve": "exponential"
+      },
+      "harmonics": [
+        { "ratio": 2.0, "amplitude": 0.5 },
+        { "ratio": 3.0, "amplitude": 0.3 },
+        { "ratio": 4.0, "amplitude": 0.15 }
+      ]
+    },
+    {
+      "id": "achievement_unlock",
+      "description": "Achievement/medal unlocked",
+      "category": "progression",
+      "oscillator": {
+        "type": "sine",
+        "frequency": 659
+      },
+      "envelope": {
+        "attack_ms": 10,
+        "decay_ms": 150,
+        "sustain": 0.4,
+        "release_ms": 200
+      },
+      "volume": 0.45,
+      "duration_ms": 400,
+      "pitch_slide": {
+        "start_offset": -200,
+        "end_offset": 330,
+        "curve": "exponential"
+      },
+      "harmonics": [
+        { "ratio": 1.5, "amplitude": 0.4 },
+        { "ratio": 2.0, "amplitude": 0.3 },
+        { "ratio": 2.5, "amplitude": 0.2 }
+      ]
+    },
+    {
+      "id": "upgrade_purchase",
+      "description": "Upgrade or item purchased",
+      "category": "progression",
+      "oscillator": {
+        "type": "sine",
+        "frequency": 880
+      },
+      "envelope": {
+        "attack_ms": 5,
+        "decay_ms": 80,
+        "sustain": 0.3,
+        "release_ms": 100
+      },
+      "volume": 0.4,
+      "duration_ms": 200,
+      "pitch_slide": {
+        "start_offset": 0,
+        "end_offset": 440,
+        "curve": "linear"
+      },
+      "harmonics": [
+        { "ratio": 2.0, "amplitude": 0.3 },
+        { "ratio": 3.0, "amplitude": 0.15 }
+      ]
+    },
+    {
+      "id": "tutorial_ding",
+      "description": "Tutorial step completed",
+      "category": "ui",
+      "oscillator": {
+        "type": "sine",
+        "frequency": 1047
+      },
+      "envelope": {
+        "attack_ms": 3,
+        "decay_ms": 60,
+        "sustain": 0.2,
+        "release_ms": 80
+      },
+      "volume": 0.35,
+      "duration_ms": 150,
+      "harmonics": [
+        { "ratio": 2.0, "amplitude": 0.2 }
+      ]
+    },
+    {
+      "id": "boss_appear",
+      "description": "Boss enemy appears",
+      "category": "combat",
+      "oscillator": {
+        "type": "sawtooth",
+        "frequency": 110
+      },
+      "envelope": {
+        "attack_ms": 50,
+        "decay_ms": 200,
+        "sustain": 0.5,
+        "release_ms": 150
+      },
+      "volume": 0.55,
+      "duration_ms": 500,
+      "pitch_slide": {
+        "start_offset": 50,
+        "end_offset": -30,
+        "curve": "exponential"
+      },
+      "filter": {
+        "type": "lowpass",
+        "cutoff_hz": 500,
+        "resonance": 0.6
+      },
+      "harmonics": [
+        { "ratio": 0.5, "amplitude": 0.4 },
+        { "ratio": 1.5, "amplitude": 0.3 },
+        { "ratio": 2.0, "amplitude": 0.2 }
+      ]
+    },
+    {
+      "id": "boss_defeated",
+      "description": "Boss enemy defeated",
+      "category": "combat",
+      "oscillator": {
+        "type": "sine",
+        "frequency": 330
+      },
+      "envelope": {
+        "attack_ms": 10,
+        "decay_ms": 250,
+        "sustain": 0.5,
+        "release_ms": 250
+      },
+      "volume": 0.55,
+      "duration_ms": 600,
+      "pitch_slide": {
+        "start_offset": 0,
+        "end_offset": 660,
+        "curve": "exponential"
+      },
+      "harmonics": [
+        { "ratio": 1.5, "amplitude": 0.4 },
+        { "ratio": 2.0, "amplitude": 0.35 },
+        { "ratio": 3.0, "amplitude": 0.25 },
+        { "ratio": 4.0, "amplitude": 0.15 }
+      ]
     }
   ],
   "mixing": {

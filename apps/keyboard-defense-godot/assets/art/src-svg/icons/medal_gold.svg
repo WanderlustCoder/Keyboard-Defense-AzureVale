@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Gold Medal -->
+  <!-- Ribbon -->
+  <rect x="3" y="0" width="4" height="5" fill="#8e44ad"/>
+  <rect x="9" y="0" width="4" height="5" fill="#8e44ad"/>
+  <rect x="4" y="0" width="2" height="4" fill="#9b59b6"/>
+  <rect x="10" y="0" width="2" height="4" fill="#9b59b6"/>
+  <!-- Medal base -->
+  <rect x="3" y="5" width="10" height="10" fill="#b7950b"/>
+  <rect x="4" y="4" width="8" height="2" fill="#b7950b"/>
+  <rect x="4" y="14" width="8" height="1" fill="#b7950b"/>
+  <!-- Medal face -->
+  <rect x="4" y="6" width="8" height="8" fill="#f4d03f"/>
+  <rect x="5" y="5" width="6" height="2" fill="#f4d03f"/>
+  <!-- Medal highlight -->
+  <rect x="5" y="7" width="3" height="3" fill="#f9e79f"/>
+  <!-- Star emblem -->
+  <rect x="7" y="7" width="2" height="5" fill="#b7950b"/>
+  <rect x="5" y="9" width="6" height="2" fill="#b7950b"/>
+  <!-- Inner star -->
+  <rect x="7" y="8" width="1" height="1" fill="#f4d03f"/>
+  <!-- Sparkle -->
+  <rect x="11" y="6" width="1" height="1" fill="#fff"/>
+</svg>

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Weakness/Debuff Status - Broken sword -->
+  <!-- Blade top piece -->
+  <rect x="10" y="1" width="3" height="4" fill="#7a7a7a"/>
+  <rect x="11" y="0" width="2" height="2" fill="#9a9a9a"/>
+  <rect x="11" y="2" width="2" height="2" fill="#8a8a8a"/>
+  <!-- Blade bottom piece (fallen) -->
+  <rect x="3" y="8" width="4" height="6" fill="#6a6a6a"/>
+  <rect x="4" y="9" width="2" height="4" fill="#7a7a7a"/>
+  <!-- Break point sparks -->
+  <rect x="7" y="4" width="2" height="2" fill="#f4d03f"/>
+  <rect x="8" y="3" width="1" height="1" fill="#f9e79f"/>
+  <rect x="6" y="5" width="1" height="1" fill="#f9e79f"/>
+  <!-- Handle -->
+  <rect x="9" y="5" width="2" height="6" fill="#5c4033"/>
+  <rect x="8" y="5" width="4" height="2" fill="#f4d03f"/>
+  <rect x="9" y="10" width="2" height="3" fill="#4a3728"/>
+  <!-- Down arrow (weakness indicator) -->
+  <rect x="12" y="10" width="3" height="2" fill="#c0392b"/>
+  <rect x="13" y="12" width="1" height="2" fill="#c0392b"/>
+</svg>

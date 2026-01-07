@@ -139,6 +139,296 @@
       "category": "icons"
     },
     {
+      "id": "poi_abandoned_wagon",
+      "path": "res://assets/icons/poi_abandoned_wagon.png",
+      "source_svg": "res://assets/art/src-svg/icons/poi_abandoned_wagon.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "poi_battlefield",
+      "path": "res://assets/icons/poi_battlefield.png",
+      "source_svg": "res://assets/art/src-svg/icons/poi_battlefield.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "poi_bridge",
+      "path": "res://assets/icons/poi_bridge.png",
+      "source_svg": "res://assets/art/src-svg/icons/poi_bridge.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "poi_cache",
+      "path": "res://assets/icons/poi_cache.png",
+      "source_svg": "res://assets/art/src-svg/icons/poi_cache.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "poi_camp",
+      "path": "res://assets/icons/poi_camp.png",
+      "source_svg": "res://assets/art/src-svg/icons/poi_camp.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "poi_crossroads",
+      "path": "res://assets/icons/poi_crossroads.png",
+      "source_svg": "res://assets/art/src-svg/icons/poi_crossroads.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "poi_farm",
+      "path": "res://assets/icons/poi_farm.png",
+      "source_svg": "res://assets/art/src-svg/icons/poi_farm.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "poi_graveyard",
+      "path": "res://assets/icons/poi_graveyard.png",
+      "source_svg": "res://assets/art/src-svg/icons/poi_graveyard.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "poi_herb_patch",
+      "path": "res://assets/icons/poi_herb_patch.png",
+      "source_svg": "res://assets/art/src-svg/icons/poi_herb_patch.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "poi_mine",
+      "path": "res://assets/icons/poi_mine.png",
+      "source_svg": "res://assets/art/src-svg/icons/poi_mine.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "poi_ruins",
+      "path": "res://assets/icons/poi_ruins.png",
+      "source_svg": "res://assets/art/src-svg/icons/poi_ruins.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "poi_shrine",
+      "path": "res://assets/icons/poi_shrine.png",
+      "source_svg": "res://assets/art/src-svg/icons/poi_shrine.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "poi_stream",
+      "path": "res://assets/icons/poi_stream.png",
+      "source_svg": "res://assets/art/src-svg/icons/poi_stream.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "poi_village",
+      "path": "res://assets/icons/poi_village.png",
+      "source_svg": "res://assets/art/src-svg/icons/poi_village.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "poi_watchtower",
+      "path": "res://assets/icons/poi_watchtower.png",
+      "source_svg": "res://assets/art/src-svg/icons/poi_watchtower.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "poi_well",
+      "path": "res://assets/icons/poi_well.png",
+      "source_svg": "res://assets/art/src-svg/icons/poi_well.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "status_burn",
+      "path": "res://assets/icons/status_burn.png",
+      "source_svg": "res://assets/art/src-svg/icons/status_burn.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "status_haste",
+      "path": "res://assets/icons/status_haste.png",
+      "source_svg": "res://assets/art/src-svg/icons/status_haste.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "status_poison",
+      "path": "res://assets/icons/status_poison.png",
+      "source_svg": "res://assets/art/src-svg/icons/status_poison.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "status_regen",
+      "path": "res://assets/icons/status_regen.png",
+      "source_svg": "res://assets/art/src-svg/icons/status_regen.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "status_shield",
+      "path": "res://assets/icons/status_shield.png",
+      "source_svg": "res://assets/art/src-svg/icons/status_shield.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "status_slow",
+      "path": "res://assets/icons/status_slow.png",
+      "source_svg": "res://assets/art/src-svg/icons/status_slow.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "status_stun",
+      "path": "res://assets/icons/status_stun.png",
+      "source_svg": "res://assets/art/src-svg/icons/status_stun.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "status_weakness",
+      "path": "res://assets/icons/status_weakness.png",
+      "source_svg": "res://assets/art/src-svg/icons/status_weakness.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "medal_bronze",
+      "path": "res://assets/icons/medal_bronze.png",
+      "source_svg": "res://assets/art/src-svg/icons/medal_bronze.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "medal_silver",
+      "path": "res://assets/icons/medal_silver.png",
+      "source_svg": "res://assets/art/src-svg/icons/medal_silver.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "medal_gold",
+      "path": "res://assets/icons/medal_gold.png",
+      "source_svg": "res://assets/art/src-svg/icons/medal_gold.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "medal_platinum",
+      "path": "res://assets/icons/medal_platinum.png",
+      "source_svg": "res://assets/art/src-svg/icons/medal_platinum.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "trophy",
+      "path": "res://assets/icons/trophy.png",
+      "source_svg": "res://assets/art/src-svg/icons/trophy.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
       "id": "tile_grass",
       "path": "res://assets/tiles/tile_grass.png",
       "source_svg": "res://assets/art/src-svg/tiles/tile_grass.svg",
@@ -359,6 +649,86 @@
       "category": "tiles"
     },
     {
+      "id": "tile_evergrove_grass",
+      "path": "res://assets/tiles/tile_evergrove_grass.png",
+      "source_svg": "res://assets/art/src-svg/tiles/tile_evergrove_grass.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_evergrove_path",
+      "path": "res://assets/tiles/tile_evergrove_path.png",
+      "source_svg": "res://assets/art/src-svg/tiles/tile_evergrove_path.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_evergrove_mossy",
+      "path": "res://assets/tiles/tile_evergrove_mossy.png",
+      "source_svg": "res://assets/art/src-svg/tiles/tile_evergrove_mossy.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_evergrove_roots",
+      "path": "res://assets/tiles/tile_evergrove_roots.png",
+      "source_svg": "res://assets/art/src-svg/tiles/tile_evergrove_roots.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_evergrove_clearing",
+      "path": "res://assets/tiles/tile_evergrove_clearing.png",
+      "source_svg": "res://assets/art/src-svg/tiles/tile_evergrove_clearing.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_evergrove_pond",
+      "path": "res://assets/tiles/tile_evergrove_pond.png",
+      "source_svg": "res://assets/art/src-svg/tiles/tile_evergrove_pond.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_evergrove_stump",
+      "path": "res://assets/tiles/tile_evergrove_stump.png",
+      "source_svg": "res://assets/art/src-svg/tiles/tile_evergrove_stump.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_evergrove_dense",
+      "path": "res://assets/tiles/tile_evergrove_dense.png",
+      "source_svg": "res://assets/art/src-svg/tiles/tile_evergrove_dense.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
       "id": "bld_castle",
       "path": "res://assets/sprites/bld_castle.png",
       "source_svg": "res://assets/art/src-svg/sprites/bld_castle.svg",
@@ -487,6 +857,236 @@
       "max_kb": 8,
       "pixel_art": true,
       "category": "enemies"
+    },
+    {
+      "id": "enemy_runner_elite",
+      "path": "res://assets/sprites/enemy_runner_elite.png",
+      "source_svg": "res://assets/art/src-svg/sprites/enemy_runner_elite.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "enemies"
+    },
+    {
+      "id": "enemy_brute_elite",
+      "path": "res://assets/sprites/enemy_brute_elite.png",
+      "source_svg": "res://assets/art/src-svg/sprites/enemy_brute_elite.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "enemies"
+    },
+    {
+      "id": "enemy_flyer_elite",
+      "path": "res://assets/sprites/enemy_flyer_elite.png",
+      "source_svg": "res://assets/art/src-svg/sprites/enemy_flyer_elite.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "enemies"
+    },
+    {
+      "id": "enemy_shielder",
+      "path": "res://assets/sprites/enemy_shielder.png",
+      "source_svg": "res://assets/art/src-svg/sprites/enemy_shielder.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "enemies"
+    },
+    {
+      "id": "enemy_healer",
+      "path": "res://assets/sprites/enemy_healer.png",
+      "source_svg": "res://assets/art/src-svg/sprites/enemy_healer.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "enemies"
+    },
+    {
+      "id": "enemy_boss_warlord",
+      "path": "res://assets/sprites/enemy_boss_warlord.png",
+      "source_svg": "res://assets/art/src-svg/sprites/enemy_boss_warlord.svg",
+      "expected_width": 32,
+      "expected_height": 32,
+      "max_kb": 12,
+      "pixel_art": true,
+      "category": "enemies"
+    },
+    {
+      "id": "enemy_boss_mage",
+      "path": "res://assets/sprites/enemy_boss_mage.png",
+      "source_svg": "res://assets/art/src-svg/sprites/enemy_boss_mage.svg",
+      "expected_width": 32,
+      "expected_height": 32,
+      "max_kb": 12,
+      "pixel_art": true,
+      "category": "enemies"
+    },
+    {
+      "id": "deco_rock_small",
+      "path": "res://assets/sprites/deco_rock_small.png",
+      "source_svg": "res://assets/art/src-svg/sprites/deco_rock_small.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "decorations"
+    },
+    {
+      "id": "deco_rock_large",
+      "path": "res://assets/sprites/deco_rock_large.png",
+      "source_svg": "res://assets/art/src-svg/sprites/deco_rock_large.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "decorations"
+    },
+    {
+      "id": "deco_bush",
+      "path": "res://assets/sprites/deco_bush.png",
+      "source_svg": "res://assets/art/src-svg/sprites/deco_bush.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "decorations"
+    },
+    {
+      "id": "deco_flowers",
+      "path": "res://assets/sprites/deco_flowers.png",
+      "source_svg": "res://assets/art/src-svg/sprites/deco_flowers.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "decorations"
+    },
+    {
+      "id": "deco_signpost",
+      "path": "res://assets/sprites/deco_signpost.png",
+      "source_svg": "res://assets/art/src-svg/sprites/deco_signpost.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "decorations"
+    },
+    {
+      "id": "deco_barrel",
+      "path": "res://assets/sprites/deco_barrel.png",
+      "source_svg": "res://assets/art/src-svg/sprites/deco_barrel.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "decorations"
+    },
+    {
+      "id": "deco_crate",
+      "path": "res://assets/sprites/deco_crate.png",
+      "source_svg": "res://assets/art/src-svg/sprites/deco_crate.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "decorations"
+    },
+    {
+      "id": "deco_fence",
+      "path": "res://assets/sprites/deco_fence.png",
+      "source_svg": "res://assets/art/src-svg/sprites/deco_fence.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "decorations"
+    },
+    {
+      "id": "deco_torch",
+      "path": "res://assets/sprites/deco_torch.png",
+      "source_svg": "res://assets/art/src-svg/sprites/deco_torch.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "decorations"
+    },
+    {
+      "id": "deco_tree_evergrove",
+      "path": "res://assets/sprites/deco_tree_evergrove.png",
+      "source_svg": "res://assets/art/src-svg/sprites/deco_tree_evergrove.svg",
+      "expected_width": 16,
+      "expected_height": 32,
+      "max_kb": 10,
+      "pixel_art": true,
+      "category": "decorations"
+    },
+    {
+      "id": "deco_tree_pine",
+      "path": "res://assets/sprites/deco_tree_pine.png",
+      "source_svg": "res://assets/art/src-svg/sprites/deco_tree_pine.svg",
+      "expected_width": 16,
+      "expected_height": 32,
+      "max_kb": 10,
+      "pixel_art": true,
+      "category": "decorations"
+    },
+    {
+      "id": "npc_lyra",
+      "path": "res://assets/sprites/npc_lyra.png",
+      "source_svg": "res://assets/art/src-svg/sprites/npc_lyra.svg",
+      "expected_width": 32,
+      "expected_height": 32,
+      "max_kb": 12,
+      "pixel_art": true,
+      "category": "npcs"
+    },
+    {
+      "id": "npc_commander",
+      "path": "res://assets/sprites/npc_commander.png",
+      "source_svg": "res://assets/art/src-svg/sprites/npc_commander.svg",
+      "expected_width": 32,
+      "expected_height": 32,
+      "max_kb": 12,
+      "pixel_art": true,
+      "category": "npcs"
+    },
+    {
+      "id": "npc_scholar",
+      "path": "res://assets/sprites/npc_scholar.png",
+      "source_svg": "res://assets/art/src-svg/sprites/npc_scholar.svg",
+      "expected_width": 32,
+      "expected_height": 32,
+      "max_kb": 12,
+      "pixel_art": true,
+      "category": "npcs"
+    },
+    {
+      "id": "npc_merchant",
+      "path": "res://assets/sprites/npc_merchant.png",
+      "source_svg": "res://assets/art/src-svg/sprites/npc_merchant.svg",
+      "expected_width": 32,
+      "expected_height": 32,
+      "max_kb": 12,
+      "pixel_art": true,
+      "category": "npcs"
+    },
+    {
+      "id": "npc_scout",
+      "path": "res://assets/sprites/npc_scout.png",
+      "source_svg": "res://assets/art/src-svg/sprites/npc_scout.svg",
+      "expected_width": 32,
+      "expected_height": 32,
+      "max_kb": 12,
+      "pixel_art": true,
+      "category": "npcs"
     },
     {
       "id": "fx_build_dust",
@@ -770,6 +1370,78 @@
       "tileable": true
     },
     {
+      "id": "tutorial_arrow_right",
+      "path": "res://assets/ui/tutorial_arrow_right.png",
+      "source_svg": "res://assets/art/src-svg/ui/tutorial_arrow_right.svg",
+      "expected_width": 32,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "ui"
+    },
+    {
+      "id": "tutorial_arrow_down",
+      "path": "res://assets/ui/tutorial_arrow_down.png",
+      "source_svg": "res://assets/art/src-svg/ui/tutorial_arrow_down.svg",
+      "expected_width": 16,
+      "expected_height": 32,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "ui"
+    },
+    {
+      "id": "tutorial_highlight",
+      "path": "res://assets/ui/tutorial_highlight.png",
+      "source_svg": "res://assets/art/src-svg/ui/tutorial_highlight.svg",
+      "expected_width": 32,
+      "expected_height": 32,
+      "max_kb": 10,
+      "pixel_art": true,
+      "category": "ui",
+      "nineslice": {
+        "margin_left": 6,
+        "margin_right": 6,
+        "margin_top": 6,
+        "margin_bottom": 6
+      }
+    },
+    {
+      "id": "tutorial_hand_point",
+      "path": "res://assets/ui/tutorial_hand_point.png",
+      "source_svg": "res://assets/art/src-svg/ui/tutorial_hand_point.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "ui"
+    },
+    {
+      "id": "tutorial_key_prompt",
+      "path": "res://assets/ui/tutorial_key_prompt.png",
+      "source_svg": "res://assets/art/src-svg/ui/tutorial_key_prompt.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "ui"
+    },
+    {
+      "id": "tutorial_speech_bubble",
+      "path": "res://assets/ui/tutorial_speech_bubble.png",
+      "source_svg": "res://assets/art/src-svg/ui/tutorial_speech_bubble.svg",
+      "expected_width": 48,
+      "expected_height": 32,
+      "max_kb": 10,
+      "pixel_art": true,
+      "category": "ui",
+      "nineslice": {
+        "margin_left": 8,
+        "margin_right": 8,
+        "margin_top": 4,
+        "margin_bottom": 10
+      }
+    },
+    {
       "id": "sfk_research_castle_ref",
       "path": "res://docs/research/super_fantasy_kingdom/pixel_art_castle.png",
       "expected_width": 1536,
@@ -875,6 +1547,54 @@
       "preset_ref": "sfx_presets.json#wave_end",
       "category": "world",
       "description": "Wave completed"
+    },
+    {
+      "id": "victory_fanfare",
+      "preset_ref": "sfx_presets.json#victory_fanfare",
+      "category": "stinger",
+      "description": "Level/battle won"
+    },
+    {
+      "id": "defeat_stinger",
+      "preset_ref": "sfx_presets.json#defeat_stinger",
+      "category": "stinger",
+      "description": "Level/battle lost"
+    },
+    {
+      "id": "level_up",
+      "preset_ref": "sfx_presets.json#level_up",
+      "category": "progression",
+      "description": "Character level up"
+    },
+    {
+      "id": "achievement_unlock",
+      "preset_ref": "sfx_presets.json#achievement_unlock",
+      "category": "progression",
+      "description": "Achievement unlocked"
+    },
+    {
+      "id": "upgrade_purchase",
+      "preset_ref": "sfx_presets.json#upgrade_purchase",
+      "category": "progression",
+      "description": "Upgrade purchased"
+    },
+    {
+      "id": "tutorial_ding",
+      "preset_ref": "sfx_presets.json#tutorial_ding",
+      "category": "ui",
+      "description": "Tutorial step completed"
+    },
+    {
+      "id": "boss_appear",
+      "preset_ref": "sfx_presets.json#boss_appear",
+      "category": "combat",
+      "description": "Boss enemy appears"
+    },
+    {
+      "id": "boss_defeated",
+      "preset_ref": "sfx_presets.json#boss_defeated",
+      "category": "combat",
+      "description": "Boss enemy defeated"
     }
   ]
 }

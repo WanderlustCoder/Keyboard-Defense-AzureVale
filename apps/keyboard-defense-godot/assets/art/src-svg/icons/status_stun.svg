@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Stun Status Effect - Stars circling -->
+  <!-- Center swirl -->
+  <rect x="6" y="6" width="4" height="4" fill="#9b59b6"/>
+  <rect x="7" y="7" width="2" height="2" fill="#d7bde2"/>
+  <!-- Stars -->
+  <!-- Star 1 -->
+  <rect x="2" y="2" width="3" height="3" fill="#f4d03f"/>
+  <rect x="3" y="1" width="1" height="1" fill="#f9e79f"/>
+  <rect x="3" y="4" width="1" height="1" fill="#f9e79f"/>
+  <rect x="1" y="3" width="1" height="1" fill="#f9e79f"/>
+  <rect x="4" y="3" width="1" height="1" fill="#f9e79f"/>
+  <!-- Star 2 -->
+  <rect x="11" y="2" width="3" height="3" fill="#f4d03f"/>
+  <rect x="12" y="1" width="1" height="1" fill="#f9e79f"/>
+  <rect x="12" y="4" width="1" height="1" fill="#f9e79f"/>
+  <rect x="10" y="3" width="1" height="1" fill="#f9e79f"/>
+  <rect x="13" y="3" width="1" height="1" fill="#f9e79f"/>
+  <!-- Star 3 -->
+  <rect x="2" y="11" width="3" height="3" fill="#f4d03f"/>
+  <rect x="3" y="10" width="1" height="1" fill="#f9e79f"/>
+  <rect x="3" y="13" width="1" height="1" fill="#f9e79f"/>
+  <!-- Star 4 -->
+  <rect x="11" y="11" width="3" height="3" fill="#f4d03f"/>
+  <rect x="12" y="10" width="1" height="1" fill="#f9e79f"/>
+  <rect x="12" y="13" width="1" height="1" fill="#f9e79f"/>
+</svg>

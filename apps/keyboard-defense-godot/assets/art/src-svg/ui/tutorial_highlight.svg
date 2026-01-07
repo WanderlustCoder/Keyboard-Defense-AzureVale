@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Tutorial Highlight Box (pulsing border) -->
+  <!-- Outer glow -->
+  <rect x="0" y="0" width="32" height="32" fill="#f4d03f" fill-opacity="0.3"/>
+  <!-- Border -->
+  <rect x="0" y="0" width="32" height="3" fill="#f4d03f"/>
+  <rect x="0" y="29" width="32" height="3" fill="#f4d03f"/>
+  <rect x="0" y="0" width="3" height="32" fill="#f4d03f"/>
+  <rect x="29" y="0" width="3" height="32" fill="#f4d03f"/>
+  <!-- Inner border highlight -->
+  <rect x="1" y="1" width="30" height="2" fill="#f9e79f"/>
+  <rect x="1" y="1" width="2" height="30" fill="#f9e79f"/>
+  <!-- Corner accents -->
+  <rect x="0" y="0" width="6" height="6" fill="#f4d03f"/>
+  <rect x="26" y="0" width="6" height="6" fill="#f4d03f"/>
+  <rect x="0" y="26" width="6" height="6" fill="#f4d03f"/>
+  <rect x="26" y="26" width="6" height="6" fill="#f4d03f"/>
+  <!-- Center (transparent) -->
+  <rect x="3" y="3" width="26" height="26" fill="#1a1a2e" fill-opacity="0"/>
+</svg>

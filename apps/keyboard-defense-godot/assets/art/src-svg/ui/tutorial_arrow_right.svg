@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 16" width="32" height="16">
+  <!-- Tutorial Arrow pointing right -->
+  <!-- Arrow shaft -->
+  <rect x="0" y="5" width="20" height="6" fill="#f4d03f"/>
+  <rect x="2" y="6" width="16" height="4" fill="#f9e79f"/>
+  <!-- Arrow head -->
+  <rect x="18" y="2" width="4" height="12" fill="#f4d03f"/>
+  <rect x="22" y="4" width="4" height="8" fill="#f4d03f"/>
+  <rect x="26" y="6" width="4" height="4" fill="#f4d03f"/>
+  <rect x="30" y="7" width="2" height="2" fill="#f4d03f"/>
+  <!-- Highlight -->
+  <rect x="20" y="4" width="2" height="3" fill="#f9e79f"/>
+  <rect x="24" y="5" width="2" height="2" fill="#f9e79f"/>
+  <!-- Outline -->
+  <rect x="0" y="4" width="20" height="1" fill="#b7950b"/>
+  <rect x="0" y="11" width="20" height="1" fill="#b7950b"/>
+</svg>

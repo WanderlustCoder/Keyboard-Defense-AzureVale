@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Merchant - Trade faction NPC -->
+  <!-- Background -->
+  <rect x="2" y="2" width="28" height="28" fill="#1a1a2e"/>
+  <rect x="4" y="4" width="24" height="24" fill="#5c4033"/>
+  <!-- Hat -->
+  <rect x="4" y="6" width="24" height="6" fill="#27ae60"/>
+  <rect x="6" y="4" width="20" height="4" fill="#2ecc71"/>
+  <rect x="10" y="2" width="12" height="3" fill="#27ae60"/>
+  <!-- Feather -->
+  <rect x="22" y="2" width="2" height="6" fill="#e74c3c"/>
+  <rect x="23" y="0" width="1" height="3" fill="#c0392b"/>
+  <!-- Face -->
+  <rect x="10" y="10" width="12" height="12" fill="#f5cba7"/>
+  <rect x="8" y="12" width="16" height="8" fill="#f5cba7"/>
+  <!-- Eyes (cheerful) -->
+  <rect x="11" y="14" width="3" height="2" fill="#1a1a2e"/>
+  <rect x="18" y="14" width="3" height="2" fill="#1a1a2e"/>
+  <rect x="12" y="14" width="1" height="1" fill="#27ae60"/>
+  <rect x="19" y="14" width="1" height="1" fill="#27ae60"/>
+  <!-- Rosy cheeks -->
+  <rect x="8" y="16" width="2" height="2" fill="#f1948a"/>
+  <rect x="22" y="16" width="2" height="2" fill="#f1948a"/>
+  <!-- Mustache -->
+  <rect x="10" y="18" width="12" height="2" fill="#5c4033"/>
+  <rect x="8" y="18" width="3" height="1" fill="#4a3728"/>
+  <rect x="21" y="18" width="3" height="1" fill="#4a3728"/>
+  <!-- Smile -->
+  <rect x="13" y="20" width="6" height="1" fill="#c0392b"/>
+  <!-- Collar/outfit -->
+  <rect x="6" y="22" width="20" height="8" fill="#f4d03f"/>
+  <rect x="8" y="24" width="16" height="6" fill="#f39c12"/>
+  <!-- Coin emblem -->
+  <rect x="14" y="24" width="4" height="4" fill="#f4d03f"/>
+  <rect x="15" y="25" width="2" height="2" fill="#f9e79f"/>
+</svg>

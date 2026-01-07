@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Regeneration Status - Heart with plus -->
+  <!-- Heart shape -->
+  <rect x="3" y="4" width="4" height="4" fill="#e74c3c"/>
+  <rect x="9" y="4" width="4" height="4" fill="#e74c3c"/>
+  <rect x="2" y="5" width="6" height="4" fill="#e74c3c"/>
+  <rect x="8" y="5" width="6" height="4" fill="#e74c3c"/>
+  <rect x="3" y="8" width="10" height="4" fill="#e74c3c"/>
+  <rect x="4" y="11" width="8" height="2" fill="#e74c3c"/>
+  <rect x="5" y="12" width="6" height="2" fill="#e74c3c"/>
+  <rect x="6" y="13" width="4" height="1" fill="#e74c3c"/>
+  <rect x="7" y="14" width="2" height="1" fill="#e74c3c"/>
+  <!-- Heart highlight -->
+  <rect x="4" y="5" width="2" height="2" fill="#f1948a"/>
+  <!-- Plus symbol -->
+  <rect x="7" y="6" width="2" height="6" fill="#2ecc71"/>
+  <rect x="5" y="8" width="6" height="2" fill="#2ecc71"/>
+  <!-- Plus highlight -->
+  <rect x="7" y="7" width="1" height="1" fill="#58d68d"/>
+</svg>

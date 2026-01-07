@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Bronze Medal -->
+  <!-- Ribbon -->
+  <rect x="3" y="0" width="4" height="5" fill="#c0392b"/>
+  <rect x="9" y="0" width="4" height="5" fill="#c0392b"/>
+  <rect x="4" y="0" width="2" height="4" fill="#e74c3c"/>
+  <rect x="10" y="0" width="2" height="4" fill="#e74c3c"/>
+  <!-- Medal base -->
+  <rect x="3" y="5" width="10" height="10" fill="#a0522d"/>
+  <rect x="4" y="4" width="8" height="2" fill="#a0522d"/>
+  <rect x="4" y="14" width="8" height="1" fill="#a0522d"/>
+  <!-- Medal face -->
+  <rect x="4" y="6" width="8" height="8" fill="#cd853f"/>
+  <rect x="5" y="5" width="6" height="2" fill="#cd853f"/>
+  <!-- Medal highlight -->
+  <rect x="5" y="7" width="3" height="3" fill="#daa520"/>
+  <!-- Star emblem -->
+  <rect x="7" y="7" width="2" height="5" fill="#8b4513"/>
+  <rect x="5" y="9" width="6" height="2" fill="#8b4513"/>
+  <!-- Inner star -->
+  <rect x="7" y="8" width="1" height="1" fill="#a0522d"/>
+</svg>
