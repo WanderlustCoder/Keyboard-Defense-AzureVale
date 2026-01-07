@@ -29,6 +29,10 @@ var _feedback_tween: Tween = null
 func _ready() -> void:
 	_apply_styling()
 
+func _exit_tree() -> void:
+	if _feedback_tween != null and _feedback_tween.is_valid():
+		_feedback_tween.kill()
+
 func _apply_styling() -> void:
 	if drill_title:
 		drill_title.add_theme_font_size_override("font_size", TITLE_FONT_SIZE)

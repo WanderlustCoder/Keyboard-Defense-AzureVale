@@ -17,9 +17,14 @@ const FADE_OUT_DURATION := 0.15
 @onready var button_container: HBoxContainer = $CenterContainer/Panel/Content/ButtonContainer
 
 var _buttons: Array[Button] = []
+var _modal_tween: Tween = null
 
 func _ready() -> void:
 	_apply_styling()
+
+func _exit_tree() -> void:
+	if _modal_tween != null and _modal_tween.is_valid():
+		_modal_tween.kill()
 
 func _apply_styling() -> void:
 	if title_label:
@@ -60,16 +65,20 @@ func add_button(text: String, callback: Callable, primary: bool = false) -> Butt
 
 ## Show the modal with animation
 func show_modal() -> void:
+	if _modal_tween != null and _modal_tween.is_valid():
+		_modal_tween.kill()
 	visible = true
 	modulate.a = 0.0
-	var tween := create_tween()
-	tween.tween_property(self, "modulate:a", 1.0, FADE_IN_DURATION)
+	_modal_tween = create_tween()
+	_modal_tween.tween_property(self, "modulate:a", 1.0, FADE_IN_DURATION)
 
 ## Hide the modal with animation
 func hide_modal() -> void:
-	var tween := create_tween()
-	tween.tween_property(self, "modulate:a", 0.0, FADE_OUT_DURATION)
-	tween.tween_callback(func(): visible = false)
+	if _modal_tween != null and _modal_tween.is_valid():
+		_modal_tween.kill()
+	_modal_tween = create_tween()
+	_modal_tween.tween_property(self, "modulate:a", 0.0, FADE_OUT_DURATION)
+	_modal_tween.tween_callback(func(): visible = false)
 
 ## Configure as a simple message dialog
 func setup_message(title: String, message: String, button_text: String = "OK", callback: Callable = Callable()) -> void:

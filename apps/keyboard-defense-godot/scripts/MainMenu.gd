@@ -3,6 +3,9 @@ extends Control
 const VERSION_PATH := "res://VERSION.txt"
 const ThemeColors = preload("res://ui/theme_colors.gd")
 
+const FONT_SIZE_HELP_TITLE := 28
+const FONT_SIZE_HELP_TEXT := 15
+
 @onready var start_button: Button = $Center/MenuPanel/VBox/StartButton
 @onready var kingdom_button: Button = $Center/MenuPanel/VBox/KingdomButton
 @onready var settings_button: Button = $Center/MenuPanel/VBox/SettingsButton
@@ -107,7 +110,7 @@ func _show_help_panel() -> void:
 	var title = Label.new()
 	title.text = "How to Play"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", 28)
+	title.add_theme_font_size_override("font_size", FONT_SIZE_HELP_TITLE)
 	title.add_theme_color_override("font_color", ThemeColors.ACCENT)
 	vbox.add_child(title)
 
@@ -117,7 +120,7 @@ func _show_help_panel() -> void:
 	help_text.fit_content = true
 	help_text.scroll_active = false
 	help_text.custom_minimum_size = Vector2(0, 320)
-	help_text.add_theme_font_size_override("normal_font_size", 15)
+	help_text.add_theme_font_size_override("normal_font_size", FONT_SIZE_HELP_TEXT)
 	help_text.text = _get_help_text()
 	vbox.add_child(help_text)
 

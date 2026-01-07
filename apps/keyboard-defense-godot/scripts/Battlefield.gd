@@ -24,6 +24,13 @@ const FEEDBACK_ERROR_DURATION := 0.6
 const FEEDBACK_WAVE_DURATION := 1.1
 const FEEDBACK_BUFF_DURATION := 0.9
 
+# Font sizes for pause menu and overlays
+const FONT_SIZE_SETTINGS_TITLE := 14
+const FONT_SIZE_SETTINGS_LABEL := 13
+const FONT_SIZE_SHORTCUTS := 11
+const FONT_SIZE_COMBO := 16
+const FONT_SIZE_RESULT_HINT := 12
+
 ## Returns true if event is a non-repeating key press
 func _is_key_pressed(event: InputEvent) -> bool:
 	return event is InputEventKey and event.pressed and not event.echo
@@ -177,6 +184,10 @@ func _ready() -> void:
 	if typed_label != null:
 		_typed_label_base_pos = typed_label.position
 	_initialize_battle()
+
+func _exit_tree() -> void:
+	if _error_shake_tween != null and _error_shake_tween.is_valid():
+		_error_shake_tween.kill()
 
 func _initialize_battle() -> void:
 	node_id = game_controller.next_battle_node_id
@@ -998,7 +1009,7 @@ func _add_pause_settings() -> void:
 	var settings_title = Label.new()
 	settings_title.text = "Quick Settings"
 	settings_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	settings_title.add_theme_font_size_override("font_size", 14)
+	settings_title.add_theme_font_size_override("font_size", FONT_SIZE_SETTINGS_TITLE)
 	settings_title.add_theme_color_override("font_color", Color(0.65, 0.7, 0.82, 1))
 	pause_settings_container.add_child(settings_title)
 
@@ -1021,7 +1032,7 @@ func _add_pause_settings() -> void:
 	shake_row.add_theme_constant_override("separation", 12)
 	var shake_label = Label.new()
 	shake_label.text = "Screen Shake"
-	shake_label.add_theme_font_size_override("font_size", 13)
+	shake_label.add_theme_font_size_override("font_size", FONT_SIZE_SETTINGS_LABEL)
 	shake_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	shake_row.add_child(shake_label)
 	pause_shake_toggle = CheckButton.new()
@@ -1038,7 +1049,7 @@ func _add_pause_settings() -> void:
 	var shortcuts_label = Label.new()
 	shortcuts_label.text = "ESC: Pause   R: Retry   Enter: Continue"
 	shortcuts_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	shortcuts_label.add_theme_font_size_override("font_size", 11)
+	shortcuts_label.add_theme_font_size_override("font_size", FONT_SIZE_SHORTCUTS)
 	shortcuts_label.add_theme_color_override("font_color", Color(0.5, 0.55, 0.65, 0.8))
 	pause_settings_container.add_child(shortcuts_label)
 
@@ -1052,7 +1063,7 @@ func _create_slider_row(label_text: String, min_val: float, max_val: float, curr
 
 	var label = Label.new()
 	label.text = label_text
-	label.add_theme_font_size_override("font_size", 13)
+	label.add_theme_font_size_override("font_size", FONT_SIZE_SETTINGS_LABEL)
 	label.custom_minimum_size = Vector2(60, 0)
 	row.add_child(label)
 
@@ -1414,7 +1425,7 @@ func _setup_combo_indicator() -> void:
 	combo_label = Label.new()
 	combo_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	combo_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	combo_label.add_theme_font_size_override("font_size", 16)
+	combo_label.add_theme_font_size_override("font_size", FONT_SIZE_COMBO)
 	combo_label.add_theme_color_override("font_color", ThemeColors.accent_alpha(0.9))
 	combo_label.visible = false
 	combo_label.pivot_offset = Vector2(40, 10)  # Center for scaling
@@ -1497,7 +1508,7 @@ func _setup_result_panel() -> void:
 	# Create keyboard hint label
 	result_hint_label = Label.new()
 	result_hint_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	result_hint_label.add_theme_font_size_override("font_size", 12)
+	result_hint_label.add_theme_font_size_override("font_size", FONT_SIZE_RESULT_HINT)
 	result_hint_label.add_theme_color_override("font_color", Color(0.65, 0.7, 0.82, 0.8))
 	result_hint_label.text = "Press Enter to continue, R to retry, Esc for map"
 	content.add_child(result_hint_label)
