@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="12" height="12">
+  <!-- Miniboss Marker (12x12) - gold crown -->
+  
+  <!-- Crown base -->
+  <rect x="1" y="6" width="10" height="5" fill="#f4d03f"/>
+  <rect x="2" y="7" width="8" height="3" fill="#daa520"/>
+  
+  <!-- Crown points -->
+  <rect x="2" y="2" width="2" height="5" fill="#f4d03f"/>
+  <rect x="5" y="1" width="2" height="6" fill="#f4d03f"/>
+  <rect x="8" y="2" width="2" height="5" fill="#f4d03f"/>
+  
+  <!-- Gems -->
+  <rect x="2" y="3" width="2" height="2" fill="#e74c3c"/>
+  <rect x="5" y="2" width="2" height="2" fill="#3498db"/>
+  <rect x="8" y="3" width="2" height="2" fill="#2ecc71"/>
+</svg>

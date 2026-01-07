@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Empty Star (16x16) -->
+  
+  <!-- Star outline -->
+  <rect x="7" y="1" width="2" height="4" fill="#7f8c8d"/>
+  <rect x="6" y="3" width="4" height="2" fill="#7f8c8d"/>
+  <rect x="2" y="5" width="4" height="2" fill="#7f8c8d"/>
+  <rect x="10" y="5" width="4" height="2" fill="#7f8c8d"/>
+  <rect x="4" y="7" width="8" height="2" fill="#7f8c8d"/>
+  <rect x="5" y="9" width="6" height="2" fill="#7f8c8d"/>
+  <rect x="3" y="11" width="3" height="3" fill="#7f8c8d"/>
+  <rect x="10" y="11" width="3" height="3" fill="#7f8c8d"/>
+  
+  <!-- Inner cutout -->
+  <rect x="7" y="3" width="2" height="2" fill="#2c3e50"/>
+  <rect x="5" y="6" width="6" height="2" fill="#2c3e50"/>
+  <rect x="6" y="8" width="4" height="2" fill="#2c3e50"/>
+  <rect x="4" y="10" width="2" height="2" fill="#2c3e50"/>
+  <rect x="10" y="10" width="2" height="2" fill="#2c3e50"/>
+</svg>

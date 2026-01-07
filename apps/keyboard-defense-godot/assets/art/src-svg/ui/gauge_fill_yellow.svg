@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 4" width="4" height="4">
+  <!-- Yellow Gauge Fill (4x4) - tileable -->
+  
+  <rect x="0" y="0" width="4" height="4" fill="#f39c12"/>
+  <rect x="0" y="0" width="4" height="1" fill="#f1c40f"/>
+  <rect x="0" y="3" width="4" height="1" fill="#d68910"/>
+</svg>

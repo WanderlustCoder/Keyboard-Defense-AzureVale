@@ -4,6 +4,11 @@ extends VBoxContainer
 
 const ThemeColors = preload("res://ui/theme_colors.gd")
 
+const BAR_CORNER_RADIUS := 3
+const THREAT_BAR_BG := Color(0.1, 0.09, 0.15, 1)
+const THREAT_HIGH_THRESHOLD := 80.0
+const THREAT_MEDIUM_THRESHOLD := 50.0
+
 @onready var threat_label: Label = $ThreatLabel
 @onready var threat_progress: ProgressBar = $ThreatProgress
 @onready var castle_label: Label = $CastleLabel
@@ -17,12 +22,12 @@ func _ready() -> void:
 
 func _create_styles() -> void:
 	_threat_bg_style = StyleBoxFlat.new()
-	_threat_bg_style.bg_color = Color(0.1, 0.09, 0.15, 1)
-	_threat_bg_style.set_corner_radius_all(3)
+	_threat_bg_style.bg_color = THREAT_BAR_BG
+	_threat_bg_style.set_corner_radius_all(BAR_CORNER_RADIUS)
 
 	_threat_style = StyleBoxFlat.new()
 	_threat_style.bg_color = ThemeColors.THREAT
-	_threat_style.set_corner_radius_all(3)
+	_threat_style.set_corner_radius_all(BAR_CORNER_RADIUS)
 
 func _apply_styling() -> void:
 	if threat_label:
@@ -43,9 +48,9 @@ func set_threat(value: float) -> void:
 
 	# Update bar color based on threat level
 	if _threat_style:
-		if value >= 80.0:
+		if value >= THREAT_HIGH_THRESHOLD:
 			_threat_style.bg_color = ThemeColors.ERROR
-		elif value >= 50.0:
+		elif value >= THREAT_MEDIUM_THRESHOLD:
 			_threat_style.bg_color = ThemeColors.WARNING
 		else:
 			_threat_style.bg_color = ThemeColors.THREAT

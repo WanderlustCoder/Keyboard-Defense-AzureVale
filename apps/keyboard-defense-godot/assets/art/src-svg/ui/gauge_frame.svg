@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 8" width="48" height="8">
+  <!-- Gauge Frame (48x8) - 9-slice horizontal bar frame -->
+  
+  <!-- Outer border -->
+  <rect x="0" y="0" width="48" height="8" fill="#2c3e50"/>
+  
+  <!-- Inner border -->
+  <rect x="1" y="1" width="46" height="6" fill="#34495e"/>
+  
+  <!-- Inner fill area (dark) -->
+  <rect x="2" y="2" width="44" height="4" fill="#1a252f"/>
+  
+  <!-- Corner accents -->
+  <rect x="0" y="0" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="46" y="0" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="0" y="6" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="46" y="6" width="2" height="2" fill="#5d6d7e"/>
+</svg>

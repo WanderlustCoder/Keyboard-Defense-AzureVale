@@ -5,6 +5,11 @@ extends Control
 
 const ThemeColors = preload("res://ui/theme_colors.gd")
 
+const TITLE_FONT_SIZE := 24
+const BUTTON_MIN_WIDTH := 120
+const FADE_IN_DURATION := 0.2
+const FADE_OUT_DURATION := 0.15
+
 @onready var overlay: ColorRect = $Overlay
 @onready var panel: PanelContainer = $CenterContainer/Panel
 @onready var title_label: Label = $CenterContainer/Panel/Content/TitleLabel
@@ -18,7 +23,7 @@ func _ready() -> void:
 
 func _apply_styling() -> void:
 	if title_label:
-		title_label.add_theme_font_size_override("font_size", 24)
+		title_label.add_theme_font_size_override("font_size", TITLE_FONT_SIZE)
 		title_label.add_theme_color_override("font_color", ThemeColors.ACCENT)
 
 ## Set the modal title
@@ -39,10 +44,12 @@ func clear_buttons() -> void:
 
 ## Add a button with callback
 func add_button(text: String, callback: Callable, primary: bool = false) -> Button:
+	if button_container == null:
+		return null
 	var btn := Button.new()
 	btn.text = text
 	btn.pressed.connect(callback)
-	btn.custom_minimum_size = Vector2(120, 0)
+	btn.custom_minimum_size = Vector2(BUTTON_MIN_WIDTH, 0)
 
 	if primary:
 		btn.add_theme_color_override("font_color", ThemeColors.ACCENT)
@@ -56,12 +63,12 @@ func show_modal() -> void:
 	visible = true
 	modulate.a = 0.0
 	var tween := create_tween()
-	tween.tween_property(self, "modulate:a", 1.0, 0.2)
+	tween.tween_property(self, "modulate:a", 1.0, FADE_IN_DURATION)
 
 ## Hide the modal with animation
 func hide_modal() -> void:
 	var tween := create_tween()
-	tween.tween_property(self, "modulate:a", 0.0, 0.15)
+	tween.tween_property(self, "modulate:a", 0.0, FADE_OUT_DURATION)
 	tween.tween_callback(func(): visible = false)
 
 ## Configure as a simple message dialog

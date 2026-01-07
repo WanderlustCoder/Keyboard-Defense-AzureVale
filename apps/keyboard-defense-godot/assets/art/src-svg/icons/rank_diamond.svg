@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Diamond Rank Badge (16x16) -->
+  
+  <!-- Glow effect -->
+  <rect x="1" y="1" width="14" height="14" fill="#b9f2ff" opacity="0.3"/>
+  
+  <!-- Diamond shape -->
+  <rect x="4" y="2" width="8" height="4" fill="#00bfff"/>
+  <rect x="3" y="4" width="10" height="4" fill="#87ceeb"/>
+  <rect x="4" y="8" width="8" height="4" fill="#00bfff"/>
+  <rect x="5" y="12" width="6" height="2" fill="#87ceeb"/>
+  <rect x="6" y="14" width="4" height="1" fill="#00bfff"/>
+  
+  <!-- Facets -->
+  <rect x="5" y="3" width="2" height="2" fill="#e0ffff"/>
+  <rect x="9" y="3" width="2" height="2" fill="#e0ffff"/>
+  <rect x="7" y="6" width="2" height="2" fill="#ffffff"/>
+  <rect x="5" y="9" width="2" height="2" fill="#e0ffff"/>
+  <rect x="9" y="9" width="2" height="2" fill="#e0ffff"/>
+  
+  <!-- Sparkle -->
+  <rect x="11" y="1" width="2" height="2" fill="#ffffff"/>
+</svg>

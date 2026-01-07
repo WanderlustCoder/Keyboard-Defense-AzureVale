@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="12" height="12">
+  <!-- Champion Marker (12x12) - purple skull with flames -->
+  
+  <!-- Flame background -->
+  <rect x="1" y="0" width="2" height="4" fill="#9b59b6"/>
+  <rect x="9" y="0" width="2" height="4" fill="#9b59b6"/>
+  <rect x="2" y="1" width="2" height="3" fill="#af7ac5"/>
+  <rect x="8" y="1" width="2" height="3" fill="#af7ac5"/>
+  
+  <!-- Skull -->
+  <rect x="3" y="3" width="6" height="5" fill="#fdfefe"/>
+  <rect x="2" y="4" width="8" height="3" fill="#fdfefe"/>
+  <rect x="3" y="8" width="6" height="3" fill="#fdfefe"/>
+  
+  <!-- Eyes -->
+  <rect x="3" y="5" width="2" height="2" fill="#9b59b6"/>
+  <rect x="7" y="5" width="2" height="2" fill="#9b59b6"/>
+  
+  <!-- Teeth -->
+  <rect x="4" y="9" width="1" height="2" fill="#bdc3c7"/>
+  <rect x="6" y="9" width="1" height="2" fill="#bdc3c7"/>
+  <rect x="8" y="9" width="1" height="1" fill="#bdc3c7"/>
+</svg>

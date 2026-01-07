@@ -4,6 +4,8 @@ extends HBoxContainer
 ## A simple stat display component showing a label and value.
 ## Use for displaying stats like "Accuracy: 95%" or "WPM: 62".
 
+const ThemeColors = preload("res://ui/theme_colors.gd")
+
 @export var stat_name: String = "Stat":
 	set(value):
 		stat_name = value
@@ -19,7 +21,7 @@ extends HBoxContainer
 		suffix = value
 		_update_display()
 
-@export var value_color: Color = Color(0.94, 0.94, 0.98, 1):
+@export var value_color: Color = ThemeColors.TEXT:
 	set(value):
 		value_color = value
 		_update_display()

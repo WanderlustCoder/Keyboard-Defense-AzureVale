@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 4" width="4" height="4">
+  <!-- Red Gauge Fill (4x4) - tileable -->
+  
+  <rect x="0" y="0" width="4" height="4" fill="#c0392b"/>
+  <rect x="0" y="0" width="4" height="1" fill="#e74c3c"/>
+  <rect x="0" y="3" width="4" height="1" fill="#922b21"/>
+</svg>

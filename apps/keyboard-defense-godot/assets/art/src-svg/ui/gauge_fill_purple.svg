@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 4" width="4" height="4">
+  <!-- Purple Gauge Fill (4x4) - tileable (for XP) -->
+  
+  <rect x="0" y="0" width="4" height="4" fill="#8e44ad"/>
+  <rect x="0" y="0" width="4" height="1" fill="#9b59b6"/>
+  <rect x="0" y="3" width="4" height="1" fill="#6c3483"/>
+</svg>
