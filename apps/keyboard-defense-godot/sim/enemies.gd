@@ -11,12 +11,12 @@ const ENEMY_KINDS := {
     "armored": {"speed": 1, "armor": 1, "hp_bonus": 1, "glyph": "a"}
 }
 const ENEMY_HP_BONUS_BY_DAY := {
-    "armored": [1, 1, 1, 2, 2, 2, 4],
+    "armored": [1, 1, 1, 2, 2, 3, 4],
     "raider": [0, 0, 0, 0, 1, 1, 2],
     "scout": [-1, -1, -1, 0, 0, 0, 1]
 }
 const ENEMY_ARMOR_BY_DAY := {
-    "armored": [1, 1, 1, 1, 1, 1, 2],
+    "armored": [1, 1, 1, 1, 1, 2, 2],
     "raider": [0, 0, 0, 0, 0, 0, 1],
     "scout": [0, 0, 0, 0, 0, 0, 1]
 }

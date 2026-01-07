@@ -2,11 +2,11 @@
 .import/
 *.import
 *.uid
-_test.log
-_test_summary.log
-Logs/ScenarioReports/
-Logs/ScenarioReports/*.json
-Logs/ScenarioReports/last_summary.txt
+
+# Log files
+_*.log
+testout.txt
+Logs/
 
 # Generated PNG assets (source SVGs are in assets/art/src-svg/)
 assets/icons/

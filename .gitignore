@@ -25,8 +25,13 @@ apps/**/static-dashboard/
 *.tmp.json
 tap.log
 tap_diag.log
-docs.zip
+
+# Archives
+*.zip
 
 # Miscellaneous scratch files
+temp/
 temp_*.txt
+temp_*.ts
 TEMP_*.txt
+tmp.txt
