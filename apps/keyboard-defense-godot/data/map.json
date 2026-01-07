@@ -487,6 +487,214 @@
       "requires": ["runeforge-core"],
       "reward_gold": 150,
       "drill_template": "eternal-scribe"
+    },
+    {
+      "id": "ember-path",
+      "label": "Ember Path",
+      "lesson_id": "fire_realm_1",
+      "requires": ["the-nexus"],
+      "reward_gold": 35,
+      "drill_template": "ember-path"
+    },
+    {
+      "id": "inferno-core",
+      "label": "Inferno Core",
+      "lesson_id": "fire_realm_2",
+      "requires": ["ember-path"],
+      "reward_gold": 45,
+      "drill_template": "inferno-core"
+    },
+    {
+      "id": "flame-tyrant",
+      "label": "Flame Tyrant",
+      "lesson_id": "fire_realm_boss",
+      "requires": ["inferno-core"],
+      "reward_gold": 80,
+      "drill_template": "flame-tyrant"
+    },
+    {
+      "id": "frozen-approach",
+      "label": "Frozen Approach",
+      "lesson_id": "ice_realm_1",
+      "requires": ["the-nexus"],
+      "reward_gold": 35,
+      "drill_template": "frozen-approach"
+    },
+    {
+      "id": "glacier-heart",
+      "label": "Glacier Heart",
+      "lesson_id": "ice_realm_2",
+      "requires": ["frozen-approach"],
+      "reward_gold": 45,
+      "drill_template": "glacier-heart"
+    },
+    {
+      "id": "frost-empress",
+      "label": "Frost Empress",
+      "lesson_id": "ice_realm_boss",
+      "requires": ["glacier-heart"],
+      "reward_gold": 80,
+      "drill_template": "frost-empress"
+    },
+    {
+      "id": "living-grove",
+      "label": "Living Grove",
+      "lesson_id": "nature_realm_1",
+      "requires": ["the-nexus"],
+      "reward_gold": 35,
+      "drill_template": "living-grove"
+    },
+    {
+      "id": "world-tree",
+      "label": "World Tree",
+      "lesson_id": "nature_realm_2",
+      "requires": ["living-grove"],
+      "reward_gold": 45,
+      "drill_template": "world-tree"
+    },
+    {
+      "id": "ancient-treant",
+      "label": "Ancient Treant",
+      "lesson_id": "nature_realm_boss",
+      "requires": ["world-tree"],
+      "reward_gold": 80,
+      "drill_template": "ancient-treant"
+    },
+    {
+      "id": "elemental-convergence",
+      "label": "Elemental Convergence",
+      "lesson_id": "gauntlet_chaos",
+      "requires": ["flame-tyrant", "frost-empress", "ancient-treant"],
+      "reward_gold": 200,
+      "drill_template": "elemental-convergence"
+    },
+    {
+      "id": "code-academy",
+      "label": "Code Academy",
+      "lesson_id": "code_variables",
+      "requires": ["apex-tower"],
+      "reward_gold": 40,
+      "drill_template": "code-academy"
+    },
+    {
+      "id": "keyword-vault",
+      "label": "Keyword Vault",
+      "lesson_id": "code_keywords",
+      "requires": ["code-academy"],
+      "reward_gold": 50,
+      "drill_template": "keyword-vault"
+    },
+    {
+      "id": "syntax-chamber",
+      "label": "Syntax Chamber",
+      "lesson_id": "code_syntax",
+      "requires": ["keyword-vault"],
+      "reward_gold": 60,
+      "drill_template": "syntax-chamber"
+    },
+    {
+      "id": "code-master-sanctum",
+      "label": "Code Master Sanctum",
+      "lesson_id": "code_master",
+      "requires": ["syntax-chamber"],
+      "reward_gold": 90,
+      "drill_template": "code-master-sanctum"
+    },
+    {
+      "id": "bronze-precision",
+      "label": "Bronze Precision",
+      "lesson_id": "precision_bronze",
+      "requires": ["training-arena"],
+      "reward_gold": 15,
+      "drill_template": "bronze-precision"
+    },
+    {
+      "id": "silver-precision",
+      "label": "Silver Precision",
+      "lesson_id": "precision_silver",
+      "requires": ["bronze-precision"],
+      "reward_gold": 25,
+      "drill_template": "silver-precision"
+    },
+    {
+      "id": "gold-precision",
+      "label": "Gold Precision",
+      "lesson_id": "precision_gold",
+      "requires": ["silver-precision"],
+      "reward_gold": 50,
+      "drill_template": "gold-precision"
+    },
+    {
+      "id": "legendary-forest-gate",
+      "label": "Legendary Forest Gate",
+      "lesson_id": "legendary_forest",
+      "requires": ["apex-tower"],
+      "reward_gold": 60,
+      "drill_template": "legendary-forest-gate"
+    },
+    {
+      "id": "legendary-citadel",
+      "label": "Legendary Citadel",
+      "lesson_id": "legendary_citadel",
+      "requires": ["legendary-forest-gate"],
+      "reward_gold": 80,
+      "drill_template": "legendary-citadel"
+    },
+    {
+      "id": "legendary-apex",
+      "label": "Legendary Apex",
+      "lesson_id": "legendary_apex",
+      "requires": ["legendary-citadel"],
+      "reward_gold": 120,
+      "drill_template": "legendary-apex"
+    },
+    {
+      "id": "sprint-trial",
+      "label": "Sprint Trial",
+      "lesson_id": "time_trial_sprint",
+      "requires": ["training-arena"],
+      "reward_gold": 20,
+      "drill_template": "sprint-trial"
+    },
+    {
+      "id": "marathon-trial",
+      "label": "Marathon Trial",
+      "lesson_id": "time_trial_marathon",
+      "requires": ["sprint-trial"],
+      "reward_gold": 35,
+      "drill_template": "marathon-trial"
+    },
+    {
+      "id": "double-letter-dungeon",
+      "label": "Double Letter Dungeon",
+      "lesson_id": "double_letters",
+      "requires": ["word-masters-den"],
+      "reward_gold": 35,
+      "drill_template": "double-letter-dungeon"
+    },
+    {
+      "id": "consonant-cavern",
+      "label": "Consonant Cavern",
+      "lesson_id": "consonant_clusters",
+      "requires": ["double-letter-dungeon"],
+      "reward_gold": 40,
+      "drill_template": "consonant-cavern"
+    },
+    {
+      "id": "vowel-sanctuary",
+      "label": "Vowel Sanctuary",
+      "lesson_id": "vowel_flow",
+      "requires": ["double-letter-dungeon"],
+      "reward_gold": 40,
+      "drill_template": "vowel-sanctuary"
+    },
+    {
+      "id": "phonetic-mastery",
+      "label": "Phonetic Mastery",
+      "lesson_id": "alternating_hands",
+      "requires": ["consonant-cavern", "vowel-sanctuary"],
+      "reward_gold": 65,
+      "drill_template": "phonetic-mastery"
     }
   ]
 }

@@ -1329,6 +1329,292 @@
           "hint": "You have become the Eternal Scribe's heir."
         }
       ]
+    },
+    {
+      "id": "ember-path",
+      "label": "Ember Path Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Flame Approach", "word_count": 6, "shuffle": false, "hint": "The heat rises with each step."},
+        {"mode": "targets", "label": "Ember Sparks", "targets": ["burn", "blaze", "fire", "heat", "ash"], "hint": "Quick bursts through the flames."},
+        {"mode": "intermission", "label": "Heat Wave", "duration": 2.0, "message": "The flames test your resolve."},
+        {"mode": "targets", "label": "Ember Commands", "targets": ["scorch", "ignite", "kindle", "sear"], "hint": "Command the flames."},
+        {"mode": "lesson", "label": "Ember Path Defense", "word_count": 10, "shuffle": true, "hint": "Speed outpaces the fire."}
+      ]
+    },
+    {
+      "id": "inferno-core",
+      "label": "Inferno Core Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Core Descent", "word_count": 7, "shuffle": false, "hint": "The volcano's heart awaits."},
+        {"mode": "targets", "label": "Magma Beats", "targets": ["molten", "magma", "lava", "crater"], "hint": "Dance on the magma flow."},
+        {"mode": "intermission", "label": "Volcanic Pause", "duration": 2.5, "message": "The core pulses with power."},
+        {"mode": "targets", "label": "Inferno Commands", "targets": ["volcanic", "eruption", "infernal", "blazing"], "hint": "Harness the inferno."},
+        {"mode": "lesson", "label": "Inferno Core Defense", "word_count": 12, "shuffle": true, "hint": "Become one with the flame."}
+      ]
+    },
+    {
+      "id": "flame-tyrant",
+      "label": "Flame Tyrant Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Tyrant's Arena", "word_count": 8, "shuffle": false, "hint": "The Flame Tyrant rises."},
+        {"mode": "targets", "label": "Tyrant's Wrath", "targets": ["destroyer", "inferno", "annihilate", "consume"], "hint": "Face the tyrant's fury."},
+        {"mode": "intermission", "label": "Tyrant's Roar", "duration": 3.0, "message": "The flames bow to their lord."},
+        {"mode": "targets", "label": "Final Flames", "targets": ["cataclysm", "firestorm", "immolate", "phoenix"], "hint": "Defeat the tyrant."},
+        {"mode": "lesson", "label": "Flame Tyrant Defense", "word_count": 15, "shuffle": true, "hint": "The flame realm is yours."}
+      ]
+    },
+    {
+      "id": "frozen-approach",
+      "label": "Frozen Approach Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Cold Entry", "word_count": 6, "shuffle": false, "hint": "The cold bites deep."},
+        {"mode": "targets", "label": "Ice Shards", "targets": ["cold", "chill", "frost", "ice", "snow"], "hint": "Precise strikes in the cold."},
+        {"mode": "intermission", "label": "Frost Breath", "duration": 2.5, "message": "Your breath crystallizes."},
+        {"mode": "targets", "label": "Frozen Commands", "targets": ["frozen", "glacial", "arctic", "winter"], "hint": "The cold demands precision."},
+        {"mode": "lesson", "label": "Frozen Approach Defense", "word_count": 10, "shuffle": true, "hint": "Precision conquers cold."}
+      ]
+    },
+    {
+      "id": "glacier-heart",
+      "label": "Glacier Heart Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Deep Freeze", "word_count": 7, "shuffle": false, "hint": "The glacier's core awaits."},
+        {"mode": "targets", "label": "Crystal Beats", "targets": ["crystal", "prism", "shard", "freeze"], "hint": "Each keystroke echoes."},
+        {"mode": "intermission", "label": "Glacial Silence", "duration": 2.5, "message": "Absolute stillness."},
+        {"mode": "targets", "label": "Glacier Commands", "targets": ["permafrost", "icicle", "blizzard", "avalanche"], "hint": "Command the ice."},
+        {"mode": "lesson", "label": "Glacier Heart Defense", "word_count": 12, "shuffle": true, "hint": "The heart of winter beats."}
+      ]
+    },
+    {
+      "id": "frost-empress",
+      "label": "Frost Empress Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Empress Court", "word_count": 8, "shuffle": false, "hint": "The Frost Empress awaits."},
+        {"mode": "targets", "label": "Royal Frost", "targets": ["sovereign", "majesty", "imperial", "regal"], "hint": "Bow before the empress."},
+        {"mode": "intermission", "label": "Frozen Throne", "duration": 3.0, "message": "The empress judges your worth."},
+        {"mode": "targets", "label": "Empress Decree", "targets": ["crystalline", "everfrost", "absolute", "eternal"], "hint": "Survive the final decree."},
+        {"mode": "lesson", "label": "Frost Empress Defense", "word_count": 15, "shuffle": true, "hint": "The ice realm submits to you."}
+      ]
+    },
+    {
+      "id": "living-grove",
+      "label": "Living Grove Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Grove Entry", "word_count": 6, "shuffle": false, "hint": "The forest welcomes you."},
+        {"mode": "targets", "label": "Nature Beats", "targets": ["leaf", "vine", "root", "bloom", "seed"], "hint": "Feel the pulse of life."},
+        {"mode": "intermission", "label": "Forest Breath", "duration": 2.5, "message": "The grove breathes with you."},
+        {"mode": "targets", "label": "Grove Commands", "targets": ["blossom", "growth", "verdant", "flourish"], "hint": "Command the living things."},
+        {"mode": "lesson", "label": "Living Grove Defense", "word_count": 10, "shuffle": true, "hint": "Life flows through your fingers."}
+      ]
+    },
+    {
+      "id": "world-tree",
+      "label": "World Tree Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Tree Ascent", "word_count": 7, "shuffle": false, "hint": "The World Tree towers above."},
+        {"mode": "targets", "label": "Branch Beats", "targets": ["ancient", "mighty", "eternal", "sacred"], "hint": "Climb the branches."},
+        {"mode": "intermission", "label": "Canopy Rest", "duration": 2.5, "message": "The canopy shelters all."},
+        {"mode": "targets", "label": "Tree Commands", "targets": ["yggdrasil", "lifeforce", "primeval", "evergrow"], "hint": "Connect to the tree's power."},
+        {"mode": "lesson", "label": "World Tree Defense", "word_count": 12, "shuffle": true, "hint": "The tree recognizes you."}
+      ]
+    },
+    {
+      "id": "ancient-treant",
+      "label": "Ancient Treant Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Treant Awakens", "word_count": 8, "shuffle": false, "hint": "The Ancient Treant stirs."},
+        {"mode": "targets", "label": "Treant's Test", "targets": ["guardian", "protector", "sentinel", "warden"], "hint": "Prove your worth to nature."},
+        {"mode": "intermission", "label": "Treant's Gaze", "duration": 3.0, "message": "Ancient eyes judge your spirit."},
+        {"mode": "targets", "label": "Final Growth", "targets": ["immortal", "everlasting", "primordial", "genesis"], "hint": "Embrace the ancient power."},
+        {"mode": "lesson", "label": "Ancient Treant Defense", "word_count": 15, "shuffle": true, "hint": "Nature's champion rises."}
+      ]
+    },
+    {
+      "id": "elemental-convergence",
+      "label": "Elemental Convergence Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Convergence Begin", "word_count": 10, "shuffle": true, "hint": "All elements unite."},
+        {"mode": "targets", "label": "Elemental Fusion", "targets": ["firestorm", "icequake", "thornstrike", "tempest"], "hint": "Wield all elements."},
+        {"mode": "intermission", "label": "Perfect Balance", "duration": 3.0, "message": "The elements achieve harmony."},
+        {"mode": "targets", "label": "Convergence Peak", "targets": ["omnipotent", "transcendent", "elemental", "primordial"], "hint": "Become the elemental master."},
+        {"mode": "lesson", "label": "Elemental Convergence Defense", "word_count": 18, "shuffle": true, "hint": "You command all elements."}
+      ]
+    },
+    {
+      "id": "code-academy",
+      "label": "Code Academy Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Academy Entry", "word_count": 5, "shuffle": false, "hint": "Welcome to the code academy."},
+        {"mode": "targets", "label": "Variable Beats", "targets": ["count", "index", "value", "data", "temp"], "hint": "Name your variables well."},
+        {"mode": "intermission", "label": "Compile Pause", "duration": 2.0, "message": "Compiling knowledge."},
+        {"mode": "targets", "label": "Variable Commands", "targets": ["user_name", "item_count", "is_valid", "max_size"], "hint": "Descriptive names matter."},
+        {"mode": "lesson", "label": "Code Academy Defense", "word_count": 8, "shuffle": true, "hint": "Variables are your tools."}
+      ]
+    },
+    {
+      "id": "keyword-vault",
+      "label": "Keyword Vault Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Vault Entry", "word_count": 6, "shuffle": false, "hint": "The keywords await."},
+        {"mode": "targets", "label": "Keyword Beats", "targets": ["func", "return", "class", "const", "var"], "hint": "Know your keywords."},
+        {"mode": "intermission", "label": "Syntax Check", "duration": 2.0, "message": "Syntax validated."},
+        {"mode": "targets", "label": "Keyword Commands", "targets": ["extends", "static", "export", "signal", "await"], "hint": "Master the language."},
+        {"mode": "lesson", "label": "Keyword Vault Defense", "word_count": 10, "shuffle": true, "hint": "Keywords bend to your will."}
+      ]
+    },
+    {
+      "id": "syntax-chamber",
+      "label": "Syntax Chamber Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Chamber Entry", "word_count": 7, "shuffle": false, "hint": "Syntax defines structure."},
+        {"mode": "targets", "label": "Syntax Beats", "targets": ["func()", "arr[]", "obj{}", "val<>"], "hint": "Brackets shape code."},
+        {"mode": "intermission", "label": "Parse Break", "duration": 2.5, "message": "Parsing complete."},
+        {"mode": "targets", "label": "Syntax Commands", "targets": ["if(x>y)", "for[]", "match{}", "a+b*c"], "hint": "Express with syntax."},
+        {"mode": "lesson", "label": "Syntax Chamber Defense", "word_count": 12, "shuffle": true, "hint": "Syntax is your language."}
+      ]
+    },
+    {
+      "id": "code-master-sanctum",
+      "label": "Code Master Sanctum Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Sanctum Entry", "word_count": 8, "shuffle": false, "hint": "The Code Master awaits."},
+        {"mode": "targets", "label": "Master Patterns", "targets": ["func():int", "var[]=[]", "class{}.new()", "a+=b*c"], "hint": "Complex patterns emerge."},
+        {"mode": "intermission", "label": "Code Review", "duration": 3.0, "message": "The master reviews your code."},
+        {"mode": "targets", "label": "Master Commands", "targets": ["for(i:arr)", "match{_=>0}", "if(a&&b)", "fn()->int"], "hint": "Write like a master."},
+        {"mode": "lesson", "label": "Code Master Defense", "word_count": 15, "shuffle": true, "hint": "You have achieved code mastery."}
+      ]
+    },
+    {
+      "id": "bronze-precision",
+      "label": "Bronze Precision Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Bronze Start", "word_count": 5, "shuffle": false, "hint": "Accuracy begins here."},
+        {"mode": "targets", "label": "Bronze Beats", "targets": ["ask", "fall", "lads", "jabs"], "hint": "Every keystroke counts."},
+        {"mode": "intermission", "label": "Bronze Check", "duration": 2.0, "message": "Precision over speed."},
+        {"mode": "targets", "label": "Bronze Commands", "targets": ["salad", "flask", "falls", "staff"], "hint": "No mistakes allowed."},
+        {"mode": "lesson", "label": "Bronze Precision Defense", "word_count": 8, "shuffle": true, "hint": "Bronze precision achieved."}
+      ]
+    },
+    {
+      "id": "silver-precision",
+      "label": "Silver Precision Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Silver Start", "word_count": 6, "shuffle": false, "hint": "Surgical precision required."},
+        {"mode": "targets", "label": "Silver Beats", "targets": ["precise", "exact", "perfect", "clean"], "hint": "Each letter matters."},
+        {"mode": "intermission", "label": "Silver Focus", "duration": 2.5, "message": "Absolute focus."},
+        {"mode": "targets", "label": "Silver Commands", "targets": ["accuracy", "flawless", "measured", "careful"], "hint": "No margin for error."},
+        {"mode": "lesson", "label": "Silver Precision Defense", "word_count": 10, "shuffle": true, "hint": "Silver precision achieved."}
+      ]
+    },
+    {
+      "id": "gold-precision",
+      "label": "Gold Precision Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Gold Start", "word_count": 7, "shuffle": false, "hint": "Perfection is the goal."},
+        {"mode": "targets", "label": "Gold Beats", "targets": ["immaculate", "pristine", "meticulous", "exacting"], "hint": "Flawless execution only."},
+        {"mode": "intermission", "label": "Gold Standard", "duration": 3.0, "message": "The gold standard awaits."},
+        {"mode": "targets", "label": "Gold Commands", "targets": ["impeccable", "unblemished", "faultless", "consummate"], "hint": "Achieve perfection."},
+        {"mode": "lesson", "label": "Gold Precision Defense", "word_count": 12, "shuffle": true, "hint": "Gold precision mastered."}
+      ]
+    },
+    {
+      "id": "legendary-forest-gate",
+      "label": "Legendary Forest Gate Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Legend Begins", "word_count": 8, "shuffle": false, "hint": "The legendary path opens."},
+        {"mode": "targets", "label": "Legend Beats", "targets": ["mythical", "fabled", "storied", "renowned"], "hint": "Walk the path of legends."},
+        {"mode": "intermission", "label": "Legend's Rest", "duration": 2.5, "message": "Legends are forged here."},
+        {"mode": "targets", "label": "Legend Commands", "targets": ["legendary", "immortal", "timeless", "eternal"], "hint": "Become the legend."},
+        {"mode": "lesson", "label": "Legendary Forest Defense", "word_count": 14, "shuffle": true, "hint": "The forest bows to legends."}
+      ]
+    },
+    {
+      "id": "legendary-citadel",
+      "label": "Legendary Citadel Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Citadel Rise", "word_count": 9, "shuffle": false, "hint": "The legendary citadel awaits."},
+        {"mode": "targets", "label": "Citadel Beats", "targets": ["invincible", "unbreakable", "sovereign", "supreme"], "hint": "Command like a legend."},
+        {"mode": "intermission", "label": "Citadel Glory", "duration": 3.0, "message": "Glory awaits the worthy."},
+        {"mode": "targets", "label": "Citadel Commands", "targets": ["unconquerable", "indomitable", "triumphant", "victorious"], "hint": "Legends never fall."},
+        {"mode": "lesson", "label": "Legendary Citadel Defense", "word_count": 16, "shuffle": true, "hint": "The citadel is yours."}
+      ]
+    },
+    {
+      "id": "legendary-apex",
+      "label": "Legendary Apex Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Apex Ascent", "word_count": 10, "shuffle": true, "hint": "Beyond mastery lies legend."},
+        {"mode": "targets", "label": "Apex Beats", "targets": ["transcendent!", "omnipotent.", "absolute?", "infinite;"], "hint": "The ultimate test."},
+        {"mode": "intermission", "label": "Apex Moment", "duration": 3.5, "message": "This is the moment."},
+        {"mode": "targets", "label": "Apex Commands", "targets": ["culmination!", "apotheosis.", "zenith?", "ascension;"], "hint": "Become legendary."},
+        {"mode": "lesson", "label": "Legendary Apex Defense", "word_count": 20, "shuffle": true, "hint": "You are the legend."}
+      ]
+    },
+    {
+      "id": "sprint-trial",
+      "label": "Sprint Trial Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Sprint Start", "word_count": 8, "shuffle": false, "hint": "Speed is everything."},
+        {"mode": "targets", "label": "Sprint Beats", "targets": ["go", "run", "fly", "zip", "dash", "race"], "hint": "Maximum velocity."},
+        {"mode": "intermission", "label": "Quick Breath", "duration": 1.0, "message": "Breathe. Sprint again."},
+        {"mode": "targets", "label": "Sprint Commands", "targets": ["bolt", "rush", "zoom", "flash", "speed"], "hint": "Faster than thought."},
+        {"mode": "lesson", "label": "Sprint Trial Defense", "word_count": 12, "shuffle": true, "hint": "You are the fastest."}
+      ]
+    },
+    {
+      "id": "marathon-trial",
+      "label": "Marathon Trial Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Marathon Start", "word_count": 6, "shuffle": false, "hint": "Endurance is tested here."},
+        {"mode": "targets", "label": "Marathon Beats", "targets": ["perseverance", "determination", "resilience", "fortitude"], "hint": "Long words, steady pace."},
+        {"mode": "intermission", "label": "Marathon Breath", "duration": 3.0, "message": "Pace yourself for the long haul."},
+        {"mode": "targets", "label": "Marathon Commands", "targets": ["indefatigable", "unwavering", "steadfast", "tenacious"], "hint": "Never give up."},
+        {"mode": "lesson", "label": "Marathon Trial Defense", "word_count": 10, "shuffle": true, "hint": "Endurance wins the race."}
+      ]
+    },
+    {
+      "id": "double-letter-dungeon",
+      "label": "Double Letter Dungeon Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Dungeon Entry", "word_count": 6, "shuffle": false, "hint": "Double letters lurk within."},
+        {"mode": "targets", "label": "Double Beats", "targets": ["book", "feel", "pool", "deep", "tall"], "hint": "Double tap precision."},
+        {"mode": "intermission", "label": "Dungeon Echo", "duration": 2.5, "message": "Letters echo twice."},
+        {"mode": "targets", "label": "Double Commands", "targets": ["success", "balloon", "committee", "occurred"], "hint": "Master the doubles."},
+        {"mode": "lesson", "label": "Double Letter Defense", "word_count": 10, "shuffle": true, "hint": "Doubles conquered."}
+      ]
+    },
+    {
+      "id": "consonant-cavern",
+      "label": "Consonant Cavern Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Cavern Entry", "word_count": 6, "shuffle": false, "hint": "Consonants cluster here."},
+        {"mode": "targets", "label": "Cluster Beats", "targets": ["strength", "through", "chrome", "splash"], "hint": "Navigate the clusters."},
+        {"mode": "intermission", "label": "Cavern Depth", "duration": 2.5, "message": "Deeper into consonants."},
+        {"mode": "targets", "label": "Cluster Commands", "targets": ["rhythm", "crypts", "hymns", "glyphs"], "hint": "Master the hardest clusters."},
+        {"mode": "lesson", "label": "Consonant Cavern Defense", "word_count": 10, "shuffle": true, "hint": "Consonants bow to you."}
+      ]
+    },
+    {
+      "id": "vowel-sanctuary",
+      "label": "Vowel Sanctuary Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Sanctuary Entry", "word_count": 6, "shuffle": false, "hint": "Vowels flow freely here."},
+        {"mode": "targets", "label": "Vowel Beats", "targets": ["aeiou", "audio", "queue", "idea"], "hint": "Pure vowel flow."},
+        {"mode": "intermission", "label": "Vowel Harmony", "duration": 2.5, "message": "The vowels sing."},
+        {"mode": "targets", "label": "Vowel Commands", "targets": ["aria", "oui", "eau", "aioli"], "hint": "Embrace the vowel flow."},
+        {"mode": "lesson", "label": "Vowel Sanctuary Defense", "word_count": 10, "shuffle": true, "hint": "Vowels are your friends."}
+      ]
+    },
+    {
+      "id": "phonetic-mastery",
+      "label": "Phonetic Mastery Drill",
+      "plan": [
+        {"mode": "lesson", "label": "Mastery Begins", "word_count": 8, "shuffle": false, "hint": "All sounds unite."},
+        {"mode": "targets", "label": "Phonetic Beats", "targets": ["alphabet", "syllable", "phoneme", "diction"], "hint": "Every sound matters."},
+        {"mode": "intermission", "label": "Phonetic Pause", "duration": 2.5, "message": "Sound and motion unite."},
+        {"mode": "targets", "label": "Phonetic Commands", "targets": ["articulate", "pronounce", "enunciate", "vocalize"], "hint": "Perfect phonetic control."},
+        {"mode": "lesson", "label": "Phonetic Mastery Defense", "word_count": 12, "shuffle": true, "hint": "You speak through your fingers."}
+      ]
     }
   ]
 }

@@ -297,6 +297,198 @@
       "mode": "charset",
       "charset": "abcdefghijklmnopqrstuvwxyz",
       "lengths": { "scout": [4, 5], "raider": [5, 7], "armored": [7, 9] }
+    },
+    {
+      "id": "fire_realm_1",
+      "name": "Ember Path",
+      "description": "The flames test your speed.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [3, 4], "raider": [4, 5], "armored": [5, 6] }
+    },
+    {
+      "id": "fire_realm_2",
+      "name": "Inferno Core",
+      "description": "The heart of the volcano.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [4, 5], "raider": [5, 6], "armored": [6, 8] }
+    },
+    {
+      "id": "fire_realm_boss",
+      "name": "Flame Tyrant",
+      "description": "Lord of the burning realm.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [5, 6], "raider": [6, 8], "armored": [8, 10] }
+    },
+    {
+      "id": "ice_realm_1",
+      "name": "Frozen Approach",
+      "description": "The cold demands precision.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [4, 5], "raider": [5, 7], "armored": [7, 9] }
+    },
+    {
+      "id": "ice_realm_2",
+      "name": "Glacier Heart",
+      "description": "Deep within the eternal ice.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [5, 6], "raider": [6, 8], "armored": [8, 10] }
+    },
+    {
+      "id": "ice_realm_boss",
+      "name": "Frost Empress",
+      "description": "Queen of the frozen wastes.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [5, 7], "raider": [7, 9], "armored": [9, 12] }
+    },
+    {
+      "id": "nature_realm_1",
+      "name": "Living Grove",
+      "description": "The forest breathes with life.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [4, 5], "raider": [5, 7], "armored": [7, 9] }
+    },
+    {
+      "id": "nature_realm_2",
+      "name": "World Tree",
+      "description": "The heart of all nature.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [5, 6], "raider": [6, 8], "armored": [8, 10] }
+    },
+    {
+      "id": "nature_realm_boss",
+      "name": "Ancient Treant",
+      "description": "Protector of the world tree.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [5, 7], "raider": [7, 9], "armored": [9, 12] }
+    },
+    {
+      "id": "code_variables",
+      "name": "Variable Names",
+      "description": "Common programming variables.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz_",
+      "lengths": { "scout": [3, 5], "raider": [5, 8], "armored": [8, 12] }
+    },
+    {
+      "id": "code_keywords",
+      "name": "Code Keywords",
+      "description": "Programming language keywords.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [3, 5], "raider": [5, 7], "armored": [7, 10] }
+    },
+    {
+      "id": "code_syntax",
+      "name": "Code Syntax",
+      "description": "Brackets, operators, and syntax.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz(){}[]<>=+-*/",
+      "lengths": { "scout": [4, 6], "raider": [6, 8], "armored": [8, 12] }
+    },
+    {
+      "id": "code_master",
+      "name": "Code Master",
+      "description": "Full programming proficiency.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz1234567890_(){}[]<>=+-*/;:.",
+      "lengths": { "scout": [5, 7], "raider": [7, 10], "armored": [10, 14] }
+    },
+    {
+      "id": "precision_bronze",
+      "name": "Bronze Precision",
+      "description": "Accuracy over speed.",
+      "mode": "charset",
+      "charset": "asdfjkl",
+      "lengths": { "scout": [4, 5], "raider": [5, 7], "armored": [7, 9] }
+    },
+    {
+      "id": "precision_silver",
+      "name": "Silver Precision",
+      "description": "Surgical accuracy required.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [5, 6], "raider": [6, 8], "armored": [8, 10] }
+    },
+    {
+      "id": "precision_gold",
+      "name": "Gold Precision",
+      "description": "Flawless execution demanded.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [6, 8], "raider": [8, 10], "armored": [10, 13] }
+    },
+    {
+      "id": "legendary_forest",
+      "name": "Legendary Forest",
+      "description": "The forest, reborn in challenge.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [5, 7], "raider": [7, 9], "armored": [9, 12] }
+    },
+    {
+      "id": "legendary_citadel",
+      "name": "Legendary Citadel",
+      "description": "The citadel's ultimate trial.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [6, 8], "raider": [8, 10], "armored": [10, 14] }
+    },
+    {
+      "id": "legendary_apex",
+      "name": "Legendary Apex",
+      "description": "Beyond mastery lies legend.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz1234567890.,;:'\"!?-",
+      "lengths": { "scout": [7, 9], "raider": [9, 12], "armored": [12, 16] }
+    },
+    {
+      "id": "time_trial_sprint",
+      "name": "Sprint Trial",
+      "description": "Race against time.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [2, 3], "raider": [3, 4], "armored": [4, 5] }
+    },
+    {
+      "id": "time_trial_marathon",
+      "name": "Marathon Trial",
+      "description": "Endurance under pressure.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [6, 8], "raider": [8, 11], "armored": [11, 15] }
+    },
+    {
+      "id": "double_letters",
+      "name": "Double Letters",
+      "description": "Words with repeated letters.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [4, 5], "raider": [5, 7], "armored": [7, 10] }
+    },
+    {
+      "id": "consonant_clusters",
+      "name": "Consonant Clusters",
+      "description": "Challenging consonant combinations.",
+      "mode": "charset",
+      "charset": "bcdfghjklmnpqrstvwxyz",
+      "lengths": { "scout": [4, 5], "raider": [5, 7], "armored": [7, 9] }
+    },
+    {
+      "id": "vowel_flow",
+      "name": "Vowel Flow",
+      "description": "Smooth vowel transitions.",
+      "mode": "charset",
+      "charset": "aeiou",
+      "lengths": { "scout": [3, 4], "raider": [4, 5], "armored": [5, 7] }
     }
   ]
 }
