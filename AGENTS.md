@@ -13,3 +13,4 @@ Godot project root is `apps/keyboard-defense-godot` (res:// maps there).
   - LANDMARK C: Tests executed (with results)
   - LANDMARK D: Next steps
 - When adding art or audio, update `apps/keyboard-defense-godot/data/assets_manifest.json` so the audit stays green
+- Use `apps/keyboard-defense-godot/docs/CODEX_SUMMARY_TEMPLATE.md` for required end-of-milestone headings and checklist
