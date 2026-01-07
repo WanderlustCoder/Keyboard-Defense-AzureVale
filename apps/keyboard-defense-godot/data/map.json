@@ -147,6 +147,162 @@
       "requires": ["skywatch-pass"],
       "reward_gold": 24,
       "drill_template": "frost-crown"
+    },
+    {
+      "id": "shadow-vale",
+      "label": "Shadow Vale",
+      "lesson_id": "bottom_row_1",
+      "requires": ["whisper-grove"],
+      "reward_gold": 14,
+      "drill_template": "shadow-vale",
+      "drill_overrides": {
+        "steps": [
+          {
+            "index": 1,
+            "data": {
+              "targets": ["ax", "vex", "zeal", "cave", "jazz"],
+              "hint": "Reach down to the shadow keys with control."
+            }
+          },
+          {
+            "index": 3,
+            "data": {
+              "targets": ["lack", "class", "valid", "black", "slack"],
+              "hint": "Blend the shadows with your home row anchor."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "cavern-depths",
+      "label": "Cavern Depths",
+      "lesson_id": "bottom_row_2",
+      "requires": ["shadow-vale"],
+      "reward_gold": 18,
+      "drill_template": "cavern-depths",
+      "drill_overrides": {
+        "steps": [
+          {
+            "index": 1,
+            "data": {
+              "targets": ["cab", "ban", "man", "van", "nab"],
+              "hint": "The cavern echoes with each keystroke."
+            }
+          },
+          {
+            "index": 3,
+            "data": {
+              "targets": ["cabin", "blank", "clamp", "brand", "crumb"],
+              "hint": "Navigate the depths with steady hands."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "crystal-hollow",
+      "label": "Crystal Hollow",
+      "lesson_id": "mixed_rows",
+      "requires": ["cavern-depths"],
+      "reward_gold": 22,
+      "drill_template": "crystal-hollow",
+      "drill_overrides": {
+        "steps": [
+          {
+            "index": 1,
+            "data": {
+              "targets": ["carved", "frozen", "blazed", "craven"],
+              "hint": "The crystals reflect every keystroke."
+            }
+          },
+          {
+            "index": 3,
+            "data": {
+              "targets": ["fragment", "chamber", "glimmer", "vibrant"],
+              "hint": "Navigate the crystalline maze with precision."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "storm-summit",
+      "label": "Storm Summit",
+      "lesson_id": "speed_alpha",
+      "requires": ["frost-crown"],
+      "reward_gold": 28,
+      "drill_template": "storm-summit",
+      "drill_overrides": {
+        "steps": [
+          {
+            "index": 1,
+            "data": {
+              "targets": ["gust", "bolt", "fury", "wind", "rage"],
+              "hint": "The storm tests your speed."
+            }
+          },
+          {
+            "index": 3,
+            "data": {
+              "targets": ["thunder", "cyclone", "tempest", "squall"],
+              "hint": "Weather the storm with rapid precision."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "the-nexus",
+      "label": "The Nexus",
+      "lesson_id": "nexus_blend",
+      "requires": ["crystal-hollow", "storm-summit"],
+      "reward_gold": 35,
+      "drill_template": "the-nexus",
+      "drill_overrides": {
+        "steps": [
+          {
+            "index": 1,
+            "data": {
+              "targets": ["converge", "unified", "balance", "merged"],
+              "hint": "Two paths become one."
+            }
+          },
+          {
+            "index": 3,
+            "data": {
+              "targets": ["junction", "crossing", "harmony", "synthesis"],
+              "hint": "All skills combine at the nexus."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "apex-tower",
+      "label": "Apex Tower",
+      "lesson_id": "apex_mastery",
+      "requires": ["the-nexus"],
+      "reward_gold": 50,
+      "drill_template": "apex-tower",
+      "drill_overrides": {
+        "steps": [
+          {
+            "index": 1,
+            "data": {
+              "targets": ["pinnacle", "zenith", "supreme", "ultimate"],
+              "hint": "The final ascent begins."
+            }
+          },
+          {
+            "index": 3,
+            "data": {
+              "targets": ["triumphant", "victorious", "legendary", "champion"],
+              "hint": "Claim your place at the apex."
+            }
+          }
+        ]
+      }
     }
   ]
 }

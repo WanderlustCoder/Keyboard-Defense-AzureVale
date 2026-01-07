@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Watchtower POI - scouting/defense -->
+  <!-- Tower base -->
+  <rect x="5" y="10" width="6" height="6" fill="#6a6a7a"/>
+  <rect x="4" y="12" width="8" height="4" fill="#5a5a6a"/>
+  <!-- Tower body -->
+  <rect x="6" y="4" width="4" height="8" fill="#7a7a8a"/>
+  <!-- Platform -->
+  <rect x="4" y="2" width="8" height="3" fill="#6a6a7a"/>
+  <!-- Roof -->
+  <rect x="5" y="0" width="6" height="2" fill="#5c3d2e"/>
+  <rect x="6" y="0" width="4" height="1" fill="#4a3024"/>
+  <!-- Battlements -->
+  <rect x="4" y="2" width="2" height="2" fill="#5a5a6a"/>
+  <rect x="10" y="2" width="2" height="2" fill="#5a5a6a"/>
+  <!-- Window -->
+  <rect x="7" y="6" width="2" height="3" fill="#1a1a2e"/>
+  <!-- Flag -->
+  <rect x="7" y="0" width="1" height="2" fill="#5c3d2e"/>
+  <rect x="8" y="0" width="4" height="1" fill="#c0392b"/>
+  <!-- Vision lines -->
+  <rect x="0" y="3" width="4" height="1" fill="#f4d03f" fill-opacity="0.4"/>
+  <rect x="12" y="3" width="4" height="1" fill="#f4d03f" fill-opacity="0.4"/>
+</svg>

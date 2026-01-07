@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Wooden Barrel -->
+  <rect x="4" y="4" width="8" height="11" fill="#5c4033"/>
+  <rect x="3" y="6" width="10" height="7" fill="#6b4c3a"/>
+  <!-- Barrel bulge -->
+  <rect x="3" y="8" width="10" height="3" fill="#7a5c4a"/>
+  <!-- Metal bands -->
+  <rect x="3" y="5" width="10" height="1" fill="#4a4a5a"/>
+  <rect x="3" y="9" width="10" height="1" fill="#4a4a5a"/>
+  <rect x="3" y="13" width="10" height="1" fill="#4a4a5a"/>
+  <!-- Band highlights -->
+  <rect x="4" y="5" width="3" height="1" fill="#5a5a6a"/>
+  <rect x="4" y="9" width="3" height="1" fill="#5a5a6a"/>
+  <!-- Top -->
+  <rect x="5" y="3" width="6" height="2" fill="#6b4c3a"/>
+  <rect x="6" y="3" width="4" height="1" fill="#7a5c4a"/>
+  <!-- Plank lines -->
+  <rect x="6" y="6" width="1" height="7" fill="#5c4033"/>
+  <rect x="9" y="6" width="1" height="7" fill="#5c4033"/>
+</svg>

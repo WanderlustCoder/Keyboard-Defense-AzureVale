@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Elite Runner - faster, spiky armor -->
+  <rect x="3" y="14" width="10" height="2" fill="#2a2a3a"/>
+  <!-- Body with armor plates -->
+  <rect x="5" y="8" width="6" height="6" fill="#6c3483"/>
+  <rect x="4" y="10" width="8" height="4" fill="#6c3483"/>
+  <!-- Armor spikes -->
+  <rect x="3" y="7" width="2" height="1" fill="#7a7a7a"/>
+  <rect x="2" y="6" width="1" height="2" fill="#9a9a9a"/>
+  <rect x="5" y="5" width="1" height="3" fill="#7a7a7a"/>
+  <rect x="10" y="6" width="2" height="1" fill="#7a7a7a"/>
+  <rect x="11" y="5" width="1" height="2" fill="#9a9a9a"/>
+  <!-- Body highlight -->
+  <rect x="5" y="8" width="2" height="5" fill="#8e44ad"/>
+  <!-- Head -->
+  <rect x="8" y="4" width="5" height="4" fill="#8e44ad"/>
+  <rect x="10" y="3" width="3" height="2" fill="#8e44ad"/>
+  <!-- Elite eyes (glowing) -->
+  <rect x="10" y="5" width="2" height="1" fill="#f4d03f"/>
+  <rect x="11" y="5" width="1" height="1" fill="#f9e79f"/>
+  <!-- Teeth -->
+  <rect x="12" y="6" width="2" height="1" fill="#eaeaea"/>
+  <!-- Arms with claws -->
+  <rect x="10" y="8" width="4" height="2" fill="#6c3483"/>
+  <rect x="13" y="7" width="2" height="2" fill="#7a7a7a"/>
+  <rect x="14" y="7" width="1" height="1" fill="#9a9a9a"/>
+  <!-- Legs -->
+  <rect x="3" y="12" width="3" height="3" fill="#6c3483"/>
+  <rect x="8" y="13" width="3" height="2" fill="#6c3483"/>
+  <!-- Elite crown/marker -->
+  <rect x="9" y="1" width="3" height="2" fill="#f4d03f"/>
+  <rect x="10" y="0" width="1" height="2" fill="#f9e79f"/>
+</svg>

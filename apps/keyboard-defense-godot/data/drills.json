@@ -227,6 +227,234 @@
           "hint": "Stay precise under the chill."
         }
       ]
+    },
+    {
+      "id": "shadow-vale",
+      "label": "Shadow Vale Drill",
+      "plan": [
+        {
+          "mode": "lesson",
+          "label": "Shadow Warmup",
+          "word_count": 5,
+          "shuffle": false,
+          "hint": "Anchor on home row, then reach down to the shadows."
+        },
+        {
+          "mode": "targets",
+          "label": "Shadow Beats",
+          "targets": ["ax", "vex", "zap", "cave"],
+          "hint": "Light taps into the darkness below."
+        },
+        {
+          "mode": "intermission",
+          "label": "Vale Stillness",
+          "duration": 2.0,
+          "message": "The shadows settle. Reset your fingers."
+        },
+        {
+          "mode": "targets",
+          "label": "Vale Sigils",
+          "targets": ["lack", "class", "valid", "black", "slack"],
+          "hint": "Weave shadow keys with home row anchors."
+        },
+        {
+          "mode": "lesson",
+          "label": "Shadow Vale Defense",
+          "word_count": 8,
+          "shuffle": true,
+          "hint": "Stay grounded as shadows swirl."
+        }
+      ]
+    },
+    {
+      "id": "cavern-depths",
+      "label": "Cavern Depths Drill",
+      "plan": [
+        {
+          "mode": "lesson",
+          "label": "Cavern Warmup",
+          "word_count": 6,
+          "shuffle": false,
+          "hint": "Prepare for the full descent into the depths."
+        },
+        {
+          "mode": "targets",
+          "label": "Depth Beats",
+          "targets": ["cab", "ban", "man", "van", "nab"],
+          "hint": "Each echo guides your fingers deeper."
+        },
+        {
+          "mode": "intermission",
+          "label": "Cavern Echo",
+          "duration": 2.5,
+          "message": "Listen to the echoes. Find your rhythm."
+        },
+        {
+          "mode": "targets",
+          "label": "Cavern Runes",
+          "targets": ["cabin", "blank", "clamp", "brand", "crumb"],
+          "hint": "Carve each rune with deliberate strokes."
+        },
+        {
+          "mode": "lesson",
+          "label": "Cavern Depths Defense",
+          "word_count": 10,
+          "shuffle": true,
+          "hint": "Master the depths with calm precision."
+        }
+      ]
+    },
+    {
+      "id": "crystal-hollow",
+      "label": "Crystal Hollow Drill",
+      "plan": [
+        {
+          "mode": "lesson",
+          "label": "Crystal Warmup",
+          "word_count": 6,
+          "shuffle": false,
+          "hint": "The crystals hum with ancient power."
+        },
+        {
+          "mode": "targets",
+          "label": "Crystal Beats",
+          "targets": ["carved", "frozen", "blazed", "craven"],
+          "hint": "Each crystal resonates with your keystrokes."
+        },
+        {
+          "mode": "intermission",
+          "label": "Hollow Resonance",
+          "duration": 2.5,
+          "message": "The hollow sings. Attune your fingers."
+        },
+        {
+          "mode": "targets",
+          "label": "Crystal Runes",
+          "targets": ["fragment", "chamber", "glimmer", "vibrant"],
+          "hint": "The crystals guide your path."
+        },
+        {
+          "mode": "lesson",
+          "label": "Crystal Hollow Defense",
+          "word_count": 11,
+          "shuffle": true,
+          "hint": "Let the crystals amplify your precision."
+        }
+      ]
+    },
+    {
+      "id": "storm-summit",
+      "label": "Storm Summit Drill",
+      "plan": [
+        {
+          "mode": "lesson",
+          "label": "Storm Warmup",
+          "word_count": 7,
+          "shuffle": false,
+          "hint": "The winds pick up. Brace yourself."
+        },
+        {
+          "mode": "targets",
+          "label": "Storm Beats",
+          "targets": ["gust", "bolt", "fury", "wind", "rage"],
+          "hint": "Quick bursts through the gale."
+        },
+        {
+          "mode": "intermission",
+          "label": "Eye of Storm",
+          "duration": 2.0,
+          "message": "A moment of calm. Prepare for the surge."
+        },
+        {
+          "mode": "targets",
+          "label": "Storm Commands",
+          "targets": ["thunder", "cyclone", "tempest", "squall"],
+          "hint": "Command the storm with rapid keystrokes."
+        },
+        {
+          "mode": "lesson",
+          "label": "Storm Summit Defense",
+          "word_count": 12,
+          "shuffle": true,
+          "hint": "Speed is your shelter from the storm."
+        }
+      ]
+    },
+    {
+      "id": "the-nexus",
+      "label": "The Nexus Drill",
+      "plan": [
+        {
+          "mode": "lesson",
+          "label": "Nexus Warmup",
+          "word_count": 7,
+          "shuffle": false,
+          "hint": "Two paths converge. All skills unite."
+        },
+        {
+          "mode": "targets",
+          "label": "Convergence Beats",
+          "targets": ["converge", "unified", "balance", "merged"],
+          "hint": "Blend every row into one flow."
+        },
+        {
+          "mode": "intermission",
+          "label": "Nexus Pulse",
+          "duration": 2.5,
+          "message": "The nexus pulses with combined energy."
+        },
+        {
+          "mode": "targets",
+          "label": "Nexus Commands",
+          "targets": ["junction", "crossing", "harmony", "synthesis"],
+          "hint": "All paths lead here. Type with purpose."
+        },
+        {
+          "mode": "lesson",
+          "label": "Nexus Defense",
+          "word_count": 13,
+          "shuffle": true,
+          "hint": "Your journey has prepared you for this."
+        }
+      ]
+    },
+    {
+      "id": "apex-tower",
+      "label": "Apex Tower Drill",
+      "plan": [
+        {
+          "mode": "lesson",
+          "label": "Apex Warmup",
+          "word_count": 8,
+          "shuffle": false,
+          "hint": "The final challenge awaits."
+        },
+        {
+          "mode": "targets",
+          "label": "Apex Beats",
+          "targets": ["pinnacle", "zenith", "supreme", "ultimate"],
+          "hint": "Each word brings you closer to mastery."
+        },
+        {
+          "mode": "intermission",
+          "label": "Tower Ascent",
+          "duration": 3.0,
+          "message": "Breathe. The apex is within reach."
+        },
+        {
+          "mode": "targets",
+          "label": "Apex Commands",
+          "targets": ["triumphant", "victorious", "legendary", "champion"],
+          "hint": "Prove yourself worthy of the tower."
+        },
+        {
+          "mode": "lesson",
+          "label": "Apex Tower Defense",
+          "word_count": 15,
+          "shuffle": true,
+          "hint": "This is your moment. Type with everything you have."
+        }
+      ]
     }
   ]
 }

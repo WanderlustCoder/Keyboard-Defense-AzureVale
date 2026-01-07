@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Battlefield POI - combat/danger -->
+  <!-- Scorched ground -->
+  <rect x="0" y="12" width="16" height="4" fill="#3a2a1e"/>
+  <rect x="2" y="10" width="12" height="4" fill="#5c4033"/>
+  <!-- Crossed swords -->
+  <rect x="3" y="2" width="1" height="10" fill="#7a7a7a"/>
+  <rect x="2" y="1" width="3" height="2" fill="#9a9a9a"/>
+  <rect x="12" y="2" width="1" height="10" fill="#7a7a7a"/>
+  <rect x="11" y="1" width="3" height="2" fill="#9a9a9a"/>
+  <!-- Cross point -->
+  <rect x="6" y="5" width="4" height="2" fill="#7a7a7a"/>
+  <rect x="7" y="4" width="2" height="4" fill="#7a7a7a"/>
+  <!-- Broken shield -->
+  <rect x="5" y="10" width="3" height="4" fill="#922b21"/>
+  <rect x="6" y="9" width="2" height="2" fill="#c0392b"/>
+  <rect x="7" y="12" width="2" height="2" fill="#5c4033"/>
+  <!-- Skull hint -->
+  <rect x="10" y="11" width="3" height="3" fill="#eaeaea"/>
+  <rect x="10" y="12" width="1" height="1" fill="#1a1a2e"/>
+  <rect x="12" y="12" width="1" height="1" fill="#1a1a2e"/>
+  <!-- Warning -->
+  <rect x="0" y="0" width="1" height="1" fill="#e74c3c"/>
+  <rect x="15" y="0" width="1" height="1" fill="#e74c3c"/>
+</svg>

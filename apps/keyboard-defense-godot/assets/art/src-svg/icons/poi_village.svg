@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Village POI - settlement/trade -->
+  <!-- Houses -->
+  <rect x="1" y="8" width="5" height="6" fill="#8b5a2b"/>
+  <rect x="0" y="6" width="7" height="3" fill="#5c3d2e"/>
+  <rect x="2" y="5" width="3" height="2" fill="#5c3d2e"/>
+  <rect x="10" y="9" width="5" height="5" fill="#8b5a2b"/>
+  <rect x="9" y="7" width="7" height="3" fill="#5c3d2e"/>
+  <rect x="11" y="6" width="3" height="2" fill="#5c3d2e"/>
+  <!-- Windows -->
+  <rect x="2" y="10" width="2" height="2" fill="#f4d03f"/>
+  <rect x="11" y="11" width="2" height="2" fill="#f4d03f"/>
+  <!-- Doors -->
+  <rect x="4" y="11" width="1" height="3" fill="#3a2a1e"/>
+  <rect x="13" y="12" width="1" height="2" fill="#3a2a1e"/>
+  <!-- Chimneys -->
+  <rect x="4" y="3" width="1" height="3" fill="#5a5a6a"/>
+  <rect x="4" y="2" width="1" height="1" fill="#6a6a6a" fill-opacity="0.5"/>
+  <rect x="13" y="4" width="1" height="3" fill="#5a5a6a"/>
+  <!-- Path -->
+  <rect x="6" y="12" width="4" height="4" fill="#8b6914"/>
+  <rect x="7" y="10" width="2" height="3" fill="#8b6914"/>
+  <!-- Market hint -->
+  <rect x="7" y="14" width="2" height="1" fill="#c0392b"/>
+</svg>

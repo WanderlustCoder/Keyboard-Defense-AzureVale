@@ -51,6 +51,54 @@
       "lengths": { "scout": [4, 5], "raider": [5, 7], "armored": [7, 10] }
     },
     {
+      "id": "bottom_row_1",
+      "name": "Bottom Row Intro",
+      "description": "Adds Z, X, C, V to home row.",
+      "mode": "charset",
+      "charset": "asdfjklzxcv",
+      "lengths": { "scout": [3, 4], "raider": [4, 6], "armored": [6, 8] }
+    },
+    {
+      "id": "bottom_row_2",
+      "name": "Bottom Row Mastery",
+      "description": "Full bottom row with B, N, M.",
+      "mode": "charset",
+      "charset": "asdfjklzxcvbnm",
+      "lengths": { "scout": [4, 5], "raider": [5, 7], "armored": [7, 9] }
+    },
+    {
+      "id": "mixed_rows",
+      "name": "Mixed Rows",
+      "description": "Bottom row combined with reach keys.",
+      "mode": "charset",
+      "charset": "asdfjklzxcvbnmertg",
+      "lengths": { "scout": [4, 5], "raider": [5, 7], "armored": [7, 9] }
+    },
+    {
+      "id": "speed_alpha",
+      "name": "Speed Alpha",
+      "description": "Full alphabet with quick bursts.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [3, 4], "raider": [4, 5], "armored": [5, 7] }
+    },
+    {
+      "id": "nexus_blend",
+      "name": "Nexus Blend",
+      "description": "All keys converge at the nexus.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [4, 5], "raider": [5, 7], "armored": [7, 10] }
+    },
+    {
+      "id": "apex_mastery",
+      "name": "Apex Mastery",
+      "description": "The ultimate typing challenge.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [5, 6], "raider": [6, 8], "armored": [8, 12] }
+    },
+    {
       "id": "full_alpha",
       "name": "Full Alphabet",
       "description": "AZ general practice.",

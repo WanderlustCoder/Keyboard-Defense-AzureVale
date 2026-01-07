@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Enemy Camp POI - danger/event -->
+  <!-- Tent -->
+  <rect x="2" y="6" width="8" height="8" fill="#922b21"/>
+  <rect x="3" y="4" width="6" height="4" fill="#c0392b"/>
+  <rect x="4" y="2" width="4" height="4" fill="#922b21"/>
+  <rect x="5" y="1" width="2" height="3" fill="#c0392b"/>
+  <!-- Tent opening -->
+  <rect x="4" y="10" width="4" height="4" fill="#1a1a2e"/>
+  <rect x="5" y="9" width="2" height="2" fill="#1a1a2e"/>
+  <!-- Tent pole -->
+  <rect x="6" y="0" width="1" height="3" fill="#5c3d2e"/>
+  <!-- Campfire -->
+  <rect x="11" y="12" width="3" height="2" fill="#5c3d2e"/>
+  <rect x="12" y="10" width="2" height="3" fill="#e74c3c"/>
+  <rect x="12" y="9" width="1" height="2" fill="#f4d03f"/>
+  <rect x="13" y="8" width="1" height="2" fill="#f39c12"/>
+  <!-- Smoke -->
+  <rect x="12" y="6" width="1" height="2" fill="#7a7a7a" fill-opacity="0.5"/>
+  <rect x="13" y="4" width="1" height="2" fill="#6a6a6a" fill-opacity="0.3"/>
+  <!-- Warning indicator -->
+  <rect x="0" y="0" width="2" height="3" fill="#e74c3c"/>
+  <rect x="0" y="1" width="1" height="1" fill="#f4d03f"/>
+</svg>

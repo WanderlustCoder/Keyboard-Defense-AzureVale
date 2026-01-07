@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Elite Flyer - larger wings, electric crackling -->
+  <rect x="6" y="14" width="4" height="1" fill="#2a2a3a"/>
+  <!-- Enhanced wings -->
+  <rect x="0" y="3" width="5" height="7" fill="#4a3483"/>
+  <rect x="0" y="2" width="4" height="2" fill="#4a3483"/>
+  <rect x="1" y="1" width="3" height="2" fill="#4a3483"/>
+  <rect x="1" y="4" width="3" height="5" fill="#6c3483"/>
+  <rect x="11" y="3" width="5" height="7" fill="#4a3483"/>
+  <rect x="12" y="2" width="4" height="2" fill="#4a3483"/>
+  <rect x="12" y="1" width="3" height="2" fill="#4a3483"/>
+  <rect x="12" y="4" width="3" height="5" fill="#6c3483"/>
+  <!-- Electric crackling -->
+  <rect x="0" y="5" width="1" height="1" fill="#f4d03f"/>
+  <rect x="2" y="3" width="1" height="1" fill="#f9e79f"/>
+  <rect x="14" y="4" width="1" height="1" fill="#f4d03f"/>
+  <rect x="13" y="6" width="1" height="1" fill="#f9e79f"/>
+  <!-- Body -->
+  <rect x="5" y="5" width="6" height="7" fill="#6c3483"/>
+  <rect x="6" y="4" width="4" height="2" fill="#6c3483"/>
+  <!-- Body highlight -->
+  <rect x="5" y="5" width="2" height="5" fill="#8e44ad"/>
+  <!-- Head -->
+  <rect x="6" y="2" width="4" height="3" fill="#8e44ad"/>
+  <!-- Elite crown eyes -->
+  <rect x="6" y="3" width="1" height="1" fill="#f4d03f"/>
+  <rect x="8" y="3" width="1" height="1" fill="#f4d03f"/>
+  <rect x="9" y="3" width="1" height="1" fill="#f4d03f"/>
+  <rect x="7" y="2" width="2" height="1" fill="#f9e79f"/>
+  <!-- Mandibles -->
+  <rect x="6" y="5" width="1" height="1" fill="#1a1a2e"/>
+  <rect x="9" y="5" width="1" height="1" fill="#1a1a2e"/>
+  <!-- Enhanced stinger -->
+  <rect x="7" y="11" width="2" height="4" fill="#6c3483"/>
+  <rect x="7" y="14" width="2" height="1" fill="#f4d03f"/>
+  <rect x="7" y="15" width="2" height="1" fill="#e74c3c"/>
+</svg>

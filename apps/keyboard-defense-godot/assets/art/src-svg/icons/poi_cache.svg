@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Cache/Treasure POI - treasure/reward -->
+  <!-- Chest body -->
+  <rect x="2" y="7" width="12" height="7" fill="#8b5a2b"/>
+  <rect x="3" y="8" width="10" height="5" fill="#5c3d2e"/>
+  <!-- Chest lid -->
+  <rect x="2" y="5" width="12" height="3" fill="#a0702f"/>
+  <rect x="1" y="6" width="14" height="2" fill="#8b5a2b"/>
+  <!-- Metal bands -->
+  <rect x="2" y="6" width="12" height="1" fill="#4a4a4a"/>
+  <rect x="2" y="10" width="12" height="1" fill="#4a4a4a"/>
+  <!-- Lock -->
+  <rect x="6" y="8" width="4" height="3" fill="#f4d03f"/>
+  <rect x="7" y="9" width="2" height="1" fill="#b7950b"/>
+  <!-- Keyhole -->
+  <rect x="7" y="10" width="2" height="1" fill="#1a1a2e"/>
+  <!-- Sparkles -->
+  <rect x="1" y="2" width="1" height="1" fill="#f4d03f"/>
+  <rect x="0" y="3" width="1" height="1" fill="#f9e79f"/>
+  <rect x="2" y="3" width="1" height="1" fill="#f9e79f"/>
+  <rect x="14" y="2" width="1" height="1" fill="#f4d03f"/>
+  <rect x="13" y="3" width="1" height="1" fill="#f9e79f"/>
+  <rect x="15" y="3" width="1" height="1" fill="#f9e79f"/>
+  <rect x="7" y="1" width="1" height="1" fill="#f4d03f"/>
+  <rect x="8" y="0" width="1" height="1" fill="#f9e79f"/>
+</svg>

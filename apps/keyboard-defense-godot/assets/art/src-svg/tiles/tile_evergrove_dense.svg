@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Evergrove Dense Undergrowth - impassable -->
+  <rect x="0" y="0" width="16" height="16" fill="#0d3d0d"/>
+  <!-- Dense foliage layers -->
+  <rect x="0" y="0" width="8" height="8" fill="#145214"/>
+  <rect x="8" y="4" width="8" height="8" fill="#145214"/>
+  <rect x="2" y="8" width="8" height="8" fill="#145214"/>
+  <!-- Bush clusters -->
+  <rect x="1" y="2" width="5" height="4" fill="#1a5a1a"/>
+  <rect x="9" y="1" width="5" height="5" fill="#1a5a1a"/>
+  <rect x="3" y="9" width="6" height="4" fill="#1a5a1a"/>
+  <rect x="10" y="10" width="5" height="5" fill="#1a5a1a"/>
+  <!-- Highlights -->
+  <rect x="2" y="3" width="2" height="2" fill="#2d7a2d"/>
+  <rect x="10" y="2" width="3" height="2" fill="#2d7a2d"/>
+  <rect x="4" y="10" width="3" height="2" fill="#2d7a2d"/>
+  <!-- Thorns -->
+  <rect x="6" y="5" width="1" height="1" fill="#4a3728"/>
+  <rect x="8" y="8" width="1" height="1" fill="#4a3728"/>
+  <rect x="13" y="7" width="1" height="1" fill="#4a3728"/>
+</svg>

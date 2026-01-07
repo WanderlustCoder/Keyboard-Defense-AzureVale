@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Shielder Enemy - blocks damage, must flank -->
+  <rect x="4" y="14" width="8" height="2" fill="#2a2a3a"/>
+  <!-- Body (behind shield) -->
+  <rect x="6" y="6" width="6" height="9" fill="#922b21"/>
+  <rect x="5" y="8" width="8" height="6" fill="#922b21"/>
+  <!-- Body visible parts -->
+  <rect x="10" y="7" width="2" height="6" fill="#c0392b"/>
+  <!-- Head (peeking over shield) -->
+  <rect x="7" y="3" width="4" height="4" fill="#c0392b"/>
+  <rect x="8" y="2" width="2" height="2" fill="#922b21"/>
+  <!-- Eyes -->
+  <rect x="8" y="4" width="1" height="1" fill="#f4d03f"/>
+  <rect x="10" y="4" width="1" height="1" fill="#f4d03f"/>
+  <!-- Large shield (main feature) -->
+  <rect x="0" y="4" width="7" height="11" fill="#4a4a5a"/>
+  <rect x="1" y="5" width="5" height="9" fill="#5a5a6a"/>
+  <!-- Shield boss -->
+  <rect x="2" y="8" width="3" height="3" fill="#f4d03f"/>
+  <rect x="3" y="9" width="1" height="1" fill="#b7950b"/>
+  <!-- Shield rivets -->
+  <rect x="1" y="5" width="1" height="1" fill="#7a7a7a"/>
+  <rect x="5" y="5" width="1" height="1" fill="#7a7a7a"/>
+  <rect x="1" y="13" width="1" height="1" fill="#7a7a7a"/>
+  <rect x="5" y="13" width="1" height="1" fill="#7a7a7a"/>
+  <!-- Spear tip -->
+  <rect x="12" y="4" width="2" height="6" fill="#7a7a7a"/>
+  <rect x="13" y="2" width="1" height="3" fill="#9a9a9a"/>
+  <rect x="12" y="10" width="2" height="4" fill="#5c3d2e"/>
+</svg>

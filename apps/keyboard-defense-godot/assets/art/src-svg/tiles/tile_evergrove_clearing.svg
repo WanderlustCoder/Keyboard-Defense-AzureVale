@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Evergrove Forest Clearing - sunlit patch -->
+  <rect x="0" y="0" width="16" height="16" fill="#1a5a1a"/>
+  <!-- Sunlit center -->
+  <rect x="3" y="3" width="10" height="10" fill="#2d7a2d"/>
+  <rect x="5" y="5" width="6" height="6" fill="#3d8a3d"/>
+  <!-- Light rays effect -->
+  <rect x="6" y="1" width="1" height="3" fill="#4d9a4d"/>
+  <rect x="9" y="2" width="1" height="2" fill="#4d9a4d"/>
+  <!-- Wildflowers -->
+  <rect x="6" y="7" width="1" height="1" fill="#f4d03f"/>
+  <rect x="9" y="8" width="1" height="1" fill="#e74c3c"/>
+  <rect x="7" y="10" width="1" height="1" fill="#9b59b6"/>
+  <rect x="5" y="6" width="1" height="1" fill="#3498db"/>
+  <!-- Shadow edges -->
+  <rect x="3" y="3" width="1" height="10" fill="#145214"/>
+  <rect x="3" y="12" width="10" height="1" fill="#145214"/>
+</svg>

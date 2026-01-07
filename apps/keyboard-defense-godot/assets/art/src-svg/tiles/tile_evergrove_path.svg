@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Evergrove Forest Path - dirt path through forest -->
+  <rect x="0" y="0" width="16" height="16" fill="#1a5a1a"/>
+  <!-- Main path -->
+  <rect x="4" y="0" width="8" height="16" fill="#5c4033"/>
+  <rect x="5" y="0" width="6" height="16" fill="#6b4c3a"/>
+  <!-- Path texture -->
+  <rect x="6" y="2" width="2" height="1" fill="#5c4033"/>
+  <rect x="8" y="6" width="3" height="1" fill="#5c4033"/>
+  <rect x="5" y="10" width="2" height="1" fill="#5c4033"/>
+  <rect x="7" y="13" width="3" height="1" fill="#5c4033"/>
+  <!-- Grass encroaching -->
+  <rect x="3" y="3" width="2" height="2" fill="#1a5a1a"/>
+  <rect x="11" y="7" width="2" height="2" fill="#1a5a1a"/>
+  <rect x="3" y="12" width="2" height="2" fill="#1a5a1a"/>
+  <!-- Pebbles -->
+  <rect x="6" y="4" width="1" height="1" fill="#7a7a7a"/>
+  <rect x="9" y="9" width="1" height="1" fill="#6a6a6a"/>
+</svg>
