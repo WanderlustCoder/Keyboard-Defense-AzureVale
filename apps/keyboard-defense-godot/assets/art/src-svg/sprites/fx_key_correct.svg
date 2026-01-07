@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 16" width="32" height="16">
+  <!-- Correct Key Press Animation (32x16 = 2 frames of 16x16) -->
+
+  <!-- Frame 1: Key flash -->
+  <rect x="4" y="4" width="8" height="8" fill="#27ae60"/>
+  <rect x="3" y="5" width="10" height="6" fill="#27ae60"/>
+  <rect x="5" y="5" width="6" height="6" fill="#2ecc71"/>
+  <rect x="6" y="6" width="4" height="4" fill="#58d68d"/>
+
+  <!-- Frame 2: Sparkle burst -->
+  <rect x="20" y="6" width="8" height="4" fill="#2ecc71"/>
+  <rect x="22" y="4" width="4" height="8" fill="#2ecc71"/>
+  <rect x="23" y="7" width="2" height="2" fill="#58d68d"/>
+  <!-- Particles -->
+  <rect x="18" y="3" width="2" height="2" fill="#82e0aa"/>
+  <rect x="28" y="4" width="2" height="2" fill="#82e0aa"/>
+  <rect x="19" y="11" width="2" height="2" fill="#82e0aa"/>
+  <rect x="27" y="10" width="2" height="2" fill="#82e0aa"/>
+  <rect x="23" y="2" width="2" height="2" fill="#abebc6"/>
+  <rect x="23" y="12" width="2" height="2" fill="#abebc6"/>
+</svg>

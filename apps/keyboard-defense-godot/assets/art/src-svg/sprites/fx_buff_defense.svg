@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 16" width="48" height="16">
+  <!-- Defense Buff Animation (48x16 = 3 frames of 16x16) -->
+
+  <!-- Frame 1: Shield forming -->
+  <rect x="5" y="4" width="6" height="8" fill="#f4d03f"/>
+  <rect x="4" y="5" width="8" height="6" fill="#f4d03f"/>
+  <rect x="6" y="5" width="4" height="6" fill="#f9e79f"/>
+
+  <!-- Frame 2: Shield glowing -->
+  <rect x="21" y="3" width="6" height="10" fill="#f39c12"/>
+  <rect x="20" y="4" width="8" height="8" fill="#f4d03f"/>
+  <rect x="22" y="4" width="4" height="8" fill="#f9e79f"/>
+  <rect x="23" y="5" width="2" height="4" fill="#fcf3cf"/>
+  <!-- Glow -->
+  <rect x="19" y="3" width="2" height="2" fill="#f9e79f"/>
+  <rect x="27" y="4" width="2" height="2" fill="#f9e79f"/>
+
+  <!-- Frame 3: Shield pulse -->
+  <rect x="37" y="2" width="6" height="12" fill="#e67e22"/>
+  <rect x="36" y="3" width="8" height="10" fill="#f39c12"/>
+  <rect x="38" y="3" width="4" height="10" fill="#f4d03f"/>
+  <rect x="39" y="4" width="2" height="6" fill="#f9e79f"/>
+  <!-- Burst -->
+  <rect x="34" y="2" width="2" height="2" fill="#fcf3cf"/>
+  <rect x="44" y="3" width="2" height="2" fill="#fcf3cf"/>
+  <rect x="35" y="12" width="2" height="2" fill="#fcf3cf"/>
+  <rect x="43" y="11" width="2" height="2" fill="#fcf3cf"/>
+</svg>

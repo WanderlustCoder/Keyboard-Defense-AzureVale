@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Cannon Tower Icon (16x16) -->
+
+  <!-- Tower base -->
+  <rect x="4" y="10" width="8" height="4" fill="#4a4a4a"/>
+  <rect x="5" y="8" width="6" height="3" fill="#5a5a5a"/>
+
+  <!-- Platform -->
+  <rect x="3" y="7" width="10" height="2" fill="#6a6a6a"/>
+
+  <!-- Cannon barrel -->
+  <rect x="6" y="4" width="6" height="4" fill="#2c3e50"/>
+  <rect x="10" y="5" width="4" height="2" fill="#34495e"/>
+  <rect x="13" y="5" width="2" height="2" fill="#1a252f"/>
+
+  <!-- Cannon details -->
+  <rect x="7" y="5" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="6" y="3" width="3" height="2" fill="#34495e"/>
+
+  <!-- Muzzle flash hint -->
+  <rect x="14" y="5" width="1" height="2" fill="#f39c12"/>
+</svg>

@@ -1329,6 +1329,66 @@
       "category": "icons"
     },
     {
+      "id": "ico_tower_fire",
+      "path": "res://assets/art/src-svg/icons/ico_tower_fire.svg",
+      "source_svg": "res://assets/art/src-svg/icons/ico_tower_fire.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_tower_ice",
+      "path": "res://assets/art/src-svg/icons/ico_tower_ice.svg",
+      "source_svg": "res://assets/art/src-svg/icons/ico_tower_ice.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_tower_poison",
+      "path": "res://assets/art/src-svg/icons/ico_tower_poison.svg",
+      "source_svg": "res://assets/art/src-svg/icons/ico_tower_poison.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_tower_lightning",
+      "path": "res://assets/art/src-svg/icons/ico_tower_lightning.svg",
+      "source_svg": "res://assets/art/src-svg/icons/ico_tower_lightning.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_tower_cannon",
+      "path": "res://assets/art/src-svg/icons/ico_tower_cannon.svg",
+      "source_svg": "res://assets/art/src-svg/icons/ico_tower_cannon.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_tower_support",
+      "path": "res://assets/art/src-svg/icons/ico_tower_support.svg",
+      "source_svg": "res://assets/art/src-svg/icons/ico_tower_support.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
       "id": "tile_grass",
       "path": "res://assets/tiles/tile_grass.png",
       "source_svg": "res://assets/art/src-svg/tiles/tile_grass.svg",
@@ -2219,6 +2279,182 @@
         "frame_width": 16,
         "frame_height": 16,
         "duration_ms": 300
+      }
+    },
+    {
+      "id": "fx_buff_attack",
+      "path": "res://assets/sprites/fx_buff_attack.png",
+      "source_svg": "res://assets/art/src-svg/sprites/fx_buff_attack.svg",
+      "expected_width": 48,
+      "expected_height": 16,
+      "max_kb": 12,
+      "pixel_art": true,
+      "category": "effects",
+      "animation": {
+        "frames": 3,
+        "frame_width": 16,
+        "frame_height": 16,
+        "duration_ms": 300
+      }
+    },
+    {
+      "id": "fx_buff_speed",
+      "path": "res://assets/sprites/fx_buff_speed.png",
+      "source_svg": "res://assets/art/src-svg/sprites/fx_buff_speed.svg",
+      "expected_width": 48,
+      "expected_height": 16,
+      "max_kb": 12,
+      "pixel_art": true,
+      "category": "effects",
+      "animation": {
+        "frames": 3,
+        "frame_width": 16,
+        "frame_height": 16,
+        "duration_ms": 300
+      }
+    },
+    {
+      "id": "fx_buff_defense",
+      "path": "res://assets/sprites/fx_buff_defense.png",
+      "source_svg": "res://assets/art/src-svg/sprites/fx_buff_defense.svg",
+      "expected_width": 48,
+      "expected_height": 16,
+      "max_kb": 12,
+      "pixel_art": true,
+      "category": "effects",
+      "animation": {
+        "frames": 3,
+        "frame_width": 16,
+        "frame_height": 16,
+        "duration_ms": 300
+      }
+    },
+    {
+      "id": "fx_debuff_slow",
+      "path": "res://assets/sprites/fx_debuff_slow.png",
+      "source_svg": "res://assets/art/src-svg/sprites/fx_debuff_slow.svg",
+      "expected_width": 48,
+      "expected_height": 16,
+      "max_kb": 12,
+      "pixel_art": true,
+      "category": "effects",
+      "animation": {
+        "frames": 3,
+        "frame_width": 16,
+        "frame_height": 16,
+        "duration_ms": 300
+      }
+    },
+    {
+      "id": "fx_debuff_weaken",
+      "path": "res://assets/sprites/fx_debuff_weaken.png",
+      "source_svg": "res://assets/art/src-svg/sprites/fx_debuff_weaken.svg",
+      "expected_width": 48,
+      "expected_height": 16,
+      "max_kb": 12,
+      "pixel_art": true,
+      "category": "effects",
+      "animation": {
+        "frames": 3,
+        "frame_width": 16,
+        "frame_height": 16,
+        "duration_ms": 300
+      }
+    },
+    {
+      "id": "fx_debuff_poison",
+      "path": "res://assets/sprites/fx_debuff_poison.png",
+      "source_svg": "res://assets/art/src-svg/sprites/fx_debuff_poison.svg",
+      "expected_width": 48,
+      "expected_height": 16,
+      "max_kb": 12,
+      "pixel_art": true,
+      "category": "effects",
+      "animation": {
+        "frames": 3,
+        "frame_width": 16,
+        "frame_height": 16,
+        "duration_ms": 300
+      }
+    },
+    {
+      "id": "fx_key_correct",
+      "path": "res://assets/sprites/fx_key_correct.png",
+      "source_svg": "res://assets/art/src-svg/sprites/fx_key_correct.svg",
+      "expected_width": 32,
+      "expected_height": 16,
+      "max_kb": 10,
+      "pixel_art": true,
+      "category": "effects",
+      "animation": {
+        "frames": 2,
+        "frame_width": 16,
+        "frame_height": 16,
+        "duration_ms": 150
+      }
+    },
+    {
+      "id": "fx_key_wrong",
+      "path": "res://assets/sprites/fx_key_wrong.png",
+      "source_svg": "res://assets/art/src-svg/sprites/fx_key_wrong.svg",
+      "expected_width": 32,
+      "expected_height": 16,
+      "max_kb": 10,
+      "pixel_art": true,
+      "category": "effects",
+      "animation": {
+        "frames": 2,
+        "frame_width": 16,
+        "frame_height": 16,
+        "duration_ms": 150
+      }
+    },
+    {
+      "id": "fx_word_spark",
+      "path": "res://assets/sprites/fx_word_spark.png",
+      "source_svg": "res://assets/art/src-svg/sprites/fx_word_spark.svg",
+      "expected_width": 48,
+      "expected_height": 16,
+      "max_kb": 12,
+      "pixel_art": true,
+      "category": "effects",
+      "animation": {
+        "frames": 3,
+        "frame_width": 16,
+        "frame_height": 16,
+        "duration_ms": 200
+      }
+    },
+    {
+      "id": "fx_combo_pop",
+      "path": "res://assets/sprites/fx_combo_pop.png",
+      "source_svg": "res://assets/art/src-svg/sprites/fx_combo_pop.svg",
+      "expected_width": 48,
+      "expected_height": 16,
+      "max_kb": 12,
+      "pixel_art": true,
+      "category": "effects",
+      "animation": {
+        "frames": 3,
+        "frame_width": 16,
+        "frame_height": 16,
+        "duration_ms": 250
+      }
+    },
+    {
+      "id": "fx_level_up",
+      "path": "res://assets/sprites/fx_level_up.png",
+      "source_svg": "res://assets/art/src-svg/sprites/fx_level_up.svg",
+      "expected_width": 64,
+      "expected_height": 16,
+      "max_kb": 14,
+      "pixel_art": true,
+      "category": "effects",
+      "animation": {
+        "frames": 4,
+        "frame_width": 16,
+        "frame_height": 16,
+        "duration_ms": 400
       }
     },
     {

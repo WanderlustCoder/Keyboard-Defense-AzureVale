@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 16" width="48" height="16">
+  <!-- Weaken Debuff Animation (48x16 = 3 frames of 16x16) -->
+
+  <!-- Frame 1: Broken sword start -->
+  <rect x="5" y="5" width="3" height="6" fill="#7f8c8d"/>
+  <rect x="6" y="4" width="2" height="2" fill="#95a5a6"/>
+  <rect x="4" y="7" width="5" height="2" fill="#bdc3c7"/>
+
+  <!-- Frame 2: Sword cracking -->
+  <rect x="21" y="4" width="3" height="7" fill="#7f8c8d"/>
+  <rect x="22" y="3" width="2" height="2" fill="#95a5a6"/>
+  <rect x="20" y="6" width="5" height="2" fill="#bdc3c7"/>
+  <!-- Crack -->
+  <rect x="23" y="5" width="1" height="3" fill="#5d6d7e"/>
+  <rect x="24" y="6" width="1" height="2" fill="#4a5568"/>
+
+  <!-- Frame 3: Sword broken -->
+  <rect x="36" y="6" width="3" height="5" fill="#7f8c8d"/>
+  <rect x="35" y="8" width="5" height="2" fill="#bdc3c7"/>
+  <!-- Broken piece flying -->
+  <rect x="41" y="3" width="2" height="3" fill="#95a5a6"/>
+  <rect x="42" y="2" width="1" height="1" fill="#bdc3c7"/>
+  <!-- Crack particles -->
+  <rect x="39" y="5" width="1" height="1" fill="#5d6d7e"/>
+  <rect x="44" y="4" width="1" height="1" fill="#5d6d7e"/>
+</svg>

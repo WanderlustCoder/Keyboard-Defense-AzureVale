@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 16" width="48" height="16">
+  <!-- Attack Buff Animation (48x16 = 3 frames of 16x16) -->
+
+  <!-- Frame 1: Sword appearing -->
+  <rect x="6" y="6" width="4" height="6" fill="#e74c3c"/>
+  <rect x="7" y="4" width="2" height="3" fill="#c0392b"/>
+  <rect x="5" y="8" width="6" height="2" fill="#bdc3c7"/>
+
+  <!-- Frame 2: Sword glowing -->
+  <rect x="22" y="5" width="4" height="7" fill="#e74c3c"/>
+  <rect x="23" y="3" width="2" height="3" fill="#c0392b"/>
+  <rect x="21" y="7" width="6" height="2" fill="#ecf0f1"/>
+  <!-- Glow -->
+  <rect x="20" y="4" width="2" height="2" fill="#f1948a"/>
+  <rect x="26" y="5" width="2" height="2" fill="#f1948a"/>
+  <rect x="24" y="2" width="1" height="1" fill="#f5b7b1"/>
+
+  <!-- Frame 3: Energy burst -->
+  <rect x="38" y="5" width="4" height="7" fill="#e74c3c"/>
+  <rect x="39" y="3" width="2" height="3" fill="#c0392b"/>
+  <rect x="37" y="7" width="6" height="2" fill="#fff"/>
+  <!-- Burst particles -->
+  <rect x="34" y="3" width="2" height="2" fill="#f1948a"/>
+  <rect x="44" y="4" width="2" height="2" fill="#f1948a"/>
+  <rect x="35" y="10" width="2" height="2" fill="#f5b7b1"/>
+  <rect x="43" y="11" width="2" height="2" fill="#f5b7b1"/>
+</svg>

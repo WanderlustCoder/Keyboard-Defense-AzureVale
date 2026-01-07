@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 16" width="48" height="16">
+  <!-- Slow Debuff Animation (48x16 = 3 frames of 16x16) -->
+
+  <!-- Frame 1: Ice crystals forming -->
+  <rect x="6" y="6" width="4" height="4" fill="#3498db"/>
+  <rect x="7" y="5" width="2" height="1" fill="#5dade2"/>
+  <rect x="7" y="10" width="2" height="1" fill="#5dade2"/>
+  <rect x="5" y="7" width="1" height="2" fill="#5dade2"/>
+  <rect x="10" y="7" width="1" height="2" fill="#5dade2"/>
+
+  <!-- Frame 2: More ice -->
+  <rect x="21" y="5" width="6" height="6" fill="#2980b9"/>
+  <rect x="22" y="4" width="4" height="1" fill="#3498db"/>
+  <rect x="22" y="11" width="4" height="1" fill="#3498db"/>
+  <rect x="20" y="6" width="1" height="4" fill="#3498db"/>
+  <rect x="27" y="6" width="1" height="4" fill="#3498db"/>
+  <rect x="23" y="6" width="2" height="4" fill="#5dade2"/>
+
+  <!-- Frame 3: Frozen effect -->
+  <rect x="36" y="4" width="8" height="8" fill="#1a5276"/>
+  <rect x="37" y="3" width="6" height="1" fill="#2980b9"/>
+  <rect x="37" y="12" width="6" height="1" fill="#2980b9"/>
+  <rect x="35" y="5" width="1" height="6" fill="#2980b9"/>
+  <rect x="44" y="5" width="1" height="6" fill="#2980b9"/>
+  <rect x="38" y="5" width="4" height="6" fill="#3498db"/>
+  <rect x="39" y="6" width="2" height="4" fill="#85c1e9"/>
+</svg>
