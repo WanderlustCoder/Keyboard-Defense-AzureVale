@@ -8,18 +8,37 @@ This document serves as the master index for all Keyboard Defense asset specific
 
 ## SPECIFICATION DOCUMENTS
 
+### Core Visual Assets
 | Document | Description | Asset Count |
 |----------|-------------|-------------|
 | [ASSET_MASTER_PLAN.md](ASSET_MASTER_PLAN.md) | Overall production plan, phases, priorities | ~475 planned |
 | [ASSET_SPEC_ENEMIES.md](ASSET_SPEC_ENEMIES.md) | Enemy types, affixes, death effects | ~50 assets |
 | [ASSET_SPEC_TOWERS.md](ASSET_SPEC_TOWERS.md) | Tower types, tiers, states, upgrades | ~70 assets |
+| [ASSET_SPEC_CHARACTERS.md](ASSET_SPEC_CHARACTERS.md) | Player, NPCs, bosses, companions | ~60 assets |
+| [ASSET_SPEC_PROJECTILES.md](ASSET_SPEC_PROJECTILES.md) | Projectiles, trails, impacts per tower | ~85 assets |
+
+### Interface & Systems
+| Document | Description | Asset Count |
+|----------|-------------|-------------|
 | [ASSET_SPEC_UI.md](ASSET_SPEC_UI.md) | HUD, menus, dialogs, controls | ~100 assets |
 | [ASSET_SPEC_TYPING.md](ASSET_SPEC_TYPING.md) | Typing interface, keyboard, feedback | ~60 assets |
-| [ASSET_SPEC_EFFECTS.md](ASSET_SPEC_EFFECTS.md) | Particles, trails, impacts, weather | ~80 assets |
-| [ASSET_SPEC_MAP.md](ASSET_SPEC_MAP.md) | Tiles, terrain, decorations, structures | ~120 assets |
-| [ASSET_SPEC_CHARACTERS.md](ASSET_SPEC_CHARACTERS.md) | Player, NPCs, bosses, companions | ~60 assets |
+| [ASSET_SPEC_PICKUPS.md](ASSET_SPEC_PICKUPS.md) | Currency, power-ups, loot containers | ~70 assets |
+| [ASSET_SPEC_PROGRESSION.md](ASSET_SPEC_PROGRESSION.md) | XP, achievements, unlockables | ~90 assets |
+| [ASSET_SPEC_TUTORIAL.md](ASSET_SPEC_TUTORIAL.md) | Onboarding, hints, practice mode | ~55 assets |
 
-**Total Documented Assets: ~540+**
+### Environment & Effects
+| Document | Description | Asset Count |
+|----------|-------------|-------------|
+| [ASSET_SPEC_MAP.md](ASSET_SPEC_MAP.md) | Tiles, terrain, decorations, structures | ~120 assets |
+| [ASSET_SPEC_EFFECTS.md](ASSET_SPEC_EFFECTS.md) | Particles, trails, impacts, weather | ~80 assets |
+
+### Audio & Accessibility
+| Document | Description | Asset Count |
+|----------|-------------|-------------|
+| [ASSET_SPEC_AUDIO.md](ASSET_SPEC_AUDIO.md) | Music, SFX, voice, ambience | ~150 assets |
+| [ASSET_SPEC_ACCESSIBILITY.md](ASSET_SPEC_ACCESSIBILITY.md) | Colorblind, high contrast, assists | ~40 assets |
+
+**Total Documented Assets: ~1,030+**
 
 ---
 
@@ -338,14 +357,29 @@ All assets must be registered in `data/assets_manifest.json`:
 
 ## QUICK LINKS
 
-- [Master Plan](ASSET_MASTER_PLAN.md) - Production schedule
-- [Enemies](ASSET_SPEC_ENEMIES.md) - All enemy specifications
-- [Towers](ASSET_SPEC_TOWERS.md) - Tower line specifications
-- [UI/HUD](ASSET_SPEC_UI.md) - Interface specifications
-- [Typing](ASSET_SPEC_TYPING.md) - Typing system specifications
-- [Effects](ASSET_SPEC_EFFECTS.md) - Visual effect specifications
-- [Map/Environment](ASSET_SPEC_MAP.md) - World building specifications
-- [Characters](ASSET_SPEC_CHARACTERS.md) - Character specifications
+### Core Assets
+- [Master Plan](ASSET_MASTER_PLAN.md) - Production schedule & phases
+- [Enemies](ASSET_SPEC_ENEMIES.md) - Enemy types, affixes, behaviors
+- [Towers](ASSET_SPEC_TOWERS.md) - Tower lines, tiers, states
+- [Characters](ASSET_SPEC_CHARACTERS.md) - Player, NPCs, bosses
+- [Projectiles](ASSET_SPEC_PROJECTILES.md) - Attacks, trails, impacts
+
+### Interface & Systems
+- [UI/HUD](ASSET_SPEC_UI.md) - Interface elements
+- [Typing](ASSET_SPEC_TYPING.md) - Typing system visuals
+- [Pickups](ASSET_SPEC_PICKUPS.md) - Collectibles, power-ups
+- [Progression](ASSET_SPEC_PROGRESSION.md) - XP, achievements, unlocks
+- [Tutorial](ASSET_SPEC_TUTORIAL.md) - Onboarding, hints
+
+### Environment & Effects
+- [Map/Environment](ASSET_SPEC_MAP.md) - Tiles, terrain, structures
+- [Effects](ASSET_SPEC_EFFECTS.md) - Particles, weather, impacts
+
+### Audio & Accessibility
+- [Audio](ASSET_SPEC_AUDIO.md) - Music, SFX, voice, ambience
+- [Accessibility](ASSET_SPEC_ACCESSIBILITY.md) - Colorblind, contrast, assists
+
+### Data
 - [Manifest](../data/assets_manifest.json) - Asset registry
 
 ---
@@ -354,7 +388,7 @@ All assets must be registered in `data/assets_manifest.json`:
 
 | Date | Change |
 |------|--------|
-| Initial | Created specification index |
-| - | Added master plan reference |
-| - | Added all category specifications |
+| Session 1 | Created core spec documents (Enemies, Towers, UI, Typing, Effects, Map, Characters) |
+| Session 2 | Added Projectiles, Audio, Pickups, Progression, Tutorial, Accessibility specs |
+| - | Updated index with organized categories and 1,030+ documented assets |
 
