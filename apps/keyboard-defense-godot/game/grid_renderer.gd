@@ -474,6 +474,56 @@ func spawn_hit_sparks(world_pos: Vector2, is_power: bool = false) -> void:
 		})
 	queue_redraw()
 
+## Spawn enemy defeat burst at position
+func spawn_defeat_burst(enemy_pos: Vector2i, is_boss: bool = false) -> void:
+	var world_pos: Vector2 = origin + Vector2(enemy_pos.x * cell_size.x, enemy_pos.y * cell_size.y) + cell_size * 0.5
+	var count: int = 12 if is_boss else 8
+	var base_color: Color = Color(0.9, 0.4, 0.9, 1.0) if is_boss else Color(0.9, 0.5, 0.3, 1.0)
+
+	# Expanding ring effect
+	for i in range(count):
+		var angle: float = (float(i) / float(count)) * TAU
+		var speed: float = PARTICLE_SPEED * (1.2 if is_boss else 0.9)
+
+		_active_particles.append({
+			"type": "defeat",
+			"pos": world_pos,
+			"velocity": Vector2(cos(angle), sin(angle)) * speed,
+			"color": base_color,
+			"size": Vector2(6, 6) if is_boss else Vector2(4, 4),
+			"lifetime": PARTICLE_LIFETIME * 1.2
+		})
+
+	# Center flash
+	_active_particles.append({
+		"type": "flash",
+		"pos": world_pos,
+		"velocity": Vector2.ZERO,
+		"color": Color(1.0, 1.0, 0.9, 1.0),
+		"size": Vector2(16, 16) if is_boss else Vector2(10, 10),
+		"lifetime": PARTICLE_LIFETIME * 0.4
+	})
+	queue_redraw()
+
+## Spawn combo break effect
+func spawn_combo_break() -> void:
+	var castle_pos: Vector2 = origin + Vector2(base_pos.x * cell_size.x, base_pos.y * cell_size.y) + cell_size * 0.5
+
+	# Red particles dispersing outward
+	for i in range(4):
+		var angle: float = randf() * TAU
+		var speed: float = PARTICLE_SPEED * 0.5
+
+		_active_particles.append({
+			"type": "combo_break",
+			"pos": castle_pos + Vector2(randf_range(-10, 10), randf_range(-10, 10)),
+			"velocity": Vector2(cos(angle), sin(angle)) * speed,
+			"color": Color(1.0, 0.3, 0.3, 0.8),
+			"size": Vector2(3, 3),
+			"lifetime": PARTICLE_LIFETIME * 0.6
+		})
+	queue_redraw()
+
 ## Spawn damage flash at castle
 func spawn_damage_flash() -> void:
 	var castle_pos: Vector2 = origin + Vector2(base_pos.x * cell_size.x, base_pos.y * cell_size.y) + cell_size * 0.5
@@ -519,7 +569,11 @@ func update_particles(delta: float) -> void:
 		if ptype == "projectile":
 			var target: Vector2 = p.get("target", Vector2.ZERO)
 			if p["pos"].distance_to(target) < 8.0:
-				spawn_hit_sparks(target, p["size"].x > 6)
+				var is_power: bool = p["size"].x > 6
+				spawn_hit_sparks(target, is_power)
+				# Spawn defeat burst at target position
+				var grid_pos: Vector2i = _world_to_grid(target)
+				spawn_defeat_burst(grid_pos, is_power)
 				_active_particles.remove_at(i)
 				needs_redraw = true
 				continue
@@ -543,3 +597,10 @@ func _draw_particles() -> void:
 
 		var rect: Rect2 = Rect2(pos - psize * 0.5, psize)
 		draw_rect(rect, color, true)
+
+## Convert world position to grid position
+func _world_to_grid(world_pos: Vector2) -> Vector2i:
+	var local_pos: Vector2 = world_pos - origin
+	var gx: int = int(local_pos.x / cell_size.x)
+	var gy: int = int(local_pos.y / cell_size.y)
+	return Vector2i(gx, gy)

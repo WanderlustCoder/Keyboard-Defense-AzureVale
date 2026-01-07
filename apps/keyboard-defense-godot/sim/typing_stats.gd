@@ -209,4 +209,12 @@ func to_report_text() -> String:
         avg_accuracy,
         avg_edit_distance
     ])
+    # Combo stats
+    var cur_combo: int = int(report.get("current_combo", 0))
+    var max_c: int = int(report.get("max_combo", 0))
+    if max_c > 0:
+        var combo_text: String = "Combo: max %d" % max_c
+        if cur_combo > 0:
+            combo_text += " (current: %d)" % cur_combo
+        lines.append(combo_text)
     return "\n".join(lines)

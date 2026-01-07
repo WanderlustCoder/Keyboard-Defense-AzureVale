@@ -216,6 +216,12 @@ func _on_command_submitted(command: String) -> void:
                 typing_stats.record_defend_attempt(command, state.enemies)
                 if audio_manager != null and typing_stats.did_reach_threshold(prev_combo):
                     audio_manager.play_sfx(audio_manager.SFX.COMBO_UP)
+                # Check for combo break (had combo >= 3, now 0)
+                if prev_combo >= 3 and typing_stats.current_combo == 0:
+                    if audio_manager != null:
+                        audio_manager.play_sfx(audio_manager.SFX.COMBO_BREAK)
+                    if grid_renderer != null:
+                        grid_renderer.spawn_combo_break()
             else:
                 typing_stats.record_command_enter(intent_kind, intent_kind == "wait")
         if intent_kind == "ui_preview":
@@ -354,6 +360,12 @@ func _on_command_submitted(command: String) -> void:
                 typing_stats.record_defend_attempt(command, state.enemies)
                 if audio_manager != null and typing_stats.did_reach_threshold(prev_combo):
                     audio_manager.play_sfx(audio_manager.SFX.COMBO_UP)
+                # Check for combo break
+                if prev_combo >= 3 and typing_stats.current_combo == 0:
+                    if audio_manager != null:
+                        audio_manager.play_sfx(audio_manager.SFX.COMBO_BREAK)
+                    if grid_renderer != null:
+                        grid_renderer.spawn_combo_break()
             command_bar.accept_submission(trimmed)
             var defend_intent: Dictionary = {"kind": "defend_input", "text": command}
             var defend_result: Dictionary = IntentApplier.apply(state, defend_intent)
@@ -531,28 +543,39 @@ func _trigger_event_visuals(events: Array) -> void:
                 return
         for event in events:
                 var text: String = str(event)
-                # Enemy hit - spawn projectile to focused enemy position
+                # Enemy defeated - spawn projectile and defeat burst
                 if text.contains("defeated") and text.contains("gold"):
-                        if typing_focus_id >= 0:
-                                for enemy in state.enemies:
-                                        if int(enemy.get("id", -1)) == typing_focus_id:
-                                                var pos: Vector2i = enemy.get("pos", Vector2i.ZERO)
-                                                grid_renderer.spawn_projectile(pos, true)
-                                                break
-                        else:
-                                # No focus, use first matching candidate
-                                for eid in typing_candidate_ids:
-                                        for enemy in state.enemies:
-                                                if int(enemy.get("id", -1)) == eid:
-                                                        var pos: Vector2i = enemy.get("pos", Vector2i.ZERO)
-                                                        grid_renderer.spawn_projectile(pos, false)
-                                                        break
-                                        break
+                        var is_boss: bool = text.contains("BOSS")
+                        # Find enemy position from last known focus or candidates
+                        var defeat_pos: Vector2i = _get_last_target_pos()
+                        if defeat_pos != Vector2i(-1, -1):
+                                grid_renderer.spawn_projectile(defeat_pos, is_boss)
+                                # Delay defeat burst slightly (will trigger when projectile hits)
+                # Boss defeated - extra visual fanfare
+                elif text.begins_with("BOSS DEFEATED:"):
+                        var defeat_pos: Vector2i = _get_last_target_pos()
+                        if defeat_pos != Vector2i(-1, -1):
+                                grid_renderer.spawn_defeat_burst(defeat_pos, true)
                 # Castle damage
                 elif text.begins_with("Enemy") and text.contains("hits the base"):
                         grid_renderer.spawn_damage_flash()
                 elif text.begins_with("Thorns deal") or text.begins_with("Enemy explodes"):
                         grid_renderer.spawn_damage_flash()
+
+## Get last targeted enemy position for visual effects
+func _get_last_target_pos() -> Vector2i:
+        # Try focused enemy first
+        if typing_focus_id >= 0:
+                for enemy in state.enemies:
+                        if int(enemy.get("id", -1)) == typing_focus_id:
+                                return enemy.get("pos", Vector2i(-1, -1))
+        # Fall back to first candidate
+        for eid in typing_candidate_ids:
+                for enemy in state.enemies:
+                        if int(enemy.get("id", -1)) == eid:
+                                return enemy.get("pos", Vector2i(-1, -1))
+        # Default to spawn area
+        return Vector2i(state.map_w - 2, state.map_h / 2)
 
 func _default_onboarding_flags() -> Dictionary:
         return {
@@ -651,6 +674,15 @@ func _show_typing_report() -> void:
     last_report = report_dict
     if last_report_text == "":
         return
+    # Wave summary line
+    var hits: int = int(report_dict.get("hits", 0))
+    var misses: int = int(report_dict.get("misses", 0))
+    var max_combo: int = int(report_dict.get("max_combo", 0))
+    var hit_rate: float = float(report_dict.get("hit_rate", 0.0)) * 100.0
+    var summary: String = "Wave Complete! Hits: %d | Misses: %d | Accuracy: %.0f%%" % [hits, misses, hit_rate]
+    if max_combo >= 3:
+        summary += " | Best Combo: %d" % max_combo
+    _append_log([summary])
     _append_log(["Typing Report:"])
     _append_log(last_report_text.split("\n"))
     _record_typing_report(report_dict)
