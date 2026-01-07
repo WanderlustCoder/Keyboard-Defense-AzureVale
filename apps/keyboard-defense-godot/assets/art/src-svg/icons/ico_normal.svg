@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Normal Difficulty Badge (16x16) - blue circle -->
+  
+  <!-- Outer ring -->
+  <rect x="3" y="3" width="10" height="10" fill="#2980b9"/>
+  <rect x="2" y="5" width="12" height="6" fill="#2980b9"/>
+  <rect x="5" y="2" width="6" height="12" fill="#2980b9"/>
+  
+  <!-- Inner fill -->
+  <rect x="4" y="4" width="8" height="8" fill="#3498db"/>
+  <rect x="5" y="5" width="6" height="6" fill="#5dade2"/>
+  
+  <!-- Stars (2 pips for normal) -->
+  <rect x="5" y="7" width="2" height="2" fill="#fdfefe"/>
+  <rect x="9" y="7" width="2" height="2" fill="#fdfefe"/>
+</svg>
