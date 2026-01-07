@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 16" width="64" height="16">
+  <!-- Coin Pickup (64x16) - 4 frame animation, spinning -->
+
+  <!-- Frame 1 - full face -->
+  <rect x="3" y="3" width="10" height="10" fill="#f4d03f"/>
+  <rect x="4" y="2" width="8" height="12" fill="#f4d03f"/>
+  <rect x="2" y="4" width="12" height="8" fill="#f4d03f"/>
+  <!-- Inner detail -->
+  <rect x="5" y="5" width="6" height="6" fill="#f9e79f"/>
+  <rect x="6" y="6" width="4" height="4" fill="#f4d03f"/>
+  <!-- Shine -->
+  <rect x="4" y="3" width="2" height="2" fill="#fdfefe"/>
+
+  <!-- Frame 2 - angled -->
+  <rect x="21" y="3" width="6" height="10" fill="#f4d03f"/>
+  <rect x="22" y="2" width="4" height="12" fill="#f4d03f"/>
+  <rect x="20" y="4" width="8" height="8" fill="#f4d03f"/>
+  <rect x="22" y="5" width="4" height="6" fill="#f9e79f"/>
+  <rect x="21" y="3" width="2" height="2" fill="#fdfefe"/>
+
+  <!-- Frame 3 - edge -->
+  <rect x="38" y="2" width="2" height="12" fill="#d4ac0d"/>
+  <rect x="37" y="3" width="4" height="10" fill="#f4d03f"/>
+  <rect x="38" y="4" width="2" height="8" fill="#f9e79f"/>
+  <rect x="37" y="3" width="1" height="2" fill="#fdfefe"/>
+
+  <!-- Frame 4 - angled other way -->
+  <rect x="53" y="3" width="6" height="10" fill="#f4d03f"/>
+  <rect x="54" y="2" width="4" height="12" fill="#f4d03f"/>
+  <rect x="52" y="4" width="8" height="8" fill="#f4d03f"/>
+  <rect x="54" y="5" width="4" height="6" fill="#f9e79f"/>
+  <rect x="57" y="3" width="2" height="2" fill="#fdfefe"/>
+</svg>

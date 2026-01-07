@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 16" width="64" height="16">
+  <!-- Speed Pickup (64x16) - 4 frame animation, bobbing -->
+
+  <!-- Frame 1 - base -->
+  <rect x="3" y="4" width="10" height="8" fill="#f39c12"/>
+  <rect x="4" y="3" width="8" height="10" fill="#f39c12"/>
+  <!-- Lightning bolt -->
+  <rect x="8" y="3" width="3" height="2" fill="#fdfefe"/>
+  <rect x="6" y="5" width="4" height="2" fill="#fdfefe"/>
+  <rect x="7" y="7" width="4" height="2" fill="#fdfefe"/>
+  <rect x="5" y="9" width="3" height="2" fill="#fdfefe"/>
+  <!-- Shine -->
+  <rect x="4" y="4" width="2" height="2" fill="#f9e79f"/>
+
+  <!-- Frame 2 - up -->
+  <rect x="19" y="3" width="10" height="8" fill="#f39c12"/>
+  <rect x="20" y="2" width="8" height="10" fill="#f39c12"/>
+  <rect x="24" y="2" width="3" height="2" fill="#fdfefe"/>
+  <rect x="22" y="4" width="4" height="2" fill="#fdfefe"/>
+  <rect x="23" y="6" width="4" height="2" fill="#fdfefe"/>
+  <rect x="21" y="8" width="3" height="2" fill="#fdfefe"/>
+  <rect x="20" y="3" width="2" height="2" fill="#f9e79f"/>
+
+  <!-- Frame 3 - base -->
+  <rect x="35" y="4" width="10" height="8" fill="#f39c12"/>
+  <rect x="36" y="3" width="8" height="10" fill="#f39c12"/>
+  <rect x="40" y="3" width="3" height="2" fill="#fdfefe"/>
+  <rect x="38" y="5" width="4" height="2" fill="#fdfefe"/>
+  <rect x="39" y="7" width="4" height="2" fill="#fdfefe"/>
+  <rect x="37" y="9" width="3" height="2" fill="#fdfefe"/>
+  <rect x="36" y="4" width="2" height="2" fill="#f9e79f"/>
+
+  <!-- Frame 4 - down -->
+  <rect x="51" y="5" width="10" height="8" fill="#f39c12"/>
+  <rect x="52" y="4" width="8" height="10" fill="#f39c12"/>
+  <rect x="56" y="4" width="3" height="2" fill="#fdfefe"/>
+  <rect x="54" y="6" width="4" height="2" fill="#fdfefe"/>
+  <rect x="55" y="8" width="4" height="2" fill="#fdfefe"/>
+  <rect x="53" y="10" width="3" height="2" fill="#fdfefe"/>
+  <rect x="52" y="5" width="2" height="2" fill="#f9e79f"/>
+</svg>

@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 16" width="48" height="16">
+  <!-- Timer Urgent Frame (48x16) - red warning state -->
+
+  <!-- Outer frame - red warning -->
+  <rect x="0" y="0" width="48" height="16" fill="#922b21"/>
+  <rect x="1" y="1" width="46" height="14" fill="#c0392b"/>
+
+  <!-- Inner display area -->
+  <rect x="2" y="2" width="44" height="12" fill="#641e16"/>
+
+  <!-- Warning clock icon area -->
+  <rect x="3" y="4" width="8" height="8" fill="#922b21"/>
+  <rect x="4" y="5" width="6" height="6" fill="#e74c3c"/>
+  <rect x="6" y="6" width="2" height="4" fill="#fdfefe"/>
+  <rect x="6" y="6" width="3" height="1" fill="#fdfefe"/>
+
+  <!-- Separator -->
+  <rect x="12" y="3" width="1" height="10" fill="#922b21"/>
+
+  <!-- Digit slots - red glow -->
+  <rect x="14" y="4" width="8" height="8" fill="#4a1813"/>
+  <rect x="24" y="4" width="8" height="8" fill="#4a1813"/>
+
+  <!-- Colon - blinking white -->
+  <rect x="22" y="6" width="2" height="2" fill="#fdfefe"/>
+  <rect x="22" y="10" width="2" height="2" fill="#fdfefe"/>
+
+  <!-- Alert corners -->
+  <rect x="0" y="0" width="2" height="2" fill="#f5b7b1"/>
+  <rect x="46" y="0" width="2" height="2" fill="#f5b7b1"/>
+  <rect x="0" y="14" width="2" height="2" fill="#f5b7b1"/>
+  <rect x="46" y="14" width="2" height="2" fill="#f5b7b1"/>
+</svg>

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="12" height="12">
+  <!-- Alert Badge (12x12) - exclamation mark -->
+
+  <!-- Circle background -->
+  <rect x="2" y="0" width="8" height="12" fill="#f39c12"/>
+  <rect x="0" y="2" width="12" height="8" fill="#f39c12"/>
+  <rect x="1" y="1" width="10" height="10" fill="#f39c12"/>
+
+  <!-- Exclamation mark -->
+  <rect x="5" y="2" width="2" height="5" fill="#fdfefe"/>
+  <rect x="5" y="8" width="2" height="2" fill="#fdfefe"/>
+
+  <!-- Highlight -->
+  <rect x="2" y="1" width="3" height="2" fill="#f9e79f"/>
+</svg>
