@@ -62,6 +62,10 @@ var pause_label: Label = null
 var pause_resume_button: Button = null
 var pause_retreat_button: Button = null
 var pause_button: Button = null
+var pause_settings_container: VBoxContainer = null
+var pause_music_slider: HSlider = null
+var pause_sfx_slider: HSlider = null
+var pause_shake_toggle: CheckButton = null
 
 var debug_panel: PanelContainer = null
 var debug_text: TextEdit = null
@@ -945,6 +949,106 @@ func _setup_pause_panel() -> void:
 		pause_retreat_button.pressed.connect(_on_pause_retreat_pressed)
 	if pause_button != null:
 		pause_button.pressed.connect(_on_pause_pressed)
+	_add_pause_settings()
+
+func _add_pause_settings() -> void:
+	var content = pause_panel.get_node_or_null("Content") as VBoxContainer
+	if content == null:
+		return
+
+	# Create settings container
+	pause_settings_container = VBoxContainer.new()
+	pause_settings_container.add_theme_constant_override("separation", 8)
+
+	# Separator
+	var sep = HSeparator.new()
+	sep.add_theme_constant_override("separation", 8)
+	pause_settings_container.add_child(sep)
+
+	# Settings label
+	var settings_title = Label.new()
+	settings_title.text = "Quick Settings"
+	settings_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	settings_title.add_theme_font_size_override("font_size", 14)
+	settings_title.add_theme_color_override("font_color", Color(0.65, 0.7, 0.82, 1))
+	pause_settings_container.add_child(settings_title)
+
+	# Music volume
+	var music_row = _create_slider_row("Music", 0.0, 1.0, _get_music_volume())
+	pause_music_slider = music_row.get_node("Slider") as HSlider
+	if pause_music_slider != null:
+		pause_music_slider.value_changed.connect(_on_pause_music_changed)
+	pause_settings_container.add_child(music_row)
+
+	# SFX volume
+	var sfx_row = _create_slider_row("SFX", 0.0, 1.0, _get_sfx_volume())
+	pause_sfx_slider = sfx_row.get_node("Slider") as HSlider
+	if pause_sfx_slider != null:
+		pause_sfx_slider.value_changed.connect(_on_pause_sfx_changed)
+	pause_settings_container.add_child(sfx_row)
+
+	# Screen shake toggle
+	var shake_row = HBoxContainer.new()
+	shake_row.add_theme_constant_override("separation", 12)
+	var shake_label = Label.new()
+	shake_label.text = "Screen Shake"
+	shake_label.add_theme_font_size_override("font_size", 13)
+	shake_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	shake_row.add_child(shake_label)
+	pause_shake_toggle = CheckButton.new()
+	pause_shake_toggle.button_pressed = settings_manager != null and settings_manager.screen_shake
+	pause_shake_toggle.toggled.connect(_on_pause_shake_toggled)
+	shake_row.add_child(pause_shake_toggle)
+	pause_settings_container.add_child(shake_row)
+
+	# Insert before button row
+	content.add_child(pause_settings_container)
+	content.move_child(pause_settings_container, content.get_child_count() - 1)
+
+func _create_slider_row(label_text: String, min_val: float, max_val: float, current_val: float) -> HBoxContainer:
+	var row = HBoxContainer.new()
+	row.add_theme_constant_override("separation", 12)
+
+	var label = Label.new()
+	label.text = label_text
+	label.add_theme_font_size_override("font_size", 13)
+	label.custom_minimum_size = Vector2(60, 0)
+	row.add_child(label)
+
+	var slider = HSlider.new()
+	slider.name = "Slider"
+	slider.min_value = min_val
+	slider.max_value = max_val
+	slider.step = 0.05
+	slider.value = current_val
+	slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	slider.custom_minimum_size = Vector2(120, 0)
+	row.add_child(slider)
+
+	return row
+
+func _get_music_volume() -> float:
+	if audio_manager != null and audio_manager.has_method("get_music_volume"):
+		return audio_manager.get_music_volume()
+	return 0.8
+
+func _get_sfx_volume() -> float:
+	if audio_manager != null and audio_manager.has_method("get_sfx_volume"):
+		return audio_manager.get_sfx_volume()
+	return 0.8
+
+func _on_pause_music_changed(value: float) -> void:
+	if audio_manager != null and audio_manager.has_method("set_music_volume"):
+		audio_manager.set_music_volume(value)
+
+func _on_pause_sfx_changed(value: float) -> void:
+	if audio_manager != null and audio_manager.has_method("set_sfx_volume"):
+		audio_manager.set_sfx_volume(value)
+
+func _on_pause_shake_toggled(pressed: bool) -> void:
+	if settings_manager != null:
+		settings_manager.screen_shake = pressed
+		settings_manager.save_settings()
 
 func _on_pause_pressed() -> void:
 	if audio_manager != null:
