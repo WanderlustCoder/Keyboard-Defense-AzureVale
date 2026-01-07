@@ -50,6 +50,8 @@ const FEEDBACK_BUFF_DURATION := 0.9
 @onready var result_panel: PanelContainer = $ResultPanel
 @onready var result_label: Label = $ResultPanel/Content/ResultLabel
 @onready var result_button: Button = $ResultPanel/Content/ResultButton
+var result_retry_button: Button = null
+var result_hint_label: Label = null
 @onready var progression = get_node("/root/ProgressionState")
 @onready var game_controller = get_node("/root/GameController")
 @onready var audio_manager = get_node("/root/AudioManager")
@@ -142,6 +144,7 @@ func _ready() -> void:
 	_setup_pause_panel()
 	_setup_debug_panel()
 	_setup_combo_indicator()
+	_setup_result_panel()
 	_initialize_battle()
 
 func _initialize_battle() -> void:
@@ -280,6 +283,22 @@ func _process(delta: float) -> void:
 	_update_threat()
 
 func _unhandled_input(event: InputEvent) -> void:
+	# Handle result panel shortcuts
+	if result_panel != null and result_panel.visible:
+		if event is InputEventKey and event.pressed and not event.echo:
+			if event.keycode == KEY_R:
+				_on_result_retry_pressed()
+				return
+			if event.keycode == KEY_ENTER or event.keycode == KEY_KP_ENTER:
+				_on_result_pressed()
+				return
+			if event.keycode == KEY_ESCAPE:
+				if audio_manager != null:
+					audio_manager.play_ui_cancel()
+				game_controller.go_to_map()
+				return
+		return
+
 	if not active:
 		return
 	if event is InputEventKey and event.pressed and not event.echo:
@@ -752,7 +771,10 @@ func _finish_battle(success: bool) -> void:
 				lines.append("Gold: +%dg (%s)" % [gold_awarded, ", ".join(gold_parts)])
 		result_label.text = "\n".join(lines)
 		result_action = "map"
-		result_button.text = "Return to Map"
+		result_button.text = "Continue (Enter)"
+		if result_retry_button != null:
+			result_retry_button.visible = true
+			result_retry_button.text = "Retry (R)"
 	else:
 		progression.record_attempt(summary)
 		# Play defeat sounds
@@ -761,7 +783,12 @@ func _finish_battle(success: bool) -> void:
 		var lines: Array = ["Defeat. The walls fell.", stats_line, words_line]
 		result_label.text = "\n".join(lines)
 		result_action = "retry"
-		result_button.text = "Retry Battle"
+		result_button.text = "Retry (Enter)"
+		if result_retry_button != null:
+			result_retry_button.visible = true
+			result_retry_button.text = "Map (Esc)"
+			result_retry_button.pressed.disconnect(_on_result_retry_pressed)
+			result_retry_button.pressed.connect(_go_to_map_from_result)
 	result_panel.visible = true
 	gold_label.text = "Gold: %d" % progression.gold
 
@@ -1167,3 +1194,48 @@ func _update_combo_indicator(delta: float) -> void:
 
 func _pulse_combo_indicator() -> void:
 	_combo_pulse_timer = COMBO_PULSE_DURATION
+
+func _setup_result_panel() -> void:
+	if result_panel == null:
+		return
+
+	var content = result_panel.get_node_or_null("Content")
+	if content == null:
+		return
+
+	# Create button row container
+	var button_row = HBoxContainer.new()
+	button_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	button_row.add_theme_constant_override("separation", 16)
+
+	# Move existing button to row
+	var button_parent = result_button.get_parent()
+	button_parent.remove_child(result_button)
+	button_row.add_child(result_button)
+
+	# Create retry button
+	result_retry_button = Button.new()
+	result_retry_button.text = "Retry (R)"
+	result_retry_button.custom_minimum_size = Vector2(140, 44)
+	result_retry_button.pressed.connect(_on_result_retry_pressed)
+	button_row.add_child(result_retry_button)
+
+	content.add_child(button_row)
+
+	# Create keyboard hint label
+	result_hint_label = Label.new()
+	result_hint_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	result_hint_label.add_theme_font_size_override("font_size", 12)
+	result_hint_label.add_theme_color_override("font_color", Color(0.65, 0.7, 0.82, 0.8))
+	result_hint_label.text = "Press Enter to continue, R to retry, Esc for map"
+	content.add_child(result_hint_label)
+
+func _on_result_retry_pressed() -> void:
+	if audio_manager != null:
+		audio_manager.play_ui_confirm()
+	game_controller.go_to_battle(node_id)
+
+func _go_to_map_from_result() -> void:
+	if audio_manager != null:
+		audio_manager.play_ui_cancel()
+	game_controller.go_to_map()
