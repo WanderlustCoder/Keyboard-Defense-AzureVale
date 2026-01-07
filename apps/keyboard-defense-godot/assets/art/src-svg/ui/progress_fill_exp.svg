@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8" width="8" height="8">
+  <!-- Progress Fill Purple/EXP (8x8) - tileable experience bar fill -->
+
+  <rect x="0" y="0" width="8" height="8" fill="#9b59b6"/>
+  <rect x="0" y="0" width="8" height="2" fill="#af7ac5"/>
+  <rect x="0" y="1" width="8" height="1" fill="#d2b4de"/>
+  <rect x="0" y="6" width="8" height="2" fill="#7d3c98"/>
+</svg>

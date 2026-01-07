@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 8" width="128" height="8">
+  <!-- Loading Bar Animation (128x8) - 8 frame fill animation -->
+
+  <!-- Frame 1 - 12.5% -->
+  <rect x="0" y="0" width="16" height="8" fill="#1a252f"/>
+  <rect x="1" y="1" width="14" height="6" fill="#0d1318"/>
+  <rect x="2" y="2" width="2" height="4" fill="#3498db"/>
+
+  <!-- Frame 2 - 25% -->
+  <rect x="16" y="0" width="16" height="8" fill="#1a252f"/>
+  <rect x="17" y="1" width="14" height="6" fill="#0d1318"/>
+  <rect x="18" y="2" width="4" height="4" fill="#3498db"/>
+
+  <!-- Frame 3 - 37.5% -->
+  <rect x="32" y="0" width="16" height="8" fill="#1a252f"/>
+  <rect x="33" y="1" width="14" height="6" fill="#0d1318"/>
+  <rect x="34" y="2" width="5" height="4" fill="#3498db"/>
+
+  <!-- Frame 4 - 50% -->
+  <rect x="48" y="0" width="16" height="8" fill="#1a252f"/>
+  <rect x="49" y="1" width="14" height="6" fill="#0d1318"/>
+  <rect x="50" y="2" width="7" height="4" fill="#3498db"/>
+
+  <!-- Frame 5 - 62.5% -->
+  <rect x="64" y="0" width="16" height="8" fill="#1a252f"/>
+  <rect x="65" y="1" width="14" height="6" fill="#0d1318"/>
+  <rect x="66" y="2" width="8" height="4" fill="#3498db"/>
+
+  <!-- Frame 6 - 75% -->
+  <rect x="80" y="0" width="16" height="8" fill="#1a252f"/>
+  <rect x="81" y="1" width="14" height="6" fill="#0d1318"/>
+  <rect x="82" y="2" width="10" height="4" fill="#3498db"/>
+
+  <!-- Frame 7 - 87.5% -->
+  <rect x="96" y="0" width="16" height="8" fill="#1a252f"/>
+  <rect x="97" y="1" width="14" height="6" fill="#0d1318"/>
+  <rect x="98" y="2" width="11" height="4" fill="#3498db"/>
+
+  <!-- Frame 8 - 100% (complete - green) -->
+  <rect x="112" y="0" width="16" height="8" fill="#1a252f"/>
+  <rect x="113" y="1" width="14" height="6" fill="#0d1318"/>
+  <rect x="114" y="2" width="12" height="4" fill="#27ae60"/>
+</svg>

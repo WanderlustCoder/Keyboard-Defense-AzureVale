@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 16" width="128" height="16">
+  <!-- Loading Spinner (128x16) - 8 frame rotation animation -->
+
+  <!-- Frame 1 - top highlighted -->
+  <rect x="5" y="0" width="6" height="2" fill="#3498db"/>
+  <rect x="3" y="2" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="11" y="2" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="1" y="5" width="2" height="6" fill="#5d6d7e"/>
+  <rect x="13" y="5" width="2" height="6" fill="#5d6d7e"/>
+  <rect x="3" y="12" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="11" y="12" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="5" y="14" width="6" height="2" fill="#5d6d7e"/>
+
+  <!-- Frame 2 - top-right highlighted -->
+  <rect x="21" y="0" width="6" height="2" fill="#5d6d7e"/>
+  <rect x="19" y="2" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="27" y="2" width="2" height="2" fill="#3498db"/>
+  <rect x="17" y="5" width="2" height="6" fill="#5d6d7e"/>
+  <rect x="29" y="5" width="2" height="6" fill="#5d6d7e"/>
+  <rect x="19" y="12" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="27" y="12" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="21" y="14" width="6" height="2" fill="#5d6d7e"/>
+
+  <!-- Frame 3 - right highlighted -->
+  <rect x="37" y="0" width="6" height="2" fill="#5d6d7e"/>
+  <rect x="35" y="2" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="43" y="2" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="33" y="5" width="2" height="6" fill="#5d6d7e"/>
+  <rect x="45" y="5" width="2" height="6" fill="#3498db"/>
+  <rect x="35" y="12" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="43" y="12" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="37" y="14" width="6" height="2" fill="#5d6d7e"/>
+
+  <!-- Frame 4 - bottom-right highlighted -->
+  <rect x="53" y="0" width="6" height="2" fill="#5d6d7e"/>
+  <rect x="51" y="2" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="59" y="2" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="49" y="5" width="2" height="6" fill="#5d6d7e"/>
+  <rect x="61" y="5" width="2" height="6" fill="#5d6d7e"/>
+  <rect x="51" y="12" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="59" y="12" width="2" height="2" fill="#3498db"/>
+  <rect x="53" y="14" width="6" height="2" fill="#5d6d7e"/>
+
+  <!-- Frame 5 - bottom highlighted -->
+  <rect x="69" y="0" width="6" height="2" fill="#5d6d7e"/>
+  <rect x="67" y="2" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="75" y="2" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="65" y="5" width="2" height="6" fill="#5d6d7e"/>
+  <rect x="77" y="5" width="2" height="6" fill="#5d6d7e"/>
+  <rect x="67" y="12" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="75" y="12" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="69" y="14" width="6" height="2" fill="#3498db"/>
+
+  <!-- Frame 6 - bottom-left highlighted -->
+  <rect x="85" y="0" width="6" height="2" fill="#5d6d7e"/>
+  <rect x="83" y="2" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="91" y="2" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="81" y="5" width="2" height="6" fill="#5d6d7e"/>
+  <rect x="93" y="5" width="2" height="6" fill="#5d6d7e"/>
+  <rect x="83" y="12" width="2" height="2" fill="#3498db"/>
+  <rect x="91" y="12" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="85" y="14" width="6" height="2" fill="#5d6d7e"/>
+
+  <!-- Frame 7 - left highlighted -->
+  <rect x="101" y="0" width="6" height="2" fill="#5d6d7e"/>
+  <rect x="99" y="2" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="107" y="2" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="97" y="5" width="2" height="6" fill="#3498db"/>
+  <rect x="109" y="5" width="2" height="6" fill="#5d6d7e"/>
+  <rect x="99" y="12" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="107" y="12" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="101" y="14" width="6" height="2" fill="#5d6d7e"/>
+
+  <!-- Frame 8 - top-left highlighted -->
+  <rect x="117" y="0" width="6" height="2" fill="#5d6d7e"/>
+  <rect x="115" y="2" width="2" height="2" fill="#3498db"/>
+  <rect x="123" y="2" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="113" y="5" width="2" height="6" fill="#5d6d7e"/>
+  <rect x="125" y="5" width="2" height="6" fill="#5d6d7e"/>
+  <rect x="115" y="12" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="123" y="12" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="117" y="14" width="6" height="2" fill="#5d6d7e"/>
+</svg>

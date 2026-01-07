@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Highlighted Keyboard Key (16x16) - tutorial hint state -->
+
+  <!-- Glow effect -->
+  <rect x="0" y="0" width="16" height="16" fill="#f4d03f" opacity="0.3"/>
+
+  <!-- Key base/shadow -->
+  <rect x="1" y="2" width="14" height="13" fill="#9a7b0a"/>
+
+  <!-- Key top -->
+  <rect x="1" y="1" width="14" height="12" fill="#f4d03f"/>
+  <rect x="2" y="2" width="12" height="10" fill="#f7dc6f"/>
+
+  <!-- Key surface -->
+  <rect x="3" y="3" width="10" height="8" fill="#f9e79f"/>
+
+  <!-- Highlight -->
+  <rect x="3" y="3" width="10" height="1" fill="#fdfefe"/>
+  <rect x="3" y="3" width="1" height="8" fill="#fdfefe"/>
+</svg>

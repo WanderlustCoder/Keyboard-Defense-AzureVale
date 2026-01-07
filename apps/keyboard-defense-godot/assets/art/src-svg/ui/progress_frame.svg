@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 12" width="64" height="12">
+  <!-- Progress Bar Frame (64x12) - 9-slice horizontal bar -->
+
+  <!-- Outer border -->
+  <rect x="0" y="0" width="64" height="12" fill="#2c3e50"/>
+  <rect x="1" y="1" width="62" height="10" fill="#1a252f"/>
+
+  <!-- Inner track -->
+  <rect x="2" y="2" width="60" height="8" fill="#0d1318"/>
+
+  <!-- Edge highlights -->
+  <rect x="0" y="0" width="2" height="1" fill="#5d6d7e"/>
+  <rect x="0" y="0" width="1" height="2" fill="#5d6d7e"/>
+  <rect x="62" y="0" width="2" height="1" fill="#5d6d7e"/>
+  <rect x="63" y="0" width="1" height="2" fill="#5d6d7e"/>
+</svg>

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Blocked Cursor (16x16) - no/forbidden symbol -->
+
+  <!-- Outer circle -->
+  <rect x="4" y="0" width="8" height="2" fill="#c0392b"/>
+  <rect x="2" y="2" width="2" height="2" fill="#c0392b"/>
+  <rect x="12" y="2" width="2" height="2" fill="#c0392b"/>
+  <rect x="0" y="4" width="2" height="8" fill="#c0392b"/>
+  <rect x="14" y="4" width="2" height="8" fill="#c0392b"/>
+  <rect x="2" y="12" width="2" height="2" fill="#c0392b"/>
+  <rect x="12" y="12" width="2" height="2" fill="#c0392b"/>
+  <rect x="4" y="14" width="8" height="2" fill="#c0392b"/>
+
+  <!-- Inner area -->
+  <rect x="4" y="4" width="8" height="8" fill="#fadbd8"/>
+  <rect x="3" y="5" width="10" height="6" fill="#fadbd8"/>
+  <rect x="5" y="3" width="6" height="10" fill="#fadbd8"/>
+
+  <!-- Diagonal slash -->
+  <rect x="3" y="3" width="2" height="2" fill="#c0392b"/>
+  <rect x="4" y="4" width="2" height="2" fill="#c0392b"/>
+  <rect x="5" y="5" width="2" height="2" fill="#c0392b"/>
+  <rect x="6" y="6" width="2" height="2" fill="#c0392b"/>
+  <rect x="7" y="7" width="2" height="2" fill="#c0392b"/>
+  <rect x="8" y="8" width="2" height="2" fill="#c0392b"/>
+  <rect x="9" y="9" width="2" height="2" fill="#c0392b"/>
+  <rect x="10" y="10" width="2" height="2" fill="#c0392b"/>
+  <rect x="11" y="11" width="2" height="2" fill="#c0392b"/>
+  <rect x="12" y="12" width="2" height="2" fill="#c0392b"/>
+</svg>
