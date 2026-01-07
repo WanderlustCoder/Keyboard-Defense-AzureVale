@@ -3,39 +3,48 @@
     {
       "id": "evergrove_wagon",
       "entries": [
-        { "event_id": "evt_bent_wheel", "weight": 40 },
-        { "event_id": "evt_herb_patch", "weight": 30 },
-        { "event_id": "evt_scribe_notes", "weight": 20 },
-        { "event_id": "evt_forest_ambush", "weight": 10 }
+        { "event_id": "evt_bent_wheel", "weight": 35 },
+        { "event_id": "evt_hidden_cache", "weight": 25 },
+        { "event_id": "evt_abandoned_camp", "weight": 20 },
+        { "event_id": "evt_lost_traveler", "weight": 15 },
+        { "event_id": "evt_forest_ambush", "weight": 5 }
       ],
       "conditions": []
     },
     {
       "id": "evergrove_shrine",
       "entries": [
-        { "event_id": "evt_shrine_offering", "weight": 50 },
-        { "event_id": "evt_scribe_notes", "weight": 30 },
-        { "event_id": "evt_herb_patch", "weight": 20 }
+        { "event_id": "evt_shrine_offering", "weight": 40 },
+        { "event_id": "evt_standing_stone", "weight": 25 },
+        { "event_id": "evt_scribe_notes", "weight": 20 },
+        { "event_id": "evt_lost_traveler", "weight": 15 }
       ],
       "conditions": []
     },
     {
       "id": "evergrove_herbs",
       "entries": [
-        { "event_id": "evt_herb_patch", "weight": 60 },
-        { "event_id": "evt_scribe_notes", "weight": 25 },
-        { "event_id": "evt_forest_ambush", "weight": 15 }
+        { "event_id": "evt_herb_patch", "weight": 40 },
+        { "event_id": "evt_berry_bush", "weight": 30 },
+        { "event_id": "evt_wild_boar", "weight": 15 },
+        { "event_id": "evt_scribe_notes", "weight": 15 }
       ],
       "conditions": []
     },
     {
       "id": "evergrove_default",
       "entries": [
-        { "event_id": "evt_bent_wheel", "weight": 25 },
-        { "event_id": "evt_herb_patch", "weight": 25 },
-        { "event_id": "evt_scribe_notes", "weight": 20 },
-        { "event_id": "evt_shrine_offering", "weight": 15 },
-        { "event_id": "evt_forest_ambush", "weight": 15 }
+        { "event_id": "evt_bent_wheel", "weight": 15 },
+        { "event_id": "evt_herb_patch", "weight": 15 },
+        { "event_id": "evt_berry_bush", "weight": 12 },
+        { "event_id": "evt_scribe_notes", "weight": 10 },
+        { "event_id": "evt_shrine_offering", "weight": 10 },
+        { "event_id": "evt_lost_traveler", "weight": 10 },
+        { "event_id": "evt_hidden_cache", "weight": 8 },
+        { "event_id": "evt_abandoned_camp", "weight": 8 },
+        { "event_id": "evt_standing_stone", "weight": 6 },
+        { "event_id": "evt_wild_boar", "weight": 4 },
+        { "event_id": "evt_forest_ambush", "weight": 2 }
       ],
       "conditions": []
     }

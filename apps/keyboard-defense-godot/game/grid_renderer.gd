@@ -3,6 +3,7 @@ extends Node2D
 const GameState = preload("res://sim/types.gd")
 const SimMap = preload("res://sim/map.gd")
 const SimEnemies = preload("res://sim/enemies.gd")
+const SimPoi = preload("res://sim/poi.gd")
 const AssetLoader = preload("res://game/asset_loader.gd")
 
 @export var cell_size: Vector2 = Vector2(40, 40)
@@ -23,6 +24,8 @@ const AssetLoader = preload("res://game/asset_loader.gd")
 @export var enemy_color: Color = Color(0.9, 0.3, 0.3, 1.0)
 @export var enemy_highlight_color: Color = Color(0.95, 0.85, 0.4, 0.8)
 @export var enemy_focus_color: Color = Color(1.0, 0.85, 0.2, 0.95)
+@export var poi_color: Color = Color(0.4, 0.7, 0.9, 1.0)
+@export var poi_undiscovered_color: Color = Color(0.3, 0.5, 0.6, 0.6)
 @export var font_size: int = 16
 @export var use_sprites: bool = true
 
@@ -35,6 +38,7 @@ var terrain: Array = []
 var structures: Dictionary = {}
 var structure_levels: Dictionary = {}
 var enemies: Array = []
+var active_pois: Dictionary = {}
 var font: Font
 var preview_type: String = ""
 var overlay_path_enabled: bool = false
@@ -84,6 +88,7 @@ func update_state(state: GameState) -> void:
 	structures = state.structures.duplicate(true)
 	structure_levels = state.structure_levels.duplicate(true)
 	enemies = state.enemies.duplicate(true)
+	active_pois = state.active_pois.duplicate(true)
 	queue_redraw()
 
 func set_preview_type(building_type: String) -> void:
@@ -151,6 +156,41 @@ func _draw() -> void:
 					var symbol: String = _structure_char(building_type, level)
 					var text_pos: Vector2 = rect.position + Vector2(6, cell_size.y - 10)
 					draw_string(font, text_pos, symbol, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, structure_color)
+
+	# Draw POIs
+	for poi_id in active_pois:
+		var poi_state: Dictionary = active_pois[poi_id]
+		var poi_pos: Variant = poi_state.get("pos", null)
+		if poi_pos == null or not (poi_pos is Vector2i):
+			continue
+		var pos: Vector2i = poi_pos
+		if not SimMap.in_bounds(pos.x, pos.y, map_w, map_h):
+			continue
+		var poi_index: int = pos.y * map_w + pos.x
+		if not discovered.has(poi_index):
+			continue
+		var poi_rect: Rect2 = Rect2(origin + Vector2(pos.x * cell_size.x, pos.y * cell_size.y), cell_size)
+		var poi_discovered: bool = bool(poi_state.get("discovered", false))
+		var poi_interacted: bool = bool(poi_state.get("interacted", false))
+
+		# Get POI data for icon
+		var poi_data: Dictionary = SimPoi.get_poi(str(poi_id))
+		var icon_name: String = str(poi_data.get("icon", "poi"))
+
+		# Draw POI marker
+		if poi_interacted:
+			# Dim marker for interacted POIs
+			var dim_color := Color(0.4, 0.4, 0.4, 0.5)
+			draw_rect(poi_rect.grow(-6.0), dim_color, false, 2.0)
+		elif poi_discovered:
+			# Bright marker for discovered POIs
+			draw_rect(poi_rect.grow(-4.0), poi_color, false, 2.0)
+			var poi_symbol := _poi_symbol(icon_name)
+			var poi_text_pos: Vector2 = poi_rect.position + Vector2(cell_size.x - 14, 14)
+			draw_string(font, poi_text_pos, poi_symbol, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size - 4, poi_color)
+		else:
+			# Subtle marker for undiscovered POIs
+			draw_rect(poi_rect.grow(-6.0), poi_undiscovered_color, false, 1.0)
 
 	# Draw building preview
 	if preview_type != "":
@@ -318,3 +358,20 @@ func _is_preview_buildable(index: int) -> bool:
 	if _terrain_at(index) == SimMap.TERRAIN_WATER:
 		return false
 	return true
+
+func _poi_symbol(icon_name: String) -> String:
+	match icon_name:
+		"wagon":
+			return "W"
+		"shrine":
+			return "S"
+		"herbs":
+			return "H"
+		"ruins":
+			return "R"
+		"camp":
+			return "C"
+		"cave":
+			return "V"
+		_:
+			return "?"

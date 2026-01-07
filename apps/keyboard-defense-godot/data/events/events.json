@@ -161,6 +161,204 @@
           ]
         }
       ]
+    },
+    {
+      "id": "evt_lost_traveler",
+      "title": "Lost Traveler",
+      "body": "A weary traveler sits by the roadside, looking confused. They seem harmless but desperate for directions.",
+      "tier": 1,
+      "tags": ["social", "evergrove"],
+      "cooldown_days": 4,
+      "choices": [
+        {
+          "id": "help",
+          "label": "Offer directions",
+          "input": { "mode": "phrase", "text": "show them the way" },
+          "effects": [
+            { "type": "buff_apply", "buff": "goodwill", "duration": 3 },
+            { "type": "threat_add", "amount": -1 }
+          ]
+        },
+        {
+          "id": "trade",
+          "label": "Trade supplies",
+          "input": { "mode": "code", "text": "trade" },
+          "effects": [
+            { "type": "resource_add", "resource": "food", "amount": -1 },
+            { "type": "resource_add", "resource": "stone", "amount": 3 }
+          ]
+        },
+        {
+          "id": "ignore",
+          "label": "Walk past",
+          "input": { "mode": "code", "text": "ignore" },
+          "effects": []
+        }
+      ]
+    },
+    {
+      "id": "evt_hidden_cache",
+      "title": "Hidden Cache",
+      "body": "Behind a fallen log, you spot something glinting. A hidden cache of supplies, perhaps left by a previous expedition.",
+      "tier": 1,
+      "tags": ["salvage", "evergrove"],
+      "cooldown_days": 5,
+      "choices": [
+        {
+          "id": "open",
+          "label": "Open the cache",
+          "input": { "mode": "phrase", "text": "unlock the hidden stash" },
+          "effects": [
+            { "type": "resource_add", "resource": "wood", "amount": 3 },
+            { "type": "resource_add", "resource": "stone", "amount": 2 },
+            { "type": "resource_add", "resource": "food", "amount": 2 }
+          ]
+        },
+        {
+          "id": "trap",
+          "label": "Check for traps first",
+          "input": { "mode": "phrase", "text": "carefully inspect" },
+          "effects": [
+            { "type": "resource_add", "resource": "wood", "amount": 2 },
+            { "type": "resource_add", "resource": "stone", "amount": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "evt_standing_stone",
+      "title": "Standing Stone",
+      "body": "An ancient monolith rises from the earth, covered in weathered runes. Power seems to emanate from within.",
+      "tier": 2,
+      "tags": ["lore", "evergrove"],
+      "cooldown_days": 7,
+      "choices": [
+        {
+          "id": "touch",
+          "label": "Touch the stone",
+          "input": { "mode": "phrase", "text": "reach out and touch" },
+          "effects": [
+            { "type": "buff_apply", "buff": "ancient_power", "duration": 5 },
+            { "type": "set_flag", "flag": "touched_monolith", "value": true }
+          ],
+          "fail_effects": [
+            { "type": "damage_castle", "amount": 1 }
+          ]
+        },
+        {
+          "id": "read",
+          "label": "Decipher the runes",
+          "input": { "mode": "prompt_burst", "prompts": ["ancient", "wisdom", "power"] },
+          "effects": [
+            { "type": "set_flag", "flag": "rune_knowledge", "value": true },
+            { "type": "buff_apply", "buff": "insight", "duration": 4 }
+          ]
+        },
+        {
+          "id": "leave",
+          "label": "Leave it alone",
+          "input": { "mode": "code", "text": "leave" },
+          "effects": []
+        }
+      ]
+    },
+    {
+      "id": "evt_wild_boar",
+      "title": "Wild Boar",
+      "body": "A massive boar blocks the path ahead, pawing at the ground. Its tusks look sharp and dangerous.",
+      "tier": 2,
+      "tags": ["combat", "evergrove", "risk"],
+      "cooldown_days": 3,
+      "choices": [
+        {
+          "id": "hunt",
+          "label": "Hunt it down",
+          "input": { "mode": "prompt_burst", "prompts": ["aim", "strike", "finish"] },
+          "effects": [
+            { "type": "resource_add", "resource": "food", "amount": 5 }
+          ],
+          "fail_effects": [
+            { "type": "damage_castle", "amount": 1 }
+          ]
+        },
+        {
+          "id": "scare",
+          "label": "Scare it away",
+          "input": { "mode": "phrase", "text": "shout loudly" },
+          "effects": [
+            { "type": "threat_add", "amount": 1 }
+          ]
+        },
+        {
+          "id": "wait",
+          "label": "Wait for it to leave",
+          "input": { "mode": "code", "text": "wait" },
+          "effects": []
+        }
+      ]
+    },
+    {
+      "id": "evt_abandoned_camp",
+      "title": "Abandoned Camp",
+      "body": "The remains of a campsite lie scattered about. A cold fire pit, torn canvas, and scattered belongings suggest a hasty departure.",
+      "tier": 1,
+      "tags": ["exploration", "evergrove"],
+      "cooldown_days": 4,
+      "choices": [
+        {
+          "id": "search",
+          "label": "Search thoroughly",
+          "input": { "mode": "phrase", "text": "look through everything" },
+          "effects": [
+            { "type": "resource_add", "resource": "wood", "amount": 2 },
+            { "type": "resource_add", "resource": "food", "amount": 1 },
+            { "type": "set_flag", "flag": "found_camp_clue", "value": true }
+          ]
+        },
+        {
+          "id": "quick",
+          "label": "Quick grab",
+          "input": { "mode": "code", "text": "grab" },
+          "effects": [
+            { "type": "resource_add", "resource": "wood", "amount": 1 }
+          ]
+        },
+        {
+          "id": "investigate",
+          "label": "Investigate what happened",
+          "input": { "mode": "phrase", "text": "examine the clues" },
+          "effects": [
+            { "type": "set_flag", "flag": "camp_mystery", "value": true },
+            { "type": "buff_apply", "buff": "wary", "duration": 2 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "evt_berry_bush",
+      "title": "Berry Bush",
+      "body": "A bush laden with ripe berries catches your eye. They look delicious, but some forest berries can be dangerous.",
+      "tier": 0,
+      "tags": ["salvage", "evergrove"],
+      "cooldown_days": 2,
+      "choices": [
+        {
+          "id": "eat",
+          "label": "Eat some berries",
+          "input": { "mode": "code", "text": "eat" },
+          "effects": [
+            { "type": "resource_add", "resource": "food", "amount": 2 }
+          ]
+        },
+        {
+          "id": "collect",
+          "label": "Collect carefully",
+          "input": { "mode": "phrase", "text": "gather the berries" },
+          "effects": [
+            { "type": "resource_add", "resource": "food", "amount": 3 }
+          ]
+        }
+      ]
     }
   ]
 }

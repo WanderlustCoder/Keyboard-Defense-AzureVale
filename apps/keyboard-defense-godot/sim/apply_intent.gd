@@ -180,7 +180,30 @@ static func _apply_explore(state: GameState, events: Array[String]) -> void:
     else:
         events.append("Found nothing of value.")
     events.append("Threat increased to %d." % state.threat)
+
+    # Try to spawn and discover a POI at this location
+    var biome: String = _terrain_to_biome(terrain)
+    var poi_id: String = SimPoi.try_spawn_random_poi(state, biome, pos)
+    if poi_id != "":
+        SimPoi.discover_poi(state, poi_id)
+        var poi_data: Dictionary = SimPoi.get_poi(poi_id)
+        var poi_name: String = str(poi_data.get("name", "something"))
+        events.append("Found: %s! Use 'interact' to investigate." % poi_name)
+
     events.append(_format_status(state))
+
+static func _terrain_to_biome(terrain: String) -> String:
+    match terrain:
+        SimMap.TERRAIN_FOREST:
+            return "Evergrove"
+        SimMap.TERRAIN_MOUNTAIN:
+            return "Stonepass"
+        SimMap.TERRAIN_WATER:
+            return "Mistfen"
+        SimMap.TERRAIN_PLAINS:
+            return "Sunfields"
+        _:
+            return "Evergrove"
 
 static func _apply_end(state: GameState, events: Array[String]) -> bool:
     if not _require_day(state, events):
