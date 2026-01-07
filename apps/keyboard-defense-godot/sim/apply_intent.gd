@@ -899,7 +899,8 @@ static func _format_status(state: GameState) -> String:
     lines.append("Lesson: %s (%s)" % [SimLessons.lesson_label(state.lesson_id), state.lesson_id])
     lines.append("Day: %d" % state.day)
     lines.append("AP: %d/%d" % [state.ap, state.ap_max])
-    lines.append("HP: %d" % state.hp)
+    var max_hp: int = 10 + SimUpgrades.get_castle_health_bonus(state)
+    lines.append("HP: %d/%d" % [state.hp, max_hp])
     lines.append("Threat: %d" % state.threat)
     lines.append("Gold: %d" % state.gold)
     lines.append("Defense: %d" % defense)
@@ -914,6 +915,26 @@ static func _format_status(state: GameState) -> String:
         int(state.resources.get("food", 0))
     ])
     lines.append("Buildings: %s" % building_text)
+    # Upgrade summary
+    var upgrade_count: int = state.purchased_kingdom_upgrades.size() + state.purchased_unit_upgrades.size()
+    if upgrade_count > 0:
+        var bonuses: Array[String] = []
+        var typing_power: float = SimUpgrades.get_typing_power(state)
+        if typing_power > 1.0:
+            bonuses.append("+%d%% dmg" % int((typing_power - 1.0) * 100))
+        var crit: float = SimUpgrades.get_critical_chance(state)
+        if crit > 0.0:
+            bonuses.append("%d%% crit" % int(crit * 100))
+        var gold_mult: float = SimUpgrades.get_gold_multiplier(state)
+        if gold_mult > 1.0:
+            bonuses.append("+%d%% gold" % int((gold_mult - 1.0) * 100))
+        var dmg_red: float = SimUpgrades.get_damage_reduction(state)
+        if dmg_red > 0.0:
+            bonuses.append("%d%% block" % int(dmg_red * 100))
+        if bonuses.is_empty():
+            lines.append("Upgrades: %d purchased" % upgrade_count)
+        else:
+            lines.append("Upgrades: %s" % ", ".join(bonuses))
     return "\n".join(lines)
 
 static func _format_tile_report(report: Dictionary) -> String:
