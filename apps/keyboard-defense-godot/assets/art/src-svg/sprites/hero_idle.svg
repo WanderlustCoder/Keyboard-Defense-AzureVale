@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 24" width="16" height="24">
+  <!-- Hero Character Idle (16x24) - typing defender -->
+
+  <!-- Cape -->
+  <rect x="3" y="8" width="2" height="12" fill="#2980b9"/>
+  <rect x="11" y="8" width="2" height="12" fill="#2980b9"/>
+  <rect x="4" y="18" width="2" height="4" fill="#3498db"/>
+  <rect x="10" y="18" width="2" height="4" fill="#3498db"/>
+
+  <!-- Body/armor -->
+  <rect x="5" y="8" width="6" height="10" fill="#5d6d7e"/>
+  <rect x="6" y="9" width="4" height="8" fill="#7f8c8d"/>
+
+  <!-- Armor detail -->
+  <rect x="6" y="10" width="4" height="2" fill="#95a5a6"/>
+  <rect x="7" y="13" width="2" height="3" fill="#3498db"/>
+
+  <!-- Head -->
+  <rect x="5" y="2" width="6" height="7" fill="#f5cba7"/>
+  <rect x="6" y="3" width="4" height="5" fill="#fdebd0"/>
+
+  <!-- Hair -->
+  <rect x="5" y="1" width="6" height="3" fill="#5d4e37"/>
+  <rect x="6" y="2" width="4" height="1" fill="#8b4513"/>
+
+  <!-- Eyes -->
+  <rect x="6" y="5" width="1" height="1" fill="#2c3e50"/>
+  <rect x="9" y="5" width="1" height="1" fill="#2c3e50"/>
+
+  <!-- Arms -->
+  <rect x="3" y="9" width="2" height="6" fill="#f5cba7"/>
+  <rect x="11" y="9" width="2" height="6" fill="#f5cba7"/>
+
+  <!-- Hands -->
+  <rect x="2" y="14" width="3" height="2" fill="#fdebd0"/>
+  <rect x="11" y="14" width="3" height="2" fill="#fdebd0"/>
+
+  <!-- Legs -->
+  <rect x="5" y="18" width="2" height="4" fill="#34495e"/>
+  <rect x="9" y="18" width="2" height="4" fill="#34495e"/>
+
+  <!-- Boots -->
+  <rect x="4" y="21" width="3" height="3" fill="#2c3e50"/>
+  <rect x="9" y="21" width="3" height="3" fill="#2c3e50"/>
+</svg>

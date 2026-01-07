@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 16" width="48" height="16">
+  <!-- Wave Banner (48x16) - 9-slice stretchable -->
+
+  <!-- Banner ribbon -->
+  <rect x="4" y="4" width="40" height="10" fill="#c0392b"/>
+  <rect x="5" y="5" width="38" height="8" fill="#e74c3c"/>
+
+  <!-- Ribbon ends (left) -->
+  <rect x="0" y="6" width="4" height="6" fill="#c0392b"/>
+  <rect x="0" y="12" width="2" height="4" fill="#922b21"/>
+  <rect x="2" y="10" width="2" height="2" fill="#922b21"/>
+
+  <!-- Ribbon ends (right) -->
+  <rect x="44" y="6" width="4" height="6" fill="#c0392b"/>
+  <rect x="46" y="12" width="2" height="4" fill="#922b21"/>
+  <rect x="44" y="10" width="2" height="2" fill="#922b21"/>
+
+  <!-- Highlight -->
+  <rect x="6" y="6" width="36" height="2" fill="#f1948a"/>
+
+  <!-- Shadow -->
+  <rect x="6" y="11" width="36" height="1" fill="#922b21"/>
+</svg>

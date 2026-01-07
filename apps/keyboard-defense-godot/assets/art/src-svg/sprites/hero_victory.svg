@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 24" width="16" height="24">
+  <!-- Hero Victory Pose (16x24) - arms raised celebration -->
+
+  <!-- Cape (flowing) -->
+  <rect x="2" y="10" width="2" height="10" fill="#2980b9"/>
+  <rect x="12" y="10" width="2" height="10" fill="#2980b9"/>
+  <rect x="1" y="18" width="3" height="4" fill="#3498db"/>
+  <rect x="12" y="18" width="3" height="4" fill="#3498db"/>
+
+  <!-- Body/armor -->
+  <rect x="5" y="8" width="6" height="10" fill="#5d6d7e"/>
+  <rect x="6" y="9" width="4" height="8" fill="#7f8c8d"/>
+  <rect x="7" y="13" width="2" height="3" fill="#f4d03f"/>
+
+  <!-- Head (looking up slightly) -->
+  <rect x="5" y="2" width="6" height="7" fill="#f5cba7"/>
+  <rect x="6" y="3" width="4" height="5" fill="#fdebd0"/>
+
+  <!-- Hair -->
+  <rect x="5" y="1" width="6" height="3" fill="#5d4e37"/>
+
+  <!-- Happy eyes -->
+  <rect x="6" y="5" width="2" height="1" fill="#2c3e50"/>
+  <rect x="9" y="5" width="1" height="1" fill="#2c3e50"/>
+
+  <!-- Smile -->
+  <rect x="7" y="7" width="2" height="1" fill="#c0392b"/>
+
+  <!-- Arms raised -->
+  <rect x="2" y="4" width="3" height="6" fill="#f5cba7"/>
+  <rect x="11" y="4" width="3" height="6" fill="#f5cba7"/>
+
+  <!-- Hands up -->
+  <rect x="1" y="2" width="3" height="3" fill="#fdebd0"/>
+  <rect x="12" y="2" width="3" height="3" fill="#fdebd0"/>
+
+  <!-- Sparkles -->
+  <rect x="0" y="0" width="2" height="2" fill="#f4d03f"/>
+  <rect x="14" y="0" width="2" height="2" fill="#f4d03f"/>
+
+  <!-- Legs -->
+  <rect x="5" y="18" width="2" height="4" fill="#34495e"/>
+  <rect x="9" y="18" width="2" height="4" fill="#34495e"/>
+
+  <!-- Boots -->
+  <rect x="4" y="21" width="3" height="3" fill="#2c3e50"/>
+  <rect x="9" y="21" width="3" height="3" fill="#2c3e50"/>
+</svg>
