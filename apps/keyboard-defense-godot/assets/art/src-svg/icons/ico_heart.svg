@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Heart Icon (16x16) - Health/lives -->
+
+  <!-- Heart shape -->
+  <!-- Top left lobe -->
+  <rect x="1" y="3" width="6" height="5" fill="#e74c3c"/>
+  <rect x="2" y="2" width="4" height="2" fill="#e74c3c"/>
+  <rect x="3" y="1" width="2" height="2" fill="#e74c3c"/>
+
+  <!-- Top right lobe -->
+  <rect x="9" y="3" width="6" height="5" fill="#e74c3c"/>
+  <rect x="10" y="2" width="4" height="2" fill="#e74c3c"/>
+  <rect x="11" y="1" width="2" height="2" fill="#e74c3c"/>
+
+  <!-- Center connection -->
+  <rect x="6" y="4" width="4" height="4" fill="#e74c3c"/>
+
+  <!-- Lower body -->
+  <rect x="3" y="7" width="10" height="3" fill="#e74c3c"/>
+  <rect x="4" y="10" width="8" height="2" fill="#e74c3c"/>
+  <rect x="5" y="12" width="6" height="2" fill="#e74c3c"/>
+  <rect x="6" y="14" width="4" height="1" fill="#e74c3c"/>
+  <rect x="7" y="15" width="2" height="1" fill="#e74c3c"/>
+
+  <!-- Highlight -->
+  <rect x="3" y="3" width="2" height="3" fill="#f1948a"/>
+  <rect x="4" y="2" width="1" height="2" fill="#f5b7b1"/>
+</svg>

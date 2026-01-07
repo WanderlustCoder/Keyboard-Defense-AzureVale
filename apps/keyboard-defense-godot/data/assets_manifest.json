@@ -809,6 +809,186 @@
       "category": "icons"
     },
     {
+      "id": "enemy_runner_ico",
+      "path": "res://assets/art/src-svg/icons/enemy_runner_ico.svg",
+      "source_svg": "res://assets/art/src-svg/icons/enemy_runner_ico.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "enemy_brute_ico",
+      "path": "res://assets/art/src-svg/icons/enemy_brute_ico.svg",
+      "source_svg": "res://assets/art/src-svg/icons/enemy_brute_ico.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "enemy_flyer_ico",
+      "path": "res://assets/art/src-svg/icons/enemy_flyer_ico.svg",
+      "source_svg": "res://assets/art/src-svg/icons/enemy_flyer_ico.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "enemy_shielder_ico",
+      "path": "res://assets/art/src-svg/icons/enemy_shielder_ico.svg",
+      "source_svg": "res://assets/art/src-svg/icons/enemy_shielder_ico.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "enemy_healer_ico",
+      "path": "res://assets/art/src-svg/icons/enemy_healer_ico.svg",
+      "source_svg": "res://assets/art/src-svg/icons/enemy_healer_ico.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "enemy_boss_ico",
+      "path": "res://assets/art/src-svg/icons/enemy_boss_ico.svg",
+      "source_svg": "res://assets/art/src-svg/icons/enemy_boss_ico.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_lock",
+      "path": "res://assets/art/src-svg/icons/ico_lock.svg",
+      "source_svg": "res://assets/art/src-svg/icons/ico_lock.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_unlock",
+      "path": "res://assets/art/src-svg/icons/ico_unlock.svg",
+      "source_svg": "res://assets/art/src-svg/icons/ico_unlock.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_star",
+      "path": "res://assets/art/src-svg/icons/ico_star.svg",
+      "source_svg": "res://assets/art/src-svg/icons/ico_star.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_star_empty",
+      "path": "res://assets/art/src-svg/icons/ico_star_empty.svg",
+      "source_svg": "res://assets/art/src-svg/icons/ico_star_empty.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_check",
+      "path": "res://assets/art/src-svg/icons/ico_check.svg",
+      "source_svg": "res://assets/art/src-svg/icons/ico_check.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_cross",
+      "path": "res://assets/art/src-svg/icons/ico_cross.svg",
+      "source_svg": "res://assets/art/src-svg/icons/ico_cross.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_heart",
+      "path": "res://assets/art/src-svg/icons/ico_heart.svg",
+      "source_svg": "res://assets/art/src-svg/icons/ico_heart.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_heart_empty",
+      "path": "res://assets/art/src-svg/icons/ico_heart_empty.svg",
+      "source_svg": "res://assets/art/src-svg/icons/ico_heart_empty.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "combo_fire",
+      "path": "res://assets/art/src-svg/icons/combo_fire.svg",
+      "source_svg": "res://assets/art/src-svg/icons/combo_fire.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "combo_x2",
+      "path": "res://assets/art/src-svg/icons/combo_x2.svg",
+      "source_svg": "res://assets/art/src-svg/icons/combo_x2.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "combo_x3",
+      "path": "res://assets/art/src-svg/icons/combo_x3.svg",
+      "source_svg": "res://assets/art/src-svg/icons/combo_x3.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "streak_perfect",
+      "path": "res://assets/art/src-svg/icons/streak_perfect.svg",
+      "source_svg": "res://assets/art/src-svg/icons/streak_perfect.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
       "id": "tile_grass",
       "path": "res://assets/tiles/tile_grass.png",
       "source_svg": "res://assets/art/src-svg/tiles/tile_grass.svg",
@@ -1551,6 +1731,74 @@
       "max_kb": 8,
       "pixel_art": true,
       "category": "effects"
+    },
+    {
+      "id": "fx_fire_bolt",
+      "path": "res://assets/sprites/fx_fire_bolt.png",
+      "source_svg": "res://assets/art/src-svg/sprites/fx_fire_bolt.svg",
+      "expected_width": 16,
+      "expected_height": 8,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "effects"
+    },
+    {
+      "id": "fx_frost_bolt",
+      "path": "res://assets/sprites/fx_frost_bolt.png",
+      "source_svg": "res://assets/art/src-svg/sprites/fx_frost_bolt.svg",
+      "expected_width": 16,
+      "expected_height": 8,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "effects"
+    },
+    {
+      "id": "fx_impact_burst",
+      "path": "res://assets/sprites/fx_impact_burst.png",
+      "source_svg": "res://assets/art/src-svg/sprites/fx_impact_burst.svg",
+      "expected_width": 48,
+      "expected_height": 16,
+      "max_kb": 12,
+      "pixel_art": true,
+      "category": "effects",
+      "animation": {
+        "frames": 3,
+        "frame_width": 16,
+        "frame_height": 16,
+        "duration_ms": 200
+      }
+    },
+    {
+      "id": "fx_word_complete",
+      "path": "res://assets/sprites/fx_word_complete.png",
+      "source_svg": "res://assets/art/src-svg/sprites/fx_word_complete.svg",
+      "expected_width": 64,
+      "expected_height": 16,
+      "max_kb": 14,
+      "pixel_art": true,
+      "category": "effects",
+      "animation": {
+        "frames": 4,
+        "frame_width": 16,
+        "frame_height": 16,
+        "duration_ms": 300
+      }
+    },
+    {
+      "id": "fx_enemy_death",
+      "path": "res://assets/sprites/fx_enemy_death.png",
+      "source_svg": "res://assets/art/src-svg/sprites/fx_enemy_death.svg",
+      "expected_width": 64,
+      "expected_height": 16,
+      "max_kb": 14,
+      "pixel_art": true,
+      "category": "effects",
+      "animation": {
+        "frames": 4,
+        "frame_width": 16,
+        "frame_height": 16,
+        "duration_ms": 300
+      }
     },
     {
       "id": "ui_panel_bg",

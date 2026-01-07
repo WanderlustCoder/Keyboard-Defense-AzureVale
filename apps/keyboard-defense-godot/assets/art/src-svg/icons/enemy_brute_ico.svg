@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Brute Enemy Icon (16x16) - Heavy armored enemy indicator -->
+
+  <!-- Background circle -->
+  <rect x="2" y="2" width="12" height="12" fill="#4a4a5a"/>
+  <rect x="3" y="1" width="10" height="2" fill="#4a4a5a"/>
+  <rect x="3" y="13" width="10" height="2" fill="#4a4a5a"/>
+  <rect x="1" y="3" width="2" height="10" fill="#4a4a5a"/>
+  <rect x="13" y="3" width="2" height="10" fill="#4a4a5a"/>
+
+  <!-- Inner area -->
+  <rect x="3" y="3" width="10" height="10" fill="#5a5a6a"/>
+
+  <!-- Helmet -->
+  <rect x="5" y="3" width="6" height="4" fill="#1a1a2e"/>
+  <rect x="4" y="4" width="2" height="2" fill="#1a1a2e"/>
+  <rect x="10" y="4" width="2" height="2" fill="#1a1a2e"/>
+
+  <!-- Horns -->
+  <rect x="4" y="2" width="2" height="3" fill="#3a3a4a"/>
+  <rect x="10" y="2" width="2" height="3" fill="#3a3a4a"/>
+
+  <!-- Eyes (glowing) -->
+  <rect x="6" y="5" width="1" height="1" fill="#e74c3c"/>
+  <rect x="9" y="5" width="1" height="1" fill="#e74c3c"/>
+
+  <!-- Body armor -->
+  <rect x="4" y="7" width="8" height="5" fill="#1a1a2e"/>
+  <rect x="5" y="8" width="6" height="3" fill="#2a2a3a"/>
+
+  <!-- Shield hint -->
+  <rect x="3" y="8" width="2" height="4" fill="#922b21"/>
+</svg>

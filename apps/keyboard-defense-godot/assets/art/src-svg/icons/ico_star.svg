@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Star Icon (16x16) - Rating/achievement star -->
+
+  <!-- Star shape using rects (5-pointed approximation) -->
+  <!-- Top point -->
+  <rect x="7" y="0" width="2" height="4" fill="#f4d03f"/>
+
+  <!-- Upper left point -->
+  <rect x="2" y="4" width="4" height="2" fill="#f4d03f"/>
+  <rect x="4" y="3" width="2" height="2" fill="#f4d03f"/>
+
+  <!-- Upper right point -->
+  <rect x="10" y="4" width="4" height="2" fill="#f4d03f"/>
+  <rect x="10" y="3" width="2" height="2" fill="#f4d03f"/>
+
+  <!-- Center body -->
+  <rect x="4" y="5" width="8" height="4" fill="#f4d03f"/>
+  <rect x="5" y="4" width="6" height="2" fill="#f4d03f"/>
+  <rect x="3" y="6" width="10" height="2" fill="#f4d03f"/>
+
+  <!-- Lower left point -->
+  <rect x="2" y="9" width="3" height="2" fill="#f4d03f"/>
+  <rect x="3" y="11" width="2" height="3" fill="#f4d03f"/>
+  <rect x="4" y="13" width="2" height="2" fill="#f4d03f"/>
+
+  <!-- Lower right point -->
+  <rect x="11" y="9" width="3" height="2" fill="#f4d03f"/>
+  <rect x="11" y="11" width="2" height="3" fill="#f4d03f"/>
+  <rect x="10" y="13" width="2" height="2" fill="#f4d03f"/>
+
+  <!-- Bottom center -->
+  <rect x="5" y="9" width="6" height="3" fill="#f4d03f"/>
+  <rect x="6" y="12" width="4" height="2" fill="#f4d03f"/>
+
+  <!-- Highlight -->
+  <rect x="6" y="2" width="1" height="2" fill="#f9e79f"/>
+  <rect x="4" y="5" width="2" height="2" fill="#f9e79f"/>
+</svg>

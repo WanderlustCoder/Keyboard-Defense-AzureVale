@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Lock Icon (16x16) - Locked/unavailable state -->
+
+  <!-- Lock shackle -->
+  <rect x="4" y="2" width="8" height="6" fill="#5a5a6a"/>
+  <rect x="5" y="1" width="6" height="2" fill="#5a5a6a"/>
+  <rect x="6" y="3" width="4" height="3" fill="#1a1a2e"/>
+
+  <!-- Lock body -->
+  <rect x="3" y="7" width="10" height="8" fill="#f4d03f"/>
+  <rect x="4" y="8" width="8" height="6" fill="#d4ac0d"/>
+
+  <!-- Keyhole -->
+  <rect x="7" y="9" width="2" height="2" fill="#1a1a2e"/>
+  <rect x="7" y="11" width="2" height="2" fill="#1a1a2e"/>
+  <rect x="6" y="10" width="1" height="1" fill="#2a2a3a"/>
+  <rect x="9" y="10" width="1" height="1" fill="#2a2a3a"/>
+
+  <!-- Highlight -->
+  <rect x="4" y="8" width="2" height="4" fill="#f9e79f"/>
+</svg>

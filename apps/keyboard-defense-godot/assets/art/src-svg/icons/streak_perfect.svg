@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Perfect Streak Icon (16x16) - 100% accuracy indicator -->
+
+  <!-- Lightning bolt shape -->
+  <!-- Upper bolt -->
+  <rect x="8" y="0" width="4" height="3" fill="#f4d03f"/>
+  <rect x="6" y="2" width="4" height="3" fill="#f4d03f"/>
+  <rect x="4" y="4" width="4" height="3" fill="#f4d03f"/>
+
+  <!-- Middle extension -->
+  <rect x="6" y="6" width="6" height="3" fill="#f4d03f"/>
+  <rect x="8" y="5" width="4" height="2" fill="#f9e79f"/>
+
+  <!-- Lower bolt -->
+  <rect x="8" y="8" width="4" height="3" fill="#f4d03f"/>
+  <rect x="6" y="10" width="4" height="3" fill="#f4d03f"/>
+  <rect x="4" y="12" width="4" height="4" fill="#f4d03f"/>
+
+  <!-- Glow effect -->
+  <rect x="2" y="3" width="2" height="2" fill="#f9e79f"/>
+  <rect x="12" y="7" width="2" height="2" fill="#f9e79f"/>
+  <rect x="2" y="11" width="2" height="2" fill="#f9e79f"/>
+
+  <!-- Sparkles -->
+  <rect x="0" y="5" width="1" height="1" fill="#fff"/>
+  <rect x="14" y="4" width="1" height="1" fill="#fff"/>
+  <rect x="1" y="9" width="1" height="1" fill="#fff"/>
+  <rect x="14" y="11" width="1" height="1" fill="#fff"/>
+
+  <!-- Inner highlight -->
+  <rect x="7" y="3" width="2" height="2" fill="#fef9e7"/>
+  <rect x="7" y="9" width="2" height="2" fill="#fef9e7"/>
+</svg>

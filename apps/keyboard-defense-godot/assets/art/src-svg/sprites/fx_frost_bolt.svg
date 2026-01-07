@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 8" width="16" height="8">
+  <!-- Frost Bolt Projectile (16x8) - Ice tower projectile -->
+
+  <!-- Ice crystal core -->
+  <rect x="2" y="2" width="8" height="4" fill="#3498db"/>
+  <rect x="4" y="1" width="4" height="2" fill="#5dade2"/>
+  <rect x="4" y="5" width="4" height="2" fill="#5dade2"/>
+
+  <!-- Sharp front point -->
+  <rect x="10" y="3" width="4" height="2" fill="#5dade2"/>
+  <rect x="12" y="2" width="2" height="4" fill="#3498db"/>
+  <rect x="14" y="3" width="2" height="2" fill="#85c1e9"/>
+
+  <!-- Trail -->
+  <rect x="0" y="3" width="3" height="2" fill="#aed6f1"/>
+  <rect x="0" y="2" width="2" height="1" fill="#d6eaf8"/>
+  <rect x="0" y="5" width="2" height="1" fill="#d6eaf8"/>
+
+  <!-- Crystal facets -->
+  <rect x="3" y="2" width="2" height="1" fill="#85c1e9"/>
+  <rect x="6" y="3" width="2" height="1" fill="#aed6f1"/>
+
+  <!-- Frost particles -->
+  <rect x="1" y="0" width="1" height="1" fill="#d6eaf8"/>
+  <rect x="3" y="7" width="1" height="1" fill="#d6eaf8"/>
+</svg>
