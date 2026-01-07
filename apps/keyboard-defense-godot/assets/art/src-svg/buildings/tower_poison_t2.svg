@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 32" width="24" height="32">
+  <!-- Poison Tower T2 (24x32) - Toxic Cauldron -->
+  <!-- Enhanced with larger vat and acid drips -->
+
+  <!-- Base/Foundation with toxic puddle -->
+  <rect x="3" y="28" width="18" height="4" fill="#145a32"/>
+  <rect x="2" y="29" width="4" height="3" fill="#1e8449"/>
+  <rect x="3" y="30" width="2" height="2" fill="#27ae60"/>
+  <rect x="18" y="28" width="4" height="4" fill="#1e8449"/>
+  <rect x="19" y="29" width="2" height="3" fill="#27ae60"/>
+
+  <!-- Tower body - toxic stone -->
+  <rect x="5" y="8" width="14" height="20" fill="#145a32"/>
+  <rect x="6" y="9" width="12" height="18" fill="#1e8449"/>
+
+  <!-- Toxic drip channels -->
+  <rect x="5" y="12" width="2" height="10" fill="#27ae60"/>
+  <rect x="6" y="13" width="1" height="8" fill="#2ecc71"/>
+  <rect x="17" y="14" width="2" height="10" fill="#27ae60"/>
+  <rect x="17" y="15" width="1" height="8" fill="#2ecc71"/>
+
+  <!-- Mossy/organic texture enhanced -->
+  <rect x="8" y="12" width="4" height="3" fill="#2ecc71"/>
+  <rect x="12" y="17" width="4" height="3" fill="#2ecc71"/>
+  <rect x="9" y="22" width="4" height="3" fill="#2ecc71"/>
+
+  <!-- Enhanced bubbling vat at top -->
+  <rect x="5" y="2" width="14" height="8" fill="#0b5345"/>
+  <rect x="6" y="3" width="12" height="6" fill="#145a32"/>
+  <rect x="7" y="4" width="10" height="4" fill="#1e8449"/>
+
+  <!-- Intense poison bubbles -->
+  <rect x="8" y="4" width="3" height="3" fill="#58d68d"/>
+  <rect x="9" y="5" width="2" height="2" fill="#82e0aa"/>
+  <rect x="12" y="5" width="4" height="3" fill="#58d68d"/>
+  <rect x="13" y="6" width="2" height="2" fill="#abebc6"/>
+  <rect x="10" y="3" width="2" height="2" fill="#82e0aa"/>
+  <rect x="11" y="2" width="2" height="2" fill="#abebc6"/>
+  <rect x="15" y="4" width="2" height="2" fill="#2ecc71"/>
+  <rect x="16" y="5" width="1" height="1" fill="#d5f5e3"/>
+
+  <!-- Toxic splash particles -->
+  <rect x="7" y="0" width="1" height="2" fill="#58d68d"/>
+  <rect x="10" y="-1" width="1" height="2" fill="#82e0aa"/>
+  <rect x="13" y="0" width="1" height="2" fill="#58d68d"/>
+  <rect x="16" y="1" width="1" height="1" fill="#82e0aa"/>
+
+  <!-- Dripping poison - enhanced -->
+  <rect x="8" y="10" width="2" height="4" fill="#58d68d"/>
+  <rect x="9" y="11" width="1" height="2" fill="#82e0aa"/>
+  <rect x="14" y="10" width="2" height="3" fill="#58d68d"/>
+  <rect x="15" y="11" width="1" height="2" fill="#abebc6"/>
+
+  <!-- Window with toxic glow -->
+  <rect x="9" y="15" width="6" height="7" fill="#052e16"/>
+  <rect x="10" y="16" width="4" height="5" fill="#1e8449"/>
+  <rect x="11" y="17" width="2" height="3" fill="#58d68d"/>
+  <rect x="11" y="18" width="1" height="1" fill="#82e0aa"/>
+</svg>

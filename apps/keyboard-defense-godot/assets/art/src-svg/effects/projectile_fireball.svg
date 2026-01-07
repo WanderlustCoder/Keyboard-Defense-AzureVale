@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 12" width="48" height="12">
+  <!-- Fireball Projectile (48x12) - 4 frames of 12x12, blazing sphere -->
+  <!-- Color Palette: #d35400, #e67e22, #f39c12, #f4d03f -->
+
+  <!-- FRAME 1 - Fireball base -->
+  <rect x="3" y="3" width="6" height="6" fill="#d35400"/>
+  <rect x="4" y="4" width="4" height="4" fill="#e67e22"/>
+  <rect x="5" y="5" width="2" height="2" fill="#f39c12"/>
+  <!-- Flame trail -->
+  <rect x="0" y="4" width="3" height="2" fill="#e67e22"/>
+  <rect x="1" y="5" width="2" height="1" fill="#f39c12"/>
+  <rect x="0" y="6" width="2" height="2" fill="#d35400"/>
+  <!-- Sparks -->
+  <rect x="9" y="2" width="1" height="1" fill="#f4d03f"/>
+  <rect x="8" y="8" width="1" height="1" fill="#f4d03f"/>
+
+  <!-- FRAME 2 - Fireball pulse -->
+  <rect x="14" y="2" width="8" height="8" fill="#d35400"/>
+  <rect x="15" y="3" width="6" height="6" fill="#e67e22"/>
+  <rect x="16" y="4" width="4" height="4" fill="#f39c12"/>
+  <rect x="17" y="5" width="2" height="2" fill="#f4d03f"/>
+  <!-- Flame trail bigger -->
+  <rect x="12" y="4" width="3" height="3" fill="#e67e22"/>
+  <rect x="13" y="5" width="2" height="2" fill="#f39c12"/>
+  <rect x="12" y="7" width="2" height="2" fill="#d35400"/>
+  <!-- Sparks -->
+  <rect x="22" y="2" width="1" height="1" fill="#f9e79f"/>
+  <rect x="21" y="9" width="1" height="1" fill="#f4d03f"/>
+  <rect x="20" y="1" width="1" height="1" fill="#f4d03f"/>
+
+  <!-- FRAME 3 - Fireball intense -->
+  <rect x="26" y="2" width="8" height="8" fill="#c0392b"/>
+  <rect x="27" y="3" width="6" height="6" fill="#d35400"/>
+  <rect x="28" y="4" width="4" height="4" fill="#e67e22"/>
+  <rect x="29" y="5" width="2" height="2" fill="#f39c12"/>
+  <rect x="29" y="5" width="1" height="1" fill="#f4d03f"/>
+  <!-- Trail -->
+  <rect x="24" y="4" width="3" height="4" fill="#d35400"/>
+  <rect x="25" y="5" width="2" height="2" fill="#e67e22"/>
+  <!-- Sparks scattered -->
+  <rect x="34" y="1" width="1" height="1" fill="#f4d03f"/>
+  <rect x="33" y="3" width="1" height="1" fill="#f9e79f"/>
+  <rect x="34" y="9" width="1" height="1" fill="#f4d03f"/>
+  <rect x="24" y="3" width="1" height="1" fill="#e67e22"/>
+
+  <!-- FRAME 4 - Fireball explosion -->
+  <rect x="37" y="1" width="10" height="10" fill="#d35400"/>
+  <rect x="38" y="2" width="8" height="8" fill="#e67e22"/>
+  <rect x="39" y="3" width="6" height="6" fill="#f39c12"/>
+  <rect x="40" y="4" width="4" height="4" fill="#f4d03f"/>
+  <rect x="41" y="5" width="2" height="2" fill="#f9e79f"/>
+  <!-- Explosion sparks -->
+  <rect x="36" y="0" width="1" height="1" fill="#f4d03f"/>
+  <rect x="47" y="0" width="1" height="1" fill="#f4d03f"/>
+  <rect x="36" y="10" width="1" height="1" fill="#e67e22"/>
+  <rect x="47" y="11" width="1" height="1" fill="#f39c12"/>
+</svg>

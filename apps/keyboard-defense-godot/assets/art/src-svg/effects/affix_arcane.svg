@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 16" width="96" height="16">
+  <!-- Arcane Affix Overlay (96x16) - 6 frames of 16x16, runic symbols rotating -->
+  <!-- Color Palette: #9b59b6, #d2b4de, #f5eef8 -->
+
+  <!-- FRAME 1 - Runes at top -->
+  <!-- Top rune -->
+  <rect x="6" y="1" width="4" height="1" fill="#9b59b6"/>
+  <rect x="7" y="2" width="2" height="2" fill="#d2b4de"/>
+  <rect x="8" y="1" width="1" height="1" fill="#f5eef8"/>
+
+  <!-- Side particles -->
+  <rect x="2" y="6" width="1" height="1" fill="#d2b4de"/>
+  <rect x="13" y="8" width="1" height="1" fill="#d2b4de"/>
+  <rect x="7" y="13" width="2" height="1" fill="#9b59b6"/>
+
+  <!-- FRAME 2 - Runes rotating right -->
+  <rect x="27" y="3" width="1" height="4" fill="#9b59b6"/>
+  <rect x="28" y="4" width="2" height="2" fill="#d2b4de"/>
+  <rect x="29" y="5" width="1" height="1" fill="#f5eef8"/>
+
+  <!-- Right rune appearing -->
+  <rect x="28" y="6" width="1" height="1" fill="#9b59b6"/>
+  <rect x="17" y="7" width="1" height="1" fill="#d2b4de"/>
+  <rect x="23" y="12" width="2" height="1" fill="#9b59b6"/>
+
+  <!-- FRAME 3 - Runes at right side -->
+  <rect x="44" y="5" width="4" height="1" fill="#9b59b6"/>
+  <rect x="44" y="6" width="2" height="2" fill="#d2b4de"/>
+  <rect x="45" y="6" width="1" height="1" fill="#f5eef8"/>
+
+  <!-- Opposite particles -->
+  <rect x="33" y="4" width="1" height="1" fill="#d2b4de"/>
+  <rect x="34" y="10" width="1" height="1" fill="#9b59b6"/>
+  <rect x="40" y="8" width="1" height="1" fill="#d2b4de"/>
+
+  <!-- FRAME 4 - Runes at bottom -->
+  <rect x="54" y="11" width="4" height="1" fill="#9b59b6"/>
+  <rect x="55" y="10" width="2" height="2" fill="#d2b4de"/>
+  <rect x="56" y="11" width="1" height="1" fill="#f5eef8"/>
+
+  <!-- Top particles -->
+  <rect x="56" y="2" width="2" height="1" fill="#9b59b6"/>
+  <rect x="50" y="5" width="1" height="1" fill="#d2b4de"/>
+  <rect x="61" y="7" width="1" height="1" fill="#d2b4de"/>
+
+  <!-- FRAME 5 - Runes at left -->
+  <rect x="65" y="5" width="1" height="4" fill="#9b59b6"/>
+  <rect x="66" y="6" width="2" height="2" fill="#d2b4de"/>
+  <rect x="66" y="7" width="1" height="1" fill="#f5eef8"/>
+
+  <!-- Right particles -->
+  <rect x="77" y="6" width="1" height="1" fill="#d2b4de"/>
+  <rect x="72" y="3" width="1" height="1" fill="#9b59b6"/>
+  <rect x="71" y="11" width="2" height="1" fill="#d2b4de"/>
+
+  <!-- FRAME 6 - Back to top (bright) -->
+  <rect x="86" y="1" width="4" height="1" fill="#d2b4de"/>
+  <rect x="87" y="2" width="2" height="2" fill="#f5eef8"/>
+  <rect x="88" y="1" width="1" height="1" fill="#fdfefe"/>
+
+  <!-- All particles visible -->
+  <rect x="82" y="6" width="1" height="1" fill="#9b59b6"/>
+  <rect x="93" y="8" width="1" height="1" fill="#9b59b6"/>
+  <rect x="87" y="13" width="2" height="1" fill="#d2b4de"/>
+  <rect x="84" y="4" width="1" height="1" fill="#d2b4de"/>
+  <rect x="91" y="5" width="1" height="1" fill="#d2b4de"/>
+</svg>

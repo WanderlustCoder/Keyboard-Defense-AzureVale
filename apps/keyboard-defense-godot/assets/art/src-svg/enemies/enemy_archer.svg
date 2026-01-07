@@ -1,0 +1,151 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 24" width="64" height="24">
+  <!-- Archer Enemy (64x24) - 4 frames of 16x24, ranged attacker -->
+  <!-- Color Palette: #1e8449 (forest green), #27ae60 (green), #d5f5e3 (light), #6e2c00 (brown) -->
+
+  <!-- FRAME 1: Idle with bow ready -->
+  <!-- Shadow -->
+  <rect x="3" y="22" width="10" height="2" fill="#1a252f"/>
+
+  <!-- Legs -->
+  <rect x="5" y="17" width="3" height="5" fill="#1e8449"/>
+  <rect x="8" y="17" width="3" height="5" fill="#1e8449"/>
+  <rect x="4" y="20" width="4" height="2" fill="#5d4e37"/>
+  <rect x="8" y="20" width="4" height="2" fill="#5d4e37"/>
+
+  <!-- Cloak/body -->
+  <rect x="4" y="9" width="8" height="8" fill="#1e8449"/>
+  <rect x="5" y="10" width="6" height="6" fill="#27ae60"/>
+
+  <!-- Quiver on back -->
+  <rect x="11" y="8" width="2" height="6" fill="#6e2c00"/>
+  <rect x="12" y="7" width="1" height="1" fill="#d5f5e3"/>
+  <rect x="12" y="8" width="1" height="1" fill="#d5f5e3"/>
+
+  <!-- Hood -->
+  <rect x="4" y="3" width="8" height="7" fill="#1e8449"/>
+  <rect x="5" y="4" width="6" height="5" fill="#27ae60"/>
+
+  <!-- Face in hood -->
+  <rect x="6" y="5" width="4" height="3" fill="#f5cba7"/>
+  <rect x="7" y="6" width="1" height="1" fill="#1a252f"/>
+  <rect x="8" y="6" width="1" height="1" fill="#1a252f"/>
+
+  <!-- Bow -->
+  <rect x="1" y="6" width="1" height="10" fill="#6e2c00"/>
+  <rect x="0" y="7" width="1" height="1" fill="#6e2c00"/>
+  <rect x="0" y="14" width="1" height="1" fill="#6e2c00"/>
+  <!-- Bowstring -->
+  <rect x="2" y="7" width="1" height="8" fill="#f4d03f"/>
+
+  <!-- Arms -->
+  <rect x="2" y="10" width="2" height="4" fill="#27ae60"/>
+
+  <!-- FRAME 2: Drawing bow -->
+  <!-- Shadow -->
+  <rect x="19" y="22" width="10" height="2" fill="#1a252f"/>
+
+  <!-- Legs (stance) -->
+  <rect x="20" y="17" width="3" height="5" fill="#1e8449"/>
+  <rect x="25" y="17" width="3" height="5" fill="#1e8449"/>
+  <rect x="19" y="20" width="4" height="2" fill="#5d4e37"/>
+  <rect x="25" y="20" width="4" height="2" fill="#5d4e37"/>
+
+  <!-- Body turning -->
+  <rect x="20" y="9" width="8" height="8" fill="#1e8449"/>
+  <rect x="21" y="10" width="6" height="6" fill="#27ae60"/>
+
+  <!-- Quiver -->
+  <rect x="27" y="8" width="2" height="6" fill="#6e2c00"/>
+  <rect x="28" y="7" width="1" height="1" fill="#d5f5e3"/>
+
+  <!-- Hood -->
+  <rect x="20" y="3" width="8" height="7" fill="#1e8449"/>
+  <rect x="21" y="4" width="6" height="5" fill="#27ae60"/>
+  <rect x="22" y="5" width="4" height="3" fill="#f5cba7"/>
+  <rect x="23" y="6" width="1" height="1" fill="#1a252f"/>
+  <rect x="24" y="6" width="1" height="1" fill="#1a252f"/>
+
+  <!-- Bow drawn back -->
+  <rect x="17" y="6" width="1" height="10" fill="#6e2c00"/>
+  <rect x="16" y="7" width="1" height="1" fill="#6e2c00"/>
+  <rect x="16" y="14" width="1" height="1" fill="#6e2c00"/>
+  <!-- Pulled string -->
+  <rect x="18" y="7" width="1" height="1" fill="#f4d03f"/>
+  <rect x="19" y="8" width="1" height="1" fill="#f4d03f"/>
+  <rect x="20" y="9" width="1" height="4" fill="#f4d03f"/>
+  <rect x="19" y="13" width="1" height="1" fill="#f4d03f"/>
+  <rect x="18" y="14" width="1" height="1" fill="#f4d03f"/>
+
+  <!-- Arrow nocked -->
+  <rect x="20" y="10" width="6" height="1" fill="#6e2c00"/>
+  <rect x="26" y="10" width="2" height="1" fill="#5d6d7e"/>
+
+  <!-- FRAME 3: Release -->
+  <!-- Shadow -->
+  <rect x="35" y="22" width="10" height="2" fill="#1a252f"/>
+
+  <!-- Legs -->
+  <rect x="37" y="17" width="3" height="5" fill="#1e8449"/>
+  <rect x="40" y="17" width="3" height="5" fill="#1e8449"/>
+  <rect x="36" y="20" width="4" height="2" fill="#5d4e37"/>
+  <rect x="40" y="20" width="4" height="2" fill="#5d4e37"/>
+
+  <!-- Body -->
+  <rect x="36" y="9" width="8" height="8" fill="#1e8449"/>
+  <rect x="37" y="10" width="6" height="6" fill="#27ae60"/>
+
+  <!-- Quiver -->
+  <rect x="43" y="8" width="2" height="6" fill="#6e2c00"/>
+
+  <!-- Hood -->
+  <rect x="36" y="3" width="8" height="7" fill="#1e8449"/>
+  <rect x="37" y="4" width="6" height="5" fill="#27ae60"/>
+  <rect x="38" y="5" width="4" height="3" fill="#f5cba7"/>
+  <rect x="39" y="6" width="1" height="1" fill="#1a252f"/>
+  <rect x="40" y="6" width="1" height="1" fill="#1a252f"/>
+
+  <!-- Bow (string snapped back) -->
+  <rect x="33" y="6" width="1" height="10" fill="#6e2c00"/>
+  <rect x="32" y="7" width="1" height="1" fill="#6e2c00"/>
+  <rect x="32" y="14" width="1" height="1" fill="#6e2c00"/>
+  <!-- String vibrating -->
+  <rect x="34" y="8" width="1" height="6" fill="#f4d03f"/>
+
+  <!-- Arrow flying away (partial) -->
+  <rect x="45" y="10" width="3" height="1" fill="#6e2c00"/>
+  <rect x="48" y="10" width="2" height="1" fill="#5d6d7e"/>
+
+  <!-- FRAME 4: Reload -->
+  <!-- Shadow -->
+  <rect x="51" y="22" width="10" height="2" fill="#1a252f"/>
+
+  <!-- Legs -->
+  <rect x="53" y="17" width="3" height="5" fill="#1e8449"/>
+  <rect x="56" y="17" width="3" height="5" fill="#1e8449"/>
+  <rect x="52" y="20" width="4" height="2" fill="#5d4e37"/>
+  <rect x="56" y="20" width="4" height="2" fill="#5d4e37"/>
+
+  <!-- Body -->
+  <rect x="52" y="9" width="8" height="8" fill="#1e8449"/>
+  <rect x="53" y="10" width="6" height="6" fill="#27ae60"/>
+
+  <!-- Reaching for quiver -->
+  <rect x="59" y="9" width="2" height="5" fill="#27ae60"/>
+
+  <!-- Quiver (arrow being drawn) -->
+  <rect x="60" y="6" width="2" height="6" fill="#6e2c00"/>
+  <rect x="61" y="5" width="1" height="2" fill="#d5f5e3"/>
+
+  <!-- Hood -->
+  <rect x="52" y="3" width="8" height="7" fill="#1e8449"/>
+  <rect x="53" y="4" width="6" height="5" fill="#27ae60"/>
+  <rect x="54" y="5" width="4" height="3" fill="#f5cba7"/>
+  <rect x="55" y="6" width="1" height="1" fill="#1a252f"/>
+  <rect x="56" y="6" width="1" height="1" fill="#1a252f"/>
+
+  <!-- Bow lowered -->
+  <rect x="50" y="10" width="1" height="8" fill="#6e2c00"/>
+  <rect x="49" y="11" width="1" height="1" fill="#6e2c00"/>
+  <rect x="49" y="16" width="1" height="1" fill="#6e2c00"/>
+  <rect x="51" y="11" width="1" height="6" fill="#f4d03f"/>
+</svg>

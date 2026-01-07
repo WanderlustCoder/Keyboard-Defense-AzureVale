@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 16" width="64" height="16">
+  <!-- Blazing Affix Overlay (64x16) - 4 frames of 16x16, fire particles rising -->
+  <!-- Color Palette: #e74c3c, #f39c12, #f4d03f -->
+
+  <!-- FRAME 1 -->
+  <!-- Fire particles rising from enemy -->
+  <rect x="2" y="12" width="2" height="3" fill="#e74c3c"/>
+  <rect x="3" y="10" width="2" height="3" fill="#f39c12"/>
+  <rect x="4" y="8" width="1" height="2" fill="#f4d03f"/>
+
+  <rect x="7" y="11" width="2" height="4" fill="#e74c3c"/>
+  <rect x="8" y="9" width="2" height="3" fill="#f39c12"/>
+  <rect x="9" y="7" width="1" height="2" fill="#f4d03f"/>
+
+  <rect x="12" y="13" width="2" height="2" fill="#e74c3c"/>
+  <rect x="13" y="11" width="1" height="3" fill="#f39c12"/>
+  <rect x="13" y="9" width="1" height="2" fill="#f4d03f"/>
+
+  <!-- Ember sparkles -->
+  <rect x="5" y="5" width="1" height="1" fill="#f4d03f"/>
+  <rect x="10" y="4" width="1" height="1" fill="#f39c12"/>
+
+  <!-- FRAME 2 -->
+  <rect x="18" y="11" width="2" height="4" fill="#e74c3c"/>
+  <rect x="19" y="9" width="2" height="3" fill="#f39c12"/>
+  <rect x="20" y="6" width="1" height="3" fill="#f4d03f"/>
+
+  <rect x="23" y="12" width="2" height="3" fill="#e74c3c"/>
+  <rect x="24" y="10" width="2" height="3" fill="#f39c12"/>
+  <rect x="25" y="8" width="1" height="2" fill="#f4d03f"/>
+
+  <rect x="28" y="10" width="2" height="5" fill="#e74c3c"/>
+  <rect x="29" y="8" width="1" height="3" fill="#f39c12"/>
+  <rect x="29" y="5" width="1" height="3" fill="#f4d03f"/>
+
+  <!-- Embers moved -->
+  <rect x="21" y="3" width="1" height="1" fill="#f4d03f"/>
+  <rect x="26" y="5" width="1" height="1" fill="#f39c12"/>
+  <rect x="17" y="6" width="1" height="1" fill="#e74c3c"/>
+
+  <!-- FRAME 3 -->
+  <rect x="34" y="10" width="2" height="5" fill="#e74c3c"/>
+  <rect x="35" y="8" width="2" height="3" fill="#f39c12"/>
+  <rect x="36" y="5" width="1" height="3" fill="#f4d03f"/>
+
+  <rect x="39" y="11" width="2" height="4" fill="#e74c3c"/>
+  <rect x="40" y="9" width="2" height="3" fill="#f39c12"/>
+  <rect x="41" y="6" width="1" height="3" fill="#f4d03f"/>
+
+  <rect x="44" y="12" width="2" height="3" fill="#e74c3c"/>
+  <rect x="45" y="10" width="1" height="3" fill="#f39c12"/>
+  <rect x="45" y="7" width="1" height="3" fill="#f4d03f"/>
+
+  <!-- Embers -->
+  <rect x="37" y="2" width="1" height="1" fill="#f4d03f"/>
+  <rect x="42" y="3" width="1" height="1" fill="#f39c12"/>
+  <rect x="33" y="4" width="1" height="1" fill="#f4d03f"/>
+
+  <!-- FRAME 4 -->
+  <rect x="50" y="11" width="2" height="4" fill="#e74c3c"/>
+  <rect x="51" y="9" width="2" height="3" fill="#f39c12"/>
+  <rect x="52" y="7" width="1" height="2" fill="#f4d03f"/>
+
+  <rect x="55" y="10" width="2" height="5" fill="#e74c3c"/>
+  <rect x="56" y="8" width="2" height="3" fill="#f39c12"/>
+  <rect x="57" y="5" width="1" height="3" fill="#f4d03f"/>
+
+  <rect x="60" y="12" width="2" height="3" fill="#e74c3c"/>
+  <rect x="61" y="10" width="1" height="3" fill="#f39c12"/>
+  <rect x="61" y="8" width="1" height="2" fill="#f4d03f"/>
+
+  <!-- Embers high -->
+  <rect x="53" y="1" width="1" height="1" fill="#f4d03f"/>
+  <rect x="58" y="2" width="1" height="1" fill="#f39c12"/>
+  <rect x="49" y="3" width="1" height="1" fill="#e74c3c"/>
+  <rect x="62" y="4" width="1" height="1" fill="#f4d03f"/>
+</svg>

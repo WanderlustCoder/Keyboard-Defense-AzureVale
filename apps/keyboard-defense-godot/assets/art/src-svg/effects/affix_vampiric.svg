@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 16" width="64" height="16">
+  <!-- Vampiric Affix Overlay (64x16) - 4 frames of 16x16, blood droplets orbiting -->
+  <!-- Color Palette: #922b21, #c0392b, #f5b7b1 -->
+
+  <!-- FRAME 1 - Droplets at positions 12, 3, 6, 9 o'clock -->
+  <!-- 12 o'clock -->
+  <rect x="7" y="1" width="2" height="3" fill="#922b21"/>
+  <rect x="7" y="2" width="2" height="2" fill="#c0392b"/>
+  <rect x="8" y="2" width="1" height="1" fill="#f5b7b1"/>
+
+  <!-- 3 o'clock -->
+  <rect x="12" y="6" width="3" height="2" fill="#922b21"/>
+  <rect x="13" y="6" width="2" height="2" fill="#c0392b"/>
+  <rect x="13" y="7" width="1" height="1" fill="#f5b7b1"/>
+
+  <!-- 6 o'clock -->
+  <rect x="7" y="12" width="2" height="3" fill="#922b21"/>
+  <rect x="7" y="12" width="2" height="2" fill="#c0392b"/>
+  <rect x="7" y="12" width="1" height="1" fill="#f5b7b1"/>
+
+  <!-- 9 o'clock -->
+  <rect x="1" y="6" width="3" height="2" fill="#922b21"/>
+  <rect x="1" y="6" width="2" height="2" fill="#c0392b"/>
+  <rect x="2" y="6" width="1" height="1" fill="#f5b7b1"/>
+
+  <!-- FRAME 2 - Rotated 45 degrees -->
+  <!-- NE -->
+  <rect x="27" y="2" width="2" height="2" fill="#922b21"/>
+  <rect x="27" y="2" width="2" height="2" fill="#c0392b"/>
+  <rect x="28" y="2" width="1" height="1" fill="#f5b7b1"/>
+
+  <!-- SE -->
+  <rect x="27" y="11" width="2" height="3" fill="#922b21"/>
+  <rect x="27" y="12" width="2" height="2" fill="#c0392b"/>
+  <rect x="28" y="12" width="1" height="1" fill="#f5b7b1"/>
+
+  <!-- SW -->
+  <rect x="19" y="11" width="2" height="3" fill="#922b21"/>
+  <rect x="19" y="12" width="2" height="2" fill="#c0392b"/>
+  <rect x="19" y="12" width="1" height="1" fill="#f5b7b1"/>
+
+  <!-- NW -->
+  <rect x="19" y="2" width="2" height="2" fill="#922b21"/>
+  <rect x="19" y="2" width="2" height="2" fill="#c0392b"/>
+  <rect x="19" y="2" width="1" height="1" fill="#f5b7b1"/>
+
+  <!-- Blood trail -->
+  <rect x="24" y="7" width="1" height="1" fill="#922b21"/>
+
+  <!-- FRAME 3 - Back to cardinal positions (opposite) -->
+  <!-- 12 -->
+  <rect x="39" y="1" width="2" height="3" fill="#c0392b"/>
+  <rect x="39" y="2" width="2" height="2" fill="#922b21"/>
+  <rect x="40" y="2" width="1" height="1" fill="#f5b7b1"/>
+
+  <!-- 3 -->
+  <rect x="44" y="6" width="3" height="2" fill="#c0392b"/>
+  <rect x="45" y="6" width="2" height="2" fill="#922b21"/>
+  <rect x="45" y="7" width="1" height="1" fill="#f5b7b1"/>
+
+  <!-- 6 -->
+  <rect x="39" y="12" width="2" height="3" fill="#c0392b"/>
+  <rect x="39" y="12" width="2" height="2" fill="#922b21"/>
+  <rect x="39" y="12" width="1" height="1" fill="#f5b7b1"/>
+
+  <!-- 9 -->
+  <rect x="33" y="6" width="3" height="2" fill="#c0392b"/>
+  <rect x="33" y="6" width="2" height="2" fill="#922b21"/>
+  <rect x="34" y="6" width="1" height="1" fill="#f5b7b1"/>
+
+  <!-- FRAME 4 - Diagonal again -->
+  <!-- NE -->
+  <rect x="59" y="2" width="2" height="2" fill="#922b21"/>
+  <rect x="59" y="2" width="2" height="2" fill="#c0392b"/>
+  <rect x="60" y="2" width="1" height="1" fill="#f5b7b1"/>
+
+  <!-- SE -->
+  <rect x="59" y="11" width="2" height="3" fill="#922b21"/>
+  <rect x="59" y="12" width="2" height="2" fill="#c0392b"/>
+  <rect x="60" y="12" width="1" height="1" fill="#f5b7b1"/>
+
+  <!-- SW -->
+  <rect x="51" y="11" width="2" height="3" fill="#922b21"/>
+  <rect x="51" y="12" width="2" height="2" fill="#c0392b"/>
+  <rect x="51" y="12" width="1" height="1" fill="#f5b7b1"/>
+
+  <!-- NW -->
+  <rect x="51" y="2" width="2" height="2" fill="#922b21"/>
+  <rect x="51" y="2" width="2" height="2" fill="#c0392b"/>
+  <rect x="51" y="2" width="1" height="1" fill="#f5b7b1"/>
+
+  <!-- Blood drip -->
+  <rect x="56" y="8" width="1" height="2" fill="#922b21"/>
+  <rect x="56" y="10" width="1" height="1" fill="#c0392b"/>
+</svg>

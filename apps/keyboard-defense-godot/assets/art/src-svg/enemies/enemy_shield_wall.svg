@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 24" width="64" height="24">
+  <!-- Shield Wall Enemy (64x24) - 4 frames of 16x24, heavy tank with shield -->
+  <!-- Color Palette: #5d6d7e (steel), #85929e (light steel), #2c3e50 (dark), #f4d03f (gold trim) -->
+
+  <!-- FRAME 1: Defensive stance -->
+  <!-- Shadow -->
+  <rect x="2" y="22" width="12" height="2" fill="#1a252f"/>
+
+  <!-- Heavy boots -->
+  <rect x="4" y="19" width="4" height="3" fill="#2c3e50"/>
+  <rect x="8" y="19" width="4" height="3" fill="#2c3e50"/>
+
+  <!-- Leg armor -->
+  <rect x="4" y="14" width="4" height="5" fill="#5d6d7e"/>
+  <rect x="8" y="14" width="4" height="5" fill="#5d6d7e"/>
+  <rect x="5" y="15" width="2" height="3" fill="#85929e"/>
+  <rect x="9" y="15" width="2" height="3" fill="#85929e"/>
+
+  <!-- Body armor -->
+  <rect x="3" y="7" width="10" height="7" fill="#5d6d7e"/>
+  <rect x="4" y="8" width="8" height="5" fill="#85929e"/>
+  <rect x="6" y="9" width="4" height="3" fill="#5d6d7e"/>
+
+  <!-- Helmet -->
+  <rect x="4" y="2" width="8" height="6" fill="#5d6d7e"/>
+  <rect x="5" y="3" width="6" height="4" fill="#85929e"/>
+  <!-- Visor -->
+  <rect x="5" y="4" width="6" height="2" fill="#2c3e50"/>
+  <!-- Eyes through visor -->
+  <rect x="6" y="5" width="1" height="1" fill="#e74c3c"/>
+  <rect x="9" y="5" width="1" height="1" fill="#e74c3c"/>
+  <!-- Plume -->
+  <rect x="7" y="0" width="2" height="2" fill="#c0392b"/>
+
+  <!-- Massive tower shield -->
+  <rect x="0" y="4" width="4" height="14" fill="#5d6d7e"/>
+  <rect x="1" y="5" width="2" height="12" fill="#85929e"/>
+  <!-- Gold trim -->
+  <rect x="0" y="4" width="4" height="1" fill="#f4d03f"/>
+  <rect x="0" y="17" width="4" height="1" fill="#f4d03f"/>
+  <rect x="0" y="10" width="4" height="1" fill="#f4d03f"/>
+
+  <!-- FRAME 2: Walking (heavy trudge) -->
+  <!-- Shadow -->
+  <rect x="18" y="22" width="12" height="2" fill="#1a252f"/>
+
+  <!-- Legs (one forward) -->
+  <rect x="19" y="18" width="4" height="4" fill="#2c3e50"/>
+  <rect x="25" y="19" width="4" height="3" fill="#2c3e50"/>
+  <rect x="19" y="13" width="4" height="5" fill="#5d6d7e"/>
+  <rect x="25" y="14" width="4" height="5" fill="#5d6d7e"/>
+  <rect x="20" y="14" width="2" height="3" fill="#85929e"/>
+  <rect x="26" y="15" width="2" height="3" fill="#85929e"/>
+
+  <!-- Body -->
+  <rect x="19" y="6" width="10" height="7" fill="#5d6d7e"/>
+  <rect x="20" y="7" width="8" height="5" fill="#85929e"/>
+  <rect x="22" y="8" width="4" height="3" fill="#5d6d7e"/>
+
+  <!-- Helmet -->
+  <rect x="20" y="1" width="8" height="6" fill="#5d6d7e"/>
+  <rect x="21" y="2" width="6" height="4" fill="#85929e"/>
+  <rect x="21" y="3" width="6" height="2" fill="#2c3e50"/>
+  <rect x="22" y="4" width="1" height="1" fill="#e74c3c"/>
+  <rect x="25" y="4" width="1" height="1" fill="#e74c3c"/>
+  <rect x="23" y="0" width="2" height="1" fill="#c0392b"/>
+
+  <!-- Shield (slightly angled) -->
+  <rect x="16" y="3" width="4" height="14" fill="#5d6d7e"/>
+  <rect x="17" y="4" width="2" height="12" fill="#85929e"/>
+  <rect x="16" y="3" width="4" height="1" fill="#f4d03f"/>
+  <rect x="16" y="16" width="4" height="1" fill="#f4d03f"/>
+  <rect x="16" y="9" width="4" height="1" fill="#f4d03f"/>
+
+  <!-- FRAME 3: Shield block (reactive) -->
+  <!-- Shadow -->
+  <rect x="34" y="22" width="12" height="2" fill="#1a252f"/>
+
+  <!-- Legs braced -->
+  <rect x="37" y="18" width="4" height="4" fill="#2c3e50"/>
+  <rect x="41" y="18" width="4" height="4" fill="#2c3e50"/>
+  <rect x="37" y="13" width="4" height="5" fill="#5d6d7e"/>
+  <rect x="41" y="13" width="4" height="5" fill="#5d6d7e"/>
+
+  <!-- Body leaning into shield -->
+  <rect x="35" y="6" width="10" height="7" fill="#5d6d7e"/>
+  <rect x="36" y="7" width="8" height="5" fill="#85929e"/>
+
+  <!-- Helmet -->
+  <rect x="36" y="1" width="8" height="6" fill="#5d6d7e"/>
+  <rect x="37" y="2" width="6" height="4" fill="#85929e"/>
+  <rect x="37" y="3" width="6" height="2" fill="#2c3e50"/>
+  <rect x="38" y="4" width="1" height="1" fill="#e74c3c"/>
+  <rect x="41" y="4" width="1" height="1" fill="#e74c3c"/>
+
+  <!-- Shield raised (blocking) - glowing on impact -->
+  <rect x="32" y="2" width="5" height="16" fill="#5d6d7e"/>
+  <rect x="33" y="3" width="3" height="14" fill="#85929e"/>
+  <!-- Impact glow -->
+  <rect x="32" y="2" width="5" height="1" fill="#fdfefe"/>
+  <rect x="32" y="17" width="5" height="1" fill="#f4d03f"/>
+  <rect x="32" y="9" width="5" height="1" fill="#f4d03f"/>
+  <!-- Flash effect -->
+  <rect x="31" y="6" width="1" height="6" fill="#aed6f1"/>
+
+  <!-- FRAME 4: Shield cracked (low HP) -->
+  <!-- Shadow -->
+  <rect x="50" y="22" width="12" height="2" fill="#1a252f"/>
+
+  <!-- Legs staggering -->
+  <rect x="52" y="18" width="4" height="4" fill="#2c3e50"/>
+  <rect x="57" y="19" width="4" height="3" fill="#2c3e50"/>
+  <rect x="52" y="13" width="4" height="5" fill="#5d6d7e"/>
+  <rect x="57" y="14" width="4" height="5" fill="#5d6d7e"/>
+
+  <!-- Body -->
+  <rect x="51" y="6" width="10" height="7" fill="#5d6d7e"/>
+  <rect x="52" y="7" width="8" height="5" fill="#85929e"/>
+
+  <!-- Damaged helmet -->
+  <rect x="52" y="1" width="8" height="6" fill="#5d6d7e"/>
+  <rect x="53" y="2" width="6" height="4" fill="#85929e"/>
+  <rect x="53" y="3" width="6" height="2" fill="#2c3e50"/>
+  <rect x="54" y="4" width="1" height="1" fill="#e74c3c"/>
+  <rect x="57" y="4" width="1" height="1" fill="#e74c3c"/>
+  <!-- Helmet damage -->
+  <rect x="58" y="2" width="1" height="2" fill="#34495e"/>
+
+  <!-- Cracked shield -->
+  <rect x="48" y="3" width="4" height="14" fill="#5d6d7e"/>
+  <rect x="49" y="4" width="2" height="12" fill="#85929e"/>
+  <!-- Cracks -->
+  <rect x="48" y="6" width="1" height="3" fill="#34495e"/>
+  <rect x="49" y="8" width="1" height="2" fill="#34495e"/>
+  <rect x="50" y="10" width="1" height="2" fill="#34495e"/>
+  <rect x="48" y="12" width="2" height="1" fill="#34495e"/>
+  <!-- Damaged trim -->
+  <rect x="48" y="3" width="4" height="1" fill="#d4ac0d"/>
+  <rect x="48" y="16" width="4" height="1" fill="#d4ac0d"/>
+</svg>

@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 8" width="48" height="8">
+  <!-- Arrow Projectile (48x8) - 4 frames of 12x8, flying arrow -->
+  <!-- Color Palette: #5d4e37 (shaft), #7f8c8d (head), #a0522d (fletching) -->
+
+  <!-- FRAME 1 - Arrow flying straight -->
+  <!-- Shaft -->
+  <rect x="2" y="3" width="8" height="2" fill="#a0522d"/>
+  <rect x="3" y="3" width="6" height="1" fill="#c4a35a"/>
+  <!-- Arrowhead -->
+  <rect x="10" y="2" width="2" height="4" fill="#7f8c8d"/>
+  <rect x="11" y="3" width="1" height="2" fill="#95a5a6"/>
+  <!-- Fletching -->
+  <rect x="0" y="1" width="2" height="2" fill="#8b4513"/>
+  <rect x="0" y="5" width="2" height="2" fill="#8b4513"/>
+
+  <!-- FRAME 2 - Arrow with motion blur -->
+  <rect x="14" y="3" width="8" height="2" fill="#a0522d"/>
+  <rect x="15" y="3" width="6" height="1" fill="#c4a35a"/>
+  <rect x="22" y="2" width="2" height="4" fill="#7f8c8d"/>
+  <rect x="23" y="3" width="1" height="2" fill="#95a5a6"/>
+  <rect x="12" y="1" width="2" height="2" fill="#8b4513"/>
+  <rect x="12" y="5" width="2" height="2" fill="#8b4513"/>
+  <!-- Motion trail -->
+  <rect x="12" y="3" width="2" height="2" fill="#c4a35a" opacity="0.5"/>
+
+  <!-- FRAME 3 - Arrow fast -->
+  <rect x="26" y="3" width="8" height="2" fill="#a0522d"/>
+  <rect x="27" y="3" width="6" height="1" fill="#c4a35a"/>
+  <rect x="34" y="2" width="2" height="4" fill="#7f8c8d"/>
+  <rect x="35" y="3" width="1" height="2" fill="#bdc3c7"/>
+  <rect x="24" y="1" width="2" height="2" fill="#8b4513"/>
+  <rect x="24" y="5" width="2" height="2" fill="#8b4513"/>
+  <!-- Motion trail -->
+  <rect x="24" y="3" width="2" height="2" fill="#c4a35a" opacity="0.3"/>
+  <rect x="26" y="3" width="1" height="2" fill="#c4a35a" opacity="0.5"/>
+
+  <!-- FRAME 4 - Arrow impact flash -->
+  <rect x="38" y="3" width="6" height="2" fill="#a0522d"/>
+  <rect x="44" y="2" width="2" height="4" fill="#bdc3c7"/>
+  <rect x="45" y="3" width="1" height="2" fill="#ecf0f1"/>
+  <rect x="36" y="1" width="2" height="2" fill="#8b4513"/>
+  <rect x="36" y="5" width="2" height="2" fill="#8b4513"/>
+  <!-- Impact flash -->
+  <rect x="46" y="1" width="2" height="2" fill="#fdfefe"/>
+  <rect x="46" y="5" width="2" height="2" fill="#fdfefe"/>
+</svg>

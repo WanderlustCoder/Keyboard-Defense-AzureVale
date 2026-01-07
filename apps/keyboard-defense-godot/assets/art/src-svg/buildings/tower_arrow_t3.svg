@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 32" width="24" height="32">
+  <!-- Arrow Tower T3 (24x32) - Eagle's Nest Fortress -->
+  <!-- Ultimate with enchanted arrows and golden ornamentation -->
+
+  <!-- Base/Foundation - marble and gold -->
+  <rect x="2" y="28" width="20" height="4" fill="#5d4e37"/>
+  <rect x="3" y="29" width="18" height="2" fill="#8b7355"/>
+  <rect x="2" y="28" width="3" height="4" fill="#d4ac0d"/>
+  <rect x="19" y="28" width="3" height="4" fill="#d4ac0d"/>
+  <rect x="3" y="29" width="2" height="2" fill="#f4d03f"/>
+  <rect x="19" y="29" width="2" height="2" fill="#f4d03f"/>
+
+  <!-- Tower body - enchanted wood and gold trim -->
+  <rect x="4" y="8" width="16" height="20" fill="#6d4c1f"/>
+  <rect x="5" y="9" width="14" height="18" fill="#8b4513"/>
+  <rect x="6" y="10" width="12" height="16" fill="#a0522d"/>
+
+  <!-- Gold reinforcement bands -->
+  <rect x="4" y="12" width="16" height="2" fill="#d4ac0d"/>
+  <rect x="5" y="12" width="14" height="1" fill="#f4d03f"/>
+  <rect x="4" y="20" width="16" height="2" fill="#d4ac0d"/>
+  <rect x="5" y="20" width="14" height="1" fill="#f4d03f"/>
+
+  <!-- Platform/roof - golden -->
+  <rect x="1" y="4" width="22" height="4" fill="#5d4e37"/>
+  <rect x="2" y="5" width="20" height="2" fill="#8b7355"/>
+  <rect x="1" y="4" width="22" height="1" fill="#d4ac0d"/>
+
+  <!-- Grand Battlements with gold caps -->
+  <rect x="1" y="0" width="5" height="4" fill="#5d4e37"/>
+  <rect x="2" y="1" width="3" height="2" fill="#8b7355"/>
+  <rect x="1" y="0" width="5" height="1" fill="#d4ac0d"/>
+  <rect x="9" y="0" width="6" height="4" fill="#5d4e37"/>
+  <rect x="10" y="1" width="4" height="2" fill="#8b7355"/>
+  <rect x="9" y="0" width="6" height="1" fill="#d4ac0d"/>
+  <rect x="18" y="0" width="5" height="4" fill="#5d4e37"/>
+  <rect x="19" y="1" width="3" height="2" fill="#8b7355"/>
+  <rect x="18" y="0" width="5" height="1" fill="#d4ac0d"/>
+
+  <!-- Enchanted triple arrow slits -->
+  <rect x="5" y="14" width="3" height="5" fill="#2c3e50"/>
+  <rect x="6" y="15" width="1" height="3" fill="#3498db"/>
+  <rect x="10" y="14" width="4" height="5" fill="#2c3e50"/>
+  <rect x="11" y="15" width="2" height="3" fill="#3498db"/>
+  <rect x="16" y="14" width="3" height="5" fill="#2c3e50"/>
+  <rect x="17" y="15" width="1" height="3" fill="#3498db"/>
+
+  <!-- Tier 3 emblem - golden eagle crest -->
+  <rect x="9" y="9" width="6" height="4" fill="#d4ac0d"/>
+  <rect x="10" y="10" width="4" height="2" fill="#f4d03f"/>
+  <rect x="11" y="9" width="2" height="1" fill="#f9e79f"/>
+  <rect x="11" y="11" width="2" height="1" fill="#fdfefe"/>
+
+  <!-- Magical glow effect -->
+  <rect x="3" y="2" width="1" height="1" fill="#5dade2"/>
+  <rect x="20" y="1" width="1" height="1" fill="#5dade2"/>
+  <rect x="11" y="3" width="2" height="1" fill="#aed6f1"/>
+</svg>

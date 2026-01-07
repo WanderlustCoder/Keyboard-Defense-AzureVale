@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 16" width="64" height="16">
+  <!-- Phasing Affix Overlay (64x16) - 4 frames of 16x16, ghost transparency pulse -->
+  <!-- Color Palette: #5dade2 at varying opacity -->
+
+  <!-- FRAME 1 - Full visibility wave (outer ring) -->
+  <!-- Outer glow ring -->
+  <rect x="0" y="7" width="2" height="2" fill="#5dade2" opacity="0.6"/>
+  <rect x="2" y="4" width="2" height="2" fill="#5dade2" opacity="0.5"/>
+  <rect x="2" y="10" width="2" height="2" fill="#5dade2" opacity="0.5"/>
+  <rect x="6" y="1" width="4" height="2" fill="#5dade2" opacity="0.4"/>
+  <rect x="6" y="13" width="4" height="2" fill="#5dade2" opacity="0.4"/>
+  <rect x="12" y="4" width="2" height="2" fill="#5dade2" opacity="0.5"/>
+  <rect x="12" y="10" width="2" height="2" fill="#5dade2" opacity="0.5"/>
+  <rect x="14" y="7" width="2" height="2" fill="#5dade2" opacity="0.6"/>
+
+  <!-- FRAME 2 - Wave moving inward -->
+  <rect x="18" y="6" width="2" height="4" fill="#5dade2" opacity="0.5"/>
+  <rect x="20" y="4" width="2" height="2" fill="#5dade2" opacity="0.4"/>
+  <rect x="20" y="10" width="2" height="2" fill="#5dade2" opacity="0.4"/>
+  <rect x="22" y="2" width="4" height="2" fill="#5dade2" opacity="0.3"/>
+  <rect x="22" y="12" width="4" height="2" fill="#5dade2" opacity="0.3"/>
+  <rect x="26" y="4" width="2" height="2" fill="#5dade2" opacity="0.4"/>
+  <rect x="26" y="10" width="2" height="2" fill="#5dade2" opacity="0.4"/>
+  <rect x="28" y="6" width="2" height="4" fill="#5dade2" opacity="0.5"/>
+
+  <!-- Inner shimmer -->
+  <rect x="23" y="6" width="2" height="4" fill="#aed6f1" opacity="0.6"/>
+
+  <!-- FRAME 3 - Mostly faded (ghost mode) -->
+  <!-- Very faint outline -->
+  <rect x="34" y="7" width="1" height="2" fill="#5dade2" opacity="0.2"/>
+  <rect x="35" y="5" width="1" height="1" fill="#5dade2" opacity="0.15"/>
+  <rect x="35" y="10" width="1" height="1" fill="#5dade2" opacity="0.15"/>
+  <rect x="38" y="3" width="2" height="1" fill="#5dade2" opacity="0.1"/>
+  <rect x="38" y="12" width="2" height="1" fill="#5dade2" opacity="0.1"/>
+  <rect x="42" y="5" width="1" height="1" fill="#5dade2" opacity="0.15"/>
+  <rect x="42" y="10" width="1" height="1" fill="#5dade2" opacity="0.15"/>
+  <rect x="43" y="7" width="1" height="2" fill="#5dade2" opacity="0.2"/>
+
+  <!-- Center still slightly visible -->
+  <rect x="38" y="6" width="2" height="4" fill="#5dade2" opacity="0.3"/>
+  <rect x="39" y="7" width="1" height="2" fill="#aed6f1" opacity="0.4"/>
+
+  <!-- FRAME 4 - Reforming (wave expanding out) -->
+  <rect x="50" y="6" width="2" height="4" fill="#5dade2" opacity="0.7"/>
+  <rect x="52" y="4" width="2" height="2" fill="#5dade2" opacity="0.6"/>
+  <rect x="52" y="10" width="2" height="2" fill="#5dade2" opacity="0.6"/>
+  <rect x="54" y="2" width="4" height="2" fill="#5dade2" opacity="0.5"/>
+  <rect x="54" y="12" width="4" height="2" fill="#5dade2" opacity="0.5"/>
+  <rect x="58" y="4" width="2" height="2" fill="#5dade2" opacity="0.6"/>
+  <rect x="58" y="10" width="2" height="2" fill="#5dade2" opacity="0.6"/>
+  <rect x="60" y="6" width="2" height="4" fill="#5dade2" opacity="0.7"/>
+
+  <!-- Bright center -->
+  <rect x="55" y="6" width="2" height="4" fill="#aed6f1" opacity="0.8"/>
+  <rect x="56" y="7" width="1" height="2" fill="#d6eaf8" opacity="0.9"/>
+</svg>

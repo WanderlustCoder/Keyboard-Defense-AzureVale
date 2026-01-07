@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 32" width="24" height="32">
+  <!-- Cannon Tower T2 (24x32) - Heavy Artillery Emplacement -->
+  <!-- Enhanced with larger barrel and reinforced stone -->
+
+  <!-- Base/Foundation - heavy reinforced -->
+  <rect x="3" y="28" width="18" height="4" fill="#4d5656"/>
+  <rect x="4" y="29" width="16" height="2" fill="#717d7e"/>
+  <rect x="3" y="28" width="2" height="4" fill="#5d6d7e"/>
+  <rect x="19" y="28" width="2" height="4" fill="#5d6d7e"/>
+
+  <!-- Tower body - reinforced stone -->
+  <rect x="4" y="10" width="16" height="18" fill="#515a5a"/>
+  <rect x="5" y="11" width="14" height="16" fill="#717d7e"/>
+
+  <!-- Stone block pattern - enhanced -->
+  <rect x="5" y="11" width="7" height="4" fill="#7f8c8d"/>
+  <rect x="12" y="15" width="7" height="4" fill="#7f8c8d"/>
+  <rect x="5" y="19" width="7" height="4" fill="#7f8c8d"/>
+  <rect x="12" y="23" width="7" height="4" fill="#7f8c8d"/>
+
+  <!-- Platform - reinforced -->
+  <rect x="2" y="6" width="20" height="4" fill="#515a5a"/>
+  <rect x="3" y="7" width="18" height="2" fill="#717d7e"/>
+
+  <!-- Upgraded Cannon barrel - larger -->
+  <rect x="6" y="2" width="12" height="8" fill="#2c3e50"/>
+  <rect x="7" y="3" width="10" height="6" fill="#34495e"/>
+  <rect x="18" y="3" width="5" height="6" fill="#2c3e50"/>
+  <rect x="19" y="4" width="3" height="4" fill="#1a252f"/>
+  <rect x="22" y="5" width="1" height="2" fill="#17202a"/>
+
+  <!-- Cannon muzzle reinforcement -->
+  <rect x="18" y="2" width="5" height="2" fill="#5d6d7e"/>
+  <rect x="18" y="8" width="5" height="2" fill="#5d6d7e"/>
+
+  <!-- Cannon wheels - reinforced -->
+  <rect x="6" y="8" width="5" height="2" fill="#5d4e37"/>
+  <rect x="7" y="9" width="3" height="1" fill="#8b7355"/>
+  <rect x="13" y="8" width="5" height="2" fill="#5d4e37"/>
+  <rect x="14" y="9" width="3" height="1" fill="#8b7355"/>
+
+  <!-- Enhanced cannonball storage -->
+  <rect x="7" y="16" width="3" height="3" fill="#1a252f"/>
+  <rect x="8" y="17" width="1" height="1" fill="#2c3e50"/>
+  <rect x="11" y="17" width="3" height="3" fill="#1a252f"/>
+  <rect x="12" y="18" width="1" height="1" fill="#2c3e50"/>
+  <rect x="14" y="16" width="3" height="3" fill="#1a252f"/>
+  <rect x="15" y="17" width="1" height="1" fill="#2c3e50"/>
+  <rect x="9" y="14" width="4" height="3" fill="#2c3e50"/>
+  <rect x="10" y="15" width="2" height="1" fill="#34495e"/>
+
+  <!-- Tier 2 emblem - bronze gear -->
+  <rect x="10" y="21" width="4" height="4" fill="#cd6839"/>
+  <rect x="11" y="22" width="2" height="2" fill="#e8c49a"/>
+</svg>

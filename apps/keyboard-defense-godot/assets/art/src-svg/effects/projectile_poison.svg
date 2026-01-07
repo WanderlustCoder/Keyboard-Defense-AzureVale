@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 10" width="48" height="10">
+  <!-- Poison Glob Projectile (48x10) - 4 frames of 12x10, toxic splatter -->
+  <!-- Color Palette: #145a32, #1e8449, #27ae60, #58d68d, #82e0aa -->
+
+  <!-- FRAME 1 - Poison glob flying -->
+  <rect x="3" y="3" width="6" height="4" fill="#1e8449"/>
+  <rect x="4" y="4" width="4" height="2" fill="#27ae60"/>
+  <rect x="5" y="4" width="2" height="1" fill="#58d68d"/>
+  <!-- Drips trailing -->
+  <rect x="1" y="4" width="2" height="2" fill="#27ae60"/>
+  <rect x="0" y="5" width="1" height="2" fill="#1e8449"/>
+  <rect x="2" y="6" width="1" height="2" fill="#27ae60"/>
+  <!-- Bubbles -->
+  <rect x="7" y="2" width="1" height="1" fill="#82e0aa"/>
+  <rect x="4" y="7" width="1" height="1" fill="#58d68d"/>
+
+  <!-- FRAME 2 - Poison glob pulsing -->
+  <rect x="14" y="2" width="8" height="6" fill="#1e8449"/>
+  <rect x="15" y="3" width="6" height="4" fill="#27ae60"/>
+  <rect x="16" y="4" width="4" height="2" fill="#58d68d"/>
+  <rect x="17" y="4" width="2" height="1" fill="#82e0aa"/>
+  <!-- Trail -->
+  <rect x="12" y="4" width="2" height="2" fill="#27ae60"/>
+  <rect x="13" y="5" width="2" height="3" fill="#1e8449"/>
+  <!-- Bubbles -->
+  <rect x="20" y="2" width="1" height="1" fill="#82e0aa"/>
+  <rect x="21" y="6" width="1" height="1" fill="#abebc6"/>
+  <rect x="14" y="7" width="1" height="1" fill="#58d68d"/>
+
+  <!-- FRAME 3 - Poison glob dripping -->
+  <rect x="26" y="2" width="8" height="6" fill="#145a32"/>
+  <rect x="27" y="3" width="6" height="4" fill="#1e8449"/>
+  <rect x="28" y="4" width="4" height="2" fill="#27ae60"/>
+  <rect x="29" y="4" width="2" height="1" fill="#58d68d"/>
+  <!-- Multiple drips -->
+  <rect x="24" y="4" width="2" height="2" fill="#1e8449"/>
+  <rect x="25" y="6" width="1" height="2" fill="#27ae60"/>
+  <rect x="24" y="5" width="1" height="3" fill="#145a32"/>
+  <!-- Bubbles scattered -->
+  <rect x="32" y="1" width="1" height="1" fill="#82e0aa"/>
+  <rect x="33" y="5" width="1" height="1" fill="#abebc6"/>
+  <rect x="26" y="7" width="1" height="1" fill="#58d68d"/>
+  <rect x="34" y="7" width="1" height="1" fill="#58d68d"/>
+
+  <!-- FRAME 4 - Poison glob splatter -->
+  <rect x="38" y="3" width="6" height="4" fill="#1e8449"/>
+  <rect x="39" y="4" width="4" height="2" fill="#27ae60"/>
+  <!-- Splatter -->
+  <rect x="44" y="2" width="2" height="2" fill="#27ae60"/>
+  <rect x="45" y="3" width="1" height="1" fill="#58d68d"/>
+  <rect x="44" y="5" width="3" height="2" fill="#27ae60"/>
+  <rect x="45" y="6" width="2" height="1" fill="#58d68d"/>
+  <rect x="46" y="3" width="2" height="4" fill="#1e8449"/>
+  <!-- Droplets -->
+  <rect x="36" y="2" width="1" height="1" fill="#58d68d"/>
+  <rect x="47" y="1" width="1" height="1" fill="#82e0aa"/>
+  <rect x="36" y="7" width="1" height="1" fill="#27ae60"/>
+  <rect x="47" y="8" width="1" height="1" fill="#58d68d"/>
+  <rect x="43" y="0" width="1" height="1" fill="#82e0aa"/>
+  <rect x="45" y="8" width="1" height="1" fill="#27ae60"/>
+</svg>

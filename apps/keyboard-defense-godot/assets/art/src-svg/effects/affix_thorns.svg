@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 16" width="32" height="16">
+  <!-- Thorns Affix Overlay (32x16) - 2 frames of 16x16, spikes pulse -->
+  <!-- Color Palette: #5d6d7e, #85929e, #aeb6bf -->
+
+  <!-- FRAME 1 - Spikes normal -->
+  <!-- Top spikes -->
+  <rect x="7" y="0" width="2" height="3" fill="#5d6d7e"/>
+  <rect x="7" y="0" width="1" height="2" fill="#85929e"/>
+  <rect x="8" y="1" width="1" height="1" fill="#aeb6bf"/>
+
+  <!-- Left spikes -->
+  <rect x="0" y="5" width="3" height="2" fill="#5d6d7e"/>
+  <rect x="0" y="5" width="2" height="1" fill="#85929e"/>
+  <rect x="1" y="6" width="1" height="1" fill="#aeb6bf"/>
+
+  <rect x="0" y="9" width="3" height="2" fill="#5d6d7e"/>
+  <rect x="0" y="9" width="2" height="1" fill="#85929e"/>
+  <rect x="1" y="10" width="1" height="1" fill="#aeb6bf"/>
+
+  <!-- Right spikes -->
+  <rect x="13" y="5" width="3" height="2" fill="#5d6d7e"/>
+  <rect x="14" y="5" width="2" height="1" fill="#85929e"/>
+  <rect x="14" y="6" width="1" height="1" fill="#aeb6bf"/>
+
+  <rect x="13" y="9" width="3" height="2" fill="#5d6d7e"/>
+  <rect x="14" y="9" width="2" height="1" fill="#85929e"/>
+  <rect x="14" y="10" width="1" height="1" fill="#aeb6bf"/>
+
+  <!-- Bottom spikes -->
+  <rect x="4" y="13" width="2" height="3" fill="#5d6d7e"/>
+  <rect x="4" y="14" width="1" height="2" fill="#85929e"/>
+  <rect x="5" y="14" width="1" height="1" fill="#aeb6bf"/>
+
+  <rect x="10" y="13" width="2" height="3" fill="#5d6d7e"/>
+  <rect x="10" y="14" width="1" height="2" fill="#85929e"/>
+  <rect x="11" y="14" width="1" height="1" fill="#aeb6bf"/>
+
+  <!-- FRAME 2 - Spikes glowing (pulse) -->
+  <!-- Top spikes bright -->
+  <rect x="23" y="0" width="2" height="3" fill="#85929e"/>
+  <rect x="23" y="0" width="1" height="2" fill="#aeb6bf"/>
+  <rect x="24" y="1" width="1" height="1" fill="#fdfefe"/>
+
+  <!-- Left spikes bright -->
+  <rect x="16" y="5" width="3" height="2" fill="#85929e"/>
+  <rect x="16" y="5" width="2" height="1" fill="#aeb6bf"/>
+  <rect x="17" y="6" width="1" height="1" fill="#fdfefe"/>
+
+  <rect x="16" y="9" width="3" height="2" fill="#85929e"/>
+  <rect x="16" y="9" width="2" height="1" fill="#aeb6bf"/>
+  <rect x="17" y="10" width="1" height="1" fill="#fdfefe"/>
+
+  <!-- Right spikes bright -->
+  <rect x="29" y="5" width="3" height="2" fill="#85929e"/>
+  <rect x="30" y="5" width="2" height="1" fill="#aeb6bf"/>
+  <rect x="30" y="6" width="1" height="1" fill="#fdfefe"/>
+
+  <rect x="29" y="9" width="3" height="2" fill="#85929e"/>
+  <rect x="30" y="9" width="2" height="1" fill="#aeb6bf"/>
+  <rect x="30" y="10" width="1" height="1" fill="#fdfefe"/>
+
+  <!-- Bottom spikes bright -->
+  <rect x="20" y="13" width="2" height="3" fill="#85929e"/>
+  <rect x="20" y="14" width="1" height="2" fill="#aeb6bf"/>
+  <rect x="21" y="14" width="1" height="1" fill="#fdfefe"/>
+
+  <rect x="26" y="13" width="2" height="3" fill="#85929e"/>
+  <rect x="26" y="14" width="1" height="2" fill="#aeb6bf"/>
+  <rect x="27" y="14" width="1" height="1" fill="#fdfefe"/>
+</svg>
