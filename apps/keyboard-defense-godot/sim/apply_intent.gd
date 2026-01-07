@@ -389,11 +389,19 @@ static func _apply_player_attack_target(state: GameState, target_index: int, hit
             enemy["speed"] = int(enemy.get("speed", 1)) + 1
             state.enemies[target_index] = enemy
             events.append("Berserker#%d enters a rage! Speed +1." % enemy_id)
+    # Thorny affix: reflect 1 damage back to castle when hit
+    if enemy.get("thorny", false) or enemy.get("affix", "") == "thorny":
+        state.hp -= 1
+        events.append("Thorns deal 1 damage!")
     if int(enemy.get("hp", 0)) <= 0:
         var enemy_pos: Vector2i = enemy.get("pos", Vector2i.ZERO)
         # Splitting affix: spawn swarm minions on death
         if enemy.get("affix", "") == "splitting":
             _spawn_split_enemies(state, enemy_pos, events)
+        # Explosive affix: deals 2 damage to castle on death
+        if enemy.get("explosive", false) or enemy.get("affix", "") == "explosive":
+            state.hp -= 2
+            events.append("Enemy explodes! Castle takes 2 damage.")
         state.enemies.remove_at(target_index)
         # Check if this was a boss
         var was_boss: bool = enemy.get("is_boss", false)
@@ -612,6 +620,21 @@ static func _enemy_ability_tick(state: GameState, events: Array[String]) -> void
         if enemy.get("affix", "") == "regenerating" or enemy.get("regen_rate", 0) > 0:
             enemy = SimEnemies.apply_regen_tick(enemy)
             state.enemies[i] = enemy
+    # Commanding affix buffs nearby allies (+1 speed temporarily)
+    for i in range(state.enemies.size()):
+        var enemy: Dictionary = state.enemies[i]
+        if enemy.get("commanding", false) or enemy.get("affix", "") == "commanding":
+            var commander_pos: Vector2i = enemy.get("pos", Vector2i.ZERO)
+            for j in range(state.enemies.size()):
+                if i == j:
+                    continue
+                var ally: Dictionary = state.enemies[j]
+                var ally_pos: Vector2i = ally.get("pos", Vector2i.ZERO)
+                if SimEnemies.manhattan(commander_pos, ally_pos) <= 2:
+                    if not ally.get("commanded", false):
+                        ally["commanded"] = true
+                        ally["speed"] = int(ally.get("speed", 1)) + 1
+                        state.enemies[j] = ally
 
 static func _sorted_enemy_ids(enemies: Array) -> Array[int]:
     var ids: Array[int] = []

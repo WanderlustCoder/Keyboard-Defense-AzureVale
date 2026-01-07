@@ -132,6 +132,75 @@
         "armor_pierce": 2,
         "critical_chance": 0.1
       }
+    },
+    {
+      "id": "supply-corps",
+      "label": "Supply Corps",
+      "tier": 1,
+      "cost": 18,
+      "description": "Organized supply lines boost resource gathering.",
+      "effects": {
+        "resource_multiplier": 0.08
+      }
+    },
+    {
+      "id": "war-drummers",
+      "label": "War Drummers",
+      "tier": 1,
+      "cost": 24,
+      "description": "Battle drums inspire faster typing.",
+      "effects": {
+        "mistake_forgiveness": 0.08
+      }
+    },
+    {
+      "id": "quartermaster",
+      "label": "Quartermaster",
+      "tier": 2,
+      "cost": 34,
+      "requires": ["supply-corps"],
+      "description": "Expert logistics increase all gains.",
+      "effects": {
+        "resource_multiplier": 0.12,
+        "gold_multiplier": 0.1
+      }
+    },
+    {
+      "id": "battle-medics",
+      "label": "Battle Medics",
+      "tier": 2,
+      "cost": 42,
+      "requires": ["war-drummers"],
+      "description": "Medics heal the castle after each wave.",
+      "effects": {
+        "wave_heal": 1,
+        "mistake_forgiveness": 0.1
+      }
+    },
+    {
+      "id": "grand-logistics",
+      "label": "Grand Logistics",
+      "tier": 3,
+      "cost": 78,
+      "requires": ["quartermaster"],
+      "description": "Supreme organization maximizes all resources.",
+      "effects": {
+        "resource_multiplier": 0.2,
+        "gold_multiplier": 0.2,
+        "gold_income": 3
+      }
+    },
+    {
+      "id": "field-hospital",
+      "label": "Field Hospital",
+      "tier": 3,
+      "cost": 80,
+      "requires": ["battle-medics"],
+      "description": "Full medical corps ensures maximum recovery.",
+      "effects": {
+        "wave_heal": 3,
+        "castle_health_bonus": 2
+      }
     }
   ]
 }

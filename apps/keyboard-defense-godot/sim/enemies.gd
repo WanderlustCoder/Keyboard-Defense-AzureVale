@@ -125,13 +125,20 @@ static func make_enemy(state: GameState, kind: String, pos: Vector2i) -> Diction
 
 static func _roll_affix(state: GameState) -> String:
     var affixes: Array[String] = ["swift", "armored", "resilient", "shielded"]
+    if state.day >= 6:
+        affixes.append("thorny")
+    if state.day >= 7:
+        affixes.append("ghostly")
     if state.day >= 8:
         affixes.append("splitting")
     if state.day >= 9:
         affixes.append("regenerating")
+        affixes.append("commanding")
     if state.day >= 10:
         affixes.append("enraged")
         affixes.append("vampiric")
+    if state.day >= 12:
+        affixes.append("explosive")
     var index: int = SimRng.roll_range(state, 0, affixes.size() - 1)
     return affixes[index]
 
@@ -151,6 +158,9 @@ static func apply_damage(enemy: Dictionary, dmg: int, state: GameState = null) -
         enemy["shield_active"] = false
         return enemy
     var effective: int = max(0, dmg - armor)
+    # Ghostly affix: 50% damage reduction
+    if enemy.get("ghostly", false):
+        effective = max(1, effective / 2)
     enemy["hp"] = int(enemy.get("hp", 0)) - effective
     return enemy
 
@@ -171,6 +181,14 @@ static func apply_affix_on_spawn(enemy: Dictionary) -> Dictionary:
             enemy["enraged"] = true
         "vampiric":
             enemy["vampiric"] = true
+        "thorny":
+            enemy["thorny"] = true  # Reflects 1 damage when hit
+        "ghostly":
+            enemy["ghostly"] = true  # 50% damage reduction
+        "commanding":
+            enemy["commanding"] = true  # Buffs nearby allies
+        "explosive":
+            enemy["explosive"] = true  # Deals damage on death
     return enemy
 
 static func apply_healer_tick(enemies: Array, healer_index: int) -> void:
@@ -428,6 +446,17 @@ static func serialize(enemy: Dictionary) -> Dictionary:
         result["enraged"] = bool(enemy["enraged"])
     if enemy.has("vampiric"):
         result["vampiric"] = bool(enemy["vampiric"])
+    # New affix properties
+    if enemy.has("thorny"):
+        result["thorny"] = bool(enemy["thorny"])
+    if enemy.has("ghostly"):
+        result["ghostly"] = bool(enemy["ghostly"])
+    if enemy.has("commanding"):
+        result["commanding"] = bool(enemy["commanding"])
+    if enemy.has("explosive"):
+        result["explosive"] = bool(enemy["explosive"])
+    if enemy.has("commanded"):
+        result["commanded"] = bool(enemy["commanded"])
     # Boss properties
     if enemy.has("is_boss"):
         result["is_boss"] = bool(enemy["is_boss"])
@@ -467,6 +496,17 @@ static func deserialize(raw: Dictionary) -> Dictionary:
         result["enraged"] = bool(raw["enraged"])
     if raw.has("vampiric"):
         result["vampiric"] = bool(raw["vampiric"])
+    # New affix properties
+    if raw.has("thorny"):
+        result["thorny"] = bool(raw["thorny"])
+    if raw.has("ghostly"):
+        result["ghostly"] = bool(raw["ghostly"])
+    if raw.has("commanding"):
+        result["commanding"] = bool(raw["commanding"])
+    if raw.has("explosive"):
+        result["explosive"] = bool(raw["explosive"])
+    if raw.has("commanded"):
+        result["commanded"] = bool(raw["commanded"])
     # Boss properties
     if raw.has("is_boss"):
         result["is_boss"] = bool(raw["is_boss"])
