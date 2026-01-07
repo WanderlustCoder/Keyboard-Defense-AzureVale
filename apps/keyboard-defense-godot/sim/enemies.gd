@@ -8,22 +8,50 @@ const SimWords = preload("res://sim/words.gd")
 const ENEMY_KINDS := {
     "raider": {"speed": 1, "armor": 0, "hp_bonus": 0, "glyph": "r"},
     "scout": {"speed": 2, "armor": 0, "hp_bonus": -1, "glyph": "s"},
-    "armored": {"speed": 1, "armor": 1, "hp_bonus": 1, "glyph": "a"}
+    "armored": {"speed": 1, "armor": 1, "hp_bonus": 1, "glyph": "a"},
+    "swarm": {"speed": 3, "armor": 0, "hp_bonus": -2, "glyph": "w"},
+    "tank": {"speed": 1, "armor": 2, "hp_bonus": 3, "glyph": "T"},
+    "berserker": {"speed": 2, "armor": 0, "hp_bonus": 1, "glyph": "B"},
+    "phantom": {"speed": 1, "armor": 0, "hp_bonus": 0, "glyph": "P", "evasion": 0.5},
+    "champion": {"speed": 1, "armor": 1, "hp_bonus": 2, "glyph": "C"},
+    "healer": {"speed": 1, "armor": 0, "hp_bonus": 0, "glyph": "H", "heal_rate": 1},
+    "elite": {"speed": 1, "armor": 1, "hp_bonus": 1, "glyph": "E", "has_affix": true}
 }
 const ENEMY_HP_BONUS_BY_DAY := {
     "armored": [1, 1, 1, 2, 2, 3, 4],
     "raider": [0, 0, 0, 0, 1, 1, 2],
-    "scout": [-1, -1, -1, 0, 0, 0, 1]
+    "scout": [-1, -1, -1, 0, 0, 0, 1],
+    "swarm": [-2, -2, -2, -1, -1, 0, 0],
+    "tank": [3, 3, 4, 4, 5, 5, 6],
+    "berserker": [1, 1, 1, 2, 2, 2, 3],
+    "phantom": [0, 0, 0, 0, 1, 1, 2],
+    "champion": [2, 2, 2, 3, 3, 4, 5],
+    "healer": [0, 0, 0, 1, 1, 1, 2],
+    "elite": [1, 1, 2, 2, 3, 3, 4]
 }
 const ENEMY_ARMOR_BY_DAY := {
     "armored": [1, 1, 1, 1, 1, 2, 2],
     "raider": [0, 0, 0, 0, 0, 0, 1],
-    "scout": [0, 0, 0, 0, 0, 0, 1]
+    "scout": [0, 0, 0, 0, 0, 0, 1],
+    "swarm": [0, 0, 0, 0, 0, 0, 0],
+    "tank": [2, 2, 2, 2, 3, 3, 3],
+    "berserker": [0, 0, 0, 0, 0, 1, 1],
+    "phantom": [0, 0, 0, 0, 0, 0, 0],
+    "champion": [1, 1, 1, 1, 2, 2, 2],
+    "healer": [0, 0, 0, 0, 0, 0, 1],
+    "elite": [1, 1, 1, 1, 1, 2, 2]
 }
 const ENEMY_SPEED_BY_DAY := {
     "raider": [1, 1, 1, 1, 1, 1, 2],
     "scout": [2, 2, 2, 2, 2, 2, 3],
-    "armored": [1, 1, 1, 1, 1, 1, 2]
+    "armored": [1, 1, 1, 1, 1, 1, 2],
+    "swarm": [3, 3, 3, 3, 3, 3, 4],
+    "tank": [1, 1, 1, 1, 1, 1, 1],
+    "berserker": [2, 2, 2, 2, 2, 2, 3],
+    "phantom": [1, 1, 1, 1, 1, 2, 2],
+    "champion": [1, 1, 1, 1, 1, 1, 2],
+    "healer": [1, 1, 1, 1, 1, 1, 1],
+    "elite": [1, 1, 1, 1, 1, 2, 2]
 }
 
 static func hp_bonus_for_day(kind: String, day: int) -> int:
@@ -56,6 +84,7 @@ static func make_enemy(state: GameState, kind: String, pos: Vector2i) -> Diction
     var hp: int = max(1, base_hp + hp_bonus)
     var armor_value: int = armor_for_day(kind, state.day)
     var speed_value: int = speed_for_day(kind, state.day)
+    var config: Dictionary = ENEMY_KINDS.get(kind, ENEMY_KINDS["raider"])
     var enemy := {
         "id": state.enemy_next_id,
         "kind": kind,
@@ -65,12 +94,87 @@ static func make_enemy(state: GameState, kind: String, pos: Vector2i) -> Diction
         "speed": speed_value,
         "word": ""
     }
+    # Special properties
+    if config.has("evasion"):
+        enemy["evasion"] = float(config["evasion"])
+        enemy["evade_ready"] = true
+    if config.has("heal_rate"):
+        enemy["heal_rate"] = int(config["heal_rate"])
+    if config.has("has_affix") and config["has_affix"]:
+        enemy["affix"] = _roll_affix(state)
     return assign_word(state, enemy)
 
-static func apply_damage(enemy: Dictionary, dmg: int) -> Dictionary:
+static func _roll_affix(state: GameState) -> String:
+    var affixes: Array[String] = ["swift", "armored", "resilient", "shielded"]
+    if state.day >= 8:
+        affixes.append("splitting")
+    if state.day >= 9:
+        affixes.append("regenerating")
+    if state.day >= 10:
+        affixes.append("enraged")
+        affixes.append("vampiric")
+    var index: int = SimRng.roll_range(state, 0, affixes.size() - 1)
+    return affixes[index]
+
+static func apply_damage(enemy: Dictionary, dmg: int, state: GameState = null) -> Dictionary:
+    # Phantom evasion: 50% chance to evade first hit
+    if enemy.get("evade_ready", false) and enemy.get("evasion", 0.0) > 0.0:
+        if state != null:
+            var roll: float = float(SimRng.roll_range(state, 1, 100)) / 100.0
+            if roll <= enemy["evasion"]:
+                enemy["evade_ready"] = false
+                return enemy  # Evaded, no damage
+        enemy["evade_ready"] = false
+
     var armor: int = int(enemy.get("armor", 0))
+    # Shielded affix: first hit immunity
+    if enemy.get("shield_active", false):
+        enemy["shield_active"] = false
+        return enemy
     var effective: int = max(0, dmg - armor)
     enemy["hp"] = int(enemy.get("hp", 0)) - effective
+    return enemy
+
+static func apply_affix_on_spawn(enemy: Dictionary) -> Dictionary:
+    var affix: String = str(enemy.get("affix", ""))
+    match affix:
+        "swift":
+            enemy["speed"] = int(enemy.get("speed", 1)) + 1
+        "armored":
+            enemy["armor"] = int(enemy.get("armor", 0)) + 1
+        "resilient":
+            enemy["hp"] = int(enemy.get("hp", 1)) + 2
+        "shielded":
+            enemy["shield_active"] = true
+        "regenerating":
+            enemy["regen_rate"] = 1
+        "enraged":
+            enemy["enraged"] = true
+        "vampiric":
+            enemy["vampiric"] = true
+    return enemy
+
+static func apply_healer_tick(enemies: Array, healer_index: int) -> void:
+    if healer_index < 0 or healer_index >= enemies.size():
+        return
+    var healer: Dictionary = enemies[healer_index]
+    var heal_rate: int = int(healer.get("heal_rate", 0))
+    if heal_rate <= 0:
+        return
+    var healer_pos: Vector2i = healer.get("pos", Vector2i.ZERO)
+    for i in range(enemies.size()):
+        if i == healer_index:
+            continue
+        var enemy: Dictionary = enemies[i]
+        var enemy_pos: Vector2i = enemy.get("pos", Vector2i.ZERO)
+        if manhattan(healer_pos, enemy_pos) <= 2:
+            enemy["hp"] = int(enemy.get("hp", 0)) + heal_rate
+            enemies[i] = enemy
+
+static func apply_regen_tick(enemy: Dictionary) -> Dictionary:
+    var regen: int = int(enemy.get("regen_rate", 0))
+    if regen > 0:
+        enemy["hp"] = int(enemy.get("hp", 0)) + regen
     return enemy
 
 static func enemy_glyph(kind: String) -> String:
@@ -131,13 +235,34 @@ static func choose_spawn_kind(state: GameState) -> String:
     var kinds: Array[String] = ["raider"]
     if state.day >= 3 or state.threat >= 2:
         kinds.append("scout")
+    if state.day >= 4 or state.threat >= 3:
+        kinds.append("swarm")
     if state.day >= 5 or state.threat >= 4:
         kinds.append("armored")
+    if state.day >= 5 or state.threat >= 5:
+        kinds.append("berserker")
+    if state.day >= 6 or state.threat >= 6:
+        kinds.append("tank")
+    if state.day >= 6 or state.threat >= 5:
+        kinds.append("phantom")
+    if state.day >= 7 or state.threat >= 7:
+        kinds.append("champion")
+    if state.day >= 7 or state.threat >= 6:
+        kinds.append("healer")
+    if state.day >= 8 or state.threat >= 8:
+        kinds.append("elite")
 
     var weights: Dictionary = {}
     weights["raider"] = 6
     weights["scout"] = 2 + int(state.day / 3)
+    weights["swarm"] = max(0, int(state.day / 2))
     weights["armored"] = max(0, int(state.day / 2) - 1)
+    weights["berserker"] = max(0, int(state.day / 3))
+    weights["tank"] = max(0, int(state.day / 3) - 1)
+    weights["phantom"] = max(0, int(state.day / 3))
+    weights["champion"] = max(0, int(state.day / 4))
+    weights["healer"] = max(0, int(state.day / 4))
+    weights["elite"] = max(0, int(state.day / 5))
 
     var total: int = 0
     for kind in kinds:
@@ -154,7 +279,7 @@ static func choose_spawn_kind(state: GameState) -> String:
 
 static func serialize(enemy: Dictionary) -> Dictionary:
     var pos: Vector2i = enemy.get("pos", Vector2i.ZERO)
-    return {
+    var result := {
         "id": int(enemy.get("id", 0)),
         "pos": {"x": pos.x, "y": pos.y},
         "hp": int(enemy.get("hp", 0)),
@@ -163,11 +288,28 @@ static func serialize(enemy: Dictionary) -> Dictionary:
         "speed": int(enemy.get("speed", 1)),
         "word": str(enemy.get("word", ""))
     }
+    # Special properties
+    if enemy.has("evasion"):
+        result["evasion"] = float(enemy["evasion"])
+        result["evade_ready"] = bool(enemy.get("evade_ready", false))
+    if enemy.has("heal_rate"):
+        result["heal_rate"] = int(enemy["heal_rate"])
+    if enemy.has("affix"):
+        result["affix"] = str(enemy["affix"])
+    if enemy.has("shield_active"):
+        result["shield_active"] = bool(enemy["shield_active"])
+    if enemy.has("regen_rate"):
+        result["regen_rate"] = int(enemy["regen_rate"])
+    if enemy.has("enraged"):
+        result["enraged"] = bool(enemy["enraged"])
+    if enemy.has("vampiric"):
+        result["vampiric"] = bool(enemy["vampiric"])
+    return result
 
 static func deserialize(raw: Dictionary) -> Dictionary:
     var pos_data: Dictionary = raw.get("pos", {})
     var pos: Vector2i = Vector2i(int(pos_data.get("x", 0)), int(pos_data.get("y", 0)))
-    return {
+    var result := {
         "id": int(raw.get("id", 0)),
         "pos": pos,
         "hp": int(raw.get("hp", 0)),
@@ -176,6 +318,23 @@ static func deserialize(raw: Dictionary) -> Dictionary:
         "speed": int(raw.get("speed", 1)),
         "word": str(raw.get("word", ""))
     }
+    # Special properties
+    if raw.has("evasion"):
+        result["evasion"] = float(raw["evasion"])
+        result["evade_ready"] = bool(raw.get("evade_ready", false))
+    if raw.has("heal_rate"):
+        result["heal_rate"] = int(raw["heal_rate"])
+    if raw.has("affix"):
+        result["affix"] = str(raw["affix"])
+    if raw.has("shield_active"):
+        result["shield_active"] = bool(raw["shield_active"])
+    if raw.has("regen_rate"):
+        result["regen_rate"] = int(raw["regen_rate"])
+    if raw.has("enraged"):
+        result["enraged"] = bool(raw["enraged"])
+    if raw.has("vampiric"):
+        result["vampiric"] = bool(raw["vampiric"])
+    return result
 
 static func _used_words(enemies: Array) -> Dictionary:
     var used: Dictionary = {}
