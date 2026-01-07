@@ -3330,6 +3330,166 @@
       "pixel_art": true,
       "category": "ui",
       "tileable": true
+    },
+    {
+      "id": "castle_base",
+      "path": "res://assets/buildings/castle_base.png",
+      "source_svg": "res://assets/art/src-svg/buildings/castle_base.svg",
+      "expected_width": 48,
+      "expected_height": 48,
+      "max_kb": 12,
+      "pixel_art": true,
+      "category": "buildings"
+    },
+    {
+      "id": "castle_damaged",
+      "path": "res://assets/buildings/castle_damaged.png",
+      "source_svg": "res://assets/art/src-svg/buildings/castle_damaged.svg",
+      "expected_width": 48,
+      "expected_height": 48,
+      "max_kb": 12,
+      "pixel_art": true,
+      "category": "buildings"
+    },
+    {
+      "id": "enemy_grunt",
+      "path": "res://assets/enemies/enemy_grunt.png",
+      "source_svg": "res://assets/art/src-svg/enemies/enemy_grunt.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "enemies"
+    },
+    {
+      "id": "enemy_runner",
+      "path": "res://assets/enemies/enemy_runner.png",
+      "source_svg": "res://assets/art/src-svg/enemies/enemy_runner.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "enemies"
+    },
+    {
+      "id": "enemy_tank",
+      "path": "res://assets/enemies/enemy_tank.png",
+      "source_svg": "res://assets/art/src-svg/enemies/enemy_tank.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "enemies"
+    },
+    {
+      "id": "enemy_mage",
+      "path": "res://assets/enemies/enemy_mage.png",
+      "source_svg": "res://assets/art/src-svg/enemies/enemy_mage.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "enemies"
+    },
+    {
+      "id": "enemy_boss",
+      "path": "res://assets/enemies/enemy_boss.png",
+      "source_svg": "res://assets/art/src-svg/enemies/enemy_boss.svg",
+      "expected_width": 24,
+      "expected_height": 24,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "enemies"
+    },
+    {
+      "id": "enemy_flying",
+      "path": "res://assets/enemies/enemy_flying.png",
+      "source_svg": "res://assets/art/src-svg/enemies/enemy_flying.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "enemies"
+    },
+    {
+      "id": "tree_pine",
+      "path": "res://assets/decorations/tree_pine.png",
+      "source_svg": "res://assets/art/src-svg/decorations/tree_pine.svg",
+      "expected_width": 16,
+      "expected_height": 24,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "decorations"
+    },
+    {
+      "id": "tree_oak",
+      "path": "res://assets/decorations/tree_oak.png",
+      "source_svg": "res://assets/art/src-svg/decorations/tree_oak.svg",
+      "expected_width": 16,
+      "expected_height": 24,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "decorations"
+    },
+    {
+      "id": "rock_large",
+      "path": "res://assets/decorations/rock_large.png",
+      "source_svg": "res://assets/art/src-svg/decorations/rock_large.svg",
+      "expected_width": 16,
+      "expected_height": 12,
+      "max_kb": 4,
+      "pixel_art": true,
+      "category": "decorations"
+    },
+    {
+      "id": "rock_small",
+      "path": "res://assets/decorations/rock_small.png",
+      "source_svg": "res://assets/art/src-svg/decorations/rock_small.svg",
+      "expected_width": 8,
+      "expected_height": 6,
+      "max_kb": 2,
+      "pixel_art": true,
+      "category": "decorations"
+    },
+    {
+      "id": "bush",
+      "path": "res://assets/decorations/bush.png",
+      "source_svg": "res://assets/art/src-svg/decorations/bush.svg",
+      "expected_width": 12,
+      "expected_height": 8,
+      "max_kb": 4,
+      "pixel_art": true,
+      "category": "decorations"
+    },
+    {
+      "id": "flowers",
+      "path": "res://assets/decorations/flowers.png",
+      "source_svg": "res://assets/art/src-svg/decorations/flowers.svg",
+      "expected_width": 16,
+      "expected_height": 8,
+      "max_kb": 4,
+      "pixel_art": true,
+      "category": "decorations"
+    },
+    {
+      "id": "grave",
+      "path": "res://assets/decorations/grave.png",
+      "source_svg": "res://assets/art/src-svg/decorations/grave.svg",
+      "expected_width": 10,
+      "expected_height": 12,
+      "max_kb": 4,
+      "pixel_art": true,
+      "category": "decorations"
+    },
+    {
+      "id": "fence_post",
+      "path": "res://assets/decorations/fence_post.png",
+      "source_svg": "res://assets/art/src-svg/decorations/fence_post.svg",
+      "expected_width": 6,
+      "expected_height": 12,
+      "max_kb": 2,
+      "pixel_art": true,
+      "category": "decorations"
     }
   ],
   "audio": [

@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <!-- Boss Enemy (24x24) - larger, intimidating -->
+
+  <!-- Large body -->
+  <rect x="6" y="10" width="12" height="12" fill="#641e16"/>
+  <rect x="7" y="11" width="10" height="10" fill="#7b241c"/>
+
+  <!-- Armor details -->
+  <rect x="8" y="12" width="8" height="3" fill="#922b21"/>
+  <rect x="8" y="17" width="8" height="3" fill="#922b21"/>
+
+  <!-- Head -->
+  <rect x="7" y="3" width="10" height="8" fill="#27ae60"/>
+  <rect x="8" y="4" width="8" height="6" fill="#2ecc71"/>
+
+  <!-- Crown/horns -->
+  <rect x="6" y="0" width="3" height="4" fill="#f4d03f"/>
+  <rect x="15" y="0" width="3" height="4" fill="#f4d03f"/>
+  <rect x="10" y="1" width="4" height="3" fill="#f39c12"/>
+
+  <!-- Angry eyes -->
+  <rect x="9" y="6" width="2" height="2" fill="#e74c3c"/>
+  <rect x="13" y="6" width="2" height="2" fill="#e74c3c"/>
+  <rect x="10" y="7" width="1" height="1" fill="#fff"/>
+  <rect x="14" y="7" width="1" height="1" fill="#fff"/>
+
+  <!-- Arms (muscular) -->
+  <rect x="2" y="10" width="4" height="8" fill="#27ae60"/>
+  <rect x="18" y="10" width="4" height="8" fill="#27ae60"/>
+  <rect x="3" y="11" width="2" height="6" fill="#2ecc71"/>
+  <rect x="19" y="11" width="2" height="6" fill="#2ecc71"/>
+
+  <!-- Weapons (dual axes) -->
+  <rect x="0" y="8" width="3" height="8" fill="#5d6d7e"/>
+  <rect x="0" y="7" width="4" height="3" fill="#7f8c8d"/>
+  <rect x="21" y="8" width="3" height="8" fill="#5d6d7e"/>
+  <rect x="20" y="7" width="4" height="3" fill="#7f8c8d"/>
+
+  <!-- Legs -->
+  <rect x="7" y="22" width="4" height="2" fill="#27ae60"/>
+  <rect x="13" y="22" width="4" height="2" fill="#27ae60"/>
+
+  <!-- Aura effect -->
+  <rect x="5" y="9" width="1" height="2" fill="#e74c3c" opacity="0.5"/>
+  <rect x="18" y="9" width="1" height="2" fill="#e74c3c" opacity="0.5"/>
+</svg>
