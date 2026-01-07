@@ -1,0 +1,57 @@
+[gd_scene load_steps=3 format=3 uid="uid://modal_panel_component"]
+
+[ext_resource type="Script" path="res://ui/components/modal_panel.gd" id="1_script"]
+[ext_resource type="Theme" path="res://themes/KeyboardDefenseTheme.tres" id="2_theme"]
+
+[node name="ModalPanel" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="Overlay" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.6)
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="CenterContainer"]
+custom_minimum_size = Vector2(400, 200)
+layout_mode = 2
+theme = ExtResource("2_theme")
+
+[node name="Content" type="VBoxContainer" parent="CenterContainer/Panel"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="CenterContainer/Panel/Content"]
+layout_mode = 2
+horizontal_alignment = 1
+text = "Title"
+
+[node name="MessageLabel" type="Label" parent="CenterContainer/Panel/Content"]
+layout_mode = 2
+horizontal_alignment = 1
+autowrap_mode = 2
+text = "Message content goes here."
+
+[node name="Spacer" type="Control" parent="CenterContainer/Panel/Content"]
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+
+[node name="ButtonContainer" type="HBoxContainer" parent="CenterContainer/Panel/Content"]
+layout_mode = 2
+alignment = 1

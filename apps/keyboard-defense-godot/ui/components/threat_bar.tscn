@@ -1,0 +1,24 @@
+[gd_scene load_steps=3 format=3 uid="uid://threat_bar_component"]
+
+[ext_resource type="Script" path="res://ui/components/threat_bar.gd" id="1_script"]
+[ext_resource type="Theme" path="res://themes/KeyboardDefenseTheme.tres" id="2_theme"]
+
+[node name="ThreatBar" type="VBoxContainer"]
+custom_minimum_size = Vector2(200, 0)
+theme = ExtResource("2_theme")
+script = ExtResource("1_script")
+
+[node name="ThreatLabel" type="Label" parent="."]
+layout_mode = 2
+text = "Threat"
+
+[node name="ThreatProgress" type="ProgressBar" parent="."]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+max_value = 100.0
+value = 0.0
+show_percentage = false
+
+[node name="CastleLabel" type="Label" parent="."]
+layout_mode = 2
+text = "Castle: 3"

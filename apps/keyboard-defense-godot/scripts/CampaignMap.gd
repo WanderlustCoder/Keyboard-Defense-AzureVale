@@ -1,6 +1,8 @@
 extends Control
 
-@onready var map_grid: GridContainer = $MapPanel/MapGrid
+const ThemeColors = preload("res://ui/theme_colors.gd")
+
+@onready var map_grid: GridContainer = $MapPanel/ScrollContainer/MapGrid
 @onready var gold_label: Label = $TopBar/GoldLabel
 @onready var summary_label: Label = $SummaryPanel/Content/SummaryLabel
 @onready var modifiers_label: Label = $SummaryPanel/Content/ModifiersLabel
@@ -14,27 +16,14 @@ func _ready() -> void:
 	back_button.pressed.connect(_on_back_pressed)
 	kingdom_button.pressed.connect(_on_kingdom_pressed)
 	_refresh()
-	# Play kingdom/map music
 	if audio_manager != null:
 		audio_manager.switch_to_kingdom_music()
 
 func _refresh() -> void:
-	_ensure_map_grid_layout()
 	gold_label.text = "Gold: %d" % progression.gold
 	modifiers_label.text = _format_modifiers(progression.get_combat_modifiers())
 	_build_map()
 	_update_summary()
-
-func _ensure_map_grid_layout() -> void:
-	map_grid.layout_mode = 0
-	map_grid.anchor_left = 0.0
-	map_grid.anchor_top = 0.0
-	map_grid.anchor_right = 1.0
-	map_grid.anchor_bottom = 1.0
-	map_grid.offset_left = 0.0
-	map_grid.offset_top = 0.0
-	map_grid.offset_right = 0.0
-	map_grid.offset_bottom = 0.0
 
 func _format_modifiers(modifiers: Dictionary) -> String:
 	var parts: Array = []
@@ -67,109 +56,73 @@ func _build_map() -> void:
 		var reward_gold = int(node.get("reward_gold", 0))
 		var unlocked = progression.is_node_unlocked(node_id)
 		var completed = progression.is_node_completed(node_id)
-		var text_color = Color(0.94, 0.94, 0.98)
-		if not unlocked:
-			text_color.a = 0.55
-		var card = Control.new()
-		card.custom_minimum_size = Vector2(260, 96)
-		card.size = card.custom_minimum_size
-		card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		card.size_flags_vertical = Control.SIZE_EXPAND_FILL
-		card.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND if unlocked else Control.CURSOR_ARROW
-		if unlocked:
-			card.mouse_filter = Control.MOUSE_FILTER_STOP
-			card.gui_input.connect(_on_card_input.bind(node_id))
-		else:
-			card.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		var card_style = StyleBoxFlat.new()
-		card_style.bg_color = Color(0.14, 0.12, 0.22) if unlocked else Color(0.11, 0.1, 0.17)
-		card_style.border_color = Color(0.35, 0.32, 0.52) if completed else Color(0.24, 0.22, 0.36)
-		card_style.border_width_left = 2
-		card_style.border_width_right = 2
-		card_style.border_width_top = 2
-		card_style.border_width_bottom = 2
-		card_style.corner_radius_top_left = 6
-		card_style.corner_radius_top_right = 6
-		card_style.corner_radius_bottom_left = 6
-		card_style.corner_radius_bottom_right = 6
-		var card_panel = Panel.new()
-		card_panel.set_anchors_preset(Control.PRESET_FULL_RECT)
-		card_panel.add_theme_stylebox_override("panel", card_style)
-		card_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		card.add_child(card_panel)
 
-		var padding = 8.0
-		var spacing = 4.0
-		var title_height = 28.0
-		var lesson_height = 22.0
-		var reward_height = 18.0
-		var y = padding
-		var card_width = card.custom_minimum_size.x
-		if card_width <= 0.0:
-			card_width = card.size.x
-		var content_width = max(card_width - padding * 2.0, 0.0)
-
-		var title = Label.new()
-		title.text = label + (" (cleared)" if completed else "")
-		title.position = Vector2(padding, y)
-		title.size = Vector2(content_width, title_height)
-		title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		title.autowrap_mode = TextServer.AUTOWRAP_WORD
-		title.max_lines_visible = 2
-		title.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-		title.add_theme_font_size_override("font_size", 16)
-		title.add_theme_color_override("font_color", text_color)
-		title.clip_text = true
-		title.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		card.add_child(title)
-
-		y += title_height + spacing
-
-		var lesson_label = Label.new()
-		lesson_label.text = "Lesson: %s" % lesson_label_text
-		lesson_label.position = Vector2(padding, y)
-		lesson_label.size = Vector2(content_width, lesson_height)
-		lesson_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		lesson_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		lesson_label.autowrap_mode = TextServer.AUTOWRAP_WORD
-		lesson_label.max_lines_visible = 2
-		lesson_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-		lesson_label.add_theme_font_size_override("font_size", 14)
-		lesson_label.add_theme_color_override("font_color", text_color)
-		lesson_label.clip_text = true
-		lesson_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		card.add_child(lesson_label)
-
-		y += lesson_height + spacing
-
-		var reward_text = _format_reward_preview(reward_gold, completed)
-		var reward_label: Label = null
-		if reward_text != "":
-			reward_label = Label.new()
-			reward_label.text = reward_text
-			reward_label.position = Vector2(padding, y)
-			reward_label.size = Vector2(content_width, reward_height)
-			reward_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-			reward_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-			reward_label.autowrap_mode = TextServer.AUTOWRAP_WORD
-			reward_label.max_lines_visible = 1
-			reward_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-			reward_label.add_theme_font_size_override("font_size", 12)
-			reward_label.add_theme_color_override("font_color", text_color)
-			reward_label.clip_text = true
-			reward_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			card.add_child(reward_label)
-
-		var update_text_layout = func() -> void:
-			var next_width = max(card.size.x - padding * 2.0, 0.0)
-			title.size.x = next_width
-			lesson_label.size.x = next_width
-			if reward_label != null:
-				reward_label.size.x = next_width
-		card.resized.connect(update_text_layout)
-
+		var card = _create_node_card(node_id, label, lesson_label_text, reward_gold, unlocked, completed)
 		map_grid.add_child(card)
+
+func _create_node_card(node_id: String, label: String, lesson_name: String, reward_gold: int, unlocked: bool, completed: bool) -> Control:
+	var text_color := ThemeColors.TEXT if unlocked else ThemeColors.TEXT_DIM
+
+	var card = PanelContainer.new()
+	card.custom_minimum_size = Vector2(240, 88)
+	card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	card.size_flags_vertical = Control.SIZE_EXPAND_FILL
+
+	var card_style = StyleBoxFlat.new()
+	card_style.bg_color = ThemeColors.BG_CARD if unlocked else ThemeColors.BG_CARD_DISABLED
+	if completed:
+		card_style.border_color = ThemeColors.ACCENT
+	elif unlocked:
+		card_style.border_color = ThemeColors.BORDER_HIGHLIGHT
+	else:
+		card_style.border_color = ThemeColors.BORDER_DISABLED
+	card_style.set_border_width_all(2)
+	card_style.set_corner_radius_all(6)
+	card_style.set_content_margin_all(8)
+	card.add_theme_stylebox_override("panel", card_style)
+
+	if unlocked:
+		card.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+		card.gui_input.connect(_on_card_input.bind(node_id))
+	else:
+		card.mouse_default_cursor_shape = Control.CURSOR_ARROW
+
+	var content = VBoxContainer.new()
+	content.add_theme_constant_override("separation", 4)
+	card.add_child(content)
+
+	var title = Label.new()
+	title.text = label + (" (cleared)" if completed else "")
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 15)
+	title.add_theme_color_override("font_color", text_color)
+	title.autowrap_mode = TextServer.AUTOWRAP_WORD
+	title.max_lines_visible = 1
+	title.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	content.add_child(title)
+
+	var lesson_label = Label.new()
+	lesson_label.text = "Lesson: %s" % lesson_name
+	lesson_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lesson_label.add_theme_font_size_override("font_size", 13)
+	lesson_label.add_theme_color_override("font_color", text_color)
+	lesson_label.autowrap_mode = TextServer.AUTOWRAP_WORD
+	lesson_label.max_lines_visible = 1
+	lesson_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	content.add_child(lesson_label)
+
+	if reward_gold > 0:
+		var reward_label = Label.new()
+		if completed:
+			reward_label.text = "Reward: %dg (first clear)" % reward_gold
+		else:
+			reward_label.text = "Reward: %dg" % reward_gold
+		reward_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		reward_label.add_theme_font_size_override("font_size", 12)
+		reward_label.add_theme_color_override("font_color", ThemeColors.ACCENT if not completed else text_color)
+		content.add_child(reward_label)
+
+	return card
 
 func _update_summary() -> void:
 	var summary = progression.get_last_summary()
@@ -196,7 +149,6 @@ func _format_reward_preview(reward_gold: int, completed: bool) -> String:
 	if completed:
 		return "Reward: %dg (first clear)" % reward_gold
 	return "Reward: %dg" % reward_gold
-
 
 func _on_node_pressed(node_id: String) -> void:
 	if audio_manager != null:

@@ -1,4 +1,205 @@
-[gd_resource type="Theme" format=3]
+[gd_resource type="Theme" load_steps=12 format=3]
+
+# ============================================================================
+# KEYBOARD DEFENSE THEME
+# A dark fantasy theme with purple/blue backgrounds and gold accents
+# ============================================================================
+
+# ---------- STYLE BOXES ----------
+
+[sub_resource type="StyleBoxFlat" id="panel_dark"]
+bg_color = Color(0.08, 0.07, 0.12, 0.95)
+border_color = Color(0.24, 0.22, 0.36, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_left = 8
+corner_radius_bottom_right = 8
+
+[sub_resource type="StyleBoxFlat" id="panel_card"]
+bg_color = Color(0.14, 0.12, 0.22, 1)
+border_color = Color(0.35, 0.32, 0.52, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_left = 6
+corner_radius_bottom_right = 6
+
+[sub_resource type="StyleBoxFlat" id="panel_card_disabled"]
+bg_color = Color(0.11, 0.1, 0.17, 1)
+border_color = Color(0.2, 0.18, 0.28, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_left = 6
+corner_radius_bottom_right = 6
+
+[sub_resource type="StyleBoxFlat" id="button_normal"]
+bg_color = Color(0.18, 0.16, 0.28, 1)
+border_color = Color(0.35, 0.32, 0.52, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_left = 4
+corner_radius_bottom_right = 4
+content_margin_left = 16
+content_margin_top = 8
+content_margin_right = 16
+content_margin_bottom = 8
+
+[sub_resource type="StyleBoxFlat" id="button_hover"]
+bg_color = Color(0.22, 0.2, 0.35, 1)
+border_color = Color(0.45, 0.42, 0.62, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_left = 4
+corner_radius_bottom_right = 4
+content_margin_left = 16
+content_margin_top = 8
+content_margin_right = 16
+content_margin_bottom = 8
+
+[sub_resource type="StyleBoxFlat" id="button_pressed"]
+bg_color = Color(0.25, 0.22, 0.4, 1)
+border_color = Color(0.55, 0.52, 0.72, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_left = 4
+corner_radius_bottom_right = 4
+content_margin_left = 16
+content_margin_top = 8
+content_margin_right = 16
+content_margin_bottom = 8
+
+[sub_resource type="StyleBoxFlat" id="button_disabled"]
+bg_color = Color(0.12, 0.11, 0.18, 0.6)
+border_color = Color(0.2, 0.18, 0.28, 0.6)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_left = 4
+corner_radius_bottom_right = 4
+content_margin_left = 16
+content_margin_top = 8
+content_margin_right = 16
+content_margin_bottom = 8
+
+[sub_resource type="StyleBoxFlat" id="progress_bg"]
+bg_color = Color(0.1, 0.09, 0.15, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_left = 3
+corner_radius_bottom_right = 3
+
+[sub_resource type="StyleBoxFlat" id="progress_fill"]
+bg_color = Color(0.45, 0.75, 0.95, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_left = 3
+corner_radius_bottom_right = 3
+
+[sub_resource type="StyleBoxFlat" id="lineedit_normal"]
+bg_color = Color(0.06, 0.055, 0.09, 1)
+border_color = Color(0.24, 0.22, 0.36, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_left = 4
+corner_radius_bottom_right = 4
+content_margin_left = 8
+content_margin_top = 6
+content_margin_right = 8
+content_margin_bottom = 6
+
+[sub_resource type="StyleBoxFlat" id="lineedit_focus"]
+bg_color = Color(0.08, 0.07, 0.12, 1)
+border_color = Color(0.45, 0.42, 0.62, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_left = 4
+corner_radius_bottom_right = 4
+content_margin_left = 8
+content_margin_top = 6
+content_margin_right = 8
+content_margin_bottom = 6
+
+# ---------- THEME RESOURCE ----------
 
 [resource]
-default_font_size = 18
+
+# Typography
+default_font_size = 16
+
+# Label colors
+Label/colors/font_color = Color(0.94, 0.94, 0.98, 1)
+Label/colors/font_shadow_color = Color(0, 0, 0, 0.3)
+Label/font_sizes/font_size = 16
+
+# Button styles
+Button/styles/normal = SubResource("button_normal")
+Button/styles/hover = SubResource("button_hover")
+Button/styles/pressed = SubResource("button_pressed")
+Button/styles/disabled = SubResource("button_disabled")
+Button/colors/font_color = Color(0.94, 0.94, 0.98, 1)
+Button/colors/font_hover_color = Color(1, 1, 1, 1)
+Button/colors/font_pressed_color = Color(0.98, 0.84, 0.44, 1)
+Button/colors/font_disabled_color = Color(0.5, 0.5, 0.55, 0.6)
+Button/font_sizes/font_size = 16
+
+# Panel styles
+Panel/styles/panel = SubResource("panel_dark")
+PanelContainer/styles/panel = SubResource("panel_dark")
+
+# Progress bar styles
+ProgressBar/styles/background = SubResource("progress_bg")
+ProgressBar/styles/fill = SubResource("progress_fill")
+
+# Line edit styles
+LineEdit/styles/normal = SubResource("lineedit_normal")
+LineEdit/styles/focus = SubResource("lineedit_focus")
+LineEdit/colors/font_color = Color(0.94, 0.94, 0.98, 1)
+LineEdit/colors/font_placeholder_color = Color(0.5, 0.5, 0.55, 0.8)
+LineEdit/colors/caret_color = Color(0.98, 0.84, 0.44, 1)
+LineEdit/colors/selection_color = Color(0.35, 0.32, 0.52, 0.5)
+LineEdit/font_sizes/font_size = 18
+
+# RichTextLabel
+RichTextLabel/colors/default_color = Color(0.94, 0.94, 0.98, 1)
+RichTextLabel/font_sizes/normal_font_size = 16
+
+# TextEdit styles
+TextEdit/styles/normal = SubResource("lineedit_normal")
+TextEdit/styles/focus = SubResource("lineedit_focus")
+TextEdit/colors/font_color = Color(0.94, 0.94, 0.98, 1)
+TextEdit/colors/caret_color = Color(0.98, 0.84, 0.44, 1)
+TextEdit/colors/selection_color = Color(0.35, 0.32, 0.52, 0.5)

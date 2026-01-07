@@ -1,10 +1,12 @@
 extends Control
 
+const ThemeColors = preload("res://ui/theme_colors.gd")
+
 @onready var gold_label: Label = $TopBar/GoldLabel
 @onready var back_button: Button = $TopBar/BackButton
-@onready var modifiers_label: Label = $Scroll/Content/ModifiersLabel
-@onready var kingdom_list: VBoxContainer = $Scroll/Content/KingdomList
-@onready var unit_list: VBoxContainer = $Scroll/Content/UnitList
+@onready var modifiers_label: Label = $ContentPanel/Scroll/Content/ModifiersLabel
+@onready var kingdom_list: VBoxContainer = $ContentPanel/Scroll/Content/KingdomList
+@onready var unit_list: VBoxContainer = $ContentPanel/Scroll/Content/UnitList
 @onready var progression = get_node("/root/ProgressionState")
 @onready var game_controller = get_node("/root/GameController")
 @onready var audio_manager = get_node_or_null("/root/AudioManager")
@@ -91,18 +93,31 @@ func _build_upgrade_section(container: VBoxContainer, upgrades: Array) -> void:
 		var effects: Dictionary = upgrade.get("effects", {})
 
 		var panel = PanelContainer.new()
-		panel.custom_minimum_size = Vector2(0, 120)
+		panel.custom_minimum_size = Vector2(0, 100)
+
+		var card_style = StyleBoxFlat.new()
+		card_style.bg_color = ThemeColors.BG_CARD
+		card_style.border_color = ThemeColors.ACCENT if owned else ThemeColors.BORDER
+		card_style.set_border_width_all(2)
+		card_style.set_corner_radius_all(6)
+		card_style.set_content_margin_all(12)
+		panel.add_theme_stylebox_override("panel", card_style)
+
 		var box = VBoxContainer.new()
-		box.add_theme_constant_override("separation", 6)
+		box.add_theme_constant_override("separation", 8)
 		panel.add_child(box)
 
 		var title = Label.new()
 		title.text = "%s (%dg)" % [label, cost]
+		title.add_theme_font_size_override("font_size", 16)
+		title.add_theme_color_override("font_color", ThemeColors.ACCENT if owned else ThemeColors.TEXT)
 		box.add_child(title)
 
 		var desc = Label.new()
 		desc.text = description
 		desc.autowrap_mode = TextServer.AUTOWRAP_WORD
+		desc.add_theme_font_size_override("font_size", 14)
+		desc.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
 		box.add_child(desc)
 
 		var tags = _get_upgrade_tags(effects)
@@ -114,7 +129,7 @@ func _build_upgrade_section(container: VBoxContainer, upgrades: Array) -> void:
 			box.add_child(tag_row)
 
 		var button = Button.new()
-		button.custom_minimum_size = Vector2(0, 44)
+		button.custom_minimum_size = Vector2(0, 40)
 		if owned:
 			button.text = "Owned"
 			button.disabled = true
