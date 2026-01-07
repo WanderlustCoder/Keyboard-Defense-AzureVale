@@ -267,6 +267,22 @@
       "lengths": { "scout": [5, 7], "raider": [7, 9], "armored": [9, 12] }
     },
     {
+      "id": "boss_fen_seer",
+      "name": "Fen Seer",
+      "description": "Mistfen prophet who reads the fog.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz.,;:'\"!?-()[]{}",
+      "lengths": { "scout": [5, 7], "raider": [7, 10], "armored": [10, 14] }
+    },
+    {
+      "id": "boss_sunlord",
+      "name": "Sunlord Champion",
+      "description": "The blazing champion of Sunfields.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [4, 6], "raider": [6, 8], "armored": [8, 11] }
+    },
+    {
       "id": "common_words",
       "name": "Common Words",
       "description": "Frequently used English words.",

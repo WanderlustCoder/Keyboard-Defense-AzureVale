@@ -695,6 +695,198 @@
       "requires": ["consonant-cavern", "vowel-sanctuary"],
       "reward_gold": 65,
       "drill_template": "phonetic-mastery"
+    },
+    {
+      "id": "mistfen-approach",
+      "label": "Mistfen Approach",
+      "lesson_id": "biome_mistfen",
+      "requires": ["apex-tower"],
+      "reward_gold": 45,
+      "drill_template": "mistfen-approach"
+    },
+    {
+      "id": "foggy-causeway",
+      "label": "Foggy Causeway",
+      "lesson_id": "punctuation_1",
+      "requires": ["mistfen-approach"],
+      "reward_gold": 50,
+      "drill_template": "foggy-causeway"
+    },
+    {
+      "id": "murky-delta",
+      "label": "Murky Delta",
+      "lesson_id": "biome_mistfen",
+      "requires": ["foggy-causeway"],
+      "reward_gold": 55,
+      "drill_template": "murky-delta"
+    },
+    {
+      "id": "willows-rest",
+      "label": "Willow's Rest",
+      "lesson_id": "punctuation_2",
+      "requires": ["murky-delta"],
+      "reward_gold": 60,
+      "drill_template": "willows-rest"
+    },
+    {
+      "id": "heron-rookery",
+      "label": "Heron Rookery",
+      "lesson_id": "symbols_1",
+      "requires": ["willows-rest"],
+      "reward_gold": 65,
+      "drill_template": "heron-rookery"
+    },
+    {
+      "id": "reed-maze",
+      "label": "Reed Maze",
+      "lesson_id": "biome_mistfen",
+      "requires": ["heron-rookery"],
+      "reward_gold": 70,
+      "drill_template": "reed-maze"
+    },
+    {
+      "id": "sunken-temple",
+      "label": "Sunken Temple",
+      "lesson_id": "symbols_2",
+      "requires": ["reed-maze"],
+      "reward_gold": 75,
+      "drill_template": "sunken-temple"
+    },
+    {
+      "id": "mist-warden-lair",
+      "label": "Mist Warden Lair",
+      "lesson_id": "biome_mistfen",
+      "requires": ["sunken-temple"],
+      "reward_gold": 80,
+      "drill_template": "mist-warden-lair"
+    },
+    {
+      "id": "fens-edge",
+      "label": "Fen's Edge",
+      "lesson_id": "punctuation_1",
+      "requires": ["mist-warden-lair"],
+      "reward_gold": 85,
+      "drill_template": "fens-edge"
+    },
+    {
+      "id": "ancient-pier",
+      "label": "Ancient Pier",
+      "lesson_id": "symbols_1",
+      "requires": ["fens-edge"],
+      "reward_gold": 90,
+      "drill_template": "ancient-pier"
+    },
+    {
+      "id": "seer-sanctum",
+      "label": "Seer Sanctum",
+      "lesson_id": "biome_mistfen",
+      "requires": ["ancient-pier"],
+      "reward_gold": 100,
+      "drill_template": "seer-sanctum"
+    },
+    {
+      "id": "fen-seer-throne",
+      "label": "Fen Seer Throne",
+      "lesson_id": "boss_fen_seer",
+      "requires": ["seer-sanctum"],
+      "reward_gold": 150,
+      "drill_template": "fen-seer-throne"
+    },
+    {
+      "id": "sunfields-gateway",
+      "label": "Sunfields Gateway",
+      "lesson_id": "biome_sunfields",
+      "requires": ["apex-tower"],
+      "reward_gold": 45,
+      "drill_template": "sunfields-gateway"
+    },
+    {
+      "id": "golden-meadow",
+      "label": "Golden Meadow",
+      "lesson_id": "speed_alpha",
+      "requires": ["sunfields-gateway"],
+      "reward_gold": 50,
+      "drill_template": "golden-meadow"
+    },
+    {
+      "id": "harvest-road",
+      "label": "Harvest Road",
+      "lesson_id": "biome_sunfields",
+      "requires": ["golden-meadow"],
+      "reward_gold": 55,
+      "drill_template": "harvest-road"
+    },
+    {
+      "id": "windmill-heights",
+      "label": "Windmill Heights",
+      "lesson_id": "gauntlet_speed",
+      "requires": ["harvest-road"],
+      "reward_gold": 60,
+      "drill_template": "windmill-heights"
+    },
+    {
+      "id": "sunlit-orchard",
+      "label": "Sunlit Orchard",
+      "lesson_id": "biome_sunfields",
+      "requires": ["windmill-heights"],
+      "reward_gold": 65,
+      "drill_template": "sunlit-orchard"
+    },
+    {
+      "id": "champions-road",
+      "label": "Champion's Road",
+      "lesson_id": "speed_alpha",
+      "requires": ["sunlit-orchard"],
+      "reward_gold": 70,
+      "drill_template": "champions-road"
+    },
+    {
+      "id": "blazing-arena",
+      "label": "Blazing Arena",
+      "lesson_id": "gauntlet_speed",
+      "requires": ["champions-road"],
+      "reward_gold": 75,
+      "drill_template": "blazing-arena"
+    },
+    {
+      "id": "valor-grounds",
+      "label": "Valor Grounds",
+      "lesson_id": "biome_sunfields",
+      "requires": ["blazing-arena"],
+      "reward_gold": 80,
+      "drill_template": "valor-grounds"
+    },
+    {
+      "id": "trial-of-dawn",
+      "label": "Trial of Dawn",
+      "lesson_id": "time_trial_sprint",
+      "requires": ["valor-grounds"],
+      "reward_gold": 85,
+      "drill_template": "trial-of-dawn"
+    },
+    {
+      "id": "pinnacle-field",
+      "label": "Pinnacle Field",
+      "lesson_id": "biome_sunfields",
+      "requires": ["trial-of-dawn"],
+      "reward_gold": 90,
+      "drill_template": "pinnacle-field"
+    },
+    {
+      "id": "sunlord-approach",
+      "label": "Sunlord Approach",
+      "lesson_id": "gauntlet_endurance",
+      "requires": ["pinnacle-field"],
+      "reward_gold": 100,
+      "drill_template": "sunlord-approach"
+    },
+    {
+      "id": "sunlord-throne",
+      "label": "Sunlord Throne",
+      "lesson_id": "boss_sunlord",
+      "requires": ["sunlord-approach"],
+      "reward_gold": 175,
+      "drill_template": "sunlord-throne"
     }
   ]
 }
