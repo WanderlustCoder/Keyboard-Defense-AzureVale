@@ -1010,6 +1010,21 @@ static func _format_status(state: GameState) -> String:
             lines.append("Upgrades: %d purchased" % upgrade_count)
         else:
             lines.append("Upgrades: %s" % ", ".join(bonuses))
+    # Boss progress indicator
+    var boss_days: Array[int] = [5, 10, 15, 20]
+    var defeated_count: int = 0
+    var next_boss_day: int = 0
+    for bd in boss_days:
+        if state.day > bd:
+            defeated_count += 1
+        elif next_boss_day == 0:
+            next_boss_day = bd
+    if defeated_count == 4:
+        lines.append("Bosses: All 4 defeated!")
+    elif next_boss_day > 0:
+        lines.append("Bosses: %d/4 defeated (next: day %d)" % [defeated_count, next_boss_day])
+    else:
+        lines.append("Bosses: %d/4 defeated" % defeated_count)
     return "\n".join(lines)
 
 static func _format_tile_report(report: Dictionary) -> String:
