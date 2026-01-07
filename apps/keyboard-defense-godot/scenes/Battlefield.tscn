@@ -73,17 +73,13 @@ layout_mode = 2
 mouse_filter = 2
 script = ExtResource("2")
 
-[node name="Castle" type="ColorRect" parent="PlayField/BattleStage"]
-layout_mode = 0
-offset_right = 80.0
-offset_bottom = 70.0
-color = Color(0.22, 0.18, 0.26, 1)
+[node name="Castle" type="Sprite2D" parent="PlayField/BattleStage"]
+position = Vector2(80, 180)
+scale = Vector2(3, 3)
 
-[node name="Enemy" type="ColorRect" parent="PlayField/BattleStage"]
-layout_mode = 0
-offset_right = 60.0
-offset_bottom = 44.0
-color = Color(0.63, 0.22, 0.26, 1)
+[node name="Enemy" type="Sprite2D" parent="PlayField/BattleStage"]
+position = Vector2(700, 180)
+scale = Vector2(3, 3)
 
 [node name="ProjectileLayer" type="Control" parent="PlayField/BattleStage"]
 anchors_preset = 0

@@ -1,14 +1,18 @@
 extends Control
 
+const AssetLoader = preload("res://game/asset_loader.gd")
+
 const DEFAULT_STAGE_SIZE := Vector2(800, 360)
 const BREACH_RESET := 0.25
 const PROJECTILE_SPEED := 520.0
 const HIT_FLASH_DURATION := 0.18
+const SPRITE_SCALE := 3.0  # Scale 16px sprites to ~48px
 
-@onready var castle: ColorRect = $Castle
-@onready var enemy: ColorRect = $Enemy
+@onready var castle: Sprite2D = $Castle
+@onready var enemy: Sprite2D = $Enemy
 @onready var projectile_layer: Control = $ProjectileLayer
 
+var asset_loader: AssetLoader
 var progress: float = 0.0
 var breach_pending: bool = false
 var lane_left_x: float = 0.0
@@ -16,14 +20,52 @@ var lane_right_x: float = 0.0
 var lane_y: float = 0.0
 var projectiles: Array = []
 var hit_flash_timer: float = 0.0
-var enemy_base_color: Color = Color(0.63, 0.22, 0.26, 1)
+var current_enemy_kind: String = "runner"
+
+# Texture references
+var projectile_texture: Texture2D
+var magic_bolt_texture: Texture2D
 
 func _ready() -> void:
+	asset_loader = AssetLoader.new()
+	asset_loader._load_manifest()
+	_load_textures()
 	if not resized.is_connected(_on_resized):
 		resized.connect(_on_resized)
-	if enemy != null:
-		enemy_base_color = enemy.color
 	_layout()
+
+func _load_textures() -> void:
+	# Load castle texture
+	if castle != null:
+		var castle_tex := asset_loader.get_sprite_texture("bld_castle")
+		if castle_tex != null:
+			castle.texture = castle_tex
+			castle.scale = Vector2(SPRITE_SCALE, SPRITE_SCALE)
+
+	# Load default enemy texture
+	if enemy != null:
+		var enemy_tex := asset_loader.get_sprite_texture("enemy_runner")
+		if enemy_tex != null:
+			enemy.texture = enemy_tex
+			enemy.scale = Vector2(SPRITE_SCALE, SPRITE_SCALE)
+
+	# Cache projectile textures
+	projectile_texture = asset_loader.get_sprite_texture("fx_projectile")
+	magic_bolt_texture = asset_loader.get_sprite_texture("fx_magic_bolt")
+
+func set_enemy_kind(kind: String) -> void:
+	current_enemy_kind = kind
+	if enemy == null or asset_loader == null:
+		return
+	var sprite_id := asset_loader.get_enemy_sprite_id(kind)
+	var enemy_tex := asset_loader.get_sprite_texture(sprite_id)
+	if enemy_tex != null:
+		enemy.texture = enemy_tex
+		# Boss sprites are 32x32, regular are 16x16
+		if kind.begins_with("boss"):
+			enemy.scale = Vector2(SPRITE_SCALE * 0.75, SPRITE_SCALE * 0.75)
+		else:
+			enemy.scale = Vector2(SPRITE_SCALE, SPRITE_SCALE)
 
 func _on_resized() -> void:
 	_layout()
@@ -81,35 +123,58 @@ func reset_after_breach() -> void:
 func spawn_projectile(power_shot: bool = false) -> void:
 	if projectile_layer == null or castle == null:
 		return
-	var shot = ColorRect.new()
-	shot.color = Color(0.96, 0.82, 0.48, 1) if power_shot else Color(0.9, 0.72, 0.32, 1)
-	shot.size = Vector2(12, 4) if power_shot else Vector2(8, 3)
-	shot.position = Vector2(castle.position.x + castle.size.x - 4.0, lane_y)
+
+	var shot: Node2D
+	var use_sprite := projectile_texture != null
+
+	if use_sprite:
+		var sprite := Sprite2D.new()
+		sprite.texture = magic_bolt_texture if power_shot else projectile_texture
+		sprite.scale = Vector2(2.0, 2.0) if power_shot else Vector2(1.5, 1.5)
+		shot = sprite
+	else:
+		# Fallback to ColorRect if no texture
+		var rect := ColorRect.new()
+		rect.color = Color(0.96, 0.82, 0.48, 1) if power_shot else Color(0.9, 0.72, 0.32, 1)
+		rect.size = Vector2(12, 4) if power_shot else Vector2(8, 3)
+		shot = rect
+
+	var castle_size := _get_sprite_size(castle)
+	shot.position = Vector2(castle.position.x + castle_size.x * 0.5, lane_y)
 	projectile_layer.add_child(shot)
 	projectiles.append({
 		"node": shot,
 		"velocity": Vector2(PROJECTILE_SPEED, 0.0)
 	})
 
+func _get_sprite_size(sprite: Sprite2D) -> Vector2:
+	if sprite == null or sprite.texture == null:
+		return Vector2(48, 48)
+	return sprite.texture.get_size() * sprite.scale
+
 func _layout() -> void:
 	var stage_size = size
 	if stage_size.x <= 0.0 or stage_size.y <= 0.0:
 		stage_size = DEFAULT_STAGE_SIZE
+
 	if castle != null:
-		var castle_size = Vector2(min(stage_size.x * 0.16, 120.0), min(stage_size.x * 0.16, 120.0))
-		castle_size.y = max(48.0, castle_size.y * 0.85)
-		castle.size = castle_size
-		castle.position = Vector2(stage_size.x * 0.06, stage_size.y * 0.65 - castle_size.y * 0.5)
-	if enemy != null:
-		var enemy_size = Vector2(max(40.0, castle.size.x * 0.7), max(28.0, castle.size.y * 0.6))
-		enemy.size = enemy_size
+		var castle_size := _get_sprite_size(castle)
+		castle.position = Vector2(
+			stage_size.x * 0.08 + castle_size.x * 0.5,
+			stage_size.y * 0.65
+		)
+
 	lane_left_x = 0.0
 	lane_right_x = 0.0
 	lane_y = stage_size.y * 0.65
+
 	if castle != null:
-		lane_left_x = castle.position.x + castle.size.x + 24.0
+		var castle_size := _get_sprite_size(castle)
+		lane_left_x = castle.position.x + castle_size.x * 0.5 + 24.0
 	if enemy != null:
-		lane_right_x = stage_size.x - enemy.size.x - 24.0
+		var enemy_size := _get_sprite_size(enemy)
+		lane_right_x = stage_size.x - enemy_size.x * 0.5 - 24.0
+
 	_update_enemy_position()
 
 func _update_enemy_position() -> void:
@@ -118,7 +183,7 @@ func _update_enemy_position() -> void:
 	if lane_right_x == 0.0 and lane_left_x == 0.0:
 		_layout()
 	var x = lerp(lane_right_x, lane_left_x, progress)
-	enemy.position = Vector2(x, lane_y - enemy.size.y * 0.5)
+	enemy.position = Vector2(x, lane_y)
 
 func _update_projectiles(delta: float) -> void:
 	if projectiles.is_empty():
@@ -161,5 +226,7 @@ func _update_enemy_flash(delta: float) -> void:
 func _apply_enemy_flash(intensity: float) -> void:
 	if enemy == null:
 		return
-	var flash_color = Color(1.0, 0.76, 0.68, 1)
-	enemy.color = enemy_base_color.lerp(flash_color, intensity)
+	# Use modulate for sprite flash effect
+	var base_color := Color.WHITE
+	var flash_color := Color(1.5, 1.2, 1.0, 1.0)  # Bright flash
+	enemy.modulate = base_color.lerp(flash_color, intensity)
