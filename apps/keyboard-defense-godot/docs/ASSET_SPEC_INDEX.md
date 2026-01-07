@@ -38,7 +38,16 @@ This document serves as the master index for all Keyboard Defense asset specific
 | [ASSET_SPEC_AUDIO.md](ASSET_SPEC_AUDIO.md) | Music, SFX, voice, ambience | ~150 assets |
 | [ASSET_SPEC_ACCESSIBILITY.md](ASSET_SPEC_ACCESSIBILITY.md) | Colorblind, high contrast, assists | ~40 assets |
 
+### Technical Guides
+| Document | Description |
+|----------|-------------|
+| [ASSET_SPEC_ANIMATION.md](ASSET_SPEC_ANIMATION.md) | Timing, easing, frame standards |
+| [ASSET_SPEC_LOCALIZATION.md](ASSET_SPEC_LOCALIZATION.md) | I18n, keyboard layouts, text |
+| [ASSET_SPEC_PERFORMANCE.md](ASSET_SPEC_PERFORMANCE.md) | Budgets, optimization, profiling |
+| [ASSET_WORKFLOW.md](ASSET_WORKFLOW.md) | Creation pipeline, validation |
+
 **Total Documented Assets: ~1,030+**
+**Total Specification Documents: 18**
 
 ---
 
@@ -379,6 +388,12 @@ All assets must be registered in `data/assets_manifest.json`:
 - [Audio](ASSET_SPEC_AUDIO.md) - Music, SFX, voice, ambience
 - [Accessibility](ASSET_SPEC_ACCESSIBILITY.md) - Colorblind, contrast, assists
 
+### Technical Guides
+- [Animation](ASSET_SPEC_ANIMATION.md) - Timing, easing, frames
+- [Localization](ASSET_SPEC_LOCALIZATION.md) - I18n, keyboards, text
+- [Performance](ASSET_SPEC_PERFORMANCE.md) - Budgets, optimization
+- [Workflow](ASSET_WORKFLOW.md) - Creation pipeline
+
 ### Data
 - [Manifest](../data/assets_manifest.json) - Asset registry
 
@@ -390,5 +405,6 @@ All assets must be registered in `data/assets_manifest.json`:
 |------|--------|
 | Session 1 | Created core spec documents (Enemies, Towers, UI, Typing, Effects, Map, Characters) |
 | Session 2 | Added Projectiles, Audio, Pickups, Progression, Tutorial, Accessibility specs |
-| - | Updated index with organized categories and 1,030+ documented assets |
+| Session 2 | Added Animation, Localization, Performance, Workflow technical guides |
+| - | Total: 18 specification documents covering 1,030+ assets |
 
