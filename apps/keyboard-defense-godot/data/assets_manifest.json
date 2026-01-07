@@ -329,6 +329,196 @@
       "category": "icons"
     },
     {
+      "id": "node_battle",
+      "path": "res://assets/art/src-svg/icons/node_battle.svg",
+      "source_svg": "res://assets/art/src-svg/icons/node_battle.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "node_lesson",
+      "path": "res://assets/art/src-svg/icons/node_lesson.svg",
+      "source_svg": "res://assets/art/src-svg/icons/node_lesson.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "node_shop",
+      "path": "res://assets/art/src-svg/icons/node_shop.svg",
+      "source_svg": "res://assets/art/src-svg/icons/node_shop.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "node_boss",
+      "path": "res://assets/art/src-svg/icons/node_boss.svg",
+      "source_svg": "res://assets/art/src-svg/icons/node_boss.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "node_rest",
+      "path": "res://assets/art/src-svg/icons/node_rest.svg",
+      "source_svg": "res://assets/art/src-svg/icons/node_rest.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "node_event",
+      "path": "res://assets/art/src-svg/icons/node_event.svg",
+      "source_svg": "res://assets/art/src-svg/icons/node_event.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "upgrade_scribe_hall",
+      "path": "res://assets/art/src-svg/icons/upgrade_scribe_hall.svg",
+      "source_svg": "res://assets/art/src-svg/icons/upgrade_scribe_hall.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "upgrade_watchtower",
+      "path": "res://assets/art/src-svg/icons/upgrade_watchtower.svg",
+      "source_svg": "res://assets/art/src-svg/icons/upgrade_watchtower.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "upgrade_granary",
+      "path": "res://assets/art/src-svg/icons/upgrade_granary.svg",
+      "source_svg": "res://assets/art/src-svg/icons/upgrade_granary.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "row_home",
+      "path": "res://assets/art/src-svg/icons/row_home.svg",
+      "source_svg": "res://assets/art/src-svg/icons/row_home.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "row_upper",
+      "path": "res://assets/art/src-svg/icons/row_upper.svg",
+      "source_svg": "res://assets/art/src-svg/icons/row_upper.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "row_bottom",
+      "path": "res://assets/art/src-svg/icons/row_bottom.svg",
+      "source_svg": "res://assets/art/src-svg/icons/row_bottom.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "row_all",
+      "path": "res://assets/art/src-svg/icons/row_all.svg",
+      "source_svg": "res://assets/art/src-svg/icons/row_all.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_music",
+      "path": "res://assets/art/src-svg/icons/ico_music.svg",
+      "source_svg": "res://assets/art/src-svg/icons/ico_music.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_sfx",
+      "path": "res://assets/art/src-svg/icons/ico_sfx.svg",
+      "source_svg": "res://assets/art/src-svg/icons/ico_sfx.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_back",
+      "path": "res://assets/art/src-svg/icons/ico_back.svg",
+      "source_svg": "res://assets/art/src-svg/icons/ico_back.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_settings",
+      "path": "res://assets/art/src-svg/icons/ico_settings.svg",
+      "source_svg": "res://assets/art/src-svg/icons/ico_settings.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_shake",
+      "path": "res://assets/art/src-svg/icons/ico_shake.svg",
+      "source_svg": "res://assets/art/src-svg/icons/ico_shake.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_fullscreen",
+      "path": "res://assets/art/src-svg/icons/ico_fullscreen.svg",
+      "source_svg": "res://assets/art/src-svg/icons/ico_fullscreen.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
       "id": "poi_abandoned_wagon",
       "path": "res://assets/icons/poi_abandoned_wagon.png",
       "source_svg": "res://assets/art/src-svg/icons/poi_abandoned_wagon.svg",

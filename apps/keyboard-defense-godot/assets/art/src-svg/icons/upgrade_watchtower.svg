@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Watchtower Bells Upgrade Icon (16x16) - Tower with bell for threat reduction -->
+
+  <!-- Tower base -->
+  <rect x="5" y="10" width="6" height="6" fill="#5a5a6a"/>
+  <rect x="6" y="12" width="4" height="4" fill="#4a4a5a"/>
+
+  <!-- Tower body -->
+  <rect x="6" y="4" width="4" height="8" fill="#6a6a7a"/>
+  <rect x="7" y="5" width="2" height="6" fill="#5a5a6a"/>
+
+  <!-- Tower roof -->
+  <rect x="5" y="2" width="6" height="3" fill="#8b4513"/>
+  <rect x="6" y="1" width="4" height="2" fill="#a05a2c"/>
+  <rect x="7" y="0" width="2" height="2" fill="#8b4513"/>
+
+  <!-- Bell -->
+  <rect x="6" y="5" width="4" height="3" fill="#f4d03f"/>
+  <rect x="7" y="6" width="2" height="2" fill="#f9e79f"/>
+  <rect x="7" y="8" width="2" height="1" fill="#d4ac0d"/>
+
+  <!-- Bell clapper -->
+  <rect x="7" y="7" width="2" height="2" fill="#5c4033"/>
+
+  <!-- Sound waves (left) -->
+  <rect x="2" y="5" width="2" height="1" fill="#5dade2"/>
+  <rect x="1" y="6" width="3" height="1" fill="#85c1e9"/>
+  <rect x="2" y="7" width="2" height="1" fill="#5dade2"/>
+
+  <!-- Sound waves (right) -->
+  <rect x="12" y="5" width="2" height="1" fill="#5dade2"/>
+  <rect x="12" y="6" width="3" height="1" fill="#85c1e9"/>
+  <rect x="12" y="7" width="2" height="1" fill="#5dade2"/>
+
+  <!-- Window -->
+  <rect x="7" y="10" width="2" height="2" fill="#1a1a2e"/>
+
+  <!-- Door -->
+  <rect x="7" y="13" width="2" height="3" fill="#4a3728"/>
+</svg>

@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Shop Node Icon (16x16) - Merchant stall/coin purse -->
+
+  <!-- Awning top -->
+  <rect x="1" y="1" width="14" height="4" fill="#27ae60"/>
+  <rect x="1" y="1" width="4" height="4" fill="#2ecc71"/>
+  <rect x="8" y="1" width="4" height="4" fill="#2ecc71"/>
+
+  <!-- Awning stripes -->
+  <rect x="5" y="1" width="3" height="4" fill="#1e8449"/>
+  <rect x="12" y="1" width="3" height="4" fill="#1e8449"/>
+
+  <!-- Counter/stall -->
+  <rect x="2" y="5" width="12" height="9" fill="#8b6914"/>
+  <rect x="3" y="6" width="10" height="7" fill="#a67c00"/>
+
+  <!-- Shelf -->
+  <rect x="3" y="9" width="10" height="1" fill="#5c4033"/>
+
+  <!-- Items on shelf -->
+  <rect x="4" y="6" width="2" height="3" fill="#e74c3c"/>
+  <rect x="7" y="7" width="2" height="2" fill="#3498db"/>
+  <rect x="10" y="6" width="2" height="3" fill="#9b59b6"/>
+
+  <!-- Gold coins at bottom -->
+  <rect x="4" y="11" width="3" height="2" fill="#f4d03f"/>
+  <rect x="5" y="11" width="1" height="1" fill="#f9e79f"/>
+
+  <rect x="9" y="10" width="3" height="3" fill="#f4d03f"/>
+  <rect x="10" y="11" width="1" height="1" fill="#f9e79f"/>
+
+  <!-- Counter edge -->
+  <rect x="2" y="13" width="12" height="2" fill="#5c4033"/>
+</svg>

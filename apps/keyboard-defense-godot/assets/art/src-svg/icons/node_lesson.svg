@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Lesson Node Icon (16x16) - Open book for typing lessons -->
+
+  <!-- Book spine -->
+  <rect x="7" y="2" width="2" height="12" fill="#5c4033"/>
+
+  <!-- Left page -->
+  <rect x="1" y="3" width="7" height="11" fill="#f5f5dc"/>
+  <rect x="2" y="4" width="5" height="9" fill="#faf8ef"/>
+
+  <!-- Left page lines -->
+  <rect x="2" y="5" width="4" height="1" fill="#d5d5c5"/>
+  <rect x="2" y="7" width="4" height="1" fill="#d5d5c5"/>
+  <rect x="2" y="9" width="3" height="1" fill="#d5d5c5"/>
+
+  <!-- Right page -->
+  <rect x="8" y="3" width="7" height="11" fill="#f5f5dc"/>
+  <rect x="9" y="4" width="5" height="9" fill="#faf8ef"/>
+
+  <!-- Right page lines -->
+  <rect x="10" y="5" width="4" height="1" fill="#d5d5c5"/>
+  <rect x="10" y="7" width="4" height="1" fill="#d5d5c5"/>
+  <rect x="10" y="9" width="3" height="1" fill="#d5d5c5"/>
+
+  <!-- Book cover edges -->
+  <rect x="0" y="2" width="1" height="12" fill="#8b4513"/>
+  <rect x="15" y="2" width="1" height="12" fill="#8b4513"/>
+  <rect x="0" y="13" width="16" height="1" fill="#5c4033"/>
+
+  <!-- Bookmark -->
+  <rect x="12" y="1" width="2" height="4" fill="#c0392b"/>
+  <rect x="12" y="4" width="1" height="1" fill="#922b21"/>
+  <rect x="13" y="4" width="1" height="1" fill="#922b21"/>
+</svg>

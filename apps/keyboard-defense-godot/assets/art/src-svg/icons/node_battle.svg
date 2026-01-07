@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Battle Node Icon (16x16) - Crossed swords for combat encounters -->
+
+  <!-- Left sword -->
+  <rect x="2" y="2" width="2" height="10" fill="#7a7a8a" transform="rotate(-30 8 8)"/>
+  <rect x="2" y="1" width="2" height="3" fill="#f4d03f" transform="rotate(-30 8 8)"/>
+  <rect x="1" y="3" width="4" height="2" fill="#5c4033" transform="rotate(-30 8 8)"/>
+
+  <!-- Right sword -->
+  <rect x="12" y="2" width="2" height="10" fill="#7a7a8a" transform="rotate(30 8 8)"/>
+  <rect x="12" y="1" width="2" height="3" fill="#f4d03f" transform="rotate(30 8 8)"/>
+  <rect x="11" y="3" width="4" height="2" fill="#5c4033" transform="rotate(30 8 8)"/>
+
+  <!-- Simplified crossed swords using rects -->
+  <!-- Sword 1 (top-left to bottom-right) -->
+  <rect x="3" y="3" width="10" height="2" fill="#9a9aaa" transform="rotate(45 8 8)"/>
+  <rect x="2" y="3" width="3" height="2" fill="#f4d03f" transform="rotate(45 8 8)"/>
+
+  <!-- Sword 2 (top-right to bottom-left) -->
+  <rect x="3" y="3" width="10" height="2" fill="#7a7a8a" transform="rotate(-45 8 8)"/>
+  <rect x="2" y="3" width="3" height="2" fill="#f4d03f" transform="rotate(-45 8 8)"/>
+
+  <!-- Center clash effect -->
+  <rect x="6" y="6" width="4" height="4" fill="#f9e79f"/>
+  <rect x="7" y="7" width="2" height="2" fill="#fff"/>
+</svg>

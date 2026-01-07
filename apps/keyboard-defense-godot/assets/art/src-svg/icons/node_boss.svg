@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Boss Node Icon (16x16) - Skull with crown for boss encounters -->
+
+  <!-- Crown -->
+  <rect x="2" y="0" width="12" height="4" fill="#f4d03f"/>
+  <rect x="2" y="0" width="2" height="3" fill="#f9e79f"/>
+  <rect x="7" y="0" width="2" height="2" fill="#f9e79f"/>
+  <rect x="12" y="0" width="2" height="3" fill="#f9e79f"/>
+
+  <!-- Crown points -->
+  <rect x="3" y="0" width="2" height="1" fill="#f4d03f"/>
+  <rect x="6" y="0" width="4" height="1" fill="#f4d03f"/>
+  <rect x="11" y="0" width="2" height="1" fill="#f4d03f"/>
+
+  <!-- Crown gems -->
+  <rect x="4" y="1" width="2" height="2" fill="#e74c3c"/>
+  <rect x="10" y="1" width="2" height="2" fill="#e74c3c"/>
+  <rect x="7" y="2" width="2" height="1" fill="#9b59b6"/>
+
+  <!-- Skull -->
+  <rect x="3" y="4" width="10" height="8" fill="#f5f5f5"/>
+  <rect x="4" y="3" width="8" height="2" fill="#f5f5f5"/>
+  <rect x="5" y="11" width="6" height="3" fill="#f5f5f5"/>
+
+  <!-- Eye sockets -->
+  <rect x="4" y="6" width="3" height="3" fill="#1a1a2e"/>
+  <rect x="9" y="6" width="3" height="3" fill="#1a1a2e"/>
+
+  <!-- Eye glow -->
+  <rect x="5" y="7" width="1" height="1" fill="#e74c3c"/>
+  <rect x="10" y="7" width="1" height="1" fill="#e74c3c"/>
+
+  <!-- Nose hole -->
+  <rect x="7" y="9" width="2" height="2" fill="#1a1a2e"/>
+
+  <!-- Teeth -->
+  <rect x="5" y="12" width="1" height="2" fill="#e5e5e5"/>
+  <rect x="7" y="12" width="2" height="2" fill="#e5e5e5"/>
+  <rect x="10" y="12" width="1" height="2" fill="#e5e5e5"/>
+
+  <!-- Jaw line -->
+  <rect x="4" y="11" width="8" height="1" fill="#d5d5d5"/>
+</svg>
