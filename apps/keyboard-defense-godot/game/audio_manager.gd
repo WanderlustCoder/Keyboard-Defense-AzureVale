@@ -150,14 +150,14 @@ func _setup_audio_players() -> void:
 func _preload_audio() -> void:
 	# Preload all SFX
 	for sfx_id in _sfx_files:
-		var path := SFX_PATH + _sfx_files[sfx_id]
+		var path: String = SFX_PATH + str(_sfx_files[sfx_id])
 		var stream := load(path) as AudioStream
 		if stream != null:
 			_sfx_cache[sfx_id] = stream
 
 	# Preload all music
 	for music_id in _music_files:
-		var path := MUSIC_PATH + _music_files[music_id]
+		var path: String = MUSIC_PATH + str(_music_files[music_id])
 		var stream := load(path) as AudioStream
 		if stream != null:
 			_music_cache[music_id] = stream

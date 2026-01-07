@@ -125,8 +125,8 @@ func spawn_projectile(power_shot: bool = false) -> void:
 	if projectile_layer == null or castle == null:
 		return
 
-	var shot: Node2D
-	var use_sprite := projectile_texture != null
+	var shot: CanvasItem
+	var use_sprite: bool = projectile_texture != null
 
 	if use_sprite:
 		var sprite := Sprite2D.new()
@@ -134,7 +134,6 @@ func spawn_projectile(power_shot: bool = false) -> void:
 		sprite.scale = Vector2(2.0, 2.0) if power_shot else Vector2(1.5, 1.5)
 		shot = sprite
 	else:
-		# Fallback to ColorRect if no texture
 		var rect := ColorRect.new()
 		rect.color = Color(0.96, 0.82, 0.48, 1) if power_shot else Color(0.9, 0.72, 0.32, 1)
 		rect.size = Vector2(12, 4) if power_shot else Vector2(8, 3)

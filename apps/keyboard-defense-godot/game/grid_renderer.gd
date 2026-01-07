@@ -231,9 +231,9 @@ func _draw() -> void:
 
 func _draw_centered_texture(rect: Rect2, tex: Texture2D, mod_color: Color = Color.WHITE) -> void:
 	var tex_size := tex.get_size()
-	var scale_factor := min(rect.size.x / tex_size.x, rect.size.y / tex_size.y) * 0.9
-	var scaled_size := tex_size * scale_factor
-	var offset := (rect.size - scaled_size) * 0.5
+	var scale_factor: float = minf(rect.size.x / tex_size.x, rect.size.y / tex_size.y) * 0.9
+	var scaled_size: Vector2 = tex_size * scale_factor
+	var offset: Vector2 = (rect.size - scaled_size) * 0.5
 	var dest_rect := Rect2(rect.position + offset, scaled_size)
 	draw_texture_rect(tex, dest_rect, false, mod_color)
 
