@@ -307,7 +307,15 @@ static func parse(command: String) -> Dictionary:
                         if compact_arg == "on" or compact_arg == "off" or compact_arg == "toggle":
                             return {"ok": true, "intent": SimIntents.make("ui_settings_compact", {"mode": compact_arg})}
                     return {"ok": false, "error": "Usage: settings compact [on|off|toggle]"}
-            return {"ok": false, "error": "Usage: settings [show|hide|lessons|prefs|verify|conflicts|resolve|export|scale|font|compact]"}
+                if mode == "motion" or mode == "reducedmotion":
+                    if tokens.size() == 2:
+                        return {"ok": true, "intent": SimIntents.make("ui_settings_motion", {"mode": "toggle"})}
+                    if tokens.size() == 3:
+                        var motion_arg: String = tokens[2].to_lower()
+                        if motion_arg == "on" or motion_arg == "off" or motion_arg == "toggle" or motion_arg == "reduced" or motion_arg == "full":
+                            return {"ok": true, "intent": SimIntents.make("ui_settings_motion", {"mode": motion_arg})}
+                    return {"ok": false, "error": "Usage: settings motion [on|off|toggle|reduced|full]"}
+            return {"ok": false, "error": "Usage: settings [show|hide|lessons|prefs|verify|conflicts|resolve|export|scale|font|compact|motion]"}
         "tutorial":
             if tokens.size() == 1:
                 return {"ok": true, "intent": SimIntents.make("ui_tutorial_toggle")}

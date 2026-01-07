@@ -94,6 +94,7 @@ var lessons_sparkline: bool = true
 var economy_note_shown: bool = false
 var ui_scale_percent: int = 100
 var compact_panels: bool = false
+var reduced_motion: bool = false
 var cycle_goal_keybind: Dictionary = {}
 var toggle_settings_keybind: Dictionary = {}
 var toggle_lessons_keybind: Dictionary = {}
@@ -220,7 +221,7 @@ func _on_command_submitted(command: String) -> void:
                 if prev_combo >= 3 and typing_stats.current_combo == 0:
                     if audio_manager != null:
                         audio_manager.play_sfx(audio_manager.SFX.COMBO_BREAK)
-                    if grid_renderer != null:
+                    if grid_renderer != null and not reduced_motion:
                         grid_renderer.spawn_combo_break()
             else:
                 typing_stats.record_command_enter(intent_kind, intent_kind == "wait")
@@ -289,6 +290,9 @@ func _on_command_submitted(command: String) -> void:
             return
         if intent_kind == "ui_settings_compact":
             _apply_settings_compact(parsed.intent)
+            return
+        if intent_kind == "ui_settings_motion":
+            _apply_settings_motion(parsed.intent)
             return
         if intent_kind == "ui_settings_verify":
             _apply_settings_verify()
@@ -364,7 +368,7 @@ func _on_command_submitted(command: String) -> void:
                 if prev_combo >= 3 and typing_stats.current_combo == 0:
                     if audio_manager != null:
                         audio_manager.play_sfx(audio_manager.SFX.COMBO_BREAK)
-                    if grid_renderer != null:
+                    if grid_renderer != null and not reduced_motion:
                         grid_renderer.spawn_combo_break()
             command_bar.accept_submission(trimmed)
             var defend_intent: Dictionary = {"kind": "defend_input", "text": command}
@@ -539,7 +543,7 @@ func _trigger_event_audio(events: Array) -> void:
 
 ## Trigger visual effects based on game event strings
 func _trigger_event_visuals(events: Array) -> void:
-        if grid_renderer == null:
+        if grid_renderer == null or reduced_motion:
                 return
         for event in events:
                 var text: String = str(event)
@@ -838,6 +842,21 @@ func _apply_settings_compact(intent: Dictionary) -> void:
     _refresh_history_panel()
     _refresh_trend_panel()
     _refresh_wave_panel()
+    command_bar.grab_focus()
+
+func _apply_settings_motion(intent: Dictionary) -> void:
+    var mode: String = str(intent.get("mode", "toggle"))
+    if mode == "toggle":
+        reduced_motion = not reduced_motion
+    elif mode == "on" or mode == "reduced":
+        reduced_motion = true
+    elif mode == "off" or mode == "full":
+        reduced_motion = false
+    var state_text: String = "REDUCED" if reduced_motion else "FULL"
+    _append_log(["Motion effects: %s (settings motion reduced|full|toggle)" % state_text])
+    if reduced_motion:
+        _append_log(["Particle effects disabled for accessibility."])
+    _refresh_settings_panel()
     command_bar.grab_focus()
 
 func _apply_help(intent: Dictionary) -> void:
@@ -1692,6 +1711,7 @@ func _refresh_settings_panel() -> void:
         lines.append("Tip: lessons sparkline off reduces panel noise")
         lines.append("UI Scale: %d%% (settings scale|font 80..140 | + | - | reset)" % ui_scale_percent)
         lines.append("Compact Panels: %s (settings compact on|off|toggle)" % ("ON" if compact_panels else "OFF"))
+        lines.append("Motion Effects: %s (settings motion reduced|full|toggle)" % ("REDUCED" if reduced_motion else "FULL"))
         lines.append("Compact effect: hides lesson samples; trims history; caps wave list.")
         lines.append("Type: settings verify")
         lines.append("Type: bind <action>")
