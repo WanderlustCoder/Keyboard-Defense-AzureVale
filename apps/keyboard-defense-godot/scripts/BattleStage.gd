@@ -1,6 +1,7 @@
 extends Control
 
 const AssetLoader = preload("res://game/asset_loader.gd")
+const HitEffects = preload("res://game/hit_effects.gd")
 
 const DEFAULT_STAGE_SIZE := Vector2(800, 360)
 const BREACH_RESET := 0.25
@@ -8,12 +9,15 @@ const PROJECTILE_SPEED := 520.0
 const HIT_FLASH_DURATION := 0.18
 const SPRITE_SCALE := 3.0  # Scale 16px sprites to ~48px
 
+signal castle_damaged
+
 @onready var castle: Sprite2D = $Castle
 @onready var enemy: Sprite2D = $Enemy
 @onready var projectile_layer: Control = $ProjectileLayer
 @onready var audio_manager = get_node_or_null("/root/AudioManager")
 
 var asset_loader: AssetLoader
+var hit_effects: HitEffects
 var progress: float = 0.0
 var breach_pending: bool = false
 var lane_left_x: float = 0.0
@@ -22,6 +26,7 @@ var lane_y: float = 0.0
 var projectiles: Array = []
 var hit_flash_timer: float = 0.0
 var current_enemy_kind: String = "runner"
+var _last_projectile_power: bool = false
 
 # Texture references
 var projectile_texture: Texture2D
@@ -30,6 +35,7 @@ var magic_bolt_texture: Texture2D
 func _ready() -> void:
 	asset_loader = AssetLoader.new()
 	asset_loader._load_manifest()
+	hit_effects = HitEffects.new()
 	_load_textures()
 	if not resized.is_connected(_on_resized):
 		resized.connect(_on_resized)
@@ -95,6 +101,8 @@ func advance(delta: float, threat_rate: float) -> void:
 	_update_enemy_position()
 	_update_projectiles(delta)
 	_update_enemy_flash(delta)
+	if hit_effects != null:
+		hit_effects.update(delta)
 
 func apply_relief(amount_percent: float) -> void:
 	if amount_percent <= 0.0:
@@ -125,6 +133,7 @@ func spawn_projectile(power_shot: bool = false) -> void:
 	if projectile_layer == null or castle == null:
 		return
 
+	_last_projectile_power = power_shot
 	var shot: CanvasItem
 	var use_sprite: bool = projectile_texture != null
 
@@ -144,7 +153,8 @@ func spawn_projectile(power_shot: bool = false) -> void:
 	projectile_layer.add_child(shot)
 	projectiles.append({
 		"node": shot,
-		"velocity": Vector2(PROJECTILE_SPEED, 0.0)
+		"velocity": Vector2(PROJECTILE_SPEED, 0.0),
+		"power": power_shot
 	})
 
 func _get_sprite_size(sprite: Sprite2D) -> Vector2:
@@ -200,9 +210,12 @@ func _update_projectiles(delta: float) -> void:
 		var velocity: Vector2 = entry.get("velocity", Vector2.ZERO)
 		node.position += velocity * delta
 		if enemy != null and node.position.x >= enemy.position.x:
+			var is_power: bool = entry.get("power", false)
+			var hit_pos := node.position
 			node.queue_free()
 			projectiles.remove_at(i)
 			_flash_enemy()
+			_spawn_hit_effect(hit_pos, is_power)
 
 func _clear_projectiles() -> void:
 	for entry in projectiles:
@@ -232,3 +245,19 @@ func _apply_enemy_flash(intensity: float) -> void:
 	var base_color := Color.WHITE
 	var flash_color := Color(1.5, 1.2, 1.0, 1.0)  # Bright flash
 	enemy.modulate = base_color.lerp(flash_color, intensity)
+
+func _spawn_hit_effect(hit_position: Vector2, is_power_shot: bool) -> void:
+	if hit_effects == null or projectile_layer == null:
+		return
+	if is_power_shot:
+		hit_effects.spawn_power_burst(projectile_layer, hit_position)
+	else:
+		hit_effects.spawn_hit_sparks(projectile_layer, hit_position)
+
+func spawn_castle_damage_effect() -> void:
+	if hit_effects == null or projectile_layer == null or castle == null:
+		return
+	var castle_size := _get_sprite_size(castle)
+	var pos := castle.position + Vector2(castle_size.x * 0.3, -castle_size.y * 0.2)
+	hit_effects.spawn_damage_flash(projectile_layer, pos)
+	castle_damaged.emit()

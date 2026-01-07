@@ -123,12 +123,25 @@ var active = true
 var result_action = "map"
 var battle_tutorial: BattleTutorial = null
 
+# Screen shake state
+var _shake_intensity: float = 0.0
+var _shake_duration: float = 0.0
+var _shake_offset: Vector2 = Vector2.ZERO
+const SHAKE_DECAY := 5.0
+
+# Combo indicator
+var combo_label: Label = null
+var _combo_pulse_timer: float = 0.0
+var _combo_scale: float = 1.0
+const COMBO_PULSE_DURATION := 0.15
+
 func _ready() -> void:
 	exit_button.pressed.connect(_on_exit_pressed)
 	result_button.pressed.connect(_on_result_pressed)
 	result_panel.visible = false
 	_setup_pause_panel()
 	_setup_debug_panel()
+	_setup_combo_indicator()
 	_initialize_battle()
 
 func _initialize_battle() -> void:
@@ -215,6 +228,8 @@ func _process(delta: float) -> void:
 		return
 	_update_buffs(delta)
 	_update_feedback(delta)
+	_update_screen_shake(delta)
+	_update_combo_indicator(delta)
 	if drill_mode == "intermission":
 		drill_timer = max(0.0, drill_timer - delta)
 		if battle_stage != null:
@@ -233,6 +248,8 @@ func _process(delta: float) -> void:
 		if battle_stage.consume_breach():
 			castle_health -= 1
 			battle_stage.reset_after_breach()
+			battle_stage.spawn_castle_damage_effect()
+			_trigger_screen_shake(12.0, 0.3)
 			if audio_manager != null:
 				audio_manager.play_hit_player()
 			# Tutorial trigger for castle damage
@@ -253,6 +270,7 @@ func _process(delta: float) -> void:
 		if threat >= 100.0:
 			castle_health -= 1
 			_set_threat(25.0)
+			_trigger_screen_shake(12.0, 0.3)
 			# Tutorial trigger for castle damage
 			if battle_tutorial != null:
 				battle_tutorial.fire_trigger("castle_damaged")
@@ -851,8 +869,10 @@ func _reset_streaks() -> void:
 func _advance_streaks(status: String) -> void:
 	if status == "progress" or status == "word_complete" or status == "lesson_complete":
 		input_streak += 1
+		_pulse_combo_indicator()
 	if status == "word_complete" or status == "lesson_complete":
 		word_streak += 1
+		_pulse_combo_indicator()
 
 func _check_buff_triggers() -> void:
 	if word_streak >= BUFF_WORD_STREAK:
@@ -1057,3 +1077,90 @@ func _on_debug_copy_pressed() -> void:
 func _on_debug_close_pressed() -> void:
 	if debug_panel != null:
 		debug_panel.visible = false
+
+func _trigger_screen_shake(intensity: float, duration: float) -> void:
+	_shake_intensity = intensity
+	_shake_duration = duration
+
+func _update_screen_shake(delta: float) -> void:
+	if _shake_duration <= 0.0:
+		if _shake_offset != Vector2.ZERO:
+			position -= _shake_offset
+			_shake_offset = Vector2.ZERO
+		return
+
+	_shake_duration -= delta
+	var current_intensity := _shake_intensity * (_shake_duration / 0.3)
+
+	# Remove previous offset
+	position -= _shake_offset
+
+	# Calculate new offset
+	_shake_offset = Vector2(
+		randf_range(-current_intensity, current_intensity),
+		randf_range(-current_intensity, current_intensity)
+	)
+
+	# Apply new offset
+	position += _shake_offset
+
+	if _shake_duration <= 0.0:
+		position -= _shake_offset
+		_shake_offset = Vector2.ZERO
+
+func _setup_combo_indicator() -> void:
+	combo_label = Label.new()
+	combo_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	combo_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	combo_label.add_theme_font_size_override("font_size", 16)
+	combo_label.add_theme_color_override("font_color", Color(0.98, 0.84, 0.44, 0.9))
+	combo_label.visible = false
+	combo_label.pivot_offset = Vector2(40, 10)  # Center for scaling
+	add_child(combo_label)
+	# Position near the drill target
+	combo_label.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	combo_label.position = Vector2(-40, 95)
+	combo_label.custom_minimum_size = Vector2(80, 20)
+
+func _update_combo_indicator(delta: float) -> void:
+	if combo_label == null:
+		return
+
+	var total_streak := input_streak + word_streak * 2
+	if total_streak < 3:
+		combo_label.visible = false
+		return
+
+	combo_label.visible = true
+
+	# Determine combo tier and color
+	var combo_text := ""
+	var combo_color := Color(0.98, 0.84, 0.44, 0.9)  # Gold
+
+	if total_streak >= 30:
+		combo_text = "BLAZING x%d" % total_streak
+		combo_color = Color(1.0, 0.5, 0.2, 1.0)  # Orange
+	elif total_streak >= 20:
+		combo_text = "HOT x%d" % total_streak
+		combo_color = Color(0.98, 0.84, 0.44, 1.0)  # Gold
+	elif total_streak >= 10:
+		combo_text = "COMBO x%d" % total_streak
+		combo_color = Color(0.65, 0.86, 1.0, 0.95)  # Cyan
+	else:
+		combo_text = "x%d" % total_streak
+		combo_color = Color(0.75, 0.75, 0.82, 0.85)  # Silver
+
+	combo_label.text = combo_text
+	combo_label.add_theme_color_override("font_color", combo_color)
+
+	# Handle pulse animation
+	if _combo_pulse_timer > 0.0:
+		_combo_pulse_timer -= delta
+		var pulse_progress := 1.0 - (_combo_pulse_timer / COMBO_PULSE_DURATION)
+		_combo_scale = 1.0 + (1.0 - pulse_progress) * 0.3  # Start big, shrink to normal
+		combo_label.scale = Vector2(_combo_scale, _combo_scale)
+	else:
+		combo_label.scale = Vector2(1.0, 1.0)
+
+func _pulse_combo_indicator() -> void:
+	_combo_pulse_timer = COMBO_PULSE_DURATION
