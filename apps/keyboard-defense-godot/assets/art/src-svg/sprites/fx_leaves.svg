@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Falling Leaves Effect (32x32) - Autumn leaves -->
+
+  <!-- Green leaves -->
+  <rect x="3" y="2" width="3" height="2" fill="#27ae60"/>
+  <rect x="4" y="1" width="2" height="1" fill="#2ecc71"/>
+
+  <rect x="20" y="8" width="3" height="2" fill="#27ae60"/>
+  <rect x="21" y="7" width="2" height="1" fill="#2ecc71"/>
+
+  <!-- Orange leaves -->
+  <rect x="10" y="5" width="3" height="2" fill="#e67e22"/>
+  <rect x="11" y="4" width="2" height="1" fill="#f39c12"/>
+
+  <rect x="26" y="14" width="3" height="2" fill="#e67e22"/>
+  <rect x="27" y="13" width="2" height="1" fill="#f39c12"/>
+
+  <!-- Red leaves -->
+  <rect x="5" y="18" width="3" height="2" fill="#c0392b"/>
+  <rect x="6" y="17" width="2" height="1" fill="#e74c3c"/>
+
+  <rect x="16" y="22" width="3" height="2" fill="#c0392b"/>
+  <rect x="17" y="21" width="2" height="1" fill="#e74c3c"/>
+
+  <!-- Yellow leaves -->
+  <rect x="12" y="12" width="3" height="2" fill="#f4d03f"/>
+  <rect x="13" y="11" width="2" height="1" fill="#f9e79f"/>
+
+  <rect x="28" y="26" width="3" height="2" fill="#f4d03f"/>
+  <rect x="29" y="25" width="2" height="1" fill="#f9e79f"/>
+
+  <!-- More scattered -->
+  <rect x="1" y="28" width="2" height="2" fill="#27ae60"/>
+  <rect x="22" y="3" width="2" height="2" fill="#e74c3c"/>
+</svg>

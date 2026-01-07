@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Snow Effect (32x32) - Tileable snowflakes -->
+
+  <!-- Snowflakes - various sizes -->
+  <rect x="3" y="2" width="2" height="2" fill="#fff"/>
+  <rect x="10" y="5" width="1" height="1" fill="#ecf0f1"/>
+  <rect x="18" y="1" width="2" height="2" fill="#fff"/>
+  <rect x="26" y="4" width="1" height="1" fill="#ecf0f1"/>
+
+  <rect x="6" y="10" width="1" height="1" fill="#fff"/>
+  <rect x="14" y="8" width="2" height="2" fill="#ecf0f1"/>
+  <rect x="22" y="11" width="1" height="1" fill="#fff"/>
+  <rect x="29" y="9" width="2" height="2" fill="#ecf0f1"/>
+
+  <rect x="2" y="16" width="2" height="2" fill="#ecf0f1"/>
+  <rect x="9" y="18" width="1" height="1" fill="#fff"/>
+  <rect x="17" y="15" width="1" height="1" fill="#fff"/>
+  <rect x="24" y="17" width="2" height="2" fill="#ecf0f1"/>
+
+  <rect x="5" y="24" width="1" height="1" fill="#fff"/>
+  <rect x="12" y="22" width="2" height="2" fill="#ecf0f1"/>
+  <rect x="20" y="25" width="1" height="1" fill="#fff"/>
+  <rect x="27" y="23" width="1" height="1" fill="#ecf0f1"/>
+
+  <rect x="1" y="29" width="1" height="1" fill="#ecf0f1"/>
+  <rect x="15" y="28" width="2" height="2" fill="#fff"/>
+  <rect x="30" y="30" width="1" height="1" fill="#fff"/>
+</svg>

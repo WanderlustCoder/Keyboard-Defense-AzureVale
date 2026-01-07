@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Active Tower Slot (16x16) - Selected/highlighted -->
+
+  <!-- Solid square outline -->
+  <rect x="2" y="2" width="12" height="2" fill="#2ecc71"/>
+  <rect x="2" y="12" width="12" height="2" fill="#2ecc71"/>
+  <rect x="2" y="2" width="2" height="12" fill="#2ecc71"/>
+  <rect x="12" y="2" width="2" height="12" fill="#2ecc71"/>
+
+  <!-- Inner glow -->
+  <rect x="4" y="4" width="8" height="8" fill="#27ae60" fill-opacity="0.3"/>
+
+  <!-- Plus sign in center -->
+  <rect x="7" y="5" width="2" height="6" fill="#2ecc71"/>
+  <rect x="5" y="7" width="6" height="2" fill="#2ecc71"/>
+
+  <!-- Bright center -->
+  <rect x="7" y="7" width="2" height="2" fill="#58d68d"/>
+
+  <!-- Corner highlights -->
+  <rect x="3" y="3" width="1" height="1" fill="#82e0aa"/>
+  <rect x="12" y="3" width="1" height="1" fill="#82e0aa"/>
+  <rect x="3" y="12" width="1" height="1" fill="#82e0aa"/>
+  <rect x="12" y="12" width="1" height="1" fill="#82e0aa"/>
+</svg>

@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 16" width="64" height="16">
+  <!-- Heal Effect Animation (64x16 = 4 frames of 16x16) -->
+
+  <!-- Frame 1: Sparkle appear -->
+  <rect x="7" y="7" width="2" height="2" fill="#2ecc71"/>
+  <rect x="6" y="6" width="4" height="4" fill="#58d68d"/>
+  <rect x="7" y="5" width="2" height="1" fill="#82e0aa"/>
+  <rect x="7" y="10" width="2" height="1" fill="#82e0aa"/>
+  <rect x="5" y="7" width="1" height="2" fill="#82e0aa"/>
+  <rect x="10" y="7" width="1" height="2" fill="#82e0aa"/>
+
+  <!-- Frame 2: Plus sign forming -->
+  <rect x="23" y="4" width="2" height="8" fill="#2ecc71"/>
+  <rect x="20" y="7" width="8" height="2" fill="#2ecc71"/>
+  <rect x="23" y="5" width="2" height="2" fill="#58d68d"/>
+  <rect x="21" y="7" width="2" height="2" fill="#58d68d"/>
+  <rect x="23" y="7" width="2" height="2" fill="#82e0aa"/>
+
+  <!-- Frame 3: Glowing plus -->
+  <rect x="39" y="3" width="2" height="10" fill="#27ae60"/>
+  <rect x="35" y="7" width="10" height="2" fill="#27ae60"/>
+  <rect x="39" y="4" width="2" height="2" fill="#2ecc71"/>
+  <rect x="36" y="7" width="2" height="2" fill="#2ecc71"/>
+  <rect x="39" y="7" width="2" height="2" fill="#58d68d"/>
+  <!-- Sparkles -->
+  <rect x="34" y="4" width="1" height="1" fill="#82e0aa"/>
+  <rect x="45" y="5" width="1" height="1" fill="#82e0aa"/>
+  <rect x="35" y="11" width="1" height="1" fill="#82e0aa"/>
+  <rect x="44" y="10" width="1" height="1" fill="#82e0aa"/>
+
+  <!-- Frame 4: Fading out -->
+  <rect x="55" y="5" width="2" height="6" fill="#58d68d"/>
+  <rect x="52" y="7" width="8" height="2" fill="#58d68d"/>
+  <!-- Rising particles -->
+  <rect x="51" y="2" width="1" height="1" fill="#82e0aa"/>
+  <rect x="56" y="1" width="1" height="1" fill="#82e0aa"/>
+  <rect x="60" y="3" width="1" height="1" fill="#82e0aa"/>
+  <rect x="53" y="12" width="1" height="1" fill="#82e0aa"/>
+  <rect x="58" y="11" width="1" height="1" fill="#82e0aa"/>
+</svg>
