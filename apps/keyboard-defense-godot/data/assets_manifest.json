@@ -1454,147 +1454,227 @@
   "audio": [
     {
       "id": "ui_keytap",
+      "path": "res://assets/audio/sfx/ui_keytap.wav",
       "preset_ref": "sfx_presets.json#ui_keytap",
       "category": "ui",
       "description": "Subtle key press sound"
     },
     {
       "id": "ui_confirm",
+      "path": "res://assets/audio/sfx/ui_confirm.wav",
       "preset_ref": "sfx_presets.json#ui_confirm",
       "category": "ui",
       "description": "Positive confirmation"
     },
     {
       "id": "ui_cancel",
+      "path": "res://assets/audio/sfx/ui_cancel.wav",
       "preset_ref": "sfx_presets.json#ui_cancel",
       "category": "ui",
       "description": "Negative cancel"
     },
     {
       "id": "type_correct",
+      "path": "res://assets/audio/sfx/type_correct.wav",
       "preset_ref": "sfx_presets.json#type_correct",
       "category": "typing",
       "description": "Correct character typed"
     },
     {
       "id": "type_mistake",
+      "path": "res://assets/audio/sfx/type_mistake.wav",
       "preset_ref": "sfx_presets.json#type_mistake",
       "category": "typing",
       "description": "Incorrect character typed"
     },
     {
       "id": "combo_up",
+      "path": "res://assets/audio/sfx/combo_up.wav",
       "preset_ref": "sfx_presets.json#combo_up",
       "category": "typing",
       "description": "Combo milestone reached"
     },
     {
       "id": "combo_break",
+      "path": "res://assets/audio/sfx/combo_break.wav",
       "preset_ref": "sfx_presets.json#combo_break",
       "category": "typing",
       "description": "Combo broken"
     },
     {
       "id": "build_place",
+      "path": "res://assets/audio/sfx/build_place.wav",
       "preset_ref": "sfx_presets.json#build_place",
       "category": "world",
       "description": "Building placement"
     },
     {
       "id": "build_complete",
+      "path": "res://assets/audio/sfx/build_complete.wav",
       "preset_ref": "sfx_presets.json#build_complete",
       "category": "world",
       "description": "Building finished"
     },
     {
       "id": "resource_pickup",
+      "path": "res://assets/audio/sfx/resource_pickup.wav",
       "preset_ref": "sfx_presets.json#resource_pickup",
       "category": "world",
       "description": "Resource collected"
     },
     {
       "id": "unit_spawn",
+      "path": "res://assets/audio/sfx/unit_spawn.wav",
       "preset_ref": "sfx_presets.json#unit_spawn",
       "category": "world",
       "description": "Friendly unit appears"
     },
     {
       "id": "enemy_spawn",
+      "path": "res://assets/audio/sfx/enemy_spawn.wav",
       "preset_ref": "sfx_presets.json#enemy_spawn",
       "category": "world",
       "description": "Enemy appears"
     },
     {
       "id": "hit_player",
+      "path": "res://assets/audio/sfx/hit_player.wav",
       "preset_ref": "sfx_presets.json#hit_player",
       "category": "combat",
       "description": "Player takes damage"
     },
     {
       "id": "hit_enemy",
+      "path": "res://assets/audio/sfx/hit_enemy.wav",
       "preset_ref": "sfx_presets.json#hit_enemy",
       "category": "combat",
       "description": "Enemy hit/defeated"
     },
     {
       "id": "wave_start",
+      "path": "res://assets/audio/sfx/wave_start.wav",
       "preset_ref": "sfx_presets.json#wave_start",
       "category": "world",
       "description": "New wave begins"
     },
     {
       "id": "wave_end",
+      "path": "res://assets/audio/sfx/wave_end.wav",
       "preset_ref": "sfx_presets.json#wave_end",
       "category": "world",
       "description": "Wave completed"
     },
     {
       "id": "victory_fanfare",
+      "path": "res://assets/audio/sfx/victory_fanfare.wav",
       "preset_ref": "sfx_presets.json#victory_fanfare",
       "category": "stinger",
       "description": "Level/battle won"
     },
     {
       "id": "defeat_stinger",
+      "path": "res://assets/audio/sfx/defeat_stinger.wav",
       "preset_ref": "sfx_presets.json#defeat_stinger",
       "category": "stinger",
       "description": "Level/battle lost"
     },
     {
       "id": "level_up",
+      "path": "res://assets/audio/sfx/level_up.wav",
       "preset_ref": "sfx_presets.json#level_up",
       "category": "progression",
       "description": "Character level up"
     },
     {
       "id": "achievement_unlock",
+      "path": "res://assets/audio/sfx/achievement_unlock.wav",
       "preset_ref": "sfx_presets.json#achievement_unlock",
       "category": "progression",
       "description": "Achievement unlocked"
     },
     {
       "id": "upgrade_purchase",
+      "path": "res://assets/audio/sfx/upgrade_purchase.wav",
       "preset_ref": "sfx_presets.json#upgrade_purchase",
       "category": "progression",
       "description": "Upgrade purchased"
     },
     {
       "id": "tutorial_ding",
+      "path": "res://assets/audio/sfx/tutorial_ding.wav",
       "preset_ref": "sfx_presets.json#tutorial_ding",
       "category": "ui",
       "description": "Tutorial step completed"
     },
     {
       "id": "boss_appear",
+      "path": "res://assets/audio/sfx/boss_appear.wav",
       "preset_ref": "sfx_presets.json#boss_appear",
       "category": "combat",
       "description": "Boss enemy appears"
     },
     {
       "id": "boss_defeated",
+      "path": "res://assets/audio/sfx/boss_defeated.wav",
       "preset_ref": "sfx_presets.json#boss_defeated",
       "category": "combat",
       "description": "Boss enemy defeated"
+    }
+  ],
+  "music": [
+    {
+      "id": "battle_calm",
+      "path": "res://assets/audio/music/battle_calm.wav",
+      "duration_sec": 16,
+      "bpm": 90,
+      "loop": true,
+      "category": "battle",
+      "description": "Calm battle background music"
+    },
+    {
+      "id": "battle_tense",
+      "path": "res://assets/audio/music/battle_tense.wav",
+      "duration_sec": 16,
+      "bpm": 110,
+      "loop": true,
+      "category": "battle",
+      "description": "Tense battle music for high threat"
+    },
+    {
+      "id": "victory",
+      "path": "res://assets/audio/music/victory.wav",
+      "duration_sec": 8,
+      "bpm": 120,
+      "loop": false,
+      "category": "stinger",
+      "description": "Victory celebration music"
+    },
+    {
+      "id": "defeat",
+      "path": "res://assets/audio/music/defeat.wav",
+      "duration_sec": 8,
+      "bpm": 70,
+      "loop": false,
+      "category": "stinger",
+      "description": "Defeat/game over music"
+    },
+    {
+      "id": "menu",
+      "path": "res://assets/audio/music/menu.wav",
+      "duration_sec": 20,
+      "bpm": 85,
+      "loop": true,
+      "category": "menu",
+      "description": "Main menu background music"
+    },
+    {
+      "id": "kingdom",
+      "path": "res://assets/audio/music/kingdom.wav",
+      "duration_sec": 20,
+      "bpm": 80,
+      "loop": true,
+      "category": "menu",
+      "description": "Kingdom hub background music"
     }
   ]
 }
