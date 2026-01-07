@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Boss Warlord Portrait (64x64) - Armored warrior commander -->
+
+  <!-- Background frame -->
+  <rect x="0" y="0" width="64" height="64" fill="#1a1a2e"/>
+  <rect x="2" y="2" width="60" height="60" fill="#2a2a3a"/>
+  <rect x="4" y="4" width="56" height="56" fill="#1a1a2e"/>
+
+  <!-- Helmet -->
+  <rect x="12" y="4" width="40" height="20" fill="#5c5c6c"/>
+  <rect x="10" y="10" width="44" height="16" fill="#4a4a5a"/>
+  <rect x="16" y="0" width="32" height="8" fill="#5c5c6c"/>
+
+  <!-- Helmet crest -->
+  <rect x="28" y="0" width="8" height="12" fill="#c0392b"/>
+  <rect x="30" y="2" width="4" height="8" fill="#e74c3c"/>
+
+  <!-- Helmet highlight -->
+  <rect x="14" y="6" width="6" height="8" fill="#7c7c8c"/>
+
+  <!-- Helmet visor slits -->
+  <rect x="18" y="16" width="10" height="4" fill="#0d0d0d"/>
+  <rect x="36" y="16" width="10" height="4" fill="#0d0d0d"/>
+
+  <!-- Eye glow behind visor -->
+  <rect x="20" y="17" width="4" height="2" fill="#c0392b"/>
+  <rect x="40" y="17" width="4" height="2" fill="#c0392b"/>
+
+  <!-- Face guard -->
+  <rect x="14" y="22" width="36" height="8" fill="#4a4a5a"/>
+  <rect x="28" y="20" width="8" height="12" fill="#5c5c6c"/>
+
+  <!-- Face guard detail -->
+  <rect x="26" y="24" width="12" height="4" fill="#3c3c4c"/>
+
+  <!-- Chin guard -->
+  <rect x="20" y="28" width="24" height="6" fill="#4a4a5a"/>
+
+  <!-- Armor collar -->
+  <rect x="8" y="32" width="48" height="12" fill="#5c5c6c"/>
+  <rect x="12" y="36" width="40" height="8" fill="#4a4a5a"/>
+
+  <!-- Armor body -->
+  <rect x="6" y="42" width="52" height="18" fill="#4a4a5a"/>
+  <rect x="10" y="46" width="44" height="14" fill="#3c3c4c"/>
+
+  <!-- Armor highlight -->
+  <rect x="8" y="34" width="4" height="12" fill="#7c7c8c"/>
+  <rect x="12" y="44" width="4" height="10" fill="#5c5c6c"/>
+
+  <!-- Chest emblem -->
+  <rect x="26" y="44" width="12" height="12" fill="#c0392b"/>
+  <rect x="28" y="46" width="8" height="8" fill="#922b21"/>
+  <rect x="30" y="48" width="4" height="4" fill="#e74c3c"/>
+
+  <!-- Skull emblem detail -->
+  <rect x="29" y="47" width="6" height="4" fill="#f5f5f5"/>
+  <rect x="30" y="48" width="2" height="2" fill="#0d0d0d"/>
+  <rect x="33" y="48" width="2" height="2" fill="#0d0d0d"/>
+  <rect x="31" y="51" width="3" height="1" fill="#0d0d0d"/>
+
+  <!-- Shoulder pauldrons -->
+  <rect x="2" y="36" width="12" height="14" fill="#5c5c6c"/>
+  <rect x="50" y="36" width="12" height="14" fill="#5c5c6c"/>
+
+  <!-- Pauldron spikes -->
+  <rect x="0" y="38" width="4" height="8" fill="#4a4a5a"/>
+  <rect x="60" y="38" width="4" height="8" fill="#4a4a5a"/>
+  <rect x="2" y="36" width="2" height="4" fill="#7c7c8c"/>
+  <rect x="60" y="36" width="2" height="4" fill="#7c7c8c"/>
+
+  <!-- Battle damage scratches -->
+  <rect x="40" y="8" width="2" height="6" fill="#3c3c4c"/>
+  <rect x="18" y="44" width="2" height="4" fill="#2a2a3a"/>
+  <rect x="44" y="48" width="2" height="6" fill="#2a2a3a"/>
+
+  <!-- Frame border (dark red) -->
+  <rect x="0" y="0" width="64" height="2" fill="#c0392b"/>
+  <rect x="0" y="62" width="64" height="2" fill="#c0392b"/>
+  <rect x="0" y="0" width="2" height="64" fill="#c0392b"/>
+  <rect x="62" y="0" width="2" height="64" fill="#c0392b"/>
+
+  <!-- Corner spikes -->
+  <rect x="2" y="2" width="6" height="6" fill="#922b21"/>
+  <rect x="56" y="2" width="6" height="6" fill="#922b21"/>
+  <rect x="2" y="56" width="6" height="6" fill="#922b21"/>
+  <rect x="56" y="56" width="6" height="6" fill="#922b21"/>
+  <rect x="4" y="4" width="2" height="2" fill="#e74c3c"/>
+  <rect x="58" y="4" width="2" height="2" fill="#e74c3c"/>
+  <rect x="4" y="58" width="2" height="2" fill="#e74c3c"/>
+  <rect x="58" y="58" width="2" height="2" fill="#e74c3c"/>
+</svg>

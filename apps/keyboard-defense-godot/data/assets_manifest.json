@@ -159,6 +159,46 @@
       "category": "icons"
     },
     {
+      "id": "portrait_lyra",
+      "path": "res://assets/art/src-svg/portraits/portrait_lyra.svg",
+      "source_svg": "res://assets/art/src-svg/portraits/portrait_lyra.svg",
+      "expected_width": 64,
+      "expected_height": 64,
+      "max_kb": 16,
+      "pixel_art": true,
+      "category": "portraits"
+    },
+    {
+      "id": "portrait_boss_mage",
+      "path": "res://assets/art/src-svg/portraits/portrait_boss_mage.svg",
+      "source_svg": "res://assets/art/src-svg/portraits/portrait_boss_mage.svg",
+      "expected_width": 64,
+      "expected_height": 64,
+      "max_kb": 16,
+      "pixel_art": true,
+      "category": "portraits"
+    },
+    {
+      "id": "portrait_boss_warlord",
+      "path": "res://assets/art/src-svg/portraits/portrait_boss_warlord.svg",
+      "source_svg": "res://assets/art/src-svg/portraits/portrait_boss_warlord.svg",
+      "expected_width": 64,
+      "expected_height": 64,
+      "max_kb": 16,
+      "pixel_art": true,
+      "category": "portraits"
+    },
+    {
+      "id": "portrait_enemy_grunt",
+      "path": "res://assets/art/src-svg/portraits/portrait_enemy_grunt.svg",
+      "source_svg": "res://assets/art/src-svg/portraits/portrait_enemy_grunt.svg",
+      "expected_width": 64,
+      "expected_height": 64,
+      "max_kb": 16,
+      "pixel_art": true,
+      "category": "portraits"
+    },
+    {
       "id": "poi_abandoned_wagon",
       "path": "res://assets/icons/poi_abandoned_wagon.png",
       "source_svg": "res://assets/art/src-svg/icons/poi_abandoned_wagon.svg",

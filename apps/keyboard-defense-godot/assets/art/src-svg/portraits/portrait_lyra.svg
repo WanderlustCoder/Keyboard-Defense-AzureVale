@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Lyra Portrait - Mentor/Guide (64x64) -->
+
+  <!-- Background frame -->
+  <rect x="0" y="0" width="64" height="64" fill="#1a1a2e"/>
+  <rect x="2" y="2" width="60" height="60" fill="#16213e"/>
+  <rect x="4" y="4" width="56" height="56" fill="#0f3460"/>
+
+  <!-- Hair background -->
+  <rect x="10" y="6" width="44" height="20" fill="#8e44ad"/>
+  <rect x="6" y="14" width="52" height="16" fill="#9b59b6"/>
+  <rect x="8" y="26" width="48" height="8" fill="#8e44ad"/>
+
+  <!-- Hair highlight -->
+  <rect x="14" y="8" width="10" height="6" fill="#d7bde2"/>
+  <rect x="16" y="10" width="6" height="4" fill="#e8daef"/>
+
+  <!-- Face shape -->
+  <rect x="16" y="18" width="32" height="32" fill="#f5cba7"/>
+  <rect x="20" y="14" width="24" height="8" fill="#f5cba7"/>
+  <rect x="18" y="48" width="28" height="6" fill="#f5cba7"/>
+
+  <!-- Face highlight -->
+  <rect x="18" y="20" width="8" height="12" fill="#fdebd0"/>
+
+  <!-- Eyes -->
+  <rect x="20" y="28" width="8" height="8" fill="#fff"/>
+  <rect x="36" y="28" width="8" height="8" fill="#fff"/>
+
+  <!-- Irises (blue) -->
+  <rect x="22" y="30" width="5" height="5" fill="#3498db"/>
+  <rect x="38" y="30" width="5" height="5" fill="#3498db"/>
+
+  <!-- Pupils -->
+  <rect x="24" y="31" width="2" height="3" fill="#1a1a2e"/>
+  <rect x="40" y="31" width="2" height="3" fill="#1a1a2e"/>
+
+  <!-- Eye highlights -->
+  <rect x="22" y="30" width="2" height="2" fill="#fff"/>
+  <rect x="38" y="30" width="2" height="2" fill="#fff"/>
+
+  <!-- Eyebrows -->
+  <rect x="20" y="24" width="8" height="2" fill="#8e44ad"/>
+  <rect x="36" y="24" width="8" height="2" fill="#8e44ad"/>
+
+  <!-- Eyelashes -->
+  <rect x="20" y="36" width="8" height="1" fill="#5d3a6e"/>
+  <rect x="36" y="36" width="8" height="1" fill="#5d3a6e"/>
+
+  <!-- Nose -->
+  <rect x="30" y="34" width="4" height="8" fill="#e5b898"/>
+  <rect x="28" y="40" width="8" height="2" fill="#e5b898"/>
+
+  <!-- Nose highlight -->
+  <rect x="30" y="34" width="2" height="4" fill="#f5cba7"/>
+
+  <!-- Mouth -->
+  <rect x="26" y="46" width="12" height="2" fill="#c0392b"/>
+  <rect x="28" y="44" width="8" height="2" fill="#e74c3c"/>
+
+  <!-- Smile lines -->
+  <rect x="24" y="44" width="2" height="2" fill="#e5b898"/>
+  <rect x="38" y="44" width="2" height="2" fill="#e5b898"/>
+
+  <!-- Robe/collar -->
+  <rect x="12" y="52" width="40" height="12" fill="#3498db"/>
+  <rect x="16" y="54" width="32" height="10" fill="#2980b9"/>
+
+  <!-- Collar V-shape -->
+  <rect x="28" y="52" width="8" height="8" fill="#f4d03f"/>
+  <rect x="30" y="54" width="4" height="6" fill="#f7dc6f"/>
+
+  <!-- Collar gem -->
+  <rect x="30" y="56" width="4" height="4" fill="#9b59b6"/>
+  <rect x="31" y="57" width="2" height="2" fill="#d7bde2"/>
+
+  <!-- Frame border -->
+  <rect x="0" y="0" width="64" height="2" fill="#f4d03f"/>
+  <rect x="0" y="62" width="64" height="2" fill="#f4d03f"/>
+  <rect x="0" y="0" width="2" height="64" fill="#f4d03f"/>
+  <rect x="62" y="0" width="2" height="64" fill="#f4d03f"/>
+
+  <!-- Corner accents -->
+  <rect x="2" y="2" width="4" height="4" fill="#f7dc6f"/>
+  <rect x="58" y="2" width="4" height="4" fill="#f7dc6f"/>
+  <rect x="2" y="58" width="4" height="4" fill="#f7dc6f"/>
+  <rect x="58" y="58" width="4" height="4" fill="#f7dc6f"/>
+</svg>

@@ -28,7 +28,7 @@ func _ready() -> void:
 	_load_lyra_portrait()
 
 func _load_lyra_portrait() -> void:
-	var tex := load("res://assets/sprites/npc_lyra.png") as Texture2D
+	var tex := load("res://assets/art/src-svg/portraits/portrait_lyra.svg") as Texture2D
 	if tex != null:
 		portrait.texture = tex
 
