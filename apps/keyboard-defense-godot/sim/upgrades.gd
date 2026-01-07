@@ -196,6 +196,10 @@ static func get_enemy_speed_reduction(state: GameState) -> float:
 	var reduction: float = get_total_effect(state, "enemy_speed_reduction")
 	return clampf(reduction, 0.0, 0.5)  # Cap at 50% speed reduction
 
+## Get passive gold income per dawn
+static func get_gold_income(state: GameState) -> int:
+	return int(get_total_effect(state, "gold_income"))
+
 ## List available upgrades for purchase
 static func list_available_kingdom_upgrades(state: GameState) -> Array:
 	_ensure_loaded()

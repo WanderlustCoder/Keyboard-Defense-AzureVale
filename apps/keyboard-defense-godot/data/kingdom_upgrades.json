@@ -35,9 +35,10 @@
       "label": "Royal Treasury",
       "tier": 1,
       "cost": 22,
-      "description": "Increases gold earned from defeats.",
+      "description": "Generates gold each dawn and boosts defeat rewards.",
       "effects": {
-        "gold_multiplier": 0.15
+        "gold_multiplier": 0.15,
+        "gold_income": 2
       }
     },
     {
@@ -128,7 +129,8 @@
       "description": "Global trade networks maximize all gains.",
       "effects": {
         "gold_multiplier": 0.25,
-        "resource_multiplier": 0.15
+        "resource_multiplier": 0.15,
+        "gold_income": 5
       }
     }
   ]

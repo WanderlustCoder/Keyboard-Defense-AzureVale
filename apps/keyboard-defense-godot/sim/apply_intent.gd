@@ -239,6 +239,17 @@ static func _apply_end(state: GameState, events: Array[String]) -> bool:
     state.enemies = []
     state.night_prompt = ""
     events.append_array(result.events)
+
+    # Boss spawn on milestone days
+    if SimEnemies.is_boss_day(state.day):
+        var boss_kind: String = SimEnemies.get_boss_for_day(state.day)
+        var boss_pos: Vector2i = SimMap.get_spawn_pos(state)
+        var boss: Dictionary = SimEnemies.make_boss(state, boss_kind, boss_pos)
+        state.enemies.append(boss)
+        state.enemy_next_id += 1
+        var boss_name: String = boss_kind.replace("_", " ").capitalize()
+        events.append("BOSS ENCOUNTER: %s appears!" % boss_name)
+
     events.append("Night falls. Enemy wave: %d." % state.night_wave_total)
     if not state.last_path_open:
         events.append("Walls slow the enemy. Night shortened.")
@@ -326,6 +337,11 @@ static func _advance_night_step(state: GameState, hit_enemy_index: int, apply_mi
             state.hp = min(max_hp, state.hp + wave_heal)
             if state.hp > old_hp:
                 events.append("Healers restore %d HP." % (state.hp - old_hp))
+        # Gold income from treasury upgrades
+        var gold_income: int = SimUpgrades.get_gold_income(state)
+        if gold_income > 0:
+            state.gold += gold_income
+            events.append("Treasury yields +%d gold." % gold_income)
         events.append("Dawn breaks.")
         return true
 
@@ -379,12 +395,18 @@ static func _apply_player_attack_target(state: GameState, target_index: int, hit
         if enemy.get("affix", "") == "splitting":
             _spawn_split_enemies(state, enemy_pos, events)
         state.enemies.remove_at(target_index)
+        # Check if this was a boss
+        var was_boss: bool = enemy.get("is_boss", false)
         # Award gold for kill
         var base_gold: int = SimEnemies.gold_reward(enemy_kind)
         var gold_mult: float = SimUpgrades.get_gold_multiplier(state)
         var gold_reward: int = int(float(base_gold) * gold_mult)
         state.gold += gold_reward
-        events.append("Enemy %s#%d defeated. +%d gold" % [enemy_kind, enemy_id, gold_reward])
+        if was_boss:
+            var boss_name: String = enemy_kind.replace("_", " ").capitalize()
+            events.append("BOSS DEFEATED: %s vanquished! +%d gold" % [boss_name, gold_reward])
+        else:
+            events.append("Enemy %s#%d defeated. +%d gold" % [enemy_kind, enemy_id, gold_reward])
 
 static func _spawn_enemy_step(state: GameState, events: Array[String]) -> void:
     if state.night_spawn_remaining <= 0:
@@ -571,15 +593,22 @@ static func _vampiric_heal(state: GameState, attacker_index: int, events: Array[
 static func _enemy_ability_tick(state: GameState, events: Array[String]) -> void:
     if state.enemies.is_empty():
         return
+    # Boss ability ticks
+    for i in range(state.enemies.size()):
+        var enemy: Dictionary = state.enemies[i]
+        if enemy.get("is_boss", false):
+            SimEnemies.apply_boss_tick(state, i, events)
     # Healer enemies heal nearby allies
     for i in range(state.enemies.size()):
         var enemy: Dictionary = state.enemies[i]
         var kind: String = str(enemy.get("kind", "raider"))
         if kind == "healer":
             SimEnemies.apply_healer_tick(state.enemies, i)
-    # Regenerating affix heals self
+    # Regenerating affix heals self (skip bosses as they have their own handling)
     for i in range(state.enemies.size()):
         var enemy: Dictionary = state.enemies[i]
+        if enemy.get("is_boss", false):
+            continue
         if enemy.get("affix", "") == "regenerating" or enemy.get("regen_rate", 0) > 0:
             enemy = SimEnemies.apply_regen_tick(enemy)
             state.enemies[i] = enemy

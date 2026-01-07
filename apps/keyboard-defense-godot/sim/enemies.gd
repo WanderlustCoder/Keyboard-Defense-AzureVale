@@ -17,6 +17,25 @@ const ENEMY_KINDS := {
     "healer": {"speed": 1, "armor": 0, "hp_bonus": 0, "glyph": "H", "heal_rate": 1},
     "elite": {"speed": 1, "armor": 1, "hp_bonus": 1, "glyph": "E", "has_affix": true}
 }
+
+# Boss enemies - spawn at specific milestones
+const BOSS_KINDS := {
+    # Day 5 boss - Evergrove
+    "forest_guardian": {"speed": 1, "armor": 1, "hp_bonus": 8, "glyph": "G", "regen_rate": 2, "is_boss": true},
+    # Day 10 boss - Stonepass
+    "stone_golem": {"speed": 1, "armor": 4, "hp_bonus": 12, "glyph": "S", "is_boss": true},
+    # Day 15 boss - Mistfen
+    "fen_seer": {"speed": 1, "armor": 1, "hp_bonus": 10, "glyph": "F", "evasion": 0.3, "summons": true, "is_boss": true},
+    # Day 20 boss - Sunfields
+    "sunlord": {"speed": 2, "armor": 2, "hp_bonus": 15, "glyph": "L", "enraged": true, "is_boss": true}
+}
+
+const BOSS_DAYS := {
+    5: "forest_guardian",
+    10: "stone_golem",
+    15: "fen_seer",
+    20: "sunlord"
+}
 const ENEMY_HP_BONUS_BY_DAY := {
     "armored": [1, 1, 1, 2, 2, 3, 4],
     "raider": [0, 0, 0, 0, 1, 1, 2],
@@ -178,6 +197,8 @@ static func apply_regen_tick(enemy: Dictionary) -> Dictionary:
     return enemy
 
 static func enemy_glyph(kind: String) -> String:
+    if BOSS_KINDS.has(kind):
+        return str(BOSS_KINDS[kind].get("glyph", "!"))
     return str(ENEMY_KINDS.get(kind, ENEMY_KINDS["raider"]).get("glyph", "r"))
 
 ## Gold reward for defeating an enemy
@@ -192,9 +213,96 @@ static func gold_reward(kind: String) -> int:
         "phantom": 3,
         "champion": 5,
         "healer": 4,
-        "elite": 6
+        "elite": 6,
+        # Boss rewards
+        "forest_guardian": 25,
+        "stone_golem": 40,
+        "fen_seer": 55,
+        "sunlord": 75
     }
     return int(rewards.get(kind, 2))
+
+## Check if a day triggers a boss encounter
+static func is_boss_day(day: int) -> bool:
+    return BOSS_DAYS.has(day)
+
+## Get the boss kind for a given day (empty string if not boss day)
+static func get_boss_for_day(day: int) -> String:
+    return str(BOSS_DAYS.get(day, ""))
+
+## Create a boss enemy with enhanced stats
+static func make_boss(state: GameState, kind: String, pos: Vector2i) -> Dictionary:
+    var config: Dictionary = BOSS_KINDS.get(kind, {})
+    if config.is_empty():
+        push_warning("Unknown boss kind: %s" % kind)
+        return make_enemy(state, "champion", pos)
+
+    # Boss HP: higher base + bonus
+    var base_hp: int = 10 + int(state.day / 2) + int(state.threat / 3)
+    var hp_bonus: int = int(config.get("hp_bonus", 0))
+    var hp: int = base_hp + hp_bonus
+
+    var boss := {
+        "id": state.enemy_next_id,
+        "kind": kind,
+        "pos": pos,
+        "hp": hp,
+        "hp_max": hp,  # Track max HP for phase transitions
+        "armor": int(config.get("armor", 0)),
+        "speed": int(config.get("speed", 1)),
+        "word": "",
+        "is_boss": true
+    }
+
+    # Apply special boss properties
+    if config.has("regen_rate"):
+        boss["regen_rate"] = int(config["regen_rate"])
+    if config.has("evasion"):
+        boss["evasion"] = float(config["evasion"])
+        boss["evade_ready"] = true
+    if config.has("summons"):
+        boss["summons"] = true
+        boss["summon_cooldown"] = 0
+    if config.has("enraged"):
+        boss["enraged"] = true
+
+    return assign_word(state, boss)
+
+## Apply boss ability tick (called each turn)
+static func apply_boss_tick(state: GameState, boss_index: int, events: Array[String]) -> void:
+    if boss_index < 0 or boss_index >= state.enemies.size():
+        return
+
+    var boss: Dictionary = state.enemies[boss_index]
+    var kind: String = str(boss.get("kind", ""))
+
+    match kind:
+        "forest_guardian":
+            # Regenerates HP each tick
+            var regen: int = int(boss.get("regen_rate", 2))
+            var old_hp: int = int(boss.get("hp", 0))
+            var max_hp: int = int(boss.get("hp_max", old_hp))
+            boss["hp"] = min(max_hp, old_hp + regen)
+            if boss["hp"] > old_hp:
+                events.append("Forest Guardian regenerates %d HP." % (int(boss["hp"]) - old_hp))
+        "fen_seer":
+            # Summons swarms periodically
+            if int(boss.get("summon_cooldown", 0)) <= 0:
+                boss["summon_cooldown"] = 3  # Every 3 ticks
+                var boss_pos: Vector2i = boss.get("pos", Vector2i.ZERO)
+                var summon_pos: Vector2i = Vector2i(boss_pos.x + 1, boss_pos.y)
+                if summon_pos.x < state.map_w:
+                    var swarm: Dictionary = make_enemy(state, "phantom", summon_pos)
+                    state.enemy_next_id += 1
+                    state.enemies.append(swarm)
+                    events.append("Fen Seer conjures a phantom!")
+            else:
+                boss["summon_cooldown"] = int(boss.get("summon_cooldown", 0)) - 1
+        "sunlord":
+            # Enraged: deals extra damage when attacks land
+            pass  # Handled in apply_intent.gd
+
+    state.enemies[boss_index] = boss
 
 static func normalize_enemy(enemy: Dictionary) -> Dictionary:
     var kind: String = str(enemy.get("kind", "raider"))
@@ -320,6 +428,15 @@ static func serialize(enemy: Dictionary) -> Dictionary:
         result["enraged"] = bool(enemy["enraged"])
     if enemy.has("vampiric"):
         result["vampiric"] = bool(enemy["vampiric"])
+    # Boss properties
+    if enemy.has("is_boss"):
+        result["is_boss"] = bool(enemy["is_boss"])
+    if enemy.has("hp_max"):
+        result["hp_max"] = int(enemy["hp_max"])
+    if enemy.has("summons"):
+        result["summons"] = bool(enemy["summons"])
+    if enemy.has("summon_cooldown"):
+        result["summon_cooldown"] = int(enemy["summon_cooldown"])
     return result
 
 static func deserialize(raw: Dictionary) -> Dictionary:
@@ -350,6 +467,15 @@ static func deserialize(raw: Dictionary) -> Dictionary:
         result["enraged"] = bool(raw["enraged"])
     if raw.has("vampiric"):
         result["vampiric"] = bool(raw["vampiric"])
+    # Boss properties
+    if raw.has("is_boss"):
+        result["is_boss"] = bool(raw["is_boss"])
+    if raw.has("hp_max"):
+        result["hp_max"] = int(raw["hp_max"])
+    if raw.has("summons"):
+        result["summons"] = bool(raw["summons"])
+    if raw.has("summon_cooldown"):
+        result["summon_cooldown"] = int(raw["summon_cooldown"])
     return result
 
 static func _used_words(enemies: Array) -> Dictionary:

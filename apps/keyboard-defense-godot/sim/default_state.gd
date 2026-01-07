@@ -13,4 +13,6 @@ static func create(seed: String = "default") -> GameState:
     SimMap.generate_terrain(state)
     var base_index: int = SimMap.idx(state.base_pos.x, state.base_pos.y, state.map_w)
     state.terrain[base_index] = SimMap.TERRAIN_PLAINS
+    # Starting resources
+    state.gold = 10
     return state
