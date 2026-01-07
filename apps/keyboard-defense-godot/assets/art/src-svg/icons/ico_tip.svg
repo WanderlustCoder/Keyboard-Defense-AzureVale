@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Tip Speech Bubble Icon (16x16) -->
+  
+  <!-- Bubble -->
+  <rect x="2" y="1" width="12" height="10" fill="#27ae60"/>
+  <rect x="3" y="2" width="10" height="8" fill="#2ecc71"/>
+  
+  <!-- Bubble tail -->
+  <rect x="4" y="11" width="2" height="2" fill="#27ae60"/>
+  <rect x="3" y="13" width="2" height="2" fill="#27ae60"/>
+  
+  <!-- Exclamation mark -->
+  <rect x="7" y="3" width="2" height="4" fill="#fdfefe"/>
+  <rect x="7" y="8" width="2" height="1" fill="#fdfefe"/>
+</svg>

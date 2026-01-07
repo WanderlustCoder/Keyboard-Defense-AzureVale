@@ -23,6 +23,10 @@ const FEEDBACK_ERROR_DURATION := 0.6
 const FEEDBACK_WAVE_DURATION := 1.1
 const FEEDBACK_BUFF_DURATION := 0.9
 
+## Returns true if event is a non-repeating key press
+func _is_key_pressed(event: InputEvent) -> bool:
+	return event is InputEventKey and event.pressed and not event.echo
+
 @onready var lesson_label: Label = $TopBar/LessonLabel
 @onready var gold_label: Label = $TopBar/GoldLabel
 @onready var exit_button: Button = $TopBar/ExitButton
@@ -54,7 +58,7 @@ var result_retry_button: Button = null
 var result_hint_label: Label = null
 @onready var progression = get_node("/root/ProgressionState")
 @onready var game_controller = get_node("/root/GameController")
-@onready var audio_manager = get_node("/root/AudioManager")
+@onready var audio_manager = get_node_or_null("/root/AudioManager")
 @onready var settings_manager = get_node_or_null("/root/SettingsManager")
 
 var pause_panel: PanelContainer = null
@@ -142,6 +146,9 @@ var _cached_castle_health: int = -1
 var _cached_accuracy: int = -1
 var _cached_wpm: int = -1
 var _cached_errors: int = -1
+var _cached_current_word: String = ""
+var _cached_typed: String = ""
+var _cached_drill_mode: String = ""
 
 # Combo indicator
 var combo_label: Label = null
@@ -312,7 +319,7 @@ func _process(delta: float) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	# Handle result panel shortcuts
 	if result_panel != null and result_panel.visible:
-		if event is InputEventKey and event.pressed and not event.echo:
+		if _is_key_pressed(event):
 			if event.keycode == KEY_R:
 				_on_result_retry_pressed()
 				return
@@ -328,7 +335,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	if not active:
 		return
-	if event is InputEventKey and event.pressed and not event.echo:
+	if _is_key_pressed(event):
 		if event.keycode == KEY_ESCAPE:
 			_toggle_pause()
 			return
@@ -340,7 +347,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	# Block typing input while tutorial dialogue is showing
 	if battle_tutorial != null and battle_tutorial.is_dialogue_open():
 		return
-	if event is InputEventKey and event.pressed and not event.echo:
+	if _is_key_pressed(event):
 		if tutorial_mode and drill_mode == "intermission" and (event.keycode == KEY_SPACE or event.keycode == KEY_ENTER or event.keycode == KEY_KP_ENTER):
 			_skip_intermission()
 			return
@@ -348,7 +355,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if not drill_input_enabled:
 		return
-	if event is InputEventKey and event.pressed and not event.echo:
+	if _is_key_pressed(event):
 		if event.keycode == KEY_BACKSPACE:
 			typing_system.backspace()
 			_update_word_display()
@@ -389,15 +396,27 @@ func _handle_typing_result(result: Dictionary) -> void:
 	_update_drill_status()
 
 func _update_word_display() -> void:
+	# Handle intermission state change
 	if drill_mode == "intermission":
-		word_label.text = "Target: --"
-		typed_label.text = "Typed: --"
-		drill_target_label.text = ""
+		if _cached_drill_mode != "intermission":
+			_cached_drill_mode = "intermission"
+			word_label.text = "Target: --"
+			typed_label.text = "Typed: --"
+			drill_target_label.text = ""
 		return
+
+	# Only update if mode, word, or typed text changed
 	var current_word: String = typing_system.get_current_word()
+	var typed_text: String = typing_system.typed
+	if _cached_drill_mode == drill_mode and _cached_current_word == current_word and _cached_typed == typed_text:
+		return
+
+	_cached_drill_mode = drill_mode
+	_cached_current_word = current_word
+	_cached_typed = typed_text
 	word_label.text = "Target: %s" % current_word
-	typed_label.text = "Typed: %s" % typing_system.typed
-	drill_target_label.text = _format_target_bbcode(current_word, typing_system.typed)
+	typed_label.text = "Typed: %s" % typed_text
+	drill_target_label.text = _format_target_bbcode(current_word, typed_text)
 
 func _update_stats() -> void:
 	var stats: Dictionary = _collect_battle_stats(true)

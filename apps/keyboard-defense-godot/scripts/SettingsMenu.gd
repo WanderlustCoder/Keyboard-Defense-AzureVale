@@ -74,26 +74,40 @@ func _on_sfx_slider_changed(value: float) -> void:
 func _on_music_toggle(pressed: bool) -> void:
 	if not _updating_ui:
 		settings.set_music_enabled(pressed)
+		# Play feedback when enabling
+		if audio_manager != null and pressed:
+			audio_manager.play_ui_confirm()
 
 func _on_sfx_toggle(pressed: bool) -> void:
 	if not _updating_ui:
 		settings.set_sfx_enabled(pressed)
+		# Play feedback when enabling (this will test that SFX works)
+		if audio_manager != null and pressed:
+			audio_manager.play_ui_confirm()
 
 func _on_typing_sounds_toggle(pressed: bool) -> void:
 	if not _updating_ui:
 		settings.set_typing_sounds(pressed)
+		if audio_manager != null:
+			audio_manager.play_ui_confirm()
 
 func _on_screen_shake_toggle(pressed: bool) -> void:
 	if not _updating_ui:
 		settings.set_screen_shake(pressed)
+		if audio_manager != null:
+			audio_manager.play_ui_confirm()
 
 func _on_show_wpm_toggle(pressed: bool) -> void:
 	if not _updating_ui:
 		settings.set_show_wpm(pressed)
+		if audio_manager != null:
+			audio_manager.play_ui_confirm()
 
 func _on_show_accuracy_toggle(pressed: bool) -> void:
 	if not _updating_ui:
 		settings.set_show_accuracy(pressed)
+		if audio_manager != null:
+			audio_manager.play_ui_confirm()
 
 func _on_back_pressed() -> void:
 	if audio_manager != null:

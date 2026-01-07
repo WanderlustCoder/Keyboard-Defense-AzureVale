@@ -148,12 +148,17 @@ func _setup_audio_players() -> void:
 	add_child(_stinger_player)
 
 func _preload_audio() -> void:
+	var missing_sfx: Array[String] = []
+	var missing_music: Array[String] = []
+
 	# Preload all SFX
 	for sfx_id in _sfx_files:
 		var path: String = SFX_PATH + str(_sfx_files[sfx_id])
 		var stream := load(path) as AudioStream
 		if stream != null:
 			_sfx_cache[sfx_id] = stream
+		else:
+			missing_sfx.append(str(_sfx_files[sfx_id]))
 
 	# Preload all music
 	for music_id in _music_files:
@@ -161,6 +166,14 @@ func _preload_audio() -> void:
 		var stream := load(path) as AudioStream
 		if stream != null:
 			_music_cache[music_id] = stream
+		else:
+			missing_music.append(str(_music_files[music_id]))
+
+	# Log summary of missing audio (avoids spamming console)
+	if not missing_sfx.is_empty():
+		push_warning("AudioManager: Missing SFX files (%d): %s" % [missing_sfx.size(), ", ".join(missing_sfx)])
+	if not missing_music.is_empty():
+		push_warning("AudioManager: Missing music files (%d): %s" % [missing_music.size(), ", ".join(missing_music)])
 
 ## Play a sound effect
 func play_sfx(sfx_id: int, volume_offset_db: float = 0.0) -> void:
