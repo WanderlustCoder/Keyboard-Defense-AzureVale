@@ -1079,6 +1079,9 @@ func _on_debug_close_pressed() -> void:
 		debug_panel.visible = false
 
 func _trigger_screen_shake(intensity: float, duration: float) -> void:
+	# Check if screen shake is enabled in settings
+	if settings_manager != null and not settings_manager.screen_shake:
+		return
 	_shake_intensity = intensity
 	_shake_duration = duration
 
