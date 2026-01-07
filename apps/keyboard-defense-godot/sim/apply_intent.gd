@@ -115,12 +115,16 @@ static func _apply_gather(state: GameState, intent: Dictionary, events: Array[St
     if not _consume_ap(state, events):
         return
     var resource: String = str(intent.get("resource", ""))
-    var amount: int = int(intent.get("amount", 0))
-    if not state.resources.has(resource) or amount <= 0:
+    var base_amount: int = int(intent.get("amount", 0))
+    if not state.resources.has(resource) or base_amount <= 0:
         events.append("Invalid gather request.")
         return
+    # Apply resource multiplier from upgrades
+    var resource_mult: float = SimUpgrades.get_resource_multiplier(state)
+    var amount: int = int(float(base_amount) * (1.0 + resource_mult))
     state.resources[resource] = int(state.resources.get(resource, 0)) + amount
-    events.append("Gathered %d %s." % [amount, resource])
+    var bonus_text: String = "" if amount == base_amount else " (+%d bonus)" % (amount - base_amount)
+    events.append("Gathered %d %s.%s" % [amount, resource, bonus_text])
     events.append(_format_status(state))
 
 static func _apply_build(state: GameState, intent: Dictionary, events: Array[String]) -> void:
@@ -175,16 +179,26 @@ static func _apply_explore(state: GameState, events: Array[String]) -> void:
     var terrain: String = SimMap.get_terrain(state, pos)
     var reward: Dictionary = _explore_reward(state, terrain)
     var reward_text: String = str(reward.get("resource", "food"))
-    var reward_amount: int = int(reward.get("amount", 0))
+    var base_reward: int = int(reward.get("amount", 0))
+    # Apply resource multiplier from upgrades
+    var resource_mult: float = SimUpgrades.get_resource_multiplier(state)
+    var reward_amount: int = int(float(base_reward) * (1.0 + resource_mult)) if base_reward > 0 else 0
     if reward_amount > 0:
         state.resources[reward_text] = int(state.resources.get(reward_text, 0)) + reward_amount
-    state.threat += 1
+    # Apply threat rate multiplier (negative values reduce threat gain)
+    var threat_mult: float = 1.0 + SimUpgrades.get_threat_rate_multiplier(state)
+    var threat_gain: int = max(0, int(1.0 * threat_mult))
+    state.threat += threat_gain
     events.append("Discovered tile (%d,%d): %s." % [pos.x, pos.y, terrain])
     if reward_amount > 0:
-        events.append("Found +%d %s." % [reward_amount, reward_text])
+        var bonus_text: String = "" if reward_amount == base_reward else " (+%d bonus)" % (reward_amount - base_reward)
+        events.append("Found +%d %s.%s" % [reward_amount, reward_text, bonus_text])
     else:
         events.append("Found nothing of value.")
-    events.append("Threat increased to %d." % state.threat)
+    if threat_gain > 0:
+        events.append("Threat increased to %d." % state.threat)
+    else:
+        events.append("Threat unchanged (watchtower protection).")
 
     # Try to spawn and discover a POI at this location
     var biome: String = _terrain_to_biome(terrain)
@@ -277,8 +291,14 @@ static func _advance_night_step(state: GameState, hit_enemy_index: int, apply_mi
         _apply_player_attack_target(state, hit_enemy_index, hit_word, events)
     else:
         if apply_miss_penalty:
-            state.hp -= 1
-            events.append("Miss. No matching enemy word.")
+            # Apply mistake forgiveness from upgrades
+            var forgiveness: float = SimUpgrades.get_mistake_forgiveness(state)
+            var forgiven: bool = forgiveness > 0.0 and float(SimRng.roll_range(state, 1, 100)) / 100.0 <= forgiveness
+            if not forgiven:
+                state.hp -= 1
+                events.append("Miss. No matching enemy word.")
+            else:
+                events.append("Miss forgiven! (granary protection)")
         else:
             events.append("Waited.")
 
