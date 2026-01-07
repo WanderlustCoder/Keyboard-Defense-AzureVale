@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Menu/Hamburger Icon (16x16) -->
+
+  <!-- Three horizontal lines -->
+  <rect x="2" y="3" width="12" height="2" fill="#2c3e50"/>
+  <rect x="2" y="7" width="12" height="2" fill="#2c3e50"/>
+  <rect x="2" y="11" width="12" height="2" fill="#2c3e50"/>
+
+  <!-- Subtle highlights -->
+  <rect x="2" y="3" width="12" height="1" fill="#34495e"/>
+  <rect x="2" y="7" width="12" height="1" fill="#34495e"/>
+  <rect x="2" y="11" width="12" height="1" fill="#34495e"/>
+</svg>

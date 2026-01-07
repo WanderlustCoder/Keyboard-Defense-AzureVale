@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Medium Difficulty Icon (16x16) - Double yellow dots -->
+
+  <!-- Left circle -->
+  <rect x="1" y="5" width="6" height="6" fill="#f39c12"/>
+  <rect x="2" y="4" width="4" height="8" fill="#f39c12"/>
+  <rect x="2" y="5" width="4" height="4" fill="#f4d03f"/>
+  <rect x="3" y="6" width="2" height="2" fill="#f9e79f"/>
+
+  <!-- Right circle -->
+  <rect x="9" y="5" width="6" height="6" fill="#f39c12"/>
+  <rect x="10" y="4" width="4" height="8" fill="#f39c12"/>
+  <rect x="10" y="5" width="4" height="4" fill="#f4d03f"/>
+  <rect x="11" y="6" width="2" height="2" fill="#f9e79f"/>
+</svg>

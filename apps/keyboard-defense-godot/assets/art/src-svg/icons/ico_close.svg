@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Close/X Icon (16x16) -->
+
+  <!-- X shape -->
+  <rect x="3" y="3" width="2" height="2" fill="#e74c3c"/>
+  <rect x="4" y="4" width="2" height="2" fill="#e74c3c"/>
+  <rect x="5" y="5" width="2" height="2" fill="#e74c3c"/>
+  <rect x="6" y="6" width="2" height="2" fill="#e74c3c"/>
+  <rect x="7" y="7" width="2" height="2" fill="#e74c3c"/>
+  <rect x="8" y="8" width="2" height="2" fill="#e74c3c"/>
+  <rect x="9" y="9" width="2" height="2" fill="#e74c3c"/>
+  <rect x="10" y="10" width="2" height="2" fill="#e74c3c"/>
+  <rect x="11" y="11" width="2" height="2" fill="#e74c3c"/>
+
+  <rect x="11" y="3" width="2" height="2" fill="#e74c3c"/>
+  <rect x="10" y="4" width="2" height="2" fill="#e74c3c"/>
+  <rect x="9" y="5" width="2" height="2" fill="#e74c3c"/>
+  <rect x="8" y="6" width="2" height="2" fill="#e74c3c"/>
+  <rect x="6" y="8" width="2" height="2" fill="#e74c3c"/>
+  <rect x="5" y="9" width="2" height="2" fill="#e74c3c"/>
+  <rect x="4" y="10" width="2" height="2" fill="#e74c3c"/>
+  <rect x="3" y="11" width="2" height="2" fill="#e74c3c"/>
+</svg>

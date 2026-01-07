@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Experience Points Icon (16x16) - Book with star -->
+
+  <!-- Book base -->
+  <rect x="3" y="3" width="10" height="11" fill="#2980b9"/>
+  <rect x="4" y="4" width="8" height="9" fill="#3498db"/>
+
+  <!-- Book spine -->
+  <rect x="3" y="3" width="2" height="11" fill="#1a5276"/>
+
+  <!-- Star on book -->
+  <rect x="8" y="5" width="2" height="1" fill="#f4d03f"/>
+  <rect x="7" y="6" width="4" height="1" fill="#f4d03f"/>
+  <rect x="6" y="7" width="6" height="2" fill="#f4d03f"/>
+  <rect x="7" y="9" width="2" height="1" fill="#f4d03f"/>
+  <rect x="6" y="10" width="2" height="1" fill="#f4d03f"/>
+  <rect x="10" y="10" width="2" height="1" fill="#f4d03f"/>
+
+  <!-- Star highlight -->
+  <rect x="8" y="6" width="1" height="1" fill="#fcf3cf"/>
+</svg>

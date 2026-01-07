@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Arrow Left Icon (16x16) -->
+
+  <!-- Arrow head -->
+  <rect x="2" y="7" width="2" height="2" fill="#2c3e50"/>
+  <rect x="4" y="5" width="2" height="6" fill="#2c3e50"/>
+  <rect x="6" y="3" width="2" height="10" fill="#2c3e50"/>
+
+  <!-- Arrow stem -->
+  <rect x="8" y="6" width="6" height="4" fill="#2c3e50"/>
+
+  <!-- Highlight -->
+  <rect x="3" y="7" width="1" height="1" fill="#5d6d7e"/>
+</svg>
