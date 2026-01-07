@@ -279,13 +279,16 @@ static func _apply_wait(state: GameState, events: Array[String]) -> bool:
     return _advance_night_step(state, -1, false, events, "")
 
 static func _apply_restart(state: GameState, events: Array[String]) -> Dictionary:
-    if state.phase != "game_over":
-        events.append("Restart is only available after game over.")
+    if state.phase != "game_over" and state.phase != "victory":
+        events.append("Restart is only available after game over or victory.")
         return {"state": state, "events": events}
     var seed_value: String = state.rng_seed
     var new_state: GameState = DefaultState.create(seed_value)
     new_state.lesson_id = state.lesson_id
-    events.append("Restarted run with seed '%s'." % seed_value)
+    if state.phase == "victory":
+        events.append("Starting a new challenge with seed '%s'." % seed_value)
+    else:
+        events.append("Restarted run with seed '%s'." % seed_value)
     return {"state": new_state, "events": events}
 
 static func _apply_new(state: GameState, events: Array[String]) -> Dictionary:
@@ -342,6 +345,13 @@ static func _advance_night_step(state: GameState, hit_enemy_index: int, apply_mi
         if gold_income > 0:
             state.gold += gold_income
             events.append("Treasury yields +%d gold." % gold_income)
+        # Victory check: surviving past day 20 (after defeating Sunlord)
+        if state.day >= 21:
+            state.phase = "victory"
+            events.append("VICTORY! The kingdom is saved!")
+            events.append("You survived %d days and defeated all bosses." % state.day)
+            events.append("Final gold: %d" % state.gold)
+            return true
         events.append("Dawn breaks.")
         return true
 
@@ -937,6 +947,19 @@ static func _explore_reward(state: GameState, terrain: String) -> Dictionary:
     return {"resource": reward_resource, "amount": amount}
 
 static func _format_status(state: GameState) -> String:
+    # Victory screen
+    if state.phase == "victory":
+        var lines: Array[String] = []
+        lines.append("=== VICTORY ===")
+        lines.append("The kingdom stands triumphant!")
+        lines.append("Days survived: %d" % state.day)
+        lines.append("Final gold: %d" % state.gold)
+        lines.append("Upgrades purchased: %d" % (state.purchased_kingdom_upgrades.size() + state.purchased_unit_upgrades.size()))
+        lines.append("")
+        lines.append("Thank you for defending the realm!")
+        lines.append("Type 'restart' to play again.")
+        return "\n".join(lines)
+
     var building_parts: Array[String] = []
     for building_type in GameState.BUILDING_KEYS:
         var count: int = int(state.buildings.get(building_type, 0))
