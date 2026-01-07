@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Freeze Status (16x16) - Slow/frozen -->
+  <!-- Color Palette: #3498db, #5dade2, #85c1e9, #fdfefe -->
+
+  <!-- Snowflake center -->
+  <rect x="7" y="7" width="2" height="2" fill="#fdfefe"/>
+
+  <!-- Vertical line -->
+  <rect x="7" y="0" width="2" height="7" fill="#3498db"/>
+  <rect x="7" y="9" width="2" height="7" fill="#3498db"/>
+  <rect x="7" y="1" width="2" height="5" fill="#5dade2"/>
+  <rect x="7" y="10" width="2" height="5" fill="#5dade2"/>
+
+  <!-- Horizontal line -->
+  <rect x="0" y="7" width="7" height="2" fill="#3498db"/>
+  <rect x="9" y="7" width="7" height="2" fill="#3498db"/>
+  <rect x="1" y="7" width="5" height="2" fill="#5dade2"/>
+  <rect x="10" y="7" width="5" height="2" fill="#5dade2"/>
+
+  <!-- Diagonal branches -->
+  <rect x="3" y="3" width="2" height="2" fill="#85c1e9"/>
+  <rect x="11" y="3" width="2" height="2" fill="#85c1e9"/>
+  <rect x="3" y="11" width="2" height="2" fill="#85c1e9"/>
+  <rect x="11" y="11" width="2" height="2" fill="#85c1e9"/>
+
+  <!-- Tips -->
+  <rect x="6" y="0" width="1" height="1" fill="#5dade2"/>
+  <rect x="9" y="0" width="1" height="1" fill="#5dade2"/>
+  <rect x="6" y="15" width="1" height="1" fill="#5dade2"/>
+  <rect x="9" y="15" width="1" height="1" fill="#5dade2"/>
+  <rect x="0" y="6" width="1" height="1" fill="#5dade2"/>
+  <rect x="0" y="9" width="1" height="1" fill="#5dade2"/>
+  <rect x="15" y="6" width="1" height="1" fill="#5dade2"/>
+  <rect x="15" y="9" width="1" height="1" fill="#5dade2"/>
+</svg>

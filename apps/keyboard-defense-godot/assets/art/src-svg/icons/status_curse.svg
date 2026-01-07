@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Curse Status (16x16) - Debuff/hex -->
+  <!-- Color Palette: #9b59b6, #8e44ad, #6c3483, #1a252f, #fdfefe -->
+
+  <!-- Evil eye background -->
+  <rect x="2" y="4" width="12" height="8" fill="#9b59b6"/>
+  <rect x="4" y="3" width="8" height="1" fill="#8e44ad"/>
+  <rect x="4" y="12" width="8" height="1" fill="#8e44ad"/>
+  <rect x="1" y="6" width="1" height="4" fill="#8e44ad"/>
+  <rect x="14" y="6" width="1" height="4" fill="#8e44ad"/>
+
+  <!-- Eye shape -->
+  <rect x="4" y="5" width="8" height="6" fill="#6c3483"/>
+  <rect x="5" y="6" width="6" height="4" fill="#1a252f"/>
+
+  <!-- Pupil -->
+  <rect x="6" y="7" width="4" height="2" fill="#9b59b6"/>
+  <rect x="7" y="7" width="2" height="2" fill="#fdfefe"/>
+  <rect x="7" y="7" width="1" height="1" fill="#e74c3c"/>
+
+  <!-- Dripping curse effect -->
+  <rect x="3" y="12" width="2" height="2" fill="#6c3483"/>
+  <rect x="6" y="13" width="1" height="2" fill="#8e44ad"/>
+  <rect x="9" y="12" width="1" height="3" fill="#6c3483"/>
+  <rect x="11" y="12" width="2" height="2" fill="#8e44ad"/>
+
+  <!-- Top mystical symbols -->
+  <rect x="4" y="0" width="2" height="2" fill="#9b59b6"/>
+  <rect x="10" y="0" width="2" height="2" fill="#9b59b6"/>
+  <rect x="7" y="1" width="2" height="2" fill="#8e44ad"/>
+</svg>
