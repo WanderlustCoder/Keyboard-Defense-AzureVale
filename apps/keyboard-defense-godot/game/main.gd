@@ -57,6 +57,7 @@ const OnboardingFlow = preload("res://game/onboarding_flow.gd")
 @onready var trend_panel: Panel = $CanvasLayer/UIRoot/TrendPanel
 @onready var trend_label: RichTextLabel = $CanvasLayer/UIRoot/TrendPanel/TrendLabel
 @onready var grid_renderer: Node2D = $GridRenderer
+@onready var audio_manager = get_node_or_null("/root/AudioManager")
 
 var state: GameState
 var preview_type: String = ""
@@ -343,12 +344,28 @@ func _on_command_submitted(command: String) -> void:
             return
 
     _append_log(["Error: %s" % parsed.get("error", "Unknown error")])
+    if audio_manager != null:
+        audio_manager.play_ui_cancel()
 
 func _apply_result(result: Dictionary, intent_kind: String = "") -> void:
     var prev_phase: String = state.phase
     var prev_lesson: String = state.lesson_id
     state = result.state
     _append_log(result.events)
+    # Play audio feedback for successful commands
+    if audio_manager != null and intent_kind != "":
+        if intent_kind == "defend_input":
+            pass  # Defend has its own sounds in battle
+        elif intent_kind == "gather":
+            audio_manager.play_sfx(audio_manager.SFX.RESOURCE_PICKUP)
+        elif intent_kind == "build":
+            audio_manager.play_sfx(audio_manager.SFX.BUILD_PLACE)
+        elif intent_kind == "upgrade":
+            audio_manager.play_upgrade_purchase()
+        elif intent_kind == "end":
+            audio_manager.play_wave_start()
+        else:
+            audio_manager.play_ui_confirm()
     if result.has("request"):
         var request_result: Dictionary = _handle_request(result.request)
         if request_result.has("state"):

@@ -145,6 +145,12 @@ var _combo_pulse_timer: float = 0.0
 var _combo_scale: float = 1.0
 const COMBO_PULSE_DURATION := 0.15
 
+# Error shake animation
+var _error_shake_tween: Tween = null
+var _typed_label_base_pos: Vector2 = Vector2.ZERO
+const ERROR_SHAKE_INTENSITY := 4.0
+const ERROR_SHAKE_DURATION := 0.15
+
 func _ready() -> void:
 	exit_button.pressed.connect(_on_exit_pressed)
 	result_button.pressed.connect(_on_result_pressed)
@@ -153,6 +159,9 @@ func _ready() -> void:
 	_setup_debug_panel()
 	_setup_combo_indicator()
 	_setup_result_panel()
+	# Store base position for error shake animation
+	if typed_label != null:
+		_typed_label_base_pos = typed_label.position
 	_initialize_battle()
 
 func _initialize_battle() -> void:
@@ -356,6 +365,7 @@ func _handle_typing_result(result: Dictionary) -> void:
 		if audio_manager != null and typing_sounds_enabled:
 			audio_manager.play_type_mistake()
 			audio_manager.play_combo_break()
+		_trigger_error_shake()
 	else:
 		_advance_streaks(status)
 		if audio_manager != null and typing_sounds_enabled:
@@ -1181,6 +1191,40 @@ func _on_debug_copy_pressed() -> void:
 func _on_debug_close_pressed() -> void:
 	if debug_panel != null:
 		debug_panel.visible = false
+
+func _trigger_error_shake() -> void:
+	# Visual shake on typing error for feedback
+	if typed_label == null:
+		return
+	# Check if screen shake is enabled in settings (respects user preference)
+	if settings_manager != null and not settings_manager.screen_shake:
+		return
+
+	# Kill existing tween if running
+	if _error_shake_tween != null and _error_shake_tween.is_valid():
+		_error_shake_tween.kill()
+		typed_label.position = _typed_label_base_pos
+
+	# Create shake animation using tween
+	_error_shake_tween = create_tween()
+	var shake_time := ERROR_SHAKE_DURATION / 4.0
+
+	# Quick shake left-right-center
+	_error_shake_tween.tween_property(typed_label, "position",
+		_typed_label_base_pos + Vector2(-ERROR_SHAKE_INTENSITY, 0), shake_time)
+	_error_shake_tween.tween_property(typed_label, "position",
+		_typed_label_base_pos + Vector2(ERROR_SHAKE_INTENSITY, 0), shake_time)
+	_error_shake_tween.tween_property(typed_label, "position",
+		_typed_label_base_pos + Vector2(-ERROR_SHAKE_INTENSITY * 0.5, 0), shake_time)
+	_error_shake_tween.tween_property(typed_label, "position",
+		_typed_label_base_pos, shake_time)
+
+	# Also flash the label red briefly
+	var original_color: Color = typed_label.modulate
+	typed_label.modulate = Color(1.0, 0.5, 0.5, 1.0)
+	await get_tree().create_timer(ERROR_SHAKE_DURATION).timeout
+	if typed_label != null:
+		typed_label.modulate = original_color
 
 func _trigger_screen_shake(intensity: float, duration: float) -> void:
 	# Check if screen shake is enabled in settings
