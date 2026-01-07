@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 16" width="48" height="16">
+  <!-- Hourglass Animation (48x16) - 3 frame animation -->
+
+  <!-- Frame 1: Sand at top -->
+  <rect x="2" y="0" width="12" height="2" fill="#8b4513"/>
+  <rect x="2" y="14" width="12" height="2" fill="#8b4513"/>
+  <rect x="4" y="2" width="8" height="4" fill="#f4d03f"/>
+  <rect x="6" y="6" width="4" height="2" fill="#f4d03f"/>
+  <rect x="7" y="8" width="2" height="2" fill="#f9e79f"/>
+  <rect x="6" y="10" width="4" height="2" fill="#f9e79f"/>
+  <rect x="4" y="12" width="8" height="2" fill="#5d4e37"/>
+
+  <!-- Frame 2: Sand flowing -->
+  <rect x="18" y="0" width="12" height="2" fill="#8b4513"/>
+  <rect x="18" y="14" width="12" height="2" fill="#8b4513"/>
+  <rect x="20" y="2" width="8" height="2" fill="#f4d03f"/>
+  <rect x="22" y="4" width="4" height="2" fill="#f4d03f"/>
+  <rect x="23" y="6" width="2" height="4" fill="#f9e79f"/>
+  <rect x="22" y="10" width="4" height="2" fill="#f4d03f"/>
+  <rect x="20" y="12" width="8" height="2" fill="#f4d03f"/>
+
+  <!-- Frame 3: Sand at bottom -->
+  <rect x="34" y="0" width="12" height="2" fill="#8b4513"/>
+  <rect x="34" y="14" width="12" height="2" fill="#8b4513"/>
+  <rect x="36" y="2" width="8" height="2" fill="#5d4e37"/>
+  <rect x="38" y="4" width="4" height="2" fill="#f9e79f"/>
+  <rect x="39" y="6" width="2" height="2" fill="#f9e79f"/>
+  <rect x="38" y="8" width="4" height="2" fill="#f4d03f"/>
+  <rect x="36" y="10" width="8" height="4" fill="#f4d03f"/>
+</svg>

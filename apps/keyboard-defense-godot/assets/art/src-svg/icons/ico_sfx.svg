@@ -1,25 +1,22 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
-  <!-- SFX Icon (16x16) - Speaker for sound effects volume -->
+  <!-- Sound Effects Icon (16x16) - bell/chime -->
 
-  <!-- Speaker body -->
-  <rect x="1" y="5" width="4" height="6" fill="#5a5a6a"/>
-  <rect x="2" y="6" width="2" height="4" fill="#4a4a5a"/>
+  <!-- Bell body -->
+  <rect x="5" y="3" width="6" height="8" fill="#f4d03f"/>
+  <rect x="4" y="5" width="8" height="5" fill="#f4d03f"/>
+  <rect x="6" y="4" width="4" height="6" fill="#f9e79f"/>
 
-  <!-- Speaker cone -->
-  <rect x="5" y="3" width="4" height="10" fill="#6a6a7a"/>
-  <rect x="5" y="5" width="3" height="6" fill="#5a5a6a"/>
+  <!-- Bell top -->
+  <rect x="7" y="1" width="2" height="3" fill="#d4ac0d"/>
+  <rect x="6" y="2" width="4" height="1" fill="#f4d03f"/>
 
-  <!-- Sound waves (large) -->
-  <rect x="10" y="4" width="1" height="8" fill="#3498db"/>
-  <rect x="11" y="3" width="1" height="1" fill="#3498db"/>
-  <rect x="11" y="12" width="1" height="1" fill="#3498db"/>
+  <!-- Bell clapper -->
+  <rect x="7" y="11" width="2" height="3" fill="#d4ac0d"/>
+  <rect x="6" y="13" width="4" height="2" fill="#b7950b"/>
 
-  <!-- Sound waves (medium) -->
-  <rect x="12" y="5" width="1" height="6" fill="#5dade2"/>
-  <rect x="13" y="4" width="1" height="1" fill="#5dade2"/>
-  <rect x="13" y="11" width="1" height="1" fill="#5dade2"/>
-
-  <!-- Sound waves (small) -->
-  <rect x="14" y="6" width="1" height="4" fill="#85c1e9"/>
-  <rect x="15" y="7" width="1" height="2" fill="#aed6f1"/>
+  <!-- Sound waves -->
+  <rect x="1" y="6" width="2" height="1" fill="#f9e79f"/>
+  <rect x="0" y="8" width="2" height="1" fill="#fcf3cf"/>
+  <rect x="13" y="6" width="2" height="1" fill="#f9e79f"/>
+  <rect x="14" y="8" width="2" height="1" fill="#fcf3cf"/>
 </svg>

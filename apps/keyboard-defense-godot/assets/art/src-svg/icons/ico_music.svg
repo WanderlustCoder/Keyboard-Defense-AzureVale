@@ -1,31 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
-  <!-- Music Icon (16x16) - Musical notes for music volume -->
+  <!-- Music Note Icon (16x16) -->
 
-  <!-- First note stem -->
-  <rect x="3" y="2" width="2" height="10" fill="#5a5a6a"/>
+  <!-- Note stem -->
+  <rect x="10" y="1" width="2" height="10" fill="#5d6d7e"/>
+  <rect x="11" y="2" width="1" height="8" fill="#7f8c8d"/>
 
-  <!-- First note head -->
-  <rect x="1" y="10" width="4" height="3" fill="#3498db"/>
-  <rect x="2" y="11" width="3" height="2" fill="#5dade2"/>
-  <rect x="0" y="11" width="2" height="2" fill="#2e86ab"/>
+  <!-- Note head -->
+  <rect x="6" y="9" width="6" height="4" fill="#5d6d7e"/>
+  <rect x="5" y="10" width="6" height="3" fill="#5d6d7e"/>
+  <rect x="7" y="10" width="4" height="2" fill="#7f8c8d"/>
 
-  <!-- Second note stem -->
-  <rect x="10" y="4" width="2" height="8" fill="#5a5a6a"/>
-
-  <!-- Second note head -->
-  <rect x="8" y="10" width="4" height="3" fill="#3498db"/>
-  <rect x="9" y="11" width="3" height="2" fill="#5dade2"/>
-  <rect x="7" y="11" width="2" height="2" fill="#2e86ab"/>
-
-  <!-- Connecting beam -->
-  <rect x="3" y="2" width="9" height="2" fill="#5a5a6a"/>
-  <rect x="10" y="3" width="2" height="2" fill="#5a5a6a"/>
-
-  <!-- Second beam -->
-  <rect x="3" y="5" width="9" height="2" fill="#4a4a5a"/>
-  <rect x="10" y="5" width="2" height="2" fill="#4a4a5a"/>
-
-  <!-- Musical sparkle -->
-  <rect x="13" y="1" width="2" height="1" fill="#f4d03f"/>
-  <rect x="14" y="0" width="1" height="3" fill="#f4d03f"/>
+  <!-- Flag -->
+  <rect x="12" y="1" width="3" height="2" fill="#5d6d7e"/>
+  <rect x="13" y="3" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="12" y="5" width="2" height="1" fill="#7f8c8d"/>
 </svg>

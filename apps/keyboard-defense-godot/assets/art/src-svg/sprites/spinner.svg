@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 16" width="64" height="16">
+  <!-- Loading Spinner (64x16) - 4 frame animation -->
+
+  <!-- Frame 1: Top highlighted -->
+  <rect x="4" y="0" width="8" height="8" fill="#3498db"/>
+  <rect x="4" y="8" width="8" height="8" fill="#5d6d7e"/>
+  <rect x="5" y="1" width="6" height="6" fill="#5dade2"/>
+  <rect x="5" y="9" width="6" height="6" fill="#7f8c8d"/>
+
+  <!-- Frame 2: Right highlighted -->
+  <rect x="20" y="0" width="8" height="8" fill="#5d6d7e"/>
+  <rect x="20" y="8" width="8" height="8" fill="#5d6d7e"/>
+  <rect x="24" y="4" width="8" height="8" fill="#3498db"/>
+  <rect x="21" y="1" width="6" height="6" fill="#7f8c8d"/>
+  <rect x="25" y="5" width="6" height="6" fill="#5dade2"/>
+
+  <!-- Frame 3: Bottom highlighted -->
+  <rect x="36" y="0" width="8" height="8" fill="#5d6d7e"/>
+  <rect x="36" y="8" width="8" height="8" fill="#3498db"/>
+  <rect x="37" y="1" width="6" height="6" fill="#7f8c8d"/>
+  <rect x="37" y="9" width="6" height="6" fill="#5dade2"/>
+
+  <!-- Frame 4: Left highlighted -->
+  <rect x="52" y="0" width="8" height="8" fill="#5d6d7e"/>
+  <rect x="52" y="8" width="8" height="8" fill="#5d6d7e"/>
+  <rect x="48" y="4" width="8" height="8" fill="#3498db"/>
+  <rect x="53" y="1" width="6" height="6" fill="#7f8c8d"/>
+  <rect x="49" y="5" width="6" height="6" fill="#5dade2"/>
+</svg>

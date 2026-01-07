@@ -3490,6 +3490,239 @@
       "max_kb": 2,
       "pixel_art": true,
       "category": "decorations"
+    },
+    {
+      "id": "ico_settings",
+      "path": "res://assets/icons/ico_settings.png",
+      "source_svg": "res://assets/art/src-svg/icons/ico_settings.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_volume",
+      "path": "res://assets/icons/ico_volume.png",
+      "source_svg": "res://assets/art/src-svg/icons/ico_volume.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_volume_mute",
+      "path": "res://assets/icons/ico_volume_mute.png",
+      "source_svg": "res://assets/art/src-svg/icons/ico_volume_mute.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_music",
+      "path": "res://assets/icons/ico_music.png",
+      "source_svg": "res://assets/art/src-svg/icons/ico_music.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_sfx",
+      "path": "res://assets/icons/ico_sfx.png",
+      "source_svg": "res://assets/art/src-svg/icons/ico_sfx.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_display",
+      "path": "res://assets/icons/ico_display.png",
+      "source_svg": "res://assets/art/src-svg/icons/ico_display.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_controls",
+      "path": "res://assets/icons/ico_controls.png",
+      "source_svg": "res://assets/art/src-svg/icons/ico_controls.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_fullscreen",
+      "path": "res://assets/icons/ico_fullscreen.png",
+      "source_svg": "res://assets/art/src-svg/icons/ico_fullscreen.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_trophy",
+      "path": "res://assets/icons/ico_trophy.png",
+      "source_svg": "res://assets/art/src-svg/icons/ico_trophy.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_crown",
+      "path": "res://assets/icons/ico_crown.png",
+      "source_svg": "res://assets/art/src-svg/icons/ico_crown.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "ico_medal",
+      "path": "res://assets/icons/ico_medal.png",
+      "source_svg": "res://assets/art/src-svg/icons/ico_medal.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "icons"
+    },
+    {
+      "id": "spinner",
+      "path": "res://assets/sprites/spinner.png",
+      "source_svg": "res://assets/art/src-svg/sprites/spinner.svg",
+      "expected_width": 64,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "effects",
+      "animation": {
+        "frames": 4,
+        "frame_width": 16,
+        "frame_height": 16,
+        "duration_ms": 600
+      }
+    },
+    {
+      "id": "loading_dots",
+      "path": "res://assets/sprites/loading_dots.png",
+      "source_svg": "res://assets/art/src-svg/sprites/loading_dots.svg",
+      "expected_width": 64,
+      "expected_height": 8,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "effects",
+      "animation": {
+        "frames": 4,
+        "frame_width": 16,
+        "frame_height": 8,
+        "duration_ms": 400
+      }
+    },
+    {
+      "id": "progress_chunk",
+      "path": "res://assets/sprites/progress_chunk.png",
+      "source_svg": "res://assets/art/src-svg/sprites/progress_chunk.svg",
+      "expected_width": 8,
+      "expected_height": 8,
+      "max_kb": 4,
+      "pixel_art": true,
+      "category": "ui",
+      "tileable": true
+    },
+    {
+      "id": "hourglass",
+      "path": "res://assets/sprites/hourglass.png",
+      "source_svg": "res://assets/art/src-svg/sprites/hourglass.svg",
+      "expected_width": 48,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "effects",
+      "animation": {
+        "frames": 3,
+        "frame_width": 16,
+        "frame_height": 16,
+        "duration_ms": 800
+      }
+    },
+    {
+      "id": "coin_spin",
+      "path": "res://assets/sprites/coin_spin.png",
+      "source_svg": "res://assets/art/src-svg/sprites/coin_spin.svg",
+      "expected_width": 64,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "effects",
+      "animation": {
+        "frames": 4,
+        "frame_width": 16,
+        "frame_height": 16,
+        "duration_ms": 400
+      }
+    },
+    {
+      "id": "star_collect",
+      "path": "res://assets/sprites/star_collect.png",
+      "source_svg": "res://assets/art/src-svg/sprites/star_collect.svg",
+      "expected_width": 64,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "effects",
+      "animation": {
+        "frames": 4,
+        "frame_width": 16,
+        "frame_height": 16,
+        "duration_ms": 300
+      }
+    },
+    {
+      "id": "chest_open",
+      "path": "res://assets/sprites/chest_open.png",
+      "source_svg": "res://assets/art/src-svg/sprites/chest_open.svg",
+      "expected_width": 64,
+      "expected_height": 16,
+      "max_kb": 10,
+      "pixel_art": true,
+      "category": "effects",
+      "animation": {
+        "frames": 4,
+        "frame_width": 16,
+        "frame_height": 16,
+        "duration_ms": 500
+      }
+    },
+    {
+      "id": "powerup_pulse",
+      "path": "res://assets/sprites/powerup_pulse.png",
+      "source_svg": "res://assets/art/src-svg/sprites/powerup_pulse.svg",
+      "expected_width": 64,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "effects",
+      "animation": {
+        "frames": 4,
+        "frame_width": 16,
+        "frame_height": 16,
+        "duration_ms": 400
+      }
     }
   ],
   "audio": [

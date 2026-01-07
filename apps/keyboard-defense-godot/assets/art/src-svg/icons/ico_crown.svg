@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Crown Icon (16x16) -->
+
+  <!-- Crown base -->
+  <rect x="2" y="8" width="12" height="6" fill="#f4d03f"/>
+  <rect x="3" y="9" width="10" height="4" fill="#f9e79f"/>
+
+  <!-- Crown points -->
+  <rect x="2" y="4" width="3" height="5" fill="#f4d03f"/>
+  <rect x="3" y="5" width="1" height="3" fill="#f9e79f"/>
+  <rect x="6" y="2" width="4" height="7" fill="#f4d03f"/>
+  <rect x="7" y="3" width="2" height="5" fill="#f9e79f"/>
+  <rect x="11" y="4" width="3" height="5" fill="#f4d03f"/>
+  <rect x="12" y="5" width="1" height="3" fill="#f9e79f"/>
+
+  <!-- Gems -->
+  <rect x="3" y="10" width="2" height="2" fill="#e74c3c"/>
+  <rect x="7" y="10" width="2" height="2" fill="#3498db"/>
+  <rect x="11" y="10" width="2" height="2" fill="#27ae60"/>
+
+  <!-- Top gems -->
+  <rect x="7" y="3" width="2" height="2" fill="#9b59b6"/>
+</svg>

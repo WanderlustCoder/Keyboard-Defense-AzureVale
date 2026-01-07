@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 8" width="64" height="8">
+  <!-- Loading Dots (64x8) - 4 frame animation -->
+
+  <!-- Frame 1: First dot lit -->
+  <rect x="2" y="2" width="4" height="4" fill="#3498db"/>
+  <rect x="8" y="2" width="4" height="4" fill="#5d6d7e"/>
+  <rect x="14" y="2" width="4" height="4" fill="#5d6d7e"/>
+
+  <!-- Frame 2: Second dot lit -->
+  <rect x="18" y="2" width="4" height="4" fill="#5d6d7e"/>
+  <rect x="24" y="2" width="4" height="4" fill="#3498db"/>
+  <rect x="30" y="2" width="4" height="4" fill="#5d6d7e"/>
+
+  <!-- Frame 3: Third dot lit -->
+  <rect x="34" y="2" width="4" height="4" fill="#5d6d7e"/>
+  <rect x="40" y="2" width="4" height="4" fill="#5d6d7e"/>
+  <rect x="46" y="2" width="4" height="4" fill="#3498db"/>
+
+  <!-- Frame 4: All dots lit -->
+  <rect x="50" y="2" width="4" height="4" fill="#5dade2"/>
+  <rect x="56" y="2" width="4" height="4" fill="#5dade2"/>
+  <rect x="62" y="2" width="4" height="4" fill="#5dade2"/>
+</svg>

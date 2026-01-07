@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Controls/Gamepad Icon (16x16) -->
+
+  <!-- Controller body -->
+  <rect x="2" y="4" width="12" height="8" fill="#5d6d7e"/>
+  <rect x="1" y="5" width="14" height="6" fill="#5d6d7e"/>
+  <rect x="3" y="5" width="10" height="6" fill="#7f8c8d"/>
+
+  <!-- D-pad -->
+  <rect x="3" y="7" width="4" height="2" fill="#2c3e50"/>
+  <rect x="4" y="6" width="2" height="4" fill="#2c3e50"/>
+
+  <!-- Buttons -->
+  <rect x="10" y="6" width="2" height="2" fill="#e74c3c"/>
+  <rect x="12" y="8" width="2" height="2" fill="#3498db"/>
+
+  <!-- Shoulder bumpers -->
+  <rect x="2" y="3" width="4" height="1" fill="#95a5a6"/>
+  <rect x="10" y="3" width="4" height="1" fill="#95a5a6"/>
+</svg>
