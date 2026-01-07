@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" width="12" height="6">
+  <!-- Ice Shard Projectile (12x6) - Frost spell projectile -->
+  <!-- Color Palette: #85c1e9, #5dade2, #3498db, #2980b9, #fdfefe -->
+
+  <!-- Main shard body -->
+  <rect x="2" y="1" width="8" height="4" fill="#5dade2"/>
+  <rect x="3" y="2" width="6" height="2" fill="#85c1e9"/>
+
+  <!-- Sharp tip -->
+  <rect x="0" y="2" width="2" height="2" fill="#3498db"/>
+  <rect x="0" y="2" width="1" height="2" fill="#2980b9"/>
+
+  <!-- Crystalline facets -->
+  <rect x="4" y="0" width="4" height="1" fill="#3498db"/>
+  <rect x="4" y="5" width="4" height="1" fill="#3498db"/>
+  <rect x="5" y="0" width="2" height="1" fill="#5dade2"/>
+  <rect x="5" y="5" width="2" height="1" fill="#5dade2"/>
+
+  <!-- Inner highlights -->
+  <rect x="4" y="2" width="2" height="1" fill="#fdfefe"/>
+  <rect x="7" y="3" width="2" height="1" fill="#fdfefe" opacity="0.6"/>
+
+  <!-- Trailing frost particles -->
+  <rect x="10" y="2" width="2" height="2" fill="#85c1e9" opacity="0.6"/>
+  <rect x="11" y="1" width="1" height="1" fill="#fdfefe" opacity="0.4"/>
+  <rect x="11" y="4" width="1" height="1" fill="#fdfefe" opacity="0.4"/>
+</svg>

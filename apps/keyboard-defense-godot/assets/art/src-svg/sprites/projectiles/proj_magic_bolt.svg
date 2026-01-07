@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 8" width="12" height="8">
+  <!-- Magic Bolt Projectile (12x8) - Mage spell projectile -->
+  <!-- Color Palette: #9b59b6, #8e44ad, #3498db, #fdfefe, #d7bde2 -->
+
+  <!-- Outer glow -->
+  <rect x="0" y="2" width="2" height="4" fill="#9b59b6" opacity="0.5"/>
+  <rect x="10" y="2" width="2" height="4" fill="#3498db" opacity="0.5"/>
+
+  <!-- Main bolt body -->
+  <rect x="2" y="1" width="8" height="6" fill="#9b59b6"/>
+  <rect x="3" y="2" width="6" height="4" fill="#8e44ad"/>
+
+  <!-- Core glow -->
+  <rect x="4" y="2" width="4" height="4" fill="#3498db"/>
+  <rect x="5" y="3" width="2" height="2" fill="#fdfefe"/>
+
+  <!-- Trailing particles -->
+  <rect x="8" y="3" width="2" height="2" fill="#d7bde2"/>
+  <rect x="10" y="3" width="1" height="1" fill="#9b59b6" opacity="0.7"/>
+
+  <!-- Leading point -->
+  <rect x="1" y="3" width="2" height="2" fill="#8e44ad"/>
+  <rect x="0" y="3" width="1" height="2" fill="#6c3483"/>
+</svg>

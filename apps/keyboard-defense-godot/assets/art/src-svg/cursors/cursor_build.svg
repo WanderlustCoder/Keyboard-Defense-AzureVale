@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Build Cursor (16x16) - Hammer for construction -->
+  <!-- Color Palette: #8b7355, #5d4e37, #7f8c8d, #95a5a6, #1a252f, #27ae60 -->
+
+  <!-- Hammer head -->
+  <rect x="1" y="1" width="8" height="4" fill="#7f8c8d"/>
+  <rect x="2" y="0" width="6" height="1" fill="#5d6d7e"/>
+  <rect x="2" y="5" width="6" height="1" fill="#5d6d7e"/>
+  <rect x="0" y="2" width="1" height="2" fill="#5d6d7e"/>
+  <rect x="9" y="2" width="1" height="2" fill="#5d6d7e"/>
+
+  <!-- Hammer face -->
+  <rect x="2" y="2" width="6" height="2" fill="#95a5a6"/>
+  <rect x="3" y="2" width="2" height="1" fill="#bdc3c7"/>
+
+  <!-- Handle -->
+  <rect x="4" y="5" width="2" height="8" fill="#8b7355"/>
+  <rect x="4" y="5" width="1" height="8" fill="#5d4e37"/>
+
+  <!-- Handle grip -->
+  <rect x="3" y="12" width="4" height="2" fill="#5d4e37"/>
+  <rect x="4" y="13" width="2" height="1" fill="#8b7355"/>
+  <rect x="3" y="14" width="4" height="1" fill="#3d3229"/>
+
+  <!-- Plus sign (build indicator) -->
+  <rect x="11" y="9" width="4" height="2" fill="#27ae60"/>
+  <rect x="12" y="8" width="2" height="4" fill="#27ae60"/>
+  <rect x="12" y="9" width="2" height="2" fill="#2ecc71"/>
+
+  <!-- Outline -->
+  <rect x="10" y="9" width="1" height="2" fill="#1a252f"/>
+  <rect x="15" y="9" width="1" height="2" fill="#1a252f"/>
+  <rect x="12" y="7" width="2" height="1" fill="#1a252f"/>
+  <rect x="12" y="12" width="2" height="1" fill="#1a252f"/>
+</svg>

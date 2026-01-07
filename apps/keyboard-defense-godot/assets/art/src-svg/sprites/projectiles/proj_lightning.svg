@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 8" width="16" height="8">
+  <!-- Lightning Bolt Projectile (16x8) - Electric spell projectile -->
+  <!-- Color Palette: #f4d03f, #f7dc6f, #fdfefe, #3498db, #9b59b6 -->
+
+  <!-- Outer electric glow -->
+  <rect x="0" y="3" width="2" height="2" fill="#3498db" opacity="0.5"/>
+  <rect x="14" y="3" width="2" height="2" fill="#9b59b6" opacity="0.5"/>
+
+  <!-- Lightning bolt zigzag -->
+  <rect x="0" y="3" width="3" height="2" fill="#f4d03f"/>
+  <rect x="2" y="2" width="2" height="2" fill="#f7dc6f"/>
+  <rect x="3" y="1" width="3" height="2" fill="#f4d03f"/>
+  <rect x="5" y="2" width="2" height="2" fill="#fdfefe"/>
+  <rect x="6" y="3" width="3" height="2" fill="#f4d03f"/>
+  <rect x="8" y="4" width="2" height="2" fill="#f7dc6f"/>
+  <rect x="9" y="5" width="3" height="2" fill="#f4d03f"/>
+  <rect x="11" y="4" width="2" height="2" fill="#fdfefe"/>
+  <rect x="12" y="3" width="3" height="2" fill="#f4d03f"/>
+  <rect x="14" y="2" width="2" height="3" fill="#f7dc6f"/>
+
+  <!-- Core brightness -->
+  <rect x="4" y="2" width="2" height="1" fill="#fdfefe"/>
+  <rect x="10" y="4" width="2" height="1" fill="#fdfefe"/>
+
+  <!-- Electric sparks -->
+  <rect x="1" y="1" width="1" height="1" fill="#3498db" opacity="0.7"/>
+  <rect x="7" y="0" width="1" height="1" fill="#9b59b6" opacity="0.7"/>
+  <rect x="13" y="6" width="1" height="1" fill="#3498db" opacity="0.7"/>
+  <rect x="3" y="6" width="1" height="1" fill="#9b59b6" opacity="0.7"/>
+</svg>

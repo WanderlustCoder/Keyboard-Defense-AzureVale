@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8" width="8" height="8">
+  <!-- Cannonball Projectile (8x8) - Heavy cannon shot -->
+  <!-- Color Palette: #2c3e50, #1a252f, #5d6d7e, #e67e22 -->
+
+  <!-- Main ball -->
+  <rect x="1" y="1" width="6" height="6" fill="#2c3e50"/>
+  <rect x="2" y="0" width="4" height="1" fill="#1a252f"/>
+  <rect x="2" y="7" width="4" height="1" fill="#1a252f"/>
+  <rect x="0" y="2" width="1" height="4" fill="#1a252f"/>
+  <rect x="7" y="2" width="1" height="4" fill="#1a252f"/>
+
+  <!-- Inner shading -->
+  <rect x="2" y="2" width="4" height="4" fill="#1a252f"/>
+
+  <!-- Highlight -->
+  <rect x="2" y="2" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="2" y="2" width="1" height="1" fill="#7f8c8d"/>
+
+  <!-- Fire trail hint -->
+  <rect x="6" y="3" width="2" height="2" fill="#e67e22" opacity="0.6"/>
+  <rect x="7" y="4" width="1" height="1" fill="#f4d03f" opacity="0.4"/>
+</svg>

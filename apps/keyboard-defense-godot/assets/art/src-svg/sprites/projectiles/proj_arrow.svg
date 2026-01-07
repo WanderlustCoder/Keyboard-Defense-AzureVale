@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 4" width="16" height="4">
+  <!-- Arrow Projectile (16x4) - Basic archer arrow -->
+  <!-- Color Palette: #8b7355, #5d4e37, #bdc3c7, #e74c3c -->
+
+  <!-- Arrow shaft -->
+  <rect x="4" y="1" width="10" height="2" fill="#8b7355"/>
+  <rect x="5" y="1" width="8" height="1" fill="#a0522d"/>
+
+  <!-- Arrow head -->
+  <rect x="0" y="1" width="4" height="2" fill="#bdc3c7"/>
+  <rect x="0" y="0" width="2" height="1" fill="#95a5a6"/>
+  <rect x="0" y="3" width="2" height="1" fill="#95a5a6"/>
+  <rect x="0" y="1" width="1" height="2" fill="#7f8c8d"/>
+
+  <!-- Fletching (feathers) -->
+  <rect x="12" y="0" width="4" height="1" fill="#e74c3c"/>
+  <rect x="12" y="3" width="4" height="1" fill="#e74c3c"/>
+  <rect x="14" y="1" width="2" height="2" fill="#c0392b"/>
+</svg>

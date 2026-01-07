@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Star Icon (16x16) - Rating/upgrade -->
+  <!-- Color Palette: #f4d03f, #e67e22, #d4a017, #fdfefe -->
+
+  <!-- Star shape (5-point simplified) -->
+  <!-- Top point -->
+  <rect x="7" y="0" width="2" height="4" fill="#f4d03f"/>
+  <rect x="6" y="3" width="4" height="2" fill="#f4d03f"/>
+
+  <!-- Middle body -->
+  <rect x="2" y="5" width="12" height="4" fill="#f4d03f"/>
+  <rect x="0" y="5" width="2" height="2" fill="#e67e22"/>
+  <rect x="14" y="5" width="2" height="2" fill="#e67e22"/>
+
+  <!-- Lower left point -->
+  <rect x="2" y="9" width="3" height="3" fill="#f4d03f"/>
+  <rect x="1" y="10" width="2" height="3" fill="#e67e22"/>
+  <rect x="0" y="12" width="2" height="2" fill="#f4d03f"/>
+
+  <!-- Lower right point -->
+  <rect x="11" y="9" width="3" height="3" fill="#f4d03f"/>
+  <rect x="13" y="10" width="2" height="3" fill="#e67e22"/>
+  <rect x="14" y="12" width="2" height="2" fill="#f4d03f"/>
+
+  <!-- Bottom center -->
+  <rect x="5" y="9" width="6" height="4" fill="#f4d03f"/>
+  <rect x="6" y="13" width="4" height="2" fill="#e67e22"/>
+  <rect x="7" y="14" width="2" height="2" fill="#d4a017"/>
+
+  <!-- Highlights -->
+  <rect x="7" y="1" width="1" height="2" fill="#fdfefe" opacity="0.5"/>
+  <rect x="4" y="5" width="2" height="2" fill="#fdfefe" opacity="0.4"/>
+</svg>

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Heart Icon (16x16) - Health/lives -->
+  <!-- Color Palette: #e74c3c, #c0392b, #ff6b6b, #fdfefe -->
+
+  <!-- Heart shape -->
+  <rect x="2" y="3" width="5" height="4" fill="#e74c3c"/>
+  <rect x="9" y="3" width="5" height="4" fill="#e74c3c"/>
+  <rect x="3" y="2" width="3" height="1" fill="#c0392b"/>
+  <rect x="10" y="2" width="3" height="1" fill="#c0392b"/>
+  <rect x="1" y="4" width="1" height="3" fill="#c0392b"/>
+  <rect x="14" y="4" width="1" height="3" fill="#c0392b"/>
+
+  <!-- Heart middle and bottom -->
+  <rect x="2" y="7" width="12" height="3" fill="#e74c3c"/>
+  <rect x="3" y="10" width="10" height="2" fill="#e74c3c"/>
+  <rect x="4" y="12" width="8" height="1" fill="#c0392b"/>
+  <rect x="5" y="13" width="6" height="1" fill="#c0392b"/>
+  <rect x="6" y="14" width="4" height="1" fill="#e74c3c"/>
+  <rect x="7" y="15" width="2" height="1" fill="#c0392b"/>
+
+  <!-- Highlight -->
+  <rect x="3" y="3" width="2" height="2" fill="#ff6b6b"/>
+  <rect x="4" y="4" width="1" height="1" fill="#fdfefe"/>
+</svg>
