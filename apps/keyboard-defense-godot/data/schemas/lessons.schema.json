@@ -15,16 +15,31 @@
   "$defs": {
     "lesson": {
       "type": "object",
-      "required": ["id", "name", "description", "mode", "charset", "lengths"],
+      "required": ["id", "name", "description", "mode", "lengths"],
       "properties": {
         "id": {"type": "string", "pattern": "^[a-z0-9_]+$"},
         "name": {"type": "string"},
         "description": {"type": "string"},
-        "mode": {"type": "string", "enum": ["charset"]},
+        "mode": {"type": "string", "enum": ["charset", "wordlist"]},
         "charset": {"type": "string", "minLength": 1},
+        "wordlist": {
+          "type": "array",
+          "items": {"type": "string"},
+          "minItems": 1
+        },
         "lengths": {"$ref": "#/$defs/lengthRanges"}
       },
-      "additionalProperties": false
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {"properties": {"mode": {"const": "charset"}}},
+          "then": {"required": ["charset"]}
+        },
+        {
+          "if": {"properties": {"mode": {"const": "wordlist"}}},
+          "then": {"required": ["wordlist"]}
+        }
+      ]
     },
     "lengthRanges": {
       "type": "object",
