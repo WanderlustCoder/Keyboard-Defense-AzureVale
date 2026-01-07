@@ -672,7 +672,7 @@
         {
           "mode": "targets",
           "label": "Core Commands",
-          "targets": ["init{}", "loop[]", "call()", "bind^all"},
+          "targets": ["init{}", "loop[]", "call()", "bind^all"],
           "hint": "Command the forge's full power."
         },
         {
@@ -786,7 +786,7 @@
         {
           "mode": "targets",
           "label": "Chaos Commands",
-          "targets": ["ultimate!", "final?", "omega@1", "apex#end"},
+          "targets": ["ultimate!", "final?", "omega@1", "apex#end"],
           "hint": "Master the chaos or be consumed."
         },
         {
