@@ -365,6 +365,8 @@ func _apply_result(result: Dictionary, intent_kind: String = "") -> void:
     _append_log(result.events)
     # Play audio for events
     _trigger_event_audio(result.events)
+    # Trigger visual effects for events
+    _trigger_event_visuals(result.events)
     # Play audio feedback for successful commands
     if audio_manager != null and intent_kind != "":
         if intent_kind == "defend_input":
@@ -516,6 +518,35 @@ func _trigger_event_audio(events: Array) -> void:
                 # Enemy spawns
                 elif text.begins_with("Enemy spawned:"):
                         audio_manager.play_sfx(audio_manager.SFX.ENEMY_SPAWN)
+
+## Trigger visual effects based on game event strings
+func _trigger_event_visuals(events: Array) -> void:
+        if grid_renderer == null:
+                return
+        for event in events:
+                var text: String = str(event)
+                # Enemy hit - spawn projectile to focused enemy position
+                if text.contains("defeated") and text.contains("gold"):
+                        if typing_focus_id >= 0:
+                                for enemy in state.enemies:
+                                        if int(enemy.get("id", -1)) == typing_focus_id:
+                                                var pos: Vector2i = enemy.get("pos", Vector2i.ZERO)
+                                                grid_renderer.spawn_projectile(pos, true)
+                                                break
+                        else:
+                                # No focus, use first matching candidate
+                                for eid in typing_candidate_ids:
+                                        for enemy in state.enemies:
+                                                if int(enemy.get("id", -1)) == eid:
+                                                        var pos: Vector2i = enemy.get("pos", Vector2i.ZERO)
+                                                        grid_renderer.spawn_projectile(pos, false)
+                                                        break
+                                        break
+                # Castle damage
+                elif text.begins_with("Enemy") and text.contains("hits the base"):
+                        grid_renderer.spawn_damage_flash()
+                elif text.begins_with("Thorns deal") or text.begins_with("Enemy explodes"):
+                        grid_renderer.spawn_damage_flash()
 
 func _default_onboarding_flags() -> Dictionary:
         return {

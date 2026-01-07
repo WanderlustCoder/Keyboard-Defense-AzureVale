@@ -50,6 +50,11 @@ var focus_enemy_id: int = -1
 var asset_loader: AssetLoader
 var texture_cache: Dictionary = {}
 
+# Hit effect particles
+var _active_particles: Array = []
+const PARTICLE_LIFETIME := 0.35
+const PARTICLE_SPEED := 100.0
+
 func _ready() -> void:
 	asset_loader = AssetLoader.new()
 	asset_loader._load_manifest()
@@ -60,6 +65,7 @@ func _preload_textures() -> void:
 	var ids := [
 		"bld_wall", "bld_tower_arrow", "bld_tower_slow",
 		"bld_barracks", "bld_library", "bld_gate", "bld_castle",
+		"castle_base", "castle_damaged",
 		"enemy_runner", "enemy_brute", "enemy_flyer",
 		"enemy_shielder", "enemy_healer",
 		"tile_grass", "tile_evergrove_dense", "tile_dirt", "tile_water"
@@ -254,12 +260,13 @@ func _draw() -> void:
 			var initial: String = word.substr(0, 1)
 			draw_string(font, enemy_rect.position + Vector2(6, 16), initial, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size - 6, enemy_color)
 
-	# Draw base
+	# Draw base with state-based sprite
 	var base_rect: Rect2 = Rect2(origin + Vector2(base_pos.x * cell_size.x, base_pos.y * cell_size.y), cell_size)
 	if use_sprites:
-		var castle_tex := _get_texture("bld_castle")
+		var castle_tex := _get_castle_texture()
+		var castle_tint := _get_castle_tint()
 		if castle_tex != null:
-			_draw_centered_texture(base_rect.grow(4.0), castle_tex)
+			_draw_centered_texture(base_rect.grow(4.0), castle_tex, castle_tint)
 		else:
 			draw_rect(base_rect.grow(-4.0), base_color, true)
 	else:
@@ -268,6 +275,12 @@ func _draw() -> void:
 	# Draw cursor
 	var cursor_rect: Rect2 = Rect2(origin + Vector2(cursor_pos.x * cell_size.x, cursor_pos.y * cell_size.y), cell_size)
 	draw_rect(cursor_rect.grow(-2.0), cursor_color, false, 2.0)
+
+	# Draw particles on top
+	_draw_particles()
+
+func _process(delta: float) -> void:
+	update_particles(delta)
 
 func _draw_centered_texture(rect: Rect2, tex: Texture2D, mod_color: Color = Color.WHITE) -> void:
 	var tex_size := tex.get_size()
@@ -375,3 +388,158 @@ func _poi_symbol(icon_name: String) -> String:
 			return "V"
 		_:
 			return "?"
+
+## Get castle texture based on HP state
+func _get_castle_texture() -> Texture2D:
+	if state_ref == null:
+		return _get_texture("bld_castle")
+
+	var hp: int = state_ref.hp
+	var max_hp: int = state_ref.max_hp
+
+	# Damaged state: HP <= 30% of max
+	if hp <= int(max_hp * 0.3):
+		var damaged_tex := _get_texture("castle_damaged")
+		if damaged_tex != null:
+			return damaged_tex
+
+	# Default/healthy castle
+	return _get_texture("bld_castle")
+
+## Get castle color tint based on HP and upgrades
+func _get_castle_tint() -> Color:
+	if state_ref == null:
+		return Color.WHITE
+
+	var hp: int = state_ref.hp
+	var max_hp: int = state_ref.max_hp
+	var hp_percent: float = float(hp) / float(max_hp) if max_hp > 0 else 1.0
+
+	# Critical HP: red tint
+	if hp_percent <= 0.25:
+		return Color(1.0, 0.7, 0.7, 1.0)
+	# Low HP: orange tint
+	elif hp_percent <= 0.5:
+		return Color(1.0, 0.9, 0.8, 1.0)
+
+	# Check for upgrades that enhance the castle
+	var kingdom_upgrades: Array = state_ref.purchased_kingdom_upgrades
+	var upgrade_count: int = kingdom_upgrades.size()
+
+	# Many upgrades: golden glow
+	if upgrade_count >= 6:
+		return Color(1.1, 1.05, 0.95, 1.0)
+	# Some upgrades: slight blue glow
+	elif upgrade_count >= 3:
+		return Color(1.0, 1.0, 1.05, 1.0)
+
+	return Color.WHITE
+
+## Spawn projectile from castle to enemy position
+func spawn_projectile(enemy_pos: Vector2i, is_power: bool = false) -> void:
+	var start_pos: Vector2 = origin + Vector2(base_pos.x * cell_size.x, base_pos.y * cell_size.y) + cell_size * 0.5
+	var end_pos: Vector2 = origin + Vector2(enemy_pos.x * cell_size.x, enemy_pos.y * cell_size.y) + cell_size * 0.5
+	var direction: Vector2 = (end_pos - start_pos).normalized()
+	var color: Color = Color(1.0, 0.9, 0.4, 1.0) if is_power else Color(0.9, 0.7, 0.3, 1.0)
+	var size: Vector2 = Vector2(8, 4) if is_power else Vector2(6, 3)
+
+	_active_particles.append({
+		"type": "projectile",
+		"pos": start_pos,
+		"target": end_pos,
+		"velocity": direction * PARTICLE_SPEED * (1.5 if is_power else 1.0),
+		"color": color,
+		"size": size,
+		"lifetime": PARTICLE_LIFETIME * 2.0
+	})
+	queue_redraw()
+
+## Spawn hit spark particles at position
+func spawn_hit_sparks(world_pos: Vector2, is_power: bool = false) -> void:
+	var count: int = 8 if is_power else 5
+	var base_color: Color = Color(1.0, 0.95, 0.5, 1.0) if is_power else Color(0.95, 0.85, 0.4, 1.0)
+
+	for i in range(count):
+		var angle: float = randf() * TAU
+		var speed: float = PARTICLE_SPEED * (0.4 + randf() * 0.6) * (1.3 if is_power else 1.0)
+		var size: Vector2 = Vector2(5, 2) if i % 2 == 0 else Vector2(3, 3)
+
+		_active_particles.append({
+			"type": "spark",
+			"pos": world_pos,
+			"velocity": Vector2(cos(angle), sin(angle)) * speed,
+			"color": base_color,
+			"size": size,
+			"lifetime": PARTICLE_LIFETIME
+		})
+	queue_redraw()
+
+## Spawn damage flash at castle
+func spawn_damage_flash() -> void:
+	var castle_pos: Vector2 = origin + Vector2(base_pos.x * cell_size.x, base_pos.y * cell_size.y) + cell_size * 0.5
+
+	for i in range(6):
+		var angle: float = randf() * TAU
+		var speed: float = PARTICLE_SPEED * 0.6 * (0.3 + randf() * 0.7)
+
+		_active_particles.append({
+			"type": "damage",
+			"pos": castle_pos,
+			"velocity": Vector2(cos(angle), sin(angle)) * speed,
+			"color": Color(1.0, 0.35, 0.25, 1.0),
+			"size": Vector2(4, 4),
+			"lifetime": PARTICLE_LIFETIME * 0.7
+		})
+	queue_redraw()
+
+## Update particles - call from _process
+func update_particles(delta: float) -> void:
+	if _active_particles.is_empty():
+		return
+
+	var needs_redraw: bool = false
+	for i in range(_active_particles.size() - 1, -1, -1):
+		var p: Dictionary = _active_particles[i]
+		p["lifetime"] = p.get("lifetime", 0.0) - delta
+
+		if p["lifetime"] <= 0.0:
+			_active_particles.remove_at(i)
+			needs_redraw = true
+			continue
+
+		var vel: Vector2 = p.get("velocity", Vector2.ZERO)
+		var ptype: String = str(p.get("type", "spark"))
+
+		# Apply gravity to sparks and damage particles
+		if ptype == "spark" or ptype == "damage":
+			vel.y += 180.0 * delta
+			p["velocity"] = vel
+
+		# Check projectile hit
+		if ptype == "projectile":
+			var target: Vector2 = p.get("target", Vector2.ZERO)
+			if p["pos"].distance_to(target) < 8.0:
+				spawn_hit_sparks(target, p["size"].x > 6)
+				_active_particles.remove_at(i)
+				needs_redraw = true
+				continue
+
+		p["pos"] = p["pos"] + vel * delta
+		needs_redraw = true
+
+	if needs_redraw:
+		queue_redraw()
+
+func _draw_particles() -> void:
+	for p in _active_particles:
+		var pos: Vector2 = p.get("pos", Vector2.ZERO)
+		var color: Color = p.get("color", Color.WHITE)
+		var psize: Vector2 = p.get("size", Vector2(4, 4))
+		var lifetime: float = p.get("lifetime", 0.0)
+
+		# Fade out
+		var alpha: float = clampf(lifetime / (PARTICLE_LIFETIME * 0.5), 0.0, 1.0)
+		color.a = alpha
+
+		var rect: Rect2 = Rect2(pos - psize * 0.5, psize)
+		draw_rect(rect, color, true)
