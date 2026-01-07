@@ -303,6 +303,78 @@
           }
         ]
       }
+    },
+    {
+      "id": "number-spire",
+      "label": "Number Spire",
+      "lesson_id": "numbers_1",
+      "requires": ["apex-tower"],
+      "reward_gold": 40,
+      "drill_template": "number-spire"
+    },
+    {
+      "id": "arcane-calculator",
+      "label": "Arcane Calculator",
+      "lesson_id": "numbers_2",
+      "requires": ["number-spire"],
+      "reward_gold": 55,
+      "drill_template": "arcane-calculator"
+    },
+    {
+      "id": "scribes-hall",
+      "label": "Scribe's Hall",
+      "lesson_id": "punctuation_1",
+      "requires": ["apex-tower"],
+      "reward_gold": 40,
+      "drill_template": "scribes-hall"
+    },
+    {
+      "id": "grand-library",
+      "label": "Grand Library",
+      "lesson_id": "punctuation_2",
+      "requires": ["scribes-hall"],
+      "reward_gold": 55,
+      "drill_template": "grand-library"
+    },
+    {
+      "id": "runeforge-entrance",
+      "label": "Runeforge Entrance",
+      "lesson_id": "symbols_1",
+      "requires": ["arcane-calculator", "grand-library"],
+      "reward_gold": 60,
+      "drill_template": "runeforge-entrance"
+    },
+    {
+      "id": "runeforge-core",
+      "label": "Runeforge Core",
+      "lesson_id": "symbols_2",
+      "requires": ["runeforge-entrance"],
+      "reward_gold": 75,
+      "drill_template": "runeforge-core"
+    },
+    {
+      "id": "speed-arena",
+      "label": "Speed Arena",
+      "lesson_id": "gauntlet_speed",
+      "requires": ["apex-tower"],
+      "reward_gold": 45,
+      "drill_template": "speed-arena"
+    },
+    {
+      "id": "endurance-arena",
+      "label": "Endurance Arena",
+      "lesson_id": "gauntlet_endurance",
+      "requires": ["apex-tower"],
+      "reward_gold": 45,
+      "drill_template": "endurance-arena"
+    },
+    {
+      "id": "chaos-arena",
+      "label": "Chaos Arena",
+      "lesson_id": "gauntlet_chaos",
+      "requires": ["speed-arena", "endurance-arena"],
+      "reward_gold": 100,
+      "drill_template": "chaos-arena"
     }
   ]
 }

@@ -455,6 +455,348 @@
           "hint": "This is your moment. Type with everything you have."
         }
       ]
+    },
+    {
+      "id": "number-spire",
+      "label": "Number Spire Drill",
+      "plan": [
+        {
+          "mode": "lesson",
+          "label": "Numeric Warmup",
+          "word_count": 6,
+          "shuffle": false,
+          "hint": "The spire counts your every keystroke."
+        },
+        {
+          "mode": "targets",
+          "label": "Counting Beats",
+          "targets": ["a1b2", "c3d4", "e5f1", "12345"],
+          "hint": "Blend letters and numbers smoothly."
+        },
+        {
+          "mode": "intermission",
+          "label": "Spire Count",
+          "duration": 2.5,
+          "message": "The numbers align. Ready your reach."
+        },
+        {
+          "mode": "targets",
+          "label": "Spire Codes",
+          "targets": ["code42", "level5", "area51", "test123"],
+          "hint": "Each code unlocks the next floor."
+        },
+        {
+          "mode": "lesson",
+          "label": "Number Spire Defense",
+          "word_count": 10,
+          "shuffle": true,
+          "hint": "Count your way to victory."
+        }
+      ]
+    },
+    {
+      "id": "arcane-calculator",
+      "label": "Arcane Calculator Drill",
+      "plan": [
+        {
+          "mode": "lesson",
+          "label": "Calculator Warmup",
+          "word_count": 7,
+          "shuffle": false,
+          "hint": "The arcane calculator hums with power."
+        },
+        {
+          "mode": "targets",
+          "label": "Equation Beats",
+          "targets": ["sum789", "add456", "mul123", "div890"],
+          "hint": "Calculate each sequence precisely."
+        },
+        {
+          "mode": "intermission",
+          "label": "Arcane Calculation",
+          "duration": 2.5,
+          "message": "The equations resolve. Numbers become power."
+        },
+        {
+          "mode": "targets",
+          "label": "Calculator Commands",
+          "targets": ["formula99", "compute10", "process07", "output42"],
+          "hint": "Master the full numeric range."
+        },
+        {
+          "mode": "lesson",
+          "label": "Arcane Calculator Defense",
+          "word_count": 12,
+          "shuffle": true,
+          "hint": "Let the numbers flow through your fingers."
+        }
+      ]
+    },
+    {
+      "id": "scribes-hall",
+      "label": "Scribe's Hall Drill",
+      "plan": [
+        {
+          "mode": "lesson",
+          "label": "Scribe Warmup",
+          "word_count": 6,
+          "shuffle": false,
+          "hint": "The scribes watch your every mark."
+        },
+        {
+          "mode": "targets",
+          "label": "Punctuation Beats",
+          "targets": ["hello.", "world,", "yes;", "no:"],
+          "hint": "End each word with the proper mark."
+        },
+        {
+          "mode": "intermission",
+          "label": "Ink Pause",
+          "duration": 2.5,
+          "message": "The ink dries. Prepare your quill."
+        },
+        {
+          "mode": "targets",
+          "label": "Scribe Marks",
+          "targets": ["'quote'", "said,", "then.", "asked;"],
+          "hint": "Punctuate with scholarly precision."
+        },
+        {
+          "mode": "lesson",
+          "label": "Scribe's Hall Defense",
+          "word_count": 10,
+          "shuffle": true,
+          "hint": "Write with the wisdom of ages."
+        }
+      ]
+    },
+    {
+      "id": "grand-library",
+      "label": "Grand Library Drill",
+      "plan": [
+        {
+          "mode": "lesson",
+          "label": "Library Warmup",
+          "word_count": 7,
+          "shuffle": false,
+          "hint": "Ancient tomes line the endless shelves."
+        },
+        {
+          "mode": "targets",
+          "label": "Literary Beats",
+          "targets": ["\"begin\"", "end.", "next?", "why!"],
+          "hint": "Each mark tells part of the story."
+        },
+        {
+          "mode": "intermission",
+          "label": "Library Silence",
+          "duration": 2.5,
+          "message": "Silence in the library. Focus your mind."
+        },
+        {
+          "mode": "targets",
+          "label": "Tome Commands",
+          "targets": ["read-more", "chapter?", "verse!", "scroll;"],
+          "hint": "Navigate the archives with care."
+        },
+        {
+          "mode": "lesson",
+          "label": "Grand Library Defense",
+          "word_count": 12,
+          "shuffle": true,
+          "hint": "All punctuation bends to your will."
+        }
+      ]
+    },
+    {
+      "id": "runeforge-entrance",
+      "label": "Runeforge Entrance Drill",
+      "plan": [
+        {
+          "mode": "lesson",
+          "label": "Forge Warmup",
+          "word_count": 7,
+          "shuffle": false,
+          "hint": "The forge glows with arcane symbols."
+        },
+        {
+          "mode": "targets",
+          "label": "Symbol Beats",
+          "targets": ["@rune", "#mark", "$gold", "%power"],
+          "hint": "Each symbol channels different energy."
+        },
+        {
+          "mode": "intermission",
+          "label": "Forge Heat",
+          "duration": 2.5,
+          "message": "The forge intensifies. Steel your fingers."
+        },
+        {
+          "mode": "targets",
+          "label": "Rune Patterns",
+          "targets": ["cast&bind", "seal*ward", "(shield)", "power&might"],
+          "hint": "Weave the symbols into spells."
+        },
+        {
+          "mode": "lesson",
+          "label": "Runeforge Entrance Defense",
+          "word_count": 11,
+          "shuffle": true,
+          "hint": "The entrance tests your symbol mastery."
+        }
+      ]
+    },
+    {
+      "id": "runeforge-core",
+      "label": "Runeforge Core Drill",
+      "plan": [
+        {
+          "mode": "lesson",
+          "label": "Core Warmup",
+          "word_count": 8,
+          "shuffle": false,
+          "hint": "The core pulses with ultimate power."
+        },
+        {
+          "mode": "targets",
+          "label": "Core Beats",
+          "targets": ["[array]", "{block}", "func()", "var^exp"],
+          "hint": "Master the deepest symbol patterns."
+        },
+        {
+          "mode": "intermission",
+          "label": "Core Resonance",
+          "duration": 3.0,
+          "message": "The core resonates with your skill."
+        },
+        {
+          "mode": "targets",
+          "label": "Core Commands",
+          "targets": ["init{}", "loop[]", "call()", "bind^all"},
+          "hint": "Command the forge's full power."
+        },
+        {
+          "mode": "lesson",
+          "label": "Runeforge Core Defense",
+          "word_count": 14,
+          "shuffle": true,
+          "hint": "You have mastered the runeforge."
+        }
+      ]
+    },
+    {
+      "id": "speed-arena",
+      "label": "Speed Arena Drill",
+      "plan": [
+        {
+          "mode": "lesson",
+          "label": "Speed Warmup",
+          "word_count": 8,
+          "shuffle": false,
+          "hint": "The arena demands pure velocity."
+        },
+        {
+          "mode": "targets",
+          "label": "Burst Beats",
+          "targets": ["go", "run", "fly", "zip", "dash"],
+          "hint": "Short bursts at maximum speed."
+        },
+        {
+          "mode": "intermission",
+          "label": "Speed Reset",
+          "duration": 1.5,
+          "message": "Quick breath. Faster now."
+        },
+        {
+          "mode": "targets",
+          "label": "Rapid Fire",
+          "targets": ["fast", "quick", "swift", "rapid", "blaze"],
+          "hint": "No hesitation. Only speed."
+        },
+        {
+          "mode": "lesson",
+          "label": "Speed Arena Defense",
+          "word_count": 15,
+          "shuffle": true,
+          "hint": "Speed is everything. Go."
+        }
+      ]
+    },
+    {
+      "id": "endurance-arena",
+      "label": "Endurance Arena Drill",
+      "plan": [
+        {
+          "mode": "lesson",
+          "label": "Endurance Warmup",
+          "word_count": 6,
+          "shuffle": false,
+          "hint": "The long road stretches before you."
+        },
+        {
+          "mode": "targets",
+          "label": "Marathon Beats",
+          "targets": ["determination", "perseverance", "steadfast", "unwavering"],
+          "hint": "Long words require sustained focus."
+        },
+        {
+          "mode": "intermission",
+          "label": "Endurance Breath",
+          "duration": 3.0,
+          "message": "Pace yourself. The marathon continues."
+        },
+        {
+          "mode": "targets",
+          "label": "Endurance Commands",
+          "targets": ["unbreakable", "indomitable", "relentless", "inexorable"],
+          "hint": "Maintain rhythm through the longest words."
+        },
+        {
+          "mode": "lesson",
+          "label": "Endurance Arena Defense",
+          "word_count": 12,
+          "shuffle": true,
+          "hint": "Endurance conquers all."
+        }
+      ]
+    },
+    {
+      "id": "chaos-arena",
+      "label": "Chaos Arena Drill",
+      "plan": [
+        {
+          "mode": "lesson",
+          "label": "Chaos Warmup",
+          "word_count": 8,
+          "shuffle": true,
+          "hint": "Chaos reigns. Adapt or fall."
+        },
+        {
+          "mode": "targets",
+          "label": "Chaos Beats",
+          "targets": ["mix123!", "blend@45", "chaos#99", "storm$78"],
+          "hint": "Everything at once. Stay focused."
+        },
+        {
+          "mode": "intermission",
+          "label": "Eye of Chaos",
+          "duration": 2.0,
+          "message": "Brief calm. The storm returns."
+        },
+        {
+          "mode": "targets",
+          "label": "Chaos Commands",
+          "targets": ["ultimate!", "final?", "omega@1", "apex#end"},
+          "hint": "Master the chaos or be consumed."
+        },
+        {
+          "mode": "lesson",
+          "label": "Chaos Arena Defense",
+          "word_count": 16,
+          "shuffle": true,
+          "hint": "You are the eye of the storm."
+        }
+      ]
     }
   ]
 }

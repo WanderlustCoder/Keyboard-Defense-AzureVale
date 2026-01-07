@@ -105,6 +105,78 @@
       "mode": "charset",
       "charset": "abcdefghijklmnopqrstuvwxyz",
       "lengths": { "scout": [3, 4], "raider": [4, 6], "armored": [6, 9] }
+    },
+    {
+      "id": "numbers_1",
+      "name": "Number Row Intro",
+      "description": "Core numbers 1-5 with letters.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz12345",
+      "lengths": { "scout": [3, 4], "raider": [4, 6], "armored": [6, 8] }
+    },
+    {
+      "id": "numbers_2",
+      "name": "Number Row Mastery",
+      "description": "Full number row 0-9.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz1234567890",
+      "lengths": { "scout": [4, 5], "raider": [5, 7], "armored": [7, 10] }
+    },
+    {
+      "id": "punctuation_1",
+      "name": "Punctuation Basics",
+      "description": "Common punctuation marks.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz.,;:'\"",
+      "lengths": { "scout": [4, 5], "raider": [5, 7], "armored": [7, 9] }
+    },
+    {
+      "id": "punctuation_2",
+      "name": "Punctuation Mastery",
+      "description": "Full punctuation with symbols.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz.,;:'\"!?-",
+      "lengths": { "scout": [4, 6], "raider": [6, 8], "armored": [8, 11] }
+    },
+    {
+      "id": "symbols_1",
+      "name": "Symbol Intro",
+      "description": "Common programming symbols.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz@#$%&*()",
+      "lengths": { "scout": [4, 5], "raider": [5, 7], "armored": [7, 9] }
+    },
+    {
+      "id": "symbols_2",
+      "name": "Symbol Mastery",
+      "description": "Full symbol coverage.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz@#$%^&*()[]{}",
+      "lengths": { "scout": [5, 6], "raider": [6, 8], "armored": [8, 11] }
+    },
+    {
+      "id": "gauntlet_speed",
+      "name": "Speed Gauntlet",
+      "description": "Short bursts at maximum speed.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [2, 3], "raider": [3, 4], "armored": [4, 5] }
+    },
+    {
+      "id": "gauntlet_endurance",
+      "name": "Endurance Gauntlet",
+      "description": "Long words for sustained focus.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [6, 8], "raider": [8, 10], "armored": [10, 14] }
+    },
+    {
+      "id": "gauntlet_chaos",
+      "name": "Chaos Gauntlet",
+      "description": "Everything at once.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz1234567890.,;:'\"!?-@#$%&*()",
+      "lengths": { "scout": [4, 6], "raider": [6, 9], "armored": [9, 13] }
     }
   ]
 }
