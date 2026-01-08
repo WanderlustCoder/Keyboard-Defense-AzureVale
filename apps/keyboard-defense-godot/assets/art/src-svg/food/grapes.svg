@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 12" width="10" height="12">
+  <!-- Grapes (10x12) - Fruit -->
+  <!-- Color Palette: #9b59b6, #8e44ad, #6c3483, #27ae60 -->
+
+  <!-- Stem -->
+  <rect x="4" y="0" width="2" height="3" fill="#27ae60"/>
+  <rect x="5" y="0" width="1" height="2" fill="#1e8449"/>
+
+  <!-- Leaf -->
+  <rect x="6" y="0" width="3" height="2" fill="#27ae60"/>
+  <rect x="7" y="1" width="2" height="1" fill="#2ecc71"/>
+
+  <!-- Top row grapes -->
+  <rect x="3" y="2" width="2" height="2" fill="#9b59b6"/>
+  <rect x="5" y="2" width="2" height="2" fill="#8e44ad"/>
+
+  <!-- Middle row grapes -->
+  <rect x="2" y="4" width="2" height="2" fill="#8e44ad"/>
+  <rect x="4" y="4" width="2" height="2" fill="#9b59b6"/>
+  <rect x="6" y="4" width="2" height="2" fill="#8e44ad"/>
+
+  <!-- Third row -->
+  <rect x="1" y="6" width="2" height="2" fill="#9b59b6"/>
+  <rect x="3" y="6" width="2" height="2" fill="#6c3483"/>
+  <rect x="5" y="6" width="2" height="2" fill="#9b59b6"/>
+  <rect x="7" y="6" width="2" height="2" fill="#8e44ad"/>
+
+  <!-- Bottom row -->
+  <rect x="2" y="8" width="2" height="2" fill="#8e44ad"/>
+  <rect x="4" y="8" width="2" height="2" fill="#9b59b6"/>
+  <rect x="6" y="8" width="2" height="2" fill="#6c3483"/>
+
+  <!-- Bottom grapes -->
+  <rect x="3" y="10" width="2" height="2" fill="#9b59b6"/>
+  <rect x="5" y="10" width="2" height="2" fill="#8e44ad"/>
+
+  <!-- Highlights -->
+  <rect x="3" y="2" width="1" height="1" fill="#d7bde2"/>
+  <rect x="4" y="5" width="1" height="1" fill="#d7bde2"/>
+</svg>

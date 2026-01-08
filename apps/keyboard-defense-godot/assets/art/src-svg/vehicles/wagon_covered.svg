@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 16" width="24" height="16">
+  <!-- Covered Wagon (24x16) - Travel vehicle -->
+  <!-- Color Palette: #8b7355, #5d4e37, #ecf0f1, #bdc3c7 -->
+
+  <!-- Canvas cover -->
+  <rect x="4" y="0" width="16" height="8" fill="#ecf0f1"/>
+  <rect x="5" y="1" width="14" height="6" fill="#bdc3c7"/>
+  <rect x="6" y="2" width="12" height="4" fill="#ecf0f1"/>
+
+  <!-- Cover supports -->
+  <rect x="6" y="0" width="2" height="8" fill="#8b7355"/>
+  <rect x="11" y="0" width="2" height="8" fill="#8b7355"/>
+  <rect x="16" y="0" width="2" height="8" fill="#8b7355"/>
+
+  <!-- Wagon body -->
+  <rect x="2" y="6" width="20" height="6" fill="#5d4e37"/>
+  <rect x="3" y="7" width="18" height="4" fill="#8b7355"/>
+
+  <!-- Handle -->
+  <rect x="0" y="8" width="3" height="2" fill="#5d4e37"/>
+
+  <!-- Wheels -->
+  <rect x="4" y="10" width="4" height="6" fill="#3d3426"/>
+  <rect x="5" y="11" width="2" height="4" fill="#5d4e37"/>
+  <rect x="16" y="10" width="4" height="6" fill="#3d3426"/>
+  <rect x="17" y="11" width="2" height="4" fill="#5d4e37"/>
+
+  <!-- Axle -->
+  <rect x="4" y="10" width="16" height="2" fill="#3d3426"/>
+</svg>

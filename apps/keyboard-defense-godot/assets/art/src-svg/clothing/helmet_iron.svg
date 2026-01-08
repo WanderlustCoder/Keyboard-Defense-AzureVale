@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="12" height="12">
+  <!-- Iron Helmet (12x12) - Basic head armor -->
+  <!-- Color Palette: #7f8c8d, #5d6d7e, #bdc3c7 -->
+
+  <!-- Dome -->
+  <rect x="2" y="0" width="8" height="4" fill="#7f8c8d"/>
+  <rect x="1" y="2" width="10" height="3" fill="#7f8c8d"/>
+  <rect x="3" y="1" width="6" height="2" fill="#5d6d7e"/>
+
+  <!-- Face opening -->
+  <rect x="0" y="5" width="12" height="5" fill="#7f8c8d"/>
+  <rect x="3" y="6" width="6" height="3" fill="#1a252f"/>
+  <rect x="4" y="7" width="4" height="1" fill="#2c3e50"/>
+
+  <!-- Nose guard -->
+  <rect x="5" y="5" width="2" height="4" fill="#5d6d7e"/>
+  <rect x="5" y="6" width="1" height="2" fill="#7f8c8d"/>
+
+  <!-- Brim -->
+  <rect x="0" y="10" width="12" height="2" fill="#5d6d7e"/>
+  <rect x="1" y="10" width="10" height="1" fill="#7f8c8d"/>
+
+  <!-- Highlight -->
+  <rect x="3" y="1" width="2" height="1" fill="#bdc3c7"/>
+</svg>

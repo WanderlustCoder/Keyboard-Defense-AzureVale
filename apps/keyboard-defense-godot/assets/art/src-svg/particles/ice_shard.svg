@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 6" width="4" height="6">
+  <!-- Ice Shard (4x6) - Frost particle -->
+  <!-- Color Palette: #5dade2, #aed6f1, #fdfefe -->
+
+  <rect x="1" y="0" width="2" height="2" fill="#aed6f1"/>
+  <rect x="0" y="2" width="4" height="2" fill="#5dade2"/>
+  <rect x="1" y="4" width="2" height="2" fill="#aed6f1"/>
+  <rect x="1" y="2" width="1" height="2" fill="#fdfefe"/>
+</svg>

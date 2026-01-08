@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8" width="8" height="8">
+  <!-- Gold Ring (8x8) - Simple band -->
+  <!-- Color Palette: #f4d03f, #d4ac0d, #9a7d0a -->
+
+  <!-- Ring band -->
+  <rect x="1" y="2" width="6" height="4" fill="#f4d03f"/>
+  <rect x="2" y="1" width="4" height="6" fill="#f4d03f"/>
+
+  <!-- Inner hole -->
+  <rect x="2" y="3" width="4" height="2" fill="#1a252f"/>
+  <rect x="3" y="2" width="2" height="4" fill="#1a252f"/>
+
+  <!-- Shading -->
+  <rect x="1" y="3" width="1" height="2" fill="#d4ac0d"/>
+  <rect x="6" y="3" width="1" height="2" fill="#9a7d0a"/>
+  <rect x="3" y="1" width="2" height="1" fill="#d4ac0d"/>
+</svg>

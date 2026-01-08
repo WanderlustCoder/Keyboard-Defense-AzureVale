@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 10" width="8" height="10">
+  <!-- Ruby Ring (8x10) - Gold ring with ruby -->
+  <!-- Color Palette: #f4d03f, #d4ac0d, #c0392b, #922b21 -->
+
+  <!-- Ring band -->
+  <rect x="1" y="4" width="6" height="4" fill="#f4d03f"/>
+  <rect x="2" y="3" width="4" height="6" fill="#f4d03f"/>
+
+  <!-- Inner hole -->
+  <rect x="2" y="5" width="4" height="2" fill="#1a252f"/>
+  <rect x="3" y="4" width="2" height="4" fill="#1a252f"/>
+
+  <!-- Ruby gem -->
+  <rect x="2" y="0" width="4" height="4" fill="#c0392b"/>
+  <rect x="3" y="1" width="2" height="2" fill="#922b21"/>
+  <rect x="3" y="1" width="1" height="1" fill="#e74c3c"/>
+
+  <!-- Gold setting -->
+  <rect x="1" y="3" width="1" height="2" fill="#d4ac0d"/>
+  <rect x="6" y="3" width="1" height="2" fill="#d4ac0d"/>
+</svg>

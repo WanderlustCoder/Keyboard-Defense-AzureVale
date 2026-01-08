@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="12" height="12">
+  <!-- Crate (12x12) - Wooden box -->
+  <!-- Color Palette: #8b7355, #5d4e37, #d4ac0d -->
+
+  <!-- Main body -->
+  <rect x="0" y="0" width="12" height="12" fill="#8b7355"/>
+  <rect x="1" y="1" width="10" height="10" fill="#5d4e37"/>
+
+  <!-- Horizontal slats -->
+  <rect x="0" y="0" width="12" height="2" fill="#8b7355"/>
+  <rect x="0" y="5" width="12" height="2" fill="#8b7355"/>
+  <rect x="0" y="10" width="12" height="2" fill="#8b7355"/>
+
+  <!-- Vertical supports -->
+  <rect x="0" y="0" width="2" height="12" fill="#8b7355"/>
+  <rect x="10" y="0" width="2" height="12" fill="#8b7355"/>
+
+  <!-- Wood grain/gaps -->
+  <rect x="2" y="2" width="8" height="1" fill="#5d4e37"/>
+  <rect x="2" y="7" width="8" height="1" fill="#5d4e37"/>
+
+  <!-- Nails -->
+  <rect x="1" y="1" width="1" height="1" fill="#d4ac0d"/>
+  <rect x="10" y="1" width="1" height="1" fill="#d4ac0d"/>
+  <rect x="1" y="10" width="1" height="1" fill="#d4ac0d"/>
+  <rect x="10" y="10" width="1" height="1" fill="#d4ac0d"/>
+</svg>

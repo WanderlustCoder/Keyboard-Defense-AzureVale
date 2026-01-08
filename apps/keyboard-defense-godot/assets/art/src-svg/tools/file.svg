@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 14" width="4" height="14">
+  <!-- File (4x14) - Metal shaping tool -->
+  <!-- Color Palette: #7f8c8d, #5d6d7e, #8b7355 -->
+
+  <!-- File head -->
+  <rect x="0" y="0" width="4" height="8" fill="#7f8c8d"/>
+  <rect x="1" y="1" width="2" height="6" fill="#5d6d7e"/>
+
+  <!-- Teeth pattern -->
+  <rect x="0" y="1" width="4" height="1" fill="#bdc3c7"/>
+  <rect x="0" y="3" width="4" height="1" fill="#bdc3c7"/>
+  <rect x="0" y="5" width="4" height="1" fill="#bdc3c7"/>
+  <rect x="0" y="7" width="4" height="1" fill="#bdc3c7"/>
+
+  <!-- Tang -->
+  <rect x="1" y="8" width="2" height="2" fill="#5d6d7e"/>
+
+  <!-- Handle -->
+  <rect x="0" y="10" width="4" height="4" fill="#8b7355"/>
+  <rect x="1" y="11" width="2" height="2" fill="#5d4e37"/>
+</svg>

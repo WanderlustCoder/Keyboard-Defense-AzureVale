@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 14" width="12" height="14">
+  <!-- Tunic (12x14) - Basic clothing -->
+  <!-- Color Palette: #27ae60, #1e8449, #8b7355 -->
+
+  <!-- Collar -->
+  <rect x="4" y="0" width="4" height="2" fill="#27ae60"/>
+  <rect x="5" y="0" width="2" height="1" fill="#1e8449"/>
+
+  <!-- Shoulders -->
+  <rect x="0" y="2" width="12" height="3" fill="#27ae60"/>
+  <rect x="1" y="2" width="10" height="2" fill="#1e8449"/>
+
+  <!-- Body -->
+  <rect x="1" y="5" width="10" height="8" fill="#27ae60"/>
+  <rect x="2" y="6" width="8" height="6" fill="#1e8449"/>
+
+  <!-- Sleeves -->
+  <rect x="0" y="2" width="2" height="5" fill="#27ae60"/>
+  <rect x="10" y="2" width="2" height="5" fill="#27ae60"/>
+
+  <!-- Bottom hem -->
+  <rect x="1" y="12" width="10" height="2" fill="#1e8449"/>
+  <rect x="2" y="12" width="8" height="1" fill="#145a32"/>
+
+  <!-- Belt -->
+  <rect x="1" y="8" width="10" height="2" fill="#8b7355"/>
+  <rect x="2" y="8" width="8" height="1" fill="#5d4e37"/>
+</svg>

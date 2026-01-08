@@ -430,6 +430,23 @@ static func parse(command: String) -> Dictionary:
                 if category not in ["kingdom", "unit"]:
                     return {"ok": false, "error": "Category must be 'kingdom' or 'unit'"}
             return {"ok": true, "intent": SimIntents.make("ui_upgrades", {"category": category})}
+        # Quick action commands for open-world exploration
+        "look", "l":
+            if tokens.size() > 1:
+                return {"ok": false, "error": "'look' takes no arguments. Move cursor with arrow keys."}
+            return {"ok": true, "intent": SimIntents.make("inspect_tile")}
+        "talk", "t":
+            if tokens.size() > 1:
+                return {"ok": false, "error": "'talk' takes no arguments. Interacts with POI at cursor."}
+            return {"ok": true, "intent": SimIntents.make("interact_poi")}
+        "take", "grab":
+            if tokens.size() > 1:
+                return {"ok": false, "error": "'take' takes no arguments. Gathers from cursor tile."}
+            return {"ok": true, "intent": SimIntents.make("gather_at_cursor")}
+        "attack", "fight":
+            if tokens.size() > 1:
+                return {"ok": false, "error": "'attack' takes no arguments. Engages roaming enemy at cursor."}
+            return {"ok": true, "intent": SimIntents.make("engage_enemy")}
         _:
             return {"ok": false, "error": "Unknown command: %s" % verb}
 

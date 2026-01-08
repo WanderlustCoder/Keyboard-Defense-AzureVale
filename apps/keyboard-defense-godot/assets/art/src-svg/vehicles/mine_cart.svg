@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 12" width="14" height="12">
+  <!-- Mine Cart (14x12) - Industrial vehicle -->
+  <!-- Color Palette: #7f8c8d, #5d6d7e, #2c3e50, #f4d03f -->
+
+  <!-- Cart body -->
+  <rect x="2" y="2" width="10" height="6" fill="#7f8c8d"/>
+  <rect x="3" y="3" width="8" height="4" fill="#5d6d7e"/>
+
+  <!-- Tapered sides -->
+  <rect x="0" y="4" width="3" height="4" fill="#7f8c8d"/>
+  <rect x="11" y="4" width="3" height="4" fill="#7f8c8d"/>
+
+  <!-- Ore/cargo -->
+  <rect x="3" y="1" width="8" height="3" fill="#f4d03f"/>
+  <rect x="4" y="2" width="6" height="1" fill="#d4ac0d"/>
+
+  <!-- Rivets -->
+  <rect x="2" y="3" width="1" height="1" fill="#2c3e50"/>
+  <rect x="11" y="3" width="1" height="1" fill="#2c3e50"/>
+  <rect x="2" y="6" width="1" height="1" fill="#2c3e50"/>
+  <rect x="11" y="6" width="1" height="1" fill="#2c3e50"/>
+
+  <!-- Wheels -->
+  <rect x="2" y="8" width="3" height="4" fill="#2c3e50"/>
+  <rect x="3" y="9" width="1" height="2" fill="#5d6d7e"/>
+  <rect x="9" y="8" width="3" height="4" fill="#2c3e50"/>
+  <rect x="10" y="9" width="1" height="2" fill="#5d6d7e"/>
+
+  <!-- Axle -->
+  <rect x="2" y="8" width="10" height="1" fill="#2c3e50"/>
+</svg>

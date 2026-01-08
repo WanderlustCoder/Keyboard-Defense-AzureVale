@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 12" width="10" height="12">
+  <!-- Gauntlet (10x12) - Hand armor -->
+  <!-- Color Palette: #7f8c8d, #5d6d7e, #bdc3c7 -->
+
+  <!-- Fingers -->
+  <rect x="0" y="0" width="2" height="4" fill="#7f8c8d"/>
+  <rect x="2" y="0" width="2" height="5" fill="#7f8c8d"/>
+  <rect x="4" y="0" width="2" height="5" fill="#7f8c8d"/>
+  <rect x="6" y="0" width="2" height="4" fill="#7f8c8d"/>
+  <rect x="8" y="1" width="2" height="3" fill="#7f8c8d"/>
+
+  <!-- Knuckle plates -->
+  <rect x="0" y="3" width="10" height="2" fill="#5d6d7e"/>
+  <rect x="1" y="3" width="8" height="1" fill="#7f8c8d"/>
+
+  <!-- Hand plate -->
+  <rect x="0" y="5" width="10" height="4" fill="#7f8c8d"/>
+  <rect x="1" y="6" width="8" height="2" fill="#5d6d7e"/>
+
+  <!-- Wrist guard -->
+  <rect x="0" y="9" width="10" height="3" fill="#5d6d7e"/>
+  <rect x="1" y="10" width="8" height="1" fill="#7f8c8d"/>
+
+  <!-- Highlight -->
+  <rect x="2" y="6" width="2" height="1" fill="#bdc3c7"/>
+</svg>

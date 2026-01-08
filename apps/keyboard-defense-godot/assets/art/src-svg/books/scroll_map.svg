@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 12" width="14" height="12">
+  <!-- Map Scroll (14x12) - Treasure map -->
+  <!-- Color Palette: #f4d03f, #d4ac0d, #8b7355, #c0392b -->
+
+  <!-- Left roll -->
+  <rect x="0" y="0" width="2" height="12" fill="#8b7355"/>
+  <rect x="0" y="1" width="1" height="10" fill="#5d4e37"/>
+
+  <!-- Right roll -->
+  <rect x="12" y="0" width="2" height="12" fill="#8b7355"/>
+  <rect x="13" y="1" width="1" height="10" fill="#5d4e37"/>
+
+  <!-- Parchment body -->
+  <rect x="2" y="1" width="10" height="10" fill="#f4d03f"/>
+  <rect x="3" y="2" width="8" height="8" fill="#d4ac0d"/>
+
+  <!-- Map markings -->
+  <rect x="4" y="3" width="1" height="3" fill="#8b7355"/>
+  <rect x="4" y="3" width="3" height="1" fill="#8b7355"/>
+  <rect x="8" y="5" width="2" height="1" fill="#8b7355"/>
+  <rect x="6" y="7" width="1" height="2" fill="#8b7355"/>
+
+  <!-- X marks the spot -->
+  <rect x="9" y="7" width="2" height="2" fill="#c0392b"/>
+  <rect x="10" y="8" width="1" height="1" fill="#922b21"/>
+
+  <!-- Compass rose -->
+  <rect x="4" y="7" width="2" height="2" fill="#5d4e37"/>
+  <rect x="5" y="8" width="1" height="1" fill="#f4d03f"/>
+</svg>

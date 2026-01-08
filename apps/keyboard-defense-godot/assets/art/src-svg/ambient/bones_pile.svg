@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 8" width="12" height="8">
+  <!-- Bone Pile (12x8) - Dark decoration -->
+  <!-- Color Palette: #ecf0f1, #bdc3c7, #95a5a6 -->
+
+  <!-- Skull -->
+  <rect x="4" y="0" width="4" height="4" fill="#ecf0f1"/>
+  <rect x="5" y="1" width="2" height="2" fill="#bdc3c7"/>
+  <rect x="5" y="1" width="1" height="1" fill="#95a5a6"/>
+  <rect x="6" y="1" width="1" height="1" fill="#95a5a6"/>
+
+  <!-- Bones -->
+  <rect x="0" y="4" width="4" height="2" fill="#ecf0f1"/>
+  <rect x="1" y="5" width="2" height="1" fill="#bdc3c7"/>
+  <rect x="0" y="3" width="2" height="2" fill="#bdc3c7"/>
+  <rect x="2" y="6" width="2" height="2" fill="#ecf0f1"/>
+
+  <rect x="8" y="3" width="4" height="2" fill="#ecf0f1"/>
+  <rect x="9" y="4" width="2" height="1" fill="#bdc3c7"/>
+  <rect x="10" y="5" width="2" height="3" fill="#bdc3c7"/>
+
+  <rect x="5" y="5" width="4" height="2" fill="#ecf0f1"/>
+  <rect x="6" y="6" width="2" height="1" fill="#95a5a6"/>
+</svg>

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 10" width="12" height="10">
+  <!-- Green Bush (12x10) - Vegetation -->
+  <!-- Color Palette: #27ae60, #1e8449, #2ecc71, #145a32 -->
+
+  <rect x="4" y="0" width="4" height="2" fill="#2ecc71"/>
+  <rect x="2" y="2" width="8" height="3" fill="#27ae60"/>
+  <rect x="0" y="4" width="12" height="4" fill="#1e8449"/>
+  <rect x="1" y="3" width="10" height="4" fill="#27ae60"/>
+  <rect x="2" y="8" width="8" height="2" fill="#145a32"/>
+  <rect x="3" y="3" width="2" height="2" fill="#2ecc71"/>
+  <rect x="7" y="2" width="2" height="2" fill="#2ecc71"/>
+</svg>

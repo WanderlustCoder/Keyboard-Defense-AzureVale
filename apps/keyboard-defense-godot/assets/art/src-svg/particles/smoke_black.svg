@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8" width="8" height="8">
+  <!-- Black Smoke (8x8) - Dark smoke particle -->
+  <!-- Color Palette: #2c3e50, #1a252f, #5d6d7e -->
+
+  <rect x="2" y="0" width="4" height="2" fill="#5d6d7e"/>
+  <rect x="0" y="2" width="8" height="4" fill="#2c3e50"/>
+  <rect x="1" y="3" width="6" height="2" fill="#1a252f"/>
+  <rect x="2" y="6" width="4" height="2" fill="#2c3e50"/>
+</svg>

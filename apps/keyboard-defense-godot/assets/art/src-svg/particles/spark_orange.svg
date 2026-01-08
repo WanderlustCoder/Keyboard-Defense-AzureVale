@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 4" width="4" height="4">
+  <!-- Orange Spark (4x4) - Fire particle -->
+  <!-- Color Palette: #f39c12, #e67e22, #f4d03f -->
+
+  <rect x="1" y="0" width="2" height="1" fill="#f39c12"/>
+  <rect x="0" y="1" width="4" height="2" fill="#e67e22"/>
+  <rect x="1" y="3" width="2" height="1" fill="#f39c12"/>
+  <rect x="1" y="1" width="2" height="2" fill="#f4d03f"/>
+</svg>

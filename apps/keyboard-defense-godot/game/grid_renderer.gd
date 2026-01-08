@@ -39,6 +39,8 @@ var structures: Dictionary = {}
 var structure_levels: Dictionary = {}
 var enemies: Array = []
 var active_pois: Dictionary = {}
+var roaming_enemies: Array = []
+var time_of_day: float = 0.25
 var font: Font
 var preview_type: String = ""
 var overlay_path_enabled: bool = false
@@ -110,6 +112,8 @@ func update_state(state: GameState) -> void:
 	structure_levels = state.structure_levels.duplicate(true)
 	enemies = state.enemies.duplicate(true)
 	active_pois = state.active_pois.duplicate(true)
+	roaming_enemies = state.roaming_enemies.duplicate(true)
+	time_of_day = state.time_of_day
 	queue_redraw()
 
 func set_preview_type(building_type: String) -> void:
@@ -275,6 +279,38 @@ func _draw() -> void:
 			var initial: String = word.substr(0, 1)
 			draw_string(font, enemy_rect.position + Vector2(6, 16), initial, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size - 6, enemy_color)
 
+	# Draw roaming enemies (semi-transparent, wandering)
+	var roaming_color: Color = Color(enemy_color.r, enemy_color.g, enemy_color.b, 0.6)
+	for entity in roaming_enemies:
+		if typeof(entity) != TYPE_DICTIONARY:
+			continue
+		var pos: Vector2i = entity.get("pos", Vector2i.ZERO)
+		if not SimMap.in_bounds(pos.x, pos.y, map_w, map_h):
+			continue
+		var roam_rect: Rect2 = Rect2(origin + Vector2(pos.x * cell_size.x, pos.y * cell_size.y), cell_size)
+		var kind: String = str(entity.get("kind", "raider"))
+
+		# Draw with pulsing effect for wandering enemies
+		var pulse: float = (sin(Time.get_ticks_msec() * 0.003) + 1.0) * 0.15
+		var pulse_color: Color = Color(roaming_color.r + pulse, roaming_color.g, roaming_color.b, 0.5 + pulse)
+
+		if use_sprites:
+			var sprite_id := asset_loader.get_enemy_sprite_id(kind)
+			var tex := _get_texture(sprite_id)
+			if tex != null:
+				_draw_centered_texture(roam_rect, tex, pulse_color)
+			else:
+				var glyph: String = SimEnemies.enemy_glyph(kind)
+				var text_pos: Vector2 = roam_rect.position + Vector2(6, cell_size.y - 10)
+				draw_string(font, text_pos, glyph, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, pulse_color)
+		else:
+			var glyph: String = SimEnemies.enemy_glyph(kind)
+			var text_pos: Vector2 = roam_rect.position + Vector2(6, cell_size.y - 10)
+			draw_string(font, text_pos, glyph, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, pulse_color)
+
+		# Draw "?" to indicate not yet engaged
+		draw_string(font, roam_rect.position + Vector2(22, 16), "?", HORIZONTAL_ALIGNMENT_LEFT, -1, font_size - 4, pulse_color)
+
 	# Draw base with state-based sprite
 	var base_rect: Rect2 = Rect2(origin + Vector2(base_pos.x * cell_size.x, base_pos.y * cell_size.y), cell_size)
 	var castle_center: Vector2 = base_rect.position + base_rect.size * 0.5
@@ -342,6 +378,17 @@ func _draw() -> void:
 			var pulse_color: Color = ring_color
 			pulse_color.a = pulse_alpha * 0.5
 			draw_arc(castle_center, _combo_ring_radius, 0.0, TAU, 24, pulse_color, 1.5)
+
+	# Draw time-of-day overlay (night darkening)
+	if time_of_day > 0.7 or time_of_day < 0.2:
+		var night_alpha: float = 0.0
+		if time_of_day > 0.7:
+			night_alpha = (time_of_day - 0.7) / 0.3 * 0.3  # Fade in to 30%
+		else:
+			night_alpha = (0.2 - time_of_day) / 0.2 * 0.3  # Fade out from 30%
+		var night_overlay: Color = Color(0.05, 0.05, 0.15, night_alpha)
+		var map_rect: Rect2 = Rect2(origin, Vector2(map_w * cell_size.x, map_h * cell_size.y))
+		draw_rect(map_rect, night_overlay, true)
 
 	# Draw cursor
 	var cursor_rect: Rect2 = Rect2(origin + Vector2(cursor_pos.x * cell_size.x, cursor_pos.y * cell_size.y), cell_size)

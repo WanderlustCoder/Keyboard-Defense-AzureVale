@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 10" width="14" height="10">
+  <!-- Roast Meat (14x10) - Cooked feast -->
+  <!-- Color Palette: #9a7d0a, #8b7355, #d4ac0d, #c0392b -->
+
+  <!-- Meat body -->
+  <rect x="2" y="2" width="10" height="6" fill="#9a7d0a"/>
+  <rect x="1" y="3" width="12" height="4" fill="#8b7355"/>
+  <rect x="3" y="3" width="8" height="4" fill="#9a7d0a"/>
+
+  <!-- Crispy top -->
+  <rect x="3" y="1" width="8" height="2" fill="#d4ac0d"/>
+  <rect x="4" y="2" width="6" height="1" fill="#9a7d0a"/>
+
+  <!-- Meat grain -->
+  <rect x="4" y="4" width="2" height="2" fill="#8b7355"/>
+  <rect x="8" y="4" width="2" height="2" fill="#8b7355"/>
+
+  <!-- Bone ends -->
+  <rect x="0" y="3" width="3" height="4" fill="#ecf0f1"/>
+  <rect x="1" y="4" width="1" height="2" fill="#bdc3c7"/>
+  <rect x="11" y="3" width="3" height="4" fill="#ecf0f1"/>
+  <rect x="12" y="4" width="1" height="2" fill="#bdc3c7"/>
+
+  <!-- Juices -->
+  <rect x="5" y="8" width="4" height="2" fill="#c0392b"/>
+  <rect x="6" y="8" width="2" height="1" fill="#922b21"/>
+</svg>

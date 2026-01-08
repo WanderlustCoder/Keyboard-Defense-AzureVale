@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 10" width="12" height="10">
+  <!-- Cooking Pot (12x10) - Iron cauldron -->
+  <!-- Color Palette: #2c3e50, #1a252f, #7f8c8d, #5d6d7e -->
+
+  <!-- Rim -->
+  <rect x="1" y="0" width="10" height="2" fill="#2c3e50"/>
+  <rect x="2" y="0" width="8" height="1" fill="#7f8c8d"/>
+
+  <!-- Body -->
+  <rect x="0" y="2" width="12" height="6" fill="#2c3e50"/>
+  <rect x="1" y="3" width="10" height="4" fill="#1a252f"/>
+
+  <!-- Base -->
+  <rect x="2" y="8" width="8" height="2" fill="#2c3e50"/>
+  <rect x="3" y="9" width="6" height="1" fill="#1a252f"/>
+
+  <!-- Handles -->
+  <rect x="0" y="1" width="1" height="3" fill="#7f8c8d"/>
+  <rect x="11" y="1" width="1" height="3" fill="#7f8c8d"/>
+
+  <!-- Shine -->
+  <rect x="2" y="3" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="3" y="4" width="1" height="1" fill="#7f8c8d"/>
+</svg>

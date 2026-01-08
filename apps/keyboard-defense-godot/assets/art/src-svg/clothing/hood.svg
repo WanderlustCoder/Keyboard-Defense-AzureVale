@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 12" width="10" height="12">
+  <!-- Hood (10x12) - Head covering -->
+  <!-- Color Palette: #2c3e50, #1a252f, #7f8c8d -->
+
+  <!-- Top -->
+  <rect x="2" y="0" width="6" height="3" fill="#2c3e50"/>
+  <rect x="3" y="0" width="4" height="2" fill="#1a252f"/>
+
+  <!-- Main hood -->
+  <rect x="0" y="3" width="10" height="6" fill="#2c3e50"/>
+  <rect x="1" y="4" width="8" height="4" fill="#1a252f"/>
+
+  <!-- Face opening -->
+  <rect x="2" y="4" width="6" height="4" fill="#7f8c8d"/>
+  <rect x="3" y="5" width="4" height="2" fill="#5d6d7e"/>
+
+  <!-- Drape -->
+  <rect x="0" y="9" width="10" height="3" fill="#2c3e50"/>
+  <rect x="1" y="10" width="8" height="1" fill="#1a252f"/>
+
+  <!-- Shadow inside -->
+  <rect x="3" y="5" width="1" height="2" fill="#1a252f"/>
+</svg>

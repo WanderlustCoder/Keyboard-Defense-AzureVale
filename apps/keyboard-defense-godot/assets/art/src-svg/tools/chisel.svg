@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 14" width="4" height="14">
+  <!-- Chisel (4x14) - Carving tool -->
+  <!-- Color Palette: #7f8c8d, #5d6d7e, #8b7355, #bdc3c7 -->
+
+  <!-- Blade -->
+  <rect x="0" y="0" width="4" height="4" fill="#7f8c8d"/>
+  <rect x="1" y="0" width="2" height="3" fill="#5d6d7e"/>
+
+  <!-- Edge -->
+  <rect x="0" y="0" width="4" height="1" fill="#bdc3c7"/>
+
+  <!-- Shaft -->
+  <rect x="1" y="4" width="2" height="4" fill="#7f8c8d"/>
+  <rect x="1" y="5" width="1" height="2" fill="#5d6d7e"/>
+
+  <!-- Handle -->
+  <rect x="0" y="8" width="4" height="6" fill="#8b7355"/>
+  <rect x="1" y="9" width="2" height="4" fill="#5d4e37"/>
+
+  <!-- Metal ferrule -->
+  <rect x="0" y="8" width="4" height="1" fill="#7f8c8d"/>
+</svg>

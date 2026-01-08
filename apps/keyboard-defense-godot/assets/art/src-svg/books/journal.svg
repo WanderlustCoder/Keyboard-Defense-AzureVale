@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 12" width="10" height="12">
+  <!-- Journal (10x12) - Personal diary -->
+  <!-- Color Palette: #8b7355, #5d4e37, #ecf0f1, #c0392b -->
+
+  <!-- Spine -->
+  <rect x="0" y="1" width="2" height="10" fill="#5d4e37"/>
+  <rect x="1" y="2" width="1" height="8" fill="#8b7355"/>
+
+  <!-- Cover -->
+  <rect x="2" y="0" width="8" height="12" fill="#8b7355"/>
+  <rect x="3" y="1" width="6" height="10" fill="#5d4e37"/>
+
+  <!-- Pages -->
+  <rect x="2" y="1" width="6" height="10" fill="#ecf0f1"/>
+
+  <!-- Cover overlay -->
+  <rect x="3" y="0" width="7" height="12" fill="#8b7355"/>
+  <rect x="4" y="1" width="5" height="10" fill="#5d4e37"/>
+
+  <!-- Strap -->
+  <rect x="8" y="4" width="2" height="4" fill="#c0392b"/>
+  <rect x="8" y="5" width="1" height="2" fill="#922b21"/>
+
+  <!-- Bookmark ribbon -->
+  <rect x="2" y="0" width="1" height="3" fill="#c0392b"/>
+</svg>

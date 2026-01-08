@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="12" height="12">
+  <!-- Pentagram (12x12) - Magic circle -->
+  <!-- Color Palette: #c0392b, #922b21, #f4d03f -->
+
+  <!-- Outer circle -->
+  <rect x="2" y="0" width="8" height="12" fill="#c0392b"/>
+  <rect x="0" y="2" width="12" height="8" fill="#c0392b"/>
+  <rect x="1" y="1" width="10" height="10" fill="#c0392b"/>
+
+  <!-- Inner circle (black) -->
+  <rect x="3" y="1" width="6" height="10" fill="#1a252f"/>
+  <rect x="1" y="3" width="10" height="6" fill="#1a252f"/>
+  <rect x="2" y="2" width="8" height="8" fill="#1a252f"/>
+
+  <!-- Star points -->
+  <rect x="5" y="1" width="2" height="2" fill="#f4d03f"/>
+  <rect x="2" y="4" width="2" height="2" fill="#f4d03f"/>
+  <rect x="8" y="4" width="2" height="2" fill="#f4d03f"/>
+  <rect x="3" y="8" width="2" height="2" fill="#f4d03f"/>
+  <rect x="7" y="8" width="2" height="2" fill="#f4d03f"/>
+
+  <!-- Center -->
+  <rect x="5" y="5" width="2" height="2" fill="#c0392b"/>
+</svg>

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6 16" width="6" height="16">
+  <!-- Crystal Staff (6x16) - Mage weapon -->
+  <!-- Color Palette: #9b59b6, #8e44ad, #8b7355, #ecf0f1 -->
+
+  <!-- Crystal -->
+  <rect x="1" y="0" width="4" height="4" fill="#9b59b6"/>
+  <rect x="2" y="1" width="2" height="2" fill="#8e44ad"/>
+  <rect x="2" y="1" width="1" height="1" fill="#ecf0f1"/>
+
+  <!-- Mount -->
+  <rect x="1" y="4" width="4" height="2" fill="#f4d03f"/>
+  <rect x="2" y="4" width="2" height="1" fill="#d4ac0d"/>
+
+  <!-- Shaft -->
+  <rect x="2" y="6" width="2" height="8" fill="#8b7355"/>
+  <rect x="2" y="7" width="1" height="6" fill="#5d4e37"/>
+
+  <!-- Base -->
+  <rect x="1" y="14" width="4" height="2" fill="#7f8c8d"/>
+  <rect x="2" y="14" width="2" height="1" fill="#5d6d7e"/>
+</svg>

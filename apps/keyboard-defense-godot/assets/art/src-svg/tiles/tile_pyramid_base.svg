@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Pyramid Base Tile (16x16) - Structure -->
+  <!-- Color Palette: #d4ac0d, #9a7d0a, #8b7355 -->
+
+  <rect x="0" y="0" width="16" height="16" fill="#d4ac0d"/>
+  <rect x="0" y="0" width="16" height="4" fill="#9a7d0a"/>
+  <rect x="0" y="4" width="16" height="4" fill="#d4ac0d"/>
+  <rect x="0" y="8" width="16" height="4" fill="#9a7d0a"/>
+  <rect x="0" y="12" width="16" height="4" fill="#d4ac0d"/>
+  <rect x="0" y="0" width="1" height="16" fill="#8b7355"/>
+  <rect x="4" y="0" width="1" height="16" fill="#8b7355"/>
+  <rect x="8" y="0" width="1" height="16" fill="#8b7355"/>
+  <rect x="12" y="0" width="1" height="16" fill="#8b7355"/>
+  <rect x="2" y="2" width="1" height="1" fill="#f4d03f"/>
+  <rect x="6" y="6" width="1" height="1" fill="#f4d03f"/>
+  <rect x="10" y="10" width="1" height="1" fill="#f4d03f"/>
+</svg>

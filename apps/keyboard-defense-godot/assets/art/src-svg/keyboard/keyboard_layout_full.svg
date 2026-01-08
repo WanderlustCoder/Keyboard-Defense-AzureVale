@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 80" width="256" height="80">
+  <!-- Keyboard Layout Full (256x80) - Complete QWERTY -->
+  <!-- Color Palette: #2c3e50, #34495e, #5d6d7e, #ecf0f1 -->
+
+  <!-- Background -->
+  <rect x="0" y="0" width="256" height="80" fill="#1a252f"/>
+
+  <!-- Row 1: Number row -->
+  <rect x="4" y="4" width="14" height="14" fill="#34495e"/>
+  <rect x="20" y="4" width="14" height="14" fill="#34495e"/>
+  <rect x="36" y="4" width="14" height="14" fill="#34495e"/>
+  <rect x="52" y="4" width="14" height="14" fill="#34495e"/>
+  <rect x="68" y="4" width="14" height="14" fill="#34495e"/>
+  <rect x="84" y="4" width="14" height="14" fill="#34495e"/>
+  <rect x="100" y="4" width="14" height="14" fill="#34495e"/>
+  <rect x="116" y="4" width="14" height="14" fill="#34495e"/>
+  <rect x="132" y="4" width="14" height="14" fill="#34495e"/>
+  <rect x="148" y="4" width="14" height="14" fill="#34495e"/>
+  <rect x="164" y="4" width="14" height="14" fill="#34495e"/>
+  <rect x="180" y="4" width="14" height="14" fill="#34495e"/>
+  <rect x="196" y="4" width="14" height="14" fill="#34495e"/>
+  <rect x="212" y="4" width="40" height="14" fill="#2c3e50"/>
+
+  <!-- Row 2: QWERTY row -->
+  <rect x="4" y="20" width="20" height="14" fill="#2c3e50"/>
+  <rect x="26" y="20" width="14" height="14" fill="#34495e"/>
+  <rect x="42" y="20" width="14" height="14" fill="#34495e"/>
+  <rect x="58" y="20" width="14" height="14" fill="#34495e"/>
+  <rect x="74" y="20" width="14" height="14" fill="#34495e"/>
+  <rect x="90" y="20" width="14" height="14" fill="#34495e"/>
+  <rect x="106" y="20" width="14" height="14" fill="#34495e"/>
+  <rect x="122" y="20" width="14" height="14" fill="#34495e"/>
+  <rect x="138" y="20" width="14" height="14" fill="#34495e"/>
+  <rect x="154" y="20" width="14" height="14" fill="#34495e"/>
+  <rect x="170" y="20" width="14" height="14" fill="#34495e"/>
+  <rect x="186" y="20" width="14" height="14" fill="#34495e"/>
+  <rect x="202" y="20" width="14" height="14" fill="#34495e"/>
+  <rect x="218" y="20" width="34" height="14" fill="#2c3e50"/>
+
+  <!-- Row 3: ASDF row -->
+  <rect x="4" y="36" width="26" height="14" fill="#2c3e50"/>
+  <rect x="32" y="36" width="14" height="14" fill="#34495e"/>
+  <rect x="48" y="36" width="14" height="14" fill="#34495e"/>
+  <rect x="64" y="36" width="14" height="14" fill="#34495e"/>
+  <rect x="80" y="36" width="14" height="14" fill="#34495e"/>
+  <rect x="96" y="36" width="14" height="14" fill="#34495e"/>
+  <rect x="112" y="36" width="14" height="14" fill="#34495e"/>
+  <rect x="128" y="36" width="14" height="14" fill="#34495e"/>
+  <rect x="144" y="36" width="14" height="14" fill="#34495e"/>
+  <rect x="160" y="36" width="14" height="14" fill="#34495e"/>
+  <rect x="176" y="36" width="14" height="14" fill="#34495e"/>
+  <rect x="192" y="36" width="14" height="14" fill="#34495e"/>
+  <rect x="208" y="36" width="44" height="14" fill="#27ae60"/>
+
+  <!-- Row 4: ZXCV row -->
+  <rect x="4" y="52" width="34" height="14" fill="#2c3e50"/>
+  <rect x="40" y="52" width="14" height="14" fill="#34495e"/>
+  <rect x="56" y="52" width="14" height="14" fill="#34495e"/>
+  <rect x="72" y="52" width="14" height="14" fill="#34495e"/>
+  <rect x="88" y="52" width="14" height="14" fill="#34495e"/>
+  <rect x="104" y="52" width="14" height="14" fill="#34495e"/>
+  <rect x="120" y="52" width="14" height="14" fill="#34495e"/>
+  <rect x="136" y="52" width="14" height="14" fill="#34495e"/>
+  <rect x="152" y="52" width="14" height="14" fill="#34495e"/>
+  <rect x="168" y="52" width="14" height="14" fill="#34495e"/>
+  <rect x="184" y="52" width="14" height="14" fill="#34495e"/>
+  <rect x="200" y="52" width="52" height="14" fill="#2c3e50"/>
+
+  <!-- Row 5: Space bar row -->
+  <rect x="4" y="68" width="20" height="10" fill="#2c3e50"/>
+  <rect x="26" y="68" width="20" height="10" fill="#2c3e50"/>
+  <rect x="48" y="68" width="20" height="10" fill="#2c3e50"/>
+  <rect x="70" y="68" width="100" height="10" fill="#5d6d7e"/>
+  <rect x="172" y="68" width="20" height="10" fill="#2c3e50"/>
+  <rect x="194" y="68" width="20" height="10" fill="#2c3e50"/>
+  <rect x="216" y="68" width="18" height="10" fill="#2c3e50"/>
+  <rect x="236" y="68" width="16" height="10" fill="#2c3e50"/>
+
+  <!-- Key highlights -->
+  <rect x="5" y="5" width="12" height="1" fill="#5d6d7e"/>
+  <rect x="71" y="69" width="98" height="1" fill="#7f8c8d"/>
+</svg>

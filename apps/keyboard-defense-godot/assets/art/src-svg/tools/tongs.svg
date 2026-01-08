@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 14" width="8" height="14">
+  <!-- Tongs (8x14) - Smithing tool -->
+  <!-- Color Palette: #2c3e50, #1a252f, #7f8c8d -->
+
+  <!-- Left arm -->
+  <rect x="0" y="0" width="2" height="8" fill="#2c3e50"/>
+  <rect x="0" y="1" width="1" height="6" fill="#1a252f"/>
+
+  <!-- Right arm -->
+  <rect x="6" y="0" width="2" height="8" fill="#2c3e50"/>
+  <rect x="7" y="1" width="1" height="6" fill="#1a252f"/>
+
+  <!-- Pivot -->
+  <rect x="2" y="7" width="4" height="2" fill="#7f8c8d"/>
+  <rect x="3" y="7" width="2" height="1" fill="#5d6d7e"/>
+
+  <!-- Left handle -->
+  <rect x="1" y="9" width="2" height="5" fill="#2c3e50"/>
+  <rect x="1" y="10" width="1" height="3" fill="#1a252f"/>
+
+  <!-- Right handle -->
+  <rect x="5" y="9" width="2" height="5" fill="#2c3e50"/>
+  <rect x="6" y="10" width="1" height="3" fill="#1a252f"/>
+
+  <!-- Jaw tips -->
+  <rect x="0" y="0" width="3" height="2" fill="#7f8c8d"/>
+  <rect x="5" y="0" width="3" height="2" fill="#7f8c8d"/>
+</svg>

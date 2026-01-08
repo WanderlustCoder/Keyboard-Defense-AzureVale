@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6 10" width="6" height="10">
+  <!-- Earring (6x10) - Drop earring -->
+  <!-- Color Palette: #f4d03f, #d4ac0d, #c0392b -->
+
+  <!-- Hook -->
+  <rect x="2" y="0" width="2" height="1" fill="#f4d03f"/>
+  <rect x="3" y="1" width="2" height="1" fill="#d4ac0d"/>
+  <rect x="4" y="2" width="1" height="2" fill="#f4d03f"/>
+  <rect x="3" y="3" width="2" height="1" fill="#d4ac0d"/>
+  <rect x="2" y="3" width="2" height="1" fill="#f4d03f"/>
+
+  <!-- Chain link -->
+  <rect x="2" y="4" width="2" height="1" fill="#d4ac0d"/>
+  <rect x="2" y="5" width="2" height="1" fill="#f4d03f"/>
+
+  <!-- Gem drop -->
+  <rect x="1" y="6" width="4" height="3" fill="#c0392b"/>
+  <rect x="2" y="7" width="2" height="2" fill="#922b21"/>
+  <rect x="2" y="9" width="2" height="1" fill="#7b241c"/>
+
+  <!-- Highlight -->
+  <rect x="2" y="6" width="1" height="1" fill="#e74c3c"/>
+</svg>

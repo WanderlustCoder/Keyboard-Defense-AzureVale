@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 14" width="12" height="14">
+  <!-- Wizard Hat (12x14) - Pointed hat -->
+  <!-- Color Palette: #9b59b6, #8e44ad, #f4d03f -->
+
+  <!-- Point -->
+  <rect x="5" y="0" width="2" height="2" fill="#9b59b6"/>
+  <rect x="4" y="2" width="4" height="2" fill="#9b59b6"/>
+  <rect x="3" y="4" width="6" height="2" fill="#9b59b6"/>
+  <rect x="2" y="6" width="8" height="2" fill="#9b59b6"/>
+
+  <!-- Main cone -->
+  <rect x="1" y="8" width="10" height="3" fill="#9b59b6"/>
+  <rect x="2" y="8" width="8" height="2" fill="#8e44ad"/>
+
+  <!-- Brim -->
+  <rect x="0" y="11" width="12" height="3" fill="#9b59b6"/>
+  <rect x="1" y="12" width="10" height="1" fill="#8e44ad"/>
+
+  <!-- Star decoration -->
+  <rect x="3" y="6" width="2" height="2" fill="#f4d03f"/>
+  <rect x="3" y="7" width="1" height="1" fill="#d4ac0d"/>
+
+  <!-- Band -->
+  <rect x="1" y="10" width="10" height="1" fill="#f4d03f"/>
+</svg>

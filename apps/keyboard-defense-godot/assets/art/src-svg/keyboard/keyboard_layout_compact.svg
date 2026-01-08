@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 64" width="192" height="64">
+  <!-- Keyboard Layout Compact (192x64) - Letter keys only -->
+  <!-- Color Palette: #2c3e50, #34495e, #5d6d7e -->
+
+  <!-- Background -->
+  <rect x="0" y="0" width="192" height="64" fill="#1a252f"/>
+
+  <!-- Row 1: QWERTY -->
+  <rect x="4" y="4" width="16" height="14" fill="#34495e"/>
+  <rect x="22" y="4" width="16" height="14" fill="#34495e"/>
+  <rect x="40" y="4" width="16" height="14" fill="#34495e"/>
+  <rect x="58" y="4" width="16" height="14" fill="#34495e"/>
+  <rect x="76" y="4" width="16" height="14" fill="#34495e"/>
+  <rect x="94" y="4" width="16" height="14" fill="#34495e"/>
+  <rect x="112" y="4" width="16" height="14" fill="#34495e"/>
+  <rect x="130" y="4" width="16" height="14" fill="#34495e"/>
+  <rect x="148" y="4" width="16" height="14" fill="#34495e"/>
+  <rect x="166" y="4" width="22" height="14" fill="#34495e"/>
+
+  <!-- Row 2: ASDF (offset) -->
+  <rect x="10" y="20" width="16" height="14" fill="#34495e"/>
+  <rect x="28" y="20" width="16" height="14" fill="#34495e"/>
+  <rect x="46" y="20" width="16" height="14" fill="#34495e"/>
+  <rect x="64" y="20" width="16" height="14" fill="#34495e"/>
+  <rect x="82" y="20" width="16" height="14" fill="#34495e"/>
+  <rect x="100" y="20" width="16" height="14" fill="#34495e"/>
+  <rect x="118" y="20" width="16" height="14" fill="#34495e"/>
+  <rect x="136" y="20" width="16" height="14" fill="#34495e"/>
+  <rect x="154" y="20" width="34" height="14" fill="#27ae60"/>
+
+  <!-- Row 3: ZXCV (offset more) -->
+  <rect x="16" y="36" width="16" height="14" fill="#34495e"/>
+  <rect x="34" y="36" width="16" height="14" fill="#34495e"/>
+  <rect x="52" y="36" width="16" height="14" fill="#34495e"/>
+  <rect x="70" y="36" width="16" height="14" fill="#34495e"/>
+  <rect x="88" y="36" width="16" height="14" fill="#34495e"/>
+  <rect x="106" y="36" width="16" height="14" fill="#34495e"/>
+  <rect x="124" y="36" width="16" height="14" fill="#34495e"/>
+  <rect x="142" y="36" width="46" height="14" fill="#2c3e50"/>
+
+  <!-- Row 4: Spacebar -->
+  <rect x="40" y="52" width="112" height="10" fill="#5d6d7e"/>
+  <rect x="41" y="53" width="110" height="1" fill="#7f8c8d"/>
+
+  <!-- Key top highlights -->
+  <rect x="5" y="5" width="14" height="1" fill="#5d6d7e"/>
+  <rect x="23" y="5" width="14" height="1" fill="#5d6d7e"/>
+  <rect x="41" y="5" width="14" height="1" fill="#5d6d7e"/>
+</svg>

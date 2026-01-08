@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 14" width="10" height="14">
+  <!-- Hammer (10x14) - Smithing tool -->
+  <!-- Color Palette: #7f8c8d, #5d6d7e, #8b7355, #5d4e37 -->
+
+  <!-- Head -->
+  <rect x="1" y="0" width="8" height="4" fill="#7f8c8d"/>
+  <rect x="2" y="1" width="6" height="2" fill="#5d6d7e"/>
+  <rect x="0" y="1" width="2" height="2" fill="#7f8c8d"/>
+  <rect x="8" y="1" width="2" height="2" fill="#7f8c8d"/>
+
+  <!-- Handle -->
+  <rect x="4" y="4" width="2" height="10" fill="#8b7355"/>
+  <rect x="4" y="5" width="1" height="8" fill="#5d4e37"/>
+
+  <!-- Grip -->
+  <rect x="3" y="11" width="4" height="3" fill="#5d4e37"/>
+  <rect x="4" y="12" width="2" height="1" fill="#8b7355"/>
+</svg>

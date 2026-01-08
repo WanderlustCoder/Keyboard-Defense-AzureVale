@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6 6" width="6" height="6">
+  <!-- Yellow Spark (6x6) - Metal/fire particle -->
+  <!-- Color Palette: #f4d03f, #fdfefe, #f39c12 -->
+
+  <rect x="2" y="0" width="2" height="2" fill="#f4d03f"/>
+  <rect x="0" y="2" width="2" height="2" fill="#f4d03f"/>
+  <rect x="4" y="2" width="2" height="2" fill="#f4d03f"/>
+  <rect x="2" y="4" width="2" height="2" fill="#f4d03f"/>
+  <rect x="2" y="2" width="2" height="2" fill="#fdfefe"/>
+</svg>

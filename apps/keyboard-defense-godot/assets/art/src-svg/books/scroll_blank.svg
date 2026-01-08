@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 10" width="14" height="10">
+  <!-- Blank Scroll (14x10) - Empty parchment -->
+  <!-- Color Palette: #f4d03f, #d4ac0d, #8b7355, #5d4e37 -->
+
+  <!-- Left roll -->
+  <rect x="0" y="0" width="3" height="10" fill="#8b7355"/>
+  <rect x="1" y="1" width="1" height="8" fill="#5d4e37"/>
+  <rect x="0" y="1" width="1" height="8" fill="#d4ac0d"/>
+
+  <!-- Right roll -->
+  <rect x="11" y="0" width="3" height="10" fill="#8b7355"/>
+  <rect x="12" y="1" width="1" height="8" fill="#5d4e37"/>
+  <rect x="13" y="1" width="1" height="8" fill="#d4ac0d"/>
+
+  <!-- Parchment body -->
+  <rect x="2" y="1" width="10" height="8" fill="#f4d03f"/>
+  <rect x="3" y="2" width="8" height="6" fill="#d4ac0d"/>
+  <rect x="4" y="3" width="6" height="4" fill="#f4d03f"/>
+</svg>

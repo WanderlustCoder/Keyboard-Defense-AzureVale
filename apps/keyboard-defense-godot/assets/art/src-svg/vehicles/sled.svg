@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 10" width="18" height="10">
+  <!-- Sled (18x10) - Snow transport -->
+  <!-- Color Palette: #8b7355, #5d4e37, #7f8c8d -->
+
+  <!-- Sled body -->
+  <rect x="2" y="2" width="14" height="4" fill="#5d4e37"/>
+  <rect x="3" y="3" width="12" height="2" fill="#8b7355"/>
+
+  <!-- Back rest -->
+  <rect x="14" y="0" width="2" height="6" fill="#5d4e37"/>
+  <rect x="14" y="1" width="1" height="4" fill="#8b7355"/>
+
+  <!-- Handle -->
+  <rect x="0" y="3" width="3" height="2" fill="#5d4e37"/>
+
+  <!-- Runners -->
+  <rect x="0" y="6" width="18" height="2" fill="#7f8c8d"/>
+  <rect x="1" y="7" width="16" height="1" fill="#5d6d7e"/>
+
+  <!-- Runner curves -->
+  <rect x="0" y="4" width="2" height="3" fill="#7f8c8d"/>
+  <rect x="16" y="4" width="2" height="3" fill="#7f8c8d"/>
+
+  <!-- Runner tips -->
+  <rect x="0" y="8" width="3" height="2" fill="#5d6d7e"/>
+  <rect x="15" y="8" width="3" height="2" fill="#5d6d7e"/>
+
+  <!-- Cross slats -->
+  <rect x="5" y="2" width="1" height="4" fill="#3d3426"/>
+  <rect x="9" y="2" width="1" height="4" fill="#3d3426"/>
+</svg>

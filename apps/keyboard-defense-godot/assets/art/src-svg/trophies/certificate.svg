@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 10" width="14" height="10">
+  <!-- Certificate (14x10) - Achievement document -->
+  <!-- Color Palette: #ecf0f1, #bdc3c7, #f4d03f, #c0392b -->
+
+  <!-- Paper -->
+  <rect x="0" y="0" width="14" height="10" fill="#ecf0f1"/>
+  <rect x="1" y="1" width="12" height="8" fill="#bdc3c7"/>
+
+  <!-- Border -->
+  <rect x="0" y="0" width="14" height="1" fill="#f4d03f"/>
+  <rect x="0" y="9" width="14" height="1" fill="#f4d03f"/>
+  <rect x="0" y="0" width="1" height="10" fill="#f4d03f"/>
+  <rect x="13" y="0" width="1" height="10" fill="#f4d03f"/>
+
+  <!-- Inner paper -->
+  <rect x="2" y="2" width="10" height="6" fill="#ecf0f1"/>
+
+  <!-- Text lines -->
+  <rect x="4" y="3" width="6" height="1" fill="#7f8c8d"/>
+  <rect x="3" y="5" width="8" height="1" fill="#bdc3c7"/>
+
+  <!-- Seal -->
+  <rect x="9" y="6" width="3" height="2" fill="#c0392b"/>
+  <rect x="10" y="6" width="1" height="1" fill="#922b21"/>
+</svg>

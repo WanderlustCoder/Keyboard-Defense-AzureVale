@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6 14" width="6" height="14">
+  <!-- Wrench (6x14) - Mechanical tool -->
+  <!-- Color Palette: #7f8c8d, #5d6d7e, #bdc3c7 -->
+
+  <!-- Top jaw -->
+  <rect x="0" y="0" width="6" height="4" fill="#7f8c8d"/>
+  <rect x="2" y="1" width="2" height="2" fill="#1a252f"/>
+  <rect x="1" y="1" width="1" height="2" fill="#5d6d7e"/>
+  <rect x="4" y="1" width="1" height="2" fill="#5d6d7e"/>
+
+  <!-- Shaft -->
+  <rect x="2" y="4" width="2" height="6" fill="#7f8c8d"/>
+  <rect x="2" y="5" width="1" height="4" fill="#5d6d7e"/>
+
+  <!-- Bottom jaw -->
+  <rect x="0" y="10" width="6" height="4" fill="#7f8c8d"/>
+  <rect x="2" y="11" width="2" height="2" fill="#1a252f"/>
+  <rect x="1" y="11" width="1" height="2" fill="#5d6d7e"/>
+  <rect x="4" y="11" width="1" height="2" fill="#5d6d7e"/>
+
+  <!-- Highlight -->
+  <rect x="3" y="5" width="1" height="4" fill="#bdc3c7"/>
+</svg>

@@ -29,6 +29,7 @@ const OnboardingFlow = preload("res://game/onboarding_flow.gd")
 const SimEvents = preload("res://sim/events.gd")
 const SimPoi = preload("res://sim/poi.gd")
 const SimEventEffects = preload("res://sim/event_effects.gd")
+const WorldTick = preload("res://sim/world_tick.gd")
 
 @onready var stats_label: Label = $CanvasLayer/UIRoot/StatsPanel/StatsLabel     
 @onready var ui_root: Control = $CanvasLayer/UIRoot
@@ -165,6 +166,16 @@ func _notification(what: int) -> void:
     if what == NOTIFICATION_WM_SIZE_CHANGED:
         _apply_ui_scale(ui_scale_percent)
 
+func _process(delta: float) -> void:
+    # World tick for open-world exploration
+    if state.phase != "game_over":
+        var result: Dictionary = WorldTick.tick(state, delta)
+        if result.get("changed", false):
+            var events: Array = result.get("events", [])
+            if not events.is_empty():
+                _append_log(events)
+            _refresh_hud()
+
 func _input(event: InputEvent) -> void:
         if event is InputEventKey and event.pressed and not event.echo:
                 if awaiting_bind_action != "":
@@ -198,6 +209,66 @@ func _input(event: InputEvent) -> void:
                         _cycle_goal_hotkey()
                         get_viewport().set_input_as_handled()
                         return
+                # Arrow key cursor navigation (when command bar is empty or not focused on typing)
+                if command_bar.text.is_empty():
+                        var cursor_moved := false
+                        match event.keycode:
+                                KEY_UP:
+                                        _move_cursor_direction(Vector2i(0, -1))
+                                        cursor_moved = true
+                                KEY_DOWN:
+                                        _move_cursor_direction(Vector2i(0, 1))
+                                        cursor_moved = true
+                                KEY_LEFT:
+                                        _move_cursor_direction(Vector2i(-1, 0))
+                                        cursor_moved = true
+                                KEY_RIGHT:
+                                        _move_cursor_direction(Vector2i(1, 0))
+                                        cursor_moved = true
+                        if cursor_moved:
+                                get_viewport().set_input_as_handled()
+                                return
+
+func _move_cursor_direction(direction: Vector2i) -> void:
+    var new_pos: Vector2i = state.cursor_pos + direction
+    if SimMap.in_bounds(new_pos.x, new_pos.y, state.map_w, state.map_h):
+        state.cursor_pos = new_pos
+        _refresh_hud()
+        _update_tile_context()
+
+func _update_tile_context() -> void:
+    # Update inspect panel with current tile info
+    var pos: Vector2i = state.cursor_pos
+    var index: int = pos.y * state.map_w + pos.x
+    var lines: Array[String] = []
+
+    # Terrain
+    var terrain: String = SimMap.get_terrain(state, pos)
+    if terrain == "":
+        terrain = "unknown"
+    lines.append("[b]Tile:[/b] %d, %d (%s)" % [pos.x, pos.y, terrain])
+
+    # Structure
+    if state.structures.has(index):
+        var struct_type: String = str(state.structures[index])
+        var level: int = state.structure_levels.get(index, 1)
+        lines.append("[b]Structure:[/b] %s (level %d)" % [struct_type, level])
+
+    # POI
+    if state.active_pois.has(index):
+        var poi: Dictionary = state.active_pois[index]
+        var poi_id: String = poi.get("id", "unknown")
+        lines.append("[b]POI:[/b] %s" % poi_id)
+
+    # Roaming enemies at this tile
+    for entity in state.roaming_enemies:
+        var ent_pos: Vector2i = entity.get("pos", Vector2i(-1, -1))
+        if ent_pos == pos:
+            var kind: String = entity.get("kind", "enemy")
+            lines.append("[b]Roaming:[/b] %s" % kind)
+
+    if inspect_label != null:
+        inspect_label.text = "\n".join(lines)
 
 func _on_command_submitted(command: String) -> void:
     var is_night: bool = state.phase == "night"
@@ -468,15 +539,36 @@ func _refresh_hud() -> void:
     _check_pending_event()
 
 func _update_prompt() -> void:
+    prompt_panel.visible = true  # Always show prompt for open-world feel
     if state.phase == "night":
-        prompt_panel.visible = true
         prompt_label.text = "DEFEND: type an enemy word"
     elif state.phase == "game_over":
-        prompt_panel.visible = true
         prompt_label.text = "GAME OVER - type restart"
     else:
-        prompt_panel.visible = false
-        prompt_label.text = ""
+        # Open-world exploration prompt
+        var pos: Vector2i = state.cursor_pos
+        var index: int = pos.y * state.map_w + pos.x
+        var context_parts: Array[String] = []
+
+        # Check what's at cursor
+        if state.active_pois.has(index):
+            context_parts.append("talk")
+        if state.structures.has(index):
+            context_parts.append("inspect")
+        var has_roaming: bool = false
+        for entity in state.roaming_enemies:
+            if entity.get("pos", Vector2i(-1, -1)) == pos:
+                has_roaming = true
+                break
+        if has_roaming:
+            context_parts.append("attack")
+        if SimMap.is_buildable(state, pos):
+            context_parts.append("build")
+
+        if context_parts.is_empty():
+            prompt_label.text = "EXPLORE: arrow keys move, type commands"
+        else:
+            prompt_label.text = "Actions: " + ", ".join(context_parts)
 
 func _update_command_hint() -> void:
     if state.phase == "night":

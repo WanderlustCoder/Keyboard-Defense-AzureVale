@@ -101,6 +101,13 @@ static func apply(state: GameState, intent: Dictionary) -> Dictionary:
             _apply_buy_upgrade(new_state, intent, events)
         "ui_upgrades":
             _apply_ui_upgrades(new_state, intent, events)
+        # Open-world quick actions
+        "inspect_tile":
+            _apply_inspect_tile(new_state, events)
+        "gather_at_cursor":
+            _apply_gather_at_cursor(new_state, events)
+        "engage_enemy":
+            _apply_engage_enemy(new_state, events)
         _:
             events.append("Unknown intent: %s" % kind)
 
@@ -1368,3 +1375,106 @@ static func _apply_ui_upgrades(state: GameState, intent: Dictionary, events: Arr
     var lines: Array[String] = SimUpgrades.format_upgrade_tree(state, category)
     for line in lines:
         events.append(line)
+
+# Open-world quick action implementations
+static func _apply_inspect_tile(state: GameState, events: Array[String]) -> void:
+    var pos: Vector2i = state.cursor_pos
+    var index: int = pos.y * state.map_w + pos.x
+
+    events.append("[Tile %d, %d]" % [pos.x, pos.y])
+
+    # Terrain
+    var terrain: String = SimMap.get_terrain(state, pos)
+    if terrain == "":
+        events.append("  Terrain: unexplored")
+    else:
+        events.append("  Terrain: %s" % terrain)
+
+    # Structure
+    if state.structures.has(index):
+        var struct_type: String = str(state.structures[index])
+        var level: int = state.structure_levels.get(index, 1)
+        events.append("  Structure: %s (level %d)" % [struct_type, level])
+
+    # POI
+    if state.active_pois.has(index):
+        var poi: Dictionary = state.active_pois[index]
+        var poi_id: String = str(poi.get("id", "unknown"))
+        events.append("  POI: %s - type 'talk' to interact" % poi_id)
+
+    # Roaming enemies
+    for entity in state.roaming_enemies:
+        var ent_pos: Vector2i = entity.get("pos", Vector2i(-1, -1))
+        if ent_pos == pos:
+            var kind: String = str(entity.get("kind", "enemy"))
+            events.append("  Roaming enemy: %s - type 'attack' to engage" % kind)
+
+    # Is base?
+    if pos == state.base_pos:
+        events.append("  This is your castle!")
+
+static func _apply_gather_at_cursor(state: GameState, events: Array[String]) -> void:
+    if state.phase != "day":
+        events.append("Can only gather during the day phase.")
+        return
+    if state.ap <= 0:
+        events.append("No action points remaining.")
+        return
+
+    var pos: Vector2i = state.cursor_pos
+    var index: int = pos.y * state.map_w + pos.x
+    var terrain: String = SimMap.get_terrain(state, pos)
+
+    # Determine what can be gathered based on terrain
+    var resource: String = ""
+    var amount: int = 0
+    match terrain:
+        SimMap.TERRAIN_FOREST:
+            resource = "wood"
+            amount = 5
+        SimMap.TERRAIN_MOUNTAIN:
+            resource = "stone"
+            amount = 3
+        SimMap.TERRAIN_PLAINS:
+            resource = "food"
+            amount = 4
+        _:
+            events.append("Nothing to gather here.")
+            return
+
+    state.ap -= 1
+    state.resources[resource] = int(state.resources.get(resource, 0)) + amount
+    events.append("Gathered %d %s from %s." % [amount, resource, terrain])
+    events.append(_format_status(state))
+
+static func _apply_engage_enemy(state: GameState, events: Array[String]) -> void:
+    var pos: Vector2i = state.cursor_pos
+
+    # Find roaming enemy at cursor
+    var target_idx: int = -1
+    for i in range(state.roaming_enemies.size()):
+        var entity: Dictionary = state.roaming_enemies[i]
+        var ent_pos: Vector2i = entity.get("pos", Vector2i(-1, -1))
+        if ent_pos == pos:
+            target_idx = i
+            break
+
+    if target_idx < 0:
+        events.append("No roaming enemy at this location.")
+        return
+
+    # Convert to combat enemy
+    var roaming: Dictionary = state.roaming_enemies[target_idx]
+    var kind: String = str(roaming.get("kind", "raider"))
+    state.roaming_enemies.remove_at(target_idx)
+
+    var enemy: Dictionary = SimEnemies.make_enemy(state, kind, state.base_pos)
+    state.enemies.append(enemy)
+
+    # Switch to night/combat phase
+    if state.phase != "night":
+        state.phase = "night"
+        state.night_spawn_remaining = 0
+        state.night_wave_total = 1
+
+    events.append("Engaged %s in combat! Defend yourself!" % kind)

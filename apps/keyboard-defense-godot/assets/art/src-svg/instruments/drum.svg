@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 10" width="12" height="10">
+  <!-- Drum (12x10) - Percussion -->
+  <!-- Color Palette: #c0392b, #922b21, #f4d03f, #ecf0f1 -->
+
+  <!-- Drum head -->
+  <rect x="1" y="0" width="10" height="2" fill="#ecf0f1"/>
+  <rect x="2" y="0" width="8" height="1" fill="#bdc3c7"/>
+
+  <!-- Body -->
+  <rect x="0" y="2" width="12" height="6" fill="#c0392b"/>
+  <rect x="1" y="3" width="10" height="4" fill="#922b21"/>
+
+  <!-- Gold bands -->
+  <rect x="0" y="2" width="12" height="1" fill="#f4d03f"/>
+  <rect x="0" y="7" width="12" height="1" fill="#f4d03f"/>
+
+  <!-- Decorative pattern -->
+  <rect x="2" y="4" width="2" height="2" fill="#c0392b"/>
+  <rect x="5" y="4" width="2" height="2" fill="#c0392b"/>
+  <rect x="8" y="4" width="2" height="2" fill="#c0392b"/>
+
+  <!-- Bottom rim -->
+  <rect x="1" y="8" width="10" height="2" fill="#8b7355"/>
+  <rect x="2" y="9" width="8" height="1" fill="#5d4e37"/>
+</svg>

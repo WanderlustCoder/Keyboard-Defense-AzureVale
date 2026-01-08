@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 12" width="10" height="12">
+  <!-- Bell (10x12) - Percussion -->
+  <!-- Color Palette: #f4d03f, #d4ac0d, #9a7d0a, #8b7355 -->
+
+  <!-- Handle -->
+  <rect x="4" y="0" width="2" height="2" fill="#8b7355"/>
+  <rect x="4" y="0" width="1" height="1" fill="#5d4e37"/>
+
+  <!-- Top -->
+  <rect x="3" y="2" width="4" height="2" fill="#f4d03f"/>
+  <rect x="4" y="2" width="2" height="1" fill="#d4ac0d"/>
+
+  <!-- Body -->
+  <rect x="2" y="4" width="6" height="3" fill="#f4d03f"/>
+  <rect x="1" y="6" width="8" height="3" fill="#f4d03f"/>
+  <rect x="0" y="8" width="10" height="3" fill="#f4d03f"/>
+
+  <!-- Shading -->
+  <rect x="3" y="5" width="4" height="2" fill="#d4ac0d"/>
+  <rect x="2" y="7" width="6" height="2" fill="#d4ac0d"/>
+  <rect x="1" y="9" width="8" height="1" fill="#9a7d0a"/>
+
+  <!-- Rim -->
+  <rect x="0" y="10" width="10" height="2" fill="#d4ac0d"/>
+  <rect x="1" y="11" width="8" height="1" fill="#9a7d0a"/>
+
+  <!-- Clapper -->
+  <rect x="4" y="8" width="2" height="3" fill="#8b7355"/>
+  <rect x="4" y="10" width="2" height="2" fill="#5d4e37"/>
+</svg>

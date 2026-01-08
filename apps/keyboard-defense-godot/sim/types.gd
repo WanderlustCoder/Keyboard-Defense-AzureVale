@@ -47,6 +47,13 @@ var gold: int
 var speed_multiplier: float
 var practice_mode: bool
 
+# Open-world exploration state
+var roaming_enemies: Array
+var roaming_resources: Array
+var threat_level: float
+var time_of_day: float
+var world_tick_accum: float
+
 func _init() -> void:
     day = 1
     phase = "day"
@@ -101,6 +108,13 @@ func _init() -> void:
     # Accessibility defaults
     speed_multiplier = 1.0
     practice_mode = false
+
+    # Open-world exploration initialization
+    roaming_enemies = []
+    roaming_resources = []
+    threat_level = 0.0
+    time_of_day = 0.25  # Start at morning (0.0=midnight, 0.5=noon, 1.0=midnight)
+    world_tick_accum = 0.0
 
     discovered[_index(base_pos.x, base_pos.y)] = true
 

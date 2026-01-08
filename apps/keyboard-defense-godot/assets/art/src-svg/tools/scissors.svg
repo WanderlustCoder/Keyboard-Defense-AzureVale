@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 12" width="10" height="12">
+  <!-- Scissors (10x12) - Cutting tool -->
+  <!-- Color Palette: #7f8c8d, #5d6d7e, #c0392b -->
+
+  <!-- Left blade -->
+  <rect x="0" y="0" width="2" height="6" fill="#7f8c8d"/>
+  <rect x="0" y="1" width="1" height="4" fill="#bdc3c7"/>
+  <rect x="2" y="4" width="2" height="2" fill="#7f8c8d"/>
+
+  <!-- Right blade -->
+  <rect x="8" y="0" width="2" height="6" fill="#7f8c8d"/>
+  <rect x="9" y="1" width="1" height="4" fill="#bdc3c7"/>
+  <rect x="6" y="4" width="2" height="2" fill="#7f8c8d"/>
+
+  <!-- Pivot -->
+  <rect x="4" y="5" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="4" y="5" width="1" height="1" fill="#7f8c8d"/>
+
+  <!-- Left handle -->
+  <rect x="1" y="7" width="3" height="4" fill="#c0392b"/>
+  <rect x="2" y="8" width="1" height="2" fill="#1a252f"/>
+  <rect x="1" y="10" width="3" height="2" fill="#922b21"/>
+
+  <!-- Right handle -->
+  <rect x="6" y="7" width="3" height="4" fill="#c0392b"/>
+  <rect x="7" y="8" width="1" height="2" fill="#1a252f"/>
+  <rect x="6" y="10" width="3" height="2" fill="#922b21"/>
+</svg>

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 12" width="10" height="12">
+  <!-- Ale Mug (10x12) - Tavern drink -->
+  <!-- Color Palette: #8b7355, #5d4e37, #f4d03f, #fdfefe -->
+
+  <!-- Mug body -->
+  <rect x="0" y="2" width="8" height="9" fill="#8b7355"/>
+  <rect x="1" y="3" width="6" height="7" fill="#5d4e37"/>
+
+  <!-- Handle -->
+  <rect x="7" y="3" width="3" height="6" fill="#8b7355"/>
+  <rect x="8" y="4" width="2" height="4" fill="#5d4e37"/>
+  <rect x="9" y="5" width="1" height="2" fill="#8b7355"/>
+
+  <!-- Ale -->
+  <rect x="1" y="4" width="6" height="6" fill="#d4ac0d"/>
+  <rect x="2" y="5" width="4" height="4" fill="#9a7d0a"/>
+
+  <!-- Foam -->
+  <rect x="0" y="1" width="8" height="3" fill="#fdfefe"/>
+  <rect x="1" y="2" width="6" height="1" fill="#ecf0f1"/>
+
+  <!-- Foam bubbles -->
+  <rect x="1" y="0" width="2" height="2" fill="#fdfefe"/>
+  <rect x="5" y="0" width="2" height="2" fill="#fdfefe"/>
+
+  <!-- Mug rim -->
+  <rect x="0" y="2" width="8" height="1" fill="#a08060"/>
+
+  <!-- Base -->
+  <rect x="0" y="10" width="8" height="2" fill="#5d4e37"/>
+</svg>

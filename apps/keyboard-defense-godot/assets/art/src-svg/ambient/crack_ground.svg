@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" width="10" height="10">
+  <!-- Ground Crack (10x10) - Terrain detail -->
+  <!-- Color Palette: #2c3e50, #1a252f, #5d6d7e -->
+
+  <rect x="4" y="0" width="2" height="3" fill="#2c3e50"/>
+  <rect x="3" y="2" width="2" height="2" fill="#1a252f"/>
+  <rect x="2" y="3" width="2" height="3" fill="#2c3e50"/>
+  <rect x="4" y="4" width="3" height="2" fill="#1a252f"/>
+  <rect x="6" y="5" width="2" height="3" fill="#2c3e50"/>
+  <rect x="5" y="7" width="2" height="2" fill="#1a252f"/>
+  <rect x="3" y="8" width="3" height="2" fill="#5d6d7e"/>
+  <rect x="1" y="5" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="7" y="3" width="2" height="2" fill="#2c3e50"/>
+</svg>
