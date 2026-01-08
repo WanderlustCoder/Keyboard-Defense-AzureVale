@@ -96,6 +96,7 @@ var ui_scale_percent: int = 100
 var compact_panels: bool = false
 var reduced_motion: bool = false
 var high_contrast: bool = false
+var nav_hints: bool = true
 var cycle_goal_keybind: Dictionary = {}
 var toggle_settings_keybind: Dictionary = {}
 var toggle_lessons_keybind: Dictionary = {}
@@ -300,6 +301,9 @@ func _on_command_submitted(command: String) -> void:
             return
         if intent_kind == "ui_settings_contrast":
             _apply_settings_contrast(parsed.intent)
+            return
+        if intent_kind == "ui_settings_hints":
+            _apply_settings_hints(parsed.intent)
             return
         if intent_kind == "ui_settings_verify":
             _apply_settings_verify()
@@ -979,6 +983,38 @@ func _apply_contrast_theme() -> void:
     # Apply to report label
     if report_label != null:
         report_label.add_theme_color_override("default_color", text_color)
+
+func _apply_settings_hints(intent: Dictionary) -> void:
+    var mode: String = str(intent.get("mode", "toggle"))
+    if mode == "toggle":
+        nav_hints = not nav_hints
+    elif mode == "on" or mode == "show":
+        nav_hints = true
+    elif mode == "off" or mode == "hide":
+        nav_hints = false
+    # Persist to profile
+    var save_result: Dictionary = TypingProfile.set_nav_hints(profile, nav_hints)
+    if save_result.get("ok", false):
+        profile = save_result.get("profile", profile)
+    var state_text: String = "ON" if nav_hints else "OFF"
+    _append_log(["Navigation hints: %s (settings hints on|off|toggle)" % state_text])
+    if nav_hints:
+        _append_log(["Keyboard shortcuts will be shown in panel headers."])
+    else:
+        _append_log(["Keyboard shortcuts hidden from panel headers."])
+    _refresh_settings_panel()
+    _refresh_lesson_panel()
+    _refresh_history_panel()
+    _refresh_trend_panel()
+    command_bar.grab_focus()
+
+func _get_nav_hint_text(keybind: Dictionary, label: String) -> String:
+    if not nav_hints:
+        return label
+    var key_text: String = ControlsFormatter.format_keybind(keybind)
+    if key_text.is_empty():
+        return label
+    return "[%s] %s" % [key_text, label]
 
 func _apply_help(intent: Dictionary) -> void:
     var topic_raw: String = str(intent.get("topic", ""))
@@ -2370,6 +2406,7 @@ func _load_profile() -> void:
     reduced_motion = TypingProfile.get_reduced_motion(profile)
     var speed_mult: float = TypingProfile.get_speed_multiplier(profile)
     high_contrast = TypingProfile.get_high_contrast(profile)
+    nav_hints = TypingProfile.get_nav_hints(profile)
     profile["ui_prefs"] = profile.get("ui_prefs", {})
     profile["ui_prefs"]["lessons_sort"] = lessons_sort_mode
     profile["ui_prefs"]["lessons_sparkline"] = lessons_sparkline
@@ -2378,6 +2415,7 @@ func _load_profile() -> void:
     profile["ui_prefs"]["reduced_motion"] = reduced_motion
     profile["ui_prefs"]["speed_multiplier"] = speed_mult
     profile["ui_prefs"]["high_contrast"] = high_contrast
+    profile["ui_prefs"]["nav_hints"] = nav_hints
     # Apply speed multiplier to state if exists
     if state != null:
         state.speed_multiplier = speed_mult

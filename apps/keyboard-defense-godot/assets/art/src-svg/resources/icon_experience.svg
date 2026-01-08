@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="12" height="12">
+  <!-- Experience Icon (12x12) - XP resource -->
+  <!-- Color Palette: #9b59b6, #8e44ad, #6c3483, #d7bde2 -->
+
+  <!-- Star burst -->
+  <rect x="5" y="0" width="2" height="4" fill="#9b59b6"/>
+  <rect x="5" y="8" width="2" height="4" fill="#9b59b6"/>
+  <rect x="0" y="5" width="4" height="2" fill="#9b59b6"/>
+  <rect x="8" y="5" width="4" height="2" fill="#9b59b6"/>
+
+  <!-- Diagonal rays -->
+  <rect x="1" y="1" width="2" height="2" fill="#8e44ad"/>
+  <rect x="9" y="1" width="2" height="2" fill="#8e44ad"/>
+  <rect x="1" y="9" width="2" height="2" fill="#8e44ad"/>
+  <rect x="9" y="9" width="2" height="2" fill="#8e44ad"/>
+
+  <!-- Center orb -->
+  <rect x="3" y="3" width="6" height="6" fill="#8e44ad"/>
+  <rect x="4" y="4" width="4" height="4" fill="#6c3483"/>
+  <rect x="5" y="5" width="2" height="2" fill="#d7bde2"/>
+
+  <!-- Sparkle -->
+  <rect x="4" y="4" width="1" height="1" fill="#d7bde2"/>
+</svg>

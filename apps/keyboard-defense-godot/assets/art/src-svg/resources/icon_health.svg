@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="12" height="12">
+  <!-- Health Icon (12x12) - Life resource -->
+  <!-- Color Palette: #e74c3c, #c0392b, #922b21, #fdfefe -->
+
+  <!-- Heart shape -->
+  <rect x="1" y="2" width="4" height="4" fill="#e74c3c"/>
+  <rect x="7" y="2" width="4" height="4" fill="#e74c3c"/>
+  <rect x="0" y="3" width="3" height="3" fill="#e74c3c"/>
+  <rect x="9" y="3" width="3" height="3" fill="#e74c3c"/>
+  <rect x="1" y="5" width="10" height="3" fill="#e74c3c"/>
+  <rect x="2" y="8" width="8" height="2" fill="#c0392b"/>
+  <rect x="3" y="10" width="6" height="1" fill="#c0392b"/>
+  <rect x="4" y="11" width="4" height="1" fill="#922b21"/>
+  <rect x="5" y="12" width="2" height="1" fill="#922b21"/>
+
+  <!-- Highlight -->
+  <rect x="2" y="3" width="2" height="2" fill="#f5b7b1"/>
+  <rect x="3" y="4" width="1" height="1" fill="#fdfefe"/>
+
+  <!-- Shading -->
+  <rect x="5" y="6" width="2" height="3" fill="#c0392b"/>
+</svg>

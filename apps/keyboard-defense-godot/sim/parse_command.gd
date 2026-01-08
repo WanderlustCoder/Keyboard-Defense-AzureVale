@@ -339,7 +339,15 @@ static func parse(command: String) -> Dictionary:
                         if contrast_arg == "on" or contrast_arg == "off" or contrast_arg == "toggle" or contrast_arg == "high" or contrast_arg == "normal":
                             return {"ok": true, "intent": SimIntents.make("ui_settings_contrast", {"mode": contrast_arg})}
                     return {"ok": false, "error": "Usage: settings contrast [on|off|toggle|high|normal]"}
-            return {"ok": false, "error": "Usage: settings [show|hide|lessons|prefs|verify|conflicts|resolve|export|scale|font|compact|motion|speed|contrast]"}
+                if mode == "hints" or mode == "navhints" or mode == "nav":
+                    if tokens.size() == 2:
+                        return {"ok": true, "intent": SimIntents.make("ui_settings_hints", {"mode": "toggle"})}
+                    if tokens.size() == 3:
+                        var hints_arg: String = tokens[2].to_lower()
+                        if hints_arg == "on" or hints_arg == "off" or hints_arg == "toggle" or hints_arg == "show" or hints_arg == "hide":
+                            return {"ok": true, "intent": SimIntents.make("ui_settings_hints", {"mode": hints_arg})}
+                    return {"ok": false, "error": "Usage: settings hints [on|off|toggle|show|hide]"}
+            return {"ok": false, "error": "Usage: settings [show|hide|lessons|prefs|verify|conflicts|resolve|export|scale|font|compact|motion|speed|contrast|hints]"}
         "tutorial":
             if tokens.size() == 1:
                 return {"ok": true, "intent": SimIntents.make("ui_tutorial_toggle")}
