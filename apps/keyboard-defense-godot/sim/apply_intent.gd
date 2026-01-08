@@ -309,8 +309,11 @@ static func _advance_night_step(state: GameState, hit_enemy_index: int, apply_mi
             var forgiveness: float = SimUpgrades.get_mistake_forgiveness(state)
             var forgiven: bool = forgiveness > 0.0 and float(SimRng.roll_range(state, 1, 100)) / 100.0 <= forgiveness
             if not forgiven:
-                state.hp -= 1
-                events.append("Miss. No matching enemy word.")
+                if not state.practice_mode:
+                    state.hp -= 1
+                    events.append("Miss. No matching enemy word.")
+                else:
+                    events.append("Miss. (practice mode - no damage)")
             else:
                 events.append("Miss forgiven! (granary protection)")
         else:
@@ -401,8 +404,11 @@ static func _apply_player_attack_target(state: GameState, target_index: int, hit
             events.append("Berserker#%d enters a rage! Speed +1." % enemy_id)
     # Thorny affix: reflect 1 damage back to castle when hit
     if enemy.get("thorny", false) or enemy.get("affix", "") == "thorny":
-        state.hp -= 1
-        events.append("Thorns deal 1 damage!")
+        if not state.practice_mode:
+            state.hp -= 1
+            events.append("Thorns deal 1 damage!")
+        else:
+            events.append("Thorns blocked! (practice mode)")
     if int(enemy.get("hp", 0)) <= 0:
         var enemy_pos: Vector2i = enemy.get("pos", Vector2i.ZERO)
         # Splitting affix: spawn swarm minions on death
@@ -410,8 +416,11 @@ static func _apply_player_attack_target(state: GameState, target_index: int, hit
             _spawn_split_enemies(state, enemy_pos, events)
         # Explosive affix: deals 2 damage to castle on death
         if enemy.get("explosive", false) or enemy.get("affix", "") == "explosive":
-            state.hp -= 2
-            events.append("Enemy explodes! Castle takes 2 damage.")
+            if not state.practice_mode:
+                state.hp -= 2
+                events.append("Enemy explodes! Castle takes 2 damage.")
+            else:
+                events.append("Explosion absorbed! (practice mode)")
         state.enemies.remove_at(target_index)
         # Check if this was a boss
         var was_boss: bool = enemy.get("is_boss", false)
@@ -547,12 +556,15 @@ static func _enemy_move_step(state: GameState, dist_field: PackedInt32Array, eve
                     var base_dmg: int = 1
                     if enemy.get("enraged", false) or enemy.get("affix", "") == "enraged":
                         base_dmg = 2
-                    state.hp -= base_dmg
-                    var dmg_text: String = " (enraged!)" if base_dmg > 1 else ""
-                    events.append("Enemy %s#%d hits the base for %d.%s" % [kind, enemy_id, base_dmg, dmg_text])
-                    # Vampiric affix heals a random ally
-                    if enemy.get("vampiric", false) or enemy.get("affix", "") == "vampiric":
-                        _vampiric_heal(state, enemy_index, events)
+                    if not state.practice_mode:
+                        state.hp -= base_dmg
+                        var dmg_text: String = " (enraged!)" if base_dmg > 1 else ""
+                        events.append("Enemy %s#%d hits the base for %d.%s" % [kind, enemy_id, base_dmg, dmg_text])
+                        # Vampiric affix heals a random ally
+                        if enemy.get("vampiric", false) or enemy.get("affix", "") == "vampiric":
+                            _vampiric_heal(state, enemy_index, events)
+                    else:
+                        events.append("Enemy %s#%d reaches base. (practice mode - no damage)" % [kind, enemy_id])
                 else:
                     events.append("Enemy %s#%d blocked!" % [kind, enemy_id])
                 state.enemies.remove_at(enemy_index)
@@ -580,12 +592,15 @@ static func _enemy_move_step(state: GameState, dist_field: PackedInt32Array, eve
                         var base_dmg: int = 1
                         if enemy.get("enraged", false) or enemy.get("affix", "") == "enraged":
                             base_dmg = 2
-                        state.hp -= base_dmg
-                        var dmg_text: String = " (enraged!)" if base_dmg > 1 else ""
-                        events.append("Enemy %s#%d hits the base for %d.%s" % [kind, enemy_id, base_dmg, dmg_text])
-                        # Vampiric affix heals a random ally
-                        if enemy.get("vampiric", false) or enemy.get("affix", "") == "vampiric":
-                            _vampiric_heal(state, enemy_index, events)
+                        if not state.practice_mode:
+                            state.hp -= base_dmg
+                            var dmg_text: String = " (enraged!)" if base_dmg > 1 else ""
+                            events.append("Enemy %s#%d hits the base for %d.%s" % [kind, enemy_id, base_dmg, dmg_text])
+                            # Vampiric affix heals a random ally
+                            if enemy.get("vampiric", false) or enemy.get("affix", "") == "vampiric":
+                                _vampiric_heal(state, enemy_index, events)
+                        else:
+                            events.append("Enemy %s#%d reaches base. (practice mode - no damage)" % [kind, enemy_id])
                     else:
                         events.append("Enemy %s#%d blocked!" % [kind, enemy_id])
                     state.enemies.remove_at(enemy_index)

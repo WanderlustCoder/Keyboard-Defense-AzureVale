@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 14" width="10" height="14">
+  <!-- Milestone (10x14) - Distance marker -->
+  <!-- Color Palette: #7f8c8d, #5d6d7e, #2c3e50 -->
+
+  <!-- Stone body -->
+  <rect x="1" y="0" width="8" height="12" fill="#7f8c8d"/>
+  <rect x="0" y="2" width="10" height="10" fill="#7f8c8d"/>
+
+  <!-- Rounded top -->
+  <rect x="2" y="0" width="6" height="2" fill="#95a5a6"/>
+  <rect x="3" y="0" width="4" height="1" fill="#bdc3c7"/>
+
+  <!-- Stone texture -->
+  <rect x="2" y="3" width="6" height="8" fill="#5d6d7e"/>
+  <rect x="3" y="4" width="4" height="6" fill="#7f8c8d"/>
+
+  <!-- Carved text area -->
+  <rect x="3" y="4" width="4" height="3" fill="#5d6d7e"/>
+
+  <!-- Roman numeral V -->
+  <rect x="3" y="5" width="1" height="1" fill="#2c3e50"/>
+  <rect x="4" y="5" width="1" height="2" fill="#2c3e50"/>
+  <rect x="5" y="5" width="1" height="1" fill="#2c3e50"/>
+
+  <!-- Base -->
+  <rect x="0" y="12" width="10" height="2" fill="#5d6d7e"/>
+  <rect x="1" y="12" width="8" height="1" fill="#7f8c8d"/>
+</svg>

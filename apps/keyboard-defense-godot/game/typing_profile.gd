@@ -27,7 +27,8 @@ const DEFAULT_UI_PREFS := {
     "reduced_motion": false,
     "speed_multiplier": 1.0,
     "high_contrast": false,
-    "nav_hints": true
+    "nav_hints": true,
+    "practice_mode": false
 }
 const DEFAULT_LESSON_PROGRESS := {
     "nights": 0,
@@ -339,6 +340,21 @@ static func set_nav_hints(profile: Dictionary, enabled: bool) -> Dictionary:
     if not profile.has("ui_prefs") or typeof(profile.get("ui_prefs")) != TYPE_DICTIONARY:
         profile["ui_prefs"] = {}
     profile["ui_prefs"]["nav_hints"] = bool(enabled)
+    var result: Dictionary = save_profile(profile)
+    if result.get("ok", false):
+        return {"ok": true, "profile": profile}
+    return {"ok": false, "profile": profile, "error": result.get("error", "unknown error")}
+
+static func get_practice_mode(profile: Dictionary) -> bool:
+    if profile.has("ui_prefs") and typeof(profile.get("ui_prefs")) == TYPE_DICTIONARY:
+        var prefs: Dictionary = profile.get("ui_prefs")
+        return bool(prefs.get("practice_mode", false))
+    return false
+
+static func set_practice_mode(profile: Dictionary, enabled: bool) -> Dictionary:
+    if not profile.has("ui_prefs") or typeof(profile.get("ui_prefs")) != TYPE_DICTIONARY:
+        profile["ui_prefs"] = {}
+    profile["ui_prefs"]["practice_mode"] = bool(enabled)
     var result: Dictionary = save_profile(profile)
     if result.get("ok", false):
         return {"ok": true, "profile": profile}

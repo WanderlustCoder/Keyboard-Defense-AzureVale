@@ -45,6 +45,7 @@ var gold: int
 
 # Accessibility settings (applied from profile)
 var speed_multiplier: float
+var practice_mode: bool
 
 func _init() -> void:
     day = 1
@@ -99,6 +100,7 @@ func _init() -> void:
 
     # Accessibility defaults
     speed_multiplier = 1.0
+    practice_mode = false
 
     discovered[_index(base_pos.x, base_pos.y)] = true
 

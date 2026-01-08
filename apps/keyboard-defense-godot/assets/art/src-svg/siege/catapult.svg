@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 18" width="24" height="18">
+  <!-- Catapult (24x18) - Siege engine -->
+  <!-- Color Palette: #8b7355, #5d4e37, #3d3426, #7f8c8d -->
+
+  <!-- Base frame -->
+  <rect x="2" y="12" width="20" height="4" fill="#5d4e37"/>
+  <rect x="3" y="13" width="18" height="2" fill="#8b7355"/>
+
+  <!-- Wheels -->
+  <rect x="2" y="14" width="4" height="4" fill="#3d3426"/>
+  <rect x="3" y="15" width="2" height="2" fill="#5d4e37"/>
+  <rect x="18" y="14" width="4" height="4" fill="#3d3426"/>
+  <rect x="19" y="15" width="2" height="2" fill="#5d4e37"/>
+
+  <!-- Arm pivot -->
+  <rect x="10" y="8" width="4" height="5" fill="#5d4e37"/>
+  <rect x="11" y="9" width="2" height="3" fill="#8b7355"/>
+
+  <!-- Throwing arm -->
+  <rect x="4" y="4" width="14" height="3" fill="#8b7355"/>
+  <rect x="5" y="5" width="12" height="1" fill="#5d4e37"/>
+
+  <!-- Arm joint -->
+  <rect x="10" y="5" width="4" height="4" fill="#7f8c8d"/>
+  <rect x="11" y="6" width="2" height="2" fill="#5d6d7e"/>
+
+  <!-- Bucket -->
+  <rect x="2" y="2" width="6" height="4" fill="#5d4e37"/>
+  <rect x="3" y="3" width="4" height="2" fill="#8b7355"/>
+
+  <!-- Counterweight -->
+  <rect x="16" y="6" width="6" height="4" fill="#7f8c8d"/>
+  <rect x="17" y="7" width="4" height="2" fill="#5d6d7e"/>
+
+  <!-- Projectile (rock) -->
+  <rect x="3" y="0" width="4" height="3" fill="#7f8c8d"/>
+  <rect x="4" y="1" width="2" height="1" fill="#5d6d7e"/>
+
+  <!-- Ropes -->
+  <rect x="8" y="6" width="2" height="6" fill="#8b7355"/>
+</svg>

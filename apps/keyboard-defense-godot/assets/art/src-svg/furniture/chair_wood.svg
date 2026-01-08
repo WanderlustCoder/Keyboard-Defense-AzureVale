@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 16" width="12" height="16">
+  <!-- Wooden Chair (12x16) - Basic seating -->
+  <!-- Color Palette: #8b7355, #5d4e37, #3d3426 -->
+
+  <!-- Back rest -->
+  <rect x="1" y="0" width="10" height="8" fill="#5d4e37"/>
+  <rect x="2" y="1" width="8" height="6" fill="#8b7355"/>
+  <rect x="3" y="2" width="6" height="4" fill="#5d4e37"/>
+
+  <!-- Back slats -->
+  <rect x="3" y="2" width="2" height="4" fill="#8b7355"/>
+  <rect x="7" y="2" width="2" height="4" fill="#8b7355"/>
+
+  <!-- Seat -->
+  <rect x="0" y="7" width="12" height="3" fill="#5d4e37"/>
+  <rect x="1" y="8" width="10" height="1" fill="#8b7355"/>
+
+  <!-- Front legs -->
+  <rect x="1" y="10" width="2" height="6" fill="#5d4e37"/>
+  <rect x="2" y="11" width="1" height="4" fill="#8b7355"/>
+  <rect x="9" y="10" width="2" height="6" fill="#5d4e37"/>
+  <rect x="9" y="11" width="1" height="4" fill="#8b7355"/>
+
+  <!-- Back legs -->
+  <rect x="1" y="7" width="2" height="3" fill="#3d3426"/>
+  <rect x="9" y="7" width="2" height="3" fill="#3d3426"/>
+</svg>

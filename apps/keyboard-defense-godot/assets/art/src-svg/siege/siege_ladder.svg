@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 24" width="10" height="24">
+  <!-- Siege Ladder (10x24) - Wall climbing -->
+  <!-- Color Palette: #8b7355, #5d4e37, #3d3426 -->
+
+  <!-- Side rails -->
+  <rect x="0" y="0" width="2" height="24" fill="#5d4e37"/>
+  <rect x="0" y="1" width="1" height="22" fill="#8b7355"/>
+  <rect x="8" y="0" width="2" height="24" fill="#5d4e37"/>
+  <rect x="9" y="1" width="1" height="22" fill="#8b7355"/>
+
+  <!-- Rungs -->
+  <rect x="1" y="2" width="8" height="2" fill="#5d4e37"/>
+  <rect x="2" y="2" width="6" height="1" fill="#8b7355"/>
+
+  <rect x="1" y="6" width="8" height="2" fill="#5d4e37"/>
+  <rect x="2" y="6" width="6" height="1" fill="#8b7355"/>
+
+  <rect x="1" y="10" width="8" height="2" fill="#5d4e37"/>
+  <rect x="2" y="10" width="6" height="1" fill="#8b7355"/>
+
+  <rect x="1" y="14" width="8" height="2" fill="#5d4e37"/>
+  <rect x="2" y="14" width="6" height="1" fill="#8b7355"/>
+
+  <rect x="1" y="18" width="8" height="2" fill="#5d4e37"/>
+  <rect x="2" y="18" width="6" height="1" fill="#8b7355"/>
+
+  <rect x="1" y="22" width="8" height="2" fill="#5d4e37"/>
+  <rect x="2" y="22" width="6" height="1" fill="#8b7355"/>
+
+  <!-- Hook at top -->
+  <rect x="0" y="0" width="3" height="1" fill="#7f8c8d"/>
+  <rect x="7" y="0" width="3" height="1" fill="#7f8c8d"/>
+</svg>

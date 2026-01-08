@@ -347,7 +347,15 @@ static func parse(command: String) -> Dictionary:
                         if hints_arg == "on" or hints_arg == "off" or hints_arg == "toggle" or hints_arg == "show" or hints_arg == "hide":
                             return {"ok": true, "intent": SimIntents.make("ui_settings_hints", {"mode": hints_arg})}
                     return {"ok": false, "error": "Usage: settings hints [on|off|toggle|show|hide]"}
-            return {"ok": false, "error": "Usage: settings [show|hide|lessons|prefs|verify|conflicts|resolve|export|scale|font|compact|motion|speed|contrast|hints]"}
+                if mode == "practice" or mode == "practicemode":
+                    if tokens.size() == 2:
+                        return {"ok": true, "intent": SimIntents.make("ui_settings_practice", {"mode": "toggle"})}
+                    if tokens.size() == 3:
+                        var practice_arg: String = tokens[2].to_lower()
+                        if practice_arg == "on" or practice_arg == "off" or practice_arg == "toggle":
+                            return {"ok": true, "intent": SimIntents.make("ui_settings_practice", {"mode": practice_arg})}
+                    return {"ok": false, "error": "Usage: settings practice [on|off|toggle]"}
+            return {"ok": false, "error": "Usage: settings [show|hide|lessons|prefs|verify|conflicts|resolve|export|scale|font|compact|motion|speed|contrast|hints|practice]"}
         "tutorial":
             if tokens.size() == 1:
                 return {"ok": true, "intent": SimIntents.make("ui_tutorial_toggle")}

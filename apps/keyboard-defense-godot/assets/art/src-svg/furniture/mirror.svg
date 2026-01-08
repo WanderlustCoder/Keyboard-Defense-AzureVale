@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 18" width="12" height="18">
+  <!-- Mirror (12x18) - Wall decoration -->
+  <!-- Color Palette: #f4d03f, #d4ac0d, #5dade2, #aed6f1 -->
+
+  <!-- Ornate frame top -->
+  <rect x="4" y="0" width="4" height="2" fill="#f4d03f"/>
+  <rect x="5" y="0" width="2" height="1" fill="#d4ac0d"/>
+
+  <!-- Frame -->
+  <rect x="0" y="1" width="12" height="16" fill="#d4ac0d"/>
+  <rect x="1" y="2" width="10" height="14" fill="#f4d03f"/>
+
+  <!-- Mirror glass -->
+  <rect x="2" y="3" width="8" height="12" fill="#5dade2"/>
+  <rect x="3" y="4" width="6" height="10" fill="#aed6f1"/>
+
+  <!-- Reflection highlight -->
+  <rect x="3" y="4" width="2" height="6" fill="#fdfefe" opacity="0.5"/>
+  <rect x="3" y="4" width="1" height="3" fill="#fdfefe"/>
+
+  <!-- Frame corners -->
+  <rect x="0" y="1" width="2" height="2" fill="#f4d03f"/>
+  <rect x="10" y="1" width="2" height="2" fill="#f4d03f"/>
+  <rect x="0" y="15" width="2" height="2" fill="#f4d03f"/>
+  <rect x="10" y="15" width="2" height="2" fill="#f4d03f"/>
+
+  <!-- Bottom ornament -->
+  <rect x="4" y="16" width="4" height="2" fill="#f4d03f"/>
+  <rect x="5" y="17" width="2" height="1" fill="#d4ac0d"/>
+</svg>

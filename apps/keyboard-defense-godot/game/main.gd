@@ -97,6 +97,7 @@ var compact_panels: bool = false
 var reduced_motion: bool = false
 var high_contrast: bool = false
 var nav_hints: bool = true
+var practice_mode: bool = false
 var cycle_goal_keybind: Dictionary = {}
 var toggle_settings_keybind: Dictionary = {}
 var toggle_lessons_keybind: Dictionary = {}
@@ -304,6 +305,9 @@ func _on_command_submitted(command: String) -> void:
             return
         if intent_kind == "ui_settings_hints":
             _apply_settings_hints(parsed.intent)
+            return
+        if intent_kind == "ui_settings_practice":
+            _apply_settings_practice(parsed.intent)
             return
         if intent_kind == "ui_settings_verify":
             _apply_settings_verify()
@@ -1008,6 +1012,30 @@ func _apply_settings_hints(intent: Dictionary) -> void:
     _refresh_trend_panel()
     command_bar.grab_focus()
 
+func _apply_settings_practice(intent: Dictionary) -> void:
+    var mode: String = str(intent.get("mode", "toggle"))
+    if mode == "toggle":
+        practice_mode = not practice_mode
+    elif mode == "on":
+        practice_mode = true
+    elif mode == "off":
+        practice_mode = false
+    # Persist to profile
+    var save_result: Dictionary = TypingProfile.set_practice_mode(profile, practice_mode)
+    if save_result.get("ok", false):
+        profile = save_result.get("profile", profile)
+    # Apply to game state
+    if state != null:
+        state.practice_mode = practice_mode
+    var state_text: String = "ON" if practice_mode else "OFF"
+    _append_log(["Practice mode: %s (settings practice on|off|toggle)" % state_text])
+    if practice_mode:
+        _append_log(["Enemies won't damage the castle. Practice your typing!"])
+    else:
+        _append_log(["Normal mode restored. Castle takes damage."])
+    _refresh_settings_panel()
+    command_bar.grab_focus()
+
 func _get_nav_hint_text(keybind: Dictionary, label: String) -> String:
     if not nav_hints:
         return label
@@ -1617,6 +1645,8 @@ static func _build_help_accessibility_lines(action_ids: Array[String]) -> Array[
     lines.append("  Reduce motion: settings motion reduced|full|toggle")
     lines.append("  Game speed: settings speed slower|faster|reset|0.5-2.0")
     lines.append("  (0.5x = easier, 2.0x = harder)")
+    lines.append("  Practice mode: settings practice on|off|toggle")
+    lines.append("  (no damage - stress-free practice)")
     lines.append("Diagnostics:")
     lines.append("  Check conflicts: settings conflicts")
     lines.append("  Auto-fix conflicts: settings resolve apply")
@@ -1884,6 +1914,8 @@ func _refresh_settings_panel() -> void:
         lines.append("Game Speed: %s (settings speed slower|faster|reset|0.5-2.0)" % speed_label)
         lines.append("High Contrast: %s (settings contrast high|normal|toggle)" % ("HIGH" if high_contrast else "NORMAL"))
         lines.append("Nav Hints: %s (settings hints on|off|toggle)" % ("ON" if nav_hints else "OFF"))
+        lines.append("Practice Mode: %s (settings practice on|off|toggle)" % ("ON" if practice_mode else "OFF"))
+        lines.append("Practice: no castle damage - stress-free typing practice.")
         lines.append("Compact effect: hides lesson samples; trims history; caps wave list.")
         lines.append("Type: settings verify")
         lines.append("Type: bind <action>")
@@ -2422,6 +2454,7 @@ func _load_profile() -> void:
     var speed_mult: float = TypingProfile.get_speed_multiplier(profile)
     high_contrast = TypingProfile.get_high_contrast(profile)
     nav_hints = TypingProfile.get_nav_hints(profile)
+    practice_mode = TypingProfile.get_practice_mode(profile)
     profile["ui_prefs"] = profile.get("ui_prefs", {})
     profile["ui_prefs"]["lessons_sort"] = lessons_sort_mode
     profile["ui_prefs"]["lessons_sparkline"] = lessons_sparkline
@@ -2431,9 +2464,11 @@ func _load_profile() -> void:
     profile["ui_prefs"]["speed_multiplier"] = speed_mult
     profile["ui_prefs"]["high_contrast"] = high_contrast
     profile["ui_prefs"]["nav_hints"] = nav_hints
-    # Apply speed multiplier to state if exists
+    profile["ui_prefs"]["practice_mode"] = practice_mode
+    # Apply speed multiplier and practice mode to state if exists
     if state != null:
         state.speed_multiplier = speed_mult
+        state.practice_mode = practice_mode
     # Apply high contrast theme if enabled
     _apply_contrast_theme()
     economy_note_shown = TypingProfile.get_economy_note_shown(profile)
