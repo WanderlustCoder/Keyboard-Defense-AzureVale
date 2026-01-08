@@ -95,6 +95,7 @@ var economy_note_shown: bool = false
 var ui_scale_percent: int = 100
 var compact_panels: bool = false
 var reduced_motion: bool = false
+var high_contrast: bool = false
 var cycle_goal_keybind: Dictionary = {}
 var toggle_settings_keybind: Dictionary = {}
 var toggle_lessons_keybind: Dictionary = {}
@@ -296,6 +297,9 @@ func _on_command_submitted(command: String) -> void:
             return
         if intent_kind == "ui_settings_speed":
             _apply_settings_speed(parsed.intent)
+            return
+        if intent_kind == "ui_settings_contrast":
+            _apply_settings_contrast(parsed.intent)
             return
         if intent_kind == "ui_settings_verify":
             _apply_settings_verify()
@@ -912,6 +916,69 @@ func _apply_settings_speed(intent: Dictionary) -> void:
         _append_log(["Game speed: %s (normal)" % speed_text])
     _refresh_settings_panel()
     command_bar.grab_focus()
+
+func _apply_settings_contrast(intent: Dictionary) -> void:
+    var mode: String = str(intent.get("mode", "toggle"))
+    if mode == "toggle":
+        high_contrast = not high_contrast
+    elif mode == "on" or mode == "high":
+        high_contrast = true
+    elif mode == "off" or mode == "normal":
+        high_contrast = false
+    # Persist to profile
+    var save_result: Dictionary = TypingProfile.set_high_contrast(profile, high_contrast)
+    if save_result.get("ok", false):
+        profile = save_result.get("profile", profile)
+    var state_text: String = "HIGH" if high_contrast else "NORMAL"
+    _append_log(["Contrast mode: %s (settings contrast high|normal|toggle)" % state_text])
+    if high_contrast:
+        _append_log(["High contrast mode enabled for improved readability."])
+    _apply_contrast_theme()
+    _refresh_settings_panel()
+    command_bar.grab_focus()
+
+func _apply_contrast_theme() -> void:
+    # Apply high contrast colors to UI elements
+    var bg_color: Color = Color.BLACK if high_contrast else Color(0.1, 0.1, 0.1, 0.9)
+    var text_color: Color = Color.WHITE if high_contrast else Color(0.9, 0.9, 0.9)
+    var accent_color: Color = Color.YELLOW if high_contrast else Color(0.4, 0.6, 0.9)
+    var error_color: Color = Color(1.0, 0.3, 0.3) if high_contrast else Color(0.9, 0.4, 0.4)
+    var success_color: Color = Color(0.3, 1.0, 0.3) if high_contrast else Color(0.4, 0.9, 0.4)
+
+    # Apply to log label
+    if log_label != null:
+        log_label.add_theme_color_override("default_color", text_color)
+
+    # Apply to wave label
+    if wave_label != null:
+        wave_label.add_theme_color_override("default_color", text_color)
+
+    # Apply to typing label
+    if typing_label != null:
+        typing_label.add_theme_color_override("default_color", text_color)
+
+    # Apply to goal badge
+    if goal_badge != null:
+        goal_badge.add_theme_color_override("default_color", accent_color if high_contrast else text_color)
+
+    # Apply to command bar
+    if command_bar != null:
+        var line_edit: LineEdit = command_bar.get_node_or_null("LineEdit") if command_bar.has_node("LineEdit") else command_bar
+        if line_edit is LineEdit:
+            line_edit.add_theme_color_override("font_color", text_color)
+            line_edit.add_theme_color_override("caret_color", accent_color)
+
+    # Apply to settings label
+    if settings_label != null:
+        settings_label.add_theme_color_override("default_color", text_color)
+
+    # Apply to lesson label
+    if lesson_label != null:
+        lesson_label.add_theme_color_override("default_color", text_color)
+
+    # Apply to report label
+    if report_label != null:
+        report_label.add_theme_color_override("default_color", text_color)
 
 func _apply_help(intent: Dictionary) -> void:
     var topic_raw: String = str(intent.get("topic", ""))
@@ -2302,6 +2369,7 @@ func _load_profile() -> void:
     compact_panels = TypingProfile.get_compact_panels(profile)
     reduced_motion = TypingProfile.get_reduced_motion(profile)
     var speed_mult: float = TypingProfile.get_speed_multiplier(profile)
+    high_contrast = TypingProfile.get_high_contrast(profile)
     profile["ui_prefs"] = profile.get("ui_prefs", {})
     profile["ui_prefs"]["lessons_sort"] = lessons_sort_mode
     profile["ui_prefs"]["lessons_sparkline"] = lessons_sparkline
@@ -2309,9 +2377,12 @@ func _load_profile() -> void:
     profile["ui_prefs"]["compact_panels"] = compact_panels
     profile["ui_prefs"]["reduced_motion"] = reduced_motion
     profile["ui_prefs"]["speed_multiplier"] = speed_mult
+    profile["ui_prefs"]["high_contrast"] = high_contrast
     # Apply speed multiplier to state if exists
     if state != null:
         state.speed_multiplier = speed_mult
+    # Apply high contrast theme if enabled
+    _apply_contrast_theme()
     economy_note_shown = TypingProfile.get_economy_note_shown(profile)
     profile["ui_prefs"]["economy_note_shown"] = economy_note_shown
     onboarding = TypingProfile.get_onboarding(profile)

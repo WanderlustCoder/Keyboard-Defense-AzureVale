@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="12" height="12">
+  <!-- Poison Debuff (12x12) - Toxic indicator -->
+  <!-- Color Palette: #9b59b6, #8e44ad, #27ae60, #145a32 -->
+
+  <!-- Background circle -->
+  <rect x="2" y="0" width="8" height="2" fill="#8e44ad"/>
+  <rect x="0" y="2" width="12" height="8" fill="#8e44ad"/>
+  <rect x="2" y="10" width="8" height="2" fill="#8e44ad"/>
+
+  <!-- Inner circle -->
+  <rect x="3" y="1" width="6" height="10" fill="#9b59b6"/>
+  <rect x="1" y="3" width="10" height="6" fill="#9b59b6"/>
+
+  <!-- Skull icon -->
+  <rect x="3" y="3" width="6" height="5" fill="#145a32"/>
+  <rect x="4" y="4" width="4" height="3" fill="#27ae60"/>
+
+  <!-- Eyes -->
+  <rect x="4" y="4" width="1" height="1" fill="#1a252f"/>
+  <rect x="7" y="4" width="1" height="1" fill="#1a252f"/>
+
+  <!-- Teeth -->
+  <rect x="4" y="7" width="4" height="2" fill="#27ae60"/>
+  <rect x="5" y="7" width="1" height="1" fill="#145a32"/>
+  <rect x="7" y="7" width="1" height="1" fill="#145a32"/>
+
+  <!-- Down arrow -->
+  <rect x="9" y="9" width="2" height="1" fill="#e74c3c"/>
+  <rect x="8" y="8" width="1" height="1" fill="#e74c3c"/>
+  <rect x="10" y="8" width="1" height="1" fill="#e74c3c"/>
+</svg>

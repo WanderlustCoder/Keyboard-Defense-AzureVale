@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 14" width="14" height="14">
+  <!-- Target Indicator (14x14) - Selection marker -->
+  <!-- Color Palette: #e74c3c, #c0392b, #fdfefe -->
+
+  <!-- Outer ring -->
+  <rect x="4" y="0" width="6" height="2" fill="#e74c3c"/>
+  <rect x="2" y="2" width="2" height="2" fill="#e74c3c"/>
+  <rect x="10" y="2" width="2" height="2" fill="#e74c3c"/>
+  <rect x="0" y="4" width="2" height="6" fill="#e74c3c"/>
+  <rect x="12" y="4" width="2" height="6" fill="#e74c3c"/>
+  <rect x="2" y="10" width="2" height="2" fill="#e74c3c"/>
+  <rect x="10" y="10" width="2" height="2" fill="#e74c3c"/>
+  <rect x="4" y="12" width="6" height="2" fill="#e74c3c"/>
+
+  <!-- Inner ring -->
+  <rect x="5" y="4" width="4" height="1" fill="#c0392b"/>
+  <rect x="4" y="5" width="1" height="4" fill="#c0392b"/>
+  <rect x="9" y="5" width="1" height="4" fill="#c0392b"/>
+  <rect x="5" y="9" width="4" height="1" fill="#c0392b"/>
+
+  <!-- Center dot -->
+  <rect x="6" y="6" width="2" height="2" fill="#fdfefe"/>
+
+  <!-- Crosshair lines -->
+  <rect x="6" y="1" width="2" height="3" fill="#c0392b"/>
+  <rect x="6" y="10" width="2" height="3" fill="#c0392b"/>
+  <rect x="1" y="6" width="3" height="2" fill="#c0392b"/>
+  <rect x="10" y="6" width="3" height="2" fill="#c0392b"/>
+</svg>

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SVG Asset Gallery</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; background: #1a1a2e; color: #eee; margin: 0; padding: 20px; }
+    h1 { text-align: center; color: #fff; }
+    .controls { position: sticky; top: 0; background: #1a1a2e; padding: 10px 0 20px; z-index: 100; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .controls input { padding: 8px 12px; font-size: 16px; border: 1px solid #444; border-radius: 4px; background: #2a2a4e; color: #fff; flex: 1; min-width: 200px; }
+    .controls select { padding: 8px 12px; font-size: 14px; border: 1px solid #444; border-radius: 4px; background: #2a2a4e; color: #fff; }
+    .controls label { display: flex; align-items: center; gap: 5px; cursor: pointer; }
+    .stats { color: #888; font-size: 14px; }
+    .category { margin-bottom: 30px; }
+    .category h2 { color: #7b68ee; border-bottom: 2px solid #7b68ee; padding-bottom: 5px; cursor: pointer; }
+    .category h2:hover { color: #9d8eff; }
+    .category h2::before { content: "▼ "; font-size: 12px; }
+    .category.collapsed h2::before { content: "▶ "; }
+    .category.collapsed .grid { display: none; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; }
+    .item { background: #2a2a4e; border-radius: 8px; padding: 10px; text-align: center; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; }
+    .item:hover { transform: scale(1.05); box-shadow: 0 4px 20px rgba(123,104,238,0.3); }
+    .item.hidden { display: none; }
+    .item img { width: 80px; height: 80px; object-fit: contain; background: #3a3a5e; border-radius: 4px; padding: 5px; }
+    .item.size-sm img { width: 60px; height: 60px; }
+    .item.size-lg img { width: 120px; height: 120px; }
+    .item .name { font-size: 11px; color: #aaa; margin-top: 8px; word-break: break-all; }
+    .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; flex-direction: column; }
+    .modal.active { display: flex; }
+    .modal img { max-width: 80vw; max-height: 70vh; background: #fff; padding: 20px; border-radius: 8px; }
+    .modal .info { color: #fff; margin-top: 20px; text-align: center; }
+    .modal .close { position: absolute; top: 20px; right: 30px; font-size: 40px; color: #fff; cursor: pointer; }
+    .modal .nav { position: absolute; top: 50%; font-size: 60px; color: #fff; cursor: pointer; user-select: none; }
+    .modal .nav.prev { left: 20px; }
+    .modal .nav.next { right: 20px; }
+    .dark-bg .item img { background: #1a1a2e; }
+    .light-bg .item img { background: #fff; }
+    .checker-bg .item img { background: repeating-conic-gradient(#ccc 0% 25%, #fff 0% 50%) 50% / 20px 20px; }
+  </style>
+</head>
+<body>
+  <h1>SVG Asset Gallery</h1>
+  <div class="controls">
+    <input type="text" id="search" placeholder="Search assets...">
+    <select id="size">
+      <option value="size-md">Medium</option>
+      <option value="size-sm">Small</option>
+      <option value="size-lg">Large</option>
+    </select>
+    <select id="bg">
+      <option value="dark-bg">Dark BG</option>
+      <option value="light-bg">Light BG</option>
+      <option value="checker-bg">Checker BG</option>
+    </select>
+    <button onclick="expandAll()">Expand All</button>
+    <button onclick="collapseAll()">Collapse All</button>
+    <span class="stats" id="stats"></span>
+  </div>
+  <div id="gallery"></div>
+  <div class="modal" id="modal">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <span class="nav prev" onclick="navModal(-1)">&#10094;</span>
+    <span class="nav next" onclick="navModal(1)">&#10095;</span>
+    <img id="modal-img" src="" alt="">
+    <div class="info" id="modal-info"></div>
+  </div>
+
+  <script>
+    const assets = {
+      "backgrounds": ["bg_clouds.svg","bg_mountains_far.svg","bg_mountains_near.svg","bg_sky_day.svg","bg_sky_night.svg","bg_sky_sunset.svg"],
+      "banners": ["banner_blue.svg","banner_gold.svg","banner_green.svg","banner_purple.svg","banner_red.svg","banner_torn.svg","banner_wall.svg","coat_of_arms.svg","shield_heraldry.svg","tapestry_royal.svg"],
+      "breakables": ["barrel_wood.svg","bottle_glass.svg","crate_wood.svg","lantern_paper.svg","pot_cooking.svg","statue_small.svg","vase_clay.svg","vase_ornate.svg"],
+      "buildings": ["castle_base.svg","castle_damaged.svg","tower_arrow.svg","tower_arrow_t2.svg","tower_arrow_t3.svg","tower_cannon.svg","tower_cannon_t2.svg","tower_cannon_t3.svg","tower_fire.svg","tower_fire_t2.svg","tower_fire_t3.svg","tower_ice.svg","tower_ice_t2.svg","tower_ice_t3.svg","tower_lightning.svg","tower_lightning_t2.svg","tower_lightning_t3.svg","tower_poison.svg","tower_poison_t2.svg","tower_poison_t3.svg","tower_support.svg","tower_support_t2.svg","tower_support_t3.svg"],
+      "consumables": ["bomb_throwable.svg","food_apple.svg","food_bread.svg","food_cheese.svg","food_fish.svg","food_meat.svg","potion_blue.svg","potion_green.svg","potion_purple.svg","potion_red.svg"],
+      "cursors": ["cursor_attack.svg","cursor_build.svg","cursor_default.svg","cursor_forbidden.svg","cursor_select.svg","cursor_typing.svg"],
+      "decorations": ["bush.svg","deco_barrel.svg","deco_crate.svg","deco_fence.svg","deco_grass_tuft.svg","deco_rock_large.svg","deco_rock_small.svg","deco_signpost.svg","deco_well.svg","fence_post.svg","flowers.svg","grave.svg","rock_large.svg","rock_small.svg","tree_oak.svg","tree_pine.svg"],
+      "doors": ["door_dungeon.svg","door_iron.svg","door_magic.svg","door_wooden.svg","gate_castle.svg","trapdoor.svg"],
+      "effects": ["affix_arcane.svg","affix_blazing.svg","affix_frozen.svg","affix_phasing.svg","affix_thorns.svg","affix_vampiric.svg","effect_critical_hit.svg","effect_death_skull.svg","effect_explosion.svg","effect_fire_burst.svg","effect_freeze.svg","effect_heal.svg","effect_level_up.svg","effect_lightning_strike.svg","effect_magic_circle.svg","effect_poison_cloud.svg","effect_shield_bubble.svg","effect_stun_stars.svg","fx_accuracy_ring.svg","fx_combo_flames.svg","fx_keystroke_ripple.svg","fx_perfect_word.svg","fx_speed_lines.svg","fx_streak_glow.svg","fx_typo_shake.svg","fx_word_shatter.svg","proj_arrow_fire.svg","proj_arrow_ice.svg","proj_arrow_poison.svg","proj_cannonball_cluster.svg","proj_cannonball_heavy.svg","proj_enemy_arrow.svg","proj_enemy_magic.svg","proj_fireball_large.svg","proj_lightning_arc.svg","proj_poison_cloud.svg","proj_support_beam.svg","projectile_arrow.svg","projectile_cannonball.svg","projectile_fireball.svg","projectile_heal.svg","projectile_ice_shard.svg","projectile_lightning.svg","projectile_poison.svg","tower_constructing.svg","tower_disabled.svg","tower_overcharged.svg","tower_targeting.svg"],
+      "enemies": ["enemy_archer.svg","enemy_assassin.svg","enemy_berserker.svg","enemy_boss.svg","enemy_flying.svg","enemy_golem.svg","enemy_grunt.svg","enemy_mage.svg","enemy_mimic.svg","enemy_necromancer.svg","enemy_runner.svg","enemy_shield_wall.svg","enemy_swarm.svg","enemy_tank.svg"],
+      "equipment": ["armor_leather.svg","armor_plate.svg","boots_iron.svg","cape_magic.svg","cape_red.svg","gloves_iron.svg","helmet_gold.svg","helmet_iron.svg"],
+      "icons": ["achieve_boss_slayer.svg","achieve_first_win.svg","achieve_perfect.svg","achieve_speed_demon.svg","badge_alert.svg","badge_bronze.svg","badge_combo_master.svg","badge_complete.svg","badge_count.svg","badge_defender.svg","badge_first_victory.svg","badge_gold.svg","badge_new.svg","badge_perfectionist.svg","badge_platinum.svg","badge_scholar.svg","badge_silver.svg","badge_speed_demon.svg","buff_focus.svg","buff_ward.svg","combo_fire.svg","combo_x2.svg","combo_x3.svg","cursor_blocked.svg","cursor_default.svg","cursor_hand.svg","cursor_target.svg","diff_easy.svg","diff_hard.svg","diff_medium.svg","enemy_boss_ico.svg","enemy_brute_ico.svg","enemy_flyer_ico.svg","enemy_healer_ico.svg","enemy_runner_ico.svg","enemy_shielder_ico.svg","finger_left.svg","finger_right.svg","finger_thumb.svg","ico_accuracy.svg","ico_achievement.svg","ico_achievement_locked.svg","ico_arrow_down.svg","ico_arrow_guide.svg","ico_arrow_left.svg","ico_arrow_right.svg","ico_arrow_up.svg","ico_attack.svg","ico_back.svg","ico_barracks.svg","ico_boss_wave.svg","ico_buff.svg","ico_castle.svg","ico_check.svg","ico_close.svg","ico_controls.svg","ico_cooldown.svg","ico_cross.svg","ico_crown.svg","ico_defense.svg","ico_display.svg","ico_easy.svg","ico_energy.svg","ico_exit.svg","ico_expert.svg","ico_fullscreen.svg","ico_gem.svg","ico_gold.svg","ico_hard.svg","ico_heart.svg","ico_heart_empty.svg","ico_help.svg","ico_hint.svg","ico_info.svg","ico_key.svg","ico_keyboard.svg","ico_library.svg","ico_lock.svg","ico_locked.svg","ico_medal.svg","ico_menu.svg","ico_music.svg","ico_new.svg","ico_next.svg","ico_normal.svg","ico_pause.svg","ico_perfect.svg","ico_pierce.svg","ico_play.svg","ico_potion.svg","ico_range.svg","ico_refresh.svg","ico_restart.svg","ico_resume.svg","ico_round.svg","ico_scroll.svg","ico_settings.svg","ico_sfx.svg","ico_shake.svg","ico_speed_demon.svg","ico_splash.svg","ico_star.svg","ico_star_empty.svg","ico_stop.svg","ico_streak.svg","ico_target.svg","ico_target_practice.svg","ico_threat.svg","ico_time.svg","ico_tip.svg","ico_tower_arrow.svg","ico_tower_cannon.svg","ico_tower_fire.svg","ico_tower_ice.svg","ico_tower_lightning.svg","ico_tower_poison.svg","ico_tower_slow.svg","ico_tower_support.svg","ico_trophy.svg","ico_tutorial.svg","ico_unlock.svg","ico_upgrade.svg","ico_upgrade_max.svg","ico_volume.svg","ico_volume_mute.svg","ico_wall.svg","ico_wave.svg","ico_wpm.svg","ico_xp.svg","icon_gold.svg","icon_heart.svg","icon_key.svg","icon_magic.svg","icon_shield.svg","icon_speed.svg","icon_star.svg","icon_sword.svg","lane_end.svg","lane_split.svg","lane_start.svg","lane_waypoint.svg","map_node_available.svg","map_node_complete.svg","map_node_current.svg","map_node_locked.svg","marker_boss.svg","marker_champion.svg","marker_elite.svg","marker_miniboss.svg","medal_bronze.svg","medal_gold.svg","medal_platinum.svg","medal_silver.svg","mini_castle.svg","mini_enemy.svg","mini_player.svg","mini_poi.svg","mini_spawn.svg","mini_tower.svg","minimap_boss.svg","minimap_castle.svg","minimap_enemy.svg","minimap_objective.svg","minimap_player.svg","minimap_tower.svg","node_battle.svg","node_boss.svg","node_event.svg","node_lesson.svg","node_rest.svg","node_shop.svg","poi_abandoned_wagon.svg","poi_battlefield.svg","poi_bridge.svg","poi_cache.svg","poi_camp.svg","poi_crossroads.svg","poi_farm.svg","poi_graveyard.svg","poi_herb_patch.svg","poi_mine.svg","poi_ruins.svg","poi_shrine.svg","poi_stream.svg","poi_village.svg","poi_watchtower.svg","poi_well.svg","rank_bronze.svg","rank_diamond.svg","rank_gold.svg","rank_platinum.svg","rank_silver.svg","row_all.svg","row_bottom.svg","row_home.svg","row_upper.svg","star_bonus.svg","star_empty.svg","star_full.svg","star_half.svg","status_attack_up.svg","status_burn.svg","status_burning.svg","status_curse.svg","status_freeze.svg","status_haste.svg","status_heal.svg","status_poison.svg","status_poisoned.svg","status_regen.svg","status_shield.svg","status_shielded.svg","status_slow.svg","status_speed_up.svg","status_stun.svg","status_stunned.svg","status_weakness.svg","streak_perfect.svg","tier_1.svg","tier_2.svg","tier_3.svg","tower_slot.svg","tower_slot_active.svg","trophy.svg","upgrade_granary.svg","upgrade_scribe_hall.svg","upgrade_watchtower.svg","word_easy.svg","word_hard.svg","word_medium.svg"],
+      "keyboard": ["key_backspace.svg","key_enter.svg","key_finger_index_l.svg","key_finger_index_r.svg","key_finger_middle_l.svg","key_finger_middle_r.svg","key_finger_pinky_l.svg","key_finger_pinky_r.svg","key_finger_ring_l.svg","key_finger_ring_r.svg","key_finger_thumb.svg","key_highlight.svg","key_pressed.svg","key_space.svg","key_standard.svg","key_wide.svg"],
+      "loot": ["amulet.svg","chest_gold.svg","chest_magic.svg","chest_open.svg","chest_wooden.svg","coin_copper.svg","coin_gold.svg","coin_silver.svg","gem_diamond.svg","gem_emerald.svg","gem_ruby.svg","gem_sapphire.svg","key_brass.svg","key_skeleton.svg","ring_gold.svg","scroll.svg"],
+      "map": ["map_bg_parchment.svg","map_compass.svg","map_fog_edge.svg","map_fog_solid.svg","map_legend_bg.svg","map_path_dot.svg","map_path_line.svg","map_region_castle.svg","map_region_desert.svg","map_region_forest.svg","map_region_mountain.svg","map_region_swamp.svg"],
+      "menu": ["defeat_banner.svg","defeat_crack_overlay.svg","defeat_frame.svg","loading_bg.svg","loading_frame.svg","loading_icon_book.svg","loading_icon_sword.svg","loading_tip_bg.svg","logo_game.svg","logo_game_small.svg","menu_bg_battlefield.svg","menu_bg_castle.svg","menu_button_options.svg","menu_button_play.svg","menu_button_quit.svg","menu_cloud_layer.svg","menu_divider_fancy.svg","menu_frame_main.svg","menu_ground_layer.svg","options_tab_audio.svg","options_tab_controls.svg","options_tab_gameplay.svg","options_tab_video.svg","pause_frame.svg","pause_overlay.svg","stats_medal_new.svg","stats_row_bg.svg","stats_star_empty.svg","stats_star_filled.svg","transition_diamond.svg","transition_fade.svg","transition_wipe_h.svg","transition_wipe_v.svg","victory_banner.svg","victory_confetti.svg","victory_frame.svg","victory_trophy_shine.svg","volume_speaker_0.svg","volume_speaker_1.svg","volume_speaker_2.svg","volume_speaker_3.svg"],
+      "mounts": ["boar_mount.svg","dragon_mount.svg","griffin_mount.svg","horse_brown.svg","horse_white.svg","nightmare_mount.svg","spider_mount.svg","unicorn_mount.svg","warhorse_armored.svg","wolf_mount.svg"],
+      "particles": ["particle_coin.svg","particle_dust.svg","particle_hit.svg","particle_leaf.svg","particle_magic.svg","particle_smoke.svg","particle_spark.svg","particle_star.svg"],
+      "pickups": ["pickup_damage_boost.svg","pickup_gem.svg","pickup_gold_coin.svg","pickup_gold_pile.svg","pickup_health_potion.svg","pickup_mana_potion.svg","pickup_shield.svg","pickup_speed_boost.svg"],
+      "portraits": ["portrait_archer.svg","portrait_blacksmith.svg","portrait_boss_mage.svg","portrait_boss_warlord.svg","portrait_commander.svg","portrait_demon_lord.svg","portrait_dragon.svg","portrait_enemy_brute.svg","portrait_enemy_flyer.svg","portrait_enemy_grunt.svg","portrait_enemy_runner.svg","portrait_frame_common.svg","portrait_frame_epic.svg","portrait_frame_legendary.svg","portrait_frame_rare.svg","portrait_guard.svg","portrait_healer.svg","portrait_king.svg","portrait_knight.svg","portrait_lyra.svg","portrait_merchant.svg","portrait_necromancer.svg","portrait_princess.svg","portrait_rogue.svg","portrait_scholar.svg","portrait_scout.svg","portrait_shopkeeper.svg","portrait_villager.svg","portrait_wizard.svg"],
+      "props": ["campfire.svg","crystal_formation.svg","flag_red.svg","gravestone.svg","lantern.svg","mushroom_red.svg","statue_knight.svg","torch_wall.svg","tree_oak.svg","tree_pine.svg"],
+      "spells": ["spell_arcane.svg","spell_dark.svg","spell_earth.svg","spell_fireball.svg","spell_heal_aura.svg","spell_holy.svg","spell_icebolt.svg","spell_lightning.svg","spell_poison.svg","spell_water.svg","spell_wind.svg"],
+      "sprites": ["bld_barracks.svg","bld_castle.svg","bld_gate.svg","bld_library.svg","bld_tower_arrow.svg","bld_tower_slow.svg","bld_wall.svg","chest_open.svg","coin_spin.svg","combo_burst.svg","combo_x10.svg","combo_x2.svg","combo_x3.svg","combo_x4.svg","combo_x5.svg","countdown_1.svg","countdown_2.svg","countdown_3.svg","countdown_go.svg","deco_barrel.svg","deco_bush.svg","deco_crate.svg","deco_fence.svg","deco_flowers.svg","deco_rock_large.svg","deco_rock_small.svg","deco_signpost.svg","deco_torch.svg","deco_tree_evergrove.svg","deco_tree_pine.svg","enemy_boss_mage.svg","enemy_boss_warlord.svg","enemy_brute.svg","enemy_brute_elite.svg","enemy_flyer.svg","enemy_flyer_elite.svg","enemy_healer.svg","enemy_runner.svg","enemy_runner_elite.svg","enemy_shielder.svg","fx_arrow.svg","fx_buff_attack.svg","fx_buff_defense.svg","fx_buff_speed.svg","fx_build_dust.svg","fx_cannonball.svg","fx_combo_pop.svg","fx_crit_hit.svg","fx_debuff_poison.svg","fx_debuff_slow.svg","fx_debuff_weaken.svg","fx_enemy_death.svg","fx_fire_bolt.svg","fx_frost_bolt.svg","fx_heal.svg","fx_hit_flash.svg","fx_impact_burst.svg","fx_key_correct.svg","fx_key_wrong.svg","fx_leaves.svg","fx_level_up.svg","fx_level_up_burst.svg","fx_lightning_bolt.svg","fx_magic_bolt.svg","fx_miss.svg","fx_perfect.svg","fx_poison_bolt.svg","fx_projectile.svg","fx_rain.svg","fx_reward_sparkle.svg","fx_shield.svg","fx_smoke.svg","fx_snow.svg","fx_support_wave.svg","fx_typing_streak.svg","fx_word_complete.svg","fx_word_spark.svg","fx_xp_gain.svg","hero_hurt.svg","hero_idle.svg","hero_typing.svg","hero_victory.svg","hourglass.svg","input_caret.svg","lane_blocked.svg","lane_danger.svg","lane_safe.svg","lane_warning.svg","loading_bar.svg","loading_dots.svg","loading_spinner.svg","npc_commander.svg","npc_lyra.svg","npc_merchant.svg","npc_scholar.svg","npc_scout.svg","num_0.svg","num_1.svg","num_2.svg","num_3.svg","num_4.svg","num_5.svg","num_6.svg","num_7.svg","num_8.svg","num_9.svg","num_minus.svg","num_plus.svg","overlay_fog.svg","overlay_rain.svg","overlay_snow.svg","overlay_storm.svg","particle_dust.svg","particle_impact.svg","particle_smoke.svg","particle_sparkle.svg","pickup_coin.svg","pickup_health.svg","pickup_shield.svg","pickup_speed.svg","powerup_damage.svg","powerup_freeze.svg","powerup_multishot.svg","powerup_pulse.svg","powerup_shield.svg","powerup_speed.svg","progress_chunk.svg","screen_flash_red.svg","screen_flash_white.svg","screen_vignette.svg","spinner.svg","star_collect.svg","text_correct.svg","text_wrong.svg","timer_digit.svg","unit_archer.svg","unit_scout.svg","unit_scribe.svg","wave_incoming.svg","word_complete.svg"],
+      "sprites/buildings": ["building_barracks.svg","building_castle.svg","building_mine.svg","tower_archer.svg","tower_ballista.svg","tower_cannon.svg","tower_fire.svg","tower_holy.svg","tower_ice.svg","tower_lightning.svg","tower_mage.svg","tower_poison.svg"],
+      "sprites/characters": ["char_archer.svg","char_bat.svg","char_boss_demon.svg","char_ghost.svg","char_goblin.svg","char_hero.svg","char_knight.svg","char_mage.svg","char_necromancer.svg","char_orc.svg","char_skeleton.svg","char_slime.svg","char_spider.svg","char_troll.svg","char_villager.svg","char_witch.svg","char_wolf.svg"],
+      "sprites/projectiles": ["proj_arrow.svg","proj_cannonball.svg","proj_fireball.svg","proj_ice_shard.svg","proj_lightning.svg","proj_magic_bolt.svg"],
+      "sprites/weapons": ["weapon_axe.svg","weapon_bow.svg","weapon_crossbow.svg","weapon_dagger.svg","weapon_hammer.svg","weapon_shield.svg","weapon_spear.svg","weapon_staff_magic.svg","weapon_sword_basic.svg","weapon_sword_fire.svg","weapon_sword_ice.svg","weapon_wand.svg"],
+      "tiles": ["tile_bridge.svg","tile_dirt.svg","tile_evergrove_clearing.svg","tile_evergrove_dense.svg","tile_evergrove_grass.svg","tile_evergrove_mossy.svg","tile_evergrove_path.svg","tile_evergrove_pond.svg","tile_evergrove_roots.svg","tile_evergrove_stump.svg","tile_grass.svg","tile_path.svg","tile_road_corner.svg","tile_road_cross.svg","tile_road_end.svg","tile_road_straight.svg","tile_road_t.svg","tile_shore_e.svg","tile_shore_n.svg","tile_shore_ne.svg","tile_shore_nw.svg","tile_shore_s.svg","tile_shore_se.svg","tile_shore_sw.svg","tile_shore_w.svg","tile_stone.svg","tile_tower_base.svg","tile_tower_base_active.svg","tile_wall_corner.svg","tile_wall_cross.svg","tile_wall_end.svg","tile_wall_straight.svg","tile_wall_t.svg","tile_water.svg"],
+      "tiles/castle": ["tile_banner.svg","tile_battlement.svg","tile_gate.svg","tile_stone_floor.svg","tile_stone_wall.svg","tile_torch.svg"],
+      "tiles/desert": ["tile_bones.svg","tile_cactus.svg","tile_oasis.svg","tile_pyramid_base.svg","tile_sand.svg","tile_sand_dune.svg"],
+      "tiles/forest": ["tile_bush.svg","tile_dirt_path.svg","tile_flowers.svg","tile_grass.svg","tile_tree_canopy.svg","tile_tree_trunk.svg"],
+      "tiles/mountain": ["tile_cave_entrance.svg","tile_cliff_edge.svg","tile_crystal.svg","tile_ice.svg","tile_rock_dark.svg","tile_snow.svg"],
+      "tiles/swamp": ["tile_dead_tree.svg","tile_fog_ground.svg","tile_lily_pad.svg","tile_mushroom.svg","tile_swamp_mud.svg","tile_swamp_water.svg"],
+      "traps": ["hazard_lava.svg","hazard_thorns.svg","trap_arrow.svg","trap_bear.svg","trap_bomb.svg","trap_electric.svg","trap_fire.svg","trap_ice.svg","trap_pit.svg","trap_poison_pool.svg","trap_sawblade.svg","trap_spikes.svg"],
+      "ui": ["alert_banner_bonus.svg","alert_banner_danger.svg","alert_boss_incoming.svg","banner_victory.svg","banner_wave.svg","bar_charge_meter.svg","bar_cooldown_radial.svg","bar_energy_pips.svg","bar_frame.svg","bar_health_boss.svg","bar_health_fill.svg","bar_health_segmented.svg","bar_mana_fill.svg","bar_shield_fill.svg","bar_shield_overlay.svg","bar_threat_fill.svg","bar_xp_fill.svg","btn_disabled.svg","btn_hover.svg","btn_normal.svg","btn_pressed.svg","btn_primary.svg","bubble_shout.svg","bubble_speak.svg","bubble_think.svg","card_frame.svg","char_highlight_error.svg","char_highlight_next.svg","char_typed_correct.svg","char_typed_wrong.svg","checkbox_off.svg","checkbox_on.svg","cursor_build.svg","cursor_default.svg","cursor_invalid.svg","cursor_pointer.svg","cursor_target.svg","cursor_wait.svg","divider_h.svg","divider_v.svg","dropdown_frame.svg","dropdown_frame_open.svg","dropdown_item.svg","dropdown_item_hover.svg","gauge_fill_blue.svg","gauge_fill_green.svg","gauge_fill_purple.svg","gauge_fill_red.svg","gauge_fill_yellow.svg","gauge_frame.svg","hud_accuracy_display.svg","hud_combo_display.svg","hud_frame_main.svg","hud_frame_minimap.svg","hud_frame_stats.svg","hud_frame_word_queue.svg","hud_gold_counter.svg","hud_threat_meter.svg","hud_timer_display.svg","hud_wave_counter.svg","hud_wpm_display.svg","indicator_ammo.svg","indicator_lives.svg","indicator_streak_flame.svg","input_frame.svg","input_frame_error.svg","input_frame_focus.svg","key_blank.svg","key_correct.svg","key_highlight.svg","key_highlighted.svg","key_home.svg","key_normal.svg","key_pressed.svg","key_wrong.svg","menu_bg.svg","modal_defeat.svg","modal_large.svg","modal_small.svg","modal_victory.svg","notif_frame_large.svg","notif_frame_small.svg","notif_icon_boss.svg","notif_icon_error.svg","notif_icon_info.svg","notif_icon_success.svg","notif_icon_upgrade.svg","notif_icon_warning.svg","notif_icon_wave.svg","panel_dark.svg","panel_header.svg","panel_light.svg","progress_fill_blue.svg","progress_fill_exp.svg","progress_fill_timer.svg","progress_frame.svg","progress_notch.svg","radio_off.svg","radio_on.svg","scroll_arrow_down.svg","scroll_arrow_up.svg","scroll_thumb_h.svg","scroll_thumb_v.svg","scroll_track_h.svg","scroll_track_v.svg","slider_fill.svg","slider_thumb.svg","slider_thumb_hover.svg","slider_track.svg","tab_active.svg","tab_hover.svg","tab_inactive.svg","text_bubble.svg","text_bubble_enemy.svg","timer_frame.svg","timer_urgent.svg","toggle_off.svg","toggle_on.svg","tooltip_frame.svg","tooltip_pointer_down.svg","tooltip_pointer_up.svg","tutorial_arrow_down.svg","tutorial_arrow_right.svg","tutorial_hand_point.svg","tutorial_highlight.svg","tutorial_key_prompt.svg","tutorial_speech_bubble.svg","ui_button.svg","ui_button_hover.svg","ui_button_pressed.svg","ui_cursor.svg","ui_focus_ring.svg","ui_mistake_underline.svg","ui_notification_error.svg","ui_notification_info.svg","ui_notification_success.svg","ui_notification_warning.svg","ui_panel_bg.svg","ui_panel_header.svg","ui_popup_bg.svg","ui_progress_bar_bg.svg","ui_progress_bar_fill.svg","ui_prompt_bg.svg","ui_tag.svg","ui_threat_card_bg.svg","ui_tooltip_bg.svg","word_container.svg","word_container_active.svg","word_container_bonus.svg","word_container_urgent.svg","word_difficulty_1.svg","word_difficulty_2.svg","word_difficulty_3.svg","word_difficulty_4.svg"],
+      "ui/buttons": ["btn_arrow_left.svg","btn_arrow_right.svg","btn_close.svg","btn_home.svg","btn_info.svg","btn_pause.svg","btn_play.svg","btn_restart.svg","btn_settings.svg","btn_sound_off.svg","btn_sound_on.svg"],
+      "ui/panels": ["panel_basic.svg","panel_gold.svg","panel_health_bar.svg","panel_mana_bar.svg","panel_slot.svg","panel_slot_selected.svg","panel_tooltip.svg"],
+      "weather": ["cloud_storm.svg","cloud_white.svg","fog_layer.svg","lightning_bolt.svg","moon.svg","rain_drop.svg","snow_flake.svg","sun.svg"]
+    };
+
+    let allItems = [];
+    let currentIndex = 0;
+
+    function render() {
+      const gallery = document.getElementById('gallery');
+      gallery.innerHTML = '';
+      allItems = [];
+
+      for (const [category, files] of Object.entries(assets)) {
+        const section = document.createElement('div');
+        section.className = 'category';
+        section.innerHTML = `<h2 onclick="this.parentElement.classList.toggle('collapsed')">${category} (${files.length})</h2>`;
+        const grid = document.createElement('div');
+        grid.className = 'grid';
+
+        files.forEach(file => {
+          const path = `${category}/${file}`;
+          const item = document.createElement('div');
+          item.className = 'item';
+          item.dataset.name = file.toLowerCase();
+          item.dataset.path = path;
+          item.innerHTML = `<img src="${path}" alt="${file}" loading="lazy"><div class="name">${file}</div>`;
+          item.onclick = () => openModal(path, file);
+          grid.appendChild(item);
+          allItems.push({ el: item, path, name: file });
+        });
+
+        section.appendChild(grid);
+        gallery.appendChild(section);
+      }
+      updateStats();
+    }
+
+    function updateStats() {
+      const visible = allItems.filter(i => !i.el.classList.contains('hidden')).length;
+      document.getElementById('stats').textContent = `${visible} / ${allItems.length} assets`;
+    }
+
+    function filter(query) {
+      query = query.toLowerCase();
+      allItems.forEach(item => {
+        item.el.classList.toggle('hidden', !item.name.toLowerCase().includes(query) && !item.path.toLowerCase().includes(query));
+      });
+      updateStats();
+    }
+
+    function openModal(path, name) {
+      currentIndex = allItems.findIndex(i => i.path === path);
+      document.getElementById('modal-img').src = path;
+      document.getElementById('modal-info').textContent = path;
+      document.getElementById('modal').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('modal').classList.remove('active');
+    }
+
+    function navModal(dir) {
+      const visible = allItems.filter(i => !i.el.classList.contains('hidden'));
+      const curr = visible.findIndex(i => i.path === allItems[currentIndex].path);
+      const next = (curr + dir + visible.length) % visible.length;
+      const item = visible[next];
+      currentIndex = allItems.indexOf(item);
+      document.getElementById('modal-img').src = item.path;
+      document.getElementById('modal-info').textContent = item.path;
+    }
+
+    function expandAll() { document.querySelectorAll('.category').forEach(c => c.classList.remove('collapsed')); }
+    function collapseAll() { document.querySelectorAll('.category').forEach(c => c.classList.add('collapsed')); }
+
+    document.getElementById('search').addEventListener('input', e => filter(e.target.value));
+    document.getElementById('size').addEventListener('change', e => {
+      document.querySelectorAll('.item').forEach(i => { i.classList.remove('size-sm','size-md','size-lg'); i.classList.add(e.target.value); });
+    });
+    document.getElementById('bg').addEventListener('change', e => {
+      document.body.classList.remove('dark-bg','light-bg','checker-bg'); document.body.classList.add(e.target.value);
+    });
+    document.addEventListener('keydown', e => {
+      if (document.getElementById('modal').classList.contains('active')) {
+        if (e.key === 'Escape') closeModal();
+        if (e.key === 'ArrowLeft') navModal(-1);
+        if (e.key === 'ArrowRight') navModal(1);
+      }
+    });
+
+    render();
+  </script>
+</body>
+</html>

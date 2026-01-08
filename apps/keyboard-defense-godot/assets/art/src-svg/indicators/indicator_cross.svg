@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="12" height="12">
+  <!-- Cross Indicator (12x12) - Failure marker -->
+  <!-- Color Palette: #e74c3c, #c0392b, #fdfefe -->
+
+  <!-- Background circle -->
+  <rect x="2" y="0" width="8" height="2" fill="#c0392b"/>
+  <rect x="0" y="2" width="12" height="8" fill="#c0392b"/>
+  <rect x="2" y="10" width="8" height="2" fill="#c0392b"/>
+
+  <!-- Inner circle -->
+  <rect x="3" y="1" width="6" height="10" fill="#e74c3c"/>
+  <rect x="1" y="3" width="10" height="6" fill="#e74c3c"/>
+
+  <!-- X mark -->
+  <rect x="2" y="2" width="2" height="2" fill="#fdfefe"/>
+  <rect x="3" y="3" width="2" height="2" fill="#fdfefe"/>
+  <rect x="4" y="4" width="2" height="2" fill="#fdfefe"/>
+  <rect x="5" y="5" width="2" height="2" fill="#fdfefe"/>
+  <rect x="6" y="6" width="2" height="2" fill="#fdfefe"/>
+  <rect x="7" y="7" width="2" height="2" fill="#fdfefe"/>
+  <rect x="8" y="8" width="2" height="2" fill="#fdfefe"/>
+
+  <rect x="8" y="2" width="2" height="2" fill="#fdfefe"/>
+  <rect x="7" y="3" width="2" height="2" fill="#fdfefe"/>
+  <rect x="6" y="4" width="2" height="2" fill="#fdfefe"/>
+  <rect x="4" y="6" width="2" height="2" fill="#fdfefe"/>
+  <rect x="3" y="7" width="2" height="2" fill="#fdfefe"/>
+  <rect x="2" y="8" width="2" height="2" fill="#fdfefe"/>
+</svg>

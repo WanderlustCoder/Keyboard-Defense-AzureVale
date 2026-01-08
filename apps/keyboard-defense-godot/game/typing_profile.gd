@@ -25,7 +25,8 @@ const DEFAULT_UI_PREFS := {
     "ui_scale_percent": DEFAULT_UI_SCALE,
     "compact_panels": false,
     "reduced_motion": false,
-    "speed_multiplier": 1.0
+    "speed_multiplier": 1.0,
+    "high_contrast": false
 }
 const DEFAULT_LESSON_PROGRESS := {
     "nights": 0,
@@ -311,6 +312,21 @@ static func cycle_speed_multiplier(profile: Dictionary, direction: int) -> Dicti
     if next_index < 0:
         next_index = SPEED_MULTIPLIER_VALUES.size() - 1
     return set_speed_multiplier(profile, SPEED_MULTIPLIER_VALUES[next_index])
+
+static func get_high_contrast(profile: Dictionary) -> bool:
+    if profile.has("ui_prefs") and typeof(profile.get("ui_prefs")) == TYPE_DICTIONARY:
+        var prefs: Dictionary = profile.get("ui_prefs")
+        return bool(prefs.get("high_contrast", false))
+    return false
+
+static func set_high_contrast(profile: Dictionary, enabled: bool) -> Dictionary:
+    if not profile.has("ui_prefs") or typeof(profile.get("ui_prefs")) != TYPE_DICTIONARY:
+        profile["ui_prefs"] = {}
+    profile["ui_prefs"]["high_contrast"] = bool(enabled)
+    var result: Dictionary = save_profile(profile)
+    if result.get("ok", false):
+        return {"ok": true, "profile": profile}
+    return {"ok": false, "profile": profile, "error": result.get("error", "unknown error")}
 
 static func default_lesson_progress_entry() -> Dictionary:
     return DEFAULT_LESSON_PROGRESS.duplicate(true)

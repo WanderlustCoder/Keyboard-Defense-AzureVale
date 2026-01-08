@@ -331,7 +331,15 @@ static func parse(command: String) -> Dictionary:
                             if val >= 0.5 and val <= 2.0:
                                 return {"ok": true, "intent": SimIntents.make("ui_settings_speed", {"mode": "set", "value": val})}
                     return {"ok": false, "error": "Usage: settings speed [slower|faster|reset|0.5-2.0]"}
-            return {"ok": false, "error": "Usage: settings [show|hide|lessons|prefs|verify|conflicts|resolve|export|scale|font|compact|motion|speed]"}
+                if mode == "contrast" or mode == "highcontrast":
+                    if tokens.size() == 2:
+                        return {"ok": true, "intent": SimIntents.make("ui_settings_contrast", {"mode": "toggle"})}
+                    if tokens.size() == 3:
+                        var contrast_arg: String = tokens[2].to_lower()
+                        if contrast_arg == "on" or contrast_arg == "off" or contrast_arg == "toggle" or contrast_arg == "high" or contrast_arg == "normal":
+                            return {"ok": true, "intent": SimIntents.make("ui_settings_contrast", {"mode": contrast_arg})}
+                    return {"ok": false, "error": "Usage: settings contrast [on|off|toggle|high|normal]"}
+            return {"ok": false, "error": "Usage: settings [show|hide|lessons|prefs|verify|conflicts|resolve|export|scale|font|compact|motion|speed|contrast]"}
         "tutorial":
             if tokens.size() == 1:
                 return {"ok": true, "intent": SimIntents.make("ui_tutorial_toggle")}
