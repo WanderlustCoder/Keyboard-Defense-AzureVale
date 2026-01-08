@@ -211,7 +211,7 @@ func _update_projectiles(delta: float) -> void:
 		node.position += velocity * delta
 		if enemy != null and node.position.x >= enemy.position.x:
 			var is_power: bool = entry.get("power", false)
-			var hit_pos := node.position
+			var hit_pos: Vector2 = node.position
 			node.queue_free()
 			projectiles.remove_at(i)
 			_flash_enemy()
