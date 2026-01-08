@@ -226,6 +226,9 @@ func _on_command_submitted(command: String) -> void:
                         audio_manager.play_sfx(audio_manager.SFX.COMBO_BREAK)
                     if grid_renderer != null and not reduced_motion:
                         grid_renderer.spawn_combo_break()
+                # Sync combo to grid renderer for visualization
+                if grid_renderer != null:
+                    grid_renderer.set_combo(typing_stats.current_combo)
             else:
                 typing_stats.record_command_enter(intent_kind, intent_kind == "wait")
         if intent_kind == "ui_preview":
@@ -385,6 +388,9 @@ func _on_command_submitted(command: String) -> void:
                         audio_manager.play_sfx(audio_manager.SFX.COMBO_BREAK)
                     if grid_renderer != null and not reduced_motion:
                         grid_renderer.spawn_combo_break()
+                # Sync combo to grid renderer for visualization
+                if grid_renderer != null:
+                    grid_renderer.set_combo(typing_stats.current_combo)
             command_bar.accept_submission(trimmed)
             var defend_intent: Dictionary = {"kind": "defend_input", "text": command}
             var defend_result: Dictionary = IntentApplier.apply(state, defend_intent)
@@ -867,6 +873,9 @@ func _apply_settings_motion(intent: Dictionary) -> void:
         reduced_motion = true
     elif mode == "off" or mode == "full":
         reduced_motion = false
+    # Sync to grid renderer
+    if grid_renderer != null:
+        grid_renderer.reduced_motion = reduced_motion
     # Persist to profile
     var save_result: Dictionary = TypingProfile.set_reduced_motion(profile, reduced_motion)
     if save_result.get("ok", false):
@@ -2451,6 +2460,8 @@ func _load_profile() -> void:
     ui_scale_percent = TypingProfile.get_ui_scale_percent(profile)
     compact_panels = TypingProfile.get_compact_panels(profile)
     reduced_motion = TypingProfile.get_reduced_motion(profile)
+    if grid_renderer != null:
+        grid_renderer.reduced_motion = reduced_motion
     var speed_mult: float = TypingProfile.get_speed_multiplier(profile)
     high_contrast = TypingProfile.get_high_contrast(profile)
     nav_hints = TypingProfile.get_nav_hints(profile)

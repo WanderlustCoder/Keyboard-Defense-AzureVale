@@ -54,6 +54,21 @@ var texture_cache: Dictionary = {}
 var _active_particles: Array = []
 const PARTICLE_LIFETIME := 0.35
 const PARTICLE_SPEED := 100.0
+const TRAIL_SPAWN_INTERVAL := 0.03
+const MAX_PARTICLES := 200  # Performance limit
+
+# Combo visualization state
+var _combo_count: int = 0
+var _combo_pulse_time: float = 0.0
+var _combo_ring_radius: float = 0.0
+
+# Reduced motion setting (synced from main)
+var reduced_motion: bool = false
+
+## Helper to add particle with limit check
+func _add_particle(p: Dictionary) -> void:
+	if _active_particles.size() < MAX_PARTICLES:
+		_active_particles.append(p)
 
 func _ready() -> void:
 	asset_loader = AssetLoader.new()
@@ -262,6 +277,36 @@ func _draw() -> void:
 
 	# Draw base with state-based sprite
 	var base_rect: Rect2 = Rect2(origin + Vector2(base_pos.x * cell_size.x, base_pos.y * cell_size.y), cell_size)
+	var castle_center: Vector2 = base_rect.position + base_rect.size * 0.5
+	var castle_tier: int = _get_castle_tier()
+
+	# Draw tier-based decorative elements behind castle
+	if castle_tier >= 1 and not reduced_motion:
+		var tier_color: Color
+		var tier_radius: float
+		if castle_tier >= 2:
+			# Fortress: golden rotating glow
+			tier_color = Color(1.0, 0.85, 0.4, 0.35)
+			tier_radius = 32.0
+			var rotation: float = Time.get_ticks_msec() * 0.001
+			for i in range(4):
+				var angle: float = rotation + (float(i) / 4.0) * TAU
+				var offset: Vector2 = Vector2(cos(angle), sin(angle)) * 8.0
+				draw_arc(castle_center + offset, tier_radius, 0.0, TAU, 16, tier_color, 1.5)
+		else:
+			# Improved: subtle silver glow
+			tier_color = Color(0.7, 0.8, 1.0, 0.25)
+			tier_radius = 26.0
+			draw_arc(castle_center, tier_radius, 0.0, TAU, 16, tier_color, 1.0)
+
+	# Draw tier badge corners for upgraded castles
+	if castle_tier >= 1:
+		var badge_color: Color = Color(1.0, 0.85, 0.4, 0.8) if castle_tier >= 2 else Color(0.7, 0.8, 1.0, 0.6)
+		var badge_size: float = 4.0 if castle_tier >= 2 else 3.0
+		# Draw corner dots
+		draw_rect(Rect2(base_rect.position - Vector2(2, 2), Vector2(badge_size, badge_size)), badge_color, true)
+		draw_rect(Rect2(base_rect.position + Vector2(base_rect.size.x - badge_size + 2, -2), Vector2(badge_size, badge_size)), badge_color, true)
+
 	if use_sprites:
 		var castle_tex := _get_castle_texture()
 		var castle_tint := _get_castle_tint()
@@ -271,6 +316,32 @@ func _draw() -> void:
 			draw_rect(base_rect.grow(-4.0), base_color, true)
 	else:
 		draw_rect(base_rect.grow(-4.0), base_color, true)
+
+	# Draw combo indicator ring around castle
+	if _combo_count >= 3 and not reduced_motion:
+		var combo_tier: int = mini(_combo_count / 5, 3)  # Tiers at 5, 10, 15+
+		var ring_color: Color
+		match combo_tier:
+			0:
+				ring_color = Color(0.9, 0.8, 0.3, 0.6)  # Yellow
+			1:
+				ring_color = Color(1.0, 0.6, 0.2, 0.7)  # Orange
+			2:
+				ring_color = Color(0.9, 0.3, 0.9, 0.8)  # Purple
+			_:
+				ring_color = Color(0.3, 0.9, 1.0, 0.9)  # Cyan (legendary)
+
+		# Pulsing ring
+		var pulse: float = sin(Time.get_ticks_msec() * 0.006) * 0.15 + 0.85
+		var base_radius: float = 28.0 + float(combo_tier) * 4.0
+		draw_arc(castle_center, base_radius * pulse, 0.0, TAU, 24, ring_color, 2.0)
+
+		# Expanding pulse ring on combo milestone
+		if _combo_pulse_time > 0.0:
+			var pulse_alpha: float = _combo_pulse_time / 0.4
+			var pulse_color: Color = ring_color
+			pulse_color.a = pulse_alpha * 0.5
+			draw_arc(castle_center, _combo_ring_radius, 0.0, TAU, 24, pulse_color, 1.5)
 
 	# Draw cursor
 	var cursor_rect: Rect2 = Rect2(origin + Vector2(cursor_pos.x * cell_size.x, cursor_pos.y * cell_size.y), cell_size)
@@ -406,6 +477,18 @@ func _get_castle_texture() -> Texture2D:
 	# Default/healthy castle
 	return _get_texture("bld_castle")
 
+## Get castle upgrade tier (0=basic, 1=improved, 2=fortress)
+func _get_castle_tier() -> int:
+	if state_ref == null:
+		return 0
+	var kingdom_upgrades: Array = state_ref.purchased_kingdom_upgrades
+	var upgrade_count: int = kingdom_upgrades.size()
+	if upgrade_count >= 6:
+		return 2  # Fortress
+	elif upgrade_count >= 3:
+		return 1  # Improved
+	return 0  # Basic
+
 ## Get castle color tint based on HP and upgrades
 func _get_castle_tint() -> Color:
 	if state_ref == null:
@@ -423,39 +506,56 @@ func _get_castle_tint() -> Color:
 		return Color(1.0, 0.9, 0.8, 1.0)
 
 	# Check for upgrades that enhance the castle
-	var kingdom_upgrades: Array = state_ref.purchased_kingdom_upgrades
-	var upgrade_count: int = kingdom_upgrades.size()
+	var tier: int = _get_castle_tier()
 
-	# Many upgrades: golden glow
-	if upgrade_count >= 6:
-		return Color(1.1, 1.05, 0.95, 1.0)
-	# Some upgrades: slight blue glow
-	elif upgrade_count >= 3:
+	# Fortress tier: golden glow
+	if tier >= 2:
+		return Color(1.15, 1.1, 0.9, 1.0)
+	# Improved tier: blue-silver glow
+	elif tier >= 1:
 		return Color(1.0, 1.0, 1.05, 1.0)
 
 	return Color.WHITE
 
+## Set combo count for visualization
+func set_combo(count: int) -> void:
+	if count > _combo_count and count >= 3:
+		# New combo milestone - pulse effect
+		_combo_pulse_time = 0.4
+		_combo_ring_radius = 0.0
+	_combo_count = count
+	if count == 0:
+		_combo_pulse_time = 0.0
+		_combo_ring_radius = 0.0
+	queue_redraw()
+
 ## Spawn projectile from castle to enemy position
 func spawn_projectile(enemy_pos: Vector2i, is_power: bool = false) -> void:
+	if reduced_motion:
+		return
 	var start_pos: Vector2 = origin + Vector2(base_pos.x * cell_size.x, base_pos.y * cell_size.y) + cell_size * 0.5
 	var end_pos: Vector2 = origin + Vector2(enemy_pos.x * cell_size.x, enemy_pos.y * cell_size.y) + cell_size * 0.5
 	var direction: Vector2 = (end_pos - start_pos).normalized()
 	var color: Color = Color(1.0, 0.9, 0.4, 1.0) if is_power else Color(0.9, 0.7, 0.3, 1.0)
 	var size: Vector2 = Vector2(8, 4) if is_power else Vector2(6, 3)
 
-	_active_particles.append({
+	_add_particle({
 		"type": "projectile",
 		"pos": start_pos,
 		"target": end_pos,
 		"velocity": direction * PARTICLE_SPEED * (1.5 if is_power else 1.0),
 		"color": color,
 		"size": size,
-		"lifetime": PARTICLE_LIFETIME * 2.0
+		"lifetime": PARTICLE_LIFETIME * 2.0,
+		"trail_timer": 0.0,
+		"is_power": is_power
 	})
 	queue_redraw()
 
 ## Spawn hit spark particles at position
 func spawn_hit_sparks(world_pos: Vector2, is_power: bool = false) -> void:
+	if reduced_motion:
+		return
 	var count: int = 8 if is_power else 5
 	var base_color: Color = Color(1.0, 0.95, 0.5, 1.0) if is_power else Color(0.95, 0.85, 0.4, 1.0)
 
@@ -464,7 +564,7 @@ func spawn_hit_sparks(world_pos: Vector2, is_power: bool = false) -> void:
 		var speed: float = PARTICLE_SPEED * (0.4 + randf() * 0.6) * (1.3 if is_power else 1.0)
 		var size: Vector2 = Vector2(5, 2) if i % 2 == 0 else Vector2(3, 3)
 
-		_active_particles.append({
+		_add_particle({
 			"type": "spark",
 			"pos": world_pos,
 			"velocity": Vector2(cos(angle), sin(angle)) * speed,
@@ -476,37 +576,84 @@ func spawn_hit_sparks(world_pos: Vector2, is_power: bool = false) -> void:
 
 ## Spawn enemy defeat burst at position
 func spawn_defeat_burst(enemy_pos: Vector2i, is_boss: bool = false) -> void:
+	if reduced_motion:
+		return
 	var world_pos: Vector2 = origin + Vector2(enemy_pos.x * cell_size.x, enemy_pos.y * cell_size.y) + cell_size * 0.5
-	var count: int = 12 if is_boss else 8
-	var base_color: Color = Color(0.9, 0.4, 0.9, 1.0) if is_boss else Color(0.9, 0.5, 0.3, 1.0)
+	var ring_count: int = 16 if is_boss else 10
+	var base_color: Color = Color(0.9, 0.4, 0.9, 1.0) if is_boss else Color(0.95, 0.6, 0.3, 1.0)
+	var accent_color: Color = Color(1.0, 0.7, 1.0, 1.0) if is_boss else Color(1.0, 0.85, 0.5, 1.0)
 
-	# Expanding ring effect
-	for i in range(count):
-		var angle: float = (float(i) / float(count)) * TAU
-		var speed: float = PARTICLE_SPEED * (1.2 if is_boss else 0.9)
+	# Primary expanding ring effect
+	for i in range(ring_count):
+		var angle: float = (float(i) / float(ring_count)) * TAU
+		var speed: float = PARTICLE_SPEED * (1.4 if is_boss else 1.0)
 
-		_active_particles.append({
+		_add_particle({
 			"type": "defeat",
 			"pos": world_pos,
 			"velocity": Vector2(cos(angle), sin(angle)) * speed,
 			"color": base_color,
 			"size": Vector2(6, 6) if is_boss else Vector2(4, 4),
-			"lifetime": PARTICLE_LIFETIME * 1.2
+			"lifetime": PARTICLE_LIFETIME * 1.3
+		})
+
+	# Secondary slower ring with accent color
+	var inner_count: int = 8 if is_boss else 5
+	for i in range(inner_count):
+		var angle: float = (float(i) / float(inner_count)) * TAU + 0.3
+		var speed: float = PARTICLE_SPEED * (0.7 if is_boss else 0.5)
+
+		_add_particle({
+			"type": "defeat",
+			"pos": world_pos,
+			"velocity": Vector2(cos(angle), sin(angle)) * speed,
+			"color": accent_color,
+			"size": Vector2(5, 5) if is_boss else Vector2(3, 3),
+			"lifetime": PARTICLE_LIFETIME * 1.0
+		})
+
+	# Rising particles (gold coins / essence effect)
+	var rise_count: int = 6 if is_boss else 3
+	for i in range(rise_count):
+		var x_offset: float = randf_range(-12, 12) if is_boss else randf_range(-8, 8)
+		_add_particle({
+			"type": "rise",
+			"pos": world_pos + Vector2(x_offset, 0),
+			"velocity": Vector2(randf_range(-15, 15), -80.0 - randf() * 40.0),
+			"color": Color(1.0, 0.9, 0.4, 0.9),
+			"size": Vector2(4, 4) if is_boss else Vector2(3, 3),
+			"lifetime": PARTICLE_LIFETIME * 1.5
 		})
 
 	# Center flash
-	_active_particles.append({
+	_add_particle({
 		"type": "flash",
 		"pos": world_pos,
 		"velocity": Vector2.ZERO,
-		"color": Color(1.0, 1.0, 0.9, 1.0),
-		"size": Vector2(16, 16) if is_boss else Vector2(10, 10),
-		"lifetime": PARTICLE_LIFETIME * 0.4
+		"color": Color(1.0, 1.0, 0.95, 1.0),
+		"size": Vector2(22, 22) if is_boss else Vector2(14, 14),
+		"lifetime": PARTICLE_LIFETIME * 0.5
 	})
+
+	# Boss gets extra dramatic outer ring
+	if is_boss:
+		for i in range(8):
+			var angle: float = (float(i) / 8.0) * TAU + randf() * 0.2
+			_add_particle({
+				"type": "defeat",
+				"pos": world_pos,
+				"velocity": Vector2(cos(angle), sin(angle)) * PARTICLE_SPEED * 2.0,
+				"color": Color(1.0, 0.5, 1.0, 0.7),
+				"size": Vector2(8, 8),
+				"lifetime": PARTICLE_LIFETIME * 0.8
+			})
+
 	queue_redraw()
 
 ## Spawn combo break effect
 func spawn_combo_break() -> void:
+	if reduced_motion:
+		return
 	var castle_pos: Vector2 = origin + Vector2(base_pos.x * cell_size.x, base_pos.y * cell_size.y) + cell_size * 0.5
 
 	# Red particles dispersing outward
@@ -514,7 +661,7 @@ func spawn_combo_break() -> void:
 		var angle: float = randf() * TAU
 		var speed: float = PARTICLE_SPEED * 0.5
 
-		_active_particles.append({
+		_add_particle({
 			"type": "combo_break",
 			"pos": castle_pos + Vector2(randf_range(-10, 10), randf_range(-10, 10)),
 			"velocity": Vector2(cos(angle), sin(angle)) * speed,
@@ -526,13 +673,15 @@ func spawn_combo_break() -> void:
 
 ## Spawn damage flash at castle
 func spawn_damage_flash() -> void:
+	if reduced_motion:
+		return
 	var castle_pos: Vector2 = origin + Vector2(base_pos.x * cell_size.x, base_pos.y * cell_size.y) + cell_size * 0.5
 
 	for i in range(6):
 		var angle: float = randf() * TAU
 		var speed: float = PARTICLE_SPEED * 0.6 * (0.3 + randf() * 0.7)
 
-		_active_particles.append({
+		_add_particle({
 			"type": "damage",
 			"pos": castle_pos,
 			"velocity": Vector2(cos(angle), sin(angle)) * speed,
@@ -544,10 +693,18 @@ func spawn_damage_flash() -> void:
 
 ## Update particles - call from _process
 func update_particles(delta: float) -> void:
+	# Update combo pulse animation
+	if _combo_pulse_time > 0.0:
+		_combo_pulse_time -= delta
+		_combo_ring_radius += delta * 80.0
+		queue_redraw()
+
 	if _active_particles.is_empty():
 		return
 
 	var needs_redraw: bool = false
+	var trails_to_spawn: Array = []
+
 	for i in range(_active_particles.size() - 1, -1, -1):
 		var p: Dictionary = _active_particles[i]
 		p["lifetime"] = p.get("lifetime", 0.0) - delta
@@ -565,11 +722,17 @@ func update_particles(delta: float) -> void:
 			vel.y += 180.0 * delta
 			p["velocity"] = vel
 
-		# Check projectile hit
+		# Rising particles slow down and fade
+		if ptype == "rise":
+			vel.y *= 0.95  # Decelerate upward movement
+			vel.x *= 0.98  # Slight horizontal drag
+			p["velocity"] = vel
+
+		# Check projectile hit and spawn trails
 		if ptype == "projectile":
 			var target: Vector2 = p.get("target", Vector2.ZERO)
 			if p["pos"].distance_to(target) < 8.0:
-				var is_power: bool = p["size"].x > 6
+				var is_power: bool = p.get("is_power", false)
 				spawn_hit_sparks(target, is_power)
 				# Spawn defeat burst at target position
 				var grid_pos: Vector2i = _world_to_grid(target)
@@ -578,8 +741,28 @@ func update_particles(delta: float) -> void:
 				needs_redraw = true
 				continue
 
+			# Spawn trail particles
+			p["trail_timer"] = p.get("trail_timer", 0.0) + delta
+			if p["trail_timer"] >= TRAIL_SPAWN_INTERVAL:
+				p["trail_timer"] = 0.0
+				var is_power: bool = p.get("is_power", false)
+				var trail_color: Color = p.get("color", Color.WHITE)
+				trail_color.a = 0.5
+				trails_to_spawn.append({
+					"type": "trail",
+					"pos": p["pos"],
+					"velocity": Vector2.ZERO,
+					"color": trail_color,
+					"size": Vector2(3, 3) if is_power else Vector2(2, 2),
+					"lifetime": PARTICLE_LIFETIME * 0.5
+				})
+
 		p["pos"] = p["pos"] + vel * delta
 		needs_redraw = true
+
+	# Add trail particles after iteration
+	for trail in trails_to_spawn:
+		_add_particle(trail)
 
 	if needs_redraw:
 		queue_redraw()
