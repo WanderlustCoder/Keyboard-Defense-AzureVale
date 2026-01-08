@@ -1048,7 +1048,7 @@ func _apply_settings_practice(intent: Dictionary) -> void:
 func _get_nav_hint_text(keybind: Dictionary, label: String) -> String:
     if not nav_hints:
         return label
-    var key_text: String = ControlsFormatter.format_keybind(keybind)
+    var key_text: String = ControlsFormatter.keybind_to_text(keybind)
     if key_text.is_empty():
         return label
     return "[%s] %s" % [key_text, label]

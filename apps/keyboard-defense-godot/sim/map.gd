@@ -214,3 +214,10 @@ static func _structure_char(building_type: String) -> String:
             return "T"
         _:
             return "?"
+
+## Get a spawn position on the map edge (typically right side for bosses)
+static func get_spawn_pos(state: GameState) -> Vector2i:
+    var w: int = state.map_w
+    var h: int = state.map_h
+    # Spawn on right edge, vertically centered
+    return Vector2i(w - 1, h / 2)
