@@ -1608,13 +1608,19 @@ static func _build_help_accessibility_lines(action_ids: Array[String]) -> Array[
     lines.append("Accessibility:")
     lines.append("  Open Settings: toggle_settings (%s)" % settings_binding)
     lines.append("  Open Lessons: toggle_lessons (%s)" % lessons_binding)
-    lines.append("  Scale UI: settings scale <percent>")
-    lines.append("  Compact on: settings compact on")
-    lines.append("  Compact off: settings compact off")
+    lines.append("Visual:")
+    lines.append("  Scale UI: settings scale <80-140>")
+    lines.append("  High contrast: settings contrast high|normal|toggle")
+    lines.append("  Compact panels: settings compact on|off|toggle")
+    lines.append("  Nav hints: settings hints on|off|toggle")
+    lines.append("Motion & Speed:")
+    lines.append("  Reduce motion: settings motion reduced|full|toggle")
+    lines.append("  Game speed: settings speed slower|faster|reset|0.5-2.0")
+    lines.append("  (0.5x = easier, 2.0x = harder)")
+    lines.append("Diagnostics:")
     lines.append("  Check conflicts: settings conflicts")
     lines.append("  Auto-fix conflicts: settings resolve apply")
     lines.append("  Export diagnostics: settings export save")
-    lines.append("  Manual checklist: docs/ACCESSIBILITY_VERIFICATION.md")
     return lines
 
 static func _build_help_hotkeys_lines(action_ids: Array[String]) -> Array[String]:
@@ -1869,6 +1875,15 @@ func _refresh_settings_panel() -> void:
         lines.append("UI Scale: %d%% (settings scale|font 80..140 | + | - | reset)" % ui_scale_percent)
         lines.append("Compact Panels: %s (settings compact on|off|toggle)" % ("ON" if compact_panels else "OFF"))
         lines.append("Motion Effects: %s (settings motion reduced|full|toggle)" % ("REDUCED" if reduced_motion else "FULL"))
+        var speed_mult: float = TypingProfile.get_speed_multiplier(profile)
+        var speed_label: String = "%.2gx" % speed_mult
+        if speed_mult < 1.0:
+            speed_label += " (easier)"
+        elif speed_mult > 1.0:
+            speed_label += " (harder)"
+        lines.append("Game Speed: %s (settings speed slower|faster|reset|0.5-2.0)" % speed_label)
+        lines.append("High Contrast: %s (settings contrast high|normal|toggle)" % ("HIGH" if high_contrast else "NORMAL"))
+        lines.append("Nav Hints: %s (settings hints on|off|toggle)" % ("ON" if nav_hints else "OFF"))
         lines.append("Compact effect: hides lesson samples; trims history; caps wave list.")
         lines.append("Type: settings verify")
         lines.append("Type: bind <action>")
