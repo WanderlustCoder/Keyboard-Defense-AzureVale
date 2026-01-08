@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 16" width="48" height="16">
+  <!-- Play Button (48x16) - Main action button -->
+  <!-- Color Palette: #27ae60, #1e8449, #145a32, #fdfefe -->
+
+  <!-- Button base -->
+  <rect x="0" y="0" width="48" height="16" fill="#145a32"/>
+  <rect x="1" y="1" width="46" height="14" fill="#1e8449"/>
+  <rect x="2" y="2" width="44" height="12" fill="#27ae60"/>
+
+  <!-- Button highlight -->
+  <rect x="2" y="2" width="44" height="2" fill="#2ecc71"/>
+
+  <!-- Button shadow -->
+  <rect x="2" y="12" width="44" height="2" fill="#1e8449"/>
+
+  <!-- Play arrow icon -->
+  <rect x="16" y="4" width="2" height="8" fill="#fdfefe"/>
+  <rect x="18" y="5" width="2" height="6" fill="#fdfefe"/>
+  <rect x="20" y="6" width="2" height="4" fill="#fdfefe"/>
+  <rect x="22" y="7" width="2" height="2" fill="#fdfefe"/>
+
+  <!-- Text area hint -->
+  <rect x="26" y="6" width="16" height="4" fill="#2ecc71"/>
+</svg>

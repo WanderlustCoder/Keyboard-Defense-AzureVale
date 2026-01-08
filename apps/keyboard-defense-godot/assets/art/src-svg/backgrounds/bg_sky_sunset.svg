@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" width="320" height="180">
+  <!-- Sunset Sky Background (320x180) - Evening sunset gradient -->
+  <!-- Color Palette: #e74c3c, #e67e22, #f4d03f, #9b59b6, #2c3e50 -->
+
+  <!-- Sky gradient layers -->
+  <rect x="0" y="0" width="320" height="30" fill="#2c3e50"/>
+  <rect x="0" y="30" width="320" height="30" fill="#8e44ad"/>
+  <rect x="0" y="60" width="320" height="30" fill="#9b59b6"/>
+  <rect x="0" y="90" width="320" height="30" fill="#e74c3c"/>
+  <rect x="0" y="120" width="320" height="30" fill="#e67e22"/>
+  <rect x="0" y="150" width="320" height="30" fill="#f4d03f"/>
+
+  <!-- Setting sun -->
+  <rect x="130" y="130" width="60" height="50" fill="#f4d03f"/>
+  <rect x="140" y="125" width="40" height="10" fill="#e67e22"/>
+  <rect x="145" y="120" width="30" height="10" fill="#e74c3c"/>
+  <rect x="135" y="135" width="50" height="40" fill="#fdfefe" opacity="0.6"/>
+  <rect x="145" y="140" width="30" height="30" fill="#f4d03f"/>
+
+  <!-- Sun reflection on horizon -->
+  <rect x="140" y="170" width="40" height="10" fill="#f4d03f" opacity="0.4"/>
+  <rect x="120" y="175" width="80" height="5" fill="#e67e22" opacity="0.3"/>
+
+  <!-- Silhouette clouds -->
+  <rect x="20" y="100" width="60" height="20" fill="#c0392b" opacity="0.6"/>
+  <rect x="30" y="95" width="40" height="10" fill="#9b59b6" opacity="0.5"/>
+  <rect x="220" y="90" width="70" height="25" fill="#c0392b" opacity="0.6"/>
+  <rect x="240" y="85" width="30" height="10" fill="#8e44ad" opacity="0.5"/>
+  <rect x="280" y="110" width="40" height="15" fill="#e67e22" opacity="0.4"/>
+</svg>

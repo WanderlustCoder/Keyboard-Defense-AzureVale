@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 14" width="20" height="14">
+  <!-- Wolf Mount (20x14) - Savage beast mount -->
+  <!-- Color Palette: #7f8c8d, #5d6d7e, #2c3e50, #1a252f -->
+
+  <!-- Ears -->
+  <rect x="1" y="0" width="2" height="3" fill="#5d6d7e"/>
+  <rect x="4" y="0" width="2" height="3" fill="#5d6d7e"/>
+
+  <!-- Head -->
+  <rect x="0" y="2" width="7" height="5" fill="#7f8c8d"/>
+  <rect x="1" y="3" width="5" height="3" fill="#5d6d7e"/>
+
+  <!-- Snout -->
+  <rect x="0" y="4" width="3" height="3" fill="#5d6d7e"/>
+  <rect x="0" y="5" width="2" height="2" fill="#2c3e50"/>
+
+  <!-- Eyes -->
+  <rect x="2" y="3" width="1" height="1" fill="#f4d03f"/>
+  <rect x="4" y="3" width="1" height="1" fill="#f4d03f"/>
+
+  <!-- Neck/mane -->
+  <rect x="6" y="2" width="4" height="5" fill="#5d6d7e"/>
+  <rect x="6" y="1" width="3" height="3" fill="#7f8c8d"/>
+
+  <!-- Body -->
+  <rect x="9" y="3" width="9" height="6" fill="#7f8c8d"/>
+  <rect x="10" y="4" width="7" height="4" fill="#5d6d7e"/>
+
+  <!-- Saddle -->
+  <rect x="11" y="2" width="5" height="3" fill="#8b7355"/>
+  <rect x="12" y="3" width="3" height="1" fill="#5d4e37"/>
+
+  <!-- Tail -->
+  <rect x="17" y="4" width="3" height="4" fill="#5d6d7e"/>
+  <rect x="18" y="6" width="2" height="3" fill="#7f8c8d"/>
+
+  <!-- Front legs -->
+  <rect x="10" y="9" width="2" height="4" fill="#7f8c8d"/>
+  <rect x="12" y="9" width="2" height="4" fill="#5d6d7e"/>
+
+  <!-- Back legs -->
+  <rect x="15" y="9" width="2" height="4" fill="#7f8c8d"/>
+  <rect x="17" y="9" width="2" height="4" fill="#5d6d7e"/>
+
+  <!-- Paws -->
+  <rect x="10" y="13" width="2" height="1" fill="#2c3e50"/>
+  <rect x="12" y="13" width="2" height="1" fill="#2c3e50"/>
+  <rect x="15" y="13" width="2" height="1" fill="#2c3e50"/>
+  <rect x="17" y="13" width="2" height="1" fill="#2c3e50"/>
+</svg>

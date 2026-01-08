@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Common Portrait Frame (32x32) - Basic NPC frame -->
+  <!-- Color Palette: #7f8c8d, #95a5a6, #bdc3c7, #5d6d7e -->
+
+  <!-- Outer frame -->
+  <rect x="0" y="0" width="32" height="32" fill="#5d6d7e"/>
+  <rect x="1" y="1" width="30" height="30" fill="#7f8c8d"/>
+  <rect x="2" y="2" width="28" height="28" fill="#95a5a6"/>
+
+  <!-- Inner border -->
+  <rect x="3" y="3" width="26" height="26" fill="#7f8c8d"/>
+  <rect x="4" y="4" width="24" height="24" fill="#bdc3c7"/>
+
+  <!-- Portrait area (empty for overlay) -->
+  <rect x="5" y="5" width="22" height="22" fill="#2c3e50"/>
+
+  <!-- Corner decorations -->
+  <rect x="0" y="0" width="4" height="4" fill="#5d6d7e"/>
+  <rect x="1" y="1" width="2" height="2" fill="#7f8c8d"/>
+  <rect x="28" y="0" width="4" height="4" fill="#5d6d7e"/>
+  <rect x="29" y="1" width="2" height="2" fill="#7f8c8d"/>
+  <rect x="0" y="28" width="4" height="4" fill="#5d6d7e"/>
+  <rect x="1" y="29" width="2" height="2" fill="#7f8c8d"/>
+  <rect x="28" y="28" width="4" height="4" fill="#5d6d7e"/>
+  <rect x="29" y="29" width="2" height="2" fill="#7f8c8d"/>
+</svg>

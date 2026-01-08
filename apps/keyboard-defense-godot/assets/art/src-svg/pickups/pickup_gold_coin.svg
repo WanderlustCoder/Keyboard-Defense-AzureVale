@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="12" height="12">
+  <!-- Gold Coin Pickup (12x12) - Currency drop -->
+  <!-- Color Palette: #f4d03f, #e67e22, #d4a017, #fdfefe -->
+
+  <!-- Coin base -->
+  <rect x="2" y="2" width="8" height="8" fill="#f4d03f"/>
+  <rect x="3" y="1" width="6" height="1" fill="#e67e22"/>
+  <rect x="3" y="10" width="6" height="1" fill="#e67e22"/>
+  <rect x="1" y="3" width="1" height="6" fill="#e67e22"/>
+  <rect x="10" y="3" width="1" height="6" fill="#e67e22"/>
+
+  <!-- Inner ring -->
+  <rect x="3" y="3" width="6" height="6" fill="#e67e22"/>
+  <rect x="4" y="4" width="4" height="4" fill="#f4d03f"/>
+
+  <!-- $ symbol hint -->
+  <rect x="5" y="4" width="2" height="1" fill="#d4a017"/>
+  <rect x="5" y="5" width="1" height="1" fill="#d4a017"/>
+  <rect x="5" y="6" width="2" height="1" fill="#d4a017"/>
+  <rect x="6" y="7" width="1" height="1" fill="#d4a017"/>
+
+  <!-- Shine -->
+  <rect x="3" y="3" width="2" height="2" fill="#fdfefe" opacity="0.5"/>
+</svg>

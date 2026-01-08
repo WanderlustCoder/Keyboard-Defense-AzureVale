@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 4" width="16" height="4">
+  <!-- Wooden Arrow (16x4) - Basic projectile -->
+  <!-- Color Palette: #8b7355, #5d4e37, #7f8c8d, #ecf0f1 -->
+
+  <!-- Arrow shaft -->
+  <rect x="4" y="1" width="10" height="2" fill="#8b7355"/>
+  <rect x="5" y="2" width="8" height="1" fill="#5d4e37"/>
+
+  <!-- Arrow head -->
+  <rect x="0" y="0" width="4" height="4" fill="#7f8c8d"/>
+  <rect x="0" y="1" width="3" height="2" fill="#5d6d7e"/>
+  <rect x="0" y="1" width="1" height="2" fill="#95a5a6"/>
+
+  <!-- Fletching -->
+  <rect x="13" y="0" width="3" height="1" fill="#ecf0f1"/>
+  <rect x="13" y="3" width="3" height="1" fill="#ecf0f1"/>
+  <rect x="14" y="1" width="2" height="2" fill="#bdc3c7"/>
+</svg>

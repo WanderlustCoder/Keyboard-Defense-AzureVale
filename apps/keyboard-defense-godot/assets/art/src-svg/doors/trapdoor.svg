@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Trapdoor (16x16) - Floor hatch -->
+  <!-- Color Palette: #8b7355, #5d4e37, #3d3426, #7f8c8d, #1a252f -->
+
+  <!-- Floor around trapdoor -->
+  <rect x="0" y="0" width="16" height="16" fill="#5d6d7e"/>
+
+  <!-- Trapdoor frame -->
+  <rect x="1" y="1" width="14" height="14" fill="#3d3426"/>
+  <rect x="2" y="2" width="12" height="12" fill="#1a252f"/>
+
+  <!-- Wooden trapdoor -->
+  <rect x="2" y="2" width="12" height="12" fill="#8b7355"/>
+  <rect x="3" y="3" width="10" height="10" fill="#5d4e37"/>
+
+  <!-- Planks -->
+  <rect x="3" y="3" width="4" height="10" fill="#8b7355"/>
+  <rect x="4" y="4" width="2" height="8" fill="#5d4e37"/>
+
+  <rect x="9" y="3" width="4" height="10" fill="#8b7355"/>
+  <rect x="10" y="4" width="2" height="8" fill="#5d4e37"/>
+
+  <!-- Cross braces -->
+  <rect x="2" y="5" width="12" height="2" fill="#3d3426"/>
+  <rect x="3" y="5" width="10" height="1" fill="#5d4e37"/>
+
+  <rect x="2" y="9" width="12" height="2" fill="#3d3426"/>
+  <rect x="3" y="9" width="10" height="1" fill="#5d4e37"/>
+
+  <!-- Ring handle -->
+  <rect x="6" y="6" width="4" height="4" fill="#7f8c8d"/>
+  <rect x="7" y="7" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="7" y="7" width="1" height="1" fill="#95a5a6"/>
+
+  <!-- Hinges -->
+  <rect x="2" y="2" width="2" height="2" fill="#7f8c8d"/>
+  <rect x="12" y="2" width="2" height="2" fill="#7f8c8d"/>
+</svg>

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 14" width="12" height="14">
+  <!-- Throwable Bomb (12x14) - Area damage -->
+  <!-- Color Palette: #1a252f, #2c3e50, #f4d03f, #e74c3c, #fdfefe -->
+
+  <!-- Fuse -->
+  <rect x="6" y="0" width="1" height="3" fill="#8b7355"/>
+  <rect x="7" y="0" width="1" height="2" fill="#5d4e37"/>
+
+  <!-- Spark -->
+  <rect x="7" y="0" width="2" height="1" fill="#f4d03f"/>
+  <rect x="8" y="0" width="1" height="2" fill="#e74c3c"/>
+
+  <!-- Bomb body -->
+  <rect x="2" y="4" width="8" height="8" fill="#1a252f"/>
+  <rect x="1" y="5" width="10" height="6" fill="#2c3e50"/>
+  <rect x="3" y="4" width="6" height="1" fill="#1a252f"/>
+  <rect x="3" y="11" width="6" height="1" fill="#1a252f"/>
+
+  <!-- Top collar -->
+  <rect x="4" y="3" width="4" height="2" fill="#5d6d7e"/>
+  <rect x="5" y="3" width="2" height="1" fill="#7f8c8d"/>
+
+  <!-- Skull warning -->
+  <rect x="4" y="6" width="4" height="3" fill="#fdfefe"/>
+  <rect x="5" y="6" width="1" height="1" fill="#1a252f"/>
+  <rect x="6" y="6" width="1" height="1" fill="#1a252f"/>
+  <rect x="5" y="8" width="2" height="1" fill="#1a252f"/>
+
+  <!-- Highlight -->
+  <rect x="3" y="5" width="2" height="2" fill="#5d6d7e" opacity="0.4"/>
+</svg>

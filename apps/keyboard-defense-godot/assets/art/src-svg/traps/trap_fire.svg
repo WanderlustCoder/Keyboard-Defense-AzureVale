@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Fire Trap (16x16) - Flame vent hazard -->
+  <!-- Color Palette: #e74c3c, #c0392b, #f4d03f, #e67e22, #7f8c8d -->
+
+  <!-- Floor grate base -->
+  <rect x="2" y="12" width="12" height="4" fill="#7f8c8d"/>
+  <rect x="3" y="13" width="10" height="2" fill="#5d6d7e"/>
+  <rect x="4" y="13" width="2" height="2" fill="#1a252f"/>
+  <rect x="7" y="13" width="2" height="2" fill="#1a252f"/>
+  <rect x="10" y="13" width="2" height="2" fill="#1a252f"/>
+
+  <!-- Flame base -->
+  <rect x="4" y="8" width="8" height="4" fill="#e74c3c"/>
+  <rect x="5" y="9" width="6" height="3" fill="#e67e22"/>
+
+  <!-- Flame middle -->
+  <rect x="5" y="5" width="6" height="4" fill="#e74c3c"/>
+  <rect x="6" y="6" width="4" height="3" fill="#e67e22"/>
+  <rect x="7" y="7" width="2" height="2" fill="#f4d03f"/>
+
+  <!-- Flame tips -->
+  <rect x="4" y="4" width="2" height="2" fill="#e74c3c"/>
+  <rect x="7" y="2" width="2" height="4" fill="#e67e22"/>
+  <rect x="7" y="3" width="2" height="2" fill="#f4d03f"/>
+  <rect x="10" y="4" width="2" height="2" fill="#e74c3c"/>
+
+  <!-- Flame peak -->
+  <rect x="7" y="1" width="2" height="2" fill="#e74c3c"/>
+  <rect x="8" y="0" width="1" height="2" fill="#e67e22"/>
+
+  <!-- Bright core -->
+  <rect x="7" y="4" width="2" height="1" fill="#fdfefe"/>
+</svg>

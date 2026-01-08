@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 14" width="20" height="14">
+  <!-- Boar Mount (20x14) - Fierce beast -->
+  <!-- Color Palette: #8b7355, #5d4e37, #3d3426, #ecf0f1 -->
+
+  <!-- Ears -->
+  <rect x="2" y="0" width="2" height="2" fill="#8b7355"/>
+  <rect x="5" y="0" width="2" height="2" fill="#8b7355"/>
+
+  <!-- Head -->
+  <rect x="0" y="2" width="8" height="6" fill="#8b7355"/>
+  <rect x="1" y="3" width="6" height="4" fill="#5d4e37"/>
+
+  <!-- Snout -->
+  <rect x="0" y="4" width="3" height="3" fill="#5d4e37"/>
+  <rect x="0" y="5" width="2" height="2" fill="#3d3426"/>
+
+  <!-- Tusks -->
+  <rect x="0" y="7" width="1" height="2" fill="#ecf0f1"/>
+  <rect x="2" y="7" width="1" height="2" fill="#ecf0f1"/>
+
+  <!-- Eyes -->
+  <rect x="3" y="3" width="1" height="1" fill="#c0392b"/>
+  <rect x="5" y="3" width="1" height="1" fill="#c0392b"/>
+
+  <!-- Bristle mane -->
+  <rect x="6" y="1" width="4" height="4" fill="#3d3426"/>
+
+  <!-- Body -->
+  <rect x="7" y="3" width="11" height="7" fill="#8b7355"/>
+  <rect x="8" y="4" width="9" height="5" fill="#5d4e37"/>
+
+  <!-- Saddle -->
+  <rect x="10" y="2" width="5" height="3" fill="#c0392b"/>
+  <rect x="11" y="3" width="3" height="1" fill="#922b21"/>
+
+  <!-- Tail -->
+  <rect x="17" y="5" width="3" height="2" fill="#3d3426"/>
+  <rect x="18" y="4" width="2" height="1" fill="#3d3426"/>
+
+  <!-- Front legs -->
+  <rect x="9" y="10" width="2" height="3" fill="#8b7355"/>
+  <rect x="11" y="10" width="2" height="3" fill="#5d4e37"/>
+
+  <!-- Back legs -->
+  <rect x="14" y="10" width="2" height="3" fill="#8b7355"/>
+  <rect x="16" y="10" width="2" height="3" fill="#5d4e37"/>
+
+  <!-- Hooves -->
+  <rect x="9" y="13" width="2" height="1" fill="#3d3426"/>
+  <rect x="11" y="13" width="2" height="1" fill="#3d3426"/>
+  <rect x="14" y="13" width="2" height="1" fill="#3d3426"/>
+  <rect x="16" y="13" width="2" height="1" fill="#3d3426"/>
+</svg>

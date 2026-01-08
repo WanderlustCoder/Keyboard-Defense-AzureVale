@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Healing Aura Spell (16x16) - Restorative magic -->
+  <!-- Color Palette: #27ae60, #2ecc71, #58d68d, #fdfefe -->
+
+  <!-- Outer glow ring -->
+  <rect x="5" y="0" width="6" height="2" fill="#27ae60"/>
+  <rect x="2" y="2" width="4" height="2" fill="#27ae60"/>
+  <rect x="10" y="2" width="4" height="2" fill="#27ae60"/>
+  <rect x="0" y="5" width="2" height="6" fill="#27ae60"/>
+  <rect x="14" y="5" width="2" height="6" fill="#27ae60"/>
+  <rect x="2" y="12" width="4" height="2" fill="#27ae60"/>
+  <rect x="10" y="12" width="4" height="2" fill="#27ae60"/>
+  <rect x="5" y="14" width="6" height="2" fill="#27ae60"/>
+
+  <!-- Inner aura -->
+  <rect x="4" y="4" width="8" height="8" fill="#2ecc71"/>
+  <rect x="5" y="5" width="6" height="6" fill="#58d68d"/>
+
+  <!-- Cross symbol -->
+  <rect x="7" y="4" width="2" height="8" fill="#fdfefe"/>
+  <rect x="4" y="7" width="8" height="2" fill="#fdfefe"/>
+  <rect x="7" y="7" width="2" height="2" fill="#abebc6"/>
+
+  <!-- Sparkle particles -->
+  <rect x="3" y="1" width="1" height="1" fill="#58d68d"/>
+  <rect x="12" y="1" width="1" height="1" fill="#58d68d"/>
+  <rect x="1" y="8" width="1" height="1" fill="#58d68d"/>
+  <rect x="14" y="7" width="1" height="1" fill="#58d68d"/>
+  <rect x="3" y="14" width="1" height="1" fill="#58d68d"/>
+  <rect x="12" y="14" width="1" height="1" fill="#58d68d"/>
+</svg>

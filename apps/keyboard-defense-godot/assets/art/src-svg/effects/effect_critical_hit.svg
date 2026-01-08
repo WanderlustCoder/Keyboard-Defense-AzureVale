@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <!-- Critical Hit Effect (24x24) - Impact star -->
+  <!-- Color Palette: #e74c3c, #c0392b, #f4d03f, #fdfefe -->
+
+  <!-- Central impact -->
+  <rect x="10" y="10" width="4" height="4" fill="#fdfefe"/>
+
+  <!-- Star rays -->
+  <rect x="10" y="0" width="4" height="10" fill="#f4d03f"/>
+  <rect x="11" y="2" width="2" height="6" fill="#fdfefe"/>
+
+  <rect x="10" y="14" width="4" height="10" fill="#f4d03f"/>
+  <rect x="11" y="16" width="2" height="6" fill="#fdfefe"/>
+
+  <rect x="0" y="10" width="10" height="4" fill="#f4d03f"/>
+  <rect x="2" y="11" width="6" height="2" fill="#fdfefe"/>
+
+  <rect x="14" y="10" width="10" height="4" fill="#f4d03f"/>
+  <rect x="16" y="11" width="6" height="2" fill="#fdfefe"/>
+
+  <!-- Diagonal rays -->
+  <rect x="2" y="2" width="6" height="6" fill="#e74c3c"/>
+  <rect x="3" y="3" width="4" height="4" fill="#c0392b"/>
+  <rect x="4" y="4" width="2" height="2" fill="#f4d03f"/>
+
+  <rect x="16" y="2" width="6" height="6" fill="#e74c3c"/>
+  <rect x="17" y="3" width="4" height="4" fill="#c0392b"/>
+  <rect x="18" y="4" width="2" height="2" fill="#f4d03f"/>
+
+  <rect x="2" y="16" width="6" height="6" fill="#e74c3c"/>
+  <rect x="3" y="17" width="4" height="4" fill="#c0392b"/>
+  <rect x="4" y="18" width="2" height="2" fill="#f4d03f"/>
+
+  <rect x="16" y="16" width="6" height="6" fill="#e74c3c"/>
+  <rect x="17" y="17" width="4" height="4" fill="#c0392b"/>
+  <rect x="18" y="18" width="2" height="2" fill="#f4d03f"/>
+
+  <!-- Impact ring -->
+  <rect x="8" y="8" width="8" height="8" fill="#fdfefe" opacity="0"/>
+  <rect x="8" y="8" width="2" height="2" fill="#f4d03f"/>
+  <rect x="14" y="8" width="2" height="2" fill="#f4d03f"/>
+  <rect x="8" y="14" width="2" height="2" fill="#f4d03f"/>
+  <rect x="14" y="14" width="2" height="2" fill="#f4d03f"/>
+</svg>

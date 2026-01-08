@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 12" width="16" height="12">
+  <!-- Fence Section (16x12) - Wooden fence decoration -->
+  <!-- Color Palette: #8b7355, #5d4e37, #a0522d -->
+
+  <!-- Posts -->
+  <rect x="0" y="0" width="3" height="12" fill="#8b7355"/>
+  <rect x="1" y="0" width="1" height="12" fill="#5d4e37"/>
+  <rect x="0" y="0" width="3" height="2" fill="#a0522d"/>
+
+  <rect x="13" y="0" width="3" height="12" fill="#8b7355"/>
+  <rect x="14" y="0" width="1" height="12" fill="#5d4e37"/>
+  <rect x="13" y="0" width="3" height="2" fill="#a0522d"/>
+
+  <!-- Horizontal rails -->
+  <rect x="3" y="2" width="10" height="2" fill="#8b7355"/>
+  <rect x="3" y="3" width="10" height="1" fill="#a0522d"/>
+
+  <rect x="3" y="7" width="10" height="2" fill="#8b7355"/>
+  <rect x="3" y="8" width="10" height="1" fill="#a0522d"/>
+
+  <!-- Nails -->
+  <rect x="3" y="2" width="1" height="1" fill="#5d6d7e"/>
+  <rect x="12" y="2" width="1" height="1" fill="#5d6d7e"/>
+  <rect x="3" y="7" width="1" height="1" fill="#5d6d7e"/>
+  <rect x="12" y="7" width="1" height="1" fill="#5d6d7e"/>
+
+  <!-- Wood grain -->
+  <rect x="0" y="5" width="1" height="2" fill="#a0522d" opacity="0.5"/>
+  <rect x="14" y="5" width="1" height="2" fill="#a0522d" opacity="0.5"/>
+</svg>

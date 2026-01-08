@@ -315,7 +315,23 @@ static func parse(command: String) -> Dictionary:
                         if motion_arg == "on" or motion_arg == "off" or motion_arg == "toggle" or motion_arg == "reduced" or motion_arg == "full":
                             return {"ok": true, "intent": SimIntents.make("ui_settings_motion", {"mode": motion_arg})}
                     return {"ok": false, "error": "Usage: settings motion [on|off|toggle|reduced|full]"}
-            return {"ok": false, "error": "Usage: settings [show|hide|lessons|prefs|verify|conflicts|resolve|export|scale|font|compact|motion]"}
+                if mode == "speed" or mode == "gamespeed":
+                    if tokens.size() == 2:
+                        return {"ok": true, "intent": SimIntents.make("ui_settings_speed", {"mode": "show"})}
+                    if tokens.size() == 3:
+                        var speed_arg: String = tokens[2].to_lower()
+                        if speed_arg == "slower" or speed_arg == "down" or speed_arg == "-":
+                            return {"ok": true, "intent": SimIntents.make("ui_settings_speed", {"mode": "slower"})}
+                        if speed_arg == "faster" or speed_arg == "up" or speed_arg == "+":
+                            return {"ok": true, "intent": SimIntents.make("ui_settings_speed", {"mode": "faster"})}
+                        if speed_arg == "reset" or speed_arg == "normal" or speed_arg == "1" or speed_arg == "1.0":
+                            return {"ok": true, "intent": SimIntents.make("ui_settings_speed", {"mode": "reset"})}
+                        if speed_arg.is_valid_float():
+                            var val: float = speed_arg.to_float()
+                            if val >= 0.5 and val <= 2.0:
+                                return {"ok": true, "intent": SimIntents.make("ui_settings_speed", {"mode": "set", "value": val})}
+                    return {"ok": false, "error": "Usage: settings speed [slower|faster|reset|0.5-2.0]"}
+            return {"ok": false, "error": "Usage: settings [show|hide|lessons|prefs|verify|conflicts|resolve|export|scale|font|compact|motion|speed]"}
         "tutorial":
             if tokens.size() == 1:
                 return {"ok": true, "intent": SimIntents.make("ui_tutorial_toggle")}

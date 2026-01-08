@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width="20" height="20">
+  <!-- Platinum Badge (20x20) - Tier 4 achievement -->
+  <!-- Color Palette: #85c1e9, #5dade2, #3498db, #fdfefe -->
+
+  <!-- Ribbon tails -->
+  <rect x="3" y="14" width="4" height="6" fill="#f4d03f"/>
+  <rect x="4" y="15" width="2" height="4" fill="#e67e22"/>
+  <rect x="13" y="14" width="4" height="6" fill="#f4d03f"/>
+  <rect x="14" y="15" width="2" height="4" fill="#e67e22"/>
+
+  <!-- Badge circle base -->
+  <rect x="4" y="2" width="12" height="14" fill="#85c1e9"/>
+  <rect x="6" y="1" width="8" height="1" fill="#3498db"/>
+  <rect x="6" y="15" width="8" height="1" fill="#3498db"/>
+  <rect x="3" y="4" width="1" height="10" fill="#3498db"/>
+  <rect x="16" y="4" width="1" height="10" fill="#3498db"/>
+
+  <!-- Inner circle -->
+  <rect x="6" y="4" width="8" height="10" fill="#aed6f1"/>
+  <rect x="7" y="3" width="6" height="1" fill="#5dade2"/>
+  <rect x="7" y="13" width="6" height="1" fill="#5dade2"/>
+
+  <!-- Diamond emblem -->
+  <rect x="8" y="5" width="4" height="6" fill="#fdfefe"/>
+  <rect x="9" y="4" width="2" height="1" fill="#85c1e9"/>
+  <rect x="9" y="11" width="2" height="1" fill="#85c1e9"/>
+  <rect x="9" y="7" width="2" height="2" fill="#3498db"/>
+
+  <!-- Shine effects -->
+  <rect x="6" y="4" width="2" height="2" fill="#fdfefe" opacity="0.7"/>
+  <rect x="12" y="5" width="1" height="1" fill="#fdfefe" opacity="0.5"/>
+  <rect x="7" y="10" width="1" height="1" fill="#fdfefe" opacity="0.4"/>
+</svg>

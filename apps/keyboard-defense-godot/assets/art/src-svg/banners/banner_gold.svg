@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 20" width="12" height="20">
+  <!-- Gold Banner (12x20) - Imperial flag -->
+  <!-- Color Palette: #f4d03f, #d4ac0d, #9a7d0a, #8b7355 -->
+
+  <!-- Pole top ornament -->
+  <rect x="5" y="0" width="2" height="2" fill="#e74c3c"/>
+  <rect x="4" y="1" width="4" height="1" fill="#c0392b"/>
+
+  <!-- Pole -->
+  <rect x="5" y="2" width="2" height="18" fill="#8b7355"/>
+  <rect x="6" y="2" width="1" height="18" fill="#5d4e37"/>
+
+  <!-- Banner fabric -->
+  <rect x="0" y="3" width="5" height="14" fill="#f4d03f"/>
+  <rect x="1" y="4" width="4" height="12" fill="#d4ac0d"/>
+
+  <!-- Banner emblem (sun) -->
+  <rect x="1" y="6" width="3" height="3" fill="#c0392b"/>
+  <rect x="2" y="7" width="1" height="1" fill="#e74c3c"/>
+
+  <!-- Banner tail (forked) -->
+  <rect x="0" y="17" width="2" height="3" fill="#f4d03f"/>
+  <rect x="3" y="17" width="2" height="3" fill="#f4d03f"/>
+  <rect x="2" y="17" width="1" height="1" fill="#d4ac0d"/>
+
+  <!-- Fabric folds -->
+  <rect x="0" y="5" width="1" height="10" fill="#9a7d0a"/>
+</svg>

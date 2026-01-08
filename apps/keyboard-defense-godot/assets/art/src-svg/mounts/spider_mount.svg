@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 16" width="22" height="16">
+  <!-- Giant Spider Mount (22x16) - Creepy crawler -->
+  <!-- Color Palette: #2c3e50, #1a252f, #e74c3c, #f4d03f -->
+
+  <!-- Eyes (multiple) -->
+  <rect x="2" y="1" width="1" height="1" fill="#e74c3c"/>
+  <rect x="4" y="1" width="1" height="1" fill="#e74c3c"/>
+  <rect x="1" y="2" width="1" height="1" fill="#e74c3c"/>
+  <rect x="5" y="2" width="1" height="1" fill="#e74c3c"/>
+
+  <!-- Head -->
+  <rect x="0" y="3" width="7" height="5" fill="#2c3e50"/>
+  <rect x="1" y="4" width="5" height="3" fill="#1a252f"/>
+
+  <!-- Fangs -->
+  <rect x="1" y="7" width="1" height="2" fill="#f4d03f"/>
+  <rect x="5" y="7" width="1" height="2" fill="#f4d03f"/>
+
+  <!-- Thorax -->
+  <rect x="6" y="4" width="5" height="5" fill="#2c3e50"/>
+  <rect x="7" y="5" width="3" height="3" fill="#1a252f"/>
+
+  <!-- Abdomen -->
+  <rect x="10" y="3" width="10" height="8" fill="#2c3e50"/>
+  <rect x="11" y="4" width="8" height="6" fill="#1a252f"/>
+
+  <!-- Saddle -->
+  <rect x="12" y="2" width="6" height="3" fill="#8b7355"/>
+  <rect x="13" y="3" width="4" height="1" fill="#5d4e37"/>
+
+  <!-- Pattern on abdomen -->
+  <rect x="13" y="6" width="4" height="3" fill="#e74c3c"/>
+  <rect x="14" y="7" width="2" height="1" fill="#c0392b"/>
+
+  <!-- Spinnerets -->
+  <rect x="19" y="7" width="3" height="2" fill="#1a252f"/>
+
+  <!-- Front legs (left side) -->
+  <rect x="3" y="8" width="2" height="3" fill="#2c3e50"/>
+  <rect x="1" y="10" width="2" height="4" fill="#1a252f"/>
+  <rect x="0" y="13" width="2" height="2" fill="#2c3e50"/>
+
+  <!-- Front legs (right side) -->
+  <rect x="5" y="8" width="2" height="3" fill="#2c3e50"/>
+  <rect x="6" y="10" width="2" height="4" fill="#1a252f"/>
+  <rect x="7" y="13" width="2" height="2" fill="#2c3e50"/>
+
+  <!-- Middle legs -->
+  <rect x="9" y="9" width="2" height="3" fill="#2c3e50"/>
+  <rect x="8" y="11" width="2" height="4" fill="#1a252f"/>
+
+  <rect x="12" y="9" width="2" height="3" fill="#2c3e50"/>
+  <rect x="13" y="11" width="2" height="4" fill="#1a252f"/>
+
+  <!-- Back legs -->
+  <rect x="15" y="9" width="2" height="3" fill="#2c3e50"/>
+  <rect x="14" y="11" width="2" height="4" fill="#1a252f"/>
+
+  <rect x="18" y="9" width="2" height="3" fill="#2c3e50"/>
+  <rect x="19" y="11" width="2" height="4" fill="#1a252f"/>
+</svg>

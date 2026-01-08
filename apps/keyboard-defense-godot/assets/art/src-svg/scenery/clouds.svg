@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 12" width="24" height="12">
+  <!-- Clouds (24x12) - Fluffy cloud formation -->
+  <!-- Color Palette: #ecf0f1, #fdfefe, #bdc3c7 -->
+
+  <!-- Main cloud body -->
+  <rect x="4" y="4" width="16" height="6" fill="#ecf0f1"/>
+
+  <!-- Cloud puffs -->
+  <rect x="2" y="5" width="4" height="4" fill="#ecf0f1"/>
+  <rect x="6" y="2" width="6" height="4" fill="#fdfefe"/>
+  <rect x="10" y="1" width="4" height="3" fill="#ecf0f1"/>
+  <rect x="14" y="2" width="6" height="4" fill="#fdfefe"/>
+  <rect x="18" y="4" width="4" height="4" fill="#ecf0f1"/>
+
+  <!-- Highlights -->
+  <rect x="7" y="3" width="3" height="2" fill="#fdfefe"/>
+  <rect x="12" y="2" width="2" height="2" fill="#fdfefe"/>
+  <rect x="15" y="3" width="3" height="2" fill="#fdfefe"/>
+
+  <!-- Shadows -->
+  <rect x="4" y="8" width="14" height="2" fill="#bdc3c7"/>
+  <rect x="6" y="9" width="10" height="1" fill="#bdc3c7"/>
+</svg>

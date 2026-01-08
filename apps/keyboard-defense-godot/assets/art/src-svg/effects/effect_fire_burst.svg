@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <!-- Fire Burst Effect (24x24) - Flame explosion -->
+  <!-- Color Palette: #e74c3c, #c0392b, #f4d03f, #e67e22, #fdfefe -->
+
+  <!-- Flame tips outer -->
+  <rect x="10" y="0" width="4" height="4" fill="#e74c3c"/>
+  <rect x="11" y="0" width="2" height="2" fill="#c0392b"/>
+  <rect x="18" y="4" width="4" height="4" fill="#e74c3c"/>
+  <rect x="2" y="4" width="4" height="4" fill="#e74c3c"/>
+  <rect x="18" y="16" width="4" height="4" fill="#e67e22"/>
+  <rect x="2" y="16" width="4" height="4" fill="#e67e22"/>
+
+  <!-- Middle flames -->
+  <rect x="6" y="4" width="4" height="6" fill="#e74c3c"/>
+  <rect x="14" y="4" width="4" height="6" fill="#e74c3c"/>
+  <rect x="4" y="10" width="4" height="6" fill="#e67e22"/>
+  <rect x="16" y="10" width="4" height="6" fill="#e67e22"/>
+
+  <!-- Inner fire -->
+  <rect x="8" y="6" width="8" height="12" fill="#f4d03f"/>
+  <rect x="6" y="8" width="12" height="8" fill="#e67e22"/>
+
+  <!-- Core -->
+  <rect x="8" y="8" width="8" height="8" fill="#f4d03f"/>
+  <rect x="10" y="10" width="4" height="4" fill="#fdfefe"/>
+
+  <!-- Flame licks -->
+  <rect x="7" y="2" width="2" height="3" fill="#e67e22"/>
+  <rect x="15" y="2" width="2" height="3" fill="#e67e22"/>
+  <rect x="8" y="18" width="3" height="4" fill="#c0392b"/>
+  <rect x="13" y="18" width="3" height="4" fill="#c0392b"/>
+
+  <!-- Sparks -->
+  <rect x="4" y="2" width="2" height="2" fill="#f4d03f"/>
+  <rect x="18" y="2" width="2" height="2" fill="#f4d03f"/>
+  <rect x="0" y="10" width="2" height="2" fill="#e74c3c"/>
+  <rect x="22" y="10" width="2" height="2" fill="#e74c3c"/>
+</svg>

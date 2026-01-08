@@ -531,9 +531,10 @@ static func _enemy_move_step(state: GameState, dist_field: PackedInt32Array, eve
             continue
         var enemy: Dictionary = SimEnemies.normalize_enemy(state.enemies[enemy_index])
         state.enemies[enemy_index] = enemy
-        # Apply speed reduction from upgrades
+        # Apply speed reduction from upgrades and accessibility multiplier
         var base_speed: int = int(enemy.get("speed", 1))
-        var reduced_speed: float = float(base_speed) * (1.0 - speed_reduction)
+        var multiplier: float = state.speed_multiplier if state.speed_multiplier > 0.0 else 1.0
+        var reduced_speed: float = float(base_speed) * (1.0 - speed_reduction) * multiplier
         var speed: int = max(1, int(reduced_speed))
         var kind: String = str(enemy.get("kind", "raider"))
         for _step in range(speed):

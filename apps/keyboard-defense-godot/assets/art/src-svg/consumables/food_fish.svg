@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 10" width="16" height="10">
+  <!-- Cooked Fish (16x10) - Mana food -->
+  <!-- Color Palette: #3498db, #2980b9, #f4d03f, #e67e22, #1a252f -->
+
+  <!-- Fish body -->
+  <rect x="4" y="2" width="8" height="6" fill="#f4d03f"/>
+  <rect x="5" y="3" width="6" height="4" fill="#e67e22"/>
+
+  <!-- Fish head -->
+  <rect x="12" y="3" width="3" height="4" fill="#f4d03f"/>
+  <rect x="13" y="4" width="2" height="2" fill="#e67e22"/>
+
+  <!-- Eye -->
+  <rect x="13" y="4" width="1" height="1" fill="#1a252f"/>
+
+  <!-- Fish tail -->
+  <rect x="0" y="1" width="4" height="3" fill="#3498db"/>
+  <rect x="0" y="6" width="4" height="3" fill="#3498db"/>
+  <rect x="1" y="4" width="3" height="2" fill="#2980b9"/>
+  <rect x="3" y="3" width="2" height="4" fill="#f4d03f"/>
+
+  <!-- Grill marks -->
+  <rect x="5" y="4" width="3" height="1" fill="#d35400"/>
+  <rect x="8" y="5" width="2" height="1" fill="#d35400"/>
+
+  <!-- Scale detail -->
+  <rect x="6" y="3" width="1" height="1" fill="#f4d03f"/>
+  <rect x="8" y="3" width="1" height="1" fill="#f4d03f"/>
+  <rect x="7" y="6" width="1" height="1" fill="#f4d03f"/>
+</svg>

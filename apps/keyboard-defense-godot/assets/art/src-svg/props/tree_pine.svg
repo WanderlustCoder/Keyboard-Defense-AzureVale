@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 24" width="16" height="24">
+  <!-- Pine Tree (16x24) - Forest environment -->
+  <!-- Color Palette: #27ae60, #1e8449, #145a32, #8b7355, #5d4e37 -->
+
+  <!-- Tree top tier -->
+  <rect x="6" y="0" width="4" height="2" fill="#145a32"/>
+  <rect x="7" y="0" width="2" height="1" fill="#1e8449"/>
+
+  <!-- Second tier -->
+  <rect x="4" y="2" width="8" height="4" fill="#1e8449"/>
+  <rect x="5" y="3" width="6" height="2" fill="#27ae60"/>
+  <rect x="3" y="4" width="10" height="2" fill="#145a32"/>
+
+  <!-- Third tier -->
+  <rect x="2" y="6" width="12" height="4" fill="#1e8449"/>
+  <rect x="3" y="7" width="10" height="2" fill="#27ae60"/>
+  <rect x="1" y="8" width="14" height="2" fill="#145a32"/>
+
+  <!-- Fourth tier -->
+  <rect x="0" y="10" width="16" height="4" fill="#1e8449"/>
+  <rect x="1" y="11" width="14" height="2" fill="#27ae60"/>
+  <rect x="0" y="12" width="16" height="2" fill="#145a32"/>
+
+  <!-- Bottom foliage -->
+  <rect x="1" y="14" width="14" height="4" fill="#1e8449"/>
+  <rect x="2" y="15" width="12" height="2" fill="#27ae60"/>
+
+  <!-- Trunk -->
+  <rect x="6" y="18" width="4" height="6" fill="#8b7355"/>
+  <rect x="7" y="19" width="2" height="4" fill="#5d4e37"/>
+
+  <!-- Snow caps (optional for winter) -->
+  <rect x="6" y="0" width="4" height="1" fill="#fdfefe" opacity="0.3"/>
+</svg>

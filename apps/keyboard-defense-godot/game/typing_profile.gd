@@ -16,13 +16,16 @@ const DEFAULT_TOGGLE_REPORT_BIND := {"keycode": KEY_F6, "shift": false, "alt": f
 const DEFAULT_ONBOARDING := {"enabled": true, "completed": false, "step": 0, "ever_shown": false}
 const UI_SCALE_VALUES := [80, 90, 100, 110, 120, 130, 140]
 const DEFAULT_UI_SCALE := 100
+const SPEED_MULTIPLIER_VALUES := [0.5, 0.75, 1.0, 1.25, 1.5, 2.0]
 const DEFAULT_UI_PREFS := {
     "lessons_sort": "default",
     "lessons_sparkline": true,
     "onboarding": DEFAULT_ONBOARDING,
     "economy_note_shown": false,
     "ui_scale_percent": DEFAULT_UI_SCALE,
-    "compact_panels": false
+    "compact_panels": false,
+    "reduced_motion": false,
+    "speed_multiplier": 1.0
 }
 const DEFAULT_LESSON_PROGRESS := {
     "nights": 0,
@@ -263,6 +266,51 @@ static func set_compact_panels(profile: Dictionary, enabled: bool) -> Dictionary
     if result.get("ok", false):
         return {"ok": true, "profile": profile}
     return {"ok": false, "profile": profile, "error": result.get("error", "unknown error")}
+
+static func get_reduced_motion(profile: Dictionary) -> bool:
+    if profile.has("ui_prefs") and typeof(profile.get("ui_prefs")) == TYPE_DICTIONARY:
+        var prefs: Dictionary = profile.get("ui_prefs")
+        return bool(prefs.get("reduced_motion", false))
+    return false
+
+static func set_reduced_motion(profile: Dictionary, enabled: bool) -> Dictionary:
+    if not profile.has("ui_prefs") or typeof(profile.get("ui_prefs")) != TYPE_DICTIONARY:
+        profile["ui_prefs"] = {}
+    profile["ui_prefs"]["reduced_motion"] = bool(enabled)
+    var result: Dictionary = save_profile(profile)
+    if result.get("ok", false):
+        return {"ok": true, "profile": profile}
+    return {"ok": false, "profile": profile, "error": result.get("error", "unknown error")}
+
+static func get_speed_multiplier(profile: Dictionary) -> float:
+    if profile.has("ui_prefs") and typeof(profile.get("ui_prefs")) == TYPE_DICTIONARY:
+        var prefs: Dictionary = profile.get("ui_prefs")
+        var val: float = float(prefs.get("speed_multiplier", 1.0))
+        if val > 0.0 and val <= 2.0:
+            return val
+    return 1.0
+
+static func set_speed_multiplier(profile: Dictionary, multiplier: float) -> Dictionary:
+    if not profile.has("ui_prefs") or typeof(profile.get("ui_prefs")) != TYPE_DICTIONARY:
+        profile["ui_prefs"] = {}
+    var clamped: float = clamp(multiplier, 0.5, 2.0)
+    profile["ui_prefs"]["speed_multiplier"] = clamped
+    var result: Dictionary = save_profile(profile)
+    if result.get("ok", false):
+        return {"ok": true, "profile": profile}
+    return {"ok": false, "profile": profile, "error": result.get("error", "unknown error")}
+
+static func cycle_speed_multiplier(profile: Dictionary, direction: int) -> Dictionary:
+    var current: float = get_speed_multiplier(profile)
+    var current_index: int = 0
+    for i in range(SPEED_MULTIPLIER_VALUES.size()):
+        if abs(SPEED_MULTIPLIER_VALUES[i] - current) < 0.01:
+            current_index = i
+            break
+    var next_index: int = (current_index + direction) % SPEED_MULTIPLIER_VALUES.size()
+    if next_index < 0:
+        next_index = SPEED_MULTIPLIER_VALUES.size() - 1
+    return set_speed_multiplier(profile, SPEED_MULTIPLIER_VALUES[next_index])
 
 static func default_lesson_progress_entry() -> Dictionary:
     return DEFAULT_LESSON_PROGRESS.duplicate(true)

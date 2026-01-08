@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 16" width="14" height="16">
+  <!-- Heraldic Shield (14x16) - Wall decoration -->
+  <!-- Color Palette: #e74c3c, #c0392b, #f4d03f, #7f8c8d -->
+
+  <!-- Shield shape -->
+  <rect x="1" y="0" width="12" height="12" fill="#7f8c8d"/>
+  <rect x="2" y="1" width="10" height="10" fill="#5d6d7e"/>
+  <rect x="3" y="12" width="8" height="2" fill="#7f8c8d"/>
+  <rect x="4" y="14" width="6" height="1" fill="#5d6d7e"/>
+  <rect x="5" y="15" width="4" height="1" fill="#7f8c8d"/>
+
+  <!-- Shield face -->
+  <rect x="3" y="2" width="8" height="9" fill="#e74c3c"/>
+  <rect x="4" y="3" width="6" height="7" fill="#c0392b"/>
+
+  <!-- Heraldic cross -->
+  <rect x="6" y="2" width="2" height="9" fill="#f4d03f"/>
+  <rect x="3" y="5" width="8" height="2" fill="#f4d03f"/>
+
+  <!-- Cross center -->
+  <rect x="6" y="5" width="2" height="2" fill="#d4ac0d"/>
+
+  <!-- Decorative rivets -->
+  <rect x="2" y="1" width="1" height="1" fill="#95a5a6"/>
+  <rect x="11" y="1" width="1" height="1" fill="#95a5a6"/>
+  <rect x="2" y="10" width="1" height="1" fill="#95a5a6"/>
+  <rect x="11" y="10" width="1" height="1" fill="#95a5a6"/>
+</svg>

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Close Button (16x16) - X icon button -->
+  <!-- Color Palette: #e74c3c, #c0392b, #922b21, #fdfefe -->
+
+  <!-- Button background -->
+  <rect x="0" y="0" width="16" height="16" fill="#922b21"/>
+  <rect x="1" y="1" width="14" height="14" fill="#c0392b"/>
+  <rect x="2" y="2" width="12" height="12" fill="#e74c3c"/>
+
+  <!-- X mark -->
+  <rect x="4" y="4" width="2" height="2" fill="#fdfefe"/>
+  <rect x="5" y="5" width="2" height="2" fill="#fdfefe"/>
+  <rect x="6" y="6" width="2" height="2" fill="#fdfefe"/>
+  <rect x="7" y="7" width="2" height="2" fill="#fdfefe"/>
+  <rect x="8" y="8" width="2" height="2" fill="#fdfefe"/>
+  <rect x="9" y="9" width="2" height="2" fill="#fdfefe"/>
+  <rect x="10" y="10" width="2" height="2" fill="#fdfefe"/>
+
+  <rect x="10" y="4" width="2" height="2" fill="#fdfefe"/>
+  <rect x="9" y="5" width="2" height="2" fill="#fdfefe"/>
+  <rect x="8" y="6" width="2" height="2" fill="#fdfefe"/>
+  <rect x="6" y="8" width="2" height="2" fill="#fdfefe"/>
+  <rect x="5" y="9" width="2" height="2" fill="#fdfefe"/>
+  <rect x="4" y="10" width="2" height="2" fill="#fdfefe"/>
+</svg>

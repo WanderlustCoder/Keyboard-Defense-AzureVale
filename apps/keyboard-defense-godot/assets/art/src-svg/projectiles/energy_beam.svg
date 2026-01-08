@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 4" width="20" height="4">
+  <!-- Energy Beam (20x4) - Laser projectile -->
+  <!-- Color Palette: #e74c3c, #f39c12, #f4d03f, #fdfefe -->
+
+  <!-- Beam core -->
+  <rect x="0" y="1" width="20" height="2" fill="#e74c3c"/>
+  <rect x="2" y="1" width="16" height="2" fill="#f39c12"/>
+  <rect x="4" y="1" width="12" height="2" fill="#f4d03f"/>
+  <rect x="6" y="1" width="8" height="2" fill="#fdfefe"/>
+
+  <!-- Glow -->
+  <rect x="0" y="0" width="4" height="1" fill="#f39c12"/>
+  <rect x="0" y="3" width="4" height="1" fill="#f39c12"/>
+  <rect x="16" y="0" width="4" height="1" fill="#f39c12"/>
+  <rect x="16" y="3" width="4" height="1" fill="#f39c12"/>
+
+  <!-- Tips -->
+  <rect x="0" y="1" width="2" height="2" fill="#f4d03f"/>
+  <rect x="18" y="1" width="2" height="2" fill="#f4d03f"/>
+</svg>

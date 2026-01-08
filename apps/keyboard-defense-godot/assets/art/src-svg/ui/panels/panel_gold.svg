@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 48" width="64" height="48">
+  <!-- Gold Panel (64x48) - Fancy UI panel -->
+  <!-- Color Palette: #f4d03f, #e67e22, #d35400, #2c3e50 -->
+
+  <!-- Panel gold border -->
+  <rect x="0" y="0" width="64" height="48" fill="#d35400"/>
+  <rect x="1" y="1" width="62" height="46" fill="#e67e22"/>
+  <rect x="2" y="2" width="60" height="44" fill="#f4d03f"/>
+
+  <!-- Panel inner area -->
+  <rect x="4" y="4" width="56" height="40" fill="#2c3e50"/>
+  <rect x="5" y="5" width="54" height="38" fill="#34495e"/>
+
+  <!-- Gold corner ornaments -->
+  <rect x="0" y="0" width="6" height="6" fill="#f4d03f"/>
+  <rect x="1" y="1" width="4" height="4" fill="#e67e22"/>
+  <rect x="2" y="2" width="2" height="2" fill="#fdfefe"/>
+
+  <rect x="58" y="0" width="6" height="6" fill="#f4d03f"/>
+  <rect x="59" y="1" width="4" height="4" fill="#e67e22"/>
+  <rect x="60" y="2" width="2" height="2" fill="#fdfefe"/>
+
+  <rect x="0" y="42" width="6" height="6" fill="#f4d03f"/>
+  <rect x="1" y="43" width="4" height="4" fill="#e67e22"/>
+  <rect x="2" y="44" width="2" height="2" fill="#fdfefe"/>
+
+  <rect x="58" y="42" width="6" height="6" fill="#f4d03f"/>
+  <rect x="59" y="43" width="4" height="4" fill="#e67e22"/>
+  <rect x="60" y="44" width="2" height="2" fill="#fdfefe"/>
+
+  <!-- Top gold accent -->
+  <rect x="24" y="0" width="16" height="3" fill="#f4d03f"/>
+  <rect x="26" y="1" width="12" height="1" fill="#fdfefe"/>
+</svg>

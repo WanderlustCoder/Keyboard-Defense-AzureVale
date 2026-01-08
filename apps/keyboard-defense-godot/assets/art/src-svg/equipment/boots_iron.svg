@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 14" width="12" height="14">
+  <!-- Iron Boots (12x14) - Foot armor -->
+  <!-- Color Palette: #7f8c8d, #95a5a6, #5d6d7e, #bdc3c7 -->
+
+  <!-- Boot shaft -->
+  <rect x="2" y="0" width="6" height="8" fill="#7f8c8d"/>
+  <rect x="3" y="1" width="4" height="6" fill="#95a5a6"/>
+  <rect x="1" y="2" width="2" height="6" fill="#5d6d7e"/>
+
+  <!-- Boot top rim -->
+  <rect x="1" y="0" width="8" height="2" fill="#5d6d7e"/>
+  <rect x="2" y="0" width="6" height="1" fill="#7f8c8d"/>
+
+  <!-- Ankle section -->
+  <rect x="1" y="6" width="8" height="3" fill="#5d6d7e"/>
+  <rect x="2" y="7" width="6" height="1" fill="#7f8c8d"/>
+
+  <!-- Foot section -->
+  <rect x="0" y="9" width="10" height="4" fill="#7f8c8d"/>
+  <rect x="1" y="10" width="8" height="2" fill="#95a5a6"/>
+
+  <!-- Toe cap -->
+  <rect x="8" y="10" width="4" height="3" fill="#5d6d7e"/>
+  <rect x="9" y="10" width="2" height="2" fill="#7f8c8d"/>
+
+  <!-- Sole -->
+  <rect x="0" y="13" width="12" height="1" fill="#3d3426"/>
+
+  <!-- Metal bands -->
+  <rect x="1" y="4" width="7" height="1" fill="#5d6d7e"/>
+  <rect x="2" y="4" width="5" height="1" fill="#bdc3c7"/>
+
+  <!-- Highlight -->
+  <rect x="3" y="2" width="2" height="2" fill="#bdc3c7"/>
+</svg>

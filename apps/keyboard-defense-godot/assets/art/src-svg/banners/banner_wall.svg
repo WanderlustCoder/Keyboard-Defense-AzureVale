@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 20" width="16" height="20">
+  <!-- Wall Banner (16x20) - Hanging tapestry -->
+  <!-- Color Palette: #e74c3c, #c0392b, #f4d03f, #8b7355 -->
+
+  <!-- Mounting rod -->
+  <rect x="0" y="0" width="16" height="2" fill="#8b7355"/>
+  <rect x="0" y="0" width="16" height="1" fill="#5d4e37"/>
+
+  <!-- Mounting rings -->
+  <rect x="1" y="0" width="2" height="2" fill="#f4d03f"/>
+  <rect x="13" y="0" width="2" height="2" fill="#f4d03f"/>
+
+  <!-- Banner fabric -->
+  <rect x="1" y="2" width="14" height="16" fill="#e74c3c"/>
+  <rect x="2" y="3" width="12" height="14" fill="#c0392b"/>
+
+  <!-- Central emblem (lion/crest) -->
+  <rect x="5" y="5" width="6" height="6" fill="#f4d03f"/>
+  <rect x="6" y="6" width="4" height="4" fill="#d4ac0d"/>
+  <rect x="7" y="7" width="2" height="2" fill="#9a7d0a"/>
+
+  <!-- Decorative border -->
+  <rect x="3" y="4" width="10" height="1" fill="#f4d03f"/>
+  <rect x="3" y="13" width="10" height="1" fill="#f4d03f"/>
+
+  <!-- Banner tail (pointed) -->
+  <rect x="1" y="18" width="6" height="2" fill="#e74c3c"/>
+  <rect x="9" y="18" width="6" height="2" fill="#e74c3c"/>
+  <rect x="7" y="18" width="2" height="1" fill="#c0392b"/>
+
+  <!-- Fabric folds -->
+  <rect x="1" y="4" width="1" height="13" fill="#922b21"/>
+  <rect x="14" y="4" width="1" height="13" fill="#922b21"/>
+</svg>

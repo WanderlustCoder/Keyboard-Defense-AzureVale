@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 6" width="14" height="6">
+  <!-- Holy Bolt (14x6) - Divine projectile -->
+  <!-- Color Palette: #f4d03f, #fdfefe, #f39c12, #ecf0f1 -->
+
+  <!-- Light trail -->
+  <rect x="10" y="2" width="4" height="2" fill="#f4d03f"/>
+  <rect x="11" y="1" width="3" height="1" fill="#fdfefe"/>
+  <rect x="11" y="4" width="3" height="1" fill="#fdfefe"/>
+
+  <!-- Core -->
+  <rect x="2" y="1" width="10" height="4" fill="#f4d03f"/>
+  <rect x="3" y="2" width="8" height="2" fill="#fdfefe"/>
+
+  <!-- Cross tip -->
+  <rect x="0" y="2" width="4" height="2" fill="#fdfefe"/>
+  <rect x="1" y="0" width="2" height="6" fill="#f4d03f"/>
+  <rect x="1" y="1" width="2" height="4" fill="#fdfefe"/>
+  <rect x="2" y="2" width="1" height="2" fill="#ecf0f1"/>
+
+  <!-- Glow particles -->
+  <rect x="6" y="0" width="1" height="1" fill="#fdfefe"/>
+  <rect x="8" y="5" width="1" height="1" fill="#fdfefe"/>
+</svg>

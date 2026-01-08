@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 24" width="32" height="24">
+  <!-- Night Sky (32x24) - Starry background -->
+  <!-- Color Palette: #1a252f, #2c3e50, #f4d03f, #fdfefe -->
+
+  <!-- Dark sky gradient -->
+  <rect x="0" y="0" width="32" height="24" fill="#1a252f"/>
+  <rect x="0" y="0" width="32" height="8" fill="#2c3e50"/>
+
+  <!-- Moon -->
+  <rect x="4" y="2" width="6" height="6" fill="#ecf0f1"/>
+  <rect x="5" y="3" width="4" height="4" fill="#fdfefe"/>
+  <rect x="6" y="4" width="2" height="2" fill="#bdc3c7"/>
+
+  <!-- Stars -->
+  <rect x="14" y="3" width="1" height="1" fill="#fdfefe"/>
+  <rect x="20" y="5" width="1" height="1" fill="#f4d03f"/>
+  <rect x="26" y="2" width="1" height="1" fill="#fdfefe"/>
+  <rect x="28" y="7" width="1" height="1" fill="#f4d03f"/>
+
+  <rect x="2" y="10" width="1" height="1" fill="#fdfefe"/>
+  <rect x="8" y="12" width="1" height="1" fill="#f4d03f"/>
+  <rect x="16" y="9" width="1" height="1" fill="#fdfefe"/>
+  <rect x="22" y="11" width="1" height="1" fill="#fdfefe"/>
+  <rect x="30" y="10" width="1" height="1" fill="#f4d03f"/>
+
+  <rect x="5" y="16" width="1" height="1" fill="#fdfefe"/>
+  <rect x="12" y="18" width="1" height="1" fill="#f4d03f"/>
+  <rect x="18" y="15" width="1" height="1" fill="#fdfefe"/>
+  <rect x="25" y="17" width="1" height="1" fill="#fdfefe"/>
+
+  <rect x="10" y="21" width="1" height="1" fill="#f4d03f"/>
+  <rect x="21" y="20" width="1" height="1" fill="#fdfefe"/>
+  <rect x="29" y="22" width="1" height="1" fill="#fdfefe"/>
+</svg>

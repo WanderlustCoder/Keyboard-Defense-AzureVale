@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width="20" height="20">
+  <!-- Speed Demon Achievement (20x20) - Fast typing achievement -->
+  <!-- Color Palette: #e74c3c, #c0392b, #f4d03f, #fdfefe -->
+
+  <!-- Circle background -->
+  <rect x="4" y="2" width="12" height="16" fill="#e74c3c"/>
+  <rect x="6" y="1" width="8" height="1" fill="#c0392b"/>
+  <rect x="6" y="18" width="8" height="1" fill="#c0392b"/>
+  <rect x="3" y="4" width="1" height="12" fill="#c0392b"/>
+  <rect x="16" y="4" width="1" height="12" fill="#c0392b"/>
+
+  <!-- Inner circle -->
+  <rect x="6" y="4" width="8" height="12" fill="#c0392b"/>
+
+  <!-- Lightning bolt -->
+  <rect x="10" y="4" width="3" height="3" fill="#f4d03f"/>
+  <rect x="8" y="6" width="4" height="3" fill="#f4d03f"/>
+  <rect x="9" y="8" width="3" height="3" fill="#fdfefe"/>
+  <rect x="7" y="10" width="4" height="3" fill="#f4d03f"/>
+  <rect x="7" y="12" width="3" height="3" fill="#f4d03f"/>
+  <rect x="8" y="9" width="2" height="2" fill="#fdfefe"/>
+
+  <!-- Speed lines -->
+  <rect x="4" y="7" width="2" height="1" fill="#fdfefe" opacity="0.5"/>
+  <rect x="4" y="10" width="3" height="1" fill="#fdfefe" opacity="0.5"/>
+  <rect x="4" y="13" width="2" height="1" fill="#fdfefe" opacity="0.5"/>
+</svg>

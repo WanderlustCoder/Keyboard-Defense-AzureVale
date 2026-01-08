@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 12" width="10" height="12">
+  <!-- Apple (10x12) - Health food -->
+  <!-- Color Palette: #e74c3c, #c0392b, #27ae60, #8b7355, #fdfefe -->
+
+  <!-- Stem -->
+  <rect x="5" y="0" width="1" height="2" fill="#8b7355"/>
+  <rect x="4" y="1" width="1" height="1" fill="#5d4e37"/>
+
+  <!-- Leaf -->
+  <rect x="6" y="1" width="2" height="2" fill="#27ae60"/>
+  <rect x="7" y="0" width="1" height="1" fill="#1e8449"/>
+
+  <!-- Apple body -->
+  <rect x="2" y="3" width="6" height="7" fill="#e74c3c"/>
+  <rect x="1" y="4" width="8" height="5" fill="#c0392b"/>
+  <rect x="3" y="3" width="4" height="1" fill="#e74c3c"/>
+  <rect x="3" y="9" width="4" height="1" fill="#e74c3c"/>
+
+  <!-- Highlight -->
+  <rect x="2" y="4" width="2" height="3" fill="#e74c3c"/>
+  <rect x="2" y="4" width="1" height="2" fill="#ff6b6b"/>
+
+  <!-- Shine -->
+  <rect x="3" y="5" width="1" height="1" fill="#fdfefe"/>
+</svg>

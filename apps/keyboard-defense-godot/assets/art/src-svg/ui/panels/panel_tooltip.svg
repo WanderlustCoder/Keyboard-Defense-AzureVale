@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 32" width="48" height="32">
+  <!-- Tooltip Panel (48x32) - Info popup -->
+  <!-- Color Palette: #1a252f, #2c3e50, #ecf0f1, #f4d03f -->
+
+  <!-- Panel border -->
+  <rect x="0" y="0" width="48" height="32" fill="#1a252f"/>
+  <rect x="1" y="1" width="46" height="30" fill="#2c3e50"/>
+
+  <!-- Inner area -->
+  <rect x="2" y="2" width="44" height="28" fill="#34495e"/>
+
+  <!-- Title bar -->
+  <rect x="2" y="2" width="44" height="6" fill="#f4d03f"/>
+  <rect x="3" y="3" width="42" height="4" fill="#e67e22"/>
+
+  <!-- Content area -->
+  <rect x="3" y="9" width="42" height="20" fill="#2c3e50"/>
+
+  <!-- Border highlight -->
+  <rect x="0" y="0" width="48" height="1" fill="#5d6d7e"/>
+  <rect x="0" y="0" width="1" height="32" fill="#5d6d7e"/>
+</svg>

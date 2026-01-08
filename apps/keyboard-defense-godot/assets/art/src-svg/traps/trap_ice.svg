@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Ice Trap (16x16) - Freezing floor hazard -->
+  <!-- Color Palette: #3498db, #2980b9, #1a5276, #85c1e9, #fdfefe -->
+
+  <!-- Ice base -->
+  <rect x="1" y="10" width="14" height="6" fill="#2980b9"/>
+  <rect x="0" y="11" width="16" height="4" fill="#3498db"/>
+  <rect x="2" y="12" width="12" height="3" fill="#5dade2"/>
+
+  <!-- Ice crystals -->
+  <rect x="2" y="6" width="2" height="5" fill="#85c1e9"/>
+  <rect x="2" y="5" width="2" height="2" fill="#5dade2"/>
+  <rect x="2" y="4" width="1" height="1" fill="#3498db"/>
+
+  <rect x="6" y="4" width="2" height="7" fill="#85c1e9"/>
+  <rect x="6" y="2" width="2" height="3" fill="#5dade2"/>
+  <rect x="6" y="1" width="1" height="2" fill="#3498db"/>
+  <rect x="7" y="0" width="1" height="2" fill="#2980b9"/>
+
+  <rect x="10" y="5" width="2" height="6" fill="#85c1e9"/>
+  <rect x="10" y="3" width="2" height="3" fill="#5dade2"/>
+  <rect x="10" y="2" width="1" height="2" fill="#3498db"/>
+  <rect x="11" y="1" width="1" height="2" fill="#2980b9"/>
+
+  <rect x="13" y="7" width="2" height="4" fill="#85c1e9"/>
+  <rect x="13" y="6" width="2" height="2" fill="#5dade2"/>
+  <rect x="14" y="5" width="1" height="1" fill="#3498db"/>
+
+  <!-- Ice shine -->
+  <rect x="3" y="6" width="1" height="2" fill="#fdfefe"/>
+  <rect x="7" y="3" width="1" height="2" fill="#fdfefe"/>
+  <rect x="11" y="4" width="1" height="2" fill="#fdfefe"/>
+
+  <!-- Frost particles -->
+  <rect x="4" y="8" width="1" height="1" fill="#fdfefe" opacity="0.6"/>
+  <rect x="8" y="6" width="1" height="1" fill="#fdfefe" opacity="0.6"/>
+</svg>

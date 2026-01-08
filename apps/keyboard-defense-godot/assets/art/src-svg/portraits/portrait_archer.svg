@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <!-- Archer Portrait (24x24) - Ranger NPC -->
+  <!-- Color Palette: #27ae60, #1e8449, #8b7355, #ecf0f1, #2c3e50 -->
+
+  <!-- Background -->
+  <rect x="0" y="0" width="24" height="24" fill="#2c3e50"/>
+
+  <!-- Hood -->
+  <rect x="5" y="2" width="14" height="6" fill="#27ae60"/>
+  <rect x="6" y="1" width="12" height="2" fill="#1e8449"/>
+  <rect x="5" y="6" width="3" height="8" fill="#27ae60"/>
+  <rect x="16" y="6" width="3" height="8" fill="#27ae60"/>
+
+  <!-- Face -->
+  <rect x="8" y="6" width="8" height="10" fill="#f5e6d3"/>
+  <rect x="9" y="7" width="6" height="8" fill="#e6d5c3"/>
+
+  <!-- Eyes -->
+  <rect x="9" y="9" width="2" height="2" fill="#2c3e50"/>
+  <rect x="13" y="9" width="2" height="2" fill="#2c3e50"/>
+  <rect x="9" y="9" width="1" height="1" fill="#27ae60"/>
+  <rect x="13" y="9" width="1" height="1" fill="#27ae60"/>
+
+  <!-- Nose -->
+  <rect x="11" y="11" width="2" height="2" fill="#d5c4a1"/>
+
+  <!-- Mouth -->
+  <rect x="10" y="14" width="4" height="1" fill="#c9a596"/>
+
+  <!-- Quiver strap -->
+  <rect x="6" y="14" width="2" height="8" fill="#8b7355"/>
+  <rect x="7" y="15" width="1" height="6" fill="#5d4e37"/>
+
+  <!-- Cloak -->
+  <rect x="5" y="16" width="14" height="8" fill="#27ae60"/>
+  <rect x="6" y="17" width="12" height="6" fill="#1e8449"/>
+
+  <!-- Arrow feathers showing -->
+  <rect x="18" y="4" width="3" height="4" fill="#c0392b"/>
+  <rect x="19" y="5" width="2" height="2" fill="#922b21"/>
+  <rect x="20" y="8" width="2" height="4" fill="#c0392b"/>
+</svg>

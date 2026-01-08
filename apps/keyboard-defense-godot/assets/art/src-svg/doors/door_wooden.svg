@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 24" width="16" height="24">
+  <!-- Wooden Door (16x24) - Basic door -->
+  <!-- Color Palette: #8b7355, #5d4e37, #3d3426, #7f8c8d, #f4d03f -->
+
+  <!-- Door frame -->
+  <rect x="0" y="0" width="16" height="24" fill="#5d4e37"/>
+  <rect x="1" y="1" width="14" height="22" fill="#3d3426"/>
+
+  <!-- Door panels -->
+  <rect x="2" y="2" width="12" height="20" fill="#8b7355"/>
+  <rect x="3" y="3" width="10" height="18" fill="#5d4e37"/>
+
+  <!-- Upper panel -->
+  <rect x="4" y="4" width="8" height="6" fill="#8b7355"/>
+  <rect x="5" y="5" width="6" height="4" fill="#5d4e37"/>
+
+  <!-- Lower panel -->
+  <rect x="4" y="12" width="8" height="8" fill="#8b7355"/>
+  <rect x="5" y="13" width="6" height="6" fill="#5d4e37"/>
+
+  <!-- Cross beam -->
+  <rect x="3" y="10" width="10" height="2" fill="#3d3426"/>
+
+  <!-- Door handle -->
+  <rect x="11" y="12" width="2" height="3" fill="#7f8c8d"/>
+  <rect x="11" y="13" width="1" height="1" fill="#95a5a6"/>
+
+  <!-- Hinges -->
+  <rect x="2" y="4" width="2" height="3" fill="#7f8c8d"/>
+  <rect x="2" y="17" width="2" height="3" fill="#7f8c8d"/>
+
+  <!-- Keyhole -->
+  <rect x="11" y="15" width="1" height="2" fill="#1a252f"/>
+</svg>

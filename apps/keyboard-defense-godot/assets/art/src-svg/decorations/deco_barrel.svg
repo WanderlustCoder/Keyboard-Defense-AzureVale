@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 16" width="12" height="16">
+  <!-- Barrel (12x16) - Decoration -->
+  <!-- Color Palette: #8b7355, #5d4e37, #a0522d, #2c3e50 -->
+
+  <!-- Barrel body -->
+  <rect x="1" y="2" width="10" height="12" fill="#8b7355"/>
+  <rect x="2" y="1" width="8" height="1" fill="#5d4e37"/>
+  <rect x="2" y="14" width="8" height="1" fill="#5d4e37"/>
+  <rect x="0" y="4" width="1" height="8" fill="#5d4e37"/>
+  <rect x="11" y="4" width="1" height="8" fill="#5d4e37"/>
+
+  <!-- Wood planks -->
+  <rect x="2" y="2" width="2" height="12" fill="#a0522d"/>
+  <rect x="5" y="2" width="2" height="12" fill="#8b7355"/>
+  <rect x="8" y="2" width="2" height="12" fill="#a0522d"/>
+
+  <!-- Metal bands -->
+  <rect x="1" y="3" width="10" height="2" fill="#2c3e50"/>
+  <rect x="1" y="11" width="10" height="2" fill="#2c3e50"/>
+  <rect x="2" y="4" width="8" height="1" fill="#5d6d7e"/>
+  <rect x="2" y="12" width="8" height="1" fill="#5d6d7e"/>
+
+  <!-- Lid top -->
+  <rect x="3" y="0" width="6" height="1" fill="#5d4e37"/>
+  <rect x="4" y="0" width="4" height="1" fill="#8b7355"/>
+
+  <!-- Highlight -->
+  <rect x="2" y="5" width="1" height="4" fill="#c4a35a" opacity="0.4"/>
+</svg>

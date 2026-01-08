@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 12" width="4" height="12">
+  <!-- Rain Drop (4x12) - Weather particle -->
+  <!-- Color Palette: #3498db, #5dade2, #85c1e9 -->
+
+  <!-- Drop body -->
+  <rect x="1" y="0" width="2" height="10" fill="#5dade2"/>
+  <rect x="1" y="1" width="1" height="8" fill="#85c1e9"/>
+  <rect x="2" y="0" width="1" height="9" fill="#3498db"/>
+
+  <!-- Drop tip -->
+  <rect x="1" y="10" width="2" height="2" fill="#3498db"/>
+  <rect x="1" y="10" width="1" height="1" fill="#5dade2"/>
+</svg>

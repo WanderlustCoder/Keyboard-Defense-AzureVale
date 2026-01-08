@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 24" width="12" height="24">
+  <!-- War Hammer (12x24) - Heavy blunt weapon -->
+  <!-- Color Palette: #7f8c8d, #95a5a6, #5d6d7e, #8b7355, #f4d03f -->
+
+  <!-- Hammer head top -->
+  <rect x="1" y="2" width="10" height="6" fill="#7f8c8d"/>
+  <rect x="2" y="3" width="8" height="4" fill="#95a5a6"/>
+
+  <!-- Hammer face details -->
+  <rect x="0" y="3" width="2" height="4" fill="#5d6d7e"/>
+  <rect x="10" y="3" width="2" height="4" fill="#5d6d7e"/>
+
+  <!-- Hammer top spike -->
+  <rect x="5" y="0" width="2" height="2" fill="#7f8c8d"/>
+  <rect x="5" y="0" width="1" height="1" fill="#95a5a6"/>
+
+  <!-- Gold band -->
+  <rect x="4" y="8" width="4" height="2" fill="#f4d03f"/>
+  <rect x="5" y="8" width="2" height="1" fill="#e67e22"/>
+
+  <!-- Handle -->
+  <rect x="5" y="10" width="2" height="12" fill="#8b7355"/>
+  <rect x="5" y="10" width="1" height="11" fill="#5d4e37"/>
+
+  <!-- Handle grip -->
+  <rect x="4" y="14" width="4" height="1" fill="#5d4e37"/>
+  <rect x="4" y="18" width="4" height="1" fill="#5d4e37"/>
+
+  <!-- Pommel -->
+  <rect x="4" y="22" width="4" height="2" fill="#7f8c8d"/>
+  <rect x="5" y="22" width="2" height="1" fill="#95a5a6"/>
+</svg>

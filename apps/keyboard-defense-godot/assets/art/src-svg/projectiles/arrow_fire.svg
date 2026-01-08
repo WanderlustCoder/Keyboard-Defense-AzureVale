@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 6" width="18" height="6">
+  <!-- Fire Arrow (18x6) - Burning projectile -->
+  <!-- Color Palette: #8b7355, #e74c3c, #f39c12, #f4d03f -->
+
+  <!-- Arrow shaft -->
+  <rect x="6" y="2" width="10" height="2" fill="#8b7355"/>
+  <rect x="7" y="3" width="8" height="1" fill="#5d4e37"/>
+
+  <!-- Fire trail -->
+  <rect x="14" y="1" width="4" height="4" fill="#e74c3c"/>
+  <rect x="15" y="2" width="3" height="2" fill="#f39c12"/>
+  <rect x="16" y="2" width="2" height="2" fill="#f4d03f"/>
+
+  <!-- Burning head -->
+  <rect x="0" y="1" width="6" height="4" fill="#e74c3c"/>
+  <rect x="1" y="2" width="4" height="2" fill="#f39c12"/>
+  <rect x="2" y="2" width="2" height="2" fill="#f4d03f"/>
+
+  <!-- Tip -->
+  <rect x="0" y="2" width="2" height="2" fill="#7f8c8d"/>
+</svg>

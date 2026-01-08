@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 24" width="32" height="24">
+  <!-- Cave Background (32x24) - Underground cavern -->
+  <!-- Color Palette: #1a252f, #2c3e50, #5d6d7e, #7f8c8d -->
+
+  <!-- Dark background -->
+  <rect x="0" y="0" width="32" height="24" fill="#1a252f"/>
+
+  <!-- Cave ceiling stalactites -->
+  <rect x="2" y="0" width="4" height="6" fill="#5d6d7e"/>
+  <rect x="3" y="5" width="2" height="3" fill="#7f8c8d"/>
+
+  <rect x="10" y="0" width="3" height="4" fill="#5d6d7e"/>
+  <rect x="11" y="3" width="1" height="2" fill="#7f8c8d"/>
+
+  <rect x="16" y="0" width="5" height="5" fill="#5d6d7e"/>
+  <rect x="17" y="4" width="3" height="3" fill="#7f8c8d"/>
+
+  <rect x="24" y="0" width="4" height="7" fill="#5d6d7e"/>
+  <rect x="25" y="6" width="2" height="2" fill="#7f8c8d"/>
+
+  <!-- Cave walls -->
+  <rect x="0" y="0" width="3" height="24" fill="#2c3e50"/>
+  <rect x="29" y="0" width="3" height="24" fill="#2c3e50"/>
+
+  <!-- Floor stalagmites -->
+  <rect x="4" y="20" width="3" height="4" fill="#5d6d7e"/>
+  <rect x="5" y="18" width="1" height="2" fill="#7f8c8d"/>
+
+  <rect x="12" y="21" width="4" height="3" fill="#5d6d7e"/>
+  <rect x="13" y="19" width="2" height="2" fill="#7f8c8d"/>
+
+  <rect x="22" y="19" width="3" height="5" fill="#5d6d7e"/>
+  <rect x="23" y="17" width="1" height="2" fill="#7f8c8d"/>
+
+  <!-- Crystal glow -->
+  <rect x="14" y="10" width="2" height="3" fill="#9b59b6"/>
+  <rect x="15" y="11" width="1" height="1" fill="#d7bde2"/>
+</svg>

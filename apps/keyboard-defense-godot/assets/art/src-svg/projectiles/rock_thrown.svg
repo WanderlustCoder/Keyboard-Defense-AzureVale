@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8" width="8" height="8">
+  <!-- Thrown Rock (8x8) - Simple projectile -->
+  <!-- Color Palette: #7f8c8d, #5d6d7e, #95a5a6, #bdc3c7 -->
+
+  <!-- Rock body -->
+  <rect x="1" y="2" width="6" height="4" fill="#7f8c8d"/>
+  <rect x="2" y="1" width="4" height="6" fill="#7f8c8d"/>
+
+  <!-- Shading -->
+  <rect x="2" y="2" width="4" height="4" fill="#5d6d7e"/>
+  <rect x="3" y="3" width="2" height="2" fill="#95a5a6"/>
+
+  <!-- Highlight -->
+  <rect x="2" y="2" width="1" height="1" fill="#bdc3c7"/>
+
+  <!-- Rough edges -->
+  <rect x="0" y="3" width="1" height="2" fill="#5d6d7e"/>
+  <rect x="7" y="3" width="1" height="2" fill="#5d6d7e"/>
+</svg>

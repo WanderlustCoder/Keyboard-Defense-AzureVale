@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6 20" width="6" height="20">
+  <!-- Magic Wand (6x20) - Light magic weapon -->
+  <!-- Color Palette: #9b59b6, #8e44ad, #d7bde2, #fdfefe, #f4d03f -->
+
+  <!-- Star tip -->
+  <rect x="2" y="0" width="2" height="2" fill="#fdfefe"/>
+  <rect x="1" y="1" width="1" height="1" fill="#f4d03f"/>
+  <rect x="4" y="1" width="1" height="1" fill="#f4d03f"/>
+  <rect x="2" y="2" width="1" height="1" fill="#f4d03f"/>
+  <rect x="3" y="2" width="1" height="1" fill="#f4d03f"/>
+
+  <!-- Crystal head -->
+  <rect x="1" y="3" width="4" height="3" fill="#d7bde2"/>
+  <rect x="2" y="3" width="2" height="2" fill="#fdfefe"/>
+
+  <!-- Wand shaft -->
+  <rect x="2" y="6" width="2" height="12" fill="#8e44ad"/>
+  <rect x="2" y="6" width="1" height="11" fill="#9b59b6"/>
+
+  <!-- Magic rings -->
+  <rect x="1" y="8" width="4" height="1" fill="#d7bde2"/>
+  <rect x="1" y="12" width="4" height="1" fill="#d7bde2"/>
+
+  <!-- Handle -->
+  <rect x="1" y="16" width="4" height="4" fill="#6c3483"/>
+  <rect x="2" y="17" width="2" height="2" fill="#8e44ad"/>
+</svg>

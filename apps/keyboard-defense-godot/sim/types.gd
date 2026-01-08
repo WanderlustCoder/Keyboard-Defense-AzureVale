@@ -43,6 +43,9 @@ var purchased_kingdom_upgrades: Array
 var purchased_unit_upgrades: Array
 var gold: int
 
+# Accessibility settings (applied from profile)
+var speed_multiplier: float
+
 func _init() -> void:
     day = 1
     phase = "day"
@@ -93,6 +96,9 @@ func _init() -> void:
     purchased_kingdom_upgrades = []
     purchased_unit_upgrades = []
     gold = 0
+
+    # Accessibility defaults
+    speed_multiplier = 1.0
 
     discovered[_index(base_pos.x, base_pos.y)] = true
 

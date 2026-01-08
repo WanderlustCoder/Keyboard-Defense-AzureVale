@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <!-- Guard Portrait (24x24) - Soldier NPC -->
+  <!-- Color Palette: #7f8c8d, #95a5a6, #c0392b, #f5e6d3, #2c3e50 -->
+
+  <!-- Background -->
+  <rect x="0" y="0" width="24" height="24" fill="#2c3e50"/>
+
+  <!-- Helmet -->
+  <rect x="6" y="3" width="12" height="8" fill="#7f8c8d"/>
+  <rect x="7" y="2" width="10" height="2" fill="#5d6d7e"/>
+  <rect x="5" y="5" width="2" height="5" fill="#7f8c8d"/>
+  <rect x="17" y="5" width="2" height="5" fill="#7f8c8d"/>
+
+  <!-- Helmet nose guard -->
+  <rect x="11" y="5" width="2" height="5" fill="#5d6d7e"/>
+
+  <!-- Face visible areas -->
+  <rect x="8" y="6" width="3" height="4" fill="#f5e6d3"/>
+  <rect x="13" y="6" width="3" height="4" fill="#f5e6d3"/>
+
+  <!-- Eyes -->
+  <rect x="9" y="7" width="1" height="2" fill="#2c3e50"/>
+  <rect x="14" y="7" width="1" height="2" fill="#2c3e50"/>
+
+  <!-- Chin guard -->
+  <rect x="7" y="10" width="10" height="3" fill="#7f8c8d"/>
+  <rect x="8" y="11" width="8" height="2" fill="#95a5a6"/>
+
+  <!-- Stubble on chin -->
+  <rect x="9" y="11" width="6" height="1" fill="#5d6d7e"/>
+
+  <!-- Armor -->
+  <rect x="4" y="13" width="16" height="4" fill="#7f8c8d"/>
+  <rect x="5" y="14" width="14" height="2" fill="#95a5a6"/>
+
+  <!-- Red cape/tabard -->
+  <rect x="6" y="17" width="12" height="7" fill="#c0392b"/>
+  <rect x="7" y="18" width="10" height="5" fill="#922b21"/>
+
+  <!-- Guard emblem -->
+  <rect x="10" y="18" width="4" height="4" fill="#f4d03f"/>
+  <rect x="11" y="19" width="2" height="2" fill="#e67e22"/>
+
+  <!-- Shoulder pauldrons -->
+  <rect x="3" y="14" width="4" height="4" fill="#5d6d7e"/>
+  <rect x="17" y="14" width="4" height="4" fill="#5d6d7e"/>
+</svg>

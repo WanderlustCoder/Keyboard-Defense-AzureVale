@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 16" width="10" height="16">
+  <!-- Lantern (10x16) - Portable light -->
+  <!-- Color Palette: #f4d03f, #e67e22, #7f8c8d, #95a5a6, #1a252f -->
+
+  <!-- Hook -->
+  <rect x="4" y="0" width="2" height="2" fill="#7f8c8d"/>
+  <rect x="3" y="1" width="4" height="1" fill="#95a5a6"/>
+
+  <!-- Top cap -->
+  <rect x="2" y="2" width="6" height="2" fill="#7f8c8d"/>
+  <rect x="3" y="2" width="4" height="1" fill="#95a5a6"/>
+
+  <!-- Glass body -->
+  <rect x="1" y="4" width="8" height="8" fill="#1a252f" opacity="0.3"/>
+  <rect x="2" y="5" width="6" height="6" fill="#2c3e50" opacity="0.4"/>
+
+  <!-- Frame -->
+  <rect x="0" y="4" width="1" height="8" fill="#7f8c8d"/>
+  <rect x="9" y="4" width="1" height="8" fill="#7f8c8d"/>
+  <rect x="1" y="4" width="8" height="1" fill="#95a5a6"/>
+  <rect x="1" y="11" width="8" height="1" fill="#5d6d7e"/>
+
+  <!-- Flame inside -->
+  <rect x="4" y="6" width="2" height="4" fill="#f4d03f"/>
+  <rect x="4" y="7" width="2" height="2" fill="#e67e22"/>
+  <rect x="4" y="6" width="1" height="1" fill="#fdfefe"/>
+
+  <!-- Glow effect -->
+  <rect x="3" y="7" width="1" height="2" fill="#f4d03f" opacity="0.4"/>
+  <rect x="6" y="7" width="1" height="2" fill="#f4d03f" opacity="0.4"/>
+
+  <!-- Bottom cap -->
+  <rect x="2" y="12" width="6" height="2" fill="#7f8c8d"/>
+  <rect x="3" y="13" width="4" height="1" fill="#5d6d7e"/>
+
+  <!-- Bottom point -->
+  <rect x="4" y="14" width="2" height="2" fill="#7f8c8d"/>
+</svg>

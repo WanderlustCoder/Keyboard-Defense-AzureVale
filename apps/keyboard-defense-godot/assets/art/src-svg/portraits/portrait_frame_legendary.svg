@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Legendary Portrait Frame (32x32) - Gold tier NPC frame -->
+  <!-- Color Palette: #f4d03f, #e67e22, #d35400, #f9e79f, #fdfefe -->
+
+  <!-- Outer frame -->
+  <rect x="0" y="0" width="32" height="32" fill="#d35400"/>
+  <rect x="1" y="1" width="30" height="30" fill="#e67e22"/>
+  <rect x="2" y="2" width="28" height="28" fill="#f4d03f"/>
+
+  <!-- Inner border -->
+  <rect x="3" y="3" width="26" height="26" fill="#e67e22"/>
+  <rect x="4" y="4" width="24" height="24" fill="#f9e79f"/>
+
+  <!-- Portrait area -->
+  <rect x="5" y="5" width="22" height="22" fill="#2c3e50"/>
+
+  <!-- Crown-style corner pieces -->
+  <rect x="0" y="0" width="7" height="7" fill="#d35400"/>
+  <rect x="1" y="1" width="5" height="5" fill="#e67e22"/>
+  <rect x="2" y="2" width="3" height="3" fill="#f4d03f"/>
+  <rect x="3" y="3" width="1" height="1" fill="#fdfefe"/>
+  <rect x="0" y="0" width="2" height="1" fill="#f4d03f"/>
+  <rect x="0" y="0" width="1" height="2" fill="#f4d03f"/>
+
+  <rect x="25" y="0" width="7" height="7" fill="#d35400"/>
+  <rect x="26" y="1" width="5" height="5" fill="#e67e22"/>
+  <rect x="27" y="2" width="3" height="3" fill="#f4d03f"/>
+  <rect x="28" y="3" width="1" height="1" fill="#fdfefe"/>
+  <rect x="30" y="0" width="2" height="1" fill="#f4d03f"/>
+  <rect x="31" y="0" width="1" height="2" fill="#f4d03f"/>
+
+  <rect x="0" y="25" width="7" height="7" fill="#d35400"/>
+  <rect x="1" y="26" width="5" height="5" fill="#e67e22"/>
+  <rect x="2" y="27" width="3" height="3" fill="#f4d03f"/>
+  <rect x="3" y="28" width="1" height="1" fill="#fdfefe"/>
+  <rect x="0" y="31" width="2" height="1" fill="#f4d03f"/>
+  <rect x="0" y="30" width="1" height="2" fill="#f4d03f"/>
+
+  <rect x="25" y="25" width="7" height="7" fill="#d35400"/>
+  <rect x="26" y="26" width="5" height="5" fill="#e67e22"/>
+  <rect x="27" y="27" width="3" height="3" fill="#f4d03f"/>
+  <rect x="28" y="28" width="1" height="1" fill="#fdfefe"/>
+  <rect x="30" y="31" width="2" height="1" fill="#f4d03f"/>
+  <rect x="31" y="30" width="1" height="2" fill="#f4d03f"/>
+
+  <!-- Crown top ornament -->
+  <rect x="12" y="0" width="8" height="4" fill="#e67e22"/>
+  <rect x="13" y="1" width="6" height="2" fill="#f4d03f"/>
+  <rect x="14" y="0" width="1" height="1" fill="#f4d03f"/>
+  <rect x="17" y="0" width="1" height="1" fill="#f4d03f"/>
+  <rect x="15" y="1" width="2" height="1" fill="#fdfefe"/>
+
+  <!-- Bottom ornament -->
+  <rect x="12" y="28" width="8" height="4" fill="#e67e22"/>
+  <rect x="13" y="29" width="6" height="2" fill="#f4d03f"/>
+  <rect x="15" y="30" width="2" height="1" fill="#fdfefe"/>
+
+  <!-- Side ornaments -->
+  <rect x="0" y="12" width="4" height="8" fill="#e67e22"/>
+  <rect x="1" y="13" width="2" height="6" fill="#f4d03f"/>
+  <rect x="1" y="15" width="1" height="2" fill="#fdfefe"/>
+
+  <rect x="28" y="12" width="4" height="8" fill="#e67e22"/>
+  <rect x="29" y="13" width="2" height="6" fill="#f4d03f"/>
+  <rect x="30" y="15" width="1" height="2" fill="#fdfefe"/>
+</svg>

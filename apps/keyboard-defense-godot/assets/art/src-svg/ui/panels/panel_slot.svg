@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <!-- Inventory Slot Panel (24x24) - Item slot -->
+  <!-- Color Palette: #2c3e50, #34495e, #5d6d7e, #7f8c8d -->
+
+  <!-- Slot border -->
+  <rect x="0" y="0" width="24" height="24" fill="#2c3e50"/>
+  <rect x="1" y="1" width="22" height="22" fill="#34495e"/>
+
+  <!-- Slot inner -->
+  <rect x="2" y="2" width="20" height="20" fill="#5d6d7e"/>
+  <rect x="3" y="3" width="18" height="18" fill="#34495e"/>
+
+  <!-- Highlight -->
+  <rect x="3" y="3" width="18" height="1" fill="#7f8c8d"/>
+  <rect x="3" y="3" width="1" height="18" fill="#7f8c8d"/>
+
+  <!-- Shadow -->
+  <rect x="3" y="20" width="18" height="1" fill="#2c3e50"/>
+  <rect x="20" y="3" width="1" height="18" fill="#2c3e50"/>
+</svg>

@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 12" width="10" height="12">
+  <!-- Diamond Gem (10x12) - Precious stone -->
+  <!-- Color Palette: #ecf0f1, #bdc3c7, #95a5a6, #fdfefe, #85c1e9 -->
+
+  <!-- Gem top facet -->
+  <rect x="3" y="0" width="4" height="2" fill="#bdc3c7"/>
+  <rect x="4" y="0" width="2" height="1" fill="#fdfefe"/>
+
+  <!-- Gem upper facets -->
+  <rect x="1" y="2" width="8" height="3" fill="#ecf0f1"/>
+  <rect x="2" y="2" width="6" height="2" fill="#bdc3c7"/>
+  <rect x="3" y="2" width="4" height="1" fill="#fdfefe"/>
+
+  <!-- Gem middle -->
+  <rect x="0" y="4" width="10" height="4" fill="#ecf0f1"/>
+  <rect x="1" y="5" width="8" height="2" fill="#bdc3c7"/>
+  <rect x="2" y="5" width="2" height="1" fill="#fdfefe"/>
+
+  <!-- Rainbow refraction -->
+  <rect x="6" y="5" width="1" height="1" fill="#85c1e9"/>
+  <rect x="7" y="6" width="1" height="1" fill="#d7bde2"/>
+
+  <!-- Gem lower facets -->
+  <rect x="1" y="8" width="8" height="2" fill="#bdc3c7"/>
+  <rect x="2" y="8" width="6" height="2" fill="#95a5a6"/>
+
+  <!-- Gem bottom point -->
+  <rect x="3" y="10" width="4" height="2" fill="#95a5a6"/>
+  <rect x="4" y="11" width="2" height="1" fill="#bdc3c7"/>
+
+  <!-- Inner glow -->
+  <rect x="4" y="5" width="2" height="2" fill="#fdfefe" opacity="0.6"/>
+
+  <!-- Sparkle -->
+  <rect x="2" y="3" width="1" height="1" fill="#fdfefe"/>
+  <rect x="7" y="4" width="1" height="1" fill="#fdfefe"/>
+</svg>

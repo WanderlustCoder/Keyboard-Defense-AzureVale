@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 14" width="10" height="14">
+  <!-- Ornate Vase (10x14) - Valuable breakable -->
+  <!-- Color Palette: #3498db, #2980b9, #1a5276, #f4d03f, #fdfefe -->
+
+  <!-- Vase neck -->
+  <rect x="3" y="0" width="4" height="2" fill="#2980b9"/>
+  <rect x="4" y="0" width="2" height="1" fill="#3498db"/>
+
+  <!-- Gold rim -->
+  <rect x="2" y="2" width="6" height="1" fill="#f4d03f"/>
+  <rect x="3" y="2" width="4" height="1" fill="#e67e22"/>
+
+  <!-- Vase body top -->
+  <rect x="2" y="3" width="6" height="3" fill="#2980b9"/>
+  <rect x="3" y="4" width="4" height="1" fill="#3498db"/>
+
+  <!-- Vase body middle -->
+  <rect x="1" y="6" width="8" height="4" fill="#2980b9"/>
+  <rect x="0" y="7" width="10" height="2" fill="#3498db"/>
+
+  <!-- Gold band decoration -->
+  <rect x="1" y="7" width="8" height="2" fill="#f4d03f"/>
+  <rect x="2" y="7" width="6" height="1" fill="#e67e22"/>
+
+  <!-- Pattern on band -->
+  <rect x="2" y="7" width="1" height="1" fill="#fdfefe"/>
+  <rect x="4" y="7" width="1" height="1" fill="#fdfefe"/>
+  <rect x="6" y="7" width="1" height="1" fill="#fdfefe"/>
+
+  <!-- Vase body bottom -->
+  <rect x="2" y="10" width="6" height="3" fill="#2980b9"/>
+  <rect x="3" y="11" width="4" height="1" fill="#1a5276"/>
+
+  <!-- Gold base -->
+  <rect x="3" y="13" width="4" height="1" fill="#f4d03f"/>
+
+  <!-- Shine -->
+  <rect x="2" y="4" width="1" height="3" fill="#5dade2"/>
+</svg>

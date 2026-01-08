@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 10" width="14" height="10">
+  <!-- Cheese Wedge (14x10) - Minor heal -->
+  <!-- Color Palette: #f4d03f, #e67e22, #d35400, #fdfefe -->
+
+  <!-- Cheese body -->
+  <rect x="0" y="4" width="14" height="6" fill="#f4d03f"/>
+  <rect x="1" y="5" width="12" height="4" fill="#e67e22"/>
+
+  <!-- Wedge top (triangle) -->
+  <rect x="0" y="2" width="12" height="3" fill="#f4d03f"/>
+  <rect x="0" y="0" width="8" height="3" fill="#f4d03f"/>
+  <rect x="0" y="0" width="4" height="2" fill="#e67e22"/>
+
+  <!-- Cut face -->
+  <rect x="12" y="2" width="2" height="8" fill="#fdfefe"/>
+  <rect x="12" y="3" width="1" height="6" fill="#f9e79f"/>
+
+  <!-- Cheese holes -->
+  <rect x="3" y="5" width="2" height="2" fill="#d35400"/>
+  <rect x="7" y="6" width="2" height="2" fill="#d35400"/>
+  <rect x="2" y="3" width="1" height="1" fill="#d35400"/>
+  <rect x="6" y="2" width="2" height="1" fill="#d35400"/>
+
+  <!-- Highlight -->
+  <rect x="1" y="1" width="2" height="1" fill="#fdfefe" opacity="0.4"/>
+</svg>

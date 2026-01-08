@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 20" width="16" height="20">
+  <!-- Death Skull Effect (16x20) - Enemy defeat -->
+  <!-- Color Palette: #ecf0f1, #bdc3c7, #95a5a6, #1a252f, #c0392b -->
+
+  <!-- Ghost trail -->
+  <rect x="6" y="16" width="4" height="4" fill="#bdc3c7" opacity="0.3"/>
+  <rect x="5" y="18" width="6" height="2" fill="#95a5a6" opacity="0.2"/>
+
+  <!-- Skull shape -->
+  <rect x="3" y="2" width="10" height="10" fill="#ecf0f1"/>
+  <rect x="4" y="1" width="8" height="2" fill="#bdc3c7"/>
+  <rect x="2" y="4" width="2" height="6" fill="#ecf0f1"/>
+  <rect x="12" y="4" width="2" height="6" fill="#ecf0f1"/>
+
+  <!-- Eye sockets -->
+  <rect x="4" y="4" width="3" height="4" fill="#1a252f"/>
+  <rect x="9" y="4" width="3" height="4" fill="#1a252f"/>
+
+  <!-- Glowing eyes -->
+  <rect x="5" y="5" width="1" height="2" fill="#c0392b"/>
+  <rect x="10" y="5" width="1" height="2" fill="#c0392b"/>
+
+  <!-- Nose -->
+  <rect x="7" y="8" width="2" height="2" fill="#1a252f"/>
+
+  <!-- Teeth -->
+  <rect x="4" y="10" width="8" height="3" fill="#1a252f"/>
+  <rect x="4" y="10" width="2" height="2" fill="#ecf0f1"/>
+  <rect x="7" y="10" width="2" height="2" fill="#ecf0f1"/>
+  <rect x="10" y="10" width="2" height="2" fill="#ecf0f1"/>
+
+  <!-- Jaw -->
+  <rect x="4" y="12" width="8" height="2" fill="#bdc3c7"/>
+  <rect x="5" y="13" width="6" height="1" fill="#95a5a6"/>
+
+  <!-- Floating smoke -->
+  <rect x="1" y="6" width="2" height="2" fill="#95a5a6" opacity="0.4"/>
+  <rect x="13" y="4" width="2" height="2" fill="#95a5a6" opacity="0.4"/>
+  <rect x="0" y="2" width="2" height="2" fill="#bdc3c7" opacity="0.3"/>
+  <rect x="14" y="0" width="2" height="2" fill="#bdc3c7" opacity="0.3"/>
+</svg>

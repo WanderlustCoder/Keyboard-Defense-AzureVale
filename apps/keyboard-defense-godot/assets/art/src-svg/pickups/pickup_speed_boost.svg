@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="12" height="12">
+  <!-- Speed Boost Pickup (12x12) - Temporary speed buff -->
+  <!-- Color Palette: #f4d03f, #e67e22, #27ae60, #fdfefe -->
+
+  <!-- Circular base -->
+  <rect x="2" y="2" width="8" height="8" fill="#27ae60"/>
+  <rect x="3" y="1" width="6" height="1" fill="#1e8449"/>
+  <rect x="3" y="10" width="6" height="1" fill="#1e8449"/>
+  <rect x="1" y="3" width="1" height="6" fill="#1e8449"/>
+  <rect x="10" y="3" width="1" height="6" fill="#1e8449"/>
+
+  <!-- Inner glow -->
+  <rect x="3" y="3" width="6" height="6" fill="#2ecc71"/>
+
+  <!-- Lightning bolt -->
+  <rect x="6" y="2" width="2" height="2" fill="#f4d03f"/>
+  <rect x="5" y="4" width="3" height="2" fill="#f4d03f"/>
+  <rect x="4" y="5" width="3" height="2" fill="#fdfefe"/>
+  <rect x="4" y="7" width="2" height="2" fill="#f4d03f"/>
+  <rect x="5" y="8" width="2" height="1" fill="#e67e22"/>
+
+  <!-- Speed lines -->
+  <rect x="1" y="4" width="2" height="1" fill="#fdfefe" opacity="0.5"/>
+  <rect x="1" y="6" width="2" height="1" fill="#fdfefe" opacity="0.5"/>
+  <rect x="1" y="8" width="2" height="1" fill="#fdfefe" opacity="0.5"/>
+</svg>

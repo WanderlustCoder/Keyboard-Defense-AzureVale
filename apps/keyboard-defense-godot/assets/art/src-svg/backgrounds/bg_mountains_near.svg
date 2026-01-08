@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 120" width="320" height="120">
+  <!-- Near Mountains Layer (320x120) - Closer mountain parallax -->
+  <!-- Color Palette: #2c3e50, #34495e, #5d6d7e, #27ae60 -->
+
+  <!-- Transparent top -->
+  <rect x="0" y="0" width="320" height="20" fill="none"/>
+
+  <!-- Closer mountain range (darker) -->
+  <!-- Mountain 1 -->
+  <rect x="0" y="60" width="80" height="60" fill="#2c3e50"/>
+  <rect x="15" y="45" width="50" height="15" fill="#34495e"/>
+  <rect x="30" y="30" width="20" height="15" fill="#2c3e50"/>
+  <rect x="35" y="25" width="10" height="5" fill="#5d6d7e"/>
+
+  <!-- Mountain 2 -->
+  <rect x="70" y="70" width="100" height="50" fill="#34495e"/>
+  <rect x="95" y="50" width="50" height="20" fill="#2c3e50"/>
+  <rect x="110" y="35" width="20" height="15" fill="#34495e"/>
+  <rect x="115" y="30" width="10" height="5" fill="#5d6d7e"/>
+
+  <!-- Mountain 3 -->
+  <rect x="160" y="55" width="90" height="65" fill="#2c3e50"/>
+  <rect x="185" y="40" width="40" height="15" fill="#34495e"/>
+  <rect x="195" y="30" width="20" height="10" fill="#2c3e50"/>
+
+  <!-- Mountain 4 -->
+  <rect x="240" y="65" width="80" height="55" fill="#34495e"/>
+  <rect x="260" y="50" width="40" height="15" fill="#2c3e50"/>
+  <rect x="275" y="40" width="10" height="10" fill="#5d6d7e"/>
+
+  <!-- Forest at base -->
+  <rect x="0" y="100" width="320" height="20" fill="#1e8449"/>
+  <rect x="10" y="95" width="15" height="10" fill="#27ae60"/>
+  <rect x="40" y="92" width="20" height="12" fill="#27ae60"/>
+  <rect x="80" y="95" width="15" height="10" fill="#27ae60"/>
+  <rect x="130" y="93" width="18" height="11" fill="#27ae60"/>
+  <rect x="180" y="95" width="12" height="10" fill="#27ae60"/>
+  <rect x="220" y="92" width="20" height="12" fill="#27ae60"/>
+  <rect x="270" y="95" width="15" height="10" fill="#27ae60"/>
+  <rect x="300" y="93" width="18" height="11" fill="#27ae60"/>
+</svg>

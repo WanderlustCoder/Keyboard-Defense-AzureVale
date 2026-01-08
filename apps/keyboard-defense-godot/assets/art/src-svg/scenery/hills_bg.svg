@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 16" width="32" height="16">
+  <!-- Rolling Hills (32x16) - Gentle terrain -->
+  <!-- Color Palette: #27ae60, #2ecc71, #58d68d, #82e0aa -->
+
+  <!-- Far hills -->
+  <rect x="0" y="6" width="12" height="10" fill="#82e0aa"/>
+  <rect x="2" y="4" width="8" height="2" fill="#82e0aa"/>
+  <rect x="4" y="3" width="4" height="1" fill="#82e0aa"/>
+
+  <rect x="20" y="5" width="12" height="11" fill="#82e0aa"/>
+  <rect x="22" y="3" width="8" height="2" fill="#82e0aa"/>
+  <rect x="24" y="2" width="4" height="1" fill="#82e0aa"/>
+
+  <!-- Middle hills -->
+  <rect x="8" y="8" width="16" height="8" fill="#58d68d"/>
+  <rect x="10" y="6" width="12" height="2" fill="#58d68d"/>
+  <rect x="14" y="4" width="4" height="2" fill="#58d68d"/>
+
+  <!-- Near hills -->
+  <rect x="0" y="12" width="14" height="4" fill="#2ecc71"/>
+  <rect x="2" y="10" width="10" height="2" fill="#2ecc71"/>
+  <rect x="4" y="9" width="6" height="1" fill="#2ecc71"/>
+
+  <rect x="18" y="11" width="14" height="5" fill="#27ae60"/>
+  <rect x="20" y="9" width="10" height="2" fill="#27ae60"/>
+  <rect x="24" y="8" width="4" height="1" fill="#27ae60"/>
+</svg>

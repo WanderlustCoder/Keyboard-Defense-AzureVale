@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 16" width="20" height="16">
+  <!-- Large Rock (20x16) - Decoration -->
+  <!-- Color Palette: #7f8c8d, #5d6d7e, #95a5a6, #bdc3c7 -->
+
+  <rect x="2" y="6" width="16" height="10" fill="#7f8c8d"/>
+  <rect x="4" y="4" width="12" height="2" fill="#5d6d7e"/>
+  <rect x="6" y="2" width="8" height="2" fill="#7f8c8d"/>
+  <rect x="8" y="0" width="4" height="2" fill="#5d6d7e"/>
+  <rect x="0" y="8" width="2" height="6" fill="#5d6d7e"/>
+  <rect x="18" y="8" width="2" height="6" fill="#5d6d7e"/>
+  <rect x="6" y="6" width="8" height="6" fill="#95a5a6"/>
+  <rect x="8" y="4" width="4" height="4" fill="#bdc3c7"/>
+  <rect x="4" y="10" width="4" height="4" fill="#5d6d7e"/>
+  <rect x="12" y="10" width="4" height="4" fill="#5d6d7e"/>
+</svg>

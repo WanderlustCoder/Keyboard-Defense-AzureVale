@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 24" width="16" height="24">
+  <!-- Iron Door (16x24) - Heavy metal door -->
+  <!-- Color Palette: #7f8c8d, #5d6d7e, #95a5a6, #bdc3c7, #1a252f -->
+
+  <!-- Door frame -->
+  <rect x="0" y="0" width="16" height="24" fill="#5d6d7e"/>
+  <rect x="1" y="1" width="14" height="22" fill="#1a252f"/>
+
+  <!-- Door body -->
+  <rect x="2" y="2" width="12" height="20" fill="#7f8c8d"/>
+  <rect x="3" y="3" width="10" height="18" fill="#5d6d7e"/>
+
+  <!-- Metal plates -->
+  <rect x="4" y="4" width="8" height="7" fill="#95a5a6"/>
+  <rect x="5" y="5" width="6" height="5" fill="#7f8c8d"/>
+
+  <rect x="4" y="13" width="8" height="7" fill="#95a5a6"/>
+  <rect x="5" y="14" width="6" height="5" fill="#7f8c8d"/>
+
+  <!-- Rivets -->
+  <rect x="4" y="4" width="1" height="1" fill="#bdc3c7"/>
+  <rect x="11" y="4" width="1" height="1" fill="#bdc3c7"/>
+  <rect x="4" y="10" width="1" height="1" fill="#bdc3c7"/>
+  <rect x="11" y="10" width="1" height="1" fill="#bdc3c7"/>
+  <rect x="4" y="13" width="1" height="1" fill="#bdc3c7"/>
+  <rect x="11" y="13" width="1" height="1" fill="#bdc3c7"/>
+  <rect x="4" y="19" width="1" height="1" fill="#bdc3c7"/>
+  <rect x="11" y="19" width="1" height="1" fill="#bdc3c7"/>
+
+  <!-- Center band -->
+  <rect x="3" y="11" width="10" height="2" fill="#5d6d7e"/>
+  <rect x="4" y="11" width="8" height="1" fill="#7f8c8d"/>
+
+  <!-- Handle -->
+  <rect x="10" y="11" width="3" height="4" fill="#95a5a6"/>
+  <rect x="11" y="12" width="1" height="2" fill="#bdc3c7"/>
+
+  <!-- Lock -->
+  <rect x="10" y="15" width="2" height="2" fill="#1a252f"/>
+</svg>

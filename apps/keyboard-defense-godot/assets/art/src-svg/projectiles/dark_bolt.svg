@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 6" width="14" height="6">
+  <!-- Dark Bolt (14x6) - Shadow projectile -->
+  <!-- Color Palette: #2c3e50, #1a252f, #9b59b6, #6c3483 -->
+
+  <!-- Shadow trail -->
+  <rect x="10" y="2" width="4" height="2" fill="#2c3e50"/>
+  <rect x="11" y="1" width="3" height="1" fill="#1a252f"/>
+  <rect x="11" y="4" width="3" height="1" fill="#1a252f"/>
+
+  <!-- Core -->
+  <rect x="2" y="1" width="10" height="4" fill="#2c3e50"/>
+  <rect x="3" y="2" width="8" height="2" fill="#1a252f"/>
+
+  <!-- Dark energy tip -->
+  <rect x="0" y="1" width="4" height="4" fill="#9b59b6"/>
+  <rect x="1" y="2" width="2" height="2" fill="#6c3483"/>
+  <rect x="0" y="2" width="1" height="2" fill="#4a235a"/>
+
+  <!-- Energy wisps -->
+  <rect x="0" y="0" width="1" height="1" fill="#6c3483"/>
+  <rect x="0" y="5" width="1" height="1" fill="#6c3483"/>
+  <rect x="4" y="0" width="1" height="1" fill="#9b59b6"/>
+  <rect x="6" y="5" width="1" height="1" fill="#9b59b6"/>
+</svg>

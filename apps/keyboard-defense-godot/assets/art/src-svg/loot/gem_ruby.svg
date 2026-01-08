@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 12" width="10" height="12">
+  <!-- Ruby Gem (10x12) - Precious stone -->
+  <!-- Color Palette: #e74c3c, #c0392b, #922b21, #ff6b6b, #fdfefe -->
+
+  <!-- Gem top facet -->
+  <rect x="3" y="0" width="4" height="2" fill="#c0392b"/>
+  <rect x="4" y="0" width="2" height="1" fill="#ff6b6b"/>
+
+  <!-- Gem upper facets -->
+  <rect x="1" y="2" width="8" height="3" fill="#e74c3c"/>
+  <rect x="2" y="2" width="6" height="2" fill="#c0392b"/>
+  <rect x="3" y="2" width="4" height="1" fill="#ff6b6b"/>
+
+  <!-- Gem middle -->
+  <rect x="0" y="4" width="10" height="4" fill="#e74c3c"/>
+  <rect x="1" y="5" width="8" height="2" fill="#c0392b"/>
+  <rect x="2" y="5" width="2" height="1" fill="#ff6b6b"/>
+
+  <!-- Gem lower facets -->
+  <rect x="1" y="8" width="8" height="2" fill="#c0392b"/>
+  <rect x="2" y="8" width="6" height="2" fill="#922b21"/>
+
+  <!-- Gem bottom point -->
+  <rect x="3" y="10" width="4" height="2" fill="#922b21"/>
+  <rect x="4" y="11" width="2" height="1" fill="#c0392b"/>
+
+  <!-- Inner glow -->
+  <rect x="4" y="5" width="2" height="2" fill="#fdfefe" opacity="0.4"/>
+
+  <!-- Sparkle -->
+  <rect x="2" y="3" width="1" height="1" fill="#fdfefe"/>
+  <rect x="7" y="6" width="1" height="1" fill="#fdfefe" opacity="0.6"/>
+</svg>

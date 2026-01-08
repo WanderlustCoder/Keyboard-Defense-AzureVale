@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 14" width="16" height="14">
+  <!-- Wooden Chest (16x14) - Basic loot container -->
+  <!-- Color Palette: #8b7355, #5d4e37, #f4d03f, #7f8c8d -->
+
+  <!-- Chest body -->
+  <rect x="1" y="6" width="14" height="8" fill="#8b7355"/>
+  <rect x="2" y="7" width="12" height="6" fill="#5d4e37"/>
+
+  <!-- Chest lid -->
+  <rect x="0" y="4" width="16" height="3" fill="#8b7355"/>
+  <rect x="1" y="3" width="14" height="2" fill="#5d4e37"/>
+  <rect x="2" y="4" width="12" height="1" fill="#a08060"/>
+
+  <!-- Metal bands -->
+  <rect x="0" y="6" width="16" height="1" fill="#7f8c8d"/>
+  <rect x="1" y="6" width="14" height="1" fill="#95a5a6"/>
+  <rect x="0" y="10" width="16" height="1" fill="#7f8c8d"/>
+
+  <!-- Lock -->
+  <rect x="6" y="5" width="4" height="4" fill="#f4d03f"/>
+  <rect x="7" y="6" width="2" height="2" fill="#e67e22"/>
+  <rect x="7" y="7" width="1" height="1" fill="#1a252f"/>
+
+  <!-- Wood grain -->
+  <rect x="3" y="8" width="1" height="4" fill="#a08060"/>
+  <rect x="12" y="8" width="1" height="4" fill="#a08060"/>
+
+  <!-- Corner metal -->
+  <rect x="0" y="4" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="14" y="4" width="2" height="2" fill="#5d6d7e"/>
+</svg>

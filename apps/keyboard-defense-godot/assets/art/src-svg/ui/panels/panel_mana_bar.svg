@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 8" width="32" height="8">
+  <!-- Mana Bar Panel (32x8) - MP bar background -->
+  <!-- Color Palette: #1a252f, #2c3e50, #3498db, #2980b9, #1a5276 -->
+
+  <!-- Bar border -->
+  <rect x="0" y="0" width="32" height="8" fill="#1a252f"/>
+  <rect x="1" y="1" width="30" height="6" fill="#2c3e50"/>
+
+  <!-- Bar background -->
+  <rect x="2" y="2" width="28" height="4" fill="#1a5276"/>
+
+  <!-- Mana fill (full) -->
+  <rect x="2" y="2" width="28" height="4" fill="#3498db"/>
+  <rect x="2" y="2" width="28" height="1" fill="#5dade2"/>
+
+  <!-- End caps -->
+  <rect x="0" y="2" width="2" height="4" fill="#95a5a6"/>
+  <rect x="30" y="2" width="2" height="4" fill="#95a5a6"/>
+</svg>

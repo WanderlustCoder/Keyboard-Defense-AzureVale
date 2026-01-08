@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="12" height="12">
+  <!-- Damage Boost Pickup (12x12) - Temporary attack buff -->
+  <!-- Color Palette: #e74c3c, #c0392b, #fdfefe, #bdc3c7 -->
+
+  <!-- Circular base -->
+  <rect x="2" y="2" width="8" height="8" fill="#e74c3c"/>
+  <rect x="3" y="1" width="6" height="1" fill="#c0392b"/>
+  <rect x="3" y="10" width="6" height="1" fill="#c0392b"/>
+  <rect x="1" y="3" width="1" height="6" fill="#c0392b"/>
+  <rect x="10" y="3" width="1" height="6" fill="#c0392b"/>
+
+  <!-- Inner glow -->
+  <rect x="3" y="3" width="6" height="6" fill="#ff6b6b"/>
+
+  <!-- Sword icon -->
+  <rect x="5" y="2" width="2" height="6" fill="#bdc3c7"/>
+  <rect x="5" y="2" width="1" height="5" fill="#fdfefe"/>
+  <rect x="6" y="2" width="1" height="1" fill="#95a5a6"/>
+
+  <!-- Crossguard -->
+  <rect x="3" y="7" width="6" height="1" fill="#f4d03f"/>
+  <rect x="4" y="7" width="4" height="1" fill="#e67e22"/>
+
+  <!-- Handle -->
+  <rect x="5" y="8" width="2" height="2" fill="#8b7355"/>
+  <rect x="5" y="8" width="1" height="2" fill="#5d4e37"/>
+
+  <!-- Attack sparkle -->
+  <rect x="8" y="3" width="1" height="1" fill="#fdfefe"/>
+  <rect x="9" y="4" width="1" height="1" fill="#fdfefe" opacity="0.6"/>
+</svg>

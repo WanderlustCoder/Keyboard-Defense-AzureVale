@@ -294,6 +294,9 @@ func _on_command_submitted(command: String) -> void:
         if intent_kind == "ui_settings_motion":
             _apply_settings_motion(parsed.intent)
             return
+        if intent_kind == "ui_settings_speed":
+            _apply_settings_speed(parsed.intent)
+            return
         if intent_kind == "ui_settings_verify":
             _apply_settings_verify()
             return
@@ -852,10 +855,61 @@ func _apply_settings_motion(intent: Dictionary) -> void:
         reduced_motion = true
     elif mode == "off" or mode == "full":
         reduced_motion = false
+    # Persist to profile
+    var save_result: Dictionary = TypingProfile.set_reduced_motion(profile, reduced_motion)
+    if save_result.get("ok", false):
+        profile = save_result.get("profile", profile)
     var state_text: String = "REDUCED" if reduced_motion else "FULL"
     _append_log(["Motion effects: %s (settings motion reduced|full|toggle)" % state_text])
     if reduced_motion:
         _append_log(["Particle effects disabled for accessibility."])
+    _refresh_settings_panel()
+    command_bar.grab_focus()
+
+func _apply_settings_speed(intent: Dictionary) -> void:
+    var mode: String = str(intent.get("mode", "show"))
+    var current: float = TypingProfile.get_speed_multiplier(profile)
+    var new_val: float = current
+    if mode == "show":
+        var speed_text: String = "%.2gx" % current
+        if current < 1.0:
+            speed_text += " (easier - enemies slower)"
+        elif current > 1.0:
+            speed_text += " (harder - enemies faster)"
+        _append_log(["Game speed: %s (settings speed slower|faster|reset|0.5-2.0)" % speed_text])
+        command_bar.grab_focus()
+        return
+    elif mode == "slower":
+        var result: Dictionary = TypingProfile.cycle_speed_multiplier(profile, -1)
+        if result.get("ok", false):
+            profile = result.get("profile", profile)
+        new_val = TypingProfile.get_speed_multiplier(profile)
+    elif mode == "faster":
+        var result: Dictionary = TypingProfile.cycle_speed_multiplier(profile, 1)
+        if result.get("ok", false):
+            profile = result.get("profile", profile)
+        new_val = TypingProfile.get_speed_multiplier(profile)
+    elif mode == "reset":
+        var result: Dictionary = TypingProfile.set_speed_multiplier(profile, 1.0)
+        if result.get("ok", false):
+            profile = result.get("profile", profile)
+        new_val = 1.0
+    elif mode == "set":
+        var val: float = float(intent.get("value", 1.0))
+        var result: Dictionary = TypingProfile.set_speed_multiplier(profile, val)
+        if result.get("ok", false):
+            profile = result.get("profile", profile)
+        new_val = TypingProfile.get_speed_multiplier(profile)
+    # Apply to game state
+    if state != null:
+        state.speed_multiplier = new_val
+    var speed_text: String = "%.2gx" % new_val
+    if new_val < 1.0:
+        _append_log(["Game speed: %s (easier - enemies move slower)" % speed_text])
+    elif new_val > 1.0:
+        _append_log(["Game speed: %s (harder - enemies move faster)" % speed_text])
+    else:
+        _append_log(["Game speed: %s (normal)" % speed_text])
     _refresh_settings_panel()
     command_bar.grab_focus()
 
@@ -2246,11 +2300,18 @@ func _load_profile() -> void:
     lessons_sparkline = TypingProfile.get_lessons_sparkline(profile)
     ui_scale_percent = TypingProfile.get_ui_scale_percent(profile)
     compact_panels = TypingProfile.get_compact_panels(profile)
+    reduced_motion = TypingProfile.get_reduced_motion(profile)
+    var speed_mult: float = TypingProfile.get_speed_multiplier(profile)
     profile["ui_prefs"] = profile.get("ui_prefs", {})
     profile["ui_prefs"]["lessons_sort"] = lessons_sort_mode
     profile["ui_prefs"]["lessons_sparkline"] = lessons_sparkline
     profile["ui_prefs"]["ui_scale_percent"] = ui_scale_percent
     profile["ui_prefs"]["compact_panels"] = compact_panels
+    profile["ui_prefs"]["reduced_motion"] = reduced_motion
+    profile["ui_prefs"]["speed_multiplier"] = speed_mult
+    # Apply speed multiplier to state if exists
+    if state != null:
+        state.speed_multiplier = speed_mult
     economy_note_shown = TypingProfile.get_economy_note_shown(profile)
     profile["ui_prefs"]["economy_note_shown"] = economy_note_shown
     onboarding = TypingProfile.get_onboarding(profile)

@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Bear Trap (16x16) - Mechanical snap trap -->
+  <!-- Color Palette: #7f8c8d, #95a5a6, #5d6d7e, #c0392b, #1a252f -->
+
+  <!-- Ground base -->
+  <rect x="0" y="13" width="16" height="3" fill="#8b7355"/>
+  <rect x="1" y="14" width="14" height="2" fill="#5d4e37"/>
+
+  <!-- Trap base plate -->
+  <rect x="2" y="11" width="12" height="3" fill="#5d6d7e"/>
+  <rect x="3" y="12" width="10" height="1" fill="#7f8c8d"/>
+
+  <!-- Left jaw -->
+  <rect x="1" y="8" width="2" height="4" fill="#7f8c8d"/>
+  <rect x="2" y="6" width="2" height="3" fill="#95a5a6"/>
+  <rect x="3" y="4" width="2" height="3" fill="#7f8c8d"/>
+  <rect x="4" y="2" width="2" height="3" fill="#95a5a6"/>
+
+  <!-- Left teeth -->
+  <rect x="5" y="3" width="1" height="2" fill="#bdc3c7"/>
+  <rect x="5" y="2" width="1" height="1" fill="#c0392b"/>
+  <rect x="4" y="5" width="1" height="2" fill="#bdc3c7"/>
+  <rect x="4" y="4" width="1" height="1" fill="#c0392b"/>
+
+  <!-- Right jaw -->
+  <rect x="13" y="8" width="2" height="4" fill="#7f8c8d"/>
+  <rect x="12" y="6" width="2" height="3" fill="#95a5a6"/>
+  <rect x="11" y="4" width="2" height="3" fill="#7f8c8d"/>
+  <rect x="10" y="2" width="2" height="3" fill="#95a5a6"/>
+
+  <!-- Right teeth -->
+  <rect x="10" y="3" width="1" height="2" fill="#bdc3c7"/>
+  <rect x="10" y="2" width="1" height="1" fill="#c0392b"/>
+  <rect x="11" y="5" width="1" height="2" fill="#bdc3c7"/>
+  <rect x="11" y="4" width="1" height="1" fill="#c0392b"/>
+
+  <!-- Center pressure plate -->
+  <rect x="6" y="9" width="4" height="3" fill="#95a5a6"/>
+  <rect x="7" y="10" width="2" height="1" fill="#7f8c8d"/>
+
+  <!-- Chain -->
+  <rect x="7" y="13" width="2" height="1" fill="#5d6d7e"/>
+  <rect x="7" y="14" width="1" height="1" fill="#7f8c8d"/>
+</svg>

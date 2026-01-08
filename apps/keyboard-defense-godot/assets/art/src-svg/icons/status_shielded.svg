@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Shield Buff Status (16x16) - Defense boost -->
+  <!-- Color Palette: #3498db, #2980b9, #fdfefe, #f4d03f -->
+
+  <!-- Shield outline -->
+  <rect x="2" y="1" width="12" height="10" fill="#3498db"/>
+  <rect x="3" y="0" width="10" height="1" fill="#2980b9"/>
+  <rect x="1" y="2" width="1" height="8" fill="#2980b9"/>
+  <rect x="14" y="2" width="1" height="8" fill="#2980b9"/>
+
+  <!-- Shield point -->
+  <rect x="3" y="11" width="10" height="2" fill="#3498db"/>
+  <rect x="4" y="13" width="8" height="1" fill="#2980b9"/>
+  <rect x="5" y="14" width="6" height="1" fill="#3498db"/>
+  <rect x="6" y="15" width="4" height="1" fill="#2980b9"/>
+
+  <!-- Inner glow -->
+  <rect x="4" y="2" width="8" height="8" fill="#5dade2"/>
+  <rect x="5" y="3" width="6" height="6" fill="#85c1e9"/>
+
+  <!-- Plus symbol (buff indicator) -->
+  <rect x="7" y="4" width="2" height="5" fill="#fdfefe"/>
+  <rect x="5" y="5" width="6" height="3" fill="#fdfefe"/>
+  <rect x="7" y="5" width="2" height="3" fill="#f4d03f"/>
+
+  <!-- Shine -->
+  <rect x="4" y="2" width="2" height="2" fill="#fdfefe" opacity="0.5"/>
+</svg>

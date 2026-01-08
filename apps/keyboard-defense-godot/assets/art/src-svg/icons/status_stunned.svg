@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Stun Status (16x16) - Dazed/stunned -->
+  <!-- Color Palette: #f4d03f, #e67e22, #fdfefe, #1a252f -->
+
+  <!-- Stars circling (3 stars) -->
+  <!-- Star 1 (top) -->
+  <rect x="6" y="0" width="4" height="1" fill="#f4d03f"/>
+  <rect x="7" y="1" width="2" height="2" fill="#f4d03f"/>
+  <rect x="6" y="2" width="1" height="1" fill="#e67e22"/>
+  <rect x="9" y="2" width="1" height="1" fill="#e67e22"/>
+  <rect x="7" y="1" width="1" height="1" fill="#fdfefe"/>
+
+  <!-- Star 2 (bottom left) -->
+  <rect x="1" y="10" width="4" height="1" fill="#f4d03f"/>
+  <rect x="2" y="9" width="2" height="3" fill="#f4d03f"/>
+  <rect x="1" y="9" width="1" height="1" fill="#e67e22"/>
+  <rect x="4" y="11" width="1" height="1" fill="#e67e22"/>
+  <rect x="2" y="10" width="1" height="1" fill="#fdfefe"/>
+
+  <!-- Star 3 (bottom right) -->
+  <rect x="11" y="10" width="4" height="1" fill="#f4d03f"/>
+  <rect x="12" y="9" width="2" height="3" fill="#f4d03f"/>
+  <rect x="11" y="11" width="1" height="1" fill="#e67e22"/>
+  <rect x="14" y="9" width="1" height="1" fill="#e67e22"/>
+  <rect x="13" y="10" width="1" height="1" fill="#fdfefe"/>
+
+  <!-- Dazed face in center -->
+  <rect x="5" y="5" width="6" height="6" fill="#1a252f"/>
+  <rect x="6" y="4" width="4" height="1" fill="#2c3e50"/>
+  <rect x="6" y="11" width="4" height="1" fill="#2c3e50"/>
+
+  <!-- Spiral eyes -->
+  <rect x="6" y="6" width="1" height="1" fill="#f4d03f"/>
+  <rect x="9" y="6" width="1" height="1" fill="#f4d03f"/>
+  <rect x="6" y="7" width="1" height="1" fill="#e67e22"/>
+  <rect x="9" y="7" width="1" height="1" fill="#e67e22"/>
+
+  <!-- Dizzy mouth -->
+  <rect x="7" y="9" width="2" height="1" fill="#fdfefe"/>
+</svg>

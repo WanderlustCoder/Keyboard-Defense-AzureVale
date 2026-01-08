@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 24" width="16" height="24">
+  <!-- Dungeon Door (16x24) - Prison/dungeon door -->
+  <!-- Color Palette: #5d6d7e, #7f8c8d, #1a252f, #2c3e50, #c0392b -->
+
+  <!-- Stone frame -->
+  <rect x="0" y="0" width="16" height="24" fill="#5d6d7e"/>
+  <rect x="1" y="1" width="14" height="22" fill="#7f8c8d"/>
+
+  <!-- Door opening (dark) -->
+  <rect x="2" y="2" width="12" height="20" fill="#1a252f"/>
+
+  <!-- Iron bars -->
+  <rect x="3" y="2" width="2" height="20" fill="#5d6d7e"/>
+  <rect x="3" y="3" width="1" height="18" fill="#7f8c8d"/>
+
+  <rect x="7" y="2" width="2" height="20" fill="#5d6d7e"/>
+  <rect x="7" y="3" width="1" height="18" fill="#7f8c8d"/>
+
+  <rect x="11" y="2" width="2" height="20" fill="#5d6d7e"/>
+  <rect x="11" y="3" width="1" height="18" fill="#7f8c8d"/>
+
+  <!-- Horizontal bars -->
+  <rect x="2" y="6" width="12" height="2" fill="#5d6d7e"/>
+  <rect x="3" y="6" width="10" height="1" fill="#7f8c8d"/>
+
+  <rect x="2" y="14" width="12" height="2" fill="#5d6d7e"/>
+  <rect x="3" y="14" width="10" height="1" fill="#7f8c8d"/>
+
+  <!-- Lock mechanism -->
+  <rect x="13" y="10" width="2" height="4" fill="#c0392b"/>
+  <rect x="13" y="11" width="1" height="2" fill="#922b21"/>
+
+  <!-- Rust stains -->
+  <rect x="4" y="18" width="1" height="2" fill="#c0392b" opacity="0.4"/>
+  <rect x="8" y="8" width="1" height="2" fill="#c0392b" opacity="0.3"/>
+</svg>

@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 20" width="24" height="20">
+  <!-- Poison Cloud Effect (24x20) - Toxic gas -->
+  <!-- Color Palette: #27ae60, #1e8449, #145a32, #2ecc71 -->
+
+  <!-- Cloud layers -->
+  <rect x="6" y="12" width="12" height="6" fill="#1e8449" opacity="0.7"/>
+  <rect x="4" y="10" width="16" height="6" fill="#27ae60" opacity="0.6"/>
+  <rect x="2" y="8" width="20" height="6" fill="#2ecc71" opacity="0.5"/>
+
+  <!-- Cloud puffs -->
+  <rect x="2" y="6" width="6" height="6" fill="#27ae60" opacity="0.6"/>
+  <rect x="8" y="4" width="8" height="8" fill="#2ecc71" opacity="0.5"/>
+  <rect x="16" y="6" width="6" height="6" fill="#27ae60" opacity="0.6"/>
+
+  <!-- Top wisps -->
+  <rect x="6" y="2" width="4" height="4" fill="#27ae60" opacity="0.4"/>
+  <rect x="10" y="0" width="4" height="4" fill="#2ecc71" opacity="0.3"/>
+  <rect x="14" y="2" width="4" height="4" fill="#27ae60" opacity="0.4"/>
+
+  <!-- Bubbles -->
+  <rect x="4" y="10" width="2" height="2" fill="#2ecc71"/>
+  <rect x="5" y="9" width="1" height="1" fill="#1e8449"/>
+
+  <rect x="10" y="8" width="2" height="2" fill="#2ecc71"/>
+  <rect x="10" y="7" width="1" height="1" fill="#145a32"/>
+
+  <rect x="16" y="10" width="2" height="2" fill="#2ecc71"/>
+  <rect x="17" y="9" width="1" height="1" fill="#1e8449"/>
+
+  <!-- Skull hint in center -->
+  <rect x="9" y="12" width="6" height="4" fill="#fdfefe" opacity="0.3"/>
+  <rect x="10" y="12" width="2" height="2" fill="#145a32" opacity="0.5"/>
+  <rect x="12" y="12" width="2" height="2" fill="#145a32" opacity="0.5"/>
+  <rect x="11" y="15" width="2" height="1" fill="#145a32" opacity="0.4"/>
+</svg>

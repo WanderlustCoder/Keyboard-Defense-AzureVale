@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Home Button (16x16) - Return to menu -->
+  <!-- Color Palette: #f4d03f, #e67e22, #d35400, #fdfefe -->
+
+  <!-- Button background -->
+  <rect x="0" y="0" width="16" height="16" fill="#d35400"/>
+  <rect x="1" y="1" width="14" height="14" fill="#e67e22"/>
+  <rect x="2" y="2" width="12" height="12" fill="#f4d03f"/>
+
+  <!-- House roof -->
+  <rect x="8" y="3" width="1" height="1" fill="#fdfefe"/>
+  <rect x="6" y="4" width="5" height="1" fill="#fdfefe"/>
+  <rect x="4" y="5" width="9" height="1" fill="#fdfefe"/>
+  <rect x="3" y="6" width="11" height="1" fill="#fdfefe"/>
+
+  <!-- House body -->
+  <rect x="4" y="7" width="8" height="6" fill="#fdfefe"/>
+
+  <!-- Door -->
+  <rect x="6" y="9" width="4" height="4" fill="#e67e22"/>
+  <rect x="7" y="10" width="2" height="3" fill="#d35400"/>
+</svg>

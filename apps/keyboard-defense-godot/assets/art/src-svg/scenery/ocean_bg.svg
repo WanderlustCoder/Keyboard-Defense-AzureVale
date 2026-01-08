@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 24" width="32" height="24">
+  <!-- Ocean Background (32x24) - Seascape -->
+  <!-- Color Palette: #3498db, #2980b9, #1a5276, #5dade2 -->
+
+  <!-- Sky -->
+  <rect x="0" y="0" width="32" height="10" fill="#aed6f1"/>
+  <rect x="0" y="0" width="32" height="4" fill="#5dade2"/>
+
+  <!-- Horizon line -->
+  <rect x="0" y="10" width="32" height="1" fill="#1a5276"/>
+
+  <!-- Far ocean -->
+  <rect x="0" y="11" width="32" height="13" fill="#2980b9"/>
+
+  <!-- Wave layer 1 -->
+  <rect x="0" y="13" width="32" height="11" fill="#3498db"/>
+
+  <!-- Waves -->
+  <rect x="0" y="14" width="8" height="2" fill="#5dade2"/>
+  <rect x="10" y="15" width="6" height="2" fill="#5dade2"/>
+  <rect x="20" y="14" width="8" height="2" fill="#5dade2"/>
+
+  <!-- Wave crests -->
+  <rect x="0" y="13" width="6" height="1" fill="#aed6f1"/>
+  <rect x="12" y="14" width="4" height="1" fill="#aed6f1"/>
+  <rect x="22" y="13" width="5" height="1" fill="#aed6f1"/>
+
+  <!-- Near ocean -->
+  <rect x="0" y="18" width="32" height="6" fill="#2980b9"/>
+  <rect x="0" y="20" width="32" height="4" fill="#1a5276"/>
+
+  <!-- Foam -->
+  <rect x="2" y="18" width="4" height="1" fill="#fdfefe"/>
+  <rect x="14" y="19" width="6" height="1" fill="#fdfefe"/>
+  <rect x="26" y="18" width="4" height="1" fill="#fdfefe"/>
+</svg>

@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <!-- Villager Portrait (24x24) - Common folk NPC -->
+  <!-- Color Palette: #8b7355, #5d4e37, #27ae60, #f5e6d3, #2c3e50 -->
+
+  <!-- Background -->
+  <rect x="0" y="0" width="24" height="24" fill="#2c3e50"/>
+
+  <!-- Straw hat -->
+  <rect x="4" y="4" width="16" height="3" fill="#f4d03f"/>
+  <rect x="5" y="3" width="14" height="2" fill="#e67e22"/>
+  <rect x="7" y="2" width="10" height="2" fill="#f4d03f"/>
+  <rect x="8" y="1" width="8" height="2" fill="#e67e22"/>
+
+  <!-- Face -->
+  <rect x="7" y="7" width="10" height="10" fill="#f5e6d3"/>
+  <rect x="8" y="8" width="8" height="8" fill="#e6d5c3"/>
+
+  <!-- Simple hair -->
+  <rect x="6" y="6" width="2" height="6" fill="#8b7355"/>
+  <rect x="16" y="6" width="2" height="6" fill="#8b7355"/>
+
+  <!-- Eyes -->
+  <rect x="9" y="10" width="2" height="2" fill="#2c3e50"/>
+  <rect x="13" y="10" width="2" height="2" fill="#2c3e50"/>
+  <rect x="9" y="10" width="1" height="1" fill="#5d4e37"/>
+  <rect x="13" y="10" width="1" height="1" fill="#5d4e37"/>
+
+  <!-- Nose -->
+  <rect x="11" y="12" width="2" height="2" fill="#d5c4a1"/>
+
+  <!-- Friendly smile -->
+  <rect x="9" y="14" width="6" height="1" fill="#c9a596"/>
+  <rect x="10" y="15" width="4" height="1" fill="#f5e6d3"/>
+
+  <!-- Simple tunic -->
+  <rect x="6" y="17" width="12" height="7" fill="#27ae60"/>
+  <rect x="7" y="18" width="10" height="5" fill="#1e8449"/>
+
+  <!-- Collar -->
+  <rect x="9" y="17" width="6" height="2" fill="#ecf0f1"/>
+  <rect x="10" y="18" width="4" height="1" fill="#bdc3c7"/>
+</svg>

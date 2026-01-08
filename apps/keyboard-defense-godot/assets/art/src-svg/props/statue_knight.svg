@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 20" width="12" height="20">
+  <!-- Knight Statue (12x20) - Decorative prop -->
+  <!-- Color Palette: #7f8c8d, #95a5a6, #bdc3c7, #5d6d7e -->
+
+  <!-- Helmet -->
+  <rect x="3" y="0" width="6" height="4" fill="#7f8c8d"/>
+  <rect x="4" y="1" width="4" height="2" fill="#95a5a6"/>
+  <rect x="5" y="0" width="2" height="1" fill="#bdc3c7"/>
+
+  <!-- Face slit -->
+  <rect x="4" y="2" width="4" height="1" fill="#1a252f"/>
+
+  <!-- Shoulders -->
+  <rect x="1" y="4" width="10" height="3" fill="#7f8c8d"/>
+  <rect x="2" y="5" width="8" height="1" fill="#95a5a6"/>
+
+  <!-- Body armor -->
+  <rect x="2" y="7" width="8" height="6" fill="#7f8c8d"/>
+  <rect x="3" y="8" width="6" height="4" fill="#95a5a6"/>
+  <rect x="4" y="9" width="4" height="2" fill="#bdc3c7"/>
+
+  <!-- Arms -->
+  <rect x="0" y="6" width="2" height="6" fill="#5d6d7e"/>
+  <rect x="10" y="6" width="2" height="6" fill="#5d6d7e"/>
+
+  <!-- Sword (held) -->
+  <rect x="0" y="4" width="2" height="10" fill="#bdc3c7"/>
+  <rect x="0" y="5" width="1" height="8" fill="#fdfefe"/>
+
+  <!-- Legs -->
+  <rect x="3" y="13" width="3" height="5" fill="#7f8c8d"/>
+  <rect x="6" y="13" width="3" height="5" fill="#7f8c8d"/>
+  <rect x="4" y="14" width="2" height="3" fill="#95a5a6"/>
+  <rect x="6" y="14" width="2" height="3" fill="#95a5a6"/>
+
+  <!-- Pedestal -->
+  <rect x="1" y="18" width="10" height="2" fill="#5d6d7e"/>
+  <rect x="2" y="18" width="8" height="1" fill="#7f8c8d"/>
+</svg>

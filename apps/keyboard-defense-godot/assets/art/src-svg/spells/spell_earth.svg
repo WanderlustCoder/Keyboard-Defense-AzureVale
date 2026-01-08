@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 14" width="14" height="14">
+  <!-- Earth Spell (14x14) - Rock projectile -->
+  <!-- Color Palette: #8b7355, #5d4e37, #3d3426, #7f8c8d -->
+
+  <!-- Main boulder -->
+  <rect x="3" y="3" width="8" height="8" fill="#8b7355"/>
+  <rect x="4" y="4" width="6" height="6" fill="#5d4e37"/>
+
+  <!-- Rock faces -->
+  <rect x="4" y="4" width="3" height="3" fill="#8b7355"/>
+  <rect x="7" y="7" width="3" height="3" fill="#3d3426"/>
+
+  <!-- Cracks/details -->
+  <rect x="5" y="5" width="1" height="4" fill="#3d3426"/>
+  <rect x="5" y="8" width="4" height="1" fill="#3d3426"/>
+
+  <!-- Flying debris -->
+  <rect x="0" y="6" width="2" height="2" fill="#5d4e37"/>
+  <rect x="1" y="2" width="2" height="2" fill="#7f8c8d"/>
+  <rect x="12" y="5" width="2" height="2" fill="#5d4e37"/>
+  <rect x="10" y="1" width="2" height="2" fill="#7f8c8d"/>
+  <rect x="2" y="11" width="2" height="2" fill="#5d4e37"/>
+  <rect x="10" y="11" width="2" height="2" fill="#7f8c8d"/>
+
+  <!-- Impact lines -->
+  <rect x="0" y="4" width="1" height="1" fill="#8b7355"/>
+  <rect x="13" y="9" width="1" height="1" fill="#8b7355"/>
+</svg>

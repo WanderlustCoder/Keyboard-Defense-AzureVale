@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 24" width="12" height="24">
+  <!-- Bow (12x24) - Ranged weapon -->
+  <!-- Color Palette: #8b7355, #5d4e37, #bdc3c7, #ecf0f1 -->
+
+  <!-- Bow limbs -->
+  <rect x="2" y="0" width="2" height="4" fill="#8b7355"/>
+  <rect x="3" y="0" width="1" height="3" fill="#5d4e37"/>
+  <rect x="1" y="3" width="2" height="4" fill="#8b7355"/>
+  <rect x="2" y="4" width="1" height="3" fill="#5d4e37"/>
+  <rect x="0" y="6" width="2" height="6" fill="#8b7355"/>
+  <rect x="1" y="7" width="1" height="4" fill="#5d4e37"/>
+
+  <!-- Bow grip -->
+  <rect x="0" y="10" width="3" height="4" fill="#5d4e37"/>
+  <rect x="1" y="11" width="2" height="2" fill="#8b7355"/>
+
+  <!-- Lower limb -->
+  <rect x="0" y="12" width="2" height="6" fill="#8b7355"/>
+  <rect x="1" y="13" width="1" height="4" fill="#5d4e37"/>
+  <rect x="1" y="17" width="2" height="4" fill="#8b7355"/>
+  <rect x="2" y="18" width="1" height="3" fill="#5d4e37"/>
+  <rect x="2" y="20" width="2" height="4" fill="#8b7355"/>
+  <rect x="3" y="21" width="1" height="3" fill="#5d4e37"/>
+
+  <!-- Bowstring -->
+  <rect x="4" y="1" width="1" height="22" fill="#ecf0f1"/>
+  <rect x="4" y="2" width="1" height="20" fill="#bdc3c7"/>
+
+  <!-- String tension points -->
+  <rect x="3" y="0" width="2" height="1" fill="#ecf0f1"/>
+  <rect x="3" y="23" width="2" height="1" fill="#ecf0f1"/>
+
+  <!-- Arrow nocked -->
+  <rect x="5" y="10" width="6" height="1" fill="#8b7355"/>
+  <rect x="5" y="11" width="6" height="1" fill="#5d4e37"/>
+  <rect x="10" y="9" width="2" height="1" fill="#bdc3c7"/>
+  <rect x="10" y="12" width="2" height="1" fill="#bdc3c7"/>
+</svg>

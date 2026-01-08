@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Lava Hazard (16x16) - Molten rock pool -->
+  <!-- Color Palette: #e74c3c, #c0392b, #922b21, #f4d03f, #e67e22 -->
+
+  <!-- Lava pool edge -->
+  <rect x="0" y="10" width="16" height="6" fill="#922b21"/>
+  <rect x="1" y="11" width="14" height="5" fill="#c0392b"/>
+
+  <!-- Lava surface -->
+  <rect x="1" y="10" width="14" height="5" fill="#e74c3c"/>
+  <rect x="2" y="11" width="12" height="3" fill="#e67e22"/>
+
+  <!-- Hot spots -->
+  <rect x="3" y="11" width="3" height="2" fill="#f4d03f"/>
+  <rect x="4" y="12" width="1" height="1" fill="#fdfefe"/>
+
+  <rect x="8" y="12" width="4" height="2" fill="#f4d03f"/>
+  <rect x="9" y="12" width="2" height="1" fill="#fdfefe"/>
+
+  <!-- Bubbles -->
+  <rect x="5" y="9" width="2" height="2" fill="#e67e22"/>
+  <rect x="5" y="8" width="1" height="1" fill="#c0392b"/>
+
+  <rect x="11" y="10" width="2" height="2" fill="#e67e22"/>
+  <rect x="12" y="9" width="1" height="1" fill="#c0392b"/>
+
+  <rect x="2" y="10" width="1" height="1" fill="#e67e22"/>
+
+  <!-- Heat waves -->
+  <rect x="3" y="5" width="2" height="1" fill="#e74c3c" opacity="0.4"/>
+  <rect x="4" y="4" width="1" height="1" fill="#e67e22" opacity="0.3"/>
+  <rect x="7" y="6" width="3" height="1" fill="#e74c3c" opacity="0.4"/>
+  <rect x="8" y="5" width="1" height="1" fill="#e67e22" opacity="0.3"/>
+  <rect x="11" y="6" width="2" height="1" fill="#e74c3c" opacity="0.4"/>
+  <rect x="12" y="5" width="1" height="1" fill="#f4d03f" opacity="0.3"/>
+
+  <!-- Rock edges -->
+  <rect x="0" y="9" width="2" height="2" fill="#5d4e37"/>
+  <rect x="14" y="9" width="2" height="2" fill="#5d4e37"/>
+</svg>
