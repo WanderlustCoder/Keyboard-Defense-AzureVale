@@ -4,6 +4,29 @@ Log of recent changes made by Claude Code. Most recent first.
 
 ---
 
+## 2026-01-10: Implementation Examples, Diagnostics, and Templates
+
+**Added implementation examples (`docs/examples/`):**
+- `ADDING_AN_ENEMY.md` - Complete walkthrough with stats, scaling, behavior, assets
+- `ADDING_A_COMMAND.md` - Full parse → intent → apply flow
+- `ADDING_A_LESSON.md` - Lesson modes, word generation, graduation paths
+- `ADDING_A_BUILDING.md` - Costs, production, effects, validation
+
+**Added diagnostic scripts:**
+- `scripts/diagnose.py` - Python diagnostic tool
+- `scripts/diagnose.sh` - Shell wrapper
+- Checks: orphaned assets, missing manifests, invalid lessons, broken references, balance anomalies
+
+**Added code templates (`templates/`):**
+- `sim_feature.gd.template` - Sim layer feature boilerplate
+- `ui_component.gd.template` - UI panel/component boilerplate
+- `intent_handler.gd.template` - Command handler (multi-file)
+- `enemy_type.gd.template` - Enemy type (multi-file)
+
+**Updated CLAUDE.md** with documentation for all new resources.
+
+---
+
 ## 2026-01-10: Schema Updates
 
 **Fixed all outdated schemas:**

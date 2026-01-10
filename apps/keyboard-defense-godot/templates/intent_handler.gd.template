@@ -1,0 +1,181 @@
+# ============================================================================
+# INTENT HANDLER TEMPLATE
+# ============================================================================
+# This is NOT a standalone file - add this code to existing files:
+#
+# 1. sim/command_keywords.gd - Register keyword
+# 2. sim/intents.gd - Add help text
+# 3. sim/parse_command.gd - Add parsing logic
+# 4. sim/apply_intent.gd - Add intent handler
+#
+# See docs/examples/ADDING_A_COMMAND.md for full walkthrough
+# ============================================================================
+
+
+# ============================================================================
+# STEP 1: sim/command_keywords.gd
+# ============================================================================
+# Add to keywords() function:
+
+static func keywords() -> Array[String]:
+	return [
+		# ... existing keywords ...
+		"{{command_name}}",
+	]
+
+
+# ============================================================================
+# STEP 2: sim/intents.gd
+# ============================================================================
+# Add to help_lines() function:
+
+static func help_lines() -> Array[String]:
+	return [
+		# ... existing help lines ...
+		"  {{command_name}} [args] - {{description}}",
+	]
+
+
+# ============================================================================
+# STEP 3: sim/parse_command.gd
+# ============================================================================
+# Add to parse() match statement:
+
+# Simple command (no arguments):
+"{{command_name}}":
+	if tokens.size() > 1:
+		return {"ok": false, "error": "'{{command_name}}' takes no arguments."}
+	return {"ok": true, "intent": SimIntents.make("{{command_name}}")}
+
+# Command with required argument:
+"{{command_name}}":
+	if tokens.size() != 2:
+		return {"ok": false, "error": "Usage: {{command_name}} <arg>"}
+	var arg_value: String = tokens[1].to_lower()
+	return {"ok": true, "intent": SimIntents.make("{{command_name}}", {"arg": arg_value})}
+
+# Command with optional argument:
+"{{command_name}}":
+	var arg_value: String = ""
+	if tokens.size() == 2:
+		arg_value = tokens[1].to_lower()
+	elif tokens.size() > 2:
+		return {"ok": false, "error": "Usage: {{command_name}} [arg]"}
+	return {"ok": true, "intent": SimIntents.make("{{command_name}}", {"arg": arg_value})}
+
+# Command with numeric argument:
+"{{command_name}}":
+	if tokens.size() != 2:
+		return {"ok": false, "error": "Usage: {{command_name}} <amount>"}
+	var amount_str: String = tokens[1]
+	if not amount_str.is_valid_int():
+		return {"ok": false, "error": "Amount must be a number."}
+	var amount: int = int(amount_str)
+	if amount <= 0:
+		return {"ok": false, "error": "Amount must be positive."}
+	return {"ok": true, "intent": SimIntents.make("{{command_name}}", {"amount": amount})}
+
+
+# ============================================================================
+# STEP 4: sim/apply_intent.gd
+# ============================================================================
+
+# Add to imports at top:
+const {{FeatureClass}} = preload("res://sim/{{feature_name}}.gd")
+
+# Add to apply() match statement:
+"{{command_name}}":
+	_apply_{{command_name}}(new_state, intent, events)
+
+# Add handler function:
+static func _apply_{{command_name}}(state: GameState, intent: Dictionary, events: Array[String]) -> void:
+	# ─────────────────────────────────────────────────────────
+	# 1. Validate Phase
+	# ─────────────────────────────────────────────────────────
+	if state.phase != "day":
+		events.append("Can only use {{command_name}} during the day phase.")
+		return
+
+	# ─────────────────────────────────────────────────────────
+	# 2. Extract Parameters
+	# ─────────────────────────────────────────────────────────
+	var arg_value: String = str(intent.get("arg", ""))
+	var amount: int = int(intent.get("amount", 0))
+
+	# ─────────────────────────────────────────────────────────
+	# 3. Validate Parameters
+	# ─────────────────────────────────────────────────────────
+	if arg_value.is_empty():
+		events.append("{{command_name}}: Missing required argument.")
+		return
+
+	# ─────────────────────────────────────────────────────────
+	# 4. Check Costs/Resources
+	# ─────────────────────────────────────────────────────────
+	var cost: int = 1  # AP cost
+	if state.ap < cost:
+		events.append("Not enough AP. Need %d, have %d." % [cost, state.ap])
+		return
+
+	# ─────────────────────────────────────────────────────────
+	# 5. Apply Effect
+	# ─────────────────────────────────────────────────────────
+	state.ap -= cost
+
+	# Call your feature logic
+	# {{FeatureClass}}.apply_{{feature_name}}(state, amount)
+
+	# ─────────────────────────────────────────────────────────
+	# 6. Generate Feedback
+	# ─────────────────────────────────────────────────────────
+	events.append("{{command_name}} executed with '%s'. (-1 AP)" % arg_value)
+
+
+# ============================================================================
+# STEP 5: tests/run_tests.gd
+# ============================================================================
+
+func test_{{command_name}}_parses() -> void:
+	var result := CommandParser.parse("{{command_name}}")
+	assert(result["ok"] == true, "Should parse successfully")
+	assert(result["intent"]["kind"] == "{{command_name}}", "Intent kind should match")
+	_pass("test_{{command_name}}_parses")
+
+
+func test_{{command_name}}_requires_day() -> void:
+	var state := GameState.new()
+	state.phase = "night"
+	var intent := SimIntents.make("{{command_name}}")
+	var result := IntentApplier.apply(state, intent)
+	assert("day" in result["events"][0].to_lower(), "Should require day phase")
+	_pass("test_{{command_name}}_requires_day")
+
+
+func test_{{command_name}}_costs_ap() -> void:
+	var state := GameState.new()
+	state.phase = "day"
+	state.ap = 5
+	var intent := SimIntents.make("{{command_name}}", {"arg": "test"})
+	var result := IntentApplier.apply(state, intent)
+	assert(result["state"].ap == 4, "Should cost 1 AP")
+	_pass("test_{{command_name}}_costs_ap")
+
+
+# ============================================================================
+# COMMON PATTERNS
+# ============================================================================
+
+# Request autosave after command:
+"{{command_name}}":
+	if _apply_{{command_name}}(new_state, intent, events):
+		request = {"kind": "autosave", "reason": "{{command_name}}"}
+
+# Return bool from handler to indicate if autosave needed:
+static func _apply_{{command_name}}(...) -> bool:
+	# ... logic ...
+	return true  # Request autosave
+
+# UI-only command (doesn't modify state):
+"{{command_name}}":
+	events.append("{{description}} (UI-only)")
+	# No state modification - UI layer handles this

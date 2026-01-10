@@ -1,0 +1,202 @@
+# ============================================================================
+# UI COMPONENT TEMPLATE
+# ============================================================================
+# Copy to: ui/components/{{feature_name}}.gd
+# Create scene: scenes/{{FeatureName}}.tscn (or add to existing scene)
+#
+# After creating, update:
+# - Parent scene to include this component
+# - Connect signals as needed
+# ============================================================================
+
+extends PanelContainer
+# Alternative bases: Control, MarginContainer, VBoxContainer
+
+class_name {{ClassName}}
+
+# ─────────────────────────────────────────────────────────────
+# Signals
+# ─────────────────────────────────────────────────────────────
+
+signal closed
+signal action_selected(action_id: String)
+signal value_changed(new_value: int)
+
+# ─────────────────────────────────────────────────────────────
+# Constants
+# ─────────────────────────────────────────────────────────────
+
+const FADE_DURATION: float = 0.2
+const UPDATE_INTERVAL: float = 0.1
+
+# ─────────────────────────────────────────────────────────────
+# Node References
+# ─────────────────────────────────────────────────────────────
+
+@onready var title_label: Label = $VBox/TitleLabel
+@onready var content_label: Label = $VBox/ContentLabel
+@onready var close_button: Button = $VBox/CloseButton
+@onready var action_container: VBoxContainer = $VBox/Actions
+
+# ─────────────────────────────────────────────────────────────
+# State
+# ─────────────────────────────────────────────────────────────
+
+var _data: Dictionary = {}
+var _is_visible: bool = false
+
+# ─────────────────────────────────────────────────────────────
+# Lifecycle
+# ─────────────────────────────────────────────────────────────
+
+func _ready() -> void:
+	# Connect signals
+	if close_button:
+		close_button.pressed.connect(_on_close_pressed)
+
+	# Initial state
+	hide()
+	modulate.a = 0.0
+
+
+func _process(delta: float) -> void:
+	# Only process when visible
+	if not _is_visible:
+		return
+
+	# Update logic here if needed
+	pass
+
+# ─────────────────────────────────────────────────────────────
+# Public API
+# ─────────────────────────────────────────────────────────────
+
+## Show the component with optional data
+func show_panel(data: Dictionary = {}) -> void:
+	_data = data
+	_update_display()
+	_is_visible = true
+	show()
+
+	var tween := create_tween()
+	tween.tween_property(self, "modulate:a", 1.0, FADE_DURATION)
+
+
+## Hide the component
+func hide_panel() -> void:
+	_is_visible = false
+
+	var tween := create_tween()
+	tween.tween_property(self, "modulate:a", 0.0, FADE_DURATION)
+	tween.tween_callback(hide)
+
+
+## Update displayed data
+func update_data(data: Dictionary) -> void:
+	_data.merge(data, true)
+	_update_display()
+
+
+## Check if panel is currently shown
+func is_panel_visible() -> bool:
+	return _is_visible
+
+# ─────────────────────────────────────────────────────────────
+# Display Logic
+# ─────────────────────────────────────────────────────────────
+
+func _update_display() -> void:
+	if title_label:
+		title_label.text = str(_data.get("title", "{{ClassName}}"))
+
+	if content_label:
+		content_label.text = str(_data.get("content", ""))
+
+	_update_actions()
+
+
+func _update_actions() -> void:
+	if not action_container:
+		return
+
+	# Clear existing buttons
+	for child in action_container.get_children():
+		child.queue_free()
+
+	# Add action buttons
+	var actions: Array = _data.get("actions", [])
+	for action in actions:
+		var btn := Button.new()
+		btn.text = str(action.get("label", "Action"))
+		var action_id: String = str(action.get("id", ""))
+		btn.pressed.connect(_on_action_pressed.bind(action_id))
+		action_container.add_child(btn)
+
+# ─────────────────────────────────────────────────────────────
+# Signal Handlers
+# ─────────────────────────────────────────────────────────────
+
+func _on_close_pressed() -> void:
+	hide_panel()
+	closed.emit()
+
+
+func _on_action_pressed(action_id: String) -> void:
+	action_selected.emit(action_id)
+
+
+# ─────────────────────────────────────────────────────────────
+# Input Handling (Optional)
+# ─────────────────────────────────────────────────────────────
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not _is_visible:
+		return
+
+	if event.is_action_pressed("ui_cancel"):
+		hide_panel()
+		closed.emit()
+		get_viewport().set_input_as_handled()
+
+
+# ============================================================================
+# SCENE STRUCTURE (.tscn)
+# ============================================================================
+#
+# {{ClassName}} (PanelContainer)
+#   └── VBox (VBoxContainer)
+#       ├── TitleLabel (Label)
+#       ├── ContentLabel (Label)
+#       ├── Actions (VBoxContainer)
+#       └── CloseButton (Button)
+#
+# ============================================================================
+# USAGE EXAMPLE
+# ============================================================================
+#
+# # In parent scene:
+# @onready var my_panel: {{ClassName}} = ${{ClassName}}
+#
+# func _ready() -> void:
+#     my_panel.closed.connect(_on_panel_closed)
+#     my_panel.action_selected.connect(_on_action_selected)
+#
+# func show_info() -> void:
+#     my_panel.show_panel({
+#         "title": "Information",
+#         "content": "This is the content.",
+#         "actions": [
+#             {"id": "confirm", "label": "Confirm"},
+#             {"id": "cancel", "label": "Cancel"}
+#         ]
+#     })
+#
+# func _on_panel_closed() -> void:
+#     print("Panel closed")
+#
+# func _on_action_selected(action_id: String) -> void:
+#     match action_id:
+#         "confirm":
+#             do_something()
+#         "cancel":
+#             pass

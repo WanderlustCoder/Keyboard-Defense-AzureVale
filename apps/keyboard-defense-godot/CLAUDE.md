@@ -317,6 +317,41 @@ The `/.claude/` directory at repo root contains persistent context for Claude Co
 3. Update `RECENT_CHANGES.md` after completing work
 4. Record decisions in `DECISIONS.md`
 
+### Implementation Examples
+
+Complete worked examples in `docs/examples/`:
+
+| Example | Description |
+|---------|-------------|
+| `ADDING_AN_ENEMY.md` | Full walkthrough: stats, scaling, behavior, assets |
+| `ADDING_A_COMMAND.md` | Parse → intent → apply flow with tests |
+| `ADDING_A_LESSON.md` | Lesson modes, word generation, graduation paths |
+| `ADDING_A_BUILDING.md` | Costs, production, effects, validation |
+
+### Code Templates
+
+Boilerplate templates in `templates/`:
+
+```bash
+# Copy and modify for new features
+templates/sim_feature.gd.template      # Sim layer feature
+templates/ui_component.gd.template     # UI panel/component
+templates/intent_handler.gd.template   # New command (multi-file)
+templates/enemy_type.gd.template       # New enemy (multi-file)
+```
+
+### Diagnostic Scripts
+
+Check for common issues:
+
+```bash
+./scripts/diagnose.sh              # Run all diagnostics
+./scripts/diagnose.sh assets       # Check asset manifest
+./scripts/diagnose.sh lessons      # Check lesson configs
+./scripts/diagnose.sh references   # Check cross-references
+./scripts/diagnose.sh balance      # Check balance values
+```
+
 ## File Locations Quick Reference
 
 | Need to... | Location |

@@ -1,0 +1,185 @@
+# ============================================================================
+# ENEMY TYPE TEMPLATE
+# ============================================================================
+# This is NOT a standalone file - add this data to existing files:
+#
+# 1. sim/enemies.gd - Add to ENEMY_KINDS and scaling tables
+# 2. sim/tick.gd - Add special behavior (if any)
+# 3. sim/balance.gd - Add to wave composition
+# 4. assets/art/src-svg/enemies/ - Create sprite
+# 5. data/assets_manifest.json - Register asset
+#
+# See docs/examples/ADDING_AN_ENEMY.md for full walkthrough
+# ============================================================================
+
+
+# ============================================================================
+# STEP 1: sim/enemies.gd - Add to ENEMY_KINDS
+# ============================================================================
+
+const ENEMY_KINDS := {
+	# ... existing enemies ...
+
+	"{{enemy_id}}": {
+		"speed": 1,          # Movement speed (1=normal, 2=fast, 3=very fast)
+		"armor": 0,          # Damage reduction
+		"hp_bonus": 0,       # Added to base HP
+		"glyph": "{{E}}",    # ASCII map character (uppercase for special)
+
+		# Optional special properties:
+		# "evasion": 0.3,    # Chance to dodge attacks
+		# "heal_rate": 1,    # HP regenerated per tick
+		# "has_affix": true, # Spawns with random affix
+		# "is_boss": true,   # Boss enemy flag
+	}
+}
+
+
+# ============================================================================
+# STEP 2: sim/enemies.gd - Add to scaling tables
+# ============================================================================
+
+# HP bonus by day (7 entries for days 1-7+)
+const ENEMY_HP_BONUS_BY_DAY := {
+	# ... existing ...
+	"{{enemy_id}}": [0, 0, 0, 1, 1, 1, 2]
+}
+
+# Armor by day
+const ENEMY_ARMOR_BY_DAY := {
+	# ... existing ...
+	"{{enemy_id}}": [0, 0, 0, 0, 0, 0, 1]
+}
+
+# Speed by day
+const ENEMY_SPEED_BY_DAY := {
+	# ... existing ...
+	"{{enemy_id}}": [1, 1, 1, 1, 1, 1, 2]
+}
+
+
+# ============================================================================
+# STEP 3: sim/tick.gd - Add special behavior (if needed)
+# ============================================================================
+
+# In _tick_enemies() or enemy processing:
+static func _tick_enemy_special(enemy: Dictionary, state: GameState) -> void:
+	var kind: String = str(enemy.get("kind", ""))
+
+	match kind:
+		"{{enemy_id}}":
+			# Example: Regeneration
+			if enemy.get("heal_rate", 0) > 0:
+				var heal: int = enemy["heal_rate"]
+				var max_hp: int = _get_max_hp(enemy)
+				enemy["hp"] = mini(enemy["hp"] + heal, max_hp)
+
+			# Example: Summoning
+			if enemy.get("summons", false) and _should_summon(state):
+				_spawn_minion(state, enemy)
+
+			# Example: Enrage at low HP
+			if enemy.get("enraged", false):
+				var hp_pct: float = float(enemy["hp"]) / float(_get_max_hp(enemy))
+				if hp_pct < 0.5:
+					enemy["speed"] = int(enemy.get("base_speed", 1)) + 1
+
+
+# ============================================================================
+# STEP 4: sim/balance.gd - Add to wave composition
+# ============================================================================
+
+# Option A: Static wave composition
+const WAVE_COMPOSITION := {
+	# Day: {enemy_type: count}
+	1: {"scout": 2, "raider": 1},
+	2: {"scout": 2, "raider": 2},
+	3: {"raider": 3, "armored": 1},
+	4: {"raider": 2, "{{enemy_id}}": 1},  # First appearance
+	5: {"raider": 3, "{{enemy_id}}": 1, "armored": 1},
+	# ...
+}
+
+# Option B: Dynamic wave generation
+static func generate_wave(day: int, rng: SimRng) -> Dictionary:
+	var composition := {}
+
+	# Base enemies
+	composition["raider"] = 2 + day / 3
+
+	# Add {{enemy_id}} starting day 4
+	if day >= 4:
+		if rng.randf() < 0.3:  # 30% chance
+			composition["{{enemy_id}}"] = 1
+
+	return composition
+
+
+# ============================================================================
+# STEP 5: Create SVG sprite
+# ============================================================================
+# Save to: assets/art/src-svg/enemies/enemy_{{enemy_id}}.svg
+
+# <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+#   <!-- Enemy visual -->
+#   <circle cx="16" cy="16" r="12" fill="#dc143c"/>
+#   <!-- Add distinctive features -->
+# </svg>
+
+
+# ============================================================================
+# STEP 6: data/assets_manifest.json
+# ============================================================================
+
+# Add to "textures" array:
+# {
+#   "id": "enemy_{{enemy_id}}",
+#   "path": "res://assets/sprites/enemy_{{enemy_id}}.png",
+#   "source_svg": "res://assets/art/src-svg/enemies/enemy_{{enemy_id}}.svg",
+#   "expected_width": 32,
+#   "expected_height": 32,
+#   "max_kb": 4,
+#   "pixel_art": true,
+#   "category": "enemies"
+# }
+
+
+# ============================================================================
+# STEP 7: tests/run_tests.gd
+# ============================================================================
+
+func test_{{enemy_id}}_in_enemy_kinds() -> void:
+	assert("{{enemy_id}}" in SimEnemies.ENEMY_KINDS, "Should be in ENEMY_KINDS")
+	_pass("test_{{enemy_id}}_in_enemy_kinds")
+
+
+func test_{{enemy_id}}_has_scaling() -> void:
+	assert("{{enemy_id}}" in SimEnemies.ENEMY_HP_BONUS_BY_DAY, "Should have HP scaling")
+	assert("{{enemy_id}}" in SimEnemies.ENEMY_ARMOR_BY_DAY, "Should have armor scaling")
+	assert("{{enemy_id}}" in SimEnemies.ENEMY_SPEED_BY_DAY, "Should have speed scaling")
+	_pass("test_{{enemy_id}}_has_scaling")
+
+
+func test_{{enemy_id}}_spawn() -> void:
+	var state := GameState.new()
+	var enemy := SimEnemies.spawn_enemy(state, "{{enemy_id}}", 1)
+	assert(enemy != null, "Should spawn successfully")
+	assert(enemy["kind"] == "{{enemy_id}}", "Kind should match")
+	_pass("test_{{enemy_id}}_spawn")
+
+
+# ============================================================================
+# ENEMY STATS REFERENCE
+# ============================================================================
+#
+# Speed: 1 = 1 tile/tick, 2 = 2 tiles/tick, etc.
+# Armor: Reduces damage by this amount (can't go below 1 damage)
+# HP Bonus: Added to base HP formula (base = word_length * 2)
+#
+# Special Properties:
+# - evasion: Float 0-1, chance to dodge
+# - heal_rate: Int, HP regenerated per tick
+# - has_affix: Bool, spawns with random affix
+# - is_boss: Bool, special boss behavior
+# - summons: Bool, can spawn minions
+# - enraged: Bool, speeds up at low HP

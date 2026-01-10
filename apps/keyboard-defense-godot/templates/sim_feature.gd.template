@@ -1,0 +1,95 @@
+# ============================================================================
+# SIM LAYER FEATURE TEMPLATE
+# ============================================================================
+# Copy to: sim/{{feature_name}}.gd
+#
+# IMPORTANT: Sim layer rules:
+# - NO extends Node (use RefCounted)
+# - NO signals, scenes, or UI references
+# - All functions should be static or operate on passed state
+# - Must be testable headless
+#
+# After creating, update:
+# - sim/apply_intent.gd: Add preload and call functions
+# - tests/run_tests.gd: Add test cases
+# ============================================================================
+
+class_name {{ClassName}}
+extends RefCounted
+
+const GameState = preload("res://sim/types.gd")
+const SimBalance = preload("res://sim/balance.gd")
+const SimRng = preload("res://sim/rng.gd")
+
+# ─────────────────────────────────────────────────────────────
+# Constants
+# ─────────────────────────────────────────────────────────────
+
+const {{CONSTANT_NAME}}_BASE_VALUE: int = 10
+const {{CONSTANT_NAME}}_MULTIPLIER: float = 1.0
+
+# ─────────────────────────────────────────────────────────────
+# Public Static Functions
+# ─────────────────────────────────────────────────────────────
+
+## {{description}}
+## Returns: {{return_description}}
+static func calculate_{{feature_name}}(state: GameState, param: String) -> int:
+	var base_value: int = {{CONSTANT_NAME}}_BASE_VALUE
+	var multiplier: float = {{CONSTANT_NAME}}_MULTIPLIER
+
+	# Add your logic here
+	var result: int = int(base_value * multiplier)
+
+	return result
+
+
+## Apply {{feature_name}} effect to game state
+## Modifies state in place
+static func apply_{{feature_name}}(state: GameState, amount: int) -> void:
+	# Validate
+	if amount <= 0:
+		return
+
+	# Apply effect
+	# state.some_field += amount
+	pass
+
+
+## Check if {{feature_name}} is available
+static func can_use_{{feature_name}}(state: GameState) -> Dictionary:
+	# Check preconditions
+	if state.phase != "day":
+		return {"ok": false, "error": "Can only use during day phase."}
+
+	# Check resources/costs
+	# if state.ap < 1:
+	#     return {"ok": false, "error": "Not enough AP."}
+
+	return {"ok": true}
+
+
+# ─────────────────────────────────────────────────────────────
+# Private Helper Functions
+# ─────────────────────────────────────────────────────────────
+
+static func _helper_function(value: int) -> int:
+	return value * 2
+
+
+# ============================================================================
+# TEST CASES (copy to tests/run_tests.gd)
+# ============================================================================
+#
+# func test_{{feature_name}}_basic() -> void:
+#     var state := GameState.new()
+#     var result := {{ClassName}}.calculate_{{feature_name}}(state, "test")
+#     assert(result > 0, "Should return positive value")
+#     _pass("test_{{feature_name}}_basic")
+#
+# func test_{{feature_name}}_validation() -> void:
+#     var state := GameState.new()
+#     state.phase = "night"
+#     var check := {{ClassName}}.can_use_{{feature_name}}(state)
+#     assert(not check["ok"], "Should fail during night")
+#     _pass("test_{{feature_name}}_validation")
