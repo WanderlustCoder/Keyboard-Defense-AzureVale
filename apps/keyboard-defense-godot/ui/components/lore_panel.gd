@@ -77,7 +77,7 @@ func _build_ui() -> void:
 	var hint := Label.new()
 	hint.text = "Select a category to view lore. Press ESC or type 'close' to exit."
 	hint.add_theme_font_size_override("font_size", 11)
-	hint.add_theme_color_override("font_color", ThemeColors.MUTED_TEXT)
+	hint.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
 	vbox.add_child(hint)
 
 func _populate_categories() -> void:
