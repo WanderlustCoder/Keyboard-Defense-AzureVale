@@ -314,3 +314,10 @@ func reset_campaign() -> void:
 	tutorial_completed = false
 	battles_played = 0
 	_save()
+
+func add_gold(amount: int) -> void:
+	gold += amount
+	_save()
+
+func get_gold() -> int:
+	return gold
