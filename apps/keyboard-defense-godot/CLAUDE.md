@@ -1300,6 +1300,57 @@ Reports:
 - Redundant conditions (if true)
 - Redundant type conversions
 
+### Cyclic Imports Checker
+
+Detect circular import dependencies:
+
+```bash
+./scripts/check_cyclic_imports.sh              # Full report
+./scripts/check_cyclic_imports.sh --file game/main.gd  # Check specific file
+./scripts/check_cyclic_imports.sh --max-depth 5  # Limit cycle depth
+./scripts/check_cyclic_imports.sh --json       # JSON output
+```
+
+Reports:
+- Direct cycles (A <-> B)
+- Indirect cycles (A -> B -> C -> A)
+- Files involved in cycles
+- Most imported files
+
+### State Mutations Checker
+
+Find state mutations outside sim layer:
+
+```bash
+./scripts/check_state_mutations.sh              # Full report
+./scripts/check_state_mutations.sh --file game/main.gd  # Single file
+./scripts/check_state_mutations.sh --strict     # Include sim-layer mutations
+./scripts/check_state_mutations.sh --json       # JSON output
+```
+
+Reports:
+- Architecture violations (mutations outside sim/)
+- Mutations by layer (sim/game/ui)
+- Most mutated state fields
+- Files with violations
+
+### API Consistency Checker
+
+Find inconsistent naming patterns:
+
+```bash
+./scripts/check_api_consistency.sh              # Full report
+./scripts/check_api_consistency.sh --file game/main.gd  # Single file
+./scripts/check_api_consistency.sh --strict     # More patterns
+./scripts/check_api_consistency.sh --json       # JSON output
+```
+
+Reports:
+- Inconsistent verb prefixes (get_ vs fetch_)
+- Boolean function naming (is_/has_/can_)
+- Verb usage statistics
+- Naming suggestions
+
 ## File Locations Quick Reference
 
 | Need to... | Location |

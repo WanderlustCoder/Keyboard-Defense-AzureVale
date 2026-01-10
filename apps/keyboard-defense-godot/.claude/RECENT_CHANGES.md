@@ -4,6 +4,30 @@ This file tracks recent changes for Claude Code context.
 
 ---
 
+## 2026-01-10: Development Tools Batch 20
+
+Added architecture and API analysis tools:
+
+### Cyclic Imports Checker (`scripts/check_cyclic_imports.py`)
+- Detects circular import dependencies
+- Finds direct cycles (A <-> B)
+- Finds indirect cycles through DFS
+- Reports most imported files
+
+### State Mutations Checker (`scripts/check_state_mutations.py`)
+- Finds state mutations outside sim layer
+- Enforces sim/game layer separation
+- Reports architecture violations
+- Tracks mutations by field and layer
+
+### API Consistency Checker (`scripts/check_api_consistency.py`)
+- Finds inconsistent verb prefixes
+- Checks boolean function naming
+- Reports verb usage statistics
+- Suggests naming improvements
+
+---
+
 ## 2026-01-10: Development Tools Batch 19
 
 Added resource loading and code quality tools:
