@@ -411,6 +411,43 @@ Scenarios:
 - `combat` - Full combat simulation (wave HP vs tower DPS)
 - `all` - Run all scenarios (default)
 
+### Word List Generator
+
+Generate themed word lists for typing lessons:
+
+```bash
+./scripts/generate_words.sh --theme fantasy --count 50
+./scripts/generate_words.sh --theme coding --min-length 4 --max-length 8
+./scripts/generate_words.sh --charset "asdfghjkl" --count 30
+./scripts/generate_words.sh --theme nature --json
+./scripts/generate_words.sh --theme medieval --lesson "medieval_words" --name "Medieval Words"
+```
+
+Available themes: `fantasy`, `coding`, `nature`, `medieval`, `science`, `common`, `bigrams`, `double_letters`
+
+### Test Scaffolding Generator
+
+Generate test stubs for new features:
+
+```bash
+./scripts/generate_tests.sh --file sim/new_feature.gd   # Analyze file
+./scripts/generate_tests.sh --intent build_tower        # Intent tests
+./scripts/generate_tests.sh --enemy dragon              # Enemy tests
+./scripts/generate_tests.sh --building barracks         # Building tests
+./scripts/generate_tests.sh --lesson home_row_1         # Lesson tests
+./scripts/generate_tests.sh --enemy orc --append        # Append to run_tests.gd
+```
+
+### System Dependency Graph
+
+Visual architecture reference at `docs/SYSTEM_GRAPH.md`:
+- Layer diagram (UI → Game → Sim → Data)
+- Command pipeline flow
+- Typing combat flow
+- Day/night cycle
+- Data dependencies
+- File impact matrix
+
 ## File Locations Quick Reference
 
 | Need to... | Location |

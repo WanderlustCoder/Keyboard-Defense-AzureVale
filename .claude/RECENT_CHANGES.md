@@ -4,6 +4,27 @@ Log of recent changes made by Claude Code. Most recent first.
 
 ---
 
+## 2026-01-10: System Graph, Word Generator, and Test Scaffolding
+
+**Added system dependency graph:**
+- `docs/SYSTEM_GRAPH.md` - Visual architecture reference
+- Layer diagrams, command pipeline, typing combat flow
+- File impact matrix for understanding change ripples
+
+**Added word list generator:**
+- `scripts/generate_words.py` - Generate themed word lists for lessons
+- `scripts/generate_words.sh` - Shell wrapper
+- Themes: fantasy, coding, nature, medieval, science, common, bigrams, double_letters
+- Supports charset-based generation, length filters, JSON/lesson output
+
+**Added test scaffolding generator:**
+- `scripts/generate_tests.py` - Auto-generate test stubs
+- `scripts/generate_tests.sh` - Shell wrapper
+- Templates for: file analysis, intents, enemies, buildings, lessons
+- Can append directly to tests/run_tests.gd
+
+---
+
 ## 2026-01-10: Asset Pipeline, Session Context, and Balance Simulator
 
 **Added asset pipeline script:**
