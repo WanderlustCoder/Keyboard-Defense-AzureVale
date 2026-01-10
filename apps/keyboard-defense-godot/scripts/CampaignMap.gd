@@ -22,8 +22,10 @@ var _card_refs: Dictionary = {}  # node_id -> Control
 @onready var audio_manager = get_node_or_null("/root/AudioManager")
 
 func _ready() -> void:
-	back_button.pressed.connect(_on_back_pressed)
-	kingdom_button.pressed.connect(_on_kingdom_pressed)
+	if back_button != null:
+		back_button.pressed.connect(_on_back_pressed)
+	if kingdom_button != null:
+		kingdom_button.pressed.connect(_on_kingdom_pressed)
 	_refresh()
 	if audio_manager != null:
 		audio_manager.switch_to_kingdom_music()

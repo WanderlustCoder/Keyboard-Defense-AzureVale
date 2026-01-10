@@ -283,6 +283,17 @@ static func check_objective(quest_id: String, progress: Dictionary) -> bool:
 	return current >= target
 
 
+## Get quest progress value (current count toward objective)
+static func get_progress_value(quest_id: String, progress: Dictionary) -> int:
+	var quest: Dictionary = get_quest(quest_id)
+	if quest.is_empty():
+		return 0
+
+	var objective: Dictionary = quest.get("objective", {})
+	var obj_type: String = str(objective.get("type", ""))
+	return int(progress.get(obj_type, 0))
+
+
 ## Get quest progress percentage
 static func get_progress_percent(quest_id: String, progress: Dictionary) -> float:
 	var quest: Dictionary = get_quest(quest_id)

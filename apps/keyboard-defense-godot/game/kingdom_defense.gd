@@ -14,6 +14,7 @@ const SimBuildings = preload("res://sim/buildings.gd")
 const SimWorkers = preload("res://sim/workers.gd")
 const SimResearch = preload("res://sim/research.gd")
 const SimTrade = preload("res://sim/trade.gd")
+const SimExpeditions = preload("res://sim/expeditions.gd")
 const KingdomDashboard = preload("res://ui/components/kingdom_dashboard.gd")
 const SettingsPanel = preload("res://ui/components/settings_panel.gd")
 const GamePersistence = preload("res://game/persistence.gd")
@@ -21,6 +22,7 @@ const TypingProfile = preload("res://game/typing_profile.gd")
 const AchievementChecker = preload("res://game/achievement_checker.gd")
 const AchievementPanel = preload("res://ui/components/achievement_panel.gd")
 const ACHIEVEMENT_POPUP_SCENE := preload("res://ui/components/achievement_popup.tscn")
+const ACHIEVEMENT_PANEL_SCENE := preload("res://ui/components/achievement_panel.tscn")
 const LorePanel = preload("res://ui/components/lore_panel.gd")
 const SimDifficulty = preload("res://sim/difficulty.gd")
 const SimCombo = preload("res://sim/combo.gd")
@@ -33,6 +35,59 @@ const SimBestiary = preload("res://sim/bestiary.gd")
 const BestiaryPanel = preload("res://ui/components/bestiary_panel.gd")
 const WaveSummaryPanel = preload("res://ui/components/wave_summary_panel.gd")
 const RunSummaryPanel = preload("res://ui/components/run_summary_panel.gd")
+const TipNotification = preload("res://ui/components/tip_notification.gd")
+const SimMilestones = preload("res://sim/milestones.gd")
+const SimPlayerStats = preload("res://sim/player_stats.gd")
+const SimLoginRewards = preload("res://sim/login_rewards.gd")
+const SimDailyChallenges = preload("res://sim/daily_challenges.gd")
+const SimEndlessMode = preload("res://sim/endless_mode.gd")
+const SimCrafting = preload("res://sim/crafting.gd")
+const SimWaveComposer = preload("res://sim/wave_composer.gd")
+const MilestonePopup = preload("res://ui/components/milestone_popup.gd")
+const StatsDashboard = preload("res://ui/components/stats_dashboard.gd")
+const EquipmentPanel = preload("res://ui/components/equipment_panel.gd")
+const SkillsPanel = preload("res://ui/components/skills_panel.gd")
+const ShopPanel = preload("res://ui/components/shop_panel.gd")
+const QuestsPanel = preload("res://ui/components/quests_panel.gd")
+const HelpPanel = preload("res://ui/components/help_panel.gd")
+const EffectsPanel = preload("res://ui/components/effects_panel.gd")
+const AutoTowersPanel = preload("res://ui/components/auto_towers_panel.gd")
+const SpellsPanel = preload("res://ui/components/spells_panel.gd")
+const WaveInfoPanel = preload("res://ui/components/wave_info_panel.gd")
+const DifficultyPanel = preload("res://ui/components/difficulty_panel.gd")
+const EndlessModePanel = preload("res://ui/components/endless_mode_panel.gd")
+const MaterialsPanel = preload("res://ui/components/materials_panel.gd")
+const RecipesPanel = preload("res://ui/components/recipes_panel.gd")
+const DailyChallengePanel = preload("res://ui/components/daily_challenge_panel.gd")
+const TokenShopPanel = preload("res://ui/components/token_shop_panel.gd")
+const StatsPanel = preload("res://ui/components/stats_panel.gd")
+const ExpeditionsPanel = preload("res://ui/components/expeditions_panel.gd")
+const SynergiesPanel = preload("res://ui/components/synergies_panel.gd")
+const BuffsPanel = preload("res://ui/components/buffs_panel.gd")
+const SummonedUnitsPanel = preload("res://ui/components/summoned_units_panel.gd")
+const LootPanel = preload("res://ui/components/loot_panel.gd")
+const ResourceNodesPanel = preload("res://ui/components/resource_nodes_panel.gd")
+const SimSummonedUnits = preload("res://sim/summoned_units.gd")
+const SimLoot = preload("res://sim/loot.gd")
+const SimResourceNodes = preload("res://sim/resource_nodes.gd")
+const AffixesPanel = preload("res://ui/components/affixes_panel.gd")
+const DamageTypesPanel = preload("res://ui/components/damage_types_panel.gd")
+const PoiPanel = preload("res://ui/components/poi_panel.gd")
+const TowerEncyclopediaPanel = preload("res://ui/components/tower_encyclopedia_panel.gd")
+const SimAffixes = preload("res://sim/affixes.gd")
+const SimPoi = preload("res://sim/poi.gd")
+const StatusEffectsPanel = preload("res://ui/components/status_effects_panel.gd")
+const ComboSystemPanel = preload("res://ui/components/combo_system_panel.gd")
+const MilestonesPanel = preload("res://ui/components/milestones_panel.gd")
+const PracticeGoalsPanel = preload("res://ui/components/practice_goals_panel.gd")
+const WaveThemesPanel = preload("res://ui/components/wave_themes_panel.gd")
+const SpecialCommandsPanel = preload("res://ui/components/special_commands_panel.gd")
+const LifetimeStatsPanel = preload("res://ui/components/lifetime_stats_panel.gd")
+const KeyboardReferencePanel = preload("res://ui/components/keyboard_reference_panel.gd")
+const LoginRewardsPanel = preload("res://ui/components/login_rewards_panel.gd")
+const TypingTowerBonusesPanel = preload("res://ui/components/typing_tower_bonuses_panel.gd")
+const ResearchTreePanel = preload("res://ui/components/research_tree_panel.gd")
+const TradePanel = preload("res://ui/components/trade_panel.gd")
 
 # UI Node references
 @onready var grid_renderer: Node2D = $GridRenderer
@@ -211,6 +266,47 @@ var lore_panel: LorePanel = null
 var bestiary_panel: BestiaryPanel = null
 var wave_summary_panel: WaveSummaryPanel = null
 var run_summary_panel: RunSummaryPanel = null
+var tip_notification: TipNotification = null
+var milestone_popup: MilestonePopup = null
+var stats_dashboard: StatsDashboard = null
+var equipment_panel: EquipmentPanel = null
+var skills_panel: SkillsPanel = null
+var shop_panel: ShopPanel = null
+var quests_panel: QuestsPanel = null
+var help_panel: HelpPanel = null
+var effects_panel: EffectsPanel = null
+var auto_towers_panel: AutoTowersPanel = null
+var spells_panel: SpellsPanel = null
+var wave_info_panel: WaveInfoPanel = null
+var difficulty_panel: DifficultyPanel = null
+var endless_mode_panel: EndlessModePanel = null
+var materials_panel: MaterialsPanel = null
+var recipes_panel: RecipesPanel = null
+var daily_challenge_panel: DailyChallengePanel = null
+var token_shop_panel: TokenShopPanel = null
+var stats_panel: StatsPanel = null
+var expeditions_panel: ExpeditionsPanel = null
+var synergies_panel: SynergiesPanel = null
+var buffs_panel: BuffsPanel = null
+var summoned_units_panel: SummonedUnitsPanel = null
+var loot_panel: LootPanel = null
+var resource_nodes_panel: ResourceNodesPanel = null
+var affixes_panel: AffixesPanel = null
+var damage_types_panel: DamageTypesPanel = null
+var poi_panel: PoiPanel = null
+var tower_encyclopedia_panel: TowerEncyclopediaPanel = null
+var status_effects_panel: StatusEffectsPanel = null
+var combo_system_panel: ComboSystemPanel = null
+var milestones_panel: MilestonesPanel = null
+var practice_goals_panel: PracticeGoalsPanel = null
+var wave_themes_panel: WaveThemesPanel = null
+var special_commands_panel: SpecialCommandsPanel = null
+var lifetime_stats_panel: LifetimeStatsPanel = null
+var keyboard_reference_panel: KeyboardReferencePanel = null
+var login_rewards_panel: LoginRewardsPanel = null
+var typing_tower_bonuses_panel: TypingTowerBonusesPanel = null
+var research_tree_panel: ResearchTreePanel = null
+var trade_panel: TradePanel = null
 var difficulty_mode: String = "adventure"
 
 # Run-level tracking
@@ -229,6 +325,8 @@ var run_best_combo: int = 0
 var run_xp_start: int = 0
 var run_level_start: int = 0
 var run_achievements_unlocked: Array[String] = []
+var consecutive_errors: int = 0
+const CONSECUTIVE_ERROR_TIP_THRESHOLD: int = 3
 
 func _ready() -> void:
 	_init_game_state()
@@ -291,7 +389,7 @@ func _init_achievement_system() -> void:
 	add_child(achievement_popup)
 
 	# Create achievement panel
-	achievement_panel = AchievementPanel.new()
+	achievement_panel = ACHIEVEMENT_PANEL_SCENE.instantiate()
 	add_child(achievement_panel)
 	achievement_panel.close_requested.connect(_on_achievement_panel_closed)
 
@@ -317,6 +415,229 @@ func _init_achievement_system() -> void:
 	run_summary_panel.new_run_pressed.connect(_on_run_summary_new_run)
 	run_summary_panel.main_menu_pressed.connect(_on_run_summary_menu)
 
+	# Create tip notification
+	tip_notification = TipNotification.new()
+	add_child(tip_notification)
+	# Position in bottom-right corner
+	tip_notification.anchors_preset = Control.PRESET_BOTTOM_RIGHT
+	tip_notification.position = Vector2(-370, -100)
+
+	# Create milestone popup
+	milestone_popup = MilestonePopup.new()
+	add_child(milestone_popup)
+
+	# Create stats dashboard
+	stats_dashboard = StatsDashboard.new()
+	add_child(stats_dashboard)
+	stats_dashboard.close_requested.connect(_on_stats_dashboard_closed)
+
+	# Create equipment panel
+	equipment_panel = EquipmentPanel.new()
+	add_child(equipment_panel)
+	equipment_panel.closed.connect(_on_equipment_panel_closed)
+	equipment_panel.item_equipped.connect(_on_item_equipped)
+	equipment_panel.item_unequipped.connect(_on_item_unequipped)
+
+	# Create skills panel
+	skills_panel = SkillsPanel.new()
+	add_child(skills_panel)
+	skills_panel.closed.connect(_on_skills_panel_closed)
+	skills_panel.skill_learned.connect(_on_skill_learned)
+
+	# Create shop panel
+	shop_panel = ShopPanel.new()
+	add_child(shop_panel)
+	shop_panel.closed.connect(_on_shop_panel_closed)
+	shop_panel.item_purchased.connect(_on_shop_item_purchased)
+
+	# Create quests panel
+	quests_panel = QuestsPanel.new()
+	add_child(quests_panel)
+	quests_panel.closed.connect(_on_quests_panel_closed)
+	quests_panel.quest_claimed.connect(_on_quest_claimed_from_panel)
+
+	# Create help panel
+	help_panel = HelpPanel.new()
+	add_child(help_panel)
+	help_panel.closed.connect(_on_help_panel_closed)
+
+	# Create effects panel
+	effects_panel = EffectsPanel.new()
+	add_child(effects_panel)
+	effects_panel.closed.connect(_on_effects_panel_closed)
+
+	# Create auto towers panel
+	auto_towers_panel = AutoTowersPanel.new()
+	add_child(auto_towers_panel)
+	auto_towers_panel.closed.connect(_on_auto_towers_panel_closed)
+
+	# Create spells panel
+	spells_panel = SpellsPanel.new()
+	add_child(spells_panel)
+	spells_panel.closed.connect(_on_spells_panel_closed)
+
+	# Create wave info panel
+	wave_info_panel = WaveInfoPanel.new()
+	add_child(wave_info_panel)
+	wave_info_panel.closed.connect(_on_wave_info_panel_closed)
+
+	# Create difficulty panel
+	difficulty_panel = DifficultyPanel.new()
+	add_child(difficulty_panel)
+	difficulty_panel.closed.connect(_on_difficulty_panel_closed)
+	difficulty_panel.difficulty_changed.connect(_on_difficulty_changed_from_panel)
+
+	# Create endless mode panel
+	endless_mode_panel = EndlessModePanel.new()
+	add_child(endless_mode_panel)
+	endless_mode_panel.closed.connect(_on_endless_mode_panel_closed)
+	endless_mode_panel.start_endless_mode.connect(_on_start_endless_from_panel)
+
+	# Create materials panel
+	materials_panel = MaterialsPanel.new()
+	add_child(materials_panel)
+	materials_panel.closed.connect(_on_materials_panel_closed)
+
+	# Create recipes panel
+	recipes_panel = RecipesPanel.new()
+	add_child(recipes_panel)
+	recipes_panel.closed.connect(_on_recipes_panel_closed)
+	recipes_panel.craft_requested.connect(_on_craft_from_panel)
+
+	# Create daily challenge panel
+	daily_challenge_panel = DailyChallengePanel.new()
+	add_child(daily_challenge_panel)
+	daily_challenge_panel.closed.connect(_on_daily_challenge_panel_closed)
+	daily_challenge_panel.start_challenge.connect(_on_start_daily_from_panel)
+
+	# Create token shop panel
+	token_shop_panel = TokenShopPanel.new()
+	add_child(token_shop_panel)
+	token_shop_panel.closed.connect(_on_token_shop_panel_closed)
+	token_shop_panel.item_purchased.connect(_on_token_item_purchased)
+
+	# Create stats panel
+	stats_panel = StatsPanel.new()
+	add_child(stats_panel)
+	stats_panel.closed.connect(_on_stats_panel_closed)
+
+	# Create expeditions panel
+	expeditions_panel = ExpeditionsPanel.new()
+	add_child(expeditions_panel)
+	expeditions_panel.closed.connect(_on_expeditions_panel_closed)
+	expeditions_panel.expedition_started.connect(_on_expedition_started)
+	expeditions_panel.expedition_cancelled.connect(_on_expedition_cancelled)
+
+	# Create synergies panel
+	synergies_panel = SynergiesPanel.new()
+	add_child(synergies_panel)
+	synergies_panel.closed.connect(_on_synergies_panel_closed)
+
+	# Create buffs panel
+	buffs_panel = BuffsPanel.new()
+	add_child(buffs_panel)
+	buffs_panel.closed.connect(_on_buffs_panel_closed)
+
+	# Create summoned units panel
+	summoned_units_panel = SummonedUnitsPanel.new()
+	add_child(summoned_units_panel)
+	summoned_units_panel.closed.connect(_on_summoned_units_panel_closed)
+
+	# Create loot panel
+	loot_panel = LootPanel.new()
+	add_child(loot_panel)
+	loot_panel.closed.connect(_on_loot_panel_closed)
+	loot_panel.loot_collected.connect(_on_loot_collected)
+
+	# Create resource nodes panel
+	resource_nodes_panel = ResourceNodesPanel.new()
+	add_child(resource_nodes_panel)
+	resource_nodes_panel.closed.connect(_on_resource_nodes_panel_closed)
+	resource_nodes_panel.harvest_requested.connect(_on_harvest_requested)
+
+	# Create affixes panel
+	affixes_panel = AffixesPanel.new()
+	add_child(affixes_panel)
+	affixes_panel.closed.connect(_on_affixes_panel_closed)
+
+	# Create damage types panel
+	damage_types_panel = DamageTypesPanel.new()
+	add_child(damage_types_panel)
+	damage_types_panel.closed.connect(_on_damage_types_panel_closed)
+
+	# Create POI panel
+	poi_panel = PoiPanel.new()
+	add_child(poi_panel)
+	poi_panel.closed.connect(_on_poi_panel_closed)
+	poi_panel.poi_selected.connect(_on_poi_selected)
+
+	# Create tower encyclopedia panel
+	tower_encyclopedia_panel = TowerEncyclopediaPanel.new()
+	add_child(tower_encyclopedia_panel)
+	tower_encyclopedia_panel.closed.connect(_on_tower_encyclopedia_panel_closed)
+
+	# Create status effects panel
+	status_effects_panel = StatusEffectsPanel.new()
+	add_child(status_effects_panel)
+	status_effects_panel.closed.connect(_on_status_effects_panel_closed)
+
+	# Create combo system panel
+	combo_system_panel = ComboSystemPanel.new()
+	add_child(combo_system_panel)
+	combo_system_panel.closed.connect(_on_combo_system_panel_closed)
+
+	# Create milestones panel
+	milestones_panel = MilestonesPanel.new()
+	add_child(milestones_panel)
+	milestones_panel.closed.connect(_on_milestones_panel_closed)
+
+	# Create practice goals panel
+	practice_goals_panel = PracticeGoalsPanel.new()
+	add_child(practice_goals_panel)
+	practice_goals_panel.closed.connect(_on_practice_goals_panel_closed)
+	practice_goals_panel.goal_selected.connect(_on_practice_goal_selected)
+
+	# Create wave themes panel
+	wave_themes_panel = WaveThemesPanel.new()
+	add_child(wave_themes_panel)
+	wave_themes_panel.closed.connect(_on_wave_themes_panel_closed)
+
+	# Create special commands panel
+	special_commands_panel = SpecialCommandsPanel.new()
+	add_child(special_commands_panel)
+	special_commands_panel.closed.connect(_on_special_commands_panel_closed)
+
+	# Create lifetime stats panel
+	lifetime_stats_panel = LifetimeStatsPanel.new()
+	add_child(lifetime_stats_panel)
+	lifetime_stats_panel.closed.connect(_on_lifetime_stats_panel_closed)
+
+	# Create keyboard reference panel
+	keyboard_reference_panel = KeyboardReferencePanel.new()
+	add_child(keyboard_reference_panel)
+	keyboard_reference_panel.closed.connect(_on_keyboard_reference_panel_closed)
+
+	# Create login rewards panel
+	login_rewards_panel = LoginRewardsPanel.new()
+	add_child(login_rewards_panel)
+	login_rewards_panel.closed.connect(_on_login_rewards_panel_closed)
+	login_rewards_panel.reward_claimed.connect(_on_login_reward_claimed)
+
+	# Create typing tower bonuses panel
+	typing_tower_bonuses_panel = TypingTowerBonusesPanel.new()
+	add_child(typing_tower_bonuses_panel)
+	typing_tower_bonuses_panel.closed.connect(_on_typing_tower_bonuses_panel_closed)
+
+	# Create research tree panel
+	research_tree_panel = ResearchTreePanel.new()
+	add_child(research_tree_panel)
+	research_tree_panel.closed.connect(_on_research_tree_panel_closed)
+
+	# Create trade panel
+	trade_panel = TradePanel.new()
+	add_child(trade_panel)
+	trade_panel.closed.connect(_on_trade_panel_closed)
+
 	# Initialize run tracking
 	_init_run_tracking()
 
@@ -329,6 +650,24 @@ func _show_streak_message(streak: int) -> void:
 	if not message.is_empty() and dialogue_box:
 		var lines: Array[String] = [message]
 		dialogue_box.show_dialogue("Elder Lyra", lines)
+
+
+func _add_event(message: String) -> void:
+	# Display an event message using the notification manager
+	if notification_manager != null:
+		# Strip BBCode for toast notification
+		var plain_text: String = message
+		# Simple BBCode removal for color tags
+		var regex := RegEx.new()
+		regex.compile("\\[/?color[^\\]]*\\]")
+		plain_text = regex.sub(plain_text, "", true)
+		notification_manager.notify_info(plain_text)
+
+
+func _update_hud() -> void:
+	# Wrapper to refresh the HUD after gold/resource changes
+	_update_ui()
+
 
 func _on_achievement_unlocked(achievement_id: String, achievement_data: Dictionary) -> void:
 	if achievement_popup != null and achievement_popup.has_method("show_achievement"):
@@ -371,6 +710,479 @@ func _toggle_bestiary() -> void:
 			bestiary_panel.hide_bestiary()
 		else:
 			bestiary_panel.show_bestiary(profile)
+
+
+func _on_stats_dashboard_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+
+func _toggle_stats() -> void:
+	if stats_dashboard:
+		if stats_dashboard.visible:
+			stats_dashboard.hide_stats()
+		else:
+			stats_dashboard.show_stats(profile)
+
+
+func _on_equipment_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+
+func _on_item_equipped(item_id: String, slot: String) -> void:
+	var item: Dictionary = SimItems.get_item(item_id)
+	var name: String = str(item.get("name", item_id))
+	_add_event("Equipped [color=lime]%s[/color] to %s slot." % [name, slot])
+	_update_equipment_stats()
+
+
+func _on_item_unequipped(slot: String) -> void:
+	_add_event("Unequipped item from %s slot." % slot)
+	_update_equipment_stats()
+
+
+func _update_equipment_stats() -> void:
+	# Reload profile to ensure we have latest equipment
+	var load_result: Dictionary = TypingProfile.load_profile()
+	if load_result.get("ok", false):
+		profile = load_result.get("profile", profile)
+
+
+func _toggle_equipment() -> void:
+	if equipment_panel:
+		if equipment_panel.visible:
+			equipment_panel.hide()
+		else:
+			equipment_panel.show_equipment(profile)
+
+
+func _on_skills_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+
+func _on_skill_learned(tree_id: String, skill_id: String) -> void:
+	var skill_name: String = SimSkills.get_skill_name(tree_id, skill_id)
+	_add_event("Learned [color=lime]%s[/color]!" % skill_name)
+
+
+func _toggle_skills() -> void:
+	if skills_panel:
+		if skills_panel.visible:
+			skills_panel.hide()
+		else:
+			skills_panel.show_skills(profile)
+
+
+func _on_shop_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+
+func _on_shop_item_purchased(item_id: String) -> void:
+	var item: Dictionary = SimItems.CONSUMABLES.get(item_id, {})
+	var price: int = int(item.get("price", 0))
+	var name: String = str(item.get("name", item_id))
+
+	if gold < price:
+		_add_event("[color=red]Not enough gold![/color]")
+		return
+
+	# Deduct gold
+	gold -= price
+
+	# Add to inventory
+	TypingProfile.add_to_inventory(profile, item_id)
+	TypingProfile.save_profile(profile)
+
+	# Update shop panel gold display
+	if shop_panel:
+		shop_panel.update_gold(gold)
+
+	_add_event("Purchased [color=lime]%s[/color] for %d gold!" % [name, price])
+	_update_hud()
+
+
+func _toggle_shop() -> void:
+	if shop_panel:
+		if shop_panel.visible:
+			shop_panel.hide()
+		else:
+			shop_panel.show_shop(gold)
+
+
+func _on_quests_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+
+func _on_help_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+
+func _on_effects_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+
+func _on_auto_towers_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+
+func _on_spells_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+
+func _on_wave_info_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+
+func _on_difficulty_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+
+func _on_difficulty_changed_from_panel(mode_id: String) -> void:
+	difficulty_mode = mode_id
+	TypingProfile.set_difficulty_mode(profile, mode_id)
+	TypingProfile.save_profile(profile)
+	var name: String = SimDifficulty.get_mode_name(mode_id)
+	_update_objective("[color=lime]Difficulty set to: %s[/color]" % name)
+
+
+func _on_endless_mode_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+
+func _on_start_endless_from_panel() -> void:
+	_start_endless_mode()
+
+
+func _on_materials_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+
+func _on_recipes_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+
+func _on_craft_from_panel(recipe_id: String) -> void:
+	_try_craft(recipe_id)
+	# Update the panel with new gold value
+	if recipes_panel and recipes_panel.visible:
+		recipes_panel.update_gold(gold)
+
+
+func _on_daily_challenge_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+
+func _on_start_daily_from_panel() -> void:
+	_start_daily_challenge()
+
+
+func _on_token_shop_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+
+func _on_token_item_purchased(item_id: String) -> void:
+	_try_buy_token_item(item_id)
+	# Update the panel with new balance
+	if token_shop_panel and token_shop_panel.visible:
+		var balance: int = SimDailyChallenges.get_token_balance(profile)
+		token_shop_panel.update_balance(balance)
+
+
+func _on_stats_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+
+func _on_expeditions_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+
+func _on_expedition_started(expedition_id: String, worker_count: int) -> void:
+	var result: Dictionary = SimExpeditions.start_expedition(state, expedition_id, worker_count)
+	if bool(result.get("ok", false)):
+		var label: String = str(result.get("label", expedition_id))
+		var duration: String = str(result.get("duration_text", ""))
+		_add_event("[color=cyan]Expedition '%s' started (%s)[/color]" % [label, duration])
+		if expeditions_panel and expeditions_panel.visible:
+			expeditions_panel.refresh()
+	else:
+		_update_objective("[color=red]%s[/color]" % str(result.get("error", "Failed to start expedition")))
+
+
+func _on_expedition_cancelled(expedition_id: int) -> void:
+	var result: Dictionary = SimExpeditions.cancel_expedition(state, expedition_id)
+	if bool(result.get("ok", false)):
+		_add_event("[color=orange]%s[/color]" % str(result.get("message", "Expedition cancelled")))
+		if expeditions_panel and expeditions_panel.visible:
+			expeditions_panel.refresh()
+	else:
+		_update_objective("[color=red]%s[/color]" % str(result.get("error", "Failed to cancel expedition")))
+
+
+func _on_synergies_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+
+func _on_buffs_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+
+func _on_summoned_units_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+
+func _on_loot_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+
+func _on_loot_collected() -> void:
+	_update_hud()
+	_add_event("[color=lime]Loot collected![/color]")
+	if loot_panel and loot_panel.visible:
+		loot_panel.refresh()
+
+
+func _on_resource_nodes_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+
+func _on_harvest_requested(pos: Vector2i) -> void:
+	# Start the harvest challenge at this position
+	var result: Dictionary = SimResourceNodes.start_harvest_challenge(state, pos)
+	if not bool(result.get("ok", false)):
+		_update_objective("[color=red]%s[/color]" % str(result.get("error", "Cannot harvest")))
+		return
+
+	var node_name: String = str(result.get("node_name", "Resource"))
+	var challenge_desc: String = str(result.get("challenge_description", "Complete the challenge!"))
+	_add_event("[color=cyan]Starting harvest: %s[/color]" % node_name)
+	_add_event("[color=gray]%s[/color]" % challenge_desc)
+
+	# Close the panel and start the challenge
+	if resource_nodes_panel:
+		resource_nodes_panel.hide()
+
+	# For now, auto-complete with simulated performance
+	# In a full implementation, this would trigger a typing mini-game
+	var performance: Dictionary = {
+		"passed": true,
+		"accuracy": 0.95,
+		"wpm": 45,
+		"time_remaining": 5.0
+	}
+
+	var harvest_result: Dictionary = SimResourceNodes.complete_harvest(state, pos, performance)
+	if bool(harvest_result.get("ok", false)):
+		_add_event("[color=lime]%s[/color]" % str(harvest_result.get("message", "Harvest complete!")))
+		_update_hud()
+	else:
+		_add_event("[color=red]%s[/color]" % str(harvest_result.get("error", "Harvest failed")))
+
+
+func _on_affixes_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+
+func _on_damage_types_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+
+func _on_poi_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+
+func _on_poi_selected(poi_id: String) -> void:
+	# Handle POI interaction
+	var poi_state: Dictionary = state.active_pois.get(poi_id, {})
+	if poi_state.is_empty():
+		_update_objective("[color=red]POI not found[/color]")
+		return
+
+	var poi_def: Dictionary = SimPoi.get_poi(poi_id)
+	var poi_name: String = str(poi_def.get("name", poi_id))
+
+	# Mark as interacted
+	poi_state["interacted"] = true
+	state.active_pois[poi_id] = poi_state
+
+	_add_event("[color=cyan]Interacted with %s[/color]" % poi_name)
+
+	# Close the panel
+	if poi_panel:
+		poi_panel.hide()
+
+	# For now, just give a small reward
+	var reward_gold: int = 10 + state.day * 2
+	gold += reward_gold
+	state.gold = gold
+	_add_event("[color=yellow]+%d gold[/color] from %s" % [reward_gold, poi_name])
+	_update_hud()
+
+
+func _on_tower_encyclopedia_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+
+func _on_status_effects_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+
+func _on_combo_system_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+
+func _on_milestones_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+
+func _on_practice_goals_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+
+func _on_practice_goal_selected(goal_id: String) -> void:
+	# Update the profile with the new goal
+	if profile != null:
+		profile["practice_goal"] = goal_id
+		TypingProfile.save_profile(profile)
+		_add_event("Practice goal set to: %s" % PracticeGoals.goal_label(goal_id))
+
+
+func _on_wave_themes_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+
+func _on_special_commands_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+
+func _on_lifetime_stats_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+
+func _on_keyboard_reference_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+
+func _on_login_rewards_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+
+func _on_login_reward_claimed(reward: Dictionary) -> void:
+	# Apply the login reward
+	var reward_gold: int = int(reward.get("gold", 0))
+	if reward_gold > 0:
+		gold += reward_gold
+		run_gold_earned += reward_gold
+		_add_event("[color=yellow]+%d gold[/color] from daily login!" % reward_gold)
+
+	# Apply bonus if present
+	var bonus: String = str(reward.get("bonus", ""))
+	if not bonus.is_empty():
+		SimLoginRewards.apply_bonus_to_profile(profile, bonus)
+		var bonus_info: Dictionary = SimLoginRewards.get_bonus_info(bonus)
+		var bonus_name: String = str(bonus_info.get("name", bonus))
+		_add_event("[color=cyan]%s[/color] activated!" % bonus_name)
+
+	# Update streak in profile
+	TypingProfile.save_profile(profile)
+	_update_hud()
+
+
+func _on_typing_tower_bonuses_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+
+func _on_research_tree_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+
+func _on_trade_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+
+func _on_quest_claimed_from_panel(quest_id: String, rewards: Dictionary) -> void:
+	# Apply rewards
+	var gold_reward: int = int(rewards.get("gold", 0))
+	var xp_reward: int = int(rewards.get("xp", 0))
+
+	if gold_reward > 0:
+		gold += gold_reward
+		run_gold_earned += gold_reward
+		_add_event("Quest reward: [color=yellow]+%d gold[/color]" % gold_reward)
+
+	if xp_reward > 0:
+		var xp_result: Dictionary = TypingProfile.add_xp(profile, xp_reward)
+		TypingProfile.save_profile(profile)
+		_add_event("Quest reward: [color=cyan]+%d XP[/color]" % xp_reward)
+		if int(xp_result.get("levels_gained", 0)) > 0:
+			var new_level: int = int(xp_result.get("new_level", 1))
+			_add_event("[color=lime]Level Up! Now level %d[/color]" % new_level)
+
+	# Mark quest as claimed
+	var quest: Dictionary = SimQuests.get_quest(quest_id)
+	var quest_type: String = str(quest.get("type", "daily"))
+
+	if quest_type == "daily":
+		var claimed: Array = quest_state.get("daily_claimed", [])
+		if not quest_id in claimed:
+			claimed.append(quest_id)
+			quest_state["daily_claimed"] = claimed
+	elif quest_type == "weekly":
+		var claimed: Array = quest_state.get("weekly_claimed", [])
+		if not quest_id in claimed:
+			claimed.append(quest_id)
+			quest_state["weekly_claimed"] = claimed
+
+	# Update quests panel
+	if quests_panel:
+		quests_panel.update_quest_state(quest_state)
+
+	_update_hud()
+
+
+func _toggle_quests() -> void:
+	if quests_panel:
+		if quests_panel.visible:
+			quests_panel.hide()
+		else:
+			quests_panel.show_quests(quest_state)
 
 
 func _on_wave_summary_continue() -> void:
@@ -773,6 +1585,9 @@ func _start_defense_phase() -> void:
 	gold_earned_this_wave = 0
 	words_typed_this_wave = 0
 	kills_this_wave = 0
+
+	# Show contextual tips at strategic moments
+	_show_contextual_defense_tip()
 
 	# Show boss intro on boss days (final wave only)
 	if wave == waves_per_day and StoryManager.is_boss_day(day):
@@ -1249,6 +2064,8 @@ func _on_input_submitted(text: String) -> void:
 			_toggle_lore()
 		elif lower_text == "bestiary" or lower_text == "enemies":
 			_toggle_bestiary()
+		elif lower_text == "stats" or lower_text == "statistics":
+			_toggle_stats()
 		elif lower_text == "difficulty" or lower_text == "diff":
 			_show_difficulty_options()
 		elif lower_text.begins_with("diff "):
@@ -1313,6 +2130,50 @@ func _on_input_submitted(text: String) -> void:
 			_try_craft(lower_text.substr(6).strip_edges())
 		elif lower_text.begins_with("recipe "):
 			_show_recipe_detail(lower_text.substr(7).strip_edges())
+		elif lower_text == "expeditions" or lower_text == "expedition" or lower_text == "exp":
+			_show_expeditions()
+		elif lower_text == "synergies" or lower_text == "synergy":
+			_show_synergies()
+		elif lower_text == "buffs" or lower_text == "buff" or lower_text == "boosts":
+			_show_buffs()
+		elif lower_text == "summons" or lower_text == "summon" or lower_text == "minions":
+			_show_summons()
+		elif lower_text == "loot" or lower_text == "drops" or lower_text == "collectloot":
+			_show_loot()
+		elif lower_text == "nodes" or lower_text == "resources" or lower_text == "harvest":
+			_show_nodes()
+		elif lower_text == "affixes" or lower_text == "affix" or lower_text == "modifiers":
+			_show_affixes()
+		elif lower_text == "damagetypes" or lower_text == "damage" or lower_text == "elements":
+			_show_damage_types()
+		elif lower_text == "pois" or lower_text == "poi" or lower_text == "locations":
+			_show_pois()
+		elif lower_text == "towers" or lower_text == "tower" or lower_text == "encyclopedia":
+			_show_towers()
+		elif lower_text == "statuseffects" or lower_text == "status" or lower_text == "effects" or lower_text == "debuffs":
+			_show_status_effects()
+		elif lower_text == "combosystem" or lower_text == "combo" or lower_text == "combos":
+			_show_combo_system()
+		elif lower_text == "milestones" or lower_text == "milestone" or lower_text == "records":
+			_show_milestones()
+		elif lower_text == "goals" or lower_text == "goal" or lower_text == "practice":
+			_show_practice_goals()
+		elif lower_text == "wavethemes" or lower_text == "waves" or lower_text == "themes":
+			_show_wave_themes()
+		elif lower_text == "commands" or lower_text == "command" or lower_text == "abilities":
+			_show_special_commands()
+		elif lower_text == "lifetimestats" or lower_text == "lifetime" or lower_text == "allstats":
+			_show_lifetime_stats()
+		elif lower_text == "keyboard" or lower_text == "keys" or lower_text == "fingers":
+			_show_keyboard_reference()
+		elif lower_text == "loginrewards" or lower_text == "login" or lower_text == "daily":
+			_show_login_rewards()
+		elif lower_text == "towerbonuses" or lower_text == "typingbonuses" or lower_text == "towerscaling":
+			_show_typing_tower_bonuses()
+		elif lower_text == "researchtree" or lower_text == "research" or lower_text == "techtree":
+			_show_research_tree()
+		elif lower_text == "trademarket" or lower_text == "trade" or lower_text == "market":
+			_show_trade_market()
 		input_field.clear()
 	elif current_phase == "defense":
 		# Check for special commands first
@@ -1332,6 +2193,13 @@ func _process_combat_typing() -> void:
 		# Mistake - break combo
 		combo = 0
 		total_chars += 1
+		consecutive_errors += 1
+
+		# Show error tip after consecutive mistakes
+		if consecutive_errors >= CONSECUTIVE_ERROR_TIP_THRESHOLD:
+			if tip_notification and not tip_notification.visible:
+				tip_notification.show_tip_for_context("error")
+			consecutive_errors = 0  # Reset after showing tip
 
 		# Handle challenge mode combo break
 		if is_challenge_mode:
@@ -1355,6 +2223,9 @@ func _process_command_typing() -> void:
 func _attack_target_enemy() -> void:
 	if target_enemy_id < 0:
 		return
+
+	# Reset consecutive errors on successful word completion
+	consecutive_errors = 0
 
 	var enemy_index: int = _find_enemy_index(target_enemy_id)
 	if enemy_index < 0:
@@ -1508,6 +2379,13 @@ func _attack_target_enemy() -> void:
 	if achievement_checker != null and combo >= 5:
 		achievement_checker.check_combo(profile, combo)
 		TypingProfile.save_profile(profile)
+
+	# Check for combo milestone
+	if milestone_popup != null and combo >= 10:
+		var prev_best_combo: int = SimPlayerStats.get_record(profile, "highest_combo")
+		var milestone: Dictionary = SimMilestones.check_combo_milestone(combo, prev_best_combo)
+		if not milestone.is_empty():
+			milestone_popup.show_milestone(milestone)
 
 	# Fire projectile visual
 	if grid_renderer.has_method("fire_projectile"):
@@ -2272,6 +3150,20 @@ func _show_wave_summary() -> void:
 	# Check for new records
 	var prev_best_combo: int = SimPlayerStats.get_record(profile, "highest_combo")
 	var prev_best_wpm: int = SimPlayerStats.get_record(profile, "highest_wpm")
+	var prev_best_accuracy: float = SimPlayerStats.get_record_float(profile, "highest_accuracy")
+
+	# Check for WPM milestone
+	if milestone_popup != null and int(wpm) > 0:
+		var wpm_milestone: Dictionary = SimMilestones.check_wpm_milestone(int(wpm), prev_best_wpm)
+		if not wpm_milestone.is_empty():
+			milestone_popup.show_milestone(wpm_milestone)
+
+	# Check for accuracy milestone (convert to 0-1 scale since that's what milestone checker expects)
+	if milestone_popup != null and accuracy >= 0.85:
+		var prev_best_accuracy_decimal: float = prev_best_accuracy / 100.0  # Convert from 0-100 to 0-1
+		var acc_milestone: Dictionary = SimMilestones.check_accuracy_milestone(accuracy, prev_best_accuracy_decimal)
+		if not acc_milestone.is_empty():
+			milestone_popup.show_milestone(acc_milestone)
 
 	var summary_stats: Dictionary = {
 		"day": day,
@@ -2307,6 +3199,28 @@ func _show_contextual_tip_after_wave() -> void:
 		context = "practice"  # General practice tips
 
 	_show_random_tip(context)
+
+	# Also show as notification if available and not on cooldown
+	if tip_notification and not tip_notification.is_on_cooldown():
+		tip_notification.show_tip_for_context(context)
+
+
+func _show_contextual_defense_tip() -> void:
+	if tip_notification == null:
+		return
+
+	# First wave of first day - show warm-up tip
+	if day == 1 and wave == 1:
+		tip_notification.show_tip_for_context("start", true)  # Force show
+		return
+
+	# Start of new day - home row reminder
+	if wave == 1 and day > 1:
+		# Show different tips based on day progress
+		var contexts: Array[String] = ["home_row", "practice", "rhythm", "technique"]
+		var context: String = contexts[(day - 1) % contexts.size()]
+		tip_notification.show_tip_for_context(context)
+
 
 func _show_lesson_intro(lesson_id: String) -> void:
 	if not dialogue_box:
@@ -2581,30 +3495,16 @@ func _check_wave_achievements() -> void:
 	TypingProfile.save_profile(profile)
 
 func _show_difficulty_options() -> void:
-	var current_name: String = SimDifficulty.get_mode_name(difficulty_mode)
-	var unlocked: Array[String] = SimDifficulty.get_unlocked_modes(profile)
+	_toggle_difficulty()
 
-	var lines: Array[String] = []
-	lines.append("[color=yellow]Current Difficulty: %s[/color]" % current_name)
-	lines.append("")
-	lines.append("Available modes (type 'diff <mode>'):")
 
-	for mode_id in unlocked:
-		var mode: Dictionary = SimDifficulty.get_mode(mode_id)
-		var name: String = str(mode.get("name", mode_id))
-		var desc: String = str(mode.get("description", ""))
-		var marker: String = " [CURRENT]" if mode_id == difficulty_mode else ""
-		lines.append("  [color=cyan]%s[/color]%s - %s" % [mode_id, marker, desc])
-
-	# Show locked modes
-	var all_modes: Array[String] = SimDifficulty.get_all_mode_ids()
-	for mode_id in all_modes:
-		if not mode_id in unlocked:
-			var mode: Dictionary = SimDifficulty.get_mode(mode_id)
-			var name: String = str(mode.get("name", mode_id))
-			lines.append("  [color=gray]%s[/color] [LOCKED] - Complete more acts to unlock" % mode_id)
-
-	_update_log(lines)
+func _toggle_difficulty() -> void:
+	if difficulty_panel:
+		if difficulty_panel.visible:
+			difficulty_panel.hide()
+		else:
+			var unlocked: Array[String] = SimDifficulty.get_unlocked_modes(profile)
+			difficulty_panel.show_difficulty(difficulty_mode, unlocked)
 
 func _try_set_difficulty(mode_id: String) -> void:
 	if not SimDifficulty.is_mode_unlocked(mode_id, profile):
@@ -2624,72 +3524,19 @@ func _try_set_difficulty(mode_id: String) -> void:
 	_update_objective("[color=lime]Difficulty set to: %s[/color]" % name)
 
 func _show_status_effects_info() -> void:
-	var lines: Array[String] = []
-	lines.append("[color=yellow]STATUS EFFECTS[/color]")
-	lines.append("")
-	lines.append("[color=cyan]Movement Effects:[/color]")
-	lines.append("  [color=#87CEEB]Slowed[/color] - Movement speed reduced (15-60%)")
-	lines.append("  [color=#00BFFF]Frozen[/color] - Completely immobilized, +50% damage taken")
-	lines.append("  [color=#228B22]Rooted[/color] - Held in place by roots")
-	lines.append("")
-	lines.append("[color=orange]Damage Over Time:[/color]")
-	lines.append("  [color=#FF4500]Burning[/color] - 3 fire damage/sec (stacks x5)")
-	lines.append("  [color=#9932CC]Poisoned[/color] - 2 poison damage/sec, reduces healing (stacks x10)")
-	lines.append("  [color=#8B0000]Bleeding[/color] - 4 physical damage/2sec (stacks x3)")
-	lines.append("  [color=#4B0082]Corrupting[/color] - 5 corruption damage/sec, reduces max HP")
-	lines.append("")
-	lines.append("[color=gray]Defensive Reduction:[/color]")
-	lines.append("  [color=#808080]Armor Broken[/color] - Armor reduced by 50%")
-	lines.append("  [color=#FF69B4]Exposed[/color] - Takes +25% damage from all sources")
-	lines.append("  [color=#D3D3D3]Weakened[/color] - Deals 30% less damage")
-	lines.append("")
-	lines.append("[color=white]Special towers and skills can apply these effects!")
-	_update_log(lines)
+	_toggle_effects()
+
+
+func _toggle_effects() -> void:
+	if effects_panel:
+		if effects_panel.visible:
+			effects_panel.hide()
+		else:
+			effects_panel.show_effects()
 
 func _show_skills_info() -> void:
-	var lines: Array[String] = []
-	var level: int = TypingProfile.get_player_level(profile)
-	var xp: int = TypingProfile.get_player_xp(profile)
-	var xp_needed: int = TypingProfile.xp_for_level(level)
-	var skill_points: int = TypingProfile.get_skill_points(profile)
-	var learned_skills: Dictionary = TypingProfile.get_learned_skills(profile)
-
-	lines.append("[color=yellow]SKILLS[/color]")
-	lines.append("Level %d | XP: %d/%d | [color=lime]%d Skill Points[/color]" % [level, xp, xp_needed, skill_points])
-	lines.append("")
-
-	# Show skill trees
-	for tree_id in SimSkills.get_all_trees():
-		var tree_name: String = SimSkills.get_tree_name(tree_id)
-		lines.append("[color=cyan]== %s ==[/color]" % tree_name)
-
-		var skills: Dictionary = SimSkills.get_tree_skills(tree_id)
-		for skill_id in skills.keys():
-			var skill: Dictionary = skills[skill_id]
-			var name: String = str(skill.get("name", skill_id))
-			var ranks: int = SimSkills.get_skill_rank(tree_id, skill_id, learned_skills)
-			var max_ranks: int = int(skill.get("max_ranks", 1))
-			var cost: int = int(skill.get("cost", 1))
-			var effect: String = str(skill.get("effect", ""))
-			var tier: int = int(skill.get("tier", 1))
-			var can_learn: bool = SimSkills.can_learn_skill(tree_id, skill_id, learned_skills)
-			var at_max: bool = ranks >= max_ranks
-
-			var indent: String = "  " if tier == 1 else "    " if tier == 2 else "      " if tier == 3 else "        "
-
-			if at_max:
-				lines.append("%s[color=lime]%s[/color] [MAXED %d/%d] - %s" % [indent, name, ranks, max_ranks, effect])
-			elif ranks > 0:
-				lines.append("%s[color=yellow]%s[/color] [%d/%d] (%d SP) - %s" % [indent, name, ranks, max_ranks, cost, effect])
-			elif can_learn:
-				lines.append("%s[color=white]%s[/color] [0/%d] (%d SP) - %s" % [indent, name, max_ranks, cost, effect])
-			else:
-				lines.append("%s[color=gray]%s[/color] [LOCKED] - %s" % [indent, name, effect])
-
-		lines.append("")
-
-	lines.append("Type 'learn <tree>:<skill>' to learn (e.g., 'learn speed:swift_start')")
-	_update_log(lines)
+	# Open skills panel
+	_toggle_skills()
 
 func _try_learn_skill(input: String) -> void:
 	var parts: PackedStringArray = input.split(":")
@@ -2745,74 +3592,12 @@ func _try_learn_skill(input: String) -> void:
 	_update_objective("[color=lime]Learned %s (rank %d/%d)![/color]" % [skill_name, new_rank, max_ranks])
 
 func _show_inventory() -> void:
-	var inventory: Array = TypingProfile.get_inventory(profile)
-	var lines: Array[String] = []
-	lines.append("[color=yellow]INVENTORY[/color]")
-	lines.append("")
-
-	if inventory.is_empty():
-		lines.append("[color=gray]Your inventory is empty.[/color]")
-		lines.append("Defeat enemies to find loot!")
-	else:
-		lines.append("Items (%d):" % inventory.size())
-		var item_counts: Dictionary = {}
-		for item_id in inventory:
-			item_counts[item_id] = int(item_counts.get(item_id, 0)) + 1
-
-		var index: int = 1
-		for item_id in item_counts.keys():
-			var count: int = item_counts[item_id]
-			var display: String = SimItems.format_item_display(item_id)
-			var slot: String = SimItems.get_slot(item_id)
-			if count > 1:
-				lines.append("  %d. %s x%d (%s)" % [index, display, count, slot])
-			else:
-				lines.append("  %d. %s (%s)" % [index, display, slot])
-			index += 1
-
-	lines.append("")
-	lines.append("Type 'equip <item_id>' to equip | 'gear' to see equipment")
-	_update_log(lines)
+	# Open equipment panel to inventory tab
+	_toggle_equipment()
 
 func _show_equipment() -> void:
-	var equipment: Dictionary = TypingProfile.get_equipment(profile)
-	var item_stats: Dictionary = SimItems.calculate_equipment_stats(equipment)
-	var lines: Array[String] = []
-	lines.append("[color=yellow]EQUIPMENT[/color]")
-	lines.append("")
-
-	for slot in SimItems.EQUIPMENT_SLOTS:
-		var item_id: String = str(equipment.get(slot, ""))
-		var slot_name: String = slot.capitalize()
-		if item_id.is_empty():
-			lines.append("  [%s]: [color=gray]Empty[/color]" % slot_name)
-		else:
-			lines.append("  [%s]: %s" % [slot_name, SimItems.format_item_display(item_id)])
-
-	lines.append("")
-	lines.append("[color=cyan]Total Stats:[/color]")
-	var stat_parts: Array[String] = []
-	if int(item_stats.get("defense", 0)) > 0:
-		stat_parts.append("DEF +%d" % int(item_stats.get("defense", 0)))
-	if float(item_stats.get("damage_bonus", 0)) > 0:
-		stat_parts.append("DMG +%.0f%%" % (float(item_stats.get("damage_bonus", 0)) * 100))
-	if float(item_stats.get("gold_bonus", 0)) > 0:
-		stat_parts.append("Gold +%.0f%%" % (float(item_stats.get("gold_bonus", 0)) * 100))
-	if float(item_stats.get("crit_chance", 0)) > 0:
-		stat_parts.append("Crit +%.0f%%" % (float(item_stats.get("crit_chance", 0)) * 100))
-	if float(item_stats.get("accuracy_bonus", 0)) > 0:
-		stat_parts.append("Acc +%.0f%%" % (float(item_stats.get("accuracy_bonus", 0)) * 100))
-	if int(item_stats.get("wpm_bonus", 0)) > 0:
-		stat_parts.append("WPM +%d" % int(item_stats.get("wpm_bonus", 0)))
-
-	if stat_parts.is_empty():
-		lines.append("  [color=gray]No stat bonuses[/color]")
-	else:
-		lines.append("  " + ", ".join(stat_parts))
-
-	lines.append("")
-	lines.append("Type 'unequip <slot>' to remove | 'inv' to see inventory")
-	_update_log(lines)
+	# Open equipment panel to equipped tab
+	_toggle_equipment()
 
 func _try_equip_item(item_id: String) -> void:
 	var inventory: Array = TypingProfile.get_inventory(profile)
@@ -3075,28 +3860,8 @@ func _get_item_buff_value(buff_type: String) -> float:
 	return 0.0
 
 func _show_shop() -> void:
-	var lines: Array[String] = []
-	lines.append("[color=yellow]SHOP[/color]")
-	lines.append("Your Gold: [color=gold]%d[/color]" % gold)
-	lines.append("")
-	lines.append("Available Items:")
-
-	for item_id in SimItems.CONSUMABLES.keys():
-		var item: Dictionary = SimItems.CONSUMABLES[item_id]
-		var name: String = str(item.get("name", item_id))
-		var price: int = int(item.get("price", 0))
-		var desc: String = str(item.get("description", ""))
-		var rarity: String = str(item.get("rarity", "common"))
-		var color: String = SimItems.RARITY_COLORS.get(rarity, "#FFFFFF")
-
-		var afford_color: String = "lime" if gold >= price else "red"
-		lines.append("  [color=%s]%s[/color] - [color=%s]%d gold[/color]" % [color, name, afford_color, price])
-		lines.append("    %s" % desc)
-		lines.append("    ID: [color=cyan]%s[/color]" % item_id)
-
-	lines.append("")
-	lines.append("Type 'buy <item_id>' to purchase")
-	_update_log(lines)
+	# Open shop panel
+	_toggle_shop()
 
 func _try_buy_item(item_id: String) -> void:
 	# Check if item exists
@@ -3126,159 +3891,59 @@ func _try_buy_item(item_id: String) -> void:
 	_update_objective("[color=lime]Purchased %s for %d gold![/color]" % [item_name, price])
 
 func _show_auto_towers() -> void:
-	var lines: Array[String] = []
-	lines.append("[color=yellow]AUTO-DEFENSE TOWERS[/color]")
-	lines.append("")
+	_toggle_auto_towers()
 
-	var auto_towers: Array[Dictionary] = SimBuildings.get_all_auto_towers(state)
-	if auto_towers.is_empty():
-		lines.append("[color=gray]No auto-towers built.[/color]")
-		lines.append("")
-		lines.append("Available auto-towers to build:")
-		lines.append("  [color=cyan]sentry[/color] - Single target, 3 DMG, 1.5s cooldown (30g)")
-		lines.append("  [color=cyan]spark[/color] - AoE damage, 2 DMG to all nearby (50g)")
-		lines.append("  [color=cyan]flame[/color] - Rapid fire + burn, 4 DMG (60g)")
-	else:
-		lines.append("Your Towers (%d):" % auto_towers.size())
-		for tower in auto_towers:
-			var tower_type: String = str(tower.get("type", "unknown"))
-			var pos: Vector2i = tower.get("pos", Vector2i.ZERO)
-			var damage: int = int(tower.get("damage", 1))
-			var attack_range: int = int(tower.get("range", 2))
-			var cooldown: float = float(tower.get("cooldown", 1.0))
-			var targeting: String = str(tower.get("targeting", "nearest"))
 
-			var type_color: String = "white"
-			match tower_type:
-				"sentry": type_color = "cyan"
-				"spark": type_color = "yellow"
-				"flame": type_color = "orange"
-
-			lines.append("  [color=%s]%s[/color] at (%d,%d)" % [type_color, tower_type.capitalize(), pos.x, pos.y])
-			lines.append("    DMG: %d | Range: %d | Cooldown: %.1fs | Mode: %s" % [damage, attack_range, cooldown, targeting])
-
-	lines.append("")
-	lines.append("Auto-towers attack automatically during waves!")
-	_update_log(lines)
+func _toggle_auto_towers() -> void:
+	if auto_towers_panel:
+		if auto_towers_panel.visible:
+			auto_towers_panel.hide()
+		else:
+			var towers: Array[Dictionary] = SimBuildings.get_all_auto_towers(state)
+			auto_towers_panel.show_auto_towers(towers)
 
 func _show_help() -> void:
-	var lines: Array[String] = []
-	lines.append("[color=yellow]KEYBOARD DEFENSE - COMMANDS[/color]")
-	lines.append("")
-	lines.append("[color=cyan]BUILDING[/color]")
-	lines.append("  build <type> - Build structure (tower, wall, farm, etc.)")
-	lines.append("  sentry/spark/flame - Build auto-defense tower")
-	lines.append("  upgrade - Upgrade structure at cursor")
-	lines.append("")
-	lines.append("[color=cyan]INFORMATION[/color]")
-	lines.append("  help - Show this help")
-	lines.append("  skills - View skill trees and learned skills")
-	lines.append("  effects - View status effects info")
-	lines.append("  auto - View auto-defense towers")
-	lines.append("  spells - View special typing commands")
-	lines.append("  wave - View current wave theme/modifiers")
-	lines.append("")
-	lines.append("[color=cyan]ITEMS & EQUIPMENT[/color]")
-	lines.append("  inv/items - View inventory")
-	lines.append("  gear - View equipped items")
-	lines.append("  equip <id> - Equip an item")
-	lines.append("  unequip <slot> - Unequip from slot")
-	lines.append("  use <id> - Use a consumable")
-	lines.append("")
-	lines.append("[color=cyan]ECONOMY[/color]")
-	lines.append("  shop - View consumable shop")
-	lines.append("  buy <id> - Purchase item")
-	lines.append("")
-	lines.append("[color=cyan]CRAFTING[/color]")
-	lines.append("  mats - View crafting materials")
-	lines.append("  recipes - View available recipes")
-	lines.append("  recipe <id> - View recipe details")
-	lines.append("  craft <id> - Craft an item")
-	lines.append("")
-	lines.append("[color=cyan]CHARACTER[/color]")
-	lines.append("  learn <tree:skill> - Learn a skill")
-	lines.append("")
-	lines.append("[color=cyan]QUESTS[/color]")
-	lines.append("  quests/q - View active quests")
-	lines.append("  claim <id> - Claim completed quest reward")
-	lines.append("")
-	lines.append("[color=cyan]GAME MODES[/color]")
-	lines.append("  endless - View endless mode status/scores")
-	lines.append("  startendless - Start an endless mode run")
-	lines.append("  daily - View today's daily challenge")
-	lines.append("  startdaily - Start the daily challenge")
-	lines.append("  tokens - View token shop (challenge rewards)")
-	lines.append("")
-	lines.append("[color=cyan]COLLECTIONS[/color]")
-	lines.append("  bestiary - View enemy catalog")
-	lines.append("  achievements/ach - View achievements")
-	lines.append("  lore/story - View game lore")
-	lines.append("")
-	lines.append("[color=cyan]STATISTICS[/color]")
-	lines.append("  stats - View stats summary")
-	lines.append("  stats full - View detailed statistics")
-	lines.append("  records - View personal records")
-	lines.append("")
-	lines.append("[color=gray]During waves: Type words OR spell commands![/color]")
-	_update_log(lines)
+	_toggle_help()
+
+
+func _toggle_help() -> void:
+	if help_panel:
+		if help_panel.visible:
+			help_panel.hide()
+		else:
+			help_panel.show_help()
 
 func _show_wave_info() -> void:
-	var lines: Array[String] = []
-	lines.append("[color=yellow]WAVE INFORMATION[/color]")
-	lines.append("Day %d, Wave %d/%d" % [day, wave, waves_per_day])
-	lines.append("")
+	_toggle_wave_info()
 
-	if current_wave_composition.is_empty():
-		lines.append("[color=gray]No wave composition data available.[/color]")
-	else:
-		var theme_name: String = str(current_wave_composition.get("theme_name", "Standard"))
-		var description: String = str(current_wave_composition.get("description", ""))
-		lines.append("[color=cyan]Theme:[/color] %s" % theme_name)
-		lines.append("  %s" % description)
-		lines.append("")
 
-		# Show modifiers
-		var modifiers: Array = current_wave_composition.get("modifier_names", [])
-		if not modifiers.is_empty():
-			lines.append("[color=orange]Modifiers:[/color] %s" % ", ".join(modifiers))
-
-		# Show stat changes
-		var stats: Array[String] = []
-		var hp_mult: float = float(current_wave_composition.get("hp_mult", 1.0))
-		var speed_mult: float = float(current_wave_composition.get("speed_mult", 1.0))
-		var gold_mult: float = float(current_wave_composition.get("gold_mult", 1.0))
-
-		if hp_mult != 1.0:
-			stats.append("HP: x%.1f" % hp_mult)
-		if speed_mult != 1.0:
-			stats.append("Speed: x%.1f" % speed_mult)
-		if gold_mult != 1.0:
-			stats.append("Gold: x%.1f" % gold_mult)
-
-		if not stats.is_empty():
-			lines.append("[color=gray]Stats: %s[/color]" % ", ".join(stats))
-
-		# Show enemy count
-		lines.append("")
-		lines.append("Enemies: %d" % int(current_wave_composition.get("enemy_count", 0)))
-
-	_update_log(lines)
+func _toggle_wave_info() -> void:
+	if wave_info_panel:
+		if wave_info_panel.visible:
+			wave_info_panel.hide()
+		else:
+			wave_info_panel.show_wave_info(day, wave, waves_per_day, current_wave_composition)
 
 func _show_endless_mode() -> void:
-	var lines: Array[String] = []
+	_toggle_endless_mode_panel()
 
-	if is_endless_mode:
-		# Show current run status
-		lines.append(SimEndlessMode.format_run_status(day, wave, max_combo, endless_run_kills))
+
+func _toggle_endless_mode_panel() -> void:
+	if endless_mode_panel == null:
+		return
+
+	if endless_mode_panel.visible:
+		endless_mode_panel.hide()
 	else:
-		# Show general endless mode status
-		lines.append(SimEndlessMode.format_status(profile))
+		var is_unlocked: bool = SimEndlessMode.is_unlocked(profile)
+		var high_scores: Dictionary = SimEndlessMode.get_high_scores(profile)
+		var current_day_reached: int = int(TypingProfile.get_profile_value(profile, "max_day_reached", 0))
 
-		if SimEndlessMode.is_unlocked(profile):
-			lines.append("")
-			lines.append("[color=cyan]Type 'startendless' to begin an endless run![/color]")
-
-	_update_log(lines)
+		if is_endless_mode:
+			# Show current run status
+			endless_mode_panel.show_current_run(day, wave, max_combo, endless_run_kills)
+		else:
+			endless_mode_panel.show_endless_mode(is_unlocked, high_scores, current_day_reached)
 
 func _start_endless_mode() -> void:
 	if not SimEndlessMode.is_unlocked(profile):
@@ -3354,33 +4019,22 @@ func _end_endless_run() -> void:
 	is_endless_mode = false
 
 func _show_daily_challenge() -> void:
-	var challenge: Dictionary = SimDailyChallenges.get_daily_challenge(profile)
-	var lines: Array[String] = []
+	_toggle_daily_challenge_panel()
 
-	lines.append("[color=yellow]DAILY CHALLENGE[/color]")
-	lines.append("")
 
-	if is_challenge_mode:
-		# Show current run progress
-		var goal: Dictionary = challenge_state.get("challenge", {}).get("goal", {})
-		var target: int = int(goal.get("target", 0))
-		var progress: int = int(challenge_state.get("progress", 0))
-		lines.append("[color=cyan]IN PROGRESS[/color]")
-		lines.append("Progress: %d / %d" % [progress, target])
-		lines.append("")
+func _toggle_daily_challenge_panel() -> void:
+	if daily_challenge_panel == null:
+		return
 
-	lines.append(SimDailyChallenges.format_challenge(challenge))
-
-	var streak: int = SimDailyChallenges.get_streak(profile)
-	if streak > 0:
-		lines.append("")
-		lines.append("[color=orange]Current Streak: %d days[/color]" % streak)
-
-	if not bool(challenge.get("completed_today", false)) and not is_challenge_mode:
-		lines.append("")
-		lines.append("[color=cyan]Type 'startdaily' to begin![/color]")
-
-	_update_log(lines)
+	if daily_challenge_panel.visible:
+		daily_challenge_panel.hide()
+	else:
+		var challenge: Dictionary = SimDailyChallenges.get_daily_challenge(profile)
+		var run_progress: int = 0
+		if is_challenge_mode:
+			run_progress = int(challenge_state.get("progress", 0))
+		var token_balance: int = SimDailyChallenges.get_token_balance(profile)
+		daily_challenge_panel.show_challenge(challenge, is_challenge_mode, run_progress, token_balance)
 
 func _start_daily_challenge() -> void:
 	var challenge: Dictionary = SimDailyChallenges.get_daily_challenge(profile)
@@ -3487,7 +4141,19 @@ func _fail_daily_challenge(reason: String) -> void:
 	is_challenge_mode = false
 
 func _show_token_shop() -> void:
-	_update_log([SimDailyChallenges.format_shop(profile)])
+	_toggle_token_shop_panel()
+
+
+func _toggle_token_shop_panel() -> void:
+	if token_shop_panel == null:
+		return
+
+	if token_shop_panel.visible:
+		token_shop_panel.hide()
+	else:
+		var balance: int = SimDailyChallenges.get_token_balance(profile)
+		token_shop_panel.show_shop(profile, balance)
+
 
 func _try_buy_token_item(item_id: String) -> void:
 	var result: Dictionary = SimDailyChallenges.purchase_token_item(profile, item_id)
@@ -3501,26 +4167,375 @@ func _try_buy_token_item(item_id: String) -> void:
 		_update_objective("[color=red]%s[/color]" % str(result.get("error", "Purchase failed")))
 
 func _show_stats_summary() -> void:
-	_update_log([SimPlayerStats.format_summary(profile)])
+	_toggle_stats_panel("overview")
+
 
 func _show_stats_full() -> void:
-	_update_log([SimPlayerStats.format_full_report(profile)])
+	_toggle_stats_panel("overview")
+
 
 func _show_records() -> void:
-	var lines: Array[String] = []
-	lines.append("[color=yellow]PERSONAL RECORDS[/color]")
-	lines.append("")
-	lines.append(SimPlayerStats.format_records(profile))
-	_update_log(lines)
+	_toggle_stats_panel("records")
+
+
+func _toggle_stats_panel(tab: String = "overview") -> void:
+	if stats_panel == null:
+		return
+
+	if stats_panel.visible:
+		stats_panel.hide()
+	else:
+		stats_panel.show_stats(profile, tab)
+
+
+func _show_expeditions() -> void:
+	_toggle_expeditions_panel()
+
+
+func _toggle_expeditions_panel() -> void:
+	if expeditions_panel == null:
+		return
+
+	if expeditions_panel.visible:
+		expeditions_panel.hide()
+	else:
+		expeditions_panel.show_expeditions(state)
+
+
+func _show_synergies() -> void:
+	_toggle_synergies_panel()
+
+
+func _toggle_synergies_panel() -> void:
+	if synergies_panel == null:
+		return
+
+	if synergies_panel.visible:
+		synergies_panel.hide()
+	else:
+		synergies_panel.show_synergies(state)
+
+
+func _show_buffs() -> void:
+	_toggle_buffs_panel()
+
+
+func _toggle_buffs_panel() -> void:
+	if buffs_panel == null:
+		return
+
+	if buffs_panel.visible:
+		buffs_panel.hide()
+	else:
+		buffs_panel.show_buffs(profile)
+
+
+func _show_summons() -> void:
+	_toggle_summoned_units_panel()
+
+
+func _toggle_summoned_units_panel() -> void:
+	if summoned_units_panel == null:
+		return
+
+	if summoned_units_panel.visible:
+		summoned_units_panel.hide()
+	else:
+		summoned_units_panel.show_summons(state)
+
+
+func _show_loot() -> void:
+	_toggle_loot_panel()
+
+
+func _toggle_loot_panel() -> void:
+	if loot_panel == null:
+		return
+
+	if loot_panel.visible:
+		loot_panel.hide()
+	else:
+		loot_panel.show_loot(state)
+
+
+func _show_nodes() -> void:
+	_toggle_resource_nodes_panel()
+
+
+func _toggle_resource_nodes_panel() -> void:
+	if resource_nodes_panel == null:
+		return
+
+	if resource_nodes_panel.visible:
+		resource_nodes_panel.hide()
+	else:
+		resource_nodes_panel.show_nodes(state)
+
+
+func _show_affixes() -> void:
+	_toggle_affixes_panel()
+
+
+func _toggle_affixes_panel() -> void:
+	if affixes_panel == null:
+		return
+
+	if affixes_panel.visible:
+		affixes_panel.hide()
+	else:
+		affixes_panel.show_affixes(state)
+
+
+func _show_damage_types() -> void:
+	_toggle_damage_types_panel()
+
+
+func _toggle_damage_types_panel() -> void:
+	if damage_types_panel == null:
+		return
+
+	if damage_types_panel.visible:
+		damage_types_panel.hide()
+	else:
+		damage_types_panel.show_damage_types()
+
+
+func _show_pois() -> void:
+	_toggle_poi_panel()
+
+
+func _toggle_poi_panel() -> void:
+	if poi_panel == null:
+		return
+
+	if poi_panel.visible:
+		poi_panel.hide()
+	else:
+		poi_panel.show_pois(state)
+
+
+func _show_towers() -> void:
+	_toggle_tower_encyclopedia_panel()
+
+
+func _toggle_tower_encyclopedia_panel() -> void:
+	if tower_encyclopedia_panel == null:
+		return
+
+	if tower_encyclopedia_panel.visible:
+		tower_encyclopedia_panel.hide()
+	else:
+		tower_encyclopedia_panel.show_encyclopedia()
+
+
+func _show_status_effects() -> void:
+	_toggle_status_effects_panel()
+
+
+func _toggle_status_effects_panel() -> void:
+	if status_effects_panel == null:
+		return
+
+	if status_effects_panel.visible:
+		status_effects_panel.hide()
+	else:
+		status_effects_panel.show_status_effects(state)
+
+
+func _show_combo_system() -> void:
+	_toggle_combo_system_panel()
+
+
+func _toggle_combo_system_panel() -> void:
+	if combo_system_panel == null:
+		return
+
+	if combo_system_panel.visible:
+		combo_system_panel.hide()
+	else:
+		combo_system_panel.show_combo_system(state)
+
+
+func _show_milestones() -> void:
+	_toggle_milestones_panel()
+
+
+func _toggle_milestones_panel() -> void:
+	if milestones_panel == null:
+		return
+
+	if milestones_panel.visible:
+		milestones_panel.hide()
+	else:
+		milestones_panel.show_milestones(profile)
+
+
+func _show_practice_goals() -> void:
+	_toggle_practice_goals_panel()
+
+
+func _toggle_practice_goals_panel() -> void:
+	if practice_goals_panel == null:
+		return
+
+	if practice_goals_panel.visible:
+		practice_goals_panel.hide()
+	else:
+		var current_goal: String = str(profile.get("practice_goal", "balanced"))
+		practice_goals_panel.show_practice_goals(profile, current_goal)
+
+
+func _show_wave_themes() -> void:
+	_toggle_wave_themes_panel()
+
+
+func _toggle_wave_themes_panel() -> void:
+	if wave_themes_panel == null:
+		return
+
+	if wave_themes_panel.visible:
+		wave_themes_panel.hide()
+	else:
+		wave_themes_panel.show_wave_themes(state)
+
+
+func _show_special_commands() -> void:
+	_toggle_special_commands_panel()
+
+
+func _toggle_special_commands_panel() -> void:
+	if special_commands_panel == null:
+		return
+
+	if special_commands_panel.visible:
+		special_commands_panel.hide()
+	else:
+		var player_level: int = int(profile.get("level", 1))
+		special_commands_panel.show_special_commands(player_level, command_cooldowns)
+
+
+func _show_lifetime_stats() -> void:
+	_toggle_lifetime_stats_panel()
+
+
+func _toggle_lifetime_stats_panel() -> void:
+	if lifetime_stats_panel == null:
+		return
+
+	if lifetime_stats_panel.visible:
+		lifetime_stats_panel.hide()
+	else:
+		lifetime_stats_panel.show_lifetime_stats(profile)
+
+
+func _show_keyboard_reference() -> void:
+	_toggle_keyboard_reference_panel()
+
+
+func _toggle_keyboard_reference_panel() -> void:
+	if keyboard_reference_panel == null:
+		return
+
+	if keyboard_reference_panel.visible:
+		keyboard_reference_panel.hide()
+	else:
+		keyboard_reference_panel.show_keyboard_reference()
+
+
+func _show_login_rewards() -> void:
+	_toggle_login_rewards_panel()
+
+
+func _toggle_login_rewards_panel() -> void:
+	if login_rewards_panel == null:
+		return
+
+	if login_rewards_panel.visible:
+		login_rewards_panel.hide()
+	else:
+		var streak: Dictionary = profile.get("streak", {})
+		var current_streak: int = int(streak.get("current", 0))
+		var can_claim: bool = SimLoginRewards.should_show_reward(profile)
+		login_rewards_panel.show_login_rewards(current_streak, can_claim)
+
+
+func _show_typing_tower_bonuses() -> void:
+	_toggle_typing_tower_bonuses_panel()
+
+
+func _toggle_typing_tower_bonuses_panel() -> void:
+	if typing_tower_bonuses_panel == null:
+		return
+
+	if typing_tower_bonuses_panel.visible:
+		typing_tower_bonuses_panel.hide()
+	else:
+		typing_tower_bonuses_panel.show_typing_tower_bonuses()
+
+
+func _show_research_tree() -> void:
+	_toggle_research_tree_panel()
+
+
+func _toggle_research_tree_panel() -> void:
+	if research_tree_panel == null:
+		return
+
+	if research_tree_panel.visible:
+		research_tree_panel.hide()
+	else:
+		var research_instance: SimResearch = SimResearch.instance()
+		var tree: Dictionary = research_instance.get_research_tree(state)
+		research_tree_panel.show_research_tree(tree, state.gold)
+
+
+func _show_trade_market() -> void:
+	_toggle_trade_panel()
+
+
+func _toggle_trade_panel() -> void:
+	if trade_panel == null:
+		return
+
+	if trade_panel.visible:
+		trade_panel.hide()
+	else:
+		var summary: Dictionary = SimTrade.get_trade_summary(state)
+		trade_panel.show_trade_market(summary)
+
 
 func _show_materials() -> void:
-	_update_log([SimCrafting.format_materials(profile)])
+	_toggle_materials_panel()
+
+
+func _toggle_materials_panel() -> void:
+	if materials_panel == null:
+		return
+
+	if materials_panel.visible:
+		materials_panel.hide()
+	else:
+		var mats: Dictionary = SimCrafting.get_materials(profile)
+		var player_level: int = int(TypingProfile.get_profile_value(profile, "player_level", 1))
+		materials_panel.show_materials(mats, player_level)
 
 func _show_recipes(category: String = "") -> void:
-	_update_log([SimCrafting.format_recipe_list(profile, category)])
+	_toggle_recipes_panel(category)
+
+
+func _toggle_recipes_panel(category: String = "") -> void:
+	if recipes_panel == null:
+		return
+
+	if recipes_panel.visible:
+		recipes_panel.hide()
+	else:
+		recipes_panel.show_recipes(profile, gold, category)
+
 
 func _show_recipe_detail(recipe_id: String) -> void:
-	_update_log([SimCrafting.format_recipe(profile, recipe_id, gold)])
+	# Show the recipes panel - the user can find the recipe there
+	_toggle_recipes_panel("")
 
 func _try_craft(recipe_id: String) -> void:
 	var check: Dictionary = SimCrafting.can_craft(profile, recipe_id, gold)
@@ -3548,41 +4563,14 @@ func _try_craft(recipe_id: String) -> void:
 
 	_update_objective("[color=lime]Crafted %s![/color] Received %s x%d" % [recipe_name, output_item, output_qty])
 
-func _show_special_commands() -> void:
-	var player_level: int = int(TypingProfile.get_profile_value(profile, "player_level", 1))
-	var unlocked: Array[String] = SimSpecialCommands.get_unlocked_commands(player_level)
-	var all_commands: Array[String] = SimSpecialCommands.get_all_command_ids()
 
-	var lines: Array[String] = []
-	lines.append("[color=yellow]SPECIAL COMMANDS[/color]")
-	lines.append("Type these words during combat to trigger effects!")
-	lines.append("Player Level: %d" % player_level)
-	lines.append("")
-
-	lines.append("[color=cyan]UNLOCKED:[/color]")
-	if unlocked.is_empty():
-		lines.append("  [color=gray]None yet - level up![/color]")
-	else:
-		for cmd_id in unlocked:
-			var cooldown_remaining: float = float(command_cooldowns.get(cmd_id, 0))
-			lines.append("  " + SimSpecialCommands.format_command(cmd_id, cooldown_remaining))
-
-	# Show locked commands
-	var locked: Array[String] = []
-	for cmd_id in all_commands:
-		if not cmd_id in unlocked:
-			locked.append(cmd_id)
-
-	if not locked.is_empty():
-		lines.append("")
-		lines.append("[color=gray]LOCKED:[/color]")
-		for cmd_id in locked:
-			var unlock_level: int = SimSpecialCommands.get_unlock_level(cmd_id)
-			var cmd: Dictionary = SimSpecialCommands.get_command(cmd_id)
-			var word: String = str(cmd.get("word", ""))
-			lines.append("  [color=gray]%s - Unlocks at level %d[/color]" % [word, unlock_level])
-
-	_update_log(lines)
+func _toggle_spells() -> void:
+	if spells_panel:
+		if spells_panel.visible:
+			spells_panel.hide()
+		else:
+			var player_level: int = int(TypingProfile.get_profile_value(profile, "player_level", 1))
+			spells_panel.show_spells(player_level, command_cooldowns)
 
 func _tick_command_cooldowns(delta: float) -> void:
 	# Tick cooldowns
@@ -3872,49 +4860,8 @@ func _check_quest_completions() -> void:
 						_update_objective("[color=lime]Weekly Quest Complete![/color] %s" % str(quest.get("name", "")))
 
 func _show_quests() -> void:
-	var lines: Array[String] = []
-	lines.append("[color=yellow]QUESTS[/color]")
-	lines.append("")
-
-	# Daily quests
-	lines.append("[color=cyan]DAILY QUESTS:[/color]")
-	var daily_quests: Array = quest_state.get("daily_quests", [])
-	var daily_progress: Dictionary = quest_state.get("daily_progress", {})
-	var daily_claimed: Array = quest_state.get("daily_claimed", [])
-
-	if daily_quests.is_empty():
-		lines.append("  [color=gray]No daily quests available[/color]")
-	else:
-		for quest_id in daily_quests:
-			var status: String = SimQuests.STATUS_ACTIVE
-			if quest_id in daily_claimed:
-				status = SimQuests.STATUS_CLAIMED
-			elif SimQuests.check_objective(quest_id, daily_progress):
-				status = SimQuests.STATUS_COMPLETED
-			lines.append("  " + SimQuests.format_quest(quest_id, daily_progress, status))
-
-	lines.append("")
-
-	# Weekly quests
-	lines.append("[color=purple]WEEKLY QUESTS:[/color]")
-	var weekly_quests: Array = quest_state.get("weekly_quests", [])
-	var weekly_progress: Dictionary = quest_state.get("weekly_progress", {})
-	var weekly_claimed: Array = quest_state.get("weekly_claimed", [])
-
-	if weekly_quests.is_empty():
-		lines.append("  [color=gray]No weekly quests available[/color]")
-	else:
-		for quest_id in weekly_quests:
-			var status: String = SimQuests.STATUS_ACTIVE
-			if quest_id in weekly_claimed:
-				status = SimQuests.STATUS_CLAIMED
-			elif SimQuests.check_objective(quest_id, weekly_progress):
-				status = SimQuests.STATUS_COMPLETED
-			lines.append("  " + SimQuests.format_quest(quest_id, weekly_progress, status))
-
-	lines.append("")
-	lines.append("Type 'claim <quest_id>' to claim completed quest rewards")
-	_update_log(lines)
+	# Open quests panel
+	_toggle_quests()
 
 func _try_claim_quest(quest_id: String) -> void:
 	var quest: Dictionary = SimQuests.get_quest(quest_id)

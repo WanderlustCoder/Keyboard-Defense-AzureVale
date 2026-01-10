@@ -17,7 +17,8 @@ var _profile: Dictionary = {}
 
 func _ready() -> void:
 	_checker = AchievementChecker.new()
-	close_button.pressed.connect(_on_close_pressed)
+	if close_button != null:
+		close_button.pressed.connect(_on_close_pressed)
 	visible = false
 
 func show_achievements(profile: Dictionary) -> void:

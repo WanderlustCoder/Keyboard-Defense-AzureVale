@@ -41,28 +41,46 @@ func _ready() -> void:
 	_setup_button_hover_effects()
 
 func _connect_signals() -> void:
-	music_slider.value_changed.connect(_on_music_slider_changed)
-	sfx_slider.value_changed.connect(_on_sfx_slider_changed)
-	music_toggle.toggled.connect(_on_music_toggle)
-	sfx_toggle.toggled.connect(_on_sfx_toggle)
-	typing_sounds_toggle.toggled.connect(_on_typing_sounds_toggle)
-	screen_shake_toggle.toggled.connect(_on_screen_shake_toggle)
-	show_wpm_toggle.toggled.connect(_on_show_wpm_toggle)
-	show_accuracy_toggle.toggled.connect(_on_show_accuracy_toggle)
-	back_button.pressed.connect(_on_back_pressed)
-	reset_button.pressed.connect(_on_reset_pressed)
+	if music_slider != null:
+		music_slider.value_changed.connect(_on_music_slider_changed)
+	if sfx_slider != null:
+		sfx_slider.value_changed.connect(_on_sfx_slider_changed)
+	if music_toggle != null:
+		music_toggle.toggled.connect(_on_music_toggle)
+	if sfx_toggle != null:
+		sfx_toggle.toggled.connect(_on_sfx_toggle)
+	if typing_sounds_toggle != null:
+		typing_sounds_toggle.toggled.connect(_on_typing_sounds_toggle)
+	if screen_shake_toggle != null:
+		screen_shake_toggle.toggled.connect(_on_screen_shake_toggle)
+	if show_wpm_toggle != null:
+		show_wpm_toggle.toggled.connect(_on_show_wpm_toggle)
+	if show_accuracy_toggle != null:
+		show_accuracy_toggle.toggled.connect(_on_show_accuracy_toggle)
+	if back_button != null:
+		back_button.pressed.connect(_on_back_pressed)
+	if reset_button != null:
+		reset_button.pressed.connect(_on_reset_pressed)
 
 func _load_from_settings() -> void:
 	_updating_ui = true
 
-	music_slider.value = settings.music_volume
-	sfx_slider.value = settings.sfx_volume
-	music_toggle.button_pressed = settings.music_enabled
-	sfx_toggle.button_pressed = settings.sfx_enabled
-	typing_sounds_toggle.button_pressed = settings.typing_sounds
-	screen_shake_toggle.button_pressed = settings.screen_shake
-	show_wpm_toggle.button_pressed = settings.show_wpm
-	show_accuracy_toggle.button_pressed = settings.show_accuracy
+	if music_slider != null:
+		music_slider.value = settings.music_volume
+	if sfx_slider != null:
+		sfx_slider.value = settings.sfx_volume
+	if music_toggle != null:
+		music_toggle.button_pressed = settings.music_enabled
+	if sfx_toggle != null:
+		sfx_toggle.button_pressed = settings.sfx_enabled
+	if typing_sounds_toggle != null:
+		typing_sounds_toggle.button_pressed = settings.typing_sounds
+	if screen_shake_toggle != null:
+		screen_shake_toggle.button_pressed = settings.screen_shake
+	if show_wpm_toggle != null:
+		show_wpm_toggle.button_pressed = settings.show_wpm
+	if show_accuracy_toggle != null:
+		show_accuracy_toggle.button_pressed = settings.show_accuracy
 
 	# Accessibility settings
 	if reduced_motion_toggle != null:
@@ -76,8 +94,10 @@ func _load_from_settings() -> void:
 	_updating_ui = false
 
 func _update_volume_labels() -> void:
-	music_value.text = "%d%%" % int(music_slider.value * 100)
-	sfx_value.text = "%d%%" % int(sfx_slider.value * 100)
+	if music_value != null and music_slider != null:
+		music_value.text = "%d%%" % int(music_slider.value * 100)
+	if sfx_value != null and sfx_slider != null:
+		sfx_value.text = "%d%%" % int(sfx_slider.value * 100)
 
 func _on_music_slider_changed(value: float) -> void:
 	_update_volume_labels()

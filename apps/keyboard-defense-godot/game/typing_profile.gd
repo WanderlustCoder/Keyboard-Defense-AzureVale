@@ -196,6 +196,14 @@ static func load_profile(path: String = PROFILE_PATH) -> Dictionary:
         for slot in profile["equipment"].keys():
             if saved_equipment.has(slot):
                 profile["equipment"][slot] = str(saved_equipment.get(slot, ""))
+    # Load bestiary data
+    if data.has("bestiary") and typeof(data.get("bestiary")) == TYPE_DICTIONARY:
+        profile["bestiary"] = data.get("bestiary")
+    if data.has("bestiary_affixes") and typeof(data.get("bestiary_affixes")) == TYPE_DICTIONARY:
+        profile["bestiary_affixes"] = data.get("bestiary_affixes")
+    # Load materials data for crafting
+    if data.has("materials") and typeof(data.get("materials")) == TYPE_DICTIONARY:
+        profile["materials"] = data.get("materials")
     return {"ok": true, "profile": profile}
 
 static func get_keybind(profile: Dictionary, action_name: String) -> Dictionary:
@@ -937,8 +945,16 @@ static func set_learned_skills(profile: Dictionary, skills: Dictionary) -> void:
 static func get_player_level(profile: Dictionary) -> int:
     return max(1, int(profile.get("player_level", 1)))
 
+## Alias for get_player_level (used by stats_dashboard)
+static func get_level(profile: Dictionary) -> int:
+    return get_player_level(profile)
+
 static func get_player_xp(profile: Dictionary) -> int:
     return int(profile.get("player_xp", 0))
+
+## Alias for get_player_xp (used by stats_dashboard)
+static func get_xp(profile: Dictionary) -> int:
+    return get_player_xp(profile)
 
 static func set_player_level(profile: Dictionary, level: int) -> void:
     profile["player_level"] = max(1, level)

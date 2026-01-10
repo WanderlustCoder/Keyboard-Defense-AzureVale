@@ -261,9 +261,12 @@ const GRADE_COLORS := {
 }
 
 func _ready() -> void:
-	exit_button.pressed.connect(_on_exit_pressed)
-	result_button.pressed.connect(_on_result_pressed)
-	result_panel.visible = false
+	if exit_button != null:
+		exit_button.pressed.connect(_on_exit_pressed)
+	if result_button != null:
+		result_button.pressed.connect(_on_result_pressed)
+	if result_panel != null:
+		result_panel.visible = false
 	_setup_pause_panel()
 	_setup_debug_panel()
 	_setup_combo_indicator()
@@ -1469,12 +1472,15 @@ func _setup_debug_panel() -> void:
 	debug_panel.visible = false
 	debug_text = debug_panel.get_node("Content/OverridesText") as TextEdit
 	debug_status_label = debug_panel.get_node("Content/StatusLabel") as Label
-	debug_apply_button = debug_panel.get_node("Content/ButtonRow/ApplyButton") as Button
-	debug_copy_button = debug_panel.get_node("Content/ButtonRow/CopyButton") as Button
-	debug_close_button = debug_panel.get_node("Content/ButtonRow/CloseButton") as Button
-	debug_apply_button.pressed.connect(_on_debug_apply_pressed)
-	debug_copy_button.pressed.connect(_on_debug_copy_pressed)
-	debug_close_button.pressed.connect(_on_debug_close_pressed)
+	debug_apply_button = debug_panel.get_node_or_null("Content/ButtonRow/ApplyButton") as Button
+	debug_copy_button = debug_panel.get_node_or_null("Content/ButtonRow/CopyButton") as Button
+	debug_close_button = debug_panel.get_node_or_null("Content/ButtonRow/CloseButton") as Button
+	if debug_apply_button != null:
+		debug_apply_button.pressed.connect(_on_debug_apply_pressed)
+	if debug_copy_button != null:
+		debug_copy_button.pressed.connect(_on_debug_copy_pressed)
+	if debug_close_button != null:
+		debug_close_button.pressed.connect(_on_debug_close_pressed)
 
 func _toggle_debug_panel() -> void:
 	if debug_panel == null:

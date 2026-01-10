@@ -53,10 +53,14 @@ static func apply_to_container(container: Node) -> void:
 static func _on_button_down(button: BaseButton) -> void:
 	if _is_reduced_motion():
 		return
+	if not button.is_inside_tree():
+		return
 
 	_kill_tween(button)
 
 	var tween := button.create_tween()
+	if tween == null:
+		return
 	tween.set_ease(Tween.EASE_OUT)
 	tween.set_trans(Tween.TRANS_QUAD)
 	tween.tween_property(button, "scale", Vector2(PRESS_SCALE, PRESS_SCALE), PRESS_DURATION)
@@ -65,10 +69,14 @@ static func _on_button_down(button: BaseButton) -> void:
 static func _on_button_up(button: BaseButton) -> void:
 	if _is_reduced_motion():
 		return
+	if not button.is_inside_tree():
+		return
 
 	_kill_tween(button)
 
 	var tween := button.create_tween()
+	if tween == null:
+		return
 	tween.set_ease(Tween.EASE_OUT)
 	tween.set_trans(Tween.TRANS_BACK)
 
@@ -80,21 +88,29 @@ static func _on_button_up(button: BaseButton) -> void:
 static func _on_mouse_entered(button: BaseButton) -> void:
 	if _is_reduced_motion():
 		return
+	if not button.is_inside_tree():
+		return
 
 	var base_mod: Color = _button_base_modulate.get(button, Color.WHITE)
 	var bright_mod := base_mod.lightened(HOVER_BRIGHTEN)
 
 	var tween := button.create_tween()
+	if tween == null:
+		return
 	tween.set_ease(Tween.EASE_OUT)
 	tween.tween_property(button, "modulate", bright_mod, HOVER_DURATION)
 
 static func _on_mouse_exited(button: BaseButton) -> void:
 	if _is_reduced_motion():
 		return
+	if not button.is_inside_tree():
+		return
 
 	var base_mod: Color = _button_base_modulate.get(button, Color.WHITE)
 
 	var tween := button.create_tween()
+	if tween == null:
+		return
 	tween.set_ease(Tween.EASE_OUT)
 	tween.tween_property(button, "modulate", base_mod, HOVER_DURATION)
 

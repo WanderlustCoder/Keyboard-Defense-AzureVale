@@ -29,7 +29,8 @@ var icon_cache: Dictionary = {}
 var stats_panel: PanelContainer = null
 
 func _ready() -> void:
-	back_button.pressed.connect(_on_back_pressed)
+	if back_button != null:
+		back_button.pressed.connect(_on_back_pressed)
 	_refresh()
 	# Play kingdom music
 	if audio_manager != null:

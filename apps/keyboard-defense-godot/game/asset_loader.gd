@@ -67,6 +67,9 @@ func get_texture(id: String) -> Texture2D:
 	var path: String = entry.get("path", "")
 	if path.is_empty():
 		return null
+	# Check if resource exists before loading to avoid error spam
+	if not ResourceLoader.exists(path):
+		return null
 	var texture := load(path) as Texture2D
 	if texture != null:
 		_texture_cache[id] = texture
@@ -324,18 +327,20 @@ func get_animation_frame(sprite_id: String, frame_index: int) -> Texture2D:
 		var png_path := _svg_to_png_path(frame_path)
 		if _texture_cache.has(png_path):
 			return _texture_cache[png_path]
-		var tex := load(png_path) as Texture2D
-		if tex != null:
-			_texture_cache[png_path] = tex
-			return tex
+		if ResourceLoader.exists(png_path):
+			var tex := load(png_path) as Texture2D
+			if tex != null:
+				_texture_cache[png_path] = tex
+				return tex
 
 		# Try SVG directly (Godot imports these as textures)
 		if _texture_cache.has(frame_path):
 			return _texture_cache[frame_path]
-		tex = load(frame_path) as Texture2D
-		if tex != null:
-			_texture_cache[frame_path] = tex
-			return tex
+		if ResourceLoader.exists(frame_path):
+			var tex := load(frame_path) as Texture2D
+			if tex != null:
+				_texture_cache[frame_path] = tex
+				return tex
 
 	# Fallback: try frame_XX naming convention
 	var frame_id := "%s_%02d" % [sprite_id, frame_index + 1]
@@ -350,10 +355,11 @@ func get_animation_frame(sprite_id: String, frame_index: int) -> Texture2D:
 			var ext_pos := base_path.rfind(".")
 			if ext_pos > 0:
 				var frame_path := base_path.insert(ext_pos, "_%02d" % [frame_index + 1])
-				var tex := load(frame_path) as Texture2D
-				if tex != null:
-					_texture_cache[frame_id] = tex
-					return tex
+				if ResourceLoader.exists(frame_path):
+					var tex := load(frame_path) as Texture2D
+					if tex != null:
+						_texture_cache[frame_id] = tex
+						return tex
 
 	# Ultimate fallback: return base texture
 	return get_texture(sprite_id)
