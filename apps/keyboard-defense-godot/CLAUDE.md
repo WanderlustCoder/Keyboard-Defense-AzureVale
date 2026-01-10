@@ -1007,6 +1007,53 @@ Reports:
 - Undeclared signal emissions
 - Signal connection patterns
 
+### Function Length Checker
+
+Find overly long functions:
+
+```bash
+./scripts/check_func_length.sh              # Full report
+./scripts/check_func_length.sh --threshold 50  # Custom threshold
+./scripts/check_func_length.sh --file game/main.gd  # Single file
+./scripts/check_func_length.sh --json       # JSON output
+```
+
+Reports:
+- Functions over threshold
+- Refactoring candidates
+- Average function length
+
+### JSON Reference Validator
+
+Validate cross-references in data files:
+
+```bash
+./scripts/validate_json_refs.sh              # Full report
+./scripts/validate_json_refs.sh --file data/lessons.json  # Single file
+./scripts/validate_json_refs.sh --json       # JSON output
+```
+
+Reports:
+- Broken ID references
+- Missing resource paths
+- Orphan entries (never referenced)
+
+### Node Reference Checker
+
+Check node reference patterns:
+
+```bash
+./scripts/check_node_refs.sh              # Full report
+./scripts/check_node_refs.sh --file game/main.gd  # Single file
+./scripts/check_node_refs.sh --strict     # Stricter checks
+./scripts/check_node_refs.sh --json       # JSON output
+```
+
+Reports:
+- $ syntax vs @onready usage
+- get_node() call patterns
+- Deep path fragility warnings
+
 ## File Locations Quick Reference
 
 | Need to... | Location |

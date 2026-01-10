@@ -4,6 +4,27 @@ This file tracks recent changes for Claude Code context.
 
 ---
 
+## 2026-01-10: Development Tools Batch 14
+
+Added code quality and data validation tools:
+
+### Function Length Checker (`scripts/check_func_length.py`)
+- Finds functions exceeding line count threshold
+- Identifies refactoring candidates
+- Reports average function length
+
+### JSON Reference Validator (`scripts/validate_json_refs.py`)
+- Validates cross-references between data files
+- Finds broken ID references
+- Detects orphan entries (never referenced)
+
+### Node Reference Checker (`scripts/check_node_refs.py`)
+- Analyzes $ syntax and get_node() patterns
+- Recommends @onready usage
+- Warns about deep path fragility
+
+---
+
 ## 2026-01-10: Development Tools Batch 13
 
 Added validation tools for code structure:
