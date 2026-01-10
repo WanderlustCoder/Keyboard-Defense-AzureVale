@@ -4,6 +4,29 @@ This file tracks recent changes for Claude Code context.
 
 ---
 
+## 2026-01-10: Development Tools Batch 18
+
+Added code quality and pattern detection tools:
+
+### Variable Shadowing Checker (`scripts/check_variable_shadowing.py`)
+- Finds parameters shadowing class variables
+- Detects local variables shadowing parameters
+- Identifies loop variables shadowing outer scope
+
+### Godot Patterns Checker (`scripts/check_godot_patterns.py`)
+- Detects deprecated Godot 4 API usage
+- Finds common mistakes (yield vs await, connect syntax)
+- Reports performance anti-patterns
+- Checks node lifecycle issues
+
+### Error Handling Checker (`scripts/check_error_handling.py`)
+- Finds file I/O without null checks
+- Detects JSON parsing without error handling
+- Reports unsafe dictionary/array access
+- Checks resource loading validation
+
+---
+
 ## 2026-01-10: Development Tools Batch 17
 
 Added comment, enum, and file organization analysis tools:

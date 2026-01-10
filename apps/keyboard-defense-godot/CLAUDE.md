@@ -1199,6 +1199,56 @@ Reports:
 - Large file detection (>500 lines)
 - Directory structure consistency
 
+### Variable Shadowing Checker
+
+Find variable shadowing issues:
+
+```bash
+./scripts/check_variable_shadowing.sh              # Full report
+./scripts/check_variable_shadowing.sh --file game/main.gd  # Single file
+./scripts/check_variable_shadowing.sh --strict     # Include minor issues
+./scripts/check_variable_shadowing.sh --json       # JSON output
+```
+
+Reports:
+- Parameters shadowing class variables
+- Local variables shadowing parameters
+- Loop variables shadowing outer scope
+
+### Godot Patterns Checker
+
+Find common Godot anti-patterns:
+
+```bash
+./scripts/check_godot_patterns.sh              # Full report
+./scripts/check_godot_patterns.sh --file game/main.gd  # Single file
+./scripts/check_godot_patterns.sh --strict     # Include debug prints
+./scripts/check_godot_patterns.sh --json       # JSON output
+```
+
+Reports:
+- Deprecated API usage (Godot 4 migration)
+- Common mistakes (yield vs await, connect syntax)
+- Performance anti-patterns
+- Node lifecycle issues
+
+### Error Handling Checker
+
+Find missing error handling:
+
+```bash
+./scripts/check_error_handling.sh              # Full report
+./scripts/check_error_handling.sh --file game/main.gd  # Single file
+./scripts/check_error_handling.sh --strict     # More patterns
+./scripts/check_error_handling.sh --json       # JSON output
+```
+
+Reports:
+- File I/O without null checks
+- JSON parsing without error handling
+- Dictionary/array access patterns
+- Resource loading validation
+
 ## File Locations Quick Reference
 
 | Need to... | Location |
