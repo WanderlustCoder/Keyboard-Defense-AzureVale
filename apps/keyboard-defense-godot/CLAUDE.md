@@ -1351,6 +1351,57 @@ Reports:
 - Verb usage statistics
 - Naming suggestions
 
+### Hardcoded Values Checker
+
+Find hardcoded values that should be constants:
+
+```bash
+./scripts/check_hardcoded_values.sh              # Full report
+./scripts/check_hardcoded_values.sh --file game/main.gd  # Single file
+./scripts/check_hardcoded_values.sh --strict     # More patterns
+./scripts/check_hardcoded_values.sh --json       # JSON output
+```
+
+Reports:
+- Hardcoded colors (use theme_colors.gd)
+- Hardcoded resource paths
+- Repeated values (constant candidates)
+- Hardcoded sizes and timing
+
+### Method Visibility Checker
+
+Find methods that should be private:
+
+```bash
+./scripts/check_method_visibility.sh              # Full report
+./scripts/check_method_visibility.sh --file game/main.gd  # Single file
+./scripts/check_method_visibility.sh --strict     # Include dead code
+./scripts/check_method_visibility.sh --json       # JSON output
+```
+
+Reports:
+- Public methods only called internally
+- Helper-pattern names that are public
+- Encapsulation ratio (% private)
+- Dead code (never called methods)
+
+### Initialization Order Checker
+
+Find initialization order issues:
+
+```bash
+./scripts/check_initialization_order.sh              # Full report
+./scripts/check_initialization_order.sh --file game/main.gd  # Single file
+./scripts/check_initialization_order.sh --strict     # More patterns
+./scripts/check_initialization_order.sh --json       # JSON output
+```
+
+Reports:
+- Node access in _init() (error)
+- @onready vars used before _ready()
+- Signal connections in _init()
+- add_child() in _init()
+
 ## File Locations Quick Reference
 
 | Need to... | Location |

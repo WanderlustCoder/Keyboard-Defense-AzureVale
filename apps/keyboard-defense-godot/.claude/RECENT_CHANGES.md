@@ -4,6 +4,30 @@ This file tracks recent changes for Claude Code context.
 
 ---
 
+## 2026-01-10: Development Tools Batch 21
+
+Added code quality and encapsulation tools:
+
+### Hardcoded Values Checker (`scripts/check_hardcoded_values.py`)
+- Finds hardcoded colors, paths, sizes
+- Identifies repeated values (constant candidates)
+- Reports values by category
+- Suggests using theme_colors.gd
+
+### Method Visibility Checker (`scripts/check_method_visibility.py`)
+- Finds public methods only called internally
+- Detects helper-pattern names that are public
+- Reports encapsulation ratio (63% private)
+- Identifies potential dead code
+
+### Initialization Order Checker (`scripts/check_initialization_order.py`)
+- Finds node access in _init() (error)
+- Detects @onready vars used before _ready()
+- Reports signal connections in _init()
+- Finds add_child() in _init()
+
+---
+
 ## 2026-01-10: Development Tools Batch 20
 
 Added architecture and API analysis tools:
