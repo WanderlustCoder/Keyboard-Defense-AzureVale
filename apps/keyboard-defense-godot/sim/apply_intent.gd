@@ -1211,6 +1211,33 @@ static func _copy_state(state: GameState) -> GameState:
     copy.loot_pending = state.loot_pending.duplicate(true)
     copy.last_loot_quality = state.last_loot_quality
     copy.perfect_kills = state.perfect_kills
+    # Worker system state
+    copy.workers = state.workers.duplicate(true)
+    copy.total_workers = state.total_workers
+    copy.max_workers = state.max_workers
+    copy.worker_upkeep = state.worker_upkeep
+    # Research system state
+    copy.active_research = state.active_research
+    copy.research_progress = state.research_progress
+    copy.completed_research = state.completed_research.duplicate()
+    # Trade system state
+    copy.trade_rates = state.trade_rates.duplicate(true)
+    copy.last_trade_day = state.last_trade_day
+    # Accessibility settings
+    copy.speed_multiplier = state.speed_multiplier
+    copy.practice_mode = state.practice_mode
+    # Tower system state
+    copy.tower_states = state.tower_states.duplicate(true)
+    copy.active_synergies = state.active_synergies.duplicate(true)
+    copy.summoned_units = state.summoned_units.duplicate(true)
+    copy.summoned_next_id = state.summoned_next_id
+    copy.active_traps = state.active_traps.duplicate(true)
+    copy.tower_charge = state.tower_charge.duplicate(true)
+    copy.tower_cooldowns = state.tower_cooldowns.duplicate(true)
+    copy.tower_summon_ids = state.tower_summon_ids.duplicate(true)
+    # Typing metrics
+    copy.typing_metrics = state.typing_metrics.duplicate(true)
+    copy.arrow_rain_timer = state.arrow_rain_timer
     return copy
 
 static func _require_day(state: GameState, events: Array[String]) -> bool:

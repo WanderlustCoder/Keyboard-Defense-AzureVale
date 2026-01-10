@@ -47,8 +47,8 @@ static func tower_attack_step(
 			return
 		_process_tower_attack(state, tower, dist_field, events)
 
-	# Tick all status effects
-	SimEnemies.tick_status_effects(state.enemies, 1.0, events)
+	# Note: Status effect ticks are handled in _enemy_ability_tick in apply_intent.gd
+	# to avoid double-ticking (DoT damage, effect expiration)
 
 	# Check trap triggers
 	_check_trap_triggers(state, events)
