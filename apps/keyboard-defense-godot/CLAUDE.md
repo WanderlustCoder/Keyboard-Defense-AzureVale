@@ -542,6 +542,62 @@ Analyzes:
 - `sim/parse_command.gd` - Aliases and parsing
 - `sim/apply_intent.gd` - Phase restrictions
 
+### Dependency Graph Generator
+
+Visualize file import relationships:
+
+```bash
+./scripts/dependency_graph.sh                    # Full overview
+./scripts/dependency_graph.sh --file sim/types.gd    # Single file deps
+./scripts/dependency_graph.sh --reverse sim/types.gd # What depends on file
+./scripts/dependency_graph.sh --dot > deps.dot   # Graphviz DOT format
+./scripts/dependency_graph.sh --json             # JSON output
+```
+
+Reports:
+- Import/dependency relationships
+- Cross-layer violations (sim → game/ui)
+- Circular dependencies
+- Most imported files (core dependencies)
+- Highest coupling files
+
+### Unused Asset Finder
+
+Find assets not referenced anywhere:
+
+```bash
+./scripts/find_unused_assets.sh              # Full report
+./scripts/find_unused_assets.sh --svg        # SVG files only
+./scripts/find_unused_assets.sh --png        # PNG files only
+./scripts/find_unused_assets.sh --audio      # Audio files only
+./scripts/find_unused_assets.sh --json       # JSON output
+```
+
+Detects:
+- SVG files not in assets_manifest.json
+- PNG files not referenced in code/scenes
+- Audio files not in sfx_presets.json
+- Orphan manifest entries (missing source files)
+
+### Data Migration Helper
+
+Manage data file schema migrations:
+
+```bash
+./scripts/migrate_data.sh --check            # Check for needed migrations
+./scripts/migrate_data.sh --generate lessons # Generate migration script
+./scripts/migrate_data.sh --apply lessons    # Apply pending migrations
+./scripts/migrate_data.sh --apply lessons --dry-run  # Preview changes
+./scripts/migrate_data.sh --rollback lessons # Restore from backup
+./scripts/migrate_data.sh --history          # Show migration history
+```
+
+Features:
+- Automatic version detection from schemas
+- Backup before applying changes
+- Migration script generation
+- Rollback support
+
 ## File Locations Quick Reference
 
 | Need to... | Location |

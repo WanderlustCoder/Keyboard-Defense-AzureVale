@@ -4,6 +4,28 @@ Log of recent changes made by Claude Code. Most recent first.
 
 ---
 
+## 2026-01-10: Dependency Graph, Unused Asset Finder, and Data Migration Helper
+
+**Added dependency graph generator:**
+- `scripts/dependency_graph.py` - Visualize file import relationships
+- `scripts/dependency_graph.sh` - Shell wrapper
+- Detects cross-layer violations, circular dependencies
+- Supports Graphviz DOT output for visualization
+
+**Added unused asset finder:**
+- `scripts/find_unused_assets.py` - Find unreferenced assets
+- `scripts/find_unused_assets.sh` - Shell wrapper
+- Checks SVGs, PNGs, audio against manifest and code
+- Finds orphan manifest entries
+
+**Added data migration helper:**
+- `scripts/migrate_data.py` - Schema migration management
+- `scripts/migrate_data.sh` - Shell wrapper
+- Auto-generate migration scripts from schema changes
+- Backup and rollback support
+
+---
+
 ## 2026-01-10: Project Statistics, Dead Code Finder, and Command Reference Generator
 
 **Added project statistics tool:**
