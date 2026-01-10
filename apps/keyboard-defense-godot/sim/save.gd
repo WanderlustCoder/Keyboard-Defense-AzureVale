@@ -55,7 +55,18 @@ static func state_to_dict(state: GameState) -> Dictionary:
         "active_buffs": SimEventEffects.serialize_buffs(state.active_buffs),
         "purchased_kingdom_upgrades": state.purchased_kingdom_upgrades.duplicate(),
         "purchased_unit_upgrades": state.purchased_unit_upgrades.duplicate(),
-        "gold": state.gold
+        "gold": state.gold,
+        # Tower system state
+        "tower_states": _serialize_tower_states(state.tower_states),
+        "active_synergies": state.active_synergies.duplicate(true),
+        "summoned_units": _serialize_summoned_units(state.summoned_units),
+        "summoned_next_id": state.summoned_next_id,
+        "active_traps": state.active_traps.duplicate(true),
+        "tower_charge": _serialize_int_dict(state.tower_charge),
+        "tower_cooldowns": _serialize_int_dict(state.tower_cooldowns),
+        "tower_summon_ids": _serialize_tower_summon_ids(state.tower_summon_ids),
+        "typing_metrics": state.typing_metrics.duplicate(true),
+        "arrow_rain_timer": state.arrow_rain_timer
     }
 
 static func state_from_dict(data: Dictionary) -> Dictionary:
@@ -97,6 +108,18 @@ static func state_from_dict(data: Dictionary) -> Dictionary:
     state.purchased_kingdom_upgrades = _deserialize_string_array(data.get("purchased_kingdom_upgrades", []))
     state.purchased_unit_upgrades = _deserialize_string_array(data.get("purchased_unit_upgrades", []))
     state.gold = int(data.get("gold", 0))
+
+    # Tower system state
+    state.tower_states = _deserialize_tower_states(data.get("tower_states", {}))
+    state.active_synergies = _deserialize_synergies(data.get("active_synergies", []))
+    state.summoned_units = _deserialize_summoned_units(data.get("summoned_units", []))
+    state.summoned_next_id = int(data.get("summoned_next_id", 1))
+    state.active_traps = _deserialize_traps(data.get("active_traps", []))
+    state.tower_charge = _deserialize_int_dict(data.get("tower_charge", {}))
+    state.tower_cooldowns = _deserialize_int_dict(data.get("tower_cooldowns", {}))
+    state.tower_summon_ids = _deserialize_tower_summon_ids(data.get("tower_summon_ids", {}))
+    state.typing_metrics = _deserialize_typing_metrics(data.get("typing_metrics", {}))
+    state.arrow_rain_timer = float(data.get("arrow_rain_timer", 0.0))
 
     SimEnemies.ensure_enemy_words(state)
 
@@ -252,3 +275,132 @@ static func _deserialize_string_array(raw: Variant) -> Array:
     for item in raw:
         result.append(str(item))
     return result
+
+
+# =============================================================================
+# TOWER SYSTEM SERIALIZATION
+# =============================================================================
+
+static func _serialize_tower_states(tower_states: Dictionary) -> Dictionary:
+    var result: Dictionary = {}
+    for key in tower_states.keys():
+        var state: Dictionary = tower_states[key]
+        if typeof(state) == TYPE_DICTIONARY:
+            result[str(key)] = state.duplicate(true)
+    return result
+
+
+static func _deserialize_tower_states(raw: Variant) -> Dictionary:
+    var result: Dictionary = {}
+    if typeof(raw) != TYPE_DICTIONARY:
+        return result
+    for key in raw:
+        var state_data: Variant = raw[key]
+        if typeof(state_data) == TYPE_DICTIONARY:
+            result[int(key)] = state_data.duplicate(true)
+    return result
+
+
+static func _serialize_summoned_units(summoned_units: Array) -> Array:
+    var result: Array = []
+    for unit in summoned_units:
+        if typeof(unit) == TYPE_DICTIONARY:
+            var serialized: Dictionary = unit.duplicate(true)
+            # Convert Vector2i to dict
+            if unit.has("pos"):
+                serialized["pos"] = _vec_to_dict(unit.get("pos"))
+            result.append(serialized)
+    return result
+
+
+static func _deserialize_summoned_units(raw: Variant) -> Array:
+    var result: Array = []
+    if typeof(raw) != TYPE_ARRAY:
+        return result
+    for entry in raw:
+        if typeof(entry) == TYPE_DICTIONARY:
+            var unit: Dictionary = entry.duplicate(true)
+            # Convert pos dict back to Vector2i
+            if entry.has("pos") and typeof(entry["pos"]) == TYPE_DICTIONARY:
+                unit["pos"] = _vec_from_dict(entry["pos"], Vector2i.ZERO)
+            result.append(unit)
+    return result
+
+
+static func _serialize_int_dict(int_dict: Dictionary) -> Dictionary:
+    var result: Dictionary = {}
+    for key in int_dict.keys():
+        result[str(key)] = int(int_dict[key])
+    return result
+
+
+static func _deserialize_int_dict(raw: Variant) -> Dictionary:
+    var result: Dictionary = {}
+    if typeof(raw) != TYPE_DICTIONARY:
+        return result
+    for key in raw:
+        result[int(key)] = int(raw[key])
+    return result
+
+
+static func _serialize_tower_summon_ids(tower_summon_ids: Dictionary) -> Dictionary:
+    var result: Dictionary = {}
+    for key in tower_summon_ids.keys():
+        var ids: Variant = tower_summon_ids[key]
+        if ids is Array:
+            result[str(key)] = ids.duplicate()
+    return result
+
+
+static func _deserialize_tower_summon_ids(raw: Variant) -> Dictionary:
+    var result: Dictionary = {}
+    if typeof(raw) != TYPE_DICTIONARY:
+        return result
+    for key in raw:
+        var ids: Variant = raw[key]
+        if ids is Array:
+            var int_ids: Array[int] = []
+            for id in ids:
+                int_ids.append(int(id))
+            result[int(key)] = int_ids
+    return result
+
+
+static func _deserialize_synergies(raw: Variant) -> Array:
+    var result: Array = []
+    if typeof(raw) != TYPE_ARRAY:
+        return result
+    for entry in raw:
+        if typeof(entry) == TYPE_DICTIONARY:
+            result.append(entry.duplicate(true))
+    return result
+
+
+static func _deserialize_traps(raw: Variant) -> Array:
+    var result: Array = []
+    if typeof(raw) != TYPE_ARRAY:
+        return result
+    for entry in raw:
+        if typeof(entry) == TYPE_DICTIONARY:
+            var trap: Dictionary = entry.duplicate(true)
+            # Convert pos dict back to Vector2i
+            if entry.has("pos") and typeof(entry["pos"]) == TYPE_DICTIONARY:
+                trap["pos"] = _vec_from_dict(entry["pos"], Vector2i.ZERO)
+            result.append(trap)
+    return result
+
+
+static func _deserialize_typing_metrics(raw: Variant) -> Dictionary:
+    if typeof(raw) != TYPE_DICTIONARY:
+        # Return default typing metrics
+        return {
+            "battle_chars_typed": 0,
+            "battle_words_typed": 0,
+            "battle_start_msec": 0,
+            "battle_errors": 0,
+            "rolling_window_chars": [],
+            "unique_letters_window": {},
+            "perfect_word_streak": 0,
+            "current_word_errors": 0
+        }
+    return raw.duplicate(true)

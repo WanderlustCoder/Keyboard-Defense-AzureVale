@@ -22,6 +22,7 @@ const SimStatusEffects = preload("res://sim/status_effects.gd")
 const SimLoot = preload("res://sim/loot.gd")
 const SimExpeditions = preload("res://sim/expeditions.gd")
 const SimResourceNodes = preload("res://sim/resource_nodes.gd")
+const SimTowerCombat = preload("res://sim/tower_combat.gd")
 
 static func apply(state: GameState, intent: Dictionary) -> Dictionary:
     var events: Array[String] = []
@@ -516,57 +517,10 @@ static func _spawn_enemy_step(state: GameState, events: Array[String]) -> void:
             ])
 
 static func _tower_attack_step(state: GameState, dist_field: PackedInt32Array, events: Array[String]) -> void:
-    if state.enemies.is_empty():
-        return
-    var tower_indices: Array[int] = []
-    for key in state.structures.keys():
-        if str(state.structures[key]) == "tower":
-            tower_indices.append(int(key))
-    tower_indices.sort()
-    for index in tower_indices:
-        if state.enemies.is_empty():
-            return
-        var tower_pos: Vector2i = SimMap.pos_from_index(index, state.map_w)
-        var level: int = int(state.structure_levels.get(index, 1))
-        var stats: Dictionary = SimBuildings.tower_stats(level)
-        var range_val: int = int(stats.get("range", 3))
-        var damage: int = int(stats.get("damage", 1))
-        var shots: int = int(stats.get("shots", 1))
-        # Check if tower can apply slow effect (level 3 towers)
-        var tower_effects: Dictionary = SimBuildings.get_tower_effects(level)
-        var applies_slow: bool = tower_effects.get("enemy_slow", 0.0) > 0
-        for _shot in range(shots):
-            if state.enemies.is_empty():
-                return
-            var target_index: int = SimEnemies.pick_target_index(state.enemies, dist_field, state.map_w, tower_pos, range_val)
-            if target_index < 0:
-                break
-            var enemy: Dictionary = state.enemies[target_index]
-            enemy = SimEnemies.apply_damage(enemy, damage, state)
-            # Apply slow status effect from upgraded towers
-            if applies_slow and int(enemy.get("hp", 0)) > 0:
-                var had_slow: bool = SimEnemies.has_status_effect(enemy, SimStatusEffects.EFFECT_SLOW)
-                enemy = SimEnemies.apply_status_effect(enemy, SimStatusEffects.EFFECT_SLOW, 1, "tower")
-                if not had_slow:
-                    events.append("Tower applies [color=#87CEEB]Slowed[/color] to enemy!")
-            state.enemies[target_index] = enemy
-            var enemy_id: int = int(enemy.get("id", 0))
-            var enemy_kind: String = str(enemy.get("kind", "raider"))
-            events.append("Tower hits %s#%d." % [enemy_kind, enemy_id])
-            # Berserker rage: speed boost when damaged but not killed
-            if int(enemy.get("hp", 0)) > 0 and enemy_kind == "berserker":
-                if not enemy.get("enraged", false):
-                    enemy["enraged"] = true
-                    enemy["speed"] = int(enemy.get("speed", 1)) + 1
-                    state.enemies[target_index] = enemy
-                    events.append("Berserker#%d enters a rage! Speed +1." % enemy_id)
-            if int(enemy.get("hp", 0)) <= 0:
-                var enemy_pos: Vector2i = enemy.get("pos", Vector2i.ZERO)
-                # Splitting affix: spawn swarm minions on death
-                if enemy.get("affix", "") == "splitting":
-                    _spawn_split_enemies(state, enemy_pos, events)
-                state.enemies.remove_at(target_index)
-                events.append("Enemy %s#%d destroyed." % [enemy_kind, enemy_id])
+    # Delegate to the new tower combat system
+    # This handles all tower types: basic, advanced, specialist, and legendary
+    # Also handles synergies, typing bonuses, summoned units, traps, etc.
+    SimTowerCombat.tower_attack_step(state, dist_field, events)
 
 static func _enemy_move_step(state: GameState, dist_field: PackedInt32Array, events: Array[String]) -> void:
     if state.enemies.is_empty():
