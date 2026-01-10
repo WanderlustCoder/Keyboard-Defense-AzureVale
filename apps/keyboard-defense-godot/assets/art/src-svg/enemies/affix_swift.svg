@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <!-- Swift Affix Overlay (24x24) - Speed lines -->
+  <!-- Color Palette: #5dade2, #aed6f1, #ecf0f1 -->
+
+  <!-- Speed lines trailing left -->
+  <rect x="0" y="4" width="6" height="2" fill="#aed6f1"/>
+  <rect x="2" y="3" width="4" height="1" fill="#ecf0f1"/>
+
+  <rect x="0" y="10" width="8" height="2" fill="#5dade2"/>
+  <rect x="0" y="9" width="6" height="1" fill="#aed6f1"/>
+  <rect x="2" y="12" width="4" height="1" fill="#aed6f1"/>
+
+  <rect x="0" y="16" width="5" height="2" fill="#aed6f1"/>
+  <rect x="1" y="18" width="3" height="1" fill="#ecf0f1"/>
+
+  <rect x="0" y="20" width="7" height="2" fill="#5dade2"/>
+  <rect x="2" y="22" width="4" height="1" fill="#aed6f1"/>
+
+  <!-- Motion blur effect -->
+  <rect x="4" y="7" width="3" height="1" fill="#ecf0f1"/>
+  <rect x="3" y="14" width="4" height="1" fill="#ecf0f1"/>
+</svg>

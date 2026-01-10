@@ -5,6 +5,8 @@ extends RefCounted
 ## Workers become unavailable during expedition but return with resources.
 
 const EXPEDITIONS_PATH := "res://data/expeditions.json"
+const SimWorkers = preload("res://sim/workers.gd")
+const SimRng = preload("res://sim/rng.gd")
 
 # Expedition states
 const STATE_TRAVELING := "traveling"
@@ -83,8 +85,8 @@ static func get_workers_on_expedition(state: GameState) -> int:
 
 static func available_workers_for_expedition(state: GameState) -> int:
 	## Get workers available to assign to new expeditions.
-	var assigned := SimWorkers.total_assigned(state) if Engine.has_singleton("SimWorkers") else 0
-	var on_expedition := get_workers_on_expedition(state)
+	var assigned: int = SimWorkers.total_assigned(state)
+	var on_expedition: int = get_workers_on_expedition(state)
 	return maxi(0, state.total_workers - assigned - on_expedition)
 
 
@@ -214,7 +216,8 @@ static func complete_expedition(state: GameState, expedition_id: int) -> Diction
 
 	# Check for risk events
 	var risk_chance: float = float(definition.get("risk_chance", 0.0))
-	var risk_occurred := SimRng.roll_float(state) < risk_chance
+	var roll: float = float(SimRng.roll_range(state, 0, 1000)) / 1000.0
+	var risk_occurred: bool = roll < risk_chance
 	var risk_message := ""
 
 	if risk_occurred:

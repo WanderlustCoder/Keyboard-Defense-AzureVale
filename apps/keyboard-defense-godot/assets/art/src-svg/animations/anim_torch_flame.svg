@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 16" width="64" height="16">
+  <!-- Torch Flame Animation (4 frames, 16x16 each) -->
+  <!-- Color Palette: #e74c3c, #f39c12, #f4d03f -->
+
+  <!-- Frame 1 -->
+  <rect x="6" y="12" width="4" height="4" fill="#8b7355"/>
+  <rect x="6" y="6" width="4" height="7" fill="#e74c3c"/>
+  <rect x="7" y="4" width="2" height="3" fill="#f39c12"/>
+  <rect x="7" y="2" width="2" height="3" fill="#f4d03f"/>
+
+  <!-- Frame 2 -->
+  <rect x="22" y="12" width="4" height="4" fill="#8b7355"/>
+  <rect x="21" y="5" width="5" height="8" fill="#e74c3c"/>
+  <rect x="22" y="3" width="3" height="4" fill="#f39c12"/>
+  <rect x="23" y="1" width="2" height="3" fill="#f4d03f"/>
+
+  <!-- Frame 3 -->
+  <rect x="38" y="12" width="4" height="4" fill="#8b7355"/>
+  <rect x="37" y="6" width="6" height="7" fill="#e74c3c"/>
+  <rect x="38" y="4" width="4" height="4" fill="#f39c12"/>
+  <rect x="39" y="2" width="2" height="3" fill="#f4d03f"/>
+
+  <!-- Frame 4 -->
+  <rect x="54" y="12" width="4" height="4" fill="#8b7355"/>
+  <rect x="53" y="7" width="5" height="6" fill="#e74c3c"/>
+  <rect x="54" y="5" width="3" height="4" fill="#f39c12"/>
+  <rect x="55" y="3" width="2" height="3" fill="#f4d03f"/>
+</svg>

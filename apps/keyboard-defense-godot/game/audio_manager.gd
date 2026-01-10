@@ -26,6 +26,9 @@ enum SFX {
 	TYPE_MISTAKE,
 	COMBO_UP,
 	COMBO_BREAK,
+	COMBO_MILESTONE_5,
+	COMBO_MILESTONE_10,
+	COMBO_MILESTONE_20,
 	BUILD_PLACE,
 	BUILD_COMPLETE,
 	RESOURCE_PICKUP,
@@ -48,7 +51,10 @@ enum SFX {
 	EVENT_SUCCESS,
 	EVENT_FAIL,
 	EVENT_SKIP,
-	POI_APPEAR
+	POI_APPEAR,
+	THREAT_PULSE_LOW,
+	THREAT_PULSE_HIGH,
+	WORD_COMPLETE
 }
 
 # Music tracks
@@ -70,6 +76,9 @@ var _sfx_files := {
 	SFX.TYPE_MISTAKE: "type_mistake.wav",
 	SFX.COMBO_UP: "combo_up.wav",
 	SFX.COMBO_BREAK: "combo_break.wav",
+	SFX.COMBO_MILESTONE_5: "combo_up.wav",  # Reuse combo_up with pitch shift
+	SFX.COMBO_MILESTONE_10: "combo_up.wav",
+	SFX.COMBO_MILESTONE_20: "level_up.wav",  # Use level_up for major milestone
 	SFX.BUILD_PLACE: "build_place.wav",
 	SFX.BUILD_COMPLETE: "build_complete.wav",
 	SFX.RESOURCE_PICKUP: "resource_pickup.wav",
@@ -92,7 +101,10 @@ var _sfx_files := {
 	SFX.EVENT_SUCCESS: "event_success.wav",
 	SFX.EVENT_FAIL: "event_fail.wav",
 	SFX.EVENT_SKIP: "event_skip.wav",
-	SFX.POI_APPEAR: "poi_appear.wav"
+	SFX.POI_APPEAR: "poi_appear.wav",
+	SFX.THREAT_PULSE_LOW: "hit_player.wav",  # Reuse hit_player with low pitch
+	SFX.THREAT_PULSE_HIGH: "hit_player.wav",  # Reuse with higher pitch
+	SFX.WORD_COMPLETE: "combo_up.wav"  # Reuse combo_up with slight pitch variation
 }
 
 # Music file mapping
@@ -321,7 +333,7 @@ func stop_music(fade_out: bool = true) -> void:
 ## Volume controls
 func set_music_volume(linear: float) -> void:
 	_music_volume_db = linear_to_db(clamp(linear, 0.0, 1.0))
-	if _active_music_player.playing:
+	if _active_music_player.playing and not _is_ducked:
 		_active_music_player.volume_db = _music_volume_db
 
 func set_sfx_volume(linear: float) -> void:
@@ -329,6 +341,39 @@ func set_sfx_volume(linear: float) -> void:
 
 func get_music_volume() -> float:
 	return db_to_linear(_music_volume_db)
+
+## Audio ducking for dialogue/tutorial
+var _is_ducked: bool = false
+var _duck_tween: Tween = null
+const DUCK_AMOUNT_DB := -12.0
+const DUCK_FADE_DURATION := 0.3
+
+func start_ducking() -> void:
+	if _is_ducked:
+		return
+	_is_ducked = true
+
+	# Kill existing tween
+	if _duck_tween != null and _duck_tween.is_valid():
+		_duck_tween.kill()
+
+	# Fade music volume down
+	_duck_tween = create_tween()
+	var target_db := _music_volume_db + DUCK_AMOUNT_DB
+	_duck_tween.tween_property(_active_music_player, "volume_db", target_db, DUCK_FADE_DURATION)
+
+func stop_ducking() -> void:
+	if not _is_ducked:
+		return
+	_is_ducked = false
+
+	# Kill existing tween
+	if _duck_tween != null and _duck_tween.is_valid():
+		_duck_tween.kill()
+
+	# Fade music volume back up
+	_duck_tween = create_tween()
+	_duck_tween.tween_property(_active_music_player, "volume_db", _music_volume_db, DUCK_FADE_DURATION)
 
 func get_sfx_volume() -> float:
 	return db_to_linear(_sfx_volume_db)
@@ -354,6 +399,10 @@ func play_ui_confirm() -> void:
 func play_ui_cancel() -> void:
 	play_sfx(SFX.UI_CANCEL)
 
+func play_ui_hover() -> void:
+	# Use keytap at lower volume for subtle hover feedback
+	play_sfx(SFX.UI_KEYTAP, -8.0)
+
 func play_type_correct() -> void:
 	play_sfx(SFX.TYPE_CORRECT)
 
@@ -365,6 +414,10 @@ func play_combo_up() -> void:
 
 func play_combo_break() -> void:
 	play_sfx(SFX.COMBO_BREAK)
+
+func play_word_complete() -> void:
+	# Slightly higher pitch for satisfying word completion feedback
+	play_sfx_pitched(SFX.WORD_COMPLETE, 1.15, -3.0)
 
 func play_hit_enemy() -> void:
 	play_sfx(SFX.HIT_ENEMY)
@@ -425,3 +478,91 @@ func set_battle_intensity(tense: bool) -> void:
 		var target := Music.BATTLE_TENSE if tense else Music.BATTLE_CALM
 		if _current_music != target:
 			play_music(target, true)
+
+## Threat pulse audio system
+var _threat_pulse_timer: float = 0.0
+var _threat_pulse_active: bool = false
+var _threat_level: float = 0.0
+const THREAT_PULSE_THRESHOLD_LOW := 0.6  # Start pulsing at 60%
+const THREAT_PULSE_THRESHOLD_HIGH := 0.85  # Faster pulse at 85%
+
+func update_threat_audio(threat_percent: float, delta: float) -> void:
+	_threat_level = clamp(threat_percent, 0.0, 1.0)
+
+	# No pulsing below threshold
+	if _threat_level < THREAT_PULSE_THRESHOLD_LOW:
+		_threat_pulse_active = false
+		_threat_pulse_timer = 0.0
+		return
+
+	_threat_pulse_active = true
+
+	# Calculate pulse interval based on threat level
+	var pulse_interval: float
+	if _threat_level >= THREAT_PULSE_THRESHOLD_HIGH:
+		# Fast pulse at high threat (0.4s interval)
+		pulse_interval = 0.4
+	else:
+		# Slower pulse at medium threat (0.8s interval)
+		pulse_interval = 0.8
+
+	_threat_pulse_timer += delta
+	if _threat_pulse_timer >= pulse_interval:
+		_threat_pulse_timer = 0.0
+		_play_threat_pulse()
+
+func _play_threat_pulse() -> void:
+	if not _sfx_enabled:
+		return
+
+	# Use different sound based on threat level
+	var sfx_id: int
+	var pitch: float
+	var volume_offset: float
+
+	if _threat_level >= THREAT_PULSE_THRESHOLD_HIGH:
+		sfx_id = SFX.THREAT_PULSE_HIGH
+		pitch = 1.2
+		volume_offset = -4.0
+	else:
+		sfx_id = SFX.THREAT_PULSE_LOW
+		pitch = 0.8
+		volume_offset = -8.0
+
+	play_sfx_pitched(sfx_id, pitch, volume_offset)
+
+## Play SFX with pitch shift
+func play_sfx_pitched(sfx_id: int, pitch: float, volume_offset_db: float = 0.0) -> void:
+	if not _sfx_enabled:
+		return
+	if not _sfx_cache.has(sfx_id):
+		return
+
+	var player := _get_available_sfx_player()
+	if player == null:
+		return
+
+	player.stream = _sfx_cache[sfx_id]
+	player.pitch_scale = pitch
+	player.volume_db = _sfx_volume_db + volume_offset_db
+	player.play()
+	# Reset pitch after a frame to not affect other sounds
+	await get_tree().process_frame
+	player.pitch_scale = 1.0
+
+## Combo milestone sounds
+func play_combo_milestone(combo_count: int) -> void:
+	if combo_count == 5:
+		play_sfx_pitched(SFX.COMBO_MILESTONE_5, 1.1, -2.0)
+	elif combo_count == 10:
+		play_sfx_pitched(SFX.COMBO_MILESTONE_10, 1.2, 0.0)
+	elif combo_count == 15:
+		play_sfx_pitched(SFX.COMBO_MILESTONE_10, 1.3, 0.0)
+	elif combo_count >= 20 and combo_count % 10 == 0:
+		# Major milestone every 10 after 20
+		play_sfx(SFX.COMBO_MILESTONE_20, 2.0)
+
+func stop_threat_pulse() -> void:
+	_threat_pulse_active = false
+	_threat_pulse_timer = 0.0
+	_threat_level = 0.0

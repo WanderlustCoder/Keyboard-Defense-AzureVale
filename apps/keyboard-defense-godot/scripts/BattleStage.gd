@@ -9,6 +9,18 @@ const PROJECTILE_SPEED := 520.0
 const HIT_FLASH_DURATION := 0.18
 const SPRITE_SCALE := 3.0  # Scale 16px sprites to ~48px
 
+# Damage number settings
+const DAMAGE_NUMBER_SPEED := 60.0
+const DAMAGE_NUMBER_LIFETIME := 0.8
+const DAMAGE_NUMBER_FONT_SIZE := 18
+const DAMAGE_NUMBER_POWER_FONT_SIZE := 24
+
+# Trail particle settings
+const TRAIL_SPAWN_INTERVAL := 0.02
+const TRAIL_PARTICLE_LIFETIME := 0.25
+const TRAIL_PARTICLE_SIZE := 4.0
+const TRAIL_POWER_SIZE := 6.0
+
 signal castle_damaged
 
 @onready var castle: Sprite2D = $Castle
@@ -24,6 +36,8 @@ var lane_left_x: float = 0.0
 var lane_right_x: float = 0.0
 var lane_y: float = 0.0
 var projectiles: Array = []
+var damage_numbers: Array = []
+var trail_particles: Array = []
 var hit_flash_timer: float = 0.0
 var current_enemy_kind: String = "runner"
 var _last_projectile_power: bool = false
@@ -82,6 +96,8 @@ func reset() -> void:
 	breach_pending = false
 	hit_flash_timer = 0.0
 	_clear_projectiles()
+	_clear_damage_numbers()
+	_clear_trail_particles()
 	_layout()
 	_update_enemy_position()
 	_apply_enemy_flash(0.0)
@@ -101,6 +117,7 @@ func advance(delta: float, threat_rate: float) -> void:
 	_update_enemy_position()
 	_update_projectiles(delta)
 	_update_enemy_flash(delta)
+	_update_damage_numbers(delta)
 	if hit_effects != null:
 		hit_effects.update(delta)
 
@@ -154,7 +171,9 @@ func spawn_projectile(power_shot: bool = false) -> void:
 	projectiles.append({
 		"node": shot,
 		"velocity": Vector2(PROJECTILE_SPEED, 0.0),
-		"power": power_shot
+		"power": power_shot,
+		"trail_timer": 0.0,
+		"rotation": 0.0
 	})
 
 func _get_sprite_size(sprite: Sprite2D) -> Vector2:
@@ -196,6 +215,9 @@ func _update_enemy_position() -> void:
 	enemy.position = Vector2(x, lane_y)
 
 func _update_projectiles(delta: float) -> void:
+	# Update trail particles
+	_update_trail_particles(delta)
+
 	if projectiles.is_empty():
 		return
 	for i in range(projectiles.size() - 1, -1, -1):
@@ -208,9 +230,25 @@ func _update_projectiles(delta: float) -> void:
 			projectiles.remove_at(i)
 			continue
 		var velocity: Vector2 = entry.get("velocity", Vector2.ZERO)
+		var is_power: bool = entry.get("power", false)
 		node.position += velocity * delta
+
+		# Rotate projectile for visual flair
+		var rotation: float = entry.get("rotation", 0.0)
+		rotation += delta * (15.0 if is_power else 10.0)
+		entry["rotation"] = rotation
+		if node is Sprite2D:
+			node.rotation = rotation
+
+		# Spawn trail particles
+		var trail_timer: float = entry.get("trail_timer", 0.0)
+		trail_timer -= delta
+		if trail_timer <= 0.0:
+			_spawn_trail_particle(node.position, is_power)
+			trail_timer = TRAIL_SPAWN_INTERVAL
+		entry["trail_timer"] = trail_timer
+
 		if enemy != null and node.position.x >= enemy.position.x:
-			var is_power: bool = entry.get("power", false)
 			var hit_pos: Vector2 = node.position
 			node.queue_free()
 			projectiles.remove_at(i)
@@ -251,8 +289,10 @@ func _spawn_hit_effect(hit_position: Vector2, is_power_shot: bool) -> void:
 		return
 	if is_power_shot:
 		hit_effects.spawn_power_burst(projectile_layer, hit_position)
+		_spawn_damage_number(hit_position, "POWER!", true)
 	else:
 		hit_effects.spawn_hit_sparks(projectile_layer, hit_position)
+		_spawn_damage_number(hit_position, "HIT", false)
 
 func spawn_castle_damage_effect() -> void:
 	if hit_effects == null or projectile_layer == null or castle == null:
@@ -261,3 +301,150 @@ func spawn_castle_damage_effect() -> void:
 	var pos := castle.position + Vector2(castle_size.x * 0.3, -castle_size.y * 0.2)
 	hit_effects.spawn_damage_flash(projectile_layer, pos)
 	castle_damaged.emit()
+
+func spawn_word_complete_effect() -> void:
+	# Spawn celebratory particle burst at castle position (where projectiles originate)
+	if hit_effects == null or projectile_layer == null or castle == null:
+		return
+	var castle_size := _get_sprite_size(castle)
+	var pos := castle.position + Vector2(castle_size.x * 0.5, -castle_size.y * 0.3)
+	hit_effects.spawn_word_complete_burst(projectile_layer, pos)
+
+func _spawn_damage_number(hit_position: Vector2, text: String, is_power: bool) -> void:
+	if projectile_layer == null:
+		return
+
+	var label := Label.new()
+	label.text = text
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.position = hit_position + Vector2(randf_range(-10, 10), -20)
+
+	var font_size := DAMAGE_NUMBER_POWER_FONT_SIZE if is_power else DAMAGE_NUMBER_FONT_SIZE
+	label.add_theme_font_size_override("font_size", font_size)
+
+	var color := Color(1.0, 0.9, 0.3, 1.0) if is_power else Color(1.0, 1.0, 1.0, 1.0)
+	label.add_theme_color_override("font_color", color)
+
+	# Add outline for readability
+	label.add_theme_constant_override("outline_size", 2)
+	label.add_theme_color_override("font_outline_color", Color(0.1, 0.1, 0.15, 1.0))
+
+	projectile_layer.add_child(label)
+
+	damage_numbers.append({
+		"node": label,
+		"velocity": Vector2(randf_range(-15, 15), -DAMAGE_NUMBER_SPEED),
+		"lifetime": DAMAGE_NUMBER_LIFETIME,
+		"initial_lifetime": DAMAGE_NUMBER_LIFETIME
+	})
+
+func _update_damage_numbers(delta: float) -> void:
+	for i in range(damage_numbers.size() - 1, -1, -1):
+		var entry = damage_numbers[i]
+		if not entry is Dictionary:
+			damage_numbers.remove_at(i)
+			continue
+
+		var node = entry.get("node")
+		if node == null or not is_instance_valid(node):
+			damage_numbers.remove_at(i)
+			continue
+
+		var velocity: Vector2 = entry.get("velocity", Vector2.ZERO)
+		var lifetime: float = entry.get("lifetime", 0.0)
+		var initial_lifetime: float = entry.get("initial_lifetime", DAMAGE_NUMBER_LIFETIME)
+
+		lifetime -= delta
+		entry["lifetime"] = lifetime
+
+		if lifetime <= 0.0:
+			node.queue_free()
+			damage_numbers.remove_at(i)
+			continue
+
+		# Slow down vertical movement (deceleration)
+		velocity.y *= 0.95
+		entry["velocity"] = velocity
+		node.position += velocity * delta
+
+		# Fade out in last 30% of lifetime
+		var fade_threshold := initial_lifetime * 0.3
+		if lifetime < fade_threshold:
+			node.modulate.a = lifetime / fade_threshold
+
+func _clear_damage_numbers() -> void:
+	for entry in damage_numbers:
+		if entry is Dictionary:
+			var node = entry.get("node")
+			if node != null and is_instance_valid(node):
+				node.queue_free()
+	damage_numbers.clear()
+
+func _spawn_trail_particle(pos: Vector2, is_power: bool) -> void:
+	if projectile_layer == null:
+		return
+
+	var particle := ColorRect.new()
+	var base_size := TRAIL_POWER_SIZE if is_power else TRAIL_PARTICLE_SIZE
+
+	# Randomize size slightly
+	var size := base_size * randf_range(0.6, 1.2)
+	particle.size = Vector2(size, size)
+	particle.position = pos + Vector2(randf_range(-3, 3), randf_range(-3, 3))
+
+	# Color based on power
+	var base_color: Color
+	if is_power:
+		base_color = Color(0.4, 0.7, 1.0, 0.9)  # Cyan/blue
+	else:
+		base_color = Color(1.0, 0.85, 0.4, 0.8)  # Gold/yellow
+
+	particle.color = base_color
+	projectile_layer.add_child(particle)
+
+	trail_particles.append({
+		"node": particle,
+		"lifetime": TRAIL_PARTICLE_LIFETIME,
+		"initial_lifetime": TRAIL_PARTICLE_LIFETIME,
+		"initial_size": size,
+		"color": base_color
+	})
+
+func _update_trail_particles(delta: float) -> void:
+	for i in range(trail_particles.size() - 1, -1, -1):
+		var entry = trail_particles[i]
+		if not entry is Dictionary:
+			trail_particles.remove_at(i)
+			continue
+
+		var node = entry.get("node")
+		if node == null or not is_instance_valid(node):
+			trail_particles.remove_at(i)
+			continue
+
+		var lifetime: float = entry.get("lifetime", 0.0)
+		var initial_lifetime: float = entry.get("initial_lifetime", TRAIL_PARTICLE_LIFETIME)
+		var initial_size: float = entry.get("initial_size", TRAIL_PARTICLE_SIZE)
+		var base_color: Color = entry.get("color", Color.WHITE)
+
+		lifetime -= delta
+		entry["lifetime"] = lifetime
+
+		if lifetime <= 0.0:
+			node.queue_free()
+			trail_particles.remove_at(i)
+			continue
+
+		# Fade and shrink
+		var progress := lifetime / initial_lifetime
+		node.modulate.a = progress * base_color.a
+		var shrink_size := initial_size * progress
+		node.size = Vector2(shrink_size, shrink_size)
+
+func _clear_trail_particles() -> void:
+	for entry in trail_particles:
+		if entry is Dictionary:
+			var node = entry.get("node")
+			if node != null and is_instance_valid(node):
+				node.queue_free()
+	trail_particles.clear()

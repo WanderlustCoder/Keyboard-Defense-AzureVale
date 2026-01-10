@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Enemy Flyer Death Frame 1 - Hit, wings folding -->
+
+  <!-- Shadow (growing as it falls) -->
+  <rect x="5" y="14" width="6" height="2" fill="#2a2a3a"/>
+
+  <!-- Wings (folding up in pain) -->
+  <rect x="1" y="3" width="4" height="5" fill="#6c3483" opacity="0.8"/>
+  <rect x="2" y="2" width="3" height="2" fill="#6c3483"/>
+  <!-- Wing membrane -->
+  <rect x="2" y="4" width="2" height="3" fill="#8e44ad"/>
+
+  <rect x="11" y="3" width="4" height="5" fill="#6c3483" opacity="0.8"/>
+  <rect x="11" y="2" width="3" height="2" fill="#6c3483"/>
+  <!-- Wing membrane -->
+  <rect x="12" y="4" width="2" height="3" fill="#8e44ad"/>
+
+  <!-- Body (tilting) -->
+  <rect x="5" y="6" width="6" height="6" fill="#922b21"/>
+  <rect x="6" y="5" width="4" height="2" fill="#922b21"/>
+
+  <!-- Body highlight -->
+  <rect x="5" y="6" width="2" height="4" fill="#c0392b"/>
+
+  <!-- Head (thrown back) -->
+  <rect x="6" y="2" width="4" height="4" fill="#c0392b"/>
+
+  <!-- Eyes (shocked) -->
+  <rect x="6" y="3" width="1" height="1" fill="#f4d03f"/>
+  <rect x="8" y="4" width="1" height="1" fill="#f4d03f" opacity="0.5"/>
+  <rect x="9" y="3" width="1" height="1" fill="#f4d03f" opacity="0.5"/>
+
+  <!-- Tail (flailing) -->
+  <rect x="7" y="11" width="2" height="3" fill="#922b21"/>
+  <rect x="6" y="13" width="2" height="1" fill="#1a1a2e"/>
+
+  <!-- Impact flash -->
+  <rect x="6" y="5" width="4" height="4" fill="#ffffff" opacity="0.4"/>
+</svg>

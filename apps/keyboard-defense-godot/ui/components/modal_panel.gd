@@ -4,6 +4,7 @@ extends Control
 ## Displays centered over a semi-transparent overlay.
 
 const ThemeColors = preload("res://ui/theme_colors.gd")
+const ButtonFeedbackClass = preload("res://ui/components/button_feedback.gd")
 
 const TITLE_FONT_SIZE := 24
 const BUTTON_MIN_WIDTH := 120
@@ -50,6 +51,7 @@ func clear_buttons() -> void:
 ## Add a button with callback
 func add_button(text: String, callback: Callable, primary: bool = false) -> Button:
 	if button_container == null:
+		push_error("ModalPanel.add_button(): button_container is null - modal not properly initialized")
 		return null
 	var btn := Button.new()
 	btn.text = text
@@ -62,6 +64,10 @@ func add_button(text: String, callback: Callable, primary: bool = false) -> Butt
 
 	button_container.add_child(btn)
 	_buttons.append(btn)
+
+	# Apply press/release feedback animation
+	ButtonFeedbackClass.apply_to_button(btn)
+
 	return btn
 
 ## Show the modal with animation

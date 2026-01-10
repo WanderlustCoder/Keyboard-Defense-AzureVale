@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 12" width="48" height="12">
+  <!-- Burn Effect Animation (4 frames, 12x12 each) -->
+  <!-- Color Palette: #e74c3c, #f39c12, #f4d03f -->
+
+  <!-- Frame 1 -->
+  <rect x="4" y="6" width="4" height="6" fill="#e74c3c"/>
+  <rect x="5" y="4" width="2" height="4" fill="#f39c12"/>
+  <rect x="5" y="2" width="1" height="3" fill="#f4d03f"/>
+
+  <!-- Frame 2 -->
+  <rect x="15" y="4" width="5" height="8" fill="#e74c3c"/>
+  <rect x="16" y="2" width="3" height="5" fill="#f39c12"/>
+  <rect x="17" y="0" width="2" height="3" fill="#f4d03f"/>
+  <rect x="20" y="6" width="3" height="5" fill="#e74c3c"/>
+
+  <!-- Frame 3 -->
+  <rect x="27" y="3" width="6" height="9" fill="#e74c3c"/>
+  <rect x="28" y="1" width="4" height="6" fill="#f39c12"/>
+  <rect x="29" y="0" width="2" height="3" fill="#f4d03f"/>
+  <rect x="33" y="5" width="4" height="6" fill="#e74c3c"/>
+  <rect x="34" y="3" width="2" height="4" fill="#f39c12"/>
+
+  <!-- Frame 4 -->
+  <rect x="39" y="5" width="5" height="7" fill="#e74c3c"/>
+  <rect x="40" y="3" width="3" height="5" fill="#f39c12"/>
+  <rect x="41" y="1" width="2" height="3" fill="#f4d03f"/>
+  <rect x="44" y="7" width="3" height="4" fill="#e74c3c"/>
+</svg>

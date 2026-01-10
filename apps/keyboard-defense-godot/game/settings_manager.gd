@@ -12,6 +12,9 @@ const DEFAULT_SCREEN_SHAKE := true
 const DEFAULT_SHOW_WPM := true
 const DEFAULT_SHOW_ACCURACY := true
 const DEFAULT_TYPING_SOUNDS := true
+const DEFAULT_REDUCED_MOTION := false
+const DEFAULT_HIGH_CONTRAST := false
+const DEFAULT_LARGE_TEXT := false
 
 # Current settings
 var music_volume: float = DEFAULT_MUSIC_VOLUME
@@ -22,6 +25,9 @@ var screen_shake: bool = DEFAULT_SCREEN_SHAKE
 var show_wpm: bool = DEFAULT_SHOW_WPM
 var show_accuracy: bool = DEFAULT_SHOW_ACCURACY
 var typing_sounds: bool = DEFAULT_TYPING_SOUNDS
+var reduced_motion: bool = DEFAULT_REDUCED_MOTION
+var high_contrast: bool = DEFAULT_HIGH_CONTRAST
+var large_text: bool = DEFAULT_LARGE_TEXT
 
 signal settings_changed
 
@@ -46,6 +52,10 @@ func load_settings() -> void:
 	show_wpm = config.get_value("gameplay", "show_wpm", DEFAULT_SHOW_WPM)
 	show_accuracy = config.get_value("gameplay", "show_accuracy", DEFAULT_SHOW_ACCURACY)
 
+	reduced_motion = config.get_value("accessibility", "reduced_motion", DEFAULT_REDUCED_MOTION)
+	high_contrast = config.get_value("accessibility", "high_contrast", DEFAULT_HIGH_CONTRAST)
+	large_text = config.get_value("accessibility", "large_text", DEFAULT_LARGE_TEXT)
+
 func save_settings() -> void:
 	var config := ConfigFile.new()
 
@@ -58,6 +68,10 @@ func save_settings() -> void:
 	config.set_value("gameplay", "screen_shake", screen_shake)
 	config.set_value("gameplay", "show_wpm", show_wpm)
 	config.set_value("gameplay", "show_accuracy", show_accuracy)
+
+	config.set_value("accessibility", "reduced_motion", reduced_motion)
+	config.set_value("accessibility", "high_contrast", high_contrast)
+	config.set_value("accessibility", "large_text", large_text)
 
 	var err := config.save(SETTINGS_PATH)
 	if err != OK:
@@ -109,6 +123,18 @@ func set_show_accuracy(value: bool) -> void:
 	show_accuracy = value
 	settings_changed.emit()
 
+func set_reduced_motion(value: bool) -> void:
+	reduced_motion = value
+	settings_changed.emit()
+
+func set_high_contrast(value: bool) -> void:
+	high_contrast = value
+	settings_changed.emit()
+
+func set_large_text(value: bool) -> void:
+	large_text = value
+	settings_changed.emit()
+
 func reset_to_defaults() -> void:
 	music_volume = DEFAULT_MUSIC_VOLUME
 	sfx_volume = DEFAULT_SFX_VOLUME
@@ -118,5 +144,8 @@ func reset_to_defaults() -> void:
 	show_wpm = DEFAULT_SHOW_WPM
 	show_accuracy = DEFAULT_SHOW_ACCURACY
 	typing_sounds = DEFAULT_TYPING_SOUNDS
+	reduced_motion = DEFAULT_REDUCED_MOTION
+	high_contrast = DEFAULT_HIGH_CONTRAST
+	large_text = DEFAULT_LARGE_TEXT
 	_apply_audio_settings()
 	settings_changed.emit()

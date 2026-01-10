@@ -3,6 +3,7 @@ class_name LyraDialogue
 ## Dialogue box with Lyra portrait for tutorial and story moments
 
 const ThemeColors = preload("res://ui/theme_colors.gd")
+const AssetLoader = preload("res://game/asset_loader.gd")
 
 signal dialogue_finished
 signal dialogue_advanced
@@ -16,8 +17,9 @@ var _is_typing: bool = false
 var _can_advance: bool = false
 var _dialogue_queue: Array[Dictionary] = []
 var _auto_advance_pending: bool = false
+var _asset_loader: AssetLoader = null
 
-@onready var portrait: TextureRect = $Content/Portrait
+@onready var portrait: TextureRect = $Content/PortraitFrame/Portrait
 @onready var name_label: Label = $Content/TextBox/NameLabel
 @onready var dialogue_label: RichTextLabel = $Content/TextBox/DialogueLabel
 @onready var continue_hint: Label = $Content/TextBox/ContinueHint
@@ -26,12 +28,26 @@ var _auto_advance_pending: bool = false
 func _ready() -> void:
 	visible = false
 	continue_hint.visible = false
+	_asset_loader = AssetLoader.new()
+	_asset_loader._load_manifest()
 	_load_lyra_portrait()
+	# Ensure portrait is visible
+	portrait.visible = true
 
 func _load_lyra_portrait() -> void:
+	# Try asset loader first
+	if _asset_loader != null:
+		var tex := _asset_loader.get_texture("portrait_lyra")
+		if tex != null:
+			portrait.texture = tex
+			return
+
+	# Fallback to direct load
 	var tex := load("res://assets/art/src-svg/portraits/portrait_lyra.svg") as Texture2D
 	if tex != null:
 		portrait.texture = tex
+	else:
+		push_warning("LyraDialogue: Failed to load Lyra portrait")
 
 func _process(delta: float) -> void:
 	if not _is_typing:
@@ -107,17 +123,26 @@ func _display_line(line: Dictionary) -> void:
 	_can_advance = false
 	continue_hint.visible = false
 
+	# Try to load portrait based on speaker name via asset loader
+	var tex: Texture2D = null
 	if portrait_path != "" and FileAccess.file_exists(portrait_path):
-		var tex := load(portrait_path) as Texture2D
-		if tex != null:
-			portrait.texture = tex
+		tex = load(portrait_path) as Texture2D
+	elif _asset_loader != null:
+		tex = _asset_loader.get_portrait_texture(speaker)
+
+	if tex != null:
+		portrait.texture = tex
 	else:
 		_load_lyra_portrait()
 
+	# Ensure portrait is visible
+	portrait.visible = true
 	visible = true
 
 	if audio_manager != null:
 		audio_manager.play_sfx(audio_manager.SFX.TUTORIAL_DING, -6.0)
+		# Duck background music during dialogue
+		audio_manager.start_ducking()
 
 func _advance() -> void:
 	_can_advance = false
@@ -130,6 +155,9 @@ func hide_dialogue() -> void:
 	_is_typing = false
 	_can_advance = false
 	_auto_advance_pending = false
+	# Stop audio ducking when dialogue closes
+	if audio_manager != null:
+		audio_manager.stop_ducking()
 
 func is_active() -> bool:
 	return visible

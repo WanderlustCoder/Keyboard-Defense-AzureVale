@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 16" width="64" height="16">
+  <!-- Grass Sway Animation (4 frames, 16x16 each) -->
+  <!-- Color Palette: #27ae60, #2ecc71, #1e8449 -->
+
+  <!-- Frame 1: Upright -->
+  <rect x="2" y="8" width="2" height="8" fill="#27ae60"/>
+  <rect x="5" y="6" width="2" height="10" fill="#2ecc71"/>
+  <rect x="8" y="7" width="2" height="9" fill="#27ae60"/>
+  <rect x="11" y="5" width="2" height="11" fill="#1e8449"/>
+
+  <!-- Frame 2: Lean right -->
+  <rect x="19" y="8" width="2" height="8" fill="#27ae60"/>
+  <rect x="3" y="7" width="1" height="2" fill="#27ae60"/>
+  <rect x="22" y="6" width="2" height="10" fill="#2ecc71"/>
+  <rect x="23" y="5" width="1" height="2" fill="#2ecc71"/>
+  <rect x="25" y="7" width="2" height="9" fill="#27ae60"/>
+  <rect x="28" y="5" width="2" height="11" fill="#1e8449"/>
+  <rect x="29" y="4" width="1" height="2" fill="#1e8449"/>
+
+  <!-- Frame 3: Far right -->
+  <rect x="35" y="9" width="2" height="7" fill="#27ae60"/>
+  <rect x="36" y="8" width="1" height="2" fill="#27ae60"/>
+  <rect x="38" y="7" width="2" height="9" fill="#2ecc71"/>
+  <rect x="39" y="5" width="2" height="3" fill="#2ecc71"/>
+  <rect x="41" y="8" width="2" height="8" fill="#27ae60"/>
+  <rect x="42" y="6" width="1" height="3" fill="#27ae60"/>
+  <rect x="44" y="6" width="2" height="10" fill="#1e8449"/>
+  <rect x="45" y="4" width="2" height="3" fill="#1e8449"/>
+
+  <!-- Frame 4: Return -->
+  <rect x="51" y="8" width="2" height="8" fill="#27ae60"/>
+  <rect x="52" y="7" width="1" height="2" fill="#27ae60"/>
+  <rect x="54" y="6" width="2" height="10" fill="#2ecc71"/>
+  <rect x="55" y="5" width="1" height="2" fill="#2ecc71"/>
+  <rect x="57" y="7" width="2" height="9" fill="#27ae60"/>
+  <rect x="60" y="5" width="2" height="11" fill="#1e8449"/>
+  <rect x="61" y="4" width="1" height="2" fill="#1e8449"/>
+</svg>

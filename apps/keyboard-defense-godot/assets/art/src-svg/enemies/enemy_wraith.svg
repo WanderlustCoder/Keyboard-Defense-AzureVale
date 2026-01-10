@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 22" width="16" height="22">
+  <!-- Wraith Enemy (16x22) - Ghostly specter -->
+  <!-- Color Palette: #9b59b6, #8e44ad, #d7bde2 -->
+
+  <!-- Ethereal body (wavy bottom) -->
+  <rect x="4" y="8" width="8" height="10" fill="#9b59b6"/>
+  <rect x="3" y="10" width="2" height="8" fill="#8e44ad"/>
+  <rect x="11" y="10" width="2" height="8" fill="#8e44ad"/>
+  <rect x="2" y="16" width="3" height="4" fill="#9b59b6"/>
+  <rect x="6" y="18" width="4" height="4" fill="#9b59b6"/>
+  <rect x="11" y="16" width="3" height="4" fill="#9b59b6"/>
+  <rect x="4" y="20" width="3" height="2" fill="#8e44ad"/>
+  <rect x="9" y="20" width="3" height="2" fill="#8e44ad"/>
+
+  <!-- Hood -->
+  <rect x="3" y="2" width="10" height="8" fill="#8e44ad"/>
+  <rect x="5" y="0" width="6" height="4" fill="#8e44ad"/>
+
+  <!-- Face (hollow eyes) -->
+  <rect x="5" y="4" width="2" height="3" fill="#d7bde2"/>
+  <rect x="9" y="4" width="2" height="3" fill="#d7bde2"/>
+  <rect x="6" y="5" width="1" height="1" fill="#1a252f"/>
+  <rect x="9" y="5" width="1" height="1" fill="#1a252f"/>
+
+  <!-- Ghostly wisps -->
+  <rect x="0" y="12" width="2" height="3" fill="#d7bde2"/>
+  <rect x="14" y="10" width="2" height="4" fill="#d7bde2"/>
+</svg>

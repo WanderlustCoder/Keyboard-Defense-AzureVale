@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 32" width="96" height="32">
+  <!-- Score Frame (96x32) - Score display container -->
+  <!-- Color Palette: #2c3e50, #34495e, #f4d03f -->
+
+  <!-- Outer frame -->
+  <rect x="0" y="0" width="96" height="32" fill="#2c3e50"/>
+  <rect x="2" y="2" width="92" height="28" fill="#34495e"/>
+  <rect x="4" y="4" width="88" height="24" fill="#1a252f"/>
+
+  <!-- Inner score area -->
+  <rect x="8" y="8" width="80" height="16" fill="#2c3e50"/>
+
+  <!-- Gold coin decoration left -->
+  <rect x="10" y="10" width="12" height="12" fill="#f4d03f"/>
+  <rect x="12" y="12" width="8" height="8" fill="#f39c12"/>
+  <rect x="14" y="14" width="4" height="4" fill="#fcf3cf"/>
+
+  <!-- Corner accents -->
+  <rect x="0" y="0" width="4" height="4" fill="#f4d03f"/>
+  <rect x="92" y="0" width="4" height="4" fill="#f4d03f"/>
+  <rect x="0" y="28" width="4" height="4" fill="#f4d03f"/>
+  <rect x="92" y="28" width="4" height="4" fill="#f4d03f"/>
+</svg>

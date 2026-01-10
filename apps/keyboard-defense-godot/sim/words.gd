@@ -55,10 +55,23 @@ const LONG_WORDS: Array[String] = [
 static func word_for_enemy(seed: String, day: int, kind: String, enemy_id: int, already_used: Dictionary, lesson_id: String = "") -> String:
     var resolved_lesson: String = SimLessons.normalize_lesson_id(lesson_id)
     var lesson: Dictionary = SimLessons.get_lesson(resolved_lesson)
-    if not lesson.is_empty() and str(lesson.get("mode", "")) == "charset":
-        var lesson_word: String = _word_from_lesson(seed, day, kind, enemy_id, resolved_lesson, lesson, already_used)
-        if lesson_word != "":
-            return lesson_word
+    if lesson.is_empty():
+        return _fallback_word(seed, day, kind, enemy_id, already_used)
+
+    var mode: String = str(lesson.get("mode", "charset"))
+    match mode:
+        "wordlist":
+            var word: String = _word_from_wordlist(seed, day, kind, enemy_id, lesson, already_used)
+            if word != "":
+                return word
+        "sentence":
+            var sentence: String = _sentence_from_lesson(seed, day, enemy_id, lesson, already_used)
+            if sentence != "":
+                return sentence
+        "charset", _:
+            var lesson_word: String = _word_from_lesson(seed, day, kind, enemy_id, resolved_lesson, lesson, already_used)
+            if lesson_word != "":
+                return lesson_word
     return _fallback_word(seed, day, kind, enemy_id, already_used)
 
 static func _word_from_lesson(seed: String, day: int, kind: String, enemy_id: int, lesson_id: String, lesson: Dictionary, already_used: Dictionary) -> String:
@@ -137,3 +150,104 @@ static func _reserved_words() -> Dictionary:
         for word in RESERVED_EXTRA.keys():
             _reserved_cache[str(word).to_lower()] = true
     return _reserved_cache
+
+static func _word_from_wordlist(seed: String, day: int, kind: String, enemy_id: int, lesson: Dictionary, already_used: Dictionary) -> String:
+    var wordlist: Array = lesson.get("wordlist", [])
+    if wordlist.is_empty():
+        return ""
+
+    # Filter by length based on enemy kind
+    var lengths: Dictionary = lesson.get("lengths", {})
+    var range_value: Variant = lengths.get(kind, [3, 6])
+    var min_len: int = 3
+    var max_len: int = 6
+    if range_value is Array and range_value.size() >= 2:
+        min_len = int(range_value[0])
+        max_len = int(range_value[1])
+
+    # Build filtered list
+    var filtered: Array = []
+    for word in wordlist:
+        var w: String = str(word)
+        if w.length() >= min_len and w.length() <= max_len:
+            filtered.append(w)
+
+    # Fall back to full list if filter is too restrictive
+    if filtered.is_empty():
+        filtered = wordlist
+
+    # Select from filtered list
+    var key: String = "%s|%d|%s|%d" % [seed, day, kind, enemy_id]
+    var index: int = _hash_index(key, filtered.size())
+    for _i in range(filtered.size()):
+        var word: String = str(filtered[index]).to_lower()
+        if not _reserved_words().has(word) and not already_used.has(word):
+            return word
+        index = (index + 1) % filtered.size()
+    return ""
+
+static func _sentence_from_lesson(seed: String, day: int, enemy_id: int, lesson: Dictionary, already_used: Dictionary) -> String:
+    var sentences: Array = lesson.get("sentences", [])
+    if sentences.is_empty():
+        return ""
+
+    var key: String = "%s|%d|%d" % [seed, day, enemy_id]
+    var index: int = _hash_index(key, sentences.size())
+    for _i in range(sentences.size()):
+        var sentence: String = str(sentences[index])
+        # Use lowercase version for uniqueness check but return original case
+        var check_key: String = sentence.to_lower()
+        if not already_used.has(check_key):
+            return sentence
+        index = (index + 1) % sentences.size()
+    # If all sentences used, just return one anyway
+    return str(sentences[_hash_index(key, sentences.size())])
+
+## Get a longer, harder word for boss enemies
+static func get_boss_word(lesson_id: String, already_used: Dictionary) -> String:
+    var resolved_lesson: String = SimLessons.normalize_lesson_id(lesson_id)
+    var lesson: Dictionary = SimLessons.get_lesson(resolved_lesson)
+    if lesson.is_empty():
+        return _get_boss_fallback_word(already_used)
+
+    var mode: String = str(lesson.get("mode", "charset"))
+
+    # For wordlist lessons, get the longest available word
+    if mode == "wordlist":
+        var wordlist: Array = lesson.get("wordlist", [])
+        if not wordlist.is_empty():
+            # Sort by length and pick a long unused word
+            var sorted_words: Array = wordlist.duplicate()
+            sorted_words.sort_custom(func(a, b): return str(a).length() > str(b).length())
+            for word in sorted_words:
+                var w: String = str(word).to_lower()
+                if not _reserved_words().has(w) and not already_used.has(w):
+                    return w
+
+    # For charset lessons, generate a longer word
+    var charset: String = str(lesson.get("charset", "")).to_lower()
+    if charset != "":
+        # Boss words are 7-10 characters
+        var min_len: int = 7
+        var max_len: int = 10
+        var base_key: String = "boss|%s|%d" % [lesson_id, Time.get_ticks_msec()]
+        for attempt in range(32):
+            var word: String = _make_word(base_key, charset, min_len, max_len, attempt)
+            if word == "":
+                continue
+            if _reserved_words().has(word):
+                continue
+            if already_used.has(word):
+                continue
+            return word
+
+    return _get_boss_fallback_word(already_used)
+
+static func _get_boss_fallback_word(already_used: Dictionary) -> String:
+    # Use long words for bosses
+    for word in LONG_WORDS:
+        var w: String = word.to_lower()
+        if not _reserved_words().has(w) and not already_used.has(w):
+            return w
+    # If all long words used, generate a unique one
+    return "overlord%d" % (Time.get_ticks_msec() % 1000)

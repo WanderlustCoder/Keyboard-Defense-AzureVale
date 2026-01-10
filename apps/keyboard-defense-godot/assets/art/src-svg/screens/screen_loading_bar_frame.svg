@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 16" width="128" height="16">
+  <!-- Loading Bar Frame (128x16) - Progress bar container -->
+  <!-- Color Palette: #2c3e50, #34495e, #1a252f -->
+
+  <!-- Outer frame -->
+  <rect x="0" y="0" width="128" height="16" fill="#2c3e50"/>
+  <rect x="2" y="2" width="124" height="12" fill="#1a252f"/>
+
+  <!-- Inner track -->
+  <rect x="4" y="4" width="120" height="8" fill="#34495e"/>
+
+  <!-- Corner detail -->
+  <rect x="0" y="0" width="2" height="2" fill="#1a252f"/>
+  <rect x="126" y="0" width="2" height="2" fill="#1a252f"/>
+  <rect x="0" y="14" width="2" height="2" fill="#1a252f"/>
+  <rect x="126" y="14" width="2" height="2" fill="#1a252f"/>
+
+  <!-- End caps highlight -->
+  <rect x="4" y="4" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="122" y="4" width="2" height="2" fill="#5d6d7e"/>
+</svg>

@@ -9,7 +9,7 @@ anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 32.0
-offset_top = -160.0
+offset_top = -180.0
 offset_right = -32.0
 offset_bottom = -24.0
 grow_horizontal = 2
@@ -21,9 +21,16 @@ script = ExtResource("1")
 layout_mode = 2
 theme_override_constants/separation = 16
 
-[node name="Portrait" type="TextureRect" parent="Content"]
+[node name="PortraitFrame" type="PanelContainer" parent="Content"]
+custom_minimum_size = Vector2(112, 112)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="Portrait" type="TextureRect" parent="Content/PortraitFrame"]
 custom_minimum_size = Vector2(96, 96)
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 expand_mode = 1
 stretch_mode = 5
 

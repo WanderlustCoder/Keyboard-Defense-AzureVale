@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 12" width="48" height="12">
+  <!-- Butterfly Animation (4 frames, 12x12 each) -->
+  <!-- Color Palette: #9b59b6, #8e44ad, #1a252f -->
+
+  <!-- Frame 1: Wings up -->
+  <rect x="5" y="5" width="2" height="4" fill="#1a252f"/>
+  <rect x="3" y="2" width="3" height="4" fill="#9b59b6"/>
+  <rect x="6" y="2" width="3" height="4" fill="#9b59b6"/>
+  <rect x="4" y="3" width="1" height="2" fill="#8e44ad"/>
+  <rect x="7" y="3" width="1" height="2" fill="#8e44ad"/>
+
+  <!-- Frame 2: Wings mid -->
+  <rect x="17" y="5" width="2" height="4" fill="#1a252f"/>
+  <rect x="14" y="4" width="4" height="3" fill="#9b59b6"/>
+  <rect x="18" y="4" width="4" height="3" fill="#9b59b6"/>
+  <rect x="15" y="5" width="2" height="1" fill="#8e44ad"/>
+  <rect x="19" y="5" width="2" height="1" fill="#8e44ad"/>
+
+  <!-- Frame 3: Wings down -->
+  <rect x="29" y="5" width="2" height="4" fill="#1a252f"/>
+  <rect x="26" y="6" width="4" height="4" fill="#9b59b6"/>
+  <rect x="30" y="6" width="4" height="4" fill="#9b59b6"/>
+  <rect x="27" y="7" width="2" height="2" fill="#8e44ad"/>
+  <rect x="31" y="7" width="2" height="2" fill="#8e44ad"/>
+
+  <!-- Frame 4: Wings mid return -->
+  <rect x="41" y="5" width="2" height="4" fill="#1a252f"/>
+  <rect x="38" y="4" width="4" height="3" fill="#9b59b6"/>
+  <rect x="42" y="4" width="4" height="3" fill="#9b59b6"/>
+  <rect x="39" y="5" width="2" height="1" fill="#8e44ad"/>
+  <rect x="43" y="5" width="2" height="1" fill="#8e44ad"/>
+</svg>

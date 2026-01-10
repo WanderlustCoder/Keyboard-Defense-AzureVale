@@ -1,0 +1,184 @@
+{
+  "buildings": {
+    "farm": {
+      "label": "Farm",
+      "description": "Produces food to feed workers.",
+      "category": "production",
+      "cost": {"wood": 10},
+      "production": {"food": 3},
+      "defense": 0,
+      "worker_slots": 1,
+      "adjacency_bonus": {
+        "terrain": {"water": {"food": 1}},
+        "building": {"farm": {"food": 1}}
+      }
+    },
+    "lumber": {
+      "label": "Lumber Mill",
+      "description": "Harvests wood from nearby forests.",
+      "category": "production",
+      "cost": {"wood": 5, "food": 2},
+      "production": {"wood": 3},
+      "defense": 0,
+      "worker_slots": 1,
+      "adjacency_bonus": {
+        "terrain": {"forest": {"wood": 1}},
+        "building": {"lumber": {"wood": 1}}
+      }
+    },
+    "quarry": {
+      "label": "Quarry",
+      "description": "Extracts stone from mountain regions.",
+      "category": "production",
+      "cost": {"wood": 5, "food": 2},
+      "production": {"stone": 3},
+      "defense": 0,
+      "worker_slots": 1,
+      "adjacency_bonus": {
+        "terrain": {"mountain": {"stone": 1}},
+        "building": {"quarry": {"stone": 1}}
+      }
+    },
+    "market": {
+      "label": "Market",
+      "description": "Generates gold from trade. More buildings nearby increase income.",
+      "category": "economy",
+      "cost": {"wood": 8, "stone": 5},
+      "production": {"gold": 5},
+      "defense": 0,
+      "worker_slots": 1,
+      "adjacency_bonus": {
+        "terrain": {},
+        "building": {"*": {"gold": 1}}
+      }
+    },
+    "wall": {
+      "label": "Wall",
+      "description": "Blocks enemy movement and provides defense.",
+      "category": "defense",
+      "cost": {"wood": 4, "stone": 4},
+      "production": {},
+      "defense": 1,
+      "worker_slots": 0,
+      "adjacency_bonus": {
+        "terrain": {},
+        "building": {}
+      },
+      "blocks_movement": true
+    },
+    "tower": {
+      "label": "Tower",
+      "description": "Ranged defense that damages enemies. Stronger near walls.",
+      "category": "defense",
+      "cost": {"wood": 4, "stone": 8},
+      "production": {},
+      "defense": 2,
+      "worker_slots": 0,
+      "adjacency_bonus": {
+        "terrain": {},
+        "building": {"wall": {"defense": 1}}
+      },
+      "blocks_movement": true,
+      "combat_stats": {
+        "range": 3,
+        "damage": 1,
+        "shots_per_wave": 1
+      }
+    },
+    "barracks": {
+      "label": "Barracks",
+      "description": "Trains soldiers to defend the kingdom.",
+      "category": "military",
+      "cost": {"wood": 10, "stone": 8},
+      "production": {},
+      "defense": 1,
+      "worker_slots": 2,
+      "adjacency_bonus": {
+        "terrain": {},
+        "building": {"tower": {"defense": 1}}
+      },
+      "unlocks": ["garrison"]
+    },
+    "temple": {
+      "label": "Temple",
+      "description": "Provides healing after each wave.",
+      "category": "support",
+      "cost": {"stone": 15, "gold": 20},
+      "production": {},
+      "defense": 0,
+      "worker_slots": 1,
+      "adjacency_bonus": {
+        "terrain": {},
+        "building": {"tower": {"damage": 1}}
+      },
+      "effects": {
+        "wave_heal": 1
+      }
+    },
+    "workshop": {
+      "label": "Workshop",
+      "description": "Reduces construction costs for all buildings.",
+      "category": "support",
+      "cost": {"wood": 12, "stone": 6},
+      "production": {},
+      "defense": 0,
+      "worker_slots": 2,
+      "adjacency_bonus": {
+        "terrain": {},
+        "building": {}
+      },
+      "effects": {
+        "build_cost_reduction": 0.15
+      }
+    }
+  },
+  "categories": {
+    "production": {
+      "label": "Production",
+      "description": "Buildings that generate resources.",
+      "color": "#4CAF50"
+    },
+    "economy": {
+      "label": "Economy",
+      "description": "Buildings that generate gold.",
+      "color": "#FFC107"
+    },
+    "defense": {
+      "label": "Defense",
+      "description": "Buildings that protect the kingdom.",
+      "color": "#F44336"
+    },
+    "military": {
+      "label": "Military",
+      "description": "Buildings for training troops.",
+      "color": "#9C27B0"
+    },
+    "support": {
+      "label": "Support",
+      "description": "Buildings with special effects.",
+      "color": "#2196F3"
+    }
+  },
+  "resources": {
+    "wood": {
+      "label": "Wood",
+      "icon": "wood",
+      "color": "#8B4513"
+    },
+    "stone": {
+      "label": "Stone",
+      "icon": "stone",
+      "color": "#808080"
+    },
+    "food": {
+      "label": "Food",
+      "icon": "food",
+      "color": "#FFD700"
+    },
+    "gold": {
+      "label": "Gold",
+      "icon": "gold",
+      "color": "#FFD700"
+    }
+  }
+}

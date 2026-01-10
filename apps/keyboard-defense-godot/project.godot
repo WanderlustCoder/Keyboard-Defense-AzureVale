@@ -31,7 +31,7 @@ settings/stdout/verbose=true
 [display]
 
 window/size/viewport_width=1280
-window/size/viewport_height=720
+window/size/viewport_height=1000
 window/stretch/mode="canvas_items"
 
 [input]

@@ -1,10 +1,15 @@
 extends Control
 
 const VERSION_PATH := "res://VERSION.txt"
+const SAVE_PATH := "user://typing_kingdom_save.json"
 const ThemeColors = preload("res://ui/theme_colors.gd")
 
 const FONT_SIZE_HELP_TITLE := 28
 const FONT_SIZE_HELP_TEXT := 15
+const HOVER_SCALE := 1.05
+const HOVER_DURATION := 0.1
+const PRESS_SCALE := 0.95
+const PRESS_DURATION := 0.05
 
 @onready var start_button: Button = $Center/MenuPanel/VBox/StartButton
 @onready var kingdom_button: Button = $Center/MenuPanel/VBox/KingdomButton
@@ -14,20 +19,47 @@ const FONT_SIZE_HELP_TEXT := 15
 @onready var menu_vbox: VBoxContainer = $Center/MenuPanel/VBox
 @onready var game_controller = get_node("/root/GameController")
 @onready var audio_manager = get_node_or_null("/root/AudioManager")
+@onready var settings_manager = get_node_or_null("/root/SettingsManager")
 
+var continue_button: Button = null
 var help_button: Button = null
 var help_panel: PanelContainer = null
+var _button_tweens: Dictionary = {}  # button -> tween
 
 func _ready() -> void:
 	start_button.pressed.connect(_on_start_pressed)
 	kingdom_button.pressed.connect(_on_kingdom_pressed)
 	settings_button.pressed.connect(_on_settings_pressed)
 	quit_button.pressed.connect(_on_quit_pressed)
+	_setup_continue_button()
 	_setup_tooltips()
 	_load_version()
 	_setup_help_button()
+	_setup_button_hover_effects()
 	if audio_manager != null:
 		audio_manager.switch_to_menu_music()
+
+func _setup_continue_button() -> void:
+	# Check if a save file exists
+	if not FileAccess.file_exists(SAVE_PATH):
+		return
+
+	# Create continue button
+	continue_button = Button.new()
+	continue_button.text = "Continue"
+	continue_button.custom_minimum_size = Vector2(0, 48)
+	continue_button.focus_mode = Control.FOCUS_ALL
+	continue_button.tooltip_text = "Resume your previous campaign"
+	continue_button.pressed.connect(_on_continue_pressed)
+
+	# Insert before start button
+	var start_index := start_button.get_index()
+	menu_vbox.add_child(continue_button)
+	menu_vbox.move_child(continue_button, start_index)
+
+	# Rename start button to "New Game"
+	start_button.text = "New Game"
+	start_button.tooltip_text = "Start a fresh campaign (overwrites save)"
 
 func _setup_tooltips() -> void:
 	if start_button:
@@ -65,9 +97,19 @@ func _setup_help_button() -> void:
 	# Move before Settings button (index 4: Title, Subtitle, Spacer, Start, Kingdom, then Help)
 	menu_vbox.move_child(help_button, menu_vbox.get_child_count() - 3)
 
+func _on_continue_pressed() -> void:
+	if audio_manager != null:
+		audio_manager.play_ui_confirm()
+	game_controller.go_to_map()
+
 func _on_start_pressed() -> void:
 	if audio_manager != null:
 		audio_manager.play_ui_confirm()
+	# If save exists (New Game mode), reset progression before starting
+	if continue_button != null:
+		var progression = get_node_or_null("/root/ProgressionState")
+		if progression != null:
+			progression.reset_campaign()
 	game_controller.go_to_map()
 
 func _on_kingdom_pressed() -> void:
@@ -193,3 +235,66 @@ func _input(event: InputEvent) -> void:
 		if event.is_action_pressed("ui_cancel"):
 			_close_help_panel()
 			get_viewport().set_input_as_handled()
+
+func _setup_button_hover_effects() -> void:
+	# Setup hover for all menu buttons
+	var buttons: Array[Button] = [start_button, kingdom_button, settings_button, quit_button]
+	if continue_button != null:
+		buttons.append(continue_button)
+	if help_button != null:
+		buttons.append(help_button)
+
+	for btn in buttons:
+		if btn == null:
+			continue
+		# Set pivot to center for proper scaling
+		btn.pivot_offset = btn.size / 2.0
+		btn.mouse_entered.connect(_on_button_hover_enter.bind(btn))
+		btn.mouse_exited.connect(_on_button_hover_exit.bind(btn))
+		btn.button_down.connect(_on_button_press_down.bind(btn))
+		btn.button_up.connect(_on_button_press_up.bind(btn))
+
+func _on_button_hover_enter(btn: Button) -> void:
+	if _is_reduced_motion():
+		return
+	_tween_button_scale(btn, HOVER_SCALE, HOVER_DURATION)
+	if audio_manager != null:
+		audio_manager.play_ui_hover()
+
+func _on_button_hover_exit(btn: Button) -> void:
+	if _is_reduced_motion():
+		return
+	_tween_button_scale(btn, 1.0, HOVER_DURATION)
+
+func _on_button_press_down(btn: Button) -> void:
+	if _is_reduced_motion():
+		return
+	_tween_button_scale(btn, PRESS_SCALE, PRESS_DURATION)
+
+func _on_button_press_up(btn: Button) -> void:
+	if _is_reduced_motion():
+		return
+	# Return to hover scale if still hovered, otherwise normal
+	var target_scale := HOVER_SCALE if btn.get_global_rect().has_point(btn.get_global_mouse_position()) else 1.0
+	_tween_button_scale(btn, target_scale, HOVER_DURATION)
+
+func _tween_button_scale(btn: Button, target_scale: float, duration: float) -> void:
+	# Kill existing tween for this button
+	if _button_tweens.has(btn):
+		var old_tween = _button_tweens[btn]
+		if old_tween != null and old_tween.is_valid():
+			old_tween.kill()
+
+	# Update pivot in case button size changed
+	btn.pivot_offset = btn.size / 2.0
+
+	var tween := create_tween()
+	tween.set_ease(Tween.EASE_OUT)
+	tween.set_trans(Tween.TRANS_BACK)
+	tween.tween_property(btn, "scale", Vector2(target_scale, target_scale), duration)
+	_button_tweens[btn] = tween
+
+func _is_reduced_motion() -> bool:
+	if settings_manager != null:
+		return settings_manager.reduced_motion
+	return false

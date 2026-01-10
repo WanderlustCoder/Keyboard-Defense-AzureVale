@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <!-- Shielded Affix Overlay (24x24) - Blue shield bubble -->
+  <!-- Color Palette: #3498db, #5dade2, #aed6f1 -->
+
+  <!-- Outer bubble -->
+  <rect x="2" y="4" width="20" height="16" fill="#3498db"/>
+  <rect x="4" y="2" width="16" height="4" fill="#3498db"/>
+  <rect x="4" y="18" width="16" height="4" fill="#3498db"/>
+
+  <!-- Inner transparent area -->
+  <rect x="4" y="6" width="16" height="12" fill="#5dade2"/>
+  <rect x="6" y="4" width="12" height="16" fill="#5dade2"/>
+
+  <!-- Highlight -->
+  <rect x="4" y="4" width="4" height="4" fill="#aed6f1"/>
+  <rect x="6" y="6" width="2" height="2" fill="#aed6f1"/>
+
+  <!-- Shimmer -->
+  <rect x="16" y="8" width="2" height="2" fill="#aed6f1"/>
+</svg>

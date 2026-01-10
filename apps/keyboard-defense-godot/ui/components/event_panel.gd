@@ -5,6 +5,7 @@ extends PanelContainer
 const ThemeColors = preload("res://ui/theme_colors.gd")
 const SimEvents = preload("res://sim/events.gd")
 const SimPoi = preload("res://sim/poi.gd")
+const ButtonFeedbackClass = preload("res://ui/components/button_feedback.gd")
 
 signal choice_selected(choice_id: String, input_text: String)
 signal event_skipped
@@ -94,6 +95,7 @@ func _build_choices(choices: Array) -> void:
 		btn.focus_mode = Control.FOCUS_ALL
 		btn.pressed.connect(_on_choice_pressed.bind(choice_id, input_config))
 		choices_container.add_child(btn)
+		ButtonFeedbackClass.apply_to_button(btn)
 
 	# Focus first button
 	await get_tree().process_frame

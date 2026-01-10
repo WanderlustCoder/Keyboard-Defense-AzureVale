@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 48" width="128" height="48">
+  <!-- Victory Banner (128x48) - Main victory text backdrop -->
+  <!-- Color Palette: #f4d03f, #f39c12, #2c3e50 -->
+
+  <!-- Ribbon ends -->
+  <rect x="0" y="16" width="16" height="24" fill="#f39c12"/>
+  <rect x="0" y="36" width="12" height="8" fill="#c9920a"/>
+  <rect x="112" y="16" width="16" height="24" fill="#f39c12"/>
+  <rect x="116" y="36" width="12" height="8" fill="#c9920a"/>
+
+  <!-- Main banner body -->
+  <rect x="12" y="8" width="104" height="32" fill="#f4d03f"/>
+  <rect x="16" y="12" width="96" height="24" fill="#f39c12"/>
+
+  <!-- Text area -->
+  <rect x="20" y="16" width="88" height="16" fill="#2c3e50"/>
+
+  <!-- Decorative corners -->
+  <rect x="12" y="8" width="4" height="4" fill="#c9920a"/>
+  <rect x="112" y="8" width="4" height="4" fill="#c9920a"/>
+  <rect x="12" y="36" width="4" height="4" fill="#c9920a"/>
+  <rect x="112" y="36" width="4" height="4" fill="#c9920a"/>
+
+  <!-- Stars decoration -->
+  <rect x="24" y="18" width="4" height="4" fill="#f4d03f"/>
+  <rect x="100" y="18" width="4" height="4" fill="#f4d03f"/>
+  <rect x="25" y="19" width="2" height="2" fill="#fcf3cf"/>
+  <rect x="101" y="19" width="2" height="2" fill="#fcf3cf"/>
+</svg>

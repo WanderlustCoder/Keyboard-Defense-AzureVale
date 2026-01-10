@@ -160,11 +160,74 @@ var _cached_drill_mode: String = ""
 var _threat_warning_played: bool = false
 const THREAT_WARNING_THRESHOLD := 70.0
 
+# Trend tracking for WPM and accuracy
+var _trend_wpm_history: Array[float] = []
+var _trend_accuracy_history: Array[float] = []
+var _trend_sample_timer: float = 0.0
+const TREND_SAMPLE_INTERVAL := 3.0  # Sample every 3 seconds
+const TREND_HISTORY_SIZE := 5  # Keep last 5 samples
+const TREND_THRESHOLD := 0.03  # 3% change needed to show trend
+
+# Threat bar glow effect
+var _threat_glow: Control = null
+var _threat_glow_intensity: float = 0.0
+const THREAT_GLOW_THRESHOLD := 50.0  # Start glowing at 50%
+const THREAT_GLOW_MAX_INTENSITY := 0.6
+
+# Typing panel streak glow effect
+var _streak_glow: Control = null
+var _streak_glow_intensity: float = 0.0
+const STREAK_GLOW_MIN_STREAK := 3  # Start glowing at streak of 3
+const STREAK_GLOW_MAX_STREAK := 20  # Max intensity at streak of 20
+const STREAK_GLOW_COLOR_LOW := Color(0.3, 0.7, 1.0, 0.4)   # Cyan
+const STREAK_GLOW_COLOR_MID := Color(0.5, 0.4, 1.0, 0.5)   # Purple
+const STREAK_GLOW_COLOR_HIGH := Color(1.0, 0.7, 0.2, 0.6)  # Gold
+
 # Combo indicator
 var combo_label: Label = null
 var _combo_pulse_timer: float = 0.0
 var _combo_scale: float = 1.0
 const COMBO_PULSE_DURATION := 0.15
+
+# Combo milestone popup
+var _milestone_popup: Label = null
+var _milestone_timer: float = 0.0
+var _last_milestone: int = 0
+const MILESTONE_THRESHOLDS := [5, 10, 15, 20, 30, 50]
+const MILESTONE_POPUP_DURATION := 1.2
+const MILESTONE_MESSAGES := {
+	5: "COMBO!",
+	10: "ON FIRE!",
+	15: "UNSTOPPABLE!",
+	20: "BLAZING!",
+	30: "LEGENDARY!",
+	50: "GODLIKE!"
+}
+
+# Screen edge glow for high combos
+var _edge_glow_container: Control = null
+var _edge_glow_intensity: float = 0.0
+const EDGE_GLOW_THRESHOLD := 10
+
+# Accuracy streak badges
+var _accuracy_badge: Label = null
+var _accuracy_badge_tween: Tween = null
+var _current_accuracy_tier: int = 0
+const ACCURACY_BADGE_THRESHOLDS := [5, 10, 20, 35, 50]
+const ACCURACY_BADGE_LABELS := {
+	5: "SHARP",
+	10: "PRECISE",
+	20: "FOCUSED",
+	35: "FLAWLESS",
+	50: "PERFECT"
+}
+const ACCURACY_BADGE_COLORS := {
+	5: Color(0.7, 0.85, 1.0, 1.0),   # Light blue
+	10: Color(0.4, 0.9, 0.6, 1.0),   # Green
+	20: Color(1.0, 0.85, 0.3, 1.0),  # Gold
+	35: Color(1.0, 0.6, 0.2, 1.0),   # Orange
+	50: Color(1.0, 0.4, 0.8, 1.0)    # Pink/magenta
+}
 
 # Error shake and feedback animation
 var _error_shake_tween: Tween = null
@@ -173,6 +236,30 @@ var _typed_label_base_pos: Vector2 = Vector2.ZERO
 const ERROR_SHAKE_INTENSITY := 4.0
 const ERROR_SHAKE_DURATION := 0.15
 
+# Typed character pulse animation
+var _typing_pulse_tween: Tween = null
+var _drill_target_base_scale: Vector2 = Vector2.ONE
+const TYPING_PULSE_SCALE := 1.08
+const TYPING_PULSE_DURATION := 0.12
+
+# Battle result grade system
+var result_grade_label: Label = null
+const GRADE_THRESHOLDS := {
+	"S": {"accuracy": 0.98, "min_wpm": 40, "max_errors": 1},
+	"A": {"accuracy": 0.95, "min_wpm": 30, "max_errors": 3},
+	"B": {"accuracy": 0.90, "min_wpm": 20, "max_errors": 6},
+	"C": {"accuracy": 0.80, "min_wpm": 15, "max_errors": 10},
+	"D": {"accuracy": 0.70, "min_wpm": 10, "max_errors": 15}
+}
+const GRADE_COLORS := {
+	"S": Color(1.0, 0.85, 0.2, 1.0),   # Gold
+	"A": Color(0.4, 0.9, 0.5, 1.0),    # Green
+	"B": Color(0.5, 0.8, 1.0, 1.0),    # Light blue
+	"C": Color(0.9, 0.7, 0.3, 1.0),    # Orange
+	"D": Color(0.9, 0.5, 0.3, 1.0),    # Dark orange
+	"F": Color(0.9, 0.3, 0.3, 1.0)     # Red
+}
+
 func _ready() -> void:
 	exit_button.pressed.connect(_on_exit_pressed)
 	result_button.pressed.connect(_on_result_pressed)
@@ -180,10 +267,19 @@ func _ready() -> void:
 	_setup_pause_panel()
 	_setup_debug_panel()
 	_setup_combo_indicator()
+	_setup_milestone_popup()
+	_setup_edge_glow()
 	_setup_result_panel()
+	_setup_accuracy_badge()
+	_setup_threat_glow()
+	_setup_streak_glow()
 	# Store base position for error shake animation
 	if typed_label != null:
 		_typed_label_base_pos = typed_label.position
+	# Store base scale for typing pulse animation
+	if drill_target_label != null:
+		drill_target_label.pivot_offset = drill_target_label.size * 0.5
+		_drill_target_base_scale = drill_target_label.scale
 	_initialize_battle()
 
 func _exit_tree() -> void:
@@ -236,6 +332,11 @@ func _initialize_battle() -> void:
 	_cached_accuracy = -1
 	_cached_wpm = -1
 	_cached_errors = -1
+	_current_accuracy_tier = 0
+	# Reset trend tracking
+	_trend_wpm_history.clear()
+	_trend_accuracy_history.clear()
+	_trend_sample_timer = 0.0
 	drill_plan = _build_drill_plan(node, lesson)
 	drill_index = -1
 
@@ -284,6 +385,11 @@ func _process(delta: float) -> void:
 	_update_feedback(delta)
 	_update_screen_shake(delta)
 	_update_combo_indicator(delta)
+	_update_milestone_popup(delta)
+	_update_edge_glow(delta)
+	_update_trends(delta)
+	_update_threat_glow(delta)
+	_update_streak_glow(delta)
 	if drill_mode == "intermission":
 		drill_timer = max(0.0, drill_timer - delta)
 		if battle_stage != null:
@@ -322,6 +428,8 @@ func _process(delta: float) -> void:
 				audio_manager.play_sfx(audio_manager.SFX.HIT_PLAYER)
 			elif not is_high_threat and _threat_warning_played:
 				_threat_warning_played = false
+			# Update threat pulse audio
+			audio_manager.update_threat_audio(threat / 100.0, delta)
 		# Tutorial trigger for threat shown
 		if threat > 20.0 and battle_tutorial != null:
 			battle_tutorial.fire_trigger("threat_shown")
@@ -405,6 +513,7 @@ func _handle_typing_result(result: Dictionary) -> void:
 		_advance_streaks(status)
 		if audio_manager != null and typing_sounds_enabled:
 			audio_manager.play_type_correct()
+		_trigger_typing_pulse()
 	_check_buff_triggers()
 	_update_feedback_for_status(status)
 	_apply_typing_combat(status)
@@ -450,10 +559,14 @@ func _update_stats() -> void:
 	# Only update UI if values changed
 	if accuracy != _cached_accuracy:
 		_cached_accuracy = accuracy
-		accuracy_label.text = "Accuracy: %d%%" % accuracy
+		var accuracy_trend := _get_trend_arrow(_trend_accuracy_history, float(accuracy) / 100.0)
+		accuracy_label.text = "Accuracy: %d%%%s" % [accuracy, accuracy_trend]
+		_apply_trend_color(accuracy_label, accuracy_trend)
 	if wpm != _cached_wpm:
 		_cached_wpm = wpm
-		wpm_label.text = "WPM: %d" % wpm
+		var wpm_trend := _get_trend_arrow(_trend_wpm_history, float(wpm))
+		wpm_label.text = "WPM: %d%s" % [wpm, wpm_trend]
+		_apply_trend_color(wpm_label, wpm_trend)
 	if errors != _cached_errors:
 		_cached_errors = errors
 		mistakes_label.text = "Errors: %d" % errors
@@ -463,9 +576,35 @@ func _update_threat() -> void:
 	if threat != _cached_threat:
 		_cached_threat = threat
 		threat_bar.value = threat
+
+		# Visual feedback based on threat level
+		if threat_bar != null:
+			if threat >= 80.0:
+				# Critical - red pulsing
+				var pulse := (sin(Time.get_ticks_msec() * 0.01) + 1.0) * 0.5
+				threat_bar.modulate = Color(1.0, 0.3 + pulse * 0.2, 0.3, 1.0)
+			elif threat >= 60.0:
+				# High - orange
+				threat_bar.modulate = Color(1.0, 0.6, 0.3, 1.0)
+			elif threat >= 40.0:
+				# Medium - yellow
+				threat_bar.modulate = Color(1.0, 0.9, 0.4, 1.0)
+			else:
+				# Normal - default
+				threat_bar.modulate = Color.WHITE
+
 	if castle_health != _cached_castle_health:
 		_cached_castle_health = castle_health
 		castle_label.text = "Castle Health: %d" % castle_health
+
+		# Visual warning for low castle health
+		if castle_label != null:
+			if castle_health <= 1:
+				castle_label.add_theme_color_override("font_color", ThemeColors.ERROR)
+			elif castle_health <= 2:
+				castle_label.add_theme_color_override("font_color", ThemeColors.ACCENT)
+			else:
+				castle_label.remove_theme_color_override("font_color")
 
 func _update_feedback(delta: float) -> void:
 	if feedback_label == null or feedback_timer <= 0.0:
@@ -487,11 +626,17 @@ func _update_feedback_for_status(status: String) -> void:
 	elif status == "word_complete":
 		_show_feedback("Strike!", ThemeColors.ACCENT)
 		if audio_manager != null:
-			audio_manager.play_combo_up()
+			audio_manager.play_word_complete()
+		# Spawn celebratory particle burst
+		if battle_stage != null:
+			battle_stage.spawn_word_complete_effect()
 	elif status == "lesson_complete":
 		_show_feedback("Wave Cleared!", ThemeColors.ACCENT_BLUE, FEEDBACK_WAVE_DURATION)
 		if audio_manager != null:
 			audio_manager.play_wave_end()
+		# Also spawn particles for wave complete (bigger effect)
+		if battle_stage != null:
+			battle_stage.spawn_word_complete_effect()
 
 func _show_feedback(message: String, color: Color, duration: float = FEEDBACK_DURATION) -> void:
 	if feedback_label == null:
@@ -748,12 +893,31 @@ func _update_drill_status() -> void:
 	var title_text := "%s (%d/%d)" % [drill_label, step, total]
 	drill_title_label.text = title_text
 	if drill_mode == "intermission":
-		drill_progress_label.text = "Resuming in %.1fs" % drill_timer
+		var time_display := "%.1fs" % drill_timer
+		drill_progress_label.text = "⏱ Next wave in %s" % time_display
+
+		# Pulsing color effect for countdown
+		if settings_manager == null or not settings_manager.reduced_motion:
+			var pulse := (sin(Time.get_ticks_msec() / 200.0) + 1.0) * 0.5
+			var countdown_color := ThemeColors.TEXT_DIM.lerp(ThemeColors.ACCENT, pulse * 0.5)
+			drill_progress_label.add_theme_color_override("font_color", countdown_color)
+
+			# Flash more intensely in last 1 second
+			if drill_timer <= 1.0:
+				var urgent_pulse := (sin(Time.get_ticks_msec() / 100.0) + 1.0) * 0.5
+				var urgent_color := ThemeColors.ACCENT.lerp(Color(1.0, 0.5, 0.3), urgent_pulse)
+				drill_progress_label.add_theme_color_override("font_color", urgent_color)
+		else:
+			drill_progress_label.remove_theme_color_override("font_color")
+
 		var hint_text := str(current_drill.get("message", "Scouts regroup."))
 		if tutorial_mode:
 			hint_text += " Press Space to skip."
 		drill_hint_label.text = hint_text
 		return
+	else:
+		# Reset color override when not in intermission
+		drill_progress_label.remove_theme_color_override("font_color")
 	var words_completed: int = typing_system.get_words_completed()
 	drill_progress_label.text = "Targets: %d/%d" % [words_completed, drill_word_goal]
 	drill_hint_label.text = str(current_drill.get("hint", "Type the runes to strike."))
@@ -855,6 +1019,9 @@ func _finish_battle(success: bool) -> void:
 	paused = false
 	if pause_panel != null:
 		pause_panel.visible = false
+	# Stop threat pulse audio
+	if audio_manager != null:
+		audio_manager.stop_threat_pulse()
 	var stats: Dictionary = _collect_battle_stats(true)
 	var accuracy: float = float(stats.get("accuracy", 1.0))
 	var wpm: float = float(stats.get("wpm", 0.0))
@@ -876,6 +1043,9 @@ func _finish_battle(success: bool) -> void:
 		"drill_step": drill_index + 1,
 		"drill_total": drill_plan.size()
 	}
+	# Calculate performance grade
+	var grade := _calculate_grade(accuracy, wpm, errors)
+
 	if success:
 		var completed_summary: Dictionary = progression.complete_node(node_id, summary)
 		var tier := str(completed_summary.get("performance_tier", ""))
@@ -909,6 +1079,8 @@ func _finish_battle(success: bool) -> void:
 		if result_retry_button != null:
 			result_retry_button.visible = true
 			result_retry_button.text = "Retry (R)"
+		# Show animated grade
+		_show_result_grade(grade, true)
 	else:
 		progression.record_attempt(summary)
 		# Play defeat sounds
@@ -923,6 +1095,8 @@ func _finish_battle(success: bool) -> void:
 			result_retry_button.text = "Map (Esc)"
 			result_retry_button.pressed.disconnect(_on_result_retry_pressed)
 			result_retry_button.pressed.connect(_go_to_map_from_result)
+		# Show grade (even on defeat, to encourage improvement)
+		_show_result_grade(grade, false)
 	result_panel.visible = true
 	gold_label.text = "Gold: %d" % progression.gold
 
@@ -1138,14 +1312,20 @@ func _skip_intermission() -> void:
 func _reset_streaks() -> void:
 	input_streak = 0
 	word_streak = 0
+	_last_milestone = 0
+	_update_accuracy_badge()
 
 func _advance_streaks(status: String) -> void:
+	var old_total := input_streak + word_streak * 2
 	if status == "progress" or status == "word_complete" or status == "lesson_complete":
 		input_streak += 1
 		_pulse_combo_indicator()
+		_update_accuracy_badge()
 	if status == "word_complete" or status == "lesson_complete":
 		word_streak += 1
 		_pulse_combo_indicator()
+	var new_total := input_streak + word_streak * 2
+	_check_milestone_trigger(old_total, new_total)
 
 func _check_buff_triggers() -> void:
 	if word_streak >= BUFF_WORD_STREAK:
@@ -1391,6 +1571,25 @@ func _trigger_backspace_feedback() -> void:
 	_backspace_feedback_tween.tween_property(typed_label, "modulate", Color(0.6, 0.6, 0.7, 1.0), 0.05)
 	_backspace_feedback_tween.tween_property(typed_label, "modulate", original_color, 0.1)
 
+func _trigger_typing_pulse() -> void:
+	# Satisfying pulse animation when typing correctly
+	if drill_target_label == null:
+		return
+	# Check reduced motion setting
+	if settings_manager != null and settings_manager.reduced_motion:
+		return
+	# Kill existing tween if running
+	if _typing_pulse_tween != null and _typing_pulse_tween.is_valid():
+		_typing_pulse_tween.kill()
+
+	# Pulse scale up then back down
+	_typing_pulse_tween = create_tween()
+	_typing_pulse_tween.set_ease(Tween.EASE_OUT)
+	_typing_pulse_tween.set_trans(Tween.TRANS_BACK)
+	var pulse_scale := _drill_target_base_scale * TYPING_PULSE_SCALE
+	_typing_pulse_tween.tween_property(drill_target_label, "scale", pulse_scale, TYPING_PULSE_DURATION * 0.4)
+	_typing_pulse_tween.tween_property(drill_target_label, "scale", _drill_target_base_scale, TYPING_PULSE_DURATION * 0.6)
+
 func _trigger_screen_shake(intensity: float, duration: float) -> void:
 	# Check if screen shake is enabled in settings
 	if settings_manager != null and not settings_manager.screen_shake:
@@ -1492,6 +1691,19 @@ func _setup_result_panel() -> void:
 	if content == null:
 		return
 
+	# Create grade label at the top (insert before result_label)
+	result_grade_label = Label.new()
+	result_grade_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	result_grade_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	result_grade_label.add_theme_font_size_override("font_size", 48)
+	result_grade_label.add_theme_constant_override("outline_size", 3)
+	result_grade_label.add_theme_color_override("font_outline_color", Color(0.1, 0.1, 0.15, 1.0))
+	result_grade_label.custom_minimum_size = Vector2(0, 60)
+	result_grade_label.visible = false
+	# Insert at beginning of content
+	content.add_child(result_grade_label)
+	content.move_child(result_grade_label, 0)
+
 	# Create button row container
 	var button_row = HBoxContainer.new()
 	button_row.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -1528,3 +1740,495 @@ func _go_to_map_from_result() -> void:
 	if audio_manager != null:
 		audio_manager.play_ui_cancel()
 	game_controller.go_to_map()
+
+func _calculate_grade(accuracy: float, wpm: float, errors: int) -> String:
+	# Check each grade threshold in order (S, A, B, C, D)
+	for grade in ["S", "A", "B", "C", "D"]:
+		var threshold: Dictionary = GRADE_THRESHOLDS[grade]
+		if accuracy >= threshold.accuracy and wpm >= threshold.min_wpm and errors <= threshold.max_errors:
+			return grade
+	return "F"
+
+func _show_result_grade(grade: String, success: bool) -> void:
+	if result_grade_label == null:
+		return
+
+	var color: Color = GRADE_COLORS.get(grade, Color.WHITE)
+	result_grade_label.text = grade
+	result_grade_label.add_theme_color_override("font_color", color)
+	result_grade_label.visible = true
+
+	# Animate grade reveal (unless reduced motion)
+	if settings_manager != null and settings_manager.reduced_motion:
+		result_grade_label.scale = Vector2(1.0, 1.0)
+		result_grade_label.modulate.a = 1.0
+		return
+
+	# Pop-in animation
+	result_grade_label.scale = Vector2(2.0, 2.0)
+	result_grade_label.modulate.a = 0.0
+	result_grade_label.pivot_offset = result_grade_label.size * 0.5
+
+	var tween := create_tween()
+	tween.set_ease(Tween.EASE_OUT)
+	tween.set_trans(Tween.TRANS_ELASTIC)
+	tween.tween_property(result_grade_label, "scale", Vector2(1.0, 1.0), 0.5)
+	tween.parallel().tween_property(result_grade_label, "modulate:a", 1.0, 0.2)
+
+func _setup_milestone_popup() -> void:
+	_milestone_popup = Label.new()
+	_milestone_popup.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_milestone_popup.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_milestone_popup.add_theme_font_size_override("font_size", 36)
+	_milestone_popup.add_theme_constant_override("outline_size", 4)
+	_milestone_popup.add_theme_color_override("font_outline_color", Color(0.1, 0.1, 0.15, 1.0))
+	_milestone_popup.visible = false
+	_milestone_popup.pivot_offset = Vector2(100, 24)
+	_milestone_popup.z_index = 100
+	add_child(_milestone_popup)
+	_milestone_popup.set_anchors_preset(Control.PRESET_CENTER)
+	_milestone_popup.position = Vector2(-100, -60)
+	_milestone_popup.custom_minimum_size = Vector2(200, 48)
+
+func _update_milestone_popup(delta: float) -> void:
+	if _milestone_popup == null or _milestone_timer <= 0.0:
+		return
+
+	_milestone_timer -= delta
+	var progress := _milestone_timer / MILESTONE_POPUP_DURATION
+
+	if _milestone_timer <= 0.0:
+		_milestone_popup.visible = false
+		return
+
+	# Animate: scale in, float up, fade out
+	var scale_factor := 1.0
+	var alpha := 1.0
+	var y_offset := 0.0
+
+	if progress > 0.7:
+		# Scale in phase (first 30% of duration)
+		var phase := (progress - 0.7) / 0.3
+		scale_factor = 1.0 + (1.0 - phase) * 0.5
+	elif progress < 0.3:
+		# Fade out phase (last 30% of duration)
+		alpha = progress / 0.3
+		y_offset = (1.0 - progress / 0.3) * 20.0
+
+	_milestone_popup.scale = Vector2(scale_factor, scale_factor)
+	_milestone_popup.modulate.a = alpha
+	_milestone_popup.position.y = -60 - y_offset
+
+func _check_milestone_trigger(old_total: int, new_total: int) -> void:
+	for threshold in MILESTONE_THRESHOLDS:
+		if old_total < threshold and new_total >= threshold:
+			if threshold > _last_milestone:
+				_last_milestone = threshold
+				_show_milestone_popup(threshold)
+				# Play combo milestone sound
+				if audio_manager != null:
+					audio_manager.play_combo_milestone(threshold)
+				break
+
+func _show_milestone_popup(threshold: int) -> void:
+	if _milestone_popup == null:
+		return
+
+	var message: String = MILESTONE_MESSAGES.get(threshold, "COMBO x%d" % threshold)
+	_milestone_popup.text = message
+
+	# Color based on threshold
+	var color: Color
+	if threshold >= 50:
+		color = Color(1.0, 0.3, 1.0, 1.0)  # Magenta
+	elif threshold >= 30:
+		color = Color(1.0, 0.4, 0.2, 1.0)  # Orange-red
+	elif threshold >= 20:
+		color = Color(1.0, 0.6, 0.2, 1.0)  # Orange
+	elif threshold >= 10:
+		color = Color(1.0, 0.85, 0.3, 1.0)  # Gold
+	else:
+		color = Color(0.4, 0.85, 1.0, 1.0)  # Cyan
+
+	_milestone_popup.add_theme_color_override("font_color", color)
+	_milestone_popup.visible = true
+	_milestone_popup.scale = Vector2(1.5, 1.5)
+	_milestone_popup.modulate.a = 1.0
+	_milestone_popup.position = Vector2(-100, -60)
+	_milestone_timer = MILESTONE_POPUP_DURATION
+
+	# Play milestone sound
+	if audio_manager != null:
+		audio_manager.play_combo_up()
+
+func _setup_edge_glow() -> void:
+	_edge_glow_container = Control.new()
+	_edge_glow_container.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_edge_glow_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_edge_glow_container.z_index = 50
+	add_child(_edge_glow_container)
+	move_child(_edge_glow_container, 0)  # Behind other UI
+	_edge_glow_container.draw.connect(_draw_edge_glow)
+
+func _update_edge_glow(delta: float) -> void:
+	if _edge_glow_container == null:
+		return
+
+	var total_streak := input_streak + word_streak * 2
+	var target_intensity := 0.0
+
+	if total_streak >= EDGE_GLOW_THRESHOLD:
+		# Scale intensity based on combo level
+		var excess := float(total_streak - EDGE_GLOW_THRESHOLD)
+		target_intensity = clamp(excess / 30.0, 0.0, 0.6)
+		# Add pulsing effect
+		target_intensity *= 0.8 + sin(Time.get_ticks_msec() * 0.005) * 0.2
+
+	# Smooth transition
+	_edge_glow_intensity = lerp(_edge_glow_intensity, target_intensity, delta * 5.0)
+
+	if _edge_glow_intensity > 0.01 or target_intensity > 0.0:
+		_edge_glow_container.queue_redraw()
+
+func _draw_edge_glow() -> void:
+	if _edge_glow_intensity < 0.01:
+		return
+
+	var container_size: Vector2 = _edge_glow_container.size
+	var glow_width := 60.0
+
+	# Calculate color based on combo level
+	var total_streak := input_streak + word_streak * 2
+	var glow_color: Color
+	if total_streak >= 30:
+		glow_color = Color(1.0, 0.4, 0.2, _edge_glow_intensity)  # Orange
+	elif total_streak >= 20:
+		glow_color = Color(1.0, 0.7, 0.2, _edge_glow_intensity)  # Gold
+	else:
+		glow_color = Color(0.4, 0.7, 1.0, _edge_glow_intensity)  # Blue
+
+	# Draw gradient rectangles on each edge
+	# Left edge
+	var left_rect := Rect2(0, 0, glow_width, container_size.y)
+	_edge_glow_container.draw_rect(left_rect, glow_color.lerp(Color(glow_color.r, glow_color.g, glow_color.b, 0), 0.7))
+
+	# Right edge
+	var right_rect := Rect2(container_size.x - glow_width, 0, glow_width, container_size.y)
+	_edge_glow_container.draw_rect(right_rect, glow_color.lerp(Color(glow_color.r, glow_color.g, glow_color.b, 0), 0.7))
+
+	# Top edge
+	var top_rect := Rect2(0, 0, container_size.x, glow_width * 0.5)
+	_edge_glow_container.draw_rect(top_rect, glow_color.lerp(Color(glow_color.r, glow_color.g, glow_color.b, 0), 0.8))
+
+	# Bottom edge
+	var bottom_rect := Rect2(0, container_size.y - glow_width * 0.5, container_size.x, glow_width * 0.5)
+	_edge_glow_container.draw_rect(bottom_rect, glow_color.lerp(Color(glow_color.r, glow_color.g, glow_color.b, 0), 0.8))
+
+func _setup_accuracy_badge() -> void:
+	_accuracy_badge = Label.new()
+	_accuracy_badge.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_accuracy_badge.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_accuracy_badge.add_theme_font_size_override("font_size", 14)
+	_accuracy_badge.add_theme_constant_override("outline_size", 2)
+	_accuracy_badge.add_theme_color_override("font_outline_color", Color(0.1, 0.1, 0.15, 1.0))
+	_accuracy_badge.visible = false
+	_accuracy_badge.pivot_offset = Vector2(50, 12)
+	add_child(_accuracy_badge)
+	# Position near top-right of typing panel
+	_accuracy_badge.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	_accuracy_badge.position = Vector2(60, 75)
+	_accuracy_badge.custom_minimum_size = Vector2(100, 24)
+
+func _update_accuracy_badge() -> void:
+	if _accuracy_badge == null:
+		return
+
+	# Find current tier based on input_streak
+	var new_tier := 0
+	for threshold in ACCURACY_BADGE_THRESHOLDS:
+		if input_streak >= threshold:
+			new_tier = threshold
+		else:
+			break
+
+	# Update badge if tier changed
+	if new_tier != _current_accuracy_tier:
+		var was_upgrade := new_tier > _current_accuracy_tier
+		_current_accuracy_tier = new_tier
+
+		if new_tier == 0:
+			# Hide badge when streak broken
+			_hide_accuracy_badge()
+		else:
+			# Show/upgrade badge
+			_show_accuracy_badge(new_tier, was_upgrade)
+
+func _show_accuracy_badge(tier: int, animate: bool) -> void:
+	if _accuracy_badge == null:
+		return
+
+	var label_text: String = ACCURACY_BADGE_LABELS.get(tier, "STREAK")
+	var badge_color: Color = ACCURACY_BADGE_COLORS.get(tier, Color.WHITE)
+
+	_accuracy_badge.text = "★ %s ★" % label_text
+	_accuracy_badge.add_theme_color_override("font_color", badge_color)
+	_accuracy_badge.visible = true
+
+	# Animate appearance/upgrade
+	if animate:
+		# Check reduced motion setting
+		if settings_manager != null and settings_manager.reduced_motion:
+			_accuracy_badge.scale = Vector2(1.0, 1.0)
+			_accuracy_badge.modulate.a = 1.0
+			return
+
+		# Kill existing tween
+		if _accuracy_badge_tween != null and _accuracy_badge_tween.is_valid():
+			_accuracy_badge_tween.kill()
+
+		# Pop-in animation
+		_accuracy_badge.scale = Vector2(1.4, 1.4)
+		_accuracy_badge.modulate.a = 0.0
+		_accuracy_badge_tween = create_tween()
+		_accuracy_badge_tween.set_ease(Tween.EASE_OUT)
+		_accuracy_badge_tween.set_trans(Tween.TRANS_BACK)
+		_accuracy_badge_tween.tween_property(_accuracy_badge, "scale", Vector2(1.0, 1.0), 0.25)
+		_accuracy_badge_tween.parallel().tween_property(_accuracy_badge, "modulate:a", 1.0, 0.15)
+
+func _hide_accuracy_badge() -> void:
+	if _accuracy_badge == null:
+		return
+
+	# Check reduced motion setting
+	if settings_manager != null and settings_manager.reduced_motion:
+		_accuracy_badge.visible = false
+		return
+
+	# Kill existing tween
+	if _accuracy_badge_tween != null and _accuracy_badge_tween.is_valid():
+		_accuracy_badge_tween.kill()
+
+	# Fade out animation
+	_accuracy_badge_tween = create_tween()
+	_accuracy_badge_tween.tween_property(_accuracy_badge, "modulate:a", 0.0, 0.15)
+	_accuracy_badge_tween.tween_callback(func(): _accuracy_badge.visible = false)
+
+func _update_trends(delta: float) -> void:
+	# Skip during intermission
+	if drill_mode == "intermission":
+		return
+
+	_trend_sample_timer += delta
+	if _trend_sample_timer < TREND_SAMPLE_INTERVAL:
+		return
+
+	_trend_sample_timer = 0.0
+
+	# Sample current stats
+	var stats: Dictionary = _collect_battle_stats(true)
+	var accuracy: float = float(stats.get("accuracy", 1.0))
+	var wpm: float = float(stats.get("wpm", 0.0))
+
+	# Add to history
+	_trend_accuracy_history.append(accuracy)
+	_trend_wpm_history.append(wpm)
+
+	# Trim to max size
+	while _trend_accuracy_history.size() > TREND_HISTORY_SIZE:
+		_trend_accuracy_history.remove_at(0)
+	while _trend_wpm_history.size() > TREND_HISTORY_SIZE:
+		_trend_wpm_history.remove_at(0)
+
+func _get_trend_arrow(history: Array[float], current: float) -> String:
+	# Need at least 2 samples to show trend
+	if history.size() < 2:
+		return ""
+
+	# Compare current to average of first half of history
+	var first_half_count := max(1, history.size() / 2)
+	var first_half_sum := 0.0
+	for i in range(first_half_count):
+		first_half_sum += history[i]
+	var first_half_avg := first_half_sum / float(first_half_count)
+
+	# Calculate percent change
+	if first_half_avg == 0.0:
+		return ""
+
+	var change := (current - first_half_avg) / first_half_avg
+
+	if change > TREND_THRESHOLD:
+		return " ↑"
+	elif change < -TREND_THRESHOLD:
+		return " ↓"
+	return ""
+
+func _apply_trend_color(label: Label, trend: String) -> void:
+	if label == null:
+		return
+
+	if trend == " ↑":
+		label.add_theme_color_override("font_color", Color(0.4, 0.9, 0.5, 1.0))  # Green
+	elif trend == " ↓":
+		label.add_theme_color_override("font_color", Color(1.0, 0.5, 0.4, 1.0))  # Red
+	else:
+		label.remove_theme_color_override("font_color")  # Default color
+
+func _setup_threat_glow() -> void:
+	if threat_bar == null:
+		return
+
+	# Create glow container that draws behind the threat bar
+	_threat_glow = Control.new()
+	_threat_glow.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_threat_glow.z_index = -1
+	_threat_glow.draw.connect(_draw_threat_glow)
+
+	# Add as sibling to threat_bar, positioned to match
+	var parent = threat_bar.get_parent()
+	if parent != null:
+		parent.add_child(_threat_glow)
+		parent.move_child(_threat_glow, threat_bar.get_index())
+
+func _update_threat_glow(delta: float) -> void:
+	if _threat_glow == null or threat_bar == null:
+		return
+
+	# Calculate target intensity based on threat level
+	var target_intensity := 0.0
+	if threat >= THREAT_GLOW_THRESHOLD:
+		var threat_factor := (threat - THREAT_GLOW_THRESHOLD) / (100.0 - THREAT_GLOW_THRESHOLD)
+		target_intensity = threat_factor * THREAT_GLOW_MAX_INTENSITY
+
+		# Add pulsing at high threat
+		if threat >= 70.0:
+			var pulse_speed := 4.0 + (threat - 70.0) * 0.1  # Faster pulse at higher threat
+			var pulse := (sin(Time.get_ticks_msec() * 0.001 * pulse_speed) + 1.0) * 0.5
+			target_intensity *= (0.7 + pulse * 0.3)
+
+	# Smooth transition
+	_threat_glow_intensity = lerp(_threat_glow_intensity, target_intensity, delta * 8.0)
+
+	# Update position and size to match threat bar
+	_threat_glow.position = threat_bar.position
+	_threat_glow.size = threat_bar.size
+
+	# Request redraw if visible
+	if _threat_glow_intensity > 0.01:
+		_threat_glow.queue_redraw()
+
+func _draw_threat_glow() -> void:
+	if _threat_glow_intensity < 0.01:
+		return
+
+	var bar_size: Vector2 = _threat_glow.size
+	var glow_expand := 8.0 + _threat_glow_intensity * 8.0  # Glow extends 8-16px
+
+	# Calculate glow color based on threat level
+	var glow_color: Color
+	if threat >= 80.0:
+		glow_color = Color(1.0, 0.2, 0.1, _threat_glow_intensity)  # Red
+	elif threat >= 60.0:
+		glow_color = Color(1.0, 0.5, 0.2, _threat_glow_intensity)  # Orange
+	else:
+		glow_color = Color(1.0, 0.8, 0.3, _threat_glow_intensity)  # Yellow
+
+	# Draw multiple expanding rectangles for glow effect
+	for i in range(3):
+		var expand := glow_expand * (1.0 - float(i) * 0.3)
+		var alpha := glow_color.a * (1.0 - float(i) * 0.3)
+		var layer_color := Color(glow_color.r, glow_color.g, glow_color.b, alpha * 0.4)
+		var glow_rect := Rect2(
+			-expand,
+			-expand,
+			bar_size.x + expand * 2.0,
+			bar_size.y + expand * 2.0
+		)
+		_threat_glow.draw_rect(glow_rect, layer_color)
+
+func _setup_streak_glow() -> void:
+	# Find the TypingPanel to add glow around
+	var typing_panel := get_node_or_null("TypingPanel")
+	if typing_panel == null:
+		return
+
+	# Create glow container that draws behind the typing panel
+	_streak_glow = Control.new()
+	_streak_glow.name = "StreakGlow"
+	_streak_glow.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_streak_glow.z_index = -1
+	_streak_glow.draw.connect(_draw_streak_glow)
+
+	# Add as sibling to typing panel, positioned to match
+	var parent = typing_panel.get_parent()
+	if parent != null:
+		parent.add_child(_streak_glow)
+		parent.move_child(_streak_glow, typing_panel.get_index())
+
+func _update_streak_glow(delta: float) -> void:
+	if _streak_glow == null:
+		return
+
+	var typing_panel := get_node_or_null("TypingPanel")
+	if typing_panel == null:
+		return
+
+	# Calculate target intensity based on streak
+	var total_streak := input_streak + word_streak * 2
+	var target_intensity := 0.0
+
+	if total_streak >= STREAK_GLOW_MIN_STREAK:
+		var streak_progress := float(total_streak - STREAK_GLOW_MIN_STREAK) / float(STREAK_GLOW_MAX_STREAK - STREAK_GLOW_MIN_STREAK)
+		target_intensity = clampf(streak_progress, 0.0, 1.0)
+
+		# Add subtle pulse at high streaks
+		if settings_manager == null or not settings_manager.reduced_motion:
+			if total_streak >= 10:
+				var pulse := sin(Time.get_ticks_msec() / 200.0) * 0.5 + 0.5
+				target_intensity *= (0.85 + pulse * 0.15)
+
+	# Smooth transition
+	_streak_glow_intensity = lerp(_streak_glow_intensity, target_intensity, delta * 6.0)
+
+	# Update position and size to match typing panel
+	_streak_glow.position = typing_panel.position
+	_streak_glow.size = typing_panel.size
+
+	# Request redraw if visible
+	if _streak_glow_intensity > 0.01:
+		_streak_glow.queue_redraw()
+
+func _draw_streak_glow() -> void:
+	if _streak_glow_intensity < 0.01:
+		return
+
+	var panel_size: Vector2 = _streak_glow.size
+	var glow_expand := 6.0 + _streak_glow_intensity * 10.0  # Glow extends 6-16px
+
+	# Calculate glow color based on streak intensity
+	var glow_color: Color
+	if _streak_glow_intensity >= 0.7:
+		glow_color = STREAK_GLOW_COLOR_HIGH.lerp(Color.WHITE, (_streak_glow_intensity - 0.7) * 0.3)
+	elif _streak_glow_intensity >= 0.4:
+		var t := (_streak_glow_intensity - 0.4) / 0.3
+		glow_color = STREAK_GLOW_COLOR_MID.lerp(STREAK_GLOW_COLOR_HIGH, t)
+	else:
+		var t := _streak_glow_intensity / 0.4
+		glow_color = STREAK_GLOW_COLOR_LOW.lerp(STREAK_GLOW_COLOR_MID, t)
+
+	glow_color.a *= _streak_glow_intensity
+
+	# Draw multiple expanding rectangles for glow effect
+	for i in range(4):
+		var expand := glow_expand * (1.0 + float(i) * 0.4)
+		var alpha_mult := 1.0 - (float(i) / 4.0)
+		var layer_color := glow_color
+		layer_color.a *= alpha_mult * 0.5
+
+		var glow_rect := Rect2(
+			-expand,
+			-expand,
+			panel_size.x + expand * 2.0,
+			panel_size.y + expand * 2.0
+		)
+		_streak_glow.draw_rect(glow_rect, layer_color)

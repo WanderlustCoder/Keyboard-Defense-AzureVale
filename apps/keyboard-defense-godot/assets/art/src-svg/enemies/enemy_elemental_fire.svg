@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 22" width="16" height="22">
+  <!-- Fire Elemental Enemy (16x22) - Living flame -->
+  <!-- Color Palette: #e74c3c, #f39c12, #f4d03f -->
+
+  <!-- Core body -->
+  <rect x="4" y="8" width="8" height="10" fill="#e74c3c"/>
+  <rect x="5" y="10" width="6" height="6" fill="#f39c12"/>
+  <rect x="6" y="12" width="4" height="3" fill="#f4d03f"/>
+
+  <!-- Flame top -->
+  <rect x="5" y="4" width="6" height="6" fill="#e74c3c"/>
+  <rect x="6" y="2" width="4" height="4" fill="#f39c12"/>
+  <rect x="7" y="0" width="2" height="4" fill="#f4d03f"/>
+
+  <!-- Flame arms -->
+  <rect x="0" y="10" width="5" height="6" fill="#e74c3c"/>
+  <rect x="1" y="8" width="3" height="4" fill="#f39c12"/>
+  <rect x="2" y="6" width="2" height="3" fill="#f4d03f"/>
+
+  <rect x="11" y="10" width="5" height="6" fill="#e74c3c"/>
+  <rect x="12" y="8" width="3" height="4" fill="#f39c12"/>
+  <rect x="12" y="6" width="2" height="3" fill="#f4d03f"/>
+
+  <!-- Flame base -->
+  <rect x="3" y="18" width="10" height="4" fill="#e74c3c"/>
+  <rect x="2" y="20" width="4" height="2" fill="#c0392b"/>
+  <rect x="10" y="20" width="4" height="2" fill="#c0392b"/>
+
+  <!-- Eyes -->
+  <rect x="5" y="10" width="2" height="2" fill="#1a252f"/>
+  <rect x="9" y="10" width="2" height="2" fill="#1a252f"/>
+</svg>

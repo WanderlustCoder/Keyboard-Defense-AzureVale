@@ -96,7 +96,7 @@ static func roll_loot(state: GameState, enemy_kind: String, is_boss: bool) -> Di
 	var drops: Array = table.get("drops", [])
 	for drop in drops:
 		var chance: float = float(drop.get("chance", 0.0))
-		var roll: float = SimRng.roll_float(state)
+		var roll: float = float(SimRng.roll_range(state, 0, 1000)) / 1000.0
 		if roll <= chance:
 			var resource: String = str(drop.get("resource", ""))
 			var amount: int = int(float(drop.get("amount", 0)) * quality_mult)

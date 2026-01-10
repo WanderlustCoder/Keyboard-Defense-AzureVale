@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8" width="8" height="8">
+  <!-- Loading Bar Fill (8x8) - Tiling progress fill -->
+  <!-- Color Palette: #27ae60, #2ecc71, #1e8449 -->
+
+  <!-- Main fill -->
+  <rect x="0" y="0" width="8" height="8" fill="#27ae60"/>
+
+  <!-- Highlight stripe -->
+  <rect x="0" y="0" width="8" height="2" fill="#2ecc71"/>
+  <rect x="0" y="2" width="4" height="2" fill="#2ecc71"/>
+
+  <!-- Shadow stripe -->
+  <rect x="0" y="6" width="8" height="2" fill="#1e8449"/>
+  <rect x="4" y="4" width="4" height="2" fill="#1e8449"/>
+</svg>

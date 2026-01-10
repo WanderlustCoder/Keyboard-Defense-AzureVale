@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 32" width="96" height="32">
+  <!-- Wave Banner (96x32) - Wave start announcement -->
+  <!-- Color Palette: #e74c3c, #c0392b, #2c3e50 -->
+
+  <!-- Main banner -->
+  <rect x="4" y="4" width="88" height="24" fill="#e74c3c"/>
+  <rect x="8" y="8" width="80" height="16" fill="#c0392b"/>
+
+  <!-- Text area -->
+  <rect x="12" y="10" width="72" height="12" fill="#2c3e50"/>
+
+  <!-- Side flags -->
+  <rect x="0" y="8" width="8" height="16" fill="#e74c3c"/>
+  <rect x="0" y="20" width="6" height="8" fill="#c0392b"/>
+  <rect x="88" y="8" width="8" height="16" fill="#e74c3c"/>
+  <rect x="90" y="20" width="6" height="8" fill="#c0392b"/>
+
+  <!-- Top/bottom borders -->
+  <rect x="4" y="2" width="88" height="4" fill="#c0392b"/>
+  <rect x="4" y="26" width="88" height="4" fill="#922b21"/>
+
+  <!-- Decorative swords -->
+  <rect x="16" y="12" width="2" height="8" fill="#bdc3c7"/>
+  <rect x="15" y="14" width="4" height="2" fill="#bdc3c7"/>
+  <rect x="78" y="12" width="2" height="8" fill="#bdc3c7"/>
+  <rect x="77" y="14" width="4" height="2" fill="#bdc3c7"/>
+</svg>

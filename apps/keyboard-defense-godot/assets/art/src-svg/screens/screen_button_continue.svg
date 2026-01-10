@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 24" width="64" height="24">
+  <!-- Continue Button (64x24) - Proceed button -->
+  <!-- Color Palette: #27ae60, #2ecc71, #1e8449 -->
+
+  <!-- Button base -->
+  <rect x="0" y="4" width="64" height="20" fill="#1e8449"/>
+  <rect x="0" y="0" width="64" height="20" fill="#27ae60"/>
+  <rect x="2" y="2" width="60" height="16" fill="#2ecc71"/>
+
+  <!-- Button highlight -->
+  <rect x="4" y="4" width="56" height="4" fill="#58d68d"/>
+
+  <!-- Arrow icon -->
+  <rect x="48" y="8" width="8" height="4" fill="#1e8449"/>
+  <rect x="52" y="6" width="4" height="8" fill="#1e8449"/>
+  <rect x="54" y="8" width="4" height="4" fill="#1e8449"/>
+
+  <!-- Corner cuts -->
+  <rect x="0" y="0" width="2" height="2" fill="#1a252f"/>
+  <rect x="62" y="0" width="2" height="2" fill="#1a252f"/>
+  <rect x="0" y="22" width="2" height="2" fill="#1a252f"/>
+  <rect x="62" y="22" width="2" height="2" fill="#1a252f"/>
+</svg>

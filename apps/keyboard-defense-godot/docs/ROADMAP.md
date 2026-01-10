@@ -3,6 +3,85 @@
 ## How to read this roadmap
 This roadmap lists the next priorities for the Godot project. Items are grouped into P0 (now), P1 (next), and P2 (later). Each item has a stable ID, status, planning references, and lightweight acceptance criteria.
 
+**Last updated:** 2026-01-08
+
+## Recent Milestones (Shipped)
+
+### M-STORY-001 Story and Narrative System
+Status: Done
+
+Implemented "The Siege of Keystonia" narrative framework with 5 acts, boss encounters, mentor dialogue, and lore.
+
+Key deliverables:
+- `data/story.json` with full 20-day campaign structure across 5 acts
+- `game/story_manager.gd` providing act progression, dialogue, tips, and achievement data
+- Boss encounters on days 4, 8, 12, 16, 20 with unique dialogue
+- Elder Lyra mentor system with contextual advice
+- Typing tips, finger assignments, and performance feedback
+- Achievement definitions for milestones
+
+### M-MODE-001 Game Mode Expansion
+Status: Done
+
+Added multiple game modes beyond the original command-line sim.
+
+Key deliverables:
+- `game/kingdom_defense.gd` + `scenes/KingdomDefense.tscn` - RTS-style typing defense
+- `game/open_world.gd` + `scenes/OpenWorld.tscn` - Exploration mode with roaming enemies
+- `game/typing_defense.gd` + `scenes/TypingDefense.tscn` - Pure typing battle mode
+- `game/dialogue_box.gd` + `scenes/DialogueBox.tscn` - Narrative dialogue system
+- `game/keyboard_display.gd` - Visual keyboard with finger hints
+- Practice mode for individual key training
+
+### M-VFX-001 Visual Effects and Polish
+Status: Done
+
+Added visual feedback systems for combat and typing.
+
+Key deliverables:
+- Projectile effects and castle morphing animations
+- Combo counter with visual feedback
+- Defeat animations and hit effects
+- Status effect icons display
+- Boss progress indicators
+
+### M-ACC-002 Accessibility Options Suite
+Status: Done
+
+Implemented comprehensive accessibility settings beyond basic readability.
+
+Key deliverables:
+- High contrast mode toggle
+- Reduced motion setting
+- Game speed multiplier (0.5x - 2.0x)
+- Keyboard navigation hints toggle
+- Practice mode for learning
+
+### M-BAL-002 Balance Diagnostics Infrastructure
+Status: Done
+
+Built tooling for deterministic balance tuning and validation.
+
+Key deliverables:
+- `balance export` command with metric groups (wave, enemies, towers, buildings, midgame)
+- `balance verify` command with guardrails and invariant checks
+- `balance diff` command for comparing to baselines
+- `balance summary` for compact pacing signals
+- Day 1-7 tuning with extensive milestone iterations (70+ balance commits)
+
+### M-EXP-002 Windows Export Infrastructure
+Status: Done
+
+Built versioned Windows export pipeline with validation.
+
+Key deliverables:
+- Windows Desktop export preset with deterministic paths
+- `VERSION.txt` as single source of truth
+- Bump version scripts (patch/minor/major modes)
+- Export manifest generation with metadata
+- PCK validation and packaging scripts
+- Product/file version consistency enforcement
+
 ## P0 - Now (stabilize and ship)
 
 ### P0-ONB-001 Onboarding and first-run guidance
@@ -27,9 +106,11 @@ Acceptance criteria:
 - Tutorial copy is finalized and matches the step plan in `docs/plans/p0/ONBOARDING_COPY.md`.
 
 ### P0-BAL-001 Balance curve and pacing
-Status: In progress
+Status: Nearly complete (validation pass remaining)
 
 Balance enemy stats, tower upgrades, and word length ranges for days 1-7 with deterministic seeds.
+
+**Progress:** Extensive tuning completed (Milestones 72-102). Balance diagnostics infrastructure shipped. Day 1-7 parameters documented. Remaining work is final playtest validation and scenario harness integration.
 
 Planning refs:
 - `docs/plans/p0/BALANCE_PLAN.md`
@@ -49,9 +130,11 @@ Acceptance criteria:
 - Day 1-7 numeric targets are documented and tied to scenario tolerances.
 
 ### P0-ACC-001 Accessibility and readability polish
-Status: In progress
+Status: Nearly complete (final audit remaining)
 
 Improve panel readability, keyboard navigation, and accessibility toggles while keeping typing-first flow.
+
+**Progress:** Core accessibility options shipped (high contrast, reduced motion, game speed, keyboard hints, practice mode). Settings persist to profile. Remaining work is final 1280x720 audit and documentation.
 
 Planning refs:
 - `docs/plans/p0/ACCESSIBILITY_READABILITY_PLAN.md`
@@ -67,9 +150,11 @@ Acceptance criteria:
 - Accessibility preferences persist in `user://profile.json`.
 
 ### P0-EXP-001 Export pipeline (Windows)
-Status: Not started
+Status: Nearly complete (smoke test remaining)
 
 Document and validate a Windows export pipeline with a release checklist.
+
+**Progress:** Windows export preset created. Version management scripts shipped (bump_version with patch/minor/major). Export scripts with dry-run/apply modes. Manifest generation and PCK validation. Remaining work is final smoke test execution and release checklist completion.
 
 Planning refs:
 - `docs/plans/p0/EXPORT_PIPELINE_PLAN.md`
@@ -85,17 +170,27 @@ Acceptance criteria:
 ## P1 - Next (expand depth)
 
 ### P1-CNT-001 Content expansion (lessons and drills)
-Status: Not started
+Status: Partially complete
 
 Expand lesson packs and word curricula with data validation and clear pedagogy stages.
 
+**Progress:** 80+ lessons implemented covering core curriculum, numbers, symbols, coding, bosses, realms, and more. 18 lessons have Elder Lyra introductions with finger guides. Story system adds lesson introductions with practice tips. Remaining work is adding introductions for 62+ lessons without guides.
+
+**Lesson Tracks Identified:**
+- Core Curriculum (training → home row → reach → upper → bottom → mixed → speed → mastery)
+- Skill Development (finger training, pattern practice)
+- Challenge Modes (gauntlets, precision, time trials, legendary)
+- Themed Content (twilight, realms, bosses, biomes)
+- Professional Skills (coding, business typing)
+
 Planning refs:
+- `docs/plans/p1/LESSON_GUIDE_PLAN.md` - Lesson inventory, tracks, and gap analysis
+- `docs/plans/p1/PEDAGOGY_GUIDE_FRAMEWORK.md` - Educational framework and templates
+- `docs/plans/p1/LESSON_INTRODUCTIONS_DRAFT.md` - Draft content for priority lessons
+- `docs/FINGER_GUIDE_REFERENCE.md` - Canonical finger-to-key assignments
 - `docs/plans/p1/CONTENT_EXPANSION_PLAN.md`
 - `docs/plans/p1/VISUAL_STYLE_GUIDE_PLAN.md`
-- `docs/plans/planpack_2025-12-27_tempPlans/generated/CONTENT_DATA_PIPELINE_PLAN.md`
 - `docs/plans/planpack_2025-12-27_tempPlans/keyboard-defense-plans/TYPING_PEDAGOGY.md`
-- `docs/plans/planpack_2025-12-27_tempPlans/keyboard-defense-plans/preprod/CONTENT_PIPELINE_WORDPACKS.md`
-- `docs/plans/SCHEMA_ALIGNMENT_PLAN.md`
 
 Acceptance criteria:
 - New lessons load and validate in headless tests.
@@ -103,9 +198,11 @@ Acceptance criteria:
 - No RNG consumption added to lesson word selection.
 
 ### P1-MAP-001 Map and exploration depth
-Status: Not started
+Status: Partially complete
 
 Add deeper exploration events and map structure while staying deterministic.
+
+**Progress:** Open world exploration mode implemented (`game/open_world.gd`). Tile discovery, resource gathering, roaming enemies, and structure building functional. Kingdom defense mode adds RTS-style map interaction. Remaining work is POI events, map variety, and deeper exploration outcomes.
 
 Planning refs:
 - `docs/plans/p1/MAP_EXPLORATION_PLAN.md`
@@ -196,6 +293,28 @@ Planning refs:
 Acceptance criteria:
 - Audio events map to key gameplay actions.
 - Asset audit rules are respected and documented.
+
+## Future Opportunities (from Story/GDD analysis)
+
+These items are not yet prioritized but represent expansion opportunities based on implemented systems.
+
+### F-ACH-001 Achievement System Integration
+The story system defines 13 achievements in `data/story.json`. UI and persistence for tracking/displaying achievements is not yet implemented.
+
+### F-NUM-001 Numbers and Symbols Lessons
+Story Act 5 introduces number row content (days 17-20). Lessons `numbers_1`, `numbers_2`, `punctuation_1`, `symbols_1` are defined in story.json but not in lessons.json.
+
+### F-BOSS-001 Boss Battle Mode
+Boss encounters are defined (Shadow Scout, Storm Wraith, Stone Golem, Typhos General, Void Tyrant) with unique dialogue but boss-specific mechanics are not distinct from regular combat.
+
+### F-PROG-001 Daily Streak and Milestone Tracking
+Story system defines daily streak messages and WPM/accuracy milestones. Tracking and notification UI not implemented.
+
+### F-LORE-001 Lore Browser
+Kingdom lore, Typhos Horde backstory, and character profiles exist in story.json. No in-game UI to browse lore.
+
+### F-TIP-001 Contextual Tip System
+Extensive typing tips by category (posture, technique, practice, rhythm, etc.) are defined but not surfaced contextually during gameplay.
 
 ## Inspiration / Research
 - Summary: `docs/RESEARCH_SFK_SUMMARY.md`

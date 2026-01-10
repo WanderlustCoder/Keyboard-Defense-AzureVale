@@ -628,6 +628,600 @@
         { "ratio": 3.0, "amplitude": 0.25 },
         { "ratio": 4.0, "amplitude": 0.15 }
       ]
+    },
+    {
+      "id": "tower_arrow",
+      "description": "Arrow tower projectile fired",
+      "category": "tower",
+      "oscillator": {
+        "type": "noise",
+        "frequency": 0
+      },
+      "envelope": {
+        "attack_ms": 2,
+        "decay_ms": 30,
+        "sustain": 0.0,
+        "release_ms": 25
+      },
+      "volume": 0.3,
+      "duration_ms": 60,
+      "filter": {
+        "type": "highpass",
+        "cutoff_hz": 2000,
+        "resonance": 0.3
+      },
+      "pitch_slide": {
+        "start_offset": 500,
+        "end_offset": -200,
+        "curve": "linear"
+      }
+    },
+    {
+      "id": "tower_cannon",
+      "description": "Cannon tower blast",
+      "category": "tower",
+      "oscillator": {
+        "type": "noise",
+        "frequency": 0
+      },
+      "envelope": {
+        "attack_ms": 5,
+        "decay_ms": 80,
+        "sustain": 0.1,
+        "release_ms": 60
+      },
+      "volume": 0.45,
+      "duration_ms": 150,
+      "filter": {
+        "type": "lowpass",
+        "cutoff_hz": 400,
+        "resonance": 0.7
+      },
+      "pitch_slide": {
+        "start_offset": 200,
+        "end_offset": -300,
+        "curve": "exponential"
+      }
+    },
+    {
+      "id": "tower_fire",
+      "description": "Fire tower flame burst",
+      "category": "tower",
+      "oscillator": {
+        "type": "noise",
+        "frequency": 0
+      },
+      "envelope": {
+        "attack_ms": 10,
+        "decay_ms": 100,
+        "sustain": 0.3,
+        "release_ms": 80
+      },
+      "volume": 0.35,
+      "duration_ms": 200,
+      "filter": {
+        "type": "bandpass",
+        "cutoff_hz": 800,
+        "resonance": 0.5
+      },
+      "pitch_slide": {
+        "start_offset": 0,
+        "end_offset": 300,
+        "curve": "exponential"
+      }
+    },
+    {
+      "id": "tower_ice",
+      "description": "Ice tower frost shot",
+      "category": "tower",
+      "oscillator": {
+        "type": "sine",
+        "frequency": 2000
+      },
+      "envelope": {
+        "attack_ms": 5,
+        "decay_ms": 60,
+        "sustain": 0.2,
+        "release_ms": 50
+      },
+      "volume": 0.3,
+      "duration_ms": 120,
+      "pitch_slide": {
+        "start_offset": 500,
+        "end_offset": -1000,
+        "curve": "exponential"
+      },
+      "filter": {
+        "type": "highpass",
+        "cutoff_hz": 1500,
+        "resonance": 0.4
+      }
+    },
+    {
+      "id": "tower_lightning",
+      "description": "Lightning tower zap",
+      "category": "tower",
+      "oscillator": {
+        "type": "square",
+        "frequency": 150
+      },
+      "envelope": {
+        "attack_ms": 2,
+        "decay_ms": 20,
+        "sustain": 0.5,
+        "release_ms": 40
+      },
+      "volume": 0.4,
+      "duration_ms": 80,
+      "pitch_slide": {
+        "start_offset": 2000,
+        "end_offset": -500,
+        "curve": "exponential"
+      },
+      "filter": {
+        "type": "bandpass",
+        "cutoff_hz": 3000,
+        "resonance": 0.6
+      }
+    },
+    {
+      "id": "tower_poison",
+      "description": "Poison tower spit",
+      "category": "tower",
+      "oscillator": {
+        "type": "sawtooth",
+        "frequency": 200
+      },
+      "envelope": {
+        "attack_ms": 15,
+        "decay_ms": 80,
+        "sustain": 0.2,
+        "release_ms": 60
+      },
+      "volume": 0.3,
+      "duration_ms": 160,
+      "pitch_slide": {
+        "start_offset": 100,
+        "end_offset": -150,
+        "curve": "linear"
+      },
+      "filter": {
+        "type": "lowpass",
+        "cutoff_hz": 600,
+        "resonance": 0.5
+      }
+    },
+    {
+      "id": "tower_arcane",
+      "description": "Arcane tower magic bolt",
+      "category": "tower",
+      "oscillator": {
+        "type": "sine",
+        "frequency": 440
+      },
+      "envelope": {
+        "attack_ms": 5,
+        "decay_ms": 70,
+        "sustain": 0.3,
+        "release_ms": 80
+      },
+      "volume": 0.35,
+      "duration_ms": 160,
+      "pitch_slide": {
+        "start_offset": 0,
+        "end_offset": 880,
+        "curve": "exponential"
+      },
+      "harmonics": [
+        { "ratio": 1.5, "amplitude": 0.3 },
+        { "ratio": 2.0, "amplitude": 0.2 }
+      ]
+    },
+    {
+      "id": "tower_holy",
+      "description": "Holy tower radiance",
+      "category": "tower",
+      "oscillator": {
+        "type": "sine",
+        "frequency": 880
+      },
+      "envelope": {
+        "attack_ms": 10,
+        "decay_ms": 100,
+        "sustain": 0.4,
+        "release_ms": 100
+      },
+      "volume": 0.35,
+      "duration_ms": 220,
+      "pitch_slide": {
+        "start_offset": 0,
+        "end_offset": 440,
+        "curve": "exponential"
+      },
+      "harmonics": [
+        { "ratio": 2.0, "amplitude": 0.4 },
+        { "ratio": 3.0, "amplitude": 0.25 },
+        { "ratio": 4.0, "amplitude": 0.15 }
+      ]
+    },
+    {
+      "id": "tower_siege",
+      "description": "Siege tower heavy blast",
+      "category": "tower",
+      "oscillator": {
+        "type": "noise",
+        "frequency": 0
+      },
+      "envelope": {
+        "attack_ms": 10,
+        "decay_ms": 150,
+        "sustain": 0.2,
+        "release_ms": 100
+      },
+      "volume": 0.55,
+      "duration_ms": 280,
+      "filter": {
+        "type": "lowpass",
+        "cutoff_hz": 300,
+        "resonance": 0.8
+      },
+      "pitch_slide": {
+        "start_offset": 100,
+        "end_offset": -400,
+        "curve": "exponential"
+      }
+    },
+    {
+      "id": "tower_multi",
+      "description": "Multi-shot tower volley",
+      "category": "tower",
+      "oscillator": {
+        "type": "noise",
+        "frequency": 0
+      },
+      "envelope": {
+        "attack_ms": 2,
+        "decay_ms": 25,
+        "sustain": 0.0,
+        "release_ms": 20
+      },
+      "volume": 0.25,
+      "duration_ms": 50,
+      "filter": {
+        "type": "highpass",
+        "cutoff_hz": 2500,
+        "resonance": 0.2
+      }
+    },
+    {
+      "id": "status_freeze",
+      "description": "Enemy frozen status applied",
+      "category": "status",
+      "oscillator": {
+        "type": "sine",
+        "frequency": 1500
+      },
+      "envelope": {
+        "attack_ms": 5,
+        "decay_ms": 80,
+        "sustain": 0.2,
+        "release_ms": 100
+      },
+      "volume": 0.35,
+      "duration_ms": 200,
+      "pitch_slide": {
+        "start_offset": 500,
+        "end_offset": -800,
+        "curve": "exponential"
+      },
+      "filter": {
+        "type": "highpass",
+        "cutoff_hz": 1000,
+        "resonance": 0.5
+      }
+    },
+    {
+      "id": "status_burn",
+      "description": "Burning damage tick",
+      "category": "status",
+      "oscillator": {
+        "type": "noise",
+        "frequency": 0
+      },
+      "envelope": {
+        "attack_ms": 5,
+        "decay_ms": 40,
+        "sustain": 0.1,
+        "release_ms": 30
+      },
+      "volume": 0.2,
+      "duration_ms": 80,
+      "filter": {
+        "type": "bandpass",
+        "cutoff_hz": 1200,
+        "resonance": 0.4
+      }
+    },
+    {
+      "id": "status_poison",
+      "description": "Poison damage tick",
+      "category": "status",
+      "oscillator": {
+        "type": "sawtooth",
+        "frequency": 150
+      },
+      "envelope": {
+        "attack_ms": 10,
+        "decay_ms": 50,
+        "sustain": 0.1,
+        "release_ms": 40
+      },
+      "volume": 0.2,
+      "duration_ms": 100,
+      "pitch_slide": {
+        "start_offset": 50,
+        "end_offset": -80,
+        "curve": "linear"
+      },
+      "filter": {
+        "type": "lowpass",
+        "cutoff_hz": 400,
+        "resonance": 0.5
+      }
+    },
+    {
+      "id": "status_stun",
+      "description": "Stun status applied",
+      "category": "status",
+      "oscillator": {
+        "type": "sine",
+        "frequency": 600
+      },
+      "envelope": {
+        "attack_ms": 3,
+        "decay_ms": 60,
+        "sustain": 0.3,
+        "release_ms": 80
+      },
+      "volume": 0.35,
+      "duration_ms": 150,
+      "pitch_slide": {
+        "start_offset": 400,
+        "end_offset": -200,
+        "curve": "exponential"
+      },
+      "harmonics": [
+        { "ratio": 1.5, "amplitude": 0.3 },
+        { "ratio": 2.5, "amplitude": 0.2 }
+      ]
+    },
+    {
+      "id": "status_slow",
+      "description": "Slow status applied",
+      "category": "status",
+      "oscillator": {
+        "type": "triangle",
+        "frequency": 300
+      },
+      "envelope": {
+        "attack_ms": 20,
+        "decay_ms": 100,
+        "sustain": 0.2,
+        "release_ms": 80
+      },
+      "volume": 0.3,
+      "duration_ms": 200,
+      "pitch_slide": {
+        "start_offset": 100,
+        "end_offset": -200,
+        "curve": "exponential"
+      },
+      "filter": {
+        "type": "lowpass",
+        "cutoff_hz": 800,
+        "resonance": 0.4
+      }
+    },
+    {
+      "id": "enemy_death",
+      "description": "Standard enemy defeated",
+      "category": "combat",
+      "oscillator": {
+        "type": "square",
+        "frequency": 300
+      },
+      "envelope": {
+        "attack_ms": 3,
+        "decay_ms": 60,
+        "sustain": 0.1,
+        "release_ms": 80
+      },
+      "volume": 0.35,
+      "duration_ms": 150,
+      "pitch_slide": {
+        "start_offset": 100,
+        "end_offset": -200,
+        "curve": "exponential"
+      },
+      "filter": {
+        "type": "lowpass",
+        "cutoff_hz": 1000,
+        "resonance": 0.4
+      }
+    },
+    {
+      "id": "critical_hit",
+      "description": "Critical damage dealt",
+      "category": "combat",
+      "oscillator": {
+        "type": "sine",
+        "frequency": 880
+      },
+      "envelope": {
+        "attack_ms": 2,
+        "decay_ms": 40,
+        "sustain": 0.3,
+        "release_ms": 60
+      },
+      "volume": 0.45,
+      "duration_ms": 110,
+      "pitch_slide": {
+        "start_offset": 0,
+        "end_offset": 440,
+        "curve": "exponential"
+      },
+      "harmonics": [
+        { "ratio": 2.0, "amplitude": 0.4 },
+        { "ratio": 3.0, "amplitude": 0.2 }
+      ]
+    },
+    {
+      "id": "word_complete",
+      "description": "Full word typed correctly",
+      "category": "typing",
+      "oscillator": {
+        "type": "sine",
+        "frequency": 523
+      },
+      "envelope": {
+        "attack_ms": 5,
+        "decay_ms": 80,
+        "sustain": 0.3,
+        "release_ms": 80
+      },
+      "volume": 0.35,
+      "duration_ms": 170,
+      "pitch_slide": {
+        "start_offset": 0,
+        "end_offset": 523,
+        "curve": "exponential"
+      },
+      "harmonics": [
+        { "ratio": 2.0, "amplitude": 0.3 },
+        { "ratio": 3.0, "amplitude": 0.15 }
+      ]
+    },
+    {
+      "id": "shield_activate",
+      "description": "Shield buff activated",
+      "category": "status",
+      "oscillator": {
+        "type": "sine",
+        "frequency": 660
+      },
+      "envelope": {
+        "attack_ms": 10,
+        "decay_ms": 100,
+        "sustain": 0.4,
+        "release_ms": 100
+      },
+      "volume": 0.35,
+      "duration_ms": 220,
+      "pitch_slide": {
+        "start_offset": -100,
+        "end_offset": 200,
+        "curve": "exponential"
+      },
+      "harmonics": [
+        { "ratio": 1.5, "amplitude": 0.3 },
+        { "ratio": 2.0, "amplitude": 0.2 }
+      ]
+    },
+    {
+      "id": "shield_break",
+      "description": "Shield depleted/broken",
+      "category": "status",
+      "oscillator": {
+        "type": "noise",
+        "frequency": 0
+      },
+      "envelope": {
+        "attack_ms": 5,
+        "decay_ms": 80,
+        "sustain": 0.1,
+        "release_ms": 60
+      },
+      "volume": 0.4,
+      "duration_ms": 150,
+      "filter": {
+        "type": "bandpass",
+        "cutoff_hz": 2000,
+        "resonance": 0.5
+      }
+    },
+    {
+      "id": "heal_tick",
+      "description": "Health restored",
+      "category": "status",
+      "oscillator": {
+        "type": "sine",
+        "frequency": 880
+      },
+      "envelope": {
+        "attack_ms": 10,
+        "decay_ms": 60,
+        "sustain": 0.2,
+        "release_ms": 60
+      },
+      "volume": 0.3,
+      "duration_ms": 140,
+      "pitch_slide": {
+        "start_offset": -200,
+        "end_offset": 200,
+        "curve": "exponential"
+      },
+      "harmonics": [
+        { "ratio": 2.0, "amplitude": 0.25 }
+      ]
+    },
+    {
+      "id": "speed_boost",
+      "description": "Speed buff activated",
+      "category": "status",
+      "oscillator": {
+        "type": "sine",
+        "frequency": 1047
+      },
+      "envelope": {
+        "attack_ms": 5,
+        "decay_ms": 50,
+        "sustain": 0.3,
+        "release_ms": 50
+      },
+      "volume": 0.3,
+      "duration_ms": 110,
+      "pitch_slide": {
+        "start_offset": 0,
+        "end_offset": 500,
+        "curve": "exponential"
+      }
+    },
+    {
+      "id": "damage_boost",
+      "description": "Damage buff activated",
+      "category": "status",
+      "oscillator": {
+        "type": "sawtooth",
+        "frequency": 220
+      },
+      "envelope": {
+        "attack_ms": 10,
+        "decay_ms": 80,
+        "sustain": 0.3,
+        "release_ms": 70
+      },
+      "volume": 0.35,
+      "duration_ms": 170,
+      "pitch_slide": {
+        "start_offset": 0,
+        "end_offset": 220,
+        "curve": "exponential"
+      },
+      "filter": {
+        "type": "lowpass",
+        "cutoff_hz": 1200,
+        "resonance": 0.3
+      }
     }
   ],
   "mixing": {

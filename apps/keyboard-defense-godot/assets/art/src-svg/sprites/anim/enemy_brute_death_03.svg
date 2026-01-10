@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Enemy Brute Death Frame 3 - Crashed on ground -->
+
+  <!-- Shadow (full width) -->
+  <rect x="0" y="14" width="16" height="2" fill="#2a2a3a"/>
+
+  <!-- Body (flattened on ground) -->
+  <rect x="1" y="11" width="12" height="5" fill="#4a4a4a"/>
+
+  <!-- Armor plates (scattered) -->
+  <rect x="2" y="12" width="4" height="2" fill="#5a5a5a"/>
+  <rect x="8" y="11" width="4" height="2" fill="#5a5a5a"/>
+
+  <!-- Helmet (separate) -->
+  <rect x="12" y="8" width="3" height="3" fill="#4a4a4a"/>
+  <rect x="13" y="7" width="2" height="2" fill="#3a3a3a"/>
+
+  <!-- Eyes (dead) -->
+  <rect x="3" y="13" width="1" height="1" fill="#3a3a3a"/>
+  <rect x="5" y="13" width="1" height="1" fill="#3a3a3a"/>
+
+  <!-- Weapon (broken) -->
+  <rect x="14" y="13" width="2" height="3" fill="#5c3d2e"/>
+  <rect x="0" y="11" width="3" height="2" fill="#4a4a4a"/>
+
+  <!-- Shield (cracked) -->
+  <rect x="0" y="14" width="2" height="2" fill="#5a5a5a"/>
+
+  <!-- Debris particles -->
+  <rect x="6" y="9" width="1" height="1" fill="#5a5a5a" opacity="0.6"/>
+  <rect x="10" y="7" width="1" height="1" fill="#4a4a4a" opacity="0.5"/>
+  <rect x="4" y="8" width="1" height="1" fill="#5a5a5a" opacity="0.4"/>
+</svg>

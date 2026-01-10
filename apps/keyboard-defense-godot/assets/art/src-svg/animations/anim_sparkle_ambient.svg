@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 12" width="48" height="12">
+  <!-- Sparkle Ambient Animation (4 frames, 12x12 each) -->
+  <!-- Color Palette: #f4d03f, #f7dc6f, #fcf3cf -->
+
+  <!-- Frame 1: Small sparkles -->
+  <rect x="3" y="3" width="1" height="1" fill="#f4d03f"/>
+  <rect x="7" y="8" width="1" height="1" fill="#f7dc6f"/>
+  <rect x="9" y="4" width="1" height="1" fill="#fcf3cf"/>
+
+  <!-- Frame 2: Growing -->
+  <rect x="14" y="2" width="2" height="2" fill="#f4d03f"/>
+  <rect x="15" y="3" width="1" height="1" fill="#fcf3cf"/>
+  <rect x="19" y="7" width="2" height="2" fill="#f7dc6f"/>
+  <rect x="21" y="3" width="1" height="1" fill="#f4d03f"/>
+
+  <!-- Frame 3: Bright -->
+  <rect x="26" y="1" width="3" height="3" fill="#f4d03f"/>
+  <rect x="27" y="2" width="1" height="1" fill="#fcf3cf"/>
+  <rect x="25" y="2" width="1" height="1" fill="#f7dc6f"/>
+  <rect x="29" y="2" width="1" height="1" fill="#f7dc6f"/>
+  <rect x="31" y="6" width="2" height="2" fill="#f7dc6f"/>
+  <rect x="32" y="7" width="1" height="1" fill="#fcf3cf"/>
+  <rect x="34" y="9" width="1" height="1" fill="#f4d03f"/>
+
+  <!-- Frame 4: Fading -->
+  <rect x="39" y="3" width="1" height="1" fill="#f7dc6f"/>
+  <rect x="43" y="5" width="1" height="1" fill="#f4d03f"/>
+  <rect x="45" y="8" width="1" height="1" fill="#fcf3cf"/>
+</svg>

@@ -69,6 +69,39 @@ func spawn_damage_flash(parent: Node, position: Vector2) -> void:
 			"fade_start": PARTICLE_LIFETIME * 0.3
 		})
 
+func spawn_word_complete_burst(parent: Node, position: Vector2) -> void:
+	# Celebratory upward burst when a word is completed
+	# Golden/cyan particles that fountain upward
+	var particle_count := 12
+	for i in range(particle_count):
+		var particle := ColorRect.new()
+		# Alternate between star-like and round particles
+		if i % 3 == 0:
+			particle.size = SPARK_SIZE * 1.2
+		else:
+			particle.size = PARTICLE_SIZE * 1.1
+
+		# Golden to cyan gradient based on particle index
+		var t := float(i) / float(particle_count)
+		var gold := Color(1.0, 0.85, 0.3, 1.0)
+		var cyan := Color(0.4, 0.9, 1.0, 1.0)
+		particle.color = gold.lerp(cyan, t * 0.6)
+		particle.position = position - particle.size * 0.5 + Vector2(randf_range(-8, 8), 0)
+		parent.add_child(particle)
+
+		# Upward burst with slight horizontal spread
+		var angle := -PI / 2.0 + randf_range(-0.5, 0.5)  # Mostly upward
+		var speed := PARTICLE_SPEED * 1.3 * (0.6 + randf() * 0.6)
+		var velocity := Vector2(cos(angle), sin(angle)) * speed
+
+		_active_particles.append({
+			"node": particle,
+			"velocity": velocity,
+			"lifetime": PARTICLE_LIFETIME * 1.0,
+			"fade_start": PARTICLE_LIFETIME * 0.4,
+			"no_gravity": false  # Will arc down naturally
+		})
+
 func update(delta: float) -> void:
 	for i in range(_active_particles.size() - 1, -1, -1):
 		var p = _active_particles[i]

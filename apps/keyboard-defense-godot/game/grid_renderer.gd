@@ -4,6 +4,7 @@ const GameState = preload("res://sim/types.gd")
 const SimMap = preload("res://sim/map.gd")
 const SimEnemies = preload("res://sim/enemies.gd")
 const SimPoi = preload("res://sim/poi.gd")
+const SimUpgrades = preload("res://sim/upgrades.gd")
 const AssetLoader = preload("res://game/asset_loader.gd")
 
 @export var cell_size: Vector2 = Vector2(40, 40)
@@ -41,6 +42,8 @@ var enemies: Array = []
 var active_pois: Dictionary = {}
 var roaming_enemies: Array = []
 var time_of_day: float = 0.25
+var threat_level: float = 0.0
+var activity_mode: String = "exploration"
 var font: Font
 var preview_type: String = ""
 var overlay_path_enabled: bool = false
@@ -66,6 +69,20 @@ var _combo_ring_radius: float = 0.0
 
 # Reduced motion setting (synced from main)
 var reduced_motion: bool = false
+var _aura_pulse_time: float = 0.0
+
+# Animation state tracking
+var _enemy_anim_state: Dictionary = {}  # enemy_id -> {anim_name, frame, timer, kind}
+var _hit_flash_timers: Dictionary = {}  # enemy_id -> flash_time_remaining
+var _damage_numbers: Array = []  # Array of damage number data
+var _building_anim_state: Dictionary = {}  # building_index -> {anim_name, frame, timer}
+const HIT_FLASH_DURATION := 0.12
+const DAMAGE_NUMBER_LIFETIME := 0.9
+const DAMAGE_NUMBER_RISE_SPEED := 50.0
+
+# Animation configuration
+const ENEMY_WALK_FPS := 8.0
+const ENEMY_DEATH_FPS := 10.0
 
 ## Helper to add particle with limit check
 func _add_particle(p: Dictionary) -> void:
@@ -92,6 +109,10 @@ func _preload_textures() -> void:
 		if tex != null:
 			texture_cache[id] = tex
 
+	# Preload animation frames
+	if asset_loader.has_method("preload_animation_textures"):
+		asset_loader.preload_animation_textures()
+
 func _get_texture(id: String) -> Texture2D:
 	if texture_cache.has(id):
 		return texture_cache[id]
@@ -110,10 +131,16 @@ func update_state(state: GameState) -> void:
 	terrain = state.terrain.duplicate(true)
 	structures = state.structures.duplicate(true)
 	structure_levels = state.structure_levels.duplicate(true)
+
+	# Track enemy animations - register new, unregister removed
+	_sync_enemy_animations(state.enemies)
+
 	enemies = state.enemies.duplicate(true)
 	active_pois = state.active_pois.duplicate(true)
 	roaming_enemies = state.roaming_enemies.duplicate(true)
 	time_of_day = state.time_of_day
+	threat_level = state.threat_level
+	activity_mode = state.activity_mode
 	queue_redraw()
 
 func set_preview_type(building_type: String) -> void:
@@ -176,7 +203,7 @@ func _draw() -> void:
 				var building_type: String = str(structures[index])
 				var level: int = int(structure_levels.get(index, 1))
 				if use_sprites:
-					_draw_structure_sprite(rect, building_type, level)
+					_draw_structure_sprite(rect, building_type, level, index)
 				else:
 					var symbol: String = _structure_char(building_type, level)
 					var text_pos: Vector2 = rect.position + Vector2(6, cell_size.y - 10)
@@ -221,13 +248,28 @@ func _draw() -> void:
 	if preview_type != "":
 		var preview_index: int = cursor_pos.y * map_w + cursor_pos.x
 		var preview_rect: Rect2 = Rect2(origin + Vector2(cursor_pos.x * cell_size.x, cursor_pos.y * cell_size.y), cell_size)
-		var preview_buildable: bool = _is_preview_buildable(preview_index)
+		var preview_result: Dictionary = _get_preview_buildable_info(preview_index)
+		var preview_buildable: bool = preview_result.get("buildable", false)
+		var block_reason: String = preview_result.get("reason", "")
+
+		# Draw glow effect for valid placements
+		if preview_buildable and not reduced_motion:
+			var pulse := (sin(_aura_pulse_time * 4.0) + 1.0) * 0.5
+			var glow_alpha := 0.15 + pulse * 0.15
+			var glow_color := Color(0.3, 0.9, 0.4, glow_alpha)
+			draw_rect(preview_rect.grow(2.0 + pulse * 2.0), glow_color)
+
+		# Draw blocked indicator with pulsing red border
+		if not preview_buildable and not reduced_motion:
+			var pulse := (sin(_aura_pulse_time * 5.0) + 1.0) * 0.5
+			var border_color := Color(0.9, 0.3, 0.2, 0.5 + pulse * 0.3)
+			draw_rect(preview_rect, border_color, false, 2.0)
 
 		if use_sprites:
 			var sprite_id := asset_loader.get_building_sprite_id(preview_type)
 			var tex := _get_texture(sprite_id)
 			if tex != null:
-				var mod_color := Color(1, 1, 1, 0.6) if preview_buildable else Color(1, 0.4, 0.4, 0.6)
+				var mod_color := Color(1, 1, 1, 0.7) if preview_buildable else Color(1, 0.4, 0.4, 0.5)
 				_draw_centered_texture(preview_rect, tex, mod_color)
 		else:
 			var preview_symbol: String = _structure_char(preview_type, 1).to_lower()
@@ -235,6 +277,13 @@ func _draw() -> void:
 			var preview_text_pos: Vector2 = preview_rect.position + Vector2(6, cell_size.y - 10)
 			var preview_draw: String = preview_symbol if preview_buildable else "x"
 			draw_string(font, preview_text_pos, preview_draw, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, preview_color_local)
+
+		# Draw block reason tooltip below cursor
+		if not preview_buildable and block_reason != "":
+			var tooltip_pos := preview_rect.position + Vector2(0, cell_size.y + 4)
+			var tooltip_bg := Rect2(tooltip_pos - Vector2(2, 2), Vector2(cell_size.x + 4, 16))
+			draw_rect(tooltip_bg, Color(0.1, 0.1, 0.15, 0.9))
+			draw_string(font, tooltip_pos + Vector2(2, 10), block_reason, HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color(0.9, 0.5, 0.4))
 
 	# Draw enemies
 	for enemy in enemies:
@@ -256,18 +305,32 @@ func _draw() -> void:
 		var kind: String = str(enemy.get("kind", "raider"))
 		if use_sprites:
 			var sprite_id := asset_loader.get_enemy_sprite_id(kind)
-			var tex := _get_texture(sprite_id)
+
+			# Try to get animated frame if animation is registered
+			var frame_tex: Texture2D = null
+			if _enemy_anim_state.has(enemy_id):
+				var anim_state: Dictionary = _enemy_anim_state[enemy_id]
+				var anim_type: String = anim_state.get("anim_type", "walk")
+				var frame: int = anim_state.get("frame", 0)
+				var anim_id := asset_loader.get_enemy_animation_id(kind, anim_type)
+				if not anim_id.is_empty():
+					frame_tex = asset_loader.get_animation_frame(anim_id, frame)
+
+			var tex: Texture2D = frame_tex if frame_tex != null else _get_texture(sprite_id)
 			if tex != null:
-				_draw_centered_texture(enemy_rect, tex)
+				# Use enhanced enemy sprite drawing with backdrop and outline
+				_draw_enemy_sprite(enemy_rect, tex, kind, Color.WHITE, enemy_id)
+
+				# Draw hit flash overlay
+				if _hit_flash_timers.has(enemy_id):
+					var flash_alpha: float = _hit_flash_timers[enemy_id] / HIT_FLASH_DURATION
+					var flash_color := Color(1.0, 1.0, 1.0, flash_alpha * 0.7)
+					draw_rect(enemy_rect.grow(-4.0), flash_color, true)
 			else:
-				# Fallback to glyph
-				var glyph: String = SimEnemies.enemy_glyph(kind)
-				var enemy_text_pos: Vector2 = enemy_rect.position + Vector2(6, cell_size.y - 10)
-				draw_string(font, enemy_text_pos, glyph, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, enemy_color)
+				# Fallback to glyph with background
+				_draw_enemy_glyph(enemy_rect, kind)
 		else:
-			var glyph: String = SimEnemies.enemy_glyph(kind)
-			var enemy_text_pos: Vector2 = enemy_rect.position + Vector2(6, cell_size.y - 10)
-			draw_string(font, enemy_text_pos, glyph, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, enemy_color)
+			_draw_enemy_glyph(enemy_rect, kind)
 
 		# Draw HP text
 		var hp_text: String = str(enemy.get("hp", 0))
@@ -280,7 +343,6 @@ func _draw() -> void:
 			draw_string(font, enemy_rect.position + Vector2(6, 16), initial, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size - 6, enemy_color)
 
 	# Draw roaming enemies (semi-transparent, wandering)
-	var roaming_color: Color = Color(enemy_color.r, enemy_color.g, enemy_color.b, 0.6)
 	for entity in roaming_enemies:
 		if typeof(entity) != TYPE_DICTIONARY:
 			continue
@@ -292,24 +354,23 @@ func _draw() -> void:
 
 		# Draw with pulsing effect for wandering enemies
 		var pulse: float = (sin(Time.get_ticks_msec() * 0.003) + 1.0) * 0.15
-		var pulse_color: Color = Color(roaming_color.r + pulse, roaming_color.g, roaming_color.b, 0.5 + pulse)
+		var pulse_alpha: float = 0.6 + pulse * 0.3
 
 		if use_sprites:
 			var sprite_id := asset_loader.get_enemy_sprite_id(kind)
 			var tex := _get_texture(sprite_id)
 			if tex != null:
-				_draw_centered_texture(roam_rect, tex, pulse_color)
+				# Use enhanced enemy sprite with pulsing alpha
+				var pulse_mod := Color(1.0, 1.0, 1.0, pulse_alpha)
+				_draw_enemy_sprite(roam_rect, tex, kind, pulse_mod)
 			else:
-				var glyph: String = SimEnemies.enemy_glyph(kind)
-				var text_pos: Vector2 = roam_rect.position + Vector2(6, cell_size.y - 10)
-				draw_string(font, text_pos, glyph, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, pulse_color)
+				_draw_enemy_glyph(roam_rect, kind)
 		else:
-			var glyph: String = SimEnemies.enemy_glyph(kind)
-			var text_pos: Vector2 = roam_rect.position + Vector2(6, cell_size.y - 10)
-			draw_string(font, text_pos, glyph, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, pulse_color)
+			_draw_enemy_glyph(roam_rect, kind)
 
 		# Draw "?" to indicate not yet engaged
-		draw_string(font, roam_rect.position + Vector2(22, 16), "?", HORIZONTAL_ALIGNMENT_LEFT, -1, font_size - 4, pulse_color)
+		var question_color := Color(0.9, 0.8, 0.4, pulse_alpha)
+		draw_string(font, roam_rect.position + Vector2(22, 16), "?", HORIZONTAL_ALIGNMENT_LEFT, -1, font_size - 4, question_color)
 
 	# Draw base with state-based sprite
 	var base_rect: Rect2 = Rect2(origin + Vector2(base_pos.x * cell_size.x, base_pos.y * cell_size.y), cell_size)
@@ -390,6 +451,12 @@ func _draw() -> void:
 		var map_rect: Rect2 = Rect2(origin, Vector2(map_w * cell_size.x, map_h * cell_size.y))
 		draw_rect(map_rect, night_overlay, true)
 
+	# Draw threat level indicator bar (top of map)
+	_draw_threat_bar()
+
+	# Draw activity mode indicator
+	_draw_activity_mode()
+
 	# Draw cursor
 	var cursor_rect: Rect2 = Rect2(origin + Vector2(cursor_pos.x * cell_size.x, cursor_pos.y * cell_size.y), cell_size)
 	draw_rect(cursor_rect.grow(-2.0), cursor_color, false, 2.0)
@@ -397,38 +464,221 @@ func _draw() -> void:
 	# Draw particles on top
 	_draw_particles()
 
+	# Draw damage numbers above everything
+	_draw_damage_numbers()
+
 func _process(delta: float) -> void:
 	update_particles(delta)
+	_update_animations(delta)
+	_update_hit_flashes(delta)
+	_update_damage_numbers(delta)
+	_aura_pulse_time += delta
 
 func _draw_centered_texture(rect: Rect2, tex: Texture2D, mod_color: Color = Color.WHITE) -> void:
 	var tex_size := tex.get_size()
-	var scale_factor: float = minf(rect.size.x / tex_size.x, rect.size.y / tex_size.y) * 0.9
+	var scale_factor: float = minf(rect.size.x / tex_size.x, rect.size.y / tex_size.y) * 0.95
 	var scaled_size: Vector2 = tex_size * scale_factor
 	var offset: Vector2 = (rect.size - scaled_size) * 0.5
 	var dest_rect := Rect2(rect.position + offset, scaled_size)
 	draw_texture_rect(tex, dest_rect, false, mod_color)
 
+## Draw enemy sprite with enhanced visibility (shadow + outline)
+## enemy_id is optional - pass -1 to skip procedural animation
+func _draw_enemy_sprite(rect: Rect2, tex: Texture2D, kind: String, mod_color: Color = Color.WHITE, enemy_id: int = -1) -> void:
+	var tex_size := tex.get_size()
+	var scale_factor: float = minf(rect.size.x / tex_size.x, rect.size.y / tex_size.y) * 0.95
+	var scaled_size: Vector2 = tex_size * scale_factor
+	var offset: Vector2 = (rect.size - scaled_size) * 0.5
+
+	# Apply procedural animation if we have animation state
+	var anim_offset := Vector2.ZERO
+	var anim_scale := 1.0
+	var anim_rotation := 0.0
+
+	if enemy_id >= 0 and _enemy_anim_state.has(enemy_id) and not reduced_motion:
+		var anim_state: Dictionary = _enemy_anim_state[enemy_id]
+		var frame: int = anim_state.get("frame", 0)
+		var frame_count: int = anim_state.get("frame_count", 4)
+		var anim_type: String = anim_state.get("anim_type", "walk")
+		var phase: float = float(frame) / float(max(1, frame_count))
+
+		if anim_type == "walk":
+			# Bobbing motion - sine wave based on frame
+			anim_offset.y = sin(phase * TAU) * 2.5
+			# Subtle lean - simulates stepping motion
+			anim_rotation = sin(phase * TAU) * 0.08
+			# Slight scale pulse
+			anim_scale = 1.0 + sin(phase * TAU * 2.0) * 0.03
+		elif anim_type == "death":
+			# Death animation - sink and fade
+			var death_progress := phase
+			anim_offset.y = death_progress * 8.0  # Sink down
+			anim_scale = 1.0 - death_progress * 0.4  # Shrink
+			anim_rotation = death_progress * 0.3  # Tilt
+			mod_color.a *= (1.0 - death_progress * 0.7)  # Fade
+
+	# Apply animation transforms
+	scaled_size *= anim_scale
+	offset = (rect.size - scaled_size) * 0.5 + anim_offset
+	var dest_rect := Rect2(rect.position + offset, scaled_size)
+
+	# Draw dark backdrop circle for contrast
+	var center := rect.position + rect.size * 0.5 + anim_offset
+	var backdrop_radius := scaled_size.x * 0.55
+
+	# Draw subtle colored outline based on enemy type
+	var outline_color: Color
+	var is_elite := false
+	match kind:
+		"runner", "raider", "scout":
+			outline_color = Color(0.9, 0.3, 0.2, 0.6)  # Red (fast)
+		"brute", "armored":
+			outline_color = Color(0.6, 0.3, 0.7, 0.6)  # Purple (tanky)
+		"flyer":
+			outline_color = Color(0.4, 0.6, 0.9, 0.6)  # Blue (aerial)
+		"shielder":
+			outline_color = Color(0.3, 0.7, 0.9, 0.6)  # Cyan (defensive)
+		"healer":
+			outline_color = Color(0.3, 0.8, 0.4, 0.6)  # Green (support)
+		"boss_warlord", "boss_mage":
+			outline_color = Color(1.0, 0.7, 0.2, 0.9)  # Gold (boss)
+			is_elite = true
+		_:
+			outline_color = Color(0.8, 0.3, 0.3, 0.5)  # Default red
+
+	# Draw pulsing outer aura for elite/boss enemies
+	if not reduced_motion and is_elite:
+		var pulse := (sin(_aura_pulse_time * 3.0) + 1.0) * 0.5  # 0 to 1
+		var aura_alpha := 0.15 + pulse * 0.2
+		var aura_radius := backdrop_radius + 4.0 + pulse * 3.0
+		var aura_color := outline_color
+		aura_color.a = aura_alpha
+		draw_circle(center, aura_radius, aura_color)
+
+	# Draw backdrop
+	draw_circle(center, backdrop_radius, Color(0.08, 0.08, 0.12, 0.85))
+
+	# Draw type indicator ring
+	draw_arc(center, backdrop_radius + 1.5, 0.0, TAU, 16, outline_color, 2.0)
+
+	# Draw the sprite with rotation if needed
+	if abs(anim_rotation) > 0.001:
+		# For rotation, we need to use draw_set_transform
+		var sprite_center := dest_rect.position + dest_rect.size * 0.5
+		draw_set_transform(sprite_center, anim_rotation, Vector2.ONE)
+		var rotated_rect := Rect2(-dest_rect.size * 0.5, dest_rect.size)
+		draw_texture_rect(tex, rotated_rect, false, mod_color)
+		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)  # Reset transform
+	else:
+		draw_texture_rect(tex, dest_rect, false, mod_color)
+
 func _draw_tiled_texture(rect: Rect2, tex: Texture2D) -> void:
 	# Draw texture scaled to fit cell
 	draw_texture_rect(tex, rect, false)
 
-func _draw_structure_sprite(rect: Rect2, building_type: String, level: int) -> void:
+## Draw enemy glyph fallback with backdrop for visibility
+func _draw_enemy_glyph(rect: Rect2, kind: String) -> void:
+	var center := rect.position + rect.size * 0.5
+	var backdrop_radius := rect.size.x * 0.4
+
+	# Draw dark backdrop circle
+	draw_circle(center, backdrop_radius, Color(0.08, 0.08, 0.12, 0.85))
+
+	# Get outline color based on enemy type
+	var outline_color: Color
+	match kind:
+		"runner", "raider", "scout":
+			outline_color = Color(0.9, 0.3, 0.2, 0.6)
+		"brute", "armored":
+			outline_color = Color(0.5, 0.4, 0.6, 0.6)
+		"flyer":
+			outline_color = Color(0.6, 0.3, 0.7, 0.6)
+		"shielder":
+			outline_color = Color(0.3, 0.5, 0.7, 0.6)
+		"healer":
+			outline_color = Color(0.3, 0.7, 0.4, 0.6)
+		"boss_warlord", "boss_mage":
+			outline_color = Color(1.0, 0.7, 0.2, 0.8)
+		_:
+			outline_color = Color(0.8, 0.3, 0.3, 0.5)
+
+	draw_arc(center, backdrop_radius + 1.5, 0.0, TAU, 16, outline_color, 2.0)
+
+	# Draw glyph
+	var glyph: String = SimEnemies.enemy_glyph(kind)
+	var text_pos: Vector2 = rect.position + Vector2(rect.size.x * 0.3, rect.size.y * 0.65)
+	draw_string(font, text_pos, glyph, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, enemy_color)
+
+func _draw_structure_sprite(rect: Rect2, building_type: String, level: int, building_index: int = -1) -> void:
 	var sprite_id := asset_loader.get_building_sprite_id(building_type)
 	# For towers, try to get level-specific sprite
 	if building_type == "tower" and level > 1:
 		var leveled_id := "bld_tower_slow" if level >= 2 else sprite_id
-		var tex := _get_texture(leveled_id)
-		if tex != null:
-			_draw_centered_texture(rect, tex)
-			return
+		sprite_id = leveled_id
+
 	var tex := _get_texture(sprite_id)
-	if tex != null:
-		_draw_centered_texture(rect, tex)
-	else:
+	if tex == null:
 		# Fallback to text
 		var symbol: String = _structure_char(building_type, level)
 		var text_pos: Vector2 = rect.position + Vector2(6, cell_size.y - 10)
 		draw_string(font, text_pos, symbol, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, structure_color)
+		return
+
+	# Check for animation state
+	var anim_offset := Vector2.ZERO
+	var anim_scale := 1.0
+	var mod_color := Color.WHITE
+	var draw_muzzle_flash := false
+
+	if building_index >= 0 and _building_anim_state.has(building_index) and not reduced_motion:
+		var anim_state: Dictionary = _building_anim_state[building_index]
+		var anim_type: String = anim_state.get("anim_type", "")
+		var frame: int = anim_state.get("frame", 0)
+		var frame_count: int = anim_state.get("frame_count", 3)
+		var phase: float = float(frame) / float(max(1, frame_count))
+
+		match anim_type:
+			"fire":
+				# Tower firing animation - recoil and flash
+				if frame == 0:
+					# Recoil backwards (up for top-down view)
+					anim_offset.y = -3.0
+					anim_scale = 1.05
+					draw_muzzle_flash = true
+				elif frame == 1:
+					anim_offset.y = -1.0
+					anim_scale = 1.02
+				else:
+					# Return to normal
+					anim_offset.y = 0.0
+					anim_scale = 1.0
+			"pulse":
+				# Slow tower pulse effect
+				var pulse := sin(phase * TAU)
+				anim_scale = 1.0 + pulse * 0.08
+				# Glow effect
+				mod_color = Color(1.0 + pulse * 0.15, 1.0 + pulse * 0.1, 1.2 + pulse * 0.2, 1.0)
+			"construct":
+				# Construction animation - rise up and fade in
+				var rise := (1.0 - phase) * 6.0
+				anim_offset.y = rise
+				mod_color.a = 0.5 + phase * 0.5
+				anim_scale = 0.85 + phase * 0.15
+
+	# Draw with animation transforms
+	var tex_size := tex.get_size()
+	var scale_factor: float = minf(rect.size.x / tex_size.x, rect.size.y / tex_size.y) * 0.95 * anim_scale
+	var scaled_size: Vector2 = tex_size * scale_factor
+	var offset: Vector2 = (rect.size - scaled_size) * 0.5 + anim_offset
+	var dest_rect := Rect2(rect.position + offset, scaled_size)
+	draw_texture_rect(tex, dest_rect, false, mod_color)
+
+	# Draw muzzle flash effect for tower firing
+	if draw_muzzle_flash and building_type == "tower":
+		var flash_center := rect.position + rect.size * 0.5 + Vector2(0, -rect.size.y * 0.35)
+		var flash_radius: float = rect.size.x * 0.25
+		draw_circle(flash_center, flash_radius, Color(1.0, 0.95, 0.6, 0.9))
+		draw_circle(flash_center, flash_radius * 0.5, Color(1.0, 1.0, 0.9, 1.0))
 
 func _get_terrain_texture(terrain_name: String) -> Texture2D:
 	match terrain_name:
@@ -477,18 +727,21 @@ func _structure_char(building_type: String, level: int) -> String:
 			return "?"
 
 func _is_preview_buildable(index: int) -> bool:
+	return _get_preview_buildable_info(index).get("buildable", false)
+
+func _get_preview_buildable_info(index: int) -> Dictionary:
 	if index < 0 or index >= map_w * map_h:
-		return false
+		return {"buildable": false, "reason": "Out of bounds"}
 	var pos: Vector2i = Vector2i(index % map_w, int(index / map_w))
 	if pos == base_pos:
-		return false
+		return {"buildable": false, "reason": "Castle"}
 	if not discovered.has(index):
-		return false
+		return {"buildable": false, "reason": "Unexplored"}
 	if structures.has(index):
-		return false
+		return {"buildable": false, "reason": "Occupied"}
 	if _terrain_at(index) == SimMap.TERRAIN_WATER:
-		return false
-	return true
+		return {"buildable": false, "reason": "Water"}
+	return {"buildable": true, "reason": ""}
 
 func _poi_symbol(icon_name: String) -> String:
 	match icon_name:
@@ -513,7 +766,7 @@ func _get_castle_texture() -> Texture2D:
 		return _get_texture("bld_castle")
 
 	var hp: int = state_ref.hp
-	var max_hp: int = state_ref.max_hp
+	var max_hp: int = 10 + SimUpgrades.get_castle_health_bonus(state_ref)
 
 	# Damaged state: HP <= 30% of max
 	if hp <= int(max_hp * 0.3):
@@ -542,7 +795,7 @@ func _get_castle_tint() -> Color:
 		return Color.WHITE
 
 	var hp: int = state_ref.hp
-	var max_hp: int = state_ref.max_hp
+	var max_hp: int = 10 + SimUpgrades.get_castle_health_bonus(state_ref)
 	var hp_percent: float = float(hp) / float(max_hp) if max_hp > 0 else 1.0
 
 	# Critical HP: red tint
@@ -738,6 +991,348 @@ func spawn_damage_flash() -> void:
 		})
 	queue_redraw()
 
+## Spawn construction dust effect at grid position
+func spawn_build_effect(grid_pos: Vector2i) -> void:
+	if reduced_motion:
+		return
+	var world_pos: Vector2 = origin + Vector2(grid_pos.x * cell_size.x, grid_pos.y * cell_size.y) + cell_size * 0.5
+
+	# Rising dust particles
+	for i in range(8):
+		var x_offset: float = randf_range(-8, 8)
+		_add_particle({
+			"type": "rise",
+			"pos": world_pos + Vector2(x_offset, 4),
+			"velocity": Vector2(randf_range(-10, 10), -40.0 - randf() * 20.0),
+			"color": Color(0.8, 0.7, 0.5, 0.8),
+			"size": Vector2(3, 3),
+			"lifetime": PARTICLE_LIFETIME * 0.6
+		})
+
+	# Sparks for "construction" feel
+	for i in range(4):
+		var angle: float = randf() * TAU
+		var speed: float = PARTICLE_SPEED * 0.4
+		_add_particle({
+			"type": "spark",
+			"pos": world_pos,
+			"velocity": Vector2(cos(angle), sin(angle)) * speed,
+			"color": Color(1.0, 0.9, 0.3, 1.0),
+			"size": Vector2(2, 2),
+			"lifetime": PARTICLE_LIFETIME * 0.4
+		})
+	queue_redraw()
+
+## Spawn gold sparkle effect at castle for resource gains
+func spawn_gold_sparkle() -> void:
+	if reduced_motion:
+		return
+	var castle_pos: Vector2 = origin + Vector2(base_pos.x * cell_size.x, base_pos.y * cell_size.y) + cell_size * 0.5
+
+	# Gold-colored rising particles
+	for i in range(5):
+		var x_offset: float = randf_range(-10, 10)
+		_add_particle({
+			"type": "rise",
+			"pos": castle_pos + Vector2(x_offset, 0),
+			"velocity": Vector2(randf_range(-5, 5), -35.0 - randf() * 15.0),
+			"color": Color(1.0, 0.84, 0.0, 1.0),  # Gold color
+			"size": Vector2(3, 3),
+			"lifetime": PARTICLE_LIFETIME * 0.8
+		})
+	queue_redraw()
+
+## Spawn healing sparkle effect at castle
+func spawn_heal_sparkle() -> void:
+	if reduced_motion:
+		return
+	var castle_pos: Vector2 = origin + Vector2(base_pos.x * cell_size.x, base_pos.y * cell_size.y) + cell_size * 0.5
+
+	# Green healing particles
+	for i in range(6):
+		var angle: float = randf() * TAU
+		var speed: float = PARTICLE_SPEED * 0.3
+		_add_particle({
+			"type": "rise",
+			"pos": castle_pos + Vector2(randf_range(-8, 8), randf_range(-8, 8)),
+			"velocity": Vector2(cos(angle) * speed * 0.3, -30.0 - randf() * 20.0),
+			"color": Color(0.2, 1.0, 0.4, 1.0),  # Green heal color
+			"size": Vector2(4, 4),
+			"lifetime": PARTICLE_LIFETIME * 0.6
+		})
+	queue_redraw()
+
+## Spawn exploration reveal effect at grid position
+func spawn_explore_reveal(grid_pos: Vector2i) -> void:
+	if reduced_motion:
+		return
+	var world_pos: Vector2 = origin + Vector2(grid_pos.x * cell_size.x, grid_pos.y * cell_size.y) + cell_size * 0.5
+
+	# Expanding reveal particles (light blue/cyan)
+	for i in range(8):
+		var angle: float = (float(i) / 8.0) * TAU
+		var speed: float = PARTICLE_SPEED * 0.5
+		_add_particle({
+			"type": "spark",
+			"pos": world_pos,
+			"velocity": Vector2(cos(angle), sin(angle)) * speed,
+			"color": Color(0.5, 0.8, 1.0, 0.9),  # Light blue
+			"size": Vector2(3, 3),
+			"lifetime": PARTICLE_LIFETIME * 0.5
+		})
+
+	# Center flash
+	_add_particle({
+		"type": "flash",
+		"pos": world_pos,
+		"velocity": Vector2.ZERO,
+		"color": Color(0.8, 0.9, 1.0, 0.7),
+		"size": Vector2(16, 16),
+		"lifetime": PARTICLE_LIFETIME * 0.3
+	})
+	queue_redraw()
+
+## Spawn enemy appear effect at grid position
+func spawn_enemy_appear(grid_pos: Vector2i) -> void:
+	if reduced_motion:
+		return
+	var world_pos: Vector2 = origin + Vector2(grid_pos.x * cell_size.x, grid_pos.y * cell_size.y) + cell_size * 0.5
+
+	# Dark/red smoke particles rising
+	for i in range(6):
+		var x_offset: float = randf_range(-6, 6)
+		_add_particle({
+			"type": "rise",
+			"pos": world_pos + Vector2(x_offset, 4),
+			"velocity": Vector2(randf_range(-8, 8), -35.0 - randf() * 20.0),
+			"color": Color(0.6, 0.2, 0.2, 0.7),  # Dark red
+			"size": Vector2(4, 4),
+			"lifetime": PARTICLE_LIFETIME * 0.5
+		})
+
+	# Quick flash at spawn point
+	_add_particle({
+		"type": "flash",
+		"pos": world_pos,
+		"velocity": Vector2.ZERO,
+		"color": Color(1.0, 0.4, 0.3, 0.5),
+		"size": Vector2(12, 12),
+		"lifetime": PARTICLE_LIFETIME * 0.2
+	})
+	queue_redraw()
+
+## Spawn wave start visual effect (screen edges pulse)
+func spawn_wave_start_effect() -> void:
+	if reduced_motion:
+		return
+	var castle_pos: Vector2 = origin + Vector2(base_pos.x * cell_size.x, base_pos.y * cell_size.y) + cell_size * 0.5
+
+	# Ring of warning particles around map edges
+	for i in range(12):
+		var angle: float = (float(i) / 12.0) * TAU
+		var dist: float = 60.0
+		var spawn_pos: Vector2 = castle_pos + Vector2(cos(angle), sin(angle)) * dist
+		_add_particle({
+			"type": "spark",
+			"pos": spawn_pos,
+			"velocity": Vector2(cos(angle), sin(angle)) * PARTICLE_SPEED * 0.3,
+			"color": Color(1.0, 0.5, 0.2, 0.8),  # Orange warning
+			"size": Vector2(3, 3),
+			"lifetime": PARTICLE_LIFETIME * 0.6
+		})
+	queue_redraw()
+
+## Spawn victory celebration effect
+func spawn_victory_effect() -> void:
+	if reduced_motion:
+		return
+	var castle_pos: Vector2 = origin + Vector2(base_pos.x * cell_size.x, base_pos.y * cell_size.y) + cell_size * 0.5
+
+	# Golden fireworks-like particles
+	for wave_i in range(3):
+		for i in range(16):
+			var angle: float = (float(i) / 16.0) * TAU
+			var speed: float = PARTICLE_SPEED * (0.6 + float(wave_i) * 0.2)
+			var delay_offset: Vector2 = Vector2(randf_range(-5, 5), randf_range(-5, 5))
+			_add_particle({
+				"type": "spark",
+				"pos": castle_pos + delay_offset,
+				"velocity": Vector2(cos(angle), sin(angle)) * speed,
+				"color": Color(1.0, 0.84, 0.0, 1.0),  # Gold
+				"size": Vector2(4, 4),
+				"lifetime": PARTICLE_LIFETIME * (0.8 + float(wave_i) * 0.3)
+			})
+
+	# Rising celebration particles
+	for i in range(10):
+		var x_offset: float = randf_range(-20, 20)
+		_add_particle({
+			"type": "rise",
+			"pos": castle_pos + Vector2(x_offset, 0),
+			"velocity": Vector2(randf_range(-15, 15), -60.0 - randf() * 30.0),
+			"color": Color(0.8, 1.0, 0.5, 1.0),  # Light green
+			"size": Vector2(5, 5),
+			"lifetime": PARTICLE_LIFETIME * 1.2
+		})
+	queue_redraw()
+
+## Spawn game over/defeat effect
+func spawn_defeat_effect() -> void:
+	if reduced_motion:
+		return
+	var castle_pos: Vector2 = origin + Vector2(base_pos.x * cell_size.x, base_pos.y * cell_size.y) + cell_size * 0.5
+
+	# Dark, falling debris particles
+	for i in range(12):
+		var angle: float = randf() * TAU
+		var speed: float = PARTICLE_SPEED * 0.5
+		_add_particle({
+			"type": "defeat",
+			"pos": castle_pos + Vector2(randf_range(-10, 10), randf_range(-10, 10)),
+			"velocity": Vector2(cos(angle) * speed, sin(angle) * speed + 20),
+			"color": Color(0.4, 0.3, 0.3, 0.9),  # Dark gray
+			"size": Vector2(5, 5),
+			"lifetime": PARTICLE_LIFETIME * 0.8
+		})
+
+	# Red flash
+	_add_particle({
+		"type": "flash",
+		"pos": castle_pos,
+		"velocity": Vector2.ZERO,
+		"color": Color(0.8, 0.2, 0.1, 0.6),
+		"size": Vector2(40, 40),
+		"lifetime": PARTICLE_LIFETIME * 0.4
+	})
+	queue_redraw()
+
+## Spawn upgrade purchase effect at castle
+func spawn_upgrade_effect() -> void:
+	if reduced_motion:
+		return
+	var castle_pos: Vector2 = origin + Vector2(base_pos.x * cell_size.x, base_pos.y * cell_size.y) + cell_size * 0.5
+
+	# Purple/magical upgrade particles
+	for i in range(8):
+		var angle: float = (float(i) / 8.0) * TAU
+		var speed: float = PARTICLE_SPEED * 0.4
+		_add_particle({
+			"type": "spark",
+			"pos": castle_pos,
+			"velocity": Vector2(cos(angle), sin(angle)) * speed,
+			"color": Color(0.7, 0.4, 1.0, 0.9),  # Purple
+			"size": Vector2(3, 3),
+			"lifetime": PARTICLE_LIFETIME * 0.5
+		})
+
+	# Rising enhancement sparkles
+	for i in range(5):
+		var x_offset: float = randf_range(-8, 8)
+		_add_particle({
+			"type": "rise",
+			"pos": castle_pos + Vector2(x_offset, 0),
+			"velocity": Vector2(randf_range(-5, 5), -45.0 - randf() * 20.0),
+			"color": Color(0.9, 0.7, 1.0, 1.0),  # Light purple
+			"size": Vector2(3, 3),
+			"lifetime": PARTICLE_LIFETIME * 0.7
+		})
+	queue_redraw()
+
+## Spawn dawn/wave complete celebration effect
+func spawn_dawn_effect() -> void:
+	if reduced_motion:
+		return
+	var castle_pos: Vector2 = origin + Vector2(base_pos.x * cell_size.x, base_pos.y * cell_size.y) + cell_size * 0.5
+
+	# Warm golden rays rising from edges
+	for i in range(10):
+		var x_offset: float = randf_range(-40, 40)
+		_add_particle({
+			"type": "rise",
+			"pos": castle_pos + Vector2(x_offset, 20),
+			"velocity": Vector2(randf_range(-5, 5), -50.0 - randf() * 25.0),
+			"color": Color(1.0, 0.9, 0.6, 0.8),  # Warm gold/yellow
+			"size": Vector2(4, 4),
+			"lifetime": PARTICLE_LIFETIME * 1.0
+		})
+
+	# Soft ambient sparkles
+	for i in range(8):
+		var angle: float = randf() * TAU
+		var dist: float = randf_range(20, 50)
+		_add_particle({
+			"type": "spark",
+			"pos": castle_pos + Vector2(cos(angle), sin(angle)) * dist,
+			"velocity": Vector2(randf_range(-10, 10), -20.0),
+			"color": Color(1.0, 0.95, 0.7, 0.7),
+			"size": Vector2(3, 3),
+			"lifetime": PARTICLE_LIFETIME * 0.8
+		})
+	queue_redraw()
+
+## Spawn boss appear dramatic effect
+func spawn_boss_appear_effect() -> void:
+	if reduced_motion:
+		return
+	var castle_pos: Vector2 = origin + Vector2(base_pos.x * cell_size.x, base_pos.y * cell_size.y) + cell_size * 0.5
+
+	# Dark ominous particles from screen edges
+	for i in range(16):
+		var angle: float = (float(i) / 16.0) * TAU
+		var dist: float = 70.0
+		var spawn_pos: Vector2 = castle_pos + Vector2(cos(angle), sin(angle)) * dist
+		_add_particle({
+			"type": "spark",
+			"pos": spawn_pos,
+			"velocity": Vector2(-cos(angle), -sin(angle)) * PARTICLE_SPEED * 0.4,
+			"color": Color(0.5, 0.2, 0.3, 0.9),  # Dark red/purple
+			"size": Vector2(4, 4),
+			"lifetime": PARTICLE_LIFETIME * 0.7
+		})
+
+	# Central warning flash
+	_add_particle({
+		"type": "flash",
+		"pos": castle_pos,
+		"velocity": Vector2.ZERO,
+		"color": Color(0.8, 0.3, 0.2, 0.5),
+		"size": Vector2(50, 50),
+		"lifetime": PARTICLE_LIFETIME * 0.3
+	})
+	queue_redraw()
+
+## Spawn POI discovery effect at grid position
+func spawn_poi_effect(grid_pos: Vector2i) -> void:
+	if reduced_motion:
+		return
+	var world_pos: Vector2 = origin + Vector2(grid_pos.x * cell_size.x, grid_pos.y * cell_size.y) + cell_size * 0.5
+
+	# Mysterious glowing particles
+	for i in range(8):
+		var angle: float = (float(i) / 8.0) * TAU
+		var speed: float = PARTICLE_SPEED * 0.35
+		_add_particle({
+			"type": "spark",
+			"pos": world_pos,
+			"velocity": Vector2(cos(angle), sin(angle)) * speed,
+			"color": Color(0.4, 0.8, 1.0, 0.9),  # Cyan/teal
+			"size": Vector2(3, 3),
+			"lifetime": PARTICLE_LIFETIME * 0.6
+		})
+
+	# Rising mystery sparkles
+	for i in range(4):
+		var x_offset: float = randf_range(-6, 6)
+		_add_particle({
+			"type": "rise",
+			"pos": world_pos + Vector2(x_offset, 0),
+			"velocity": Vector2(randf_range(-8, 8), -35.0 - randf() * 15.0),
+			"color": Color(0.6, 0.9, 1.0, 1.0),
+			"size": Vector2(3, 3),
+			"lifetime": PARTICLE_LIFETIME * 0.7
+		})
+	queue_redraw()
+
 ## Update particles - call from _process
 func update_particles(delta: float) -> void:
 	# Update combo pulse animation
@@ -834,3 +1429,465 @@ func _world_to_grid(world_pos: Vector2) -> Vector2i:
 	var gx: int = int(local_pos.x / cell_size.x)
 	var gy: int = int(local_pos.y / cell_size.y)
 	return Vector2i(gx, gy)
+
+## Draw threat level bar at top of map
+func _draw_threat_bar() -> void:
+	var bar_width: float = map_w * cell_size.x
+	var bar_height: float = 6.0
+	var bar_pos: Vector2 = origin + Vector2(0, -12)
+
+	# Background
+	var bg_rect: Rect2 = Rect2(bar_pos, Vector2(bar_width, bar_height))
+	draw_rect(bg_rect, Color(0.15, 0.15, 0.2, 0.8), true)
+	draw_rect(bg_rect, Color(0.3, 0.3, 0.35, 1.0), false, 1.0)
+
+	# Filled portion based on threat_level
+	var fill_width: float = bar_width * threat_level
+	if fill_width > 0:
+		var fill_rect: Rect2 = Rect2(bar_pos, Vector2(fill_width, bar_height))
+		# Color interpolates from yellow to red as threat increases
+		var threat_color: Color
+		if threat_level < 0.5:
+			threat_color = Color(0.9, 0.8, 0.2, 0.9)  # Yellow
+		elif threat_level < 0.8:
+			threat_color = Color(0.95, 0.5, 0.2, 0.9)  # Orange
+		else:
+			threat_color = Color(0.95, 0.25, 0.2, 0.9)  # Red (danger!)
+		draw_rect(fill_rect, threat_color, true)
+
+	# Threshold marker at 80%
+	var threshold_x: float = bar_pos.x + bar_width * 0.8
+	draw_line(
+		Vector2(threshold_x, bar_pos.y),
+		Vector2(threshold_x, bar_pos.y + bar_height),
+		Color(1.0, 0.3, 0.3, 0.8),
+		2.0
+	)
+
+	# Label
+	if font != null:
+		var label: String = "THREAT"
+		draw_string(font, bar_pos + Vector2(2, -2), label, HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color(0.7, 0.7, 0.75, 0.8))
+
+## Draw activity mode indicator
+func _draw_activity_mode() -> void:
+	if font == null:
+		return
+
+	var indicator_pos: Vector2 = origin + Vector2(map_w * cell_size.x - 100, -22)
+	var mode_color: Color
+	var mode_text: String
+
+	match activity_mode:
+		"exploration":
+			mode_color = Color(0.4, 0.8, 0.4, 0.9)
+			mode_text = "EXPLORE"
+		"encounter":
+			mode_color = Color(0.9, 0.6, 0.3, 0.9)
+			mode_text = "COMBAT"
+		"wave_assault":
+			mode_color = Color(0.95, 0.3, 0.3, 0.95)
+			mode_text = "WAVE!"
+			# Pulsing effect for wave assault
+			if not reduced_motion:
+				var pulse: float = (sin(Time.get_ticks_msec() * 0.008) + 1.0) * 0.3
+				mode_color.a = 0.7 + pulse
+		"event":
+			mode_color = Color(0.5, 0.7, 0.9, 0.9)
+			mode_text = "EVENT"
+		_:
+			mode_color = Color(0.6, 0.6, 0.6, 0.8)
+			mode_text = activity_mode.to_upper()
+
+	# Draw mode badge
+	var text_size: float = 12.0
+	var badge_width: float = 80.0
+	var badge_rect: Rect2 = Rect2(indicator_pos, Vector2(badge_width, 16))
+	draw_rect(badge_rect, Color(mode_color.r * 0.3, mode_color.g * 0.3, mode_color.b * 0.3, 0.8), true)
+	draw_rect(badge_rect, mode_color, false, 1.5)
+	draw_string(font, indicator_pos + Vector2(badge_width / 2 - 20, 12), mode_text, HORIZONTAL_ALIGNMENT_LEFT, -1, int(text_size), mode_color)
+
+## Animation System Methods
+
+## Update enemy walk/idle animations
+func _update_animations(delta: float) -> void:
+	if reduced_motion:
+		return
+
+	var needs_redraw := false
+
+	# Update enemy animations
+	for enemy_id in _enemy_anim_state:
+		var state: Dictionary = _enemy_anim_state[enemy_id]
+		var fps: float = state.get("fps", ENEMY_WALK_FPS)
+		var frame_count: int = state.get("frame_count", 4)
+		var loop: bool = state.get("loop", true)
+
+		state["timer"] = state.get("timer", 0.0) + delta
+		var frame_duration: float = 1.0 / fps
+
+		if state["timer"] >= frame_duration:
+			state["timer"] -= frame_duration
+			state["frame"] = state.get("frame", 0) + 1
+
+			if state["frame"] >= frame_count:
+				if loop:
+					state["frame"] = 0
+				else:
+					state["frame"] = frame_count - 1
+					# Oneshot complete - handle callback if any
+					if state.has("on_complete"):
+						var callback: Callable = state["on_complete"]
+						if callback.is_valid():
+							callback.call()
+						_enemy_anim_state.erase(enemy_id)
+
+			needs_redraw = true
+
+	# Update building animations
+	var building_anims_to_remove: Array = []
+	for bld_idx in _building_anim_state:
+		var state: Dictionary = _building_anim_state[bld_idx]
+		var fps: float = state.get("fps", 6.0)
+		var frame_count: int = state.get("frame_count", 3)
+		var anim_type: String = state.get("anim_type", "")
+
+		state["timer"] = state.get("timer", 0.0) + delta
+		var frame_duration: float = 1.0 / fps
+
+		if state["timer"] >= frame_duration:
+			state["timer"] -= frame_duration
+			var next_frame: int = state.get("frame", 0) + 1
+
+			# Fire and construct are oneshot animations
+			if anim_type == "fire" or anim_type == "construct":
+				if next_frame >= frame_count:
+					building_anims_to_remove.append(bld_idx)
+				else:
+					state["frame"] = next_frame
+			else:
+				# Loop for pulse and other continuous animations
+				state["frame"] = next_frame % frame_count
+			needs_redraw = true
+
+	for bld_idx in building_anims_to_remove:
+		_building_anim_state.erase(bld_idx)
+
+	if needs_redraw:
+		queue_redraw()
+
+## Update hit flash effect timers
+func _update_hit_flashes(delta: float) -> void:
+	if _hit_flash_timers.is_empty():
+		return
+
+	var expired: Array = []
+	for enemy_id in _hit_flash_timers:
+		_hit_flash_timers[enemy_id] -= delta
+		if _hit_flash_timers[enemy_id] <= 0:
+			expired.append(enemy_id)
+
+	for enemy_id in expired:
+		_hit_flash_timers.erase(enemy_id)
+
+	if not expired.is_empty():
+		queue_redraw()
+
+## Update floating damage numbers
+func _update_damage_numbers(delta: float) -> void:
+	if _damage_numbers.is_empty():
+		return
+
+	var needs_redraw := false
+	for i in range(_damage_numbers.size() - 1, -1, -1):
+		var dn: Dictionary = _damage_numbers[i]
+		dn["lifetime"] -= delta
+		dn["pos"] = dn["pos"] + Vector2(0, -DAMAGE_NUMBER_RISE_SPEED * delta)
+
+		if dn["lifetime"] <= 0:
+			_damage_numbers.remove_at(i)
+			needs_redraw = true
+
+	if needs_redraw or not _damage_numbers.is_empty():
+		queue_redraw()
+
+## Draw damage numbers overlay (call from _draw after particles)
+func _draw_damage_numbers() -> void:
+	if font == null or _damage_numbers.is_empty():
+		return
+
+	for dn in _damage_numbers:
+		var pos: Vector2 = dn["pos"]
+		var value: int = dn["value"]
+		var color: Color = dn["color"]
+		var is_crit: bool = dn.get("is_crit", false)
+		var lifetime: float = dn["lifetime"]
+		var prefix: String = dn.get("prefix", "")
+
+		# Fade out
+		var alpha: float = clampf(lifetime / (DAMAGE_NUMBER_LIFETIME * 0.5), 0.0, 1.0)
+		color.a = alpha
+
+		var text := prefix + str(value)
+		var fsize: int = 16 if is_crit else 14
+
+		# Crit numbers scale up briefly
+		if is_crit and lifetime > DAMAGE_NUMBER_LIFETIME * 0.7:
+			fsize = 20
+
+		# Draw with outline for better visibility
+		var outline_color := Color(0.0, 0.0, 0.0, alpha * 0.8)
+		for ox in [-1, 0, 1]:
+			for oy in [-1, 0, 1]:
+				if ox != 0 or oy != 0:
+					draw_string(font, pos + Vector2(ox, oy), text, HORIZONTAL_ALIGNMENT_CENTER, -1, fsize, outline_color)
+		draw_string(font, pos, text, HORIZONTAL_ALIGNMENT_CENTER, -1, fsize, color)
+
+## Trigger hit flash effect on enemy
+func trigger_hit_flash(enemy_id: int) -> void:
+	if reduced_motion:
+		return
+	_hit_flash_timers[enemy_id] = HIT_FLASH_DURATION
+	queue_redraw()
+
+## Spawn floating damage number
+func spawn_damage_number(enemy_pos: Vector2i, damage: int, is_crit: bool = false) -> void:
+	if reduced_motion:
+		return
+
+	var world_pos: Vector2 = origin + Vector2(enemy_pos.x * cell_size.x, enemy_pos.y * cell_size.y)
+	world_pos += cell_size * 0.5 + Vector2(randf_range(-8, 8), -10)
+
+	var color: Color = Color(1.0, 0.95, 0.3, 1.0) if is_crit else Color(1.0, 1.0, 1.0, 1.0)
+
+	_damage_numbers.append({
+		"pos": world_pos,
+		"value": damage,
+		"color": color,
+		"is_crit": is_crit,
+		"lifetime": DAMAGE_NUMBER_LIFETIME
+	})
+	queue_redraw()
+
+## Spawn production indicator (+resource) at building position
+func spawn_production_indicator(building_pos: Vector2i, resource: String, amount: int) -> void:
+	if reduced_motion or amount <= 0:
+		return
+
+	var world_pos: Vector2 = origin + Vector2(building_pos.x * cell_size.x, building_pos.y * cell_size.y)
+	world_pos += cell_size * 0.5 + Vector2(randf_range(-5, 5), -8)
+
+	# Color based on resource type
+	var color: Color
+	match resource:
+		"food":
+			color = Color(0.4, 0.85, 0.4, 1.0)  # Green
+		"wood":
+			color = Color(0.7, 0.5, 0.3, 1.0)  # Brown
+		"stone":
+			color = Color(0.6, 0.6, 0.65, 1.0)  # Gray
+		"gold":
+			color = Color(1.0, 0.85, 0.3, 1.0)  # Gold
+		_:
+			color = Color(0.9, 0.9, 0.9, 1.0)  # White
+
+	_damage_numbers.append({
+		"pos": world_pos,
+		"value": amount,
+		"color": color,
+		"is_crit": false,
+		"lifetime": DAMAGE_NUMBER_LIFETIME * 0.8,
+		"prefix": "+"  # Will show as "+3" instead of just "3"
+	})
+
+	# Also trigger a subtle pulse on the building
+	var bld_index: int = building_pos.y * map_w + building_pos.x
+	if not _building_anim_state.has(bld_index):
+		register_building_animation(bld_index, "pulse")
+
+	queue_redraw()
+
+## Register enemy for walk animation
+func register_enemy_animation(enemy_id: int, kind: String, anim_type: String = "walk") -> void:
+	if reduced_motion:
+		return
+
+	var frame_count: int = 4
+	var fps: float = ENEMY_WALK_FPS
+	var loop: bool = true
+
+	# Configure based on enemy kind and animation type
+	match anim_type:
+		"walk":
+			match kind:
+				"runner", "raider", "scout":
+					frame_count = 4
+					fps = 10.0
+				"brute", "armored":
+					frame_count = 3
+					fps = 6.0
+				"flyer":
+					frame_count = 3
+					fps = 8.0
+				_:
+					frame_count = 3
+					fps = 7.0
+		"death":
+			frame_count = 3
+			fps = ENEMY_DEATH_FPS
+			loop = false
+		"hover":
+			frame_count = 3
+			fps = 8.0
+
+	_enemy_anim_state[enemy_id] = {
+		"kind": kind,
+		"anim_type": anim_type,
+		"frame": 0,
+		"timer": randf() * 0.5,  # Stagger start times
+		"frame_count": frame_count,
+		"fps": fps,
+		"loop": loop
+	}
+
+## Play enemy death animation
+func play_enemy_death_anim(enemy_id: int, kind: String, on_complete: Callable = Callable()) -> void:
+	if reduced_motion:
+		if on_complete.is_valid():
+			on_complete.call()
+		return
+
+	var frame_count: int = 3
+	match kind:
+		"brute", "armored":
+			frame_count = 4
+		"boss_warlord", "boss_mage":
+			frame_count = 5
+		_:
+			frame_count = 3
+
+	_enemy_anim_state[enemy_id] = {
+		"kind": kind,
+		"anim_type": "death",
+		"frame": 0,
+		"timer": 0.0,
+		"frame_count": frame_count,
+		"fps": ENEMY_DEATH_FPS,
+		"loop": false,
+		"on_complete": on_complete
+	}
+	queue_redraw()
+
+## Unregister enemy animation (when enemy removed)
+func unregister_enemy_animation(enemy_id: int) -> void:
+	_enemy_anim_state.erase(enemy_id)
+	_hit_flash_timers.erase(enemy_id)
+
+## Sync enemy animations with current enemy list - register new, unregister removed
+func _sync_enemy_animations(new_enemies: Array) -> void:
+	if reduced_motion:
+		return
+
+	# Build set of current enemy IDs
+	var current_ids: Dictionary = {}
+	for enemy in enemies:
+		var eid: int = int(enemy.get("id", -1))
+		if eid >= 0:
+			current_ids[eid] = true
+
+	# Build set of new enemy IDs
+	var new_ids: Dictionary = {}
+	for enemy in new_enemies:
+		var eid: int = int(enemy.get("id", -1))
+		if eid >= 0:
+			new_ids[eid] = enemy
+
+	# Register new enemies
+	for eid in new_ids:
+		if not current_ids.has(eid):
+			var enemy: Dictionary = new_ids[eid]
+			var kind: String = str(enemy.get("kind", "runner"))
+			var anim_type := "hover" if kind == "flyer" else "walk"
+			register_enemy_animation(eid, kind, anim_type)
+
+	# Unregister removed enemies (unless death animation is playing)
+	for eid in current_ids:
+		if not new_ids.has(eid):
+			# Check if death animation is playing - don't unregister if so
+			if _enemy_anim_state.has(eid):
+				var state: Dictionary = _enemy_anim_state[eid]
+				if state.get("anim_type", "") == "death":
+					continue  # Let death animation complete
+			unregister_enemy_animation(eid)
+
+## Get current animation frame for enemy
+func get_enemy_animation_frame(enemy_id: int) -> int:
+	if _enemy_anim_state.has(enemy_id):
+		return _enemy_anim_state[enemy_id].get("frame", 0)
+	return 0
+
+## Check if enemy has hit flash active
+func has_hit_flash(enemy_id: int) -> bool:
+	return _hit_flash_timers.has(enemy_id)
+
+## Register building for animation (e.g., tower firing)
+func register_building_animation(building_index: int, anim_type: String) -> void:
+	if reduced_motion:
+		return
+
+	var frame_count: int = 3
+	var fps: float = 8.0
+
+	match anim_type:
+		"fire":
+			frame_count = 3
+			fps = 12.0
+		"pulse":
+			frame_count = 3
+			fps = 6.0
+		"construct":
+			frame_count = 4
+			fps = 8.0
+
+	_building_anim_state[building_index] = {
+		"anim_type": anim_type,
+		"frame": 0,
+		"timer": 0.0,
+		"frame_count": frame_count,
+		"fps": fps
+	}
+
+## Clear all animation states (e.g., on scene change)
+func clear_animation_states() -> void:
+	_enemy_anim_state.clear()
+	_hit_flash_timers.clear()
+	_damage_numbers.clear()
+	_building_anim_state.clear()
+
+## Trigger tower fire animation at position
+func trigger_tower_fire(tower_pos: Vector2i) -> void:
+	if reduced_motion:
+		return
+	var index: int = tower_pos.y * map_w + tower_pos.x
+	register_building_animation(index, "fire")
+
+## Find and animate the closest tower to an enemy position
+func trigger_nearest_tower_fire(enemy_pos: Vector2i) -> void:
+	if reduced_motion or structures.is_empty():
+		return
+
+	var closest_index: int = -1
+	var closest_dist: int = 999
+
+	for key in structures.keys():
+		if str(structures[key]) == "tower":
+			var idx: int = int(key)
+			var tx: int = idx % map_w
+			var ty: int = idx / map_w
+			var dist: int = absi(tx - enemy_pos.x) + absi(ty - enemy_pos.y)
+			if dist < closest_dist:
+				closest_dist = dist
+				closest_index = idx
+
+	if closest_index >= 0:
+		register_building_animation(closest_index, "fire")

@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 26" width="22" height="26">
+  <!-- Siege Tower T2 (22x26) - Enhanced siege tower -->
+  <!-- Color Palette: #5d6d7e, #34495e, #7f8c8d, #e74c3c -->
+
+  <!-- Heavy base -->
+  <rect x="2" y="20" width="18" height="6" fill="#34495e"/>
+  <rect x="4" y="22" width="14" height="4" fill="#5d6d7e"/>
+
+  <!-- Reinforced body -->
+  <rect x="4" y="8" width="14" height="14" fill="#5d6d7e"/>
+  <rect x="5" y="10" width="12" height="10" fill="#34495e"/>
+
+  <!-- Dual cannons -->
+  <rect x="6" y="2" width="10" height="8" fill="#7f8c8d"/>
+  <rect x="7" y="3" width="4" height="4" fill="#5d6d7e"/>
+  <rect x="11" y="3" width="4" height="4" fill="#5d6d7e"/>
+  <rect x="8" y="4" width="2" height="2" fill="#1a252f"/>
+  <rect x="12" y="4" width="2" height="2" fill="#1a252f"/>
+
+  <!-- Barrels -->
+  <rect x="2" y="4" width="6" height="3" fill="#5d6d7e"/>
+  <rect x="0" y="4" width="3" height="2" fill="#7f8c8d"/>
+  <rect x="2" y="6" width="6" height="3" fill="#5d6d7e"/>
+  <rect x="0" y="7" width="3" height="2" fill="#7f8c8d"/>
+
+  <!-- Red warning stripes -->
+  <rect x="5" y="18" width="12" height="2" fill="#e74c3c"/>
+
+  <!-- Ammunition rack -->
+  <rect x="16" y="12" width="4" height="6" fill="#1a252f"/>
+  <rect x="17" y="13" width="2" height="4" fill="#2c3e50"/>
+</svg>

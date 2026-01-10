@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 24" width="16" height="24">
+  <!-- Holy Tower T1 (16x24) - Light/anti-undead tower -->
+  <!-- Color Palette: #f4d03f, #f39c12, #ecf0f1 -->
+
+  <!-- Base -->
+  <rect x="2" y="18" width="12" height="6" fill="#f39c12"/>
+  <rect x="4" y="20" width="8" height="4" fill="#f4d03f"/>
+
+  <!-- Tower body -->
+  <rect x="4" y="8" width="8" height="12" fill="#ecf0f1"/>
+  <rect x="5" y="10" width="6" height="8" fill="#f4d03f"/>
+
+  <!-- Cross top -->
+  <rect x="6" y="0" width="4" height="10" fill="#f4d03f"/>
+  <rect x="3" y="3" width="10" height="4" fill="#f4d03f"/>
+  <rect x="7" y="1" width="2" height="8" fill="#ecf0f1"/>
+  <rect x="4" y="4" width="8" height="2" fill="#ecf0f1"/>
+
+  <!-- Light rays -->
+  <rect x="2" y="2" width="2" height="2" fill="#fcf3cf"/>
+  <rect x="12" y="2" width="2" height="2" fill="#fcf3cf"/>
+
+  <!-- Window -->
+  <rect x="6" y="12" width="4" height="4" fill="#f39c12"/>
+  <rect x="7" y="13" width="2" height="2" fill="#fcf3cf"/>
+</svg>

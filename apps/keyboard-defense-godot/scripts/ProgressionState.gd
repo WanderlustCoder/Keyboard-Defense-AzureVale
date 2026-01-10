@@ -303,3 +303,14 @@ func mark_tutorial_completed() -> void:
 func reset_tutorial() -> void:
 	tutorial_completed = false
 	_save()
+
+func reset_campaign() -> void:
+	gold = 0
+	completed_nodes = {}
+	purchased_upgrades = {}
+	modifiers = DEFAULT_MODIFIERS.duplicate(true)
+	mastery = DEFAULT_MASTERY.duplicate(true)
+	last_summary = {}
+	tutorial_completed = false
+	battles_played = 0
+	_save()

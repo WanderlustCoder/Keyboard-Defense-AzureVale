@@ -2,6 +2,19 @@ extends Control
 
 const ThemeColors = preload("res://ui/theme_colors.gd")
 
+# Tier thresholds based on cost
+const TIER_COLORS := {
+	"common": Color(0.7, 0.7, 0.75, 1.0),   # Gray
+	"uncommon": Color(0.4, 0.8, 0.4, 1.0),  # Green
+	"rare": Color(0.3, 0.6, 1.0, 1.0),      # Blue
+	"epic": Color(0.7, 0.4, 0.9, 1.0)       # Purple
+}
+const HOVER_SCALE := 1.02
+const HOVER_DURATION := 0.1
+
+var _upgrade_cards: Dictionary = {}  # upgrade_id -> Control
+var _card_tweens: Dictionary = {}
+
 @onready var gold_label: Label = $TopBar/GoldLabel
 @onready var back_button: Button = $TopBar/BackButton
 @onready var modifiers_label: Label = $ContentPanel/Scroll/Content/ModifiersLabel
@@ -176,9 +189,28 @@ func _build_tag_badge(tag: Dictionary) -> TextureRect:
 	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	return icon
 
+func _get_tier_from_cost(cost: int) -> String:
+	if cost >= 60:
+		return "epic"
+	elif cost >= 35:
+		return "rare"
+	elif cost >= 15:
+		return "uncommon"
+	else:
+		return "common"
+
+func _get_tier_label(tier: String) -> String:
+	match tier:
+		"epic": return "★★★"
+		"rare": return "★★"
+		"uncommon": return "★"
+		_: return ""
+
 func _build_upgrade_section(container: VBoxContainer, upgrades: Array) -> void:
+	# Clear old references
 	for child in container.get_children():
 		child.queue_free()
+
 	for upgrade in upgrades:
 		var upgrade_id = str(upgrade.get("id", ""))
 		var label = str(upgrade.get("label", ""))
@@ -186,27 +218,65 @@ func _build_upgrade_section(container: VBoxContainer, upgrades: Array) -> void:
 		var owned = progression.is_upgrade_owned(upgrade_id)
 		var description = str(upgrade.get("description", ""))
 		var effects: Dictionary = upgrade.get("effects", {})
+		var tier := _get_tier_from_cost(cost)
+		var tier_color: Color = TIER_COLORS.get(tier, TIER_COLORS["common"])
 
 		var panel = PanelContainer.new()
 		panel.custom_minimum_size = Vector2(0, 100)
+		panel.pivot_offset = Vector2(panel.custom_minimum_size.x * 0.5, 50)
 
 		var card_style = StyleBoxFlat.new()
 		card_style.bg_color = ThemeColors.BG_CARD
-		card_style.border_color = ThemeColors.ACCENT if owned else ThemeColors.BORDER
-		card_style.set_border_width_all(2)
+		if owned:
+			card_style.border_color = ThemeColors.ACCENT
+			card_style.set_border_width_all(3)
+		else:
+			card_style.border_color = tier_color
+			card_style.set_border_width_all(2)
 		card_style.set_corner_radius_all(6)
 		card_style.set_content_margin_all(12)
 		panel.add_theme_stylebox_override("panel", card_style)
+
+		# Add hover effects for purchasable cards
+		if not owned and progression.gold >= cost:
+			panel.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+			panel.mouse_entered.connect(_on_card_hover_enter.bind(upgrade_id))
+			panel.mouse_exited.connect(_on_card_hover_exit.bind(upgrade_id))
 
 		var box = VBoxContainer.new()
 		box.add_theme_constant_override("separation", 8)
 		panel.add_child(box)
 
+		# Title row with tier badge and owned checkmark
+		var title_row = HBoxContainer.new()
+		title_row.add_theme_constant_override("separation", 8)
+		box.add_child(title_row)
+
+		# Tier badge
+		var tier_label_text := _get_tier_label(tier)
+		if tier_label_text != "":
+			var tier_badge = Label.new()
+			tier_badge.text = tier_label_text
+			tier_badge.add_theme_font_size_override("font_size", 14)
+			tier_badge.add_theme_color_override("font_color", tier_color)
+			title_row.add_child(tier_badge)
+
+		# Owned checkmark
+		if owned:
+			var check_badge = Label.new()
+			check_badge.text = "✓"
+			check_badge.add_theme_font_size_override("font_size", 16)
+			check_badge.add_theme_color_override("font_color", ThemeColors.ACCENT)
+			title_row.add_child(check_badge)
+
 		var title = Label.new()
 		title.text = "%s (%dg)" % [label, cost]
 		title.add_theme_font_size_override("font_size", 16)
 		title.add_theme_color_override("font_color", ThemeColors.ACCENT if owned else ThemeColors.TEXT)
-		box.add_child(title)
+		title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		title_row.add_child(title)
+
+		_upgrade_cards[upgrade_id] = panel
 
 		var desc = Label.new()
 		desc.text = description
@@ -258,3 +328,40 @@ func _on_back_pressed() -> void:
 	if audio_manager != null:
 		audio_manager.play_ui_cancel()
 	game_controller.go_to_map()
+
+func _on_card_hover_enter(upgrade_id: String) -> void:
+	var card = _upgrade_cards.get(upgrade_id)
+	if card == null:
+		return
+
+	# Kill existing tween
+	if _card_tweens.has(upgrade_id):
+		var old_tween = _card_tweens[upgrade_id]
+		if old_tween != null and old_tween.is_valid():
+			old_tween.kill()
+
+	var tween = create_tween()
+	tween.set_ease(Tween.EASE_OUT)
+	tween.set_trans(Tween.TRANS_BACK)
+	tween.tween_property(card, "scale", Vector2(HOVER_SCALE, HOVER_SCALE), HOVER_DURATION)
+	_card_tweens[upgrade_id] = tween
+
+	if audio_manager != null:
+		audio_manager.play_ui_hover()
+
+func _on_card_hover_exit(upgrade_id: String) -> void:
+	var card = _upgrade_cards.get(upgrade_id)
+	if card == null:
+		return
+
+	# Kill existing tween
+	if _card_tweens.has(upgrade_id):
+		var old_tween = _card_tweens[upgrade_id]
+		if old_tween != null and old_tween.is_valid():
+			old_tween.kill()
+
+	var tween = create_tween()
+	tween.set_ease(Tween.EASE_OUT)
+	tween.set_trans(Tween.TRANS_QUAD)
+	tween.tween_property(card, "scale", Vector2(1.0, 1.0), HOVER_DURATION)
+	_card_tweens[upgrade_id] = tween

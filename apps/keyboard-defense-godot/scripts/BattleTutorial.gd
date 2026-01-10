@@ -81,12 +81,22 @@ const TUTORIAL_STEPS := {
 	}
 }
 
+const ThemeColors = preload("res://ui/theme_colors.gd")
+
 var _current_step: int = Step.WELCOME
 var _dialogue: LyraDialogue = null
 var _active: bool = false
 var _paused: bool = false
 var _triggers_fired: Dictionary = {}
 var _parent_control: Control = null
+var _progress_panel: PanelContainer = null
+var _progress_dots: Array[ColorRect] = []
+
+const DOT_SIZE := 8.0
+const DOT_GAP := 6.0
+const DOT_COLOR_COMPLETE := Color(0.4, 0.85, 0.5, 1.0)  # Green
+const DOT_COLOR_CURRENT := Color(1.0, 0.85, 0.2, 1.0)   # Yellow/gold (pulsing)
+const DOT_COLOR_PENDING := Color(0.35, 0.4, 0.5, 0.6)   # Dim gray
 
 @onready var progression = get_node_or_null("/root/ProgressionState")
 
@@ -106,11 +116,108 @@ func _setup_dialogue() -> void:
 	_dialogue = LYRA_DIALOGUE_SCENE.instantiate() as LyraDialogue
 	_parent_control.add_child(_dialogue)
 	_dialogue.dialogue_finished.connect(_on_dialogue_finished)
+	_setup_progress_panel()
+
+func _setup_progress_panel() -> void:
+	if _parent_control == null:
+		return
+
+	_progress_panel = PanelContainer.new()
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.1, 0.12, 0.18, 0.9)
+	style.border_color = ThemeColors.ACCENT_BLUE
+	style.set_border_width_all(1)
+	style.set_corner_radius_all(4)
+	style.set_content_margin_all(8)
+	_progress_panel.add_theme_stylebox_override("panel", style)
+
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 6)
+	_progress_panel.add_child(vbox)
+
+	# Top row: icon + label + skip hint
+	var hbox = HBoxContainer.new()
+	hbox.add_theme_constant_override("separation", 8)
+	vbox.add_child(hbox)
+
+	var icon = Label.new()
+	icon.text = "📖"
+	icon.add_theme_font_size_override("font_size", 14)
+	hbox.add_child(icon)
+
+	var label = Label.new()
+	label.name = "ProgressLabel"
+	label.text = "Tutorial: Step 1/7"
+	label.add_theme_font_size_override("font_size", 12)
+	label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	hbox.add_child(label)
+
+	var skip_hint = Label.new()
+	skip_hint.text = "[ESC to skip]"
+	skip_hint.add_theme_font_size_override("font_size", 10)
+	skip_hint.add_theme_color_override("font_color", Color(0.5, 0.55, 0.65, 0.7))
+	hbox.add_child(skip_hint)
+
+	# Bottom row: progress dots
+	var dots_container = HBoxContainer.new()
+	dots_container.name = "DotsContainer"
+	dots_container.add_theme_constant_override("separation", int(DOT_GAP))
+	dots_container.alignment = BoxContainer.ALIGNMENT_CENTER
+	vbox.add_child(dots_container)
+
+	# Create dots for each step (Step.COMPLETE + 1 = 7 total steps)
+	_progress_dots.clear()
+	var total_steps := Step.COMPLETE + 1
+	for i in range(total_steps):
+		var dot := ColorRect.new()
+		dot.custom_minimum_size = Vector2(DOT_SIZE, DOT_SIZE)
+		dot.color = DOT_COLOR_PENDING
+		dots_container.add_child(dot)
+		_progress_dots.append(dot)
+
+	_parent_control.add_child(_progress_panel)
+	# Position in top-right corner
+	_progress_panel.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	_progress_panel.position = Vector2(-220, 8)
+	_progress_panel.visible = false
+
+func _update_progress_display() -> void:
+	if _progress_panel == null:
+		return
+
+	# Update text label
+	var vbox = _progress_panel.get_child(0) as VBoxContainer
+	var label: Label = null
+	if vbox != null:
+		var hbox = vbox.get_child(0) as HBoxContainer
+		if hbox != null:
+			label = hbox.get_node_or_null("ProgressLabel") as Label
+
+	if label != null:
+		var step_num := _current_step + 1
+		var total := Step.COMPLETE + 1
+		label.text = "Tutorial: Step %d/%d" % [step_num, total]
+
+	# Update progress dots
+	for i in range(_progress_dots.size()):
+		var dot := _progress_dots[i]
+		if i < _current_step:
+			# Completed step - green
+			dot.color = DOT_COLOR_COMPLETE
+		elif i == _current_step:
+			# Current step - yellow/gold
+			dot.color = DOT_COLOR_CURRENT
+		else:
+			# Pending step - dim gray
+			dot.color = DOT_COLOR_PENDING
+
+	_progress_panel.visible = _active
 
 func start() -> void:
 	if not _active or _dialogue == null:
 		return
 
+	_update_progress_display()
 	_show_step(Step.WELCOME)
 
 func _show_step(step: int) -> void:
@@ -118,6 +225,7 @@ func _show_step(step: int) -> void:
 		return
 
 	_current_step = step
+	_update_progress_display()
 	var step_data: Dictionary = TUTORIAL_STEPS.get(step, {})
 	var lines: Array = step_data.get("lines", [])
 
@@ -181,6 +289,8 @@ func fire_trigger(trigger_name: String) -> void:
 
 func _finish_tutorial() -> void:
 	_active = false
+	if _progress_panel != null:
+		_progress_panel.visible = false
 	if progression != null:
 		progression.mark_tutorial_completed()
 	tutorial_finished.emit()
@@ -206,3 +316,7 @@ func cleanup() -> void:
 	if _dialogue != null:
 		_dialogue.queue_free()
 		_dialogue = null
+	if _progress_panel != null:
+		_progress_panel.queue_free()
+		_progress_panel = null
+	_progress_dots.clear()

@@ -1,17 +1,37 @@
 # Keyboard Defense (Godot 4)
 
-This is the Windows-targeted Godot 4 port focused on a pixel-art fantasy kingdom typing trainer.
+A fantasy kingdom typing trainer featuring "The Siege of Keystonia" - a 20-day campaign across 5 acts with boss encounters, mentor dialogue, and progressive lesson difficulty.
+
 The typing loop drives all defense outcomes; map progression and kingdom upgrades unlock as typing mastery grows.
+
+## Game Modes
+
+- **Main Sim Mode** (`scenes/Main.tscn`) - Command-line typing interface with full day/night loop
+- **Kingdom Defense** (`scenes/KingdomDefense.tscn`) - RTS-style top-down typing game with story integration
+- **Open World** (`scenes/OpenWorld.tscn`) - Exploration mode with tile discovery and roaming enemies
+- **Typing Defense** (`scenes/TypingDefense.tscn`) - Pure typing battle focus
+
+## Story Campaign
+
+The game features a 5-act narrative:
+1. **The Awakening** (Days 1-4) - Home row mastery
+2. **Reaching Beyond** (Days 5-8) - Reach keys
+3. **The Depths** (Days 9-12) - Bottom row
+4. **Full Power** (Days 13-16) - Full alphabet speed
+5. **The Final Stand** (Days 17-20) - Numbers and symbols
+
+Each act ends with a boss encounter and includes Elder Lyra mentor dialogue.
 
 ## Open in Godot
 
 1. Launch Godot 4.
 2. Import the project from this folder.
-3. Run the main scene (`scenes/Main.tscn`).
+3. Run main menu (`scenes/MainMenu.tscn`) or individual game modes.
 
 ## Data
 
-- `data/lessons.json`: lesson word lists for battles.
+- `data/lessons.json`: lesson word lists for battles (12 lessons from home row to apex mastery).
+- `data/story.json`: campaign narrative, acts, bosses, dialogue, lore, typing tips, and achievements.
 - `data/map.json`: campaign nodes, unlock requirements, drill template references, and optional `drill_overrides`.
 - `data/drills.json`: shared drill templates referenced by the map.
 
@@ -40,10 +60,25 @@ Press `F1` in a battle to open the debug panel. Paste `drill_overrides` JSON, hi
 - Battle rewards include a performance tier (C/B/A/S) based on accuracy + WPM.
 - Higher tiers grant bonus gold on top of the base reward and practice gold.
 
+## Accessibility
+
+The game includes several accessibility options (available in Settings panel):
+
+- **High Contrast Mode** - Enhanced visual contrast for better readability
+- **Reduced Motion** - Disables particles and animations
+- **Game Speed** - Adjustable from 0.5x to 2.0x
+- **Keyboard Navigation Hints** - Visual indicators for keyboard controls
+- **Practice Mode** - Key-by-key learning for individual lessons
+- **Compact Panels** - Reduced UI density for smaller screens
+- **UI Scale** - Adjustable from 80% to 140%
+
+All preferences persist in `user://profile.json`.
+
 ## Notes
 
 - Save data is stored at `user://savegame.json`.
-- This is an early playable loop: map -> battle -> rewards -> kingdom.
+- Profile data (typing history, settings, keybinds) stored at `user://profile.json`.
+- Multiple game modes available from main menu.
 
 ## Typing Commands (Milestone 02)
 
@@ -142,10 +177,29 @@ Night typing feedback:
 - Use `settings prefs` to print a full configuration summary (lesson, goal, panels, keybinds).
 - The HUD shows Lesson Health (GOOD/OK/WARN/--) based on recent lesson trends.
 
+## Windows Export
+
+Build a Windows release:
+
+```powershell
+.\scripts\export_windows.ps1        # Dry-run
+.\scripts\export_windows.ps1 apply  # Build
+.\scripts\export_windows.ps1 package # Build + zip
+```
+
+Version management:
+
+```powershell
+.\scripts\bump_version.ps1 patch    # 1.0.0 -> 1.0.1
+.\scripts\bump_version.ps1 minor    # 1.0.0 -> 1.1.0
+.\scripts\bump_version.ps1 major    # 1.0.0 -> 2.0.0
+```
+
 ## Docs
 
-- `docs/PROJECT_STATUS.md` - current project status snapshot.
-- `docs/ROADMAP.md` - near-term roadmap and quality gates.
+- `docs/PROJECT_STATUS.md` - current project status snapshot with feature inventory.
+- `docs/ROADMAP.md` - prioritized roadmap with milestones and acceptance criteria.
+- `docs/PRIORITIES.md` - gaps analysis and recommended next steps.
 - `docs/COMMAND_REFERENCE.md` - command reference with phases and examples.
 - `docs/RESEARCH_SFK_SUMMARY.md` - research summary and mapping notes.
 - `docs/CHANGELOG.md` - milestone changelog.
@@ -153,7 +207,7 @@ Night typing feedback:
 - `docs/QUALITY_GATES.md` - merge/release gate checklist.
 - `docs/PLAYTEST_PROTOCOL.md` - playtest session script and reporting.
 - `docs/plans/README.md` - plan library and action plans index.
-- `docs/plans/PLANPACK_TRIAGE.md` - planpack triage and adoption decisions.
+- `docs/plans/p0/P0_IMPLEMENTATION_BACKLOG.md` - P0 task breakdown with status.
 
 ## Automated Tests
 

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 32" width="128" height="32">
+  <!-- Transition Wipe (4 frames, 32x32 each) - Horizontal wipe -->
+  <!-- Color Palette: #1a252f, #2c3e50 -->
+
+  <!-- Frame 1: 25% wipe -->
+  <rect x="0" y="0" width="8" height="32" fill="#1a252f"/>
+
+  <!-- Frame 2: 50% wipe -->
+  <rect x="32" y="0" width="16" height="32" fill="#1a252f"/>
+
+  <!-- Frame 3: 75% wipe -->
+  <rect x="64" y="0" width="24" height="32" fill="#1a252f"/>
+
+  <!-- Frame 4: Full wipe -->
+  <rect x="96" y="0" width="32" height="32" fill="#1a252f"/>
+</svg>

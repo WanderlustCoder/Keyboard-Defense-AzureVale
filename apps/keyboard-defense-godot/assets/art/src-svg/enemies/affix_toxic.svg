@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <!-- Toxic Affix Overlay (24x24) - Poison clouds -->
+  <!-- Color Palette: #27ae60, #1e8449, #82e0aa -->
+
+  <!-- Poison cloud bubbles -->
+  <rect x="0" y="14" width="4" height="4" fill="#27ae60"/>
+  <rect x="2" y="12" width="3" height="3" fill="#1e8449"/>
+  <rect x="1" y="16" width="2" height="3" fill="#1e8449"/>
+  <rect x="3" y="15" width="2" height="2" fill="#82e0aa"/>
+
+  <rect x="18" y="12" width="5" height="5" fill="#27ae60"/>
+  <rect x="20" y="10" width="3" height="3" fill="#1e8449"/>
+  <rect x="19" y="15" width="3" height="3" fill="#1e8449"/>
+  <rect x="21" y="13" width="2" height="2" fill="#82e0aa"/>
+
+  <rect x="8" y="18" width="4" height="4" fill="#27ae60"/>
+  <rect x="10" y="20" width="3" height="3" fill="#1e8449"/>
+  <rect x="9" y="19" width="2" height="2" fill="#82e0aa"/>
+
+  <!-- Drip drops -->
+  <rect x="4" y="20" width="1" height="2" fill="#27ae60"/>
+  <rect x="16" y="18" width="1" height="2" fill="#27ae60"/>
+  <rect x="12" y="22" width="1" height="2" fill="#1e8449"/>
+</svg>

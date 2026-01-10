@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 36" width="32" height="36">
+  <!-- Defeat Skull (32x36) - Game over skull icon -->
+  <!-- Color Palette: #ecf0f1, #bdc3c7, #2c3e50 -->
+
+  <!-- Skull main shape -->
+  <rect x="6" y="4" width="20" height="20" fill="#ecf0f1"/>
+  <rect x="4" y="8" width="4" height="12" fill="#ecf0f1"/>
+  <rect x="24" y="8" width="4" height="12" fill="#ecf0f1"/>
+  <rect x="8" y="2" width="16" height="4" fill="#ecf0f1"/>
+  <rect x="10" y="0" width="12" height="4" fill="#bdc3c7"/>
+
+  <!-- Eye sockets -->
+  <rect x="8" y="10" width="6" height="6" fill="#2c3e50"/>
+  <rect x="18" y="10" width="6" height="6" fill="#2c3e50"/>
+  <rect x="9" y="11" width="2" height="2" fill="#1a252f"/>
+  <rect x="19" y="11" width="2" height="2" fill="#1a252f"/>
+
+  <!-- Nose cavity -->
+  <rect x="14" y="16" width="4" height="4" fill="#2c3e50"/>
+  <rect x="15" y="18" width="2" height="2" fill="#1a252f"/>
+
+  <!-- Jaw -->
+  <rect x="8" y="22" width="16" height="6" fill="#bdc3c7"/>
+  <rect x="6" y="24" width="20" height="4" fill="#ecf0f1"/>
+
+  <!-- Teeth -->
+  <rect x="10" y="24" width="3" height="4" fill="#ecf0f1"/>
+  <rect x="11" y="26" width="1" height="2" fill="#bdc3c7"/>
+  <rect x="14" y="24" width="3" height="4" fill="#ecf0f1"/>
+  <rect x="15" y="26" width="1" height="2" fill="#bdc3c7"/>
+  <rect x="18" y="24" width="3" height="4" fill="#ecf0f1"/>
+  <rect x="19" y="26" width="1" height="2" fill="#bdc3c7"/>
+
+  <!-- Jaw bottom -->
+  <rect x="10" y="28" width="12" height="4" fill="#bdc3c7"/>
+  <rect x="8" y="30" width="16" height="4" fill="#95a5a6"/>
+  <rect x="12" y="32" width="8" height="4" fill="#7f8c8d"/>
+</svg>

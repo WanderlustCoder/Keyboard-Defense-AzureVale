@@ -16,11 +16,21 @@ const MAX_ROAMING_ENEMIES := 8
 const THREAT_DECAY_RATE := 0.01  # Threat decreases per tick when safe
 const THREAT_GROWTH_RATE := 0.02  # Threat grows per tick when enemies near
 
+# Unified threat system constants
+const WAVE_ASSAULT_THRESHOLD := 0.8  # Threat level that triggers wave assault
+const WAVE_COOLDOWN_DURATION := 30.0  # Seconds before threat can trigger another wave
+const ENCOUNTER_RETURN_DELAY := 2.0  # Seconds after encounter ends before returning to exploration
+const THREAT_DECAY_IN_EXPLORATION := 0.005  # Passive threat decay when exploring
+
 ## Main world tick function - call from _process with accumulated delta
 static func tick(state: GameState, delta: float) -> Dictionary:
 	state.world_tick_accum += delta
 	var events: Array[String] = []
 	var state_changed: bool = false
+
+	# Decay wave cooldown
+	if state.wave_cooldown > 0:
+		state.wave_cooldown = max(0.0, state.wave_cooldown - delta)
 
 	# Process ticks at regular intervals
 	while state.world_tick_accum >= WORLD_TICK_INTERVAL:
@@ -31,26 +41,103 @@ static func tick(state: GameState, delta: float) -> Dictionary:
 		if state.time_of_day >= 1.0:
 			state.time_of_day -= 1.0
 
-		# Tick roaming entities
-		var roaming_events := _tick_roaming_entities(state)
-		events.append_array(roaming_events)
+		# Handle activity mode-specific logic
+		match state.activity_mode:
+			"exploration":
+				# Tick roaming entities
+				var roaming_events := _tick_roaming_entities(state)
+				events.append_array(roaming_events)
 
-		# Maybe spawn new POI
-		var poi_event := _tick_poi_spawns(state)
-		if poi_event != "":
-			events.append(poi_event)
+				# Maybe spawn new POI
+				var poi_event := _tick_poi_spawns(state)
+				if poi_event != "":
+					events.append(poi_event)
 
-		# Maybe spawn roaming enemy
-		var enemy_event := _tick_roaming_spawns(state)
-		if enemy_event != "":
-			events.append(enemy_event)
+				# Maybe spawn roaming enemy
+				var enemy_event := _tick_roaming_spawns(state)
+				if enemy_event != "":
+					events.append(enemy_event)
 
-		# Update threat level based on proximity
-		_tick_threat_level(state)
+				# Update threat level based on proximity
+				_tick_threat_level(state)
+
+				# Check for wave assault trigger
+				var wave_event := _check_wave_assault_trigger(state)
+				if wave_event != "":
+					events.append(wave_event)
+
+			"encounter":
+				# Check if encounter is over
+				if state.enemies.is_empty():
+					_end_encounter(state)
+					events.append("Encounter resolved. Continue exploring.")
+
+			"wave_assault":
+				# Wave assault uses existing night phase combat
+				# Check if wave is cleared
+				if state.enemies.is_empty() and state.night_spawn_remaining <= 0:
+					_end_wave_assault(state)
+					events.append("Wave repelled! The kingdom is safe... for now.")
+
+			"event":
+				# Events are handled by the event system, just wait
+				pass
 
 		state_changed = true
 
 	return {"events": events, "changed": state_changed}
+
+## Check if threat level triggers a wave assault
+static func _check_wave_assault_trigger(state: GameState) -> String:
+	if state.wave_cooldown > 0:
+		return ""
+	if state.threat_level < WAVE_ASSAULT_THRESHOLD:
+		return ""
+
+	# Trigger wave assault!
+	_start_wave_assault(state)
+	return "WAVE ASSAULT! Enemies converge on the castle!"
+
+## Start a wave assault (threat-triggered combat)
+static func _start_wave_assault(state: GameState) -> void:
+	state.activity_mode = "wave_assault"
+	state.phase = "night"
+
+	# Calculate wave size based on threat and day
+	var base_size: int = 2 + int(state.day / 2)
+	var threat_bonus: int = int(state.threat_level * 3)
+	var wave_size: int = base_size + threat_bonus
+
+	state.night_wave_total = wave_size
+	state.night_spawn_remaining = wave_size
+	state.enemies = []
+
+	# Convert some roaming enemies to combat
+	var converted: int = 0
+	for i in range(min(2, state.roaming_enemies.size())):
+		if state.roaming_enemies.is_empty():
+			break
+		var roaming: Dictionary = state.roaming_enemies.pop_back()
+		_convert_to_combat_enemy(state, roaming)
+		converted += 1
+
+	# Reset threat level
+	state.threat_level = 0.3
+
+## End wave assault, return to exploration
+static func _end_wave_assault(state: GameState) -> void:
+	state.activity_mode = "exploration"
+	state.phase = "day"
+	state.ap = state.ap_max
+	state.wave_cooldown = WAVE_COOLDOWN_DURATION
+	state.day += 1  # Advance day after wave
+
+## End encounter, return to exploration
+static func _end_encounter(state: GameState) -> void:
+	state.activity_mode = "exploration"
+	state.phase = "day"
+	# Don't restore AP for small encounters
+	state.encounter_enemies = []
 
 ## Spawn POIs on discovered tiles
 static func _tick_poi_spawns(state: GameState) -> String:
@@ -243,10 +330,23 @@ static func _move_roaming_enemy(state: GameState, entity: Dictionary) -> bool:
 static func _convert_to_combat_enemy(state: GameState, roaming: Dictionary) -> void:
 	var kind: String = roaming.get("kind", "raider")
 	var enemy := SimEnemies.make_enemy(state, kind, state.base_pos)
+	state.enemy_next_id += 1
 	state.enemies.append(enemy)
 
-	# Force night phase if not already
-	if state.phase != "night":
+	# Start encounter if not already in combat
+	if state.activity_mode == "exploration":
+		state.activity_mode = "encounter"
 		state.phase = "night"
 		state.night_spawn_remaining = 0
-		state.night_wave_total = 1
+		state.night_wave_total = state.enemies.size()
+
+## Start a focused encounter (player-initiated or enemy reaching castle)
+static func start_encounter(state: GameState, enemies_to_add: Array = []) -> void:
+	state.activity_mode = "encounter"
+	state.phase = "night"
+	state.night_spawn_remaining = 0
+
+	for enemy_data in enemies_to_add:
+		state.enemies.append(enemy_data)
+
+	state.night_wave_total = state.enemies.size()

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 24" width="64" height="24">
+  <!-- Retry Button (64x24) - Try again button -->
+  <!-- Color Palette: #e74c3c, #ec7063, #c0392b -->
+
+  <!-- Button base -->
+  <rect x="0" y="4" width="64" height="20" fill="#c0392b"/>
+  <rect x="0" y="0" width="64" height="20" fill="#e74c3c"/>
+  <rect x="2" y="2" width="60" height="16" fill="#ec7063"/>
+
+  <!-- Button highlight -->
+  <rect x="4" y="4" width="56" height="4" fill="#f1948a"/>
+
+  <!-- Retry arrow icon -->
+  <rect x="46" y="8" width="8" height="4" fill="#c0392b"/>
+  <rect x="46" y="6" width="4" height="2" fill="#c0392b"/>
+  <rect x="46" y="12" width="4" height="2" fill="#c0392b"/>
+  <rect x="50" y="4" width="4" height="4" fill="#c0392b"/>
+  <rect x="50" y="12" width="4" height="4" fill="#c0392b"/>
+
+  <!-- Corner cuts -->
+  <rect x="0" y="0" width="2" height="2" fill="#1a252f"/>
+  <rect x="62" y="0" width="2" height="2" fill="#1a252f"/>
+  <rect x="0" y="22" width="2" height="2" fill="#1a252f"/>
+  <rect x="62" y="22" width="2" height="2" fill="#1a252f"/>
+</svg>

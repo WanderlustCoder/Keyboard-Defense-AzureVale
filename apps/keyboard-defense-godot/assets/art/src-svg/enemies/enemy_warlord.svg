@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 24" width="20" height="24">
+  <!-- Warlord Enemy (20x24) - Heavy armored boss -->
+  <!-- Color Palette: #5d6d7e, #34495e, #c0392b -->
+
+  <!-- Legs -->
+  <rect x="5" y="19" width="4" height="5" fill="#34495e"/>
+  <rect x="11" y="19" width="4" height="5" fill="#34495e"/>
+
+  <!-- Body (heavy armor) -->
+  <rect x="3" y="10" width="14" height="10" fill="#5d6d7e"/>
+  <rect x="5" y="12" width="10" height="6" fill="#34495e"/>
+  <rect x="7" y="14" width="6" height="2" fill="#7f8c8d"/>
+
+  <!-- Pauldrons -->
+  <rect x="0" y="10" width="5" height="6" fill="#5d6d7e"/>
+  <rect x="15" y="10" width="5" height="6" fill="#5d6d7e"/>
+  <rect x="1" y="11" width="3" height="2" fill="#7f8c8d"/>
+  <rect x="16" y="11" width="3" height="2" fill="#7f8c8d"/>
+
+  <!-- Head with horned helm -->
+  <rect x="5" y="4" width="10" height="7" fill="#5d6d7e"/>
+  <rect x="7" y="6" width="2" height="2" fill="#c0392b"/>
+  <rect x="11" y="6" width="2" height="2" fill="#c0392b"/>
+  <rect x="3" y="2" width="4" height="6" fill="#5d6d7e"/>
+  <rect x="13" y="2" width="4" height="6" fill="#5d6d7e"/>
+  <rect x="4" y="0" width="2" height="4" fill="#34495e"/>
+  <rect x="14" y="0" width="2" height="4" fill="#34495e"/>
+
+  <!-- Cape -->
+  <rect x="6" y="18" width="8" height="4" fill="#c0392b"/>
+</svg>

@@ -4,6 +4,7 @@ extends RefCounted
 const GameState = preload("res://sim/types.gd")
 const SimRng = preload("res://sim/rng.gd")
 const SimWords = preload("res://sim/words.gd")
+const SimStatusEffects = preload("res://sim/status_effects.gd")
 
 const ENEMY_KINDS := {
     "raider": {"speed": 1, "armor": 0, "hp_bonus": 0, "glyph": "r"},
@@ -466,6 +467,11 @@ static func serialize(enemy: Dictionary) -> Dictionary:
         result["summons"] = bool(enemy["summons"])
     if enemy.has("summon_cooldown"):
         result["summon_cooldown"] = int(enemy["summon_cooldown"])
+    # Status effects
+    if enemy.has("status_effects"):
+        result["status_effects"] = SimStatusEffects.serialize_effects(enemy["status_effects"])
+    if enemy.has("freeze_immunity"):
+        result["freeze_immunity"] = float(enemy["freeze_immunity"])
     return result
 
 static func deserialize(raw: Dictionary) -> Dictionary:
@@ -516,6 +522,11 @@ static func deserialize(raw: Dictionary) -> Dictionary:
         result["summons"] = bool(raw["summons"])
     if raw.has("summon_cooldown"):
         result["summon_cooldown"] = int(raw["summon_cooldown"])
+    # Status effects
+    if raw.has("status_effects"):
+        result["status_effects"] = SimStatusEffects.deserialize_effects(raw["status_effects"])
+    if raw.has("freeze_immunity"):
+        result["freeze_immunity"] = float(raw["freeze_immunity"])
     return result
 
 static func _used_words(enemies: Array) -> Dictionary:
@@ -562,3 +573,68 @@ static func pick_target_index(enemies: Array, dist: PackedInt32Array, map_w: int
             best_id = enemy_id
             best_index = i
     return best_index
+
+
+## Status effect helpers
+
+## Apply a status effect to an enemy
+static func apply_status_effect(enemy: Dictionary, effect_id: String, tier: int = 1, source: String = "") -> Dictionary:
+    enemy = SimStatusEffects.apply_effect(enemy, effect_id, tier, source)
+    enemy = SimStatusEffects.apply_effect_interactions(enemy, effect_id)
+    return enemy
+
+## Remove a status effect from an enemy
+static func remove_status_effect(enemy: Dictionary, effect_id: String) -> Dictionary:
+    return SimStatusEffects.remove_effect(enemy, effect_id)
+
+## Check if enemy has a specific effect
+static func has_status_effect(enemy: Dictionary, effect_id: String) -> bool:
+    return SimStatusEffects.has_effect(enemy, effect_id)
+
+## Get effective speed considering status effects
+static func get_effective_speed(enemy: Dictionary) -> int:
+    return SimStatusEffects.get_effective_speed(enemy)
+
+## Get effective armor considering status effects
+static func get_effective_armor(enemy: Dictionary) -> int:
+    return SimStatusEffects.get_effective_armor(enemy)
+
+## Get damage multiplier from status effects (for damage taken)
+static func get_damage_taken_multiplier(enemy: Dictionary) -> float:
+    return SimStatusEffects.get_damage_taken_multiplier(enemy)
+
+## Get damage reduction for enemy attacks (weakened debuff)
+static func get_damage_dealt_reduction(enemy: Dictionary) -> float:
+    return SimStatusEffects.get_damage_dealt_reduction(enemy)
+
+## Check if enemy is immobilized (frozen/rooted)
+static func is_immobilized(enemy: Dictionary) -> bool:
+    return SimStatusEffects.is_immobilized(enemy)
+
+## Process status effect ticks for all enemies (call during combat tick)
+static func tick_status_effects(enemies: Array, delta: float, events: Array[String]) -> void:
+    for i in range(enemies.size()):
+        var enemy: Dictionary = enemies[i]
+        if typeof(enemy) != TYPE_DICTIONARY:
+            continue
+        var result: Dictionary = SimStatusEffects.tick_effects(enemy, delta)
+        var dot_damage: int = int(result.get("damage", 0))
+        if dot_damage > 0:
+            enemy["hp"] = int(enemy.get("hp", 0)) - dot_damage
+            var enemy_id: int = int(enemy.get("id", 0))
+            var kind: String = str(enemy.get("kind", "raider"))
+            events.append("%s#%d takes %d DoT damage." % [kind, enemy_id, dot_damage])
+        enemies[i] = enemy
+
+## Apply damage with status effect modifiers
+static func apply_damage_with_effects(enemy: Dictionary, base_dmg: int, state: GameState = null) -> Dictionary:
+    # Get damage multiplier from status effects (exposed, frozen vulnerability)
+    var damage_mult: float = get_damage_taken_multiplier(enemy)
+    var effective_damage: int = int(float(base_dmg) * damage_mult)
+
+    # Apply damage through existing system
+    return apply_damage(enemy, effective_damage, state)
+
+## Get status effect summary for an enemy (for UI display)
+static func get_status_summary(enemy: Dictionary) -> Array[Dictionary]:
+    return SimStatusEffects.get_effect_summary(enemy)

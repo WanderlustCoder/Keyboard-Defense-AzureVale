@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 48" width="128" height="48">
+  <!-- Title Logo (128x48) - Game title backdrop -->
+  <!-- Color Palette: #f4d03f, #f39c12, #2c3e50 -->
+
+  <!-- Shield background -->
+  <rect x="24" y="4" width="80" height="36" fill="#2c3e50"/>
+  <rect x="28" y="0" width="72" height="8" fill="#2c3e50"/>
+  <rect x="28" y="36" width="72" height="8" fill="#2c3e50"/>
+  <rect x="32" y="40" width="64" height="6" fill="#2c3e50"/>
+  <rect x="40" y="44" width="48" height="4" fill="#2c3e50"/>
+
+  <!-- Shield border -->
+  <rect x="24" y="4" width="4" height="36" fill="#f4d03f"/>
+  <rect x="100" y="4" width="4" height="36" fill="#f4d03f"/>
+  <rect x="28" y="0" width="72" height="4" fill="#f4d03f"/>
+  <rect x="28" y="40" width="72" height="4" fill="#f39c12"/>
+
+  <!-- Inner decoration -->
+  <rect x="32" y="8" width="64" height="28" fill="#34495e"/>
+
+  <!-- Crown at top -->
+  <rect x="52" y="10" width="24" height="8" fill="#f4d03f"/>
+  <rect x="48" y="14" width="8" height="4" fill="#f4d03f"/>
+  <rect x="72" y="14" width="8" height="4" fill="#f4d03f"/>
+  <rect x="54" y="8" width="4" height="4" fill="#f4d03f"/>
+  <rect x="62" y="6" width="4" height="6" fill="#f4d03f"/>
+  <rect x="70" y="8" width="4" height="4" fill="#f4d03f"/>
+
+  <!-- Gems on crown -->
+  <rect x="55" y="12" width="2" height="2" fill="#e74c3c"/>
+  <rect x="63" y="10" width="2" height="2" fill="#3498db"/>
+  <rect x="71" y="12" width="2" height="2" fill="#27ae60"/>
+
+  <!-- Keyboard keys below -->
+  <rect x="40" y="24" width="8" height="8" fill="#5d6d7e"/>
+  <rect x="50" y="24" width="8" height="8" fill="#5d6d7e"/>
+  <rect x="60" y="24" width="8" height="8" fill="#5d6d7e"/>
+  <rect x="70" y="24" width="8" height="8" fill="#5d6d7e"/>
+  <rect x="80" y="24" width="8" height="8" fill="#5d6d7e"/>
+
+  <!-- Key highlights -->
+  <rect x="41" y="25" width="6" height="2" fill="#7f8c8d"/>
+  <rect x="51" y="25" width="6" height="2" fill="#7f8c8d"/>
+  <rect x="61" y="25" width="6" height="2" fill="#7f8c8d"/>
+  <rect x="71" y="25" width="6" height="2" fill="#7f8c8d"/>
+  <rect x="81" y="25" width="6" height="2" fill="#7f8c8d"/>
+</svg>

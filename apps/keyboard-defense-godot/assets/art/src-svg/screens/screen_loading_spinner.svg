@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 24" width="96" height="24">
+  <!-- Loading Spinner (6 frames, 24x24 each) - Rotating dots -->
+  <!-- Color Palette: #3498db, #5dade2, #aed6f1 -->
+
+  <!-- Frame 1 -->
+  <rect x="10" y="2" width="4" height="4" fill="#3498db"/>
+  <rect x="16" y="6" width="4" height="4" fill="#5dade2"/>
+  <rect x="16" y="14" width="4" height="4" fill="#aed6f1"/>
+  <rect x="10" y="18" width="4" height="4" fill="#aed6f1"/>
+  <rect x="4" y="14" width="4" height="4" fill="#5dade2"/>
+  <rect x="4" y="6" width="4" height="4" fill="#3498db"/>
+
+  <!-- Frame 2 -->
+  <rect x="34" y="2" width="4" height="4" fill="#5dade2"/>
+  <rect x="40" y="6" width="4" height="4" fill="#3498db"/>
+  <rect x="40" y="14" width="4" height="4" fill="#5dade2"/>
+  <rect x="34" y="18" width="4" height="4" fill="#aed6f1"/>
+  <rect x="28" y="14" width="4" height="4" fill="#aed6f1"/>
+  <rect x="28" y="6" width="4" height="4" fill="#5dade2"/>
+
+  <!-- Frame 3 -->
+  <rect x="58" y="2" width="4" height="4" fill="#aed6f1"/>
+  <rect x="64" y="6" width="4" height="4" fill="#5dade2"/>
+  <rect x="64" y="14" width="4" height="4" fill="#3498db"/>
+  <rect x="58" y="18" width="4" height="4" fill="#5dade2"/>
+  <rect x="52" y="14" width="4" height="4" fill="#aed6f1"/>
+  <rect x="52" y="6" width="4" height="4" fill="#aed6f1"/>
+
+  <!-- Frame 4 -->
+  <rect x="82" y="2" width="4" height="4" fill="#aed6f1"/>
+  <rect x="88" y="6" width="4" height="4" fill="#aed6f1"/>
+  <rect x="88" y="14" width="4" height="4" fill="#5dade2"/>
+  <rect x="82" y="18" width="4" height="4" fill="#3498db"/>
+  <rect x="76" y="14" width="4" height="4" fill="#5dade2"/>
+  <rect x="76" y="6" width="4" height="4" fill="#aed6f1"/>
+</svg>

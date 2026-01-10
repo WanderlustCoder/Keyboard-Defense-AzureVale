@@ -1,0 +1,228 @@
+{
+  "categories": {
+    "construction": {
+      "label": "Construction",
+      "description": "Improve building efficiency and durability.",
+      "color": "#8B4513",
+      "icon": "hammer"
+    },
+    "economy": {
+      "label": "Economy",
+      "description": "Boost resource production and trade.",
+      "color": "#FFD700",
+      "icon": "coin"
+    },
+    "military": {
+      "label": "Military",
+      "description": "Enhance combat effectiveness.",
+      "color": "#F44336",
+      "icon": "sword"
+    },
+    "mystical": {
+      "label": "Mystical",
+      "description": "Unlock special abilities and bonuses.",
+      "color": "#9C27B0",
+      "icon": "star"
+    }
+  },
+  "research": [
+    {
+      "id": "masonry",
+      "label": "Masonry",
+      "category": "construction",
+      "description": "Refined stonework reduces construction costs.",
+      "cost": {"gold": 25},
+      "waves_to_complete": 2,
+      "effects": {
+        "stone_cost_reduction": 0.1
+      },
+      "requires": []
+    },
+    {
+      "id": "architecture",
+      "label": "Architecture",
+      "category": "construction",
+      "description": "Advanced planning allows more buildings per day.",
+      "cost": {"gold": 40},
+      "waves_to_complete": 3,
+      "effects": {
+        "build_limit_bonus": 1
+      },
+      "requires": ["masonry"]
+    },
+    {
+      "id": "fortification",
+      "label": "Fortification",
+      "category": "construction",
+      "description": "Reinforced walls provide extra defense.",
+      "cost": {"gold": 50},
+      "waves_to_complete": 2,
+      "effects": {
+        "wall_defense_bonus": 1
+      },
+      "requires": ["masonry"]
+    },
+    {
+      "id": "engineering",
+      "label": "Engineering",
+      "category": "construction",
+      "description": "Advanced techniques reduce all build costs.",
+      "cost": {"gold": 75},
+      "waves_to_complete": 3,
+      "effects": {
+        "build_cost_reduction": 0.15
+      },
+      "requires": ["architecture", "fortification"]
+    },
+    {
+      "id": "efficient_farming",
+      "label": "Efficient Farming",
+      "category": "economy",
+      "description": "Better techniques increase food production.",
+      "cost": {"gold": 20},
+      "waves_to_complete": 2,
+      "effects": {
+        "food_production_bonus": 0.2
+      },
+      "requires": []
+    },
+    {
+      "id": "trade_routes",
+      "label": "Trade Routes",
+      "category": "economy",
+      "description": "Established trade paths boost market income.",
+      "cost": {"gold": 35},
+      "waves_to_complete": 2,
+      "effects": {
+        "gold_production_bonus": 0.3
+      },
+      "requires": ["efficient_farming"]
+    },
+    {
+      "id": "taxation",
+      "label": "Taxation",
+      "category": "economy",
+      "description": "Collect gold from each building owned.",
+      "cost": {"gold": 45},
+      "waves_to_complete": 3,
+      "effects": {
+        "gold_per_building": 2
+      },
+      "requires": ["trade_routes"]
+    },
+    {
+      "id": "prosperity",
+      "label": "Prosperity",
+      "category": "economy",
+      "description": "A thriving economy multiplies all resource gains.",
+      "cost": {"gold": 80},
+      "waves_to_complete": 4,
+      "effects": {
+        "resource_multiplier": 0.25
+      },
+      "requires": ["taxation"]
+    },
+    {
+      "id": "archery_training",
+      "label": "Archery Training",
+      "category": "military",
+      "description": "Towers gain extended range.",
+      "cost": {"gold": 30},
+      "waves_to_complete": 2,
+      "effects": {
+        "tower_range_bonus": 1
+      },
+      "requires": []
+    },
+    {
+      "id": "steel_weapons",
+      "label": "Steel Weapons",
+      "category": "military",
+      "description": "Superior weapons increase typing power.",
+      "cost": {"gold": 45},
+      "waves_to_complete": 3,
+      "effects": {
+        "typing_power": 0.15
+      },
+      "requires": ["archery_training"]
+    },
+    {
+      "id": "battle_tactics",
+      "label": "Battle Tactics",
+      "category": "military",
+      "description": "Strategic coordination amplifies combo bonuses.",
+      "cost": {"gold": 55},
+      "waves_to_complete": 3,
+      "effects": {
+        "combo_multiplier": 0.25
+      },
+      "requires": ["steel_weapons"]
+    },
+    {
+      "id": "war_mastery",
+      "label": "War Mastery",
+      "category": "military",
+      "description": "Complete martial expertise grants all combat bonuses.",
+      "cost": {"gold": 90},
+      "waves_to_complete": 4,
+      "effects": {
+        "typing_power": 0.1,
+        "tower_damage_bonus": 1,
+        "critical_chance": 0.1
+      },
+      "requires": ["battle_tactics"]
+    },
+    {
+      "id": "healing_aura",
+      "label": "Healing Aura",
+      "category": "mystical",
+      "description": "Mystical energy heals the castle after each wave.",
+      "cost": {"gold": 35},
+      "waves_to_complete": 2,
+      "effects": {
+        "wave_heal": 1
+      },
+      "requires": []
+    },
+    {
+      "id": "time_dilation",
+      "label": "Time Dilation",
+      "category": "mystical",
+      "description": "Bend time to extend the planning phase.",
+      "cost": {"gold": 50},
+      "waves_to_complete": 3,
+      "effects": {
+        "planning_time_bonus": 10
+      },
+      "requires": ["healing_aura"]
+    },
+    {
+      "id": "word_mastery",
+      "label": "Word Mastery",
+      "category": "mystical",
+      "description": "Perfect words deal critical damage.",
+      "cost": {"gold": 60},
+      "waves_to_complete": 3,
+      "effects": {
+        "perfect_word_crit": true,
+        "critical_damage": 0.5
+      },
+      "requires": ["healing_aura"]
+    },
+    {
+      "id": "arcane_supremacy",
+      "label": "Arcane Supremacy",
+      "category": "mystical",
+      "description": "Ultimate magical power grants all mystical bonuses.",
+      "cost": {"gold": 100},
+      "waves_to_complete": 5,
+      "effects": {
+        "wave_heal": 2,
+        "castle_health_bonus": 3,
+        "typing_power": 0.2,
+        "mistake_forgiveness": 0.15
+      },
+      "requires": ["time_dilation", "word_mastery"]
+    }
+  ]
+}

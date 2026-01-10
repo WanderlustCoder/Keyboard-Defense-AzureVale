@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 20" width="16" height="20">
+  <!-- Champion Enemy (16x20) - Elite warrior -->
+  <!-- Color Palette: #c0392b, #922b21, #f4d03f -->
+
+  <!-- Legs -->
+  <rect x="4" y="16" width="3" height="4" fill="#922b21"/>
+  <rect x="9" y="16" width="3" height="4" fill="#922b21"/>
+
+  <!-- Body (armored) -->
+  <rect x="3" y="8" width="10" height="8" fill="#c0392b"/>
+  <rect x="5" y="10" width="6" height="4" fill="#922b21"/>
+  <rect x="6" y="11" width="4" height="2" fill="#7f8c8d"/>
+
+  <!-- Arms -->
+  <rect x="0" y="9" width="4" height="6" fill="#c0392b"/>
+  <rect x="12" y="9" width="4" height="6" fill="#c0392b"/>
+
+  <!-- Head with crown -->
+  <rect x="4" y="3" width="8" height="6" fill="#c0392b"/>
+  <rect x="5" y="4" width="2" height="2" fill="#1a252f"/>
+  <rect x="9" y="4" width="2" height="2" fill="#1a252f"/>
+  <rect x="5" y="0" width="6" height="4" fill="#f4d03f"/>
+  <rect x="6" y="0" width="1" height="2" fill="#f39c12"/>
+  <rect x="9" y="0" width="1" height="2" fill="#f39c12"/>
+
+  <!-- Sword -->
+  <rect x="14" y="4" width="2" height="10" fill="#bdc3c7"/>
+  <rect x="13" y="8" width="3" height="2" fill="#8b7355"/>
+</svg>

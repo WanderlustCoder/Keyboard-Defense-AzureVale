@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 24" width="96" height="24">
+  <!-- Flag Wave Animation (4 frames, 24x24 each) -->
+  <!-- Color Palette: #e74c3c, #c0392b, #8b7355 -->
+
+  <!-- Frame 1: Extended -->
+  <rect x="2" y="4" width="2" height="20" fill="#8b7355"/>
+  <rect x="4" y="4" width="12" height="8" fill="#e74c3c"/>
+  <rect x="4" y="6" width="3" height="2" fill="#c0392b"/>
+  <rect x="10" y="8" width="4" height="2" fill="#c0392b"/>
+
+  <!-- Frame 2: Slight wave -->
+  <rect x="26" y="4" width="2" height="20" fill="#8b7355"/>
+  <rect x="28" y="5" width="10" height="7" fill="#e74c3c"/>
+  <rect x="38" y="6" width="4" height="5" fill="#e74c3c"/>
+  <rect x="28" y="7" width="3" height="2" fill="#c0392b"/>
+  <rect x="35" y="8" width="3" height="2" fill="#c0392b"/>
+
+  <!-- Frame 3: Mid wave -->
+  <rect x="50" y="4" width="2" height="20" fill="#8b7355"/>
+  <rect x="52" y="6" width="8" height="6" fill="#e74c3c"/>
+  <rect x="60" y="4" width="6" height="6" fill="#e74c3c"/>
+  <rect x="66" y="5" width="2" height="4" fill="#e74c3c"/>
+  <rect x="52" y="8" width="3" height="2" fill="#c0392b"/>
+  <rect x="61" y="6" width="3" height="2" fill="#c0392b"/>
+
+  <!-- Frame 4: Return wave -->
+  <rect x="74" y="4" width="2" height="20" fill="#8b7355"/>
+  <rect x="76" y="5" width="10" height="7" fill="#e74c3c"/>
+  <rect x="86" y="6" width="4" height="5" fill="#e74c3c"/>
+  <rect x="90" y="7" width="2" height="3" fill="#e74c3c"/>
+  <rect x="76" y="7" width="3" height="2" fill="#c0392b"/>
+  <rect x="84" y="8" width="3" height="2" fill="#c0392b"/>
+</svg>

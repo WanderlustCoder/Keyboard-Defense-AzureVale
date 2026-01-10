@@ -4,7 +4,8 @@ var next_battle_node_id: String = ""
 var last_battle_summary: Dictionary = {}
 
 const SCENE_MENU := "res://scenes/MainMenu.tscn"
-const SCENE_MAP := "res://scenes/CampaignMap.tscn"
+const SCENE_MAP := "res://scenes/KingdomDefense.tscn"  # Top-down RTS typing game
+const SCENE_MAP_LEGACY := "res://scenes/OpenWorld.tscn"  # Open-world version
 const SCENE_BATTLE := "res://scenes/Battlefield.tscn"
 const SCENE_KINGDOM := "res://scenes/KingdomHub.tscn"
 const SCENE_SETTINGS := "res://scenes/SettingsMenu.tscn"

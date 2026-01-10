@@ -8,27 +8,91 @@ const BUILDINGS := {
     "farm": {
         "cost": {"wood": 10},
         "production": {"food": 3},
-        "defense": 0
+        "defense": 0,
+        "worker_slots": 1,
+        "category": "production"
     },
     "lumber": {
         "cost": {"wood": 5, "food": 2},
         "production": {"wood": 3},
-        "defense": 0
+        "defense": 0,
+        "worker_slots": 1,
+        "category": "production"
     },
     "quarry": {
         "cost": {"wood": 5, "food": 2},
         "production": {"stone": 3},
-        "defense": 0
+        "defense": 0,
+        "worker_slots": 1,
+        "category": "production"
     },
     "wall": {
         "cost": {"wood": 4, "stone": 4},
         "production": {},
-        "defense": 1
+        "defense": 1,
+        "worker_slots": 0,
+        "category": "defense"
     },
     "tower": {
         "cost": {"wood": 4, "stone": 8},
         "production": {},
-        "defense": 2
+        "defense": 2,
+        "worker_slots": 0,
+        "category": "defense"
+    },
+    "market": {
+        "cost": {"wood": 8, "stone": 5},
+        "production": {"gold": 5},
+        "defense": 0,
+        "worker_slots": 1,
+        "category": "economy"
+    },
+    "barracks": {
+        "cost": {"wood": 10, "stone": 8},
+        "production": {},
+        "defense": 1,
+        "worker_slots": 2,
+        "category": "military"
+    },
+    "temple": {
+        "cost": {"stone": 15, "gold": 20},
+        "production": {},
+        "defense": 0,
+        "worker_slots": 1,
+        "category": "support",
+        "effects": {"wave_heal": 1}
+    },
+    "workshop": {
+        "cost": {"wood": 12, "stone": 6},
+        "production": {},
+        "defense": 0,
+        "worker_slots": 2,
+        "category": "support",
+        "effects": {"build_cost_reduction": 0.1}
+    },
+    "sentry": {
+        "cost": {"wood": 6, "stone": 10, "gold": 30},
+        "production": {},
+        "defense": 1,
+        "worker_slots": 0,
+        "category": "auto_defense",
+        "auto_attack": {"damage": 3, "range": 3, "cooldown": 1.5, "targeting": "nearest"}
+    },
+    "spark": {
+        "cost": {"wood": 4, "stone": 8, "gold": 50},
+        "production": {},
+        "defense": 0,
+        "worker_slots": 0,
+        "category": "auto_defense",
+        "auto_attack": {"damage": 2, "range": 2, "cooldown": 2.0, "targeting": "aoe", "aoe_radius": 2}
+    },
+    "flame": {
+        "cost": {"wood": 8, "stone": 6, "gold": 60},
+        "production": {},
+        "defense": 0,
+        "worker_slots": 0,
+        "category": "auto_defense",
+        "auto_attack": {"damage": 4, "range": 2, "cooldown": 0.8, "targeting": "nearest", "burn": true}
     }
 }
 
@@ -41,6 +105,73 @@ const TOWER_STATS := {
 const TOWER_UPGRADE_COSTS := {
     1: {"wood": 4, "stone": 8},
     2: {"wood": 8, "stone": 12}
+}
+
+# Generic upgrade definitions for all buildings
+const BUILDING_UPGRADES := {
+    "farm": {
+        "max_level": 3,
+        "levels": {
+            2: {"cost": {"wood": 8}, "production": {"food": 5}, "worker_slots": 2},
+            3: {"cost": {"wood": 12, "stone": 5}, "production": {"food": 8}, "worker_slots": 3}
+        }
+    },
+    "lumber": {
+        "max_level": 3,
+        "levels": {
+            2: {"cost": {"wood": 6, "stone": 4}, "production": {"wood": 5}, "worker_slots": 2},
+            3: {"cost": {"wood": 10, "stone": 8}, "production": {"wood": 8}, "worker_slots": 3}
+        }
+    },
+    "quarry": {
+        "max_level": 3,
+        "levels": {
+            2: {"cost": {"wood": 6, "stone": 4}, "production": {"stone": 5}, "worker_slots": 2},
+            3: {"cost": {"wood": 10, "stone": 8}, "production": {"stone": 8}, "worker_slots": 3}
+        }
+    },
+    "market": {
+        "max_level": 3,
+        "levels": {
+            2: {"cost": {"wood": 10, "stone": 8}, "production": {"gold": 8}, "worker_slots": 2, "per_adjacent": 2},
+            3: {"cost": {"wood": 15, "stone": 12, "gold": 30}, "production": {"gold": 12}, "worker_slots": 3, "per_adjacent": 3, "enables_trade": true}
+        }
+    },
+    "wall": {
+        "max_level": 3,
+        "levels": {
+            2: {"cost": {"stone": 4}, "defense": 2, "effects": {"enemy_slow": 0.2}},
+            3: {"cost": {"stone": 8, "wood": 4}, "defense": 3, "effects": {"enemy_slow": 0.3, "thorns": 1}}
+        }
+    },
+    "tower": {
+        "max_level": 3,
+        "levels": {
+            2: {"cost": {"wood": 4, "stone": 8}, "defense": 3, "combat": {"range": 4, "damage": 2, "shots": 2}},
+            3: {"cost": {"wood": 8, "stone": 12}, "defense": 4, "combat": {"range": 5, "damage": 3, "shots": 2}, "effects": {"enemy_slow": 0.15}}
+        }
+    },
+    "barracks": {
+        "max_level": 3,
+        "levels": {
+            2: {"cost": {"wood": 8, "stone": 10}, "defense": 2, "worker_slots": 3, "effects": {"typing_power": 0.1}},
+            3: {"cost": {"wood": 12, "stone": 15, "gold": 25}, "defense": 3, "worker_slots": 4, "effects": {"typing_power": 0.2, "combo_bonus": 0.15}}
+        }
+    },
+    "temple": {
+        "max_level": 3,
+        "levels": {
+            2: {"cost": {"stone": 10, "gold": 15}, "worker_slots": 2, "effects": {"wave_heal": 2, "morale": 0.1}},
+            3: {"cost": {"stone": 20, "gold": 40}, "worker_slots": 3, "effects": {"wave_heal": 3, "morale": 0.2, "castle_hp": 2}}
+        }
+    },
+    "workshop": {
+        "max_level": 3,
+        "levels": {
+            2: {"cost": {"wood": 8, "stone": 10}, "worker_slots": 3, "effects": {"build_cost_reduction": 0.15, "upgrade_cost_reduction": 0.1}},
+            3: {"cost": {"wood": 15, "stone": 15, "gold": 20}, "worker_slots": 4, "effects": {"build_cost_reduction": 0.2, "upgrade_cost_reduction": 0.15, "tower_damage": 1}}
+        }
+    }
 }
 
 static func is_valid(building_type: String) -> bool:
@@ -60,6 +191,14 @@ static func tower_max_level() -> int:
 
 static func tower_stats(level: int) -> Dictionary:
     return TOWER_STATS.get(level, TOWER_STATS[1])
+
+static func get_tower_effects(level: int) -> Dictionary:
+    ## Get status effect abilities for tower at given level
+    var upgrade_data: Dictionary = BUILDING_UPGRADES.get("tower", {})
+    var levels: Dictionary = upgrade_data.get("levels", {})
+    if levels.has(level):
+        return levels[level].get("effects", {})
+    return {}
 
 static func upgrade_cost_for(level: int) -> Dictionary:
     return TOWER_UPGRADE_COSTS.get(level, {})
@@ -111,6 +250,32 @@ static func list_types() -> Array[String]:
 
 static func is_blocking(building_type: String) -> bool:
     return building_type == "wall" or building_type == "tower"
+
+static func is_auto_tower(building_type: String) -> bool:
+    return BUILDINGS.get(building_type, {}).get("category", "") == "auto_defense"
+
+static func get_auto_attack_stats(building_type: String) -> Dictionary:
+    return BUILDINGS.get(building_type, {}).get("auto_attack", {})
+
+static func get_all_auto_towers(state: GameState) -> Array[Dictionary]:
+    var auto_towers: Array[Dictionary] = []
+    for key in state.structures.keys():
+        var building_type: String = str(state.structures[key])
+        if is_auto_tower(building_type):
+            var stats: Dictionary = get_auto_attack_stats(building_type)
+            var pos: Vector2i = SimMap.pos_from_index(int(key), state.map_w)
+            auto_towers.append({
+                "index": int(key),
+                "type": building_type,
+                "pos": pos,
+                "damage": int(stats.get("damage", 1)),
+                "range": int(stats.get("range", 2)),
+                "cooldown": float(stats.get("cooldown", 1.0)),
+                "targeting": str(stats.get("targeting", "nearest")),
+                "aoe_radius": int(stats.get("aoe_radius", 0)),
+                "burn": bool(stats.get("burn", false))
+            })
+    return auto_towers
 
 static func get_build_preview(state: GameState, pos: Vector2i, building_type: String) -> Dictionary:
     var preview := {
@@ -269,3 +434,188 @@ static func invested_cost(building_type: String, level: int) -> Dictionary:
 static func _add_costs(target: Dictionary, add: Dictionary) -> void:
     for key in add.keys():
         target[key] = int(target.get(key, 0)) + int(add[key])
+
+# Generic building upgrade functions
+
+static func max_level(building_type: String) -> int:
+    if BUILDING_UPGRADES.has(building_type):
+        return int(BUILDING_UPGRADES[building_type].get("max_level", 1))
+    return 1
+
+static func building_upgrade_cost(building_type: String, current_level: int) -> Dictionary:
+    if not BUILDING_UPGRADES.has(building_type):
+        return {}
+    var upgrades: Dictionary = BUILDING_UPGRADES[building_type]
+    var next_level: int = current_level + 1
+    if not upgrades.get("levels", {}).has(next_level):
+        return {}
+    return upgrades["levels"][next_level].get("cost", {}).duplicate(true)
+
+static func worker_slots_for(building_type: String, level: int) -> int:
+    var base_slots: int = int(BUILDINGS.get(building_type, {}).get("worker_slots", 0))
+    if level <= 1:
+        return base_slots
+    if not BUILDING_UPGRADES.has(building_type):
+        return base_slots
+    var level_data: Dictionary = BUILDING_UPGRADES[building_type].get("levels", {}).get(level, {})
+    return int(level_data.get("worker_slots", base_slots))
+
+static func production_for_level(building_type: String, level: int) -> Dictionary:
+    var base_prod: Dictionary = production_for(building_type).duplicate(true)
+    if level <= 1:
+        return base_prod
+    if not BUILDING_UPGRADES.has(building_type):
+        return base_prod
+    var level_data: Dictionary = BUILDING_UPGRADES[building_type].get("levels", {}).get(level, {})
+    if level_data.has("production"):
+        return level_data["production"].duplicate(true)
+    return base_prod
+
+static func defense_for_level(building_type: String, level: int) -> int:
+    var base_def: int = defense_for(building_type)
+    if level <= 1:
+        return base_def
+    if not BUILDING_UPGRADES.has(building_type):
+        return base_def
+    var level_data: Dictionary = BUILDING_UPGRADES[building_type].get("levels", {}).get(level, {})
+    return int(level_data.get("defense", base_def))
+
+static func effects_for_level(building_type: String, level: int) -> Dictionary:
+    var base_effects: Dictionary = BUILDINGS.get(building_type, {}).get("effects", {}).duplicate(true)
+    if level <= 1:
+        return base_effects
+    if not BUILDING_UPGRADES.has(building_type):
+        return base_effects
+    var level_data: Dictionary = BUILDING_UPGRADES[building_type].get("levels", {}).get(level, {})
+    if level_data.has("effects"):
+        return level_data["effects"].duplicate(true)
+    return base_effects
+
+static func can_upgrade(state: GameState, index: int) -> Dictionary:
+    var result := {"ok": false, "reason": "", "cost": {}, "next_level": 0}
+
+    if not state.structures.has(index):
+        result.reason = "no building"
+        return result
+
+    var building_type: String = str(state.structures[index])
+    var current_level: int = structure_level(state, index)
+    var max_lvl: int = max_level(building_type)
+
+    if current_level >= max_lvl:
+        result.reason = "max level"
+        return result
+
+    var cost: Dictionary = building_upgrade_cost(building_type, current_level)
+    if cost.is_empty():
+        result.reason = "no upgrade available"
+        return result
+
+    # Check resources
+    for res_key in cost.keys():
+        var have: int = int(state.resources.get(res_key, 0))
+        if res_key == "gold":
+            have = state.gold
+        if have < int(cost[res_key]):
+            result.reason = "not enough " + res_key
+            return result
+
+    result.ok = true
+    result.cost = cost
+    result.next_level = current_level + 1
+    return result
+
+static func get_building_upgrade_preview(state: GameState, index: int) -> Dictionary:
+    var preview := {
+        "building_type": "",
+        "current_level": 0,
+        "can_upgrade": false,
+        "reason": "",
+        "cost": {},
+        "next_level": 0,
+        "current_stats": {},
+        "next_stats": {}
+    }
+
+    if not state.structures.has(index):
+        return preview
+
+    var building_type: String = str(state.structures[index])
+    var current_level: int = structure_level(state, index)
+
+    preview.building_type = building_type
+    preview.current_level = current_level
+    preview.current_stats = {
+        "production": production_for_level(building_type, current_level),
+        "defense": defense_for_level(building_type, current_level),
+        "worker_slots": worker_slots_for(building_type, current_level),
+        "effects": effects_for_level(building_type, current_level)
+    }
+
+    var upgrade_check: Dictionary = can_upgrade(state, index)
+    preview.can_upgrade = upgrade_check.ok
+    preview.reason = upgrade_check.reason
+    preview.cost = upgrade_check.cost
+    preview.next_level = upgrade_check.next_level
+
+    if upgrade_check.ok:
+        var next_level: int = upgrade_check.next_level
+        preview.next_stats = {
+            "production": production_for_level(building_type, next_level),
+            "defense": defense_for_level(building_type, next_level),
+            "worker_slots": worker_slots_for(building_type, next_level),
+            "effects": effects_for_level(building_type, next_level)
+        }
+
+    return preview
+
+static func apply_upgrade(state: GameState, index: int) -> bool:
+    var check: Dictionary = can_upgrade(state, index)
+    if not check.ok:
+        return false
+
+    # Deduct costs
+    for res_key in check.cost.keys():
+        if res_key == "gold":
+            state.gold -= int(check.cost[res_key])
+        else:
+            state.resources[res_key] = int(state.resources.get(res_key, 0)) - int(check.cost[res_key])
+
+    # Apply level
+    state.structure_levels[index] = check.next_level
+    return true
+
+static func count_adjacent_buildings(state: GameState, pos: Vector2i) -> int:
+    var count: int = 0
+    for neighbor in SimMap.neighbors4(pos, state.map_w, state.map_h):
+        var idx: int = SimMap.idx(neighbor.x, neighbor.y, state.map_w)
+        if state.structures.has(idx):
+            count += 1
+    return count
+
+static func get_total_effects(state: GameState) -> Dictionary:
+    var effects := {
+        "wave_heal": 0,
+        "typing_power": 0.0,
+        "combo_bonus": 0.0,
+        "build_cost_reduction": 0.0,
+        "upgrade_cost_reduction": 0.0,
+        "tower_damage": 0,
+        "enemy_slow": 0.0,
+        "castle_hp": 0,
+        "morale": 0.0
+    }
+
+    for key in state.structures.keys():
+        var building_type: String = str(state.structures[key])
+        var level: int = structure_level(state, int(key))
+        var building_effects: Dictionary = effects_for_level(building_type, level)
+
+        for effect_key in building_effects.keys():
+            if effects.has(effect_key):
+                if effect_key in ["wave_heal", "tower_damage", "castle_hp"]:
+                    effects[effect_key] = int(effects[effect_key]) + int(building_effects[effect_key])
+                else:
+                    effects[effect_key] = float(effects[effect_key]) + float(building_effects[effect_key])
+
+    return effects

@@ -95,13 +95,17 @@ static func _normalize_data(raw: Dictionary) -> Dictionary:
             var mode: String = str(entry.get("mode", "charset"))
             var charset: String = _normalize_charset(str(entry.get("charset", "")))
             var lengths: Dictionary = _normalize_lengths(entry.get("lengths", {}))
+            var wordlist: Array = _normalize_wordlist(entry.get("wordlist", []))
+            var sentences: Array = _normalize_sentences(entry.get("sentences", []))
             var lesson := {
                 "id": id,
                 "name": name,
                 "description": description,
                 "mode": mode,
                 "charset": charset,
-                "lengths": lengths
+                "lengths": lengths,
+                "wordlist": wordlist,
+                "sentences": sentences
             }
             lessons.append(lesson)
             by_id[id] = lesson
@@ -159,4 +163,22 @@ static func _normalize_lengths(raw: Variant) -> Dictionary:
         if max_len < min_len:
             max_len = min_len
         output[kind] = [min_len, max_len]
+    return output
+
+static func _normalize_wordlist(raw: Variant) -> Array:
+    var output: Array = []
+    if raw is Array:
+        for item in raw:
+            var word: String = str(item).strip_edges().to_lower()
+            if word != "":
+                output.append(word)
+    return output
+
+static func _normalize_sentences(raw: Variant) -> Array:
+    var output: Array = []
+    if raw is Array:
+        for item in raw:
+            var sentence: String = str(item).strip_edges()
+            if sentence != "":
+                output.append(sentence)
     return output

@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Confetti Pattern (64x64) - Victory celebration particles -->
+  <!-- Color Palette: #e74c3c, #f4d03f, #3498db, #27ae60, #9b59b6 -->
+
+  <!-- Red confetti -->
+  <rect x="5" y="8" width="3" height="5" fill="#e74c3c"/>
+  <rect x="45" y="20" width="4" height="3" fill="#e74c3c"/>
+  <rect x="28" y="50" width="3" height="4" fill="#c0392b"/>
+
+  <!-- Yellow confetti -->
+  <rect x="20" y="5" width="4" height="3" fill="#f4d03f"/>
+  <rect x="55" y="35" width="3" height="5" fill="#f4d03f"/>
+  <rect x="10" y="45" width="4" height="3" fill="#f39c12"/>
+
+  <!-- Blue confetti -->
+  <rect x="35" y="10" width="3" height="4" fill="#3498db"/>
+  <rect x="8" y="28" width="4" height="3" fill="#3498db"/>
+  <rect x="50" y="55" width="3" height="4" fill="#2980b9"/>
+
+  <!-- Green confetti -->
+  <rect x="52" y="8" width="4" height="3" fill="#27ae60"/>
+  <rect x="25" y="30" width="3" height="5" fill="#27ae60"/>
+  <rect x="40" y="48" width="4" height="3" fill="#1e8449"/>
+
+  <!-- Purple confetti -->
+  <rect x="15" y="18" width="3" height="4" fill="#9b59b6"/>
+  <rect x="42" y="38" width="4" height="3" fill="#9b59b6"/>
+  <rect x="58" y="52" width="3" height="4" fill="#8e44ad"/>
+
+  <!-- Streamers -->
+  <rect x="30" y="2" width="2" height="8" fill="#f4d03f"/>
+  <rect x="31" y="8" width="2" height="6" fill="#f39c12"/>
+  <rect x="12" y="55" width="2" height="7" fill="#3498db"/>
+  <rect x="13" y="60" width="2" height="4" fill="#2980b9"/>
+</svg>
