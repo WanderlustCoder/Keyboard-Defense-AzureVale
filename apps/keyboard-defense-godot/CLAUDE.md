@@ -758,6 +758,57 @@ Includes:
 - Project statistics (files, lines)
 - Data counts (lessons, buildings, etc.)
 
+### Signal Analyzer
+
+Analyze GDScript signal declarations and connections:
+
+```bash
+./scripts/analyze_signals.sh              # Full report
+./scripts/analyze_signals.sh --unused     # Show only unused signals
+./scripts/analyze_signals.sh --file game/main.gd  # Single file
+./scripts/analyze_signals.sh --json       # JSON output
+```
+
+Reports:
+- Signal declarations and parameters
+- Signal connections and emissions
+- Unused signals (declared but never connected)
+- Signals by layer (warns about sim/ signals)
+
+### Type Checker
+
+Find missing type annotations:
+
+```bash
+./scripts/check_types.sh              # Full report
+./scripts/check_types.sh --strict     # Include private functions
+./scripts/check_types.sh --layer sim  # Only sim layer
+./scripts/check_types.sh --file game/main.gd  # Single file
+./scripts/check_types.sh --json       # JSON output
+```
+
+Reports:
+- Function return type coverage
+- Parameter type coverage
+- Untyped variables
+- Files needing type annotations
+
+### Resource Path Validator
+
+Validate res:// paths in code and scenes:
+
+```bash
+./scripts/validate_paths.sh              # Full report
+./scripts/validate_paths.sh --broken     # Show only broken paths
+./scripts/validate_paths.sh --file game/main.gd  # Single file
+./scripts/validate_paths.sh --json       # JSON output
+```
+
+Reports:
+- Valid vs broken resource paths
+- Reference types (preload, load, scene, string)
+- Files with broken references
+
 ## File Locations Quick Reference
 
 | Need to... | Location |

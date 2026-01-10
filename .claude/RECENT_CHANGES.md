@@ -4,6 +4,28 @@ Log of recent changes made by Claude Code. Most recent first.
 
 ---
 
+## 2026-01-10: Signal Analyzer, Type Checker, and Resource Path Validator
+
+**Added signal analyzer:**
+- `scripts/analyze_signals.py` - Analyze signal declarations and connections
+- `scripts/analyze_signals.sh` - Shell wrapper
+- Finds unused signals, tracks connections and emissions
+- Warns about signals in sim layer
+
+**Added type checker:**
+- `scripts/check_types.py` - Find missing type annotations
+- `scripts/check_types.sh` - Shell wrapper
+- Reports function return type and parameter coverage
+- Identifies files needing type annotations
+
+**Added resource path validator:**
+- `scripts/validate_paths.py` - Validate res:// paths
+- `scripts/validate_paths.sh` - Shell wrapper
+- Checks preload, load, scene, and string references
+- Reports broken paths and reference types
+
+---
+
 ## 2026-01-10: TODO Tracker, Test Coverage Analyzer, and Build Info Generator
 
 **Added TODO/FIXME tracker:**
