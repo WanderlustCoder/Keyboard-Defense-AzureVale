@@ -39,7 +39,7 @@ func _build_ui() -> void:
 	_title_label = Label.new()
 	_title_label.text = "Lore of Keystonia"
 	_title_label.add_theme_font_size_override("font_size", 20)
-	_title_label.add_theme_color_override("font_color", ThemeColors.GOLD)
+	_title_label.add_theme_color_override("font_color", ThemeColors.ACCENT)
 	_title_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header.add_child(_title_label)
 
