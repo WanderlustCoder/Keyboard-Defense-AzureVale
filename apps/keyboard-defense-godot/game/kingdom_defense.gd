@@ -29,6 +29,10 @@ const SimSkills = preload("res://sim/skills.gd")
 const SimItems = preload("res://sim/items.gd")
 const SimSpecialCommands = preload("res://sim/special_commands.gd")
 const SimQuests = preload("res://sim/quests.gd")
+const SimBestiary = preload("res://sim/bestiary.gd")
+const BestiaryPanel = preload("res://ui/components/bestiary_panel.gd")
+const WaveSummaryPanel = preload("res://ui/components/wave_summary_panel.gd")
+const RunSummaryPanel = preload("res://ui/components/run_summary_panel.gd")
 
 # UI Node references
 @onready var grid_renderer: Node2D = $GridRenderer
@@ -91,6 +95,8 @@ var current_wave_composition: Dictionary = {}  # Wave composer output
 
 # Skill system tracking
 var words_typed_this_wave: int = 0
+var kills_this_wave: int = 0
+var gold_earned_this_wave: int = 0
 var last_kill_time: float = 0.0
 var chain_kill_count: int = 0
 var active_skill_buffs: Dictionary = {}  # {skill_id: {remaining: float, effect: value}}
@@ -198,10 +204,31 @@ var profile: Dictionary = {}
 var achievement_checker: AchievementChecker = null
 var achievement_popup: Node = null
 var achievement_panel: AchievementPanel = null
+var notification_manager: NotificationManager = null
 var damage_taken_this_wave: int = 0
 var damage_taken_this_day: int = 0
 var lore_panel: LorePanel = null
+var bestiary_panel: BestiaryPanel = null
+var wave_summary_panel: WaveSummaryPanel = null
+var run_summary_panel: RunSummaryPanel = null
 var difficulty_mode: String = "adventure"
+
+# Run-level tracking
+var run_start_time: float = 0.0
+var run_total_kills: int = 0
+var run_boss_kills: int = 0
+var run_damage_dealt: int = 0
+var run_damage_taken: int = 0
+var run_gold_earned: int = 0
+var run_words_typed: int = 0
+var run_best_accuracy: float = 0.0
+var run_accuracy_sum: float = 0.0
+var run_accuracy_count: int = 0
+var run_best_wpm: int = 0
+var run_best_combo: int = 0
+var run_xp_start: int = 0
+var run_level_start: int = 0
+var run_achievements_unlocked: Array[String] = []
 
 func _ready() -> void:
 	_init_game_state()
@@ -273,6 +300,30 @@ func _init_achievement_system() -> void:
 	add_child(lore_panel)
 	lore_panel.close_requested.connect(_on_lore_panel_closed)
 
+	# Create bestiary panel
+	bestiary_panel = BestiaryPanel.new()
+	add_child(bestiary_panel)
+	bestiary_panel.close_requested.connect(_on_bestiary_panel_closed)
+
+	# Create wave summary panel
+	wave_summary_panel = WaveSummaryPanel.new()
+	add_child(wave_summary_panel)
+	wave_summary_panel.continue_pressed.connect(_on_wave_summary_continue)
+
+	# Create run summary panel
+	run_summary_panel = RunSummaryPanel.new()
+	add_child(run_summary_panel)
+	run_summary_panel.continue_pressed.connect(_on_run_summary_continue)
+	run_summary_panel.new_run_pressed.connect(_on_run_summary_new_run)
+	run_summary_panel.main_menu_pressed.connect(_on_run_summary_menu)
+
+	# Initialize run tracking
+	_init_run_tracking()
+
+	# Create notification manager
+	notification_manager = NotificationManager.new()
+	add_child(notification_manager)
+
 func _show_streak_message(streak: int) -> void:
 	var message: String = StoryManager.get_daily_streak_message(streak)
 	if not message.is_empty() and dialogue_box:
@@ -282,6 +333,16 @@ func _show_streak_message(streak: int) -> void:
 func _on_achievement_unlocked(achievement_id: String, achievement_data: Dictionary) -> void:
 	if achievement_popup != null and achievement_popup.has_method("show_achievement"):
 		achievement_popup.show_achievement(achievement_id, achievement_data)
+
+	# Track for run summary
+	var ach_name: String = str(achievement_data.get("name", achievement_id))
+	if not run_achievements_unlocked.has(ach_name):
+		run_achievements_unlocked.append(ach_name)
+
+	# Also show toast notification
+	if notification_manager != null:
+		var desc: String = str(achievement_data.get("description", ""))
+		notification_manager.notify_achievement(ach_name, desc)
 
 func _on_achievement_panel_closed() -> void:
 	if input_field:
@@ -297,6 +358,95 @@ func _toggle_lore() -> void:
 			lore_panel.hide_lore()
 		else:
 			lore_panel.show_lore()
+
+
+func _on_bestiary_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+
+func _toggle_bestiary() -> void:
+	if bestiary_panel:
+		if bestiary_panel.visible:
+			bestiary_panel.hide_bestiary()
+		else:
+			bestiary_panel.show_bestiary(profile)
+
+
+func _on_wave_summary_continue() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+
+func _init_run_tracking() -> void:
+	run_start_time = Time.get_unix_time_from_system()
+	run_total_kills = 0
+	run_boss_kills = 0
+	run_damage_dealt = 0
+	run_damage_taken = 0
+	run_gold_earned = 0
+	run_words_typed = 0
+	run_best_accuracy = 0.0
+	run_accuracy_sum = 0.0
+	run_accuracy_count = 0
+	run_best_wpm = 0
+	run_best_combo = 0
+	run_xp_start = int(profile.get("player_xp", 0))
+	run_level_start = int(profile.get("player_level", 1))
+	run_achievements_unlocked.clear()
+
+
+func _on_run_summary_continue() -> void:
+	# For victory, continue playing (maybe unlock endless mode or rewards)
+	if input_field:
+		input_field.grab_focus()
+
+
+func _on_run_summary_new_run() -> void:
+	# Reset and start a new run
+	_reset_game()
+	_init_run_tracking()
+
+
+func _on_run_summary_menu() -> void:
+	# Return to main menu
+	if game_controller and game_controller.has_method("go_to_main_menu"):
+		game_controller.go_to_main_menu()
+	else:
+		get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
+
+
+func _show_run_summary(victory: bool) -> void:
+	if run_summary_panel == null:
+		return
+
+	var play_time: float = Time.get_unix_time_from_system() - run_start_time
+	var avg_accuracy: float = run_accuracy_sum / float(max(1, run_accuracy_count))
+
+	var xp_gained: int = int(profile.get("player_xp", 0)) - run_xp_start
+	var levels_gained: int = int(profile.get("player_level", 1)) - run_level_start
+
+	var summary_stats: Dictionary = {
+		"day_reached": day,
+		"waves_cleared": (day - 1) * waves_per_day + wave - 1,
+		"total_kills": run_total_kills,
+		"boss_kills": run_boss_kills,
+		"damage_dealt": run_damage_dealt,
+		"damage_taken": run_damage_taken,
+		"gold_earned": run_gold_earned,
+		"words_typed": run_words_typed,
+		"best_accuracy": run_best_accuracy,
+		"avg_accuracy": avg_accuracy,
+		"best_wpm": run_best_wpm,
+		"best_combo": run_best_combo,
+		"play_time": play_time,
+		"xp_gained": xp_gained,
+		"levels_gained": levels_gained,
+		"achievements_unlocked": run_achievements_unlocked.duplicate()
+	}
+
+	run_summary_panel.show_summary(summary_stats, victory)
+
 
 func _on_dashboard_closed() -> void:
 	if input_field:
@@ -324,6 +474,37 @@ func _on_research_started(research_id: String) -> void:
 
 func _on_trade_executed(from: String, to: String, amount: int) -> void:
 	_update_objective("[color=green]Trade complete![/color]")
+
+func _reset_game() -> void:
+	# Reset gameplay variables
+	day = 1
+	wave = 1
+	castle_hp = castle_max_hp
+	gold = 50
+	combo = 0
+	max_combo = 0
+	correct_chars = 0
+	total_chars = 0
+	words_typed = 0
+	active_enemies.clear()
+	enemy_queue.clear()
+	target_enemy_id = -1
+	current_word = ""
+	typed_text = ""
+	current_phase = "planning"
+
+	# Reset wave tracking
+	words_typed_this_wave = 0
+	kills_this_wave = 0
+	gold_earned_this_wave = 0
+
+	# Reinitialize game state
+	_init_game_state()
+
+	# Clear input
+	if input_field:
+		input_field.text = ""
+		input_field.grab_focus()
 
 func _init_game_state() -> void:
 	state = DefaultState.create()
@@ -550,6 +731,7 @@ func _enemy_reached_castle(enemy_index: int) -> void:
 	castle_hp = max(0, castle_hp - damage)
 	damage_taken_this_wave += damage
 	damage_taken_this_day += damage
+	run_damage_taken += damage
 	combo = 0  # Break combo
 
 	# Lifetime stats: damage taken
@@ -588,6 +770,9 @@ func _start_defense_phase() -> void:
 	current_phase = "defense"
 	wave_start_time = Time.get_unix_time_from_system()
 	damage_taken_this_wave = 0
+	gold_earned_this_wave = 0
+	words_typed_this_wave = 0
+	kills_this_wave = 0
 
 	# Show boss intro on boss days (final wave only)
 	if wave == waves_per_day and StoryManager.is_boss_day(day):
@@ -791,12 +976,16 @@ func _wave_complete() -> void:
 	if castle_hp == castle_max_hp:
 		wave_bonus = int(wave_bonus * 1.5)  # Perfect defense bonus
 	gold += wave_bonus
+	gold_earned_this_wave += wave_bonus
 	state.gold = gold
 	SimPlayerStats.increment_stat(profile, "total_gold_earned", wave_bonus)
-	SimPlayerStats.update_record(profile, "most_gold_wave", wave_bonus)
+	SimPlayerStats.update_record(profile, "most_gold_wave", gold_earned_this_wave)
 
 	# Check wave achievements
 	_check_wave_achievements()
+
+	# Show wave summary panel
+	_show_wave_summary()
 
 	# Show contextual tip based on performance
 	_show_contextual_tip_after_wave()
@@ -825,8 +1014,12 @@ func _wave_complete() -> void:
 	if regen_value > 0:
 		total_wave_heal += int(regen_value)
 
+	# Update kills record before reset
+	SimPlayerStats.update_record(profile, "most_kills_wave", kills_this_wave)
+
 	# Reset wave counters
 	words_typed_this_wave = 0
+	kills_this_wave = 0
 	chain_kill_count = 0
 
 	# Check lesson progression
@@ -875,6 +1068,11 @@ func _wave_complete() -> void:
 		# Lifetime stats: day progression
 		SimPlayerStats.increment_stat(profile, "days_survived", 1)
 		SimPlayerStats.update_record(profile, "highest_day", day)
+
+		# Check for victory (completed day 20 - campaign end)
+		if completed_day >= 20 and not is_endless_mode and not is_challenge_mode:
+			_on_campaign_victory()
+			return
 
 		# Check for act completion
 		_check_act_completion(completed_day)
@@ -942,8 +1140,48 @@ func _game_over() -> void:
 	if is_endless_mode:
 		_end_endless_run()
 		_update_objective("[color=yellow]ENDLESS RUN ENDED![/color] Final: Day %d, Wave %d, Kills %d, Max Combo %d" % [day, wave, endless_run_kills, max_combo])
+	elif is_challenge_mode:
+		_fail_daily_challenge("Castle destroyed!")
 	else:
 		_update_objective("Game Over! Final score: Day %d, Gold %d, Max Combo %d" % [day, gold, max_combo])
+
+	# Show run summary (not for challenges - they have their own summary)
+	if not is_challenge_mode:
+		_show_run_summary(false)
+
+
+func _on_campaign_victory() -> void:
+	word_display.text = "[center][color=gold]VICTORY![/color]\nThe Siege of Keystonia is Over![/center]"
+	input_field.editable = false
+	current_phase = "victory"
+
+	# Award completion bonus
+	var victory_gold: int = 500
+	var victory_xp: int = 1000
+	gold += victory_gold
+	run_gold_earned += victory_gold
+	TypingProfile.add_xp(profile, victory_xp)
+
+	# Lifetime stats: victory
+	SimPlayerStats.increment_stat(profile, "campaigns_won", 1)
+	TypingProfile.save_profile(profile)
+
+	# Show victory dialogue if we have dialogue box
+	if dialogue_box:
+		var lines: Array[String] = [
+			"[color=gold]Congratulations, Champion![/color]",
+			"You have defended Keystonia from the Typhos Horde!",
+			"The Void Tyrant has been vanquished, and peace returns to the land.",
+			"Your typing skills have saved the kingdom!",
+			"[color=cyan]Victory Rewards: +%d Gold, +%d XP[/color]" % [victory_gold, victory_xp]
+		]
+		dialogue_box.show_dialogue("Elder Lyra", lines)
+
+	_update_objective("[color=gold]CAMPAIGN COMPLETE![/color] You have saved Keystonia!")
+
+	# Show run summary
+	_show_run_summary(true)
+
 
 func _on_input_changed(new_text: String) -> void:
 	var old_len: int = typed_text.length()
@@ -1009,6 +1247,8 @@ func _on_input_submitted(text: String) -> void:
 			_toggle_achievements()
 		elif lower_text == "lore" or lower_text == "story":
 			_toggle_lore()
+		elif lower_text == "bestiary" or lower_text == "enemies":
+			_toggle_bestiary()
 		elif lower_text == "difficulty" or lower_text == "diff":
 			_show_difficulty_options()
 		elif lower_text.begins_with("diff "):
@@ -1063,6 +1303,16 @@ func _on_input_submitted(text: String) -> void:
 			_show_stats_full()
 		elif lower_text == "records" or lower_text == "highscores":
 			_show_records()
+		elif lower_text == "materials" or lower_text == "mats":
+			_show_materials()
+		elif lower_text == "recipes" or lower_text == "crafting":
+			_show_recipes()
+		elif lower_text.begins_with("recipes "):
+			_show_recipes(lower_text.substr(8).strip_edges())
+		elif lower_text.begins_with("craft "):
+			_try_craft(lower_text.substr(6).strip_edges())
+		elif lower_text.begins_with("recipe "):
+			_show_recipe_detail(lower_text.substr(7).strip_edges())
 		input_field.clear()
 	elif current_phase == "defense":
 		# Check for special commands first
@@ -1226,9 +1476,11 @@ func _attack_target_enemy() -> void:
 	total_chars += current_word.length()
 	words_typed += 1
 	words_typed_this_wave += 1
+	run_words_typed += 1
 	var prev_combo: int = combo
 	combo += 1
 	max_combo = max(max_combo, combo)
+	run_best_combo = max(run_best_combo, combo)
 
 	# Quest progress: words typed and combo
 	_update_quest_progress("words_typed", 1)
@@ -1279,6 +1531,10 @@ func _attack_target_enemy() -> void:
 			_update_objective("[color=lime]BOSS DEFEATED![/color] +%d Gold!" % gold_reward)
 			# Lifetime stats: boss kill
 			SimPlayerStats.increment_stat(profile, "total_boss_kills", 1)
+			# Toast notification
+			if notification_manager != null:
+				var boss_name: String = str(enemy.get("name", enemy_kind))
+				notification_manager.notify_boss_defeated(boss_name, gold_reward)
 
 		# Apply combo tier bonus (replaces simple combo bonus)
 		gold_reward = SimCombo.apply_gold_bonus(gold_reward, combo)
@@ -1311,6 +1567,7 @@ func _attack_target_enemy() -> void:
 		# Apply difficulty modifier to gold
 		gold_reward = SimDifficulty.apply_gold_modifier(gold_reward, difficulty_mode)
 		gold += gold_reward
+		gold_earned_this_wave += gold_reward
 		SimPlayerStats.increment_stat(profile, "total_gold_earned", gold_reward)
 
 		# Award XP for kills (with equipment bonus)
@@ -1324,6 +1581,10 @@ func _attack_target_enemy() -> void:
 			var sp_gained: int = int(xp_result.get("skill_points_gained", 0))
 			_update_objective("[color=yellow]LEVEL UP![/color] Now level %d! +%d skill point(s)" % [new_level, sp_gained])
 
+			# Toast notification for level up
+			if notification_manager != null:
+				notification_manager.notify_level_up(new_level, sp_gained)
+
 		# Track chain kills
 		last_kill_time = Time.get_unix_time_from_system()
 
@@ -1331,6 +1592,13 @@ func _attack_target_enemy() -> void:
 		if achievement_checker != null:
 			achievement_checker.on_enemy_defeated(profile, is_boss, enemy_kind)
 			TypingProfile.save_profile(profile)
+
+		# Track bestiary encounter
+		SimBestiary.record_encounter(profile, enemy_kind, true)
+		var affix: String = str(enemy.get("affix", ""))
+		if not affix.is_empty():
+			SimBestiary.record_affix_encounter(profile, affix)
+		TypingProfile.save_profile(profile)
 
 		# Roll for item drop
 		var drop_seed: int = state.rng_state + int(enemy.get("id", 0)) * 7
@@ -1340,6 +1608,20 @@ func _attack_target_enemy() -> void:
 			TypingProfile.save_profile(profile)
 			var item_display: String = SimItems.format_item_display(dropped_item)
 			_update_objective("[color=lime]LOOT![/color] Found %s!" % item_display)
+
+		# Roll for crafting material drop
+		var is_elite: bool = enemy.get("affixes", []).size() > 0
+		var mat_drop: String = SimCrafting.roll_material_drop(day, is_boss, is_elite, drop_seed + 100)
+		if not mat_drop.is_empty():
+			SimCrafting.add_material(profile, mat_drop, 1)
+			TypingProfile.save_profile(profile)
+			var mat_info: Dictionary = SimCrafting.MATERIALS.get(mat_drop, {})
+			var mat_name: String = str(mat_info.get("name", mat_drop))
+			var mat_tier: int = int(mat_info.get("tier", 1))
+			_update_objective("[color=cyan]MATERIAL:[/color] Found %s!" % mat_name)
+			# Toast for rare+ materials
+			if mat_tier >= 3 and notification_manager != null:
+				notification_manager.notify_material(mat_name, 1)
 
 		# Quest progress: kills and gold
 		_update_quest_progress("kills", 1)
@@ -1359,12 +1641,19 @@ func _attack_target_enemy() -> void:
 		if is_endless_mode:
 			endless_run_kills += 1
 
-		# Lifetime stats tracking
+		# Wave kill tracking (for records)
+		kills_this_wave += 1
+
+		# Run tracking
+		run_total_kills += 1
+		run_damage_dealt += damage
+		run_gold_earned += gold_reward
+		if is_boss:
+			run_boss_kills += 1
+
+		# Lifetime stats tracking (gold and boss kills tracked earlier)
 		SimPlayerStats.increment_stat(profile, "total_kills", 1)
 		SimPlayerStats.increment_stat(profile, "total_damage_dealt", damage)
-		SimPlayerStats.increment_stat(profile, "total_gold_earned", gold_reward)
-		if is_boss:
-			SimPlayerStats.increment_stat(profile, "total_boss_kills", 1)
 
 		# Critical hit visual
 		if is_crit and grid_renderer.has_method("spawn_hit_particles"):
@@ -1963,6 +2252,46 @@ func _show_random_tip(context: String = "") -> void:
 	if not tip.is_empty():
 		tip_label.text = "Tip: " + tip
 
+func _show_wave_summary() -> void:
+	if wave_summary_panel == null:
+		return
+
+	# Build stats dictionary for summary
+	var wave_time: float = Time.get_unix_time_from_system() - wave_start_time
+	var accuracy: float = _get_accuracy()
+	var wpm: float = _get_wpm()
+
+	# Update run-level accuracy/WPM tracking
+	if accuracy > 0:
+		run_accuracy_sum += accuracy
+		run_accuracy_count += 1
+		run_best_accuracy = maxf(run_best_accuracy, accuracy)
+	if wpm > 0:
+		run_best_wpm = max(run_best_wpm, int(wpm))
+
+	# Check for new records
+	var prev_best_combo: int = SimPlayerStats.get_record(profile, "highest_combo")
+	var prev_best_wpm: int = SimPlayerStats.get_record(profile, "highest_wpm")
+
+	var summary_stats: Dictionary = {
+		"day": day,
+		"wave": wave - 1,  # Wave was just incremented
+		"won": true,
+		"words_typed": words_typed_this_wave,
+		"accuracy": accuracy,
+		"wpm": int(wpm),
+		"best_combo": max_combo,
+		"kills": kills_this_wave,
+		"gold_earned": gold_earned_this_wave,
+		"time": wave_time,
+		"damage_taken": damage_taken_this_wave,
+		"new_record_combo": max_combo > prev_best_combo and max_combo > 0,
+		"new_record_wpm": int(wpm) > prev_best_wpm and wpm > 0
+	}
+
+	wave_summary_panel.show_summary(summary_stats)
+
+
 func _show_contextual_tip_after_wave() -> void:
 	# Determine context based on performance
 	var accuracy: float = _get_accuracy()
@@ -2040,7 +2369,9 @@ func _show_wave_feedback() -> void:
 
 	# Update highest WPM record
 	if wpm_int > 0:
-		SimPlayerStats.update_record(profile, "highest_wpm", wpm_int)
+		var is_new_record: bool = SimPlayerStats.update_record(profile, "highest_wpm", wpm_int)
+		if is_new_record and notification_manager != null:
+			notification_manager.notify_new_record("Highest WPM", wpm_int)
 
 	var milestone_thresholds: Array[int] = [100, 80, 70, 60, 50, 40, 30, 20]
 	for threshold in milestone_thresholds:
@@ -2858,6 +3189,12 @@ func _show_help() -> void:
 	lines.append("  shop - View consumable shop")
 	lines.append("  buy <id> - Purchase item")
 	lines.append("")
+	lines.append("[color=cyan]CRAFTING[/color]")
+	lines.append("  mats - View crafting materials")
+	lines.append("  recipes - View available recipes")
+	lines.append("  recipe <id> - View recipe details")
+	lines.append("  craft <id> - Craft an item")
+	lines.append("")
 	lines.append("[color=cyan]CHARACTER[/color]")
 	lines.append("  learn <tree:skill> - Learn a skill")
 	lines.append("")
@@ -2871,6 +3208,11 @@ func _show_help() -> void:
 	lines.append("  daily - View today's daily challenge")
 	lines.append("  startdaily - Start the daily challenge")
 	lines.append("  tokens - View token shop (challenge rewards)")
+	lines.append("")
+	lines.append("[color=cyan]COLLECTIONS[/color]")
+	lines.append("  bestiary - View enemy catalog")
+	lines.append("  achievements/ach - View achievements")
+	lines.append("  lore/story - View game lore")
 	lines.append("")
 	lines.append("[color=cyan]STATISTICS[/color]")
 	lines.append("  stats - View stats summary")
@@ -3170,6 +3512,41 @@ func _show_records() -> void:
 	lines.append("")
 	lines.append(SimPlayerStats.format_records(profile))
 	_update_log(lines)
+
+func _show_materials() -> void:
+	_update_log([SimCrafting.format_materials(profile)])
+
+func _show_recipes(category: String = "") -> void:
+	_update_log([SimCrafting.format_recipe_list(profile, category)])
+
+func _show_recipe_detail(recipe_id: String) -> void:
+	_update_log([SimCrafting.format_recipe(profile, recipe_id, gold)])
+
+func _try_craft(recipe_id: String) -> void:
+	var check: Dictionary = SimCrafting.can_craft(profile, recipe_id, gold)
+	if not bool(check.get("can_craft", false)):
+		_update_objective("[color=red]Cannot craft: %s[/color]" % str(check.get("reason", "Unknown error")))
+		return
+
+	var result: Dictionary = SimCrafting.craft(profile, recipe_id, gold)
+	if not bool(result.get("success", false)):
+		_update_objective("[color=red]Crafting failed: %s[/color]" % str(result.get("error", "Unknown error")))
+		return
+
+	# Deduct gold
+	var gold_cost: int = int(result.get("gold_cost", 0))
+	gold -= gold_cost
+	state.gold = gold
+
+	# Track stats
+	SimPlayerStats.increment_stat(profile, "total_gold_spent", gold_cost)
+	TypingProfile.save_profile(profile)
+
+	var recipe_name: String = str(result.get("recipe_name", recipe_id))
+	var output_item: String = str(result.get("output_item", ""))
+	var output_qty: int = int(result.get("output_qty", 1))
+
+	_update_objective("[color=lime]Crafted %s![/color] Received %s x%d" % [recipe_name, output_item, output_qty])
 
 func _show_special_commands() -> void:
 	var player_level: int = int(TypingProfile.get_profile_value(profile, "player_level", 1))
