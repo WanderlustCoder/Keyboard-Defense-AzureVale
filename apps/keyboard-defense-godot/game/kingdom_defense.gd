@@ -552,6 +552,9 @@ func _enemy_reached_castle(enemy_index: int) -> void:
 	damage_taken_this_day += damage
 	combo = 0  # Break combo
 
+	# Lifetime stats: damage taken
+	SimPlayerStats.increment_stat(profile, "total_damage_taken", damage)
+
 	active_enemies.remove_at(enemy_index)
 
 	if target_enemy_id == int(enemy.get("id", -1)):
@@ -789,6 +792,8 @@ func _wave_complete() -> void:
 		wave_bonus = int(wave_bonus * 1.5)  # Perfect defense bonus
 	gold += wave_bonus
 	state.gold = gold
+	SimPlayerStats.increment_stat(profile, "total_gold_earned", wave_bonus)
+	SimPlayerStats.update_record(profile, "most_gold_wave", wave_bonus)
 
 	# Check wave achievements
 	_check_wave_achievements()
@@ -926,6 +931,12 @@ func _game_over() -> void:
 	word_display.text = "[center][color=red]GAME OVER[/color]\nCastle Destroyed![/center]"
 	input_field.editable = false
 	current_phase = "gameover"
+
+	# Lifetime stats: death and final records
+	SimPlayerStats.increment_stat(profile, "total_deaths", 1)
+	SimPlayerStats.update_record(profile, "highest_day", day)
+	SimPlayerStats.update_record(profile, "highest_combo", max_combo)
+	TypingProfile.save_profile(profile)
 
 	# Handle endless mode game over
 	if is_endless_mode:
@@ -1266,6 +1277,8 @@ func _attack_target_enemy() -> void:
 		if is_boss:
 			gold_reward = gold_reward * 5 + 50  # Significant boss bonus
 			_update_objective("[color=lime]BOSS DEFEATED![/color] +%d Gold!" % gold_reward)
+			# Lifetime stats: boss kill
+			SimPlayerStats.increment_stat(profile, "total_boss_kills", 1)
 
 		# Apply combo tier bonus (replaces simple combo bonus)
 		gold_reward = SimCombo.apply_gold_bonus(gold_reward, combo)
@@ -1298,6 +1311,7 @@ func _attack_target_enemy() -> void:
 		# Apply difficulty modifier to gold
 		gold_reward = SimDifficulty.apply_gold_modifier(gold_reward, difficulty_mode)
 		gold += gold_reward
+		SimPlayerStats.increment_stat(profile, "total_gold_earned", gold_reward)
 
 		# Award XP for kills (with equipment bonus)
 		var base_xp: int = 10 if not is_boss else 100
@@ -1319,7 +1333,7 @@ func _attack_target_enemy() -> void:
 			TypingProfile.save_profile(profile)
 
 		# Roll for item drop
-		var drop_seed: int = state.rng_seed + int(enemy.get("id", 0)) * 7
+		var drop_seed: int = state.rng_state + int(enemy.get("id", 0)) * 7
 		var dropped_item: String = SimItems.roll_drop(day, is_boss, drop_seed)
 		if not dropped_item.is_empty():
 			TypingProfile.add_to_inventory(profile, dropped_item)
@@ -1428,11 +1442,15 @@ func _try_build(building_type: String) -> void:
 		state.structures[test_index] = building_type
 
 	# Deduct resources
+	var gold_spent: int = 0
 	for res in cost.keys():
 		if res == "gold":
-			state.gold -= int(cost[res])
+			gold_spent = int(cost[res])
+			state.gold -= gold_spent
 		else:
 			state.resources[res] = int(state.resources.get(res, 0)) - int(cost.get(res, 0))
+	if gold_spent > 0:
+		SimPlayerStats.increment_stat(profile, "total_gold_spent", gold_spent)
 
 	# Update building counts
 	state.buildings[building_type] = int(state.buildings.get(building_type, 0)) + 1
@@ -2019,6 +2037,11 @@ func _show_wave_feedback() -> void:
 
 	# WPM milestone check
 	var wpm_int: int = int(wpm)
+
+	# Update highest WPM record
+	if wpm_int > 0:
+		SimPlayerStats.update_record(profile, "highest_wpm", wpm_int)
+
 	var milestone_thresholds: Array[int] = [100, 80, 70, 60, 50, 40, 30, 20]
 	for threshold in milestone_thresholds:
 		if wpm_int >= threshold and last_wpm_milestone < threshold:
@@ -2764,6 +2787,10 @@ func _try_buy_item(item_id: String) -> void:
 	state.gold = gold
 	TypingProfile.add_to_inventory(profile, item_id)
 	TypingProfile.save_profile(profile)
+
+	# Lifetime stats: shop purchase
+	SimPlayerStats.increment_stat(profile, "total_gold_spent", price)
+	SimPlayerStats.increment_stat(profile, "items_purchased", 1)
 
 	_update_objective("[color=lime]Purchased %s for %d gold![/color]" % [item_name, price])
 
