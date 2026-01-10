@@ -4,6 +4,28 @@ Log of recent changes made by Claude Code. Most recent first.
 
 ---
 
+## 2026-01-10: Code Complexity Analyzer, Import Optimizer, and Naming Checker
+
+**Added code complexity analyzer:**
+- `scripts/analyze_complexity.py` - Analyze function complexity metrics
+- `scripts/analyze_complexity.sh` - Shell wrapper
+- Metrics: cyclomatic, lines, nesting, cognitive complexity
+- Risk levels: low, medium, high
+
+**Added import optimizer:**
+- `scripts/optimize_imports.py` - Find unused preload/load imports
+- `scripts/optimize_imports.sh` - Shell wrapper
+- Supports dry-run and auto-fix modes
+- Detects const, var, and @onready preloads
+
+**Added naming convention checker:**
+- `scripts/check_naming.py` - Check naming standards
+- `scripts/check_naming.sh` - Shell wrapper
+- snake_case, PascalCase, SCREAMING_SNAKE conventions
+- Suggests corrections for violations
+
+---
+
 ## 2026-01-10: Dependency Graph, Unused Asset Finder, and Data Migration Helper
 
 **Added dependency graph generator:**

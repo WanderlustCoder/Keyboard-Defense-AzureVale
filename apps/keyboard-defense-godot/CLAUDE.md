@@ -598,6 +598,59 @@ Features:
 - Migration script generation
 - Rollback support
 
+### Code Complexity Analyzer
+
+Analyze functions for complexity metrics:
+
+```bash
+./scripts/analyze_complexity.sh              # Full report
+./scripts/analyze_complexity.sh --threshold 10  # Only high complexity
+./scripts/analyze_complexity.sh --file game/main.gd  # Single file
+./scripts/analyze_complexity.sh --sort lines # Sort by line count
+./scripts/analyze_complexity.sh --json       # JSON output
+```
+
+Metrics:
+- Cyclomatic complexity (decision points)
+- Function length (lines of code)
+- Nesting depth
+- Cognitive complexity
+- Risk level (low/medium/high)
+
+### Import Optimizer
+
+Find and remove unused imports:
+
+```bash
+./scripts/optimize_imports.sh              # Report unused imports
+./scripts/optimize_imports.sh --file game/main.gd  # Single file
+./scripts/optimize_imports.sh --fix        # Show removals (dry run)
+./scripts/optimize_imports.sh --fix --apply  # Actually remove unused
+./scripts/optimize_imports.sh --json       # JSON output
+```
+
+Detects:
+- Unused const preloads
+- Unused var preloads
+- Unused @onready preloads
+
+### Naming Convention Checker
+
+Check code against naming standards:
+
+```bash
+./scripts/check_naming.sh              # Full report
+./scripts/check_naming.sh --file game/main.gd  # Single file
+./scripts/check_naming.sh --strict     # Stricter checks
+./scripts/check_naming.sh --json       # JSON output
+```
+
+Conventions:
+- `snake_case` for functions, variables, signals
+- `PascalCase` for classes, class_name
+- `SCREAMING_SNAKE_CASE` for constants
+- `_prefixed` for private members
+
 ## File Locations Quick Reference
 
 | Need to... | Location |
