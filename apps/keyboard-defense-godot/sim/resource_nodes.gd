@@ -5,6 +5,7 @@ extends RefCounted
 ## Resource nodes spawn on terrain and require typing challenges to harvest.
 
 const NODES_PATH := "res://data/resource_nodes.json"
+const SimRng = preload("res://sim/rng.gd")
 
 # Challenge types
 const CHALLENGE_WORD_BURST := "word_burst"
@@ -57,7 +58,7 @@ static func try_spawn_random_node(state: GameState, terrain: String, pos: Vector
 		return ""
 
 	# Roll for which node type
-	var roll: float = SimRng.roll_float(state)
+	var roll: float = float(SimRng.roll_range(state, 0, 1000)) / 1000.0
 	var cumulative: float = 0.0
 	var selected_type := ""
 
