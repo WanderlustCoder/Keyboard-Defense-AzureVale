@@ -4,6 +4,26 @@ Log of recent changes made by Claude Code. Most recent first.
 
 ---
 
+## 2026-01-10: Quick Reference, Integrity Checker, and Changelog Generator
+
+**Added quick reference card:**
+- `docs/QUICK_REFERENCE.md` - One-page essential reference
+- Commands, file locations, code patterns, validation snippets
+
+**Added data integrity checker:**
+- `scripts/check_integrity.py` - Deep validation beyond schemas
+- `scripts/check_integrity.sh` - Shell wrapper
+- Categories: lessons, upgrades, buildings, assets, story, cross_ref, balance
+- Checks reference integrity, upgrade chains, balance sanity
+
+**Added changelog generator:**
+- `scripts/generate_changelog.py` - Generate changelogs from git
+- `scripts/generate_changelog.sh` - Shell wrapper
+- Formats: plain, markdown, json, release
+- Supports date ranges, tags, category grouping
+
+---
+
 ## 2026-01-10: System Graph, Word Generator, and Test Scaffolding
 
 **Added system dependency graph:**

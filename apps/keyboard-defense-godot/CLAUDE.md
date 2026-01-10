@@ -448,6 +448,48 @@ Visual architecture reference at `docs/SYSTEM_GRAPH.md`:
 - Data dependencies
 - File impact matrix
 
+### Data Integrity Checker
+
+Deep validation beyond schema checks:
+
+```bash
+./scripts/check_integrity.sh                    # All checks
+./scripts/check_integrity.sh --category lessons # Specific category
+./scripts/check_integrity.sh --json             # JSON output
+./scripts/check_integrity.sh --list             # List categories
+```
+
+Categories: `lessons`, `upgrades`, `buildings`, `assets`, `story`, `cross_ref`, `balance`
+
+Checks:
+- Reference integrity (all IDs exist)
+- Upgrade chain validity
+- Balance sanity (cost progression)
+- Asset completeness
+
+### Changelog Generator
+
+Generate changelogs from git commits:
+
+```bash
+./scripts/generate_changelog.sh                     # Last 20 commits
+./scripts/generate_changelog.sh --since 2026-01-01  # Since date
+./scripts/generate_changelog.sh --tag v1.0.0        # Since tag
+./scripts/generate_changelog.sh --format markdown   # Markdown output
+./scripts/generate_changelog.sh --category          # Group by type
+./scripts/generate_changelog.sh --format release --version 1.0.0
+```
+
+Formats: `plain`, `markdown`, `json`, `release`
+
+### Quick Reference Card
+
+One-page reference at `docs/QUICK_REFERENCE.md`:
+- Essential commands
+- File locations
+- Code patterns
+- Common validation snippets
+
 ## File Locations Quick Reference
 
 | Need to... | Location |
