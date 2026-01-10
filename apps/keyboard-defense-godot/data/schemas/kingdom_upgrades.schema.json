@@ -32,6 +32,7 @@
             "mistake_forgiveness": {"type": "number"},
             "castle_health_bonus": {"type": "integer"},
             "gold_multiplier": {"type": "number"},
+            "gold_income": {"type": "integer"},
             "resource_multiplier": {"type": "number"},
             "wave_heal": {"type": "integer"},
             "damage_reduction": {"type": "number"},

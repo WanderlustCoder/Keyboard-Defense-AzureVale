@@ -257,6 +257,66 @@ godot --headless --path . --script res://tools/run_scenarios.gd
 
 Scenarios defined in `data/scenarios.json`.
 
+## Development Tools
+
+### Schema Validation
+
+Validate JSON data files against their schemas before committing:
+
+```bash
+# Validate all data files
+./scripts/validate.sh
+
+# Only files with schemas (faster)
+./scripts/validate.sh --quick
+
+# Validate specific files
+./scripts/validate.sh lessons map
+```
+
+Requires: `pip install jsonschema`
+
+### Pre-commit Validation
+
+Run all checks before committing:
+
+```bash
+# Full validation (includes headless tests)
+./scripts/precommit.sh
+
+# Quick mode (skip slow tests)
+./scripts/precommit.sh --quick
+
+# Skip tests only
+./scripts/precommit.sh --no-tests
+```
+
+Checks performed:
+1. JSON syntax validation
+2. Schema validation
+3. Sim layer architecture (no Node imports)
+4. GDScript syntax
+5. Headless tests
+6. Common mistakes (TODOs, debug prints)
+
+### Context Directory
+
+The `/.claude/` directory at repo root contains persistent context for Claude Code:
+
+| File | Purpose |
+|------|---------|
+| `CURRENT_TASK.md` | What's being worked on now |
+| `RECENT_CHANGES.md` | Log of recent changes |
+| `DECISIONS.md` | Architecture decisions made |
+| `KNOWN_ISSUES.md` | Gotchas and edge cases |
+| `BLOCKED.md` | Current blockers |
+
+**Session workflow:**
+1. Read `CURRENT_TASK.md` at session start
+2. Check `KNOWN_ISSUES.md` before implementing
+3. Update `RECENT_CHANGES.md` after completing work
+4. Record decisions in `DECISIONS.md`
+
 ## File Locations Quick Reference
 
 | Need to... | Location |

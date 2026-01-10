@@ -4,6 +4,8 @@
   "type": "object",
   "required": ["textures", "audio"],
   "properties": {
+    "version": {"type": "string"},
+    "generated": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"},
     "textures": {
       "type": "array",
       "items": {"$ref": "#/$defs/texture"}
@@ -11,6 +13,10 @@
     "audio": {
       "type": "array",
       "items": {"$ref": "#/$defs/audio"}
+    },
+    "music": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/music"}
     }
   },
   "$defs": {
@@ -20,12 +26,60 @@
       "properties": {
         "id": {"type": "string", "pattern": "^[a-z0-9_-]+$"},
         "path": {"type": "string"},
+        "source_svg": {"type": "string", "description": "Path to source SVG file"},
+        "source_svg_frames": {
+          "oneOf": [
+            {"type": "string", "description": "Path to SVG frames directory"},
+            {"type": "array", "items": {"type": "string"}, "description": "Array of SVG frame paths"}
+          ]
+        },
+        "category": {"type": "string", "description": "Asset category (icons, sprites, etc.)"},
+        "description": {"type": "string", "description": "Human-readable description"},
         "expected_width": {"type": "integer", "minimum": 1},
         "expected_height": {"type": "integer", "minimum": 1},
         "max_width": {"type": "integer", "minimum": 1},
         "max_height": {"type": "integer", "minimum": 1},
         "max_kb": {"type": "integer", "minimum": 1},
-        "pixel_art": {"type": "boolean"}
+        "pixel_art": {"type": "boolean"},
+        "tileable": {"type": "boolean", "description": "Whether texture tiles seamlessly"},
+        "frames": {"type": "integer", "minimum": 1, "description": "Number of frames (flat animation)"},
+        "frame_width": {"type": "integer", "minimum": 1, "description": "Width of each frame"},
+        "frame_height": {"type": "integer", "minimum": 1, "description": "Height of each frame"},
+        "duration_ms": {"type": "integer", "minimum": 0, "description": "Animation duration in ms"},
+        "animation": {"$ref": "#/$defs/animation"},
+        "nineslice": {
+          "oneOf": [
+            {"type": "boolean", "description": "Whether texture is 9-slice (margins at texture level)"},
+            {"$ref": "#/$defs/ninesliceObject"}
+          ]
+        },
+        "margin_left": {"type": "integer", "minimum": 0},
+        "margin_right": {"type": "integer", "minimum": 0},
+        "margin_top": {"type": "integer", "minimum": 0},
+        "margin_bottom": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "animation": {
+      "type": "object",
+      "properties": {
+        "frame_count": {"type": "integer", "minimum": 1},
+        "frame_width": {"type": "integer", "minimum": 1},
+        "frame_height": {"type": "integer", "minimum": 1},
+        "fps": {"type": "number", "minimum": 0},
+        "loop": {"type": "boolean"},
+        "frames": {"type": "integer", "minimum": 1},
+        "duration_ms": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "ninesliceObject": {
+      "type": "object",
+      "properties": {
+        "margin_left": {"type": "integer", "minimum": 0},
+        "margin_right": {"type": "integer", "minimum": 0},
+        "margin_top": {"type": "integer", "minimum": 0},
+        "margin_bottom": {"type": "integer", "minimum": 0}
       },
       "additionalProperties": false
     },
@@ -35,11 +89,29 @@
       "properties": {
         "id": {"type": "string", "pattern": "^[a-z0-9_-]+$"},
         "path": {"type": "string"},
+        "preset_ref": {"type": "string", "description": "Reference to SFX preset"},
+        "category": {"type": "string", "description": "Audio category (sfx, ui, combat, etc.)"},
+        "description": {"type": "string"},
         "max_kb": {"type": "integer", "minimum": 1},
         "min_seconds": {"type": "number", "minimum": 0},
         "max_seconds": {"type": "number", "minimum": 0},
+        "duration_ms": {"type": "integer", "minimum": 0},
         "expected_sample_rate": {"type": "integer", "minimum": 1},
         "expected_channels": {"type": "integer", "minimum": 1}
+      },
+      "additionalProperties": false
+    },
+    "music": {
+      "type": "object",
+      "required": ["id", "path"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z0-9_-]+$"},
+        "path": {"type": "string"},
+        "duration_sec": {"type": "number", "minimum": 0},
+        "bpm": {"type": "integer", "minimum": 1},
+        "loop": {"type": "boolean"},
+        "category": {"type": "string"},
+        "description": {"type": "string"}
       },
       "additionalProperties": false
     }

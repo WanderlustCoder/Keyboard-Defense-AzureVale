@@ -35,7 +35,11 @@
             "critical_chance": {"type": "number"},
             "enemy_armor_reduction": {"type": "integer"},
             "armor_pierce": {"type": "integer"},
-            "enemy_speed_reduction": {"type": "number"}
+            "enemy_speed_reduction": {"type": "number"},
+            "resource_multiplier": {"type": "number"},
+            "gold_multiplier": {"type": "number"},
+            "gold_income": {"type": "integer"},
+            "wave_heal": {"type": "integer"}
           },
           "additionalProperties": false
         }

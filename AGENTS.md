@@ -87,6 +87,33 @@ Before finalizing changes:
 - Run headless smoke boot to check for parse errors
 - Use scenario harness for balance testing: `res://tools/run_scenarios.gd`
 
+## Development Tools
+
+### Pre-commit Validation
+Run before committing to catch issues early:
+```bash
+./scripts/precommit.sh          # Full validation
+./scripts/precommit.sh --quick  # Skip slow tests
+```
+
+### Schema Validation
+Validate JSON data files against schemas:
+```bash
+./scripts/validate.sh           # All files
+./scripts/validate.sh lessons   # Specific file
+```
+
+## Context Directory
+
+The `/.claude/` directory at repo root contains persistent context files:
+- `CURRENT_TASK.md` - Active work tracking (update at session start)
+- `RECENT_CHANGES.md` - Log of recent changes (update after work)
+- `DECISIONS.md` - Architecture decisions log
+- `KNOWN_ISSUES.md` - Gotchas and edge cases to check before implementing
+- `BLOCKED.md` - Current blockers
+
+**Session workflow:** Read context files at start, update after completing work.
+
 ## Work Summary Format
 
 When summarizing work, use LANDMARK sections:

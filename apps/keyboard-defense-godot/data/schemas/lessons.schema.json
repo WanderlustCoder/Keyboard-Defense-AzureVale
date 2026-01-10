@@ -6,6 +6,10 @@
   "properties": {
     "version": {"type": "integer", "minimum": 1},
     "default_lesson": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+    "graduation_paths": {
+      "type": "object",
+      "additionalProperties": {"$ref": "#/$defs/graduationPath"}
+    },
     "lessons": {
       "type": "array",
       "minItems": 1,
@@ -13,19 +17,52 @@
     }
   },
   "$defs": {
+    "graduationPath": {
+      "type": "object",
+      "required": ["name", "description", "stages"],
+      "properties": {
+        "name": {"type": "string"},
+        "description": {"type": "string"},
+        "stages": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/graduationStage"}
+        }
+      },
+      "additionalProperties": false
+    },
+    "graduationStage": {
+      "type": "object",
+      "required": ["stage", "name", "lessons", "goal"],
+      "properties": {
+        "stage": {"type": "integer", "minimum": 1},
+        "name": {"type": "string"},
+        "lessons": {
+          "type": "array",
+          "items": {"type": "string", "pattern": "^[a-z0-9_]+$"}
+        },
+        "goal": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
     "lesson": {
       "type": "object",
-      "required": ["id", "name", "description", "mode", "lengths"],
+      "required": ["id", "name", "description", "mode"],
       "properties": {
         "id": {"type": "string", "pattern": "^[a-z0-9_]+$"},
         "name": {"type": "string"},
         "description": {"type": "string"},
-        "mode": {"type": "string", "enum": ["charset", "wordlist"]},
+        "mode": {"type": "string", "enum": ["charset", "wordlist", "sentence"]},
         "charset": {"type": "string", "minLength": 1},
         "wordlist": {
           "type": "array",
           "items": {"type": "string"},
           "minItems": 1
+        },
+        "sentences": {
+          "type": "array",
+          "items": {"type": "string"},
+          "minItems": 1,
+          "description": "Full sentences for sentence mode"
         },
         "lengths": {"$ref": "#/$defs/lengthRanges"}
       },
@@ -33,11 +70,15 @@
       "allOf": [
         {
           "if": {"properties": {"mode": {"const": "charset"}}},
-          "then": {"required": ["charset"]}
+          "then": {"required": ["charset", "lengths"]}
         },
         {
           "if": {"properties": {"mode": {"const": "wordlist"}}},
-          "then": {"required": ["wordlist"]}
+          "then": {"required": ["wordlist", "lengths"]}
+        },
+        {
+          "if": {"properties": {"mode": {"const": "sentence"}}},
+          "then": {"required": ["sentences"]}
         }
       ]
     },
