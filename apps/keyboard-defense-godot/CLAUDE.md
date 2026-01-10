@@ -960,6 +960,53 @@ Runs:
 - Pass/fail thresholds
 - Summary report
 
+### Class Name Validator
+
+Validate class_name declarations:
+
+```bash
+./scripts/check_class_names.sh              # Full report
+./scripts/check_class_names.sh --strict     # Check missing class_name
+./scripts/check_class_names.sh --json       # JSON output
+```
+
+Reports:
+- class_name vs filename mismatches
+- Duplicate class_name declarations
+- Missing class_name (strict mode)
+
+### Scene Validator
+
+Validate scene (.tscn) files:
+
+```bash
+./scripts/validate_scenes.sh              # Full report
+./scripts/validate_scenes.sh --file scenes/Main.tscn  # Single scene
+./scripts/validate_scenes.sh --verbose    # Show all nodes
+./scripts/validate_scenes.sh --json       # JSON output
+```
+
+Reports:
+- Missing resources and scripts
+- Deep nesting (>10 levels)
+- Large scenes (>100 nodes)
+- Duplicate node names
+
+### Signal Signature Checker
+
+Validate signal declarations and usage:
+
+```bash
+./scripts/check_signal_signatures.sh              # Full report
+./scripts/check_signal_signatures.sh --file game/main.gd  # Single file
+./scripts/check_signal_signatures.sh --json       # JSON output
+```
+
+Reports:
+- Emission parameter count vs declaration
+- Undeclared signal emissions
+- Signal connection patterns
+
 ## File Locations Quick Reference
 
 | Need to... | Location |

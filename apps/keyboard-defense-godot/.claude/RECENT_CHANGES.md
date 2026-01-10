@@ -4,6 +4,28 @@ This file tracks recent changes for Claude Code context.
 
 ---
 
+## 2026-01-10: Development Tools Batch 13
+
+Added validation tools for code structure:
+
+### Class Name Validator (`scripts/check_class_names.py`)
+- Validates class_name matches filename convention
+- Detects duplicate class_name declarations
+- Reports mismatches and missing class_name
+
+### Scene Validator (`scripts/validate_scenes.py`)
+- Validates .tscn scene files
+- Detects missing resources and scripts
+- Reports deep nesting and large scenes
+- Finds duplicate node names
+
+### Signal Signature Checker (`scripts/check_signal_signatures.py`)
+- Validates signal declarations and usage
+- Checks emission parameter counts
+- Detects undeclared signal emissions
+
+---
+
 ## 2026-01-10: Development Tools Batch 12
 
 Added final batch of development tooling:
