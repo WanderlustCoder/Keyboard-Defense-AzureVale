@@ -861,6 +861,55 @@ Detects:
 - Tweens without kill() on cleanup
 - Connect/disconnect imbalance
 
+### Export Variable Checker
+
+Check @export variables:
+
+```bash
+./scripts/check_exports.sh              # Full report
+./scripts/check_exports.sh --untyped    # Only untyped exports
+./scripts/check_exports.sh --file game/main.gd  # Single file
+./scripts/check_exports.sh --json       # JSON output
+```
+
+Reports:
+- Export type hint coverage
+- Missing default values
+- Invalid export_range/export_enum usage
+
+### Magic Number Detector
+
+Find hardcoded magic numbers:
+
+```bash
+./scripts/find_magic_numbers.sh              # Full report
+./scripts/find_magic_numbers.sh --threshold 3  # Min occurrences
+./scripts/find_magic_numbers.sh --file game/main.gd  # Single file
+./scripts/find_magic_numbers.sh --json       # JSON output
+```
+
+Reports:
+- Repeated numeric values
+- Suggested constant names
+- Files with most magic numbers
+
+### Code Health Dashboard
+
+Aggregate all metrics:
+
+```bash
+./scripts/health_dashboard.sh              # Full dashboard
+./scripts/health_dashboard.sh --quick      # Quick summary
+./scripts/health_dashboard.sh --save       # Save to history
+./scripts/health_dashboard.sh --json       # JSON output
+```
+
+Aggregates:
+- Type, doc, test coverage
+- Performance and memory scores
+- Tech debt and magic numbers
+- Overall grade (A-F)
+
 ## File Locations Quick Reference
 
 | Need to... | Location |

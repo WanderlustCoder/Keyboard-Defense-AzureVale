@@ -4,6 +4,26 @@ Log of recent changes made by Claude Code. Most recent first.
 
 ---
 
+## 2026-01-10: Export Checker, Magic Number Detector, and Health Dashboard
+
+**Added export variable checker:**
+- `scripts/check_exports.py` - Analyze @export variables
+- `scripts/check_exports.sh` - Shell wrapper
+- Checks type hints, defaults, export_range/enum usage
+
+**Added magic number detector:**
+- `scripts/find_magic_numbers.py` - Find hardcoded numbers
+- `scripts/find_magic_numbers.sh` - Shell wrapper
+- Identifies repeated values, suggests constant names
+
+**Added code health dashboard:**
+- `scripts/health_dashboard.py` - Aggregate all metrics
+- `scripts/health_dashboard.sh` - Shell wrapper
+- Runs all analyzers, calculates overall health score
+- Generates grade (A-F) and tracks history
+
+---
+
 ## 2026-01-10: Doc Coverage, Performance Linter, and Memory Leak Detector
 
 **Added documentation coverage checker:**
