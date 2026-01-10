@@ -4,6 +4,28 @@ Log of recent changes made by Claude Code. Most recent first.
 
 ---
 
+## 2026-01-10: Scene Analyzer, Code Duplication Finder, and API Docs Generator
+
+**Added scene analyzer:**
+- `scripts/analyze_scenes.py` - Analyze .tscn files for issues
+- `scripts/analyze_scenes.sh` - Shell wrapper
+- Detects broken references, deep nesting, large scenes
+- Reports duplicate node names, missing scripts
+
+**Added code duplication finder:**
+- `scripts/find_duplicates.py` - Find duplicate code blocks
+- `scripts/find_duplicates.sh` - Shell wrapper
+- Identifies copy-paste code patterns
+- Reports duplication percentage and hot spots
+
+**Added API documentation generator:**
+- `scripts/generate_api_docs.py` - Generate docs from source
+- `scripts/generate_api_docs.sh` - Shell wrapper
+- Documents classes, functions, signals, enums
+- Supports markdown and JSON output
+
+---
+
 ## 2026-01-10: Code Complexity Analyzer, Import Optimizer, and Naming Checker
 
 **Added code complexity analyzer:**

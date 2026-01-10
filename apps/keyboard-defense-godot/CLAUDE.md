@@ -651,6 +651,59 @@ Conventions:
 - `SCREAMING_SNAKE_CASE` for constants
 - `_prefixed` for private members
 
+### Scene Analyzer
+
+Analyze Godot scene files for issues:
+
+```bash
+./scripts/analyze_scenes.sh              # Full report
+./scripts/analyze_scenes.sh --file scenes/Main.tscn  # Single scene
+./scripts/analyze_scenes.sh --verbose    # Show all nodes
+./scripts/analyze_scenes.sh --json       # JSON output
+```
+
+Detects:
+- Missing/broken resource references
+- Duplicate node names
+- Deep nesting (>10 levels)
+- Large scenes (>100 nodes)
+- Scenes without root scripts
+
+### Code Duplication Finder
+
+Find duplicate code blocks:
+
+```bash
+./scripts/find_duplicates.sh              # Full report
+./scripts/find_duplicates.sh --min-lines 5  # Min block size
+./scripts/find_duplicates.sh --json       # JSON output
+```
+
+Reports:
+- Duplicate function implementations
+- Copy-paste code patterns
+- Files with most duplication
+- Refactoring suggestions
+
+### API Documentation Generator
+
+Generate docs from source code:
+
+```bash
+./scripts/generate_api_docs.sh              # Full docs
+./scripts/generate_api_docs.sh --layer sim  # Only sim layer
+./scripts/generate_api_docs.sh --file sim/types.gd  # Single file
+./scripts/generate_api_docs.sh -o docs/API.md  # Write to file
+./scripts/generate_api_docs.sh --json       # JSON output
+```
+
+Documents:
+- Classes with class_name
+- Functions with signatures
+- Signals and parameters
+- Constants and enums
+- Export properties
+
 ## File Locations Quick Reference
 
 | Need to... | Location |
