@@ -1054,6 +1054,53 @@ Reports:
 - get_node() call patterns
 - Deep path fragility warnings
 
+### Dictionary Key Checker
+
+Find potential dictionary key issues:
+
+```bash
+./scripts/check_dict_keys.sh              # Full report
+./scripts/check_dict_keys.sh --file game/main.gd  # Single file
+./scripts/check_dict_keys.sh --json       # JSON output
+```
+
+Reports:
+- Similar keys (potential typos)
+- Single-use keys
+- Naming consistency
+
+### Inheritance Analyzer
+
+Analyze class inheritance hierarchy:
+
+```bash
+./scripts/analyze_inheritance.sh              # Full report
+./scripts/analyze_inheritance.sh --class GameState  # Single class
+./scripts/analyze_inheritance.sh --depth 5    # Custom threshold
+./scripts/analyze_inheritance.sh --json       # JSON output
+```
+
+Reports:
+- Inheritance chains and depth
+- Base class usage statistics
+- Deep inheritance warnings
+
+### Await Pattern Checker
+
+Check async/await usage patterns:
+
+```bash
+./scripts/check_await_patterns.sh              # Full report
+./scripts/check_await_patterns.sh --file game/main.gd  # Single file
+./scripts/check_await_patterns.sh --strict     # Stricter checks
+./scripts/check_await_patterns.sh --json       # JSON output
+```
+
+Reports:
+- Hot path await issues (_process, _physics_process)
+- Signal and timer await patterns
+- Functions with most awaits
+
 ## File Locations Quick Reference
 
 | Need to... | Location |

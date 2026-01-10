@@ -4,6 +4,27 @@ This file tracks recent changes for Claude Code context.
 
 ---
 
+## 2026-01-10: Development Tools Batch 15
+
+Added code analysis and pattern detection tools:
+
+### Dictionary Key Checker (`scripts/check_dict_keys.py`)
+- Finds similar keys (potential typos)
+- Detects single-use keys
+- Checks naming consistency
+
+### Inheritance Analyzer (`scripts/analyze_inheritance.py`)
+- Maps class inheritance hierarchy
+- Detects deep inheritance chains
+- Reports base class usage statistics
+
+### Await Pattern Checker (`scripts/check_await_patterns.py`)
+- Finds await in hot path functions (_process)
+- Analyzes signal and timer await patterns
+- Reports functions with most awaits
+
+---
+
 ## 2026-01-10: Development Tools Batch 14
 
 Added code quality and data validation tools:
