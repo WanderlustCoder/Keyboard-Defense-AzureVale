@@ -352,6 +352,65 @@ Check for common issues:
 ./scripts/diagnose.sh balance      # Check balance values
 ```
 
+### Asset Pipeline
+
+Convert SVG source files to PNG sprites:
+
+```bash
+./scripts/convert_assets.sh              # Convert all missing PNGs
+./scripts/convert_assets.sh --all        # Reconvert everything
+./scripts/convert_assets.sh --id enemy_scout  # Convert specific asset
+./scripts/convert_assets.sh --dry-run    # Show what would be converted
+```
+
+Requires one of: `pip install cairosvg`, `inkscape`, `rsvg-convert`, or `imagemagick`
+
+The script reads `data/assets_manifest.json` to find SVG sources and expected dimensions, then converts to PNG in `assets/sprites/`.
+
+### Session Context Loader
+
+Get aggregated project context at session start:
+
+```bash
+./scripts/session_context.sh           # Full context
+./scripts/session_context.sh --brief   # Quick summary
+./scripts/session_context.sh --json    # Machine-readable output
+./scripts/session_context.sh --no-diagnostics  # Skip running diagnostics
+```
+
+Aggregates:
+- Git status and recent commits
+- `.claude/` directory files (current task, blockers, known issues)
+- Diagnostic summary
+- Project statistics
+
+**Recommended session start:** Run `./scripts/session_context.sh --brief` to quickly understand project state.
+
+### Balance Simulator
+
+Test game balance scenarios without running full Godot:
+
+```bash
+# Using GDScript (requires Godot)
+godot --headless --path . --script res://tools/balance_simulator.gd
+
+# Using Python fallback
+python3 scripts/simulate_balance.py
+
+# Options
+./scripts/simulate_balance.sh --scenario economy --days 10
+./scripts/simulate_balance.sh --scenario waves --verbose
+./scripts/simulate_balance.sh --verify    # Run balance checks only
+./scripts/simulate_balance.sh --json      # JSON output
+```
+
+Scenarios:
+- `economy` - Resource production, caps, catch-up mechanics
+- `waves` - Wave composition, threat scaling
+- `towers` - Tower damage output, DPS scaling
+- `combat` - Full combat simulation (wave HP vs tower DPS)
+- `all` - Run all scenarios (default)
+
 ## File Locations Quick Reference
 
 | Need to... | Location |

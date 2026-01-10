@@ -4,6 +4,34 @@ Log of recent changes made by Claude Code. Most recent first.
 
 ---
 
+## 2026-01-10: Asset Pipeline, Session Context, and Balance Simulator
+
+**Added asset pipeline script:**
+- `scripts/convert_assets.py` - Converts SVG source files to PNG sprites
+- `scripts/convert_assets.sh` - Shell wrapper
+- Supports multiple backends: cairosvg, Inkscape, rsvg-convert, ImageMagick
+- Reads dimensions from `assets_manifest.json`
+
+**Added session context loader:**
+- `scripts/session_context.py` - Aggregates project context for session start
+- `scripts/session_context.sh` - Shell wrapper
+- Combines: git status, .claude/ files, diagnostics, project stats
+- Supports `--brief`, `--json`, `--no-diagnostics` flags
+
+**Added balance simulator:**
+- `tools/balance_simulator.gd` - GDScript headless balance testing
+- `scripts/simulate_balance.py` - Python fallback when Godot unavailable
+- `scripts/simulate_balance.sh` - Shell wrapper with auto-fallback
+- Scenarios: economy, waves, towers, combat
+
+**Fixed duplicate lesson IDs in lessons.json:**
+- `alternating_hands` → `hand_alternation_drill`
+- `double_letters` → `double_letter_drill`
+- `bigram_flow` (second) → `bigram_common`
+- `weak_fingers` (second) → `pinky_ring_strength`
+
+---
+
 ## 2026-01-10: Implementation Examples, Diagnostics, and Templates
 
 **Added implementation examples (`docs/examples/`):**
