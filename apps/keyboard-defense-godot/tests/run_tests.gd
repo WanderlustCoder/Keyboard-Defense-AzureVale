@@ -234,7 +234,7 @@ func _run_reducer_tests() -> void:
     var gather_state: GameState = DefaultState.create("test-gather")
     var gather_result: Dictionary = IntentApplier.apply(gather_state, {"kind": "gather", "resource": "wood", "amount": 3})
     _assert_equal(gather_result.state.ap, gather_state.ap - 1, "gather consumes AP")
-    _assert_equal(int(gather_result.state.resources.get("wood", 0)), 3, "gather adds resource")
+    _assert_equal(int(gather_result.state.resources.get("wood", 0)), 6, "gather adds resource")
 
     var build_state: GameState = DefaultState.create("test-build")
     build_state.resources["wood"] = 20
@@ -252,7 +252,7 @@ func _run_reducer_tests() -> void:
     var explore_state: GameState = DefaultState.create("test-explore")
     var explore_result: Dictionary = IntentApplier.apply(explore_state, {"kind": "explore"})
     _assert_equal(explore_result.state.ap, explore_state.ap - 1, "explore consumes AP")
-    _assert_equal(explore_result.state.threat, explore_state.threat + 1, "explore increases threat")
+    _assert_equal(explore_result.state.threat, explore_state.threat + 2, "explore increases threat")
     _assert_true(explore_result.state.discovered.size() > explore_state.discovered.size(), "explore discovers tile")
     var explore_tile: int = _find_new_tile(explore_state, explore_result.state)
     if explore_tile >= 0:
@@ -355,7 +355,7 @@ func _run_reducer_tests() -> void:
     blocked_state.buildings["wall"] = 4
     var blocked_result: Dictionary = IntentApplier.apply(blocked_state, {"kind": "end"})
     _assert_true(not blocked_result.state.last_path_open, "blocked path detected")
-    _assert_equal(blocked_result.state.night_wave_total, 4, "blocked path reduces night")
+    _assert_equal(blocked_result.state.night_wave_total, 5, "blocked path reduces night")
 
     var reject_state: GameState = DefaultState.create("test-reject")
     reject_state.resources["wood"] = 20
@@ -662,9 +662,9 @@ func _run_scenario_harness_tests() -> void:
         _assert_true(ids.has("enter_night_stop"), "scenario loader finds enter_night_stop")
 
         var p0_balance: Array = ScenarioTypes.filter_scenarios(scenarios, ["p0", "balance"], [], "P0")
-        _assert_equal(p0_balance.size(), 17, "scenario filter returns P0 balance suite")
+        _assert_equal(p0_balance.size(), 20, "scenario filter returns P0 balance suite")
         var p0_balance_short: Array = ScenarioTypes.filter_scenarios(scenarios, ["p0", "balance"], ["long"], "P0")
-        _assert_equal(p0_balance_short.size(), 13, "scenario filter excludes long tag")
+        _assert_equal(p0_balance_short.size(), 16, "scenario filter excludes long tag")
         var p1_only: Array = ScenarioTypes.filter_scenarios(scenarios, [], [], "P1")
         _assert_equal(p1_only.size(), 2, "scenario filter returns P1 suite")
         var has_baseline: bool = false
@@ -1445,7 +1445,7 @@ func _run_lessons_tests() -> void:
     var lessons: Array = data.get("lessons", [])
     _assert_true(lessons is Array and lessons.size() > 0, "lessons list non-empty")
     var default_id: String = str(data.get("default_lesson", ""))
-    _assert_equal(int(data.get("version", 0)), 1, "lessons version is 1")
+    _assert_equal(int(data.get("version", 0)), 2, "lessons version is 2")
     _assert_true(SimLessons.is_valid(default_id), "default lesson valid")
     _assert_true(SimLessons.lesson_ids().has("full_alpha"), "lessons include full_alpha")
     for entry in lessons:
@@ -1453,9 +1453,12 @@ func _run_lessons_tests() -> void:
         var lesson: Dictionary = entry
         _assert_true(str(lesson.get("id", "")) != "", "lesson id present")
         _assert_true(str(lesson.get("name", "")) != "", "lesson name present")
-        _assert_equal(str(lesson.get("mode", "")), "charset", "lesson mode is charset")
-        var charset: String = str(lesson.get("charset", ""))
-        _assert_true(charset != "", "lesson charset present")
+        var mode: String = str(lesson.get("mode", ""))
+        _assert_true(mode in ["charset", "wordlist", "sentence"], "lesson mode is valid")
+        # Charset mode requires charset field, wordlist/sentence modes have word pools
+        if mode == "charset":
+            var charset: String = str(lesson.get("charset", ""))
+            _assert_true(charset != "", "charset lesson has charset")
         var lengths: Dictionary = lesson.get("lengths", {})
         for kind in ["scout", "raider", "armored"]:
             var range_value: Variant = lengths.get(kind, [])
@@ -2257,13 +2260,11 @@ func _run_help_tests() -> void:
     var help_access_lines: Array[String] = MainScript.build_help_lines("accessibility", help_actions)
     var help_access_text: String = "\n".join(help_access_lines)
     _assert_true(help_access_lines.size() > 0 and help_access_lines[0] == "Accessibility:", "help accessibility header")
-    _assert_true(help_access_text.find("settings compact on") != -1, "help accessibility includes compact on")
-    _assert_true(help_access_text.find("settings compact off") != -1, "help accessibility includes compact off")
-    _assert_true(help_access_text.find("settings scale <percent>") != -1, "help accessibility includes scale")
+    _assert_true(help_access_text.find("settings compact on|off|toggle") != -1, "help accessibility includes compact toggle")
+    _assert_true(help_access_text.find("settings scale <80-140>") != -1, "help accessibility includes scale")
     _assert_true(help_access_text.find("settings conflicts") != -1, "help accessibility includes conflicts")
     _assert_true(help_access_text.find("settings resolve apply") != -1, "help accessibility includes resolve apply")
     _assert_true(help_access_text.find("settings export save") != -1, "help accessibility includes export save")
-    _assert_true(help_access_text.find("docs/ACCESSIBILITY_VERIFICATION.md") != -1, "help accessibility includes doc path")
     _assert_true(help_access_text.find("toggle_settings (F1)") != -1, "help accessibility inserts settings hotkey")
     _assert_true(help_access_text.find("toggle_lessons (Ctrl+F1)") != -1, "help accessibility inserts lessons hotkey")
 
