@@ -4,6 +4,28 @@ Log of recent changes made by Claude Code. Most recent first.
 
 ---
 
+## 2026-01-10: Project Statistics, Dead Code Finder, and Command Reference Generator
+
+**Added project statistics tool:**
+- `scripts/project_stats.py` - Codebase metrics and health overview
+- `scripts/project_stats.sh` - Shell wrapper
+- Reports: lines of code, functions, classes, data entries, asset counts
+- Health indicators: comment ratio, TODOs, file sizes
+
+**Added dead code finder:**
+- `scripts/find_dead_code.py` - Find potentially unused code
+- `scripts/find_dead_code.sh` - Shell wrapper
+- Detects: unused functions, classes, constants, signals
+- Finds orphan files not loaded/preloaded anywhere
+
+**Added command reference generator:**
+- `scripts/generate_command_ref.py` - Auto-document game commands
+- `scripts/generate_command_ref.sh` - Shell wrapper
+- Formats: markdown, JSON, HTML
+- Parses intents.gd, parse_command.gd, apply_intent.gd
+
+---
+
 ## 2026-01-10: Quick Reference, Integrity Checker, and Changelog Generator
 
 **Added quick reference card:**

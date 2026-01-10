@@ -490,6 +490,58 @@ One-page reference at `docs/QUICK_REFERENCE.md`:
 - Code patterns
 - Common validation snippets
 
+### Project Statistics
+
+Codebase metrics and health overview:
+
+```bash
+./scripts/project_stats.sh              # Full report
+./scripts/project_stats.sh --brief      # Summary only
+./scripts/project_stats.sh --json       # JSON output
+```
+
+Reports:
+- Lines of code by type and directory
+- Function/class counts
+- Data file statistics
+- Asset counts (SVG, PNG, audio)
+- Documentation coverage
+- Health indicators (comment ratio, TODOs, file sizes)
+
+### Dead Code Finder
+
+Find potentially unused code:
+
+```bash
+./scripts/find_dead_code.sh              # Full analysis
+./scripts/find_dead_code.sh --functions  # Functions only
+./scripts/find_dead_code.sh --files      # Orphan files only
+./scripts/find_dead_code.sh --json       # JSON output
+./scripts/find_dead_code.sh --verbose    # Show usage details
+```
+
+Detects:
+- Unused functions (defined but never called)
+- Unused classes (defined but never referenced)
+- Unused constants and signals
+- Orphan files (not loaded/preloaded anywhere)
+
+### Command Reference Generator
+
+Auto-generate command documentation:
+
+```bash
+./scripts/generate_command_ref.sh                    # Markdown output
+./scripts/generate_command_ref.sh --json             # JSON output
+./scripts/generate_command_ref.sh --html             # HTML output
+./scripts/generate_command_ref.sh -o docs/COMMANDS.md  # Write to file
+```
+
+Analyzes:
+- `sim/intents.gd` - Help text and definitions
+- `sim/parse_command.gd` - Aliases and parsing
+- `sim/apply_intent.gd` - Phase restrictions
+
 ## File Locations Quick Reference
 
 | Need to... | Location |
