@@ -491,6 +491,11 @@ static func get_tower_name(tower_id: String) -> String:
 	return str(stats.get("name", tower_id.capitalize()))
 
 
+## Get full tower data (stats, cost, abilities, etc.)
+static func get_tower_data(tower_id: String) -> Dictionary:
+	return TOWER_STATS.get(tower_id, {}).duplicate(true)
+
+
 ## Get tower build cost
 static func get_build_cost(tower_id: String) -> Dictionary:
 	var stats: Dictionary = TOWER_STATS.get(tower_id, {})
