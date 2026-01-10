@@ -4,6 +4,28 @@ Log of recent changes made by Claude Code. Most recent first.
 
 ---
 
+## 2026-01-10: TODO Tracker, Test Coverage Analyzer, and Build Info Generator
+
+**Added TODO/FIXME tracker:**
+- `scripts/track_todos.py` - Find and categorize TODO/FIXME comments
+- `scripts/track_todos.sh` - Shell wrapper
+- Tracks: TODO, FIXME, HACK, XXX, BUG, NOTE, OPTIMIZE, REFACTOR
+- Priority detection, context extraction, markdown export
+
+**Added test coverage analyzer:**
+- `scripts/analyze_test_coverage.py` - Analyze test coverage
+- `scripts/analyze_test_coverage.sh` - Shell wrapper
+- Reports coverage by layer, untested function priorities
+- Identifies files needing tests
+
+**Added build info generator:**
+- `scripts/generate_build_info.py` - Generate build metadata
+- `scripts/generate_build_info.sh` - Shell wrapper
+- Includes version, git info, build date, project stats
+- Can export to game/build_info.gd
+
+---
+
 ## 2026-01-10: Scene Analyzer, Code Duplication Finder, and API Docs Generator
 
 **Added scene analyzer:**

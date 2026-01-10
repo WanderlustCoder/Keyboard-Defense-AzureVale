@@ -704,6 +704,60 @@ Documents:
 - Constants and enums
 - Export properties
 
+### TODO/FIXME Tracker
+
+Track technical debt and code comments:
+
+```bash
+./scripts/track_todos.sh              # Full report
+./scripts/track_todos.sh --type TODO  # Only TODOs
+./scripts/track_todos.sh --type FIXME # Only FIXMEs
+./scripts/track_todos.sh --layer sim  # Only sim layer
+./scripts/track_todos.sh --markdown   # Markdown for issue tracking
+./scripts/track_todos.sh --json       # JSON output
+```
+
+Tracks:
+- TODO, FIXME, HACK, XXX, BUG, NOTE comments
+- Priority detection (urgent, critical, later, etc.)
+- Context (function/class containing the comment)
+- Health indicators
+
+### Test Coverage Analyzer
+
+Analyze test coverage across the codebase:
+
+```bash
+./scripts/analyze_test_coverage.sh              # Full report
+./scripts/analyze_test_coverage.sh --layer sim  # Sim layer only
+./scripts/analyze_test_coverage.sh --untested   # Show only untested functions
+./scripts/analyze_test_coverage.sh --json       # JSON output
+```
+
+Reports:
+- Coverage percentage by layer
+- Untested function priorities
+- Files needing tests
+- Existing test inventory
+
+### Build Info Generator
+
+Generate build metadata:
+
+```bash
+./scripts/generate_build_info.sh              # Show build info
+./scripts/generate_build_info.sh --json       # JSON output
+./scripts/generate_build_info.sh --export     # Generate game/build_info.gd
+./scripts/generate_build_info.sh -o path/file.gd  # Custom output path
+```
+
+Includes:
+- Version from project.godot
+- Git commit hash, branch, tag
+- Build date/timestamp
+- Project statistics (files, lines)
+- Data counts (lessons, buildings, etc.)
+
 ## File Locations Quick Reference
 
 | Need to... | Location |
