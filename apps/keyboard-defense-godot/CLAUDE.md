@@ -1101,6 +1101,54 @@ Reports:
 - Signal and timer await patterns
 - Functions with most awaits
 
+### String Literal Checker
+
+Find repeated string literals:
+
+```bash
+./scripts/check_string_literals.sh              # Full report
+./scripts/check_string_literals.sh --min 3      # Min occurrences
+./scripts/check_string_literals.sh --file game/main.gd  # Single file
+./scripts/check_string_literals.sh --json       # JSON output
+```
+
+Reports:
+- Repeated strings (potential constants)
+- Suggested constant names
+- Categorization by type
+
+### Coupling Analyzer
+
+Measure file coupling metrics:
+
+```bash
+./scripts/analyze_coupling.sh              # Full report
+./scripts/analyze_coupling.sh --file game/main.gd  # Single file
+./scripts/analyze_coupling.sh --layer sim  # Single layer
+./scripts/analyze_coupling.sh --json       # JSON output
+```
+
+Reports:
+- Afferent/efferent coupling
+- Instability metrics
+- Layer violation detection
+
+### Match Pattern Checker
+
+Analyze match statement patterns:
+
+```bash
+./scripts/check_match_patterns.sh              # Full report
+./scripts/check_match_patterns.sh --file game/main.gd  # Single file
+./scripts/check_match_patterns.sh --strict     # Stricter checks
+./scripts/check_match_patterns.sh --json       # JSON output
+```
+
+Reports:
+- Missing default cases
+- Large match statements
+- Duplicate patterns
+
 ## File Locations Quick Reference
 
 | Need to... | Location |

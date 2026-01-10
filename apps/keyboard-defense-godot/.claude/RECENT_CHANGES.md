@@ -4,6 +4,27 @@ This file tracks recent changes for Claude Code context.
 
 ---
 
+## 2026-01-10: Development Tools Batch 16
+
+Added code quality and architecture tools:
+
+### String Literal Checker (`scripts/check_string_literals.py`)
+- Finds repeated string literals
+- Suggests constant names
+- Categorizes by type (path, identifier, etc.)
+
+### Coupling Analyzer (`scripts/analyze_coupling.py`)
+- Measures afferent/efferent coupling
+- Calculates instability metrics
+- Detects layer violations
+
+### Match Pattern Checker (`scripts/check_match_patterns.py`)
+- Finds missing default cases
+- Detects duplicate patterns
+- Reports large match statements
+
+---
+
 ## 2026-01-10: Development Tools Batch 15
 
 Added code analysis and pattern detection tools:
