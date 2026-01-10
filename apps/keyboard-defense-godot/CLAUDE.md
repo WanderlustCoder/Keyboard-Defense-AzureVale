@@ -1149,6 +1149,56 @@ Reports:
 - Large match statements
 - Duplicate patterns
 
+### Comment Quality Checker
+
+Analyze comment quality and coverage:
+
+```bash
+./scripts/check_comments.sh              # Full report
+./scripts/check_comments.sh --layer sim  # Single layer
+./scripts/check_comments.sh --file game/main.gd  # Single file
+./scripts/check_comments.sh --json       # JSON output
+```
+
+Reports:
+- Comment density and distribution
+- Commented-out code detection
+- Doc comments (##) vs inline comments (#)
+- Best/worst commented files
+
+### Enum Analyzer
+
+Analyze enum definitions and usage:
+
+```bash
+./scripts/analyze_enums.sh              # Full report
+./scripts/analyze_enums.sh --unused     # Show only unused values
+./scripts/analyze_enums.sh --file game/main.gd  # Single file
+./scripts/analyze_enums.sh --json       # JSON output
+```
+
+Reports:
+- Enum declarations and values
+- Usage tracking per value
+- Unused enum values
+- Enum-like constant patterns
+
+### File Organization Checker
+
+Check file organization and structure:
+
+```bash
+./scripts/check_file_organization.sh              # Full report
+./scripts/check_file_organization.sh --layer sim  # Single layer
+./scripts/check_file_organization.sh --json       # JSON output
+```
+
+Reports:
+- File placement by layer
+- Naming convention compliance
+- Large file detection (>500 lines)
+- Directory structure consistency
+
 ## File Locations Quick Reference
 
 | Need to... | Location |

@@ -4,6 +4,30 @@ This file tracks recent changes for Claude Code context.
 
 ---
 
+## 2026-01-10: Development Tools Batch 17
+
+Added comment, enum, and file organization analysis tools:
+
+### Comment Quality Checker (`scripts/check_comments.py`)
+- Analyzes comment density and distribution
+- Detects commented-out code
+- Distinguishes doc comments (##) from inline (#)
+- Reports best/worst commented files
+
+### Enum Analyzer (`scripts/analyze_enums.py`)
+- Lists all enum declarations and values
+- Tracks usage per enum value
+- Finds unused enum values
+- Detects enum-like constant patterns
+
+### File Organization Checker (`scripts/check_file_organization.py`)
+- Validates file placement by layer
+- Checks naming convention compliance
+- Detects large files (>500 lines)
+- Reports directory structure consistency
+
+---
+
 ## 2026-01-10: Development Tools Batch 16
 
 Added code quality and architecture tools:
