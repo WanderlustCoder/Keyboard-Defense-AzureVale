@@ -809,6 +809,58 @@ Reports:
 - Reference types (preload, load, scene, string)
 - Files with broken references
 
+### Documentation Coverage Checker
+
+Check documentation coverage:
+
+```bash
+./scripts/check_docs.sh              # Full report
+./scripts/check_docs.sh --layer sim  # Only sim layer
+./scripts/check_docs.sh --public     # Only public functions
+./scripts/check_docs.sh --file game/main.gd  # Single file
+./scripts/check_docs.sh --json       # JSON output
+```
+
+Reports:
+- Function and class documentation coverage
+- Undocumented public functions (priority)
+- Files needing documentation
+- Coverage by layer
+
+### Performance Linter
+
+Find potential performance issues:
+
+```bash
+./scripts/lint_performance.sh              # Full report
+./scripts/lint_performance.sh --severity high  # Only high severity
+./scripts/lint_performance.sh --file game/main.gd  # Single file
+./scripts/lint_performance.sh --json       # JSON output
+```
+
+Detects:
+- Hot path issues (allocations in _process/_physics_process)
+- Nested loops (O(n^2) complexity)
+- String concatenation in loops
+- get_node() calls in hot paths
+
+### Memory Leak Detector
+
+Find potential memory leaks:
+
+```bash
+./scripts/check_memory.sh              # Full report
+./scripts/check_memory.sh --strict     # More aggressive checks
+./scripts/check_memory.sh --file game/main.gd  # Single file
+./scripts/check_memory.sh --json       # JSON output
+```
+
+Detects:
+- Signal connects without _exit_tree cleanup
+- Lambda signal handlers (prevent GC)
+- Tweens without kill() on cleanup
+- Connect/disconnect imbalance
+
 ## File Locations Quick Reference
 
 | Need to... | Location |

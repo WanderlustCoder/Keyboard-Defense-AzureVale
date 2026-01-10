@@ -4,6 +4,28 @@ Log of recent changes made by Claude Code. Most recent first.
 
 ---
 
+## 2026-01-10: Doc Coverage, Performance Linter, and Memory Leak Detector
+
+**Added documentation coverage checker:**
+- `scripts/check_docs.py` - Analyze documentation coverage
+- `scripts/check_docs.sh` - Shell wrapper
+- Reports function/class doc coverage by layer
+- Identifies undocumented public functions
+
+**Added performance linter:**
+- `scripts/lint_performance.py` - Find performance issues
+- `scripts/lint_performance.sh` - Shell wrapper
+- Detects hot path issues, nested loops, string concat
+- Categories: high/medium/low severity
+
+**Added memory leak detector:**
+- `scripts/check_memory.py` - Find potential memory leaks
+- `scripts/check_memory.sh` - Shell wrapper
+- Tracks signal connect/disconnect patterns
+- Identifies missing _exit_tree cleanup
+
+---
+
 ## 2026-01-10: Signal Analyzer, Type Checker, and Resource Path Validator
 
 **Added signal analyzer:**
