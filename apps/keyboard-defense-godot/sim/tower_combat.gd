@@ -76,25 +76,25 @@ static func _process_tower_attack(
 		_attack_legacy_tower(state, tower_index, tower_pos, level, dist_field, events)
 		return
 
-	# Get target type from stats
-	var target_type_str: String = str(stats.get("target_type", "single"))
+	# Get target type from stats (enum value)
+	var target_type: int = int(stats.get("target_type", SimTowerTypes.TargetType.SINGLE))
 
 	# Get support tower buff if applicable
 	var support_buff: float = _get_support_buff(state, tower_pos)
 
 	# Dispatch based on target type
-	match target_type_str:
-		"single":
+	match target_type:
+		SimTowerTypes.TargetType.SINGLE:
 			_attack_single(state, tower_index, tower_pos, level, tower_type, stats, support_buff, dist_field, events)
-		"multi":
+		SimTowerTypes.TargetType.MULTI:
 			_attack_multi(state, tower_index, tower_pos, level, tower_type, stats, support_buff, dist_field, events)
-		"aoe":
+		SimTowerTypes.TargetType.AOE:
 			_attack_aoe(state, tower_index, tower_pos, level, tower_type, stats, support_buff, dist_field, events)
-		"chain":
+		SimTowerTypes.TargetType.CHAIN:
 			_attack_chain(state, tower_index, tower_pos, level, tower_type, stats, support_buff, dist_field, events)
-		"adaptive":
+		SimTowerTypes.TargetType.ADAPTIVE:
 			_attack_adaptive(state, tower_index, tower_pos, level, tower_type, stats, support_buff, dist_field, events)
-		"none":
+		SimTowerTypes.TargetType.NONE:
 			# Non-attacking towers (support, summoner, trap)
 			_process_non_attacking_tower(state, tower_index, tower_pos, level, tower_type, stats, events)
 
