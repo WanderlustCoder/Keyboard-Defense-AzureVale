@@ -17,6 +17,11 @@ const SimPoi = preload("res://sim/poi.gd")
 const SimEvents = preload("res://sim/events.gd")
 const SimEventEffects = preload("res://sim/event_effects.gd")
 const SimUpgrades = preload("res://sim/upgrades.gd")
+const WorldTick = preload("res://sim/world_tick.gd")
+const SimStatusEffects = preload("res://sim/status_effects.gd")
+const SimLoot = preload("res://sim/loot.gd")
+const SimExpeditions = preload("res://sim/expeditions.gd")
+const SimResourceNodes = preload("res://sim/resource_nodes.gd")
 
 static func apply(state: GameState, intent: Dictionary) -> Dictionary:
     var events: Array[String] = []
@@ -108,6 +113,23 @@ static func apply(state: GameState, intent: Dictionary) -> Dictionary:
             _apply_gather_at_cursor(new_state, events)
         "engage_enemy":
             _apply_engage_enemy(new_state, events)
+        # Resource gathering system intents
+        "loot_preview":
+            _apply_loot_preview(new_state, events)
+        "collect_loot":
+            _apply_collect_loot(new_state, events)
+        "expeditions_list":
+            _apply_expeditions_list(new_state, events)
+        "start_expedition":
+            _apply_start_expedition(new_state, intent, events)
+        "cancel_expedition":
+            _apply_cancel_expedition(new_state, intent, events)
+        "expedition_status":
+            _apply_expedition_status(new_state, events)
+        "harvest_node":
+            _apply_harvest_node(new_state, intent, events)
+        "nodes_list":
+            _apply_nodes_list(new_state, events)
         _:
             events.append("Unknown intent: %s" % kind)
 
@@ -390,13 +412,16 @@ static func _apply_player_attack_target(state: GameState, target_index: int, hit
             damage = damage * 2
 
     # Apply armor reduction and pierce from upgrades
-    var enemy_armor: int = int(enemy.get("armor", 0))
+    var enemy_armor: int = SimEnemies.get_effective_armor(enemy)  # Uses status effects
     var armor_reduction: int = SimUpgrades.get_enemy_armor_reduction(state)
     var armor_pierce: int = SimUpgrades.get_armor_pierce(state)
     var effective_armor: int = max(0, enemy_armor - armor_reduction - armor_pierce)
-    var effective_damage: int = max(1, damage - effective_armor)
+    # Apply damage vulnerability from status effects (exposed, frozen)
+    var damage_mult: float = SimEnemies.get_damage_taken_multiplier(enemy)
+    var modified_damage: int = int(float(damage) * damage_mult)
+    var effective_damage: int = max(1, modified_damage - effective_armor)
 
-    enemy = SimEnemies.apply_damage(enemy, damage, state)
+    enemy = SimEnemies.apply_damage(enemy, modified_damage, state)
     state.enemies[target_index] = enemy
     var enemy_word: String = str(enemy.get("word", ""))
     var word_text: String = hit_word if hit_word != "" else enemy_word
@@ -504,17 +529,26 @@ static func _tower_attack_step(state: GameState, dist_field: PackedInt32Array, e
         var tower_pos: Vector2i = SimMap.pos_from_index(index, state.map_w)
         var level: int = int(state.structure_levels.get(index, 1))
         var stats: Dictionary = SimBuildings.tower_stats(level)
-        var range: int = int(stats.get("range", 3))
+        var range_val: int = int(stats.get("range", 3))
         var damage: int = int(stats.get("damage", 1))
         var shots: int = int(stats.get("shots", 1))
+        # Check if tower can apply slow effect (level 3 towers)
+        var tower_effects: Dictionary = SimBuildings.get_tower_effects(level)
+        var applies_slow: bool = tower_effects.get("enemy_slow", 0.0) > 0
         for _shot in range(shots):
             if state.enemies.is_empty():
                 return
-            var target_index: int = SimEnemies.pick_target_index(state.enemies, dist_field, state.map_w, tower_pos, range)
+            var target_index: int = SimEnemies.pick_target_index(state.enemies, dist_field, state.map_w, tower_pos, range_val)
             if target_index < 0:
                 break
             var enemy: Dictionary = state.enemies[target_index]
             enemy = SimEnemies.apply_damage(enemy, damage, state)
+            # Apply slow status effect from upgraded towers
+            if applies_slow and int(enemy.get("hp", 0)) > 0:
+                var had_slow: bool = SimEnemies.has_status_effect(enemy, SimStatusEffects.EFFECT_SLOW)
+                enemy = SimEnemies.apply_status_effect(enemy, SimStatusEffects.EFFECT_SLOW, 1, "tower")
+                if not had_slow:
+                    events.append("Tower applies [color=#87CEEB]Slowed[/color] to enemy!")
             state.enemies[target_index] = enemy
             var enemy_id: int = int(enemy.get("id", 0))
             var enemy_kind: String = str(enemy.get("kind", "raider"))
@@ -547,10 +581,14 @@ static func _enemy_move_step(state: GameState, dist_field: PackedInt32Array, eve
             continue
         var enemy: Dictionary = SimEnemies.normalize_enemy(state.enemies[enemy_index])
         state.enemies[enemy_index] = enemy
+        # Check if immobilized by status effects (frozen/rooted)
+        if SimEnemies.is_immobilized(enemy):
+            continue
+        # Get effective speed considering status effects (slow debuff)
+        var effect_speed: int = SimEnemies.get_effective_speed(enemy)
         # Apply speed reduction from upgrades and accessibility multiplier
-        var base_speed: int = int(enemy.get("speed", 1))
         var multiplier: float = state.speed_multiplier if state.speed_multiplier > 0.0 else 1.0
-        var reduced_speed: float = float(base_speed) * (1.0 - speed_reduction) * multiplier
+        var reduced_speed: float = float(effect_speed) * (1.0 - speed_reduction) * multiplier
         var speed: int = max(1, int(reduced_speed))
         var kind: String = str(enemy.get("kind", "raider"))
         for _step in range(speed):
@@ -634,6 +672,18 @@ static func _vampiric_heal(state: GameState, attacker_index: int, events: Array[
 static func _enemy_ability_tick(state: GameState, events: Array[String]) -> void:
     if state.enemies.is_empty():
         return
+    # Process status effect ticks (DoT damage, expiration)
+    SimEnemies.tick_status_effects(state.enemies, 1.0, events)
+    # Remove dead enemies from DoT damage
+    for i in range(state.enemies.size() - 1, -1, -1):
+        var enemy: Dictionary = state.enemies[i]
+        if int(enemy.get("hp", 0)) <= 0:
+            var enemy_id: int = int(enemy.get("id", 0))
+            var kind: String = str(enemy.get("kind", "raider"))
+            state.enemies.remove_at(i)
+            var gold: int = SimEnemies.gold_reward(kind)
+            state.gold += gold
+            events.append("%s#%d died from DoT. +%d gold" % [kind, enemy_id, gold])
     # Boss ability ticks
     for i in range(state.enemies.size()):
         var enemy: Dictionary = state.enemies[i]
@@ -960,8 +1010,9 @@ static func _explore_reward(state: GameState, terrain: String) -> Dictionary:
             amount = 5
         _:
             choices = ["food", "wood", "stone"]
-    var reward_resource: String = str(SimRng.choose(state, choices))
-    if reward_resource == "":
+    var chosen = SimRng.choose(state, choices)
+    var reward_resource: String = str(chosen) if chosen != null else "food"
+    if reward_resource == "" or reward_resource == "null":
         reward_resource = "food"
     var override_resource: String = SimBalance.maybe_override_explore_reward(state, reward_resource)
     if override_resource != reward_resource and amount < 8:
@@ -993,13 +1044,19 @@ static func _format_status(state: GameState) -> String:
     var path_text: String = "yes" if state.last_path_open else "no"
 
     var lines: Array[String] = []
-    lines.append("Phase: %s" % state.phase)
+    # Show activity mode with descriptive label
+    var mode_label: String = state.activity_mode.capitalize()
+    if state.activity_mode == "wave_assault":
+        mode_label = "WAVE ASSAULT"
+    lines.append("Mode: %s | Day: %d" % [mode_label, state.day])
     lines.append("Lesson: %s (%s)" % [SimLessons.lesson_label(state.lesson_id), state.lesson_id])
-    lines.append("Day: %d" % state.day)
     lines.append("AP: %d/%d" % [state.ap, state.ap_max])
     var max_hp: int = 10 + SimUpgrades.get_castle_health_bonus(state)
     lines.append("HP: %d/%d" % [state.hp, max_hp])
-    lines.append("Threat: %d" % state.threat)
+    # Show threat level as percentage bar
+    var threat_pct: int = int(state.threat_level * 100)
+    var threat_bar: String = _threat_bar(state.threat_level)
+    lines.append("Threat: %s %d%%" % [threat_bar, threat_pct])
     lines.append("Gold: %d" % state.gold)
     lines.append("Defense: %d" % defense)
     lines.append("Path open: %s" % path_text)
@@ -1130,6 +1187,16 @@ static func _format_resource_list(values: Dictionary, show_plus: bool) -> String
         return "none"
     return ", ".join(parts)
 
+static func _threat_bar(threat_level: float) -> String:
+    var filled: int = int(threat_level * 10)
+    var bar: String = ""
+    for i in range(10):
+        if i < filled:
+            bar += "#"
+        else:
+            bar += "-"
+    return "[%s]" % bar
+
 static func _copy_state(state: GameState) -> GameState:
     var copy: GameState = GameState.new()
     copy.day = state.day
@@ -1168,6 +1235,28 @@ static func _copy_state(state: GameState) -> GameState:
     copy.purchased_kingdom_upgrades = state.purchased_kingdom_upgrades.duplicate()
     copy.purchased_unit_upgrades = state.purchased_unit_upgrades.duplicate()
     copy.gold = state.gold
+    # Open-world exploration state
+    copy.roaming_enemies = state.roaming_enemies.duplicate(true)
+    copy.roaming_resources = state.roaming_resources.duplicate(true)
+    copy.threat_level = state.threat_level
+    copy.time_of_day = state.time_of_day
+    copy.world_tick_accum = state.world_tick_accum
+    # Unified threat system state
+    copy.activity_mode = state.activity_mode
+    copy.encounter_enemies = state.encounter_enemies.duplicate(true)
+    copy.wave_cooldown = state.wave_cooldown
+    copy.threat_decay_accum = state.threat_decay_accum
+    # Expedition system state
+    copy.active_expeditions = state.active_expeditions.duplicate(true)
+    copy.expedition_next_id = state.expedition_next_id
+    copy.expedition_history = state.expedition_history.duplicate(true)
+    # Resource node system state
+    copy.resource_nodes = state.resource_nodes.duplicate(true)
+    copy.harvested_nodes = state.harvested_nodes.duplicate(true)
+    # Loot tracking state
+    copy.loot_pending = state.loot_pending.duplicate(true)
+    copy.last_loot_quality = state.last_loot_quality
+    copy.perfect_kills = state.perfect_kills
     return copy
 
 static func _require_day(state: GameState, events: Array[String]) -> bool:
@@ -1223,6 +1312,8 @@ static func _pick_explore_tile(state: GameState) -> int:
         return -1
     candidates.sort()
     var choice = SimRng.choose(state, candidates)
+    if choice == null:
+        return -1
     return int(choice)
 
 static func _adjacent_undiscovered(state: GameState) -> Array[int]:
@@ -1468,13 +1559,166 @@ static func _apply_engage_enemy(state: GameState, events: Array[String]) -> void
     var kind: String = str(roaming.get("kind", "raider"))
     state.roaming_enemies.remove_at(target_idx)
 
-    var enemy: Dictionary = SimEnemies.make_enemy(state, kind, state.base_pos)
-    state.enemies.append(enemy)
+    # Create combat enemy and start encounter
+    var enemy: Dictionary = SimEnemies.make_enemy(state, kind, pos)
+    state.enemy_next_id += 1
+    WorldTick.start_encounter(state, [enemy])
 
-    # Switch to night/combat phase
-    if state.phase != "night":
-        state.phase = "night"
-        state.night_spawn_remaining = 0
-        state.night_wave_total = 1
+    events.append("Engaged %s in combat! Type the word to attack!" % kind)
 
-    events.append("Engaged %s in combat! Defend yourself!" % kind)
+# Resource gathering system handlers
+static func _apply_loot_preview(state: GameState, events: Array[String]) -> void:
+    var pending: Dictionary = SimLoot.get_pending_loot_summary(state)
+    if pending.is_empty():
+        events.append("No pending loot to collect.")
+        return
+    var parts: Array[String] = []
+    for resource in pending.keys():
+        parts.append("%d %s" % [int(pending[resource]), resource])
+    events.append("Pending loot: %s" % ", ".join(parts))
+    events.append("Use 'loot collect' to collect all pending loot.")
+
+static func _apply_collect_loot(state: GameState, events: Array[String]) -> void:
+    if state.loot_pending.is_empty():
+        events.append("No loot to collect.")
+        return
+    var result: Dictionary = SimLoot.collect_pending_loot(state)
+    var total: Dictionary = result.get("collected", {})
+    var parts: Array[String] = []
+    for resource in total.keys():
+        if int(total[resource]) > 0:
+            parts.append("+%d %s" % [int(total[resource]), resource])
+    if parts.is_empty():
+        events.append("Collected loot (nothing of value).")
+    else:
+        events.append("Collected loot: %s" % ", ".join(parts))
+    events.append(_format_status(state))
+
+static func _apply_expeditions_list(state: GameState, events: Array[String]) -> void:
+    var available: Array = SimExpeditions.get_available_expeditions(state)
+    if available.is_empty():
+        events.append("No expeditions available yet.")
+        return
+    events.append("=== Available Expeditions ===")
+    var workers_free: int = SimExpeditions.available_workers_for_expedition(state)
+    events.append("Workers available: %d" % workers_free)
+    events.append("")
+    for exp in available:
+        var exp_id: String = str(exp.get("id", ""))
+        var label: String = str(exp.get("label", exp_id))
+        var desc: String = str(exp.get("description", ""))
+        var duration: int = int(exp.get("duration_seconds", 0))
+        var min_w: int = int(exp.get("min_workers", 1))
+        var max_w: int = int(exp.get("max_workers", 1))
+        var base_yield: Dictionary = exp.get("base_yield", {})
+        var yield_parts: Array[String] = []
+        for res in base_yield.keys():
+            yield_parts.append("%d %s" % [int(base_yield[res]), res])
+        events.append("[%s] %s" % [exp_id, label])
+        events.append("  %s" % desc)
+        events.append("  Duration: %dm | Workers: %d-%d | Yields: %s" % [
+            duration / 60, min_w, max_w,
+            ", ".join(yield_parts) if not yield_parts.is_empty() else "none"
+        ])
+    events.append("")
+    events.append("Use: expedition <id> [workers] to start")
+    # Show active expeditions if any
+    if not state.active_expeditions.is_empty():
+        events.append("")
+        events.append("=== Active Expeditions ===")
+        for exp in state.active_expeditions:
+            var exp_id: int = int(exp.get("id", 0))
+            var type_id: String = str(exp.get("expedition_type_id", ""))
+            var progress: int = int(float(exp.get("progress", 0)) * 100)
+            var exp_state: String = str(exp.get("state", "traveling"))
+            events.append("#%d %s - %s (%d%%)" % [exp_id, type_id, exp_state, progress])
+
+static func _apply_start_expedition(state: GameState, intent: Dictionary, events: Array[String]) -> void:
+    if not _require_day(state, events):
+        return
+    var expedition_id: String = str(intent.get("expedition_id", ""))
+    var worker_count: int = int(intent.get("workers", 1))
+    var result: Dictionary = SimExpeditions.start_expedition(state, expedition_id, worker_count)
+    if result.get("ok", false):
+        var label: String = str(result.get("label", expedition_id))
+        var duration_text: String = str(result.get("duration_text", "unknown"))
+        events.append("Expedition '%s' started with %d workers." % [label, worker_count])
+        events.append("Duration: %s. Workers will return with resources." % duration_text)
+    else:
+        events.append("Cannot start expedition: %s" % str(result.get("error", "unknown")))
+
+static func _apply_cancel_expedition(state: GameState, intent: Dictionary, events: Array[String]) -> void:
+    var expedition_id: int = int(intent.get("id", 0))
+    var result: Dictionary = SimExpeditions.cancel_expedition(state, expedition_id)
+    if result.get("ok", false):
+        events.append(str(result.get("message", "Expedition cancelled.")))
+    else:
+        events.append("Cannot cancel expedition: %s" % str(result.get("error", "not found")))
+
+static func _apply_expedition_status(state: GameState, events: Array[String]) -> void:
+    if state.active_expeditions.is_empty():
+        events.append("No active expeditions.")
+        return
+    events.append("=== Active Expeditions ===")
+    for exp in state.active_expeditions:
+        var exp_id: int = int(exp.get("id", 0))
+        var result: Dictionary = SimExpeditions.get_expedition_status(state, exp_id)
+        if result.get("ok", false):
+            var label: String = str(result.get("label", "Unknown"))
+            var state_label: String = str(result.get("state_label", "Unknown"))
+            var progress: int = int(result.get("progress_percent", 0))
+            var time_remaining: String = str(result.get("time_remaining", "?"))
+            var workers: int = int(exp.get("workers_assigned", 0))
+            events.append("#%d [%s] - %s" % [exp_id, label, state_label])
+            events.append("  Progress: %d%% | Time remaining: %s | Workers: %d" % [progress, time_remaining, workers])
+
+static func _apply_harvest_node(state: GameState, intent: Dictionary, events: Array[String]) -> void:
+    if not _require_day(state, events):
+        return
+    var pos: Vector2i = _intent_position(state, intent)
+    var check: Dictionary = SimResourceNodes.can_harvest(state, pos)
+    if not check.get("ok", false):
+        events.append("Cannot harvest: %s" % str(check.get("error", "unknown")))
+        return
+    var result: Dictionary = SimResourceNodes.start_harvest_challenge(state, pos)
+    if not result.get("ok", false):
+        events.append("Cannot start harvest: %s" % str(result.get("error", "unknown")))
+        return
+    # For now, auto-complete with standard performance (typing challenge would integrate with game layer)
+    # In a full implementation, this would trigger a typing challenge UI
+    var performance: Dictionary = {"passed": true, "accuracy": 0.95, "wpm": 45, "time_remaining": 5}
+    var harvest_result: Dictionary = SimResourceNodes.complete_harvest(state, pos, performance)
+    if harvest_result.get("ok", false):
+        events.append(str(harvest_result.get("message", "Harvested resources.")))
+        if harvest_result.get("depleted", false):
+            events.append("Node depleted. It will respawn in a few days.")
+    else:
+        events.append("Harvest failed: %s" % str(harvest_result.get("error", "unknown")))
+    events.append(_format_status(state))
+
+static func _apply_nodes_list(state: GameState, events: Array[String]) -> void:
+    var nodes: Array = SimResourceNodes.get_discovered_nodes(state)
+    if nodes.is_empty():
+        events.append("No resource nodes discovered yet.")
+        events.append("Explore to find resource nodes on the map.")
+        return
+    events.append("=== Discovered Resource Nodes ===")
+    for node in nodes:
+        var node_type: String = str(node.get("node_type", "unknown"))
+        var pos_x: int = int(node.get("pos_x", 0))
+        var pos_y: int = int(node.get("pos_y", 0))
+        var harvests: int = int(node.get("harvests_remaining", 0))
+        var max_harvests: int = int(node.get("max_harvests", 1))
+        var definition: Dictionary = SimResourceNodes.get_node_type_definition(node_type)
+        var name: String = str(definition.get("name", node_type))
+        var base_yield: Dictionary = node.get("base_yield", {})
+        var yield_parts: Array[String] = []
+        for res in base_yield.keys():
+            yield_parts.append("%d %s" % [int(base_yield[res]), res])
+        events.append("[%s] at (%d,%d)" % [name, pos_x, pos_y])
+        events.append("  Yields: %s | Harvests: %d/%d" % [
+            ", ".join(yield_parts) if not yield_parts.is_empty() else "none",
+            harvests, max_harvests
+        ])
+    events.append("")
+    events.append("Use: harvest [x y] to harvest a node")

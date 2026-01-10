@@ -2,7 +2,7 @@ class_name GameState
 extends RefCounted
 
 const RESOURCE_KEYS := ["wood", "stone", "food"]
-const BUILDING_KEYS := ["farm", "lumber", "quarry", "wall", "tower"]
+const BUILDING_KEYS := ["farm", "lumber", "quarry", "wall", "tower", "market", "barracks", "temple", "workshop"]
 
 var day: int
 var phase: String
@@ -43,6 +43,21 @@ var purchased_kingdom_upgrades: Array
 var purchased_unit_upgrades: Array
 var gold: int
 
+# Worker system state
+var workers: Dictionary  # {building_index: worker_count}
+var total_workers: int
+var max_workers: int
+var worker_upkeep: int  # Food consumed per worker per day
+
+# Research system state
+var active_research: String  # Currently researching ID
+var research_progress: int  # Waves completed toward research
+var completed_research: Array  # List of completed research IDs
+
+# Trade system state
+var trade_rates: Dictionary  # Current exchange rates
+var last_trade_day: int  # Day of last trade (for rate changes)
+
 # Accessibility settings (applied from profile)
 var speed_multiplier: float
 var practice_mode: bool
@@ -53,6 +68,40 @@ var roaming_resources: Array
 var threat_level: float
 var time_of_day: float
 var world_tick_accum: float
+
+# Unified threat system (replaces rigid day/night)
+var activity_mode: String  # "exploration", "encounter", "event", "wave_assault"
+var encounter_enemies: Array  # Enemies in current local encounter
+var wave_cooldown: float  # Time until threat can trigger another wave
+var threat_decay_accum: float  # Accumulator for passive threat decay
+
+# Expedition system state
+var active_expeditions: Array  # Array of expedition dictionaries
+var expedition_next_id: int  # ID counter for expeditions
+var expedition_history: Array  # Recent expedition results (for UI)
+
+# Resource node system state
+var resource_nodes: Dictionary  # {tile_index: node_data}
+var harvested_nodes: Dictionary  # {node_id: last_harvested_day}
+
+# Loot tracking state
+var loot_pending: Array  # Pending loot to collect from defeats
+var last_loot_quality: float  # Quality modifier from last combat (0.0-2.0)
+var perfect_kills: int  # Count of perfect (no mistakes) kills this wave
+
+# Tower system state
+var tower_states: Dictionary  # {index: tower_instance_state}
+var active_synergies: Array  # Currently active tower synergies
+var summoned_units: Array  # Summoned units from summoner towers
+var summoned_next_id: int  # Counter for summoned unit IDs
+var active_traps: Array  # Placed traps from trap towers
+var tower_charge: Dictionary  # {index: charge_turns} for siege towers
+var tower_cooldowns: Dictionary  # {index: cooldown_remaining}
+var tower_summon_ids: Dictionary  # {index: [summoned_unit_ids]}
+
+# Typing metrics for tower damage scaling
+var typing_metrics: Dictionary  # Real-time WPM, accuracy, letter tracking
+var arrow_rain_timer: float  # Timer for Arrow Rain synergy
 
 func _init() -> void:
     day = 1
@@ -105,6 +154,30 @@ func _init() -> void:
     purchased_unit_upgrades = []
     gold = 0
 
+    # Worker system initialization
+    workers = {}
+    total_workers = 3
+    max_workers = 10
+    worker_upkeep = 1
+
+    # Research system initialization
+    active_research = ""
+    research_progress = 0
+    completed_research = []
+
+    # Trade system initialization
+    trade_rates = {
+        "wood_to_stone": 1.5,  # 3 wood = 2 stone
+        "stone_to_wood": 0.67,
+        "food_to_gold": 0.5,   # 2 food = 1 gold
+        "gold_to_food": 2.0,
+        "wood_to_gold": 0.33,  # 3 wood = 1 gold
+        "gold_to_wood": 3.0,
+        "stone_to_gold": 0.5,  # 2 stone = 1 gold
+        "gold_to_stone": 2.0
+    }
+    last_trade_day = 0
+
     # Accessibility defaults
     speed_multiplier = 1.0
     practice_mode = false
@@ -115,6 +188,49 @@ func _init() -> void:
     threat_level = 0.0
     time_of_day = 0.25  # Start at morning (0.0=midnight, 0.5=noon, 1.0=midnight)
     world_tick_accum = 0.0
+
+    # Unified threat system initialization
+    activity_mode = "exploration"
+    encounter_enemies = []
+    wave_cooldown = 0.0
+    threat_decay_accum = 0.0
+
+    # Expedition system initialization
+    active_expeditions = []
+    expedition_next_id = 1
+    expedition_history = []
+
+    # Resource node system initialization
+    resource_nodes = {}
+    harvested_nodes = {}
+
+    # Loot tracking initialization
+    loot_pending = []
+    last_loot_quality = 1.0
+    perfect_kills = 0
+
+    # Tower system initialization
+    tower_states = {}
+    active_synergies = []
+    summoned_units = []
+    summoned_next_id = 1
+    active_traps = []
+    tower_charge = {}
+    tower_cooldowns = {}
+    tower_summon_ids = {}
+
+    # Typing metrics initialization
+    typing_metrics = {
+        "battle_chars_typed": 0,
+        "battle_words_typed": 0,
+        "battle_start_msec": 0,
+        "battle_errors": 0,
+        "rolling_window_chars": [],
+        "unique_letters_window": {},
+        "perfect_word_streak": 0,
+        "current_word_errors": 0
+    }
+    arrow_rain_timer = 0.0
 
     discovered[_index(base_pos.x, base_pos.y)] = true
 

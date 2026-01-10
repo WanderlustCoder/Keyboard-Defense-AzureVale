@@ -447,6 +447,45 @@ static func parse(command: String) -> Dictionary:
             if tokens.size() > 1:
                 return {"ok": false, "error": "'attack' takes no arguments. Engages roaming enemy at cursor."}
             return {"ok": true, "intent": SimIntents.make("engage_enemy")}
+        # Resource gathering commands
+        "loot":
+            if tokens.size() == 1:
+                return {"ok": true, "intent": SimIntents.make("loot_preview")}
+            if tokens.size() == 2 and tokens[1].to_lower() == "collect":
+                return {"ok": true, "intent": SimIntents.make("collect_loot")}
+            return {"ok": false, "error": "Usage: loot [collect]"}
+        "expedition", "exp":
+            if tokens.size() == 1:
+                return {"ok": true, "intent": SimIntents.make("expeditions_list")}
+            if tokens.size() == 2:
+                var subcommand: String = tokens[1].to_lower()
+                if subcommand == "status":
+                    return {"ok": true, "intent": SimIntents.make("expedition_status")}
+                # Start expedition by ID with 1 worker
+                return {"ok": true, "intent": SimIntents.make("start_expedition", {"expedition_id": subcommand, "workers": 1})}
+            if tokens.size() == 3:
+                var subcommand: String = tokens[1].to_lower()
+                if subcommand == "cancel":
+                    if not tokens[2].is_valid_int():
+                        return {"ok": false, "error": "Expedition ID must be a number."}
+                    return {"ok": true, "intent": SimIntents.make("cancel_expedition", {"id": int(tokens[2])})}
+                # Start expedition by ID with specified workers
+                if not tokens[2].is_valid_int():
+                    return {"ok": false, "error": "Worker count must be a number."}
+                return {"ok": true, "intent": SimIntents.make("start_expedition", {"expedition_id": subcommand, "workers": int(tokens[2])})}
+            return {"ok": false, "error": "Usage: expedition [id [workers]] | expedition status | expedition cancel <id>"}
+        "harvest":
+            if tokens.size() == 1:
+                return {"ok": true, "intent": SimIntents.make("harvest_node")}
+            if tokens.size() == 3:
+                if not tokens[1].is_valid_int() or not tokens[2].is_valid_int():
+                    return {"ok": false, "error": "Harvest coordinates must be integers."}
+                return {"ok": true, "intent": SimIntents.make("harvest_node", {"x": int(tokens[1]), "y": int(tokens[2])})}
+            return {"ok": false, "error": "Usage: harvest [x y]"}
+        "nodes":
+            if tokens.size() > 1:
+                return {"ok": false, "error": "'nodes' takes no arguments."}
+            return {"ok": true, "intent": SimIntents.make("nodes_list")}
         _:
             return {"ok": false, "error": "Unknown command: %s" % verb}
 

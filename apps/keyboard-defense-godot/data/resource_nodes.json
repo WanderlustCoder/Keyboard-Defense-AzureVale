@@ -1,0 +1,300 @@
+{
+  "version": 1,
+  "spawn_rates": {
+    "forest": {
+      "timber_stand": 0.35,
+      "herb_garden": 0.25,
+      "berry_patch": 0.2,
+      "mushroom_grove": 0.1,
+      "fallen_log": 0.1
+    },
+    "mountain": {
+      "ore_vein": 0.35,
+      "quarry_site": 0.25,
+      "gold_deposit": 0.15,
+      "crystal_cave": 0.1,
+      "stone_pile": 0.15
+    },
+    "plains": {
+      "berry_patch": 0.3,
+      "herb_garden": 0.25,
+      "wheat_field": 0.2,
+      "beehive": 0.1,
+      "wild_garden": 0.15
+    },
+    "water": {
+      "fishing_spot": 0.5,
+      "pearl_bed": 0.15,
+      "driftwood": 0.2,
+      "reed_patch": 0.15
+    }
+  },
+  "node_types": {
+    "timber_stand": {
+      "name": "Timber Stand",
+      "description": "A grove of mature trees ready for harvesting.",
+      "icon": "tree",
+      "terrain": "forest",
+      "base_yield": {"wood": 15},
+      "max_harvests": 3,
+      "respawn_days": 5,
+      "challenge": {
+        "type": "word_burst",
+        "word_count": 4,
+        "time_limit": 15,
+        "word_theme": "trees"
+      }
+    },
+    "ore_vein": {
+      "name": "Ore Vein",
+      "description": "A rich vein of ore exposed in the rock face.",
+      "icon": "rock",
+      "terrain": "mountain",
+      "base_yield": {"stone": 12},
+      "max_harvests": 4,
+      "respawn_days": 6,
+      "challenge": {
+        "type": "speed_type",
+        "target_wpm": 40,
+        "word_count": 5,
+        "word_theme": "minerals"
+      }
+    },
+    "berry_patch": {
+      "name": "Berry Patch",
+      "description": "A thicket of ripe berries ready for picking.",
+      "icon": "berries",
+      "terrain": "plains",
+      "base_yield": {"food": 10},
+      "max_harvests": 2,
+      "respawn_days": 3,
+      "challenge": {
+        "type": "accuracy_test",
+        "min_accuracy": 0.9,
+        "word_count": 6,
+        "word_theme": "plants"
+      }
+    },
+    "gold_deposit": {
+      "name": "Gold Deposit",
+      "description": "Glittering gold visible in the rock.",
+      "icon": "gold",
+      "terrain": "mountain",
+      "base_yield": {"gold": 8},
+      "max_harvests": 2,
+      "respawn_days": 10,
+      "challenge": {
+        "type": "word_burst",
+        "word_count": 6,
+        "time_limit": 12,
+        "word_theme": "precious"
+      }
+    },
+    "herb_garden": {
+      "name": "Herb Garden",
+      "description": "A patch of wild medicinal herbs.",
+      "icon": "herbs",
+      "terrain": "forest",
+      "base_yield": {"food": 8},
+      "bonus_effect": {"type": "heal_castle", "amount": 1},
+      "max_harvests": 3,
+      "respawn_days": 4,
+      "challenge": {
+        "type": "accuracy_test",
+        "min_accuracy": 0.95,
+        "word_count": 4,
+        "word_theme": "herbs"
+      }
+    },
+    "quarry_site": {
+      "name": "Quarry Site",
+      "description": "An exposed rock face perfect for quarrying.",
+      "icon": "quarry",
+      "terrain": "mountain",
+      "base_yield": {"stone": 20},
+      "max_harvests": 5,
+      "respawn_days": 7,
+      "challenge": {
+        "type": "speed_type",
+        "target_wpm": 35,
+        "word_count": 6,
+        "word_theme": "construction"
+      }
+    },
+    "fishing_spot": {
+      "name": "Fishing Spot",
+      "description": "A calm pool teeming with fish.",
+      "icon": "fish",
+      "terrain": "water",
+      "base_yield": {"food": 12},
+      "max_harvests": 3,
+      "respawn_days": 3,
+      "challenge": {
+        "type": "word_burst",
+        "word_count": 3,
+        "time_limit": 10,
+        "word_theme": "aquatic"
+      }
+    },
+    "mushroom_grove": {
+      "name": "Mushroom Grove",
+      "description": "A shaded area with edible mushrooms.",
+      "icon": "mushroom",
+      "terrain": "forest",
+      "base_yield": {"food": 6},
+      "max_harvests": 2,
+      "respawn_days": 4,
+      "challenge": {
+        "type": "accuracy_test",
+        "min_accuracy": 0.92,
+        "word_count": 4,
+        "word_theme": "plants"
+      }
+    },
+    "crystal_cave": {
+      "name": "Crystal Cave",
+      "description": "A small cave with valuable crystal formations.",
+      "icon": "crystal",
+      "terrain": "mountain",
+      "base_yield": {"gold": 5, "stone": 5},
+      "max_harvests": 2,
+      "respawn_days": 8,
+      "challenge": {
+        "type": "word_burst",
+        "word_count": 5,
+        "time_limit": 12,
+        "word_theme": "precious"
+      }
+    },
+    "fallen_log": {
+      "name": "Fallen Log",
+      "description": "A large fallen tree ready for processing.",
+      "icon": "log",
+      "terrain": "forest",
+      "base_yield": {"wood": 8},
+      "max_harvests": 1,
+      "respawn_days": 6,
+      "challenge": {
+        "type": "speed_type",
+        "target_wpm": 30,
+        "word_count": 3,
+        "word_theme": "trees"
+      }
+    },
+    "stone_pile": {
+      "name": "Stone Pile",
+      "description": "A pile of loose stones easily gathered.",
+      "icon": "stones",
+      "terrain": "mountain",
+      "base_yield": {"stone": 6},
+      "max_harvests": 2,
+      "respawn_days": 4,
+      "challenge": {
+        "type": "word_burst",
+        "word_count": 3,
+        "time_limit": 8,
+        "word_theme": "minerals"
+      }
+    },
+    "wheat_field": {
+      "name": "Wild Wheat Field",
+      "description": "A field of wild wheat ready for harvest.",
+      "icon": "wheat",
+      "terrain": "plains",
+      "base_yield": {"food": 14},
+      "max_harvests": 2,
+      "respawn_days": 5,
+      "challenge": {
+        "type": "speed_type",
+        "target_wpm": 35,
+        "word_count": 5,
+        "word_theme": "plants"
+      }
+    },
+    "beehive": {
+      "name": "Wild Beehive",
+      "description": "A beehive with honey for the brave.",
+      "icon": "bee",
+      "terrain": "plains",
+      "base_yield": {"food": 8, "gold": 2},
+      "max_harvests": 1,
+      "respawn_days": 7,
+      "challenge": {
+        "type": "word_burst",
+        "word_count": 4,
+        "time_limit": 8,
+        "word_theme": "nature"
+      }
+    },
+    "wild_garden": {
+      "name": "Wild Garden",
+      "description": "An overgrown garden with edible plants.",
+      "icon": "garden",
+      "terrain": "plains",
+      "base_yield": {"food": 10},
+      "max_harvests": 2,
+      "respawn_days": 4,
+      "challenge": {
+        "type": "accuracy_test",
+        "min_accuracy": 0.88,
+        "word_count": 5,
+        "word_theme": "plants"
+      }
+    },
+    "pearl_bed": {
+      "name": "Pearl Bed",
+      "description": "Oysters with a chance of valuable pearls.",
+      "icon": "pearl",
+      "terrain": "water",
+      "base_yield": {"gold": 6},
+      "max_harvests": 2,
+      "respawn_days": 9,
+      "challenge": {
+        "type": "accuracy_test",
+        "min_accuracy": 0.95,
+        "word_count": 4,
+        "word_theme": "aquatic"
+      }
+    },
+    "driftwood": {
+      "name": "Driftwood Pile",
+      "description": "Useful wood washed ashore.",
+      "icon": "driftwood",
+      "terrain": "water",
+      "base_yield": {"wood": 6},
+      "max_harvests": 1,
+      "respawn_days": 4,
+      "challenge": {
+        "type": "word_burst",
+        "word_count": 3,
+        "time_limit": 10,
+        "word_theme": "aquatic"
+      }
+    },
+    "reed_patch": {
+      "name": "Reed Patch",
+      "description": "Tall reeds useful for crafting and building.",
+      "icon": "reeds",
+      "terrain": "water",
+      "base_yield": {"wood": 4, "food": 2},
+      "max_harvests": 2,
+      "respawn_days": 3,
+      "challenge": {
+        "type": "speed_type",
+        "target_wpm": 30,
+        "word_count": 4,
+        "word_theme": "nature"
+      }
+    }
+  },
+  "challenge_word_themes": {
+    "trees": ["oak", "pine", "maple", "birch", "cedar", "willow", "elm", "ash", "spruce", "fir", "beech", "poplar"],
+    "minerals": ["iron", "copper", "silver", "coal", "quartz", "granite", "marble", "slate", "ore", "gem", "crystal", "flint"],
+    "plants": ["fern", "moss", "ivy", "vine", "root", "leaf", "stem", "bud", "petal", "seed", "bark", "berry"],
+    "precious": ["gold", "gem", "jewel", "crystal", "ruby", "sapphire", "diamond", "pearl", "emerald", "topaz", "jade", "amber"],
+    "herbs": ["sage", "mint", "basil", "thyme", "rosemary", "lavender", "chamomile", "ginger", "parsley", "oregano", "dill", "fennel"],
+    "construction": ["brick", "beam", "mortar", "pillar", "arch", "wall", "tile", "foundation", "frame", "plank", "stone", "timber"],
+    "aquatic": ["fish", "crab", "kelp", "shell", "wave", "tide", "reef", "coral", "eel", "clam", "shrimp", "trout"],
+    "nature": ["wind", "rain", "sun", "moon", "star", "cloud", "storm", "dew", "frost", "bloom", "breeze", "dawn"]
+  }
+}
