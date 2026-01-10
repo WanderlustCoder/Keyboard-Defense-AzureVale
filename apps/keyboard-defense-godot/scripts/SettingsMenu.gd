@@ -272,7 +272,7 @@ func _pulse_label(label: Label) -> void:
 			old_tween.kill()
 
 	# Store original color
-	var original_color := ThemeColors.TEXT_NORMAL
+	var original_color := ThemeColors.TEXT
 
 	# Create pulse tween
 	var tween := create_tween()

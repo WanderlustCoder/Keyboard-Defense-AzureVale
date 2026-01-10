@@ -239,6 +239,10 @@ func _init_achievement_system() -> void:
 	# Load difficulty mode from profile
 	difficulty_mode = TypingProfile.get_difficulty_mode(profile)
 
+	# Track session start for lifetime stats
+	SimPlayerStats.start_session(profile)
+	TypingProfile.save_profile(profile)
+
 	# Update daily streak
 	var streak_result: Dictionary = TypingProfile.update_daily_streak(profile)
 	if streak_result.get("changed", false):
@@ -618,7 +622,7 @@ func _generate_wave_enemies() -> void:
 	var is_boss_wave: bool = wave == waves_per_day and StoryManager.is_boss_day(day)
 
 	# Use wave composer for varied enemy composition
-	current_wave_composition = SimWaveComposer.compose_wave(day, wave, waves_per_day, state.rng_seed)
+	current_wave_composition = SimWaveComposer.compose_wave(day, wave, waves_per_day, state.rng_state)
 	var wave_size: int = SimDifficulty.apply_wave_size_modifier(int(current_wave_composition.get("enemy_count", 5)), difficulty_mode)
 	var enemy_list: Array = current_wave_composition.get("enemies", [])
 	var used_words: Dictionary = {}
@@ -636,7 +640,7 @@ func _generate_wave_enemies() -> void:
 		wave_size = int(float(wave_size) * float(endless_scaling.get("count_mult", 1.0)))
 
 		# Check for swarm wave
-		if SimEndlessMode.is_swarm_wave(day, wave, state.rng_seed):
+		if SimEndlessMode.is_swarm_wave(day, wave, state.rng_state):
 			wave_size = int(wave_size * 2)
 			hp_mult *= 0.5
 
@@ -646,12 +650,22 @@ func _generate_wave_enemies() -> void:
 			affix_chances["armored"] = 0.2
 			affix_chances["swift"] = 0.2
 
+	# Apply challenge mode modifiers
+	if is_challenge_mode:
+		var challenge_mods: Dictionary = challenge_state.get("challenge", {}).get("modifiers", {})
+		if challenge_mods.has("enemy_speed"):
+			speed_mult *= float(challenge_mods.get("enemy_speed", 1.0))
+		if challenge_mods.has("enemy_hp"):
+			hp_mult *= float(challenge_mods.get("enemy_hp", 1.0))
+		if challenge_mods.has("enemy_count"):
+			wave_size = int(float(wave_size) * float(challenge_mods.get("enemy_count", 1.0)))
+
 	# Generate enemies from composition
 	for i in range(min(wave_size, enemy_list.size())):
 		var kind: String = str(enemy_list[i]) if i < enemy_list.size() else "raider"
 
 		# Validate enemy type exists, fallback to raider
-		if not SimEnemies.ENEMY_TYPES.has(kind):
+		if not SimEnemies.ENEMY_KINDS.has(kind):
 			kind = "raider"
 
 		var base_hp: int = _get_enemy_hp(kind)
@@ -826,6 +840,17 @@ func _wave_complete() -> void:
 	var wave_time: int = int(Time.get_unix_time_from_system() - wave_start_time)
 	_update_quest_progress("fast_wave", wave_time)
 
+	# Lifetime stats: wave completion
+	SimPlayerStats.increment_stat(profile, "waves_completed", 1)
+	SimPlayerStats.update_record(profile, "highest_combo", max_combo)
+	SimPlayerStats.update_record(profile, "highest_accuracy", int(accuracy * 100))
+	if wave_time > 0:
+		SimPlayerStats.update_record(profile, "fastest_wave_time", wave_time)
+
+	# Challenge progress: wave survival
+	if is_challenge_mode:
+		_update_challenge_progress("survive_waves", 1)
+
 	# Heal between waves
 	castle_hp = min(castle_hp + total_wave_heal, castle_max_hp)
 
@@ -841,6 +866,10 @@ func _wave_complete() -> void:
 		if damage_taken_this_day == 0:
 			_update_quest_progress("no_damage_day", 1)
 		damage_taken_this_day = 0  # Reset for next day
+
+		# Lifetime stats: day progression
+		SimPlayerStats.increment_stat(profile, "days_survived", 1)
+		SimPlayerStats.update_record(profile, "highest_day", day)
 
 		# Check for act completion
 		_check_act_completion(completed_day)
@@ -1017,6 +1046,12 @@ func _on_input_submitted(text: String) -> void:
 			_show_token_shop()
 		elif lower_text.begins_with("tokenbuy "):
 			_try_buy_token_item(lower_text.substr(9).strip_edges())
+		elif lower_text == "stats" or lower_text == "statistics":
+			_show_stats_summary()
+		elif lower_text == "stats full" or lower_text == "stats all":
+			_show_stats_full()
+		elif lower_text == "records" or lower_text == "highscores":
+			_show_records()
 		input_field.clear()
 	elif current_phase == "defense":
 		# Check for special commands first
@@ -1036,6 +1071,17 @@ func _process_combat_typing() -> void:
 		# Mistake - break combo
 		combo = 0
 		total_chars += 1
+
+		# Handle challenge mode combo break
+		if is_challenge_mode:
+			_update_challenge_progress("combo_break", 1)
+			var modifiers: Dictionary = challenge_state.get("challenge", {}).get("modifiers", {})
+			if bool(modifiers.get("typo_ends_run", false)):
+				_fail_daily_challenge("Typo detected! This challenge requires perfect typing.")
+
+		# Lifetime stats: typos and combo breaks
+		SimPlayerStats.increment_stat(profile, "total_typos", 1)
+		SimPlayerStats.increment_stat(profile, "total_combos_broken", 1)
 
 	# Auto-complete on exact match
 	if typed_text == current_word:
@@ -1082,6 +1128,13 @@ func _attack_target_enemy() -> void:
 	var cmd_damage_buff: float = float(command_effects.get("damage_buff", 0))
 	if cmd_damage_buff > 0:
 		damage = int(float(damage) * (1.0 + cmd_damage_buff))
+
+	# Apply challenge mode damage bonus
+	if is_challenge_mode:
+		var challenge_mods: Dictionary = challenge_state.get("challenge", {}).get("modifiers", {})
+		var challenge_damage: float = float(challenge_mods.get("player_damage", 1.0))
+		if challenge_damage != 1.0:
+			damage = max(1, int(float(damage) * challenge_damage))
 
 	# Apply damage charges (BARRAGE)
 	if int(command_effects.get("damage_charges", 0)) > 0:
@@ -1175,6 +1228,12 @@ func _attack_target_enemy() -> void:
 		_update_challenge_progress("words_typed", 1)
 		_update_challenge_progress("words_without_break", 1)
 		_update_challenge_progress("max_combo", combo)
+
+	# Lifetime stats: words and characters
+	SimPlayerStats.increment_stat(profile, "total_words_typed", 1)
+	SimPlayerStats.increment_stat(profile, "total_chars_typed", current_word.length())
+	SimPlayerStats.increment_stat(profile, "perfect_words", 1)
+	SimPlayerStats.increment_stat(profile, "combo_words_typed", 1)
 
 	# Check for tier milestone and announce
 	if SimCombo.is_tier_milestone(prev_combo, combo):
@@ -1285,6 +1344,13 @@ func _attack_target_enemy() -> void:
 		# Endless mode kill tracking
 		if is_endless_mode:
 			endless_run_kills += 1
+
+		# Lifetime stats tracking
+		SimPlayerStats.increment_stat(profile, "total_kills", 1)
+		SimPlayerStats.increment_stat(profile, "total_damage_dealt", damage)
+		SimPlayerStats.increment_stat(profile, "total_gold_earned", gold_reward)
+		if is_boss:
+			SimPlayerStats.increment_stat(profile, "total_boss_kills", 1)
 
 		# Critical hit visual
 		if is_crit and grid_renderer.has_method("spawn_hit_particles"):
@@ -2419,7 +2485,7 @@ func _try_equip_item(item_id: String) -> void:
 		TypingProfile.add_to_inventory(profile, old_item)
 
 	# Equip the new item
-	TypingProfile.equip_item(profile, item_id)
+	TypingProfile.equip_item(profile, item_id, slot)
 	TypingProfile.save_profile(profile)
 
 	var item_display: String = SimItems.format_item_display(item_id)
@@ -2775,6 +2841,14 @@ func _show_help() -> void:
 	lines.append("[color=cyan]GAME MODES[/color]")
 	lines.append("  endless - View endless mode status/scores")
 	lines.append("  startendless - Start an endless mode run")
+	lines.append("  daily - View today's daily challenge")
+	lines.append("  startdaily - Start the daily challenge")
+	lines.append("  tokens - View token shop (challenge rewards)")
+	lines.append("")
+	lines.append("[color=cyan]STATISTICS[/color]")
+	lines.append("  stats - View stats summary")
+	lines.append("  stats full - View detailed statistics")
+	lines.append("  records - View personal records")
 	lines.append("")
 	lines.append("[color=gray]During waves: Type words OR spell commands![/color]")
 	_update_log(lines)
@@ -3056,6 +3130,19 @@ func _try_buy_token_item(item_id: String) -> void:
 		_update_objective("[color=lime]Purchased %s![/color]" % name)
 	else:
 		_update_objective("[color=red]%s[/color]" % str(result.get("error", "Purchase failed")))
+
+func _show_stats_summary() -> void:
+	_update_log([SimPlayerStats.format_summary(profile)])
+
+func _show_stats_full() -> void:
+	_update_log([SimPlayerStats.format_full_report(profile)])
+
+func _show_records() -> void:
+	var lines: Array[String] = []
+	lines.append("[color=yellow]PERSONAL RECORDS[/color]")
+	lines.append("")
+	lines.append(SimPlayerStats.format_records(profile))
+	_update_log(lines)
 
 func _show_special_commands() -> void:
 	var player_level: int = int(TypingProfile.get_profile_value(profile, "player_level", 1))

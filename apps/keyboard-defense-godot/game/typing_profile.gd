@@ -1060,3 +1060,76 @@ static func unequip_item(profile: Dictionary, slot: String) -> Dictionary:
     profile["equipment"] = equipment
 
     return {"ok": true, "unequipped": old_item}
+
+
+## Generic Profile Value Access Functions
+
+## Get a value from the profile by key path (supports nested paths like "lifetime.best_combo")
+static func get_profile_value(profile: Dictionary, key: String, default_value: Variant = null) -> Variant:
+    # Handle nested paths
+    if key.contains("."):
+        var parts: PackedStringArray = key.split(".")
+        var current: Variant = profile
+        for part in parts:
+            if typeof(current) != TYPE_DICTIONARY:
+                return default_value
+            current = current.get(part, null)
+            if current == null:
+                return default_value
+        return current
+
+    # Top-level keys
+    if profile.has(key):
+        return profile.get(key)
+
+    # Check ui_prefs for common settings
+    if profile.has("ui_prefs") and typeof(profile.get("ui_prefs")) == TYPE_DICTIONARY:
+        var prefs: Dictionary = profile.get("ui_prefs")
+        if prefs.has(key):
+            return prefs.get(key)
+
+    # Check lifetime stats
+    if profile.has("lifetime") and typeof(profile.get("lifetime")) == TYPE_DICTIONARY:
+        var lifetime: Dictionary = profile.get("lifetime")
+        if lifetime.has(key):
+            return lifetime.get(key)
+
+    # Check streak
+    if profile.has("streak") and typeof(profile.get("streak")) == TYPE_DICTIONARY:
+        var streak: Dictionary = profile.get("streak")
+        if streak.has(key):
+            return streak.get(key)
+
+    return default_value
+
+
+## Set a value in the profile by key path (supports nested paths)
+static func set_profile_value(profile: Dictionary, key: String, value: Variant) -> Dictionary:
+    # Handle nested paths
+    if key.contains("."):
+        var parts: PackedStringArray = key.split(".")
+        var current: Dictionary = profile
+        for i in range(parts.size() - 1):
+            var part: String = parts[i]
+            if not current.has(part) or typeof(current.get(part)) != TYPE_DICTIONARY:
+                current[part] = {}
+            current = current.get(part)
+        current[parts[parts.size() - 1]] = value
+    else:
+        # Check if this is a ui_pref key
+        var ui_pref_keys: Array[String] = [
+            "lessons_sort", "lessons_sparkline", "onboarding", "economy_note_shown",
+            "ui_scale_percent", "compact_panels", "reduced_motion", "speed_multiplier",
+            "high_contrast", "nav_hints", "practice_mode"
+        ]
+        if key in ui_pref_keys:
+            if not profile.has("ui_prefs") or typeof(profile.get("ui_prefs")) != TYPE_DICTIONARY:
+                profile["ui_prefs"] = {}
+            profile["ui_prefs"][key] = value
+        else:
+            profile[key] = value
+
+    var result: Dictionary = save_profile(profile)
+    if result.get("ok", false):
+        return {"ok": true, "profile": profile}
+    return {"ok": false, "profile": profile, "error": result.get("error", "unknown error")}

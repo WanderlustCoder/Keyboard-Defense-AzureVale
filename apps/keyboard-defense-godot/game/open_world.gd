@@ -161,7 +161,7 @@ func _on_command_submitted(text: String) -> void:
 			return
 
 	# Parse and apply command
-	var parse_result: Dictionary = CommandParser.parse(text, state)
+	var parse_result: Dictionary = CommandParser.parse(text)
 	if not parse_result.get("ok", false):
 		_append_log("[color=gray]Unknown: %s[/color]" % text)
 		return

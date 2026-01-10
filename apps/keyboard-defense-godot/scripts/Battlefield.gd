@@ -2045,7 +2045,7 @@ func _get_trend_arrow(history: Array[float], current: float) -> String:
 		return ""
 
 	# Compare current to average of first half of history
-	var first_half_count := max(1, history.size() / 2)
+	var first_half_count: int = max(1, history.size() / 2)
 	var first_half_sum := 0.0
 	for i in range(first_half_count):
 		first_half_sum += history[i]

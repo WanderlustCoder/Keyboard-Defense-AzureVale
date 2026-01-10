@@ -46,7 +46,7 @@ static func get_tower_damage_multiplier(
 		SimTowerTypes.TOWER_ARCANE:
 			multiplier *= _get_arcane_bonus(state)
 
-		SimTowerTypes.TOWER_LETTER_SHRINE:
+		SimTowerTypes.TOWER_SHRINE:
 			multiplier *= _get_letter_shrine_bonus(state)
 
 		SimTowerTypes.TOWER_ARROW, SimTowerTypes.TOWER_MULTI:
