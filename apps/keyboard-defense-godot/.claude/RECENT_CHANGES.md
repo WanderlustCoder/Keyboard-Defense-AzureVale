@@ -4,6 +4,30 @@ This file tracks recent changes for Claude Code context.
 
 ---
 
+## 2026-01-10: Development Tools Batch 19
+
+Added resource loading and code quality tools:
+
+### Preload Patterns Checker (`scripts/check_preload_patterns.py`)
+- Analyzes preload vs load usage patterns
+- Finds class-level vs function preloads
+- Reports most loaded resources
+- Detects duplicate resource loads
+
+### Function Parameters Checker (`scripts/check_function_params.py`)
+- Finds functions with too many parameters
+- Detects unused parameters
+- Reports parameter type hint coverage
+- Shows parameter count distribution
+
+### Redundant Code Checker (`scripts/check_redundant_code.py`)
+- Finds dead code after return/break/continue
+- Detects self-assignments (x = x)
+- Reports redundant conditions (if true)
+- Finds redundant type conversions
+
+---
+
 ## 2026-01-10: Development Tools Batch 18
 
 Added code quality and pattern detection tools:

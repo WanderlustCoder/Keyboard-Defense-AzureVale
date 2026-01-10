@@ -1249,6 +1249,57 @@ Reports:
 - Dictionary/array access patterns
 - Resource loading validation
 
+### Preload Patterns Checker
+
+Analyze preload vs load usage:
+
+```bash
+./scripts/check_preload_patterns.sh              # Full report
+./scripts/check_preload_patterns.sh --file game/main.gd  # Single file
+./scripts/check_preload_patterns.sh --strict     # Include info issues
+./scripts/check_preload_patterns.sh --json       # JSON output
+```
+
+Reports:
+- Class-level vs function preloads
+- Runtime load patterns
+- Most loaded resources
+- Duplicate resource loads
+
+### Function Parameters Checker
+
+Analyze function parameter patterns:
+
+```bash
+./scripts/check_function_params.sh              # Full report
+./scripts/check_function_params.sh --threshold 5  # Custom max params
+./scripts/check_function_params.sh --file game/main.gd  # Single file
+./scripts/check_function_params.sh --json       # JSON output
+```
+
+Reports:
+- Functions with too many parameters
+- Unused parameters
+- Parameter type hint coverage
+- Parameter count distribution
+
+### Redundant Code Checker
+
+Find potentially redundant code:
+
+```bash
+./scripts/check_redundant_code.sh              # Full report
+./scripts/check_redundant_code.sh --file game/main.gd  # Single file
+./scripts/check_redundant_code.sh --strict     # Include info patterns
+./scripts/check_redundant_code.sh --json       # JSON output
+```
+
+Reports:
+- Dead code after return/break
+- Self-assignments (x = x)
+- Redundant conditions (if true)
+- Redundant type conversions
+
 ## File Locations Quick Reference
 
 | Need to... | Location |
