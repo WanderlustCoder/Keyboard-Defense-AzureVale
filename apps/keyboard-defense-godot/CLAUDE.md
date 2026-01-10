@@ -910,6 +910,56 @@ Aggregates:
 - Tech debt and magic numbers
 - Overall grade (A-F)
 
+### Autoload Analyzer
+
+Analyze autoload singletons:
+
+```bash
+./scripts/analyze_autoloads.sh              # Full report
+./scripts/analyze_autoloads.sh --deps       # Show dependency graph
+./scripts/analyze_autoloads.sh --usage      # Show usage stats
+./scripts/analyze_autoloads.sh --json       # JSON output
+```
+
+Reports:
+- Autoload list and paths
+- Dependency order
+- Circular dependencies
+- Usage statistics
+
+### Input Action Validator
+
+Validate input actions:
+
+```bash
+./scripts/validate_inputs.sh              # Full report
+./scripts/validate_inputs.sh --undefined  # Show undefined references
+./scripts/validate_inputs.sh --unused     # Show unused actions
+./scripts/validate_inputs.sh --json       # JSON output
+```
+
+Reports:
+- Defined vs used actions
+- Undefined action references
+- Unused actions
+
+### Run All Checks
+
+Master script for all tools:
+
+```bash
+./scripts/run_all_checks.sh              # Full check suite
+./scripts/run_all_checks.sh --quick      # Quick checks only
+./scripts/run_all_checks.sh --ci         # CI mode (exit 1 on fail)
+./scripts/run_all_checks.sh -o report.md # Output to file
+./scripts/run_all_checks.sh --json       # JSON output
+```
+
+Runs:
+- All validators and analyzers
+- Pass/fail thresholds
+- Summary report
+
 ## File Locations Quick Reference
 
 | Need to... | Location |
