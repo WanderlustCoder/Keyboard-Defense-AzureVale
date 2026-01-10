@@ -6,7 +6,7 @@ const GameState = preload("res://sim/types.gd")
 const SimTowerTypes = preload("res://sim/tower_types.gd")
 const SimTargeting = preload("res://sim/targeting.gd")
 const SimDamageTypes = preload("res://sim/damage_types.gd")
-const SimStatusEffects = preload("res://sim/status_effects.gd")
+
 const SimEnemies = preload("res://sim/enemies.gd")
 const SimMap = preload("res://sim/map.gd")
 const SimBuildings = preload("res://sim/buildings.gd")
@@ -53,7 +53,6 @@ static func tower_attack_step(
 	# Check trap triggers
 	_check_trap_triggers(state, events)
 
-
 # =============================================================================
 # TOWER ATTACK DISPATCHER
 # =============================================================================
@@ -97,7 +96,6 @@ static func _process_tower_attack(
 		SimTowerTypes.TargetType.NONE:
 			# Non-attacking towers (support, summoner, trap)
 			_process_non_attacking_tower(state, tower_index, tower_pos, level, tower_type, stats, events)
-
 
 # =============================================================================
 # ATTACK IMPLEMENTATIONS
@@ -156,7 +154,6 @@ static func _attack_single(
 		# Apply damage
 		_apply_damage_to_enemy(state, target_index, final_damage, events, SimTowerTypes.get_tower_name(tower_type))
 
-
 ## Multi-target attack (Multi-Shot)
 static func _attack_multi(
 	state: GameState,
@@ -198,7 +195,6 @@ static func _attack_multi(
 		if support_buff > 0:
 			final_damage = int(float(final_damage) * (1.0 + support_buff))
 		_apply_damage_to_enemy(state, enemy_index, final_damage, events, tower_name)
-
 
 ## AoE attack (Cannon)
 static func _attack_aoe(
@@ -247,7 +243,6 @@ static func _attack_aoe(
 		if support_buff > 0:
 			final_damage = int(float(final_damage) * (1.0 + support_buff))
 		_apply_damage_to_enemy(state, enemy_index, final_damage, events, tower_name)
-
 
 ## Chain lightning attack (Tesla)
 static func _attack_chain(
@@ -302,7 +297,6 @@ static func _attack_chain(
 		if enemy_index >= state.enemies.size():
 			continue
 		_apply_damage_to_enemy(state, enemy_index, int(item["damage"]), events, tower_name)
-
 
 ## Adaptive attack (Legendary towers)
 static func _attack_adaptive(
@@ -370,7 +364,6 @@ static func _attack_adaptive(
 				state.hp = min(state.hp + 1, 10)  # Heal 1 HP on kill
 				events.append("Castle healed! (+1 HP)")
 
-
 # =============================================================================
 # NON-ATTACKING TOWERS
 # =============================================================================
@@ -392,7 +385,6 @@ static func _process_non_attacking_tower(
 		SimTowerTypes.TOWER_SUPPORT:
 			# Support tower aura is passive, handled in _get_support_buff
 			pass
-
 
 ## Process summoner tower
 static func _process_summoner(
@@ -436,7 +428,6 @@ static func _process_summoner(
 	state.tower_cooldowns[tower_index] = summon_cooldown
 
 	events.append("Summoner creates %s!" % summon_type.replace("_", " ").capitalize())
-
 
 ## Process trap tower
 static func _process_trap_tower(
@@ -483,7 +474,6 @@ static func _process_trap_tower(
 
 	events.append("Trap placed at (%d,%d)." % [trap_pos.x, trap_pos.y])
 
-
 # =============================================================================
 # ATTACK EFFECTS
 # =============================================================================
@@ -527,7 +517,6 @@ static func _apply_attack_effects(
 					str(enemy.get("kind", "enemy")), enemy_id
 				])
 
-
 # =============================================================================
 # HELPER FUNCTIONS
 # =============================================================================
@@ -557,7 +546,6 @@ static func _apply_damage_to_enemy(
 		return true
 
 	return false
-
 
 static func _handle_enemy_death(
 	state: GameState,
@@ -589,10 +577,8 @@ static func _handle_enemy_death(
 	state.enemies.remove_at(enemy_index)
 	events.append("Enemy %s#%d destroyed. +%d gold" % [kind, enemy_id, gold_reward])
 
-
 static func _is_tower_type(building_type: String) -> bool:
 	return building_type.begins_with("tower")
-
 
 static func _get_support_buff(state: GameState, tower_pos: Vector2i) -> float:
 	var buff: float = 0.0
@@ -614,7 +600,6 @@ static func _get_support_buff(state: GameState, tower_pos: Vector2i) -> float:
 
 	return buff
 
-
 static func _has_chain_synergy(state: GameState, tower_pos: Vector2i) -> bool:
 	# Check for Chain Reaction synergy (Tesla + Magic Chain)
 	for synergy in state.active_synergies:
@@ -622,13 +607,11 @@ static func _has_chain_synergy(state: GameState, tower_pos: Vector2i) -> bool:
 			return true
 	return false
 
-
 static func _summon_exists(state: GameState, summon_id: int) -> bool:
 	for summon in state.summoned_units:
 		if int(summon.get("id", 0)) == summon_id:
 			return true
 	return false
-
 
 static func _create_summon(
 	state: GameState,
@@ -660,7 +643,6 @@ static func _create_summon(
 
 	state.summoned_next_id += 1
 	return summon
-
 
 static func _find_trap_placement(
 	state: GameState,
@@ -698,7 +680,6 @@ static func _find_trap_placement(
 				best_pos = pos
 
 	return best_pos
-
 
 static func _check_trap_triggers(
 	state: GameState,
@@ -743,11 +724,9 @@ static func _check_trap_triggers(
 		if i < state.active_traps.size():
 			state.active_traps.remove_at(i)
 
-
 static func _roll_percent(state: GameState) -> int:
 	state.rng_state = (state.rng_state * 1103515245 + 12345) % 2147483648
 	return (state.rng_state >> 16) % 101
-
 
 ## Legacy tower attack for backward compatibility
 static func _attack_legacy_tower(
@@ -775,7 +754,6 @@ static func _attack_legacy_tower(
 			return
 
 		_apply_damage_to_enemy(state, target_index, damage, events, "Tower")
-
 
 ## Spawn split enemies when a splitting enemy dies
 static func _spawn_split_enemies(

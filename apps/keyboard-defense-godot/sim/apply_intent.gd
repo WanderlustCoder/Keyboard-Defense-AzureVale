@@ -15,10 +15,10 @@ const SimWords = preload("res://sim/words.gd")
 const SimBalance = preload("res://sim/balance.gd")
 const SimPoi = preload("res://sim/poi.gd")
 const SimEvents = preload("res://sim/events.gd")
-const SimEventEffects = preload("res://sim/event_effects.gd")
+
 const SimUpgrades = preload("res://sim/upgrades.gd")
 const WorldTick = preload("res://sim/world_tick.gd")
-const SimStatusEffects = preload("res://sim/status_effects.gd")
+
 const SimLoot = preload("res://sim/loot.gd")
 const SimExpeditions = preload("res://sim/expeditions.gd")
 const SimResourceNodes = preload("res://sim/resource_nodes.gd")

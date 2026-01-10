@@ -3,8 +3,7 @@ extends PanelContainer
 ## Panel for displaying events and handling choice input.
 
 const ThemeColors = preload("res://ui/theme_colors.gd")
-const SimEvents = preload("res://sim/events.gd")
-const SimPoi = preload("res://sim/poi.gd")
+
 const ButtonFeedbackClass = preload("res://ui/components/button_feedback.gd")
 
 signal choice_selected(choice_id: String, input_text: String)

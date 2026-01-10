@@ -3,12 +3,10 @@ extends Node2D
 const GameState = preload("res://sim/types.gd")
 const DefaultState = preload("res://sim/default_state.gd")
 const SimMap = preload("res://sim/map.gd")
-const SimIntents = preload("res://sim/intents.gd")
+
 const CommandParser = preload("res://sim/parse_command.gd")
 const IntentApplier = preload("res://sim/apply_intent.gd")
 const WorldTick = preload("res://sim/world_tick.gd")
-const SimEnemies = preload("res://sim/enemies.gd")
-const SimTick = preload("res://sim/tick.gd")
 
 @onready var grid_renderer: Node2D = $GridRenderer
 @onready var command_bar: LineEdit = $CanvasLayer/HUD/CommandBar

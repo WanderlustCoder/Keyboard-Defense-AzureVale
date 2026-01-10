@@ -29,7 +29,7 @@ const OnboardingFlow = preload("res://game/onboarding_flow.gd")
 const SimEvents = preload("res://sim/events.gd")
 const AchievementChecker = preload("res://game/achievement_checker.gd")
 const ACHIEVEMENT_POPUP_SCENE := preload("res://ui/components/achievement_popup.tscn")
-const SimPoi = preload("res://sim/poi.gd")
+
 const SimEventEffects = preload("res://sim/event_effects.gd")
 const WorldTick = preload("res://sim/world_tick.gd")
 const ActionTooltipClass = preload("res://ui/components/action_tooltip.gd")
@@ -3574,4 +3574,3 @@ func _check_wave_achievements(report: Dictionary) -> void:
 	if not mastered.is_empty():
 		result = achievement_checker.check_lesson_mastery(profile, mastered)
 		profile = result.get("profile", profile)
-

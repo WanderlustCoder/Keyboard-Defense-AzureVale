@@ -7,7 +7,7 @@ const GameState = preload("res://sim/types.gd")
 const SimMap = preload("res://sim/map.gd")
 const SimBuildings = preload("res://sim/buildings.gd")
 const SimSave = preload("res://sim/save.gd")
-const SimRng = preload("res://sim/rng.gd")
+
 const SimEnemies = preload("res://sim/enemies.gd")
 const SimLessons = preload("res://sim/lessons.gd")
 const SimWords = preload("res://sim/words.gd")
@@ -2946,5 +2946,3 @@ func _assert_approx(actual: float, expected: float, epsilon: float, name: String
     if abs(actual - expected) > epsilon:
         total_failed += 1
         messages.append("FAIL: %s (expected %s, got %s)" % [name, str(expected), str(actual)])
-
-

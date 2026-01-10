@@ -26,7 +26,7 @@ const ACHIEVEMENT_PANEL_SCENE := preload("res://ui/components/achievement_panel.
 const LorePanel = preload("res://ui/components/lore_panel.gd")
 const SimDifficulty = preload("res://sim/difficulty.gd")
 const SimCombo = preload("res://sim/combo.gd")
-const SimStatusEffects = preload("res://sim/status_effects.gd")
+
 const SimSkills = preload("res://sim/skills.gd")
 const SimItems = preload("res://sim/items.gd")
 const SimSpecialCommands = preload("res://sim/special_commands.gd")
@@ -67,14 +67,13 @@ const BuffsPanel = preload("res://ui/components/buffs_panel.gd")
 const SummonedUnitsPanel = preload("res://ui/components/summoned_units_panel.gd")
 const LootPanel = preload("res://ui/components/loot_panel.gd")
 const ResourceNodesPanel = preload("res://ui/components/resource_nodes_panel.gd")
-const SimSummonedUnits = preload("res://sim/summoned_units.gd")
-const SimLoot = preload("res://sim/loot.gd")
+
 const SimResourceNodes = preload("res://sim/resource_nodes.gd")
 const AffixesPanel = preload("res://ui/components/affixes_panel.gd")
 const DamageTypesPanel = preload("res://ui/components/damage_types_panel.gd")
 const PoiPanel = preload("res://ui/components/poi_panel.gd")
 const TowerEncyclopediaPanel = preload("res://ui/components/tower_encyclopedia_panel.gd")
-const SimAffixes = preload("res://sim/affixes.gd")
+
 const SimPoi = preload("res://sim/poi.gd")
 const StatusEffectsPanel = preload("res://ui/components/status_effects_panel.gd")
 const ComboSystemPanel = preload("res://ui/components/combo_system_panel.gd")
@@ -88,6 +87,14 @@ const LoginRewardsPanel = preload("res://ui/components/login_rewards_panel.gd")
 const TypingTowerBonusesPanel = preload("res://ui/components/typing_tower_bonuses_panel.gd")
 const ResearchTreePanel = preload("res://ui/components/research_tree_panel.gd")
 const TradePanel = preload("res://ui/components/trade_panel.gd")
+const TargetingModesPanel = preload("res://ui/components/targeting_modes_panel.gd")
+const WorkersPanel = preload("res://ui/components/workers_panel.gd")
+const EventEffectsPanel = preload("res://ui/components/event_effects_panel.gd")
+const UpgradesPanel = preload("res://ui/components/upgrades_panel.gd")
+const BalanceReferencePanel = preload("res://ui/components/balance_reference_panel.gd")
+const WaveCompositionPanel = preload("res://ui/components/wave_composition_panel.gd")
+const SynergyReferencePanel = preload("res://ui/components/synergy_reference_panel.gd")
+const TypingMetricsPanel = preload("res://ui/components/typing_metrics_panel.gd")
 
 # UI Node references
 @onready var grid_renderer: Node2D = $GridRenderer
@@ -307,6 +314,14 @@ var login_rewards_panel: LoginRewardsPanel = null
 var typing_tower_bonuses_panel: TypingTowerBonusesPanel = null
 var research_tree_panel: ResearchTreePanel = null
 var trade_panel: TradePanel = null
+var targeting_modes_panel: TargetingModesPanel = null
+var workers_panel: WorkersPanel = null
+var event_effects_panel: EventEffectsPanel = null
+var upgrades_panel: UpgradesPanel = null
+var balance_reference_panel: BalanceReferencePanel = null
+var wave_composition_panel: WaveCompositionPanel = null
+var synergy_reference_panel: SynergyReferencePanel = null
+var typing_metrics_panel: TypingMetricsPanel = null
 var difficulty_mode: String = "adventure"
 
 # Run-level tracking
@@ -638,6 +653,46 @@ func _init_achievement_system() -> void:
 	add_child(trade_panel)
 	trade_panel.closed.connect(_on_trade_panel_closed)
 
+	# Create targeting modes panel
+	targeting_modes_panel = TargetingModesPanel.new()
+	add_child(targeting_modes_panel)
+	targeting_modes_panel.closed.connect(_on_targeting_modes_panel_closed)
+
+	# Create workers panel
+	workers_panel = WorkersPanel.new()
+	add_child(workers_panel)
+	workers_panel.closed.connect(_on_workers_panel_closed)
+
+	# Create event effects panel
+	event_effects_panel = EventEffectsPanel.new()
+	add_child(event_effects_panel)
+	event_effects_panel.closed.connect(_on_event_effects_panel_closed)
+
+	# Create upgrades panel
+	upgrades_panel = UpgradesPanel.new()
+	add_child(upgrades_panel)
+	upgrades_panel.closed.connect(_on_upgrades_panel_closed)
+
+	# Create balance reference panel
+	balance_reference_panel = BalanceReferencePanel.new()
+	add_child(balance_reference_panel)
+	balance_reference_panel.closed.connect(_on_balance_reference_panel_closed)
+
+	# Create wave composition panel
+	wave_composition_panel = WaveCompositionPanel.new()
+	add_child(wave_composition_panel)
+	wave_composition_panel.closed.connect(_on_wave_composition_panel_closed)
+
+	# Create synergy reference panel
+	synergy_reference_panel = SynergyReferencePanel.new()
+	add_child(synergy_reference_panel)
+	synergy_reference_panel.closed.connect(_on_synergy_reference_panel_closed)
+
+	# Create typing metrics panel
+	typing_metrics_panel = TypingMetricsPanel.new()
+	add_child(typing_metrics_panel)
+	typing_metrics_panel.closed.connect(_on_typing_metrics_panel_closed)
+
 	# Initialize run tracking
 	_init_run_tracking()
 
@@ -651,7 +706,6 @@ func _show_streak_message(streak: int) -> void:
 		var lines: Array[String] = [message]
 		dialogue_box.show_dialogue("Elder Lyra", lines)
 
-
 func _add_event(message: String) -> void:
 	# Display an event message using the notification manager
 	if notification_manager != null:
@@ -663,11 +717,9 @@ func _add_event(message: String) -> void:
 		plain_text = regex.sub(plain_text, "", true)
 		notification_manager.notify_info(plain_text)
 
-
 func _update_hud() -> void:
 	# Wrapper to refresh the HUD after gold/resource changes
 	_update_ui()
-
 
 func _on_achievement_unlocked(achievement_id: String, achievement_data: Dictionary) -> void:
 	if achievement_popup != null and achievement_popup.has_method("show_achievement"):
@@ -698,11 +750,9 @@ func _toggle_lore() -> void:
 		else:
 			lore_panel.show_lore()
 
-
 func _on_bestiary_panel_closed() -> void:
 	if input_field:
 		input_field.grab_focus()
-
 
 func _toggle_bestiary() -> void:
 	if bestiary_panel:
@@ -711,11 +761,9 @@ func _toggle_bestiary() -> void:
 		else:
 			bestiary_panel.show_bestiary(profile)
 
-
 func _on_stats_dashboard_closed() -> void:
 	if input_field:
 		input_field.grab_focus()
-
 
 func _toggle_stats() -> void:
 	if stats_dashboard:
@@ -724,11 +772,9 @@ func _toggle_stats() -> void:
 		else:
 			stats_dashboard.show_stats(profile)
 
-
 func _on_equipment_panel_closed() -> void:
 	if input_field:
 		input_field.grab_focus()
-
 
 func _on_item_equipped(item_id: String, slot: String) -> void:
 	var item: Dictionary = SimItems.get_item(item_id)
@@ -736,18 +782,15 @@ func _on_item_equipped(item_id: String, slot: String) -> void:
 	_add_event("Equipped [color=lime]%s[/color] to %s slot." % [name, slot])
 	_update_equipment_stats()
 
-
 func _on_item_unequipped(slot: String) -> void:
 	_add_event("Unequipped item from %s slot." % slot)
 	_update_equipment_stats()
-
 
 func _update_equipment_stats() -> void:
 	# Reload profile to ensure we have latest equipment
 	var load_result: Dictionary = TypingProfile.load_profile()
 	if load_result.get("ok", false):
 		profile = load_result.get("profile", profile)
-
 
 func _toggle_equipment() -> void:
 	if equipment_panel:
@@ -756,16 +799,13 @@ func _toggle_equipment() -> void:
 		else:
 			equipment_panel.show_equipment(profile)
 
-
 func _on_skills_panel_closed() -> void:
 	if input_field:
 		input_field.grab_focus()
 
-
 func _on_skill_learned(tree_id: String, skill_id: String) -> void:
 	var skill_name: String = SimSkills.get_skill_name(tree_id, skill_id)
 	_add_event("Learned [color=lime]%s[/color]!" % skill_name)
-
 
 func _toggle_skills() -> void:
 	if skills_panel:
@@ -774,11 +814,9 @@ func _toggle_skills() -> void:
 		else:
 			skills_panel.show_skills(profile)
 
-
 func _on_shop_panel_closed() -> void:
 	if input_field:
 		input_field.grab_focus()
-
 
 func _on_shop_item_purchased(item_id: String) -> void:
 	var item: Dictionary = SimItems.CONSUMABLES.get(item_id, {})
@@ -803,7 +841,6 @@ func _on_shop_item_purchased(item_id: String) -> void:
 	_add_event("Purchased [color=lime]%s[/color] for %d gold!" % [name, price])
 	_update_hud()
 
-
 func _toggle_shop() -> void:
 	if shop_panel:
 		if shop_panel.visible:
@@ -811,41 +848,33 @@ func _toggle_shop() -> void:
 		else:
 			shop_panel.show_shop(gold)
 
-
 func _on_quests_panel_closed() -> void:
 	if input_field:
 		input_field.grab_focus()
-
 
 func _on_help_panel_closed() -> void:
 	if input_field:
 		input_field.grab_focus()
 
-
 func _on_effects_panel_closed() -> void:
 	if input_field:
 		input_field.grab_focus()
-
 
 func _on_auto_towers_panel_closed() -> void:
 	if input_field:
 		input_field.grab_focus()
 
-
 func _on_spells_panel_closed() -> void:
 	if input_field:
 		input_field.grab_focus()
-
 
 func _on_wave_info_panel_closed() -> void:
 	if input_field:
 		input_field.grab_focus()
 
-
 func _on_difficulty_panel_closed() -> void:
 	if input_field:
 		input_field.grab_focus()
-
 
 func _on_difficulty_changed_from_panel(mode_id: String) -> void:
 	difficulty_mode = mode_id
@@ -854,25 +883,20 @@ func _on_difficulty_changed_from_panel(mode_id: String) -> void:
 	var name: String = SimDifficulty.get_mode_name(mode_id)
 	_update_objective("[color=lime]Difficulty set to: %s[/color]" % name)
 
-
 func _on_endless_mode_panel_closed() -> void:
 	if input_field:
 		input_field.grab_focus()
 
-
 func _on_start_endless_from_panel() -> void:
 	_start_endless_mode()
-
 
 func _on_materials_panel_closed() -> void:
 	if input_field:
 		input_field.grab_focus()
 
-
 func _on_recipes_panel_closed() -> void:
 	if input_field:
 		input_field.grab_focus()
-
 
 func _on_craft_from_panel(recipe_id: String) -> void:
 	_try_craft(recipe_id)
@@ -880,20 +904,16 @@ func _on_craft_from_panel(recipe_id: String) -> void:
 	if recipes_panel and recipes_panel.visible:
 		recipes_panel.update_gold(gold)
 
-
 func _on_daily_challenge_panel_closed() -> void:
 	if input_field:
 		input_field.grab_focus()
 
-
 func _on_start_daily_from_panel() -> void:
 	_start_daily_challenge()
-
 
 func _on_token_shop_panel_closed() -> void:
 	if input_field:
 		input_field.grab_focus()
-
 
 func _on_token_item_purchased(item_id: String) -> void:
 	_try_buy_token_item(item_id)
@@ -902,16 +922,13 @@ func _on_token_item_purchased(item_id: String) -> void:
 		var balance: int = SimDailyChallenges.get_token_balance(profile)
 		token_shop_panel.update_balance(balance)
 
-
 func _on_stats_panel_closed() -> void:
 	if input_field:
 		input_field.grab_focus()
 
-
 func _on_expeditions_panel_closed() -> void:
 	if input_field:
 		input_field.grab_focus()
-
 
 func _on_expedition_started(expedition_id: String, worker_count: int) -> void:
 	var result: Dictionary = SimExpeditions.start_expedition(state, expedition_id, worker_count)
@@ -924,7 +941,6 @@ func _on_expedition_started(expedition_id: String, worker_count: int) -> void:
 	else:
 		_update_objective("[color=red]%s[/color]" % str(result.get("error", "Failed to start expedition")))
 
-
 func _on_expedition_cancelled(expedition_id: int) -> void:
 	var result: Dictionary = SimExpeditions.cancel_expedition(state, expedition_id)
 	if bool(result.get("ok", false)):
@@ -934,26 +950,21 @@ func _on_expedition_cancelled(expedition_id: int) -> void:
 	else:
 		_update_objective("[color=red]%s[/color]" % str(result.get("error", "Failed to cancel expedition")))
 
-
 func _on_synergies_panel_closed() -> void:
 	if input_field:
 		input_field.grab_focus()
-
 
 func _on_buffs_panel_closed() -> void:
 	if input_field:
 		input_field.grab_focus()
 
-
 func _on_summoned_units_panel_closed() -> void:
 	if input_field:
 		input_field.grab_focus()
 
-
 func _on_loot_panel_closed() -> void:
 	if input_field:
 		input_field.grab_focus()
-
 
 func _on_loot_collected() -> void:
 	_update_hud()
@@ -961,11 +972,9 @@ func _on_loot_collected() -> void:
 	if loot_panel and loot_panel.visible:
 		loot_panel.refresh()
 
-
 func _on_resource_nodes_panel_closed() -> void:
 	if input_field:
 		input_field.grab_focus()
-
 
 func _on_harvest_requested(pos: Vector2i) -> void:
 	# Start the harvest challenge at this position
@@ -999,21 +1008,17 @@ func _on_harvest_requested(pos: Vector2i) -> void:
 	else:
 		_add_event("[color=red]%s[/color]" % str(harvest_result.get("error", "Harvest failed")))
 
-
 func _on_affixes_panel_closed() -> void:
 	if input_field:
 		input_field.grab_focus()
-
 
 func _on_damage_types_panel_closed() -> void:
 	if input_field:
 		input_field.grab_focus()
 
-
 func _on_poi_panel_closed() -> void:
 	if input_field:
 		input_field.grab_focus()
-
 
 func _on_poi_selected(poi_id: String) -> void:
 	# Handle POI interaction
@@ -1042,31 +1047,25 @@ func _on_poi_selected(poi_id: String) -> void:
 	_add_event("[color=yellow]+%d gold[/color] from %s" % [reward_gold, poi_name])
 	_update_hud()
 
-
 func _on_tower_encyclopedia_panel_closed() -> void:
 	if input_field:
 		input_field.grab_focus()
-
 
 func _on_status_effects_panel_closed() -> void:
 	if input_field:
 		input_field.grab_focus()
 
-
 func _on_combo_system_panel_closed() -> void:
 	if input_field:
 		input_field.grab_focus()
-
 
 func _on_milestones_panel_closed() -> void:
 	if input_field:
 		input_field.grab_focus()
 
-
 func _on_practice_goals_panel_closed() -> void:
 	if input_field:
 		input_field.grab_focus()
-
 
 func _on_practice_goal_selected(goal_id: String) -> void:
 	# Update the profile with the new goal
@@ -1075,31 +1074,25 @@ func _on_practice_goal_selected(goal_id: String) -> void:
 		TypingProfile.save_profile(profile)
 		_add_event("Practice goal set to: %s" % PracticeGoals.goal_label(goal_id))
 
-
 func _on_wave_themes_panel_closed() -> void:
 	if input_field:
 		input_field.grab_focus()
-
 
 func _on_special_commands_panel_closed() -> void:
 	if input_field:
 		input_field.grab_focus()
 
-
 func _on_lifetime_stats_panel_closed() -> void:
 	if input_field:
 		input_field.grab_focus()
-
 
 func _on_keyboard_reference_panel_closed() -> void:
 	if input_field:
 		input_field.grab_focus()
 
-
 func _on_login_rewards_panel_closed() -> void:
 	if input_field:
 		input_field.grab_focus()
-
 
 func _on_login_reward_claimed(reward: Dictionary) -> void:
 	# Apply the login reward
@@ -1121,21 +1114,49 @@ func _on_login_reward_claimed(reward: Dictionary) -> void:
 	TypingProfile.save_profile(profile)
 	_update_hud()
 
-
 func _on_typing_tower_bonuses_panel_closed() -> void:
 	if input_field:
 		input_field.grab_focus()
-
 
 func _on_research_tree_panel_closed() -> void:
 	if input_field:
 		input_field.grab_focus()
 
-
 func _on_trade_panel_closed() -> void:
 	if input_field:
 		input_field.grab_focus()
 
+func _on_targeting_modes_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+func _on_workers_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+func _on_event_effects_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+func _on_upgrades_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+func _on_balance_reference_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+func _on_wave_composition_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+func _on_synergy_reference_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+func _on_typing_metrics_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
 
 func _on_quest_claimed_from_panel(quest_id: String, rewards: Dictionary) -> void:
 	# Apply rewards
@@ -1176,7 +1197,6 @@ func _on_quest_claimed_from_panel(quest_id: String, rewards: Dictionary) -> void
 
 	_update_hud()
 
-
 func _toggle_quests() -> void:
 	if quests_panel:
 		if quests_panel.visible:
@@ -1184,11 +1204,9 @@ func _toggle_quests() -> void:
 		else:
 			quests_panel.show_quests(quest_state)
 
-
 func _on_wave_summary_continue() -> void:
 	if input_field:
 		input_field.grab_focus()
-
 
 func _init_run_tracking() -> void:
 	run_start_time = Time.get_unix_time_from_system()
@@ -1207,18 +1225,15 @@ func _init_run_tracking() -> void:
 	run_level_start = int(profile.get("player_level", 1))
 	run_achievements_unlocked.clear()
 
-
 func _on_run_summary_continue() -> void:
 	# For victory, continue playing (maybe unlock endless mode or rewards)
 	if input_field:
 		input_field.grab_focus()
 
-
 func _on_run_summary_new_run() -> void:
 	# Reset and start a new run
 	_reset_game()
 	_init_run_tracking()
-
 
 func _on_run_summary_menu() -> void:
 	# Return to main menu
@@ -1226,7 +1241,6 @@ func _on_run_summary_menu() -> void:
 		game_controller.go_to_main_menu()
 	else:
 		get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
-
 
 func _show_run_summary(victory: bool) -> void:
 	if run_summary_panel == null:
@@ -1258,7 +1272,6 @@ func _show_run_summary(victory: bool) -> void:
 	}
 
 	run_summary_panel.show_summary(summary_stats, victory)
-
 
 func _on_dashboard_closed() -> void:
 	if input_field:
@@ -1964,7 +1977,6 @@ func _game_over() -> void:
 	if not is_challenge_mode:
 		_show_run_summary(false)
 
-
 func _on_campaign_victory() -> void:
 	word_display.text = "[center][color=gold]VICTORY![/color]\nThe Siege of Keystonia is Over![/center]"
 	input_field.editable = false
@@ -1996,7 +2008,6 @@ func _on_campaign_victory() -> void:
 
 	# Show run summary
 	_show_run_summary(true)
-
 
 func _on_input_changed(new_text: String) -> void:
 	var old_len: int = typed_text.length()
@@ -2174,6 +2185,22 @@ func _on_input_submitted(text: String) -> void:
 			_show_research_tree()
 		elif lower_text == "trademarket" or lower_text == "trade" or lower_text == "market":
 			_show_trade_market()
+		elif lower_text == "targeting" or lower_text == "targetmodes" or lower_text == "priority":
+			_show_targeting_modes()
+		elif lower_text == "workers" or lower_text == "workforce" or lower_text == "labor":
+			_show_workers()
+		elif lower_text == "eventeffects" or lower_text == "effects" or lower_text == "buffs":
+			_show_event_effects()
+		elif lower_text == "upgrades" or lower_text == "upgradetree" or lower_text == "perks":
+			_show_upgrades()
+		elif lower_text == "balance" or lower_text == "economy" or lower_text == "scaling":
+			_show_balance_reference()
+		elif lower_text == "waves" or lower_text == "wavecomposition" or lower_text == "wavethemes":
+			_show_wave_composition()
+		elif lower_text == "synergies" or lower_text == "combos" or lower_text == "towersynergy":
+			_show_synergy_reference()
+		elif lower_text == "metrics" or lower_text == "typingmetrics" or lower_text == "wpm":
+			_show_typing_metrics()
 		input_field.clear()
 	elif current_phase == "defense":
 		# Check for special commands first
@@ -3183,7 +3210,6 @@ func _show_wave_summary() -> void:
 
 	wave_summary_panel.show_summary(summary_stats)
 
-
 func _show_contextual_tip_after_wave() -> void:
 	# Determine context based on performance
 	var accuracy: float = _get_accuracy()
@@ -3204,7 +3230,6 @@ func _show_contextual_tip_after_wave() -> void:
 	if tip_notification and not tip_notification.is_on_cooldown():
 		tip_notification.show_tip_for_context(context)
 
-
 func _show_contextual_defense_tip() -> void:
 	if tip_notification == null:
 		return
@@ -3220,7 +3245,6 @@ func _show_contextual_defense_tip() -> void:
 		var contexts: Array[String] = ["home_row", "practice", "rhythm", "technique"]
 		var context: String = contexts[(day - 1) % contexts.size()]
 		tip_notification.show_tip_for_context(context)
-
 
 func _show_lesson_intro(lesson_id: String) -> void:
 	if not dialogue_box:
@@ -3497,7 +3521,6 @@ func _check_wave_achievements() -> void:
 func _show_difficulty_options() -> void:
 	_toggle_difficulty()
 
-
 func _toggle_difficulty() -> void:
 	if difficulty_panel:
 		if difficulty_panel.visible:
@@ -3525,7 +3548,6 @@ func _try_set_difficulty(mode_id: String) -> void:
 
 func _show_status_effects_info() -> void:
 	_toggle_effects()
-
 
 func _toggle_effects() -> void:
 	if effects_panel:
@@ -3893,7 +3915,6 @@ func _try_buy_item(item_id: String) -> void:
 func _show_auto_towers() -> void:
 	_toggle_auto_towers()
 
-
 func _toggle_auto_towers() -> void:
 	if auto_towers_panel:
 		if auto_towers_panel.visible:
@@ -3905,7 +3926,6 @@ func _toggle_auto_towers() -> void:
 func _show_help() -> void:
 	_toggle_help()
 
-
 func _toggle_help() -> void:
 	if help_panel:
 		if help_panel.visible:
@@ -3916,7 +3936,6 @@ func _toggle_help() -> void:
 func _show_wave_info() -> void:
 	_toggle_wave_info()
 
-
 func _toggle_wave_info() -> void:
 	if wave_info_panel:
 		if wave_info_panel.visible:
@@ -3926,7 +3945,6 @@ func _toggle_wave_info() -> void:
 
 func _show_endless_mode() -> void:
 	_toggle_endless_mode_panel()
-
 
 func _toggle_endless_mode_panel() -> void:
 	if endless_mode_panel == null:
@@ -4020,7 +4038,6 @@ func _end_endless_run() -> void:
 
 func _show_daily_challenge() -> void:
 	_toggle_daily_challenge_panel()
-
 
 func _toggle_daily_challenge_panel() -> void:
 	if daily_challenge_panel == null:
@@ -4143,7 +4160,6 @@ func _fail_daily_challenge(reason: String) -> void:
 func _show_token_shop() -> void:
 	_toggle_token_shop_panel()
 
-
 func _toggle_token_shop_panel() -> void:
 	if token_shop_panel == null:
 		return
@@ -4153,7 +4169,6 @@ func _toggle_token_shop_panel() -> void:
 	else:
 		var balance: int = SimDailyChallenges.get_token_balance(profile)
 		token_shop_panel.show_shop(profile, balance)
-
 
 func _try_buy_token_item(item_id: String) -> void:
 	var result: Dictionary = SimDailyChallenges.purchase_token_item(profile, item_id)
@@ -4169,14 +4184,11 @@ func _try_buy_token_item(item_id: String) -> void:
 func _show_stats_summary() -> void:
 	_toggle_stats_panel("overview")
 
-
 func _show_stats_full() -> void:
 	_toggle_stats_panel("overview")
 
-
 func _show_records() -> void:
 	_toggle_stats_panel("records")
-
 
 func _toggle_stats_panel(tab: String = "overview") -> void:
 	if stats_panel == null:
@@ -4187,10 +4199,8 @@ func _toggle_stats_panel(tab: String = "overview") -> void:
 	else:
 		stats_panel.show_stats(profile, tab)
 
-
 func _show_expeditions() -> void:
 	_toggle_expeditions_panel()
-
 
 func _toggle_expeditions_panel() -> void:
 	if expeditions_panel == null:
@@ -4201,10 +4211,8 @@ func _toggle_expeditions_panel() -> void:
 	else:
 		expeditions_panel.show_expeditions(state)
 
-
 func _show_synergies() -> void:
 	_toggle_synergies_panel()
-
 
 func _toggle_synergies_panel() -> void:
 	if synergies_panel == null:
@@ -4215,10 +4223,8 @@ func _toggle_synergies_panel() -> void:
 	else:
 		synergies_panel.show_synergies(state)
 
-
 func _show_buffs() -> void:
 	_toggle_buffs_panel()
-
 
 func _toggle_buffs_panel() -> void:
 	if buffs_panel == null:
@@ -4229,10 +4235,8 @@ func _toggle_buffs_panel() -> void:
 	else:
 		buffs_panel.show_buffs(profile)
 
-
 func _show_summons() -> void:
 	_toggle_summoned_units_panel()
-
 
 func _toggle_summoned_units_panel() -> void:
 	if summoned_units_panel == null:
@@ -4243,10 +4247,8 @@ func _toggle_summoned_units_panel() -> void:
 	else:
 		summoned_units_panel.show_summons(state)
 
-
 func _show_loot() -> void:
 	_toggle_loot_panel()
-
 
 func _toggle_loot_panel() -> void:
 	if loot_panel == null:
@@ -4257,10 +4259,8 @@ func _toggle_loot_panel() -> void:
 	else:
 		loot_panel.show_loot(state)
 
-
 func _show_nodes() -> void:
 	_toggle_resource_nodes_panel()
-
 
 func _toggle_resource_nodes_panel() -> void:
 	if resource_nodes_panel == null:
@@ -4271,10 +4271,8 @@ func _toggle_resource_nodes_panel() -> void:
 	else:
 		resource_nodes_panel.show_nodes(state)
 
-
 func _show_affixes() -> void:
 	_toggle_affixes_panel()
-
 
 func _toggle_affixes_panel() -> void:
 	if affixes_panel == null:
@@ -4285,10 +4283,8 @@ func _toggle_affixes_panel() -> void:
 	else:
 		affixes_panel.show_affixes(state)
 
-
 func _show_damage_types() -> void:
 	_toggle_damage_types_panel()
-
 
 func _toggle_damage_types_panel() -> void:
 	if damage_types_panel == null:
@@ -4299,10 +4295,8 @@ func _toggle_damage_types_panel() -> void:
 	else:
 		damage_types_panel.show_damage_types()
 
-
 func _show_pois() -> void:
 	_toggle_poi_panel()
-
 
 func _toggle_poi_panel() -> void:
 	if poi_panel == null:
@@ -4313,10 +4307,8 @@ func _toggle_poi_panel() -> void:
 	else:
 		poi_panel.show_pois(state)
 
-
 func _show_towers() -> void:
 	_toggle_tower_encyclopedia_panel()
-
 
 func _toggle_tower_encyclopedia_panel() -> void:
 	if tower_encyclopedia_panel == null:
@@ -4327,10 +4319,8 @@ func _toggle_tower_encyclopedia_panel() -> void:
 	else:
 		tower_encyclopedia_panel.show_encyclopedia()
 
-
 func _show_status_effects() -> void:
 	_toggle_status_effects_panel()
-
 
 func _toggle_status_effects_panel() -> void:
 	if status_effects_panel == null:
@@ -4341,10 +4331,8 @@ func _toggle_status_effects_panel() -> void:
 	else:
 		status_effects_panel.show_status_effects(state)
 
-
 func _show_combo_system() -> void:
 	_toggle_combo_system_panel()
-
 
 func _toggle_combo_system_panel() -> void:
 	if combo_system_panel == null:
@@ -4355,10 +4343,8 @@ func _toggle_combo_system_panel() -> void:
 	else:
 		combo_system_panel.show_combo_system(state)
 
-
 func _show_milestones() -> void:
 	_toggle_milestones_panel()
-
 
 func _toggle_milestones_panel() -> void:
 	if milestones_panel == null:
@@ -4369,10 +4355,8 @@ func _toggle_milestones_panel() -> void:
 	else:
 		milestones_panel.show_milestones(profile)
 
-
 func _show_practice_goals() -> void:
 	_toggle_practice_goals_panel()
-
 
 func _toggle_practice_goals_panel() -> void:
 	if practice_goals_panel == null:
@@ -4384,10 +4368,8 @@ func _toggle_practice_goals_panel() -> void:
 		var current_goal: String = str(profile.get("practice_goal", "balanced"))
 		practice_goals_panel.show_practice_goals(profile, current_goal)
 
-
 func _show_wave_themes() -> void:
 	_toggle_wave_themes_panel()
-
 
 func _toggle_wave_themes_panel() -> void:
 	if wave_themes_panel == null:
@@ -4398,10 +4380,8 @@ func _toggle_wave_themes_panel() -> void:
 	else:
 		wave_themes_panel.show_wave_themes(state)
 
-
 func _show_special_commands() -> void:
 	_toggle_special_commands_panel()
-
 
 func _toggle_special_commands_panel() -> void:
 	if special_commands_panel == null:
@@ -4413,10 +4393,8 @@ func _toggle_special_commands_panel() -> void:
 		var player_level: int = int(profile.get("level", 1))
 		special_commands_panel.show_special_commands(player_level, command_cooldowns)
 
-
 func _show_lifetime_stats() -> void:
 	_toggle_lifetime_stats_panel()
-
 
 func _toggle_lifetime_stats_panel() -> void:
 	if lifetime_stats_panel == null:
@@ -4427,10 +4405,8 @@ func _toggle_lifetime_stats_panel() -> void:
 	else:
 		lifetime_stats_panel.show_lifetime_stats(profile)
 
-
 func _show_keyboard_reference() -> void:
 	_toggle_keyboard_reference_panel()
-
 
 func _toggle_keyboard_reference_panel() -> void:
 	if keyboard_reference_panel == null:
@@ -4441,10 +4417,8 @@ func _toggle_keyboard_reference_panel() -> void:
 	else:
 		keyboard_reference_panel.show_keyboard_reference()
 
-
 func _show_login_rewards() -> void:
 	_toggle_login_rewards_panel()
-
 
 func _toggle_login_rewards_panel() -> void:
 	if login_rewards_panel == null:
@@ -4458,10 +4432,8 @@ func _toggle_login_rewards_panel() -> void:
 		var can_claim: bool = SimLoginRewards.should_show_reward(profile)
 		login_rewards_panel.show_login_rewards(current_streak, can_claim)
 
-
 func _show_typing_tower_bonuses() -> void:
 	_toggle_typing_tower_bonuses_panel()
-
 
 func _toggle_typing_tower_bonuses_panel() -> void:
 	if typing_tower_bonuses_panel == null:
@@ -4472,10 +4444,8 @@ func _toggle_typing_tower_bonuses_panel() -> void:
 	else:
 		typing_tower_bonuses_panel.show_typing_tower_bonuses()
 
-
 func _show_research_tree() -> void:
 	_toggle_research_tree_panel()
-
 
 func _toggle_research_tree_panel() -> void:
 	if research_tree_panel == null:
@@ -4488,10 +4458,8 @@ func _toggle_research_tree_panel() -> void:
 		var tree: Dictionary = research_instance.get_research_tree(state)
 		research_tree_panel.show_research_tree(tree, state.gold)
 
-
 func _show_trade_market() -> void:
 	_toggle_trade_panel()
-
 
 func _toggle_trade_panel() -> void:
 	if trade_panel == null:
@@ -4503,10 +4471,109 @@ func _toggle_trade_panel() -> void:
 		var summary: Dictionary = SimTrade.get_trade_summary(state)
 		trade_panel.show_trade_market(summary)
 
+func _show_targeting_modes() -> void:
+	_toggle_targeting_modes_panel()
+
+func _toggle_targeting_modes_panel() -> void:
+	if targeting_modes_panel == null:
+		return
+
+	if targeting_modes_panel.visible:
+		targeting_modes_panel.hide()
+	else:
+		targeting_modes_panel.show_targeting_modes()
+
+func _show_workers() -> void:
+	_toggle_workers_panel()
+
+func _toggle_workers_panel() -> void:
+	if workers_panel == null:
+		return
+
+	if workers_panel.visible:
+		workers_panel.hide()
+	else:
+		var summary: Dictionary = SimWorkers.get_worker_summary(state)
+		workers_panel.show_workers(summary)
+
+func _show_event_effects() -> void:
+	_toggle_event_effects_panel()
+
+func _toggle_event_effects_panel() -> void:
+	if event_effects_panel == null:
+		return
+
+	if event_effects_panel.visible:
+		event_effects_panel.hide()
+	else:
+		event_effects_panel.show_event_effects()
+
+func _show_upgrades() -> void:
+	_toggle_upgrades_panel()
+
+func _toggle_upgrades_panel() -> void:
+	if upgrades_panel == null:
+		return
+
+	if upgrades_panel.visible:
+		upgrades_panel.hide()
+	else:
+		upgrades_panel.show_upgrades(
+			state.gold,
+			state.purchased_kingdom_upgrades,
+			state.purchased_unit_upgrades
+		)
+
+func _show_balance_reference() -> void:
+	_toggle_balance_reference_panel()
+
+func _toggle_balance_reference_panel() -> void:
+	if balance_reference_panel == null:
+		return
+
+	if balance_reference_panel.visible:
+		balance_reference_panel.hide()
+	else:
+		balance_reference_panel.show_balance_reference()
+
+func _show_wave_composition() -> void:
+	_toggle_wave_composition_panel()
+
+func _toggle_wave_composition_panel() -> void:
+	if wave_composition_panel == null:
+		return
+
+	if wave_composition_panel.visible:
+		wave_composition_panel.hide()
+	else:
+		wave_composition_panel.show_wave_composition()
+
+func _show_synergy_reference() -> void:
+	_toggle_synergy_reference_panel()
+
+func _toggle_synergy_reference_panel() -> void:
+	if synergy_reference_panel == null:
+		return
+
+	if synergy_reference_panel.visible:
+		synergy_reference_panel.hide()
+	else:
+		synergy_reference_panel.show_synergies()
+
+func _show_typing_metrics() -> void:
+	_toggle_typing_metrics_panel()
+
+func _toggle_typing_metrics_panel() -> void:
+	if typing_metrics_panel == null:
+		return
+
+	if typing_metrics_panel.visible:
+		typing_metrics_panel.hide()
+	else:
+		typing_metrics_panel.show_typing_metrics()
 
 func _show_materials() -> void:
 	_toggle_materials_panel()
-
 
 func _toggle_materials_panel() -> void:
 	if materials_panel == null:
@@ -4522,7 +4589,6 @@ func _toggle_materials_panel() -> void:
 func _show_recipes(category: String = "") -> void:
 	_toggle_recipes_panel(category)
 
-
 func _toggle_recipes_panel(category: String = "") -> void:
 	if recipes_panel == null:
 		return
@@ -4531,7 +4597,6 @@ func _toggle_recipes_panel(category: String = "") -> void:
 		recipes_panel.hide()
 	else:
 		recipes_panel.show_recipes(profile, gold, category)
-
 
 func _show_recipe_detail(recipe_id: String) -> void:
 	# Show the recipes panel - the user can find the recipe there
@@ -4562,7 +4627,6 @@ func _try_craft(recipe_id: String) -> void:
 	var output_qty: int = int(result.get("output_qty", 1))
 
 	_update_objective("[color=lime]Crafted %s![/color] Received %s x%d" % [recipe_name, output_item, output_qty])
-
 
 func _toggle_spells() -> void:
 	if spells_panel:

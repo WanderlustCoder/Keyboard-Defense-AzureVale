@@ -2,8 +2,6 @@ class_name ComboAnnouncement
 extends Control
 ## Shows celebratory combo milestone announcements with visual flair
 
-const ThemeColors = preload("res://ui/theme_colors.gd")
-
 # Milestone thresholds
 const MILESTONES := [5, 10, 15, 20, 25, 30, 40, 50]
 
@@ -183,4 +181,3 @@ func _get_milestone_color(combo: int) -> Color:
 		return COLOR_TIER_2
 	else:
 		return COLOR_TIER_1
-

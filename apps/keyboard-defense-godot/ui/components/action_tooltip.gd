@@ -2,8 +2,6 @@ class_name ActionTooltip
 extends Control
 ## Floating tooltip for showing blocked action feedback with icon and text
 
-const ThemeColors = preload("res://ui/theme_colors.gd")
-
 const TOOLTIP_DURATION := 2.0
 const FADE_IN_DURATION := 0.15
 const FADE_OUT_DURATION := 0.3

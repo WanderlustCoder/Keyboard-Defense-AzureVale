@@ -3,7 +3,6 @@ extends RefCounted
 
 const GameState = preload("res://sim/types.gd")
 const SimBuildings = preload("res://sim/buildings.gd")
-const SimMap = preload("res://sim/map.gd")
 
 # Base exchange rates (how much you get per 1 unit traded)
 const BASE_RATES := {

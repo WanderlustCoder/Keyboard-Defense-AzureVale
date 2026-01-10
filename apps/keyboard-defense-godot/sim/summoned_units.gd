@@ -6,7 +6,6 @@ const GameState = preload("res://sim/types.gd")
 const SimEnemies = preload("res://sim/enemies.gd")
 const SimMap = preload("res://sim/map.gd")
 const SimTowerTypes = preload("res://sim/tower_types.gd")
-const SimStatusEffects = preload("res://sim/status_effects.gd")
 
 # =============================================================================
 # CONSTANTS
@@ -58,7 +57,6 @@ static func create_summon(
 	state.summoned_next_id += 1
 	return summon
 
-
 ## Add a summon to the state
 static func spawn_summon(
 	state: GameState,
@@ -89,7 +87,6 @@ static func spawn_summon(
 
 	return true
 
-
 ## Count summons belonging to a tower
 static func count_summons_for_tower(state: GameState, owner_index: int) -> int:
 	var count: int = 0
@@ -97,7 +94,6 @@ static func count_summons_for_tower(state: GameState, owner_index: int) -> int:
 		if int(summon.get("owner_index", -1)) == owner_index:
 			count += 1
 	return count
-
 
 ## Get max summons for a tower (affected by synergies)
 static func get_max_summons(state: GameState, owner_index: int) -> int:
@@ -110,7 +106,6 @@ static func get_max_summons(state: GameState, owner_index: int) -> int:
 			break
 
 	return base_max
-
 
 ## Remove a summon by ID
 static func remove_summon(state: GameState, summon_id: int) -> void:
@@ -127,7 +122,6 @@ static func remove_summon(state: GameState, summon_id: int) -> void:
 					ids.remove_at(idx)
 			break
 
-
 ## Remove all summons belonging to a tower
 static func remove_tower_summons(state: GameState, owner_index: int) -> void:
 	for i in range(state.summoned_units.size() - 1, -1, -1):
@@ -136,7 +130,6 @@ static func remove_tower_summons(state: GameState, owner_index: int) -> void:
 
 	if state.tower_summon_ids.has(owner_index):
 		state.tower_summon_ids.erase(owner_index)
-
 
 # =============================================================================
 # SUMMON AI TICK
@@ -187,7 +180,6 @@ static func tick_summons(
 	for summon_id in expired:
 		remove_summon(state, summon_id)
 		events.append("Summon faded away.")
-
 
 ## Summon attacks nearby enemies
 static func _summon_attack(
@@ -269,7 +261,6 @@ static func _summon_attack(
 
 	return true
 
-
 ## Move summon toward nearest enemy
 static func _summon_move(
 	state: GameState,
@@ -330,7 +321,6 @@ static func _summon_move(
 			summon_pos = best_move
 			summon["pos"] = summon_pos
 
-
 # =============================================================================
 # SUMMON DAMAGE (from enemies)
 # =============================================================================
@@ -360,7 +350,6 @@ static func apply_damage_to_summon(
 			remove_summon(state, summon_id)
 		break
 
-
 ## Find summon with taunt at position for enemy targeting
 static func get_taunt_summon_at(state: GameState, pos: Vector2i) -> int:
 	for summon in state.summoned_units:
@@ -370,7 +359,6 @@ static func get_taunt_summon_at(state: GameState, pos: Vector2i) -> int:
 		if SimEnemies.manhattan(summon_pos, pos) <= 1:
 			return int(summon.get("id", 0))
 	return -1
-
 
 # =============================================================================
 # SERIALIZATION
@@ -382,7 +370,6 @@ static func serialize_summon(summon: Dictionary) -> Dictionary:
 	if summon.has("pos"):
 		result["pos"] = {"x": summon.pos.x, "y": summon.pos.y}
 	return result
-
 
 ## Deserialize a summon from save data
 static func deserialize_summon(data: Dictionary) -> Dictionary:

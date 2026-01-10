@@ -2,7 +2,6 @@ extends PanelContainer
 class_name LyraDialogue
 ## Dialogue box with Lyra portrait for tutorial and story moments
 
-const ThemeColors = preload("res://ui/theme_colors.gd")
 const AssetLoader = preload("res://game/asset_loader.gd")
 
 signal dialogue_finished

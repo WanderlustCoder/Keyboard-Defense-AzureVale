@@ -15,7 +15,6 @@ const SimBalance = preload("res://sim/balance.gd")
 const SimBalanceReport = preload("res://sim/balance_report.gd")
 const SimBuildings = preload("res://sim/buildings.gd")
 const SimEnemies = preload("res://sim/enemies.gd")
-const SimRng = preload("res://sim/rng.gd")
 
 # Simulation results
 var _results: Dictionary = {}
@@ -72,7 +71,6 @@ func _init() -> void:
 	var exit_code := 0 if _errors.is_empty() else 1
 	quit(exit_code)
 
-
 func _print_help() -> void:
 	print("""
 Balance Simulator - Headless Game Balance Testing
@@ -106,7 +104,6 @@ Examples:
   godot --headless --path . --script res://tools/balance_simulator.gd -- --verify
 """)
 
-
 func _run_verification(json_output: bool) -> void:
 	print("-" .repeat(40))
 	print("BALANCE VERIFICATION")
@@ -117,7 +114,6 @@ func _run_verification(json_output: bool) -> void:
 
 	if "FAIL" in output:
 		_errors.append("Balance verification failed")
-
 
 func _run_scenarios(scenario: String, days: int, verbose: bool, json_output: bool) -> void:
 	var scenarios_to_run: Array[String] = []
@@ -141,7 +137,6 @@ func _run_scenarios(scenario: String, days: int, verbose: bool, json_output: boo
 				_simulate_towers(days, verbose)
 			"combat":
 				_simulate_combat(days, verbose)
-
 
 func _simulate_economy(days: int, verbose: bool) -> void:
 	print("")
@@ -220,7 +215,6 @@ func _simulate_economy(days: int, verbose: bool) -> void:
 
 	print("Economy simulation: OK")
 
-
 func _simulate_production(state: GameState) -> Dictionary:
 	# Simplified production based on assumed buildings
 	# In real game, would call SimBuildings.calculate_production()
@@ -236,7 +230,6 @@ func _simulate_production(state: GameState) -> Dictionary:
 	production["food"] += SimBalance.midgame_food_bonus(state)
 
 	return production
-
 
 func _simulate_waves(days: int, verbose: bool) -> void:
 	print("")
@@ -281,7 +274,6 @@ func _simulate_waves(days: int, verbose: bool) -> void:
 
 	print("Wave simulation: OK")
 
-
 func _generate_wave_for_day(day: int) -> Dictionary:
 	# Simplified wave generation
 	# In real game, would use actual wave composition from SimEnemies
@@ -304,7 +296,6 @@ func _generate_wave_for_day(day: int) -> Dictionary:
 		"composition": _get_wave_composition(day)
 	}
 
-
 func _get_wave_composition(day: int) -> Dictionary:
 	# Simplified wave composition
 	var comp := {}
@@ -321,7 +312,6 @@ func _get_wave_composition(day: int) -> Dictionary:
 		comp["armored"] = day / 4
 
 	return comp
-
 
 func _simulate_towers(days: int, verbose: bool) -> void:
 	print("")
@@ -367,7 +357,6 @@ func _simulate_towers(days: int, verbose: bool) -> void:
 
 	print("Tower simulation: OK")
 
-
 func _calculate_tower_stats(tower_type: String, day: int) -> Dictionary:
 	# Simplified tower stats
 	# In real game, would use SimTowerTypes
@@ -399,7 +388,6 @@ func _calculate_tower_stats(tower_type: String, day: int) -> Dictionary:
 		"dps": dps,
 		"range": 3 + day / 3
 	}
-
 
 func _simulate_combat(days: int, verbose: bool) -> void:
 	print("")
@@ -453,7 +441,6 @@ func _simulate_combat(days: int, verbose: bool) -> void:
 
 	print("Combat simulation: OK")
 
-
 func _calculate_total_tower_dps(day: int) -> float:
 	# Assume player has built towers appropriate for the day
 	var num_towers: int = 1 + day / 2
@@ -462,7 +449,6 @@ func _calculate_total_tower_dps(day: int) -> float:
 	var total_dps: float = num_towers * float(arrow_stats["dps"])
 
 	return total_dps
-
 
 func _print_summary(json_output: bool) -> void:
 	print("")
