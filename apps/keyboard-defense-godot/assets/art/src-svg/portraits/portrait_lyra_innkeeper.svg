@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Lyra the Innkeeper - Friendly Tavern Keeper -->
+
+  <!-- Background frame - warm tavern -->
+  <rect x="0" y="0" width="64" height="64" fill="#4a3728"/>
+  <rect x="2" y="2" width="60" height="60" fill="#3d2817"/>
+  <rect x="4" y="4" width="56" height="56" fill="#5d4037"/>
+
+  <!-- Warm tavern glow -->
+  <rect x="6" y="6" width="52" height="52" fill="#6d4c3d"/>
+
+  <!-- Auburn hair -->
+  <rect x="10" y="6" width="44" height="20" fill="#a04000"/>
+  <rect x="8" y="14" width="48" height="14" fill="#b34700"/>
+  <rect x="6" y="22" width="52" height="8" fill="#a04000"/>
+
+  <!-- Hair tied back bun suggestion -->
+  <rect x="46" y="8" width="10" height="10" fill="#8b3500"/>
+  <rect x="48" y="10" width="6" height="6" fill="#a04000"/>
+
+  <!-- Hair highlight -->
+  <rect x="14" y="8" width="8" height="6" fill="#cc5500"/>
+  <rect x="16" y="10" width="4" height="4" fill="#e67300"/>
+
+  <!-- Face shape -->
+  <rect x="16" y="18" width="32" height="32" fill="#f5cba7"/>
+  <rect x="20" y="14" width="24" height="8" fill="#f5cba7"/>
+  <rect x="18" y="48" width="28" height="6" fill="#f5cba7"/>
+
+  <!-- Rosy cheeks -->
+  <rect x="16" y="36" width="6" height="4" fill="#f1948a"/>
+  <rect x="42" y="36" width="6" height="4" fill="#f1948a"/>
+
+  <!-- Face highlight -->
+  <rect x="18" y="20" width="8" height="12" fill="#fdebd0"/>
+
+  <!-- Eyes (warm, friendly) -->
+  <rect x="20" y="28" width="8" height="8" fill="#fff"/>
+  <rect x="36" y="28" width="8" height="8" fill="#fff"/>
+
+  <!-- Irises (brown) -->
+  <rect x="22" y="30" width="5" height="5" fill="#8e6b4d"/>
+  <rect x="38" y="30" width="5" height="5" fill="#8e6b4d"/>
+
+  <!-- Pupils -->
+  <rect x="24" y="31" width="2" height="3" fill="#3d2817"/>
+  <rect x="40" y="31" width="2" height="3" fill="#3d2817"/>
+
+  <!-- Eye highlights -->
+  <rect x="22" y="30" width="2" height="2" fill="#fff"/>
+  <rect x="38" y="30" width="2" height="2" fill="#fff"/>
+
+  <!-- Friendly eye crinkles -->
+  <rect x="18" y="30" width="2" height="1" fill="#e5b898"/>
+  <rect x="44" y="30" width="2" height="1" fill="#e5b898"/>
+
+  <!-- Eyebrows (warm) -->
+  <rect x="20" y="24" width="8" height="2" fill="#a04000"/>
+  <rect x="36" y="24" width="8" height="2" fill="#a04000"/>
+
+  <!-- Nose -->
+  <rect x="30" y="34" width="4" height="8" fill="#e5b898"/>
+  <rect x="28" y="40" width="8" height="2" fill="#e5b898"/>
+
+  <!-- Warm smile -->
+  <rect x="24" y="46" width="16" height="3" fill="#c0392b"/>
+  <rect x="26" y="44" width="12" height="2" fill="#e74c3c"/>
+  <rect x="28" y="45" width="8" height="1" fill="#fff"/>
+
+  <!-- Smile lines -->
+  <rect x="22" y="44" width="2" height="3" fill="#e5b898"/>
+  <rect x="40" y="44" width="2" height="3" fill="#e5b898"/>
+
+  <!-- Simple dress with rolled sleeves -->
+  <rect x="10" y="50" width="44" height="14" fill="#6d4c3d"/>
+  <rect x="14" y="52" width="36" height="12" fill="#8d6e63"/>
+
+  <!-- White apron -->
+  <rect x="22" y="52" width="20" height="12" fill="#ecf0f1"/>
+  <rect x="24" y="54" width="16" height="10" fill="#fff"/>
+
+  <!-- Apron stain (character detail) -->
+  <rect x="26" y="56" width="3" height="2" fill="#d4a574"/>
+
+  <!-- Rolled sleeves hint -->
+  <rect x="8" y="50" width="6" height="8" fill="#f5cba7"/>
+  <rect x="50" y="50" width="6" height="8" fill="#f5cba7"/>
+
+  <!-- Frame border - warm copper -->
+  <rect x="0" y="0" width="64" height="2" fill="#b87333"/>
+  <rect x="0" y="62" width="64" height="2" fill="#b87333"/>
+  <rect x="0" y="0" width="2" height="64" fill="#b87333"/>
+  <rect x="62" y="0" width="2" height="64" fill="#b87333"/>
+
+  <!-- Corner accents - barrel/wheat -->
+  <rect x="2" y="2" width="4" height="4" fill="#a0522d"/>
+  <rect x="58" y="2" width="4" height="4" fill="#a0522d"/>
+  <rect x="2" y="58" width="4" height="4" fill="#a0522d"/>
+  <rect x="58" y="58" width="4" height="4" fill="#a0522d"/>
+
+  <!-- Inner corner warmth -->
+  <rect x="3" y="3" width="2" height="2" fill="#cd853f"/>
+  <rect x="59" y="3" width="2" height="2" fill="#cd853f"/>
+  <rect x="3" y="59" width="2" height="2" fill="#cd853f"/>
+  <rect x="59" y="59" width="2" height="2" fill="#cd853f"/>
+</svg>

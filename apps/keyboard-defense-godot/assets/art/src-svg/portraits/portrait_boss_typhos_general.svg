@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Typhos General - Act 4 Boss (Military Commander) -->
+
+  <!-- Background frame - war banner -->
+  <rect x="0" y="0" width="64" height="64" fill="#4a0404"/>
+  <rect x="2" y="2" width="60" height="60" fill="#2c1810"/>
+  <rect x="4" y="4" width="56" height="56" fill="#1a0f0a"/>
+
+  <!-- War banner pattern -->
+  <rect x="4" y="4" width="8" height="56" fill="#3d0c0c"/>
+  <rect x="52" y="4" width="8" height="56" fill="#3d0c0c"/>
+
+  <!-- Helmet base -->
+  <rect x="12" y="6" width="40" height="32" fill="#2c2c3c"/>
+  <rect x="16" y="2" width="32" height="8" fill="#3d3d4d"/>
+  <rect x="10" y="12" width="44" height="24" fill="#4a4a5a"/>
+
+  <!-- Helmet crest -->
+  <rect x="28" y="0" width="8" height="10" fill="#922b21"/>
+  <rect x="30" y="2" width="4" height="8" fill="#c0392b"/>
+
+  <!-- Visor -->
+  <rect x="14" y="18" width="36" height="16" fill="#1a1a2e"/>
+  <rect x="16" y="20" width="32" height="12" fill="#0d0d1a"/>
+
+  <!-- Red glowing visor eyes -->
+  <rect x="18" y="22" width="10" height="6" fill="#e74c3c"/>
+  <rect x="36" y="22" width="10" height="6" fill="#e74c3c"/>
+
+  <!-- Eye inner glow -->
+  <rect x="20" y="24" width="6" height="2" fill="#f5b041"/>
+  <rect x="38" y="24" width="6" height="2" fill="#f5b041"/>
+
+  <!-- Visor slits -->
+  <rect x="14" y="26" width="36" height="2" fill="#2c2c3c"/>
+
+  <!-- Helmet jaw guard -->
+  <rect x="12" y="34" width="40" height="8" fill="#4a4a5a"/>
+  <rect x="16" y="36" width="32" height="6" fill="#3d3d4d"/>
+
+  <!-- Scarred face visible through gaps -->
+  <rect x="26" y="36" width="12" height="6" fill="#d4a574"/>
+  <rect x="28" y="38" width="8" height="4" fill="#c8956c"/>
+
+  <!-- Armor plate -->
+  <rect x="10" y="42" width="44" height="18" fill="#2c2c3c"/>
+  <rect x="14" y="46" width="36" height="12" fill="#3d3d4d"/>
+
+  <!-- Corruption veins on armor -->
+  <rect x="16" y="48" width="2" height="8" fill="#4a0404"/>
+  <rect x="24" y="50" width="2" height="6" fill="#4a0404"/>
+  <rect x="38" y="48" width="2" height="8" fill="#4a0404"/>
+  <rect x="46" y="50" width="2" height="6" fill="#4a0404"/>
+
+  <!-- Typhos skull emblem -->
+  <rect x="28" y="48" width="8" height="8" fill="#922b21"/>
+  <rect x="30" y="50" width="4" height="4" fill="#c0392b"/>
+  <rect x="30" y="52" width="1" height="2" fill="#1a1a2e"/>
+  <rect x="33" y="52" width="1" height="2" fill="#1a1a2e"/>
+
+  <!-- Dark energy wisps from gauntlets (sides) -->
+  <rect x="4" y="44" width="6" height="12" fill="#4a0404"/>
+  <rect x="54" y="44" width="6" height="12" fill="#4a0404"/>
+  <rect x="5" y="46" width="4" height="8" fill="#641e16"/>
+  <rect x="55" y="46" width="4" height="8" fill="#641e16"/>
+
+  <!-- Frame border - crimson military -->
+  <rect x="0" y="0" width="64" height="2" fill="#922b21"/>
+  <rect x="0" y="62" width="64" height="2" fill="#922b21"/>
+  <rect x="0" y="0" width="2" height="64" fill="#922b21"/>
+  <rect x="62" y="0" width="2" height="64" fill="#922b21"/>
+
+  <!-- Corner accents - spiked -->
+  <rect x="2" y="2" width="4" height="4" fill="#641e16"/>
+  <rect x="58" y="2" width="4" height="4" fill="#641e16"/>
+  <rect x="2" y="58" width="4" height="4" fill="#641e16"/>
+  <rect x="58" y="58" width="4" height="4" fill="#641e16"/>
+
+  <!-- Inner corner flame -->
+  <rect x="3" y="3" width="2" height="2" fill="#e74c3c"/>
+  <rect x="59" y="3" width="2" height="2" fill="#e74c3c"/>
+  <rect x="3" y="59" width="2" height="2" fill="#e74c3c"/>
+  <rect x="59" y="59" width="2" height="2" fill="#e74c3c"/>
+</svg>

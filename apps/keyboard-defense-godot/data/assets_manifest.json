@@ -269,6 +269,226 @@
       "category": "portraits"
     },
     {
+      "id": "portrait_boss_shadow_scout",
+      "path": "res://assets/art/src-svg/portraits/portrait_boss_shadow_scout.svg",
+      "source_svg": "res://assets/art/src-svg/portraits/portrait_boss_shadow_scout.svg",
+      "expected_width": 64,
+      "expected_height": 64,
+      "max_kb": 16,
+      "pixel_art": true,
+      "category": "portraits"
+    },
+    {
+      "id": "portrait_boss_storm_wraith",
+      "path": "res://assets/art/src-svg/portraits/portrait_boss_storm_wraith.svg",
+      "source_svg": "res://assets/art/src-svg/portraits/portrait_boss_storm_wraith.svg",
+      "expected_width": 64,
+      "expected_height": 64,
+      "max_kb": 16,
+      "pixel_art": true,
+      "category": "portraits"
+    },
+    {
+      "id": "portrait_boss_stone_golem",
+      "path": "res://assets/art/src-svg/portraits/portrait_boss_stone_golem.svg",
+      "source_svg": "res://assets/art/src-svg/portraits/portrait_boss_stone_golem.svg",
+      "expected_width": 64,
+      "expected_height": 64,
+      "max_kb": 16,
+      "pixel_art": true,
+      "category": "portraits"
+    },
+    {
+      "id": "portrait_boss_typhos_general",
+      "path": "res://assets/art/src-svg/portraits/portrait_boss_typhos_general.svg",
+      "source_svg": "res://assets/art/src-svg/portraits/portrait_boss_typhos_general.svg",
+      "expected_width": 64,
+      "expected_height": 64,
+      "max_kb": 16,
+      "pixel_art": true,
+      "category": "portraits"
+    },
+    {
+      "id": "portrait_boss_void_tyrant",
+      "path": "res://assets/art/src-svg/portraits/portrait_boss_void_tyrant.svg",
+      "source_svg": "res://assets/art/src-svg/portraits/portrait_boss_void_tyrant.svg",
+      "expected_width": 64,
+      "expected_height": 64,
+      "max_kb": 16,
+      "pixel_art": true,
+      "category": "portraits"
+    },
+    {
+      "id": "portrait_elder_typhos",
+      "path": "res://assets/art/src-svg/portraits/portrait_elder_typhos.svg",
+      "source_svg": "res://assets/art/src-svg/portraits/portrait_elder_typhos.svg",
+      "expected_width": 64,
+      "expected_height": 64,
+      "max_kb": 16,
+      "pixel_art": true,
+      "category": "portraits"
+    },
+    {
+      "id": "portrait_lyra_innkeeper",
+      "path": "res://assets/art/src-svg/portraits/portrait_lyra_innkeeper.svg",
+      "source_svg": "res://assets/art/src-svg/portraits/portrait_lyra_innkeeper.svg",
+      "expected_width": 64,
+      "expected_height": 64,
+      "max_kb": 16,
+      "pixel_art": true,
+      "category": "portraits"
+    },
+    {
+      "id": "portrait_captain_helena",
+      "path": "res://assets/art/src-svg/portraits/portrait_captain_helena.svg",
+      "source_svg": "res://assets/art/src-svg/portraits/portrait_captain_helena.svg",
+      "expected_width": 64,
+      "expected_height": 64,
+      "max_kb": 16,
+      "pixel_art": true,
+      "category": "portraits"
+    },
+    {
+      "id": "portrait_ranger_sylva",
+      "path": "res://assets/art/src-svg/portraits/portrait_ranger_sylva.svg",
+      "source_svg": "res://assets/art/src-svg/portraits/portrait_ranger_sylva.svg",
+      "expected_width": 64,
+      "expected_height": 64,
+      "max_kb": 16,
+      "pixel_art": true,
+      "category": "portraits"
+    },
+    {
+      "id": "portrait_forgemaster_thrain",
+      "path": "res://assets/art/src-svg/portraits/portrait_forgemaster_thrain.svg",
+      "source_svg": "res://assets/art/src-svg/portraits/portrait_forgemaster_thrain.svg",
+      "expected_width": 64,
+      "expected_height": 64,
+      "max_kb": 16,
+      "pixel_art": true,
+      "category": "portraits"
+    },
+    {
+      "id": "portrait_arcanist_vera",
+      "path": "res://assets/art/src-svg/portraits/portrait_arcanist_vera.svg",
+      "source_svg": "res://assets/art/src-svg/portraits/portrait_arcanist_vera.svg",
+      "expected_width": 64,
+      "expected_height": 64,
+      "max_kb": 16,
+      "pixel_art": true,
+      "category": "portraits"
+    },
+    {
+      "id": "portrait_marco_merchant",
+      "path": "res://assets/art/src-svg/portraits/portrait_marco_merchant.svg",
+      "source_svg": "res://assets/art/src-svg/portraits/portrait_marco_merchant.svg",
+      "expected_width": 64,
+      "expected_height": 64,
+      "max_kb": 16,
+      "pixel_art": true,
+      "category": "portraits"
+    },
+    {
+      "id": "portrait_wandering_scribe",
+      "path": "res://assets/art/src-svg/portraits/portrait_wandering_scribe.svg",
+      "source_svg": "res://assets/art/src-svg/portraits/portrait_wandering_scribe.svg",
+      "expected_width": 64,
+      "expected_height": 64,
+      "max_kb": 16,
+      "pixel_art": true,
+      "category": "portraits"
+    },
+    {
+      "id": "portrait_ghost_champion",
+      "path": "res://assets/art/src-svg/portraits/portrait_ghost_champion.svg",
+      "source_svg": "res://assets/art/src-svg/portraits/portrait_ghost_champion.svg",
+      "expected_width": 64,
+      "expected_height": 64,
+      "max_kb": 16,
+      "pixel_art": true,
+      "category": "portraits"
+    },
+    {
+      "id": "portrait_boss_grove_guardian",
+      "path": "res://assets/art/src-svg/portraits/portrait_boss_grove_guardian.svg",
+      "source_svg": "res://assets/art/src-svg/portraits/portrait_boss_grove_guardian.svg",
+      "expected_width": 64,
+      "expected_height": 64,
+      "max_kb": 16,
+      "pixel_art": true,
+      "category": "portraits"
+    },
+    {
+      "id": "portrait_boss_sunlord",
+      "path": "res://assets/art/src-svg/portraits/portrait_boss_sunlord.svg",
+      "source_svg": "res://assets/art/src-svg/portraits/portrait_boss_sunlord.svg",
+      "expected_width": 64,
+      "expected_height": 64,
+      "max_kb": 16,
+      "pixel_art": true,
+      "category": "portraits"
+    },
+    {
+      "id": "portrait_boss_citadel_warden",
+      "path": "res://assets/art/src-svg/portraits/portrait_boss_citadel_warden.svg",
+      "source_svg": "res://assets/art/src-svg/portraits/portrait_boss_citadel_warden.svg",
+      "expected_width": 64,
+      "expected_height": 64,
+      "max_kb": 16,
+      "pixel_art": true,
+      "category": "portraits"
+    },
+    {
+      "id": "portrait_boss_fen_seer",
+      "path": "res://assets/art/src-svg/portraits/portrait_boss_fen_seer.svg",
+      "source_svg": "res://assets/art/src-svg/portraits/portrait_boss_fen_seer.svg",
+      "expected_width": 64,
+      "expected_height": 64,
+      "max_kb": 16,
+      "pixel_art": true,
+      "category": "portraits"
+    },
+    {
+      "id": "portrait_boss_eternal_scribe",
+      "path": "res://assets/art/src-svg/portraits/portrait_boss_eternal_scribe.svg",
+      "source_svg": "res://assets/art/src-svg/portraits/portrait_boss_eternal_scribe.svg",
+      "expected_width": 64,
+      "expected_height": 64,
+      "max_kb": 16,
+      "pixel_art": true,
+      "category": "portraits"
+    },
+    {
+      "id": "portrait_boss_flame_tyrant",
+      "path": "res://assets/art/src-svg/portraits/portrait_boss_flame_tyrant.svg",
+      "source_svg": "res://assets/art/src-svg/portraits/portrait_boss_flame_tyrant.svg",
+      "expected_width": 64,
+      "expected_height": 64,
+      "max_kb": 16,
+      "pixel_art": true,
+      "category": "portraits"
+    },
+    {
+      "id": "portrait_boss_frost_empress",
+      "path": "res://assets/art/src-svg/portraits/portrait_boss_frost_empress.svg",
+      "source_svg": "res://assets/art/src-svg/portraits/portrait_boss_frost_empress.svg",
+      "expected_width": 64,
+      "expected_height": 64,
+      "max_kb": 16,
+      "pixel_art": true,
+      "category": "portraits"
+    },
+    {
+      "id": "portrait_boss_ancient_treant",
+      "path": "res://assets/art/src-svg/portraits/portrait_boss_ancient_treant.svg",
+      "source_svg": "res://assets/art/src-svg/portraits/portrait_boss_ancient_treant.svg",
+      "expected_width": 64,
+      "expected_height": 64,
+      "max_kb": 16,
+      "pixel_art": true,
+      "category": "portraits"
+    },
+    {
       "id": "ico_tower_arrow",
       "path": "res://assets/art/src-svg/icons/ico_tower_arrow.svg",
       "source_svg": "res://assets/art/src-svg/icons/ico_tower_arrow.svg",
@@ -3350,66 +3570,6 @@
       "max_kb": 12,
       "pixel_art": true,
       "category": "buildings"
-    },
-    {
-      "id": "enemy_grunt",
-      "path": "res://assets/enemies/enemy_grunt.png",
-      "source_svg": "res://assets/art/src-svg/enemies/enemy_grunt.svg",
-      "expected_width": 16,
-      "expected_height": 16,
-      "max_kb": 6,
-      "pixel_art": true,
-      "category": "enemies"
-    },
-    {
-      "id": "enemy_runner",
-      "path": "res://assets/enemies/enemy_runner.png",
-      "source_svg": "res://assets/art/src-svg/enemies/enemy_runner.svg",
-      "expected_width": 16,
-      "expected_height": 16,
-      "max_kb": 6,
-      "pixel_art": true,
-      "category": "enemies"
-    },
-    {
-      "id": "enemy_tank",
-      "path": "res://assets/enemies/enemy_tank.png",
-      "source_svg": "res://assets/art/src-svg/enemies/enemy_tank.svg",
-      "expected_width": 16,
-      "expected_height": 16,
-      "max_kb": 6,
-      "pixel_art": true,
-      "category": "enemies"
-    },
-    {
-      "id": "enemy_mage",
-      "path": "res://assets/enemies/enemy_mage.png",
-      "source_svg": "res://assets/art/src-svg/enemies/enemy_mage.svg",
-      "expected_width": 16,
-      "expected_height": 16,
-      "max_kb": 6,
-      "pixel_art": true,
-      "category": "enemies"
-    },
-    {
-      "id": "enemy_boss",
-      "path": "res://assets/enemies/enemy_boss.png",
-      "source_svg": "res://assets/art/src-svg/enemies/enemy_boss.svg",
-      "expected_width": 24,
-      "expected_height": 24,
-      "max_kb": 8,
-      "pixel_art": true,
-      "category": "enemies"
-    },
-    {
-      "id": "enemy_flying",
-      "path": "res://assets/enemies/enemy_flying.png",
-      "source_svg": "res://assets/art/src-svg/enemies/enemy_flying.svg",
-      "expected_width": 16,
-      "expected_height": 16,
-      "max_kb": 6,
-      "pixel_art": true,
-      "category": "enemies"
     },
     {
       "id": "tree_pine",
@@ -6510,6 +6670,134 @@
       "frames": 4,
       "frame_width": 12,
       "description": "Support tower healing wave"
+    },
+    {
+      "id": "enemy_runner_walk",
+      "path": "res://assets/sprites/enemy_runner_walk.png",
+      "source_svg_frames": [
+        "res://assets/art/src-svg/sprites/anim/enemy_runner_walk_01.svg",
+        "res://assets/art/src-svg/sprites/anim/enemy_runner_walk_02.svg",
+        "res://assets/art/src-svg/sprites/anim/enemy_runner_walk_03.svg",
+        "res://assets/art/src-svg/sprites/anim/enemy_runner_walk_04.svg"
+      ],
+      "expected_width": 64,
+      "expected_height": 16,
+      "pixel_art": true,
+      "category": "enemies",
+      "animation": {
+        "frame_count": 4,
+        "fps": 10,
+        "loop": true,
+        "frame_width": 16,
+        "frame_height": 16
+      },
+      "description": "Runner enemy walk cycle animation"
+    },
+    {
+      "id": "enemy_runner_death",
+      "path": "res://assets/sprites/enemy_runner_death.png",
+      "source_svg_frames": [
+        "res://assets/art/src-svg/sprites/anim/enemy_runner_death_01.svg",
+        "res://assets/art/src-svg/sprites/anim/enemy_runner_death_02.svg",
+        "res://assets/art/src-svg/sprites/anim/enemy_runner_death_03.svg"
+      ],
+      "expected_width": 48,
+      "expected_height": 16,
+      "pixel_art": true,
+      "category": "enemies",
+      "animation": {
+        "frame_count": 3,
+        "fps": 10,
+        "loop": false,
+        "frame_width": 16,
+        "frame_height": 16
+      },
+      "description": "Runner enemy death animation"
+    },
+    {
+      "id": "enemy_brute_walk",
+      "path": "res://assets/sprites/enemy_brute_walk.png",
+      "source_svg_frames": [
+        "res://assets/art/src-svg/sprites/anim/enemy_brute_walk_01.svg",
+        "res://assets/art/src-svg/sprites/anim/enemy_brute_walk_02.svg",
+        "res://assets/art/src-svg/sprites/anim/enemy_brute_walk_03.svg"
+      ],
+      "expected_width": 48,
+      "expected_height": 16,
+      "pixel_art": true,
+      "category": "enemies",
+      "animation": {
+        "frame_count": 3,
+        "fps": 6,
+        "loop": true,
+        "frame_width": 16,
+        "frame_height": 16
+      },
+      "description": "Brute enemy walk cycle animation"
+    },
+    {
+      "id": "enemy_brute_death",
+      "path": "res://assets/sprites/enemy_brute_death.png",
+      "source_svg_frames": [
+        "res://assets/art/src-svg/sprites/anim/enemy_brute_death_01.svg",
+        "res://assets/art/src-svg/sprites/anim/enemy_brute_death_02.svg",
+        "res://assets/art/src-svg/sprites/anim/enemy_brute_death_03.svg",
+        "res://assets/art/src-svg/sprites/anim/enemy_brute_death_04.svg"
+      ],
+      "expected_width": 64,
+      "expected_height": 16,
+      "pixel_art": true,
+      "category": "enemies",
+      "animation": {
+        "frame_count": 4,
+        "fps": 10,
+        "loop": false,
+        "frame_width": 16,
+        "frame_height": 16
+      },
+      "description": "Brute enemy death animation"
+    },
+    {
+      "id": "enemy_flyer_hover",
+      "path": "res://assets/sprites/enemy_flyer_hover.png",
+      "source_svg_frames": [
+        "res://assets/art/src-svg/sprites/anim/enemy_flyer_hover_01.svg",
+        "res://assets/art/src-svg/sprites/anim/enemy_flyer_hover_02.svg",
+        "res://assets/art/src-svg/sprites/anim/enemy_flyer_hover_03.svg"
+      ],
+      "expected_width": 48,
+      "expected_height": 16,
+      "pixel_art": true,
+      "category": "enemies",
+      "animation": {
+        "frame_count": 3,
+        "fps": 8,
+        "loop": true,
+        "frame_width": 16,
+        "frame_height": 16
+      },
+      "description": "Flyer enemy hover animation"
+    },
+    {
+      "id": "enemy_flyer_death",
+      "path": "res://assets/sprites/enemy_flyer_death.png",
+      "source_svg_frames": [
+        "res://assets/art/src-svg/sprites/anim/enemy_flyer_death_01.svg",
+        "res://assets/art/src-svg/sprites/anim/enemy_flyer_death_02.svg",
+        "res://assets/art/src-svg/sprites/anim/enemy_flyer_death_03.svg"
+      ],
+      "expected_width": 48,
+      "expected_height": 16,
+      "pixel_art": true,
+      "category": "enemies",
+      "animation": {
+        "frame_count": 3,
+        "fps": 10,
+        "loop": false,
+        "frame_width": 16,
+        "frame_height": 16
+      },
+      "description": "Flyer enemy death animation"
     }
   ],
   "audio": [

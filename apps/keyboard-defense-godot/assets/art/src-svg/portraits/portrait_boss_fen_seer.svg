@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Fen Seer - Oracle Regional Boss -->
+
+  <!-- Background frame - swirling mist -->
+  <rect x="0" y="0" width="64" height="64" fill="#1a2f2f"/>
+  <rect x="2" y="2" width="60" height="60" fill="#1abc9c"/>
+  <rect x="4" y="4" width="56" height="56" fill="#1a2f2f"/>
+
+  <!-- Swirling mist effect -->
+  <rect x="6" y="8" width="14" height="4" fill="#16a085"/>
+  <rect x="44" y="6" width="12" height="4" fill="#1abc9c"/>
+  <rect x="8" y="50" width="16" height="4" fill="#16a085"/>
+  <rect x="40" y="52" width="14" height="4" fill="#1abc9c"/>
+  <rect x="10" y="28" width="6" height="3" fill="#48c9b0"/>
+  <rect x="48" y="32" width="8" height="3" fill="#48c9b0"/>
+
+  <!-- Flowing mist/water hair -->
+  <rect x="8" y="6" width="48" height="22" fill="#76d7c4"/>
+  <rect x="6" y="14" width="52" height="16" fill="#48c9b0"/>
+  <rect x="4" y="22" width="56" height="10" fill="#76d7c4"/>
+
+  <!-- Hair wave effect -->
+  <rect x="10" y="8" width="8" height="4" fill="#a3e4d7"/>
+  <rect x="46" y="10" width="8" height="4" fill="#a3e4d7"/>
+  <rect x="26" y="6" width="12" height="4" fill="#d1f2eb"/>
+
+  <!-- Ancient wizened face -->
+  <rect x="18" y="22" width="28" height="28" fill="#d5dbdb"/>
+  <rect x="22" y="18" width="20" height="8" fill="#d5dbdb"/>
+  <rect x="20" y="48" width="24" height="4" fill="#d5dbdb"/>
+
+  <!-- Face wrinkles/age lines -->
+  <rect x="20" y="24" width="6" height="1" fill="#aeb6bf"/>
+  <rect x="38" y="24" width="6" height="1" fill="#aeb6bf"/>
+  <rect x="22" y="44" width="20" height="1" fill="#aeb6bf"/>
+
+  <!-- Third eye on forehead -->
+  <rect x="28" y="22" width="8" height="6" fill="#1abc9c"/>
+  <rect x="30" y="24" width="4" height="2" fill="#a3e4d7"/>
+
+  <!-- Milky white blind eyes (but seeing) -->
+  <rect x="22" y="32" width="7" height="7" fill="#ecf0f1"/>
+  <rect x="35" y="32" width="7" height="7" fill="#ecf0f1"/>
+
+  <!-- No visible pupils (blind) -->
+  <rect x="24" y="34" width="3" height="3" fill="#d5dbdb"/>
+  <rect x="37" y="34" width="3" height="3" fill="#d5dbdb"/>
+
+  <!-- Subtle eye shine -->
+  <rect x="23" y="33" width="2" height="2" fill="#fff"/>
+  <rect x="36" y="33" width="2" height="2" fill="#fff"/>
+
+  <!-- Thin eyebrows -->
+  <rect x="22" y="28" width="7" height="2" fill="#76d7c4"/>
+  <rect x="35" y="28" width="7" height="2" fill="#76d7c4"/>
+
+  <!-- Nose -->
+  <rect x="30" y="38" width="4" height="6" fill="#bfc9ca"/>
+  <rect x="28" y="42" width="8" height="2" fill="#bfc9ca"/>
+
+  <!-- Thin cryptic mouth -->
+  <rect x="28" y="46" width="8" height="2" fill="#7f8c8d"/>
+  <rect x="30" y="45" width="4" height="2" fill="#95a5a6"/>
+
+  <!-- Floating seeing orb -->
+  <rect x="46" y="28" width="12" height="12" fill="#1abc9c"/>
+  <rect x="48" y="30" width="8" height="8" fill="#48c9b0"/>
+  <rect x="50" y="32" width="4" height="4" fill="#a3e4d7"/>
+  <rect x="51" y="33" width="2" height="2" fill="#fff"/>
+
+  <!-- Orb glow effect -->
+  <rect x="44" y="26" width="2" height="2" fill="#76d7c4"/>
+  <rect x="58" y="38" width="2" height="2" fill="#76d7c4"/>
+
+  <!-- Flowing water-like robes -->
+  <rect x="10" y="48" width="44" height="16" fill="#16a085"/>
+  <rect x="14" y="52" width="36" height="12" fill="#1abc9c"/>
+
+  <!-- Robe wave patterns -->
+  <rect x="18" y="54" width="28" height="2" fill="#48c9b0"/>
+  <rect x="16" y="58" width="32" height="2" fill="#76d7c4"/>
+
+  <!-- Clasp -->
+  <rect x="28" y="50" width="8" height="4" fill="#a3e4d7"/>
+  <rect x="30" y="51" width="4" height="2" fill="#d1f2eb"/>
+
+  <!-- Frame border - misty teal -->
+  <rect x="0" y="0" width="64" height="2" fill="#1abc9c"/>
+  <rect x="0" y="62" width="64" height="2" fill="#1abc9c"/>
+  <rect x="0" y="0" width="2" height="64" fill="#1abc9c"/>
+  <rect x="62" y="0" width="2" height="64" fill="#1abc9c"/>
+
+  <!-- Corner accents - ripples -->
+  <rect x="2" y="2" width="4" height="4" fill="#16a085"/>
+  <rect x="58" y="2" width="4" height="4" fill="#16a085"/>
+  <rect x="2" y="58" width="4" height="4" fill="#16a085"/>
+  <rect x="58" y="58" width="4" height="4" fill="#16a085"/>
+
+  <!-- Inner corner wave -->
+  <rect x="3" y="3" width="2" height="2" fill="#76d7c4"/>
+  <rect x="59" y="3" width="2" height="2" fill="#76d7c4"/>
+  <rect x="3" y="59" width="2" height="2" fill="#76d7c4"/>
+  <rect x="59" y="59" width="2" height="2" fill="#76d7c4"/>
+</svg>

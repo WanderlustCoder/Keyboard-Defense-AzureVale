@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Storm Wraith - Act 2 Boss (Chaos Spirit) -->
+
+  <!-- Background frame - storm clouds -->
+  <rect x="0" y="0" width="64" height="64" fill="#1a2a3a"/>
+  <rect x="2" y="2" width="60" height="60" fill="#2c3e50"/>
+  <rect x="4" y="4" width="56" height="56" fill="#1a2a3a"/>
+
+  <!-- Storm cloud background -->
+  <rect x="8" y="8" width="12" height="6" fill="#34495e"/>
+  <rect x="44" y="6" width="14" height="8" fill="#34495e"/>
+  <rect x="6" y="48" width="16" height="6" fill="#34495e"/>
+  <rect x="42" y="52" width="12" height="4" fill="#34495e"/>
+
+  <!-- Lightning streaks background -->
+  <rect x="10" y="14" width="2" height="10" fill="#f1c40f"/>
+  <rect x="8" y="24" width="2" height="6" fill="#f39c12"/>
+  <rect x="52" y="12" width="2" height="14" fill="#f1c40f"/>
+  <rect x="54" y="26" width="2" height="8" fill="#f39c12"/>
+
+  <!-- Spectral form - translucent body effect -->
+  <rect x="16" y="12" width="32" height="40" fill="#aed6f1"/>
+  <rect x="20" y="8" width="24" height="8" fill="#85c1e9"/>
+  <rect x="18" y="48" width="28" height="8" fill="#5dade2"/>
+
+  <!-- Inner glow layers -->
+  <rect x="20" y="16" width="24" height="32" fill="#d6eaf8"/>
+  <rect x="24" y="20" width="16" height="24" fill="#ebf5fb"/>
+
+  <!-- Eyes - crackling lightning -->
+  <rect x="20" y="26" width="8" height="8" fill="#f1c40f"/>
+  <rect x="36" y="26" width="8" height="8" fill="#f1c40f"/>
+
+  <!-- Eye inner intensity -->
+  <rect x="22" y="28" width="4" height="4" fill="#fff"/>
+  <rect x="38" y="28" width="4" height="4" fill="#fff"/>
+
+  <!-- Lightning bolt crown -->
+  <rect x="30" y="4" width="4" height="10" fill="#f1c40f"/>
+  <rect x="28" y="8" width="2" height="6" fill="#f39c12"/>
+  <rect x="34" y="8" width="2" height="6" fill="#f39c12"/>
+  <rect x="24" y="10" width="2" height="8" fill="#e67e22"/>
+  <rect x="38" y="10" width="2" height="8" fill="#e67e22"/>
+
+  <!-- Face suggestion (ghostly) -->
+  <rect x="28" y="36" width="8" height="4" fill="#85c1e9"/>
+  <rect x="26" y="42" width="12" height="2" fill="#5dade2"/>
+
+  <!-- Static/glitch artifacts -->
+  <rect x="6" y="30" width="6" height="2" fill="#3498db"/>
+  <rect x="52" y="34" width="6" height="2" fill="#3498db"/>
+  <rect x="14" y="44" width="4" height="2" fill="#2980b9"/>
+  <rect x="46" y="40" width="4" height="2" fill="#2980b9"/>
+
+  <!-- Energy tendrils -->
+  <rect x="12" y="28" width="4" height="16" fill="#5dade2"/>
+  <rect x="48" y="24" width="4" height="18" fill="#5dade2"/>
+
+  <!-- Frame border - electric blue -->
+  <rect x="0" y="0" width="64" height="2" fill="#3498db"/>
+  <rect x="0" y="62" width="64" height="2" fill="#3498db"/>
+  <rect x="0" y="0" width="2" height="64" fill="#3498db"/>
+  <rect x="62" y="0" width="2" height="64" fill="#3498db"/>
+
+  <!-- Corner accents - lightning bolts -->
+  <rect x="2" y="2" width="4" height="4" fill="#1a5276"/>
+  <rect x="58" y="2" width="4" height="4" fill="#1a5276"/>
+  <rect x="2" y="58" width="4" height="4" fill="#1a5276"/>
+  <rect x="58" y="58" width="4" height="4" fill="#1a5276"/>
+
+  <!-- Inner corner spark -->
+  <rect x="3" y="3" width="2" height="2" fill="#f1c40f"/>
+  <rect x="59" y="3" width="2" height="2" fill="#f1c40f"/>
+  <rect x="3" y="59" width="2" height="2" fill="#f1c40f"/>
+  <rect x="59" y="59" width="2" height="2" fill="#f1c40f"/>
+</svg>

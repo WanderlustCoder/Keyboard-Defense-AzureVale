@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Void Tyrant - Act 5 Final Boss (Lord of Silence) -->
+
+  <!-- Background frame - void/glitch -->
+  <rect x="0" y="0" width="64" height="64" fill="#0a0a0f"/>
+  <rect x="2" y="2" width="60" height="60" fill="#050508"/>
+  <rect x="4" y="4" width="56" height="56" fill="#0d0d12"/>
+
+  <!-- Static/glitch background -->
+  <rect x="6" y="8" width="4" height="2" fill="#9b59b6"/>
+  <rect x="50" y="6" width="6" height="2" fill="#e74c3c"/>
+  <rect x="8" y="52" width="8" height="2" fill="#f1c40f"/>
+  <rect x="48" y="54" width="4" height="2" fill="#9b59b6"/>
+  <rect x="12" y="28" width="3" height="1" fill="#3498db"/>
+  <rect x="49" y="32" width="5" height="1" fill="#e74c3c"/>
+
+  <!-- Amorphous dark form -->
+  <rect x="14" y="10" width="36" height="44" fill="#1a0a2e"/>
+  <rect x="18" y="6" width="28" height="8" fill="#150820"/>
+  <rect x="16" y="50" width="32" height="8" fill="#150820"/>
+
+  <!-- Shifting form layers -->
+  <rect x="18" y="14" width="28" height="36" fill="#200d3a"/>
+  <rect x="22" y="18" width="20" height="28" fill="#2a1248"/>
+
+  <!-- Multiple shifting eyes -->
+  <!-- Main eyes -->
+  <rect x="20" y="24" width="8" height="8" fill="#e74c3c"/>
+  <rect x="36" y="24" width="8" height="8" fill="#e74c3c"/>
+  <rect x="22" y="26" width="4" height="4" fill="#f1c40f"/>
+  <rect x="38" y="26" width="4" height="4" fill="#f1c40f"/>
+
+  <!-- Secondary smaller eyes -->
+  <rect x="28" y="20" width="4" height="4" fill="#9b59b6"/>
+  <rect x="32" y="20" width="4" height="4" fill="#9b59b6"/>
+  <rect x="29" y="21" width="2" height="2" fill="#d7bde2"/>
+  <rect x="33" y="21" width="2" height="2" fill="#d7bde2"/>
+
+  <!-- Third eye (center) -->
+  <rect x="28" y="34" width="8" height="6" fill="#e74c3c"/>
+  <rect x="30" y="35" width="4" height="4" fill="#f5b041"/>
+  <rect x="31" y="36" width="2" height="2" fill="#fff"/>
+
+  <!-- Corrupted screen texture on eyes -->
+  <rect x="23" y="27" width="1" height="2" fill="#0d0d12"/>
+  <rect x="39" y="27" width="1" height="2" fill="#0d0d12"/>
+
+  <!-- Floating broken keyboard keys -->
+  <rect x="6" y="16" width="6" height="6" fill="#4a4a5a"/>
+  <rect x="7" y="17" width="4" height="4" fill="#6a6a7a"/>
+  <rect x="8" y="18" width="2" height="2" fill="#bdc3c7"/>
+
+  <rect x="52" y="20" width="6" height="6" fill="#4a4a5a"/>
+  <rect x="53" y="21" width="4" height="4" fill="#6a6a7a"/>
+  <rect x="54" y="22" width="2" height="2" fill="#bdc3c7"/>
+
+  <rect x="8" y="38" width="5" height="5" fill="#4a4a5a"/>
+  <rect x="9" y="39" width="3" height="3" fill="#6a6a7a"/>
+
+  <rect x="51" y="42" width="5" height="5" fill="#4a4a5a"/>
+  <rect x="52" y="43" width="3" height="3" fill="#6a6a7a"/>
+
+  <!-- Static tendrils -->
+  <rect x="10" y="26" width="4" height="18" fill="#1a0a2e"/>
+  <rect x="11" y="28" width="2" height="14" fill="#2a1248"/>
+  <rect x="50" y="24" width="4" height="20" fill="#1a0a2e"/>
+  <rect x="51" y="26" width="2" height="16" fill="#2a1248"/>
+
+  <!-- Digital corruption artifacts -->
+  <rect x="24" y="42" width="16" height="4" fill="#1a0a2e"/>
+  <rect x="26" y="43" width="4" height="2" fill="#9b59b6"/>
+  <rect x="34" y="43" width="4" height="2" fill="#e74c3c"/>
+
+  <!-- Frame border - void corruption (incomplete/glitched) -->
+  <rect x="0" y="0" width="64" height="2" fill="#1a0a2e"/>
+  <rect x="0" y="62" width="64" height="2" fill="#1a0a2e"/>
+  <rect x="0" y="0" width="2" height="64" fill="#1a0a2e"/>
+  <rect x="62" y="0" width="2" height="64" fill="#1a0a2e"/>
+
+  <!-- Glitched border sections -->
+  <rect x="20" y="0" width="8" height="2" fill="#9b59b6"/>
+  <rect x="40" y="62" width="10" height="2" fill="#e74c3c"/>
+  <rect x="0" y="30" width="2" height="8" fill="#f1c40f"/>
+  <rect x="62" y="20" width="2" height="6" fill="#9b59b6"/>
+
+  <!-- Corner accents - dissolving -->
+  <rect x="2" y="2" width="4" height="4" fill="#2a1248"/>
+  <rect x="58" y="2" width="4" height="4" fill="#2a1248"/>
+  <rect x="2" y="58" width="4" height="4" fill="#2a1248"/>
+  <rect x="58" y="58" width="4" height="4" fill="#2a1248"/>
+
+  <!-- Corrupted corner glow -->
+  <rect x="3" y="3" width="2" height="2" fill="#e74c3c"/>
+  <rect x="59" y="3" width="2" height="2" fill="#9b59b6"/>
+  <rect x="3" y="59" width="2" height="2" fill="#f1c40f"/>
+  <rect x="59" y="59" width="2" height="2" fill="#e74c3c"/>
+</svg>

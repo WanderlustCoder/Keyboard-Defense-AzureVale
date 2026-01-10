@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Ranger Sylva - Forest Ranger -->
+
+  <!-- Background frame - forest canopy -->
+  <rect x="0" y="0" width="64" height="64" fill="#0d2818"/>
+  <rect x="2" y="2" width="60" height="60" fill="#1a3d2a"/>
+  <rect x="4" y="4" width="56" height="56" fill="#0d2818"/>
+
+  <!-- Leaf shadows in background -->
+  <rect x="6" y="6" width="8" height="4" fill="#145a32"/>
+  <rect x="50" y="8" width="6" height="6" fill="#1e8449"/>
+  <rect x="8" y="50" width="10" height="6" fill="#145a32"/>
+  <rect x="46" y="52" width="8" height="4" fill="#1e8449"/>
+
+  <!-- Ranger hood -->
+  <rect x="10" y="4" width="44" height="24" fill="#2e4d2e"/>
+  <rect x="8" y="12" width="48" height="18" fill="#3d5c3d"/>
+  <rect x="6" y="20" width="52" height="10" fill="#2e4d2e"/>
+
+  <!-- Hood shadow -->
+  <rect x="14" y="16" width="36" height="14" fill="#1a3d2a"/>
+
+  <!-- Leaves woven into hood -->
+  <rect x="12" y="6" width="4" height="3" fill="#27ae60"/>
+  <rect x="48" y="8" width="4" height="3" fill="#27ae60"/>
+  <rect x="8" y="14" width="3" height="4" fill="#2ecc71"/>
+  <rect x="53" y="16" width="3" height="4" fill="#2ecc71"/>
+
+  <!-- Weathered face -->
+  <rect x="18" y="22" width="28" height="28" fill="#deb887"/>
+  <rect x="22" y="18" width="20" height="8" fill="#deb887"/>
+  <rect x="20" y="48" width="24" height="4" fill="#deb887"/>
+
+  <!-- Face weathering/tan lines -->
+  <rect x="20" y="24" width="6" height="8" fill="#d4a574"/>
+  <rect x="38" y="24" width="6" height="8" fill="#d4a574"/>
+
+  <!-- Scar across cheek -->
+  <rect x="40" y="38" width="6" height="2" fill="#c9a89a"/>
+
+  <!-- Dark green-tinted hair visible under hood -->
+  <rect x="16" y="18" width="32" height="6" fill="#2e4d2e"/>
+  <rect x="14" y="22" width="6" height="10" fill="#3d5c3d"/>
+  <rect x="44" y="22" width="6" height="10" fill="#3d5c3d"/>
+
+  <!-- Sharp green eyes -->
+  <rect x="22" y="30" width="7" height="7" fill="#fff"/>
+  <rect x="35" y="30" width="7" height="7" fill="#fff"/>
+
+  <!-- Irises (forest green) -->
+  <rect x="24" y="32" width="4" height="4" fill="#27ae60"/>
+  <rect x="37" y="32" width="4" height="4" fill="#27ae60"/>
+
+  <!-- Pupils (alert) -->
+  <rect x="25" y="33" width="2" height="2" fill="#0d2818"/>
+  <rect x="38" y="33" width="2" height="2" fill="#0d2818"/>
+
+  <!-- Eye highlights -->
+  <rect x="24" y="32" width="2" height="2" fill="#fff"/>
+  <rect x="37" y="32" width="2" height="2" fill="#fff"/>
+
+  <!-- Alert eyebrows -->
+  <rect x="22" y="26" width="7" height="2" fill="#2e4d2e"/>
+  <rect x="35" y="26" width="7" height="2" fill="#2e4d2e"/>
+
+  <!-- Nose -->
+  <rect x="30" y="36" width="4" height="6" fill="#c9a89a"/>
+  <rect x="28" y="40" width="8" height="2" fill="#c9a89a"/>
+
+  <!-- Reserved mouth -->
+  <rect x="28" y="44" width="8" height="2" fill="#8b6b5a"/>
+  <rect x="30" y="43" width="4" height="2" fill="#a08070"/>
+
+  <!-- Bow visible over shoulder -->
+  <rect x="48" y="28" width="4" height="24" fill="#5d4037"/>
+  <rect x="50" y="30" width="2" height="20" fill="#6d4c41"/>
+  <rect x="52" y="24" width="2" height="6" fill="#795548"/>
+  <rect x="52" y="48" width="2" height="6" fill="#795548"/>
+
+  <!-- Ranger cloak/collar -->
+  <rect x="10" y="46" width="44" height="18" fill="#2e4d2e"/>
+  <rect x="14" y="50" width="36" height="14" fill="#3d5c3d"/>
+
+  <!-- Clasp -->
+  <rect x="28" y="48" width="8" height="6" fill="#8b7355"/>
+  <rect x="30" y="50" width="4" height="2" fill="#a08060"/>
+
+  <!-- Frame border - forest green -->
+  <rect x="0" y="0" width="64" height="2" fill="#1e8449"/>
+  <rect x="0" y="62" width="64" height="2" fill="#1e8449"/>
+  <rect x="0" y="0" width="2" height="64" fill="#1e8449"/>
+  <rect x="62" y="0" width="2" height="64" fill="#1e8449"/>
+
+  <!-- Corner accents - leaves -->
+  <rect x="2" y="2" width="4" height="4" fill="#145a32"/>
+  <rect x="58" y="2" width="4" height="4" fill="#145a32"/>
+  <rect x="2" y="58" width="4" height="4" fill="#145a32"/>
+  <rect x="58" y="58" width="4" height="4" fill="#145a32"/>
+
+  <!-- Inner corner leaf highlight -->
+  <rect x="3" y="3" width="2" height="2" fill="#27ae60"/>
+  <rect x="59" y="3" width="2" height="2" fill="#27ae60"/>
+  <rect x="3" y="59" width="2" height="2" fill="#27ae60"/>
+  <rect x="59" y="59" width="2" height="2" fill="#27ae60"/>
+</svg>

@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Ghost of the Last Champion - Ultimate Challenge -->
+
+  <!-- Background frame - starfield/void -->
+  <rect x="0" y="0" width="64" height="64" fill="#0a0a15"/>
+  <rect x="2" y="2" width="60" height="60" fill="#0f0f1a"/>
+  <rect x="4" y="4" width="56" height="56" fill="#0a0a15"/>
+
+  <!-- Stars in background -->
+  <rect x="8" y="8" width="2" height="2" fill="#fff"/>
+  <rect x="52" y="12" width="2" height="2" fill="#fff"/>
+  <rect x="14" y="48" width="2" height="2" fill="#d5dbdb"/>
+  <rect x="46" y="52" width="2" height="2" fill="#d5dbdb"/>
+  <rect x="28" y="6" width="1" height="1" fill="#85c1e9"/>
+  <rect x="36" y="54" width="1" height="1" fill="#85c1e9"/>
+
+  <!-- Translucent spectral form (dithered effect) -->
+  <rect x="14" y="8" width="36" height="48" fill="#6c7a89"/>
+  <rect x="18" y="4" width="28" height="8" fill="#5d6d7e"/>
+  <rect x="16" y="52" width="32" height="8" fill="#5d6d7e"/>
+
+  <!-- Inner glow layers (ethereal) -->
+  <rect x="18" y="12" width="28" height="40" fill="#85929e"/>
+  <rect x="22" y="16" width="20" height="32" fill="#aab7b8"/>
+
+  <!-- Faded dither pattern (ghostly transparency) -->
+  <rect x="20" y="14" width="2" height="2" fill="#0a0a15"/>
+  <rect x="26" y="18" width="2" height="2" fill="#0a0a15"/>
+  <rect x="36" y="14" width="2" height="2" fill="#0a0a15"/>
+  <rect x="42" y="20" width="2" height="2" fill="#0a0a15"/>
+  <rect x="18" y="40" width="2" height="2" fill="#0a0a15"/>
+  <rect x="44" y="44" width="2" height="2" fill="#0a0a15"/>
+
+  <!-- Ancient heroic armor (faded) -->
+  <rect x="16" y="38" width="32" height="18" fill="#5d6d7e"/>
+  <rect x="20" y="42" width="24" height="12" fill="#6c7a89"/>
+
+  <!-- Armor details -->
+  <rect x="24" y="44" width="16" height="8" fill="#7d8a96"/>
+  <rect x="28" y="46" width="8" height="4" fill="#95a5a6"/>
+
+  <!-- Shoulder pauldrons -->
+  <rect x="10" y="40" width="10" height="12" fill="#5d6d7e"/>
+  <rect x="44" y="40" width="10" height="12" fill="#5d6d7e"/>
+  <rect x="12" y="42" width="6" height="8" fill="#6c7a89"/>
+  <rect x="46" y="42" width="6" height="8" fill="#6c7a89"/>
+
+  <!-- Noble but sorrowful face -->
+  <rect x="22" y="18" width="20" height="22" fill="#d5dbdb"/>
+  <rect x="26" y="14" width="12" height="8" fill="#d5dbdb"/>
+
+  <!-- Face fading effect -->
+  <rect x="24" y="20" width="16" height="16" fill="#e8ecee"/>
+
+  <!-- Eyes (soft blue glow) -->
+  <rect x="24" y="26" width="6" height="6" fill="#85c1e9"/>
+  <rect x="34" y="26" width="6" height="6" fill="#85c1e9"/>
+
+  <!-- Eye inner glow -->
+  <rect x="26" y="28" width="2" height="2" fill="#d4e6f1"/>
+  <rect x="36" y="28" width="2" height="2" fill="#d4e6f1"/>
+
+  <!-- Sorrowful downturned eyebrows -->
+  <rect x="24" y="22" width="6" height="2" fill="#aab7b8"/>
+  <rect x="34" y="22" width="6" height="2" fill="#aab7b8"/>
+
+  <!-- Nose -->
+  <rect x="30" y="30" width="4" height="6" fill="#bdc3c7"/>
+
+  <!-- Solemn mouth -->
+  <rect x="28" y="38" width="8" height="2" fill="#95a5a6"/>
+
+  <!-- Faint heroic aura/halo -->
+  <rect x="18" y="6" width="28" height="2" fill="#85c1e9"/>
+  <rect x="20" y="4" width="24" height="2" fill="#aed6f1"/>
+  <rect x="24" y="2" width="16" height="2" fill="#d4e6f1"/>
+
+  <!-- Side aura -->
+  <rect x="10" y="20" width="4" height="20" fill="#5dade2"/>
+  <rect x="12" y="24" width="2" height="12" fill="#85c1e9"/>
+  <rect x="50" y="20" width="4" height="20" fill="#5dade2"/>
+  <rect x="52" y="24" width="2" height="12" fill="#85c1e9"/>
+
+  <!-- Spectral legendary sword -->
+  <rect x="48" y="16" width="4" height="36" fill="#85c1e9"/>
+  <rect x="50" y="20" width="2" height="28" fill="#aed6f1"/>
+  <rect x="46" y="48" width="8" height="4" fill="#5dade2"/>
+  <rect x="48" y="50" width="4" height="2" fill="#85c1e9"/>
+
+  <!-- Sword glow -->
+  <rect x="52" y="24" width="2" height="20" fill="#d4e6f1"/>
+
+  <!-- Frame border - ethereal silver -->
+  <rect x="0" y="0" width="64" height="2" fill="#bdc3c7"/>
+  <rect x="0" y="62" width="64" height="2" fill="#bdc3c7"/>
+  <rect x="0" y="0" width="2" height="64" fill="#bdc3c7"/>
+  <rect x="62" y="0" width="2" height="64" fill="#bdc3c7"/>
+
+  <!-- Corner accents - fading stars -->
+  <rect x="2" y="2" width="4" height="4" fill="#95a5a6"/>
+  <rect x="58" y="2" width="4" height="4" fill="#95a5a6"/>
+  <rect x="2" y="58" width="4" height="4" fill="#95a5a6"/>
+  <rect x="58" y="58" width="4" height="4" fill="#95a5a6"/>
+
+  <!-- Inner corner star shine -->
+  <rect x="3" y="3" width="2" height="2" fill="#d4e6f1"/>
+  <rect x="59" y="3" width="2" height="2" fill="#d4e6f1"/>
+  <rect x="3" y="59" width="2" height="2" fill="#d4e6f1"/>
+  <rect x="59" y="59" width="2" height="2" fill="#d4e6f1"/>
+</svg>

@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- The Wandering Scribe - Challenge Giver -->
+
+  <!-- Background frame - floating words/text -->
+  <rect x="0" y="0" width="64" height="64" fill="#d4b896"/>
+  <rect x="2" y="2" width="60" height="60" fill="#c4a886"/>
+  <rect x="4" y="4" width="56" height="56" fill="#e8d4b8"/>
+
+  <!-- Floating text pattern (decorative) -->
+  <rect x="8" y="8" width="12" height="2" fill="#8b7355"/>
+  <rect x="44" y="6" width="10" height="2" fill="#8b7355"/>
+  <rect x="6" y="16" width="8" height="2" fill="#a08060"/>
+  <rect x="50" y="14" width="8" height="2" fill="#a08060"/>
+  <rect x="10" y="50" width="14" height="2" fill="#8b7355"/>
+  <rect x="40" y="52" width="12" height="2" fill="#8b7355"/>
+
+  <!-- Traveler's hood -->
+  <rect x="10" y="4" width="44" height="24" fill="#8b7355"/>
+  <rect x="8" y="12" width="48" height="18" fill="#a08060"/>
+  <rect x="6" y="20" width="52" height="10" fill="#8b7355"/>
+
+  <!-- Hood inner shadow -->
+  <rect x="16" y="16" width="32" height="16" fill="#6d5a45"/>
+
+  <!-- Quill feather decoration on hood -->
+  <rect x="44" y="6" width="4" height="14" fill="#ecf0f1"/>
+  <rect x="46" y="8" width="2" height="10" fill="#bdc3c7"/>
+  <rect x="48" y="4" width="6" height="4" fill="#fff"/>
+  <rect x="50" y="2" width="4" height="3" fill="#d7bde2"/>
+
+  <!-- Ageless neutral face -->
+  <rect x="20" y="22" width="24" height="26" fill="#e8d4b8"/>
+  <rect x="24" y="18" width="16" height="8" fill="#e8d4b8"/>
+  <rect x="22" y="46" width="20" height="4" fill="#e8d4b8"/>
+
+  <!-- Deep knowing eyes -->
+  <rect x="24" y="30" width="6" height="6" fill="#fff"/>
+  <rect x="34" y="30" width="6" height="6" fill="#fff"/>
+
+  <!-- Irises (deep knowing blue) -->
+  <rect x="25" y="31" width="4" height="4" fill="#2c3e50"/>
+  <rect x="35" y="31" width="4" height="4" fill="#2c3e50"/>
+
+  <!-- Pupils -->
+  <rect x="26" y="32" width="2" height="2" fill="#1a1a2e"/>
+  <rect x="36" y="32" width="2" height="2" fill="#1a1a2e"/>
+
+  <!-- Eye highlights -->
+  <rect x="25" y="31" width="2" height="2" fill="#fff"/>
+  <rect x="35" y="31" width="2" height="2" fill="#fff"/>
+
+  <!-- Subtle eyebrows -->
+  <rect x="24" y="26" width="6" height="2" fill="#8b7355"/>
+  <rect x="34" y="26" width="6" height="2" fill="#8b7355"/>
+
+  <!-- Nose -->
+  <rect x="30" y="34" width="4" height="6" fill="#d4c4a8"/>
+  <rect x="28" y="38" width="8" height="2" fill="#d4c4a8"/>
+
+  <!-- Neutral mouth -->
+  <rect x="28" y="44" width="8" height="2" fill="#a08070"/>
+  <rect x="30" y="43" width="4" height="2" fill="#b09080"/>
+
+  <!-- Glowing quill pen in hand -->
+  <rect x="48" y="32" width="4" height="20" fill="#f4d03f"/>
+  <rect x="50" y="34" width="2" height="16" fill="#f7dc6f"/>
+  <rect x="52" y="28" width="6" height="8" fill="#ecf0f1"/>
+  <rect x="54" y="30" width="4" height="4" fill="#fff"/>
+
+  <!-- Quill glow effect -->
+  <rect x="46" y="38" width="2" height="8" fill="#f9e79f"/>
+  <rect x="52" y="48" width="4" height="4" fill="#f4d03f"/>
+
+  <!-- Satchel overflowing with scrolls (side) -->
+  <rect x="4" y="36" width="12" height="20" fill="#5d4037"/>
+  <rect x="6" y="38" width="8" height="16" fill="#6d5047"/>
+
+  <!-- Scrolls poking out -->
+  <rect x="4" y="36" width="10" height="4" fill="#e8d4b8"/>
+  <rect x="6" y="38" width="6" height="2" fill="#d4c4a8"/>
+  <rect x="8" y="42" width="6" height="3" fill="#e8d4b8"/>
+  <rect x="6" y="48" width="8" height="3" fill="#e8d4b8"/>
+
+  <!-- Traveler robes -->
+  <rect x="14" y="44" width="36" height="20" fill="#8b7355"/>
+  <rect x="18" y="48" width="28" height="16" fill="#a08060"/>
+
+  <!-- Robe clasp -->
+  <rect x="28" y="46" width="8" height="6" fill="#d4b896"/>
+  <rect x="30" y="48" width="4" height="2" fill="#c4a886"/>
+
+  <!-- Ink stains on robes (character detail) -->
+  <rect x="22" y="54" width="3" height="3" fill="#2c3e50"/>
+  <rect x="38" y="52" width="4" height="4" fill="#1a1a2e"/>
+
+  <!-- Frame border - parchment/ink -->
+  <rect x="0" y="0" width="64" height="2" fill="#8b7355"/>
+  <rect x="0" y="62" width="64" height="2" fill="#8b7355"/>
+  <rect x="0" y="0" width="2" height="64" fill="#8b7355"/>
+  <rect x="62" y="0" width="2" height="64" fill="#8b7355"/>
+
+  <!-- Corner accents - ink splatters -->
+  <rect x="2" y="2" width="4" height="4" fill="#6d5a45"/>
+  <rect x="58" y="2" width="4" height="4" fill="#6d5a45"/>
+  <rect x="2" y="58" width="4" height="4" fill="#6d5a45"/>
+  <rect x="58" y="58" width="4" height="4" fill="#6d5a45"/>
+
+  <!-- Inner corner ink -->
+  <rect x="3" y="3" width="2" height="2" fill="#2c3e50"/>
+  <rect x="59" y="3" width="2" height="2" fill="#2c3e50"/>
+  <rect x="3" y="59" width="2" height="2" fill="#2c3e50"/>
+  <rect x="59" y="59" width="2" height="2" fill="#2c3e50"/>
+</svg>

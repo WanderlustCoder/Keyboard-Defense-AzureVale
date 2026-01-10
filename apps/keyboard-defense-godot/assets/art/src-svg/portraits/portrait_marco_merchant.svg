@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Marco the Merchant - Wandering Trader -->
+
+  <!-- Background frame - market stall -->
+  <rect x="0" y="0" width="64" height="64" fill="#3d2817"/>
+  <rect x="2" y="2" width="60" height="60" fill="#4a3520"/>
+  <rect x="4" y="4" width="56" height="56" fill="#5d4430"/>
+
+  <!-- Market fabric in background -->
+  <rect x="6" y="6" width="16" height="10" fill="#922b21"/>
+  <rect x="42" y="6" width="16" height="10" fill="#1e8449"/>
+  <rect x="6" y="50" width="18" height="8" fill="#2980b9"/>
+  <rect x="40" y="52" width="18" height="6" fill="#8e44ad"/>
+
+  <!-- Merchant's cap -->
+  <rect x="14" y="4" width="36" height="14" fill="#1e8449"/>
+  <rect x="18" y="2" width="28" height="8" fill="#27ae60"/>
+  <rect x="12" y="10" width="40" height="8" fill="#145a32"/>
+
+  <!-- Cap feather -->
+  <rect x="42" y="2" width="4" height="10" fill="#e74c3c"/>
+  <rect x="44" y="4" width="2" height="8" fill="#c0392b"/>
+
+  <!-- Dark curly hair -->
+  <rect x="10" y="14" width="44" height="10" fill="#2c1810"/>
+  <rect x="8" y="18" width="48" height="8" fill="#3d2817"/>
+  <rect x="6" y="22" width="52" height="6" fill="#2c1810"/>
+
+  <!-- Curly hair texture -->
+  <rect x="12" y="16" width="4" height="3" fill="#4d3d30"/>
+  <rect x="20" y="15" width="3" height="4" fill="#4d3d30"/>
+  <rect x="40" y="16" width="4" height="3" fill="#4d3d30"/>
+  <rect x="48" y="15" width="3" height="4" fill="#4d3d30"/>
+
+  <!-- Round jolly face (tanned) -->
+  <rect x="14" y="20" width="36" height="32" fill="#d4a574"/>
+  <rect x="18" y="16" width="28" height="8" fill="#d4a574"/>
+  <rect x="16" y="50" width="32" height="4" fill="#d4a574"/>
+
+  <!-- Face highlight -->
+  <rect x="16" y="22" width="10" height="12" fill="#e5b898"/>
+
+  <!-- Rosy cheeks (jolly) -->
+  <rect x="14" y="36" width="8" height="6" fill="#e08060"/>
+  <rect x="42" y="36" width="8" height="6" fill="#e08060"/>
+
+  <!-- Twinkling friendly eyes -->
+  <rect x="20" y="28" width="8" height="8" fill="#fff"/>
+  <rect x="36" y="28" width="8" height="8" fill="#fff"/>
+
+  <!-- Irises (purple/playful) -->
+  <rect x="22" y="30" width="5" height="5" fill="#8e44ad"/>
+  <rect x="38" y="30" width="5" height="5" fill="#8e44ad"/>
+
+  <!-- Pupils -->
+  <rect x="24" y="31" width="2" height="3" fill="#2c1810"/>
+  <rect x="40" y="31" width="2" height="3" fill="#2c1810"/>
+
+  <!-- Eye highlights (twinkle) -->
+  <rect x="22" y="30" width="2" height="2" fill="#fff"/>
+  <rect x="38" y="30" width="2" height="2" fill="#fff"/>
+
+  <!-- Crow's feet (laugh lines) -->
+  <rect x="18" y="32" width="2" height="1" fill="#c8956c"/>
+  <rect x="44" y="32" width="2" height="1" fill="#c8956c"/>
+
+  <!-- Arched eyebrows -->
+  <rect x="20" y="24" width="8" height="2" fill="#2c1810"/>
+  <rect x="36" y="24" width="8" height="2" fill="#2c1810"/>
+
+  <!-- Nose (rounded) -->
+  <rect x="28" y="34" width="8" height="8" fill="#c8956c"/>
+  <rect x="30" y="36" width="4" height="4" fill="#d4a574"/>
+
+  <!-- Big toothy grin -->
+  <rect x="22" y="46" width="20" height="6" fill="#c0392b"/>
+  <rect x="24" y="44" width="16" height="4" fill="#e74c3c"/>
+
+  <!-- Teeth showing -->
+  <rect x="26" y="46" width="12" height="3" fill="#fff"/>
+  <rect x="28" y="47" width="2" height="2" fill="#f7dc6f"/>
+
+  <!-- Gold tooth! -->
+  <rect x="34" y="47" width="2" height="2" fill="#f4d03f"/>
+
+  <!-- Smile dimples -->
+  <rect x="20" y="44" width="2" height="4" fill="#c8956c"/>
+  <rect x="42" y="44" width="2" height="4" fill="#c8956c"/>
+
+  <!-- Colorful merchant vest -->
+  <rect x="10" y="50" width="44" height="14" fill="#e74c3c"/>
+  <rect x="14" y="52" width="36" height="12" fill="#c0392b"/>
+
+  <!-- Vest pattern stripes -->
+  <rect x="16" y="54" width="4" height="8" fill="#f4d03f"/>
+  <rect x="24" y="54" width="4" height="8" fill="#27ae60"/>
+  <rect x="32" y="54" width="4" height="8" fill="#3498db"/>
+  <rect x="40" y="54" width="4" height="8" fill="#8e44ad"/>
+
+  <!-- Many pouches hint -->
+  <rect x="6" y="54" width="6" height="8" fill="#8b7355"/>
+  <rect x="7" y="55" width="4" height="6" fill="#a08060"/>
+  <rect x="52" y="54" width="6" height="8" fill="#8b7355"/>
+  <rect x="53" y="55" width="4" height="6" fill="#a08060"/>
+
+  <!-- Collar/scarf -->
+  <rect x="24" y="50" width="16" height="4" fill="#f7dc6f"/>
+  <rect x="26" y="51" width="12" height="2" fill="#f4d03f"/>
+
+  <!-- Frame border - gold coin -->
+  <rect x="0" y="0" width="64" height="2" fill="#f4d03f"/>
+  <rect x="0" y="62" width="64" height="2" fill="#f4d03f"/>
+  <rect x="0" y="0" width="2" height="64" fill="#f4d03f"/>
+  <rect x="62" y="0" width="2" height="64" fill="#f4d03f"/>
+
+  <!-- Corner accents - coin stacks -->
+  <rect x="2" y="2" width="4" height="4" fill="#d4ac0d"/>
+  <rect x="58" y="2" width="4" height="4" fill="#d4ac0d"/>
+  <rect x="2" y="58" width="4" height="4" fill="#d4ac0d"/>
+  <rect x="58" y="58" width="4" height="4" fill="#d4ac0d"/>
+
+  <!-- Inner corner shine -->
+  <rect x="3" y="3" width="2" height="2" fill="#f7dc6f"/>
+  <rect x="59" y="3" width="2" height="2" fill="#f7dc6f"/>
+  <rect x="3" y="59" width="2" height="2" fill="#f7dc6f"/>
+  <rect x="59" y="59" width="2" height="2" fill="#f7dc6f"/>
+</svg>

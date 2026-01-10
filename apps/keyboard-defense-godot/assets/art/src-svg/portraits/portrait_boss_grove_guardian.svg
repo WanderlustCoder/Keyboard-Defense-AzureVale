@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Grove Guardian - Nature Spirit Regional Boss -->
+
+  <!-- Background frame - ancient grove -->
+  <rect x="0" y="0" width="64" height="64" fill="#0d2818"/>
+  <rect x="2" y="2" width="60" height="60" fill="#1a3d2a"/>
+  <rect x="4" y="4" width="56" height="56" fill="#0d2818"/>
+
+  <!-- Vine pattern on frame -->
+  <rect x="6" y="6" width="2" height="52" fill="#27ae60"/>
+  <rect x="56" y="6" width="2" height="52" fill="#27ae60"/>
+  <rect x="8" y="8" width="48" height="2" fill="#27ae60"/>
+  <rect x="8" y="54" width="48" height="2" fill="#27ae60"/>
+
+  <!-- Tree bark face base -->
+  <rect x="14" y="14" width="36" height="40" fill="#5d4037"/>
+  <rect x="18" y="10" width="28" height="8" fill="#4e342e"/>
+  <rect x="16" y="50" width="32" height="6" fill="#4e342e"/>
+
+  <!-- Bark texture -->
+  <rect x="16" y="18" width="32" height="32" fill="#6d4c41"/>
+  <rect x="20" y="22" width="24" height="24" fill="#5d4037"/>
+
+  <!-- Bark cracks/lines -->
+  <rect x="22" y="14" width="2" height="20" fill="#3e2723"/>
+  <rect x="40" y="16" width="2" height="24" fill="#3e2723"/>
+  <rect x="18" y="40" width="28" height="2" fill="#3e2723"/>
+
+  <!-- Branch antlers with leaves -->
+  <rect x="8" y="4" width="4" height="16" fill="#5d4037"/>
+  <rect x="4" y="8" width="4" height="4" fill="#5d4037"/>
+  <rect x="6" y="2" width="2" height="8" fill="#4e342e"/>
+
+  <rect x="52" y="4" width="4" height="16" fill="#5d4037"/>
+  <rect x="56" y="8" width="4" height="4" fill="#5d4037"/>
+  <rect x="56" y="2" width="2" height="8" fill="#4e342e"/>
+
+  <!-- Leaves on antlers -->
+  <rect x="2" y="4" width="4" height="4" fill="#27ae60"/>
+  <rect x="8" y="2" width="4" height="3" fill="#2ecc71"/>
+  <rect x="58" y="4" width="4" height="4" fill="#27ae60"/>
+  <rect x="52" y="2" width="4" height="3" fill="#2ecc71"/>
+
+  <!-- Emerald glowing eyes -->
+  <rect x="20" y="28" width="8" height="8" fill="#0d2818"/>
+  <rect x="36" y="28" width="8" height="8" fill="#0d2818"/>
+
+  <rect x="22" y="30" width="4" height="4" fill="#2ecc71"/>
+  <rect x="38" y="30" width="4" height="4" fill="#2ecc71"/>
+
+  <!-- Eye inner glow -->
+  <rect x="23" y="31" width="2" height="2" fill="#58d68d"/>
+  <rect x="39" y="31" width="2" height="2" fill="#58d68d"/>
+
+  <!-- Wooden brow ridges -->
+  <rect x="18" y="24" width="12" height="3" fill="#4e342e"/>
+  <rect x="34" y="24" width="12" height="3" fill="#4e342e"/>
+
+  <!-- Nose (knot in wood) -->
+  <rect x="28" y="36" width="8" height="8" fill="#4e342e"/>
+  <rect x="30" y="38" width="4" height="4" fill="#5d4037"/>
+
+  <!-- Mouth (weathered crack) -->
+  <rect x="24" y="48" width="16" height="3" fill="#3e2723"/>
+  <rect x="26" y="49" width="12" height="1" fill="#5d4037"/>
+
+  <!-- Moss growing on face -->
+  <rect x="12" y="32" width="4" height="8" fill="#27ae60"/>
+  <rect x="14" y="34" width="2" height="4" fill="#2ecc71"/>
+  <rect x="48" y="34" width="4" height="8" fill="#27ae60"/>
+  <rect x="50" y="36" width="2" height="4" fill="#2ecc71"/>
+
+  <!-- Flowers on shoulders -->
+  <rect x="8" y="44" width="6" height="6" fill="#e74c3c"/>
+  <rect x="10" y="46" width="2" height="2" fill="#f7dc6f"/>
+  <rect x="50" y="44" width="6" height="6" fill="#9b59b6"/>
+  <rect x="52" y="46" width="2" height="2" fill="#f7dc6f"/>
+
+  <!-- Body merged with trunk -->
+  <rect x="12" y="50" width="40" height="14" fill="#5d4037"/>
+  <rect x="16" y="52" width="32" height="12" fill="#4e342e"/>
+
+  <!-- Root texture -->
+  <rect x="18" y="56" width="4" height="6" fill="#3e2723"/>
+  <rect x="28" y="58" width="8" height="4" fill="#3e2723"/>
+  <rect x="42" y="56" width="4" height="6" fill="#3e2723"/>
+
+  <!-- Frame border - living wood -->
+  <rect x="0" y="0" width="64" height="2" fill="#27ae60"/>
+  <rect x="0" y="62" width="64" height="2" fill="#27ae60"/>
+  <rect x="0" y="0" width="2" height="64" fill="#27ae60"/>
+  <rect x="62" y="0" width="2" height="64" fill="#27ae60"/>
+
+  <!-- Corner accents - flowering vines -->
+  <rect x="2" y="2" width="4" height="4" fill="#1e8449"/>
+  <rect x="58" y="2" width="4" height="4" fill="#1e8449"/>
+  <rect x="2" y="58" width="4" height="4" fill="#1e8449"/>
+  <rect x="58" y="58" width="4" height="4" fill="#1e8449"/>
+
+  <!-- Inner corner flower -->
+  <rect x="3" y="3" width="2" height="2" fill="#58d68d"/>
+  <rect x="59" y="3" width="2" height="2" fill="#58d68d"/>
+  <rect x="3" y="59" width="2" height="2" fill="#58d68d"/>
+  <rect x="59" y="59" width="2" height="2" fill="#58d68d"/>
+</svg>

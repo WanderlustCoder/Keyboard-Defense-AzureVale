@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Arcanist Vera - Spell Researcher -->
+
+  <!-- Background frame - arcane runes -->
+  <rect x="0" y="0" width="64" height="64" fill="#1a1a2e"/>
+  <rect x="2" y="2" width="60" height="60" fill="#16102a"/>
+  <rect x="4" y="4" width="56" height="56" fill="#1a1a2e"/>
+
+  <!-- Floating rune symbols -->
+  <rect x="8" y="8" width="4" height="4" fill="#9b59b6"/>
+  <rect x="52" y="10" width="4" height="4" fill="#9b59b6"/>
+  <rect x="6" y="48" width="4" height="4" fill="#8e44ad"/>
+  <rect x="54" y="50" width="4" height="4" fill="#8e44ad"/>
+  <rect x="10" y="28" width="2" height="2" fill="#d7bde2"/>
+  <rect x="52" y="32" width="2" height="2" fill="#d7bde2"/>
+
+  <!-- Silver/white floating hair -->
+  <rect x="8" y="4" width="48" height="24" fill="#d7d7d7"/>
+  <rect x="6" y="12" width="52" height="18" fill="#ecf0f1"/>
+  <rect x="4" y="20" width="56" height="12" fill="#d7d7d7"/>
+
+  <!-- Hair floats upward (arcane effect) -->
+  <rect x="10" y="2" width="8" height="6" fill="#bdc3c7"/>
+  <rect x="46" y="2" width="8" height="6" fill="#bdc3c7"/>
+  <rect x="28" y="0" width="8" height="4" fill="#ecf0f1"/>
+
+  <!-- Hair glow effect -->
+  <rect x="14" y="6" width="4" height="4" fill="#fff"/>
+  <rect x="46" y="8" width="4" height="4" fill="#fff"/>
+
+  <!-- Pale ethereal face -->
+  <rect x="18" y="18" width="28" height="30" fill="#f0e6ef"/>
+  <rect x="22" y="14" width="20" height="8" fill="#f0e6ef"/>
+  <rect x="20" y="46" width="24" height="4" fill="#f0e6ef"/>
+
+  <!-- Face highlight (translucent quality) -->
+  <rect x="20" y="20" width="8" height="10" fill="#f8f4f7"/>
+
+  <!-- Glowing violet eyes -->
+  <rect x="22" y="28" width="8" height="8" fill="#fff"/>
+  <rect x="34" y="28" width="8" height="8" fill="#fff"/>
+
+  <!-- Irises (glowing violet) -->
+  <rect x="24" y="30" width="5" height="5" fill="#9b59b6"/>
+  <rect x="36" y="30" width="5" height="5" fill="#9b59b6"/>
+
+  <!-- Eye inner glow -->
+  <rect x="25" y="31" width="3" height="3" fill="#d7bde2"/>
+  <rect x="37" y="31" width="3" height="3" fill="#d7bde2"/>
+
+  <!-- Pupils -->
+  <rect x="26" y="32" width="1" height="1" fill="#4a235a"/>
+  <rect x="38" y="32" width="1" height="1" fill="#4a235a"/>
+
+  <!-- Eye glow aura -->
+  <rect x="21" y="27" width="10" height="1" fill="#9b59b6"/>
+  <rect x="33" y="27" width="10" height="1" fill="#9b59b6"/>
+  <rect x="21" y="36" width="10" height="1" fill="#9b59b6"/>
+  <rect x="33" y="36" width="10" height="1" fill="#9b59b6"/>
+
+  <!-- Delicate eyebrows -->
+  <rect x="22" y="24" width="8" height="2" fill="#bdc3c7"/>
+  <rect x="34" y="24" width="8" height="2" fill="#bdc3c7"/>
+
+  <!-- Nose -->
+  <rect x="30" y="34" width="4" height="7" fill="#e8dae7"/>
+  <rect x="28" y="39" width="8" height="2" fill="#e8dae7"/>
+
+  <!-- Subtle mouth -->
+  <rect x="28" y="44" width="8" height="2" fill="#c9a0c9"/>
+  <rect x="30" y="43" width="4" height="2" fill="#d4b8d4"/>
+
+  <!-- Arcane monocle (right eye) -->
+  <rect x="32" y="26" width="12" height="12" fill="none" stroke="#8e44ad" stroke-width="1"/>
+  <rect x="32" y="26" width="12" height="1" fill="#8e44ad"/>
+  <rect x="32" y="37" width="12" height="1" fill="#8e44ad"/>
+  <rect x="44" y="30" width="6" height="2" fill="#6c3483"/>
+  <rect x="48" y="28" width="4" height="6" fill="#4a235a"/>
+
+  <!-- Academic robes with rune patterns -->
+  <rect x="10" y="46" width="44" height="18" fill="#4a235a"/>
+  <rect x="14" y="50" width="36" height="14" fill="#6c3483"/>
+
+  <!-- Rune patterns on robes -->
+  <rect x="18" y="52" width="4" height="4" fill="#9b59b6"/>
+  <rect x="28" y="54" width="8" height="6" fill="#8e44ad"/>
+  <rect x="42" y="52" width="4" height="4" fill="#9b59b6"/>
+
+  <!-- Collar clasp (magical focus) -->
+  <rect x="28" y="48" width="8" height="6" fill="#9b59b6"/>
+  <rect x="30" y="50" width="4" height="2" fill="#d7bde2"/>
+
+  <!-- Floating crystal accents -->
+  <rect x="6" y="36" width="4" height="6" fill="#9b59b6"/>
+  <rect x="7" y="37" width="2" height="4" fill="#d7bde2"/>
+  <rect x="54" y="38" width="4" height="6" fill="#9b59b6"/>
+  <rect x="55" y="39" width="2" height="4" fill="#d7bde2"/>
+
+  <!-- Frame border - arcane purple -->
+  <rect x="0" y="0" width="64" height="2" fill="#8e44ad"/>
+  <rect x="0" y="62" width="64" height="2" fill="#8e44ad"/>
+  <rect x="0" y="0" width="2" height="64" fill="#8e44ad"/>
+  <rect x="62" y="0" width="2" height="64" fill="#8e44ad"/>
+
+  <!-- Corner accents - crystals -->
+  <rect x="2" y="2" width="4" height="4" fill="#6c3483"/>
+  <rect x="58" y="2" width="4" height="4" fill="#6c3483"/>
+  <rect x="2" y="58" width="4" height="4" fill="#6c3483"/>
+  <rect x="58" y="58" width="4" height="4" fill="#6c3483"/>
+
+  <!-- Inner corner glow -->
+  <rect x="3" y="3" width="2" height="2" fill="#d7bde2"/>
+  <rect x="59" y="3" width="2" height="2" fill="#d7bde2"/>
+  <rect x="3" y="59" width="2" height="2" fill="#d7bde2"/>
+  <rect x="59" y="59" width="2" height="2" fill="#d7bde2"/>
+</svg>
