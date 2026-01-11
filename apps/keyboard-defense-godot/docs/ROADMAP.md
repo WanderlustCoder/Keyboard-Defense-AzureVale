@@ -281,17 +281,33 @@ Acceptance criteria:
 - Progression data remains deterministic and saveable.
 
 ### P2-HERO-001 Hero or faction layer
-Status: Not started
+Status: Complete (2026-01-11)
 
 Introduce optional hero or faction choices with small typing-linked bonuses.
+
+**Progress:** Full hero system implemented with 5 heroes. Each hero has passive bonuses and one typed-command ability. Heroes are optional - game works without one selected.
+
+Heroes:
+- Scribe (Support): +5% crit, gold for perfect words, INSCRIBE ability
+- Warden (Tank): -10% castle damage, +1 HP, SHIELD ability
+- Tempest (Assault): fast typing bonus, SURGE ability
+- Sage (Control): +20% buff duration, SLOW ability
+- Forgemaster (Builder): +15% gold, -10% tower cost, REINFORCE ability
+
+Key deliverables:
+- `sim/hero_types.gd` - Hero definitions, passives, abilities
+- Hero command (`hero [id|none]`) for selection
+- Hero passive integration with upgrade effect system
+- Profile persistence for selected hero
+- Comprehensive tests
 
 Planning refs:
 - `docs/plans/p2/HERO_SYSTEM_PLAN.md`
 - `docs/plans/planpack_2025-12-27_tempPlans/keyboard-defense-plans/GDD.md`
 
 Acceptance criteria:
-- Choices are readable and reversible without forcing rerolls.
-- Balance and determinism remain stable.
+- [x] Choices are readable and reversible without forcing rerolls.
+- [x] Balance and determinism remain stable.
 
 ### P2-LOC-001 Localization scaffolding
 Status: Not started
