@@ -268,17 +268,31 @@ Acceptance criteria:
 ## P2 - Later (strategic expansion)
 
 ### P2-META-001 Meta progression and mastery
-Status: Not started
+Status: In progress (2026-01-11)
 
 Add lightweight persistent unlocks tied to lesson mastery without changing core balance.
+
+**Progress:** Core meta progression systems implemented:
+- `sim/titles.gd` - Title and badge system with 30+ titles and 8+ badges
+- Titles organized by category: Speed, Accuracy, Combat, Dedication, Mastery, Special
+- Unlock conditions based on WPM, accuracy, kills, combos, streaks, words typed, and achievements
+- `title` and `badges` commands for viewing and equipping
+- Profile persistence for unlocked titles/badges and equipped title
+- Comprehensive tests (70+ assertions)
+
+Existing related systems:
+- `sim/skills.gd` - Skill tree with 3 paths (Speed, Accuracy, Defense)
+- `sim/milestones.gd` - WPM/accuracy/combo/kill/word/streak milestones
+- `sim/player_stats.gd` - Lifetime stats tracking
+- Achievement system in typing_profile.gd
 
 Planning refs:
 - `docs/plans/p2/META_PROGRESSION_PLAN.md`
 - `docs/plans/planpack_2025-12-27_tempPlans/keyboard-defense-plans/GDD.md`
 
 Acceptance criteria:
-- Unlocks are cosmetic or optional, not required for success.
-- Progression data remains deterministic and saveable.
+- [x] Unlocks are cosmetic or optional, not required for success.
+- [x] Progression data remains deterministic and saveable.
 
 ### P2-HERO-001 Hero or faction layer
 Status: Complete (2026-01-11)
