@@ -2,6 +2,7 @@ class_name SimUpgrades
 extends RefCounted
 
 const GameState = preload("res://sim/types.gd")
+const SimHeroTypes = preload("res://sim/hero_types.gd")
 
 static var _kingdom_upgrades: Array = []
 static var _unit_upgrades: Array = []
@@ -125,7 +126,7 @@ static func purchase_unit_upgrade(state: GameState, upgrade_id: String) -> Dicti
 
 	return {"ok": true, "message": "Purchased %s for %d gold" % [label, cost]}
 
-## Calculate total effect value from all purchased upgrades
+## Calculate total effect value from all purchased upgrades and hero passives
 static func get_total_effect(state: GameState, effect_key: String) -> float:
 	var total: float = 0.0
 
@@ -142,6 +143,12 @@ static func get_total_effect(state: GameState, effect_key: String) -> float:
 		var effects: Dictionary = upgrade.get("effects", {})
 		if effects.has(effect_key):
 			total += float(effects.get(effect_key, 0))
+
+	# Sum hero passive effects
+	if state.hero_id != "":
+		var hero_effects: Dictionary = SimHeroTypes.get_passive_effects(state.hero_id)
+		if hero_effects.has(effect_key):
+			total += float(hero_effects.get(effect_key, 0))
 
 	return total
 

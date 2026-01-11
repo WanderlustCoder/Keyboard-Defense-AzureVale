@@ -27,6 +27,7 @@ const SimAutoTowerTypes = preload("res://sim/auto_tower_types.gd")
 const SimEnemyAbilities = preload("res://sim/enemy_abilities.gd")
 const SimBossEncounters = preload("res://sim/boss_encounters.gd")
 const SimEnemyTypes = preload("res://sim/enemy_types.gd")
+const SimHeroTypes = preload("res://sim/hero_types.gd")
 
 static func apply(state: GameState, intent: Dictionary) -> Dictionary:
     var events: Array[String] = []
@@ -135,6 +136,12 @@ static func apply(state: GameState, intent: Dictionary) -> Dictionary:
             _apply_harvest_node(new_state, intent, events)
         "nodes_list":
             _apply_nodes_list(new_state, events)
+        "hero_show":
+            _apply_hero_show(new_state, events)
+        "hero_set":
+            _apply_hero_set(new_state, intent, events)
+        "hero_clear":
+            _apply_hero_clear(new_state, events)
         _:
             events.append("Unknown intent: %s" % kind)
 
@@ -1988,3 +1995,75 @@ static func _apply_nodes_list(state: GameState, events: Array[String]) -> void:
         ])
     events.append("")
     events.append("Use: harvest [x y] to harvest a node")
+
+
+# =============================================================================
+# HERO SYSTEM
+# =============================================================================
+
+static func _apply_hero_show(state: GameState, events: Array[String]) -> void:
+    if state.hero_id == "":
+        events.append("No hero selected.")
+        events.append("")
+        events.append(SimHeroTypes.get_heroes_list())
+    else:
+        events.append(SimHeroTypes.get_hero_summary(state.hero_id))
+        events.append("")
+        if state.hero_ability_cooldown > 0:
+            events.append("Ability on cooldown: %.1fs remaining" % state.hero_ability_cooldown)
+        else:
+            var ability_word: String = SimHeroTypes.get_ability_word(state.hero_id)
+            events.append("Ability ready! Type '%s' during combat." % ability_word)
+
+
+static func _apply_hero_set(state: GameState, intent: Dictionary, events: Array[String]) -> void:
+    var hero_id: String = str(intent.get("hero_id", ""))
+
+    if not SimHeroTypes.is_valid_hero(hero_id):
+        events.append("Unknown hero: %s" % hero_id)
+        return
+
+    if state.hero_id == hero_id:
+        events.append("%s is already your selected hero." % SimHeroTypes.get_hero_name(hero_id))
+        return
+
+    var old_hero: String = state.hero_id
+    state.hero_id = hero_id
+    state.hero_ability_cooldown = 0.0
+    state.hero_active_effects = []
+
+    var hero: Dictionary = SimHeroTypes.get_hero(hero_id)
+    var hero_name: String = str(hero.get("name", hero_id))
+    var hero_class: String = str(hero.get("class", ""))
+    var passive: Dictionary = hero.get("passive", {}) as Dictionary
+    var passive_name: String = str(passive.get("name", ""))
+    var passive_desc: String = str(passive.get("description", ""))
+    var ability: Dictionary = hero.get("ability", {}) as Dictionary
+    var ability_name: String = str(ability.get("name", ""))
+    var ability_word: String = str(ability.get("word", ""))
+
+    if old_hero != "":
+        events.append("Changed hero from %s to %s." % [SimHeroTypes.get_hero_name(old_hero), hero_name])
+    else:
+        events.append("Selected %s (%s)!" % [hero_name, hero_class])
+
+    events.append("")
+    events.append("Passive: %s" % passive_name)
+    events.append("  %s" % passive_desc)
+    events.append("")
+    events.append("Ability: %s" % ability_name)
+    events.append("  Type '%s' during combat to activate." % ability_word)
+
+
+static func _apply_hero_clear(state: GameState, events: Array[String]) -> void:
+    if state.hero_id == "":
+        events.append("No hero is currently selected.")
+        return
+
+    var old_name: String = SimHeroTypes.get_hero_name(state.hero_id)
+    state.hero_id = ""
+    state.hero_ability_cooldown = 0.0
+    state.hero_active_effects = []
+
+    events.append("Dismissed %s. No hero selected." % old_name)
+    events.append("Hero bonuses are no longer active.")

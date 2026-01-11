@@ -103,6 +103,11 @@ var tower_summon_ids: Dictionary  # {index: [summoned_unit_ids]}
 var typing_metrics: Dictionary  # Real-time WPM, accuracy, letter tracking
 var arrow_rain_timer: float  # Timer for Arrow Rain synergy
 
+# Hero system state
+var hero_id: String  # Selected hero ID (empty for no hero)
+var hero_ability_cooldown: float  # Remaining cooldown for hero ability
+var hero_active_effects: Array  # Active hero ability effects
+
 func _init() -> void:
 	day = 1
 	phase = "day"
@@ -231,6 +236,11 @@ func _init() -> void:
 		"current_word_errors": 0
 	}
 	arrow_rain_timer = 0.0
+
+	# Hero system initialization
+	hero_id = ""
+	hero_ability_cooldown = 0.0
+	hero_active_effects = []
 
 	discovered[_index(base_pos.x, base_pos.y)] = true
 

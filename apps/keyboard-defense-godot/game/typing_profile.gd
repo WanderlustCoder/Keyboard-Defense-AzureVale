@@ -142,7 +142,8 @@ static func default_profile() -> Dictionary:
             "ring": "",
             "belt": "",
             "cape": ""
-        }
+        },
+        "selected_hero": ""  # Selected hero ID (empty for no hero)
     }
 
 static func load_profile(path: String = PROFILE_PATH) -> Dictionary:
@@ -196,6 +197,9 @@ static func load_profile(path: String = PROFILE_PATH) -> Dictionary:
         for slot in profile["equipment"].keys():
             if saved_equipment.has(slot):
                 profile["equipment"][slot] = str(saved_equipment.get(slot, ""))
+    # Load hero selection
+    if data.has("selected_hero"):
+        profile["selected_hero"] = str(data.get("selected_hero", ""))
     # Load bestiary data
     if data.has("bestiary") and typeof(data.get("bestiary")) == TYPE_DICTIONARY:
         profile["bestiary"] = data.get("bestiary")
@@ -1076,6 +1080,16 @@ static func unequip_item(profile: Dictionary, slot: String) -> Dictionary:
     profile["equipment"] = equipment
 
     return {"ok": true, "unequipped": old_item}
+
+
+## Hero System Functions
+
+static func get_selected_hero(profile: Dictionary) -> String:
+    return str(profile.get("selected_hero", ""))
+
+
+static func set_selected_hero(profile: Dictionary, hero_id: String) -> void:
+    profile["selected_hero"] = hero_id
 
 
 ## Generic Profile Value Access Functions

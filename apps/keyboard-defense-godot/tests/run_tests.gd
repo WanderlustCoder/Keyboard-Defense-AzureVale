@@ -51,6 +51,7 @@ const SimTowerTypes = preload("res://sim/tower_types.gd")
 const SimSkills = preload("res://sim/skills.gd")
 const SimQuests = preload("res://sim/quests.gd")
 const SimHeroTypes = preload("res://sim/hero_types.gd")
+const SimUpgrades = preload("res://sim/upgrades.gd")
 const SimWaveComposer = preload("res://sim/wave_composer.gd")
 
 var total_tests: int = 0
@@ -4137,6 +4138,55 @@ func _run_hero_types_tests() -> void:
     _assert_true(ability.has("name"), "Ability has name")
     _assert_true(ability.has("word"), "Ability has word trigger")
     _assert_true(ability.has("cooldown"), "Ability has cooldown")
+
+    # Test helper functions
+    _assert_true(SimHeroTypes.is_valid_hero("scribe"), "scribe is valid hero")
+    _assert_true(SimHeroTypes.is_valid_hero("warden"), "warden is valid hero")
+    _assert_true(SimHeroTypes.is_valid_hero(""), "empty string is valid (no hero)")
+    _assert_true(not SimHeroTypes.is_valid_hero("invalid"), "invalid ID returns false")
+
+    _assert_equal(SimHeroTypes.get_hero_name("scribe"), "Aldric the Scribe", "get_hero_name works")
+    _assert_equal(SimHeroTypes.get_hero_class("warden"), "Tank", "get_hero_class works")
+    _assert_true(SimHeroTypes.get_ability_word("scribe") == "INSCRIBE", "get_ability_word works")
+    _assert_true(SimHeroTypes.get_ability_cooldown("scribe") > 0, "get_ability_cooldown returns positive")
+
+    var passive_effects: Dictionary = SimHeroTypes.get_passive_effects("scribe")
+    _assert_true(passive_effects.has("critical_chance"), "Scribe passive has critical_chance")
+    _assert_true(float(passive_effects.get("critical_chance", 0)) > 0, "Scribe crit chance is positive")
+
+    _assert_true(SimHeroTypes.match_ability_word("scribe", "INSCRIBE"), "match_ability_word matches")
+    _assert_true(SimHeroTypes.match_ability_word("scribe", "inscribe"), "match_ability_word case insensitive")
+    _assert_true(not SimHeroTypes.match_ability_word("scribe", "WRONG"), "match_ability_word rejects wrong word")
+    _assert_true(not SimHeroTypes.match_ability_word("", "INSCRIBE"), "match_ability_word rejects no hero")
+
+    var all_ids: Array[String] = SimHeroTypes.get_all_hero_ids()
+    _assert_true(all_ids.size() >= 5, "get_all_hero_ids returns 5+ heroes")
+    _assert_true("scribe" in all_ids, "all_ids contains scribe")
+
+    # Test hero passive integration with upgrades
+    var state: GameState = GameState.new()
+    state.hero_id = ""
+    var base_crit: float = SimUpgrades.get_total_effect(state, "critical_chance")
+    state.hero_id = "scribe"
+    var hero_crit: float = SimUpgrades.get_total_effect(state, "critical_chance")
+    _assert_true(hero_crit > base_crit, "Hero passive adds to total effect")
+    _assert_true(hero_crit >= 0.05, "Scribe adds at least 5% crit")
+
+    # Test hero command parsing
+    var result: Dictionary = CommandParser.parse("hero")
+    _assert_true(result.get("ok", false), "hero command parses")
+    _assert_equal(str(result.get("intent", {}).get("kind", "")), "hero_show", "hero -> hero_show intent")
+
+    result = CommandParser.parse("hero scribe")
+    _assert_true(result.get("ok", false), "hero scribe parses")
+    _assert_equal(str(result.get("intent", {}).get("kind", "")), "hero_set", "hero scribe -> hero_set intent")
+
+    result = CommandParser.parse("hero none")
+    _assert_true(result.get("ok", false), "hero none parses")
+    _assert_equal(str(result.get("intent", {}).get("kind", "")), "hero_clear", "hero none -> hero_clear intent")
+
+    result = CommandParser.parse("hero invalid_hero")
+    _assert_true(not result.get("ok", false), "invalid hero rejected")
 
 
 func _run_wave_composer_tests() -> void:

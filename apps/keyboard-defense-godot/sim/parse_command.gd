@@ -4,6 +4,7 @@ extends RefCounted
 const GameState = preload("res://sim/types.gd")
 const SimBuildings = preload("res://sim/buildings.gd")
 const SimIntents = preload("res://sim/intents.gd")
+const SimHeroTypes = preload("res://sim/hero_types.gd")
 
 static func parse(command: String) -> Dictionary:
     var trimmed: String = command.strip_edges()
@@ -486,6 +487,17 @@ static func parse(command: String) -> Dictionary:
             if tokens.size() > 1:
                 return {"ok": false, "error": "'nodes' takes no arguments."}
             return {"ok": true, "intent": SimIntents.make("nodes_list")}
+        "hero":
+            if tokens.size() == 1:
+                return {"ok": true, "intent": SimIntents.make("hero_show")}
+            if tokens.size() == 2:
+                var hero_arg: String = tokens[1].to_lower()
+                if hero_arg == "none":
+                    return {"ok": true, "intent": SimIntents.make("hero_clear")}
+                if not SimHeroTypes.is_valid_hero(hero_arg):
+                    return {"ok": false, "error": "Unknown hero: %s. Type 'hero' to see available heroes." % hero_arg}
+                return {"ok": true, "intent": SimIntents.make("hero_set", {"hero_id": hero_arg})}
+            return {"ok": false, "error": "Usage: hero [hero_id|none]"}
         _:
             return {"ok": false, "error": "Unknown command: %s" % verb}
 
