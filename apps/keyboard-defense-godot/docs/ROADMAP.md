@@ -3,7 +3,7 @@
 ## How to read this roadmap
 This roadmap lists the next priorities for the Godot project. Items are grouped into P0 (now), P1 (next), and P2 (later). Each item has a stable ID, status, planning references, and lightweight acceptance criteria.
 
-**Last updated:** 2026-01-08
+**Last updated:** 2026-01-11
 
 ## Recent Milestones (Shipped)
 
@@ -216,9 +216,21 @@ Acceptance criteria:
 - UI can surface event outcomes clearly in the log.
 
 ### P1-QA-001 Testing and QA hardening
-Status: In progress
+Status: In progress (significant test additions 2026-01-11)
 
 Increase automated coverage and formalize manual QA gates for releases.
+
+**Progress (2026-01-11):** Test suite expanded to 3,558 assertions covering:
+- Boss encounters (phases, mechanics, dialogue)
+- Difficulty modes (modifiers, multipliers)
+- Lesson consistency (lesson-story alignment)
+- Dialogue flow (speakers, substitutions, milestones)
+- Exploration challenges (generation, evaluation, rewards)
+- Daily challenges (structure, shop, streaks)
+- Story manager (acts, bosses, tips, lore)
+- Buffs system (multipliers, bonuses, active buff tracking)
+- Combo system (tiers, damage/gold bonuses, milestones)
+- Affixes system (application, glyphs, serialization)
 
 Planning refs:
 - `docs/plans/p1/QA_AUTOMATION_PLAN.md`

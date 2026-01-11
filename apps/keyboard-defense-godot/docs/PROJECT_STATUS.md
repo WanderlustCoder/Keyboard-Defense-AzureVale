@@ -166,6 +166,11 @@ New SVG assets in `assets/art/src-svg/`:
 - **Difficulty tests**: Modes, modifiers, multipliers
 - **Lesson consistency tests**: Lesson-story intro alignment
 - **Dialogue flow tests**: Key dialogues, substitutions, milestones
+- **Exploration challenges tests**: Generation, evaluation, rewards
+- **Daily challenges tests**: Structure, shop, streaks
+- **Buffs tests**: Multipliers, bonuses, active buff tracking
+- **Combo tests**: Tiers, damage/gold bonuses, milestones
+- **Affixes tests**: Application, glyphs, serialization
 
 ## Planning
 - `docs/ROADMAP.md` is the authoritative milestone list.

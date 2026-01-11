@@ -101,13 +101,15 @@ static func apply_damage_bonus(base_damage: int, combo: int) -> int:
 	var bonus_percent: int = get_damage_bonus_percent(combo)
 	if bonus_percent <= 0:
 		return base_damage
-	return int(base_damage * (1.0 + bonus_percent / 100.0))
+	# Use roundi to avoid floating point truncation issues
+	return roundi(base_damage * (1.0 + bonus_percent / 100.0))
 
 static func apply_gold_bonus(base_gold: int, combo: int) -> int:
 	var bonus_percent: int = get_gold_bonus_percent(combo)
 	if bonus_percent <= 0:
 		return base_gold
-	return int(base_gold * (1.0 + bonus_percent / 100.0))
+	# Use roundi to avoid floating point truncation issues
+	return roundi(base_gold * (1.0 + bonus_percent / 100.0))
 
 static func is_tier_milestone(prev_combo: int, new_combo: int) -> bool:
 	## Check if transitioning from prev_combo to new_combo crossed a tier threshold

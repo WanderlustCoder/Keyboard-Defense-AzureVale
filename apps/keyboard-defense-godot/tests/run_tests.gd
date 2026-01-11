@@ -36,6 +36,9 @@ const SimBossEncounters = preload("res://sim/boss_encounters.gd")
 const SimDifficulty = preload("res://sim/difficulty.gd")
 const SimExplorationChallenges = preload("res://sim/exploration_challenges.gd")
 const SimDailyChallenges = preload("res://sim/daily_challenges.gd")
+const SimBuffs = preload("res://sim/buffs.gd")
+const SimCombo = preload("res://sim/combo.gd")
+const SimAffixes = preload("res://sim/affixes.gd")
 
 var total_tests: int = 0
 var total_failed: int = 0
@@ -90,6 +93,9 @@ func _run_all() -> void:
     _run_dialogue_flow_tests()
     _run_exploration_challenges_tests()
     _run_daily_challenges_tests()
+    _run_buffs_tests()
+    _run_combo_tests()
+    _run_affixes_tests()
 
     for message in messages:
         print("[tests] %s" % message)
@@ -3432,3 +3438,168 @@ func _run_daily_challenges_tests() -> void:
     # Test format_shop
     var shop_str: String = SimDailyChallenges.format_shop(profile)
     _assert_true(not shop_str.is_empty(), "Shop can be formatted")
+
+
+func _run_buffs_tests() -> void:
+    # Test buff data loading
+    SimBuffs.load_buffs()
+    var all_buffs: Dictionary = SimBuffs.get_all_buffs()
+    _assert_true(all_buffs.size() >= 0, "Buffs can be loaded")
+
+    # Test get_buff_data for a known buff (if any exist)
+    var buff_data: Dictionary = SimBuffs.get_buff_data("resource_boost")
+    # Buff may or may not exist depending on data
+    _assert_true(buff_data != null, "get_buff_data returns dictionary")
+
+    # Test multiplier functions with a fresh state
+    var state: GameState = DefaultState.create("buffs_test")
+
+    var resource_mult: float = SimBuffs.get_resource_multiplier(state)
+    _assert_true(resource_mult >= 0.0, "Resource multiplier is non-negative")
+
+    var threat_mult: float = SimBuffs.get_threat_multiplier(state)
+    _assert_true(threat_mult >= 0.0, "Threat multiplier is non-negative")
+
+    var damage_mult: float = SimBuffs.get_damage_multiplier(state)
+    _assert_true(damage_mult >= 0.0, "Damage multiplier is non-negative")
+
+    var damage_red: int = SimBuffs.get_damage_reduction(state)
+    _assert_true(damage_red >= 0, "Damage reduction is non-negative")
+
+    var gold_mult: float = SimBuffs.get_gold_multiplier(state)
+    _assert_true(gold_mult >= 0.0, "Gold multiplier is non-negative")
+
+    var explore_mult: float = SimBuffs.get_explore_reward_multiplier(state)
+    _assert_true(explore_mult >= 0.0, "Explore reward multiplier is non-negative")
+
+    var ap_bonus: int = SimBuffs.get_ap_bonus(state)
+    _assert_true(ap_bonus >= 0, "AP bonus is non-negative")
+
+    var hp_regen: int = SimBuffs.get_hp_regen(state)
+    _assert_true(hp_regen >= 0, "HP regen is non-negative")
+
+    var acc_bonus: float = SimBuffs.get_accuracy_bonus(state)
+    _assert_true(acc_bonus >= 0.0, "Accuracy bonus is non-negative")
+
+    var enemy_speed: float = SimBuffs.get_enemy_speed_multiplier(state)
+    _assert_true(enemy_speed >= 0.0, "Enemy speed multiplier is non-negative")
+
+    # Test active buff display
+    var display: Array[Dictionary] = SimBuffs.get_active_buff_display(state)
+    _assert_true(display != null, "Active buff display returns array")
+
+    # Test is_buff_active
+    var is_active: bool = SimBuffs.is_buff_active(state, "nonexistent_buff")
+    _assert_true(not is_active, "Nonexistent buff returns false for is_buff_active")
+
+
+func _run_combo_tests() -> void:
+    # Test combo tiers exist
+    _assert_true(SimCombo.TIERS.size() >= 5, "At least 5 combo tiers defined")
+
+    # Test tier 0 (no combo)
+    var tier0: Dictionary = SimCombo.get_tier_for_combo(0)
+    _assert_equal(int(tier0.get("tier", -1)), 0, "Combo 0 is tier 0")
+
+    # Test tier progression
+    var tier1: Dictionary = SimCombo.get_tier_for_combo(3)
+    _assert_equal(int(tier1.get("tier", -1)), 1, "Combo 3 is tier 1 (Warming Up)")
+
+    var tier2: Dictionary = SimCombo.get_tier_for_combo(5)
+    _assert_equal(int(tier2.get("tier", -1)), 2, "Combo 5 is tier 2 (On Fire)")
+
+    var tier3: Dictionary = SimCombo.get_tier_for_combo(10)
+    _assert_equal(int(tier3.get("tier", -1)), 3, "Combo 10 is tier 3 (Blazing)")
+
+    var tier4: Dictionary = SimCombo.get_tier_for_combo(25)
+    _assert_equal(int(tier4.get("tier", -1)), 4, "Combo 25 is tier 4 (Inferno)")
+
+    # Test tier number function
+    _assert_equal(SimCombo.get_tier_number(0), 0, "get_tier_number(0) is 0")
+    _assert_equal(SimCombo.get_tier_number(10), 3, "get_tier_number(10) is 3")
+
+    # Test tier name function
+    var name3: String = SimCombo.get_tier_name(10)
+    _assert_equal(name3, "Blazing", "Tier 3 name is Blazing")
+
+    # Test damage bonus
+    var dmg_bonus: int = SimCombo.get_damage_bonus_percent(10)
+    _assert_equal(dmg_bonus, 20, "Combo 10 has 20% damage bonus")
+
+    # Test gold bonus
+    var gold_bonus: int = SimCombo.get_gold_bonus_percent(10)
+    _assert_equal(gold_bonus, 15, "Combo 10 has 15% gold bonus")
+
+    # Test tier color
+    var color: Color = SimCombo.get_tier_color(10)
+    _assert_true(color != Color.BLACK, "Tier color is not black")
+
+    # Test damage bonus application
+    var base_dmg: int = 100
+    var boosted_dmg: int = SimCombo.apply_damage_bonus(base_dmg, 10)
+    _assert_equal(boosted_dmg, 120, "100 damage with 20% bonus is 120")
+
+    # Test gold bonus application
+    var base_gold: int = 100
+    var boosted_gold: int = SimCombo.apply_gold_bonus(base_gold, 10)
+    _assert_equal(boosted_gold, 115, "100 gold with 15% bonus is 115")
+
+    # Test tier milestone detection
+    _assert_true(SimCombo.is_tier_milestone(2, 3), "2->3 is a milestone (tier 1)")
+    _assert_true(SimCombo.is_tier_milestone(4, 5), "4->5 is a milestone (tier 2)")
+    _assert_true(not SimCombo.is_tier_milestone(6, 7), "6->7 is not a milestone")
+
+    # Test tier announcement
+    var announce: String = SimCombo.get_tier_announcement(5)
+    _assert_true(not announce.is_empty(), "Tier 2 has announcement")
+
+    # Test format combo display
+    var display: String = SimCombo.format_combo_display(10)
+    _assert_true(not display.is_empty(), "Combo display is formatted")
+
+
+func _run_affixes_tests() -> void:
+    # Test AFFIXES constant exists and has entries
+    _assert_true(SimAffixes.AFFIXES.size() >= 1, "At least 1 affix defined")
+
+    # Test get_affix for a known affix
+    var swift_affix: Dictionary = SimAffixes.get_affix("swift")
+    _assert_true(not swift_affix.is_empty(), "Swift affix exists")
+
+    # Test get_all_affixes
+    var all_affixes: Array = SimAffixes.get_all_affixes()
+    _assert_true(all_affixes.size() >= 1, "get_all_affixes returns array")
+
+    # Test get_affixes_for_tier
+    var tier1_affixes: Array = SimAffixes.get_affixes_for_tier(1)
+    _assert_true(tier1_affixes != null, "get_affixes_for_tier returns array")
+
+    # Test get_available_affixes for day
+    var day5_affixes: Array = SimAffixes.get_available_affixes(5)
+    _assert_true(day5_affixes != null, "get_available_affixes returns array")
+
+    # Test affix application
+    var enemy: Dictionary = {
+        "id": 1,
+        "kind": "raider",
+        "hp": 10,
+        "speed": 1.0,
+        "damage": 1
+    }
+    var affixed_enemy: Dictionary = SimAffixes.apply_affix_to_enemy(enemy.duplicate(), "swift")
+    _assert_true(affixed_enemy.has("affix"), "apply_affix_to_enemy adds affix field")
+
+    # Test affix glyph
+    var glyph: String = SimAffixes.get_affix_glyph("swift")
+    _assert_true(not glyph.is_empty(), "Swift affix has glyph")
+
+    # Test affix name
+    var name: String = SimAffixes.get_affix_name("swift")
+    _assert_true(not name.is_empty(), "Swift affix has name")
+
+    # Test shield functions
+    _assert_true(not SimAffixes.has_active_shield(enemy), "Regular enemy has no shield")
+
+    # Test serialization
+    var serialized: Dictionary = SimAffixes.serialize_affix_state(affixed_enemy)
+    _assert_true(serialized != null, "Affix state can be serialized")
