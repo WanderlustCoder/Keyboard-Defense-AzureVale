@@ -23,6 +23,10 @@ const SimLoot = preload("res://sim/loot.gd")
 const SimExpeditions = preload("res://sim/expeditions.gd")
 const SimResourceNodes = preload("res://sim/resource_nodes.gd")
 const SimTowerCombat = preload("res://sim/tower_combat.gd")
+const SimAutoTowerTypes = preload("res://sim/auto_tower_types.gd")
+const SimEnemyAbilities = preload("res://sim/enemy_abilities.gd")
+const SimBossEncounters = preload("res://sim/boss_encounters.gd")
+const SimEnemyTypes = preload("res://sim/enemy_types.gd")
 
 static func apply(state: GameState, intent: Dictionary) -> Dictionary:
     var events: Array[String] = []
@@ -428,6 +432,28 @@ static func _apply_player_attack_target(state: GameState, target_index: int, hit
     var word_text: String = hit_word if hit_word != "" else enemy_word
     var crit_text: String = " CRITICAL!" if is_crit else ""
     events.append("Hit %s#%d word=%s dmg=%d.%s" % [enemy_kind, enemy_id, word_text, effective_damage, crit_text])
+
+    # NEW ABILITY SYSTEM: Handle ON_DAMAGE triggers
+    if SimEnemies.uses_new_type_system(enemy):
+        var damage_events: Array[Dictionary] = SimEnemyAbilities.handle_trigger(
+            enemy, SimEnemyAbilities.TriggerEvent.ON_DAMAGE,
+            {"damage": effective_damage, "source": "typing"}
+        )
+        for evt in damage_events:
+            _process_ability_event(state, enemy, evt, events)
+        state.enemies[target_index] = enemy
+
+        # Boss phase transition check
+        if enemy.get("is_boss", false):
+            var phase_event: Dictionary = SimBossEncounters.check_phase_transition(enemy)
+            if not phase_event.is_empty():
+                var phase_num: int = int(phase_event.get("new_phase", 2))
+                var dialogue: Array = phase_event.get("dialogue", [])
+                events.append("PHASE %d: %s enters a new phase!" % [phase_num, enemy_kind.replace("_", " ").capitalize()])
+                for line in dialogue:
+                    events.append("  > %s" % str(line))
+                state.enemies[target_index] = enemy
+
     # Berserker rage: speed boost when damaged but not killed
     if int(enemy.get("hp", 0)) > 0 and enemy_kind == "berserker":
         if not enemy.get("enraged", false):
@@ -444,6 +470,16 @@ static func _apply_player_attack_target(state: GameState, target_index: int, hit
             events.append("Thorns blocked! (practice mode)")
     if int(enemy.get("hp", 0)) <= 0:
         var enemy_pos: Vector2i = enemy.get("pos", Vector2i.ZERO)
+
+        # NEW ABILITY SYSTEM: Handle ON_DEATH triggers before removing
+        if SimEnemies.uses_new_type_system(enemy):
+            var death_events: Array[Dictionary] = SimEnemyAbilities.handle_trigger(
+                enemy, SimEnemyAbilities.TriggerEvent.ON_DEATH,
+                {"pos": enemy_pos, "killer": "typing"}
+            )
+            for evt in death_events:
+                _process_ability_event(state, enemy, evt, events)
+
         # Splitting affix: spawn swarm minions on death
         if enemy.get("affix", "") == "splitting":
             _spawn_split_enemies(state, enemy_pos, events)
@@ -457,8 +493,8 @@ static func _apply_player_attack_target(state: GameState, target_index: int, hit
         state.enemies.remove_at(target_index)
         # Check if this was a boss
         var was_boss: bool = enemy.get("is_boss", false)
-        # Award gold for kill
-        var base_gold: int = SimEnemies.gold_reward(enemy_kind)
+        # Award gold for kill - use new system if applicable
+        var base_gold: int = SimEnemies.get_type_gold(enemy_kind) if SimEnemies.uses_new_type_system(enemy) else SimEnemies.gold_reward(enemy_kind)
         var gold_mult: float = SimUpgrades.get_gold_multiplier(state)
         var gold_reward: int = int(float(base_gold) * gold_mult)
         state.gold += gold_reward
@@ -626,52 +662,87 @@ static func _vampiric_heal(state: GameState, attacker_index: int, events: Array[
 static func _enemy_ability_tick(state: GameState, events: Array[String]) -> void:
     if state.enemies.is_empty():
         return
+
     # Process status effect ticks (DoT damage, expiration)
     SimEnemies.tick_status_effects(state.enemies, 1.0, events)
+
+    # NEW ABILITY SYSTEM: Tick abilities for new-system enemies
+    for i in range(state.enemies.size()):
+        var enemy: Dictionary = state.enemies[i]
+        if SimEnemies.uses_new_type_system(enemy):
+            # Tick cooldown abilities
+            var ability_events: Array[Dictionary] = SimEnemyAbilities.tick_abilities(enemy, 1.0)
+            for evt in ability_events:
+                _process_ability_event(state, enemy, evt, events)
+            state.enemies[i] = enemy
+
+            # Boss-specific ability ticks (new system)
+            if enemy.get("is_boss", false):
+                var boss_events: Array[Dictionary] = SimBossEncounters.tick_boss_abilities(enemy, 1.0)
+                for evt in boss_events:
+                    _process_ability_event(state, enemy, evt, events)
+                state.enemies[i] = enemy
+
     # Remove dead enemies from DoT damage
     for i in range(state.enemies.size() - 1, -1, -1):
         var enemy: Dictionary = state.enemies[i]
         if int(enemy.get("hp", 0)) <= 0:
             var enemy_id: int = int(enemy.get("id", 0))
             var kind: String = str(enemy.get("kind", "raider"))
+
+            # Handle death triggers for new system enemies
+            if SimEnemies.uses_new_type_system(enemy):
+                var death_events: Array[Dictionary] = SimEnemyAbilities.handle_trigger(
+                    enemy, SimEnemyAbilities.TriggerEvent.ON_DEATH,
+                    {"pos": enemy.get("pos", Vector2i.ZERO), "killer": "dot"}
+                )
+                for evt in death_events:
+                    _process_ability_event(state, enemy, evt, events)
+
             state.enemies.remove_at(i)
-            var gold: int = SimEnemies.gold_reward(kind)
+            var gold: int = SimEnemies.get_type_gold(kind) if SimEnemies.uses_new_type_system(enemy) else SimEnemies.gold_reward(kind)
             state.gold += gold
             events.append("%s#%d died from DoT. +%d gold" % [kind, enemy_id, gold])
-    # Boss ability ticks
+
+    # LEGACY SYSTEM: Boss ability ticks (for old bosses)
     for i in range(state.enemies.size()):
         var enemy: Dictionary = state.enemies[i]
-        if enemy.get("is_boss", false):
+        if enemy.get("is_boss", false) and not SimEnemies.uses_new_type_system(enemy):
             SimEnemies.apply_boss_tick(state, i, events)
-    # Healer enemies heal nearby allies
+
+    # LEGACY SYSTEM: Healer enemies heal nearby allies
     for i in range(state.enemies.size()):
         var enemy: Dictionary = state.enemies[i]
         var kind: String = str(enemy.get("kind", "raider"))
-        if kind == "healer":
+        if kind == "healer" and not SimEnemies.uses_new_type_system(enemy):
             SimEnemies.apply_healer_tick(state.enemies, i)
-    # Regenerating affix heals self (skip bosses as they have their own handling)
+
+    # LEGACY SYSTEM: Regenerating affix heals self (skip bosses as they have their own handling)
     for i in range(state.enemies.size()):
         var enemy: Dictionary = state.enemies[i]
         if enemy.get("is_boss", false):
             continue
-        if enemy.get("affix", "") == "regenerating" or enemy.get("regen_rate", 0) > 0:
-            enemy = SimEnemies.apply_regen_tick(enemy)
-            state.enemies[i] = enemy
-    # Commanding affix buffs nearby allies (+1 speed temporarily)
+        if not SimEnemies.uses_new_type_system(enemy):
+            if enemy.get("affix", "") == "regenerating" or enemy.get("regen_rate", 0) > 0:
+                enemy = SimEnemies.apply_regen_tick(enemy)
+                state.enemies[i] = enemy
+
+    # LEGACY SYSTEM: Commanding affix buffs nearby allies (+1 speed temporarily)
     for i in range(state.enemies.size()):
         var enemy: Dictionary = state.enemies[i]
-        if enemy.get("commanding", false) or enemy.get("affix", "") == "commanding":
-            var commander_pos: Vector2i = enemy.get("pos", Vector2i.ZERO)
-            for j in range(state.enemies.size()):
-                if i == j:
-                    continue
-                var ally: Dictionary = state.enemies[j]
-                var ally_pos: Vector2i = ally.get("pos", Vector2i.ZERO)
-                if SimEnemies.manhattan(commander_pos, ally_pos) <= 2:
-                    if not ally.get("commanded", false):
-                        ally["commanded"] = true
-                        ally["speed"] = int(ally.get("speed", 1)) + 1
-                        state.enemies[j] = ally
+        if not SimEnemies.uses_new_type_system(enemy):
+            if enemy.get("commanding", false) or enemy.get("affix", "") == "commanding":
+                var commander_pos: Vector2i = enemy.get("pos", Vector2i.ZERO)
+                for j in range(state.enemies.size()):
+                    if i == j:
+                        continue
+                    var ally: Dictionary = state.enemies[j]
+                    var ally_pos: Vector2i = ally.get("pos", Vector2i.ZERO)
+                    if SimEnemies.manhattan(commander_pos, ally_pos) <= 2:
+                        if not ally.get("commanded", false):
+                            ally["commanded"] = true
+                            ally["speed"] = int(ally.get("speed", 1)) + 1
+                            state.enemies[j] = ally
 
 static func _sorted_enemy_ids(enemies: Array) -> Array[int]:
     var ids: Array[int] = []
@@ -736,6 +807,164 @@ static func _spawn_split_enemies(state: GameState, origin_pos: Vector2i, events:
             str(enemy.get("word", ""))
         ])
         spawned += 1
+
+
+## Process ability event from new ability system
+static func _process_ability_event(state: GameState, source_enemy: Dictionary, event: Dictionary, events: Array[String]) -> void:
+    var event_type: String = str(event.get("type", ""))
+    var ability_name: String = str(event.get("ability", ""))
+    var enemy_kind: String = str(source_enemy.get("kind", "raider"))
+    var enemy_id: int = int(source_enemy.get("id", 0))
+
+    match event_type:
+        # =================================================================
+        # DAMAGE EVENTS
+        # =================================================================
+        "damage_aoe", "explosion":
+            var damage: int = int(event.get("damage", 1))
+            if not state.practice_mode:
+                state.hp -= damage
+                events.append("%s#%d uses %s! Castle takes %d damage." % [enemy_kind, enemy_id, ability_name, damage])
+            else:
+                events.append("%s#%d uses %s! (blocked in practice)" % [enemy_kind, enemy_id, ability_name])
+
+        # =================================================================
+        # SPAWN EVENTS
+        # =================================================================
+        "spawn_minions", "death_spawn", "pack_spawn":
+            var spawn_type: String = str(event.get("spawn_type", "typhos_spawn"))
+            var count: int = int(event.get("count", 1))
+            var source_pos: Vector2i = source_enemy.get("pos", Vector2i.ZERO)
+            var spawned: int = 0
+            var offsets: Array[Vector2i] = [
+                Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)
+            ]
+            for offset in offsets:
+                if spawned >= count:
+                    break
+                var pos: Vector2i = source_pos + offset
+                if not SimMap.in_bounds(pos.x, pos.y, state.map_w, state.map_h):
+                    continue
+                if pos == state.base_pos:
+                    continue
+                SimMap.ensure_tile_generated(state, pos)
+                if not SimMap.is_passable(state, pos):
+                    continue
+                var minion: Dictionary = SimEnemies.make_enemy_from_type(state, spawn_type, pos)
+                state.enemy_next_id += 1
+                state.enemies.append(minion)
+                spawned += 1
+            if spawned > 0:
+                events.append("%s#%d uses %s! Spawned %d %s." % [enemy_kind, enemy_id, ability_name, spawned, spawn_type])
+
+        "split":
+            var count: int = int(event.get("count", 2))
+            var split_type: String = str(event.get("split_type", "typhos_spawn"))
+            var source_pos: Vector2i = source_enemy.get("pos", Vector2i.ZERO)
+            var spawned: int = 0
+            var offsets: Array[Vector2i] = [
+                Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)
+            ]
+            for offset in offsets:
+                if spawned >= count:
+                    break
+                var pos: Vector2i = source_pos + offset
+                if not SimMap.in_bounds(pos.x, pos.y, state.map_w, state.map_h):
+                    continue
+                SimMap.ensure_tile_generated(state, pos)
+                if SimMap.is_passable(state, pos):
+                    var split_enemy: Dictionary = SimEnemies.make_enemy_from_type(state, split_type, pos)
+                    state.enemy_next_id += 1
+                    state.enemies.append(split_enemy)
+                    spawned += 1
+            if spawned > 0:
+                events.append("%s#%d splits into %d %s!" % [enemy_kind, enemy_id, spawned, split_type])
+
+        # =================================================================
+        # HEALING EVENTS
+        # =================================================================
+        "heal_allies", "death_heal":
+            var amount: int = int(event.get("amount", 3))
+            var radius: int = int(event.get("radius", 2))
+            var source_pos: Vector2i = source_enemy.get("pos", Vector2i.ZERO)
+            var healed: int = 0
+            for i in range(state.enemies.size()):
+                var ally: Dictionary = state.enemies[i]
+                var ally_pos: Vector2i = ally.get("pos", Vector2i.ZERO)
+                if SimEnemies.manhattan(source_pos, ally_pos) <= radius:
+                    ally["hp"] = int(ally.get("hp", 1)) + amount
+                    state.enemies[i] = ally
+                    healed += 1
+            if healed > 0:
+                events.append("%s#%d uses %s! Healed %d allies for %d HP." % [enemy_kind, enemy_id, ability_name, healed, amount])
+
+        # =================================================================
+        # WORD SCRAMBLE EVENTS
+        # =================================================================
+        "scramble_words", "scramble_all":
+            var radius: int = int(event.get("radius", -1))  # -1 = all enemies
+            var source_pos: Vector2i = source_enemy.get("pos", Vector2i.ZERO)
+            var scrambled: int = 0
+            for i in range(state.enemies.size()):
+                var ally: Dictionary = state.enemies[i]
+                var ally_pos: Vector2i = ally.get("pos", Vector2i.ZERO)
+                if radius < 0 or SimEnemies.manhattan(source_pos, ally_pos) <= radius:
+                    var old_word: String = str(ally.get("word", ""))
+                    if old_word.length() > 1:
+                        ally["word"] = SimWords.scramble_word(old_word, state.rng_seed)
+                        state.enemies[i] = ally
+                        scrambled += 1
+            if scrambled > 0:
+                events.append("%s#%d uses %s! Scrambled %d enemy words." % [enemy_kind, enemy_id, ability_name, scrambled])
+
+        # =================================================================
+        # BUFF EVENTS
+        # =================================================================
+        "buff_self", "buff_applied":
+            var stat: String = str(event.get("stat", ""))
+            var amount: int = int(event.get("amount", 0))
+            if stat != "" and amount > 0:
+                source_enemy[stat] = int(source_enemy.get(stat, 0)) + amount
+                events.append("%s#%d uses %s! +%d %s." % [enemy_kind, enemy_id, ability_name, amount, stat])
+            elif ability_name != "":
+                events.append("%s#%d: %s triggered." % [enemy_kind, enemy_id, ability_name])
+
+        "enrage":
+            source_enemy["enraged"] = true
+            source_enemy["speed"] = int(source_enemy.get("speed", 1)) + 1
+            source_enemy["damage"] = int(source_enemy.get("damage", 1)) + 1
+            events.append("%s#%d enters a rage! +1 speed, +1 damage." % [enemy_kind, enemy_id])
+
+        "cloak":
+            source_enemy["cloaked"] = true
+            source_enemy["cloak_duration"] = float(event.get("duration", 2.0))
+            events.append("%s#%d cloaks and becomes untargetable!" % [enemy_kind, enemy_id])
+
+        # =================================================================
+        # HAZARD EVENTS
+        # =================================================================
+        "create_hazard":
+            var hazard_type: String = str(event.get("hazard_type", "ink"))
+            var duration: float = float(event.get("duration", 5.0))
+            # For now, just log it - hazards would need a separate system
+            events.append("%s#%d leaves a %s hazard on the ground!" % [enemy_kind, enemy_id, hazard_type])
+
+        # =================================================================
+        # OTHER EVENTS
+        # =================================================================
+        "attach":
+            # Attach to nearby ally - would need additional logic
+            events.append("%s#%d attempts to attach to an ally." % [enemy_kind, enemy_id])
+
+        "message":
+            var message: String = str(event.get("message", ""))
+            if message != "":
+                events.append("%s#%d: %s" % [enemy_kind, enemy_id, message])
+
+        _:
+            if ability_name != "":
+                events.append("%s#%d activated %s." % [enemy_kind, enemy_id, ability_name])
+
 
 static func _pick_spawn_tile(state: GameState) -> int:
     var candidates: Array[int] = []
@@ -902,8 +1131,17 @@ static func _apply_upgrade(state: GameState, intent: Dictionary, events: Array[S
     if not state.structures.has(index):
         events.append("No structure to upgrade.")
         return
-    if str(state.structures[index]) != "tower":
-        events.append("Only towers can be upgraded.")
+
+    var structure_type: String = str(state.structures[index])
+
+    # Check if this is an auto-tower
+    if SimBuildings.is_auto_tower(structure_type):
+        _apply_auto_tower_upgrade(state, index, pos, intent, events)
+        return
+
+    # Regular tower upgrade
+    if structure_type != "tower":
+        events.append("Only towers and auto-towers can be upgraded.")
         return
     var level: int = int(state.structure_levels.get(index, 1))
     var max_level: int = SimBuildings.tower_max_level()
@@ -920,6 +1158,53 @@ static func _apply_upgrade(state: GameState, intent: Dictionary, events: Array[S
     state.structure_levels[index] = level + 1
     events.append("Upgraded tower at (%d,%d) to level %d." % [pos.x, pos.y, level + 1])
     events.append(_format_status(state))
+
+
+static func _apply_auto_tower_upgrade(state: GameState, index: int, pos: Vector2i, intent: Dictionary, events: Array[String]) -> void:
+    var check := SimBuildings.can_upgrade_auto_tower(state, index)
+
+    if check.options.is_empty():
+        var current_type: String = str(state.structures[index])
+        var tower_name: String = SimAutoTowerTypes.get_name(current_type)
+        events.append("%s is at maximum tier and cannot be upgraded." % tower_name)
+        return
+
+    if not check.can_upgrade:
+        events.append("Cannot afford upgrade: %s" % check.reason)
+        # Show what's needed
+        for option in check.options:
+            var cost: Dictionary = check.costs.get(option, {})
+            var cost_str: String = _format_upgrade_cost(cost)
+            var tower_name: String = SimAutoTowerTypes.get_name(option)
+            events.append("  %s requires: %s" % [tower_name, cost_str])
+        return
+
+    # Get the target upgrade type from intent or use first available option
+    var target_type: String = str(intent.get("target_type", ""))
+    if target_type.is_empty() or not target_type in check.options:
+        target_type = str(check.options[0])
+
+    if not _consume_ap(state, events):
+        return
+
+    var old_type: String = str(state.structures[index])
+    var old_name: String = SimAutoTowerTypes.get_name(old_type)
+
+    if SimBuildings.apply_auto_tower_upgrade(state, index, target_type):
+        var new_name: String = SimAutoTowerTypes.get_name(target_type)
+        var new_tier: int = SimAutoTowerTypes.get_tier(target_type)
+        events.append("Upgraded %s to %s (Tier %d) at (%d,%d)!" % [old_name, new_name, new_tier, pos.x, pos.y])
+        events.append(_format_status(state))
+    else:
+        events.append("Upgrade failed.")
+
+
+static func _format_upgrade_cost(cost: Dictionary) -> String:
+    var parts: Array[String] = []
+    for key in cost.keys():
+        parts.append("%d %s" % [int(cost[key]), str(key)])
+    return ", ".join(parts)
+
 
 static func _apply_enemies(state: GameState, events: Array[String]) -> void:
     if state.enemies.is_empty():

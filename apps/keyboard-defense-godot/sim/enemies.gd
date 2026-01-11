@@ -5,6 +5,9 @@ const GameState = preload("res://sim/types.gd")
 const SimRng = preload("res://sim/rng.gd")
 const SimWords = preload("res://sim/words.gd")
 const SimStatusEffects = preload("res://sim/status_effects.gd")
+const SimEnemyTypes = preload("res://sim/enemy_types.gd")
+const SimEnemyAbilities = preload("res://sim/enemy_abilities.gd")
+const SimBossEncounters = preload("res://sim/boss_encounters.gd")
 
 const ENEMY_KINDS := {
     "raider": {"speed": 1, "armor": 0, "hp_bonus": 0, "glyph": "r"},
@@ -638,3 +641,238 @@ static func apply_damage_with_effects(enemy: Dictionary, base_dmg: int, state: G
 ## Get status effect summary for an enemy (for UI display)
 static func get_status_summary(enemy: Dictionary) -> Array[Dictionary]:
     return SimStatusEffects.get_effect_summary(enemy)
+
+
+# =============================================================================
+# NEW ENEMY TYPE SYSTEM INTEGRATION
+# =============================================================================
+
+## Create enemy from new type system (SimEnemyTypes)
+static func make_enemy_from_type(state: GameState, type_id: String, pos: Vector2i) -> Dictionary:
+    # Get enemy data from new type system
+    var type_data: Dictionary = SimEnemyTypes.get_any_enemy(type_id)
+    if type_data.is_empty():
+        # Fallback to legacy system
+        return make_enemy(state, "raider", pos)
+
+    # Scale HP with day progression
+    var base_hp: int = int(type_data.get("hp", 3))
+    var day_bonus: int = int(state.day / 3)
+    var hp: int = base_hp + day_bonus
+
+    var enemy := {
+        "id": state.enemy_next_id,
+        "kind": type_id,
+        "type": type_id,  # New field for type system
+        "pos": pos,
+        "hp": hp,
+        "hp_max": hp,
+        "armor": int(type_data.get("armor", 0)),
+        "speed": int(type_data.get("speed", 1.0)),
+        "damage": int(type_data.get("damage", 1)),
+        "gold": int(type_data.get("gold", 1)),
+        "tier": int(type_data.get("tier", SimEnemyTypes.Tier.MINION)),
+        "category": int(type_data.get("category", SimEnemyTypes.Category.BASIC)),
+        "word": "",
+        "glyph": str(type_data.get("glyph", "?")),
+        "color": type_data.get("color", Color.WHITE)
+    }
+
+    # Initialize abilities
+    SimEnemyAbilities.init_ability_state(enemy)
+
+    # Assign word and return
+    return assign_word(state, enemy)
+
+
+## Create boss from new boss encounter system
+static func make_boss_from_type(state: GameState, boss_id: String, pos: Vector2i) -> Dictionary:
+    var boss_data: Dictionary = SimBossEncounters.get_boss(boss_id)
+    if boss_data.is_empty():
+        # Fallback to legacy boss
+        return make_boss(state, "forest_guardian", pos)
+
+    var base_hp: int = int(boss_data.get("hp", 50))
+    var hp: int = base_hp + int(state.day / 2)
+
+    var boss := {
+        "id": state.enemy_next_id,
+        "kind": boss_id,
+        "type": boss_id,
+        "pos": pos,
+        "hp": hp,
+        "hp_max": hp,
+        "armor": int(boss_data.get("armor", 2)),
+        "speed": int(boss_data.get("speed", 0.3) * 2),  # Convert float speed to int
+        "damage": int(boss_data.get("damage", 4)),
+        "gold": int(boss_data.get("gold", 100)),
+        "tier": SimEnemyTypes.Tier.BOSS,
+        "is_boss": true,
+        "word": "",
+        "glyph": str(boss_data.get("glyph", "B")),
+        "color": boss_data.get("color", Color.RED)
+    }
+
+    # Initialize boss state
+    SimBossEncounters.init_boss_state(boss)
+
+    return assign_word(state, boss)
+
+
+## Choose spawn type using tiered system
+static func choose_spawn_type(state: GameState) -> String:
+    var available: Array[String] = SimEnemyTypes.get_available_enemies_for_day(state.day)
+
+    if available.is_empty():
+        return SimEnemyTypes.TYPHOS_SPAWN
+
+    # Weight selection based on tier
+    var tier_weights: Dictionary = {}
+    var total_weight: int = 0
+
+    for tier in [SimEnemyTypes.Tier.MINION, SimEnemyTypes.Tier.SOLDIER, SimEnemyTypes.Tier.ELITE, SimEnemyTypes.Tier.CHAMPION]:
+        var weight: int = _get_tier_weight_for_day(tier, state.day)
+        if weight > 0:
+            tier_weights[tier] = weight
+            total_weight += weight
+
+    if total_weight == 0:
+        tier_weights[SimEnemyTypes.Tier.MINION] = 100
+        total_weight = 100
+
+    # Roll for tier
+    var roll: int = SimRng.roll_range(state, 1, total_weight)
+    var cumulative: int = 0
+    var selected_tier: int = SimEnemyTypes.Tier.MINION
+
+    for tier in tier_weights.keys():
+        cumulative += int(tier_weights[tier])
+        if roll <= cumulative:
+            selected_tier = int(tier)
+            break
+
+    # Get enemies of selected tier
+    var tier_enemies: Array[String] = SimEnemyTypes.get_enemies_by_tier(selected_tier)
+    if tier_enemies.is_empty():
+        return SimEnemyTypes.TYPHOS_SPAWN
+
+    # Random selection from tier
+    var enemy_index: int = SimRng.roll_range(state, 0, tier_enemies.size() - 1)
+    return tier_enemies[enemy_index]
+
+
+static func _get_tier_weight_for_day(tier: int, day: int) -> int:
+    match tier:
+        SimEnemyTypes.Tier.MINION:
+            if day >= 15:
+                return 30
+            elif day >= 7:
+                return 50
+            elif day >= 3:
+                return 70
+            else:
+                return 100
+        SimEnemyTypes.Tier.SOLDIER:
+            if day < 3:
+                return 0
+            elif day >= 15:
+                return 40
+            elif day >= 7:
+                return 50
+            else:
+                return 30
+        SimEnemyTypes.Tier.ELITE:
+            if day < 7:
+                return 0
+            elif day >= 15:
+                return 35
+            else:
+                return 20
+        SimEnemyTypes.Tier.CHAMPION:
+            if day < 15:
+                return 0
+            else:
+                return 15
+    return 0
+
+
+## Get enemy glyph from new type system
+static func get_type_glyph(type_id: String) -> String:
+    # Check new type system first
+    if SimEnemyTypes.is_valid(type_id):
+        return SimEnemyTypes.get_glyph(type_id)
+    # Check boss system
+    if SimBossEncounters.is_valid_boss(type_id):
+        return str(SimBossEncounters.get_boss(type_id).get("glyph", "B"))
+    # Fall back to legacy
+    return enemy_glyph(type_id)
+
+
+## Get enemy color from new type system
+static func get_type_color(type_id: String) -> Color:
+    if SimEnemyTypes.is_valid(type_id):
+        return SimEnemyTypes.get_color(type_id)
+    if SimBossEncounters.is_valid_boss(type_id):
+        return SimBossEncounters.get_boss(type_id).get("color", Color.RED)
+    return Color.WHITE
+
+
+## Get gold reward from new type system
+static func get_type_gold(type_id: String) -> int:
+    if SimEnemyTypes.is_valid(type_id):
+        return SimEnemyTypes.get_gold(type_id)
+    if SimBossEncounters.is_valid_boss(type_id):
+        return int(SimBossEncounters.get_boss(type_id).get("gold", 100))
+    return gold_reward(type_id)
+
+
+## Tick abilities for an enemy using new ability system
+static func tick_enemy_abilities(enemy: Dictionary, delta: float) -> Array[Dictionary]:
+    return SimEnemyAbilities.tick_abilities(enemy, delta)
+
+
+## Handle ability trigger for an enemy
+static func trigger_enemy_ability(enemy: Dictionary, event_type: int, context: Dictionary = {}) -> Array[Dictionary]:
+    return SimEnemyAbilities.handle_trigger(enemy, event_type, context)
+
+
+## Check if enemy is using new type system
+static func uses_new_type_system(enemy: Dictionary) -> bool:
+    return enemy.has("type") and SimEnemyTypes.is_valid(str(enemy.get("type", "")))
+
+
+## Get effective stats using new ability system (considers auras, buffs)
+static func get_effective_stats_with_abilities(enemy: Dictionary, nearby_enemies: Array) -> Dictionary:
+    if not uses_new_type_system(enemy):
+        return {
+            "armor": int(enemy.get("armor", 0)),
+            "speed": int(enemy.get("speed", 1)),
+            "damage": int(enemy.get("damage", 1))
+        }
+
+    return {
+        "armor": SimEnemyAbilities.get_effective_armor(enemy, nearby_enemies),
+        "speed": SimEnemyAbilities.get_effective_speed(enemy, nearby_enemies),
+        "damage": SimEnemyAbilities.get_effective_damage(enemy, nearby_enemies)
+    }
+
+
+## Apply damage with new ability system checks
+static func apply_damage_with_abilities(enemy: Dictionary, dmg: int, state: GameState = null) -> Dictionary:
+    if not uses_new_type_system(enemy):
+        return apply_damage(enemy, dmg, state)
+
+    # Check dodge
+    if SimEnemyAbilities.should_dodge(enemy):
+        return enemy  # Dodged
+
+    # Check void armor
+    if SimEnemyAbilities.check_void_armor(enemy):
+        dmg = 1  # Reduce to 1 damage
+
+    # Check untargetable
+    if SimEnemyAbilities.is_untargetable(enemy):
+        return enemy  # Can't be damaged
+
+    # Apply normal damage
+    return apply_damage(enemy, dmg, state)

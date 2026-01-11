@@ -719,6 +719,23 @@ func _trigger_event_visuals(events: Array) -> void:
 						var defeated_kind: String = _get_last_defeated_enemy_kind()
 						if defeated_id >= 0:
 								grid_renderer.play_enemy_death_anim(defeated_id, defeated_kind)
+				# Typing attack hit - spawn projectile from castle to enemy
+				elif text.begins_with("Hit ") and text.contains("dmg="):
+						# Parse enemy ID from "Hit kind#ID word=... dmg=..."
+						var hash_pos: int = text.find("#")
+						if hash_pos > 0:
+								var space_pos: int = text.find(" ", hash_pos)
+								if space_pos > hash_pos:
+										var enemy_id_str: String = text.substr(hash_pos + 1, space_pos - hash_pos - 1)
+										var enemy_id: int = int(enemy_id_str)
+										# Find enemy position for projectile target
+										for enemy in state.enemies:
+												if int(enemy.get("id", -1)) == enemy_id:
+														var pos: Vector2i = enemy.get("pos", Vector2i.ZERO)
+														var is_power: bool = text.contains("CRIT")
+														grid_renderer.spawn_projectile(pos, is_power)
+														grid_renderer.trigger_hit_flash(enemy_id)
+														break
 				# Boss defeated - extra visual fanfare
 				elif text.begins_with("BOSS DEFEATED:"):
 						var defeat_pos: Vector2i = _get_last_target_pos()

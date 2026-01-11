@@ -43,6 +43,7 @@ const SimDailyChallenges = preload("res://sim/daily_challenges.gd")
 const SimEndlessMode = preload("res://sim/endless_mode.gd")
 const SimCrafting = preload("res://sim/crafting.gd")
 const SimWaveComposer = preload("res://sim/wave_composer.gd")
+const SimAutoTowerCombat = preload("res://sim/auto_tower_combat.gd")
 const MilestonePopup = preload("res://ui/components/milestone_popup.gd")
 const StatsDashboard = preload("res://ui/components/stats_dashboard.gd")
 const EquipmentPanel = preload("res://ui/components/equipment_panel.gd")
@@ -95,6 +96,31 @@ const BalanceReferencePanel = preload("res://ui/components/balance_reference_pan
 const WaveCompositionPanel = preload("res://ui/components/wave_composition_panel.gd")
 const SynergyReferencePanel = preload("res://ui/components/synergy_reference_panel.gd")
 const TypingMetricsPanel = preload("res://ui/components/typing_metrics_panel.gd")
+const TowerTypesReferencePanel = preload("res://ui/components/tower_types_reference_panel.gd")
+const EnemyTypesReferencePanel = preload("res://ui/components/enemy_types_reference_panel.gd")
+const BuildingTypesReferencePanel = preload("res://ui/components/building_types_reference_panel.gd")
+const ResearchTreeReferencePanel = preload("res://ui/components/research_tree_reference_panel.gd")
+const WorkersReferencePanel = preload("res://ui/components/workers_reference_panel.gd")
+const TradeReferencePanel = preload("res://ui/components/trade_reference_panel.gd")
+const LessonsReferencePanel = preload("res://ui/components/lessons_reference_panel.gd")
+const KingdomUpgradesReferencePanel = preload("res://ui/components/kingdom_upgrades_reference_panel.gd")
+const SpecialCommandsReferencePanel = preload("res://ui/components/special_commands_reference_panel.gd")
+const StatusEffectsReferencePanel = preload("res://ui/components/status_effects_reference_panel.gd")
+const ComboSystemReferencePanel = preload("res://ui/components/combo_system_reference_panel.gd")
+const DifficultyModesReferencePanel = preload("res://ui/components/difficulty_modes_reference_panel.gd")
+const DamageTypesReferencePanel = preload("res://ui/components/damage_types_reference_panel.gd")
+const EnemyAffixesReferencePanel = preload("res://ui/components/enemy_affixes_reference_panel.gd")
+const EquipmentItemsReferencePanel = preload("res://ui/components/equipment_items_reference_panel.gd")
+const SkillTreesReferencePanel = preload("res://ui/components/skill_trees_reference_panel.gd")
+const ExpeditionsReferencePanel = preload("res://ui/components/expeditions_reference_panel.gd")
+const DailyChallengesReferencePanel = preload("res://ui/components/daily_challenges_reference_panel.gd")
+const MilestonesReferencePanel = preload("res://ui/components/milestones_reference_panel.gd")
+const LoginRewardsReferencePanel = preload("res://ui/components/login_rewards_reference_panel.gd")
+const LootSystemReferencePanel = preload("res://ui/components/loot_system_reference_panel.gd")
+const QuestsReferencePanel = preload("res://ui/components/quests_reference_panel.gd")
+const ResourceNodesReferencePanel = preload("res://ui/components/resource_nodes_reference_panel.gd")
+const PlayerStatsReferencePanel = preload("res://ui/components/player_stats_reference_panel.gd")
+const WaveComposerReferencePanel = preload("res://ui/components/wave_composer_reference_panel.gd")
 
 # UI Node references
 @onready var grid_renderer: Node2D = $GridRenderer
@@ -166,8 +192,9 @@ var active_skill_buffs: Dictionary = {}  # {skill_id: {remaining: float, effect:
 # Active item buffs
 var active_item_buffs: Dictionary = {}  # {buff_type: {remaining: float, value: float}}
 
-# Auto-tower cooldowns
+# Auto-tower cooldowns and states
 var auto_tower_cooldowns: Dictionary = {}  # {tower_index: remaining_cooldown}
+var auto_tower_states: Dictionary = {}  # {tower_index: {heat, fuel, ramp_multiplier, etc.}}
 
 # Special command tracking
 var command_cooldowns: Dictionary = {}  # {command_id: remaining_cooldown}
@@ -322,6 +349,31 @@ var balance_reference_panel: BalanceReferencePanel = null
 var wave_composition_panel: WaveCompositionPanel = null
 var synergy_reference_panel: SynergyReferencePanel = null
 var typing_metrics_panel: TypingMetricsPanel = null
+var tower_types_reference_panel: TowerTypesReferencePanel = null
+var enemy_types_reference_panel: EnemyTypesReferencePanel = null
+var building_types_reference_panel: BuildingTypesReferencePanel = null
+var research_tree_reference_panel: ResearchTreeReferencePanel = null
+var workers_reference_panel: WorkersReferencePanel = null
+var trade_reference_panel: TradeReferencePanel = null
+var lessons_reference_panel: LessonsReferencePanel = null
+var kingdom_upgrades_reference_panel: KingdomUpgradesReferencePanel = null
+var special_commands_reference_panel: SpecialCommandsReferencePanel = null
+var status_effects_reference_panel: StatusEffectsReferencePanel = null
+var combo_system_reference_panel: ComboSystemReferencePanel = null
+var difficulty_modes_reference_panel: DifficultyModesReferencePanel = null
+var damage_types_reference_panel: DamageTypesReferencePanel = null
+var enemy_affixes_reference_panel: EnemyAffixesReferencePanel = null
+var equipment_items_reference_panel: EquipmentItemsReferencePanel = null
+var skill_trees_reference_panel: SkillTreesReferencePanel = null
+var expeditions_reference_panel: ExpeditionsReferencePanel = null
+var daily_challenges_reference_panel: DailyChallengesReferencePanel = null
+var milestones_reference_panel: MilestonesReferencePanel = null
+var login_rewards_reference_panel: LoginRewardsReferencePanel = null
+var loot_system_reference_panel: LootSystemReferencePanel = null
+var quests_reference_panel: QuestsReferencePanel = null
+var resource_nodes_reference_panel: ResourceNodesReferencePanel = null
+var player_stats_reference_panel: PlayerStatsReferencePanel = null
+var wave_composer_reference_panel: WaveComposerReferencePanel = null
 var difficulty_mode: String = "adventure"
 
 # Run-level tracking
@@ -692,6 +744,131 @@ func _init_achievement_system() -> void:
 	typing_metrics_panel = TypingMetricsPanel.new()
 	add_child(typing_metrics_panel)
 	typing_metrics_panel.closed.connect(_on_typing_metrics_panel_closed)
+
+	# Create tower types reference panel
+	tower_types_reference_panel = TowerTypesReferencePanel.new()
+	add_child(tower_types_reference_panel)
+	tower_types_reference_panel.closed.connect(_on_tower_types_reference_panel_closed)
+
+	# Create enemy types reference panel
+	enemy_types_reference_panel = EnemyTypesReferencePanel.new()
+	add_child(enemy_types_reference_panel)
+	enemy_types_reference_panel.closed.connect(_on_enemy_types_reference_panel_closed)
+
+	# Create building types reference panel
+	building_types_reference_panel = BuildingTypesReferencePanel.new()
+	add_child(building_types_reference_panel)
+	building_types_reference_panel.closed.connect(_on_building_types_reference_panel_closed)
+
+	# Create research tree reference panel
+	research_tree_reference_panel = ResearchTreeReferencePanel.new()
+	add_child(research_tree_reference_panel)
+	research_tree_reference_panel.closed.connect(_on_research_tree_reference_panel_closed)
+
+	# Create workers reference panel
+	workers_reference_panel = WorkersReferencePanel.new()
+	add_child(workers_reference_panel)
+	workers_reference_panel.closed.connect(_on_workers_reference_panel_closed)
+
+	# Create trade reference panel
+	trade_reference_panel = TradeReferencePanel.new()
+	add_child(trade_reference_panel)
+	trade_reference_panel.closed.connect(_on_trade_reference_panel_closed)
+
+	# Create lessons reference panel
+	lessons_reference_panel = LessonsReferencePanel.new()
+	add_child(lessons_reference_panel)
+	lessons_reference_panel.closed.connect(_on_lessons_reference_panel_closed)
+
+	# Create kingdom upgrades reference panel
+	kingdom_upgrades_reference_panel = KingdomUpgradesReferencePanel.new()
+	add_child(kingdom_upgrades_reference_panel)
+	kingdom_upgrades_reference_panel.closed.connect(_on_kingdom_upgrades_reference_panel_closed)
+
+	# Create special commands reference panel
+	special_commands_reference_panel = SpecialCommandsReferencePanel.new()
+	add_child(special_commands_reference_panel)
+	special_commands_reference_panel.closed.connect(_on_special_commands_reference_panel_closed)
+
+	# Create status effects reference panel
+	status_effects_reference_panel = StatusEffectsReferencePanel.new()
+	add_child(status_effects_reference_panel)
+	status_effects_reference_panel.closed.connect(_on_status_effects_reference_panel_closed)
+
+	# Create combo system reference panel
+	combo_system_reference_panel = ComboSystemReferencePanel.new()
+	add_child(combo_system_reference_panel)
+	combo_system_reference_panel.closed.connect(_on_combo_system_reference_panel_closed)
+
+	# Create difficulty modes reference panel
+	difficulty_modes_reference_panel = DifficultyModesReferencePanel.new()
+	add_child(difficulty_modes_reference_panel)
+	difficulty_modes_reference_panel.closed.connect(_on_difficulty_modes_reference_panel_closed)
+
+	# Create damage types reference panel
+	damage_types_reference_panel = DamageTypesReferencePanel.new()
+	add_child(damage_types_reference_panel)
+	damage_types_reference_panel.closed.connect(_on_damage_types_reference_panel_closed)
+
+	# Create enemy affixes reference panel
+	enemy_affixes_reference_panel = EnemyAffixesReferencePanel.new()
+	add_child(enemy_affixes_reference_panel)
+	enemy_affixes_reference_panel.closed.connect(_on_enemy_affixes_reference_panel_closed)
+
+	# Create equipment items reference panel
+	equipment_items_reference_panel = EquipmentItemsReferencePanel.new()
+	add_child(equipment_items_reference_panel)
+	equipment_items_reference_panel.closed.connect(_on_equipment_items_reference_panel_closed)
+
+	# Create skill trees reference panel
+	skill_trees_reference_panel = SkillTreesReferencePanel.new()
+	add_child(skill_trees_reference_panel)
+	skill_trees_reference_panel.closed.connect(_on_skill_trees_reference_panel_closed)
+
+	# Create expeditions reference panel
+	expeditions_reference_panel = ExpeditionsReferencePanel.new()
+	add_child(expeditions_reference_panel)
+	expeditions_reference_panel.closed.connect(_on_expeditions_reference_panel_closed)
+
+	# Create daily challenges reference panel
+	daily_challenges_reference_panel = DailyChallengesReferencePanel.new()
+	add_child(daily_challenges_reference_panel)
+	daily_challenges_reference_panel.closed.connect(_on_daily_challenges_reference_panel_closed)
+
+	# Create milestones reference panel
+	milestones_reference_panel = MilestonesReferencePanel.new()
+	add_child(milestones_reference_panel)
+	milestones_reference_panel.closed.connect(_on_milestones_reference_panel_closed)
+
+	# Create login rewards reference panel
+	login_rewards_reference_panel = LoginRewardsReferencePanel.new()
+	add_child(login_rewards_reference_panel)
+	login_rewards_reference_panel.closed.connect(_on_login_rewards_reference_panel_closed)
+
+	# Create loot system reference panel
+	loot_system_reference_panel = LootSystemReferencePanel.new()
+	add_child(loot_system_reference_panel)
+	loot_system_reference_panel.closed.connect(_on_loot_system_reference_panel_closed)
+
+	# Create quests reference panel
+	quests_reference_panel = QuestsReferencePanel.new()
+	add_child(quests_reference_panel)
+	quests_reference_panel.closed.connect(_on_quests_reference_panel_closed)
+
+	# Create resource nodes reference panel
+	resource_nodes_reference_panel = ResourceNodesReferencePanel.new()
+	add_child(resource_nodes_reference_panel)
+	resource_nodes_reference_panel.closed.connect(_on_resource_nodes_reference_panel_closed)
+
+	# Create player stats reference panel
+	player_stats_reference_panel = PlayerStatsReferencePanel.new()
+	add_child(player_stats_reference_panel)
+	player_stats_reference_panel.closed.connect(_on_player_stats_reference_panel_closed)
+
+	# Create wave composer reference panel
+	wave_composer_reference_panel = WaveComposerReferencePanel.new()
+	add_child(wave_composer_reference_panel)
+	wave_composer_reference_panel.closed.connect(_on_wave_composer_reference_panel_closed)
 
 	# Initialize run tracking
 	_init_run_tracking()
@@ -1158,6 +1335,106 @@ func _on_typing_metrics_panel_closed() -> void:
 	if input_field:
 		input_field.grab_focus()
 
+func _on_tower_types_reference_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+func _on_enemy_types_reference_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+func _on_building_types_reference_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+func _on_research_tree_reference_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+func _on_workers_reference_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+func _on_trade_reference_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+func _on_lessons_reference_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+func _on_kingdom_upgrades_reference_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+func _on_special_commands_reference_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+func _on_status_effects_reference_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+func _on_combo_system_reference_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+func _on_difficulty_modes_reference_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+func _on_damage_types_reference_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+func _on_enemy_affixes_reference_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+func _on_equipment_items_reference_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+func _on_skill_trees_reference_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+func _on_expeditions_reference_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+func _on_daily_challenges_reference_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+func _on_milestones_reference_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+func _on_login_rewards_reference_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+func _on_loot_system_reference_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+func _on_quests_reference_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+func _on_resource_nodes_reference_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+func _on_player_stats_reference_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
+func _on_wave_composer_reference_panel_closed() -> void:
+	if input_field:
+		input_field.grab_focus()
+
 func _on_quest_claimed_from_panel(quest_id: String, rewards: Dictionary) -> void:
 	# Apply rewards
 	var gold_reward: int = int(rewards.get("gold", 0))
@@ -1347,12 +1624,33 @@ func _init_game_state() -> void:
 	# Generate terrain
 	SimMap.generate_terrain(state)
 
-	# Starting resources
-	state.resources["wood"] = 10
-	state.resources["stone"] = 5
-	state.resources["food"] = 10
+	# Starting resources - enough to build one tower (costs 4 wood, 8 stone)
+	state.resources["wood"] = 5
+	state.resources["stone"] = 10
+	state.resources["food"] = 5
 
 	_update_grid_renderer()
+
+
+func _place_starting_towers() -> void:
+	var base: Vector2i = state.base_pos
+	# Place towers adjacent to castle (above and below)
+	var tower_positions: Array[Vector2i] = [
+		Vector2i(base.x, base.y - 1),  # Above castle
+		Vector2i(base.x, base.y + 1),  # Below castle
+		Vector2i(base.x + 1, base.y),  # Right of castle
+	]
+
+	for pos in tower_positions:
+		if not SimMap.in_bounds(pos.x, pos.y, state.map_w, state.map_h):
+			continue
+		var index: int = SimMap.idx(pos.x, pos.y, state.map_w)
+		# Ensure terrain is buildable
+		if state.terrain[index] == SimMap.TERRAIN_WATER:
+			state.terrain[index] = SimMap.TERRAIN_PLAINS
+		# Place the tower
+		state.structures[index] = "tower"
+
 
 func _connect_signals() -> void:
 	if input_field:
@@ -2201,6 +2499,56 @@ func _on_input_submitted(text: String) -> void:
 			_show_synergy_reference()
 		elif lower_text == "metrics" or lower_text == "typingmetrics" or lower_text == "wpm":
 			_show_typing_metrics()
+		elif lower_text == "towerref" or lower_text == "towers" or lower_text == "towertypes":
+			_show_tower_types_reference()
+		elif lower_text == "enemyref" or lower_text == "enemies" or lower_text == "bestiary":
+			_show_enemy_types_reference()
+		elif lower_text == "buildingref" or lower_text == "buildings" or lower_text == "structures":
+			_show_building_types_reference()
+		elif lower_text == "researchref" or lower_text == "research" or lower_text == "tech":
+			_show_research_tree_reference()
+		elif lower_text == "workersref" or lower_text == "workers" or lower_text == "labor":
+			_show_workers_reference()
+		elif lower_text == "traderef" or lower_text == "trade" or lower_text == "exchange":
+			_show_trade_reference()
+		elif lower_text == "lessonsref" or lower_text == "lessons" or lower_text == "curriculum":
+			_show_lessons_reference()
+		elif lower_text == "upgradesref" or lower_text == "upgrades" or lower_text == "kingdom":
+			_show_kingdom_upgrades_reference()
+		elif lower_text == "commandsref" or lower_text == "commands" or lower_text == "abilities":
+			_show_special_commands_reference()
+		elif lower_text == "effectsref" or lower_text == "effects" or lower_text == "debuffs":
+			_show_status_effects_reference()
+		elif lower_text == "comboref" or lower_text == "combo" or lower_text == "multiplier":
+			_show_combo_system_reference()
+		elif lower_text == "difficultyref" or lower_text == "difficulty" or lower_text == "modes":
+			_show_difficulty_modes_reference()
+		elif lower_text == "damageref" or lower_text == "damage" or lower_text == "elements":
+			_show_damage_types_reference()
+		elif lower_text == "affixref" or lower_text == "affixes" or lower_text == "modifiers":
+			_show_enemy_affixes_reference()
+		elif lower_text == "equipref" or lower_text == "equipment" or lower_text == "gear":
+			_show_equipment_items_reference()
+		elif lower_text == "skillref" or lower_text == "skills" or lower_text == "talents":
+			_show_skill_trees_reference()
+		elif lower_text == "expeditionref" or lower_text == "expeditions" or lower_text == "journeys":
+			_show_expeditions_reference()
+		elif lower_text == "challengeref" or lower_text == "challenges" or lower_text == "daily":
+			_show_daily_challenges_reference()
+		elif lower_text == "milestoneref" or lower_text == "milestones" or lower_text == "achievements":
+			_show_milestones_reference()
+		elif lower_text == "loginref" or lower_text == "login" or lower_text == "streaks":
+			_show_login_rewards_reference()
+		elif lower_text == "lootref" or lower_text == "loot" or lower_text == "drops":
+			_show_loot_system_reference()
+		elif lower_text == "questref" or lower_text == "quests" or lower_text == "missions":
+			_show_quests_reference()
+		elif lower_text == "noderef" or lower_text == "nodes" or lower_text == "harvest":
+			_show_resource_nodes_reference()
+		elif lower_text == "statsref" or lower_text == "playerstats" or lower_text == "records":
+			_show_player_stats_reference()
+		elif lower_text == "waveref" or lower_text == "waves" or lower_text == "themes":
+			_show_wave_composer_reference()
 		input_field.clear()
 	elif current_phase == "defense":
 		# Check for special commands first
@@ -2415,9 +2763,9 @@ func _attack_target_enemy() -> void:
 			milestone_popup.show_milestone(milestone)
 
 	# Fire projectile visual
-	if grid_renderer.has_method("fire_projectile"):
+	if grid_renderer != null and grid_renderer.has_method("spawn_projectile"):
 		var enemy_pos: Vector2i = enemy.get("pos", Vector2i.ZERO)
-		grid_renderer.fire_projectile(state.base_pos, enemy_pos, Color(1, 0.8, 0.3))
+		grid_renderer.spawn_projectile(enemy_pos, is_crit)
 
 	if int(enemy.get("hp", 0)) <= 0:
 		# Enemy defeated
@@ -3758,93 +4106,72 @@ func _process_auto_towers(delta: float) -> void:
 	if active_enemies.is_empty():
 		return
 
-	var auto_towers: Array[Dictionary] = SimBuildings.get_all_auto_towers(state)
-	if auto_towers.is_empty():
-		return
+	# Use the new combat system
+	var combat_result := SimAutoTowerCombat.process_auto_towers(
+		state,
+		active_enemies,
+		auto_tower_cooldowns,
+		auto_tower_states,
+		delta,
+		auto_tower_speed_buff
+	)
 
-	# Update cooldowns
-	for tower_index in auto_tower_cooldowns.keys():
-		auto_tower_cooldowns[tower_index] = max(0.0, float(auto_tower_cooldowns[tower_index]) - delta)
+	# Update tracking dictionaries
+	auto_tower_cooldowns = combat_result.updated_cooldowns
+	auto_tower_states = combat_result.updated_states
 
-	# Process each auto-tower
-	for tower in auto_towers:
-		var tower_idx: int = int(tower.get("index", 0))
-		var cooldown_remaining: float = float(auto_tower_cooldowns.get(tower_idx, 0))
+	# Apply damage events and handle kills
+	if not combat_result.damage_events.is_empty():
+		var damage_result := SimAutoTowerCombat.apply_damage_events(active_enemies, combat_result.damage_events)
+		active_enemies = damage_result.updated_enemies
 
-		if cooldown_remaining > 0:
-			continue
+		# Process kills (in reverse order to preserve indices)
+		var kill_indices: Array[int] = []
+		for kill in damage_result.kills:
+			kill_indices.append(int(kill.index))
+		kill_indices.sort()
+		kill_indices.reverse()
 
-		var tower_pos: Vector2i = tower.get("pos", Vector2i.ZERO)
-		var attack_range: int = int(tower.get("range", 2))
-		var damage: int = int(tower.get("damage", 1))
-		var targeting: String = str(tower.get("targeting", "nearest"))
-		var aoe_radius: int = int(tower.get("aoe_radius", 0))
-		var apply_burn: bool = bool(tower.get("burn", false))
-		# Apply speed buff to cooldown (lower cooldown = faster attacks)
-		var cooldown: float = float(tower.get("cooldown", 1.0)) / auto_tower_speed_buff
+		for idx in kill_indices:
+			if idx >= 0 and idx < active_enemies.size():
+				var tower_type: String = ""
+				for kill in damage_result.kills:
+					if int(kill.index) == idx:
+						tower_type = str(kill.tower_type)
+						break
+				_auto_tower_kill(idx, tower_type)
 
-		# Find targets based on targeting type
-		if targeting == "aoe":
-			# Damage all enemies in range
-			var hit_count: int = 0
-			for i in range(active_enemies.size() - 1, -1, -1):
-				var enemy: Dictionary = active_enemies[i]
-				var enemy_pos: Vector2i = enemy.get("pos", Vector2i.ZERO)
-				var dist: int = abs(tower_pos.x - enemy_pos.x) + abs(tower_pos.y - enemy_pos.y)
+	# Spawn visual effects for attacks
+	for attack in combat_result.attacks:
+		var tower_pos: Vector2i = attack.tower_pos
+		var effect_type: String = str(attack.effect_type)
+		var damage_count: int = attack.damage_events.size()
 
-				if dist <= attack_range:
-					enemy["hp"] = int(enemy.get("hp", 1)) - damage
-					hit_count += 1
-
-					# Apply burn if applicable
-					if apply_burn:
-						enemy = SimEnemies.apply_status_effect(enemy, "burning", 1, "auto_tower")
-						active_enemies[i] = enemy
-
-					# Check for kill
-					if int(enemy.get("hp", 0)) <= 0:
-						_auto_tower_kill(i, tower.get("type", "sentry"))
-					else:
-						active_enemies[i] = enemy
-
-			if hit_count > 0:
-				auto_tower_cooldowns[tower_idx] = cooldown
-				_spawn_auto_tower_effect(tower_pos, "aoe", hit_count)
-
-		else:
-			# Nearest targeting - find closest enemy in range
-			var best_target: int = -1
-			var best_dist: int = 999
-
-			for i in range(active_enemies.size()):
-				var enemy: Dictionary = active_enemies[i]
-				var enemy_pos: Vector2i = enemy.get("pos", Vector2i.ZERO)
-				var dist: int = abs(tower_pos.x - enemy_pos.x) + abs(tower_pos.y - enemy_pos.y)
-
-				if dist <= attack_range and dist < best_dist:
-					best_dist = dist
-					best_target = i
-
-			if best_target >= 0:
-				var enemy: Dictionary = active_enemies[best_target]
-				enemy["hp"] = int(enemy.get("hp", 1)) - damage
-
-				# Apply burn if applicable
-				if apply_burn:
-					enemy = SimEnemies.apply_status_effect(enemy, "burning", 1, "auto_tower")
-
-				# Set cooldown
-				auto_tower_cooldowns[tower_idx] = cooldown
-
-				# Spawn effect
-				var enemy_pos: Vector2i = enemy.get("pos", Vector2i.ZERO)
-				_spawn_auto_tower_effect(tower_pos, "projectile", 1, enemy_pos)
-
-				# Check for kill
-				if int(enemy.get("hp", 0)) <= 0:
-					_auto_tower_kill(best_target, tower.get("type", "sentry"))
-				else:
-					active_enemies[best_target] = enemy
+		if damage_count > 0:
+			if effect_type == "aoe" or effect_type == "zone":
+				_spawn_auto_tower_effect(tower_pos, "aoe", damage_count)
+			elif effect_type == "chain":
+				# Spawn chain effect - projectile to first target, then chain lines
+				if not attack.damage_events.is_empty():
+					var first_idx: int = int(attack.damage_events[0].get("enemy_index", -1))
+					if first_idx >= 0 and first_idx < active_enemies.size():
+						var target_pos: Vector2i = active_enemies[first_idx].get("pos", Vector2i.ZERO)
+						_spawn_auto_tower_effect(tower_pos, "chain", damage_count, target_pos)
+			elif effect_type == "splash":
+				if not attack.damage_events.is_empty():
+					var first_idx: int = int(attack.damage_events[0].get("enemy_index", -1))
+					if first_idx >= 0 and first_idx < active_enemies.size():
+						var target_pos: Vector2i = active_enemies[first_idx].get("pos", Vector2i.ZERO)
+						_spawn_auto_tower_effect(tower_pos, "splash", damage_count, target_pos)
+			elif effect_type == "contact":
+				_spawn_auto_tower_effect(tower_pos, "contact", damage_count)
+			else:
+				# Single target projectile
+				if not attack.damage_events.is_empty():
+					var first_idx: int = int(attack.damage_events[0].get("enemy_index", -1))
+					if first_idx >= 0 and first_idx < active_enemies.size():
+						var target_pos: Vector2i = active_enemies[first_idx].get("pos", Vector2i.ZERO)
+						_spawn_auto_tower_effect(tower_pos, "projectile", 1, target_pos)
 
 func _auto_tower_kill(enemy_index: int, tower_type: String) -> void:
 	var enemy: Dictionary = active_enemies[enemy_index]
@@ -3871,10 +4198,29 @@ func _spawn_auto_tower_effect(tower_pos: Vector2i, effect_type: String, count: i
 	if not grid_renderer:
 		return
 
-	if effect_type == "aoe" and grid_renderer.has_method("spawn_hit_particles"):
-		grid_renderer.spawn_hit_particles(tower_pos, count * 5, Color(1.0, 1.0, 0.0))
-	elif effect_type == "projectile" and grid_renderer.has_method("spawn_projectile"):
-		grid_renderer.spawn_projectile(tower_pos, target_pos, Color(0.5, 0.8, 1.0))
+	match effect_type:
+		"aoe", "zone":
+			if grid_renderer.has_method("spawn_hit_particles"):
+				grid_renderer.spawn_hit_particles(tower_pos, count * 5, Color(1.0, 1.0, 0.0))
+		"projectile":
+			if grid_renderer.has_method("spawn_projectile"):
+				grid_renderer.spawn_projectile(tower_pos, target_pos, Color(0.5, 0.8, 1.0))
+		"chain":
+			# Lightning chain effect
+			if grid_renderer.has_method("spawn_projectile"):
+				grid_renderer.spawn_projectile(tower_pos, target_pos, Color(0.5, 0.7, 1.0))
+			if grid_renderer.has_method("spawn_hit_particles"):
+				grid_renderer.spawn_hit_particles(target_pos, count * 3, Color(0.6, 0.8, 1.0))
+		"splash":
+			# Explosive splash effect
+			if grid_renderer.has_method("spawn_projectile"):
+				grid_renderer.spawn_projectile(tower_pos, target_pos, Color(1.0, 0.6, 0.2))
+			if grid_renderer.has_method("spawn_hit_particles"):
+				grid_renderer.spawn_hit_particles(target_pos, count * 4, Color(1.0, 0.5, 0.1))
+		"contact":
+			# Thorn/contact damage effect
+			if grid_renderer.has_method("spawn_hit_particles"):
+				grid_renderer.spawn_hit_particles(tower_pos, count * 3, Color(0.3, 0.8, 0.3))
 
 func _get_item_buff_value(buff_type: String) -> float:
 	if active_item_buffs.has(buff_type):
@@ -4571,6 +4917,306 @@ func _toggle_typing_metrics_panel() -> void:
 		typing_metrics_panel.hide()
 	else:
 		typing_metrics_panel.show_typing_metrics()
+
+func _show_tower_types_reference() -> void:
+	_toggle_tower_types_reference_panel()
+
+func _toggle_tower_types_reference_panel() -> void:
+	if tower_types_reference_panel == null:
+		return
+
+	if tower_types_reference_panel.visible:
+		tower_types_reference_panel.hide()
+	else:
+		tower_types_reference_panel.show_tower_types_reference()
+
+func _show_enemy_types_reference() -> void:
+	_toggle_enemy_types_reference_panel()
+
+func _toggle_enemy_types_reference_panel() -> void:
+	if enemy_types_reference_panel == null:
+		return
+
+	if enemy_types_reference_panel.visible:
+		enemy_types_reference_panel.hide()
+	else:
+		enemy_types_reference_panel.show_enemy_types_reference()
+
+func _show_building_types_reference() -> void:
+	_toggle_building_types_reference_panel()
+
+func _toggle_building_types_reference_panel() -> void:
+	if building_types_reference_panel == null:
+		return
+
+	if building_types_reference_panel.visible:
+		building_types_reference_panel.hide()
+	else:
+		building_types_reference_panel.show_building_types_reference()
+
+func _show_research_tree_reference() -> void:
+	_toggle_research_tree_reference_panel()
+
+func _toggle_research_tree_reference_panel() -> void:
+	if research_tree_reference_panel == null:
+		return
+
+	if research_tree_reference_panel.visible:
+		research_tree_reference_panel.hide()
+	else:
+		research_tree_reference_panel.show_research_tree_reference()
+
+func _show_workers_reference() -> void:
+	_toggle_workers_reference_panel()
+
+func _toggle_workers_reference_panel() -> void:
+	if workers_reference_panel == null:
+		return
+
+	if workers_reference_panel.visible:
+		workers_reference_panel.hide()
+	else:
+		workers_reference_panel.show_workers_reference()
+
+func _show_trade_reference() -> void:
+	_toggle_trade_reference_panel()
+
+func _toggle_trade_reference_panel() -> void:
+	if trade_reference_panel == null:
+		return
+
+	if trade_reference_panel.visible:
+		trade_reference_panel.hide()
+	else:
+		trade_reference_panel.show_trade_reference()
+
+func _show_lessons_reference() -> void:
+	_toggle_lessons_reference_panel()
+
+func _toggle_lessons_reference_panel() -> void:
+	if lessons_reference_panel == null:
+		return
+
+	if lessons_reference_panel.visible:
+		lessons_reference_panel.hide()
+	else:
+		lessons_reference_panel.show_lessons_reference()
+
+func _show_kingdom_upgrades_reference() -> void:
+	_toggle_kingdom_upgrades_reference_panel()
+
+func _toggle_kingdom_upgrades_reference_panel() -> void:
+	if kingdom_upgrades_reference_panel == null:
+		return
+
+	if kingdom_upgrades_reference_panel.visible:
+		kingdom_upgrades_reference_panel.hide()
+	else:
+		kingdom_upgrades_reference_panel.show_kingdom_upgrades_reference()
+
+func _show_special_commands_reference() -> void:
+	_toggle_special_commands_reference_panel()
+
+func _toggle_special_commands_reference_panel() -> void:
+	if special_commands_reference_panel == null:
+		return
+
+	if special_commands_reference_panel.visible:
+		special_commands_reference_panel.hide()
+	else:
+		special_commands_reference_panel.show_special_commands_reference()
+
+func _show_status_effects_reference() -> void:
+	_toggle_status_effects_reference_panel()
+
+func _toggle_status_effects_reference_panel() -> void:
+	if status_effects_reference_panel == null:
+		return
+
+	if status_effects_reference_panel.visible:
+		status_effects_reference_panel.hide()
+	else:
+		status_effects_reference_panel.show_status_effects_reference()
+
+func _show_combo_system_reference() -> void:
+	_toggle_combo_system_reference_panel()
+
+func _toggle_combo_system_reference_panel() -> void:
+	if combo_system_reference_panel == null:
+		return
+
+	if combo_system_reference_panel.visible:
+		combo_system_reference_panel.hide()
+	else:
+		combo_system_reference_panel.show_combo_system_reference()
+
+func _show_difficulty_modes_reference() -> void:
+	_toggle_difficulty_modes_reference_panel()
+
+func _toggle_difficulty_modes_reference_panel() -> void:
+	if difficulty_modes_reference_panel == null:
+		return
+
+	if difficulty_modes_reference_panel.visible:
+		difficulty_modes_reference_panel.hide()
+	else:
+		difficulty_modes_reference_panel.show_difficulty_modes_reference()
+
+func _show_damage_types_reference() -> void:
+	_toggle_damage_types_reference_panel()
+
+func _toggle_damage_types_reference_panel() -> void:
+	if damage_types_reference_panel == null:
+		return
+
+	if damage_types_reference_panel.visible:
+		damage_types_reference_panel.hide()
+	else:
+		damage_types_reference_panel.show_damage_types_reference()
+
+func _show_enemy_affixes_reference() -> void:
+	_toggle_enemy_affixes_reference_panel()
+
+func _toggle_enemy_affixes_reference_panel() -> void:
+	if enemy_affixes_reference_panel == null:
+		return
+
+	if enemy_affixes_reference_panel.visible:
+		enemy_affixes_reference_panel.hide()
+	else:
+		enemy_affixes_reference_panel.show_enemy_affixes_reference()
+
+func _show_equipment_items_reference() -> void:
+	_toggle_equipment_items_reference_panel()
+
+func _toggle_equipment_items_reference_panel() -> void:
+	if equipment_items_reference_panel == null:
+		return
+
+	if equipment_items_reference_panel.visible:
+		equipment_items_reference_panel.hide()
+	else:
+		equipment_items_reference_panel.show_equipment_items_reference()
+
+func _show_skill_trees_reference() -> void:
+	_toggle_skill_trees_reference_panel()
+
+func _toggle_skill_trees_reference_panel() -> void:
+	if skill_trees_reference_panel == null:
+		return
+
+	if skill_trees_reference_panel.visible:
+		skill_trees_reference_panel.hide()
+	else:
+		skill_trees_reference_panel.show_skill_trees_reference()
+
+func _show_expeditions_reference() -> void:
+	_toggle_expeditions_reference_panel()
+
+func _toggle_expeditions_reference_panel() -> void:
+	if expeditions_reference_panel == null:
+		return
+
+	if expeditions_reference_panel.visible:
+		expeditions_reference_panel.hide()
+	else:
+		expeditions_reference_panel.show_expeditions_reference()
+
+func _show_daily_challenges_reference() -> void:
+	_toggle_daily_challenges_reference_panel()
+
+func _toggle_daily_challenges_reference_panel() -> void:
+	if daily_challenges_reference_panel == null:
+		return
+
+	if daily_challenges_reference_panel.visible:
+		daily_challenges_reference_panel.hide()
+	else:
+		daily_challenges_reference_panel.show_daily_challenges_reference()
+
+func _show_milestones_reference() -> void:
+	_toggle_milestones_reference_panel()
+
+func _toggle_milestones_reference_panel() -> void:
+	if milestones_reference_panel == null:
+		return
+
+	if milestones_reference_panel.visible:
+		milestones_reference_panel.hide()
+	else:
+		milestones_reference_panel.show_milestones_reference()
+
+func _show_login_rewards_reference() -> void:
+	_toggle_login_rewards_reference_panel()
+
+func _toggle_login_rewards_reference_panel() -> void:
+	if login_rewards_reference_panel == null:
+		return
+
+	if login_rewards_reference_panel.visible:
+		login_rewards_reference_panel.hide()
+	else:
+		login_rewards_reference_panel.show_login_rewards_reference()
+
+func _show_loot_system_reference() -> void:
+	_toggle_loot_system_reference_panel()
+
+func _toggle_loot_system_reference_panel() -> void:
+	if loot_system_reference_panel == null:
+		return
+
+	if loot_system_reference_panel.visible:
+		loot_system_reference_panel.hide()
+	else:
+		loot_system_reference_panel.show_loot_system_reference()
+
+func _show_quests_reference() -> void:
+	_toggle_quests_reference_panel()
+
+func _toggle_quests_reference_panel() -> void:
+	if quests_reference_panel == null:
+		return
+
+	if quests_reference_panel.visible:
+		quests_reference_panel.hide()
+	else:
+		quests_reference_panel.show_quests_reference()
+
+func _show_resource_nodes_reference() -> void:
+	_toggle_resource_nodes_reference_panel()
+
+func _toggle_resource_nodes_reference_panel() -> void:
+	if resource_nodes_reference_panel == null:
+		return
+
+	if resource_nodes_reference_panel.visible:
+		resource_nodes_reference_panel.hide()
+	else:
+		resource_nodes_reference_panel.show_resource_nodes_reference()
+
+func _show_player_stats_reference() -> void:
+	_toggle_player_stats_reference_panel()
+
+func _toggle_player_stats_reference_panel() -> void:
+	if player_stats_reference_panel == null:
+		return
+
+	if player_stats_reference_panel.visible:
+		player_stats_reference_panel.hide()
+	else:
+		player_stats_reference_panel.show_player_stats_reference()
+
+func _show_wave_composer_reference() -> void:
+	_toggle_wave_composer_reference_panel()
+
+func _toggle_wave_composer_reference_panel() -> void:
+	if wave_composer_reference_panel == null:
+		return
+
+	if wave_composer_reference_panel.visible:
+		wave_composer_reference_panel.hide()
+	else:
+		wave_composer_reference_panel.show_wave_composer_reference()
 
 func _show_materials() -> void:
 	_toggle_materials_panel()

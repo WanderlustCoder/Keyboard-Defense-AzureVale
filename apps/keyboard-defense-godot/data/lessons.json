@@ -8,30 +8,42 @@
       "stages": [
         {
           "stage": 1,
+          "name": "First Keys",
+          "lessons": ["intro_left_hand", "intro_right_hand", "intro_home_row"],
+          "goal": "Learn where each key is - one key at a time!"
+        },
+        {
+          "stage": 2,
+          "name": "Key Pairs",
+          "lessons": ["intro_pairs_left", "intro_pairs_right", "intro_pairs_all"],
+          "goal": "Practice two-key combinations"
+        },
+        {
+          "stage": 3,
           "name": "Home Row Fundamentals",
           "lessons": ["home_row_1", "home_row_2", "home_row_words"],
           "goal": "Master the home row position"
         },
         {
-          "stage": 2,
+          "stage": 4,
           "name": "Reach Row Addition",
           "lessons": ["reach_row_1", "reach_row_2", "reach_row_words"],
           "goal": "Add E, R, T, Y, U, I, O to your repertoire"
         },
         {
-          "stage": 3,
+          "stage": 5,
           "name": "Bottom Row",
           "lessons": ["bottom_row_1", "bottom_row_2", "bottom_row_words"],
           "goal": "Master Z, X, C, V, B, N, M"
         },
         {
-          "stage": 4,
+          "stage": 6,
           "name": "Full Alphabet",
           "lessons": ["full_alpha", "full_alpha_words", "common_words"],
           "goal": "Type all letters fluently"
         },
         {
-          "stage": 5,
+          "stage": 7,
           "name": "Simple Sentences",
           "lessons": ["sentence_basics", "sentence_home_row", "sentence_common"],
           "goal": "Graduate to full sentence typing"
@@ -130,6 +142,54 @@
     }
   },
   "lessons": [
+    {
+      "id": "intro_left_hand",
+      "name": "Left Hand - Single Keys",
+      "description": "Learn A, S, D, F one key at a time. No rush!",
+      "mode": "charset",
+      "charset": "asdf",
+      "lengths": { "scout": [1, 1], "raider": [1, 1], "armored": [1, 2] }
+    },
+    {
+      "id": "intro_right_hand",
+      "name": "Right Hand - Single Keys",
+      "description": "Learn J, K, L one key at a time.",
+      "mode": "charset",
+      "charset": "jkl",
+      "lengths": { "scout": [1, 1], "raider": [1, 1], "armored": [1, 2] }
+    },
+    {
+      "id": "intro_home_row",
+      "name": "All Home Keys - Single",
+      "description": "Practice all home row keys, one at a time.",
+      "mode": "charset",
+      "charset": "asdfghjkl",
+      "lengths": { "scout": [1, 1], "raider": [1, 1], "armored": [1, 2] }
+    },
+    {
+      "id": "intro_pairs_left",
+      "name": "Left Hand - Pairs",
+      "description": "Two-letter combinations with A, S, D, F.",
+      "mode": "charset",
+      "charset": "asdf",
+      "lengths": { "scout": [2, 2], "raider": [2, 2], "armored": [2, 3] }
+    },
+    {
+      "id": "intro_pairs_right",
+      "name": "Right Hand - Pairs",
+      "description": "Two-letter combinations with J, K, L.",
+      "mode": "charset",
+      "charset": "jkl",
+      "lengths": { "scout": [2, 2], "raider": [2, 2], "armored": [2, 3] }
+    },
+    {
+      "id": "intro_pairs_all",
+      "name": "Home Row - Pairs",
+      "description": "Two-letter combinations across home row.",
+      "mode": "charset",
+      "charset": "asdfghjkl",
+      "lengths": { "scout": [2, 2], "raider": [2, 2], "armored": [2, 3] }
+    },
     {
       "id": "home_row_1",
       "name": "Home Row Basics",

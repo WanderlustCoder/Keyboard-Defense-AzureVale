@@ -104,135 +104,135 @@ var typing_metrics: Dictionary  # Real-time WPM, accuracy, letter tracking
 var arrow_rain_timer: float  # Timer for Arrow Rain synergy
 
 func _init() -> void:
-    day = 1
-    phase = "day"
-    ap_max = 3
-    ap = ap_max
-    hp = 10
-    threat = 0
-    map_w = 16
-    map_h = 10
-    base_pos = Vector2i(int(map_w / 2), int(map_h / 2))
-    cursor_pos = base_pos
-    night_prompt = ""
-    night_spawn_remaining = 0
-    night_wave_total = 0
-    enemies = []
-    enemy_next_id = 1
-    last_path_open = true
-    rng_seed = "default"
-    rng_state = 0
-    lesson_id = "full_alpha"
-    version = 1
+	day = 1
+	phase = "day"
+	ap_max = 3
+	ap = ap_max
+	hp = 10
+	threat = 0
+	map_w = 16
+	map_h = 10
+	base_pos = Vector2i(int(map_w / 2), int(map_h / 2))
+	cursor_pos = base_pos
+	night_prompt = ""
+	night_spawn_remaining = 0
+	night_wave_total = 0
+	enemies = []
+	enemy_next_id = 1
+	last_path_open = true
+	rng_seed = "default"
+	rng_state = 0
+	lesson_id = "full_alpha"
+	version = 1
 
-    resources = {}
-    for key in RESOURCE_KEYS:
-        resources[key] = 0
+	resources = {}
+	for key in RESOURCE_KEYS:
+		resources[key] = 0
 
-    buildings = {}
-    for key in BUILDING_KEYS:
-        buildings[key] = 0
+	buildings = {}
+	for key in BUILDING_KEYS:
+		buildings[key] = 0
 
-    terrain = []
-    for _i in range(map_w * map_h):
-        terrain.append("")
+	terrain = []
+	for _i in range(map_w * map_h):
+		terrain.append("")
 
-    structures = {}
-    structure_levels = {}
+	structures = {}
+	structure_levels = {}
 
-    discovered = {}
+	discovered = {}
 
-    # Event system initialization
-    active_pois = {}
-    event_cooldowns = {}
-    event_flags = {}
-    pending_event = {}
-    active_buffs = []
+	# Event system initialization
+	active_pois = {}
+	event_cooldowns = {}
+	event_flags = {}
+	pending_event = {}
+	active_buffs = []
 
-    # Upgrade system initialization
-    purchased_kingdom_upgrades = []
-    purchased_unit_upgrades = []
-    gold = 0
+	# Upgrade system initialization
+	purchased_kingdom_upgrades = []
+	purchased_unit_upgrades = []
+	gold = 0
 
-    # Worker system initialization
-    workers = {}
-    total_workers = 3
-    max_workers = 10
-    worker_upkeep = 1
+	# Worker system initialization
+	workers = {}
+	total_workers = 3
+	max_workers = 10
+	worker_upkeep = 1
 
-    # Research system initialization
-    active_research = ""
-    research_progress = 0
-    completed_research = []
+	# Research system initialization
+	active_research = ""
+	research_progress = 0
+	completed_research = []
 
-    # Trade system initialization
-    trade_rates = {
-        "wood_to_stone": 1.5,  # 3 wood = 2 stone
-        "stone_to_wood": 0.67,
-        "food_to_gold": 0.5,   # 2 food = 1 gold
-        "gold_to_food": 2.0,
-        "wood_to_gold": 0.33,  # 3 wood = 1 gold
-        "gold_to_wood": 3.0,
-        "stone_to_gold": 0.5,  # 2 stone = 1 gold
-        "gold_to_stone": 2.0
-    }
-    last_trade_day = 0
+	# Trade system initialization
+	trade_rates = {
+		"wood_to_stone": 1.5,  # 3 wood = 2 stone
+		"stone_to_wood": 0.67,
+		"food_to_gold": 0.5,   # 2 food = 1 gold
+		"gold_to_food": 2.0,
+		"wood_to_gold": 0.33,  # 3 wood = 1 gold
+		"gold_to_wood": 3.0,
+		"stone_to_gold": 0.5,  # 2 stone = 1 gold
+		"gold_to_stone": 2.0
+	}
+	last_trade_day = 0
 
-    # Accessibility defaults
-    speed_multiplier = 1.0
-    practice_mode = false
+	# Accessibility defaults
+	speed_multiplier = 1.0
+	practice_mode = false
 
-    # Open-world exploration initialization
-    roaming_enemies = []
-    roaming_resources = []
-    threat_level = 0.0
-    time_of_day = 0.25  # Start at morning (0.0=midnight, 0.5=noon, 1.0=midnight)
-    world_tick_accum = 0.0
+	# Open-world exploration initialization
+	roaming_enemies = []
+	roaming_resources = []
+	threat_level = 0.0
+	time_of_day = 0.25  # Start at morning (0.0=midnight, 0.5=noon, 1.0=midnight)
+	world_tick_accum = 0.0
 
-    # Unified threat system initialization
-    activity_mode = "exploration"
-    encounter_enemies = []
-    wave_cooldown = 0.0
-    threat_decay_accum = 0.0
+	# Unified threat system initialization
+	activity_mode = "exploration"
+	encounter_enemies = []
+	wave_cooldown = 0.0
+	threat_decay_accum = 0.0
 
-    # Expedition system initialization
-    active_expeditions = []
-    expedition_next_id = 1
-    expedition_history = []
+	# Expedition system initialization
+	active_expeditions = []
+	expedition_next_id = 1
+	expedition_history = []
 
-    # Resource node system initialization
-    resource_nodes = {}
-    harvested_nodes = {}
+	# Resource node system initialization
+	resource_nodes = {}
+	harvested_nodes = {}
 
-    # Loot tracking initialization
-    loot_pending = []
-    last_loot_quality = 1.0
-    perfect_kills = 0
+	# Loot tracking initialization
+	loot_pending = []
+	last_loot_quality = 1.0
+	perfect_kills = 0
 
-    # Tower system initialization
-    tower_states = {}
-    active_synergies = []
-    summoned_units = []
-    summoned_next_id = 1
-    active_traps = []
-    tower_charge = {}
-    tower_cooldowns = {}
-    tower_summon_ids = {}
+	# Tower system initialization
+	tower_states = {}
+	active_synergies = []
+	summoned_units = []
+	summoned_next_id = 1
+	active_traps = []
+	tower_charge = {}
+	tower_cooldowns = {}
+	tower_summon_ids = {}
 
-    # Typing metrics initialization
-    typing_metrics = {
-        "battle_chars_typed": 0,
-        "battle_words_typed": 0,
-        "battle_start_msec": 0,
-        "battle_errors": 0,
-        "rolling_window_chars": [],
-        "unique_letters_window": {},
-        "perfect_word_streak": 0,
-        "current_word_errors": 0
-    }
-    arrow_rain_timer = 0.0
+	# Typing metrics initialization
+	typing_metrics = {
+		"battle_chars_typed": 0,
+		"battle_words_typed": 0,
+		"battle_start_msec": 0,
+		"battle_errors": 0,
+		"rolling_window_chars": [],
+		"unique_letters_window": {},
+		"perfect_word_streak": 0,
+		"current_word_errors": 0
+	}
+	arrow_rain_timer = 0.0
 
-    discovered[_index(base_pos.x, base_pos.y)] = true
+	discovered[_index(base_pos.x, base_pos.y)] = true
 
 func _index(x: int, y: int) -> int:
-    return y * map_w + x
+	return y * map_w + x

@@ -70,43 +70,43 @@ Lessons are organized into progressive paths in `lessons.json`:
 | Biomes (wordlist) | 4 | biome_evergrove, biome_stonepass, biome_mistfen, biome_sunfields |
 | Specialty | 5 | common_words, same_hand_words, mixed_case, email_patterns, weak_fingers_words |
 
-### Lesson Introductions (18 lessons in `data/story.json`)
+### Lesson Introductions (75 lessons in `data/story.json` v4)
 
-Currently have Elder Lyra introductions with finger guides:
-- home_row_1, home_row_2
-- reach_row_1, reach_row_2
-- upper_row_1, upper_row_2
-- bottom_row_1, bottom_row_2
-- mixed_rows
-- speed_alpha
-- nexus_blend
-- numbers_1, numbers_2
-- apex_mastery
-- punctuation_1
-- symbols_1
+Elder Lyra introductions with finger guides now cover:
+
+**Core Progression (18 original):**
+- home_row_1, home_row_2, reach_row_1, reach_row_2, upper_row_1, upper_row_2
+- bottom_row_1, bottom_row_2, mixed_rows, speed_alpha, nexus_blend, full_alpha
+- numbers_1, numbers_2, apex_mastery, punctuation_1, symbols_1
+
+**New Additions (57 added 2026-01-10):**
+- training_basics, training_rhythm (foundation)
+- capitals_1, capitals_2 (capitals)
+- punctuation_2, symbols_2 (extended characters)
+- gauntlet_speed, gauntlet_endurance, gauntlet_chaos (gauntlets)
+- finger_gym_left, finger_gym_right, weak_fingers, pinky_power, ring_finger_focus, alternating_hands (finger training)
+- code_variables, code_keywords, code_syntax, code_master (coding)
+- boss_grove_guardian, boss_citadel_warden, boss_twilight_lord, boss_eternal_scribe, boss_fen_seer, boss_sunlord (bosses)
+- fire_realm_1, fire_realm_2, fire_realm_boss, ice_realm_1, ice_realm_2, ice_realm_boss, nature_realm_1, nature_realm_2, nature_realm_boss (realms)
+- biome_evergrove, biome_stonepass, biome_mistfen, biome_sunfields (biomes)
+- bigram_flow, double_letters, consonant_clusters, vowel_flow, rhythm_words (patterns)
+- twilight_whisper, twilight_shadow, twilight_void (twilight)
+- precision_bronze, precision_silver, precision_gold (precision)
+- time_trial_sprint, time_trial_marathon (time trials)
+- legendary_forest, legendary_citadel, legendary_apex (legendary)
+- common_words, same_hand_words (specialty)
 
 ### Gap Analysis
 
-**62+ lessons lack introductions** - organized by priority:
+**~20 lessons still need introductions:**
 
-#### High Priority (campaign progression)
-- gauntlet_speed, gauntlet_endurance, gauntlet_chaos
-- capitals_1, capitals_2
-- punctuation_2, symbols_2
-
-#### Medium Priority (themed content)
-- All boss lessons (6)
-- All realm lessons (9)
-- All twilight lessons (3)
-- All legendary lessons (3)
-
-#### Lower Priority (specialty/optional)
-- All coding lessons (4)
-- All precision lessons (3)
-- All finger training lessons (6)
-- All pattern lessons (5)
-- All biome lessons (4)
-- Other specialty lessons
+#### Remaining (lower priority)
+- weak_fingers_words
+- email_patterns
+- mixed_case
+- sentence_* lessons (8 sentence lessons)
+- full_alpha_words, home_row_words, reach_row_words, bottom_row_words
+- misc specialty lessons
 
 ## Proposed Lesson Track Structure
 
@@ -252,38 +252,40 @@ Each lesson introduction should include:
 ## Implementation Tasks
 
 ### Phase 1: Core Curriculum Guides
-1. [ ] Add introductions for training_basics, training_rhythm
-2. [ ] Add introductions for capitals_1, capitals_2
-3. [ ] Add introduction for punctuation_2
-4. [ ] Add introduction for symbols_2
-5. [ ] Add introductions for gauntlet_speed/endurance/chaos
+1. [x] Add introductions for training_basics, training_rhythm
+2. [x] Add introductions for capitals_1, capitals_2
+3. [x] Add introduction for punctuation_2
+4. [x] Add introduction for symbols_2
+5. [x] Add introductions for gauntlet_speed/endurance/chaos
 
 ### Phase 2: Finger Training Guides
-6. [ ] Add introductions for finger_gym_left, finger_gym_right
-7. [ ] Add introductions for weak_fingers, pinky_power, ring_finger_focus
-8. [ ] Add introduction for alternating_hands
+6. [x] Add introductions for finger_gym_left, finger_gym_right
+7. [x] Add introductions for weak_fingers, pinky_power, ring_finger_focus
+8. [x] Add introduction for alternating_hands
 
 ### Phase 3: Pattern Guides
-9. [ ] Add introductions for bigram_flow, double_letters
-10. [ ] Add introductions for consonant_clusters, vowel_flow
-11. [ ] Add introduction for rhythm_words
+9. [x] Add introductions for bigram_flow, double_letters
+10. [x] Add introductions for consonant_clusters, vowel_flow
+11. [x] Add introduction for rhythm_words
 
 ### Phase 4: Themed Content Guides
-12. [ ] Add introductions for twilight lessons (3)
-13. [ ] Add introductions for realm lessons (9)
-14. [ ] Add introductions for boss lessons (6)
+12. [x] Add introductions for twilight lessons (3)
+13. [x] Add introductions for realm lessons (9)
+14. [x] Add introductions for boss lessons (6)
 
 ### Phase 5: Challenge Mode Guides
-15. [ ] Add introductions for precision lessons (3)
-16. [ ] Add introductions for time trial lessons (2)
-17. [ ] Add introductions for legendary lessons (3)
+15. [x] Add introductions for precision lessons (3)
+16. [x] Add introductions for time trial lessons (2)
+17. [x] Add introductions for legendary lessons (3)
 
 ### Phase 6: Professional Skills Guides
-18. [ ] Add introductions for coding lessons (4)
-19. [ ] Add introductions for specialty lessons (common_words, mixed_case, email_patterns)
+18. [x] Add introductions for coding lessons (4)
+19. [x] Add introductions for specialty lessons (common_words, same_hand_words)
 
 ### Phase 7: Biome Wordlist Guides
-20. [ ] Add introductions for biome lessons (4)
+20. [x] Add introductions for biome lessons (4)
+
+**Status: All phases complete as of 2026-01-10. 57 lesson introductions added to story.json (v4).**
 
 ## Story Integration
 

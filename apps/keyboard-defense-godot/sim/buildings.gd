@@ -38,7 +38,9 @@ const BUILDINGS := {
         "production": {},
         "defense": 2,
         "worker_slots": 0,
-        "category": "defense"
+        "category": "auto_defense",
+        "tier": 1,
+        "auto_attack": {"damage": 3, "range": 3, "cooldown": 1.5, "targeting": "nearest", "damage_type": "physical"}
     },
     "market": {
         "cost": {"wood": 8, "stone": 5},
@@ -70,29 +72,171 @@ const BUILDINGS := {
         "category": "support",
         "effects": {"build_cost_reduction": 0.1}
     },
-    "sentry": {
-        "cost": {"wood": 6, "stone": 10, "gold": 30},
+    # =========================================================================
+    # AUTO-DEFENSE TOWERS - Tier 1
+    # =========================================================================
+    "auto_sentry": {
+        "cost": {"wood": 6, "stone": 10, "gold": 80},
         "production": {},
         "defense": 1,
         "worker_slots": 0,
         "category": "auto_defense",
-        "auto_attack": {"damage": 3, "range": 3, "cooldown": 1.5, "targeting": "nearest"}
+        "tier": 1,
+        "auto_attack": {"damage": 5, "range": 3, "cooldown": 1.25, "targeting": "nearest", "damage_type": "physical"}
+    },
+    "auto_spark": {
+        "cost": {"wood": 4, "stone": 8, "gold": 100},
+        "production": {},
+        "defense": 0,
+        "worker_slots": 0,
+        "category": "auto_defense",
+        "tier": 1,
+        "auto_attack": {"damage": 3, "range": 2, "cooldown": 1.5, "targeting": "zone", "aoe_radius": 2, "damage_type": "lightning"}
+    },
+    "auto_thorns": {
+        "cost": {"wood": 8, "gold": 60},
+        "production": {},
+        "defense": 0,
+        "worker_slots": 0,
+        "category": "auto_defense",
+        "tier": 1,
+        "auto_attack": {"damage": 8, "range": 1, "cooldown": 0, "targeting": "contact", "slow_percent": 15, "damage_type": "nature"}
+    },
+    # =========================================================================
+    # AUTO-DEFENSE TOWERS - Tier 2
+    # =========================================================================
+    "auto_ballista": {
+        "cost": {"wood": 10, "stone": 15, "gold": 230},
+        "production": {},
+        "defense": 1,
+        "worker_slots": 0,
+        "category": "auto_defense",
+        "tier": 2,
+        "auto_attack": {"damage": 25, "range": 6, "cooldown": 3.3, "targeting": "highest_hp", "armor_pierce": 50, "damage_type": "siege"}
+    },
+    "auto_tesla": {
+        "cost": {"wood": 6, "stone": 12, "gold": 280},
+        "production": {},
+        "defense": 0,
+        "worker_slots": 0,
+        "category": "auto_defense",
+        "tier": 2,
+        "auto_attack": {"damage": 8, "range": 4, "cooldown": 1.0, "targeting": "chain", "chain_count": 4, "chain_falloff": 0.8, "damage_type": "lightning"}
+    },
+    "auto_bramble": {
+        "cost": {"wood": 15, "stone": 5, "gold": 180},
+        "production": {},
+        "defense": 0,
+        "worker_slots": 0,
+        "category": "auto_defense",
+        "tier": 2,
+        "auto_attack": {"damage": 4, "range": 3, "cooldown": 0.5, "targeting": "zone", "slow_percent": 30, "root_chance": 10, "damage_type": "nature"}
+    },
+    "auto_flame": {
+        "cost": {"wood": 8, "stone": 10, "gold": 250},
+        "production": {},
+        "defense": 0,
+        "worker_slots": 0,
+        "category": "auto_defense",
+        "tier": 2,
+        "auto_attack": {"damage": 6, "range": 3, "cooldown": 0.5, "targeting": "nearest", "burn_damage": 3, "burn_duration": 3.0, "damage_type": "fire"}
+    },
+    # =========================================================================
+    # AUTO-DEFENSE TOWERS - Tier 3
+    # =========================================================================
+    "auto_cannon": {
+        "cost": {"wood": 15, "stone": 30, "gold": 530},
+        "production": {},
+        "defense": 2,
+        "worker_slots": 0,
+        "category": "auto_defense",
+        "tier": 3,
+        "auto_attack": {"damage": 50, "range": 8, "cooldown": 5.0, "targeting": "cluster", "splash_radius": 2, "splash_percent": 60, "damage_type": "siege"}
+    },
+    "auto_storm": {
+        "cost": {"wood": 8, "stone": 20, "gold": 630},
+        "production": {},
+        "defense": 1,
+        "worker_slots": 0,
+        "category": "auto_defense",
+        "tier": 3,
+        "auto_attack": {"damage": 15, "range": 6, "cooldown": 2.0, "targeting": "cluster", "strikes": 5, "stun_chance": 20, "stun_duration": 1.0, "damage_type": "lightning"}
+    },
+    "auto_fortress": {
+        "cost": {"wood": 30, "stone": 10, "gold": 520},
+        "production": {},
+        "defense": 3,
+        "worker_slots": 0,
+        "category": "auto_defense",
+        "tier": 3,
+        "auto_attack": {"damage": 20, "range": 2, "cooldown": 1.25, "targeting": "zone", "damage_type": "nature"},
+        "special": {"hp": 500, "armor": 30, "regen": 5, "blocks_path": true}
+    },
+    "auto_inferno": {
+        "cost": {"wood": 12, "stone": 15, "gold": 580},
+        "production": {},
+        "defense": 1,
+        "worker_slots": 0,
+        "category": "auto_defense",
+        "tier": 3,
+        "auto_attack": {"damage": 10, "range": 4, "cooldown": 0.33, "targeting": "nearest", "ramp_max": 3.0, "uses_fuel": true, "damage_type": "fire"}
+    },
+    # =========================================================================
+    # AUTO-DEFENSE TOWERS - Tier 4 (Legendary)
+    # =========================================================================
+    "auto_arcane": {
+        "cost": {"wood": 20, "stone": 30, "gold": 1200},
+        "production": {},
+        "defense": 2,
+        "worker_slots": 0,
+        "category": "auto_defense",
+        "tier": 4,
+        "auto_attack": {"damage": 35, "range": 5, "cooldown": 0.83, "targeting": "smart", "adaptive": true, "damage_type": "physical"},
+        "legendary": true,
+        "limit_per_map": 1
+    },
+    "auto_doom": {
+        "cost": {"wood": 50, "stone": 80, "gold": 2000},
+        "production": {},
+        "defense": 5,
+        "worker_slots": 0,
+        "category": "auto_defense",
+        "tier": 4,
+        "auto_attack": {"damage": 80, "range": 7, "cooldown": 6.67, "targeting": "cluster", "multi_system": true, "damage_type": "siege"},
+        "legendary": true,
+        "limit_per_map": 1,
+        "size": "3x3"
+    },
+    # Legacy aliases for backward compatibility
+    "sentry": {
+        "cost": {"wood": 6, "stone": 10, "gold": 80},
+        "production": {},
+        "defense": 1,
+        "worker_slots": 0,
+        "category": "auto_defense",
+        "tier": 1,
+        "auto_attack": {"damage": 5, "range": 3, "cooldown": 1.25, "targeting": "nearest"},
+        "alias_of": "auto_sentry"
     },
     "spark": {
-        "cost": {"wood": 4, "stone": 8, "gold": 50},
+        "cost": {"wood": 4, "stone": 8, "gold": 100},
         "production": {},
         "defense": 0,
         "worker_slots": 0,
         "category": "auto_defense",
-        "auto_attack": {"damage": 2, "range": 2, "cooldown": 2.0, "targeting": "aoe", "aoe_radius": 2}
+        "tier": 1,
+        "auto_attack": {"damage": 3, "range": 2, "cooldown": 1.5, "targeting": "zone", "aoe_radius": 2},
+        "alias_of": "auto_spark"
     },
     "flame": {
-        "cost": {"wood": 8, "stone": 6, "gold": 60},
+        "cost": {"wood": 8, "stone": 10, "gold": 250},
         "production": {},
         "defense": 0,
         "worker_slots": 0,
         "category": "auto_defense",
-        "auto_attack": {"damage": 4, "range": 2, "cooldown": 0.8, "targeting": "nearest", "burn": true}
+        "tier": 2,
+        "auto_attack": {"damage": 6, "range": 3, "cooldown": 0.5, "targeting": "nearest", "burn_damage": 3},
+        "alias_of": "auto_flame"
     }
 }
 
@@ -276,6 +420,82 @@ static func get_all_auto_towers(state: GameState) -> Array[Dictionary]:
                 "burn": bool(stats.get("burn", false))
             })
     return auto_towers
+
+
+static func get_auto_tower_tier(building_type: String) -> int:
+    return int(BUILDINGS.get(building_type, {}).get("tier", 0))
+
+
+static func get_auto_tower_upgrade_options(building_type: String) -> Array[String]:
+    return SimAutoTowerTypes.get_upgrade_options(building_type)
+
+
+static func can_upgrade_auto_tower(state: GameState, index: int) -> Dictionary:
+    var result := {"can_upgrade": false, "reason": "", "options": [], "costs": {}}
+
+    if not state.structures.has(index):
+        result.reason = "no structure at index"
+        return result
+
+    var building_type: String = str(state.structures[index])
+    if not is_auto_tower(building_type):
+        result.reason = "not an auto-tower"
+        return result
+
+    var options: Array[String] = get_auto_tower_upgrade_options(building_type)
+    if options.is_empty():
+        result.reason = "no upgrade available"
+        return result
+
+    # Check each upgrade option
+    for option in options:
+        var cost: Dictionary = SimAutoTowerTypes.get_upgrade_cost(option)
+        var can_afford := true
+        for res_key in cost.keys():
+            var res_name: String = str(res_key)
+            var required: int = int(cost[res_key])
+            var current: int = 0
+            if res_name == "gold":
+                current = state.gold
+            else:
+                current = int(state.resources.get(res_name, 0))
+            if current < required:
+                can_afford = false
+                break
+
+        result.options.append(option)
+        result.costs[option] = cost
+        if can_afford:
+            result.can_upgrade = true
+
+    if not result.can_upgrade:
+        result.reason = "cannot afford upgrade"
+
+    return result
+
+
+static func apply_auto_tower_upgrade(state: GameState, index: int, target_type: String) -> bool:
+    var check := can_upgrade_auto_tower(state, index)
+    if not check.can_upgrade:
+        return false
+
+    if not target_type in check.options:
+        return false
+
+    # Deduct cost
+    var cost: Dictionary = check.costs.get(target_type, {})
+    for res_key in cost.keys():
+        var res_name: String = str(res_key)
+        var amount: int = int(cost[res_key])
+        if res_name == "gold":
+            state.gold -= amount
+        else:
+            state.resources[res_name] = int(state.resources.get(res_name, 0)) - amount
+
+    # Replace structure
+    state.structures[index] = target_type
+    return true
+
 
 static func get_build_preview(state: GameState, pos: Vector2i, building_type: String) -> Dictionary:
     var preview := {
