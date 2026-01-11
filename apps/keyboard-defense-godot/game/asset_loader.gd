@@ -2,6 +2,7 @@ extends Node
 ## Asset Loader - Loads and caches textures from assets_manifest.json
 
 const MANIFEST_PATH := "res://data/assets_manifest.json"
+const SimEnemyTypes = preload("res://sim/enemy_types.gd")
 
 var _manifest: Dictionary = {}
 var _texture_cache: Dictionary = {}
@@ -119,6 +120,15 @@ func get_nineslice_info(id: String) -> Dictionary:
 
 ## Enemy sprite mapping - maps enemy kind to sprite id
 func get_enemy_sprite_id(kind: String) -> String:
+	# First check new enemy type system for explicit sprite
+	if SimEnemyTypes.is_valid(kind):
+		var enemy_data: Dictionary = SimEnemyTypes.get_any_enemy(kind)
+		if enemy_data.has("sprite"):
+			return str(enemy_data.get("sprite"))
+		# Map based on tier and category
+		return _get_sprite_for_enemy_type(enemy_data)
+
+	# Legacy enemy kind mapping
 	match kind:
 		"raider":
 			return "enemy_raider"
@@ -146,6 +156,73 @@ func get_enemy_sprite_id(kind: String) -> String:
 					return base_id + "_elite"
 				return base_id
 			return "enemy_runner"
+
+
+## Map new enemy types to sprites based on tier and category
+func _get_sprite_for_enemy_type(enemy_data: Dictionary) -> String:
+	var tier: int = int(enemy_data.get("tier", SimEnemyTypes.Tier.MINION))
+	var category: int = int(enemy_data.get("category", SimEnemyTypes.Category.BASIC))
+
+	# Tier-based primary mapping
+	match tier:
+		SimEnemyTypes.Tier.MINION:
+			# Small fast creatures
+			match category:
+				SimEnemyTypes.Category.SWARM:
+					return "enemy_runner"
+				SimEnemyTypes.Category.STEALTH:
+					return "enemy_runner"
+				SimEnemyTypes.Category.CASTER:
+					return "enemy_flyer"
+				_:
+					return "enemy_runner"
+
+		SimEnemyTypes.Tier.SOLDIER:
+			# Medium enemies
+			match category:
+				SimEnemyTypes.Category.TANK:
+					return "enemy_brute"
+				SimEnemyTypes.Category.RANGED:
+					return "enemy_runner"
+				SimEnemyTypes.Category.BERSERKER:
+					return "enemy_raider"
+				SimEnemyTypes.Category.STEALTH:
+					return "enemy_runner"
+				SimEnemyTypes.Category.CASTER:
+					return "enemy_healer"
+				_:
+					return "enemy_runner"
+
+		SimEnemyTypes.Tier.ELITE:
+			# Strong enemies
+			match category:
+				SimEnemyTypes.Category.TANK:
+					return "enemy_brute_elite"
+				SimEnemyTypes.Category.BERSERKER:
+					return "enemy_raider"
+				SimEnemyTypes.Category.CASTER:
+					return "enemy_healer"
+				SimEnemyTypes.Category.SUPPORT:
+					return "enemy_healer"
+				_:
+					return "enemy_runner_elite"
+
+		SimEnemyTypes.Tier.CHAMPION:
+			# Boss-like enemies
+			match category:
+				SimEnemyTypes.Category.TANK, SimEnemyTypes.Category.SIEGE:
+					return "enemy_brute_elite"
+				SimEnemyTypes.Category.CASTER:
+					return "enemy_boss_mage"
+				SimEnemyTypes.Category.SUPPORT:
+					return "enemy_healer"
+				_:
+					return "enemy_boss_warlord"
+
+		SimEnemyTypes.Tier.BOSS:
+			return "enemy_boss_warlord"
+
+	return "enemy_runner"
 
 ## Building sprite mapping
 func get_building_sprite_id(building_type: String) -> String:

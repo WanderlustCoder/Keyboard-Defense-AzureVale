@@ -108,6 +108,7 @@ const ENEMIES: Dictionary = {
 		"gold": 1,
 		"glyph": "t",
 		"color": Color(0.6, 0.4, 0.8),
+		"sprite": "enemy_typhos_spawn",
 		"abilities": [],
 		"flavor": "The first whispers of corruption."
 	},
@@ -456,6 +457,7 @@ const ENEMIES: Dictionary = {
 		"gold": 10,
 		"glyph": "V",
 		"color": Color(0.4, 0.3, 0.5),
+		"sprite": "enemy_void_knight",
 		"abilities": ["shield_aura"],
 		"aura_radius": 2,
 		"aura_armor_bonus": 1,
@@ -568,6 +570,7 @@ const ENEMIES: Dictionary = {
 		"gold": 25,
 		"glyph": "T",
 		"color": Color(0.6, 0.3, 0.8),
+		"sprite": "enemy_typhos_lord",
 		"abilities": ["summon_spawn", "command_aura"],
 		"summon_cooldown": 10.0,
 		"summon_count": 2,

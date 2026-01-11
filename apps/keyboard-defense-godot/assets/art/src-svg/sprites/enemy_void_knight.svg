@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Void Knight - 16x16 elite armored enemy -->
+
+  <!-- Shadow -->
+  <ellipse cx="8" cy="15" rx="5" ry="1.5" fill="#1a1a2e" opacity="0.6"/>
+
+  <!-- Legs (armored) -->
+  <rect x="5" y="11" width="2" height="4" fill="#2a2a3a"/>
+  <rect x="9" y="12" width="2" height="3" fill="#2a2a3a"/>
+  <!-- Leg armor plates -->
+  <rect x="5" y="11" width="2" height="2" fill="#3a3a4a"/>
+  <rect x="9" y="12" width="2" height="2" fill="#3a3a4a"/>
+  <!-- Boots -->
+  <rect x="4" y="14" width="3" height="2" fill="#1a1a2a"/>
+  <rect x="9" y="14" width="3" height="2" fill="#1a1a2a"/>
+
+  <!-- Body (void-touched plate armor) -->
+  <rect x="4" y="5" width="8" height="7" fill="#3a3a5a"/>
+  <!-- Chest plate -->
+  <rect x="5" y="6" width="6" height="5" fill="#4a4a6a"/>
+  <!-- Void core in chest -->
+  <rect x="7" y="7" width="2" height="2" fill="#8060a0"/>
+  <rect x="7" y="8" width="2" height="1" fill="#a080c0"/>
+
+  <!-- Left arm with shield -->
+  <rect x="2" y="6" width="2" height="5" fill="#3a3a5a"/>
+  <!-- Large shield -->
+  <rect x="1" y="7" width="2" height="4" fill="#4a4a6a"/>
+  <rect x="1" y="8" width="2" height="2" fill="#5a5a7a"/>
+  <!-- Shield void emblem -->
+  <rect x="1" y="9" width="2" height="1" fill="#8060a0"/>
+
+  <!-- Right arm with sword -->
+  <rect x="12" y="6" width="2" height="5" fill="#3a3a5a"/>
+  <!-- Void sword -->
+  <rect x="13" y="2" width="1" height="9" fill="#6a6a8a"/>
+  <rect x="13" y="2" width="1" height="3" fill="#8080a0"/>
+  <!-- Sword void glow -->
+  <rect x="13" y="4" width="1" height="2" fill="#9080b0"/>
+  <!-- Hilt -->
+  <rect x="12" y="10" width="3" height="1" fill="#3a3a5a"/>
+
+  <!-- Helmet -->
+  <rect x="5" y="1" width="6" height="5" fill="#3a3a5a"/>
+  <rect x="6" y="2" width="4" height="3" fill="#4a4a6a"/>
+  <!-- Helmet crest -->
+  <rect x="7" y="0" width="2" height="2" fill="#5a5a7a"/>
+
+  <!-- Visor slit -->
+  <rect x="6" y="3" width="4" height="1" fill="#1a1a2a"/>
+  <!-- Void eyes behind visor -->
+  <rect x="6" y="3" width="1" height="1" fill="#c090e0"/>
+  <rect x="9" y="3" width="1" height="1" fill="#c090e0"/>
+
+  <!-- Pauldrons -->
+  <rect x="2" y="5" width="3" height="2" fill="#4a4a6a"/>
+  <rect x="11" y="5" width="3" height="2" fill="#4a4a6a"/>
+</svg>

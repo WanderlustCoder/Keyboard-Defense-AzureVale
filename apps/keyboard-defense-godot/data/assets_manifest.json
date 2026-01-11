@@ -2029,6 +2029,36 @@
       "category": "enemies"
     },
     {
+      "id": "enemy_typhos_spawn",
+      "path": "res://assets/sprites/enemy_typhos_spawn.png",
+      "source_svg": "res://assets/art/src-svg/sprites/enemy_typhos_spawn.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "enemies"
+    },
+    {
+      "id": "enemy_void_knight",
+      "path": "res://assets/sprites/enemy_void_knight.png",
+      "source_svg": "res://assets/art/src-svg/sprites/enemy_void_knight.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "enemies"
+    },
+    {
+      "id": "enemy_typhos_lord",
+      "path": "res://assets/sprites/enemy_typhos_lord.png",
+      "source_svg": "res://assets/art/src-svg/sprites/enemy_typhos_lord.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "enemies"
+    },
+    {
       "id": "enemy_brute",
       "path": "res://assets/sprites/enemy_brute.png",
       "source_svg": "res://assets/art/src-svg/sprites/enemy_brute.svg",
