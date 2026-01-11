@@ -1,7 +1,7 @@
 # Priorities Analysis
 
 **Generated:** 2026-01-08
-**Last Updated:** 2026-01-11
+**Last Updated:** 2026-01-11 (Audio integration complete)
 
 This document identifies gaps between implemented features and the story/GDD vision, and recommends next priorities.
 
@@ -130,7 +130,7 @@ All P0 items are nearly complete. Remaining work:
 - [x] Story manager functions have unit tests (40+ assertions)
 - [x] Boss encounter tests (phases, dialogue, mechanics)
 - [x] Difficulty mode tests (modifiers, multipliers)
-- [ ] Dialogue box flow needs integration tests
+- [x] Dialogue flow tests (key dialogues, substitutions, act text, taunts, milestones)
 
 ## Recommended Priority Order
 
@@ -172,7 +172,7 @@ The following P0 items remain:
 1. ~~Verify lesson ID consistency between data files~~ - DONE (2026-01-10, all 98 lessons have introductions)
 2. ~~Unit tests for story manager functions~~ - DONE (2026-01-10, 40+ test assertions added)
 3. ~~Boss encounters and difficulty tests~~ - DONE (2026-01-11)
-4. Integration tests for dialogue flow
+4. ~~Integration tests for dialogue flow~~ - DONE (2026-01-11, comprehensive tests in run_tests.gd)
 
 ## Success Metrics
 
