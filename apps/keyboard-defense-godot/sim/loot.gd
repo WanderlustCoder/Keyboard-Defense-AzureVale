@@ -4,6 +4,9 @@ extends RefCounted
 ## Combat loot drop system - handles enemy drops based on typing performance.
 ## Drop rates and quality scale with player accuracy and combo performance.
 
+const GameState = preload("res://sim/types.gd")
+const SimRng = preload("res://sim/rng.gd")
+
 const LOOT_PATH := "res://data/loot_tables.json"
 
 # Quality tiers based on typing performance

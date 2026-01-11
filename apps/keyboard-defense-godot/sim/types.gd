@@ -108,6 +108,11 @@ var hero_id: String  # Selected hero ID (empty for no hero)
 var hero_ability_cooldown: float  # Remaining cooldown for hero ability
 var hero_active_effects: Array  # Active hero ability effects
 
+# Title system state (synced from profile)
+var equipped_title: String  # Currently equipped title ID
+var unlocked_titles: Array  # Array of unlocked title IDs
+var unlocked_badges: Array  # Array of unlocked badge IDs
+
 func _init() -> void:
 	day = 1
 	phase = "day"
@@ -241,6 +246,11 @@ func _init() -> void:
 	hero_id = ""
 	hero_ability_cooldown = 0.0
 	hero_active_effects = []
+
+	# Title system initialization
+	equipped_title = ""
+	unlocked_titles = []
+	unlocked_badges = []
 
 	discovered[_index(base_pos.x, base_pos.y)] = true
 

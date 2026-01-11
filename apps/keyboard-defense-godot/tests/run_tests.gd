@@ -52,6 +52,7 @@ const SimSkills = preload("res://sim/skills.gd")
 const SimQuests = preload("res://sim/quests.gd")
 const SimHeroTypes = preload("res://sim/hero_types.gd")
 const SimLocale = preload("res://sim/locale.gd")
+const SimTitles = preload("res://sim/titles.gd")
 const SimUpgrades = preload("res://sim/upgrades.gd")
 const SimWaveComposer = preload("res://sim/wave_composer.gd")
 const SimLoot = preload("res://sim/loot.gd")
@@ -126,6 +127,7 @@ func _run_all() -> void:
     _run_quests_tests()
     _run_hero_types_tests()
     _run_locale_tests()
+    _run_titles_tests()
     _run_wave_composer_tests()
     _run_upgrades_tests()
     _run_loot_tests()
@@ -4287,6 +4289,151 @@ func _run_locale_tests() -> void:
     _assert_equal(TypingProfile.get_locale(profile), "en", "default profile locale is en")
     TypingProfile.set_locale(profile, "es")
     _assert_equal(TypingProfile.get_locale(profile), "es", "set_locale updates profile")
+
+
+func _run_titles_tests() -> void:
+    # Test category constants
+    _assert_equal(SimTitles.CATEGORY_SPEED, "speed", "CATEGORY_SPEED constant")
+    _assert_equal(SimTitles.CATEGORY_ACCURACY, "accuracy", "CATEGORY_ACCURACY constant")
+    _assert_equal(SimTitles.CATEGORY_COMBAT, "combat", "CATEGORY_COMBAT constant")
+    _assert_equal(SimTitles.CATEGORY_DEDICATION, "dedication", "CATEGORY_DEDICATION constant")
+    _assert_equal(SimTitles.CATEGORY_MASTERY, "mastery", "CATEGORY_MASTERY constant")
+    _assert_equal(SimTitles.CATEGORY_SPECIAL, "special", "CATEGORY_SPECIAL constant")
+
+    # Test TITLES dictionary
+    _assert_true(SimTitles.TITLES.size() >= 20, "At least 20 titles defined")
+    _assert_true(SimTitles.TITLES.has("novice_typist"), "Has novice_typist title")
+    _assert_true(SimTitles.TITLES.has("speed_demon"), "Has speed_demon title")
+    _assert_true(SimTitles.TITLES.has("perfectionist"), "Has perfectionist title")
+    _assert_true(SimTitles.TITLES.has("champion"), "Has champion title")
+
+    # Test title structure
+    var title: Dictionary = SimTitles.get_title("novice_typist")
+    _assert_true(title.has("name"), "Title has name")
+    _assert_true(title.has("description"), "Title has description")
+    _assert_true(title.has("category"), "Title has category")
+    _assert_true(title.has("color"), "Title has color")
+    _assert_true(title.has("unlock"), "Title has unlock requirements")
+
+    # Test unlock structure
+    var unlock: Dictionary = title.get("unlock", {})
+    _assert_true(unlock.has("type"), "Unlock has type")
+    _assert_true(unlock.has("value"), "Unlock has value")
+
+    # Test BADGES dictionary
+    _assert_true(SimTitles.BADGES.size() >= 5, "At least 5 badges defined")
+    _assert_true(SimTitles.BADGES.has("early_bird"), "Has early_bird badge")
+    _assert_true(SimTitles.BADGES.has("explorer"), "Has explorer badge")
+
+    # Test badge structure
+    var badge: Dictionary = SimTitles.get_badge("early_bird")
+    _assert_true(badge.has("name"), "Badge has name")
+    _assert_true(badge.has("description"), "Badge has description")
+    _assert_true(badge.has("icon"), "Badge has icon")
+    _assert_true(badge.has("unlock"), "Badge has unlock requirements")
+
+    # Test helper functions
+    _assert_true(SimTitles.is_valid_title("novice_typist"), "novice_typist is valid title")
+    _assert_true(SimTitles.is_valid_title("speed_demon"), "speed_demon is valid title")
+    _assert_true(not SimTitles.is_valid_title("invalid_title"), "invalid_title is not valid")
+    _assert_true(not SimTitles.is_valid_title(""), "empty string is not valid title")
+
+    _assert_true(SimTitles.is_valid_badge("early_bird"), "early_bird is valid badge")
+    _assert_true(not SimTitles.is_valid_badge("invalid_badge"), "invalid_badge is not valid")
+
+    # Test get_title_name
+    _assert_equal(SimTitles.get_title_name("novice_typist"), "Novice Typist", "get_title_name works")
+    _assert_equal(SimTitles.get_title_name("speed_demon"), "Speed Demon", "get_title_name for speed_demon")
+
+    # Test get_title_color
+    var color: Color = SimTitles.get_title_color("novice_typist")
+    _assert_true(color is Color, "get_title_color returns Color")
+
+    # Test get_all_title_ids
+    var all_ids: Array[String] = SimTitles.get_all_title_ids()
+    _assert_true(all_ids.size() >= 20, "get_all_title_ids returns 20+ titles")
+    _assert_true("novice_typist" in all_ids, "all_ids contains novice_typist")
+    _assert_true("champion" in all_ids, "all_ids contains champion")
+
+    # Test get_all_badge_ids
+    var badge_ids: Array[String] = SimTitles.get_all_badge_ids()
+    _assert_true(badge_ids.size() >= 5, "get_all_badge_ids returns 5+ badges")
+    _assert_true("early_bird" in badge_ids, "badge_ids contains early_bird")
+
+    # Test get_titles_by_category
+    var speed_titles: Array[String] = SimTitles.get_titles_by_category(SimTitles.CATEGORY_SPEED)
+    _assert_true(speed_titles.size() >= 1, "Speed category has titles")
+    _assert_true("novice_typist" in speed_titles, "Speed category contains novice_typist")
+
+    # Test get_categories
+    var categories: Array[String] = SimTitles.get_categories()
+    _assert_true(categories.size() >= 6, "At least 6 categories")
+    _assert_true("speed" in categories, "Categories contains speed")
+    _assert_true("combat" in categories, "Categories contains combat")
+
+    # Test get_category_name
+    _assert_equal(SimTitles.get_category_name("speed"), "Speed", "get_category_name for speed")
+    _assert_equal(SimTitles.get_category_name("combat"), "Combat", "get_category_name for combat")
+
+    # Test check_title_unlock
+    var stats: Dictionary = {"highest_wpm": 25, "total_kills": 150, "highest_combo": 15}
+    _assert_true(SimTitles.check_title_unlock("novice_typist", stats), "novice_typist unlocked at 25 WPM")
+    _assert_true(not SimTitles.check_title_unlock("swift_fingers", stats), "swift_fingers not unlocked at 25 WPM")
+    _assert_true(SimTitles.check_title_unlock("centurion", stats), "centurion unlocked at 150 kills")
+
+    # Test check_all_title_unlocks
+    var already_unlocked: Array = ["novice_typist"]
+    var newly_unlockable: Array[String] = SimTitles.check_all_title_unlocks(stats, already_unlocked)
+    _assert_true("novice_typist" not in newly_unlockable, "Already unlocked not in newly_unlockable")
+    _assert_true("centurion" in newly_unlockable, "centurion in newly_unlockable")
+
+    # Test title command parsing
+    var result: Dictionary = CommandParser.parse("titles")
+    _assert_true(result.get("ok", false), "titles command parses")
+    _assert_equal(str(result.get("intent", {}).get("kind", "")), "titles_show", "titles -> titles_show intent")
+
+    result = CommandParser.parse("title novice_typist")
+    _assert_true(result.get("ok", false), "title novice_typist parses")
+    _assert_equal(str(result.get("intent", {}).get("kind", "")), "title_equip", "title -> title_equip intent")
+    _assert_equal(str(result.get("intent", {}).get("title_id", "")), "novice_typist", "title_id is correct")
+
+    result = CommandParser.parse("title none")
+    _assert_true(result.get("ok", false), "title none parses")
+    _assert_equal(str(result.get("intent", {}).get("kind", "")), "title_clear", "title none -> title_clear intent")
+
+    result = CommandParser.parse("badges")
+    _assert_true(result.get("ok", false), "badges command parses")
+    _assert_equal(str(result.get("intent", {}).get("kind", "")), "badges_show", "badges -> badges_show intent")
+
+    result = CommandParser.parse("title invalid_title")
+    _assert_true(not result.get("ok", false), "invalid title rejected")
+
+    # Test TypingProfile title functions
+    var profile: Dictionary = TypingProfile.default_profile()
+    _assert_true(TypingProfile.get_unlocked_titles(profile).is_empty(), "default profile has no unlocked titles")
+    _assert_true(TypingProfile.get_unlocked_badges(profile).is_empty(), "default profile has no unlocked badges")
+    _assert_equal(TypingProfile.get_equipped_title(profile), "", "default profile has no equipped title")
+
+    _assert_true(TypingProfile.unlock_title(profile, "novice_typist"), "unlock_title returns true")
+    _assert_true(TypingProfile.is_title_unlocked(profile, "novice_typist"), "novice_typist is now unlocked")
+    _assert_true(not TypingProfile.unlock_title(profile, "novice_typist"), "unlock_title returns false for already unlocked")
+
+    TypingProfile.set_equipped_title(profile, "novice_typist")
+    _assert_equal(TypingProfile.get_equipped_title(profile), "novice_typist", "equipped title is set")
+
+    _assert_true(TypingProfile.unlock_badge(profile, "early_bird"), "unlock_badge returns true")
+    _assert_true(TypingProfile.is_badge_unlocked(profile, "early_bird"), "early_bird is now unlocked")
+
+    # Test GameState title fields
+    var state: GameState = GameState.new()
+    _assert_equal(state.equipped_title, "", "GameState default equipped_title is empty")
+    _assert_true(state.unlocked_titles.is_empty(), "GameState default unlocked_titles is empty")
+    _assert_true(state.unlocked_badges.is_empty(), "GameState default unlocked_badges is empty")
+
+    state.unlocked_titles = ["novice_typist", "centurion"]
+    state.equipped_title = "novice_typist"
+    _assert_true("novice_typist" in state.unlocked_titles, "Can add titles to state")
+    _assert_equal(state.equipped_title, "novice_typist", "Can equip title in state")
 
 
 func _run_wave_composer_tests() -> void:

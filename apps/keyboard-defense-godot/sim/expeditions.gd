@@ -4,6 +4,7 @@ extends RefCounted
 ## Worker expedition system - send workers on timed gathering trips.
 ## Workers become unavailable during expedition but return with resources.
 
+const GameState = preload("res://sim/types.gd")
 const EXPEDITIONS_PATH := "res://data/expeditions.json"
 const SimWorkers = preload("res://sim/workers.gd")
 const SimRng = preload("res://sim/rng.gd")

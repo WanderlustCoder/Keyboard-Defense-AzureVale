@@ -144,7 +144,10 @@ static func default_profile() -> Dictionary:
             "cape": ""
         },
         "selected_hero": "",  # Selected hero ID (empty for no hero)
-        "locale": "en"  # UI language (en, es, de, fr, pt)
+        "locale": "en",  # UI language (en, es, de, fr, pt)
+        "unlocked_titles": [],  # Array of unlocked title IDs
+        "unlocked_badges": [],  # Array of unlocked badge IDs
+        "equipped_title": ""  # Currently equipped title ID
     }
 
 static func load_profile(path: String = PROFILE_PATH) -> Dictionary:
@@ -204,6 +207,13 @@ static func load_profile(path: String = PROFILE_PATH) -> Dictionary:
     # Load locale preference
     if data.has("locale"):
         profile["locale"] = str(data.get("locale", "en"))
+    # Load title/badge data
+    if data.has("unlocked_titles") and typeof(data.get("unlocked_titles")) == TYPE_ARRAY:
+        profile["unlocked_titles"] = data.get("unlocked_titles")
+    if data.has("unlocked_badges") and typeof(data.get("unlocked_badges")) == TYPE_ARRAY:
+        profile["unlocked_badges"] = data.get("unlocked_badges")
+    if data.has("equipped_title"):
+        profile["equipped_title"] = str(data.get("equipped_title", ""))
     # Load bestiary data
     if data.has("bestiary") and typeof(data.get("bestiary")) == TYPE_DICTIONARY:
         profile["bestiary"] = data.get("bestiary")
@@ -1104,6 +1114,50 @@ static func get_locale(profile: Dictionary) -> String:
 
 static func set_locale(profile: Dictionary, locale: String) -> void:
     profile["locale"] = locale
+
+
+## Title Functions
+
+static func get_unlocked_titles(profile: Dictionary) -> Array:
+    return profile.get("unlocked_titles", [])
+
+
+static func get_unlocked_badges(profile: Dictionary) -> Array:
+    return profile.get("unlocked_badges", [])
+
+
+static func get_equipped_title(profile: Dictionary) -> String:
+    return str(profile.get("equipped_title", ""))
+
+
+static func set_equipped_title(profile: Dictionary, title_id: String) -> void:
+    profile["equipped_title"] = title_id
+
+
+static func unlock_title(profile: Dictionary, title_id: String) -> bool:
+    var titles: Array = get_unlocked_titles(profile)
+    if title_id in titles:
+        return false  # Already unlocked
+    titles.append(title_id)
+    profile["unlocked_titles"] = titles
+    return true
+
+
+static func unlock_badge(profile: Dictionary, badge_id: String) -> bool:
+    var badges: Array = get_unlocked_badges(profile)
+    if badge_id in badges:
+        return false  # Already unlocked
+    badges.append(badge_id)
+    profile["unlocked_badges"] = badges
+    return true
+
+
+static func is_title_unlocked(profile: Dictionary, title_id: String) -> bool:
+    return title_id in get_unlocked_titles(profile)
+
+
+static func is_badge_unlocked(profile: Dictionary, badge_id: String) -> bool:
+    return badge_id in get_unlocked_badges(profile)
 
 
 ## Generic Profile Value Access Functions

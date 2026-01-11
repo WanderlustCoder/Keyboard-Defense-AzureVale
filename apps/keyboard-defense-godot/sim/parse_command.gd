@@ -6,6 +6,7 @@ const SimBuildings = preload("res://sim/buildings.gd")
 const SimIntents = preload("res://sim/intents.gd")
 const SimHeroTypes = preload("res://sim/hero_types.gd")
 const SimLocale = preload("res://sim/locale.gd")
+const SimTitles = preload("res://sim/titles.gd")
 
 static func parse(command: String) -> Dictionary:
     var trimmed: String = command.strip_edges()
@@ -508,6 +509,19 @@ static func parse(command: String) -> Dictionary:
                     return {"ok": false, "error": "Unknown locale: %s. Type 'locale' to see available languages." % locale_arg}
                 return {"ok": true, "intent": SimIntents.make("locale_set", {"locale": locale_arg})}
             return {"ok": false, "error": "Usage: locale [locale_id]"}
+        "title", "titles":
+            if tokens.size() == 1:
+                return {"ok": true, "intent": SimIntents.make("titles_show")}
+            if tokens.size() == 2:
+                var title_arg: String = tokens[1].to_lower()
+                if title_arg == "none":
+                    return {"ok": true, "intent": SimIntents.make("title_clear")}
+                if not SimTitles.is_valid_title(title_arg):
+                    return {"ok": false, "error": "Unknown title: %s. Type 'titles' to see your titles." % title_arg}
+                return {"ok": true, "intent": SimIntents.make("title_equip", {"title_id": title_arg})}
+            return {"ok": false, "error": "Usage: title [title_id|none]"}
+        "badge", "badges":
+            return {"ok": true, "intent": SimIntents.make("badges_show")}
         _:
             return {"ok": false, "error": "Unknown command: %s" % verb}
 

@@ -155,7 +155,7 @@ New SVG assets in `assets/art/src-svg/`:
 - Scenario reports and summaries are written under `Logs/ScenarioReports/` for CI-friendly collection (via `--out-dir`).
 
 ## Test Coverage (as of 2026-01-11)
-**Total: 3,801 assertions**
+**Total: 4,051 assertions**
 
 - **Parser tests**: Command parsing, intent validation
 - **Reducer tests**: State mutation, intent application
@@ -186,6 +186,9 @@ New SVG assets in `assets/art/src-svg/`:
 - **Quests tests**: Type/status constants, daily quest structure
 - **Hero types tests**: Hero IDs, data, passives, abilities
 - **Wave composer tests**: Tier weights, themes, modifiers
+- **Upgrades tests**: Kingdom/unit upgrades, effects, purchase validation
+- **Loot tests**: Quality tiers, multipliers, loot queue management
+- **Milestones tests**: Milestone categories, messages, detection, formatting
 
 ## Planning
 - `docs/ROADMAP.md` is the authoritative milestone list.

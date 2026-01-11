@@ -29,6 +29,7 @@ const SimBossEncounters = preload("res://sim/boss_encounters.gd")
 const SimEnemyTypes = preload("res://sim/enemy_types.gd")
 const SimHeroTypes = preload("res://sim/hero_types.gd")
 const SimLocale = preload("res://sim/locale.gd")
+const SimTitles = preload("res://sim/titles.gd")
 
 static func apply(state: GameState, intent: Dictionary) -> Dictionary:
     var events: Array[String] = []
@@ -147,6 +148,14 @@ static func apply(state: GameState, intent: Dictionary) -> Dictionary:
             _apply_locale_show(events)
         "locale_set":
             _apply_locale_set(intent, events)
+        "titles_show":
+            _apply_titles_show(new_state, events)
+        "title_equip":
+            _apply_title_equip(new_state, intent, events)
+        "title_clear":
+            _apply_title_clear(new_state, events)
+        "badges_show":
+            _apply_badges_show(new_state, events)
         _:
             events.append("Unknown intent: %s" % kind)
 
@@ -2109,3 +2118,47 @@ static func _apply_locale_set(intent: Dictionary, events: Array[String]) -> void
     ])
     if locale != old_locale:
         events.append("[color=gray]Note: Some text may not update until restart.[/color]")
+
+
+# =============================================================================
+# TITLE HANDLERS
+# =============================================================================
+
+
+static func _apply_titles_show(state: GameState, events: Array[String]) -> void:
+    events.append(SimTitles.format_titles_list(state.unlocked_titles, state.equipped_title))
+
+
+static func _apply_title_equip(state: GameState, intent: Dictionary, events: Array[String]) -> void:
+    var title_id: String = str(intent.get("title_id", ""))
+
+    if not SimTitles.is_valid_title(title_id):
+        events.append("Unknown title: %s" % title_id)
+        events.append("Type 'titles' to see available titles.")
+        return
+
+    # Check if title is unlocked
+    if title_id not in state.unlocked_titles:
+        var title: Dictionary = SimTitles.get_title(title_id)
+        var desc: String = str(title.get("description", ""))
+        events.append("[color=red]Title not unlocked![/color]")
+        events.append("Requirement: %s" % desc)
+        return
+
+    # Equip the title
+    state.equipped_title = title_id
+    events.append("[color=lime]Title equipped: %s[/color]" % SimTitles.format_title(title_id))
+
+
+static func _apply_title_clear(state: GameState, events: Array[String]) -> void:
+    if state.equipped_title == "":
+        events.append("No title is currently equipped.")
+        return
+
+    var old_title: String = SimTitles.format_title(state.equipped_title)
+    state.equipped_title = ""
+    events.append("Removed title: %s" % old_title)
+
+
+static func _apply_badges_show(state: GameState, events: Array[String]) -> void:
+    events.append(SimTitles.format_badges_list(state.unlocked_badges))
