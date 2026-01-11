@@ -1555,6 +1555,54 @@ Reports:
 - Tween pattern statistics
 - Cleanup call counts
 
+### Print Statement Fixer
+
+Automatically fix debug print statements:
+
+```bash
+./scripts/fix_print_statements.sh              # Dry run (show changes)
+./scripts/fix_print_statements.sh --apply      # Apply changes
+./scripts/fix_print_statements.sh --remove     # Remove instead of comment
+./scripts/fix_print_statements.sh --wrap       # Wrap in OS.is_debug_build()
+```
+
+Actions:
+- Comments out print() calls (default)
+- Removes prints entirely (--remove)
+- Wraps in debug check (--wrap)
+- Skips test and tool files
+
+### Dictionary Access Fixer
+
+Automatically convert unsafe dictionary access:
+
+```bash
+./scripts/fix_dictionary_access.sh              # Dry run (show changes)
+./scripts/fix_dictionary_access.sh --apply      # Apply changes
+./scripts/fix_dictionary_access.sh --default "" # Custom default value
+```
+
+Actions:
+- Converts dict["key"] to dict.get("key", default)
+- Smart defaults based on key name
+- Skips assignment targets
+
+### Unused Code Fixer
+
+Automatically remove unused code:
+
+```bash
+./scripts/fix_unused_code.sh              # Dry run (show changes)
+./scripts/fix_unused_code.sh --apply      # Apply changes
+./scripts/fix_unused_code.sh --constants  # Only fix constants
+./scripts/fix_unused_code.sh --imports    # Only fix imports
+```
+
+Actions:
+- Removes unused constants
+- Removes unused imports/preloads
+- Safe deletion (verifies no references)
+
 ## File Locations Quick Reference
 
 | Need to... | Location |

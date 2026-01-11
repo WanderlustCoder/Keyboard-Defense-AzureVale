@@ -4,6 +4,30 @@ This file tracks recent changes for Claude Code context.
 
 ---
 
+## 2026-01-10: Auto-Fix Tools
+
+Added automatic code fixing tools:
+
+### Print Statement Fixer (`scripts/fix_print_statements.py`)
+- Comments out debug print() calls
+- Can remove or wrap in debug check
+- Skips test and tool files
+- Would fix 8 prints in game code
+
+### Dictionary Access Fixer (`scripts/fix_dictionary_access.py`)
+- Converts dict["key"] to dict.get("key", default)
+- Smart defaults based on key names
+- Would fix 207 unsafe accesses
+
+### Unused Code Fixer (`scripts/fix_unused_code.py`)
+- Removes unused constants
+- Removes unused imports/preloads
+- Would remove 62 unused items
+
+All tools run in dry-run mode by default. Use --apply to make changes.
+
+---
+
 ## 2026-01-10: Development Tools Batch 24
 
 Added dictionary, print, and tween analysis tools:
