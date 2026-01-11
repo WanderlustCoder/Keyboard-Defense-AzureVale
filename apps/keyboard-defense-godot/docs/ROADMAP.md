@@ -220,7 +220,7 @@ Status: In progress (significant test additions 2026-01-11)
 
 Increase automated coverage and formalize manual QA gates for releases.
 
-**Progress (2026-01-11):** Test suite expanded to 3,684 assertions covering:
+**Progress (2026-01-11):** Test suite expanded to 3,801 assertions covering:
 - Boss encounters (phases, mechanics, dialogue)
 - Difficulty modes (modifiers, multipliers)
 - Lesson consistency (lesson-story alignment)
@@ -238,6 +238,12 @@ Increase automated coverage and formalize manual QA gates for releases.
 - Crafting system (materials, recipes, ingredients)
 - Endless mode (milestones, modifiers, unlock conditions)
 - Expeditions (state constants, worker tracking)
+- Status effects (constants, categories, DoT properties)
+- Tower types (enums, IDs, category arrays, footprints)
+- Skills (skill trees, data structure, prerequisites)
+- Quests (type/status constants, daily quest structure)
+- Hero types (hero IDs, data, passives, abilities)
+- Wave composer (tier weights, themes, modifiers)
 
 Planning refs:
 - `docs/plans/p1/QA_AUTOMATION_PLAN.md`
