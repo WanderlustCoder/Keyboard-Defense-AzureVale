@@ -269,10 +269,21 @@ def convert_animation_frames(texture: Dict[str, Any], backend: ConversionBackend
         return 0
 
     elif isinstance(source_svg_frames, list):
-        converted = 0
-        frame_width = texture.get("frame_width", texture.get("expected_width", 32))
-        frame_height = texture.get("frame_height", texture.get("expected_height", 32))
+        # Get frame dimensions from animation config or texture dimensions
+        animation_config = texture.get("animation", {})
+        frame_width = animation_config.get("frame_width", texture.get("expected_width", 32) // len(source_svg_frames))
+        frame_height = animation_config.get("frame_height", texture.get("expected_height", 32))
 
+        png_path = resolve_png_path(texture)
+        temp_frames = []
+
+        if dry_run:
+            print(f"  Would create spritesheet: {texture_id} ({len(source_svg_frames)} frames, {frame_width}x{frame_height} each)")
+            return 1
+
+        print(f"  Creating spritesheet: {texture_id} ({len(source_svg_frames)} frames)...")
+
+        # Convert each frame to temp PNG
         for i, frame_svg in enumerate(source_svg_frames):
             if frame_svg.startswith("res://"):
                 svg_path = PROJECT_ROOT / frame_svg[6:]
@@ -280,25 +291,70 @@ def convert_animation_frames(texture: Dict[str, Any], backend: ConversionBackend
                 svg_path = Path(frame_svg)
 
             if not svg_path.exists():
+                print(f"    Frame {i} not found: {svg_path}")
                 continue
 
-            # Output path for frame
-            png_path = resolve_png_path(texture)
-            frame_png = png_path.parent / f"{png_path.stem}_frame{i}.png"
+            frame_png = png_path.parent / f"{png_path.stem}_temp_frame{i}.png"
 
-            if dry_run:
-                print(f"  Would convert frame {i}: {svg_path.name} -> {frame_png.name}")
-                converted += 1
-                continue
-
-            print(f"  Converting frame {i}: {texture_id}...", end=" ")
+            print(f"    Converting frame {i}...", end=" ")
             if backend.convert(svg_path, frame_png, frame_width, frame_height):
                 print("OK")
-                converted += 1
+                temp_frames.append(frame_png)
             else:
                 print("FAILED")
 
-        return converted
+        if not temp_frames:
+            print("  No frames converted!")
+            return 0
+
+        # Combine frames into horizontal spritesheet
+        print(f"    Combining {len(temp_frames)} frames into spritesheet...", end=" ")
+        try:
+            # Try using ImageMagick's convert command
+            import subprocess
+            result = subprocess.run(
+                ["convert", "+append"] + [str(f) for f in temp_frames] + [str(png_path)],
+                capture_output=True, text=True
+            )
+            if result.returncode == 0:
+                print("OK")
+                # Clean up temp files
+                for f in temp_frames:
+                    f.unlink()
+                return 1
+            else:
+                print(f"FAILED: {result.stderr}")
+        except FileNotFoundError:
+            print("FAILED (ImageMagick not found)")
+
+        # Fallback: Try using PIL/Pillow
+        try:
+            from PIL import Image
+            images = [Image.open(f) for f in temp_frames]
+            total_width = sum(img.width for img in images)
+            max_height = max(img.height for img in images)
+            spritesheet = Image.new('RGBA', (total_width, max_height), (0, 0, 0, 0))
+            x_offset = 0
+            for img in images:
+                spritesheet.paste(img, (x_offset, 0))
+                x_offset += img.width
+            spritesheet.save(str(png_path))
+            print("OK (Pillow)")
+            # Clean up temp files
+            for f in temp_frames:
+                f.unlink()
+            return 1
+        except ImportError:
+            print("FAILED (Pillow not available)")
+        except Exception as e:
+            print(f"FAILED: {e}")
+
+        # Clean up temp files even on failure
+        for f in temp_frames:
+            if f.exists():
+                f.unlink()
+
+        return 0
 
     return 0
 
@@ -362,9 +418,10 @@ def main():
         texture_id = texture.get("id", "unknown")
         png_path = resolve_png_path(texture)
         svg_path = resolve_svg_path(texture)
+        has_animation_frames = texture.get("source_svg_frames") is not None
 
         # Check if we should convert
-        if not svg_path:
+        if not svg_path and not has_animation_frames:
             no_source += 1
             continue
 
@@ -372,15 +429,17 @@ def main():
             skipped += 1
             continue
 
-        # Convert main texture
-        if convert_texture(texture, backend, args.dry_run):
-            converted += 1
-        else:
-            failed += 1
+        # Convert main texture (if it has a source_svg)
+        if svg_path:
+            if convert_texture(texture, backend, args.dry_run):
+                converted += 1
+            else:
+                failed += 1
 
         # Convert animation frames if present
-        frame_count = convert_animation_frames(texture, backend, args.dry_run)
-        converted += frame_count
+        if has_animation_frames:
+            frame_count = convert_animation_frames(texture, backend, args.dry_run)
+            converted += frame_count
 
     # Summary
     print("\n" + "=" * 60)

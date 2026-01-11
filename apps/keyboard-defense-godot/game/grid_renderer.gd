@@ -100,7 +100,7 @@ func _preload_textures() -> void:
 		"bld_wall", "bld_tower_arrow", "bld_tower_slow",
 		"bld_barracks", "bld_library", "bld_gate", "bld_castle",
 		"castle_base", "castle_damaged",
-		"enemy_runner", "enemy_brute", "enemy_flyer",
+		"enemy_runner", "enemy_raider", "enemy_brute", "enemy_flyer",
 		"enemy_shielder", "enemy_healer",
 		"tile_grass", "tile_evergrove_dense", "tile_dirt", "tile_water"
 	]
@@ -836,17 +836,25 @@ func spawn_projectile(enemy_pos: Vector2i, is_power: bool = false) -> void:
 	var start_pos: Vector2 = origin + Vector2(base_pos.x * cell_size.x, base_pos.y * cell_size.y) + cell_size * 0.5
 	var end_pos: Vector2 = origin + Vector2(enemy_pos.x * cell_size.x, enemy_pos.y * cell_size.y) + cell_size * 0.5
 	var direction: Vector2 = (end_pos - start_pos).normalized()
-	var color: Color = Color(1.0, 0.9, 0.4, 1.0) if is_power else Color(0.9, 0.7, 0.3, 1.0)
-	var size: Vector2 = Vector2(8, 4) if is_power else Vector2(6, 3)
+	var distance: float = start_pos.distance_to(end_pos)
+
+	# Calculate speed so projectile reaches target in ~0.25 seconds
+	var flight_time: float = 0.25
+	var speed: float = distance / flight_time
+	speed = maxf(speed, 200.0)  # Minimum speed
+
+	var color: Color = Color(1.0, 0.85, 0.3, 1.0) if is_power else Color(0.85, 0.65, 0.25, 1.0)
+	var arrow_length: float = 16.0 if is_power else 12.0
 
 	_add_particle({
-		"type": "projectile",
+		"type": "arrow",
 		"pos": start_pos,
 		"target": end_pos,
-		"velocity": direction * PARTICLE_SPEED * (1.5 if is_power else 1.0),
+		"velocity": direction * speed,
+		"direction": direction,
 		"color": color,
-		"size": size,
-		"lifetime": PARTICLE_LIFETIME * 2.0,
+		"arrow_length": arrow_length,
+		"lifetime": flight_time + 0.1,
 		"trail_timer": 0.0,
 		"is_power": is_power
 	})
@@ -1399,6 +1407,31 @@ func update_particles(delta: float) -> void:
 					"lifetime": PARTICLE_LIFETIME * 0.5
 				})
 
+		# Arrow projectile - check hit and spawn trails
+		if ptype == "arrow":
+			var target: Vector2 = p.get("target", Vector2.ZERO)
+			if p["pos"].distance_to(target) < 12.0:
+				var is_power: bool = p.get("is_power", false)
+				spawn_hit_sparks(target, is_power)
+				_active_particles.remove_at(i)
+				needs_redraw = true
+				continue
+
+			# Spawn trail particles for arrow
+			p["trail_timer"] = p.get("trail_timer", 0.0) + delta
+			if p["trail_timer"] >= TRAIL_SPAWN_INTERVAL * 0.5:
+				p["trail_timer"] = 0.0
+				var trail_color: Color = p.get("color", Color.WHITE)
+				trail_color.a = 0.4
+				trails_to_spawn.append({
+					"type": "trail",
+					"pos": p["pos"],
+					"velocity": Vector2.ZERO,
+					"color": trail_color,
+					"size": Vector2(2, 2),
+					"lifetime": PARTICLE_LIFETIME * 0.3
+				})
+
 		p["pos"] = p["pos"] + vel * delta
 		needs_redraw = true
 
@@ -1413,15 +1446,48 @@ func _draw_particles() -> void:
 	for p in _active_particles:
 		var pos: Vector2 = p.get("pos", Vector2.ZERO)
 		var color: Color = p.get("color", Color.WHITE)
-		var psize: Vector2 = p.get("size", Vector2(4, 4))
+		var ptype: String = str(p.get("type", ""))
 		var lifetime: float = p.get("lifetime", 0.0)
 
-		# Fade out
-		var alpha: float = clampf(lifetime / (PARTICLE_LIFETIME * 0.5), 0.0, 1.0)
-		color.a = alpha
+		# Draw arrow projectiles as arrow shapes
+		if ptype == "arrow":
+			var direction: Vector2 = p.get("direction", Vector2.RIGHT)
+			var arrow_length: float = p.get("arrow_length", 12.0)
+			var is_power: bool = p.get("is_power", false)
 
-		var rect: Rect2 = Rect2(pos - psize * 0.5, psize)
-		draw_rect(rect, color, true)
+			# Arrow tip (front)
+			var tip: Vector2 = pos + direction * (arrow_length * 0.5)
+			# Arrow tail (back)
+			var tail: Vector2 = pos - direction * (arrow_length * 0.5)
+			# Arrow head wings
+			var perp: Vector2 = Vector2(-direction.y, direction.x)
+			var head_size: float = 4.0 if is_power else 3.0
+			var wing1: Vector2 = pos + direction * (arrow_length * 0.2) + perp * head_size
+			var wing2: Vector2 = pos + direction * (arrow_length * 0.2) - perp * head_size
+
+			# Draw arrow shaft
+			var shaft_color: Color = color
+			shaft_color.a = 1.0
+			draw_line(tail, tip, shaft_color, 2.0 if is_power else 1.5)
+
+			# Draw arrow head (triangle)
+			var head_points: PackedVector2Array = PackedVector2Array([tip, wing1, wing2])
+			draw_colored_polygon(head_points, shaft_color)
+
+			# Draw glow effect for power shots
+			if is_power:
+				var glow_color: Color = Color(1.0, 0.95, 0.6, 0.4)
+				draw_line(tail, tip, glow_color, 4.0)
+		else:
+			# Default particle rendering
+			var psize: Vector2 = p.get("size", Vector2(4, 4))
+
+			# Fade out
+			var alpha: float = clampf(lifetime / (PARTICLE_LIFETIME * 0.5), 0.0, 1.0)
+			color.a = alpha
+
+			var rect: Rect2 = Rect2(pos - psize * 0.5, psize)
+			draw_rect(rect, color, true)
 
 ## Convert world position to grid position
 func _world_to_grid(world_pos: Vector2) -> Vector2i:

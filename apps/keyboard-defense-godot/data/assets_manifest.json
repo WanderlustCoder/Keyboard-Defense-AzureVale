@@ -2019,6 +2019,16 @@
       "category": "enemies"
     },
     {
+      "id": "enemy_raider",
+      "path": "res://assets/sprites/enemy_raider.png",
+      "source_svg": "res://assets/art/src-svg/sprites/enemy_raider.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 8,
+      "pixel_art": true,
+      "category": "enemies"
+    },
+    {
       "id": "enemy_brute",
       "path": "res://assets/sprites/enemy_brute.png",
       "source_svg": "res://assets/art/src-svg/sprites/enemy_brute.svg",
@@ -6713,6 +6723,28 @@
         "frame_height": 16
       },
       "description": "Runner enemy death animation"
+    },
+    {
+      "id": "enemy_raider_walk",
+      "path": "res://assets/sprites/enemy_raider_walk.png",
+      "source_svg_frames": [
+        "res://assets/art/src-svg/sprites/anim/enemy_raider_walk_01.svg",
+        "res://assets/art/src-svg/sprites/anim/enemy_raider_walk_02.svg",
+        "res://assets/art/src-svg/sprites/anim/enemy_raider_walk_03.svg",
+        "res://assets/art/src-svg/sprites/anim/enemy_raider_walk_04.svg"
+      ],
+      "expected_width": 64,
+      "expected_height": 16,
+      "pixel_art": true,
+      "category": "enemies",
+      "animation": {
+        "frame_count": 4,
+        "fps": 8,
+        "loop": true,
+        "frame_width": 16,
+        "frame_height": 16
+      },
+      "description": "Raider enemy walk cycle animation with sword swing"
     },
     {
       "id": "enemy_brute_walk",

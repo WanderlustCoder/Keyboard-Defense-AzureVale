@@ -31,6 +31,7 @@ const ScenarioLoader = preload("res://tools/scenario_harness/scenario_loader.gd"
 const ScenarioRunner = preload("res://tools/scenario_harness/scenario_runner.gd")
 const ScenarioEval = preload("res://tools/scenario_harness/scenario_eval.gd")
 const ScenarioTypes = preload("res://tools/scenario_harness/scenario_types.gd")
+const StoryManager = preload("res://game/story_manager.gd")
 
 var total_tests: int = 0
 var total_failed: int = 0
@@ -78,6 +79,7 @@ func _run_all() -> void:
     _run_typing_feedback_tests()
     _run_typing_stats_tests()
     _run_typing_trends_tests()
+    _run_story_manager_tests()
 
     for message in messages:
         print("[tests] %s" % message)
@@ -2895,6 +2897,126 @@ func _make_flat_state(seed_text: String) -> GameState:
             state.terrain[index] = SimMap.TERRAIN_PLAINS
             state.discovered[index] = true
     return state
+
+func _run_story_manager_tests() -> void:
+    # Test data loading
+    var data: Dictionary = StoryManager.load_data()
+    _assert_true(data.get("ok", false), "StoryManager.load_data() succeeds")
+
+    # Test acts retrieval
+    var acts: Array = StoryManager.get_acts()
+    _assert_true(acts.size() >= 5, "StoryManager has at least 5 acts")
+
+    # Test act for day
+    var act1: Dictionary = StoryManager.get_act_for_day(1)
+    _assert_true(not act1.is_empty(), "get_act_for_day(1) returns act")
+    _assert_true(str(act1.get("id", "")).begins_with("act"), "Day 1 is in an act")
+
+    var act3: Dictionary = StoryManager.get_act_for_day(10)
+    _assert_true(not act3.is_empty(), "get_act_for_day(10) returns act")
+
+    # Test boss day detection
+    _assert_true(StoryManager.is_boss_day(4), "Day 4 is boss day")
+    _assert_true(StoryManager.is_boss_day(8), "Day 8 is boss day")
+    _assert_true(not StoryManager.is_boss_day(3), "Day 3 is not boss day")
+    _assert_true(not StoryManager.is_boss_day(7), "Day 7 is not boss day")
+
+    # Test boss data retrieval
+    var boss4: Dictionary = StoryManager.get_boss_for_day(4)
+    _assert_true(not boss4.is_empty(), "get_boss_for_day(4) returns boss")
+    _assert_true(not str(boss4.get("kind", "")).is_empty(), "Boss has kind")
+
+    # Test boss kind detection
+    var boss_kinds: Array[String] = StoryManager.get_all_boss_kinds()
+    _assert_true(boss_kinds.size() >= 4, "At least 4 boss kinds exist")
+    for kind in boss_kinds:
+        _assert_true(StoryManager.is_boss_kind(kind), "is_boss_kind(%s) returns true" % kind)
+    _assert_true(not StoryManager.is_boss_kind("raider"), "raider is not a boss kind")
+
+    # Test act progress
+    var progress: Dictionary = StoryManager.get_act_progress(1)
+    _assert_true(progress.get("act_number", 0) == 1, "Day 1 is act number 1")
+    _assert_true(progress.get("day_in_act", 0) >= 1, "Day in act is at least 1")
+
+    # Test dialogue retrieval
+    var dialogue: Dictionary = StoryManager.get_dialogue("game_start")
+    _assert_true(not dialogue.is_empty(), "game_start dialogue exists")
+
+    var lines: Array[String] = StoryManager.get_dialogue_lines("game_start")
+    _assert_true(lines.size() > 0, "game_start has dialogue lines")
+
+    # Test mentor name
+    var mentor: String = StoryManager.get_mentor_name(1)
+    _assert_true(not mentor.is_empty(), "Mentor name for day 1 exists")
+
+    # Test lesson introductions
+    var intro: Dictionary = StoryManager.get_lesson_intro("home_row_1")
+    _assert_true(not intro.is_empty(), "home_row_1 lesson intro exists")
+
+    var intro_lines: Array[String] = StoryManager.get_lesson_intro_lines("home_row_1")
+    _assert_true(intro_lines.size() > 0, "home_row_1 has intro lines")
+
+    var finger_guide: Dictionary = StoryManager.get_lesson_finger_guide("home_row_1")
+    _assert_true(not finger_guide.is_empty(), "home_row_1 has finger guide")
+
+    var lesson_title: String = StoryManager.get_lesson_title("home_row_1")
+    _assert_true(not lesson_title.is_empty(), "home_row_1 has title")
+
+    # Test typing tips
+    var tips: Array[String] = StoryManager.get_typing_tips("technique")
+    _assert_true(tips.size() > 0, "technique tips exist")
+
+    var random_tip: String = StoryManager.get_random_typing_tip()
+    _assert_true(not random_tip.is_empty(), "Random typing tip returns value")
+
+    # Test performance feedback
+    var acc_feedback: String = StoryManager.get_accuracy_feedback(98.0)
+    _assert_true(not acc_feedback.is_empty(), "Accuracy feedback for 98% exists")
+
+    var speed_feedback: String = StoryManager.get_speed_feedback(60.0)
+    _assert_true(not speed_feedback.is_empty(), "Speed feedback for 60 WPM exists")
+
+    var combo_feedback: String = StoryManager.get_combo_feedback(15)
+    _assert_true(not combo_feedback.is_empty(), "Combo feedback for 15 exists")
+
+    # Test finger assignments
+    var finger_a: String = StoryManager.get_finger_for_key("a")
+    _assert_true(not finger_a.is_empty(), "Finger for 'a' key exists")
+    _assert_true(finger_a.to_lower().find("pinky") != -1 or finger_a.to_lower().find("little") != -1, "Key 'a' uses left pinky/little finger")
+
+    var finger_j: String = StoryManager.get_finger_for_key("j")
+    _assert_true(not finger_j.is_empty(), "Finger for 'j' key exists")
+    _assert_true(finger_j.to_lower().find("index") != -1, "Key 'j' uses index finger")
+
+    # Test contextual tips
+    var error_tip: String = StoryManager.get_contextual_tip("error")
+    _assert_true(not error_tip.is_empty(), "Error context tip exists")
+
+    # Test lore retrieval
+    var kingdom_lore: Dictionary = StoryManager.get_kingdom_lore()
+    _assert_true(not kingdom_lore.is_empty(), "Kingdom lore exists")
+
+    var horde_lore: Dictionary = StoryManager.get_horde_lore()
+    _assert_true(not horde_lore.is_empty(), "Horde lore exists")
+
+    # Test character info
+    var lyra_info: Dictionary = StoryManager.get_character_info("elder_lyra")
+    _assert_true(not lyra_info.is_empty(), "Elder Lyra character info exists")
+
+    # Test act completion detection
+    _assert_true(StoryManager.is_act_complete_day(4), "Day 4 completes an act")
+    _assert_true(not StoryManager.is_act_complete_day(3), "Day 3 does not complete an act")
+
+    var completion_info: Dictionary = StoryManager.get_act_completion_info(4)
+    _assert_true(not completion_info.is_empty(), "Act completion info for day 4 exists")
+
+    # Test streak messages
+    var streak_msg: String = StoryManager.get_daily_streak_message(7)
+    _assert_true(not streak_msg.is_empty(), "7-day streak message exists")
+
+    # Test milestone messages
+    var wpm_msg: String = StoryManager.get_wpm_milestone_message(50)
+    _assert_true(not wpm_msg.is_empty(), "50 WPM milestone message exists")
 
 func _assert_parse_ok(command: String, expected_kind: String) -> void:
     var result: Dictionary = CommandParser.parse(command)

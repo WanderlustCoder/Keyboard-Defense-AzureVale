@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Enemy Raider - 16x16 armed humanoid marauder -->
+
+  <!-- Shadow -->
+  <ellipse cx="8" cy="15" rx="5" ry="1.5" fill="#1a1a2e" opacity="0.6"/>
+
+  <!-- Legs (walking stance) -->
+  <rect x="5" y="12" width="2" height="3" fill="#4a3728"/>
+  <rect x="9" y="11" width="2" height="4" fill="#4a3728"/>
+  <!-- Boots -->
+  <rect x="4" y="14" width="3" height="2" fill="#2c2c3c"/>
+  <rect x="9" y="14" width="3" height="2" fill="#2c2c3c"/>
+
+  <!-- Body (leather armor) -->
+  <rect x="5" y="6" width="6" height="6" fill="#5d4037"/>
+  <!-- Armor highlight -->
+  <rect x="5" y="6" width="2" height="5" fill="#6d4c41"/>
+  <!-- Belt -->
+  <rect x="4" y="10" width="8" height="2" fill="#3e2723"/>
+  <rect x="7" y="10" width="2" height="2" fill="#ffd700"/>
+
+  <!-- Arms -->
+  <!-- Left arm (shield side) -->
+  <rect x="3" y="7" width="2" height="4" fill="#5d4037"/>
+  <!-- Shield (small buckler) -->
+  <rect x="2" y="8" width="2" height="3" fill="#5c5c6c"/>
+  <rect x="2" y="9" width="2" height="1" fill="#7c7c8c"/>
+
+  <!-- Right arm (sword side) -->
+  <rect x="11" y="7" width="2" height="4" fill="#5d4037"/>
+  <!-- Hand -->
+  <rect x="12" y="10" width="2" height="2" fill="#d4a574"/>
+
+  <!-- Sword -->
+  <rect x="13" y="3" width="1" height="8" fill="#9ca3af"/>
+  <rect x="13" y="3" width="1" height="2" fill="#d1d5db"/>
+  <!-- Sword handle -->
+  <rect x="12" y="10" width="3" height="1" fill="#8b4513"/>
+  <rect x="13" y="11" width="1" height="2" fill="#5d3a1a"/>
+
+  <!-- Head -->
+  <rect x="6" y="2" width="4" height="4" fill="#d4a574"/>
+  <!-- Helmet -->
+  <rect x="5" y="1" width="6" height="3" fill="#4a4a5a"/>
+  <rect x="6" y="0" width="4" height="2" fill="#5a5a6a"/>
+  <!-- Helmet ridge -->
+  <rect x="7" y="0" width="2" height="1" fill="#6a6a7a"/>
+
+  <!-- Face -->
+  <!-- Eye slit in helmet -->
+  <rect x="6" y="2" width="4" height="1" fill="#1a1a2e"/>
+  <!-- Glowing red eyes -->
+  <rect x="7" y="2" width="1" height="1" fill="#e74c3c"/>
+  <rect x="9" y="2" width="1" height="1" fill="#e74c3c"/>
+
+  <!-- Beard (visible below helmet) -->
+  <rect x="6" y="4" width="4" height="2" fill="#3d2914"/>
+  <rect x="7" y="5" width="2" height="2" fill="#4a3520"/>
+
+  <!-- Shoulder pauldrons -->
+  <rect x="3" y="6" width="3" height="2" fill="#4a4a5a"/>
+  <rect x="10" y="6" width="3" height="2" fill="#4a4a5a"/>
+</svg>

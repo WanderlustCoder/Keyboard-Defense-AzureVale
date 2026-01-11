@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Enemy Raider Walk Frame 1 - Left leg forward, sword up -->
+
+  <!-- Shadow -->
+  <ellipse cx="8" cy="15" rx="5" ry="1.5" fill="#1a1a2e" opacity="0.6"/>
+
+  <!-- Legs (left forward) -->
+  <rect x="4" y="11" width="2" height="4" fill="#4a3728"/>
+  <rect x="10" y="12" width="2" height="3" fill="#4a3728"/>
+  <!-- Boots -->
+  <rect x="3" y="14" width="3" height="2" fill="#2c2c3c"/>
+  <rect x="10" y="14" width="3" height="2" fill="#2c2c3c"/>
+
+  <!-- Body -->
+  <rect x="5" y="6" width="6" height="6" fill="#5d4037"/>
+  <rect x="5" y="6" width="2" height="5" fill="#6d4c41"/>
+  <rect x="4" y="10" width="8" height="2" fill="#3e2723"/>
+  <rect x="7" y="10" width="2" height="2" fill="#ffd700"/>
+
+  <!-- Left arm with shield -->
+  <rect x="3" y="7" width="2" height="4" fill="#5d4037"/>
+  <rect x="2" y="8" width="2" height="3" fill="#5c5c6c"/>
+  <rect x="2" y="9" width="2" height="1" fill="#7c7c8c"/>
+
+  <!-- Right arm (raised with sword) -->
+  <rect x="11" y="6" width="2" height="4" fill="#5d4037"/>
+  <rect x="12" y="9" width="2" height="2" fill="#d4a574"/>
+
+  <!-- Sword (raised position) -->
+  <rect x="13" y="1" width="1" height="9" fill="#9ca3af"/>
+  <rect x="13" y="1" width="1" height="2" fill="#d1d5db"/>
+  <rect x="12" y="9" width="3" height="1" fill="#8b4513"/>
+  <rect x="13" y="10" width="1" height="2" fill="#5d3a1a"/>
+
+  <!-- Head with helmet -->
+  <rect x="6" y="2" width="4" height="4" fill="#d4a574"/>
+  <rect x="5" y="1" width="6" height="3" fill="#4a4a5a"/>
+  <rect x="6" y="0" width="4" height="2" fill="#5a5a6a"/>
+  <rect x="7" y="0" width="2" height="1" fill="#6a6a7a"/>
+
+  <!-- Face -->
+  <rect x="6" y="2" width="4" height="1" fill="#1a1a2e"/>
+  <rect x="7" y="2" width="1" height="1" fill="#e74c3c"/>
+  <rect x="9" y="2" width="1" height="1" fill="#e74c3c"/>
+
+  <!-- Beard -->
+  <rect x="6" y="4" width="4" height="2" fill="#3d2914"/>
+  <rect x="7" y="5" width="2" height="2" fill="#4a3520"/>
+
+  <!-- Pauldrons -->
+  <rect x="3" y="6" width="3" height="2" fill="#4a4a5a"/>
+  <rect x="10" y="6" width="3" height="2" fill="#4a4a5a"/>
+</svg>

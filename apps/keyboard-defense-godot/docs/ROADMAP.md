@@ -170,11 +170,11 @@ Acceptance criteria:
 ## P1 - Next (expand depth)
 
 ### P1-CNT-001 Content expansion (lessons and drills)
-Status: Partially complete
+Status: Complete
 
 Expand lesson packs and word curricula with data validation and clear pedagogy stages.
 
-**Progress:** 80+ lessons implemented covering core curriculum, numbers, symbols, coding, bosses, realms, and more. 18 lessons have Elder Lyra introductions with finger guides. Story system adds lesson introductions with practice tips. Remaining work is adding introductions for 62+ lessons without guides.
+**Progress:** 98 lessons implemented covering core curriculum, numbers, symbols, coding, bosses, realms, and more. As of 2026-01-10, all 98 lessons have introductions in `data/story.json` (version 5) including finger guides and practice tips. Full 1:1 consistency between `lessons.json` and `story.json` lesson introductions verified.
 
 **Lesson Tracks Identified:**
 - Core Curriculum (training → home row → reach → upper → bottom → mixed → speed → mastery)
@@ -296,25 +296,44 @@ Acceptance criteria:
 
 ## Future Opportunities (from Story/GDD analysis)
 
-These items are not yet prioritized but represent expansion opportunities based on implemented systems.
+**Note:** As of 2026-01-10, all previously listed items have been implemented. See `docs/PRIORITIES.md` for updated status.
 
-### F-ACH-001 Achievement System Integration
-The story system defines 13 achievements in `data/story.json`. UI and persistence for tracking/displaying achievements is not yet implemented.
+### F-ACH-001 Achievement System Integration - COMPLETED
+Full achievement system with UI, notifications, and profile persistence.
+- `game/achievement_checker.gd` - Achievement tracking logic
+- `ui/components/achievement_panel.gd/.tscn` - Achievement display panel
+- `ui/components/achievement_popup.gd/.tscn` - Unlock notifications
 
-### F-NUM-001 Numbers and Symbols Lessons
-Story Act 5 introduces number row content (days 17-20). Lessons `numbers_1`, `numbers_2`, `punctuation_1`, `symbols_1` are defined in story.json but not in lessons.json.
+### F-NUM-001 Numbers and Symbols Lessons - COMPLETED
+All campaign lessons exist in `data/lessons.json` including numbers_1, numbers_2, punctuation_1, symbols_1.
 
-### F-BOSS-001 Boss Battle Mode
-Boss encounters are defined (Shadow Scout, Storm Wraith, Stone Golem, Typhos General, Void Tyrant) with unique dialogue but boss-specific mechanics are not distinct from regular combat.
+### F-BOSS-001 Boss Battle Mode - COMPLETED
+Multi-phase boss system with unique mechanics per boss.
+- `sim/boss_encounters.gd` - 4 bosses with distinct abilities
+- Phase transitions with HP thresholds
+- Boss-specific dialogue (intro, phases, defeat)
 
-### F-PROG-001 Daily Streak and Milestone Tracking
-Story system defines daily streak messages and WPM/accuracy milestones. Tracking and notification UI not implemented.
+### F-PROG-001 Daily Streak and Milestone Tracking - COMPLETED
+Full streak tracking in `game/typing_profile.gd` with persistence and notification.
 
-### F-LORE-001 Lore Browser
-Kingdom lore, Typhos Horde backstory, and character profiles exist in story.json. No in-game UI to browse lore.
+### F-LORE-001 Lore Browser - COMPLETED
+`ui/components/lore_panel.gd` with category navigation and formatted display.
 
-### F-TIP-001 Contextual Tip System
-Extensive typing tips by category (posture, technique, practice, rhythm, etc.) are defined but not surfaced contextually during gameplay.
+### F-TIP-001 Contextual Tip System - COMPLETED
+`ui/components/tip_notification.gd` with context-aware tips and cooldown system.
+
+### F-OW-001 Open World Story Integration - COMPLETED (2026-01-10)
+Open World mode now includes narrative integration:
+- [x] Welcome dialogue from Elder Lyra on game start
+- [x] Exploration milestone messages (10, 25, 50 tiles)
+- [x] First combat introduction dialogue
+- [x] Victory messages with contextual typing tips
+- [x] Dialogue box integration with pause during narrative
+
+Future expansion could add:
+- Region-specific lore triggers
+- Terrain discovery flavor text
+- Boss encounter dialogues
 
 ## Inspiration / Research
 - Summary: `docs/RESEARCH_SFK_SUMMARY.md`

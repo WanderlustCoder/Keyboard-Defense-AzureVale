@@ -120,7 +120,9 @@ func get_nineslice_info(id: String) -> Dictionary:
 ## Enemy sprite mapping - maps enemy kind to sprite id
 func get_enemy_sprite_id(kind: String) -> String:
 	match kind:
-		"raider", "runner":
+		"raider":
+			return "enemy_raider"
+		"runner":
 			return "enemy_runner"
 		"scout":
 			return "enemy_runner"
@@ -274,7 +276,7 @@ func get_portrait_texture(character: String) -> Texture2D:
 ## Preload commonly used textures
 func preload_battle_textures() -> void:
 	var battle_ids := [
-		"bld_castle", "enemy_runner", "enemy_brute", "enemy_flyer",
+		"bld_castle", "enemy_runner", "enemy_raider", "enemy_brute", "enemy_flyer",
 		"fx_projectile", "fx_hit_flash", "fx_magic_bolt"
 	]
 	for id in battle_ids:
@@ -284,7 +286,7 @@ func preload_grid_textures() -> void:
 	var grid_ids := [
 		"bld_wall", "bld_tower_arrow", "bld_tower_slow",
 		"bld_barracks", "bld_library", "bld_gate",
-		"enemy_runner", "enemy_brute", "enemy_flyer",
+		"enemy_runner", "enemy_raider", "enemy_brute", "enemy_flyer",
 		"tile_grass", "tile_forest", "tile_mountain", "tile_water"
 	]
 	for id in grid_ids:
@@ -409,6 +411,7 @@ func get_building_animation_id(building_type: String, anim_type: String) -> Stri
 func preload_animation_textures() -> void:
 	var anim_ids := [
 		"enemy_runner_walk", "enemy_runner_death",
+		"enemy_raider_walk",
 		"enemy_brute_walk", "enemy_brute_death",
 		"enemy_flyer_hover", "enemy_flyer_death",
 		"bld_tower_arrow_fire", "bld_tower_slow_pulse"

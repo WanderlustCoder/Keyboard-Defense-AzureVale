@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 5,
   "title": "The Siege of Keystonia",
   "subtitle": "A Typing Adventure",
   "acts": [
@@ -614,6 +614,1107 @@
         "$": "Left index finger (Shift + 4)",
         "%": "Left index finger (Shift + 5)"
       }
+    },
+    "training_basics": {
+      "speaker": "Elder Lyra",
+      "title": "First Steps",
+      "lines": [
+        "Welcome, young defender. Before you can protect the kingdom, you must learn the fundamentals.",
+        "Place your left hand on A, S, D, and F. Feel the small bump on F? That's your guide home.",
+        "These four keys are your foundation. Master them, and all else will follow."
+      ],
+      "keys": ["a", "s", "d", "f"],
+      "finger_guide": {
+        "a": "Left pinky",
+        "s": "Left ring finger",
+        "d": "Left middle finger",
+        "f": "Left index finger"
+      },
+      "practice_tips": [
+        "Keep your wrist straight and fingers curved like you're holding a small ball."
+      ]
+    },
+    "training_rhythm": {
+      "speaker": "Elder Lyra",
+      "title": "Finding Your Rhythm",
+      "lines": [
+        "Now we add the right hand. J, K, L join your arsenal of keys.",
+        "Feel the bump on J - it mirrors F on the left. These bumps are your anchors.",
+        "Typing is like music. Find a steady rhythm and let your fingers dance."
+      ],
+      "keys": ["j", "k", "l"],
+      "finger_guide": {
+        "j": "Right index finger",
+        "k": "Right middle finger",
+        "l": "Right ring finger"
+      },
+      "practice_tips": [
+        "Try typing to a mental beat - steady tempo builds speed naturally."
+      ]
+    },
+    "capitals_1": {
+      "speaker": "Elder Lyra",
+      "title": "The Shift of Power",
+      "lines": [
+        "Capital letters announce importance - the names of heroes, the start of sentences.",
+        "Use your pinky to hold Shift while another finger presses the letter.",
+        "The secret: use the OPPOSITE hand's Shift. Right hand letter? Left Shift. Left hand letter? Right Shift."
+      ],
+      "keys": ["A", "S", "D", "F", "J", "K", "L"],
+      "finger_guide": {
+        "shift_left": "Left pinky",
+        "shift_right": "Right pinky"
+      },
+      "practice_tips": [
+        "Press Shift before the letter, release after. Never same-hand Shift + letter."
+      ]
+    },
+    "capitals_2": {
+      "speaker": "Elder Lyra",
+      "title": "Capital Mastery",
+      "lines": [
+        "With full capital command, you can write proper names and titles with authority.",
+        "CamelCase, SHOUTING, Proper Nouns - all are within your grasp.",
+        "Speed comes from smooth Shift transitions. Practice makes permanent."
+      ],
+      "practice_tips": [
+        "Practice typing your name with proper capitalization until it feels natural."
+      ]
+    },
+    "punctuation_2": {
+      "speaker": "Elder Lyra",
+      "title": "Punctuation Mastery",
+      "lines": [
+        "Question marks, exclamation points, hyphens - the tools of expression.",
+        "These keys require Shift or reach, but they give your words power.",
+        "A well-placed exclamation can rally troops. A question can probe enemy weakness."
+      ],
+      "keys": ["!", "?", "-"],
+      "finger_guide": {
+        "!": "Left pinky (Shift+1)",
+        "?": "Right pinky (Shift+/)",
+        "-": "Right pinky"
+      },
+      "practice_tips": [
+        "! and ? require Shift - remember opposite-hand technique."
+      ]
+    },
+    "symbols_2": {
+      "speaker": "Elder Lyra",
+      "title": "Symbol Mastery",
+      "lines": [
+        "Brackets, braces, and special symbols - the arcane runes of the keyboard.",
+        "These keys are used by scribes and code-weavers alike.",
+        "Master them, and no inscription will be beyond your skill."
+      ],
+      "keys": ["[", "]", "{", "}"],
+      "finger_guide": {
+        "[": "Right pinky",
+        "]": "Right pinky",
+        "{": "Right pinky (Shift+[)",
+        "}": "Right pinky (Shift+])"
+      },
+      "practice_tips": [
+        "Bracket pairs always match - [ with ], { with }. Practice them together."
+      ]
+    },
+    "gauntlet_speed": {
+      "speaker": "Elder Lyra",
+      "title": "The Speed Gauntlet",
+      "lines": [
+        "Speed! Raw, unrelenting speed!",
+        "Short words will fly at you. React instantly. Trust your fingers.",
+        "This is not about perfect form - this is about survival reflexes."
+      ],
+      "practice_tips": [
+        "Don't think - react. Let muscle memory take over."
+      ]
+    },
+    "gauntlet_endurance": {
+      "speaker": "Elder Lyra",
+      "title": "The Endurance Gauntlet",
+      "lines": [
+        "Long words. Sustained focus. The true test of a keyboard warrior.",
+        "Each word is a marathon. Pace yourself. Breathe.",
+        "Accuracy matters more than speed here. One mistake costs precious time."
+      ],
+      "practice_tips": [
+        "Read the whole word before you start typing. Plan your fingers' path."
+      ]
+    },
+    "gauntlet_chaos": {
+      "speaker": "Elder Lyra",
+      "title": "The Chaos Gauntlet",
+      "lines": [
+        "Letters. Numbers. Symbols. Everything. All at once.",
+        "This is the ultimate test. No pattern. No mercy. Pure chaos.",
+        "If you survive this, you can survive anything the Typhos Horde throws at you."
+      ],
+      "practice_tips": [
+        "Stay calm. Chaos is just complexity you haven't mastered yet."
+      ]
+    },
+    "finger_gym_left": {
+      "speaker": "Elder Lyra",
+      "title": "Left Hand Forge",
+      "lines": [
+        "Your left hand guards the western keys. Today we strengthen it.",
+        "Q, W, E, R, T - A, S, D, F, G - Z, X, C, V, B. All yours to command.",
+        "A chain is only as strong as its weakest link. Find your weak fingers and forge them strong."
+      ],
+      "finger_guide": {
+        "columns": "Pinky: QAZ, Ring: WSX, Middle: EDC, Index: RFVTGB"
+      },
+      "practice_tips": [
+        "Pay special attention to your pinky - it's often the weakest."
+      ]
+    },
+    "finger_gym_right": {
+      "speaker": "Elder Lyra",
+      "title": "Right Hand Forge",
+      "lines": [
+        "Your right hand guards the eastern keys. Now we strengthen it.",
+        "Y, U, I, O, P - H, J, K, L, ; - N, M and the punctuation marks.",
+        "Balance between hands creates harmony. Neither should dominate."
+      ],
+      "finger_guide": {
+        "columns": "Index: YUHJNM, Middle: IK,, Ring: OL., Pinky: P;/"
+      },
+      "practice_tips": [
+        "Right pinky handles many keys - give it extra attention."
+      ]
+    },
+    "weak_fingers": {
+      "speaker": "Elder Lyra",
+      "title": "Pinky Strengthening",
+      "lines": [
+        "Your pinkies are small but mighty. They guard the outer keys.",
+        "Q, A, Z on the left. P, ;, / on the right. The edges of your domain.",
+        "Weak pinkies slow your typing. Strong pinkies unlock true speed."
+      ],
+      "keys": ["q", "a", "z", "p", ";", "/"],
+      "finger_guide": {
+        "q": "Left pinky",
+        "a": "Left pinky",
+        "z": "Left pinky",
+        "p": "Right pinky",
+        ";": "Right pinky",
+        "/": "Right pinky"
+      },
+      "practice_tips": [
+        "Isolate pinky practice - short sessions, frequent breaks."
+      ]
+    },
+    "pinky_power": {
+      "speaker": "Elder Lyra",
+      "title": "Pinky Power",
+      "lines": [
+        "Intensive pinky training begins now.",
+        "These small fingers control crucial territory - don't let them be your weakness.",
+        "Short bursts of focused practice build pinky strength faster than marathon sessions."
+      ],
+      "keys": ["q", "a", "z", "p"],
+      "finger_guide": {
+        "q": "Left pinky",
+        "a": "Left pinky",
+        "z": "Left pinky",
+        "p": "Right pinky"
+      },
+      "practice_tips": [
+        "Stretch your pinkies between drills to prevent strain."
+      ]
+    },
+    "ring_finger_focus": {
+      "speaker": "Elder Lyra",
+      "title": "Ring Finger Focus",
+      "lines": [
+        "Ring fingers often lack independence - they want to follow their neighbors.",
+        "W, S, X on the left. O, L, period on the right.",
+        "Train them to move alone and your typing will flow like water."
+      ],
+      "keys": ["w", "s", "x", "o", "l", "."],
+      "finger_guide": {
+        "w": "Left ring",
+        "s": "Left ring",
+        "x": "Left ring",
+        "o": "Right ring",
+        "l": "Right ring",
+        ".": "Right ring"
+      },
+      "practice_tips": [
+        "Practice lifting only your ring finger while keeping others still."
+      ]
+    },
+    "alternating_hands": {
+      "speaker": "Elder Lyra",
+      "title": "Hand Alternation",
+      "lines": [
+        "The fastest typists alternate hands smoothly - left, right, left, right.",
+        "While one hand types, the other prepares. No wasted motion.",
+        "Words that alternate hands naturally flow faster. Learn to feel the rhythm."
+      ],
+      "practice_tips": [
+        "Words like 'their', 'world', 'right' alternate hands - notice how fast they feel."
+      ]
+    },
+    "code_variables": {
+      "speaker": "Elder Lyra",
+      "title": "The Scribe's Variables",
+      "lines": [
+        "Code-weavers name their spells with variables - descriptive names that hold power.",
+        "Underscores connect words. camelCase blends them. Both are common in the arcane arts.",
+        "Practice these patterns and you'll transcribe code with ease."
+      ],
+      "keys": ["_"],
+      "finger_guide": {
+        "_": "Right pinky (Shift+-)"
+      },
+      "practice_tips": [
+        "user_name, firstName, maxValue - these patterns appear constantly in code."
+      ]
+    },
+    "code_keywords": {
+      "speaker": "Elder Lyra",
+      "title": "Keywords of Power",
+      "lines": [
+        "Every spell has keywords - if, else, for, while, return.",
+        "These words command the flow of magic. Type them until they become instinct.",
+        "Speed with keywords separates apprentices from masters."
+      ],
+      "practice_tips": [
+        "The most common keywords are short - 'if', 'for', 'var'. Drill them fast."
+      ]
+    },
+    "code_syntax": {
+      "speaker": "Elder Lyra",
+      "title": "Syntax and Structure",
+      "lines": [
+        "Brackets, parentheses, operators - the grammar of code.",
+        "() for functions. {} for blocks. [] for arrays. <> for comparisons.",
+        "Master these symbols and you can write any spell."
+      ],
+      "keys": ["(", ")", "{", "}", "[", "]", "<", ">", "=", "+", "-", "*", "/"],
+      "finger_guide": {
+        "()": "Right pinky/ring (Shift+9/0)",
+        "{}[]": "Right pinky",
+        "<>": "Right pinky/ring (Shift+,/.)",
+        "=+-*/": "Various"
+      },
+      "practice_tips": [
+        "Brackets come in pairs - always type both, then fill the middle."
+      ]
+    },
+    "code_master": {
+      "speaker": "Elder Lyra",
+      "title": "Code Mastery",
+      "lines": [
+        "You've learned the pieces. Now we combine them all.",
+        "Full code sequences - variables, keywords, syntax, numbers - flowing together.",
+        "This is the true test of a code-weaver's typing skill."
+      ],
+      "practice_tips": [
+        "Read code aloud in your head as you type - it helps with flow."
+      ]
+    },
+    "boss_grove_guardian": {
+      "speaker": "Elder Lyra",
+      "title": "The Grove Guardian Awakens",
+      "lines": [
+        "The ancient protector of the Evergrove stirs from slumber.",
+        "This guardian has watched over the forest for centuries. It will test your foundational skills.",
+        "Remember your training. Steady hands defeat ancient foes."
+      ],
+      "practice_tips": [
+        "Boss battles are marathons - pace yourself and stay accurate."
+      ]
+    },
+    "boss_citadel_warden": {
+      "speaker": "Elder Lyra",
+      "title": "The Citadel Warden",
+      "lines": [
+        "The Warden of the Citadel blocks your path. A formidable guardian.",
+        "It will throw the full alphabet at you. No hiding behind simple keys.",
+        "You've trained for this. Show the Warden what you've learned."
+      ],
+      "practice_tips": [
+        "Full alphabet coverage required - warm up all fingers before this fight."
+      ]
+    },
+    "boss_twilight_lord": {
+      "speaker": "Elder Lyra",
+      "title": "The Twilight Lord",
+      "lines": [
+        "Between light and shadow stands the Twilight Lord.",
+        "This master of duality will test your speed AND accuracy. Neither alone will suffice.",
+        "Find balance in your typing, and you will find victory."
+      ],
+      "practice_tips": [
+        "Don't sacrifice accuracy for speed - the Twilight Lord punishes mistakes."
+      ]
+    },
+    "boss_eternal_scribe": {
+      "speaker": "Elder Lyra",
+      "title": "The Eternal Scribe",
+      "lines": [
+        "The keeper of all written knowledge challenges you.",
+        "Punctuation, symbols, the full breadth of the keyboard - the Scribe commands it all.",
+        "Prove that your typing wisdom matches your speed."
+      ],
+      "practice_tips": [
+        "The Scribe uses punctuation heavily - warm up your pinky Shift technique."
+      ]
+    },
+    "boss_fen_seer": {
+      "speaker": "Elder Lyra",
+      "title": "The Fen Seer",
+      "lines": [
+        "In the mists of Mistfen, the Seer awaits. They see all possibilities.",
+        "Brackets, braces, the symbols of prophecy - the Seer speaks in code.",
+        "Decode their words faster than they can speak them."
+      ],
+      "practice_tips": [
+        "Heavy symbol usage - practice bracket pairs before this battle."
+      ]
+    },
+    "boss_sunlord": {
+      "speaker": "Elder Lyra",
+      "title": "The Sunlord Champion",
+      "lines": [
+        "The blazing champion of Sunfields stands before you, radiant with power.",
+        "Speed is the Sunlord's weapon. Match it or be burned.",
+        "This is a test of pure typing velocity. Let your fingers fly like flames."
+      ],
+      "practice_tips": [
+        "Speed is everything here - accuracy matters less. Go fast!"
+      ]
+    },
+    "fire_realm_1": {
+      "speaker": "Elder Lyra",
+      "title": "The Ember Path",
+      "lines": [
+        "The Fire Realm tests speed above all else. Flames wait for no one.",
+        "Short words, rapid fire. Your fingers must dance like flames themselves.",
+        "Speed comes from relaxation, not tension. Let your hands flow."
+      ],
+      "practice_tips": [
+        "Light, quick taps. Don't press hard - it slows you down."
+      ],
+      "theme_color": "#FF6B35"
+    },
+    "fire_realm_2": {
+      "speaker": "Elder Lyra",
+      "title": "The Inferno Core",
+      "lines": [
+        "You've reached the heart of the volcano. The heat intensifies.",
+        "Longer words now, but the pace remains relentless.",
+        "Trust your training. Your fingers know the way."
+      ],
+      "practice_tips": [
+        "Read ahead - see the next word before you finish the current one."
+      ],
+      "theme_color": "#FF4500"
+    },
+    "fire_realm_boss": {
+      "speaker": "Elder Lyra",
+      "title": "The Flame Tyrant",
+      "lines": [
+        "The lord of fire stands before you, wreathed in flame.",
+        "This is pure speed combat. Hesitation means defeat.",
+        "You've trained in the fire - now become the flame itself!"
+      ],
+      "practice_tips": [
+        "Zone out the pressure. Let muscle memory take control."
+      ]
+    },
+    "ice_realm_1": {
+      "speaker": "Elder Lyra",
+      "title": "The Frozen Approach",
+      "lines": [
+        "The Ice Realm demands precision. Cold punishes carelessness.",
+        "Each keystroke must be deliberate. Quality over quantity.",
+        "Move methodically, like crossing a frozen lake."
+      ],
+      "practice_tips": [
+        "Slow is smooth, smooth is fast. Accuracy builds speed."
+      ],
+      "theme_color": "#4FC3F7"
+    },
+    "ice_realm_2": {
+      "speaker": "Elder Lyra",
+      "title": "The Glacier Heart",
+      "lines": [
+        "Deep within the glacier, ancient ice holds secrets.",
+        "Long words require sustained focus. Don't let your attention drift.",
+        "The cold sharpens the mind. Use it."
+      ],
+      "practice_tips": [
+        "Break long words into chunks mentally - type them as phrases."
+      ],
+      "theme_color": "#29B6F6"
+    },
+    "ice_realm_boss": {
+      "speaker": "Elder Lyra",
+      "title": "The Frost Empress",
+      "lines": [
+        "The queen of eternal winter awaits. Her gaze freezes the unworthy.",
+        "Perfect accuracy is your only path to victory.",
+        "One mistake and the cold will claim you. Type with certainty."
+      ],
+      "practice_tips": [
+        "If unsure of a letter, pause briefly rather than guess wrong."
+      ]
+    },
+    "nature_realm_1": {
+      "speaker": "Elder Lyra",
+      "title": "The Living Grove",
+      "lines": [
+        "The forest breathes with life. It responds to those who type in harmony.",
+        "Natural rhythm - not too fast, not too slow. Find your flow.",
+        "The trees have watched typists for generations. They know true skill."
+      ],
+      "practice_tips": [
+        "Find a comfortable pace you can sustain. Consistency is key."
+      ],
+      "theme_color": "#66BB6A"
+    },
+    "nature_realm_2": {
+      "speaker": "Elder Lyra",
+      "title": "The World Tree",
+      "lines": [
+        "At the heart of all nature stands the World Tree.",
+        "Its roots touch all keyboards. Its branches reach all typists.",
+        "Prove your worth, and the tree will grant its blessing."
+      ],
+      "practice_tips": [
+        "Connect with your natural typing rhythm - don't force unnatural speed."
+      ],
+      "theme_color": "#43A047"
+    },
+    "nature_realm_boss": {
+      "speaker": "Elder Lyra",
+      "title": "The Ancient Treant",
+      "lines": [
+        "The protector of the World Tree awakens. Older than memory itself.",
+        "It has seen countless typists. Only the balanced ones earn respect.",
+        "Show both speed AND accuracy. The Treant accepts nothing less."
+      ],
+      "practice_tips": [
+        "Balance is everything. Neither speed nor accuracy alone will win."
+      ]
+    },
+    "biome_evergrove": {
+      "speaker": "Elder Lyra",
+      "title": "Evergrove Woods",
+      "lines": [
+        "The Evergrove's vocabulary speaks of trees, creatures, and forest life.",
+        "Oak, pine, deer, wolf - the words of the woodland.",
+        "Let the forest's calm focus guide your fingers."
+      ],
+      "practice_tips": [
+        "Themed words help memory - visualize the forest as you type."
+      ],
+      "theme_color": "#2E7D32"
+    },
+    "biome_stonepass": {
+      "speaker": "Elder Lyra",
+      "title": "Stonepass Mountains",
+      "lines": [
+        "The mountain's vocabulary is of stone, ore, and height.",
+        "Peak, cliff, mine, gem - words carved from rock itself.",
+        "Type with the steady determination of a dwarf miner."
+      ],
+      "practice_tips": [
+        "Mountain words often have hard consonants - strike them firmly."
+      ],
+      "theme_color": "#757575"
+    },
+    "biome_mistfen": {
+      "speaker": "Elder Lyra",
+      "title": "Mistfen Swamps",
+      "lines": [
+        "The swamp speaks in murky, mysterious words.",
+        "Bog, mire, mist, haze - the vocabulary of the marshlands.",
+        "Navigate carefully. The Mistfen hides tricky letter combinations."
+      ],
+      "practice_tips": [
+        "Swamp words have unusual patterns - read carefully before typing."
+      ],
+      "theme_color": "#5D4037"
+    },
+    "biome_sunfields": {
+      "speaker": "Elder Lyra",
+      "title": "Sunfields Plains",
+      "lines": [
+        "The open plains speak simply and clearly.",
+        "Farm, wheat, sun, wind - honest words for honest work.",
+        "The easiest biome - perfect for building confidence."
+      ],
+      "practice_tips": [
+        "Common, simple words - great for speed practice."
+      ],
+      "theme_color": "#FFB300"
+    },
+    "bigram_flow": {
+      "speaker": "Elder Lyra",
+      "title": "Bigram Flow",
+      "lines": [
+        "Two-letter patterns are the building blocks of typing fluency.",
+        "TH, ER, ON, AN - these combinations appear constantly.",
+        "Master the bigrams and whole words will flow naturally."
+      ],
+      "practice_tips": [
+        "Think of TH, ER, ON as single units, not two letters."
+      ]
+    },
+    "double_letters": {
+      "speaker": "Elder Lyra",
+      "title": "Double Trouble",
+      "lines": [
+        "Words with repeated letters require a special rhythm.",
+        "Book, moon, letter - the same finger strikes twice.",
+        "Don't rush the double - tap, tap, distinct and clear."
+      ],
+      "practice_tips": [
+        "Lift your finger completely between double letters for clean strikes."
+      ]
+    },
+    "consonant_clusters": {
+      "speaker": "Elder Lyra",
+      "title": "Consonant Clusters",
+      "lines": [
+        "STR, SCR, THR - consonants clustering together.",
+        "These combinations challenge your finger coordination.",
+        "Practice them in isolation until they become automatic."
+      ],
+      "practice_tips": [
+        "Consonant clusters often trip people up - slow down at first."
+      ]
+    },
+    "vowel_flow": {
+      "speaker": "Elder Lyra",
+      "title": "Vowel Flow",
+      "lines": [
+        "A, E, I, O, U - the breath of language.",
+        "Vowels are typed with alternating hands mostly.",
+        "Let them flow smoothly between your hands."
+      ],
+      "keys": ["a", "e", "i", "o", "u"],
+      "finger_guide": {
+        "a": "Left pinky",
+        "e": "Left middle",
+        "i": "Right middle",
+        "o": "Right ring",
+        "u": "Right index"
+      },
+      "practice_tips": [
+        "Vowel sequences like 'ea', 'ou', 'ie' should feel like smooth handoffs."
+      ]
+    },
+    "rhythm_words": {
+      "speaker": "Elder Lyra",
+      "title": "Rhythm Builders",
+      "lines": [
+        "Some words have a natural typing rhythm.",
+        "Element, minimum, premium - feel the cadence.",
+        "Finding rhythm transforms typing from work into flow."
+      ],
+      "practice_tips": [
+        "Try to feel the beat of each word - some are almost musical."
+      ]
+    },
+    "twilight_whisper": {
+      "speaker": "Elder Lyra",
+      "title": "Twilight Whisper",
+      "lines": [
+        "In the space between light and dark, whispers guide you.",
+        "Soft keys, gentle touches. The twilight rewards subtlety.",
+        "Listen to your fingers - they know the path."
+      ],
+      "practice_tips": [
+        "Light, whispering touches. Barely press the keys."
+      ],
+      "theme_color": "#7E57C2"
+    },
+    "twilight_shadow": {
+      "speaker": "Elder Lyra",
+      "title": "Twilight Shadow",
+      "lines": [
+        "Dancing between light and dark, the shadow shows the way.",
+        "More keys now, but the same gentle approach.",
+        "Let your typing cast no shadow of doubt."
+      ],
+      "practice_tips": [
+        "Stay relaxed - tension creates errors in the twilight."
+      ],
+      "theme_color": "#5E35B1"
+    },
+    "twilight_void": {
+      "speaker": "Elder Lyra",
+      "title": "Twilight Void",
+      "lines": [
+        "Beyond shadow lies the void. The ultimate twilight test.",
+        "Here, only instinct guides you. Trust completely.",
+        "The void reveals what you truly know."
+      ],
+      "practice_tips": [
+        "Don't think - just type. Let unconscious skill take over."
+      ],
+      "theme_color": "#311B92"
+    },
+    "precision_bronze": {
+      "speaker": "Elder Lyra",
+      "title": "Bronze Precision",
+      "lines": [
+        "The precision trials begin. Accuracy above all else.",
+        "90% accuracy is your target. Speed means nothing here.",
+        "Type slowly if you must, but type correctly."
+      ],
+      "practice_tips": [
+        "If you feel yourself rushing, consciously slow down."
+      ],
+      "accuracy_target": 0.90
+    },
+    "precision_silver": {
+      "speaker": "Elder Lyra",
+      "title": "Silver Precision",
+      "lines": [
+        "The silver trial demands more. 92% accuracy required.",
+        "One error in twelve keystrokes. Surgical precision.",
+        "Feel each key before you press. Certainty before action."
+      ],
+      "practice_tips": [
+        "Visualize the key location before pressing - reduces errors."
+      ],
+      "accuracy_target": 0.92
+    },
+    "precision_gold": {
+      "speaker": "Elder Lyra",
+      "title": "Gold Precision",
+      "lines": [
+        "The gold trial. 95% accuracy. Near perfection.",
+        "One error in twenty keystrokes. The elite standard.",
+        "This is where masters are separated from students."
+      ],
+      "practice_tips": [
+        "At this level, mental state matters. Stay calm and focused."
+      ],
+      "accuracy_target": 0.95
+    },
+    "time_trial_sprint": {
+      "speaker": "Elder Lyra",
+      "title": "Sprint Trial",
+      "lines": [
+        "A race against time. Short words, maximum speed.",
+        "40+ WPM is your target. Push your limits.",
+        "Accuracy still matters - errors cost time."
+      ],
+      "practice_tips": [
+        "Don't look at the WPM counter - it distracts. Just type."
+      ],
+      "wpm_target": 40
+    },
+    "time_trial_marathon": {
+      "speaker": "Elder Lyra",
+      "title": "Marathon Trial",
+      "lines": [
+        "Sustained speed over distance. The true test of endurance.",
+        "45+ WPM across long words. No slowing down.",
+        "Pace yourself at the start. Save energy for the finish."
+      ],
+      "practice_tips": [
+        "Steady rhythm is more important than burst speed."
+      ],
+      "wpm_target": 45
+    },
+    "legendary_forest": {
+      "speaker": "Elder Lyra",
+      "title": "Legendary Forest",
+      "lines": [
+        "The forest, reborn in legendary difficulty.",
+        "Everything you learned, pushed to the extreme.",
+        "Only true masters complete this trial."
+      ],
+      "practice_tips": [
+        "You know everything needed. Trust your training."
+      ]
+    },
+    "legendary_citadel": {
+      "speaker": "Elder Lyra",
+      "title": "Legendary Citadel",
+      "lines": [
+        "The citadel's ultimate trial. Legend difficulty.",
+        "Speed AND accuracy at the highest level.",
+        "Few have completed this. Fewer still with honor."
+      ],
+      "practice_tips": [
+        "Legendary means no second chances. Every keystroke counts."
+      ]
+    },
+    "legendary_apex": {
+      "speaker": "Elder Lyra",
+      "title": "Legendary Apex",
+      "lines": [
+        "Beyond mastery lies legend. This is the apex of all training.",
+        "Letters, numbers, symbols - everything, at legendary pace.",
+        "Complete this, and you join the immortal typists of Keystonia."
+      ],
+      "practice_tips": [
+        "Breathe. Focus. Become one with the keyboard."
+      ]
+    },
+    "common_words": {
+      "speaker": "Elder Lyra",
+      "title": "Common Words",
+      "lines": [
+        "The most frequently used words in the language.",
+        "The, and, is, are - small words that appear everywhere.",
+        "Speed on common words dramatically improves overall WPM."
+      ],
+      "practice_tips": [
+        "These words should become completely automatic - no thinking."
+      ]
+    },
+    "same_hand_words": {
+      "speaker": "Elder Lyra",
+      "title": "Same Hand Challenge",
+      "lines": [
+        "Words typed primarily with one hand.",
+        "These are tricky - the usual left-right rhythm doesn't help.",
+        "Focus on finger independence within each hand."
+      ],
+      "practice_tips": [
+        "Same-hand words require more finger independence - go slower."
+      ]
+    },
+    "intro_left_hand": {
+      "speaker": "Elder Lyra",
+      "title": "Left Hand Foundation",
+      "lines": [
+        "We begin with your left hand, defender.",
+        "Place your fingers on A, S, D, and F - these are your home keys.",
+        "Feel the small bump on F? That's your anchor point.",
+        "Let's build strength and confidence in your left hand."
+      ],
+      "keys": ["a", "s", "d", "f"],
+      "finger_guide": {
+        "new_keys": ["a", "s", "d", "f"],
+        "finger_assignments": {
+          "a": "left pinky",
+          "s": "left ring finger",
+          "d": "left middle finger",
+          "f": "left index finger"
+        }
+      },
+      "practice_tips": [
+        "Keep your wrist straight and fingers curved naturally."
+      ]
+    },
+    "intro_right_hand": {
+      "speaker": "Elder Lyra",
+      "title": "Right Hand Foundation",
+      "lines": [
+        "Now your right hand joins the battle.",
+        "Place your fingers on J, K, L, and semicolon.",
+        "Feel the bump on J? It mirrors the F key on your left.",
+        "Together, both hands will defend the kingdom."
+      ],
+      "keys": ["j", "k", "l", ";"],
+      "finger_guide": {
+        "new_keys": ["j", "k", "l", ";"],
+        "finger_assignments": {
+          "j": "right index finger",
+          "k": "right middle finger",
+          "l": "right ring finger",
+          ";": "right pinky"
+        }
+      },
+      "practice_tips": [
+        "Your hands should mirror each other in position."
+      ]
+    },
+    "intro_home_row": {
+      "speaker": "Elder Lyra",
+      "title": "The Home Row",
+      "lines": [
+        "The home row is where your fingers rest between keystrokes.",
+        "A, S, D, F for the left hand. J, K, L, semicolon for the right.",
+        "Your index fingers rest on F and J - feel the bumps.",
+        "Always return to home position after reaching for other keys."
+      ],
+      "keys": ["a", "s", "d", "f", "j", "k", "l", ";"],
+      "practice_tips": [
+        "Practice finding home position without looking at the keyboard."
+      ]
+    },
+    "intro_pairs_left": {
+      "speaker": "Elder Lyra",
+      "title": "Left Hand Pairs",
+      "lines": [
+        "Now we practice common letter pairs using your left hand.",
+        "Typing in pairs builds rhythm and speed.",
+        "Focus on smooth transitions between neighboring fingers."
+      ],
+      "practice_tips": [
+        "Think of pairs as single units, not individual letters."
+      ]
+    },
+    "intro_pairs_right": {
+      "speaker": "Elder Lyra",
+      "title": "Right Hand Pairs",
+      "lines": [
+        "Time to drill pairs with your right hand.",
+        "The same rhythm principles apply here.",
+        "Your right hand should feel as confident as your left."
+      ],
+      "practice_tips": [
+        "If one hand feels weaker, give it extra practice."
+      ]
+    },
+    "intro_pairs_all": {
+      "speaker": "Elder Lyra",
+      "title": "Combined Pairs",
+      "lines": [
+        "Now both hands work together on alternating pairs.",
+        "The best typing flows smoothly between hands.",
+        "This is the foundation of fast, accurate typing."
+      ],
+      "practice_tips": [
+        "Alternating hands is natural - let the rhythm guide you."
+      ]
+    },
+    "home_row_words": {
+      "speaker": "Elder Lyra",
+      "title": "Home Row Words",
+      "lines": [
+        "Time to type real words using only home row keys.",
+        "Words like 'add', 'fall', 'salad' - all from the home row.",
+        "This is where letters become language."
+      ],
+      "practice_tips": [
+        "Read the whole word before typing - don't hunt and peck."
+      ]
+    },
+    "reach_row_words": {
+      "speaker": "Elder Lyra",
+      "title": "Reach Row Words",
+      "lines": [
+        "Now we form words using the reach row keys.",
+        "Your fingers extend upward to G, H, T, Y and neighbors.",
+        "Reach confidently, then return home."
+      ],
+      "practice_tips": [
+        "Keep your wrists stable as your fingers reach upward."
+      ]
+    },
+    "bottom_row_words": {
+      "speaker": "Elder Lyra",
+      "title": "Bottom Row Words",
+      "lines": [
+        "Words from the bottom row - Z, X, C, V, B, N, M.",
+        "The bottom row requires a downward reach.",
+        "Master this and you command the entire alphabet."
+      ],
+      "practice_tips": [
+        "The bottom row often uses pinkies - strengthen them!"
+      ]
+    },
+    "full_alpha_words": {
+      "speaker": "Elder Lyra",
+      "title": "Full Alphabet Words",
+      "lines": [
+        "All 26 letters are now at your command.",
+        "Type words from across the entire keyboard.",
+        "Your fingers should flow naturally to any key."
+      ],
+      "practice_tips": [
+        "If you hesitate on certain letters, practice them more."
+      ]
+    },
+    "hand_alternation_drill": {
+      "speaker": "Elder Lyra",
+      "title": "Hand Alternation",
+      "lines": [
+        "The fastest typists alternate hands smoothly.",
+        "While one hand types, the other prepares.",
+        "This drill builds that crucial coordination."
+      ],
+      "practice_tips": [
+        "Feel the rhythm of left-right-left-right typing."
+      ]
+    },
+    "double_letter_drill": {
+      "speaker": "Elder Lyra",
+      "title": "Double Letter Drill",
+      "lines": [
+        "Words with repeated letters require special technique.",
+        "The same finger must strike twice in quick succession.",
+        "Lift cleanly between strikes for distinct keypresses."
+      ],
+      "practice_tips": [
+        "Don't rush double letters - clarity beats speed."
+      ]
+    },
+    "bigram_common": {
+      "speaker": "Elder Lyra",
+      "title": "Common Bigrams",
+      "lines": [
+        "Bigrams are two-letter combinations that appear frequently.",
+        "TH, HE, IN, ER - these patterns are everywhere in English.",
+        "Learning them as units dramatically improves your speed."
+      ],
+      "practice_tips": [
+        "Think of common bigrams as single keystrokes in your mind."
+      ]
+    },
+    "pinky_ring_strength": {
+      "speaker": "Elder Lyra",
+      "title": "Pinky and Ring Strength",
+      "lines": [
+        "Your weakest fingers need the most training.",
+        "Pinky and ring fingers control important keys.",
+        "This drill builds their strength and independence."
+      ],
+      "practice_tips": [
+        "Isolate these fingers - don't let others compensate."
+      ]
+    },
+    "weak_fingers_words": {
+      "speaker": "Elder Lyra",
+      "title": "Weak Finger Words",
+      "lines": [
+        "Now apply your stronger weak fingers to real words.",
+        "Words heavy in Q, Z, P, and other pinky keys.",
+        "Every finger must carry its weight in battle."
+      ],
+      "practice_tips": [
+        "Accuracy first - speed will follow with practice."
+      ]
+    },
+    "mixed_case": {
+      "speaker": "Elder Lyra",
+      "title": "Mixed Case Typing",
+      "lines": [
+        "Capital letters require coordination with Shift.",
+        "Use the opposite hand's pinky for Shift.",
+        "Proper names, sentences, acronyms - all need this skill."
+      ],
+      "finger_guide": {
+        "new_keys": ["shift"],
+        "finger_assignments": {
+          "shift": "opposite hand pinky"
+        }
+      },
+      "practice_tips": [
+        "Press Shift before the letter, release after - smooth motion."
+      ]
+    },
+    "email_patterns": {
+      "speaker": "Elder Lyra",
+      "title": "Email Patterns",
+      "lines": [
+        "The modern defender must master digital communication.",
+        "Email addresses use @, dots, and underscores.",
+        "These symbols are essential in today's world."
+      ],
+      "practice_tips": [
+        "Learn the symbol key positions by feel, not sight."
+      ]
+    },
+    "sentence_basics": {
+      "speaker": "Elder Lyra",
+      "title": "Basic Sentences",
+      "lines": [
+        "From words to sentences - a major step forward.",
+        "Capital at the start, period at the end.",
+        "Spacing between words must be consistent."
+      ],
+      "practice_tips": [
+        "One space after periods. Keep rhythm steady."
+      ]
+    },
+    "sentence_home_row": {
+      "speaker": "Elder Lyra",
+      "title": "Home Row Sentences",
+      "lines": [
+        "Complete sentences using primarily home row keys.",
+        "Simple sentences build confidence in sentence flow.",
+        "Focus on smooth word-to-word transitions."
+      ],
+      "practice_tips": [
+        "Don't pause between words - maintain typing flow."
+      ]
+    },
+    "sentence_common": {
+      "speaker": "Elder Lyra",
+      "title": "Common Sentences",
+      "lines": [
+        "Frequently used sentence patterns and phrases.",
+        "The quick brown fox, hello world, and more.",
+        "These classic sentences test all your skills."
+      ],
+      "practice_tips": [
+        "Famous typing sentences are famous for a reason - they work!"
+      ]
+    },
+    "sentence_pangrams": {
+      "speaker": "Elder Lyra",
+      "title": "Pangram Practice",
+      "lines": [
+        "Pangrams contain every letter of the alphabet.",
+        "The quick brown fox jumps over the lazy dog.",
+        "These sentences ensure complete keyboard coverage."
+      ],
+      "practice_tips": [
+        "Pangrams reveal which letters need more practice."
+      ]
+    },
+    "sentence_intermediate": {
+      "speaker": "Elder Lyra",
+      "title": "Intermediate Sentences",
+      "lines": [
+        "Longer sentences with varied vocabulary.",
+        "Your endurance and accuracy will be tested.",
+        "Maintain rhythm across the entire sentence."
+      ],
+      "practice_tips": [
+        "Read ahead to anticipate upcoming words."
+      ]
+    },
+    "sentence_advanced": {
+      "speaker": "Elder Lyra",
+      "title": "Advanced Sentences",
+      "lines": [
+        "Complex sentences with challenging vocabulary.",
+        "Punctuation, capitalization, numbers - everything.",
+        "This is the final test of sentence typing mastery."
+      ],
+      "practice_tips": [
+        "Stay calm - complexity is just many simple parts together."
+      ]
+    },
+    "sentence_fantasy": {
+      "speaker": "Elder Lyra",
+      "title": "Fantasy Sentences",
+      "lines": [
+        "Sentences drawn from the lore of Keystonia.",
+        "Dragons, castles, magic - the words of our world.",
+        "Type the tales of our kingdom's heroes."
+      ],
+      "practice_tips": [
+        "Immerse yourself in the story as you type."
+      ]
+    },
+    "sentence_coding": {
+      "speaker": "Elder Lyra",
+      "title": "Coding Sentences",
+      "lines": [
+        "Programming requires its own sentence patterns.",
+        "Variable declarations, function calls, comments.",
+        "The syntax of code is a language unto itself."
+      ],
+      "practice_tips": [
+        "Symbols like {}, [], and () need special attention."
+      ]
     }
   },
   "typing_tips": {

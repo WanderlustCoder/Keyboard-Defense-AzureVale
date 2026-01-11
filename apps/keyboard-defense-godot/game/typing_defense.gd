@@ -3,6 +3,9 @@ extends Control
 ## Typing Defense - On-rails typing tutor with kingdom building rewards
 ## Better typing = more attack power = faster enemy defeats = more gold
 
+const StoryManager = preload("res://game/story_manager.gd")
+const DIALOGUE_BOX_SCENE := preload("res://scenes/DialogueBox.tscn")
+
 @onready var wave_label: Label = $TopBar/WaveLabel
 @onready var hp_label: Label = $TopBar/HPLabel
 @onready var gold_label: Label = $TopBar/GoldLabel
@@ -63,6 +66,12 @@ var enemy_types: Array[Dictionary] = [
 # Visual enemy nodes
 var enemy_visuals: Array[Control] = []
 
+# Story integration
+var dialogue_box: Node = null
+var waiting_for_dialogue: bool = false
+var has_shown_welcome: bool = false
+var last_lesson_intro: String = ""
+
 func _ready() -> void:
 	input_field.text_changed.connect(_on_input_changed)
 	input_field.text_submitted.connect(_on_input_submitted)
@@ -71,9 +80,41 @@ func _ready() -> void:
 	if menu_button:
 		menu_button.pressed.connect(_on_menu_pressed)
 
+	_init_dialogue_box()
+	_show_welcome_dialogue()
 	_start_wave()
 
+
+func _init_dialogue_box() -> void:
+	dialogue_box = DIALOGUE_BOX_SCENE.instantiate()
+	add_child(dialogue_box)
+	dialogue_box.dialogue_finished.connect(_on_dialogue_finished)
+
+
+func _on_dialogue_finished() -> void:
+	waiting_for_dialogue = false
+	input_field.grab_focus()
+
+
+func _show_welcome_dialogue() -> void:
+	if has_shown_welcome:
+		return
+	has_shown_welcome = true
+
+	var lines: Array[String] = [
+		"Welcome to the Typing Arena, defender!",
+		"Here you will hone your skills against endless waves of enemies.",
+		"Type the words quickly and accurately to build power.",
+		"Higher combos mean more damage - and more gold!",
+		"Good luck, and may your fingers be swift!"
+	]
+
+	waiting_for_dialogue = true
+	dialogue_box.show_dialogue("Elder Lyra", lines)
+
 func _process(delta: float) -> void:
+	if waiting_for_dialogue:
+		return
 	_update_enemies(delta)
 	_update_wpm()
 
@@ -116,6 +157,9 @@ func _get_lesson_word() -> String:
 	return words[randi() % words.size()]
 
 func _on_input_changed(new_text: String) -> void:
+	if waiting_for_dialogue:
+		return
+
 	var target: String = current_enemy.get("word", "")
 	var typed: String = new_text.to_lower()
 
@@ -251,29 +295,105 @@ func _wave_complete() -> void:
 	feedback_label.text = "WAVE COMPLETE! +%d gold bonus!" % wave_bonus
 	feedback_label.add_theme_color_override("font_color", Color(0.3, 1, 0.5))
 
-	# Progress lesson difficulty
+	# Progress lesson difficulty with story integration
+	var lesson_changed: bool = false
+	var new_lesson_id: String = ""
 	if wave >= 3 and current_lesson == "home_row":
 		current_lesson = "top_row"
-		feedback_label.text += " New keys unlocked: TOP ROW!"
+		new_lesson_id = "upper_row_1"
+		lesson_changed = true
 	elif wave >= 6 and current_lesson == "top_row":
 		current_lesson = "bottom_row"
-		feedback_label.text += " New keys unlocked: BOTTOM ROW!"
+		new_lesson_id = "bottom_row_1"
+		lesson_changed = true
 	elif wave >= 9 and current_lesson == "bottom_row":
 		current_lesson = "full"
-		feedback_label.text += " Full keyboard unlocked!"
+		new_lesson_id = "full_alpha"
+		lesson_changed = true
 
 	# Heal castle between waves
 	castle_hp = min(castle_hp + 2, castle_max_hp)
 
+	# Show lesson introduction for new lessons
+	if lesson_changed and new_lesson_id != last_lesson_intro:
+		last_lesson_intro = new_lesson_id
+		_show_lesson_intro(new_lesson_id)
+	else:
+		# Show contextual tip
+		_show_wave_tip()
+
 	# Short delay then start next wave
 	await get_tree().create_timer(2.0).timeout
 	_start_wave()
+
+
+func _show_lesson_intro(lesson_id: String) -> void:
+	if not dialogue_box or waiting_for_dialogue:
+		return
+
+	var lines: Array[String] = StoryManager.get_lesson_intro_lines(lesson_id)
+	if lines.is_empty():
+		# Fallback for lessons without story intros
+		var lesson_name: String = lesson_id.replace("_", " ").capitalize()
+		lines = [
+			"Excellent progress, defender!",
+			"You are now ready for: %s" % lesson_name,
+			"New keys will test your expanding abilities!"
+		]
+
+	waiting_for_dialogue = true
+	dialogue_box.show_dialogue("Elder Lyra", lines)
+
+
+func _show_wave_tip() -> void:
+	if waiting_for_dialogue:
+		return
+
+	# Get contextual tip based on performance
+	var tip: String = ""
+	var accuracy: float = _get_accuracy()
+	if accuracy < 0.8:
+		tip = StoryManager.get_contextual_tip("accuracy")
+	elif max_combo < 5:
+		tip = StoryManager.get_contextual_tip("combo")
+	else:
+		tip = StoryManager.get_contextual_tip("practice")
+
+	if not tip.is_empty():
+		feedback_label.text += " Tip: " + tip
 
 func _game_over() -> void:
 	word_display.text = "[center][color=red]GAME OVER[/color][/center]"
 	input_field.editable = false
 	feedback_label.text = "Castle destroyed! Final gold: %d | Max combo: %d" % [gold, max_combo]
 	feedback_label.add_theme_color_override("font_color", Color(1, 0.3, 0.3))
+
+	# Show story game over message
+	if dialogue_box:
+		var accuracy: float = _get_accuracy()
+		var lines: Array[String] = []
+
+		if wave >= 10:
+			lines = [
+				"You fought valiantly, defender!",
+				"Wave %d is an impressive achievement." % wave,
+				"Rest now, and return stronger than before."
+			]
+		elif accuracy >= 0.9:
+			lines = [
+				"The castle has fallen, but your accuracy was remarkable!",
+				"Keep that precision - it will serve you well.",
+				"Try again when you are ready."
+			]
+		else:
+			lines = [
+				"The Typhos Horde has overwhelmed us!",
+				"Practice your typing accuracy and speed.",
+				"Every keystroke matters in battle."
+			]
+
+		waiting_for_dialogue = true
+		dialogue_box.show_dialogue("Elder Lyra", lines)
 
 func _refresh_ui() -> void:
 	wave_label.text = "Wave %d" % wave
