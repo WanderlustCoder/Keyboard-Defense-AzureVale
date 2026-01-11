@@ -155,6 +155,8 @@ New SVG assets in `assets/art/src-svg/`:
 - Scenario reports and summaries are written under `Logs/ScenarioReports/` for CI-friendly collection (via `--out-dir`).
 
 ## Test Coverage (as of 2026-01-11)
+**Total: 3,684 assertions**
+
 - **Parser tests**: Command parsing, intent validation
 - **Reducer tests**: State mutation, intent application
 - **Determinism tests**: RNG reproducibility
@@ -171,6 +173,13 @@ New SVG assets in `assets/art/src-svg/`:
 - **Buffs tests**: Multipliers, bonuses, active buff tracking
 - **Combo tests**: Tiers, damage/gold bonuses, milestones
 - **Affixes tests**: Application, glyphs, serialization
+- **Bestiary tests**: Tier/category names, encounter tracking
+- **Damage types tests**: Calculations, resistances, type info
+- **Enemy types tests**: Enums, definitions, tier validation
+- **Items tests**: Equipment slots, rarities, data structure
+- **Crafting tests**: Materials, recipes, ingredients
+- **Endless mode tests**: Milestones, modifiers, unlock conditions
+- **Expeditions tests**: State constants, worker tracking
 
 ## Planning
 - `docs/ROADMAP.md` is the authoritative milestone list.

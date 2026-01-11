@@ -220,7 +220,7 @@ Status: In progress (significant test additions 2026-01-11)
 
 Increase automated coverage and formalize manual QA gates for releases.
 
-**Progress (2026-01-11):** Test suite expanded to 3,558 assertions covering:
+**Progress (2026-01-11):** Test suite expanded to 3,684 assertions covering:
 - Boss encounters (phases, mechanics, dialogue)
 - Difficulty modes (modifiers, multipliers)
 - Lesson consistency (lesson-story alignment)
@@ -231,6 +231,13 @@ Increase automated coverage and formalize manual QA gates for releases.
 - Buffs system (multipliers, bonuses, active buff tracking)
 - Combo system (tiers, damage/gold bonuses, milestones)
 - Affixes system (application, glyphs, serialization)
+- Bestiary system (tier/category names, encounter tracking)
+- Damage types (calculations, resistances, type info)
+- Enemy types (enums, definitions, tier validation)
+- Items system (equipment slots, rarities, data structure)
+- Crafting system (materials, recipes, ingredients)
+- Endless mode (milestones, modifiers, unlock conditions)
+- Expeditions (state constants, worker tracking)
 
 Planning refs:
 - `docs/plans/p1/QA_AUTOMATION_PLAN.md`
