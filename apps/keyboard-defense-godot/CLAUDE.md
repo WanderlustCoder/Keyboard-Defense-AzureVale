@@ -1504,6 +1504,57 @@ Reports:
 - Private/public function interleaving
 - Missing class_name declarations
 
+### Dictionary Access Checker
+
+Find unsafe dictionary access patterns:
+
+```bash
+./scripts/check_dictionary_access.sh              # Full report
+./scripts/check_dictionary_access.sh --file game/main.gd  # Single file
+./scripts/check_dictionary_access.sh --strict     # Include .get() without defaults
+./scripts/check_dictionary_access.sh --json       # JSON output
+```
+
+Reports:
+- Unsafe bracket access (use .get() instead)
+- Nested dictionary access risks
+- Access pattern statistics
+- Safe access ratio
+
+### Print Statement Checker
+
+Find debug print statements left in code:
+
+```bash
+./scripts/check_print_statements.sh              # Full report
+./scripts/check_print_statements.sh --file game/main.gd  # Single file
+./scripts/check_print_statements.sh --strict     # Include push_error/warning
+./scripts/check_print_statements.sh --json       # JSON output
+```
+
+Reports:
+- print()/prints()/printt() calls
+- print_debug()/print_rich() calls
+- Prints by type and file
+- Suggests alternatives
+
+### Tween Usage Checker
+
+Find tween usage issues:
+
+```bash
+./scripts/check_tween_usage.sh              # Full report
+./scripts/check_tween_usage.sh --file game/main.gd  # Single file
+./scripts/check_tween_usage.sh --strict     # Include cleanup checks
+./scripts/check_tween_usage.sh --json       # JSON output
+```
+
+Reports:
+- Tweens in hot paths (_process)
+- Unstored tweens (can't be stopped)
+- Tween pattern statistics
+- Cleanup call counts
+
 ## File Locations Quick Reference
 
 | Need to... | Location |

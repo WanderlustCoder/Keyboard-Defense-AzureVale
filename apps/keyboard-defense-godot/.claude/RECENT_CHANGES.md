@@ -4,6 +4,30 @@ This file tracks recent changes for Claude Code context.
 
 ---
 
+## 2026-01-10: Development Tools Batch 24
+
+Added dictionary, print, and tween analysis tools:
+
+### Dictionary Access Checker (`scripts/check_dictionary_access.py`)
+- Finds unsafe bracket access (902 found)
+- Reports safe access ratio (86%)
+- Detects nested access risks
+- Tracks access patterns
+
+### Print Statement Checker (`scripts/check_print_statements.py`)
+- Finds debug print() calls (79 found)
+- Skips test files automatically
+- Reports by type and file
+- Suggests alternatives
+
+### Tween Usage Checker (`scripts/check_tween_usage.py`)
+- Finds tweens in hot paths
+- Reports stored vs unstored (35/48)
+- Tracks cleanup calls (44)
+- No issues found (clean!)
+
+---
+
 ## 2026-01-10: Development Tools Batch 23
 
 Added constant, return, and class structure analysis tools:
