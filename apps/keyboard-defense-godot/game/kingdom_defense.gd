@@ -1571,15 +1571,24 @@ func _toggle_settings() -> void:
 			settings_panel.show_settings()
 
 func _on_upgrade_requested(building_index: int) -> void:
+	# Play upgrade sound
+	if audio_manager:
+		audio_manager.play_upgrade_purchase()
 	_update_objective("[color=green]Building upgraded![/color]")
 	_update_grid_renderer()
 
 func _on_research_started(research_id: String) -> void:
 	var research: Dictionary = research_instance.get_research(research_id)
 	var label: String = str(research.get("label", research_id))
+	# Play UI confirm sound
+	if audio_manager:
+		audio_manager.play_ui_confirm()
 	_update_objective("[color=cyan]Started research: %s[/color]" % label)
 
 func _on_trade_executed(from: String, to: String, amount: int) -> void:
+	# Play trade sound
+	if audio_manager:
+		audio_manager.play_ui_confirm()
 	_update_objective("[color=green]Trade complete![/color]")
 
 func _reset_game() -> void:
@@ -2277,6 +2286,11 @@ func _game_over() -> void:
 	input_field.editable = false
 	current_phase = "gameover"
 
+	# Play defeat sound and switch to defeat music
+	if audio_manager:
+		audio_manager.play_defeat()
+		audio_manager.play_music(audio_manager.Music.DEFEAT)
+
 	# Lifetime stats: death and final records
 	SimPlayerStats.increment_stat(profile, "total_deaths", 1)
 	SimPlayerStats.update_record(profile, "highest_day", day)
@@ -2300,6 +2314,11 @@ func _on_campaign_victory() -> void:
 	word_display.text = "[center][color=gold]VICTORY![/color]\nThe Siege of Keystonia is Over![/center]"
 	input_field.editable = false
 	current_phase = "victory"
+
+	# Play victory sound and switch to victory music
+	if audio_manager:
+		audio_manager.play_victory()
+		audio_manager.play_music(audio_manager.Music.VICTORY)
 
 	# Award completion bonus
 	var victory_gold: int = 500
@@ -2591,6 +2610,11 @@ func _process_combat_typing() -> void:
 		total_chars += 1
 		consecutive_errors += 1
 
+		# Play mistake and combo break sounds
+		if audio_manager:
+			audio_manager.play_type_mistake()
+			audio_manager.play_combo_break()
+
 		# Show error tip after consecutive mistakes
 		if consecutive_errors >= CONSECUTIVE_ERROR_TIP_THRESHOLD:
 			if tip_notification and not tip_notification.visible:
@@ -2800,6 +2824,10 @@ func _attack_target_enemy() -> void:
 		var enemy_kind: String = str(enemy.get("kind", "raider"))
 		var is_boss: bool = bool(enemy.get("is_boss", false)) or StoryManager.is_boss_kind(enemy_kind)
 		var gold_reward: int = SimEnemies.gold_reward(enemy_kind)
+
+		# Play word complete sound
+		if audio_manager:
+			audio_manager.play_word_complete()
 
 		# Apply wave composition gold multiplier
 		var wave_gold_mult: float = float(current_wave_composition.get("gold_mult", 1.0))
@@ -3024,6 +3052,10 @@ func _try_build(building_type: String) -> void:
 
 	# Update building counts
 	state.buildings[building_type] = int(state.buildings.get(building_type, 0)) + 1
+
+	# Play build sound
+	if audio_manager:
+		audio_manager.play_ui_confirm()
 
 	_update_objective("[color=green]Built %s![/color]" % building_type)
 	_update_grid_renderer()
