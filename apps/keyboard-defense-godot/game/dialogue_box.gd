@@ -9,10 +9,12 @@ const FADE_IN_DURATION := 0.2
 const FADE_OUT_DURATION := 0.15
 
 @onready var panel: Panel = $Panel
-@onready var speaker_label: Label = $Panel/VBox/SpeakerLabel
-@onready var text_label: RichTextLabel = $Panel/VBox/TextLabel
-@onready var continue_label: Label = $Panel/VBox/ContinueLabel
+@onready var portrait: TextureRect = $Panel/HBox/PortraitContainer/Portrait
+@onready var speaker_label: Label = $Panel/HBox/VBox/SpeakerLabel
+@onready var text_label: RichTextLabel = $Panel/HBox/VBox/TextLabel
+@onready var continue_label: Label = $Panel/HBox/VBox/ContinueLabel
 @onready var settings_manager = get_node_or_null("/root/SettingsManager")
+@onready var asset_loader = get_node_or_null("/root/AssetLoader")
 
 var dialogue_lines: Array[String] = []
 var current_line_index: int = 0
@@ -39,6 +41,9 @@ func show_dialogue(speaker: String, lines: Array[String], auto_delay: float = 0.
 		speaker_label.text = speaker
 		speaker_label.visible = not speaker.is_empty()
 
+	# Load and display portrait for the speaker
+	_update_portrait(speaker)
+
 	_show_current_line()
 	visible = true
 	is_active = true
@@ -48,6 +53,23 @@ func show_dialogue(speaker: String, lines: Array[String], auto_delay: float = 0.
 
 	# Grab focus to capture input
 	grab_focus()
+
+func _update_portrait(speaker: String) -> void:
+	if not portrait:
+		return
+
+	if asset_loader == null:
+		portrait.texture = null
+		portrait.visible = false
+		return
+
+	var texture: Texture2D = asset_loader.get_portrait_texture(speaker)
+	if texture:
+		portrait.texture = texture
+		portrait.visible = true
+	else:
+		portrait.texture = null
+		portrait.visible = false
 
 func _show_current_line() -> void:
 	if current_line_index >= dialogue_lines.size():
