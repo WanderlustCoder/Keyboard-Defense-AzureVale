@@ -282,17 +282,19 @@ Acceptance criteria:
 - UI layouts handle longer text without overlap.
 
 ### P2-AUDIO-001 Audio pass
-Status: Not started
+Status: Complete (2026-01-11)
 
 Add procedural or original SFX for typing and combat feedback.
+
+**Progress:** Full audio integration completed. AudioManager autoload with 60+ SFX presets, 6 music tracks, and comprehensive game mode integration. All three main game modes (open_world.gd, typing_defense.gd, kingdom_defense.gd) now have audio calls for music transitions, combat events, typing feedback, and UI interactions.
 
 Planning refs:
 - `docs/plans/p2/AUDIO_PLAN.md`
 - `docs/plans/planpack_2025-12-27_tempPlans/keyboard-defense-plans/assets/AUDIO_EVENT_MAP.md`
 
 Acceptance criteria:
-- Audio events map to key gameplay actions.
-- Asset audit rules are respected and documented.
+- [x] Audio events map to key gameplay actions.
+- [x] Asset audit rules are respected and documented.
 
 ## Future Opportunities (from Story/GDD analysis)
 
