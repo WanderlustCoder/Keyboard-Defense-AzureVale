@@ -1,6 +1,6 @@
 # Project Status
 
-**Last updated:** 2026-01-08
+**Last updated:** 2026-01-11
 
 ## Overview
 Keyboard Defense is a Godot 4 typing-first kingdom defense roguelite. The sim layer is deterministic and data-first, while the game layer renders a tile grid, HUD, and typing-driven day/night loop.
@@ -148,11 +148,24 @@ New SVG assets in `assets/art/src-svg/`:
 - Profile: `user://profile.json` stores typing history, lifetime stats, practice goal, preferred lesson, lesson progress, keybinds, and UI preferences.
 
 ## Architecture Snapshot
-- `sim/**`: deterministic rules and data helpers (no Node/Scene dependencies).  
+- `sim/**`: deterministic rules and data helpers (no Node/Scene dependencies).
 - `game/**` and `ui/**`: rendering, input routing, panels, and profile persistence.
 - Tests: headless via `godot --headless --path . --script res://tests/run_tests.gd` (wrappers in `scripts/`).
 - Scenario harness (Phase 2): `res://tools/run_scenarios.gd` runs `data/scenarios.json` headless with tag/priority filtering and expanded balance coverage.
 - Scenario reports and summaries are written under `Logs/ScenarioReports/` for CI-friendly collection (via `--out-dir`).
+
+## Test Coverage (as of 2026-01-11)
+- **Parser tests**: Command parsing, intent validation
+- **Reducer tests**: State mutation, intent application
+- **Determinism tests**: RNG reproducibility
+- **Lessons tests**: Lesson data validation, word generation
+- **Balance report tests**: Export, verify, diff commands
+- **Typing tests**: Feedback, stats, trends, profiles
+- **Story manager tests**: Acts, bosses, dialogue, lore
+- **Boss encounters tests**: Phases, mechanics, dialogue
+- **Difficulty tests**: Modes, modifiers, multipliers
+- **Lesson consistency tests**: Lesson-story intro alignment
+- **Dialogue flow tests**: Key dialogues, substitutions, milestones
 
 ## Planning
 - `docs/ROADMAP.md` is the authoritative milestone list.
