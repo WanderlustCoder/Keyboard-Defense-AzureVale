@@ -1,7 +1,7 @@
 # Priorities Analysis
 
 **Generated:** 2026-01-08
-**Last Updated:** 2026-01-10
+**Last Updated:** 2026-01-11
 
 This document identifies gaps between implemented features and the story/GDD vision, and recommends next priorities.
 
@@ -101,10 +101,11 @@ All P0 items are nearly complete. Remaining work:
 
 ## Game Mode Integration Gaps
 
-### Kingdom Defense Mode
-- [ ] Story integration is partial - dialogue triggers may not fire for all events
-- [ ] Practice mode exists but may not use story lesson intros
-- [ ] Act completion rewards not implemented
+### Kingdom Defense Mode - UPDATED (2026-01-11)
+- [x] Story integration complete (dialogue triggers, lesson intros, tips, feedback)
+- [x] Audio integration added (music transitions, sound effects for combat events)
+- [x] Practice mode uses story lesson intros via StoryManager
+- [x] Act completion rewards implemented (gold, ability unlocks)
 
 ### Open World Mode - UPDATED (2026-01-10)
 - [x] Story integration added (welcome dialogue, exploration milestones, combat intro, victory messages)
@@ -124,10 +125,12 @@ All P0 items are nearly complete. Remaining work:
 - `lessons.json` and `story.json` lesson IDs should be verified for consistency
 - Consider merging lesson content (finger guides, tips) into lessons.json or creating a build-time validation
 
-### Test Coverage
-- Kingdom Defense mode lacks headless test coverage
-- Story manager functions need unit tests
-- Dialogue box flow needs integration tests
+### Test Coverage - UPDATED (2026-01-11)
+- [x] Kingdom Defense mode test coverage via boss encounters and difficulty tests
+- [x] Story manager functions have unit tests (40+ assertions)
+- [x] Boss encounter tests (phases, dialogue, mechanics)
+- [x] Difficulty mode tests (modifiers, multipliers)
+- [ ] Dialogue box flow needs integration tests
 
 ## Recommended Priority Order
 
@@ -151,7 +154,7 @@ All P0 items are nearly complete. Remaining work:
 11. Open World story integration
 12. Additional game mode polish
 
-## Updated Remaining Work (2026-01-10)
+## Updated Remaining Work (2026-01-11)
 
 ### P0 Checklist Items
 The following P0 items remain:
@@ -159,16 +162,17 @@ The following P0 items remain:
 2. Accessibility audit at 1280x720
 3. Windows export smoke test
 
-### Game Mode Polish
-1. Kingdom Defense mode story integration polish - partially done
+### Game Mode Polish - COMPLETED (2026-01-11)
+1. ~~Kingdom Defense mode story integration polish~~ - DONE (2026-01-11, audio added)
 2. ~~Open World mode story integration~~ - DONE (2026-01-10)
 3. ~~Typing Defense mode story integration~~ - DONE (2026-01-10)
-4. Test coverage for all game modes
+4. ~~Test coverage for all game modes~~ - DONE (2026-01-11, boss/difficulty tests)
 
 ### Technical Debt
 1. ~~Verify lesson ID consistency between data files~~ - DONE (2026-01-10, all 98 lessons have introductions)
 2. ~~Unit tests for story manager functions~~ - DONE (2026-01-10, 40+ test assertions added)
-3. Integration tests for dialogue flow
+3. ~~Boss encounters and difficulty tests~~ - DONE (2026-01-11)
+4. Integration tests for dialogue flow
 
 ## Success Metrics
 
