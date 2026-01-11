@@ -4,6 +4,30 @@ This file tracks recent changes for Claude Code context.
 
 ---
 
+## 2026-01-10: Development Tools Batch 23
+
+Added constant, return, and class structure analysis tools:
+
+### Constant Usage Checker (`scripts/check_constant_usage.py`)
+- Finds unused constants (2 found)
+- Detects naming convention violations
+- Reports repeated values (1408 candidates)
+- Identifies potential enum groupings
+
+### Return Consistency Checker (`scripts/check_return_consistency.py`)
+- Finds mixed return types (value and void)
+- Detects type/void mismatches
+- Reports return type annotation coverage (100%)
+- Identifies potential missing returns
+
+### Class Structure Checker (`scripts/check_class_structure.py`)
+- Validates declaration ordering
+- Reports 131 ordering violations
+- Shows expected GDScript class structure
+- Tracks element counts by type
+
+---
+
 ## 2026-01-10: Development Tools Batch 22
 
 Added property encapsulation and signal/resource analysis tools:

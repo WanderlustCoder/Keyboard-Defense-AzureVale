@@ -1453,6 +1453,57 @@ Reports:
 - Signal connection patterns
 - Most connected signals
 
+### Constant Usage Checker
+
+Find issues with constant declarations:
+
+```bash
+./scripts/check_constant_usage.sh              # Full report
+./scripts/check_constant_usage.sh --file game/main.gd  # Single file
+./scripts/check_constant_usage.sh --strict     # Include repeated values
+./scripts/check_constant_usage.sh --json       # JSON output
+```
+
+Reports:
+- Unused constants (dead code)
+- Naming convention violations
+- Repeated string values (constant candidates)
+- Potential enum groupings
+
+### Return Consistency Checker
+
+Find function return pattern issues:
+
+```bash
+./scripts/check_return_consistency.sh              # Full report
+./scripts/check_return_consistency.sh --file game/main.gd  # Single file
+./scripts/check_return_consistency.sh --strict     # Include untyped returns
+./scripts/check_return_consistency.sh --json       # JSON output
+```
+
+Reports:
+- Mixed return types (value and void)
+- Declared type with void return
+- Missing return type annotations
+- Potential missing returns in branches
+
+### Class Structure Checker
+
+Validate GDScript class organization:
+
+```bash
+./scripts/check_class_structure.sh              # Full report
+./scripts/check_class_structure.sh --file game/main.gd  # Single file
+./scripts/check_class_structure.sh --strict     # Include visibility checks
+./scripts/check_class_structure.sh --json       # JSON output
+```
+
+Reports:
+- Declaration ordering violations
+- Expected order reference
+- Private/public function interleaving
+- Missing class_name declarations
+
 ## File Locations Quick Reference
 
 | Need to... | Location |
