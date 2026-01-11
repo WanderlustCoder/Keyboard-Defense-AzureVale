@@ -84,6 +84,8 @@ func _run_all() -> void:
     _run_story_manager_tests()
     _run_boss_encounters_tests()
     _run_difficulty_tests()
+    _run_lesson_consistency_tests()
+    _run_dialogue_flow_tests()
 
     for message in messages:
         print("[tests] %s" % message)
@@ -3197,3 +3199,103 @@ func _run_difficulty_tests() -> void:
     # Test typo forgiveness
     var typo_forgiveness: int = SimDifficulty.get_typo_forgiveness("adventure")
     _assert_true(typo_forgiveness >= 0, "Typo forgiveness is non-negative")
+
+
+func _run_lesson_consistency_tests() -> void:
+    # Test that all lesson IDs have story introductions
+    var lesson_ids: PackedStringArray = SimLessons.lesson_ids()
+    _assert_true(lesson_ids.size() >= 10, "At least 10 lessons defined")
+
+    var lessons_with_intros: int = 0
+    var lessons_without_intros: Array[String] = []
+
+    for lesson_id in lesson_ids:
+        var intro: Dictionary = StoryManager.get_lesson_intro(lesson_id)
+        if not intro.is_empty():
+            lessons_with_intros += 1
+        else:
+            lessons_without_intros.append(lesson_id)
+
+    # At least 90% of lessons should have intros
+    var coverage: float = float(lessons_with_intros) / float(lesson_ids.size())
+    _assert_true(coverage >= 0.9, "At least 90%% of lessons have story intros (%.1f%%)" % [coverage * 100])
+
+    # Test lesson title retrieval
+    for lesson_id in lesson_ids:
+        var title: String = StoryManager.get_lesson_title(lesson_id)
+        _assert_true(not title.is_empty(), "Lesson '%s' has title" % lesson_id)
+
+    # Test finger guide availability for home row lessons
+    var finger_guide: Dictionary = StoryManager.get_lesson_finger_guide("home_row_1")
+    _assert_true(not finger_guide.is_empty(), "home_row_1 has finger guide")
+
+    # Test lesson practice tips
+    var tips: Array[String] = StoryManager.get_lesson_practice_tips("home_row_1")
+    _assert_true(tips.size() > 0, "home_row_1 has practice tips")
+
+
+func _run_dialogue_flow_tests() -> void:
+    # Test all key dialogue keys exist
+    var key_dialogues: Array[String] = [
+        "game_start", "first_night", "first_victory", "game_over"
+    ]
+
+    for key in key_dialogues:
+        var dialogue: Dictionary = StoryManager.get_dialogue(key)
+        _assert_true(not dialogue.is_empty(), "Dialogue '%s' exists" % key)
+
+        var speaker: String = StoryManager.get_dialogue_speaker(key)
+        _assert_true(not speaker.is_empty(), "Dialogue '%s' has speaker" % key)
+
+        var lines: Array[String] = StoryManager.get_dialogue_lines(key)
+        _assert_true(lines.size() > 0, "Dialogue '%s' has lines" % key)
+
+    # Test dialogue with substitutions
+    var substitutions: Dictionary = {"player_name": "Hero", "day": 5}
+    var subbed_lines: Array[String] = StoryManager.get_dialogue_lines("game_start", substitutions)
+    _assert_true(subbed_lines.size() > 0, "Dialogue with substitutions returns lines")
+
+    # Test act intro/completion text for all 5 acts
+    var act_end_days: Array[int] = [4, 8, 12, 16, 20]
+    for day in act_end_days:
+        var intro_text: String = StoryManager.get_act_intro_text(day)
+        # Not all days have intros, but some should
+        if day <= 4:
+            _assert_true(not intro_text.is_empty(), "Day %d has act intro text" % day)
+
+        var completion_text: String = StoryManager.get_act_completion_text(day)
+        _assert_true(not completion_text.is_empty(), "Day %d has act completion text" % day)
+
+    # Test enemy taunts exist for common enemy kinds
+    var enemy_kinds: Array[String] = ["raider", "scout", "armored"]
+    for kind in enemy_kinds:
+        var taunt: String = StoryManager.get_enemy_taunt(kind)
+        # Taunts are optional, just ensure function doesn't crash
+        _assert_true(taunt != null, "Enemy taunt function works for '%s'" % kind)
+
+    # Test comeback messages
+    var comeback: String = StoryManager.get_comeback_message()
+    _assert_true(not comeback.is_empty(), "Comeback message exists")
+
+    # Test combo milestone messages for various thresholds
+    var combo_thresholds: Array[int] = [5, 10, 15, 20, 25]
+    for combo in combo_thresholds:
+        var msg: String = StoryManager.get_combo_milestone_message(combo)
+        _assert_true(not msg.is_empty(), "Combo milestone message for %d exists" % combo)
+
+    # Test accuracy milestone messages
+    var accuracy_thresholds: Array[int] = [90, 95, 99, 100]
+    for acc in accuracy_thresholds:
+        var msg: String = StoryManager.get_accuracy_milestone_message(acc)
+        _assert_true(not msg.is_empty(), "Accuracy milestone message for %d%% exists" % acc)
+
+    # Test hint themes
+    var hint_themes: Array[String] = ["speed", "accuracy", "endurance", "combo"]
+    for theme in hint_themes:
+        var hint: String = StoryManager.get_hint_for_theme(theme)
+        _assert_true(not hint.is_empty(), "Hint for theme '%s' exists" % theme)
+
+    # Test all lore retrieval
+    var all_lore: Dictionary = StoryManager.get_all_lore()
+    _assert_true(not all_lore.is_empty(), "All lore retrieval works")
+    _assert_true(all_lore.has("kingdom") or all_lore.has("horde"), "All lore has expected categories")
