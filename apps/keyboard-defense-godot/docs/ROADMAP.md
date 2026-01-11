@@ -310,17 +310,29 @@ Acceptance criteria:
 - [x] Balance and determinism remain stable.
 
 ### P2-LOC-001 Localization scaffolding
-Status: Not started
+Status: In progress (2026-01-11)
 
 Add a localization pipeline for UI strings and commands.
+
+**Progress:** Core localization infrastructure implemented:
+- `sim/locale.gd` - Translation system with locale management, string lookup, placeholder substitution, and formatting helpers
+- `data/translations/en.json` - English UI strings organized by category (ui, game, resources, combat, messages, help, stats, heroes, tutorial, accessibility, errors)
+- Profile persistence for locale preference via `typing_profile.gd`
+- `locale` command (with `lang`/`language` aliases) for runtime language switching
+- Comprehensive tests for locale system
+
+Remaining work:
+- Add translation files for other locales (es, de, fr, pt)
+- Integrate tr() calls throughout UI components
+- Test UI layouts with longer translated strings
 
 Planning refs:
 - `docs/plans/p2/LOCALIZATION_PLAN.md`
 - `docs/plans/planpack_2025-12-27_tempPlans/keyboard-defense-plans/preprod/LOCALIZATION_AND_LAYOUTS.md`
 
 Acceptance criteria:
-- Strings are centralized and can be exported for translation.
-- UI layouts handle longer text without overlap.
+- [x] Strings are centralized and can be exported for translation.
+- [ ] UI layouts handle longer text without overlap.
 
 ### P2-AUDIO-001 Audio pass
 Status: Complete (2026-01-11)

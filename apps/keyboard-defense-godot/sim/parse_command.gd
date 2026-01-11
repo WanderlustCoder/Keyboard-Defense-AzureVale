@@ -5,6 +5,7 @@ const GameState = preload("res://sim/types.gd")
 const SimBuildings = preload("res://sim/buildings.gd")
 const SimIntents = preload("res://sim/intents.gd")
 const SimHeroTypes = preload("res://sim/hero_types.gd")
+const SimLocale = preload("res://sim/locale.gd")
 
 static func parse(command: String) -> Dictionary:
     var trimmed: String = command.strip_edges()
@@ -498,6 +499,15 @@ static func parse(command: String) -> Dictionary:
                     return {"ok": false, "error": "Unknown hero: %s. Type 'hero' to see available heroes." % hero_arg}
                 return {"ok": true, "intent": SimIntents.make("hero_set", {"hero_id": hero_arg})}
             return {"ok": false, "error": "Usage: hero [hero_id|none]"}
+        "locale", "lang", "language":
+            if tokens.size() == 1:
+                return {"ok": true, "intent": SimIntents.make("locale_show")}
+            if tokens.size() == 2:
+                var locale_arg: String = tokens[1].to_lower()
+                if not SimLocale.is_valid_locale(locale_arg):
+                    return {"ok": false, "error": "Unknown locale: %s. Type 'locale' to see available languages." % locale_arg}
+                return {"ok": true, "intent": SimIntents.make("locale_set", {"locale": locale_arg})}
+            return {"ok": false, "error": "Usage: locale [locale_id]"}
         _:
             return {"ok": false, "error": "Unknown command: %s" % verb}
 

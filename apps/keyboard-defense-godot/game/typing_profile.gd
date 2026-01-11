@@ -143,7 +143,8 @@ static func default_profile() -> Dictionary:
             "belt": "",
             "cape": ""
         },
-        "selected_hero": ""  # Selected hero ID (empty for no hero)
+        "selected_hero": "",  # Selected hero ID (empty for no hero)
+        "locale": "en"  # UI language (en, es, de, fr, pt)
     }
 
 static func load_profile(path: String = PROFILE_PATH) -> Dictionary:
@@ -200,6 +201,9 @@ static func load_profile(path: String = PROFILE_PATH) -> Dictionary:
     # Load hero selection
     if data.has("selected_hero"):
         profile["selected_hero"] = str(data.get("selected_hero", ""))
+    # Load locale preference
+    if data.has("locale"):
+        profile["locale"] = str(data.get("locale", "en"))
     # Load bestiary data
     if data.has("bestiary") and typeof(data.get("bestiary")) == TYPE_DICTIONARY:
         profile["bestiary"] = data.get("bestiary")
@@ -1090,6 +1094,16 @@ static func get_selected_hero(profile: Dictionary) -> String:
 
 static func set_selected_hero(profile: Dictionary, hero_id: String) -> void:
     profile["selected_hero"] = hero_id
+
+
+## Locale Functions
+
+static func get_locale(profile: Dictionary) -> String:
+    return str(profile.get("locale", "en"))
+
+
+static func set_locale(profile: Dictionary, locale: String) -> void:
+    profile["locale"] = locale
 
 
 ## Generic Profile Value Access Functions

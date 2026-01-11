@@ -28,6 +28,7 @@ const SimEnemyAbilities = preload("res://sim/enemy_abilities.gd")
 const SimBossEncounters = preload("res://sim/boss_encounters.gd")
 const SimEnemyTypes = preload("res://sim/enemy_types.gd")
 const SimHeroTypes = preload("res://sim/hero_types.gd")
+const SimLocale = preload("res://sim/locale.gd")
 
 static func apply(state: GameState, intent: Dictionary) -> Dictionary:
     var events: Array[String] = []
@@ -142,6 +143,10 @@ static func apply(state: GameState, intent: Dictionary) -> Dictionary:
             _apply_hero_set(new_state, intent, events)
         "hero_clear":
             _apply_hero_clear(new_state, events)
+        "locale_show":
+            _apply_locale_show(events)
+        "locale_set":
+            _apply_locale_set(intent, events)
         _:
             events.append("Unknown intent: %s" % kind)
 
@@ -2067,3 +2072,40 @@ static func _apply_hero_clear(state: GameState, events: Array[String]) -> void:
 
     events.append("Dismissed %s. No hero selected." % old_name)
     events.append("Hero bonuses are no longer active.")
+
+
+# =============================================================================
+# LOCALE HANDLERS
+# =============================================================================
+
+
+static func _apply_locale_show(events: Array[String]) -> void:
+    events.append("[color=yellow]LANGUAGE / LOCALE[/color]")
+    events.append("")
+    events.append("Current: [color=lime]%s[/color] (%s)" % [
+        SimLocale.get_locale(),
+        SimLocale.get_locale_name(SimLocale.get_locale())
+    ])
+    events.append("")
+    events.append(SimLocale.format_locale_list())
+    events.append("")
+    events.append("[color=gray]Type 'locale <id>' to change language.[/color]")
+
+
+static func _apply_locale_set(intent: Dictionary, events: Array[String]) -> void:
+    var locale: String = str(intent.get("locale", ""))
+
+    if not SimLocale.is_valid_locale(locale):
+        events.append("Unknown locale: %s" % locale)
+        events.append("Type 'locale' to see available languages.")
+        return
+
+    var old_locale: String = SimLocale.get_locale()
+    SimLocale.set_locale(locale)
+
+    events.append("[color=lime]Language changed to %s (%s)[/color]" % [
+        locale,
+        SimLocale.get_locale_name(locale)
+    ])
+    if locale != old_locale:
+        events.append("[color=gray]Note: Some text may not update until restart.[/color]")

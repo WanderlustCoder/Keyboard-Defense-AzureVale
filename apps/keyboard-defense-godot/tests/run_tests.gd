@@ -51,8 +51,11 @@ const SimTowerTypes = preload("res://sim/tower_types.gd")
 const SimSkills = preload("res://sim/skills.gd")
 const SimQuests = preload("res://sim/quests.gd")
 const SimHeroTypes = preload("res://sim/hero_types.gd")
+const SimLocale = preload("res://sim/locale.gd")
 const SimUpgrades = preload("res://sim/upgrades.gd")
 const SimWaveComposer = preload("res://sim/wave_composer.gd")
+const SimLoot = preload("res://sim/loot.gd")
+const SimMilestones = preload("res://sim/milestones.gd")
 
 var total_tests: int = 0
 var total_failed: int = 0
@@ -122,7 +125,11 @@ func _run_all() -> void:
     _run_skills_tests()
     _run_quests_tests()
     _run_hero_types_tests()
+    _run_locale_tests()
     _run_wave_composer_tests()
+    _run_upgrades_tests()
+    _run_loot_tests()
+    _run_milestones_tests()
 
     for message in messages:
         print("[tests] %s" % message)
@@ -4189,6 +4196,99 @@ func _run_hero_types_tests() -> void:
     _assert_true(not result.get("ok", false), "invalid hero rejected")
 
 
+func _run_locale_tests() -> void:
+    # Test locale ID constants
+    _assert_equal(SimLocale.LOCALE_EN, "en", "LOCALE_EN constant")
+    _assert_equal(SimLocale.LOCALE_ES, "es", "LOCALE_ES constant")
+    _assert_equal(SimLocale.LOCALE_DE, "de", "LOCALE_DE constant")
+    _assert_equal(SimLocale.LOCALE_FR, "fr", "LOCALE_FR constant")
+    _assert_equal(SimLocale.LOCALE_PT, "pt", "LOCALE_PT constant")
+    _assert_equal(SimLocale.DEFAULT_LOCALE, "en", "DEFAULT_LOCALE is en")
+
+    # Test SUPPORTED_LOCALES array
+    _assert_true(SimLocale.SUPPORTED_LOCALES.size() >= 5, "At least 5 locales supported")
+    _assert_true("en" in SimLocale.SUPPORTED_LOCALES, "en is supported")
+    _assert_true("es" in SimLocale.SUPPORTED_LOCALES, "es is supported")
+    _assert_true("de" in SimLocale.SUPPORTED_LOCALES, "de is supported")
+    _assert_true("fr" in SimLocale.SUPPORTED_LOCALES, "fr is supported")
+    _assert_true("pt" in SimLocale.SUPPORTED_LOCALES, "pt is supported")
+
+    # Test LOCALE_NAMES dictionary
+    _assert_equal(SimLocale.LOCALE_NAMES.get("en", ""), "English", "English name")
+    _assert_equal(SimLocale.LOCALE_NAMES.get("es", ""), "Español", "Spanish name")
+    _assert_equal(SimLocale.LOCALE_NAMES.get("de", ""), "Deutsch", "German name")
+    _assert_equal(SimLocale.LOCALE_NAMES.get("fr", ""), "Français", "French name")
+    _assert_equal(SimLocale.LOCALE_NAMES.get("pt", ""), "Português", "Portuguese name")
+
+    # Test is_valid_locale function
+    _assert_true(SimLocale.is_valid_locale("en"), "en is valid locale")
+    _assert_true(SimLocale.is_valid_locale("es"), "es is valid locale")
+    _assert_true(SimLocale.is_valid_locale("de"), "de is valid locale")
+    _assert_true(not SimLocale.is_valid_locale("invalid"), "invalid is not valid locale")
+    _assert_true(not SimLocale.is_valid_locale(""), "empty string is not valid locale")
+
+    # Test get_locale_name function
+    _assert_equal(SimLocale.get_locale_name("en"), "English", "get_locale_name en")
+    _assert_equal(SimLocale.get_locale_name("es"), "Español", "get_locale_name es")
+    _assert_equal(SimLocale.get_locale_name("invalid"), "invalid", "get_locale_name fallback")
+
+    # Test get_supported_locales function
+    var locales: Array[Dictionary] = SimLocale.get_supported_locales()
+    _assert_true(locales.size() >= 5, "get_supported_locales returns 5+ entries")
+    var first: Dictionary = locales[0] if locales.size() > 0 else {}
+    _assert_true(first.has("id"), "locale entry has id")
+    _assert_true(first.has("name"), "locale entry has name")
+
+    # Test set_locale and get_locale
+    SimLocale.init("en")
+    _assert_equal(SimLocale.get_locale(), "en", "get_locale returns en")
+    _assert_true(SimLocale.set_locale("es"), "set_locale es succeeds")
+    _assert_equal(SimLocale.get_locale(), "es", "get_locale returns es after set")
+    _assert_true(not SimLocale.set_locale("invalid"), "set_locale invalid fails")
+    _assert_equal(SimLocale.get_locale(), "es", "locale unchanged after invalid set")
+    # Reset to default
+    SimLocale.set_locale("en")
+
+    # Test format_number function
+    _assert_equal(SimLocale.format_number(1234567), "1,234,567", "format_number with commas")
+    _assert_equal(SimLocale.format_number(0), "0", "format_number zero")
+    _assert_equal(SimLocale.format_number(-500), "-500", "format_number negative")
+
+    # Test get_locale_info function
+    var info: Dictionary = SimLocale.get_locale_info()
+    _assert_true(info.has("current"), "locale_info has current")
+    _assert_true(info.has("name"), "locale_info has name")
+    _assert_true(info.has("supported"), "locale_info has supported")
+    _assert_true(info.has("translations_loaded"), "locale_info has translations_loaded")
+
+    # Test locale command parsing
+    var result: Dictionary = CommandParser.parse("locale")
+    _assert_true(result.get("ok", false), "locale command parses")
+    _assert_equal(str(result.get("intent", {}).get("kind", "")), "locale_show", "locale -> locale_show intent")
+
+    result = CommandParser.parse("locale en")
+    _assert_true(result.get("ok", false), "locale en parses")
+    _assert_equal(str(result.get("intent", {}).get("kind", "")), "locale_set", "locale en -> locale_set intent")
+    _assert_equal(str(result.get("intent", {}).get("locale", "")), "en", "locale en has correct locale")
+
+    result = CommandParser.parse("lang es")
+    _assert_true(result.get("ok", false), "lang alias parses")
+    _assert_equal(str(result.get("intent", {}).get("kind", "")), "locale_set", "lang es -> locale_set intent")
+
+    result = CommandParser.parse("language de")
+    _assert_true(result.get("ok", false), "language alias parses")
+    _assert_equal(str(result.get("intent", {}).get("kind", "")), "locale_set", "language de -> locale_set intent")
+
+    result = CommandParser.parse("locale invalid_locale")
+    _assert_true(not result.get("ok", false), "invalid locale rejected")
+
+    # Test TypingProfile locale functions
+    var profile: Dictionary = TypingProfile.default_profile()
+    _assert_equal(TypingProfile.get_locale(profile), "en", "default profile locale is en")
+    TypingProfile.set_locale(profile, "es")
+    _assert_equal(TypingProfile.get_locale(profile), "es", "set_locale updates profile")
+
+
 func _run_wave_composer_tests() -> void:
     # Test TIER_WEIGHTS_BY_DAY dictionary
     _assert_true(SimWaveComposer.TIER_WEIGHTS_BY_DAY.size() >= 1, "TIER_WEIGHTS_BY_DAY has entries")
@@ -4222,3 +4322,307 @@ func _run_wave_composer_tests() -> void:
     var swarm: Dictionary = SimWaveComposer.WAVE_THEMES.get("swarm", {})
     _assert_true(swarm.has("count_mult"), "Swarm has count_mult")
     _assert_true(float(swarm.get("count_mult", 1.0)) > 1.0, "Swarm has increased count")
+
+
+func _run_upgrades_tests() -> void:
+    # Test kingdom upgrade retrieval
+    var all_kingdom: Array = SimUpgrades.get_all_kingdom_upgrades()
+    _assert_true(all_kingdom is Array, "get_all_kingdom_upgrades returns Array")
+
+    var all_unit: Array = SimUpgrades.get_all_unit_upgrades()
+    _assert_true(all_unit is Array, "get_all_unit_upgrades returns Array")
+
+    # Test upgrade structure validation (if upgrades exist)
+    for upgrade in all_kingdom:
+        if not upgrade.is_empty():
+            _assert_true(upgrade.has("id"), "Kingdom upgrade has id")
+            _assert_true(upgrade.has("cost") or upgrade.has("label"), "Kingdom upgrade has cost or label")
+
+    for upgrade in all_unit:
+        if not upgrade.is_empty():
+            _assert_true(upgrade.has("id"), "Unit upgrade has id")
+            _assert_true(upgrade.has("cost") or upgrade.has("label"), "Unit upgrade has cost or label")
+
+    # Test get_kingdom_upgrade with empty ID
+    var empty_upgrade: Dictionary = SimUpgrades.get_kingdom_upgrade("")
+    _assert_true(empty_upgrade.is_empty(), "Empty ID returns empty upgrade")
+
+    var unknown_upgrade: Dictionary = SimUpgrades.get_kingdom_upgrade("nonexistent_upgrade_xyz")
+    _assert_true(unknown_upgrade.is_empty(), "Unknown ID returns empty upgrade")
+
+    # Test effect calculations
+    var state: GameState = GameState.new()
+    state.purchased_kingdom_upgrades = []
+    state.purchased_unit_upgrades = []
+    state.gold = 0
+    state.hero_id = ""
+
+    # Test base effect values
+    var typing_power: float = SimUpgrades.get_typing_power(state)
+    _assert_true(typing_power >= 1.0, "Base typing power is at least 1.0")
+
+    var threat_rate: float = SimUpgrades.get_threat_rate_multiplier(state)
+    _assert_true(threat_rate >= 0.0, "Threat rate multiplier is non-negative")
+
+    var gold_mult: float = SimUpgrades.get_gold_multiplier(state)
+    _assert_true(gold_mult >= 1.0, "Base gold multiplier is at least 1.0")
+
+    var resource_mult: float = SimUpgrades.get_resource_multiplier(state)
+    _assert_true(resource_mult >= 1.0, "Base resource multiplier is at least 1.0")
+
+    var damage_reduction: float = SimUpgrades.get_damage_reduction(state)
+    _assert_true(damage_reduction >= 0.0, "Damage reduction is non-negative")
+    _assert_true(damage_reduction <= 0.75, "Damage reduction is capped at 75%")
+
+    var castle_hp: int = SimUpgrades.get_castle_health_bonus(state)
+    _assert_true(castle_hp >= 0, "Castle health bonus is non-negative")
+
+    var wave_heal: int = SimUpgrades.get_wave_heal(state)
+    _assert_true(wave_heal >= 0, "Wave heal is non-negative")
+
+    var crit_chance: float = SimUpgrades.get_critical_chance(state)
+    _assert_true(crit_chance >= 0.0, "Critical chance is non-negative")
+    _assert_true(crit_chance <= 0.5, "Critical chance is capped at 50%")
+
+    var mistake_forgiveness: float = SimUpgrades.get_mistake_forgiveness(state)
+    _assert_true(mistake_forgiveness >= 0.0, "Mistake forgiveness is non-negative")
+
+    var armor_reduction: int = SimUpgrades.get_enemy_armor_reduction(state)
+    _assert_true(armor_reduction >= 0, "Armor reduction is non-negative")
+
+    var armor_pierce: int = SimUpgrades.get_armor_pierce(state)
+    _assert_true(armor_pierce >= 0, "Armor pierce is non-negative")
+
+    var speed_reduction: float = SimUpgrades.get_enemy_speed_reduction(state)
+    _assert_true(speed_reduction >= 0.0, "Speed reduction is non-negative")
+    _assert_true(speed_reduction <= 0.5, "Speed reduction is capped at 50%")
+
+    var gold_income: int = SimUpgrades.get_gold_income(state)
+    _assert_true(gold_income >= 0, "Gold income is non-negative")
+
+    # Test can_purchase validation
+    state.gold = 0
+    var result: Dictionary = SimUpgrades.can_purchase_kingdom_upgrade(state, "nonexistent_xyz")
+    _assert_true(not result.get("ok", true), "Cannot purchase nonexistent upgrade")
+
+    # Test available upgrades listing
+    state.gold = 10000
+    var available_kingdom: Array = SimUpgrades.list_available_kingdom_upgrades(state)
+    _assert_true(available_kingdom is Array, "list_available_kingdom_upgrades returns Array")
+
+    var available_unit: Array = SimUpgrades.list_available_unit_upgrades(state)
+    _assert_true(available_unit is Array, "list_available_unit_upgrades returns Array")
+
+    # Test format_upgrade_tree
+    var tree_lines: Array[String] = SimUpgrades.format_upgrade_tree(state, "kingdom")
+    _assert_true(tree_lines.size() > 0, "format_upgrade_tree returns lines")
+    _assert_true("Kingdom Upgrades" in tree_lines[0], "Tree header contains category name")
+
+    var unit_tree: Array[String] = SimUpgrades.format_upgrade_tree(state, "unit")
+    _assert_true(unit_tree.size() > 0, "format_upgrade_tree returns lines for unit")
+
+
+func _run_loot_tests() -> void:
+    # Test QUALITY_TIERS constant
+    _assert_true(SimLoot.QUALITY_TIERS.size() >= 5, "QUALITY_TIERS has at least 5 tiers")
+    _assert_true(SimLoot.QUALITY_TIERS.has("poor"), "Has poor tier")
+    _assert_true(SimLoot.QUALITY_TIERS.has("normal"), "Has normal tier")
+    _assert_true(SimLoot.QUALITY_TIERS.has("good"), "Has good tier")
+    _assert_true(SimLoot.QUALITY_TIERS.has("excellent"), "Has excellent tier")
+    _assert_true(SimLoot.QUALITY_TIERS.has("perfect"), "Has perfect tier")
+
+    # Test tier structure
+    var poor: Dictionary = SimLoot.QUALITY_TIERS.get("poor", {})
+    _assert_true(poor.has("multiplier"), "Poor tier has multiplier")
+    _assert_true(poor.has("min_accuracy"), "Poor tier has min_accuracy")
+    _assert_true(poor.has("max_accuracy"), "Poor tier has max_accuracy")
+
+    # Test multiplier progression
+    var poor_mult: float = float(SimLoot.QUALITY_TIERS["poor"]["multiplier"])
+    var normal_mult: float = float(SimLoot.QUALITY_TIERS["normal"]["multiplier"])
+    var good_mult: float = float(SimLoot.QUALITY_TIERS["good"]["multiplier"])
+    var excellent_mult: float = float(SimLoot.QUALITY_TIERS["excellent"]["multiplier"])
+    var perfect_mult: float = float(SimLoot.QUALITY_TIERS["perfect"]["multiplier"])
+
+    _assert_true(poor_mult < normal_mult, "Poor mult < normal mult")
+    _assert_true(normal_mult < good_mult, "Normal mult < good mult")
+    _assert_true(good_mult < excellent_mult, "Good mult < excellent mult")
+    _assert_true(excellent_mult < perfect_mult, "Excellent mult < perfect mult")
+
+    # Test calculate_quality_tier
+    var tier_poor: String = SimLoot.calculate_quality_tier(0.5, false)
+    _assert_equal(tier_poor, "poor", "50% accuracy is poor tier")
+
+    var tier_normal: String = SimLoot.calculate_quality_tier(0.75, false)
+    _assert_equal(tier_normal, "normal", "75% accuracy is normal tier")
+
+    var tier_good: String = SimLoot.calculate_quality_tier(0.90, false)
+    _assert_equal(tier_good, "good", "90% accuracy is good tier")
+
+    var tier_excellent: String = SimLoot.calculate_quality_tier(0.97, false)
+    _assert_equal(tier_excellent, "excellent", "97% accuracy is excellent tier")
+
+    var tier_perfect: String = SimLoot.calculate_quality_tier(1.0, true)
+    _assert_equal(tier_perfect, "perfect", "100% accuracy with perfect flag is perfect tier")
+
+    # Test get_quality_multiplier
+    _assert_true(SimLoot.get_quality_multiplier("poor") == poor_mult, "get_quality_multiplier returns correct poor mult")
+    _assert_true(SimLoot.get_quality_multiplier("perfect") == perfect_mult, "get_quality_multiplier returns correct perfect mult")
+    _assert_true(SimLoot.get_quality_multiplier("invalid") == 1.0, "Invalid tier returns 1.0")
+
+    # Test format_loot_brief
+    var loot_dict: Dictionary = {"gold": 10, "wood": 5}
+    var brief: String = SimLoot.format_loot_brief(loot_dict)
+    _assert_true(brief.length() > 0, "format_loot_brief returns non-empty string")
+    _assert_true("10" in brief or "5" in brief, "Brief contains amounts")
+
+    var empty_brief: String = SimLoot.format_loot_brief({})
+    _assert_equal(empty_brief, "", "Empty loot returns empty string")
+
+    # Test get_pending_loot_summary with empty state
+    var state: GameState = GameState.new()
+    state.loot_pending = []
+    var summary: Dictionary = SimLoot.get_pending_loot_summary(state)
+    _assert_true(summary.is_empty(), "Empty pending loot returns empty summary")
+
+    # Test queue_loot
+    SimLoot.queue_loot(state, {"gold": 50})
+    _assert_true(state.loot_pending.size() == 1, "queue_loot adds to pending")
+
+    SimLoot.queue_loot(state, {})
+    _assert_true(state.loot_pending.size() == 1, "Empty loot not queued")
+
+    # Test get_pending_loot_summary with queued loot
+    var pending_summary: Dictionary = SimLoot.get_pending_loot_summary(state)
+    _assert_true(pending_summary.get("gold", 0) == 50, "Pending summary shows queued gold")
+
+    # Test reset_wave_stats
+    state.perfect_kills = 5
+    state.last_loot_quality = 2.0
+    SimLoot.reset_wave_stats(state)
+    _assert_true(state.perfect_kills == 0, "reset_wave_stats clears perfect_kills")
+    _assert_true(state.last_loot_quality == 1.0, "reset_wave_stats resets quality")
+
+    # Test update_quality_from_performance
+    state.perfect_kills = 0
+    SimLoot.update_quality_from_performance(state, 0.5, false)
+    _assert_true(state.last_loot_quality == poor_mult, "update_quality sets poor mult")
+
+    SimLoot.update_quality_from_performance(state, 1.0, false)
+    _assert_true(state.perfect_kills == 1, "Perfect performance increments perfect_kills")
+
+
+func _run_milestones_tests() -> void:
+    # Test WPM_MILESTONES array
+    _assert_true(SimMilestones.WPM_MILESTONES.size() >= 10, "WPM_MILESTONES has 10+ entries")
+    _assert_true(20 in SimMilestones.WPM_MILESTONES, "WPM milestones includes 20")
+    _assert_true(100 in SimMilestones.WPM_MILESTONES, "WPM milestones includes 100")
+
+    # Test ACCURACY_MILESTONES array
+    _assert_true(SimMilestones.ACCURACY_MILESTONES.size() >= 7, "ACCURACY_MILESTONES has 7+ entries")
+    _assert_true(100.0 in SimMilestones.ACCURACY_MILESTONES, "Accuracy milestones includes 100%")
+
+    # Test COMBO_MILESTONES array
+    _assert_true(SimMilestones.COMBO_MILESTONES.size() >= 10, "COMBO_MILESTONES has 10+ entries")
+    _assert_true(100 in SimMilestones.COMBO_MILESTONES, "Combo milestones includes 100")
+
+    # Test KILL_MILESTONES array
+    _assert_true(SimMilestones.KILL_MILESTONES.size() >= 8, "KILL_MILESTONES has 8+ entries")
+    _assert_true(1000 in SimMilestones.KILL_MILESTONES, "Kill milestones includes 1000")
+
+    # Test WORD_MILESTONES array
+    _assert_true(SimMilestones.WORD_MILESTONES.size() >= 8, "WORD_MILESTONES has 8+ entries")
+    _assert_true(1000 in SimMilestones.WORD_MILESTONES, "Word milestones includes 1000")
+
+    # Test STREAK_MILESTONES array
+    _assert_true(SimMilestones.STREAK_MILESTONES.size() >= 9, "STREAK_MILESTONES has 9+ entries")
+    _assert_true(365 in SimMilestones.STREAK_MILESTONES, "Streak milestones includes 365")
+
+    # Test Category enum
+    _assert_true(SimMilestones.Category.WPM == 0, "WPM category is 0")
+    _assert_true(SimMilestones.Category.ACCURACY == 1, "ACCURACY category is 1")
+    _assert_true(SimMilestones.Category.COMBO == 2, "COMBO category is 2")
+    _assert_true(SimMilestones.Category.KILLS == 3, "KILLS category is 3")
+    _assert_true(SimMilestones.Category.WORDS == 4, "WORDS category is 4")
+    _assert_true(SimMilestones.Category.STREAK == 5, "STREAK category is 5")
+
+    # Test MILESTONE_MESSAGES dictionary
+    _assert_true(SimMilestones.MILESTONE_MESSAGES.has(SimMilestones.Category.WPM), "Messages has WPM category")
+    _assert_true(SimMilestones.MILESTONE_MESSAGES.has(SimMilestones.Category.ACCURACY), "Messages has ACCURACY category")
+    _assert_true(SimMilestones.MILESTONE_MESSAGES.has(SimMilestones.Category.COMBO), "Messages has COMBO category")
+    _assert_true(SimMilestones.MILESTONE_MESSAGES.has(SimMilestones.Category.KILLS), "Messages has KILLS category")
+    _assert_true(SimMilestones.MILESTONE_MESSAGES.has(SimMilestones.Category.WORDS), "Messages has WORDS category")
+    _assert_true(SimMilestones.MILESTONE_MESSAGES.has(SimMilestones.Category.STREAK), "Messages has STREAK category")
+
+    # Test check_wpm_milestone
+    var wpm_result: Dictionary = SimMilestones.check_wpm_milestone(25, 15)
+    _assert_true(not wpm_result.is_empty(), "WPM milestone detected for 25 WPM from 15")
+    _assert_equal(int(wpm_result.get("value", 0)), 20, "WPM milestone value is 20")
+    _assert_equal(int(wpm_result.get("category", -1)), SimMilestones.Category.WPM, "Category is WPM")
+    _assert_true(wpm_result.has("message"), "WPM result has message")
+
+    var no_wpm_result: Dictionary = SimMilestones.check_wpm_milestone(15, 15)
+    _assert_true(no_wpm_result.is_empty(), "No milestone if current <= previous")
+
+    # Personal best without milestone
+    var pb_result: Dictionary = SimMilestones.check_wpm_milestone(17, 15)
+    _assert_true(not pb_result.is_empty(), "Personal best detected")
+    _assert_true(bool(pb_result.get("is_personal_best", false)), "Marked as personal best")
+
+    # Test check_accuracy_milestone
+    var acc_result: Dictionary = SimMilestones.check_accuracy_milestone(0.91, 0.85)
+    _assert_true(not acc_result.is_empty(), "Accuracy milestone detected for 91%")
+    _assert_equal(float(acc_result.get("value", 0)), 90.0, "Accuracy milestone value is 90%")
+
+    var no_acc_result: Dictionary = SimMilestones.check_accuracy_milestone(0.85, 0.86)
+    _assert_true(no_acc_result.is_empty(), "No milestone if current <= previous")
+
+    # Test check_combo_milestone
+    var combo_result: Dictionary = SimMilestones.check_combo_milestone(12, 8)
+    _assert_true(not combo_result.is_empty(), "Combo milestone detected for 12")
+    _assert_equal(int(combo_result.get("value", 0)), 10, "Combo milestone value is 10")
+
+    # Test check_kill_milestone
+    var kill_result: Dictionary = SimMilestones.check_kill_milestone(55, 45)
+    _assert_true(not kill_result.is_empty(), "Kill milestone detected for 55")
+    _assert_equal(int(kill_result.get("value", 0)), 50, "Kill milestone value is 50")
+    _assert_true(not bool(kill_result.get("is_personal_best", true)), "Kill milestone is not personal best")
+
+    # Test check_word_milestone
+    var word_result: Dictionary = SimMilestones.check_word_milestone(120, 90)
+    _assert_true(not word_result.is_empty(), "Word milestone detected for 120")
+    _assert_equal(int(word_result.get("value", 0)), 100, "Word milestone value is 100")
+
+    # Test check_streak_milestone
+    var streak_result: Dictionary = SimMilestones.check_streak_milestone(8, 5)
+    _assert_true(not streak_result.is_empty(), "Streak milestone detected for 8")
+    _assert_equal(int(streak_result.get("value", 0)), 7, "Streak milestone value is 7")
+
+    # Test get_next_milestone
+    var next_wpm: Dictionary = SimMilestones.get_next_milestone(SimMilestones.Category.WPM, 35)
+    _assert_true(next_wpm.has("next"), "Next WPM has next field")
+    _assert_equal(int(next_wpm.get("next", 0)), 40, "Next WPM after 35 is 40")
+    _assert_true(next_wpm.has("progress"), "Next WPM has progress")
+    _assert_true(float(next_wpm.get("progress", 0)) > 0.5, "Progress > 50% at 35 WPM towards 40")
+
+    var next_combo: Dictionary = SimMilestones.get_next_milestone(SimMilestones.Category.COMBO, 100)
+    _assert_true(int(next_combo.get("next", 0)) == -1, "No next combo after 100")
+    _assert_true(float(next_combo.get("progress", 0)) == 1.0, "Progress is 1.0 at max")
+
+    # Test get_category_color
+    var wpm_color: Color = SimMilestones.get_category_color(SimMilestones.Category.WPM)
+    _assert_true(wpm_color != Color.BLACK, "WPM color is not black")
+
+    var accuracy_color: Color = SimMilestones.get_category_color(SimMilestones.Category.ACCURACY)
+    _assert_true(accuracy_color != wpm_color, "Accuracy color differs from WPM")
+
+    # Test format_milestone
+    var formatted: String = SimMilestones.format_milestone(wpm_result)
+    _assert_true(formatted.length() > 0, "Formatted milestone is non-empty")
+
+    var empty_formatted: String = SimMilestones.format_milestone({})
+    _assert_equal(empty_formatted, "", "Empty milestone formats to empty string")
+
+    # Test personal best formatting
+    var pb_formatted: String = SimMilestones.format_milestone(pb_result)
+    _assert_true("ffd700" in pb_formatted.to_lower() or "gold" in pb_formatted.to_lower() or "[color" in pb_formatted, "Personal best has special formatting")
