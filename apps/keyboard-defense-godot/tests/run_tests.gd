@@ -39,6 +39,13 @@ const SimDailyChallenges = preload("res://sim/daily_challenges.gd")
 const SimBuffs = preload("res://sim/buffs.gd")
 const SimCombo = preload("res://sim/combo.gd")
 const SimAffixes = preload("res://sim/affixes.gd")
+const SimBestiary = preload("res://sim/bestiary.gd")
+const SimDamageTypes = preload("res://sim/damage_types.gd")
+const SimEnemyTypes = preload("res://sim/enemy_types.gd")
+const SimItems = preload("res://sim/items.gd")
+const SimCrafting = preload("res://sim/crafting.gd")
+const SimEndlessMode = preload("res://sim/endless_mode.gd")
+const SimExpeditions = preload("res://sim/expeditions.gd")
 
 var total_tests: int = 0
 var total_failed: int = 0
@@ -96,6 +103,13 @@ func _run_all() -> void:
     _run_buffs_tests()
     _run_combo_tests()
     _run_affixes_tests()
+    _run_bestiary_tests()
+    _run_damage_types_tests()
+    _run_enemy_types_tests()
+    _run_items_tests()
+    _run_crafting_tests()
+    _run_endless_mode_tests()
+    _run_expeditions_tests()
 
     for message in messages:
         print("[tests] %s" % message)
@@ -3603,3 +3617,329 @@ func _run_affixes_tests() -> void:
     # Test serialization
     var serialized: Dictionary = SimAffixes.serialize_affix_state(affixed_enemy)
     _assert_true(serialized != null, "Affix state can be serialized")
+
+
+func _run_bestiary_tests() -> void:
+    # Test enemy categories constant
+    _assert_true(SimBestiary.ENEMY_CATEGORIES.size() >= 1, "Enemy categories defined")
+
+    # Test get_enemies_by_tier
+    var tier1_enemies: Array[String] = SimBestiary.get_enemies_by_tier(SimEnemyTypes.Tier.MINION)
+    _assert_true(tier1_enemies != null, "get_enemies_by_tier returns array")
+
+    # Test get_enemies_by_category
+    var basic_enemies: Array[String] = SimBestiary.get_enemies_by_category(SimEnemyTypes.Category.BASIC)
+    _assert_true(basic_enemies != null, "get_enemies_by_category returns array")
+
+    # Test get_enemy_info for a known enemy
+    var spawn_info: Dictionary = SimBestiary.get_enemy_info("typhos_spawn")
+    if not spawn_info.is_empty():
+        _assert_true(spawn_info.has("name"), "Enemy info has name")
+        _assert_true(spawn_info.has("hp"), "Enemy info has hp")
+
+    # Test get_tier_name
+    var tier_name: String = SimBestiary.get_tier_name(SimEnemyTypes.Tier.MINION)
+    _assert_equal(tier_name, "Minion", "Minion tier name is Minion")
+
+    var elite_name: String = SimBestiary.get_tier_name(SimEnemyTypes.Tier.ELITE)
+    _assert_equal(elite_name, "Elite", "Elite tier name is Elite")
+
+    # Test get_category_name
+    var basic_name: String = SimBestiary.get_category_name(SimEnemyTypes.Category.BASIC)
+    _assert_equal(basic_name, "Basic", "Basic category name is Basic")
+
+    var tank_name: String = SimBestiary.get_category_name(SimEnemyTypes.Category.TANK)
+    _assert_equal(tank_name, "Tank", "Tank category name is Tank")
+
+    # Test encounter tracking
+    var profile: Dictionary = {}
+    _assert_true(not SimBestiary.has_encountered(profile, "raider"), "New profile has no encounters")
+
+    SimBestiary.record_encounter(profile, "raider", true)
+    _assert_true(SimBestiary.has_encountered(profile, "raider"), "Encounter recorded")
+    _assert_equal(SimBestiary.get_defeat_count(profile, "raider"), 1, "Defeat count is 1")
+
+    SimBestiary.record_encounter(profile, "raider", true)
+    _assert_equal(SimBestiary.get_defeat_count(profile, "raider"), 2, "Defeat count is 2")
+
+    # Test ability encounter tracking
+    _assert_true(not SimBestiary.has_encountered_ability(profile, "charge"), "No ability encounter")
+    SimBestiary.record_ability_encounter(profile, "charge")
+    _assert_true(SimBestiary.has_encountered_ability(profile, "charge"), "Ability encounter recorded")
+
+    # Test boss encounter tracking
+    SimBestiary.record_boss_encounter(profile, "grove_guardian", false, 2)
+    _assert_true(profile.has("bestiary"), "Profile has bestiary")
+    _assert_true(profile["bestiary"].has("boss_encounters"), "Bestiary has boss_encounters")
+
+    # Test get_summary
+    var summary: Dictionary = SimBestiary.get_summary(profile)
+    _assert_true(summary.has("enemies_seen"), "Summary has enemies_seen")
+    _assert_true(summary.has("enemies_total"), "Summary has enemies_total")
+    _assert_true(summary.has("completion_percent"), "Summary has completion_percent")
+
+    # Test get_all_bosses
+    var all_bosses: Array[String] = SimBestiary.get_all_bosses()
+    _assert_true(all_bosses != null, "get_all_bosses returns array")
+
+    # Test get_all_abilities
+    var all_abilities: Array[String] = SimBestiary.get_all_abilities()
+    _assert_true(all_abilities != null, "get_all_abilities returns array")
+
+
+func _run_damage_types_tests() -> void:
+    # Test damage type colors exist
+    var physical_color: Color = SimDamageTypes.get_damage_type_color(0)  # PHYSICAL
+    _assert_true(physical_color != Color.BLACK, "Physical damage has color")
+
+    var fire_color: Color = SimDamageTypes.get_damage_type_color(6)  # FIRE
+    _assert_true(fire_color != Color.BLACK, "Fire damage has color")
+
+    # Test damage type names
+    var physical_name: String = SimDamageTypes.get_damage_type_name(0)
+    _assert_true(not physical_name.is_empty(), "Physical damage has name")
+
+    # Test damage type descriptions
+    var physical_desc: String = SimDamageTypes.get_damage_type_description(0)
+    _assert_true(not physical_desc.is_empty(), "Physical damage has description")
+
+    var magic_desc: String = SimDamageTypes.get_damage_type_description(1)  # MAGICAL
+    _assert_true("armor" in magic_desc.to_lower(), "Magic damage ignores armor")
+
+    # Test basic damage calculation
+    var state: GameState = DefaultState.create("damage_test")
+    var enemy: Dictionary = {"hp": 10, "armor": 2, "pos": Vector2i(5, 5)}
+
+    var damage: int = SimDamageTypes.calculate_damage(10, 0, enemy, state)  # PHYSICAL
+    _assert_true(damage >= 1, "Damage is at least 1")
+    _assert_true(damage <= 10, "Damage is reduced by armor")
+
+    # Test magical damage ignores armor
+    var magic_damage: int = SimDamageTypes.calculate_damage(10, 1, enemy, state)  # MAGICAL
+    _assert_true(magic_damage >= damage, "Magic damage ignores armor")
+
+    # Test critical multiplier
+    var crit_damage: int = SimDamageTypes.apply_critical_multiplier(10, 2.0)
+    _assert_equal(crit_damage, 20, "Critical multiplier doubles damage")
+
+    # Test resistance application
+    var resisted: int = SimDamageTypes.apply_resistance(100, 0.5)
+    _assert_equal(resisted, 50, "50% resistance halves damage")
+
+    var no_resist: int = SimDamageTypes.apply_resistance(100, 0.0)
+    _assert_equal(no_resist, 100, "0% resistance does nothing")
+
+
+func _run_enemy_types_tests() -> void:
+    # Test tier enum values
+    _assert_equal(SimEnemyTypes.Tier.MINION, 1, "MINION tier is 1")
+    _assert_equal(SimEnemyTypes.Tier.SOLDIER, 2, "SOLDIER tier is 2")
+    _assert_equal(SimEnemyTypes.Tier.ELITE, 3, "ELITE tier is 3")
+    _assert_equal(SimEnemyTypes.Tier.CHAMPION, 4, "CHAMPION tier is 4")
+    _assert_equal(SimEnemyTypes.Tier.BOSS, 5, "BOSS tier is 5")
+
+    # Test category enum values
+    _assert_equal(SimEnemyTypes.Category.BASIC, 0, "BASIC category is 0")
+    _assert_equal(SimEnemyTypes.Category.SWARM, 1, "SWARM category is 1")
+    _assert_equal(SimEnemyTypes.Category.TANK, 5, "TANK category is 5")
+
+    # Test ENEMIES constant has entries
+    _assert_true(SimEnemyTypes.ENEMIES.size() >= 1, "ENEMIES has entries")
+
+    # Test known enemy type exists
+    _assert_true(SimEnemyTypes.ENEMIES.has(SimEnemyTypes.TYPHOS_SPAWN), "Typhos Spawn exists")
+
+    # Test enemy type data
+    var spawn_data: Dictionary = SimEnemyTypes.ENEMIES.get(SimEnemyTypes.TYPHOS_SPAWN, {})
+    _assert_true(spawn_data.has("name"), "Enemy has name")
+    _assert_true(spawn_data.has("hp"), "Enemy has hp")
+    _assert_true(spawn_data.has("tier"), "Enemy has tier")
+    _assert_true(spawn_data.has("category"), "Enemy has category")
+
+    # Test tier values are valid
+    var tier: int = int(spawn_data.get("tier", 0))
+    _assert_equal(tier, SimEnemyTypes.Tier.MINION, "Typhos Spawn is Minion tier")
+
+    # Test get_enemies_by_tier
+    var minions: Array[String] = SimEnemyTypes.get_enemies_by_tier(SimEnemyTypes.Tier.MINION)
+    _assert_true(minions.size() >= 1, "At least 1 minion enemy")
+
+    # Test get_enemies_by_category
+    var basic: Array[String] = SimEnemyTypes.get_enemies_by_category(SimEnemyTypes.Category.BASIC)
+    _assert_true(basic != null, "get_enemies_by_category returns array")
+
+    # Test region enum
+    _assert_equal(SimEnemyTypes.Region.ALL, 0, "ALL region is 0")
+    _assert_equal(SimEnemyTypes.Region.EVERGROVE, 1, "EVERGROVE region is 1")
+
+    # Test region name
+    var region_name: String = SimEnemyTypes.get_region_name(SimEnemyTypes.Region.EVERGROVE)
+    _assert_true(not region_name.is_empty(), "Evergrove has name")
+
+
+func _run_items_tests() -> void:
+    # Test rarity constants
+    _assert_equal(SimItems.RARITY_COMMON, "common", "Common rarity constant")
+    _assert_equal(SimItems.RARITY_LEGENDARY, "legendary", "Legendary rarity constant")
+
+    # Test slot constants
+    _assert_equal(SimItems.SLOT_HEADGEAR, "headgear", "Headgear slot constant")
+    _assert_equal(SimItems.SLOT_ARMOR, "armor", "Armor slot constant")
+
+    # Test EQUIPMENT_SLOTS array
+    _assert_true(SimItems.EQUIPMENT_SLOTS.size() == 8, "8 equipment slots")
+    _assert_true(SimItems.EQUIPMENT_SLOTS.has("headgear"), "Has headgear slot")
+    _assert_true(SimItems.EQUIPMENT_SLOTS.has("ring"), "Has ring slot")
+
+    # Test RARITY_COLORS
+    _assert_true(SimItems.RARITY_COLORS.has("common"), "Has common color")
+    _assert_true(SimItems.RARITY_COLORS.has("legendary"), "Has legendary color")
+
+    # Test RARITY_WEIGHTS
+    _assert_true(SimItems.RARITY_WEIGHTS.has("common"), "Has common weight")
+    _assert_true(int(SimItems.RARITY_WEIGHTS.get("common", 0)) > int(SimItems.RARITY_WEIGHTS.get("legendary", 0)), "Common more likely than legendary")
+
+    # Test EQUIPMENT dictionary has items
+    _assert_true(SimItems.EQUIPMENT.size() >= 1, "EQUIPMENT has items")
+
+    # Test known equipment exists
+    _assert_true(SimItems.EQUIPMENT.has("helm_basic"), "Has basic helm")
+    _assert_true(SimItems.EQUIPMENT.has("armor_basic"), "Has basic armor")
+
+    # Test equipment data structure
+    var helm: Dictionary = SimItems.EQUIPMENT.get("helm_basic", {})
+    _assert_true(helm.has("name"), "Equipment has name")
+    _assert_true(helm.has("slot"), "Equipment has slot")
+    _assert_true(helm.has("rarity"), "Equipment has rarity")
+    _assert_true(helm.has("stats"), "Equipment has stats")
+
+    # Test slot assignment is correct
+    _assert_equal(str(helm.get("slot", "")), "headgear", "Helm is headgear slot")
+
+
+func _run_crafting_tests() -> void:
+    # Test MATERIALS dictionary
+    _assert_true(SimCrafting.MATERIALS.size() >= 1, "MATERIALS has entries")
+
+    # Test known materials exist
+    _assert_true(SimCrafting.MATERIALS.has("scrap_metal"), "Has scrap metal")
+    _assert_true(SimCrafting.MATERIALS.has("leather_scraps"), "Has leather scraps")
+    _assert_true(SimCrafting.MATERIALS.has("crystal_shard"), "Has crystal shard")
+
+    # Test material data structure
+    var scrap: Dictionary = SimCrafting.MATERIALS.get("scrap_metal", {})
+    _assert_true(scrap.has("name"), "Material has name")
+    _assert_true(scrap.has("tier"), "Material has tier")
+    _assert_true(scrap.has("description"), "Material has description")
+
+    # Test material tiers
+    _assert_equal(int(scrap.get("tier", 0)), 1, "Scrap metal is tier 1")
+
+    var iron: Dictionary = SimCrafting.MATERIALS.get("iron_ingot", {})
+    _assert_equal(int(iron.get("tier", 0)), 2, "Iron ingot is tier 2")
+
+    var steel: Dictionary = SimCrafting.MATERIALS.get("steel_ingot", {})
+    _assert_equal(int(steel.get("tier", 0)), 3, "Steel ingot is tier 3")
+
+    # Test RECIPES dictionary
+    _assert_true(SimCrafting.RECIPES.size() >= 1, "RECIPES has entries")
+
+    # Test known recipes exist
+    _assert_true(SimCrafting.RECIPES.has("health_potion"), "Has health potion recipe")
+
+    # Test recipe data structure
+    var health_recipe: Dictionary = SimCrafting.RECIPES.get("health_potion", {})
+    _assert_true(health_recipe.has("name"), "Recipe has name")
+    _assert_true(health_recipe.has("category"), "Recipe has category")
+    _assert_true(health_recipe.has("ingredients"), "Recipe has ingredients")
+    _assert_true(health_recipe.has("gold_cost"), "Recipe has gold cost")
+    _assert_true(health_recipe.has("output_item"), "Recipe has output item")
+
+    # Test recipe ingredients structure
+    var ingredients: Array = health_recipe.get("ingredients", [])
+    _assert_true(ingredients.size() >= 1, "Recipe has at least 1 ingredient")
+    var first_ing: Dictionary = ingredients[0] if ingredients.size() > 0 else {}
+    _assert_true(first_ing.has("item"), "Ingredient has item id")
+    _assert_true(first_ing.has("qty"), "Ingredient has quantity")
+
+    # Test recipe categories
+    _assert_equal(str(health_recipe.get("category", "")), "consumable", "Health potion is consumable")
+
+
+func _run_endless_mode_tests() -> void:
+    # Test unlock constants
+    _assert_true(SimEndlessMode.UNLOCK_DAY >= 1, "UNLOCK_DAY is positive")
+    _assert_true(SimEndlessMode.UNLOCK_WAVES >= 1, "UNLOCK_WAVES is positive")
+
+    # Test scaling constants
+    _assert_true(SimEndlessMode.HP_SCALE_PER_DAY > 0.0, "HP scaling is positive")
+    _assert_true(SimEndlessMode.SPEED_SCALE_PER_DAY >= 0.0, "Speed scaling is non-negative")
+    _assert_true(SimEndlessMode.COUNT_SCALE_PER_DAY > 0.0, "Count scaling is positive")
+    _assert_true(SimEndlessMode.DAMAGE_SCALE_PER_DAY >= 0.0, "Damage scaling is non-negative")
+
+    # Test MILESTONES dictionary
+    _assert_true(SimEndlessMode.MILESTONES.size() >= 1, "MILESTONES has entries")
+    _assert_true(SimEndlessMode.MILESTONES.has(5), "Has day 5 milestone")
+    _assert_true(SimEndlessMode.MILESTONES.has(10), "Has day 10 milestone")
+
+    # Test milestone structure
+    var milestone5: Dictionary = SimEndlessMode.MILESTONES.get(5, {})
+    _assert_true(milestone5.has("name"), "Milestone has name")
+    _assert_true(milestone5.has("gold"), "Milestone has gold reward")
+    _assert_true(milestone5.has("xp"), "Milestone has xp reward")
+
+    # Test ENDLESS_MODIFIERS dictionary
+    _assert_true(SimEndlessMode.ENDLESS_MODIFIERS.size() >= 1, "ENDLESS_MODIFIERS has entries")
+    _assert_true(SimEndlessMode.ENDLESS_MODIFIERS.has("veteran_enemies"), "Has veteran_enemies modifier")
+    _assert_true(SimEndlessMode.ENDLESS_MODIFIERS.has("nightmare"), "Has nightmare modifier")
+
+    # Test modifier structure
+    var veteran: Dictionary = SimEndlessMode.ENDLESS_MODIFIERS.get("veteran_enemies", {})
+    _assert_true(veteran.has("start_day"), "Modifier has start_day")
+    _assert_true(veteran.has("description"), "Modifier has description")
+
+    # Test is_unlocked function exists
+    var profile: Dictionary = {"max_day_reached": 20}
+    var unlocked: bool = SimEndlessMode.is_unlocked(profile)
+    _assert_true(unlocked, "Day 20 profile unlocks endless mode")
+
+    var early_profile: Dictionary = {"max_day_reached": 5}
+    var early_unlocked: bool = SimEndlessMode.is_unlocked(early_profile)
+    _assert_true(not early_unlocked, "Day 5 profile does not unlock endless mode")
+
+    # Test get_high_scores function
+    var scores: Dictionary = SimEndlessMode.get_high_scores(profile)
+    _assert_true(scores.has("highest_day"), "Scores has highest_day")
+    _assert_true(scores.has("highest_wave"), "Scores has highest_wave")
+
+
+func _run_expeditions_tests() -> void:
+    # Test state constants
+    _assert_equal(SimExpeditions.STATE_TRAVELING, "traveling", "STATE_TRAVELING constant")
+    _assert_equal(SimExpeditions.STATE_GATHERING, "gathering", "STATE_GATHERING constant")
+    _assert_equal(SimExpeditions.STATE_RETURNING, "returning", "STATE_RETURNING constant")
+    _assert_equal(SimExpeditions.STATE_COMPLETE, "complete", "STATE_COMPLETE constant")
+    _assert_equal(SimExpeditions.STATE_FAILED, "failed", "STATE_FAILED constant")
+
+    # Test get_expedition_definition for unknown returns empty
+    var unknown_exp: Dictionary = SimExpeditions.get_expedition_definition("nonexistent_expedition")
+    _assert_true(unknown_exp.is_empty(), "Unknown expedition returns empty dictionary")
+
+    # Test get_available_expeditions with fresh state
+    var state: GameState = DefaultState.create("expedition_test")
+    var available: Array = SimExpeditions.get_available_expeditions(state)
+    _assert_true(available != null, "get_available_expeditions returns array")
+
+    # Test get_workers_on_expedition with no expeditions
+    var workers_on_exp: int = SimExpeditions.get_workers_on_expedition(state)
+    _assert_equal(workers_on_exp, 0, "No workers on expedition initially")
+
+    # Test available_workers_for_expedition
+    var available_workers: int = SimExpeditions.available_workers_for_expedition(state)
+    _assert_true(available_workers >= 0, "Available workers is non-negative")
+
+    # Test can_start_expedition validation
+    var result: Dictionary = SimExpeditions.can_start_expedition(state, "nonexistent", 1)
+    _assert_true(result.has("ok"), "can_start_expedition returns ok field")
+    _assert_true(result.has("error"), "can_start_expedition returns error field")
+    _assert_true(not result.get("ok", true), "Unknown expedition cannot start")
