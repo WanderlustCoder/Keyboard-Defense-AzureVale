@@ -46,6 +46,12 @@ const SimItems = preload("res://sim/items.gd")
 const SimCrafting = preload("res://sim/crafting.gd")
 const SimEndlessMode = preload("res://sim/endless_mode.gd")
 const SimExpeditions = preload("res://sim/expeditions.gd")
+const SimStatusEffects = preload("res://sim/status_effects.gd")
+const SimTowerTypes = preload("res://sim/tower_types.gd")
+const SimSkills = preload("res://sim/skills.gd")
+const SimQuests = preload("res://sim/quests.gd")
+const SimHeroTypes = preload("res://sim/hero_types.gd")
+const SimWaveComposer = preload("res://sim/wave_composer.gd")
 
 var total_tests: int = 0
 var total_failed: int = 0
@@ -110,6 +116,12 @@ func _run_all() -> void:
     _run_crafting_tests()
     _run_endless_mode_tests()
     _run_expeditions_tests()
+    _run_status_effects_tests()
+    _run_tower_types_tests()
+    _run_skills_tests()
+    _run_quests_tests()
+    _run_hero_types_tests()
+    _run_wave_composer_tests()
 
     for message in messages:
         print("[tests] %s" % message)
@@ -3943,3 +3955,220 @@ func _run_expeditions_tests() -> void:
     _assert_true(result.has("ok"), "can_start_expedition returns ok field")
     _assert_true(result.has("error"), "can_start_expedition returns error field")
     _assert_true(not result.get("ok", true), "Unknown expedition cannot start")
+
+
+func _run_status_effects_tests() -> void:
+    # Test category constants
+    _assert_equal(SimStatusEffects.CATEGORY_DEBUFF, "debuff", "CATEGORY_DEBUFF constant")
+    _assert_equal(SimStatusEffects.CATEGORY_BUFF, "buff", "CATEGORY_BUFF constant")
+    _assert_equal(SimStatusEffects.CATEGORY_NEUTRAL, "neutral", "CATEGORY_NEUTRAL constant")
+
+    # Test effect ID constants
+    _assert_equal(SimStatusEffects.EFFECT_SLOW, "slow", "EFFECT_SLOW constant")
+    _assert_equal(SimStatusEffects.EFFECT_FROZEN, "frozen", "EFFECT_FROZEN constant")
+    _assert_equal(SimStatusEffects.EFFECT_BURNING, "burning", "EFFECT_BURNING constant")
+    _assert_equal(SimStatusEffects.EFFECT_POISONED, "poisoned", "EFFECT_POISONED constant")
+    _assert_equal(SimStatusEffects.EFFECT_MARKED, "marked", "EFFECT_MARKED constant")
+
+    # Test EFFECTS dictionary exists and has entries
+    _assert_true(SimStatusEffects.EFFECTS.size() >= 1, "EFFECTS has entries")
+    _assert_true(SimStatusEffects.EFFECTS.has("slow"), "Has slow effect")
+    _assert_true(SimStatusEffects.EFFECTS.has("frozen"), "Has frozen effect")
+    _assert_true(SimStatusEffects.EFFECTS.has("burning"), "Has burning effect")
+
+    # Test effect data structure
+    var slow_effect: Dictionary = SimStatusEffects.EFFECTS.get("slow", {})
+    _assert_true(slow_effect.has("name"), "Effect has name")
+    _assert_true(slow_effect.has("description"), "Effect has description")
+    _assert_true(slow_effect.has("category"), "Effect has category")
+    _assert_equal(str(slow_effect.get("category", "")), "debuff", "Slow is debuff")
+
+    # Test burning has DoT properties
+    var burning: Dictionary = SimStatusEffects.EFFECTS.get("burning", {})
+    _assert_true(burning.has("tick_damage"), "Burning has tick_damage")
+    _assert_true(burning.has("duration"), "Burning has duration")
+    _assert_true(burning.has("max_stacks"), "Burning has max_stacks")
+
+    # Test frozen has immobilize
+    var frozen: Dictionary = SimStatusEffects.EFFECTS.get("frozen", {})
+    _assert_true(frozen.has("immobilize"), "Frozen has immobilize")
+    _assert_true(frozen.get("immobilize", false), "Frozen immobilizes")
+
+
+func _run_tower_types_tests() -> void:
+    # Test TowerCategory enum
+    _assert_equal(SimTowerTypes.TowerCategory.BASIC, 0, "BASIC category is 0")
+    _assert_equal(SimTowerTypes.TowerCategory.ADVANCED, 1, "ADVANCED category is 1")
+    _assert_equal(SimTowerTypes.TowerCategory.SPECIALIST, 2, "SPECIALIST category is 2")
+    _assert_equal(SimTowerTypes.TowerCategory.LEGENDARY, 3, "LEGENDARY category is 3")
+
+    # Test DamageType enum
+    _assert_equal(SimTowerTypes.DamageType.PHYSICAL, 0, "PHYSICAL damage is 0")
+    _assert_equal(SimTowerTypes.DamageType.MAGICAL, 1, "MAGICAL damage is 1")
+    _assert_equal(SimTowerTypes.DamageType.FIRE, 6, "FIRE damage is 6")
+    _assert_equal(SimTowerTypes.DamageType.PURE, 7, "PURE damage is 7")
+
+    # Test TargetType enum
+    _assert_equal(SimTowerTypes.TargetType.SINGLE, 0, "SINGLE target is 0")
+    _assert_equal(SimTowerTypes.TargetType.AOE, 2, "AOE target is 2")
+    _assert_equal(SimTowerTypes.TargetType.CHAIN, 3, "CHAIN target is 3")
+
+    # Test tower ID constants
+    _assert_equal(SimTowerTypes.TOWER_ARROW, "tower_arrow", "TOWER_ARROW constant")
+    _assert_equal(SimTowerTypes.TOWER_MAGIC, "tower_magic", "TOWER_MAGIC constant")
+    _assert_equal(SimTowerTypes.TOWER_FROST, "tower_frost", "TOWER_FROST constant")
+
+    # Test ALL_TOWER_IDS array
+    _assert_true(SimTowerTypes.ALL_TOWER_IDS.size() >= 4, "At least 4 tower types")
+    _assert_true(SimTowerTypes.ALL_TOWER_IDS.has("tower_arrow"), "Has arrow tower")
+    _assert_true(SimTowerTypes.ALL_TOWER_IDS.has("tower_magic"), "Has magic tower")
+
+    # Test category arrays
+    _assert_true(SimTowerTypes.CATEGORY_BASIC.size() >= 1, "CATEGORY_BASIC has entries")
+    _assert_true(SimTowerTypes.CATEGORY_ADVANCED.size() >= 1, "CATEGORY_ADVANCED has entries")
+    _assert_true(SimTowerTypes.CATEGORY_SPECIALIST.size() >= 1, "CATEGORY_SPECIALIST has entries")
+    _assert_true(SimTowerTypes.CATEGORY_LEGENDARY.size() >= 1, "CATEGORY_LEGENDARY has entries")
+
+    # Test footprint constants
+    _assert_equal(SimTowerTypes.FOOTPRINT_1X1, Vector2i(1, 1), "FOOTPRINT_1X1 is 1x1")
+    _assert_equal(SimTowerTypes.FOOTPRINT_2X2, Vector2i(2, 2), "FOOTPRINT_2X2 is 2x2")
+
+
+func _run_skills_tests() -> void:
+    # Test tree ID constants
+    _assert_equal(SimSkills.TREE_SPEED, "speed", "TREE_SPEED constant")
+    _assert_equal(SimSkills.TREE_ACCURACY, "accuracy", "TREE_ACCURACY constant")
+    _assert_equal(SimSkills.TREE_DEFENSE, "defense", "TREE_DEFENSE constant")
+
+    # Test SKILL_TREES dictionary
+    _assert_true(SimSkills.SKILL_TREES.size() >= 1, "SKILL_TREES has entries")
+    _assert_true(SimSkills.SKILL_TREES.has("speed"), "Has speed tree")
+    _assert_true(SimSkills.SKILL_TREES.has("accuracy"), "Has accuracy tree")
+
+    # Test tree structure
+    var speed_tree: Dictionary = SimSkills.SKILL_TREES.get("speed", {})
+    _assert_true(speed_tree.has("name"), "Tree has name")
+    _assert_true(speed_tree.has("description"), "Tree has description")
+    _assert_true(speed_tree.has("skills"), "Tree has skills")
+
+    # Test skills within tree
+    var skills: Dictionary = speed_tree.get("skills", {})
+    _assert_true(skills.size() >= 1, "Tree has at least 1 skill")
+    _assert_true(skills.has("swift_start"), "Has swift_start skill")
+
+    # Test skill data structure
+    var swift: Dictionary = skills.get("swift_start", {})
+    _assert_true(swift.has("name"), "Skill has name")
+    _assert_true(swift.has("tier"), "Skill has tier")
+    _assert_true(swift.has("cost"), "Skill has cost")
+    _assert_true(swift.has("max_ranks"), "Skill has max_ranks")
+    _assert_true(swift.has("effect"), "Skill has effect description")
+    _assert_true(swift.has("effect_type"), "Skill has effect_type")
+    _assert_true(swift.has("prerequisites"), "Skill has prerequisites")
+
+
+func _run_quests_tests() -> void:
+    # Test type constants
+    _assert_equal(SimQuests.TYPE_DAILY, "daily", "TYPE_DAILY constant")
+    _assert_equal(SimQuests.TYPE_WEEKLY, "weekly", "TYPE_WEEKLY constant")
+    _assert_equal(SimQuests.TYPE_STORY, "story", "TYPE_STORY constant")
+    _assert_equal(SimQuests.TYPE_CHALLENGE, "challenge", "TYPE_CHALLENGE constant")
+
+    # Test status constants
+    _assert_equal(SimQuests.STATUS_AVAILABLE, "available", "STATUS_AVAILABLE constant")
+    _assert_equal(SimQuests.STATUS_ACTIVE, "active", "STATUS_ACTIVE constant")
+    _assert_equal(SimQuests.STATUS_COMPLETED, "completed", "STATUS_COMPLETED constant")
+    _assert_equal(SimQuests.STATUS_CLAIMED, "claimed", "STATUS_CLAIMED constant")
+
+    # Test DAILY_QUESTS array
+    _assert_true(SimQuests.DAILY_QUESTS.size() >= 1, "DAILY_QUESTS has entries")
+
+    # Test quest data structure
+    var first_quest: Dictionary = SimQuests.DAILY_QUESTS[0] if SimQuests.DAILY_QUESTS.size() > 0 else {}
+    _assert_true(first_quest.has("id"), "Quest has id")
+    _assert_true(first_quest.has("name"), "Quest has name")
+    _assert_true(first_quest.has("description"), "Quest has description")
+    _assert_true(first_quest.has("type"), "Quest has type")
+    _assert_true(first_quest.has("objective"), "Quest has objective")
+    _assert_true(first_quest.has("rewards"), "Quest has rewards")
+
+    # Test objective structure
+    var objective: Dictionary = first_quest.get("objective", {})
+    _assert_true(objective.has("type"), "Objective has type")
+    _assert_true(objective.has("target"), "Objective has target")
+
+    # Test rewards structure
+    var rewards: Dictionary = first_quest.get("rewards", {})
+    _assert_true(rewards.has("gold") or rewards.has("xp"), "Rewards has gold or xp")
+
+
+func _run_hero_types_tests() -> void:
+    # Test hero ID constants
+    _assert_equal(SimHeroTypes.HERO_NONE, "", "HERO_NONE constant")
+    _assert_equal(SimHeroTypes.HERO_SCRIBE, "scribe", "HERO_SCRIBE constant")
+    _assert_equal(SimHeroTypes.HERO_WARDEN, "warden", "HERO_WARDEN constant")
+    _assert_equal(SimHeroTypes.HERO_TEMPEST, "tempest", "HERO_TEMPEST constant")
+    _assert_equal(SimHeroTypes.HERO_SAGE, "sage", "HERO_SAGE constant")
+    _assert_equal(SimHeroTypes.HERO_FORGEMASTER, "forgemaster", "HERO_FORGEMASTER constant")
+
+    # Test HEROES dictionary
+    _assert_true(SimHeroTypes.HEROES.size() >= 1, "HEROES has entries")
+    _assert_true(SimHeroTypes.HEROES.has(SimHeroTypes.HERO_SCRIBE), "Has scribe hero")
+    _assert_true(SimHeroTypes.HEROES.has(SimHeroTypes.HERO_WARDEN), "Has warden hero")
+
+    # Test hero data structure
+    var scribe: Dictionary = SimHeroTypes.HEROES.get(SimHeroTypes.HERO_SCRIBE, {})
+    _assert_true(scribe.has("name"), "Hero has name")
+    _assert_true(scribe.has("class"), "Hero has class")
+    _assert_true(scribe.has("description"), "Hero has description")
+    _assert_true(scribe.has("passive"), "Hero has passive")
+    _assert_true(scribe.has("ability"), "Hero has ability")
+    _assert_true(scribe.has("flavor"), "Hero has flavor text")
+
+    # Test passive structure
+    var passive: Dictionary = scribe.get("passive", {})
+    _assert_true(passive.has("name"), "Passive has name")
+    _assert_true(passive.has("description"), "Passive has description")
+    _assert_true(passive.has("effects"), "Passive has effects")
+
+    # Test ability structure
+    var ability: Dictionary = scribe.get("ability", {})
+    _assert_true(ability.has("id"), "Ability has id")
+    _assert_true(ability.has("name"), "Ability has name")
+    _assert_true(ability.has("word"), "Ability has word trigger")
+    _assert_true(ability.has("cooldown"), "Ability has cooldown")
+
+
+func _run_wave_composer_tests() -> void:
+    # Test TIER_WEIGHTS_BY_DAY dictionary
+    _assert_true(SimWaveComposer.TIER_WEIGHTS_BY_DAY.size() >= 1, "TIER_WEIGHTS_BY_DAY has entries")
+    _assert_true(SimWaveComposer.TIER_WEIGHTS_BY_DAY.has(SimEnemyTypes.Tier.MINION), "Has MINION tier weights")
+
+    # Test get_tier_weight function
+    var minion_weight_d1: int = SimWaveComposer.get_tier_weight(SimEnemyTypes.Tier.MINION, 1)
+    _assert_true(minion_weight_d1 >= 0, "Day 1 minion weight is non-negative")
+
+    var minion_weight_d20: int = SimWaveComposer.get_tier_weight(SimEnemyTypes.Tier.MINION, 20)
+    _assert_true(minion_weight_d20 < minion_weight_d1, "Later days have lower minion weight")
+
+    var soldier_weight_d1: int = SimWaveComposer.get_tier_weight(SimEnemyTypes.Tier.SOLDIER, 1)
+    var soldier_weight_d10: int = SimWaveComposer.get_tier_weight(SimEnemyTypes.Tier.SOLDIER, 10)
+    _assert_true(soldier_weight_d10 > soldier_weight_d1, "Later days have higher soldier weight")
+
+    # Test WAVE_THEMES dictionary
+    _assert_true(SimWaveComposer.WAVE_THEMES.size() >= 1, "WAVE_THEMES has entries")
+    _assert_true(SimWaveComposer.WAVE_THEMES.has("standard"), "Has standard theme")
+    _assert_true(SimWaveComposer.WAVE_THEMES.has("swarm"), "Has swarm theme")
+    _assert_true(SimWaveComposer.WAVE_THEMES.has("elite"), "Has elite theme")
+
+    # Test theme structure
+    var standard: Dictionary = SimWaveComposer.WAVE_THEMES.get("standard", {})
+    _assert_true(standard.has("name"), "Theme has name")
+    _assert_true(standard.has("description"), "Theme has description")
+    _assert_true(standard.has("enemy_weights"), "Theme has enemy_weights")
+    _assert_true(standard.has("modifiers"), "Theme has modifiers")
+
+    # Test swarm theme has multipliers
+    var swarm: Dictionary = SimWaveComposer.WAVE_THEMES.get("swarm", {})
+    _assert_true(swarm.has("count_mult"), "Swarm has count_mult")
+    _assert_true(float(swarm.get("count_mult", 1.0)) > 1.0, "Swarm has increased count")
