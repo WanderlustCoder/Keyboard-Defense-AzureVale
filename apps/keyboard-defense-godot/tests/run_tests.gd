@@ -34,6 +34,8 @@ const ScenarioTypes = preload("res://tools/scenario_harness/scenario_types.gd")
 const StoryManager = preload("res://game/story_manager.gd")
 const SimBossEncounters = preload("res://sim/boss_encounters.gd")
 const SimDifficulty = preload("res://sim/difficulty.gd")
+const SimExplorationChallenges = preload("res://sim/exploration_challenges.gd")
+const SimDailyChallenges = preload("res://sim/daily_challenges.gd")
 
 var total_tests: int = 0
 var total_failed: int = 0
@@ -86,6 +88,8 @@ func _run_all() -> void:
     _run_difficulty_tests()
     _run_lesson_consistency_tests()
     _run_dialogue_flow_tests()
+    _run_exploration_challenges_tests()
+    _run_daily_challenges_tests()
 
     for message in messages:
         print("[tests] %s" % message)
@@ -3299,3 +3303,129 @@ func _run_dialogue_flow_tests() -> void:
     var all_lore: Dictionary = StoryManager.get_all_lore()
     _assert_true(not all_lore.is_empty(), "All lore retrieval works")
     _assert_true(all_lore.has("kingdom") or all_lore.has("horde"), "All lore has expected categories")
+
+
+func _run_exploration_challenges_tests() -> void:
+    # Test difficulty presets exist
+    _assert_true(SimExplorationChallenges.DIFFICULTY_PRESETS.has("easy"), "Easy difficulty preset exists")
+    _assert_true(SimExplorationChallenges.DIFFICULTY_PRESETS.has("medium"), "Medium difficulty preset exists")
+    _assert_true(SimExplorationChallenges.DIFFICULTY_PRESETS.has("hard"), "Hard difficulty preset exists")
+    _assert_true(SimExplorationChallenges.DIFFICULTY_PRESETS.has("legendary"), "Legendary difficulty preset exists")
+
+    # Test difficulty scaling by day
+    _assert_equal(SimExplorationChallenges.get_difficulty_for_day(1), "easy", "Day 1 is easy")
+    _assert_equal(SimExplorationChallenges.get_difficulty_for_day(3), "easy", "Day 3 is easy")
+    _assert_equal(SimExplorationChallenges.get_difficulty_for_day(5), "medium", "Day 5 is medium")
+    _assert_equal(SimExplorationChallenges.get_difficulty_for_day(10), "hard", "Day 10 is hard")
+    _assert_equal(SimExplorationChallenges.get_difficulty_for_day(20), "legendary", "Day 20 is legendary")
+
+    # Test challenge generation with config
+    var config: Dictionary = {
+        "type": SimExplorationChallenges.ChallengeType.WORD_COUNT,
+        "difficulty": "medium",
+        "day_scaled": false
+    }
+    var challenge: Dictionary = SimExplorationChallenges.generate_challenge(null, config)
+    _assert_true(not challenge.is_empty(), "Challenge generation returns dictionary")
+    _assert_true(challenge.has("words"), "Challenge has words")
+    _assert_true(challenge.has("difficulty"), "Challenge has difficulty")
+    _assert_equal(str(challenge.get("difficulty")), "medium", "Challenge has correct difficulty")
+
+    # Test challenge words are generated
+    var words: Array = challenge.get("words", [])
+    _assert_true(words.size() > 0, "Challenge has words generated")
+
+    # Test challenge start
+    var started: Dictionary = SimExplorationChallenges.start_challenge(challenge, 0.0)
+    _assert_true(started.get("started", false), "Challenge started after start_challenge")
+    _assert_equal(int(started.get("current_word_index", -1)), 0, "Challenge starts at word index 0")
+
+    # Test word processing
+    if words.size() > 0:
+        var first_word: String = str(words[0])
+        var process_result: Dictionary = SimExplorationChallenges.process_word(challenge, first_word)
+        _assert_true(process_result.get("accepted", false), "Correct word is accepted")
+        _assert_true(process_result.get("correct", false), "Correct word is marked correct")
+
+        # Test wrong word
+        var wrong_result: Dictionary = SimExplorationChallenges.process_word(challenge, "wrongwordxyz")
+        _assert_true(wrong_result.get("accepted", false), "Wrong word is accepted (tracked)")
+        _assert_true(not wrong_result.get("correct", true), "Wrong word is marked incorrect")
+
+    # Test challenge evaluation
+    var eval_result: Dictionary = SimExplorationChallenges.evaluate_challenge(challenge, 10.0)
+    _assert_true(eval_result.has("passed"), "Evaluation has passed field")
+    _assert_true(eval_result.has("score"), "Evaluation has score field")
+    _assert_true(eval_result.has("accuracy"), "Evaluation has accuracy field")
+    _assert_true(eval_result.has("wpm"), "Evaluation has wpm field")
+
+    # Test challenge description
+    var desc: String = SimExplorationChallenges.get_challenge_description(challenge)
+    _assert_true(not desc.is_empty(), "Challenge description is not empty")
+
+    # Test result description
+    var result_desc: String = SimExplorationChallenges.get_result_description(eval_result)
+    _assert_true(not result_desc.is_empty(), "Result description is not empty")
+
+    # Test reward scaling
+    var base_rewards: Array = [
+        {"type": "gold_add", "amount": 10},
+        {"type": "resource_add", "resource": "wood", "amount": 5}
+    ]
+    var passing_eval: Dictionary = {"passed": true, "score": 80}
+    var scaled_rewards: Array = SimExplorationChallenges.scale_rewards(base_rewards, passing_eval, 5)
+    _assert_true(scaled_rewards.size() > 0, "Scaled rewards are returned for passing challenge")
+
+    # Test no rewards on failure
+    var failing_eval: Dictionary = {"passed": false, "score": 30}
+    var no_rewards: Array = SimExplorationChallenges.scale_rewards(base_rewards, failing_eval, 5)
+    _assert_equal(no_rewards.size(), 0, "No rewards returned for failing challenge")
+
+
+func _run_daily_challenges_tests() -> void:
+    # Test daily challenges module exists and has basic structure
+    _assert_true(SimDailyChallenges != null, "SimDailyChallenges module loads")
+
+    # Test CHALLENGES dictionary exists and has entries
+    _assert_true(SimDailyChallenges.CHALLENGES.size() >= 5, "At least 5 daily challenges defined")
+
+    # Test TOKEN_SHOP exists
+    _assert_true(SimDailyChallenges.TOKEN_SHOP.size() >= 1, "Token shop has items")
+
+    # Test STREAK_BONUSES exists
+    _assert_true(SimDailyChallenges.STREAK_BONUSES.has(3), "3-day streak bonus exists")
+    _assert_true(SimDailyChallenges.STREAK_BONUSES.has(7), "7-day streak bonus exists")
+
+    # Test challenge structure
+    var sample_challenge: Dictionary = SimDailyChallenges.CHALLENGES.get("speed_demon", {})
+    _assert_true(sample_challenge.has("name"), "Challenge has name")
+    _assert_true(sample_challenge.has("description"), "Challenge has description")
+    _assert_true(sample_challenge.has("modifiers"), "Challenge has modifiers")
+    _assert_true(sample_challenge.has("goal"), "Challenge has goal")
+    _assert_true(sample_challenge.has("rewards"), "Challenge has rewards")
+
+    # Test daily challenge retrieval with profile
+    var profile: Dictionary = {}
+    var daily: Dictionary = SimDailyChallenges.get_daily_challenge(profile)
+    _assert_true(not daily.is_empty(), "Daily challenge returns data")
+    _assert_true(daily.has("name"), "Daily challenge has name")
+
+    # Test format_challenge
+    var formatted: String = SimDailyChallenges.format_challenge(daily)
+    _assert_true(not formatted.is_empty(), "Challenge can be formatted")
+
+    # Test token balance
+    var balance: int = SimDailyChallenges.get_token_balance(profile)
+    _assert_true(balance >= 0, "Token balance is non-negative")
+
+    # Test streak retrieval
+    var streak: int = SimDailyChallenges.get_streak(profile)
+    _assert_true(streak >= 0, "Streak is non-negative")
+
+    # Test shop items retrieval
+    var shop: Dictionary = SimDailyChallenges.get_shop_items()
+    _assert_true(not shop.is_empty(), "Shop items can be retrieved")
+
+    # Test format_shop
+    var shop_str: String = SimDailyChallenges.format_shop(profile)
+    _assert_true(not shop_str.is_empty(), "Shop can be formatted")
