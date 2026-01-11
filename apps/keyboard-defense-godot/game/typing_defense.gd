@@ -23,6 +23,7 @@ const DIALOGUE_BOX_SCENE := preload("res://scenes/DialogueBox.tscn")
 @onready var wave_progress: ProgressBar = $WaveProgress
 @onready var enemy_lane: Control = $BattleArea/EnemyLane
 @onready var game_controller = get_node_or_null("/root/GameController")
+@onready var audio_manager = get_node_or_null("/root/AudioManager")
 
 # Game state
 var castle_hp: int = 10
@@ -84,6 +85,10 @@ func _ready() -> void:
 	_show_welcome_dialogue()
 	_start_wave()
 
+	# Start battle music
+	if audio_manager:
+		audio_manager.play_music(audio_manager.Music.BATTLE_CALM)
+
 
 func _init_dialogue_box() -> void:
 	dialogue_box = DIALOGUE_BOX_SCENE.instantiate()
@@ -123,6 +128,10 @@ func _start_wave() -> void:
 	enemies_defeated = 0
 	wave_enemies_total = 3 + wave * 2
 	wave_start_time = Time.get_unix_time_from_system()
+
+	# Play wave start sound
+	if audio_manager:
+		audio_manager.play_wave_start()
 
 	# Generate enemies for this wave
 	for i in range(wave_enemies_total):
@@ -172,8 +181,14 @@ func _on_input_changed(new_text: String) -> void:
 		if combo > 0:
 			feedback_label.text = "[color=red]Mistake! Combo broken.[/color]"
 			feedback_label.add_theme_color_override("font_color", Color(1, 0.4, 0.4))
+			# Play combo break sound
+			if audio_manager:
+				audio_manager.play_combo_break()
 		combo = 0
 		total_chars += 1
+		# Play mistake sound
+		if audio_manager:
+			audio_manager.play_type_mistake()
 		_refresh_ui()
 
 	# Auto-complete on exact match
@@ -205,6 +220,14 @@ func _attack_enemy() -> void:
 	combo += 1
 	max_combo = max(max_combo, combo)
 
+	# Play hit enemy sound
+	if audio_manager:
+		audio_manager.play_hit_enemy()
+
+	# Play combo milestone sounds
+	if audio_manager and combo in [5, 10, 15, 20, 25]:
+		audio_manager.play_combo_milestone(combo)
+
 	if int(current_enemy.get("hp", 0)) <= 0:
 		# Enemy defeated!
 		var gold_reward: int = int(current_enemy.get("gold", 5))
@@ -219,6 +242,10 @@ func _attack_enemy() -> void:
 
 		feedback_label.text = "DEFEATED! +%d gold (Combo: %d)" % [gold_reward, combo]
 		feedback_label.add_theme_color_override("font_color", Color(0.4, 1, 0.4))
+
+		# Play word complete sound
+		if audio_manager:
+			audio_manager.play_word_complete()
 
 		_remove_enemy_visual()
 		_next_enemy()
@@ -275,6 +302,11 @@ func _enemy_reached_castle() -> void:
 	feedback_label.text = "ENEMY BREACHED! Castle damaged!"
 	feedback_label.add_theme_color_override("font_color", Color(1, 0.3, 0.3))
 
+	# Play castle hit and combo break sounds
+	if audio_manager:
+		audio_manager.play_hit_player()
+		audio_manager.play_combo_break()
+
 	if castle_hp <= 0:
 		_game_over()
 	else:
@@ -294,6 +326,11 @@ func _wave_complete() -> void:
 
 	feedback_label.text = "WAVE COMPLETE! +%d gold bonus!" % wave_bonus
 	feedback_label.add_theme_color_override("font_color", Color(0.3, 1, 0.5))
+
+	# Play wave end and victory sounds
+	if audio_manager:
+		audio_manager.play_wave_end()
+		audio_manager.play_victory()
 
 	# Progress lesson difficulty with story integration
 	var lesson_changed: bool = false
@@ -367,6 +404,11 @@ func _game_over() -> void:
 	input_field.editable = false
 	feedback_label.text = "Castle destroyed! Final gold: %d | Max combo: %d" % [gold, max_combo]
 	feedback_label.add_theme_color_override("font_color", Color(1, 0.3, 0.3))
+
+	# Play defeat sound and switch to defeat music
+	if audio_manager:
+		audio_manager.play_defeat()
+		audio_manager.play_music(audio_manager.Music.DEFEAT)
 
 	# Show story game over message
 	if dialogue_box:

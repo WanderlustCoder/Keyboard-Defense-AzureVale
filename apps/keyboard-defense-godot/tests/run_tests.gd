@@ -32,6 +32,8 @@ const ScenarioRunner = preload("res://tools/scenario_harness/scenario_runner.gd"
 const ScenarioEval = preload("res://tools/scenario_harness/scenario_eval.gd")
 const ScenarioTypes = preload("res://tools/scenario_harness/scenario_types.gd")
 const StoryManager = preload("res://game/story_manager.gd")
+const SimBossEncounters = preload("res://sim/boss_encounters.gd")
+const SimDifficulty = preload("res://sim/difficulty.gd")
 
 var total_tests: int = 0
 var total_failed: int = 0
@@ -80,6 +82,8 @@ func _run_all() -> void:
     _run_typing_stats_tests()
     _run_typing_trends_tests()
     _run_story_manager_tests()
+    _run_boss_encounters_tests()
+    _run_difficulty_tests()
 
     for message in messages:
         print("[tests] %s" % message)
@@ -3068,3 +3072,128 @@ func _assert_approx(actual: float, expected: float, epsilon: float, name: String
     if abs(actual - expected) > epsilon:
         total_failed += 1
         messages.append("FAIL: %s (expected %s, got %s)" % [name, str(expected), str(actual)])
+
+func _run_boss_encounters_tests() -> void:
+    # Test getting all boss IDs
+    var boss_ids: Array[String] = SimBossEncounters.get_all_boss_ids()
+    _assert_true(boss_ids.size() >= 4, "At least 4 bosses defined")
+
+    # Test individual boss validation
+    for boss_id in boss_ids:
+        _assert_true(SimBossEncounters.is_valid_boss(boss_id), "Boss '%s' is valid" % boss_id)
+
+    # Test invalid boss detection
+    _assert_true(not SimBossEncounters.is_valid_boss("not_a_boss"), "Invalid boss returns false")
+
+    # Test boss data retrieval
+    var grove_guardian: Dictionary = SimBossEncounters.get_boss("grove_guardian")
+    _assert_true(not grove_guardian.is_empty(), "grove_guardian boss data exists")
+    _assert_true(grove_guardian.has("name"), "Boss has name field")
+    _assert_true(grove_guardian.has("phases"), "Boss has phases field")
+
+    # Test boss name and title
+    var boss_name: String = SimBossEncounters.get_boss_name("grove_guardian")
+    _assert_true(not boss_name.is_empty(), "Boss name is not empty")
+
+    var boss_title: String = SimBossEncounters.get_boss_title("grove_guardian")
+    _assert_true(not boss_title.is_empty(), "Boss title is not empty")
+
+    # Test boss for region
+    var region1_boss: String = SimBossEncounters.get_boss_for_region(1)
+    _assert_true(not region1_boss.is_empty(), "Region 1 has a boss")
+    _assert_true(SimBossEncounters.is_valid_boss(region1_boss), "Region 1 boss is valid")
+
+    # Test boss unlock days
+    var unlock_day: int = SimBossEncounters.get_boss_unlock_day("grove_guardian")
+    _assert_true(unlock_day >= 1, "Boss has valid unlock day")
+
+    # Test available bosses for day
+    var day4_bosses: Array[String] = SimBossEncounters.get_available_bosses_for_day(4)
+    _assert_true(day4_bosses.size() >= 1, "At least 1 boss available on day 4")
+
+    # Test dialogue retrieval
+    var intro: Array = SimBossEncounters.get_intro_dialogue("grove_guardian")
+    _assert_true(intro.size() > 0, "Boss has intro dialogue")
+
+    var defeat: Array = SimBossEncounters.get_defeat_dialogue("grove_guardian")
+    _assert_true(defeat.size() > 0, "Boss has defeat dialogue")
+
+    # Test phase name retrieval
+    var phase1_name: String = SimBossEncounters.get_phase_name("grove_guardian", 1)
+    _assert_true(not phase1_name.is_empty(), "Phase 1 has a name")
+
+    # Test boss state initialization
+    var boss_enemy: Dictionary = {
+        "id": 1,
+        "kind": "grove_guardian",
+        "hp": 100,
+        "max_hp": 100,
+        "pos": Vector2i(5, 5),
+        "word": "test"
+    }
+    SimBossEncounters.init_boss_state(boss_enemy)
+    _assert_true(boss_enemy.has("boss_phase"), "Boss state has phase after init")
+    _assert_equal(int(boss_enemy.get("boss_phase", 0)), 1, "Boss starts at phase 1")
+
+    # Test phase transition check
+    boss_enemy["hp"] = 30  # Low HP
+    var transition: Dictionary = SimBossEncounters.check_phase_transition(boss_enemy)
+    _assert_true(transition.has("transitioned"), "Phase transition result has transitioned field")
+
+    # Test mechanic retrieval
+    var regen_mechanic: Dictionary = SimBossEncounters.get_mechanic("regeneration")
+    _assert_true(not regen_mechanic.is_empty(), "Regeneration mechanic exists")
+
+
+func _run_difficulty_tests() -> void:
+    # Test difficulty mode definitions
+    var modes: Array[String] = SimDifficulty.get_all_mode_ids()
+    _assert_true(modes.size() >= 3, "At least 3 difficulty modes exist")
+    _assert_true("adventure" in modes, "Adventure mode exists")
+    _assert_true("story" in modes, "Story mode exists")
+
+    # Test mode data (adventure is the default/normal mode)
+    var adventure: Dictionary = SimDifficulty.get_mode("adventure")
+    _assert_true(not adventure.is_empty(), "Adventure mode data exists")
+
+    # Test mode name and description
+    var mode_name: String = SimDifficulty.get_mode_name("adventure")
+    _assert_true(not mode_name.is_empty(), "Mode has name")
+
+    var mode_desc: String = SimDifficulty.get_mode_description("adventure")
+    _assert_true(not mode_desc.is_empty(), "Mode has description")
+
+    # Test modifier application
+    var base_hp: int = 10
+    var modified_hp: int = SimDifficulty.apply_health_modifier(base_hp, "adventure")
+    _assert_true(modified_hp >= 1, "Adventure mode HP modifier works")
+
+    var base_speed: float = 1.0
+    var modified_speed: float = SimDifficulty.apply_speed_modifier(base_speed, "adventure")
+    _assert_true(modified_speed > 0, "Adventure mode speed modifier works")
+
+    # Test damage modifier
+    var base_damage: int = 5
+    var modified_damage: int = SimDifficulty.apply_damage_modifier(base_damage, "adventure")
+    _assert_true(modified_damage >= 1, "Damage modifier produces valid value")
+
+    # Test wave size modifier
+    var base_size: int = 5
+    var modified_size: int = SimDifficulty.apply_wave_size_modifier(base_size, "adventure")
+    _assert_true(modified_size >= 1, "Wave size modifier produces valid value")
+
+    # Test gold modifier
+    var base_gold: int = 10
+    var modified_gold: int = SimDifficulty.apply_gold_modifier(base_gold, "adventure")
+    _assert_true(modified_gold >= 1, "Gold modifier produces valid value")
+
+    # Test multiplier getters
+    var health_mult: float = SimDifficulty.get_enemy_health_mult("adventure")
+    _assert_true(health_mult > 0, "Health multiplier is positive")
+
+    var speed_mult: float = SimDifficulty.get_enemy_speed_mult("adventure")
+    _assert_true(speed_mult > 0, "Speed multiplier is positive")
+
+    # Test typo forgiveness
+    var typo_forgiveness: int = SimDifficulty.get_typo_forgiveness("adventure")
+    _assert_true(typo_forgiveness >= 0, "Typo forgiveness is non-negative")

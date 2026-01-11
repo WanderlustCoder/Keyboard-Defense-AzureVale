@@ -280,3 +280,58 @@ static func scramble_word(word: String, seed: String) -> String:
 		result = "".join(chars)
 
 	return result
+
+
+# =============================================================================
+# Random Word Generation (for exploration challenges)
+# =============================================================================
+
+static func random_common_word(state) -> String:
+	## Get a random common word from SHORT_WORDS or MEDIUM_WORDS
+	var combined: Array[String] = []
+	combined.append_array(SHORT_WORDS)
+	combined.append_array(MEDIUM_WORDS)
+	if combined.is_empty():
+		return "word"
+	var idx: int = 0
+	if state != null and state.has_method("get"):
+		# Use state RNG if available
+		var seed_val: String = str(state.get("rng_seed", "random"))
+		idx = _hash_index(seed_val + str(Time.get_ticks_msec()), combined.size())
+	else:
+		idx = randi() % combined.size()
+	return combined[idx]
+
+
+static func random_uncommon_word(state) -> String:
+	## Get a random uncommon/longer word from LONG_WORDS
+	if LONG_WORDS.is_empty():
+		return "challenge"
+	var idx: int = 0
+	if state != null and state.has_method("get"):
+		var seed_val: String = str(state.get("rng_seed", "random"))
+		idx = _hash_index(seed_val + str(Time.get_ticks_msec()) + "uncommon", LONG_WORDS.size())
+	else:
+		idx = randi() % LONG_WORDS.size()
+	return LONG_WORDS[idx]
+
+
+static func random_word_for_lesson(state, lesson_id: String) -> String:
+	## Get a random word appropriate for a specific lesson
+	var lesson: Dictionary = SimLessons.get_lesson(lesson_id)
+	if lesson.is_empty():
+		return random_common_word(state)
+
+	# Try to get from lesson word pool
+	var word_pool: Array = lesson.get("word_pool", [])
+	if not word_pool.is_empty():
+		var idx: int = 0
+		if state != null and state.has_method("get"):
+			var seed_val: String = str(state.get("rng_seed", "random"))
+			idx = _hash_index(seed_val + str(Time.get_ticks_msec()) + lesson_id, word_pool.size())
+		else:
+			idx = randi() % word_pool.size()
+		return str(word_pool[idx])
+
+	# Fallback to common words
+	return random_common_word(state)

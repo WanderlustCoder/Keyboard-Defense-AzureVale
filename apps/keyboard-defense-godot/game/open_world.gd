@@ -29,6 +29,7 @@ const DIALOGUE_BOX_SCENE := preload("res://scenes/DialogueBox.tscn")
 @onready var enemy_panel: Panel = $CanvasLayer/HUD/EnemyPanel
 @onready var enemy_list: RichTextLabel = $CanvasLayer/HUD/EnemyPanel/EnemyList
 @onready var game_controller = get_node_or_null("/root/GameController")
+@onready var audio_manager = get_node_or_null("/root/AudioManager")
 
 var state: GameState
 var log_lines: Array[String] = []
@@ -70,6 +71,10 @@ func _ready() -> void:
 		menu_button.pressed.connect(_on_menu_pressed)
 
 	_refresh_all()
+
+	# Start exploration music
+	if audio_manager:
+		audio_manager.play_music(audio_manager.Music.KINGDOM)
 
 	# Show welcome dialogue from Elder Lyra
 	_show_welcome_dialogue()
@@ -187,6 +192,10 @@ func _process(delta: float) -> void:
 		# Check for combat start
 		if prev_activity == "exploration" and state.activity_mode in ["encounter", "wave_assault"]:
 			_show_first_combat_message()
+			# Play combat music and wave start sound
+			if audio_manager:
+				audio_manager.play_wave_start()
+				audio_manager.play_music(audio_manager.Music.BATTLE_TENSE)
 
 		_refresh_all()
 
@@ -268,11 +277,19 @@ func _on_command_submitted(text: String) -> void:
 			var kind: String = str(hit_enemy.get("kind", "enemy"))
 			var word: String = str(hit_enemy.get("word", ""))
 
+			# Play hit sound
+			if audio_manager:
+				audio_manager.play_hit_enemy()
+
 			if int(hit_enemy.get("hp", 0)) <= 0:
 				state.enemies.remove_at(hit_idx)
 				var gold_reward: int = 5 + state.day
 				state.gold += gold_reward
 				_append_log("[color=lime]DEFEATED %s![/color] +%d gold" % [kind.to_upper(), gold_reward])
+
+				# Play word complete sound
+				if audio_manager:
+					audio_manager.play_word_complete()
 
 				# Check if combat over
 				if state.enemies.is_empty():
@@ -280,6 +297,10 @@ func _on_command_submitted(text: String) -> void:
 					state.phase = "day"
 					_append_log("[color=cyan]Combat ended! Back to exploration.[/color]")
 					_show_victory_message(gold_reward)
+					# Play victory sound and switch music
+					if audio_manager:
+						audio_manager.play_victory()
+						audio_manager.play_music(audio_manager.Music.KINGDOM)
 			else:
 				_append_log("[color=yellow]Hit %s![/color] HP: %d" % [kind, hit_enemy.get("hp", 0)])
 				# Give enemy a new word
@@ -527,6 +548,9 @@ func _check_poi_discovery() -> void:
 		if not description.is_empty():
 			_append_log("[color=gray]%s[/color]" % description)
 		_append_log("Type 'interact' to investigate.")
+		# Play POI discovery sound
+		if audio_manager:
+			audio_manager.play_poi_appear()
 
 
 func _handle_interact_command() -> void:
@@ -595,6 +619,9 @@ func _show_event_dialogue(event_data: Dictionary) -> void:
 
 	waiting_for_dialogue = true
 	dialogue_box.show_dialogue(name, lines)
+	# Play event show sound
+	if audio_manager:
+		audio_manager.play_event_show()
 
 
 func _try_resolve_event_choice(input: String) -> bool:
@@ -631,6 +658,9 @@ func _try_resolve_event_choice(input: String) -> bool:
 		_append_log("[color=cyan]You made your choice.[/color]")
 		pending_event_choices.clear()
 		current_event_data = {}
+		# Play event choice sound
+		if audio_manager:
+			audio_manager.play_event_choice()
 		return true
 	else:
 		var error: String = str(result.get("error", "unknown"))
@@ -663,6 +693,9 @@ func _start_challenge(choice_id: String, choice_data: Dictionary) -> void:
 	_append_log("[color=cyan]--- TYPING CHALLENGE ---[/color]")
 	_append_log(desc)
 	_show_challenge_status()
+	# Play wave start sound to signal challenge beginning
+	if audio_manager:
+		audio_manager.play_wave_start()
 
 
 func _process_challenge_input(input: String) -> void:
@@ -679,8 +712,14 @@ func _process_challenge_input(input: String) -> void:
 
 		if correct:
 			_append_log("[color=lime]Correct![/color] '%s'" % expected)
+			# Play correct typing sound
+			if audio_manager:
+				audio_manager.play_type_correct()
 		else:
 			_append_log("[color=yellow]Accepted.[/color] Expected '%s'" % expected)
+			# Play mistake sound for accepted but incorrect
+			if audio_manager:
+				audio_manager.play_type_mistake()
 
 		if remaining <= 0:
 			# Challenge complete
@@ -735,6 +774,9 @@ func _complete_challenge() -> void:
 
 		state.pending_event = {}
 		_append_log("[color=cyan]Challenge complete![/color]")
+		# Play success sound
+		if audio_manager:
+			audio_manager.play_event_success()
 	else:
 		# Apply fail effects if any
 		var choice_data: Dictionary = SimEvents.get_choice(current_event_data, challenge_choice_id)
@@ -748,6 +790,9 @@ func _complete_challenge() -> void:
 
 		state.pending_event = {}
 		_append_log("[color=red]Challenge failed.[/color]")
+		# Play fail sound
+		if audio_manager:
+			audio_manager.play_event_fail()
 
 	# Clear challenge state
 	active_challenge = {}

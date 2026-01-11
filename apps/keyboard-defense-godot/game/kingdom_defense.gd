@@ -151,6 +151,7 @@ const WaveComposerReferencePanel = preload("res://ui/components/wave_composer_re
 @onready var act_label: Label = $HUD/TopBar/HBox/ActLabel
 @onready var dialogue_box: Control = $DialogueBox
 @onready var game_controller = get_node_or_null("/root/GameController")
+@onready var audio_manager = get_node_or_null("/root/AudioManager")
 
 # Game state
 var state: GameState
@@ -401,6 +402,10 @@ func _ready() -> void:
 	_init_achievement_system()
 	_connect_signals()
 	_show_game_start_dialogue()
+
+	# Start with kingdom music (planning phase)
+	if audio_manager:
+		audio_manager.play_music(audio_manager.Music.KINGDOM)
 
 func _init_kingdom_systems() -> void:
 	# Initialize research system
@@ -1857,6 +1862,11 @@ func _enemy_reached_castle(enemy_index: int) -> void:
 	run_damage_taken += damage
 	combo = 0  # Break combo
 
+	# Play castle hit and combo break sounds
+	if audio_manager:
+		audio_manager.play_hit_player()
+		audio_manager.play_combo_break()
+
 	# Lifetime stats: damage taken
 	SimPlayerStats.increment_stat(profile, "total_damage_taken", damage)
 
@@ -1896,6 +1906,11 @@ func _start_defense_phase() -> void:
 	gold_earned_this_wave = 0
 	words_typed_this_wave = 0
 	kills_this_wave = 0
+
+	# Play wave start sound and switch to battle music
+	if audio_manager:
+		audio_manager.play_wave_start()
+		audio_manager.play_music(audio_manager.Music.BATTLE_TENSE)
 
 	# Show contextual tips at strategic moments
 	_show_contextual_defense_tip()
@@ -2094,6 +2109,12 @@ func _get_enemy_hp(kind: String) -> int:
 func _wave_complete() -> void:
 	var was_boss_day: bool = wave == waves_per_day and StoryManager.is_boss_day(day)
 	var old_lesson_id: String = state.lesson_id
+
+	# Play wave end and victory sounds, switch back to kingdom music
+	if audio_manager:
+		audio_manager.play_wave_end()
+		audio_manager.play_victory()
+		audio_manager.play_music(audio_manager.Music.KINGDOM)
 
 	wave += 1
 
@@ -2717,6 +2738,10 @@ func _attack_target_enemy() -> void:
 	# Apply damage to main target
 	enemy["hp"] = int(enemy.get("hp", 1)) - damage
 
+	# Play hit sound
+	if audio_manager:
+		audio_manager.play_hit_enemy()
+
 	# Track stats
 	correct_chars += current_word.length()
 	total_chars += current_word.length()
@@ -2749,6 +2774,9 @@ func _attack_target_enemy() -> void:
 		var announcement: String = SimCombo.get_tier_announcement(combo)
 		if not announcement.is_empty():
 			_update_objective("[color=yellow]%s[/color]" % announcement)
+		# Play combo milestone sound
+		if audio_manager:
+			audio_manager.play_combo_milestone(combo)
 
 	# Check combo achievements
 	if achievement_checker != null and combo >= 5:
