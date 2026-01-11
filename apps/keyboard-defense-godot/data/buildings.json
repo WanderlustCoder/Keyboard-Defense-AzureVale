@@ -99,6 +99,25 @@
       },
       "unlocks": ["garrison"]
     },
+    "garrison": {
+      "label": "Garrison",
+      "description": "Houses trained soldiers that automatically defend nearby areas.",
+      "category": "military",
+      "cost": {"wood": 15, "stone": 12, "gold": 25},
+      "production": {},
+      "defense": 3,
+      "worker_slots": 3,
+      "adjacency_bonus": {
+        "terrain": {},
+        "building": {"barracks": {"defense": 1}, "wall": {"defense": 1}}
+      },
+      "requires": ["barracks"],
+      "combat_stats": {
+        "range": 2,
+        "damage": 2,
+        "shots_per_wave": 2
+      }
+    },
     "temple": {
       "label": "Temple",
       "description": "Provides healing after each wave.",

@@ -70,11 +70,26 @@ def extract_ids(data: Dict, file_name: str) -> Set[str]:
         if "entries" in data and isinstance(data["entries"], dict):
             ids.update(data["entries"].keys())
 
-        # Direct entries pattern: {"id1": {...}, "id2": {...}}
-        # Skip known non-ID keys
-        skip_keys = {"version", "meta", "settings", "config", "schema"}
+        # Skip known non-ID keys (metadata and container keys)
+        skip_keys = {"version", "meta", "settings", "config", "schema", "categories", "resources", "synergies"}
+
+        # Container keys that hold ID dictionaries (e.g., {"buildings": {"farm": {...}, "lumber": {...}}})
+        container_keys = {"buildings", "towers", "lessons", "upgrades", "achievements", "quests", "items", "enemies", "research"}
+
         for key in data.keys():
-            if key not in skip_keys and isinstance(data[key], dict):
+            if key in skip_keys:
+                continue
+
+            value = data[key]
+
+            # Check if this is a container with nested IDs
+            if key in container_keys and isinstance(value, dict):
+                # Extract the nested IDs
+                for nested_key, nested_value in value.items():
+                    if isinstance(nested_value, dict):
+                        ids.add(nested_key)
+            elif isinstance(value, dict):
+                # Direct entries pattern: {"id1": {...}, "id2": {...}}
                 ids.add(key)
 
         # Array entries with id field: [{"id": "x"}, {"id": "y"}]

@@ -418,7 +418,7 @@
           "description": "10 consecutive perfect words unleash devastating attack"
         }
       },
-      "unlock_requirement": {"type": "quest", "quest_id": "master_of_words"},
+      "unlock_requirement": {"type": "level", "value": 30},
       "placement_limit": 1,
       "terrain_bonuses": {},
       "blocks_movement": true,
@@ -509,11 +509,7 @@
           "description": "Type the phrase to deal massive damage to boss"
         }
       },
-      "unlock_requirement": {
-        "type": "achievement",
-        "achievement_id": "purifier_master",
-        "description": "Defeat 1000 corrupted enemies with 95%+ accuracy"
-      },
+      "unlock_requirement": {"type": "level", "value": 35},
       "placement_limit": 1,
       "terrain_bonuses": {},
       "blocks_movement": true,
