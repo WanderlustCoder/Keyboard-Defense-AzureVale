@@ -4,6 +4,30 @@ This file tracks recent changes for Claude Code context.
 
 ---
 
+## 2026-01-10: Development Tools Batch 22
+
+Added property encapsulation and signal/resource analysis tools:
+
+### Setget Patterns Checker (`scripts/check_setget_patterns.py`)
+- Finds properties modified externally without setters
+- Detects export variables without validation
+- Reports setter/getter consistency
+- Tracks external modification counts
+
+### Resource References Checker (`scripts/check_resource_refs.py`)
+- Finds broken res:// paths
+- Detects load() in hot paths (use preload)
+- Reports most referenced resources
+- Tracks preload vs load ratio (77% preload)
+
+### Signal Patterns Checker (`scripts/check_signal_patterns.py`)
+- Finds signals declared but never emitted
+- Detects lambda handlers (memory leak risk)
+- Reports signal connection patterns
+- Lists most connected signals
+
+---
+
 ## 2026-01-10: Development Tools Batch 21
 
 Added code quality and encapsulation tools:

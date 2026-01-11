@@ -1402,6 +1402,57 @@ Reports:
 - Signal connections in _init()
 - add_child() in _init()
 
+### Setget Patterns Checker
+
+Find properties that should use set/get accessors:
+
+```bash
+./scripts/check_setget_patterns.sh              # Full report
+./scripts/check_setget_patterns.sh --file game/main.gd  # Single file
+./scripts/check_setget_patterns.sh --strict     # Include info patterns
+./scripts/check_setget_patterns.sh --json       # JSON output
+```
+
+Reports:
+- Properties modified externally without setters
+- Export variables without setters
+- Setter/getter consistency
+- External modification counts
+
+### Resource References Checker
+
+Find issues with resource references:
+
+```bash
+./scripts/check_resource_refs.sh              # Full report
+./scripts/check_resource_refs.sh --file game/main.gd  # Single file
+./scripts/check_resource_refs.sh --strict     # Include unused loads
+./scripts/check_resource_refs.sh --json       # JSON output
+```
+
+Reports:
+- Broken res:// paths
+- load() in hot paths (use preload)
+- Most referenced resources
+- Preload vs load ratio
+
+### Signal Patterns Checker
+
+Find issues with signal usage:
+
+```bash
+./scripts/check_signal_patterns.sh              # Full report
+./scripts/check_signal_patterns.sh --file game/main.gd  # Single file
+./scripts/check_signal_patterns.sh --strict     # Include disconnect checks
+./scripts/check_signal_patterns.sh --json       # JSON output
+```
+
+Reports:
+- Signals declared but never emitted
+- Lambda signal handlers (memory leak risk)
+- Signal connection patterns
+- Most connected signals
+
 ## File Locations Quick Reference
 
 | Need to... | Location |
