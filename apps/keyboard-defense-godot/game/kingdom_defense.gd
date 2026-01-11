@@ -1609,7 +1609,7 @@ func _reset_game() -> void:
 		input_field.grab_focus()
 
 func _init_game_state() -> void:
-	state = DefaultState.create()
+	state = DefaultState.create("default", true)
 	state.base_pos = Vector2i(1, state.map_h / 2)
 	state.cursor_pos = cursor_grid_pos
 	state.lesson_id = lesson_order[current_lesson_index]

@@ -42,12 +42,14 @@ static func apply_resource_add(state: GameState, effect: Dictionary) -> Dictiona
 	var old_value: int = int(state.resources.get(resource, 0))
 	var new_value: int = max(0, old_value + amount)
 	state.resources[resource] = new_value
+	var sign_str: String = "+" if amount >= 0 else ""
 	return {
 		"type": "resource_add",
 		"resource": resource,
 		"amount": amount,
 		"old_value": old_value,
-		"new_value": new_value
+		"new_value": new_value,
+		"message": "%s%d %s" % [sign_str, amount, resource]
 	}
 
 static func apply_buff(state: GameState, effect: Dictionary) -> Dictionary:
@@ -67,6 +69,7 @@ static func apply_buff(state: GameState, effect: Dictionary) -> Dictionary:
 		"expires_day": state.day + duration,
 		"applied_day": state.day
 	}
+	var buff_name: String = buff_id.replace("_", " ").capitalize()
 	if found_index >= 0:
 		# Refresh duration
 		state.active_buffs[found_index] = buff_data
@@ -74,7 +77,8 @@ static func apply_buff(state: GameState, effect: Dictionary) -> Dictionary:
 			"type": "buff_apply",
 			"buff_id": buff_id,
 			"duration": duration,
-			"refreshed": true
+			"refreshed": true,
+			"message": "Buff refreshed: %s (%d days)" % [buff_name, duration]
 		}
 	else:
 		state.active_buffs.append(buff_data)
@@ -82,7 +86,8 @@ static func apply_buff(state: GameState, effect: Dictionary) -> Dictionary:
 			"type": "buff_apply",
 			"buff_id": buff_id,
 			"duration": duration,
-			"refreshed": false
+			"refreshed": false,
+			"message": "Buff gained: %s (%d days)" % [buff_name, duration]
 		}
 
 static func apply_damage_castle(state: GameState, effect: Dictionary) -> Dictionary:
@@ -93,7 +98,8 @@ static func apply_damage_castle(state: GameState, effect: Dictionary) -> Diction
 		"type": "damage_castle",
 		"amount": amount,
 		"old_hp": old_hp,
-		"new_hp": state.hp
+		"new_hp": state.hp,
+		"message": "Castle damaged: -%d HP" % amount
 	}
 
 static func apply_heal_castle(state: GameState, effect: Dictionary) -> Dictionary:
@@ -101,11 +107,13 @@ static func apply_heal_castle(state: GameState, effect: Dictionary) -> Dictionar
 	var max_hp: int = int(effect.get("max_hp", 10))
 	var old_hp: int = state.hp
 	state.hp = min(max_hp, state.hp + amount)
+	var healed: int = state.hp - old_hp
 	return {
 		"type": "heal_castle",
 		"amount": amount,
 		"old_hp": old_hp,
-		"new_hp": state.hp
+		"new_hp": state.hp,
+		"message": "Castle healed: +%d HP" % healed if healed > 0 else "Castle already at full health"
 	}
 
 static func apply_set_flag(state: GameState, effect: Dictionary) -> Dictionary:
@@ -139,22 +147,27 @@ static func apply_threat_add(state: GameState, effect: Dictionary) -> Dictionary
 	var amount: int = int(effect.get("amount", 1))
 	var old_threat: int = state.threat
 	state.threat = max(0, state.threat + amount)
+	var sign_str: String = "+" if amount >= 0 else ""
 	return {
 		"type": "threat_add",
 		"amount": amount,
 		"old_threat": old_threat,
-		"new_threat": state.threat
+		"new_threat": state.threat,
+		"message": "Threat %s%d" % [sign_str, amount]
 	}
 
 static func apply_ap_add(state: GameState, effect: Dictionary) -> Dictionary:
 	var amount: int = int(effect.get("amount", 1))
 	var old_ap: int = state.ap
 	state.ap = clamp(state.ap + amount, 0, state.ap_max)
+	var actual: int = state.ap - old_ap
+	var sign_str: String = "+" if actual >= 0 else ""
 	return {
 		"type": "ap_add",
 		"amount": amount,
 		"old_ap": old_ap,
-		"new_ap": state.ap
+		"new_ap": state.ap,
+		"message": "%s%d AP" % [sign_str, actual] if actual != 0 else "AP unchanged"
 	}
 
 static func has_buff(state: GameState, buff_id: String) -> bool:

@@ -1,0 +1,95 @@
+{
+  "version": 1,
+  "buffs": {
+    "resource_boost": {
+      "name": "Resource Boost",
+      "description": "Increases resource gathering by 25%",
+      "icon": "buff_resource",
+      "effects": {
+        "resource_multiplier": 0.25
+      },
+      "stackable": false
+    },
+    "ap_regen": {
+      "name": "Energized",
+      "description": "Gain +1 AP at dawn",
+      "icon": "buff_energy",
+      "effects": {
+        "ap_bonus": 1
+      },
+      "stackable": false
+    },
+    "threat_reduction": {
+      "name": "Concealed",
+      "description": "Reduces threat gain by 50%",
+      "icon": "buff_stealth",
+      "effects": {
+        "threat_multiplier": -0.5
+      },
+      "stackable": false
+    },
+    "damage_boost": {
+      "name": "Battle Ready",
+      "description": "Increases damage dealt by 20%",
+      "icon": "buff_damage",
+      "effects": {
+        "damage_multiplier": 0.2
+      },
+      "stackable": false
+    },
+    "defense_boost": {
+      "name": "Fortified",
+      "description": "Reduces damage taken by 1",
+      "icon": "buff_defense",
+      "effects": {
+        "damage_reduction": 1
+      },
+      "stackable": false
+    },
+    "gold_boost": {
+      "name": "Prosperous",
+      "description": "Increases gold earned by 30%",
+      "icon": "buff_gold",
+      "effects": {
+        "gold_multiplier": 0.3
+      },
+      "stackable": false
+    },
+    "typing_precision": {
+      "name": "Focused Mind",
+      "description": "Typing challenges are easier",
+      "icon": "buff_focus",
+      "effects": {
+        "accuracy_bonus": 0.05
+      },
+      "stackable": false
+    },
+    "discovery_boost": {
+      "name": "Explorer's Instinct",
+      "description": "Better rewards from exploration",
+      "icon": "buff_explore",
+      "effects": {
+        "explore_reward_multiplier": 0.5
+      },
+      "stackable": false
+    },
+    "speed_boost": {
+      "name": "Swift",
+      "description": "Enemies move slower",
+      "icon": "buff_speed",
+      "effects": {
+        "enemy_speed_multiplier": -0.2
+      },
+      "stackable": false
+    },
+    "hp_regen": {
+      "name": "Regeneration",
+      "description": "Heal 1 HP at dawn",
+      "icon": "buff_heal",
+      "effects": {
+        "hp_regen": 1
+      },
+      "stackable": false
+    }
+  }
+}

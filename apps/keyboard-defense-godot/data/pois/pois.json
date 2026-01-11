@@ -32,7 +32,8 @@
       "rarity": 40,
       "tags": ["salvage", "healing"],
       "min_day": 1,
-      "max_day": 20
+      "max_day": 20,
+      "respawn_days": 3
     },
     {
       "id": "poi_stonepass_quarry",
@@ -43,7 +44,8 @@
       "rarity": 30,
       "tags": ["salvage", "mining"],
       "min_day": 3,
-      "max_day": 15
+      "max_day": 15,
+      "respawn_days": 4
     },
     {
       "id": "poi_stonepass_watchtower",
@@ -142,7 +144,8 @@
       "rarity": 30,
       "tags": ["salvage", "healing"],
       "min_day": 9,
-      "max_day": 25
+      "max_day": 25,
+      "respawn_days": 3
     },
     {
       "id": "poi_sunfields_arena",
@@ -186,7 +189,8 @@
       "rarity": 35,
       "tags": ["salvage", "risk"],
       "min_day": 1,
-      "max_day": 8
+      "max_day": 8,
+      "respawn_days": 2
     },
     {
       "id": "poi_stonepass_forge",
@@ -219,7 +223,8 @@
       "rarity": 25,
       "tags": ["social", "salvage"],
       "min_day": 8,
-      "max_day": 22
+      "max_day": 22,
+      "respawn_days": 5
     },
     {
       "id": "poi_sunfields_fountain",

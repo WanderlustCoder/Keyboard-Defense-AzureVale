@@ -6,34 +6,66 @@
       "title": "Bent Wheel",
       "body": "An abandoned wagon sits tilted in the path, its wheel badly bent. Salvageable supplies are scattered nearby, but repairing it could yield better rewards.",
       "tier": 1,
-      "tags": ["salvage", "evergrove"],
+      "tags": [
+        "salvage",
+        "evergrove"
+      ],
       "cooldown_days": 3,
       "choices": [
         {
           "id": "salvage",
           "label": "Salvage supplies",
-          "input": { "mode": "phrase", "text": "gather the supplies" },
+          "input": {
+            "mode": "phrase",
+            "text": "gather the supplies"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "wood", "amount": 2 },
-            { "type": "resource_add", "resource": "food", "amount": 1 }
+            {
+              "type": "resource_add",
+              "resource": "wood",
+              "amount": 2
+            },
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": 1
+            }
           ]
         },
         {
           "id": "repair",
           "label": "Repair the wheel",
-          "input": { "mode": "phrase", "text": "mend the broken wheel" },
+          "input": {
+            "mode": "phrase",
+            "text": "mend the broken wheel"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "wood", "amount": 4 },
-            { "type": "resource_add", "resource": "stone", "amount": 2 }
+            {
+              "type": "resource_add",
+              "resource": "wood",
+              "amount": 4
+            },
+            {
+              "type": "resource_add",
+              "resource": "stone",
+              "amount": 2
+            }
           ],
           "fail_effects": [
-            { "type": "resource_add", "resource": "wood", "amount": 1 }
+            {
+              "type": "resource_add",
+              "resource": "wood",
+              "amount": 1
+            }
           ]
         },
         {
           "id": "leave",
           "label": "Leave it",
-          "input": { "mode": "code", "text": "leave" },
+          "input": {
+            "mode": "code",
+            "text": "leave"
+          },
           "effects": []
         }
       ]
@@ -43,24 +75,45 @@
       "title": "Scribe's Notes",
       "body": "Weathered pages flutter in the breeze, pinned beneath a rock. The handwriting is elegant but faded. These appear to be notes from a traveling scribe.",
       "tier": 1,
-      "tags": ["lore", "evergrove"],
+      "tags": [
+        "lore",
+        "evergrove"
+      ],
       "cooldown_days": 5,
       "choices": [
         {
           "id": "read",
           "label": "Study the notes",
-          "input": { "mode": "phrase", "text": "read the ancient text" },
+          "input": {
+            "mode": "phrase",
+            "text": "read the ancient text"
+          },
           "effects": [
-            { "type": "set_flag", "flag": "scribe_lore_1", "value": true },
-            { "type": "buff_apply", "buff": "insight", "duration": 2 }
+            {
+              "type": "set_flag",
+              "flag": "scribe_lore_1",
+              "value": true
+            },
+            {
+              "type": "buff_apply",
+              "buff": "insight",
+              "duration": 2
+            }
           ]
         },
         {
           "id": "take",
           "label": "Take the pages",
-          "input": { "mode": "code", "text": "collect" },
+          "input": {
+            "mode": "code",
+            "text": "collect"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "wood", "amount": 1 }
+            {
+              "type": "resource_add",
+              "resource": "wood",
+              "amount": 1
+            }
           ]
         }
       ]
@@ -70,33 +123,65 @@
       "title": "Forest Ambush",
       "body": "Rustling in the underbrush! Bandits emerge from the treeline, blocking your path. You could fight, flee, or try to negotiate.",
       "tier": 2,
-      "tags": ["combat", "evergrove", "risk"],
+      "tags": [
+        "combat",
+        "evergrove",
+        "risk"
+      ],
       "cooldown_days": 4,
       "choices": [
         {
           "id": "fight",
           "label": "Stand and fight",
-          "input": { "mode": "prompt_burst", "prompts": ["strike", "defend", "counter"] },
+          "input": {
+            "mode": "prompt_burst",
+            "prompts": [
+              "strike",
+              "defend",
+              "counter"
+            ]
+          },
           "effects": [
-            { "type": "resource_add", "resource": "food", "amount": 3 },
-            { "type": "resource_add", "resource": "stone", "amount": 2 }
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": 3
+            },
+            {
+              "type": "resource_add",
+              "resource": "stone",
+              "amount": 2
+            }
           ],
           "fail_effects": [
-            { "type": "damage_castle", "amount": 2 }
+            {
+              "type": "damage_castle",
+              "amount": 2
+            }
           ]
         },
         {
           "id": "flee",
           "label": "Retreat quickly",
-          "input": { "mode": "phrase", "text": "run away fast" },
+          "input": {
+            "mode": "phrase",
+            "text": "run away fast"
+          },
           "effects": []
         },
         {
           "id": "bribe",
           "label": "Offer supplies",
-          "input": { "mode": "code", "text": "bribe" },
+          "input": {
+            "mode": "code",
+            "text": "bribe"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "food", "amount": -2 }
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": -2
+            }
           ]
         }
       ]
@@ -106,23 +191,40 @@
       "title": "Healing Herbs",
       "body": "A patch of medicinal herbs grows in a sunny clearing. Their leaves shimmer with morning dew.",
       "tier": 0,
-      "tags": ["salvage", "evergrove"],
+      "tags": [
+        "salvage",
+        "evergrove"
+      ],
       "cooldown_days": 2,
       "choices": [
         {
           "id": "harvest",
           "label": "Harvest herbs",
-          "input": { "mode": "phrase", "text": "pick the herbs" },
+          "input": {
+            "mode": "phrase",
+            "text": "pick the herbs"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "food", "amount": 2 }
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": 2
+            }
           ]
         },
         {
           "id": "mark",
           "label": "Mark for later",
-          "input": { "mode": "code", "text": "mark" },
+          "input": {
+            "mode": "code",
+            "text": "mark"
+          },
           "effects": [
-            { "type": "set_flag", "flag": "herb_patch_marked", "value": true }
+            {
+              "type": "set_flag",
+              "flag": "herb_patch_marked",
+              "value": true
+            }
           ]
         }
       ]
@@ -132,32 +234,61 @@
       "title": "Quiet Shrine",
       "body": "A small stone shrine stands in a grove of ancient oaks. Faded offerings rest at its base. The air feels peaceful here.",
       "tier": 1,
-      "tags": ["lore", "evergrove", "social"],
+      "tags": [
+        "lore",
+        "evergrove",
+        "social"
+      ],
       "cooldown_days": 6,
       "choices": [
         {
           "id": "pray",
           "label": "Offer a prayer",
-          "input": { "mode": "phrase", "text": "speak words of blessing" },
+          "input": {
+            "mode": "phrase",
+            "text": "speak words of blessing"
+          },
           "effects": [
-            { "type": "buff_apply", "buff": "blessed", "duration": 3 }
+            {
+              "type": "buff_apply",
+              "buff": "blessed",
+              "duration": 3
+            }
           ]
         },
         {
           "id": "donate",
           "label": "Leave an offering",
-          "input": { "mode": "code", "text": "offer" },
+          "input": {
+            "mode": "code",
+            "text": "offer"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "food", "amount": -1 },
-            { "type": "buff_apply", "buff": "fortune", "duration": 5 }
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": -1
+            },
+            {
+              "type": "buff_apply",
+              "buff": "fortune",
+              "duration": 5
+            }
           ]
         },
         {
           "id": "observe",
           "label": "Study the shrine",
-          "input": { "mode": "phrase", "text": "examine the ancient stones" },
+          "input": {
+            "mode": "phrase",
+            "text": "examine the ancient stones"
+          },
           "effects": [
-            { "type": "set_flag", "flag": "shrine_lore_1", "value": true }
+            {
+              "type": "set_flag",
+              "flag": "shrine_lore_1",
+              "value": true
+            }
           ]
         }
       ]
@@ -167,31 +298,58 @@
       "title": "Lost Traveler",
       "body": "A weary traveler sits by the roadside, looking confused. They seem harmless but desperate for directions.",
       "tier": 1,
-      "tags": ["social", "evergrove"],
+      "tags": [
+        "social",
+        "evergrove"
+      ],
       "cooldown_days": 4,
       "choices": [
         {
           "id": "help",
           "label": "Offer directions",
-          "input": { "mode": "phrase", "text": "show them the way" },
+          "input": {
+            "mode": "phrase",
+            "text": "show them the way"
+          },
           "effects": [
-            { "type": "buff_apply", "buff": "goodwill", "duration": 3 },
-            { "type": "threat_add", "amount": -1 }
+            {
+              "type": "buff_apply",
+              "buff": "goodwill",
+              "duration": 3
+            },
+            {
+              "type": "threat_add",
+              "amount": -1
+            }
           ]
         },
         {
           "id": "trade",
           "label": "Trade supplies",
-          "input": { "mode": "code", "text": "trade" },
+          "input": {
+            "mode": "code",
+            "text": "trade"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "food", "amount": -1 },
-            { "type": "resource_add", "resource": "stone", "amount": 3 }
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": -1
+            },
+            {
+              "type": "resource_add",
+              "resource": "stone",
+              "amount": 3
+            }
           ]
         },
         {
           "id": "ignore",
           "label": "Walk past",
-          "input": { "mode": "code", "text": "ignore" },
+          "input": {
+            "mode": "code",
+            "text": "ignore"
+          },
           "effects": []
         }
       ]
@@ -201,26 +359,55 @@
       "title": "Hidden Cache",
       "body": "Behind a fallen log, you spot something glinting. A hidden cache of supplies, perhaps left by a previous expedition.",
       "tier": 1,
-      "tags": ["salvage", "evergrove"],
+      "tags": [
+        "salvage",
+        "evergrove"
+      ],
       "cooldown_days": 5,
       "choices": [
         {
           "id": "open",
           "label": "Open the cache",
-          "input": { "mode": "phrase", "text": "unlock the hidden stash" },
+          "input": {
+            "mode": "phrase",
+            "text": "unlock the hidden stash"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "wood", "amount": 3 },
-            { "type": "resource_add", "resource": "stone", "amount": 2 },
-            { "type": "resource_add", "resource": "food", "amount": 2 }
+            {
+              "type": "resource_add",
+              "resource": "wood",
+              "amount": 3
+            },
+            {
+              "type": "resource_add",
+              "resource": "stone",
+              "amount": 2
+            },
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": 2
+            }
           ]
         },
         {
           "id": "trap",
           "label": "Check for traps first",
-          "input": { "mode": "phrase", "text": "carefully inspect" },
+          "input": {
+            "mode": "phrase",
+            "text": "carefully inspect"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "wood", "amount": 2 },
-            { "type": "resource_add", "resource": "stone", "amount": 1 }
+            {
+              "type": "resource_add",
+              "resource": "wood",
+              "amount": 2
+            },
+            {
+              "type": "resource_add",
+              "resource": "stone",
+              "amount": 1
+            }
           ]
         }
       ]
@@ -230,34 +417,69 @@
       "title": "Standing Stone",
       "body": "An ancient monolith rises from the earth, covered in weathered runes. Power seems to emanate from within.",
       "tier": 2,
-      "tags": ["lore", "evergrove"],
+      "tags": [
+        "lore",
+        "evergrove"
+      ],
       "cooldown_days": 7,
       "choices": [
         {
           "id": "touch",
           "label": "Touch the stone",
-          "input": { "mode": "phrase", "text": "reach out and touch" },
+          "input": {
+            "mode": "phrase",
+            "text": "reach out and touch"
+          },
           "effects": [
-            { "type": "buff_apply", "buff": "ancient_power", "duration": 5 },
-            { "type": "set_flag", "flag": "touched_monolith", "value": true }
+            {
+              "type": "buff_apply",
+              "buff": "ancient_power",
+              "duration": 5
+            },
+            {
+              "type": "set_flag",
+              "flag": "touched_monolith",
+              "value": true
+            }
           ],
           "fail_effects": [
-            { "type": "damage_castle", "amount": 1 }
+            {
+              "type": "damage_castle",
+              "amount": 1
+            }
           ]
         },
         {
           "id": "read",
           "label": "Decipher the runes",
-          "input": { "mode": "prompt_burst", "prompts": ["ancient", "wisdom", "power"] },
+          "input": {
+            "mode": "prompt_burst",
+            "prompts": [
+              "ancient",
+              "wisdom",
+              "power"
+            ]
+          },
           "effects": [
-            { "type": "set_flag", "flag": "rune_knowledge", "value": true },
-            { "type": "buff_apply", "buff": "insight", "duration": 4 }
+            {
+              "type": "set_flag",
+              "flag": "rune_knowledge",
+              "value": true
+            },
+            {
+              "type": "buff_apply",
+              "buff": "insight",
+              "duration": 4
+            }
           ]
         },
         {
           "id": "leave",
           "label": "Leave it alone",
-          "input": { "mode": "code", "text": "leave" },
+          "input": {
+            "mode": "code",
+            "text": "leave"
+          },
           "effects": []
         }
       ]
@@ -267,32 +489,59 @@
       "title": "Wild Boar",
       "body": "A massive boar blocks the path ahead, pawing at the ground. Its tusks look sharp and dangerous.",
       "tier": 2,
-      "tags": ["combat", "evergrove", "risk"],
+      "tags": [
+        "combat",
+        "evergrove",
+        "risk"
+      ],
       "cooldown_days": 3,
       "choices": [
         {
           "id": "hunt",
           "label": "Hunt it down",
-          "input": { "mode": "prompt_burst", "prompts": ["aim", "strike", "finish"] },
+          "input": {
+            "mode": "prompt_burst",
+            "prompts": [
+              "aim",
+              "strike",
+              "finish"
+            ]
+          },
           "effects": [
-            { "type": "resource_add", "resource": "food", "amount": 5 }
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": 5
+            }
           ],
           "fail_effects": [
-            { "type": "damage_castle", "amount": 1 }
+            {
+              "type": "damage_castle",
+              "amount": 1
+            }
           ]
         },
         {
           "id": "scare",
           "label": "Scare it away",
-          "input": { "mode": "phrase", "text": "shout loudly" },
+          "input": {
+            "mode": "phrase",
+            "text": "shout loudly"
+          },
           "effects": [
-            { "type": "threat_add", "amount": 1 }
+            {
+              "type": "threat_add",
+              "amount": 1
+            }
           ]
         },
         {
           "id": "wait",
           "label": "Wait for it to leave",
-          "input": { "mode": "code", "text": "wait" },
+          "input": {
+            "mode": "code",
+            "text": "wait"
+          },
           "effects": []
         }
       ]
@@ -302,34 +551,70 @@
       "title": "Abandoned Camp",
       "body": "The remains of a campsite lie scattered about. A cold fire pit, torn canvas, and scattered belongings suggest a hasty departure.",
       "tier": 1,
-      "tags": ["exploration", "evergrove"],
+      "tags": [
+        "exploration",
+        "evergrove"
+      ],
       "cooldown_days": 4,
       "choices": [
         {
           "id": "search",
           "label": "Search thoroughly",
-          "input": { "mode": "phrase", "text": "look through everything" },
+          "input": {
+            "mode": "phrase",
+            "text": "look through everything"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "wood", "amount": 2 },
-            { "type": "resource_add", "resource": "food", "amount": 1 },
-            { "type": "set_flag", "flag": "found_camp_clue", "value": true }
+            {
+              "type": "resource_add",
+              "resource": "wood",
+              "amount": 2
+            },
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": 1
+            },
+            {
+              "type": "set_flag",
+              "flag": "found_camp_clue",
+              "value": true
+            }
           ]
         },
         {
           "id": "quick",
           "label": "Quick grab",
-          "input": { "mode": "code", "text": "grab" },
+          "input": {
+            "mode": "code",
+            "text": "grab"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "wood", "amount": 1 }
+            {
+              "type": "resource_add",
+              "resource": "wood",
+              "amount": 1
+            }
           ]
         },
         {
           "id": "investigate",
           "label": "Investigate what happened",
-          "input": { "mode": "phrase", "text": "examine the clues" },
+          "input": {
+            "mode": "phrase",
+            "text": "examine the clues"
+          },
           "effects": [
-            { "type": "set_flag", "flag": "camp_mystery", "value": true },
-            { "type": "buff_apply", "buff": "wary", "duration": 2 }
+            {
+              "type": "set_flag",
+              "flag": "camp_mystery",
+              "value": true
+            },
+            {
+              "type": "buff_apply",
+              "buff": "wary",
+              "duration": 2
+            }
           ]
         }
       ]
@@ -339,23 +624,40 @@
       "title": "Berry Bush",
       "body": "A bush laden with ripe berries catches your eye. They look delicious, but some forest berries can be dangerous.",
       "tier": 0,
-      "tags": ["salvage", "evergrove"],
+      "tags": [
+        "salvage",
+        "evergrove"
+      ],
       "cooldown_days": 2,
       "choices": [
         {
           "id": "eat",
           "label": "Eat some berries",
-          "input": { "mode": "code", "text": "eat" },
+          "input": {
+            "mode": "code",
+            "text": "eat"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "food", "amount": 2 }
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": 2
+            }
           ]
         },
         {
           "id": "collect",
           "label": "Collect carefully",
-          "input": { "mode": "phrase", "text": "gather the berries" },
+          "input": {
+            "mode": "phrase",
+            "text": "gather the berries"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "food", "amount": 3 }
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": 3
+            }
           ]
         }
       ]
@@ -365,24 +667,45 @@
       "title": "Rich Ore Vein",
       "body": "Glittering metal ore streaks through the rock face. Mining it would take effort, but the yield looks promising.",
       "tier": 2,
-      "tags": ["salvage", "stonepass"],
+      "tags": [
+        "salvage",
+        "stonepass"
+      ],
       "cooldown_days": 4,
       "choices": [
         {
           "id": "mine",
           "label": "Mine the ore",
-          "input": { "mode": "phrase", "text": "dig into the stone" },
+          "input": {
+            "mode": "phrase",
+            "text": "dig into the stone"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "stone", "amount": 5 }
+            {
+              "type": "resource_add",
+              "resource": "stone",
+              "amount": 5
+            }
           ]
         },
         {
           "id": "survey",
           "label": "Survey for more",
-          "input": { "mode": "code", "text": "survey" },
+          "input": {
+            "mode": "code",
+            "text": "survey"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "stone", "amount": 2 },
-            { "type": "set_flag", "flag": "ore_survey_done", "value": true }
+            {
+              "type": "resource_add",
+              "resource": "stone",
+              "amount": 2
+            },
+            {
+              "type": "set_flag",
+              "flag": "ore_survey_done",
+              "value": true
+            }
           ]
         }
       ]
@@ -392,27 +715,52 @@
       "title": "Collapsed Tunnel",
       "body": "A tunnel entrance lies half-buried in rubble. Something glints within the darkness beyond.",
       "tier": 2,
-      "tags": ["exploration", "stonepass", "risk"],
+      "tags": [
+        "exploration",
+        "stonepass",
+        "risk"
+      ],
       "cooldown_days": 5,
       "choices": [
         {
           "id": "excavate",
           "label": "Clear the rubble",
-          "input": { "mode": "phrase", "text": "move the heavy stones" },
+          "input": {
+            "mode": "phrase",
+            "text": "move the heavy stones"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "stone", "amount": 3 },
-            { "type": "resource_add", "resource": "wood", "amount": 2 }
+            {
+              "type": "resource_add",
+              "resource": "stone",
+              "amount": 3
+            },
+            {
+              "type": "resource_add",
+              "resource": "wood",
+              "amount": 2
+            }
           ],
           "fail_effects": [
-            { "type": "damage_castle", "amount": 1 }
+            {
+              "type": "damage_castle",
+              "amount": 1
+            }
           ]
         },
         {
           "id": "peek",
           "label": "Peer through gaps",
-          "input": { "mode": "code", "text": "look" },
+          "input": {
+            "mode": "code",
+            "text": "look"
+          },
           "effects": [
-            { "type": "set_flag", "flag": "tunnel_glimpsed", "value": true }
+            {
+              "type": "set_flag",
+              "flag": "tunnel_glimpsed",
+              "value": true
+            }
           ]
         }
       ]
@@ -422,24 +770,45 @@
       "title": "Miner's Spirit",
       "body": "A translucent figure in miner's garb hovers near an old pickaxe. It gestures toward a shadowed alcove.",
       "tier": 2,
-      "tags": ["lore", "stonepass"],
+      "tags": [
+        "lore",
+        "stonepass"
+      ],
       "cooldown_days": 6,
       "choices": [
         {
           "id": "follow",
           "label": "Follow the spirit",
-          "input": { "mode": "phrase", "text": "walk toward the shade" },
+          "input": {
+            "mode": "phrase",
+            "text": "walk toward the shade"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "stone", "amount": 4 },
-            { "type": "set_flag", "flag": "miner_blessing", "value": true }
+            {
+              "type": "resource_add",
+              "resource": "stone",
+              "amount": 4
+            },
+            {
+              "type": "set_flag",
+              "flag": "miner_blessing",
+              "value": true
+            }
           ]
         },
         {
           "id": "banish",
           "label": "Banish it",
-          "input": { "mode": "code", "text": "banish" },
+          "input": {
+            "mode": "code",
+            "text": "banish"
+          },
           "effects": [
-            { "type": "buff_apply", "buff": "wary", "duration": 2 }
+            {
+              "type": "buff_apply",
+              "buff": "wary",
+              "duration": 2
+            }
           ]
         }
       ]
@@ -449,24 +818,44 @@
       "title": "Rockslide",
       "body": "Loose stones tumble from above. Quick action might prevent injury, or you could salvage from the debris.",
       "tier": 2,
-      "tags": ["risk", "stonepass"],
+      "tags": [
+        "risk",
+        "stonepass"
+      ],
       "cooldown_days": 3,
       "choices": [
         {
           "id": "dodge",
           "label": "Dive for cover",
-          "input": { "mode": "prompt_burst", "prompts": ["duck", "roll", "run"] },
+          "input": {
+            "mode": "prompt_burst",
+            "prompts": [
+              "duck",
+              "roll",
+              "run"
+            ]
+          },
           "effects": [],
           "fail_effects": [
-            { "type": "damage_castle", "amount": 2 }
+            {
+              "type": "damage_castle",
+              "amount": 2
+            }
           ]
         },
         {
           "id": "salvage",
           "label": "Gather fallen stone",
-          "input": { "mode": "phrase", "text": "pick up the rocks" },
+          "input": {
+            "mode": "phrase",
+            "text": "pick up the rocks"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "stone", "amount": 2 }
+            {
+              "type": "resource_add",
+              "resource": "stone",
+              "amount": 2
+            }
           ]
         }
       ]
@@ -476,24 +865,44 @@
       "title": "Tower Scout",
       "body": "An old scout occupies the watchtower. She offers information about enemy movements in exchange for supplies.",
       "tier": 2,
-      "tags": ["social", "stonepass"],
+      "tags": [
+        "social",
+        "stonepass"
+      ],
       "cooldown_days": 5,
       "choices": [
         {
           "id": "trade",
           "label": "Trade for intel",
-          "input": { "mode": "phrase", "text": "share your supplies" },
+          "input": {
+            "mode": "phrase",
+            "text": "share your supplies"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "food", "amount": -2 },
-            { "type": "threat_add", "amount": -2 }
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": -2
+            },
+            {
+              "type": "threat_add",
+              "amount": -2
+            }
           ]
         },
         {
           "id": "recruit",
           "label": "Recruit her",
-          "input": { "mode": "code", "text": "join" },
+          "input": {
+            "mode": "code",
+            "text": "join"
+          },
           "effects": [
-            { "type": "buff_apply", "buff": "scout_assist", "duration": 5 }
+            {
+              "type": "buff_apply",
+              "buff": "scout_assist",
+              "duration": 5
+            }
           ]
         }
       ]
@@ -503,25 +912,50 @@
       "title": "Bandit Lookout",
       "body": "Rough-looking men patrol the tower's base. They haven't noticed you yet.",
       "tier": 3,
-      "tags": ["combat", "stonepass", "risk"],
+      "tags": [
+        "combat",
+        "stonepass",
+        "risk"
+      ],
       "cooldown_days": 4,
       "choices": [
         {
           "id": "ambush",
           "label": "Ambush them",
-          "input": { "mode": "prompt_burst", "prompts": ["strike", "parry", "finish"] },
+          "input": {
+            "mode": "prompt_burst",
+            "prompts": [
+              "strike",
+              "parry",
+              "finish"
+            ]
+          },
           "effects": [
-            { "type": "resource_add", "resource": "food", "amount": 4 },
-            { "type": "resource_add", "resource": "stone", "amount": 2 }
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": 4
+            },
+            {
+              "type": "resource_add",
+              "resource": "stone",
+              "amount": 2
+            }
           ],
           "fail_effects": [
-            { "type": "damage_castle", "amount": 3 }
+            {
+              "type": "damage_castle",
+              "amount": 3
+            }
           ]
         },
         {
           "id": "sneak",
           "label": "Sneak past",
-          "input": { "mode": "phrase", "text": "move without sound" },
+          "input": {
+            "mode": "phrase",
+            "text": "move without sound"
+          },
           "effects": []
         }
       ]
@@ -531,24 +965,44 @@
       "title": "Signal Fire",
       "body": "An unlit beacon stands ready atop the tower. Lighting it could summon help or attract danger.",
       "tier": 2,
-      "tags": ["exploration", "stonepass"],
+      "tags": [
+        "exploration",
+        "stonepass"
+      ],
       "cooldown_days": 6,
       "choices": [
         {
           "id": "light",
           "label": "Light the beacon",
-          "input": { "mode": "phrase", "text": "strike the flint" },
+          "input": {
+            "mode": "phrase",
+            "text": "strike the flint"
+          },
           "effects": [
-            { "type": "threat_add", "amount": 1 },
-            { "type": "buff_apply", "buff": "reinforcements", "duration": 3 }
+            {
+              "type": "threat_add",
+              "amount": 1
+            },
+            {
+              "type": "buff_apply",
+              "buff": "reinforcements",
+              "duration": 3
+            }
           ]
         },
         {
           "id": "salvage",
           "label": "Take the fuel",
-          "input": { "mode": "code", "text": "take" },
+          "input": {
+            "mode": "code",
+            "text": "take"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "wood", "amount": 3 }
+            {
+              "type": "resource_add",
+              "resource": "wood",
+              "amount": 3
+            }
           ]
         }
       ]
@@ -558,24 +1012,45 @@
       "title": "Abandoned Armory",
       "body": "Rusted weapons and dented armor fill the tower's lower level. Some pieces might still be salvageable.",
       "tier": 2,
-      "tags": ["salvage", "stonepass"],
+      "tags": [
+        "salvage",
+        "stonepass"
+      ],
       "cooldown_days": 5,
       "choices": [
         {
           "id": "search",
           "label": "Search thoroughly",
-          "input": { "mode": "phrase", "text": "examine every piece" },
+          "input": {
+            "mode": "phrase",
+            "text": "examine every piece"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "stone", "amount": 3 },
-            { "type": "buff_apply", "buff": "armed", "duration": 4 }
+            {
+              "type": "resource_add",
+              "resource": "stone",
+              "amount": 3
+            },
+            {
+              "type": "buff_apply",
+              "buff": "armed",
+              "duration": 4
+            }
           ]
         },
         {
           "id": "quick",
           "label": "Grab and go",
-          "input": { "mode": "code", "text": "grab" },
+          "input": {
+            "mode": "code",
+            "text": "grab"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "stone", "amount": 1 }
+            {
+              "type": "resource_add",
+              "resource": "stone",
+              "amount": 1
+            }
           ]
         }
       ]
@@ -585,24 +1060,45 @@
       "title": "Cave Beast",
       "body": "Yellow eyes gleam from the darkness. A low growl echoes off the cave walls.",
       "tier": 3,
-      "tags": ["combat", "stonepass", "risk"],
+      "tags": [
+        "combat",
+        "stonepass",
+        "risk"
+      ],
       "cooldown_days": 4,
       "choices": [
         {
           "id": "fight",
           "label": "Slay the beast",
-          "input": { "mode": "prompt_burst", "prompts": ["dodge", "strike", "kill"] },
+          "input": {
+            "mode": "prompt_burst",
+            "prompts": [
+              "dodge",
+              "strike",
+              "kill"
+            ]
+          },
           "effects": [
-            { "type": "resource_add", "resource": "food", "amount": 6 }
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": 6
+            }
           ],
           "fail_effects": [
-            { "type": "damage_castle", "amount": 2 }
+            {
+              "type": "damage_castle",
+              "amount": 2
+            }
           ]
         },
         {
           "id": "flee",
           "label": "Back away slowly",
-          "input": { "mode": "phrase", "text": "step back carefully" },
+          "input": {
+            "mode": "phrase",
+            "text": "step back carefully"
+          },
           "effects": []
         }
       ]
@@ -612,24 +1108,45 @@
       "title": "Crystal Formation",
       "body": "Luminescent crystals grow from the cave wall, casting eerie light. They pulse with faint energy.",
       "tier": 2,
-      "tags": ["lore", "stonepass"],
+      "tags": [
+        "lore",
+        "stonepass"
+      ],
       "cooldown_days": 7,
       "choices": [
         {
           "id": "harvest",
           "label": "Harvest crystals",
-          "input": { "mode": "phrase", "text": "chip away carefully" },
+          "input": {
+            "mode": "phrase",
+            "text": "chip away carefully"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "stone", "amount": 4 },
-            { "type": "buff_apply", "buff": "crystal_glow", "duration": 3 }
+            {
+              "type": "resource_add",
+              "resource": "stone",
+              "amount": 4
+            },
+            {
+              "type": "buff_apply",
+              "buff": "crystal_glow",
+              "duration": 3
+            }
           ]
         },
         {
           "id": "study",
           "label": "Study the pattern",
-          "input": { "mode": "code", "text": "study" },
+          "input": {
+            "mode": "code",
+            "text": "study"
+          },
           "effects": [
-            { "type": "set_flag", "flag": "crystal_knowledge", "value": true }
+            {
+              "type": "set_flag",
+              "flag": "crystal_knowledge",
+              "value": true
+            }
           ]
         }
       ]
@@ -639,23 +1156,39 @@
       "title": "Underground Spring",
       "body": "Fresh water bubbles from a crack in the stone. The pool looks clean and inviting.",
       "tier": 1,
-      "tags": ["exploration", "stonepass"],
+      "tags": [
+        "exploration",
+        "stonepass"
+      ],
       "cooldown_days": 4,
       "choices": [
         {
           "id": "drink",
           "label": "Drink deeply",
-          "input": { "mode": "phrase", "text": "cup the water" },
+          "input": {
+            "mode": "phrase",
+            "text": "cup the water"
+          },
           "effects": [
-            { "type": "heal_castle", "amount": 1 }
+            {
+              "type": "heal_castle",
+              "amount": 1
+            }
           ]
         },
         {
           "id": "fill",
           "label": "Fill containers",
-          "input": { "mode": "code", "text": "fill" },
+          "input": {
+            "mode": "code",
+            "text": "fill"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "food", "amount": 2 }
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": 2
+            }
           ]
         }
       ]
@@ -665,24 +1198,44 @@
       "title": "Ancestor's Blessing",
       "body": "The cairn seems to shimmer as you approach. Ancient voices whisper on the wind.",
       "tier": 2,
-      "tags": ["lore", "stonepass"],
+      "tags": [
+        "lore",
+        "stonepass"
+      ],
       "cooldown_days": 8,
       "choices": [
         {
           "id": "receive",
           "label": "Accept the blessing",
-          "input": { "mode": "phrase", "text": "bow before the stones" },
+          "input": {
+            "mode": "phrase",
+            "text": "bow before the stones"
+          },
           "effects": [
-            { "type": "buff_apply", "buff": "ancestral_ward", "duration": 5 }
+            {
+              "type": "buff_apply",
+              "buff": "ancestral_ward",
+              "duration": 5
+            }
           ]
         },
         {
           "id": "offer",
           "label": "Leave an offering",
-          "input": { "mode": "code", "text": "offer" },
+          "input": {
+            "mode": "code",
+            "text": "offer"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "food", "amount": -1 },
-            { "type": "threat_add", "amount": -1 }
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": -1
+            },
+            {
+              "type": "threat_add",
+              "amount": -1
+            }
           ]
         }
       ]
@@ -692,25 +1245,50 @@
       "title": "Mountain Sage",
       "body": "An elderly hermit sits cross-legged on a flat stone, eyes closed in meditation. He seems aware of your presence.",
       "tier": 2,
-      "tags": ["social", "stonepass"],
+      "tags": [
+        "social",
+        "stonepass"
+      ],
       "cooldown_days": 6,
       "choices": [
         {
           "id": "learn",
           "label": "Seek wisdom",
-          "input": { "mode": "phrase", "text": "ask for guidance" },
+          "input": {
+            "mode": "phrase",
+            "text": "ask for guidance"
+          },
           "effects": [
-            { "type": "buff_apply", "buff": "insight", "duration": 4 },
-            { "type": "set_flag", "flag": "sage_wisdom", "value": true }
+            {
+              "type": "buff_apply",
+              "buff": "insight",
+              "duration": 4
+            },
+            {
+              "type": "set_flag",
+              "flag": "sage_wisdom",
+              "value": true
+            }
           ]
         },
         {
           "id": "trade",
           "label": "Trade supplies",
-          "input": { "mode": "code", "text": "trade" },
+          "input": {
+            "mode": "code",
+            "text": "trade"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "food", "amount": -1 },
-            { "type": "resource_add", "resource": "stone", "amount": 3 }
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": -1
+            },
+            {
+              "type": "resource_add",
+              "resource": "stone",
+              "amount": 3
+            }
           ]
         }
       ]
@@ -720,24 +1298,45 @@
       "title": "Sunken Cargo",
       "body": "Waterlogged crates bob in the murky water near the dock. Most are ruined, but some look salvageable.",
       "tier": 2,
-      "tags": ["salvage", "mistfen"],
+      "tags": [
+        "salvage",
+        "mistfen"
+      ],
       "cooldown_days": 4,
       "choices": [
         {
           "id": "dive",
           "label": "Dive for cargo",
-          "input": { "mode": "phrase", "text": "swim through the muck" },
+          "input": {
+            "mode": "phrase",
+            "text": "swim through the muck"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "wood", "amount": 3 },
-            { "type": "resource_add", "resource": "food", "amount": 2 }
+            {
+              "type": "resource_add",
+              "resource": "wood",
+              "amount": 3
+            },
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": 2
+            }
           ]
         },
         {
           "id": "hook",
           "label": "Use a pole",
-          "input": { "mode": "code", "text": "hook" },
+          "input": {
+            "mode": "code",
+            "text": "hook"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "wood", "amount": 2 }
+            {
+              "type": "resource_add",
+              "resource": "wood",
+              "amount": 2
+            }
           ]
         }
       ]
@@ -747,25 +1346,50 @@
       "title": "Fen Fisher",
       "body": "A weathered fisherman mends nets on the rotting dock. He eyes you with suspicion but not hostility.",
       "tier": 1,
-      "tags": ["social", "mistfen"],
+      "tags": [
+        "social",
+        "mistfen"
+      ],
       "cooldown_days": 4,
       "choices": [
         {
           "id": "help",
           "label": "Help with nets",
-          "input": { "mode": "phrase", "text": "mend the torn lines" },
+          "input": {
+            "mode": "phrase",
+            "text": "mend the torn lines"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "food", "amount": 3 },
-            { "type": "buff_apply", "buff": "goodwill", "duration": 3 }
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": 3
+            },
+            {
+              "type": "buff_apply",
+              "buff": "goodwill",
+              "duration": 3
+            }
           ]
         },
         {
           "id": "buy",
           "label": "Buy fish",
-          "input": { "mode": "code", "text": "buy" },
+          "input": {
+            "mode": "code",
+            "text": "buy"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "wood", "amount": -1 },
-            { "type": "resource_add", "resource": "food", "amount": 4 }
+            {
+              "type": "resource_add",
+              "resource": "wood",
+              "amount": -1
+            },
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": 4
+            }
           ]
         }
       ]
@@ -775,24 +1399,45 @@
       "title": "Swamp Creature",
       "body": "Something large disturbs the water nearby. Bubbles rise and a scaled back briefly surfaces.",
       "tier": 3,
-      "tags": ["combat", "mistfen", "risk"],
+      "tags": [
+        "combat",
+        "mistfen",
+        "risk"
+      ],
       "cooldown_days": 5,
       "choices": [
         {
           "id": "hunt",
           "label": "Hunt the creature",
-          "input": { "mode": "prompt_burst", "prompts": ["lure", "strike", "finish"] },
+          "input": {
+            "mode": "prompt_burst",
+            "prompts": [
+              "lure",
+              "strike",
+              "finish"
+            ]
+          },
           "effects": [
-            { "type": "resource_add", "resource": "food", "amount": 7 }
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": 7
+            }
           ],
           "fail_effects": [
-            { "type": "damage_castle", "amount": 2 }
+            {
+              "type": "damage_castle",
+              "amount": 2
+            }
           ]
         },
         {
           "id": "avoid",
           "label": "Stay clear",
-          "input": { "mode": "code", "text": "avoid" },
+          "input": {
+            "mode": "code",
+            "text": "avoid"
+          },
           "effects": []
         }
       ]
@@ -802,24 +1447,44 @@
       "title": "Fog Spirit",
       "body": "A spectral form coalesces from the mist, neither threatening nor welcoming. It waits.",
       "tier": 2,
-      "tags": ["lore", "mistfen"],
+      "tags": [
+        "lore",
+        "mistfen"
+      ],
       "cooldown_days": 6,
       "choices": [
         {
           "id": "commune",
           "label": "Commune with it",
-          "input": { "mode": "phrase", "text": "reach out with your mind" },
+          "input": {
+            "mode": "phrase",
+            "text": "reach out with your mind"
+          },
           "effects": [
-            { "type": "set_flag", "flag": "fog_touched", "value": true },
-            { "type": "buff_apply", "buff": "mist_walker", "duration": 4 }
+            {
+              "type": "set_flag",
+              "flag": "fog_touched",
+              "value": true
+            },
+            {
+              "type": "buff_apply",
+              "buff": "mist_walker",
+              "duration": 4
+            }
           ]
         },
         {
           "id": "dispel",
           "label": "Dispel the spirit",
-          "input": { "mode": "code", "text": "dispel" },
+          "input": {
+            "mode": "code",
+            "text": "dispel"
+          },
           "effects": [
-            { "type": "threat_add", "amount": -1 }
+            {
+              "type": "threat_add",
+              "amount": -1
+            }
           ]
         }
       ]
@@ -829,24 +1494,45 @@
       "title": "Willow Whispers",
       "body": "The willows seem to sway without wind. Soft voices murmur secrets just beyond hearing.",
       "tier": 2,
-      "tags": ["lore", "mistfen"],
+      "tags": [
+        "lore",
+        "mistfen"
+      ],
       "cooldown_days": 5,
       "choices": [
         {
           "id": "listen",
           "label": "Listen closely",
-          "input": { "mode": "phrase", "text": "strain to hear the words" },
+          "input": {
+            "mode": "phrase",
+            "text": "strain to hear the words"
+          },
           "effects": [
-            { "type": "set_flag", "flag": "willow_secret", "value": true },
-            { "type": "buff_apply", "buff": "insight", "duration": 3 }
+            {
+              "type": "set_flag",
+              "flag": "willow_secret",
+              "value": true
+            },
+            {
+              "type": "buff_apply",
+              "buff": "insight",
+              "duration": 3
+            }
           ]
         },
         {
           "id": "harvest",
           "label": "Gather willow bark",
-          "input": { "mode": "code", "text": "harvest" },
+          "input": {
+            "mode": "code",
+            "text": "harvest"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "wood", "amount": 2 }
+            {
+              "type": "resource_add",
+              "resource": "wood",
+              "amount": 2
+            }
           ]
         }
       ]
@@ -856,24 +1542,44 @@
       "title": "Healing Waters",
       "body": "A clear pool lies hidden among the willows. Its waters shimmer with an inner light.",
       "tier": 2,
-      "tags": ["healing", "mistfen"],
+      "tags": [
+        "healing",
+        "mistfen"
+      ],
       "cooldown_days": 7,
       "choices": [
         {
           "id": "bathe",
           "label": "Bathe in the waters",
-          "input": { "mode": "phrase", "text": "step into the pool" },
+          "input": {
+            "mode": "phrase",
+            "text": "step into the pool"
+          },
           "effects": [
-            { "type": "heal_castle", "amount": 2 }
+            {
+              "type": "heal_castle",
+              "amount": 2
+            }
           ]
         },
         {
           "id": "collect",
           "label": "Bottle the water",
-          "input": { "mode": "code", "text": "bottle" },
+          "input": {
+            "mode": "code",
+            "text": "bottle"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "food", "amount": 2 },
-            { "type": "buff_apply", "buff": "blessed", "duration": 2 }
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": 2
+            },
+            {
+              "type": "buff_apply",
+              "buff": "blessed",
+              "duration": 2
+            }
           ]
         }
       ]
@@ -883,31 +1589,59 @@
       "title": "Swamp Witch",
       "body": "A crone watches you from the hut's doorway, stirring a bubbling cauldron. She beckons you closer.",
       "tier": 3,
-      "tags": ["social", "mistfen", "risk"],
+      "tags": [
+        "social",
+        "mistfen",
+        "risk"
+      ],
       "cooldown_days": 6,
       "choices": [
         {
           "id": "deal",
           "label": "Make a deal",
-          "input": { "mode": "phrase", "text": "accept her bargain" },
+          "input": {
+            "mode": "phrase",
+            "text": "accept her bargain"
+          },
           "effects": [
-            { "type": "buff_apply", "buff": "witch_boon", "duration": 5 },
-            { "type": "set_flag", "flag": "witch_debt", "value": true }
+            {
+              "type": "buff_apply",
+              "buff": "witch_boon",
+              "duration": 5
+            },
+            {
+              "type": "set_flag",
+              "flag": "witch_debt",
+              "value": true
+            }
           ]
         },
         {
           "id": "buy",
           "label": "Buy a potion",
-          "input": { "mode": "code", "text": "buy" },
+          "input": {
+            "mode": "code",
+            "text": "buy"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "food", "amount": -2 },
-            { "type": "heal_castle", "amount": 1 }
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": -2
+            },
+            {
+              "type": "heal_castle",
+              "amount": 1
+            }
           ]
         },
         {
           "id": "leave",
           "label": "Politely decline",
-          "input": { "mode": "code", "text": "leave" },
+          "input": {
+            "mode": "code",
+            "text": "leave"
+          },
           "effects": []
         }
       ]
@@ -917,25 +1651,49 @@
       "title": "Potion Trade",
       "body": "Various bottles and vials line makeshift shelves. Strange liquids bubble and glow within.",
       "tier": 2,
-      "tags": ["salvage", "mistfen"],
+      "tags": [
+        "salvage",
+        "mistfen"
+      ],
       "cooldown_days": 5,
       "choices": [
         {
           "id": "buy_healing",
           "label": "Buy healing potion",
-          "input": { "mode": "phrase", "text": "point to the red bottle" },
+          "input": {
+            "mode": "phrase",
+            "text": "point to the red bottle"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "food", "amount": -2 },
-            { "type": "heal_castle", "amount": 2 }
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": -2
+            },
+            {
+              "type": "heal_castle",
+              "amount": 2
+            }
           ]
         },
         {
           "id": "buy_power",
           "label": "Buy power potion",
-          "input": { "mode": "code", "text": "power" },
+          "input": {
+            "mode": "code",
+            "text": "power"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "food", "amount": -2 },
-            { "type": "buff_apply", "buff": "empowered", "duration": 4 }
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": -2
+            },
+            {
+              "type": "buff_apply",
+              "buff": "empowered",
+              "duration": 4
+            }
           ]
         }
       ]
@@ -945,35 +1703,70 @@
       "title": "Dark Offering",
       "body": "The sunken altar radiates an unsettling energy. Strange symbols glow faintly on its surface.",
       "tier": 3,
-      "tags": ["lore", "mistfen", "risk"],
+      "tags": [
+        "lore",
+        "mistfen",
+        "risk"
+      ],
       "cooldown_days": 8,
       "choices": [
         {
           "id": "offer",
           "label": "Make an offering",
-          "input": { "mode": "phrase", "text": "place your gift upon the stone" },
+          "input": {
+            "mode": "phrase",
+            "text": "place your gift upon the stone"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "food", "amount": -3 },
-            { "type": "buff_apply", "buff": "dark_power", "duration": 6 }
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": -3
+            },
+            {
+              "type": "buff_apply",
+              "buff": "dark_power",
+              "duration": 6
+            }
           ],
           "fail_effects": [
-            { "type": "damage_castle", "amount": 2 }
+            {
+              "type": "damage_castle",
+              "amount": 2
+            }
           ]
         },
         {
           "id": "study",
           "label": "Study the runes",
-          "input": { "mode": "code", "text": "study" },
+          "input": {
+            "mode": "code",
+            "text": "study"
+          },
           "effects": [
-            { "type": "set_flag", "flag": "dark_knowledge", "value": true }
+            {
+              "type": "set_flag",
+              "flag": "dark_knowledge",
+              "value": true
+            }
           ]
         },
         {
           "id": "destroy",
           "label": "Destroy the altar",
-          "input": { "mode": "prompt_burst", "prompts": ["smash", "break", "shatter"] },
+          "input": {
+            "mode": "prompt_burst",
+            "prompts": [
+              "smash",
+              "break",
+              "shatter"
+            ]
+          },
           "effects": [
-            { "type": "threat_add", "amount": -2 }
+            {
+              "type": "threat_add",
+              "amount": -2
+            }
           ]
         }
       ]
@@ -983,23 +1776,40 @@
       "title": "Grain Stores",
       "body": "The windmill's storage room holds sacks of grain, though some show signs of rot.",
       "tier": 1,
-      "tags": ["salvage", "sunfields"],
+      "tags": [
+        "salvage",
+        "sunfields"
+      ],
       "cooldown_days": 4,
       "choices": [
         {
           "id": "salvage",
           "label": "Salvage good grain",
-          "input": { "mode": "phrase", "text": "sort through the sacks" },
+          "input": {
+            "mode": "phrase",
+            "text": "sort through the sacks"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "food", "amount": 4 }
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": 4
+            }
           ]
         },
         {
           "id": "quick",
           "label": "Grab a sack",
-          "input": { "mode": "code", "text": "grab" },
+          "input": {
+            "mode": "code",
+            "text": "grab"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "food", "amount": 2 }
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": 2
+            }
           ]
         }
       ]
@@ -1009,25 +1819,49 @@
       "title": "Miller's Family",
       "body": "A family of refugees huddles in the windmill. They're frightened but have information to share.",
       "tier": 2,
-      "tags": ["social", "sunfields"],
+      "tags": [
+        "social",
+        "sunfields"
+      ],
       "cooldown_days": 5,
       "choices": [
         {
           "id": "help",
           "label": "Offer protection",
-          "input": { "mode": "phrase", "text": "promise them safety" },
+          "input": {
+            "mode": "phrase",
+            "text": "promise them safety"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "food", "amount": -2 },
-            { "type": "threat_add", "amount": -2 },
-            { "type": "buff_apply", "buff": "goodwill", "duration": 4 }
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": -2
+            },
+            {
+              "type": "threat_add",
+              "amount": -2
+            },
+            {
+              "type": "buff_apply",
+              "buff": "goodwill",
+              "duration": 4
+            }
           ]
         },
         {
           "id": "trade",
           "label": "Trade information",
-          "input": { "mode": "code", "text": "trade" },
+          "input": {
+            "mode": "code",
+            "text": "trade"
+          },
           "effects": [
-            { "type": "set_flag", "flag": "miller_intel", "value": true }
+            {
+              "type": "set_flag",
+              "flag": "miller_intel",
+              "value": true
+            }
           ]
         }
       ]
@@ -1037,27 +1871,55 @@
       "title": "Field Bandits",
       "body": "Desperate bandits have made camp in the fields. They look hungry but dangerous.",
       "tier": 2,
-      "tags": ["combat", "sunfields", "risk"],
+      "tags": [
+        "combat",
+        "sunfields",
+        "risk"
+      ],
       "cooldown_days": 4,
       "choices": [
         {
           "id": "fight",
           "label": "Drive them off",
-          "input": { "mode": "prompt_burst", "prompts": ["charge", "strike", "rout"] },
+          "input": {
+            "mode": "prompt_burst",
+            "prompts": [
+              "charge",
+              "strike",
+              "rout"
+            ]
+          },
           "effects": [
-            { "type": "resource_add", "resource": "food", "amount": 3 },
-            { "type": "threat_add", "amount": -1 }
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": 3
+            },
+            {
+              "type": "threat_add",
+              "amount": -1
+            }
           ],
           "fail_effects": [
-            { "type": "damage_castle", "amount": 2 }
+            {
+              "type": "damage_castle",
+              "amount": 2
+            }
           ]
         },
         {
           "id": "bribe",
           "label": "Pay them off",
-          "input": { "mode": "code", "text": "pay" },
+          "input": {
+            "mode": "code",
+            "text": "pay"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "food", "amount": -3 }
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": -3
+            }
           ]
         }
       ]
@@ -1067,25 +1929,50 @@
       "title": "Harvest Festival",
       "body": "Local farmers have gathered for a small celebration. They welcome strangers with open arms.",
       "tier": 1,
-      "tags": ["social", "sunfields"],
+      "tags": [
+        "social",
+        "sunfields"
+      ],
       "cooldown_days": 6,
       "choices": [
         {
           "id": "join",
           "label": "Join the feast",
-          "input": { "mode": "phrase", "text": "share in their joy" },
+          "input": {
+            "mode": "phrase",
+            "text": "share in their joy"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "food", "amount": 4 },
-            { "type": "buff_apply", "buff": "well_fed", "duration": 3 }
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": 4
+            },
+            {
+              "type": "buff_apply",
+              "buff": "well_fed",
+              "duration": 3
+            }
           ]
         },
         {
           "id": "trade",
           "label": "Trade goods",
-          "input": { "mode": "code", "text": "trade" },
+          "input": {
+            "mode": "code",
+            "text": "trade"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "wood", "amount": -2 },
-            { "type": "resource_add", "resource": "food", "amount": 5 }
+            {
+              "type": "resource_add",
+              "resource": "wood",
+              "amount": -2
+            },
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": 5
+            }
           ]
         }
       ]
@@ -1095,24 +1982,44 @@
       "title": "Golden Apples",
       "body": "Perfectly ripe golden apples hang from ancient trees. Their sweet scent fills the air.",
       "tier": 1,
-      "tags": ["salvage", "sunfields"],
+      "tags": [
+        "salvage",
+        "sunfields"
+      ],
       "cooldown_days": 4,
       "choices": [
         {
           "id": "harvest",
           "label": "Harvest apples",
-          "input": { "mode": "phrase", "text": "pick the ripe fruit" },
+          "input": {
+            "mode": "phrase",
+            "text": "pick the ripe fruit"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "food", "amount": 5 }
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": 5
+            }
           ]
         },
         {
           "id": "eat",
           "label": "Eat some now",
-          "input": { "mode": "code", "text": "eat" },
+          "input": {
+            "mode": "code",
+            "text": "eat"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "food", "amount": 2 },
-            { "type": "heal_castle", "amount": 1 }
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": 2
+            },
+            {
+              "type": "heal_castle",
+              "amount": 1
+            }
           ]
         }
       ]
@@ -1122,28 +2029,61 @@
       "title": "Champion's Challenge",
       "body": "A seasoned warrior awaits challengers in the arena. Victory promises both glory and rewards.",
       "tier": 3,
-      "tags": ["combat", "sunfields"],
+      "tags": [
+        "combat",
+        "sunfields"
+      ],
       "cooldown_days": 5,
       "choices": [
         {
           "id": "fight",
           "label": "Accept the challenge",
-          "input": { "mode": "prompt_burst", "prompts": ["block", "parry", "strike", "finish"] },
+          "input": {
+            "mode": "prompt_burst",
+            "prompts": [
+              "block",
+              "parry",
+              "strike",
+              "finish"
+            ]
+          },
           "effects": [
-            { "type": "resource_add", "resource": "food", "amount": 4 },
-            { "type": "resource_add", "resource": "stone", "amount": 3 },
-            { "type": "buff_apply", "buff": "champion", "duration": 5 }
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": 4
+            },
+            {
+              "type": "resource_add",
+              "resource": "stone",
+              "amount": 3
+            },
+            {
+              "type": "buff_apply",
+              "buff": "champion",
+              "duration": 5
+            }
           ],
           "fail_effects": [
-            { "type": "damage_castle", "amount": 2 }
+            {
+              "type": "damage_castle",
+              "amount": 2
+            }
           ]
         },
         {
           "id": "watch",
           "label": "Watch and learn",
-          "input": { "mode": "phrase", "text": "observe the technique" },
+          "input": {
+            "mode": "phrase",
+            "text": "observe the technique"
+          },
           "effects": [
-            { "type": "buff_apply", "buff": "insight", "duration": 2 }
+            {
+              "type": "buff_apply",
+              "buff": "insight",
+              "duration": 2
+            }
           ]
         }
       ]
@@ -1153,24 +2093,45 @@
       "title": "Training Grounds",
       "body": "Practice dummies and weapon racks fill the arena floor. A chance to hone your skills.",
       "tier": 2,
-      "tags": ["exploration", "sunfields"],
+      "tags": [
+        "exploration",
+        "sunfields"
+      ],
       "cooldown_days": 4,
       "choices": [
         {
           "id": "train",
           "label": "Practice combat",
-          "input": { "mode": "phrase", "text": "swing at the dummies" },
+          "input": {
+            "mode": "phrase",
+            "text": "swing at the dummies"
+          },
           "effects": [
-            { "type": "buff_apply", "buff": "trained", "duration": 4 }
+            {
+              "type": "buff_apply",
+              "buff": "trained",
+              "duration": 4
+            }
           ]
         },
         {
           "id": "salvage",
           "label": "Take equipment",
-          "input": { "mode": "code", "text": "take" },
+          "input": {
+            "mode": "code",
+            "text": "take"
+          },
           "effects": [
-            { "type": "resource_add", "resource": "wood", "amount": 2 },
-            { "type": "resource_add", "resource": "stone", "amount": 1 }
+            {
+              "type": "resource_add",
+              "resource": "wood",
+              "amount": 2
+            },
+            {
+              "type": "resource_add",
+              "resource": "stone",
+              "amount": 1
+            }
           ]
         }
       ]
@@ -1180,24 +2141,45 @@
       "title": "Veteran's Wisdom",
       "body": "An old soldier tends the monument, polishing names etched in stone. He has stories to tell.",
       "tier": 2,
-      "tags": ["social", "sunfields"],
+      "tags": [
+        "social",
+        "sunfields"
+      ],
       "cooldown_days": 5,
       "choices": [
         {
           "id": "listen",
           "label": "Hear his tales",
-          "input": { "mode": "phrase", "text": "sit and listen" },
+          "input": {
+            "mode": "phrase",
+            "text": "sit and listen"
+          },
           "effects": [
-            { "type": "set_flag", "flag": "veteran_lore", "value": true },
-            { "type": "buff_apply", "buff": "inspired", "duration": 4 }
+            {
+              "type": "set_flag",
+              "flag": "veteran_lore",
+              "value": true
+            },
+            {
+              "type": "buff_apply",
+              "buff": "inspired",
+              "duration": 4
+            }
           ]
         },
         {
           "id": "help",
           "label": "Help with chores",
-          "input": { "mode": "code", "text": "help" },
+          "input": {
+            "mode": "code",
+            "text": "help"
+          },
           "effects": [
-            { "type": "buff_apply", "buff": "goodwill", "duration": 3 }
+            {
+              "type": "buff_apply",
+              "buff": "goodwill",
+              "duration": 3
+            }
           ]
         }
       ]
@@ -1207,25 +2189,387 @@
       "title": "Hero's Blessing",
       "body": "The monument glows faintly as you approach. The spirits of fallen heroes seem to stir.",
       "tier": 3,
-      "tags": ["lore", "sunfields"],
+      "tags": [
+        "lore",
+        "sunfields"
+      ],
       "cooldown_days": 8,
       "choices": [
         {
           "id": "receive",
           "label": "Accept their blessing",
-          "input": { "mode": "phrase", "text": "kneel before the monument" },
+          "input": {
+            "mode": "phrase",
+            "text": "kneel before the monument"
+          },
           "effects": [
-            { "type": "buff_apply", "buff": "hero_spirit", "duration": 6 },
-            { "type": "heal_castle", "amount": 1 }
+            {
+              "type": "buff_apply",
+              "buff": "hero_spirit",
+              "duration": 6
+            },
+            {
+              "type": "heal_castle",
+              "amount": 1
+            }
           ]
         },
         {
           "id": "honor",
           "label": "Pay your respects",
-          "input": { "mode": "code", "text": "salute" },
+          "input": {
+            "mode": "code",
+            "text": "salute"
+          },
           "effects": [
-            { "type": "set_flag", "flag": "honored_fallen", "value": true },
-            { "type": "threat_add", "amount": -1 }
+            {
+              "type": "set_flag",
+              "flag": "honored_fallen",
+              "value": true
+            },
+            {
+              "type": "threat_add",
+              "amount": -1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "evt_typing_trial",
+      "title": "Ancient Trial",
+      "body": "A mystical stone tablet glows with power. Ancient runes demand a test of your typing prowess. Complete the trial to earn its blessing.",
+      "tier": 2,
+      "tags": [
+        "challenge",
+        "magic",
+        "all_biomes"
+      ],
+      "cooldown_days": 3,
+      "choices": [
+        {
+          "id": "accept",
+          "label": "Accept the trial",
+          "input": {
+            "mode": "challenge",
+            "challenge": {
+              "type": 3,
+              "difficulty": "medium",
+              "day_scaled": true,
+              "word_pool": "common"
+            }
+          },
+          "effects": [
+            {
+              "type": "resource_add",
+              "resource": "stone",
+              "amount": 5
+            },
+            {
+              "type": "buff_apply",
+              "buff": "blessed",
+              "duration": 3
+            }
+          ],
+          "fail_effects": [
+            {
+              "type": "damage_castle",
+              "amount": 1
+            }
+          ]
+        },
+        {
+          "id": "decline",
+          "label": "Walk away",
+          "input": {
+            "mode": "code",
+            "text": "leave"
+          },
+          "effects": []
+        }
+      ]
+    },
+    {
+      "id": "evt_speed_shrine",
+      "title": "Shrine of Swiftness",
+      "body": "A weathered shrine dedicated to the god of wind. The inscription reads: 'Prove your speed, earn my blessing.' Type quickly to receive the shrine's power.",
+      "tier": 2,
+      "tags": [
+        "challenge",
+        "shrine",
+        "sunfields"
+      ],
+      "cooldown_days": 4,
+      "choices": [
+        {
+          "id": "pray",
+          "label": "Pray for speed",
+          "input": {
+            "mode": "challenge",
+            "challenge": {
+              "type": 1,
+              "min_wpm": 40,
+              "word_count": 5,
+              "day_scaled": true
+            }
+          },
+          "effects": [
+            {
+              "type": "buff_apply",
+              "buff": "haste",
+              "duration": 5
+            },
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": 3
+            }
+          ],
+          "fail_effects": []
+        },
+        {
+          "id": "leave",
+          "label": "Leave the shrine",
+          "input": {
+            "mode": "code",
+            "text": "pass"
+          },
+          "effects": []
+        }
+      ]
+    },
+    {
+      "id": "evt_accuracy_test",
+      "title": "Precision Stone",
+      "body": "A perfectly smooth stone pillar rises from the ground. Carved into its surface: 'Only the precise may pass.' Your accuracy will be tested.",
+      "tier": 2,
+      "tags": [
+        "challenge",
+        "stonepass"
+      ],
+      "cooldown_days": 4,
+      "choices": [
+        {
+          "id": "attempt",
+          "label": "Attempt the test",
+          "input": {
+            "mode": "challenge",
+            "challenge": {
+              "type": 0,
+              "min_accuracy": 0.9,
+              "word_count": 6,
+              "day_scaled": true
+            }
+          },
+          "effects": [
+            {
+              "type": "resource_add",
+              "resource": "stone",
+              "amount": 8
+            },
+            {
+              "type": "heal_castle",
+              "amount": 2
+            }
+          ],
+          "fail_effects": [
+            {
+              "type": "resource_add",
+              "resource": "stone",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "id": "bypass",
+          "label": "Find another way",
+          "input": {
+            "mode": "code",
+            "text": "detour"
+          },
+          "effects": []
+        }
+      ]
+    },
+    {
+      "id": "evt_guardian_challenge",
+      "title": "Forest Guardian",
+      "body": "A massive treant blocks your path, its ancient eyes studying you. 'Prove your worth with words, traveler, or turn back.' This is a serious challenge.",
+      "tier": 3,
+      "tags": [
+        "challenge",
+        "boss",
+        "evergrove"
+      ],
+      "cooldown_days": 7,
+      "choices": [
+        {
+          "id": "challenge",
+          "label": "Accept the challenge",
+          "input": {
+            "mode": "challenge",
+            "challenge": {
+              "type": 5,
+              "min_accuracy": 0.85,
+              "min_wpm": 35,
+              "time_limit": 30,
+              "word_count": 8,
+              "day_scaled": true
+            }
+          },
+          "effects": [
+            {
+              "type": "resource_add",
+              "resource": "wood",
+              "amount": 15
+            },
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": 10
+            },
+            {
+              "type": "set_flag",
+              "flag": "guardian_blessing",
+              "value": true
+            }
+          ],
+          "fail_effects": [
+            {
+              "type": "damage_castle",
+              "amount": 3
+            },
+            {
+              "type": "threat_add",
+              "amount": 5
+            }
+          ]
+        },
+        {
+          "id": "retreat",
+          "label": "Retreat carefully",
+          "input": {
+            "mode": "phrase",
+            "text": "i will return"
+          },
+          "effects": []
+        }
+      ]
+    },
+    {
+      "id": "evt_mystic_pool",
+      "title": "Mystic Pool",
+      "body": "A shimmering pool reflects the sky despite being deep in the marsh. Its surface ripples with arcane energy. Type the incantation to receive its power.",
+      "tier": 2,
+      "tags": [
+        "challenge",
+        "magic",
+        "mistfen"
+      ],
+      "cooldown_days": 5,
+      "choices": [
+        {
+          "id": "incant",
+          "label": "Speak the words",
+          "input": {
+            "mode": "challenge",
+            "challenge": {
+              "type": 3,
+              "word_count": 4,
+              "time_limit": 20,
+              "day_scaled": true
+            }
+          },
+          "effects": [
+            {
+              "type": "heal_castle",
+              "amount": 5
+            },
+            {
+              "type": "buff_apply",
+              "buff": "clarity",
+              "duration": 3
+            }
+          ],
+          "fail_effects": [
+            {
+              "type": "buff_apply",
+              "buff": "confusion",
+              "duration": 2
+            }
+          ]
+        },
+        {
+          "id": "drink",
+          "label": "Just drink from it",
+          "input": {
+            "mode": "code",
+            "text": "drink"
+          },
+          "effects": [
+            {
+              "type": "heal_castle",
+              "amount": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "evt_merchant_riddle",
+      "title": "Wandering Merchant",
+      "body": "A hooded merchant blocks the path with a knowing smile. 'I trade not in gold, but in wit. Answer my riddle with speed and precision, and my wares are yours.'",
+      "tier": 2,
+      "tags": [
+        "challenge",
+        "social",
+        "all_biomes"
+      ],
+      "cooldown_days": 3,
+      "choices": [
+        {
+          "id": "riddle",
+          "label": "Accept the riddle",
+          "input": {
+            "mode": "challenge",
+            "challenge": {
+              "type": 4,
+              "word_count": 5,
+              "day_scaled": true
+            }
+          },
+          "effects": [
+            {
+              "type": "resource_add",
+              "resource": "wood",
+              "amount": 5
+            },
+            {
+              "type": "resource_add",
+              "resource": "stone",
+              "amount": 5
+            },
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": 5
+            }
+          ],
+          "fail_effects": []
+        },
+        {
+          "id": "trade",
+          "label": "Offer to trade normally",
+          "input": {
+            "mode": "code",
+            "text": "trade"
+          },
+          "effects": [
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": 2
+            }
           ]
         }
       ]

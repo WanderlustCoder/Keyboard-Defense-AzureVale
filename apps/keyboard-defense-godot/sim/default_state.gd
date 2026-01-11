@@ -6,7 +6,7 @@ const SimMap = preload("res://sim/map.gd")
 const SimRng = preload("res://sim/rng.gd")
 const SimLessons = preload("res://sim/lessons.gd")
 
-static func create(seed: String = "default") -> GameState:
+static func create(seed: String = "default", place_starting_towers: bool = false) -> GameState:
     var state: GameState = GameState.new()
     SimRng.seed_state(state, seed)
     state.lesson_id = SimLessons.default_lesson_id()
@@ -15,8 +15,9 @@ static func create(seed: String = "default") -> GameState:
     state.terrain[base_index] = SimMap.TERRAIN_PLAINS
     # Starting resources
     state.gold = 10
-    # Place starting auto-towers near base
-    _place_starting_towers(state)
+    # Optionally place starting auto-towers near base
+    if place_starting_towers:
+        _place_starting_towers(state)
     return state
 
 

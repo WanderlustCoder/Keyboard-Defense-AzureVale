@@ -317,7 +317,7 @@ static func _apply_restart(state: GameState, events: Array[String]) -> Dictionar
         events.append("Restart is only available after game over or victory.")
         return {"state": state, "events": events}
     var seed_value: String = state.rng_seed
-    var new_state: GameState = DefaultState.create(seed_value)
+    var new_state: GameState = DefaultState.create(seed_value, true)
     new_state.lesson_id = state.lesson_id
     if state.phase == "victory":
         events.append("Starting a new challenge with seed '%s'." % seed_value)
@@ -327,7 +327,7 @@ static func _apply_restart(state: GameState, events: Array[String]) -> Dictionar
 
 static func _apply_new(state: GameState, events: Array[String]) -> Dictionary:
     var seed_value: String = state.rng_seed
-    var new_state: GameState = DefaultState.create(seed_value)
+    var new_state: GameState = DefaultState.create(seed_value, true)
     new_state.lesson_id = state.lesson_id
     events.append("New run started with seed '%s'." % seed_value)
     return {"state": new_state, "events": events}
@@ -1165,7 +1165,7 @@ static func _apply_auto_tower_upgrade(state: GameState, index: int, pos: Vector2
 
     if check.options.is_empty():
         var current_type: String = str(state.structures[index])
-        var tower_name: String = SimAutoTowerTypes.get_name(current_type)
+        var tower_name: String = SimAutoTowerTypes.get_tower_name(current_type)
         events.append("%s is at maximum tier and cannot be upgraded." % tower_name)
         return
 
@@ -1175,7 +1175,7 @@ static func _apply_auto_tower_upgrade(state: GameState, index: int, pos: Vector2
         for option in check.options:
             var cost: Dictionary = check.costs.get(option, {})
             var cost_str: String = _format_upgrade_cost(cost)
-            var tower_name: String = SimAutoTowerTypes.get_name(option)
+            var tower_name: String = SimAutoTowerTypes.get_tower_name(option)
             events.append("  %s requires: %s" % [tower_name, cost_str])
         return
 
@@ -1188,10 +1188,10 @@ static func _apply_auto_tower_upgrade(state: GameState, index: int, pos: Vector2
         return
 
     var old_type: String = str(state.structures[index])
-    var old_name: String = SimAutoTowerTypes.get_name(old_type)
+    var old_name: String = SimAutoTowerTypes.get_tower_name(old_type)
 
     if SimBuildings.apply_auto_tower_upgrade(state, index, target_type):
-        var new_name: String = SimAutoTowerTypes.get_name(target_type)
+        var new_name: String = SimAutoTowerTypes.get_tower_name(target_type)
         var new_tier: int = SimAutoTowerTypes.get_tier(target_type)
         events.append("Upgraded %s to %s (Tier %d) at (%d,%d)!" % [old_name, new_name, new_tier, pos.x, pos.y])
         events.append(_format_status(state))

@@ -5,6 +5,7 @@ const GameState = preload("res://sim/types.gd")
 const SimEventTables = preload("res://sim/event_tables.gd")
 const SimEventEffects = preload("res://sim/event_effects.gd")
 const SimPoi = preload("res://sim/poi.gd")
+const SimExplorationChallenges = preload("res://sim/exploration_challenges.gd")
 
 const EVENTS_PATH := "res://data/events/events.json"
 
@@ -251,3 +252,134 @@ static func deserialize_pending_event(raw: Dictionary) -> Dictionary:
 		"input_progress": str(raw.get("input_progress", "")),
 		"resolved": bool(raw.get("resolved", false))
 	}
+
+
+# =============================================================================
+# TYPING CHALLENGE SUPPORT
+# =============================================================================
+
+## Create a typing challenge for an event choice
+static func create_challenge_for_choice(state: GameState, choice: Dictionary) -> Dictionary:
+	var input_config: Dictionary = choice.get("input", {})
+	var mode: String = str(input_config.get("mode", ""))
+
+	if mode != "challenge":
+		return {}
+
+	var challenge_config: Dictionary = input_config.get("challenge", {})
+	return SimExplorationChallenges.generate_challenge(state, challenge_config)
+
+
+## Check if a choice requires a typing challenge
+static func choice_is_challenge(choice: Dictionary) -> bool:
+	var input_config: Dictionary = choice.get("input", {})
+	return str(input_config.get("mode", "")) == "challenge"
+
+
+## Get challenge words to display to player
+static func get_challenge_words(challenge: Dictionary) -> Array:
+	return challenge.get("words", [])
+
+
+## Get current word in challenge
+static func get_current_challenge_word(challenge: Dictionary) -> String:
+	var idx: int = int(challenge.get("current_word_index", 0))
+	var words: Array = challenge.get("words", [])
+	if idx < words.size():
+		return str(words[idx])
+	return ""
+
+
+## Process a word typed during a challenge
+static func process_challenge_word(challenge: Dictionary, typed_word: String) -> Dictionary:
+	return SimExplorationChallenges.process_word(challenge, typed_word)
+
+
+## Evaluate completed challenge
+static func evaluate_challenge(challenge: Dictionary, end_time: float) -> Dictionary:
+	return SimExplorationChallenges.evaluate_challenge(challenge, end_time)
+
+
+## Scale event rewards based on challenge performance
+static func scale_event_rewards(state: GameState, choice: Dictionary, evaluation: Dictionary) -> Array:
+	var effects: Array = choice.get("effects", [])
+	return SimExplorationChallenges.scale_rewards(effects, evaluation, state.day)
+
+
+## Get challenge description for UI
+static func get_challenge_description(challenge: Dictionary) -> String:
+	return SimExplorationChallenges.get_challenge_description(challenge)
+
+
+## Get challenge result description for UI
+static func get_challenge_result(evaluation: Dictionary) -> String:
+	return SimExplorationChallenges.get_result_description(evaluation)
+
+
+# =============================================================================
+# DIFFICULTY SCALING
+# =============================================================================
+
+## Apply difficulty scaling to event based on day and distance from base
+static func get_scaled_event(state: GameState, event_data: Dictionary, distance: int = 0) -> Dictionary:
+	if event_data.is_empty():
+		return event_data
+
+	var scaled: Dictionary = event_data.duplicate(true)
+	var day: int = state.day
+
+	# Calculate difficulty multiplier
+	var day_mult: float = 1.0 + (float(day - 1) * 0.1)  # 10% per day
+	var dist_mult: float = 1.0 + (float(distance) * 0.05)  # 5% per tile from base
+	var total_mult: float = day_mult * dist_mult
+
+	# Scale rewards in choices
+	var choices: Array = scaled.get("choices", [])
+	for i in range(choices.size()):
+		if typeof(choices[i]) != TYPE_DICTIONARY:
+			continue
+		var choice: Dictionary = choices[i]
+		var effects: Array = choice.get("effects", [])
+		var scaled_effects: Array = _scale_effects(effects, total_mult)
+		choice["effects"] = scaled_effects
+		choices[i] = choice
+
+	scaled["choices"] = choices
+	scaled["difficulty_multiplier"] = total_mult
+
+	return scaled
+
+
+## Scale effect values
+static func _scale_effects(effects: Array, multiplier: float) -> Array:
+	var scaled: Array = []
+	for effect in effects:
+		if typeof(effect) != TYPE_DICTIONARY:
+			scaled.append(effect)
+			continue
+
+		var effect_copy: Dictionary = effect.duplicate()
+		var effect_type: String = str(effect.get("type", ""))
+
+		# Scale numeric rewards
+		match effect_type:
+			"resource_add", "gold_add", "heal_castle", "ap_add":
+				var amount: int = int(effect.get("amount", 0))
+				if amount > 0:  # Only scale positive rewards
+					effect_copy["amount"] = int(float(amount) * multiplier)
+
+		scaled.append(effect_copy)
+
+	return scaled
+
+
+## Get event tier based on day (for filtering high-tier events early game)
+static func get_event_tier_for_day(day: int) -> int:
+	if day <= 3:
+		return 1  # Basic events only
+	elif day <= 7:
+		return 2  # Include uncommon events
+	elif day <= 14:
+		return 3  # Include rare events
+	else:
+		return 4  # All events available

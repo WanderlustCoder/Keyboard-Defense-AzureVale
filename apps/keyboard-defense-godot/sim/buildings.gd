@@ -396,6 +396,9 @@ static func is_blocking(building_type: String) -> bool:
     return building_type == "wall" or building_type == "tower"
 
 static func is_auto_tower(building_type: String) -> bool:
+    # "tower" is a legacy tower with level-based upgrades, not an auto-tower
+    if building_type == "tower":
+        return false
     return BUILDINGS.get(building_type, {}).get("category", "") == "auto_defense"
 
 static func get_auto_attack_stats(building_type: String) -> Dictionary:

@@ -172,7 +172,7 @@ func _create_tower_widget(tower: Dictionary) -> Control:
 	var targeting: String = str(tower.get("targeting", "nearest"))
 
 	var tower_data: Dictionary = SimAutoTowerTypes.get_tower(tower_type)
-	var tower_name: String = SimAutoTowerTypes.get_name(tower_type)
+	var tower_name: String = SimAutoTowerTypes.get_tower_name(tower_type)
 	var tier: int = SimAutoTowerTypes.get_tier(tower_type)
 	var color: Color = _get_tower_color(tower_type)
 
@@ -370,7 +370,7 @@ func _create_tower_type_card(tower_id: String) -> Control:
 		var upgrade_label := Label.new()
 		var upgrade_names: Array[String] = []
 		for opt in upgrade_options:
-			upgrade_names.append(SimAutoTowerTypes.get_name(opt))
+			upgrade_names.append(SimAutoTowerTypes.get_tower_name(opt))
 		upgrade_label.text = "Upgrades to: %s" % ", ".join(upgrade_names)
 		upgrade_label.add_theme_font_size_override("font_size", 9)
 		upgrade_label.add_theme_color_override("font_color", Color(0.5, 0.8, 0.5))

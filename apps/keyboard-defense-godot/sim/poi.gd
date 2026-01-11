@@ -175,6 +175,60 @@ static func remove_poi(state: GameState, poi_id: String) -> bool:
 	state.active_pois.erase(poi_id)
 	return true
 
+
+## Mark a POI as interacted and set respawn timer
+static func mark_interacted(state: GameState, poi_id: String) -> void:
+	if not state.active_pois.has(poi_id):
+		return
+	var poi_state: Dictionary = state.active_pois[poi_id]
+	var poi_data: Dictionary = get_poi(poi_id)
+	poi_state["interacted"] = true
+	poi_state["interacted_day"] = state.day
+	# Set respawn day based on POI definition
+	var respawn_days: int = int(poi_data.get("respawn_days", 0))
+	if respawn_days > 0:
+		poi_state["respawn_day"] = state.day + respawn_days
+	else:
+		poi_state["respawn_day"] = 0  # Never respawns
+	state.active_pois[poi_id] = poi_state
+
+
+## Check and respawn eligible POIs (call at dawn)
+static func check_respawns(state: GameState) -> Array[String]:
+	var respawned: Array[String] = []
+	var pois_to_respawn: Array[String] = []
+
+	for poi_id in state.active_pois:
+		var poi_state: Dictionary = state.active_pois[poi_id]
+		if not poi_state.get("interacted", false):
+			continue
+		var respawn_day: int = int(poi_state.get("respawn_day", 0))
+		if respawn_day > 0 and state.day >= respawn_day:
+			pois_to_respawn.append(poi_id)
+
+	for poi_id in pois_to_respawn:
+		var poi_state: Dictionary = state.active_pois[poi_id]
+		poi_state["interacted"] = false
+		poi_state["respawn_day"] = 0
+		poi_state["interacted_day"] = 0
+		state.active_pois[poi_id] = poi_state
+		respawned.append(poi_id)
+
+	return respawned
+
+
+## Get time until POI respawns (0 if not interacted or never respawns)
+static func get_respawn_remaining(state: GameState, poi_id: String) -> int:
+	if not state.active_pois.has(poi_id):
+		return 0
+	var poi_state: Dictionary = state.active_pois[poi_id]
+	if not poi_state.get("interacted", false):
+		return 0
+	var respawn_day: int = int(poi_state.get("respawn_day", 0))
+	if respawn_day <= 0:
+		return -1  # Never respawns
+	return max(0, respawn_day - state.day)
+
 static func serialize_poi_state(poi_state: Dictionary) -> Dictionary:
 	var pos: Variant = poi_state.get("pos", Vector2i.ZERO)
 	var pos_dict: Dictionary = {"x": 0, "y": 0}
@@ -184,7 +238,9 @@ static func serialize_poi_state(poi_state: Dictionary) -> Dictionary:
 		"poi_id": str(poi_state.get("poi_id", "")),
 		"pos": pos_dict,
 		"discovered": bool(poi_state.get("discovered", false)),
-		"interacted": bool(poi_state.get("interacted", false))
+		"interacted": bool(poi_state.get("interacted", false)),
+		"interacted_day": int(poi_state.get("interacted_day", 0)),
+		"respawn_day": int(poi_state.get("respawn_day", 0))
 	}
 
 static func deserialize_poi_state(raw: Dictionary) -> Dictionary:
@@ -194,5 +250,7 @@ static func deserialize_poi_state(raw: Dictionary) -> Dictionary:
 		"poi_id": str(raw.get("poi_id", "")),
 		"pos": pos,
 		"discovered": bool(raw.get("discovered", false)),
-		"interacted": bool(raw.get("interacted", false))
+		"interacted": bool(raw.get("interacted", false)),
+		"interacted_day": int(raw.get("interacted_day", 0)),
+		"respawn_day": int(raw.get("respawn_day", 0))
 	}

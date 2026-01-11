@@ -332,7 +332,7 @@ static func get_tower(tower_id: String) -> Dictionary:
 	return TOWERS.get(tower_id, {})
 
 
-static func get_name(tower_id: String) -> String:
+static func get_tower_name(tower_id: String) -> String:
 	return str(TOWERS.get(tower_id, {}).get("name", tower_id))
 
 

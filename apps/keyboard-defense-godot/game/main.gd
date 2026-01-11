@@ -115,7 +115,7 @@ var achievement_checker: AchievementChecker = null
 var achievement_popup: Node = null
 
 func _ready() -> void:
-	state = DefaultState.create()
+	state = DefaultState.create("default", true)
 	typing_stats = SimTypingStats.new()
 	if command_bar.has_signal("command_submitted"):
 		command_bar.command_submitted.connect(_on_command_submitted)

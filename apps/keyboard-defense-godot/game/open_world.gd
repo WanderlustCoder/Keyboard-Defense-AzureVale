@@ -11,6 +11,7 @@ const StoryManager = preload("res://game/story_manager.gd")
 const SimPoi = preload("res://sim/poi.gd")
 const SimEvents = preload("res://sim/events.gd")
 const SimEventEffects = preload("res://sim/event_effects.gd")
+const SimExplorationChallenges = preload("res://sim/exploration_challenges.gd")
 const DIALOGUE_BOX_SCENE := preload("res://scenes/DialogueBox.tscn")
 
 @onready var grid_renderer: Node2D = $GridRenderer
@@ -45,8 +46,13 @@ var first_combat_message_shown: bool = false
 var pending_event_choices: Array = []
 var current_event_data: Dictionary = {}
 
+# Typing challenge state
+var active_challenge: Dictionary = {}
+var challenge_choice_id: String = ""
+var challenge_start_time: float = 0.0
+
 func _ready() -> void:
-	state = DefaultState.create("open_world")
+	state = DefaultState.create("open_world", true)
 	state.activity_mode = "exploration"
 	state.resources = {"wood": 10, "stone": 5, "food": 10}  # Starting resources
 
@@ -237,6 +243,12 @@ func _on_command_submitted(text: String) -> void:
 
 	var input: String = text.strip_edges().to_lower()
 
+	# During active challenge, process challenge word
+	if not active_challenge.is_empty():
+		_process_challenge_input(input)
+		_refresh_all()
+		return
+
 	# During combat, check if typing an enemy word
 	if state.activity_mode in ["encounter", "wave_assault"] and not state.enemies.is_empty():
 		var hit_enemy: Dictionary = {}
@@ -364,7 +376,12 @@ func _refresh_hud() -> void:
 	mode_label.text = mode_text
 
 	# Update actions based on context
-	if state.activity_mode in ["encounter", "wave_assault"]:
+	if not active_challenge.is_empty():
+		var words: Array = active_challenge.get("words", [])
+		var current_idx: int = int(active_challenge.get("current_word_index", 0))
+		var current_word: String = str(words[current_idx]) if current_idx < words.size() else ""
+		actions_label.text = "[color=yellow]CHALLENGE![/color] Type: %s | %d/%d" % [current_word, current_idx, words.size()]
+	elif state.activity_mode in ["encounter", "wave_assault"]:
 		actions_label.text = "[color=red]COMBAT![/color] Type the enemy word to attack! | wait: skip turn"
 	elif SimEvents.has_pending_event(state):
 		actions_label.text = "[color=cyan]EVENT![/color] Type your choice to respond."
@@ -586,15 +603,24 @@ func _try_resolve_event_choice(input: String) -> bool:
 
 	# Find matching choice
 	var choice_id: String = ""
+	var matched_choice: Dictionary = {}
 	for choice in pending_event_choices:
 		if str(choice.get("input", "")).to_lower() == input.to_lower():
 			choice_id = str(choice.get("id", ""))
+			matched_choice = choice
 			break
 
 	if choice_id == "":
 		return false
 
-	# Resolve the choice
+	# Check if this is a challenge-mode choice
+	var choice_data: Dictionary = SimEvents.get_choice(current_event_data, choice_id)
+	if SimEvents.choice_is_challenge(choice_data):
+		# Start a typing challenge
+		_start_challenge(choice_id, choice_data)
+		return true
+
+	# Resolve the choice normally
 	var result: Dictionary = SimEvents.resolve_choice(state, choice_id, input)
 	if result.get("success", false):
 		var effects: Array = result.get("effects_applied", [])
@@ -613,3 +639,146 @@ func _try_resolve_event_choice(input: String) -> bool:
 		return false
 
 	return false
+
+
+# =============================================================================
+# TYPING CHALLENGE SYSTEM
+# =============================================================================
+
+func _start_challenge(choice_id: String, choice_data: Dictionary) -> void:
+	# Generate challenge from choice config
+	active_challenge = SimEvents.create_challenge_for_choice(state, choice_data)
+	if active_challenge.is_empty():
+		_append_log("[color=red]Failed to create challenge.[/color]")
+		return
+
+	challenge_choice_id = choice_id
+	challenge_start_time = Time.get_unix_time_from_system()
+
+	# Start tracking
+	active_challenge = SimExplorationChallenges.start_challenge(active_challenge, challenge_start_time)
+
+	# Show challenge intro
+	var desc: String = SimExplorationChallenges.get_challenge_description(active_challenge)
+	_append_log("[color=cyan]--- TYPING CHALLENGE ---[/color]")
+	_append_log(desc)
+	_show_challenge_status()
+
+
+func _process_challenge_input(input: String) -> void:
+	if active_challenge.is_empty():
+		return
+
+	# Process the typed word
+	var result: Dictionary = SimExplorationChallenges.process_word(active_challenge, input)
+
+	if result.get("accepted", false):
+		var correct: bool = result.get("correct", false)
+		var expected: String = str(result.get("expected", ""))
+		var remaining: int = int(result.get("words_remaining", 0))
+
+		if correct:
+			_append_log("[color=lime]Correct![/color] '%s'" % expected)
+		else:
+			_append_log("[color=yellow]Accepted.[/color] Expected '%s'" % expected)
+
+		if remaining <= 0:
+			# Challenge complete
+			_complete_challenge()
+		else:
+			_show_challenge_status()
+	else:
+		var reason: String = str(result.get("reason", ""))
+		if reason == "challenge_complete":
+			_complete_challenge()
+		else:
+			_append_log("[color=gray]Word not matched.[/color]")
+			_show_challenge_status()
+
+
+func _complete_challenge() -> void:
+	if active_challenge.is_empty():
+		return
+
+	var end_time: float = Time.get_unix_time_from_system()
+	var evaluation: Dictionary = SimExplorationChallenges.evaluate_challenge(active_challenge, end_time)
+
+	# Show result
+	var result_text: String = SimExplorationChallenges.get_result_description(evaluation)
+	_append_log("[color=cyan]--- CHALLENGE RESULT ---[/color]")
+	_append_log(result_text)
+
+	var passed: bool = evaluation.get("passed", false)
+
+	if passed:
+		# Get choice and scale rewards
+		var choice_data: Dictionary = SimEvents.get_choice(current_event_data, challenge_choice_id)
+		var scaled_effects: Array = SimEvents.scale_event_rewards(state, choice_data, evaluation)
+
+		# Apply scaled effects
+		var results: Array = SimEventEffects.apply_effects(state, scaled_effects)
+		for effect_result in results:
+			var msg: String = str(effect_result.get("message", ""))
+			if not msg.is_empty():
+				_append_log("[color=lime]%s[/color]" % msg)
+
+		# Mark event as resolved
+		state.pending_event["resolved"] = true
+		state.pending_event["choice_id"] = challenge_choice_id
+
+		# Mark POI as interacted
+		var source_poi: String = str(state.pending_event.get("source_poi", ""))
+		if source_poi != "" and state.active_pois.has(source_poi):
+			var poi_state: Dictionary = state.active_pois[source_poi]
+			poi_state["interacted"] = true
+			state.active_pois[source_poi] = poi_state
+
+		state.pending_event = {}
+		_append_log("[color=cyan]Challenge complete![/color]")
+	else:
+		# Apply fail effects if any
+		var choice_data: Dictionary = SimEvents.get_choice(current_event_data, challenge_choice_id)
+		var fail_effects: Array = choice_data.get("fail_effects", [])
+		if not fail_effects.is_empty():
+			var results: Array = SimEventEffects.apply_effects(state, fail_effects)
+			for effect_result in results:
+				var msg: String = str(effect_result.get("message", ""))
+				if not msg.is_empty():
+					_append_log("[color=red]%s[/color]" % msg)
+
+		state.pending_event = {}
+		_append_log("[color=red]Challenge failed.[/color]")
+
+	# Clear challenge state
+	active_challenge = {}
+	challenge_choice_id = ""
+	pending_event_choices.clear()
+	current_event_data = {}
+
+
+func _show_challenge_status() -> void:
+	if active_challenge.is_empty():
+		return
+
+	var words: Array = active_challenge.get("words", [])
+	var current_idx: int = int(active_challenge.get("current_word_index", 0))
+
+	if current_idx >= words.size():
+		return
+
+	var current_word: String = str(words[current_idx])
+	var progress: String = "%d/%d" % [current_idx, words.size()]
+
+	# Build word display
+	var word_display: String = ""
+	for i in range(words.size()):
+		var word: String = str(words[i])
+		if i < current_idx:
+			word_display += "[color=gray][s]%s[/s][/color] " % word
+		elif i == current_idx:
+			word_display += "[color=yellow][b]%s[/b][/color] " % word
+		else:
+			word_display += "[color=gray]%s[/color] " % word
+
+	_append_log(word_display.strip_edges())
+	_append_log("[color=cyan]Type:[/color] [color=yellow]%s[/color] [%s]" % [current_word, progress])
