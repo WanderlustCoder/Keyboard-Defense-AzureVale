@@ -91,6 +91,8 @@ const GamePersistence = preload("res://game/persistence.gd")
 const AudioManagerScript = preload("res://game/audio_manager.gd")
 const DamageNumbers = preload("res://game/damage_numbers.gd")
 const KeyboardDisplay = preload("res://game/keyboard_display.gd")
+const ComboAnnouncement = preload("res://ui/components/combo_announcement.gd")
+const ThreatBar = preload("res://ui/components/threat_bar.gd")
 
 var total_tests: int = 0
 var total_failed: int = 0
@@ -203,6 +205,8 @@ func _run_all() -> void:
     _run_audio_manager_tests()
     _run_damage_numbers_tests()
     _run_keyboard_display_tests()
+    _run_combo_announcement_tests()
+    _run_threat_bar_tests()
 
     for message in messages:
         print("[tests] %s" % message)
@@ -9475,3 +9479,164 @@ func _test_keyboard_display_ripple_constants() -> void:
 
     _assert_true(KeyboardDisplay.RIPPLE_ERROR_COLOR is Color, "RIPPLE_ERROR_COLOR is Color")
     _assert_true(KeyboardDisplay.RIPPLE_ERROR_COLOR.r > KeyboardDisplay.RIPPLE_ERROR_COLOR.g, "RIPPLE_ERROR_COLOR is red")
+
+# =============================================================================
+# COMBO ANNOUNCEMENT TESTS
+# =============================================================================
+
+func _run_combo_announcement_tests() -> void:
+    _test_combo_announcement_milestones()
+    _test_combo_announcement_animation_constants()
+    _test_combo_announcement_visual_constants()
+    _test_combo_announcement_colors()
+    _test_combo_announcement_titles()
+
+func _test_combo_announcement_milestones() -> void:
+    # MILESTONES should be an array of increasing values
+    _assert_true(ComboAnnouncement.MILESTONES is Array, "MILESTONES is Array")
+    _assert_true(ComboAnnouncement.MILESTONES.size() >= 5, "MILESTONES has at least 5 entries")
+    _assert_equal(ComboAnnouncement.MILESTONES[0], 5, "First milestone is 5")
+
+    # Milestones should be in ascending order
+    var prev: int = 0
+    for milestone in ComboAnnouncement.MILESTONES:
+        _assert_true(milestone > prev, "Milestone %d > %d (ascending)" % [milestone, prev])
+        prev = milestone
+
+    # Should include key milestones
+    _assert_true(5 in ComboAnnouncement.MILESTONES, "5 is a milestone")
+    _assert_true(10 in ComboAnnouncement.MILESTONES, "10 is a milestone")
+    _assert_true(20 in ComboAnnouncement.MILESTONES, "20 is a milestone")
+
+func _test_combo_announcement_animation_constants() -> void:
+    # Announce duration should be reasonable
+    _assert_true(ComboAnnouncement.ANNOUNCE_DURATION > 0.0, "ANNOUNCE_DURATION is positive")
+    _assert_true(ComboAnnouncement.ANNOUNCE_DURATION <= 5.0, "ANNOUNCE_DURATION is reasonable")
+    _assert_equal(ComboAnnouncement.ANNOUNCE_DURATION, 1.5, "ANNOUNCE_DURATION is 1.5")
+
+    # Scale durations
+    _assert_true(ComboAnnouncement.SCALE_IN_DURATION > 0.0, "SCALE_IN_DURATION is positive")
+    _assert_true(ComboAnnouncement.SCALE_IN_DURATION < 1.0, "SCALE_IN_DURATION is quick")
+    _assert_equal(ComboAnnouncement.SCALE_IN_DURATION, 0.2, "SCALE_IN_DURATION is 0.2")
+
+    _assert_true(ComboAnnouncement.SCALE_OUT_DURATION > 0.0, "SCALE_OUT_DURATION is positive")
+    _assert_true(ComboAnnouncement.SCALE_OUT_DURATION < 1.0, "SCALE_OUT_DURATION is quick")
+    _assert_equal(ComboAnnouncement.SCALE_OUT_DURATION, 0.4, "SCALE_OUT_DURATION is 0.4")
+
+    # Scale values
+    _assert_true(ComboAnnouncement.SCALE_PEAK > 1.0, "SCALE_PEAK is greater than 1")
+    _assert_equal(ComboAnnouncement.SCALE_PEAK, 1.3, "SCALE_PEAK is 1.3")
+    _assert_equal(ComboAnnouncement.SCALE_FINAL, 1.0, "SCALE_FINAL is 1.0")
+
+    # Shake settings
+    _assert_true(ComboAnnouncement.SHAKE_INTENSITY > 0.0, "SHAKE_INTENSITY is positive")
+    _assert_equal(ComboAnnouncement.SHAKE_INTENSITY, 4.0, "SHAKE_INTENSITY is 4.0")
+    _assert_true(ComboAnnouncement.SHAKE_FREQUENCY > 0.0, "SHAKE_FREQUENCY is positive")
+    _assert_equal(ComboAnnouncement.SHAKE_FREQUENCY, 20.0, "SHAKE_FREQUENCY is 20.0")
+
+func _test_combo_announcement_visual_constants() -> void:
+    # Font sizes should be positive
+    _assert_true(ComboAnnouncement.FONT_SIZE_BASE > 0, "FONT_SIZE_BASE is positive")
+    _assert_equal(ComboAnnouncement.FONT_SIZE_BASE, 36, "FONT_SIZE_BASE is 36")
+
+    _assert_true(ComboAnnouncement.FONT_SIZE_MAX > 0, "FONT_SIZE_MAX is positive")
+    _assert_equal(ComboAnnouncement.FONT_SIZE_MAX, 48, "FONT_SIZE_MAX is 48")
+
+    _assert_true(ComboAnnouncement.FONT_SIZE_MAX > ComboAnnouncement.FONT_SIZE_BASE, "FONT_SIZE_MAX > FONT_SIZE_BASE")
+
+    # Glow expand
+    _assert_true(ComboAnnouncement.GLOW_EXPAND > 0.0, "GLOW_EXPAND is positive")
+    _assert_equal(ComboAnnouncement.GLOW_EXPAND, 6.0, "GLOW_EXPAND is 6.0")
+
+func _test_combo_announcement_colors() -> void:
+    # All tier colors should be Colors with full alpha
+    _assert_true(ComboAnnouncement.COLOR_TIER_1 is Color, "COLOR_TIER_1 is Color")
+    _assert_equal(ComboAnnouncement.COLOR_TIER_1.a, 1.0, "COLOR_TIER_1 has full alpha")
+
+    _assert_true(ComboAnnouncement.COLOR_TIER_2 is Color, "COLOR_TIER_2 is Color")
+    _assert_equal(ComboAnnouncement.COLOR_TIER_2.a, 1.0, "COLOR_TIER_2 has full alpha")
+
+    _assert_true(ComboAnnouncement.COLOR_TIER_3 is Color, "COLOR_TIER_3 is Color")
+    _assert_equal(ComboAnnouncement.COLOR_TIER_3.a, 1.0, "COLOR_TIER_3 has full alpha")
+
+    _assert_true(ComboAnnouncement.COLOR_TIER_4 is Color, "COLOR_TIER_4 is Color")
+    _assert_equal(ComboAnnouncement.COLOR_TIER_4.a, 1.0, "COLOR_TIER_4 has full alpha")
+
+    _assert_true(ComboAnnouncement.COLOR_TIER_5 is Color, "COLOR_TIER_5 is Color")
+    _assert_equal(ComboAnnouncement.COLOR_TIER_5.a, 1.0, "COLOR_TIER_5 has full alpha")
+
+    # Colors should be distinct (different hues)
+    _assert_true(ComboAnnouncement.COLOR_TIER_1 != ComboAnnouncement.COLOR_TIER_2, "TIER_1 != TIER_2")
+    _assert_true(ComboAnnouncement.COLOR_TIER_2 != ComboAnnouncement.COLOR_TIER_3, "TIER_2 != TIER_3")
+    _assert_true(ComboAnnouncement.COLOR_TIER_3 != ComboAnnouncement.COLOR_TIER_4, "TIER_3 != TIER_4")
+    _assert_true(ComboAnnouncement.COLOR_TIER_4 != ComboAnnouncement.COLOR_TIER_5, "TIER_4 != TIER_5")
+
+func _test_combo_announcement_titles() -> void:
+    # TITLES should be a dictionary mapping milestones to strings
+    _assert_true(ComboAnnouncement.TITLES is Dictionary, "TITLES is Dictionary")
+    _assert_true(ComboAnnouncement.TITLES.size() >= 5, "TITLES has at least 5 entries")
+
+    # Each milestone should have a title
+    for milestone in ComboAnnouncement.MILESTONES:
+        _assert_true(ComboAnnouncement.TITLES.has(milestone), "TITLES has entry for milestone %d" % milestone)
+        _assert_true(ComboAnnouncement.TITLES[milestone] is String, "Title for %d is String" % milestone)
+        _assert_true(ComboAnnouncement.TITLES[milestone].length() > 0, "Title for %d is not empty" % milestone)
+
+    # Test some specific titles
+    _assert_equal(ComboAnnouncement.TITLES.get(5, ""), "NICE!", "5x title is NICE!")
+    _assert_equal(ComboAnnouncement.TITLES.get(10, ""), "GREAT!", "10x title is GREAT!")
+    _assert_equal(ComboAnnouncement.TITLES.get(20, ""), "INCREDIBLE!", "20x title is INCREDIBLE!")
+
+# =============================================================================
+# THREAT BAR TESTS
+# =============================================================================
+
+func _run_threat_bar_tests() -> void:
+    _test_threat_bar_visual_constants()
+    _test_threat_bar_threshold_constants()
+    _test_threat_bar_health_constants()
+
+func _test_threat_bar_visual_constants() -> void:
+    # Bar corner radius
+    _assert_true(ThreatBar.BAR_CORNER_RADIUS >= 0, "BAR_CORNER_RADIUS is non-negative")
+    _assert_equal(ThreatBar.BAR_CORNER_RADIUS, 3, "BAR_CORNER_RADIUS is 3")
+
+    # Bar background color
+    _assert_true(ThreatBar.THREAT_BAR_BG is Color, "THREAT_BAR_BG is Color")
+    _assert_equal(ThreatBar.THREAT_BAR_BG.a, 1.0, "THREAT_BAR_BG has full alpha")
+    _assert_true(ThreatBar.THREAT_BAR_BG.r < 0.2, "THREAT_BAR_BG is dark")
+    _assert_true(ThreatBar.THREAT_BAR_BG.g < 0.2, "THREAT_BAR_BG is dark")
+
+func _test_threat_bar_threshold_constants() -> void:
+    # Threat thresholds should be percentages (0-100)
+    _assert_true(ThreatBar.THREAT_HIGH_THRESHOLD > 0.0, "THREAT_HIGH_THRESHOLD is positive")
+    _assert_true(ThreatBar.THREAT_HIGH_THRESHOLD <= 100.0, "THREAT_HIGH_THRESHOLD is <= 100")
+    _assert_equal(ThreatBar.THREAT_HIGH_THRESHOLD, 80.0, "THREAT_HIGH_THRESHOLD is 80.0")
+
+    _assert_true(ThreatBar.THREAT_MEDIUM_THRESHOLD > 0.0, "THREAT_MEDIUM_THRESHOLD is positive")
+    _assert_true(ThreatBar.THREAT_MEDIUM_THRESHOLD <= 100.0, "THREAT_MEDIUM_THRESHOLD is <= 100")
+    _assert_equal(ThreatBar.THREAT_MEDIUM_THRESHOLD, 50.0, "THREAT_MEDIUM_THRESHOLD is 50.0")
+
+    # High threshold should be greater than medium
+    _assert_true(ThreatBar.THREAT_HIGH_THRESHOLD > ThreatBar.THREAT_MEDIUM_THRESHOLD, "HIGH > MEDIUM threshold")
+
+func _test_threat_bar_health_constants() -> void:
+    # Heart size should be positive
+    _assert_true(ThreatBar.HEALTH_HEART_SIZE > 0.0, "HEALTH_HEART_SIZE is positive")
+    _assert_equal(ThreatBar.HEALTH_HEART_SIZE, 20.0, "HEALTH_HEART_SIZE is 20.0")
+
+    # Heart gap should be non-negative
+    _assert_true(ThreatBar.HEALTH_HEART_GAP >= 0.0, "HEALTH_HEART_GAP is non-negative")
+    _assert_equal(ThreatBar.HEALTH_HEART_GAP, 4.0, "HEALTH_HEART_GAP is 4.0")
+
+    # Health colors
+    _assert_true(ThreatBar.HEALTH_FULL_COLOR is Color, "HEALTH_FULL_COLOR is Color")
+    _assert_equal(ThreatBar.HEALTH_FULL_COLOR.a, 1.0, "HEALTH_FULL_COLOR has full alpha")
+    _assert_true(ThreatBar.HEALTH_FULL_COLOR.r > 0.7, "HEALTH_FULL_COLOR is red")
+
+    _assert_true(ThreatBar.HEALTH_EMPTY_COLOR is Color, "HEALTH_EMPTY_COLOR is Color")
+    _assert_true(ThreatBar.HEALTH_EMPTY_COLOR.a < 1.0, "HEALTH_EMPTY_COLOR has reduced alpha")
+
+    # Pulse speed
+    _assert_true(ThreatBar.HEALTH_LOW_PULSE_SPEED > 0.0, "HEALTH_LOW_PULSE_SPEED is positive")
+    _assert_equal(ThreatBar.HEALTH_LOW_PULSE_SPEED, 4.0, "HEALTH_LOW_PULSE_SPEED is 4.0")
