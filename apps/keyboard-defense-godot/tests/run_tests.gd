@@ -88,6 +88,9 @@ const ScenarioReport = preload("res://tools/scenario_harness/scenario_report.gd"
 const ButtonFeedback = preload("res://ui/components/button_feedback.gd")
 const ThemeColors = preload("res://ui/theme_colors.gd")
 const GamePersistence = preload("res://game/persistence.gd")
+const AudioManagerScript = preload("res://game/audio_manager.gd")
+const DamageNumbers = preload("res://game/damage_numbers.gd")
+const KeyboardDisplay = preload("res://game/keyboard_display.gd")
 
 var total_tests: int = 0
 var total_failed: int = 0
@@ -197,6 +200,9 @@ func _run_all() -> void:
     _run_theme_colors_tests()
     _run_persistence_tests()
     _run_data_integrity_tests()
+    _run_audio_manager_tests()
+    _run_damage_numbers_tests()
+    _run_keyboard_display_tests()
 
     for message in messages:
         print("[tests] %s" % message)
@@ -9180,3 +9186,292 @@ func _test_data_files_structure() -> void:
         research_file.close()
         if typeof(research_data) == TYPE_DICTIONARY:
             _assert_true(research_data.has("research") or research_data.has("version"), "research.json has research or version")
+
+# =============================================================================
+# AUDIO MANAGER TESTS
+# =============================================================================
+
+func _run_audio_manager_tests() -> void:
+    _test_audio_manager_bus_constants()
+    _test_audio_manager_path_constants()
+    _test_audio_manager_rate_limits()
+    _test_audio_manager_timing_constants()
+    _test_audio_manager_sfx_enum()
+    _test_audio_manager_music_enum()
+    _test_audio_manager_ducking_constants()
+    _test_audio_manager_threat_constants()
+
+func _test_audio_manager_bus_constants() -> void:
+    # Bus names should be non-empty strings
+    _assert_equal(AudioManagerScript.BUS_MASTER, "Master", "BUS_MASTER is Master")
+    _assert_equal(AudioManagerScript.BUS_MUSIC, "Music", "BUS_MUSIC is Music")
+    _assert_equal(AudioManagerScript.BUS_SFX, "SFX", "BUS_SFX is SFX")
+
+func _test_audio_manager_path_constants() -> void:
+    # Paths should be valid res:// paths
+    _assert_true(AudioManagerScript.SFX_PATH.begins_with("res://"), "SFX_PATH is res:// path")
+    _assert_true(AudioManagerScript.SFX_PATH.ends_with("/"), "SFX_PATH ends with /")
+    _assert_true(AudioManagerScript.MUSIC_PATH.begins_with("res://"), "MUSIC_PATH is res:// path")
+    _assert_true(AudioManagerScript.MUSIC_PATH.ends_with("/"), "MUSIC_PATH ends with /")
+
+func _test_audio_manager_rate_limits() -> void:
+    # Rate limits should be positive and reasonable
+    _assert_true(AudioManagerScript.RATE_LIMIT_KEYTAP > 0.0, "RATE_LIMIT_KEYTAP is positive")
+    _assert_true(AudioManagerScript.RATE_LIMIT_KEYTAP < 1.0, "RATE_LIMIT_KEYTAP is less than 1s")
+    _assert_equal(AudioManagerScript.RATE_LIMIT_KEYTAP, 0.05, "RATE_LIMIT_KEYTAP is 0.05")
+
+    _assert_true(AudioManagerScript.RATE_LIMIT_TYPE > 0.0, "RATE_LIMIT_TYPE is positive")
+    _assert_true(AudioManagerScript.RATE_LIMIT_TYPE < 1.0, "RATE_LIMIT_TYPE is less than 1s")
+    _assert_equal(AudioManagerScript.RATE_LIMIT_TYPE, 0.03, "RATE_LIMIT_TYPE is 0.03")
+
+    # Type should be faster than keytap (happens more frequently)
+    _assert_true(AudioManagerScript.RATE_LIMIT_TYPE < AudioManagerScript.RATE_LIMIT_KEYTAP, "TYPE rate faster than KEYTAP")
+
+func _test_audio_manager_timing_constants() -> void:
+    # Music fade should be positive and reasonable
+    _assert_true(AudioManagerScript.MUSIC_FADE_DURATION > 0.0, "MUSIC_FADE_DURATION is positive")
+    _assert_true(AudioManagerScript.MUSIC_FADE_DURATION <= 5.0, "MUSIC_FADE_DURATION is reasonable (<= 5s)")
+    _assert_equal(AudioManagerScript.MUSIC_FADE_DURATION, 1.5, "MUSIC_FADE_DURATION is 1.5")
+
+    # SFX pool size should be reasonable
+    _assert_true(AudioManagerScript.SFX_POOL_SIZE >= 4, "SFX_POOL_SIZE is at least 4")
+    _assert_true(AudioManagerScript.SFX_POOL_SIZE <= 16, "SFX_POOL_SIZE is not excessive")
+    _assert_equal(AudioManagerScript.SFX_POOL_SIZE, 8, "SFX_POOL_SIZE is 8")
+
+func _test_audio_manager_sfx_enum() -> void:
+    # Test SFX enum values exist and are integers
+    _assert_true(AudioManagerScript.SFX.UI_KEYTAP is int, "SFX.UI_KEYTAP is int")
+    _assert_true(AudioManagerScript.SFX.UI_CONFIRM is int, "SFX.UI_CONFIRM is int")
+    _assert_true(AudioManagerScript.SFX.TYPE_CORRECT is int, "SFX.TYPE_CORRECT is int")
+    _assert_true(AudioManagerScript.SFX.TYPE_MISTAKE is int, "SFX.TYPE_MISTAKE is int")
+    _assert_true(AudioManagerScript.SFX.COMBO_UP is int, "SFX.COMBO_UP is int")
+    _assert_true(AudioManagerScript.SFX.COMBO_BREAK is int, "SFX.COMBO_BREAK is int")
+    _assert_true(AudioManagerScript.SFX.HIT_ENEMY is int, "SFX.HIT_ENEMY is int")
+    _assert_true(AudioManagerScript.SFX.HIT_PLAYER is int, "SFX.HIT_PLAYER is int")
+    _assert_true(AudioManagerScript.SFX.WAVE_START is int, "SFX.WAVE_START is int")
+    _assert_true(AudioManagerScript.SFX.WAVE_END is int, "SFX.WAVE_END is int")
+    _assert_true(AudioManagerScript.SFX.BOSS_APPEAR is int, "SFX.BOSS_APPEAR is int")
+    _assert_true(AudioManagerScript.SFX.BOSS_DEFEATED is int, "SFX.BOSS_DEFEATED is int")
+    _assert_true(AudioManagerScript.SFX.VICTORY_FANFARE is int, "SFX.VICTORY_FANFARE is int")
+    _assert_true(AudioManagerScript.SFX.DEFEAT_STINGER is int, "SFX.DEFEAT_STINGER is int")
+    _assert_true(AudioManagerScript.SFX.WORD_COMPLETE is int, "SFX.WORD_COMPLETE is int")
+
+func _test_audio_manager_music_enum() -> void:
+    # Test Music enum values exist and are integers
+    _assert_true(AudioManagerScript.Music.MENU is int, "Music.MENU is int")
+    _assert_true(AudioManagerScript.Music.KINGDOM is int, "Music.KINGDOM is int")
+    _assert_true(AudioManagerScript.Music.BATTLE_CALM is int, "Music.BATTLE_CALM is int")
+    _assert_true(AudioManagerScript.Music.BATTLE_TENSE is int, "Music.BATTLE_TENSE is int")
+    _assert_true(AudioManagerScript.Music.VICTORY is int, "Music.VICTORY is int")
+    _assert_true(AudioManagerScript.Music.DEFEAT is int, "Music.DEFEAT is int")
+
+func _test_audio_manager_ducking_constants() -> void:
+    # Ducking constants should be reasonable
+    _assert_true(AudioManagerScript.DUCK_AMOUNT_DB < 0.0, "DUCK_AMOUNT_DB is negative (volume reduction)")
+    _assert_true(AudioManagerScript.DUCK_AMOUNT_DB >= -20.0, "DUCK_AMOUNT_DB is not too extreme")
+    _assert_equal(AudioManagerScript.DUCK_AMOUNT_DB, -12.0, "DUCK_AMOUNT_DB is -12.0")
+
+    _assert_true(AudioManagerScript.DUCK_FADE_DURATION > 0.0, "DUCK_FADE_DURATION is positive")
+    _assert_true(AudioManagerScript.DUCK_FADE_DURATION < 1.0, "DUCK_FADE_DURATION is quick")
+    _assert_equal(AudioManagerScript.DUCK_FADE_DURATION, 0.3, "DUCK_FADE_DURATION is 0.3")
+
+func _test_audio_manager_threat_constants() -> void:
+    # Threat thresholds should be between 0 and 1 (percentages)
+    _assert_true(AudioManagerScript.THREAT_PULSE_THRESHOLD_LOW > 0.0, "THREAT_PULSE_THRESHOLD_LOW > 0")
+    _assert_true(AudioManagerScript.THREAT_PULSE_THRESHOLD_LOW < 1.0, "THREAT_PULSE_THRESHOLD_LOW < 1")
+    _assert_equal(AudioManagerScript.THREAT_PULSE_THRESHOLD_LOW, 0.6, "THREAT_PULSE_THRESHOLD_LOW is 0.6")
+
+    _assert_true(AudioManagerScript.THREAT_PULSE_THRESHOLD_HIGH > 0.0, "THREAT_PULSE_THRESHOLD_HIGH > 0")
+    _assert_true(AudioManagerScript.THREAT_PULSE_THRESHOLD_HIGH < 1.0, "THREAT_PULSE_THRESHOLD_HIGH < 1")
+    _assert_equal(AudioManagerScript.THREAT_PULSE_THRESHOLD_HIGH, 0.85, "THREAT_PULSE_THRESHOLD_HIGH is 0.85")
+
+    # High threshold should be greater than low
+    _assert_true(AudioManagerScript.THREAT_PULSE_THRESHOLD_HIGH > AudioManagerScript.THREAT_PULSE_THRESHOLD_LOW, "HIGH > LOW threshold")
+
+# =============================================================================
+# DAMAGE NUMBERS TESTS
+# =============================================================================
+
+func _run_damage_numbers_tests() -> void:
+    _test_damage_numbers_animation_constants()
+    _test_damage_numbers_font_constants()
+    _test_damage_numbers_color_constants()
+
+func _test_damage_numbers_animation_constants() -> void:
+    # Float duration should be positive and reasonable
+    _assert_true(DamageNumbers.FLOAT_DURATION > 0.0, "FLOAT_DURATION is positive")
+    _assert_true(DamageNumbers.FLOAT_DURATION <= 3.0, "FLOAT_DURATION is reasonable (<= 3s)")
+    _assert_equal(DamageNumbers.FLOAT_DURATION, 0.9, "FLOAT_DURATION is 0.9")
+
+    # Float distance should be positive
+    _assert_true(DamageNumbers.FLOAT_DISTANCE > 0.0, "FLOAT_DISTANCE is positive")
+    _assert_equal(DamageNumbers.FLOAT_DISTANCE, 45.0, "FLOAT_DISTANCE is 45.0")
+
+    # Initial velocity should be upward (negative Y)
+    _assert_true(DamageNumbers.INITIAL_VELOCITY is Vector2, "INITIAL_VELOCITY is Vector2")
+    _assert_true(DamageNumbers.INITIAL_VELOCITY.y < 0.0, "INITIAL_VELOCITY.y is negative (upward)")
+    _assert_equal(DamageNumbers.INITIAL_VELOCITY, Vector2(0, -80), "INITIAL_VELOCITY is (0, -80)")
+
+    # Gravity should be positive (pulls down)
+    _assert_true(DamageNumbers.GRAVITY > 0.0, "GRAVITY is positive")
+    _assert_equal(DamageNumbers.GRAVITY, 60.0, "GRAVITY is 60.0")
+
+    # Spread should be positive
+    _assert_true(DamageNumbers.SPREAD_X > 0.0, "SPREAD_X is positive")
+    _assert_equal(DamageNumbers.SPREAD_X, 25.0, "SPREAD_X is 25.0")
+
+func _test_damage_numbers_font_constants() -> void:
+    # Font sizes should be positive integers
+    _assert_true(DamageNumbers.FONT_SIZE_NORMAL > 0, "FONT_SIZE_NORMAL is positive")
+    _assert_equal(DamageNumbers.FONT_SIZE_NORMAL, 14, "FONT_SIZE_NORMAL is 14")
+
+    _assert_true(DamageNumbers.FONT_SIZE_CRIT > 0, "FONT_SIZE_CRIT is positive")
+    _assert_equal(DamageNumbers.FONT_SIZE_CRIT, 18, "FONT_SIZE_CRIT is 18")
+
+    _assert_true(DamageNumbers.FONT_SIZE_HEAL > 0, "FONT_SIZE_HEAL is positive")
+    _assert_equal(DamageNumbers.FONT_SIZE_HEAL, 12, "FONT_SIZE_HEAL is 12")
+
+    # Crit should be larger than normal
+    _assert_true(DamageNumbers.FONT_SIZE_CRIT > DamageNumbers.FONT_SIZE_NORMAL, "CRIT size > NORMAL size")
+
+func _test_damage_numbers_color_constants() -> void:
+    # All colors should be Color type with full alpha (except blocked)
+    _assert_true(DamageNumbers.COLOR_NORMAL is Color, "COLOR_NORMAL is Color")
+    _assert_equal(DamageNumbers.COLOR_NORMAL.a, 1.0, "COLOR_NORMAL has full alpha")
+    _assert_equal(DamageNumbers.COLOR_NORMAL, Color(1.0, 1.0, 1.0, 1.0), "COLOR_NORMAL is white")
+
+    _assert_true(DamageNumbers.COLOR_CRIT is Color, "COLOR_CRIT is Color")
+    _assert_equal(DamageNumbers.COLOR_CRIT.a, 1.0, "COLOR_CRIT has full alpha")
+    _assert_true(DamageNumbers.COLOR_CRIT.r > 0.9, "COLOR_CRIT is gold (high red)")
+    _assert_true(DamageNumbers.COLOR_CRIT.g > 0.7, "COLOR_CRIT is gold (moderate green)")
+
+    _assert_true(DamageNumbers.COLOR_HEAL is Color, "COLOR_HEAL is Color")
+    _assert_equal(DamageNumbers.COLOR_HEAL.a, 1.0, "COLOR_HEAL has full alpha")
+    _assert_true(DamageNumbers.COLOR_HEAL.g > DamageNumbers.COLOR_HEAL.r, "COLOR_HEAL is green")
+
+    _assert_true(DamageNumbers.COLOR_BLOCKED is Color, "COLOR_BLOCKED is Color")
+    _assert_true(DamageNumbers.COLOR_BLOCKED.a < 1.0, "COLOR_BLOCKED has reduced alpha")
+
+    _assert_true(DamageNumbers.COLOR_FIRE is Color, "COLOR_FIRE is Color")
+    _assert_true(DamageNumbers.COLOR_FIRE.r > DamageNumbers.COLOR_FIRE.b, "COLOR_FIRE is orange (more red than blue)")
+
+    _assert_true(DamageNumbers.COLOR_ICE is Color, "COLOR_ICE is Color")
+    _assert_true(DamageNumbers.COLOR_ICE.b > DamageNumbers.COLOR_ICE.r, "COLOR_ICE is cyan (more blue than red)")
+
+    _assert_true(DamageNumbers.COLOR_POISON is Color, "COLOR_POISON is Color")
+    _assert_true(DamageNumbers.COLOR_POISON.g > DamageNumbers.COLOR_POISON.r, "COLOR_POISON is lime (more green than red)")
+
+# =============================================================================
+# KEYBOARD DISPLAY TESTS
+# =============================================================================
+
+func _run_keyboard_display_tests() -> void:
+    _test_keyboard_display_layout_constants()
+    _test_keyboard_display_finger_zones()
+    _test_keyboard_display_finger_colors()
+    _test_keyboard_display_animation_constants()
+    _test_keyboard_display_ripple_constants()
+
+func _test_keyboard_display_layout_constants() -> void:
+    # ROWS should be an array of 5 rows (number row, top, home, bottom, space)
+    _assert_true(KeyboardDisplay.ROWS is Array, "ROWS is Array")
+    _assert_equal(KeyboardDisplay.ROWS.size(), 5, "ROWS has 5 rows")
+
+    # Each row should be an array
+    for i in range(KeyboardDisplay.ROWS.size()):
+        _assert_true(KeyboardDisplay.ROWS[i] is Array, "ROWS[%d] is Array" % i)
+
+    # Number row should have 12 keys
+    _assert_equal(KeyboardDisplay.ROWS[0].size(), 12, "Number row has 12 keys")
+
+    # QWERTY row should have 12 keys
+    _assert_equal(KeyboardDisplay.ROWS[1].size(), 12, "QWERTY row has 12 keys")
+
+    # Home row should have 11 keys (a-; plus ')
+    _assert_equal(KeyboardDisplay.ROWS[2].size(), 11, "Home row has 11 keys")
+
+    # Bottom row should have 10 keys
+    _assert_equal(KeyboardDisplay.ROWS[3].size(), 10, "Bottom row has 10 keys")
+
+    # Space row should have 1 key (spacebar)
+    _assert_equal(KeyboardDisplay.ROWS[4].size(), 1, "Space row has 1 key")
+    _assert_equal(KeyboardDisplay.ROWS[4][0], " ", "Space row contains spacebar")
+
+    # ROW_OFFSETS should match ROWS count
+    _assert_true(KeyboardDisplay.ROW_OFFSETS is Array, "ROW_OFFSETS is Array")
+    _assert_equal(KeyboardDisplay.ROW_OFFSETS.size(), 5, "ROW_OFFSETS matches ROWS count")
+
+    # Offsets should be non-negative
+    for i in range(KeyboardDisplay.ROW_OFFSETS.size()):
+        _assert_true(KeyboardDisplay.ROW_OFFSETS[i] >= 0.0, "ROW_OFFSETS[%d] is non-negative" % i)
+
+func _test_keyboard_display_finger_zones() -> void:
+    # FINGER_ZONES should map keys to finger names
+    _assert_true(KeyboardDisplay.FINGER_ZONES is Dictionary, "FINGER_ZONES is Dictionary")
+    _assert_true(KeyboardDisplay.FINGER_ZONES.size() > 30, "FINGER_ZONES has many mappings")
+
+    # Test home row keys have correct fingers
+    _assert_equal(KeyboardDisplay.FINGER_ZONES.get("a", ""), "left_pinky", "a is left_pinky")
+    _assert_equal(KeyboardDisplay.FINGER_ZONES.get("s", ""), "left_ring", "s is left_ring")
+    _assert_equal(KeyboardDisplay.FINGER_ZONES.get("d", ""), "left_middle", "d is left_middle")
+    _assert_equal(KeyboardDisplay.FINGER_ZONES.get("f", ""), "left_index", "f is left_index")
+    _assert_equal(KeyboardDisplay.FINGER_ZONES.get("j", ""), "right_index", "j is right_index")
+    _assert_equal(KeyboardDisplay.FINGER_ZONES.get("k", ""), "right_middle", "k is right_middle")
+    _assert_equal(KeyboardDisplay.FINGER_ZONES.get("l", ""), "right_ring", "l is right_ring")
+    _assert_equal(KeyboardDisplay.FINGER_ZONES.get(";", ""), "right_pinky", "; is right_pinky")
+
+    # Spacebar should be thumb
+    _assert_equal(KeyboardDisplay.FINGER_ZONES.get(" ", ""), "thumb", "space is thumb")
+
+func _test_keyboard_display_finger_colors() -> void:
+    # FINGER_COLORS should map finger names to colors
+    _assert_true(KeyboardDisplay.FINGER_COLORS is Dictionary, "FINGER_COLORS is Dictionary")
+
+    # All finger zones should have colors
+    var expected_fingers: Array = ["left_pinky", "left_ring", "left_middle", "left_index",
+                                    "right_index", "right_middle", "right_ring", "right_pinky", "thumb"]
+    for finger in expected_fingers:
+        _assert_true(KeyboardDisplay.FINGER_COLORS.has(finger), "FINGER_COLORS has %s" % finger)
+        _assert_true(KeyboardDisplay.FINGER_COLORS[finger] is Color, "%s color is Color" % finger)
+
+    # Symmetric fingers should have same colors
+    _assert_equal(KeyboardDisplay.FINGER_COLORS["left_pinky"], KeyboardDisplay.FINGER_COLORS["right_pinky"], "Pinkies have same color")
+    _assert_equal(KeyboardDisplay.FINGER_COLORS["left_ring"], KeyboardDisplay.FINGER_COLORS["right_ring"], "Rings have same color")
+    _assert_equal(KeyboardDisplay.FINGER_COLORS["left_middle"], KeyboardDisplay.FINGER_COLORS["right_middle"], "Middles have same color")
+    _assert_equal(KeyboardDisplay.FINGER_COLORS["left_index"], KeyboardDisplay.FINGER_COLORS["right_index"], "Index fingers have same color")
+
+func _test_keyboard_display_animation_constants() -> void:
+    # Flash duration should be positive and quick
+    _assert_true(KeyboardDisplay.FLASH_DURATION > 0.0, "FLASH_DURATION is positive")
+    _assert_true(KeyboardDisplay.FLASH_DURATION < 1.0, "FLASH_DURATION is quick")
+    _assert_equal(KeyboardDisplay.FLASH_DURATION, 0.2, "FLASH_DURATION is 0.2")
+
+    # Pulse speed should be positive
+    _assert_true(KeyboardDisplay.NEXT_KEY_PULSE_SPEED > 0.0, "NEXT_KEY_PULSE_SPEED is positive")
+    _assert_equal(KeyboardDisplay.NEXT_KEY_PULSE_SPEED, 4.0, "NEXT_KEY_PULSE_SPEED is 4.0")
+
+    # Pulse widths should be reasonable
+    _assert_true(KeyboardDisplay.NEXT_KEY_PULSE_MIN_WIDTH > 0.0, "NEXT_KEY_PULSE_MIN_WIDTH is positive")
+    _assert_true(KeyboardDisplay.NEXT_KEY_PULSE_MAX_WIDTH > KeyboardDisplay.NEXT_KEY_PULSE_MIN_WIDTH, "MAX_WIDTH > MIN_WIDTH")
+
+func _test_keyboard_display_ripple_constants() -> void:
+    # Ripple duration should be positive
+    _assert_true(KeyboardDisplay.RIPPLE_DURATION > 0.0, "RIPPLE_DURATION is positive")
+    _assert_true(KeyboardDisplay.RIPPLE_DURATION < 1.0, "RIPPLE_DURATION is quick")
+    _assert_equal(KeyboardDisplay.RIPPLE_DURATION, 0.35, "RIPPLE_DURATION is 0.35")
+
+    # Ripple radius should be positive
+    _assert_true(KeyboardDisplay.RIPPLE_MAX_RADIUS > 0.0, "RIPPLE_MAX_RADIUS is positive")
+    _assert_equal(KeyboardDisplay.RIPPLE_MAX_RADIUS, 28.0, "RIPPLE_MAX_RADIUS is 28.0")
+
+    # Ripple widths should be positive
+    _assert_true(KeyboardDisplay.RIPPLE_START_WIDTH > 0.0, "RIPPLE_START_WIDTH is positive")
+    _assert_true(KeyboardDisplay.RIPPLE_END_WIDTH > 0.0, "RIPPLE_END_WIDTH is positive")
+    _assert_true(KeyboardDisplay.RIPPLE_START_WIDTH > KeyboardDisplay.RIPPLE_END_WIDTH, "START_WIDTH > END_WIDTH (tapers)")
+
+    # Ripple colors should be Colors
+    _assert_true(KeyboardDisplay.RIPPLE_CORRECT_COLOR is Color, "RIPPLE_CORRECT_COLOR is Color")
+    _assert_true(KeyboardDisplay.RIPPLE_CORRECT_COLOR.g > KeyboardDisplay.RIPPLE_CORRECT_COLOR.r, "RIPPLE_CORRECT_COLOR is green")
+
+    _assert_true(KeyboardDisplay.RIPPLE_ERROR_COLOR is Color, "RIPPLE_ERROR_COLOR is Color")
+    _assert_true(KeyboardDisplay.RIPPLE_ERROR_COLOR.r > KeyboardDisplay.RIPPLE_ERROR_COLOR.g, "RIPPLE_ERROR_COLOR is red")
