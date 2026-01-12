@@ -256,7 +256,7 @@ Status: In progress (significant test additions 2026-01-11)
 
 Increase automated coverage and formalize manual QA gates for releases.
 
-**Progress (2026-01-11):** Test suite expanded to 4,240+ assertions covering:
+**Progress (2026-01-12):** Test suite expanded to 4,260+ assertions covering:
 - Boss encounters (phases, mechanics, dialogue)
 - Difficulty modes (modifiers, multipliers)
 - Lesson consistency (lesson-story alignment)
@@ -285,6 +285,8 @@ Increase automated coverage and formalize manual QA gates for releases.
 - Milestones (categories, messages, detection, formatting)
 - Titles system (unlock conditions, equip, display)
 - Locale system (translations, language switching)
+- Zone-aware POI spawning (tier filtering, rarity bonuses)
+- Threat-based spawning (zone multipliers, exploration modifiers)
 
 Planning refs:
 - `docs/plans/p1/QA_AUTOMATION_PLAN.md`
