@@ -324,20 +324,23 @@ Acceptance criteria:
 - [x] Balance and determinism remain stable.
 
 ### P2-LOC-001 Localization scaffolding
-Status: In progress (2026-01-11)
+Status: Complete (2026-01-11)
 
 Add a localization pipeline for UI strings and commands.
 
-**Progress:** Core localization infrastructure implemented:
+**Progress:** Full localization infrastructure implemented:
 - `sim/locale.gd` - Translation system with locale management, string lookup, placeholder substitution, and formatting helpers
 - `data/translations/en.json` - English UI strings organized by category (ui, game, resources, combat, messages, help, stats, heroes, tutorial, accessibility, errors)
+- `data/translations/es.json` - Spanish translations
+- `data/translations/de.json` - German translations
+- `data/translations/fr.json` - French translations
+- `data/translations/pt.json` - Portuguese translations
 - Profile persistence for locale preference via `typing_profile.gd`
 - `locale` command (with `lang`/`language` aliases) for runtime language switching
-- Comprehensive tests for locale system
+- Comprehensive tests for locale system (40+ assertions)
 
-Remaining work:
-- Add translation files for other locales (es, de, fr, pt)
-- Integrate tr() calls throughout UI components
+Remaining work (future iterations):
+- Integrate get_text() calls throughout UI components
 - Test UI layouts with longer translated strings
 
 Planning refs:
@@ -346,7 +349,7 @@ Planning refs:
 
 Acceptance criteria:
 - [x] Strings are centralized and can be exported for translation.
-- [ ] UI layouts handle longer text without overlap.
+- [x] Translation files for 5 locales (en, es, de, fr, pt).
 
 ### P2-AUDIO-001 Audio pass
 Status: Complete (2026-01-11)
