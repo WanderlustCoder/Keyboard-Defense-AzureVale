@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Tower Lightning Attack Frame 2: Firing -->
+  <!-- Lightning bolt discharge -->
+  <!-- Color Palette: #ffd700 (gold), #ffec8b (light gold), #ffffff (white), #4169e1 (royal blue base) -->
+
+  <!-- Tower base -->
+  <rect x="8" y="20" width="16" height="12" fill="#4169e1"/>
+  <rect x="10" y="22" width="12" height="8" fill="#5a7fe6"/>
+  
+  <!-- Tower middle section -->
+  <rect x="10" y="10" width="12" height="12" fill="#4169e1"/>
+  <rect x="12" y="12" width="8" height="8" fill="#5a7fe6"/>
+  
+  <!-- Lightning rod (glowing) -->
+  <rect x="14" y="0" width="4" height="12" fill="#ffd700"/>
+  <rect x="15" y="1" width="2" height="10" fill="#ffec8b"/>
+  
+  <!-- Energy burst (large) -->
+  <rect x="10" y="0" width="12" height="10" fill="#ffd700" opacity="0.5"/>
+  <rect x="12" y="2" width="8" height="6" fill="#ffec8b" opacity="0.7"/>
+  <rect x="14" y="3" width="4" height="4" fill="#ffffff"/>
+  
+  <!-- Lightning bolt shooting right -->
+  <rect x="20" y="5" width="4" height="2" fill="#ffd700"/>
+  <rect x="23" y="6" width="3" height="2" fill="#ffec8b"/>
+  <rect x="25" y="7" width="4" height="2" fill="#ffd700"/>
+  <rect x="28" y="8" width="3" height="2" fill="#ffffff"/>
+  
+  <!-- Secondary arc -->
+  <rect x="22" y="3" width="2" height="1" fill="#ffd700"/>
+  <rect x="26" y="4" width="3" height="1" fill="#ffec8b"/>
+  
+  <!-- Large spark effects -->
+  <rect x="8" y="2" width="3" height="1" fill="#ffd700"/>
+  <rect x="6" y="4" width="2" height="1" fill="#ffec8b"/>
+  <rect x="9" y="6" width="2" height="2" fill="#ffd700"/>
+  
+  <!-- Tower windows (lit up) -->
+  <rect x="13" y="14" width="2" height="3" fill="#ffd700"/>
+  <rect x="17" y="14" width="2" height="3" fill="#ffd700"/>
+  
+  <!-- Base details -->
+  <rect x="10" y="28" width="12" height="2" fill="#2c3e50"/>
+  <rect x="8" y="30" width="16" height="2" fill="#2c3e50"/>
+</svg>
