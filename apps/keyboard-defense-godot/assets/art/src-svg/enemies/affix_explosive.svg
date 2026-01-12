@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Affix: Explosive - Danger indicator overlay -->
+  <!-- Shows the enemy will explode on death, dealing AoE damage -->
+  <!-- Color: Orange/red danger with warning symbols -->
+
+  <!-- Danger pulsing ring -->
+  <rect x="2" y="2" width="28" height="28" fill="none" stroke="#ff4500" stroke-width="2" opacity="0.5"/>
+  <rect x="4" y="4" width="24" height="24" fill="none" stroke="#ff6b00" stroke-width="1" opacity="0.4"/>
+
+  <!-- Inner danger glow -->
+  <rect x="6" y="6" width="20" height="20" fill="#ff4500" opacity="0.15"/>
+  <rect x="8" y="8" width="16" height="16" fill="#ff6b00" opacity="0.12"/>
+  <rect x="10" y="10" width="12" height="12" fill="#ffeb3b" opacity="0.1"/>
+
+  <!-- Explosion rays from center -->
+  <!-- Vertical -->
+  <rect x="15" y="2" width="2" height="8" fill="#ff4500" opacity="0.6"/>
+  <rect x="15" y="22" width="2" height="8" fill="#ff4500" opacity="0.6"/>
+  <!-- Horizontal -->
+  <rect x="2" y="15" width="8" height="2" fill="#ff4500" opacity="0.6"/>
+  <rect x="22" y="15" width="8" height="2" fill="#ff4500" opacity="0.6"/>
+  <!-- Diagonals -->
+  <rect x="4" y="4" width="6" height="2" fill="#ff6b00" opacity="0.5" transform="rotate(45 7 5)"/>
+  <rect x="22" y="4" width="6" height="2" fill="#ff6b00" opacity="0.5" transform="rotate(-45 25 5)"/>
+  <rect x="4" y="26" width="6" height="2" fill="#ff6b00" opacity="0.5" transform="rotate(-45 7 27)"/>
+  <rect x="22" y="26" width="6" height="2" fill="#ff6b00" opacity="0.5" transform="rotate(45 25 27)"/>
+
+  <!-- Warning symbol (exclamation in circle) -->
+  <rect x="12" y="12" width="8" height="8" fill="#ff4500" opacity="0.8"/>
+  <rect x="13" y="13" width="6" height="6" fill="#ffeb3b" opacity="0.9"/>
+  <!-- Exclamation mark -->
+  <rect x="15" y="14" width="2" height="3" fill="#ff4500"/>
+  <rect x="15" y="18" width="2" height="1" fill="#ff4500"/>
+
+  <!-- Corner danger markers -->
+  <rect x="0" y="0" width="4" height="4" fill="#ff4500" opacity="0.6"/>
+  <rect x="1" y="1" width="2" height="2" fill="#ffeb3b" opacity="0.5"/>
+  <rect x="28" y="0" width="4" height="4" fill="#ff4500" opacity="0.6"/>
+  <rect x="29" y="1" width="2" height="2" fill="#ffeb3b" opacity="0.5"/>
+  <rect x="0" y="28" width="4" height="4" fill="#ff4500" opacity="0.6"/>
+  <rect x="1" y="29" width="2" height="2" fill="#ffeb3b" opacity="0.5"/>
+  <rect x="28" y="28" width="4" height="4" fill="#ff4500" opacity="0.6"/>
+  <rect x="29" y="29" width="2" height="2" fill="#ffeb3b" opacity="0.5"/>
+
+  <!-- Spark particles -->
+  <rect x="6" y="14" width="2" height="2" fill="#fff176" opacity="0.7"/>
+  <rect x="24" y="16" width="2" height="2" fill="#fff176" opacity="0.7"/>
+  <rect x="14" y="6" width="2" height="2" fill="#fff176" opacity="0.7"/>
+  <rect x="16" y="24" width="2" height="2" fill="#fff176" opacity="0.7"/>
+</svg>
