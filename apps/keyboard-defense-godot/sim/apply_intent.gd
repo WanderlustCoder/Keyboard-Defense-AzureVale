@@ -60,6 +60,10 @@ static func apply(state: GameState, intent: Dictionary) -> Dictionary:
             _apply_inspect(new_state, intent, events)
         "map":
             _apply_map(new_state, events)
+        "zone_show":
+            _apply_zone_show(new_state, events)
+        "zone_summary":
+            _apply_zone_summary(new_state, events)
         "lesson_show":
             _apply_lesson_show(new_state, events)
         "lesson_set":
@@ -1047,6 +1051,24 @@ static func _apply_inspect(state: GameState, intent: Dictionary, events: Array[S
 
 static func _apply_map(state: GameState, events: Array[String]) -> void:
     events.append(SimMap.render_ascii(state))
+
+static func _apply_zone_show(state: GameState, events: Array[String]) -> void:
+    var zone: String = SimMap.get_zone_at(state, state.cursor_pos)
+    var info: String = SimMap.format_zone_info(state, state.cursor_pos)
+    var dist: int = SimMap.chebyshev_distance_to_castle(state, state.cursor_pos)
+    events.append("Current position: (%d, %d)" % [state.cursor_pos.x, state.cursor_pos.y])
+    events.append("Distance from castle: %d tiles" % dist)
+    events.append(info)
+
+static func _apply_zone_summary(state: GameState, events: Array[String]) -> void:
+    events.append(SimMap.format_exploration_summary(state))
+    events.append("")
+    events.append("Zone legend:")
+    for zone_id in SimMap.get_all_zones():
+        var name: String = SimMap.get_zone_name(zone_id)
+        var threat: float = SimMap.get_zone_threat_multiplier(zone_id)
+        var loot: float = SimMap.get_zone_loot_multiplier(zone_id)
+        events.append("  %s - Threat x%.1f, Loot x%.1f" % [name, threat, loot])
 
 static func _apply_lesson_show(state: GameState, events: Array[String]) -> void:
     var lesson_ids: PackedStringArray = SimLessons.lesson_ids()

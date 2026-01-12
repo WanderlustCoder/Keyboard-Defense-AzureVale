@@ -211,10 +211,15 @@ Add deeper exploration events and map structure while staying deterministic.
   - `modify_terrain` - Change terrain at specified tile
   - `unlock_lesson` - Unlock lessons via exploration
   - `unlock_achievement` - Earn achievements through events
-- Added 80+ test assertions for event effects system
-- Added event system tests (POI loading, event tables, conditions)
+- Zone/region system for map variety:
+  - 4 zones: Safe, Frontier, Wilderness, Depths
+  - Zone-based threat, loot, and enemy tier multipliers
+  - Exploration tracking per zone
+  - `zone` command to view current zone info
+  - `zone summary` for full exploration breakdown
+- Added 140+ test assertions for event effects, events, and zones
 
-**Remaining work:** Zone/region system for map variety, complex event chains, exploration progression tracking.
+**Remaining work:** Complex event chains, region-specific POI spawning.
 
 Planning refs:
 - `docs/plans/p1/MAP_EXPLORATION_PLAN.md`

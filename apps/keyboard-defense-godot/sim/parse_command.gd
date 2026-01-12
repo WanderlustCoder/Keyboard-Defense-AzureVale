@@ -138,6 +138,12 @@ static func parse(command: String) -> Dictionary:
             if tokens.size() > 1:
                 return {"ok": false, "error": "'map' takes no arguments."}
             return {"ok": true, "intent": SimIntents.make("map")}
+        "zone", "zones", "region":
+            if tokens.size() == 1:
+                return {"ok": true, "intent": SimIntents.make("zone_show")}
+            if tokens.size() == 2 and tokens[1] == "summary":
+                return {"ok": true, "intent": SimIntents.make("zone_summary")}
+            return {"ok": false, "error": "Usage: zone [summary]"}
         "demolish":
             if tokens.size() == 1:
                 return {"ok": true, "intent": SimIntents.make("demolish")}

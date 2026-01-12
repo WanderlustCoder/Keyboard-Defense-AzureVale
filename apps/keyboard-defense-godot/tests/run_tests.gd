@@ -138,6 +138,7 @@ func _run_all() -> void:
     _run_milestones_tests()
     _run_event_effects_tests()
     _run_event_system_tests()
+    _run_zone_system_tests()
 
     for message in messages:
         print("[tests] %s" % message)
@@ -5028,3 +5029,145 @@ func _run_event_system_tests() -> void:
 
     # Test unknown condition type (should pass by default)
     _assert_true(SimEventTables.check_condition(state, {"type": "unknown_condition"}), "Unknown condition passes by default")
+
+
+func _run_zone_system_tests() -> void:
+    var state: GameState = DefaultState.create()
+
+    # Test zone constants
+    _assert_equal(SimMap.ZONE_SAFE, "safe", "ZONE_SAFE constant")
+    _assert_equal(SimMap.ZONE_FRONTIER, "frontier", "ZONE_FRONTIER constant")
+    _assert_equal(SimMap.ZONE_WILDERNESS, "wilderness", "ZONE_WILDERNESS constant")
+    _assert_equal(SimMap.ZONE_DEPTHS, "depths", "ZONE_DEPTHS constant")
+
+    # Test zone radii
+    _assert_equal(SimMap.ZONE_SAFE_RADIUS, 3, "Safe zone radius")
+    _assert_equal(SimMap.ZONE_FRONTIER_RADIUS, 6, "Frontier zone radius")
+    _assert_equal(SimMap.ZONE_WILDERNESS_RADIUS, 10, "Wilderness zone radius")
+
+    # Test zone data structure
+    _assert_true(SimMap.ZONE_DATA.has(SimMap.ZONE_SAFE), "ZONE_DATA has safe zone")
+    _assert_true(SimMap.ZONE_DATA.has(SimMap.ZONE_FRONTIER), "ZONE_DATA has frontier zone")
+    _assert_true(SimMap.ZONE_DATA.has(SimMap.ZONE_WILDERNESS), "ZONE_DATA has wilderness zone")
+    _assert_true(SimMap.ZONE_DATA.has(SimMap.ZONE_DEPTHS), "ZONE_DATA has depths zone")
+
+    # Test zone data fields
+    var safe_data: Dictionary = SimMap.ZONE_DATA[SimMap.ZONE_SAFE]
+    _assert_true(safe_data.has("name"), "Zone data has name")
+    _assert_true(safe_data.has("description"), "Zone data has description")
+    _assert_true(safe_data.has("threat_multiplier"), "Zone data has threat_multiplier")
+    _assert_true(safe_data.has("loot_multiplier"), "Zone data has loot_multiplier")
+    _assert_true(safe_data.has("enemy_tier_max"), "Zone data has enemy_tier_max")
+    _assert_true(safe_data.has("color"), "Zone data has color")
+
+    # Test distance calculations
+    state.base_pos = Vector2i(8, 5)  # Center of 16x10 map
+    _assert_equal(SimMap.distance_to_castle(state, Vector2i(8, 5)), 0, "Distance at castle is 0")
+    _assert_equal(SimMap.distance_to_castle(state, Vector2i(9, 5)), 1, "Manhattan distance 1 right")
+    _assert_equal(SimMap.distance_to_castle(state, Vector2i(10, 6)), 3, "Manhattan distance 3")
+
+    _assert_equal(SimMap.chebyshev_distance_to_castle(state, Vector2i(8, 5)), 0, "Chebyshev at castle is 0")
+    _assert_equal(SimMap.chebyshev_distance_to_castle(state, Vector2i(9, 6)), 1, "Chebyshev diagonal 1")
+    _assert_equal(SimMap.chebyshev_distance_to_castle(state, Vector2i(11, 8)), 3, "Chebyshev max of dx,dy")
+
+    # Test get_zone_at
+    _assert_equal(SimMap.get_zone_at(state, state.base_pos), SimMap.ZONE_SAFE, "Castle is in safe zone")
+    _assert_equal(SimMap.get_zone_at(state, Vector2i(8 + 2, 5)), SimMap.ZONE_SAFE, "2 tiles away is safe")
+    _assert_equal(SimMap.get_zone_at(state, Vector2i(8 + 4, 5)), SimMap.ZONE_FRONTIER, "4 tiles away is frontier")
+    _assert_equal(SimMap.get_zone_at(state, Vector2i(8 + 8, 5)), SimMap.ZONE_WILDERNESS, "8 tiles away is wilderness")
+    _assert_equal(SimMap.get_zone_at(state, Vector2i(0, 0)), SimMap.ZONE_DEPTHS, "Far corner is depths")
+
+    # Test get_zone_data
+    var zone_data: Dictionary = SimMap.get_zone_data(SimMap.ZONE_FRONTIER)
+    _assert_equal(str(zone_data.get("name", "")), "Frontier", "Frontier zone name")
+    _assert_equal(float(zone_data.get("threat_multiplier", 0)), 1.0, "Frontier threat multiplier")
+
+    # Test fallback for invalid zone
+    var fallback: Dictionary = SimMap.get_zone_data("invalid_zone")
+    _assert_equal(str(fallback.get("name", "")), "Safe Zone", "Invalid zone falls back to safe")
+
+    # Test get_cursor_zone
+    state.cursor_pos = state.base_pos
+    _assert_equal(SimMap.get_cursor_zone(state), SimMap.ZONE_SAFE, "Cursor at castle is safe zone")
+
+    # Test zone name/description getters
+    _assert_equal(SimMap.get_zone_name(SimMap.ZONE_SAFE), "Safe Zone", "Safe zone name")
+    _assert_true(SimMap.get_zone_description(SimMap.ZONE_SAFE).length() > 0, "Safe zone has description")
+
+    # Test zone color
+    var safe_color: Color = SimMap.get_zone_color(SimMap.ZONE_SAFE)
+    _assert_true(safe_color != Color.BLACK, "Safe zone has color")
+
+    # Test zone property getters
+    _assert_equal(SimMap.get_zone_threat_multiplier(SimMap.ZONE_SAFE), 0.5, "Safe zone threat 0.5x")
+    _assert_equal(SimMap.get_zone_threat_multiplier(SimMap.ZONE_DEPTHS), 2.0, "Depths threat 2.0x")
+
+    _assert_equal(SimMap.get_zone_loot_multiplier(SimMap.ZONE_SAFE), 0.8, "Safe zone loot 0.8x")
+    _assert_equal(SimMap.get_zone_loot_multiplier(SimMap.ZONE_DEPTHS), 2.0, "Depths loot 2.0x")
+
+    _assert_equal(SimMap.get_zone_enemy_tier_max(SimMap.ZONE_SAFE), 1, "Safe zone max tier 1")
+    _assert_equal(SimMap.get_zone_enemy_tier_max(SimMap.ZONE_DEPTHS), 4, "Depths max tier 4")
+
+    _assert_equal(SimMap.get_zone_resource_quality(SimMap.ZONE_SAFE), 1.0, "Safe zone quality 1.0")
+    _assert_equal(SimMap.get_zone_resource_quality(SimMap.ZONE_DEPTHS), 2.0, "Depths quality 2.0")
+
+    # Test zone checks
+    _assert_true(SimMap.is_in_safe_zone(state, state.base_pos), "Castle is in safe zone")
+    _assert_false(SimMap.is_in_safe_zone(state, Vector2i(0, 0)), "Far corner not safe")
+
+    _assert_false(SimMap.is_dangerous_zone(state, state.base_pos), "Castle is not dangerous")
+    _assert_true(SimMap.is_dangerous_zone(state, Vector2i(0, 0)), "Far corner is dangerous")
+
+    # Test get_all_zones
+    var all_zones: Array[String] = SimMap.get_all_zones()
+    _assert_equal(all_zones.size(), 4, "4 zones total")
+    _assert_equal(all_zones[0], SimMap.ZONE_SAFE, "First zone is safe")
+    _assert_equal(all_zones[3], SimMap.ZONE_DEPTHS, "Last zone is depths")
+
+    # Test count_tiles_by_zone
+    var tile_counts: Dictionary = SimMap.count_tiles_by_zone(state)
+    _assert_true(int(tile_counts.get(SimMap.ZONE_SAFE, 0)) > 0, "Some tiles in safe zone")
+    var total_counted: int = 0
+    for zone in all_zones:
+        total_counted += int(tile_counts.get(zone, 0))
+    _assert_equal(total_counted, state.map_w * state.map_h, "Total tiles equals map size")
+
+    # Test count_discovered_by_zone (initial state has castle tile discovered)
+    var discovered_counts: Dictionary = SimMap.count_discovered_by_zone(state)
+    _assert_true(int(discovered_counts.get(SimMap.ZONE_SAFE, 0)) >= 1, "At least castle tile discovered in safe zone")
+
+    # Test exploration tracking
+    var exploration: Dictionary = SimMap.get_exploration_by_zone(state)
+    _assert_true(float(exploration.get(SimMap.ZONE_SAFE, 0.0)) > 0.0, "Some safe zone explored")
+
+    var total_exploration: float = SimMap.get_total_exploration(state)
+    _assert_true(total_exploration > 0.0, "Some total exploration")
+    _assert_true(total_exploration < 1.0, "Not fully explored")
+
+    # Test format functions
+    var zone_info: String = SimMap.format_zone_info(state, state.base_pos)
+    _assert_true("Safe Zone" in zone_info, "Zone info contains zone name")
+    _assert_true("Threat" in zone_info, "Zone info contains threat")
+    _assert_true("Loot" in zone_info, "Zone info contains loot")
+
+    var summary: String = SimMap.format_exploration_summary(state)
+    _assert_true("Exploration" in summary, "Summary contains Exploration")
+    _assert_true("Safe Zone" in summary, "Summary contains Safe Zone")
+
+    # Test zone command parsing
+    var zone_cmd: Dictionary = CommandParser.parse("zone")
+    _assert_true(bool(zone_cmd.get("ok", false)), "zone command parses")
+    var zone_intent: Dictionary = zone_cmd.get("intent", {})
+    _assert_equal(str(zone_intent.get("id", "")), "zone_show", "zone returns zone_show intent")
+
+    var zone_summary_cmd: Dictionary = CommandParser.parse("zone summary")
+    _assert_true(bool(zone_summary_cmd.get("ok", false)), "zone summary parses")
+    var summary_intent: Dictionary = zone_summary_cmd.get("intent", {})
+    _assert_equal(str(summary_intent.get("id", "")), "zone_summary", "zone summary returns zone_summary intent")
+
+    # Test zone aliases
+    var zones_cmd: Dictionary = CommandParser.parse("zones")
+    _assert_true(bool(zones_cmd.get("ok", false)), "zones alias parses")
+
+    var region_cmd: Dictionary = CommandParser.parse("region")
+    _assert_true(bool(region_cmd.get("ok", false)), "region alias parses")
