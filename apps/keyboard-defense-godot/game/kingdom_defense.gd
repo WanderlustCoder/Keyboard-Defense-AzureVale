@@ -419,6 +419,7 @@ func _init_kingdom_systems() -> void:
 	kingdom_dashboard.upgrade_requested.connect(_on_upgrade_requested)
 	kingdom_dashboard.research_started.connect(_on_research_started)
 	kingdom_dashboard.trade_executed.connect(_on_trade_executed)
+	kingdom_dashboard.build_requested.connect(_on_build_requested)
 
 	# Create settings panel
 	settings_panel = SettingsPanel.new()
@@ -1590,6 +1591,10 @@ func _on_trade_executed(from: String, to: String, amount: int) -> void:
 	if audio_manager:
 		audio_manager.play_ui_confirm()
 	_update_objective("[color=green]Trade complete![/color]")
+
+func _on_build_requested(building_type: String) -> void:
+	# Build at cursor position via the same function used by typed commands
+	_try_build(building_type)
 
 func _reset_game() -> void:
 	# Reset gameplay variables
