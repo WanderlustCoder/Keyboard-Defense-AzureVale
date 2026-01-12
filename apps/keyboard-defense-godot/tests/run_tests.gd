@@ -103,6 +103,12 @@ const ActionTooltip = preload("res://ui/components/action_tooltip.gd")
 const BattleStage = preload("res://scripts/BattleStage.gd")
 const Battlefield = preload("res://scripts/Battlefield.gd")
 const SettingsManagerScript = preload("res://game/settings_manager.gd")
+const BattleTutorial = preload("res://scripts/BattleTutorial.gd")
+const CampaignMap = preload("res://scripts/CampaignMap.gd")
+const MainMenuScript = preload("res://scripts/MainMenu.gd")
+const ProgressionState = preload("res://scripts/ProgressionState.gd")
+const SettingsMenu = preload("res://scripts/SettingsMenu.gd")
+const KingdomHub = preload("res://scripts/KingdomHub.gd")
 
 var total_tests: int = 0
 var total_failed: int = 0
@@ -228,6 +234,12 @@ func _run_all() -> void:
     _run_battlefield_tests()
     _run_settings_manager_tests()
     _run_typing_profile_constants_tests()
+    _run_battle_tutorial_tests()
+    _run_campaign_map_tests()
+    _run_main_menu_tests()
+    _run_progression_state_tests()
+    _run_settings_menu_tests()
+    _run_kingdom_hub_tests()
 
     for message in messages:
         print("[tests] %s" % message)
@@ -10534,3 +10546,348 @@ func _test_typing_profile_default_lesson_progress() -> void:
     _assert_equal(TypingProfile.DEFAULT_LESSON_PROGRESS["sum_accuracy"], 0.0, "Sum accuracy starts at 0")
     _assert_true(TypingProfile.DEFAULT_LESSON_PROGRESS["recent"] is Array, "Recent is Array")
     _assert_equal(TypingProfile.DEFAULT_LESSON_PROGRESS["recent"].size(), 0, "Recent starts empty")
+
+# =============================================================================
+# BATTLE TUTORIAL TESTS
+# =============================================================================
+
+func _run_battle_tutorial_tests() -> void:
+    _test_battle_tutorial_dot_constants()
+    _test_battle_tutorial_dot_colors()
+
+func _test_battle_tutorial_dot_constants() -> void:
+    # DOT_SIZE
+    _assert_true(BattleTutorial.DOT_SIZE is float, "DOT_SIZE is float")
+    _assert_true(BattleTutorial.DOT_SIZE > 0.0, "DOT_SIZE is positive")
+    _assert_true(BattleTutorial.DOT_SIZE <= 20.0, "DOT_SIZE is reasonable (<=20)")
+    _assert_equal(BattleTutorial.DOT_SIZE, 8.0, "DOT_SIZE is 8.0")
+
+    # DOT_GAP
+    _assert_true(BattleTutorial.DOT_GAP is float, "DOT_GAP is float")
+    _assert_true(BattleTutorial.DOT_GAP > 0.0, "DOT_GAP is positive")
+    _assert_true(BattleTutorial.DOT_GAP <= BattleTutorial.DOT_SIZE, "DOT_GAP <= DOT_SIZE")
+    _assert_equal(BattleTutorial.DOT_GAP, 6.0, "DOT_GAP is 6.0")
+
+func _test_battle_tutorial_dot_colors() -> void:
+    # DOT_COLOR_COMPLETE (green)
+    _assert_true(BattleTutorial.DOT_COLOR_COMPLETE is Color, "DOT_COLOR_COMPLETE is Color")
+    _assert_equal(BattleTutorial.DOT_COLOR_COMPLETE.a, 1.0, "DOT_COLOR_COMPLETE is fully opaque")
+    _assert_true(BattleTutorial.DOT_COLOR_COMPLETE.g > BattleTutorial.DOT_COLOR_COMPLETE.r, "DOT_COLOR_COMPLETE is green-ish")
+    _assert_true(BattleTutorial.DOT_COLOR_COMPLETE.g > 0.7, "DOT_COLOR_COMPLETE has strong green")
+
+    # DOT_COLOR_CURRENT (yellow/gold, pulsing)
+    _assert_true(BattleTutorial.DOT_COLOR_CURRENT is Color, "DOT_COLOR_CURRENT is Color")
+    _assert_equal(BattleTutorial.DOT_COLOR_CURRENT.a, 1.0, "DOT_COLOR_CURRENT is fully opaque")
+    _assert_true(BattleTutorial.DOT_COLOR_CURRENT.r > 0.9, "DOT_COLOR_CURRENT has high red (gold)")
+    _assert_true(BattleTutorial.DOT_COLOR_CURRENT.g > 0.7, "DOT_COLOR_CURRENT has moderate green (gold)")
+
+    # DOT_COLOR_PENDING (dim gray)
+    _assert_true(BattleTutorial.DOT_COLOR_PENDING is Color, "DOT_COLOR_PENDING is Color")
+    _assert_true(BattleTutorial.DOT_COLOR_PENDING.a < 1.0, "DOT_COLOR_PENDING is semi-transparent")
+    _assert_true(BattleTutorial.DOT_COLOR_PENDING.a > 0.4, "DOT_COLOR_PENDING is still visible")
+    _assert_true(BattleTutorial.DOT_COLOR_PENDING.r < 0.5, "DOT_COLOR_PENDING is dim")
+
+    # Color ordering makes visual sense
+    _assert_true(BattleTutorial.DOT_COLOR_COMPLETE.a >= BattleTutorial.DOT_COLOR_PENDING.a, "Complete more visible than pending")
+
+# =============================================================================
+# CAMPAIGN MAP TESTS
+# =============================================================================
+
+func _run_campaign_map_tests() -> void:
+    _test_campaign_map_animation_constants()
+
+func _test_campaign_map_animation_constants() -> void:
+    # HOVER_SCALE
+    _assert_true(CampaignMap.HOVER_SCALE is float, "HOVER_SCALE is float")
+    _assert_true(CampaignMap.HOVER_SCALE > 1.0, "HOVER_SCALE > 1.0 (enlarges)")
+    _assert_true(CampaignMap.HOVER_SCALE < 1.2, "HOVER_SCALE < 1.2 (not too large)")
+    _assert_equal(CampaignMap.HOVER_SCALE, 1.05, "HOVER_SCALE is 1.05")
+
+    # HOVER_DURATION
+    _assert_true(CampaignMap.HOVER_DURATION is float, "HOVER_DURATION is float")
+    _assert_true(CampaignMap.HOVER_DURATION > 0.0, "HOVER_DURATION is positive")
+    _assert_true(CampaignMap.HOVER_DURATION < 0.5, "HOVER_DURATION is snappy")
+    _assert_equal(CampaignMap.HOVER_DURATION, 0.12, "HOVER_DURATION is 0.12")
+
+    # PULSE_DURATION
+    _assert_true(CampaignMap.PULSE_DURATION is float, "PULSE_DURATION is float")
+    _assert_true(CampaignMap.PULSE_DURATION > 0.0, "PULSE_DURATION is positive")
+    _assert_true(CampaignMap.PULSE_DURATION > CampaignMap.HOVER_DURATION, "PULSE_DURATION > HOVER_DURATION")
+    _assert_equal(CampaignMap.PULSE_DURATION, 1.2, "PULSE_DURATION is 1.2")
+
+# =============================================================================
+# MAIN MENU TESTS
+# =============================================================================
+
+func _run_main_menu_tests() -> void:
+    _test_main_menu_path_constants()
+    _test_main_menu_font_constants()
+    _test_main_menu_animation_constants()
+
+func _test_main_menu_path_constants() -> void:
+    # VERSION_PATH
+    _assert_true(MainMenuScript.VERSION_PATH is String, "VERSION_PATH is String")
+    _assert_true(MainMenuScript.VERSION_PATH.begins_with("res://"), "VERSION_PATH in res://")
+    _assert_true(MainMenuScript.VERSION_PATH.ends_with(".txt"), "VERSION_PATH is .txt")
+    _assert_equal(MainMenuScript.VERSION_PATH, "res://VERSION.txt", "VERSION_PATH value")
+
+    # SAVE_PATH
+    _assert_true(MainMenuScript.SAVE_PATH is String, "SAVE_PATH is String")
+    _assert_true(MainMenuScript.SAVE_PATH.begins_with("user://"), "SAVE_PATH in user://")
+    _assert_true(MainMenuScript.SAVE_PATH.ends_with(".json"), "SAVE_PATH is .json")
+    _assert_equal(MainMenuScript.SAVE_PATH, "user://typing_kingdom_save.json", "SAVE_PATH value")
+
+func _test_main_menu_font_constants() -> void:
+    # FONT_SIZE_HELP_TITLE
+    _assert_true(MainMenuScript.FONT_SIZE_HELP_TITLE is int, "FONT_SIZE_HELP_TITLE is int")
+    _assert_true(MainMenuScript.FONT_SIZE_HELP_TITLE > 0, "FONT_SIZE_HELP_TITLE is positive")
+    _assert_true(MainMenuScript.FONT_SIZE_HELP_TITLE >= 20, "FONT_SIZE_HELP_TITLE readable")
+    _assert_equal(MainMenuScript.FONT_SIZE_HELP_TITLE, 28, "FONT_SIZE_HELP_TITLE is 28")
+
+    # FONT_SIZE_HELP_TEXT
+    _assert_true(MainMenuScript.FONT_SIZE_HELP_TEXT is int, "FONT_SIZE_HELP_TEXT is int")
+    _assert_true(MainMenuScript.FONT_SIZE_HELP_TEXT > 0, "FONT_SIZE_HELP_TEXT is positive")
+    _assert_true(MainMenuScript.FONT_SIZE_HELP_TEXT < MainMenuScript.FONT_SIZE_HELP_TITLE, "Help text smaller than title")
+    _assert_equal(MainMenuScript.FONT_SIZE_HELP_TEXT, 15, "FONT_SIZE_HELP_TEXT is 15")
+
+func _test_main_menu_animation_constants() -> void:
+    # HOVER_SCALE
+    _assert_true(MainMenuScript.HOVER_SCALE is float, "HOVER_SCALE is float")
+    _assert_true(MainMenuScript.HOVER_SCALE > 1.0, "HOVER_SCALE > 1.0 (enlarges)")
+    _assert_true(MainMenuScript.HOVER_SCALE < 1.2, "HOVER_SCALE < 1.2 (not too large)")
+    _assert_equal(MainMenuScript.HOVER_SCALE, 1.05, "HOVER_SCALE is 1.05")
+
+    # HOVER_DURATION
+    _assert_true(MainMenuScript.HOVER_DURATION is float, "HOVER_DURATION is float")
+    _assert_true(MainMenuScript.HOVER_DURATION > 0.0, "HOVER_DURATION is positive")
+    _assert_true(MainMenuScript.HOVER_DURATION < 0.5, "HOVER_DURATION is snappy")
+    _assert_equal(MainMenuScript.HOVER_DURATION, 0.1, "HOVER_DURATION is 0.1")
+
+    # PRESS_SCALE
+    _assert_true(MainMenuScript.PRESS_SCALE is float, "PRESS_SCALE is float")
+    _assert_true(MainMenuScript.PRESS_SCALE < 1.0, "PRESS_SCALE < 1.0 (shrinks)")
+    _assert_true(MainMenuScript.PRESS_SCALE > 0.8, "PRESS_SCALE not too small")
+    _assert_equal(MainMenuScript.PRESS_SCALE, 0.95, "PRESS_SCALE is 0.95")
+
+    # PRESS_DURATION
+    _assert_true(MainMenuScript.PRESS_DURATION is float, "PRESS_DURATION is float")
+    _assert_true(MainMenuScript.PRESS_DURATION > 0.0, "PRESS_DURATION is positive")
+    _assert_true(MainMenuScript.PRESS_DURATION <= MainMenuScript.HOVER_DURATION, "PRESS_DURATION <= HOVER_DURATION")
+    _assert_equal(MainMenuScript.PRESS_DURATION, 0.05, "PRESS_DURATION is 0.05")
+
+    # Scale ordering
+    _assert_true(MainMenuScript.PRESS_SCALE < MainMenuScript.HOVER_SCALE, "PRESS_SCALE < HOVER_SCALE")
+
+# =============================================================================
+# PROGRESSION STATE TESTS
+# =============================================================================
+
+func _run_progression_state_tests() -> void:
+    _test_progression_state_path_constants()
+    _test_progression_state_default_modifiers()
+    _test_progression_state_default_mastery()
+    _test_progression_state_performance_tiers()
+
+func _test_progression_state_path_constants() -> void:
+    # LESSONS_PATH
+    _assert_true(ProgressionState.LESSONS_PATH is String, "LESSONS_PATH is String")
+    _assert_true(ProgressionState.LESSONS_PATH.begins_with("res://"), "LESSONS_PATH in res://")
+    _assert_true(ProgressionState.LESSONS_PATH.ends_with(".json"), "LESSONS_PATH is .json")
+    _assert_equal(ProgressionState.LESSONS_PATH, "res://data/lessons.json", "LESSONS_PATH value")
+
+    # MAP_PATH
+    _assert_true(ProgressionState.MAP_PATH is String, "MAP_PATH is String")
+    _assert_true(ProgressionState.MAP_PATH.begins_with("res://"), "MAP_PATH in res://")
+    _assert_true(ProgressionState.MAP_PATH.ends_with(".json"), "MAP_PATH is .json")
+    _assert_equal(ProgressionState.MAP_PATH, "res://data/map.json", "MAP_PATH value")
+
+    # DRILLS_PATH
+    _assert_true(ProgressionState.DRILLS_PATH is String, "DRILLS_PATH is String")
+    _assert_true(ProgressionState.DRILLS_PATH.begins_with("res://"), "DRILLS_PATH in res://")
+    _assert_true(ProgressionState.DRILLS_PATH.ends_with(".json"), "DRILLS_PATH is .json")
+    _assert_equal(ProgressionState.DRILLS_PATH, "res://data/drills.json", "DRILLS_PATH value")
+
+    # KINGDOM_UPGRADES_PATH
+    _assert_true(ProgressionState.KINGDOM_UPGRADES_PATH is String, "KINGDOM_UPGRADES_PATH is String")
+    _assert_true(ProgressionState.KINGDOM_UPGRADES_PATH.begins_with("res://"), "KINGDOM_UPGRADES_PATH in res://")
+    _assert_equal(ProgressionState.KINGDOM_UPGRADES_PATH, "res://data/kingdom_upgrades.json", "KINGDOM_UPGRADES_PATH value")
+
+    # UNIT_UPGRADES_PATH
+    _assert_true(ProgressionState.UNIT_UPGRADES_PATH is String, "UNIT_UPGRADES_PATH is String")
+    _assert_true(ProgressionState.UNIT_UPGRADES_PATH.begins_with("res://"), "UNIT_UPGRADES_PATH in res://")
+    _assert_equal(ProgressionState.UNIT_UPGRADES_PATH, "res://data/unit_upgrades.json", "UNIT_UPGRADES_PATH value")
+
+    # SAVE_PATH
+    _assert_true(ProgressionState.SAVE_PATH is String, "SAVE_PATH is String")
+    _assert_true(ProgressionState.SAVE_PATH.begins_with("user://"), "SAVE_PATH in user://")
+    _assert_true(ProgressionState.SAVE_PATH.ends_with(".json"), "SAVE_PATH is .json")
+    _assert_equal(ProgressionState.SAVE_PATH, "user://typing_kingdom_save.json", "SAVE_PATH value")
+
+func _test_progression_state_default_modifiers() -> void:
+    # DEFAULT_MODIFIERS structure
+    _assert_true(ProgressionState.DEFAULT_MODIFIERS is Dictionary, "DEFAULT_MODIFIERS is Dictionary")
+    _assert_true(ProgressionState.DEFAULT_MODIFIERS.has("typing_power"), "Has typing_power")
+    _assert_true(ProgressionState.DEFAULT_MODIFIERS.has("threat_rate_multiplier"), "Has threat_rate_multiplier")
+    _assert_true(ProgressionState.DEFAULT_MODIFIERS.has("mistake_forgiveness"), "Has mistake_forgiveness")
+    _assert_true(ProgressionState.DEFAULT_MODIFIERS.has("castle_health_bonus"), "Has castle_health_bonus")
+
+    # Default values
+    _assert_equal(ProgressionState.DEFAULT_MODIFIERS["typing_power"], 1.0, "typing_power defaults to 1.0")
+    _assert_equal(ProgressionState.DEFAULT_MODIFIERS["threat_rate_multiplier"], 1.0, "threat_rate_multiplier defaults to 1.0")
+    _assert_equal(ProgressionState.DEFAULT_MODIFIERS["mistake_forgiveness"], 0.0, "mistake_forgiveness defaults to 0.0")
+    _assert_equal(ProgressionState.DEFAULT_MODIFIERS["castle_health_bonus"], 0, "castle_health_bonus defaults to 0")
+
+func _test_progression_state_default_mastery() -> void:
+    # DEFAULT_MASTERY structure
+    _assert_true(ProgressionState.DEFAULT_MASTERY is Dictionary, "DEFAULT_MASTERY is Dictionary")
+    _assert_true(ProgressionState.DEFAULT_MASTERY.has("best_accuracy"), "Has best_accuracy")
+    _assert_true(ProgressionState.DEFAULT_MASTERY.has("best_wpm"), "Has best_wpm")
+    _assert_true(ProgressionState.DEFAULT_MASTERY.has("last_accuracy"), "Has last_accuracy")
+    _assert_true(ProgressionState.DEFAULT_MASTERY.has("last_wpm"), "Has last_wpm")
+
+    # Default values should be zeroed
+    _assert_equal(ProgressionState.DEFAULT_MASTERY["best_accuracy"], 0.0, "best_accuracy defaults to 0.0")
+    _assert_equal(ProgressionState.DEFAULT_MASTERY["best_wpm"], 0.0, "best_wpm defaults to 0.0")
+    _assert_equal(ProgressionState.DEFAULT_MASTERY["last_accuracy"], 0.0, "last_accuracy defaults to 0.0")
+    _assert_equal(ProgressionState.DEFAULT_MASTERY["last_wpm"], 0.0, "last_wpm defaults to 0.0")
+
+func _test_progression_state_performance_tiers() -> void:
+    # PERFORMANCE_TIERS structure
+    _assert_true(ProgressionState.PERFORMANCE_TIERS is Array, "PERFORMANCE_TIERS is Array")
+    _assert_equal(ProgressionState.PERFORMANCE_TIERS.size(), 4, "4 performance tiers (S/A/B/C)")
+
+    # Each tier has required fields
+    for tier in ProgressionState.PERFORMANCE_TIERS:
+        _assert_true(tier is Dictionary, "Tier is Dictionary")
+        _assert_true(tier.has("id"), "Tier has id")
+        _assert_true(tier.has("accuracy"), "Tier has accuracy")
+        _assert_true(tier.has("wpm"), "Tier has wpm")
+        _assert_true(tier.has("bonus_gold"), "Tier has bonus_gold")
+
+    # Check tier IDs in order
+    _assert_equal(ProgressionState.PERFORMANCE_TIERS[0]["id"], "S", "First tier is S")
+    _assert_equal(ProgressionState.PERFORMANCE_TIERS[1]["id"], "A", "Second tier is A")
+    _assert_equal(ProgressionState.PERFORMANCE_TIERS[2]["id"], "B", "Third tier is B")
+    _assert_equal(ProgressionState.PERFORMANCE_TIERS[3]["id"], "C", "Fourth tier is C")
+
+    # Tiers should be in descending difficulty order
+    for i in range(1, ProgressionState.PERFORMANCE_TIERS.size()):
+        var prev = ProgressionState.PERFORMANCE_TIERS[i - 1]
+        var curr = ProgressionState.PERFORMANCE_TIERS[i]
+        _assert_true(prev["accuracy"] >= curr["accuracy"], "Accuracy descends: %s >= %s" % [prev["id"], curr["id"]])
+        _assert_true(prev["wpm"] >= curr["wpm"], "WPM descends: %s >= %s" % [prev["id"], curr["id"]])
+        _assert_true(prev["bonus_gold"] >= curr["bonus_gold"], "Gold descends: %s >= %s" % [prev["id"], curr["id"]])
+
+    # S tier should be challenging
+    _assert_true(ProgressionState.PERFORMANCE_TIERS[0]["accuracy"] >= 0.95, "S tier needs 95%+ accuracy")
+    _assert_true(ProgressionState.PERFORMANCE_TIERS[0]["wpm"] >= 30.0, "S tier needs 30+ WPM")
+
+    # C tier should be achievable (baseline)
+    _assert_equal(ProgressionState.PERFORMANCE_TIERS[3]["accuracy"], 0.0, "C tier has no accuracy requirement")
+    _assert_equal(ProgressionState.PERFORMANCE_TIERS[3]["wpm"], 0.0, "C tier has no WPM requirement")
+    _assert_equal(ProgressionState.PERFORMANCE_TIERS[3]["bonus_gold"], 0, "C tier gives no bonus gold")
+
+# =============================================================================
+# SETTINGS MENU TESTS
+# =============================================================================
+
+func _run_settings_menu_tests() -> void:
+    _test_settings_menu_animation_constants()
+    _test_settings_menu_pulse_constants()
+
+func _test_settings_menu_animation_constants() -> void:
+    # HOVER_SCALE
+    _assert_true(SettingsMenu.HOVER_SCALE is float, "HOVER_SCALE is float")
+    _assert_true(SettingsMenu.HOVER_SCALE > 1.0, "HOVER_SCALE > 1.0 (enlarges)")
+    _assert_true(SettingsMenu.HOVER_SCALE < 1.2, "HOVER_SCALE < 1.2 (not too large)")
+    _assert_equal(SettingsMenu.HOVER_SCALE, 1.05, "HOVER_SCALE is 1.05")
+
+    # HOVER_DURATION
+    _assert_true(SettingsMenu.HOVER_DURATION is float, "HOVER_DURATION is float")
+    _assert_true(SettingsMenu.HOVER_DURATION > 0.0, "HOVER_DURATION is positive")
+    _assert_true(SettingsMenu.HOVER_DURATION < 0.5, "HOVER_DURATION is snappy")
+    _assert_equal(SettingsMenu.HOVER_DURATION, 0.1, "HOVER_DURATION is 0.1")
+
+    # PRESS_SCALE
+    _assert_true(SettingsMenu.PRESS_SCALE is float, "PRESS_SCALE is float")
+    _assert_true(SettingsMenu.PRESS_SCALE < 1.0, "PRESS_SCALE < 1.0 (shrinks)")
+    _assert_true(SettingsMenu.PRESS_SCALE > 0.8, "PRESS_SCALE not too small")
+    _assert_equal(SettingsMenu.PRESS_SCALE, 0.95, "PRESS_SCALE is 0.95")
+
+    # PRESS_DURATION
+    _assert_true(SettingsMenu.PRESS_DURATION is float, "PRESS_DURATION is float")
+    _assert_true(SettingsMenu.PRESS_DURATION > 0.0, "PRESS_DURATION is positive")
+    _assert_true(SettingsMenu.PRESS_DURATION <= SettingsMenu.HOVER_DURATION, "PRESS_DURATION <= HOVER_DURATION")
+    _assert_equal(SettingsMenu.PRESS_DURATION, 0.05, "PRESS_DURATION is 0.05")
+
+    # Scale ordering
+    _assert_true(SettingsMenu.PRESS_SCALE < SettingsMenu.HOVER_SCALE, "PRESS_SCALE < HOVER_SCALE")
+
+func _test_settings_menu_pulse_constants() -> void:
+    # PULSE_COLOR (golden highlight)
+    _assert_true(SettingsMenu.PULSE_COLOR is Color, "PULSE_COLOR is Color")
+    _assert_equal(SettingsMenu.PULSE_COLOR.a, 1.0, "PULSE_COLOR is fully opaque")
+    _assert_true(SettingsMenu.PULSE_COLOR.r > 0.8, "PULSE_COLOR has high red (gold)")
+    _assert_true(SettingsMenu.PULSE_COLOR.g > 0.7, "PULSE_COLOR has moderate green (gold)")
+    _assert_true(SettingsMenu.PULSE_COLOR.b < 0.5, "PULSE_COLOR has low blue (gold)")
+
+    # PULSE_DURATION
+    _assert_true(SettingsMenu.PULSE_DURATION is float, "PULSE_DURATION is float")
+    _assert_true(SettingsMenu.PULSE_DURATION > 0.0, "PULSE_DURATION is positive")
+    _assert_true(SettingsMenu.PULSE_DURATION > SettingsMenu.HOVER_DURATION, "PULSE_DURATION > HOVER_DURATION")
+    _assert_equal(SettingsMenu.PULSE_DURATION, 0.3, "PULSE_DURATION is 0.3")
+
+# =============================================================================
+# KINGDOM HUB TESTS
+# =============================================================================
+
+func _run_kingdom_hub_tests() -> void:
+    _test_kingdom_hub_tier_colors()
+    _test_kingdom_hub_animation_constants()
+
+func _test_kingdom_hub_tier_colors() -> void:
+    # TIER_COLORS structure
+    _assert_true(KingdomHub.TIER_COLORS is Dictionary, "TIER_COLORS is Dictionary")
+    _assert_true(KingdomHub.TIER_COLORS.has("common"), "Has common tier")
+    _assert_true(KingdomHub.TIER_COLORS.has("uncommon"), "Has uncommon tier")
+    _assert_true(KingdomHub.TIER_COLORS.has("rare"), "Has rare tier")
+    _assert_true(KingdomHub.TIER_COLORS.has("epic"), "Has epic tier")
+
+    # All tier colors are valid Colors
+    for tier in KingdomHub.TIER_COLORS:
+        _assert_true(KingdomHub.TIER_COLORS[tier] is Color, "Tier %s color is Color" % tier)
+        _assert_equal(KingdomHub.TIER_COLORS[tier].a, 1.0, "Tier %s is fully opaque" % tier)
+
+    # Common (gray)
+    var common = KingdomHub.TIER_COLORS["common"]
+    _assert_true(abs(common.r - common.g) < 0.1, "Common is gray-ish (r ≈ g)")
+    _assert_true(abs(common.g - common.b) < 0.1, "Common is gray-ish (g ≈ b)")
+
+    # Uncommon (green)
+    var uncommon = KingdomHub.TIER_COLORS["uncommon"]
+    _assert_true(uncommon.g > uncommon.r, "Uncommon has more green than red")
+    _assert_true(uncommon.g > uncommon.b, "Uncommon has more green than blue")
+
+    # Rare (blue)
+    var rare = KingdomHub.TIER_COLORS["rare"]
+    _assert_true(rare.b > rare.r, "Rare has more blue than red")
+    _assert_true(rare.b > rare.g, "Rare has more blue than green")
+
+    # Epic (purple)
+    var epic = KingdomHub.TIER_COLORS["epic"]
+    _assert_true(epic.r > epic.g, "Epic has more red than green (purple)")
+    _assert_true(epic.b > epic.g, "Epic has more blue than green (purple)")
+
+func _test_kingdom_hub_animation_constants() -> void:
+    # HOVER_SCALE
+    _assert_true(KingdomHub.HOVER_SCALE is float, "HOVER_SCALE is float")
+    _assert_true(KingdomHub.HOVER_SCALE > 1.0, "HOVER_SCALE > 1.0 (enlarges)")
+    _assert_true(KingdomHub.HOVER_SCALE < 1.1, "HOVER_SCALE < 1.1 (subtle)")
+    _assert_equal(KingdomHub.HOVER_SCALE, 1.02, "HOVER_SCALE is 1.02")
+
+    # HOVER_DURATION
+    _assert_true(KingdomHub.HOVER_DURATION is float, "HOVER_DURATION is float")
+    _assert_true(KingdomHub.HOVER_DURATION > 0.0, "HOVER_DURATION is positive")
+    _assert_true(KingdomHub.HOVER_DURATION < 0.5, "HOVER_DURATION is snappy")
+    _assert_equal(KingdomHub.HOVER_DURATION, 0.1, "HOVER_DURATION is 0.1")

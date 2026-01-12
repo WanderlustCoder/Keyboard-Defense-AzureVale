@@ -155,7 +155,7 @@ New SVG assets in `assets/art/src-svg/`:
 - Scenario reports and summaries are written under `Logs/ScenarioReports/` for CI-friendly collection (via `--out-dir`).
 
 ## Test Coverage (as of 2026-01-12)
-**Total: ~7,250+ assertions**
+**Total: ~7,400+ assertions**
 
 - **Parser tests**: Command parsing, intent validation
 - **Reducer tests**: State mutation, intent application
@@ -234,6 +234,12 @@ New SVG assets in `assets/art/src-svg/`:
 - **Battlefield tests**: Buff streaks, feedback durations, font sizes, threat/trend tracking, streak glow, combo milestones, accuracy badges, animation timing, grade system
 - **Settings manager tests**: Path constants, audio defaults, gameplay defaults, accessibility defaults
 - **Typing profile constants tests**: Path/version, UI scale values, speed multipliers, achievement IDs, default UI prefs, default lesson progress
+- **Battle tutorial tests**: Dot size/gap, progress indicator colors (complete, current, pending)
+- **Campaign map tests**: Hover scale/duration, pulse animation timing
+- **Main menu tests**: Path constants (version, save), font sizes, hover/press animation constants
+- **Progression state tests**: Data path constants, default modifiers, default mastery, performance tiers (S/A/B/C)
+- **Settings menu tests**: Hover/press animation constants, pulse color and duration
+- **Kingdom hub tests**: Tier colors (common, uncommon, rare, epic), hover animation constants
 
 ## Planning
 - `docs/ROADMAP.md` is the authoritative milestone list.
