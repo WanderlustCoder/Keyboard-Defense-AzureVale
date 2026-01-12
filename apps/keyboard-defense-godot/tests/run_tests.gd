@@ -62,6 +62,8 @@ const SimEvents = preload("res://sim/events.gd")
 const SimEventTables = preload("res://sim/event_tables.gd")
 const SimPoi = preload("res://sim/poi.gd")
 const SimAutoTowerTypes = preload("res://sim/auto_tower_types.gd")
+const SimPlayerStats = preload("res://sim/player_stats.gd")
+const SimLoginRewards = preload("res://sim/login_rewards.gd")
 
 var total_tests: int = 0
 var total_failed: int = 0
@@ -142,6 +144,7 @@ func _run_all() -> void:
     _run_zone_system_tests()
     _run_poi_zone_tests()
     _run_auto_tower_types_tests()
+    _run_player_stats_tests()
 
     for message in messages:
         print("[tests] %s" % message)
@@ -5300,3 +5303,351 @@ func _run_poi_zone_tests() -> void:
     _assert_true("POI Distribution" in summary, "Summary has title")
     _assert_true("Safe Zone" in summary, "Summary mentions Safe Zone")
     _assert_true("POIs available" in summary, "Summary shows POI count")
+
+
+func _run_auto_tower_types_tests() -> void:
+    # Test Tier enum
+    _assert_equal(SimAutoTowerTypes.Tier.TIER_1, 1, "TIER_1 is 1")
+    _assert_equal(SimAutoTowerTypes.Tier.TIER_2, 2, "TIER_2 is 2")
+    _assert_equal(SimAutoTowerTypes.Tier.TIER_3, 3, "TIER_3 is 3")
+    _assert_equal(SimAutoTowerTypes.Tier.TIER_4, 4, "TIER_4 is 4")
+
+    # Test TargetMode enum
+    _assert_equal(SimAutoTowerTypes.TargetMode.NEAREST, 0, "NEAREST target mode is 0")
+    _assert_equal(SimAutoTowerTypes.TargetMode.HIGHEST_HP, 1, "HIGHEST_HP target mode is 1")
+    _assert_equal(SimAutoTowerTypes.TargetMode.LOWEST_HP, 2, "LOWEST_HP target mode is 2")
+    _assert_equal(SimAutoTowerTypes.TargetMode.CLUSTER, 4, "CLUSTER target mode is 4")
+    _assert_equal(SimAutoTowerTypes.TargetMode.SMART, 8, "SMART target mode is 8")
+
+    # Test DamageType enum
+    _assert_equal(SimAutoTowerTypes.DamageType.PHYSICAL, 0, "PHYSICAL damage type is 0")
+    _assert_equal(SimAutoTowerTypes.DamageType.LIGHTNING, 1, "LIGHTNING damage type is 1")
+    _assert_equal(SimAutoTowerTypes.DamageType.FIRE, 2, "FIRE damage type is 2")
+    _assert_equal(SimAutoTowerTypes.DamageType.NATURE, 3, "NATURE damage type is 3")
+    _assert_equal(SimAutoTowerTypes.DamageType.SIEGE, 4, "SIEGE damage type is 4")
+
+    # Test tower ID constants
+    _assert_equal(SimAutoTowerTypes.AUTO_SENTRY, "auto_sentry", "AUTO_SENTRY constant")
+    _assert_equal(SimAutoTowerTypes.AUTO_SPARK, "auto_spark", "AUTO_SPARK constant")
+    _assert_equal(SimAutoTowerTypes.AUTO_THORNS, "auto_thorns", "AUTO_THORNS constant")
+    _assert_equal(SimAutoTowerTypes.AUTO_BALLISTA, "auto_ballista", "AUTO_BALLISTA constant")
+    _assert_equal(SimAutoTowerTypes.AUTO_TESLA, "auto_tesla", "AUTO_TESLA constant")
+    _assert_equal(SimAutoTowerTypes.AUTO_CANNON, "auto_cannon", "AUTO_CANNON constant")
+    _assert_equal(SimAutoTowerTypes.AUTO_ARCANE, "auto_arcane", "AUTO_ARCANE constant")
+    _assert_equal(SimAutoTowerTypes.AUTO_DOOM, "auto_doom", "AUTO_DOOM constant")
+
+    # Test TOWERS dictionary has all towers
+    _assert_true(SimAutoTowerTypes.TOWERS.size() >= 13, "At least 13 auto-tower types")
+    _assert_true(SimAutoTowerTypes.TOWERS.has(SimAutoTowerTypes.AUTO_SENTRY), "TOWERS has AUTO_SENTRY")
+    _assert_true(SimAutoTowerTypes.TOWERS.has(SimAutoTowerTypes.AUTO_DOOM), "TOWERS has AUTO_DOOM")
+
+    # Test get_tower
+    var sentry: Dictionary = SimAutoTowerTypes.get_tower(SimAutoTowerTypes.AUTO_SENTRY)
+    _assert_equal(str(sentry.get("name", "")), "Sentry Turret", "Sentry name")
+    _assert_equal(int(sentry.get("tier", 0)), SimAutoTowerTypes.Tier.TIER_1, "Sentry tier is 1")
+    _assert_equal(int(sentry.get("damage", 0)), 5, "Sentry damage is 5")
+    _assert_true(float(sentry.get("attack_speed", 0)) > 0, "Sentry has attack speed")
+    _assert_equal(int(sentry.get("range", 0)), 3, "Sentry range is 3")
+
+    # Test get_tower_name
+    _assert_equal(SimAutoTowerTypes.get_tower_name(SimAutoTowerTypes.AUTO_SENTRY), "Sentry Turret", "get_tower_name for sentry")
+    _assert_equal(SimAutoTowerTypes.get_tower_name(SimAutoTowerTypes.AUTO_DOOM), "Doom Fortress", "get_tower_name for doom")
+    _assert_equal(SimAutoTowerTypes.get_tower_name("invalid_tower"), "invalid_tower", "get_tower_name fallback for invalid ID")
+
+    # Test get_tier
+    _assert_equal(SimAutoTowerTypes.get_tier(SimAutoTowerTypes.AUTO_SENTRY), 1, "Sentry tier is 1")
+    _assert_equal(SimAutoTowerTypes.get_tier(SimAutoTowerTypes.AUTO_BALLISTA), 2, "Ballista tier is 2")
+    _assert_equal(SimAutoTowerTypes.get_tier(SimAutoTowerTypes.AUTO_CANNON), 3, "Cannon tier is 3")
+    _assert_equal(SimAutoTowerTypes.get_tier(SimAutoTowerTypes.AUTO_DOOM), 4, "Doom tier is 4")
+    _assert_equal(SimAutoTowerTypes.get_tier("invalid"), 1, "Invalid tower defaults to tier 1")
+
+    # Test get_cost
+    var sentry_cost: Dictionary = SimAutoTowerTypes.get_cost(SimAutoTowerTypes.AUTO_SENTRY)
+    _assert_true(int(sentry_cost.get("gold", 0)) > 0, "Sentry costs gold")
+    _assert_true(sentry_cost.has("stone") or sentry_cost.has("wood"), "Sentry costs resources")
+
+    var doom_cost: Dictionary = SimAutoTowerTypes.get_cost(SimAutoTowerTypes.AUTO_DOOM)
+    _assert_true(int(doom_cost.get("gold", 0)) > 1000, "Doom costs over 1000 gold")
+
+    # Test get_upgrade_cost
+    var ballista_upgrade: Dictionary = SimAutoTowerTypes.get_upgrade_cost(SimAutoTowerTypes.AUTO_BALLISTA)
+    _assert_true(int(ballista_upgrade.get("gold", 0)) > 0, "Ballista upgrade costs gold")
+
+    # Test get_upgrade_options
+    var sentry_upgrades: Array[String] = SimAutoTowerTypes.get_upgrade_options(SimAutoTowerTypes.AUTO_SENTRY)
+    _assert_equal(sentry_upgrades.size(), 1, "Sentry has 1 upgrade option")
+    _assert_equal(sentry_upgrades[0], SimAutoTowerTypes.AUTO_BALLISTA, "Sentry upgrades to Ballista")
+
+    var ballista_upgrades: Array[String] = SimAutoTowerTypes.get_upgrade_options(SimAutoTowerTypes.AUTO_BALLISTA)
+    _assert_equal(ballista_upgrades.size(), 1, "Ballista has 1 upgrade option")
+    _assert_equal(ballista_upgrades[0], SimAutoTowerTypes.AUTO_CANNON, "Ballista upgrades to Cannon")
+
+    # Test can_upgrade_to
+    _assert_true(SimAutoTowerTypes.can_upgrade_to(SimAutoTowerTypes.AUTO_SENTRY, SimAutoTowerTypes.AUTO_BALLISTA), "Sentry can upgrade to Ballista")
+    _assert_false(SimAutoTowerTypes.can_upgrade_to(SimAutoTowerTypes.AUTO_SENTRY, SimAutoTowerTypes.AUTO_CANNON), "Sentry cannot upgrade directly to Cannon")
+    _assert_false(SimAutoTowerTypes.can_upgrade_to(SimAutoTowerTypes.AUTO_DOOM, SimAutoTowerTypes.AUTO_SENTRY), "Doom cannot upgrade to Sentry")
+    _assert_true(SimAutoTowerTypes.can_upgrade_to(SimAutoTowerTypes.AUTO_SPARK, SimAutoTowerTypes.AUTO_TESLA), "Spark can upgrade to Tesla")
+
+    # Test get_targeting_mode
+    _assert_equal(SimAutoTowerTypes.get_targeting_mode(SimAutoTowerTypes.AUTO_SENTRY), SimAutoTowerTypes.TargetMode.NEAREST, "Sentry uses NEAREST")
+    _assert_equal(SimAutoTowerTypes.get_targeting_mode(SimAutoTowerTypes.AUTO_BALLISTA), SimAutoTowerTypes.TargetMode.HIGHEST_HP, "Ballista uses HIGHEST_HP")
+    _assert_equal(SimAutoTowerTypes.get_targeting_mode(SimAutoTowerTypes.AUTO_SPARK), SimAutoTowerTypes.TargetMode.ZONE, "Spark uses ZONE")
+    _assert_equal(SimAutoTowerTypes.get_targeting_mode(SimAutoTowerTypes.AUTO_ARCANE), SimAutoTowerTypes.TargetMode.SMART, "Arcane uses SMART")
+
+    # Test get_damage_type
+    _assert_equal(SimAutoTowerTypes.get_damage_type(SimAutoTowerTypes.AUTO_SENTRY), SimAutoTowerTypes.DamageType.PHYSICAL, "Sentry is PHYSICAL")
+    _assert_equal(SimAutoTowerTypes.get_damage_type(SimAutoTowerTypes.AUTO_SPARK), SimAutoTowerTypes.DamageType.LIGHTNING, "Spark is LIGHTNING")
+    _assert_equal(SimAutoTowerTypes.get_damage_type(SimAutoTowerTypes.AUTO_THORNS), SimAutoTowerTypes.DamageType.NATURE, "Thorns is NATURE")
+    _assert_equal(SimAutoTowerTypes.get_damage_type(SimAutoTowerTypes.AUTO_FLAME), SimAutoTowerTypes.DamageType.FIRE, "Flame is FIRE")
+    _assert_equal(SimAutoTowerTypes.get_damage_type(SimAutoTowerTypes.AUTO_CANNON), SimAutoTowerTypes.DamageType.SIEGE, "Cannon is SIEGE")
+
+    # Test get_special
+    var spark_special: Dictionary = SimAutoTowerTypes.get_special(SimAutoTowerTypes.AUTO_SPARK)
+    _assert_true(spark_special.has("aoe_radius"), "Spark has aoe_radius special")
+
+    var tesla_special: Dictionary = SimAutoTowerTypes.get_special(SimAutoTowerTypes.AUTO_TESLA)
+    _assert_true(tesla_special.has("chain_count"), "Tesla has chain_count special")
+    _assert_equal(int(tesla_special.get("chain_count", 0)), 4, "Tesla chains to 4 targets")
+
+    var thorns_special: Dictionary = SimAutoTowerTypes.get_special(SimAutoTowerTypes.AUTO_THORNS)
+    _assert_true(thorns_special.has("slow_percent"), "Thorns has slow_percent special")
+    _assert_true(bool(thorns_special.get("contact_damage", false)), "Thorns has contact_damage")
+
+    # Test is_legendary
+    _assert_false(SimAutoTowerTypes.is_legendary(SimAutoTowerTypes.AUTO_SENTRY), "Sentry is not legendary")
+    _assert_false(SimAutoTowerTypes.is_legendary(SimAutoTowerTypes.AUTO_CANNON), "Cannon is not legendary")
+    _assert_true(SimAutoTowerTypes.is_legendary(SimAutoTowerTypes.AUTO_ARCANE), "Arcane is legendary")
+    _assert_true(SimAutoTowerTypes.is_legendary(SimAutoTowerTypes.AUTO_DOOM), "Doom is legendary")
+
+    # Test has_overheat
+    _assert_true(SimAutoTowerTypes.has_overheat(SimAutoTowerTypes.AUTO_SENTRY), "Sentry has overheat")
+    _assert_true(SimAutoTowerTypes.has_overheat(SimAutoTowerTypes.AUTO_BALLISTA), "Ballista has overheat")
+    _assert_true(SimAutoTowerTypes.has_overheat(SimAutoTowerTypes.AUTO_CANNON), "Cannon has overheat")
+    _assert_false(SimAutoTowerTypes.has_overheat(SimAutoTowerTypes.AUTO_SPARK), "Spark has no overheat")
+    _assert_false(SimAutoTowerTypes.has_overheat(SimAutoTowerTypes.AUTO_THORNS), "Thorns has no overheat")
+
+    # Test get_overheat_config
+    var sentry_overheat: Dictionary = SimAutoTowerTypes.get_overheat_config(SimAutoTowerTypes.AUTO_SENTRY)
+    _assert_true(sentry_overheat.has("heat_per_shot"), "Sentry overheat has heat_per_shot")
+    _assert_true(sentry_overheat.has("max_heat"), "Sentry overheat has max_heat")
+    _assert_true(sentry_overheat.has("cooldown_rate"), "Sentry overheat has cooldown_rate")
+    _assert_equal(int(sentry_overheat.get("heat_per_shot", 0)), 5, "Sentry heat_per_shot is 5")
+
+    var cannon_overheat: Dictionary = SimAutoTowerTypes.get_overheat_config(SimAutoTowerTypes.AUTO_CANNON)
+    _assert_true(int(cannon_overheat.get("heat_per_shot", 0)) > int(sentry_overheat.get("heat_per_shot", 0)), "Cannon generates more heat than sentry")
+
+    # Test uses_fuel
+    _assert_false(SimAutoTowerTypes.uses_fuel(SimAutoTowerTypes.AUTO_SENTRY), "Sentry doesn't use fuel")
+    _assert_true(SimAutoTowerTypes.uses_fuel(SimAutoTowerTypes.AUTO_INFERNO), "Inferno uses fuel")
+
+    # Test get_all_tower_ids
+    var all_ids: Array[String] = SimAutoTowerTypes.get_all_tower_ids()
+    _assert_true(all_ids.size() >= 13, "At least 13 auto-tower IDs")
+    _assert_true(all_ids.has(SimAutoTowerTypes.AUTO_SENTRY), "All IDs includes sentry")
+    _assert_true(all_ids.has(SimAutoTowerTypes.AUTO_DOOM), "All IDs includes doom")
+
+    # Test get_towers_by_tier
+    var tier1_towers: Array[String] = SimAutoTowerTypes.get_towers_by_tier(1)
+    _assert_true(tier1_towers.size() >= 3, "At least 3 tier 1 towers")
+    _assert_true(tier1_towers.has(SimAutoTowerTypes.AUTO_SENTRY), "Tier 1 includes sentry")
+    _assert_true(tier1_towers.has(SimAutoTowerTypes.AUTO_SPARK), "Tier 1 includes spark")
+    _assert_true(tier1_towers.has(SimAutoTowerTypes.AUTO_THORNS), "Tier 1 includes thorns")
+
+    var tier4_towers: Array[String] = SimAutoTowerTypes.get_towers_by_tier(4)
+    _assert_equal(tier4_towers.size(), 2, "Exactly 2 tier 4 towers")
+    _assert_true(tier4_towers.has(SimAutoTowerTypes.AUTO_ARCANE), "Tier 4 includes arcane")
+    _assert_true(tier4_towers.has(SimAutoTowerTypes.AUTO_DOOM), "Tier 4 includes doom")
+
+    # Test get_dps calculation
+    var sentry_dps: float = SimAutoTowerTypes.get_dps(SimAutoTowerTypes.AUTO_SENTRY)
+    _assert_true(sentry_dps > 0, "Sentry DPS is positive")
+    _assert_approx(sentry_dps, 5.0 * 0.8, 0.01, "Sentry DPS is damage * attack_speed")
+
+    var thorns_dps: float = SimAutoTowerTypes.get_dps(SimAutoTowerTypes.AUTO_THORNS)
+    _assert_equal(thorns_dps, 0.0, "Thorns DPS is 0 (contact damage, no attack speed)")
+
+    # Test get_cooldown
+    var sentry_cooldown: float = SimAutoTowerTypes.get_cooldown(SimAutoTowerTypes.AUTO_SENTRY)
+    _assert_true(sentry_cooldown > 0, "Sentry cooldown is positive")
+    _assert_approx(sentry_cooldown, 1.0 / 0.8, 0.01, "Sentry cooldown is 1/attack_speed")
+
+    var ballista_cooldown: float = SimAutoTowerTypes.get_cooldown(SimAutoTowerTypes.AUTO_BALLISTA)
+    _assert_approx(ballista_cooldown, 1.0 / 0.3, 0.01, "Ballista cooldown is ~3.33s")
+
+    var thorns_cooldown: float = SimAutoTowerTypes.get_cooldown(SimAutoTowerTypes.AUTO_THORNS)
+    _assert_equal(thorns_cooldown, 0.0, "Thorns cooldown is 0 (no attack speed)")
+
+    # Test TIER_COLORS
+    _assert_true(SimAutoTowerTypes.TIER_COLORS.size() == 4, "4 tier colors defined")
+    _assert_true(SimAutoTowerTypes.TIER_COLORS.has(SimAutoTowerTypes.Tier.TIER_1), "Has tier 1 color")
+    _assert_true(SimAutoTowerTypes.TIER_COLORS.has(SimAutoTowerTypes.Tier.TIER_4), "Has tier 4 color")
+
+    # Test DAMAGE_TYPE_COLORS
+    _assert_true(SimAutoTowerTypes.DAMAGE_TYPE_COLORS.size() == 5, "5 damage type colors defined")
+    _assert_true(SimAutoTowerTypes.DAMAGE_TYPE_COLORS.has(SimAutoTowerTypes.DamageType.PHYSICAL), "Has physical color")
+    _assert_true(SimAutoTowerTypes.DAMAGE_TYPE_COLORS.has(SimAutoTowerTypes.DamageType.SIEGE), "Has siege color")
+
+    # Test UPGRADE_PATHS structure
+    _assert_true(SimAutoTowerTypes.UPGRADE_PATHS.size() >= 7, "At least 7 upgrade paths defined")
+    _assert_true(SimAutoTowerTypes.UPGRADE_PATHS.has(SimAutoTowerTypes.AUTO_SENTRY), "Sentry has upgrade path")
+    _assert_true(SimAutoTowerTypes.UPGRADE_PATHS.has(SimAutoTowerTypes.AUTO_BALLISTA), "Ballista has upgrade path")
+
+    # Test tower data integrity
+    for tower_id in SimAutoTowerTypes.get_all_tower_ids():
+        var tower: Dictionary = SimAutoTowerTypes.get_tower(tower_id)
+        _assert_true(tower.has("name"), "Tower '%s' has name" % tower_id)
+        _assert_true(tower.has("description"), "Tower '%s' has description" % tower_id)
+        _assert_true(tower.has("tier"), "Tower '%s' has tier" % tower_id)
+        _assert_true(tower.has("damage"), "Tower '%s' has damage" % tower_id)
+        _assert_true(tower.has("attack_speed"), "Tower '%s' has attack_speed" % tower_id)
+        _assert_true(tower.has("range"), "Tower '%s' has range" % tower_id)
+        _assert_true(tower.has("targeting"), "Tower '%s' has targeting" % tower_id)
+        _assert_true(tower.has("damage_type"), "Tower '%s' has damage_type" % tower_id)
+        _assert_true(tower.has("cost"), "Tower '%s' has cost" % tower_id)
+        _assert_true(tower.has("special"), "Tower '%s' has special" % tower_id)
+
+
+func _run_player_stats_tests() -> void:
+    # Test STATS dictionary structure
+    _assert_true(SimPlayerStats.STATS.size() >= 19, "At least 19 stats defined")
+    _assert_true(SimPlayerStats.STATS.has("total_kills"), "STATS has total_kills")
+    _assert_true(SimPlayerStats.STATS.has("total_words_typed"), "STATS has total_words_typed")
+    _assert_true(SimPlayerStats.STATS.has("total_gold_earned"), "STATS has total_gold_earned")
+
+    # Test stat info structure
+    var kill_stat: Dictionary = SimPlayerStats.STATS["total_kills"]
+    _assert_true(kill_stat.has("name"), "Stat has name")
+    _assert_true(kill_stat.has("category"), "Stat has category")
+    _assert_equal(str(kill_stat.get("category", "")), "combat", "total_kills is combat category")
+
+    # Test RECORDS dictionary structure
+    _assert_true(SimPlayerStats.RECORDS.size() >= 8, "At least 8 records defined")
+    _assert_true(SimPlayerStats.RECORDS.has("highest_combo"), "RECORDS has highest_combo")
+    _assert_true(SimPlayerStats.RECORDS.has("highest_day"), "RECORDS has highest_day")
+    _assert_true(SimPlayerStats.RECORDS.has("fastest_wave_time"), "RECORDS has fastest_wave_time")
+
+    # Test record info structure
+    var wave_time_record: Dictionary = SimPlayerStats.RECORDS["fastest_wave_time"]
+    _assert_true(wave_time_record.has("name"), "Record has name")
+    _assert_true(wave_time_record.has("category"), "Record has category")
+    _assert_true(bool(wave_time_record.get("lower_is_better", false)), "fastest_wave_time is lower_is_better")
+
+    # Test init_stats
+    var stats: Dictionary = SimPlayerStats.init_stats()
+    _assert_true(stats.has("total_kills"), "init_stats has total_kills")
+    _assert_equal(int(stats.get("total_kills", -1)), 0, "total_kills starts at 0")
+    _assert_true(stats.has("highest_combo"), "init_stats has highest_combo")
+    _assert_equal(int(stats.get("highest_combo", -1)), 0, "highest_combo starts at 0")
+    _assert_true(stats.has("fastest_wave_time"), "init_stats has fastest_wave_time")
+    _assert_equal(int(stats.get("fastest_wave_time", 0)), 999999, "fastest_wave_time starts at 999999")
+    _assert_true(stats.has("first_played"), "init_stats has first_played timestamp")
+    _assert_true(stats.has("last_played"), "init_stats has last_played timestamp")
+
+    # Test get_stats with empty profile
+    var empty_profile: Dictionary = {}
+    var new_stats: Dictionary = SimPlayerStats.get_stats(empty_profile)
+    _assert_true(new_stats.has("total_kills"), "get_stats creates new stats for empty profile")
+
+    # Test _format_number helper
+    _assert_equal(SimPlayerStats._format_number(0), "0", "format 0")
+    _assert_equal(SimPlayerStats._format_number(100), "100", "format 100")
+    _assert_equal(SimPlayerStats._format_number(1000), "1,000", "format 1000")
+    _assert_equal(SimPlayerStats._format_number(1234567), "1,234,567", "format 1234567")
+    _assert_equal(SimPlayerStats._format_number(-1000), "-1,000", "format -1000")
+
+    # Test get_categories
+    var categories: Array[String] = SimPlayerStats.get_categories()
+    _assert_true(categories.size() >= 7, "At least 7 categories")
+    _assert_true("combat" in categories, "Has combat category")
+    _assert_true("typing" in categories, "Has typing category")
+    _assert_true("economy" in categories, "Has economy category")
+    _assert_true("progression" in categories, "Has progression category")
+    _assert_true("time" in categories, "Has time category")
+    _assert_true("combo" in categories, "Has combo category")
+    _assert_true("records" in categories, "Has records category")
+
+    # Test stat info integrity - all stats have required fields
+    for stat_key in SimPlayerStats.STATS.keys():
+        var stat_info: Dictionary = SimPlayerStats.STATS[stat_key]
+        _assert_true(stat_info.has("name"), "Stat '%s' has name" % stat_key)
+        _assert_true(stat_info.has("category"), "Stat '%s' has category" % stat_key)
+        var category: String = str(stat_info.get("category", ""))
+        _assert_true(category in categories, "Stat '%s' category '%s' is valid" % [stat_key, category])
+
+    # Test record info integrity
+    for record_key in SimPlayerStats.RECORDS.keys():
+        var record_info: Dictionary = SimPlayerStats.RECORDS[record_key]
+        _assert_true(record_info.has("name"), "Record '%s' has name" % record_key)
+        _assert_true(record_info.has("category"), "Record '%s' has category" % record_key)
+
+    # Test calculate_derived_stats
+    var profile: Dictionary = {}
+    TypingProfile.set_profile_value(profile, "player_stats", {
+        "total_chars_typed": 100,
+        "total_typos": 10,
+        "total_kills": 50,
+        "total_deaths": 5,
+        "total_combos_started": 20,
+        "total_combos_broken": 5,
+        "sessions_played": 10,
+        "total_words_typed": 200,
+        "waves_completed": 25,
+        "total_gold_earned": 5000,
+        "total_play_time": 120
+    })
+    var derived: Dictionary = SimPlayerStats.calculate_derived_stats(profile)
+
+    # overall_accuracy = (100 - 10) / 100 * 100 = 90%
+    _assert_approx(float(derived.get("overall_accuracy", 0)), 90.0, 0.1, "Overall accuracy calculation")
+
+    # kd_ratio = 50 / 5 = 10.0
+    _assert_approx(float(derived.get("kd_ratio", 0)), 10.0, 0.1, "K/D ratio calculation")
+
+    # combo_efficiency = (20 - 5) / 20 * 100 = 75%
+    _assert_approx(float(derived.get("combo_efficiency", 0)), 75.0, 0.1, "Combo efficiency calculation")
+
+    # avg_words_per_session = 200 / 10 = 20.0
+    _assert_approx(float(derived.get("avg_words_per_session", 0)), 20.0, 0.1, "Avg words per session")
+
+    # avg_gold_per_wave = 5000 / 25 = 200.0
+    _assert_approx(float(derived.get("avg_gold_per_wave", 0)), 200.0, 0.1, "Avg gold per wave")
+
+    # avg_kills_per_wave = 50 / 25 = 2.0
+    _assert_approx(float(derived.get("avg_kills_per_wave", 0)), 2.0, 0.1, "Avg kills per wave")
+
+    # play_time_hours = 120 / 60 = 2.0
+    _assert_approx(float(derived.get("play_time_hours", 0)), 2.0, 0.1, "Play time hours")
+
+    # Test derived stats with zero values (edge cases)
+    var empty_stats_profile: Dictionary = {}
+    TypingProfile.set_profile_value(empty_stats_profile, "player_stats", {
+        "total_chars_typed": 0,
+        "total_deaths": 0,
+        "total_combos_started": 0
+    })
+    var empty_derived: Dictionary = SimPlayerStats.calculate_derived_stats(empty_stats_profile)
+    _assert_approx(float(empty_derived.get("overall_accuracy", 0)), 100.0, 0.1, "Accuracy defaults to 100% with no chars")
+    _assert_approx(float(empty_derived.get("combo_efficiency", 0)), 100.0, 0.1, "Combo efficiency defaults to 100% with no combos")
+
+    # Test format_stats_by_category returns string
+    var format_profile: Dictionary = {}
+    TypingProfile.set_profile_value(format_profile, "player_stats", SimPlayerStats.init_stats())
+    var combat_format: String = SimPlayerStats.format_stats_by_category(format_profile, "combat")
+    _assert_true(combat_format.length() > 0, "format_stats_by_category returns non-empty string")
+    _assert_true("Kills" in combat_format or "kills" in combat_format.to_lower(), "Combat stats mentions kills")
+
+    # Test format_records returns string
+    var records_format: String = SimPlayerStats.format_records(format_profile)
+    _assert_true(records_format.length() > 0, "format_records returns non-empty string")
+    _assert_true("Combo" in records_format or "combo" in records_format.to_lower(), "Records mentions combo")
+
+    # Test format_full_report returns string
+    var full_report: String = SimPlayerStats.format_full_report(format_profile)
+    _assert_true(full_report.length() > 0, "format_full_report returns non-empty string")
+    _assert_true("STATISTICS" in full_report or "statistics" in full_report.to_lower(), "Full report has title")
+    _assert_true("Combat" in full_report or "combat" in full_report.to_lower(), "Full report has combat section")
+
+    # Test format_summary returns string
+    var summary: String = SimPlayerStats.format_summary(format_profile)
+    _assert_true(summary.length() > 0, "format_summary returns non-empty string")
+    _assert_true("SUMMARY" in summary or "summary" in summary.to_lower(), "Summary has title")

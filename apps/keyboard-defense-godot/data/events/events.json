@@ -2573,6 +2573,762 @@
           ]
         }
       ]
+    },
+    {
+      "id": "evt_chain_scholar_start",
+      "title": "Wandering Scholar",
+      "body": "A disheveled scholar pores over a tattered map, muttering about ancient ruins. She looks up as you approach. 'Traveler! I seek the Lost Library of Evandale. The map shows it near here, but I cannot find the entrance alone.'",
+      "tier": 2,
+      "tags": [
+        "chain",
+        "social",
+        "quest",
+        "stonepass"
+      ],
+      "cooldown_days": 0,
+      "choices": [
+        {
+          "id": "help",
+          "label": "Offer to help search",
+          "input": {
+            "mode": "phrase",
+            "text": "i will help you search"
+          },
+          "effects": [
+            {
+              "type": "set_flag",
+              "flag": "scholar_quest_active",
+              "value": true
+            },
+            {
+              "type": "buff_apply",
+              "buff": "scholar_companion",
+              "duration": 5
+            }
+          ],
+          "next_event_id": "evt_chain_scholar_search"
+        },
+        {
+          "id": "trade",
+          "label": "Trade supplies for information",
+          "input": {
+            "mode": "code",
+            "text": "trade"
+          },
+          "effects": [
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": -2
+            },
+            {
+              "type": "set_flag",
+              "flag": "library_hint",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "decline",
+          "label": "Wish her luck",
+          "input": {
+            "mode": "code",
+            "text": "goodbye"
+          },
+          "effects": []
+        }
+      ]
+    },
+    {
+      "id": "evt_chain_scholar_search",
+      "title": "Hidden Entrance",
+      "body": "Following the scholar's map, you discover a moss-covered stone archway hidden behind a waterfall. Ancient symbols glow faintly on its surface. 'This is it!' the scholar exclaims. 'But the door requires a password - can you decipher these runes?'",
+      "tier": 2,
+      "tags": [
+        "chain",
+        "exploration",
+        "stonepass"
+      ],
+      "cooldown_days": 0,
+      "choices": [
+        {
+          "id": "decipher",
+          "label": "Decipher the runes",
+          "input": {
+            "mode": "prompt_burst",
+            "prompts": [
+              "wisdom",
+              "seekers",
+              "enter"
+            ]
+          },
+          "effects": [
+            {
+              "type": "set_flag",
+              "flag": "library_unlocked",
+              "value": true
+            }
+          ],
+          "next_event_id": "evt_chain_scholar_library"
+        },
+        {
+          "id": "force",
+          "label": "Try to force the door",
+          "input": {
+            "mode": "phrase",
+            "text": "push with all strength"
+          },
+          "effects": [
+            {
+              "type": "damage_castle",
+              "amount": 1
+            }
+          ],
+          "fail_effects": [
+            {
+              "type": "damage_castle",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "id": "leave",
+          "label": "Mark location for later",
+          "input": {
+            "mode": "code",
+            "text": "mark"
+          },
+          "effects": [
+            {
+              "type": "set_flag",
+              "flag": "library_marked",
+              "value": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "evt_chain_scholar_library",
+      "title": "The Lost Library",
+      "body": "The door groans open, revealing vast halls lined with ancient tomes. Dust motes dance in shafts of light from crystal skylights. The scholar gasps with joy. 'Decades of searching... it's real!' She turns to you. 'Take whatever knowledge you can carry. You've earned it.'",
+      "tier": 2,
+      "tags": [
+        "chain",
+        "lore",
+        "stonepass"
+      ],
+      "cooldown_days": 0,
+      "choices": [
+        {
+          "id": "study",
+          "label": "Study ancient tactics",
+          "input": {
+            "mode": "phrase",
+            "text": "read the battle scrolls"
+          },
+          "effects": [
+            {
+              "type": "set_flag",
+              "flag": "ancient_tactics",
+              "value": true
+            },
+            {
+              "type": "buff_apply",
+              "buff": "tactician",
+              "duration": 10
+            },
+            {
+              "type": "threat_add",
+              "amount": -3
+            },
+            {
+              "type": "clear_flag",
+              "flag": "scholar_quest_active"
+            }
+          ]
+        },
+        {
+          "id": "gather",
+          "label": "Gather rare materials",
+          "input": {
+            "mode": "phrase",
+            "text": "collect valuable components"
+          },
+          "effects": [
+            {
+              "type": "resource_add",
+              "resource": "wood",
+              "amount": 8
+            },
+            {
+              "type": "resource_add",
+              "resource": "stone",
+              "amount": 8
+            },
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": 4
+            },
+            {
+              "type": "clear_flag",
+              "flag": "scholar_quest_active"
+            }
+          ]
+        },
+        {
+          "id": "magic",
+          "label": "Absorb magical knowledge",
+          "input": {
+            "mode": "prompt_burst",
+            "prompts": [
+              "arcane",
+              "power",
+              "grant",
+              "wisdom"
+            ]
+          },
+          "effects": [
+            {
+              "type": "set_flag",
+              "flag": "library_mastery",
+              "value": true
+            },
+            {
+              "type": "buff_apply",
+              "buff": "arcane_insight",
+              "duration": 15
+            },
+            {
+              "type": "heal_castle",
+              "amount": 3
+            },
+            {
+              "type": "clear_flag",
+              "flag": "scholar_quest_active"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "evt_chain_ruins_start",
+      "title": "Desperate Cries",
+      "body": "Muffled shouts echo from a collapsed ruin. Someone is trapped inside! The rubble looks unstable - rescuing them will be dangerous, but leaving them seems wrong.",
+      "tier": 2,
+      "tags": [
+        "chain",
+        "risk",
+        "exploration",
+        "evergrove"
+      ],
+      "cooldown_days": 0,
+      "choices": [
+        {
+          "id": "rescue",
+          "label": "Begin rescue operation",
+          "input": {
+            "mode": "phrase",
+            "text": "hold on i am coming"
+          },
+          "effects": [
+            {
+              "type": "set_flag",
+              "flag": "rescue_started",
+              "value": true
+            }
+          ],
+          "next_event_id": "evt_chain_ruins_rescue"
+        },
+        {
+          "id": "call",
+          "label": "Call for more help",
+          "input": {
+            "mode": "code",
+            "text": "shout"
+          },
+          "effects": [
+            {
+              "type": "threat_add",
+              "amount": 2
+            },
+            {
+              "type": "set_flag",
+              "flag": "rescue_help_called",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "leave",
+          "label": "It's too dangerous",
+          "input": {
+            "mode": "code",
+            "text": "leave"
+          },
+          "effects": [
+            {
+              "type": "set_flag",
+              "flag": "abandoned_survivor",
+              "value": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "evt_chain_ruins_rescue",
+      "title": "Race Against Time",
+      "body": "You squeeze through a gap in the rubble. A wounded explorer lies pinned beneath fallen stones. 'Thank the gods,' she gasps. 'The ceiling is crumbling - you need to move fast!' Work quickly to free her before the ruins collapse!",
+      "tier": 2,
+      "tags": [
+        "chain",
+        "challenge",
+        "evergrove"
+      ],
+      "cooldown_days": 0,
+      "choices": [
+        {
+          "id": "fast",
+          "label": "Work frantically",
+          "input": {
+            "mode": "challenge",
+            "challenge": {
+              "type": 1,
+              "min_wpm": 45,
+              "word_count": 6,
+              "time_limit": 20,
+              "day_scaled": true
+            }
+          },
+          "effects": [
+            {
+              "type": "set_flag",
+              "flag": "rescued_explorer",
+              "value": true
+            },
+            {
+              "type": "clear_flag",
+              "flag": "rescue_started"
+            },
+            {
+              "type": "buff_apply",
+              "buff": "heroic",
+              "duration": 7
+            },
+            {
+              "type": "threat_add",
+              "amount": -2
+            }
+          ],
+          "fail_effects": [
+            {
+              "type": "damage_castle",
+              "amount": 2
+            },
+            {
+              "type": "set_flag",
+              "flag": "rescue_failed",
+              "value": true
+            },
+            {
+              "type": "clear_flag",
+              "flag": "rescue_started"
+            }
+          ],
+          "next_event_id": "evt_chain_ruins_reward"
+        },
+        {
+          "id": "careful",
+          "label": "Work methodically",
+          "input": {
+            "mode": "phrase",
+            "text": "slowly and carefully remove stones"
+          },
+          "effects": [
+            {
+              "type": "set_flag",
+              "flag": "rescued_explorer",
+              "value": true
+            },
+            {
+              "type": "clear_flag",
+              "flag": "rescue_started"
+            }
+          ],
+          "next_event_id": "evt_chain_ruins_reward"
+        }
+      ]
+    },
+    {
+      "id": "evt_chain_ruins_reward",
+      "title": "Grateful Survivor",
+      "body": "You pull the explorer free just as the ceiling gives way behind you. She clutches a leather satchel to her chest. 'You saved my life and my research. Take this - it's a map to the treasures I found before the collapse.'",
+      "tier": 2,
+      "tags": [
+        "chain",
+        "social",
+        "evergrove"
+      ],
+      "cooldown_days": 0,
+      "choices": [
+        {
+          "id": "accept",
+          "label": "Accept the treasure map",
+          "input": {
+            "mode": "phrase",
+            "text": "thank you for the gift"
+          },
+          "effects": [
+            {
+              "type": "set_flag",
+              "flag": "treasure_map_ruins",
+              "value": true
+            },
+            {
+              "type": "resource_add",
+              "resource": "wood",
+              "amount": 5
+            },
+            {
+              "type": "resource_add",
+              "resource": "stone",
+              "amount": 5
+            },
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": 5
+            }
+          ]
+        },
+        {
+          "id": "share",
+          "label": "Share the spoils equally",
+          "input": {
+            "mode": "code",
+            "text": "share"
+          },
+          "effects": [
+            {
+              "type": "resource_add",
+              "resource": "wood",
+              "amount": 3
+            },
+            {
+              "type": "resource_add",
+              "resource": "stone",
+              "amount": 3
+            },
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": 3
+            },
+            {
+              "type": "buff_apply",
+              "buff": "ally",
+              "duration": 10
+            },
+            {
+              "type": "set_flag",
+              "flag": "explorer_friendship",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "refuse",
+          "label": "Decline - helping was enough",
+          "input": {
+            "mode": "code",
+            "text": "refuse"
+          },
+          "effects": [
+            {
+              "type": "buff_apply",
+              "buff": "noble_heart",
+              "duration": 5
+            },
+            {
+              "type": "heal_castle",
+              "amount": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "evt_chain_witch_bargain",
+      "title": "The Witch's Price",
+      "body": "The swamp witch cackles. 'You seek power? Very well. But magic requires sacrifice. Complete three trials, and I shall grant you great boons. Fail... and you owe me a debt.'",
+      "tier": 3,
+      "tags": [
+        "chain",
+        "risk",
+        "magic",
+        "mistfen"
+      ],
+      "cooldown_days": 0,
+      "choices": [
+        {
+          "id": "accept",
+          "label": "Accept the bargain",
+          "input": {
+            "mode": "phrase",
+            "text": "i accept your terms"
+          },
+          "effects": [
+            {
+              "type": "set_flag",
+              "flag": "witch_trials_active",
+              "value": true
+            }
+          ],
+          "next_event_id": "evt_chain_witch_trial1"
+        },
+        {
+          "id": "counter",
+          "label": "Negotiate better terms",
+          "input": {
+            "mode": "phrase",
+            "text": "let us discuss the terms"
+          },
+          "effects": [
+            {
+              "type": "set_flag",
+              "flag": "witch_negotiated",
+              "value": true
+            },
+            {
+              "type": "set_flag",
+              "flag": "witch_trials_active",
+              "value": true
+            }
+          ],
+          "next_event_id": "evt_chain_witch_trial1"
+        },
+        {
+          "id": "refuse",
+          "label": "Refuse politely",
+          "input": {
+            "mode": "code",
+            "text": "refuse"
+          },
+          "effects": []
+        }
+      ]
+    },
+    {
+      "id": "evt_chain_witch_trial1",
+      "title": "Trial of Memory",
+      "body": "The witch waves her gnarled staff. 'First, the Trial of Memory. Repeat after me...' She speaks a series of mystical words, her eyes gleaming. 'Now, speak them back - exactly as I said.'",
+      "tier": 3,
+      "tags": [
+        "chain",
+        "challenge",
+        "mistfen"
+      ],
+      "cooldown_days": 0,
+      "choices": [
+        {
+          "id": "recite",
+          "label": "Recite the words",
+          "input": {
+            "mode": "prompt_burst",
+            "prompts": [
+              "mist",
+              "shadow",
+              "moon",
+              "tide",
+              "bone"
+            ]
+          },
+          "effects": [
+            {
+              "type": "set_flag",
+              "flag": "witch_trial1_pass",
+              "value": true
+            }
+          ],
+          "next_event_id": "evt_chain_witch_trial2"
+        }
+      ]
+    },
+    {
+      "id": "evt_chain_witch_trial2",
+      "title": "Trial of Speed",
+      "body": "'Good, good,' the witch hisses. 'Now, the Trial of Speed. Catch the fireflies I summon - they flee quickly!' Glowing orbs begin to scatter around the clearing. Type fast to catch them!",
+      "tier": 3,
+      "tags": [
+        "chain",
+        "challenge",
+        "mistfen"
+      ],
+      "cooldown_days": 0,
+      "choices": [
+        {
+          "id": "catch",
+          "label": "Catch the fireflies",
+          "input": {
+            "mode": "challenge",
+            "challenge": {
+              "type": 1,
+              "min_wpm": 50,
+              "word_count": 8,
+              "time_limit": 25,
+              "day_scaled": true
+            }
+          },
+          "effects": [
+            {
+              "type": "set_flag",
+              "flag": "witch_trial2_pass",
+              "value": true
+            }
+          ],
+          "fail_effects": [
+            {
+              "type": "set_flag",
+              "flag": "witch_trial2_fail",
+              "value": true
+            }
+          ],
+          "next_event_id": "evt_chain_witch_trial3"
+        }
+      ]
+    },
+    {
+      "id": "evt_chain_witch_trial3",
+      "title": "Trial of Precision",
+      "body": "'Two down, one to go.' The witch's smile grows unsettling. 'The final trial tests your precision. Write these runes exactly - one mistake and the spell backfires!' Ancient symbols glow before you.",
+      "tier": 3,
+      "tags": [
+        "chain",
+        "challenge",
+        "mistfen"
+      ],
+      "cooldown_days": 0,
+      "choices": [
+        {
+          "id": "inscribe",
+          "label": "Inscribe the runes",
+          "input": {
+            "mode": "challenge",
+            "challenge": {
+              "type": 0,
+              "min_accuracy": 0.95,
+              "word_count": 6,
+              "day_scaled": true
+            }
+          },
+          "effects": [
+            {
+              "type": "set_flag",
+              "flag": "witch_trial3_pass",
+              "value": true
+            },
+            {
+              "type": "clear_flag",
+              "flag": "witch_trials_active"
+            }
+          ],
+          "fail_effects": [
+            {
+              "type": "damage_castle",
+              "amount": 2
+            },
+            {
+              "type": "set_flag",
+              "flag": "witch_trial3_fail",
+              "value": true
+            },
+            {
+              "type": "clear_flag",
+              "flag": "witch_trials_active"
+            }
+          ],
+          "next_event_id": "evt_chain_witch_reward"
+        }
+      ]
+    },
+    {
+      "id": "evt_chain_witch_reward",
+      "title": "The Witch's Reward",
+      "body": "The witch claps her hands together. 'The trials are complete! As promised, your reward.' She reaches into a bubbling cauldron and withdraws glowing vials. 'Choose wisely - each holds different power.'",
+      "tier": 3,
+      "tags": [
+        "chain",
+        "magic",
+        "mistfen"
+      ],
+      "cooldown_days": 0,
+      "choices": [
+        {
+          "id": "power",
+          "label": "Take the power elixir",
+          "input": {
+            "mode": "phrase",
+            "text": "give me power"
+          },
+          "effects": [
+            {
+              "type": "buff_apply",
+              "buff": "witch_power",
+              "duration": 20
+            },
+            {
+              "type": "threat_add",
+              "amount": 3
+            }
+          ]
+        },
+        {
+          "id": "healing",
+          "label": "Take the healing draught",
+          "input": {
+            "mode": "phrase",
+            "text": "give me healing"
+          },
+          "effects": [
+            {
+              "type": "heal_castle",
+              "amount": 5
+            },
+            {
+              "type": "buff_apply",
+              "buff": "regeneration",
+              "duration": 10
+            }
+          ]
+        },
+        {
+          "id": "fortune",
+          "label": "Take the fortune philter",
+          "input": {
+            "mode": "phrase",
+            "text": "give me fortune"
+          },
+          "effects": [
+            {
+              "type": "resource_add",
+              "resource": "food",
+              "amount": 10
+            },
+            {
+              "type": "resource_add",
+              "resource": "wood",
+              "amount": 10
+            },
+            {
+              "type": "resource_add",
+              "resource": "stone",
+              "amount": 10
+            }
+          ]
+        }
+      ]
     }
   ]
 }

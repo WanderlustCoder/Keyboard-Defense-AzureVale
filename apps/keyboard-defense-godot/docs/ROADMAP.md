@@ -198,7 +198,7 @@ Acceptance criteria:
 - No RNG consumption added to lesson word selection.
 
 ### P1-MAP-001 Map and exploration depth
-Status: Partially complete (2026-01-11 updates)
+Status: Complete
 
 Add deeper exploration events and map structure while staying deterministic.
 
@@ -223,8 +223,13 @@ Add deeper exploration events and map structure while staying deterministic.
   - Zone rarity bonuses affect spawn weighting
   - Format functions for POI distribution by zone
 - Added 180+ test assertions for event effects, events, zones, and POIs
+- Complex event chains with multi-step narratives:
+  - Scholar's Quest (3 events) - Find the Lost Library
+  - Ruins Rescue (3 events) - Save trapped explorer
+  - Witch's Trials (5 events) - Complete trials for rewards
+  - All chains use `next_event_id` linking and flag-based state tracking
 
-**Remaining work:** Complex event chains.
+**Status: Complete** - Core exploration depth features implemented.
 
 Planning refs:
 - `docs/plans/p1/MAP_EXPLORATION_PLAN.md`
