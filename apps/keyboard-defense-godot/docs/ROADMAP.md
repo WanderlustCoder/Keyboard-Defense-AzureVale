@@ -220,7 +220,7 @@ Status: In progress (significant test additions 2026-01-11)
 
 Increase automated coverage and formalize manual QA gates for releases.
 
-**Progress (2026-01-11):** Test suite expanded to 3,801 assertions covering:
+**Progress (2026-01-11):** Test suite expanded to 4,126 assertions covering:
 - Boss encounters (phases, mechanics, dialogue)
 - Difficulty modes (modifiers, multipliers)
 - Lesson consistency (lesson-story alignment)
@@ -244,6 +244,11 @@ Increase automated coverage and formalize manual QA gates for releases.
 - Quests (type/status constants, daily quest structure)
 - Hero types (hero IDs, data, passives, abilities)
 - Wave composer (tier weights, themes, modifiers)
+- Upgrades (kingdom/unit upgrades, effects, purchase validation)
+- Loot system (quality tiers, multipliers, loot queue management)
+- Milestones (categories, messages, detection, formatting)
+- Titles system (unlock conditions, equip, display)
+- Locale system (translations, language switching)
 
 Planning refs:
 - `docs/plans/p1/QA_AUTOMATION_PLAN.md`
