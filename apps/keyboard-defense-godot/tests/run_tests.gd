@@ -87,6 +87,7 @@ const ControlsAliases = preload("res://game/controls_aliases.gd")
 const ScenarioReport = preload("res://tools/scenario_harness/scenario_report.gd")
 const ButtonFeedback = preload("res://ui/components/button_feedback.gd")
 const ThemeColors = preload("res://ui/theme_colors.gd")
+const GamePersistence = preload("res://game/persistence.gd")
 
 var total_tests: int = 0
 var total_failed: int = 0
@@ -194,6 +195,8 @@ func _run_all() -> void:
     _run_scenario_report_tests()
     _run_button_feedback_tests()
     _run_theme_colors_tests()
+    _run_persistence_tests()
+    _run_data_integrity_tests()
 
     for message in messages:
         print("[tests] %s" % message)
@@ -9040,3 +9043,140 @@ func _test_theme_colors_alpha_functions() -> void:
 # Helper function for theme colors tests
 func _color_brightness(c: Color) -> float:
     return (c.r + c.g + c.b) / 3.0
+
+# =============================================================================
+# PERSISTENCE TESTS
+# =============================================================================
+
+func _run_persistence_tests() -> void:
+    _test_persistence_constants()
+
+func _test_persistence_constants() -> void:
+    # Test SAVE_PATH constant
+    _assert_equal(GamePersistence.SAVE_PATH, "user://savegame.json", "SAVE_PATH is user://savegame.json")
+    _assert_true(GamePersistence.SAVE_PATH.begins_with("user://"), "SAVE_PATH uses user:// prefix")
+    _assert_true(GamePersistence.SAVE_PATH.ends_with(".json"), "SAVE_PATH has .json extension")
+
+# =============================================================================
+# DATA INTEGRITY TESTS
+# =============================================================================
+
+func _run_data_integrity_tests() -> void:
+    _test_data_files_exist()
+    _test_data_files_parse()
+    _test_data_files_structure()
+
+func _test_data_files_exist() -> void:
+    # Core data files that must exist
+    var required_files: Array[String] = [
+        "res://data/lessons.json",
+        "res://data/story.json",
+        "res://data/buildings.json",
+        "res://data/map.json",
+        "res://data/scenarios.json",
+        "res://data/buffs.json",
+        "res://data/drills.json",
+        "res://data/expeditions.json",
+        "res://data/kingdom_upgrades.json",
+        "res://data/tower_upgrades.json",
+        "res://data/building_upgrades.json",
+        "res://data/loot_tables.json",
+        "res://data/resource_nodes.json",
+        "res://data/research.json",
+        "res://data/assets_manifest.json"
+    ]
+
+    for file_path in required_files:
+        var exists: bool = FileAccess.file_exists(file_path)
+        var file_name: String = file_path.get_file()
+        _assert_true(exists, "Data file exists: %s" % file_name)
+
+func _test_data_files_parse() -> void:
+    # Test that all JSON files parse without errors
+    var data_files: Array[String] = [
+        "res://data/lessons.json",
+        "res://data/story.json",
+        "res://data/buildings.json",
+        "res://data/map.json",
+        "res://data/scenarios.json",
+        "res://data/buffs.json",
+        "res://data/drills.json",
+        "res://data/expeditions.json",
+        "res://data/kingdom_upgrades.json",
+        "res://data/tower_upgrades.json",
+        "res://data/building_upgrades.json",
+        "res://data/loot_tables.json",
+        "res://data/resource_nodes.json",
+        "res://data/research.json",
+        "res://data/assets_manifest.json"
+    ]
+
+    for file_path in data_files:
+        var file_name: String = file_path.get_file()
+        if not FileAccess.file_exists(file_path):
+            continue  # Already tested existence
+
+        var file: FileAccess = FileAccess.open(file_path, FileAccess.READ)
+        _assert_true(file != null, "Can open: %s" % file_name)
+        if file == null:
+            continue
+
+        var text: String = file.get_as_text()
+        file.close()
+        _assert_true(text.length() > 0, "File not empty: %s" % file_name)
+
+        var parsed: Variant = JSON.parse_string(text)
+        _assert_true(parsed != null, "JSON parses: %s" % file_name)
+        _assert_true(typeof(parsed) == TYPE_DICTIONARY or typeof(parsed) == TYPE_ARRAY, "JSON is dict or array: %s" % file_name)
+
+func _test_data_files_structure() -> void:
+    # Test specific structure requirements for key data files
+
+    # lessons.json - should have lessons object
+    var lessons_file: FileAccess = FileAccess.open("res://data/lessons.json", FileAccess.READ)
+    if lessons_file != null:
+        var lessons_data: Variant = JSON.parse_string(lessons_file.get_as_text())
+        lessons_file.close()
+        if typeof(lessons_data) == TYPE_DICTIONARY:
+            _assert_true(lessons_data.has("lessons") or lessons_data.has("version"), "lessons.json has lessons or version")
+
+    # story.json - should have acts and dialogue
+    var story_file: FileAccess = FileAccess.open("res://data/story.json", FileAccess.READ)
+    if story_file != null:
+        var story_data: Variant = JSON.parse_string(story_file.get_as_text())
+        story_file.close()
+        if typeof(story_data) == TYPE_DICTIONARY:
+            _assert_true(story_data.has("acts") or story_data.has("version"), "story.json has acts or version")
+            _assert_true(story_data.has("dialogue") or story_data.has("version"), "story.json has dialogue or version")
+
+    # buildings.json - should have buildings object
+    var buildings_file: FileAccess = FileAccess.open("res://data/buildings.json", FileAccess.READ)
+    if buildings_file != null:
+        var buildings_data: Variant = JSON.parse_string(buildings_file.get_as_text())
+        buildings_file.close()
+        if typeof(buildings_data) == TYPE_DICTIONARY:
+            _assert_true(buildings_data.has("buildings") or buildings_data.has("version"), "buildings.json has buildings or version")
+
+    # scenarios.json - should have scenarios array
+    var scenarios_file: FileAccess = FileAccess.open("res://data/scenarios.json", FileAccess.READ)
+    if scenarios_file != null:
+        var scenarios_data: Variant = JSON.parse_string(scenarios_file.get_as_text())
+        scenarios_file.close()
+        if typeof(scenarios_data) == TYPE_DICTIONARY:
+            _assert_true(scenarios_data.has("scenarios") or scenarios_data.has("version"), "scenarios.json has scenarios or version")
+
+    # assets_manifest.json - should have assets
+    var manifest_file: FileAccess = FileAccess.open("res://data/assets_manifest.json", FileAccess.READ)
+    if manifest_file != null:
+        var manifest_data: Variant = JSON.parse_string(manifest_file.get_as_text())
+        manifest_file.close()
+        if typeof(manifest_data) == TYPE_DICTIONARY:
+            _assert_true(manifest_data.has("assets") or manifest_data.has("version"), "assets_manifest.json has assets or version")
+
+    # research.json - should have research tree
+    var research_file: FileAccess = FileAccess.open("res://data/research.json", FileAccess.READ)
+    if research_file != null:
+        var research_data: Variant = JSON.parse_string(research_file.get_as_text())
+        research_file.close()
+        if typeof(research_data) == TYPE_DICTIONARY:
+            _assert_true(research_data.has("research") or research_data.has("version"), "research.json has research or version")
