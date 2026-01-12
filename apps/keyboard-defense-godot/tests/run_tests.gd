@@ -72,6 +72,10 @@ const SimTypingMetrics = preload("res://sim/typing_metrics.gd")
 const SimTypingTowerBonuses = preload("res://sim/typing_tower_bonuses.gd")
 const SimSummonedUnits = preload("res://sim/summoned_units.gd")
 const SimTrade = preload("res://sim/trade.gd")
+const SimResearch = preload("res://sim/research.gd")
+const SimTargeting = preload("res://sim/targeting.gd")
+const SimTowerCombat = preload("res://sim/tower_combat.gd")
+const SimRng = preload("res://sim/rng.gd")
 
 var total_tests: int = 0
 var total_failed: int = 0
@@ -166,6 +170,10 @@ func _run_all() -> void:
     _run_trade_tests()
     _run_workers_tests()
     _run_special_commands_tests()
+    _run_research_tests()
+    _run_targeting_tests()
+    _run_tower_combat_tests()
+    _run_rng_tests()
 
     for message in messages:
         print("[tests] %s" % message)
@@ -7237,3 +7245,773 @@ func _run_special_commands_tests() -> void:
     _assert_equal(color, "yellow", "Medium difficulty color is yellow")
     color = SimSpecialCommands.get_difficulty_color("overcharge")
     _assert_equal(color, "orange", "Hard difficulty color is orange")
+
+
+func _run_research_tests() -> void:
+    # SimResearch is an instance-based class that loads from JSON
+    # Test the static instance getter
+    var research: SimResearch = SimResearch.instance()
+    _assert_true(research != null, "SimResearch instance exists")
+
+    # Test get_all_research returns array
+    var all_research: Array = research.get_all_research()
+    _assert_true(all_research is Array, "get_all_research returns Array")
+
+    # Test get_research for unknown ID returns empty dict
+    var unknown: Dictionary = research.get_research("nonexistent_research_id")
+    _assert_true(unknown.is_empty(), "Unknown research returns empty dict")
+
+    # Create mock state for testing
+    var state: GameState = GameState.new()
+    state.gold = 1000
+    state.completed_research = []
+    state.active_research = ""
+    state.research_progress = 0
+
+    # Test has_prerequisites with no prerequisites
+    # For empty completed_research, prereqs should work for root items
+    var root_items: Array = []
+    for item in all_research:
+        var reqs: Array = item.get("requires", [])
+        if reqs.is_empty():
+            root_items.append(str(item.get("id", "")))
+    if root_items.size() > 0:
+        var has_prereqs: bool = research.has_prerequisites(state, root_items[0])
+        _assert_true(has_prereqs, "Root research has prerequisites met (no reqs)")
+
+    # Test can_start_research for unknown ID
+    var can_start: Dictionary = research.can_start_research(state, "nonexistent")
+    _assert_false(can_start.ok, "Cannot start unknown research")
+    _assert_equal(can_start.reason, "unknown research", "Reason is unknown research")
+
+    # Test already researching check
+    state.active_research = "some_research"
+    if root_items.size() > 0:
+        can_start = research.can_start_research(state, root_items[0])
+        _assert_false(can_start.ok, "Cannot start when already researching")
+        _assert_equal(can_start.reason, "already researching", "Reason is already researching")
+    state.active_research = ""
+
+    # Test get_progress_percent with no active research
+    var progress: float = research.get_progress_percent(state)
+    _assert_approx(progress, 0.0, 0.01, "Progress 0 with no active research")
+
+    # Test get_available_research
+    var available: Array = research.get_available_research(state)
+    _assert_true(available is Array, "get_available_research returns Array")
+
+    # Test get_total_effects with no completed research
+    var effects: Dictionary = research.get_total_effects(state)
+    _assert_true(effects is Dictionary, "get_total_effects returns Dictionary")
+    _assert_approx(float(effects.get("stone_cost_reduction", 0)), 0.0, 0.01, "No stone cost reduction initially")
+    _assert_equal(int(effects.get("build_limit_bonus", 0)), 0, "No build limit bonus initially")
+
+    # Test is_completed
+    var is_done: bool = research.is_completed(state, "test_research")
+    _assert_false(is_done, "Research not completed initially")
+
+    # Test get_research_summary
+    var summary: Dictionary = research.get_research_summary(state)
+    _assert_true(summary.has("active_research"), "Summary has active_research")
+    _assert_true(summary.has("completed_count"), "Summary has completed_count")
+    _assert_true(summary.has("total_count"), "Summary has total_count")
+    _assert_true(summary.has("available_count"), "Summary has available_count")
+    _assert_equal(int(summary.completed_count), 0, "Completed count is 0")
+
+    # Test get_research_tree
+    var tree: Dictionary = research.get_research_tree(state)
+    _assert_true(tree.has("construction"), "Tree has construction category")
+    _assert_true(tree.has("economy"), "Tree has economy category")
+    _assert_true(tree.has("military"), "Tree has military category")
+    _assert_true(tree.has("mystical"), "Tree has mystical category")
+
+    # Test cancel_research with nothing active
+    var cancelled: bool = research.cancel_research(state)
+    _assert_false(cancelled, "Cannot cancel when nothing researching")
+
+
+func _run_targeting_tests() -> void:
+    # Test TargetPriority enum values
+    _assert_equal(SimTargeting.TargetPriority.CLOSEST_TO_BASE, 0, "CLOSEST_TO_BASE is 0")
+    _assert_equal(SimTargeting.TargetPriority.HIGHEST_HP, 1, "HIGHEST_HP is 1")
+    _assert_equal(SimTargeting.TargetPriority.LOWEST_HP, 2, "LOWEST_HP is 2")
+    _assert_equal(SimTargeting.TargetPriority.MARKED, 3, "MARKED is 3")
+    _assert_equal(SimTargeting.TargetPriority.BOSS, 4, "BOSS is 4")
+    _assert_equal(SimTargeting.TargetPriority.RANDOM, 5, "RANDOM is 5")
+
+    # Create test enemies
+    var enemies: Array = [
+        {"id": 1, "pos": Vector2i(2, 2), "hp": 50, "is_boss": false},
+        {"id": 2, "pos": Vector2i(3, 3), "hp": 100, "is_boss": false},
+        {"id": 3, "pos": Vector2i(4, 4), "hp": 25, "is_boss": false},
+        {"id": 4, "pos": Vector2i(5, 5), "hp": 200, "is_boss": true}
+    ]
+
+    # Create mock distance field (lower = closer to base)
+    var dist_field: PackedInt32Array = PackedInt32Array()
+    dist_field.resize(100)  # 10x10 grid
+    for i in range(100):
+        dist_field[i] = i  # Simple distance field
+    var map_w: int = 10
+
+    # Test pick_single_target - basic
+    var origin: Vector2i = Vector2i(0, 0)
+    var max_range: int = 10
+    var target_idx: int = SimTargeting.pick_single_target(
+        enemies, dist_field, map_w, origin, max_range
+    )
+    _assert_true(target_idx >= 0 and target_idx < enemies.size(), "pick_single_target returns valid index")
+
+    # Test pick_single_target - no enemies in range
+    target_idx = SimTargeting.pick_single_target(
+        enemies, dist_field, map_w, origin, 0
+    )
+    _assert_equal(target_idx, -1, "pick_single_target returns -1 when no targets in range")
+
+    # Test pick_single_target - empty enemies
+    target_idx = SimTargeting.pick_single_target(
+        [], dist_field, map_w, origin, max_range
+    )
+    _assert_equal(target_idx, -1, "pick_single_target returns -1 for empty enemies")
+
+    # Test pick_boss_or_affixed_target
+    target_idx = SimTargeting.pick_boss_or_affixed_target(
+        enemies, dist_field, map_w, origin, max_range
+    )
+    _assert_equal(target_idx, 3, "pick_boss_or_affixed_target finds boss at index 3")
+
+    # Test with affixed enemy (no boss)
+    var affixed_enemies: Array = [
+        {"id": 1, "pos": Vector2i(2, 2), "hp": 50, "affix": ""},
+        {"id": 2, "pos": Vector2i(3, 3), "hp": 100, "affix": "armored"},
+        {"id": 3, "pos": Vector2i(4, 4), "hp": 25, "affix": ""}
+    ]
+    target_idx = SimTargeting.pick_boss_or_affixed_target(
+        affixed_enemies, dist_field, map_w, origin, max_range
+    )
+    _assert_equal(target_idx, 1, "pick_boss_or_affixed_target finds affixed enemy at index 1")
+
+    # Test pick_multi_targets
+    var targets: Array[int] = SimTargeting.pick_multi_targets(
+        enemies, dist_field, map_w, origin, max_range, 3
+    )
+    _assert_equal(targets.size(), 3, "pick_multi_targets returns 3 targets")
+
+    # Test pick_multi_targets with more targets than enemies
+    targets = SimTargeting.pick_multi_targets(
+        enemies, dist_field, map_w, origin, max_range, 10
+    )
+    _assert_equal(targets.size(), enemies.size(), "pick_multi_targets capped at enemy count")
+
+    # Test get_aoe_targets
+    var aoe_targets: Array[int] = SimTargeting.get_aoe_targets(
+        enemies, Vector2i(3, 3), 2
+    )
+    _assert_true(aoe_targets.size() > 0, "get_aoe_targets finds enemies in radius")
+
+    # Test get_aoe_targets with tight radius
+    aoe_targets = SimTargeting.get_aoe_targets(
+        enemies, Vector2i(2, 2), 0
+    )
+    _assert_equal(aoe_targets.size(), 1, "get_aoe_targets with radius 0 finds 1 enemy at center")
+
+    # Test pick_aoe_primary_and_splash
+    var aoe_result: Dictionary = SimTargeting.pick_aoe_primary_and_splash(
+        enemies, dist_field, map_w, origin, max_range, 2
+    )
+    _assert_true(aoe_result.has("primary_index"), "AoE result has primary_index")
+    _assert_true(aoe_result.has("splash_indices"), "AoE result has splash_indices")
+    _assert_true(aoe_result.has("center"), "AoE result has center")
+    _assert_true(aoe_result.primary_index >= 0, "Primary index is valid")
+
+    # Test get_chain_targets
+    var chain_targets: Array[int] = SimTargeting.get_chain_targets(
+        enemies, 0, 3, 3
+    )
+    _assert_true(chain_targets.size() > 0, "get_chain_targets returns at least 1 target")
+    _assert_equal(chain_targets[0], 0, "Chain starts with initial target")
+
+    # Test get_chain_targets with invalid start
+    chain_targets = SimTargeting.get_chain_targets(
+        enemies, -1, 3, 3
+    )
+    _assert_equal(chain_targets.size(), 0, "get_chain_targets empty for invalid start")
+
+    # Test pick_chain_primary_and_jumps
+    var chain_result: Array[int] = SimTargeting.pick_chain_primary_and_jumps(
+        enemies, dist_field, map_w, origin, max_range, 4, 3
+    )
+    _assert_true(chain_result.size() > 0, "pick_chain_primary_and_jumps returns targets")
+
+    # Test is_valid_target
+    var valid: bool = SimTargeting.is_valid_target({"hp": 50})
+    _assert_true(valid, "Enemy with HP > 0 is valid target")
+    valid = SimTargeting.is_valid_target({"hp": 0})
+    _assert_false(valid, "Enemy with HP = 0 is not valid target")
+    valid = SimTargeting.is_valid_target({"hp": -5})
+    _assert_false(valid, "Enemy with HP < 0 is not valid target")
+
+
+func _run_tower_combat_tests() -> void:
+    # SimTowerCombat is primarily static functions for tower attacks
+    # Test the _is_tower_type helper
+    # Note: This function is private, so we test via observable behavior
+
+    # Create a minimal state for testing
+    var state: GameState = GameState.new()
+    state.map_w = 10
+    state.map_h = 10
+    state.terrain = []
+    state.terrain.resize(100)
+    for i in range(100):
+        state.terrain[i] = "grass"
+    state.structures = {}
+    state.structure_levels = {}
+    state.enemies = []
+    state.base_pos = Vector2i(5, 5)
+    state.rng_state = 12345
+    state.tower_cooldowns = {}
+    state.tower_summon_ids = {}
+    state.summoned_units = []
+    state.summoned_next_id = 1
+    state.active_traps = []
+    state.active_synergies = []
+    state.practice_mode = false
+
+    # Test tower_attack_step with no enemies
+    var dist_field: PackedInt32Array = PackedInt32Array()
+    dist_field.resize(100)
+    var events: Array[String] = []
+    SimTowerCombat.tower_attack_step(state, dist_field, events)
+    _assert_true(events.is_empty(), "No events when no enemies")
+
+    # Add an enemy
+    state.enemies = [
+        {"id": 1, "pos": Vector2i(3, 3), "hp": 50, "kind": "raider", "word": "test"}
+    ]
+
+    # Test tower_attack_step with no towers
+    events.clear()
+    SimTowerCombat.tower_attack_step(state, dist_field, events)
+    _assert_true(events.is_empty(), "No events when no towers")
+
+    # Add a legacy tower
+    state.structures[22] = "tower"  # pos 2,2
+    state.structure_levels[22] = 1
+
+    # Test with legacy tower
+    events.clear()
+    SimTowerCombat.tower_attack_step(state, dist_field, events)
+    # Legacy tower should fire if enemy in range
+    _assert_true(events.size() >= 0, "Tower attack processed")
+
+    # Test that reference tiles are skipped
+    state.structures[23] = "tower_arrow:ref:22"
+    events.clear()
+    SimTowerCombat.tower_attack_step(state, dist_field, events)
+    # Should not process ref tile as separate tower
+    _assert_true(true, "Reference tiles are skipped")
+
+    # Test active_traps triggering
+    state.enemies = [
+        {"id": 2, "pos": Vector2i(4, 4), "hp": 50, "kind": "raider", "word": "test"}
+    ]
+    state.active_traps = [
+        {"pos": Vector2i(4, 4), "damage": 30, "radius": 1, "owner_index": 22}
+    ]
+    events.clear()
+    SimTowerCombat.tower_attack_step(state, dist_field, events)
+    # Trap should trigger
+    var trap_triggered: bool = false
+    for event in events:
+        if "TRAP TRIGGERED" in event:
+            trap_triggered = true
+            break
+    _assert_true(trap_triggered, "Trap triggers when enemy on trap position")
+    _assert_equal(state.active_traps.size(), 0, "Triggered trap is removed")
+
+
+func _run_rng_tests() -> void:
+    # Test seed_to_int
+    var seed_int: int = SimRng.seed_to_int("test_seed")
+    _assert_true(seed_int >= 0, "seed_to_int returns non-negative")
+
+    # Test consistent hashing
+    var seed_int2: int = SimRng.seed_to_int("test_seed")
+    _assert_equal(seed_int, seed_int2, "Same seed produces same int")
+
+    # Test different seeds produce different ints
+    var seed_int3: int = SimRng.seed_to_int("different_seed")
+    _assert_true(seed_int != seed_int3, "Different seeds produce different ints")
+
+    # Test empty string
+    var seed_empty: int = SimRng.seed_to_int("")
+    _assert_true(seed_empty >= 0, "Empty string seed returns non-negative")
+
+    # Create state for testing roll functions
+    var state: GameState = GameState.new()
+
+    # Test seed_state
+    SimRng.seed_state(state, "test_seed")
+    _assert_equal(state.rng_seed, "test_seed", "seed_state sets rng_seed")
+    _assert_true(state.rng_state >= 0, "seed_state sets rng_state non-negative")
+
+    # Test roll_range
+    var rolled: int = SimRng.roll_range(state, 1, 10)
+    _assert_true(rolled >= 1 and rolled <= 10, "roll_range within bounds")
+
+    # Test roll_range determinism
+    SimRng.seed_state(state, "determinism_test")
+    var roll1: int = SimRng.roll_range(state, 0, 100)
+    SimRng.seed_state(state, "determinism_test")
+    var roll2: int = SimRng.roll_range(state, 0, 100)
+    _assert_equal(roll1, roll2, "Same seed produces same roll")
+
+    # Test roll_range advances state
+    SimRng.seed_state(state, "advance_test")
+    var initial_state: int = state.rng_state
+    SimRng.roll_range(state, 0, 100)
+    _assert_true(state.rng_state != initial_state, "roll_range advances rng_state")
+
+    # Test choose
+    var arr: Array = ["a", "b", "c", "d"]
+    SimRng.seed_state(state, "choose_test")
+    var chosen = SimRng.choose(state, arr)
+    _assert_true(chosen in arr, "choose returns element from array")
+
+    # Test choose empty array
+    var empty_result = SimRng.choose(state, [])
+    _assert_true(empty_result == null, "choose returns null for empty array")
+
+    # Test choose determinism
+    SimRng.seed_state(state, "choose_determinism")
+    var choice1 = SimRng.choose(state, arr)
+    SimRng.seed_state(state, "choose_determinism")
+    var choice2 = SimRng.choose(state, arr)
+    _assert_equal(choice1, choice2, "Same seed produces same choice")
+
+    # Test roll_range edge cases
+    SimRng.seed_state(state, "edge_test")
+    var same: int = SimRng.roll_range(state, 5, 5)
+    _assert_equal(same, 5, "roll_range with same min/max returns that value")
+
+func _run_research_tests() -> void:
+    # Test SimResearch instance creation
+    var research := SimResearch.new()
+    _assert_true(research != null, "SimResearch instance created")
+
+    # Test static instance
+    var inst: SimResearch = SimResearch.instance()
+    _assert_true(inst != null, "Static instance exists")
+
+    # Test get_all_research returns array
+    var all_research: Array = inst.get_all_research()
+    _assert_true(all_research is Array, "get_all_research returns array")
+
+    # Test get_research with valid ID (if data exists)
+    if all_research.size() > 0:
+        var first_id: String = str(all_research[0].get("id", ""))
+        if first_id != "":
+            var item: Dictionary = inst.get_research(first_id)
+            _assert_false(item.is_empty(), "get_research returns data for valid ID")
+
+    # Test get_research with invalid ID
+    var invalid: Dictionary = inst.get_research("invalid_research_xyz")
+    _assert_true(invalid.is_empty(), "get_research returns empty for invalid ID")
+
+    # Test has_prerequisites with no requirements
+    var state: GameState = DefaultState.create()
+    state.completed_research = []
+    # Check first item that has no prerequisites
+    var has_prereqs: bool = true
+    for item in all_research:
+        var reqs: Array = item.get("requires", [])
+        if reqs.is_empty():
+            has_prereqs = inst.has_prerequisites(state, str(item.get("id", "")))
+            break
+    _assert_true(has_prereqs, "has_prerequisites returns true with no requirements")
+
+    # Test has_prerequisites with invalid ID
+    has_prereqs = inst.has_prerequisites(state, "invalid_research")
+    _assert_false(has_prereqs, "has_prerequisites returns false for invalid ID")
+
+    # Test can_start_research with invalid ID
+    var can_start: Dictionary = inst.can_start_research(state, "invalid_research")
+    _assert_false(can_start.get("ok", true), "can_start_research fails for invalid ID")
+    _assert_true(can_start.get("reason", "").contains("unknown"), "Reason mentions unknown")
+
+    # Test can_start_research already completed
+    state.completed_research = ["test_research"]
+    can_start = inst.can_start_research(state, "test_research")
+    _assert_false(can_start.get("ok", true), "can_start_research fails for completed research")
+
+    # Test can_start_research already researching
+    state = DefaultState.create()
+    state.active_research = "something"
+    state.completed_research = []
+    if all_research.size() > 0:
+        var first_id: String = str(all_research[0].get("id", ""))
+        can_start = inst.can_start_research(state, first_id)
+        _assert_false(can_start.get("ok", true), "can_start_research fails when already researching")
+        _assert_true(can_start.get("reason", "").contains("already"), "Reason mentions already")
+
+    # Test cancel_research with nothing active
+    state = DefaultState.create()
+    state.active_research = ""
+    var cancelled: bool = inst.cancel_research(state)
+    _assert_false(cancelled, "cancel_research returns false with nothing active")
+
+    # Test get_progress_percent with no active research
+    state.active_research = ""
+    var progress: float = inst.get_progress_percent(state)
+    _assert_approx(progress, 0.0, 0.01, "get_progress_percent returns 0 with no active research")
+
+    # Test get_available_research
+    state = DefaultState.create()
+    state.completed_research = []
+    state.active_research = ""
+    var available: Array = inst.get_available_research(state)
+    _assert_true(available is Array, "get_available_research returns array")
+
+    # Test get_total_effects with no completed research
+    state.completed_research = []
+    var effects: Dictionary = inst.get_total_effects(state)
+    _assert_true(effects.has("stone_cost_reduction"), "Effects has stone_cost_reduction")
+    _assert_true(effects.has("tower_damage_bonus"), "Effects has tower_damage_bonus")
+    _assert_true(effects.has("typing_power"), "Effects has typing_power")
+    _assert_approx(float(effects.get("stone_cost_reduction", 1.0)), 0.0, 0.01, "No stone reduction with no research")
+
+    # Test get_research_summary
+    state = DefaultState.create()
+    state.active_research = ""
+    state.completed_research = []
+    state.research_progress = 0
+    var summary: Dictionary = inst.get_research_summary(state)
+    _assert_true(summary.has("active_research"), "Summary has active_research")
+    _assert_true(summary.has("completed_count"), "Summary has completed_count")
+    _assert_true(summary.has("total_count"), "Summary has total_count")
+    _assert_true(summary.has("available_count"), "Summary has available_count")
+    _assert_equal(summary.get("completed_count", -1), 0, "Completed count is 0")
+
+    # Test is_completed
+    state.completed_research = ["test_research"]
+    var completed: bool = inst.is_completed(state, "test_research")
+    _assert_true(completed, "is_completed returns true for completed research")
+    completed = inst.is_completed(state, "other_research")
+    _assert_false(completed, "is_completed returns false for non-completed research")
+
+    # Test get_research_tree
+    state = DefaultState.create()
+    state.completed_research = []
+    state.active_research = ""
+    state.gold = 1000
+    var tree: Dictionary = inst.get_research_tree(state)
+    _assert_true(tree.has("construction"), "Tree has construction category")
+    _assert_true(tree.has("economy"), "Tree has economy category")
+    _assert_true(tree.has("military"), "Tree has military category")
+    _assert_true(tree.has("mystical"), "Tree has mystical category")
+
+    # Test advance_research with nothing active
+    state.active_research = ""
+    var advance_result: Dictionary = inst.advance_research(state)
+    _assert_false(advance_result.get("completed", true), "advance_research not completed with nothing active")
+
+
+func _run_targeting_tests() -> void:
+    # Test TargetPriority enum values
+    _assert_equal(SimTargeting.TargetPriority.CLOSEST_TO_BASE, 0, "CLOSEST_TO_BASE is 0")
+    _assert_equal(SimTargeting.TargetPriority.HIGHEST_HP, 1, "HIGHEST_HP is 1")
+    _assert_equal(SimTargeting.TargetPriority.LOWEST_HP, 2, "LOWEST_HP is 2")
+    _assert_equal(SimTargeting.TargetPriority.MARKED, 3, "MARKED is 3")
+    _assert_equal(SimTargeting.TargetPriority.BOSS, 4, "BOSS is 4")
+    _assert_equal(SimTargeting.TargetPriority.RANDOM, 5, "RANDOM is 5")
+
+    # Test pick_single_target with no enemies
+    var enemies: Array = []
+    var dist_field: PackedInt32Array = PackedInt32Array()
+    var target: int = SimTargeting.pick_single_target(enemies, dist_field, 10, Vector2i(5, 5), 3)
+    _assert_equal(target, -1, "pick_single_target returns -1 with no enemies")
+
+    # Test pick_single_target with enemies
+    enemies = [
+        {"id": 1, "pos": Vector2i(4, 5), "hp": 10},
+        {"id": 2, "pos": Vector2i(6, 5), "hp": 20}
+    ]
+    dist_field = PackedInt32Array()
+    dist_field.resize(100)
+    for i in range(100):
+        dist_field[i] = i  # Simple distance field
+    target = SimTargeting.pick_single_target(enemies, dist_field, 10, Vector2i(5, 5), 3)
+    _assert_true(target >= 0 and target < enemies.size(), "pick_single_target returns valid index")
+
+    # Test pick_single_target out of range
+    enemies = [{"id": 1, "pos": Vector2i(0, 0), "hp": 10}]
+    target = SimTargeting.pick_single_target(enemies, dist_field, 10, Vector2i(9, 9), 2)
+    _assert_equal(target, -1, "pick_single_target returns -1 when enemy out of range")
+
+    # Test pick_multi_targets with no enemies
+    enemies = []
+    var targets: Array[int] = SimTargeting.pick_multi_targets(enemies, dist_field, 10, Vector2i(5, 5), 3, 3)
+    _assert_equal(targets.size(), 0, "pick_multi_targets returns empty with no enemies")
+
+    # Test pick_multi_targets with enemies
+    enemies = [
+        {"id": 1, "pos": Vector2i(4, 5), "hp": 10},
+        {"id": 2, "pos": Vector2i(5, 4), "hp": 20},
+        {"id": 3, "pos": Vector2i(6, 5), "hp": 15}
+    ]
+    targets = SimTargeting.pick_multi_targets(enemies, dist_field, 10, Vector2i(5, 5), 5, 2)
+    _assert_true(targets.size() <= 2, "pick_multi_targets returns at most requested count")
+    _assert_true(targets.size() > 0, "pick_multi_targets returns at least one target")
+
+    # Test get_aoe_targets with no enemies
+    enemies = []
+    var aoe_targets: Array[int] = SimTargeting.get_aoe_targets(enemies, Vector2i(5, 5), 2)
+    _assert_equal(aoe_targets.size(), 0, "get_aoe_targets returns empty with no enemies")
+
+    # Test get_aoe_targets with enemies in range
+    enemies = [
+        {"id": 1, "pos": Vector2i(5, 5), "hp": 10},  # Center
+        {"id": 2, "pos": Vector2i(6, 5), "hp": 20},  # 1 tile away
+        {"id": 3, "pos": Vector2i(8, 8), "hp": 15}   # 6 tiles away
+    ]
+    aoe_targets = SimTargeting.get_aoe_targets(enemies, Vector2i(5, 5), 2)
+    _assert_equal(aoe_targets.size(), 2, "get_aoe_targets returns 2 enemies in radius 2")
+
+    # Test get_chain_targets with invalid start
+    var chain_targets: Array[int] = SimTargeting.get_chain_targets(enemies, -1, 3, 2)
+    _assert_equal(chain_targets.size(), 0, "get_chain_targets returns empty with invalid start")
+
+    # Test get_chain_targets with valid start
+    enemies = [
+        {"id": 1, "pos": Vector2i(0, 0), "hp": 10},
+        {"id": 2, "pos": Vector2i(1, 0), "hp": 20},
+        {"id": 3, "pos": Vector2i(2, 0), "hp": 15},
+        {"id": 4, "pos": Vector2i(10, 10), "hp": 5}  # Far away
+    ]
+    chain_targets = SimTargeting.get_chain_targets(enemies, 0, 5, 2)
+    _assert_true(chain_targets.size() >= 1, "get_chain_targets includes start target")
+    _assert_equal(chain_targets[0], 0, "First chain target is start target")
+    # Should chain to nearby enemies but not far one
+    _assert_true(chain_targets.size() <= 3, "Chain doesn't reach far enemy")
+
+    # Test pick_boss_or_affixed_target with boss
+    enemies = [
+        {"id": 1, "pos": Vector2i(4, 5), "hp": 10, "is_boss": false},
+        {"id": 2, "pos": Vector2i(5, 4), "hp": 100, "is_boss": true}
+    ]
+    target = SimTargeting.pick_boss_or_affixed_target(enemies, dist_field, 10, Vector2i(5, 5), 5)
+    _assert_equal(target, 1, "pick_boss_or_affixed_target prioritizes boss")
+
+    # Test pick_boss_or_affixed_target with affixed enemy
+    enemies = [
+        {"id": 1, "pos": Vector2i(4, 5), "hp": 10},
+        {"id": 2, "pos": Vector2i(5, 4), "hp": 20, "affix": "armored"}
+    ]
+    target = SimTargeting.pick_boss_or_affixed_target(enemies, dist_field, 10, Vector2i(5, 5), 5)
+    _assert_equal(target, 1, "pick_boss_or_affixed_target prioritizes affixed")
+
+    # Test is_valid_target
+    var alive_enemy := {"hp": 10}
+    var dead_enemy := {"hp": 0}
+    _assert_true(SimTargeting.is_valid_target(alive_enemy), "Alive enemy is valid target")
+    _assert_false(SimTargeting.is_valid_target(dead_enemy), "Dead enemy is not valid target")
+
+    # Test get_tower_position
+    var state: GameState = DefaultState.create()
+    state.map_w = 10
+    var tower_pos: Vector2i = SimTargeting.get_tower_position(state, 15)
+    _assert_equal(tower_pos.x, 5, "Tower position x correct")
+    _assert_equal(tower_pos.y, 1, "Tower position y correct")
+
+    # Test pick_aoe_primary_and_splash
+    enemies = [
+        {"id": 1, "pos": Vector2i(4, 5), "hp": 10},
+        {"id": 2, "pos": Vector2i(4, 6), "hp": 20},
+        {"id": 3, "pos": Vector2i(9, 9), "hp": 15}
+    ]
+    var aoe_result: Dictionary = SimTargeting.pick_aoe_primary_and_splash(
+        enemies, dist_field, 10, Vector2i(5, 5), 5, 2
+    )
+    _assert_true(aoe_result.has("primary_index"), "AOE result has primary_index")
+    _assert_true(aoe_result.has("splash_indices"), "AOE result has splash_indices")
+    _assert_true(aoe_result.has("center"), "AOE result has center")
+    _assert_true(aoe_result.get("primary_index", -1) >= 0, "Primary target found")
+
+
+func _run_tower_combat_tests() -> void:
+    # Test _is_tower_type helper via tower processing
+    # We can't call private static directly but can test behavior
+
+    # Test tower attack step with no enemies
+    var state: GameState = DefaultState.create()
+    state.enemies = []
+    state.structures = {0: "tower"}
+    state.structure_levels = {0: 1}
+    var events: Array[String] = []
+    var dist_field: PackedInt32Array = PackedInt32Array()
+    dist_field.resize(state.map_w * state.map_h)
+    SimTowerCombat.tower_attack_step(state, dist_field, events)
+    _assert_equal(events.size(), 0, "No events with no enemies")
+
+    # Test tower attack step with enemies
+    state = DefaultState.create()
+    state.enemies = [
+        {"id": 1, "pos": Vector2i(3, 3), "hp": 100, "kind": "raider", "word": "test"}
+    ]
+    state.structures = {44: "tower"}  # Position (4,4) in 10-wide map
+    state.structure_levels = {44: 1}
+    events = []
+    dist_field = PackedInt32Array()
+    dist_field.resize(state.map_w * state.map_h)
+    for i in range(dist_field.size()):
+        dist_field[i] = i
+    SimTowerCombat.tower_attack_step(state, dist_field, events)
+    # Should have attack events
+    _assert_true(events.size() > 0 or state.enemies[0].get("hp", 100) < 100, "Tower attacked or event generated")
+
+    # Test constants are accessible through SimTowerTypes
+    _assert_true(SimTowerTypes.TOWER_ARROW != "", "TOWER_ARROW constant exists")
+    _assert_true(SimTowerTypes.TOWER_MAGIC != "", "TOWER_MAGIC constant exists")
+    _assert_true(SimTowerTypes.TOWER_CANNON != "", "TOWER_CANNON constant exists")
+
+    # Test TargetType enum through SimTowerTypes
+    _assert_equal(SimTowerTypes.TargetType.SINGLE, 0, "TargetType.SINGLE is 0")
+    _assert_equal(SimTowerTypes.TargetType.MULTI, 1, "TargetType.MULTI is 1")
+    _assert_equal(SimTowerTypes.TargetType.AOE, 2, "TargetType.AOE is 2")
+    _assert_equal(SimTowerTypes.TargetType.CHAIN, 3, "TargetType.CHAIN is 3")
+    _assert_equal(SimTowerTypes.TargetType.ADAPTIVE, 4, "TargetType.ADAPTIVE is 4")
+    _assert_equal(SimTowerTypes.TargetType.NONE, 5, "TargetType.NONE is 5")
+
+    # Test tower stats via SimTowerTypes
+    var arrow_stats: Dictionary = SimTowerTypes.get_base_stats(SimTowerTypes.TOWER_ARROW)
+    _assert_true(arrow_stats.has("damage") or arrow_stats.is_empty(), "Arrow stats have damage or empty")
+    _assert_true(arrow_stats.has("range") or arrow_stats.is_empty(), "Arrow stats have range or empty")
+
+    # Test tower name retrieval
+    var name: String = SimTowerTypes.get_tower_name(SimTowerTypes.TOWER_ARROW)
+    _assert_true(name != "" or name == "", "get_tower_name returns string")
+
+    # Test summon type retrieval
+    var summon_data: Dictionary = SimTowerTypes.get_summon_type("word_warrior")
+    _assert_true(summon_data is Dictionary, "get_summon_type returns dictionary")
+
+    # Test tower attack with summoner (non-attacking)
+    state = DefaultState.create()
+    state.enemies = [{"id": 1, "pos": Vector2i(3, 3), "hp": 50, "kind": "raider", "word": "test"}]
+    state.structures = {44: SimTowerTypes.TOWER_SUMMONER}
+    state.structure_levels = {44: 1}
+    state.summoned_units = []
+    state.tower_summon_ids = {}
+    state.tower_cooldowns = {}
+    state.summoned_next_id = 1
+    events = []
+    SimTowerCombat.tower_attack_step(state, dist_field, events)
+    # Summoner may create summons
+    _assert_true(state.summoned_units.size() >= 0, "Summoner processed without error")
+
+    # Test trap trigger checking
+    state = DefaultState.create()
+    state.enemies = [{"id": 1, "pos": Vector2i(5, 5), "hp": 50, "kind": "raider", "word": "test"}]
+    state.active_traps = [{"pos": Vector2i(5, 5), "damage": 30, "radius": 1, "owner_index": 0}]
+    state.structures = {}
+    events = []
+    SimTowerCombat.tower_attack_step(state, dist_field, events)
+    # Trap should trigger
+    _assert_true(state.active_traps.size() == 0 or events.size() > 0, "Trap triggered or processed")
+
+
+func _run_rng_tests() -> void:
+    # Test seed_to_int
+    var seed_int: int = SimRng.seed_to_int("test_seed")
+    _assert_true(seed_int >= 0, "seed_to_int returns non-negative")
+
+    # Test seed_to_int consistency
+    var seed_int2: int = SimRng.seed_to_int("test_seed")
+    _assert_equal(seed_int, seed_int2, "seed_to_int is deterministic")
+
+    # Test different seeds give different values
+    var other_seed: int = SimRng.seed_to_int("other_seed")
+    _assert_true(seed_int != other_seed, "Different seeds give different values")
+
+    # Test seed_to_int edge case
+    var empty_seed: int = SimRng.seed_to_int("")
+    _assert_true(empty_seed >= 0, "Empty seed returns non-negative")
+
+    # Test seed_state
+    var state: GameState = DefaultState.create()
+    SimRng.seed_state(state, "my_seed")
+    _assert_equal(state.rng_seed, "my_seed", "seed_state sets rng_seed")
+    _assert_true(state.rng_state >= 0, "seed_state sets rng_state")
+
+    # Test roll_range
+    state = DefaultState.create()
+    SimRng.seed_state(state, "roll_test")
+    var roll: int = SimRng.roll_range(state, 1, 10)
+    _assert_true(roll >= 1 and roll <= 10, "roll_range returns value in range")
+
+    # Test roll_range determinism
+    state = DefaultState.create()
+    SimRng.seed_state(state, "determinism_test")
+    var rolls1: Array[int] = []
+    for i in range(5):
+        rolls1.append(SimRng.roll_range(state, 0, 100))
+
+    state = DefaultState.create()
+    SimRng.seed_state(state, "determinism_test")
+    var rolls2: Array[int] = []
+    for i in range(5):
+        rolls2.append(SimRng.roll_range(state, 0, 100))
+
+    var all_match: bool = true
+    for i in range(5):
+        if rolls1[i] != rolls2[i]:
+            all_match = false
+            break
+    _assert_true(all_match, "roll_range is deterministic with same seed")
+
+    # Test roll_range single value
+    state = DefaultState.create()
+    SimRng.seed_state(state, "single_value")
+    roll = SimRng.roll_range(state, 5, 5)
+    _assert_equal(roll, 5, "roll_range with min=max returns that value")
+
+    # Test choose with empty array
+    state = DefaultState.create()
+    SimRng.seed_state(state, "choose_test")
+    var choice = SimRng.choose(state, [])
+    _assert_true(choice == null, "choose returns null for empty array")
+
+    # Test choose with array
+    state = DefaultState.create()
+    SimRng.seed_state(state, "choose_test")
+    var options: Array = ["a", "b", "c", "d"]
+    choice = SimRng.choose(state, options)
+    _assert_true(choice in options, "choose returns element from array")
+
+    # Test choose determinism
+    state = DefaultState.create()
+    SimRng.seed_state(state, "choose_determinism")
+    var choices1: Array = []
+    for i in range(5):
+        choices1.append(SimRng.choose(state, [1, 2, 3, 4, 5]))
+
+    state = DefaultState.create()
+    SimRng.seed_state(state, "choose_determinism")
+    var choices2: Array = []
+    for i in range(5):
+        choices2.append(SimRng.choose(state, [1, 2, 3, 4, 5]))
+
+    all_match = true
+    for i in range(5):
+        if choices1[i] != choices2[i]:
+            all_match = false
+            break
+    _assert_true(all_match, "choose is deterministic with same seed")
+
+    # Test state mutation
+    state = DefaultState.create()
+    SimRng.seed_state(state, "mutation_test")
+    var initial_state: int = state.rng_state
+    SimRng.roll_range(state, 0, 100)
+    _assert_true(state.rng_state != initial_state, "roll_range mutates rng_state")

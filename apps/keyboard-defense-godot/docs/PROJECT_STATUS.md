@@ -155,7 +155,7 @@ New SVG assets in `assets/art/src-svg/`:
 - Scenario reports and summaries are written under `Logs/ScenarioReports/` for CI-friendly collection (via `--out-dir`).
 
 ## Test Coverage (as of 2026-01-12)
-**Total: ~4,800+ assertions**
+**Total: ~5,000+ assertions**
 
 - **Parser tests**: Command parsing, intent validation
 - **Reducer tests**: State mutation, intent application
@@ -201,6 +201,12 @@ New SVG assets in `assets/art/src-svg/`:
 - **Typing tower bonuses tests**: Tower damage constants, chain bonuses, letter shrine modes
 - **Summoned units tests**: Summon creation/removal, Legion synergy, taunt detection, serialization
 - **Trade tests**: Base rates, market requirements, command parsing, trade calculation/execution
+- **Workers tests**: Production bonuses, upkeep calculation, assignment/unassignment, capacity
+- **Special commands tests**: Command structure, unlock levels, cooldowns, effects, formatting
+- **Research tests**: Prerequisites, start/cancel research, progress tracking, research tree
+- **Targeting tests**: Priority enums, single/multi/AoE/chain targeting, boss prioritization
+- **Tower combat tests**: Attack dispatch, tower types, summoner/trap processing, damage application
+- **RNG tests**: Seed conversion, roll_range determinism, choose function, state mutation
 
 ## Planning
 - `docs/ROADMAP.md` is the authoritative milestone list.
