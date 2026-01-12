@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ExpeditionsFile",
+  "type": "object",
+  "required": ["categories", "expeditions"],
+  "properties": {
+    "version": {"type": "integer", "minimum": 1},
+    "categories": {
+      "type": "object",
+      "additionalProperties": {"$ref": "#/$defs/category"}
+    },
+    "expeditions": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/expedition"}
+    }
+  },
+  "$defs": {
+    "category": {
+      "type": "object",
+      "required": ["label", "description", "color"],
+      "properties": {
+        "label": {"type": "string"},
+        "description": {"type": "string"},
+        "color": {"type": "string", "pattern": "^#[0-9A-Fa-f]{6}$"}
+      },
+      "additionalProperties": false
+    },
+    "expedition": {
+      "type": "object",
+      "required": ["id", "label", "category", "description", "duration_seconds", "min_workers", "max_workers", "worker_bonus", "base_yield", "bonus_yield", "risk_chance", "risk_effect", "requires", "min_day"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+        "label": {"type": "string"},
+        "category": {"type": "string"},
+        "description": {"type": "string"},
+        "duration_seconds": {"type": "integer", "minimum": 1},
+        "min_workers": {"type": "integer", "minimum": 1},
+        "max_workers": {"type": "integer", "minimum": 1},
+        "worker_bonus": {"type": "number", "minimum": 0},
+        "base_yield": {"$ref": "#/$defs/resource_yield"},
+        "bonus_yield": {"$ref": "#/$defs/resource_yield"},
+        "risk_chance": {"type": "number", "minimum": 0, "maximum": 1},
+        "risk_effect": {"$ref": "#/$defs/risk_effect"},
+        "requires": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "min_day": {"type": "integer", "minimum": 1},
+        "terrain_preference": {"type": ["string", "null"]}
+      },
+      "additionalProperties": false
+    },
+    "resource_yield": {
+      "type": "object",
+      "properties": {
+        "wood": {"type": "integer", "minimum": 0},
+        "stone": {"type": "integer", "minimum": 0},
+        "food": {"type": "integer", "minimum": 0},
+        "gold": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "risk_effect": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {"type": "string"},
+        "duration_days": {"type": "integer", "minimum": 0},
+        "amount": {"type": "integer"},
+        "enemy_kind": {"type": "string"},
+        "worker_loss": {"type": "integer", "minimum": 0},
+        "gold_loss": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

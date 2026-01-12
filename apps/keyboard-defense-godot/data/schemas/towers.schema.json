@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TowersFile",
+  "type": "object",
+  "required": ["categories", "towers"],
+  "properties": {
+    "version": {"type": "integer", "minimum": 1},
+    "categories": {
+      "type": "object",
+      "additionalProperties": {"$ref": "#/$defs/category"}
+    },
+    "towers": {
+      "type": "object",
+      "additionalProperties": {"$ref": "#/$defs/tower"}
+    },
+    "synergies": {
+      "type": "object",
+      "additionalProperties": {"$ref": "#/$defs/synergy"}
+    }
+  },
+  "$defs": {
+    "category": {
+      "type": "object",
+      "required": ["label", "description"],
+      "properties": {
+        "label": {"type": "string"},
+        "description": {"type": "string"},
+        "unlock_level": {"type": "integer", "minimum": 0},
+        "color": {"type": "string", "pattern": "^#[0-9A-Fa-f]{6}$"}
+      },
+      "additionalProperties": false
+    },
+    "tower": {
+      "type": "object",
+      "required": ["name", "description", "category", "footprint", "base_cost", "base_stats"],
+      "properties": {
+        "name": {"type": "string"},
+        "description": {"type": "string"},
+        "category": {"type": "string"},
+        "footprint": {
+          "type": "array",
+          "items": {"type": "integer", "minimum": 1},
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "base_cost": {
+          "type": "object",
+          "properties": {
+            "wood": {"type": "integer", "minimum": 0},
+            "stone": {"type": "integer", "minimum": 0},
+            "gold": {"type": "integer", "minimum": 0}
+          },
+          "additionalProperties": false
+        },
+        "base_stats": {
+          "type": "object",
+          "properties": {
+            "damage": {"type": "number", "minimum": 0},
+            "range": {"type": "number", "minimum": 0},
+            "attack_speed": {"type": "number", "minimum": 0},
+            "shots_per_attack": {"type": "integer", "minimum": 0},
+            "damage_type": {"type": "string"},
+            "target_type": {"type": "string"},
+            "armor_pierce": {"type": "boolean"},
+            "slow_percent": {"type": "number"},
+            "slow_duration": {"type": "number"},
+            "aoe_radius": {"type": "number"},
+            "target_count": {"type": "integer"},
+            "accuracy_scaling": {"type": "boolean"},
+            "perfect_accuracy_bonus": {"type": "number"},
+            "corruption_bonus_percent": {"type": "number"},
+            "purify_chance": {"type": "number"},
+            "charge_mechanic": {"type": "boolean"},
+            "charge_time": {"type": "number"},
+            "charge_damage_bonus_per_word": {"type": "number"},
+            "max_charge_multiplier": {"type": "number"},
+            "poison_damage_per_tick": {"type": "number"},
+            "poison_duration": {"type": "number"},
+            "poison_max_stacks": {"type": "integer"},
+            "chain_count": {"type": "integer"},
+            "chain_range": {"type": "number"},
+            "chain_damage_falloff": {"type": "number"},
+            "max_summons": {"type": "integer"},
+            "summon_cooldown": {"type": "number"},
+            "default_summon": {"type": "string"},
+            "aura_range": {"type": "number"},
+            "damage_buff_percent": {"type": "number"},
+            "speed_buff_percent": {"type": "number"},
+            "trap_count": {"type": "integer"},
+            "trap_recharge_time": {"type": "number"},
+            "trap_radius": {"type": "number"},
+            "placement_range": {"type": "number"},
+            "wpm_scaling": {"type": "boolean"},
+            "damage_formula": {"type": "string"},
+            "corruption_damage_bonus_percent": {"type": "number"}
+          },
+          "additionalProperties": false
+        },
+        "word_bonus": {
+          "type": "object",
+          "properties": {
+            "condition": {"type": "string"},
+            "effect": {"type": "object"}
+          },
+          "additionalProperties": false
+        },
+        "terrain_bonuses": {"type": "object"},
+        "blocks_movement": {"type": "boolean"},
+        "visual": {
+          "type": "object",
+          "properties": {
+            "sprite_id": {"type": "string"},
+            "projectile_id": {"type": "string"}
+          },
+          "additionalProperties": false
+        },
+        "unlock_requirement": {"type": "object"},
+        "summons": {"type": "object"},
+        "trap_types": {"type": "object"},
+        "special_abilities": {"type": "object"},
+        "spirit_modes": {"type": "object"},
+        "passive_aura": {"type": "object"},
+        "placement_limit": {"type": "integer", "minimum": 1}
+      },
+      "additionalProperties": false
+    },
+    "synergy": {
+      "type": "object",
+      "required": ["name", "effect"],
+      "properties": {
+        "name": {"type": "string"},
+        "towers": {
+          "type": "array",
+          "items": {"type": "string"},
+          "minItems": 1
+        },
+        "min_count": {"type": "integer", "minimum": 1},
+        "proximity": {"type": "number"},
+        "cooldown": {"type": "number"},
+        "effect": {"type": "string"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

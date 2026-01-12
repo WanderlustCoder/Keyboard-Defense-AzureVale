@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TowerUpgradesFile",
+  "type": "object",
+  "required": ["upgrades"],
+  "properties": {
+    "version": {"type": "integer", "minimum": 1},
+    "upgrades": {
+      "type": "object",
+      "additionalProperties": {"$ref": "#/$defs/tower_upgrade"}
+    }
+  },
+  "$defs": {
+    "tower_upgrade": {
+      "type": "object",
+      "required": ["max_level", "levels"],
+      "properties": {
+        "max_level": {"type": "integer", "minimum": 1},
+        "has_tier3_choice": {"type": "boolean"},
+        "levels": {
+          "type": "object",
+          "additionalProperties": {"$ref": "#/$defs/level"}
+        },
+        "tier3_choices": {
+          "type": "object",
+          "additionalProperties": {"$ref": "#/$defs/tier3_choice"}
+        }
+      },
+      "additionalProperties": false
+    },
+    "level": {
+      "type": "object",
+      "required": ["label", "stats"],
+      "properties": {
+        "label": {"type": "string"},
+        "cost": {"$ref": "#/$defs/resource_cost"},
+        "stats": {"type": "object"},
+        "ability": {"$ref": "#/$defs/ability"}
+      },
+      "additionalProperties": false
+    },
+    "tier3_choice": {
+      "type": "object",
+      "required": ["label", "cost", "stats", "ability", "evolves_to"],
+      "properties": {
+        "label": {"type": "string"},
+        "cost": {"$ref": "#/$defs/resource_cost"},
+        "stats": {"type": "object"},
+        "ability": {"$ref": "#/$defs/ability"},
+        "evolves_to": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "resource_cost": {
+      "type": "object",
+      "properties": {
+        "wood": {"type": "integer", "minimum": 0},
+        "stone": {"type": "integer", "minimum": 0},
+        "food": {"type": "integer", "minimum": 0},
+        "gold": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "ability": {
+      "type": "object",
+      "required": ["name", "description"],
+      "properties": {
+        "name": {"type": "string"},
+        "description": {"type": "string"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

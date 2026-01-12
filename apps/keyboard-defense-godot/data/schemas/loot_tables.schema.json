@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LootTablesFile",
+  "type": "object",
+  "required": ["quality_bonuses", "enemy_drops", "boss_drops"],
+  "properties": {
+    "version": {"type": "integer", "minimum": 1},
+    "quality_bonuses": {
+      "type": "object",
+      "properties": {
+        "perfect_kill_bonus": {"type": "number"},
+        "no_mistake_bonus": {"type": "number"},
+        "combo_tier_bonus": {"type": "number"}
+      },
+      "additionalProperties": false
+    },
+    "enemy_drops": {
+      "type": "object",
+      "additionalProperties": {"$ref": "#/$defs/drop_table"}
+    },
+    "boss_drops": {
+      "type": "object",
+      "additionalProperties": {"$ref": "#/$defs/drop_table"}
+    }
+  },
+  "$defs": {
+    "drop_table": {
+      "type": "object",
+      "required": ["guaranteed", "drops", "perfect_bonus"],
+      "properties": {
+        "guaranteed": {"$ref": "#/$defs/resource_amount"},
+        "drops": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/drop_entry"}
+        },
+        "perfect_bonus": {"$ref": "#/$defs/resource_amount"}
+      },
+      "additionalProperties": false
+    },
+    "drop_entry": {
+      "type": "object",
+      "required": ["resource", "amount", "chance"],
+      "properties": {
+        "resource": {"type": "string"},
+        "amount": {"type": "integer", "minimum": 0},
+        "chance": {"type": "number", "minimum": 0, "maximum": 1}
+      },
+      "additionalProperties": false
+    },
+    "resource_amount": {
+      "type": "object",
+      "properties": {
+        "wood": {"type": "integer", "minimum": 0},
+        "stone": {"type": "integer", "minimum": 0},
+        "food": {"type": "integer", "minimum": 0},
+        "gold": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

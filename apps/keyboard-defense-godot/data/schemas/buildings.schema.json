@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BuildingsFile",
+  "type": "object",
+  "required": ["buildings", "categories", "resources"],
+  "properties": {
+    "version": {"type": "integer", "minimum": 1},
+    "buildings": {
+      "type": "object",
+      "additionalProperties": {"$ref": "#/$defs/building"}
+    },
+    "categories": {
+      "type": "object",
+      "additionalProperties": {"$ref": "#/$defs/category"}
+    },
+    "resources": {
+      "type": "object",
+      "additionalProperties": {"$ref": "#/$defs/resource"}
+    }
+  },
+  "$defs": {
+    "building": {
+      "type": "object",
+      "required": ["label", "description", "category", "cost", "production", "defense", "worker_slots", "adjacency_bonus"],
+      "properties": {
+        "label": {"type": "string"},
+        "description": {"type": "string"},
+        "category": {"type": "string"},
+        "cost": {"$ref": "#/$defs/resource_cost"},
+        "production": {"$ref": "#/$defs/resource_cost"},
+        "defense": {"type": "integer", "minimum": 0},
+        "worker_slots": {"type": "integer", "minimum": 0},
+        "adjacency_bonus": {"$ref": "#/$defs/adjacency_bonus"},
+        "blocks_movement": {"type": "boolean"},
+        "combat_stats": {"$ref": "#/$defs/combat_stats"},
+        "unlocks": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "requires": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "effects": {"type": "object"}
+      },
+      "additionalProperties": false
+    },
+    "category": {
+      "type": "object",
+      "required": ["label", "description", "color"],
+      "properties": {
+        "label": {"type": "string"},
+        "description": {"type": "string"},
+        "color": {"type": "string", "pattern": "^#[0-9A-Fa-f]{6}$"}
+      },
+      "additionalProperties": false
+    },
+    "resource": {
+      "type": "object",
+      "required": ["label", "icon", "color"],
+      "properties": {
+        "label": {"type": "string"},
+        "icon": {"type": "string"},
+        "color": {"type": "string", "pattern": "^#[0-9A-Fa-f]{6}$"}
+      },
+      "additionalProperties": false
+    },
+    "resource_cost": {
+      "type": "object",
+      "properties": {
+        "wood": {"type": "integer", "minimum": 0},
+        "stone": {"type": "integer", "minimum": 0},
+        "food": {"type": "integer", "minimum": 0},
+        "gold": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "adjacency_bonus": {
+      "type": "object",
+      "properties": {
+        "terrain": {"type": "object"},
+        "building": {"type": "object"}
+      },
+      "additionalProperties": false
+    },
+    "combat_stats": {
+      "type": "object",
+      "properties": {
+        "range": {"type": "integer", "minimum": 0},
+        "damage": {"type": "integer", "minimum": 0},
+        "shots_per_wave": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BuildingUpgradesFile",
+  "type": "object",
+  "required": ["upgrades"],
+  "properties": {
+    "version": {"type": "integer", "minimum": 1},
+    "upgrades": {
+      "type": "object",
+      "additionalProperties": {"$ref": "#/$defs/building_upgrade"}
+    }
+  },
+  "$defs": {
+    "building_upgrade": {
+      "type": "object",
+      "required": ["max_level", "levels"],
+      "properties": {
+        "max_level": {"type": "integer", "minimum": 1},
+        "levels": {
+          "type": "object",
+          "additionalProperties": {"$ref": "#/$defs/level"}
+        }
+      },
+      "additionalProperties": false
+    },
+    "level": {
+      "type": "object",
+      "required": ["label"],
+      "properties": {
+        "label": {"type": "string"},
+        "cost": {"$ref": "#/$defs/resource_cost"},
+        "production": {"$ref": "#/$defs/resource_cost"},
+        "worker_slots": {"type": "integer", "minimum": 0},
+        "adjacency_multiplier": {"type": "number"},
+        "adjacency_bonus": {"type": "object"},
+        "defense": {"type": "integer", "minimum": 0},
+        "combat_stats": {"$ref": "#/$defs/combat_stats"},
+        "effects": {"type": "object"},
+        "per_adjacent_building": {"type": "integer", "minimum": 0},
+        "enables_trade": {"type": "boolean"},
+        "garrison_size": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "resource_cost": {
+      "type": "object",
+      "properties": {
+        "wood": {"type": "integer", "minimum": 0},
+        "stone": {"type": "integer", "minimum": 0},
+        "food": {"type": "integer", "minimum": 0},
+        "gold": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "combat_stats": {
+      "type": "object",
+      "properties": {
+        "range": {"type": "integer", "minimum": 0},
+        "damage": {"type": "integer", "minimum": 0},
+        "shots_per_wave": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

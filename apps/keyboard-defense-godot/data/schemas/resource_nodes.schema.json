@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ResourceNodesFile",
+  "type": "object",
+  "required": ["spawn_rates", "node_types", "challenge_word_themes"],
+  "properties": {
+    "version": {"type": "integer", "minimum": 1},
+    "spawn_rates": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": {"type": "number", "minimum": 0, "maximum": 1}
+      }
+    },
+    "node_types": {
+      "type": "object",
+      "additionalProperties": {"$ref": "#/$defs/node_type"}
+    },
+    "challenge_word_themes": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {"type": "string"}
+      }
+    }
+  },
+  "$defs": {
+    "node_type": {
+      "type": "object",
+      "required": ["name", "description", "icon", "terrain", "base_yield", "max_harvests", "respawn_days", "challenge"],
+      "properties": {
+        "name": {"type": "string"},
+        "description": {"type": "string"},
+        "icon": {"type": "string"},
+        "terrain": {"type": "string"},
+        "base_yield": {"$ref": "#/$defs/resource_yield"},
+        "bonus_effect": {"$ref": "#/$defs/bonus_effect"},
+        "max_harvests": {"type": "integer", "minimum": 1},
+        "respawn_days": {"type": "integer", "minimum": 1},
+        "challenge": {"$ref": "#/$defs/challenge"}
+      },
+      "additionalProperties": false
+    },
+    "resource_yield": {
+      "type": "object",
+      "properties": {
+        "wood": {"type": "integer", "minimum": 0},
+        "stone": {"type": "integer", "minimum": 0},
+        "food": {"type": "integer", "minimum": 0},
+        "gold": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "bonus_effect": {
+      "type": "object",
+      "required": ["type", "amount"],
+      "properties": {
+        "type": {"type": "string"},
+        "amount": {"type": "integer"}
+      },
+      "additionalProperties": false
+    },
+    "challenge": {
+      "type": "object",
+      "required": ["type", "word_count", "word_theme"],
+      "properties": {
+        "type": {"type": "string", "enum": ["word_burst", "speed_type", "accuracy_test"]},
+        "word_count": {"type": "integer", "minimum": 1},
+        "time_limit": {"type": "integer", "minimum": 1},
+        "target_wpm": {"type": "integer", "minimum": 1},
+        "min_accuracy": {"type": "number", "minimum": 0, "maximum": 1},
+        "word_theme": {"type": "string"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

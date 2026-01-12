@@ -26,11 +26,20 @@ from typing import Dict, List, Tuple, Optional
 # Files not in this map will be checked for basic JSON validity only
 SCHEMA_MAP = {
     "assets_manifest.json": "assets_manifest.schema.json",
+    "buffs.json": "buffs.schema.json",
+    "building_upgrades.json": "building_upgrades.schema.json",
+    "buildings.json": "buildings.schema.json",
     "drills.json": "drills.schema.json",
+    "expeditions.json": "expeditions.schema.json",
     "kingdom_upgrades.json": "kingdom_upgrades.schema.json",
     "lessons.json": "lessons.schema.json",
+    "loot_tables.json": "loot_tables.schema.json",
     "map.json": "map.schema.json",
+    "research.json": "research.schema.json",
+    "resource_nodes.json": "resource_nodes.schema.json",
     "scenarios.json": "scenarios.schema.json",
+    "tower_upgrades.json": "tower_upgrades.schema.json",
+    "towers.json": "towers.schema.json",
     "unit_upgrades.json": "unit_upgrades.schema.json",
 }
 

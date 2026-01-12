@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ResearchFile",
+  "type": "object",
+  "required": ["categories", "research"],
+  "properties": {
+    "version": {"type": "integer", "minimum": 1},
+    "categories": {
+      "type": "object",
+      "additionalProperties": {"$ref": "#/$defs/category"}
+    },
+    "research": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/research_item"}
+    }
+  },
+  "$defs": {
+    "category": {
+      "type": "object",
+      "required": ["label", "description", "color", "icon"],
+      "properties": {
+        "label": {"type": "string"},
+        "description": {"type": "string"},
+        "color": {"type": "string", "pattern": "^#[0-9A-Fa-f]{6}$"},
+        "icon": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "research_item": {
+      "type": "object",
+      "required": ["id", "label", "category", "description", "cost", "waves_to_complete", "effects", "requires"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+        "label": {"type": "string"},
+        "category": {"type": "string"},
+        "description": {"type": "string"},
+        "cost": {"$ref": "#/$defs/resource_cost"},
+        "waves_to_complete": {"type": "integer", "minimum": 1},
+        "effects": {"type": "object"},
+        "requires": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      },
+      "additionalProperties": false
+    },
+    "resource_cost": {
+      "type": "object",
+      "properties": {
+        "wood": {"type": "integer", "minimum": 0},
+        "stone": {"type": "integer", "minimum": 0},
+        "food": {"type": "integer", "minimum": 0},
+        "gold": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

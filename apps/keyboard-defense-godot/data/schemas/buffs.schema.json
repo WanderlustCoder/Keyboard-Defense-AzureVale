@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BuffsFile",
+  "type": "object",
+  "required": ["buffs"],
+  "properties": {
+    "version": {"type": "integer", "minimum": 1},
+    "buffs": {
+      "type": "object",
+      "additionalProperties": {"$ref": "#/$defs/buff"}
+    }
+  },
+  "$defs": {
+    "buff": {
+      "type": "object",
+      "required": ["name", "description", "effects"],
+      "properties": {
+        "name": {"type": "string"},
+        "description": {"type": "string"},
+        "icon": {"type": "string"},
+        "effects": {
+          "type": "object",
+          "properties": {
+            "resource_multiplier": {"type": "number"},
+            "ap_bonus": {"type": "integer"},
+            "threat_multiplier": {"type": "number"},
+            "damage_multiplier": {"type": "number"},
+            "damage_reduction": {"type": "number"},
+            "gold_multiplier": {"type": "number"},
+            "accuracy_bonus": {"type": "number"},
+            "explore_reward_multiplier": {"type": "number"},
+            "enemy_speed_multiplier": {"type": "number"},
+            "hp_regen": {"type": "integer"}
+          },
+          "additionalProperties": false
+        },
+        "stackable": {"type": "boolean"},
+        "duration": {"type": "integer", "minimum": 1}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
