@@ -1,0 +1,176 @@
+{
+  "version": 1,
+  "locale": "pt",
+  "name": "Português",
+
+  "ui": {
+    "save": "Salvar",
+    "load": "Carregar",
+    "quit": "Sair",
+    "back": "Voltar",
+    "continue": "Continuar",
+    "start": "Iniciar",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "close": "Fechar",
+    "yes": "Sim",
+    "no": "Não",
+    "ok": "OK",
+    "settings": "Configurações",
+    "help": "Ajuda",
+    "stats": "Estatísticas",
+    "achievements": "Conquistas",
+    "lessons": "Lições",
+    "profile": "Perfil",
+    "main_menu": "Menu Principal",
+    "new_game": "Novo Jogo",
+    "resume": "Retomar",
+    "available_languages": "Idiomas Disponíveis:",
+    "current_language": "Idioma Atual: {language}",
+    "language_changed": "Idioma alterado para {language}"
+  },
+
+  "game": {
+    "day": "Dia",
+    "night": "Noite",
+    "dawn": "Amanhecer",
+    "wave": "Onda",
+    "phase": "Fase",
+    "paused": "PAUSADO",
+    "game_over": "FIM DE JOGO",
+    "victory": "VITÓRIA",
+    "score": "Pontuação",
+    "time": "Tempo",
+    "level": "Nível"
+  },
+
+  "resources": {
+    "gold": "Ouro",
+    "wood": "Madeira",
+    "stone": "Pedra",
+    "food": "Comida",
+    "ap": "PA",
+    "hp": "PV",
+    "mana": "Mana"
+  },
+
+  "combat": {
+    "enemy_approaching": "Inimigo se aproximando!",
+    "enemy_defeated": "Inimigo derrotado!",
+    "tower_built": "Torre construída!",
+    "tower_upgraded": "Torre melhorada!",
+    "castle_damaged": "Castelo danificado!",
+    "wave_complete": "Onda completa!",
+    "wave_incoming": "Onda chegando!",
+    "boss_appeared": "Chefe apareceu!",
+    "boss_defeated": "Chefe derrotado!",
+    "critical_hit": "Golpe crítico!",
+    "perfect_word": "Perfeito!",
+    "combo": "Combo",
+    "miss": "Errou!"
+  },
+
+  "messages": {
+    "not_enough_gold": "Ouro insuficiente!",
+    "not_enough_resources": "Recursos insuficientes!",
+    "not_enough_ap": "PA insuficiente!",
+    "invalid_command": "Comando inválido",
+    "unknown_command": "Comando desconhecido: {command}",
+    "day_phase_only": "Disponível apenas durante o dia",
+    "night_phase_only": "Disponível apenas durante a noite",
+    "building_placed": "{building} colocado",
+    "building_removed": "{building} removido",
+    "upgrade_purchased": "{upgrade} comprado",
+    "lesson_started": "Lição iniciada: {lesson}",
+    "lesson_complete": "Lição concluída!",
+    "achievement_unlocked": "Conquista desbloqueada: {achievement}",
+    "new_personal_best": "Novo recorde pessoal!",
+    "streak_continued": "Sequência continuada! {days} dias",
+    "welcome_back": "Bem-vindo de volta!",
+    "profile_saved": "Perfil salvo",
+    "profile_loaded": "Perfil carregado",
+    "settings_saved": "Configurações salvas"
+  },
+
+  "help": {
+    "header": "COMANDOS",
+    "build": "build <tipo> - Construir uma estrutura",
+    "upgrade": "upgrade <tipo> - Comprar uma melhoria",
+    "move": "move <dir> - Mover cursor (wasd/setas)",
+    "end": "end - Terminar fase atual",
+    "status": "status - Mostrar estado do jogo",
+    "help": "help - Mostrar esta ajuda",
+    "save": "save - Salvar jogo",
+    "load": "load - Carregar jogo",
+    "quit": "quit - Voltar ao menu",
+    "stats": "stats - Mostrar estatísticas",
+    "lesson": "lesson <id> - Iniciar uma lição",
+    "hero": "hero [id|none] - Selecionar ou remover herói",
+    "locale": "locale [id] - Mostrar ou alterar idioma",
+    "settings": "settings - Mostrar configurações",
+    "achievements": "achievements - Mostrar conquistas"
+  },
+
+  "time": {
+    "seconds": "{value}s",
+    "minutes": "{value}m",
+    "hours": "{value}h",
+    "minutes_seconds": "{minutes}m {seconds}s",
+    "hours_minutes": "{hours}h {minutes}m"
+  },
+
+  "stats": {
+    "header": "ESTATÍSTICAS DO JOGADOR",
+    "combat": "Combate",
+    "typing": "Digitação",
+    "economy": "Economia",
+    "progression": "Progressão",
+    "time": "Tempo",
+    "records": "Recordes",
+    "total_kills": "Inimigos Derrotados",
+    "total_words": "Palavras Digitadas",
+    "total_gold": "Ouro Total",
+    "accuracy": "Precisão",
+    "wpm": "PPM",
+    "highest_combo": "Maior Combo",
+    "highest_day": "Dia Máximo",
+    "play_time": "Tempo de Jogo"
+  },
+
+  "heroes": {
+    "header": "HERÓIS",
+    "no_hero": "Nenhum herói selecionado",
+    "select_hero": "Digite 'hero <id>' para selecionar:",
+    "current_hero": "Herói atual: {name}",
+    "passive": "Passiva",
+    "ability": "Habilidade",
+    "cooldown": "Recarga: {seconds}s",
+    "ready": "Pronto!"
+  },
+
+  "tutorial": {
+    "welcome": "Bem-vindo ao Keyboard Defense!",
+    "move_cursor": "Use WASD ou as setas para mover o cursor",
+    "build_tower": "Digite 'build tower' para construir uma torre",
+    "end_day": "Digite 'end' para avançar para a noite",
+    "type_words": "Digite as palavras sobre os inimigos para derrotá-los",
+    "survive_night": "Sobreviva a noite para ver o amanhecer!",
+    "complete": "Tutorial concluído! Boa sorte, defensor!"
+  },
+
+  "accessibility": {
+    "high_contrast": "Alto Contraste",
+    "reduced_motion": "Movimento Reduzido",
+    "game_speed": "Velocidade do Jogo",
+    "keyboard_hints": "Dicas de Teclado",
+    "font_size": "Tamanho da Fonte"
+  },
+
+  "errors": {
+    "file_not_found": "Arquivo não encontrado",
+    "save_failed": "Falha ao salvar",
+    "load_failed": "Falha ao carregar",
+    "invalid_input": "Entrada inválida",
+    "connection_failed": "Falha de conexão"
+  }
+}
