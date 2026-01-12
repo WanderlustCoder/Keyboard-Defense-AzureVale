@@ -97,6 +97,9 @@ const TypingDisplay = preload("res://ui/components/typing_display.gd")
 const ModalPanel = preload("res://ui/components/modal_panel.gd")
 const CommandBar = preload("res://ui/command_bar.gd")
 const EventPanel = preload("res://ui/components/event_panel.gd")
+const DialogueBox = preload("res://game/dialogue_box.gd")
+const GridRenderer = preload("res://game/grid_renderer.gd")
+const ActionTooltip = preload("res://ui/components/action_tooltip.gd")
 
 var total_tests: int = 0
 var total_failed: int = 0
@@ -215,6 +218,9 @@ func _run_all() -> void:
     _run_modal_panel_tests()
     _run_command_bar_tests()
     _run_event_panel_tests()
+    _run_dialogue_box_tests()
+    _run_grid_renderer_tests()
+    _run_action_tooltip_tests()
 
     for message in messages:
         print("[tests] %s" % message)
@@ -9939,3 +9945,130 @@ func _test_event_panel_animation_constants() -> void:
     _assert_true(EventPanel.FADE_DURATION > 0.0, "FADE_DURATION is positive")
     _assert_true(EventPanel.FADE_DURATION < 1.0, "FADE_DURATION is quick")
     _assert_equal(EventPanel.FADE_DURATION, 0.2, "FADE_DURATION is 0.2")
+
+# =============================================================================
+# DIALOGUE BOX TESTS
+# =============================================================================
+
+func _run_dialogue_box_tests() -> void:
+    _test_dialogue_box_fade_constants()
+
+func _test_dialogue_box_fade_constants() -> void:
+    # FADE_IN_DURATION
+    _assert_true(DialogueBox.FADE_IN_DURATION > 0.0, "FADE_IN_DURATION is positive")
+    _assert_true(DialogueBox.FADE_IN_DURATION < 1.0, "FADE_IN_DURATION is quick")
+    _assert_equal(DialogueBox.FADE_IN_DURATION, 0.2, "FADE_IN_DURATION is 0.2")
+
+    # FADE_OUT_DURATION
+    _assert_true(DialogueBox.FADE_OUT_DURATION > 0.0, "FADE_OUT_DURATION is positive")
+    _assert_true(DialogueBox.FADE_OUT_DURATION < 1.0, "FADE_OUT_DURATION is quick")
+    _assert_equal(DialogueBox.FADE_OUT_DURATION, 0.15, "FADE_OUT_DURATION is 0.15")
+
+    # Fade out should be faster than fade in (snappy dismiss)
+    _assert_true(DialogueBox.FADE_OUT_DURATION < DialogueBox.FADE_IN_DURATION, "FADE_OUT < FADE_IN (snappy dismiss)")
+
+# =============================================================================
+# GRID RENDERER TESTS
+# =============================================================================
+
+func _run_grid_renderer_tests() -> void:
+    _test_grid_renderer_particle_constants()
+    _test_grid_renderer_damage_number_constants()
+    _test_grid_renderer_animation_constants()
+
+func _test_grid_renderer_particle_constants() -> void:
+    # PARTICLE_LIFETIME
+    _assert_true(GridRenderer.PARTICLE_LIFETIME > 0.0, "PARTICLE_LIFETIME is positive")
+    _assert_true(GridRenderer.PARTICLE_LIFETIME < 2.0, "PARTICLE_LIFETIME is not too long")
+    _assert_equal(GridRenderer.PARTICLE_LIFETIME, 0.35, "PARTICLE_LIFETIME is 0.35")
+
+    # PARTICLE_SPEED
+    _assert_true(GridRenderer.PARTICLE_SPEED > 0.0, "PARTICLE_SPEED is positive")
+    _assert_true(GridRenderer.PARTICLE_SPEED < 500.0, "PARTICLE_SPEED is reasonable")
+    _assert_equal(GridRenderer.PARTICLE_SPEED, 100.0, "PARTICLE_SPEED is 100.0")
+
+    # TRAIL_SPAWN_INTERVAL
+    _assert_true(GridRenderer.TRAIL_SPAWN_INTERVAL > 0.0, "TRAIL_SPAWN_INTERVAL is positive")
+    _assert_true(GridRenderer.TRAIL_SPAWN_INTERVAL < 0.5, "TRAIL_SPAWN_INTERVAL is small")
+    _assert_equal(GridRenderer.TRAIL_SPAWN_INTERVAL, 0.03, "TRAIL_SPAWN_INTERVAL is 0.03")
+
+    # MAX_PARTICLES
+    _assert_true(GridRenderer.MAX_PARTICLES > 0, "MAX_PARTICLES is positive")
+    _assert_true(GridRenderer.MAX_PARTICLES <= 500, "MAX_PARTICLES is reasonable for performance")
+    _assert_equal(GridRenderer.MAX_PARTICLES, 200, "MAX_PARTICLES is 200")
+
+func _test_grid_renderer_damage_number_constants() -> void:
+    # HIT_FLASH_DURATION
+    _assert_true(GridRenderer.HIT_FLASH_DURATION > 0.0, "HIT_FLASH_DURATION is positive")
+    _assert_true(GridRenderer.HIT_FLASH_DURATION < 0.5, "HIT_FLASH_DURATION is quick")
+    _assert_equal(GridRenderer.HIT_FLASH_DURATION, 0.12, "HIT_FLASH_DURATION is 0.12")
+
+    # DAMAGE_NUMBER_LIFETIME
+    _assert_true(GridRenderer.DAMAGE_NUMBER_LIFETIME > 0.0, "DAMAGE_NUMBER_LIFETIME is positive")
+    _assert_true(GridRenderer.DAMAGE_NUMBER_LIFETIME < 3.0, "DAMAGE_NUMBER_LIFETIME is not too long")
+    _assert_equal(GridRenderer.DAMAGE_NUMBER_LIFETIME, 0.9, "DAMAGE_NUMBER_LIFETIME is 0.9")
+
+    # DAMAGE_NUMBER_RISE_SPEED
+    _assert_true(GridRenderer.DAMAGE_NUMBER_RISE_SPEED > 0.0, "DAMAGE_NUMBER_RISE_SPEED is positive")
+    _assert_true(GridRenderer.DAMAGE_NUMBER_RISE_SPEED < 200.0, "DAMAGE_NUMBER_RISE_SPEED is reasonable")
+    _assert_equal(GridRenderer.DAMAGE_NUMBER_RISE_SPEED, 50.0, "DAMAGE_NUMBER_RISE_SPEED is 50.0")
+
+func _test_grid_renderer_animation_constants() -> void:
+    # ENEMY_WALK_FPS
+    _assert_true(GridRenderer.ENEMY_WALK_FPS > 0.0, "ENEMY_WALK_FPS is positive")
+    _assert_true(GridRenderer.ENEMY_WALK_FPS <= 30.0, "ENEMY_WALK_FPS is reasonable")
+    _assert_equal(GridRenderer.ENEMY_WALK_FPS, 8.0, "ENEMY_WALK_FPS is 8.0")
+
+    # ENEMY_DEATH_FPS
+    _assert_true(GridRenderer.ENEMY_DEATH_FPS > 0.0, "ENEMY_DEATH_FPS is positive")
+    _assert_true(GridRenderer.ENEMY_DEATH_FPS <= 30.0, "ENEMY_DEATH_FPS is reasonable")
+    _assert_equal(GridRenderer.ENEMY_DEATH_FPS, 10.0, "ENEMY_DEATH_FPS is 10.0")
+
+    # Death animation should be faster than walk (more dramatic)
+    _assert_true(GridRenderer.ENEMY_DEATH_FPS >= GridRenderer.ENEMY_WALK_FPS, "DEATH_FPS >= WALK_FPS (death is dramatic)")
+
+# =============================================================================
+# ACTION TOOLTIP TESTS
+# =============================================================================
+
+func _run_action_tooltip_tests() -> void:
+    _test_action_tooltip_timing_constants()
+    _test_action_tooltip_size_constants()
+
+func _test_action_tooltip_timing_constants() -> void:
+    # TOOLTIP_DURATION
+    _assert_true(ActionTooltip.TOOLTIP_DURATION > 0.0, "TOOLTIP_DURATION is positive")
+    _assert_true(ActionTooltip.TOOLTIP_DURATION < 10.0, "TOOLTIP_DURATION is reasonable")
+    _assert_equal(ActionTooltip.TOOLTIP_DURATION, 2.0, "TOOLTIP_DURATION is 2.0")
+
+    # FADE_IN_DURATION
+    _assert_true(ActionTooltip.FADE_IN_DURATION > 0.0, "FADE_IN_DURATION is positive")
+    _assert_true(ActionTooltip.FADE_IN_DURATION < 1.0, "FADE_IN_DURATION is quick")
+    _assert_equal(ActionTooltip.FADE_IN_DURATION, 0.15, "FADE_IN_DURATION is 0.15")
+
+    # FADE_OUT_DURATION
+    _assert_true(ActionTooltip.FADE_OUT_DURATION > 0.0, "FADE_OUT_DURATION is positive")
+    _assert_true(ActionTooltip.FADE_OUT_DURATION < 1.0, "FADE_OUT_DURATION is quick")
+    _assert_equal(ActionTooltip.FADE_OUT_DURATION, 0.3, "FADE_OUT_DURATION is 0.3")
+
+    # Fade out should be longer than fade in (more noticeable disappear)
+    _assert_true(ActionTooltip.FADE_OUT_DURATION > ActionTooltip.FADE_IN_DURATION, "FADE_OUT > FADE_IN")
+
+    # FLOAT_DISTANCE
+    _assert_true(ActionTooltip.FLOAT_DISTANCE > 0.0, "FLOAT_DISTANCE is positive")
+    _assert_true(ActionTooltip.FLOAT_DISTANCE < 100.0, "FLOAT_DISTANCE is reasonable")
+    _assert_equal(ActionTooltip.FLOAT_DISTANCE, 20.0, "FLOAT_DISTANCE is 20.0")
+
+func _test_action_tooltip_size_constants() -> void:
+    # FONT_SIZE
+    _assert_true(ActionTooltip.FONT_SIZE > 0, "FONT_SIZE is positive")
+    _assert_true(ActionTooltip.FONT_SIZE < 30, "FONT_SIZE is reasonable")
+    _assert_equal(ActionTooltip.FONT_SIZE, 12, "FONT_SIZE is 12")
+
+    # ICON_SIZE
+    _assert_true(ActionTooltip.ICON_SIZE > 0, "ICON_SIZE is positive")
+    _assert_true(ActionTooltip.ICON_SIZE < 50, "ICON_SIZE is reasonable")
+    _assert_equal(ActionTooltip.ICON_SIZE, 16, "ICON_SIZE is 16")
+
+    # Icon should be slightly larger than font for visual balance
+    _assert_true(ActionTooltip.ICON_SIZE >= ActionTooltip.FONT_SIZE, "ICON_SIZE >= FONT_SIZE")
