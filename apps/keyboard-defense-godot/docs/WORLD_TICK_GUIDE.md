@@ -57,23 +57,72 @@ The world tick handles different activity states:
 
 ## Threat System
 
-Threat level (0.0 - 1.0) determines danger:
+Threat level (0.0 - 1.0) determines danger. The system is zone-aware, with enemies from dangerous zones contributing more threat.
+
+### Zone-Based Threat Calculation
 
 ```gdscript
 static func _tick_threat_level(state: GameState) -> void:
-    var enemies_near_castle: int = 0
+    var threat_contribution: float = 0.0
     var castle_dist_threshold := 5
 
     for entity in state.roaming_enemies:
         var pos: Vector2i = entity.get("pos", Vector2i.ZERO)
         var dist: int = abs(pos.x - state.base_pos.x) + abs(pos.y - state.base_pos.y)
-        if dist <= castle_dist_threshold:
-            enemies_near_castle += 1
 
-    if enemies_near_castle > 0:
-        state.threat_level = min(1.0, state.threat_level + THREAT_GROWTH_RATE * enemies_near_castle)
+        if dist <= castle_dist_threshold:
+            # Base contribution
+            var base_threat: float = 1.0
+
+            # Zone multipliers (enemies from dangerous zones are more threatening)
+            var spawn_zone: String = str(entity.get("spawn_zone", SimMap.ZONE_SAFE))
+            var zone_mult: float = SimMap.get_zone_threat_multiplier(spawn_zone)
+            var current_zone: String = SimMap.get_zone_at(state, pos)
+            var current_mult: float = SimMap.get_zone_threat_multiplier(current_zone)
+            var avg_mult: float = (zone_mult + current_mult) / 2.0
+
+            # Proximity bonus (closer = more threatening)
+            var proximity_bonus: float = 1.0 + (float(castle_dist_threshold - dist) / float(castle_dist_threshold))
+
+            threat_contribution += base_threat * avg_mult * proximity_bonus
+
+    # Apply threat growth/decay
+    if threat_contribution > 0:
+        var growth: float = THREAT_GROWTH_RATE * threat_contribution
+        state.threat_level = min(1.0, state.threat_level + growth)
     else:
         state.threat_level = max(0.0, state.threat_level - THREAT_DECAY_RATE)
+
+    # Exploration pressure from dangerous zones
+    var exploration: Dictionary = SimMap.get_exploration_by_zone(state)
+    var wilderness_explored: float = float(exploration.get(SimMap.ZONE_WILDERNESS, 0.0))
+    var depths_explored: float = float(exploration.get(SimMap.ZONE_DEPTHS, 0.0))
+    if wilderness_explored > 0.1 or depths_explored > 0.05:
+        var exploration_threat: float = (wilderness_explored * 0.002) + (depths_explored * 0.005)
+        state.threat_level = min(1.0, state.threat_level + exploration_threat)
+```
+
+### Zone Threat Multipliers
+
+| Zone | Multiplier | Description |
+|------|------------|-------------|
+| Safe | 0.5x | Close to castle, enemies contribute less threat |
+| Frontier | 1.0x | Standard threat contribution |
+| Wilderness | 1.5x | Enemies from here are more dangerous |
+| Depths | 2.0x | Maximum threat contribution |
+
+### Threat Utility Functions
+
+```gdscript
+# Calculate threat contribution for a single enemy
+static func calculate_enemy_threat_contribution(state: GameState, enemy: Dictionary) -> float
+
+# Get detailed threat breakdown for debugging/display
+static func get_threat_breakdown(state: GameState) -> Dictionary
+# Returns: {"total_threat", "enemy_contributions", "exploration_pressure", "cursor_zone"}
+
+# Format threat info for human-readable display
+static func format_threat_info(state: GameState) -> String
 ```
 
 ## Wave Assault Trigger
@@ -139,19 +188,76 @@ static func _tick_poi_spawns(state: GameState) -> String:
 
 ## Roaming Enemy Spawning
 
-Enemies spawn at map edges with increased chance at night:
+Enemies spawn at map edges with zone-aware kind selection. Spawn chance increases at night, high threat, and when exploring dangerous zones.
+
+### Spawn Chance Modifiers
 
 ```gdscript
 static func _tick_roaming_spawns(state: GameState) -> String:
-    if state.roaming_enemies.size() >= MAX_ROAMING_ENEMIES:
-        return ""
+    # Base spawn chance: 10%
+    var spawn_chance: float = ROAMING_SPAWN_CHANCE
 
-    # Higher chance at night and high threat
+    # +15% at night (time 0.7-1.0 or 0.0-0.2)
     var time_modifier: float = 0.0
-    if state.time_of_day > 0.7 or state.time_of_day < 0.2:  # Night
+    if state.time_of_day > 0.7 or state.time_of_day < 0.2:
         time_modifier = 0.15
+
+    # +0-10% based on threat level
     var threat_modifier: float = state.threat_level * 0.1
-    var spawn_chance: float = ROAMING_SPAWN_CHANCE + time_modifier + threat_modifier
+
+    # +0-15% based on exploration (cursor zone + exploration progress)
+    var exploration_modifier: float = _get_exploration_spawn_modifier(state)
+
+    spawn_chance += time_modifier + threat_modifier + exploration_modifier
+```
+
+### Exploration Spawn Modifier
+
+```gdscript
+static func _get_exploration_spawn_modifier(state: GameState) -> float:
+    var modifier: float = 0.0
+
+    # +5-10% if cursor is in dangerous zone
+    var cursor_zone: String = SimMap.get_cursor_zone(state)
+    match cursor_zone:
+        SimMap.ZONE_WILDERNESS: modifier += 0.05
+        SimMap.ZONE_DEPTHS: modifier += 0.10
+
+    # Additional modifier based on exploration progress
+    var exploration: Dictionary = SimMap.get_exploration_by_zone(state)
+    modifier += float(exploration.get(SimMap.ZONE_WILDERNESS, 0.0)) * 0.02
+    modifier += float(exploration.get(SimMap.ZONE_DEPTHS, 0.0)) * 0.05
+
+    return modifier
+```
+
+### Zone-Aware Enemy Kind Selection
+
+Enemies are selected based on the spawn position's zone tier:
+
+```gdscript
+static func _select_enemy_kind_for_zone(state: GameState, max_tier: int) -> String:
+    # Tier 1: raider, scout
+    # Tier 2: + armored, swarm (day 3+)
+    # Tier 3: + berserker, tank, phantom (day 5+)
+    # Tier 4: + champion, healer, elite (day 7+)
+```
+
+| Zone | Max Tier | Available Enemies |
+|------|----------|-------------------|
+| Safe | 1 | raider, scout |
+| Frontier | 2 | + armored, swarm |
+| Wilderness | 3 | + berserker, tank, phantom |
+| Depths | 4 | + champion, healer, elite |
+
+### Weighted Edge Position
+
+At high threat (>0.5), the system prefers spawning from dangerous zone edges:
+
+```gdscript
+static func _get_weighted_edge_position(state: GameState) -> Vector2i:
+    var prefer_dangerous: bool = state.threat_level > 0.5
+    # Attempts multiple edge positions and picks highest tier zone
 ```
 
 ## Roaming Entity Structure
@@ -163,7 +269,8 @@ static func _tick_roaming_spawns(state: GameState) -> String:
     "pos": Vector2i,
     "target_pos": Vector2i, # Usually castle position
     "state": String,        # "wandering"
-    "move_timer": float
+    "move_timer": float,
+    "spawn_zone": String   # Zone where enemy spawned (for threat calculation)
 }
 ```
 
@@ -294,7 +401,24 @@ func _process(delta: float) -> void:
 ## File Dependencies
 
 - `sim/types.gd` - GameState
-- `sim/map.gd` - SimMap for terrain/pathfinding
+- `sim/map.gd` - SimMap for terrain, pathfinding, and zone system
 - `sim/poi.gd` - SimPoi for POI spawning
 - `sim/rng.gd` - SimRng for random rolls
 - `sim/enemies.gd` - SimEnemies for enemy creation
+
+## Zone System Integration
+
+The world tick system integrates with the zone system from `sim/map.gd`:
+
+| Zone Constant | Radius from Castle | Enemy Tier Max | Threat Mult |
+|---------------|-------------------|----------------|-------------|
+| `ZONE_SAFE` | 0-3 tiles | 1 | 0.5x |
+| `ZONE_FRONTIER` | 4-6 tiles | 2 | 1.0x |
+| `ZONE_WILDERNESS` | 7-10 tiles | 3 | 1.5x |
+| `ZONE_DEPTHS` | 11+ tiles | 4 | 2.0x |
+
+Key zone functions used:
+- `SimMap.get_zone_at(state, pos)` - Get zone ID for position
+- `SimMap.get_zone_threat_multiplier(zone)` - Get threat contribution multiplier
+- `SimMap.get_zone_enemy_tier_max(zone)` - Get max enemy tier for zone
+- `SimMap.get_exploration_by_zone(state)` - Get exploration percentages by zone
