@@ -217,9 +217,14 @@ Add deeper exploration events and map structure while staying deterministic.
   - Exploration tracking per zone
   - `zone` command to view current zone info
   - `zone summary` for full exploration breakdown
-- Added 140+ test assertions for event effects, events, and zones
+- Zone-aware POI spawning:
+  - POI tier derived from min_day or explicit tier field
+  - Higher tier POIs only spawn in more dangerous zones
+  - Zone rarity bonuses affect spawn weighting
+  - Format functions for POI distribution by zone
+- Added 180+ test assertions for event effects, events, zones, and POIs
 
-**Remaining work:** Complex event chains, region-specific POI spawning.
+**Remaining work:** Complex event chains.
 
 Planning refs:
 - `docs/plans/p1/MAP_EXPLORATION_PLAN.md`
@@ -237,7 +242,7 @@ Status: In progress (significant test additions 2026-01-11)
 
 Increase automated coverage and formalize manual QA gates for releases.
 
-**Progress (2026-01-11):** Test suite expanded to 4,200+ assertions covering:
+**Progress (2026-01-11):** Test suite expanded to 4,240+ assertions covering:
 - Boss encounters (phases, mechanics, dialogue)
 - Difficulty modes (modifiers, multipliers)
 - Lesson consistency (lesson-story alignment)
