@@ -268,7 +268,7 @@ Acceptance criteria:
 ## P2 - Later (strategic expansion)
 
 ### P2-META-001 Meta progression and mastery
-Status: In progress (2026-01-11)
+Status: Complete (2026-01-11)
 
 Add lightweight persistent unlocks tied to lesson mastery without changing core balance.
 
