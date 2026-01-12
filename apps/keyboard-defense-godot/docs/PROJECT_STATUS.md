@@ -155,7 +155,7 @@ New SVG assets in `assets/art/src-svg/`:
 - Scenario reports and summaries are written under `Logs/ScenarioReports/` for CI-friendly collection (via `--out-dir`).
 
 ## Test Coverage (as of 2026-01-12)
-**Total: ~5,000+ assertions**
+**Total: ~5,200+ assertions**
 
 - **Parser tests**: Command parsing, intent validation
 - **Reducer tests**: State mutation, intent application
@@ -207,6 +207,9 @@ New SVG assets in `assets/art/src-svg/`:
 - **Targeting tests**: Priority enums, single/multi/AoE/chain targeting, boss prioritization
 - **Tower combat tests**: Attack dispatch, tower types, summoner/trap processing, damage application
 - **RNG tests**: Seed conversion, roll_range determinism, choose function, state mutation
+- **Balance tests**: Midgame constants, resource caps, stone catchup, food bonus mechanics
+- **Intents tests**: Intent creation, help_lines content, COMMANDS array structure
+- **Tick tests**: Wave base values, night prompts, advance_day, wave total calculation
 
 ## Planning
 - `docs/ROADMAP.md` is the authoritative milestone list.

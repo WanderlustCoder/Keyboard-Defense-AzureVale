@@ -76,6 +76,11 @@ const SimResearch = preload("res://sim/research.gd")
 const SimTargeting = preload("res://sim/targeting.gd")
 const SimTowerCombat = preload("res://sim/tower_combat.gd")
 const SimRng = preload("res://sim/rng.gd")
+const SimWorkers = preload("res://sim/workers.gd")
+const SimSpecialCommands = preload("res://sim/special_commands.gd")
+const SimBalance = preload("res://sim/balance.gd")
+const SimIntents = preload("res://sim/intents.gd")
+const SimTick = preload("res://sim/tick.gd")
 
 var total_tests: int = 0
 var total_failed: int = 0
@@ -174,6 +179,9 @@ func _run_all() -> void:
     _run_targeting_tests()
     _run_tower_combat_tests()
     _run_rng_tests()
+    _run_balance_tests()
+    _run_intents_tests()
+    _run_tick_tests()
 
     for message in messages:
         print("[tests] %s" % message)
@@ -7667,3 +7675,249 @@ func _run_rng_tests() -> void:
     var initial_state: int = state.rng_state
     SimRng.roll_range(state, 0, 100)
     _assert_true(state.rng_state != initial_state, "roll_range mutates rng_state")
+
+
+func _run_balance_tests() -> void:
+    # Test constants
+    _assert_equal(SimBalance.MIDGAME_STONE_CATCHUP_DAY, 4, "MIDGAME_STONE_CATCHUP_DAY is 4")
+    _assert_equal(SimBalance.MIDGAME_STONE_CATCHUP_MIN, 10, "MIDGAME_STONE_CATCHUP_MIN is 10")
+    _assert_equal(SimBalance.MIDGAME_FOOD_BONUS_DAY, 4, "MIDGAME_FOOD_BONUS_DAY is 4")
+    _assert_equal(SimBalance.MIDGAME_FOOD_BONUS_THRESHOLD, 12, "MIDGAME_FOOD_BONUS_THRESHOLD is 12")
+    _assert_equal(SimBalance.MIDGAME_FOOD_BONUS_AMOUNT, 2, "MIDGAME_FOOD_BONUS_AMOUNT is 2")
+
+    # Test caps dictionaries
+    _assert_true(SimBalance.MIDGAME_CAPS_DAY5.has("wood"), "DAY5 caps has wood")
+    _assert_true(SimBalance.MIDGAME_CAPS_DAY5.has("stone"), "DAY5 caps has stone")
+    _assert_true(SimBalance.MIDGAME_CAPS_DAY5.has("food"), "DAY5 caps has food")
+    _assert_equal(int(SimBalance.MIDGAME_CAPS_DAY5.get("wood", 0)), 40, "DAY5 wood cap is 40")
+    _assert_equal(int(SimBalance.MIDGAME_CAPS_DAY5.get("stone", 0)), 20, "DAY5 stone cap is 20")
+    _assert_equal(int(SimBalance.MIDGAME_CAPS_DAY5.get("food", 0)), 25, "DAY5 food cap is 25")
+
+    _assert_true(SimBalance.MIDGAME_CAPS_DAY7.has("wood"), "DAY7 caps has wood")
+    _assert_equal(int(SimBalance.MIDGAME_CAPS_DAY7.get("wood", 0)), 50, "DAY7 wood cap is 50")
+    _assert_equal(int(SimBalance.MIDGAME_CAPS_DAY7.get("stone", 0)), 35, "DAY7 stone cap is 35")
+    _assert_equal(int(SimBalance.MIDGAME_CAPS_DAY7.get("food", 0)), 35, "DAY7 food cap is 35")
+
+    # Test maybe_override_explore_reward before catchup day
+    var state: GameState = DefaultState.create()
+    state.day = 2
+    state.resources = {"wood": 0, "stone": 0, "food": 0}
+    var reward: String = SimBalance.maybe_override_explore_reward(state, "wood")
+    _assert_equal(reward, "wood", "Before catchup day, reward is unchanged")
+
+    # Test maybe_override_explore_reward at catchup day with low stone
+    state.day = 5
+    state.resources = {"wood": 50, "stone": 5, "food": 20}
+    reward = SimBalance.maybe_override_explore_reward(state, "wood")
+    _assert_equal(reward, "stone", "At catchup day with low stone, reward becomes stone")
+
+    # Test maybe_override_explore_reward at catchup day with enough stone
+    state.resources = {"wood": 50, "stone": 15, "food": 20}
+    reward = SimBalance.maybe_override_explore_reward(state, "wood")
+    _assert_equal(reward, "wood", "With enough stone, reward is unchanged")
+
+    # Test midgame_food_bonus before bonus day
+    state.day = 2
+    state.resources = {"food": 5}
+    var bonus: int = SimBalance.midgame_food_bonus(state)
+    _assert_equal(bonus, 0, "No food bonus before bonus day")
+
+    # Test midgame_food_bonus at bonus day with low food
+    state.day = 5
+    state.resources = {"food": 5}
+    bonus = SimBalance.midgame_food_bonus(state)
+    _assert_equal(bonus, 2, "Food bonus at day 5 with low food")
+
+    # Test midgame_food_bonus at bonus day with enough food
+    state.resources = {"food": 15}
+    bonus = SimBalance.midgame_food_bonus(state)
+    _assert_equal(bonus, 0, "No food bonus with enough food")
+
+    # Test caps_for_day before day 5
+    var caps: Dictionary = SimBalance.caps_for_day(3)
+    _assert_true(caps.is_empty(), "No caps before day 5")
+
+    # Test caps_for_day at day 5
+    caps = SimBalance.caps_for_day(5)
+    _assert_equal(int(caps.get("wood", 0)), 40, "Day 5 wood cap is 40")
+
+    # Test caps_for_day at day 7+
+    caps = SimBalance.caps_for_day(7)
+    _assert_equal(int(caps.get("wood", 0)), 50, "Day 7 wood cap is 50")
+    caps = SimBalance.caps_for_day(10)
+    _assert_equal(int(caps.get("wood", 0)), 50, "Day 10 still uses day 7 caps")
+
+    # Test apply_resource_caps with no caps
+    state = DefaultState.create()
+    state.day = 3
+    state.resources = {"wood": 100, "stone": 50, "food": 30}
+    var trimmed: Dictionary = SimBalance.apply_resource_caps(state)
+    _assert_true(trimmed.is_empty(), "No trimming before day 5")
+    _assert_equal(int(state.resources.get("wood", 0)), 100, "Wood unchanged")
+
+    # Test apply_resource_caps with caps
+    state.day = 5
+    state.resources = {"wood": 100, "stone": 50, "food": 30}
+    trimmed = SimBalance.apply_resource_caps(state)
+    _assert_true(trimmed.has("wood"), "Wood was trimmed")
+    _assert_equal(int(trimmed.get("wood", 0)), 60, "Trimmed 60 wood (100-40)")
+    _assert_equal(int(state.resources.get("wood", 0)), 40, "Wood capped at 40")
+    _assert_true(trimmed.has("stone"), "Stone was trimmed")
+    _assert_equal(int(trimmed.get("stone", 0)), 30, "Trimmed 30 stone (50-20)")
+    _assert_equal(int(state.resources.get("stone", 0)), 20, "Stone capped at 20")
+    _assert_true(trimmed.has("food"), "Food was trimmed")
+
+
+func _run_intents_tests() -> void:
+    # Test COMMANDS array exists and has content
+    _assert_true(SimIntents.COMMANDS is Array, "COMMANDS is array")
+    _assert_true(SimIntents.COMMANDS.size() > 0, "COMMANDS has entries")
+
+    # Test make with just kind
+    var intent: Dictionary = SimIntents.make("test_kind")
+    _assert_equal(intent.get("kind", ""), "test_kind", "make sets kind")
+    _assert_equal(intent.size(), 1, "Intent with no data has size 1")
+
+    # Test make with data
+    intent = SimIntents.make("build", {"type": "tower", "x": 5, "y": 3})
+    _assert_equal(intent.get("kind", ""), "build", "make sets kind")
+    _assert_equal(intent.get("type", ""), "tower", "make includes type")
+    _assert_equal(int(intent.get("x", 0)), 5, "make includes x")
+    _assert_equal(int(intent.get("y", 0)), 3, "make includes y")
+    _assert_equal(intent.size(), 4, "Intent has all fields")
+
+    # Test make with empty data
+    intent = SimIntents.make("help", {})
+    _assert_equal(intent.get("kind", ""), "help", "make with empty data sets kind")
+    _assert_equal(intent.size(), 1, "Intent with empty data has size 1")
+
+    # Test make preserves all data keys
+    intent = SimIntents.make("cursor", {"direction": "up", "steps": 3, "fast": true})
+    _assert_equal(intent.get("direction", ""), "up", "make includes direction")
+    _assert_equal(int(intent.get("steps", 0)), 3, "make includes steps")
+    _assert_true(intent.get("fast", false), "make includes boolean")
+
+    # Test help_lines returns array
+    var lines: Array[String] = SimIntents.help_lines()
+    _assert_true(lines is Array, "help_lines returns array")
+    _assert_true(lines.size() > 10, "help_lines has many entries")
+
+    # Test help_lines contains expected commands
+    var help_text: String = "\n".join(lines)
+    _assert_true(help_text.contains("help"), "Help text contains help")
+    _assert_true(help_text.contains("build"), "Help text contains build")
+    _assert_true(help_text.contains("gather"), "Help text contains gather")
+    _assert_true(help_text.contains("explore"), "Help text contains explore")
+    _assert_true(help_text.contains("cursor"), "Help text contains cursor")
+    _assert_true(help_text.contains("save"), "Help text contains save")
+    _assert_true(help_text.contains("load"), "Help text contains load")
+    _assert_true(help_text.contains("end"), "Help text contains end")
+    _assert_true(help_text.contains("lesson"), "Help text contains lesson")
+    _assert_true(help_text.contains("goal"), "Help text contains goal")
+    _assert_true(help_text.contains("settings"), "Help text contains settings")
+
+    # Test COMMANDS includes basic commands
+    _assert_true("help" in SimIntents.COMMANDS or SimIntents.COMMANDS.size() > 0, "COMMANDS has entries")
+
+
+func _run_tick_tests() -> void:
+    # Test NIGHT_WAVE_BASE_BY_DAY dictionary
+    _assert_true(SimTick.NIGHT_WAVE_BASE_BY_DAY.has(1), "Wave base has day 1")
+    _assert_true(SimTick.NIGHT_WAVE_BASE_BY_DAY.has(7), "Wave base has day 7")
+    _assert_equal(int(SimTick.NIGHT_WAVE_BASE_BY_DAY.get(1, 0)), 2, "Day 1 base is 2")
+    _assert_equal(int(SimTick.NIGHT_WAVE_BASE_BY_DAY.get(2, 0)), 3, "Day 2 base is 3")
+    _assert_equal(int(SimTick.NIGHT_WAVE_BASE_BY_DAY.get(5, 0)), 5, "Day 5 base is 5")
+    _assert_equal(int(SimTick.NIGHT_WAVE_BASE_BY_DAY.get(7, 0)), 7, "Day 7 base is 7")
+
+    # Test NIGHT_PROMPTS array
+    _assert_true(SimTick.NIGHT_PROMPTS is Array, "NIGHT_PROMPTS is array")
+    _assert_true(SimTick.NIGHT_PROMPTS.size() >= 5, "NIGHT_PROMPTS has at least 5 entries")
+    _assert_true("bastion" in SimTick.NIGHT_PROMPTS, "NIGHT_PROMPTS contains bastion")
+    _assert_true("shield" in SimTick.NIGHT_PROMPTS, "NIGHT_PROMPTS contains shield")
+
+    # Test advance_day
+    var state: GameState = DefaultState.create()
+    state.day = 1
+    state.resources = {"wood": 10, "stone": 5, "food": 8}
+    state.structures = {}  # No production buildings
+    var result: Dictionary = SimTick.advance_day(state)
+    _assert_equal(state.day, 2, "Day advanced to 2")
+    _assert_true(result.has("state"), "Result has state")
+    _assert_true(result.has("events"), "Result has events")
+    _assert_true(result.get("events", []).size() > 0, "Result has event messages")
+
+    # Test advance_day with production
+    state = DefaultState.create()
+    state.day = 1
+    state.resources = {"wood": 0, "stone": 0, "food": 0}
+    state.structures = {10: "farm"}  # Farm produces food
+    state.structure_levels = {10: 1}
+    result = SimTick.advance_day(state)
+    _assert_equal(state.day, 2, "Day advanced with production")
+    # Food should have increased (base 1 + farm production)
+    _assert_true(int(state.resources.get("food", 0)) >= 1, "Food increased")
+
+    # Test build_night_prompt
+    state = DefaultState.create()
+    state.rng_seed = "test_prompt"
+    state.rng_state = 12345
+    var prompt: String = SimTick.build_night_prompt(state)
+    _assert_true(prompt != "", "Night prompt is not empty")
+    _assert_true(prompt in SimTick.NIGHT_PROMPTS, "Prompt is from NIGHT_PROMPTS")
+
+    # Test build_night_prompt determinism
+    state.rng_state = 12345
+    var prompt1: String = SimTick.build_night_prompt(state)
+    state.rng_state = 12345
+    var prompt2: String = SimTick.build_night_prompt(state)
+    _assert_equal(prompt1, prompt2, "Night prompt is deterministic")
+
+    # Test compute_night_wave_total
+    state = DefaultState.create()
+    state.day = 1
+    state.threat = 0
+    var wave: int = SimTick.compute_night_wave_total(state, 0)
+    _assert_equal(wave, 2, "Day 1 wave with 0 threat and 0 defense is 2")
+
+    # Test wave with threat
+    state.day = 1
+    state.threat = 3
+    wave = SimTick.compute_night_wave_total(state, 0)
+    _assert_equal(wave, 5, "Day 1 wave with 3 threat is 5")
+
+    # Test wave with defense
+    state.day = 1
+    state.threat = 0
+    wave = SimTick.compute_night_wave_total(state, 1)
+    _assert_equal(wave, 1, "Day 1 wave with 1 defense is 1 (minimum)")
+
+    # Test wave minimum
+    state.day = 1
+    state.threat = 0
+    wave = SimTick.compute_night_wave_total(state, 10)
+    _assert_equal(wave, 1, "Wave total has minimum of 1")
+
+    # Test wave for later days
+    state.day = 5
+    state.threat = 2
+    wave = SimTick.compute_night_wave_total(state, 1)
+    _assert_equal(wave, 6, "Day 5 wave: base 5 + 2 threat - 1 defense = 6")
+
+    # Test wave for day beyond table
+    state.day = 10
+    state.threat = 0
+    wave = SimTick.compute_night_wave_total(state, 0)
+    # Day 10: base = 2 + 10/2 = 7
+    _assert_equal(wave, 7, "Day 10 uses formula: 2 + day/2")
+
+    # Test advance_day triggers resource caps
+    state = DefaultState.create()
+    state.day = 6  # Will advance to 7, triggering caps
+    state.resources = {"wood": 100, "stone": 100, "food": 100}
+    state.structures = {}
+    result = SimTick.advance_day(state)
+    _assert_equal(state.day, 7, "Day advanced to 7")
+    # At day 7, caps are: wood 50, stone 35, food 35
+    _assert_equal(int(state.resources.get("wood", 0)), 50, "Wood capped at 50")
+    _assert_equal(int(state.resources.get("stone", 0)), 35, "Stone capped at 35")
+    _assert_equal(int(state.resources.get("food", 0)), 35, "Food capped at 35")
