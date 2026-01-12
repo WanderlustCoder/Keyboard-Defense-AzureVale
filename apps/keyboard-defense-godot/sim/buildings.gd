@@ -842,3 +842,39 @@ static func get_total_effects(state: GameState) -> Dictionary:
                     effects[effect_key] = float(effects[effect_key]) + float(building_effects[effect_key])
 
     return effects
+
+static func get_available_buildings(_state: GameState) -> Array:
+    ## Returns list of building IDs that can be constructed (excludes aliases and legendary towers)
+    var available: Array = []
+    for building_id in BUILDINGS.keys():
+        var info: Dictionary = BUILDINGS[building_id]
+        # Skip alias buildings
+        if info.has("alias_of"):
+            continue
+        # Skip legendary towers (require special unlock)
+        if info.get("legendary", false):
+            continue
+        # Skip advanced auto-towers for now (tier 2+) - unlocked via research
+        if info.get("category", "") == "auto_defense" and int(info.get("tier", 1)) > 1:
+            continue
+        available.append(building_id)
+    return available
+
+static func get_building_info(building_id: String) -> Dictionary:
+    ## Returns full building info dictionary for display purposes
+    if not BUILDINGS.has(building_id):
+        return {}
+    return BUILDINGS[building_id].duplicate(true)
+
+static func can_afford(state: GameState, cost: Dictionary) -> bool:
+    ## Returns true if player can afford the given cost dictionary
+    for res_key in cost.keys():
+        var required: int = int(cost[res_key])
+        var current: int = 0
+        if res_key == "gold":
+            current = state.gold
+        else:
+            current = int(state.resources.get(res_key, 0))
+        if current < required:
+            return false
+    return true
