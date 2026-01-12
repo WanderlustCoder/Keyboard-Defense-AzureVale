@@ -155,7 +155,7 @@ New SVG assets in `assets/art/src-svg/`:
 - Scenario reports and summaries are written under `Logs/ScenarioReports/` for CI-friendly collection (via `--out-dir`).
 
 ## Test Coverage (as of 2026-01-12)
-**Total: ~6,700+ assertions**
+**Total: ~6,900+ assertions**
 
 - **Parser tests**: Command parsing, intent validation
 - **Reducer tests**: State mutation, intent application
@@ -223,6 +223,8 @@ New SVG assets in `assets/art/src-svg/`:
 - **Keyboard display tests**: Layout constants, finger zones, finger colors, animation timing, ripple effects
 - **Combo announcement tests**: Milestones, animation constants, tier colors, celebration titles
 - **Threat bar tests**: Visual constants, threat thresholds, health display constants
+- **Typing display tests**: Font sizes, animation timing, progress bar, accuracy ring colors, letter burst effects
+- **Modal panel tests**: Title font, button dimensions, fade animation timing
 
 ## Planning
 - `docs/ROADMAP.md` is the authoritative milestone list.

@@ -93,6 +93,8 @@ const DamageNumbers = preload("res://game/damage_numbers.gd")
 const KeyboardDisplay = preload("res://game/keyboard_display.gd")
 const ComboAnnouncement = preload("res://ui/components/combo_announcement.gd")
 const ThreatBar = preload("res://ui/components/threat_bar.gd")
+const TypingDisplay = preload("res://ui/components/typing_display.gd")
+const ModalPanel = preload("res://ui/components/modal_panel.gd")
 
 var total_tests: int = 0
 var total_failed: int = 0
@@ -207,6 +209,8 @@ func _run_all() -> void:
     _run_keyboard_display_tests()
     _run_combo_announcement_tests()
     _run_threat_bar_tests()
+    _run_typing_display_tests()
+    _run_modal_panel_tests()
 
     for message in messages:
         print("[tests] %s" % message)
@@ -9640,3 +9644,178 @@ func _test_threat_bar_health_constants() -> void:
     # Pulse speed
     _assert_true(ThreatBar.HEALTH_LOW_PULSE_SPEED > 0.0, "HEALTH_LOW_PULSE_SPEED is positive")
     _assert_equal(ThreatBar.HEALTH_LOW_PULSE_SPEED, 4.0, "HEALTH_LOW_PULSE_SPEED is 4.0")
+
+# =============================================================================
+# TYPING DISPLAY TESTS
+# =============================================================================
+
+func _run_typing_display_tests() -> void:
+    _test_typing_display_font_constants()
+    _test_typing_display_animation_constants()
+    _test_typing_display_progress_bar_constants()
+    _test_typing_display_accuracy_ring_constants()
+    _test_typing_display_burst_constants()
+
+func _test_typing_display_font_constants() -> void:
+    # Title font size
+    _assert_true(TypingDisplay.TITLE_FONT_SIZE > 0, "TITLE_FONT_SIZE is positive")
+    _assert_equal(TypingDisplay.TITLE_FONT_SIZE, 18, "TITLE_FONT_SIZE is 18")
+
+    # Hint font size
+    _assert_true(TypingDisplay.HINT_FONT_SIZE > 0, "HINT_FONT_SIZE is positive")
+    _assert_equal(TypingDisplay.HINT_FONT_SIZE, 14, "HINT_FONT_SIZE is 14")
+
+    # Word font size (should be largest)
+    _assert_true(TypingDisplay.WORD_FONT_SIZE > 0, "WORD_FONT_SIZE is positive")
+    _assert_equal(TypingDisplay.WORD_FONT_SIZE, 32, "WORD_FONT_SIZE is 32")
+    _assert_true(TypingDisplay.WORD_FONT_SIZE > TypingDisplay.TITLE_FONT_SIZE, "WORD > TITLE font size")
+
+    # Feedback font size
+    _assert_true(TypingDisplay.FEEDBACK_FONT_SIZE > 0, "FEEDBACK_FONT_SIZE is positive")
+    _assert_equal(TypingDisplay.FEEDBACK_FONT_SIZE, 20, "FEEDBACK_FONT_SIZE is 20")
+
+func _test_typing_display_animation_constants() -> void:
+    # Feedback animation ratios (should be between 0 and 1)
+    _assert_true(TypingDisplay.FEEDBACK_FADE_RATIO > 0.0, "FEEDBACK_FADE_RATIO is positive")
+    _assert_true(TypingDisplay.FEEDBACK_FADE_RATIO <= 1.0, "FEEDBACK_FADE_RATIO is <= 1")
+    _assert_equal(TypingDisplay.FEEDBACK_FADE_RATIO, 0.4, "FEEDBACK_FADE_RATIO is 0.4")
+
+    _assert_true(TypingDisplay.FEEDBACK_DELAY_RATIO > 0.0, "FEEDBACK_DELAY_RATIO is positive")
+    _assert_true(TypingDisplay.FEEDBACK_DELAY_RATIO <= 1.0, "FEEDBACK_DELAY_RATIO is <= 1")
+    _assert_equal(TypingDisplay.FEEDBACK_DELAY_RATIO, 0.6, "FEEDBACK_DELAY_RATIO is 0.6")
+
+    # Feedback durations
+    _assert_true(TypingDisplay.ERROR_DURATION > 0.0, "ERROR_DURATION is positive")
+    _assert_true(TypingDisplay.ERROR_DURATION < 3.0, "ERROR_DURATION is reasonable")
+    _assert_equal(TypingDisplay.ERROR_DURATION, 0.6, "ERROR_DURATION is 0.6")
+
+    _assert_true(TypingDisplay.SUCCESS_DURATION > 0.0, "SUCCESS_DURATION is positive")
+    _assert_true(TypingDisplay.SUCCESS_DURATION < 3.0, "SUCCESS_DURATION is reasonable")
+    _assert_equal(TypingDisplay.SUCCESS_DURATION, 0.75, "SUCCESS_DURATION is 0.75")
+
+    _assert_true(TypingDisplay.SPECIAL_DURATION > 0.0, "SPECIAL_DURATION is positive")
+    _assert_equal(TypingDisplay.SPECIAL_DURATION, 1.1, "SPECIAL_DURATION is 1.1")
+
+    # Special should be longest
+    _assert_true(TypingDisplay.SPECIAL_DURATION > TypingDisplay.SUCCESS_DURATION, "SPECIAL > SUCCESS duration")
+    _assert_true(TypingDisplay.SUCCESS_DURATION > TypingDisplay.ERROR_DURATION, "SUCCESS > ERROR duration")
+
+func _test_typing_display_progress_bar_constants() -> void:
+    # Progress bar dimensions
+    _assert_true(TypingDisplay.PROGRESS_BAR_HEIGHT > 0.0, "PROGRESS_BAR_HEIGHT is positive")
+    _assert_equal(TypingDisplay.PROGRESS_BAR_HEIGHT, 6.0, "PROGRESS_BAR_HEIGHT is 6.0")
+
+    _assert_true(TypingDisplay.PROGRESS_BAR_MARGIN >= 0.0, "PROGRESS_BAR_MARGIN is non-negative")
+    _assert_equal(TypingDisplay.PROGRESS_BAR_MARGIN, 8.0, "PROGRESS_BAR_MARGIN is 8.0")
+
+    # Progress colors
+    _assert_true(TypingDisplay.PROGRESS_COLOR_START is Color, "PROGRESS_COLOR_START is Color")
+    _assert_equal(TypingDisplay.PROGRESS_COLOR_START.a, 1.0, "PROGRESS_COLOR_START has full alpha")
+
+    _assert_true(TypingDisplay.PROGRESS_COLOR_HALF is Color, "PROGRESS_COLOR_HALF is Color")
+    _assert_equal(TypingDisplay.PROGRESS_COLOR_HALF.a, 1.0, "PROGRESS_COLOR_HALF has full alpha")
+
+    _assert_true(TypingDisplay.PROGRESS_COLOR_NEAR is Color, "PROGRESS_COLOR_NEAR is Color")
+    _assert_equal(TypingDisplay.PROGRESS_COLOR_NEAR.a, 1.0, "PROGRESS_COLOR_NEAR has full alpha")
+
+    _assert_true(TypingDisplay.PROGRESS_COLOR_DONE is Color, "PROGRESS_COLOR_DONE is Color")
+    _assert_equal(TypingDisplay.PROGRESS_COLOR_DONE.a, 1.0, "PROGRESS_COLOR_DONE has full alpha")
+    _assert_true(TypingDisplay.PROGRESS_COLOR_DONE.g > 0.7, "PROGRESS_COLOR_DONE is green")
+
+    _assert_true(TypingDisplay.PROGRESS_BG_COLOR is Color, "PROGRESS_BG_COLOR is Color")
+    _assert_true(TypingDisplay.PROGRESS_BG_COLOR.a < 1.0, "PROGRESS_BG_COLOR has reduced alpha")
+
+    # Milestone glow duration
+    _assert_true(TypingDisplay.MILESTONE_GLOW_DURATION > 0.0, "MILESTONE_GLOW_DURATION is positive")
+    _assert_equal(TypingDisplay.MILESTONE_GLOW_DURATION, 0.4, "MILESTONE_GLOW_DURATION is 0.4")
+
+func _test_typing_display_accuracy_ring_constants() -> void:
+    # Ring dimensions
+    _assert_true(TypingDisplay.ACCURACY_RING_RADIUS > 0.0, "ACCURACY_RING_RADIUS is positive")
+    _assert_equal(TypingDisplay.ACCURACY_RING_RADIUS, 28.0, "ACCURACY_RING_RADIUS is 28.0")
+
+    _assert_true(TypingDisplay.ACCURACY_RING_WIDTH > 0.0, "ACCURACY_RING_WIDTH is positive")
+    _assert_equal(TypingDisplay.ACCURACY_RING_WIDTH, 4.0, "ACCURACY_RING_WIDTH is 4.0")
+
+    # Ring colors for different accuracy levels
+    _assert_true(TypingDisplay.ACCURACY_RING_BG_COLOR is Color, "ACCURACY_RING_BG_COLOR is Color")
+    _assert_true(TypingDisplay.ACCURACY_RING_BG_COLOR.a < 1.0, "ACCURACY_RING_BG_COLOR has reduced alpha")
+
+    _assert_true(TypingDisplay.ACCURACY_RING_EXCELLENT is Color, "ACCURACY_RING_EXCELLENT is Color")
+    _assert_equal(TypingDisplay.ACCURACY_RING_EXCELLENT.a, 1.0, "ACCURACY_RING_EXCELLENT has full alpha")
+    _assert_true(TypingDisplay.ACCURACY_RING_EXCELLENT.g > 0.7, "ACCURACY_RING_EXCELLENT is green")
+
+    _assert_true(TypingDisplay.ACCURACY_RING_GOOD is Color, "ACCURACY_RING_GOOD is Color")
+    _assert_equal(TypingDisplay.ACCURACY_RING_GOOD.a, 1.0, "ACCURACY_RING_GOOD has full alpha")
+
+    _assert_true(TypingDisplay.ACCURACY_RING_OK is Color, "ACCURACY_RING_OK is Color")
+    _assert_equal(TypingDisplay.ACCURACY_RING_OK.a, 1.0, "ACCURACY_RING_OK has full alpha")
+
+    _assert_true(TypingDisplay.ACCURACY_RING_POOR is Color, "ACCURACY_RING_POOR is Color")
+    _assert_equal(TypingDisplay.ACCURACY_RING_POOR.a, 1.0, "ACCURACY_RING_POOR has full alpha")
+
+    _assert_true(TypingDisplay.ACCURACY_RING_BAD is Color, "ACCURACY_RING_BAD is Color")
+    _assert_equal(TypingDisplay.ACCURACY_RING_BAD.a, 1.0, "ACCURACY_RING_BAD has full alpha")
+    _assert_true(TypingDisplay.ACCURACY_RING_BAD.r > 0.7, "ACCURACY_RING_BAD is red")
+
+    # Pulse duration
+    _assert_true(TypingDisplay.ACCURACY_PULSE_DURATION > 0.0, "ACCURACY_PULSE_DURATION is positive")
+    _assert_equal(TypingDisplay.ACCURACY_PULSE_DURATION, 0.3, "ACCURACY_PULSE_DURATION is 0.3")
+
+func _test_typing_display_burst_constants() -> void:
+    # Burst timing
+    _assert_true(TypingDisplay.BURST_DURATION > 0.0, "BURST_DURATION is positive")
+    _assert_equal(TypingDisplay.BURST_DURATION, 0.8, "BURST_DURATION is 0.8")
+
+    # Burst physics
+    _assert_true(TypingDisplay.BURST_SPEED > 0.0, "BURST_SPEED is positive")
+    _assert_equal(TypingDisplay.BURST_SPEED, 120.0, "BURST_SPEED is 120.0")
+
+    _assert_true(TypingDisplay.BURST_GRAVITY > 0.0, "BURST_GRAVITY is positive")
+    _assert_equal(TypingDisplay.BURST_GRAVITY, 150.0, "BURST_GRAVITY is 150.0")
+
+    # Burst font
+    _assert_true(TypingDisplay.BURST_FONT_SIZE > 0, "BURST_FONT_SIZE is positive")
+    _assert_equal(TypingDisplay.BURST_FONT_SIZE, 18, "BURST_FONT_SIZE is 18")
+
+    # Burst colors for different word lengths
+    _assert_true(TypingDisplay.BURST_COLOR_SHORT is Color, "BURST_COLOR_SHORT is Color")
+    _assert_equal(TypingDisplay.BURST_COLOR_SHORT.a, 1.0, "BURST_COLOR_SHORT has full alpha")
+
+    _assert_true(TypingDisplay.BURST_COLOR_MEDIUM is Color, "BURST_COLOR_MEDIUM is Color")
+    _assert_equal(TypingDisplay.BURST_COLOR_MEDIUM.a, 1.0, "BURST_COLOR_MEDIUM has full alpha")
+
+    _assert_true(TypingDisplay.BURST_COLOR_LONG is Color, "BURST_COLOR_LONG is Color")
+    _assert_equal(TypingDisplay.BURST_COLOR_LONG.a, 1.0, "BURST_COLOR_LONG has full alpha")
+
+    # Colors should be distinct
+    _assert_true(TypingDisplay.BURST_COLOR_SHORT != TypingDisplay.BURST_COLOR_MEDIUM, "SHORT != MEDIUM burst color")
+    _assert_true(TypingDisplay.BURST_COLOR_MEDIUM != TypingDisplay.BURST_COLOR_LONG, "MEDIUM != LONG burst color")
+
+# =============================================================================
+# MODAL PANEL TESTS
+# =============================================================================
+
+func _run_modal_panel_tests() -> void:
+    _test_modal_panel_constants()
+
+func _test_modal_panel_constants() -> void:
+    # Title font size
+    _assert_true(ModalPanel.TITLE_FONT_SIZE > 0, "TITLE_FONT_SIZE is positive")
+    _assert_equal(ModalPanel.TITLE_FONT_SIZE, 24, "TITLE_FONT_SIZE is 24")
+
+    # Button minimum width
+    _assert_true(ModalPanel.BUTTON_MIN_WIDTH > 0, "BUTTON_MIN_WIDTH is positive")
+    _assert_equal(ModalPanel.BUTTON_MIN_WIDTH, 120, "BUTTON_MIN_WIDTH is 120")
+
+    # Fade durations
+    _assert_true(ModalPanel.FADE_IN_DURATION > 0.0, "FADE_IN_DURATION is positive")
+    _assert_true(ModalPanel.FADE_IN_DURATION < 1.0, "FADE_IN_DURATION is quick")
+    _assert_equal(ModalPanel.FADE_IN_DURATION, 0.2, "FADE_IN_DURATION is 0.2")
+
+    _assert_true(ModalPanel.FADE_OUT_DURATION > 0.0, "FADE_OUT_DURATION is positive")
+    _assert_true(ModalPanel.FADE_OUT_DURATION < 1.0, "FADE_OUT_DURATION is quick")
+    _assert_equal(ModalPanel.FADE_OUT_DURATION, 0.15, "FADE_OUT_DURATION is 0.15")
+
+    # Fade out should be faster than fade in (snappier dismiss)
+    _assert_true(ModalPanel.FADE_OUT_DURATION < ModalPanel.FADE_IN_DURATION, "FADE_OUT < FADE_IN (snappy dismiss)")
