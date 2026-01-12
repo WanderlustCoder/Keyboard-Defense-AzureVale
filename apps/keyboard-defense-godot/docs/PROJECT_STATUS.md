@@ -155,7 +155,7 @@ New SVG assets in `assets/art/src-svg/`:
 - Scenario reports and summaries are written under `Logs/ScenarioReports/` for CI-friendly collection (via `--out-dir`).
 
 ## Test Coverage (as of 2026-01-12)
-**Total: ~7,150+ assertions**
+**Total: ~7,250+ assertions**
 
 - **Parser tests**: Command parsing, intent validation
 - **Reducer tests**: State mutation, intent application
@@ -232,6 +232,8 @@ New SVG assets in `assets/art/src-svg/`:
 - **Action tooltip tests**: Timing constants, size constants
 - **Battle stage tests**: Core constants, damage number settings, trail particle settings
 - **Battlefield tests**: Buff streaks, feedback durations, font sizes, threat/trend tracking, streak glow, combo milestones, accuracy badges, animation timing, grade system
+- **Settings manager tests**: Path constants, audio defaults, gameplay defaults, accessibility defaults
+- **Typing profile constants tests**: Path/version, UI scale values, speed multipliers, achievement IDs, default UI prefs, default lesson progress
 
 ## Planning
 - `docs/ROADMAP.md` is the authoritative milestone list.

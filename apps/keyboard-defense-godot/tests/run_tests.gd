@@ -102,6 +102,7 @@ const GridRenderer = preload("res://game/grid_renderer.gd")
 const ActionTooltip = preload("res://ui/components/action_tooltip.gd")
 const BattleStage = preload("res://scripts/BattleStage.gd")
 const Battlefield = preload("res://scripts/Battlefield.gd")
+const SettingsManagerScript = preload("res://game/settings_manager.gd")
 
 var total_tests: int = 0
 var total_failed: int = 0
@@ -225,6 +226,8 @@ func _run_all() -> void:
     _run_action_tooltip_tests()
     _run_battle_stage_tests()
     _run_battlefield_tests()
+    _run_settings_manager_tests()
+    _run_typing_profile_constants_tests()
 
     for message in messages:
         print("[tests] %s" % message)
@@ -10370,3 +10373,164 @@ func _test_battlefield_grade_constants() -> void:
     _assert_true(Battlefield.GRADE_COLORS["S"] != Battlefield.GRADE_COLORS["A"], "S != A color")
     _assert_true(Battlefield.GRADE_COLORS["A"] != Battlefield.GRADE_COLORS["B"], "A != B color")
     _assert_true(Battlefield.GRADE_COLORS["D"] != Battlefield.GRADE_COLORS["F"], "D != F color")
+
+# =============================================================================
+# SETTINGS MANAGER TESTS
+# =============================================================================
+
+func _run_settings_manager_tests() -> void:
+    _test_settings_manager_path_constants()
+    _test_settings_manager_audio_defaults()
+    _test_settings_manager_gameplay_defaults()
+    _test_settings_manager_accessibility_defaults()
+
+func _test_settings_manager_path_constants() -> void:
+    # SETTINGS_PATH
+    _assert_true(SettingsManagerScript.SETTINGS_PATH is String, "SETTINGS_PATH is String")
+    _assert_true(SettingsManagerScript.SETTINGS_PATH.begins_with("user://"), "SETTINGS_PATH is in user directory")
+    _assert_true(SettingsManagerScript.SETTINGS_PATH.ends_with(".cfg"), "SETTINGS_PATH is .cfg file")
+    _assert_equal(SettingsManagerScript.SETTINGS_PATH, "user://settings.cfg", "SETTINGS_PATH is user://settings.cfg")
+
+func _test_settings_manager_audio_defaults() -> void:
+    # DEFAULT_MUSIC_VOLUME
+    _assert_true(SettingsManagerScript.DEFAULT_MUSIC_VOLUME >= 0.0, "DEFAULT_MUSIC_VOLUME >= 0")
+    _assert_true(SettingsManagerScript.DEFAULT_MUSIC_VOLUME <= 1.0, "DEFAULT_MUSIC_VOLUME <= 1")
+    _assert_equal(SettingsManagerScript.DEFAULT_MUSIC_VOLUME, 0.8, "DEFAULT_MUSIC_VOLUME is 0.8")
+
+    # DEFAULT_SFX_VOLUME
+    _assert_true(SettingsManagerScript.DEFAULT_SFX_VOLUME >= 0.0, "DEFAULT_SFX_VOLUME >= 0")
+    _assert_true(SettingsManagerScript.DEFAULT_SFX_VOLUME <= 1.0, "DEFAULT_SFX_VOLUME <= 1")
+    _assert_equal(SettingsManagerScript.DEFAULT_SFX_VOLUME, 1.0, "DEFAULT_SFX_VOLUME is 1.0")
+
+    # DEFAULT_MUSIC_ENABLED
+    _assert_true(SettingsManagerScript.DEFAULT_MUSIC_ENABLED is bool, "DEFAULT_MUSIC_ENABLED is bool")
+    _assert_equal(SettingsManagerScript.DEFAULT_MUSIC_ENABLED, true, "DEFAULT_MUSIC_ENABLED is true")
+
+    # DEFAULT_SFX_ENABLED
+    _assert_true(SettingsManagerScript.DEFAULT_SFX_ENABLED is bool, "DEFAULT_SFX_ENABLED is bool")
+    _assert_equal(SettingsManagerScript.DEFAULT_SFX_ENABLED, true, "DEFAULT_SFX_ENABLED is true")
+
+    # DEFAULT_TYPING_SOUNDS
+    _assert_true(SettingsManagerScript.DEFAULT_TYPING_SOUNDS is bool, "DEFAULT_TYPING_SOUNDS is bool")
+    _assert_equal(SettingsManagerScript.DEFAULT_TYPING_SOUNDS, true, "DEFAULT_TYPING_SOUNDS is true")
+
+func _test_settings_manager_gameplay_defaults() -> void:
+    # DEFAULT_SCREEN_SHAKE
+    _assert_true(SettingsManagerScript.DEFAULT_SCREEN_SHAKE is bool, "DEFAULT_SCREEN_SHAKE is bool")
+    _assert_equal(SettingsManagerScript.DEFAULT_SCREEN_SHAKE, true, "DEFAULT_SCREEN_SHAKE is true")
+
+    # DEFAULT_SHOW_WPM
+    _assert_true(SettingsManagerScript.DEFAULT_SHOW_WPM is bool, "DEFAULT_SHOW_WPM is bool")
+    _assert_equal(SettingsManagerScript.DEFAULT_SHOW_WPM, true, "DEFAULT_SHOW_WPM is true")
+
+    # DEFAULT_SHOW_ACCURACY
+    _assert_true(SettingsManagerScript.DEFAULT_SHOW_ACCURACY is bool, "DEFAULT_SHOW_ACCURACY is bool")
+    _assert_equal(SettingsManagerScript.DEFAULT_SHOW_ACCURACY, true, "DEFAULT_SHOW_ACCURACY is true")
+
+func _test_settings_manager_accessibility_defaults() -> void:
+    # DEFAULT_REDUCED_MOTION
+    _assert_true(SettingsManagerScript.DEFAULT_REDUCED_MOTION is bool, "DEFAULT_REDUCED_MOTION is bool")
+    _assert_equal(SettingsManagerScript.DEFAULT_REDUCED_MOTION, false, "DEFAULT_REDUCED_MOTION is false (off by default)")
+
+    # DEFAULT_HIGH_CONTRAST
+    _assert_true(SettingsManagerScript.DEFAULT_HIGH_CONTRAST is bool, "DEFAULT_HIGH_CONTRAST is bool")
+    _assert_equal(SettingsManagerScript.DEFAULT_HIGH_CONTRAST, false, "DEFAULT_HIGH_CONTRAST is false (off by default)")
+
+    # DEFAULT_LARGE_TEXT
+    _assert_true(SettingsManagerScript.DEFAULT_LARGE_TEXT is bool, "DEFAULT_LARGE_TEXT is bool")
+    _assert_equal(SettingsManagerScript.DEFAULT_LARGE_TEXT, false, "DEFAULT_LARGE_TEXT is false (off by default)")
+
+# =============================================================================
+# TYPING PROFILE CONSTANTS TESTS
+# =============================================================================
+
+func _run_typing_profile_constants_tests() -> void:
+    _test_typing_profile_path_constants()
+    _test_typing_profile_ui_scale_constants()
+    _test_typing_profile_speed_multiplier_constants()
+    _test_typing_profile_achievement_ids()
+    _test_typing_profile_default_ui_prefs()
+    _test_typing_profile_default_lesson_progress()
+
+func _test_typing_profile_path_constants() -> void:
+    # PROFILE_PATH
+    _assert_true(TypingProfile.PROFILE_PATH is String, "PROFILE_PATH is String")
+    _assert_true(TypingProfile.PROFILE_PATH.begins_with("user://"), "PROFILE_PATH is in user directory")
+    _assert_true(TypingProfile.PROFILE_PATH.ends_with(".json"), "PROFILE_PATH is .json file")
+    _assert_equal(TypingProfile.PROFILE_PATH, "user://profile.json", "PROFILE_PATH is user://profile.json")
+
+    # VERSION
+    _assert_true(TypingProfile.VERSION is int, "VERSION is int")
+    _assert_true(TypingProfile.VERSION >= 1, "VERSION >= 1")
+    _assert_equal(TypingProfile.VERSION, 1, "VERSION is 1")
+
+func _test_typing_profile_ui_scale_constants() -> void:
+    # UI_SCALE_VALUES
+    _assert_true(TypingProfile.UI_SCALE_VALUES is Array, "UI_SCALE_VALUES is Array")
+    _assert_true(TypingProfile.UI_SCALE_VALUES.size() > 0, "UI_SCALE_VALUES has entries")
+    _assert_true(TypingProfile.UI_SCALE_VALUES.has(100), "UI_SCALE_VALUES has 100% (normal)")
+    _assert_equal(TypingProfile.UI_SCALE_VALUES[0], 80, "First scale is 80%")
+    _assert_equal(TypingProfile.UI_SCALE_VALUES[-1], 140, "Last scale is 140%")
+
+    # Scales should be in ascending order
+    for i in range(1, TypingProfile.UI_SCALE_VALUES.size()):
+        _assert_true(TypingProfile.UI_SCALE_VALUES[i] > TypingProfile.UI_SCALE_VALUES[i - 1], "UI scales ascending")
+
+    # DEFAULT_UI_SCALE
+    _assert_true(TypingProfile.DEFAULT_UI_SCALE is int, "DEFAULT_UI_SCALE is int")
+    _assert_true(TypingProfile.UI_SCALE_VALUES.has(TypingProfile.DEFAULT_UI_SCALE), "DEFAULT_UI_SCALE is in UI_SCALE_VALUES")
+    _assert_equal(TypingProfile.DEFAULT_UI_SCALE, 100, "DEFAULT_UI_SCALE is 100%")
+
+func _test_typing_profile_speed_multiplier_constants() -> void:
+    # SPEED_MULTIPLIER_VALUES
+    _assert_true(TypingProfile.SPEED_MULTIPLIER_VALUES is Array, "SPEED_MULTIPLIER_VALUES is Array")
+    _assert_true(TypingProfile.SPEED_MULTIPLIER_VALUES.size() > 0, "SPEED_MULTIPLIER_VALUES has entries")
+    _assert_true(TypingProfile.SPEED_MULTIPLIER_VALUES.has(1.0), "SPEED_MULTIPLIER_VALUES has 1.0 (normal)")
+    _assert_equal(TypingProfile.SPEED_MULTIPLIER_VALUES[0], 0.5, "First speed is 0.5x")
+    _assert_equal(TypingProfile.SPEED_MULTIPLIER_VALUES[-1], 2.0, "Last speed is 2.0x")
+
+    # Speeds should be in ascending order
+    for i in range(1, TypingProfile.SPEED_MULTIPLIER_VALUES.size()):
+        _assert_true(TypingProfile.SPEED_MULTIPLIER_VALUES[i] > TypingProfile.SPEED_MULTIPLIER_VALUES[i - 1], "Speeds ascending")
+
+func _test_typing_profile_achievement_ids() -> void:
+    # ACHIEVEMENT_IDS
+    _assert_true(TypingProfile.ACHIEVEMENT_IDS is Array, "ACHIEVEMENT_IDS is Array")
+    _assert_true(TypingProfile.ACHIEVEMENT_IDS.size() > 0, "ACHIEVEMENT_IDS has entries")
+    _assert_true(TypingProfile.ACHIEVEMENT_IDS.has("first_blood"), "Has first_blood achievement")
+    _assert_true(TypingProfile.ACHIEVEMENT_IDS.has("keyboard_master"), "Has keyboard_master achievement")
+    _assert_true(TypingProfile.ACHIEVEMENT_IDS.has("void_vanquisher"), "Has void_vanquisher achievement")
+
+    # All IDs should be strings
+    for id in TypingProfile.ACHIEVEMENT_IDS:
+        _assert_true(id is String, "Achievement ID is String")
+
+func _test_typing_profile_default_ui_prefs() -> void:
+    # DEFAULT_UI_PREFS
+    _assert_true(TypingProfile.DEFAULT_UI_PREFS is Dictionary, "DEFAULT_UI_PREFS is Dictionary")
+    _assert_true(TypingProfile.DEFAULT_UI_PREFS.has("lessons_sort"), "Has lessons_sort")
+    _assert_true(TypingProfile.DEFAULT_UI_PREFS.has("ui_scale_percent"), "Has ui_scale_percent")
+    _assert_true(TypingProfile.DEFAULT_UI_PREFS.has("compact_panels"), "Has compact_panels")
+    _assert_true(TypingProfile.DEFAULT_UI_PREFS.has("reduced_motion"), "Has reduced_motion")
+    _assert_true(TypingProfile.DEFAULT_UI_PREFS.has("speed_multiplier"), "Has speed_multiplier")
+
+    # Default values make sense
+    _assert_equal(TypingProfile.DEFAULT_UI_PREFS["lessons_sort"], "default", "Default sort is 'default'")
+    _assert_equal(TypingProfile.DEFAULT_UI_PREFS["speed_multiplier"], 1.0, "Default speed is 1.0x")
+    _assert_equal(TypingProfile.DEFAULT_UI_PREFS["compact_panels"], false, "Compact panels off by default")
+
+func _test_typing_profile_default_lesson_progress() -> void:
+    # DEFAULT_LESSON_PROGRESS
+    _assert_true(TypingProfile.DEFAULT_LESSON_PROGRESS is Dictionary, "DEFAULT_LESSON_PROGRESS is Dictionary")
+    _assert_true(TypingProfile.DEFAULT_LESSON_PROGRESS.has("nights"), "Has nights")
+    _assert_true(TypingProfile.DEFAULT_LESSON_PROGRESS.has("goal_passes"), "Has goal_passes")
+    _assert_true(TypingProfile.DEFAULT_LESSON_PROGRESS.has("sum_accuracy"), "Has sum_accuracy")
+    _assert_true(TypingProfile.DEFAULT_LESSON_PROGRESS.has("best_accuracy"), "Has best_accuracy")
+    _assert_true(TypingProfile.DEFAULT_LESSON_PROGRESS.has("recent"), "Has recent array")
+
+    # Default values should be zeroed/empty
+    _assert_equal(TypingProfile.DEFAULT_LESSON_PROGRESS["nights"], 0, "Nights starts at 0")
+    _assert_equal(TypingProfile.DEFAULT_LESSON_PROGRESS["goal_passes"], 0, "Goal passes starts at 0")
+    _assert_equal(TypingProfile.DEFAULT_LESSON_PROGRESS["sum_accuracy"], 0.0, "Sum accuracy starts at 0")
+    _assert_true(TypingProfile.DEFAULT_LESSON_PROGRESS["recent"] is Array, "Recent is Array")
+    _assert_equal(TypingProfile.DEFAULT_LESSON_PROGRESS["recent"].size(), 0, "Recent starts empty")
