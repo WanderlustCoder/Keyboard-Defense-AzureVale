@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 32" width="24" height="32">
+  <!-- Arrow Tower Attack Frame 1: Normal/Idle state -->
+  <!-- Wooden archer tower ready to fire -->
+
+  <!-- Base/Foundation -->
+  <rect x="4" y="28" width="16" height="4" fill="#5d4e37"/>
+  <rect x="5" y="29" width="14" height="2" fill="#8b7355"/>
+
+  <!-- Tower body -->
+  <rect x="6" y="12" width="12" height="16" fill="#8b4513"/>
+  <rect x="7" y="13" width="10" height="14" fill="#a0522d"/>
+
+  <!-- Wooden planks detail -->
+  <rect x="7" y="15" width="10" height="1" fill="#8b4513"/>
+  <rect x="7" y="19" width="10" height="1" fill="#8b4513"/>
+  <rect x="7" y="23" width="10" height="1" fill="#8b4513"/>
+
+  <!-- Platform/roof -->
+  <rect x="3" y="8" width="18" height="4" fill="#5d4e37"/>
+  <rect x="4" y="9" width="16" height="2" fill="#8b7355"/>
+
+  <!-- Battlements -->
+  <rect x="3" y="4" width="4" height="4" fill="#5d4e37"/>
+  <rect x="10" y="4" width="4" height="4" fill="#5d4e37"/>
+  <rect x="17" y="4" width="4" height="4" fill="#5d4e37"/>
+
+  <!-- Arrow slits -->
+  <rect x="10" y="16" width="4" height="6" fill="#2c3e50"/>
+  <rect x="11" y="17" width="2" height="4" fill="#1a252f"/>
+
+  <!-- Highlight -->
+  <rect x="4" y="9" width="1" height="1" fill="#c4a35a"/>
+  <rect x="4" y="5" width="1" height="1" fill="#8b7355"/>
+
+  <!-- Archer silhouette (ready) -->
+  <rect x="10" y="5" width="4" height="3" fill="#5d4e37"/>
+  <rect x="11" y="4" width="2" height="2" fill="#8b7355"/>
+</svg>

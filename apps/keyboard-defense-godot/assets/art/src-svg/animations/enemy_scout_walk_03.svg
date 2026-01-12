@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Enemy Scout Walk Frame 3: Right leg extended far forward -->
+  <!-- Fast, lean runner - Purple/crimson palette -->
+  <!-- Color Palette: #8e44ad (purple), #9b59b6 (light purple), #dc143c (crimson), #4c1d95 (dark purple), #f4d03f (yellow eyes), #1a1a2e (charcoal) -->
+
+  <!-- Ground shadow (stretched) -->
+  <ellipse cx="16" cy="30" rx="12" ry="2" fill="#1a1a2e" opacity="0.5"/>
+
+  <!-- Speed lines -->
+  <rect x="0" y="11" width="4" height="1" fill="#9b59b6" opacity="0.4"/>
+  <rect x="1" y="15" width="3" height="1" fill="#9b59b6" opacity="0.3"/>
+  <rect x="0" y="19" width="4" height="1" fill="#9b59b6" opacity="0.4"/>
+
+  <!-- Back leg (left, far back) -->
+  <rect x="6" y="18" width="3" height="12" fill="#8e44ad"/>
+  <rect x="7" y="19" width="2" height="10" fill="#9b59b6"/>
+  <!-- Back foot -->
+  <rect x="4" y="28" width="4" height="2" fill="#4c1d95"/>
+
+  <!-- Front leg (right, extended far forward) -->
+  <rect x="20" y="16" width="4" height="14" fill="#8e44ad"/>
+  <rect x="21" y="17" width="2" height="12" fill="#9b59b6"/>
+  <!-- Front foot -->
+  <rect x="22" y="28" width="6" height="2" fill="#4c1d95"/>
+
+  <!-- Lean torso -->
+  <rect x="10" y="10" width="10" height="10" fill="#8e44ad"/>
+  <rect x="11" y="11" width="8" height="8" fill="#9b59b6"/>
+  <!-- Light armor straps -->
+  <rect x="11" y="13" width="8" height="1" fill="#4c1d95"/>
+  <rect x="11" y="16" width="8" height="1" fill="#4c1d95"/>
+  <!-- Corruption veins -->
+  <rect x="10" y="12" width="1" height="4" fill="#dc143c"/>
+  <rect x="19" y="12" width="1" height="4" fill="#dc143c"/>
+
+  <!-- Left arm (pumping forward) -->
+  <rect x="6" y="8" width="4" height="6" fill="#8e44ad"/>
+  <rect x="7" y="9" width="2" height="4" fill="#9b59b6"/>
+  <!-- Clawed hand -->
+  <rect x="4" y="6" width="3" height="3" fill="#bb8fce"/>
+  <rect x="4" y="6" width="1" height="2" fill="#dc143c"/>
+
+  <!-- Right arm (pumping back) -->
+  <rect x="18" y="14" width="4" height="6" fill="#8e44ad"/>
+  <rect x="19" y="15" width="2" height="4" fill="#9b59b6"/>
+  <!-- Clawed hand -->
+  <rect x="20" y="18" width="3" height="3" fill="#bb8fce"/>
+  <rect x="22" y="19" width="1" height="2" fill="#dc143c"/>
+
+  <!-- Head -->
+  <rect x="12" y="2" width="8" height="9" fill="#8e44ad"/>
+  <rect x="13" y="3" width="6" height="7" fill="#9b59b6"/>
+  <!-- Face -->
+  <rect x="14" y="4" width="5" height="5" fill="#bb8fce"/>
+
+  <!-- Alert eyes -->
+  <rect x="14" y="5" width="2" height="2" fill="#f4d03f"/>
+  <rect x="17" y="5" width="2" height="2" fill="#f4d03f"/>
+  <!-- Eye glow -->
+  <rect x="13" y="4" width="4" height="4" fill="#f4d03f" opacity="0.2"/>
+  <rect x="16" y="4" width="4" height="4" fill="#f4d03f" opacity="0.2"/>
+  <!-- Pupils -->
+  <rect x="15" y="6" width="1" height="1" fill="#4c1d95"/>
+  <rect x="17" y="6" width="1" height="1" fill="#4c1d95"/>
+
+  <!-- Mouth -->
+  <rect x="15" y="8" width="3" height="2" fill="#1a1a2e"/>
+  <rect x="15" y="8" width="1" height="1" fill="#f0f0f5"/>
+  <rect x="17" y="8" width="1" height="1" fill="#f0f0f5"/>
+
+  <!-- Pointed ears -->
+  <rect x="10" y="3" width="3" height="2" fill="#8e44ad"/>
+  <rect x="9" y="2" width="2" height="2" fill="#9b59b6"/>
+  <rect x="19" y="3" width="3" height="2" fill="#8e44ad"/>
+  <rect x="21" y="2" width="2" height="2" fill="#9b59b6"/>
+
+  <!-- Tail -->
+  <rect x="20" y="12" width="6" height="2" fill="#8e44ad"/>
+  <rect x="24" y="11" width="3" height="2" fill="#9b59b6"/>
+  <rect x="26" y="10" width="2" height="2" fill="#bb8fce"/>
+</svg>

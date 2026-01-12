@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Generic Enemy Death Frame 4: Final fade / Gone -->
+  <!-- Only wisps and particles remaining -->
+  <!-- Color Palette: #4c1d95 (dark purple), #9370db (medium purple), #5c5c7a (ash), #1a1a2e (charcoal) -->
+
+  <!-- No shadow -->
+
+  <!-- Final scattered dust particles -->
+  <rect x="4" y="8" width="1" height="1" fill="#dc143c" opacity="0.2"/>
+  <rect x="27" y="6" width="1" height="1" fill="#dc143c" opacity="0.2"/>
+  <rect x="6" y="22" width="1" height="1" fill="#8b0000" opacity="0.15"/>
+  <rect x="25" y="20" width="1" height="1" fill="#8b0000" opacity="0.15"/>
+
+  <!-- Ash settling -->
+  <rect x="10" y="28" width="2" height="1" fill="#5c5c7a" opacity="0.4"/>
+  <rect x="14" y="29" width="4" height="1" fill="#5c5c7a" opacity="0.5"/>
+  <rect x="20" y="28" width="2" height="1" fill="#5c5c7a" opacity="0.4"/>
+  <rect x="12" y="30" width="8" height="1" fill="#5c5c7a" opacity="0.3"/>
+
+  <!-- Rising corruption wisps (fading up) -->
+  <rect x="14" y="0" width="2" height="4" fill="#4c1d95" opacity="0.3"/>
+  <rect x="13" y="2" width="1" height="3" fill="#9370db" opacity="0.2"/>
+  <rect x="18" y="1" width="1" height="3" fill="#9370db" opacity="0.2"/>
+
+  <rect x="16" y="4" width="1" height="4" fill="#4c1d95" opacity="0.25"/>
+  <rect x="12" y="6" width="1" height="3" fill="#4c1d95" opacity="0.2"/>
+  <rect x="19" y="5" width="1" height="3" fill="#4c1d95" opacity="0.2"/>
+
+  <!-- Faint remaining particles in center -->
+  <rect x="14" y="12" width="2" height="2" fill="#4c1d95" opacity="0.15"/>
+  <rect x="16" y="10" width="2" height="2" fill="#9370db" opacity="0.1"/>
+  <rect x="12" y="14" width="2" height="2" fill="#4c1d95" opacity="0.1"/>
+  <rect x="18" y="14" width="2" height="2" fill="#9370db" opacity="0.1"/>
+
+  <!-- Very faint body outline remnant -->
+  <rect x="13" y="16" width="6" height="4" fill="#dc143c" opacity="0.05"/>
+</svg>

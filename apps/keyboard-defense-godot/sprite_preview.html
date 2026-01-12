@@ -44,6 +44,10 @@
             color: #32cd32;
             border-color: #32cd32;
         }
+        .section h2.animations {
+            color: #00bfff;
+            border-color: #00bfff;
+        }
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -118,6 +122,14 @@
             width: 256px;
             height: 256px;
         }
+        .sprite-container.animations img {
+            width: 128px;
+            height: 128px;
+        }
+        .sprite-container.animations-tower img {
+            width: 96px;
+            height: 128px;
+        }
         .description {
             color: #c4c4d4;
             font-size: 14px;
@@ -174,6 +186,59 @@
         .priority-badge.p1 {
             background: #9370db;
             color: white;
+        }
+        /* Animation specific styles */
+        .animation-frames {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        .animation-frames img {
+            border: 1px solid #3d3d5c;
+            border-radius: 4px;
+            background: #0a0a0f;
+            padding: 4px;
+        }
+        .animation-player {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        .animation-display {
+            background: #0a0a0f;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .animation-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .animation-controls button {
+            background: #3d3d5c;
+            color: #f0f0f5;
+            border: 1px solid #5c5c7a;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .animation-controls button:hover {
+            background: #5c5c7a;
+        }
+        .animation-controls button.playing {
+            background: #00bfff;
+            color: #1a1a2e;
+        }
+        .fps-label {
+            color: #8b8ba8;
+            font-size: 12px;
         }
     </style>
 </head>
@@ -246,6 +311,138 @@
                     <img src="assets/art/src-svg/enemies/boss_sunlord.svg" alt="Sunlord Final Boss" class="sprite">
                 </div>
                 <p class="description">Blazing warrior king, leader of the Typhos Horde. Crown of flames, massive burning blade, golden plate armor with sun emblem, war cape.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ANIMATIONS SECTION -->
+    <div class="section">
+        <h2 class="animations">Animation Frames <span class="priority-badge p1">P1</span></h2>
+        <div class="grid">
+            <!-- Raider Walk -->
+            <div class="sprite-card">
+                <h3>Raider Walk Cycle</h3>
+                <div class="dimensions">4 frames @ 10 FPS</div>
+                <div class="animation-player">
+                    <div class="animation-display">
+                        <img id="raider-walk-display" src="assets/art/src-svg/animations/enemy_raider_walk_01.svg" class="sprite" style="width: 128px; height: 128px;">
+                    </div>
+                    <div class="animation-controls">
+                        <button onclick="toggleAnimation('raider-walk')" id="raider-walk-btn">Play</button>
+                        <span class="fps-label">10 FPS</span>
+                    </div>
+                </div>
+                <div class="animation-frames">
+                    <img src="assets/art/src-svg/animations/enemy_raider_walk_01.svg" style="width: 48px; height: 48px;">
+                    <img src="assets/art/src-svg/animations/enemy_raider_walk_02.svg" style="width: 48px; height: 48px;">
+                    <img src="assets/art/src-svg/animations/enemy_raider_walk_03.svg" style="width: 48px; height: 48px;">
+                    <img src="assets/art/src-svg/animations/enemy_raider_walk_04.svg" style="width: 48px; height: 48px;">
+                </div>
+                <p class="description">Raider marching forward with weapon raised, alternating leg positions.</p>
+            </div>
+
+            <!-- Scout Walk -->
+            <div class="sprite-card">
+                <h3>Scout Walk Cycle</h3>
+                <div class="dimensions">4 frames @ 12 FPS</div>
+                <div class="animation-player">
+                    <div class="animation-display">
+                        <img id="scout-walk-display" src="assets/art/src-svg/animations/enemy_scout_walk_01.svg" class="sprite" style="width: 128px; height: 128px;">
+                    </div>
+                    <div class="animation-controls">
+                        <button onclick="toggleAnimation('scout-walk')" id="scout-walk-btn">Play</button>
+                        <span class="fps-label">12 FPS</span>
+                    </div>
+                </div>
+                <div class="animation-frames">
+                    <img src="assets/art/src-svg/animations/enemy_scout_walk_01.svg" style="width: 48px; height: 48px;">
+                    <img src="assets/art/src-svg/animations/enemy_scout_walk_02.svg" style="width: 48px; height: 48px;">
+                    <img src="assets/art/src-svg/animations/enemy_scout_walk_03.svg" style="width: 48px; height: 48px;">
+                    <img src="assets/art/src-svg/animations/enemy_scout_walk_04.svg" style="width: 48px; height: 48px;">
+                </div>
+                <p class="description">Fast runner with extended stride, speed lines for motion blur effect.</p>
+            </div>
+
+            <!-- Enemy Death -->
+            <div class="sprite-card">
+                <h3>Enemy Death</h3>
+                <div class="dimensions">4 frames @ 12 FPS</div>
+                <div class="animation-player">
+                    <div class="animation-display">
+                        <img id="enemy-death-display" src="assets/art/src-svg/animations/enemy_death_01.svg" class="sprite" style="width: 128px; height: 128px;">
+                    </div>
+                    <div class="animation-controls">
+                        <button onclick="toggleAnimation('enemy-death')" id="enemy-death-btn">Play</button>
+                        <span class="fps-label">12 FPS</span>
+                    </div>
+                </div>
+                <div class="animation-frames">
+                    <img src="assets/art/src-svg/animations/enemy_death_01.svg" style="width: 48px; height: 48px;">
+                    <img src="assets/art/src-svg/animations/enemy_death_02.svg" style="width: 48px; height: 48px;">
+                    <img src="assets/art/src-svg/animations/enemy_death_03.svg" style="width: 48px; height: 48px;">
+                    <img src="assets/art/src-svg/animations/enemy_death_04.svg" style="width: 48px; height: 48px;">
+                </div>
+                <p class="description">Generic death: flash, break apart, dissolve, fade with corruption wisps.</p>
+            </div>
+
+            <!-- Arrow Tower Attack -->
+            <div class="sprite-card">
+                <h3>Arrow Tower Attack</h3>
+                <div class="dimensions">2 frames @ 12 FPS</div>
+                <div class="animation-player">
+                    <div class="animation-display">
+                        <img id="arrow-attack-display" src="assets/art/src-svg/animations/tower_arrow_attack_01.svg" class="sprite" style="width: 96px; height: 128px;">
+                    </div>
+                    <div class="animation-controls">
+                        <button onclick="toggleAnimation('arrow-attack')" id="arrow-attack-btn">Play</button>
+                        <span class="fps-label">12 FPS</span>
+                    </div>
+                </div>
+                <div class="animation-frames">
+                    <img src="assets/art/src-svg/animations/tower_arrow_attack_01.svg" style="width: 48px; height: 64px;">
+                    <img src="assets/art/src-svg/animations/tower_arrow_attack_02.svg" style="width: 48px; height: 64px;">
+                </div>
+                <p class="description">Bow string flash, arrow launching with motion blur.</p>
+            </div>
+
+            <!-- Fire Tower Attack -->
+            <div class="sprite-card">
+                <h3>Fire Tower Attack</h3>
+                <div class="dimensions">2 frames @ 12 FPS</div>
+                <div class="animation-player">
+                    <div class="animation-display">
+                        <img id="fire-attack-display" src="assets/art/src-svg/animations/tower_fire_attack_01.svg" class="sprite" style="width: 96px; height: 128px;">
+                    </div>
+                    <div class="animation-controls">
+                        <button onclick="toggleAnimation('fire-attack')" id="fire-attack-btn">Play</button>
+                        <span class="fps-label">12 FPS</span>
+                    </div>
+                </div>
+                <div class="animation-frames">
+                    <img src="assets/art/src-svg/animations/tower_fire_attack_01.svg" style="width: 48px; height: 64px;">
+                    <img src="assets/art/src-svg/animations/tower_fire_attack_02.svg" style="width: 48px; height: 64px;">
+                </div>
+                <p class="description">Flame eruption, fireball launching with ember particles.</p>
+            </div>
+
+            <!-- Ice Tower Attack -->
+            <div class="sprite-card">
+                <h3>Ice Tower Attack</h3>
+                <div class="dimensions">2 frames @ 12 FPS</div>
+                <div class="animation-player">
+                    <div class="animation-display">
+                        <img id="ice-attack-display" src="assets/art/src-svg/animations/tower_ice_attack_01.svg" class="sprite" style="width: 96px; height: 128px;">
+                    </div>
+                    <div class="animation-controls">
+                        <button onclick="toggleAnimation('ice-attack')" id="ice-attack-btn">Play</button>
+                        <span class="fps-label">12 FPS</span>
+                    </div>
+                </div>
+                <div class="animation-frames">
+                    <img src="assets/art/src-svg/animations/tower_ice_attack_01.svg" style="width: 48px; height: 64px;">
+                    <img src="assets/art/src-svg/animations/tower_ice_attack_02.svg" style="width: 48px; height: 64px;">
+                </div>
+                <p class="description">Crystal glow burst, ice shard launching with frost particles.</p>
             </div>
         </div>
     </div>
@@ -411,6 +608,83 @@
 
     <script>
         let currentScale = 2;
+        let animations = {};
+
+        // Animation definitions
+        const animationData = {
+            'raider-walk': {
+                frames: [
+                    'assets/art/src-svg/animations/enemy_raider_walk_01.svg',
+                    'assets/art/src-svg/animations/enemy_raider_walk_02.svg',
+                    'assets/art/src-svg/animations/enemy_raider_walk_03.svg',
+                    'assets/art/src-svg/animations/enemy_raider_walk_04.svg'
+                ],
+                fps: 10
+            },
+            'scout-walk': {
+                frames: [
+                    'assets/art/src-svg/animations/enemy_scout_walk_01.svg',
+                    'assets/art/src-svg/animations/enemy_scout_walk_02.svg',
+                    'assets/art/src-svg/animations/enemy_scout_walk_03.svg',
+                    'assets/art/src-svg/animations/enemy_scout_walk_04.svg'
+                ],
+                fps: 12
+            },
+            'enemy-death': {
+                frames: [
+                    'assets/art/src-svg/animations/enemy_death_01.svg',
+                    'assets/art/src-svg/animations/enemy_death_02.svg',
+                    'assets/art/src-svg/animations/enemy_death_03.svg',
+                    'assets/art/src-svg/animations/enemy_death_04.svg'
+                ],
+                fps: 12
+            },
+            'arrow-attack': {
+                frames: [
+                    'assets/art/src-svg/animations/tower_arrow_attack_01.svg',
+                    'assets/art/src-svg/animations/tower_arrow_attack_02.svg'
+                ],
+                fps: 12
+            },
+            'fire-attack': {
+                frames: [
+                    'assets/art/src-svg/animations/tower_fire_attack_01.svg',
+                    'assets/art/src-svg/animations/tower_fire_attack_02.svg'
+                ],
+                fps: 12
+            },
+            'ice-attack': {
+                frames: [
+                    'assets/art/src-svg/animations/tower_ice_attack_01.svg',
+                    'assets/art/src-svg/animations/tower_ice_attack_02.svg'
+                ],
+                fps: 12
+            }
+        };
+
+        function toggleAnimation(name) {
+            const btn = document.getElementById(name + '-btn');
+            const display = document.getElementById(name + '-display');
+            const data = animationData[name];
+
+            if (animations[name]) {
+                // Stop animation
+                clearInterval(animations[name]);
+                delete animations[name];
+                btn.textContent = 'Play';
+                btn.classList.remove('playing');
+                display.src = data.frames[0];
+            } else {
+                // Start animation
+                let frame = 0;
+                animations[name] = setInterval(() => {
+                    display.src = data.frames[frame];
+                    frame = (frame + 1) % data.frames.length;
+                }, 1000 / data.fps);
+                btn.textContent = 'Stop';
+                btn.classList.add('playing');
+            }
+        }
 
         function setScale(scale) {
             currentScale = scale;
@@ -459,6 +733,18 @@
             document.querySelectorAll('.sprite-container.effects-large img').forEach(img => {
                 img.style.width = (64 * scale) + 'px';
                 img.style.height = (64 * scale) + 'px';
+            });
+
+            // Update animation displays
+            document.querySelectorAll('.animation-display img').forEach(img => {
+                const isEnemy = img.id.includes('raider') || img.id.includes('scout') || img.id.includes('death');
+                if (isEnemy) {
+                    img.style.width = (32 * scale) + 'px';
+                    img.style.height = (32 * scale) + 'px';
+                } else {
+                    img.style.width = (24 * scale) + 'px';
+                    img.style.height = (32 * scale) + 'px';
+                }
             });
         }
 
