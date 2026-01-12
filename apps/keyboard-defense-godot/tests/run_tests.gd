@@ -84,6 +84,7 @@ const SimTick = preload("res://sim/tick.gd")
 const SimAutoTowerCombat = preload("res://sim/auto_tower_combat.gd")
 const WorldTick = preload("res://sim/world_tick.gd")
 const ControlsAliases = preload("res://game/controls_aliases.gd")
+const ScenarioReport = preload("res://tools/scenario_harness/scenario_report.gd")
 
 var total_tests: int = 0
 var total_failed: int = 0
@@ -188,6 +189,7 @@ func _run_all() -> void:
     _run_auto_tower_combat_tests()
     _run_world_tick_tests()
     _run_controls_aliases_tests()
+    _run_scenario_report_tests()
 
     for message in messages:
         print("[tests] %s" % message)
@@ -8666,3 +8668,124 @@ func _test_controls_aliases_keycode_from_token() -> void:
     _assert_equal(ControlsAliases.keycode_from_token("UNKNOWN"), 0, "UNKNOWN returns 0")
     _assert_equal(ControlsAliases.keycode_from_token("F0"), 0, "F0 returns 0")
     _assert_equal(ControlsAliases.keycode_from_token("F13"), 0, "F13 returns 0")
+
+
+# ==============================================================================
+# SCENARIO REPORT TESTS
+# ==============================================================================
+
+func _run_scenario_report_tests() -> void:
+    _test_scenario_report_build_report()
+    _test_scenario_report_path_normalization()
+    _test_scenario_report_dir_normalization()
+    _test_scenario_report_join_path()
+
+func _test_scenario_report_build_report() -> void:
+    # Test with empty results
+    var empty_results: Array = []
+    var meta: Dictionary = {"timestamp": 12345, "version": "1.0"}
+    var empty_report: Dictionary = ScenarioReport.build_report(empty_results, meta)
+
+    _assert_true(empty_report.has("meta"), "Report has meta")
+    _assert_true(empty_report.has("summary"), "Report has summary")
+    _assert_true(empty_report.has("results"), "Report has results")
+    _assert_equal(int(empty_report.get("meta", {}).get("timestamp", 0)), 12345, "Meta timestamp preserved")
+
+    var summary: Dictionary = empty_report.get("summary", {})
+    _assert_equal(int(summary.get("total", -1)), 0, "Empty results: total is 0")
+    _assert_equal(int(summary.get("ok", -1)), 0, "Empty results: ok is 0")
+    _assert_equal(int(summary.get("fail", -1)), 0, "Empty results: fail is 0")
+
+    # Test with passing results
+    var passing_results: Array = [
+        {"id": "test1", "pass": true, "baseline_failures": []},
+        {"id": "test2", "pass": true, "baseline_failures": []}
+    ]
+    var pass_report: Dictionary = ScenarioReport.build_report(passing_results, {})
+    var pass_summary: Dictionary = pass_report.get("summary", {})
+
+    _assert_equal(int(pass_summary.get("total", -1)), 2, "Passing: total is 2")
+    _assert_equal(int(pass_summary.get("ok", -1)), 2, "Passing: ok is 2")
+    _assert_equal(int(pass_summary.get("fail", -1)), 0, "Passing: fail is 0")
+    _assert_equal(int(pass_summary.get("baseline_pass_count", -1)), 2, "Passing: baseline_pass_count is 2")
+
+    # Test with mixed results
+    var mixed_results: Array = [
+        {"id": "pass1", "pass": true, "baseline_failures": []},
+        {"id": "fail1", "pass": false, "baseline_failures": ["error1"]},
+        {"id": "pass2", "pass": true, "baseline_failures": []},
+        {"id": "fail2", "pass": false, "baseline_failures": ["error2", "error3"]}
+    ]
+    var mixed_report: Dictionary = ScenarioReport.build_report(mixed_results, {})
+    var mixed_summary: Dictionary = mixed_report.get("summary", {})
+
+    _assert_equal(int(mixed_summary.get("total", -1)), 4, "Mixed: total is 4")
+    _assert_equal(int(mixed_summary.get("ok", -1)), 2, "Mixed: ok is 2")
+    _assert_equal(int(mixed_summary.get("fail", -1)), 2, "Mixed: fail is 2")
+    _assert_equal(int(mixed_summary.get("baseline_pass_count", -1)), 2, "Mixed: baseline_pass_count is 2")
+
+    var failed_ids: Array = mixed_summary.get("failed_ids", [])
+    _assert_equal(failed_ids.size(), 2, "Mixed: 2 failed IDs")
+    _assert_true("fail1" in failed_ids, "fail1 in failed_ids")
+    _assert_true("fail2" in failed_ids, "fail2 in failed_ids")
+
+    # Test with target expectations
+    var target_results: Array = [
+        {"id": "t1", "pass": true, "baseline_failures": [], "target_expected": true, "target_failures": []},
+        {"id": "t2", "pass": true, "baseline_failures": [], "target_expected": true, "target_failures": ["missed"]},
+        {"id": "t3", "pass": true, "baseline_failures": [], "target_expected": false}
+    ]
+    var target_report: Dictionary = ScenarioReport.build_report(target_results, {})
+    var target_summary: Dictionary = target_report.get("summary", {})
+
+    _assert_equal(int(target_summary.get("target_total_count", -1)), 2, "Target: total_count is 2")
+    _assert_equal(int(target_summary.get("target_met_count", -1)), 1, "Target: met_count is 1")
+
+func _test_scenario_report_path_normalization() -> void:
+    # Test empty path
+    _assert_equal(ScenarioReport._normalize_output_path(""), "", "Empty path stays empty")
+    _assert_equal(ScenarioReport._normalize_output_path("   "), "", "Whitespace becomes empty")
+
+    # Test res:// paths
+    _assert_equal(ScenarioReport._normalize_output_path("res://foo.json"), "res://foo.json", "res:// preserved")
+    _assert_equal(ScenarioReport._normalize_output_path("  res://bar.json  "), "res://bar.json", "res:// with whitespace trimmed")
+
+    # Test user:// paths
+    _assert_equal(ScenarioReport._normalize_output_path("user://save.json"), "user://save.json", "user:// preserved")
+
+    # Test relative paths get res:// prefix
+    _assert_equal(ScenarioReport._normalize_output_path("reports/test.json"), "res://reports/test.json", "Relative gets res://")
+    _assert_equal(ScenarioReport._normalize_output_path("./local/file.json"), "res://local/file.json", "./ stripped and gets res://")
+
+func _test_scenario_report_dir_normalization() -> void:
+    # Test empty dir
+    _assert_equal(ScenarioReport._normalize_dir(""), "", "Empty dir stays empty")
+    _assert_equal(ScenarioReport._normalize_dir("   "), "", "Whitespace becomes empty")
+
+    # Test res:// dirs
+    _assert_equal(ScenarioReport._normalize_dir("res://output"), "res://output", "res:// dir preserved")
+    _assert_equal(ScenarioReport._normalize_dir("res://output/"), "res://output", "Trailing slash stripped")
+
+    # Test user:// dirs
+    _assert_equal(ScenarioReport._normalize_dir("user://reports"), "user://reports", "user:// dir preserved")
+    _assert_equal(ScenarioReport._normalize_dir("user://reports/"), "user://reports", "user:// trailing slash stripped")
+
+    # Test relative dirs
+    _assert_equal(ScenarioReport._normalize_dir("logs"), "res://logs", "Relative dir gets res://")
+    _assert_equal(ScenarioReport._normalize_dir("./data/output"), "res://data/output", "./ stripped for dir")
+    _assert_equal(ScenarioReport._normalize_dir("./data/output/"), "res://data/output", "./ and trailing slash stripped")
+
+func _test_scenario_report_join_path() -> void:
+    # Test basic joining
+    _assert_equal(ScenarioReport._join_path("dir", "file.txt"), "dir/file.txt", "Basic join")
+    _assert_equal(ScenarioReport._join_path("path/to", "file.json"), "path/to/file.json", "Multi-level join")
+
+    # Test with trailing slash
+    _assert_equal(ScenarioReport._join_path("dir/", "file.txt"), "dir/file.txt", "Dir with trailing slash")
+
+    # Test with empty dir
+    _assert_equal(ScenarioReport._join_path("", "file.txt"), "file.txt", "Empty dir returns just filename")
+
+    # Test with res:// paths
+    _assert_equal(ScenarioReport._join_path("res://output", "report.json"), "res://output/report.json", "res:// path join")
+    _assert_equal(ScenarioReport._join_path("user://data/", "save.json"), "user://data/save.json", "user:// path join with slash")

@@ -155,7 +155,7 @@ New SVG assets in `assets/art/src-svg/`:
 - Scenario reports and summaries are written under `Logs/ScenarioReports/` for CI-friendly collection (via `--out-dir`).
 
 ## Test Coverage (as of 2026-01-12)
-**Total: ~5,500+ assertions**
+**Total: ~5,600+ assertions**
 
 - **Parser tests**: Command parsing, intent validation
 - **Reducer tests**: State mutation, intent application
@@ -213,6 +213,7 @@ New SVG assets in `assets/art/src-svg/`:
 - **Auto tower combat tests**: Targeting modes, damage events, fire checks, state init, enemy conversion, damage application
 - **World tick tests**: Constants, terrain biomes, threat contribution, enemy kind selection, threat breakdown
 - **Controls aliases tests**: Modifier aliases, key aliases, token normalization, modifier detection, keycode lookup
+- **Scenario report tests**: Report building, path normalization, directory normalization, path joining
 
 ## Planning
 - `docs/ROADMAP.md` is the authoritative milestone list.
