@@ -61,6 +61,7 @@ const SimEventEffects = preload("res://sim/event_effects.gd")
 const SimEvents = preload("res://sim/events.gd")
 const SimEventTables = preload("res://sim/event_tables.gd")
 const SimPoi = preload("res://sim/poi.gd")
+const SimAutoTowerTypes = preload("res://sim/auto_tower_types.gd")
 
 var total_tests: int = 0
 var total_failed: int = 0
@@ -139,6 +140,8 @@ func _run_all() -> void:
     _run_event_effects_tests()
     _run_event_system_tests()
     _run_zone_system_tests()
+    _run_poi_zone_tests()
+    _run_auto_tower_types_tests()
 
     for message in messages:
         print("[tests] %s" % message)
@@ -3128,6 +3131,12 @@ func _assert_approx(actual: float, expected: float, epsilon: float, name: String
         total_failed += 1
         messages.append("FAIL: %s (expected %s, got %s)" % [name, str(expected), str(actual)])
 
+func _assert_false(value: bool, name: String) -> void:
+    total_tests += 1
+    if value:
+        total_failed += 1
+        messages.append("FAIL: %s (expected false, got true)" % name)
+
 func _run_boss_encounters_tests() -> void:
     # Test getting all boss IDs
     var boss_ids: Array[String] = SimBossEncounters.get_all_boss_ids()
@@ -5171,3 +5180,123 @@ func _run_zone_system_tests() -> void:
 
     var region_cmd: Dictionary = CommandParser.parse("region")
     _assert_true(bool(region_cmd.get("ok", false)), "region alias parses")
+
+
+func _run_poi_zone_tests() -> void:
+    var state: GameState = DefaultState.create()
+    state.base_pos = Vector2i(8, 5)
+
+    # Test get_poi_tier with explicit tier
+    var poi_with_tier: Dictionary = {"id": "explicit_tier", "tier": 3, "min_day": 1}
+    _assert_equal(SimPoi.get_poi_tier(poi_with_tier), 3, "Explicit tier respected")
+
+    # Test tier clamping
+    var poi_high_tier: Dictionary = {"id": "high_tier", "tier": 10}
+    _assert_equal(SimPoi.get_poi_tier(poi_high_tier), 4, "Tier clamped to 4 max")
+
+    var poi_low_tier: Dictionary = {"id": "low_tier", "tier": 0}
+    _assert_equal(SimPoi.get_poi_tier(poi_low_tier), 1, "Tier clamped to 1 min")
+
+    # Test tier derived from min_day
+    var poi_day_1: Dictionary = {"id": "early", "min_day": 1}
+    _assert_equal(SimPoi.get_poi_tier(poi_day_1), 1, "Day 1 = tier 1")
+
+    var poi_day_5: Dictionary = {"id": "mid_early", "min_day": 5}
+    _assert_equal(SimPoi.get_poi_tier(poi_day_5), 1, "Day 5 = tier 1")
+
+    var poi_day_6: Dictionary = {"id": "mid", "min_day": 6}
+    _assert_equal(SimPoi.get_poi_tier(poi_day_6), 2, "Day 6 = tier 2")
+
+    var poi_day_10: Dictionary = {"id": "mid_late", "min_day": 10}
+    _assert_equal(SimPoi.get_poi_tier(poi_day_10), 2, "Day 10 = tier 2")
+
+    var poi_day_11: Dictionary = {"id": "late", "min_day": 11}
+    _assert_equal(SimPoi.get_poi_tier(poi_day_11), 3, "Day 11 = tier 3")
+
+    var poi_day_15: Dictionary = {"id": "very_late", "min_day": 15}
+    _assert_equal(SimPoi.get_poi_tier(poi_day_15), 3, "Day 15 = tier 3")
+
+    var poi_day_16: Dictionary = {"id": "end_game", "min_day": 16}
+    _assert_equal(SimPoi.get_poi_tier(poi_day_16), 4, "Day 16+ = tier 4")
+
+    var poi_day_30: Dictionary = {"id": "very_end", "min_day": 30}
+    _assert_equal(SimPoi.get_poi_tier(poi_day_30), 4, "Day 30 = tier 4")
+
+    # Test filter_by_zone
+    var pois: Array = [
+        {"id": "tier1", "tier": 1},
+        {"id": "tier2", "tier": 2},
+        {"id": "tier3", "tier": 3},
+        {"id": "tier4", "tier": 4}
+    ]
+
+    # Safe zone (max tier 1)
+    var safe_pos: Vector2i = state.base_pos
+    var safe_filtered: Array = SimPoi.filter_by_zone(state, pois, safe_pos)
+    _assert_equal(safe_filtered.size(), 1, "Safe zone allows 1 tier")
+    _assert_equal(str(safe_filtered[0].get("id", "")), "tier1", "Only tier 1 in safe zone")
+
+    # Frontier zone (max tier 2)
+    var frontier_pos: Vector2i = Vector2i(state.base_pos.x + 4, state.base_pos.y)
+    var frontier_filtered: Array = SimPoi.filter_by_zone(state, pois, frontier_pos)
+    _assert_equal(frontier_filtered.size(), 2, "Frontier allows 2 tiers")
+
+    # Wilderness zone (max tier 3)
+    var wild_pos: Vector2i = Vector2i(state.base_pos.x + 8, state.base_pos.y)
+    var wild_filtered: Array = SimPoi.filter_by_zone(state, pois, wild_pos)
+    _assert_equal(wild_filtered.size(), 3, "Wilderness allows 3 tiers")
+
+    # Depths zone (max tier 4)
+    var depths_pos: Vector2i = Vector2i(0, 0)
+    var depths_filtered: Array = SimPoi.filter_by_zone(state, pois, depths_pos)
+    _assert_equal(depths_filtered.size(), 4, "Depths allows all 4 tiers")
+
+    # Test filter_by_zone handles non-dictionary entries
+    var mixed: Array = [{"id": "valid", "tier": 1}, "invalid", 123, null]
+    var mixed_filtered: Array = SimPoi.filter_by_zone(state, mixed, safe_pos)
+    _assert_equal(mixed_filtered.size(), 1, "filter_by_zone skips non-dictionaries")
+
+    # Test get_adjusted_rarity
+    var base_poi: Dictionary = {"id": "test", "rarity": 50}
+
+    # Safe zone has +20 bonus
+    var safe_rarity: int = SimPoi.get_adjusted_rarity(state, base_poi, safe_pos)
+    _assert_equal(safe_rarity, 70, "Safe zone +20 rarity bonus")
+
+    # Frontier zone has 0 bonus
+    var frontier_rarity: int = SimPoi.get_adjusted_rarity(state, base_poi, frontier_pos)
+    _assert_equal(frontier_rarity, 50, "Frontier zone 0 rarity bonus")
+
+    # Wilderness zone has -10 bonus
+    var wild_rarity: int = SimPoi.get_adjusted_rarity(state, base_poi, wild_pos)
+    _assert_equal(wild_rarity, 40, "Wilderness zone -10 rarity bonus")
+
+    # Depths zone has -20 bonus
+    var depths_rarity: int = SimPoi.get_adjusted_rarity(state, base_poi, depths_pos)
+    _assert_equal(depths_rarity, 30, "Depths zone -20 rarity bonus")
+
+    # Test rarity clamping
+    var low_rarity_poi: Dictionary = {"id": "low", "rarity": 5}
+    var depths_low: int = SimPoi.get_adjusted_rarity(state, low_rarity_poi, depths_pos)
+    _assert_equal(depths_low, 1, "Rarity clamped to minimum 1")
+
+    var high_rarity_poi: Dictionary = {"id": "high", "rarity": 95}
+    var safe_high: int = SimPoi.get_adjusted_rarity(state, high_rarity_poi, safe_pos)
+    _assert_equal(safe_high, 100, "Rarity clamped to maximum 100")
+
+    # Test get_pois_for_zone returns array
+    var zone_pois: Array = SimPoi.get_pois_for_zone(SimMap.ZONE_SAFE)
+    _assert_true(typeof(zone_pois) == TYPE_ARRAY, "get_pois_for_zone returns array")
+
+    # Test count_pois_by_zone
+    var counts: Dictionary = SimPoi.count_pois_by_zone()
+    _assert_true(counts.has(SimMap.ZONE_SAFE), "count has safe zone")
+    _assert_true(counts.has(SimMap.ZONE_FRONTIER), "count has frontier zone")
+    _assert_true(counts.has(SimMap.ZONE_WILDERNESS), "count has wilderness zone")
+    _assert_true(counts.has(SimMap.ZONE_DEPTHS), "count has depths zone")
+
+    # Test format_poi_zone_summary
+    var summary: String = SimPoi.format_poi_zone_summary()
+    _assert_true("POI Distribution" in summary, "Summary has title")
+    _assert_true("Safe Zone" in summary, "Summary mentions Safe Zone")
+    _assert_true("POIs available" in summary, "Summary shows POI count")
