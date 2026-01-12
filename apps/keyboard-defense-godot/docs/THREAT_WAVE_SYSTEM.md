@@ -42,24 +42,50 @@ const WAVE_ASSAULT_THRESHOLD := 0.8 # Triggers wave assault
 
 ### Threat Growth
 
-Threat increases when roaming enemies are near the castle:
+Threat increases based on roaming enemy proximity AND zone danger. Enemies from dangerous zones contribute more threat.
 
 ```gdscript
 static func _tick_threat_level(state: GameState) -> void:
-    var enemies_near_castle: int = 0
+    var threat_contribution: float = 0.0
     var castle_dist_threshold := 5
 
     for entity in state.roaming_enemies:
-        var pos = entity.get("pos", Vector2i.ZERO)
-        var dist = abs(pos.x - state.base_pos.x) + abs(pos.y - state.base_pos.y)
-        if dist <= castle_dist_threshold:
-            enemies_near_castle += 1
+        var pos: Vector2i = entity.get("pos", Vector2i.ZERO)
+        var dist: int = abs(pos.x - state.base_pos.x) + abs(pos.y - state.base_pos.y)
 
-    if enemies_near_castle > 0:
-        state.threat_level = min(1.0, state.threat_level + THREAT_GROWTH_RATE * enemies_near_castle)
+        if dist <= castle_dist_threshold:
+            var base_threat: float = 1.0
+
+            # Zone multipliers (enemies from dangerous zones are more threatening)
+            var spawn_zone: String = str(entity.get("spawn_zone", SimMap.ZONE_SAFE))
+            var zone_mult: float = SimMap.get_zone_threat_multiplier(spawn_zone)
+
+            # Proximity bonus (closer = more threatening)
+            var proximity_bonus: float = 1.0 + (float(castle_dist_threshold - dist) / float(castle_dist_threshold))
+
+            threat_contribution += base_threat * zone_mult * proximity_bonus
+
+    if threat_contribution > 0:
+        state.threat_level = min(1.0, state.threat_level + THREAT_GROWTH_RATE * threat_contribution)
     else:
         state.threat_level = max(0.0, state.threat_level - THREAT_DECAY_RATE)
+
+    # Additional threat from exploring dangerous zones
+    var exploration = SimMap.get_exploration_by_zone(state)
+    if exploration.get(SimMap.ZONE_WILDERNESS, 0.0) > 0.1:
+        state.threat_level += 0.002
+    if exploration.get(SimMap.ZONE_DEPTHS, 0.0) > 0.05:
+        state.threat_level += 0.005
 ```
+
+### Zone Threat Multipliers
+
+| Zone | Threat Mult | Description |
+|------|-------------|-------------|
+| Safe | 0.5x | Enemies near castle contribute half threat |
+| Frontier | 1.0x | Standard threat contribution |
+| Wilderness | 1.5x | Enemies from wilderness are more dangerous |
+| Depths | 2.0x | Maximum threat contribution |
 
 ### Wave Assault Trigger
 
@@ -164,14 +190,35 @@ static func _tick_roaming_spawns(state: GameState) -> String:
 
 ### Roaming Enemy Types
 
-Available types scale with day:
+Available types scale with day AND spawn zone tier:
 
 ```gdscript
-var kinds: Array = ["raider", "scout", "armored"]
-if state.day >= 3:
-    kinds.append("swarm")
-if state.day >= 5:
-    kinds.append("berserker")
+static func _select_enemy_kind_for_zone(state: GameState, max_tier: int) -> String:
+    # Tier 1: raider, scout
+    # Tier 2: + armored, swarm (day 3+)
+    # Tier 3: + berserker, tank, phantom (day 5+)
+    # Tier 4: + champion, healer, elite (day 7+)
+```
+
+| Zone | Max Tier | Available Enemies |
+|------|----------|-------------------|
+| Safe | 1 | raider, scout |
+| Frontier | 2 | + armored, swarm |
+| Wilderness | 3 | + berserker, tank, phantom |
+| Depths | 4 | + champion, healer, elite |
+
+### Roaming Enemy Structure
+
+```gdscript
+{
+    "id": int,
+    "kind": String,
+    "pos": Vector2i,
+    "target_pos": Vector2i,
+    "state": "wandering",
+    "move_timer": float,
+    "spawn_zone": String  # Zone where enemy spawned (for threat calculation)
+}
 ```
 
 ### Movement
@@ -343,6 +390,50 @@ state.threat_level = 1.0
 state.wave_cooldown = 0.0
 ```
 
+## Zone System Integration
+
+The threat system integrates with the zone-based map to create spatial danger:
+
+### Zone Definitions (from `sim/map.gd`)
+
+| Zone | Distance from Castle | Enemy Tier | Threat Mult |
+|------|---------------------|------------|-------------|
+| Safe | 0-3 tiles | 1 | 0.5x |
+| Frontier | 4-6 tiles | 2 | 1.0x |
+| Wilderness | 7-10 tiles | 3 | 1.5x |
+| Depths | 11+ tiles | 4 | 2.0x |
+
+### Exploration Spawn Modifier
+
+Exploring dangerous zones increases enemy spawn rate:
+
+```gdscript
+static func _get_exploration_spawn_modifier(state: GameState) -> float:
+    var modifier: float = 0.0
+
+    # Cursor in dangerous zone increases spawns
+    match SimMap.get_cursor_zone(state):
+        SimMap.ZONE_WILDERNESS: modifier += 0.05
+        SimMap.ZONE_DEPTHS: modifier += 0.10
+
+    # Exploration progress adds passive spawn pressure
+    var exploration = SimMap.get_exploration_by_zone(state)
+    modifier += exploration.get(SimMap.ZONE_WILDERNESS, 0.0) * 0.02
+    modifier += exploration.get(SimMap.ZONE_DEPTHS, 0.0) * 0.05
+
+    return modifier
+```
+
+### Weighted Edge Position
+
+At high threat (>50%), spawns prefer dangerous zone edges:
+
+```gdscript
+static func _get_weighted_edge_position(state: GameState) -> Vector2i:
+    var prefer_dangerous: bool = state.threat_level > 0.5
+    # Attempts multiple positions, picks highest tier zone
+```
+
 ## Design Philosophy
 
 The threat system embodies key design pillars:
@@ -351,9 +442,11 @@ The threat system embodies key design pillars:
 2. **Clear Progression** - Day number correlates with wave difficulty
 3. **Player Agency** - Exploring/building affects threat growth
 4. **Tension Without Frustration** - Threat rises predictably, not randomly
+5. **Spatial Danger** - Zone system creates risk/reward exploration
 
 The system creates a natural rhythm:
 - Explore and build (threat rises slowly)
+- Venture into dangerous zones (threat rises faster)
 - Defend against wave (threat resets)
 - Brief respite (cooldown)
 - Repeat with increased difficulty
