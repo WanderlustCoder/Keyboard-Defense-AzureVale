@@ -262,6 +262,11 @@ func _run_all() -> void:
     _run_sim_poi_constants_tests()
     _run_story_manager_constants_tests()
     _run_keybind_conflicts_constants_tests()
+    _run_sim_buildings_constants_tests()
+    _run_sim_events_constants_tests()
+    _run_sim_event_tables_constants_tests()
+    _run_sim_locale_constants_tests()
+    _run_sim_titles_constants_tests()
 
     for message in messages:
         print("[tests] %s" % message)
@@ -11614,3 +11619,279 @@ func _test_keybind_conflicts_game_name() -> void:
     _assert_true(KeybindConflicts.GAME_NAME is String, "GAME_NAME is String")
     _assert_true(KeybindConflicts.GAME_NAME.length() > 0, "GAME_NAME is not empty")
     _assert_equal(KeybindConflicts.GAME_NAME, "Keyboard Defense", "GAME_NAME value")
+
+# =============================================================================
+# SIM BUILDINGS CONSTANTS TESTS
+# =============================================================================
+
+func _run_sim_buildings_constants_tests() -> void:
+    _test_sim_buildings_dictionary()
+    _test_sim_buildings_tower_stats()
+    _test_sim_buildings_tower_upgrade_costs()
+    _test_sim_buildings_building_upgrades()
+
+func _test_sim_buildings_dictionary() -> void:
+    # BUILDINGS dictionary
+    _assert_true(SimBuildings.BUILDINGS is Dictionary, "BUILDINGS is Dictionary")
+    _assert_true(SimBuildings.BUILDINGS.size() > 0, "BUILDINGS not empty")
+
+    # Required basic building types
+    var basic_types: Array[String] = ["farm", "lumber", "quarry", "wall", "tower", "market", "barracks", "temple", "workshop"]
+    for building_type in basic_types:
+        _assert_true(SimBuildings.BUILDINGS.has(building_type), "BUILDINGS has %s" % building_type)
+
+    # Validate building structure
+    for building_id in SimBuildings.BUILDINGS.keys():
+        var building: Dictionary = SimBuildings.BUILDINGS[building_id]
+        _assert_true(building is Dictionary, "Building %s is Dictionary" % building_id)
+        _assert_true(building.has("cost"), "Building %s has cost" % building_id)
+        _assert_true(building.has("production"), "Building %s has production" % building_id)
+        _assert_true(building.has("category"), "Building %s has category" % building_id)
+
+        # Cost should be a dictionary
+        _assert_true(building["cost"] is Dictionary, "Building %s cost is Dictionary" % building_id)
+
+        # Production should be a dictionary
+        _assert_true(building["production"] is Dictionary, "Building %s production is Dictionary" % building_id)
+
+        # Defense should be a non-negative integer
+        var defense: int = int(building.get("defense", 0))
+        _assert_true(defense >= 0, "Building %s defense >= 0" % building_id)
+
+        # Worker slots should be non-negative
+        var slots: int = int(building.get("worker_slots", 0))
+        _assert_true(slots >= 0, "Building %s worker_slots >= 0" % building_id)
+
+func _test_sim_buildings_tower_stats() -> void:
+    # TOWER_STATS dictionary
+    _assert_true(SimBuildings.TOWER_STATS is Dictionary, "TOWER_STATS is Dictionary")
+    _assert_true(SimBuildings.TOWER_STATS.size() >= 3, "TOWER_STATS has at least 3 levels")
+
+    # Validate tower stat levels
+    for level in [1, 2, 3]:
+        _assert_true(SimBuildings.TOWER_STATS.has(level), "TOWER_STATS has level %d" % level)
+        var stats: Dictionary = SimBuildings.TOWER_STATS[level]
+        _assert_true(stats.has("range"), "TOWER_STATS level %d has range" % level)
+        _assert_true(stats.has("damage"), "TOWER_STATS level %d has damage" % level)
+        _assert_true(stats.has("shots"), "TOWER_STATS level %d has shots" % level)
+
+        # Values should be positive
+        _assert_true(int(stats["range"]) > 0, "TOWER_STATS level %d range > 0" % level)
+        _assert_true(int(stats["damage"]) > 0, "TOWER_STATS level %d damage > 0" % level)
+        _assert_true(int(stats["shots"]) > 0, "TOWER_STATS level %d shots > 0" % level)
+
+    # Higher levels should have better stats
+    _assert_true(int(SimBuildings.TOWER_STATS[2]["range"]) >= int(SimBuildings.TOWER_STATS[1]["range"]), "Tower range increases with level")
+    _assert_true(int(SimBuildings.TOWER_STATS[3]["damage"]) >= int(SimBuildings.TOWER_STATS[2]["damage"]), "Tower damage increases with level")
+
+func _test_sim_buildings_tower_upgrade_costs() -> void:
+    # TOWER_UPGRADE_COSTS dictionary
+    _assert_true(SimBuildings.TOWER_UPGRADE_COSTS is Dictionary, "TOWER_UPGRADE_COSTS is Dictionary")
+    _assert_true(SimBuildings.TOWER_UPGRADE_COSTS.size() >= 2, "TOWER_UPGRADE_COSTS has at least 2 levels")
+
+    for level in [1, 2]:
+        _assert_true(SimBuildings.TOWER_UPGRADE_COSTS.has(level), "TOWER_UPGRADE_COSTS has level %d" % level)
+        var cost: Dictionary = SimBuildings.TOWER_UPGRADE_COSTS[level]
+        _assert_true(cost is Dictionary, "TOWER_UPGRADE_COSTS level %d is Dictionary" % level)
+
+        # Costs should be non-negative
+        for res_key in cost.keys():
+            _assert_true(int(cost[res_key]) >= 0, "TOWER_UPGRADE_COSTS level %d %s >= 0" % [level, res_key])
+
+func _test_sim_buildings_building_upgrades() -> void:
+    # BUILDING_UPGRADES dictionary
+    _assert_true(SimBuildings.BUILDING_UPGRADES is Dictionary, "BUILDING_UPGRADES is Dictionary")
+    _assert_true(SimBuildings.BUILDING_UPGRADES.size() > 0, "BUILDING_UPGRADES not empty")
+
+    # Validate upgrade structure
+    for building_id in SimBuildings.BUILDING_UPGRADES.keys():
+        var upgrade_data: Dictionary = SimBuildings.BUILDING_UPGRADES[building_id]
+        _assert_true(upgrade_data is Dictionary, "BUILDING_UPGRADES %s is Dictionary" % building_id)
+        _assert_true(upgrade_data.has("max_level"), "BUILDING_UPGRADES %s has max_level" % building_id)
+        _assert_true(upgrade_data.has("levels"), "BUILDING_UPGRADES %s has levels" % building_id)
+
+        var max_level: int = int(upgrade_data["max_level"])
+        _assert_true(max_level >= 1, "BUILDING_UPGRADES %s max_level >= 1" % building_id)
+
+        var levels: Dictionary = upgrade_data["levels"]
+        _assert_true(levels is Dictionary, "BUILDING_UPGRADES %s levels is Dictionary" % building_id)
+
+# =============================================================================
+# SIM EVENTS CONSTANTS TESTS
+# =============================================================================
+
+func _run_sim_events_constants_tests() -> void:
+    _test_sim_events_path_constant()
+
+func _test_sim_events_path_constant() -> void:
+    # EVENTS_PATH
+    _assert_true(SimEvents.EVENTS_PATH is String, "EVENTS_PATH is String")
+    _assert_true(SimEvents.EVENTS_PATH.begins_with("res://"), "EVENTS_PATH in res://")
+    _assert_true(SimEvents.EVENTS_PATH.ends_with(".json"), "EVENTS_PATH is .json")
+    _assert_equal(SimEvents.EVENTS_PATH, "res://data/events/events.json", "EVENTS_PATH value")
+
+# =============================================================================
+# SIM EVENT TABLES CONSTANTS TESTS
+# =============================================================================
+
+func _run_sim_event_tables_constants_tests() -> void:
+    _test_sim_event_tables_path_constant()
+
+func _test_sim_event_tables_path_constant() -> void:
+    # TABLES_PATH
+    _assert_true(SimEventTables.TABLES_PATH is String, "TABLES_PATH is String")
+    _assert_true(SimEventTables.TABLES_PATH.begins_with("res://"), "TABLES_PATH in res://")
+    _assert_true(SimEventTables.TABLES_PATH.ends_with(".json"), "TABLES_PATH is .json")
+    _assert_equal(SimEventTables.TABLES_PATH, "res://data/events/event_tables.json", "TABLES_PATH value")
+
+# =============================================================================
+# SIM LOCALE CONSTANTS TESTS
+# =============================================================================
+
+func _run_sim_locale_constants_tests() -> void:
+    _test_sim_locale_codes()
+    _test_sim_locale_supported_locales()
+    _test_sim_locale_names()
+    _test_sim_locale_categories()
+
+func _test_sim_locale_codes() -> void:
+    # Locale code constants
+    _assert_equal(SimLocale.LOCALE_EN, "en", "LOCALE_EN is 'en'")
+    _assert_equal(SimLocale.LOCALE_ES, "es", "LOCALE_ES is 'es'")
+    _assert_equal(SimLocale.LOCALE_DE, "de", "LOCALE_DE is 'de'")
+    _assert_equal(SimLocale.LOCALE_FR, "fr", "LOCALE_FR is 'fr'")
+    _assert_equal(SimLocale.LOCALE_PT, "pt", "LOCALE_PT is 'pt'")
+
+    # Default locale
+    _assert_equal(SimLocale.DEFAULT_LOCALE, SimLocale.LOCALE_EN, "DEFAULT_LOCALE is EN")
+
+func _test_sim_locale_supported_locales() -> void:
+    # SUPPORTED_LOCALES array
+    _assert_true(SimLocale.SUPPORTED_LOCALES is Array, "SUPPORTED_LOCALES is Array")
+    _assert_true(SimLocale.SUPPORTED_LOCALES.size() >= 5, "SUPPORTED_LOCALES has at least 5 locales")
+
+    # All locale codes should be in supported list
+    var expected_locales: Array[String] = [
+        SimLocale.LOCALE_EN,
+        SimLocale.LOCALE_ES,
+        SimLocale.LOCALE_DE,
+        SimLocale.LOCALE_FR,
+        SimLocale.LOCALE_PT
+    ]
+    for locale in expected_locales:
+        _assert_true(locale in SimLocale.SUPPORTED_LOCALES, "SUPPORTED_LOCALES contains %s" % locale)
+
+    # Default locale should be in supported list
+    _assert_true(SimLocale.DEFAULT_LOCALE in SimLocale.SUPPORTED_LOCALES, "DEFAULT_LOCALE in SUPPORTED_LOCALES")
+
+func _test_sim_locale_names() -> void:
+    # LOCALE_NAMES dictionary
+    _assert_true(SimLocale.LOCALE_NAMES is Dictionary, "LOCALE_NAMES is Dictionary")
+    _assert_true(SimLocale.LOCALE_NAMES.size() >= 5, "LOCALE_NAMES has at least 5 entries")
+
+    # All supported locales should have names
+    for locale in SimLocale.SUPPORTED_LOCALES:
+        _assert_true(SimLocale.LOCALE_NAMES.has(locale), "LOCALE_NAMES has %s" % locale)
+        _assert_true(str(SimLocale.LOCALE_NAMES[locale]).length() > 0, "LOCALE_NAMES[%s] not empty" % locale)
+
+    # Verify some known names
+    _assert_equal(SimLocale.LOCALE_NAMES[SimLocale.LOCALE_EN], "English", "LOCALE_NAMES EN is English")
+    _assert_equal(SimLocale.LOCALE_NAMES[SimLocale.LOCALE_ES], "Español", "LOCALE_NAMES ES is Español")
+    _assert_equal(SimLocale.LOCALE_NAMES[SimLocale.LOCALE_DE], "Deutsch", "LOCALE_NAMES DE is Deutsch")
+
+func _test_sim_locale_categories() -> void:
+    # Translation category constants
+    _assert_equal(SimLocale.CATEGORY_UI, "ui", "CATEGORY_UI is 'ui'")
+    _assert_equal(SimLocale.CATEGORY_GAME, "game", "CATEGORY_GAME is 'game'")
+    _assert_equal(SimLocale.CATEGORY_COMMANDS, "commands", "CATEGORY_COMMANDS is 'commands'")
+    _assert_equal(SimLocale.CATEGORY_COMBAT, "combat", "CATEGORY_COMBAT is 'combat'")
+    _assert_equal(SimLocale.CATEGORY_RESOURCES, "resources", "CATEGORY_RESOURCES is 'resources'")
+    _assert_equal(SimLocale.CATEGORY_MESSAGES, "messages", "CATEGORY_MESSAGES is 'messages'")
+    _assert_equal(SimLocale.CATEGORY_HELP, "help", "CATEGORY_HELP is 'help'")
+
+# =============================================================================
+# SIM TITLES CONSTANTS TESTS
+# =============================================================================
+
+func _run_sim_titles_constants_tests() -> void:
+    _test_sim_titles_categories()
+    _test_sim_titles_dictionary()
+    _test_sim_titles_badges()
+
+func _test_sim_titles_categories() -> void:
+    # Title category constants
+    _assert_equal(SimTitles.CATEGORY_SPEED, "speed", "CATEGORY_SPEED is 'speed'")
+    _assert_equal(SimTitles.CATEGORY_ACCURACY, "accuracy", "CATEGORY_ACCURACY is 'accuracy'")
+    _assert_equal(SimTitles.CATEGORY_COMBAT, "combat", "CATEGORY_COMBAT is 'combat'")
+    _assert_equal(SimTitles.CATEGORY_DEDICATION, "dedication", "CATEGORY_DEDICATION is 'dedication'")
+    _assert_equal(SimTitles.CATEGORY_MASTERY, "mastery", "CATEGORY_MASTERY is 'mastery'")
+    _assert_equal(SimTitles.CATEGORY_SPECIAL, "special", "CATEGORY_SPECIAL is 'special'")
+
+func _test_sim_titles_dictionary() -> void:
+    # TITLES dictionary
+    _assert_true(SimTitles.TITLES is Dictionary, "TITLES is Dictionary")
+    _assert_true(SimTitles.TITLES.size() >= 20, "TITLES has at least 20 titles")
+
+    # Validate title structure
+    for title_id in SimTitles.TITLES.keys():
+        var title: Dictionary = SimTitles.TITLES[title_id]
+        _assert_true(title is Dictionary, "Title %s is Dictionary" % title_id)
+        _assert_true(title.has("name"), "Title %s has name" % title_id)
+        _assert_true(title.has("description"), "Title %s has description" % title_id)
+        _assert_true(title.has("category"), "Title %s has category" % title_id)
+        _assert_true(title.has("color"), "Title %s has color" % title_id)
+        _assert_true(title.has("unlock"), "Title %s has unlock" % title_id)
+
+        # Name and description should be non-empty strings
+        _assert_true(str(title["name"]).length() > 0, "Title %s name not empty" % title_id)
+        _assert_true(str(title["description"]).length() > 0, "Title %s description not empty" % title_id)
+
+        # Category should be one of the defined categories
+        var valid_categories: Array[String] = [
+            SimTitles.CATEGORY_SPEED, SimTitles.CATEGORY_ACCURACY,
+            SimTitles.CATEGORY_COMBAT, SimTitles.CATEGORY_DEDICATION,
+            SimTitles.CATEGORY_MASTERY, SimTitles.CATEGORY_SPECIAL
+        ]
+        _assert_true(str(title["category"]) in valid_categories, "Title %s category is valid" % title_id)
+
+        # Color should be a Color
+        _assert_true(title["color"] is Color, "Title %s color is Color" % title_id)
+
+        # Unlock should be a dictionary with type
+        _assert_true(title["unlock"] is Dictionary, "Title %s unlock is Dictionary" % title_id)
+        _assert_true(title["unlock"].has("type"), "Title %s unlock has type" % title_id)
+
+    # Verify some known titles exist
+    var expected_titles: Array[String] = [
+        "novice_typist", "swift_fingers", "speed_demon",
+        "careful_scribe", "flawless", "centurion", "champion"
+    ]
+    for title_id in expected_titles:
+        _assert_true(SimTitles.TITLES.has(title_id), "TITLES has %s" % title_id)
+
+func _test_sim_titles_badges() -> void:
+    # BADGES dictionary
+    _assert_true(SimTitles.BADGES is Dictionary, "BADGES is Dictionary")
+    _assert_true(SimTitles.BADGES.size() >= 5, "BADGES has at least 5 badges")
+
+    # Validate badge structure
+    for badge_id in SimTitles.BADGES.keys():
+        var badge: Dictionary = SimTitles.BADGES[badge_id]
+        _assert_true(badge is Dictionary, "Badge %s is Dictionary" % badge_id)
+        _assert_true(badge.has("name"), "Badge %s has name" % badge_id)
+        _assert_true(badge.has("description"), "Badge %s has description" % badge_id)
+        _assert_true(badge.has("icon"), "Badge %s has icon" % badge_id)
+        _assert_true(badge.has("unlock"), "Badge %s has unlock" % badge_id)
+
+        # Name, description, icon should be non-empty
+        _assert_true(str(badge["name"]).length() > 0, "Badge %s name not empty" % badge_id)
+        _assert_true(str(badge["description"]).length() > 0, "Badge %s description not empty" % badge_id)
+        _assert_true(str(badge["icon"]).length() > 0, "Badge %s icon not empty" % badge_id)
+
+        # Unlock should be a dictionary
+        _assert_true(badge["unlock"] is Dictionary, "Badge %s unlock is Dictionary" % badge_id)
+
+    # Verify some known badges exist
+    var expected_badges: Array[String] = ["early_bird", "night_owl", "explorer", "builder"]
+    for badge_id in expected_badges:
+        _assert_true(SimTitles.BADGES.has(badge_id), "BADGES has %s" % badge_id)

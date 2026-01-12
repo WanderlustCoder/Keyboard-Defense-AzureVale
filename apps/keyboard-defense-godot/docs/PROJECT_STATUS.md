@@ -155,7 +155,7 @@ New SVG assets in `assets/art/src-svg/`:
 - Scenario reports and summaries are written under `Logs/ScenarioReports/` for CI-friendly collection (via `--out-dir`).
 
 ## Test Coverage (as of 2026-01-12)
-**Total: ~7,950+ assertions**
+**Total: ~8,250+ assertions**
 
 - **Parser tests**: Command parsing, intent validation
 - **Reducer tests**: State mutation, intent application
@@ -255,6 +255,11 @@ New SVG assets in `assets/art/src-svg/`:
 - **SimPoi tests**: POIs path constant
 - **StoryManager tests**: Story data path constant
 - **KeybindConflicts tests**: Game name constant
+- **SimBuildings tests**: BUILDINGS dictionary structure, tower stats progression, tower upgrade costs, building upgrades
+- **SimEvents tests**: Events data path constant
+- **SimEventTables tests**: Event tables data path constant
+- **SimLocale tests**: Locale codes (en/es/de/fr/pt), supported locales array, locale names dictionary, translation categories
+- **SimTitles tests**: Title category constants, TITLES dictionary structure (unlock types, colors, categories), BADGES dictionary
 
 ## Planning
 - `docs/ROADMAP.md` is the authoritative milestone list.
