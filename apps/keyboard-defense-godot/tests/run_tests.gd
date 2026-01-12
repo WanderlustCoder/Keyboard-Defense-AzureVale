@@ -81,6 +81,8 @@ const SimSpecialCommands = preload("res://sim/special_commands.gd")
 const SimBalance = preload("res://sim/balance.gd")
 const SimIntents = preload("res://sim/intents.gd")
 const SimTick = preload("res://sim/tick.gd")
+const SimAutoTowerCombat = preload("res://sim/auto_tower_combat.gd")
+const WorldTick = preload("res://sim/world_tick.gd")
 
 var total_tests: int = 0
 var total_failed: int = 0
@@ -182,6 +184,9 @@ func _run_all() -> void:
     _run_balance_tests()
     _run_intents_tests()
     _run_tick_tests()
+    _run_auto_tower_combat_tests()
+    _run_world_tick_tests()
+    _run_words_tests()
 
     for message in messages:
         print("[tests] %s" % message)
@@ -7921,3 +7926,596 @@ func _run_tick_tests() -> void:
     _assert_equal(int(state.resources.get("wood", 0)), 50, "Wood capped at 50")
     _assert_equal(int(state.resources.get("stone", 0)), 35, "Stone capped at 35")
     _assert_equal(int(state.resources.get("food", 0)), 35, "Food capped at 35")
+
+
+# ==============================================================================
+# AUTO TOWER COMBAT TESTS
+# ==============================================================================
+
+func _run_auto_tower_combat_tests() -> void:
+    _test_auto_tower_combat_targeting_modes()
+    _test_auto_tower_combat_damage_event_creation()
+    _test_auto_tower_combat_can_fire()
+    _test_auto_tower_combat_init_state()
+    _test_auto_tower_combat_enemy_conversion()
+    _test_auto_tower_combat_apply_damage()
+
+func _test_auto_tower_combat_targeting_modes() -> void:
+    # Test targeting string to mode conversion
+    var nearest: int = SimAutoTowerCombat._targeting_string_to_mode("nearest")
+    _assert_equal(nearest, SimAutoTowerTypes.TargetMode.NEAREST, "nearest maps to NEAREST")
+
+    var highest_hp: int = SimAutoTowerCombat._targeting_string_to_mode("highest_hp")
+    _assert_equal(highest_hp, SimAutoTowerTypes.TargetMode.HIGHEST_HP, "highest_hp maps to HIGHEST_HP")
+
+    var lowest_hp: int = SimAutoTowerCombat._targeting_string_to_mode("lowest_hp")
+    _assert_equal(lowest_hp, SimAutoTowerTypes.TargetMode.LOWEST_HP, "lowest_hp maps to LOWEST_HP")
+
+    var fastest: int = SimAutoTowerCombat._targeting_string_to_mode("fastest")
+    _assert_equal(fastest, SimAutoTowerTypes.TargetMode.FASTEST, "fastest maps to FASTEST")
+
+    var cluster: int = SimAutoTowerCombat._targeting_string_to_mode("cluster")
+    _assert_equal(cluster, SimAutoTowerTypes.TargetMode.CLUSTER, "cluster maps to CLUSTER")
+
+    var chain: int = SimAutoTowerCombat._targeting_string_to_mode("chain")
+    _assert_equal(chain, SimAutoTowerTypes.TargetMode.CHAIN, "chain maps to CHAIN")
+
+    var zone: int = SimAutoTowerCombat._targeting_string_to_mode("zone")
+    _assert_equal(zone, SimAutoTowerTypes.TargetMode.ZONE, "zone maps to ZONE")
+
+    var aoe: int = SimAutoTowerCombat._targeting_string_to_mode("aoe")
+    _assert_equal(aoe, SimAutoTowerTypes.TargetMode.ZONE, "aoe maps to ZONE")
+
+    var contact: int = SimAutoTowerCombat._targeting_string_to_mode("contact")
+    _assert_equal(contact, SimAutoTowerTypes.TargetMode.CONTACT, "contact maps to CONTACT")
+
+    var smart: int = SimAutoTowerCombat._targeting_string_to_mode("smart")
+    _assert_equal(smart, SimAutoTowerTypes.TargetMode.SMART, "smart maps to SMART")
+
+    # Unknown should default to nearest
+    var unknown: int = SimAutoTowerCombat._targeting_string_to_mode("invalid")
+    _assert_equal(unknown, SimAutoTowerTypes.TargetMode.NEAREST, "unknown defaults to NEAREST")
+
+func _test_auto_tower_combat_damage_event_creation() -> void:
+    # Test basic damage event
+    var event: Dictionary = SimAutoTowerCombat._make_damage_event(
+        0, 10, SimAutoTowerTypes.DamageType.PHYSICAL, "arrow_tower", {}
+    )
+    _assert_equal(int(event.get("enemy_index", -1)), 0, "Enemy index is 0")
+    _assert_equal(int(event.get("damage", 0)), 10, "Damage is 10")
+    _assert_equal(int(event.get("damage_type", -1)), SimAutoTowerTypes.DamageType.PHYSICAL, "Damage type is PHYSICAL")
+    _assert_equal(str(event.get("tower_type", "")), "arrow_tower", "Tower type is arrow_tower")
+    _assert_false(bool(event.get("is_secondary", false)), "Not secondary damage")
+    _assert_true(event.has("effects"), "Has effects array")
+    _assert_true(event.get("effects", []).is_empty(), "Effects array is empty for no special")
+
+    # Test fire damage event with burn effect
+    var fire_event: Dictionary = SimAutoTowerCombat._make_damage_event(
+        1, 15, SimAutoTowerTypes.DamageType.FIRE, "inferno_tower",
+        {"burn_damage": 3, "burn_duration": 3.0}
+    )
+    _assert_equal(int(fire_event.get("damage_type", -1)), SimAutoTowerTypes.DamageType.FIRE, "Fire damage type")
+    var effects: Array = fire_event.get("effects", [])
+    _assert_false(effects.is_empty(), "Fire has burn effect")
+    if not effects.is_empty():
+        var burn_effect: Dictionary = effects[0]
+        _assert_equal(str(burn_effect.get("type", "")), "burning", "Effect is burning")
+        _assert_equal(int(burn_effect.get("damage", 0)), 3, "Burn damage is 3")
+
+    # Test secondary damage flag
+    var secondary: Dictionary = SimAutoTowerCombat._make_damage_event(
+        2, 8, SimAutoTowerTypes.DamageType.PHYSICAL, "chain_tower", {}, true
+    )
+    _assert_true(bool(secondary.get("is_secondary", false)), "Is secondary damage")
+
+    # Test lightning with stun chance
+    var lightning_event: Dictionary = SimAutoTowerCombat._make_damage_event(
+        3, 12, SimAutoTowerTypes.DamageType.LIGHTNING, "lightning_tower",
+        {"stun_chance": 20, "stun_duration": 1.0}
+    )
+    var lightning_effects: Array = lightning_event.get("effects", [])
+    _assert_false(lightning_effects.is_empty(), "Lightning has stun effect")
+    if not lightning_effects.is_empty():
+        var stun_effect: Dictionary = lightning_effects[0]
+        _assert_equal(str(stun_effect.get("type", "")), "stun_chance", "Effect is stun_chance")
+
+    # Test nature with slow
+    var nature_event: Dictionary = SimAutoTowerCombat._make_damage_event(
+        4, 8, SimAutoTowerTypes.DamageType.NATURE, "nature_tower",
+        {"slow_percent": 15}
+    )
+    var nature_effects: Array = nature_event.get("effects", [])
+    _assert_false(nature_effects.is_empty(), "Nature has slow effect")
+    if not nature_effects.is_empty():
+        var slow_effect: Dictionary = nature_effects[0]
+        _assert_equal(str(slow_effect.get("type", "")), "slow", "Effect is slow")
+
+func _test_auto_tower_combat_can_fire() -> void:
+    # Test can fire with no restrictions
+    var result: bool = SimAutoTowerCombat._can_fire("arrow_tower", {})
+    _assert_true(result, "Arrow tower can always fire")
+
+    # Test overheat prevention - we check that generic tower with no overheat can fire
+    var result2: bool = SimAutoTowerCombat._can_fire("basic_tower", {"heat": 0.0})
+    _assert_true(result2, "Basic tower can fire at 0 heat")
+
+    # Test fuel check - generic tower with no fuel requirement can fire
+    var result3: bool = SimAutoTowerCombat._can_fire("basic_tower", {"fuel": 0.0})
+    _assert_true(result3, "Basic tower can fire with no fuel if no fuel requirement")
+
+func _test_auto_tower_combat_init_state() -> void:
+    # Test initializing state for a basic tower
+    var state: Dictionary = SimAutoTowerCombat._init_tower_state("arrow_tower")
+    _assert_true(state is Dictionary, "Init state returns dictionary")
+
+    # Test initializing state for unknown tower
+    var unknown_state: Dictionary = SimAutoTowerCombat._init_tower_state("unknown_tower")
+    _assert_true(unknown_state is Dictionary, "Unknown tower state is dictionary")
+
+func _test_auto_tower_combat_enemy_conversion() -> void:
+    # Test converting enemies to targeting format
+    var enemies: Array = [
+        {"pos": Vector2i(5, 3), "hp": 10, "max_hp": 15, "speed": 60, "damage": 2, "is_boss": false},
+        {"pos": Vector2i(7, 4), "hp": 5, "speed": 40, "damage": 1, "is_elite": true}
+    ]
+
+    var converted: Array = SimAutoTowerCombat._convert_enemies_for_targeting(enemies)
+    _assert_equal(converted.size(), 2, "Converted 2 enemies")
+
+    var first: Dictionary = converted[0]
+    _assert_equal(int(first.get("x", 0)), 5, "First enemy x is 5")
+    _assert_equal(int(first.get("y", 0)), 3, "First enemy y is 3")
+    _assert_equal(int(first.get("hp", 0)), 10, "First enemy hp is 10")
+    _assert_equal(int(first.get("max_hp", 0)), 15, "First enemy max_hp is 15")
+    _assert_equal(float(first.get("speed", 0)), 60.0, "First enemy speed is 60")
+    _assert_false(bool(first.get("is_boss", false)), "First enemy is not boss")
+
+    var second: Dictionary = converted[1]
+    _assert_equal(int(second.get("hp", 0)), 5, "Second enemy hp is 5")
+    _assert_true(bool(second.get("is_elite", false)), "Second enemy is elite")
+    # max_hp defaults to hp when not present
+    _assert_equal(int(second.get("max_hp", 0)), 5, "Second enemy max_hp defaults to hp")
+
+func _test_auto_tower_combat_apply_damage() -> void:
+    # Test applying damage events to enemies
+    var enemies: Array = [
+        {"hp": 10, "armor": 0},
+        {"hp": 5, "armor": 2},
+        {"hp": 3, "armor": 0}
+    ]
+
+    var damage_events: Array = [
+        {"enemy_index": 0, "damage": 4, "damage_type": SimAutoTowerTypes.DamageType.PHYSICAL, "tower_type": "arrow", "effects": []},
+        {"enemy_index": 2, "damage": 5, "damage_type": SimAutoTowerTypes.DamageType.PHYSICAL, "tower_type": "arrow", "effects": []}
+    ]
+
+    var result: Dictionary = SimAutoTowerCombat.apply_damage_events(enemies, damage_events)
+    _assert_true(result.has("updated_enemies"), "Result has updated_enemies")
+    _assert_true(result.has("kills"), "Result has kills")
+
+    var updated: Array = result.get("updated_enemies", [])
+    _assert_equal(updated.size(), 3, "Still 3 enemies")
+    _assert_equal(int(updated[0].get("hp", 0)), 6, "First enemy hp: 10 - 4 = 6")
+    _assert_equal(int(updated[1].get("hp", 0)), 5, "Second enemy hp unchanged at 5")
+    _assert_equal(int(updated[2].get("hp", 0)), -2, "Third enemy hp: 3 - 5 = -2")
+
+    var kills: Array = result.get("kills", [])
+    _assert_equal(kills.size(), 1, "One kill")
+    if not kills.is_empty():
+        _assert_equal(int(kills[0].get("index", -1)), 2, "Kill was enemy at index 2")
+
+    # Test damage with burning effect
+    var enemies2: Array = [{"hp": 20, "armor": 0}]
+    var events2: Array = [{
+        "enemy_index": 0, "damage": 5,
+        "damage_type": SimAutoTowerTypes.DamageType.FIRE,
+        "tower_type": "inferno",
+        "effects": [{"type": "burning", "damage": 3, "duration": 3.0}]
+    }]
+
+    var result2: Dictionary = SimAutoTowerCombat.apply_damage_events(enemies2, events2)
+    var updated2: Array = result2.get("updated_enemies", [])
+    _assert_equal(int(updated2[0].get("hp", 0)), 15, "Enemy hp: 20 - 5 = 15")
+    _assert_true(bool(updated2[0].get("status_burning", false)), "Enemy has burning status")
+    _assert_equal(int(updated2[0].get("burn_damage", 0)), 3, "Burn damage is 3")
+
+    # Test damage with slow effect
+    var enemies3: Array = [{"hp": 10, "armor": 0}]
+    var events3: Array = [{
+        "enemy_index": 0, "damage": 2,
+        "damage_type": SimAutoTowerTypes.DamageType.NATURE,
+        "tower_type": "nature",
+        "effects": [{"type": "slow", "percent": 15}]
+    }]
+
+    var result3: Dictionary = SimAutoTowerCombat.apply_damage_events(enemies3, events3)
+    var updated3: Array = result3.get("updated_enemies", [])
+    _assert_true(bool(updated3[0].get("status_slowed", false)), "Enemy has slowed status")
+    _assert_equal(int(updated3[0].get("slow_percent", 0)), 15, "Slow percent is 15")
+
+    # Test armor pierce effect
+    var enemies4: Array = [{"hp": 20, "armor": 10}]
+    var events4: Array = [{
+        "enemy_index": 0, "damage": 15,
+        "damage_type": SimAutoTowerTypes.DamageType.SIEGE,
+        "tower_type": "siege",
+        "effects": [{"type": "armor_pierce", "percent": 50}]
+    }]
+
+    var result4: Dictionary = SimAutoTowerCombat.apply_damage_events(enemies4, events4)
+    var updated4: Array = result4.get("updated_enemies", [])
+    # Armor 10 reduced by 50% = 5 effective armor
+    # Damage = max(1, 15 - 5) = 10
+    _assert_equal(int(updated4[0].get("hp", 0)), 10, "Enemy hp with armor pierce: 20 - 10 = 10")
+
+
+# ==============================================================================
+# WORLD TICK TESTS
+# ==============================================================================
+
+func _run_world_tick_tests() -> void:
+    _test_world_tick_constants()
+    _test_world_tick_terrain_to_biome()
+    _test_world_tick_threat_contribution()
+    _test_world_tick_enemy_kind_selection()
+    _test_world_tick_threat_breakdown()
+
+func _test_world_tick_constants() -> void:
+    # Test that key constants are defined with expected values
+    _assert_equal(WorldTick.WORLD_TICK_INTERVAL, 1.0, "World tick interval is 1 second")
+    _assert_true(WorldTick.TIME_ADVANCE_RATE > 0, "Time advance rate is positive")
+    _assert_true(WorldTick.TIME_ADVANCE_RATE < 0.1, "Time advance rate is reasonable (<0.1)")
+
+    _assert_true(WorldTick.POI_SPAWN_CHANCE > 0, "POI spawn chance is positive")
+    _assert_true(WorldTick.POI_SPAWN_CHANCE <= 1.0, "POI spawn chance is <= 1")
+    _assert_equal(WorldTick.POI_SPAWN_CHANCE, 0.15, "POI spawn chance is 0.15")
+
+    _assert_true(WorldTick.ROAMING_SPAWN_CHANCE > 0, "Roaming spawn chance is positive")
+    _assert_true(WorldTick.ROAMING_SPAWN_CHANCE <= 1.0, "Roaming spawn chance is <= 1")
+    _assert_equal(WorldTick.ROAMING_SPAWN_CHANCE, 0.10, "Roaming spawn chance is 0.10")
+
+    _assert_equal(WorldTick.MAX_ACTIVE_POIS, 5, "Max active POIs is 5")
+    _assert_equal(WorldTick.MAX_ROAMING_ENEMIES, 8, "Max roaming enemies is 8")
+
+    _assert_true(WorldTick.THREAT_DECAY_RATE > 0, "Threat decay rate is positive")
+    _assert_true(WorldTick.THREAT_GROWTH_RATE > 0, "Threat growth rate is positive")
+
+    _assert_equal(WorldTick.WAVE_ASSAULT_THRESHOLD, 0.8, "Wave assault threshold is 0.8")
+    _assert_equal(WorldTick.WAVE_COOLDOWN_DURATION, 30.0, "Wave cooldown duration is 30 seconds")
+    _assert_equal(WorldTick.ENCOUNTER_RETURN_DELAY, 2.0, "Encounter return delay is 2 seconds")
+    _assert_true(WorldTick.THREAT_DECAY_IN_EXPLORATION > 0, "Threat decay in exploration is positive")
+
+func _test_world_tick_terrain_to_biome() -> void:
+    # Test terrain to biome conversion
+    var forest_biome: String = WorldTick._terrain_to_biome(SimMap.TERRAIN_FOREST)
+    _assert_equal(forest_biome, "evergrove", "Forest terrain maps to evergrove")
+
+    var mountain_biome: String = WorldTick._terrain_to_biome(SimMap.TERRAIN_MOUNTAIN)
+    _assert_equal(mountain_biome, "stonepass", "Mountain terrain maps to stonepass")
+
+    var water_biome: String = WorldTick._terrain_to_biome(SimMap.TERRAIN_WATER)
+    _assert_equal(water_biome, "mistfen", "Water terrain maps to mistfen")
+
+    var grass_biome: String = WorldTick._terrain_to_biome(SimMap.TERRAIN_GRASS)
+    _assert_equal(grass_biome, "sunfields", "Grass terrain maps to sunfields")
+
+    # Unknown terrain should default to sunfields
+    var unknown_biome: String = WorldTick._terrain_to_biome("unknown")
+    _assert_equal(unknown_biome, "sunfields", "Unknown terrain defaults to sunfields")
+
+func _test_world_tick_threat_contribution() -> void:
+    # Test threat contribution calculation
+    var state: GameState = DefaultState.create()
+    state.base_pos = Vector2i(5, 5)
+
+    # Enemy at castle (distance 0) should have high contribution
+    var enemy_at_castle: Dictionary = {
+        "pos": Vector2i(5, 5),
+        "spawn_zone": SimMap.ZONE_SAFE
+    }
+    var contribution_at_castle: float = WorldTick.calculate_enemy_threat_contribution(state, enemy_at_castle)
+    _assert_true(contribution_at_castle > 0, "Enemy at castle has positive contribution")
+
+    # Enemy far away should have 0 contribution
+    var enemy_far: Dictionary = {
+        "pos": Vector2i(15, 15),
+        "spawn_zone": SimMap.ZONE_SAFE
+    }
+    var contribution_far: float = WorldTick.calculate_enemy_threat_contribution(state, enemy_far)
+    _assert_equal(contribution_far, 0.0, "Enemy far away has 0 contribution")
+
+    # Enemy from dangerous zone at castle should have higher contribution
+    var enemy_from_depths: Dictionary = {
+        "pos": Vector2i(5, 5),
+        "spawn_zone": SimMap.ZONE_DEPTHS
+    }
+    var contribution_depths: float = WorldTick.calculate_enemy_threat_contribution(state, enemy_from_depths)
+    _assert_true(contribution_depths > contribution_at_castle, "Enemy from depths has higher contribution")
+
+    # Enemy at edge of threshold (distance 5)
+    var enemy_at_edge: Dictionary = {
+        "pos": Vector2i(10, 5),  # Distance 5 from base_pos
+        "spawn_zone": SimMap.ZONE_SAFE
+    }
+    var contribution_edge: float = WorldTick.calculate_enemy_threat_contribution(state, enemy_at_edge)
+    _assert_true(contribution_edge > 0, "Enemy at threshold edge has positive contribution")
+
+    # Enemy just outside threshold (distance 6)
+    var enemy_outside: Dictionary = {
+        "pos": Vector2i(11, 5),  # Distance 6 from base_pos
+        "spawn_zone": SimMap.ZONE_SAFE
+    }
+    var contribution_outside: float = WorldTick.calculate_enemy_threat_contribution(state, enemy_outside)
+    _assert_equal(contribution_outside, 0.0, "Enemy outside threshold has 0 contribution")
+
+func _test_world_tick_enemy_kind_selection() -> void:
+    # Test enemy kind selection based on zone tier
+    var state: GameState = DefaultState.create()
+    state.day = 1
+
+    # Tier 1 (safe zone) should only have basic enemies
+    var tier1_kinds: Array = ["raider", "scout"]
+    for _i in range(10):
+        var kind: String = WorldTick._select_enemy_kind_for_zone(state, 1)
+        _assert_true(kind in tier1_kinds, "Tier 1 at day 1 only raider/scout: got " + kind)
+
+    # Higher day enables more enemy types
+    state.day = 10
+
+    # Tier 4 with high day should have all types available
+    var tier4_kinds: Array = ["raider", "scout", "armored", "swarm", "berserker", "tank", "phantom", "champion", "healer", "elite"]
+    var seen_kinds: Dictionary = {}
+    for _i in range(100):
+        var kind: String = WorldTick._select_enemy_kind_for_zone(state, 4)
+        _assert_true(kind in tier4_kinds, "Tier 4 enemy is valid: " + kind)
+        seen_kinds[kind] = true
+
+    # Should have seen at least some variety
+    _assert_true(seen_kinds.size() >= 3, "Saw at least 3 different enemy types")
+
+func _test_world_tick_threat_breakdown() -> void:
+    # Test threat breakdown reporting
+    var state: GameState = DefaultState.create()
+    state.base_pos = Vector2i(5, 5)
+    state.threat_level = 0.5
+    state.roaming_enemies = [
+        {"id": 1, "kind": "raider", "pos": Vector2i(5, 5), "spawn_zone": SimMap.ZONE_SAFE},
+        {"id": 2, "kind": "scout", "pos": Vector2i(20, 20), "spawn_zone": SimMap.ZONE_FRONTIER}
+    ]
+
+    var breakdown: Dictionary = WorldTick.get_threat_breakdown(state)
+    _assert_true(breakdown.has("total_threat"), "Breakdown has total_threat")
+    _assert_true(breakdown.has("enemy_contributions"), "Breakdown has enemy_contributions")
+    _assert_true(breakdown.has("exploration_pressure"), "Breakdown has exploration_pressure")
+    _assert_true(breakdown.has("cursor_zone"), "Breakdown has cursor_zone")
+
+    _assert_equal(float(breakdown.get("total_threat", 0)), 0.5, "Total threat matches state")
+
+    var contributions: Array = breakdown.get("enemy_contributions", [])
+    # Only the enemy at castle (id 1) should contribute, not the far one (id 2)
+    _assert_equal(contributions.size(), 1, "Only 1 enemy contributes to threat")
+    if not contributions.is_empty():
+        var contrib: Dictionary = contributions[0]
+        _assert_equal(int(contrib.get("id", 0)), 1, "Contributing enemy is id 1")
+        _assert_equal(str(contrib.get("kind", "")), "raider", "Contributing enemy is raider")
+
+    # Test format_threat_info returns string
+    var info: String = WorldTick.format_threat_info(state)
+    _assert_true(info.length() > 0, "format_threat_info returns non-empty string")
+    _assert_true("Threat Level" in info, "Info contains threat level")
+    _assert_true("50" in info, "Info shows 50% threat")
+
+
+# ==============================================================================
+# WORDS TESTS
+# ==============================================================================
+
+func _run_words_tests() -> void:
+    _test_words_constants()
+    _test_words_hash_index()
+    _test_words_list_for_kind()
+    _test_words_reserved_words()
+    _test_words_word_for_enemy()
+    _test_words_word_determinism()
+    _test_words_scramble_word()
+    _test_words_get_boss_word()
+    _test_words_random_functions()
+
+func _test_words_constants() -> void:
+    # Test SHORT_WORDS array
+    _assert_true(SimWords.SHORT_WORDS.size() > 0, "SHORT_WORDS has entries")
+    _assert_true(SimWords.SHORT_WORDS.size() >= 10, "SHORT_WORDS has at least 10 entries")
+    for word in SimWords.SHORT_WORDS:
+        _assert_true(word.length() >= 3, "SHORT_WORDS entries are at least 3 chars: " + word)
+        _assert_true(word.length() <= 5, "SHORT_WORDS entries are at most 5 chars: " + word)
+
+    # Test MEDIUM_WORDS array
+    _assert_true(SimWords.MEDIUM_WORDS.size() > 0, "MEDIUM_WORDS has entries")
+    _assert_true(SimWords.MEDIUM_WORDS.size() >= 10, "MEDIUM_WORDS has at least 10 entries")
+    for word in SimWords.MEDIUM_WORDS:
+        _assert_true(word.length() >= 5, "MEDIUM_WORDS entries are at least 5 chars: " + word)
+        _assert_true(word.length() <= 8, "MEDIUM_WORDS entries are at most 8 chars: " + word)
+
+    # Test LONG_WORDS array
+    _assert_true(SimWords.LONG_WORDS.size() > 0, "LONG_WORDS has entries")
+    _assert_true(SimWords.LONG_WORDS.size() >= 10, "LONG_WORDS has at least 10 entries")
+    for word in SimWords.LONG_WORDS:
+        _assert_true(word.length() >= 7, "LONG_WORDS entries are at least 7 chars: " + word)
+
+func _test_words_hash_index() -> void:
+    # Test basic hash index functionality
+    var idx1: int = SimWords._hash_index("test_key", 10)
+    _assert_true(idx1 >= 0, "Hash index is non-negative")
+    _assert_true(idx1 < 10, "Hash index is within modulo")
+
+    # Test determinism
+    var idx2: int = SimWords._hash_index("test_key", 10)
+    _assert_equal(idx1, idx2, "Hash index is deterministic")
+
+    # Test different keys give different results (usually)
+    var idx3: int = SimWords._hash_index("different_key", 10)
+    # Not asserting they're different - they could collide
+    _assert_true(idx3 >= 0 and idx3 < 10, "Different key gives valid index")
+
+    # Test modulo of 1
+    var idx4: int = SimWords._hash_index("any_key", 1)
+    _assert_equal(idx4, 0, "Modulo 1 always returns 0")
+
+    # Test modulo of 0 (edge case)
+    var idx5: int = SimWords._hash_index("any_key", 0)
+    _assert_equal(idx5, 0, "Modulo 0 returns 0 safely")
+
+    # Test negative modulo (edge case)
+    var idx6: int = SimWords._hash_index("any_key", -5)
+    _assert_equal(idx6, 0, "Negative modulo returns 0 safely")
+
+func _test_words_list_for_kind() -> void:
+    # Test scout returns SHORT_WORDS
+    var scout_list: Array[String] = SimWords._list_for_kind("scout")
+    _assert_equal(scout_list, SimWords.SHORT_WORDS, "Scout uses SHORT_WORDS")
+
+    # Test armored returns LONG_WORDS
+    var armored_list: Array[String] = SimWords._list_for_kind("armored")
+    _assert_equal(armored_list, SimWords.LONG_WORDS, "Armored uses LONG_WORDS")
+
+    # Test raider (default) returns MEDIUM_WORDS
+    var raider_list: Array[String] = SimWords._list_for_kind("raider")
+    _assert_equal(raider_list, SimWords.MEDIUM_WORDS, "Raider uses MEDIUM_WORDS")
+
+    # Test unknown kind defaults to MEDIUM_WORDS
+    var unknown_list: Array[String] = SimWords._list_for_kind("unknown_enemy")
+    _assert_equal(unknown_list, SimWords.MEDIUM_WORDS, "Unknown kind defaults to MEDIUM_WORDS")
+
+    # Test empty string defaults to MEDIUM_WORDS
+    var empty_list: Array[String] = SimWords._list_for_kind("")
+    _assert_equal(empty_list, SimWords.MEDIUM_WORDS, "Empty kind defaults to MEDIUM_WORDS")
+
+func _test_words_reserved_words() -> void:
+    # Test reserved words includes command keywords
+    var reserved: Dictionary = SimWords._reserved_words()
+    _assert_true(reserved.size() > 0, "Reserved words dictionary not empty")
+
+    # Common commands should be reserved
+    _assert_true(reserved.has("help"), "help is reserved")
+    _assert_true(reserved.has("build"), "build is reserved")
+    _assert_true(reserved.has("upgrade"), "upgrade is reserved")
+    _assert_true(reserved.has("map"), "map is reserved")
+    _assert_true(reserved.has("gather"), "gather is reserved")
+
+    # Check lowercase normalization
+    _assert_true(reserved.has("end"), "end is reserved (lowercase)")
+
+func _test_words_word_for_enemy() -> void:
+    # Test basic word generation without lesson
+    var word1: String = SimWords.word_for_enemy("seed1", 1, "raider", 1, {}, "")
+    _assert_true(word1.length() > 0, "Generated word is not empty")
+
+    # Test with used words dictionary
+    var used: Dictionary = {}
+    used[word1] = true
+    var word2: String = SimWords.word_for_enemy("seed1", 1, "raider", 2, used, "")
+    _assert_true(word2.length() > 0, "Second word generated")
+    _assert_true(word2 != word1 or word2.begins_with("foe"), "Second word is different or fallback")
+
+    # Test scout (short words)
+    var scout_word: String = SimWords.word_for_enemy("seed2", 1, "scout", 1, {}, "")
+    _assert_true(scout_word.length() > 0, "Scout word generated")
+
+    # Test armored (long words)
+    var armored_word: String = SimWords.word_for_enemy("seed3", 1, "armored", 1, {}, "")
+    _assert_true(armored_word.length() > 0, "Armored word generated")
+
+    # Test with a lesson ID (if lessons are loaded)
+    var lesson_word: String = SimWords.word_for_enemy("seed4", 1, "raider", 1, {}, "home_row")
+    _assert_true(lesson_word.length() > 0, "Word with lesson generated")
+
+func _test_words_word_determinism() -> void:
+    # Test that same inputs produce same outputs
+    var word1: String = SimWords.word_for_enemy("determinism_test", 5, "raider", 42, {}, "")
+    var word2: String = SimWords.word_for_enemy("determinism_test", 5, "raider", 42, {}, "")
+    _assert_equal(word1, word2, "Word generation is deterministic")
+
+    # Test different seeds produce different words
+    var word3: String = SimWords.word_for_enemy("different_seed", 5, "raider", 42, {}, "")
+    # They might collide, so just check it runs
+    _assert_true(word3.length() > 0, "Different seed produces valid word")
+
+    # Test different enemy IDs produce different words
+    var word4: String = SimWords.word_for_enemy("determinism_test", 5, "raider", 99, {}, "")
+    # Again, might collide but should be valid
+    _assert_true(word4.length() > 0, "Different enemy ID produces valid word")
+
+func _test_words_scramble_word() -> void:
+    # Test scrambling a word
+    var original: String = "fortress"
+    var scrambled: String = SimWords.scramble_word(original, "scramble_seed")
+    _assert_equal(scrambled.length(), original.length(), "Scrambled word has same length")
+    _assert_true(scrambled != original, "Scrambled word is different from original")
+
+    # Test determinism
+    var scrambled2: String = SimWords.scramble_word(original, "scramble_seed")
+    _assert_equal(scrambled, scrambled2, "Scrambling is deterministic with same seed")
+
+    # Test different seed produces different result
+    var scrambled3: String = SimWords.scramble_word(original, "different_seed")
+    # Might be same by chance, but usually different
+    _assert_equal(scrambled3.length(), original.length(), "Different seed same length")
+
+    # Test single character word returns unchanged
+    var single: String = SimWords.scramble_word("a", "seed")
+    _assert_equal(single, "a", "Single char word unchanged")
+
+    # Test empty string returns empty
+    var empty: String = SimWords.scramble_word("", "seed")
+    _assert_equal(empty, "", "Empty string returns empty")
+
+    # Test scrambled word has same characters (just reordered)
+    var chars_original: Array = []
+    var chars_scrambled: Array = []
+    for c in original:
+        chars_original.append(c)
+    for c in scrambled:
+        chars_scrambled.append(c)
+    chars_original.sort()
+    chars_scrambled.sort()
+    _assert_equal(chars_original, chars_scrambled, "Scrambled word has same characters")
+
+func _test_words_get_boss_word() -> void:
+    # Test boss word generation
+    var boss_word: String = SimWords.get_boss_word("", {})
+    _assert_true(boss_word.length() > 0, "Boss word generated")
+    _assert_true(boss_word.length() >= 7 or boss_word.begins_with("overlord"), "Boss word is long or fallback")
+
+    # Test with used words
+    var used: Dictionary = {}
+    for word in SimWords.LONG_WORDS:
+        used[word.to_lower()] = true
+    var boss_word2: String = SimWords.get_boss_word("", used)
+    _assert_true(boss_word2.length() > 0, "Boss word generated with all long words used")
+    _assert_true(boss_word2.begins_with("overlord"), "Falls back to overlord when all used")
+
+    # Test with lesson
+    var boss_word3: String = SimWords.get_boss_word("home_row", {})
+    _assert_true(boss_word3.length() > 0, "Boss word with lesson generated")
+
+func _test_words_random_functions() -> void:
+    # Test random_common_word
+    var common: String = SimWords.random_common_word(null)
+    _assert_true(common.length() > 0, "random_common_word returns word")
+    var combined: Array[String] = []
+    combined.append_array(SimWords.SHORT_WORDS)
+    combined.append_array(SimWords.MEDIUM_WORDS)
+    _assert_true(common in combined, "Common word is from SHORT or MEDIUM lists")
+
+    # Test random_uncommon_word
+    var uncommon: String = SimWords.random_uncommon_word(null)
+    _assert_true(uncommon.length() > 0, "random_uncommon_word returns word")
+    _assert_true(uncommon in SimWords.LONG_WORDS or uncommon == "challenge", "Uncommon word is from LONG list")
+
+    # Test random_word_for_lesson with invalid lesson
+    var random_lesson: String = SimWords.random_word_for_lesson(null, "nonexistent_lesson")
+    _assert_true(random_lesson.length() > 0, "random_word_for_lesson returns word even with invalid lesson")
+
+    # Test random_word_for_lesson with valid lesson (if available)
+    var random_home: String = SimWords.random_word_for_lesson(null, "home_row")
+    _assert_true(random_home.length() > 0, "random_word_for_lesson returns word with home_row")
