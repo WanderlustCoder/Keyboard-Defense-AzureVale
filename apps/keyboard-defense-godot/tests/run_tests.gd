@@ -100,6 +100,8 @@ const EventPanel = preload("res://ui/components/event_panel.gd")
 const DialogueBox = preload("res://game/dialogue_box.gd")
 const GridRenderer = preload("res://game/grid_renderer.gd")
 const ActionTooltip = preload("res://ui/components/action_tooltip.gd")
+const BattleStage = preload("res://scripts/BattleStage.gd")
+const Battlefield = preload("res://scripts/Battlefield.gd")
 
 var total_tests: int = 0
 var total_failed: int = 0
@@ -221,6 +223,8 @@ func _run_all() -> void:
     _run_dialogue_box_tests()
     _run_grid_renderer_tests()
     _run_action_tooltip_tests()
+    _run_battle_stage_tests()
+    _run_battlefield_tests()
 
     for message in messages:
         print("[tests] %s" % message)
@@ -10072,3 +10076,297 @@ func _test_action_tooltip_size_constants() -> void:
 
     # Icon should be slightly larger than font for visual balance
     _assert_true(ActionTooltip.ICON_SIZE >= ActionTooltip.FONT_SIZE, "ICON_SIZE >= FONT_SIZE")
+
+# =============================================================================
+# BATTLE STAGE TESTS
+# =============================================================================
+
+func _run_battle_stage_tests() -> void:
+    _test_battle_stage_core_constants()
+    _test_battle_stage_damage_number_constants()
+    _test_battle_stage_trail_constants()
+
+func _test_battle_stage_core_constants() -> void:
+    # DEFAULT_STAGE_SIZE
+    _assert_true(BattleStage.DEFAULT_STAGE_SIZE is Vector2, "DEFAULT_STAGE_SIZE is Vector2")
+    _assert_true(BattleStage.DEFAULT_STAGE_SIZE.x > 0, "DEFAULT_STAGE_SIZE.x is positive")
+    _assert_true(BattleStage.DEFAULT_STAGE_SIZE.y > 0, "DEFAULT_STAGE_SIZE.y is positive")
+    _assert_equal(BattleStage.DEFAULT_STAGE_SIZE.x, 800.0, "DEFAULT_STAGE_SIZE.x is 800")
+    _assert_equal(BattleStage.DEFAULT_STAGE_SIZE.y, 360.0, "DEFAULT_STAGE_SIZE.y is 360")
+
+    # BREACH_RESET
+    _assert_true(BattleStage.BREACH_RESET > 0.0, "BREACH_RESET is positive")
+    _assert_true(BattleStage.BREACH_RESET < 1.0, "BREACH_RESET is less than 1")
+    _assert_equal(BattleStage.BREACH_RESET, 0.25, "BREACH_RESET is 0.25")
+
+    # PROJECTILE_SPEED
+    _assert_true(BattleStage.PROJECTILE_SPEED > 0.0, "PROJECTILE_SPEED is positive")
+    _assert_true(BattleStage.PROJECTILE_SPEED < 1000.0, "PROJECTILE_SPEED is reasonable")
+    _assert_equal(BattleStage.PROJECTILE_SPEED, 520.0, "PROJECTILE_SPEED is 520.0")
+
+    # HIT_FLASH_DURATION
+    _assert_true(BattleStage.HIT_FLASH_DURATION > 0.0, "HIT_FLASH_DURATION is positive")
+    _assert_true(BattleStage.HIT_FLASH_DURATION < 1.0, "HIT_FLASH_DURATION is quick")
+    _assert_equal(BattleStage.HIT_FLASH_DURATION, 0.18, "HIT_FLASH_DURATION is 0.18")
+
+    # SPRITE_SCALE
+    _assert_true(BattleStage.SPRITE_SCALE > 0.0, "SPRITE_SCALE is positive")
+    _assert_true(BattleStage.SPRITE_SCALE <= 10.0, "SPRITE_SCALE is reasonable")
+    _assert_equal(BattleStage.SPRITE_SCALE, 3.0, "SPRITE_SCALE is 3.0")
+
+func _test_battle_stage_damage_number_constants() -> void:
+    # DAMAGE_NUMBER_SPEED
+    _assert_true(BattleStage.DAMAGE_NUMBER_SPEED > 0.0, "DAMAGE_NUMBER_SPEED is positive")
+    _assert_true(BattleStage.DAMAGE_NUMBER_SPEED < 200.0, "DAMAGE_NUMBER_SPEED is reasonable")
+    _assert_equal(BattleStage.DAMAGE_NUMBER_SPEED, 60.0, "DAMAGE_NUMBER_SPEED is 60.0")
+
+    # DAMAGE_NUMBER_LIFETIME
+    _assert_true(BattleStage.DAMAGE_NUMBER_LIFETIME > 0.0, "DAMAGE_NUMBER_LIFETIME is positive")
+    _assert_true(BattleStage.DAMAGE_NUMBER_LIFETIME < 3.0, "DAMAGE_NUMBER_LIFETIME is not too long")
+    _assert_equal(BattleStage.DAMAGE_NUMBER_LIFETIME, 0.8, "DAMAGE_NUMBER_LIFETIME is 0.8")
+
+    # DAMAGE_NUMBER_FONT_SIZE
+    _assert_true(BattleStage.DAMAGE_NUMBER_FONT_SIZE > 0, "DAMAGE_NUMBER_FONT_SIZE is positive")
+    _assert_true(BattleStage.DAMAGE_NUMBER_FONT_SIZE < 50, "DAMAGE_NUMBER_FONT_SIZE is reasonable")
+    _assert_equal(BattleStage.DAMAGE_NUMBER_FONT_SIZE, 18, "DAMAGE_NUMBER_FONT_SIZE is 18")
+
+    # DAMAGE_NUMBER_POWER_FONT_SIZE
+    _assert_true(BattleStage.DAMAGE_NUMBER_POWER_FONT_SIZE > 0, "DAMAGE_NUMBER_POWER_FONT_SIZE is positive")
+    _assert_true(BattleStage.DAMAGE_NUMBER_POWER_FONT_SIZE > BattleStage.DAMAGE_NUMBER_FONT_SIZE, "POWER > normal font size")
+    _assert_equal(BattleStage.DAMAGE_NUMBER_POWER_FONT_SIZE, 24, "DAMAGE_NUMBER_POWER_FONT_SIZE is 24")
+
+func _test_battle_stage_trail_constants() -> void:
+    # TRAIL_SPAWN_INTERVAL
+    _assert_true(BattleStage.TRAIL_SPAWN_INTERVAL > 0.0, "TRAIL_SPAWN_INTERVAL is positive")
+    _assert_true(BattleStage.TRAIL_SPAWN_INTERVAL < 0.5, "TRAIL_SPAWN_INTERVAL is small")
+    _assert_equal(BattleStage.TRAIL_SPAWN_INTERVAL, 0.02, "TRAIL_SPAWN_INTERVAL is 0.02")
+
+    # TRAIL_PARTICLE_LIFETIME
+    _assert_true(BattleStage.TRAIL_PARTICLE_LIFETIME > 0.0, "TRAIL_PARTICLE_LIFETIME is positive")
+    _assert_true(BattleStage.TRAIL_PARTICLE_LIFETIME < 1.0, "TRAIL_PARTICLE_LIFETIME is quick")
+    _assert_equal(BattleStage.TRAIL_PARTICLE_LIFETIME, 0.25, "TRAIL_PARTICLE_LIFETIME is 0.25")
+
+    # TRAIL_PARTICLE_SIZE
+    _assert_true(BattleStage.TRAIL_PARTICLE_SIZE > 0.0, "TRAIL_PARTICLE_SIZE is positive")
+    _assert_true(BattleStage.TRAIL_PARTICLE_SIZE < 20.0, "TRAIL_PARTICLE_SIZE is reasonable")
+    _assert_equal(BattleStage.TRAIL_PARTICLE_SIZE, 4.0, "TRAIL_PARTICLE_SIZE is 4.0")
+
+    # TRAIL_POWER_SIZE
+    _assert_true(BattleStage.TRAIL_POWER_SIZE > 0.0, "TRAIL_POWER_SIZE is positive")
+    _assert_true(BattleStage.TRAIL_POWER_SIZE > BattleStage.TRAIL_PARTICLE_SIZE, "POWER > normal trail size")
+    _assert_equal(BattleStage.TRAIL_POWER_SIZE, 6.0, "TRAIL_POWER_SIZE is 6.0")
+
+# =============================================================================
+# BATTLEFIELD TESTS
+# =============================================================================
+
+func _run_battlefield_tests() -> void:
+    _test_battlefield_buff_constants()
+    _test_battlefield_feedback_constants()
+    _test_battlefield_font_size_constants()
+    _test_battlefield_threat_constants()
+    _test_battlefield_streak_glow_constants()
+    _test_battlefield_combo_constants()
+    _test_battlefield_accuracy_badge_constants()
+    _test_battlefield_animation_constants()
+    _test_battlefield_grade_constants()
+
+func _test_battlefield_buff_constants() -> void:
+    # BUFF_WORD_STREAK
+    _assert_true(Battlefield.BUFF_WORD_STREAK > 0, "BUFF_WORD_STREAK is positive")
+    _assert_true(Battlefield.BUFF_WORD_STREAK <= 10, "BUFF_WORD_STREAK is reasonable")
+    _assert_equal(Battlefield.BUFF_WORD_STREAK, 4, "BUFF_WORD_STREAK is 4")
+
+    # BUFF_INPUT_STREAK
+    _assert_true(Battlefield.BUFF_INPUT_STREAK > 0, "BUFF_INPUT_STREAK is positive")
+    _assert_true(Battlefield.BUFF_INPUT_STREAK > Battlefield.BUFF_WORD_STREAK, "INPUT_STREAK > WORD_STREAK")
+    _assert_equal(Battlefield.BUFF_INPUT_STREAK, 24, "BUFF_INPUT_STREAK is 24")
+
+func _test_battlefield_feedback_constants() -> void:
+    # FEEDBACK_DURATION
+    _assert_true(Battlefield.FEEDBACK_DURATION > 0.0, "FEEDBACK_DURATION is positive")
+    _assert_true(Battlefield.FEEDBACK_DURATION < 2.0, "FEEDBACK_DURATION is reasonable")
+    _assert_equal(Battlefield.FEEDBACK_DURATION, 0.75, "FEEDBACK_DURATION is 0.75")
+
+    # FEEDBACK_ERROR_DURATION
+    _assert_true(Battlefield.FEEDBACK_ERROR_DURATION > 0.0, "FEEDBACK_ERROR_DURATION is positive")
+    _assert_true(Battlefield.FEEDBACK_ERROR_DURATION < Battlefield.FEEDBACK_DURATION, "ERROR < normal duration")
+    _assert_equal(Battlefield.FEEDBACK_ERROR_DURATION, 0.6, "FEEDBACK_ERROR_DURATION is 0.6")
+
+    # FEEDBACK_WAVE_DURATION
+    _assert_true(Battlefield.FEEDBACK_WAVE_DURATION > 0.0, "FEEDBACK_WAVE_DURATION is positive")
+    _assert_true(Battlefield.FEEDBACK_WAVE_DURATION > Battlefield.FEEDBACK_DURATION, "WAVE > normal duration")
+    _assert_equal(Battlefield.FEEDBACK_WAVE_DURATION, 1.1, "FEEDBACK_WAVE_DURATION is 1.1")
+
+    # FEEDBACK_BUFF_DURATION
+    _assert_true(Battlefield.FEEDBACK_BUFF_DURATION > 0.0, "FEEDBACK_BUFF_DURATION is positive")
+    _assert_true(Battlefield.FEEDBACK_BUFF_DURATION > Battlefield.FEEDBACK_DURATION, "BUFF > normal duration")
+    _assert_equal(Battlefield.FEEDBACK_BUFF_DURATION, 0.9, "FEEDBACK_BUFF_DURATION is 0.9")
+
+func _test_battlefield_font_size_constants() -> void:
+    # FONT_SIZE_SETTINGS_TITLE
+    _assert_true(Battlefield.FONT_SIZE_SETTINGS_TITLE > 0, "FONT_SIZE_SETTINGS_TITLE is positive")
+    _assert_equal(Battlefield.FONT_SIZE_SETTINGS_TITLE, 14, "FONT_SIZE_SETTINGS_TITLE is 14")
+
+    # FONT_SIZE_SETTINGS_LABEL
+    _assert_true(Battlefield.FONT_SIZE_SETTINGS_LABEL > 0, "FONT_SIZE_SETTINGS_LABEL is positive")
+    _assert_true(Battlefield.FONT_SIZE_SETTINGS_LABEL <= Battlefield.FONT_SIZE_SETTINGS_TITLE, "LABEL <= TITLE")
+    _assert_equal(Battlefield.FONT_SIZE_SETTINGS_LABEL, 13, "FONT_SIZE_SETTINGS_LABEL is 13")
+
+    # FONT_SIZE_SHORTCUTS
+    _assert_true(Battlefield.FONT_SIZE_SHORTCUTS > 0, "FONT_SIZE_SHORTCUTS is positive")
+    _assert_equal(Battlefield.FONT_SIZE_SHORTCUTS, 11, "FONT_SIZE_SHORTCUTS is 11")
+
+    # FONT_SIZE_COMBO
+    _assert_true(Battlefield.FONT_SIZE_COMBO > 0, "FONT_SIZE_COMBO is positive")
+    _assert_true(Battlefield.FONT_SIZE_COMBO > Battlefield.FONT_SIZE_SETTINGS_TITLE, "COMBO > TITLE font")
+    _assert_equal(Battlefield.FONT_SIZE_COMBO, 16, "FONT_SIZE_COMBO is 16")
+
+    # FONT_SIZE_RESULT_HINT
+    _assert_true(Battlefield.FONT_SIZE_RESULT_HINT > 0, "FONT_SIZE_RESULT_HINT is positive")
+    _assert_equal(Battlefield.FONT_SIZE_RESULT_HINT, 12, "FONT_SIZE_RESULT_HINT is 12")
+
+func _test_battlefield_threat_constants() -> void:
+    # SHAKE_DECAY
+    _assert_true(Battlefield.SHAKE_DECAY > 0.0, "SHAKE_DECAY is positive")
+    _assert_equal(Battlefield.SHAKE_DECAY, 5.0, "SHAKE_DECAY is 5.0")
+
+    # THREAT_WARNING_THRESHOLD
+    _assert_true(Battlefield.THREAT_WARNING_THRESHOLD > 0.0, "THREAT_WARNING_THRESHOLD is positive")
+    _assert_true(Battlefield.THREAT_WARNING_THRESHOLD < 100.0, "THREAT_WARNING_THRESHOLD is < 100")
+    _assert_equal(Battlefield.THREAT_WARNING_THRESHOLD, 70.0, "THREAT_WARNING_THRESHOLD is 70.0")
+
+    # TREND_SAMPLE_INTERVAL
+    _assert_true(Battlefield.TREND_SAMPLE_INTERVAL > 0.0, "TREND_SAMPLE_INTERVAL is positive")
+    _assert_equal(Battlefield.TREND_SAMPLE_INTERVAL, 3.0, "TREND_SAMPLE_INTERVAL is 3.0")
+
+    # TREND_HISTORY_SIZE
+    _assert_true(Battlefield.TREND_HISTORY_SIZE > 0, "TREND_HISTORY_SIZE is positive")
+    _assert_equal(Battlefield.TREND_HISTORY_SIZE, 5, "TREND_HISTORY_SIZE is 5")
+
+    # TREND_THRESHOLD
+    _assert_true(Battlefield.TREND_THRESHOLD > 0.0, "TREND_THRESHOLD is positive")
+    _assert_true(Battlefield.TREND_THRESHOLD < 0.5, "TREND_THRESHOLD is small")
+    _assert_equal(Battlefield.TREND_THRESHOLD, 0.03, "TREND_THRESHOLD is 0.03")
+
+    # THREAT_GLOW_THRESHOLD
+    _assert_true(Battlefield.THREAT_GLOW_THRESHOLD > 0.0, "THREAT_GLOW_THRESHOLD is positive")
+    _assert_true(Battlefield.THREAT_GLOW_THRESHOLD < Battlefield.THREAT_WARNING_THRESHOLD, "GLOW < WARNING threshold")
+    _assert_equal(Battlefield.THREAT_GLOW_THRESHOLD, 50.0, "THREAT_GLOW_THRESHOLD is 50.0")
+
+    # THREAT_GLOW_MAX_INTENSITY
+    _assert_true(Battlefield.THREAT_GLOW_MAX_INTENSITY > 0.0, "THREAT_GLOW_MAX_INTENSITY is positive")
+    _assert_true(Battlefield.THREAT_GLOW_MAX_INTENSITY <= 1.0, "THREAT_GLOW_MAX_INTENSITY <= 1.0")
+    _assert_equal(Battlefield.THREAT_GLOW_MAX_INTENSITY, 0.6, "THREAT_GLOW_MAX_INTENSITY is 0.6")
+
+func _test_battlefield_streak_glow_constants() -> void:
+    # STREAK_GLOW_MIN_STREAK
+    _assert_true(Battlefield.STREAK_GLOW_MIN_STREAK > 0, "STREAK_GLOW_MIN_STREAK is positive")
+    _assert_equal(Battlefield.STREAK_GLOW_MIN_STREAK, 3, "STREAK_GLOW_MIN_STREAK is 3")
+
+    # STREAK_GLOW_MAX_STREAK
+    _assert_true(Battlefield.STREAK_GLOW_MAX_STREAK > Battlefield.STREAK_GLOW_MIN_STREAK, "MAX > MIN streak")
+    _assert_equal(Battlefield.STREAK_GLOW_MAX_STREAK, 20, "STREAK_GLOW_MAX_STREAK is 20")
+
+    # STREAK_GLOW_COLOR_LOW
+    _assert_true(Battlefield.STREAK_GLOW_COLOR_LOW is Color, "STREAK_GLOW_COLOR_LOW is Color")
+    _assert_true(Battlefield.STREAK_GLOW_COLOR_LOW.a > 0.0, "LOW color has alpha")
+
+    # STREAK_GLOW_COLOR_MID
+    _assert_true(Battlefield.STREAK_GLOW_COLOR_MID is Color, "STREAK_GLOW_COLOR_MID is Color")
+    _assert_true(Battlefield.STREAK_GLOW_COLOR_MID.a > 0.0, "MID color has alpha")
+
+    # STREAK_GLOW_COLOR_HIGH
+    _assert_true(Battlefield.STREAK_GLOW_COLOR_HIGH is Color, "STREAK_GLOW_COLOR_HIGH is Color")
+    _assert_true(Battlefield.STREAK_GLOW_COLOR_HIGH.a > 0.0, "HIGH color has alpha")
+
+    # Colors should be distinct
+    _assert_true(Battlefield.STREAK_GLOW_COLOR_LOW != Battlefield.STREAK_GLOW_COLOR_MID, "LOW != MID color")
+    _assert_true(Battlefield.STREAK_GLOW_COLOR_MID != Battlefield.STREAK_GLOW_COLOR_HIGH, "MID != HIGH color")
+
+func _test_battlefield_combo_constants() -> void:
+    # COMBO_PULSE_DURATION
+    _assert_true(Battlefield.COMBO_PULSE_DURATION > 0.0, "COMBO_PULSE_DURATION is positive")
+    _assert_true(Battlefield.COMBO_PULSE_DURATION < 1.0, "COMBO_PULSE_DURATION is quick")
+    _assert_equal(Battlefield.COMBO_PULSE_DURATION, 0.15, "COMBO_PULSE_DURATION is 0.15")
+
+    # MILESTONE_THRESHOLDS
+    _assert_true(Battlefield.MILESTONE_THRESHOLDS is Array, "MILESTONE_THRESHOLDS is Array")
+    _assert_true(Battlefield.MILESTONE_THRESHOLDS.size() > 0, "MILESTONE_THRESHOLDS has entries")
+    _assert_equal(Battlefield.MILESTONE_THRESHOLDS[0], 5, "First milestone is 5")
+
+    # MILESTONE_POPUP_DURATION
+    _assert_true(Battlefield.MILESTONE_POPUP_DURATION > 0.0, "MILESTONE_POPUP_DURATION is positive")
+    _assert_true(Battlefield.MILESTONE_POPUP_DURATION < 3.0, "MILESTONE_POPUP_DURATION is reasonable")
+    _assert_equal(Battlefield.MILESTONE_POPUP_DURATION, 1.2, "MILESTONE_POPUP_DURATION is 1.2")
+
+    # MILESTONE_MESSAGES
+    _assert_true(Battlefield.MILESTONE_MESSAGES is Dictionary, "MILESTONE_MESSAGES is Dictionary")
+    _assert_true(Battlefield.MILESTONE_MESSAGES.size() > 0, "MILESTONE_MESSAGES has entries")
+    _assert_true(Battlefield.MILESTONE_MESSAGES.has(5), "MILESTONE_MESSAGES has 5")
+    _assert_equal(Battlefield.MILESTONE_MESSAGES[5], "COMBO!", "MILESTONE 5 message is COMBO!")
+
+    # EDGE_GLOW_THRESHOLD
+    _assert_true(Battlefield.EDGE_GLOW_THRESHOLD > 0, "EDGE_GLOW_THRESHOLD is positive")
+    _assert_equal(Battlefield.EDGE_GLOW_THRESHOLD, 10, "EDGE_GLOW_THRESHOLD is 10")
+
+func _test_battlefield_accuracy_badge_constants() -> void:
+    # ACCURACY_BADGE_THRESHOLDS
+    _assert_true(Battlefield.ACCURACY_BADGE_THRESHOLDS is Array, "ACCURACY_BADGE_THRESHOLDS is Array")
+    _assert_true(Battlefield.ACCURACY_BADGE_THRESHOLDS.size() > 0, "ACCURACY_BADGE_THRESHOLDS has entries")
+    _assert_equal(Battlefield.ACCURACY_BADGE_THRESHOLDS[0], 5, "First accuracy threshold is 5")
+
+    # ACCURACY_BADGE_LABELS
+    _assert_true(Battlefield.ACCURACY_BADGE_LABELS is Dictionary, "ACCURACY_BADGE_LABELS is Dictionary")
+    _assert_true(Battlefield.ACCURACY_BADGE_LABELS.has(5), "ACCURACY_BADGE_LABELS has 5")
+    _assert_equal(Battlefield.ACCURACY_BADGE_LABELS[5], "SHARP", "Badge 5 is SHARP")
+
+    # ACCURACY_BADGE_COLORS
+    _assert_true(Battlefield.ACCURACY_BADGE_COLORS is Dictionary, "ACCURACY_BADGE_COLORS is Dictionary")
+    _assert_true(Battlefield.ACCURACY_BADGE_COLORS.has(5), "ACCURACY_BADGE_COLORS has 5")
+    _assert_true(Battlefield.ACCURACY_BADGE_COLORS[5] is Color, "Badge color 5 is Color")
+
+func _test_battlefield_animation_constants() -> void:
+    # ERROR_SHAKE_INTENSITY
+    _assert_true(Battlefield.ERROR_SHAKE_INTENSITY > 0.0, "ERROR_SHAKE_INTENSITY is positive")
+    _assert_true(Battlefield.ERROR_SHAKE_INTENSITY < 20.0, "ERROR_SHAKE_INTENSITY is reasonable")
+    _assert_equal(Battlefield.ERROR_SHAKE_INTENSITY, 4.0, "ERROR_SHAKE_INTENSITY is 4.0")
+
+    # ERROR_SHAKE_DURATION
+    _assert_true(Battlefield.ERROR_SHAKE_DURATION > 0.0, "ERROR_SHAKE_DURATION is positive")
+    _assert_true(Battlefield.ERROR_SHAKE_DURATION < 0.5, "ERROR_SHAKE_DURATION is quick")
+    _assert_equal(Battlefield.ERROR_SHAKE_DURATION, 0.15, "ERROR_SHAKE_DURATION is 0.15")
+
+    # TYPING_PULSE_SCALE
+    _assert_true(Battlefield.TYPING_PULSE_SCALE > 1.0, "TYPING_PULSE_SCALE > 1.0 (expand)")
+    _assert_true(Battlefield.TYPING_PULSE_SCALE < 1.5, "TYPING_PULSE_SCALE is subtle")
+    _assert_equal(Battlefield.TYPING_PULSE_SCALE, 1.08, "TYPING_PULSE_SCALE is 1.08")
+
+    # TYPING_PULSE_DURATION
+    _assert_true(Battlefield.TYPING_PULSE_DURATION > 0.0, "TYPING_PULSE_DURATION is positive")
+    _assert_true(Battlefield.TYPING_PULSE_DURATION < 0.5, "TYPING_PULSE_DURATION is quick")
+    _assert_equal(Battlefield.TYPING_PULSE_DURATION, 0.12, "TYPING_PULSE_DURATION is 0.12")
+
+func _test_battlefield_grade_constants() -> void:
+    # GRADE_THRESHOLDS
+    _assert_true(Battlefield.GRADE_THRESHOLDS is Dictionary, "GRADE_THRESHOLDS is Dictionary")
+    _assert_true(Battlefield.GRADE_THRESHOLDS.has("S"), "GRADE_THRESHOLDS has S")
+    _assert_true(Battlefield.GRADE_THRESHOLDS.has("A"), "GRADE_THRESHOLDS has A")
+    _assert_true(Battlefield.GRADE_THRESHOLDS.has("B"), "GRADE_THRESHOLDS has B")
+    _assert_true(Battlefield.GRADE_THRESHOLDS.has("C"), "GRADE_THRESHOLDS has C")
+    _assert_true(Battlefield.GRADE_THRESHOLDS.has("D"), "GRADE_THRESHOLDS has D")
+
+    # S grade should have highest accuracy requirement
+    _assert_true(Battlefield.GRADE_THRESHOLDS["S"]["accuracy"] > Battlefield.GRADE_THRESHOLDS["A"]["accuracy"], "S accuracy > A")
+    _assert_true(Battlefield.GRADE_THRESHOLDS["A"]["accuracy"] > Battlefield.GRADE_THRESHOLDS["B"]["accuracy"], "A accuracy > B")
+
+    # GRADE_COLORS
+    _assert_true(Battlefield.GRADE_COLORS is Dictionary, "GRADE_COLORS is Dictionary")
+    _assert_true(Battlefield.GRADE_COLORS.has("S"), "GRADE_COLORS has S")
+    _assert_true(Battlefield.GRADE_COLORS.has("F"), "GRADE_COLORS has F")
+    _assert_true(Battlefield.GRADE_COLORS["S"] is Color, "S grade color is Color")
+
+    # All grade colors should be distinct
+    _assert_true(Battlefield.GRADE_COLORS["S"] != Battlefield.GRADE_COLORS["A"], "S != A color")
+    _assert_true(Battlefield.GRADE_COLORS["A"] != Battlefield.GRADE_COLORS["B"], "A != B color")
+    _assert_true(Battlefield.GRADE_COLORS["D"] != Battlefield.GRADE_COLORS["F"], "D != F color")
