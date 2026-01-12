@@ -254,6 +254,14 @@ func _run_all() -> void:
     _run_workers_panel_tests()
     _run_node_card_tests()
     _run_design_system_tests()
+    _run_sim_lessons_constants_tests()
+    _run_sim_save_constants_tests()
+    _run_sim_map_constants_tests()
+    _run_sim_enemies_constants_tests()
+    _run_sim_words_constants_tests()
+    _run_sim_poi_constants_tests()
+    _run_story_manager_constants_tests()
+    _run_keybind_conflicts_constants_tests()
 
     for message in messages:
         print("[tests] %s" % message)
@@ -11342,3 +11350,267 @@ func _test_design_system_z_layers() -> void:
     _assert_equal(DesignSystem.Z_MODAL, 40, "Z_MODAL is 40")
     _assert_equal(DesignSystem.Z_NOTIFICATION, 50, "Z_NOTIFICATION is 50")
     _assert_equal(DesignSystem.Z_LOADING, 60, "Z_LOADING is 60")
+
+# =============================================================================
+# SIM LESSONS CONSTANTS TESTS
+# =============================================================================
+
+func _run_sim_lessons_constants_tests() -> void:
+    _test_sim_lessons_path_constants()
+    _test_sim_lessons_default_values()
+
+func _test_sim_lessons_path_constants() -> void:
+    # LESSONS_PATH
+    _assert_true(SimLessons.LESSONS_PATH is String, "LESSONS_PATH is String")
+    _assert_true(SimLessons.LESSONS_PATH.begins_with("res://"), "LESSONS_PATH in res://")
+    _assert_true(SimLessons.LESSONS_PATH.ends_with(".json"), "LESSONS_PATH is .json")
+    _assert_equal(SimLessons.LESSONS_PATH, "res://data/lessons.json", "LESSONS_PATH value")
+
+func _test_sim_lessons_default_values() -> void:
+    # DEFAULT_LESSON_ID
+    _assert_true(SimLessons.DEFAULT_LESSON_ID is String, "DEFAULT_LESSON_ID is String")
+    _assert_true(SimLessons.DEFAULT_LESSON_ID.length() > 0, "DEFAULT_LESSON_ID is not empty")
+    _assert_equal(SimLessons.DEFAULT_LESSON_ID, "full_alpha", "DEFAULT_LESSON_ID is full_alpha")
+
+    # KINDS
+    _assert_true(SimLessons.KINDS is Array, "KINDS is Array")
+    _assert_true(SimLessons.KINDS.size() > 0, "KINDS has entries")
+    _assert_true(SimLessons.KINDS.has("scout"), "KINDS has scout")
+    _assert_true(SimLessons.KINDS.has("raider"), "KINDS has raider")
+    _assert_true(SimLessons.KINDS.has("armored"), "KINDS has armored")
+
+# =============================================================================
+# SIM SAVE CONSTANTS TESTS
+# =============================================================================
+
+func _run_sim_save_constants_tests() -> void:
+    _test_sim_save_version_constant()
+
+func _test_sim_save_version_constant() -> void:
+    # SAVE_VERSION
+    _assert_true(SimSave.SAVE_VERSION is int, "SAVE_VERSION is int")
+    _assert_true(SimSave.SAVE_VERSION >= 1, "SAVE_VERSION >= 1")
+    _assert_equal(SimSave.SAVE_VERSION, 1, "SAVE_VERSION is 1")
+
+# =============================================================================
+# SIM MAP CONSTANTS TESTS
+# =============================================================================
+
+func _run_sim_map_constants_tests() -> void:
+    _test_sim_map_terrain_constants()
+    _test_sim_map_zone_constants()
+    _test_sim_map_zone_data()
+
+func _test_sim_map_terrain_constants() -> void:
+    # Terrain type constants
+    _assert_true(SimMap.TERRAIN_PLAINS is String, "TERRAIN_PLAINS is String")
+    _assert_true(SimMap.TERRAIN_FOREST is String, "TERRAIN_FOREST is String")
+    _assert_true(SimMap.TERRAIN_MOUNTAIN is String, "TERRAIN_MOUNTAIN is String")
+    _assert_true(SimMap.TERRAIN_WATER is String, "TERRAIN_WATER is String")
+
+    _assert_equal(SimMap.TERRAIN_PLAINS, "plains", "TERRAIN_PLAINS value")
+    _assert_equal(SimMap.TERRAIN_FOREST, "forest", "TERRAIN_FOREST value")
+    _assert_equal(SimMap.TERRAIN_MOUNTAIN, "mountain", "TERRAIN_MOUNTAIN value")
+    _assert_equal(SimMap.TERRAIN_WATER, "water", "TERRAIN_WATER value")
+
+func _test_sim_map_zone_constants() -> void:
+    # Zone type constants
+    _assert_true(SimMap.ZONE_SAFE is String, "ZONE_SAFE is String")
+    _assert_true(SimMap.ZONE_FRONTIER is String, "ZONE_FRONTIER is String")
+    _assert_true(SimMap.ZONE_WILDERNESS is String, "ZONE_WILDERNESS is String")
+    _assert_true(SimMap.ZONE_DEPTHS is String, "ZONE_DEPTHS is String")
+
+    _assert_equal(SimMap.ZONE_SAFE, "safe", "ZONE_SAFE value")
+    _assert_equal(SimMap.ZONE_FRONTIER, "frontier", "ZONE_FRONTIER value")
+    _assert_equal(SimMap.ZONE_WILDERNESS, "wilderness", "ZONE_WILDERNESS value")
+    _assert_equal(SimMap.ZONE_DEPTHS, "depths", "ZONE_DEPTHS value")
+
+    # Zone radius constants (ascending order)
+    _assert_true(SimMap.ZONE_SAFE_RADIUS is int, "ZONE_SAFE_RADIUS is int")
+    _assert_true(SimMap.ZONE_FRONTIER_RADIUS is int, "ZONE_FRONTIER_RADIUS is int")
+    _assert_true(SimMap.ZONE_WILDERNESS_RADIUS is int, "ZONE_WILDERNESS_RADIUS is int")
+
+    _assert_true(SimMap.ZONE_SAFE_RADIUS < SimMap.ZONE_FRONTIER_RADIUS, "SAFE < FRONTIER radius")
+    _assert_true(SimMap.ZONE_FRONTIER_RADIUS < SimMap.ZONE_WILDERNESS_RADIUS, "FRONTIER < WILDERNESS radius")
+
+    _assert_equal(SimMap.ZONE_SAFE_RADIUS, 3, "ZONE_SAFE_RADIUS is 3")
+    _assert_equal(SimMap.ZONE_FRONTIER_RADIUS, 6, "ZONE_FRONTIER_RADIUS is 6")
+    _assert_equal(SimMap.ZONE_WILDERNESS_RADIUS, 10, "ZONE_WILDERNESS_RADIUS is 10")
+
+func _test_sim_map_zone_data() -> void:
+    # ZONE_DATA structure
+    _assert_true(SimMap.ZONE_DATA is Dictionary, "ZONE_DATA is Dictionary")
+    _assert_true(SimMap.ZONE_DATA.has(SimMap.ZONE_SAFE), "ZONE_DATA has safe zone")
+    _assert_true(SimMap.ZONE_DATA.has(SimMap.ZONE_FRONTIER), "ZONE_DATA has frontier zone")
+    _assert_true(SimMap.ZONE_DATA.has(SimMap.ZONE_WILDERNESS), "ZONE_DATA has wilderness zone")
+    _assert_true(SimMap.ZONE_DATA.has(SimMap.ZONE_DEPTHS), "ZONE_DATA has depths zone")
+
+    # Each zone has required fields
+    for zone_id in SimMap.ZONE_DATA:
+        var zone: Dictionary = SimMap.ZONE_DATA[zone_id]
+        _assert_true(zone.has("name"), "Zone %s has name" % zone_id)
+        _assert_true(zone.has("description"), "Zone %s has description" % zone_id)
+        _assert_true(zone.has("threat_multiplier"), "Zone %s has threat_multiplier" % zone_id)
+        _assert_true(zone.has("loot_multiplier"), "Zone %s has loot_multiplier" % zone_id)
+        _assert_true(zone.has("color"), "Zone %s has color" % zone_id)
+        _assert_true(zone["color"] is Color, "Zone %s color is Color" % zone_id)
+
+    # Safe zone has lowest threat, depths has highest
+    var safe_threat = SimMap.ZONE_DATA[SimMap.ZONE_SAFE]["threat_multiplier"]
+    var depths_threat = SimMap.ZONE_DATA[SimMap.ZONE_DEPTHS]["threat_multiplier"]
+    _assert_true(safe_threat < depths_threat, "Safe zone threat < depths threat")
+
+# =============================================================================
+# SIM ENEMIES CONSTANTS TESTS
+# =============================================================================
+
+func _run_sim_enemies_constants_tests() -> void:
+    _test_sim_enemies_kinds()
+    _test_sim_enemies_boss_kinds()
+    _test_sim_enemies_boss_days()
+
+func _test_sim_enemies_kinds() -> void:
+    # ENEMY_KINDS structure
+    _assert_true(SimEnemies.ENEMY_KINDS is Dictionary, "ENEMY_KINDS is Dictionary")
+    _assert_true(SimEnemies.ENEMY_KINDS.size() >= 5, "ENEMY_KINDS has at least 5 types")
+
+    # Basic enemy types exist
+    _assert_true(SimEnemies.ENEMY_KINDS.has("raider"), "Has raider")
+    _assert_true(SimEnemies.ENEMY_KINDS.has("scout"), "Has scout")
+    _assert_true(SimEnemies.ENEMY_KINDS.has("armored"), "Has armored")
+    _assert_true(SimEnemies.ENEMY_KINDS.has("tank"), "Has tank")
+    _assert_true(SimEnemies.ENEMY_KINDS.has("swarm"), "Has swarm")
+
+    # Each enemy type has required fields
+    for kind_id in SimEnemies.ENEMY_KINDS:
+        var kind: Dictionary = SimEnemies.ENEMY_KINDS[kind_id]
+        _assert_true(kind.has("speed"), "Enemy %s has speed" % kind_id)
+        _assert_true(kind.has("armor"), "Enemy %s has armor" % kind_id)
+        _assert_true(kind.has("hp_bonus"), "Enemy %s has hp_bonus" % kind_id)
+        _assert_true(kind.has("glyph"), "Enemy %s has glyph" % kind_id)
+        _assert_true(kind["glyph"] is String, "Enemy %s glyph is String" % kind_id)
+        _assert_true(kind["glyph"].length() == 1, "Enemy %s glyph is single char" % kind_id)
+
+    # Scout should be faster than raider
+    _assert_true(SimEnemies.ENEMY_KINDS["scout"]["speed"] > SimEnemies.ENEMY_KINDS["raider"]["speed"], "Scout faster than raider")
+
+    # Tank should have more armor than raider
+    _assert_true(SimEnemies.ENEMY_KINDS["tank"]["armor"] > SimEnemies.ENEMY_KINDS["raider"]["armor"], "Tank more armor than raider")
+
+func _test_sim_enemies_boss_kinds() -> void:
+    # BOSS_KINDS structure
+    _assert_true(SimEnemies.BOSS_KINDS is Dictionary, "BOSS_KINDS is Dictionary")
+    _assert_true(SimEnemies.BOSS_KINDS.size() >= 4, "BOSS_KINDS has at least 4 bosses")
+
+    # Boss types exist
+    _assert_true(SimEnemies.BOSS_KINDS.has("forest_guardian"), "Has forest_guardian")
+    _assert_true(SimEnemies.BOSS_KINDS.has("stone_golem"), "Has stone_golem")
+    _assert_true(SimEnemies.BOSS_KINDS.has("fen_seer"), "Has fen_seer")
+    _assert_true(SimEnemies.BOSS_KINDS.has("sunlord"), "Has sunlord")
+
+    # Each boss has required fields and is marked as boss
+    for boss_id in SimEnemies.BOSS_KINDS:
+        var boss: Dictionary = SimEnemies.BOSS_KINDS[boss_id]
+        _assert_true(boss.has("speed"), "Boss %s has speed" % boss_id)
+        _assert_true(boss.has("armor"), "Boss %s has armor" % boss_id)
+        _assert_true(boss.has("hp_bonus"), "Boss %s has hp_bonus" % boss_id)
+        _assert_true(boss.has("glyph"), "Boss %s has glyph" % boss_id)
+        _assert_true(boss.get("is_boss", false), "Boss %s marked as boss" % boss_id)
+
+    # Bosses should have high hp_bonus
+    for boss_id in SimEnemies.BOSS_KINDS:
+        var boss: Dictionary = SimEnemies.BOSS_KINDS[boss_id]
+        _assert_true(boss["hp_bonus"] >= 8, "Boss %s has hp_bonus >= 8" % boss_id)
+
+func _test_sim_enemies_boss_days() -> void:
+    # BOSS_DAYS structure
+    _assert_true(SimEnemies.BOSS_DAYS is Dictionary, "BOSS_DAYS is Dictionary")
+    _assert_true(SimEnemies.BOSS_DAYS.size() >= 4, "BOSS_DAYS has at least 4 entries")
+
+    # Boss days map to valid boss kinds
+    for day in SimEnemies.BOSS_DAYS:
+        var boss_id: String = SimEnemies.BOSS_DAYS[day]
+        _assert_true(SimEnemies.BOSS_KINDS.has(boss_id), "Day %d boss %s exists in BOSS_KINDS" % [day, boss_id])
+
+    # Specific boss days
+    _assert_equal(SimEnemies.BOSS_DAYS.get(5, ""), "forest_guardian", "Day 5 boss is forest_guardian")
+    _assert_equal(SimEnemies.BOSS_DAYS.get(10, ""), "stone_golem", "Day 10 boss is stone_golem")
+    _assert_equal(SimEnemies.BOSS_DAYS.get(15, ""), "fen_seer", "Day 15 boss is fen_seer")
+    _assert_equal(SimEnemies.BOSS_DAYS.get(20, ""), "sunlord", "Day 20 boss is sunlord")
+
+# =============================================================================
+# SIM WORDS CONSTANTS TESTS
+# =============================================================================
+
+func _run_sim_words_constants_tests() -> void:
+    _test_sim_words_arrays()
+
+func _test_sim_words_arrays() -> void:
+    # SHORT_WORDS
+    _assert_true(SimWords.SHORT_WORDS is Array, "SHORT_WORDS is Array")
+    _assert_true(SimWords.SHORT_WORDS.size() >= 10, "SHORT_WORDS has at least 10 entries")
+
+    # All short words are actually short
+    for word in SimWords.SHORT_WORDS:
+        _assert_true(word is String, "Short word is String")
+        _assert_true(word.length() >= 3, "Short word length >= 3")
+        _assert_true(word.length() <= 6, "Short word length <= 6")
+
+    # MEDIUM_WORDS
+    _assert_true(SimWords.MEDIUM_WORDS is Array, "MEDIUM_WORDS is Array")
+    _assert_true(SimWords.MEDIUM_WORDS.size() >= 10, "MEDIUM_WORDS has at least 10 entries")
+
+    # Medium words are medium length
+    for word in SimWords.MEDIUM_WORDS:
+        _assert_true(word is String, "Medium word is String")
+        _assert_true(word.length() >= 5, "Medium word length >= 5")
+
+    # LONG_WORDS
+    _assert_true(SimWords.LONG_WORDS is Array, "LONG_WORDS is Array")
+    _assert_true(SimWords.LONG_WORDS.size() >= 10, "LONG_WORDS has at least 10 entries")
+
+    # Long words are actually long
+    for word in SimWords.LONG_WORDS:
+        _assert_true(word is String, "Long word is String")
+        _assert_true(word.length() >= 8, "Long word length >= 8")
+
+# =============================================================================
+# SIM POI CONSTANTS TESTS
+# =============================================================================
+
+func _run_sim_poi_constants_tests() -> void:
+    _test_sim_poi_path_constant()
+
+func _test_sim_poi_path_constant() -> void:
+    # POIS_PATH
+    _assert_true(SimPoi.POIS_PATH is String, "POIS_PATH is String")
+    _assert_true(SimPoi.POIS_PATH.begins_with("res://"), "POIS_PATH in res://")
+    _assert_true(SimPoi.POIS_PATH.ends_with(".json"), "POIS_PATH is .json")
+    _assert_equal(SimPoi.POIS_PATH, "res://data/pois/pois.json", "POIS_PATH value")
+
+# =============================================================================
+# STORY MANAGER CONSTANTS TESTS
+# =============================================================================
+
+func _run_story_manager_constants_tests() -> void:
+    _test_story_manager_path_constant()
+
+func _test_story_manager_path_constant() -> void:
+    # STORY_PATH
+    _assert_true(StoryManager.STORY_PATH is String, "STORY_PATH is String")
+    _assert_true(StoryManager.STORY_PATH.begins_with("res://"), "STORY_PATH in res://")
+    _assert_true(StoryManager.STORY_PATH.ends_with(".json"), "STORY_PATH is .json")
+    _assert_equal(StoryManager.STORY_PATH, "res://data/story.json", "STORY_PATH value")
+
+# =============================================================================
+# KEYBIND CONFLICTS CONSTANTS TESTS
+# =============================================================================
+
+func _run_keybind_conflicts_constants_tests() -> void:
+    _test_keybind_conflicts_game_name()
+
+func _test_keybind_conflicts_game_name() -> void:
+    # GAME_NAME
+    _assert_true(KeybindConflicts.GAME_NAME is String, "GAME_NAME is String")
+    _assert_true(KeybindConflicts.GAME_NAME.length() > 0, "GAME_NAME is not empty")
+    _assert_equal(KeybindConflicts.GAME_NAME, "Keyboard Defense", "GAME_NAME value")

@@ -155,7 +155,7 @@ New SVG assets in `assets/art/src-svg/`:
 - Scenario reports and summaries are written under `Logs/ScenarioReports/` for CI-friendly collection (via `--out-dir`).
 
 ## Test Coverage (as of 2026-01-12)
-**Total: ~7,700+ assertions**
+**Total: ~7,950+ assertions**
 
 - **Parser tests**: Command parsing, intent validation
 - **Reducer tests**: State mutation, intent application
@@ -247,6 +247,14 @@ New SVG assets in `assets/art/src-svg/`:
 - **Workers panel tests**: Production bonus, upkeep, building color dictionary
 - **Node card tests**: Font sizes (title, lesson, reward), border width, corner radius, margin
 - **Design system tests**: Typography scale (display, h1-h3, body, caption, mono), spacing scale (xs-xxl), sizing (buttons, icons, panels), border radius, shadow definitions, animation timing, z-index layers
+- **SimLessons tests**: Path constants, default lesson ID, lesson kinds array validation
+- **SimSave tests**: Save version constant
+- **SimMap tests**: Terrain constants, zone constants, zone radius hierarchy, zone data structure validation
+- **SimEnemies tests**: Enemy kinds structure (HP, speed, damage, word pool), boss kinds, boss days mapping
+- **SimWords tests**: Short/medium/long word arrays, word length validation
+- **SimPoi tests**: POIs path constant
+- **StoryManager tests**: Story data path constant
+- **KeybindConflicts tests**: Game name constant
 
 ## Planning
 - `docs/ROADMAP.md` is the authoritative milestone list.
