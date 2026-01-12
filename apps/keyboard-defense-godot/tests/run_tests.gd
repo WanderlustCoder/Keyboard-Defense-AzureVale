@@ -68,6 +68,10 @@ const SimSynergyDetector = preload("res://sim/synergy_detector.gd")
 const SimAutoTargeting = preload("res://sim/auto_targeting.gd")
 const SimEnemyAbilities = preload("res://sim/enemy_abilities.gd")
 const SimResourceNodes = preload("res://sim/resource_nodes.gd")
+const SimTypingMetrics = preload("res://sim/typing_metrics.gd")
+const SimTypingTowerBonuses = preload("res://sim/typing_tower_bonuses.gd")
+const SimSummonedUnits = preload("res://sim/summoned_units.gd")
+const SimTrade = preload("res://sim/trade.gd")
 
 var total_tests: int = 0
 var total_failed: int = 0
@@ -156,6 +160,12 @@ func _run_all() -> void:
     _run_enemy_abilities_tests()
     _run_practice_goals_tests()
     _run_resource_nodes_tests()
+    _run_typing_metrics_tests()
+    _run_typing_tower_bonuses_tests()
+    _run_summoned_units_tests()
+    _run_trade_tests()
+    _run_workers_tests()
+    _run_special_commands_tests()
 
     for message in messages:
         print("[tests] %s" % message)
@@ -6527,3 +6537,703 @@ func _run_resource_nodes_tests() -> void:
 
     # Test NODES_PATH constant
     _assert_equal(SimResourceNodes.NODES_PATH, "res://data/resource_nodes.json", "NODES_PATH constant correct")
+
+
+func _run_typing_metrics_tests() -> void:
+    # Test constants
+    _assert_equal(SimTypingMetrics.WPM_WINDOW_MS, 10000, "WPM_WINDOW_MS is 10000")
+    _assert_equal(SimTypingMetrics.UNIQUE_LETTER_WINDOW_MS, 10000, "UNIQUE_LETTER_WINDOW_MS is 10000")
+    _assert_approx(SimTypingMetrics.CHARS_PER_WORD, 5.0, 0.01, "CHARS_PER_WORD is 5.0")
+
+    # Test COMBO_THRESHOLDS and COMBO_MULTIPLIERS
+    _assert_equal(SimTypingMetrics.COMBO_THRESHOLDS.size(), 5, "COMBO_THRESHOLDS has 5 entries")
+    _assert_equal(SimTypingMetrics.COMBO_MULTIPLIERS.size(), 5, "COMBO_MULTIPLIERS has 5 entries")
+    _assert_equal(SimTypingMetrics.COMBO_THRESHOLDS[0], 3, "First combo threshold is 3")
+    _assert_approx(SimTypingMetrics.COMBO_MULTIPLIERS[0], 1.1, 0.01, "First combo multiplier is 1.1")
+    _assert_equal(SimTypingMetrics.COMBO_THRESHOLDS[4], 50, "Last combo threshold is 50")
+    _assert_approx(SimTypingMetrics.COMBO_MULTIPLIERS[4], 2.5, 0.01, "Last combo multiplier is 2.5")
+
+    # Test init_battle_metrics
+    var state: GameState = DefaultState.create()
+    SimTypingMetrics.init_battle_metrics(state)
+    _assert_true(state.typing_metrics.has("battle_chars_typed"), "Metrics has battle_chars_typed")
+    _assert_true(state.typing_metrics.has("battle_words_typed"), "Metrics has battle_words_typed")
+    _assert_true(state.typing_metrics.has("battle_errors"), "Metrics has battle_errors")
+    _assert_true(state.typing_metrics.has("combo_count"), "Metrics has combo_count")
+    _assert_true(state.typing_metrics.has("max_combo"), "Metrics has max_combo")
+    _assert_equal(state.typing_metrics.get("battle_chars_typed", -1), 0, "battle_chars_typed starts at 0")
+    _assert_equal(state.typing_metrics.get("combo_count", -1), 0, "combo_count starts at 0")
+
+    # Test reset_metrics
+    state.typing_metrics["battle_chars_typed"] = 100
+    SimTypingMetrics.reset_metrics(state)
+    _assert_equal(state.typing_metrics.get("battle_chars_typed", -1), 0, "reset_metrics resets battle_chars_typed")
+
+    # Test get_accuracy with no chars
+    state = DefaultState.create()
+    SimTypingMetrics.init_battle_metrics(state)
+    _assert_approx(SimTypingMetrics.get_accuracy(state), 1.0, 0.01, "Accuracy is 1.0 with no chars")
+
+    # Test get_accuracy with chars and errors
+    state.typing_metrics["battle_chars_typed"] = 90
+    state.typing_metrics["battle_errors"] = 10
+    _assert_approx(SimTypingMetrics.get_accuracy(state), 0.9, 0.01, "Accuracy is 0.9 with 90 chars and 10 errors")
+
+    state.typing_metrics["battle_chars_typed"] = 80
+    state.typing_metrics["battle_errors"] = 20
+    _assert_approx(SimTypingMetrics.get_accuracy(state), 0.8, 0.01, "Accuracy is 0.8 with 80 chars and 20 errors")
+
+    # Test get_combo_count
+    state = DefaultState.create()
+    SimTypingMetrics.init_battle_metrics(state)
+    _assert_equal(SimTypingMetrics.get_combo_count(state), 0, "Combo count starts at 0")
+    state.typing_metrics["combo_count"] = 15
+    _assert_equal(SimTypingMetrics.get_combo_count(state), 15, "get_combo_count returns 15")
+
+    # Test get_max_combo
+    state.typing_metrics["max_combo"] = 25
+    _assert_equal(SimTypingMetrics.get_max_combo(state), 25, "get_max_combo returns 25")
+
+    # Test get_perfect_streak
+    state.typing_metrics["perfect_word_streak"] = 5
+    _assert_equal(SimTypingMetrics.get_perfect_streak(state), 5, "get_perfect_streak returns 5")
+
+    # Test get_combo_multiplier at various combo levels
+    state.typing_metrics["combo_count"] = 0
+    _assert_approx(SimTypingMetrics.get_combo_multiplier(state), 1.0, 0.01, "Combo 0 = 1.0x")
+
+    state.typing_metrics["combo_count"] = 3
+    _assert_approx(SimTypingMetrics.get_combo_multiplier(state), 1.1, 0.01, "Combo 3 = 1.1x")
+
+    state.typing_metrics["combo_count"] = 5
+    _assert_approx(SimTypingMetrics.get_combo_multiplier(state), 1.25, 0.01, "Combo 5 = 1.25x")
+
+    state.typing_metrics["combo_count"] = 10
+    _assert_approx(SimTypingMetrics.get_combo_multiplier(state), 1.5, 0.01, "Combo 10 = 1.5x")
+
+    state.typing_metrics["combo_count"] = 20
+    _assert_approx(SimTypingMetrics.get_combo_multiplier(state), 2.0, 0.01, "Combo 20 = 2.0x")
+
+    state.typing_metrics["combo_count"] = 50
+    _assert_approx(SimTypingMetrics.get_combo_multiplier(state), 2.5, 0.01, "Combo 50 = 2.5x")
+
+    state.typing_metrics["combo_count"] = 100
+    _assert_approx(SimTypingMetrics.get_combo_multiplier(state), 2.5, 0.01, "Combo 100 still = 2.5x (capped)")
+
+    # Test get_chars_typed
+    state.typing_metrics["battle_chars_typed"] = 42
+    _assert_equal(SimTypingMetrics.get_chars_typed(state), 42, "get_chars_typed returns 42")
+
+    # Test get_words_typed
+    state.typing_metrics["battle_words_typed"] = 8
+    _assert_equal(SimTypingMetrics.get_words_typed(state), 8, "get_words_typed returns 8")
+
+    # Test get_errors
+    state.typing_metrics["battle_errors"] = 3
+    _assert_equal(SimTypingMetrics.get_errors(state), 3, "get_errors returns 3")
+
+    # Test get_battle_summary
+    state = DefaultState.create()
+    SimTypingMetrics.init_battle_metrics(state)
+    state.typing_metrics["battle_chars_typed"] = 100
+    state.typing_metrics["battle_words_typed"] = 20
+    state.typing_metrics["battle_errors"] = 5
+    state.typing_metrics["max_combo"] = 15
+    state.typing_metrics["perfect_word_streak"] = 3
+    var summary: Dictionary = SimTypingMetrics.get_battle_summary(state)
+    _assert_true(summary.has("wpm"), "Summary has wpm")
+    _assert_true(summary.has("accuracy"), "Summary has accuracy")
+    _assert_true(summary.has("chars_typed"), "Summary has chars_typed")
+    _assert_true(summary.has("words_typed"), "Summary has words_typed")
+    _assert_true(summary.has("errors"), "Summary has errors")
+    _assert_true(summary.has("max_combo"), "Summary has max_combo")
+    _assert_true(summary.has("perfect_streak"), "Summary has perfect_streak")
+    _assert_equal(summary.get("chars_typed", 0), 100, "Summary chars_typed is 100")
+    _assert_equal(summary.get("words_typed", 0), 20, "Summary words_typed is 20")
+    _assert_equal(summary.get("max_combo", 0), 15, "Summary max_combo is 15")
+
+    # Test format_battle_summary runs without error
+    var formatted: String = SimTypingMetrics.format_battle_summary(state)
+    _assert_true(formatted.length() > 0, "format_battle_summary returns non-empty string")
+    _assert_true(formatted.contains("WPM"), "Formatted summary contains WPM")
+    _assert_true(formatted.contains("Accuracy"), "Formatted summary contains Accuracy")
+
+
+func _run_typing_tower_bonuses_tests() -> void:
+    # Test constants
+    _assert_approx(SimTypingTowerBonuses.WORDSMITH_WPM_SCALE, 100.0, 0.01, "WORDSMITH_WPM_SCALE is 100.0")
+    _assert_approx(SimTypingTowerBonuses.WORDSMITH_ACCURACY_POWER, 2.0, 0.01, "WORDSMITH_ACCURACY_POWER is 2.0")
+    _assert_approx(SimTypingTowerBonuses.ARCANE_MAX_ACCURACY_BONUS, 1.5, 0.01, "ARCANE_MAX_ACCURACY_BONUS is 1.5")
+    _assert_approx(SimTypingTowerBonuses.LETTER_SPIRIT_PER_LETTER, 0.05, 0.01, "LETTER_SPIRIT_PER_LETTER is 0.05")
+    _assert_approx(SimTypingTowerBonuses.LETTER_SPIRIT_MAX_BONUS, 1.30, 0.01, "LETTER_SPIRIT_MAX_BONUS is 1.30")
+    _assert_approx(SimTypingTowerBonuses.MIN_ACCURACY_FOR_BONUS, 0.5, 0.01, "MIN_ACCURACY_FOR_BONUS is 0.5")
+
+    # Test get_tower_damage_multiplier with base state
+    var state: GameState = DefaultState.create()
+    SimTypingMetrics.init_battle_metrics(state)
+    var mult: float = SimTypingTowerBonuses.get_tower_damage_multiplier(state, SimTowerTypes.TOWER_ARROW)
+    _assert_true(mult >= 1.0, "Base tower multiplier >= 1.0")
+
+    # Test get_chain_bonus for Tesla tower
+    state.typing_metrics["combo_count"] = 0
+    var chain_bonus: int = SimTypingTowerBonuses.get_chain_bonus(state, SimTowerTypes.TOWER_TESLA)
+    _assert_equal(chain_bonus, 0, "Chain bonus 0 at combo 0")
+
+    state.typing_metrics["combo_count"] = 10
+    chain_bonus = SimTypingTowerBonuses.get_chain_bonus(state, SimTowerTypes.TOWER_TESLA)
+    _assert_equal(chain_bonus, 1, "Chain bonus 1 at combo 10")
+
+    state.typing_metrics["combo_count"] = 20
+    chain_bonus = SimTypingTowerBonuses.get_chain_bonus(state, SimTowerTypes.TOWER_TESLA)
+    _assert_equal(chain_bonus, 2, "Chain bonus 2 at combo 20")
+
+    state.typing_metrics["combo_count"] = 50
+    chain_bonus = SimTypingTowerBonuses.get_chain_bonus(state, SimTowerTypes.TOWER_TESLA)
+    _assert_equal(chain_bonus, 3, "Chain bonus 3 at combo 50")
+
+    # Test get_chain_bonus for non-Tesla tower
+    chain_bonus = SimTypingTowerBonuses.get_chain_bonus(state, SimTowerTypes.TOWER_ARROW)
+    _assert_equal(chain_bonus, 0, "Non-Tesla tower gets 0 chain bonus")
+
+    # Test get_attack_speed_multiplier
+    state.typing_metrics["rolling_window_chars"] = []  # No chars = 0 WPM
+    var speed_mult: float = SimTypingTowerBonuses.get_attack_speed_multiplier(state, SimTowerTypes.TOWER_ARROW)
+    _assert_true(speed_mult >= 1.0, "Attack speed multiplier >= 1.0")
+    _assert_true(speed_mult <= 2.0, "Attack speed multiplier <= 2.0")
+
+    # Test get_letter_shrine_mode
+    state.typing_metrics["unique_letters_window"] = {}
+    state.typing_metrics["combo_count"] = 0
+    var mode: String = SimTypingTowerBonuses.get_letter_shrine_mode(state)
+    _assert_equal(mode, "alpha", "Default mode is alpha")
+
+    # Epsilon mode with many unique letters
+    var unique: Dictionary = {}
+    for i in range(20):
+        unique[char(97 + i)] = Time.get_ticks_msec()  # 'a' to 't'
+    state.typing_metrics["unique_letters_window"] = unique
+    mode = SimTypingTowerBonuses.get_letter_shrine_mode(state)
+    _assert_equal(mode, "epsilon", "Epsilon mode with 20+ unique letters")
+
+    # Omega mode with high combo
+    state.typing_metrics["unique_letters_window"] = {}
+    state.typing_metrics["combo_count"] = 30
+    mode = SimTypingTowerBonuses.get_letter_shrine_mode(state)
+    _assert_equal(mode, "omega", "Omega mode with combo >= 30")
+
+    # Test get_letter_shrine_mode_description
+    _assert_true(SimTypingTowerBonuses.get_letter_shrine_mode_description("alpha").contains("single"), "Alpha mode is single target")
+    _assert_true(SimTypingTowerBonuses.get_letter_shrine_mode_description("epsilon").contains("Chain"), "Epsilon mode is chain")
+    _assert_true(SimTypingTowerBonuses.get_letter_shrine_mode_description("omega").contains("Heal"), "Omega mode heals")
+    _assert_true(SimTypingTowerBonuses.get_letter_shrine_mode_description("invalid").contains("Unknown"), "Invalid mode returns Unknown")
+
+    # Test get_word_bonus with length pattern
+    state = DefaultState.create()
+    # Note: This depends on tower data having word_bonus configured
+    # Just test it doesn't crash
+    var word_bonus: float = SimTypingTowerBonuses.get_word_bonus(state, SimTowerTypes.TOWER_ARROW, "test")
+    _assert_true(word_bonus >= 1.0, "Word bonus >= 1.0")
+
+    # Test get_active_bonuses
+    SimTypingMetrics.init_battle_metrics(state)
+    var bonuses: Dictionary = SimTypingTowerBonuses.get_active_bonuses(state, SimTowerTypes.TOWER_ARROW)
+    _assert_true(bonuses.has("combo_multiplier"), "Active bonuses has combo_multiplier")
+    _assert_true(bonuses.has("tower_multiplier"), "Active bonuses has tower_multiplier")
+    _assert_true(bonuses.has("attack_speed"), "Active bonuses has attack_speed")
+    _assert_true(bonuses.has("chain_bonus"), "Active bonuses has chain_bonus")
+    _assert_true(bonuses.has("wpm"), "Active bonuses has wpm")
+    _assert_true(bonuses.has("accuracy"), "Active bonuses has accuracy")
+    _assert_true(bonuses.has("combo"), "Active bonuses has combo")
+    _assert_true(bonuses.has("unique_letters"), "Active bonuses has unique_letters")
+
+
+func _run_summoned_units_tests() -> void:
+    # Test constants
+    _assert_equal(SimSummonedUnits.MAX_SUMMONS_PER_TOWER, 3, "MAX_SUMMONS_PER_TOWER is 3")
+    _assert_equal(SimSummonedUnits.DEFAULT_SUMMON_DURATION, 30, "DEFAULT_SUMMON_DURATION is 30")
+    _assert_equal(SimSummonedUnits.SUMMON_ATTACK_RANGE, 1, "SUMMON_ATTACK_RANGE is 1")
+
+    # Test create_summon
+    var state: GameState = DefaultState.create()
+    state.summoned_next_id = 1
+    var summon: Dictionary = SimSummonedUnits.create_summon(state, "skeleton", Vector2i(5, 5), 0, 1)
+    _assert_equal(summon.get("id", 0), 1, "Summon ID is 1")
+    _assert_equal(summon.get("type", ""), "skeleton", "Summon type is skeleton")
+    _assert_equal(summon.get("pos", Vector2i.ZERO), Vector2i(5, 5), "Summon position correct")
+    _assert_equal(summon.get("owner_index", -1), 0, "Summon owner_index is 0")
+    _assert_true(summon.has("hp"), "Summon has hp")
+    _assert_true(summon.has("damage"), "Summon has damage")
+    _assert_true(summon.has("attack_speed"), "Summon has attack_speed")
+    _assert_equal(state.summoned_next_id, 2, "summoned_next_id incremented")
+
+    # Test count_summons_for_tower
+    state = DefaultState.create()
+    state.summoned_units = [
+        {"owner_index": 0, "id": 1},
+        {"owner_index": 0, "id": 2},
+        {"owner_index": 1, "id": 3}
+    ]
+    _assert_equal(SimSummonedUnits.count_summons_for_tower(state, 0), 2, "Tower 0 has 2 summons")
+    _assert_equal(SimSummonedUnits.count_summons_for_tower(state, 1), 1, "Tower 1 has 1 summon")
+    _assert_equal(SimSummonedUnits.count_summons_for_tower(state, 99), 0, "Tower 99 has 0 summons")
+
+    # Test get_max_summons without synergy
+    state.active_synergies = []
+    _assert_equal(SimSummonedUnits.get_max_summons(state, 0), 3, "Max summons is 3 without synergy")
+
+    # Test get_max_summons with Legion synergy
+    state.active_synergies = [{"synergy_id": "legion"}]
+    _assert_equal(SimSummonedUnits.get_max_summons(state, 0), 5, "Max summons is 5 with Legion synergy")
+
+    # Test remove_summon
+    state = DefaultState.create()
+    state.summoned_units = [
+        {"id": 1, "owner_index": 0},
+        {"id": 2, "owner_index": 0},
+        {"id": 3, "owner_index": 1}
+    ]
+    state.tower_summon_ids = {0: [1, 2], 1: [3]}
+    SimSummonedUnits.remove_summon(state, 2)
+    _assert_equal(state.summoned_units.size(), 2, "Summon removed, 2 remaining")
+    _assert_false(2 in state.tower_summon_ids.get(0, []), "Summon ID 2 removed from tower tracking")
+
+    # Test remove_tower_summons
+    state = DefaultState.create()
+    state.summoned_units = [
+        {"id": 1, "owner_index": 0},
+        {"id": 2, "owner_index": 0},
+        {"id": 3, "owner_index": 1}
+    ]
+    state.tower_summon_ids = {0: [1, 2], 1: [3]}
+    SimSummonedUnits.remove_tower_summons(state, 0)
+    _assert_equal(state.summoned_units.size(), 1, "Tower 0 summons removed, 1 remaining")
+    _assert_false(state.tower_summon_ids.has(0), "Tower 0 removed from tracking")
+    _assert_true(state.tower_summon_ids.has(1), "Tower 1 still tracked")
+
+    # Test get_taunt_summon_at
+    state = DefaultState.create()
+    state.summoned_units = [
+        {"id": 1, "pos": Vector2i(5, 5), "taunt": false},
+        {"id": 2, "pos": Vector2i(10, 10), "taunt": true},
+        {"id": 3, "pos": Vector2i(10, 11), "taunt": true}
+    ]
+    _assert_equal(SimSummonedUnits.get_taunt_summon_at(state, Vector2i(5, 5)), -1, "No taunt summon at (5,5)")
+    _assert_equal(SimSummonedUnits.get_taunt_summon_at(state, Vector2i(10, 10)), 2, "Taunt summon 2 at (10,10)")
+    _assert_equal(SimSummonedUnits.get_taunt_summon_at(state, Vector2i(10, 11)), 3, "Taunt summon 3 at (10,11)")
+    _assert_true(SimSummonedUnits.get_taunt_summon_at(state, Vector2i(10, 9)) in [2, 3], "Taunt summon adjacent to (10,9)")
+
+    # Test serialize_summon
+    var original_summon: Dictionary = {
+        "id": 1,
+        "type": "skeleton",
+        "pos": Vector2i(3, 4),
+        "hp": 50
+    }
+    var serialized: Dictionary = SimSummonedUnits.serialize_summon(original_summon)
+    _assert_true(serialized.has("pos"), "Serialized has pos")
+    _assert_equal(serialized["pos"]["x"], 3, "Serialized pos x is 3")
+    _assert_equal(serialized["pos"]["y"], 4, "Serialized pos y is 4")
+
+    # Test deserialize_summon
+    var save_data: Dictionary = {
+        "id": 1,
+        "type": "skeleton",
+        "pos": {"x": 3, "y": 4},
+        "hp": 50
+    }
+    var deserialized: Dictionary = SimSummonedUnits.deserialize_summon(save_data)
+    _assert_equal(deserialized["pos"], Vector2i(3, 4), "Deserialized pos is Vector2i(3, 4)")
+
+
+func _run_trade_tests() -> void:
+    # Test BASE_RATES
+    _assert_true(SimTrade.BASE_RATES.has("wood_to_stone"), "BASE_RATES has wood_to_stone")
+    _assert_true(SimTrade.BASE_RATES.has("stone_to_wood"), "BASE_RATES has stone_to_wood")
+    _assert_true(SimTrade.BASE_RATES.has("wood_to_gold"), "BASE_RATES has wood_to_gold")
+    _assert_true(SimTrade.BASE_RATES.has("gold_to_wood"), "BASE_RATES has gold_to_wood")
+    _assert_approx(SimTrade.BASE_RATES["wood_to_stone"], 0.67, 0.01, "wood_to_stone rate ~0.67")
+    _assert_approx(SimTrade.BASE_RATES["stone_to_wood"], 1.5, 0.01, "stone_to_wood rate ~1.5")
+
+    # Test RATE_VARIANCE
+    _assert_approx(SimTrade.RATE_VARIANCE, 0.15, 0.01, "RATE_VARIANCE is 0.15")
+
+    # Test is_trading_enabled without market
+    var state: GameState = DefaultState.create()
+    state.structures = {}
+    _assert_false(SimTrade.is_trading_enabled(state), "Trading disabled without market")
+
+    # Test is_trading_enabled with level 1 market
+    state.structures = {10: "market"}
+    state.structure_levels = {10: 1}
+    _assert_false(SimTrade.is_trading_enabled(state), "Trading disabled with level 1 market")
+
+    # Test is_trading_enabled with level 3 market
+    state.structure_levels = {10: 3}
+    _assert_true(SimTrade.is_trading_enabled(state), "Trading enabled with level 3 market")
+
+    # Test parse_trade_command valid
+    var parsed: Dictionary = SimTrade.parse_trade_command("10 wood for stone")
+    _assert_true(parsed.get("ok", false), "Parse '10 wood for stone' succeeds")
+    _assert_equal(parsed.get("amount", 0), 10, "Parsed amount is 10")
+    _assert_equal(parsed.get("from_resource", ""), "wood", "Parsed from_resource is wood")
+    _assert_equal(parsed.get("to_resource", ""), "stone", "Parsed to_resource is stone")
+
+    # Test parse with "to" keyword
+    parsed = SimTrade.parse_trade_command("5 food to gold")
+    _assert_true(parsed.get("ok", false), "Parse '5 food to gold' succeeds")
+    _assert_equal(parsed.get("amount", 0), 5, "Parsed amount is 5")
+    _assert_equal(parsed.get("from_resource", ""), "food", "Parsed from_resource is food")
+    _assert_equal(parsed.get("to_resource", ""), "gold", "Parsed to_resource is gold")
+
+    # Test parse with "trade" prefix
+    parsed = SimTrade.parse_trade_command("trade 20 stone for wood")
+    _assert_true(parsed.get("ok", false), "Parse with 'trade' prefix succeeds")
+    _assert_equal(parsed.get("amount", 0), 20, "Parsed amount is 20")
+
+    # Test parse invalid format
+    parsed = SimTrade.parse_trade_command("invalid")
+    _assert_false(parsed.get("ok", true), "Parse 'invalid' fails")
+    _assert_true(parsed.get("reason", "").length() > 0, "Has error reason")
+
+    # Test parse invalid amount
+    parsed = SimTrade.parse_trade_command("abc wood for stone")
+    _assert_false(parsed.get("ok", true), "Parse with invalid amount fails")
+
+    # Test parse zero amount
+    parsed = SimTrade.parse_trade_command("0 wood for stone")
+    _assert_false(parsed.get("ok", true), "Parse with zero amount fails")
+
+    # Test calculate_trade without trading enabled
+    state = DefaultState.create()
+    state.structures = {}
+    var calc: Dictionary = SimTrade.calculate_trade(state, "wood", "stone", 10)
+    _assert_false(calc.get("ok", true), "Calculate trade fails without market")
+    _assert_true(calc.get("reason", "").contains("not enabled"), "Reason mentions not enabled")
+
+    # Test calculate_trade invalid resource
+    state.structures = {10: "market"}
+    state.structure_levels = {10: 3}
+    calc = SimTrade.calculate_trade(state, "invalid", "stone", 10)
+    _assert_false(calc.get("ok", true), "Calculate trade fails with invalid resource")
+
+    # Test calculate_trade same resource
+    calc = SimTrade.calculate_trade(state, "wood", "wood", 10)
+    _assert_false(calc.get("ok", true), "Calculate trade fails with same resource")
+
+    # Test calculate_trade not enough resources
+    state.resources = {"wood": 5, "stone": 0, "food": 0}
+    calc = SimTrade.calculate_trade(state, "wood", "stone", 10)
+    _assert_false(calc.get("ok", true), "Calculate trade fails with insufficient resources")
+    _assert_true(calc.get("reason", "").contains("not enough"), "Reason mentions not enough")
+
+    # Test calculate_trade success
+    state.resources = {"wood": 100, "stone": 0, "food": 0}
+    state.rng_seed = 12345
+    state.day = 1
+    state.trade_rates = {}
+    state.last_trade_day = 0
+    calc = SimTrade.calculate_trade(state, "wood", "stone", 30)
+    _assert_true(calc.get("ok", false), "Calculate trade succeeds")
+    _assert_equal(calc.get("from_amount", 0), 30, "from_amount is 30")
+    _assert_true(calc.get("to_amount", 0) > 0, "to_amount > 0")
+    _assert_true(calc.get("rate", 0.0) > 0, "rate > 0")
+
+    # Test execute_trade
+    state = DefaultState.create()
+    state.structures = {10: "market"}
+    state.structure_levels = {10: 3}
+    state.resources = {"wood": 100, "stone": 50, "food": 50}
+    state.gold = 10
+    state.rng_seed = 12345
+    state.day = 1
+    state.trade_rates = {}
+    state.last_trade_day = 0
+    var result: Dictionary = SimTrade.execute_trade(state, "wood", "stone", 30)
+    _assert_true(result.get("ok", false), "Execute trade succeeds")
+    _assert_equal(state.resources.get("wood", 0), 70, "Wood reduced by 30")
+    _assert_true(state.resources.get("stone", 0) > 50, "Stone increased")
+
+    # Test get_trade_summary
+    state.trade_rates = {}
+    state.last_trade_day = 0
+    var summary: Dictionary = SimTrade.get_trade_summary(state)
+    _assert_true(summary.has("enabled"), "Summary has enabled")
+    _assert_true(summary.has("market_bonus"), "Summary has market_bonus")
+    _assert_true(summary.has("rates"), "Summary has rates")
+    _assert_true(summary.has("resources"), "Summary has resources")
+    _assert_true(summary.get("enabled", false), "Summary shows trading enabled")
+
+    # Test get_suggested_trades
+    state.resources = {"wood": 200, "stone": 10, "food": 50}
+    state.gold = 10
+    var suggestions: Array = SimTrade.get_suggested_trades(state)
+    _assert_true(suggestions is Array, "Suggestions is array")
+    # Should suggest trading excess wood
+    if suggestions.size() > 0:
+        _assert_true(suggestions[0].has("from"), "Suggestion has from")
+        _assert_true(suggestions[0].has("to"), "Suggestion has to")
+        _assert_true(suggestions[0].has("amount"), "Suggestion has amount")
+
+
+func _run_workers_tests() -> void:
+    # Test constants
+    _assert_approx(SimWorkers.WORKER_PRODUCTION_BONUS, 0.5, 0.01, "WORKER_PRODUCTION_BONUS is 0.5")
+    _assert_equal(SimWorkers.WORKER_UPKEEP, 1, "WORKER_UPKEEP is 1")
+
+    # Test workers_at with no workers
+    var state: GameState = DefaultState.create()
+    state.workers = {}
+    var count: int = SimWorkers.workers_at(state, 0)
+    _assert_equal(count, 0, "workers_at returns 0 with no workers")
+
+    # Test workers_at with workers assigned
+    state.workers = {0: 2, 1: 3}
+    count = SimWorkers.workers_at(state, 0)
+    _assert_equal(count, 2, "workers_at returns 2 for building 0")
+    count = SimWorkers.workers_at(state, 1)
+    _assert_equal(count, 3, "workers_at returns 3 for building 1")
+
+    # Test total_assigned
+    state.workers = {0: 2, 1: 3, 2: 1}
+    var total: int = SimWorkers.total_assigned(state)
+    _assert_equal(total, 6, "total_assigned returns 6")
+
+    # Test available_workers
+    state.total_workers = 10
+    state.workers = {0: 2, 1: 3}
+    var available: int = SimWorkers.available_workers(state)
+    _assert_equal(available, 5, "available_workers returns 5")
+
+    # Test available_workers with all assigned
+    state.total_workers = 5
+    state.workers = {0: 2, 1: 3}
+    available = SimWorkers.available_workers(state)
+    _assert_equal(available, 0, "available_workers returns 0 when all assigned")
+
+    # Test daily_upkeep
+    state.total_workers = 10
+    state.worker_upkeep = 1
+    state.workers = {0: 2, 1: 3}  # 5 assigned
+    var upkeep: int = SimWorkers.daily_upkeep(state)
+    _assert_equal(upkeep, 5, "daily_upkeep returns 5")
+
+    # Test worker_bonus with workers
+    state.workers = {0: 2}
+    var bonus: float = SimWorkers.worker_bonus(state, 0)
+    _assert_approx(bonus, 1.0, 0.01, "worker_bonus returns 1.0 for 2 workers (2 * 0.5)")
+
+    # Test worker_bonus with no workers
+    state.workers = {}
+    bonus = SimWorkers.worker_bonus(state, 0)
+    _assert_approx(bonus, 0.0, 0.01, "worker_bonus returns 0.0 with no workers")
+
+    # Test gain_worker
+    state.total_workers = 5
+    state.max_workers = 10
+    var gained: bool = SimWorkers.gain_worker(state)
+    _assert_true(gained, "gain_worker returns true when below max")
+    _assert_equal(state.total_workers, 6, "total_workers increased to 6")
+
+    # Test gain_worker at max
+    state.total_workers = 10
+    state.max_workers = 10
+    gained = SimWorkers.gain_worker(state)
+    _assert_false(gained, "gain_worker returns false at max")
+    _assert_equal(state.total_workers, 10, "total_workers stays at 10")
+
+    # Test on_building_removed
+    state.workers = {0: 2, 1: 3}
+    SimWorkers.on_building_removed(state, 0)
+    _assert_false(state.workers.has(0), "Workers removed from building 0")
+    _assert_true(state.workers.has(1), "Workers remain at building 1")
+
+    # Test can_assign without building
+    state = DefaultState.create()
+    state.structures = {}
+    var can_assign: Dictionary = SimWorkers.can_assign(state, 0)
+    _assert_false(can_assign.get("ok", true), "can_assign fails without building")
+    _assert_true(can_assign.get("reason", "").contains("no building"), "Reason mentions no building")
+
+    # Test can_unassign without workers
+    state.structures = {0: "farm"}
+    state.workers = {}
+    var can_unassign: Dictionary = SimWorkers.can_unassign(state, 0)
+    _assert_false(can_unassign.get("ok", true), "can_unassign fails without workers")
+
+    # Test can_unassign with workers
+    state.workers = {0: 2}
+    can_unassign = SimWorkers.can_unassign(state, 0)
+    _assert_true(can_unassign.get("ok", false), "can_unassign succeeds with workers")
+
+    # Test unassign_worker
+    state = DefaultState.create()
+    state.structures = {0: "farm"}
+    state.workers = {0: 2}
+    var unassigned: bool = SimWorkers.unassign_worker(state, 0)
+    _assert_true(unassigned, "unassign_worker succeeds")
+    _assert_equal(SimWorkers.workers_at(state, 0), 1, "Workers reduced to 1")
+
+    # Test unassign_worker last worker
+    state.workers = {0: 1}
+    unassigned = SimWorkers.unassign_worker(state, 0)
+    _assert_true(unassigned, "unassign_worker last worker succeeds")
+    _assert_false(state.workers.has(0), "Building removed from workers dict")
+
+    # Test set_workers
+    state = DefaultState.create()
+    state.structures = {0: "farm"}
+    state.structure_levels = {0: 1}
+    state.workers = {}
+    state.total_workers = 5
+    var success: bool = SimWorkers.set_workers(state, 0, 2)
+    _assert_true(success, "set_workers succeeds")
+    _assert_equal(SimWorkers.workers_at(state, 0), 2, "Workers set to 2")
+
+    # Test apply_upkeep with enough food
+    state = DefaultState.create()
+    state.workers = {0: 2, 1: 3}  # 5 workers
+    state.worker_upkeep = 1
+    state.resources = {"food": 10}
+    var upkeep_result: Dictionary = SimWorkers.apply_upkeep(state)
+    _assert_true(upkeep_result.get("ok", false), "apply_upkeep succeeds with enough food")
+    _assert_equal(upkeep_result.get("food_consumed", 0), 5, "Consumed 5 food")
+    _assert_equal(state.resources.get("food", 0), 5, "Food reduced to 5")
+
+    # Test get_worker_summary
+    state = DefaultState.create()
+    state.total_workers = 10
+    state.max_workers = 15
+    state.workers = {0: 2}
+    state.structures = {0: "farm"}
+    state.structure_levels = {0: 1}
+    state.worker_upkeep = 1
+    var summary: Dictionary = SimWorkers.get_worker_summary(state)
+    _assert_true(summary.has("total_workers"), "Summary has total_workers")
+    _assert_true(summary.has("max_workers"), "Summary has max_workers")
+    _assert_true(summary.has("assigned"), "Summary has assigned")
+    _assert_true(summary.has("available"), "Summary has available")
+    _assert_true(summary.has("upkeep"), "Summary has upkeep")
+    _assert_true(summary.has("assignments"), "Summary has assignments")
+    _assert_equal(summary.get("total_workers", 0), 10, "Summary total_workers is 10")
+    _assert_equal(summary.get("assigned", 0), 2, "Summary assigned is 2")
+
+
+func _run_special_commands_tests() -> void:
+    # Test COMMANDS dictionary structure
+    _assert_true(SimSpecialCommands.COMMANDS.has("overcharge"), "COMMANDS has overcharge")
+    _assert_true(SimSpecialCommands.COMMANDS.has("heal"), "COMMANDS has heal")
+    _assert_true(SimSpecialCommands.COMMANDS.has("fury"), "COMMANDS has fury")
+    _assert_true(SimSpecialCommands.COMMANDS.has("freeze"), "COMMANDS has freeze")
+    _assert_true(SimSpecialCommands.COMMANDS.has("shield"), "COMMANDS has shield")
+    _assert_true(SimSpecialCommands.COMMANDS.has("barrage"), "COMMANDS has barrage")
+    _assert_true(SimSpecialCommands.COMMANDS.has("fortify"), "COMMANDS has fortify")
+    _assert_true(SimSpecialCommands.COMMANDS.has("gold"), "COMMANDS has gold")
+    _assert_true(SimSpecialCommands.COMMANDS.has("critical"), "COMMANDS has critical")
+    _assert_true(SimSpecialCommands.COMMANDS.has("cleave"), "COMMANDS has cleave")
+    _assert_true(SimSpecialCommands.COMMANDS.has("execute"), "COMMANDS has execute")
+    _assert_true(SimSpecialCommands.COMMANDS.has("combo"), "COMMANDS has combo")
+    _assert_equal(SimSpecialCommands.COMMANDS.size(), 12, "COMMANDS has 12 entries")
+
+    # Test command structure
+    var heal_cmd: Dictionary = SimSpecialCommands.COMMANDS["heal"]
+    _assert_true(heal_cmd.has("name"), "Command has name")
+    _assert_true(heal_cmd.has("word"), "Command has word")
+    _assert_true(heal_cmd.has("cooldown"), "Command has cooldown")
+    _assert_true(heal_cmd.has("difficulty"), "Command has difficulty")
+    _assert_true(heal_cmd.has("description"), "Command has description")
+    _assert_true(heal_cmd.has("effect"), "Command has effect")
+    _assert_equal(heal_cmd["word"], "HEAL", "Heal command word is HEAL")
+
+    # Test UNLOCK_LEVELS
+    _assert_true(SimSpecialCommands.UNLOCK_LEVELS.has("heal"), "UNLOCK_LEVELS has heal")
+    _assert_equal(SimSpecialCommands.UNLOCK_LEVELS["heal"], 1, "Heal unlocks at level 1")
+    _assert_equal(SimSpecialCommands.UNLOCK_LEVELS["overcharge"], 30, "Overcharge unlocks at level 30")
+    _assert_equal(SimSpecialCommands.UNLOCK_LEVELS["fury"], 3, "Fury unlocks at level 3")
+    _assert_equal(SimSpecialCommands.UNLOCK_LEVELS["gold"], 5, "Gold unlocks at level 5")
+
+    # Test get_all_command_ids
+    var ids: Array[String] = SimSpecialCommands.get_all_command_ids()
+    _assert_equal(ids.size(), 12, "get_all_command_ids returns 12 IDs")
+    _assert_true("heal" in ids, "IDs include heal")
+    _assert_true("fury" in ids, "IDs include fury")
+
+    # Test get_command
+    var cmd: Dictionary = SimSpecialCommands.get_command("fury")
+    _assert_false(cmd.is_empty(), "get_command returns non-empty dict")
+    _assert_equal(cmd.get("word", ""), "FURY", "Fury word is FURY")
+
+    # Test get_command with invalid ID
+    cmd = SimSpecialCommands.get_command("invalid_command")
+    _assert_true(cmd.is_empty(), "get_command returns empty for invalid ID")
+
+    # Test get_command_word
+    var word: String = SimSpecialCommands.get_command_word("freeze")
+    _assert_equal(word, "FREEZE", "get_command_word returns FREEZE")
+
+    # Test match_command
+    var matched_id: String = SimSpecialCommands.match_command("HEAL")
+    _assert_equal(matched_id, "heal", "match_command finds heal")
+    matched_id = SimSpecialCommands.match_command("heal")  # lowercase
+    _assert_equal(matched_id, "heal", "match_command is case insensitive")
+    matched_id = SimSpecialCommands.match_command("UNKNOWN")
+    _assert_equal(matched_id, "", "match_command returns empty for unknown word")
+
+    # Test get_unlock_level
+    var level: int = SimSpecialCommands.get_unlock_level("fury")
+    _assert_equal(level, 3, "get_unlock_level returns 3 for fury")
+    level = SimSpecialCommands.get_unlock_level("invalid")
+    _assert_equal(level, 1, "get_unlock_level returns 1 for invalid")
+
+    # Test is_unlocked
+    var unlocked: bool = SimSpecialCommands.is_unlocked("heal", 1)
+    _assert_true(unlocked, "Heal is unlocked at level 1")
+    unlocked = SimSpecialCommands.is_unlocked("overcharge", 1)
+    _assert_false(unlocked, "Overcharge is not unlocked at level 1")
+    unlocked = SimSpecialCommands.is_unlocked("overcharge", 30)
+    _assert_true(unlocked, "Overcharge is unlocked at level 30")
+
+    # Test get_unlocked_commands
+    var unlocked_cmds: Array[String] = SimSpecialCommands.get_unlocked_commands(1)
+    _assert_true("heal" in unlocked_cmds, "Heal unlocked at level 1")
+    _assert_false("fury" in unlocked_cmds, "Fury not unlocked at level 1")
+    unlocked_cmds = SimSpecialCommands.get_unlocked_commands(50)
+    _assert_equal(unlocked_cmds.size(), 12, "All 12 commands unlocked at level 50")
+
+    # Test get_cooldown
+    var cooldown: float = SimSpecialCommands.get_cooldown("heal")
+    _assert_approx(cooldown, 120.0, 0.01, "Heal cooldown is 120.0")
+    cooldown = SimSpecialCommands.get_cooldown("fury")
+    _assert_approx(cooldown, 40.0, 0.01, "Fury cooldown is 40.0")
+
+    # Test get_effect
+    var effect: Dictionary = SimSpecialCommands.get_effect("heal")
+    _assert_true(effect.has("type"), "Effect has type")
+    _assert_equal(effect.get("type", ""), "heal", "Heal effect type is heal")
+    _assert_equal(int(effect.get("value", 0)), 3, "Heal effect value is 3")
+
+    # Test other effect structures
+    effect = SimSpecialCommands.get_effect("fury")
+    _assert_equal(effect.get("type", ""), "damage_buff", "Fury effect type is damage_buff")
+    _assert_approx(float(effect.get("value", 0)), 0.5, 0.01, "Fury effect value is 0.5")
+    _assert_approx(float(effect.get("duration", 0)), 10.0, 0.01, "Fury effect duration is 10.0")
+
+    effect = SimSpecialCommands.get_effect("barrage")
+    _assert_equal(effect.get("type", ""), "damage_charges", "Barrage effect type is damage_charges")
+    _assert_equal(int(effect.get("charges", 0)), 5, "Barrage effect charges is 5")
+
+    # Test format_command
+    var formatted: String = SimSpecialCommands.format_command("fury", 0.0)
+    _assert_true(formatted.contains("FURY"), "Formatted contains FURY")
+    _assert_true(formatted.contains("READY"), "Formatted shows READY with 0 cooldown")
+    formatted = SimSpecialCommands.format_command("fury", 10.0)
+    _assert_true(formatted.contains("10"), "Formatted shows cooldown remaining")
+
+    # Test get_difficulty_color
+    var color: String = SimSpecialCommands.get_difficulty_color("heal")
+    _assert_equal(color, "lime", "Easy difficulty (heal) color is lime")
+    color = SimSpecialCommands.get_difficulty_color("fury")
+    _assert_equal(color, "lime", "Easy difficulty (fury) color is lime")
+    color = SimSpecialCommands.get_difficulty_color("freeze")
+    _assert_equal(color, "yellow", "Medium difficulty color is yellow")
+    color = SimSpecialCommands.get_difficulty_color("overcharge")
+    _assert_equal(color, "orange", "Hard difficulty color is orange")
