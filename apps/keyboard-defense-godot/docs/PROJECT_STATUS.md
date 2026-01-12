@@ -155,7 +155,7 @@ New SVG assets in `assets/art/src-svg/`:
 - Scenario reports and summaries are written under `Logs/ScenarioReports/` for CI-friendly collection (via `--out-dir`).
 
 ## Test Coverage (as of 2026-01-12)
-**Total: ~7,400+ assertions**
+**Total: ~7,700+ assertions**
 
 - **Parser tests**: Command parsing, intent validation
 - **Reducer tests**: State mutation, intent application
@@ -240,6 +240,13 @@ New SVG assets in `assets/art/src-svg/`:
 - **Progression state tests**: Data path constants, default modifiers, default mastery, performance tiers (S/A/B/C)
 - **Settings menu tests**: Hover/press animation constants, pulse color and duration
 - **Kingdom hub tests**: Tier colors (common, uncommon, rare, epic), hover animation constants
+- **Game controller tests**: Scene path constants (menu, map, battle, kingdom, settings)
+- **Hit effects tests**: Particle count, lifetime, speed, size, spark dimensions
+- **Kingdom dashboard tests**: Panel dimensions, section/item spacing, fade duration
+- **Asset loader tests**: Manifest path constant
+- **Workers panel tests**: Production bonus, upkeep, building color dictionary
+- **Node card tests**: Font sizes (title, lesson, reward), border width, corner radius, margin
+- **Design system tests**: Typography scale (display, h1-h3, body, caption, mono), spacing scale (xs-xxl), sizing (buttons, icons, panels), border radius, shadow definitions, animation timing, z-index layers
 
 ## Planning
 - `docs/ROADMAP.md` is the authoritative milestone list.

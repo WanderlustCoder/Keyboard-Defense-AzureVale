@@ -109,6 +109,13 @@ const MainMenuScript = preload("res://scripts/MainMenu.gd")
 const ProgressionState = preload("res://scripts/ProgressionState.gd")
 const SettingsMenu = preload("res://scripts/SettingsMenu.gd")
 const KingdomHub = preload("res://scripts/KingdomHub.gd")
+const GameControllerScript = preload("res://scripts/GameController.gd")
+const HitEffects = preload("res://game/hit_effects.gd")
+const KingdomDashboard = preload("res://ui/components/kingdom_dashboard.gd")
+const AssetLoaderScript = preload("res://game/asset_loader.gd")
+const WorkersPanel = preload("res://ui/components/workers_panel.gd")
+const NodeCard = preload("res://ui/components/node_card.gd")
+const DesignSystem = preload("res://ui/design_system.gd")
 
 var total_tests: int = 0
 var total_failed: int = 0
@@ -240,6 +247,13 @@ func _run_all() -> void:
     _run_progression_state_tests()
     _run_settings_menu_tests()
     _run_kingdom_hub_tests()
+    _run_game_controller_tests()
+    _run_hit_effects_tests()
+    _run_kingdom_dashboard_tests()
+    _run_asset_loader_tests()
+    _run_workers_panel_tests()
+    _run_node_card_tests()
+    _run_design_system_tests()
 
     for message in messages:
         print("[tests] %s" % message)
@@ -10891,3 +10905,440 @@ func _test_kingdom_hub_animation_constants() -> void:
     _assert_true(KingdomHub.HOVER_DURATION > 0.0, "HOVER_DURATION is positive")
     _assert_true(KingdomHub.HOVER_DURATION < 0.5, "HOVER_DURATION is snappy")
     _assert_equal(KingdomHub.HOVER_DURATION, 0.1, "HOVER_DURATION is 0.1")
+
+# =============================================================================
+# GAME CONTROLLER TESTS
+# =============================================================================
+
+func _run_game_controller_tests() -> void:
+    _test_game_controller_scene_paths()
+
+func _test_game_controller_scene_paths() -> void:
+    # SCENE_MENU
+    _assert_true(GameControllerScript.SCENE_MENU is String, "SCENE_MENU is String")
+    _assert_true(GameControllerScript.SCENE_MENU.begins_with("res://"), "SCENE_MENU in res://")
+    _assert_true(GameControllerScript.SCENE_MENU.ends_with(".tscn"), "SCENE_MENU is .tscn")
+    _assert_equal(GameControllerScript.SCENE_MENU, "res://scenes/MainMenu.tscn", "SCENE_MENU value")
+
+    # SCENE_MAP
+    _assert_true(GameControllerScript.SCENE_MAP is String, "SCENE_MAP is String")
+    _assert_true(GameControllerScript.SCENE_MAP.begins_with("res://"), "SCENE_MAP in res://")
+    _assert_true(GameControllerScript.SCENE_MAP.ends_with(".tscn"), "SCENE_MAP is .tscn")
+    _assert_equal(GameControllerScript.SCENE_MAP, "res://scenes/KingdomDefense.tscn", "SCENE_MAP value")
+
+    # SCENE_MAP_LEGACY
+    _assert_true(GameControllerScript.SCENE_MAP_LEGACY is String, "SCENE_MAP_LEGACY is String")
+    _assert_true(GameControllerScript.SCENE_MAP_LEGACY.begins_with("res://"), "SCENE_MAP_LEGACY in res://")
+    _assert_equal(GameControllerScript.SCENE_MAP_LEGACY, "res://scenes/OpenWorld.tscn", "SCENE_MAP_LEGACY value")
+
+    # SCENE_BATTLE
+    _assert_true(GameControllerScript.SCENE_BATTLE is String, "SCENE_BATTLE is String")
+    _assert_true(GameControllerScript.SCENE_BATTLE.begins_with("res://"), "SCENE_BATTLE in res://")
+    _assert_equal(GameControllerScript.SCENE_BATTLE, "res://scenes/Battlefield.tscn", "SCENE_BATTLE value")
+
+    # SCENE_KINGDOM
+    _assert_true(GameControllerScript.SCENE_KINGDOM is String, "SCENE_KINGDOM is String")
+    _assert_true(GameControllerScript.SCENE_KINGDOM.begins_with("res://"), "SCENE_KINGDOM in res://")
+    _assert_equal(GameControllerScript.SCENE_KINGDOM, "res://scenes/KingdomHub.tscn", "SCENE_KINGDOM value")
+
+    # SCENE_SETTINGS
+    _assert_true(GameControllerScript.SCENE_SETTINGS is String, "SCENE_SETTINGS is String")
+    _assert_true(GameControllerScript.SCENE_SETTINGS.begins_with("res://"), "SCENE_SETTINGS in res://")
+    _assert_equal(GameControllerScript.SCENE_SETTINGS, "res://scenes/SettingsMenu.tscn", "SCENE_SETTINGS value")
+
+# =============================================================================
+# HIT EFFECTS TESTS
+# =============================================================================
+
+func _run_hit_effects_tests() -> void:
+    _test_hit_effects_particle_constants()
+
+func _test_hit_effects_particle_constants() -> void:
+    # PARTICLE_COUNT
+    _assert_true(HitEffects.PARTICLE_COUNT is int, "PARTICLE_COUNT is int")
+    _assert_true(HitEffects.PARTICLE_COUNT > 0, "PARTICLE_COUNT is positive")
+    _assert_true(HitEffects.PARTICLE_COUNT <= 20, "PARTICLE_COUNT is reasonable")
+    _assert_equal(HitEffects.PARTICLE_COUNT, 6, "PARTICLE_COUNT is 6")
+
+    # PARTICLE_LIFETIME
+    _assert_true(HitEffects.PARTICLE_LIFETIME is float, "PARTICLE_LIFETIME is float")
+    _assert_true(HitEffects.PARTICLE_LIFETIME > 0.0, "PARTICLE_LIFETIME is positive")
+    _assert_true(HitEffects.PARTICLE_LIFETIME < 2.0, "PARTICLE_LIFETIME is short")
+    _assert_equal(HitEffects.PARTICLE_LIFETIME, 0.4, "PARTICLE_LIFETIME is 0.4")
+
+    # PARTICLE_SPEED
+    _assert_true(HitEffects.PARTICLE_SPEED is float, "PARTICLE_SPEED is float")
+    _assert_true(HitEffects.PARTICLE_SPEED > 0.0, "PARTICLE_SPEED is positive")
+    _assert_true(HitEffects.PARTICLE_SPEED >= 50.0, "PARTICLE_SPEED is fast enough")
+    _assert_equal(HitEffects.PARTICLE_SPEED, 120.0, "PARTICLE_SPEED is 120.0")
+
+    # PARTICLE_SIZE
+    _assert_true(HitEffects.PARTICLE_SIZE is Vector2, "PARTICLE_SIZE is Vector2")
+    _assert_true(HitEffects.PARTICLE_SIZE.x > 0, "PARTICLE_SIZE.x is positive")
+    _assert_true(HitEffects.PARTICLE_SIZE.y > 0, "PARTICLE_SIZE.y is positive")
+    _assert_equal(HitEffects.PARTICLE_SIZE, Vector2(4, 4), "PARTICLE_SIZE is 4x4")
+
+    # SPARK_SIZE
+    _assert_true(HitEffects.SPARK_SIZE is Vector2, "SPARK_SIZE is Vector2")
+    _assert_true(HitEffects.SPARK_SIZE.x > 0, "SPARK_SIZE.x is positive")
+    _assert_true(HitEffects.SPARK_SIZE.y > 0, "SPARK_SIZE.y is positive")
+    _assert_equal(HitEffects.SPARK_SIZE, Vector2(6, 2), "SPARK_SIZE is 6x2")
+    _assert_true(HitEffects.SPARK_SIZE.x > HitEffects.SPARK_SIZE.y, "SPARK is elongated")
+
+# =============================================================================
+# KINGDOM DASHBOARD TESTS
+# =============================================================================
+
+func _run_kingdom_dashboard_tests() -> void:
+    _test_kingdom_dashboard_panel_constants()
+    _test_kingdom_dashboard_spacing_constants()
+
+func _test_kingdom_dashboard_panel_constants() -> void:
+    # PANEL_WIDTH
+    _assert_true(KingdomDashboard.PANEL_WIDTH is int, "PANEL_WIDTH is int")
+    _assert_true(KingdomDashboard.PANEL_WIDTH > 0, "PANEL_WIDTH is positive")
+    _assert_true(KingdomDashboard.PANEL_WIDTH >= 300, "PANEL_WIDTH is readable")
+    _assert_equal(KingdomDashboard.PANEL_WIDTH, 500, "PANEL_WIDTH is 500")
+
+    # PANEL_HEIGHT
+    _assert_true(KingdomDashboard.PANEL_HEIGHT is int, "PANEL_HEIGHT is int")
+    _assert_true(KingdomDashboard.PANEL_HEIGHT > 0, "PANEL_HEIGHT is positive")
+    _assert_true(KingdomDashboard.PANEL_HEIGHT >= 300, "PANEL_HEIGHT is usable")
+    _assert_equal(KingdomDashboard.PANEL_HEIGHT, 450, "PANEL_HEIGHT is 450")
+
+func _test_kingdom_dashboard_spacing_constants() -> void:
+    # SECTION_SPACING
+    _assert_true(KingdomDashboard.SECTION_SPACING is int, "SECTION_SPACING is int")
+    _assert_true(KingdomDashboard.SECTION_SPACING > 0, "SECTION_SPACING is positive")
+    _assert_equal(KingdomDashboard.SECTION_SPACING, 12, "SECTION_SPACING is 12")
+
+    # ITEM_SPACING
+    _assert_true(KingdomDashboard.ITEM_SPACING is int, "ITEM_SPACING is int")
+    _assert_true(KingdomDashboard.ITEM_SPACING > 0, "ITEM_SPACING is positive")
+    _assert_true(KingdomDashboard.ITEM_SPACING < KingdomDashboard.SECTION_SPACING, "ITEM_SPACING < SECTION_SPACING")
+    _assert_equal(KingdomDashboard.ITEM_SPACING, 6, "ITEM_SPACING is 6")
+
+    # FADE_DURATION
+    _assert_true(KingdomDashboard.FADE_DURATION is float, "FADE_DURATION is float")
+    _assert_true(KingdomDashboard.FADE_DURATION > 0.0, "FADE_DURATION is positive")
+    _assert_true(KingdomDashboard.FADE_DURATION < 1.0, "FADE_DURATION is snappy")
+    _assert_equal(KingdomDashboard.FADE_DURATION, 0.15, "FADE_DURATION is 0.15")
+
+# =============================================================================
+# ASSET LOADER TESTS
+# =============================================================================
+
+func _run_asset_loader_tests() -> void:
+    _test_asset_loader_path_constants()
+
+func _test_asset_loader_path_constants() -> void:
+    # MANIFEST_PATH
+    _assert_true(AssetLoaderScript.MANIFEST_PATH is String, "MANIFEST_PATH is String")
+    _assert_true(AssetLoaderScript.MANIFEST_PATH.begins_with("res://"), "MANIFEST_PATH in res://")
+    _assert_true(AssetLoaderScript.MANIFEST_PATH.ends_with(".json"), "MANIFEST_PATH is .json")
+    _assert_equal(AssetLoaderScript.MANIFEST_PATH, "res://data/assets_manifest.json", "MANIFEST_PATH value")
+
+# =============================================================================
+# WORKERS PANEL TESTS
+# =============================================================================
+
+func _run_workers_panel_tests() -> void:
+    _test_workers_panel_production_constants()
+    _test_workers_panel_building_colors()
+
+func _test_workers_panel_production_constants() -> void:
+    # WORKER_PRODUCTION_BONUS
+    _assert_true(WorkersPanel.WORKER_PRODUCTION_BONUS is float, "WORKER_PRODUCTION_BONUS is float")
+    _assert_true(WorkersPanel.WORKER_PRODUCTION_BONUS > 0.0, "WORKER_PRODUCTION_BONUS is positive")
+    _assert_true(WorkersPanel.WORKER_PRODUCTION_BONUS <= 1.0, "WORKER_PRODUCTION_BONUS <= 100%")
+    _assert_equal(WorkersPanel.WORKER_PRODUCTION_BONUS, 0.5, "WORKER_PRODUCTION_BONUS is 0.5 (+50%)")
+
+    # WORKER_UPKEEP
+    _assert_true(WorkersPanel.WORKER_UPKEEP is int, "WORKER_UPKEEP is int")
+    _assert_true(WorkersPanel.WORKER_UPKEEP > 0, "WORKER_UPKEEP is positive")
+    _assert_equal(WorkersPanel.WORKER_UPKEEP, 1, "WORKER_UPKEEP is 1 food/day")
+
+func _test_workers_panel_building_colors() -> void:
+    # BUILDING_COLORS structure
+    _assert_true(WorkersPanel.BUILDING_COLORS is Dictionary, "BUILDING_COLORS is Dictionary")
+    _assert_true(WorkersPanel.BUILDING_COLORS.has("farm"), "Has farm color")
+    _assert_true(WorkersPanel.BUILDING_COLORS.has("lumber"), "Has lumber color")
+    _assert_true(WorkersPanel.BUILDING_COLORS.has("quarry"), "Has quarry color")
+    _assert_true(WorkersPanel.BUILDING_COLORS.has("market"), "Has market color")
+    _assert_true(WorkersPanel.BUILDING_COLORS.has("barracks"), "Has barracks color")
+    _assert_true(WorkersPanel.BUILDING_COLORS.has("workshop"), "Has workshop color")
+    _assert_true(WorkersPanel.BUILDING_COLORS.has("library"), "Has library color")
+    _assert_true(WorkersPanel.BUILDING_COLORS.has("smithy"), "Has smithy color")
+
+    # All colors are valid
+    for building in WorkersPanel.BUILDING_COLORS:
+        _assert_true(WorkersPanel.BUILDING_COLORS[building] is Color, "Building %s color is Color" % building)
+
+    # Farm is green-ish (food/growth)
+    var farm = WorkersPanel.BUILDING_COLORS["farm"]
+    _assert_true(farm.g > farm.r, "Farm has green tint")
+
+    # Market is gold (wealth)
+    var market = WorkersPanel.BUILDING_COLORS["market"]
+    _assert_true(market.r > 0.9, "Market has gold red")
+    _assert_true(market.g > 0.7, "Market has gold green")
+
+    # Barracks is red-ish (military)
+    var barracks = WorkersPanel.BUILDING_COLORS["barracks"]
+    _assert_true(barracks.r > barracks.g, "Barracks has red tint")
+    _assert_true(barracks.r > barracks.b, "Barracks red > blue")
+
+# =============================================================================
+# NODE CARD TESTS
+# =============================================================================
+
+func _run_node_card_tests() -> void:
+    _test_node_card_font_constants()
+    _test_node_card_layout_constants()
+
+func _test_node_card_font_constants() -> void:
+    # TITLE_FONT_SIZE
+    _assert_true(NodeCard.TITLE_FONT_SIZE is int, "TITLE_FONT_SIZE is int")
+    _assert_true(NodeCard.TITLE_FONT_SIZE > 0, "TITLE_FONT_SIZE is positive")
+    _assert_true(NodeCard.TITLE_FONT_SIZE >= 14, "TITLE_FONT_SIZE is readable")
+    _assert_equal(NodeCard.TITLE_FONT_SIZE, 16, "TITLE_FONT_SIZE is 16")
+
+    # LESSON_FONT_SIZE
+    _assert_true(NodeCard.LESSON_FONT_SIZE is int, "LESSON_FONT_SIZE is int")
+    _assert_true(NodeCard.LESSON_FONT_SIZE > 0, "LESSON_FONT_SIZE is positive")
+    _assert_true(NodeCard.LESSON_FONT_SIZE <= NodeCard.TITLE_FONT_SIZE, "LESSON <= TITLE font")
+    _assert_equal(NodeCard.LESSON_FONT_SIZE, 14, "LESSON_FONT_SIZE is 14")
+
+    # REWARD_FONT_SIZE
+    _assert_true(NodeCard.REWARD_FONT_SIZE is int, "REWARD_FONT_SIZE is int")
+    _assert_true(NodeCard.REWARD_FONT_SIZE > 0, "REWARD_FONT_SIZE is positive")
+    _assert_true(NodeCard.REWARD_FONT_SIZE <= NodeCard.LESSON_FONT_SIZE, "REWARD <= LESSON font")
+    _assert_equal(NodeCard.REWARD_FONT_SIZE, 12, "REWARD_FONT_SIZE is 12")
+
+func _test_node_card_layout_constants() -> void:
+    # BORDER_WIDTH
+    _assert_true(NodeCard.BORDER_WIDTH is int, "BORDER_WIDTH is int")
+    _assert_true(NodeCard.BORDER_WIDTH > 0, "BORDER_WIDTH is positive")
+    _assert_true(NodeCard.BORDER_WIDTH <= 4, "BORDER_WIDTH is not too thick")
+    _assert_equal(NodeCard.BORDER_WIDTH, 2, "BORDER_WIDTH is 2")
+
+    # CORNER_RADIUS
+    _assert_true(NodeCard.CORNER_RADIUS is int, "CORNER_RADIUS is int")
+    _assert_true(NodeCard.CORNER_RADIUS >= 0, "CORNER_RADIUS is non-negative")
+    _assert_equal(NodeCard.CORNER_RADIUS, 6, "CORNER_RADIUS is 6")
+
+    # CONTENT_MARGIN
+    _assert_true(NodeCard.CONTENT_MARGIN is int, "CONTENT_MARGIN is int")
+    _assert_true(NodeCard.CONTENT_MARGIN > 0, "CONTENT_MARGIN is positive")
+    _assert_equal(NodeCard.CONTENT_MARGIN, 8, "CONTENT_MARGIN is 8")
+
+# =============================================================================
+# DESIGN SYSTEM TESTS
+# =============================================================================
+
+func _run_design_system_tests() -> void:
+    _test_design_system_typography()
+    _test_design_system_spacing()
+    _test_design_system_sizing()
+    _test_design_system_border_radius()
+    _test_design_system_shadows()
+    _test_design_system_animation_timing()
+    _test_design_system_z_layers()
+
+func _test_design_system_typography() -> void:
+    # Font size hierarchy (larger to smaller)
+    _assert_true(DesignSystem.FONT_DISPLAY is int, "FONT_DISPLAY is int")
+    _assert_true(DesignSystem.FONT_H1 is int, "FONT_H1 is int")
+    _assert_true(DesignSystem.FONT_H2 is int, "FONT_H2 is int")
+    _assert_true(DesignSystem.FONT_H3 is int, "FONT_H3 is int")
+    _assert_true(DesignSystem.FONT_BODY is int, "FONT_BODY is int")
+    _assert_true(DesignSystem.FONT_BODY_SMALL is int, "FONT_BODY_SMALL is int")
+    _assert_true(DesignSystem.FONT_CAPTION is int, "FONT_CAPTION is int")
+    _assert_true(DesignSystem.FONT_MONO is int, "FONT_MONO is int")
+
+    # Hierarchy order
+    _assert_true(DesignSystem.FONT_DISPLAY > DesignSystem.FONT_H1, "DISPLAY > H1")
+    _assert_true(DesignSystem.FONT_H1 > DesignSystem.FONT_H2, "H1 > H2")
+    _assert_true(DesignSystem.FONT_H2 > DesignSystem.FONT_H3, "H2 > H3")
+    _assert_true(DesignSystem.FONT_H3 > DesignSystem.FONT_BODY, "H3 > BODY")
+    _assert_true(DesignSystem.FONT_BODY > DesignSystem.FONT_BODY_SMALL, "BODY > BODY_SMALL")
+    _assert_true(DesignSystem.FONT_BODY_SMALL > DesignSystem.FONT_CAPTION, "BODY_SMALL > CAPTION")
+
+    # Specific values
+    _assert_equal(DesignSystem.FONT_DISPLAY, 32, "FONT_DISPLAY is 32")
+    _assert_equal(DesignSystem.FONT_H1, 24, "FONT_H1 is 24")
+    _assert_equal(DesignSystem.FONT_H2, 20, "FONT_H2 is 20")
+    _assert_equal(DesignSystem.FONT_H3, 18, "FONT_H3 is 18")
+    _assert_equal(DesignSystem.FONT_BODY, 16, "FONT_BODY is 16")
+    _assert_equal(DesignSystem.FONT_BODY_SMALL, 14, "FONT_BODY_SMALL is 14")
+    _assert_equal(DesignSystem.FONT_CAPTION, 12, "FONT_CAPTION is 12")
+    _assert_equal(DesignSystem.FONT_MONO, 16, "FONT_MONO is 16")
+
+    # LINE_HEIGHT
+    _assert_true(DesignSystem.LINE_HEIGHT is float, "LINE_HEIGHT is float")
+    _assert_true(DesignSystem.LINE_HEIGHT >= 1.0, "LINE_HEIGHT >= 1.0")
+    _assert_true(DesignSystem.LINE_HEIGHT <= 2.0, "LINE_HEIGHT <= 2.0")
+    _assert_equal(DesignSystem.LINE_HEIGHT, 1.4, "LINE_HEIGHT is 1.4")
+
+    # FONT_SIZES dictionary
+    _assert_true(DesignSystem.FONT_SIZES is Dictionary, "FONT_SIZES is Dictionary")
+    _assert_equal(DesignSystem.FONT_SIZES["display"], DesignSystem.FONT_DISPLAY, "FONT_SIZES[display] matches")
+    _assert_equal(DesignSystem.FONT_SIZES["h1"], DesignSystem.FONT_H1, "FONT_SIZES[h1] matches")
+    _assert_equal(DesignSystem.FONT_SIZES["body"], DesignSystem.FONT_BODY, "FONT_SIZES[body] matches")
+
+func _test_design_system_spacing() -> void:
+    # Spacing scale (4px base)
+    _assert_true(DesignSystem.SPACE_XS is int, "SPACE_XS is int")
+    _assert_true(DesignSystem.SPACE_SM is int, "SPACE_SM is int")
+    _assert_true(DesignSystem.SPACE_MD is int, "SPACE_MD is int")
+    _assert_true(DesignSystem.SPACE_LG is int, "SPACE_LG is int")
+    _assert_true(DesignSystem.SPACE_XL is int, "SPACE_XL is int")
+    _assert_true(DesignSystem.SPACE_XXL is int, "SPACE_XXL is int")
+
+    # Ascending order
+    _assert_true(DesignSystem.SPACE_XS < DesignSystem.SPACE_SM, "XS < SM")
+    _assert_true(DesignSystem.SPACE_SM < DesignSystem.SPACE_MD, "SM < MD")
+    _assert_true(DesignSystem.SPACE_MD < DesignSystem.SPACE_LG, "MD < LG")
+    _assert_true(DesignSystem.SPACE_LG < DesignSystem.SPACE_XL, "LG < XL")
+    _assert_true(DesignSystem.SPACE_XL < DesignSystem.SPACE_XXL, "XL < XXL")
+
+    # Specific values (4px base)
+    _assert_equal(DesignSystem.SPACE_XS, 4, "SPACE_XS is 4")
+    _assert_equal(DesignSystem.SPACE_SM, 8, "SPACE_SM is 8")
+    _assert_equal(DesignSystem.SPACE_MD, 12, "SPACE_MD is 12")
+    _assert_equal(DesignSystem.SPACE_LG, 16, "SPACE_LG is 16")
+    _assert_equal(DesignSystem.SPACE_XL, 24, "SPACE_XL is 24")
+    _assert_equal(DesignSystem.SPACE_XXL, 32, "SPACE_XXL is 32")
+
+    # SPACING dictionary
+    _assert_true(DesignSystem.SPACING is Dictionary, "SPACING is Dictionary")
+    _assert_equal(DesignSystem.SPACING["xs"], DesignSystem.SPACE_XS, "SPACING[xs] matches")
+    _assert_equal(DesignSystem.SPACING["lg"], DesignSystem.SPACE_LG, "SPACING[lg] matches")
+
+func _test_design_system_sizing() -> void:
+    # Touch target
+    _assert_true(DesignSystem.SIZE_TOUCH_MIN is int, "SIZE_TOUCH_MIN is int")
+    _assert_true(DesignSystem.SIZE_TOUCH_MIN >= 44, "SIZE_TOUCH_MIN >= 44 (accessibility)")
+    _assert_equal(DesignSystem.SIZE_TOUCH_MIN, 44, "SIZE_TOUCH_MIN is 44")
+
+    # Button sizes
+    _assert_true(DesignSystem.SIZE_BUTTON_SM < DesignSystem.SIZE_BUTTON_MD, "BUTTON_SM < BUTTON_MD")
+    _assert_true(DesignSystem.SIZE_BUTTON_MD < DesignSystem.SIZE_BUTTON_LG, "BUTTON_MD < BUTTON_LG")
+    _assert_equal(DesignSystem.SIZE_BUTTON_SM, 32, "SIZE_BUTTON_SM is 32")
+    _assert_equal(DesignSystem.SIZE_BUTTON_MD, 40, "SIZE_BUTTON_MD is 40")
+    _assert_equal(DesignSystem.SIZE_BUTTON_LG, 48, "SIZE_BUTTON_LG is 48")
+
+    # Icon sizes
+    _assert_true(DesignSystem.SIZE_ICON_SM < DesignSystem.SIZE_ICON_MD, "ICON_SM < ICON_MD")
+    _assert_true(DesignSystem.SIZE_ICON_MD < DesignSystem.SIZE_ICON_LG, "ICON_MD < ICON_LG")
+    _assert_true(DesignSystem.SIZE_ICON_LG < DesignSystem.SIZE_ICON_XL, "ICON_LG < ICON_XL")
+    _assert_equal(DesignSystem.SIZE_ICON_SM, 16, "SIZE_ICON_SM is 16")
+    _assert_equal(DesignSystem.SIZE_ICON_MD, 24, "SIZE_ICON_MD is 24")
+    _assert_equal(DesignSystem.SIZE_ICON_LG, 32, "SIZE_ICON_LG is 32")
+    _assert_equal(DesignSystem.SIZE_ICON_XL, 48, "SIZE_ICON_XL is 48")
+
+    # Panel sizes
+    _assert_true(DesignSystem.SIZE_PANEL_SM < DesignSystem.SIZE_PANEL_MD, "PANEL_SM < PANEL_MD")
+    _assert_true(DesignSystem.SIZE_PANEL_MD < DesignSystem.SIZE_PANEL_LG, "PANEL_MD < PANEL_LG")
+    _assert_true(DesignSystem.SIZE_PANEL_LG < DesignSystem.SIZE_PANEL_XL, "PANEL_LG < PANEL_XL")
+    _assert_equal(DesignSystem.SIZE_PANEL_SM, 320, "SIZE_PANEL_SM is 320")
+    _assert_equal(DesignSystem.SIZE_PANEL_MD, 480, "SIZE_PANEL_MD is 480")
+    _assert_equal(DesignSystem.SIZE_PANEL_LG, 640, "SIZE_PANEL_LG is 640")
+    _assert_equal(DesignSystem.SIZE_PANEL_XL, 800, "SIZE_PANEL_XL is 800")
+
+func _test_design_system_border_radius() -> void:
+    # Border radius scale
+    _assert_true(DesignSystem.RADIUS_SM is int, "RADIUS_SM is int")
+    _assert_true(DesignSystem.RADIUS_MD is int, "RADIUS_MD is int")
+    _assert_true(DesignSystem.RADIUS_LG is int, "RADIUS_LG is int")
+    _assert_true(DesignSystem.RADIUS_FULL is int, "RADIUS_FULL is int")
+
+    # Ascending order
+    _assert_true(DesignSystem.RADIUS_SM < DesignSystem.RADIUS_MD, "RADIUS_SM < RADIUS_MD")
+    _assert_true(DesignSystem.RADIUS_MD < DesignSystem.RADIUS_LG, "RADIUS_MD < RADIUS_LG")
+    _assert_true(DesignSystem.RADIUS_LG < DesignSystem.RADIUS_FULL, "RADIUS_LG < RADIUS_FULL")
+
+    # Specific values
+    _assert_equal(DesignSystem.RADIUS_SM, 4, "RADIUS_SM is 4")
+    _assert_equal(DesignSystem.RADIUS_MD, 8, "RADIUS_MD is 8")
+    _assert_equal(DesignSystem.RADIUS_LG, 12, "RADIUS_LG is 12")
+    _assert_equal(DesignSystem.RADIUS_FULL, 9999, "RADIUS_FULL is 9999 (pill)")
+
+func _test_design_system_shadows() -> void:
+    # Shadow definitions
+    _assert_true(DesignSystem.SHADOW_SM is Dictionary, "SHADOW_SM is Dictionary")
+    _assert_true(DesignSystem.SHADOW_MD is Dictionary, "SHADOW_MD is Dictionary")
+    _assert_true(DesignSystem.SHADOW_LG is Dictionary, "SHADOW_LG is Dictionary")
+    _assert_true(DesignSystem.SHADOW_GLOW is Dictionary, "SHADOW_GLOW is Dictionary")
+
+    # All shadows have required keys
+    for shadow_name in ["SHADOW_SM", "SHADOW_MD", "SHADOW_LG", "SHADOW_GLOW"]:
+        var shadow: Dictionary = DesignSystem.get(shadow_name)
+        _assert_true(shadow.has("size"), "%s has size" % shadow_name)
+        _assert_true(shadow.has("offset"), "%s has offset" % shadow_name)
+        _assert_true(shadow.has("color"), "%s has color" % shadow_name)
+        _assert_true(shadow["offset"] is Vector2, "%s offset is Vector2" % shadow_name)
+        _assert_true(shadow["color"] is Color, "%s color is Color" % shadow_name)
+
+    # Size hierarchy
+    _assert_true(DesignSystem.SHADOW_SM["size"] < DesignSystem.SHADOW_MD["size"], "SM shadow < MD shadow")
+    _assert_true(DesignSystem.SHADOW_MD["size"] < DesignSystem.SHADOW_LG["size"], "MD shadow < LG shadow")
+
+func _test_design_system_animation_timing() -> void:
+    # Animation durations
+    _assert_true(DesignSystem.ANIM_INSTANT is float, "ANIM_INSTANT is float")
+    _assert_true(DesignSystem.ANIM_FAST is float, "ANIM_FAST is float")
+    _assert_true(DesignSystem.ANIM_NORMAL is float, "ANIM_NORMAL is float")
+    _assert_true(DesignSystem.ANIM_SLOW is float, "ANIM_SLOW is float")
+    _assert_true(DesignSystem.ANIM_DRAMATIC is float, "ANIM_DRAMATIC is float")
+
+    # Ascending order
+    _assert_true(DesignSystem.ANIM_INSTANT < DesignSystem.ANIM_FAST, "INSTANT < FAST")
+    _assert_true(DesignSystem.ANIM_FAST < DesignSystem.ANIM_NORMAL, "FAST < NORMAL")
+    _assert_true(DesignSystem.ANIM_NORMAL < DesignSystem.ANIM_SLOW, "NORMAL < SLOW")
+    _assert_true(DesignSystem.ANIM_SLOW < DesignSystem.ANIM_DRAMATIC, "SLOW < DRAMATIC")
+
+    # Specific values
+    _assert_equal(DesignSystem.ANIM_INSTANT, 0.05, "ANIM_INSTANT is 0.05")
+    _assert_equal(DesignSystem.ANIM_FAST, 0.15, "ANIM_FAST is 0.15")
+    _assert_equal(DesignSystem.ANIM_NORMAL, 0.25, "ANIM_NORMAL is 0.25")
+    _assert_equal(DesignSystem.ANIM_SLOW, 0.4, "ANIM_SLOW is 0.4")
+    _assert_equal(DesignSystem.ANIM_DRAMATIC, 0.6, "ANIM_DRAMATIC is 0.6")
+
+    # ANIM_DURATIONS dictionary
+    _assert_true(DesignSystem.ANIM_DURATIONS is Dictionary, "ANIM_DURATIONS is Dictionary")
+    _assert_equal(DesignSystem.ANIM_DURATIONS["instant"], DesignSystem.ANIM_INSTANT, "ANIM_DURATIONS[instant] matches")
+    _assert_equal(DesignSystem.ANIM_DURATIONS["normal"], DesignSystem.ANIM_NORMAL, "ANIM_DURATIONS[normal] matches")
+
+    # Easing constants
+    _assert_true(DesignSystem.EASE_DEFAULT is int, "EASE_DEFAULT is enum (int)")
+    _assert_true(DesignSystem.TRANS_DEFAULT is int, "TRANS_DEFAULT is enum (int)")
+    _assert_true(DesignSystem.TRANS_BOUNCE is int, "TRANS_BOUNCE is enum (int)")
+    _assert_true(DesignSystem.TRANS_ELASTIC is int, "TRANS_ELASTIC is enum (int)")
+
+func _test_design_system_z_layers() -> void:
+    # Z-index layers
+    _assert_true(DesignSystem.Z_GAME is int, "Z_GAME is int")
+    _assert_true(DesignSystem.Z_HUD is int, "Z_HUD is int")
+    _assert_true(DesignSystem.Z_PANEL is int, "Z_PANEL is int")
+    _assert_true(DesignSystem.Z_TOOLTIP is int, "Z_TOOLTIP is int")
+    _assert_true(DesignSystem.Z_MODAL is int, "Z_MODAL is int")
+    _assert_true(DesignSystem.Z_NOTIFICATION is int, "Z_NOTIFICATION is int")
+    _assert_true(DesignSystem.Z_LOADING is int, "Z_LOADING is int")
+
+    # Ascending order (layers stack correctly)
+    _assert_true(DesignSystem.Z_GAME < DesignSystem.Z_HUD, "Z_GAME < Z_HUD")
+    _assert_true(DesignSystem.Z_HUD < DesignSystem.Z_PANEL, "Z_HUD < Z_PANEL")
+    _assert_true(DesignSystem.Z_PANEL < DesignSystem.Z_TOOLTIP, "Z_PANEL < Z_TOOLTIP")
+    _assert_true(DesignSystem.Z_TOOLTIP < DesignSystem.Z_MODAL, "Z_TOOLTIP < Z_MODAL")
+    _assert_true(DesignSystem.Z_MODAL < DesignSystem.Z_NOTIFICATION, "Z_MODAL < Z_NOTIFICATION")
+    _assert_true(DesignSystem.Z_NOTIFICATION < DesignSystem.Z_LOADING, "Z_NOTIFICATION < Z_LOADING")
+
+    # Specific values
+    _assert_equal(DesignSystem.Z_GAME, 0, "Z_GAME is 0")
+    _assert_equal(DesignSystem.Z_HUD, 10, "Z_HUD is 10")
+    _assert_equal(DesignSystem.Z_PANEL, 20, "Z_PANEL is 20")
+    _assert_equal(DesignSystem.Z_TOOLTIP, 30, "Z_TOOLTIP is 30")
+    _assert_equal(DesignSystem.Z_MODAL, 40, "Z_MODAL is 40")
+    _assert_equal(DesignSystem.Z_NOTIFICATION, 50, "Z_NOTIFICATION is 50")
+    _assert_equal(DesignSystem.Z_LOADING, 60, "Z_LOADING is 60")
