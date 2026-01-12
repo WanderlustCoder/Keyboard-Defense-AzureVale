@@ -58,18 +58,91 @@ func _update_portrait(speaker: String) -> void:
 	if not portrait:
 		return
 
-	if asset_loader == null:
-		portrait.texture = null
-		portrait.visible = false
-		return
+	var texture: Texture2D = null
 
-	var texture: Texture2D = asset_loader.get_portrait_texture(speaker)
+	# Try asset loader first
+	if asset_loader != null:
+		texture = asset_loader.get_portrait_texture(speaker)
+
+	# Fallback: create procedural portrait for Elder Lyra
+	if texture == null and speaker.to_lower().contains("lyra"):
+		texture = _create_lyra_portrait()
+
 	if texture:
 		portrait.texture = texture
 		portrait.visible = true
 	else:
 		portrait.texture = null
 		portrait.visible = false
+
+func _create_lyra_portrait() -> ImageTexture:
+	## Creates Elder Lyra's portrait procedurally (24x24 pixel art)
+	var img := Image.create(24, 24, false, Image.FORMAT_RGBA8)
+
+	# Colors
+	var bg := Color("#2c3e50")
+	var hair_dark := Color("#bdc3c7")
+	var hair_light := Color("#ecf0f1")
+	var skin := Color("#f5e6d3")
+	var skin_shadow := Color("#e6d5c3")
+	var eyes := Color("#8e44ad")
+	var eye_highlight := Color("#fdfefe")
+	var brow := Color("#95a5a6")
+	var nose := Color("#d5c4a1")
+	var robe_dark := Color("#8e44ad")
+	var robe_light := Color("#9b59b6")
+	var robe_collar := Color("#d7bde2")
+	var gold := Color("#f1c40f")
+
+	# Fill background
+	img.fill(bg)
+
+	# Hair (silver/white)
+	_fill_rect(img, 5, 2, 14, 8, hair_dark)
+	_fill_rect(img, 6, 3, 12, 6, hair_light)
+	_fill_rect(img, 4, 6, 4, 10, hair_dark)
+	_fill_rect(img, 16, 6, 4, 10, hair_dark)
+	_fill_rect(img, 5, 7, 3, 8, hair_light)
+	_fill_rect(img, 16, 7, 3, 8, hair_light)
+
+	# Face
+	_fill_rect(img, 7, 6, 10, 12, skin_shadow)
+	_fill_rect(img, 8, 7, 8, 10, skin)
+
+	# Eyes (purple, wise)
+	_fill_rect(img, 9, 9, 2, 2, eyes)
+	_fill_rect(img, 13, 9, 2, 2, eyes)
+	_fill_rect(img, 9, 9, 1, 1, eye_highlight)
+	_fill_rect(img, 13, 9, 1, 1, eye_highlight)
+
+	# Eyebrows
+	_fill_rect(img, 9, 8, 2, 1, brow)
+	_fill_rect(img, 13, 8, 2, 1, brow)
+
+	# Nose
+	_fill_rect(img, 11, 11, 2, 2, nose)
+
+	# Gentle smile
+	_fill_rect(img, 10, 14, 4, 1, Color("#c9a0dc"))
+
+	# Purple robe
+	_fill_rect(img, 4, 18, 16, 6, robe_dark)
+	_fill_rect(img, 5, 19, 14, 4, robe_light)
+
+	# Robe collar
+	_fill_rect(img, 10, 17, 4, 2, robe_light)
+	_fill_rect(img, 11, 18, 2, 1, robe_collar)
+
+	# Wisdom symbol
+	_fill_rect(img, 11, 20, 2, 2, gold)
+
+	return ImageTexture.create_from_image(img)
+
+func _fill_rect(img: Image, x: int, y: int, w: int, h: int, color: Color) -> void:
+	for px in range(x, mini(x + w, img.get_width())):
+		for py in range(y, mini(y + h, img.get_height())):
+			if px >= 0 and py >= 0:
+				img.set_pixel(px, py, color)
 
 func _show_current_line() -> void:
 	if current_line_index >= dialogue_lines.size():

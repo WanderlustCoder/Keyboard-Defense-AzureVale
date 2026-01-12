@@ -41,12 +41,85 @@ func _load_lyra_portrait() -> void:
 			portrait.texture = tex
 			return
 
-	# Fallback to direct load
-	var tex := load("res://assets/art/src-svg/portraits/portrait_lyra.svg") as Texture2D
-	if tex != null:
-		portrait.texture = tex
-	else:
-		push_warning("LyraDialogue: Failed to load Lyra portrait")
+	# Try direct load
+	if ResourceLoader.exists("res://assets/art/src-svg/portraits/portrait_lyra.svg"):
+		var tex := load("res://assets/art/src-svg/portraits/portrait_lyra.svg") as Texture2D
+		if tex != null:
+			portrait.texture = tex
+			return
+
+	# Final fallback: create procedural portrait
+	portrait.texture = _create_lyra_portrait()
+
+func _create_lyra_portrait() -> ImageTexture:
+	## Creates Elder Lyra's portrait procedurally (24x24 pixel art)
+	var img := Image.create(24, 24, false, Image.FORMAT_RGBA8)
+
+	# Colors
+	var bg := Color("#2c3e50")
+	var hair_dark := Color("#bdc3c7")
+	var hair_light := Color("#ecf0f1")
+	var skin := Color("#f5e6d3")
+	var skin_shadow := Color("#e6d5c3")
+	var eyes := Color("#8e44ad")
+	var eye_highlight := Color("#fdfefe")
+	var brow := Color("#95a5a6")
+	var nose := Color("#d5c4a1")
+	var robe_dark := Color("#8e44ad")
+	var robe_light := Color("#9b59b6")
+	var robe_collar := Color("#d7bde2")
+	var gold := Color("#f1c40f")
+
+	# Fill background
+	img.fill(bg)
+
+	# Hair (silver/white)
+	_draw_rect(img, 5, 2, 14, 8, hair_dark)
+	_draw_rect(img, 6, 3, 12, 6, hair_light)
+	_draw_rect(img, 4, 6, 4, 10, hair_dark)
+	_draw_rect(img, 16, 6, 4, 10, hair_dark)
+	_draw_rect(img, 5, 7, 3, 8, hair_light)
+	_draw_rect(img, 16, 7, 3, 8, hair_light)
+
+	# Face
+	_draw_rect(img, 7, 6, 10, 12, skin_shadow)
+	_draw_rect(img, 8, 7, 8, 10, skin)
+
+	# Eyes (purple, wise)
+	_draw_rect(img, 9, 9, 2, 2, eyes)
+	_draw_rect(img, 13, 9, 2, 2, eyes)
+	_draw_rect(img, 9, 9, 1, 1, eye_highlight)
+	_draw_rect(img, 13, 9, 1, 1, eye_highlight)
+
+	# Eyebrows
+	_draw_rect(img, 9, 8, 2, 1, brow)
+	_draw_rect(img, 13, 8, 2, 1, brow)
+
+	# Nose
+	_draw_rect(img, 11, 11, 2, 2, nose)
+
+	# Gentle smile
+	_draw_rect(img, 10, 14, 4, 1, Color("#c9a0dc"))
+
+	# Purple robe
+	_draw_rect(img, 4, 18, 16, 6, robe_dark)
+	_draw_rect(img, 5, 19, 14, 4, robe_light)
+
+	# Robe collar
+	_draw_rect(img, 10, 17, 4, 2, robe_light)
+	_draw_rect(img, 11, 18, 2, 1, robe_collar)
+
+	# Wisdom symbol
+	_draw_rect(img, 11, 20, 2, 2, gold)
+
+	var tex := ImageTexture.create_from_image(img)
+	return tex
+
+func _draw_rect(img: Image, x: int, y: int, w: int, h: int, color: Color) -> void:
+	for px in range(x, x + w):
+		for py in range(y, y + h):
+			if px >= 0 and px < img.get_width() and py >= 0 and py < img.get_height():
+				img.set_pixel(px, py, color)
 
 func _process(delta: float) -> void:
 	if not _is_typing:
