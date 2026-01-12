@@ -16,6 +16,7 @@ signal worker_unassigned(building_index: int)
 signal upgrade_requested(building_index: int)
 signal research_started(research_id: String)
 signal trade_executed(from: String, to: String, amount: int)
+signal build_requested(building_type: String)
 signal closed
 
 const PANEL_WIDTH := 500
@@ -39,6 +40,7 @@ var _tabs: TabContainer
 var _resources_section: VBoxContainer
 var _workers_section: VBoxContainer
 var _buildings_section: VBoxContainer
+var _build_section: VBoxContainer
 var _research_section: VBoxContainer
 var _trade_section: VBoxContainer
 
@@ -101,6 +103,7 @@ func _build_ui() -> void:
 
 	# Create tabs
 	_create_resources_tab()
+	_create_build_tab()
 	_create_workers_tab()
 	_create_buildings_tab()
 	_create_research_tab()
@@ -115,6 +118,16 @@ func _create_resources_tab() -> void:
 	_resources_section = VBoxContainer.new()
 	_resources_section.add_theme_constant_override("separation", ITEM_SPACING)
 	scroll.add_child(_resources_section)
+
+func _create_build_tab() -> void:
+	var scroll := ScrollContainer.new()
+	scroll.name = "Build"
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_tabs.add_child(scroll)
+
+	_build_section = VBoxContainer.new()
+	_build_section.add_theme_constant_override("separation", ITEM_SPACING)
+	scroll.add_child(_build_section)
 
 func _create_workers_tab() -> void:
 	var scroll := ScrollContainer.new()
@@ -191,6 +204,7 @@ func _refresh_all() -> void:
 	if _state == null:
 		return
 	_refresh_resources()
+	_refresh_build()
 	_refresh_workers()
 	_refresh_buildings()
 	_refresh_research()
@@ -223,6 +237,75 @@ func _refresh_resources() -> void:
 	defense_label.text = "Defense Rating: %d" % defense
 	defense_label.add_theme_color_override("font_color", ThemeColors.ACCENT_CYAN)
 	_resources_section.add_child(defense_label)
+
+func _refresh_build() -> void:
+	_clear_children(_build_section)
+	if _state == null:
+		return
+
+	var header := _create_section_header("Construct Buildings")
+	_build_section.add_child(header)
+
+	# Hint text
+	var hint := Label.new()
+	hint.text = "Click to build, or type 'build [name]' in command bar"
+	hint.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	hint.add_theme_font_size_override("font_size", 12)
+	_build_section.add_child(hint)
+
+	# Get available buildings from SimBuildings
+	var available: Array = SimBuildings.get_available_buildings(_state)
+
+	if available.is_empty():
+		var empty_label := Label.new()
+		empty_label.text = "No buildings available to construct."
+		empty_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+		_build_section.add_child(empty_label)
+		return
+
+	for building_id in available:
+		var row := _create_build_row(building_id)
+		_build_section.add_child(row)
+
+func _create_build_row(building_id: String) -> HBoxContainer:
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 8)
+
+	var info: Dictionary = SimBuildings.get_building_info(building_id)
+	var cost: Dictionary = info.get("cost", {})
+	var can_afford: bool = SimBuildings.can_afford(_state, cost)
+
+	# Building name
+	var name_label := Label.new()
+	name_label.text = building_id.capitalize()
+	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	if not can_afford:
+		name_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	row.add_child(name_label)
+
+	# Cost display
+	var cost_text := _format_cost(cost)
+	var cost_label := Label.new()
+	cost_label.text = cost_text
+	if can_afford:
+		cost_label.add_theme_color_override("font_color", ThemeColors.ACCENT)
+	else:
+		cost_label.add_theme_color_override("font_color", ThemeColors.ERROR)
+	row.add_child(cost_label)
+
+	# Build button
+	var build_btn := Button.new()
+	build_btn.text = "Build"
+	build_btn.custom_minimum_size = Vector2(60, 0)
+	build_btn.disabled = not can_afford
+	build_btn.pressed.connect(func(): _on_build_pressed(building_id))
+	row.add_child(build_btn)
+
+	return row
+
+func _on_build_pressed(building_id: String) -> void:
+	build_requested.emit(building_id)
+	hide_dashboard()
 
 func _refresh_workers() -> void:
 	_clear_children(_workers_section)
