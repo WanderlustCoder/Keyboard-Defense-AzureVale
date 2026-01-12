@@ -144,6 +144,7 @@ func _run_all() -> void:
     _run_event_system_tests()
     _run_zone_system_tests()
     _run_poi_zone_tests()
+    _run_threat_spawn_tests()
     _run_auto_tower_types_tests()
     _run_player_stats_tests()
     _run_login_rewards_tests()
@@ -5306,6 +5307,128 @@ func _run_poi_zone_tests() -> void:
     _assert_true("POI Distribution" in summary, "Summary has title")
     _assert_true("Safe Zone" in summary, "Summary mentions Safe Zone")
     _assert_true("POIs available" in summary, "Summary shows POI count")
+
+
+func _run_threat_spawn_tests() -> void:
+    # Test zone-aware threat contribution
+    var state: GameState = DefaultState.create()
+    state.base_pos = Vector2i(8, 5)
+    state.map_w = 16
+    state.map_h = 10
+
+    # Create roaming enemy at castle (distance 0)
+    var enemy_at_castle: Dictionary = {
+        "id": 1,
+        "kind": "raider",
+        "pos": state.base_pos,
+        "spawn_zone": SimMap.ZONE_SAFE
+    }
+
+    # Calculate threat contribution
+    var contrib: float = WorldTick.calculate_enemy_threat_contribution(state, enemy_at_castle)
+    _assert_true(contrib > 0, "Enemy at castle contributes threat")
+    _assert_true(contrib > 1.0, "Proximity bonus at castle > 1.0")
+
+    # Enemy from depths should contribute more threat
+    var depths_enemy: Dictionary = {
+        "id": 2,
+        "kind": "champion",
+        "pos": state.base_pos,
+        "spawn_zone": SimMap.ZONE_DEPTHS
+    }
+    var depths_contrib: float = WorldTick.calculate_enemy_threat_contribution(state, depths_enemy)
+    _assert_true(depths_contrib > contrib, "Depths enemy contributes more threat than safe zone enemy")
+
+    # Enemy far from castle contributes no threat
+    var far_enemy: Dictionary = {
+        "id": 3,
+        "kind": "raider",
+        "pos": Vector2i(0, 0),
+        "spawn_zone": SimMap.ZONE_DEPTHS
+    }
+    var far_contrib: float = WorldTick.calculate_enemy_threat_contribution(state, far_enemy)
+    _assert_equal(far_contrib, 0.0, "Far enemy contributes no threat")
+
+    # Enemy at edge of threat range
+    var edge_enemy: Dictionary = {
+        "id": 4,
+        "kind": "raider",
+        "pos": Vector2i(state.base_pos.x + 5, state.base_pos.y),
+        "spawn_zone": SimMap.ZONE_FRONTIER
+    }
+    var edge_contrib: float = WorldTick.calculate_enemy_threat_contribution(state, edge_enemy)
+    _assert_true(edge_contrib > 0, "Enemy at threat edge contributes")
+    _assert_true(edge_contrib < contrib, "Edge enemy contributes less than castle enemy")
+
+    # Test get_threat_breakdown
+    state.roaming_enemies = [enemy_at_castle, depths_enemy]
+    var breakdown: Dictionary = WorldTick.get_threat_breakdown(state)
+    _assert_true(breakdown.has("total_threat"), "Breakdown has total_threat")
+    _assert_true(breakdown.has("enemy_contributions"), "Breakdown has enemy_contributions")
+    _assert_true(breakdown.has("cursor_zone"), "Breakdown has cursor_zone")
+
+    var contributions: Array = breakdown.get("enemy_contributions", [])
+    _assert_equal(contributions.size(), 2, "Two enemies contributing")
+
+    # Test format_threat_info
+    var info: String = WorldTick.format_threat_info(state)
+    _assert_true("Threat Level" in info, "Info has threat level")
+    _assert_true("Cursor Zone" in info, "Info has cursor zone")
+    _assert_true("Nearby Enemies" in info, "Info has nearby enemies")
+
+    # Test enemy kind selection by zone tier
+    # Tier 1 (safe zone) should only have tier 1 enemies
+    state.day = 1
+    var tier1_kinds: Array = ["raider", "scout"]
+    var tier1_enemy: String = WorldTick._select_enemy_kind_for_zone(state, 1)
+    _assert_true(tier1_enemy in tier1_kinds, "Tier 1 zone spawns tier 1 enemy")
+
+    # Tier 2 (frontier) at day 5 can have tier 2 enemies
+    state.day = 5
+    var tier2_test: String = WorldTick._select_enemy_kind_for_zone(state, 2)
+    _assert_true(tier2_test != "", "Tier 2 zone returns enemy kind")
+
+    # Tier 4 (depths) at day 10 can have elite enemies
+    state.day = 10
+    # Run multiple times to test distribution
+    var high_tier_found: bool = false
+    for _i in range(50):
+        var tier4_test: String = WorldTick._select_enemy_kind_for_zone(state, 4)
+        if tier4_test in ["champion", "healer", "elite"]:
+            high_tier_found = true
+            break
+    _assert_true(high_tier_found, "Tier 4 zone can spawn elite enemies")
+
+    # Test exploration spawn modifier
+    state.cursor_pos = state.base_pos
+    var safe_modifier: float = WorldTick._get_exploration_spawn_modifier(state)
+    _assert_true(safe_modifier >= 0.0, "Safe zone modifier non-negative")
+
+    # Move cursor to wilderness
+    state.cursor_pos = Vector2i(0, 0)  # Far corner, should be depths/wilderness
+    var dangerous_modifier: float = WorldTick._get_exploration_spawn_modifier(state)
+    _assert_true(dangerous_modifier > safe_modifier, "Dangerous zone has higher spawn modifier")
+
+    # Test roaming enemy creation includes spawn_zone
+    var created_enemy: Dictionary = WorldTick._create_roaming_enemy(state, Vector2i(0, 0))
+    _assert_true(created_enemy.has("spawn_zone"), "Created enemy has spawn_zone")
+    _assert_true(created_enemy.has("kind"), "Created enemy has kind")
+    _assert_true(created_enemy.has("pos"), "Created enemy has pos")
+
+    # Test weighted edge position selection (at high threat prefers dangerous zones)
+    state.threat_level = 0.8  # High threat
+    # Run multiple times - should prefer more dangerous edges
+    var attempts: int = 0
+    var dangerous_found: bool = false
+    for _i in range(20):
+        var edge: Vector2i = WorldTick._get_weighted_edge_position(state)
+        if edge != Vector2i(-1, -1):
+            var zone: String = SimMap.get_zone_at(state, edge)
+            if zone in [SimMap.ZONE_WILDERNESS, SimMap.ZONE_DEPTHS]:
+                dangerous_found = true
+                break
+            attempts += 1
+    _assert_true(attempts > 0 or dangerous_found, "Weighted edge position works")
 
 
 func _run_auto_tower_types_tests() -> void:

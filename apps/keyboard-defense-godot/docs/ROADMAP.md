@@ -229,6 +229,15 @@ Add deeper exploration events and map structure while staying deterministic.
   - Witch's Trials (5 events) - Complete trials for rewards
   - All chains use `next_event_id` linking and flag-based state tracking
 
+**Recent additions (2026-01-12):**
+- Enhanced roaming enemy / threat system integration:
+  - Zone-aware enemy spawning (`_create_roaming_enemy()` uses zone tier limits)
+  - Enemies from dangerous zones contribute more threat
+  - Exploration-triggered spawn rate increases
+  - Weighted edge position selection at high threat
+  - Utility functions: `calculate_enemy_threat_contribution()`, `get_threat_breakdown()`, `format_threat_info()`
+- Added 20+ test assertions for threat-based spawning in `_run_threat_spawn_tests()`
+
 **Status: Complete** - Core exploration depth features implemented.
 
 Planning refs:

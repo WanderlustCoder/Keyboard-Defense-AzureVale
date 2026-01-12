@@ -107,9 +107,9 @@ All P0 items are nearly complete. Remaining work:
 - [x] Practice mode uses story lesson intros via StoryManager
 - [x] Act completion rewards implemented (gold, ability unlocks)
 
-### Open World Mode - UPDATED (2026-01-10)
+### Open World Mode - UPDATED (2026-01-12)
 - [x] Story integration added (welcome dialogue, exploration milestones, combat intro, victory messages)
-- [ ] Roaming enemy system is basic - could tie to threat system
+- [x] Roaming enemy / threat system enhanced with zone-aware spawning and threat calculations
 - [x] POI events and discovery rewards added (interact command, event dialogues, choice resolution)
 
 ### Typing Defense Mode - COMPLETED (2026-01-10)

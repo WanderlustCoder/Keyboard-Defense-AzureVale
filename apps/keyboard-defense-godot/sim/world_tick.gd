@@ -179,7 +179,7 @@ static func _tick_poi_spawns(state: GameState) -> String:
 		return "A point of interest appeared nearby!"
 	return ""
 
-## Spawn roaming enemies at map edges
+## Spawn roaming enemies at map edges - zone-aware spawn rates
 static func _tick_roaming_spawns(state: GameState) -> String:
 	if state.roaming_enemies.size() >= MAX_ROAMING_ENEMIES:
 		return ""
@@ -189,14 +189,18 @@ static func _tick_roaming_spawns(state: GameState) -> String:
 	if state.time_of_day > 0.7 or state.time_of_day < 0.2:  # Night
 		time_modifier = 0.15
 	var threat_modifier: float = state.threat_level * 0.1
-	var spawn_chance: float = ROAMING_SPAWN_CHANCE + time_modifier + threat_modifier
+
+	# Exploration bonus - more spawns when player explores dangerous zones
+	var exploration_modifier: float = _get_exploration_spawn_modifier(state)
+
+	var spawn_chance: float = ROAMING_SPAWN_CHANCE + time_modifier + threat_modifier + exploration_modifier
 
 	var roll: float = SimRng.roll_range(state, 0, 100) / 100.0
 	if roll > spawn_chance:
 		return ""
 
-	# Pick edge spawn position
-	var edge_pos: Vector2i = _get_random_edge_position(state)
+	# Pick edge spawn position - prefer edges in more dangerous zones
+	var edge_pos: Vector2i = _get_weighted_edge_position(state)
 	if edge_pos == Vector2i(-1, -1):
 		return ""
 
@@ -204,7 +208,69 @@ static func _tick_roaming_spawns(state: GameState) -> String:
 	var enemy := _create_roaming_enemy(state, edge_pos)
 	state.roaming_enemies.append(enemy)
 
+	# Notify if elite enemy spawned from depths
+	var kind: String = str(enemy.get("kind", ""))
+	var spawn_zone: String = str(enemy.get("spawn_zone", ""))
+	if spawn_zone == SimMap.ZONE_DEPTHS and kind in ["champion", "healer", "elite"]:
+		return "A powerful enemy emerges from the depths!"
+
 	return ""  # Silent spawn for atmosphere
+
+## Calculate spawn rate modifier based on player exploration
+static func _get_exploration_spawn_modifier(state: GameState) -> float:
+	var modifier: float = 0.0
+
+	# Check if cursor is in a dangerous zone
+	var cursor_zone: String = SimMap.get_cursor_zone(state)
+	match cursor_zone:
+		SimMap.ZONE_WILDERNESS:
+			modifier += 0.05
+		SimMap.ZONE_DEPTHS:
+			modifier += 0.10
+
+	# Additional modifier based on exploration progress
+	var exploration: Dictionary = SimMap.get_exploration_by_zone(state)
+	var wilderness_explored: float = float(exploration.get(SimMap.ZONE_WILDERNESS, 0.0))
+	var depths_explored: float = float(exploration.get(SimMap.ZONE_DEPTHS, 0.0))
+
+	# More exploration = more enemies are "aware" of the player
+	modifier += wilderness_explored * 0.02
+	modifier += depths_explored * 0.05
+
+	return modifier
+
+## Get edge position weighted toward dangerous zones when threat is high
+static func _get_weighted_edge_position(state: GameState) -> Vector2i:
+	# When threat is high, spawn more from dangerous zone edges
+	var prefer_dangerous: bool = state.threat_level > 0.5
+
+	var attempts: int = 3
+	var best_pos: Vector2i = Vector2i(-1, -1)
+	var best_tier: int = 0
+
+	for _i in range(attempts):
+		var pos: Vector2i = _get_random_edge_position(state)
+		if pos == Vector2i(-1, -1):
+			continue
+
+		var zone: String = SimMap.get_zone_at(state, pos)
+		var tier: int = SimMap.get_zone_enemy_tier_max(zone)
+
+		if prefer_dangerous:
+			# Prefer positions in higher-tier zones
+			if tier > best_tier:
+				best_tier = tier
+				best_pos = pos
+		else:
+			# First valid position is fine
+			if best_pos == Vector2i(-1, -1):
+				best_pos = pos
+
+	# Fall back to single attempt if all failed
+	if best_pos == Vector2i(-1, -1):
+		best_pos = _get_random_edge_position(state)
+
+	return best_pos
 
 ## Move roaming enemies, check for encounters
 static func _tick_roaming_entities(state: GameState) -> Array[String]:
@@ -228,21 +294,52 @@ static func _tick_roaming_entities(state: GameState) -> Array[String]:
 
 	return events
 
-## Update threat level based on roaming enemy proximity
+## Update threat level based on roaming enemy proximity and zone danger
 static func _tick_threat_level(state: GameState) -> void:
-	var enemies_near_castle: int = 0
+	var threat_contribution: float = 0.0
 	var castle_dist_threshold := 5
 
 	for entity in state.roaming_enemies:
 		var pos: Vector2i = entity.get("pos", Vector2i.ZERO)
 		var dist: int = abs(pos.x - state.base_pos.x) + abs(pos.y - state.base_pos.y)
-		if dist <= castle_dist_threshold:
-			enemies_near_castle += 1
 
-	if enemies_near_castle > 0:
-		state.threat_level = min(1.0, state.threat_level + THREAT_GROWTH_RATE * enemies_near_castle)
+		if dist <= castle_dist_threshold:
+			# Base contribution for being near castle
+			var base_threat: float = 1.0
+
+			# Enemies from more dangerous zones contribute more threat
+			var spawn_zone: String = str(entity.get("spawn_zone", SimMap.ZONE_SAFE))
+			var zone_mult: float = SimMap.get_zone_threat_multiplier(spawn_zone)
+
+			# Current position zone also matters (closer = more threatening)
+			var current_zone: String = SimMap.get_zone_at(state, pos)
+			var current_mult: float = SimMap.get_zone_threat_multiplier(current_zone)
+
+			# Use average of spawn and current zone multipliers
+			var avg_mult: float = (zone_mult + current_mult) / 2.0
+
+			# Closer enemies are more threatening (inverse of distance)
+			var proximity_bonus: float = 1.0 + (float(castle_dist_threshold - dist) / float(castle_dist_threshold))
+
+			threat_contribution += base_threat * avg_mult * proximity_bonus
+
+	if threat_contribution > 0:
+		# Scale threat growth by contribution
+		var growth: float = THREAT_GROWTH_RATE * threat_contribution
+		state.threat_level = min(1.0, state.threat_level + growth)
 	else:
+		# Decay threat when no enemies nearby
 		state.threat_level = max(0.0, state.threat_level - THREAT_DECAY_RATE)
+
+	# Additional passive threat based on exploration of dangerous zones
+	var exploration: Dictionary = SimMap.get_exploration_by_zone(state)
+	var wilderness_explored: float = float(exploration.get(SimMap.ZONE_WILDERNESS, 0.0))
+	var depths_explored: float = float(exploration.get(SimMap.ZONE_DEPTHS, 0.0))
+
+	# Exploring dangerous zones slowly increases base threat
+	if wilderness_explored > 0.1 or depths_explored > 0.05:
+		var exploration_threat: float = (wilderness_explored * 0.002) + (depths_explored * 0.005)
+		state.threat_level = min(1.0, state.threat_level + exploration_threat)
 
 ## Helper: Convert terrain to biome name
 static func _terrain_to_biome(terrain: String) -> String:
@@ -275,16 +372,14 @@ static func _get_random_edge_position(state: GameState) -> Vector2i:
 		return Vector2i(-1, -1)
 	return pos
 
-## Create a roaming enemy entity
+## Create a roaming enemy entity - zone-aware selection
 static func _create_roaming_enemy(state: GameState, pos: Vector2i) -> Dictionary:
-	var kinds: Array = ["raider", "scout", "armored"]
-	if state.day >= 3:
-		kinds.append("swarm")
-	if state.day >= 5:
-		kinds.append("berserker")
+	# Determine zone and max tier for this spawn position
+	var zone: String = SimMap.get_zone_at(state, pos)
+	var max_tier: int = SimMap.get_zone_enemy_tier_max(zone)
 
-	var kind_idx: int = SimRng.roll_range(state, 0, kinds.size() - 1)
-	var kind: String = kinds[kind_idx]
+	# Build kind list based on zone tier and day
+	var kind: String = _select_enemy_kind_for_zone(state, max_tier)
 
 	var id: int = state.enemy_next_id
 	state.enemy_next_id += 1
@@ -295,8 +390,58 @@ static func _create_roaming_enemy(state: GameState, pos: Vector2i) -> Dictionary
 		"pos": pos,
 		"target_pos": state.base_pos,  # Roam toward castle
 		"state": "wandering",
-		"move_timer": 0.0
+		"move_timer": 0.0,
+		"spawn_zone": zone  # Track origin zone for threat calculations
 	}
+
+## Select enemy kind based on zone tier limits and day progression
+static func _select_enemy_kind_for_zone(state: GameState, max_tier: int) -> String:
+	# Tier 1: Basic enemies (safe zone)
+	var tier1: Array = ["raider", "scout"]
+
+	# Tier 2: Moderate enemies (frontier)
+	var tier2: Array = ["armored", "swarm"]
+
+	# Tier 3: Dangerous enemies (wilderness)
+	var tier3: Array = ["berserker", "tank", "phantom"]
+
+	# Tier 4: Elite enemies (depths)
+	var tier4: Array = ["champion", "healer", "elite"]
+
+	# Build available kinds based on max tier and day
+	var available: Array = []
+	available.append_array(tier1)
+
+	if max_tier >= 2 and state.day >= 3:
+		available.append_array(tier2)
+	if max_tier >= 3 and state.day >= 5:
+		available.append_array(tier3)
+	if max_tier >= 4 and state.day >= 7:
+		available.append_array(tier4)
+
+	# Weight selection - higher tier enemies are rarer
+	var weights: Dictionary = {
+		"raider": 6, "scout": 4,
+		"armored": 3, "swarm": 3,
+		"berserker": 2, "tank": 2, "phantom": 2,
+		"champion": 1, "healer": 1, "elite": 1
+	}
+
+	var total_weight: int = 0
+	for kind in available:
+		total_weight += int(weights.get(kind, 1))
+
+	if total_weight <= 0:
+		return "raider"
+
+	var roll: int = SimRng.roll_range(state, 1, total_weight)
+	var running: int = 0
+	for kind in available:
+		running += int(weights.get(kind, 1))
+		if roll <= running:
+			return kind
+
+	return "raider"
 
 ## Move a roaming enemy toward its target
 static func _move_roaming_enemy(state: GameState, entity: Dictionary) -> bool:
@@ -350,3 +495,84 @@ static func start_encounter(state: GameState, enemies_to_add: Array = []) -> voi
 		state.enemies.append(enemy_data)
 
 	state.night_wave_total = state.enemies.size()
+
+# ============================================================================
+# Zone-Aware Threat System Utilities
+# ============================================================================
+
+## Calculate threat contribution for a roaming enemy based on zone and distance
+static func calculate_enemy_threat_contribution(state: GameState, enemy: Dictionary) -> float:
+	var pos: Vector2i = enemy.get("pos", Vector2i.ZERO)
+	var dist: int = abs(pos.x - state.base_pos.x) + abs(pos.y - state.base_pos.y)
+	var castle_dist_threshold := 5
+
+	if dist > castle_dist_threshold:
+		return 0.0
+
+	var base_threat: float = 1.0
+
+	# Spawn zone multiplier
+	var spawn_zone: String = str(enemy.get("spawn_zone", SimMap.ZONE_SAFE))
+	var zone_mult: float = SimMap.get_zone_threat_multiplier(spawn_zone)
+
+	# Current position zone multiplier
+	var current_zone: String = SimMap.get_zone_at(state, pos)
+	var current_mult: float = SimMap.get_zone_threat_multiplier(current_zone)
+
+	# Average of spawn and current zone
+	var avg_mult: float = (zone_mult + current_mult) / 2.0
+
+	# Proximity bonus
+	var proximity_bonus: float = 1.0 + (float(castle_dist_threshold - dist) / float(castle_dist_threshold))
+
+	return base_threat * avg_mult * proximity_bonus
+
+## Get threat summary for debugging/display
+static func get_threat_breakdown(state: GameState) -> Dictionary:
+	var breakdown: Dictionary = {
+		"total_threat": state.threat_level,
+		"enemy_contributions": [],
+		"exploration_pressure": 0.0,
+		"cursor_zone": SimMap.get_cursor_zone(state)
+	}
+
+	# Calculate individual enemy contributions
+	for entity in state.roaming_enemies:
+		var contribution: float = calculate_enemy_threat_contribution(state, entity)
+		if contribution > 0:
+			breakdown["enemy_contributions"].append({
+				"id": int(entity.get("id", 0)),
+				"kind": str(entity.get("kind", "raider")),
+				"spawn_zone": str(entity.get("spawn_zone", "")),
+				"contribution": contribution
+			})
+
+	# Calculate exploration pressure
+	var exploration: Dictionary = SimMap.get_exploration_by_zone(state)
+	var wilderness_explored: float = float(exploration.get(SimMap.ZONE_WILDERNESS, 0.0))
+	var depths_explored: float = float(exploration.get(SimMap.ZONE_DEPTHS, 0.0))
+
+	if wilderness_explored > 0.1 or depths_explored > 0.05:
+		breakdown["exploration_pressure"] = (wilderness_explored * 0.002) + (depths_explored * 0.005)
+
+	return breakdown
+
+## Format threat info for display
+static func format_threat_info(state: GameState) -> String:
+	var breakdown: Dictionary = get_threat_breakdown(state)
+	var lines: Array[String] = []
+
+	lines.append("Threat Level: %.1f%%" % (state.threat_level * 100))
+	lines.append("Cursor Zone: %s" % SimMap.get_zone_name(str(breakdown.get("cursor_zone", ""))))
+
+	var contributions: Array = breakdown.get("enemy_contributions", [])
+	if not contributions.is_empty():
+		lines.append("Nearby Enemies (%d):" % contributions.size())
+		for c in contributions:
+			lines.append("  %s from %s: +%.2f" % [str(c.get("kind", "")), str(c.get("spawn_zone", "")), float(c.get("contribution", 0))])
+
+	var exploration_pressure: float = float(breakdown.get("exploration_pressure", 0.0))
+	if exploration_pressure > 0:
+		lines.append("Exploration Pressure: +%.3f/tick" % exploration_pressure)
+
+	return "\n".join(lines)
