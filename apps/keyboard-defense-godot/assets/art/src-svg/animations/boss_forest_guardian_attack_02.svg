@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- Boss Forest Guardian Attack Frame 2: Arms swinging down -->
+  
+  <ellipse cx="64" cy="124" rx="42" ry="6" fill="#0f3d0f" opacity="0.6"/>
+  
+  <!-- Roots spreading -->
+  <rect x="36" y="108" width="56" height="18" fill="#8b4513"/>
+  <rect x="10" y="114" width="16" height="10" fill="#228b22"/>
+  <rect x="76" y="114" width="18" height="10" fill="#4c1d95"/>
+  <rect x="100" y="118" width="10" height="6" fill="#c084fc" opacity="0.5"/>
+  
+  <!-- Lower trunk -->
+  <rect x="40" y="82" width="48" height="28" fill="#8b4513"/>
+  <rect x="42" y="84" width="20" height="24" fill="#228b22"/>
+  <rect x="66" y="84" width="20" height="24" fill="#4c1d95"/>
+  
+  <!-- Upper trunk (lunging forward) -->
+  <rect x="34" y="44" width="56" height="40" fill="#8b4513"/>
+  <rect x="36" y="46" width="24" height="36" fill="#32cd32"/>
+  <rect x="64" y="46" width="24" height="36" fill="#2d1157"/>
+  
+  <!-- Core bright -->
+  <rect x="52" y="54" width="20" height="20" fill="#3d2817"/>
+  <rect x="48" y="50" width="28" height="28" fill="#ffd700" opacity="0.5"/>
+  <rect x="54" y="56" width="16" height="16" fill="#ffd700" opacity="0.7"/>
+  <rect x="58" y="60" width="8" height="8" fill="#ffeb3b"/>
+  
+  <!-- Left arm SWINGING DOWN -->
+  <rect x="0" y="46" width="32" height="20" fill="#228b22"/>
+  <rect x="-4" y="44" width="12" height="24" fill="#8b4513"/>
+  <rect x="-6" y="62" width="10" height="12" fill="#90ee90"/>
+  <rect x="4" y="64" width="8" height="10" fill="#32cd32"/>
+  
+  <!-- Right arm SWINGING DOWN -->
+  <rect x="96" y="44" width="32" height="20" fill="#4c1d95"/>
+  <rect x="120" y="42" width="12" height="26" fill="#2d1157"/>
+  <rect x="124" y="60" width="8" height="14" fill="#c084fc" opacity="0.7"/>
+  <rect x="116" y="62" width="8" height="12" fill="#c084fc" opacity="0.5"/>
+  
+  <!-- Head forward -->
+  <rect x="44" y="22" width="36" height="26" fill="#8b4513"/>
+  <rect x="46" y="24" width="14" height="20" fill="#32cd32"/>
+  <rect x="64" y="24" width="14" height="20" fill="#4c1d95"/>
+  
+  <!-- Eyes -->
+  <rect x="50" y="32" width="6" height="4" fill="#90ee90"/>
+  <rect x="68" y="32" width="6" height="4" fill="#c084fc"/>
+  
+  <rect x="52" y="38" width="20" height="6" fill="#3d2817"/>
+  
+  <!-- Crown -->
+  <rect x="18" y="6" width="30" height="20" fill="#228b22"/>
+  <rect x="76" y="6" width="30" height="20" fill="#4c1d95"/>
+  <rect x="48" y="8" width="28" height="16" fill="#8b4513"/>
+</svg>

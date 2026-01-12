@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- Boss Forest Guardian Attack Frame 3: IMPACT - arms slam ground -->
+  
+  <ellipse cx="64" cy="124" rx="50" ry="8" fill="#0f3d0f" opacity="0.7"/>
+  
+  <!-- Ground crack effects -->
+  <rect x="20" y="120" width="88" height="4" fill="#8b4513"/>
+  <rect x="30" y="118" width="4" height="6" fill="#228b22"/>
+  <rect x="60" y="116" width="8" height="8" fill="#ffd700" opacity="0.5"/>
+  <rect x="94" y="118" width="4" height="6" fill="#c084fc" opacity="0.6"/>
+  
+  <!-- Roots erupting -->
+  <rect x="32" y="106" width="64" height="20" fill="#8b4513"/>
+  <rect x="6" y="110" width="20" height="14" fill="#228b22"/>
+  <rect x="72" y="108" width="24" height="16" fill="#4c1d95"/>
+  <rect x="100" y="112" width="14" height="10" fill="#c084fc" opacity="0.6"/>
+  
+  <!-- Lower trunk -->
+  <rect x="40" y="80" width="48" height="28" fill="#8b4513"/>
+  <rect x="42" y="82" width="20" height="24" fill="#228b22"/>
+  <rect x="66" y="82" width="20" height="24" fill="#4c1d95"/>
+  
+  <!-- Upper trunk (bent forward) -->
+  <rect x="32" y="42" width="56" height="40" fill="#8b4513"/>
+  <rect x="34" y="44" width="24" height="36" fill="#32cd32"/>
+  <rect x="62" y="44" width="24" height="36" fill="#2d1157"/>
+  
+  <!-- Core FLASHING -->
+  <rect x="50" y="52" width="20" height="20" fill="#3d2817"/>
+  <rect x="44" y="46" width="32" height="32" fill="#ffd700" opacity="0.6"/>
+  <rect x="50" y="52" width="20" height="20" fill="#ffd700" opacity="0.8"/>
+  <rect x="56" y="58" width="8" height="8" fill="#ffffff"/>
+  
+  <!-- Left arm GROUND SLAM -->
+  <rect x="-8" y="90" width="40" height="20" fill="#228b22"/>
+  <rect x="-12" y="88" width="16" height="24" fill="#8b4513"/>
+  <rect x="-14" y="106" width="12" height="10" fill="#90ee90"/>
+  <!-- Impact effect -->
+  <rect x="-10" y="108" width="20" height="4" fill="#ffd700" opacity="0.6"/>
+  
+  <!-- Right arm GROUND SLAM -->
+  <rect x="96" y="88" width="40" height="20" fill="#4c1d95"/>
+  <rect x="124" y="86" width="16" height="26" fill="#2d1157"/>
+  <rect x="130" y="104" width="10" height="12" fill="#c084fc" opacity="0.8"/>
+  <!-- Impact effect -->
+  <rect x="118" y="108" width="20" height="4" fill="#c084fc" opacity="0.6"/>
+  
+  <!-- Head low -->
+  <rect x="42" y="24" width="36" height="24" fill="#8b4513"/>
+  <rect x="44" y="26" width="14" height="18" fill="#32cd32"/>
+  <rect x="62" y="26" width="14" height="18" fill="#4c1d95"/>
+  
+  <!-- Eyes BRIGHT -->
+  <rect x="48" y="32" width="8" height="6" fill="#98fb98"/>
+  <rect x="46" y="30" width="12" height="10" fill="#90ee90" opacity="0.5"/>
+  <rect x="66" y="32" width="8" height="6" fill="#e9d5ff"/>
+  <rect x="64" y="30" width="12" height="10" fill="#c084fc" opacity="0.5"/>
+  
+  <rect x="50" y="40" width="20" height="4" fill="#3d2817"/>
+  
+  <!-- Crown -->
+  <rect x="16" y="8" width="30" height="18" fill="#228b22"/>
+  <rect x="74" y="8" width="30" height="18" fill="#4c1d95"/>
+  <rect x="46" y="10" width="28" height="14" fill="#8b4513"/>
+  
+  <!-- Shockwave particles -->
+  <rect x="10" y="100" width="4" height="4" fill="#90ee90" opacity="0.7"/>
+  <rect x="114" y="98" width="4" height="4" fill="#c084fc" opacity="0.7"/>
+</svg>

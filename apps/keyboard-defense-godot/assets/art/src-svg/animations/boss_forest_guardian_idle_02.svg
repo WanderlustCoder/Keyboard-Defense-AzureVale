@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- Boss Forest Guardian Idle Frame 2: Core brightening, slight sway left -->
+  
+  <!-- Ground shadow -->
+  <ellipse cx="62" cy="124" rx="40" ry="6" fill="#0f3d0f" opacity="0.5"/>
+
+  <!-- Root system (shifted slightly) -->
+  <rect x="34" y="110" width="56" height="16" fill="#8b4513"/>
+  <rect x="12" y="114" width="12" height="10" fill="#228b22"/>
+  <rect x="78" y="114" width="14" height="12" fill="#4c1d95"/>
+  <rect x="100" y="120" width="8" height="6" fill="#c084fc" opacity="0.5"/>
+
+  <!-- Lower trunk -->
+  <rect x="38" y="84" width="48" height="28" fill="#8b4513"/>
+  <rect x="40" y="86" width="20" height="22" fill="#228b22"/>
+  <rect x="64" y="86" width="20" height="22" fill="#4c1d95"/>
+
+  <!-- Upper trunk/torso (swayed left) -->
+  <rect x="34" y="46" width="56" height="40" fill="#8b4513"/>
+  <rect x="36" y="48" width="24" height="34" fill="#32cd32"/>
+  <rect x="64" y="48" width="24" height="34" fill="#2d1157"/>
+
+  <!-- Heartwood core (brighter) -->
+  <rect x="52" y="56" width="20" height="20" fill="#3d2817"/>
+  <rect x="54" y="58" width="16" height="16" fill="#ffd700" opacity="0.4"/>
+  <rect x="58" y="62" width="8" height="8" fill="#ffd700" opacity="0.6"/>
+  <rect x="60" y="64" width="4" height="4" fill="#ffeb3b"/>
+
+  <!-- Left arm (healthy, extended) -->
+  <rect x="6" y="40" width="28" height="16" fill="#228b22"/>
+  <rect x="2" y="36" width="10" height="20" fill="#8b4513"/>
+  <rect x="0" y="32" width="8" height="8" fill="#90ee90"/>
+  <rect x="-2" y="44" width="4" height="6" fill="#228b22"/>
+
+  <!-- Right arm (corrupted) -->
+  <rect x="88" y="42" width="28" height="18" fill="#4c1d95"/>
+  <rect x="110" y="38" width="12" height="22" fill="#2d1157"/>
+  <rect x="116" y="34" width="4" height="6" fill="#c084fc" opacity="0.5"/>
+  <rect x="118" y="50" width="4" height="6" fill="#c084fc" opacity="0.4"/>
+
+  <!-- Head (swayed) -->
+  <rect x="44" y="24" width="36" height="26" fill="#8b4513"/>
+  <rect x="46" y="26" width="14" height="20" fill="#32cd32"/>
+  <rect x="64" y="26" width="14" height="20" fill="#4c1d95"/>
+
+  <!-- Eyes (brighter glow) -->
+  <rect x="50" y="34" width="6" height="4" fill="#228b22"/>
+  <rect x="52" y="35" width="3" height="2" fill="#98fb98"/>
+  <rect x="48" y="32" width="10" height="8" fill="#90ee90" opacity="0.2"/>
+  <rect x="68" y="34" width="6" height="4" fill="#4c1d95"/>
+  <rect x="70" y="35" width="3" height="2" fill="#e9d5ff"/>
+  <rect x="66" y="32" width="10" height="8" fill="#c084fc" opacity="0.25"/>
+
+  <!-- Mouth -->
+  <rect x="52" y="40" width="20" height="6" fill="#3d2817"/>
+
+  <!-- Crown (healthy side) -->
+  <rect x="18" y="8" width="30" height="20" fill="#228b22"/>
+  <rect x="12" y="10" width="6" height="12" fill="#32cd32"/>
+  <rect x="8" y="6" width="8" height="6" fill="#90ee90"/>
+
+  <!-- Crown (corrupted side) -->
+  <rect x="76" y="8" width="30" height="20" fill="#4c1d95"/>
+  <rect x="106" y="10" width="6" height="12" fill="#2d1157"/>
+  <rect x="82" y="2" width="4" height="10" fill="#1a1a2e"/>
+  <rect x="86" y="4" width="3" height="4" fill="#c084fc" opacity="0.5"/>
+
+  <!-- Central crown -->
+  <rect x="48" y="10" width="28" height="16" fill="#8b4513"/>
+  <rect x="56" y="14" width="4" height="4" fill="#ffd700" opacity="0.7"/>
+
+  <!-- Leaf particles -->
+  <rect x="4" y="24" width="3" height="2" fill="#90ee90" opacity="0.7"/>
+  <rect x="10" y="60" width="2" height="3" fill="#32cd32" opacity="0.6"/>
+</svg>

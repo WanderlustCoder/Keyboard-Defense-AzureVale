@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- Boss Stone Golem Idle Frame 4: Runes dimming -->
+  
+  <ellipse cx="64" cy="124" rx="44" ry="6" fill="#1a1a2e" opacity="0.6"/>
+  
+  <!-- Feet -->
+  <rect x="18" y="108" width="28" height="16" fill="#3d3d5c"/>
+  <rect x="20" y="110" width="24" height="12" fill="#5c5c7a"/>
+  <rect x="82" y="108" width="28" height="16" fill="#3d3d5c"/>
+  <rect x="84" y="110" width="24" height="12" fill="#5c5c7a"/>
+  <rect x="28" y="112" width="4" height="2" fill="#ffd700" opacity="0.5"/>
+  <rect x="96" y="112" width="4" height="2" fill="#ffd700" opacity="0.5"/>
+  
+  <!-- Legs -->
+  <rect x="24" y="72" width="22" height="38" fill="#3d3d5c"/>
+  <rect x="26" y="74" width="18" height="34" fill="#5c5c7a"/>
+  <rect x="82" y="72" width="22" height="38" fill="#3d3d5c"/>
+  <rect x="84" y="74" width="18" height="34" fill="#5c5c7a"/>
+  <!-- Leg runes -->
+  <rect x="28" y="87" width="14" height="2" fill="#ffd700" opacity="0.5"/>
+  <rect x="86" y="87" width="14" height="2" fill="#ffd700" opacity="0.5"/>
+  <rect x="32" y="88" width="6" height="4" fill="#00ffff" opacity="0.5"/>
+  <rect x="90" y="88" width="6" height="4" fill="#00ffff" opacity="0.5"/>
+  
+  <!-- Waist -->
+  <rect x="38" y="66" width="52" height="12" fill="#3d3d5c"/>
+  <rect x="40" y="68" width="48" height="8" fill="#5c5c7a"/>
+  <rect x="50" y="70" width="4" height="2" fill="#ffd700" opacity="0.5"/>
+  <rect x="62" y="70" width="4" height="2" fill="#ffd700" opacity="0.5"/>
+  
+  <!-- Torso -->
+  <rect x="28" y="28" width="72" height="40" fill="#3d3d5c"/>
+  <rect x="30" y="30" width="68" height="36" fill="#5c5c7a"/>
+  <rect x="48" y="38" width="32" height="18" fill="#c4c4d4"/>
+  
+  <!-- Central core (dimming) -->
+  <rect x="54" y="42" width="20" height="14" fill="#3d3d5c"/>
+  <rect x="56" y="44" width="16" height="10" fill="#1a1a2e"/>
+  <rect x="58" y="46" width="12" height="6" fill="#ffd700" opacity="0.4"/>
+  <rect x="60" y="47" width="8" height="4" fill="#ffd700" opacity="0.5"/>
+  
+  <!-- Left arm -->
+  <rect x="6" y="40" width="18" height="24" fill="#3d3d5c"/>
+  <rect x="8" y="42" width="14" height="20" fill="#5c5c7a"/>
+  <rect x="0" y="84" width="16" height="14" fill="#3d3d5c"/>
+  <rect x="2" y="86" width="12" height="10" fill="#5c5c7a"/>
+  <rect x="6" y="48" width="18" height="3" fill="#ffd700" opacity="0.4"/>
+  
+  <!-- Right arm -->
+  <rect x="104" y="40" width="18" height="24" fill="#3d3d5c"/>
+  <rect x="106" y="42" width="14" height="20" fill="#5c5c7a"/>
+  <rect x="112" y="84" width="16" height="14" fill="#3d3d5c"/>
+  <rect x="114" y="86" width="12" height="10" fill="#5c5c7a"/>
+  <rect x="104" y="48" width="18" height="3" fill="#ffd700" opacity="0.4"/>
+  
+  <!-- Shoulder crystals (left) -->
+  <rect x="8" y="20" width="14" height="16" fill="#00b3b3"/>
+  <rect x="10" y="18" width="10" height="14" fill="#00ffff"/>
+  <rect x="12" y="16" width="6" height="10" fill="#7fffff"/>
+  <rect x="6" y="14" width="18" height="20" fill="#00ffff" opacity="0.1"/>
+  
+  <!-- Shoulder crystals (right) -->
+  <rect x="106" y="20" width="14" height="16" fill="#00b3b3"/>
+  <rect x="108" y="18" width="10" height="14" fill="#00ffff"/>
+  <rect x="110" y="16" width="6" height="10" fill="#7fffff"/>
+  <rect x="104" y="14" width="18" height="20" fill="#00ffff" opacity="0.1"/>
+  
+  <!-- Head -->
+  <rect x="46" y="6" width="36" height="24" fill="#3d3d5c"/>
+  <rect x="48" y="8" width="32" height="20" fill="#5c5c7a"/>
+  <rect x="52" y="10" width="24" height="14" fill="#8b8ba8"/>
+  
+  <!-- Eye slits -->
+  <rect x="52" y="14" width="10" height="4" fill="#1a1a2e"/>
+  <rect x="54" y="15" width="6" height="2" fill="#ffd700" opacity="0.6"/>
+  <rect x="66" y="14" width="10" height="4" fill="#1a1a2e"/>
+  <rect x="68" y="15" width="6" height="2" fill="#ffd700" opacity="0.6"/>
+  
+  <!-- Dust particles -->
+  <rect x="16" y="118" width="2" height="2" fill="#5c5c7a" opacity="0.5"/>
+  <rect x="106" y="116" width="2" height="2" fill="#5c5c7a" opacity="0.4"/>
+</svg>

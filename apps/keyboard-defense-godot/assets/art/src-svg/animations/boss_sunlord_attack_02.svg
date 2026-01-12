@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- Boss Sunlord Attack Frame 2: Swing down -->
+
+  <!-- Ground heat/shadow (intensifying) -->
+  <ellipse cx="64" cy="122" rx="52" ry="9" fill="#ff4500" opacity="0.45"/>
+  <ellipse cx="64" cy="124" rx="44" ry="7" fill="#1a1a2e" opacity="0.5"/>
+
+  <!-- Corona (bright) -->
+  <rect x="14" y="4" width="100" height="12" fill="#ff8c00" opacity="0.55"/>
+  <rect x="8" y="12" width="112" height="8" fill="#ff8c00" opacity="0.4"/>
+  <rect x="54" y="-4" width="20" height="20" fill="#ffd700" opacity="0.75"/>
+
+  <!-- Burning cape (flaring wide) -->
+  <rect x="26" y="50" width="76" height="70" fill="#ff4500"/>
+  <rect x="30" y="54" width="68" height="62" fill="#ff8c00"/>
+  <rect x="22" y="104" width="14" height="22" fill="#ff0000"/>
+  <rect x="24" y="114" width="6" height="12" fill="#ffd700"/>
+  <rect x="46" y="106" width="14" height="20" fill="#ff0000"/>
+  <rect x="64" y="104" width="16" height="22" fill="#ff4500"/>
+  <rect x="86" y="104" width="16" height="22" fill="#ff0000"/>
+  <rect x="92" y="114" width="6" height="12" fill="#ffd700"/>
+
+  <!-- Legs (wide stance) -->
+  <rect x="36" y="90" width="20" height="30" fill="#8b4513"/>
+  <rect x="38" y="92" width="16" height="26" fill="#ffd700"/>
+  <rect x="72" y="90" width="20" height="30" fill="#8b4513"/>
+  <rect x="74" y="92" width="16" height="26" fill="#ffd700"/>
+
+  <!-- Torso (rotating) -->
+  <rect x="34" y="48" width="60" height="46" fill="#8b4513"/>
+  <rect x="38" y="52" width="52" height="38" fill="#ffd700"/>
+  <!-- Sun emblem (blazing) -->
+  <rect x="56" y="64" width="14" height="14" fill="#ffffff"/>
+  <rect x="58" y="66" width="10" height="10" fill="#ffd700"/>
+  <rect x="50" y="56" width="28" height="28" fill="#ffffff" opacity="0.35"/>
+
+  <!-- Belt -->
+  <rect x="36" y="86" width="56" height="8" fill="#8b4513"/>
+  <rect x="58" y="86" width="12" height="8" fill="#ffd700"/>
+
+  <!-- Left arm (bracing) -->
+  <rect x="14" y="52" width="18" height="36" fill="#8b4513"/>
+  <rect x="16" y="54" width="14" height="32" fill="#ffd700"/>
+
+  <!-- Right arm (swinging down) -->
+  <rect x="92" y="34" width="18" height="44" fill="#8b4513"/>
+  <rect x="94" y="36" width="14" height="40" fill="#ffd700"/>
+  <rect x="100" y="78" width="12" height="8" fill="#ff8c00"/>
+
+  <!-- Sword (mid-swing diagonal) -->
+  <rect x="56" y="4" width="60" height="8" fill="#8b4513" transform="rotate(45 86 8)"/>
+  <rect x="60" y="2" width="50" height="12" fill="#ffd700" transform="rotate(45 85 8)"/>
+  <rect x="62" y="4" width="46" height="8" fill="#ffffff" transform="rotate(45 85 8)"/>
+  <!-- Sword trail flames -->
+  <rect x="30" y="-8" width="30" height="8" fill="#ff4500" opacity="0.8" transform="rotate(45 45 -4)"/>
+  <rect x="24" y="-14" width="24" height="6" fill="#ff0000" opacity="0.65" transform="rotate(45 36 -11)"/>
+  <rect x="50" y="2" width="20" height="6" fill="#ffd700" opacity="0.5" transform="rotate(45 60 5)"/>
+
+  <!-- Head/Helmet (following swing) -->
+  <rect x="42" y="20" width="40" height="32" fill="#8b4513"/>
+  <rect x="46" y="24" width="32" height="24" fill="#ffd700"/>
+  <rect x="50" y="32" width="24" height="12" fill="#1a1a2e"/>
+  <!-- Eyes (fierce) -->
+  <rect x="52" y="34" width="8" height="6" fill="#ffffff"/>
+  <rect x="54" y="36" width="4" height="2" fill="#ffd700"/>
+  <rect x="64" y="34" width="8" height="6" fill="#ffffff"/>
+  <rect x="66" y="36" width="4" height="2" fill="#ffd700"/>
+  <rect x="50" y="32" width="24" height="10" fill="#ffffff" opacity="0.15"/>
+
+  <!-- Crown -->
+  <rect x="38" y="18" width="48" height="8" fill="#ffd700"/>
+  <rect x="42" y="6" width="6" height="16" fill="#ffd700"/>
+  <rect x="54" y="4" width="6" height="18" fill="#ffd700"/>
+  <rect x="64" y="4" width="6" height="18" fill="#ffd700"/>
+  <rect x="76" y="6" width="6" height="16" fill="#ffd700"/>
+  <!-- Crown flames -->
+  <rect x="44" y="0" width="2" height="10" fill="#ff4500" opacity="0.85"/>
+  <rect x="56" y="-2" width="2" height="12" fill="#ff4500" opacity="0.85"/>
+  <rect x="66" y="-2" width="2" height="12" fill="#ff4500" opacity="0.85"/>
+  <rect x="78" y="0" width="2" height="10" fill="#ff4500" opacity="0.85"/>
+
+  <!-- Motion blur particles -->
+  <rect x="118" y="30" width="6" height="6" fill="#ff4500" opacity="0.7"/>
+  <rect x="112" y="20" width="4" height="4" fill="#ffd700" opacity="0.6"/>
+  <rect x="106" y="10" width="4" height="4" fill="#ff0000" opacity="0.5"/>
+</svg>

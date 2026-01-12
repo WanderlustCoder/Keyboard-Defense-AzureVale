@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- Boss Fen Seer Attack Frame 2: Energy focused -->
+  <ellipse cx="64" cy="120" rx="50" ry="8" fill="#2d5a27" opacity="0.6"/>
+  <ellipse cx="64" cy="122" rx="48" ry="7" fill="#39ff14" opacity="0.35"/>
+  
+  <!-- Bone totems (bright) -->
+  <rect x="12" y="42" width="8" height="34" fill="#c4b8a0"/>
+  <rect x="14" y="46" width="4" height="8" fill="#39ff14"/>
+  <rect x="108" y="47" width="8" height="32" fill="#c4b8a0"/>
+  <rect x="110" y="51" width="4" height="8" fill="#39ff14"/>
+  
+  <!-- Spectral arms (extended forward) -->
+  <rect x="28" y="42" width="14" height="20" fill="#7b2d8e" opacity="0.8"/>
+  <rect x="34" y="36" width="12" height="14" fill="#39ff14" opacity="0.6"/>
+  <rect x="86" y="40" width="14" height="22" fill="#7b2d8e" opacity="0.8"/>
+  <rect x="82" y="34" width="12" height="14" fill="#39ff14" opacity="0.6"/>
+  
+  <!-- Inner arms merged forward -->
+  <rect x="38" y="40" width="20" height="16" fill="#7b2d8e" opacity="0.85"/>
+  <rect x="42" y="34" width="16" height="12" fill="#39ff14" opacity="0.65"/>
+  <rect x="70" y="38" width="20" height="18" fill="#7b2d8e" opacity="0.85"/>
+  <rect x="70" y="32" width="16" height="12" fill="#39ff14" opacity="0.65"/>
+  
+  <!-- Energy ball forming -->
+  <rect x="52" y="32" width="24" height="24" fill="#39ff14" opacity="0.5"/>
+  <rect x="56" y="36" width="16" height="16" fill="#7fff00" opacity="0.6"/>
+  <rect x="60" y="40" width="8" height="8" fill="#ffffff" opacity="0.7"/>
+  
+  <!-- Main robed body -->
+  <rect x="40" y="56" width="48" height="64" fill="#4a0080"/>
+  <rect x="44" y="60" width="40" height="56" fill="#7b2d8e"/>
+  
+  <!-- Hood (leaning forward) -->
+  <rect x="36" y="26" width="56" height="34" fill="#4a0080"/>
+  <rect x="40" y="30" width="48" height="26" fill="#7b2d8e"/>
+  <rect x="44" y="34" width="40" height="18" fill="#1a1a2e"/>
+  <rect x="56" y="18" width="16" height="12" fill="#4a0080"/>
+  
+  <!-- Third eye (blazing) -->
+  <rect x="58" y="28" width="12" height="12" fill="#ffffff"/>
+  <rect x="56" y="26" width="16" height="16" fill="#39ff14" opacity="0.6"/>
+  <rect x="48" y="18" width="32" height="32" fill="#39ff14" opacity="0.35"/>
+  
+  <!-- Eyes -->
+  <rect x="52" y="42" width="6" height="6" fill="#ffffff"/>
+  <rect x="70" y="42" width="6" height="6" fill="#ffffff"/>
+  
+  <!-- Chest sigil -->
+  <rect x="56" y="66" width="16" height="16" fill="#4a0080"/>
+  <rect x="58" y="68" width="12" height="12" fill="#39ff14"/>
+</svg>

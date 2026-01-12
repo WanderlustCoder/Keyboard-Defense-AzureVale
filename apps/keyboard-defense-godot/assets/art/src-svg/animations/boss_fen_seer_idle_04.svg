@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- Boss Fen Seer Idle Frame 4: Eye dimming, arms retracting -->
+  
+  <!-- Swamp mist -->
+  <ellipse cx="62" cy="120" rx="50" ry="8" fill="#2d5a27" opacity="0.5"/>
+  <ellipse cx="66" cy="122" rx="45" ry="6" fill="#39ff14" opacity="0.22"/>
+  
+  <!-- Bone totems -->
+  <rect x="12" y="48" width="8" height="30" fill="#c4b8a0"/>
+  <rect x="14" y="52" width="4" height="4" fill="#39ff14" opacity="0.65"/>
+  <rect x="14" y="62" width="4" height="4" fill="#39ff14" opacity="0.45"/>
+  
+  <rect x="108" y="53" width="8" height="28" fill="#c4b8a0"/>
+  <rect x="110" y="57" width="4" height="4" fill="#39ff14" opacity="0.65"/>
+  
+  <!-- Spectral arms (outer, retracting) -->
+  <rect x="16" y="68" width="6" height="22" fill="#7b2d8e" opacity="0.52"/>
+  <rect x="14" y="88" width="10" height="8" fill="#39ff14" opacity="0.42"/>
+  <rect x="106" y="66" width="6" height="24" fill="#7b2d8e" opacity="0.52"/>
+  <rect x="102" y="88" width="10" height="8" fill="#39ff14" opacity="0.42"/>
+  
+  <!-- Main robed body -->
+  <rect x="40" y="60" width="48" height="60" fill="#4a0080"/>
+  <rect x="44" y="64" width="40" height="52" fill="#7b2d8e"/>
+  <rect x="46" y="70" width="4" height="40" fill="#4a0080"/>
+  <rect x="78" y="70" width="4" height="40" fill="#4a0080"/>
+  
+  <!-- Spectral arms (inner, retracting) -->
+  <rect x="28" y="64" width="14" height="11" fill="#7b2d8e" opacity="0.62"/>
+  <rect x="22" y="77" width="9" height="15" fill="#7b2d8e" opacity="0.52"/>
+  <rect x="20" y="90" width="11" height="10" fill="#39ff14" opacity="0.42"/>
+  <rect x="86" y="64" width="14" height="11" fill="#7b2d8e" opacity="0.62"/>
+  <rect x="100" y="77" width="9" height="15" fill="#7b2d8e" opacity="0.52"/>
+  <rect x="100" y="90" width="11" height="10" fill="#39ff14" opacity="0.42"/>
+  
+  <!-- Hood -->
+  <rect x="36" y="30" width="56" height="36" fill="#4a0080"/>
+  <rect x="40" y="34" width="48" height="28" fill="#7b2d8e"/>
+  <rect x="44" y="38" width="40" height="20" fill="#1a1a2e"/>
+  <rect x="56" y="22" width="16" height="12" fill="#4a0080"/>
+  
+  <!-- Third eye (dimming) -->
+  <rect x="58" y="32" width="12" height="12" fill="#39ff14" opacity="0.68"/>
+  <rect x="60" y="34" width="8" height="8" fill="#7fff00" opacity="0.78"/>
+  <rect x="62" y="36" width="4" height="4" fill="#ffffff" opacity="0.58"/>
+  <rect x="54" y="28" width="20" height="20" fill="#39ff14" opacity="0.15"/>
+  
+  <!-- Regular eyes -->
+  <rect x="52" y="46" width="6" height="6" fill="#39ff14" opacity="0.75"/>
+  <rect x="70" y="46" width="6" height="6" fill="#39ff14" opacity="0.75"/>
+  
+  <!-- Chest sigil -->
+  <rect x="56" y="70" width="16" height="16" fill="#4a0080"/>
+  <rect x="58" y="72" width="12" height="12" fill="#39ff14" opacity="0.55"/>
+  
+  <!-- Magic wisps (fading) -->
+  <rect x="32" y="42" width="3" height="3" fill="#39ff14" opacity="0.4"/>
+  <rect x="92" y="44" width="3" height="3" fill="#39ff14" opacity="0.4"/>
+</svg>

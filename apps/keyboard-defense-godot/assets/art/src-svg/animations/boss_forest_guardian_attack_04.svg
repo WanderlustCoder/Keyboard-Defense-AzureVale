@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- Boss Forest Guardian Attack Frame 4: Recovery -->
+  
+  <ellipse cx="64" cy="124" rx="44" ry="6" fill="#0f3d0f" opacity="0.5"/>
+  
+  <!-- Roots settling -->
+  <rect x="34" y="108" width="60" height="18" fill="#8b4513"/>
+  <rect x="12" y="112" width="14" height="12" fill="#228b22"/>
+  <rect x="78" y="112" width="16" height="12" fill="#4c1d95"/>
+  
+  <!-- Lower trunk -->
+  <rect x="40" y="82" width="48" height="28" fill="#8b4513"/>
+  <rect x="42" y="84" width="20" height="24" fill="#228b22"/>
+  <rect x="66" y="84" width="20" height="24" fill="#4c1d95"/>
+  
+  <!-- Upper trunk (recovering) -->
+  <rect x="36" y="46" width="56" height="38" fill="#8b4513"/>
+  <rect x="38" y="48" width="24" height="34" fill="#32cd32"/>
+  <rect x="66" y="48" width="24" height="34" fill="#2d1157"/>
+  
+  <!-- Core dimming -->
+  <rect x="54" y="56" width="20" height="20" fill="#3d2817"/>
+  <rect x="56" y="58" width="16" height="16" fill="#ffd700" opacity="0.4"/>
+  <rect x="60" y="62" width="8" height="8" fill="#ffd700" opacity="0.5"/>
+  
+  <!-- Left arm returning -->
+  <rect x="6" y="50" width="30" height="18" fill="#228b22"/>
+  <rect x="2" y="48" width="12" height="22" fill="#8b4513"/>
+  <rect x="0" y="42" width="8" height="10" fill="#90ee90"/>
+  
+  <!-- Right arm returning -->
+  <rect x="92" y="48" width="30" height="18" fill="#4c1d95"/>
+  <rect x="114" y="46" width="12" height="24" fill="#2d1157"/>
+  <rect x="120" y="40" width="6" height="10" fill="#c084fc" opacity="0.5"/>
+  
+  <!-- Head rising -->
+  <rect x="46" y="24" width="36" height="26" fill="#8b4513"/>
+  <rect x="48" y="26" width="14" height="20" fill="#32cd32"/>
+  <rect x="66" y="26" width="14" height="20" fill="#4c1d95"/>
+  
+  <!-- Eyes normal -->
+  <rect x="52" y="34" width="6" height="4" fill="#228b22"/>
+  <rect x="54" y="35" width="3" height="2" fill="#90ee90"/>
+  <rect x="70" y="34" width="6" height="4" fill="#4c1d95"/>
+  <rect x="72" y="35" width="3" height="2" fill="#c084fc"/>
+  
+  <rect x="54" y="40" width="20" height="6" fill="#3d2817"/>
+  
+  <!-- Crown -->
+  <rect x="20" y="8" width="30" height="20" fill="#228b22"/>
+  <rect x="78" y="8" width="30" height="20" fill="#4c1d95"/>
+  <rect x="50" y="10" width="28" height="16" fill="#8b4513"/>
+  
+  <!-- Lingering particles -->
+  <rect x="4" y="90" width="3" height="3" fill="#90ee90" opacity="0.4"/>
+  <rect x="122" y="88" width="3" height="3" fill="#c084fc" opacity="0.4"/>
+</svg>
