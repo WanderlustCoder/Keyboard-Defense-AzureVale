@@ -1,0 +1,260 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- Boss: Forest Guardian (128x128) - Day 5 Evergrove Boss -->
+  <!-- Ancient tree spirit corrupted by void energy, asymmetrical design (healthy left, corrupted right) -->
+  <!-- Healthy Palette: #228b22 (forest), #90ee90 (lime), #1a5f1a (dark green), #0f3d0f (deepest) -->
+  <!-- Corrupt Palette: #4c1d95 (purple), #c084fc (violet glow), #2d1157 (deep purple), #1a1a2e (void black) -->
+  <!-- Neutral: #8b4513 (bark brown), #3d2817 (dark bark), #ffd700 (gold runes) -->
+
+  <!-- Ground shadow -->
+  <ellipse cx="64" cy="124" rx="40" ry="6" fill="#0f3d0f" opacity="0.5"/>
+
+  <!-- ========== ROOT SYSTEM (Bottom 20px) ========== -->
+  <!-- Healthy roots (left side) -->
+  <rect x="14" y="114" width="12" height="10" fill="#8b4513"/>
+  <rect x="16" y="116" width="8" height="8" fill="#a0522d"/>
+  <rect x="10" y="118" width="8" height="8" fill="#8b4513"/>
+  <rect x="6" y="120" width="6" height="6" fill="#8b4513"/>
+  <rect x="20" y="118" width="10" height="8" fill="#228b22"/>
+  <rect x="26" y="116" width="8" height="6" fill="#8b4513"/>
+  <!-- Root tendrils healthy -->
+  <rect x="4" y="122" width="4" height="4" fill="#228b22"/>
+  <rect x="30" y="120" width="6" height="4" fill="#228b22"/>
+
+  <!-- Corrupted roots (right side) -->
+  <rect x="80" y="114" width="14" height="12" fill="#2d1157"/>
+  <rect x="82" y="116" width="10" height="8" fill="#4c1d95"/>
+  <rect x="92" y="116" width="12" height="10" fill="#1a1a2e"/>
+  <rect x="96" y="118" width="10" height="8" fill="#2d1157"/>
+  <rect x="102" y="120" width="8" height="6" fill="#4c1d95"/>
+  <!-- Corruption tendrils (writhing) -->
+  <rect x="108" y="118" width="6" height="4" fill="#c084fc" opacity="0.6"/>
+  <rect x="112" y="116" width="4" height="6" fill="#4c1d95"/>
+  <rect x="116" y="118" width="4" height="4" fill="#2d1157"/>
+
+  <!-- Central root mass -->
+  <rect x="36" y="110" width="56" height="16" fill="#8b4513"/>
+  <rect x="40" y="112" width="48" height="12" fill="#a0522d"/>
+  <!-- Transition zone -->
+  <rect x="60" y="112" width="8" height="10" fill="#3d2817"/>
+  <rect x="66" y="114" width="4" height="8" fill="#4c1d95" opacity="0.5"/>
+
+  <!-- ========== LOWER TRUNK (30px) ========== -->
+  <rect x="40" y="84" width="48" height="28" fill="#8b4513"/>
+  <rect x="42" y="86" width="44" height="24" fill="#a0522d"/>
+
+  <!-- Healthy bark texture (left) -->
+  <rect x="42" y="86" width="20" height="22" fill="#228b22"/>
+  <rect x="44" y="88" width="16" height="18" fill="#32cd32"/>
+  <!-- Bark lines -->
+  <rect x="46" y="88" width="2" height="18" fill="#1a5f1a"/>
+  <rect x="52" y="88" width="2" height="18" fill="#1a5f1a"/>
+  <rect x="58" y="88" width="2" height="18" fill="#1a5f1a"/>
+  <!-- Moss patches -->
+  <rect x="44" y="90" width="4" height="3" fill="#90ee90"/>
+  <rect x="50" y="95" width="3" height="4" fill="#90ee90"/>
+
+  <!-- Corrupted bark (right) -->
+  <rect x="66" y="86" width="20" height="22" fill="#4c1d95"/>
+  <rect x="68" y="88" width="16" height="18" fill="#2d1157"/>
+  <!-- Corruption cracks -->
+  <rect x="70" y="88" width="2" height="16" fill="#1a1a2e"/>
+  <rect x="76" y="90" width="2" height="14" fill="#1a1a2e"/>
+  <rect x="80" y="88" width="2" height="18" fill="#c084fc" opacity="0.4"/>
+  <!-- Void seeping through -->
+  <rect x="72" y="92" width="4" height="4" fill="#c084fc" opacity="0.6"/>
+  <rect x="78" y="96" width="3" height="3" fill="#c084fc" opacity="0.5"/>
+
+  <!-- Ancient carved runes on lower trunk -->
+  <rect x="54" y="92" width="4" height="6" fill="#ffd700" opacity="0.8"/>
+  <rect x="55" y="93" width="2" height="4" fill="#ffd700"/>
+  <rect x="58" y="98" width="6" height="2" fill="#ffd700" opacity="0.6"/>
+
+  <!-- ========== UPPER TRUNK / TORSO (40px) ========== -->
+  <rect x="36" y="46" width="56" height="40" fill="#8b4513"/>
+  <rect x="38" y="48" width="52" height="36" fill="#a0522d"/>
+
+  <!-- Healthy upper trunk (left) -->
+  <rect x="38" y="48" width="24" height="34" fill="#228b22"/>
+  <rect x="40" y="50" width="20" height="30" fill="#32cd32"/>
+  <!-- Bark detail -->
+  <rect x="42" y="50" width="3" height="28" fill="#1a5f1a"/>
+  <rect x="48" y="52" width="3" height="26" fill="#1a5f1a"/>
+  <rect x="54" y="50" width="3" height="28" fill="#1a5f1a"/>
+  <!-- Healthy glow areas -->
+  <rect x="44" y="54" width="4" height="4" fill="#90ee90" opacity="0.6"/>
+  <rect x="50" y="62" width="5" height="5" fill="#90ee90" opacity="0.5"/>
+
+  <!-- Corrupted upper trunk (right) -->
+  <rect x="66" y="48" width="24" height="34" fill="#4c1d95"/>
+  <rect x="68" y="50" width="20" height="30" fill="#2d1157"/>
+  <!-- Deep cracks showing void -->
+  <rect x="70" y="50" width="3" height="26" fill="#1a1a2e"/>
+  <rect x="76" y="52" width="3" height="24" fill="#1a1a2e"/>
+  <rect x="82" y="50" width="3" height="28" fill="#1a1a2e"/>
+  <!-- Corruption glow seeping -->
+  <rect x="72" y="54" width="4" height="6" fill="#c084fc" opacity="0.7"/>
+  <rect x="78" y="58" width="5" height="5" fill="#c084fc" opacity="0.6"/>
+  <rect x="84" y="52" width="3" height="8" fill="#c084fc" opacity="0.5"/>
+
+  <!-- ========== HEARTWOOD CORE (Central chest) ========== -->
+  <rect x="54" y="56" width="20" height="20" fill="#3d2817"/>
+  <rect x="56" y="58" width="16" height="16" fill="#ffd700" opacity="0.3"/>
+  <rect x="58" y="60" width="12" height="12" fill="#ffd700" opacity="0.5"/>
+  <rect x="60" y="62" width="8" height="8" fill="#ffd700" opacity="0.7"/>
+  <rect x="62" y="64" width="4" height="4" fill="#ffeb3b"/>
+  <!-- Core pulse rings -->
+  <rect x="54" y="55" width="20" height="1" fill="#ffd700" opacity="0.4"/>
+  <rect x="54" y="76" width="20" height="1" fill="#ffd700" opacity="0.4"/>
+  <rect x="53" y="56" width="1" height="20" fill="#ffd700" opacity="0.4"/>
+  <rect x="74" y="56" width="1" height="20" fill="#ffd700" opacity="0.4"/>
+
+  <!-- ========== LEFT ARM (Healthy branch arm) ========== -->
+  <rect x="10" y="42" width="28" height="16" fill="#228b22"/>
+  <rect x="12" y="44" width="24" height="12" fill="#32cd32"/>
+  <!-- Branch structure -->
+  <rect x="6" y="38" width="10" height="20" fill="#8b4513"/>
+  <rect x="8" y="40" width="6" height="16" fill="#a0522d"/>
+  <!-- Leaves on healthy arm -->
+  <rect x="4" y="34" width="8" height="8" fill="#90ee90"/>
+  <rect x="2" y="36" width="6" height="6" fill="#32cd32"/>
+  <rect x="0" y="38" width="4" height="4" fill="#228b22"/>
+  <rect x="8" y="30" width="6" height="6" fill="#90ee90"/>
+  <rect x="12" y="28" width="4" height="4" fill="#32cd32"/>
+  <!-- Branch fingers (5 digits) -->
+  <rect x="2" y="44" width="6" height="4" fill="#8b4513"/>
+  <rect x="0" y="46" width="4" height="6" fill="#a0522d"/>
+  <rect x="4" y="48" width="4" height="6" fill="#8b4513"/>
+  <rect x="0" y="50" width="3" height="4" fill="#228b22"/>
+  <rect x="4" y="52" width="3" height="4" fill="#228b22"/>
+  <rect x="8" y="50" width="3" height="5" fill="#228b22"/>
+
+  <!-- ========== RIGHT ARM (Corrupted branch arm) ========== -->
+  <rect x="90" y="40" width="28" height="18" fill="#4c1d95"/>
+  <rect x="92" y="42" width="24" height="14" fill="#2d1157"/>
+  <!-- Twisted branch structure -->
+  <rect x="112" y="36" width="12" height="22" fill="#1a1a2e"/>
+  <rect x="114" y="38" width="8" height="18" fill="#2d1157"/>
+  <!-- Thorns on corrupted arm -->
+  <rect x="118" y="32" width="4" height="6" fill="#4c1d95"/>
+  <rect x="120" y="28" width="3" height="5" fill="#2d1157"/>
+  <rect x="122" y="24" width="2" height="5" fill="#1a1a2e"/>
+  <rect x="116" y="36" width="3" height="4" fill="#4c1d95"/>
+  <rect x="124" y="34" width="3" height="4" fill="#2d1157"/>
+  <!-- Corruption glow on arm -->
+  <rect x="114" y="40" width="6" height="4" fill="#c084fc" opacity="0.5"/>
+  <rect x="118" y="44" width="4" height="6" fill="#c084fc" opacity="0.4"/>
+  <!-- Twisted fingers -->
+  <rect x="120" y="48" width="4" height="6" fill="#2d1157"/>
+  <rect x="124" y="50" width="3" height="6" fill="#4c1d95"/>
+  <rect x="122" y="54" width="4" height="4" fill="#1a1a2e"/>
+  <rect x="126" y="52" width="2" height="5" fill="#c084fc" opacity="0.6"/>
+
+  <!-- ========== HEAD / FACE (In upper trunk) ========== -->
+  <rect x="46" y="24" width="36" height="26" fill="#8b4513"/>
+  <rect x="48" y="26" width="32" height="22" fill="#a0522d"/>
+
+  <!-- Healthy half face (left) -->
+  <rect x="48" y="26" width="14" height="20" fill="#32cd32"/>
+  <rect x="50" y="28" width="10" height="16" fill="#228b22"/>
+
+  <!-- Corrupted half face (right) -->
+  <rect x="66" y="26" width="14" height="20" fill="#4c1d95"/>
+  <rect x="68" y="28" width="10" height="16" fill="#2d1157"/>
+  <!-- Corruption cracks on face -->
+  <rect x="70" y="28" width="2" height="14" fill="#1a1a2e"/>
+  <rect x="76" y="30" width="2" height="12" fill="#c084fc" opacity="0.5"/>
+
+  <!-- LEFT EYE (Healthy green glow) -->
+  <rect x="50" y="32" width="10" height="8" fill="#0f3d0f"/>
+  <rect x="52" y="34" width="6" height="4" fill="#228b22"/>
+  <rect x="54" y="35" width="3" height="2" fill="#90ee90"/>
+  <rect x="55" y="35" width="1" height="2" fill="#98fb98"/>
+  <!-- Green eye glow -->
+  <rect x="48" y="30" width="14" height="12" fill="#90ee90" opacity="0.2"/>
+
+  <!-- RIGHT EYE (Corrupted purple void) -->
+  <rect x="68" y="32" width="10" height="8" fill="#1a1a2e"/>
+  <rect x="70" y="34" width="6" height="4" fill="#4c1d95"/>
+  <rect x="72" y="35" width="3" height="2" fill="#c084fc"/>
+  <rect x="73" y="35" width="1" height="2" fill="#e9d5ff"/>
+  <!-- Purple eye glow -->
+  <rect x="66" y="30" width="14" height="12" fill="#c084fc" opacity="0.25"/>
+
+  <!-- Mouth (carved bark expression - pained) -->
+  <rect x="54" y="40" width="20" height="6" fill="#3d2817"/>
+  <rect x="56" y="41" width="16" height="4" fill="#1a1a2e"/>
+  <!-- Expression lines -->
+  <rect x="58" y="42" width="4" height="2" fill="#8b4513"/>
+  <rect x="66" y="42" width="4" height="2" fill="#2d1157"/>
+
+  <!-- ========== CROWN (Branches and leaves at top) ========== -->
+  <!-- Healthy crown branches (left) -->
+  <rect x="20" y="8" width="30" height="20" fill="#228b22"/>
+  <rect x="22" y="10" width="26" height="16" fill="#32cd32"/>
+  <rect x="24" y="6" width="8" height="10" fill="#228b22"/>
+  <rect x="18" y="12" width="8" height="8" fill="#32cd32"/>
+  <rect x="14" y="10" width="6" height="12" fill="#228b22"/>
+  <!-- Branch tips -->
+  <rect x="16" y="4" width="4" height="8" fill="#8b4513"/>
+  <rect x="26" y="2" width="4" height="6" fill="#8b4513"/>
+  <rect x="34" y="4" width="4" height="6" fill="#8b4513"/>
+  <!-- Healthy leaves -->
+  <rect x="10" y="6" width="8" height="6" fill="#90ee90"/>
+  <rect x="8" y="8" width="6" height="4" fill="#32cd32"/>
+  <rect x="20" y="0" width="6" height="6" fill="#90ee90"/>
+  <rect x="22" y="2" width="4" height="4" fill="#98fb98"/>
+  <rect x="30" y="0" width="8" height="4" fill="#90ee90"/>
+  <rect x="38" y="2" width="6" height="6" fill="#32cd32"/>
+
+  <!-- Corrupted crown branches (right) -->
+  <rect x="78" y="8" width="30" height="20" fill="#4c1d95"/>
+  <rect x="80" y="10" width="26" height="16" fill="#2d1157"/>
+  <rect x="96" y="6" width="8" height="10" fill="#4c1d95"/>
+  <rect x="102" y="12" width="8" height="8" fill="#2d1157"/>
+  <rect x="108" y="10" width="6" height="12" fill="#4c1d95"/>
+  <!-- Bare twisted branches -->
+  <rect x="84" y="2" width="4" height="10" fill="#1a1a2e"/>
+  <rect x="92" y="0" width="4" height="8" fill="#2d1157"/>
+  <rect x="100" y="2" width="4" height="8" fill="#1a1a2e"/>
+  <rect x="108" y="4" width="4" height="6" fill="#4c1d95"/>
+  <rect x="114" y="6" width="3" height="8" fill="#2d1157"/>
+  <!-- Corruption glow on crown -->
+  <rect x="86" y="4" width="3" height="4" fill="#c084fc" opacity="0.5"/>
+  <rect x="96" y="2" width="4" height="3" fill="#c084fc" opacity="0.4"/>
+  <rect x="106" y="6" width="3" height="4" fill="#c084fc" opacity="0.6"/>
+
+  <!-- Central crown transition -->
+  <rect x="50" y="10" width="28" height="16" fill="#8b4513"/>
+  <rect x="52" y="12" width="24" height="12" fill="#a0522d"/>
+  <!-- Ancient runes on crown -->
+  <rect x="58" y="14" width="4" height="4" fill="#ffd700" opacity="0.7"/>
+  <rect x="66" y="14" width="4" height="4" fill="#ffd700" opacity="0.5"/>
+
+  <!-- ========== CORRUPTION PARTICLES (Right side) ========== -->
+  <rect x="116" y="20" width="2" height="2" fill="#c084fc" opacity="0.8"/>
+  <rect x="120" y="28" width="2" height="2" fill="#c084fc" opacity="0.6"/>
+  <rect x="112" y="60" width="3" height="3" fill="#c084fc" opacity="0.5"/>
+  <rect x="118" y="72" width="2" height="2" fill="#c084fc" opacity="0.7"/>
+  <rect x="106" y="90" width="3" height="3" fill="#c084fc" opacity="0.4"/>
+
+  <!-- ========== LEAF PARTICLES (Left side) ========== -->
+  <rect x="6" y="24" width="3" height="2" fill="#90ee90" opacity="0.8"/>
+  <rect x="2" y="58" width="2" height="3" fill="#32cd32" opacity="0.6"/>
+  <rect x="10" y="76" width="3" height="2" fill="#90ee90" opacity="0.7"/>
+  <rect x="4" y="100" width="2" height="2" fill="#228b22" opacity="0.5"/>
+
+  <!-- ========== OUTLINE (2-3px, varies by side) ========== -->
+  <!-- Left outline (dark forest green) -->
+  <rect x="0" y="30" width="2" height="30" fill="#0f3d0f"/>
+  <rect x="36" y="44" width="2" height="68" fill="#0f3d0f"/>
+  <rect x="8" y="118" width="2" height="8" fill="#0f3d0f"/>
+
+  <!-- Right outline (void black) -->
+  <rect x="88" y="38" width="2" height="46" fill="#1a1a2e"/>
+  <rect x="126" y="30" width="2" height="28" fill="#1a1a2e"/>
+  <rect x="108" y="116" width="2" height="10" fill="#1a1a2e"/>
+
+  <!-- Top outline -->
+  <rect x="18" y="0" width="30" height="2" fill="#0f3d0f"/>
+  <rect x="80" y="0" width="30" height="2" fill="#1a1a2e"/>
+</svg>

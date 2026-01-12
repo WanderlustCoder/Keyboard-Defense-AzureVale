@@ -1,0 +1,245 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- Boss: Stone Golem (128x128) - Day 10 Stonepass Boss -->
+  <!-- Ancient dwarven construct, blocky geometric form with runic patterns -->
+  <!-- Stone Palette: #5c5c7a (stone gray), #3d3d5c (dark slate), #c4c4d4 (silver), #1a1a2e (charcoal) -->
+  <!-- Accent: #ffd700 (rune gold), #00ffff (crystal cyan), #2d2d3d (outline) -->
+
+  <!-- Ground shadow -->
+  <ellipse cx="64" cy="124" rx="44" ry="6" fill="#1a1a2e" opacity="0.6"/>
+  <!-- Ground cracks from weight -->
+  <rect x="24" y="122" width="80" height="2" fill="#3d3d5c"/>
+  <rect x="30" y="120" width="3" height="4" fill="#1a1a2e"/>
+  <rect x="60" y="120" width="3" height="4" fill="#1a1a2e"/>
+  <rect x="92" y="120" width="3" height="4" fill="#1a1a2e"/>
+
+  <!-- ========== FEET (Wide base) ========== -->
+  <!-- Left foot block -->
+  <rect x="18" y="108" width="28" height="16" fill="#3d3d5c"/>
+  <rect x="20" y="110" width="24" height="12" fill="#5c5c7a"/>
+  <rect x="22" y="112" width="20" height="8" fill="#5c5c7a"/>
+  <!-- Foot detail -->
+  <rect x="24" y="114" width="16" height="4" fill="#c4c4d4"/>
+  <rect x="20" y="118" width="24" height="2" fill="#3d3d5c"/>
+  <!-- Rune on foot -->
+  <rect x="28" y="112" width="4" height="2" fill="#ffd700" opacity="0.6"/>
+
+  <!-- Right foot block -->
+  <rect x="82" y="108" width="28" height="16" fill="#3d3d5c"/>
+  <rect x="84" y="110" width="24" height="12" fill="#5c5c7a"/>
+  <rect x="86" y="112" width="20" height="8" fill="#5c5c7a"/>
+  <!-- Foot detail -->
+  <rect x="88" y="114" width="16" height="4" fill="#c4c4d4"/>
+  <rect x="84" y="118" width="24" height="2" fill="#3d3d5c"/>
+  <!-- Rune on foot -->
+  <rect x="96" y="112" width="4" height="2" fill="#ffd700" opacity="0.6"/>
+
+  <!-- ========== LEGS (Pillar-like) ========== -->
+  <!-- Left leg -->
+  <rect x="24" y="72" width="22" height="38" fill="#3d3d5c"/>
+  <rect x="26" y="74" width="18" height="34" fill="#5c5c7a"/>
+  <rect x="28" y="76" width="14" height="30" fill="#5c5c7a"/>
+  <!-- Leg segments/joints -->
+  <rect x="24" y="86" width="22" height="4" fill="#3d3d5c"/>
+  <rect x="28" y="87" width="14" height="2" fill="#ffd700" opacity="0.5"/>
+  <rect x="24" y="98" width="22" height="4" fill="#3d3d5c"/>
+  <rect x="28" y="99" width="14" height="2" fill="#ffd700" opacity="0.5"/>
+  <!-- Joint crystal (small) -->
+  <rect x="32" y="88" width="6" height="4" fill="#00ffff" opacity="0.7"/>
+  <rect x="33" y="89" width="4" height="2" fill="#7fffff"/>
+
+  <!-- Right leg -->
+  <rect x="82" y="72" width="22" height="38" fill="#3d3d5c"/>
+  <rect x="84" y="74" width="18" height="34" fill="#5c5c7a"/>
+  <rect x="86" y="76" width="14" height="30" fill="#5c5c7a"/>
+  <!-- Leg segments/joints -->
+  <rect x="82" y="86" width="22" height="4" fill="#3d3d5c"/>
+  <rect x="86" y="87" width="14" height="2" fill="#ffd700" opacity="0.5"/>
+  <rect x="82" y="98" width="22" height="4" fill="#3d3d5c"/>
+  <rect x="86" y="99" width="14" height="2" fill="#ffd700" opacity="0.5"/>
+  <!-- Joint crystal (small) -->
+  <rect x="90" y="88" width="6" height="4" fill="#00ffff" opacity="0.7"/>
+  <rect x="91" y="89" width="4" height="2" fill="#7fffff"/>
+
+  <!-- ========== WAIST / HIP SECTION ========== -->
+  <rect x="38" y="66" width="52" height="12" fill="#3d3d5c"/>
+  <rect x="40" y="68" width="48" height="8" fill="#5c5c7a"/>
+  <!-- Waist rune band -->
+  <rect x="44" y="69" width="40" height="4" fill="#ffd700" opacity="0.4"/>
+  <rect x="50" y="70" width="4" height="2" fill="#ffd700"/>
+  <rect x="62" y="70" width="4" height="2" fill="#ffd700"/>
+  <rect x="74" y="70" width="4" height="2" fill="#ffd700"/>
+
+  <!-- ========== TORSO (Massive barrel-like) ========== -->
+  <rect x="28" y="28" width="72" height="40" fill="#3d3d5c"/>
+  <rect x="30" y="30" width="68" height="36" fill="#5c5c7a"/>
+  <rect x="32" y="32" width="64" height="32" fill="#5c5c7a"/>
+
+  <!-- Armor plates -->
+  <rect x="36" y="34" width="56" height="26" fill="#8b8ba8"/>
+  <rect x="38" y="36" width="52" height="22" fill="#5c5c7a"/>
+  <!-- Central plate -->
+  <rect x="48" y="38" width="32" height="18" fill="#c4c4d4"/>
+  <rect x="50" y="40" width="28" height="14" fill="#8b8ba8"/>
+
+  <!-- ========== CENTRAL POWER CORE ========== -->
+  <rect x="54" y="42" width="20" height="14" fill="#3d3d5c"/>
+  <rect x="56" y="44" width="16" height="10" fill="#1a1a2e"/>
+  <!-- Core glow -->
+  <rect x="58" y="46" width="12" height="6" fill="#ffd700" opacity="0.4"/>
+  <rect x="60" y="47" width="8" height="4" fill="#ffd700" opacity="0.6"/>
+  <rect x="62" y="48" width="4" height="2" fill="#ffeb3b"/>
+  <!-- Core rune circle -->
+  <rect x="56" y="42" width="16" height="2" fill="#ffd700" opacity="0.7"/>
+  <rect x="56" y="54" width="16" height="2" fill="#ffd700" opacity="0.7"/>
+  <rect x="54" y="44" width="2" height="10" fill="#ffd700" opacity="0.7"/>
+  <rect x="72" y="44" width="2" height="10" fill="#ffd700" opacity="0.7"/>
+
+  <!-- Dwarven inscriptions on chest -->
+  <rect x="38" y="50" width="12" height="2" fill="#ffd700" opacity="0.5"/>
+  <rect x="40" y="52" width="8" height="1" fill="#ffd700" opacity="0.4"/>
+  <rect x="78" y="50" width="12" height="2" fill="#ffd700" opacity="0.5"/>
+  <rect x="80" y="52" width="8" height="1" fill="#ffd700" opacity="0.4"/>
+
+  <!-- ========== LEFT ARM ========== -->
+  <!-- Shoulder joint -->
+  <rect x="10" y="30" width="20" height="16" fill="#3d3d5c"/>
+  <rect x="12" y="32" width="16" height="12" fill="#5c5c7a"/>
+  <!-- Upper arm -->
+  <rect x="6" y="40" width="18" height="24" fill="#3d3d5c"/>
+  <rect x="8" y="42" width="14" height="20" fill="#5c5c7a"/>
+  <!-- Rune band on arm -->
+  <rect x="6" y="48" width="18" height="3" fill="#ffd700" opacity="0.5"/>
+  <rect x="10" y="49" width="10" height="1" fill="#ffd700"/>
+  <!-- Elbow joint -->
+  <rect x="4" y="60" width="16" height="8" fill="#3d3d5c"/>
+  <rect x="6" y="62" width="12" height="4" fill="#5c5c7a"/>
+  <rect x="8" y="63" width="8" height="2" fill="#00ffff" opacity="0.6"/>
+  <!-- Forearm -->
+  <rect x="2" y="66" width="14" height="20" fill="#3d3d5c"/>
+  <rect x="4" y="68" width="10" height="16" fill="#5c5c7a"/>
+  <!-- Rune band on forearm -->
+  <rect x="2" y="74" width="14" height="2" fill="#ffd700" opacity="0.5"/>
+  <!-- Fist -->
+  <rect x="0" y="84" width="16" height="14" fill="#3d3d5c"/>
+  <rect x="2" y="86" width="12" height="10" fill="#5c5c7a"/>
+  <rect x="4" y="88" width="8" height="6" fill="#8b8ba8"/>
+  <!-- Knuckle details -->
+  <rect x="2" y="86" width="3" height="3" fill="#c4c4d4"/>
+  <rect x="6" y="86" width="3" height="3" fill="#c4c4d4"/>
+  <rect x="10" y="86" width="3" height="3" fill="#c4c4d4"/>
+
+  <!-- ========== RIGHT ARM ========== -->
+  <!-- Shoulder joint -->
+  <rect x="98" y="30" width="20" height="16" fill="#3d3d5c"/>
+  <rect x="100" y="32" width="16" height="12" fill="#5c5c7a"/>
+  <!-- Upper arm -->
+  <rect x="104" y="40" width="18" height="24" fill="#3d3d5c"/>
+  <rect x="106" y="42" width="14" height="20" fill="#5c5c7a"/>
+  <!-- Rune band on arm -->
+  <rect x="104" y="48" width="18" height="3" fill="#ffd700" opacity="0.5"/>
+  <rect x="108" y="49" width="10" height="1" fill="#ffd700"/>
+  <!-- Elbow joint -->
+  <rect x="108" y="60" width="16" height="8" fill="#3d3d5c"/>
+  <rect x="110" y="62" width="12" height="4" fill="#5c5c7a"/>
+  <rect x="112" y="63" width="8" height="2" fill="#00ffff" opacity="0.6"/>
+  <!-- Forearm -->
+  <rect x="112" y="66" width="14" height="20" fill="#3d3d5c"/>
+  <rect x="114" y="68" width="10" height="16" fill="#5c5c7a"/>
+  <!-- Rune band on forearm -->
+  <rect x="112" y="74" width="14" height="2" fill="#ffd700" opacity="0.5"/>
+  <!-- Fist -->
+  <rect x="112" y="84" width="16" height="14" fill="#3d3d5c"/>
+  <rect x="114" y="86" width="12" height="10" fill="#5c5c7a"/>
+  <rect x="116" y="88" width="8" height="6" fill="#8b8ba8"/>
+  <!-- Knuckle details -->
+  <rect x="114" y="86" width="3" height="3" fill="#c4c4d4"/>
+  <rect x="118" y="86" width="3" height="3" fill="#c4c4d4"/>
+  <rect x="122" y="86" width="3" height="3" fill="#c4c4d4"/>
+
+  <!-- ========== SHOULDER CRYSTALS ========== -->
+  <!-- Left shoulder crystal cluster -->
+  <rect x="8" y="20" width="14" height="16" fill="#00b3b3"/>
+  <rect x="10" y="18" width="10" height="14" fill="#00ffff"/>
+  <rect x="12" y="16" width="6" height="10" fill="#7fffff"/>
+  <rect x="14" y="14" width="4" height="6" fill="#b3ffff"/>
+  <rect x="15" y="12" width="2" height="4" fill="#e6ffff"/>
+  <!-- Secondary crystals -->
+  <rect x="4" y="24" width="6" height="10" fill="#00b3b3"/>
+  <rect x="5" y="22" width="4" height="8" fill="#00ffff"/>
+  <rect x="6" y="20" width="2" height="4" fill="#7fffff"/>
+  <rect x="18" y="22" width="8" height="8" fill="#00b3b3"/>
+  <rect x="20" y="20" width="4" height="6" fill="#00ffff"/>
+  <!-- Crystal glow effect -->
+  <rect x="6" y="14" width="18" height="20" fill="#00ffff" opacity="0.15"/>
+
+  <!-- Right shoulder crystal cluster -->
+  <rect x="106" y="20" width="14" height="16" fill="#00b3b3"/>
+  <rect x="108" y="18" width="10" height="14" fill="#00ffff"/>
+  <rect x="110" y="16" width="6" height="10" fill="#7fffff"/>
+  <rect x="112" y="14" width="4" height="6" fill="#b3ffff"/>
+  <rect x="113" y="12" width="2" height="4" fill="#e6ffff"/>
+  <!-- Secondary crystals -->
+  <rect x="118" y="24" width="6" height="10" fill="#00b3b3"/>
+  <rect x="119" y="22" width="4" height="8" fill="#00ffff"/>
+  <rect x="120" y="20" width="2" height="4" fill="#7fffff"/>
+  <rect x="102" y="22" width="8" height="8" fill="#00b3b3"/>
+  <rect x="104" y="20" width="4" height="6" fill="#00ffff"/>
+  <!-- Crystal glow effect -->
+  <rect x="104" y="14" width="18" height="20" fill="#00ffff" opacity="0.15"/>
+
+  <!-- ========== HEAD (Small relative to body) ========== -->
+  <rect x="46" y="6" width="36" height="24" fill="#3d3d5c"/>
+  <rect x="48" y="8" width="32" height="20" fill="#5c5c7a"/>
+  <rect x="50" y="10" width="28" height="16" fill="#5c5c7a"/>
+
+  <!-- Head shape (angular/cubic) -->
+  <rect x="52" y="10" width="24" height="14" fill="#8b8ba8"/>
+  <rect x="54" y="12" width="20" height="10" fill="#5c5c7a"/>
+
+  <!-- Eye slits -->
+  <rect x="52" y="14" width="10" height="4" fill="#1a1a2e"/>
+  <rect x="54" y="15" width="6" height="2" fill="#ffd700"/>
+  <rect x="55" y="15" width="4" height="2" fill="#ffeb3b"/>
+  <!-- Eye glow -->
+  <rect x="50" y="12" width="14" height="8" fill="#ffd700" opacity="0.15"/>
+
+  <rect x="66" y="14" width="10" height="4" fill="#1a1a2e"/>
+  <rect x="68" y="15" width="6" height="2" fill="#ffd700"/>
+  <rect x="69" y="15" width="4" height="2" fill="#ffeb3b"/>
+  <!-- Eye glow -->
+  <rect x="64" y="12" width="14" height="8" fill="#ffd700" opacity="0.15"/>
+
+  <!-- Head rune patterns -->
+  <rect x="56" y="20" width="16" height="2" fill="#ffd700" opacity="0.5"/>
+  <rect x="60" y="22" width="8" height="2" fill="#ffd700" opacity="0.4"/>
+
+  <!-- Angular jaw/chin -->
+  <rect x="54" y="24" width="20" height="4" fill="#3d3d5c"/>
+  <rect x="58" y="26" width="12" height="2" fill="#5c5c7a"/>
+
+  <!-- Head top detail -->
+  <rect x="56" y="4" width="16" height="4" fill="#3d3d5c"/>
+  <rect x="60" y="2" width="8" height="4" fill="#5c5c7a"/>
+
+  <!-- ========== RUNE GLOW EFFECTS ========== -->
+  <!-- Ambient rune glow -->
+  <rect x="36" y="36" width="56" height="24" fill="#ffd700" opacity="0.05"/>
+  <rect x="48" y="40" width="32" height="16" fill="#ffd700" opacity="0.08"/>
+
+  <!-- ========== DUST PARTICLES ========== -->
+  <rect x="16" y="118" width="2" height="2" fill="#5c5c7a" opacity="0.5"/>
+  <rect x="34" y="116" width="2" height="2" fill="#5c5c7a" opacity="0.4"/>
+  <rect x="90" y="118" width="2" height="2" fill="#5c5c7a" opacity="0.5"/>
+  <rect x="106" y="116" width="2" height="2" fill="#5c5c7a" opacity="0.4"/>
+
+  <!-- ========== OUTLINE (2-3px, dark stone) ========== -->
+  <rect x="0" y="84" width="2" height="14" fill="#2d2d3d"/>
+  <rect x="126" y="84" width="2" height="14" fill="#2d2d3d"/>
+  <rect x="16" y="108" width="2" height="16" fill="#2d2d3d"/>
+  <rect x="110" y="108" width="2" height="16" fill="#2d2d3d"/>
+  <rect x="18" y="122" width="28" height="2" fill="#2d2d3d"/>
+  <rect x="82" y="122" width="28" height="2" fill="#2d2d3d"/>
+  <rect x="26" y="28" width="2" height="40" fill="#2d2d3d"/>
+  <rect x="100" y="28" width="2" height="40" fill="#2d2d3d"/>
+  <rect x="44" y="4" width="40" height="2" fill="#2d2d3d"/>
+</svg>

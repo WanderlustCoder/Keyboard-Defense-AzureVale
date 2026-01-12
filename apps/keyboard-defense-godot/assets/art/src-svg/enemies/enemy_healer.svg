@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Enemy Healer: Void Mender (32x32) - Support enemy that heals others -->
+  <!-- Color Palette: #32cd32 (grass green), #228b22 (forest), #90ee90 (lime), #14532d (dark forest), #1a2e1a (outline), #800080 (corruption) -->
+
+  <!-- Ground shadow -->
+  <ellipse cx="16" cy="30" rx="8" ry="2" fill="#14532d" opacity="0.5"/>
+
+  <!-- Flowing robe - bell-shaped bottom -->
+  <rect x="6" y="24" width="20" height="6" fill="#228b22"/>
+  <rect x="7" y="24" width="18" height="5" fill="#32cd32"/>
+  <rect x="8" y="25" width="16" height="3" fill="#32cd32"/>
+  <!-- Robe folds -->
+  <rect x="10" y="25" width="1" height="4" fill="#228b22"/>
+  <rect x="15" y="25" width="1" height="4" fill="#228b22"/>
+  <rect x="20" y="25" width="1" height="4" fill="#228b22"/>
+  <!-- Robe hem glow effect -->
+  <rect x="7" y="28" width="18" height="1" fill="#90ee90" opacity="0.4"/>
+
+  <!-- Mid robe section -->
+  <rect x="9" y="18" width="14" height="6" fill="#32cd32"/>
+  <rect x="10" y="19" width="12" height="4" fill="#32cd32"/>
+  <!-- Robe shadow/depth -->
+  <rect x="9" y="18" width="2" height="5" fill="#228b22"/>
+  <rect x="21" y="18" width="2" height="5" fill="#228b22"/>
+
+  <!-- Belt/sash -->
+  <rect x="10" y="17" width="12" height="2" fill="#14532d"/>
+  <rect x="14" y="17" width="4" height="2" fill="#800080"/>
+
+  <!-- Torso -->
+  <rect x="11" y="11" width="10" height="6" fill="#32cd32"/>
+  <rect x="12" y="12" width="8" height="4" fill="#32cd32"/>
+  <!-- Corruption veins on shoulders -->
+  <rect x="11" y="12" width="1" height="3" fill="#800080"/>
+  <rect x="20" y="12" width="1" height="3" fill="#800080"/>
+  <rect x="12" y="11" width="1" height="1" fill="#800080"/>
+  <rect x="19" y="11" width="1" height="1" fill="#800080"/>
+
+  <!-- Hood -->
+  <rect x="10" y="4" width="12" height="8" fill="#228b22"/>
+  <rect x="11" y="5" width="10" height="6" fill="#32cd32"/>
+  <rect x="12" y="6" width="8" height="4" fill="#32cd32"/>
+  <!-- Hood peak -->
+  <rect x="14" y="2" width="4" height="3" fill="#228b22"/>
+  <rect x="15" y="1" width="2" height="2" fill="#228b22"/>
+  <!-- Deep shadow under hood -->
+  <rect x="12" y="7" width="8" height="3" fill="#14532d"/>
+
+  <!-- Glowing eyes in shadow -->
+  <rect x="13" y="8" width="2" height="1" fill="#90ee90"/>
+  <rect x="17" y="8" width="2" height="1" fill="#90ee90"/>
+  <!-- Eye glow effect -->
+  <rect x="12" y="7" width="4" height="3" fill="#90ee90" opacity="0.2"/>
+  <rect x="16" y="7" width="4" height="3" fill="#90ee90" opacity="0.2"/>
+
+  <!-- Left arm raised (blessing pose) -->
+  <rect x="5" y="8" width="4" height="6" fill="#32cd32"/>
+  <rect x="4" y="6" width="3" height="4" fill="#32cd32"/>
+  <rect x="3" y="4" width="4" height="3" fill="#32cd32"/>
+  <!-- Left sleeve flow -->
+  <rect x="7" y="10" width="2" height="4" fill="#228b22"/>
+  <!-- Left hand -->
+  <rect x="2" y="2" width="5" height="3" fill="#90ee90"/>
+  <rect x="1" y="3" width="2" height="1" fill="#90ee90"/>
+  <rect x="6" y="3" width="2" height="1" fill="#90ee90"/>
+  <!-- Fingers spread -->
+  <rect x="2" y="1" width="1" height="2" fill="#90ee90"/>
+  <rect x="4" y="0" width="1" height="3" fill="#90ee90"/>
+  <rect x="6" y="1" width="1" height="2" fill="#90ee90"/>
+
+  <!-- Right arm raised (blessing pose) -->
+  <rect x="23" y="8" width="4" height="6" fill="#32cd32"/>
+  <rect x="25" y="6" width="3" height="4" fill="#32cd32"/>
+  <rect x="25" y="4" width="4" height="3" fill="#32cd32"/>
+  <!-- Right sleeve flow -->
+  <rect x="23" y="10" width="2" height="4" fill="#228b22"/>
+  <!-- Right hand -->
+  <rect x="25" y="2" width="5" height="3" fill="#90ee90"/>
+  <rect x="24" y="3" width="2" height="1" fill="#90ee90"/>
+  <rect x="29" y="3" width="2" height="1" fill="#90ee90"/>
+  <!-- Fingers spread -->
+  <rect x="25" y="1" width="1" height="2" fill="#90ee90"/>
+  <rect x="27" y="0" width="1" height="3" fill="#90ee90"/>
+  <rect x="29" y="1" width="1" height="2" fill="#90ee90"/>
+
+  <!-- Healing energy between hands -->
+  <rect x="8" y="2" width="2" height="2" fill="#90ee90" opacity="0.7"/>
+  <rect x="22" y="2" width="2" height="2" fill="#90ee90" opacity="0.7"/>
+  <rect x="11" y="1" width="3" height="3" fill="#90ee90" opacity="0.5"/>
+  <rect x="18" y="1" width="3" height="3" fill="#90ee90" opacity="0.5"/>
+  <!-- Central energy glow -->
+  <rect x="14" y="0" width="4" height="4" fill="#90ee90" opacity="0.6"/>
+  <rect x="15" y="1" width="2" height="2" fill="#98fb98"/>
+
+  <!-- Energy particles -->
+  <rect x="10" y="3" width="1" height="1" fill="#98fb98"/>
+  <rect x="21" y="3" width="1" height="1" fill="#98fb98"/>
+  <rect x="13" y="2" width="1" height="1" fill="#98fb98"/>
+  <rect x="18" y="2" width="1" height="1" fill="#98fb98"/>
+
+  <!-- Outline (selective, green-tinted charcoal) -->
+  <!-- Hood outline -->
+  <rect x="9" y="4" width="1" height="8" fill="#1a2e1a"/>
+  <rect x="22" y="4" width="1" height="8" fill="#1a2e1a"/>
+  <rect x="14" y="1" width="1" height="1" fill="#1a2e1a"/>
+  <rect x="17" y="1" width="1" height="1" fill="#1a2e1a"/>
+  <!-- Robe outline -->
+  <rect x="5" y="24" width="1" height="6" fill="#1a2e1a"/>
+  <rect x="26" y="24" width="1" height="6" fill="#1a2e1a"/>
+  <rect x="6" y="29" width="20" height="1" fill="#1a2e1a"/>
+</svg>
