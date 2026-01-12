@@ -54,174 +54,223 @@ func _load_lyra_portrait() -> void:
 	portrait.texture = _create_lyra_portrait()
 
 func _create_lyra_portrait() -> ImageTexture:
-	## Creates Elder Lyra's portrait procedurally (64x64 detailed pixel art)
+	## Creates Elder Lyra's portrait procedurally (64x64 detailed pixel art with frame)
 	var img := Image.create(64, 64, false, Image.FORMAT_RGBA8)
 
-	# Color palette
-	var bg := Color("#1a1a2e")           # Dark blue background
-	var bg_accent := Color("#16213e")    # Slightly lighter bg accent
+	# Frame colors
+	var frame_outer := Color("#1a1a2e")      # Outer frame dark
+	var frame_gold := Color("#d4ac0d")       # Gold frame
+	var frame_gold_light := Color("#f4d03f") # Gold highlight
+	var frame_gold_dark := Color("#9a7b0a")  # Gold shadow
+	var frame_inner := Color("#2c1810")      # Inner frame dark wood
 
-	var hair_dark := Color("#8e9aaf")    # Silver hair shadow
-	var hair_mid := Color("#bdc3c7")     # Silver hair mid
-	var hair_light := Color("#ecf0f1")   # Silver hair highlight
-	var hair_shine := Color("#ffffff")   # Hair shine
+	# Background colors (mystical purple gradient)
+	var bg_dark := Color("#1a0a2e")          # Dark purple
+	var bg_mid := Color("#2d1b4e")           # Mid purple
+	var bg_light := Color("#3d2b5e")         # Lighter purple
+	var bg_accent := Color("#4a3a6e")        # Accent
 
-	var skin := Color("#f5e6d3")         # Main skin tone
-	var skin_shadow := Color("#d4c4a8")  # Skin shadow
-	var skin_highlight := Color("#fdf6e3") # Skin highlight
+	# Character colors
+	var hair_dark := Color("#8e9aaf")
+	var hair_mid := Color("#bdc3c7")
+	var hair_light := Color("#ecf0f1")
+	var hair_shine := Color("#ffffff")
 
-	var eyes_outer := Color("#2c3e50")   # Eye outline
-	var eyes_purple := Color("#8e44ad")  # Iris purple
-	var eyes_light := Color("#af7ac5")   # Iris highlight
-	var eyes_white := Color("#fdfefe")   # Eye whites
-	var pupil := Color("#1a1a2e")        # Pupil
+	var skin := Color("#f5e6d3")
+	var skin_shadow := Color("#d4c4a8")
+	var skin_highlight := Color("#fdf6e3")
 
-	var brow := Color("#7f8c8d")         # Eyebrow color
-	var lips := Color("#d4a5a5")         # Lip color
-	var blush := Color("#e8c4c4")        # Subtle blush
+	var eyes_outer := Color("#2c3e50")
+	var eyes_purple := Color("#8e44ad")
+	var eyes_light := Color("#af7ac5")
+	var eyes_white := Color("#fdfefe")
+	var pupil := Color("#1a1a2e")
 
-	var robe_dark := Color("#5b2c6f")    # Robe deep shadow
-	var robe_mid := Color("#7d3c98")     # Robe mid tone
-	var robe_light := Color("#9b59b6")   # Robe main
-	var robe_highlight := Color("#bb8fce") # Robe highlight
-	var robe_trim := Color("#d4ac0d")    # Gold trim
-	var robe_trim_light := Color("#f4d03f") # Gold highlight
+	var brow := Color("#7f8c8d")
+	var lips := Color("#d4a5a5")
+	var blush := Color("#e8c4c4")
 
-	var gem := Color("#3498db")          # Blue gem
-	var gem_light := Color("#85c1e9")    # Gem highlight
-	var magic := Color("#a569bd")        # Magic glow
+	var robe_dark := Color("#5b2c6f")
+	var robe_mid := Color("#7d3c98")
+	var robe_light := Color("#9b59b6")
+	var robe_highlight := Color("#bb8fce")
+	var robe_trim := Color("#d4ac0d")
+	var robe_trim_light := Color("#f4d03f")
 
-	# Fill background with gradient effect
-	img.fill(bg)
-	_draw_rect(img, 0, 0, 64, 20, bg_accent)
+	var gem := Color("#3498db")
+	var gem_light := Color("#85c1e9")
+	var magic := Color("#a569bd")
+
+	# === OUTER FRAME ===
+	img.fill(frame_outer)
+
+	# Gold frame border (3 pixels wide)
+	_fill_rect(img, 1, 1, 62, 62, frame_gold_dark)
+	_fill_rect(img, 2, 2, 60, 60, frame_gold)
+	_fill_rect(img, 3, 3, 58, 58, frame_gold_light)
+
+	# Frame highlight (top-left edges)
+	_fill_rect(img, 2, 2, 60, 1, frame_gold_light)
+	_fill_rect(img, 2, 2, 1, 60, frame_gold_light)
+
+	# Frame shadow (bottom-right edges)
+	_fill_rect(img, 3, 61, 60, 1, frame_gold_dark)
+	_fill_rect(img, 61, 3, 1, 58, frame_gold_dark)
+
+	# Corner ornaments
+	_fill_rect(img, 1, 1, 4, 4, frame_gold_light)
+	_fill_rect(img, 59, 1, 4, 4, frame_gold_light)
+	_fill_rect(img, 1, 59, 4, 4, frame_gold_light)
+	_fill_rect(img, 59, 59, 4, 4, frame_gold_light)
+	_fill_rect(img, 2, 2, 2, 2, frame_gold)
+	_fill_rect(img, 60, 2, 2, 2, frame_gold)
+	_fill_rect(img, 2, 60, 2, 2, frame_gold)
+	_fill_rect(img, 60, 60, 2, 2, frame_gold)
+
+	# Inner dark border
+	_fill_rect(img, 4, 4, 56, 56, frame_inner)
+
+	# === BACKGROUND (mystical gradient) ===
+	_fill_rect(img, 5, 5, 54, 54, bg_dark)
+	_fill_rect(img, 5, 5, 54, 18, bg_mid)
+	_fill_rect(img, 5, 5, 54, 10, bg_light)
+
+	# Background magical swirls/accents
+	_fill_rect(img, 7, 8, 3, 2, bg_accent)
+	_fill_rect(img, 52, 12, 4, 2, bg_accent)
+	_fill_rect(img, 8, 48, 2, 3, bg_accent)
+	_fill_rect(img, 52, 45, 3, 2, bg_accent)
 
 	# === HAIR (flowing silver hair) ===
-	_draw_rect(img, 12, 4, 40, 18, hair_dark)
-	_draw_rect(img, 14, 5, 36, 15, hair_mid)
-	_draw_rect(img, 16, 6, 32, 12, hair_light)
+	_fill_rect(img, 14, 8, 36, 16, hair_dark)
+	_fill_rect(img, 16, 9, 32, 13, hair_mid)
+	_fill_rect(img, 18, 10, 28, 10, hair_light)
 
 	# Hair top curve
-	_draw_rect(img, 18, 3, 28, 4, hair_dark)
-	_draw_rect(img, 20, 2, 24, 3, hair_mid)
-	_draw_rect(img, 24, 1, 16, 2, hair_light)
+	_fill_rect(img, 20, 7, 24, 4, hair_dark)
+	_fill_rect(img, 22, 6, 20, 3, hair_mid)
+	_fill_rect(img, 26, 5, 12, 2, hair_light)
 
 	# Left flowing hair
-	_draw_rect(img, 6, 14, 12, 32, hair_dark)
-	_draw_rect(img, 8, 16, 8, 28, hair_mid)
-	_draw_rect(img, 9, 18, 5, 24, hair_light)
-	_draw_rect(img, 10, 20, 2, 8, hair_shine)
+	_fill_rect(img, 8, 16, 10, 28, hair_dark)
+	_fill_rect(img, 10, 18, 6, 24, hair_mid)
+	_fill_rect(img, 11, 20, 4, 20, hair_light)
+	_fill_rect(img, 12, 22, 2, 6, hair_shine)
 
 	# Right flowing hair
-	_draw_rect(img, 46, 14, 12, 32, hair_dark)
-	_draw_rect(img, 48, 16, 8, 28, hair_mid)
-	_draw_rect(img, 50, 18, 5, 24, hair_light)
-	_draw_rect(img, 51, 20, 2, 8, hair_shine)
+	_fill_rect(img, 46, 16, 10, 28, hair_dark)
+	_fill_rect(img, 48, 18, 6, 24, hair_mid)
+	_fill_rect(img, 49, 20, 4, 20, hair_light)
+	_fill_rect(img, 50, 22, 2, 6, hair_shine)
 
-	# Hair strands and highlights
-	_draw_rect(img, 4, 20, 3, 20, hair_dark)
-	_draw_rect(img, 57, 20, 3, 20, hair_dark)
-	_draw_rect(img, 26, 4, 4, 2, hair_shine)
-	_draw_rect(img, 34, 5, 3, 2, hair_shine)
+	# Hair strands
+	_fill_rect(img, 6, 22, 3, 18, hair_dark)
+	_fill_rect(img, 55, 22, 3, 18, hair_dark)
+
+	# Top highlights
+	_fill_rect(img, 28, 8, 3, 2, hair_shine)
+	_fill_rect(img, 35, 9, 2, 2, hair_shine)
 
 	# === FACE ===
-	_draw_rect(img, 18, 14, 28, 32, skin_shadow)
-	_draw_rect(img, 20, 16, 24, 28, skin)
-	_draw_rect(img, 22, 18, 20, 24, skin_highlight)
+	_fill_rect(img, 20, 16, 24, 28, skin_shadow)
+	_fill_rect(img, 22, 18, 20, 24, skin)
+	_fill_rect(img, 24, 20, 16, 20, skin_highlight)
 
-	# Cheek shading and blush
-	_draw_rect(img, 18, 26, 4, 8, skin_shadow)
-	_draw_rect(img, 42, 26, 4, 8, skin_shadow)
-	_draw_rect(img, 20, 32, 4, 3, blush)
-	_draw_rect(img, 40, 32, 4, 3, blush)
+	# Cheek shading
+	_fill_rect(img, 20, 26, 4, 6, skin_shadow)
+	_fill_rect(img, 40, 26, 4, 6, skin_shadow)
+
+	# Blush
+	_fill_rect(img, 22, 32, 3, 2, blush)
+	_fill_rect(img, 39, 32, 3, 2, blush)
 
 	# Chin
-	_draw_rect(img, 26, 42, 12, 4, skin)
-	_draw_rect(img, 28, 44, 8, 2, skin_shadow)
+	_fill_rect(img, 28, 40, 8, 4, skin)
+	_fill_rect(img, 30, 42, 4, 2, skin_shadow)
 
 	# === EYES ===
 	# Left eye
-	_draw_rect(img, 22, 24, 8, 6, eyes_white)
-	_draw_rect(img, 24, 25, 5, 4, eyes_purple)
-	_draw_rect(img, 25, 26, 3, 2, eyes_light)
-	_draw_rect(img, 26, 26, 2, 2, pupil)
-	_draw_rect(img, 26, 26, 1, 1, eyes_white)
-	_draw_rect(img, 22, 23, 8, 1, eyes_outer)
-	_draw_rect(img, 22, 30, 8, 1, eyes_outer)
+	_fill_rect(img, 24, 25, 7, 5, eyes_white)
+	_fill_rect(img, 26, 26, 4, 3, eyes_purple)
+	_fill_rect(img, 27, 27, 2, 2, eyes_light)
+	_fill_rect(img, 28, 27, 1, 1, pupil)
+	_fill_rect(img, 27, 26, 1, 1, eyes_white)
+	_fill_rect(img, 24, 24, 7, 1, eyes_outer)
+	_fill_rect(img, 24, 30, 7, 1, eyes_outer)
 
 	# Right eye
-	_draw_rect(img, 34, 24, 8, 6, eyes_white)
-	_draw_rect(img, 35, 25, 5, 4, eyes_purple)
-	_draw_rect(img, 36, 26, 3, 2, eyes_light)
-	_draw_rect(img, 37, 26, 2, 2, pupil)
-	_draw_rect(img, 37, 26, 1, 1, eyes_white)
-	_draw_rect(img, 34, 23, 8, 1, eyes_outer)
-	_draw_rect(img, 34, 30, 8, 1, eyes_outer)
+	_fill_rect(img, 33, 25, 7, 5, eyes_white)
+	_fill_rect(img, 34, 26, 4, 3, eyes_purple)
+	_fill_rect(img, 35, 27, 2, 2, eyes_light)
+	_fill_rect(img, 36, 27, 1, 1, pupil)
+	_fill_rect(img, 35, 26, 1, 1, eyes_white)
+	_fill_rect(img, 33, 24, 7, 1, eyes_outer)
+	_fill_rect(img, 33, 30, 7, 1, eyes_outer)
 
 	# Eyebrows
-	_draw_rect(img, 21, 21, 9, 2, brow)
-	_draw_rect(img, 22, 20, 6, 1, brow)
-	_draw_rect(img, 34, 21, 9, 2, brow)
-	_draw_rect(img, 36, 20, 6, 1, brow)
+	_fill_rect(img, 23, 22, 8, 2, brow)
+	_fill_rect(img, 24, 21, 5, 1, brow)
+	_fill_rect(img, 33, 22, 8, 2, brow)
+	_fill_rect(img, 35, 21, 5, 1, brow)
 
 	# Crow's feet
-	_draw_rect(img, 19, 26, 1, 3, skin_shadow)
-	_draw_rect(img, 44, 26, 1, 3, skin_shadow)
+	_fill_rect(img, 21, 27, 1, 2, skin_shadow)
+	_fill_rect(img, 42, 27, 1, 2, skin_shadow)
 
 	# === NOSE ===
-	_draw_rect(img, 30, 30, 4, 6, skin_shadow)
-	_draw_rect(img, 31, 31, 2, 4, skin)
-	_draw_rect(img, 29, 35, 6, 2, skin_shadow)
+	_fill_rect(img, 30, 30, 4, 5, skin_shadow)
+	_fill_rect(img, 31, 31, 2, 3, skin)
+	_fill_rect(img, 29, 34, 6, 2, skin_shadow)
 
 	# === MOUTH ===
-	_draw_rect(img, 28, 38, 8, 1, lips)
-	_draw_rect(img, 27, 39, 10, 2, lips)
-	_draw_rect(img, 29, 39, 6, 1, Color("#e8b4b4"))
-	_draw_rect(img, 25, 39, 2, 1, skin_shadow)
-	_draw_rect(img, 37, 39, 2, 1, skin_shadow)
+	_fill_rect(img, 29, 37, 6, 1, lips)
+	_fill_rect(img, 28, 38, 8, 2, lips)
+	_fill_rect(img, 30, 38, 4, 1, Color("#e8b4b4"))
+	_fill_rect(img, 26, 38, 2, 1, skin_shadow)
+	_fill_rect(img, 36, 38, 2, 1, skin_shadow)
 
 	# === ROBE ===
-	_draw_rect(img, 10, 46, 44, 18, robe_dark)
-	_draw_rect(img, 12, 48, 40, 14, robe_mid)
-	_draw_rect(img, 14, 50, 36, 10, robe_light)
+	_fill_rect(img, 12, 44, 40, 14, robe_dark)
+	_fill_rect(img, 14, 46, 36, 10, robe_mid)
+	_fill_rect(img, 16, 48, 32, 6, robe_light)
 
 	# V-neck collar
-	_draw_rect(img, 26, 44, 12, 8, robe_mid)
-	_draw_rect(img, 28, 45, 8, 6, robe_light)
-	_draw_rect(img, 30, 46, 4, 4, skin_shadow)
+	_fill_rect(img, 27, 42, 10, 6, robe_mid)
+	_fill_rect(img, 29, 43, 6, 4, robe_light)
+	_fill_rect(img, 31, 44, 2, 2, skin_shadow)
 
 	# Gold trim
-	_draw_rect(img, 24, 44, 2, 10, robe_trim)
-	_draw_rect(img, 38, 44, 2, 10, robe_trim)
-	_draw_rect(img, 25, 45, 1, 8, robe_trim_light)
-	_draw_rect(img, 39, 45, 1, 8, robe_trim_light)
+	_fill_rect(img, 25, 42, 2, 8, robe_trim)
+	_fill_rect(img, 37, 42, 2, 8, robe_trim)
+	_fill_rect(img, 26, 43, 1, 6, robe_trim_light)
+	_fill_rect(img, 38, 43, 1, 6, robe_trim_light)
 
-	# Shoulder highlights and folds
-	_draw_rect(img, 16, 50, 6, 4, robe_highlight)
-	_draw_rect(img, 42, 50, 6, 4, robe_highlight)
-	_draw_rect(img, 20, 54, 2, 8, robe_dark)
-	_draw_rect(img, 32, 54, 2, 8, robe_dark)
-	_draw_rect(img, 42, 54, 2, 8, robe_dark)
+	# Shoulder highlights
+	_fill_rect(img, 18, 48, 5, 3, robe_highlight)
+	_fill_rect(img, 41, 48, 5, 3, robe_highlight)
 
-	# === DECORATIONS ===
-	# Pendant with gem
-	_draw_rect(img, 29, 52, 6, 6, robe_trim)
-	_draw_rect(img, 30, 53, 4, 4, gem)
-	_draw_rect(img, 31, 54, 2, 2, gem_light)
+	# Robe folds
+	_fill_rect(img, 22, 52, 2, 6, robe_dark)
+	_fill_rect(img, 32, 52, 2, 6, robe_dark)
+	_fill_rect(img, 40, 52, 2, 6, robe_dark)
 
-	# Magic sparkles
-	_draw_rect(img, 8, 8, 2, 2, magic)
-	_draw_rect(img, 54, 10, 2, 2, magic)
-	_draw_rect(img, 4, 36, 2, 2, magic)
-	_draw_rect(img, 58, 38, 2, 2, magic)
-	_draw_rect(img, 12, 58, 1, 1, magic)
-	_draw_rect(img, 52, 56, 1, 1, magic)
+	# === PENDANT ===
+	_fill_rect(img, 30, 50, 4, 4, robe_trim)
+	_fill_rect(img, 31, 51, 2, 2, gem)
+	_fill_rect(img, 31, 51, 1, 1, gem_light)
+
+	# === MAGIC SPARKLES ===
+	_fill_rect(img, 9, 10, 2, 2, magic)
+	_fill_rect(img, 52, 14, 2, 2, magic)
+	_fill_rect(img, 7, 38, 1, 1, magic)
+	_fill_rect(img, 55, 40, 1, 1, magic)
 
 	return ImageTexture.create_from_image(img)
 
-func _draw_rect(img: Image, x: int, y: int, w: int, h: int, color: Color) -> void:
-	for px in range(x, x + w):
-		for py in range(y, y + h):
-			if px >= 0 and px < img.get_width() and py >= 0 and py < img.get_height():
+func _fill_rect(img: Image, x: int, y: int, w: int, h: int, color: Color) -> void:
+	for px in range(x, mini(x + w, img.get_width())):
+		for py in range(y, mini(y + h, img.get_height())):
+			if px >= 0 and py >= 0:
 				img.set_pixel(px, py, color)
 
 func _process(delta: float) -> void:
