@@ -64,6 +64,7 @@ const SimPoi = preload("res://sim/poi.gd")
 const SimAutoTowerTypes = preload("res://sim/auto_tower_types.gd")
 const SimPlayerStats = preload("res://sim/player_stats.gd")
 const SimLoginRewards = preload("res://sim/login_rewards.gd")
+const SimSynergyDetector = preload("res://sim/synergy_detector.gd")
 
 var total_tests: int = 0
 var total_failed: int = 0
@@ -145,6 +146,8 @@ func _run_all() -> void:
     _run_poi_zone_tests()
     _run_auto_tower_types_tests()
     _run_player_stats_tests()
+    _run_login_rewards_tests()
+    _run_synergy_detector_tests()
 
     for message in messages:
         print("[tests] %s" % message)
@@ -5651,3 +5654,321 @@ func _run_player_stats_tests() -> void:
     var summary: String = SimPlayerStats.format_summary(format_profile)
     _assert_true(summary.length() > 0, "format_summary returns non-empty string")
     _assert_true("SUMMARY" in summary or "summary" in summary.to_lower(), "Summary has title")
+
+
+func _run_login_rewards_tests() -> void:
+    # Test REWARD_TIERS structure
+    _assert_true(SimLoginRewards.REWARD_TIERS.size() >= 10, "At least 10 reward tiers")
+
+    # Test first tier
+    var tier1: Dictionary = SimLoginRewards.REWARD_TIERS[0]
+    _assert_equal(int(tier1.get("day", 0)), 1, "First tier is day 1")
+    _assert_equal(int(tier1.get("gold", 0)), 10, "First tier gives 10 gold")
+
+    # Test tier progression
+    var tier7: Dictionary = SimLoginRewards.REWARD_TIERS[6]
+    _assert_equal(int(tier7.get("day", 0)), 7, "Tier 7 is day 7")
+    _assert_true(int(tier7.get("gold", 0)) > int(tier1.get("gold", 0)), "Day 7 gives more gold than day 1")
+    _assert_equal(str(tier7.get("bonus", "")), "xp_boost", "Day 7 gives xp_boost bonus")
+
+    # Test BONUS_ITEMS structure
+    _assert_true(SimLoginRewards.BONUS_ITEMS.size() >= 6, "At least 6 bonus items")
+    _assert_true(SimLoginRewards.BONUS_ITEMS.has("power_boost"), "Has power_boost")
+    _assert_true(SimLoginRewards.BONUS_ITEMS.has("xp_boost"), "Has xp_boost")
+    _assert_true(SimLoginRewards.BONUS_ITEMS.has("mega_boost"), "Has mega_boost")
+
+    # Test bonus item structure
+    var power_boost: Dictionary = SimLoginRewards.BONUS_ITEMS["power_boost"]
+    _assert_true(power_boost.has("name"), "Bonus has name")
+    _assert_true(power_boost.has("description"), "Bonus has description")
+    _assert_true(power_boost.has("icon"), "Bonus has icon")
+    _assert_true(power_boost.has("duration_battles"), "Bonus has duration_battles")
+    _assert_true(power_boost.has("effect"), "Bonus has effect")
+
+    # Test calculate_reward for day 1
+    var reward1: Dictionary = SimLoginRewards.calculate_reward(1)
+    _assert_equal(int(reward1.get("gold", 0)), 10, "Day 1 reward is 10 gold")
+    _assert_equal(str(reward1.get("bonus", "x")), "", "Day 1 has no bonus")
+    _assert_equal(int(reward1.get("streak", 0)), 1, "Streak is 1")
+
+    # Test calculate_reward for day 3 (power_boost)
+    var reward3: Dictionary = SimLoginRewards.calculate_reward(3)
+    _assert_equal(int(reward3.get("gold", 0)), 20, "Day 3 reward is 20 gold")
+    _assert_equal(str(reward3.get("bonus", "")), "power_boost", "Day 3 has power_boost")
+
+    # Test calculate_reward for day 7 (xp_boost)
+    var reward7: Dictionary = SimLoginRewards.calculate_reward(7)
+    _assert_equal(int(reward7.get("gold", 0)), 50, "Day 7 reward is 50 gold")
+    _assert_equal(str(reward7.get("bonus", "")), "xp_boost", "Day 7 has xp_boost")
+
+    # Test calculate_reward for day 30 (mega_boost)
+    var reward30: Dictionary = SimLoginRewards.calculate_reward(30)
+    _assert_equal(int(reward30.get("gold", 0)), 150, "Day 30 reward is 150 gold")
+    _assert_equal(str(reward30.get("bonus", "")), "mega_boost", "Day 30 has mega_boost")
+
+    # Test get_bonus_info
+    var xp_info: Dictionary = SimLoginRewards.get_bonus_info("xp_boost")
+    _assert_equal(str(xp_info.get("name", "")), "XP Boost", "xp_boost name")
+    _assert_equal(int(xp_info.get("duration_battles", 0)), 5, "xp_boost duration is 5")
+
+    var invalid_info: Dictionary = SimLoginRewards.get_bonus_info("invalid_bonus")
+    _assert_true(invalid_info.is_empty(), "Invalid bonus returns empty dict")
+
+    # Test apply_bonus_to_profile
+    var profile: Dictionary = {}
+    SimLoginRewards.apply_bonus_to_profile(profile, "power_boost")
+    var buffs: Array = profile.get("active_login_buffs", [])
+    _assert_equal(buffs.size(), 1, "One buff applied")
+    _assert_equal(str(buffs[0].get("id", "")), "power_boost", "Buff ID is power_boost")
+    _assert_equal(int(buffs[0].get("battles_remaining", 0)), 3, "Battles remaining is 3")
+
+    # Test apply with empty bonus (should not add)
+    var before_count: int = profile.get("active_login_buffs", []).size()
+    SimLoginRewards.apply_bonus_to_profile(profile, "")
+    var after_count: int = profile.get("active_login_buffs", []).size()
+    _assert_equal(before_count, after_count, "Empty bonus doesn't add anything")
+
+    # Test get_active_buffs
+    var active_buffs: Array = SimLoginRewards.get_active_buffs(profile)
+    _assert_equal(active_buffs.size(), 1, "One active buff")
+
+    var empty_profile: Dictionary = {}
+    var empty_buffs: Array = SimLoginRewards.get_active_buffs(empty_profile)
+    _assert_equal(empty_buffs.size(), 0, "Empty profile has no buffs")
+
+    # Test get_streak_progress
+    var progress1: Dictionary = SimLoginRewards.get_streak_progress(1)
+    _assert_equal(int(progress1.get("current_streak", 0)), 1, "Current streak is 1")
+    _assert_true(int(progress1.get("days_to_next", 0)) > 0, "Days to next tier > 0")
+
+    var progress7: Dictionary = SimLoginRewards.get_streak_progress(7)
+    _assert_equal(int(progress7.get("current_streak", 0)), 7, "Current streak is 7")
+    _assert_equal(int(progress7.get("days_to_next", 0)), 7, "7 days to day 14")
+
+    # Test format_reward_text
+    var text1: String = SimLoginRewards.format_reward_text({"gold": 50, "bonus": ""})
+    _assert_true("+50 Gold" in text1, "Format shows gold amount")
+
+    var text2: String = SimLoginRewards.format_reward_text({"gold": 50, "bonus": "power_boost"})
+    _assert_true("+50 Gold" in text2, "Format shows gold with bonus")
+    _assert_true("Power Boost" in text2, "Format shows bonus name")
+
+    var text_empty: String = SimLoginRewards.format_reward_text({})
+    _assert_equal(text_empty, "Login Reward", "Empty reward shows default text")
+
+    # Test tick_buffs
+    var tick_profile: Dictionary = {}
+    SimLoginRewards.apply_bonus_to_profile(tick_profile, "power_boost")  # 3 battles
+    _assert_equal(tick_profile.get("active_login_buffs", []).size(), 1, "One buff before tick")
+
+    SimLoginRewards.tick_buffs(tick_profile)
+    var remaining: int = tick_profile["active_login_buffs"][0].get("battles_remaining", 0)
+    _assert_equal(remaining, 2, "2 battles remaining after tick")
+
+    SimLoginRewards.tick_buffs(tick_profile)
+    SimLoginRewards.tick_buffs(tick_profile)
+    _assert_equal(tick_profile.get("active_login_buffs", []).size(), 0, "Buff removed after expiration")
+
+    # Test get_combined_buff_effects
+    var combo_profile: Dictionary = {}
+    SimLoginRewards.apply_bonus_to_profile(combo_profile, "power_boost")  # typing_power: 0.1
+    SimLoginRewards.apply_bonus_to_profile(combo_profile, "xp_boost")     # gold_mult: 0.2
+    var combined: Dictionary = SimLoginRewards.get_combined_buff_effects(combo_profile)
+    _assert_approx(float(combined.get("typing_power", 0)), 0.1, 0.01, "Combined typing_power")
+    _assert_approx(float(combined.get("gold_mult", 0)), 0.2, 0.01, "Combined gold_mult")
+
+    # Test stacking same effect type
+    var stack_profile: Dictionary = {}
+    SimLoginRewards.apply_bonus_to_profile(stack_profile, "xp_boost")   # gold_mult: 0.2
+    SimLoginRewards.apply_bonus_to_profile(stack_profile, "gold_boost") # gold_mult: 0.5
+    var stacked: Dictionary = SimLoginRewards.get_combined_buff_effects(stack_profile)
+    _assert_approx(float(stacked.get("gold_mult", 0)), 0.7, 0.01, "Stacked gold_mult is 0.2 + 0.5 = 0.7")
+
+    # Test all bonus items have valid structure
+    for bonus_id in SimLoginRewards.BONUS_ITEMS.keys():
+        var bonus: Dictionary = SimLoginRewards.BONUS_ITEMS[bonus_id]
+        _assert_true(bonus.has("name"), "Bonus '%s' has name" % bonus_id)
+        _assert_true(bonus.has("description"), "Bonus '%s' has description" % bonus_id)
+        _assert_true(bonus.has("icon"), "Bonus '%s' has icon" % bonus_id)
+        _assert_true(bonus.has("duration_battles"), "Bonus '%s' has duration_battles" % bonus_id)
+        _assert_true(bonus.has("effect"), "Bonus '%s' has effect" % bonus_id)
+        _assert_true(int(bonus.get("duration_battles", 0)) > 0, "Bonus '%s' duration > 0" % bonus_id)
+
+    # Test all reward tiers have valid structure
+    for i in range(SimLoginRewards.REWARD_TIERS.size()):
+        var tier: Dictionary = SimLoginRewards.REWARD_TIERS[i]
+        _assert_true(tier.has("day"), "Tier %d has day" % i)
+        _assert_true(tier.has("gold"), "Tier %d has gold" % i)
+        _assert_true(int(tier.get("day", 0)) > 0, "Tier %d day > 0" % i)
+        _assert_true(int(tier.get("gold", 0)) >= 0, "Tier %d gold >= 0" % i)
+        var bonus: String = str(tier.get("bonus", ""))
+        if bonus != "":
+            _assert_true(SimLoginRewards.BONUS_ITEMS.has(bonus), "Tier %d bonus '%s' exists" % [i, bonus])
+
+
+func _run_synergy_detector_tests() -> void:
+    # Test SYNERGIES dictionary structure
+    _assert_true(SimSynergyDetector.SYNERGIES.size() >= 8, "At least 8 synergies defined")
+    _assert_true(SimSynergyDetector.SYNERGIES.has("fire_ice"), "Has fire_ice synergy")
+    _assert_true(SimSynergyDetector.SYNERGIES.has("arrow_rain"), "Has arrow_rain synergy")
+    _assert_true(SimSynergyDetector.SYNERGIES.has("chain_reaction"), "Has chain_reaction synergy")
+    _assert_true(SimSynergyDetector.SYNERGIES.has("titan_slayer"), "Has titan_slayer synergy")
+
+    # Test synergy definition structure
+    var fire_ice: Dictionary = SimSynergyDetector.SYNERGIES["fire_ice"]
+    _assert_equal(str(fire_ice.get("id", "")), "fire_ice", "Synergy has id")
+    _assert_equal(str(fire_ice.get("name", "")), "Fire & Ice", "fire_ice has correct name")
+    _assert_true(fire_ice.has("description"), "Synergy has description")
+    _assert_true(fire_ice.has("required_towers"), "Synergy has required_towers")
+    _assert_true(fire_ice.has("any_of_towers"), "Synergy has any_of_towers")
+    _assert_true(fire_ice.has("min_count"), "Synergy has min_count")
+    _assert_true(fire_ice.has("proximity"), "Synergy has proximity")
+    _assert_true(fire_ice.has("effects"), "Synergy has effects")
+
+    # Test fire_ice effects
+    var fire_ice_effects: Dictionary = fire_ice.get("effects", {})
+    _assert_approx(float(fire_ice_effects.get("frozen_fire_mult", 0)), 3.0, 0.01, "frozen_fire_mult is 3.0")
+    _assert_approx(float(fire_ice_effects.get("burning_cold_mult", 0)), 3.0, 0.01, "burning_cold_mult is 3.0")
+
+    # Test arrow_rain synergy structure
+    var arrow_rain: Dictionary = SimSynergyDetector.SYNERGIES["arrow_rain"]
+    var min_count: Dictionary = arrow_rain.get("min_count", {})
+    _assert_true(min_count.has(SimTowerTypes.TOWER_ARROW), "arrow_rain requires arrow towers")
+    _assert_equal(int(min_count.get(SimTowerTypes.TOWER_ARROW, 0)), 3, "arrow_rain requires 3 arrow towers")
+
+    # Test get_all_synergy_ids
+    var all_ids: Array[String] = SimSynergyDetector.get_all_synergy_ids()
+    _assert_true(all_ids.size() >= 8, "At least 8 synergy IDs")
+    _assert_true("fire_ice" in all_ids, "Has fire_ice ID")
+    _assert_true("arrow_rain" in all_ids, "Has arrow_rain ID")
+    _assert_true("chain_reaction" in all_ids, "Has chain_reaction ID")
+
+    # Test get_synergy_definition
+    var fire_ice_def: Dictionary = SimSynergyDetector.get_synergy_definition("fire_ice")
+    _assert_equal(str(fire_ice_def.get("id", "")), "fire_ice", "get_synergy_definition returns correct synergy")
+    _assert_equal(str(fire_ice_def.get("name", "")), "Fire & Ice", "Definition has name")
+
+    var invalid_def: Dictionary = SimSynergyDetector.get_synergy_definition("nonexistent_synergy")
+    _assert_true(invalid_def.is_empty(), "Invalid synergy returns empty dict")
+
+    # Test get_synergy_display_info
+    var fire_ice_display: Dictionary = SimSynergyDetector.get_synergy_display_info("fire_ice")
+    _assert_equal(str(fire_ice_display.get("name", "")), "Fire & Ice", "Display info has name")
+    _assert_true(fire_ice_display.has("description"), "Display info has description")
+    _assert_true(fire_ice_display.has("required_towers"), "Display info has required_towers")
+    _assert_true(fire_ice_display.has("min_count"), "Display info has min_count")
+
+    var invalid_display: Dictionary = SimSynergyDetector.get_synergy_display_info("nonexistent")
+    _assert_true(invalid_display.is_empty(), "Invalid synergy display returns empty dict")
+
+    # Test is_synergy_active with empty state
+    var state: GameState = DefaultState.create()
+    state.active_synergies = []
+    _assert_false(SimSynergyDetector.is_synergy_active(state, "fire_ice"), "fire_ice not active with empty synergies")
+    _assert_false(SimSynergyDetector.is_synergy_active(state, "arrow_rain"), "arrow_rain not active with empty synergies")
+
+    # Test is_synergy_active with active synergy
+    state.active_synergies = [{"id": "fire_ice", "effects": {"frozen_fire_mult": 3.0}}]
+    _assert_true(SimSynergyDetector.is_synergy_active(state, "fire_ice"), "fire_ice is active when in list")
+    _assert_false(SimSynergyDetector.is_synergy_active(state, "arrow_rain"), "arrow_rain still not active")
+
+    # Test get_synergy_effect
+    var effect: Variant = SimSynergyDetector.get_synergy_effect(state, "fire_ice", "frozen_fire_mult")
+    _assert_approx(float(effect), 3.0, 0.01, "get_synergy_effect returns correct value")
+
+    var no_effect: Variant = SimSynergyDetector.get_synergy_effect(state, "fire_ice", "nonexistent_effect")
+    _assert_true(no_effect == null, "Nonexistent effect returns null")
+
+    var inactive_effect: Variant = SimSynergyDetector.get_synergy_effect(state, "arrow_rain", "coordinated_attack_mult")
+    _assert_true(inactive_effect == null, "Inactive synergy returns null")
+
+    # Test detect_synergies with empty structures
+    var empty_state: GameState = DefaultState.create()
+    empty_state.structures = {}
+    var detected: Array = SimSynergyDetector.detect_synergies(empty_state)
+    _assert_equal(detected.size(), 0, "No synergies detected with no structures")
+
+    # Test update_synergies
+    var update_state: GameState = DefaultState.create()
+    update_state.structures = {}
+    update_state.active_synergies = [{"id": "fake"}]  # Pre-populated
+    SimSynergyDetector.update_synergies(update_state)
+    _assert_equal(update_state.active_synergies.size(), 0, "update_synergies clears fake synergies")
+
+    # Test get_extra_chain_jumps with no synergy
+    var no_chain_state: GameState = DefaultState.create()
+    no_chain_state.active_synergies = []
+    _assert_equal(SimSynergyDetector.get_extra_chain_jumps(no_chain_state), 0, "No extra chain jumps without synergy")
+
+    # Test get_extra_chain_jumps with synergy
+    var chain_state: GameState = DefaultState.create()
+    chain_state.active_synergies = [{"id": "chain_reaction", "effects": {"extra_chain_jumps": 3}}]
+    _assert_equal(SimSynergyDetector.get_extra_chain_jumps(chain_state), 3, "3 extra chain jumps with synergy")
+
+    # Test has_no_chain_falloff with no synergy
+    _assert_false(SimSynergyDetector.has_no_chain_falloff(no_chain_state), "No chain falloff bypass without synergy")
+
+    # Test has_no_chain_falloff with synergy
+    chain_state.active_synergies = [{"id": "chain_reaction", "effects": {"no_chain_falloff": true}}]
+    _assert_true(SimSynergyDetector.has_no_chain_falloff(chain_state), "Chain falloff bypassed with synergy")
+
+    # Test get_charge_speed_bonus with no synergy
+    _assert_approx(SimSynergyDetector.get_charge_speed_bonus(no_chain_state), 0.0, 0.01, "No charge bonus without synergy")
+
+    # Test get_charge_speed_bonus with synergy
+    var titan_state: GameState = DefaultState.create()
+    titan_state.active_synergies = [{"id": "titan_slayer", "effects": {"charge_speed_bonus": 0.5}}]
+    _assert_approx(SimSynergyDetector.get_charge_speed_bonus(titan_state), 0.5, 0.01, "50% charge bonus with synergy")
+
+    # Test get_purify_chance_multiplier with no synergy
+    _assert_approx(SimSynergyDetector.get_purify_chance_multiplier(no_chain_state), 1.0, 0.01, "1.0 purify mult without synergy")
+
+    # Test get_purify_chance_multiplier with synergy
+    var holy_state: GameState = DefaultState.create()
+    holy_state.active_synergies = [{"id": "holy_purification", "effects": {"purify_chance_mult": 2.0}}]
+    _assert_approx(SimSynergyDetector.get_purify_chance_multiplier(holy_state), 2.0, 0.01, "2.0 purify mult with synergy")
+
+    # Test should_purify_explode with no synergy
+    _assert_false(SimSynergyDetector.should_purify_explode(no_chain_state), "No purify explosion without synergy")
+
+    # Test should_purify_explode with synergy
+    holy_state.active_synergies = [{"id": "holy_purification", "effects": {"purify_explosion": true}}]
+    _assert_true(SimSynergyDetector.should_purify_explode(holy_state), "Purify explosion with synergy")
+
+    # Test check_arrow_rain with no synergy
+    var arrow_result: Dictionary = SimSynergyDetector.check_arrow_rain(no_chain_state, 1.0)
+    _assert_false(bool(arrow_result.get("ready", true)), "Arrow rain not ready without synergy")
+
+    # Test get_fire_ice_multiplier with no synergy
+    var mult: float = SimSynergyDetector.get_fire_ice_multiplier(no_chain_state, SimTowerTypes.DamageType.FIRE, {})
+    _assert_approx(mult, 1.0, 0.01, "1.0 mult without fire_ice synergy")
+
+    # Test get_fire_ice_multiplier with synergy but no frozen status
+    var fire_ice_state: GameState = DefaultState.create()
+    fire_ice_state.active_synergies = [{"id": "fire_ice", "effects": {"frozen_fire_mult": 3.0, "burning_cold_mult": 3.0}}]
+    var no_frozen_enemy: Dictionary = {}
+    mult = SimSynergyDetector.get_fire_ice_multiplier(fire_ice_state, SimTowerTypes.DamageType.FIRE, no_frozen_enemy)
+    _assert_approx(mult, 1.0, 0.01, "1.0 mult without frozen status")
+
+    # Test get_fire_ice_multiplier with synergy and frozen status
+    var frozen_enemy: Dictionary = {"status_effects": {"frozen": true}}
+    mult = SimSynergyDetector.get_fire_ice_multiplier(fire_ice_state, SimTowerTypes.DamageType.FIRE, frozen_enemy)
+    _assert_approx(mult, 3.0, 0.01, "3.0 mult for fire vs frozen")
+
+    # Test get_fire_ice_multiplier with cold damage vs burning
+    var burning_enemy: Dictionary = {"status_effects": {"burning": true}}
+    mult = SimSynergyDetector.get_fire_ice_multiplier(fire_ice_state, SimTowerTypes.DamageType.COLD, burning_enemy)
+    _assert_approx(mult, 3.0, 0.01, "3.0 mult for cold vs burning")
+
+    # Test all synergies have valid structure
+    for synergy_id in SimSynergyDetector.SYNERGIES.keys():
+        var synergy: Dictionary = SimSynergyDetector.SYNERGIES[synergy_id]
+        _assert_true(synergy.has("id"), "Synergy '%s' has id" % synergy_id)
+        _assert_true(synergy.has("name"), "Synergy '%s' has name" % synergy_id)
+        _assert_true(synergy.has("description"), "Synergy '%s' has description" % synergy_id)
+        _assert_true(synergy.has("required_towers"), "Synergy '%s' has required_towers" % synergy_id)
+        _assert_true(synergy.has("any_of_towers"), "Synergy '%s' has any_of_towers" % synergy_id)
+        _assert_true(synergy.has("min_count"), "Synergy '%s' has min_count" % synergy_id)
+        _assert_true(synergy.has("proximity"), "Synergy '%s' has proximity" % synergy_id)
+        _assert_true(synergy.has("effects"), "Synergy '%s' has effects" % synergy_id)
+        _assert_true(int(synergy.get("proximity", 0)) > 0, "Synergy '%s' proximity > 0" % synergy_id)
