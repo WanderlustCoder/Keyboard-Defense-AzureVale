@@ -370,6 +370,42 @@ func _append_log(text: String) -> void:
 | `end` | End day, advance time |
 | `[enemy word]` | Attack matching enemy |
 
+## Zone System
+
+The map is divided into zones based on distance from castle. Each zone has different danger levels and enemy types.
+
+### Zone Definitions
+
+| Zone | Distance | Enemy Tier | Threat Mult | Description |
+|------|----------|------------|-------------|-------------|
+| Safe | 0-3 tiles | 1 | 0.5x | Beginner-friendly area |
+| Frontier | 4-6 tiles | 2 | 1.0x | Moderate challenge |
+| Wilderness | 7-10 tiles | 3 | 1.5x | Dangerous territory |
+| Depths | 11+ tiles | 4 | 2.0x | Endgame difficulty |
+
+### Zone Effects
+
+1. **Enemy Spawning**: Roaming enemies spawn with types limited by zone tier:
+   - Tier 1: raider, scout
+   - Tier 2: + armored, swarm
+   - Tier 3: + berserker, tank, phantom
+   - Tier 4: + champion, healer, elite
+
+2. **Threat Contribution**: Enemies from dangerous zones contribute more threat when near castle
+
+3. **Exploration Pressure**: Exploring dangerous zones increases enemy spawn rate:
+   - Cursor in Wilderness: +5% spawn chance
+   - Cursor in Depths: +10% spawn chance
+
+4. **POI Spawning**: Higher tier POIs only spawn in more dangerous zones
+
+### Zone Commands
+
+| Command | Description |
+|---------|-------------|
+| `zone` | Show current cursor zone info |
+| `zone summary` | Show exploration progress by zone |
+
 ## Integration with Sim Layer
 
 The open world scene uses these sim modules:
@@ -377,10 +413,10 @@ The open world scene uses these sim modules:
 | Module | Purpose |
 |--------|---------|
 | `DefaultState` | Create initial game state |
-| `SimMap` | Terrain, bounds, tile generation |
+| `SimMap` | Terrain, bounds, tile generation, zone system |
 | `CommandParser` | Parse typed commands |
 | `IntentApplier` | Execute commands |
-| `WorldTick` | Real-time threat/enemy updates |
+| `WorldTick` | Real-time threat/enemy updates, zone-aware spawning |
 | `SimEnemies` | Enemy data and words |
 
 ## Testing

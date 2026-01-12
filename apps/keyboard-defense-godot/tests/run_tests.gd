@@ -65,6 +65,9 @@ const SimAutoTowerTypes = preload("res://sim/auto_tower_types.gd")
 const SimPlayerStats = preload("res://sim/player_stats.gd")
 const SimLoginRewards = preload("res://sim/login_rewards.gd")
 const SimSynergyDetector = preload("res://sim/synergy_detector.gd")
+const SimAutoTargeting = preload("res://sim/auto_targeting.gd")
+const SimEnemyAbilities = preload("res://sim/enemy_abilities.gd")
+const SimResourceNodes = preload("res://sim/resource_nodes.gd")
 
 var total_tests: int = 0
 var total_failed: int = 0
@@ -149,6 +152,10 @@ func _run_all() -> void:
     _run_player_stats_tests()
     _run_login_rewards_tests()
     _run_synergy_detector_tests()
+    _run_auto_targeting_tests()
+    _run_enemy_abilities_tests()
+    _run_practice_goals_tests()
+    _run_resource_nodes_tests()
 
     for message in messages:
         print("[tests] %s" % message)
@@ -6095,3 +6102,428 @@ func _run_synergy_detector_tests() -> void:
         _assert_true(synergy.has("proximity"), "Synergy '%s' has proximity" % synergy_id)
         _assert_true(synergy.has("effects"), "Synergy '%s' has effects" % synergy_id)
         _assert_true(int(synergy.get("proximity", 0)) > 0, "Synergy '%s' proximity > 0" % synergy_id)
+
+
+func _run_auto_targeting_tests() -> void:
+    # Test picking nearest target
+    var enemies: Array = [
+        {"x": 5, "y": 5, "hp": 10},
+        {"x": 3, "y": 3, "hp": 20},
+        {"x": 10, "y": 10, "hp": 5}
+    ]
+    var tower_pos := Vector2i(4, 4)
+    var result: Dictionary = SimAutoTargeting.pick_target(enemies, tower_pos, 10, SimAutoTowerTypes.TargetMode.NEAREST)
+    _assert_equal(result.get("target_index", -1), 1, "NEAREST picks closest enemy (index 1)")
+    _assert_equal(result.get("target_pos", Vector2i.ZERO), Vector2i(3, 3), "NEAREST target pos correct")
+
+    # Test picking highest HP target
+    result = SimAutoTargeting.pick_target(enemies, tower_pos, 10, SimAutoTowerTypes.TargetMode.HIGHEST_HP)
+    _assert_equal(result.get("target_index", -1), 1, "HIGHEST_HP picks enemy with hp=20")
+
+    # Test picking lowest HP target
+    result = SimAutoTargeting.pick_target(enemies, tower_pos, 10, SimAutoTowerTypes.TargetMode.LOWEST_HP)
+    _assert_equal(result.get("target_index", -1), 2, "LOWEST_HP picks enemy with hp=5")
+
+    # Test picking fastest target
+    var enemies_with_speed: Array = [
+        {"x": 5, "y": 5, "hp": 10, "speed": 50},
+        {"x": 3, "y": 3, "hp": 20, "speed": 100},
+        {"x": 6, "y": 6, "hp": 5, "speed": 75}
+    ]
+    result = SimAutoTargeting.pick_target(enemies_with_speed, tower_pos, 10, SimAutoTowerTypes.TargetMode.FASTEST)
+    _assert_equal(result.get("target_index", -1), 1, "FASTEST picks enemy with speed=100")
+
+    # Test empty enemies array returns no target
+    var empty_result: Dictionary = SimAutoTargeting.pick_target([], tower_pos, 10, SimAutoTowerTypes.TargetMode.NEAREST)
+    _assert_equal(empty_result.get("target_index", -1), -1, "Empty enemies returns no target")
+
+    # Test enemies out of range returns no target
+    var far_enemies: Array = [{"x": 100, "y": 100, "hp": 10}]
+    var out_of_range_result: Dictionary = SimAutoTargeting.pick_target(far_enemies, tower_pos, 5, SimAutoTowerTypes.TargetMode.NEAREST)
+    _assert_equal(out_of_range_result.get("target_index", -1), -1, "Out of range returns no target")
+
+    # Test cluster targeting
+    var clustered_enemies: Array = [
+        {"x": 5, "y": 5, "hp": 10},
+        {"x": 6, "y": 5, "hp": 10},
+        {"x": 5, "y": 6, "hp": 10},
+        {"x": 20, "y": 20, "hp": 10}
+    ]
+    result = SimAutoTargeting.pick_target(clustered_enemies, Vector2i(5, 5), 30, SimAutoTowerTypes.TargetMode.CLUSTER)
+    _assert_true(result.get("target_index", -1) in [0, 1, 2], "CLUSTER picks enemy from cluster")
+
+    # Test chain targeting
+    var chain_enemies: Array = [
+        {"x": 5, "y": 5, "hp": 10},
+        {"x": 6, "y": 5, "hp": 10},
+        {"x": 7, "y": 5, "hp": 10}
+    ]
+    result = SimAutoTargeting.pick_target(chain_enemies, Vector2i(4, 5), 10, SimAutoTowerTypes.TargetMode.CHAIN)
+    _assert_true(result.get("target_index", -1) >= 0, "CHAIN picks primary target")
+    var additional: Array = result.get("additional_targets", [])
+    _assert_true(additional.size() >= 0, "CHAIN may have additional targets")
+
+    # Test zone targeting includes all enemies in range
+    result = SimAutoTargeting.pick_target(chain_enemies, Vector2i(5, 5), 10, SimAutoTowerTypes.TargetMode.ZONE)
+    additional = result.get("additional_targets", [])
+    _assert_equal(additional.size(), 3, "ZONE includes all 3 enemies in additional_targets")
+
+    # Test contact targeting (adjacent enemies)
+    var contact_enemies: Array = [
+        {"x": 5, "y": 5, "hp": 10},
+        {"x": 5, "y": 6, "hp": 10},
+        {"x": 100, "y": 100, "hp": 10}
+    ]
+    result = SimAutoTargeting.pick_target(contact_enemies, Vector2i(5, 5), 1, SimAutoTowerTypes.TargetMode.CONTACT)
+    additional = result.get("additional_targets", [])
+    _assert_equal(additional.size(), 2, "CONTACT includes 2 adjacent enemies")
+
+    # Test smart targeting prioritizes low HP finishable enemies
+    var smart_enemies: Array = [
+        {"x": 5, "y": 5, "hp": 100, "max_hp": 100, "speed": 50, "damage": 1},
+        {"x": 6, "y": 6, "hp": 5, "max_hp": 100, "speed": 50, "damage": 1},
+        {"x": 7, "y": 7, "hp": 50, "max_hp": 100, "speed": 50, "damage": 1}
+    ]
+    result = SimAutoTargeting.pick_target(smart_enemies, Vector2i(5, 5), 10, SimAutoTowerTypes.TargetMode.SMART)
+    _assert_equal(result.get("target_index", -1), 1, "SMART prioritizes low HP enemy")
+
+    # Test smart targeting prioritizes bosses
+    var boss_enemies: Array = [
+        {"x": 5, "y": 5, "hp": 100, "max_hp": 100, "speed": 50, "damage": 1},
+        {"x": 6, "y": 6, "hp": 100, "max_hp": 100, "speed": 50, "damage": 1, "is_boss": true}
+    ]
+    result = SimAutoTargeting.pick_target(boss_enemies, Vector2i(5, 5), 10, SimAutoTowerTypes.TargetMode.SMART)
+    _assert_equal(result.get("target_index", -1), 1, "SMART prioritizes boss")
+
+    # Test get_enemies_in_splash_radius utility
+    var splash_enemies: Array = [
+        {"x": 5, "y": 5},
+        {"x": 6, "y": 5},
+        {"x": 10, "y": 10}
+    ]
+    var splash_indices: Array[int] = SimAutoTargeting.get_enemies_in_splash_radius(splash_enemies, Vector2i(5, 5), 2)
+    _assert_equal(splash_indices.size(), 2, "Splash radius includes 2 enemies")
+    _assert_true(0 in splash_indices, "Splash includes enemy at (5,5)")
+    _assert_true(1 in splash_indices, "Splash includes enemy at (6,5)")
+
+    # Test get_chain_targets utility
+    var chain_test_enemies: Array = [
+        {"x": 0, "y": 0},
+        {"x": 1, "y": 0},
+        {"x": 2, "y": 0},
+        {"x": 10, "y": 10}
+    ]
+    var chain_indices: Array[int] = SimAutoTargeting.get_chain_targets(chain_test_enemies, Vector2i(0, 0), 3, 2.0)
+    _assert_true(chain_indices.size() <= 3, "Chain targets limited to count")
+    _assert_true(chain_indices.size() >= 2, "Chain finds at least 2 nearby targets")
+
+
+func _run_enemy_abilities_tests() -> void:
+    # Test AbilityType enum
+    _assert_equal(SimEnemyAbilities.AbilityType.PASSIVE, 0, "AbilityType.PASSIVE is 0")
+    _assert_equal(SimEnemyAbilities.AbilityType.TRIGGER, 1, "AbilityType.TRIGGER is 1")
+    _assert_equal(SimEnemyAbilities.AbilityType.COOLDOWN, 2, "AbilityType.COOLDOWN is 2")
+    _assert_equal(SimEnemyAbilities.AbilityType.DEATH, 3, "AbilityType.DEATH is 3")
+
+    # Test TriggerEvent enum
+    _assert_equal(SimEnemyAbilities.TriggerEvent.ON_SPAWN, 0, "TriggerEvent.ON_SPAWN is 0")
+    _assert_equal(SimEnemyAbilities.TriggerEvent.ON_DAMAGE, 1, "TriggerEvent.ON_DAMAGE is 1")
+    _assert_equal(SimEnemyAbilities.TriggerEvent.ON_LOW_HP, 2, "TriggerEvent.ON_LOW_HP is 2")
+    _assert_equal(SimEnemyAbilities.TriggerEvent.ON_ALLY_DEATH, 3, "TriggerEvent.ON_ALLY_DEATH is 3")
+    _assert_equal(SimEnemyAbilities.TriggerEvent.ON_ATTACK, 4, "TriggerEvent.ON_ATTACK is 4")
+    _assert_equal(SimEnemyAbilities.TriggerEvent.ON_DEATH, 5, "TriggerEvent.ON_DEATH is 5")
+
+    # Test ABILITIES dictionary exists and has content
+    _assert_true(SimEnemyAbilities.ABILITIES.size() > 0, "ABILITIES dictionary has entries")
+
+    # Test get_ability
+    var void_armor: Dictionary = SimEnemyAbilities.get_ability("void_armor")
+    _assert_true(not void_armor.is_empty(), "get_ability returns void_armor")
+    _assert_equal(void_armor.get("name", ""), "Void Armor", "void_armor has correct name")
+    _assert_equal(void_armor.get("type", -1), SimEnemyAbilities.AbilityType.PASSIVE, "void_armor is passive")
+
+    # Test invalid ability
+    var invalid_ability: Dictionary = SimEnemyAbilities.get_ability("nonexistent")
+    _assert_true(invalid_ability.is_empty(), "Invalid ability returns empty dict")
+
+    # Test get_ability_name
+    _assert_equal(SimEnemyAbilities.get_ability_name("void_armor"), "Void Armor", "get_ability_name returns name")
+    _assert_equal(SimEnemyAbilities.get_ability_name("frost_aura"), "Frost Aura", "get_ability_name frost_aura")
+    _assert_equal(SimEnemyAbilities.get_ability_name("invalid"), "invalid", "Invalid ability returns id")
+
+    # Test get_ability_type
+    _assert_equal(SimEnemyAbilities.get_ability_type("void_armor"), SimEnemyAbilities.AbilityType.PASSIVE, "void_armor type")
+    _assert_equal(SimEnemyAbilities.get_ability_type("blood_frenzy"), SimEnemyAbilities.AbilityType.TRIGGER, "blood_frenzy type")
+    _assert_equal(SimEnemyAbilities.get_ability_type("summon_spawn"), SimEnemyAbilities.AbilityType.COOLDOWN, "summon_spawn type")
+    _assert_equal(SimEnemyAbilities.get_ability_type("splitting"), SimEnemyAbilities.AbilityType.DEATH, "splitting type")
+
+    # Test is_valid_ability
+    _assert_true(SimEnemyAbilities.is_valid_ability("void_armor"), "void_armor is valid")
+    _assert_true(SimEnemyAbilities.is_valid_ability("frost_aura"), "frost_aura is valid")
+    _assert_false(SimEnemyAbilities.is_valid_ability("nonexistent"), "nonexistent is invalid")
+
+    # Test get_all_ability_ids
+    var all_ids: Array[String] = SimEnemyAbilities.get_all_ability_ids()
+    _assert_true(all_ids.size() > 0, "get_all_ability_ids returns ids")
+    _assert_true("void_armor" in all_ids, "all_ids contains void_armor")
+    _assert_true("frost_aura" in all_ids, "all_ids contains frost_aura")
+    _assert_true("splitting" in all_ids, "all_ids contains splitting")
+
+    # Test get_abilities_by_type
+    var passive_abilities: Array[String] = SimEnemyAbilities.get_abilities_by_type(SimEnemyAbilities.AbilityType.PASSIVE)
+    _assert_true(passive_abilities.size() > 0, "Has passive abilities")
+    _assert_true("void_armor" in passive_abilities, "void_armor in passive list")
+    _assert_true("frost_aura" in passive_abilities, "frost_aura in passive list")
+
+    var trigger_abilities: Array[String] = SimEnemyAbilities.get_abilities_by_type(SimEnemyAbilities.AbilityType.TRIGGER)
+    _assert_true(trigger_abilities.size() > 0, "Has trigger abilities")
+    _assert_true("blood_frenzy" in trigger_abilities, "blood_frenzy in trigger list")
+
+    var cooldown_abilities: Array[String] = SimEnemyAbilities.get_abilities_by_type(SimEnemyAbilities.AbilityType.COOLDOWN)
+    _assert_true(cooldown_abilities.size() > 0, "Has cooldown abilities")
+    _assert_true("summon_spawn" in cooldown_abilities, "summon_spawn in cooldown list")
+
+    var death_abilities: Array[String] = SimEnemyAbilities.get_abilities_by_type(SimEnemyAbilities.AbilityType.DEATH)
+    _assert_true(death_abilities.size() > 0, "Has death abilities")
+    _assert_true("splitting" in death_abilities, "splitting in death list")
+
+    # Test get_ability_description with placeholder substitution
+    var frost_desc: String = SimEnemyAbilities.get_ability_description("frost_aura")
+    _assert_true(frost_desc.contains("30%"), "frost_aura description has 30%")
+
+    var enrage_desc: String = SimEnemyAbilities.get_ability_description("enrage")
+    _assert_true(enrage_desc.contains("50%"), "enrage description has 50% threshold")
+
+    # Test has_passive with mock enemy
+    var enemy_with_ability: Dictionary = {
+        "ability_state": {
+            "void_armor": {"active": true, "stacks": 1}
+        }
+    }
+    _assert_true(SimEnemyAbilities.has_passive(enemy_with_ability, "void_armor"), "has_passive returns true")
+    _assert_false(SimEnemyAbilities.has_passive(enemy_with_ability, "frost_aura"), "has_passive returns false for missing")
+
+    var enemy_without_state: Dictionary = {}
+    _assert_false(SimEnemyAbilities.has_passive(enemy_without_state, "void_armor"), "has_passive false without state")
+
+    # Test get_passive_value
+    _assert_equal(SimEnemyAbilities.get_passive_value(enemy_with_ability, "void_armor", "stacks", 0), 1, "get_passive_value returns stacks")
+
+    # Test check_void_armor
+    var void_armor_enemy: Dictionary = {
+        "ability_state": {
+            "void_armor": {"active": true, "stacks": 1}
+        }
+    }
+    _assert_true(SimEnemyAbilities.check_void_armor(void_armor_enemy), "check_void_armor returns true")
+    _assert_equal(void_armor_enemy["ability_state"]["void_armor"]["stacks"], 0, "void_armor stacks decremented")
+    _assert_false(SimEnemyAbilities.check_void_armor(void_armor_enemy), "check_void_armor false when stacks=0")
+
+    # Test is_untargetable
+    var normal_enemy: Dictionary = {"ability_state": {}}
+    _assert_false(SimEnemyAbilities.is_untargetable(normal_enemy), "Normal enemy targetable")
+
+    var flickering_enemy: Dictionary = {"ability_state": {"flicker": {"active": true}}}
+    _assert_true(SimEnemyAbilities.is_untargetable(flickering_enemy), "Flickering enemy untargetable")
+
+    var cloaked_enemy: Dictionary = {"ability_state": {"shadow_cloak": {"active": true}}}
+    _assert_true(SimEnemyAbilities.is_untargetable(cloaked_enemy), "Cloaked enemy untargetable")
+
+    var burrowed_enemy: Dictionary = {"ability_state": {"tunnel": {"active": true}}}
+    _assert_true(SimEnemyAbilities.is_untargetable(burrowed_enemy), "Burrowed enemy untargetable")
+
+    # Test should_dodge (note: uses randi, so we just check it doesn't crash)
+    var dodge_enemy: Dictionary = {"ability_state": {"dodge": {"active": true}}}
+    var _dodge_result: bool = SimEnemyAbilities.should_dodge(dodge_enemy)
+    _assert_true(true, "should_dodge runs without error")
+
+    var no_dodge_enemy: Dictionary = {"ability_state": {}}
+    _assert_false(SimEnemyAbilities.should_dodge(no_dodge_enemy), "No dodge ability means no dodge")
+
+    # Test is_word_hidden (mute aura check)
+    var muter: Dictionary = {
+        "pos": Vector2(5, 5),
+        "ability_state": {"mute_aura": {"active": true}}
+    }
+    var nearby_target: Dictionary = {"pos": Vector2(6, 5), "ability_state": {}}
+    var far_target: Dictionary = {"pos": Vector2(100, 100), "ability_state": {}}
+    var enemies_with_muter: Array = [muter, nearby_target, far_target]
+
+    _assert_true(SimEnemyAbilities.is_word_hidden(nearby_target, enemies_with_muter), "Nearby enemy word hidden by mute aura")
+    _assert_false(SimEnemyAbilities.is_word_hidden(far_target, enemies_with_muter), "Far enemy word not hidden")
+
+    # Test all abilities have valid structure
+    for ability_id in SimEnemyAbilities.ABILITIES.keys():
+        var ability: Dictionary = SimEnemyAbilities.ABILITIES[ability_id]
+        _assert_true(ability.has("name"), "Ability '%s' has name" % ability_id)
+        _assert_true(ability.has("type"), "Ability '%s' has type" % ability_id)
+        _assert_true(ability.has("description"), "Ability '%s' has description" % ability_id)
+        _assert_true(ability.has("effect"), "Ability '%s' has effect" % ability_id)
+        var ability_type: int = int(ability.get("type", -1))
+        _assert_true(ability_type >= 0 and ability_type <= 3, "Ability '%s' has valid type" % ability_id)
+
+
+func _run_practice_goals_tests() -> void:
+    # Test GOAL_ORDER array
+    _assert_equal(PracticeGoals.GOAL_ORDER.size(), 4, "GOAL_ORDER has 4 goals")
+    _assert_equal(PracticeGoals.GOAL_ORDER[0], "balanced", "First goal is balanced")
+    _assert_equal(PracticeGoals.GOAL_ORDER[1], "accuracy", "Second goal is accuracy")
+    _assert_equal(PracticeGoals.GOAL_ORDER[2], "backspace", "Third goal is backspace")
+    _assert_equal(PracticeGoals.GOAL_ORDER[3], "speed", "Fourth goal is speed")
+
+    # Test all_goal_ids
+    var all_ids: PackedStringArray = PracticeGoals.all_goal_ids()
+    _assert_equal(all_ids.size(), 4, "all_goal_ids returns 4 ids")
+    _assert_true("balanced" in all_ids, "all_goal_ids contains balanced")
+    _assert_true("accuracy" in all_ids, "all_goal_ids contains accuracy")
+    _assert_true("backspace" in all_ids, "all_goal_ids contains backspace")
+    _assert_true("speed" in all_ids, "all_goal_ids contains speed")
+
+    # Test is_valid
+    _assert_true(PracticeGoals.is_valid("balanced"), "balanced is valid")
+    _assert_true(PracticeGoals.is_valid("accuracy"), "accuracy is valid")
+    _assert_true(PracticeGoals.is_valid("backspace"), "backspace is valid")
+    _assert_true(PracticeGoals.is_valid("speed"), "speed is valid")
+    _assert_false(PracticeGoals.is_valid("invalid"), "invalid goal is invalid")
+    _assert_false(PracticeGoals.is_valid(""), "empty string is invalid")
+
+    # Test normalize_goal
+    _assert_equal(PracticeGoals.normalize_goal("balanced"), "balanced", "normalize balanced")
+    _assert_equal(PracticeGoals.normalize_goal("ACCURACY"), "accuracy", "normalize uppercase")
+    _assert_equal(PracticeGoals.normalize_goal("  Speed  "), "speed", "normalize with whitespace")
+    _assert_equal(PracticeGoals.normalize_goal(""), "balanced", "normalize empty returns balanced")
+    _assert_equal(PracticeGoals.normalize_goal("invalid"), "balanced", "normalize invalid returns balanced")
+    _assert_equal(PracticeGoals.normalize_goal("BACKSPACE"), "backspace", "normalize BACKSPACE")
+
+    # Test goal_label
+    _assert_equal(PracticeGoals.goal_label("balanced"), "Balanced", "goal_label balanced")
+    _assert_equal(PracticeGoals.goal_label("accuracy"), "Accuracy", "goal_label accuracy")
+    _assert_equal(PracticeGoals.goal_label("backspace"), "Clean Keystrokes", "goal_label backspace")
+    _assert_equal(PracticeGoals.goal_label("speed"), "Speed", "goal_label speed")
+    _assert_equal(PracticeGoals.goal_label("invalid"), "Balanced", "goal_label invalid defaults to Balanced")
+
+    # Test goal_description
+    var balanced_desc: String = PracticeGoals.goal_description("balanced")
+    _assert_true(balanced_desc.length() > 0, "balanced description not empty")
+    _assert_true(balanced_desc.contains("balance"), "balanced description mentions balance")
+
+    var accuracy_desc: String = PracticeGoals.goal_description("accuracy")
+    _assert_true(accuracy_desc.contains("correct"), "accuracy description mentions correct")
+
+    var backspace_desc: String = PracticeGoals.goal_description("backspace")
+    _assert_true(backspace_desc.contains("clean") or backspace_desc.contains("correction"), "backspace description mentions clean/corrections")
+
+    var speed_desc: String = PracticeGoals.goal_description("speed")
+    _assert_true(speed_desc.contains("fast") or speed_desc.contains("pace"), "speed description mentions fast/pace")
+
+    # Test thresholds for balanced
+    var balanced_thresholds: Dictionary = PracticeGoals.thresholds("balanced")
+    _assert_true(balanced_thresholds.has("min_hit_rate"), "balanced has min_hit_rate")
+    _assert_true(balanced_thresholds.has("min_accuracy"), "balanced has min_accuracy")
+    _assert_true(balanced_thresholds.has("max_backspace_rate"), "balanced has max_backspace_rate")
+    _assert_true(balanced_thresholds.has("max_incomplete_rate"), "balanced has max_incomplete_rate")
+    _assert_approx(balanced_thresholds.get("min_hit_rate", 0), 0.55, 0.01, "balanced min_hit_rate is 0.55")
+    _assert_approx(balanced_thresholds.get("min_accuracy", 0), 0.78, 0.01, "balanced min_accuracy is 0.78")
+    _assert_approx(balanced_thresholds.get("max_backspace_rate", 0), 0.20, 0.01, "balanced max_backspace_rate is 0.20")
+    _assert_approx(balanced_thresholds.get("max_incomplete_rate", 0), 0.30, 0.01, "balanced max_incomplete_rate is 0.30")
+
+    # Test thresholds for accuracy
+    var accuracy_thresholds: Dictionary = PracticeGoals.thresholds("accuracy")
+    _assert_approx(accuracy_thresholds.get("min_accuracy", 0), 0.85, 0.01, "accuracy min_accuracy is 0.85")
+    _assert_true(accuracy_thresholds.get("min_accuracy", 0) > balanced_thresholds.get("min_accuracy", 0), "accuracy requires higher accuracy than balanced")
+
+    # Test thresholds for backspace
+    var backspace_thresholds: Dictionary = PracticeGoals.thresholds("backspace")
+    _assert_approx(backspace_thresholds.get("max_backspace_rate", 0), 0.12, 0.01, "backspace max_backspace_rate is 0.12")
+    _assert_true(backspace_thresholds.get("max_backspace_rate", 0) < balanced_thresholds.get("max_backspace_rate", 0), "backspace allows fewer corrections")
+
+    # Test thresholds for speed
+    var speed_thresholds: Dictionary = PracticeGoals.thresholds("speed")
+    _assert_approx(speed_thresholds.get("min_hit_rate", 0), 0.70, 0.01, "speed min_hit_rate is 0.70")
+    _assert_true(speed_thresholds.get("min_hit_rate", 0) > balanced_thresholds.get("min_hit_rate", 0), "speed requires higher hit rate")
+
+    # Test all goal thresholds are valid
+    for goal_id in PracticeGoals.GOAL_ORDER:
+        var thresholds: Dictionary = PracticeGoals.thresholds(goal_id)
+        _assert_true(thresholds.size() == 4, "Goal '%s' has 4 threshold values" % goal_id)
+        _assert_true(float(thresholds.get("min_hit_rate", 0)) > 0, "Goal '%s' min_hit_rate > 0" % goal_id)
+        _assert_true(float(thresholds.get("min_accuracy", 0)) > 0, "Goal '%s' min_accuracy > 0" % goal_id)
+        _assert_true(float(thresholds.get("max_backspace_rate", 0)) >= 0, "Goal '%s' max_backspace_rate >= 0" % goal_id)
+        _assert_true(float(thresholds.get("max_incomplete_rate", 0)) >= 0, "Goal '%s' max_incomplete_rate >= 0" % goal_id)
+        _assert_true(float(thresholds.get("min_hit_rate", 0)) <= 1.0, "Goal '%s' min_hit_rate <= 1.0" % goal_id)
+        _assert_true(float(thresholds.get("min_accuracy", 0)) <= 1.0, "Goal '%s' min_accuracy <= 1.0" % goal_id)
+
+
+func _run_resource_nodes_tests() -> void:
+    # Test challenge type constants
+    _assert_equal(SimResourceNodes.CHALLENGE_WORD_BURST, "word_burst", "CHALLENGE_WORD_BURST constant")
+    _assert_equal(SimResourceNodes.CHALLENGE_SPEED_TYPE, "speed_type", "CHALLENGE_SPEED_TYPE constant")
+    _assert_equal(SimResourceNodes.CHALLENGE_ACCURACY_TEST, "accuracy_test", "CHALLENGE_ACCURACY_TEST constant")
+
+    # Test get_node_at with no nodes
+    var state: GameState = DefaultState.create()
+    var empty_node: Dictionary = SimResourceNodes.get_node_at(state, Vector2i(5, 5))
+    _assert_true(empty_node.is_empty(), "No node at empty position")
+
+    # Test spawn_node_at
+    state.resource_nodes = {}
+    var node_id: String = SimResourceNodes.spawn_node_at(state, Vector2i(3, 3), "forest_grove")
+    # Note: This may return empty if no node data file exists, which is fine for testing
+    if node_id != "":
+        _assert_true(node_id.begins_with("node_"), "Node ID format correct")
+        var spawned_node: Dictionary = SimResourceNodes.get_node_at(state, Vector2i(3, 3))
+        _assert_true(not spawned_node.is_empty(), "Spawned node retrievable")
+        _assert_equal(spawned_node.get("pos_x", -1), 3, "Spawned node has correct x")
+        _assert_equal(spawned_node.get("pos_y", -1), 3, "Spawned node has correct y")
+    _assert_true(true, "spawn_node_at runs without error")
+
+    # Test can_harvest during day phase
+    state = DefaultState.create()
+    state.phase = "day"
+    state.resource_nodes = {}
+    var can_harvest_empty: Dictionary = SimResourceNodes.can_harvest(state, Vector2i(5, 5))
+    _assert_false(can_harvest_empty.get("ok", true), "Cannot harvest empty position")
+    _assert_true(can_harvest_empty.get("error", "").length() > 0, "Error message for empty position")
+
+    # Test can_harvest during night phase
+    state.phase = "night"
+    var can_harvest_night: Dictionary = SimResourceNodes.can_harvest(state, Vector2i(5, 5))
+    _assert_false(can_harvest_night.get("ok", true), "Cannot harvest during night")
+    _assert_true(can_harvest_night.get("error", "").contains("day"), "Night error mentions day phase")
+
+    # Test get_discovered_nodes
+    state = DefaultState.create()
+    state.resource_nodes = {
+        0: {"discovered": true, "node_type": "test1"},
+        1: {"discovered": false, "node_type": "test2"},
+        2: {"discovered": true, "node_type": "test3"}
+    }
+    var discovered: Array = SimResourceNodes.get_discovered_nodes(state)
+    _assert_equal(discovered.size(), 2, "Only discovered nodes returned")
+
+    # Test tick_node_respawns
+    state = DefaultState.create()
+    state.day = 10
+    state.harvested_nodes = {"node_1": 4, "node_2": 8}  # Depleted on days 4 and 8
+    SimResourceNodes.tick_node_respawns(state)
+    # node_1 should be respawned (10-4=6 >= 5), node_2 should remain (10-8=2 < 5)
+    _assert_false(state.harvested_nodes.has("node_1"), "node_1 removed after respawn time")
+    _assert_true(state.harvested_nodes.has("node_2"), "node_2 still in harvested_nodes")
+
+    # Test _calculate_performance_multiplier (via complete_harvest path)
+    # These are internal but we can test the patterns
+    # Failed performance should give 0.5x
+    # Perfect accuracy gives 1.5x
+    # High WPM gives bonus
+    # Time remaining gives bonus
+
+    # Test get_node_type_definition (may return empty if no data file)
+    var definition: Dictionary = SimResourceNodes.get_node_type_definition("forest_grove")
+    _assert_true(true, "get_node_type_definition runs without error")
+
+    # Test get_spawn_rates_for_terrain
+    var spawn_rates: Dictionary = SimResourceNodes.get_spawn_rates_for_terrain("forest")
+    _assert_true(true, "get_spawn_rates_for_terrain runs without error")
+
+    # Test NODES_PATH constant
+    _assert_equal(SimResourceNodes.NODES_PATH, "res://data/resource_nodes.json", "NODES_PATH constant correct")

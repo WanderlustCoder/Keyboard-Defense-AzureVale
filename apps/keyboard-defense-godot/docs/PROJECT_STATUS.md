@@ -154,8 +154,8 @@ New SVG assets in `assets/art/src-svg/`:
 - Scenario harness (Phase 2): `res://tools/run_scenarios.gd` runs `data/scenarios.json` headless with tag/priority filtering and expanded balance coverage.
 - Scenario reports and summaries are written under `Logs/ScenarioReports/` for CI-friendly collection (via `--out-dir`).
 
-## Test Coverage (as of 2026-01-11)
-**Total: ~4,400+ assertions**
+## Test Coverage (as of 2026-01-12)
+**Total: ~4,600+ assertions**
 
 - **Parser tests**: Command parsing, intent validation
 - **Reducer tests**: State mutation, intent application
@@ -193,6 +193,10 @@ New SVG assets in `assets/art/src-svg/`:
 - **Player stats tests**: Statistics tracking, records, derived stats, formatting
 - **Login rewards tests**: Reward tiers, bonuses, streak progress, buff management
 - **Synergy detector tests**: Synergy definitions, detection, effect queries
+- **Auto targeting tests**: Target selection modes (nearest, HP, fastest, cluster, chain, zone, smart)
+- **Enemy abilities tests**: Ability types, passive queries, untargetable states, data integrity
+- **Practice goals tests**: Goal validation, normalization, labels, descriptions, thresholds
+- **Resource nodes tests**: Challenge types, node spawning, harvesting, respawn mechanics
 
 ## Planning
 - `docs/ROADMAP.md` is the authoritative milestone list.
