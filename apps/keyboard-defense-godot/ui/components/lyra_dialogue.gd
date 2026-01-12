@@ -54,68 +54,169 @@ func _load_lyra_portrait() -> void:
 	portrait.texture = _create_lyra_portrait()
 
 func _create_lyra_portrait() -> ImageTexture:
-	## Creates Elder Lyra's portrait procedurally (24x24 pixel art)
-	var img := Image.create(24, 24, false, Image.FORMAT_RGBA8)
+	## Creates Elder Lyra's portrait procedurally (64x64 detailed pixel art)
+	var img := Image.create(64, 64, false, Image.FORMAT_RGBA8)
 
-	# Colors
-	var bg := Color("#2c3e50")
-	var hair_dark := Color("#bdc3c7")
-	var hair_light := Color("#ecf0f1")
-	var skin := Color("#f5e6d3")
-	var skin_shadow := Color("#e6d5c3")
-	var eyes := Color("#8e44ad")
-	var eye_highlight := Color("#fdfefe")
-	var brow := Color("#95a5a6")
-	var nose := Color("#d5c4a1")
-	var robe_dark := Color("#8e44ad")
-	var robe_light := Color("#9b59b6")
-	var robe_collar := Color("#d7bde2")
-	var gold := Color("#f1c40f")
+	# Color palette
+	var bg := Color("#1a1a2e")           # Dark blue background
+	var bg_accent := Color("#16213e")    # Slightly lighter bg accent
 
-	# Fill background
+	var hair_dark := Color("#8e9aaf")    # Silver hair shadow
+	var hair_mid := Color("#bdc3c7")     # Silver hair mid
+	var hair_light := Color("#ecf0f1")   # Silver hair highlight
+	var hair_shine := Color("#ffffff")   # Hair shine
+
+	var skin := Color("#f5e6d3")         # Main skin tone
+	var skin_shadow := Color("#d4c4a8")  # Skin shadow
+	var skin_highlight := Color("#fdf6e3") # Skin highlight
+
+	var eyes_outer := Color("#2c3e50")   # Eye outline
+	var eyes_purple := Color("#8e44ad")  # Iris purple
+	var eyes_light := Color("#af7ac5")   # Iris highlight
+	var eyes_white := Color("#fdfefe")   # Eye whites
+	var pupil := Color("#1a1a2e")        # Pupil
+
+	var brow := Color("#7f8c8d")         # Eyebrow color
+	var lips := Color("#d4a5a5")         # Lip color
+	var blush := Color("#e8c4c4")        # Subtle blush
+
+	var robe_dark := Color("#5b2c6f")    # Robe deep shadow
+	var robe_mid := Color("#7d3c98")     # Robe mid tone
+	var robe_light := Color("#9b59b6")   # Robe main
+	var robe_highlight := Color("#bb8fce") # Robe highlight
+	var robe_trim := Color("#d4ac0d")    # Gold trim
+	var robe_trim_light := Color("#f4d03f") # Gold highlight
+
+	var gem := Color("#3498db")          # Blue gem
+	var gem_light := Color("#85c1e9")    # Gem highlight
+	var magic := Color("#a569bd")        # Magic glow
+
+	# Fill background with gradient effect
 	img.fill(bg)
+	_draw_rect(img, 0, 0, 64, 20, bg_accent)
 
-	# Hair (silver/white)
-	_draw_rect(img, 5, 2, 14, 8, hair_dark)
-	_draw_rect(img, 6, 3, 12, 6, hair_light)
-	_draw_rect(img, 4, 6, 4, 10, hair_dark)
-	_draw_rect(img, 16, 6, 4, 10, hair_dark)
-	_draw_rect(img, 5, 7, 3, 8, hair_light)
-	_draw_rect(img, 16, 7, 3, 8, hair_light)
+	# === HAIR (flowing silver hair) ===
+	_draw_rect(img, 12, 4, 40, 18, hair_dark)
+	_draw_rect(img, 14, 5, 36, 15, hair_mid)
+	_draw_rect(img, 16, 6, 32, 12, hair_light)
 
-	# Face
-	_draw_rect(img, 7, 6, 10, 12, skin_shadow)
-	_draw_rect(img, 8, 7, 8, 10, skin)
+	# Hair top curve
+	_draw_rect(img, 18, 3, 28, 4, hair_dark)
+	_draw_rect(img, 20, 2, 24, 3, hair_mid)
+	_draw_rect(img, 24, 1, 16, 2, hair_light)
 
-	# Eyes (purple, wise)
-	_draw_rect(img, 9, 9, 2, 2, eyes)
-	_draw_rect(img, 13, 9, 2, 2, eyes)
-	_draw_rect(img, 9, 9, 1, 1, eye_highlight)
-	_draw_rect(img, 13, 9, 1, 1, eye_highlight)
+	# Left flowing hair
+	_draw_rect(img, 6, 14, 12, 32, hair_dark)
+	_draw_rect(img, 8, 16, 8, 28, hair_mid)
+	_draw_rect(img, 9, 18, 5, 24, hair_light)
+	_draw_rect(img, 10, 20, 2, 8, hair_shine)
+
+	# Right flowing hair
+	_draw_rect(img, 46, 14, 12, 32, hair_dark)
+	_draw_rect(img, 48, 16, 8, 28, hair_mid)
+	_draw_rect(img, 50, 18, 5, 24, hair_light)
+	_draw_rect(img, 51, 20, 2, 8, hair_shine)
+
+	# Hair strands and highlights
+	_draw_rect(img, 4, 20, 3, 20, hair_dark)
+	_draw_rect(img, 57, 20, 3, 20, hair_dark)
+	_draw_rect(img, 26, 4, 4, 2, hair_shine)
+	_draw_rect(img, 34, 5, 3, 2, hair_shine)
+
+	# === FACE ===
+	_draw_rect(img, 18, 14, 28, 32, skin_shadow)
+	_draw_rect(img, 20, 16, 24, 28, skin)
+	_draw_rect(img, 22, 18, 20, 24, skin_highlight)
+
+	# Cheek shading and blush
+	_draw_rect(img, 18, 26, 4, 8, skin_shadow)
+	_draw_rect(img, 42, 26, 4, 8, skin_shadow)
+	_draw_rect(img, 20, 32, 4, 3, blush)
+	_draw_rect(img, 40, 32, 4, 3, blush)
+
+	# Chin
+	_draw_rect(img, 26, 42, 12, 4, skin)
+	_draw_rect(img, 28, 44, 8, 2, skin_shadow)
+
+	# === EYES ===
+	# Left eye
+	_draw_rect(img, 22, 24, 8, 6, eyes_white)
+	_draw_rect(img, 24, 25, 5, 4, eyes_purple)
+	_draw_rect(img, 25, 26, 3, 2, eyes_light)
+	_draw_rect(img, 26, 26, 2, 2, pupil)
+	_draw_rect(img, 26, 26, 1, 1, eyes_white)
+	_draw_rect(img, 22, 23, 8, 1, eyes_outer)
+	_draw_rect(img, 22, 30, 8, 1, eyes_outer)
+
+	# Right eye
+	_draw_rect(img, 34, 24, 8, 6, eyes_white)
+	_draw_rect(img, 35, 25, 5, 4, eyes_purple)
+	_draw_rect(img, 36, 26, 3, 2, eyes_light)
+	_draw_rect(img, 37, 26, 2, 2, pupil)
+	_draw_rect(img, 37, 26, 1, 1, eyes_white)
+	_draw_rect(img, 34, 23, 8, 1, eyes_outer)
+	_draw_rect(img, 34, 30, 8, 1, eyes_outer)
 
 	# Eyebrows
-	_draw_rect(img, 9, 8, 2, 1, brow)
-	_draw_rect(img, 13, 8, 2, 1, brow)
+	_draw_rect(img, 21, 21, 9, 2, brow)
+	_draw_rect(img, 22, 20, 6, 1, brow)
+	_draw_rect(img, 34, 21, 9, 2, brow)
+	_draw_rect(img, 36, 20, 6, 1, brow)
 
-	# Nose
-	_draw_rect(img, 11, 11, 2, 2, nose)
+	# Crow's feet
+	_draw_rect(img, 19, 26, 1, 3, skin_shadow)
+	_draw_rect(img, 44, 26, 1, 3, skin_shadow)
 
-	# Gentle smile
-	_draw_rect(img, 10, 14, 4, 1, Color("#c9a0dc"))
+	# === NOSE ===
+	_draw_rect(img, 30, 30, 4, 6, skin_shadow)
+	_draw_rect(img, 31, 31, 2, 4, skin)
+	_draw_rect(img, 29, 35, 6, 2, skin_shadow)
 
-	# Purple robe
-	_draw_rect(img, 4, 18, 16, 6, robe_dark)
-	_draw_rect(img, 5, 19, 14, 4, robe_light)
+	# === MOUTH ===
+	_draw_rect(img, 28, 38, 8, 1, lips)
+	_draw_rect(img, 27, 39, 10, 2, lips)
+	_draw_rect(img, 29, 39, 6, 1, Color("#e8b4b4"))
+	_draw_rect(img, 25, 39, 2, 1, skin_shadow)
+	_draw_rect(img, 37, 39, 2, 1, skin_shadow)
 
-	# Robe collar
-	_draw_rect(img, 10, 17, 4, 2, robe_light)
-	_draw_rect(img, 11, 18, 2, 1, robe_collar)
+	# === ROBE ===
+	_draw_rect(img, 10, 46, 44, 18, robe_dark)
+	_draw_rect(img, 12, 48, 40, 14, robe_mid)
+	_draw_rect(img, 14, 50, 36, 10, robe_light)
 
-	# Wisdom symbol
-	_draw_rect(img, 11, 20, 2, 2, gold)
+	# V-neck collar
+	_draw_rect(img, 26, 44, 12, 8, robe_mid)
+	_draw_rect(img, 28, 45, 8, 6, robe_light)
+	_draw_rect(img, 30, 46, 4, 4, skin_shadow)
 
-	var tex := ImageTexture.create_from_image(img)
-	return tex
+	# Gold trim
+	_draw_rect(img, 24, 44, 2, 10, robe_trim)
+	_draw_rect(img, 38, 44, 2, 10, robe_trim)
+	_draw_rect(img, 25, 45, 1, 8, robe_trim_light)
+	_draw_rect(img, 39, 45, 1, 8, robe_trim_light)
+
+	# Shoulder highlights and folds
+	_draw_rect(img, 16, 50, 6, 4, robe_highlight)
+	_draw_rect(img, 42, 50, 6, 4, robe_highlight)
+	_draw_rect(img, 20, 54, 2, 8, robe_dark)
+	_draw_rect(img, 32, 54, 2, 8, robe_dark)
+	_draw_rect(img, 42, 54, 2, 8, robe_dark)
+
+	# === DECORATIONS ===
+	# Pendant with gem
+	_draw_rect(img, 29, 52, 6, 6, robe_trim)
+	_draw_rect(img, 30, 53, 4, 4, gem)
+	_draw_rect(img, 31, 54, 2, 2, gem_light)
+
+	# Magic sparkles
+	_draw_rect(img, 8, 8, 2, 2, magic)
+	_draw_rect(img, 54, 10, 2, 2, magic)
+	_draw_rect(img, 4, 36, 2, 2, magic)
+	_draw_rect(img, 58, 38, 2, 2, magic)
+	_draw_rect(img, 12, 58, 1, 1, magic)
+	_draw_rect(img, 52, 56, 1, 1, magic)
+
+	return ImageTexture.create_from_image(img)
 
 func _draw_rect(img: Image, x: int, y: int, w: int, h: int, color: Color) -> void:
 	for px in range(x, x + w):

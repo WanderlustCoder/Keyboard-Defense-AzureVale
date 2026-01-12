@@ -155,7 +155,7 @@ New SVG assets in `assets/art/src-svg/`:
 - Scenario reports and summaries are written under `Logs/ScenarioReports/` for CI-friendly collection (via `--out-dir`).
 
 ## Test Coverage (as of 2026-01-12)
-**Total: ~5,600+ assertions**
+**Total: ~5,700+ assertions**
 
 - **Parser tests**: Command parsing, intent validation
 - **Reducer tests**: State mutation, intent application
@@ -214,6 +214,8 @@ New SVG assets in `assets/art/src-svg/`:
 - **World tick tests**: Constants, terrain biomes, threat contribution, enemy kind selection, threat breakdown
 - **Controls aliases tests**: Modifier aliases, key aliases, token normalization, modifier detection, keycode lookup
 - **Scenario report tests**: Report building, path normalization, directory normalization, path joining
+- **Button feedback tests**: Scale constants, duration constants, hover constants, animation timing
+- **Theme colors tests**: Background colors, border colors, text colors, accent colors, status colors, gameplay colors, alpha helper functions
 
 ## Planning
 - `docs/ROADMAP.md` is the authoritative milestone list.
