@@ -1,6 +1,8 @@
 extends PanelContainer
 class_name LyraDialogue
-## Dialogue box with Lyra portrait for tutorial and story moments
+## Dialogue box with Lyra portrait - ONLY used by BattleTutorial.gd
+## NOTE: KingdomDefense mode uses game/dialogue_box.gd instead!
+## If fixing Lyra's portrait in Kingdom Defense, edit game/dialogue_box.gd
 
 const AssetLoader = preload("res://game/asset_loader.gd")
 

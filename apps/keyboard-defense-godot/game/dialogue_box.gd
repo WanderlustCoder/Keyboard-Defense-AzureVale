@@ -1,7 +1,11 @@
 extends Control
 
-## Dialogue Box - Displays story dialogue with character name and text
+## Dialogue Box - Main dialogue system for KingdomDefense mode
+## Displays story dialogue with character portraits, names, and text
 ## Press Enter or click to advance through lines
+##
+## NOTE: This is the PRIMARY dialogue system used by KingdomDefense.
+## There's also ui/components/lyra_dialogue.gd which is ONLY for BattleTutorial.
 
 signal dialogue_finished
 
