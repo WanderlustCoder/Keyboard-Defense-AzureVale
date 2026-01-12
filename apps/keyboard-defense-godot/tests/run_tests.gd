@@ -85,6 +85,8 @@ const SimAutoTowerCombat = preload("res://sim/auto_tower_combat.gd")
 const WorldTick = preload("res://sim/world_tick.gd")
 const ControlsAliases = preload("res://game/controls_aliases.gd")
 const ScenarioReport = preload("res://tools/scenario_harness/scenario_report.gd")
+const ButtonFeedback = preload("res://ui/components/button_feedback.gd")
+const ThemeColors = preload("res://ui/theme_colors.gd")
 
 var total_tests: int = 0
 var total_failed: int = 0
@@ -190,6 +192,8 @@ func _run_all() -> void:
     _run_world_tick_tests()
     _run_controls_aliases_tests()
     _run_scenario_report_tests()
+    _run_button_feedback_tests()
+    _run_theme_colors_tests()
 
     for message in messages:
         print("[tests] %s" % message)
@@ -8789,3 +8793,248 @@ func _test_scenario_report_join_path() -> void:
     # Test with res:// paths
     _assert_equal(ScenarioReport._join_path("res://output", "report.json"), "res://output/report.json", "res:// path join")
     _assert_equal(ScenarioReport._join_path("user://data/", "save.json"), "user://data/save.json", "user:// path join with slash")
+
+# =============================================================================
+# BUTTON FEEDBACK TESTS
+# =============================================================================
+
+func _run_button_feedback_tests() -> void:
+    _test_button_feedback_scale_constants()
+    _test_button_feedback_duration_constants()
+    _test_button_feedback_hover_constants()
+
+func _test_button_feedback_scale_constants() -> void:
+    # Test PRESS_SCALE
+    _assert_true(ButtonFeedback.PRESS_SCALE > 0.0, "PRESS_SCALE is positive")
+    _assert_true(ButtonFeedback.PRESS_SCALE < 1.0, "PRESS_SCALE is less than 1 (shrink)")
+    _assert_equal(ButtonFeedback.PRESS_SCALE, 0.92, "PRESS_SCALE is 0.92")
+
+    # Test RELEASE_SCALE
+    _assert_equal(ButtonFeedback.RELEASE_SCALE, 1.0, "RELEASE_SCALE is 1.0 (normal)")
+
+    # Test OVERSHOOT_SCALE
+    _assert_true(ButtonFeedback.OVERSHOOT_SCALE > 1.0, "OVERSHOOT_SCALE is greater than 1")
+    _assert_true(ButtonFeedback.OVERSHOOT_SCALE < 1.2, "OVERSHOOT_SCALE is not too large")
+    _assert_equal(ButtonFeedback.OVERSHOOT_SCALE, 1.06, "OVERSHOOT_SCALE is 1.06")
+
+    # Scale ordering makes sense
+    _assert_true(ButtonFeedback.PRESS_SCALE < ButtonFeedback.RELEASE_SCALE, "PRESS < RELEASE")
+    _assert_true(ButtonFeedback.RELEASE_SCALE < ButtonFeedback.OVERSHOOT_SCALE, "RELEASE < OVERSHOOT")
+
+func _test_button_feedback_duration_constants() -> void:
+    # Test PRESS_DURATION
+    _assert_true(ButtonFeedback.PRESS_DURATION > 0.0, "PRESS_DURATION is positive")
+    _assert_true(ButtonFeedback.PRESS_DURATION < 1.0, "PRESS_DURATION is less than 1 second")
+    _assert_equal(ButtonFeedback.PRESS_DURATION, 0.08, "PRESS_DURATION is 0.08")
+
+    # Test RELEASE_DURATION
+    _assert_true(ButtonFeedback.RELEASE_DURATION > 0.0, "RELEASE_DURATION is positive")
+    _assert_true(ButtonFeedback.RELEASE_DURATION < 1.0, "RELEASE_DURATION is less than 1 second")
+    _assert_equal(ButtonFeedback.RELEASE_DURATION, 0.12, "RELEASE_DURATION is 0.12")
+
+    # Test OVERSHOOT_DURATION
+    _assert_true(ButtonFeedback.OVERSHOOT_DURATION > 0.0, "OVERSHOOT_DURATION is positive")
+    _assert_true(ButtonFeedback.OVERSHOOT_DURATION < 1.0, "OVERSHOOT_DURATION is less than 1 second")
+    _assert_equal(ButtonFeedback.OVERSHOOT_DURATION, 0.06, "OVERSHOOT_DURATION is 0.06")
+
+    # Press animation should be fast
+    _assert_true(ButtonFeedback.PRESS_DURATION <= 0.15, "PRESS_DURATION is snappy")
+    _assert_true(ButtonFeedback.OVERSHOOT_DURATION <= ButtonFeedback.RELEASE_DURATION, "Overshoot <= release duration")
+
+func _test_button_feedback_hover_constants() -> void:
+    # Test HOVER_BRIGHTEN
+    _assert_true(ButtonFeedback.HOVER_BRIGHTEN > 0.0, "HOVER_BRIGHTEN is positive")
+    _assert_true(ButtonFeedback.HOVER_BRIGHTEN < 1.0, "HOVER_BRIGHTEN is less than 1")
+    _assert_equal(ButtonFeedback.HOVER_BRIGHTEN, 0.1, "HOVER_BRIGHTEN is 0.1")
+
+    # Test HOVER_DURATION
+    _assert_true(ButtonFeedback.HOVER_DURATION > 0.0, "HOVER_DURATION is positive")
+    _assert_true(ButtonFeedback.HOVER_DURATION < 1.0, "HOVER_DURATION is less than 1 second")
+    _assert_equal(ButtonFeedback.HOVER_DURATION, 0.1, "HOVER_DURATION is 0.1")
+
+# =============================================================================
+# THEME COLORS TESTS
+# =============================================================================
+
+func _run_theme_colors_tests() -> void:
+    _test_theme_colors_background_constants()
+    _test_theme_colors_border_constants()
+    _test_theme_colors_text_constants()
+    _test_theme_colors_accent_constants()
+    _test_theme_colors_status_constants()
+    _test_theme_colors_gameplay_constants()
+    _test_theme_colors_alpha_functions()
+
+func _test_theme_colors_background_constants() -> void:
+    # BG_DARK
+    _assert_true(ThemeColors.BG_DARK is Color, "BG_DARK is a Color")
+    _assert_equal(ThemeColors.BG_DARK.a, 1.0, "BG_DARK has full alpha")
+    _assert_true(ThemeColors.BG_DARK.r < 0.2, "BG_DARK is dark (r < 0.2)")
+    _assert_true(ThemeColors.BG_DARK.g < 0.2, "BG_DARK is dark (g < 0.2)")
+    _assert_true(ThemeColors.BG_DARK.b < 0.2, "BG_DARK is dark (b < 0.2)")
+
+    # BG_PANEL
+    _assert_true(ThemeColors.BG_PANEL is Color, "BG_PANEL is a Color")
+    _assert_true(ThemeColors.BG_PANEL.a > 0.9, "BG_PANEL has high alpha")
+    _assert_true(ThemeColors.BG_PANEL.a < 1.0, "BG_PANEL has slight transparency")
+
+    # BG_CARD
+    _assert_true(ThemeColors.BG_CARD is Color, "BG_CARD is a Color")
+    _assert_equal(ThemeColors.BG_CARD.a, 1.0, "BG_CARD has full alpha")
+
+    # BG_CARD_DISABLED
+    _assert_true(ThemeColors.BG_CARD_DISABLED is Color, "BG_CARD_DISABLED is a Color")
+    _assert_true(_color_brightness(ThemeColors.BG_CARD_DISABLED) < _color_brightness(ThemeColors.BG_CARD), "BG_CARD_DISABLED is darker than BG_CARD")
+
+    # BG_BUTTON
+    _assert_true(ThemeColors.BG_BUTTON is Color, "BG_BUTTON is a Color")
+    _assert_equal(ThemeColors.BG_BUTTON.a, 1.0, "BG_BUTTON has full alpha")
+
+    # BG_BUTTON_HOVER
+    _assert_true(ThemeColors.BG_BUTTON_HOVER is Color, "BG_BUTTON_HOVER is a Color")
+    _assert_true(_color_brightness(ThemeColors.BG_BUTTON_HOVER) > _color_brightness(ThemeColors.BG_BUTTON), "BG_BUTTON_HOVER is brighter than BG_BUTTON")
+
+    # BG_INPUT
+    _assert_true(ThemeColors.BG_INPUT is Color, "BG_INPUT is a Color")
+    _assert_equal(ThemeColors.BG_INPUT.a, 1.0, "BG_INPUT has full alpha")
+
+func _test_theme_colors_border_constants() -> void:
+    # BORDER
+    _assert_true(ThemeColors.BORDER is Color, "BORDER is a Color")
+    _assert_equal(ThemeColors.BORDER.a, 1.0, "BORDER has full alpha")
+
+    # BORDER_HIGHLIGHT
+    _assert_true(ThemeColors.BORDER_HIGHLIGHT is Color, "BORDER_HIGHLIGHT is a Color")
+    _assert_true(_color_brightness(ThemeColors.BORDER_HIGHLIGHT) > _color_brightness(ThemeColors.BORDER), "BORDER_HIGHLIGHT is brighter than BORDER")
+
+    # BORDER_FOCUS
+    _assert_true(ThemeColors.BORDER_FOCUS is Color, "BORDER_FOCUS is a Color")
+    _assert_true(_color_brightness(ThemeColors.BORDER_FOCUS) > _color_brightness(ThemeColors.BORDER_HIGHLIGHT), "BORDER_FOCUS is brighter than BORDER_HIGHLIGHT")
+
+    # BORDER_DISABLED
+    _assert_true(ThemeColors.BORDER_DISABLED is Color, "BORDER_DISABLED is a Color")
+    _assert_true(_color_brightness(ThemeColors.BORDER_DISABLED) < _color_brightness(ThemeColors.BORDER), "BORDER_DISABLED is darker than BORDER")
+
+func _test_theme_colors_text_constants() -> void:
+    # TEXT
+    _assert_true(ThemeColors.TEXT is Color, "TEXT is a Color")
+    _assert_equal(ThemeColors.TEXT.a, 1.0, "TEXT has full alpha")
+    _assert_true(_color_brightness(ThemeColors.TEXT) > 0.8, "TEXT is bright (readable)")
+
+    # TEXT_DIM
+    _assert_true(ThemeColors.TEXT_DIM is Color, "TEXT_DIM is a Color")
+    _assert_true(ThemeColors.TEXT_DIM.a < ThemeColors.TEXT.a, "TEXT_DIM has lower alpha than TEXT")
+    _assert_true(ThemeColors.TEXT_DIM.a > 0.4, "TEXT_DIM is still visible")
+
+    # TEXT_DISABLED
+    _assert_true(ThemeColors.TEXT_DISABLED is Color, "TEXT_DISABLED is a Color")
+    _assert_true(ThemeColors.TEXT_DISABLED.a < ThemeColors.TEXT_DIM.a, "TEXT_DISABLED has lower alpha than TEXT_DIM")
+
+    # TEXT_PLACEHOLDER
+    _assert_true(ThemeColors.TEXT_PLACEHOLDER is Color, "TEXT_PLACEHOLDER is a Color")
+    _assert_true(ThemeColors.TEXT_PLACEHOLDER.a > 0.5, "TEXT_PLACEHOLDER is visible")
+
+func _test_theme_colors_accent_constants() -> void:
+    # ACCENT (gold)
+    _assert_true(ThemeColors.ACCENT is Color, "ACCENT is a Color")
+    _assert_equal(ThemeColors.ACCENT.a, 1.0, "ACCENT has full alpha")
+    _assert_true(ThemeColors.ACCENT.r > 0.9, "ACCENT has high red (gold)")
+    _assert_true(ThemeColors.ACCENT.g > 0.7, "ACCENT has moderate green (gold)")
+
+    # ACCENT_BLUE
+    _assert_true(ThemeColors.ACCENT_BLUE is Color, "ACCENT_BLUE is a Color")
+    _assert_true(ThemeColors.ACCENT_BLUE.b > ThemeColors.ACCENT_BLUE.r, "ACCENT_BLUE is actually blue")
+
+    # ACCENT_CYAN
+    _assert_true(ThemeColors.ACCENT_CYAN is Color, "ACCENT_CYAN is a Color")
+    _assert_true(ThemeColors.ACCENT_CYAN.b > 0.8, "ACCENT_CYAN has high blue")
+    _assert_true(ThemeColors.ACCENT_CYAN.g > 0.6, "ACCENT_CYAN has moderate green (cyan)")
+
+func _test_theme_colors_status_constants() -> void:
+    # SUCCESS (green)
+    _assert_true(ThemeColors.SUCCESS is Color, "SUCCESS is a Color")
+    _assert_true(ThemeColors.SUCCESS.g > ThemeColors.SUCCESS.r, "SUCCESS is green")
+    _assert_true(ThemeColors.SUCCESS.g > ThemeColors.SUCCESS.b, "SUCCESS green > blue")
+
+    # WARNING (gold/amber)
+    _assert_true(ThemeColors.WARNING is Color, "WARNING is a Color")
+    _assert_true(ThemeColors.WARNING.r > 0.9, "WARNING has high red")
+    _assert_true(ThemeColors.WARNING.g > 0.7, "WARNING has moderate green")
+
+    # ERROR (red)
+    _assert_true(ThemeColors.ERROR is Color, "ERROR is a Color")
+    _assert_true(ThemeColors.ERROR.r > ThemeColors.ERROR.g, "ERROR is red")
+    _assert_true(ThemeColors.ERROR.r > ThemeColors.ERROR.b, "ERROR red > blue")
+    _assert_true(ThemeColors.ERROR.r > 0.9, "ERROR has high red")
+
+    # INFO (blue)
+    _assert_true(ThemeColors.INFO is Color, "INFO is a Color")
+    _assert_true(ThemeColors.INFO.b > ThemeColors.INFO.r * 0.9, "INFO is blue-ish")
+
+func _test_theme_colors_gameplay_constants() -> void:
+    # THREAT
+    _assert_true(ThemeColors.THREAT is Color, "THREAT is a Color")
+    _assert_true(ThemeColors.THREAT.r > 0.8, "THREAT has high red")
+
+    # CASTLE_HEALTHY
+    _assert_true(ThemeColors.CASTLE_HEALTHY is Color, "CASTLE_HEALTHY is a Color")
+    _assert_true(ThemeColors.CASTLE_HEALTHY.g > ThemeColors.CASTLE_HEALTHY.r, "CASTLE_HEALTHY is green")
+
+    # CASTLE_DAMAGED
+    _assert_true(ThemeColors.CASTLE_DAMAGED is Color, "CASTLE_DAMAGED is a Color")
+    _assert_true(ThemeColors.CASTLE_DAMAGED.r > ThemeColors.CASTLE_DAMAGED.g, "CASTLE_DAMAGED is red")
+
+    # BUFF_ACTIVE
+    _assert_true(ThemeColors.BUFF_ACTIVE is Color, "BUFF_ACTIVE is a Color")
+    _assert_equal(ThemeColors.BUFF_ACTIVE.a, 1.0, "BUFF_ACTIVE has full alpha")
+
+    # TYPED_CORRECT
+    _assert_true(ThemeColors.TYPED_CORRECT is Color, "TYPED_CORRECT is a Color")
+    _assert_equal(ThemeColors.TYPED_CORRECT.a, 1.0, "TYPED_CORRECT has full alpha")
+
+    # TYPED_ERROR
+    _assert_true(ThemeColors.TYPED_ERROR is Color, "TYPED_ERROR is a Color")
+    _assert_true(ThemeColors.TYPED_ERROR.r > 0.9, "TYPED_ERROR has high red")
+
+    # TYPED_PENDING
+    _assert_true(ThemeColors.TYPED_PENDING is Color, "TYPED_PENDING is a Color")
+    _assert_true(ThemeColors.TYPED_PENDING.a < 0.5, "TYPED_PENDING has low alpha (dim)")
+
+func _test_theme_colors_alpha_functions() -> void:
+    # Test text_alpha()
+    var text_half: Color = ThemeColors.text_alpha(0.5)
+    _assert_true(text_half is Color, "text_alpha returns Color")
+    _assert_equal(text_half.a, 0.5, "text_alpha sets alpha correctly")
+    _assert_equal(text_half.r, ThemeColors.TEXT.r, "text_alpha preserves red")
+    _assert_equal(text_half.g, ThemeColors.TEXT.g, "text_alpha preserves green")
+    _assert_equal(text_half.b, ThemeColors.TEXT.b, "text_alpha preserves blue")
+
+    var text_zero: Color = ThemeColors.text_alpha(0.0)
+    _assert_equal(text_zero.a, 0.0, "text_alpha(0.0) is invisible")
+
+    var text_full: Color = ThemeColors.text_alpha(1.0)
+    _assert_equal(text_full.a, 1.0, "text_alpha(1.0) is fully opaque")
+
+    # Test accent_alpha()
+    var accent_half: Color = ThemeColors.accent_alpha(0.5)
+    _assert_true(accent_half is Color, "accent_alpha returns Color")
+    _assert_equal(accent_half.a, 0.5, "accent_alpha sets alpha correctly")
+    _assert_equal(accent_half.r, ThemeColors.ACCENT.r, "accent_alpha preserves red")
+    _assert_equal(accent_half.g, ThemeColors.ACCENT.g, "accent_alpha preserves green")
+    _assert_equal(accent_half.b, ThemeColors.ACCENT.b, "accent_alpha preserves blue")
+
+    # Test error_alpha()
+    var error_half: Color = ThemeColors.error_alpha(0.5)
+    _assert_true(error_half is Color, "error_alpha returns Color")
+    _assert_equal(error_half.a, 0.5, "error_alpha sets alpha correctly")
+    _assert_equal(error_half.r, ThemeColors.ERROR.r, "error_alpha preserves red")
+
+    # Test success_alpha()
+    var success_half: Color = ThemeColors.success_alpha(0.5)
+    _assert_true(success_half is Color, "success_alpha returns Color")
+    _assert_equal(success_half.a, 0.5, "success_alpha sets alpha correctly")
+    _assert_equal(success_half.g, ThemeColors.SUCCESS.g, "success_alpha preserves green")
+
+# Helper function for theme colors tests
+func _color_brightness(c: Color) -> float:
+    return (c.r + c.g + c.b) / 3.0
