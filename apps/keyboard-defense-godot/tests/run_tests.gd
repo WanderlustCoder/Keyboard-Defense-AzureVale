@@ -95,6 +95,8 @@ const ComboAnnouncement = preload("res://ui/components/combo_announcement.gd")
 const ThreatBar = preload("res://ui/components/threat_bar.gd")
 const TypingDisplay = preload("res://ui/components/typing_display.gd")
 const ModalPanel = preload("res://ui/components/modal_panel.gd")
+const CommandBar = preload("res://ui/command_bar.gd")
+const EventPanel = preload("res://ui/components/event_panel.gd")
 
 var total_tests: int = 0
 var total_failed: int = 0
@@ -211,6 +213,8 @@ func _run_all() -> void:
     _run_threat_bar_tests()
     _run_typing_display_tests()
     _run_modal_panel_tests()
+    _run_command_bar_tests()
+    _run_event_panel_tests()
 
     for message in messages:
         print("[tests] %s" % message)
@@ -9819,3 +9823,119 @@ func _test_modal_panel_constants() -> void:
 
     # Fade out should be faster than fade in (snappier dismiss)
     _assert_true(ModalPanel.FADE_OUT_DURATION < ModalPanel.FADE_IN_DURATION, "FADE_OUT < FADE_IN (snappy dismiss)")
+
+# =============================================================================
+# COMMAND BAR TESTS
+# =============================================================================
+
+func _run_command_bar_tests() -> void:
+    _test_command_bar_background_colors()
+    _test_command_bar_error_shake_constants()
+    _test_command_bar_autocomplete_constants()
+
+func _test_command_bar_background_colors() -> void:
+    # HISTORY_BG_COLOR
+    _assert_true(CommandBar.HISTORY_BG_COLOR is Color, "HISTORY_BG_COLOR is a Color")
+    _assert_equal(CommandBar.HISTORY_BG_COLOR.a, 1.0, "HISTORY_BG_COLOR has full alpha")
+    _assert_true(CommandBar.HISTORY_BG_COLOR.b > CommandBar.HISTORY_BG_COLOR.r, "HISTORY_BG_COLOR has blue tint")
+
+    # NORMAL_BG_COLOR
+    _assert_true(CommandBar.NORMAL_BG_COLOR is Color, "NORMAL_BG_COLOR is a Color")
+    _assert_equal(CommandBar.NORMAL_BG_COLOR.a, 1.0, "NORMAL_BG_COLOR has full alpha")
+    _assert_true(CommandBar.NORMAL_BG_COLOR.r < 0.2, "NORMAL_BG_COLOR is dark")
+    _assert_true(CommandBar.NORMAL_BG_COLOR.g < 0.2, "NORMAL_BG_COLOR is dark (g)")
+    _assert_true(CommandBar.NORMAL_BG_COLOR.b < 0.2, "NORMAL_BG_COLOR is dark (b)")
+
+    # ERROR_BG_COLOR
+    _assert_true(CommandBar.ERROR_BG_COLOR is Color, "ERROR_BG_COLOR is a Color")
+    _assert_equal(CommandBar.ERROR_BG_COLOR.a, 1.0, "ERROR_BG_COLOR has full alpha")
+    _assert_true(CommandBar.ERROR_BG_COLOR.r > CommandBar.ERROR_BG_COLOR.g, "ERROR_BG_COLOR has red tint")
+    _assert_true(CommandBar.ERROR_BG_COLOR.r > CommandBar.ERROR_BG_COLOR.b, "ERROR_BG_COLOR red > blue")
+
+    # Background colors should be distinct
+    _assert_true(CommandBar.HISTORY_BG_COLOR != CommandBar.NORMAL_BG_COLOR, "HISTORY != NORMAL bg color")
+    _assert_true(CommandBar.ERROR_BG_COLOR != CommandBar.NORMAL_BG_COLOR, "ERROR != NORMAL bg color")
+    _assert_true(CommandBar.HISTORY_BG_COLOR != CommandBar.ERROR_BG_COLOR, "HISTORY != ERROR bg color")
+
+func _test_command_bar_error_shake_constants() -> void:
+    # ERROR_SHAKE_DURATION
+    _assert_true(CommandBar.ERROR_SHAKE_DURATION > 0.0, "ERROR_SHAKE_DURATION is positive")
+    _assert_true(CommandBar.ERROR_SHAKE_DURATION < 1.0, "ERROR_SHAKE_DURATION is less than 1 second")
+    _assert_equal(CommandBar.ERROR_SHAKE_DURATION, 0.25, "ERROR_SHAKE_DURATION is 0.25")
+
+    # ERROR_SHAKE_INTENSITY
+    _assert_true(CommandBar.ERROR_SHAKE_INTENSITY > 0.0, "ERROR_SHAKE_INTENSITY is positive")
+    _assert_true(CommandBar.ERROR_SHAKE_INTENSITY < 20.0, "ERROR_SHAKE_INTENSITY is reasonable")
+    _assert_equal(CommandBar.ERROR_SHAKE_INTENSITY, 6.0, "ERROR_SHAKE_INTENSITY is 6.0")
+
+    # ERROR_SHAKE_FREQUENCY
+    _assert_true(CommandBar.ERROR_SHAKE_FREQUENCY > 0.0, "ERROR_SHAKE_FREQUENCY is positive")
+    _assert_true(CommandBar.ERROR_SHAKE_FREQUENCY < 100.0, "ERROR_SHAKE_FREQUENCY is reasonable")
+    _assert_equal(CommandBar.ERROR_SHAKE_FREQUENCY, 30.0, "ERROR_SHAKE_FREQUENCY is 30.0")
+
+func _test_command_bar_autocomplete_constants() -> void:
+    # AUTOCOMPLETE_MAX_ITEMS
+    _assert_true(CommandBar.AUTOCOMPLETE_MAX_ITEMS > 0, "AUTOCOMPLETE_MAX_ITEMS is positive")
+    _assert_true(CommandBar.AUTOCOMPLETE_MAX_ITEMS <= 10, "AUTOCOMPLETE_MAX_ITEMS is reasonable")
+    _assert_equal(CommandBar.AUTOCOMPLETE_MAX_ITEMS, 6, "AUTOCOMPLETE_MAX_ITEMS is 6")
+
+    # AUTOCOMPLETE_ITEM_HEIGHT
+    _assert_true(CommandBar.AUTOCOMPLETE_ITEM_HEIGHT > 0, "AUTOCOMPLETE_ITEM_HEIGHT is positive")
+    _assert_true(CommandBar.AUTOCOMPLETE_ITEM_HEIGHT <= 50, "AUTOCOMPLETE_ITEM_HEIGHT is reasonable")
+    _assert_equal(CommandBar.AUTOCOMPLETE_ITEM_HEIGHT, 24, "AUTOCOMPLETE_ITEM_HEIGHT is 24")
+
+    # AUTOCOMPLETE_BG_COLOR
+    _assert_true(CommandBar.AUTOCOMPLETE_BG_COLOR is Color, "AUTOCOMPLETE_BG_COLOR is a Color")
+    _assert_true(CommandBar.AUTOCOMPLETE_BG_COLOR.a > 0.9, "AUTOCOMPLETE_BG_COLOR has high alpha")
+    _assert_true(CommandBar.AUTOCOMPLETE_BG_COLOR.a < 1.0, "AUTOCOMPLETE_BG_COLOR has slight transparency")
+
+    # AUTOCOMPLETE_SELECTED_COLOR
+    _assert_true(CommandBar.AUTOCOMPLETE_SELECTED_COLOR is Color, "AUTOCOMPLETE_SELECTED_COLOR is a Color")
+    _assert_equal(CommandBar.AUTOCOMPLETE_SELECTED_COLOR.a, 1.0, "AUTOCOMPLETE_SELECTED_COLOR has full alpha")
+    _assert_true(_color_brightness(CommandBar.AUTOCOMPLETE_SELECTED_COLOR) > _color_brightness(CommandBar.AUTOCOMPLETE_BG_COLOR), "SELECTED is brighter than BG")
+
+    # AUTOCOMPLETE_TEXT_COLOR
+    _assert_true(CommandBar.AUTOCOMPLETE_TEXT_COLOR is Color, "AUTOCOMPLETE_TEXT_COLOR is a Color")
+    _assert_equal(CommandBar.AUTOCOMPLETE_TEXT_COLOR.a, 1.0, "AUTOCOMPLETE_TEXT_COLOR has full alpha")
+    _assert_true(_color_brightness(CommandBar.AUTOCOMPLETE_TEXT_COLOR) > 0.8, "AUTOCOMPLETE_TEXT_COLOR is bright (readable)")
+
+    # AUTOCOMPLETE_DIM_COLOR
+    _assert_true(CommandBar.AUTOCOMPLETE_DIM_COLOR is Color, "AUTOCOMPLETE_DIM_COLOR is a Color")
+    _assert_true(CommandBar.AUTOCOMPLETE_DIM_COLOR.a < CommandBar.AUTOCOMPLETE_TEXT_COLOR.a, "DIM has lower alpha than TEXT")
+    _assert_true(_color_brightness(CommandBar.AUTOCOMPLETE_DIM_COLOR) < _color_brightness(CommandBar.AUTOCOMPLETE_TEXT_COLOR), "DIM is less bright than TEXT")
+
+# =============================================================================
+# EVENT PANEL TESTS
+# =============================================================================
+
+func _run_event_panel_tests() -> void:
+    _test_event_panel_font_sizes()
+    _test_event_panel_animation_constants()
+
+func _test_event_panel_font_sizes() -> void:
+    # TITLE_FONT_SIZE
+    _assert_true(EventPanel.TITLE_FONT_SIZE > 0, "TITLE_FONT_SIZE is positive")
+    _assert_equal(EventPanel.TITLE_FONT_SIZE, 22, "TITLE_FONT_SIZE is 22")
+
+    # BODY_FONT_SIZE
+    _assert_true(EventPanel.BODY_FONT_SIZE > 0, "BODY_FONT_SIZE is positive")
+    _assert_equal(EventPanel.BODY_FONT_SIZE, 16, "BODY_FONT_SIZE is 16")
+
+    # CHOICE_FONT_SIZE
+    _assert_true(EventPanel.CHOICE_FONT_SIZE > 0, "CHOICE_FONT_SIZE is positive")
+    _assert_equal(EventPanel.CHOICE_FONT_SIZE, 14, "CHOICE_FONT_SIZE is 14")
+
+    # INPUT_FONT_SIZE
+    _assert_true(EventPanel.INPUT_FONT_SIZE > 0, "INPUT_FONT_SIZE is positive")
+    _assert_equal(EventPanel.INPUT_FONT_SIZE, 18, "INPUT_FONT_SIZE is 18")
+
+    # Font size hierarchy: title > input > body > choice
+    _assert_true(EventPanel.TITLE_FONT_SIZE > EventPanel.INPUT_FONT_SIZE, "TITLE > INPUT font size")
+    _assert_true(EventPanel.INPUT_FONT_SIZE > EventPanel.BODY_FONT_SIZE, "INPUT > BODY font size")
+    _assert_true(EventPanel.BODY_FONT_SIZE > EventPanel.CHOICE_FONT_SIZE, "BODY > CHOICE font size")
+
+func _test_event_panel_animation_constants() -> void:
+    # FADE_DURATION
+    _assert_true(EventPanel.FADE_DURATION > 0.0, "FADE_DURATION is positive")
+    _assert_true(EventPanel.FADE_DURATION < 1.0, "FADE_DURATION is quick")
+    _assert_equal(EventPanel.FADE_DURATION, 0.2, "FADE_DURATION is 0.2")
