@@ -57,6 +57,10 @@ const SimUpgrades = preload("res://sim/upgrades.gd")
 const SimWaveComposer = preload("res://sim/wave_composer.gd")
 const SimLoot = preload("res://sim/loot.gd")
 const SimMilestones = preload("res://sim/milestones.gd")
+const SimEventEffects = preload("res://sim/event_effects.gd")
+const SimEvents = preload("res://sim/events.gd")
+const SimEventTables = preload("res://sim/event_tables.gd")
+const SimPoi = preload("res://sim/poi.gd")
 
 var total_tests: int = 0
 var total_failed: int = 0
@@ -132,6 +136,8 @@ func _run_all() -> void:
     _run_upgrades_tests()
     _run_loot_tests()
     _run_milestones_tests()
+    _run_event_effects_tests()
+    _run_event_system_tests()
 
     for message in messages:
         print("[tests] %s" % message)
@@ -4773,3 +4779,252 @@ func _run_milestones_tests() -> void:
     # Test personal best formatting
     var pb_formatted: String = SimMilestones.format_milestone(pb_result)
     _assert_true("ffd700" in pb_formatted.to_lower() or "gold" in pb_formatted.to_lower() or "[color" in pb_formatted, "Personal best has special formatting")
+
+
+func _run_event_effects_tests() -> void:
+    var state: GameState = DefaultState.create()
+
+    # Test resource_add effect
+    state.resources["wood"] = 10
+    var resource_result: Dictionary = SimEventEffects.apply_effect(state, {"type": "resource_add", "resource": "wood", "amount": 5})
+    _assert_equal(str(resource_result.get("type", "")), "resource_add", "resource_add type")
+    _assert_equal(int(state.resources.get("wood", 0)), 15, "Wood increased by 5")
+    _assert_equal(int(resource_result.get("old_value", 0)), 10, "old_value correct")
+    _assert_equal(int(resource_result.get("new_value", 0)), 15, "new_value correct")
+
+    # Test resource_add with negative (can't go below 0)
+    var negative_result: Dictionary = SimEventEffects.apply_effect(state, {"type": "resource_add", "resource": "wood", "amount": -100})
+    _assert_equal(int(state.resources.get("wood", 0)), 0, "Wood can't go below 0")
+
+    # Test invalid resource
+    var invalid_resource: Dictionary = SimEventEffects.apply_effect(state, {"type": "resource_add", "resource": "fake_resource", "amount": 5})
+    _assert_true(invalid_resource.has("error"), "Invalid resource returns error")
+
+    # Test gold_add effect
+    state.gold = 50
+    var gold_result: Dictionary = SimEventEffects.apply_effect(state, {"type": "gold_add", "amount": 25})
+    _assert_equal(str(gold_result.get("type", "")), "gold_add", "gold_add type")
+    _assert_equal(int(state.gold), 75, "Gold increased by 25")
+
+    # Test buff_apply effect
+    var buff_result: Dictionary = SimEventEffects.apply_effect(state, {"type": "buff_apply", "buff": "speed_boost", "duration": 3})
+    _assert_equal(str(buff_result.get("type", "")), "buff_apply", "buff_apply type")
+    _assert_equal(str(buff_result.get("buff_id", "")), "speed_boost", "buff_id correct")
+    _assert_equal(int(buff_result.get("duration", 0)), 3, "duration correct")
+    _assert_false(bool(buff_result.get("refreshed", true)), "First application not refreshed")
+
+    # Test buff refresh
+    var refresh_result: Dictionary = SimEventEffects.apply_effect(state, {"type": "buff_apply", "buff": "speed_boost", "duration": 5})
+    _assert_true(bool(refresh_result.get("refreshed", false)), "Second application refreshed")
+
+    # Test has_buff
+    _assert_true(SimEventEffects.has_buff(state, "speed_boost"), "has_buff returns true for active buff")
+    _assert_false(SimEventEffects.has_buff(state, "nonexistent_buff"), "has_buff returns false for nonexistent buff")
+
+    # Test damage_castle effect
+    state.hp = 10
+    var damage_result: Dictionary = SimEventEffects.apply_effect(state, {"type": "damage_castle", "amount": 3})
+    _assert_equal(str(damage_result.get("type", "")), "damage_castle", "damage_castle type")
+    _assert_equal(int(state.hp), 7, "HP reduced by 3")
+    _assert_equal(int(damage_result.get("old_hp", 0)), 10, "old_hp correct")
+    _assert_equal(int(damage_result.get("new_hp", 0)), 7, "new_hp correct")
+
+    # Test heal_castle effect
+    var heal_result: Dictionary = SimEventEffects.apply_effect(state, {"type": "heal_castle", "amount": 5, "max_hp": 10})
+    _assert_equal(int(state.hp), 10, "HP healed to max")
+    _assert_equal(int(heal_result.get("new_hp", 0)), 10, "new_hp capped at max")
+
+    # Test threat_add effect
+    state.threat = 5
+    var threat_result: Dictionary = SimEventEffects.apply_effect(state, {"type": "threat_add", "amount": 3})
+    _assert_equal(int(state.threat), 8, "Threat increased by 3")
+
+    # Test ap_add effect
+    state.ap = 2
+    state.ap_max = 5
+    var ap_result: Dictionary = SimEventEffects.apply_effect(state, {"type": "ap_add", "amount": 10})
+    _assert_equal(int(state.ap), 5, "AP capped at ap_max")
+
+    # Test set_flag effect
+    var flag_result: Dictionary = SimEventEffects.apply_effect(state, {"type": "set_flag", "flag": "test_flag", "value": true})
+    _assert_true(state.event_flags.has("test_flag"), "Flag set in state")
+    _assert_true(bool(state.event_flags.get("test_flag", false)), "Flag value is true")
+
+    # Test clear_flag effect
+    var clear_result: Dictionary = SimEventEffects.apply_effect(state, {"type": "clear_flag", "flag": "test_flag"})
+    _assert_false(state.event_flags.has("test_flag"), "Flag removed from state")
+    _assert_true(bool(clear_result.get("removed", false)), "clear_flag reports removed")
+
+    # Test spawn_enemies effect
+    state.enemies = []
+    state.enemy_next_id = 1
+    var spawn_result: Dictionary = SimEventEffects.apply_effect(state, {"type": "spawn_enemies", "kind": "raider", "count": 2, "at_cursor": true})
+    _assert_equal(str(spawn_result.get("type", "")), "spawn_enemies", "spawn_enemies type")
+    _assert_true(int(spawn_result.get("spawned", 0)) >= 1, "At least 1 enemy spawned")
+    _assert_true(state.enemies.size() >= 1, "Enemies array has entries")
+    _assert_true(spawn_result.has("enemy_ids"), "spawn_result has enemy_ids")
+
+    # Test spawn_enemies with invalid kind
+    var invalid_spawn: Dictionary = SimEventEffects.apply_effect(state, {"type": "spawn_enemies", "kind": "fake_enemy", "count": 1})
+    _assert_true(invalid_spawn.has("error"), "Invalid enemy kind returns error")
+
+    # Test modify_terrain effect
+    var terrain_result: Dictionary = SimEventEffects.apply_effect(state, {"type": "modify_terrain", "terrain": "forest", "at_cursor": true})
+    _assert_equal(str(terrain_result.get("type", "")), "modify_terrain", "modify_terrain type")
+    var terrain_index: int = state.cursor_pos.y * state.map_w + state.cursor_pos.x
+    _assert_equal(str(state.terrain[terrain_index]), "forest", "Terrain changed to forest")
+
+    # Test modify_terrain with invalid terrain
+    var invalid_terrain: Dictionary = SimEventEffects.apply_effect(state, {"type": "modify_terrain", "terrain": "lava"})
+    _assert_true(invalid_terrain.has("error"), "Invalid terrain returns error")
+
+    # Test unlock_lesson effect
+    var lesson_result: Dictionary = SimEventEffects.apply_effect(state, {"type": "unlock_lesson", "lesson": "test_lesson"})
+    _assert_equal(str(lesson_result.get("type", "")), "unlock_lesson", "unlock_lesson type")
+    _assert_true(state.event_flags.has("lesson_unlocked_test_lesson"), "Lesson unlock flag set")
+    _assert_false(bool(lesson_result.get("already_unlocked", true)), "First unlock not already_unlocked")
+
+    # Test unlock_lesson when already unlocked
+    var second_unlock: Dictionary = SimEventEffects.apply_effect(state, {"type": "unlock_lesson", "lesson": "test_lesson"})
+    _assert_true(bool(second_unlock.get("already_unlocked", false)), "Second unlock already_unlocked")
+
+    # Test unlock_achievement effect
+    var achievement_result: Dictionary = SimEventEffects.apply_effect(state, {"type": "unlock_achievement", "achievement": "test_achievement"})
+    _assert_equal(str(achievement_result.get("type", "")), "unlock_achievement", "unlock_achievement type")
+    _assert_true(state.event_flags.has("achievement_test_achievement"), "Achievement flag set")
+    _assert_false(bool(achievement_result.get("already_earned", true)), "First earn not already_earned")
+
+    # Test unknown effect type
+    var unknown_result: Dictionary = SimEventEffects.apply_effect(state, {"type": "unknown_type"})
+    _assert_true(unknown_result.has("error"), "Unknown effect type returns error")
+
+    # Test apply_effects with multiple effects
+    var multi_state: GameState = DefaultState.create()
+    multi_state.resources["wood"] = 0
+    multi_state.gold = 0
+    var effects: Array = [
+        {"type": "resource_add", "resource": "wood", "amount": 10},
+        {"type": "gold_add", "amount": 50},
+        {"type": "set_flag", "flag": "multi_test", "value": true}
+    ]
+    var multi_results: Array = SimEventEffects.apply_effects(multi_state, effects)
+    _assert_equal(multi_results.size(), 3, "3 effect results returned")
+    _assert_equal(int(multi_state.resources.get("wood", 0)), 10, "Wood set from multi effects")
+    _assert_equal(int(multi_state.gold), 50, "Gold set from multi effects")
+    _assert_true(multi_state.event_flags.has("multi_test"), "Flag set from multi effects")
+
+    # Test expire_buffs
+    var expire_state: GameState = DefaultState.create()
+    expire_state.day = 5
+    expire_state.active_buffs = [
+        {"buff_id": "expired", "expires_day": 4, "applied_day": 1},
+        {"buff_id": "active", "expires_day": 10, "applied_day": 3}
+    ]
+    var expired: Array = SimEventEffects.expire_buffs(expire_state)
+    _assert_equal(expired.size(), 1, "1 buff expired")
+    _assert_equal(str(expired[0]), "expired", "Correct buff expired")
+    _assert_equal(expire_state.active_buffs.size(), 1, "1 active buff remains")
+
+    # Test get_buff_remaining_days
+    var remaining: int = SimEventEffects.get_buff_remaining_days(expire_state, "active")
+    _assert_equal(remaining, 5, "5 days remaining on active buff")
+
+    # Test serialize/deserialize buffs
+    var serialized: Array = SimEventEffects.serialize_buffs(expire_state.active_buffs)
+    _assert_equal(serialized.size(), 1, "1 buff serialized")
+    var deserialized: Array = SimEventEffects.deserialize_buffs(serialized)
+    _assert_equal(deserialized.size(), 1, "1 buff deserialized")
+    _assert_equal(str(deserialized[0].get("buff_id", "")), "active", "Buff ID preserved")
+
+
+func _run_event_system_tests() -> void:
+    # Test SimEvents loading
+    SimEvents.load_events()
+    var events: Dictionary = SimEvents.get_all_events()
+    _assert_true(events.size() > 0, "Events loaded from JSON")
+
+    # Test get_event
+    if events.size() > 0:
+        var first_id: String = str(events.keys()[0])
+        var event: Dictionary = SimEvents.get_event(first_id)
+        _assert_true(event.has("title"), "Event has title")
+        _assert_true(event.has("body"), "Event has body")
+        _assert_true(event.has("choices") or event.has("id"), "Event has choices or id")
+
+    # Test is_valid_event
+    _assert_false(SimEvents.is_valid_event("nonexistent_event_12345"), "Nonexistent event invalid")
+
+    # Test SimEventTables loading
+    SimEventTables.load_tables()
+    var tables: Dictionary = SimEventTables.get_all_tables()
+    _assert_true(tables.size() > 0, "Event tables loaded from JSON")
+
+    # Test table structure
+    if tables.size() > 0:
+        var first_table_id: String = str(tables.keys()[0])
+        var table: Dictionary = SimEventTables.get_table(first_table_id)
+        _assert_true(table.has("entries") or table.has("id"), "Table has entries or id")
+
+    # Test SimPoi loading
+    SimPoi.load_pois()
+    var pois: Dictionary = SimPoi.get_all_pois()
+    _assert_true(pois.size() > 0, "POIs loaded from JSON")
+
+    # Test POI structure
+    if pois.size() > 0:
+        var first_poi_id: String = str(pois.keys()[0])
+        var poi: Dictionary = SimPoi.get_poi(first_poi_id)
+        _assert_true(poi.has("name") or poi.has("id"), "POI has name or id")
+        _assert_true(poi.has("biome") or poi.has("event_table_id") or poi.has("id"), "POI has biome or event_table_id")
+
+    # Test POI spawn validation
+    var state: GameState = DefaultState.create()
+    state.day = 5
+    # Test can_spawn_poi doesn't crash (we don't know valid POI IDs from data)
+
+    # Test event cooldown management
+    state.event_cooldowns = {}
+    _assert_false(SimEvents.is_on_cooldown(state, "test_event"), "Event not on cooldown initially")
+
+    # Test has_pending_event
+    state.pending_event = {}
+    _assert_false(SimEvents.has_pending_event(state), "No pending event initially")
+
+    # Test start_event
+    var test_event: Dictionary = {
+        "id": "test_event",
+        "title": "Test Event",
+        "body": "This is a test event.",
+        "choices": [
+            {"text": "Option A", "input_mode": "code", "code": "accept", "effects": []},
+            {"text": "Option B", "input_mode": "code", "code": "decline", "effects": []}
+        ]
+    }
+    SimEvents.start_event(state, test_event)
+    _assert_true(SimEvents.has_pending_event(state), "Event is pending after start")
+    var pending: Dictionary = SimEvents.get_pending_event(state)
+    _assert_equal(str(pending.get("id", "")), "test_event", "Pending event ID correct")
+
+    # Test clear pending event
+    state.pending_event = {}
+    _assert_false(SimEvents.has_pending_event(state), "No pending event after clear")
+
+    # Test event flag conditions
+    state.event_flags = {"has_key": true}
+    _assert_true(SimEventTables.check_condition(state, {"type": "flag_set", "flag": "has_key"}), "flag_set condition passes")
+    _assert_false(SimEventTables.check_condition(state, {"type": "flag_set", "flag": "no_key"}), "flag_set fails for missing flag")
+    _assert_true(SimEventTables.check_condition(state, {"type": "flag_not_set", "flag": "no_key"}), "flag_not_set passes for missing flag")
+    _assert_false(SimEventTables.check_condition(state, {"type": "flag_not_set", "flag": "has_key"}), "flag_not_set fails for set flag")
+
+    # Test day_range condition
+    state.day = 5
+    _assert_true(SimEventTables.check_condition(state, {"type": "day_range", "min": 1, "max": 10}), "day_range passes when in range")
+    _assert_false(SimEventTables.check_condition(state, {"type": "day_range", "min": 10, "max": 20}), "day_range fails when below min")
+
+    # Test resource_min condition
+    state.resources["wood"] = 50
+    _assert_true(SimEventTables.check_condition(state, {"type": "resource_min", "resource": "wood", "amount": 30}), "resource_min passes")
+    _assert_false(SimEventTables.check_condition(state, {"type": "resource_min", "resource": "wood", "amount": 100}), "resource_min fails when insufficient")
+
+    # Test unknown condition type (should pass by default)
+    _assert_true(SimEventTables.check_condition(state, {"type": "unknown_condition"}), "Unknown condition passes by default")

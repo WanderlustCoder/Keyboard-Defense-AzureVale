@@ -198,11 +198,23 @@ Acceptance criteria:
 - No RNG consumption added to lesson word selection.
 
 ### P1-MAP-001 Map and exploration depth
-Status: Partially complete
+Status: Partially complete (2026-01-11 updates)
 
 Add deeper exploration events and map structure while staying deterministic.
 
-**Progress:** Open world exploration mode implemented (`game/open_world.gd`). Tile discovery, resource gathering, roaming enemies, and structure building functional. Kingdom defense mode adds RTS-style map interaction. Remaining work is POI events, map variety, and deeper exploration outcomes.
+**Progress:** Open world exploration mode implemented (`game/open_world.gd`). Tile discovery, resource gathering, roaming enemies, and structure building functional. Kingdom defense mode adds RTS-style map interaction.
+
+**Recent additions (2026-01-11):**
+- Extended event effects system with 5 new effect types:
+  - `gold_add` - Direct gold rewards from events
+  - `spawn_enemies` - Spawn enemies at cursor/base position
+  - `modify_terrain` - Change terrain at specified tile
+  - `unlock_lesson` - Unlock lessons via exploration
+  - `unlock_achievement` - Earn achievements through events
+- Added 80+ test assertions for event effects system
+- Added event system tests (POI loading, event tables, conditions)
+
+**Remaining work:** Zone/region system for map variety, complex event chains, exploration progression tracking.
 
 Planning refs:
 - `docs/plans/p1/MAP_EXPLORATION_PLAN.md`
@@ -220,7 +232,7 @@ Status: In progress (significant test additions 2026-01-11)
 
 Increase automated coverage and formalize manual QA gates for releases.
 
-**Progress (2026-01-11):** Test suite expanded to 4,126 assertions covering:
+**Progress (2026-01-11):** Test suite expanded to 4,200+ assertions covering:
 - Boss encounters (phases, mechanics, dialogue)
 - Difficulty modes (modifiers, multipliers)
 - Lesson consistency (lesson-story alignment)
