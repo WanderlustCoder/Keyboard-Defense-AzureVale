@@ -83,6 +83,7 @@ const SimIntents = preload("res://sim/intents.gd")
 const SimTick = preload("res://sim/tick.gd")
 const SimAutoTowerCombat = preload("res://sim/auto_tower_combat.gd")
 const WorldTick = preload("res://sim/world_tick.gd")
+const ControlsAliases = preload("res://game/controls_aliases.gd")
 
 var total_tests: int = 0
 var total_failed: int = 0
@@ -186,7 +187,7 @@ func _run_all() -> void:
     _run_tick_tests()
     _run_auto_tower_combat_tests()
     _run_world_tick_tests()
-    _run_words_tests()
+    _run_controls_aliases_tests()
 
     for message in messages:
         print("[tests] %s" % message)
@@ -8519,3 +8520,149 @@ func _test_words_random_functions() -> void:
     # Test random_word_for_lesson with valid lesson (if available)
     var random_home: String = SimWords.random_word_for_lesson(null, "home_row")
     _assert_true(random_home.length() > 0, "random_word_for_lesson returns word with home_row")
+
+
+# ==============================================================================
+# CONTROLS ALIASES TESTS
+# ==============================================================================
+
+func _run_controls_aliases_tests() -> void:
+    _test_controls_aliases_constants()
+    _test_controls_aliases_normalize_token()
+    _test_controls_aliases_is_modifier_token()
+    _test_controls_aliases_keycode_from_token()
+
+func _test_controls_aliases_constants() -> void:
+    # Test MODIFIER_ALIASES contains expected entries
+    _assert_true(ControlsAliases.MODIFIER_ALIASES.has("CTRL"), "Has CTRL alias")
+    _assert_true(ControlsAliases.MODIFIER_ALIASES.has("CONTROL"), "Has CONTROL alias")
+    _assert_true(ControlsAliases.MODIFIER_ALIASES.has("ALT"), "Has ALT alias")
+    _assert_true(ControlsAliases.MODIFIER_ALIASES.has("OPTION"), "Has OPTION alias")
+    _assert_true(ControlsAliases.MODIFIER_ALIASES.has("SHIFT"), "Has SHIFT alias")
+    _assert_true(ControlsAliases.MODIFIER_ALIASES.has("META"), "Has META alias")
+    _assert_true(ControlsAliases.MODIFIER_ALIASES.has("CMD"), "Has CMD alias")
+    _assert_true(ControlsAliases.MODIFIER_ALIASES.has("COMMAND"), "Has COMMAND alias")
+    _assert_true(ControlsAliases.MODIFIER_ALIASES.has("SUPER"), "Has SUPER alias")
+    _assert_true(ControlsAliases.MODIFIER_ALIASES.has("WIN"), "Has WIN alias")
+    _assert_true(ControlsAliases.MODIFIER_ALIASES.has("WINDOWS"), "Has WINDOWS alias")
+
+    # Verify all modifiers map to correct canonical names
+    _assert_equal(str(ControlsAliases.MODIFIER_ALIASES.get("CTRL")), "ctrl", "CTRL maps to ctrl")
+    _assert_equal(str(ControlsAliases.MODIFIER_ALIASES.get("CONTROL")), "ctrl", "CONTROL maps to ctrl")
+    _assert_equal(str(ControlsAliases.MODIFIER_ALIASES.get("ALT")), "alt", "ALT maps to alt")
+    _assert_equal(str(ControlsAliases.MODIFIER_ALIASES.get("OPTION")), "alt", "OPTION maps to alt")
+    _assert_equal(str(ControlsAliases.MODIFIER_ALIASES.get("SHIFT")), "shift", "SHIFT maps to shift")
+    _assert_equal(str(ControlsAliases.MODIFIER_ALIASES.get("META")), "meta", "META maps to meta")
+    _assert_equal(str(ControlsAliases.MODIFIER_ALIASES.get("CMD")), "meta", "CMD maps to meta")
+    _assert_equal(str(ControlsAliases.MODIFIER_ALIASES.get("COMMAND")), "meta", "COMMAND maps to meta")
+    _assert_equal(str(ControlsAliases.MODIFIER_ALIASES.get("WIN")), "meta", "WIN maps to meta")
+
+    # Test KEY_ALIASES contains expected entries
+    _assert_true(ControlsAliases.KEY_ALIASES.has("INS"), "Has INS alias")
+    _assert_true(ControlsAliases.KEY_ALIASES.has("INSERT"), "Has INSERT alias")
+    _assert_true(ControlsAliases.KEY_ALIASES.has("DEL"), "Has DEL alias")
+    _assert_true(ControlsAliases.KEY_ALIASES.has("DELETE"), "Has DELETE alias")
+    _assert_true(ControlsAliases.KEY_ALIASES.has("HOME"), "Has HOME alias")
+    _assert_true(ControlsAliases.KEY_ALIASES.has("END"), "Has END alias")
+    _assert_true(ControlsAliases.KEY_ALIASES.has("PAGEUP"), "Has PAGEUP alias")
+    _assert_true(ControlsAliases.KEY_ALIASES.has("PGUP"), "Has PGUP alias")
+    _assert_true(ControlsAliases.KEY_ALIASES.has("PAGEDOWN"), "Has PAGEDOWN alias")
+    _assert_true(ControlsAliases.KEY_ALIASES.has("PGDN"), "Has PGDN alias")
+    _assert_true(ControlsAliases.KEY_ALIASES.has("PRINTSCREEN"), "Has PRINTSCREEN alias")
+    _assert_true(ControlsAliases.KEY_ALIASES.has("SCROLLLOCK"), "Has SCROLLLOCK alias")
+    _assert_true(ControlsAliases.KEY_ALIASES.has("PAUSE"), "Has PAUSE alias")
+    _assert_true(ControlsAliases.KEY_ALIASES.has("BREAK"), "Has BREAK alias")
+
+    # Verify key mappings
+    _assert_equal(int(ControlsAliases.KEY_ALIASES.get("INSERT")), KEY_INSERT, "INSERT maps to KEY_INSERT")
+    _assert_equal(int(ControlsAliases.KEY_ALIASES.get("INS")), KEY_INSERT, "INS maps to KEY_INSERT")
+    _assert_equal(int(ControlsAliases.KEY_ALIASES.get("DELETE")), KEY_DELETE, "DELETE maps to KEY_DELETE")
+    _assert_equal(int(ControlsAliases.KEY_ALIASES.get("DEL")), KEY_DELETE, "DEL maps to KEY_DELETE")
+    _assert_equal(int(ControlsAliases.KEY_ALIASES.get("HOME")), KEY_HOME, "HOME maps to KEY_HOME")
+    _assert_equal(int(ControlsAliases.KEY_ALIASES.get("END")), KEY_END, "END maps to KEY_END")
+    _assert_equal(int(ControlsAliases.KEY_ALIASES.get("PAGEUP")), KEY_PAGEUP, "PAGEUP maps to KEY_PAGEUP")
+    _assert_equal(int(ControlsAliases.KEY_ALIASES.get("PGUP")), KEY_PAGEUP, "PGUP maps to KEY_PAGEUP")
+    _assert_equal(int(ControlsAliases.KEY_ALIASES.get("PAGEDOWN")), KEY_PAGEDOWN, "PAGEDOWN maps to KEY_PAGEDOWN")
+    _assert_equal(int(ControlsAliases.KEY_ALIASES.get("PGDN")), KEY_PAGEDOWN, "PGDN maps to KEY_PAGEDOWN")
+
+func _test_controls_aliases_normalize_token() -> void:
+    # Test basic normalization
+    _assert_equal(ControlsAliases.normalize_token("ctrl"), "CTRL", "ctrl normalizes to CTRL")
+    _assert_equal(ControlsAliases.normalize_token("CTRL"), "CTRL", "CTRL stays CTRL")
+    _assert_equal(ControlsAliases.normalize_token("Ctrl"), "CTRL", "Ctrl normalizes to CTRL")
+
+    # Test whitespace handling
+    _assert_equal(ControlsAliases.normalize_token("  ctrl  "), "CTRL", "Whitespace trimmed")
+    _assert_equal(ControlsAliases.normalize_token(""), "", "Empty string stays empty")
+    _assert_equal(ControlsAliases.normalize_token("   "), "", "Whitespace-only becomes empty")
+
+    # Test separator removal
+    _assert_equal(ControlsAliases.normalize_token("page_up"), "PAGEUP", "Underscores removed")
+    _assert_equal(ControlsAliases.normalize_token("page-up"), "PAGEUP", "Hyphens removed")
+    _assert_equal(ControlsAliases.normalize_token("page up"), "PAGEUP", "Spaces removed")
+    _assert_equal(ControlsAliases.normalize_token("PAGE_DOWN"), "PAGEDOWN", "PAGE_DOWN normalizes to PAGEDOWN")
+    _assert_equal(ControlsAliases.normalize_token("scroll lock"), "SCROLLLOCK", "scroll lock normalizes")
+
+    # Test function keys
+    _assert_equal(ControlsAliases.normalize_token("f1"), "F1", "f1 normalizes to F1")
+    _assert_equal(ControlsAliases.normalize_token("F12"), "F12", "F12 stays F12")
+
+func _test_controls_aliases_is_modifier_token() -> void:
+    # Test valid modifiers
+    _assert_true(ControlsAliases.is_modifier_token("CTRL"), "CTRL is modifier")
+    _assert_true(ControlsAliases.is_modifier_token("CONTROL"), "CONTROL is modifier")
+    _assert_true(ControlsAliases.is_modifier_token("ALT"), "ALT is modifier")
+    _assert_true(ControlsAliases.is_modifier_token("OPTION"), "OPTION is modifier")
+    _assert_true(ControlsAliases.is_modifier_token("SHIFT"), "SHIFT is modifier")
+    _assert_true(ControlsAliases.is_modifier_token("META"), "META is modifier")
+    _assert_true(ControlsAliases.is_modifier_token("CMD"), "CMD is modifier")
+    _assert_true(ControlsAliases.is_modifier_token("COMMAND"), "COMMAND is modifier")
+    _assert_true(ControlsAliases.is_modifier_token("SUPER"), "SUPER is modifier")
+    _assert_true(ControlsAliases.is_modifier_token("WIN"), "WIN is modifier")
+    _assert_true(ControlsAliases.is_modifier_token("WINDOWS"), "WINDOWS is modifier")
+
+    # Test non-modifiers
+    _assert_false(ControlsAliases.is_modifier_token("A"), "A is not modifier")
+    _assert_false(ControlsAliases.is_modifier_token("F1"), "F1 is not modifier")
+    _assert_false(ControlsAliases.is_modifier_token("ENTER"), "ENTER is not modifier")
+    _assert_false(ControlsAliases.is_modifier_token("SPACE"), "SPACE is not modifier")
+    _assert_false(ControlsAliases.is_modifier_token("DELETE"), "DELETE is not modifier")
+    _assert_false(ControlsAliases.is_modifier_token(""), "Empty is not modifier")
+    _assert_false(ControlsAliases.is_modifier_token("INVALID"), "INVALID is not modifier")
+
+func _test_controls_aliases_keycode_from_token() -> void:
+    # Test special keys
+    _assert_equal(ControlsAliases.keycode_from_token("INSERT"), KEY_INSERT, "INSERT returns KEY_INSERT")
+    _assert_equal(ControlsAliases.keycode_from_token("INS"), KEY_INSERT, "INS returns KEY_INSERT")
+    _assert_equal(ControlsAliases.keycode_from_token("DELETE"), KEY_DELETE, "DELETE returns KEY_DELETE")
+    _assert_equal(ControlsAliases.keycode_from_token("DEL"), KEY_DELETE, "DEL returns KEY_DELETE")
+    _assert_equal(ControlsAliases.keycode_from_token("HOME"), KEY_HOME, "HOME returns KEY_HOME")
+    _assert_equal(ControlsAliases.keycode_from_token("END"), KEY_END, "END returns KEY_END")
+    _assert_equal(ControlsAliases.keycode_from_token("PAGEUP"), KEY_PAGEUP, "PAGEUP returns KEY_PAGEUP")
+    _assert_equal(ControlsAliases.keycode_from_token("PGUP"), KEY_PAGEUP, "PGUP returns KEY_PAGEUP")
+    _assert_equal(ControlsAliases.keycode_from_token("PAGEDOWN"), KEY_PAGEDOWN, "PAGEDOWN returns KEY_PAGEDOWN")
+    _assert_equal(ControlsAliases.keycode_from_token("PGDN"), KEY_PAGEDOWN, "PGDN returns KEY_PAGEDOWN")
+    _assert_equal(ControlsAliases.keycode_from_token("PRINT"), KEY_PRINT, "PRINT returns KEY_PRINT")
+    _assert_equal(ControlsAliases.keycode_from_token("SCROLLLOCK"), KEY_SCROLLLOCK, "SCROLLLOCK returns KEY_SCROLLLOCK")
+    _assert_equal(ControlsAliases.keycode_from_token("PAUSE"), KEY_PAUSE, "PAUSE returns KEY_PAUSE")
+    _assert_equal(ControlsAliases.keycode_from_token("BREAK"), KEY_PAUSE, "BREAK returns KEY_PAUSE")
+
+    # Test function keys
+    _assert_equal(ControlsAliases.keycode_from_token("F1"), KEY_F1, "F1 returns KEY_F1")
+    _assert_equal(ControlsAliases.keycode_from_token("F2"), KEY_F2, "F2 returns KEY_F2")
+    _assert_equal(ControlsAliases.keycode_from_token("F3"), KEY_F3, "F3 returns KEY_F3")
+    _assert_equal(ControlsAliases.keycode_from_token("F4"), KEY_F4, "F4 returns KEY_F4")
+    _assert_equal(ControlsAliases.keycode_from_token("F5"), KEY_F5, "F5 returns KEY_F5")
+    _assert_equal(ControlsAliases.keycode_from_token("F6"), KEY_F6, "F6 returns KEY_F6")
+    _assert_equal(ControlsAliases.keycode_from_token("F7"), KEY_F7, "F7 returns KEY_F7")
+    _assert_equal(ControlsAliases.keycode_from_token("F8"), KEY_F8, "F8 returns KEY_F8")
+    _assert_equal(ControlsAliases.keycode_from_token("F9"), KEY_F9, "F9 returns KEY_F9")
+    _assert_equal(ControlsAliases.keycode_from_token("F10"), KEY_F10, "F10 returns KEY_F10")
+    _assert_equal(ControlsAliases.keycode_from_token("F11"), KEY_F11, "F11 returns KEY_F11")
+    _assert_equal(ControlsAliases.keycode_from_token("F12"), KEY_F12, "F12 returns KEY_F12")
+
+    # Test invalid/unsupported tokens
+    _assert_equal(ControlsAliases.keycode_from_token(""), 0, "Empty returns 0")
+    _assert_equal(ControlsAliases.keycode_from_token("UNKNOWN"), 0, "UNKNOWN returns 0")
+    _assert_equal(ControlsAliases.keycode_from_token("F0"), 0, "F0 returns 0")
+    _assert_equal(ControlsAliases.keycode_from_token("F13"), 0, "F13 returns 0")
