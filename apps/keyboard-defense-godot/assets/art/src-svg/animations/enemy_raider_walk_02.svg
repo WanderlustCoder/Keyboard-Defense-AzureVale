@@ -1,108 +1,91 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
-  <!-- Enemy Raider Walk Frame 2: Legs passing (left crossing right) -->
+  <!-- Enemy Raider Walk Frame 2: Right leg passing (lifted), left leg planted -->
   <!-- Color Palette: #dc143c (crimson), #8b0000 (blood red), #ff4500 (flame), #4c1d95 (dark purple), #f08080 (light coral), #1a1a2e (charcoal), #5c5c7a (slate/metal) -->
 
-  <!-- Ground shadow (centered) -->
-  <ellipse cx="16" cy="30" rx="8" ry="2" fill="#1a1a2e" opacity="0.6"/>
+  <!-- Ground shadow (under planted foot) -->
+  <ellipse cx="12" cy="30" rx="6" ry="2" fill="#1a1a2e" opacity="0.6"/>
 
-  <!-- Back leg (right, underneath) -->
-  <rect x="14" y="20" width="4" height="10" fill="#8b0000"/>
-  <rect x="15" y="21" width="2" height="8" fill="#dc143c"/>
-  <!-- Back foot -->
-  <rect x="13" y="28" width="6" height="2" fill="#5c5c7a"/>
-  <rect x="14" y="29" width="4" height="1" fill="#3d3d5c"/>
-
-  <!-- Front leg (left, crossing) -->
-  <rect x="10" y="19" width="5" height="11" fill="#8b0000"/>
-  <rect x="11" y="20" width="3" height="9" fill="#dc143c"/>
-  <!-- Front foot -->
-  <rect x="9" y="28" width="7" height="2" fill="#5c5c7a"/>
-  <rect x="10" y="29" width="5" height="1" fill="#3d3d5c"/>
+  <!-- Left leg (planted, bearing weight, slightly bent) -->
+  <rect x="9" y="18" width="5" height="12" fill="#8b0000"/>
+  <rect x="10" y="19" width="3" height="10" fill="#dc143c"/>
+  <!-- Left foot (flat on ground) -->
+  <rect x="7" y="28" width="7" height="2" fill="#5c5c7a"/>
+  <rect x="8" y="29" width="5" height="1" fill="#3d3d5c"/>
   <!-- Leg armor straps -->
-  <rect x="10" y="22" width="5" height="1" fill="#5c5c7a"/>
-  <rect x="10" y="25" width="5" height="1" fill="#5c5c7a"/>
+  <rect x="9" y="21" width="5" height="1" fill="#5c5c7a"/>
+  <rect x="9" y="24" width="5" height="1" fill="#5c5c7a"/>
 
-  <!-- Torso (upright) -->
-  <rect x="9" y="10" width="12" height="10" fill="#dc143c"/>
-  <rect x="10" y="11" width="10" height="8" fill="#dc143c"/>
+  <!-- Right leg (lifted, bent at knee, passing forward) -->
+  <rect x="14" y="18" width="4" height="6" fill="#8b0000"/>
+  <rect x="15" y="19" width="2" height="4" fill="#dc143c"/>
+  <!-- Lower leg (bent back) -->
+  <rect x="16" y="22" width="3" height="5" fill="#8b0000"/>
+  <rect x="17" y="23" width="2" height="3" fill="#dc143c"/>
+  <!-- Foot (off ground, toe down) -->
+  <rect x="17" y="26" width="4" height="2" fill="#5c5c7a"/>
+
+  <!-- Torso (body rises slightly during pass) -->
+  <rect x="8" y="9" width="12" height="10" fill="#dc143c"/>
+  <rect x="9" y="10" width="10" height="8" fill="#dc143c"/>
   <!-- Chest armor plates -->
-  <rect x="11" y="11" width="8" height="6" fill="#8b0000"/>
-  <rect x="12" y="12" width="6" height="4" fill="#5c5c7a"/>
-  <rect x="13" y="13" width="4" height="2" fill="#3d3d5c"/>
+  <rect x="10" y="10" width="8" height="6" fill="#8b0000"/>
+  <rect x="11" y="11" width="6" height="4" fill="#5c5c7a"/>
+  <rect x="12" y="12" width="4" height="2" fill="#3d3d5c"/>
   <!-- Corruption veins -->
-  <rect x="9" y="12" width="1" height="4" fill="#4c1d95"/>
-  <rect x="20" y="12" width="1" height="4" fill="#4c1d95"/>
+  <rect x="8" y="11" width="1" height="4" fill="#4c1d95"/>
+  <rect x="19" y="11" width="1" height="4" fill="#4c1d95"/>
 
   <!-- Belt with trophies -->
-  <rect x="8" y="17" width="14" height="2" fill="#3d3d5c"/>
-  <rect x="9" y="17" width="2" height="2" fill="#5c5c7a"/>
-  <rect x="13" y="17" width="3" height="2" fill="#8b0000"/>
-  <!-- Skull trophy -->
-  <rect x="17" y="17" width="2" height="2" fill="#c4c4d4"/>
-  <rect x="17" y="17" width="1" height="1" fill="#1a1a2e"/>
-  <rect x="18" y="17" width="1" height="1" fill="#1a1a2e"/>
+  <rect x="7" y="16" width="14" height="2" fill="#3d3d5c"/>
+  <rect x="8" y="16" width="2" height="2" fill="#5c5c7a"/>
+  <rect x="12" y="16" width="3" height="2" fill="#8b0000"/>
+  <rect x="16" y="16" width="2" height="2" fill="#c4c4d4"/>
+  <rect x="16" y="16" width="1" height="1" fill="#1a1a2e"/>
+  <rect x="17" y="16" width="1" height="1" fill="#1a1a2e"/>
 
   <!-- Shoulder spikes (left) -->
-  <rect x="6" y="8" width="5" height="4" fill="#8b0000"/>
-  <rect x="5" y="7" width="3" height="3" fill="#5c5c7a"/>
-  <rect x="4" y="6" width="2" height="2" fill="#5c5c7a"/>
-  <rect x="3" y="5" width="1" height="2" fill="#3d3d5c"/>
+  <rect x="5" y="7" width="5" height="4" fill="#8b0000"/>
+  <rect x="4" y="6" width="3" height="3" fill="#5c5c7a"/>
+  <rect x="3" y="5" width="2" height="2" fill="#5c5c7a"/>
 
   <!-- Shoulder spikes (right) -->
-  <rect x="19" y="8" width="5" height="4" fill="#8b0000"/>
-  <rect x="21" y="7" width="3" height="3" fill="#5c5c7a"/>
-  <rect x="23" y="6" width="2" height="2" fill="#5c5c7a"/>
-  <rect x="24" y="5" width="1" height="2" fill="#3d3d5c"/>
+  <rect x="18" y="7" width="5" height="4" fill="#8b0000"/>
+  <rect x="20" y="6" width="3" height="3" fill="#5c5c7a"/>
+  <rect x="22" y="5" width="2" height="2" fill="#5c5c7a"/>
 
-  <!-- Left arm (neutral) -->
-  <rect x="5" y="11" width="4" height="7" fill="#dc143c"/>
-  <rect x="6" y="12" width="2" height="5" fill="#dc143c"/>
-  <!-- Left forearm bandage -->
-  <rect x="5" y="14" width="3" height="1" fill="#c4c4d4"/>
-  <!-- Left fist -->
-  <rect x="4" y="16" width="4" height="3" fill="#f08080"/>
+  <!-- Left arm (neutral, mid-swing) -->
+  <rect x="4" y="10" width="4" height="7" fill="#dc143c"/>
+  <rect x="5" y="11" width="2" height="5" fill="#dc143c"/>
+  <rect x="4" y="13" width="3" height="1" fill="#c4c4d4"/>
+  <rect x="3" y="15" width="4" height="3" fill="#f08080"/>
 
-  <!-- Right arm (neutral, weapon ready) -->
-  <rect x="21" y="8" width="4" height="8" fill="#dc143c"/>
-  <rect x="22" y="9" width="2" height="6" fill="#dc143c"/>
-  <!-- Right forearm armor -->
-  <rect x="21" y="10" width="4" height="2" fill="#5c5c7a"/>
-  <!-- Right hand gripping weapon -->
-  <rect x="23" y="5" width="4" height="4" fill="#f08080"/>
+  <!-- Right arm (neutral with weapon) -->
+  <rect x="20" y="8" width="4" height="8" fill="#dc143c"/>
+  <rect x="21" y="9" width="2" height="6" fill="#dc143c"/>
+  <rect x="20" y="10" width="4" height="2" fill="#5c5c7a"/>
+  <rect x="22" y="4" width="4" height="5" fill="#f08080"/>
 
-  <!-- Weapon - Crude battle axe (upright) -->
-  <rect x="25" y="1" width="3" height="8" fill="#5c5c7a"/>
-  <rect x="26" y="2" width="1" height="6" fill="#3d3d5c"/>
-  <!-- Axe head -->
-  <rect x="27" y="0" width="4" height="6" fill="#5c5c7a"/>
-  <rect x="28" y="1" width="3" height="4" fill="#c4c4d4"/>
-  <!-- Axe edge glow -->
-  <rect x="30" y="1" width="1" height="4" fill="#ff4500"/>
+  <!-- Weapon - Battle axe (more upright) -->
+  <rect x="24" y="0" width="3" height="8" fill="#5c5c7a"/>
+  <rect x="25" y="1" width="1" height="6" fill="#3d3d5c"/>
+  <rect x="26" y="0" width="4" height="5" fill="#5c5c7a"/>
+  <rect x="27" y="1" width="3" height="3" fill="#c4c4d4"/>
+  <rect x="29" y="1" width="1" height="3" fill="#ff4500"/>
 
   <!-- Head -->
-  <rect x="10" y="1" width="10" height="10" fill="#dc143c"/>
-  <rect x="11" y="2" width="8" height="8" fill="#dc143c"/>
-  <!-- Face -->
-  <rect x="12" y="3" width="6" height="6" fill="#f08080"/>
+  <rect x="9" y="0" width="10" height="10" fill="#dc143c"/>
+  <rect x="10" y="1" width="8" height="8" fill="#dc143c"/>
+  <rect x="11" y="2" width="6" height="6" fill="#f08080"/>
+  <rect x="10" y="2" width="8" height="2" fill="#8b0000"/>
+  <rect x="11" y="3" width="2" height="2" fill="#ff4500"/>
+  <rect x="15" y="3" width="2" height="2" fill="#ff4500"/>
+  <rect x="12" y="4" width="1" height="1" fill="#4c1d95"/>
+  <rect x="15" y="4" width="1" height="1" fill="#4c1d95"/>
+  <rect x="12" y="6" width="4" height="2" fill="#4c1d95"/>
+  <rect x="12" y="6" width="1" height="1" fill="#c4c4d4"/>
+  <rect x="15" y="6" width="1" height="1" fill="#c4c4d4"/>
 
-  <!-- Heavy brow -->
-  <rect x="11" y="3" width="8" height="2" fill="#8b0000"/>
-
-  <!-- Glowing eyes -->
-  <rect x="12" y="4" width="2" height="2" fill="#ff4500"/>
-  <rect x="16" y="4" width="2" height="2" fill="#ff4500"/>
-  <!-- Pupils -->
-  <rect x="13" y="5" width="1" height="1" fill="#4c1d95"/>
-  <rect x="16" y="5" width="1" height="1" fill="#4c1d95"/>
-
-  <!-- Mouth -->
-  <rect x="13" y="7" width="4" height="2" fill="#4c1d95"/>
-  <rect x="13" y="7" width="1" height="1" fill="#c4c4d4"/>
-  <rect x="16" y="7" width="1" height="1" fill="#c4c4d4"/>
-
-  <!-- Small horns -->
-  <rect x="10" y="0" width="2" height="3" fill="#8b0000"/>
-  <rect x="10" y="0" width="1" height="1" fill="#5c5c7a"/>
-  <rect x="18" y="0" width="2" height="3" fill="#8b0000"/>
-  <rect x="19" y="0" width="1" height="1" fill="#5c5c7a"/>
+  <!-- Horns -->
+  <rect x="9" y="0" width="2" height="2" fill="#8b0000"/>
+  <rect x="17" y="0" width="2" height="2" fill="#8b0000"/>
 </svg>

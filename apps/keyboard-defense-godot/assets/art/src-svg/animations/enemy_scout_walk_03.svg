@@ -1,27 +1,29 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
-  <!-- Enemy Scout Walk Frame 3: Right leg extended far forward -->
+  <!-- Enemy Scout Run Frame 3: Right leg forward (contact), left leg back -->
   <!-- Fast, lean runner - Purple/crimson palette -->
-  <!-- Color Palette: #8e44ad (purple), #9b59b6 (light purple), #dc143c (crimson), #4c1d95 (dark purple), #f4d03f (yellow eyes), #1a1a2e (charcoal) -->
+  <!-- Color Palette: #8e44ad (purple), #9b59b6 (light purple), #dc143c (crimson), #4c1d95 (dark purple), #f4d03f (yellow eyes), #1a1a2e (charcoal), #bb8fce (skin) -->
 
-  <!-- Ground shadow (stretched) -->
-  <ellipse cx="16" cy="30" rx="12" ry="2" fill="#1a1a2e" opacity="0.5"/>
+  <!-- Ground shadow (stretched for speed) -->
+  <ellipse cx="18" cy="30" rx="12" ry="2" fill="#1a1a2e" opacity="0.5"/>
 
   <!-- Speed lines -->
   <rect x="0" y="11" width="4" height="1" fill="#9b59b6" opacity="0.4"/>
   <rect x="1" y="15" width="3" height="1" fill="#9b59b6" opacity="0.3"/>
   <rect x="0" y="19" width="4" height="1" fill="#9b59b6" opacity="0.4"/>
 
-  <!-- Back leg (left, far back) -->
+  <!-- Back leg (left, extended back, toe on ground) -->
   <rect x="6" y="18" width="3" height="12" fill="#8e44ad"/>
   <rect x="7" y="19" width="2" height="10" fill="#9b59b6"/>
-  <!-- Back foot -->
-  <rect x="4" y="28" width="4" height="2" fill="#4c1d95"/>
+  <!-- Back foot (heel up, pushing off) -->
+  <rect x="3" y="28" width="5" height="2" fill="#4c1d95"/>
+  <rect x="4" y="29" width="3" height="1" fill="#1a1a2e"/>
 
-  <!-- Front leg (right, extended far forward) -->
+  <!-- Front leg (right, extended forward, bearing weight) -->
   <rect x="20" y="16" width="4" height="14" fill="#8e44ad"/>
   <rect x="21" y="17" width="2" height="12" fill="#9b59b6"/>
-  <!-- Front foot -->
-  <rect x="22" y="28" width="6" height="2" fill="#4c1d95"/>
+  <!-- Front foot (flat on ground) -->
+  <rect x="20" y="28" width="6" height="2" fill="#4c1d95"/>
+  <rect x="21" y="29" width="4" height="1" fill="#1a1a2e"/>
 
   <!-- Lean torso -->
   <rect x="10" y="10" width="10" height="10" fill="#8e44ad"/>
@@ -38,7 +40,7 @@
   <rect x="7" y="9" width="2" height="4" fill="#9b59b6"/>
   <!-- Clawed hand -->
   <rect x="4" y="6" width="3" height="3" fill="#bb8fce"/>
-  <rect x="4" y="6" width="1" height="2" fill="#dc143c"/>
+  <rect x="3" y="6" width="1" height="2" fill="#dc143c"/>
 
   <!-- Right arm (pumping back) -->
   <rect x="18" y="14" width="4" height="6" fill="#8e44ad"/>
