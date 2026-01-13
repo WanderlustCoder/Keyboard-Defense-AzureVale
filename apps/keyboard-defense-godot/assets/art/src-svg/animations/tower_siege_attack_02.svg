@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Siege Tower Attack Frame 2: Massive blast -->
+
+  <!-- Heavy base (shaking) -->
+  <rect x="5" y="24" width="20" height="6" fill="#34495e"/>
+  <rect x="7" y="26" width="16" height="4" fill="#5d6d7e"/>
+
+  <!-- Reinforced body -->
+  <rect x="7" y="14" width="16" height="12" fill="#5d6d7e"/>
+  <rect x="8" y="16" width="14" height="8" fill="#34495e"/>
+
+  <!-- Large cannon housing (recoiled) -->
+  <rect x="12" y="6" width="12" height="10" fill="#7f8c8d"/>
+  <rect x="13" y="8" width="10" height="6" fill="#5d6d7e"/>
+  <rect x="14" y="9" width="8" height="4" fill="#1a252f"/>
+
+  <!-- Cannon barrel (recoiled back) -->
+  <rect x="8" y="8" width="6" height="6" fill="#5d6d7e"/>
+  <rect x="6" y="9" width="4" height="4" fill="#7f8c8d"/>
+  <rect x="4" y="10" width="3" height="2" fill="#5d6d7e"/>
+
+  <!-- MASSIVE muzzle flash -->
+  <rect x="0" y="4" width="10" height="14" fill="#ff4500"/>
+  <rect x="0" y="6" width="8" height="10" fill="#ffd700"/>
+  <rect x="0" y="8" width="6" height="6" fill="#ffffff"/>
+
+  <!-- Large shell flying -->
+  <rect x="-4" y="8" width="6" height="6" fill="#2c3e50"/>
+  <rect x="-3" y="9" width="4" height="4" fill="#34495e"/>
+  <rect x="-2" y="10" width="2" height="2" fill="#5d6d7e"/>
+
+  <!-- Smoke cloud (huge) -->
+  <rect x="2" y="0" width="8" height="6" fill="#7f8c8d" opacity="0.8"/>
+  <rect x="0" y="2" width="6" height="4" fill="#95a5a6" opacity="0.7"/>
+  <rect x="6" y="16" width="6" height="4" fill="#7f8c8d" opacity="0.6"/>
+  <rect x="0" y="14" width="4" height="4" fill="#95a5a6" opacity="0.5"/>
+  <rect x="8" y="0" width="4" height="4" fill="#95a5a6" opacity="0.6"/>
+
+  <!-- Shockwave lines -->
+  <rect x="0" y="7" width="2" height="1" fill="#ffd700" opacity="0.8"/>
+  <rect x="0" y="11" width="2" height="1" fill="#ffd700" opacity="0.8"/>
+  <rect x="0" y="13" width="2" height="1" fill="#ff4500" opacity="0.6"/>
+
+  <!-- Rivets -->
+  <rect x="10" y="16" width="2" height="2" fill="#7f8c8d"/>
+  <rect x="20" y="22" width="2" height="2" fill="#7f8c8d"/>
+</svg>

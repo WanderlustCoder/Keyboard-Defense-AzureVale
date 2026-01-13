@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Cannon Tower Attack Frame 2: Firing! -->
+
+  <!-- Base -->
+  <rect x="8" y="28" width="16" height="4" fill="#5d4e37"/>
+  <rect x="9" y="29" width="14" height="2" fill="#7f8c8d"/>
+
+  <!-- Tower body -->
+  <rect x="9" y="14" width="14" height="14" fill="#5d6d7e"/>
+  <rect x="10" y="15" width="12" height="12" fill="#7f8c8d"/>
+
+  <!-- Platform -->
+  <rect x="7" y="10" width="18" height="4" fill="#5d6d7e"/>
+  <rect x="8" y="11" width="16" height="2" fill="#7f8c8d"/>
+
+  <!-- Cannon barrel (recoiled back slightly) -->
+  <rect x="10" y="5" width="8" height="7" fill="#34495e"/>
+  <rect x="11" y="6" width="6" height="5" fill="#5d6d7e"/>
+  <rect x="18" y="6" width="5" height="5" fill="#34495e"/>
+  <rect x="20" y="7" width="2" height="3" fill="#2c3e50"/>
+
+  <!-- Muzzle flash -->
+  <rect x="22" y="4" width="8" height="8" fill="#ff4500"/>
+  <rect x="24" y="5" width="6" height="6" fill="#ffd700"/>
+  <rect x="26" y="6" width="4" height="4" fill="#ffffff"/>
+  <rect x="30" y="7" width="2" height="2" fill="#ff4500" opacity="0.7"/>
+
+  <!-- Cannonball flying -->
+  <rect x="28" y="6" width="4" height="4" fill="#2c3e50"/>
+  <rect x="29" y="7" width="2" height="2" fill="#34495e"/>
+
+  <!-- Smoke cloud -->
+  <rect x="20" y="2" width="4" height="4" fill="#7f8c8d" opacity="0.7"/>
+  <rect x="18" y="0" width="4" height="3" fill="#95a5a6" opacity="0.5"/>
+  <rect x="24" y="0" width="3" height="3" fill="#95a5a6" opacity="0.5"/>
+  <rect x="16" y="4" width="3" height="3" fill="#7f8c8d" opacity="0.6"/>
+
+  <!-- Cannon wheels -->
+  <rect x="11" y="10" width="4" height="2" fill="#5d4e37"/>
+  <rect x="17" y="10" width="4" height="2" fill="#5d4e37"/>
+</svg>

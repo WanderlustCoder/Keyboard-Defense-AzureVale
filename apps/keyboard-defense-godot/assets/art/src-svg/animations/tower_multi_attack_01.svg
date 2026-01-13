@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Multi Tower Attack Frame 1: Arrows drawn -->
+
+  <!-- Base -->
+  <rect x="10" y="24" width="12" height="6" fill="#1e8449"/>
+  <rect x="12" y="26" width="8" height="4" fill="#27ae60"/>
+
+  <!-- Tower body -->
+  <rect x="12" y="14" width="8" height="12" fill="#27ae60"/>
+  <rect x="13" y="16" width="6" height="8" fill="#1e8449"/>
+
+  <!-- Triple arrow launchers (tensed/drawn) -->
+  <rect x="6" y="6" width="5" height="10" fill="#2ecc71"/>
+  <rect x="13" y="4" width="6" height="12" fill="#2ecc71"/>
+  <rect x="21" y="6" width="5" height="10" fill="#2ecc71"/>
+
+  <!-- Arrow slots (drawn back) -->
+  <rect x="7" y="8" width="3" height="6" fill="#1e8449"/>
+  <rect x="14" y="6" width="4" height="8" fill="#1e8449"/>
+  <rect x="22" y="8" width="3" height="6" fill="#1e8449"/>
+
+  <!-- Arrows visible (nocked, tensed) -->
+  <rect x="8" y="9" width="1" height="4" fill="#8b7355"/>
+  <rect x="8" y="8" width="2" height="2" fill="#7f8c8d"/>
+  <rect x="15" y="7" width="2" height="6" fill="#8b7355"/>
+  <rect x="15" y="5" width="2" height="3" fill="#7f8c8d"/>
+  <rect x="23" y="9" width="1" height="4" fill="#8b7355"/>
+  <rect x="22" y="8" width="2" height="2" fill="#7f8c8d"/>
+
+  <!-- Bowstrings (pulled) -->
+  <rect x="10" y="10" width="1" height="4" fill="#f4d03f"/>
+  <rect x="18" y="8" width="1" height="6" fill="#f4d03f"/>
+  <rect x="25" y="10" width="1" height="4" fill="#f4d03f"/>
+
+  <!-- Rotation mechanism -->
+  <rect x="14" y="16" width="4" height="3" fill="#2ecc71"/>
+  <rect x="15" y="17" width="2" height="1" fill="#82e0aa"/>
+</svg>

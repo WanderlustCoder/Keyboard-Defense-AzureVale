@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Support Tower Attack Frame 1: Charging aura -->
+
+  <!-- Base -->
+  <rect x="8" y="28" width="16" height="4" fill="#f4d03f"/>
+  <rect x="9" y="29" width="14" height="2" fill="#f9e79f"/>
+
+  <!-- Tower body -->
+  <rect x="11" y="12" width="10" height="16" fill="#d5d8dc"/>
+  <rect x="12" y="13" width="8" height="14" fill="#ecf0f1"/>
+
+  <!-- Columns -->
+  <rect x="11" y="12" width="2" height="16" fill="#bdc3c7"/>
+  <rect x="19" y="12" width="2" height="16" fill="#bdc3c7"/>
+
+  <!-- Platform -->
+  <rect x="9" y="8" width="14" height="4" fill="#f4d03f"/>
+  <rect x="10" y="9" width="12" height="2" fill="#f9e79f"/>
+
+  <!-- Beacon crystal (glowing, charging) -->
+  <rect x="13" y="2" width="6" height="6" fill="#3498db"/>
+  <rect x="14" y="3" width="4" height="4" fill="#5dade2"/>
+  <rect x="15" y="4" width="2" height="2" fill="#aed6f1"/>
+
+  <!-- Charging energy -->
+  <rect x="11" y="4" width="2" height="2" fill="#aed6f1" opacity="0.7"/>
+  <rect x="19" y="4" width="2" height="2" fill="#aed6f1" opacity="0.7"/>
+  <rect x="15" y="0" width="2" height="2" fill="#aed6f1" opacity="0.6"/>
+
+  <!-- Inner glow -->
+  <rect x="12" y="1" width="8" height="8" fill="#5dade2" opacity="0.2"/>
+
+  <!-- Window -->
+  <rect x="14" y="16" width="4" height="6" fill="#3498db"/>
+  <rect x="15" y="17" width="2" height="4" fill="#5dade2"/>
+</svg>
