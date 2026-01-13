@@ -62,17 +62,30 @@ Press `F1` in a battle to open the debug panel. Paste `drill_overrides` JSON, hi
 
 ## Accessibility
 
-The game includes several accessibility options (available in Settings panel):
+The game includes comprehensive accessibility options to ensure inclusive gameplay. Access via `F1` or type `settings`.
 
+### Visual Options
 - **High Contrast Mode** - Enhanced visual contrast for better readability
-- **Reduced Motion** - Disables particles and animations
-- **Game Speed** - Adjustable from 0.5x to 2.0x
-- **Keyboard Navigation Hints** - Visual indicators for keyboard controls
-- **Practice Mode** - Key-by-key learning for individual lessons
-- **Compact Panels** - Reduced UI density for smaller screens
+- **Reduced Motion** - Disables particles, animations, and screen effects
 - **UI Scale** - Adjustable from 80% to 140%
+- **Compact Panels** - Reduced UI density for smaller screens
 
-All preferences persist in `user://profile.json`.
+### Motor Options
+- **Game Speed** - Adjustable from 0.5x to 2.0x for pacing control
+- **Pause Anytime** - Pause during combat for breaks
+- **Keyboard Navigation Hints** - Visual indicators for keyboard controls
+
+### Learning Options
+- **Practice Mode** - Key-by-key learning for individual lessons
+- **Keyboard Display** - On-screen keyboard with finger zone highlighting
+- **Finger Guides** - Visual indicators showing which finger to use
+
+### Quick Commands
+- `settings` - Open Settings panel
+- `settings prefs` - View current accessibility configuration
+- `settings verify` - Run automated accessibility checks
+
+All preferences persist in `user://profile.json`. See `docs/ACCESSIBILITY_VERIFICATION.md` for the manual verification checklist.
 
 ## Notes
 

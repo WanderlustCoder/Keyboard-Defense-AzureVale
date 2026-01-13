@@ -3,6 +3,9 @@ extends Control
 ## Floating tooltip for showing blocked action feedback with icon and text.
 ## Migrated to use DesignSystem and ThemeColors for consistency.
 
+# Preload for test compatibility (when autoload isn't available)
+const DesignSystem = preload("res://ui/design_system.gd")
+
 var _panel: PanelContainer = null
 var _icon_label: Label = null
 var _text_label: Label = null

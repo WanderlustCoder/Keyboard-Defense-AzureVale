@@ -3387,6 +3387,406 @@
       "category": "tiles"
     },
     {
+      "id": "tile_grass_forest_n",
+      "path": "res://assets/tiles/transitions/tile_grass_forest_n.png",
+      "source_svg": "res://assets/art/src-svg/tiles/transitions/tile_grass_forest_n.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_grass_forest_s",
+      "path": "res://assets/tiles/transitions/tile_grass_forest_s.png",
+      "source_svg": "res://assets/art/src-svg/tiles/transitions/tile_grass_forest_s.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_grass_forest_e",
+      "path": "res://assets/tiles/transitions/tile_grass_forest_e.png",
+      "source_svg": "res://assets/art/src-svg/tiles/transitions/tile_grass_forest_e.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_grass_forest_w",
+      "path": "res://assets/tiles/transitions/tile_grass_forest_w.png",
+      "source_svg": "res://assets/art/src-svg/tiles/transitions/tile_grass_forest_w.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_grass_forest_ne",
+      "path": "res://assets/tiles/transitions/tile_grass_forest_ne.png",
+      "source_svg": "res://assets/art/src-svg/tiles/transitions/tile_grass_forest_ne.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_grass_forest_nw",
+      "path": "res://assets/tiles/transitions/tile_grass_forest_nw.png",
+      "source_svg": "res://assets/art/src-svg/tiles/transitions/tile_grass_forest_nw.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_grass_forest_se",
+      "path": "res://assets/tiles/transitions/tile_grass_forest_se.png",
+      "source_svg": "res://assets/art/src-svg/tiles/transitions/tile_grass_forest_se.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_grass_forest_sw",
+      "path": "res://assets/tiles/transitions/tile_grass_forest_sw.png",
+      "source_svg": "res://assets/art/src-svg/tiles/transitions/tile_grass_forest_sw.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_grass_forest_inner_ne",
+      "path": "res://assets/tiles/transitions/tile_grass_forest_inner_ne.png",
+      "source_svg": "res://assets/art/src-svg/tiles/transitions/tile_grass_forest_inner_ne.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_grass_forest_inner_nw",
+      "path": "res://assets/tiles/transitions/tile_grass_forest_inner_nw.png",
+      "source_svg": "res://assets/art/src-svg/tiles/transitions/tile_grass_forest_inner_nw.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_grass_forest_inner_se",
+      "path": "res://assets/tiles/transitions/tile_grass_forest_inner_se.png",
+      "source_svg": "res://assets/art/src-svg/tiles/transitions/tile_grass_forest_inner_se.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_grass_forest_inner_sw",
+      "path": "res://assets/tiles/transitions/tile_grass_forest_inner_sw.png",
+      "source_svg": "res://assets/art/src-svg/tiles/transitions/tile_grass_forest_inner_sw.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_grass_mountain_n",
+      "path": "res://assets/tiles/transitions/tile_grass_mountain_n.png",
+      "source_svg": "res://assets/art/src-svg/tiles/transitions/tile_grass_mountain_n.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_grass_mountain_s",
+      "path": "res://assets/tiles/transitions/tile_grass_mountain_s.png",
+      "source_svg": "res://assets/art/src-svg/tiles/transitions/tile_grass_mountain_s.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_grass_mountain_e",
+      "path": "res://assets/tiles/transitions/tile_grass_mountain_e.png",
+      "source_svg": "res://assets/art/src-svg/tiles/transitions/tile_grass_mountain_e.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_grass_mountain_w",
+      "path": "res://assets/tiles/transitions/tile_grass_mountain_w.png",
+      "source_svg": "res://assets/art/src-svg/tiles/transitions/tile_grass_mountain_w.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_grass_mountain_ne",
+      "path": "res://assets/tiles/transitions/tile_grass_mountain_ne.png",
+      "source_svg": "res://assets/art/src-svg/tiles/transitions/tile_grass_mountain_ne.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_grass_mountain_nw",
+      "path": "res://assets/tiles/transitions/tile_grass_mountain_nw.png",
+      "source_svg": "res://assets/art/src-svg/tiles/transitions/tile_grass_mountain_nw.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_grass_mountain_se",
+      "path": "res://assets/tiles/transitions/tile_grass_mountain_se.png",
+      "source_svg": "res://assets/art/src-svg/tiles/transitions/tile_grass_mountain_se.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_grass_mountain_sw",
+      "path": "res://assets/tiles/transitions/tile_grass_mountain_sw.png",
+      "source_svg": "res://assets/art/src-svg/tiles/transitions/tile_grass_mountain_sw.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_grass_mountain_inner_ne",
+      "path": "res://assets/tiles/transitions/tile_grass_mountain_inner_ne.png",
+      "source_svg": "res://assets/art/src-svg/tiles/transitions/tile_grass_mountain_inner_ne.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_grass_mountain_inner_nw",
+      "path": "res://assets/tiles/transitions/tile_grass_mountain_inner_nw.png",
+      "source_svg": "res://assets/art/src-svg/tiles/transitions/tile_grass_mountain_inner_nw.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_grass_mountain_inner_se",
+      "path": "res://assets/tiles/transitions/tile_grass_mountain_inner_se.png",
+      "source_svg": "res://assets/art/src-svg/tiles/transitions/tile_grass_mountain_inner_se.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_grass_mountain_inner_sw",
+      "path": "res://assets/tiles/transitions/tile_grass_mountain_inner_sw.png",
+      "source_svg": "res://assets/art/src-svg/tiles/transitions/tile_grass_mountain_inner_sw.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_forest_mountain_n",
+      "path": "res://assets/tiles/transitions/tile_forest_mountain_n.png",
+      "source_svg": "res://assets/art/src-svg/tiles/transitions/tile_forest_mountain_n.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_forest_mountain_s",
+      "path": "res://assets/tiles/transitions/tile_forest_mountain_s.png",
+      "source_svg": "res://assets/art/src-svg/tiles/transitions/tile_forest_mountain_s.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_forest_mountain_e",
+      "path": "res://assets/tiles/transitions/tile_forest_mountain_e.png",
+      "source_svg": "res://assets/art/src-svg/tiles/transitions/tile_forest_mountain_e.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_forest_mountain_w",
+      "path": "res://assets/tiles/transitions/tile_forest_mountain_w.png",
+      "source_svg": "res://assets/art/src-svg/tiles/transitions/tile_forest_mountain_w.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_forest_mountain_ne",
+      "path": "res://assets/tiles/transitions/tile_forest_mountain_ne.png",
+      "source_svg": "res://assets/art/src-svg/tiles/transitions/tile_forest_mountain_ne.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_forest_mountain_nw",
+      "path": "res://assets/tiles/transitions/tile_forest_mountain_nw.png",
+      "source_svg": "res://assets/art/src-svg/tiles/transitions/tile_forest_mountain_nw.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_forest_mountain_se",
+      "path": "res://assets/tiles/transitions/tile_forest_mountain_se.png",
+      "source_svg": "res://assets/art/src-svg/tiles/transitions/tile_forest_mountain_se.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_forest_mountain_sw",
+      "path": "res://assets/tiles/transitions/tile_forest_mountain_sw.png",
+      "source_svg": "res://assets/art/src-svg/tiles/transitions/tile_forest_mountain_sw.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_forest_mountain_inner_ne",
+      "path": "res://assets/tiles/transitions/tile_forest_mountain_inner_ne.png",
+      "source_svg": "res://assets/art/src-svg/tiles/transitions/tile_forest_mountain_inner_ne.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_forest_mountain_inner_nw",
+      "path": "res://assets/tiles/transitions/tile_forest_mountain_inner_nw.png",
+      "source_svg": "res://assets/art/src-svg/tiles/transitions/tile_forest_mountain_inner_nw.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_forest_mountain_inner_se",
+      "path": "res://assets/tiles/transitions/tile_forest_mountain_inner_se.png",
+      "source_svg": "res://assets/art/src-svg/tiles/transitions/tile_forest_mountain_inner_se.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_forest_mountain_inner_sw",
+      "path": "res://assets/tiles/transitions/tile_forest_mountain_inner_sw.png",
+      "source_svg": "res://assets/art/src-svg/tiles/transitions/tile_forest_mountain_inner_sw.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_water_grass_inner_ne",
+      "path": "res://assets/tiles/transitions/tile_water_grass_inner_ne.png",
+      "source_svg": "res://assets/art/src-svg/tiles/transitions/tile_water_grass_inner_ne.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_water_grass_inner_nw",
+      "path": "res://assets/tiles/transitions/tile_water_grass_inner_nw.png",
+      "source_svg": "res://assets/art/src-svg/tiles/transitions/tile_water_grass_inner_nw.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_water_grass_inner_se",
+      "path": "res://assets/tiles/transitions/tile_water_grass_inner_se.png",
+      "source_svg": "res://assets/art/src-svg/tiles/transitions/tile_water_grass_inner_se.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
+      "id": "tile_water_grass_inner_sw",
+      "path": "res://assets/tiles/transitions/tile_water_grass_inner_sw.png",
+      "source_svg": "res://assets/art/src-svg/tiles/transitions/tile_water_grass_inner_sw.svg",
+      "expected_width": 16,
+      "expected_height": 16,
+      "max_kb": 6,
+      "pixel_art": true,
+      "category": "tiles"
+    },
+    {
       "id": "tower_arrow",
       "path": "res://assets/buildings/tower_arrow.png",
       "source_svg": "res://assets/art/src-svg/buildings/tower_arrow.svg",

@@ -31,6 +31,7 @@ const AssetLoader = preload("res://game/asset_loader.gd")
 @export var poi_undiscovered_color: Color = Color(0.3, 0.5, 0.6, 0.6)
 @export var font_size: int = 16
 @export var use_sprites: bool = true
+@export var show_grid_lines: bool = false
 
 # Visual placement system colors
 @export var range_circle_color: Color = Color(0.4, 0.7, 1.0, 0.25)
@@ -103,6 +104,34 @@ const DAMAGE_NUMBER_LIFETIME := 0.9
 const DAMAGE_NUMBER_RISE_SPEED := 50.0
 const COMBO_ANNOUNCEMENT_LIFETIME := 1.2
 const INSUFFICIENT_PULSE_LIFETIME := 0.4
+
+# Terrain autotiling configuration
+const TERRAIN_PRIORITY := {
+	"water": 0,
+	"plains": 1,
+	"forest": 2,
+	"mountain": 3
+}
+
+# Direction offsets for neighbor checking
+const NEIGHBOR_OFFSETS := {
+	"n": Vector2i(0, -1),
+	"ne": Vector2i(1, -1),
+	"e": Vector2i(1, 0),
+	"se": Vector2i(1, 1),
+	"s": Vector2i(0, 1),
+	"sw": Vector2i(-1, 1),
+	"w": Vector2i(-1, 0),
+	"nw": Vector2i(-1, -1)
+}
+
+# Terrain variant tiles for visual variety
+const TERRAIN_VARIANTS := {
+	"plains": ["tile_grass"],
+	"forest": ["tile_evergrove_dense"],
+	"mountain": ["tile_dirt"],
+	"water": ["tile_water"]
+}
 
 # Animation configuration
 const ENEMY_WALK_FPS := 8.0
@@ -208,16 +237,11 @@ func _draw() -> void:
 			var is_discovered: bool = discovered.has(index)
 			var terrain_type := _terrain_at(index)
 
-			# Draw terrain background
+			# Draw terrain background with autotiling transitions
 			var fill: Color = undiscovered_color
 			if is_discovered:
 				if use_sprites:
-					var tile_tex := _get_terrain_texture(terrain_type)
-					if tile_tex != null:
-						_draw_tiled_texture(rect, tile_tex)
-					else:
-						fill = _terrain_color(terrain_type)
-						draw_rect(rect, fill, true)
+					_draw_terrain_with_transitions(rect, x, y, terrain_type)
 				else:
 					fill = _terrain_color(terrain_type)
 					draw_rect(rect, fill, true)
@@ -229,8 +253,9 @@ func _draw() -> void:
 				var overlay_color: Color = overlay_reachable_color if dist_field[index] >= 0 else overlay_blocked_color
 				draw_rect(rect, overlay_color, true)
 
-			# Draw grid lines
-			draw_rect(rect, line_color, false, 1.0)
+			# Draw grid lines (optional)
+			if show_grid_lines:
+				draw_rect(rect, line_color, false, 1.0)
 
 			# Draw structures
 			if is_discovered and structures.has(index):
@@ -764,6 +789,145 @@ func _terrain_color(terrain_name: String) -> Color:
 			return water_color
 		_:
 			return plains_color
+
+## Get terrain type at grid position, or center terrain if out of bounds
+func _terrain_at_pos(x: int, y: int, center_terrain: String) -> String:
+	if x < 0 or x >= map_w or y < 0 or y >= map_h:
+		return center_terrain
+	var idx := y * map_w + x
+	return _terrain_at(idx)
+
+## Get neighbor terrains for a tile position
+func _get_neighbor_terrains(x: int, y: int, center_terrain: String) -> Dictionary:
+	var neighbors := {}
+	for dir in NEIGHBOR_OFFSETS:
+		var offset: Vector2i = NEIGHBOR_OFFSETS[dir]
+		neighbors[dir] = _terrain_at_pos(x + offset.x, y + offset.y, center_terrain)
+	return neighbors
+
+## Get the canonical terrain pair key (lower priority first)
+func _get_terrain_pair_key(terrain_a: String, terrain_b: String) -> String:
+	var priority_a: int = TERRAIN_PRIORITY.get(terrain_a, 1)
+	var priority_b: int = TERRAIN_PRIORITY.get(terrain_b, 1)
+	if priority_a <= priority_b:
+		return "%s_%s" % [terrain_a, terrain_b]
+	return "%s_%s" % [terrain_b, terrain_a]
+
+## Convert terrain name to short form for tile IDs
+func _terrain_short_name(terrain_name: String) -> String:
+	match terrain_name:
+		"plains": return "grass"
+		"forest": return "forest"
+		"mountain": return "mountain"
+		"water": return "water"
+		_: return "grass"
+
+## Get transition tiles needed for a tile based on neighbors
+func _get_transition_tiles(x: int, y: int, center_terrain: String) -> Array:
+	var result := []
+	var neighbors := _get_neighbor_terrains(x, y, center_terrain)
+	var center_priority: int = TERRAIN_PRIORITY.get(center_terrain, 1)
+
+	# Check each cardinal direction for higher priority terrain
+	var n_terrain: String = neighbors.get("n", center_terrain)
+	var s_terrain: String = neighbors.get("s", center_terrain)
+	var e_terrain: String = neighbors.get("e", center_terrain)
+	var w_terrain: String = neighbors.get("w", center_terrain)
+	var ne_terrain: String = neighbors.get("ne", center_terrain)
+	var nw_terrain: String = neighbors.get("nw", center_terrain)
+	var se_terrain: String = neighbors.get("se", center_terrain)
+	var sw_terrain: String = neighbors.get("sw", center_terrain)
+
+	var n_priority: int = TERRAIN_PRIORITY.get(n_terrain, 1)
+	var s_priority: int = TERRAIN_PRIORITY.get(s_terrain, 1)
+	var e_priority: int = TERRAIN_PRIORITY.get(e_terrain, 1)
+	var w_priority: int = TERRAIN_PRIORITY.get(w_terrain, 1)
+
+	var center_short := _terrain_short_name(center_terrain)
+
+	# Check for edge transitions (cardinal neighbors with higher priority)
+	# North edge
+	if n_priority > center_priority and n_terrain == e_terrain and n_terrain == w_terrain:
+		# Both N and E and W are same higher terrain - just draw N edge
+		var other_short := _terrain_short_name(n_terrain)
+		result.append("tile_%s_%s_n" % [center_short, other_short])
+	elif n_priority > center_priority and e_priority > center_priority and n_terrain == e_terrain:
+		# NE corner (both N and E are same higher terrain)
+		var other_short := _terrain_short_name(n_terrain)
+		result.append("tile_%s_%s_ne" % [center_short, other_short])
+	elif n_priority > center_priority and w_priority > center_priority and n_terrain == w_terrain:
+		# NW corner
+		var other_short := _terrain_short_name(n_terrain)
+		result.append("tile_%s_%s_nw" % [center_short, other_short])
+	elif n_priority > center_priority:
+		var other_short := _terrain_short_name(n_terrain)
+		result.append("tile_%s_%s_n" % [center_short, other_short])
+
+	# South edge (only if not already covered by corner)
+	if s_priority > center_priority and n_priority <= center_priority:
+		if s_terrain == e_terrain and e_priority > center_priority:
+			var other_short := _terrain_short_name(s_terrain)
+			result.append("tile_%s_%s_se" % [center_short, other_short])
+		elif s_terrain == w_terrain and w_priority > center_priority:
+			var other_short := _terrain_short_name(s_terrain)
+			result.append("tile_%s_%s_sw" % [center_short, other_short])
+		else:
+			var other_short := _terrain_short_name(s_terrain)
+			result.append("tile_%s_%s_s" % [center_short, other_short])
+
+	# East edge (only if not already part of a corner)
+	if e_priority > center_priority and n_terrain != e_terrain and s_terrain != e_terrain:
+		var other_short := _terrain_short_name(e_terrain)
+		result.append("tile_%s_%s_e" % [center_short, other_short])
+
+	# West edge
+	if w_priority > center_priority and n_terrain != w_terrain and s_terrain != w_terrain:
+		var other_short := _terrain_short_name(w_terrain)
+		result.append("tile_%s_%s_w" % [center_short, other_short])
+
+	# Inner corners (diagonal-only transitions)
+	var ne_priority: int = TERRAIN_PRIORITY.get(ne_terrain, 1)
+	var nw_priority: int = TERRAIN_PRIORITY.get(nw_terrain, 1)
+	var se_priority: int = TERRAIN_PRIORITY.get(se_terrain, 1)
+	var sw_priority: int = TERRAIN_PRIORITY.get(sw_terrain, 1)
+
+	# NE inner corner: NE is different but N and E are same as center
+	if ne_priority > center_priority and n_priority <= center_priority and e_priority <= center_priority:
+		var other_short := _terrain_short_name(ne_terrain)
+		result.append("tile_%s_%s_inner_ne" % [center_short, other_short])
+
+	# NW inner corner
+	if nw_priority > center_priority and n_priority <= center_priority and w_priority <= center_priority:
+		var other_short := _terrain_short_name(nw_terrain)
+		result.append("tile_%s_%s_inner_nw" % [center_short, other_short])
+
+	# SE inner corner
+	if se_priority > center_priority and s_priority <= center_priority and e_priority <= center_priority:
+		var other_short := _terrain_short_name(se_terrain)
+		result.append("tile_%s_%s_inner_se" % [center_short, other_short])
+
+	# SW inner corner
+	if sw_priority > center_priority and s_priority <= center_priority and w_priority <= center_priority:
+		var other_short := _terrain_short_name(sw_terrain)
+		result.append("tile_%s_%s_inner_sw" % [center_short, other_short])
+
+	return result
+
+## Draw terrain with transition blending
+func _draw_terrain_with_transitions(rect: Rect2, x: int, y: int, center_terrain: String) -> void:
+	# Draw base terrain tile
+	var base_tex := _get_terrain_texture(center_terrain)
+	if base_tex != null:
+		_draw_tiled_texture(rect, base_tex)
+	else:
+		draw_rect(rect, _terrain_color(center_terrain), true)
+
+	# Draw transition overlays
+	var transitions := _get_transition_tiles(x, y, center_terrain)
+	for tile_id in transitions:
+		var trans_tex := _get_texture(tile_id)
+		if trans_tex != null:
+			_draw_tiled_texture(rect, trans_tex)
 
 func _structure_char(building_type: String, level: int) -> String:
 	match building_type:
@@ -1775,7 +1939,7 @@ func _update_combo_announcements(delta: float) -> void:
 		ann["lifetime"] -= delta
 
 		# Animate scale (grow quickly at start, then stabilize)
-		var t := 1.0 - (ann["lifetime"] / COMBO_ANNOUNCEMENT_LIFETIME)
+		var t: float = 1.0 - (float(ann["lifetime"]) / COMBO_ANNOUNCEMENT_LIFETIME)
 		if t < 0.2:
 			# Quick grow phase
 			ann["scale"] = 0.5 + (t / 0.2) * 0.6

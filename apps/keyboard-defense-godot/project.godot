@@ -18,6 +18,8 @@ config/icon="res://icon.svg"
 
 [autoload]
 
+ThemeColors="*res://ui/theme_colors.gd"
+DesignSystem="*res://ui/design_system.gd"
 AssetLoader="*res://game/asset_loader.gd"
 ProgressionState="*res://scripts/ProgressionState.gd"
 GameController="*res://scripts/GameController.gd"

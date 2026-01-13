@@ -3,6 +3,9 @@ extends PanelContainer
 ## Login Reward Popup - Shows daily login rewards to the player.
 ## Migrated to use DesignSystem and ThemeColors for consistency.
 
+# Preload for test compatibility (when autoload isn't available)
+const DesignSystem = preload("res://ui/design_system.gd")
+
 signal claim_pressed(reward: Dictionary)
 signal closed
 

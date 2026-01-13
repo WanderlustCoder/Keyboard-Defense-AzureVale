@@ -547,7 +547,7 @@ static func _format_effects(effects: Dictionary) -> Array:
 ## Check if placing a tower would create any new synergies
 static func preview_synergies(state, pos: Vector2i, tower_type: String) -> Array:
 	# Create a temporary state with the new tower
-	var temp_structures := state.structures.duplicate()
+	var temp_structures: Dictionary = state.structures.duplicate()
 	var temp_index: int = SimMap.idx(pos.x, pos.y, state.map_w)
 	temp_structures[temp_index] = tower_type
 

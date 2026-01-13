@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Grass with forest bleeding from North -->
+
+  <!-- Grass base -->
+  <rect x="0" y="0" width="16" height="16" fill="#27ae60"/>
+
+  <!-- Forest from north (top 5-6 rows with irregular edge) -->
+  <rect x="0" y="0" width="16" height="5" fill="#0d3d0d"/>
+  <rect x="0" y="5" width="16" height="2" fill="#145214"/>
+
+  <!-- Irregular blend edge -->
+  <rect x="1" y="6" width="2" height="2" fill="#1a5a1a"/>
+  <rect x="5" y="5" width="3" height="2" fill="#1a5a1a"/>
+  <rect x="10" y="6" width="2" height="1" fill="#145214"/>
+  <rect x="14" y="5" width="2" height="2" fill="#1a5a1a"/>
+
+  <!-- Forest highlights in top portion -->
+  <rect x="2" y="2" width="2" height="2" fill="#1a5a1a"/>
+  <rect x="8" y="1" width="3" height="2" fill="#1a5a1a"/>
+  <rect x="12" y="3" width="2" height="1" fill="#2d7a2d"/>
+
+  <!-- Grass details in bottom portion -->
+  <rect x="3" y="10" width="2" height="1" fill="#2ecc71"/>
+  <rect x="9" y="12" width="2" height="1" fill="#2ecc71"/>
+  <rect x="6" y="14" width="1" height="1" fill="#1e8449"/>
+</svg>

@@ -1,6 +1,6 @@
 # P0 Implementation Backlog
 
-**Last updated:** 2026-01-08
+**Last updated:** 2026-01-12
 
 ## P0-ONB-001 Onboarding and first-run guidance
 **Status: COMPLETE**
@@ -85,7 +85,7 @@ Task breakdown:
 - [x] ACC-T02: Add compact/expanded UI preferences | Files: `game/typing_profile.gd`, `game/main.gd` | Tests: profile tests | Complexity: M | Dependencies: ACC-T01
 - [x] ACC-T03: Ensure focus behavior and hotkeys work on all panels | Files: `game/main.gd`, `ui/command_bar.gd` | Tests: input tests | Complexity: M | Dependencies: ACC-T01
 - [x] ACC-T04: Improve legend clarity for grid and lessons | Files: `scenes/Main.tscn`, `game/main.gd` | Tests: smoke boot | Complexity: S | Dependencies: ACC-T01
-- [ ] ACC-T05: Add docs for accessibility prefs | Files: `docs/PROJECT_STATUS.md`, `README.md` | Tests: doc presence | Complexity: S | Dependencies: ACC-T02
+- [x] ACC-T05: Add docs for accessibility prefs | Files: `docs/PROJECT_STATUS.md`, `README.md` | Tests: doc presence | Complexity: S | Dependencies: ACC-T02
 - [ ] ACC-T06: Manual accessibility checklist pass | Files: `docs/QUALITY_GATES.md` | Tests: manual | Complexity: S | Dependencies: ACC-T01
 - [x] ACC-T07: Add/adjust tests for UI prefs | Files: `tests/run_tests.gd` | Tests: headless | Complexity: S | Dependencies: ACC-T02
 - [x] ACC-T08: Update changelog | Files: `docs/CHANGELOG.md` | Tests: doc presence | Complexity: S | Dependencies: none
@@ -116,7 +116,7 @@ Task breakdown:
 - [x] EXP-T02: Define release checklist (smoke + tests) | Files: `docs/QUALITY_GATES.md` | Tests: manual | Complexity: S | Dependencies: EXP-T01
 - [x] EXP-T03: Validate headless tests in export workflow | Files: `scripts/test.ps1`, `scripts/test.sh` | Tests: headless | Complexity: S | Dependencies: EXP-T01
 - [x] EXP-T04: Document versioning notes | Files: `docs/QUALITY_GATES.md` | Tests: doc presence | Complexity: S | Dependencies: EXP-T01
-- [ ] EXP-T05: Update README with export pointer | Files: `README.md` | Tests: doc presence | Complexity: S | Dependencies: EXP-T01
+- [x] EXP-T05: Update README with export pointer | Files: `README.md` | Tests: doc presence | Complexity: S | Dependencies: EXP-T01
 - [ ] EXP-T06: Manual export smoke run | Files: none | Tests: manual | Complexity: M | Dependencies: EXP-T01
 - [ ] EXP-T07: Record results in CHANGELOG | Files: `docs/CHANGELOG.md` | Tests: doc presence | Complexity: S | Dependencies: EXP-T06
 - [x] EXP-T08: Link to planpack release guidance | Files: `docs/plans/p0/EXPORT_PIPELINE_PLAN.md` | Tests: doc presence | Complexity: S | Dependencies: none

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Water with small grass corner peeking from SE diagonal only -->
+
+  <!-- Water base -->
+  <rect x="0" y="0" width="16" height="16" fill="#3498db"/>
+
+  <!-- Wave patterns -->
+  <rect x="1" y="2" width="4" height="1" fill="#5dade2"/>
+  <rect x="8" y="4" width="5" height="1" fill="#5dade2"/>
+  <rect x="3" y="7" width="4" height="1" fill="#5dade2"/>
+  <rect x="0" y="10" width="5" height="1" fill="#5dade2"/>
+
+  <!-- Deep water accents -->
+  <rect x="6" y="3" width="2" height="1" fill="#2874a6"/>
+  <rect x="2" y="8" width="2" height="1" fill="#2874a6"/>
+
+  <!-- Small grass corner in SE -->
+  <rect x="13" y="13" width="3" height="3" fill="#4a8c3f"/>
+  <rect x="11" y="14" width="2" height="2" fill="#8b6914"/>
+  <rect x="14" y="11" width="2" height="2" fill="#8b6914"/>
+  <rect x="12" y="12" width="2" height="2" fill="#27ae60"/>
+
+  <!-- Water sparkle -->
+  <rect x="4" y="5" width="1" height="1" fill="#aed6f1"/>
+  <rect x="9" y="1" width="1" height="1" fill="#aed6f1"/>
+</svg>

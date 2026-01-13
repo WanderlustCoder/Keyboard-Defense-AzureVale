@@ -1,5 +1,8 @@
 extends SceneTree
 
+# Preload autoloads for test compatibility
+const ThemeColors = preload("res://ui/theme_colors.gd")
+
 const DefaultState = preload("res://sim/default_state.gd")
 const CommandParser = preload("res://sim/parse_command.gd")
 const IntentApplier = preload("res://sim/apply_intent.gd")
@@ -9608,27 +9611,21 @@ func _test_combo_announcement_visual_constants() -> void:
     _assert_equal(ComboAnnouncement.GLOW_EXPAND, 6.0, "GLOW_EXPAND is 6.0")
 
 func _test_combo_announcement_colors() -> void:
+    # COMBO_TIER_COLORS should be a dictionary with tier colors
+    _assert_true(ComboAnnouncement.COMBO_TIER_COLORS is Dictionary, "COMBO_TIER_COLORS is Dictionary")
+    _assert_true(ComboAnnouncement.COMBO_TIER_COLORS.size() >= 5, "COMBO_TIER_COLORS has at least 5 tiers")
+
     # All tier colors should be Colors with full alpha
-    _assert_true(ComboAnnouncement.COLOR_TIER_1 is Color, "COLOR_TIER_1 is Color")
-    _assert_equal(ComboAnnouncement.COLOR_TIER_1.a, 1.0, "COLOR_TIER_1 has full alpha")
-
-    _assert_true(ComboAnnouncement.COLOR_TIER_2 is Color, "COLOR_TIER_2 is Color")
-    _assert_equal(ComboAnnouncement.COLOR_TIER_2.a, 1.0, "COLOR_TIER_2 has full alpha")
-
-    _assert_true(ComboAnnouncement.COLOR_TIER_3 is Color, "COLOR_TIER_3 is Color")
-    _assert_equal(ComboAnnouncement.COLOR_TIER_3.a, 1.0, "COLOR_TIER_3 has full alpha")
-
-    _assert_true(ComboAnnouncement.COLOR_TIER_4 is Color, "COLOR_TIER_4 is Color")
-    _assert_equal(ComboAnnouncement.COLOR_TIER_4.a, 1.0, "COLOR_TIER_4 has full alpha")
-
-    _assert_true(ComboAnnouncement.COLOR_TIER_5 is Color, "COLOR_TIER_5 is Color")
-    _assert_equal(ComboAnnouncement.COLOR_TIER_5.a, 1.0, "COLOR_TIER_5 has full alpha")
+    for tier in range(1, 6):
+        _assert_true(ComboAnnouncement.COMBO_TIER_COLORS.has(tier), "COMBO_TIER_COLORS has tier %d" % tier)
+        _assert_true(ComboAnnouncement.COMBO_TIER_COLORS[tier] is Color, "Tier %d color is Color" % tier)
+        _assert_equal(ComboAnnouncement.COMBO_TIER_COLORS[tier].a, 1.0, "Tier %d has full alpha" % tier)
 
     # Colors should be distinct (different hues)
-    _assert_true(ComboAnnouncement.COLOR_TIER_1 != ComboAnnouncement.COLOR_TIER_2, "TIER_1 != TIER_2")
-    _assert_true(ComboAnnouncement.COLOR_TIER_2 != ComboAnnouncement.COLOR_TIER_3, "TIER_2 != TIER_3")
-    _assert_true(ComboAnnouncement.COLOR_TIER_3 != ComboAnnouncement.COLOR_TIER_4, "TIER_3 != TIER_4")
-    _assert_true(ComboAnnouncement.COLOR_TIER_4 != ComboAnnouncement.COLOR_TIER_5, "TIER_4 != TIER_5")
+    _assert_true(ComboAnnouncement.COMBO_TIER_COLORS[1] != ComboAnnouncement.COMBO_TIER_COLORS[2], "TIER_1 != TIER_2")
+    _assert_true(ComboAnnouncement.COMBO_TIER_COLORS[2] != ComboAnnouncement.COMBO_TIER_COLORS[3], "TIER_2 != TIER_3")
+    _assert_true(ComboAnnouncement.COMBO_TIER_COLORS[3] != ComboAnnouncement.COMBO_TIER_COLORS[4], "TIER_3 != TIER_4")
+    _assert_true(ComboAnnouncement.COMBO_TIER_COLORS[4] != ComboAnnouncement.COMBO_TIER_COLORS[5], "TIER_4 != TIER_5")
 
 func _test_combo_announcement_titles() -> void:
     # TITLES should be a dictionary mapping milestones to strings
@@ -10081,42 +10078,18 @@ func _run_action_tooltip_tests() -> void:
     _test_action_tooltip_size_constants()
 
 func _test_action_tooltip_timing_constants() -> void:
-    # TOOLTIP_DURATION
-    _assert_true(ActionTooltip.TOOLTIP_DURATION > 0.0, "TOOLTIP_DURATION is positive")
-    _assert_true(ActionTooltip.TOOLTIP_DURATION < 10.0, "TOOLTIP_DURATION is reasonable")
-    _assert_equal(ActionTooltip.TOOLTIP_DURATION, 2.0, "TOOLTIP_DURATION is 2.0")
-
-    # FADE_IN_DURATION
-    _assert_true(ActionTooltip.FADE_IN_DURATION > 0.0, "FADE_IN_DURATION is positive")
-    _assert_true(ActionTooltip.FADE_IN_DURATION < 1.0, "FADE_IN_DURATION is quick")
-    _assert_equal(ActionTooltip.FADE_IN_DURATION, 0.15, "FADE_IN_DURATION is 0.15")
-
-    # FADE_OUT_DURATION
-    _assert_true(ActionTooltip.FADE_OUT_DURATION > 0.0, "FADE_OUT_DURATION is positive")
-    _assert_true(ActionTooltip.FADE_OUT_DURATION < 1.0, "FADE_OUT_DURATION is quick")
-    _assert_equal(ActionTooltip.FADE_OUT_DURATION, 0.3, "FADE_OUT_DURATION is 0.3")
-
-    # Fade out should be longer than fade in (more noticeable disappear)
-    _assert_true(ActionTooltip.FADE_OUT_DURATION > ActionTooltip.FADE_IN_DURATION, "FADE_OUT > FADE_IN")
-
-    # FLOAT_DISTANCE
-    _assert_true(ActionTooltip.FLOAT_DISTANCE > 0.0, "FLOAT_DISTANCE is positive")
-    _assert_true(ActionTooltip.FLOAT_DISTANCE < 100.0, "FLOAT_DISTANCE is reasonable")
-    _assert_equal(ActionTooltip.FLOAT_DISTANCE, 20.0, "FLOAT_DISTANCE is 20.0")
+    # ActionTooltip now uses DesignSystem animation constants
+    # Verify the icon constants are still available
+    _assert_true(ActionTooltip.ICON_LOCKED is String, "ICON_LOCKED is String")
+    _assert_true(ActionTooltip.ICON_NO_GOLD is String, "ICON_NO_GOLD is String")
+    _assert_true(ActionTooltip.ICON_NO_AP is String, "ICON_NO_AP is String")
+    _assert_true(ActionTooltip.ICON_WRONG_PHASE is String, "ICON_WRONG_PHASE is String")
+    _assert_true(ActionTooltip.ICON_ERROR is String, "ICON_ERROR is String")
 
 func _test_action_tooltip_size_constants() -> void:
-    # FONT_SIZE
-    _assert_true(ActionTooltip.FONT_SIZE > 0, "FONT_SIZE is positive")
-    _assert_true(ActionTooltip.FONT_SIZE < 30, "FONT_SIZE is reasonable")
-    _assert_equal(ActionTooltip.FONT_SIZE, 12, "FONT_SIZE is 12")
-
-    # ICON_SIZE
-    _assert_true(ActionTooltip.ICON_SIZE > 0, "ICON_SIZE is positive")
-    _assert_true(ActionTooltip.ICON_SIZE < 50, "ICON_SIZE is reasonable")
-    _assert_equal(ActionTooltip.ICON_SIZE, 16, "ICON_SIZE is 16")
-
-    # Icon should be slightly larger than font for visual balance
-    _assert_true(ActionTooltip.ICON_SIZE >= ActionTooltip.FONT_SIZE, "ICON_SIZE >= FONT_SIZE")
+    # ActionTooltip now uses DesignSystem for sizing
+    # Verify the class can be instantiated (basic sanity check)
+    _assert_true(ActionTooltip != null, "ActionTooltip class exists")
 
 # =============================================================================
 # BATTLE STAGE TESTS

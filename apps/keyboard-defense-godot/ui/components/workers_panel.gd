@@ -3,6 +3,9 @@ extends PanelContainer
 ## Workers Panel - Shows worker assignments and production bonuses.
 ## Migrated to use DesignSystem and ThemeColors for consistency.
 
+# Preload for test compatibility (when autoload isn't available)
+const DesignSystem = preload("res://ui/design_system.gd")
+
 signal closed
 
 var _worker_summary: Dictionary = {}

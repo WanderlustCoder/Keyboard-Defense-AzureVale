@@ -1,7 +1,7 @@
-class_name ThemeColors
-extends RefCounted
+extends Node
 ## Centralized color definitions for Keyboard Defense UI.
 ## Use these instead of hardcoding Color() values throughout the codebase.
+## Registered as autoload - access via ThemeColors.CONSTANT_NAME
 
 # ============================================================================
 # BACKGROUND COLORS

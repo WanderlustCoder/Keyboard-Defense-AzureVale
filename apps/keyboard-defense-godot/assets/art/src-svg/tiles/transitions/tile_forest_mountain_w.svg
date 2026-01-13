@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Forest with mountain bleeding from West -->
+
+  <!-- Forest base -->
+  <rect x="0" y="0" width="16" height="16" fill="#0d3d0d"/>
+
+  <!-- Mountain from west -->
+  <rect x="0" y="0" width="5" height="16" fill="#8b6914"/>
+  <rect x="5" y="0" width="2" height="16" fill="#6a5010"/>
+
+  <!-- Irregular blend edge -->
+  <rect x="6" y="0" width="2" height="3" fill="#5c4033"/>
+  <rect x="6" y="5" width="1" height="3" fill="#6a5010"/>
+  <rect x="6" y="10" width="2" height="3" fill="#5c4033"/>
+  <rect x="6" y="14" width="1" height="2" fill="#6a5010"/>
+
+  <!-- Mountain details -->
+  <rect x="1" y="2" width="2" height="2" fill="#5c4033"/>
+  <rect x="2" y="8" width="2" height="2" fill="#5c4033"/>
+  <rect x="1" y="13" width="1" height="1" fill="#a0781c"/>
+
+  <!-- Forest foliage in right -->
+  <rect x="10" y="2" width="4" height="4" fill="#145214"/>
+  <rect x="9" y="9" width="5" height="4" fill="#145214"/>
+  <rect x="11" y="3" width="2" height="2" fill="#1a5a1a"/>
+  <rect x="10" y="10" width="2" height="2" fill="#2d7a2d"/>
+</svg>

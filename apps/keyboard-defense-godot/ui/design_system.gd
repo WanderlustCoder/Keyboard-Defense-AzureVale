@@ -1,8 +1,9 @@
-class_name DesignSystem
-extends RefCounted
+extends Node
 ## Centralized design system for Keyboard Defense.
 ## Provides typography, spacing, shadows, and animation constants.
 ## Use these instead of hardcoding values throughout the UI codebase.
+## Registered as autoload - access via DesignSystem.CONSTANT_NAME
+
 
 # =============================================================================
 # TYPOGRAPHY SCALE
@@ -113,6 +114,9 @@ const SIZE_PANEL_XL := 800
 # =============================================================================
 # BORDER RADIUS
 # =============================================================================
+
+## Extra small radius - subtle rounding, tags, badges
+const RADIUS_XS := 2
 
 ## Small radius - buttons, inputs, chips
 const RADIUS_SM := 4
@@ -236,15 +240,16 @@ const Z_LOADING := 60
 # =============================================================================
 
 ## Creates a StyleBoxFlat with standard panel styling
+## Pass Color(-1,-1,-1,-1) to use ThemeColors defaults
 static func create_panel_style(
-	bg_color: Color = ThemeColors.BG_PANEL,
-	border_color: Color = ThemeColors.BORDER,
+	bg_color: Color = Color(-1, -1, -1, -1),
+	border_color: Color = Color(-1, -1, -1, -1),
 	corner_radius: int = RADIUS_MD,
 	border_width: int = 1
 ) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
-	style.bg_color = bg_color
-	style.border_color = border_color
+	style.bg_color = ThemeColors.BG_PANEL if bg_color.r < 0 else bg_color
+	style.border_color = ThemeColors.BORDER if border_color.r < 0 else border_color
 	style.set_border_width_all(border_width)
 	style.set_corner_radius_all(corner_radius)
 	style.content_margin_left = SPACE_XL
@@ -255,12 +260,13 @@ static func create_panel_style(
 
 
 ## Creates a StyleBoxFlat with shadow
+## Pass Color(-1,-1,-1,-1) to use ThemeColors defaults
 static func create_elevated_style(
-	bg_color: Color = ThemeColors.BG_CARD,
+	bg_color: Color = Color(-1, -1, -1, -1),
 	shadow: Dictionary = SHADOW_MD
 ) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
-	style.bg_color = bg_color
+	style.bg_color = ThemeColors.BG_CARD if bg_color.r < 0 else bg_color
 	style.set_corner_radius_all(RADIUS_MD)
 	style.shadow_size = shadow.size
 	style.shadow_offset = shadow.offset
@@ -273,14 +279,16 @@ static func create_elevated_style(
 
 
 ## Creates a standard button StyleBoxFlat
+## Pass Color(-1,-1,-1,-1) to use ThemeColors defaults
 static func create_button_style(
-	bg_color: Color = ThemeColors.BG_BUTTON,
-	border_color: Color = ThemeColors.BORDER,
+	bg_color: Color = Color(-1, -1, -1, -1),
+	border_color: Color = Color(-1, -1, -1, -1),
 	pressed: bool = false
 ) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
-	style.bg_color = bg_color if not pressed else bg_color.darkened(0.1)
-	style.border_color = border_color
+	var actual_bg: Color = ThemeColors.BG_BUTTON if bg_color.r < 0 else bg_color
+	style.bg_color = actual_bg if not pressed else actual_bg.darkened(0.1)
+	style.border_color = ThemeColors.BORDER if border_color.r < 0 else border_color
 	style.set_border_width_all(1)
 	style.set_corner_radius_all(RADIUS_SM)
 	style.content_margin_left = SPACE_LG
@@ -291,9 +299,10 @@ static func create_button_style(
 
 
 ## Applies standard label styling with typography level
-static func style_label(label: Label, level: String = "body", color: Color = ThemeColors.TEXT) -> void:
+## Pass Color(-1,-1,-1,-1) to use ThemeColors defaults
+static func style_label(label: Label, level: String = "body", color: Color = Color(-1, -1, -1, -1)) -> void:
 	label.add_theme_font_size_override("font_size", FONT_SIZES.get(level, FONT_BODY))
-	label.add_theme_color_override("font_color", color)
+	label.add_theme_color_override("font_color", ThemeColors.TEXT if color.r < 0 else color)
 
 
 ## Creates a horizontal spacer Control
@@ -305,9 +314,10 @@ static func create_spacer(expand: bool = true) -> Control:
 
 
 ## Creates a vertical separator with spacing
-static func create_separator(height: int = 1, color: Color = ThemeColors.BORDER) -> ColorRect:
+## Pass Color(-1,-1,-1,-1) to use ThemeColors defaults
+static func create_separator(height: int = 1, color: Color = Color(-1, -1, -1, -1)) -> ColorRect:
 	var sep := ColorRect.new()
-	sep.color = color
+	sep.color = ThemeColors.BORDER if color.r < 0 else color
 	sep.custom_minimum_size.y = height
 	return sep
 

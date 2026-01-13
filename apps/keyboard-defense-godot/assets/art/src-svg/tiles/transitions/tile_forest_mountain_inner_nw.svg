@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Forest with small mountain corner peeking from NW diagonal only -->
+
+  <!-- Forest base -->
+  <rect x="0" y="0" width="16" height="16" fill="#0d3d0d"/>
+
+  <!-- Small mountain corner in NW -->
+  <rect x="0" y="0" width="3" height="3" fill="#8b6914"/>
+  <rect x="3" y="0" width="2" height="2" fill="#6a5010"/>
+  <rect x="0" y="2" width="2" height="2" fill="#6a5010"/>
+  <rect x="2" y="1" width="2" height="2" fill="#5c4033"/>
+
+  <!-- Forest foliage layers -->
+  <rect x="9" y="2" width="5" height="4" fill="#145214"/>
+  <rect x="3" y="6" width="5" height="4" fill="#145214"/>
+  <rect x="6" y="10" width="6" height="4" fill="#145214"/>
+  <rect x="10" y="3" width="2" height="2" fill="#1a5a1a"/>
+  <rect x="4" y="7" width="2" height="2" fill="#1a5a1a"/>
+  <rect x="7" y="11" width="3" height="2" fill="#2d7a2d"/>
+</svg>

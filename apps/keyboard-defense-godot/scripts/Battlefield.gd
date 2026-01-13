@@ -2,6 +2,10 @@ extends Control
 ## Battlefield scene - Main combat and typing gameplay.
 ## Migrated to use DesignSystem and ThemeColors for consistency.
 
+# Preload autoloads for test compatibility
+const ThemeColors = preload("res://ui/theme_colors.gd")
+const DesignSystem = preload("res://ui/design_system.gd")
+
 const TypingSystem = preload("res://scripts/TypingSystem.gd")
 const SimWords = preload("res://sim/words.gd")
 const BattleTutorial = preload("res://scripts/BattleTutorial.gd")

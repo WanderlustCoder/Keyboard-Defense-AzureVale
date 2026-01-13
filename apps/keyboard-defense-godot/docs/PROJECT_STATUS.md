@@ -99,12 +99,34 @@ Plan library: `docs/plans/README.md` (reference material only).
 - Sprite animations (`game/sprite_animator.gd`)
 
 ## Accessibility Options
-- High contrast mode toggle
-- Reduced motion setting (disables particles, animations)
-- Game speed multiplier (0.5x - 2.0x)
-- Keyboard navigation hints toggle
-- Practice mode for individual key learning
-- All settings persist to `user://profile.json`
+
+The game provides comprehensive accessibility features to ensure inclusive gameplay. All settings persist to `user://profile.json`.
+
+### Visual Accessibility
+- **High Contrast Mode**: Enhanced visual contrast for better readability
+- **Reduced Motion**: Disables particles, animations, and screen effects
+- **UI Scale**: Adjustable from 80% to 140% for different screen sizes
+- **Compact Panels**: Reduced UI density for smaller screens
+
+### Motor Accessibility
+- **Game Speed Multiplier**: Adjustable from 0.5x to 2.0x for pacing control
+- **Pause Anytime**: Pause during combat for breaks
+- **Keyboard Navigation Hints**: Visual indicators for keyboard controls
+- **One-Handed Mode**: (Planned) Limit words to single-hand typing
+
+### Learning Accessibility
+- **Practice Mode**: Key-by-key learning for individual lessons
+- **Keyboard Display**: On-screen keyboard with finger zone highlighting
+- **Finger Guides**: Visual indicators showing which finger to use
+
+### How to Access
+- Press `F1` or type `settings` to open the Settings panel
+- Use `settings prefs` to view current accessibility configuration
+- Hotkey hints appear on panels when Keyboard Navigation Hints is enabled
+
+### Verification
+- Run `docs/ACCESSIBILITY_VERIFICATION.md` checklist at 1280x720
+- Use `settings verify` for automated configuration checks
 
 ## Balance Diagnostics Infrastructure
 - `balance export` command with metric groups:

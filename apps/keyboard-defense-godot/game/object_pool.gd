@@ -152,7 +152,9 @@ static func get_pool(pool_name: String, factory: Callable = Callable(), reset_fu
 		push_error("ObjectPool: Cannot create pool '%s' without factory" % pool_name)
 		return null
 
-	var pool := ObjectPool.new(factory, reset_func, max_size)
+	# Use load() to reference own class from static context
+	var ObjectPoolClass = load("res://game/object_pool.gd")
+	var pool = ObjectPoolClass.new(factory, reset_func, max_size)
 	_pools[pool_name] = pool
 	return pool
 
