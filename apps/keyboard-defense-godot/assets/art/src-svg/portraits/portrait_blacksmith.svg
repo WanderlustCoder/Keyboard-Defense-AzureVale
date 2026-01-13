@@ -1,48 +1,172 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-  <!-- Blacksmith Portrait (24x24) - Forge NPC -->
-  <!-- Color Palette: #7f8c8d, #5d6d7e, #e74c3c, #f5e6d3, #2c3e50 -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Blacksmith Portrait (64x64) - Burly forge master -->
+  <!-- Color Palette: Skin #d5c4a1/#e6d5c3, Beard #5d4e37/#8b7355, Apron #7f8c8d, Forge #e74c3c -->
 
-  <!-- Background -->
-  <rect x="0" y="0" width="24" height="24" fill="#2c3e50"/>
+  <!-- === ORNATE FRAME === -->
+  <!-- Outer frame border -->
+  <rect x="0" y="0" width="64" height="64" fill="#4a3520"/>
+  <rect x="1" y="1" width="62" height="62" fill="#8b6914"/>
+  <rect x="2" y="2" width="60" height="60" fill="#d4a855"/>
+  <rect x="3" y="3" width="58" height="58" fill="#c49a4b"/>
+  <rect x="4" y="4" width="56" height="56" fill="#2c3e50"/>
 
-  <!-- Face -->
-  <rect x="7" y="6" width="10" height="12" fill="#d5c4a1"/>
-  <rect x="8" y="7" width="8" height="10" fill="#e6d5c3"/>
+  <!-- Frame corner ornaments - orange/red gems for forge theme -->
+  <rect x="2" y="2" width="6" height="6" fill="#922b21"/>
+  <rect x="3" y="3" width="4" height="4" fill="#c0392b"/>
+  <rect x="4" y="4" width="2" height="2" fill="#e74c3c"/>
+  <rect x="56" y="2" width="6" height="6" fill="#922b21"/>
+  <rect x="57" y="3" width="4" height="4" fill="#c0392b"/>
+  <rect x="58" y="4" width="2" height="2" fill="#e74c3c"/>
+  <rect x="2" y="56" width="6" height="6" fill="#922b21"/>
+  <rect x="3" y="57" width="4" height="4" fill="#c0392b"/>
+  <rect x="4" y="58" width="2" height="2" fill="#e74c3c"/>
+  <rect x="56" y="56" width="6" height="6" fill="#922b21"/>
+  <rect x="57" y="57" width="4" height="4" fill="#c0392b"/>
+  <rect x="58" y="58" width="2" height="2" fill="#e74c3c"/>
 
-  <!-- Beard -->
-  <rect x="7" y="12" width="10" height="6" fill="#5d4e37"/>
-  <rect x="8" y="13" width="8" height="4" fill="#8b7355"/>
-  <rect x="6" y="14" width="2" height="4" fill="#5d4e37"/>
-  <rect x="16" y="14" width="2" height="4" fill="#5d4e37"/>
+  <!-- === BACKGROUND === -->
+  <!-- Forge glow background -->
+  <rect x="5" y="5" width="54" height="54" fill="#1a1510"/>
+  <rect x="5" y="35" width="54" height="24" fill="#2a1a12"/>
+  <rect x="5" y="45" width="54" height="14" fill="#3a2218"/>
+  <!-- Forge glow from below -->
+  <rect x="10" y="50" width="44" height="9" fill="#4a2a1a"/>
+  <rect x="15" y="52" width="34" height="7" fill="#5a3020"/>
 
-  <!-- Bald head with soot -->
-  <rect x="7" y="4" width="10" height="4" fill="#d5c4a1"/>
-  <rect x="8" y="3" width="8" height="2" fill="#e6d5c3"/>
-  <rect x="9" y="4" width="2" height="1" fill="#5d6d7e"/>
-  <rect x="13" y="5" width="1" height="1" fill="#5d6d7e"/>
+  <!-- === BALD HEAD === -->
+  <!-- Head shape - wide and strong -->
+  <rect x="16" y="8" width="32" height="26" fill="#c9b896"/>
+  <rect x="18" y="9" width="28" height="24" fill="#d5c4a1"/>
+  <rect x="20" y="10" width="24" height="22" fill="#e6d5c3"/>
 
-  <!-- Eyes -->
-  <rect x="9" y="8" width="2" height="2" fill="#2c3e50"/>
-  <rect x="13" y="8" width="2" height="2" fill="#2c3e50"/>
-  <rect x="9" y="8" width="1" height="1" fill="#fdfefe"/>
-  <rect x="13" y="8" width="1" height="1" fill="#fdfefe"/>
+  <!-- Bald dome -->
+  <rect x="20" y="7" width="24" height="6" fill="#d5c4a1"/>
+  <rect x="22" y="6" width="20" height="4" fill="#e6d5c3"/>
+  <rect x="24" y="5" width="16" height="3" fill="#e6d5c3"/>
 
-  <!-- Bushy eyebrows -->
-  <rect x="8" y="7" width="3" height="1" fill="#5d4e37"/>
-  <rect x="13" y="7" width="3" height="1" fill="#5d4e37"/>
+  <!-- Head highlights -->
+  <rect x="26" y="6" width="12" height="2" fill="#f0e6d8"/>
+  <rect x="28" y="7" width="8" height="1" fill="#f5ebe0"/>
 
-  <!-- Nose -->
-  <rect x="11" y="10" width="2" height="2" fill="#c9b896"/>
+  <!-- Soot marks on head -->
+  <rect x="22" y="8" width="3" height="2" fill="#4a4540"/>
+  <rect x="36" y="10" width="2" height="2" fill="#5a5550"/>
+  <rect x="40" y="8" width="2" height="1" fill="#4a4540"/>
 
-  <!-- Apron -->
-  <rect x="5" y="18" width="14" height="6" fill="#7f8c8d"/>
-  <rect x="6" y="19" width="12" height="4" fill="#5d6d7e"/>
+  <!-- === EARS === -->
+  <!-- Left ear -->
+  <rect x="14" y="16" width="4" height="8" fill="#c9b896"/>
+  <rect x="15" y="17" width="2" height="6" fill="#d5c4a1"/>
+  <rect x="15" y="18" width="1" height="4" fill="#b8a888"/>
+  <!-- Right ear -->
+  <rect x="46" y="16" width="4" height="8" fill="#c9b896"/>
+  <rect x="47" y="17" width="2" height="6" fill="#d5c4a1"/>
+  <rect x="48" y="18" width="1" height="4" fill="#b8a888"/>
 
-  <!-- Hammer icon on apron -->
-  <rect x="10" y="19" width="4" height="3" fill="#95a5a6"/>
-  <rect x="11" y="20" width="2" height="2" fill="#bdc3c7"/>
+  <!-- === BUSHY EYEBROWS === -->
+  <rect x="20" y="16" width="8" height="3" fill="#4d3e2a"/>
+  <rect x="21" y="15" width="6" height="2" fill="#5d4e37"/>
+  <rect x="22" y="16" width="4" height="2" fill="#6d5e47"/>
+  <rect x="36" y="16" width="8" height="3" fill="#4d3e2a"/>
+  <rect x="37" y="15" width="6" height="2" fill="#5d4e37"/>
+  <rect x="38" y="16" width="4" height="2" fill="#6d5e47"/>
 
-  <!-- Sweat drop -->
-  <rect x="17" y="6" width="2" height="3" fill="#3498db"/>
-  <rect x="17" y="7" width="1" height="1" fill="#5dade2"/>
+  <!-- === EYES === -->
+  <!-- Left eye -->
+  <rect x="22" y="19" width="6" height="4" fill="#1a1512"/>
+  <rect x="23" y="20" width="4" height="2" fill="#2c2520"/>
+  <rect x="24" y="20" width="2" height="2" fill="#3d3530"/>
+  <rect x="24" y="20" width="1" height="1" fill="#fdfefe"/>
+  <!-- Right eye -->
+  <rect x="36" y="19" width="6" height="4" fill="#1a1512"/>
+  <rect x="37" y="20" width="4" height="2" fill="#2c2520"/>
+  <rect x="38" y="20" width="2" height="2" fill="#3d3530"/>
+  <rect x="39" y="20" width="1" height="1" fill="#fdfefe"/>
+
+  <!-- === NOSE === -->
+  <!-- Large prominent nose -->
+  <rect x="29" y="21" width="6" height="8" fill="#c9b896"/>
+  <rect x="30" y="22" width="4" height="6" fill="#d5c4a1"/>
+  <rect x="31" y="23" width="2" height="3" fill="#e6d5c3"/>
+  <!-- Nostrils -->
+  <rect x="29" y="27" width="2" height="2" fill="#a89878"/>
+  <rect x="33" y="27" width="2" height="2" fill="#a89878"/>
+
+  <!-- === BEARD === -->
+  <!-- Main beard mass -->
+  <rect x="14" y="28" width="36" height="16" fill="#4d3e2a"/>
+  <rect x="16" y="29" width="32" height="14" fill="#5d4e37"/>
+  <rect x="18" y="30" width="28" height="12" fill="#6d5e47"/>
+  <rect x="20" y="31" width="24" height="10" fill="#8b7355"/>
+
+  <!-- Beard texture - lighter strands -->
+  <rect x="22" y="32" width="2" height="6" fill="#9b8365"/>
+  <rect x="26" y="33" width="2" height="5" fill="#9b8365"/>
+  <rect x="30" y="32" width="4" height="6" fill="#9b8365"/>
+  <rect x="36" y="33" width="2" height="5" fill="#9b8365"/>
+  <rect x="40" y="32" width="2" height="6" fill="#9b8365"/>
+
+  <!-- Beard shadow/depth -->
+  <rect x="18" y="38" width="28" height="4" fill="#5d4e37"/>
+  <rect x="20" y="40" width="24" height="2" fill="#4d3e2a"/>
+
+  <!-- Mustache -->
+  <rect x="24" y="28" width="16" height="3" fill="#5d4e37"/>
+  <rect x="26" y="28" width="12" height="2" fill="#6d5e47"/>
+  <rect x="28" y="29" width="8" height="1" fill="#8b7355"/>
+
+  <!-- Mouth gap in beard -->
+  <rect x="28" y="30" width="8" height="2" fill="#3d2e1a"/>
+
+  <!-- Side beard extensions -->
+  <rect x="12" y="30" width="4" height="10" fill="#5d4e37"/>
+  <rect x="13" y="31" width="2" height="8" fill="#6d5e47"/>
+  <rect x="48" y="30" width="4" height="10" fill="#5d4e37"/>
+  <rect x="49" y="31" width="2" height="8" fill="#6d5e47"/>
+
+  <!-- === SHOULDERS === -->
+  <!-- Broad muscular shoulders -->
+  <rect x="6" y="42" width="14" height="16" fill="#8b7355"/>
+  <rect x="7" y="43" width="12" height="14" fill="#9b8365"/>
+  <rect x="44" y="42" width="14" height="16" fill="#8b7355"/>
+  <rect x="45" y="43" width="12" height="14" fill="#9b8365"/>
+
+  <!-- Shoulder muscles definition -->
+  <rect x="8" y="44" width="4" height="4" fill="#ab9375"/>
+  <rect x="52" y="44" width="4" height="4" fill="#ab9375"/>
+
+  <!-- === LEATHER APRON === -->
+  <rect x="16" y="44" width="32" height="15" fill="#5d5550"/>
+  <rect x="18" y="45" width="28" height="13" fill="#6d6560"/>
+  <rect x="20" y="46" width="24" height="11" fill="#7d7570"/>
+
+  <!-- Apron strap -->
+  <rect x="22" y="42" width="4" height="4" fill="#5d5550"/>
+  <rect x="38" y="42" width="4" height="4" fill="#5d5550"/>
+
+  <!-- Apron highlights -->
+  <rect x="22" y="48" width="8" height="4" fill="#8d8580"/>
+  <rect x="34" y="48" width="8" height="4" fill="#8d8580"/>
+
+  <!-- === HAMMER EMBLEM ON APRON === -->
+  <rect x="28" y="48" width="8" height="8" fill="#5d6d7e"/>
+  <rect x="29" y="49" width="6" height="6" fill="#7f8c8d"/>
+  <!-- Hammer head -->
+  <rect x="30" y="50" width="4" height="2" fill="#95a5a6"/>
+  <rect x="31" y="50" width="2" height="1" fill="#bdc3c7"/>
+  <!-- Hammer handle -->
+  <rect x="31" y="52" width="2" height="3" fill="#8b7355"/>
+
+  <!-- === SWEAT DROPS === -->
+  <rect x="48" y="12" width="3" height="5" fill="#3498db"/>
+  <rect x="49" y="13" width="2" height="3" fill="#5dade2"/>
+  <rect x="49" y="14" width="1" height="1" fill="#85c1e9"/>
+
+  <rect x="13" y="14" width="2" height="4" fill="#3498db"/>
+  <rect x="13" y="15" width="1" height="2" fill="#5dade2"/>
+
+  <!-- === FORGE GLOW REFLECTION === -->
+  <!-- Orange glow on chin/beard from below -->
+  <rect x="24" y="40" width="16" height="2" fill="#8b5a3a"/>
+  <rect x="26" y="41" width="12" height="1" fill="#9b6a4a"/>
 </svg>

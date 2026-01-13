@@ -1,49 +1,296 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-  <!-- Wizard Portrait (24x24) - Magic NPC -->
-  <!-- Color Palette: #9b59b6, #8e44ad, #ecf0f1, #f4d03f, #2c3e50 -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Wizard Portrait (64x64) - Wise arcane master with long beard -->
 
-  <!-- Background -->
-  <rect x="0" y="0" width="24" height="24" fill="#2c3e50"/>
+  <!-- === OUTER FRAME === -->
+  <rect x="0" y="0" width="64" height="64" fill="#1a1a2e"/>
+  <rect x="1" y="1" width="62" height="62" fill="#9a7b0a"/>
+  <rect x="2" y="2" width="60" height="60" fill="#d4ac0d"/>
+  <rect x="3" y="3" width="58" height="58" fill="#f4d03f"/>
+  <rect x="2" y="2" width="60" height="1" fill="#f4d03f"/>
+  <rect x="2" y="2" width="1" height="60" fill="#f4d03f"/>
+  <rect x="3" y="61" width="60" height="1" fill="#9a7b0a"/>
+  <rect x="61" y="3" width="1" height="58" fill="#9a7b0a"/>
 
-  <!-- Wizard hat -->
-  <rect x="8" y="0" width="8" height="2" fill="#8e44ad"/>
-  <rect x="9" y="2" width="6" height="2" fill="#9b59b6"/>
-  <rect x="7" y="4" width="10" height="2" fill="#8e44ad"/>
-  <rect x="5" y="5" width="14" height="2" fill="#9b59b6"/>
+  <!-- Corner ornaments - purple gems -->
+  <rect x="1" y="1" width="5" height="5" fill="#f4d03f"/>
+  <rect x="2" y="2" width="3" height="3" fill="#d4ac0d"/>
+  <rect x="2" y="2" width="2" height="2" fill="#8e44ad"/>
+  <rect x="2" y="2" width="1" height="1" fill="#c9a0dc"/>
+  <rect x="58" y="1" width="5" height="5" fill="#f4d03f"/>
+  <rect x="59" y="2" width="3" height="3" fill="#d4ac0d"/>
+  <rect x="60" y="2" width="2" height="2" fill="#8e44ad"/>
+  <rect x="61" y="2" width="1" height="1" fill="#c9a0dc"/>
+  <rect x="1" y="58" width="5" height="5" fill="#f4d03f"/>
+  <rect x="2" y="59" width="3" height="3" fill="#d4ac0d"/>
+  <rect x="2" y="60" width="2" height="2" fill="#8e44ad"/>
+  <rect x="2" y="61" width="1" height="1" fill="#c9a0dc"/>
+  <rect x="58" y="58" width="5" height="5" fill="#f4d03f"/>
+  <rect x="59" y="59" width="3" height="3" fill="#d4ac0d"/>
+  <rect x="60" y="60" width="2" height="2" fill="#8e44ad"/>
+  <rect x="61" y="61" width="1" height="1" fill="#c9a0dc"/>
 
-  <!-- Hat star -->
-  <rect x="10" y="2" width="4" height="2" fill="#f4d03f"/>
-  <rect x="11" y="1" width="2" height="1" fill="#f4d03f"/>
-  <rect x="11" y="4" width="2" height="1" fill="#f4d03f"/>
+  <!-- Inner border -->
+  <rect x="4" y="4" width="56" height="56" fill="#2c1810"/>
 
-  <!-- Face -->
-  <rect x="7" y="7" width="10" height="10" fill="#ecf0f1"/>
-  <rect x="8" y="8" width="8" height="8" fill="#f5e6d3"/>
+  <!-- === BACKGROUND === -->
+  <rect x="5" y="5" width="54" height="54" fill="#1a0a2e"/>
+  <rect x="5" y="5" width="54" height="30" fill="#201535"/>
+  <rect x="5" y="5" width="54" height="20" fill="#281a42"/>
+  <rect x="5" y="5" width="54" height="10" fill="#352350"/>
 
-  <!-- Long beard -->
-  <rect x="8" y="14" width="8" height="4" fill="#ecf0f1"/>
-  <rect x="7" y="15" width="10" height="6" fill="#bdc3c7"/>
-  <rect x="9" y="17" width="6" height="5" fill="#ecf0f1"/>
-  <rect x="10" y="20" width="4" height="4" fill="#bdc3c7"/>
+  <!-- Arcane glow behind head -->
+  <rect x="18" y="6" width="28" height="16" fill="#352350"/>
+  <rect x="20" y="8" width="24" height="12" fill="#402a5a"/>
+  <rect x="23" y="10" width="18" height="8" fill="#4a3570"/>
+  <rect x="27" y="12" width="10" height="4" fill="#5a4580"/>
 
-  <!-- Eyes -->
-  <rect x="9" y="10" width="2" height="2" fill="#2c3e50"/>
-  <rect x="13" y="10" width="2" height="2" fill="#2c3e50"/>
-  <rect x="9" y="10" width="1" height="1" fill="#5dade2"/>
-  <rect x="13" y="10" width="1" height="1" fill="#5dade2"/>
+  <!-- === WIZARD HAT === -->
+  <!-- Hat tip -->
+  <rect x="30" y="5" width="4" height="2" fill="#6a3078"/>
+  <rect x="31" y="5" width="2" height="1" fill="#7a3888"/>
+  <!-- Hat cone -->
+  <rect x="28" y="7" width="8" height="3" fill="#5a2868"/>
+  <rect x="29" y="7" width="6" height="2" fill="#6a3078"/>
+  <rect x="30" y="7" width="4" height="1" fill="#7a3888"/>
+  <rect x="26" y="10" width="12" height="3" fill="#4a2058"/>
+  <rect x="27" y="10" width="10" height="2" fill="#5a2868"/>
+  <rect x="28" y="10" width="8" height="1" fill="#6a3078"/>
+  <!-- Hat brim -->
+  <rect x="20" y="13" width="24" height="3" fill="#4a2058"/>
+  <rect x="21" y="13" width="22" height="2" fill="#5a2868"/>
+  <rect x="22" y="13" width="20" height="1" fill="#6a3078"/>
+  <!-- Hat band - gold -->
+  <rect x="26" y="12" width="12" height="1" fill="#b8960b"/>
+  <rect x="27" y="12" width="10" height="1" fill="#d4ac0d"/>
+  <!-- Hat star decoration -->
+  <rect x="30" y="8" width="4" height="3" fill="#d4ac0d"/>
+  <rect x="31" y="7" width="2" height="1" fill="#f4d03f"/>
+  <rect x="31" y="11" width="2" height="1" fill="#f4d03f"/>
+  <rect x="29" y="9" width="1" height="1" fill="#f4d03f"/>
+  <rect x="34" y="9" width="1" height="1" fill="#f4d03f"/>
+  <rect x="31" y="9" width="2" height="1" fill="#f4d03f"/>
 
-  <!-- Eyebrows -->
-  <rect x="8" y="9" width="3" height="1" fill="#bdc3c7"/>
-  <rect x="13" y="9" width="3" height="1" fill="#bdc3c7"/>
+  <!-- === HAIR - Silver/white, visible under hat === -->
+  <!-- Left hair under hat -->
+  <rect x="18" y="16" width="6" height="22" fill="#7a8595"/>
+  <rect x="19" y="17" width="4" height="20" fill="#8a95a5"/>
+  <rect x="20" y="18" width="2" height="18" fill="#9aa5b5"/>
+  <!-- Left hair highlights -->
+  <rect x="19" y="18" width="2" height="1" fill="#e8f0f8"/>
+  <rect x="20" y="24" width="2" height="1" fill="#e8f0f8"/>
 
-  <!-- Nose -->
-  <rect x="11" y="12" width="2" height="2" fill="#e6d5c3"/>
+  <!-- Right hair under hat -->
+  <rect x="40" y="16" width="6" height="22" fill="#7a8595"/>
+  <rect x="41" y="17" width="4" height="20" fill="#8a95a5"/>
+  <rect x="42" y="18" width="2" height="18" fill="#9aa5b5"/>
+  <!-- Right hair highlights -->
+  <rect x="43" y="18" width="2" height="1" fill="#e8f0f8"/>
+  <rect x="42" y="24" width="2" height="1" fill="#e8f0f8"/>
 
-  <!-- Robe -->
-  <rect x="5" y="18" width="14" height="6" fill="#9b59b6"/>
-  <rect x="6" y="19" width="12" height="4" fill="#8e44ad"/>
+  <!-- === FACE === -->
+  <!-- Base face shape -->
+  <rect x="22" y="16" width="20" height="20" fill="#e5d5c5"/>
 
-  <!-- Magic glow on hand -->
-  <rect x="18" y="19" width="3" height="3" fill="#d7bde2"/>
-  <rect x="19" y="20" width="1" height="1" fill="#fdfefe"/>
+  <!-- Main skin -->
+  <rect x="23" y="17" width="18" height="18" fill="#f5e8db"/>
+  <rect x="24" y="18" width="16" height="14" fill="#faf3eb"/>
+
+  <!-- Temple shadows -->
+  <rect x="23" y="18" width="2" height="5" fill="#e8dcd0"/>
+  <rect x="39" y="18" width="2" height="5" fill="#e8dcd0"/>
+
+  <!-- Cheek contour -->
+  <rect x="23" y="24" width="2" height="4" fill="#e8dcd0"/>
+  <rect x="39" y="24" width="2" height="4" fill="#e8dcd0"/>
+
+  <!-- Forehead - under hat -->
+  <rect x="22" y="16" width="20" height="2" fill="#ddd0c5"/>
+
+  <!-- === EYES === -->
+  <!-- Eye shadow -->
+  <rect x="25" y="21" width="6" height="2" fill="#a098b0"/>
+  <rect x="33" y="21" width="6" height="2" fill="#a098b0"/>
+
+  <!-- Left eye white -->
+  <rect x="25" y="23" width="6" height="4" fill="#fafafa"/>
+  <!-- Left eye corners -->
+  <rect x="25" y="23" width="1" height="1" fill="#f0e3d5"/>
+  <rect x="30" y="23" width="1" height="1" fill="#f0e3d5"/>
+  <rect x="25" y="26" width="1" height="1" fill="#f0e3d5"/>
+  <rect x="30" y="26" width="1" height="1" fill="#f0e3d5"/>
+  <!-- Left iris - blue magical -->
+  <rect x="26" y="23" width="4" height="4" fill="#1a5276"/>
+  <rect x="26" y="23" width="3" height="3" fill="#2980b9"/>
+  <rect x="27" y="24" width="2" height="2" fill="#5dade2"/>
+  <!-- Left pupil -->
+  <rect x="27" y="24" width="2" height="2" fill="#0d1a26"/>
+  <rect x="28" y="25" width="1" height="1" fill="#000a12"/>
+  <!-- Left eye sparkle -->
+  <rect x="26" y="23" width="2" height="1" fill="#fafafa"/>
+  <rect x="27" y="24" width="1" height="1" fill="#fafafa"/>
+  <rect x="29" y="25" width="1" height="1" fill="#85c1e9"/>
+  <!-- Left eyelid -->
+  <rect x="25" y="22" width="6" height="1" fill="#8878a0"/>
+  <rect x="26" y="22" width="4" height="1" fill="#706088"/>
+  <!-- Left lower lid -->
+  <rect x="26" y="27" width="4" height="1" fill="#e8dcd0"/>
+
+  <!-- Right eye white -->
+  <rect x="33" y="23" width="6" height="4" fill="#fafafa"/>
+  <!-- Right eye corners -->
+  <rect x="33" y="23" width="1" height="1" fill="#f0e3d5"/>
+  <rect x="38" y="23" width="1" height="1" fill="#f0e3d5"/>
+  <rect x="33" y="26" width="1" height="1" fill="#f0e3d5"/>
+  <rect x="38" y="26" width="1" height="1" fill="#f0e3d5"/>
+  <!-- Right iris - blue magical -->
+  <rect x="34" y="23" width="4" height="4" fill="#1a5276"/>
+  <rect x="35" y="23" width="3" height="3" fill="#2980b9"/>
+  <rect x="35" y="24" width="2" height="2" fill="#5dade2"/>
+  <!-- Right pupil -->
+  <rect x="35" y="24" width="2" height="2" fill="#0d1a26"/>
+  <rect x="35" y="25" width="1" height="1" fill="#000a12"/>
+  <!-- Right eye sparkle -->
+  <rect x="36" y="23" width="2" height="1" fill="#fafafa"/>
+  <rect x="36" y="24" width="1" height="1" fill="#fafafa"/>
+  <rect x="34" y="25" width="1" height="1" fill="#85c1e9"/>
+  <!-- Right eyelid -->
+  <rect x="33" y="22" width="6" height="1" fill="#8878a0"/>
+  <rect x="34" y="22" width="4" height="1" fill="#706088"/>
+  <!-- Right lower lid -->
+  <rect x="34" y="27" width="4" height="1" fill="#e8dcd0"/>
+
+  <!-- === EYEBROWS === -->
+  <!-- Bushy silver brows -->
+  <rect x="24" y="20" width="6" height="2" fill="#8a95a5"/>
+  <rect x="25" y="20" width="4" height="1" fill="#9aa5b5"/>
+  <rect x="34" y="20" width="6" height="2" fill="#8a95a5"/>
+  <rect x="35" y="20" width="4" height="1" fill="#9aa5b5"/>
+
+  <!-- === NOSE === -->
+  <rect x="30" y="27" width="4" height="3" fill="#f0e3d5"/>
+  <rect x="31" y="27" width="2" height="2" fill="#f5e8db"/>
+  <rect x="31" y="27" width="1" height="2" fill="#faf3eb"/>
+  <rect x="33" y="27" width="1" height="2" fill="#ead8cc"/>
+  <!-- Nose tip -->
+  <rect x="29" y="30" width="6" height="1" fill="#f0e3d5"/>
+  <rect x="30" y="30" width="4" height="1" fill="#f5e8db"/>
+  <!-- Nostrils -->
+  <rect x="29" y="31" width="2" height="1" fill="#ddd0c5"/>
+  <rect x="33" y="31" width="2" height="1" fill="#ddd0c5"/>
+
+  <!-- === BEARD - Long flowing silver === -->
+  <!-- Mustache -->
+  <rect x="26" y="32" width="12" height="2" fill="#8a95a5"/>
+  <rect x="27" y="32" width="10" height="1" fill="#9aa5b5"/>
+  <rect x="30" y="32" width="4" height="1" fill="#aab5c5"/>
+  <!-- Upper beard - cheek level -->
+  <rect x="24" y="34" width="16" height="4" fill="#7a8595"/>
+  <rect x="25" y="34" width="14" height="3" fill="#8a95a5"/>
+  <rect x="26" y="34" width="12" height="2" fill="#9aa5b5"/>
+  <!-- Beard highlights -->
+  <rect x="28" y="34" width="3" height="1" fill="#e8f0f8"/>
+  <rect x="33" y="35" width="3" height="1" fill="#e8f0f8"/>
+  <!-- Mid beard -->
+  <rect x="25" y="38" width="14" height="6" fill="#7a8595"/>
+  <rect x="26" y="39" width="12" height="5" fill="#8a95a5"/>
+  <rect x="27" y="40" width="10" height="4" fill="#9aa5b5"/>
+  <rect x="28" y="41" width="8" height="3" fill="#aab5c5"/>
+  <!-- Beard wave pattern -->
+  <rect x="25" y="40" width="2" height="3" fill="#9aa5b5"/>
+  <rect x="37" y="40" width="2" height="3" fill="#9aa5b5"/>
+  <rect x="26" y="42" width="2" height="2" fill="#aab5c5"/>
+  <rect x="36" y="42" width="2" height="2" fill="#aab5c5"/>
+  <!-- Lower beard -->
+  <rect x="27" y="44" width="10" height="6" fill="#7a8595"/>
+  <rect x="28" y="45" width="8" height="5" fill="#8a95a5"/>
+  <rect x="29" y="46" width="6" height="4" fill="#9aa5b5"/>
+  <rect x="30" y="47" width="4" height="3" fill="#aab5c5"/>
+  <!-- Beard tip -->
+  <rect x="30" y="50" width="4" height="4" fill="#8a95a5"/>
+  <rect x="31" y="51" width="2" height="3" fill="#9aa5b5"/>
+  <rect x="31" y="52" width="2" height="2" fill="#aab5c5"/>
+  <!-- Beard shimmer -->
+  <rect x="30" y="45" width="2" height="1" fill="#e8f0f8"/>
+  <rect x="32" y="48" width="2" height="1" fill="#e8f0f8"/>
+
+  <!-- === ROBE === -->
+  <!-- Shoulders -->
+  <rect x="10" y="38" width="12" height="8" fill="#4a2058"/>
+  <rect x="11" y="39" width="10" height="6" fill="#5a2868"/>
+  <rect x="12" y="40" width="8" height="4" fill="#6a3078"/>
+  <rect x="42" y="38" width="12" height="8" fill="#4a2058"/>
+  <rect x="43" y="39" width="10" height="6" fill="#5a2868"/>
+  <rect x="44" y="40" width="8" height="4" fill="#6a3078"/>
+  <!-- Shoulder highlights -->
+  <rect x="14" y="40" width="4" height="2" fill="#7a3888"/>
+  <rect x="46" y="40" width="4" height="2" fill="#7a3888"/>
+
+  <!-- Main robe body -->
+  <rect x="8" y="46" width="48" height="12" fill="#4a2058"/>
+  <rect x="10" y="47" width="44" height="10" fill="#5a2868"/>
+  <rect x="12" y="48" width="40" height="8" fill="#6a3078"/>
+
+  <!-- Robe folds -->
+  <rect x="16" y="50" width="2" height="6" fill="#4a2058"/>
+  <rect x="17" y="51" width="1" height="4" fill="#5a2868"/>
+  <rect x="46" y="50" width="2" height="6" fill="#4a2058"/>
+  <rect x="46" y="51" width="1" height="4" fill="#5a2868"/>
+
+  <!-- Collar - gold trim -->
+  <rect x="22" y="36" width="4" height="6" fill="#b8960b"/>
+  <rect x="38" y="36" width="4" height="6" fill="#b8960b"/>
+  <rect x="23" y="37" width="2" height="4" fill="#d4ac0d"/>
+  <rect x="39" y="37" width="2" height="4" fill="#d4ac0d"/>
+  <rect x="23" y="36" width="1" height="1" fill="#f4d03f"/>
+  <rect x="40" y="36" width="1" height="1" fill="#f4d03f"/>
+
+  <!-- Center robe pattern -->
+  <rect x="29" y="52" width="6" height="6" fill="#7a3888"/>
+  <rect x="30" y="53" width="4" height="4" fill="#8a4098"/>
+  <!-- Arcane symbol on robe -->
+  <rect x="31" y="53" width="2" height="1" fill="#5dade2"/>
+  <rect x="30" y="54" width="1" height="2" fill="#5dade2"/>
+  <rect x="33" y="54" width="1" height="2" fill="#5dade2"/>
+  <rect x="31" y="56" width="2" height="1" fill="#5dade2"/>
+
+  <!-- Bottom hem - gold -->
+  <rect x="8" y="58" width="48" height="2" fill="#9a7b0a"/>
+  <rect x="10" y="58" width="44" height="1" fill="#b8960b"/>
+  <rect x="12" y="58" width="40" height="1" fill="#d4ac0d"/>
+  <!-- Hem pattern -->
+  <rect x="16" y="58" width="1" height="1" fill="#f4d03f"/>
+  <rect x="24" y="58" width="1" height="1" fill="#f4d03f"/>
+  <rect x="32" y="58" width="1" height="1" fill="#f4d03f"/>
+  <rect x="40" y="58" width="1" height="1" fill="#f4d03f"/>
+  <rect x="48" y="58" width="1" height="1" fill="#f4d03f"/>
+
+  <!-- === AMULET === -->
+  <!-- Chain -->
+  <rect x="28" y="36" width="1" height="1" fill="#d4ac0d"/>
+  <rect x="29" y="37" width="1" height="1" fill="#b8960b"/>
+  <rect x="30" y="38" width="1" height="1" fill="#d4ac0d"/>
+  <rect x="35" y="36" width="1" height="1" fill="#d4ac0d"/>
+  <rect x="34" y="37" width="1" height="1" fill="#b8960b"/>
+  <rect x="33" y="38" width="1" height="1" fill="#d4ac0d"/>
+  <!-- Pendant setting -->
+  <rect x="30" y="39" width="4" height="4" fill="#9a7b0a"/>
+  <rect x="30" y="39" width="4" height="1" fill="#d4ac0d"/>
+  <rect x="30" y="39" width="1" height="4" fill="#d4ac0d"/>
+  <!-- Gem - glowing blue -->
+  <rect x="31" y="40" width="2" height="2" fill="#1a5276"/>
+  <rect x="31" y="40" width="1" height="1" fill="#5dade2"/>
+  <rect x="32" y="41" width="1" height="1" fill="#2980b9"/>
+  <!-- Gem glow -->
+  <rect x="29" y="40" width="1" height="2" fill="#85c1e9"/>
+  <rect x="34" y="40" width="1" height="2" fill="#85c1e9"/>
+
+  <!-- === MAGICAL SPARKLES === -->
+  <rect x="7" y="8" width="2" height="2" fill="#5dade2"/>
+  <rect x="8" y="9" width="1" height="1" fill="#85c1e9"/>
+  <rect x="55" y="9" width="2" height="2" fill="#5dade2"/>
+  <rect x="56" y="10" width="1" height="1" fill="#85c1e9"/>
+  <rect x="6" y="28" width="1" height="1" fill="#2980b9"/>
+  <rect x="57" y="30" width="1" height="1" fill="#2980b9"/>
+  <rect x="8" y="42" width="1" height="1" fill="#5dade2"/>
+  <rect x="55" y="44" width="1" height="1" fill="#5dade2"/>
 </svg>

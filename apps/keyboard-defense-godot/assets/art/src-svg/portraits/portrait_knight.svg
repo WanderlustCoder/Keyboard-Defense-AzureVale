@@ -1,49 +1,189 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-  <!-- Knight Portrait (24x24) - Armored warrior NPC -->
-  <!-- Color Palette: #7f8c8d, #95a5a6, #bdc3c7, #3498db, #2c3e50 -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Knight Portrait (64x64) - Armored warrior with closed helm -->
+  <!-- Color Palette: Steel #7f8c8d/#95a5a6/#bdc3c7, Blue #3498db, Red #c0392b, Gold #d4a855 -->
 
-  <!-- Background -->
-  <rect x="0" y="0" width="24" height="24" fill="#2c3e50"/>
+  <!-- === ORNATE FRAME === -->
+  <!-- Outer frame border -->
+  <rect x="0" y="0" width="64" height="64" fill="#4a3520"/>
+  <rect x="1" y="1" width="62" height="62" fill="#8b6914"/>
+  <rect x="2" y="2" width="60" height="60" fill="#d4a855"/>
+  <rect x="3" y="3" width="58" height="58" fill="#c49a4b"/>
+  <rect x="4" y="4" width="56" height="56" fill="#2c3e50"/>
 
-  <!-- Helmet -->
-  <rect x="6" y="2" width="12" height="10" fill="#7f8c8d"/>
-  <rect x="7" y="3" width="10" height="8" fill="#95a5a6"/>
-  <rect x="5" y="4" width="2" height="6" fill="#7f8c8d"/>
-  <rect x="17" y="4" width="2" height="6" fill="#7f8c8d"/>
+  <!-- Frame corner ornaments - purple gems -->
+  <rect x="2" y="2" width="6" height="6" fill="#6b3a6b"/>
+  <rect x="3" y="3" width="4" height="4" fill="#8b4a8b"/>
+  <rect x="4" y="4" width="2" height="2" fill="#ab6aab"/>
+  <rect x="56" y="2" width="6" height="6" fill="#6b3a6b"/>
+  <rect x="57" y="3" width="4" height="4" fill="#8b4a8b"/>
+  <rect x="58" y="4" width="2" height="2" fill="#ab6aab"/>
+  <rect x="2" y="56" width="6" height="6" fill="#6b3a6b"/>
+  <rect x="3" y="57" width="4" height="4" fill="#8b4a8b"/>
+  <rect x="4" y="58" width="2" height="2" fill="#ab6aab"/>
+  <rect x="56" y="56" width="6" height="6" fill="#6b3a6b"/>
+  <rect x="57" y="57" width="4" height="4" fill="#8b4a8b"/>
+  <rect x="58" y="58" width="2" height="2" fill="#ab6aab"/>
 
-  <!-- Helmet visor -->
-  <rect x="8" y="6" width="8" height="4" fill="#1a252f"/>
-  <rect x="9" y="7" width="6" height="2" fill="#2c3e50"/>
+  <!-- === BACKGROUND === -->
+  <!-- Dark blue castle background gradient -->
+  <rect x="5" y="5" width="54" height="54" fill="#1a252f"/>
+  <rect x="5" y="5" width="54" height="20" fill="#243342"/>
+  <rect x="5" y="5" width="54" height="10" fill="#2c3e50"/>
 
-  <!-- Eye slits -->
-  <rect x="9" y="7" width="2" height="1" fill="#3498db"/>
-  <rect x="13" y="7" width="2" height="1" fill="#3498db"/>
+  <!-- === HELMET PLUME/CREST === -->
+  <!-- Red plume flowing back -->
+  <rect x="22" y="6" width="20" height="3" fill="#922b21"/>
+  <rect x="20" y="7" width="24" height="3" fill="#c0392b"/>
+  <rect x="18" y="8" width="28" height="3" fill="#e74c3c"/>
+  <rect x="21" y="9" width="22" height="2" fill="#c0392b"/>
+  <!-- Plume highlight -->
+  <rect x="25" y="7" width="8" height="1" fill="#ec7063"/>
+  <rect x="23" y="8" width="6" height="1" fill="#f1948a"/>
 
-  <!-- Helmet crest -->
-  <rect x="10" y="0" width="4" height="3" fill="#c0392b"/>
-  <rect x="11" y="0" width="2" height="2" fill="#922b21"/>
+  <!-- === HELMET === -->
+  <!-- Helmet base shape -->
+  <rect x="16" y="10" width="32" height="24" fill="#5d6d7e"/>
+  <rect x="17" y="11" width="30" height="22" fill="#7f8c8d"/>
+  <rect x="18" y="12" width="28" height="20" fill="#95a5a6"/>
 
-  <!-- Helmet plume -->
-  <rect x="10" y="1" width="1" height="1" fill="#e74c3c"/>
-  <rect x="13" y="1" width="1" height="1" fill="#e74c3c"/>
+  <!-- Helmet dome/top -->
+  <rect x="20" y="10" width="24" height="4" fill="#7f8c8d"/>
+  <rect x="22" y="9" width="20" height="3" fill="#5d6d7e"/>
+  <rect x="24" y="11" width="16" height="2" fill="#bdc3c7"/>
 
-  <!-- Neck guard -->
-  <rect x="7" y="12" width="10" height="2" fill="#7f8c8d"/>
-  <rect x="8" y="12" width="8" height="1" fill="#95a5a6"/>
+  <!-- Helmet center ridge -->
+  <rect x="30" y="10" width="4" height="14" fill="#5d6d7e"/>
+  <rect x="31" y="10" width="2" height="14" fill="#7f8c8d"/>
 
-  <!-- Armor shoulders -->
-  <rect x="4" y="14" width="16" height="4" fill="#7f8c8d"/>
-  <rect x="5" y="15" width="14" height="2" fill="#95a5a6"/>
+  <!-- Helmet side plates -->
+  <rect x="14" y="14" width="4" height="16" fill="#5d6d7e"/>
+  <rect x="15" y="15" width="3" height="14" fill="#7f8c8d"/>
+  <rect x="46" y="14" width="4" height="16" fill="#5d6d7e"/>
+  <rect x="46" y="15" width="3" height="14" fill="#7f8c8d"/>
 
-  <!-- Chest plate -->
-  <rect x="6" y="18" width="12" height="6" fill="#7f8c8d"/>
-  <rect x="7" y="19" width="10" height="4" fill="#95a5a6"/>
+  <!-- Helmet ear guards -->
+  <rect x="12" y="18" width="4" height="8" fill="#5d6d7e"/>
+  <rect x="13" y="19" width="2" height="6" fill="#7f8c8d"/>
+  <rect x="48" y="18" width="4" height="8" fill="#5d6d7e"/>
+  <rect x="49" y="19" width="2" height="6" fill="#7f8c8d"/>
 
-  <!-- Emblem -->
-  <rect x="10" y="19" width="4" height="3" fill="#3498db"/>
-  <rect x="11" y="20" width="2" height="1" fill="#fdfefe"/>
+  <!-- === VISOR === -->
+  <!-- Visor opening - dark interior -->
+  <rect x="20" y="18" width="24" height="10" fill="#1a252f"/>
+  <rect x="21" y="19" width="22" height="8" fill="#0d1318"/>
 
-  <!-- Shoulder plates -->
-  <rect x="4" y="16" width="4" height="3" fill="#5d6d7e"/>
-  <rect x="16" y="16" width="4" height="3" fill="#5d6d7e"/>
+  <!-- Visor horizontal slits -->
+  <rect x="20" y="18" width="24" height="2" fill="#5d6d7e"/>
+  <rect x="20" y="22" width="24" height="1" fill="#5d6d7e"/>
+  <rect x="20" y="25" width="24" height="1" fill="#5d6d7e"/>
+  <rect x="20" y="27" width="24" height="2" fill="#5d6d7e"/>
+
+  <!-- Eyes visible through visor -->
+  <!-- Left eye -->
+  <rect x="23" y="20" width="6" height="3" fill="#1a252f"/>
+  <rect x="24" y="20" width="4" height="2" fill="#2980b9"/>
+  <rect x="25" y="20" width="2" height="2" fill="#3498db"/>
+  <rect x="25" y="20" width="1" height="1" fill="#5dade2"/>
+  <!-- Right eye -->
+  <rect x="35" y="20" width="6" height="3" fill="#1a252f"/>
+  <rect x="36" y="20" width="4" height="2" fill="#2980b9"/>
+  <rect x="37" y="20" width="2" height="2" fill="#3498db"/>
+  <rect x="38" y="20" width="1" height="1" fill="#5dade2"/>
+
+  <!-- Nose guard -->
+  <rect x="30" y="18" width="4" height="12" fill="#7f8c8d"/>
+  <rect x="31" y="19" width="2" height="10" fill="#95a5a6"/>
+  <rect x="31" y="20" width="1" height="4" fill="#bdc3c7"/>
+
+  <!-- === CHIN GUARD === -->
+  <rect x="22" y="30" width="20" height="4" fill="#5d6d7e"/>
+  <rect x="23" y="30" width="18" height="3" fill="#7f8c8d"/>
+  <rect x="24" y="30" width="16" height="2" fill="#95a5a6"/>
+
+  <!-- Chin guard ventilation holes -->
+  <rect x="26" y="31" width="2" height="1" fill="#4a5a6a"/>
+  <rect x="30" y="31" width="4" height="1" fill="#4a5a6a"/>
+  <rect x="36" y="31" width="2" height="1" fill="#4a5a6a"/>
+
+  <!-- === NECK GUARD / GORGET === -->
+  <rect x="18" y="34" width="28" height="6" fill="#5d6d7e"/>
+  <rect x="19" y="35" width="26" height="4" fill="#7f8c8d"/>
+  <rect x="20" y="36" width="24" height="2" fill="#95a5a6"/>
+
+  <!-- Gorget segments -->
+  <rect x="18" y="36" width="28" height="1" fill="#4a5a6a"/>
+  <rect x="18" y="38" width="28" height="1" fill="#4a5a6a"/>
+
+  <!-- === SHOULDERS / PAULDRONS === -->
+  <!-- Left pauldron -->
+  <rect x="6" y="38" width="16" height="12" fill="#5d6d7e"/>
+  <rect x="7" y="39" width="14" height="10" fill="#7f8c8d"/>
+  <rect x="8" y="40" width="12" height="8" fill="#95a5a6"/>
+  <rect x="9" y="41" width="8" height="4" fill="#bdc3c7"/>
+  <!-- Pauldron ridges -->
+  <rect x="6" y="42" width="16" height="1" fill="#4a5a6a"/>
+  <rect x="6" y="46" width="16" height="1" fill="#4a5a6a"/>
+
+  <!-- Right pauldron -->
+  <rect x="42" y="38" width="16" height="12" fill="#5d6d7e"/>
+  <rect x="43" y="39" width="14" height="10" fill="#7f8c8d"/>
+  <rect x="44" y="40" width="12" height="8" fill="#95a5a6"/>
+  <rect x="47" y="41" width="8" height="4" fill="#bdc3c7"/>
+  <!-- Pauldron ridges -->
+  <rect x="42" y="42" width="16" height="1" fill="#4a5a6a"/>
+  <rect x="42" y="46" width="16" height="1" fill="#4a5a6a"/>
+
+  <!-- === CHEST PLATE === -->
+  <rect x="18" y="40" width="28" height="18" fill="#5d6d7e"/>
+  <rect x="19" y="41" width="26" height="16" fill="#7f8c8d"/>
+  <rect x="20" y="42" width="24" height="14" fill="#95a5a6"/>
+
+  <!-- Chest plate center ridge -->
+  <rect x="30" y="40" width="4" height="16" fill="#5d6d7e"/>
+  <rect x="31" y="41" width="2" height="14" fill="#7f8c8d"/>
+
+  <!-- Chest plate highlights -->
+  <rect x="22" y="44" width="6" height="6" fill="#bdc3c7"/>
+  <rect x="36" y="44" width="6" height="6" fill="#bdc3c7"/>
+  <rect x="23" y="45" width="4" height="4" fill="#d5dbdb"/>
+  <rect x="37" y="45" width="4" height="4" fill="#d5dbdb"/>
+
+  <!-- === EMBLEM ON CHEST === -->
+  <!-- Blue shield emblem -->
+  <rect x="27" y="46" width="10" height="8" fill="#21618c"/>
+  <rect x="28" y="47" width="8" height="6" fill="#2980b9"/>
+  <rect x="29" y="48" width="6" height="4" fill="#3498db"/>
+  <!-- White cross on shield -->
+  <rect x="31" y="47" width="2" height="6" fill="#ecf0f1"/>
+  <rect x="28" y="49" width="8" height="2" fill="#ecf0f1"/>
+
+  <!-- === HELMET DECORATIONS === -->
+  <!-- Gold trim around visor -->
+  <rect x="19" y="17" width="26" height="1" fill="#d4a855"/>
+  <rect x="19" y="29" width="26" height="1" fill="#d4a855"/>
+  <rect x="19" y="18" width="1" height="11" fill="#d4a855"/>
+  <rect x="44" y="18" width="1" height="11" fill="#d4a855"/>
+
+  <!-- Gold rivets on helmet -->
+  <rect x="16" y="16" width="2" height="2" fill="#d4a855"/>
+  <rect x="46" y="16" width="2" height="2" fill="#d4a855"/>
+  <rect x="16" y="26" width="2" height="2" fill="#d4a855"/>
+  <rect x="46" y="26" width="2" height="2" fill="#d4a855"/>
+
+  <!-- Gold rivets on pauldrons -->
+  <rect x="10" y="44" width="2" height="2" fill="#d4a855"/>
+  <rect x="52" y="44" width="2" height="2" fill="#d4a855"/>
+
+  <!-- === ARMOR HIGHLIGHTS AND SHADOWS === -->
+  <!-- Top helmet shine -->
+  <rect x="26" y="11" width="12" height="1" fill="#d5dbdb"/>
+  <rect x="28" y="12" width="8" height="1" fill="#ecf0f1"/>
+
+  <!-- Side shadows -->
+  <rect x="14" y="20" width="2" height="8" fill="#4a5a6a"/>
+  <rect x="48" y="20" width="2" height="8" fill="#4a5a6a"/>
+
+  <!-- Pauldron shadows -->
+  <rect x="6" y="48" width="16" height="2" fill="#4a5a6a"/>
+  <rect x="42" y="48" width="16" height="2" fill="#4a5a6a"/>
 </svg>

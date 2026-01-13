@@ -1,47 +1,175 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-  <!-- Healer Portrait (24x24) - Cleric NPC -->
-  <!-- Color Palette: #fdfefe, #ecf0f1, #e74c3c, #f4d03f, #2c3e50 -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Healer Portrait (64x64) - Serene cleric/nun -->
+  <!-- Color Palette: White #fdfefe/#ecf0f1, Red #e74c3c, Gold #f4d03f, Blue #3498db -->
 
-  <!-- Background -->
-  <rect x="0" y="0" width="24" height="24" fill="#2c3e50"/>
+  <!-- === ORNATE FRAME === -->
+  <!-- Outer frame border -->
+  <rect x="0" y="0" width="64" height="64" fill="#4a3520"/>
+  <rect x="1" y="1" width="62" height="62" fill="#8b6914"/>
+  <rect x="2" y="2" width="60" height="60" fill="#d4a855"/>
+  <rect x="3" y="3" width="58" height="58" fill="#c49a4b"/>
+  <rect x="4" y="4" width="56" height="56" fill="#2c3e50"/>
 
-  <!-- Head covering -->
-  <rect x="5" y="3" width="14" height="6" fill="#fdfefe"/>
-  <rect x="6" y="2" width="12" height="2" fill="#ecf0f1"/>
-  <rect x="4" y="6" width="3" height="10" fill="#fdfefe"/>
-  <rect x="17" y="6" width="3" height="10" fill="#fdfefe"/>
+  <!-- Frame corner ornaments - white/silver for purity theme -->
+  <rect x="2" y="2" width="6" height="6" fill="#b8b8b8"/>
+  <rect x="3" y="3" width="4" height="4" fill="#d8d8d8"/>
+  <rect x="4" y="4" width="2" height="2" fill="#fdfefe"/>
+  <rect x="56" y="2" width="6" height="6" fill="#b8b8b8"/>
+  <rect x="57" y="3" width="4" height="4" fill="#d8d8d8"/>
+  <rect x="58" y="4" width="2" height="2" fill="#fdfefe"/>
+  <rect x="2" y="56" width="6" height="6" fill="#b8b8b8"/>
+  <rect x="3" y="57" width="4" height="4" fill="#d8d8d8"/>
+  <rect x="4" y="58" width="2" height="2" fill="#fdfefe"/>
+  <rect x="56" y="56" width="6" height="6" fill="#b8b8b8"/>
+  <rect x="57" y="57" width="4" height="4" fill="#d8d8d8"/>
+  <rect x="58" y="58" width="2" height="2" fill="#fdfefe"/>
 
-  <!-- Face -->
-  <rect x="7" y="6" width="10" height="10" fill="#f5e6d3"/>
-  <rect x="8" y="7" width="8" height="8" fill="#e6d5c3"/>
+  <!-- === BACKGROUND === -->
+  <!-- Soft blue spiritual background -->
+  <rect x="5" y="5" width="54" height="54" fill="#1a2530"/>
+  <rect x="5" y="5" width="54" height="20" fill="#1e3040"/>
+  <rect x="5" y="5" width="54" height="10" fill="#243550"/>
 
-  <!-- Eyes -->
-  <rect x="9" y="9" width="2" height="2" fill="#2c3e50"/>
-  <rect x="13" y="9" width="2" height="2" fill="#2c3e50"/>
-  <rect x="9" y="9" width="1" height="1" fill="#3498db"/>
-  <rect x="13" y="9" width="1" height="1" fill="#3498db"/>
+  <!-- === HALO === -->
+  <!-- Golden halo behind head -->
+  <rect x="16" y="5" width="32" height="4" fill="#c9a030"/>
+  <rect x="18" y="5" width="28" height="3" fill="#dab040"/>
+  <rect x="20" y="5" width="24" height="2" fill="#f4d03f"/>
+  <rect x="22" y="6" width="20" height="1" fill="#fdfefe"/>
+  <!-- Halo sides -->
+  <rect x="12" y="8" width="4" height="6" fill="#c9a030"/>
+  <rect x="13" y="9" width="2" height="4" fill="#f4d03f"/>
+  <rect x="48" y="8" width="4" height="6" fill="#c9a030"/>
+  <rect x="49" y="9" width="2" height="4" fill="#f4d03f"/>
 
-  <!-- Gentle eyebrows -->
-  <rect x="9" y="8" width="2" height="1" fill="#8b7355"/>
-  <rect x="13" y="8" width="2" height="1" fill="#8b7355"/>
+  <!-- === HEAD COVERING / WIMPLE === -->
+  <!-- White veil top -->
+  <rect x="14" y="8" width="36" height="12" fill="#d8d8d8"/>
+  <rect x="16" y="9" width="32" height="10" fill="#ecf0f1"/>
+  <rect x="18" y="10" width="28" height="8" fill="#fdfefe"/>
 
-  <!-- Nose -->
-  <rect x="11" y="11" width="2" height="2" fill="#d5c4a1"/>
+  <!-- Veil drape - left side -->
+  <rect x="10" y="14" width="8" height="24" fill="#d8d8d8"/>
+  <rect x="11" y="15" width="6" height="22" fill="#ecf0f1"/>
+  <rect x="12" y="16" width="4" height="20" fill="#fdfefe"/>
 
-  <!-- Smile -->
-  <rect x="10" y="13" width="4" height="1" fill="#c9a596"/>
+  <!-- Veil drape - right side -->
+  <rect x="46" y="14" width="8" height="24" fill="#d8d8d8"/>
+  <rect x="47" y="15" width="6" height="22" fill="#ecf0f1"/>
+  <rect x="48" y="16" width="4" height="20" fill="#fdfefe"/>
 
-  <!-- Robe -->
-  <rect x="5" y="16" width="14" height="8" fill="#fdfefe"/>
-  <rect x="6" y="17" width="12" height="6" fill="#ecf0f1"/>
+  <!-- Veil fold shadows -->
+  <rect x="10" y="20" width="2" height="10" fill="#c8c8c8"/>
+  <rect x="52" y="20" width="2" height="10" fill="#c8c8c8"/>
 
-  <!-- Red cross emblem -->
-  <rect x="10" y="17" width="4" height="5" fill="#e74c3c"/>
-  <rect x="9" y="19" width="6" height="2" fill="#e74c3c"/>
+  <!-- Inner headband -->
+  <rect x="16" y="16" width="32" height="3" fill="#d8d8d8"/>
+  <rect x="18" y="17" width="28" height="1" fill="#c8c8c8"/>
 
-  <!-- Halo glow -->
-  <rect x="8" y="0" width="8" height="2" fill="#f4d03f"/>
-  <rect x="9" y="1" width="6" height="1" fill="#fdfefe"/>
-  <rect x="7" y="1" width="1" height="1" fill="#f4d03f"/>
-  <rect x="16" y="1" width="1" height="1" fill="#f4d03f"/>
+  <!-- === FACE === -->
+  <!-- Face oval -->
+  <rect x="18" y="18" width="28" height="22" fill="#e0d0c0"/>
+  <rect x="20" y="19" width="24" height="20" fill="#f0e0d0"/>
+  <rect x="22" y="20" width="20" height="18" fill="#f5e6d3"/>
+
+  <!-- Forehead -->
+  <rect x="24" y="18" width="16" height="4" fill="#f5e6d3"/>
+
+  <!-- Cheeks - soft rosy -->
+  <rect x="20" y="28" width="6" height="4" fill="#f8e0d8"/>
+  <rect x="38" y="28" width="6" height="4" fill="#f8e0d8"/>
+  <rect x="21" y="29" width="4" height="2" fill="#fad8d0"/>
+  <rect x="39" y="29" width="4" height="2" fill="#fad8d0"/>
+
+  <!-- === EYEBROWS === -->
+  <!-- Gentle arched brows -->
+  <rect x="23" y="22" width="5" height="1" fill="#8b7355"/>
+  <rect x="24" y="21" width="3" height="1" fill="#9b8365"/>
+  <rect x="36" y="22" width="5" height="1" fill="#8b7355"/>
+  <rect x="37" y="21" width="3" height="1" fill="#9b8365"/>
+
+  <!-- === EYES === -->
+  <!-- Left eye - kind blue eyes -->
+  <rect x="23" y="24" width="6" height="5" fill="#fdfefe"/>
+  <rect x="24" y="25" width="4" height="3" fill="#2980b9"/>
+  <rect x="25" y="25" width="2" height="2" fill="#3498db"/>
+  <rect x="25" y="25" width="1" height="1" fill="#5dade2"/>
+  <!-- Pupil -->
+  <rect x="26" y="26" width="1" height="1" fill="#1a252f"/>
+  <!-- Eyelid -->
+  <rect x="23" y="23" width="6" height="1" fill="#e6d5c3"/>
+  <!-- Lower lashes -->
+  <rect x="24" y="29" width="4" height="1" fill="#8b7355"/>
+
+  <!-- Right eye -->
+  <rect x="35" y="24" width="6" height="5" fill="#fdfefe"/>
+  <rect x="36" y="25" width="4" height="3" fill="#2980b9"/>
+  <rect x="37" y="25" width="2" height="2" fill="#3498db"/>
+  <rect x="38" y="25" width="1" height="1" fill="#5dade2"/>
+  <!-- Pupil -->
+  <rect x="37" y="26" width="1" height="1" fill="#1a252f"/>
+  <!-- Eyelid -->
+  <rect x="35" y="23" width="6" height="1" fill="#e6d5c3"/>
+  <!-- Lower lashes -->
+  <rect x="36" y="29" width="4" height="1" fill="#8b7355"/>
+
+  <!-- Eye sparkles -->
+  <rect x="24" y="25" width="1" height="1" fill="#fdfefe"/>
+  <rect x="36" y="25" width="1" height="1" fill="#fdfefe"/>
+
+  <!-- === NOSE === -->
+  <rect x="30" y="27" width="4" height="5" fill="#e6d5c3"/>
+  <rect x="31" y="28" width="2" height="3" fill="#f0e0d0"/>
+  <!-- Nostrils -->
+  <rect x="30" y="30" width="1" height="2" fill="#d5c5b5"/>
+  <rect x="33" y="30" width="1" height="2" fill="#d5c5b5"/>
+
+  <!-- === LIPS === -->
+  <!-- Gentle serene smile -->
+  <rect x="27" y="34" width="10" height="3" fill="#c9a596"/>
+  <rect x="28" y="34" width="8" height="2" fill="#d4b0a0"/>
+  <rect x="29" y="34" width="6" height="1" fill="#e0bab0"/>
+  <!-- Upper lip line -->
+  <rect x="28" y="33" width="8" height="1" fill="#d5c5b5"/>
+  <!-- Smile highlight -->
+  <rect x="30" y="35" width="4" height="1" fill="#e8c5b8"/>
+
+  <!-- === NECK === -->
+  <rect x="26" y="38" width="12" height="4" fill="#e6d5c3"/>
+  <rect x="28" y="38" width="8" height="3" fill="#f0e0d0"/>
+  <rect x="30" y="39" width="4" height="2" fill="#f5e6d3"/>
+
+  <!-- === ROBES === -->
+  <!-- White robe base -->
+  <rect x="10" y="38" width="44" height="21" fill="#d8d8d8"/>
+  <rect x="12" y="39" width="40" height="19" fill="#ecf0f1"/>
+  <rect x="14" y="40" width="36" height="17" fill="#fdfefe"/>
+
+  <!-- Robe collar -->
+  <rect x="22" y="40" width="20" height="4" fill="#d8d8d8"/>
+  <rect x="24" y="41" width="16" height="2" fill="#ecf0f1"/>
+
+  <!-- Robe neckline V -->
+  <rect x="28" y="40" width="8" height="6" fill="#fdfefe"/>
+  <rect x="30" y="42" width="4" height="2" fill="#f0f0f0"/>
+
+  <!-- Robe fold shadows -->
+  <rect x="14" y="46" width="2" height="10" fill="#d0d0d0"/>
+  <rect x="20" y="48" width="2" height="8" fill="#d8d8d8"/>
+  <rect x="42" y="48" width="2" height="8" fill="#d8d8d8"/>
+  <rect x="48" y="46" width="2" height="10" fill="#d0d0d0"/>
+
+  <!-- === RED CROSS EMBLEM === -->
+  <rect x="28" y="46" width="8" height="12" fill="#c0392b"/>
+  <rect x="29" y="47" width="6" height="10" fill="#e74c3c"/>
+  <rect x="24" y="50" width="16" height="4" fill="#c0392b"/>
+  <rect x="25" y="51" width="14" height="2" fill="#e74c3c"/>
+  <!-- Cross highlight -->
+  <rect x="30" y="48" width="2" height="2" fill="#ec7063"/>
+  <rect x="27" y="51" width="2" height="1" fill="#ec7063"/>
+
+  <!-- === HANDS CLASPED IN PRAYER (optional detail) === -->
+  <rect x="26" y="54" width="12" height="4" fill="#e6d5c3"/>
+  <rect x="28" y="54" width="8" height="3" fill="#f0e0d0"/>
+  <rect x="30" y="54" width="4" height="2" fill="#f5e6d3"/>
 </svg>

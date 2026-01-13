@@ -1,50 +1,186 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-  <!-- Demon Lord Portrait (24x24) - Boss NPC -->
-  <!-- Color Palette: #c0392b, #922b21, #1a252f, #f4d03f, #2c3e50 -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Demon Lord Portrait (64x64) - Fearsome demon boss -->
+  <!-- Color Palette: Red #c0392b/#922b21, Dark #1a252f, Gold #f4d03f, Fire #e74c3c -->
 
-  <!-- Background (fire glow) -->
-  <rect x="0" y="0" width="24" height="24" fill="#2c3e50"/>
-  <rect x="2" y="2" width="20" height="20" fill="#922b21" opacity="0.3"/>
+  <!-- === ORNATE FRAME === -->
+  <!-- Outer frame border - dark iron with red accents -->
+  <rect x="0" y="0" width="64" height="64" fill="#1a0a0a"/>
+  <rect x="1" y="1" width="62" height="62" fill="#3a1515"/>
+  <rect x="2" y="2" width="60" height="60" fill="#5a2020"/>
+  <rect x="3" y="3" width="58" height="58" fill="#4a1818"/>
+  <rect x="4" y="4" width="56" height="56" fill="#0a0808"/>
 
-  <!-- Horns -->
-  <rect x="3" y="2" width="3" height="6" fill="#1a252f"/>
-  <rect x="4" y="0" width="2" height="3" fill="#2c3e50"/>
-  <rect x="5" y="0" width="1" height="1" fill="#c0392b"/>
+  <!-- Frame corner ornaments - fiery orange gems -->
+  <rect x="2" y="2" width="6" height="6" fill="#7b241c"/>
+  <rect x="3" y="3" width="4" height="4" fill="#c0392b"/>
+  <rect x="4" y="4" width="2" height="2" fill="#e74c3c"/>
+  <rect x="56" y="2" width="6" height="6" fill="#7b241c"/>
+  <rect x="57" y="3" width="4" height="4" fill="#c0392b"/>
+  <rect x="58" y="4" width="2" height="2" fill="#e74c3c"/>
+  <rect x="2" y="56" width="6" height="6" fill="#7b241c"/>
+  <rect x="3" y="57" width="4" height="4" fill="#c0392b"/>
+  <rect x="4" y="58" width="2" height="2" fill="#e74c3c"/>
+  <rect x="56" y="56" width="6" height="6" fill="#7b241c"/>
+  <rect x="57" y="57" width="4" height="4" fill="#c0392b"/>
+  <rect x="58" y="58" width="2" height="2" fill="#e74c3c"/>
 
-  <rect x="18" y="2" width="3" height="6" fill="#1a252f"/>
-  <rect x="18" y="0" width="2" height="3" fill="#2c3e50"/>
-  <rect x="18" y="0" width="1" height="1" fill="#c0392b"/>
+  <!-- === BACKGROUND === -->
+  <!-- Hellfire glow background -->
+  <rect x="5" y="5" width="54" height="54" fill="#0a0505"/>
+  <rect x="5" y="25" width="54" height="34" fill="#150808"/>
+  <rect x="5" y="40" width="54" height="19" fill="#200a0a"/>
+  <!-- Fire glow from below -->
+  <rect x="10" y="50" width="44" height="9" fill="#301010"/>
+  <rect x="15" y="52" width="34" height="7" fill="#401515"/>
 
-  <!-- Face -->
-  <rect x="6" y="5" width="12" height="12" fill="#c0392b"/>
-  <rect x="7" y="6" width="10" height="10" fill="#922b21"/>
+  <!-- === HORNS === -->
+  <!-- Left horn - large curved -->
+  <rect x="6" y="8" width="8" height="18" fill="#1a1520"/>
+  <rect x="7" y="6" width="6" height="16" fill="#2c2838"/>
+  <rect x="8" y="4" width="4" height="12" fill="#3d3948"/>
+  <rect x="9" y="2" width="2" height="6" fill="#4e4a58"/>
+  <!-- Horn tip glow -->
+  <rect x="8" y="2" width="2" height="2" fill="#922b21"/>
+  <rect x="9" y="3" width="1" height="1" fill="#c0392b"/>
+  <!-- Horn ridges -->
+  <rect x="10" y="10" width="2" height="2" fill="#1a1520"/>
+  <rect x="10" y="14" width="2" height="2" fill="#1a1520"/>
+  <rect x="10" y="18" width="2" height="2" fill="#1a1520"/>
 
-  <!-- Glowing eyes -->
-  <rect x="8" y="8" width="3" height="3" fill="#f4d03f"/>
-  <rect x="9" y="9" width="1" height="1" fill="#fdfefe"/>
-  <rect x="13" y="8" width="3" height="3" fill="#f4d03f"/>
-  <rect x="14" y="9" width="1" height="1" fill="#fdfefe"/>
+  <!-- Right horn -->
+  <rect x="50" y="8" width="8" height="18" fill="#1a1520"/>
+  <rect x="51" y="6" width="6" height="16" fill="#2c2838"/>
+  <rect x="52" y="4" width="4" height="12" fill="#3d3948"/>
+  <rect x="53" y="2" width="2" height="6" fill="#4e4a58"/>
+  <!-- Horn tip glow -->
+  <rect x="54" y="2" width="2" height="2" fill="#922b21"/>
+  <rect x="54" y="3" width="1" height="1" fill="#c0392b"/>
+  <!-- Horn ridges -->
+  <rect x="52" y="10" width="2" height="2" fill="#1a1520"/>
+  <rect x="52" y="14" width="2" height="2" fill="#1a1520"/>
+  <rect x="52" y="18" width="2" height="2" fill="#1a1520"/>
 
-  <!-- Nose -->
-  <rect x="11" y="11" width="2" height="2" fill="#7b241c"/>
+  <!-- === FACE === -->
+  <!-- Demonic red face -->
+  <rect x="14" y="12" width="36" height="28" fill="#7b241c"/>
+  <rect x="16" y="13" width="32" height="26" fill="#922b21"/>
+  <rect x="18" y="14" width="28" height="24" fill="#a52a2a"/>
+  <rect x="20" y="15" width="24" height="22" fill="#c0392b"/>
 
-  <!-- Fanged mouth -->
-  <rect x="9" y="14" width="6" height="2" fill="#1a252f"/>
-  <rect x="9" y="14" width="1" height="2" fill="#fdfefe"/>
-  <rect x="14" y="14" width="1" height="2" fill="#fdfefe"/>
-  <rect x="11" y="15" width="2" height="1" fill="#c0392b"/>
+  <!-- Brow ridge - heavy and menacing -->
+  <rect x="16" y="16" width="32" height="6" fill="#7b241c"/>
+  <rect x="18" y="17" width="28" height="4" fill="#922b21"/>
+  <rect x="20" y="18" width="24" height="2" fill="#a52a2a"/>
+
+  <!-- Furrowed brow center -->
+  <rect x="30" y="16" width="4" height="4" fill="#5a1a1a"/>
+
+  <!-- Cheekbones -->
+  <rect x="14" y="24" width="6" height="8" fill="#922b21"/>
+  <rect x="44" y="24" width="6" height="8" fill="#922b21"/>
+
+  <!-- === EYES - GLOWING GOLD === -->
+  <!-- Left eye socket -->
+  <rect x="20" y="20" width="10" height="8" fill="#4a1a1a"/>
+  <rect x="21" y="21" width="8" height="6" fill="#3a0a0a"/>
+  <!-- Left eye glow -->
+  <rect x="22" y="22" width="6" height="4" fill="#b8860b"/>
+  <rect x="23" y="22" width="4" height="3" fill="#daa520"/>
+  <rect x="24" y="22" width="2" height="2" fill="#f4d03f"/>
+  <rect x="24" y="23" width="1" height="1" fill="#fdfefe"/>
+  <!-- Eye glow aura -->
+  <rect x="20" y="20" width="10" height="8" fill="#f4d03f" opacity="0.2"/>
+
+  <!-- Right eye socket -->
+  <rect x="34" y="20" width="10" height="8" fill="#4a1a1a"/>
+  <rect x="35" y="21" width="8" height="6" fill="#3a0a0a"/>
+  <!-- Right eye glow -->
+  <rect x="36" y="22" width="6" height="4" fill="#b8860b"/>
+  <rect x="37" y="22" width="4" height="3" fill="#daa520"/>
+  <rect x="38" y="22" width="2" height="2" fill="#f4d03f"/>
+  <rect x="39" y="23" width="1" height="1" fill="#fdfefe"/>
+  <!-- Eye glow aura -->
+  <rect x="34" y="20" width="10" height="8" fill="#f4d03f" opacity="0.2"/>
+
+  <!-- === NOSE === -->
+  <rect x="28" y="28" width="8" height="6" fill="#922b21"/>
+  <rect x="29" y="29" width="6" height="4" fill="#7b241c"/>
+  <!-- Nostrils -->
+  <rect x="29" y="31" width="2" height="2" fill="#4a1a1a"/>
+  <rect x="33" y="31" width="2" height="2" fill="#4a1a1a"/>
+
+  <!-- === FANGED MOUTH === -->
+  <!-- Mouth opening -->
+  <rect x="22" y="34" width="20" height="6" fill="#1a0a0a"/>
+  <rect x="24" y="35" width="16" height="4" fill="#0a0505"/>
+
+  <!-- Upper fangs -->
+  <rect x="23" y="34" width="3" height="5" fill="#e8e8e8"/>
+  <rect x="24" y="34" width="2" height="4" fill="#fdfefe"/>
+  <rect x="38" y="34" width="3" height="5" fill="#e8e8e8"/>
+  <rect x="38" y="34" width="2" height="4" fill="#fdfefe"/>
+
+  <!-- Small teeth -->
+  <rect x="27" y="34" width="2" height="2" fill="#fdfefe"/>
+  <rect x="30" y="34" width="2" height="2" fill="#fdfefe"/>
+  <rect x="33" y="34" width="2" height="2" fill="#fdfefe"/>
+
+  <!-- Tongue -->
+  <rect x="28" y="36" width="8" height="3" fill="#8b1a1a"/>
+  <rect x="30" y="37" width="4" height="2" fill="#a52a2a"/>
+
+  <!-- Lower lip/jaw -->
+  <rect x="20" y="38" width="24" height="4" fill="#922b21"/>
+  <rect x="22" y="39" width="20" height="2" fill="#a52a2a"/>
+
+  <!-- === DARK ARMOR === -->
+  <rect x="10" y="42" width="44" height="17" fill="#0a0808"/>
+  <rect x="12" y="43" width="40" height="15" fill="#1a1520"/>
+  <rect x="14" y="44" width="36" height="13" fill="#2c2838"/>
 
   <!-- Armor collar -->
-  <rect x="5" y="17" width="14" height="7" fill="#1a252f"/>
-  <rect x="6" y="18" width="12" height="5" fill="#2c3e50"/>
+  <rect x="20" y="40" width="24" height="6" fill="#0a0808"/>
+  <rect x="22" y="41" width="20" height="4" fill="#1a1520"/>
+  <rect x="24" y="42" width="16" height="2" fill="#2c2838"/>
 
-  <!-- Spikes on armor -->
-  <rect x="4" y="18" width="2" height="4" fill="#7f8c8d"/>
-  <rect x="18" y="18" width="2" height="4" fill="#7f8c8d"/>
+  <!-- === ARMOR SPIKES === -->
+  <!-- Left shoulder spike -->
+  <rect x="8" y="44" width="6" height="12" fill="#3d3948"/>
+  <rect x="9" y="42" width="4" height="10" fill="#5d6d7e"/>
+  <rect x="10" y="40" width="2" height="6" fill="#7f8c8d"/>
+  <rect x="10" y="38" width="2" height="3" fill="#95a5a6"/>
+  <!-- Spike highlight -->
+  <rect x="10" y="40" width="1" height="2" fill="#bdc3c7"/>
 
-  <!-- Fire effect on sides -->
-  <rect x="0" y="10" width="3" height="6" fill="#e74c3c" opacity="0.6"/>
-  <rect x="1" y="12" width="2" height="3" fill="#f4d03f" opacity="0.5"/>
-  <rect x="21" y="10" width="3" height="6" fill="#e74c3c" opacity="0.6"/>
-  <rect x="21" y="12" width="2" height="3" fill="#f4d03f" opacity="0.5"/>
+  <!-- Right shoulder spike -->
+  <rect x="50" y="44" width="6" height="12" fill="#3d3948"/>
+  <rect x="51" y="42" width="4" height="10" fill="#5d6d7e"/>
+  <rect x="52" y="40" width="2" height="6" fill="#7f8c8d"/>
+  <rect x="52" y="38" width="2" height="3" fill="#95a5a6"/>
+  <!-- Spike highlight -->
+  <rect x="52" y="40" width="1" height="2" fill="#bdc3c7"/>
+
+  <!-- Smaller spikes -->
+  <rect x="14" y="50" width="3" height="6" fill="#5d6d7e"/>
+  <rect x="15" y="48" width="2" height="4" fill="#7f8c8d"/>
+  <rect x="47" y="50" width="3" height="6" fill="#5d6d7e"/>
+  <rect x="48" y="48" width="2" height="4" fill="#7f8c8d"/>
+
+  <!-- Armor details -->
+  <rect x="28" y="48" width="8" height="6" fill="#0a0808"/>
+  <rect x="29" y="49" width="6" height="4" fill="#922b21"/>
+  <rect x="30" y="50" width="4" height="2" fill="#c0392b"/>
+
+  <!-- === FIRE EFFECTS === -->
+  <!-- Left fire -->
+  <rect x="5" y="26" width="6" height="14" fill="#7b241c" opacity="0.6"/>
+  <rect x="6" y="28" width="4" height="10" fill="#c0392b" opacity="0.5"/>
+  <rect x="7" y="30" width="2" height="6" fill="#e74c3c" opacity="0.6"/>
+  <rect x="7" y="32" width="2" height="3" fill="#f4d03f" opacity="0.5"/>
+
+  <!-- Right fire -->
+  <rect x="53" y="26" width="6" height="14" fill="#7b241c" opacity="0.6"/>
+  <rect x="54" y="28" width="4" height="10" fill="#c0392b" opacity="0.5"/>
+  <rect x="55" y="30" width="2" height="6" fill="#e74c3c" opacity="0.6"/>
+  <rect x="55" y="32" width="2" height="3" fill="#f4d03f" opacity="0.5"/>
 </svg>

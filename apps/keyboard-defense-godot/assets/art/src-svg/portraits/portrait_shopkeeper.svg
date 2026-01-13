@@ -1,44 +1,175 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-  <!-- Shopkeeper Portrait (24x24) - Shop NPC -->
-  <!-- Color Palette: #f4d03f, #e67e22, #8b7355, #ecf0f1, #2c3e50 -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Shopkeeper Portrait (64x64) - Friendly merchant -->
+  <!-- Color Palette: Gold #f4d03f/#e67e22, Hair #8b7355, Skin #f5e6d3, Green #27ae60 -->
 
-  <!-- Background -->
-  <rect x="0" y="0" width="24" height="24" fill="#2c3e50"/>
+  <!-- === ORNATE FRAME === -->
+  <!-- Outer frame border -->
+  <rect x="0" y="0" width="64" height="64" fill="#4a3520"/>
+  <rect x="1" y="1" width="62" height="62" fill="#8b6914"/>
+  <rect x="2" y="2" width="60" height="60" fill="#d4a855"/>
+  <rect x="3" y="3" width="58" height="58" fill="#c49a4b"/>
+  <rect x="4" y="4" width="56" height="56" fill="#2c3e50"/>
 
-  <!-- Face -->
-  <rect x="7" y="6" width="10" height="12" fill="#ecf0f1"/>
-  <rect x="8" y="7" width="8" height="10" fill="#f5e6d3"/>
+  <!-- Frame corner ornaments - gold gems for merchant theme -->
+  <rect x="2" y="2" width="6" height="6" fill="#b8860b"/>
+  <rect x="3" y="3" width="4" height="4" fill="#daa520"/>
+  <rect x="4" y="4" width="2" height="2" fill="#f4d03f"/>
+  <rect x="56" y="2" width="6" height="6" fill="#b8860b"/>
+  <rect x="57" y="3" width="4" height="4" fill="#daa520"/>
+  <rect x="58" y="4" width="2" height="2" fill="#f4d03f"/>
+  <rect x="2" y="56" width="6" height="6" fill="#b8860b"/>
+  <rect x="3" y="57" width="4" height="4" fill="#daa520"/>
+  <rect x="4" y="58" width="2" height="2" fill="#f4d03f"/>
+  <rect x="56" y="56" width="6" height="6" fill="#b8860b"/>
+  <rect x="57" y="57" width="4" height="4" fill="#daa520"/>
+  <rect x="58" y="58" width="2" height="2" fill="#f4d03f"/>
 
-  <!-- Hair -->
-  <rect x="6" y="4" width="12" height="4" fill="#8b7355"/>
-  <rect x="7" y="3" width="10" height="2" fill="#5d4e37"/>
-  <rect x="6" y="6" width="2" height="6" fill="#8b7355"/>
-  <rect x="16" y="6" width="2" height="6" fill="#8b7355"/>
+  <!-- === BACKGROUND === -->
+  <!-- Shop interior warm background -->
+  <rect x="5" y="5" width="54" height="54" fill="#1a2530"/>
+  <rect x="5" y="5" width="54" height="20" fill="#243040"/>
+  <rect x="5" y="5" width="54" height="10" fill="#2c3850"/>
 
-  <!-- Eyes -->
-  <rect x="9" y="9" width="2" height="2" fill="#2c3e50"/>
-  <rect x="13" y="9" width="2" height="2" fill="#2c3e50"/>
-  <rect x="9" y="9" width="1" height="1" fill="#fdfefe"/>
-  <rect x="13" y="9" width="1" height="1" fill="#fdfefe"/>
+  <!-- === MERCHANT HAT === -->
+  <!-- Hat brim -->
+  <rect x="8" y="8" width="48" height="6" fill="#cc6a00"/>
+  <rect x="10" y="9" width="44" height="4" fill="#e67e22"/>
+  <rect x="12" y="10" width="40" height="2" fill="#f39c12"/>
 
-  <!-- Nose -->
-  <rect x="11" y="11" width="2" height="2" fill="#e6d5c3"/>
+  <!-- Hat crown -->
+  <rect x="16" y="5" width="32" height="6" fill="#cc6a00"/>
+  <rect x="18" y="5" width="28" height="5" fill="#e67e22"/>
+  <rect x="20" y="6" width="24" height="3" fill="#f39c12"/>
+  <rect x="22" y="6" width="20" height="2" fill="#f4d03f"/>
 
-  <!-- Smile -->
-  <rect x="10" y="14" width="4" height="1" fill="#c0392b"/>
-  <rect x="9" y="13" width="1" height="1" fill="#f5e6d3"/>
-  <rect x="14" y="13" width="1" height="1" fill="#f5e6d3"/>
+  <!-- Hat band -->
+  <rect x="16" y="10" width="32" height="2" fill="#8b4513"/>
+  <rect x="18" y="10" width="28" height="1" fill="#a0522d"/>
 
-  <!-- Merchant hat -->
-  <rect x="4" y="2" width="16" height="3" fill="#e67e22"/>
-  <rect x="5" y="0" width="14" height="2" fill="#f4d03f"/>
-  <rect x="7" y="1" width="10" height="1" fill="#fdfefe"/>
+  <!-- Hat highlight -->
+  <rect x="24" y="6" width="8" height="1" fill="#fdfefe"/>
 
-  <!-- Collar/clothing -->
-  <rect x="6" y="18" width="12" height="6" fill="#27ae60"/>
-  <rect x="8" y="18" width="8" height="4" fill="#1e8449"/>
+  <!-- === HAIR === -->
+  <!-- Hair sides -->
+  <rect x="12" y="12" width="6" height="16" fill="#5d4e37"/>
+  <rect x="13" y="13" width="4" height="14" fill="#8b7355"/>
+  <rect x="14" y="14" width="2" height="10" fill="#9b8365"/>
 
-  <!-- Gold coin decoration -->
-  <rect x="10" y="19" width="4" height="3" fill="#f4d03f"/>
-  <rect x="11" y="20" width="2" height="1" fill="#e67e22"/>
+  <rect x="46" y="12" width="6" height="16" fill="#5d4e37"/>
+  <rect x="47" y="13" width="4" height="14" fill="#8b7355"/>
+  <rect x="48" y="14" width="2" height="10" fill="#9b8365"/>
+
+  <!-- Hair front bangs under hat -->
+  <rect x="18" y="12" width="28" height="4" fill="#5d4e37"/>
+  <rect x="20" y="13" width="24" height="2" fill="#8b7355"/>
+
+  <!-- === FACE === -->
+  <!-- Face base -->
+  <rect x="16" y="14" width="32" height="24" fill="#e0d0c0"/>
+  <rect x="18" y="15" width="28" height="22" fill="#f0e0d0"/>
+  <rect x="20" y="16" width="24" height="20" fill="#f5e6d3"/>
+
+  <!-- Forehead -->
+  <rect x="22" y="14" width="20" height="4" fill="#f5e6d3"/>
+
+  <!-- Cheeks - rosy -->
+  <rect x="18" y="24" width="6" height="4" fill="#f5d5c5"/>
+  <rect x="40" y="24" width="6" height="4" fill="#f5d5c5"/>
+  <rect x="19" y="25" width="4" height="2" fill="#f8c8b8"/>
+  <rect x="41" y="25" width="4" height="2" fill="#f8c8b8"/>
+
+  <!-- === EYEBROWS === -->
+  <rect x="21" y="18" width="6" height="2" fill="#5d4e37"/>
+  <rect x="22" y="19" width="4" height="1" fill="#6d5e47"/>
+  <rect x="37" y="18" width="6" height="2" fill="#5d4e37"/>
+  <rect x="38" y="19" width="4" height="1" fill="#6d5e47"/>
+
+  <!-- === EYES === -->
+  <!-- Left eye -->
+  <rect x="22" y="21" width="6" height="5" fill="#fdfefe"/>
+  <rect x="23" y="22" width="4" height="3" fill="#2c3e50"/>
+  <rect x="24" y="22" width="2" height="2" fill="#4a6580"/>
+  <rect x="24" y="22" width="1" height="1" fill="#fdfefe"/>
+  <!-- Eyelid -->
+  <rect x="22" y="20" width="6" height="1" fill="#e6d5c3"/>
+
+  <!-- Right eye -->
+  <rect x="36" y="21" width="6" height="5" fill="#fdfefe"/>
+  <rect x="37" y="22" width="4" height="3" fill="#2c3e50"/>
+  <rect x="38" y="22" width="2" height="2" fill="#4a6580"/>
+  <rect x="39" y="22" width="1" height="1" fill="#fdfefe"/>
+  <!-- Eyelid -->
+  <rect x="36" y="20" width="6" height="1" fill="#e6d5c3"/>
+
+  <!-- Crow's feet - laugh lines -->
+  <rect x="20" y="22" width="1" height="2" fill="#e6d5c3"/>
+  <rect x="43" y="22" width="1" height="2" fill="#e6d5c3"/>
+
+  <!-- === NOSE === -->
+  <rect x="29" y="24" width="6" height="6" fill="#e6d5c3"/>
+  <rect x="30" y="25" width="4" height="4" fill="#f0e0d0"/>
+  <rect x="31" y="26" width="2" height="2" fill="#f5e6d3"/>
+  <!-- Nostrils -->
+  <rect x="29" y="28" width="2" height="2" fill="#d5c5b5"/>
+  <rect x="33" y="28" width="2" height="2" fill="#d5c5b5"/>
+
+  <!-- === SMILE === -->
+  <!-- Wide friendly smile -->
+  <rect x="24" y="32" width="16" height="4" fill="#a03020"/>
+  <rect x="26" y="32" width="12" height="3" fill="#c04030"/>
+  <!-- Teeth -->
+  <rect x="27" y="32" width="10" height="2" fill="#fdfefe"/>
+  <rect x="28" y="32" width="8" height="1" fill="#f5f5f5"/>
+  <!-- Smile corners -->
+  <rect x="22" y="31" width="2" height="2" fill="#f5e6d3"/>
+  <rect x="40" y="31" width="2" height="2" fill="#f5e6d3"/>
+
+  <!-- === NECK === -->
+  <rect x="24" y="36" width="16" height="6" fill="#e6d5c3"/>
+  <rect x="26" y="37" width="12" height="4" fill="#f0e0d0"/>
+  <rect x="28" y="38" width="8" height="2" fill="#f5e6d3"/>
+
+  <!-- === CLOTHING === -->
+  <!-- Green merchant vest -->
+  <rect x="10" y="40" width="44" height="19" fill="#1a6030"/>
+  <rect x="12" y="41" width="40" height="17" fill="#27ae60"/>
+  <rect x="14" y="42" width="36" height="15" fill="#2ecc71"/>
+
+  <!-- Vest collar -->
+  <rect x="22" y="40" width="8" height="4" fill="#1a6030"/>
+  <rect x="34" y="40" width="8" height="4" fill="#1a6030"/>
+  <rect x="24" y="41" width="6" height="2" fill="#27ae60"/>
+  <rect x="34" y="41" width="6" height="2" fill="#27ae60"/>
+
+  <!-- White undershirt visible -->
+  <rect x="28" y="40" width="8" height="8" fill="#d0d5d8"/>
+  <rect x="29" y="41" width="6" height="6" fill="#ecf0f1"/>
+  <rect x="30" y="42" width="4" height="4" fill="#fdfefe"/>
+
+  <!-- Vest buttons -->
+  <rect x="30" y="48" width="4" height="2" fill="#d4a855"/>
+  <rect x="31" y="48" width="2" height="1" fill="#f4d03f"/>
+  <rect x="30" y="52" width="4" height="2" fill="#d4a855"/>
+  <rect x="31" y="52" width="2" height="1" fill="#f4d03f"/>
+
+  <!-- === GOLD COIN PENDANT === -->
+  <rect x="28" y="46" width="8" height="8" fill="#b8860b"/>
+  <rect x="29" y="47" width="6" height="6" fill="#daa520"/>
+  <rect x="30" y="48" width="4" height="4" fill="#f4d03f"/>
+  <rect x="31" y="49" width="2" height="2" fill="#e67e22"/>
+  <!-- Coin shine -->
+  <rect x="30" y="48" width="1" height="1" fill="#fdfefe"/>
+
+  <!-- Pendant chain -->
+  <rect x="30" y="44" width="2" height="2" fill="#d4a855"/>
+  <rect x="32" y="44" width="2" height="2" fill="#d4a855"/>
+
+  <!-- === VEST DETAILS === -->
+  <!-- Vest fold shadows -->
+  <rect x="14" y="48" width="2" height="8" fill="#1a6030"/>
+  <rect x="48" y="48" width="2" height="8" fill="#1a6030"/>
+
+  <!-- Vest highlights -->
+  <rect x="20" y="46" width="4" height="4" fill="#3ddc84"/>
+  <rect x="40" y="46" width="4" height="4" fill="#3ddc84"/>
 </svg>

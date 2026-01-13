@@ -1,42 +1,173 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-  <!-- Archer Portrait (24x24) - Ranger NPC -->
-  <!-- Color Palette: #27ae60, #1e8449, #8b7355, #ecf0f1, #2c3e50 -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Archer Portrait (64x64) - Hooded ranger with keen eyes -->
+  <!-- Color Palette: Green #27ae60/#1e8449, Brown #8b7355, Skin #f5e6d3, Red #c0392b -->
 
-  <!-- Background -->
-  <rect x="0" y="0" width="24" height="24" fill="#2c3e50"/>
+  <!-- === ORNATE FRAME === -->
+  <!-- Outer frame border -->
+  <rect x="0" y="0" width="64" height="64" fill="#4a3520"/>
+  <rect x="1" y="1" width="62" height="62" fill="#8b6914"/>
+  <rect x="2" y="2" width="60" height="60" fill="#d4a855"/>
+  <rect x="3" y="3" width="58" height="58" fill="#c49a4b"/>
+  <rect x="4" y="4" width="56" height="56" fill="#2c3e50"/>
 
-  <!-- Hood -->
-  <rect x="5" y="2" width="14" height="6" fill="#27ae60"/>
-  <rect x="6" y="1" width="12" height="2" fill="#1e8449"/>
-  <rect x="5" y="6" width="3" height="8" fill="#27ae60"/>
-  <rect x="16" y="6" width="3" height="8" fill="#27ae60"/>
+  <!-- Frame corner ornaments - green gems for forest theme -->
+  <rect x="2" y="2" width="6" height="6" fill="#145a32"/>
+  <rect x="3" y="3" width="4" height="4" fill="#1e8449"/>
+  <rect x="4" y="4" width="2" height="2" fill="#27ae60"/>
+  <rect x="56" y="2" width="6" height="6" fill="#145a32"/>
+  <rect x="57" y="3" width="4" height="4" fill="#1e8449"/>
+  <rect x="58" y="4" width="2" height="2" fill="#27ae60"/>
+  <rect x="2" y="56" width="6" height="6" fill="#145a32"/>
+  <rect x="3" y="57" width="4" height="4" fill="#1e8449"/>
+  <rect x="4" y="58" width="2" height="2" fill="#27ae60"/>
+  <rect x="56" y="56" width="6" height="6" fill="#145a32"/>
+  <rect x="57" y="57" width="4" height="4" fill="#1e8449"/>
+  <rect x="58" y="58" width="2" height="2" fill="#27ae60"/>
 
-  <!-- Face -->
-  <rect x="8" y="6" width="8" height="10" fill="#f5e6d3"/>
-  <rect x="9" y="7" width="6" height="8" fill="#e6d5c3"/>
+  <!-- === BACKGROUND === -->
+  <!-- Forest/nature dark background -->
+  <rect x="5" y="5" width="54" height="54" fill="#1a2518"/>
+  <rect x="5" y="5" width="54" height="20" fill="#1e2a1c"/>
+  <rect x="5" y="5" width="54" height="10" fill="#223020"/>
 
-  <!-- Eyes -->
-  <rect x="9" y="9" width="2" height="2" fill="#2c3e50"/>
-  <rect x="13" y="9" width="2" height="2" fill="#2c3e50"/>
-  <rect x="9" y="9" width="1" height="1" fill="#27ae60"/>
-  <rect x="13" y="9" width="1" height="1" fill="#27ae60"/>
+  <!-- === HOOD === -->
+  <!-- Hood outer -->
+  <rect x="12" y="6" width="40" height="20" fill="#145a32"/>
+  <rect x="14" y="7" width="36" height="18" fill="#1e8449"/>
+  <rect x="16" y="8" width="32" height="16" fill="#27ae60"/>
 
-  <!-- Nose -->
-  <rect x="11" y="11" width="2" height="2" fill="#d5c4a1"/>
+  <!-- Hood top peak -->
+  <rect x="26" y="5" width="12" height="4" fill="#145a32"/>
+  <rect x="28" y="5" width="8" height="3" fill="#1e8449"/>
+  <rect x="30" y="6" width="4" height="2" fill="#27ae60"/>
 
-  <!-- Mouth -->
-  <rect x="10" y="14" width="4" height="1" fill="#c9a596"/>
+  <!-- Hood sides draping -->
+  <rect x="10" y="14" width="8" height="26" fill="#145a32"/>
+  <rect x="11" y="15" width="6" height="24" fill="#1e8449"/>
+  <rect x="12" y="16" width="4" height="22" fill="#27ae60"/>
 
-  <!-- Quiver strap -->
-  <rect x="6" y="14" width="2" height="8" fill="#8b7355"/>
-  <rect x="7" y="15" width="1" height="6" fill="#5d4e37"/>
+  <rect x="46" y="14" width="8" height="26" fill="#145a32"/>
+  <rect x="47" y="15" width="6" height="24" fill="#1e8449"/>
+  <rect x="48" y="16" width="4" height="22" fill="#27ae60"/>
 
-  <!-- Cloak -->
-  <rect x="5" y="16" width="14" height="8" fill="#27ae60"/>
-  <rect x="6" y="17" width="12" height="6" fill="#1e8449"/>
+  <!-- Hood inner shadow -->
+  <rect x="16" y="12" width="32" height="4" fill="#0e3d22"/>
 
-  <!-- Arrow feathers showing -->
-  <rect x="18" y="4" width="3" height="4" fill="#c0392b"/>
-  <rect x="19" y="5" width="2" height="2" fill="#922b21"/>
-  <rect x="20" y="8" width="2" height="4" fill="#c0392b"/>
+  <!-- Hood fold details -->
+  <rect x="14" y="20" width="2" height="10" fill="#0e3d22"/>
+  <rect x="48" y="20" width="2" height="10" fill="#0e3d22"/>
+
+  <!-- === FACE === -->
+  <!-- Face in shadow of hood -->
+  <rect x="18" y="14" width="28" height="24" fill="#c9b896"/>
+  <rect x="20" y="15" width="24" height="22" fill="#d5c4a1"/>
+  <rect x="22" y="16" width="20" height="20" fill="#e6d5c3"/>
+  <rect x="24" y="17" width="16" height="18" fill="#f5e6d3"/>
+
+  <!-- Hood shadow on forehead -->
+  <rect x="20" y="14" width="24" height="4" fill="#c9b080"/>
+
+  <!-- Cheekbones -->
+  <rect x="20" y="24" width="4" height="4" fill="#e6d5c3"/>
+  <rect x="40" y="24" width="4" height="4" fill="#e6d5c3"/>
+
+  <!-- === EYEBROWS === -->
+  <!-- Sharp focused brows -->
+  <rect x="22" y="18" width="6" height="2" fill="#5d4e37"/>
+  <rect x="23" y="17" width="4" height="2" fill="#6d5e47"/>
+  <rect x="36" y="18" width="6" height="2" fill="#5d4e37"/>
+  <rect x="37" y="17" width="4" height="2" fill="#6d5e47"/>
+
+  <!-- === EYES === -->
+  <!-- Left eye - keen green -->
+  <rect x="23" y="21" width="6" height="5" fill="#fdfefe"/>
+  <rect x="24" y="22" width="4" height="3" fill="#145a32"/>
+  <rect x="25" y="22" width="2" height="2" fill="#1e8449"/>
+  <rect x="25" y="22" width="1" height="1" fill="#27ae60"/>
+  <!-- Pupil -->
+  <rect x="26" y="23" width="1" height="1" fill="#0a2e18"/>
+  <!-- Eye sparkle -->
+  <rect x="24" y="22" width="1" height="1" fill="#fdfefe"/>
+  <!-- Eyelid -->
+  <rect x="23" y="20" width="6" height="1" fill="#c9b896"/>
+
+  <!-- Right eye -->
+  <rect x="35" y="21" width="6" height="5" fill="#fdfefe"/>
+  <rect x="36" y="22" width="4" height="3" fill="#145a32"/>
+  <rect x="37" y="22" width="2" height="2" fill="#1e8449"/>
+  <rect x="38" y="22" width="1" height="1" fill="#27ae60"/>
+  <!-- Pupil -->
+  <rect x="37" y="23" width="1" height="1" fill="#0a2e18"/>
+  <!-- Eye sparkle -->
+  <rect x="36" y="22" width="1" height="1" fill="#fdfefe"/>
+  <!-- Eyelid -->
+  <rect x="35" y="20" width="6" height="1" fill="#c9b896"/>
+
+  <!-- === NOSE === -->
+  <rect x="30" y="24" width="4" height="6" fill="#d5c4a1"/>
+  <rect x="31" y="25" width="2" height="4" fill="#e6d5c3"/>
+  <!-- Nostrils -->
+  <rect x="30" y="28" width="1" height="2" fill="#c0a888"/>
+  <rect x="33" y="28" width="1" height="2" fill="#c0a888"/>
+
+  <!-- === MOUTH === -->
+  <rect x="28" y="32" width="8" height="2" fill="#b89080"/>
+  <rect x="29" y="32" width="6" height="1" fill="#c9a090"/>
+  <rect x="30" y="33" width="4" height="1" fill="#d0a898"/>
+
+  <!-- === NECK === -->
+  <rect x="26" y="36" width="12" height="4" fill="#d5c4a1"/>
+  <rect x="28" y="36" width="8" height="3" fill="#e6d5c3"/>
+
+  <!-- === QUIVER STRAP === -->
+  <rect x="14" y="32" width="6" height="26" fill="#5d4e37"/>
+  <rect x="15" y="33" width="4" height="24" fill="#8b7355"/>
+  <rect x="16" y="34" width="2" height="22" fill="#9b8365"/>
+
+  <!-- Strap buckle -->
+  <rect x="15" y="38" width="4" height="3" fill="#d4a855"/>
+  <rect x="16" y="39" width="2" height="1" fill="#f4d03f"/>
+
+  <!-- === CLOAK === -->
+  <rect x="10" y="40" width="44" height="19" fill="#145a32"/>
+  <rect x="12" y="41" width="40" height="17" fill="#1e8449"/>
+  <rect x="14" y="42" width="36" height="15" fill="#27ae60"/>
+
+  <!-- Cloak collar -->
+  <rect x="22" y="38" width="20" height="6" fill="#145a32"/>
+  <rect x="24" y="39" width="16" height="4" fill="#1e8449"/>
+  <rect x="26" y="40" width="12" height="2" fill="#27ae60"/>
+
+  <!-- Cloak folds -->
+  <rect x="14" y="46" width="2" height="10" fill="#0e3d22"/>
+  <rect x="22" y="48" width="2" height="8" fill="#1e8449"/>
+  <rect x="40" y="48" width="2" height="8" fill="#1e8449"/>
+  <rect x="48" y="46" width="2" height="10" fill="#0e3d22"/>
+
+  <!-- Cloak highlights -->
+  <rect x="30" y="46" width="4" height="4" fill="#2ecc71"/>
+
+  <!-- === ARROWS IN QUIVER === -->
+  <!-- Arrow shafts -->
+  <rect x="50" y="8" width="2" height="20" fill="#8b7355"/>
+  <rect x="52" y="10" width="2" height="18" fill="#8b7355"/>
+  <rect x="54" y="12" width="2" height="16" fill="#8b7355"/>
+
+  <!-- Arrow fletching - red feathers -->
+  <rect x="49" y="6" width="4" height="6" fill="#922b21"/>
+  <rect x="50" y="7" width="2" height="4" fill="#c0392b"/>
+  <rect x="51" y="8" width="1" height="2" fill="#e74c3c"/>
+
+  <rect x="51" y="8" width="4" height="6" fill="#922b21"/>
+  <rect x="52" y="9" width="2" height="4" fill="#c0392b"/>
+  <rect x="53" y="10" width="1" height="2" fill="#e74c3c"/>
+
+  <rect x="53" y="10" width="4" height="6" fill="#922b21"/>
+  <rect x="54" y="11" width="2" height="4" fill="#c0392b"/>
+  <rect x="55" y="12" width="1" height="2" fill="#e74c3c"/>
+
+  <!-- Quiver visible -->
+  <rect x="48" y="20" width="8" height="20" fill="#5d4e37"/>
+  <rect x="49" y="21" width="6" height="18" fill="#8b7355"/>
+  <rect x="50" y="22" width="4" height="16" fill="#9b8365"/>
 </svg>

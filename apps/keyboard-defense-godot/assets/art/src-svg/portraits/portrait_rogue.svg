@@ -1,43 +1,156 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-  <!-- Rogue Portrait (24x24) - Thief NPC -->
-  <!-- Color Palette: #1a252f, #2c3e50, #5d6d7e, #c0392b, #f5e6d3 -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Rogue Portrait (64x64) - Mysterious hooded thief -->
+  <!-- Color Palette: Dark #1a252f/#2c3e50, Gray #5d6d7e, Red #c0392b, Skin #f5e6d3 -->
 
-  <!-- Background -->
-  <rect x="0" y="0" width="24" height="24" fill="#2c3e50"/>
+  <!-- === ORNATE FRAME === -->
+  <!-- Outer frame border -->
+  <rect x="0" y="0" width="64" height="64" fill="#4a3520"/>
+  <rect x="1" y="1" width="62" height="62" fill="#8b6914"/>
+  <rect x="2" y="2" width="60" height="60" fill="#d4a855"/>
+  <rect x="3" y="3" width="58" height="58" fill="#c49a4b"/>
+  <rect x="4" y="4" width="56" height="56" fill="#0d1318"/>
 
-  <!-- Hood -->
-  <rect x="4" y="2" width="16" height="8" fill="#1a252f"/>
-  <rect x="5" y="1" width="14" height="2" fill="#2c3e50"/>
-  <rect x="3" y="6" width="4" height="10" fill="#1a252f"/>
-  <rect x="17" y="6" width="4" height="10" fill="#1a252f"/>
+  <!-- Frame corner ornaments - dark gray gems for shadow theme -->
+  <rect x="2" y="2" width="6" height="6" fill="#2c3e50"/>
+  <rect x="3" y="3" width="4" height="4" fill="#5d6d7e"/>
+  <rect x="4" y="4" width="2" height="2" fill="#7f8c8d"/>
+  <rect x="56" y="2" width="6" height="6" fill="#2c3e50"/>
+  <rect x="57" y="3" width="4" height="4" fill="#5d6d7e"/>
+  <rect x="58" y="4" width="2" height="2" fill="#7f8c8d"/>
+  <rect x="2" y="56" width="6" height="6" fill="#2c3e50"/>
+  <rect x="3" y="57" width="4" height="4" fill="#5d6d7e"/>
+  <rect x="4" y="58" width="2" height="2" fill="#7f8c8d"/>
+  <rect x="56" y="56" width="6" height="6" fill="#2c3e50"/>
+  <rect x="57" y="57" width="4" height="4" fill="#5d6d7e"/>
+  <rect x="58" y="58" width="2" height="2" fill="#7f8c8d"/>
 
-  <!-- Face (partially shadowed) -->
-  <rect x="7" y="6" width="10" height="10" fill="#2c3e50"/>
-  <rect x="8" y="8" width="8" height="7" fill="#f5e6d3"/>
-  <rect x="9" y="9" width="6" height="5" fill="#e6d5c3"/>
+  <!-- === BACKGROUND === -->
+  <!-- Very dark shadowy background -->
+  <rect x="5" y="5" width="54" height="54" fill="#0a0e12"/>
+  <rect x="5" y="5" width="54" height="20" fill="#0d1318"/>
+  <rect x="5" y="5" width="54" height="10" fill="#10181e"/>
 
-  <!-- Shadow across face -->
-  <rect x="8" y="6" width="8" height="2" fill="#1a252f"/>
+  <!-- === HOOD === -->
+  <!-- Deep dark hood -->
+  <rect x="10" y="5" width="44" height="24" fill="#0d1318"/>
+  <rect x="12" y="6" width="40" height="22" fill="#1a252f"/>
+  <rect x="14" y="7" width="36" height="20" fill="#2c3e50"/>
 
-  <!-- Eyes (glowing) -->
-  <rect x="9" y="10" width="2" height="2" fill="#fdfefe"/>
-  <rect x="13" y="10" width="2" height="2" fill="#fdfefe"/>
-  <rect x="10" y="10" width="1" height="1" fill="#1a252f"/>
-  <rect x="14" y="10" width="1" height="1" fill="#1a252f"/>
+  <!-- Hood peak -->
+  <rect x="24" y="5" width="16" height="4" fill="#0d1318"/>
+  <rect x="26" y="5" width="12" height="3" fill="#1a252f"/>
+  <rect x="28" y="6" width="8" height="2" fill="#2c3e50"/>
 
-  <!-- Mask/bandana -->
-  <rect x="7" y="13" width="10" height="3" fill="#5d6d7e"/>
-  <rect x="8" y="14" width="8" height="1" fill="#7f8c8d"/>
+  <!-- Hood sides draping down -->
+  <rect x="8" y="12" width="10" height="30" fill="#0d1318"/>
+  <rect x="9" y="13" width="8" height="28" fill="#1a252f"/>
+  <rect x="10" y="14" width="6" height="26" fill="#2c3e50"/>
 
-  <!-- Cloak -->
-  <rect x="4" y="16" width="16" height="8" fill="#1a252f"/>
-  <rect x="5" y="17" width="14" height="6" fill="#2c3e50"/>
+  <rect x="46" y="12" width="10" height="30" fill="#0d1318"/>
+  <rect x="47" y="13" width="8" height="28" fill="#1a252f"/>
+  <rect x="48" y="14" width="6" height="26" fill="#2c3e50"/>
 
-  <!-- Red scarf accent -->
-  <rect x="6" y="16" width="2" height="6" fill="#c0392b"/>
-  <rect x="7" y="17" width="1" height="4" fill="#922b21"/>
+  <!-- Hood inner darkness -->
+  <rect x="14" y="10" width="36" height="8" fill="#050810"/>
 
-  <!-- Dagger glint -->
-  <rect x="18" y="18" width="3" height="1" fill="#bdc3c7"/>
-  <rect x="19" y="17" width="1" height="1" fill="#fdfefe"/>
+  <!-- === FACE IN SHADOW === -->
+  <!-- Upper face - deeply shadowed -->
+  <rect x="18" y="14" width="28" height="10" fill="#0d1318"/>
+  <rect x="20" y="15" width="24" height="8" fill="#1a252f"/>
+
+  <!-- Lower visible face -->
+  <rect x="20" y="22" width="24" height="12" fill="#c9b080"/>
+  <rect x="22" y="23" width="20" height="10" fill="#d5c4a1"/>
+  <rect x="24" y="24" width="16" height="8" fill="#e6d5c3"/>
+
+  <!-- Face shadow gradient from hood -->
+  <rect x="20" y="22" width="24" height="3" fill="#a89060"/>
+  <rect x="22" y="23" width="20" height="2" fill="#b8a070"/>
+
+  <!-- Cheekbones -->
+  <rect x="20" y="26" width="4" height="4" fill="#d5c4a1"/>
+  <rect x="40" y="26" width="4" height="4" fill="#d5c4a1"/>
+
+  <!-- === EYES - PIERCING FROM SHADOW === -->
+  <!-- Left eye - glowing in shadow -->
+  <rect x="22" y="18" width="8" height="5" fill="#1a252f"/>
+  <rect x="23" y="19" width="6" height="3" fill="#e8e8e8"/>
+  <rect x="24" y="19" width="4" height="2" fill="#fdfefe"/>
+  <rect x="25" y="19" width="2" height="2" fill="#1a252f"/>
+  <!-- Eye gleam -->
+  <rect x="24" y="19" width="1" height="1" fill="#fdfefe"/>
+
+  <!-- Right eye -->
+  <rect x="34" y="18" width="8" height="5" fill="#1a252f"/>
+  <rect x="35" y="19" width="6" height="3" fill="#e8e8e8"/>
+  <rect x="36" y="19" width="4" height="2" fill="#fdfefe"/>
+  <rect x="37" y="19" width="2" height="2" fill="#1a252f"/>
+  <!-- Eye gleam -->
+  <rect x="38" y="19" width="1" height="1" fill="#fdfefe"/>
+
+  <!-- Eyebrows - furrowed/hidden -->
+  <rect x="22" y="16" width="8" height="2" fill="#0d1318"/>
+  <rect x="34" y="16" width="8" height="2" fill="#0d1318"/>
+
+  <!-- === NOSE === -->
+  <rect x="30" y="24" width="4" height="4" fill="#c9b080"/>
+  <rect x="31" y="25" width="2" height="2" fill="#d5c4a1"/>
+
+  <!-- === MASK/BANDANA === -->
+  <!-- Mask covering lower face -->
+  <rect x="16" y="30" width="32" height="10" fill="#4a5a6a"/>
+  <rect x="18" y="31" width="28" height="8" fill="#5d6d7e"/>
+  <rect x="20" y="32" width="24" height="6" fill="#7f8c8d"/>
+
+  <!-- Mask folds -->
+  <rect x="24" y="33" width="2" height="4" fill="#5d6d7e"/>
+  <rect x="30" y="33" width="4" height="4" fill="#8d9aa8"/>
+  <rect x="38" y="33" width="2" height="4" fill="#5d6d7e"/>
+
+  <!-- Mask knot at side -->
+  <rect x="46" y="32" width="6" height="4" fill="#4a5a6a"/>
+  <rect x="48" y="32" width="4" height="3" fill="#5d6d7e"/>
+  <rect x="50" y="33" width="4" height="4" fill="#4a5a6a"/>
+  <rect x="52" y="34" width="4" height="3" fill="#5d6d7e"/>
+
+  <!-- === CLOAK === -->
+  <rect x="8" y="40" width="48" height="19" fill="#0d1318"/>
+  <rect x="10" y="41" width="44" height="17" fill="#1a252f"/>
+  <rect x="12" y="42" width="40" height="15" fill="#2c3e50"/>
+
+  <!-- Cloak collar high -->
+  <rect x="18" y="38" width="28" height="6" fill="#0d1318"/>
+  <rect x="20" y="39" width="24" height="4" fill="#1a252f"/>
+  <rect x="22" y="40" width="20" height="2" fill="#2c3e50"/>
+
+  <!-- Cloak folds -->
+  <rect x="12" y="46" width="2" height="10" fill="#0d1318"/>
+  <rect x="20" y="48" width="2" height="8" fill="#1a252f"/>
+  <rect x="42" y="48" width="2" height="8" fill="#1a252f"/>
+  <rect x="50" y="46" width="2" height="10" fill="#0d1318"/>
+
+  <!-- === RED SCARF ACCENT === -->
+  <rect x="14" y="40" width="6" height="16" fill="#7b241c"/>
+  <rect x="15" y="41" width="4" height="14" fill="#922b21"/>
+  <rect x="16" y="42" width="2" height="12" fill="#c0392b"/>
+
+  <!-- Scarf end flowing -->
+  <rect x="12" y="52" width="4" height="6" fill="#922b21"/>
+  <rect x="13" y="53" width="2" height="4" fill="#c0392b"/>
+
+  <!-- Scarf highlight -->
+  <rect x="16" y="44" width="1" height="2" fill="#e74c3c"/>
+
+  <!-- === DAGGER GLINT === -->
+  <rect x="48" y="48" width="8" height="2" fill="#5d6d7e"/>
+  <rect x="50" y="48" width="6" height="1" fill="#95a5a6"/>
+  <rect x="52" y="48" width="4" height="1" fill="#bdc3c7"/>
+  <rect x="54" y="48" width="2" height="1" fill="#fdfefe"/>
+  <!-- Dagger handle -->
+  <rect x="46" y="47" width="4" height="4" fill="#2c3e50"/>
+  <rect x="47" y="48" width="2" height="2" fill="#3d4f61"/>
+
+  <!-- === SHADOW EFFECTS === -->
+  <!-- Deep shadow under hood on shoulders -->
+  <rect x="18" y="40" width="28" height="2" fill="#0a0e12"/>
 </svg>
