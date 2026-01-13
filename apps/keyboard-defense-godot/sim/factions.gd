@@ -3,8 +3,6 @@ extends RefCounted
 ## Faction system for diplomatic relations and interactions.
 ## Manages faction state, relations, and AI decision-making.
 
-const SimMap = preload("res://sim/map.gd")
-
 # =============================================================================
 # FACTION DATA
 # =============================================================================

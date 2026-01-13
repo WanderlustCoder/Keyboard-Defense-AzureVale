@@ -4,7 +4,6 @@ extends RefCounted
 ## Detects combinations and calculates bonus multipliers.
 
 const SimMap = preload("res://sim/map.gd")
-const SimBuildings = preload("res://sim/buildings.gd")
 
 # =============================================================================
 # SYNERGY DEFINITIONS

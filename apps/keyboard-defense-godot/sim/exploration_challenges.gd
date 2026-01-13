@@ -3,7 +3,6 @@ extends RefCounted
 ## Typing challenges for exploration events - accuracy, speed, consistency tests
 
 const SimWords = preload("res://sim/words.gd")
-const SimRng = preload("res://sim/rng.gd")
 
 # Challenge types
 enum ChallengeType {

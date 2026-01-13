@@ -41,7 +41,9 @@
           "type": "array",
           "items": {"type": "string"}
         },
-        "effects": {"type": "object"}
+        "effects": {"type": "object"},
+        "tier": {"type": "integer", "minimum": 1},
+        "limit_per_map": {"type": "integer", "minimum": 1}
       },
       "additionalProperties": false
     },
@@ -88,7 +90,8 @@
       "properties": {
         "range": {"type": "integer", "minimum": 0},
         "damage": {"type": "integer", "minimum": 0},
-        "shots_per_wave": {"type": "integer", "minimum": 0}
+        "shots_per_wave": {"type": "integer", "minimum": 0},
+        "damage_type": {"type": "string"}
       },
       "additionalProperties": false
     }

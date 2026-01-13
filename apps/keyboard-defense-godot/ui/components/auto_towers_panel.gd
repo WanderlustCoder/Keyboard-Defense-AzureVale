@@ -5,7 +5,6 @@ extends PanelContainer
 
 signal closed
 
-const SimBuildings = preload("res://sim/buildings.gd")
 const SimAutoTowerTypes = preload("res://sim/auto_tower_types.gd")
 
 var _active_towers: Array[Dictionary] = []

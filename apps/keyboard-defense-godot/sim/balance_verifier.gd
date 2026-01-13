@@ -5,7 +5,6 @@ extends RefCounted
 
 const SimEnemies = preload("res://sim/enemies.gd")
 const SimTowerTypes = preload("res://sim/tower_types.gd")
-const SimBalance = preload("res://sim/balance.gd")
 
 # =============================================================================
 # VERIFICATION THRESHOLDS

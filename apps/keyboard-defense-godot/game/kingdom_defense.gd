@@ -2281,7 +2281,7 @@ func _wave_complete() -> void:
 
 		# Autosave on day completion
 		var save_result: Dictionary = GamePersistence.save_state(state)
-		if save_result.ok:
+		if save_result.ok and OS.is_debug_build():
 			print("[Kingdom Defense] Autosaved on day %d" % day)
 
 	# Show boss defeat dialogue if we just beat a boss
