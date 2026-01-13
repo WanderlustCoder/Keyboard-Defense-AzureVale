@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Animation Gallery - Keyboard Defense</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: system-ui, sans-serif;
+      background: #1a1a2e;
+      color: #eee;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 { text-align: center; color: #fff; margin-bottom: 10px; }
+    .subtitle { text-align: center; color: #888; margin-bottom: 20px; }
+
+    .controls {
+      position: sticky;
+      top: 0;
+      background: #1a1a2e;
+      padding: 10px 0 20px;
+      z-index: 100;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      border-bottom: 1px solid #333;
+    }
+    .controls input {
+      padding: 8px 12px;
+      font-size: 16px;
+      border: 1px solid #444;
+      border-radius: 4px;
+      background: #2a2a4e;
+      color: #fff;
+      flex: 1;
+      min-width: 200px;
+    }
+    .controls select, .controls button {
+      padding: 8px 12px;
+      font-size: 14px;
+      border: 1px solid #444;
+      border-radius: 4px;
+      background: #2a2a4e;
+      color: #fff;
+      cursor: pointer;
+    }
+    .controls button:hover { background: #3a3a6e; }
+    .stats { color: #888; font-size: 14px; margin-left: auto; }
+
+    .category { margin-bottom: 40px; }
+    .category h2 {
+      color: #7b68ee;
+      border-bottom: 2px solid #7b68ee;
+      padding-bottom: 8px;
+      margin-bottom: 15px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+    }
+
+    .anim-card {
+      background: #2a2a4e;
+      border-radius: 12px;
+      padding: 15px;
+      text-align: center;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .anim-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 25px rgba(123,104,238,0.3);
+    }
+    .anim-card.hidden { display: none; }
+
+    .anim-name {
+      font-size: 13px;
+      color: #fff;
+      margin-bottom: 10px;
+      font-weight: 500;
+    }
+
+    .anim-preview {
+      width: 100%;
+      height: 120px;
+      background: #1a1a2e;
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+    .anim-preview.boss-size {
+      height: 180px;
+    }
+    .anim-preview img {
+      max-width: 90%;
+      max-height: 90%;
+      object-fit: contain;
+      image-rendering: pixelated;
+    }
+    .anim-preview.boss-size img {
+      max-width: 80%;
+      max-height: 80%;
+    }
+
+    .frame-counter {
+      position: absolute;
+      bottom: 5px;
+      right: 8px;
+      font-size: 11px;
+      color: #666;
+      background: rgba(0,0,0,0.5);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .anim-frames {
+      display: flex;
+      gap: 4px;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
+    .frame-thumb {
+      width: 32px;
+      height: 32px;
+      background: #3a3a5e;
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: border-color 0.2s;
+    }
+    .frame-thumb:hover { border-color: #7b68ee; }
+    .frame-thumb.active { border-color: #9d8eff; background: #4a4a6e; }
+    .frame-thumb img {
+      width: 24px;
+      height: 24px;
+      object-fit: contain;
+      image-rendering: pixelated;
+    }
+
+    .anim-controls {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      align-items: center;
+    }
+    .anim-controls button {
+      background: #3a3a5e;
+      border: none;
+      color: #fff;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+    .anim-controls button:hover { background: #5a5a7e; }
+    .anim-controls button.playing { background: #7b68ee; }
+
+    .speed-label {
+      font-size: 11px;
+      color: #888;
+    }
+
+    .checker-bg .anim-preview {
+      background: repeating-conic-gradient(#3a3a5e 0% 25%, #2a2a4e 0% 50%) 50% / 16px 16px;
+    }
+    .light-bg .anim-preview { background: #fff; }
+    .dark-bg .anim-preview { background: #1a1a2e; }
+
+    .legend {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #888;
+    }
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+    }
+    .legend-color.boss { background: #e74c3c; }
+    .legend-color.enemy { background: #3498db; }
+    .legend-color.tower { background: #2ecc71; }
+    .legend-color.ambient { background: #f39c12; }
+    .legend-color.death { background: #9b59b6; }
+  </style>
+</head>
+<body class="dark-bg">
+  <h1>Animation Gallery</h1>
+  <p class="subtitle">Keyboard Defense - SVG Animation Frames</p>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-color boss"></div> Bosses (128x128)</div>
+    <div class="legend-item"><div class="legend-color enemy"></div> Enemies (32x32)</div>
+    <div class="legend-item"><div class="legend-color tower"></div> Towers (32x32)</div>
+    <div class="legend-item"><div class="legend-color ambient"></div> Ambient</div>
+    <div class="legend-item"><div class="legend-color death"></div> Effects</div>
+  </div>
+
+  <div class="controls">
+    <input type="text" id="search" placeholder="Search animations...">
+    <select id="speed">
+      <option value="500">Slow (500ms)</option>
+      <option value="250" selected>Normal (250ms)</option>
+      <option value="150">Fast (150ms)</option>
+      <option value="100">Very Fast (100ms)</option>
+    </select>
+    <select id="bg">
+      <option value="dark-bg">Dark BG</option>
+      <option value="light-bg">Light BG</option>
+      <option value="checker-bg">Checker BG</option>
+    </select>
+    <button onclick="playAll()">Play All</button>
+    <button onclick="stopAll()">Stop All</button>
+    <span class="stats" id="stats"></span>
+  </div>
+
+  <div id="gallery"></div>
+
+  <script>
+    // Animation definitions grouped by category
+    const animations = {
+      "Boss Animations": {
+        isBoss: true,
+        sets: [
+          { name: "Forest Guardian - Idle", frames: ["boss_forest_guardian_idle_01.svg","boss_forest_guardian_idle_02.svg","boss_forest_guardian_idle_03.svg","boss_forest_guardian_idle_04.svg"] },
+          { name: "Forest Guardian - Attack", frames: ["boss_forest_guardian_attack_01.svg","boss_forest_guardian_attack_02.svg","boss_forest_guardian_attack_03.svg","boss_forest_guardian_attack_04.svg"] },
+          { name: "Stone Golem - Idle", frames: ["boss_stone_golem_idle_01.svg","boss_stone_golem_idle_02.svg","boss_stone_golem_idle_03.svg","boss_stone_golem_idle_04.svg"] },
+          { name: "Stone Golem - Attack", frames: ["boss_stone_golem_attack_01.svg","boss_stone_golem_attack_02.svg","boss_stone_golem_attack_03.svg","boss_stone_golem_attack_04.svg"] },
+          { name: "Fen Seer - Idle", frames: ["boss_fen_seer_idle_01.svg","boss_fen_seer_idle_02.svg","boss_fen_seer_idle_03.svg","boss_fen_seer_idle_04.svg"] },
+          { name: "Fen Seer - Attack", frames: ["boss_fen_seer_attack_01.svg","boss_fen_seer_attack_02.svg","boss_fen_seer_attack_03.svg","boss_fen_seer_attack_04.svg"] },
+          { name: "Sunlord - Idle", frames: ["boss_sunlord_idle_01.svg","boss_sunlord_idle_02.svg","boss_sunlord_idle_03.svg","boss_sunlord_idle_04.svg"] },
+          { name: "Sunlord - Attack", frames: ["boss_sunlord_attack_01.svg","boss_sunlord_attack_02.svg","boss_sunlord_attack_03.svg","boss_sunlord_attack_04.svg"] }
+        ]
+      },
+      "Enemy Walk Cycles": {
+        sets: [
+          { name: "Raider - Walk", frames: ["enemy_raider_walk_01.svg","enemy_raider_walk_02.svg","enemy_raider_walk_03.svg","enemy_raider_walk_04.svg"] },
+          { name: "Scout - Walk", frames: ["enemy_scout_walk_01.svg","enemy_scout_walk_02.svg","enemy_scout_walk_03.svg","enemy_scout_walk_04.svg"] },
+          { name: "Tank - Walk", frames: ["enemy_tank_walk_01.svg","enemy_tank_walk_02.svg","enemy_tank_walk_03.svg","enemy_tank_walk_04.svg"] },
+          { name: "Grunt - Walk", frames: ["enemy_grunt_walk_01.svg","enemy_grunt_walk_02.svg","enemy_grunt_walk_03.svg","enemy_grunt_walk_04.svg"] },
+          { name: "Runner - Walk", frames: ["enemy_runner_walk_01.svg","enemy_runner_walk_02.svg","enemy_runner_walk_03.svg","enemy_runner_walk_04.svg"] },
+          { name: "Mage - Walk", frames: ["enemy_mage_walk_01.svg","enemy_mage_walk_02.svg","enemy_mage_walk_03.svg","enemy_mage_walk_04.svg"] },
+          { name: "Flying - Fly", frames: ["enemy_flying_walk_01.svg","enemy_flying_walk_02.svg","enemy_flying_walk_03.svg","enemy_flying_walk_04.svg"] },
+          { name: "Archer - Walk", frames: ["enemy_archer_walk_01.svg","enemy_archer_walk_02.svg","enemy_archer_walk_03.svg","enemy_archer_walk_04.svg"] }
+        ]
+      },
+      "Enemy Idle Cycles": {
+        sets: [
+          { name: "Raider - Idle", frames: ["enemy_raider_idle_01.svg","enemy_raider_idle_02.svg"] },
+          { name: "Scout - Idle", frames: ["enemy_scout_idle_01.svg","enemy_scout_idle_02.svg"] },
+          { name: "Tank - Idle", frames: ["enemy_tank_idle_01.svg","enemy_tank_idle_02.svg"] },
+          { name: "Grunt - Idle", frames: ["enemy_grunt_idle_01.svg","enemy_grunt_idle_02.svg"] },
+          { name: "Runner - Idle", frames: ["enemy_runner_idle_01.svg","enemy_runner_idle_02.svg"] },
+          { name: "Mage - Idle", frames: ["enemy_mage_idle_01.svg","enemy_mage_idle_02.svg"] },
+          { name: "Flying - Hover", frames: ["enemy_flying_idle_01.svg","enemy_flying_idle_02.svg"] },
+          { name: "Archer - Idle", frames: ["enemy_archer_idle_01.svg","enemy_archer_idle_02.svg"] }
+        ]
+      },
+      "Tower Attacks": {
+        sets: [
+          { name: "Arrow Tower", frames: ["tower_arrow_attack_01.svg","tower_arrow_attack_02.svg"] },
+          { name: "Fire Tower", frames: ["tower_fire_attack_01.svg","tower_fire_attack_02.svg"] },
+          { name: "Ice Tower", frames: ["tower_ice_attack_01.svg","tower_ice_attack_02.svg"] },
+          { name: "Lightning Tower", frames: ["tower_lightning_attack_01.svg","tower_lightning_attack_02.svg"] },
+          { name: "Poison Tower", frames: ["tower_poison_attack_01.svg","tower_poison_attack_02.svg"] },
+          { name: "Arcane Tower", frames: ["tower_arcane_attack_01.svg","tower_arcane_attack_02.svg"] },
+          { name: "Cannon Tower", frames: ["tower_cannon_attack_01.svg","tower_cannon_attack_02.svg"] },
+          { name: "Support Tower", frames: ["tower_support_attack_01.svg","tower_support_attack_02.svg"] },
+          { name: "Holy Tower", frames: ["tower_holy_attack_01.svg","tower_holy_attack_02.svg"] },
+          { name: "Siege Tower", frames: ["tower_siege_attack_01.svg","tower_siege_attack_02.svg"] },
+          { name: "Multi Tower", frames: ["tower_multi_attack_01.svg","tower_multi_attack_02.svg"] }
+        ]
+      },
+      "Ambient Animations": {
+        sets: [
+          { name: "Torch Flame", frames: ["anim_torch_flame.svg"] },
+          { name: "Water Ripple", frames: ["anim_water_ripple.svg"] },
+          { name: "Grass Sway", frames: ["anim_grass_sway.svg"] },
+          { name: "Flag Wave", frames: ["anim_flag_wave.svg"] },
+          { name: "Butterfly", frames: ["anim_butterfly.svg"] },
+          { name: "Bird Fly", frames: ["anim_bird_fly.svg"] },
+          { name: "Leaves Fall", frames: ["anim_leaves_fall.svg"] },
+          { name: "Dust Mote", frames: ["anim_dust_mote.svg"] },
+          { name: "Sparkle", frames: ["anim_sparkle_ambient.svg"] },
+          { name: "Chimney Smoke", frames: ["anim_smoke_chimney.svg"] }
+        ]
+      },
+      "Death & Effects": {
+        sets: [
+          { name: "Enemy Death", frames: ["enemy_death_01.svg","enemy_death_02.svg","enemy_death_03.svg","enemy_death_04.svg"] }
+        ]
+      }
+    };
+
+    let animationIntervals = {};
+    let globalSpeed = 250;
+
+    function render() {
+      const gallery = document.getElementById('gallery');
+      gallery.innerHTML = '';
+      let totalAnims = 0;
+
+      for (const [categoryName, categoryData] of Object.entries(animations)) {
+        const section = document.createElement('div');
+        section.className = 'category';
+        section.innerHTML = `<h2>${categoryName} (${categoryData.sets.length})</h2>`;
+
+        const grid = document.createElement('div');
+        grid.className = 'grid';
+
+        categoryData.sets.forEach((animSet, setIndex) => {
+          const cardId = `anim-${categoryName.replace(/\s+/g, '-')}-${setIndex}`;
+          const card = document.createElement('div');
+          card.className = 'anim-card';
+          card.dataset.name = animSet.name.toLowerCase();
+          card.dataset.cardid = cardId;
+
+          const isBoss = categoryData.isBoss || false;
+          const previewClass = isBoss ? 'anim-preview boss-size' : 'anim-preview';
+
+          let framesHtml = '';
+          animSet.frames.forEach((frame, frameIndex) => {
+            framesHtml += `
+              <div class="frame-thumb ${frameIndex === 0 ? 'active' : ''}" onclick="setFrame('${cardId}', ${frameIndex})">
+                <img src="${frame}" alt="Frame ${frameIndex + 1}">
+              </div>
+            `;
+          });
+
+          card.innerHTML = `
+            <div class="anim-name">${animSet.name}</div>
+            <div class="${previewClass}">
+              <img id="${cardId}-img" src="${animSet.frames[0]}" alt="${animSet.name}">
+              <div class="frame-counter"><span id="${cardId}-counter">1</span>/${animSet.frames.length}</div>
+            </div>
+            <div class="anim-frames" id="${cardId}-thumbs">
+              ${framesHtml}
+            </div>
+            <div class="anim-controls">
+              <button onclick="prevFrame('${cardId}')" title="Previous Frame">&#9664;</button>
+              <button id="${cardId}-play" onclick="togglePlay('${cardId}')" title="Play/Pause">&#9654;</button>
+              <button onclick="nextFrame('${cardId}')" title="Next Frame">&#9654;</button>
+            </div>
+          `;
+
+          // Store frame data
+          card.dataset.frames = JSON.stringify(animSet.frames);
+          card.dataset.currentframe = "0";
+
+          grid.appendChild(card);
+          totalAnims++;
+        });
+
+        section.appendChild(grid);
+        gallery.appendChild(section);
+      }
+
+      document.getElementById('stats').textContent = `${totalAnims} animations`;
+    }
+
+    function getCardData(cardId) {
+      const card = document.querySelector(`[data-cardid="${cardId}"]`);
+      if (!card) return null;
+      return {
+        card,
+        frames: JSON.parse(card.dataset.frames),
+        currentFrame: parseInt(card.dataset.currentframe)
+      };
+    }
+
+    function setFrame(cardId, frameIndex) {
+      const data = getCardData(cardId);
+      if (!data) return;
+
+      data.card.dataset.currentframe = frameIndex.toString();
+
+      const img = document.getElementById(`${cardId}-img`);
+      img.src = data.frames[frameIndex];
+
+      const counter = document.getElementById(`${cardId}-counter`);
+      counter.textContent = frameIndex + 1;
+
+      // Update thumb highlights
+      const thumbs = document.querySelectorAll(`#${cardId}-thumbs .frame-thumb`);
+      thumbs.forEach((thumb, i) => {
+        thumb.classList.toggle('active', i === frameIndex);
+      });
+    }
+
+    function nextFrame(cardId) {
+      const data = getCardData(cardId);
+      if (!data) return;
+      const nextIndex = (data.currentFrame + 1) % data.frames.length;
+      setFrame(cardId, nextIndex);
+    }
+
+    function prevFrame(cardId) {
+      const data = getCardData(cardId);
+      if (!data) return;
+      const prevIndex = (data.currentFrame - 1 + data.frames.length) % data.frames.length;
+      setFrame(cardId, prevIndex);
+    }
+
+    function togglePlay(cardId) {
+      const btn = document.getElementById(`${cardId}-play`);
+
+      if (animationIntervals[cardId]) {
+        clearInterval(animationIntervals[cardId]);
+        delete animationIntervals[cardId];
+        btn.classList.remove('playing');
+        btn.innerHTML = '&#9654;';
+      } else {
+        animationIntervals[cardId] = setInterval(() => nextFrame(cardId), globalSpeed);
+        btn.classList.add('playing');
+        btn.innerHTML = '&#10074;&#10074;';
+      }
+    }
+
+    function playAll() {
+      document.querySelectorAll('.anim-card:not(.hidden)').forEach(card => {
+        const cardId = card.dataset.cardid;
+        if (!animationIntervals[cardId]) {
+          togglePlay(cardId);
+        }
+      });
+    }
+
+    function stopAll() {
+      Object.keys(animationIntervals).forEach(cardId => {
+        clearInterval(animationIntervals[cardId]);
+        delete animationIntervals[cardId];
+        const btn = document.getElementById(`${cardId}-play`);
+        if (btn) {
+          btn.classList.remove('playing');
+          btn.innerHTML = '&#9654;';
+        }
+      });
+    }
+
+    function filter(query) {
+      query = query.toLowerCase();
+      document.querySelectorAll('.anim-card').forEach(card => {
+        const name = card.dataset.name;
+        card.classList.toggle('hidden', !name.includes(query));
+      });
+
+      // Update stats
+      const visible = document.querySelectorAll('.anim-card:not(.hidden)').length;
+      const total = document.querySelectorAll('.anim-card').length;
+      document.getElementById('stats').textContent = `${visible} / ${total} animations`;
+    }
+
+    // Event listeners
+    document.getElementById('search').addEventListener('input', e => filter(e.target.value));
+
+    document.getElementById('speed').addEventListener('change', e => {
+      globalSpeed = parseInt(e.target.value);
+      // Update running animations
+      Object.keys(animationIntervals).forEach(cardId => {
+        clearInterval(animationIntervals[cardId]);
+        animationIntervals[cardId] = setInterval(() => nextFrame(cardId), globalSpeed);
+      });
+    });
+
+    document.getElementById('bg').addEventListener('change', e => {
+      document.body.classList.remove('dark-bg', 'light-bg', 'checker-bg');
+      document.body.classList.add(e.target.value);
+    });
+
+    // Initialize
+    render();
+  </script>
+</body>
+</html>
