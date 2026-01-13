@@ -49,6 +49,9 @@ var total_workers: int
 var max_workers: int
 var worker_upkeep: int  # Food consumed per worker per day
 
+# Citizen identity system state
+var citizens: Array  # Array of citizen dictionaries
+
 # Research system state
 var active_research: String  # Currently researching ID
 var research_progress: int  # Waves completed toward research
@@ -57,6 +60,11 @@ var completed_research: Array  # List of completed research IDs
 # Trade system state
 var trade_rates: Dictionary  # Current exchange rates
 var last_trade_day: int  # Day of last trade (for rate changes)
+
+# Faction/Diplomacy system state
+var faction_relations: Dictionary  # {faction_id: relation_value}
+var faction_agreements: Dictionary  # {agreement_type: [faction_ids]}
+var pending_diplomacy: Dictionary  # {faction_id: pending_offer_data}
 
 # Accessibility settings (applied from profile)
 var speed_multiplier: float
@@ -112,6 +120,13 @@ var hero_active_effects: Array  # Active hero ability effects
 var equipped_title: String  # Currently equipped title ID
 var unlocked_titles: Array  # Array of unlocked title IDs
 var unlocked_badges: Array  # Array of unlocked badge IDs
+
+# Victory system state
+var victory_achieved: Array  # Array of achieved victory condition IDs
+var victory_checked: bool  # Whether victory has been checked this turn
+var peak_gold: int  # Highest gold amount achieved (for economic victory tracking)
+var story_completed: bool  # Whether the full story campaign is complete
+var current_act: int  # Current story act (1-5)
 
 func _init() -> void:
 	day = 1
@@ -170,6 +185,9 @@ func _init() -> void:
 	max_workers = 10
 	worker_upkeep = 1
 
+	# Citizen identity system initialization
+	citizens = []
+
 	# Research system initialization
 	active_research = ""
 	research_progress = 0
@@ -187,6 +205,16 @@ func _init() -> void:
 		"gold_to_stone": 2.0
 	}
 	last_trade_day = 0
+
+	# Faction/Diplomacy system initialization
+	faction_relations = {}
+	faction_agreements = {
+		"trade": [],
+		"non_aggression": [],
+		"alliance": [],
+		"war": []
+	}
+	pending_diplomacy = {}
 
 	# Accessibility defaults
 	speed_multiplier = 1.0
@@ -251,6 +279,13 @@ func _init() -> void:
 	equipped_title = ""
 	unlocked_titles = []
 	unlocked_badges = []
+
+	# Victory system initialization
+	victory_achieved = []
+	victory_checked = false
+	peak_gold = 0
+	story_completed = false
+	current_act = 1
 
 	discovered[_index(base_pos.x, base_pos.y)] = true
 

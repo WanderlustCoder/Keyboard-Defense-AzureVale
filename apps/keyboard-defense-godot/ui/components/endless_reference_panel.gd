@@ -1,17 +1,16 @@
 class_name EndlessReferencePanel
 extends PanelContainer
-## Endless Mode Reference Panel - Shows scaling, milestones, and modifiers
+## Endless Mode Reference Panel - Shows scaling, milestones, and modifiers.
+## Migrated to use DesignSystem and ThemeColors for consistency.
 
 signal closed
-
-const ThemeColors = preload("res://ui/theme_colors.gd")
 
 # UI elements
 var _close_btn: Button = null
 var _content_scroll: ScrollContainer = null
 var _content_vbox: VBoxContainer = null
 
-# Scaling data (from SimEndlessMode)
+# Scaling data (from SimEndlessMode) - domain-specific colors
 const SCALING_INFO: Array[Dictionary] = [
 	{
 		"stat": "Enemy HP",
@@ -106,52 +105,42 @@ func _ready() -> void:
 
 
 func _build_ui() -> void:
-	custom_minimum_size = Vector2(540, 640)
+	custom_minimum_size = Vector2(DesignSystem.SIZE_PANEL_LG, 640)
 
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.08, 0.09, 0.12, 0.98)
-	style.border_color = ThemeColors.BORDER
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(8)
-	style.set_content_margin_all(12)
+	var style := DesignSystem.create_panel_style()
 	add_theme_stylebox_override("panel", style)
 
-	var main_vbox := VBoxContainer.new()
-	main_vbox.add_theme_constant_override("separation", 10)
+	var main_vbox := DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	add_child(main_vbox)
 
 	# Header
-	var header := HBoxContainer.new()
+	var header := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 	main_vbox.add_child(header)
 
 	var title := Label.new()
 	title.text = "ENDLESS MODE"
-	title.add_theme_font_size_override("font_size", 18)
-	title.add_theme_color_override("font_color", Color(0.9, 0.4, 0.4))
+	DesignSystem.style_label(title, "h2", ThemeColors.ERROR)
 	header.add_child(title)
 
-	var spacer := Control.new()
-	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	header.add_child(spacer)
+	header.add_child(DesignSystem.create_spacer())
 
 	_close_btn = Button.new()
-	_close_btn.text = "X"
-	_close_btn.custom_minimum_size = Vector2(30, 30)
+	_close_btn.text = "✕"
+	_close_btn.custom_minimum_size = Vector2(DesignSystem.SIZE_BUTTON_SM, DesignSystem.SIZE_BUTTON_SM)
+	_style_close_button()
 	_close_btn.pressed.connect(_on_close_pressed)
 	header.add_child(_close_btn)
 
 	# Subtitle
 	var subtitle := Label.new()
 	subtitle.text = "Infinite scaling challenge - how long can you survive?"
-	subtitle.add_theme_font_size_override("font_size", 12)
-	subtitle.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(subtitle, "body_small", ThemeColors.TEXT_DIM)
 	main_vbox.add_child(subtitle)
 
 	# Unlock info
 	var unlock := Label.new()
 	unlock.text = "Unlock: Reach Day 15 or complete 45 waves"
-	unlock.add_theme_font_size_override("font_size", 11)
-	unlock.add_theme_color_override("font_color", Color(1.0, 0.84, 0.0))
+	DesignSystem.style_label(unlock, "caption", ThemeColors.RESOURCE_GOLD)
 	main_vbox.add_child(unlock)
 
 	# Content scroll
@@ -161,18 +150,24 @@ func _build_ui() -> void:
 	_content_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	main_vbox.add_child(_content_scroll)
 
-	_content_vbox = VBoxContainer.new()
-	_content_vbox.add_theme_constant_override("separation", 10)
+	_content_vbox = DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	_content_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_content_scroll.add_child(_content_vbox)
 
 	# Footer
 	var footer := Label.new()
 	footer.text = "Survive as long as possible for eternal glory"
-	footer.add_theme_font_size_override("font_size", 11)
-	footer.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(footer, "caption", ThemeColors.TEXT_DIM)
 	footer.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	main_vbox.add_child(footer)
+
+
+func _style_close_button() -> void:
+	var normal := DesignSystem.create_button_style(ThemeColors.BG_BUTTON, ThemeColors.BORDER)
+	var hover := DesignSystem.create_button_style(ThemeColors.ERROR.darkened(0.3), ThemeColors.ERROR)
+	_close_btn.add_theme_stylebox_override("normal", normal)
+	_close_btn.add_theme_stylebox_override("hover", hover)
+	_close_btn.add_theme_color_override("font_color", ThemeColors.TEXT)
 
 
 func show_endless_reference() -> void:
@@ -203,14 +198,13 @@ func _build_content() -> void:
 
 
 func _build_scaling_section() -> void:
-	var section := _create_section_panel("DIFFICULTY SCALING", Color(0.9, 0.4, 0.4))
+	var section := _create_section_panel("DIFFICULTY SCALING", ThemeColors.ERROR)
 	_content_vbox.add_child(section)
 
 	var vbox: VBoxContainer = section.get_child(0)
 
 	for info in SCALING_INFO:
-		var hbox := HBoxContainer.new()
-		hbox.add_theme_constant_override("separation", 10)
+		var hbox := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 		vbox.add_child(hbox)
 
 		var stat: String = str(info.get("stat", ""))
@@ -219,22 +213,19 @@ func _build_scaling_section() -> void:
 
 		var stat_label := Label.new()
 		stat_label.text = stat
-		stat_label.add_theme_font_size_override("font_size", 10)
-		stat_label.add_theme_color_override("font_color", color)
+		DesignSystem.style_label(stat_label, "caption", color)
 		stat_label.custom_minimum_size = Vector2(100, 0)
 		hbox.add_child(stat_label)
 
 		var rate_label := Label.new()
 		rate_label.text = per_day + "/day"
-		rate_label.add_theme_font_size_override("font_size", 10)
-		rate_label.add_theme_color_override("font_color", Color(0.9, 0.6, 0.3))
+		DesignSystem.style_label(rate_label, "caption", Color(0.9, 0.6, 0.3))
 		rate_label.custom_minimum_size = Vector2(70, 0)
 		hbox.add_child(rate_label)
 
 		var desc_label := Label.new()
 		desc_label.text = str(info.get("description", ""))
-		desc_label.add_theme_font_size_override("font_size", 9)
-		desc_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+		DesignSystem.style_label(desc_label, "caption", ThemeColors.TEXT_DIM)
 		hbox.add_child(desc_label)
 
 
@@ -255,34 +246,30 @@ func _create_modifier_card(mod: Dictionary) -> Control:
 	var description: String = str(mod.get("description", ""))
 	var color: Color = mod.get("color", Color.WHITE)
 
-	var hbox := HBoxContainer.new()
-	hbox.add_theme_constant_override("separation", 10)
+	var hbox := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 
 	var day_label := Label.new()
 	day_label.text = "Day %d+" % start_day
-	day_label.add_theme_font_size_override("font_size", 9)
-	day_label.add_theme_color_override("font_color", Color(1.0, 0.84, 0.0))
+	DesignSystem.style_label(day_label, "caption", ThemeColors.RESOURCE_GOLD)
 	day_label.custom_minimum_size = Vector2(55, 0)
 	hbox.add_child(day_label)
 
 	var name_label := Label.new()
 	name_label.text = name_str
-	name_label.add_theme_font_size_override("font_size", 10)
-	name_label.add_theme_color_override("font_color", color)
+	DesignSystem.style_label(name_label, "caption", color)
 	name_label.custom_minimum_size = Vector2(110, 0)
 	hbox.add_child(name_label)
 
 	var desc_label := Label.new()
 	desc_label.text = description
-	desc_label.add_theme_font_size_override("font_size", 9)
-	desc_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(desc_label, "caption", ThemeColors.TEXT_DIM)
 	hbox.add_child(desc_label)
 
 	return hbox
 
 
 func _build_milestones_section() -> void:
-	var section := _create_section_panel("MILESTONES & REWARDS", Color(1.0, 0.84, 0.0))
+	var section := _create_section_panel("MILESTONES & REWARDS", ThemeColors.RESOURCE_GOLD)
 	_content_vbox.add_child(section)
 
 	var vbox: VBoxContainer = section.get_child(0)
@@ -290,8 +277,8 @@ func _build_milestones_section() -> void:
 	# Create grid for milestones
 	var grid := GridContainer.new()
 	grid.columns = 4
-	grid.add_theme_constant_override("h_separation", 15)
-	grid.add_theme_constant_override("v_separation", 4)
+	grid.add_theme_constant_override("h_separation", DesignSystem.SPACE_LG)
+	grid.add_theme_constant_override("v_separation", DesignSystem.SPACE_XS)
 	vbox.add_child(grid)
 
 	# Header row
@@ -299,8 +286,7 @@ func _build_milestones_section() -> void:
 	for h in headers:
 		var header := Label.new()
 		header.text = h
-		header.add_theme_font_size_override("font_size", 10)
-		header.add_theme_color_override("font_color", Color(1.0, 0.84, 0.0))
+		DesignSystem.style_label(header, "caption", ThemeColors.RESOURCE_GOLD)
 		grid.add_child(header)
 
 	# Milestone rows
@@ -312,38 +298,34 @@ func _build_milestones_section() -> void:
 
 		var day_label := Label.new()
 		day_label.text = str(day)
-		day_label.add_theme_font_size_override("font_size", 9)
-		day_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+		DesignSystem.style_label(day_label, "caption", ThemeColors.TEXT_DIM)
 		grid.add_child(day_label)
 
 		var name_label := Label.new()
 		name_label.text = name_str
-		name_label.add_theme_font_size_override("font_size", 9)
-		name_label.add_theme_color_override("font_color", _get_milestone_color(day))
+		DesignSystem.style_label(name_label, "caption", _get_milestone_color(day))
 		grid.add_child(name_label)
 
 		var gold_label := Label.new()
 		gold_label.text = str(gold)
-		gold_label.add_theme_font_size_override("font_size", 9)
-		gold_label.add_theme_color_override("font_color", Color(1.0, 0.84, 0.0))
+		DesignSystem.style_label(gold_label, "caption", ThemeColors.RESOURCE_GOLD)
 		grid.add_child(gold_label)
 
 		var xp_label := Label.new()
 		xp_label.text = str(xp)
-		xp_label.add_theme_font_size_override("font_size", 9)
-		xp_label.add_theme_color_override("font_color", Color(0.4, 0.8, 1.0))
+		DesignSystem.style_label(xp_label, "caption", ThemeColors.INFO)
 		grid.add_child(xp_label)
 
 
 func _get_milestone_color(day: int) -> Color:
 	if day >= 75:
-		return Color(1.0, 0.84, 0.0)  # Gold
+		return ThemeColors.RESOURCE_GOLD
 	elif day >= 40:
 		return Color(0.7, 0.5, 0.9)  # Purple
 	elif day >= 20:
 		return Color(0.9, 0.6, 0.3)  # Orange
 	else:
-		return Color(0.5, 0.8, 0.3)  # Green
+		return ThemeColors.SUCCESS
 
 
 func _create_section_panel(title: String, color: Color) -> PanelContainer:
@@ -353,18 +335,16 @@ func _create_section_panel(title: String, color: Color) -> PanelContainer:
 	panel_style.bg_color = color.darkened(0.85)
 	panel_style.border_color = color.darkened(0.5)
 	panel_style.set_border_width_all(1)
-	panel_style.set_corner_radius_all(6)
-	panel_style.set_content_margin_all(10)
+	panel_style.set_corner_radius_all(DesignSystem.RADIUS_SM)
+	panel_style.set_content_margin_all(DesignSystem.SPACE_MD)
 	container.add_theme_stylebox_override("panel", panel_style)
 
-	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 6)
+	var vbox := DesignSystem.create_vbox(DesignSystem.SPACE_SM)
 	container.add_child(vbox)
 
 	var header := Label.new()
 	header.text = title
-	header.add_theme_font_size_override("font_size", 12)
-	header.add_theme_color_override("font_color", color)
+	DesignSystem.style_label(header, "body_small", color)
 	vbox.add_child(header)
 
 	return container

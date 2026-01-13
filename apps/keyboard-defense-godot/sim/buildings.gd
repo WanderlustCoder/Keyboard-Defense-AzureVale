@@ -207,6 +207,53 @@ const BUILDINGS := {
         "limit_per_map": 1,
         "size": "3x3"
     },
+    # =========================================================================
+    # MONUMENT BUILDINGS - Tier 4 (Kingdom-wide effects)
+    # =========================================================================
+    "grand_cathedral": {
+        "cost": {"gold": 500, "stone": 200, "wood": 200},
+        "production": {},
+        "defense": 2,
+        "worker_slots": 4,
+        "category": "monument",
+        "tier": 4,
+        "effects": {"morale_bonus": 0.5, "wave_heal": 3, "castle_hp_regen": 1},
+        "requires": ["temple"],
+        "limit_per_map": 1
+    },
+    "war_academy": {
+        "cost": {"gold": 400, "stone": 300},
+        "production": {},
+        "defense": 3,
+        "worker_slots": 3,
+        "category": "monument",
+        "tier": 4,
+        "effects": {"tower_damage_bonus": 0.25, "typing_power": 0.15, "unlocks_elite_units": true},
+        "requires": ["barracks"],
+        "limit_per_map": 1
+    },
+    "trade_emporium": {
+        "cost": {"gold": 600, "stone": 100, "wood": 100},
+        "production": {"gold": 15},
+        "defense": 0,
+        "worker_slots": 5,
+        "category": "monument",
+        "tier": 4,
+        "effects": {"trade_cost_reduction": 0.3, "merchant_attraction": true, "faction_relation_bonus": 10},
+        "requires": ["market"],
+        "limit_per_map": 1
+    },
+    "wizard_tower": {
+        "cost": {"gold": 800, "stone": 400},
+        "production": {},
+        "defense": 2,
+        "worker_slots": 2,
+        "category": "monument",
+        "tier": 4,
+        "effects": {"research_speed_bonus": 0.4, "unlocks_magic": true, "spell_power": 0.2},
+        "limit_per_map": 1,
+        "combat_stats": {"range": 5, "damage": 10, "damage_type": "magic", "shots_per_wave": 3}
+    },
     # Legacy aliases for backward compatibility
     "sentry": {
         "cost": {"wood": 6, "stone": 10, "gold": 80},
@@ -400,6 +447,59 @@ static func is_auto_tower(building_type: String) -> bool:
     if building_type == "tower":
         return false
     return BUILDINGS.get(building_type, {}).get("category", "") == "auto_defense"
+
+
+static func is_monument(building_type: String) -> bool:
+    return BUILDINGS.get(building_type, {}).get("category", "") == "monument"
+
+
+static func get_monument_buildings() -> Array[String]:
+    var monuments: Array[String] = []
+    for building_id in BUILDINGS.keys():
+        if is_monument(building_id):
+            monuments.append(building_id)
+    return monuments
+
+
+static func can_build_monument(state: GameState, monument_type: String) -> Dictionary:
+    var result := {"ok": false, "reason": ""}
+
+    if not is_monument(monument_type):
+        result.reason = "not a monument"
+        return result
+
+    var info: Dictionary = BUILDINGS.get(monument_type, {})
+
+    # Check limit per map
+    if info.get("limit_per_map", 0) > 0:
+        var existing_count := 0
+        for idx in state.structures.keys():
+            if str(state.structures[idx]) == monument_type:
+                existing_count += 1
+        if existing_count >= int(info.get("limit_per_map", 1)):
+            result.reason = "limit reached"
+            return result
+
+    # Check requires (must have built the prerequisite building)
+    var requires: Array = info.get("requires", [])
+    for req_building in requires:
+        var has_req := false
+        for idx in state.structures.keys():
+            if str(state.structures[idx]) == str(req_building):
+                has_req = true
+                break
+        if not has_req:
+            result.reason = "requires %s" % req_building
+            return result
+
+    # Check cost
+    var cost: Dictionary = info.get("cost", {})
+    if not can_afford(state, cost):
+        result.reason = "cannot afford"
+        return result
+
+    result.ok = true
+    return result
 
 static func get_auto_attack_stats(building_type: String) -> Dictionary:
     return BUILDINGS.get(building_type, {}).get("auto_attack", {})
@@ -826,7 +926,18 @@ static func get_total_effects(state: GameState) -> Dictionary:
         "tower_damage": 0,
         "enemy_slow": 0.0,
         "castle_hp": 0,
-        "morale": 0.0
+        "morale": 0.0,
+        # Monument effects
+        "morale_bonus": 0.0,
+        "castle_hp_regen": 0,
+        "tower_damage_bonus": 0.0,
+        "unlocks_elite_units": false,
+        "trade_cost_reduction": 0.0,
+        "merchant_attraction": false,
+        "faction_relation_bonus": 0,
+        "research_speed_bonus": 0.0,
+        "unlocks_magic": false,
+        "spell_power": 0.0
     }
 
     for key in state.structures.keys():
@@ -836,10 +947,13 @@ static func get_total_effects(state: GameState) -> Dictionary:
 
         for effect_key in building_effects.keys():
             if effects.has(effect_key):
-                if effect_key in ["wave_heal", "tower_damage", "castle_hp"]:
-                    effects[effect_key] = int(effects[effect_key]) + int(building_effects[effect_key])
+                var value = building_effects[effect_key]
+                if typeof(value) == TYPE_BOOL:
+                    effects[effect_key] = value or effects[effect_key]
+                elif effect_key in ["wave_heal", "tower_damage", "castle_hp", "castle_hp_regen", "faction_relation_bonus"]:
+                    effects[effect_key] = int(effects[effect_key]) + int(value)
                 else:
-                    effects[effect_key] = float(effects[effect_key]) + float(building_effects[effect_key])
+                    effects[effect_key] = float(effects[effect_key]) + float(value)
 
     return effects
 

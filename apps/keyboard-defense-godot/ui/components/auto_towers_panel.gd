@@ -1,10 +1,10 @@
 class_name AutoTowersPanel
 extends PanelContainer
-## Auto Towers Panel - Shows auto-defense tower status and info
+## Auto Towers Panel - Shows auto-defense tower status and info.
+## Migrated to use DesignSystem and ThemeColors for consistency.
 
 signal closed
 
-const ThemeColors = preload("res://ui/theme_colors.gd")
 const SimBuildings = preload("res://sim/buildings.gd")
 const SimAutoTowerTypes = preload("res://sim/auto_tower_types.gd")
 
@@ -16,12 +16,6 @@ var _content_scroll: ScrollContainer = null
 var _content_vbox: VBoxContainer = null
 var _towers_list: VBoxContainer = null
 var _info_section: VBoxContainer = null
-
-# Tower colors by type (dynamically uses tier colors from SimAutoTowerTypes)
-func _get_tower_color(tower_type: String) -> Color:
-	var tier: int = SimAutoTowerTypes.get_tier(tower_type)
-	return SimAutoTowerTypes.TIER_COLORS.get(tier, Color.WHITE)
-
 
 # Tower targeting mode descriptions
 const TARGETING_DESCRIPTIONS: Dictionary = {
@@ -37,40 +31,39 @@ const TARGETING_DESCRIPTIONS: Dictionary = {
 }
 
 
+func _get_tower_color(tower_type: String) -> Color:
+	var tier: int = SimAutoTowerTypes.get_tier(tower_type)
+	return SimAutoTowerTypes.TIER_COLORS.get(tier, Color.WHITE)
+
+
 func _ready() -> void:
 	_build_ui()
 	hide()
 
 
 func _build_ui() -> void:
-	custom_minimum_size = Vector2(520, 500)
+	custom_minimum_size = Vector2(DesignSystem.SIZE_PANEL_MD + 40, 500)
 
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.08, 0.09, 0.12, 0.98)
-	style.border_color = ThemeColors.BORDER
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(8)
-	style.set_content_margin_all(12)
+	var style := DesignSystem.create_panel_style()
 	add_theme_stylebox_override("panel", style)
 
-	var main_vbox := VBoxContainer.new()
-	main_vbox.add_theme_constant_override("separation", 10)
+	var main_vbox := DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	add_child(main_vbox)
 
 	# Header
-	var header := HBoxContainer.new()
+	var header := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 	main_vbox.add_child(header)
 
 	var title := Label.new()
 	title.text = "AUTO-DEFENSE TOWERS"
-	title.add_theme_font_size_override("font_size", 18)
-	title.add_theme_color_override("font_color", ThemeColors.ACCENT)
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	DesignSystem.style_label(title, "h2", ThemeColors.ACCENT)
 	header.add_child(title)
 
 	_close_btn = Button.new()
-	_close_btn.text = "X"
-	_close_btn.custom_minimum_size = Vector2(30, 30)
+	_close_btn.text = "✕"
+	_close_btn.custom_minimum_size = Vector2(DesignSystem.SIZE_BUTTON_SM, DesignSystem.SIZE_BUTTON_SM)
+	_style_close_button()
 	_close_btn.pressed.connect(_on_close_pressed)
 	header.add_child(_close_btn)
 
@@ -81,32 +74,35 @@ func _build_ui() -> void:
 	_content_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	main_vbox.add_child(_content_scroll)
 
-	_content_vbox = VBoxContainer.new()
-	_content_vbox.add_theme_constant_override("separation", 15)
+	_content_vbox = DesignSystem.create_vbox(DesignSystem.SPACE_LG)
 	_content_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_content_scroll.add_child(_content_vbox)
 
 	# Towers list section
-	_towers_list = VBoxContainer.new()
-	_towers_list.add_theme_constant_override("separation", 8)
+	_towers_list = DesignSystem.create_vbox(DesignSystem.SPACE_SM)
 	_content_vbox.add_child(_towers_list)
 
 	# Separator
-	var sep := HSeparator.new()
-	_content_vbox.add_child(sep)
+	_content_vbox.add_child(DesignSystem.create_separator())
 
 	# Tower types info section
-	_info_section = VBoxContainer.new()
-	_info_section.add_theme_constant_override("separation", 10)
+	_info_section = DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	_content_vbox.add_child(_info_section)
 
 	# Footer
 	var footer := Label.new()
 	footer.text = "Auto-towers attack automatically during defense waves!"
-	footer.add_theme_font_size_override("font_size", 11)
-	footer.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(footer, "caption", ThemeColors.TEXT_DIM)
 	footer.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	main_vbox.add_child(footer)
+
+
+func _style_close_button() -> void:
+	var normal := DesignSystem.create_button_style(ThemeColors.BG_BUTTON, ThemeColors.BORDER)
+	var hover := DesignSystem.create_button_style(ThemeColors.ERROR.darkened(0.3), ThemeColors.ERROR)
+	_close_btn.add_theme_stylebox_override("normal", normal)
+	_close_btn.add_theme_stylebox_override("hover", hover)
+	_close_btn.add_theme_color_override("font_color", ThemeColors.TEXT)
 
 
 func show_auto_towers(towers: Array[Dictionary]) -> void:
@@ -132,29 +128,25 @@ func _build_towers_list() -> void:
 	# Section header
 	var header := Label.new()
 	header.text = "YOUR TOWERS"
-	header.add_theme_font_size_override("font_size", 14)
-	header.add_theme_color_override("font_color", ThemeColors.ACCENT)
+	DesignSystem.style_label(header, "body", ThemeColors.ACCENT)
 	_towers_list.add_child(header)
 
 	if _active_towers.is_empty():
 		var empty_label := Label.new()
 		empty_label.text = "No auto-towers built yet."
-		empty_label.add_theme_font_size_override("font_size", 12)
-		empty_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+		DesignSystem.style_label(empty_label, "body_small", ThemeColors.TEXT_DIM)
 		_towers_list.add_child(empty_label)
 
 		var hint_label := Label.new()
 		hint_label.text = "Build with: build auto_sentry, build auto_spark, build auto_thorns"
-		hint_label.add_theme_font_size_override("font_size", 11)
-		hint_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+		DesignSystem.style_label(hint_label, "caption", ThemeColors.TEXT_DIM)
 		_towers_list.add_child(hint_label)
 		return
 
 	# Count towers by type
 	var count_label := Label.new()
 	count_label.text = "Active Towers: %d" % _active_towers.size()
-	count_label.add_theme_font_size_override("font_size", 12)
-	count_label.add_theme_color_override("font_color", Color(0.4, 1.0, 0.4))
+	DesignSystem.style_label(count_label, "body_small", ThemeColors.SUCCESS)
 	_towers_list.add_child(count_label)
 
 	# Display each tower
@@ -177,85 +169,71 @@ func _create_tower_widget(tower: Dictionary) -> Control:
 	var color: Color = _get_tower_color(tower_type)
 
 	var container := PanelContainer.new()
-
-	var container_style := StyleBoxFlat.new()
-	container_style.bg_color = Color(0.06, 0.07, 0.1, 0.9)
+	var container_style := DesignSystem.create_elevated_style(ThemeColors.BG_CARD)
 	container_style.border_color = color.darkened(0.4)
 	container_style.set_border_width_all(1)
-	container_style.set_corner_radius_all(4)
-	container_style.set_content_margin_all(8)
 	container.add_theme_stylebox_override("panel", container_style)
 
-	var hbox := HBoxContainer.new()
-	hbox.add_theme_constant_override("separation", 15)
+	var hbox := DesignSystem.create_hbox(DesignSystem.SPACE_LG)
 	container.add_child(hbox)
 
 	# Tower name, tier badge, and position
-	var name_vbox := VBoxContainer.new()
-	name_vbox.add_theme_constant_override("separation", 2)
+	var name_vbox := DesignSystem.create_vbox(2)
 	name_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	hbox.add_child(name_vbox)
 
-	var name_hbox := HBoxContainer.new()
-	name_hbox.add_theme_constant_override("separation", 8)
+	var name_hbox := DesignSystem.create_hbox(DesignSystem.SPACE_SM)
 	name_vbox.add_child(name_hbox)
 
 	var name_label := Label.new()
 	name_label.text = tower_name
-	name_label.add_theme_font_size_override("font_size", 13)
-	name_label.add_theme_color_override("font_color", color)
+	DesignSystem.style_label(name_label, "body_small", color)
 	name_hbox.add_child(name_label)
 
 	# Tier badge
 	var tier_badge := Label.new()
 	tier_badge.text = "T%d" % tier
-	tier_badge.add_theme_font_size_override("font_size", 10)
-	tier_badge.add_theme_color_override("font_color", color)
+	DesignSystem.style_label(tier_badge, "caption", color)
 	name_hbox.add_child(tier_badge)
 
 	var pos_label := Label.new()
 	pos_label.text = "Position: (%d, %d)" % [pos.x, pos.y]
-	pos_label.add_theme_font_size_override("font_size", 10)
-	pos_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(pos_label, "caption", ThemeColors.TEXT_DIM)
 	name_vbox.add_child(pos_label)
 
 	# Stats
-	var stats_hbox := HBoxContainer.new()
-	stats_hbox.add_theme_constant_override("separation", 12)
+	var stats_hbox := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 	hbox.add_child(stats_hbox)
 
 	# Damage
-	_add_stat_column(stats_hbox, "DMG", str(damage), Color(1.0, 0.5, 0.3))
+	_add_stat_column(stats_hbox, "DMG", str(damage), ThemeColors.ERROR)
 
 	# Range
-	_add_stat_column(stats_hbox, "RNG", str(attack_range), Color(0.4, 0.8, 1.0))
+	_add_stat_column(stats_hbox, "RNG", str(attack_range), ThemeColors.INFO)
 
 	# Cooldown
-	_add_stat_column(stats_hbox, "CD", "%.1fs" % cooldown, Color(0.8, 0.8, 0.8))
+	_add_stat_column(stats_hbox, "CD", "%.1fs" % cooldown, ThemeColors.TEXT_DIM)
 
 	# DPS calculation
 	var dps: float = float(damage) / cooldown if cooldown > 0 else 0.0
-	_add_stat_column(stats_hbox, "DPS", "%.1f" % dps, Color(1.0, 0.84, 0.0))
+	_add_stat_column(stats_hbox, "DPS", "%.1f" % dps, ThemeColors.ACCENT)
 
 	return container
 
 
 func _add_stat_column(parent: Control, header_text: String, value_text: String, value_color: Color) -> void:
-	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 2)
+	var vbox := DesignSystem.create_vbox(2)
 	parent.add_child(vbox)
 
 	var header := Label.new()
 	header.text = header_text
-	header.add_theme_font_size_override("font_size", 9)
-	header.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(header, "caption", ThemeColors.TEXT_DIM)
 	header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(header)
 
 	var value := Label.new()
 	value.text = value_text
-	value.add_theme_font_size_override("font_size", 14)
-	value.add_theme_color_override("font_color", value_color)
+	DesignSystem.style_label(value, "body", value_color)
 	value.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(value)
 
@@ -266,8 +244,7 @@ func _build_info_section() -> void:
 	# Section header
 	var header := Label.new()
 	header.text = "TOWER TYPES BY TIER"
-	header.add_theme_font_size_override("font_size", 14)
-	header.add_theme_color_override("font_color", ThemeColors.ACCENT)
+	DesignSystem.style_label(header, "body", ThemeColors.ACCENT)
 	_info_section.add_child(header)
 
 	# Build towers by tier
@@ -281,9 +258,9 @@ func _build_info_section() -> void:
 		var tier_name: String = "Tier %d" % tier
 		if tier == 4:
 			tier_name = "Tier 4 (Legendary)"
+		var tier_color: Color = SimAutoTowerTypes.TIER_COLORS.get(tier, Color.WHITE)
+		DesignSystem.style_label(tier_label, "body_small", tier_color)
 		tier_label.text = tier_name
-		tier_label.add_theme_font_size_override("font_size", 12)
-		tier_label.add_theme_color_override("font_color", SimAutoTowerTypes.TIER_COLORS.get(tier, Color.WHITE))
 		_info_section.add_child(tier_label)
 
 		# Tower cards for this tier
@@ -309,59 +286,49 @@ func _create_tower_type_card(tower_id: String) -> Control:
 	var dps: float = float(damage) * attack_speed
 
 	var container := PanelContainer.new()
-
-	var container_style := StyleBoxFlat.new()
-	container_style.bg_color = Color(0.05, 0.06, 0.08, 0.9)
+	var container_style := DesignSystem.create_elevated_style(ThemeColors.BG_CARD, DesignSystem.SHADOW_SM)
 	container_style.border_color = color.darkened(0.5)
 	container_style.set_border_width_all(1)
-	container_style.set_corner_radius_all(4)
-	container_style.set_content_margin_all(8)
 	container.add_theme_stylebox_override("panel", container_style)
 
-	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 4)
+	var vbox := DesignSystem.create_vbox(DesignSystem.SPACE_XS)
 	container.add_child(vbox)
 
 	# Header row
-	var header_hbox := HBoxContainer.new()
+	var header_hbox := DesignSystem.create_hbox(DesignSystem.SPACE_SM)
 	vbox.add_child(header_hbox)
 
 	var name_label := Label.new()
 	name_label.text = tower_name
-	name_label.add_theme_font_size_override("font_size", 13)
-	name_label.add_theme_color_override("font_color", color)
 	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	DesignSystem.style_label(name_label, "body_small", color)
 	header_hbox.add_child(name_label)
 
 	# Cost
 	var cost_str := _format_cost(cost)
 	var cost_label := Label.new()
 	cost_label.text = cost_str
-	cost_label.add_theme_font_size_override("font_size", 11)
-	cost_label.add_theme_color_override("font_color", Color(1.0, 0.84, 0.0))
+	DesignSystem.style_label(cost_label, "caption", ThemeColors.RESOURCE_GOLD)
 	header_hbox.add_child(cost_label)
 
 	# Description
 	var desc_label := Label.new()
 	desc_label.text = description
-	desc_label.add_theme_font_size_override("font_size", 10)
-	desc_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(desc_label, "caption", ThemeColors.TEXT_DIM)
 	desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD
 	vbox.add_child(desc_label)
 
 	# Stats row
 	var stats_label := Label.new()
 	stats_label.text = "DMG: %d | Range: %d | CD: %.1fs | DPS: %.1f" % [damage, range_val, cooldown, dps]
-	stats_label.add_theme_font_size_override("font_size", 10)
-	stats_label.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
+	DesignSystem.style_label(stats_label, "caption", ThemeColors.TEXT_DIM)
 	vbox.add_child(stats_label)
 
 	# Targeting info
 	var targeting_str: String = _get_targeting_description(targeting)
 	var targeting_label := Label.new()
 	targeting_label.text = targeting_str
-	targeting_label.add_theme_font_size_override("font_size", 10)
-	targeting_label.add_theme_color_override("font_color", Color(0.6, 0.8, 1.0))
+	DesignSystem.style_label(targeting_label, "caption", ThemeColors.INFO)
 	vbox.add_child(targeting_label)
 
 	# Upgrade path indicator
@@ -372,15 +339,13 @@ func _create_tower_type_card(tower_id: String) -> Control:
 		for opt in upgrade_options:
 			upgrade_names.append(SimAutoTowerTypes.get_tower_name(opt))
 		upgrade_label.text = "Upgrades to: %s" % ", ".join(upgrade_names)
-		upgrade_label.add_theme_font_size_override("font_size", 9)
-		upgrade_label.add_theme_color_override("font_color", Color(0.5, 0.8, 0.5))
+		DesignSystem.style_label(upgrade_label, "caption", ThemeColors.SUCCESS)
 		vbox.add_child(upgrade_label)
 
 	# Build command
 	var cmd_label := Label.new()
 	cmd_label.text = "build %s" % tower_id
-	cmd_label.add_theme_font_size_override("font_size", 9)
-	cmd_label.add_theme_color_override("font_color", Color(0.5, 0.5, 0.6))
+	DesignSystem.style_label(cmd_label, "caption", ThemeColors.TEXT_DIM)
 	vbox.add_child(cmd_label)
 
 	return container

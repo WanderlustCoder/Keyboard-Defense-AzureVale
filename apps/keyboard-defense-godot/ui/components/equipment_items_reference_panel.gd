@@ -1,10 +1,9 @@
 class_name EquipmentItemsReferencePanel
 extends PanelContainer
-## Equipment & Items Reference Panel - Shows equipment slots, rarities, and consumables
+## Equipment & Items Reference Panel - Shows equipment slots, rarities, and consumables.
+## Migrated to use DesignSystem and ThemeColors for consistency.
 
 signal closed
-
-const ThemeColors = preload("res://ui/theme_colors.gd")
 
 # UI elements
 var _close_btn: Button = null
@@ -121,45 +120,36 @@ func _ready() -> void:
 
 
 func _build_ui() -> void:
-	custom_minimum_size = Vector2(560, 680)
+	custom_minimum_size = Vector2(DesignSystem.SIZE_PANEL_LG, 680)
 
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.08, 0.09, 0.12, 0.98)
-	style.border_color = ThemeColors.BORDER
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(8)
-	style.set_content_margin_all(12)
+	var style := DesignSystem.create_panel_style()
 	add_theme_stylebox_override("panel", style)
 
-	var main_vbox := VBoxContainer.new()
-	main_vbox.add_theme_constant_override("separation", 10)
+	var main_vbox := DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	add_child(main_vbox)
 
 	# Header
-	var header := HBoxContainer.new()
+	var header := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 	main_vbox.add_child(header)
 
 	var title := Label.new()
 	title.text = "EQUIPMENT & ITEMS"
-	title.add_theme_font_size_override("font_size", 18)
-	title.add_theme_color_override("font_color", Color(0.67, 0.0, 1.0))
+	DesignSystem.style_label(title, "h2", Color(0.67, 0.0, 1.0))
 	header.add_child(title)
 
-	var spacer := Control.new()
-	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	header.add_child(spacer)
+	header.add_child(DesignSystem.create_spacer())
 
 	_close_btn = Button.new()
-	_close_btn.text = "X"
-	_close_btn.custom_minimum_size = Vector2(30, 30)
+	_close_btn.text = "✕"
+	_close_btn.custom_minimum_size = Vector2(DesignSystem.SIZE_BUTTON_SM, DesignSystem.SIZE_BUTTON_SM)
+	_style_close_button()
 	_close_btn.pressed.connect(_on_close_pressed)
 	header.add_child(_close_btn)
 
 	# Subtitle
 	var subtitle := Label.new()
 	subtitle.text = "8 equipment slots, 5 rarities, and consumable items"
-	subtitle.add_theme_font_size_override("font_size", 12)
-	subtitle.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(subtitle, "body_small", ThemeColors.TEXT_DIM)
 	main_vbox.add_child(subtitle)
 
 	# Content scroll
@@ -169,18 +159,24 @@ func _build_ui() -> void:
 	_content_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	main_vbox.add_child(_content_scroll)
 
-	_content_vbox = VBoxContainer.new()
-	_content_vbox.add_theme_constant_override("separation", 10)
+	_content_vbox = DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	_content_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_content_scroll.add_child(_content_vbox)
 
 	# Footer
 	var footer := Label.new()
 	footer.text = "Find items from enemy drops and boss kills"
-	footer.add_theme_font_size_override("font_size", 11)
-	footer.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(footer, "caption", ThemeColors.TEXT_DIM)
 	footer.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	main_vbox.add_child(footer)
+
+
+func _style_close_button() -> void:
+	var normal := DesignSystem.create_button_style(ThemeColors.BG_BUTTON, ThemeColors.BORDER)
+	var hover := DesignSystem.create_button_style(ThemeColors.ERROR.darkened(0.3), ThemeColors.ERROR)
+	_close_btn.add_theme_stylebox_override("normal", normal)
+	_close_btn.add_theme_stylebox_override("hover", hover)
+	_close_btn.add_theme_color_override("font_color", ThemeColors.TEXT)
 
 
 func show_equipment_items_reference() -> void:
@@ -225,27 +221,24 @@ func _build_slots_section() -> void:
 	# Create two-column layout
 	var grid := GridContainer.new()
 	grid.columns = 2
-	grid.add_theme_constant_override("h_separation", 20)
-	grid.add_theme_constant_override("v_separation", 4)
+	grid.add_theme_constant_override("h_separation", DesignSystem.SPACE_LG)
+	grid.add_theme_constant_override("v_separation", DesignSystem.SPACE_XS)
 	vbox.add_child(grid)
 
 	for slot in EQUIPMENT_SLOTS:
-		var hbox := HBoxContainer.new()
-		hbox.add_theme_constant_override("separation", 8)
+		var hbox := DesignSystem.create_hbox(DesignSystem.SPACE_SM)
 		hbox.custom_minimum_size = Vector2(220, 0)
 		grid.add_child(hbox)
 
 		var name_label := Label.new()
 		name_label.text = str(slot.get("name", ""))
-		name_label.add_theme_font_size_override("font_size", 10)
-		name_label.add_theme_color_override("font_color", slot.get("color", Color.WHITE))
+		DesignSystem.style_label(name_label, "caption", slot.get("color", Color.WHITE))
 		name_label.custom_minimum_size = Vector2(70, 0)
 		hbox.add_child(name_label)
 
 		var desc_label := Label.new()
 		desc_label.text = str(slot.get("desc", ""))
-		desc_label.add_theme_font_size_override("font_size", 9)
-		desc_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+		DesignSystem.style_label(desc_label, "caption", ThemeColors.TEXT_DIM)
 		hbox.add_child(desc_label)
 
 
@@ -256,32 +249,27 @@ func _build_rarity_section() -> void:
 	var vbox: VBoxContainer = section.get_child(0)
 
 	for rarity in RARITY_TIERS:
-		var container := VBoxContainer.new()
-		container.add_theme_constant_override("separation", 1)
+		var container := DesignSystem.create_vbox(1)
 		vbox.add_child(container)
 
-		var header_hbox := HBoxContainer.new()
-		header_hbox.add_theme_constant_override("separation", 10)
+		var header_hbox := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 		container.add_child(header_hbox)
 
 		var name_label := Label.new()
 		name_label.text = str(rarity.get("name", ""))
-		name_label.add_theme_font_size_override("font_size", 11)
-		name_label.add_theme_color_override("font_color", rarity.get("color", Color.WHITE))
+		DesignSystem.style_label(name_label, "caption", rarity.get("color", Color.WHITE))
 		name_label.custom_minimum_size = Vector2(90, 0)
 		header_hbox.add_child(name_label)
 
 		var weight_label := Label.new()
 		weight_label.text = "%d%% drop" % rarity.get("drop_weight", 0)
-		weight_label.add_theme_font_size_override("font_size", 9)
-		weight_label.add_theme_color_override("font_color", Color(0.5, 0.5, 0.6))
+		DesignSystem.style_label(weight_label, "caption", Color(0.5, 0.5, 0.6))
 		weight_label.custom_minimum_size = Vector2(60, 0)
 		header_hbox.add_child(weight_label)
 
 		var desc_label := Label.new()
 		desc_label.text = str(rarity.get("desc", ""))
-		desc_label.add_theme_font_size_override("font_size", 9)
-		desc_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+		DesignSystem.style_label(desc_label, "caption", ThemeColors.TEXT_DIM)
 		header_hbox.add_child(desc_label)
 
 
@@ -292,21 +280,18 @@ func _build_stats_section() -> void:
 	var vbox: VBoxContainer = section.get_child(0)
 
 	for stat in STAT_TYPES:
-		var hbox := HBoxContainer.new()
-		hbox.add_theme_constant_override("separation", 10)
+		var hbox := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 		vbox.add_child(hbox)
 
 		var name_label := Label.new()
 		name_label.text = str(stat.get("name", ""))
-		name_label.add_theme_font_size_override("font_size", 10)
-		name_label.add_theme_color_override("font_color", stat.get("color", Color.WHITE))
+		DesignSystem.style_label(name_label, "caption", stat.get("color", Color.WHITE))
 		name_label.custom_minimum_size = Vector2(110, 0)
 		hbox.add_child(name_label)
 
 		var desc_label := Label.new()
 		desc_label.text = str(stat.get("desc", ""))
-		desc_label.add_theme_font_size_override("font_size", 9)
-		desc_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+		DesignSystem.style_label(desc_label, "caption", ThemeColors.TEXT_DIM)
 		hbox.add_child(desc_label)
 
 
@@ -317,31 +302,26 @@ func _build_consumables_section() -> void:
 	var vbox: VBoxContainer = section.get_child(0)
 
 	for cons in CONSUMABLE_TYPES:
-		var container := VBoxContainer.new()
-		container.add_theme_constant_override("separation", 1)
+		var container := DesignSystem.create_vbox(1)
 		vbox.add_child(container)
 
-		var header_hbox := HBoxContainer.new()
-		header_hbox.add_theme_constant_override("separation", 10)
+		var header_hbox := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 		container.add_child(header_hbox)
 
 		var name_label := Label.new()
 		name_label.text = str(cons.get("name", ""))
-		name_label.add_theme_font_size_override("font_size", 10)
-		name_label.add_theme_color_override("font_color", cons.get("color", Color.WHITE))
+		DesignSystem.style_label(name_label, "caption", cons.get("color", Color.WHITE))
 		name_label.custom_minimum_size = Vector2(70, 0)
 		header_hbox.add_child(name_label)
 
 		var desc_label := Label.new()
 		desc_label.text = str(cons.get("desc", ""))
-		desc_label.add_theme_font_size_override("font_size", 9)
-		desc_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+		DesignSystem.style_label(desc_label, "caption", ThemeColors.TEXT_DIM)
 		header_hbox.add_child(desc_label)
 
 		var examples_label := Label.new()
 		examples_label.text = "  Examples: %s" % cons.get("examples", "")
-		examples_label.add_theme_font_size_override("font_size", 9)
-		examples_label.add_theme_color_override("font_color", Color(0.5, 0.6, 0.5))
+		DesignSystem.style_label(examples_label, "caption", Color(0.5, 0.6, 0.5))
 		examples_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		container.add_child(examples_label)
 
@@ -355,8 +335,7 @@ func _build_tips_section() -> void:
 	for tip in ITEM_TIPS:
 		var tip_label := Label.new()
 		tip_label.text = "- " + tip
-		tip_label.add_theme_font_size_override("font_size", 9)
-		tip_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+		DesignSystem.style_label(tip_label, "caption", ThemeColors.TEXT_DIM)
 		tip_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		vbox.add_child(tip_label)
 
@@ -368,18 +347,16 @@ func _create_section_panel(title: String, color: Color) -> PanelContainer:
 	panel_style.bg_color = color.darkened(0.85)
 	panel_style.border_color = color.darkened(0.5)
 	panel_style.set_border_width_all(1)
-	panel_style.set_corner_radius_all(6)
-	panel_style.set_content_margin_all(10)
+	panel_style.set_corner_radius_all(DesignSystem.RADIUS_SM)
+	panel_style.set_content_margin_all(DesignSystem.SPACE_MD)
 	container.add_theme_stylebox_override("panel", panel_style)
 
-	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 6)
+	var vbox := DesignSystem.create_vbox(DesignSystem.SPACE_SM)
 	container.add_child(vbox)
 
 	var header := Label.new()
 	header.text = title
-	header.add_theme_font_size_override("font_size", 12)
-	header.add_theme_color_override("font_color", color)
+	DesignSystem.style_label(header, "body_small", color)
 	vbox.add_child(header)
 
 	return container

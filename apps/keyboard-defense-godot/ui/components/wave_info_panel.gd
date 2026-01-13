@@ -1,10 +1,9 @@
 class_name WaveInfoPanel
 extends PanelContainer
-## Wave Info Panel - Shows current wave composition and modifiers
+## Wave Info Panel - Shows current wave composition and modifiers.
+## Migrated to use DesignSystem and ThemeColors for consistency.
 
 signal closed
-
-const ThemeColors = preload("res://ui/theme_colors.gd")
 
 var _day: int = 1
 var _wave: int = 1
@@ -37,41 +36,42 @@ func _ready() -> void:
 
 
 func _build_ui() -> void:
-	custom_minimum_size = Vector2(420, 350)
+	custom_minimum_size = Vector2(DesignSystem.SIZE_PANEL_MD, 350)
 
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.08, 0.09, 0.12, 0.98)
-	style.border_color = ThemeColors.BORDER
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(8)
-	style.set_content_margin_all(12)
+	var style := DesignSystem.create_panel_style()
 	add_theme_stylebox_override("panel", style)
 
-	var main_vbox := VBoxContainer.new()
-	main_vbox.add_theme_constant_override("separation", 12)
+	var main_vbox := DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	add_child(main_vbox)
 
 	# Header
-	var header := HBoxContainer.new()
+	var header := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 	main_vbox.add_child(header)
 
 	var title := Label.new()
 	title.text = "WAVE INFORMATION"
-	title.add_theme_font_size_override("font_size", 18)
-	title.add_theme_color_override("font_color", ThemeColors.ACCENT)
+	DesignSystem.style_label(title, "h2", ThemeColors.ACCENT)
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header.add_child(title)
 
 	_close_btn = Button.new()
-	_close_btn.text = "X"
-	_close_btn.custom_minimum_size = Vector2(30, 30)
+	_close_btn.text = "✕"
+	_close_btn.custom_minimum_size = Vector2(DesignSystem.SIZE_BUTTON_SM, DesignSystem.SIZE_BUTTON_SM)
+	_style_close_button()
 	_close_btn.pressed.connect(_on_close_pressed)
 	header.add_child(_close_btn)
 
 	# Content
-	_content_vbox = VBoxContainer.new()
-	_content_vbox.add_theme_constant_override("separation", 10)
+	_content_vbox = DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	main_vbox.add_child(_content_vbox)
+
+
+func _style_close_button() -> void:
+	var normal := DesignSystem.create_button_style(ThemeColors.BG_BUTTON, ThemeColors.BORDER)
+	var hover := DesignSystem.create_button_style(ThemeColors.ERROR.darkened(0.3), ThemeColors.ERROR)
+	_close_btn.add_theme_stylebox_override("normal", normal)
+	_close_btn.add_theme_stylebox_override("hover", hover)
+	_close_btn.add_theme_color_override("font_color", ThemeColors.TEXT)
 
 
 func show_wave_info(day: int, wave: int, waves_per_day: int, composition: Dictionary) -> void:

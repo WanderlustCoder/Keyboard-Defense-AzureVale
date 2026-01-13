@@ -3,10 +3,9 @@ class_name NodeCard
 extends PanelContainer
 ## A card component for displaying campaign map nodes.
 ## Handles its own styling based on locked/completed state.
+## Migrated to use DesignSystem and ThemeColors for consistency.
 
 signal pressed(node_id: String)
-
-const ThemeColors = preload("res://ui/theme_colors.gd")
 
 const TITLE_FONT_SIZE := 16
 const LESSON_FONT_SIZE := 14

@@ -1,17 +1,16 @@
 class_name KeyboardReferencePanel
 extends PanelContainer
-## Keyboard Reference Panel - Shows finger zones and proper typing technique
+## Keyboard Reference Panel - Shows finger zones and proper typing technique.
+## Migrated to use DesignSystem and ThemeColors for consistency.
 
 signal closed
-
-const ThemeColors = preload("res://ui/theme_colors.gd")
 
 # UI elements
 var _close_btn: Button = null
 var _content_scroll: ScrollContainer = null
 var _content_vbox: VBoxContainer = null
 
-# Finger zone definitions (QWERTY layout)
+# Finger zone definitions (QWERTY layout) - domain-specific colors
 const FINGER_ZONES: Dictionary = {
 	"left_pinky": {
 		"name": "Left Pinky",
@@ -80,45 +79,36 @@ func _ready() -> void:
 
 
 func _build_ui() -> void:
-	custom_minimum_size = Vector2(540, 580)
+	custom_minimum_size = Vector2(DesignSystem.SIZE_PANEL_LG, 580)
 
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.08, 0.09, 0.12, 0.98)
-	style.border_color = ThemeColors.BORDER
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(8)
-	style.set_content_margin_all(12)
+	var style := DesignSystem.create_panel_style()
 	add_theme_stylebox_override("panel", style)
 
-	var main_vbox := VBoxContainer.new()
-	main_vbox.add_theme_constant_override("separation", 10)
+	var main_vbox := DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	add_child(main_vbox)
 
 	# Header
-	var header := HBoxContainer.new()
+	var header := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 	main_vbox.add_child(header)
 
 	var title := Label.new()
 	title.text = "KEYBOARD REFERENCE"
-	title.add_theme_font_size_override("font_size", 18)
-	title.add_theme_color_override("font_color", Color(0.6, 0.8, 1.0))
+	DesignSystem.style_label(title, "h2", ThemeColors.INFO)
 	header.add_child(title)
 
-	var spacer := Control.new()
-	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	header.add_child(spacer)
+	header.add_child(DesignSystem.create_spacer())
 
 	_close_btn = Button.new()
-	_close_btn.text = "X"
-	_close_btn.custom_minimum_size = Vector2(30, 30)
+	_close_btn.text = "✕"
+	_close_btn.custom_minimum_size = Vector2(DesignSystem.SIZE_BUTTON_SM, DesignSystem.SIZE_BUTTON_SM)
+	_style_close_button()
 	_close_btn.pressed.connect(_on_close_pressed)
 	header.add_child(_close_btn)
 
 	# Subtitle
 	var subtitle := Label.new()
 	subtitle.text = "Finger zones and proper typing technique"
-	subtitle.add_theme_font_size_override("font_size", 12)
-	subtitle.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(subtitle, "body_small", ThemeColors.TEXT_DIM)
 	main_vbox.add_child(subtitle)
 
 	# Content scroll
@@ -128,18 +118,24 @@ func _build_ui() -> void:
 	_content_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	main_vbox.add_child(_content_scroll)
 
-	_content_vbox = VBoxContainer.new()
-	_content_vbox.add_theme_constant_override("separation", 12)
+	_content_vbox = DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	_content_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_content_scroll.add_child(_content_vbox)
 
 	# Footer
 	var footer := Label.new()
 	footer.text = "Practice consistently to build muscle memory"
-	footer.add_theme_font_size_override("font_size", 11)
-	footer.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(footer, "caption", ThemeColors.TEXT_DIM)
 	footer.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	main_vbox.add_child(footer)
+
+
+func _style_close_button() -> void:
+	var normal := DesignSystem.create_button_style(ThemeColors.BG_BUTTON, ThemeColors.BORDER)
+	var hover := DesignSystem.create_button_style(ThemeColors.ERROR.darkened(0.3), ThemeColors.ERROR)
+	_close_btn.add_theme_stylebox_override("normal", normal)
+	_close_btn.add_theme_stylebox_override("hover", hover)
+	_close_btn.add_theme_color_override("font_color", ThemeColors.TEXT)
 
 
 func show_keyboard_reference() -> void:
@@ -176,17 +172,16 @@ func _build_keyboard_visual() -> void:
 	var section := PanelContainer.new()
 
 	var section_style := StyleBoxFlat.new()
-	section_style.bg_color = Color(0.06, 0.07, 0.09, 0.9)
-	section_style.border_color = Color(0.3, 0.35, 0.4)
+	section_style.bg_color = ThemeColors.BG_DARK.darkened(0.3)
+	section_style.border_color = ThemeColors.BORDER
 	section_style.set_border_width_all(1)
-	section_style.set_corner_radius_all(6)
-	section_style.set_content_margin_all(10)
+	section_style.set_corner_radius_all(DesignSystem.RADIUS_SM)
+	section_style.set_content_margin_all(DesignSystem.SPACE_MD)
 	section.add_theme_stylebox_override("panel", section_style)
 
 	_content_vbox.add_child(section)
 
-	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 4)
+	var vbox := DesignSystem.create_vbox(DesignSystem.SPACE_XS)
 	section.add_child(vbox)
 
 	# Build keyboard rows
@@ -228,7 +223,7 @@ func _create_key_visual(key: String, width: int = 32) -> Control:
 	panel_style.bg_color = color.darkened(0.7)
 	panel_style.border_color = color.darkened(0.4) if is_home else color.darkened(0.5)
 	panel_style.set_border_width_all(2 if is_home else 1)
-	panel_style.set_corner_radius_all(3)
+	panel_style.set_corner_radius_all(DesignSystem.RADIUS_XS)
 	panel.add_theme_stylebox_override("panel", panel_style)
 
 	var label := Label.new()
@@ -236,8 +231,7 @@ func _create_key_visual(key: String, width: int = 32) -> Control:
 		label.text = ""
 	else:
 		label.text = key
-	label.add_theme_font_size_override("font_size", 10)
-	label.add_theme_color_override("font_color", color)
+	DesignSystem.style_label(label, "caption", color)
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -256,26 +250,23 @@ func _get_key_color(key: String) -> Color:
 
 
 func _build_home_row_section() -> void:
-	var section := _create_section_panel("HOME ROW", Color(0.4, 0.9, 0.4))
+	var section := _create_section_panel("HOME ROW", ThemeColors.SUCCESS)
 	_content_vbox.add_child(section)
 
 	var vbox: VBoxContainer = section.get_child(0)
 
 	var desc := Label.new()
 	desc.text = "Your fingers should rest on these keys when not typing:"
-	desc.add_theme_font_size_override("font_size", 11)
-	desc.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(desc, "caption", ThemeColors.TEXT_DIM)
 	vbox.add_child(desc)
 
-	var keys_row := HBoxContainer.new()
-	keys_row.add_theme_constant_override("separation", 8)
+	var keys_row := DesignSystem.create_hbox(DesignSystem.SPACE_SM)
 	keys_row.alignment = BoxContainer.ALIGNMENT_CENTER
 	vbox.add_child(keys_row)
 
 	var left_label := Label.new()
 	left_label.text = "Left Hand:"
-	left_label.add_theme_font_size_override("font_size", 11)
-	left_label.add_theme_color_override("font_color", Color(0.7, 0.7, 0.8))
+	DesignSystem.style_label(left_label, "caption", ThemeColors.TEXT_DIM)
 	keys_row.add_child(left_label)
 
 	for key in ["A", "S", "D", "F"]:
@@ -288,8 +279,7 @@ func _build_home_row_section() -> void:
 
 	var right_label := Label.new()
 	right_label.text = "Right Hand:"
-	right_label.add_theme_font_size_override("font_size", 11)
-	right_label.add_theme_color_override("font_color", Color(0.7, 0.7, 0.8))
+	DesignSystem.style_label(right_label, "caption", ThemeColors.TEXT_DIM)
 	keys_row.add_child(right_label)
 
 	for key in ["J", "K", "L", ";"]:
@@ -298,7 +288,7 @@ func _build_home_row_section() -> void:
 
 
 func _build_finger_zones_section() -> void:
-	var section := _create_section_panel("FINGER ZONES", Color(0.6, 0.8, 1.0))
+	var section := _create_section_panel("FINGER ZONES", ThemeColors.INFO)
 	_content_vbox.add_child(section)
 
 	var vbox: VBoxContainer = section.get_child(0)
@@ -306,8 +296,7 @@ func _build_finger_zones_section() -> void:
 	# Left hand
 	var left_header := Label.new()
 	left_header.text = "Left Hand"
-	left_header.add_theme_font_size_override("font_size", 11)
-	left_header.add_theme_color_override("font_color", Color(0.7, 0.8, 0.9))
+	DesignSystem.style_label(left_header, "caption", ThemeColors.TEXT)
 	vbox.add_child(left_header)
 
 	for zone_id in ["left_pinky", "left_ring", "left_middle", "left_index"]:
@@ -321,8 +310,7 @@ func _build_finger_zones_section() -> void:
 	# Right hand
 	var right_header := Label.new()
 	right_header.text = "Right Hand"
-	right_header.add_theme_font_size_override("font_size", 11)
-	right_header.add_theme_color_override("font_color", Color(0.7, 0.8, 0.9))
+	DesignSystem.style_label(right_header, "caption", ThemeColors.TEXT)
 	vbox.add_child(right_header)
 
 	for zone_id in ["right_index", "right_middle", "right_ring", "right_pinky"]:
@@ -336,8 +324,7 @@ func _create_finger_zone_row(zone_id: String) -> Control:
 	var color: Color = zone.get("color", Color.WHITE)
 	var keys: Array = zone.get("keys", [])
 
-	var hbox := HBoxContainer.new()
-	hbox.add_theme_constant_override("separation", 10)
+	var hbox := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 
 	# Color indicator
 	var color_rect := ColorRect.new()
@@ -348,8 +335,7 @@ func _create_finger_zone_row(zone_id: String) -> Control:
 	# Finger name
 	var name_label := Label.new()
 	name_label.text = zone_name
-	name_label.add_theme_font_size_override("font_size", 10)
-	name_label.add_theme_color_override("font_color", color)
+	DesignSystem.style_label(name_label, "caption", color)
 	name_label.custom_minimum_size = Vector2(90, 0)
 	hbox.add_child(name_label)
 
@@ -359,8 +345,7 @@ func _create_finger_zone_row(zone_id: String) -> Control:
 	if key_display.length() > 30:
 		key_display = key_display.substr(0, 30) + "..."
 	keys_label.text = key_display
-	keys_label.add_theme_font_size_override("font_size", 10)
-	keys_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(keys_label, "caption", ThemeColors.TEXT_DIM)
 	hbox.add_child(keys_label)
 
 	return hbox
@@ -373,21 +358,18 @@ func _build_technique_tips_section() -> void:
 	var vbox: VBoxContainer = section.get_child(0)
 
 	for tip in TECHNIQUE_TIPS:
-		var row := HBoxContainer.new()
-		row.add_theme_constant_override("separation", 8)
+		var row := DesignSystem.create_hbox(DesignSystem.SPACE_SM)
 		vbox.add_child(row)
 
 		var title_label := Label.new()
 		title_label.text = str(tip.get("title", ""))
-		title_label.add_theme_font_size_override("font_size", 10)
-		title_label.add_theme_color_override("font_color", Color(0.9, 0.7, 0.4))
+		DesignSystem.style_label(title_label, "caption", Color(0.9, 0.7, 0.4))
 		title_label.custom_minimum_size = Vector2(120, 0)
 		row.add_child(title_label)
 
 		var desc_label := Label.new()
 		desc_label.text = str(tip.get("desc", ""))
-		desc_label.add_theme_font_size_override("font_size", 10)
-		desc_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+		DesignSystem.style_label(desc_label, "caption", ThemeColors.TEXT_DIM)
 		row.add_child(desc_label)
 
 
@@ -398,18 +380,16 @@ func _create_section_panel(title: String, color: Color) -> PanelContainer:
 	panel_style.bg_color = color.darkened(0.85)
 	panel_style.border_color = color.darkened(0.5)
 	panel_style.set_border_width_all(1)
-	panel_style.set_corner_radius_all(6)
-	panel_style.set_content_margin_all(10)
+	panel_style.set_corner_radius_all(DesignSystem.RADIUS_SM)
+	panel_style.set_content_margin_all(DesignSystem.SPACE_MD)
 	container.add_theme_stylebox_override("panel", panel_style)
 
-	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 8)
+	var vbox := DesignSystem.create_vbox(DesignSystem.SPACE_SM)
 	container.add_child(vbox)
 
 	var header := Label.new()
 	header.text = title
-	header.add_theme_font_size_override("font_size", 12)
-	header.add_theme_color_override("font_color", color)
+	DesignSystem.style_label(header, "body_small", color)
 	vbox.add_child(header)
 
 	return container

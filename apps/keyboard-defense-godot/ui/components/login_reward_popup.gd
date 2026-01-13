@@ -1,11 +1,11 @@
 class_name LoginRewardPopup
 extends PanelContainer
-## Login Reward Popup - Shows daily login rewards to the player
+## Login Reward Popup - Shows daily login rewards to the player.
+## Migrated to use DesignSystem and ThemeColors for consistency.
 
 signal claim_pressed(reward: Dictionary)
 signal closed
 
-const ThemeColors = preload("res://ui/theme_colors.gd")
 const SimLoginRewards = preload("res://sim/login_rewards.gd")
 
 var _reward: Dictionary = {}
@@ -26,26 +26,19 @@ func _ready() -> void:
 
 
 func _build_ui() -> void:
-	custom_minimum_size = Vector2(400, 320)
+	custom_minimum_size = Vector2(DesignSystem.SIZE_PANEL_MD, 320)
 
 	# Background panel style
 	var style := StyleBoxFlat.new()
 	style.bg_color = ThemeColors.BG_PANEL
 	style.border_color = Color(1.0, 0.84, 0.0)  # Gold border
 	style.set_border_width_all(3)
-	style.set_corner_radius_all(12)
+	style.set_corner_radius_all(DesignSystem.RADIUS_LG)
+	style.set_content_margin_all(DesignSystem.SPACE_LG)
 	add_theme_stylebox_override("panel", style)
 
-	var margin := MarginContainer.new()
-	margin.add_theme_constant_override("margin_left", 24)
-	margin.add_theme_constant_override("margin_right", 24)
-	margin.add_theme_constant_override("margin_top", 20)
-	margin.add_theme_constant_override("margin_bottom", 20)
-	add_child(margin)
-
-	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 12)
-	margin.add_child(vbox)
+	var vbox := DesignSystem.create_vbox(DesignSystem.SPACE_MD)
+	add_child(vbox)
 
 	# Title with icon
 	var title_row := HBoxContainer.new()

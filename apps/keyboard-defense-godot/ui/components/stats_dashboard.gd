@@ -1,10 +1,10 @@
 class_name StatsDashboard
 extends PanelContainer
-## Statistics Dashboard - Comprehensive view of player progress and stats
+## Statistics Dashboard - Comprehensive view of player progress and stats.
+## Migrated to use DesignSystem and ThemeColors for consistency.
 
 signal close_requested
 
-const ThemeColors = preload("res://ui/theme_colors.gd")
 const SimPlayerStats = preload("res://sim/player_stats.gd")
 const TypingProfile = preload("res://game/typing_profile.gd")
 
@@ -28,40 +28,35 @@ func _ready() -> void:
 
 
 func _build_ui() -> void:
-	custom_minimum_size = Vector2(650, 500)
+	custom_minimum_size = Vector2(DesignSystem.SIZE_PANEL_LG, 500)
 
-	var style := StyleBoxFlat.new()
-	style.bg_color = ThemeColors.BG_PANEL
-	style.border_color = ThemeColors.ACCENT
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(8)
+	var style := DesignSystem.create_panel_style()
 	add_theme_stylebox_override("panel", style)
 
 	var margin := MarginContainer.new()
-	margin.add_theme_constant_override("margin_left", 16)
-	margin.add_theme_constant_override("margin_right", 16)
-	margin.add_theme_constant_override("margin_top", 12)
-	margin.add_theme_constant_override("margin_bottom", 12)
+	margin.add_theme_constant_override("margin_left", DesignSystem.SPACE_LG)
+	margin.add_theme_constant_override("margin_right", DesignSystem.SPACE_LG)
+	margin.add_theme_constant_override("margin_top", DesignSystem.SPACE_MD)
+	margin.add_theme_constant_override("margin_bottom", DesignSystem.SPACE_MD)
 	add_child(margin)
 
-	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 10)
+	var vbox := DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	margin.add_child(vbox)
 
 	# Header
-	var header := HBoxContainer.new()
+	var header := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 	vbox.add_child(header)
 
 	_title_label = Label.new()
 	_title_label.text = "Statistics"
-	_title_label.add_theme_font_size_override("font_size", 22)
-	_title_label.add_theme_color_override("font_color", ThemeColors.ACCENT)
+	DesignSystem.style_label(_title_label, "h2", ThemeColors.ACCENT)
 	_title_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header.add_child(_title_label)
 
 	_close_btn = Button.new()
-	_close_btn.text = "X"
-	_close_btn.custom_minimum_size = Vector2(32, 32)
+	_close_btn.text = "✕"
+	_close_btn.custom_minimum_size = Vector2(DesignSystem.SIZE_BUTTON_SM, DesignSystem.SIZE_BUTTON_SM)
+	_style_close_button()
 	_close_btn.pressed.connect(_on_close_pressed)
 	header.add_child(_close_btn)
 
@@ -90,18 +85,24 @@ func _build_ui() -> void:
 	_content_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	vbox.add_child(_content_scroll)
 
-	_content_container = VBoxContainer.new()
-	_content_container.add_theme_constant_override("separation", 8)
+	_content_container = DesignSystem.create_vbox(DesignSystem.SPACE_SM)
 	_content_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_content_scroll.add_child(_content_container)
 
 	# Footer hint
 	var hint := Label.new()
 	hint.text = "Press ESC to close. Use arrow keys to switch tabs."
-	hint.add_theme_font_size_override("font_size", 11)
-	hint.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(hint, "caption", ThemeColors.TEXT_DIM)
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(hint)
+
+
+func _style_close_button() -> void:
+	var normal := DesignSystem.create_button_style(ThemeColors.BG_BUTTON, ThemeColors.BORDER)
+	var hover := DesignSystem.create_button_style(ThemeColors.ERROR.darkened(0.3), ThemeColors.ERROR)
+	_close_btn.add_theme_stylebox_override("normal", normal)
+	_close_btn.add_theme_stylebox_override("hover", hover)
+	_close_btn.add_theme_color_override("font_color", ThemeColors.TEXT)
 
 
 func show_stats(profile: Dictionary) -> void:

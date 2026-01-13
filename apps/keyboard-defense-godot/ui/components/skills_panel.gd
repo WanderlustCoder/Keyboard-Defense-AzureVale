@@ -1,11 +1,11 @@
 class_name SkillsPanel
 extends PanelContainer
-## Skills Panel - View and upgrade player skill trees
+## Skills Panel - View and upgrade player skill trees.
+## Migrated to use DesignSystem and ThemeColors for consistency.
 
 signal closed
 signal skill_learned(tree_id: String, skill_id: String)
 
-const ThemeColors = preload("res://ui/theme_colors.gd")
 const SimSkills = preload("res://sim/skills.gd")
 const TypingProfile = preload("res://game/typing_profile.gd")
 
@@ -26,7 +26,7 @@ var _skill_detail_panel: PanelContainer = null
 var _skill_detail_label: RichTextLabel = null
 var _learn_btn: Button = null
 
-# Tree colors
+# Tree colors (domain-specific)
 const TREE_COLORS: Dictionary = {
 	"speed": Color(0.4, 0.8, 1.0),      # Cyan
 	"accuracy": Color(1.0, 0.8, 0.3),   # Gold
@@ -40,52 +40,42 @@ func _ready() -> void:
 
 
 func _build_ui() -> void:
-	custom_minimum_size = Vector2(600, 500)
+	custom_minimum_size = Vector2(DesignSystem.SIZE_PANEL_LG, 500)
 
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.08, 0.09, 0.12, 0.98)
-	style.border_color = ThemeColors.BORDER
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(8)
-	style.set_content_margin_all(12)
+	var style := DesignSystem.create_panel_style()
 	add_theme_stylebox_override("panel", style)
 
-	var main_vbox := VBoxContainer.new()
-	main_vbox.add_theme_constant_override("separation", 10)
+	var main_vbox := DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	add_child(main_vbox)
 
 	# Header with title and close button
-	var header := HBoxContainer.new()
+	var header := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 	main_vbox.add_child(header)
 
 	var title := Label.new()
 	title.text = "SKILL TREES"
-	title.add_theme_font_size_override("font_size", 18)
-	title.add_theme_color_override("font_color", ThemeColors.ACCENT)
+	DesignSystem.style_label(title, "h2", ThemeColors.ACCENT)
 	header.add_child(title)
 
-	var spacer := Control.new()
-	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	header.add_child(spacer)
+	header.add_child(DesignSystem.create_spacer())
 
 	_skill_points_label = Label.new()
-	_skill_points_label.add_theme_font_size_override("font_size", 14)
-	_skill_points_label.add_theme_color_override("font_color", Color(0.4, 0.8, 1.0))
+	DesignSystem.style_label(_skill_points_label, "body_small", ThemeColors.INFO)
 	header.add_child(_skill_points_label)
 
 	var spacer2 := Control.new()
-	spacer2.custom_minimum_size = Vector2(20, 0)
+	spacer2.custom_minimum_size = Vector2(DesignSystem.SPACE_LG, 0)
 	header.add_child(spacer2)
 
 	_close_btn = Button.new()
-	_close_btn.text = "X"
-	_close_btn.custom_minimum_size = Vector2(30, 30)
+	_close_btn.text = "✕"
+	_close_btn.custom_minimum_size = Vector2(DesignSystem.SIZE_BUTTON_SM, DesignSystem.SIZE_BUTTON_SM)
+	_style_close_button()
 	_close_btn.pressed.connect(_on_close_pressed)
 	header.add_child(_close_btn)
 
 	# Tree tabs
-	_tree_tabs = HBoxContainer.new()
-	_tree_tabs.add_theme_constant_override("separation", 5)
+	_tree_tabs = DesignSystem.create_hbox(DesignSystem.SPACE_XS)
 	main_vbox.add_child(_tree_tabs)
 
 	for tree_id in SimSkills.get_all_trees():
@@ -94,14 +84,14 @@ func _build_ui() -> void:
 
 		var btn := Button.new()
 		btn.text = tree_name
-		btn.custom_minimum_size = Vector2(150, 35)
+		btn.custom_minimum_size = Vector2(150, DesignSystem.SIZE_BUTTON_MD)
+		_style_tree_button(btn, tree_id)
 		btn.pressed.connect(_on_tree_selected.bind(tree_id))
 		_tree_tabs.add_child(btn)
 		_tree_buttons[tree_id] = btn
 
 	# Main content area (split into skills grid + detail panel)
-	var content_hbox := HBoxContainer.new()
-	content_hbox.add_theme_constant_override("separation", 10)
+	var content_hbox := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 	content_hbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	main_vbox.add_child(content_hbox)
 
@@ -112,8 +102,7 @@ func _build_ui() -> void:
 	tree_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	content_hbox.add_child(tree_scroll)
 
-	_tree_content = VBoxContainer.new()
-	_tree_content.add_theme_constant_override("separation", 8)
+	_tree_content = DesignSystem.create_vbox(DesignSystem.SPACE_SM)
 	_tree_content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	tree_scroll.add_child(_tree_content)
 
@@ -122,16 +111,12 @@ func _build_ui() -> void:
 	_skill_detail_panel.custom_minimum_size = Vector2(220, 0)
 	content_hbox.add_child(_skill_detail_panel)
 
-	var detail_style := StyleBoxFlat.new()
-	detail_style.bg_color = Color(0.05, 0.06, 0.09, 0.9)
-	detail_style.border_color = ThemeColors.BORDER_DISABLED
+	var detail_style := DesignSystem.create_elevated_style(ThemeColors.BG_CARD)
+	detail_style.border_color = ThemeColors.BORDER
 	detail_style.set_border_width_all(1)
-	detail_style.set_corner_radius_all(4)
-	detail_style.set_content_margin_all(8)
 	_skill_detail_panel.add_theme_stylebox_override("panel", detail_style)
 
-	var detail_vbox := VBoxContainer.new()
-	detail_vbox.add_theme_constant_override("separation", 8)
+	var detail_vbox := DesignSystem.create_vbox(DesignSystem.SPACE_SM)
 	_skill_detail_panel.add_child(detail_vbox)
 
 	_skill_detail_label = RichTextLabel.new()
@@ -139,16 +124,43 @@ func _build_ui() -> void:
 	_skill_detail_label.fit_content = true
 	_skill_detail_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_skill_detail_label.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_skill_detail_label.add_theme_font_size_override("normal_font_size", 12)
+	_skill_detail_label.add_theme_font_size_override("normal_font_size", DesignSystem.FONT_CAPTION)
 	detail_vbox.add_child(_skill_detail_label)
 
 	_learn_btn = Button.new()
 	_learn_btn.text = "Learn Skill"
 	_learn_btn.visible = false
+	_learn_btn.custom_minimum_size = Vector2(0, DesignSystem.SIZE_BUTTON_SM)
+	_style_learn_button()
 	_learn_btn.pressed.connect(_on_learn_pressed)
 	detail_vbox.add_child(_learn_btn)
 
 	_update_tree_tabs()
+
+
+func _style_close_button() -> void:
+	var normal := DesignSystem.create_button_style(ThemeColors.BG_BUTTON, ThemeColors.BORDER)
+	var hover := DesignSystem.create_button_style(ThemeColors.ERROR.darkened(0.3), ThemeColors.ERROR)
+	_close_btn.add_theme_stylebox_override("normal", normal)
+	_close_btn.add_theme_stylebox_override("hover", hover)
+	_close_btn.add_theme_color_override("font_color", ThemeColors.TEXT)
+
+
+func _style_tree_button(btn: Button, tree_id: String) -> void:
+	var color: Color = TREE_COLORS.get(tree_id, ThemeColors.TEXT)
+	var normal := DesignSystem.create_button_style(ThemeColors.BG_BUTTON, ThemeColors.BORDER)
+	var hover := DesignSystem.create_button_style(ThemeColors.BG_BUTTON_HOVER, ThemeColors.BORDER_HIGHLIGHT)
+	btn.add_theme_stylebox_override("normal", normal)
+	btn.add_theme_stylebox_override("hover", hover)
+	btn.add_theme_color_override("font_color", color)
+
+
+func _style_learn_button() -> void:
+	var normal := DesignSystem.create_button_style(ThemeColors.SUCCESS.darkened(0.3), ThemeColors.SUCCESS)
+	var hover := DesignSystem.create_button_style(ThemeColors.SUCCESS.darkened(0.1), ThemeColors.SUCCESS.lightened(0.2))
+	_learn_btn.add_theme_stylebox_override("normal", normal)
+	_learn_btn.add_theme_stylebox_override("hover", hover)
+	_learn_btn.add_theme_color_override("font_color", ThemeColors.TEXT)
 
 
 func show_skills(profile: Dictionary) -> void:
@@ -172,9 +184,13 @@ func _update_tree_tabs() -> void:
 		var btn: Button = _tree_buttons[tree_id]
 		var color: Color = TREE_COLORS.get(tree_id, Color.WHITE)
 		if tree_id == _selected_tree:
+			var style := DesignSystem.create_button_style(ThemeColors.BG_CARD, ThemeColors.BORDER_HIGHLIGHT)
+			btn.add_theme_stylebox_override("normal", style)
 			btn.add_theme_color_override("font_color", color)
 		else:
-			btn.remove_theme_color_override("font_color")
+			var style := DesignSystem.create_button_style(ThemeColors.BG_BUTTON, ThemeColors.BORDER)
+			btn.add_theme_stylebox_override("normal", style)
+			btn.add_theme_color_override("font_color", ThemeColors.TEXT)
 
 
 func _clear_tree_content() -> void:
@@ -213,14 +229,13 @@ func _build_tree_content() -> void:
 		# Tier header
 		var tier_label := Label.new()
 		tier_label.text = "Tier %d" % tier
-		tier_label.add_theme_font_size_override("font_size", 14)
-		tier_label.add_theme_color_override("font_color", tree_color)
+		DesignSystem.style_label(tier_label, "body_small", tree_color)
 		_tree_content.add_child(tier_label)
 
 		# Skills in this tier
 		var tier_hbox := HFlowContainer.new()
-		tier_hbox.add_theme_constant_override("h_separation", 8)
-		tier_hbox.add_theme_constant_override("v_separation", 8)
+		tier_hbox.add_theme_constant_override("h_separation", DesignSystem.SPACE_SM)
+		tier_hbox.add_theme_constant_override("v_separation", DesignSystem.SPACE_SM)
 		_tree_content.add_child(tier_hbox)
 
 		for skill_data in skills_by_tier[tier]:
@@ -232,7 +247,7 @@ func _build_tree_content() -> void:
 
 		# Spacer between tiers
 		var spacer := Control.new()
-		spacer.custom_minimum_size = Vector2(0, 5)
+		spacer.custom_minimum_size = Vector2(0, DesignSystem.SPACE_XS)
 		_tree_content.add_child(spacer)
 
 
@@ -245,44 +260,61 @@ func _create_skill_button(skill_id: String, skill: Dictionary, tree_color: Color
 
 	var btn := Button.new()
 	btn.custom_minimum_size = Vector2(140, 50)
+	_style_skill_button(btn, is_maxed, current_rank > 0, can_learn)
 	btn.pressed.connect(_on_skill_selected.bind(skill_id))
 
 	# Create button content
-	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 2)
+	var vbox := DesignSystem.create_vbox(2)
 	btn.add_child(vbox)
 
 	var name_label := Label.new()
 	name_label.text = name
 	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	name_label.add_theme_font_size_override("font_size", 11)
+	name_label.add_theme_font_size_override("font_size", DesignSystem.FONT_CAPTION)
 	vbox.add_child(name_label)
 
 	var rank_label := Label.new()
 	rank_label.text = "%d/%d" % [current_rank, max_ranks]
 	rank_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	rank_label.add_theme_font_size_override("font_size", 10)
+	rank_label.add_theme_font_size_override("font_size", DesignSystem.FONT_CAPTION)
 	vbox.add_child(rank_label)
 
 	# Color based on state
 	if is_maxed:
-		# Fully learned - gold/bright
 		name_label.add_theme_color_override("font_color", tree_color)
-		rank_label.add_theme_color_override("font_color", Color(0.4, 1.0, 0.4))
+		rank_label.add_theme_color_override("font_color", ThemeColors.SUCCESS)
 	elif current_rank > 0:
-		# Partially learned - normal color
 		name_label.add_theme_color_override("font_color", tree_color.lightened(0.3))
-		rank_label.add_theme_color_override("font_color", Color.WHITE)
+		rank_label.add_theme_color_override("font_color", ThemeColors.TEXT)
 	elif can_learn:
-		# Available to learn - dimmer
-		name_label.add_theme_color_override("font_color", Color.WHITE)
+		name_label.add_theme_color_override("font_color", ThemeColors.TEXT)
 		rank_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
 	else:
-		# Locked - gray
 		name_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
-		rank_label.add_theme_color_override("font_color", Color(0.4, 0.4, 0.4))
+		rank_label.add_theme_color_override("font_color", ThemeColors.TEXT_DISABLED)
 
 	return btn
+
+
+func _style_skill_button(btn: Button, is_maxed: bool, is_partial: bool, can_learn: bool) -> void:
+	var normal: StyleBoxFlat
+	var hover: StyleBoxFlat
+
+	if is_maxed:
+		normal = DesignSystem.create_button_style(ThemeColors.SUCCESS.darkened(0.6), ThemeColors.SUCCESS.darkened(0.3))
+		hover = DesignSystem.create_button_style(ThemeColors.SUCCESS.darkened(0.5), ThemeColors.SUCCESS)
+	elif is_partial:
+		normal = DesignSystem.create_button_style(ThemeColors.BG_CARD, ThemeColors.BORDER_HIGHLIGHT)
+		hover = DesignSystem.create_button_style(ThemeColors.BG_BUTTON_HOVER, ThemeColors.BORDER_HIGHLIGHT)
+	elif can_learn:
+		normal = DesignSystem.create_button_style(ThemeColors.BG_BUTTON, ThemeColors.BORDER)
+		hover = DesignSystem.create_button_style(ThemeColors.BG_BUTTON_HOVER, ThemeColors.BORDER_HIGHLIGHT)
+	else:
+		normal = DesignSystem.create_button_style(ThemeColors.BG_CARD_DISABLED, ThemeColors.BORDER)
+		hover = DesignSystem.create_button_style(ThemeColors.BG_CARD_DISABLED, ThemeColors.BORDER)
+
+	btn.add_theme_stylebox_override("normal", normal)
+	btn.add_theme_stylebox_override("hover", hover)
 
 
 func _show_skill_detail(skill_id: String) -> void:

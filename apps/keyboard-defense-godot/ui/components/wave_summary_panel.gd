@@ -1,11 +1,11 @@
 class_name WaveSummaryPanel
 extends PanelContainer
-## Wave Summary Panel - Shows performance summary after each wave
+## Wave Summary Panel - Shows performance summary after each wave.
+## Migrated to use DesignSystem and ThemeColors for consistency.
 
 signal continue_pressed
 signal retry_pressed
 
-const ThemeColors = preload("res://ui/theme_colors.gd")
 const StoryManager = preload("res://game/story_manager.gd")
 
 var _stats: Dictionary = {}
@@ -25,17 +25,19 @@ func _ready() -> void:
 
 
 func _build_ui() -> void:
-	custom_minimum_size = Vector2(400, 350)
+	custom_minimum_size = Vector2(DesignSystem.SIZE_PANEL_MD, 350)
+
+	var style := DesignSystem.create_panel_style()
+	add_theme_stylebox_override("panel", style)
 
 	var margin := MarginContainer.new()
-	margin.add_theme_constant_override("margin_left", 20)
-	margin.add_theme_constant_override("margin_right", 20)
-	margin.add_theme_constant_override("margin_top", 16)
-	margin.add_theme_constant_override("margin_bottom", 16)
+	margin.add_theme_constant_override("margin_left", DesignSystem.SPACE_LG)
+	margin.add_theme_constant_override("margin_right", DesignSystem.SPACE_LG)
+	margin.add_theme_constant_override("margin_top", DesignSystem.SPACE_LG)
+	margin.add_theme_constant_override("margin_bottom", DesignSystem.SPACE_LG)
 	add_child(margin)
 
-	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 10)
+	var vbox := DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	margin.add_child(vbox)
 
 	# Header with title and grade

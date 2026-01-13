@@ -1,11 +1,11 @@
 class_name ShopPanel
 extends PanelContainer
-## Shop Panel - Purchase items and consumables
+## Shop Panel - Purchase items and consumables.
+## Migrated to use DesignSystem and ThemeColors for consistency.
 
 signal closed
 signal item_purchased(item_id: String)
 
-const ThemeColors = preload("res://ui/theme_colors.gd")
 const SimItems = preload("res://sim/items.gd")
 
 var _gold: int = 0
@@ -28,52 +28,42 @@ func _ready() -> void:
 
 
 func _build_ui() -> void:
-	custom_minimum_size = Vector2(550, 450)
+	custom_minimum_size = Vector2(DesignSystem.SIZE_PANEL_LG, 450)
 
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.08, 0.09, 0.12, 0.98)
-	style.border_color = ThemeColors.BORDER
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(8)
-	style.set_content_margin_all(12)
+	var style := DesignSystem.create_panel_style()
 	add_theme_stylebox_override("panel", style)
 
-	var main_vbox := VBoxContainer.new()
-	main_vbox.add_theme_constant_override("separation", 10)
+	var main_vbox := DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	add_child(main_vbox)
 
 	# Header with title, gold, and close button
-	var header := HBoxContainer.new()
+	var header := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 	main_vbox.add_child(header)
 
 	var title := Label.new()
 	title.text = "SHOP"
-	title.add_theme_font_size_override("font_size", 18)
-	title.add_theme_color_override("font_color", ThemeColors.ACCENT)
+	DesignSystem.style_label(title, "h2", ThemeColors.ACCENT)
 	header.add_child(title)
 
-	var spacer := Control.new()
-	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	header.add_child(spacer)
+	header.add_child(DesignSystem.create_spacer())
 
 	_gold_label = Label.new()
-	_gold_label.add_theme_font_size_override("font_size", 16)
-	_gold_label.add_theme_color_override("font_color", Color(1.0, 0.84, 0.0))
+	DesignSystem.style_label(_gold_label, "body", ThemeColors.RESOURCE_GOLD)
 	header.add_child(_gold_label)
 
 	var spacer2 := Control.new()
-	spacer2.custom_minimum_size = Vector2(20, 0)
+	spacer2.custom_minimum_size = Vector2(DesignSystem.SPACE_LG, 0)
 	header.add_child(spacer2)
 
 	_close_btn = Button.new()
-	_close_btn.text = "X"
-	_close_btn.custom_minimum_size = Vector2(30, 30)
+	_close_btn.text = "✕"
+	_close_btn.custom_minimum_size = Vector2(DesignSystem.SIZE_BUTTON_SM, DesignSystem.SIZE_BUTTON_SM)
+	_style_close_button()
 	_close_btn.pressed.connect(_on_close_pressed)
 	header.add_child(_close_btn)
 
 	# Main content (items list + detail panel)
-	var content_hbox := HBoxContainer.new()
-	content_hbox.add_theme_constant_override("separation", 10)
+	var content_hbox := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 	content_hbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	main_vbox.add_child(content_hbox)
 
@@ -84,8 +74,7 @@ func _build_ui() -> void:
 	_items_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	content_hbox.add_child(_items_scroll)
 
-	_items_vbox = VBoxContainer.new()
-	_items_vbox.add_theme_constant_override("separation", 8)
+	_items_vbox = DesignSystem.create_vbox(DesignSystem.SPACE_SM)
 	_items_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_items_scroll.add_child(_items_vbox)
 
@@ -94,16 +83,12 @@ func _build_ui() -> void:
 	_detail_panel.custom_minimum_size = Vector2(200, 0)
 	content_hbox.add_child(_detail_panel)
 
-	var detail_style := StyleBoxFlat.new()
-	detail_style.bg_color = Color(0.05, 0.06, 0.09, 0.9)
-	detail_style.border_color = ThemeColors.BORDER_DISABLED
+	var detail_style := DesignSystem.create_elevated_style(ThemeColors.BG_CARD)
+	detail_style.border_color = ThemeColors.BORDER
 	detail_style.set_border_width_all(1)
-	detail_style.set_corner_radius_all(4)
-	detail_style.set_content_margin_all(8)
 	_detail_panel.add_theme_stylebox_override("panel", detail_style)
 
-	var detail_vbox := VBoxContainer.new()
-	detail_vbox.add_theme_constant_override("separation", 8)
+	var detail_vbox := DesignSystem.create_vbox(DesignSystem.SPACE_SM)
 	_detail_panel.add_child(detail_vbox)
 
 	_detail_label = RichTextLabel.new()
@@ -111,14 +96,32 @@ func _build_ui() -> void:
 	_detail_label.fit_content = true
 	_detail_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_detail_label.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_detail_label.add_theme_font_size_override("normal_font_size", 12)
+	_detail_label.add_theme_font_size_override("normal_font_size", DesignSystem.FONT_CAPTION)
 	detail_vbox.add_child(_detail_label)
 
 	_buy_btn = Button.new()
 	_buy_btn.text = "Buy"
 	_buy_btn.visible = false
+	_buy_btn.custom_minimum_size = Vector2(0, DesignSystem.SIZE_BUTTON_SM)
+	_style_buy_button()
 	_buy_btn.pressed.connect(_on_buy_pressed)
 	detail_vbox.add_child(_buy_btn)
+
+
+func _style_close_button() -> void:
+	var normal := DesignSystem.create_button_style(ThemeColors.BG_BUTTON, ThemeColors.BORDER)
+	var hover := DesignSystem.create_button_style(ThemeColors.ERROR.darkened(0.3), ThemeColors.ERROR)
+	_close_btn.add_theme_stylebox_override("normal", normal)
+	_close_btn.add_theme_stylebox_override("hover", hover)
+	_close_btn.add_theme_color_override("font_color", ThemeColors.TEXT)
+
+
+func _style_buy_button() -> void:
+	var normal := DesignSystem.create_button_style(ThemeColors.SUCCESS.darkened(0.3), ThemeColors.SUCCESS)
+	var hover := DesignSystem.create_button_style(ThemeColors.SUCCESS.darkened(0.1), ThemeColors.SUCCESS.lightened(0.2))
+	_buy_btn.add_theme_stylebox_override("normal", normal)
+	_buy_btn.add_theme_stylebox_override("hover", hover)
+	_buy_btn.add_theme_color_override("font_color", ThemeColors.TEXT)
 
 
 func show_shop(gold: int) -> void:
@@ -186,8 +189,7 @@ func _build_items_list() -> void:
 		# Category header
 		var header := Label.new()
 		header.text = type_names.get(type, type.capitalize())
-		header.add_theme_font_size_override("font_size", 14)
-		header.add_theme_color_override("font_color", ThemeColors.ACCENT)
+		DesignSystem.style_label(header, "body_small", ThemeColors.ACCENT)
 		_items_vbox.add_child(header)
 
 		# Items in category
@@ -198,7 +200,7 @@ func _build_items_list() -> void:
 
 		# Spacer
 		var spacer := Control.new()
-		spacer.custom_minimum_size = Vector2(0, 5)
+		spacer.custom_minimum_size = Vector2(0, DesignSystem.SPACE_XS)
 		_items_vbox.add_child(spacer)
 
 
@@ -213,11 +215,11 @@ func _create_item_button(item_id: String) -> Button:
 	var btn := Button.new()
 	btn.custom_minimum_size = Vector2(0, 40)
 	btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_style_item_button(btn)
 	btn.pressed.connect(_on_item_selected.bind(item_id))
 
 	# Custom button content
-	var hbox := HBoxContainer.new()
-	hbox.add_theme_constant_override("separation", 10)
+	var hbox := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 	btn.add_child(hbox)
 
 	var name_label := Label.new()
@@ -229,12 +231,19 @@ func _create_item_button(item_id: String) -> Button:
 	var price_label := Label.new()
 	price_label.text = "%d gold" % price
 	if can_afford:
-		price_label.add_theme_color_override("font_color", Color(0.4, 1.0, 0.4))
+		price_label.add_theme_color_override("font_color", ThemeColors.SUCCESS)
 	else:
-		price_label.add_theme_color_override("font_color", Color(1.0, 0.4, 0.4))
+		price_label.add_theme_color_override("font_color", ThemeColors.ERROR)
 	hbox.add_child(price_label)
 
 	return btn
+
+
+func _style_item_button(btn: Button) -> void:
+	var normal := DesignSystem.create_button_style(ThemeColors.BG_BUTTON, ThemeColors.BORDER)
+	var hover := DesignSystem.create_button_style(ThemeColors.BG_BUTTON_HOVER, ThemeColors.BORDER_HIGHLIGHT)
+	btn.add_theme_stylebox_override("normal", normal)
+	btn.add_theme_stylebox_override("hover", hover)
 
 
 func _show_item_detail(item_id: String) -> void:

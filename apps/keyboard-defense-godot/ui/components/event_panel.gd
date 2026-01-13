@@ -1,8 +1,8 @@
 class_name EventPanel
 extends PanelContainer
 ## Panel for displaying events and handling choice input.
+## Migrated to use ThemeColors autoload.
 
-const ThemeColors = preload("res://ui/theme_colors.gd")
 const ButtonFeedbackClass = preload("res://ui/components/button_feedback.gd")
 const SimExplorationChallenges = preload("res://sim/exploration_challenges.gd")
 

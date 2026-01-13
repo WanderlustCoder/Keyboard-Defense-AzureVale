@@ -4,9 +4,13 @@ extends RefCounted
 const GameState = preload("res://sim/types.gd")
 const SimBuildings = preload("res://sim/buildings.gd")
 const SimMap = preload("res://sim/map.gd")
+const SimCitizens = preload("res://sim/citizens.gd")
 
 const WORKER_PRODUCTION_BONUS := 0.5  # +50% production per worker
 const WORKER_UPKEEP := 1  # Food consumed per worker per day
+
+## Whether to use the citizen system for workers
+const USE_CITIZEN_SYSTEM := true
 
 # Get the number of workers assigned to a building
 static func workers_at(state: GameState, building_index: int) -> int:
@@ -69,6 +73,35 @@ static func assign_worker(state: GameState, building_index: int) -> bool:
 
 	var current: int = workers_at(state, building_index)
 	state.workers[building_index] = current + 1
+
+	# Also assign an unassigned citizen if available
+	if USE_CITIZEN_SYSTEM:
+		var unassigned: Array = SimCitizens.get_unassigned_citizens(state)
+		if not unassigned.is_empty():
+			var citizen: Dictionary = unassigned[0]
+			SimCitizens.assign_to_building(state, citizen.get("id", -1), building_index)
+
+	return true
+
+
+# Assign a specific citizen to a building
+static func assign_citizen(state: GameState, citizen_id: int, building_index: int) -> bool:
+	var check: Dictionary = can_assign(state, building_index)
+	if not check.ok:
+		return false
+
+	var citizen: Dictionary = SimCitizens.find_citizen(state, citizen_id)
+	if citizen.is_empty():
+		return false
+
+	# If citizen was assigned elsewhere, unassign first
+	var prev_building: int = citizen.get("assigned_building", -1)
+	if prev_building >= 0 and prev_building != building_index:
+		unassign_worker(state, prev_building)
+
+	var current: int = workers_at(state, building_index)
+	state.workers[building_index] = current + 1
+	SimCitizens.assign_to_building(state, citizen_id, building_index)
 	return true
 
 # Check if we can unassign a worker from a building
@@ -98,6 +131,35 @@ static func unassign_worker(state: GameState, building_index: int) -> bool:
 		state.workers.erase(building_index)
 	else:
 		state.workers[building_index] = current - 1
+
+	# Also unassign a citizen from this building
+	if USE_CITIZEN_SYSTEM:
+		var citizens: Array = SimCitizens.find_citizens_at_building(state, building_index)
+		if not citizens.is_empty():
+			var citizen: Dictionary = citizens[0]
+			SimCitizens.unassign_from_building(state, citizen.get("id", -1))
+
+	return true
+
+
+# Unassign a specific citizen from their building
+static func unassign_citizen(state: GameState, citizen_id: int) -> bool:
+	var citizen: Dictionary = SimCitizens.find_citizen(state, citizen_id)
+	if citizen.is_empty():
+		return false
+
+	var building_index: int = citizen.get("assigned_building", -1)
+	if building_index < 0:
+		return false
+
+	# Decrement worker count
+	var current: int = workers_at(state, building_index)
+	if current <= 1:
+		state.workers.erase(building_index)
+	else:
+		state.workers[building_index] = current - 1
+
+	SimCitizens.unassign_from_building(state, citizen_id)
 	return true
 
 # Set workers at a building to a specific count
@@ -132,7 +194,7 @@ static func daily_upkeep(state: GameState) -> int:
 
 # Apply daily worker upkeep (consume food)
 static func apply_upkeep(state: GameState) -> Dictionary:
-	var result := {"ok": true, "food_consumed": 0, "workers_lost": 0}
+	var result := {"ok": true, "food_consumed": 0, "workers_lost": 0, "citizens_lost": []}
 
 	var upkeep: int = daily_upkeep(state)
 	var food: int = int(state.resources.get("food", 0))
@@ -164,11 +226,26 @@ static func apply_upkeep(state: GameState) -> Dictionary:
 				break
 			var at_building: int = int(state.workers[idx])
 			var to_remove: int = min(workers_to_remove, at_building)
+
+			# Also remove citizens from this building
+			if USE_CITIZEN_SYSTEM:
+				var citizens: Array = SimCitizens.find_citizens_at_building(state, int(idx))
+				for i in range(mini(to_remove, citizens.size())):
+					var citizen: Dictionary = citizens[i]
+					result.citizens_lost.append({
+						"id": citizen.get("id"),
+						"name": SimCitizens.get_full_name(citizen)
+					})
+					SimCitizens.remove_citizen(state, citizen.get("id", -1))
+
 			if to_remove >= at_building:
 				state.workers.erase(idx)
 			else:
 				state.workers[idx] = at_building - to_remove
 			workers_to_remove -= to_remove
+
+		# Update total workers count
+		state.total_workers = maxi(0, state.total_workers - result.workers_lost)
 
 		result.ok = false
 
@@ -180,6 +257,33 @@ static func worker_bonus(state: GameState, building_index: int) -> float:
 	if workers <= 0:
 		return 0.0
 	return workers * WORKER_PRODUCTION_BONUS
+
+
+# Calculate production bonus using citizen skills and morale
+static func citizen_enhanced_bonus(state: GameState, building_index: int) -> float:
+	if not USE_CITIZEN_SYSTEM:
+		return worker_bonus(state, building_index)
+
+	# Get citizens at this building
+	var citizens: Array = SimCitizens.find_citizens_at_building(state, building_index)
+	if citizens.is_empty():
+		# Fall back to basic worker bonus if no citizens assigned
+		return worker_bonus(state, building_index)
+
+	var total_bonus := 0.0
+	for citizen in citizens:
+		# Base bonus per worker
+		var base := WORKER_PRODUCTION_BONUS
+
+		# Apply skill bonus (10% per level above 1)
+		var skill_mult: float = SimCitizens.get_skill_bonus(citizen)
+
+		# Apply morale multiplier
+		var morale_mult: float = SimCitizens.get_productivity_multiplier(citizen)
+
+		total_bonus += base * skill_mult * morale_mult
+
+	return total_bonus
 
 # Calculate total daily production including worker bonuses
 static func daily_production_with_workers(state: GameState) -> Dictionary:
@@ -255,15 +359,90 @@ static func get_worker_summary(state: GameState) -> Dictionary:
 	return summary
 
 # Add a new worker to the pool (called on day advancement)
-static func gain_worker(state: GameState) -> bool:
+static func gain_worker(state: GameState, rng: RandomNumberGenerator = null) -> bool:
 	if state.total_workers >= state.max_workers:
 		return false
 	state.total_workers += 1
+
+	# Create a citizen for this worker if system is enabled
+	if USE_CITIZEN_SYSTEM:
+		var new_citizen: Dictionary = SimCitizens.create_citizen("", rng)
+		SimCitizens.add_citizen(state, new_citizen)
+
 	return true
+
+
+# Get citizen info for a gained worker (for UI feedback)
+static func gain_worker_with_info(state: GameState, rng: RandomNumberGenerator = null) -> Dictionary:
+	if state.total_workers >= state.max_workers:
+		return {"success": false, "citizen": {}}
+
+	state.total_workers += 1
+
+	var new_citizen: Dictionary = {}
+	if USE_CITIZEN_SYSTEM:
+		new_citizen = SimCitizens.create_citizen("", rng)
+		SimCitizens.add_citizen(state, new_citizen)
+
+	return {"success": true, "citizen": new_citizen}
 
 # Remove workers when a building is destroyed
 static func on_building_removed(state: GameState, building_index: int) -> void:
+	# Unassign all citizens from this building
+	if USE_CITIZEN_SYSTEM:
+		var citizens: Array = SimCitizens.find_citizens_at_building(state, building_index)
+		for citizen in citizens:
+			SimCitizens.unassign_from_building(state, citizen.get("id", -1))
+
 	state.workers.erase(building_index)
+
+
+# Get citizen-enhanced worker summary
+static func get_citizen_summary(state: GameState) -> Dictionary:
+	var summary := get_worker_summary(state)
+
+	if not USE_CITIZEN_SYSTEM:
+		return summary
+
+	# Add citizen details
+	summary.total_citizens = SimCitizens.count_citizens(state)
+	summary.average_morale = SimCitizens.get_average_morale(state)
+	summary.unassigned_citizens = SimCitizens.get_unassigned_citizens(state).size()
+
+	# Enhance assignment info with citizen details
+	for i in range(summary.assignments.size()):
+		var assignment: Dictionary = summary.assignments[i]
+		var building_index: int = assignment.get("index", -1)
+		var citizens: Array = SimCitizens.find_citizens_at_building(state, building_index)
+
+		var citizen_info := []
+		var total_skill := 0.0
+		var total_morale := 0.0
+
+		for cit in citizens:
+			var cit_dict: Dictionary = cit
+			citizen_info.append({
+				"id": cit_dict.get("id"),
+				"name": SimCitizens.get_full_name(cit_dict),
+				"title": SimCitizens.get_title(cit_dict),
+				"skill_level": cit_dict.get("skill_level", 1),
+				"morale": cit_dict.get("morale", 50.0),
+				"traits": cit_dict.get("traits", [])
+			})
+			total_skill += cit_dict.get("skill_level", 1)
+			total_morale += cit_dict.get("morale", 50.0)
+
+		assignment.citizens = citizen_info
+		if not citizens.is_empty():
+			assignment.avg_skill = total_skill / citizens.size()
+			assignment.avg_morale = total_morale / citizens.size()
+			assignment.citizen_bonus = citizen_enhanced_bonus(state, building_index)
+		else:
+			assignment.avg_skill = 0.0
+			assignment.avg_morale = 0.0
+			assignment.citizen_bonus = 0.0
+
+	return summary
 
 # Helper function to check adjacent terrain
 static func _adjacent_terrain(state: GameState, pos: Vector2i, terrain: String) -> bool:

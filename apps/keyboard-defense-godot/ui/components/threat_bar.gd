@@ -1,8 +1,7 @@
 class_name ThreatBar
 extends VBoxContainer
 ## Displays threat level and castle health.
-
-const ThemeColors = preload("res://ui/theme_colors.gd")
+## Migrated to use DesignSystem and ThemeColors for consistency.
 
 const BAR_CORNER_RADIUS := 3
 const THREAT_BAR_BG := Color(0.1, 0.09, 0.15, 1)

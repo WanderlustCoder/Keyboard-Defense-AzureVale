@@ -1,11 +1,12 @@
 class_name ComboAnnouncement
 extends Control
-## Shows celebratory combo milestone announcements with visual flair
+## Shows celebratory combo milestone announcements with visual flair.
+## Partially migrated to use DesignSystem - keeps domain-specific animation values.
 
 # Milestone thresholds
 const MILESTONES := [5, 10, 15, 20, 25, 30, 40, 50]
 
-# Animation settings
+# Animation settings (domain-specific, kept as constants)
 const ANNOUNCE_DURATION := 1.5
 const SCALE_IN_DURATION := 0.2
 const SCALE_OUT_DURATION := 0.4
@@ -14,17 +15,19 @@ const SCALE_FINAL := 1.0
 const SHAKE_INTENSITY := 4.0
 const SHAKE_FREQUENCY := 20.0
 
-# Visual settings
+# Visual settings (larger than DesignSystem typography for celebratory effect)
 const FONT_SIZE_BASE := 36
 const FONT_SIZE_MAX := 48
 const GLOW_EXPAND := 6.0
 
-# Colors per milestone tier
-const COLOR_TIER_1 := Color(0.4, 0.8, 0.9, 1.0)  # 5x - Cyan
-const COLOR_TIER_2 := Color(0.3, 0.9, 0.5, 1.0)  # 10x - Green
-const COLOR_TIER_3 := Color(0.9, 0.8, 0.2, 1.0)  # 15x - Gold
-const COLOR_TIER_4 := Color(0.9, 0.5, 0.2, 1.0)  # 20x - Orange
-const COLOR_TIER_5 := Color(0.9, 0.3, 0.9, 1.0)  # 25x+ - Purple
+# Combo tier colors (domain-specific milestone colors)
+const COMBO_TIER_COLORS := {
+	1: Color(0.4, 0.8, 0.9, 1.0),  # 5x - Cyan
+	2: Color(0.3, 0.9, 0.5, 1.0),  # 10x - Green
+	3: Color(0.9, 0.8, 0.2, 1.0),  # 15x - Gold
+	4: Color(0.9, 0.5, 0.2, 1.0),  # 20x - Orange
+	5: Color(0.9, 0.3, 0.9, 1.0)   # 25x+ - Purple
+}
 
 # Titles per milestone
 const TITLES := {
@@ -40,12 +43,14 @@ const TITLES := {
 
 var _announcement_label: Label = null
 var _combo_label: Label = null
+var _container: VBoxContainer = null
 var _tween: Tween = null
 var _shake_time: float = 0.0
 var _is_animating: bool = false
 var _base_position: Vector2 = Vector2.ZERO
 var _settings_manager = null
 var _audio_manager = null
+
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -54,28 +59,30 @@ func _ready() -> void:
 	_settings_manager = get_node_or_null("/root/SettingsManager")
 	_audio_manager = get_node_or_null("/root/AudioManager")
 
+
 func _setup_ui() -> void:
-	# Container for centering
-	var vbox := VBoxContainer.new()
-	vbox.set_anchors_preset(Control.PRESET_CENTER)
-	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
-	vbox.add_theme_constant_override("separation", -4)
-	add_child(vbox)
+	# Container for centering - use negative spacing for tight vertical layout
+	_container = VBoxContainer.new()
+	_container.set_anchors_preset(Control.PRESET_CENTER)
+	_container.alignment = BoxContainer.ALIGNMENT_CENTER
+	_container.add_theme_constant_override("separation", -DesignSystem.SPACE_XS)
+	add_child(_container)
 
 	# Title label (e.g., "AMAZING!")
 	_announcement_label = Label.new()
 	_announcement_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_announcement_label.add_theme_font_size_override("font_size", FONT_SIZE_BASE)
-	vbox.add_child(_announcement_label)
+	_container.add_child(_announcement_label)
 
 	# Combo count label (e.g., "x15 COMBO")
 	_combo_label = Label.new()
 	_combo_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_combo_label.add_theme_font_size_override("font_size", int(FONT_SIZE_BASE * 0.7))
-	vbox.add_child(_combo_label)
+	_container.add_child(_combo_label)
 
 	# Store base position for shake effect
-	_base_position = vbox.position
+	_base_position = _container.position
+
 
 func _process(delta: float) -> void:
 	if not _is_animating:
@@ -91,14 +98,15 @@ func _process(delta: float) -> void:
 		_shake_time += delta * SHAKE_FREQUENCY
 		var shake_decay := modulate.a  # Fade shake with alpha
 		var offset_x := sin(_shake_time) * SHAKE_INTENSITY * shake_decay
-		var vbox := get_child(0)
-		if vbox != null:
-			vbox.position = _base_position + Vector2(offset_x, 0)
+		if _container != null:
+			_container.position = _base_position + Vector2(offset_x, 0)
+
 
 ## Check if a combo value is a milestone and show announcement if so
 func check_combo(combo: int) -> void:
 	if combo in MILESTONES:
 		show_milestone(combo)
+
 
 ## Show a milestone announcement for the given combo
 func show_milestone(combo: int) -> void:
@@ -162,22 +170,23 @@ func show_milestone(combo: int) -> void:
 		elif _audio_manager.has_method("play_combo_milestone_5"):
 			_audio_manager.play_combo_milestone_5()
 
+
 func _on_animation_finished() -> void:
 	_is_animating = false
 	visible = false
 	# Reset shake offset
-	var vbox := get_child(0)
-	if vbox != null:
-		vbox.position = _base_position
+	if _container != null:
+		_container.position = _base_position
+
 
 func _get_milestone_color(combo: int) -> Color:
 	if combo >= 25:
-		return COLOR_TIER_5
+		return COMBO_TIER_COLORS[5]
 	elif combo >= 20:
-		return COLOR_TIER_4
+		return COMBO_TIER_COLORS[4]
 	elif combo >= 15:
-		return COLOR_TIER_3
+		return COMBO_TIER_COLORS[3]
 	elif combo >= 10:
-		return COLOR_TIER_2
+		return COMBO_TIER_COLORS[2]
 	else:
-		return COLOR_TIER_1
+		return COMBO_TIER_COLORS[1]

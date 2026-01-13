@@ -1,10 +1,9 @@
 class_name SkillTreesReferencePanel
 extends PanelContainer
-## Skill Trees Reference Panel - Shows all 3 skill trees and their abilities
+## Skill Trees Reference Panel - Shows all 3 skill trees and their abilities.
+## Migrated to use DesignSystem and ThemeColors for consistency.
 
 signal closed
-
-const ThemeColors = preload("res://ui/theme_colors.gd")
 
 # UI elements
 var _close_btn: Button = null
@@ -232,45 +231,36 @@ func _ready() -> void:
 
 
 func _build_ui() -> void:
-	custom_minimum_size = Vector2(560, 720)
+	custom_minimum_size = Vector2(DesignSystem.SIZE_PANEL_LG, 720)
 
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.08, 0.09, 0.12, 0.98)
-	style.border_color = ThemeColors.BORDER
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(8)
-	style.set_content_margin_all(12)
+	var style := DesignSystem.create_panel_style()
 	add_theme_stylebox_override("panel", style)
 
-	var main_vbox := VBoxContainer.new()
-	main_vbox.add_theme_constant_override("separation", 10)
+	var main_vbox := DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	add_child(main_vbox)
 
 	# Header
-	var header := HBoxContainer.new()
+	var header := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 	main_vbox.add_child(header)
 
 	var title := Label.new()
 	title.text = "SKILL TREES"
-	title.add_theme_font_size_override("font_size", 18)
-	title.add_theme_color_override("font_color", Color(0.8, 0.6, 0.3))
+	DesignSystem.style_label(title, "h2", Color(0.8, 0.6, 0.3))
 	header.add_child(title)
 
-	var spacer := Control.new()
-	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	header.add_child(spacer)
+	header.add_child(DesignSystem.create_spacer())
 
 	_close_btn = Button.new()
-	_close_btn.text = "X"
-	_close_btn.custom_minimum_size = Vector2(30, 30)
+	_close_btn.text = "✕"
+	_close_btn.custom_minimum_size = Vector2(DesignSystem.SIZE_BUTTON_SM, DesignSystem.SIZE_BUTTON_SM)
+	_style_close_button()
 	_close_btn.pressed.connect(_on_close_pressed)
 	header.add_child(_close_btn)
 
 	# Subtitle
 	var subtitle := Label.new()
 	subtitle.text = "3 skill trees with 18 skills across 4 tiers"
-	subtitle.add_theme_font_size_override("font_size", 12)
-	subtitle.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(subtitle, "body_small", ThemeColors.TEXT_DIM)
 	main_vbox.add_child(subtitle)
 
 	# Content scroll
@@ -280,18 +270,24 @@ func _build_ui() -> void:
 	_content_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	main_vbox.add_child(_content_scroll)
 
-	_content_vbox = VBoxContainer.new()
-	_content_vbox.add_theme_constant_override("separation", 10)
+	_content_vbox = DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	_content_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_content_scroll.add_child(_content_vbox)
 
 	# Footer
 	var footer := Label.new()
 	footer.text = "Spend skill points earned by leveling up"
-	footer.add_theme_font_size_override("font_size", 11)
-	footer.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(footer, "caption", ThemeColors.TEXT_DIM)
 	footer.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	main_vbox.add_child(footer)
+
+
+func _style_close_button() -> void:
+	var normal := DesignSystem.create_button_style(ThemeColors.BG_BUTTON, ThemeColors.BORDER)
+	var hover := DesignSystem.create_button_style(ThemeColors.ERROR.darkened(0.3), ThemeColors.ERROR)
+	_close_btn.add_theme_stylebox_override("normal", normal)
+	_close_btn.add_theme_stylebox_override("hover", hover)
+	_close_btn.add_theme_color_override("font_color", ThemeColors.TEXT)
 
 
 func show_skill_trees_reference() -> void:
@@ -334,31 +330,26 @@ func _build_trees_overview() -> void:
 	var vbox: VBoxContainer = section.get_child(0)
 
 	for tree in SKILL_TREES:
-		var container := VBoxContainer.new()
-		container.add_theme_constant_override("separation", 1)
+		var container := DesignSystem.create_vbox(1)
 		vbox.add_child(container)
 
-		var header_hbox := HBoxContainer.new()
-		header_hbox.add_theme_constant_override("separation", 10)
+		var header_hbox := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 		container.add_child(header_hbox)
 
 		var name_label := Label.new()
 		name_label.text = str(tree.get("name", ""))
-		name_label.add_theme_font_size_override("font_size", 11)
-		name_label.add_theme_color_override("font_color", tree.get("color", Color.WHITE))
+		DesignSystem.style_label(name_label, "caption", tree.get("color", Color.WHITE))
 		name_label.custom_minimum_size = Vector2(150, 0)
 		header_hbox.add_child(name_label)
 
 		var desc_label := Label.new()
 		desc_label.text = str(tree.get("desc", ""))
-		desc_label.add_theme_font_size_override("font_size", 9)
-		desc_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+		DesignSystem.style_label(desc_label, "caption", ThemeColors.TEXT_DIM)
 		header_hbox.add_child(desc_label)
 
 		var focus_label := Label.new()
 		focus_label.text = "  Focus: %s" % tree.get("focus", "")
-		focus_label.add_theme_font_size_override("font_size", 9)
-		focus_label.add_theme_color_override("font_color", Color(0.5, 0.6, 0.5))
+		DesignSystem.style_label(focus_label, "caption", Color(0.5, 0.6, 0.5))
 		container.add_child(focus_label)
 
 
@@ -369,8 +360,7 @@ func _build_tree_section(title: String, color: Color, skills: Array[Dictionary])
 	var vbox: VBoxContainer = section.get_child(0)
 
 	# Header row
-	var header_hbox := HBoxContainer.new()
-	header_hbox.add_theme_constant_override("separation", 5)
+	var header_hbox := DesignSystem.create_hbox(DesignSystem.SPACE_XS)
 	vbox.add_child(header_hbox)
 
 	var headers := ["T", "Skill", "Cost", "Ranks", "Effect"]
@@ -378,58 +368,50 @@ func _build_tree_section(title: String, color: Color, skills: Array[Dictionary])
 	for i in headers.size():
 		var h := Label.new()
 		h.text = headers[i]
-		h.add_theme_font_size_override("font_size", 9)
-		h.add_theme_color_override("font_color", Color(0.5, 0.5, 0.6))
+		DesignSystem.style_label(h, "caption", Color(0.5, 0.5, 0.6))
 		h.custom_minimum_size = Vector2(widths[i], 0)
 		header_hbox.add_child(h)
 
 	# Skills
 	for skill in skills:
-		var container := VBoxContainer.new()
-		container.add_theme_constant_override("separation", 1)
+		var container := DesignSystem.create_vbox(1)
 		vbox.add_child(container)
 
-		var row := HBoxContainer.new()
-		row.add_theme_constant_override("separation", 5)
+		var row := DesignSystem.create_hbox(DesignSystem.SPACE_XS)
 		container.add_child(row)
 
 		# Tier
 		var tier_label := Label.new()
 		tier_label.text = str(skill.get("tier", 1))
-		tier_label.add_theme_font_size_override("font_size", 10)
-		tier_label.add_theme_color_override("font_color", _get_tier_color(int(skill.get("tier", 1))))
+		DesignSystem.style_label(tier_label, "caption", _get_tier_color(int(skill.get("tier", 1))))
 		tier_label.custom_minimum_size = Vector2(20, 0)
 		row.add_child(tier_label)
 
 		# Name
 		var name_label := Label.new()
 		name_label.text = str(skill.get("name", ""))
-		name_label.add_theme_font_size_override("font_size", 10)
-		name_label.add_theme_color_override("font_color", color)
+		DesignSystem.style_label(name_label, "caption", color)
 		name_label.custom_minimum_size = Vector2(110, 0)
 		row.add_child(name_label)
 
 		# Cost
 		var cost_label := Label.new()
 		cost_label.text = str(skill.get("cost", 1))
-		cost_label.add_theme_font_size_override("font_size", 10)
-		cost_label.add_theme_color_override("font_color", Color(1.0, 0.84, 0.0))
+		DesignSystem.style_label(cost_label, "caption", ThemeColors.RESOURCE_GOLD)
 		cost_label.custom_minimum_size = Vector2(35, 0)
 		row.add_child(cost_label)
 
 		# Max ranks
 		var ranks_label := Label.new()
 		ranks_label.text = "x%d" % skill.get("max_ranks", 1)
-		ranks_label.add_theme_font_size_override("font_size", 10)
-		ranks_label.add_theme_color_override("font_color", Color.WHITE)
+		DesignSystem.style_label(ranks_label, "caption", Color.WHITE)
 		ranks_label.custom_minimum_size = Vector2(40, 0)
 		row.add_child(ranks_label)
 
 		# Effect
 		var effect_label := Label.new()
 		effect_label.text = str(skill.get("effect", ""))
-		effect_label.add_theme_font_size_override("font_size", 9)
-		effect_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+		DesignSystem.style_label(effect_label, "caption", ThemeColors.TEXT_DIM)
 		effect_label.custom_minimum_size = Vector2(240, 0)
 		effect_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		row.add_child(effect_label)
@@ -439,8 +421,7 @@ func _build_tree_section(title: String, color: Color, skills: Array[Dictionary])
 		if prereqs != "-":
 			var prereq_label := Label.new()
 			prereq_label.text = "     Requires: %s" % prereqs
-			prereq_label.add_theme_font_size_override("font_size", 9)
-			prereq_label.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
+			DesignSystem.style_label(prereq_label, "caption", Color(0.5, 0.5, 0.5))
 			container.add_child(prereq_label)
 
 
@@ -462,8 +443,7 @@ func _build_tips_section() -> void:
 	for tip in SKILL_TIPS:
 		var tip_label := Label.new()
 		tip_label.text = "- " + tip
-		tip_label.add_theme_font_size_override("font_size", 9)
-		tip_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+		DesignSystem.style_label(tip_label, "caption", ThemeColors.TEXT_DIM)
 		tip_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		vbox.add_child(tip_label)
 
@@ -475,18 +455,16 @@ func _create_section_panel(title: String, color: Color) -> PanelContainer:
 	panel_style.bg_color = color.darkened(0.85)
 	panel_style.border_color = color.darkened(0.5)
 	panel_style.set_border_width_all(1)
-	panel_style.set_corner_radius_all(6)
-	panel_style.set_content_margin_all(10)
+	panel_style.set_corner_radius_all(DesignSystem.RADIUS_SM)
+	panel_style.set_content_margin_all(DesignSystem.SPACE_MD)
 	container.add_theme_stylebox_override("panel", panel_style)
 
-	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 6)
+	var vbox := DesignSystem.create_vbox(DesignSystem.SPACE_SM)
 	container.add_child(vbox)
 
 	var header := Label.new()
 	header.text = title
-	header.add_theme_font_size_override("font_size", 12)
-	header.add_theme_color_override("font_color", color)
+	DesignSystem.style_label(header, "body_small", color)
 	vbox.add_child(header)
 
 	return container

@@ -2,8 +2,8 @@ class_name KingdomDashboard
 extends Control
 ## Kingdom management dashboard showing resources, workers, buildings, and research.
 ## Toggled with Tab during planning phase.
+## Migrated to use ThemeColors autoload.
 
-const ThemeColors = preload("res://ui/theme_colors.gd")
 const GameState = preload("res://sim/types.gd")
 const SimBuildings = preload("res://sim/buildings.gd")
 const SimWorkers = preload("res://sim/workers.gd")

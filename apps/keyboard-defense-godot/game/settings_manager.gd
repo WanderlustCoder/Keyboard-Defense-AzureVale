@@ -15,6 +15,9 @@ const DEFAULT_TYPING_SOUNDS := true
 const DEFAULT_REDUCED_MOTION := false
 const DEFAULT_HIGH_CONTRAST := false
 const DEFAULT_LARGE_TEXT := false
+const DEFAULT_COLORBLIND_MODE := "none"  # "none", "protanopia", "deuteranopia", "tritanopia"
+const DEFAULT_FOCUS_INDICATORS := true
+const DEFAULT_SCREEN_READER_HINTS := false
 
 # Current settings
 var music_volume: float = DEFAULT_MUSIC_VOLUME
@@ -28,6 +31,9 @@ var typing_sounds: bool = DEFAULT_TYPING_SOUNDS
 var reduced_motion: bool = DEFAULT_REDUCED_MOTION
 var high_contrast: bool = DEFAULT_HIGH_CONTRAST
 var large_text: bool = DEFAULT_LARGE_TEXT
+var colorblind_mode: String = DEFAULT_COLORBLIND_MODE
+var focus_indicators: bool = DEFAULT_FOCUS_INDICATORS
+var screen_reader_hints: bool = DEFAULT_SCREEN_READER_HINTS
 
 signal settings_changed
 
@@ -55,6 +61,9 @@ func load_settings() -> void:
 	reduced_motion = config.get_value("accessibility", "reduced_motion", DEFAULT_REDUCED_MOTION)
 	high_contrast = config.get_value("accessibility", "high_contrast", DEFAULT_HIGH_CONTRAST)
 	large_text = config.get_value("accessibility", "large_text", DEFAULT_LARGE_TEXT)
+	colorblind_mode = config.get_value("accessibility", "colorblind_mode", DEFAULT_COLORBLIND_MODE)
+	focus_indicators = config.get_value("accessibility", "focus_indicators", DEFAULT_FOCUS_INDICATORS)
+	screen_reader_hints = config.get_value("accessibility", "screen_reader_hints", DEFAULT_SCREEN_READER_HINTS)
 
 func save_settings() -> void:
 	var config := ConfigFile.new()
@@ -72,6 +81,9 @@ func save_settings() -> void:
 	config.set_value("accessibility", "reduced_motion", reduced_motion)
 	config.set_value("accessibility", "high_contrast", high_contrast)
 	config.set_value("accessibility", "large_text", large_text)
+	config.set_value("accessibility", "colorblind_mode", colorblind_mode)
+	config.set_value("accessibility", "focus_indicators", focus_indicators)
+	config.set_value("accessibility", "screen_reader_hints", screen_reader_hints)
 
 	var err := config.save(SETTINGS_PATH)
 	if err != OK:
@@ -135,6 +147,19 @@ func set_large_text(value: bool) -> void:
 	large_text = value
 	settings_changed.emit()
 
+func set_colorblind_mode(value: String) -> void:
+	if value in ["none", "protanopia", "deuteranopia", "tritanopia"]:
+		colorblind_mode = value
+		settings_changed.emit()
+
+func set_focus_indicators(value: bool) -> void:
+	focus_indicators = value
+	settings_changed.emit()
+
+func set_screen_reader_hints(value: bool) -> void:
+	screen_reader_hints = value
+	settings_changed.emit()
+
 func reset_to_defaults() -> void:
 	music_volume = DEFAULT_MUSIC_VOLUME
 	sfx_volume = DEFAULT_SFX_VOLUME
@@ -147,5 +172,8 @@ func reset_to_defaults() -> void:
 	reduced_motion = DEFAULT_REDUCED_MOTION
 	high_contrast = DEFAULT_HIGH_CONTRAST
 	large_text = DEFAULT_LARGE_TEXT
+	colorblind_mode = DEFAULT_COLORBLIND_MODE
+	focus_indicators = DEFAULT_FOCUS_INDICATORS
+	screen_reader_hints = DEFAULT_SCREEN_READER_HINTS
 	_apply_audio_settings()
 	settings_changed.emit()

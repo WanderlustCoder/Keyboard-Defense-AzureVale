@@ -1,10 +1,10 @@
 class_name LorePanel
 extends PanelContainer
-## Lore Browser Panel - View game lore and backstory
+## Lore Browser Panel - View game lore and backstory.
+## Migrated to use DesignSystem and ThemeColors for consistency.
 
 signal close_requested
 
-const ThemeColors = preload("res://ui/theme_colors.gd")
 const StoryManager = preload("res://game/story_manager.gd")
 
 var _category_list: ItemList = null

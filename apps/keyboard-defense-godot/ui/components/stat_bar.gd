@@ -3,8 +3,7 @@ class_name StatBar
 extends HBoxContainer
 ## A simple stat display component showing a label and value.
 ## Use for displaying stats like "Accuracy: 95%" or "WPM: 62".
-
-const ThemeColors = preload("res://ui/theme_colors.gd")
+## Migrated to use DesignSystem and ThemeColors for consistency.
 
 @export var stat_name: String = "Stat":
 	set(value):

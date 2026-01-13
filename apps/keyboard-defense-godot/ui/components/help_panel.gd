@@ -1,10 +1,9 @@
 class_name HelpPanel
 extends PanelContainer
-## Help Panel - Shows game commands organized by category
+## Help Panel - Shows game commands organized by category.
+## Migrated to use DesignSystem and ThemeColors for consistency.
 
 signal closed
-
-const ThemeColors = preload("res://ui/theme_colors.gd")
 
 enum Tab { BUILDING, INFO, ITEMS, ECONOMY, CHARACTER, QUESTS, MODES, COLLECTIONS, REFERENCE }
 
@@ -18,7 +17,7 @@ var _tab_buttons: Array[Button] = []
 var _content_scroll: ScrollContainer = null
 var _content_vbox: VBoxContainer = null
 
-# Command data organized by category
+# Command data organized by category (domain-specific colors)
 const COMMAND_CATEGORIES: Dictionary = {
 	"Building": {
 		"color": Color(0.4, 0.8, 1.0),
@@ -126,40 +125,33 @@ func _ready() -> void:
 
 
 func _build_ui() -> void:
-	custom_minimum_size = Vector2(620, 520)
+	custom_minimum_size = Vector2(DesignSystem.SIZE_PANEL_LG, 520)
 
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.08, 0.09, 0.12, 0.98)
-	style.border_color = ThemeColors.BORDER
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(8)
-	style.set_content_margin_all(12)
+	var style := DesignSystem.create_panel_style()
 	add_theme_stylebox_override("panel", style)
 
-	var main_vbox := VBoxContainer.new()
-	main_vbox.add_theme_constant_override("separation", 10)
+	var main_vbox := DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	add_child(main_vbox)
 
 	# Header
-	var header := HBoxContainer.new()
+	var header := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 	main_vbox.add_child(header)
 
 	var title := Label.new()
 	title.text = "HELP - COMMANDS"
-	title.add_theme_font_size_override("font_size", 18)
-	title.add_theme_color_override("font_color", ThemeColors.ACCENT)
+	DesignSystem.style_label(title, "h2", ThemeColors.ACCENT)
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header.add_child(title)
 
 	_close_btn = Button.new()
-	_close_btn.text = "X"
-	_close_btn.custom_minimum_size = Vector2(30, 30)
+	_close_btn.text = "✕"
+	_close_btn.custom_minimum_size = Vector2(DesignSystem.SIZE_BUTTON_SM, DesignSystem.SIZE_BUTTON_SM)
+	_style_close_button()
 	_close_btn.pressed.connect(_on_close_pressed)
 	header.add_child(_close_btn)
 
 	# Content area (tabs on left, commands on right)
-	var content_hbox := HBoxContainer.new()
-	content_hbox.add_theme_constant_override("separation", 10)
+	var content_hbox := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 	content_hbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	main_vbox.add_child(content_hbox)
 
@@ -169,8 +161,7 @@ func _build_ui() -> void:
 	_tab_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	content_hbox.add_child(_tab_scroll)
 
-	_tab_container = VBoxContainer.new()
-	_tab_container.add_theme_constant_override("separation", 4)
+	_tab_container = DesignSystem.create_vbox(DesignSystem.SPACE_XS)
 	_tab_scroll.add_child(_tab_container)
 
 	# Build category tabs
@@ -182,9 +173,9 @@ func _build_ui() -> void:
 
 		var btn := Button.new()
 		btn.text = category
-		btn.custom_minimum_size = Vector2(130, 32)
+		btn.custom_minimum_size = Vector2(130, DesignSystem.SIZE_BUTTON_SM)
+		_style_tab_button(btn, color)
 		btn.pressed.connect(_on_category_selected.bind(i))
-		btn.add_theme_color_override("font_color", color)
 		_tab_container.add_child(btn)
 		_tab_buttons.append(btn)
 
@@ -195,21 +186,35 @@ func _build_ui() -> void:
 	_content_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	content_hbox.add_child(_content_scroll)
 
-	_content_vbox = VBoxContainer.new()
-	_content_vbox.add_theme_constant_override("separation", 8)
+	_content_vbox = DesignSystem.create_vbox(DesignSystem.SPACE_SM)
 	_content_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_content_scroll.add_child(_content_vbox)
 
 	# Footer hint
 	var footer := Label.new()
 	footer.text = "During waves: Type enemy words OR special spell commands!"
-	footer.add_theme_font_size_override("font_size", 11)
-	footer.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(footer, "caption", ThemeColors.TEXT_DIM)
 	footer.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	main_vbox.add_child(footer)
 
 	_update_tab_buttons()
 	_build_commands_list()
+
+
+func _style_close_button() -> void:
+	var normal := DesignSystem.create_button_style(ThemeColors.BG_BUTTON, ThemeColors.BORDER)
+	var hover := DesignSystem.create_button_style(ThemeColors.ERROR.darkened(0.3), ThemeColors.ERROR)
+	_close_btn.add_theme_stylebox_override("normal", normal)
+	_close_btn.add_theme_stylebox_override("hover", hover)
+	_close_btn.add_theme_color_override("font_color", ThemeColors.TEXT)
+
+
+func _style_tab_button(btn: Button, accent_color: Color) -> void:
+	var normal := DesignSystem.create_button_style(ThemeColors.BG_BUTTON, ThemeColors.BORDER)
+	var hover := DesignSystem.create_button_style(ThemeColors.BG_BUTTON_HOVER, ThemeColors.BORDER_HIGHLIGHT)
+	btn.add_theme_stylebox_override("normal", normal)
+	btn.add_theme_stylebox_override("hover", hover)
+	btn.add_theme_color_override("font_color", accent_color)
 
 
 func show_help() -> void:
@@ -223,12 +228,11 @@ func _update_tab_buttons() -> void:
 	for i in range(_tab_buttons.size()):
 		var btn: Button = _tab_buttons[i]
 		if i == _current_tab:
-			var style := StyleBoxFlat.new()
-			style.bg_color = Color(0.15, 0.18, 0.25)
-			style.set_corner_radius_all(4)
+			var style := DesignSystem.create_button_style(ThemeColors.BG_CARD, ThemeColors.BORDER_HIGHLIGHT)
 			btn.add_theme_stylebox_override("normal", style)
 		else:
-			btn.remove_theme_stylebox_override("normal")
+			var style := DesignSystem.create_button_style(ThemeColors.BG_BUTTON, ThemeColors.BORDER)
+			btn.add_theme_stylebox_override("normal", style)
 
 
 func _clear_content() -> void:
@@ -251,12 +255,11 @@ func _build_commands_list() -> void:
 	# Category header
 	var header := Label.new()
 	header.text = category_name.to_upper()
-	header.add_theme_font_size_override("font_size", 16)
-	header.add_theme_color_override("font_color", color)
+	DesignSystem.style_label(header, "body", color)
 	_content_vbox.add_child(header)
 
 	var spacer := Control.new()
-	spacer.custom_minimum_size = Vector2(0, 5)
+	spacer.custom_minimum_size = Vector2(0, DesignSystem.SPACE_XS)
 	_content_vbox.add_child(spacer)
 
 	# Commands
@@ -271,28 +274,22 @@ func _create_command_widget(cmd_data: Dictionary, accent_color: Color) -> Contro
 
 	var container := PanelContainer.new()
 
-	var container_style := StyleBoxFlat.new()
-	container_style.bg_color = Color(0.06, 0.07, 0.1, 0.8)
+	var container_style := DesignSystem.create_elevated_style(ThemeColors.BG_CARD)
 	container_style.border_color = accent_color.darkened(0.5)
 	container_style.set_border_width_all(1)
-	container_style.set_corner_radius_all(4)
-	container_style.set_content_margin_all(8)
 	container.add_theme_stylebox_override("panel", container_style)
 
-	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 4)
+	var vbox := DesignSystem.create_vbox(DesignSystem.SPACE_XS)
 	container.add_child(vbox)
 
 	var cmd_label := Label.new()
 	cmd_label.text = cmd
-	cmd_label.add_theme_font_size_override("font_size", 13)
-	cmd_label.add_theme_color_override("font_color", accent_color)
+	DesignSystem.style_label(cmd_label, "body_small", accent_color)
 	vbox.add_child(cmd_label)
 
 	var desc_label := Label.new()
 	desc_label.text = desc
-	desc_label.add_theme_font_size_override("font_size", 11)
-	desc_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(desc_label, "caption", ThemeColors.TEXT_DIM)
 	desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	vbox.add_child(desc_label)
 

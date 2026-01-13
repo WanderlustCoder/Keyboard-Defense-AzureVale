@@ -1,11 +1,11 @@
 class_name EndlessModePanel
 extends PanelContainer
-## Endless Mode Panel - Shows endless mode info, high scores, milestones
+## Endless Mode Panel - Shows endless mode info, high scores, milestones.
+## Migrated to use DesignSystem and ThemeColors for consistency.
 
 signal closed
 signal start_endless_mode
 
-const ThemeColors = preload("res://ui/theme_colors.gd")
 const SimEndlessMode = preload("res://sim/endless_mode.gd")
 
 var _is_unlocked: bool = false
@@ -44,42 +44,35 @@ func _ready() -> void:
 
 
 func _build_ui() -> void:
-	custom_minimum_size = Vector2(560, 520)
+	custom_minimum_size = Vector2(DesignSystem.SIZE_PANEL_LG, 520)
 
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.08, 0.09, 0.12, 0.98)
-	style.border_color = ThemeColors.BORDER
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(8)
-	style.set_content_margin_all(12)
+	var style := DesignSystem.create_panel_style()
 	add_theme_stylebox_override("panel", style)
 
-	var main_vbox := VBoxContainer.new()
-	main_vbox.add_theme_constant_override("separation", 10)
+	var main_vbox := DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	add_child(main_vbox)
 
 	# Header
-	var header := HBoxContainer.new()
+	var header := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 	main_vbox.add_child(header)
 
 	var title := Label.new()
 	title.text = "ENDLESS MODE"
-	title.add_theme_font_size_override("font_size", 18)
-	title.add_theme_color_override("font_color", Color(1.0, 0.5, 0.3))
+	DesignSystem.style_label(title, "h2", Color(1.0, 0.5, 0.3))
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header.add_child(title)
 
 	_close_btn = Button.new()
-	_close_btn.text = "X"
-	_close_btn.custom_minimum_size = Vector2(30, 30)
+	_close_btn.text = "✕"
+	_close_btn.custom_minimum_size = Vector2(DesignSystem.SIZE_BUTTON_SM, DesignSystem.SIZE_BUTTON_SM)
+	_style_close_button()
 	_close_btn.pressed.connect(_on_close_pressed)
 	header.add_child(_close_btn)
 
 	# Subtitle
 	var subtitle := Label.new()
 	subtitle.text = "Infinite scaling challenge - How far can you go?"
-	subtitle.add_theme_font_size_override("font_size", 12)
-	subtitle.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(subtitle, "body_small", ThemeColors.TEXT_DIM)
 	main_vbox.add_child(subtitle)
 
 	# Content scroll
@@ -89,8 +82,7 @@ func _build_ui() -> void:
 	_content_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	main_vbox.add_child(_content_scroll)
 
-	_content_vbox = VBoxContainer.new()
-	_content_vbox.add_theme_constant_override("separation", 12)
+	_content_vbox = DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	_content_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_content_scroll.add_child(_content_vbox)
 
@@ -100,6 +92,14 @@ func _build_ui() -> void:
 	_start_btn.custom_minimum_size = Vector2(0, 40)
 	_start_btn.pressed.connect(_on_start_pressed)
 	main_vbox.add_child(_start_btn)
+
+
+func _style_close_button() -> void:
+	var normal := DesignSystem.create_button_style(ThemeColors.BG_BUTTON, ThemeColors.BORDER)
+	var hover := DesignSystem.create_button_style(ThemeColors.ERROR.darkened(0.3), ThemeColors.ERROR)
+	_close_btn.add_theme_stylebox_override("normal", normal)
+	_close_btn.add_theme_stylebox_override("hover", hover)
+	_close_btn.add_theme_color_override("font_color", ThemeColors.TEXT)
 
 
 func show_endless_mode(is_unlocked: bool, high_scores: Dictionary, current_day: int) -> void:

@@ -197,6 +197,11 @@ var active_item_buffs: Dictionary = {}  # {buff_type: {remaining: float, value: 
 var auto_tower_cooldowns: Dictionary = {}  # {tower_index: remaining_cooldown}
 var auto_tower_states: Dictionary = {}  # {tower_index: {heat, fuel, ramp_multiplier, etc.}}
 
+# Distance field cache (performance optimization)
+var _cached_dist_field: PackedInt32Array = PackedInt32Array()
+var _dist_field_valid: bool = false
+var _last_structure_hash: int = 0
+
 # Special command tracking
 var command_cooldowns: Dictionary = {}  # {command_id: remaining_cooldown}
 var command_effects: Dictionary = {}  # Active effects like {damage_charges: 5, crit_charges: 3, etc.}
@@ -1730,8 +1735,8 @@ func _process_defense(delta: float) -> void:
 		_spawn_next_enemy()
 		spawn_timer = spawn_interval
 
-	# Move all active enemies toward castle
-	var dist_field: PackedInt32Array = SimMap.compute_dist_to_base(state)
+	# Move all active enemies toward castle (uses cached distance field)
+	var dist_field: PackedInt32Array = _get_cached_dist_field()
 	for i in range(active_enemies.size() - 1, -1, -1):
 		var enemy: Dictionary = active_enemies[i]
 		_move_enemy(enemy, dist_field, delta)
@@ -1749,6 +1754,36 @@ func _process_defense(delta: float) -> void:
 	# Check wave completion
 	if active_enemies.is_empty() and enemy_queue.is_empty():
 		_wave_complete()
+
+
+## Get distance field with caching (major performance optimization)
+func _get_cached_dist_field() -> PackedInt32Array:
+	# Check if cache needs invalidation via structure hash
+	var current_hash := _compute_structure_hash()
+	if current_hash != _last_structure_hash:
+		_dist_field_valid = false
+		_last_structure_hash = current_hash
+
+	if not _dist_field_valid:
+		_cached_dist_field = SimMap.compute_dist_to_base(state)
+		_dist_field_valid = true
+
+	return _cached_dist_field
+
+
+## Compute a simple hash of structures for change detection
+func _compute_structure_hash() -> int:
+	var hash_val := 0
+	for key in state.structures.keys():
+		# Mix in both key and value
+		hash_val = hash_val * 31 + int(key)
+		hash_val = hash_val * 31 + str(state.structures[key]).hash()
+	return hash_val
+
+
+## Invalidate distance field cache (call when structures change)
+func _invalidate_dist_field_cache() -> void:
+	_dist_field_valid = false
 
 func _move_enemy(enemy: Dictionary, dist_field: PackedInt32Array, delta: float) -> void:
 	var pos: Vector2i = enemy.get("pos", Vector2i.ZERO)

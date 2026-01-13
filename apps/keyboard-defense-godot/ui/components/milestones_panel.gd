@@ -1,10 +1,10 @@
 class_name MilestonesPanel
 extends PanelContainer
-## Milestones Panel - Shows all milestone categories and progress toward next milestones
+## Milestones Panel - Shows all milestone categories and progress toward next milestones.
+## Migrated to use DesignSystem and ThemeColors for consistency.
 
 signal closed
 
-const ThemeColors = preload("res://ui/theme_colors.gd")
 const SimMilestones = preload("res://sim/milestones.gd")
 
 var _profile: Dictionary = {}
@@ -21,45 +21,36 @@ func _ready() -> void:
 
 
 func _build_ui() -> void:
-	custom_minimum_size = Vector2(480, 520)
+	custom_minimum_size = Vector2(DesignSystem.SIZE_PANEL_MD, 520)
 
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.08, 0.09, 0.12, 0.98)
-	style.border_color = ThemeColors.BORDER
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(8)
-	style.set_content_margin_all(12)
+	var style := DesignSystem.create_panel_style()
 	add_theme_stylebox_override("panel", style)
 
-	var main_vbox := VBoxContainer.new()
-	main_vbox.add_theme_constant_override("separation", 10)
+	var main_vbox := DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	add_child(main_vbox)
 
 	# Header
-	var header := HBoxContainer.new()
+	var header := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 	main_vbox.add_child(header)
 
 	var title := Label.new()
 	title.text = "MILESTONES"
-	title.add_theme_font_size_override("font_size", 18)
-	title.add_theme_color_override("font_color", Color(1.0, 0.84, 0.0))
+	DesignSystem.style_label(title, "h2", ThemeColors.RESOURCE_GOLD)
 	header.add_child(title)
 
-	var spacer := Control.new()
-	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	header.add_child(spacer)
+	header.add_child(DesignSystem.create_spacer())
 
 	_close_btn = Button.new()
-	_close_btn.text = "X"
-	_close_btn.custom_minimum_size = Vector2(30, 30)
+	_close_btn.text = "✕"
+	_close_btn.custom_minimum_size = Vector2(DesignSystem.SIZE_BUTTON_SM, DesignSystem.SIZE_BUTTON_SM)
+	_style_close_button()
 	_close_btn.pressed.connect(_on_close_pressed)
 	header.add_child(_close_btn)
 
 	# Subtitle
 	var subtitle := Label.new()
 	subtitle.text = "Track your typing achievements and personal records"
-	subtitle.add_theme_font_size_override("font_size", 12)
-	subtitle.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(subtitle, "caption", ThemeColors.TEXT_DIM)
 	main_vbox.add_child(subtitle)
 
 	# Content scroll
@@ -69,18 +60,24 @@ func _build_ui() -> void:
 	_content_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	main_vbox.add_child(_content_scroll)
 
-	_content_vbox = VBoxContainer.new()
-	_content_vbox.add_theme_constant_override("separation", 10)
+	_content_vbox = DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	_content_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_content_scroll.add_child(_content_vbox)
 
 	# Footer
 	var footer := Label.new()
 	footer.text = "Personal bests are highlighted in gold"
-	footer.add_theme_font_size_override("font_size", 11)
-	footer.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(footer, "caption", ThemeColors.TEXT_DIM)
 	footer.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	main_vbox.add_child(footer)
+
+
+func _style_close_button() -> void:
+	var normal := DesignSystem.create_button_style(ThemeColors.BG_BUTTON, ThemeColors.BORDER)
+	var hover := DesignSystem.create_button_style(ThemeColors.ERROR.darkened(0.3), ThemeColors.ERROR)
+	_close_btn.add_theme_stylebox_override("normal", normal)
+	_close_btn.add_theme_stylebox_override("hover", hover)
+	_close_btn.add_theme_color_override("font_color", ThemeColors.TEXT)
 
 
 func show_milestones(profile: Dictionary = {}) -> void:
@@ -175,32 +172,28 @@ func _build_category_section(category: SimMilestones.Category, title: String, cu
 	section_style.bg_color = color.darkened(0.85)
 	section_style.border_color = color.darkened(0.5)
 	section_style.set_border_width_all(1)
-	section_style.set_corner_radius_all(6)
-	section_style.set_content_margin_all(10)
+	section_style.set_corner_radius_all(DesignSystem.RADIUS_MD)
+	section_style.set_content_margin_all(DesignSystem.SPACE_MD)
 	section.add_theme_stylebox_override("panel", section_style)
 
 	_content_vbox.add_child(section)
 
-	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 6)
+	var vbox := DesignSystem.create_vbox(DesignSystem.SPACE_SM)
 	section.add_child(vbox)
 
 	# Header row
-	var header := HBoxContainer.new()
-	header.add_theme_constant_override("separation", 10)
+	var header := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 	vbox.add_child(header)
 
 	var title_label := Label.new()
 	title_label.text = title
-	title_label.add_theme_font_size_override("font_size", 13)
-	title_label.add_theme_color_override("font_color", color)
+	DesignSystem.style_label(title_label, "body_small", color)
 	title_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header.add_child(title_label)
 
 	var value_label := Label.new()
 	value_label.text = current_text
-	value_label.add_theme_font_size_override("font_size", 16)
-	value_label.add_theme_color_override("font_color", Color.WHITE)
+	DesignSystem.style_label(value_label, "body", ThemeColors.TEXT)
 	header.add_child(value_label)
 
 	# Progress bar and next milestone
@@ -209,8 +202,7 @@ func _build_category_section(category: SimMilestones.Category, title: String, cu
 
 	if next_milestone > 0:
 		# Progress bar
-		var bar_container := HBoxContainer.new()
-		bar_container.add_theme_constant_override("separation", 8)
+		var bar_container := DesignSystem.create_hbox(DesignSystem.SPACE_SM)
 		vbox.add_child(bar_container)
 
 		var progress_bg := PanelContainer.new()
@@ -219,19 +211,9 @@ func _build_category_section(category: SimMilestones.Category, title: String, cu
 		bar_container.add_child(progress_bg)
 
 		var bg_style := StyleBoxFlat.new()
-		bg_style.bg_color = Color(0.1, 0.1, 0.12)
-		bg_style.set_corner_radius_all(3)
+		bg_style.bg_color = ThemeColors.BG_INPUT
+		bg_style.set_corner_radius_all(DesignSystem.RADIUS_SM)
 		progress_bg.add_theme_stylebox_override("panel", bg_style)
-
-		var progress_fill := Control.new()
-		progress_fill.custom_minimum_size = Vector2(int(200 * progress), 12)
-		progress_fill.position = Vector2(2, 2)
-		progress_bg.add_child(progress_fill)
-
-		var fill_style := StyleBoxFlat.new()
-		fill_style.bg_color = color.darkened(0.3)
-		fill_style.set_corner_radius_all(2)
-		progress_fill.add_theme_stylebox_override("panel", fill_style)
 
 		# Note: We use a ColorRect for actual fill since Control can't draw by default
 		var fill_rect := ColorRect.new()
@@ -242,19 +224,16 @@ func _build_category_section(category: SimMilestones.Category, title: String, cu
 
 		var next_label := Label.new()
 		next_label.text = "Next: %s" % _format_milestone_value(category, next_milestone)
-		next_label.add_theme_font_size_override("font_size", 11)
-		next_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+		DesignSystem.style_label(next_label, "caption", ThemeColors.TEXT_DIM)
 		bar_container.add_child(next_label)
 	else:
 		var complete_label := Label.new()
 		complete_label.text = "All milestones achieved!"
-		complete_label.add_theme_font_size_override("font_size", 11)
-		complete_label.add_theme_color_override("font_color", Color(1.0, 0.84, 0.0))
+		DesignSystem.style_label(complete_label, "caption", ThemeColors.RESOURCE_GOLD)
 		vbox.add_child(complete_label)
 
 	# Milestone chips row
-	var chips_row := HBoxContainer.new()
-	chips_row.add_theme_constant_override("separation", 4)
+	var chips_row := DesignSystem.create_hbox(DesignSystem.SPACE_XS)
 	vbox.add_child(chips_row)
 
 	for milestone in milestones:
@@ -266,12 +245,11 @@ func _build_category_section(category: SimMilestones.Category, title: String, cu
 func _create_milestone_chip(category: SimMilestones.Category, milestone, is_achieved: bool, color: Color) -> Control:
 	var label := Label.new()
 	label.text = _format_milestone_value(category, milestone)
-	label.add_theme_font_size_override("font_size", 9)
 
 	if is_achieved:
-		label.add_theme_color_override("font_color", color)
+		DesignSystem.style_label(label, "caption", color)
 	else:
-		label.add_theme_color_override("font_color", Color(0.3, 0.3, 0.35))
+		DesignSystem.style_label(label, "caption", ThemeColors.TEXT_DISABLED)
 
 	return label
 

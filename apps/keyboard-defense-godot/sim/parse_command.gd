@@ -439,6 +439,35 @@ static func parse(command: String) -> Dictionary:
                 if category not in ["kingdom", "unit"]:
                     return {"ok": false, "error": "Category must be 'kingdom' or 'unit'"}
             return {"ok": true, "intent": SimIntents.make("ui_upgrades", {"category": category})}
+        "research":
+            if tokens.size() == 1:
+                return {"ok": true, "intent": SimIntents.make("research_show")}
+            var subcommand: String = tokens[1].to_lower()
+            if subcommand == "cancel":
+                return {"ok": true, "intent": SimIntents.make("research_cancel")}
+            # Otherwise it's a research ID to start
+            return {"ok": true, "intent": SimIntents.make("research_start", {"research_id": subcommand})}
+        "trade":
+            if tokens.size() == 1:
+                return {"ok": true, "intent": SimIntents.make("trade_show")}
+            # Parse: trade <amount> <resource> for/to <resource>
+            if tokens.size() < 5:
+                return {"ok": false, "error": "Usage: trade <amount> <resource> for <resource>"}
+            if not tokens[1].is_valid_int():
+                return {"ok": false, "error": "Amount must be a number."}
+            var amount: int = int(tokens[1])
+            if amount <= 0:
+                return {"ok": false, "error": "Amount must be positive."}
+            var from_resource: String = tokens[2].to_lower()
+            var connector: String = tokens[3].to_lower()
+            if connector != "for" and connector != "to":
+                return {"ok": false, "error": "Usage: trade <amount> <resource> for <resource>"}
+            var to_resource: String = tokens[4].to_lower()
+            return {"ok": true, "intent": SimIntents.make("trade_execute", {
+                "from_resource": from_resource,
+                "to_resource": to_resource,
+                "amount": amount
+            })}
         # Quick action commands for open-world exploration
         "look", "l":
             if tokens.size() > 1:

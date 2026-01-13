@@ -1,10 +1,10 @@
 class_name BestiaryPanel
 extends PanelContainer
-## Bestiary Panel - View encountered enemies and their information
+## Bestiary Panel - View encountered enemies and their information.
+## Migrated to use DesignSystem and ThemeColors for consistency.
 
 signal close_requested
 
-const ThemeColors = preload("res://ui/theme_colors.gd")
 const SimBestiary = preload("res://sim/bestiary.gd")
 const SimEnemyTypes = preload("res://sim/enemy_types.gd")
 const SimEnemyAbilities = preload("res://sim/enemy_abilities.gd")
@@ -32,82 +32,75 @@ func _ready() -> void:
 
 
 func _build_ui() -> void:
-	custom_minimum_size = Vector2(750, 500)
+	custom_minimum_size = Vector2(DesignSystem.SIZE_PANEL_LG + 100, 500)
 
-	var margin := MarginContainer.new()
-	margin.add_theme_constant_override("margin_left", 16)
-	margin.add_theme_constant_override("margin_right", 16)
-	margin.add_theme_constant_override("margin_top", 12)
-	margin.add_theme_constant_override("margin_bottom", 12)
-	add_child(margin)
+	var style := DesignSystem.create_panel_style()
+	add_theme_stylebox_override("panel", style)
 
-	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 8)
-	margin.add_child(vbox)
+	var main_vbox := DesignSystem.create_vbox(DesignSystem.SPACE_SM)
+	add_child(main_vbox)
 
 	# Header
-	var header := HBoxContainer.new()
-	vbox.add_child(header)
+	var header := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
+	main_vbox.add_child(header)
 
 	_title_label = Label.new()
-	_title_label.text = "Bestiary"
-	_title_label.add_theme_font_size_override("font_size", 20)
-	_title_label.add_theme_color_override("font_color", ThemeColors.ACCENT)
+	_title_label.text = "BESTIARY"
+	DesignSystem.style_label(_title_label, "h2", ThemeColors.ACCENT)
 	_title_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header.add_child(_title_label)
 
 	_close_btn = Button.new()
-	_close_btn.text = "X"
+	_close_btn.text = "✕"
+	_close_btn.custom_minimum_size = Vector2(DesignSystem.SIZE_BUTTON_SM, DesignSystem.SIZE_BUTTON_SM)
+	_style_close_button()
 	_close_btn.pressed.connect(_on_close_pressed)
 	header.add_child(_close_btn)
 
 	# Summary
 	_summary_label = Label.new()
-	_summary_label.add_theme_font_size_override("font_size", 12)
-	_summary_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
-	vbox.add_child(_summary_label)
+	DesignSystem.style_label(_summary_label, "caption", ThemeColors.TEXT_DIM)
+	main_vbox.add_child(_summary_label)
 
 	# Tab bar
-	_tab_bar = HBoxContainer.new()
-	_tab_bar.add_theme_constant_override("separation", 2)
-	vbox.add_child(_tab_bar)
+	_tab_bar = DesignSystem.create_hbox(2)
+	main_vbox.add_child(_tab_bar)
 
-	# Create tab buttons
+	# Create tab buttons with domain-specific tier colors
 	var tabs: Array[Dictionary] = [
 		{"name": "Minions", "tab": Tab.MINIONS, "color": SimEnemyTypes.TIER_COLORS.get(SimEnemyTypes.Tier.MINION, Color.GRAY)},
 		{"name": "Soldiers", "tab": Tab.SOLDIERS, "color": SimEnemyTypes.TIER_COLORS.get(SimEnemyTypes.Tier.SOLDIER, Color.GREEN)},
 		{"name": "Elites", "tab": Tab.ELITES, "color": SimEnemyTypes.TIER_COLORS.get(SimEnemyTypes.Tier.ELITE, Color.BLUE)},
 		{"name": "Champions", "tab": Tab.CHAMPIONS, "color": SimEnemyTypes.TIER_COLORS.get(SimEnemyTypes.Tier.CHAMPION, Color.PURPLE)},
 		{"name": "Bosses", "tab": Tab.BOSSES, "color": SimEnemyTypes.TIER_COLORS.get(SimEnemyTypes.Tier.BOSS, Color.ORANGE)},
-		{"name": "Regional", "tab": Tab.REGIONAL, "color": Color(0.5, 0.7, 0.5)},
-		{"name": "Abilities", "tab": Tab.ABILITIES, "color": Color(0.6, 0.4, 0.8)}
+		{"name": "Regional", "tab": Tab.REGIONAL, "color": ThemeColors.SUCCESS.darkened(0.2)},
+		{"name": "Abilities", "tab": Tab.ABILITIES, "color": ThemeColors.RARITY_EPIC}
 	]
 
 	for tab_info in tabs:
 		var btn := Button.new()
 		btn.text = str(tab_info["name"])
 		btn.toggle_mode = true
-		btn.add_theme_font_size_override("font_size", 11)
+		DesignSystem.style_label(btn, "caption", ThemeColors.TEXT)
 		var tab_val: Tab = tab_info["tab"]
 		btn.pressed.connect(_on_tab_selected.bind(tab_val))
 		_tab_bar.add_child(btn)
 		_tab_buttons.append(btn)
 
 	# Separator
-	var sep := HSeparator.new()
-	vbox.add_child(sep)
+	main_vbox.add_child(DesignSystem.create_separator())
 
 	# Content area - split view
-	var content := HBoxContainer.new()
-	content.add_theme_constant_override("separation", 12)
+	var content := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 	content.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	vbox.add_child(content)
+	main_vbox.add_child(content)
 
 	# List
 	_list_container = ItemList.new()
 	_list_container.custom_minimum_size = Vector2(200, 0)
 	_list_container.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_list_container.item_selected.connect(_on_item_selected)
+	_style_item_list()
 	content.add_child(_list_container)
 
 	# Detail display
@@ -121,9 +114,26 @@ func _build_ui() -> void:
 	# Hint
 	var hint := Label.new()
 	hint.text = "Select an entry to view details. Use LEFT/RIGHT to change tabs. ESC to close."
-	hint.add_theme_font_size_override("font_size", 11)
-	hint.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
-	vbox.add_child(hint)
+	DesignSystem.style_label(hint, "caption", ThemeColors.TEXT_DIM)
+	main_vbox.add_child(hint)
+
+
+func _style_close_button() -> void:
+	var normal := DesignSystem.create_button_style(ThemeColors.BG_BUTTON, ThemeColors.BORDER)
+	var hover := DesignSystem.create_button_style(ThemeColors.ERROR.darkened(0.3), ThemeColors.ERROR)
+	_close_btn.add_theme_stylebox_override("normal", normal)
+	_close_btn.add_theme_stylebox_override("hover", hover)
+	_close_btn.add_theme_color_override("font_color", ThemeColors.TEXT)
+
+
+func _style_item_list() -> void:
+	var bg_style := StyleBoxFlat.new()
+	bg_style.bg_color = ThemeColors.BG_INPUT
+	bg_style.set_corner_radius_all(DesignSystem.RADIUS_SM)
+	_list_container.add_theme_stylebox_override("panel", bg_style)
+	_list_container.add_theme_color_override("font_color", ThemeColors.TEXT)
+	_list_container.add_theme_color_override("font_selected_color", ThemeColors.TEXT)
+	_list_container.add_theme_color_override("guide_color", ThemeColors.BORDER)
 
 
 func show_bestiary(profile: Dictionary) -> void:
@@ -203,7 +213,7 @@ func _populate_tier(tier: int) -> void:
 		if encountered:
 			_list_container.set_item_custom_fg_color(idx, tier_color)
 		else:
-			_list_container.set_item_custom_fg_color(idx, Color(0.4, 0.4, 0.4))
+			_list_container.set_item_custom_fg_color(idx, ThemeColors.TEXT_DISABLED)
 
 
 func _populate_bosses() -> void:
@@ -225,7 +235,7 @@ func _populate_bosses() -> void:
 		if encountered:
 			_list_container.set_item_custom_fg_color(idx, boss_color)
 		else:
-			_list_container.set_item_custom_fg_color(idx, Color(0.4, 0.4, 0.4))
+			_list_container.set_item_custom_fg_color(idx, ThemeColors.TEXT_DISABLED)
 
 
 func _populate_regional() -> void:
@@ -264,7 +274,7 @@ func _populate_regional() -> void:
 			if encountered:
 				_list_container.set_item_custom_fg_color(idx, region_color.lightened(0.2))
 			else:
-				_list_container.set_item_custom_fg_color(idx, Color(0.4, 0.4, 0.4))
+				_list_container.set_item_custom_fg_color(idx, ThemeColors.TEXT_DISABLED)
 
 
 func _populate_abilities() -> void:
@@ -286,7 +296,7 @@ func _populate_abilities() -> void:
 
 		# Add type header
 		var header_idx: int = _list_container.add_item("-- %s --" % type_name)
-		_list_container.set_item_custom_fg_color(header_idx, Color(0.6, 0.4, 0.8))
+		_list_container.set_item_custom_fg_color(header_idx, ThemeColors.RARITY_EPIC)
 		_list_container.set_item_selectable(header_idx, false)
 		_list_container.set_item_metadata(header_idx, "")
 
@@ -301,9 +311,9 @@ func _populate_abilities() -> void:
 			_list_container.set_item_metadata(idx, ability_id)
 
 			if encountered:
-				_list_container.set_item_custom_fg_color(idx, Color(0.7, 0.5, 0.9))
+				_list_container.set_item_custom_fg_color(idx, ThemeColors.RARITY_EPIC.lightened(0.2))
 			else:
-				_list_container.set_item_custom_fg_color(idx, Color(0.4, 0.4, 0.4))
+				_list_container.set_item_custom_fg_color(idx, ThemeColors.TEXT_DISABLED)
 
 
 func _on_tab_selected(tab: Tab) -> void:

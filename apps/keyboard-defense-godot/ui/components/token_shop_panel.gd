@@ -1,11 +1,10 @@
 class_name TokenShopPanel
 extends PanelContainer
-## Token Shop Panel - Spend challenge tokens on rewards
+## Token Shop Panel - Spend challenge tokens on rewards.
+## Migrated to use DesignSystem and ThemeColors for consistency.
 
 signal closed
 signal item_purchased(item_id: String, cost: int)
-
-const ThemeColors = preload("res://ui/theme_colors.gd")
 
 # UI elements
 var _close_btn: Button = null
@@ -77,43 +76,34 @@ func _ready() -> void:
 
 
 func _build_ui() -> void:
-	custom_minimum_size = Vector2(400, 500)
+	custom_minimum_size = Vector2(DesignSystem.SIZE_PANEL_MD, 500)
 
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.08, 0.09, 0.12, 0.98)
-	style.border_color = ThemeColors.BORDER
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(8)
-	style.set_content_margin_all(12)
+	var style := DesignSystem.create_panel_style()
 	add_theme_stylebox_override("panel", style)
 
-	var main_vbox := VBoxContainer.new()
-	main_vbox.add_theme_constant_override("separation", 10)
+	var main_vbox := DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	add_child(main_vbox)
 
 	# Header
-	var header := HBoxContainer.new()
+	var header := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 	main_vbox.add_child(header)
 
 	var title := Label.new()
 	title.text = "TOKEN SHOP"
-	title.add_theme_font_size_override("font_size", 18)
-	title.add_theme_color_override("font_color", Color(0.9, 0.7, 0.3))
+	DesignSystem.style_label(title, "h2", Color(0.9, 0.7, 0.3))
 	header.add_child(title)
 
-	var spacer := Control.new()
-	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	header.add_child(spacer)
+	header.add_child(DesignSystem.create_spacer())
 
 	_close_btn = Button.new()
-	_close_btn.text = "X"
-	_close_btn.custom_minimum_size = Vector2(30, 30)
+	_close_btn.text = "✕"
+	_close_btn.custom_minimum_size = Vector2(DesignSystem.SIZE_BUTTON_SM, DesignSystem.SIZE_BUTTON_SM)
+	_style_close_button()
 	_close_btn.pressed.connect(_on_close_pressed)
 	header.add_child(_close_btn)
 
 	# Balance display
-	var balance_hbox := HBoxContainer.new()
-	balance_hbox.add_theme_constant_override("separation", 8)
+	var balance_hbox := DesignSystem.create_hbox(DesignSystem.SPACE_SM)
 	main_vbox.add_child(balance_hbox)
 
 	var balance_icon := Label.new()
@@ -135,10 +125,17 @@ func _build_ui() -> void:
 	_content_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	main_vbox.add_child(_content_scroll)
 
-	_content_vbox = VBoxContainer.new()
-	_content_vbox.add_theme_constant_override("separation", 8)
+	_content_vbox = DesignSystem.create_vbox(DesignSystem.SPACE_SM)
 	_content_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_content_scroll.add_child(_content_vbox)
+
+
+func _style_close_button() -> void:
+	var normal := DesignSystem.create_button_style(ThemeColors.BG_BUTTON, ThemeColors.BORDER)
+	var hover := DesignSystem.create_button_style(ThemeColors.ERROR.darkened(0.3), ThemeColors.ERROR)
+	_close_btn.add_theme_stylebox_override("normal", normal)
+	_close_btn.add_theme_stylebox_override("hover", hover)
+	_close_btn.add_theme_color_override("font_color", ThemeColors.TEXT)
 
 
 func show_shop(profile: Dictionary, balance: int) -> void:

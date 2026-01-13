@@ -1,10 +1,9 @@
 class_name BalanceReferencePanel
 extends PanelContainer
-## Balance Reference Panel - Explains game economy and pacing mechanics
+## Balance Reference Panel - Explains game economy and pacing mechanics.
+## Migrated to use DesignSystem and ThemeColors for consistency.
 
 signal closed
-
-const ThemeColors = preload("res://ui/theme_colors.gd")
 
 # UI elements
 var _close_btn: Button = null
@@ -69,45 +68,36 @@ func _ready() -> void:
 
 
 func _build_ui() -> void:
-	custom_minimum_size = Vector2(500, 560)
+	custom_minimum_size = Vector2(DesignSystem.SIZE_PANEL_MD, 560)
 
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.08, 0.09, 0.12, 0.98)
-	style.border_color = ThemeColors.BORDER
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(8)
-	style.set_content_margin_all(12)
+	var style := DesignSystem.create_panel_style()
 	add_theme_stylebox_override("panel", style)
 
-	var main_vbox := VBoxContainer.new()
-	main_vbox.add_theme_constant_override("separation", 10)
+	var main_vbox := DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	add_child(main_vbox)
 
 	# Header
-	var header := HBoxContainer.new()
+	var header := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 	main_vbox.add_child(header)
 
 	var title := Label.new()
 	title.text = "BALANCE REFERENCE"
-	title.add_theme_font_size_override("font_size", 18)
-	title.add_theme_color_override("font_color", Color(0.6, 0.8, 1.0))
+	DesignSystem.style_label(title, "h2", ThemeColors.INFO)
 	header.add_child(title)
 
-	var spacer := Control.new()
-	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	header.add_child(spacer)
+	header.add_child(DesignSystem.create_spacer())
 
 	_close_btn = Button.new()
-	_close_btn.text = "X"
-	_close_btn.custom_minimum_size = Vector2(30, 30)
+	_close_btn.text = "✕"
+	_close_btn.custom_minimum_size = Vector2(DesignSystem.SIZE_BUTTON_SM, DesignSystem.SIZE_BUTTON_SM)
+	_style_close_button()
 	_close_btn.pressed.connect(_on_close_pressed)
 	header.add_child(_close_btn)
 
 	# Subtitle
 	var subtitle := Label.new()
 	subtitle.text = "Game economy and pacing mechanics"
-	subtitle.add_theme_font_size_override("font_size", 12)
-	subtitle.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(subtitle, "body_small", ThemeColors.TEXT_DIM)
 	main_vbox.add_child(subtitle)
 
 	# Content scroll
@@ -117,18 +107,24 @@ func _build_ui() -> void:
 	_content_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	main_vbox.add_child(_content_scroll)
 
-	_content_vbox = VBoxContainer.new()
-	_content_vbox.add_theme_constant_override("separation", 10)
+	_content_vbox = DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	_content_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_content_scroll.add_child(_content_vbox)
 
 	# Footer
 	var footer := Label.new()
 	footer.text = "Understanding balance helps optimize your strategy"
-	footer.add_theme_font_size_override("font_size", 11)
-	footer.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(footer, "caption", ThemeColors.TEXT_DIM)
 	footer.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	main_vbox.add_child(footer)
+
+
+func _style_close_button() -> void:
+	var normal := DesignSystem.create_button_style(ThemeColors.BG_BUTTON, ThemeColors.BORDER)
+	var hover := DesignSystem.create_button_style(ThemeColors.ERROR.darkened(0.3), ThemeColors.ERROR)
+	_close_btn.add_theme_stylebox_override("normal", normal)
+	_close_btn.add_theme_stylebox_override("hover", hover)
+	_close_btn.add_theme_color_override("font_color", ThemeColors.TEXT)
 
 
 func show_balance_reference() -> void:
@@ -162,15 +158,14 @@ func _build_content() -> void:
 
 
 func _build_resource_caps_section() -> void:
-	var section := _create_section_panel("RESOURCE CAPS", Color(0.6, 0.8, 1.0))
+	var section := _create_section_panel("RESOURCE CAPS", ThemeColors.INFO)
 	_content_vbox.add_child(section)
 
 	var vbox: VBoxContainer = section.get_child(0)
 
 	var desc := Label.new()
 	desc.text = "Excess resources are trimmed at the start of each day:"
-	desc.add_theme_font_size_override("font_size", 11)
-	desc.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(desc, "caption", ThemeColors.TEXT_DIM)
 	vbox.add_child(desc)
 
 	for cap_info in RESOURCE_CAPS:
@@ -178,14 +173,12 @@ func _build_resource_caps_section() -> void:
 		var caps: Dictionary = cap_info.get("caps", {})
 		var color: Color = cap_info.get("color", Color.WHITE)
 
-		var hbox := HBoxContainer.new()
-		hbox.add_theme_constant_override("separation", 15)
+		var hbox := DesignSystem.create_hbox(DesignSystem.SPACE_LG)
 		vbox.add_child(hbox)
 
 		var day_label := Label.new()
 		day_label.text = day_str
-		day_label.add_theme_font_size_override("font_size", 11)
-		day_label.add_theme_color_override("font_color", color)
+		DesignSystem.style_label(day_label, "caption", color)
 		day_label.custom_minimum_size = Vector2(70, 0)
 		hbox.add_child(day_label)
 
@@ -198,13 +191,12 @@ func _build_resource_caps_section() -> void:
 
 		var caps_label := Label.new()
 		caps_label.text = caps_text
-		caps_label.add_theme_font_size_override("font_size", 10)
-		caps_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+		DesignSystem.style_label(caps_label, "caption", ThemeColors.TEXT_DIM)
 		hbox.add_child(caps_label)
 
 
 func _build_catchup_section() -> void:
-	var section := _create_section_panel("CATCH-UP MECHANICS", Color(0.5, 0.8, 0.3))
+	var section := _create_section_panel("CATCH-UP MECHANICS", ThemeColors.SUCCESS)
 	_content_vbox.add_child(section)
 
 	var vbox: VBoxContainer = section.get_child(0)
@@ -219,25 +211,22 @@ func _build_catchup_section() -> void:
 		container_style.bg_color = color.darkened(0.85)
 		container_style.border_color = color.darkened(0.6)
 		container_style.set_border_width_all(1)
-		container_style.set_corner_radius_all(4)
-		container_style.set_content_margin_all(8)
+		container_style.set_corner_radius_all(DesignSystem.RADIUS_XS)
+		container_style.set_content_margin_all(DesignSystem.SPACE_SM)
 		container.add_theme_stylebox_override("panel", container_style)
 		vbox.add_child(container)
 
-		var inner_vbox := VBoxContainer.new()
-		inner_vbox.add_theme_constant_override("separation", 3)
+		var inner_vbox := DesignSystem.create_vbox(2)
 		container.add_child(inner_vbox)
 
 		var name_label := Label.new()
 		name_label.text = name_str
-		name_label.add_theme_font_size_override("font_size", 11)
-		name_label.add_theme_color_override("font_color", color)
+		DesignSystem.style_label(name_label, "caption", color)
 		inner_vbox.add_child(name_label)
 
 		var desc_label := Label.new()
 		desc_label.text = description
-		desc_label.add_theme_font_size_override("font_size", 10)
-		desc_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+		DesignSystem.style_label(desc_label, "caption", ThemeColors.TEXT_DIM)
 		desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		inner_vbox.add_child(desc_label)
 
@@ -250,26 +239,23 @@ func _build_typing_section() -> void:
 
 	var desc := Label.new()
 	desc.text = "Consecutive hits increase tower damage:"
-	desc.add_theme_font_size_override("font_size", 11)
-	desc.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(desc, "caption", ThemeColors.TEXT_DIM)
 	vbox.add_child(desc)
 
 	var grid := GridContainer.new()
 	grid.columns = 5
-	grid.add_theme_constant_override("h_separation", 15)
-	grid.add_theme_constant_override("v_separation", 4)
+	grid.add_theme_constant_override("h_separation", DesignSystem.SPACE_LG)
+	grid.add_theme_constant_override("v_separation", DesignSystem.SPACE_XS)
 	vbox.add_child(grid)
 
 	for bonus_info in TYPING_BONUSES:
 		var thresholds: Array = bonus_info.get("thresholds", [])
 		for threshold in thresholds:
 			var combo: int = int(threshold.get("combo", 0))
-			var bonus: String = str(threshold.get("bonus", ""))
 
 			var combo_label := Label.new()
 			combo_label.text = "%d+" % combo
-			combo_label.add_theme_font_size_override("font_size", 11)
-			combo_label.add_theme_color_override("font_color", Color(0.9, 0.6, 0.3))
+			DesignSystem.style_label(combo_label, "caption", Color(0.9, 0.6, 0.3))
 			grid.add_child(combo_label)
 
 	# Second row: bonuses
@@ -280,55 +266,48 @@ func _build_typing_section() -> void:
 
 			var bonus_label := Label.new()
 			bonus_label.text = bonus
-			bonus_label.add_theme_font_size_override("font_size", 10)
-			bonus_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+			DesignSystem.style_label(bonus_label, "caption", ThemeColors.TEXT_DIM)
 			grid.add_child(bonus_label)
 
 
 func _build_wave_section() -> void:
-	var section := _create_section_panel("WAVE SCALING", Color(0.9, 0.4, 0.4))
+	var section := _create_section_panel("WAVE SCALING", ThemeColors.ERROR)
 	_content_vbox.add_child(section)
 
 	var vbox: VBoxContainer = section.get_child(0)
 
 	var formula_desc := Label.new()
 	formula_desc.text = WAVE_FORMULA.get("description", "")
-	formula_desc.add_theme_font_size_override("font_size", 11)
-	formula_desc.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(formula_desc, "caption", ThemeColors.TEXT_DIM)
 	formula_desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	vbox.add_child(formula_desc)
 
-	var stats_hbox := HBoxContainer.new()
-	stats_hbox.add_theme_constant_override("separation", 20)
+	var stats_hbox := DesignSystem.create_hbox(DesignSystem.SPACE_XL)
 	vbox.add_child(stats_hbox)
 
-	_add_stat_box(stats_hbox, "Base HP", str(WAVE_FORMULA.get("base_hp", 30)), Color(0.9, 0.4, 0.4))
+	_add_stat_box(stats_hbox, "Base HP", str(WAVE_FORMULA.get("base_hp", 30)), ThemeColors.ERROR)
 	_add_stat_box(stats_hbox, "HP/Day", "+%d" % WAVE_FORMULA.get("hp_per_day", 15), Color(0.9, 0.6, 0.3))
 	_add_stat_box(stats_hbox, "Boss", "x%.1f" % WAVE_FORMULA.get("boss_multiplier", 3.0), Color(0.9, 0.5, 0.9))
 
 	# Example calculations
 	var examples_label := Label.new()
 	examples_label.text = "Examples: Day 1 = 45 HP, Day 5 = 105 HP, Day 10 = 180 HP"
-	examples_label.add_theme_font_size_override("font_size", 10)
-	examples_label.add_theme_color_override("font_color", Color(0.5, 0.6, 0.7))
+	DesignSystem.style_label(examples_label, "caption", ThemeColors.TEXT_DIM)
 	vbox.add_child(examples_label)
 
 
 func _add_stat_box(parent: Control, label: String, value: String, color: Color) -> void:
-	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 0)
+	var vbox := DesignSystem.create_vbox(0)
 	parent.add_child(vbox)
 
 	var label_node := Label.new()
 	label_node.text = label
-	label_node.add_theme_font_size_override("font_size", 10)
-	label_node.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(label_node, "caption", ThemeColors.TEXT_DIM)
 	vbox.add_child(label_node)
 
 	var value_node := Label.new()
 	value_node.text = value
-	value_node.add_theme_font_size_override("font_size", 12)
-	value_node.add_theme_color_override("font_color", color)
+	DesignSystem.style_label(value_node, "body_small", color)
 	vbox.add_child(value_node)
 
 
@@ -339,18 +318,16 @@ func _create_section_panel(title: String, color: Color) -> PanelContainer:
 	panel_style.bg_color = color.darkened(0.85)
 	panel_style.border_color = color.darkened(0.5)
 	panel_style.set_border_width_all(1)
-	panel_style.set_corner_radius_all(6)
-	panel_style.set_content_margin_all(10)
+	panel_style.set_corner_radius_all(DesignSystem.RADIUS_SM)
+	panel_style.set_content_margin_all(DesignSystem.SPACE_MD)
 	container.add_theme_stylebox_override("panel", panel_style)
 
-	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 8)
+	var vbox := DesignSystem.create_vbox(DesignSystem.SPACE_SM)
 	container.add_child(vbox)
 
 	var header := Label.new()
 	header.text = title
-	header.add_theme_font_size_override("font_size", 12)
-	header.add_theme_color_override("font_color", color)
+	DesignSystem.style_label(header, "body_small", color)
 	vbox.add_child(header)
 
 	return container

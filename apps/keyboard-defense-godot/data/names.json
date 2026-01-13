@@ -1,0 +1,225 @@
+{
+  "version": 1,
+  "description": "Name pools for procedural citizen generation",
+  "first_names": {
+    "common": [
+      "Ada", "Aiden", "Alma", "Amos", "Anna", "Asher", "Bea", "Ben", "Beth", "Birch",
+      "Cal", "Cara", "Clara", "Cole", "Cora", "Dale", "Dana", "Dara", "Drew", "Eli",
+      "Ella", "Emma", "Evan", "Eve", "Fern", "Finn", "Flora", "Gale", "Glen", "Grace",
+      "Grant", "Gwen", "Hank", "Hazel", "Heath", "Hope", "Hugh", "Ida", "Iris", "Ivy",
+      "Jack", "Jane", "Jed", "Joel", "John", "Joy", "June", "Kate", "Kent", "Lars",
+      "Leah", "Lena", "Leo", "Lily", "Luke", "Lynn", "Mae", "Mark", "Mary", "Max",
+      "Mira", "Moss", "Ned", "Neil", "Nell", "Nora", "Oak", "Olga", "Otto", "Owen",
+      "Paul", "Peg", "Penn", "Reed", "Rex", "Rhea", "Rose", "Roy", "Ruth", "Sam",
+      "Sara", "Seth", "Shaw", "Tate", "Thea", "Todd", "Tom", "Vera", "Wade", "Will",
+      "Wren", "Zara", "Zeke"
+    ],
+    "noble": [
+      "Alaric", "Aldric", "Baldwin", "Cedric", "Edmund", "Eleanor", "Frederick",
+      "Gideon", "Helena", "Isolde", "Leopold", "Margery", "Oswald", "Rosalind",
+      "Sigmund", "Theodora", "Ulric", "Vivienne", "Wilhelm", "Yolanda"
+    ],
+    "rustic": [
+      "Barley", "Bramble", "Clover", "Flint", "Harvest", "Meadow", "Miller",
+      "Pebble", "Potter", "Rye", "Sage", "Sorrel", "Stone", "Tanner", "Thatcher",
+      "Wheat", "Willow"
+    ]
+  },
+  "last_names": {
+    "common": [
+      "Baker", "Black", "Brown", "Clay", "Cole", "Cook", "Crane", "Dale", "Drake",
+      "Dunn", "Finch", "Ford", "Fox", "Frost", "Grant", "Gray", "Green", "Grove",
+      "Hall", "Hart", "Hayes", "Heath", "Hill", "Hunt", "Kent", "King", "Lake",
+      "Lane", "Long", "Marsh", "Mason", "Mills", "Moon", "Nash", "North", "Park",
+      "Pike", "Pope", "Price", "Quinn", "Reed", "Ridge", "Rock", "Shaw", "Shore",
+      "Smith", "Snow", "Stone", "Storm", "Swift", "Thorne", "Vale", "Ward", "Webb",
+      "Wells", "West", "White", "Wilde", "Wolf", "Wood", "Wren", "York"
+    ],
+    "trade": [
+      "Archer", "Bowman", "Brewer", "Builder", "Carter", "Carver", "Cooper",
+      "Farmer", "Fisher", "Fletcher", "Forger", "Gardner", "Harper", "Hunter",
+      "Mason", "Miller", "Potter", "Sawyer", "Shepherd", "Smith", "Tanner",
+      "Taylor", "Thatcher", "Turner", "Weaver", "Wheeler", "Wright"
+    ],
+    "place": [
+      "Ashford", "Blackwood", "Brookside", "Clearwater", "Eastgate", "Fairfield",
+      "Greenhill", "Highmore", "Irondale", "Lakewood", "Millbrook", "Northfield",
+      "Oakridge", "Pinewood", "Riverside", "Southbrook", "Stonegate", "Westmoor",
+      "Whitehall", "Woodvale"
+    ]
+  },
+  "traits": {
+    "positive": [
+      {
+        "id": "hardworking",
+        "name": "Hardworking",
+        "description": "Works tirelessly without complaint",
+        "effect": {"production_bonus": 0.15}
+      },
+      {
+        "id": "skilled",
+        "name": "Skilled",
+        "description": "Natural talent for their profession",
+        "effect": {"skill_growth": 0.25}
+      },
+      {
+        "id": "cheerful",
+        "name": "Cheerful",
+        "description": "Brightens the mood of those around them",
+        "effect": {"morale_aura": 5}
+      },
+      {
+        "id": "resilient",
+        "name": "Resilient",
+        "description": "Recovers quickly from hardship",
+        "effect": {"morale_recovery": 0.20}
+      },
+      {
+        "id": "frugal",
+        "name": "Frugal",
+        "description": "Requires less food",
+        "effect": {"upkeep_reduction": 0.25}
+      },
+      {
+        "id": "strong",
+        "name": "Strong",
+        "description": "Can do the work of many",
+        "effect": {"production_bonus": 0.10, "carry_bonus": 2}
+      },
+      {
+        "id": "quick_learner",
+        "name": "Quick Learner",
+        "description": "Masters new skills rapidly",
+        "effect": {"skill_growth": 0.50}
+      },
+      {
+        "id": "loyal",
+        "name": "Loyal",
+        "description": "Devoted to the kingdom",
+        "effect": {"morale_floor": 30}
+      }
+    ],
+    "negative": [
+      {
+        "id": "lazy",
+        "name": "Lazy",
+        "description": "Does the bare minimum",
+        "effect": {"production_bonus": -0.20}
+      },
+      {
+        "id": "clumsy",
+        "name": "Clumsy",
+        "description": "Prone to accidents",
+        "effect": {"production_bonus": -0.10, "accident_chance": 0.05}
+      },
+      {
+        "id": "grumpy",
+        "name": "Grumpy",
+        "description": "Complains constantly",
+        "effect": {"morale_aura": -3}
+      },
+      {
+        "id": "fragile",
+        "name": "Fragile",
+        "description": "Easily discouraged",
+        "effect": {"morale_recovery": -0.15}
+      },
+      {
+        "id": "glutton",
+        "name": "Glutton",
+        "description": "Always hungry",
+        "effect": {"upkeep_increase": 0.50}
+      },
+      {
+        "id": "slow_learner",
+        "name": "Slow Learner",
+        "description": "Takes time to master new skills",
+        "effect": {"skill_growth": -0.25}
+      }
+    ],
+    "neutral": [
+      {
+        "id": "night_owl",
+        "name": "Night Owl",
+        "description": "More productive at night",
+        "effect": {"night_bonus": 0.20, "day_penalty": -0.10}
+      },
+      {
+        "id": "early_bird",
+        "name": "Early Bird",
+        "description": "Most productive in the morning",
+        "effect": {"day_bonus": 0.15, "night_penalty": -0.15}
+      },
+      {
+        "id": "solitary",
+        "name": "Solitary",
+        "description": "Works best alone",
+        "effect": {"solo_bonus": 0.20, "team_penalty": -0.10}
+      },
+      {
+        "id": "social",
+        "name": "Social",
+        "description": "Thrives in groups",
+        "effect": {"team_bonus": 0.15, "solo_penalty": -0.10}
+      }
+    ]
+  },
+  "professions": [
+    {
+      "id": "farmer",
+      "name": "Farmer",
+      "description": "Tends crops and produces food",
+      "buildings": ["farm"],
+      "base_skill": 1
+    },
+    {
+      "id": "lumberjack",
+      "name": "Lumberjack",
+      "description": "Harvests wood from the forest",
+      "buildings": ["lumber"],
+      "base_skill": 1
+    },
+    {
+      "id": "miner",
+      "name": "Miner",
+      "description": "Extracts stone from quarries",
+      "buildings": ["quarry"],
+      "base_skill": 1
+    },
+    {
+      "id": "merchant",
+      "name": "Merchant",
+      "description": "Manages trade at the market",
+      "buildings": ["market"],
+      "base_skill": 1
+    },
+    {
+      "id": "builder",
+      "name": "Builder",
+      "description": "Constructs and repairs buildings",
+      "buildings": ["all"],
+      "base_skill": 1
+    },
+    {
+      "id": "guard",
+      "name": "Guard",
+      "description": "Defends the kingdom",
+      "buildings": ["tower", "wall", "barracks"],
+      "base_skill": 1
+    },
+    {
+      "id": "scholar",
+      "name": "Scholar",
+      "description": "Advances research",
+      "buildings": ["library", "academy"],
+      "base_skill": 1
+    }
+  ],
+  "title_prefixes": {
+    "skill_1": "",
+    "skill_2": "Apprentice",
+    "skill_3": "Journeyman",
+    "skill_4": "Expert",
+    "skill_5": "Master"
+  }
+}

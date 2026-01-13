@@ -2,8 +2,8 @@ class_name ModalPanel
 extends Control
 ## A modal panel component for dialogs, results, and menus.
 ## Displays centered over a semi-transparent overlay.
+## Migrated to use DesignSystem and ThemeColors for consistency.
 
-const ThemeColors = preload("res://ui/theme_colors.gd")
 const ButtonFeedbackClass = preload("res://ui/components/button_feedback.gd")
 
 const TITLE_FONT_SIZE := 24

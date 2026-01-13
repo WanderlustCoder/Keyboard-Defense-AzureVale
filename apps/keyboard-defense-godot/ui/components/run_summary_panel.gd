@@ -1,12 +1,11 @@
 class_name RunSummaryPanel
 extends PanelContainer
-## Run Summary Panel - Shows comprehensive stats at end of a run
+## Run Summary Panel - Shows comprehensive stats at end of a run.
+## Migrated to use DesignSystem and ThemeColors for consistency.
 
 signal continue_pressed
 signal new_run_pressed
 signal main_menu_pressed
-
-const ThemeColors = preload("res://ui/theme_colors.gd")
 
 var _stats: Dictionary = {}
 var _is_victory: bool = false
@@ -29,17 +28,19 @@ func _ready() -> void:
 
 
 func _build_ui() -> void:
-	custom_minimum_size = Vector2(600, 500)
+	custom_minimum_size = Vector2(DesignSystem.SIZE_PANEL_LG, 500)
+
+	var style := DesignSystem.create_panel_style()
+	add_theme_stylebox_override("panel", style)
 
 	var margin := MarginContainer.new()
-	margin.add_theme_constant_override("margin_left", 24)
-	margin.add_theme_constant_override("margin_right", 24)
-	margin.add_theme_constant_override("margin_top", 20)
-	margin.add_theme_constant_override("margin_bottom", 20)
+	margin.add_theme_constant_override("margin_left", DesignSystem.SPACE_LG)
+	margin.add_theme_constant_override("margin_right", DesignSystem.SPACE_LG)
+	margin.add_theme_constant_override("margin_top", DesignSystem.SPACE_LG)
+	margin.add_theme_constant_override("margin_bottom", DesignSystem.SPACE_LG)
 	add_child(margin)
 
-	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 12)
+	var vbox := DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	margin.add_child(vbox)
 
 	# Header

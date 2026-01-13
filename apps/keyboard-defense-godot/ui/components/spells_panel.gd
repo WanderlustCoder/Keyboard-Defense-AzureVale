@@ -1,17 +1,16 @@
 class_name SpellsPanel
 extends PanelContainer
-## Spells Panel - Shows available spells and cooldowns
+## Spells Panel - Shows available spells and cooldowns.
+## Migrated to use DesignSystem and ThemeColors for consistency.
 
 signal closed
-
-const ThemeColors = preload("res://ui/theme_colors.gd")
 
 # UI elements
 var _close_btn: Button = null
 var _content_scroll: ScrollContainer = null
 var _content_vbox: VBoxContainer = null
 
-# Spell definitions
+# Spell definitions (domain-specific colors)
 const SPELLS: Dictionary = {
 	"fireball": {
 		"name": "Fireball",
@@ -68,45 +67,36 @@ func _ready() -> void:
 
 
 func _build_ui() -> void:
-	custom_minimum_size = Vector2(380, 450)
+	custom_minimum_size = Vector2(DesignSystem.SIZE_PANEL_SM, 450)
 
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.08, 0.09, 0.12, 0.98)
-	style.border_color = ThemeColors.BORDER
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(8)
-	style.set_content_margin_all(12)
+	var style := DesignSystem.create_panel_style()
 	add_theme_stylebox_override("panel", style)
 
-	var main_vbox := VBoxContainer.new()
-	main_vbox.add_theme_constant_override("separation", 10)
+	var main_vbox := DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	add_child(main_vbox)
 
 	# Header
-	var header := HBoxContainer.new()
+	var header := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 	main_vbox.add_child(header)
 
 	var title := Label.new()
 	title.text = "SPELLS"
-	title.add_theme_font_size_override("font_size", 18)
-	title.add_theme_color_override("font_color", Color(0.6, 0.4, 0.9))
+	DesignSystem.style_label(title, "h2", ThemeColors.RARITY_EPIC)
 	header.add_child(title)
 
-	var spacer := Control.new()
-	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	header.add_child(spacer)
+	header.add_child(DesignSystem.create_spacer())
 
 	_close_btn = Button.new()
-	_close_btn.text = "X"
-	_close_btn.custom_minimum_size = Vector2(30, 30)
+	_close_btn.text = "✕"
+	_close_btn.custom_minimum_size = Vector2(DesignSystem.SIZE_BUTTON_SM, DesignSystem.SIZE_BUTTON_SM)
+	_style_close_button()
 	_close_btn.pressed.connect(_on_close_pressed)
 	header.add_child(_close_btn)
 
 	# Subtitle
 	var subtitle := Label.new()
 	subtitle.text = "Type spell name to cast"
-	subtitle.add_theme_font_size_override("font_size", 11)
-	subtitle.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(subtitle, "caption", ThemeColors.TEXT_DIM)
 	main_vbox.add_child(subtitle)
 
 	# Content scroll
@@ -116,10 +106,17 @@ func _build_ui() -> void:
 	_content_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	main_vbox.add_child(_content_scroll)
 
-	_content_vbox = VBoxContainer.new()
-	_content_vbox.add_theme_constant_override("separation", 8)
+	_content_vbox = DesignSystem.create_vbox(DesignSystem.SPACE_SM)
 	_content_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_content_scroll.add_child(_content_vbox)
+
+
+func _style_close_button() -> void:
+	var normal := DesignSystem.create_button_style(ThemeColors.BG_BUTTON, ThemeColors.BORDER)
+	var hover := DesignSystem.create_button_style(ThemeColors.ERROR.darkened(0.3), ThemeColors.ERROR)
+	_close_btn.add_theme_stylebox_override("normal", normal)
+	_close_btn.add_theme_stylebox_override("hover", hover)
+	_close_btn.add_theme_color_override("font_color", ThemeColors.TEXT)
 
 
 func show_spells(player_level: int, cooldowns: Dictionary) -> void:
@@ -151,58 +148,52 @@ func _create_spell_entry(spell_id: String, spell: Dictionary, is_unlocked: bool,
 	var container := PanelContainer.new()
 
 	var spell_color: Color = spell.get("color", Color.WHITE)
-	var bg_color := spell_color.darkened(0.85) if is_unlocked else Color(0.1, 0.1, 0.1)
+	var bg_color := spell_color.darkened(0.85) if is_unlocked else ThemeColors.BG_CARD_DISABLED
 
 	var panel_style := StyleBoxFlat.new()
 	panel_style.bg_color = bg_color
-	panel_style.border_color = spell_color.darkened(0.5) if is_unlocked else Color(0.3, 0.3, 0.3)
+	panel_style.border_color = spell_color.darkened(0.5) if is_unlocked else ThemeColors.BORDER
 	panel_style.set_border_width_all(1)
-	panel_style.set_corner_radius_all(6)
-	panel_style.set_content_margin_all(8)
+	panel_style.set_corner_radius_all(DesignSystem.RADIUS_SM)
+	panel_style.set_content_margin_all(DesignSystem.SPACE_SM)
 	container.add_theme_stylebox_override("panel", panel_style)
 
-	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 4)
+	var vbox := DesignSystem.create_vbox(DesignSystem.SPACE_XS)
 	container.add_child(vbox)
 
 	# Name and cooldown
-	var header_hbox := HBoxContainer.new()
-	header_hbox.add_theme_constant_override("separation", 10)
+	var header_hbox := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 	vbox.add_child(header_hbox)
 
 	var name_label := Label.new()
 	name_label.text = str(spell.get("name", spell_id))
-	name_label.add_theme_font_size_override("font_size", 12)
-	name_label.add_theme_color_override("font_color", spell_color if is_unlocked else Color(0.5, 0.5, 0.5))
+	DesignSystem.style_label(name_label, "body_small", spell_color if is_unlocked else ThemeColors.TEXT_DISABLED)
 	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header_hbox.add_child(name_label)
 
 	var status_label := Label.new()
 	if not is_unlocked:
 		status_label.text = "Lvl %d" % spell.get("unlock_level", 1)
-		status_label.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
+		DesignSystem.style_label(status_label, "caption", ThemeColors.TEXT_DISABLED)
 	elif cooldown > 0:
 		status_label.text = "%ds" % cooldown
-		status_label.add_theme_color_override("font_color", Color(1.0, 0.6, 0.3))
+		DesignSystem.style_label(status_label, "caption", ThemeColors.WARNING)
 	else:
 		status_label.text = "Ready"
-		status_label.add_theme_color_override("font_color", Color(0.3, 1.0, 0.4))
-	status_label.add_theme_font_size_override("font_size", 10)
+		DesignSystem.style_label(status_label, "caption", ThemeColors.SUCCESS)
 	header_hbox.add_child(status_label)
 
 	# Description
 	var desc_label := Label.new()
 	desc_label.text = str(spell.get("description", ""))
-	desc_label.add_theme_font_size_override("font_size", 10)
-	desc_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM if is_unlocked else Color(0.4, 0.4, 0.4))
+	DesignSystem.style_label(desc_label, "caption", ThemeColors.TEXT_DIM if is_unlocked else ThemeColors.TEXT_DISABLED)
 	desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	vbox.add_child(desc_label)
 
 	# Cooldown info
 	var cd_label := Label.new()
 	cd_label.text = "Cooldown: %d waves" % spell.get("cooldown", 1)
-	cd_label.add_theme_font_size_override("font_size", 9)
-	cd_label.add_theme_color_override("font_color", Color(0.5, 0.5, 0.6))
+	DesignSystem.style_label(cd_label, "caption", ThemeColors.TEXT_DIM)
 	vbox.add_child(cd_label)
 
 	return container

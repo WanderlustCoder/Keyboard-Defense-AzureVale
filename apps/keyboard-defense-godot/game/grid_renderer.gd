@@ -5,6 +5,8 @@ const SimMap = preload("res://sim/map.gd")
 const SimEnemies = preload("res://sim/enemies.gd")
 const SimPoi = preload("res://sim/poi.gd")
 const SimUpgrades = preload("res://sim/upgrades.gd")
+const SimBuildings = preload("res://sim/buildings.gd")
+const SimTowerSynergies = preload("res://sim/tower_synergies.gd")
 const AssetLoader = preload("res://game/asset_loader.gd")
 
 @export var cell_size: Vector2 = Vector2(40, 40)
@@ -30,6 +32,20 @@ const AssetLoader = preload("res://game/asset_loader.gd")
 @export var font_size: int = 16
 @export var use_sprites: bool = true
 
+# Visual placement system colors
+@export var range_circle_color: Color = Color(0.4, 0.7, 1.0, 0.25)
+@export var range_circle_border_color: Color = Color(0.4, 0.7, 1.0, 0.5)
+@export var grid_overlay_buildable_color: Color = Color(0.2, 0.6, 0.3, 0.15)
+@export var grid_overlay_unbuildable_color: Color = Color(0.6, 0.2, 0.2, 0.1)
+@export var cost_tooltip_bg_color: Color = Color(0.08, 0.08, 0.12, 0.95)
+@export var cost_affordable_color: Color = Color(0.4, 0.85, 0.5, 1.0)
+@export var cost_unaffordable_color: Color = Color(0.9, 0.4, 0.4, 1.0)
+
+# Synergy visualization colors
+@export var synergy_line_color: Color = Color(0.5, 0.8, 1.0, 0.4)
+@export var synergy_glow_color: Color = Color(0.4, 0.7, 1.0, 0.25)
+@export var synergy_preview_color: Color = Color(0.3, 0.9, 0.5, 0.5)
+
 var map_w: int = 16
 var map_h: int = 10
 var base_pos: Vector2i = Vector2i(0, 0)
@@ -47,6 +63,10 @@ var activity_mode: String = "exploration"
 var font: Font
 var preview_type: String = ""
 var overlay_path_enabled: bool = false
+var show_placement_grid: bool = false  # Show buildable/unbuildable overlay when previewing
+var current_resources: Dictionary = {}  # For cost affordability checks
+var active_synergies: Array = []  # Cached active tower synergies
+var preview_synergies: Array = []  # Synergies that would activate with current preview
 var state_ref: GameState
 var highlight_enemy_ids: Dictionary = {}
 var focus_enemy_id: int = -1
@@ -76,9 +96,13 @@ var _enemy_anim_state: Dictionary = {}  # enemy_id -> {anim_name, frame, timer, 
 var _hit_flash_timers: Dictionary = {}  # enemy_id -> flash_time_remaining
 var _damage_numbers: Array = []  # Array of damage number data
 var _building_anim_state: Dictionary = {}  # building_index -> {anim_name, frame, timer}
+var _combo_announcements: Array = []  # Combo milestone text popups
+var _insufficient_pulses: Array = []  # Red pulse effects for insufficient resources
 const HIT_FLASH_DURATION := 0.12
 const DAMAGE_NUMBER_LIFETIME := 0.9
 const DAMAGE_NUMBER_RISE_SPEED := 50.0
+const COMBO_ANNOUNCEMENT_LIFETIME := 1.2
+const INSUFFICIENT_PULSE_LIFETIME := 0.4
 
 # Animation configuration
 const ENEMY_WALK_FPS := 8.0
@@ -131,6 +155,10 @@ func update_state(state: GameState) -> void:
 	terrain = state.terrain.duplicate(true)
 	structures = state.structures.duplicate(true)
 	structure_levels = state.structure_levels.duplicate(true)
+	current_resources = state.resources.duplicate(true)
+
+	# Compute active tower synergies
+	active_synergies = SimTowerSynergies.find_active_synergies(state)
 
 	# Track enemy animations - register new, unregister removed
 	_sync_enemy_animations(state.enemies)
@@ -145,6 +173,12 @@ func update_state(state: GameState) -> void:
 
 func set_preview_type(building_type: String) -> void:
 	preview_type = building_type
+	show_placement_grid = building_type != ""  # Show grid overlay when previewing
+	# Compute preview synergies if placing a tower
+	if building_type != "" and state_ref != null and building_type.begins_with("auto_") or building_type == "tower":
+		preview_synergies = SimTowerSynergies.preview_synergies(state_ref, cursor_pos, building_type)
+	else:
+		preview_synergies = []
 	queue_redraw()
 
 func set_path_overlay(enabled: bool) -> void:
@@ -209,6 +243,9 @@ func _draw() -> void:
 					var text_pos: Vector2 = rect.position + Vector2(6, cell_size.y - 10)
 					draw_string(font, text_pos, symbol, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, structure_color)
 
+	# Draw tower synergy connections
+	_draw_tower_synergies()
+
 	# Draw POIs
 	for poi_id in active_pois:
 		var poi_state: Dictionary = active_pois[poi_id]
@@ -244,6 +281,10 @@ func _draw() -> void:
 			# Subtle marker for undiscovered POIs
 			draw_rect(poi_rect.grow(-6.0), poi_undiscovered_color, false, 1.0)
 
+	# Draw placement grid overlay (shows buildable/unbuildable tiles)
+	if show_placement_grid and preview_type != "":
+		_draw_placement_grid_overlay()
+
 	# Draw building preview
 	if preview_type != "":
 		var preview_index: int = cursor_pos.y * map_w + cursor_pos.x
@@ -251,6 +292,11 @@ func _draw() -> void:
 		var preview_result: Dictionary = _get_preview_buildable_info(preview_index)
 		var preview_buildable: bool = preview_result.get("buildable", false)
 		var block_reason: String = preview_result.get("reason", "")
+
+		# Draw range circle for towers BEFORE the building preview
+		var tower_range: int = _get_building_range(preview_type)
+		if tower_range > 0:
+			_draw_range_circle(cursor_pos, tower_range, preview_buildable)
 
 		# Draw glow effect for valid placements
 		if preview_buildable and not reduced_motion:
@@ -278,12 +324,12 @@ func _draw() -> void:
 			var preview_draw: String = preview_symbol if preview_buildable else "x"
 			draw_string(font, preview_text_pos, preview_draw, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, preview_color_local)
 
-		# Draw block reason tooltip below cursor
-		if not preview_buildable and block_reason != "":
-			var tooltip_pos := preview_rect.position + Vector2(0, cell_size.y + 4)
-			var tooltip_bg := Rect2(tooltip_pos - Vector2(2, 2), Vector2(cell_size.x + 4, 16))
-			draw_rect(tooltip_bg, Color(0.1, 0.1, 0.15, 0.9))
-			draw_string(font, tooltip_pos + Vector2(2, 10), block_reason, HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color(0.9, 0.5, 0.4))
+		# Draw enhanced tooltip with cost info or block reason
+		_draw_preview_tooltip(preview_rect, preview_buildable, block_reason)
+
+		# Draw preview synergies (potential synergies if tower is placed here)
+		if preview_buildable:
+			_draw_preview_synergies()
 
 	# Draw enemies
 	for enemy in enemies:
@@ -467,11 +513,19 @@ func _draw() -> void:
 	# Draw damage numbers above everything
 	_draw_damage_numbers()
 
+	# Draw combo announcements (big text for milestones)
+	_draw_combo_announcements()
+
+	# Draw insufficient resource pulses
+	_draw_insufficient_pulses()
+
 func _process(delta: float) -> void:
 	update_particles(delta)
 	_update_animations(delta)
 	_update_hit_flashes(delta)
 	_update_damage_numbers(delta)
+	_update_combo_announcements(delta)
+	_update_insufficient_pulses(delta)
 	_aura_pulse_time += delta
 
 func _draw_centered_texture(rect: Rect2, tex: Texture2D, mod_color: Color = Color.WHITE) -> void:
@@ -1709,6 +1763,108 @@ func _draw_damage_numbers() -> void:
 					draw_string(font, pos + Vector2(ox, oy), text, HORIZONTAL_ALIGNMENT_CENTER, -1, fsize, outline_color)
 		draw_string(font, pos, text, HORIZONTAL_ALIGNMENT_CENTER, -1, fsize, color)
 
+
+## Update combo announcements
+func _update_combo_announcements(delta: float) -> void:
+	if _combo_announcements.is_empty():
+		return
+
+	var needs_redraw := false
+	for i in range(_combo_announcements.size() - 1, -1, -1):
+		var ann: Dictionary = _combo_announcements[i]
+		ann["lifetime"] -= delta
+
+		# Animate scale (grow quickly at start, then stabilize)
+		var t := 1.0 - (ann["lifetime"] / COMBO_ANNOUNCEMENT_LIFETIME)
+		if t < 0.2:
+			# Quick grow phase
+			ann["scale"] = 0.5 + (t / 0.2) * 0.6
+		else:
+			ann["scale"] = 1.1 - (t - 0.2) * 0.1  # Slight shrink back
+
+		# Move upward slightly
+		ann["pos"] = ann["pos"] + Vector2(0, -20.0 * delta)
+
+		if ann["lifetime"] <= 0:
+			_combo_announcements.remove_at(i)
+			needs_redraw = true
+
+	if needs_redraw or not _combo_announcements.is_empty():
+		queue_redraw()
+
+
+## Draw combo announcements
+func _draw_combo_announcements() -> void:
+	if font == null or _combo_announcements.is_empty():
+		return
+
+	for ann in _combo_announcements:
+		var pos: Vector2 = ann["pos"]
+		var text: String = ann["text"]
+		var color: Color = ann["color"]
+		var size_mult: float = ann["size_mult"]
+		var lifetime: float = ann["lifetime"]
+		var scale: float = ann["scale"]
+
+		# Fade out in last 30%
+		var alpha := 1.0
+		if lifetime < COMBO_ANNOUNCEMENT_LIFETIME * 0.3:
+			alpha = lifetime / (COMBO_ANNOUNCEMENT_LIFETIME * 0.3)
+		color.a = alpha
+
+		var fsize: int = int(24 * size_mult * scale)
+
+		# Draw with thick outline for visibility
+		var outline_color := Color(0.0, 0.0, 0.0, alpha * 0.9)
+		for ox in [-2, -1, 0, 1, 2]:
+			for oy in [-2, -1, 0, 1, 2]:
+				if ox != 0 or oy != 0:
+					draw_string(font, pos + Vector2(ox, oy), text, HORIZONTAL_ALIGNMENT_CENTER, -1, fsize, outline_color)
+		draw_string(font, pos, text, HORIZONTAL_ALIGNMENT_CENTER, -1, fsize, color)
+
+
+## Update insufficient resource pulses
+func _update_insufficient_pulses(delta: float) -> void:
+	if _insufficient_pulses.is_empty():
+		return
+
+	var needs_redraw := false
+	for i in range(_insufficient_pulses.size() - 1, -1, -1):
+		var pulse: Dictionary = _insufficient_pulses[i]
+		pulse["lifetime"] -= delta
+		pulse["radius"] += 80.0 * delta  # Expand outward
+
+		if pulse["lifetime"] <= 0:
+			_insufficient_pulses.remove_at(i)
+			needs_redraw = true
+
+	if needs_redraw or not _insufficient_pulses.is_empty():
+		queue_redraw()
+
+
+## Draw insufficient resource pulses (red expanding rings)
+func _draw_insufficient_pulses() -> void:
+	if _insufficient_pulses.is_empty():
+		return
+
+	for pulse in _insufficient_pulses:
+		var pos: Vector2 = pulse["pos"]
+		var lifetime: float = pulse["lifetime"]
+		var radius: float = pulse["radius"]
+
+		# Fade out
+		var alpha := lifetime / INSUFFICIENT_PULSE_LIFETIME
+		var color := Color(0.9, 0.3, 0.2, alpha * 0.6)
+
+		# Draw expanding ring
+		draw_arc(pos, radius, 0, TAU, 24, color, 2.0)
+
+		# Inner ring slightly delayed
+		if radius > 10:
+			var inner_color := Color(0.9, 0.3, 0.2, alpha * 0.4)
+			draw_arc(pos, radius - 10, 0, TAU, 24, inner_color, 1.5)
+
+
 ## Trigger hit flash effect on enemy
 func trigger_hit_flash(enemy_id: int) -> void:
 	if reduced_motion:
@@ -1772,6 +1928,99 @@ func spawn_production_indicator(building_pos: Vector2i, resource: String, amount
 		register_building_animation(bld_index, "pulse")
 
 	queue_redraw()
+
+
+## Spawn resource spend indicator (-resource) at a position
+func spawn_resource_spend_indicator(screen_pos: Vector2, resource: String, amount: int) -> void:
+	if reduced_motion or amount <= 0:
+		return
+
+	var world_pos: Vector2 = screen_pos + Vector2(randf_range(-5, 5), -5)
+
+	# Color based on resource type (slightly desaturated compared to gain)
+	var color: Color
+	match resource:
+		"food":
+			color = Color(0.5, 0.7, 0.5, 1.0)
+		"wood":
+			color = Color(0.6, 0.45, 0.3, 1.0)
+		"stone":
+			color = Color(0.55, 0.55, 0.6, 1.0)
+		"gold":
+			color = Color(0.9, 0.75, 0.3, 1.0)
+		_:
+			color = Color(0.8, 0.8, 0.8, 1.0)
+
+	_damage_numbers.append({
+		"pos": world_pos,
+		"value": amount,
+		"color": color,
+		"is_crit": false,
+		"lifetime": DAMAGE_NUMBER_LIFETIME * 0.6,
+		"prefix": "-"
+	})
+	queue_redraw()
+
+
+## Spawn combo milestone announcement
+func spawn_combo_announcement(combo_count: int) -> void:
+	if reduced_motion:
+		return
+
+	# Only show announcements for milestones
+	if combo_count < 5:
+		return
+	if combo_count > 5 and combo_count % 5 != 0:
+		return
+
+	# Position at center of grid
+	var center_x := origin.x + (map_w * cell_size.x) * 0.5
+	var center_y := origin.y + (map_h * cell_size.y) * 0.3  # Upper third
+
+	var text: String
+	var color: Color
+	var size_mult: float = 1.0
+
+	if combo_count >= 20:
+		text = "COMBO x%d!" % combo_count
+		color = Color(1.0, 0.3, 0.8, 1.0)  # Magenta
+		size_mult = 1.4
+	elif combo_count >= 15:
+		text = "x%d STREAK!" % combo_count
+		color = Color(0.4, 0.9, 1.0, 1.0)  # Cyan
+		size_mult = 1.3
+	elif combo_count >= 10:
+		text = "x%d!" % combo_count
+		color = Color(1.0, 0.85, 0.3, 1.0)  # Gold
+		size_mult = 1.2
+	else:  # 5
+		text = "x%d" % combo_count
+		color = Color(0.9, 0.9, 0.9, 1.0)  # White
+		size_mult = 1.0
+
+	_combo_announcements.append({
+		"pos": Vector2(center_x, center_y),
+		"text": text,
+		"color": color,
+		"size_mult": size_mult,
+		"lifetime": COMBO_ANNOUNCEMENT_LIFETIME,
+		"scale": 0.5  # Start small, grow
+	})
+	queue_redraw()
+
+
+## Spawn insufficient resources pulse at screen position
+func spawn_insufficient_pulse(screen_pos: Vector2) -> void:
+	if reduced_motion:
+		return
+
+	_insufficient_pulses.append({
+		"pos": screen_pos,
+		"lifetime": INSUFFICIENT_PULSE_LIFETIME,
+		"radius": 0.0
+	})
+	queue_redraw()
+
 
 ## Register enemy for walk animation
 func register_enemy_animation(enemy_id: int, kind: String, anim_type: String = "walk") -> void:
@@ -1929,6 +2178,8 @@ func clear_animation_states() -> void:
 	_hit_flash_timers.clear()
 	_damage_numbers.clear()
 	_building_anim_state.clear()
+	_combo_announcements.clear()
+	_insufficient_pulses.clear()
 
 ## Trigger tower fire animation at position
 func trigger_tower_fire(tower_pos: Vector2i) -> void:
@@ -1957,3 +2208,441 @@ func trigger_nearest_tower_fire(enemy_pos: Vector2i) -> void:
 
 	if closest_index >= 0:
 		register_building_animation(closest_index, "fire")
+
+
+# =============================================================================
+# VISUAL PLACEMENT SYSTEM
+# =============================================================================
+
+## Draw grid overlay showing buildable/unbuildable tiles
+func _draw_placement_grid_overlay() -> void:
+	for y in range(map_h):
+		for x in range(map_w):
+			var index: int = y * map_w + x
+			var rect: Rect2 = Rect2(origin + Vector2(x * cell_size.x, y * cell_size.y), cell_size)
+
+			# Skip cursor position (it has its own highlight)
+			if x == cursor_pos.x and y == cursor_pos.y:
+				continue
+
+			# Only show overlay for discovered tiles
+			if not discovered.has(index):
+				continue
+
+			var buildable: bool = _is_preview_buildable(index)
+			var overlay_color: Color = grid_overlay_buildable_color if buildable else grid_overlay_unbuildable_color
+			draw_rect(rect.grow(-1), overlay_color)
+
+
+## Get the attack range for a building type (0 if not a tower)
+func _get_building_range(building_type: String) -> int:
+	var building_data: Dictionary = SimBuildings.BUILDINGS.get(building_type, {})
+
+	# Check for auto-tower attack stats
+	var auto_attack: Dictionary = building_data.get("auto_attack", {})
+	if not auto_attack.is_empty():
+		return int(auto_attack.get("range", 0))
+
+	# Check for regular tower combat stats
+	if building_type == "tower":
+		var combat: Dictionary = SimBuildings.TOWER_STATS.get(1, {})
+		return int(combat.get("range", 3))
+
+	return 0
+
+
+## Draw range circle for towers
+func _draw_range_circle(center_pos: Vector2i, tile_range: int, is_valid: bool) -> void:
+	var center_pixel := origin + Vector2(center_pos.x * cell_size.x, center_pos.y * cell_size.y) + cell_size / 2
+
+	# Calculate radius in pixels (range is in tiles)
+	var radius_pixels: float = tile_range * cell_size.x + cell_size.x / 2
+
+	# Pulsing effect
+	var pulse := (sin(_aura_pulse_time * 2.0) + 1.0) * 0.5
+
+	# Color based on validity
+	var fill_color: Color = range_circle_color
+	var border_color: Color = range_circle_border_color
+	if not is_valid:
+		fill_color = Color(0.8, 0.3, 0.3, 0.15)
+		border_color = Color(0.8, 0.3, 0.3, 0.4)
+
+	# Pulse the alpha slightly
+	fill_color.a = fill_color.a * (0.7 + pulse * 0.3)
+	border_color.a = border_color.a * (0.7 + pulse * 0.3)
+
+	# Draw filled circle (approximate with polygon)
+	var points := PackedVector2Array()
+	var segments: int = 32
+	for i in range(segments):
+		var angle := float(i) / float(segments) * TAU
+		points.append(center_pixel + Vector2(cos(angle), sin(angle)) * radius_pixels)
+
+	draw_colored_polygon(points, fill_color)
+
+	# Draw border
+	for i in range(segments):
+		var angle1 := float(i) / float(segments) * TAU
+		var angle2 := float(i + 1) / float(segments) * TAU
+		var p1 := center_pixel + Vector2(cos(angle1), sin(angle1)) * radius_pixels
+		var p2 := center_pixel + Vector2(cos(angle2), sin(angle2)) * radius_pixels
+		draw_line(p1, p2, border_color, 2.0)
+
+	# Also highlight tiles within range
+	_draw_range_tile_highlights(center_pos, tile_range, is_valid)
+
+
+## Highlight individual tiles within tower range
+func _draw_range_tile_highlights(center_pos: Vector2i, tile_range: int, is_valid: bool) -> void:
+	var highlight_color: Color = Color(0.4, 0.7, 1.0, 0.08) if is_valid else Color(0.8, 0.3, 0.3, 0.08)
+
+	for dy in range(-tile_range, tile_range + 1):
+		for dx in range(-tile_range, tile_range + 1):
+			var tx: int = center_pos.x + dx
+			var ty: int = center_pos.y + dy
+
+			# Skip out of bounds
+			if tx < 0 or tx >= map_w or ty < 0 or ty >= map_h:
+				continue
+
+			# Check if within circular range (Manhattan for simplicity, or Euclidean)
+			var dist: float = sqrt(dx * dx + dy * dy)
+			if dist > tile_range:
+				continue
+
+			# Skip the center tile
+			if dx == 0 and dy == 0:
+				continue
+
+			var rect := Rect2(origin + Vector2(tx * cell_size.x, ty * cell_size.y), cell_size)
+			draw_rect(rect.grow(-2), highlight_color)
+
+
+## Draw enhanced tooltip with cost breakdown or block reason
+func _draw_preview_tooltip(preview_rect: Rect2, buildable: bool, block_reason: String) -> void:
+	var tooltip_y := preview_rect.position.y + cell_size.y + 6
+	var tooltip_x := preview_rect.position.x
+
+	# Get building cost
+	var cost: Dictionary = SimBuildings.BUILDINGS.get(preview_type, {}).get("cost", {})
+
+	if not buildable:
+		# Show block reason
+		if block_reason != "":
+			var tooltip_text := block_reason
+			var text_width: float = font.get_string_size(tooltip_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 11).x
+			var bg_rect := Rect2(tooltip_x - 4, tooltip_y - 2, text_width + 12, 18)
+			draw_rect(bg_rect, cost_tooltip_bg_color)
+			draw_rect(bg_rect, Color(0.8, 0.3, 0.3, 0.5), false, 1.0)
+			draw_string(font, Vector2(tooltip_x, tooltip_y + 11), tooltip_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 11, cost_unaffordable_color)
+	else:
+		# Show cost breakdown
+		if cost.is_empty():
+			return
+
+		var cost_parts := []
+		var can_afford := true
+
+		for resource in ["wood", "stone", "food", "gold"]:
+			var amount: int = int(cost.get(resource, 0))
+			if amount > 0:
+				var have: int = int(current_resources.get(resource, 0))
+				var affordable: bool = have >= amount
+				if not affordable:
+					can_afford = false
+				var color_tag: String = "affordable" if affordable else "unaffordable"
+				cost_parts.append({"resource": resource, "amount": amount, "affordable": affordable})
+
+		if cost_parts.is_empty():
+			return
+
+		# Calculate tooltip width
+		var total_width: float = 8.0  # padding
+		for part in cost_parts:
+			var resource_char: String = _resource_char(part.resource)
+			var amount_str: String = str(part.amount)
+			total_width += font.get_string_size(resource_char + amount_str, HORIZONTAL_ALIGNMENT_LEFT, -1, 10).x + 8
+
+		# Draw background
+		var bg_rect := Rect2(tooltip_x - 4, tooltip_y - 2, total_width, 18)
+		draw_rect(bg_rect, cost_tooltip_bg_color)
+
+		# Border color based on affordability
+		var border_col: Color = Color(0.3, 0.7, 0.4, 0.6) if can_afford else Color(0.7, 0.3, 0.3, 0.6)
+		draw_rect(bg_rect, border_col, false, 1.0)
+
+		# Draw cost items
+		var x_offset := tooltip_x
+		for part in cost_parts:
+			var resource_char: String = _resource_char(part.resource)
+			var amount_str: String = str(part.amount)
+			var color: Color = cost_affordable_color if part.affordable else cost_unaffordable_color
+
+			# Resource icon
+			var resource_color := _resource_icon_color(part.resource)
+			draw_string(font, Vector2(x_offset, tooltip_y + 11), resource_char, HORIZONTAL_ALIGNMENT_LEFT, -1, 10, resource_color)
+			x_offset += font.get_string_size(resource_char, HORIZONTAL_ALIGNMENT_LEFT, -1, 10).x + 2
+
+			# Amount
+			draw_string(font, Vector2(x_offset, tooltip_y + 11), amount_str, HORIZONTAL_ALIGNMENT_LEFT, -1, 10, color)
+			x_offset += font.get_string_size(amount_str, HORIZONTAL_ALIGNMENT_LEFT, -1, 10).x + 6
+
+
+## Get single-char representation of a resource
+func _resource_char(resource: String) -> String:
+	match resource:
+		"wood": return "W"
+		"stone": return "S"
+		"food": return "F"
+		"gold": return "G"
+		_: return "?"
+
+
+## Get color for resource icon
+func _resource_icon_color(resource: String) -> Color:
+	match resource:
+		"wood": return Color(0.6, 0.4, 0.2)
+		"stone": return Color(0.5, 0.5, 0.6)
+		"food": return Color(0.4, 0.7, 0.3)
+		"gold": return Color(0.9, 0.75, 0.3)
+		_: return Color.WHITE
+
+
+# =============================================================================
+# TOWER SYNERGY VISUALIZATION
+# =============================================================================
+
+## Draw connections between towers that have active synergies
+func _draw_tower_synergies() -> void:
+	if active_synergies.is_empty():
+		return
+
+	# Draw connection lines between synergized towers
+	for synergy in active_synergies:
+		var positions: Array = synergy.get("positions", [])
+		var synergy_color: Color = synergy.get("color", synergy_line_color)
+
+		if positions.size() < 2:
+			continue
+
+		# Draw lines connecting all towers in the synergy
+		for i in range(positions.size()):
+			var pos1: Vector2i = positions[i]
+			var center1 := _tile_center(pos1)
+
+			# Draw glow on each tower
+			_draw_synergy_glow(pos1, synergy_color)
+
+			# Connect to all other towers in the synergy
+			for j in range(i + 1, positions.size()):
+				var pos2: Vector2i = positions[j]
+				var center2 := _tile_center(pos2)
+
+				# Draw connection line
+				_draw_synergy_connection(center1, center2, synergy_color)
+
+		# Draw synergy icon at the center of the formation
+		_draw_synergy_icon(positions, synergy)
+
+
+## Draw a glow effect around a synergized tower
+func _draw_synergy_glow(pos: Vector2i, base_color: Color) -> void:
+	if reduced_motion:
+		return
+
+	var rect := Rect2(origin + Vector2(pos.x * cell_size.x, pos.y * cell_size.y), cell_size)
+
+	# Pulsing glow effect
+	var pulse := (sin(_aura_pulse_time * 3.0) + 1.0) * 0.5
+	var glow_alpha := 0.1 + pulse * 0.15
+	var glow_color := Color(base_color.r, base_color.g, base_color.b, glow_alpha)
+
+	# Draw multiple expanding rings for glow effect
+	for ring in range(3):
+		var ring_alpha := glow_alpha * (1.0 - float(ring) * 0.3)
+		var ring_color := Color(glow_color.r, glow_color.g, glow_color.b, ring_alpha)
+		var grow_amount := 2.0 + float(ring) * 3.0 + pulse * 2.0
+		draw_rect(rect.grow(grow_amount), ring_color, false, 1.5)
+
+
+## Draw a connection line between two synergized towers
+func _draw_synergy_connection(from: Vector2, to: Vector2, color: Color) -> void:
+	# Main line
+	var line_alpha := 0.3 if reduced_motion else 0.4 + (sin(_aura_pulse_time * 2.0) + 1.0) * 0.15
+	var line_color := Color(color.r, color.g, color.b, line_alpha)
+
+	# Draw main line with glow
+	if not reduced_motion:
+		# Outer glow
+		var glow_color := Color(color.r, color.g, color.b, line_alpha * 0.3)
+		draw_line(from, to, glow_color, 6.0)
+
+	# Core line
+	draw_line(from, to, line_color, 2.0)
+
+	# Draw energy particles along the line (if not reduced motion)
+	if not reduced_motion:
+		_draw_line_particles(from, to, color)
+
+
+## Draw animated particles along a synergy connection line
+func _draw_line_particles(from: Vector2, to: Vector2, color: Color) -> void:
+	var dir := (to - from).normalized()
+	var dist := from.distance_to(to)
+	var particle_count := int(dist / 15.0)
+
+	for i in range(particle_count):
+		# Animated position along the line
+		var base_t := float(i) / float(particle_count)
+		var animated_t := fmod(base_t + _aura_pulse_time * 0.5, 1.0)
+		var pos := from.lerp(to, animated_t)
+
+		# Particle size based on position in animation
+		var particle_alpha := sin(animated_t * PI) * 0.6
+		var particle_color := Color(color.r, color.g, color.b, particle_alpha)
+		var particle_size := 2.0 + sin(animated_t * PI) * 1.5
+
+		draw_circle(pos, particle_size, particle_color)
+
+
+## Draw synergy icon at the center of the tower formation
+func _draw_synergy_icon(positions: Array, synergy: Dictionary) -> void:
+	if positions.is_empty():
+		return
+
+	# Calculate center of all positions
+	var center_sum := Vector2.ZERO
+	for pos in positions:
+		center_sum += _tile_center(pos)
+	var icon_center := center_sum / float(positions.size())
+
+	var icon_text: String = synergy.get("icon", "")
+	var synergy_color: Color = synergy.get("color", Color.WHITE)
+
+	if icon_text.is_empty():
+		# Draw a generic synergy indicator
+		var indicator_radius := 8.0
+		var indicator_alpha := 0.7 if reduced_motion else 0.6 + (sin(_aura_pulse_time * 4.0) + 1.0) * 0.2
+		var indicator_color := Color(synergy_color.r, synergy_color.g, synergy_color.b, indicator_alpha)
+
+		# Draw diamond shape
+		var diamond_points := PackedVector2Array([
+			icon_center + Vector2(0, -indicator_radius),
+			icon_center + Vector2(indicator_radius, 0),
+			icon_center + Vector2(0, indicator_radius),
+			icon_center + Vector2(-indicator_radius, 0)
+		])
+		draw_colored_polygon(diamond_points, indicator_color)
+
+		# Border
+		for i in range(4):
+			var p1 := diamond_points[i]
+			var p2 := diamond_points[(i + 1) % 4]
+			draw_line(p1, p2, Color(synergy_color.r, synergy_color.g, synergy_color.b, 0.8), 1.5)
+	else:
+		# Draw icon text with background
+		var bg_radius := 12.0
+		var bg_alpha := 0.85
+		var bg_color := Color(0.1, 0.1, 0.15, bg_alpha)
+
+		# Background circle
+		draw_circle(icon_center, bg_radius, bg_color)
+		draw_arc(icon_center, bg_radius, 0, TAU, 24, synergy_color, 1.5)
+
+		# Icon text (centered)
+		var text_offset := Vector2(-font.get_string_size(icon_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 10).x * 0.5, 4)
+		draw_string(font, icon_center + text_offset, icon_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color.WHITE)
+
+
+## Draw preview synergies (potential synergies when placing a tower)
+func _draw_preview_synergies() -> void:
+	if preview_synergies.is_empty():
+		return
+
+	# Re-compute preview synergies based on current cursor position
+	if preview_type != "" and state_ref != null:
+		if preview_type.begins_with("auto_") or preview_type == "tower":
+			preview_synergies = SimTowerSynergies.preview_synergies(state_ref, cursor_pos, preview_type)
+
+	for synergy in preview_synergies:
+		var positions: Array = synergy.get("positions", [])
+		var synergy_color: Color = synergy.get("color", synergy_preview_color)
+
+		# Make preview synergies more visible with distinct color
+		var preview_col := Color(synergy_color.r * 1.2, synergy_color.g * 1.2, synergy_color.b, 0.6)
+
+		if positions.size() < 2:
+			continue
+
+		# Draw dashed preview lines connecting towers
+		for i in range(positions.size()):
+			var pos1: Vector2i = positions[i]
+			var center1 := _tile_center(pos1)
+
+			for j in range(i + 1, positions.size()):
+				var pos2: Vector2i = positions[j]
+				var center2 := _tile_center(pos2)
+
+				# Draw dashed preview line
+				_draw_preview_synergy_line(center1, center2, preview_col)
+
+		# Draw preview synergy label
+		_draw_preview_synergy_label(positions, synergy)
+
+
+## Draw a dashed line for preview synergies
+func _draw_preview_synergy_line(from: Vector2, to: Vector2, color: Color) -> void:
+	var dir := (to - from).normalized()
+	var dist := from.distance_to(to)
+	var dash_length := 8.0
+	var gap_length := 4.0
+	var segment_length := dash_length + gap_length
+
+	var num_segments := int(dist / segment_length)
+	var offset := fmod(_aura_pulse_time * 30.0, segment_length)  # Animated offset
+
+	for i in range(num_segments + 1):
+		var start_dist := float(i) * segment_length + offset
+		var end_dist := minf(start_dist + dash_length, dist)
+
+		if start_dist >= dist:
+			break
+
+		var start_pos := from + dir * start_dist
+		var end_pos := from + dir * end_dist
+
+		draw_line(start_pos, end_pos, color, 2.0)
+
+
+## Draw preview synergy label showing what synergy would activate
+func _draw_preview_synergy_label(positions: Array, synergy: Dictionary) -> void:
+	if positions.is_empty():
+		return
+
+	# Calculate center of all positions
+	var center_sum := Vector2.ZERO
+	for pos in positions:
+		center_sum += _tile_center(pos)
+	var label_center := center_sum / float(positions.size())
+
+	var synergy_name: String = synergy.get("name", "Synergy")
+	var synergy_color: Color = synergy.get("color", Color.WHITE)
+
+	# Draw label above the center
+	var label_pos := label_center + Vector2(0, -20)
+
+	# Background
+	var text_width := font.get_string_size(synergy_name, HORIZONTAL_ALIGNMENT_LEFT, -1, 10).x
+	var bg_rect := Rect2(label_pos.x - text_width * 0.5 - 4, label_pos.y - 12, text_width + 8, 16)
+	draw_rect(bg_rect, Color(0.1, 0.15, 0.1, 0.9))
+	draw_rect(bg_rect, synergy_color, false, 1.0)
+
+	# Text
+	var text_pos := Vector2(label_pos.x - text_width * 0.5, label_pos.y)
+	draw_string(font, text_pos, synergy_name, HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color(0.8, 1.0, 0.8))
+
+
+## Get the pixel center of a tile
+func _tile_center(pos: Vector2i) -> Vector2:
+	return origin + Vector2(pos.x * cell_size.x + cell_size.x * 0.5, pos.y * cell_size.y + cell_size.y * 0.5)

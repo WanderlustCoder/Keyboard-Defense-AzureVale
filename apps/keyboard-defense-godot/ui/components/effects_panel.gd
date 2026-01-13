@@ -1,10 +1,10 @@
 class_name EffectsPanel
 extends PanelContainer
-## Effects Panel - Shows status effects information organized by category
+## Effects Panel - Shows status effects information organized by category.
+## Migrated to use DesignSystem and ThemeColors for consistency.
 
 signal closed
 
-const ThemeColors = preload("res://ui/theme_colors.gd")
 const SimStatusEffects = preload("res://sim/status_effects.gd")
 
 enum Tab { MOVEMENT, DOT, DEFENSE, SPECIAL }
@@ -18,7 +18,7 @@ var _tab_buttons: Array[Button] = []
 var _content_scroll: ScrollContainer = null
 var _content_vbox: VBoxContainer = null
 
-# Effect categories
+# Effect categories (domain-specific colors)
 const EFFECT_CATEGORIES: Dictionary = {
 	"Movement": {
 		"color": Color(0.53, 0.81, 0.92),  # Light blue
@@ -45,47 +45,41 @@ func _ready() -> void:
 
 
 func _build_ui() -> void:
-	custom_minimum_size = Vector2(520, 440)
+	custom_minimum_size = Vector2(DesignSystem.SIZE_PANEL_MD + 40, 440)
 
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.08, 0.09, 0.12, 0.98)
-	style.border_color = ThemeColors.BORDER
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(8)
-	style.set_content_margin_all(12)
+	var style := DesignSystem.create_panel_style()
 	add_theme_stylebox_override("panel", style)
 
-	var main_vbox := VBoxContainer.new()
-	main_vbox.add_theme_constant_override("separation", 10)
+	var main_vbox := DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	add_child(main_vbox)
 
 	# Header
-	var header := HBoxContainer.new()
+	var header := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 	main_vbox.add_child(header)
 
 	var title := Label.new()
 	title.text = "STATUS EFFECTS"
-	title.add_theme_font_size_override("font_size", 18)
-	title.add_theme_color_override("font_color", ThemeColors.ACCENT)
+	DesignSystem.style_label(title, "h2", ThemeColors.ACCENT)
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header.add_child(title)
 
 	_close_btn = Button.new()
-	_close_btn.text = "X"
-	_close_btn.custom_minimum_size = Vector2(30, 30)
+	_close_btn.text = "✕"
+	_close_btn.custom_minimum_size = Vector2(DesignSystem.SIZE_BUTTON_SM, DesignSystem.SIZE_BUTTON_SM)
+	_style_close_button()
 	_close_btn.pressed.connect(_on_close_pressed)
 	header.add_child(_close_btn)
 
 	# Tab buttons
-	_tab_container = HBoxContainer.new()
-	_tab_container.add_theme_constant_override("separation", 5)
+	_tab_container = DesignSystem.create_hbox(DesignSystem.SPACE_XS)
 	main_vbox.add_child(_tab_container)
 
 	var tab_names: Array[String] = ["Movement", "DoT", "Defense", "Special"]
 	for i in range(tab_names.size()):
 		var btn := Button.new()
 		btn.text = tab_names[i]
-		btn.custom_minimum_size = Vector2(100, 30)
+		btn.custom_minimum_size = Vector2(100, DesignSystem.SIZE_BUTTON_SM)
+		_style_tab_button(btn)
 		btn.pressed.connect(_on_tab_pressed.bind(i))
 		_tab_container.add_child(btn)
 		_tab_buttons.append(btn)
@@ -97,21 +91,35 @@ func _build_ui() -> void:
 	_content_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	main_vbox.add_child(_content_scroll)
 
-	_content_vbox = VBoxContainer.new()
-	_content_vbox.add_theme_constant_override("separation", 10)
+	_content_vbox = DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	_content_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_content_scroll.add_child(_content_vbox)
 
 	# Footer hint
 	var footer := Label.new()
 	footer.text = "Towers, skills, and spells can apply these effects to enemies!"
-	footer.add_theme_font_size_override("font_size", 11)
-	footer.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(footer, "caption", ThemeColors.TEXT_DIM)
 	footer.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	main_vbox.add_child(footer)
 
 	_update_tab_buttons()
 	_build_effects_list()
+
+
+func _style_close_button() -> void:
+	var normal := DesignSystem.create_button_style(ThemeColors.BG_BUTTON, ThemeColors.BORDER)
+	var hover := DesignSystem.create_button_style(ThemeColors.ERROR.darkened(0.3), ThemeColors.ERROR)
+	_close_btn.add_theme_stylebox_override("normal", normal)
+	_close_btn.add_theme_stylebox_override("hover", hover)
+	_close_btn.add_theme_color_override("font_color", ThemeColors.TEXT)
+
+
+func _style_tab_button(btn: Button) -> void:
+	var normal := DesignSystem.create_button_style(ThemeColors.BG_BUTTON, ThemeColors.BORDER)
+	var hover := DesignSystem.create_button_style(ThemeColors.BG_BUTTON_HOVER, ThemeColors.BORDER_HIGHLIGHT)
+	btn.add_theme_stylebox_override("normal", normal)
+	btn.add_theme_stylebox_override("hover", hover)
+	btn.add_theme_color_override("font_color", ThemeColors.TEXT)
 
 
 func show_effects() -> void:
@@ -131,7 +139,7 @@ func _update_tab_buttons() -> void:
 			if i == _current_tab:
 				btn.add_theme_color_override("font_color", color)
 			else:
-				btn.remove_theme_color_override("font_color")
+				btn.add_theme_color_override("font_color", ThemeColors.TEXT)
 
 
 func _clear_content() -> void:
@@ -154,12 +162,11 @@ func _build_effects_list() -> void:
 	# Category header
 	var header := Label.new()
 	header.text = category_name.to_upper()
-	header.add_theme_font_size_override("font_size", 16)
-	header.add_theme_color_override("font_color", color)
+	DesignSystem.style_label(header, "body", color)
 	_content_vbox.add_child(header)
 
 	var spacer := Control.new()
-	spacer.custom_minimum_size = Vector2(0, 5)
+	spacer.custom_minimum_size = Vector2(0, DesignSystem.SPACE_XS)
 	_content_vbox.add_child(spacer)
 
 	# Effects in category
@@ -173,6 +180,7 @@ func _create_effect_widget(effect_id: String) -> Control:
 	if effect.is_empty():
 		var label := Label.new()
 		label.text = "Unknown effect: %s" % effect_id
+		DesignSystem.style_label(label, "caption", ThemeColors.ERROR)
 		return label
 
 	var name: String = str(effect.get("name", effect_id.capitalize()))
@@ -182,30 +190,24 @@ func _create_effect_widget(effect_id: String) -> Control:
 
 	var container := PanelContainer.new()
 
-	var container_style := StyleBoxFlat.new()
-	container_style.bg_color = Color(0.06, 0.07, 0.1, 0.9)
+	var container_style := DesignSystem.create_elevated_style(ThemeColors.BG_CARD)
 	container_style.border_color = effect_color.darkened(0.5)
 	container_style.set_border_width_all(1)
-	container_style.set_corner_radius_all(4)
-	container_style.set_content_margin_all(10)
 	container.add_theme_stylebox_override("panel", container_style)
 
-	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 6)
+	var vbox := DesignSystem.create_vbox(DesignSystem.SPACE_SM)
 	container.add_child(vbox)
 
 	# Effect name
 	var name_label := Label.new()
 	name_label.text = name
-	name_label.add_theme_font_size_override("font_size", 14)
-	name_label.add_theme_color_override("font_color", effect_color)
+	DesignSystem.style_label(name_label, "body_small", effect_color)
 	vbox.add_child(name_label)
 
 	# Description
 	var desc_label := Label.new()
 	desc_label.text = desc
-	desc_label.add_theme_font_size_override("font_size", 11)
-	desc_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(desc_label, "caption", ThemeColors.TEXT_DIM)
 	vbox.add_child(desc_label)
 
 	# Effect details
@@ -214,7 +216,7 @@ func _create_effect_widget(effect_id: String) -> Control:
 		var details_label := RichTextLabel.new()
 		details_label.bbcode_enabled = true
 		details_label.fit_content = true
-		details_label.add_theme_font_size_override("normal_font_size", 11)
+		details_label.add_theme_font_size_override("normal_font_size", DesignSystem.FONT_CAPTION)
 		details_label.text = details
 		vbox.add_child(details_label)
 

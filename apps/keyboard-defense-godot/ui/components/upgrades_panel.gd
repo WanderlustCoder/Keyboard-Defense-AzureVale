@@ -1,11 +1,11 @@
 class_name UpgradesPanel
 extends PanelContainer
-## Upgrades Panel - Shows kingdom and unit upgrade trees
+## Upgrades Panel - Shows kingdom and unit upgrade trees.
+## Migrated to use DesignSystem and ThemeColors for consistency.
 
 signal closed
 signal upgrade_selected(upgrade_id: String, category: String)
 
-const ThemeColors = preload("res://ui/theme_colors.gd")
 const SimUpgrades = preload("res://sim/upgrades.gd")
 
 var _current_gold: int = 0
@@ -17,7 +17,7 @@ var _close_btn: Button = null
 var _content_scroll: ScrollContainer = null
 var _content_vbox: VBoxContainer = null
 
-# Tier colors
+# Tier colors (domain-specific)
 const TIER_COLORS: Dictionary = {
 	1: Color(0.5, 0.8, 0.3),
 	2: Color(0.4, 0.8, 1.0),
@@ -31,45 +31,36 @@ func _ready() -> void:
 
 
 func _build_ui() -> void:
-	custom_minimum_size = Vector2(540, 560)
+	custom_minimum_size = Vector2(DesignSystem.SIZE_PANEL_LG, 560)
 
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.08, 0.09, 0.12, 0.98)
-	style.border_color = ThemeColors.BORDER
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(8)
-	style.set_content_margin_all(12)
+	var style := DesignSystem.create_panel_style()
 	add_theme_stylebox_override("panel", style)
 
-	var main_vbox := VBoxContainer.new()
-	main_vbox.add_theme_constant_override("separation", 10)
+	var main_vbox := DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	add_child(main_vbox)
 
 	# Header
-	var header := HBoxContainer.new()
+	var header := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 	main_vbox.add_child(header)
 
 	var title := Label.new()
 	title.text = "UPGRADE TREES"
-	title.add_theme_font_size_override("font_size", 18)
-	title.add_theme_color_override("font_color", Color(1.0, 0.84, 0.0))
+	DesignSystem.style_label(title, "h2", ThemeColors.RESOURCE_GOLD)
 	header.add_child(title)
 
-	var spacer := Control.new()
-	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	header.add_child(spacer)
+	header.add_child(DesignSystem.create_spacer())
 
 	_close_btn = Button.new()
-	_close_btn.text = "X"
-	_close_btn.custom_minimum_size = Vector2(30, 30)
+	_close_btn.text = "✕"
+	_close_btn.custom_minimum_size = Vector2(DesignSystem.SIZE_BUTTON_SM, DesignSystem.SIZE_BUTTON_SM)
+	_style_close_button()
 	_close_btn.pressed.connect(_on_close_pressed)
 	header.add_child(_close_btn)
 
 	# Subtitle
 	var subtitle := Label.new()
 	subtitle.text = "Permanent upgrades purchased with gold"
-	subtitle.add_theme_font_size_override("font_size", 12)
-	subtitle.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(subtitle, "body_small", ThemeColors.TEXT_DIM)
 	main_vbox.add_child(subtitle)
 
 	# Content scroll
@@ -79,18 +70,24 @@ func _build_ui() -> void:
 	_content_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	main_vbox.add_child(_content_scroll)
 
-	_content_vbox = VBoxContainer.new()
-	_content_vbox.add_theme_constant_override("separation", 12)
+	_content_vbox = DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	_content_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_content_scroll.add_child(_content_vbox)
 
 	# Footer
 	var footer := Label.new()
 	footer.text = "Type 'buy upgrade <name>' during day phase"
-	footer.add_theme_font_size_override("font_size", 11)
-	footer.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(footer, "caption", ThemeColors.TEXT_DIM)
 	footer.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	main_vbox.add_child(footer)
+
+
+func _style_close_button() -> void:
+	var normal := DesignSystem.create_button_style(ThemeColors.BG_BUTTON, ThemeColors.BORDER)
+	var hover := DesignSystem.create_button_style(ThemeColors.ERROR.darkened(0.3), ThemeColors.ERROR)
+	_close_btn.add_theme_stylebox_override("normal", normal)
+	_close_btn.add_theme_stylebox_override("hover", hover)
+	_close_btn.add_theme_color_override("font_color", ThemeColors.TEXT)
 
 
 func show_upgrades(gold: int = 0, purchased_kingdom: Array = [], purchased_unit: Array = []) -> void:
@@ -130,54 +127,50 @@ func _build_gold_summary() -> void:
 	var section := PanelContainer.new()
 
 	var section_style := StyleBoxFlat.new()
-	section_style.bg_color = Color(0.15, 0.14, 0.1, 0.9)
-	section_style.border_color = Color(0.6, 0.5, 0.2, 0.7)
+	section_style.bg_color = ThemeColors.RESOURCE_GOLD.darkened(0.85)
+	section_style.border_color = ThemeColors.RESOURCE_GOLD.darkened(0.5)
 	section_style.set_border_width_all(2)
-	section_style.set_corner_radius_all(6)
-	section_style.set_content_margin_all(10)
+	section_style.set_corner_radius_all(DesignSystem.RADIUS_SM)
+	section_style.set_content_margin_all(DesignSystem.SPACE_MD)
 	section.add_theme_stylebox_override("panel", section_style)
 
 	_content_vbox.add_child(section)
 
-	var hbox := HBoxContainer.new()
-	hbox.add_theme_constant_override("separation", 30)
+	var hbox := DesignSystem.create_hbox(DesignSystem.SPACE_XL)
 	hbox.alignment = BoxContainer.ALIGNMENT_CENTER
 	section.add_child(hbox)
 
 	# Gold available
-	_add_summary_stat(hbox, "Gold Available", str(_current_gold), Color(1.0, 0.84, 0.0))
+	_add_summary_stat(hbox, "Gold Available", str(_current_gold), ThemeColors.RESOURCE_GOLD)
 
 	# Kingdom owned
 	var kingdom_total: int = SimUpgrades.get_all_kingdom_upgrades().size()
-	_add_summary_stat(hbox, "Kingdom", "%d/%d" % [_purchased_kingdom.size(), kingdom_total], Color(0.4, 0.9, 0.4))
+	_add_summary_stat(hbox, "Kingdom", "%d/%d" % [_purchased_kingdom.size(), kingdom_total], ThemeColors.SUCCESS)
 
 	# Unit owned
 	var unit_total: int = SimUpgrades.get_all_unit_upgrades().size()
-	_add_summary_stat(hbox, "Unit", "%d/%d" % [_purchased_unit.size(), unit_total], Color(0.4, 0.8, 1.0))
+	_add_summary_stat(hbox, "Unit", "%d/%d" % [_purchased_unit.size(), unit_total], ThemeColors.INFO)
 
 
 func _add_summary_stat(parent: Control, label: String, value: String, color: Color) -> void:
-	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 0)
+	var vbox := DesignSystem.create_vbox(0)
 	parent.add_child(vbox)
 
 	var label_node := Label.new()
 	label_node.text = label
-	label_node.add_theme_font_size_override("font_size", 10)
-	label_node.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(label_node, "caption", ThemeColors.TEXT_DIM)
 	label_node.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(label_node)
 
 	var value_node := Label.new()
 	value_node.text = value
-	value_node.add_theme_font_size_override("font_size", 14)
-	value_node.add_theme_color_override("font_color", color)
+	DesignSystem.style_label(value_node, "body", color)
 	value_node.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(value_node)
 
 
 func _build_kingdom_section() -> void:
-	var section := _create_section_panel("KINGDOM UPGRADES", Color(0.5, 0.8, 0.3))
+	var section := _create_section_panel("KINGDOM UPGRADES", ThemeColors.SUCCESS)
 	_content_vbox.add_child(section)
 
 	var vbox: VBoxContainer = section.get_child(0)
@@ -187,8 +180,7 @@ func _build_kingdom_section() -> void:
 	if upgrades.is_empty():
 		var empty_label := Label.new()
 		empty_label.text = "No kingdom upgrades available"
-		empty_label.add_theme_font_size_override("font_size", 11)
-		empty_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+		DesignSystem.style_label(empty_label, "caption", ThemeColors.TEXT_DIM)
 		vbox.add_child(empty_label)
 		return
 
@@ -204,8 +196,7 @@ func _build_kingdom_section() -> void:
 
 		var tier_label := Label.new()
 		tier_label.text = "Tier %d" % tier
-		tier_label.add_theme_font_size_override("font_size", 11)
-		tier_label.add_theme_color_override("font_color", TIER_COLORS.get(tier, Color.WHITE))
+		DesignSystem.style_label(tier_label, "caption", TIER_COLORS.get(tier, Color.WHITE))
 		vbox.add_child(tier_label)
 
 		for upgrade in tier_upgrades:
@@ -214,7 +205,7 @@ func _build_kingdom_section() -> void:
 
 
 func _build_unit_section() -> void:
-	var section := _create_section_panel("UNIT UPGRADES", Color(0.4, 0.8, 1.0))
+	var section := _create_section_panel("UNIT UPGRADES", ThemeColors.INFO)
 	_content_vbox.add_child(section)
 
 	var vbox: VBoxContainer = section.get_child(0)
@@ -224,8 +215,7 @@ func _build_unit_section() -> void:
 	if upgrades.is_empty():
 		var empty_label := Label.new()
 		empty_label.text = "No unit upgrades available"
-		empty_label.add_theme_font_size_override("font_size", 11)
-		empty_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+		DesignSystem.style_label(empty_label, "caption", ThemeColors.TEXT_DIM)
 		vbox.add_child(empty_label)
 		return
 
@@ -241,8 +231,7 @@ func _build_unit_section() -> void:
 
 		var tier_label := Label.new()
 		tier_label.text = "Tier %d" % tier
-		tier_label.add_theme_font_size_override("font_size", 11)
-		tier_label.add_theme_color_override("font_color", TIER_COLORS.get(tier, Color.WHITE))
+		DesignSystem.style_label(tier_label, "caption", TIER_COLORS.get(tier, Color.WHITE))
 		vbox.add_child(tier_label)
 
 		for upgrade in tier_upgrades:
@@ -285,68 +274,61 @@ func _create_upgrade_card(upgrade: Dictionary, category: String) -> Control:
 	var bg_color: Color
 	var border_color: Color
 	if purchased:
-		bg_color = Color(0.2, 0.35, 0.2, 0.9)
-		border_color = Color(0.4, 0.7, 0.4)
+		bg_color = ThemeColors.SUCCESS.darkened(0.7)
+		border_color = ThemeColors.SUCCESS.darkened(0.3)
 	elif reqs_met and can_afford:
-		bg_color = Color(0.15, 0.2, 0.3, 0.9)
+		bg_color = ThemeColors.BG_CARD
 		border_color = tier_color.darkened(0.3)
 	else:
-		bg_color = Color(0.1, 0.1, 0.12, 0.7)
-		border_color = Color(0.3, 0.3, 0.35)
+		bg_color = ThemeColors.BG_CARD_DISABLED
+		border_color = ThemeColors.BORDER
 
 	var container_style := StyleBoxFlat.new()
 	container_style.bg_color = bg_color
 	container_style.border_color = border_color
 	container_style.set_border_width_all(1)
-	container_style.set_corner_radius_all(4)
-	container_style.set_content_margin_all(8)
+	container_style.set_corner_radius_all(DesignSystem.RADIUS_XS)
+	container_style.set_content_margin_all(DesignSystem.SPACE_SM)
 	container.add_theme_stylebox_override("panel", container_style)
 
-	var main_vbox := VBoxContainer.new()
-	main_vbox.add_theme_constant_override("separation", 4)
+	var main_vbox := DesignSystem.create_vbox(DesignSystem.SPACE_XS)
 	container.add_child(main_vbox)
 
 	# Header row
-	var header := HBoxContainer.new()
-	header.add_theme_constant_override("separation", 10)
+	var header := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 	main_vbox.add_child(header)
 
 	var name_label := Label.new()
 	name_label.text = label
-	name_label.add_theme_font_size_override("font_size", 11)
 	if purchased:
-		name_label.add_theme_color_override("font_color", Color(0.4, 0.9, 0.4))
+		DesignSystem.style_label(name_label, "caption", ThemeColors.SUCCESS)
 	else:
-		name_label.add_theme_color_override("font_color", tier_color)
+		DesignSystem.style_label(name_label, "caption", tier_color)
 	header.add_child(name_label)
 
-	var spacer := Control.new()
-	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	header.add_child(spacer)
+	header.add_child(DesignSystem.create_spacer())
 
 	# Status/cost
 	var status_label := Label.new()
 	if purchased:
 		status_label.text = "OWNED"
-		status_label.add_theme_color_override("font_color", Color(0.4, 0.9, 0.4))
+		DesignSystem.style_label(status_label, "caption", ThemeColors.SUCCESS)
 	elif not reqs_met:
 		status_label.text = "LOCKED"
-		status_label.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
+		DesignSystem.style_label(status_label, "caption", ThemeColors.TEXT_DISABLED)
 	elif can_afford:
 		status_label.text = "%d gold" % cost
-		status_label.add_theme_color_override("font_color", Color(1.0, 0.84, 0.0))
+		DesignSystem.style_label(status_label, "caption", ThemeColors.RESOURCE_GOLD)
 	else:
 		status_label.text = "%d gold" % cost
-		status_label.add_theme_color_override("font_color", Color(0.7, 0.4, 0.4))
-	status_label.add_theme_font_size_override("font_size", 10)
+		DesignSystem.style_label(status_label, "caption", ThemeColors.ERROR)
 	header.add_child(status_label)
 
 	# Description
 	if not description.is_empty():
 		var desc_label := Label.new()
 		desc_label.text = description
-		desc_label.add_theme_font_size_override("font_size", 10)
-		desc_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+		DesignSystem.style_label(desc_label, "caption", ThemeColors.TEXT_DIM)
 		desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		main_vbox.add_child(desc_label)
 
@@ -361,16 +343,14 @@ func _create_upgrade_card(upgrade: Dictionary, category: String) -> Control:
 
 		var effects_label := Label.new()
 		effects_label.text = effects_str
-		effects_label.add_theme_font_size_override("font_size", 9)
-		effects_label.add_theme_color_override("font_color", Color(0.5, 0.7, 0.5))
+		DesignSystem.style_label(effects_label, "caption", ThemeColors.SUCCESS.darkened(0.2))
 		main_vbox.add_child(effects_label)
 
 	# Requirements
 	if not requires.is_empty() and not purchased:
 		var req_label := Label.new()
 		req_label.text = "Requires: " + ", ".join(requires)
-		req_label.add_theme_font_size_override("font_size", 9)
-		req_label.add_theme_color_override("font_color", Color(0.5, 0.5, 0.6))
+		DesignSystem.style_label(req_label, "caption", ThemeColors.TEXT_DIM)
 		main_vbox.add_child(req_label)
 
 	return container
@@ -383,18 +363,16 @@ func _create_section_panel(title: String, color: Color) -> PanelContainer:
 	panel_style.bg_color = color.darkened(0.85)
 	panel_style.border_color = color.darkened(0.5)
 	panel_style.set_border_width_all(1)
-	panel_style.set_corner_radius_all(6)
-	panel_style.set_content_margin_all(10)
+	panel_style.set_corner_radius_all(DesignSystem.RADIUS_SM)
+	panel_style.set_content_margin_all(DesignSystem.SPACE_MD)
 	container.add_theme_stylebox_override("panel", panel_style)
 
-	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 8)
+	var vbox := DesignSystem.create_vbox(DesignSystem.SPACE_SM)
 	container.add_child(vbox)
 
 	var header := Label.new()
 	header.text = title
-	header.add_theme_font_size_override("font_size", 12)
-	header.add_theme_color_override("font_color", color)
+	DesignSystem.style_label(header, "body_small", color)
 	vbox.add_child(header)
 
 	return container

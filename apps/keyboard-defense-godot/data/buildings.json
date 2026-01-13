@@ -150,6 +150,96 @@
       "effects": {
         "build_cost_reduction": 0.15
       }
+    },
+    "grand_cathedral": {
+      "label": "Grand Cathedral",
+      "description": "A magnificent place of worship that inspires the entire kingdom. Provides +50% morale and passive healing each wave.",
+      "category": "monument",
+      "tier": 4,
+      "cost": {"gold": 500, "stone": 200, "wood": 200},
+      "production": {},
+      "defense": 2,
+      "worker_slots": 4,
+      "adjacency_bonus": {
+        "terrain": {},
+        "building": {"temple": {"wave_heal": 1}}
+      },
+      "effects": {
+        "morale_bonus": 0.5,
+        "wave_heal": 3,
+        "castle_hp_regen": 1
+      },
+      "requires": ["temple"],
+      "limit_per_map": 1
+    },
+    "war_academy": {
+      "label": "War Academy",
+      "description": "The finest military institution in the realm. Unlocks elite units and provides +25% tower damage.",
+      "category": "monument",
+      "tier": 4,
+      "cost": {"gold": 400, "stone": 300},
+      "production": {},
+      "defense": 3,
+      "worker_slots": 3,
+      "adjacency_bonus": {
+        "terrain": {},
+        "building": {"barracks": {"tower_damage": 5}}
+      },
+      "effects": {
+        "tower_damage_bonus": 0.25,
+        "typing_power": 0.15,
+        "unlocks_elite_units": true
+      },
+      "requires": ["barracks"],
+      "limit_per_map": 1
+    },
+    "trade_emporium": {
+      "label": "Trade Emporium",
+      "description": "A grand trading hub connecting routes across the realm. Reduces trade costs by 30% and attracts traveling merchants.",
+      "category": "monument",
+      "tier": 4,
+      "cost": {"gold": 600, "stone": 100, "wood": 100},
+      "production": {"gold": 15},
+      "defense": 0,
+      "worker_slots": 5,
+      "adjacency_bonus": {
+        "terrain": {},
+        "building": {"market": {"gold": 5}}
+      },
+      "effects": {
+        "trade_cost_reduction": 0.3,
+        "merchant_attraction": true,
+        "faction_relation_bonus": 10
+      },
+      "requires": ["market"],
+      "limit_per_map": 1
+    },
+    "wizard_tower": {
+      "label": "Wizard Tower",
+      "description": "A tower of arcane knowledge where the greatest mages study. Unlocks magic abilities and provides +40% research speed.",
+      "category": "monument",
+      "tier": 4,
+      "cost": {"gold": 800, "stone": 400},
+      "production": {},
+      "defense": 2,
+      "worker_slots": 2,
+      "adjacency_bonus": {
+        "terrain": {},
+        "building": {}
+      },
+      "effects": {
+        "research_speed_bonus": 0.4,
+        "unlocks_magic": true,
+        "spell_power": 0.2
+      },
+      "requires": [],
+      "limit_per_map": 1,
+      "combat_stats": {
+        "range": 5,
+        "damage": 10,
+        "damage_type": "magic",
+        "shots_per_wave": 3
+      }
     }
   },
   "categories": {
@@ -177,6 +267,11 @@
       "label": "Support",
       "description": "Buildings with special effects.",
       "color": "#2196F3"
+    },
+    "monument": {
+      "label": "Monument",
+      "description": "Legendary Tier 4 structures with powerful kingdom-wide effects.",
+      "color": "#9C27B0"
     }
   },
   "resources": {

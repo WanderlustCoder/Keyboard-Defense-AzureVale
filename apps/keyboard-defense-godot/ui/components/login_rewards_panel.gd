@@ -1,11 +1,11 @@
 class_name LoginRewardsPanel
 extends PanelContainer
-## Login Rewards Panel - Shows daily login rewards calendar and streak progress
+## Login Rewards Panel - Shows daily login rewards calendar and streak progress.
+## Migrated to use DesignSystem and ThemeColors for consistency.
 
 signal closed
 signal reward_claimed(reward: Dictionary)
 
-const ThemeColors = preload("res://ui/theme_colors.gd")
 const SimLoginRewards = preload("res://sim/login_rewards.gd")
 
 var _current_streak: int = 0
@@ -18,7 +18,7 @@ var _content_scroll: ScrollContainer = null
 var _content_vbox: VBoxContainer = null
 var _claim_btn: Button = null
 
-# Day colors
+# Day colors (domain-specific)
 const DAY_COLORS: Dictionary = {
 	"claimed": Color(0.3, 0.5, 0.3),
 	"today": Color(0.8, 0.7, 0.2),
@@ -33,45 +33,36 @@ func _ready() -> void:
 
 
 func _build_ui() -> void:
-	custom_minimum_size = Vector2(480, 520)
+	custom_minimum_size = Vector2(DesignSystem.SIZE_PANEL_MD, 520)
 
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.08, 0.09, 0.12, 0.98)
-	style.border_color = ThemeColors.BORDER
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(8)
-	style.set_content_margin_all(12)
+	var style := DesignSystem.create_panel_style()
 	add_theme_stylebox_override("panel", style)
 
-	var main_vbox := VBoxContainer.new()
-	main_vbox.add_theme_constant_override("separation", 10)
+	var main_vbox := DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	add_child(main_vbox)
 
 	# Header
-	var header := HBoxContainer.new()
+	var header := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 	main_vbox.add_child(header)
 
 	var title := Label.new()
 	title.text = "DAILY LOGIN REWARDS"
-	title.add_theme_font_size_override("font_size", 18)
-	title.add_theme_color_override("font_color", Color(1.0, 0.84, 0.0))
+	DesignSystem.style_label(title, "h2", ThemeColors.RESOURCE_GOLD)
 	header.add_child(title)
 
-	var spacer := Control.new()
-	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	header.add_child(spacer)
+	header.add_child(DesignSystem.create_spacer())
 
 	_close_btn = Button.new()
-	_close_btn.text = "X"
-	_close_btn.custom_minimum_size = Vector2(30, 30)
+	_close_btn.text = "✕"
+	_close_btn.custom_minimum_size = Vector2(DesignSystem.SIZE_BUTTON_SM, DesignSystem.SIZE_BUTTON_SM)
+	_style_close_button()
 	_close_btn.pressed.connect(_on_close_pressed)
 	header.add_child(_close_btn)
 
 	# Subtitle
 	var subtitle := Label.new()
 	subtitle.text = "Log in daily to earn rewards and build your streak!"
-	subtitle.add_theme_font_size_override("font_size", 12)
-	subtitle.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(subtitle, "caption", ThemeColors.TEXT_DIM)
 	main_vbox.add_child(subtitle)
 
 	# Content scroll
@@ -81,18 +72,24 @@ func _build_ui() -> void:
 	_content_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	main_vbox.add_child(_content_scroll)
 
-	_content_vbox = VBoxContainer.new()
-	_content_vbox.add_theme_constant_override("separation", 12)
+	_content_vbox = DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	_content_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_content_scroll.add_child(_content_vbox)
 
 	# Footer
 	var footer := Label.new()
 	footer.text = "Rewards reset at midnight"
-	footer.add_theme_font_size_override("font_size", 11)
-	footer.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(footer, "caption", ThemeColors.TEXT_DIM)
 	footer.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	main_vbox.add_child(footer)
+
+
+func _style_close_button() -> void:
+	var normal := DesignSystem.create_button_style(ThemeColors.BG_BUTTON, ThemeColors.BORDER)
+	var hover := DesignSystem.create_button_style(ThemeColors.ERROR.darkened(0.3), ThemeColors.ERROR)
+	_close_btn.add_theme_stylebox_override("normal", normal)
+	_close_btn.add_theme_stylebox_override("hover", hover)
+	_close_btn.add_theme_color_override("font_color", ThemeColors.TEXT)
 
 
 func show_login_rewards(streak: int = 0, can_claim: bool = false) -> void:
@@ -130,27 +127,24 @@ func _build_content() -> void:
 
 
 func _build_streak_section() -> void:
-	var section := _create_section_panel("CURRENT STREAK", Color(1.0, 0.84, 0.0))
+	var section := _create_section_panel("CURRENT STREAK", ThemeColors.RESOURCE_GOLD)
 	_content_vbox.add_child(section)
 
 	var vbox: VBoxContainer = section.get_child(0)
 
 	# Streak display
-	var streak_row := HBoxContainer.new()
-	streak_row.add_theme_constant_override("separation", 20)
+	var streak_row := DesignSystem.create_hbox(DesignSystem.SPACE_LG)
 	streak_row.alignment = BoxContainer.ALIGNMENT_CENTER
 	vbox.add_child(streak_row)
 
 	var streak_label := Label.new()
 	streak_label.text = str(_current_streak)
-	streak_label.add_theme_font_size_override("font_size", 36)
-	streak_label.add_theme_color_override("font_color", Color(1.0, 0.84, 0.0))
+	DesignSystem.style_label(streak_label, "display", ThemeColors.RESOURCE_GOLD)
 	streak_row.add_child(streak_label)
 
 	var days_label := Label.new()
 	days_label.text = "day streak" if _current_streak == 1 else "day streak"
-	days_label.add_theme_font_size_override("font_size", 14)
-	days_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(days_label, "body_small", ThemeColors.TEXT_DIM)
 	streak_row.add_child(days_label)
 
 	# Progress to next milestone
@@ -161,14 +155,13 @@ func _build_streak_section() -> void:
 	if days_to_milestone > 0:
 		var progress_label := Label.new()
 		progress_label.text = "%d day%s until %s" % [days_to_milestone, "s" if days_to_milestone != 1 else "", milestone_name]
-		progress_label.add_theme_font_size_override("font_size", 12)
-		progress_label.add_theme_color_override("font_color", Color(0.7, 0.6, 0.9))
+		DesignSystem.style_label(progress_label, "caption", ThemeColors.RARITY_EPIC)
 		progress_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		vbox.add_child(progress_label)
 
 
 func _build_calendar_section() -> void:
-	var section := _create_section_panel("WEEKLY REWARDS", Color(0.6, 0.8, 1.0))
+	var section := _create_section_panel("WEEKLY REWARDS", ThemeColors.INFO)
 	_content_vbox.add_child(section)
 
 	var vbox: VBoxContainer = section.get_child(0)
@@ -176,8 +169,8 @@ func _build_calendar_section() -> void:
 	# Create 7-day grid
 	var grid := GridContainer.new()
 	grid.columns = 7
-	grid.add_theme_constant_override("h_separation", 6)
-	grid.add_theme_constant_override("v_separation", 6)
+	grid.add_theme_constant_override("h_separation", DesignSystem.SPACE_SM)
+	grid.add_theme_constant_override("v_separation", DesignSystem.SPACE_SM)
 	vbox.add_child(grid)
 
 	# Day headers
@@ -185,8 +178,7 @@ func _build_calendar_section() -> void:
 	for day_name in day_names:
 		var header := Label.new()
 		header.text = "Day " + day_name
-		header.add_theme_font_size_override("font_size", 10)
-		header.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+		DesignSystem.style_label(header, "caption", ThemeColors.TEXT_DIM)
 		header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		header.custom_minimum_size = Vector2(55, 0)
 		grid.add_child(header)
@@ -222,19 +214,20 @@ func _create_day_tile(day: int, tier: Dictionary, is_claimed: bool, is_today: bo
 	panel_style.bg_color = bg_color
 	panel_style.border_color = bg_color.lightened(0.3) if is_today else bg_color.lightened(0.1)
 	panel_style.set_border_width_all(2 if is_today else 1)
-	panel_style.set_corner_radius_all(4)
+	panel_style.set_corner_radius_all(DesignSystem.RADIUS_SM)
 	panel.add_theme_stylebox_override("panel", panel_style)
 
-	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 2)
+	var vbox := DesignSystem.create_vbox(2)
 	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
 	panel.add_child(vbox)
 
 	# Gold amount
 	var gold_label := Label.new()
 	gold_label.text = str(tier.get("gold", 0))
-	gold_label.add_theme_font_size_override("font_size", 12)
-	gold_label.add_theme_color_override("font_color", Color(1.0, 0.84, 0.0) if not is_claimed else Color(0.5, 0.5, 0.5))
+	if is_claimed:
+		DesignSystem.style_label(gold_label, "caption", ThemeColors.TEXT_DISABLED)
+	else:
+		DesignSystem.style_label(gold_label, "caption", ThemeColors.RESOURCE_GOLD)
 	gold_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(gold_label)
 
@@ -243,8 +236,7 @@ func _create_day_tile(day: int, tier: Dictionary, is_claimed: bool, is_today: bo
 	if not bonus.is_empty():
 		var bonus_label := Label.new()
 		bonus_label.text = "+"
-		bonus_label.add_theme_font_size_override("font_size", 10)
-		bonus_label.add_theme_color_override("font_color", Color(0.7, 0.5, 0.9))
+		DesignSystem.style_label(bonus_label, "caption", ThemeColors.RARITY_EPIC)
 		bonus_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		vbox.add_child(bonus_label)
 
@@ -252,8 +244,7 @@ func _create_day_tile(day: int, tier: Dictionary, is_claimed: bool, is_today: bo
 	if is_claimed:
 		var check := Label.new()
 		check.text = "ok"
-		check.add_theme_font_size_override("font_size", 9)
-		check.add_theme_color_override("font_color", Color(0.4, 0.7, 0.4))
+		DesignSystem.style_label(check, "caption", ThemeColors.SUCCESS)
 		check.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		vbox.add_child(check)
 
@@ -264,51 +255,55 @@ func _build_todays_reward_section() -> void:
 	var section := PanelContainer.new()
 
 	var section_style := StyleBoxFlat.new()
-	section_style.bg_color = Color(0.2, 0.25, 0.15, 0.9)
-	section_style.border_color = Color(1.0, 0.84, 0.0, 0.7)
+	section_style.bg_color = ThemeColors.SUCCESS.darkened(0.8)
+	section_style.border_color = ThemeColors.RESOURCE_GOLD.darkened(0.3)
 	section_style.set_border_width_all(2)
-	section_style.set_corner_radius_all(6)
-	section_style.set_content_margin_all(12)
+	section_style.set_corner_radius_all(DesignSystem.RADIUS_MD)
+	section_style.set_content_margin_all(DesignSystem.SPACE_MD)
 	section.add_theme_stylebox_override("panel", section_style)
 
 	_content_vbox.add_child(section)
 
-	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 8)
+	var vbox := DesignSystem.create_vbox(DesignSystem.SPACE_SM)
 	section.add_child(vbox)
 
 	var header := Label.new()
 	header.text = "TODAY'S REWARD"
-	header.add_theme_font_size_override("font_size", 14)
-	header.add_theme_color_override("font_color", Color(1.0, 0.84, 0.0))
+	DesignSystem.style_label(header, "body_small", ThemeColors.RESOURCE_GOLD)
 	header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(header)
 
 	# Reward preview
 	var reward_text := Label.new()
 	reward_text.text = SimLoginRewards.format_reward_text(_today_reward)
-	reward_text.add_theme_font_size_override("font_size", 12)
-	reward_text.add_theme_color_override("font_color", Color.WHITE)
+	DesignSystem.style_label(reward_text, "caption", ThemeColors.TEXT)
 	reward_text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(reward_text)
 
 	# Claim button
 	_claim_btn = Button.new()
 	_claim_btn.text = "CLAIM REWARD"
-	_claim_btn.custom_minimum_size = Vector2(160, 40)
+	_claim_btn.custom_minimum_size = Vector2(160, DesignSystem.SIZE_BUTTON_MD)
+	_style_claim_button()
 	_claim_btn.pressed.connect(_on_claim_pressed)
-	vbox.add_child(_claim_btn)
 
 	# Center the button
-	var btn_container := HBoxContainer.new()
+	var btn_container := DesignSystem.create_hbox(0)
 	btn_container.alignment = BoxContainer.ALIGNMENT_CENTER
+	btn_container.add_child(_claim_btn)
 	vbox.add_child(btn_container)
-	vbox.move_child(_claim_btn, vbox.get_child_count() - 1)
-	_claim_btn.reparent(btn_container)
+
+
+func _style_claim_button() -> void:
+	var normal := DesignSystem.create_button_style(ThemeColors.SUCCESS.darkened(0.3), ThemeColors.SUCCESS)
+	var hover := DesignSystem.create_button_style(ThemeColors.SUCCESS.darkened(0.1), ThemeColors.SUCCESS.lightened(0.2))
+	_claim_btn.add_theme_stylebox_override("normal", normal)
+	_claim_btn.add_theme_stylebox_override("hover", hover)
+	_claim_btn.add_theme_color_override("font_color", ThemeColors.TEXT)
 
 
 func _build_bonus_reference_section() -> void:
-	var section := _create_section_panel("BONUS REWARDS", Color(0.7, 0.5, 0.9))
+	var section := _create_section_panel("BONUS REWARDS", ThemeColors.RARITY_EPIC)
 	_content_vbox.add_child(section)
 
 	var vbox: VBoxContainer = section.get_child(0)
@@ -320,20 +315,17 @@ func _build_bonus_reference_section() -> void:
 
 
 func _create_bonus_row(bonus_id: String, bonus_info: Dictionary) -> Control:
-	var hbox := HBoxContainer.new()
-	hbox.add_theme_constant_override("separation", 10)
+	var hbox := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 
 	var name_label := Label.new()
 	name_label.text = str(bonus_info.get("name", bonus_id))
-	name_label.add_theme_font_size_override("font_size", 11)
-	name_label.add_theme_color_override("font_color", Color(0.7, 0.5, 0.9))
+	DesignSystem.style_label(name_label, "caption", ThemeColors.RARITY_EPIC)
 	name_label.custom_minimum_size = Vector2(100, 0)
 	hbox.add_child(name_label)
 
 	var desc_label := Label.new()
 	desc_label.text = str(bonus_info.get("description", ""))
-	desc_label.add_theme_font_size_override("font_size", 10)
-	desc_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(desc_label, "caption", ThemeColors.TEXT_DIM)
 	hbox.add_child(desc_label)
 
 	return hbox
@@ -346,18 +338,16 @@ func _create_section_panel(title: String, color: Color) -> PanelContainer:
 	panel_style.bg_color = color.darkened(0.85)
 	panel_style.border_color = color.darkened(0.5)
 	panel_style.set_border_width_all(1)
-	panel_style.set_corner_radius_all(6)
-	panel_style.set_content_margin_all(10)
+	panel_style.set_corner_radius_all(DesignSystem.RADIUS_MD)
+	panel_style.set_content_margin_all(DesignSystem.SPACE_MD)
 	container.add_theme_stylebox_override("panel", panel_style)
 
-	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 8)
+	var vbox := DesignSystem.create_vbox(DesignSystem.SPACE_SM)
 	container.add_child(vbox)
 
 	var header := Label.new()
 	header.text = title
-	header.add_theme_font_size_override("font_size", 12)
-	header.add_theme_color_override("font_color", color)
+	DesignSystem.style_label(header, "body_small", color)
 	vbox.add_child(header)
 
 	return container

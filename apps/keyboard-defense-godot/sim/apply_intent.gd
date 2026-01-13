@@ -30,6 +30,8 @@ const SimEnemyTypes = preload("res://sim/enemy_types.gd")
 const SimHeroTypes = preload("res://sim/hero_types.gd")
 const SimLocale = preload("res://sim/locale.gd")
 const SimTitles = preload("res://sim/titles.gd")
+const SimResearch = preload("res://sim/research.gd")
+const SimTrade = preload("res://sim/trade.gd")
 
 static func apply(state: GameState, intent: Dictionary) -> Dictionary:
     var events: Array[String] = []
@@ -118,6 +120,16 @@ static func apply(state: GameState, intent: Dictionary) -> Dictionary:
             _apply_buy_upgrade(new_state, intent, events)
         "ui_upgrades":
             _apply_ui_upgrades(new_state, intent, events)
+        "research_show":
+            _apply_research_show(new_state, events)
+        "research_start":
+            _apply_research_start(new_state, intent, events)
+        "research_cancel":
+            _apply_research_cancel(new_state, events)
+        "trade_show":
+            _apply_trade_show(new_state, events)
+        "trade_execute":
+            _apply_trade_execute(new_state, intent, events)
         # Open-world quick actions
         "inspect_tile":
             _apply_inspect_tile(new_state, events)
@@ -407,6 +419,16 @@ static func _advance_night_step(state: GameState, hit_enemy_index: int, apply_mi
         if gold_income > 0:
             state.gold += gold_income
             events.append("Treasury yields +%d gold." % gold_income)
+        # Advance research progress
+        var research := SimResearch.instance()
+        var research_result: Dictionary = research.advance_research(state)
+        if research_result.completed:
+            var research_label: String = research.get_research(research_result.research_id).get("label", research_result.research_id)
+            events.append("Research complete: %s!" % research_label)
+            # TODO: Apply research effects to gameplay
+        elif not state.active_research.is_empty():
+            var summary: Dictionary = research.get_research_summary(state)
+            events.append("Research progress: %s (%d/%d)" % [summary.active_label, summary.progress, summary.waves_needed])
         # Victory check: surviving past day 20 (after defeating Sunlord)
         if state.day >= 21:
             state.phase = "victory"
@@ -1775,6 +1797,151 @@ static func _apply_ui_upgrades(state: GameState, intent: Dictionary, events: Arr
     var lines: Array[String] = SimUpgrades.format_upgrade_tree(state, category)
     for line in lines:
         events.append(line)
+
+# Research system implementations
+static func _apply_research_show(state: GameState, events: Array[String]) -> void:
+    var research := SimResearch.instance()
+    var summary: Dictionary = research.get_research_summary(state)
+
+    events.append("=== RESEARCH ===")
+    events.append("Completed: %d/%d" % [summary.completed_count, summary.total_count])
+    events.append("Available: %d" % summary.available_count)
+
+    if not summary.active_research.is_empty():
+        events.append("")
+        events.append("Currently Researching: %s" % summary.active_label)
+        events.append("Progress: %d/%d waves (%d%%)" % [
+            summary.progress,
+            summary.waves_needed,
+            int(summary.progress_percent * 100)
+        ])
+    else:
+        events.append("")
+        events.append("No active research. Use 'research <id>' to start.")
+
+    events.append("")
+    events.append("=== AVAILABLE RESEARCH ===")
+    var tree: Dictionary = research.get_research_tree(state)
+    for category in tree.keys():
+        var items: Array = tree[category]
+        var available_in_category: Array = items.filter(func(item): return item.available and not item.completed)
+        if available_in_category.size() > 0:
+            events.append("")
+            events.append("[%s]" % category.capitalize())
+            for item in available_in_category:
+                var cost: int = int(item.get("cost", {}).get("gold", 0))
+                var waves: int = int(item.get("waves_to_complete", 1))
+                var afford: String = " (can afford)" if item.can_afford else " (need %dg)" % cost
+                events.append("  %s - %s (%dg, %d waves)%s" % [
+                    item.id,
+                    item.label,
+                    cost,
+                    waves,
+                    afford
+                ])
+
+static func _apply_research_start(state: GameState, intent: Dictionary, events: Array[String]) -> void:
+    if not _require_day(state, events):
+        return
+
+    var research_id: String = str(intent.get("research_id", ""))
+    var research := SimResearch.instance()
+
+    var check: Dictionary = research.can_start_research(state, research_id)
+    if not check.ok:
+        events.append("Cannot start research '%s': %s" % [research_id, check.reason])
+        return
+
+    if research.start_research(state, research_id):
+        var info: Dictionary = research.get_research(research_id)
+        var cost: int = int(info.get("cost", {}).get("gold", 0))
+        var waves: int = int(info.get("waves_to_complete", 1))
+        events.append("Started researching: %s" % info.get("label", research_id))
+        events.append("Cost: %d gold. Complete in %d waves." % [cost, waves])
+    else:
+        events.append("Failed to start research.")
+
+static func _apply_research_cancel(state: GameState, events: Array[String]) -> void:
+    var research := SimResearch.instance()
+
+    if state.active_research.is_empty():
+        events.append("No active research to cancel.")
+        return
+
+    var info: Dictionary = research.get_research(state.active_research)
+    var label: String = str(info.get("label", state.active_research))
+    var cost: int = int(info.get("cost", {}).get("gold", 0))
+    var refund: int = int(cost / 2)
+
+    if research.cancel_research(state):
+        events.append("Cancelled research: %s" % label)
+        events.append("Refunded: %d gold (50%%)." % refund)
+    else:
+        events.append("Failed to cancel research.")
+
+# Trade system implementations
+static func _apply_trade_show(state: GameState, events: Array[String]) -> void:
+    var summary: Dictionary = SimTrade.get_trade_summary(state)
+
+    events.append("=== TRADE ===")
+
+    if not summary.enabled:
+        events.append("Trading is not enabled.")
+        events.append("Build a Level 3 Market to unlock trading.")
+        return
+
+    events.append("Market Bonus: +%d%%" % int(summary.market_bonus * 100))
+    events.append("")
+    events.append("Your Resources:")
+    events.append("  Wood: %d  Stone: %d  Food: %d  Gold: %d" % [
+        summary.resources.wood,
+        summary.resources.stone,
+        summary.resources.food,
+        summary.resources.gold
+    ])
+
+    events.append("")
+    events.append("Current Rates (per unit):")
+
+    var rates: Dictionary = summary.rates
+    for rate_key in rates.keys():
+        var parts: Array = rate_key.split("_to_")
+        if parts.size() == 2:
+            var from_res: String = parts[0]
+            var to_res: String = parts[1]
+            var rate: float = rates[rate_key]
+            events.append("  %s -> %s: %.2f" % [from_res.capitalize(), to_res.capitalize(), rate])
+
+    # Show suggestions
+    var suggestions: Array = SimTrade.get_suggested_trades(state)
+    if suggestions.size() > 0:
+        events.append("")
+        events.append("Suggested Trades:")
+        for s in suggestions.slice(0, 3):  # Show top 3
+            events.append("  trade %d %s for %s -> get %d %s" % [
+                s.amount, s.from, s.to, s.receive, s.to
+            ])
+
+static func _apply_trade_execute(state: GameState, intent: Dictionary, events: Array[String]) -> void:
+    if not _require_day(state, events):
+        return
+
+    var from_resource: String = str(intent.get("from_resource", ""))
+    var to_resource: String = str(intent.get("to_resource", ""))
+    var amount: int = int(intent.get("amount", 0))
+
+    var result: Dictionary = SimTrade.execute_trade(state, from_resource, to_resource, amount)
+
+    if result.ok:
+        events.append("Traded %d %s for %d %s (rate: %.2f)" % [
+            amount,
+            from_resource,
+            result.to_amount,
+            to_resource,
+            result.rate
+        ])
+    else:
+        events.append("Trade failed: %s" % result.reason)
 
 # Open-world quick action implementations
 static func _apply_inspect_tile(state: GameState, events: Array[String]) -> void:

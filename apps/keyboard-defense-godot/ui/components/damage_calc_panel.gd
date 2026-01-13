@@ -1,17 +1,16 @@
 class_name DamageCalcPanel
 extends PanelContainer
-## Damage Calculation Panel - Explains damage formulas and type interactions
+## Damage Calculation Panel - Explains damage formulas and type interactions.
+## Migrated to use DesignSystem and ThemeColors for consistency.
 
 signal closed
-
-const ThemeColors = preload("res://ui/theme_colors.gd")
 
 # UI elements
 var _close_btn: Button = null
 var _content_scroll: ScrollContainer = null
 var _content_vbox: VBoxContainer = null
 
-# Damage type data (from SimDamageTypes)
+# Damage type data (domain-specific colors kept as constant)
 const DAMAGE_TYPES: Array[Dictionary] = [
 	{
 		"type": "Physical",
@@ -71,7 +70,7 @@ const DAMAGE_FORMULA: Dictionary = {
 	"minimum": "All damage has a minimum of 1"
 }
 
-# Armor and resistance info
+# Armor and resistance info (domain-specific colors)
 const ARMOR_INFO: Array[Dictionary] = [
 	{
 		"source": "Armored affix",
@@ -102,45 +101,36 @@ func _ready() -> void:
 
 
 func _build_ui() -> void:
-	custom_minimum_size = Vector2(520, 580)
+	custom_minimum_size = Vector2(DesignSystem.SIZE_PANEL_MD + 40, 580)
 
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.08, 0.09, 0.12, 0.98)
-	style.border_color = ThemeColors.BORDER
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(8)
-	style.set_content_margin_all(12)
+	var style := DesignSystem.create_panel_style()
 	add_theme_stylebox_override("panel", style)
 
-	var main_vbox := VBoxContainer.new()
-	main_vbox.add_theme_constant_override("separation", 10)
+	var main_vbox := DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	add_child(main_vbox)
 
 	# Header
-	var header := HBoxContainer.new()
+	var header := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 	main_vbox.add_child(header)
 
 	var title := Label.new()
 	title.text = "DAMAGE SYSTEM"
-	title.add_theme_font_size_override("font_size", 18)
-	title.add_theme_color_override("font_color", Color(0.9, 0.4, 0.4))
+	DesignSystem.style_label(title, "h2", ThemeColors.ERROR)
 	header.add_child(title)
 
-	var spacer := Control.new()
-	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	header.add_child(spacer)
+	header.add_child(DesignSystem.create_spacer())
 
 	_close_btn = Button.new()
-	_close_btn.text = "X"
-	_close_btn.custom_minimum_size = Vector2(30, 30)
+	_close_btn.text = "✕"
+	_close_btn.custom_minimum_size = Vector2(DesignSystem.SIZE_BUTTON_SM, DesignSystem.SIZE_BUTTON_SM)
+	_style_close_button()
 	_close_btn.pressed.connect(_on_close_pressed)
 	header.add_child(_close_btn)
 
 	# Subtitle
 	var subtitle := Label.new()
 	subtitle.text = "How tower damage is calculated against enemies"
-	subtitle.add_theme_font_size_override("font_size", 12)
-	subtitle.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(subtitle, "caption", ThemeColors.TEXT_DIM)
 	main_vbox.add_child(subtitle)
 
 	# Content scroll
@@ -150,18 +140,24 @@ func _build_ui() -> void:
 	_content_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	main_vbox.add_child(_content_scroll)
 
-	_content_vbox = VBoxContainer.new()
-	_content_vbox.add_theme_constant_override("separation", 10)
+	_content_vbox = DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	_content_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_content_scroll.add_child(_content_vbox)
 
 	# Footer
 	var footer := Label.new()
 	footer.text = "Match damage types to enemy weaknesses for maximum effect"
-	footer.add_theme_font_size_override("font_size", 11)
-	footer.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(footer, "caption", ThemeColors.TEXT_DIM)
 	footer.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	main_vbox.add_child(footer)
+
+
+func _style_close_button() -> void:
+	var normal := DesignSystem.create_button_style(ThemeColors.BG_BUTTON, ThemeColors.BORDER)
+	var hover := DesignSystem.create_button_style(ThemeColors.ERROR.darkened(0.3), ThemeColors.ERROR)
+	_close_btn.add_theme_stylebox_override("normal", normal)
+	_close_btn.add_theme_stylebox_override("hover", hover)
+	_close_btn.add_theme_color_override("font_color", ThemeColors.TEXT)
 
 
 func show_damage_calc() -> void:
@@ -192,7 +188,7 @@ func _build_content() -> void:
 
 
 func _build_damage_types_section() -> void:
-	var section := _create_section_panel("DAMAGE TYPES", Color(0.9, 0.4, 0.4))
+	var section := _create_section_panel("DAMAGE TYPES", ThemeColors.ERROR)
 	_content_vbox.add_child(section)
 
 	var vbox: VBoxContainer = section.get_child(0)
@@ -205,31 +201,27 @@ func _build_damage_types_section() -> void:
 func _create_damage_type_card(dmg_type: Dictionary) -> Control:
 	var type_name: String = str(dmg_type.get("type", ""))
 	var description: String = str(dmg_type.get("description", ""))
-	var notes: String = str(dmg_type.get("notes", ""))
 	var color: Color = dmg_type.get("color", Color.WHITE)
 
-	var hbox := HBoxContainer.new()
-	hbox.add_theme_constant_override("separation", 10)
+	var hbox := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 
 	# Color indicator
 	var color_rect := ColorRect.new()
-	color_rect.custom_minimum_size = Vector2(8, 8)
+	color_rect.custom_minimum_size = Vector2(DesignSystem.SPACE_SM, DesignSystem.SPACE_SM)
 	color_rect.color = color
 	hbox.add_child(color_rect)
 
 	# Name
 	var name_label := Label.new()
 	name_label.text = type_name
-	name_label.add_theme_font_size_override("font_size", 11)
-	name_label.add_theme_color_override("font_color", color)
+	DesignSystem.style_label(name_label, "caption", color)
 	name_label.custom_minimum_size = Vector2(70, 0)
 	hbox.add_child(name_label)
 
 	# Description
 	var desc_label := Label.new()
 	desc_label.text = description
-	desc_label.add_theme_font_size_override("font_size", 10)
-	desc_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(desc_label, "caption", ThemeColors.TEXT_DIM)
 	desc_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	hbox.add_child(desc_label)
 
@@ -237,7 +229,7 @@ func _create_damage_type_card(dmg_type: Dictionary) -> Control:
 
 
 func _build_formula_section() -> void:
-	var section := _create_section_panel("DAMAGE FORMULA", Color(0.6, 0.8, 1.0))
+	var section := _create_section_panel("DAMAGE FORMULA", ThemeColors.INFO)
 	_content_vbox.add_child(section)
 
 	var vbox: VBoxContainer = section.get_child(0)
@@ -252,21 +244,19 @@ func _build_formula_section() -> void:
 	for i in range(formulas.size()):
 		var formula_label := Label.new()
 		formula_label.text = "%d. %s" % [i + 1, formulas[i]]
-		formula_label.add_theme_font_size_override("font_size", 10)
-		formula_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+		DesignSystem.style_label(formula_label, "caption", ThemeColors.TEXT_DIM)
 		formula_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		vbox.add_child(formula_label)
 
 
 func _build_resistance_section() -> void:
-	var section := _create_section_panel("ARMOR & RESISTANCES", Color(0.6, 0.6, 0.7))
+	var section := _create_section_panel("ARMOR & RESISTANCES", ThemeColors.TEXT_DIM)
 	_content_vbox.add_child(section)
 
 	var vbox: VBoxContainer = section.get_child(0)
 
 	for armor_info in ARMOR_INFO:
-		var hbox := HBoxContainer.new()
-		hbox.add_theme_constant_override("separation", 10)
+		var hbox := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 		vbox.add_child(hbox)
 
 		var source: String = str(armor_info.get("source", ""))
@@ -275,22 +265,19 @@ func _build_resistance_section() -> void:
 
 		var source_label := Label.new()
 		source_label.text = source
-		source_label.add_theme_font_size_override("font_size", 10)
-		source_label.add_theme_color_override("font_color", color)
+		DesignSystem.style_label(source_label, "caption", color)
 		source_label.custom_minimum_size = Vector2(110, 0)
 		hbox.add_child(source_label)
 
 		var effect_label := Label.new()
 		effect_label.text = effect
-		effect_label.add_theme_font_size_override("font_size", 10)
-		effect_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+		DesignSystem.style_label(effect_label, "caption", ThemeColors.TEXT_DIM)
 		hbox.add_child(effect_label)
 
 	# Resistance cap note
 	var cap_note := Label.new()
 	cap_note.text = "Max resistance: 90% | Max vulnerability: -100%"
-	cap_note.add_theme_font_size_override("font_size", 9)
-	cap_note.add_theme_color_override("font_color", Color(0.5, 0.6, 0.7))
+	DesignSystem.style_label(cap_note, "caption", ThemeColors.TEXT_DIM)
 	vbox.add_child(cap_note)
 
 
@@ -301,18 +288,16 @@ func _create_section_panel(title: String, color: Color) -> PanelContainer:
 	panel_style.bg_color = color.darkened(0.85)
 	panel_style.border_color = color.darkened(0.5)
 	panel_style.set_border_width_all(1)
-	panel_style.set_corner_radius_all(6)
-	panel_style.set_content_margin_all(10)
+	panel_style.set_corner_radius_all(DesignSystem.RADIUS_MD)
+	panel_style.set_content_margin_all(DesignSystem.SPACE_MD)
 	container.add_theme_stylebox_override("panel", panel_style)
 
-	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 6)
+	var vbox := DesignSystem.create_vbox(DesignSystem.SPACE_SM)
 	container.add_child(vbox)
 
 	var header := Label.new()
 	header.text = title
-	header.add_theme_font_size_override("font_size", 12)
-	header.add_theme_color_override("font_color", color)
+	DesignSystem.style_label(header, "body_small", color)
 	vbox.add_child(header)
 
 	return container

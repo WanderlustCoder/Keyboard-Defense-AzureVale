@@ -1,10 +1,9 @@
 class_name BuildingTypesReferencePanel
 extends PanelContainer
-## Building Types Reference Panel - Shows all building types with costs and effects
+## Building Types Reference Panel - Shows all building types with costs and effects.
+## Migrated to use DesignSystem and ThemeColors for consistency.
 
 signal closed
-
-const ThemeColors = preload("res://ui/theme_colors.gd")
 
 # UI elements
 var _close_btn: Button = null
@@ -237,45 +236,36 @@ func _ready() -> void:
 
 
 func _build_ui() -> void:
-	custom_minimum_size = Vector2(560, 640)
+	custom_minimum_size = Vector2(DesignSystem.SIZE_PANEL_LG, 640)
 
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.08, 0.09, 0.12, 0.98)
-	style.border_color = ThemeColors.BORDER
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(8)
-	style.set_content_margin_all(12)
+	var style := DesignSystem.create_panel_style()
 	add_theme_stylebox_override("panel", style)
 
-	var main_vbox := VBoxContainer.new()
-	main_vbox.add_theme_constant_override("separation", 10)
+	var main_vbox := DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	add_child(main_vbox)
 
 	# Header
-	var header := HBoxContainer.new()
+	var header := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 	main_vbox.add_child(header)
 
 	var title := Label.new()
 	title.text = "BUILDING TYPES"
-	title.add_theme_font_size_override("font_size", 18)
-	title.add_theme_color_override("font_color", Color(0.6, 0.4, 0.2))
+	DesignSystem.style_label(title, "h2", Color(0.6, 0.4, 0.2))
 	header.add_child(title)
 
-	var spacer := Control.new()
-	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	header.add_child(spacer)
+	header.add_child(DesignSystem.create_spacer())
 
 	_close_btn = Button.new()
-	_close_btn.text = "X"
-	_close_btn.custom_minimum_size = Vector2(30, 30)
+	_close_btn.text = "✕"
+	_close_btn.custom_minimum_size = Vector2(DesignSystem.SIZE_BUTTON_SM, DesignSystem.SIZE_BUTTON_SM)
+	_style_close_button()
 	_close_btn.pressed.connect(_on_close_pressed)
 	header.add_child(_close_btn)
 
 	# Subtitle
 	var subtitle := Label.new()
 	subtitle.text = "12 building types across 6 categories"
-	subtitle.add_theme_font_size_override("font_size", 12)
-	subtitle.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(subtitle, "body_small", ThemeColors.TEXT_DIM)
 	main_vbox.add_child(subtitle)
 
 	# Content scroll
@@ -285,18 +275,24 @@ func _build_ui() -> void:
 	_content_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	main_vbox.add_child(_content_scroll)
 
-	_content_vbox = VBoxContainer.new()
-	_content_vbox.add_theme_constant_override("separation", 10)
+	_content_vbox = DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	_content_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_content_scroll.add_child(_content_vbox)
 
 	# Footer
 	var footer := Label.new()
 	footer.text = "Type 'build [name]' during planning phase"
-	footer.add_theme_font_size_override("font_size", 11)
-	footer.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(footer, "caption", ThemeColors.TEXT_DIM)
 	footer.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	main_vbox.add_child(footer)
+
+
+func _style_close_button() -> void:
+	var normal := DesignSystem.create_button_style(ThemeColors.BG_BUTTON, ThemeColors.BORDER)
+	var hover := DesignSystem.create_button_style(ThemeColors.ERROR.darkened(0.3), ThemeColors.ERROR)
+	_close_btn.add_theme_stylebox_override("normal", normal)
+	_close_btn.add_theme_stylebox_override("hover", hover)
+	_close_btn.add_theme_color_override("font_color", ThemeColors.TEXT)
 
 
 func show_building_types_reference() -> void:
@@ -348,39 +344,34 @@ func _build_buildings_section(title: String, color: Color, buildings: Array[Dict
 	var vbox: VBoxContainer = section.get_child(0)
 
 	for building in buildings:
-		var container := VBoxContainer.new()
-		container.add_theme_constant_override("separation", 1)
+		var container := DesignSystem.create_vbox(1)
 		vbox.add_child(container)
 
 		# Name and cost
-		var header_hbox := HBoxContainer.new()
-		header_hbox.add_theme_constant_override("separation", 10)
+		var header_hbox := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 		container.add_child(header_hbox)
 
 		var name_label := Label.new()
 		name_label.text = str(building.get("name", ""))
-		name_label.add_theme_font_size_override("font_size", 10)
-		name_label.add_theme_color_override("font_color", building.get("color", color))
+		DesignSystem.style_label(name_label, "caption", building.get("color", color))
 		name_label.custom_minimum_size = Vector2(90, 0)
 		header_hbox.add_child(name_label)
 
 		var cost_label := Label.new()
 		cost_label.text = str(building.get("cost", ""))
-		cost_label.add_theme_font_size_override("font_size", 9)
-		cost_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+		DesignSystem.style_label(cost_label, "caption", ThemeColors.TEXT_DIM)
 		header_hbox.add_child(cost_label)
 
 		# Stats row
-		var stats_hbox := HBoxContainer.new()
-		stats_hbox.add_theme_constant_override("separation", 12)
+		var stats_hbox := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 		container.add_child(stats_hbox)
 
 		var prod: String = str(building.get("production", "-"))
 		if prod != "-":
-			_add_stat_label(stats_hbox, "Prod", prod, Color(0.5, 0.8, 0.3))
+			_add_stat_label(stats_hbox, "Prod", prod, ThemeColors.SUCCESS)
 
 		if building.has("defense") and int(building.get("defense", 0)) > 0:
-			_add_stat_label(stats_hbox, "Def", str(building.get("defense", 0)), Color(0.6, 0.6, 0.8))
+			_add_stat_label(stats_hbox, "Def", str(building.get("defense", 0)), ThemeColors.INFO)
 
 		var workers: int = int(building.get("workers", 0))
 		if workers > 0:
@@ -389,8 +380,7 @@ func _build_buildings_section(title: String, color: Color, buildings: Array[Dict
 		# Special ability
 		var special_label := Label.new()
 		special_label.text = "  " + str(building.get("special", ""))
-		special_label.add_theme_font_size_override("font_size", 9)
-		special_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+		DesignSystem.style_label(special_label, "caption", ThemeColors.TEXT_DIM)
 		special_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		container.add_child(special_label)
 
@@ -398,27 +388,23 @@ func _build_buildings_section(title: String, color: Color, buildings: Array[Dict
 		if building.has("upgrades"):
 			var upgrade_label := Label.new()
 			upgrade_label.text = "  Upgrades: " + str(building.get("upgrades", ""))
-			upgrade_label.add_theme_font_size_override("font_size", 8)
-			upgrade_label.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
+			DesignSystem.style_label(upgrade_label, "caption", Color(0.5, 0.5, 0.5))
 			upgrade_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 			container.add_child(upgrade_label)
 
 
 func _add_stat_label(parent: Control, label: String, value: String, color: Color) -> void:
-	var hbox := HBoxContainer.new()
-	hbox.add_theme_constant_override("separation", 2)
+	var hbox := DesignSystem.create_hbox(2)
 	parent.add_child(hbox)
 
 	var label_node := Label.new()
 	label_node.text = label + ":"
-	label_node.add_theme_font_size_override("font_size", 9)
-	label_node.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
+	DesignSystem.style_label(label_node, "caption", Color(0.5, 0.5, 0.5))
 	hbox.add_child(label_node)
 
 	var value_node := Label.new()
 	value_node.text = value
-	value_node.add_theme_font_size_override("font_size", 9)
-	value_node.add_theme_color_override("font_color", color)
+	DesignSystem.style_label(value_node, "caption", color)
 	hbox.add_child(value_node)
 
 
@@ -429,28 +415,24 @@ func _build_terrain_section() -> void:
 	var vbox: VBoxContainer = section.get_child(0)
 
 	for bonus in TERRAIN_BONUSES:
-		var hbox := HBoxContainer.new()
-		hbox.add_theme_constant_override("separation", 8)
+		var hbox := DesignSystem.create_hbox(DesignSystem.SPACE_SM)
 		vbox.add_child(hbox)
 
 		var building_label := Label.new()
 		building_label.text = str(bonus.get("building", ""))
-		building_label.add_theme_font_size_override("font_size", 9)
-		building_label.add_theme_color_override("font_color", bonus.get("color", Color.WHITE))
+		DesignSystem.style_label(building_label, "caption", bonus.get("color", Color.WHITE))
 		building_label.custom_minimum_size = Vector2(80, 0)
 		hbox.add_child(building_label)
 
 		var terrain_label := Label.new()
 		terrain_label.text = str(bonus.get("terrain", ""))
-		terrain_label.add_theme_font_size_override("font_size", 9)
-		terrain_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+		DesignSystem.style_label(terrain_label, "caption", ThemeColors.TEXT_DIM)
 		terrain_label.custom_minimum_size = Vector2(110, 0)
 		hbox.add_child(terrain_label)
 
 		var bonus_label := Label.new()
 		bonus_label.text = str(bonus.get("bonus", ""))
-		bonus_label.add_theme_font_size_override("font_size", 9)
-		bonus_label.add_theme_color_override("font_color", Color(0.5, 0.8, 0.3))
+		DesignSystem.style_label(bonus_label, "caption", ThemeColors.SUCCESS)
 		hbox.add_child(bonus_label)
 
 
@@ -463,8 +445,7 @@ func _build_tips_section() -> void:
 	for tip in BUILDING_TIPS:
 		var tip_label := Label.new()
 		tip_label.text = "- " + tip
-		tip_label.add_theme_font_size_override("font_size", 9)
-		tip_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+		DesignSystem.style_label(tip_label, "caption", ThemeColors.TEXT_DIM)
 		tip_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		vbox.add_child(tip_label)
 
@@ -476,18 +457,16 @@ func _create_section_panel(title: String, color: Color) -> PanelContainer:
 	panel_style.bg_color = color.darkened(0.85)
 	panel_style.border_color = color.darkened(0.5)
 	panel_style.set_border_width_all(1)
-	panel_style.set_corner_radius_all(6)
-	panel_style.set_content_margin_all(10)
+	panel_style.set_corner_radius_all(DesignSystem.RADIUS_SM)
+	panel_style.set_content_margin_all(DesignSystem.SPACE_MD)
 	container.add_theme_stylebox_override("panel", panel_style)
 
-	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 6)
+	var vbox := DesignSystem.create_vbox(DesignSystem.SPACE_SM)
 	container.add_child(vbox)
 
 	var header := Label.new()
 	header.text = title
-	header.add_theme_font_size_override("font_size", 12)
-	header.add_theme_color_override("font_color", color)
+	DesignSystem.style_label(header, "body_small", color)
 	vbox.add_child(header)
 
 	return container

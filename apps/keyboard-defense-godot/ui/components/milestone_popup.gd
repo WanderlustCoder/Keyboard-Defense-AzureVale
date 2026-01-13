@@ -1,10 +1,10 @@
 class_name MilestonePopup
 extends Control
-## Milestone Popup - Celebrates player achievements with animated notifications
+## Milestone Popup - Celebrates player achievements with animated notifications.
+## Migrated to use DesignSystem and ThemeColors for consistency.
 
 signal dismissed
 
-const ThemeColors = preload("res://ui/theme_colors.gd")
 const SimMilestones = preload("res://sim/milestones.gd")
 
 var _panel: PanelContainer = null

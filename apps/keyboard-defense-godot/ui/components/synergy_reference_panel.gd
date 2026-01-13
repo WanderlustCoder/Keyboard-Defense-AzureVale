@@ -1,17 +1,16 @@
 class_name SynergyReferencePanel
 extends PanelContainer
-## Synergy Reference Panel - Shows tower synergy combinations and effects
+## Synergy Reference Panel - Shows tower synergy combinations and effects.
+## Migrated to use DesignSystem and ThemeColors for consistency.
 
 signal closed
-
-const ThemeColors = preload("res://ui/theme_colors.gd")
 
 # UI elements
 var _close_btn: Button = null
 var _content_scroll: ScrollContainer = null
 var _content_vbox: VBoxContainer = null
 
-# Synergy definitions (from SimSynergyDetector)
+# Synergy definitions (from SimSynergyDetector) - domain-specific colors
 const SYNERGIES: Array[Dictionary] = [
 	{
 		"id": "fire_ice",
@@ -96,45 +95,36 @@ func _ready() -> void:
 
 
 func _build_ui() -> void:
-	custom_minimum_size = Vector2(520, 580)
+	custom_minimum_size = Vector2(DesignSystem.SIZE_PANEL_MD, 580)
 
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.08, 0.09, 0.12, 0.98)
-	style.border_color = ThemeColors.BORDER
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(8)
-	style.set_content_margin_all(12)
+	var style := DesignSystem.create_panel_style()
 	add_theme_stylebox_override("panel", style)
 
-	var main_vbox := VBoxContainer.new()
-	main_vbox.add_theme_constant_override("separation", 10)
+	var main_vbox := DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	add_child(main_vbox)
 
 	# Header
-	var header := HBoxContainer.new()
+	var header := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 	main_vbox.add_child(header)
 
 	var title := Label.new()
 	title.text = "TOWER SYNERGIES"
-	title.add_theme_font_size_override("font_size", 18)
-	title.add_theme_color_override("font_color", Color(0.6, 0.3, 0.9))
+	DesignSystem.style_label(title, "h2", Color(0.6, 0.3, 0.9))
 	header.add_child(title)
 
-	var spacer := Control.new()
-	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	header.add_child(spacer)
+	header.add_child(DesignSystem.create_spacer())
 
 	_close_btn = Button.new()
-	_close_btn.text = "X"
-	_close_btn.custom_minimum_size = Vector2(30, 30)
+	_close_btn.text = "✕"
+	_close_btn.custom_minimum_size = Vector2(DesignSystem.SIZE_BUTTON_SM, DesignSystem.SIZE_BUTTON_SM)
+	_style_close_button()
 	_close_btn.pressed.connect(_on_close_pressed)
 	header.add_child(_close_btn)
 
 	# Subtitle
 	var subtitle := Label.new()
 	subtitle.text = "Tower combinations that create powerful effects"
-	subtitle.add_theme_font_size_override("font_size", 12)
-	subtitle.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(subtitle, "body_small", ThemeColors.TEXT_DIM)
 	main_vbox.add_child(subtitle)
 
 	# Content scroll
@@ -144,18 +134,24 @@ func _build_ui() -> void:
 	_content_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	main_vbox.add_child(_content_scroll)
 
-	_content_vbox = VBoxContainer.new()
-	_content_vbox.add_theme_constant_override("separation", 10)
+	_content_vbox = DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	_content_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_content_scroll.add_child(_content_vbox)
 
 	# Footer
 	var footer := Label.new()
 	footer.text = "Place towers within proximity range to activate synergies"
-	footer.add_theme_font_size_override("font_size", 11)
-	footer.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(footer, "caption", ThemeColors.TEXT_DIM)
 	footer.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	main_vbox.add_child(footer)
+
+
+func _style_close_button() -> void:
+	var normal := DesignSystem.create_button_style(ThemeColors.BG_BUTTON, ThemeColors.BORDER)
+	var hover := DesignSystem.create_button_style(ThemeColors.ERROR.darkened(0.3), ThemeColors.ERROR)
+	_close_btn.add_theme_stylebox_override("normal", normal)
+	_close_btn.add_theme_stylebox_override("hover", hover)
+	_close_btn.add_theme_color_override("font_color", ThemeColors.TEXT)
 
 
 func show_synergies() -> void:
@@ -206,48 +202,40 @@ func _create_synergy_card(synergy: Dictionary) -> Control:
 	container_style.bg_color = color.darkened(0.85)
 	container_style.border_color = color.darkened(0.6)
 	container_style.set_border_width_all(1)
-	container_style.set_corner_radius_all(4)
-	container_style.set_content_margin_all(8)
+	container_style.set_corner_radius_all(DesignSystem.RADIUS_XS)
+	container_style.set_content_margin_all(DesignSystem.SPACE_SM)
 	container.add_theme_stylebox_override("panel", container_style)
 
-	var main_vbox := VBoxContainer.new()
-	main_vbox.add_theme_constant_override("separation", 3)
+	var main_vbox := DesignSystem.create_vbox(2)
 	container.add_child(main_vbox)
 
 	# Header with name and proximity
-	var header := HBoxContainer.new()
-	header.add_theme_constant_override("separation", 10)
+	var header := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 	main_vbox.add_child(header)
 
 	var name_label := Label.new()
 	name_label.text = name_str
-	name_label.add_theme_font_size_override("font_size", 12)
-	name_label.add_theme_color_override("font_color", color)
+	DesignSystem.style_label(name_label, "body_small", color)
 	header.add_child(name_label)
 
-	var header_spacer := Control.new()
-	header_spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	header.add_child(header_spacer)
+	header.add_child(DesignSystem.create_spacer())
 
 	var prox_label := Label.new()
 	prox_label.text = "Range: %d" % proximity
-	prox_label.add_theme_font_size_override("font_size", 10)
-	prox_label.add_theme_color_override("font_color", Color(0.5, 0.7, 0.9))
+	DesignSystem.style_label(prox_label, "caption", ThemeColors.INFO)
 	header.add_child(prox_label)
 
 	# Requirements
 	var req_label := Label.new()
 	req_label.text = requirements
-	req_label.add_theme_font_size_override("font_size", 10)
-	req_label.add_theme_color_override("font_color", Color(0.7, 0.7, 0.5))
+	DesignSystem.style_label(req_label, "caption", ThemeColors.RESOURCE_GOLD)
 	req_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	main_vbox.add_child(req_label)
 
 	# Effect description
 	var desc_label := Label.new()
 	desc_label.text = description
-	desc_label.add_theme_font_size_override("font_size", 10)
-	desc_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(desc_label, "caption", ThemeColors.TEXT_DIM)
 	desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	main_vbox.add_child(desc_label)
 
@@ -255,7 +243,7 @@ func _create_synergy_card(synergy: Dictionary) -> Control:
 
 
 func _build_tips_section() -> void:
-	var section := _create_section_panel("SYNERGY TIPS", Color(0.5, 0.8, 0.3))
+	var section := _create_section_panel("SYNERGY TIPS", ThemeColors.SUCCESS)
 	_content_vbox.add_child(section)
 
 	var vbox: VBoxContainer = section.get_child(0)
@@ -263,8 +251,7 @@ func _build_tips_section() -> void:
 	for tip in SYNERGY_TIPS:
 		var tip_label := Label.new()
 		tip_label.text = "- " + tip
-		tip_label.add_theme_font_size_override("font_size", 10)
-		tip_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+		DesignSystem.style_label(tip_label, "caption", ThemeColors.TEXT_DIM)
 		tip_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		vbox.add_child(tip_label)
 
@@ -276,18 +263,16 @@ func _create_section_panel(title: String, color: Color) -> PanelContainer:
 	panel_style.bg_color = color.darkened(0.85)
 	panel_style.border_color = color.darkened(0.5)
 	panel_style.set_border_width_all(1)
-	panel_style.set_corner_radius_all(6)
-	panel_style.set_content_margin_all(10)
+	panel_style.set_corner_radius_all(DesignSystem.RADIUS_SM)
+	panel_style.set_content_margin_all(DesignSystem.SPACE_MD)
 	container.add_theme_stylebox_override("panel", panel_style)
 
-	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 8)
+	var vbox := DesignSystem.create_vbox(DesignSystem.SPACE_SM)
 	container.add_child(vbox)
 
 	var header := Label.new()
 	header.text = title
-	header.add_theme_font_size_override("font_size", 12)
-	header.add_theme_color_override("font_color", color)
+	DesignSystem.style_label(header, "body_small", color)
 	vbox.add_child(header)
 
 	return container

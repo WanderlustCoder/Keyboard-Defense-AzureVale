@@ -1,8 +1,7 @@
 class_name TypingDisplay
 extends PanelContainer
 ## The main typing display component showing the current word and progress.
-
-const ThemeColors = preload("res://ui/theme_colors.gd")
+## Migrated to use DesignSystem and ThemeColors for consistency.
 
 # Font sizes
 const TITLE_FONT_SIZE := 18

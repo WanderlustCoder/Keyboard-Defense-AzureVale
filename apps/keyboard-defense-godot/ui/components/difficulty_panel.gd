@@ -1,11 +1,11 @@
 class_name DifficultyPanel
 extends PanelContainer
-## Difficulty Panel - View and change game difficulty mode
+## Difficulty Panel - View and change game difficulty mode.
+## Migrated to use DesignSystem and ThemeColors for consistency.
 
 signal closed
 signal difficulty_changed(mode_id: String)
 
-const ThemeColors = preload("res://ui/theme_colors.gd")
 const SimDifficulty = preload("res://sim/difficulty.gd")
 
 var _current_mode: String = "adventure"
@@ -16,7 +16,7 @@ var _close_btn: Button = null
 var _content_scroll: ScrollContainer = null
 var _content_vbox: VBoxContainer = null
 
-# Mode colors and icons
+# Mode colors (domain-specific, kept as constant)
 const MODE_COLORS: Dictionary = {
 	"story": Color(0.4, 0.8, 0.4),     # Green
 	"adventure": Color(0.4, 0.6, 1.0), # Blue
@@ -32,34 +32,28 @@ func _ready() -> void:
 
 
 func _build_ui() -> void:
-	custom_minimum_size = Vector2(520, 480)
+	custom_minimum_size = Vector2(DesignSystem.SIZE_PANEL_MD + 40, 480)
 
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.08, 0.09, 0.12, 0.98)
-	style.border_color = ThemeColors.BORDER
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(8)
-	style.set_content_margin_all(12)
+	var style := DesignSystem.create_panel_style()
 	add_theme_stylebox_override("panel", style)
 
-	var main_vbox := VBoxContainer.new()
-	main_vbox.add_theme_constant_override("separation", 12)
+	var main_vbox := DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	add_child(main_vbox)
 
 	# Header
-	var header := HBoxContainer.new()
+	var header := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 	main_vbox.add_child(header)
 
 	var title := Label.new()
 	title.text = "DIFFICULTY SETTINGS"
-	title.add_theme_font_size_override("font_size", 18)
-	title.add_theme_color_override("font_color", ThemeColors.ACCENT)
+	DesignSystem.style_label(title, "h2", ThemeColors.ACCENT)
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header.add_child(title)
 
 	_close_btn = Button.new()
-	_close_btn.text = "X"
-	_close_btn.custom_minimum_size = Vector2(30, 30)
+	_close_btn.text = "✕"
+	_close_btn.custom_minimum_size = Vector2(DesignSystem.SIZE_BUTTON_SM, DesignSystem.SIZE_BUTTON_SM)
+	_style_close_button()
 	_close_btn.pressed.connect(_on_close_pressed)
 	header.add_child(_close_btn)
 
@@ -70,18 +64,24 @@ func _build_ui() -> void:
 	_content_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	main_vbox.add_child(_content_scroll)
 
-	_content_vbox = VBoxContainer.new()
-	_content_vbox.add_theme_constant_override("separation", 10)
+	_content_vbox = DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	_content_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_content_scroll.add_child(_content_vbox)
 
 	# Footer hint
 	var footer := Label.new()
 	footer.text = "Click a difficulty mode to select it"
-	footer.add_theme_font_size_override("font_size", 11)
-	footer.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(footer, "caption", ThemeColors.TEXT_DIM)
 	footer.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	main_vbox.add_child(footer)
+
+
+func _style_close_button() -> void:
+	var normal := DesignSystem.create_button_style(ThemeColors.BG_BUTTON, ThemeColors.BORDER)
+	var hover := DesignSystem.create_button_style(ThemeColors.ERROR.darkened(0.3), ThemeColors.ERROR)
+	_close_btn.add_theme_stylebox_override("normal", normal)
+	_close_btn.add_theme_stylebox_override("hover", hover)
+	_close_btn.add_theme_color_override("font_color", ThemeColors.TEXT)
 
 
 func show_difficulty(current_mode: String, unlocked_modes: Array[String]) -> void:
@@ -102,12 +102,11 @@ func _build_modes_list() -> void:
 	# Current difficulty header
 	var current_header := Label.new()
 	current_header.text = "CURRENT: %s" % SimDifficulty.get_mode_name(_current_mode).to_upper()
-	current_header.add_theme_font_size_override("font_size", 14)
-	current_header.add_theme_color_override("font_color", MODE_COLORS.get(_current_mode, Color.WHITE))
+	DesignSystem.style_label(current_header, "body_small", MODE_COLORS.get(_current_mode, Color.WHITE))
 	_content_vbox.add_child(current_header)
 
 	var sep := Control.new()
-	sep.custom_minimum_size = Vector2(0, 5)
+	sep.custom_minimum_size = Vector2(0, DesignSystem.SPACE_XS)
 	_content_vbox.add_child(sep)
 
 	# Build mode cards for all modes
@@ -128,62 +127,55 @@ func _create_mode_card(mode_id: String, is_unlocked: bool, is_current: bool) -> 
 
 	var container := PanelContainer.new()
 
-	var container_style := StyleBoxFlat.new()
+	var container_style: StyleBoxFlat
 	if is_current:
-		container_style.bg_color = color.darkened(0.7)
+		container_style = DesignSystem.create_elevated_style(color.darkened(0.7))
 		container_style.border_color = color
 		container_style.set_border_width_all(2)
 	elif is_unlocked:
-		container_style.bg_color = Color(0.06, 0.07, 0.1, 0.9)
+		container_style = DesignSystem.create_elevated_style(ThemeColors.BG_CARD)
 		container_style.border_color = color.darkened(0.5)
 		container_style.set_border_width_all(1)
 	else:
-		container_style.bg_color = Color(0.04, 0.04, 0.06, 0.9)
-		container_style.border_color = Color(0.3, 0.3, 0.3, 0.5)
+		container_style = DesignSystem.create_elevated_style(ThemeColors.BG_CARD_DISABLED)
+		container_style.border_color = ThemeColors.BORDER
 		container_style.set_border_width_all(1)
-	container_style.set_corner_radius_all(6)
-	container_style.set_content_margin_all(12)
 	container.add_theme_stylebox_override("panel", container_style)
 
-	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 6)
+	var vbox := DesignSystem.create_vbox(DesignSystem.SPACE_SM)
 	container.add_child(vbox)
 
 	# Header row: name + status
-	var header_hbox := HBoxContainer.new()
+	var header_hbox := DesignSystem.create_hbox(DesignSystem.SPACE_SM)
 	vbox.add_child(header_hbox)
 
 	var name_label := Label.new()
 	name_label.text = name
-	name_label.add_theme_font_size_override("font_size", 16)
 	if is_unlocked:
-		name_label.add_theme_color_override("font_color", color)
+		DesignSystem.style_label(name_label, "body", color)
 	else:
-		name_label.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
+		DesignSystem.style_label(name_label, "body", ThemeColors.TEXT_DISABLED)
 	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header_hbox.add_child(name_label)
 
 	if is_current:
 		var status_label := Label.new()
 		status_label.text = "CURRENT"
-		status_label.add_theme_font_size_override("font_size", 11)
-		status_label.add_theme_color_override("font_color", Color(0.4, 1.0, 0.4))
+		DesignSystem.style_label(status_label, "caption", ThemeColors.SUCCESS)
 		header_hbox.add_child(status_label)
 	elif not is_unlocked:
 		var lock_label := Label.new()
 		lock_label.text = "LOCKED"
-		lock_label.add_theme_font_size_override("font_size", 11)
-		lock_label.add_theme_color_override("font_color", Color(0.6, 0.4, 0.4))
+		DesignSystem.style_label(lock_label, "caption", ThemeColors.ERROR.darkened(0.2))
 		header_hbox.add_child(lock_label)
 
 	# Description
 	var desc_label := Label.new()
 	desc_label.text = desc
-	desc_label.add_theme_font_size_override("font_size", 12)
 	if is_unlocked:
-		desc_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+		DesignSystem.style_label(desc_label, "caption", ThemeColors.TEXT_DIM)
 	else:
-		desc_label.add_theme_color_override("font_color", Color(0.35, 0.35, 0.35))
+		DesignSystem.style_label(desc_label, "caption", ThemeColors.TEXT_DISABLED)
 	desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	vbox.add_child(desc_label)
 
@@ -195,27 +187,34 @@ func _create_mode_card(mode_id: String, is_unlocked: bool, is_current: bool) -> 
 	if not recommended.is_empty():
 		var rec_label := Label.new()
 		rec_label.text = "Recommended: %s" % recommended
-		rec_label.add_theme_font_size_override("font_size", 10)
 		if is_unlocked:
-			rec_label.add_theme_color_override("font_color", Color(0.5, 0.6, 0.7))
+			DesignSystem.style_label(rec_label, "caption", ThemeColors.TEXT_DIM)
 		else:
-			rec_label.add_theme_color_override("font_color", Color(0.35, 0.35, 0.35))
+			DesignSystem.style_label(rec_label, "caption", ThemeColors.TEXT_DISABLED)
 		vbox.add_child(rec_label)
 
 	# Make clickable if unlocked and not current
 	if is_unlocked and not is_current:
 		var btn := Button.new()
 		btn.text = "Select"
-		btn.custom_minimum_size = Vector2(80, 28)
+		btn.custom_minimum_size = Vector2(80, DesignSystem.SIZE_BUTTON_SM)
+		_style_select_button(btn)
 		btn.pressed.connect(_on_mode_selected.bind(mode_id))
 		vbox.add_child(btn)
 
 	return container
 
 
+func _style_select_button(btn: Button) -> void:
+	var normal := DesignSystem.create_button_style(ThemeColors.BG_BUTTON, ThemeColors.BORDER)
+	var hover := DesignSystem.create_button_style(ThemeColors.BG_BUTTON_HOVER, ThemeColors.BORDER_HIGHLIGHT)
+	btn.add_theme_stylebox_override("normal", normal)
+	btn.add_theme_stylebox_override("hover", hover)
+	btn.add_theme_color_override("font_color", ThemeColors.TEXT)
+
+
 func _create_modifiers_display(mode: Dictionary, is_unlocked: bool) -> Control:
-	var hbox := HBoxContainer.new()
-	hbox.add_theme_constant_override("separation", 15)
+	var hbox := DesignSystem.create_hbox(DesignSystem.SPACE_LG)
 
 	# Enemy HP
 	var hp_mult: float = float(mode.get("enemy_health", 1.0))
@@ -246,37 +245,40 @@ func _create_modifiers_display(mode: Dictionary, is_unlocked: bool) -> Control:
 
 
 func _create_stat_chip(stat_name: String, multiplier: float, is_unlocked: bool, is_reward: bool = false) -> Control:
-	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 0)
+	var vbox := DesignSystem.create_vbox(0)
 
 	var name_label := Label.new()
 	name_label.text = stat_name
-	name_label.add_theme_font_size_override("font_size", 9)
-	name_label.add_theme_color_override("font_color", Color(0.4, 0.4, 0.4) if not is_unlocked else ThemeColors.TEXT_DIM)
+	if is_unlocked:
+		DesignSystem.style_label(name_label, "caption", ThemeColors.TEXT_DIM)
+	else:
+		DesignSystem.style_label(name_label, "caption", ThemeColors.TEXT_DISABLED)
 	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(name_label)
 
 	var value_label := Label.new()
+	var value_color: Color
+
 	if multiplier == 0.0:
 		value_label.text = "OFF"
-		value_label.add_theme_color_override("font_color", Color(0.3, 0.3, 0.3) if not is_unlocked else Color(0.5, 0.5, 0.5))
+		value_color = ThemeColors.TEXT_DISABLED if not is_unlocked else ThemeColors.TEXT_DIM
 	elif multiplier == 1.0:
 		value_label.text = "x1.0"
-		value_label.add_theme_color_override("font_color", Color(0.3, 0.3, 0.3) if not is_unlocked else Color(0.5, 0.5, 0.5))
+		value_color = ThemeColors.TEXT_DISABLED if not is_unlocked else ThemeColors.TEXT_DIM
 	elif multiplier > 1.0:
 		value_label.text = "x%.1f" % multiplier
 		if is_reward:
-			value_label.add_theme_color_override("font_color", Color(0.3, 0.5, 0.3) if not is_unlocked else Color(0.4, 1.0, 0.4))
+			value_color = ThemeColors.TEXT_DISABLED if not is_unlocked else ThemeColors.SUCCESS
 		else:
-			value_label.add_theme_color_override("font_color", Color(0.5, 0.3, 0.3) if not is_unlocked else Color(1.0, 0.4, 0.4))
+			value_color = ThemeColors.TEXT_DISABLED if not is_unlocked else ThemeColors.ERROR
 	else:
 		value_label.text = "x%.1f" % multiplier
 		if is_reward:
-			value_label.add_theme_color_override("font_color", Color(0.5, 0.3, 0.3) if not is_unlocked else Color(1.0, 0.4, 0.4))
+			value_color = ThemeColors.TEXT_DISABLED if not is_unlocked else ThemeColors.ERROR
 		else:
-			value_label.add_theme_color_override("font_color", Color(0.3, 0.5, 0.3) if not is_unlocked else Color(0.4, 1.0, 0.4))
+			value_color = ThemeColors.TEXT_DISABLED if not is_unlocked else ThemeColors.SUCCESS
 
-	value_label.add_theme_font_size_override("font_size", 11)
+	DesignSystem.style_label(value_label, "caption", value_color)
 	value_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(value_label)
 

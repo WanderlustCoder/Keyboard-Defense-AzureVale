@@ -1,17 +1,16 @@
 class_name AffixReferencePanel
 extends PanelContainer
-## Affix Reference Panel - Shows enemy affixes and their effects
+## Affix Reference Panel - Shows enemy affixes and their effects.
+## Migrated to use DesignSystem and ThemeColors for consistency.
 
 signal closed
-
-const ThemeColors = preload("res://ui/theme_colors.gd")
 
 # UI elements
 var _close_btn: Button = null
 var _content_scroll: ScrollContainer = null
 var _content_vbox: VBoxContainer = null
 
-# Affix data (from SimAffixes and SimBestiary)
+# Affix data (from SimAffixes and SimBestiary) - domain-specific colors
 const AFFIX_TIERS: Array[Dictionary] = [
 	{
 		"tier": 1,
@@ -77,45 +76,36 @@ func _ready() -> void:
 
 
 func _build_ui() -> void:
-	custom_minimum_size = Vector2(540, 620)
+	custom_minimum_size = Vector2(DesignSystem.SIZE_PANEL_LG, 620)
 
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.08, 0.09, 0.12, 0.98)
-	style.border_color = ThemeColors.BORDER
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(8)
-	style.set_content_margin_all(12)
+	var style := DesignSystem.create_panel_style()
 	add_theme_stylebox_override("panel", style)
 
-	var main_vbox := VBoxContainer.new()
-	main_vbox.add_theme_constant_override("separation", 10)
+	var main_vbox := DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	add_child(main_vbox)
 
 	# Header
-	var header := HBoxContainer.new()
+	var header := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 	main_vbox.add_child(header)
 
 	var title := Label.new()
 	title.text = "ENEMY AFFIXES"
-	title.add_theme_font_size_override("font_size", 18)
-	title.add_theme_color_override("font_color", Color(0.9, 0.4, 0.4))
+	DesignSystem.style_label(title, "h2", ThemeColors.ERROR)
 	header.add_child(title)
 
-	var spacer := Control.new()
-	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	header.add_child(spacer)
+	header.add_child(DesignSystem.create_spacer())
 
 	_close_btn = Button.new()
-	_close_btn.text = "X"
-	_close_btn.custom_minimum_size = Vector2(30, 30)
+	_close_btn.text = "✕"
+	_close_btn.custom_minimum_size = Vector2(DesignSystem.SIZE_BUTTON_SM, DesignSystem.SIZE_BUTTON_SM)
+	_style_close_button()
 	_close_btn.pressed.connect(_on_close_pressed)
 	header.add_child(_close_btn)
 
 	# Subtitle
 	var subtitle := Label.new()
 	subtitle.text = "Special modifiers that enhance enemy abilities"
-	subtitle.add_theme_font_size_override("font_size", 12)
-	subtitle.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(subtitle, "body_small", ThemeColors.TEXT_DIM)
 	main_vbox.add_child(subtitle)
 
 	# Content scroll
@@ -125,18 +115,24 @@ func _build_ui() -> void:
 	_content_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	main_vbox.add_child(_content_scroll)
 
-	_content_vbox = VBoxContainer.new()
-	_content_vbox.add_theme_constant_override("separation", 10)
+	_content_vbox = DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	_content_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_content_scroll.add_child(_content_vbox)
 
 	# Footer
 	var footer := Label.new()
 	footer.text = "Watch for glyphs next to enemy words"
-	footer.add_theme_font_size_override("font_size", 11)
-	footer.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(footer, "caption", ThemeColors.TEXT_DIM)
 	footer.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	main_vbox.add_child(footer)
+
+
+func _style_close_button() -> void:
+	var normal := DesignSystem.create_button_style(ThemeColors.BG_BUTTON, ThemeColors.BORDER)
+	var hover := DesignSystem.create_button_style(ThemeColors.ERROR.darkened(0.3), ThemeColors.ERROR)
+	_close_btn.add_theme_stylebox_override("normal", normal)
+	_close_btn.add_theme_stylebox_override("hover", hover)
+	_close_btn.add_theme_color_override("font_color", ThemeColors.TEXT)
 
 
 func show_affix_reference() -> void:
@@ -171,8 +167,7 @@ func _build_info_section() -> void:
 	var vbox: VBoxContainer = section.get_child(0)
 
 	for info in AFFIX_INFO:
-		var hbox := HBoxContainer.new()
-		hbox.add_theme_constant_override("separation", 10)
+		var hbox := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 		vbox.add_child(hbox)
 
 		var topic: String = str(info.get("topic", ""))
@@ -181,15 +176,13 @@ func _build_info_section() -> void:
 
 		var topic_label := Label.new()
 		topic_label.text = topic
-		topic_label.add_theme_font_size_override("font_size", 10)
-		topic_label.add_theme_color_override("font_color", color)
+		DesignSystem.style_label(topic_label, "caption", color)
 		topic_label.custom_minimum_size = Vector2(100, 0)
 		hbox.add_child(topic_label)
 
 		var desc_label := Label.new()
 		desc_label.text = description
-		desc_label.add_theme_font_size_override("font_size", 9)
-		desc_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+		DesignSystem.style_label(desc_label, "caption", ThemeColors.TEXT_DIM)
 		hbox.add_child(desc_label)
 
 
@@ -207,15 +200,14 @@ func _build_tier_section(tier_data: Dictionary) -> void:
 	# Unlock info
 	var unlock_label := Label.new()
 	unlock_label.text = "Unlock: " + unlock
-	unlock_label.add_theme_font_size_override("font_size", 10)
-	unlock_label.add_theme_color_override("font_color", Color(1.0, 0.84, 0.0))
+	DesignSystem.style_label(unlock_label, "caption", ThemeColors.RESOURCE_GOLD)
 	vbox.add_child(unlock_label)
 
 	# Affixes grid
 	var grid := GridContainer.new()
 	grid.columns = 4
-	grid.add_theme_constant_override("h_separation", 10)
-	grid.add_theme_constant_override("v_separation", 4)
+	grid.add_theme_constant_override("h_separation", DesignSystem.SPACE_MD)
+	grid.add_theme_constant_override("v_separation", DesignSystem.SPACE_XS)
 	vbox.add_child(grid)
 
 	for affix in affixes:
@@ -227,32 +219,28 @@ func _build_tier_section(tier_data: Dictionary) -> void:
 		# Glyph
 		var glyph_label := Label.new()
 		glyph_label.text = "[%s]" % glyph
-		glyph_label.add_theme_font_size_override("font_size", 10)
-		glyph_label.add_theme_color_override("font_color", color)
+		DesignSystem.style_label(glyph_label, "caption", color)
 		glyph_label.custom_minimum_size = Vector2(30, 0)
 		grid.add_child(glyph_label)
 
 		# Name
 		var name_label := Label.new()
 		name_label.text = affix_name
-		name_label.add_theme_font_size_override("font_size", 9)
-		name_label.add_theme_color_override("font_color", color.lightened(0.2))
+		DesignSystem.style_label(name_label, "caption", color.lightened(0.2))
 		name_label.custom_minimum_size = Vector2(85, 0)
 		grid.add_child(name_label)
 
 		# Effect
 		var effect_label := Label.new()
 		effect_label.text = effect
-		effect_label.add_theme_font_size_override("font_size", 9)
-		effect_label.add_theme_color_override("font_color", Color(0.9, 0.6, 0.3))
+		DesignSystem.style_label(effect_label, "caption", Color(0.9, 0.6, 0.3))
 		effect_label.custom_minimum_size = Vector2(110, 0)
 		grid.add_child(effect_label)
 
 		# Description
 		var desc_label := Label.new()
 		desc_label.text = description
-		desc_label.add_theme_font_size_override("font_size", 8)
-		desc_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+		DesignSystem.style_label(desc_label, "caption", ThemeColors.TEXT_DIM)
 		grid.add_child(desc_label)
 
 
@@ -263,18 +251,16 @@ func _create_section_panel(title: String, color: Color) -> PanelContainer:
 	panel_style.bg_color = color.darkened(0.85)
 	panel_style.border_color = color.darkened(0.5)
 	panel_style.set_border_width_all(1)
-	panel_style.set_corner_radius_all(6)
-	panel_style.set_content_margin_all(10)
+	panel_style.set_corner_radius_all(DesignSystem.RADIUS_SM)
+	panel_style.set_content_margin_all(DesignSystem.SPACE_MD)
 	container.add_theme_stylebox_override("panel", panel_style)
 
-	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 6)
+	var vbox := DesignSystem.create_vbox(DesignSystem.SPACE_SM)
 	container.add_child(vbox)
 
 	var header := Label.new()
 	header.text = title
-	header.add_theme_font_size_override("font_size", 12)
-	header.add_theme_color_override("font_color", color)
+	DesignSystem.style_label(header, "body_small", color)
 	vbox.add_child(header)
 
 	return container

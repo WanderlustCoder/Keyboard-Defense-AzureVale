@@ -1,10 +1,9 @@
 class_name ComboSystemReferencePanel
 extends PanelContainer
-## Combo System Reference Panel - Shows combo tiers and bonuses
+## Combo System Reference Panel - Shows combo tiers and bonuses.
+## Migrated to use DesignSystem and ThemeColors for consistency.
 
 signal closed
-
-const ThemeColors = preload("res://ui/theme_colors.gd")
 
 # UI elements
 var _close_btn: Button = null
@@ -119,45 +118,36 @@ func _ready() -> void:
 
 
 func _build_ui() -> void:
-	custom_minimum_size = Vector2(520, 600)
+	custom_minimum_size = Vector2(DesignSystem.SIZE_PANEL_MD, 600)
 
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.08, 0.09, 0.12, 0.98)
-	style.border_color = ThemeColors.BORDER
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(8)
-	style.set_content_margin_all(12)
+	var style := DesignSystem.create_panel_style()
 	add_theme_stylebox_override("panel", style)
 
-	var main_vbox := VBoxContainer.new()
-	main_vbox.add_theme_constant_override("separation", 10)
+	var main_vbox := DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	add_child(main_vbox)
 
 	# Header
-	var header := HBoxContainer.new()
+	var header := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 	main_vbox.add_child(header)
 
 	var title := Label.new()
 	title.text = "COMBO SYSTEM"
-	title.add_theme_font_size_override("font_size", 18)
-	title.add_theme_color_override("font_color", Color(1.0, 0.55, 0.0))
+	DesignSystem.style_label(title, "h2", Color(1.0, 0.55, 0.0))
 	header.add_child(title)
 
-	var spacer := Control.new()
-	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	header.add_child(spacer)
+	header.add_child(DesignSystem.create_spacer())
 
 	_close_btn = Button.new()
-	_close_btn.text = "X"
-	_close_btn.custom_minimum_size = Vector2(30, 30)
+	_close_btn.text = "✕"
+	_close_btn.custom_minimum_size = Vector2(DesignSystem.SIZE_BUTTON_SM, DesignSystem.SIZE_BUTTON_SM)
+	_style_close_button()
 	_close_btn.pressed.connect(_on_close_pressed)
 	header.add_child(_close_btn)
 
 	# Subtitle
 	var subtitle := Label.new()
 	subtitle.text = "7 combo tiers with damage and gold bonuses"
-	subtitle.add_theme_font_size_override("font_size", 12)
-	subtitle.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(subtitle, "body_small", ThemeColors.TEXT_DIM)
 	main_vbox.add_child(subtitle)
 
 	# Content scroll
@@ -167,18 +157,24 @@ func _build_ui() -> void:
 	_content_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	main_vbox.add_child(_content_scroll)
 
-	_content_vbox = VBoxContainer.new()
-	_content_vbox.add_theme_constant_override("separation", 10)
+	_content_vbox = DesignSystem.create_vbox(DesignSystem.SPACE_MD)
 	_content_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_content_scroll.add_child(_content_vbox)
 
 	# Footer
 	var footer := Label.new()
 	footer.text = "Build combo by typing words without mistakes"
-	footer.add_theme_font_size_override("font_size", 11)
-	footer.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+	DesignSystem.style_label(footer, "caption", ThemeColors.TEXT_DIM)
 	footer.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	main_vbox.add_child(footer)
+
+
+func _style_close_button() -> void:
+	var normal := DesignSystem.create_button_style(ThemeColors.BG_BUTTON, ThemeColors.BORDER)
+	var hover := DesignSystem.create_button_style(ThemeColors.ERROR.darkened(0.3), ThemeColors.ERROR)
+	_close_btn.add_theme_stylebox_override("normal", normal)
+	_close_btn.add_theme_stylebox_override("hover", hover)
+	_close_btn.add_theme_color_override("font_color", ThemeColors.TEXT)
 
 
 func show_combo_system_reference() -> void:
@@ -215,21 +211,18 @@ func _build_mechanics_section() -> void:
 	var vbox: VBoxContainer = section.get_child(0)
 
 	for mech in COMBO_MECHANICS:
-		var hbox := HBoxContainer.new()
-		hbox.add_theme_constant_override("separation", 10)
+		var hbox := DesignSystem.create_hbox(DesignSystem.SPACE_MD)
 		vbox.add_child(hbox)
 
 		var name_label := Label.new()
 		name_label.text = str(mech.get("name", ""))
-		name_label.add_theme_font_size_override("font_size", 10)
-		name_label.add_theme_color_override("font_color", mech.get("color", Color.WHITE))
+		DesignSystem.style_label(name_label, "caption", mech.get("color", Color.WHITE))
 		name_label.custom_minimum_size = Vector2(110, 0)
 		hbox.add_child(name_label)
 
 		var desc_label := Label.new()
 		desc_label.text = str(mech.get("desc", ""))
-		desc_label.add_theme_font_size_override("font_size", 9)
-		desc_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+		DesignSystem.style_label(desc_label, "caption", ThemeColors.TEXT_DIM)
 		desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		hbox.add_child(desc_label)
 
@@ -241,8 +234,7 @@ func _build_tiers_section() -> void:
 	var vbox: VBoxContainer = section.get_child(0)
 
 	# Header row
-	var header_hbox := HBoxContainer.new()
-	header_hbox.add_theme_constant_override("separation", 5)
+	var header_hbox := DesignSystem.create_hbox(DesignSystem.SPACE_XS)
 	vbox.add_child(header_hbox)
 
 	var headers := ["Tier", "Name", "Min", "Dmg+", "Gold+"]
@@ -250,61 +242,52 @@ func _build_tiers_section() -> void:
 	for i in headers.size():
 		var h := Label.new()
 		h.text = headers[i]
-		h.add_theme_font_size_override("font_size", 9)
-		h.add_theme_color_override("font_color", Color(0.6, 0.6, 0.7))
+		DesignSystem.style_label(h, "caption", Color(0.6, 0.6, 0.7))
 		h.custom_minimum_size = Vector2(widths[i], 0)
 		header_hbox.add_child(h)
 
 	# Tier rows
 	for tier in COMBO_TIERS:
-		var container := VBoxContainer.new()
-		container.add_theme_constant_override("separation", 1)
+		var container := DesignSystem.create_vbox(1)
 		vbox.add_child(container)
 
-		var row := HBoxContainer.new()
-		row.add_theme_constant_override("separation", 5)
+		var row := DesignSystem.create_hbox(DesignSystem.SPACE_XS)
 		container.add_child(row)
 
 		var tier_label := Label.new()
 		tier_label.text = "T%d" % tier.get("tier", 0)
-		tier_label.add_theme_font_size_override("font_size", 10)
-		tier_label.add_theme_color_override("font_color", Color(0.5, 0.6, 0.7))
+		DesignSystem.style_label(tier_label, "caption", Color(0.5, 0.6, 0.7))
 		tier_label.custom_minimum_size = Vector2(35, 0)
 		row.add_child(tier_label)
 
 		var name_label := Label.new()
 		name_label.text = str(tier.get("name", ""))
-		name_label.add_theme_font_size_override("font_size", 10)
-		name_label.add_theme_color_override("font_color", tier.get("color", Color.WHITE))
+		DesignSystem.style_label(name_label, "caption", tier.get("color", Color.WHITE))
 		name_label.custom_minimum_size = Vector2(100, 0)
 		row.add_child(name_label)
 
 		var min_label := Label.new()
 		min_label.text = "x%d" % tier.get("min_combo", 0)
-		min_label.add_theme_font_size_override("font_size", 10)
-		min_label.add_theme_color_override("font_color", Color.WHITE)
+		DesignSystem.style_label(min_label, "caption", Color.WHITE)
 		min_label.custom_minimum_size = Vector2(40, 0)
 		row.add_child(min_label)
 
 		var dmg_label := Label.new()
 		dmg_label.text = "+%d%%" % tier.get("damage_bonus", 0)
-		dmg_label.add_theme_font_size_override("font_size", 10)
-		dmg_label.add_theme_color_override("font_color", Color(0.96, 0.26, 0.21))
+		DesignSystem.style_label(dmg_label, "caption", ThemeColors.ERROR)
 		dmg_label.custom_minimum_size = Vector2(45, 0)
 		row.add_child(dmg_label)
 
 		var gold_label := Label.new()
 		gold_label.text = "+%d%%" % tier.get("gold_bonus", 0)
-		gold_label.add_theme_font_size_override("font_size", 10)
-		gold_label.add_theme_color_override("font_color", Color(1.0, 0.84, 0.0))
+		DesignSystem.style_label(gold_label, "caption", ThemeColors.RESOURCE_GOLD)
 		gold_label.custom_minimum_size = Vector2(45, 0)
 		row.add_child(gold_label)
 
 		# Announcement
 		var ann_label := Label.new()
 		ann_label.text = "  " + str(tier.get("announcement", ""))
-		ann_label.add_theme_font_size_override("font_size", 9)
-		ann_label.add_theme_color_override("font_color", tier.get("color", Color.WHITE).darkened(0.3))
+		DesignSystem.style_label(ann_label, "caption", tier.get("color", Color.WHITE).darkened(0.3))
 		container.add_child(ann_label)
 
 
@@ -317,8 +300,7 @@ func _build_tips_section() -> void:
 	for tip in COMBO_TIPS:
 		var tip_label := Label.new()
 		tip_label.text = "- " + tip
-		tip_label.add_theme_font_size_override("font_size", 9)
-		tip_label.add_theme_color_override("font_color", ThemeColors.TEXT_DIM)
+		DesignSystem.style_label(tip_label, "caption", ThemeColors.TEXT_DIM)
 		tip_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		vbox.add_child(tip_label)
 
@@ -330,18 +312,16 @@ func _create_section_panel(title: String, color: Color) -> PanelContainer:
 	panel_style.bg_color = color.darkened(0.85)
 	panel_style.border_color = color.darkened(0.5)
 	panel_style.set_border_width_all(1)
-	panel_style.set_corner_radius_all(6)
-	panel_style.set_content_margin_all(10)
+	panel_style.set_corner_radius_all(DesignSystem.RADIUS_SM)
+	panel_style.set_content_margin_all(DesignSystem.SPACE_MD)
 	container.add_theme_stylebox_override("panel", panel_style)
 
-	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 6)
+	var vbox := DesignSystem.create_vbox(DesignSystem.SPACE_SM)
 	container.add_child(vbox)
 
 	var header := Label.new()
 	header.text = title
-	header.add_theme_font_size_override("font_size", 12)
-	header.add_theme_color_override("font_color", color)
+	DesignSystem.style_label(header, "body_small", color)
 	vbox.add_child(header)
 
 	return container

@@ -11285,8 +11285,16 @@ func _test_design_system_shadows() -> void:
     _assert_true(DesignSystem.SHADOW_GLOW is Dictionary, "SHADOW_GLOW is Dictionary")
 
     # All shadows have required keys
-    for shadow_name in ["SHADOW_SM", "SHADOW_MD", "SHADOW_LG", "SHADOW_GLOW"]:
-        var shadow: Dictionary = DesignSystem.get(shadow_name)
+    var shadows: Array[Dictionary] = [
+        DesignSystem.SHADOW_SM,
+        DesignSystem.SHADOW_MD,
+        DesignSystem.SHADOW_LG,
+        DesignSystem.SHADOW_GLOW
+    ]
+    var shadow_names: Array[String] = ["SHADOW_SM", "SHADOW_MD", "SHADOW_LG", "SHADOW_GLOW"]
+    for i in range(shadows.size()):
+        var shadow: Dictionary = shadows[i]
+        var shadow_name: String = shadow_names[i]
         _assert_true(shadow.has("size"), "%s has size" % shadow_name)
         _assert_true(shadow.has("offset"), "%s has offset" % shadow_name)
         _assert_true(shadow.has("color"), "%s has color" % shadow_name)
