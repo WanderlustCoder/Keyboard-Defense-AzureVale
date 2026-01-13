@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Swarm Walk Frame 1: Scurry pose 1 -->
+
+  <!-- Body (rat/spider hybrid) - centered and scaled -->
+  <rect x="11" y="12" width="10" height="8" fill="#6e2c00"/>
+  <rect x="12" y="14" width="8" height="4" fill="#a04000"/>
+
+  <!-- Legs (left side) -->
+  <rect x="7" y="16" width="4" height="6" fill="#6e2c00"/>
+  <rect x="9" y="18" width="2" height="6" fill="#6e2c00"/>
+
+  <!-- Legs (right side) -->
+  <rect x="21" y="16" width="4" height="6" fill="#6e2c00"/>
+  <rect x="21" y="18" width="2" height="6" fill="#6e2c00"/>
+
+  <!-- Head -->
+  <rect x="8" y="10" width="6" height="6" fill="#6e2c00"/>
+  <!-- Eyes -->
+  <rect x="8" y="12" width="2" height="2" fill="#f4d03f"/>
+  <rect x="12" y="12" width="2" height="2" fill="#f4d03f"/>
+
+  <!-- Tail -->
+  <rect x="21" y="14" width="4" height="2" fill="#a04000"/>
+
+  <!-- Shadow -->
+  <rect x="11" y="26" width="10" height="4" fill="#1a252f" opacity="0.5"/>
+</svg>

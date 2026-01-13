@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Swarm Walk Frame 4: Death/splat -->
+
+  <!-- Splat pattern -->
+  <rect x="8" y="16" width="16" height="8" fill="#6e2c00"/>
+  <rect x="10" y="18" width="12" height="4" fill="#a04000"/>
+
+  <!-- Spread legs -->
+  <rect x="4" y="18" width="4" height="4" fill="#6e2c00"/>
+  <rect x="24" y="18" width="4" height="4" fill="#6e2c00"/>
+  <rect x="12" y="14" width="2" height="4" fill="#6e2c00"/>
+  <rect x="18" y="14" width="2" height="4" fill="#6e2c00"/>
+
+  <!-- Flattened head -->
+  <rect x="6" y="16" width="6" height="4" fill="#6e2c00"/>
+  <!-- X eyes -->
+  <rect x="8" y="16" width="2" height="2" fill="#5d6d7e"/>
+  <rect x="10" y="18" width="2" height="2" fill="#5d6d7e"/>
+
+  <!-- Shadow (larger) -->
+  <rect x="6" y="26" width="16" height="4" fill="#1a252f" opacity="0.5"/>
+</svg>

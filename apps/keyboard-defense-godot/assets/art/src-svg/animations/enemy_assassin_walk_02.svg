@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Assassin Walk Frame 2: Revealing (60% visible) -->
+
+  <!-- Shadow forming -->
+  <rect x="12" y="28" width="8" height="2" fill="#1a252f" opacity="0.6"/>
+
+  <!-- Body materializing -->
+  <rect x="12" y="20" width="8" height="8" fill="#1a252f" opacity="0.6"/>
+  <rect x="13" y="21" width="6" height="6" fill="#34495e" opacity="0.6"/>
+
+  <!-- Legs -->
+  <rect x="13" y="24" width="3" height="4" fill="#1a252f" opacity="0.6"/>
+  <rect x="16" y="24" width="3" height="4" fill="#1a252f" opacity="0.6"/>
+
+  <!-- Body -->
+  <rect x="12" y="14" width="8" height="6" fill="#1a252f" opacity="0.6"/>
+  <rect x="13" y="15" width="6" height="4" fill="#34495e" opacity="0.6"/>
+
+  <!-- Head with mask -->
+  <rect x="13" y="9" width="6" height="6" fill="#1a252f" opacity="0.6"/>
+  <rect x="14" y="10" width="4" height="4" fill="#34495e" opacity="0.6"/>
+  <!-- Yellow eyes appearing -->
+  <rect x="14" y="11" width="1" height="1" fill="#f4d03f" opacity="0.8"/>
+  <rect x="17" y="11" width="1" height="1" fill="#f4d03f" opacity="0.8"/>
+
+  <!-- Shadow wisps -->
+  <rect x="11" y="16" width="1" height="4" fill="#5dade2" opacity="0.4"/>
+  <rect x="20" y="18" width="1" height="3" fill="#5dade2" opacity="0.4"/>
+</svg>

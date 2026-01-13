@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Mimic Walk Frame 3: Reveal (mouth opening) -->
+
+  <!-- Shadow -->
+  <rect x="10" y="28" width="12" height="2" fill="#1a252f"/>
+
+  <!-- Legs emerging -->
+  <rect x="9" y="24" width="3" height="4" fill="#4a235a"/>
+  <rect x="20" y="24" width="3" height="4" fill="#4a235a"/>
+  <rect x="11" y="26" width="2" height="2" fill="#7d3c98"/>
+  <rect x="19" y="26" width="2" height="2" fill="#7d3c98"/>
+
+  <!-- Body transforming -->
+  <rect x="10" y="16" width="12" height="10" fill="#4a235a"/>
+  <rect x="11" y="17" width="10" height="8" fill="#7d3c98"/>
+
+  <!-- Massive mouth (chest opening) -->
+  <rect x="9" y="12" width="14" height="6" fill="#6e2c00"/>
+  <rect x="10" y="14" width="12" height="4" fill="#c0392b"/>
+  <rect x="11" y="15" width="10" height="2" fill="#e74c3c"/>
+
+  <!-- Teeth -->
+  <rect x="11" y="14" width="2" height="2" fill="#fdfefe"/>
+  <rect x="14" y="14" width="2" height="2" fill="#fdfefe"/>
+  <rect x="17" y="14" width="2" height="2" fill="#fdfefe"/>
+  <rect x="11" y="16" width="2" height="2" fill="#fdfefe"/>
+  <rect x="14" y="16" width="2" height="2" fill="#fdfefe"/>
+  <rect x="17" y="16" width="2" height="2" fill="#fdfefe"/>
+
+  <!-- Lure tongue -->
+  <rect x="15" y="10" width="2" height="4" fill="#c0392b"/>
+  <rect x="14" y="8" width="4" height="2" fill="#f4d03f"/>
+
+  <!-- Eyes on lid -->
+  <rect x="11" y="11" width="2" height="2" fill="#f4d03f"/>
+  <rect x="19" y="11" width="2" height="2" fill="#f4d03f"/>
+  <rect x="12" y="12" width="1" height="1" fill="#1a252f"/>
+  <rect x="20" y="12" width="1" height="1" fill="#1a252f"/>
+</svg>

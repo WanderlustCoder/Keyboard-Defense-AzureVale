@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Necromancer Walk Frame 1: Idle/Base pose (extracted from sprite sheet) -->
+
+  <!-- Shadow -->
+  <rect x="11" y="28" width="10" height="2" fill="#1a252f"/>
+
+  <!-- Tattered robes -->
+  <rect x="12" y="16" width="8" height="12" fill="#4a235a"/>
+  <rect x="13" y="17" width="6" height="10" fill="#7d3c98"/>
+  <rect x="11" y="24" width="10" height="4" fill="#4a235a"/>
+  <rect x="10" y="26" width="3" height="2" fill="#4a235a"/>
+  <rect x="19" y="26" width="3" height="2" fill="#4a235a"/>
+
+  <!-- Hood -->
+  <rect x="12" y="10" width="8" height="7" fill="#4a235a"/>
+  <rect x="13" y="11" width="6" height="5" fill="#7d3c98"/>
+
+  <!-- Glowing eyes -->
+  <rect x="14" y="13" width="1" height="1" fill="#58d68d"/>
+  <rect x="17" y="13" width="1" height="1" fill="#58d68d"/>
+
+  <!-- Floating skull orb -->
+  <rect x="20" y="12" width="3" height="3" fill="#d5d8dc"/>
+  <rect x="21" y="13" width="1" height="1" fill="#1a252f"/>
+
+  <!-- Ethereal wisps -->
+  <rect x="10" y="18" width="1" height="1" fill="#d7bde2"/>
+  <rect x="21" y="20" width="1" height="1" fill="#d7bde2"/>
+</svg>

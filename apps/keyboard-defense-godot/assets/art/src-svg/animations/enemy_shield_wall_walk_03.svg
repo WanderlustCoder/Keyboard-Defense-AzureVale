@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Shield Wall Walk Frame 3: Shield block -->
+
+  <!-- Shadow -->
+  <rect x="10" y="28" width="12" height="2" fill="#1a252f"/>
+
+  <!-- Legs braced -->
+  <rect x="13" y="24" width="4" height="4" fill="#2c3e50"/>
+  <rect x="17" y="24" width="4" height="4" fill="#2c3e50"/>
+  <rect x="13" y="19" width="4" height="5" fill="#5d6d7e"/>
+  <rect x="17" y="19" width="4" height="5" fill="#5d6d7e"/>
+
+  <!-- Body leaning into shield -->
+  <rect x="11" y="12" width="10" height="7" fill="#5d6d7e"/>
+  <rect x="12" y="13" width="8" height="5" fill="#85929e"/>
+
+  <!-- Helmet -->
+  <rect x="12" y="7" width="8" height="6" fill="#5d6d7e"/>
+  <rect x="13" y="8" width="6" height="4" fill="#85929e"/>
+  <rect x="13" y="9" width="6" height="2" fill="#2c3e50"/>
+  <rect x="14" y="10" width="1" height="1" fill="#e74c3c"/>
+  <rect x="17" y="10" width="1" height="1" fill="#e74c3c"/>
+
+  <!-- Shield raised (blocking) - glowing -->
+  <rect x="6" y="8" width="5" height="16" fill="#5d6d7e"/>
+  <rect x="7" y="9" width="3" height="14" fill="#85929e"/>
+  <!-- Impact glow -->
+  <rect x="6" y="8" width="5" height="1" fill="#fdfefe"/>
+  <rect x="6" y="23" width="5" height="1" fill="#f4d03f"/>
+  <rect x="6" y="15" width="5" height="1" fill="#f4d03f"/>
+  <!-- Flash effect -->
+  <rect x="5" y="12" width="1" height="6" fill="#aed6f1"/>
+</svg>
