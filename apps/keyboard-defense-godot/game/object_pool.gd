@@ -153,8 +153,8 @@ static func get_pool(pool_name: String, factory: Callable = Callable(), reset_fu
 		return null
 
 	# Use load() to reference own class from static context
-	var ObjectPoolClass = load("res://game/object_pool.gd")
-	var pool = ObjectPoolClass.new(factory, reset_func, max_size)
+	var object_pool_class = load("res://game/object_pool.gd")
+	var pool = object_pool_class.new(factory, reset_func, max_size)
 	_pools[pool_name] = pool
 	return pool
 
