@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Specter Idle Frame 2: Hovering high -->
+
+  <!-- Shadow below - smaller (higher hover) -->
+  <ellipse cx="16" cy="30" rx="6" ry="2" fill="#1a252f" opacity="0.3"/>
+
+  <!-- Wispy bottom - pulled in -->
+  <rect x="8" y="22" width="4" height="6" fill="#2c3e50"/>
+  <rect x="12" y="23" width="4" height="5" fill="#1a252f"/>
+  <rect x="16" y="22" width="4" height="6" fill="#2c3e50"/>
+  <rect x="20" y="23" width="4" height="5" fill="#1a252f"/>
+  <rect x="10" y="26" width="3" height="3" fill="#1a252f"/>
+  <rect x="18" y="25" width="3" height="4" fill="#2c3e50"/>
+
+  <!-- Shadowy body - contracted -->
+  <rect x="8" y="8" width="16" height="16" fill="#2c3e50"/>
+  <rect x="4" y="10" width="6" height="12" fill="#1a252f"/>
+  <rect x="22" y="10" width="6" height="12" fill="#1a252f"/>
+
+  <!-- Shadow wisps - contracted -->
+  <rect x="2" y="13" width="3" height="5" fill="#1a252f"/>
+  <rect x="27" y="13" width="3" height="5" fill="#1a252f"/>
+
+  <!-- Hood/head - raised -->
+  <rect x="6" y="2" width="20" height="10" fill="#1a252f"/>
+  <rect x="10" y="0" width="12" height="6" fill="#2c3e50"/>
+
+  <!-- Glowing eyes - bright -->
+  <rect x="9" y="5" width="4" height="3" fill="#9b59b6"/>
+  <rect x="19" y="5" width="4" height="3" fill="#9b59b6"/>
+  <rect x="10" y="6" width="2" height="1" fill="#d7bde2"/>
+  <rect x="20" y="6" width="2" height="1" fill="#d7bde2"/>
+  <!-- Extra glow effect -->
+  <rect x="9" y="5" width="1" height="1" fill="#ffffff" opacity="0.3"/>
+  <rect x="22" y="5" width="1" height="1" fill="#ffffff" opacity="0.3"/>
+</svg>

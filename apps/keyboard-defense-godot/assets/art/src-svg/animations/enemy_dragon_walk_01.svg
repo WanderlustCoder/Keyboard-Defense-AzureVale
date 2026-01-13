@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Dragon Fly Frame 1: Wings up -->
+
+  <!-- Shadow (small - flying high) -->
+  <rect x="10" y="28" width="12" height="3" fill="#1a252f" opacity="0.3"/>
+
+  <!-- Body -->
+  <rect x="10" y="14" width="14" height="10" fill="#c0392b"/>
+  <rect x="12" y="16" width="10" height="6" fill="#922b21"/>
+
+  <!-- Neck and head -->
+  <rect x="4" y="12" width="8" height="6" fill="#c0392b"/>
+  <rect x="0" y="10" width="8" height="6" fill="#c0392b"/>
+  <rect x="2" y="8" width="4" height="4" fill="#c0392b"/>
+
+  <!-- Eye -->
+  <rect x="2" y="11" width="3" height="2" fill="#f39c12"/>
+  <rect x="2" y="11" width="1" height="1" fill="#1a252f"/>
+
+  <!-- Horns -->
+  <rect x="4" y="6" width="2" height="4" fill="#922b21"/>
+  <rect x="6" y="8" width="2" height="2" fill="#922b21"/>
+
+  <!-- Wings (up position) -->
+  <rect x="14" y="2" width="10" height="10" fill="#922b21"/>
+  <rect x="16" y="0" width="6" height="6" fill="#c0392b"/>
+  <rect x="22" y="4" width="6" height="6" fill="#922b21"/>
+  <rect x="26" y="6" width="4" height="4" fill="#c0392b"/>
+
+  <!-- Tail -->
+  <rect x="22" y="18" width="6" height="4" fill="#c0392b"/>
+  <rect x="26" y="20" width="4" height="3" fill="#922b21"/>
+
+  <!-- Legs (tucked) -->
+  <rect x="12" y="22" width="4" height="4" fill="#922b21"/>
+  <rect x="18" y="22" width="4" height="4" fill="#922b21"/>
+
+  <!-- Fire breath -->
+  <rect x="0" y="14" width="3" height="2" fill="#f39c12"/>
+  <rect x="0" y="13" width="2" height="1" fill="#f4d03f"/>
+</svg>

@@ -1,6 +1,6 @@
 extends Control
-
-const ThemeColors = preload("res://ui/theme_colors.gd")
+## Kingdom Hub - Upgrade purchase and management screen.
+## Migrated to use DesignSystem and ThemeColors for consistency.
 
 # Tier thresholds based on cost
 const TIER_COLORS := {

@@ -1,6 +1,7 @@
 extends Node
 class_name BattleTutorial
-## Manages tutorial prompts during the first battle via Lyra dialogue
+## Manages tutorial prompts during the first battle via Lyra dialogue.
+## Migrated to use DesignSystem and ThemeColors for consistency.
 
 signal tutorial_step_completed(step_id: String)
 signal tutorial_finished
@@ -80,8 +81,6 @@ const TUTORIAL_STEPS := {
 		]
 	}
 }
-
-const ThemeColors = preload("res://ui/theme_colors.gd")
 
 var _current_step: int = Step.WELCOME
 var _dialogue: LyraDialogue = null

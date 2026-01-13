@@ -1,6 +1,6 @@
 extends Control
-
-const ThemeColors = preload("res://ui/theme_colors.gd")
+## Settings Menu - Audio and gameplay preferences.
+## Migrated to use DesignSystem and ThemeColors for consistency.
 const HOVER_SCALE := 1.05
 const HOVER_DURATION := 0.1
 const PRESS_SCALE := 0.95

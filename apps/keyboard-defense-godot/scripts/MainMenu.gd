@@ -1,8 +1,9 @@
 extends Control
+## Main Menu - Entry point for the game.
+## Migrated to use DesignSystem and ThemeColors for consistency.
 
 const VERSION_PATH := "res://VERSION.txt"
 const SAVE_PATH := "user://typing_kingdom_save.json"
-const ThemeColors = preload("res://ui/theme_colors.gd")
 const TypingProfile = preload("res://game/typing_profile.gd")
 const SimLoginRewards = preload("res://sim/login_rewards.gd")
 const LoginRewardPopup = preload("res://ui/components/login_reward_popup.gd")

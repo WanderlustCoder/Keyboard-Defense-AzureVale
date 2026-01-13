@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Wraith Walk Frame 2: Ghostly drift up -->
+
+  <!-- Ethereal body -->
+  <rect x="10" y="10" width="12" height="14" fill="#9b59b6"/>
+  <rect x="8" y="12" width="4" height="10" fill="#8e44ad"/>
+  <rect x="20" y="12" width="4" height="10" fill="#8e44ad"/>
+
+  <!-- Wispy tendrils (shorter - floating higher) -->
+  <rect x="6" y="20" width="4" height="8" fill="#9b59b6"/>
+  <rect x="12" y="22" width="8" height="8" fill="#9b59b6"/>
+  <rect x="22" y="20" width="4" height="8" fill="#9b59b6"/>
+  <rect x="9" y="26" width="3" height="4" fill="#8e44ad"/>
+  <rect x="20" y="26" width="3" height="4" fill="#8e44ad"/>
+
+  <!-- Hood -->
+  <rect x="8" y="2" width="16" height="10" fill="#8e44ad"/>
+  <rect x="10" y="0" width="12" height="6" fill="#8e44ad"/>
+
+  <!-- Face (hollow eyes) -->
+  <rect x="10" y="4" width="4" height="5" fill="#d7bde2"/>
+  <rect x="18" y="4" width="4" height="5" fill="#d7bde2"/>
+  <rect x="11" y="6" width="2" height="2" fill="#1a252f"/>
+  <rect x="19" y="6" width="2" height="2" fill="#1a252f"/>
+
+  <!-- Ghostly wisps (different positions) -->
+  <rect x="3" y="14" width="4" height="5" fill="#d7bde2" opacity="0.7"/>
+  <rect x="26" y="16" width="3" height="4" fill="#d7bde2" opacity="0.7"/>
+</svg>

@@ -380,10 +380,10 @@ if audio_manager != null:
 
 ## Theme Colors
 
-Scene controllers use `ThemeColors` for consistent styling:
+Scene controllers use `ThemeColors` autoload for consistent styling:
 
 ```gdscript
-const ThemeColors = preload("res://ui/theme_colors.gd")
+# ThemeColors is an autoload - no preload needed
 
 # Common colors used
 ThemeColors.TEXT           # Normal text

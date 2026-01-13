@@ -1,9 +1,10 @@
 extends Control
+## Battlefield scene - Main combat and typing gameplay.
+## Migrated to use DesignSystem and ThemeColors for consistency.
 
 const TypingSystem = preload("res://scripts/TypingSystem.gd")
 const SimWords = preload("res://sim/words.gd")
 const BattleTutorial = preload("res://scripts/BattleTutorial.gd")
-const ThemeColors = preload("res://ui/theme_colors.gd")
 const DEFAULT_RUNE_TARGETS := ["1-2-3", "x^2", "go!", "rune+1", "shield+2"]
 const BUFF_DEFS := {
 	"focus": {

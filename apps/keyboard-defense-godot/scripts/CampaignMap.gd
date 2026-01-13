@@ -1,6 +1,6 @@
 extends Control
-
-const ThemeColors = preload("res://ui/theme_colors.gd")
+## Campaign Map - Node selection and progression display.
+## Migrated to use DesignSystem and ThemeColors for consistency.
 
 # Hover animation settings
 const HOVER_SCALE := 1.05
