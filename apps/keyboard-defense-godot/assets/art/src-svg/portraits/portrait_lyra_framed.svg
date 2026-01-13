@@ -128,26 +128,41 @@
   <rect x="25" y="10" width="14" height="4" fill="#9aa5b5"/>
   <rect x="28" y="11" width="8" height="2" fill="#aab5c5"/>
 
-  <!-- Top highlights -->
+  <!-- Top highlights - symmetric around center -->
   <rect x="25" y="9" width="4" height="1" fill="#e8f0f8"/>
-  <rect x="35" y="10" width="3" height="1" fill="#e8f0f8"/>
+  <rect x="35" y="9" width="4" height="1" fill="#e8f0f8"/>
 
   <!-- Hair part -->
   <rect x="31" y="8" width="2" height="4" fill="#5a6575"/>
   <rect x="31" y="12" width="2" height="1" fill="#8a95a5"/>
 
-  <!-- Face-framing curls -->
+  <!-- Face-framing curls - left side -->
+  <!-- Base hair fill from hair mass to face edge -->
+  <rect x="18" y="14" width="3" height="30" fill="#7a8595"/>
+  <rect x="19" y="14" width="2" height="30" fill="#8a95a5"/>
+  <!-- Curl detail at top -->
   <rect x="19" y="14" width="2" height="7" fill="#9aa5b5"/>
   <rect x="20" y="15" width="1" height="5" fill="#aab5c5"/>
-  <rect x="18" y="18" width="2" height="3" fill="#8a95a5"/>
+  <rect x="18" y="18" width="2" height="4" fill="#8a95a5"/>
+  <!-- Curl wave pattern down the side -->
+  <rect x="18" y="26" width="2" height="4" fill="#9aa5b5"/>
+  <rect x="19" y="27" width="1" height="2" fill="#aab5c5"/>
+  <rect x="18" y="34" width="2" height="4" fill="#9aa5b5"/>
+  <rect x="19" y="35" width="1" height="2" fill="#aab5c5"/>
+
+  <!-- Face-framing curls - right side -->
+  <!-- Base hair fill from face edge to hair mass -->
+  <rect x="43" y="14" width="3" height="30" fill="#7a8595"/>
+  <rect x="43" y="14" width="2" height="30" fill="#8a95a5"/>
+  <!-- Curl detail at top -->
   <rect x="43" y="14" width="2" height="7" fill="#9aa5b5"/>
   <rect x="43" y="15" width="1" height="5" fill="#aab5c5"/>
-  <rect x="44" y="18" width="2" height="3" fill="#8a95a5"/>
-  <!-- Fill gaps between curls and face (above and below ears) -->
-  <rect x="20" y="21" width="1" height="3" fill="#8a95a5"/><!-- Left, above ear -->
-  <rect x="20" y="28" width="1" height="16" fill="#8a95a5"/><!-- Left, below ear to robe -->
-  <rect x="43" y="21" width="1" height="3" fill="#8a95a5"/><!-- Right, above ear -->
-  <rect x="43" y="28" width="1" height="16" fill="#8a95a5"/><!-- Right, below ear to robe -->
+  <rect x="44" y="18" width="2" height="4" fill="#8a95a5"/>
+  <!-- Curl wave pattern down the side -->
+  <rect x="44" y="26" width="2" height="4" fill="#9aa5b5"/>
+  <rect x="44" y="27" width="1" height="2" fill="#aab5c5"/>
+  <rect x="44" y="34" width="2" height="4" fill="#9aa5b5"/>
+  <rect x="44" y="35" width="1" height="2" fill="#aab5c5"/>
 
   <!-- === FACE === -->
   <!-- Base face shape -->
@@ -213,11 +228,21 @@
   <rect x="37" y="34" width="2" height="2" fill="#ddd0c5"/>
 
   <!-- === NECK === -->
-  <!-- Tapered neck - narrower at bottom -->
-  <rect x="26" y="41" width="12" height="2" fill="#f0e3d5"/><!-- Widened to cover dark edges -->
-  <rect x="27" y="41" width="10" height="2" fill="#f5e8db"/>
-  <rect x="28" y="41" width="8" height="1" fill="#f5e8db"/>
-  <rect x="29" y="41" width="6" height="1" fill="#faf3eb"/>
+  <!-- Base layer - wide coverage to prevent any dark gaps -->
+  <rect x="24" y="40" width="16" height="6" fill="#e0d5c8"/>
+  <!-- Main neck skin - tapers from chin width down to collar -->
+  <rect x="25" y="40" width="14" height="5" fill="#e8dcd0"/>
+  <rect x="26" y="40" width="12" height="4" fill="#f0e3d5"/>
+  <rect x="27" y="41" width="10" height="3" fill="#f5e8db"/>
+  <!-- Neck center highlight -->
+  <rect x="28" y="41" width="8" height="2" fill="#f5e8db"/>
+  <rect x="29" y="41" width="6" height="2" fill="#faf3eb"/>
+  <rect x="30" y="41" width="4" height="1" fill="#faf3eb"/>
+  <!-- Neck side shadows - where jaw meets neck -->
+  <rect x="24" y="40" width="2" height="4" fill="#ddd0c5"/>
+  <rect x="38" y="40" width="2" height="4" fill="#ddd0c5"/>
+  <!-- Throat shadow - subtle vertical definition -->
+  <rect x="31" y="43" width="2" height="2" fill="#e8dcd0"/>
 
   <!-- === EARS === -->
   <!-- Left ear - small, partially hidden by hair -->
@@ -295,9 +320,9 @@
   <rect x="35" y="22" width="4" height="4" fill="#7b3898"/>
   <rect x="35" y="23" width="3" height="3" fill="#9548b8"/>
   <rect x="36" y="23" width="2" height="2" fill="#7b3898"/>
-  <!-- Right pupil - with depth -->
-  <rect x="36" y="24" width="2" height="2" fill="#1a1525"/>
-  <rect x="37" y="24" width="1" height="1" fill="#0d0a12"/>
+  <!-- Right pupil - with depth (mirrors left: x=27 → x=35) -->
+  <rect x="35" y="24" width="2" height="2" fill="#1a1525"/>
+  <rect x="36" y="24" width="1" height="1" fill="#0d0a12"/>
   <!-- Right iris ring highlight -->
   <rect x="38" y="23" width="1" height="2" fill="#c8a0d8"/>
   <rect x="34" y="24" width="1" height="2" fill="#9548b8"/>
@@ -328,15 +353,16 @@
   <rect x="35" y="19" width="4" height="1" fill="#8a95a5"/>
 
   <!-- === WISDOM LINES === -->
-  <!-- Crow's feet - gentle, wise -->
+  <!-- Crow's feet - gentle, wise (symmetric around center) -->
+  <!-- Left side -->
   <rect x="22" y="23" width="1" height="1" fill="#e0d5c8"/>
-  <rect x="22" y="25" width="1" height="1" fill="#e0d5c8"/>
   <rect x="21" y="24" width="1" height="1" fill="#e0d5c8"/>
-  <rect x="41" y="23" width="1" height="1" fill="#e0d5c8"/>
-  <rect x="41" y="25" width="1" height="1" fill="#e0d5c8"/>
-  <rect x="42" y="24" width="1" height="1" fill="#e0d5c8"/>
+  <rect x="22" y="25" width="1" height="1" fill="#e0d5c8"/>
   <rect x="22" y="26" width="1" height="1" fill="#e0d5c8"/>
-  <rect x="41" y="24" width="1" height="1" fill="#e0d5c8"/>
+  <!-- Right side (mirrors: x=22→41, x=21→42) -->
+  <rect x="41" y="23" width="1" height="1" fill="#e0d5c8"/>
+  <rect x="42" y="24" width="1" height="1" fill="#e0d5c8"/>
+  <rect x="41" y="25" width="1" height="1" fill="#e0d5c8"/>
   <rect x="41" y="26" width="1" height="1" fill="#e0d5c8"/>
 
   <!-- === NOSE === -->
@@ -464,23 +490,26 @@
 
   <!-- === NECKLACE === -->
   <!-- Chain sits on collar, curves down to pendant -->
-  <!-- Left chain - on collar -->
-  <rect x="26" y="43" width="1" height="1" fill="#b8960b"/><!-- Extend chain to cover dark edge -->
-  <rect x="27" y="44" width="1" height="1" fill="#b8960b"/>
-  <rect x="28" y="44" width="1" height="1" fill="#d4ac0d"/>
-  <rect x="29" y="45" width="1" height="1" fill="#b8960b"/>
+  <!-- Left chain - diagonal with proper pixel connections -->
+  <rect x="27" y="43" width="2" height="1" fill="#b8960b"/>
+  <rect x="28" y="43" width="1" height="1" fill="#d4ac0d"/>
+  <rect x="28" y="44" width="2" height="1" fill="#b8960b"/>
+  <rect x="29" y="44" width="1" height="1" fill="#d4ac0d"/>
+  <rect x="29" y="45" width="2" height="1" fill="#b8960b"/>
   <rect x="30" y="45" width="1" height="1" fill="#d4ac0d"/>
-  <rect x="30" y="46" width="1" height="1" fill="#f4d03f"/>
-  <rect x="31" y="46" width="1" height="1" fill="#d4ac0d"/>
-  <!-- Right chain - on collar -->
-  <rect x="37" y="43" width="1" height="1" fill="#b8960b"/><!-- Extend chain to cover dark edge -->
-  <rect x="36" y="44" width="1" height="1" fill="#b8960b"/>
-  <rect x="35" y="44" width="1" height="1" fill="#d4ac0d"/>
-  <rect x="34" y="45" width="1" height="1" fill="#b8960b"/>
+  <rect x="30" y="46" width="2" height="1" fill="#b8960b"/>
+  <rect x="31" y="46" width="1" height="1" fill="#f4d03f"/>
+  <!-- Right chain - diagonal with proper pixel connections -->
+  <rect x="35" y="43" width="2" height="1" fill="#b8960b"/>
+  <rect x="35" y="43" width="1" height="1" fill="#d4ac0d"/>
+  <rect x="34" y="44" width="2" height="1" fill="#b8960b"/>
+  <rect x="34" y="44" width="1" height="1" fill="#d4ac0d"/>
+  <rect x="33" y="45" width="2" height="1" fill="#b8960b"/>
   <rect x="33" y="45" width="1" height="1" fill="#d4ac0d"/>
-  <rect x="33" y="46" width="1" height="1" fill="#f4d03f"/>
-  <rect x="32" y="46" width="1" height="1" fill="#d4ac0d"/>
+  <rect x="32" y="46" width="2" height="1" fill="#b8960b"/>
+  <rect x="32" y="46" width="1" height="1" fill="#f4d03f"/>
   <!-- Center chain drop to pendant -->
+  <rect x="31" y="47" width="2" height="1" fill="#b8960b"/>
   <rect x="31" y="47" width="2" height="1" fill="#d4ac0d"/>
   <rect x="31" y="47" width="1" height="1" fill="#f4d03f"/>
 
