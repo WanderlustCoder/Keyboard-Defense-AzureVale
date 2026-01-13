@@ -160,11 +160,11 @@
     },
     {
       "id": "portrait_lyra",
-      "path": "res://assets/art/src-svg/portraits/portrait_lyra.svg",
-      "source_svg": "res://assets/art/src-svg/portraits/portrait_lyra.svg",
+      "path": "res://assets/art/src-svg/portraits/portrait_lyra_framed.svg",
+      "source_svg": "res://assets/art/src-svg/portraits/portrait_lyra_framed.svg",
       "expected_width": 64,
       "expected_height": 64,
-      "max_kb": 16,
+      "max_kb": 32,
       "pixel_art": true,
       "category": "portraits"
     },

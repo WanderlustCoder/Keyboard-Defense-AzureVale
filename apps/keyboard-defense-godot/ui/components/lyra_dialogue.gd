@@ -44,8 +44,8 @@ func _load_lyra_portrait() -> void:
 			return
 
 	# Try direct load
-	if ResourceLoader.exists("res://assets/art/src-svg/portraits/portrait_lyra.svg"):
-		var tex := load("res://assets/art/src-svg/portraits/portrait_lyra.svg") as Texture2D
+	if ResourceLoader.exists("res://assets/art/src-svg/portraits/portrait_lyra_framed.svg"):
+		var tex := load("res://assets/art/src-svg/portraits/portrait_lyra_framed.svg") as Texture2D
 		if tex != null:
 			portrait.texture = tex
 			return
