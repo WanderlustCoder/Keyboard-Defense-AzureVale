@@ -3,11 +3,11 @@ extends PanelContainer
 ## The main typing display component showing the current word and progress.
 ## Migrated to use DesignSystem and ThemeColors for consistency.
 
-# Font sizes (from DesignSystem)
-const TITLE_FONT_SIZE := DesignSystem.FONT_H3
-const HINT_FONT_SIZE := DesignSystem.FONT_BODY_SMALL
-const WORD_FONT_SIZE := DesignSystem.FONT_DISPLAY
-const FEEDBACK_FONT_SIZE := DesignSystem.FONT_H2
+# Font sizes — values match DesignSystem (FONT_H3, FONT_BODY_SMALL, FONT_DISPLAY, FONT_H2)
+const TITLE_FONT_SIZE := 18
+const HINT_FONT_SIZE := 14
+const WORD_FONT_SIZE := 32
+const FEEDBACK_FONT_SIZE := 20
 
 # Animation timing
 const FEEDBACK_FADE_RATIO := 0.4
