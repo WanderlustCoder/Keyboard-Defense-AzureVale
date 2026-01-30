@@ -10,9 +10,9 @@ extends RefCounted
 
 ## Check if reduced motion is enabled
 static func _should_reduce_motion() -> bool:
-	var settings := Engine.get_main_loop().root.get_node_or_null("/root/SettingsManager")
+	var settings = Engine.get_main_loop().root.get_node_or_null("/root/SettingsManager")
 	if settings:
-		return settings.reduced_motion
+		return bool(settings.reduced_motion)
 	return false
 
 
@@ -29,10 +29,11 @@ static func _get_duration(base_duration: float) -> float:
 
 ## Panel open/close presets
 const PANEL_OPEN := {
-	"duration": 0.2,
+	"duration": 0.25,
 	"ease": Tween.EASE_OUT,
-	"trans": Tween.TRANS_QUAD,
-	"scale_from": Vector2(0.95, 0.95),
+	"trans": Tween.TRANS_BACK,
+	"fade_trans": Tween.TRANS_QUAD,
+	"scale_from": Vector2(0.92, 0.92),
 	"alpha_from": 0.0
 }
 
@@ -99,10 +100,11 @@ static func open_panel(panel: Control, callback: Callable = Callable()) -> Tween
 	var tween := panel.create_tween()
 	tween.set_parallel(true)
 	tween.set_ease(PANEL_OPEN.ease)
-	tween.set_trans(PANEL_OPEN.trans)
 
-	tween.tween_property(panel, "modulate:a", 1.0, duration)
-	tween.tween_property(panel, "scale", Vector2.ONE, duration)
+	# Fade: faster with TRANS_QUAD so content is visible before scale settles
+	tween.tween_property(panel, "modulate:a", 1.0, duration * 0.6).set_trans(PANEL_OPEN.fade_trans)
+	# Scale: full duration with TRANS_BACK for spring overshoot
+	tween.tween_property(panel, "scale", Vector2.ONE, duration).set_trans(PANEL_OPEN.trans)
 
 	if callback.is_valid():
 		tween.chain().tween_callback(callback)
@@ -141,6 +143,14 @@ static func close_panel(panel: Control, callback: Callable = Callable()) -> Twee
 
 ## Animate panel slide in from direction
 static func slide_in(panel: Control, from_direction: String = "bottom", callback: Callable = Callable()) -> Tween:
+	var duration := _get_duration(SCENE_SLIDE.duration)
+	if duration <= 0:
+		panel.visible = true
+		panel.modulate.a = 1.0
+		if callback.is_valid():
+			callback.call()
+		return null
+
 	panel.visible = true
 	panel.modulate.a = 0.0
 
@@ -165,8 +175,8 @@ static func slide_in(panel: Control, from_direction: String = "bottom", callback
 	tween.set_ease(Tween.EASE_OUT)
 	tween.set_trans(Tween.TRANS_QUAD)
 
-	tween.tween_property(panel, "modulate:a", 1.0, SCENE_SLIDE.duration)
-	tween.tween_property(panel, "position", original_pos, SCENE_SLIDE.duration)
+	tween.tween_property(panel, "modulate:a", 1.0, duration)
+	tween.tween_property(panel, "position", original_pos, duration)
 
 	if callback.is_valid():
 		tween.chain().tween_callback(callback)
@@ -176,6 +186,13 @@ static func slide_in(panel: Control, from_direction: String = "bottom", callback
 
 ## Animate panel slide out to direction
 static func slide_out(panel: Control, to_direction: String = "bottom", callback: Callable = Callable()) -> Tween:
+	var duration := _get_duration(SCENE_SLIDE.duration)
+	if duration <= 0:
+		panel.visible = false
+		if callback.is_valid():
+			callback.call()
+		return null
+
 	var offset: Vector2
 	match to_direction:
 		"top":
@@ -196,8 +213,8 @@ static func slide_out(panel: Control, to_direction: String = "bottom", callback:
 	tween.set_ease(Tween.EASE_IN)
 	tween.set_trans(Tween.TRANS_QUAD)
 
-	tween.tween_property(panel, "modulate:a", 0.0, SCENE_SLIDE.duration)
-	tween.tween_property(panel, "position", original_pos + offset, SCENE_SLIDE.duration)
+	tween.tween_property(panel, "modulate:a", 0.0, duration)
+	tween.tween_property(panel, "position", original_pos + offset, duration)
 
 	tween.chain().tween_callback(func():
 		panel.visible = false
@@ -400,7 +417,7 @@ static func pop_out(element: Control, callback: Callable = Callable()) -> Tween:
 ## Staggered animation for list items
 static func stagger_in(elements: Array[Control], delay_between: float = 0.05) -> void:
 	for i in range(elements.size()):
-		var element := elements[i]
+		var element: Control = elements[i]
 		pop_in(element, float(i) * delay_between)
 
 

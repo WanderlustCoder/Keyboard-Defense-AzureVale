@@ -11,10 +11,10 @@ signal event_skipped
 signal challenge_completed(choice_id: String, evaluation: Dictionary)
 signal challenge_failed(choice_id: String)
 
-const TITLE_FONT_SIZE := 22
-const BODY_FONT_SIZE := 16
-const CHOICE_FONT_SIZE := 14
-const INPUT_FONT_SIZE := 18
+const TITLE_FONT_SIZE := 22  # No exact DesignSystem match
+const BODY_FONT_SIZE := DesignSystem.FONT_BODY
+const CHOICE_FONT_SIZE := DesignSystem.FONT_BODY_SMALL
+const INPUT_FONT_SIZE := DesignSystem.FONT_H3
 const FADE_DURATION := 0.2
 
 var _current_event: Dictionary = {}

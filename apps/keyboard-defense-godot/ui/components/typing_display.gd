@@ -3,11 +3,11 @@ extends PanelContainer
 ## The main typing display component showing the current word and progress.
 ## Migrated to use DesignSystem and ThemeColors for consistency.
 
-# Font sizes
-const TITLE_FONT_SIZE := 18
-const HINT_FONT_SIZE := 14
-const WORD_FONT_SIZE := 32
-const FEEDBACK_FONT_SIZE := 20
+# Font sizes (from DesignSystem)
+const TITLE_FONT_SIZE := DesignSystem.FONT_H3
+const HINT_FONT_SIZE := DesignSystem.FONT_BODY_SMALL
+const WORD_FONT_SIZE := DesignSystem.FONT_DISPLAY
+const FEEDBACK_FONT_SIZE := DesignSystem.FONT_H2
 
 # Animation timing
 const FEEDBACK_FADE_RATIO := 0.4
@@ -25,6 +25,9 @@ const PROGRESS_COLOR_NEAR := Color(0.9, 0.7, 0.2, 1.0)     # Yellow/gold
 const PROGRESS_COLOR_DONE := Color(0.3, 0.9, 0.5, 1.0)     # Bright green
 const PROGRESS_BG_COLOR := Color(0.15, 0.15, 0.2, 0.6)
 const MILESTONE_GLOW_DURATION := 0.4
+const SHINE_WIDTH := 0.15
+const SHINE_SPEED := 1.5
+const SHINE_COLOR := Color(1.0, 1.0, 1.0, 0.4)
 
 # Accuracy ring settings
 const ACCURACY_RING_RADIUS := 28.0
@@ -59,6 +62,9 @@ var _progress_fill: float = 0.0
 var _progress_glow: float = 0.0
 var _glow_tween: Tween = null
 var _last_milestone: int = 0  # 0=none, 1=50%, 2=75%, 3=100%
+var _shine_position: float = -0.3  # -0.3 to 1.3 for full sweep
+var _shine_active: bool = false
+var _shine_tween: Tween = null
 var _settings_manager = null
 var _audio_manager = null
 
@@ -74,6 +80,62 @@ var _accuracy_pulse_tween: Tween = null
 var _burst_canvas: Control = null
 var _burst_particles: Array = []  # [{letter, pos, vel, lifetime, color}]
 
+# Current character pulse effect
+var _char_pulse_scale: float = 1.0
+var _char_pulse_direction: float = 1.0
+const CHAR_PULSE_MIN := 0.95
+const CHAR_PULSE_MAX := 1.1
+const CHAR_PULSE_SPEED := 4.0
+const CHAR_PULSE_COLOR := Color(1.0, 0.95, 0.7, 1.0)  # Warm highlight
+
+# Word shake on error
+var _shake_offset: float = 0.0
+var _shake_intensity: float = 0.0
+var _shake_decay: float = 0.0
+const SHAKE_MAGNITUDE := 8.0
+const SHAKE_FREQUENCY := 30.0
+const SHAKE_DECAY_RATE := 8.0
+
+# Letter pop animation
+var _pop_letters: Array = []  # [{letter, pos, scale, alpha, color}]
+const POP_DURATION := 0.35
+const POP_SCALE_START := 1.2
+const POP_SCALE_END := 1.8
+const POP_RISE := 15.0
+
+# Perfect word celebration
+var _celebration_active: bool = false
+var _celebration_time: float = 0.0
+var _celebration_word: String = ""
+const CELEBRATION_DURATION := 0.8
+const CELEBRATION_COLORS: Array[Color] = [
+	Color(1.0, 0.4, 0.4),   # Red
+	Color(1.0, 0.7, 0.2),   # Orange
+	Color(1.0, 1.0, 0.3),   # Yellow
+	Color(0.4, 1.0, 0.4),   # Green
+	Color(0.3, 0.7, 1.0),   # Blue
+	Color(0.7, 0.4, 1.0),   # Purple
+]
+
+# Typing trail effect
+var _trail_chars: Array = []  # [{letter, pos, alpha, time}]
+const TRAIL_MAX_LENGTH := 5
+const TRAIL_FADE_TIME := 0.4
+const TRAIL_SPACING := 18.0
+
+# Combo streak visual
+var _combo_count: int = 0
+var _combo_glow_intensity: float = 0.0
+var _combo_fire_time: float = 0.0
+const COMBO_GLOW_MAX := 0.8
+const COMBO_THRESHOLD_WARM := 3
+const COMBO_THRESHOLD_HOT := 7
+const COMBO_THRESHOLD_FIRE := 12
+const COMBO_COLOR_NONE := Color(1.0, 1.0, 1.0, 0.0)
+const COMBO_COLOR_WARM := Color(1.0, 0.9, 0.5, 0.3)
+const COMBO_COLOR_HOT := Color(1.0, 0.6, 0.2, 0.5)
+const COMBO_COLOR_FIRE := Color(1.0, 0.3, 0.1, 0.7)
+
 func _ready() -> void:
 	_apply_styling()
 	_setup_progress_bar()
@@ -83,6 +145,24 @@ func _ready() -> void:
 	_audio_manager = get_node_or_null("/root/AudioManager")
 
 func _process(delta: float) -> void:
+	# Update current character pulse
+	_update_char_pulse(delta)
+
+	# Update word shake
+	_update_word_shake(delta)
+
+	# Update letter pop animations
+	_update_letter_pops(delta)
+
+	# Update celebration effect
+	_update_celebration(delta)
+
+	# Update typing trail
+	_update_typing_trail(delta)
+
+	# Update combo glow
+	_update_combo_glow(delta)
+
 	# Update letter burst particles
 	if not _burst_particles.is_empty():
 		var to_remove: Array[int] = []
@@ -129,6 +209,269 @@ func _apply_styling() -> void:
 	if feedback_label:
 		feedback_label.add_theme_font_size_override("font_size", FEEDBACK_FONT_SIZE)
 		feedback_label.modulate.a = 0.0
+
+
+## Update the current character pulse effect
+func _update_char_pulse(delta: float) -> void:
+	if current_char == null or current_char.text.is_empty():
+		return
+
+	# Check reduced motion setting
+	if _settings_manager != null and _settings_manager.get("reduced_motion") != null:
+		if _settings_manager.reduced_motion:
+			current_char.scale = Vector2.ONE
+			return
+
+	# Oscillate the scale
+	_char_pulse_scale += _char_pulse_direction * CHAR_PULSE_SPEED * delta
+
+	# Bounce at limits
+	if _char_pulse_scale >= CHAR_PULSE_MAX:
+		_char_pulse_scale = CHAR_PULSE_MAX
+		_char_pulse_direction = -1.0
+	elif _char_pulse_scale <= CHAR_PULSE_MIN:
+		_char_pulse_scale = CHAR_PULSE_MIN
+		_char_pulse_direction = 1.0
+
+	# Apply scale to current character
+	current_char.pivot_offset = current_char.size * 0.5
+	current_char.scale = Vector2(_char_pulse_scale, _char_pulse_scale)
+
+	# Apply subtle color tint based on pulse
+	var t := (_char_pulse_scale - CHAR_PULSE_MIN) / (CHAR_PULSE_MAX - CHAR_PULSE_MIN)
+	var tinted_color := ThemeColors.ACCENT.lerp(CHAR_PULSE_COLOR, t * 0.3)
+	current_char.add_theme_color_override("font_color", tinted_color)
+
+
+## Update word shake effect
+func _update_word_shake(delta: float) -> void:
+	if _shake_intensity <= 0.01:
+		_shake_intensity = 0.0
+		_apply_shake_offset(0.0)
+		return
+
+	# Decay the intensity
+	_shake_intensity *= exp(-SHAKE_DECAY_RATE * delta)
+
+	# Calculate shake offset using sine wave
+	_shake_decay += delta * SHAKE_FREQUENCY
+	var offset := sin(_shake_decay) * SHAKE_MAGNITUDE * _shake_intensity
+	_apply_shake_offset(offset)
+
+
+## Apply shake offset to word display labels
+func _apply_shake_offset(offset: float) -> void:
+	var word_display := get_node_or_null("Content/WordDisplay")
+	if word_display != null:
+		word_display.position.x = offset
+
+
+## Trigger word shake on typing error
+func trigger_word_shake() -> void:
+	# Check reduced motion setting
+	if _settings_manager != null and _settings_manager.get("reduced_motion") != null:
+		if _settings_manager.reduced_motion:
+			return
+
+	_shake_intensity = 1.0
+	_shake_decay = 0.0
+
+
+## Update letter pop animations
+func _update_letter_pops(delta: float) -> void:
+	if _pop_letters.is_empty():
+		return
+
+	var to_remove: Array[int] = []
+	for i in range(_pop_letters.size()):
+		var p = _pop_letters[i]
+		p.lifetime -= delta
+		if p.lifetime <= 0:
+			to_remove.append(i)
+		else:
+			# Calculate progress (0 to 1)
+			var progress: float = 1.0 - (float(p.lifetime) / POP_DURATION)
+			# Ease out for smooth animation
+			var eased := 1.0 - pow(1.0 - progress, 2.0)
+			# Update scale and alpha
+			p.scale = lerp(POP_SCALE_START, POP_SCALE_END, eased)
+			p.alpha = 1.0 - eased
+			p.pos.y -= POP_RISE * delta
+
+	# Remove expired pops in reverse order
+	for i in range(to_remove.size() - 1, -1, -1):
+		_pop_letters.remove_at(to_remove[i])
+
+	if _burst_canvas != null:
+		_burst_canvas.queue_redraw()
+
+
+## Trigger a letter pop animation when a character is correctly typed
+func trigger_letter_pop(letter: String) -> void:
+	# Check reduced motion setting
+	if _settings_manager != null and _settings_manager.get("reduced_motion") != null:
+		if _settings_manager.reduced_motion:
+			return
+
+	if letter.is_empty():
+		return
+
+	# Get position from current char (it just moved to typed)
+	var spawn_pos := size * 0.5
+	if typed_label != null:
+		var word_display := get_node_or_null("Content/WordDisplay")
+		if word_display != null:
+			spawn_pos = word_display.global_position - global_position
+			spawn_pos.x += typed_label.size.x - 10  # Near the last typed char
+			spawn_pos.y += typed_label.size.y * 0.5
+
+	var pop := {
+		"letter": letter.to_upper(),
+		"pos": spawn_pos,
+		"scale": POP_SCALE_START,
+		"alpha": 1.0,
+		"lifetime": POP_DURATION,
+		"color": ThemeColors.TYPED_CORRECT.lightened(0.2)
+	}
+	_pop_letters.append(pop)
+
+
+## Update celebration effect
+func _update_celebration(delta: float) -> void:
+	if not _celebration_active:
+		return
+
+	_celebration_time += delta
+	if _celebration_time >= CELEBRATION_DURATION:
+		_celebration_active = false
+		_celebration_time = 0.0
+		_celebration_word = ""
+		return
+
+	if _burst_canvas != null:
+		_burst_canvas.queue_redraw()
+
+
+## Trigger perfect word celebration (rainbow shimmer)
+func trigger_perfect_celebration(word: String) -> void:
+	# Check reduced motion setting
+	if _settings_manager != null and _settings_manager.get("reduced_motion") != null:
+		if _settings_manager.reduced_motion:
+			return
+
+	if word.is_empty():
+		return
+
+	_celebration_active = true
+	_celebration_time = 0.0
+	_celebration_word = word
+
+
+## Update typing trail effect
+func _update_typing_trail(delta: float) -> void:
+	if _trail_chars.is_empty():
+		return
+
+	var to_remove: Array[int] = []
+	for i in range(_trail_chars.size()):
+		var t = _trail_chars[i]
+		t.time += delta
+		t.alpha = 1.0 - (t.time / TRAIL_FADE_TIME)
+		if t.alpha <= 0:
+			to_remove.append(i)
+
+	# Remove expired trails in reverse order
+	for i in range(to_remove.size() - 1, -1, -1):
+		_trail_chars.remove_at(to_remove[i])
+
+	if _burst_canvas != null:
+		_burst_canvas.queue_redraw()
+
+
+## Add a character to the typing trail
+func add_trail_char(letter: String) -> void:
+	# Check reduced motion setting
+	if _settings_manager != null and _settings_manager.get("reduced_motion") != null:
+		if _settings_manager.reduced_motion:
+			return
+
+	if letter.is_empty():
+		return
+
+	# Get spawn position (near current char)
+	var spawn_pos := size * 0.5
+	if current_char != null:
+		var word_display := get_node_or_null("Content/WordDisplay")
+		if word_display != null:
+			spawn_pos = word_display.global_position - global_position
+			spawn_pos.x += current_char.position.x
+			spawn_pos.y += current_char.size.y * 0.5 + 25  # Below the word
+
+	var trail := {
+		"letter": letter.to_upper(),
+		"pos": spawn_pos,
+		"alpha": 1.0,
+		"time": 0.0
+	}
+	_trail_chars.append(trail)
+
+	# Limit trail length
+	while _trail_chars.size() > TRAIL_MAX_LENGTH:
+		_trail_chars.pop_front()
+
+
+## Update combo glow effect
+func _update_combo_glow(delta: float) -> void:
+	# Calculate target intensity based on combo
+	var target_intensity := 0.0
+	if _combo_count >= COMBO_THRESHOLD_FIRE:
+		target_intensity = COMBO_GLOW_MAX
+	elif _combo_count >= COMBO_THRESHOLD_HOT:
+		target_intensity = COMBO_GLOW_MAX * 0.7
+	elif _combo_count >= COMBO_THRESHOLD_WARM:
+		target_intensity = COMBO_GLOW_MAX * 0.4
+
+	# Smooth transition to target
+	_combo_glow_intensity = lerp(_combo_glow_intensity, target_intensity, delta * 5.0)
+
+	# Update fire animation time
+	if _combo_glow_intensity > 0.01:
+		_combo_fire_time += delta
+
+	# Apply glow to panel
+	if _combo_glow_intensity > 0.01:
+		var glow_color := _get_combo_glow_color()
+		# Flicker effect for fire
+		if _combo_count >= COMBO_THRESHOLD_FIRE:
+			var flicker := 0.9 + 0.1 * sin(_combo_fire_time * 15.0)
+			glow_color = glow_color * flicker
+		self_modulate = Color(1.0, 1.0, 1.0, 1.0).lerp(glow_color, _combo_glow_intensity * 0.3)
+	else:
+		self_modulate = Color.WHITE
+
+
+## Get the current combo glow color
+func _get_combo_glow_color() -> Color:
+	if _combo_count >= COMBO_THRESHOLD_FIRE:
+		return COMBO_COLOR_FIRE
+	elif _combo_count >= COMBO_THRESHOLD_HOT:
+		return COMBO_COLOR_HOT
+	elif _combo_count >= COMBO_THRESHOLD_WARM:
+		return COMBO_COLOR_WARM
+	return COMBO_COLOR_NONE
+
+
+## Set the current combo count for visual feedback
+func set_combo(count: int) -> void:
+	_combo_count = count
+
+
+## Reset combo visual
+func reset_combo() -> void:
+	_combo_count = 0
+	_combo_glow_intensity = 0.0
+	self_modulate = Color.WHITE
+
 
 ## Set the drill title
 func set_drill_title(text: String) -> void:
@@ -283,6 +626,9 @@ func _trigger_milestone_glow() -> void:
 	_glow_tween.tween_method(_set_glow, 1.0, 0.0, MILESTONE_GLOW_DURATION)
 	_glow_tween.set_ease(Tween.EASE_OUT)
 
+	# Trigger shine sweep
+	_trigger_shine()
+
 	# Play subtle sound
 	if _audio_manager != null and _audio_manager.has_method("play_ui_confirm"):
 		_audio_manager.play_ui_confirm()
@@ -291,6 +637,35 @@ func _set_glow(value: float) -> void:
 	_progress_glow = value
 	if _progress_bar != null:
 		_progress_bar.queue_redraw()
+
+
+func _trigger_shine() -> void:
+	# Check reduced motion
+	if _settings_manager != null and _settings_manager.get("reduced_motion") != null:
+		if _settings_manager.reduced_motion:
+			return
+
+	# Kill existing shine tween
+	if _shine_tween != null and _shine_tween.is_valid():
+		_shine_tween.kill()
+
+	_shine_active = true
+	_shine_position = -0.3
+
+	_shine_tween = create_tween()
+	_shine_tween.tween_property(self, "_shine_position", 1.3, SHINE_SPEED)
+	_shine_tween.tween_callback(func():
+		_shine_active = false
+		if _progress_bar != null:
+			_progress_bar.queue_redraw()
+	)
+
+
+func _set_shine_position(value: float) -> void:
+	_shine_position = value
+	if _progress_bar != null:
+		_progress_bar.queue_redraw()
+
 
 func _draw_progress_bar() -> void:
 	if _progress_bar == null:
@@ -339,6 +714,22 @@ func _draw_progress_bar() -> void:
 			PROGRESS_BAR_HEIGHT + glow_expand * 2
 		)
 		_progress_bar.draw_rect(glow_rect, glow_color, false, 2.0)
+
+	# Draw shine sweep if active
+	if _shine_active and fill_width > 0:
+		var shine_x := PROGRESS_BAR_MARGIN + fill_width * _shine_position
+		var shine_half_width := fill_width * SHINE_WIDTH * 0.5
+		var shine_rect := Rect2(
+			shine_x - shine_half_width,
+			bar_y,
+			shine_half_width * 2,
+			PROGRESS_BAR_HEIGHT
+		)
+		# Clip to fill area
+		var fill_area := Rect2(PROGRESS_BAR_MARGIN, bar_y, fill_width, PROGRESS_BAR_HEIGHT)
+		shine_rect = shine_rect.intersection(fill_area)
+		if shine_rect.size.x > 0:
+			_progress_bar.draw_rect(shine_rect, SHINE_COLOR)
 
 ## Setup the accuracy ring indicator
 func _setup_accuracy_ring() -> void:
@@ -494,11 +885,11 @@ func trigger_letter_burst(word: String) -> void:
 	var start_x := spawn_center.x - total_width * 0.5
 
 	for i in range(word.length()):
-		var letter := word[i]
-		var x_offset := start_x + i * letter_spacing - spawn_center.x
+		var letter: String = word[i]
+		var x_offset: float = start_x + i * letter_spacing - spawn_center.x
 
 		# Random upward burst with spread
-		var angle := randf_range(-PI * 0.6, -PI * 0.4)  # Mostly upward
+		var angle: float = randf_range(-PI * 0.6, -PI * 0.4)  # Mostly upward
 		angle += x_offset * 0.005  # Slight outward spread based on position
 		var speed := BURST_SPEED * randf_range(0.8, 1.2)
 
@@ -515,18 +906,82 @@ func trigger_letter_burst(word: String) -> void:
 		_burst_canvas.queue_redraw()
 
 func _draw_burst_particles() -> void:
-	if _burst_canvas == null or _burst_particles.is_empty():
+	if _burst_canvas == null:
 		return
 
 	var font := ThemeDB.fallback_font
 
+	# Draw burst particles
 	for p in _burst_particles:
 		# Calculate alpha based on remaining lifetime
 		var alpha: float = clamp(p.lifetime / (BURST_DURATION * 0.5), 0.0, 1.0)
 		var draw_color := Color(p.color.r, p.color.g, p.color.b, alpha)
 
 		# Scale shrinks as particle ages
-		var scale: float = lerp(0.5, 1.0, alpha)
-		var adjusted_font_size := int(BURST_FONT_SIZE * scale)
+		var scale_factor: float = lerp(0.5, 1.0, alpha)
+		var adjusted_font_size := int(BURST_FONT_SIZE * scale_factor)
 
 		_burst_canvas.draw_string(font, p.pos, p.letter, HORIZONTAL_ALIGNMENT_CENTER, -1, adjusted_font_size, draw_color)
+
+	# Draw letter pop animations
+	for p in _pop_letters:
+		var draw_color := Color(p.color.r, p.color.g, p.color.b, p.alpha)
+		var pop_font_size := int(WORD_FONT_SIZE * p.scale)
+		_burst_canvas.draw_string(font, p.pos, p.letter, HORIZONTAL_ALIGNMENT_CENTER, -1, pop_font_size, draw_color)
+
+	# Draw celebration effect
+	if _celebration_active and not _celebration_word.is_empty():
+		_draw_celebration(font)
+
+	# Draw typing trail
+	for i in range(_trail_chars.size()):
+		var t = _trail_chars[i]
+		var trail_color := ThemeColors.ACCENT.darkened(0.3)
+		trail_color.a = t.alpha * 0.6
+		var offset_x := (i - _trail_chars.size() + 1) * TRAIL_SPACING
+		var trail_pos := Vector2(t.pos.x + offset_x, t.pos.y)
+		var trail_font_size := int(14 * (0.6 + t.alpha * 0.4))  # Shrink as they fade
+		_burst_canvas.draw_string(font, trail_pos, t.letter, HORIZONTAL_ALIGNMENT_CENTER, -1, trail_font_size, trail_color)
+
+
+## Draw the celebration rainbow text effect
+func _draw_celebration(font: Font) -> void:
+	if _burst_canvas == null:
+		return
+
+	var progress := _celebration_time / CELEBRATION_DURATION
+	var alpha := 1.0 - progress  # Fade out
+
+	# Get center position
+	var word_display := get_node_or_null("Content/WordDisplay")
+	var center := _burst_canvas.size * 0.5
+	if word_display != null:
+		center = word_display.global_position - global_position + word_display.size * 0.5
+
+	# Calculate letter spacing and starting position
+	var letter_width := 20.0
+	var total_width := _celebration_word.length() * letter_width
+	var start_x := center.x - total_width * 0.5
+
+	# Rise effect
+	var rise := progress * 30.0
+
+	# Draw each letter with rainbow color
+	for i in range(_celebration_word.length()):
+		var letter: String = _celebration_word[i].to_upper()
+
+		# Calculate color based on letter index and time (creates shimmer)
+		var color_offset: float = (_celebration_time * 8.0 + float(i) * 0.5)
+		var color_index: int = int(color_offset) % CELEBRATION_COLORS.size()
+		var next_index: int = (color_index + 1) % CELEBRATION_COLORS.size()
+		var blend: float = fmod(color_offset, 1.0)
+
+		var letter_color: Color = CELEBRATION_COLORS[color_index].lerp(CELEBRATION_COLORS[next_index], blend)
+		letter_color.a = alpha
+
+		# Scale pulse based on time
+		var scale_pulse := 1.0 + 0.2 * sin(_celebration_time * 10.0 + float(i) * 0.5)
+		var font_size := int(WORD_FONT_SIZE * scale_pulse)
+
+		var letter_pos := Vector2(start_x + i * letter_width, center.y - rise)
+		_burst_canvas.draw_string(font, letter_pos, letter, HORIZONTAL_ALIGNMENT_CENTER, -1, font_size, letter_color)

@@ -7,9 +7,9 @@ extends PanelContainer
 
 signal pressed(node_id: String)
 
-const TITLE_FONT_SIZE := 16
-const LESSON_FONT_SIZE := 14
-const REWARD_FONT_SIZE := 12
+const TITLE_FONT_SIZE := DesignSystem.FONT_BODY
+const LESSON_FONT_SIZE := DesignSystem.FONT_BODY_SMALL
+const REWARD_FONT_SIZE := DesignSystem.FONT_CAPTION
 const BORDER_WIDTH := 2
 const CORNER_RADIUS := 6
 const CONTENT_MARGIN := 8

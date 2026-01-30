@@ -227,7 +227,7 @@ func _connect_signals() -> void:
 
 func _prepare_for_animation() -> void:
 	modulate.a = 0.0
-	scale = Vector2(0.95, 0.95)
+	scale = Vector2(0.92, 0.92)
 	pivot_offset = size / 2
 
 
@@ -238,10 +238,39 @@ func _animate_open() -> void:
 	_open_tween = create_tween()
 	_open_tween.set_parallel(true)
 	_open_tween.set_ease(Tween.EASE_OUT)
-	_open_tween.set_trans(Tween.TRANS_QUAD)
 
-	_open_tween.tween_property(self, "modulate:a", 1.0, DesignSystem.ANIM_NORMAL)
-	_open_tween.tween_property(self, "scale", Vector2.ONE, DesignSystem.ANIM_NORMAL)
+	# Fade: faster with TRANS_QUAD so content is visible before scale settles
+	_open_tween.tween_property(self, "modulate:a", 1.0, DesignSystem.ANIM_NORMAL * 0.6).set_trans(Tween.TRANS_QUAD)
+	# Scale: full duration with TRANS_BACK for spring overshoot
+	_open_tween.tween_property(self, "scale", Vector2.ONE, DesignSystem.ANIM_NORMAL).set_trans(Tween.TRANS_BACK)
+
+	_open_tween.chain().tween_callback(_stagger_content)
+
+
+func _stagger_content() -> void:
+	if _should_reduce_motion():
+		return
+	if _content == null:
+		return
+
+	var children := _content.get_children()
+	if children.size() <= 1:
+		return
+
+	for i in range(children.size()):
+		var child: Control = children[i] as Control
+		if child == null:
+			continue
+		child.modulate.a = 0.0
+		child.position.y += 8.0
+
+		var delay := i * 0.03
+		var tween := child.create_tween()
+		tween.set_parallel(true)
+		tween.set_ease(Tween.EASE_OUT)
+		tween.set_trans(Tween.TRANS_QUAD)
+		tween.tween_property(child, "modulate:a", 1.0, 0.15).set_delay(delay)
+		tween.tween_property(child, "position:y", child.position.y - 8.0, 0.15).set_delay(delay)
 
 
 func _animate_close() -> void:
@@ -341,12 +370,12 @@ func _setup_keyboard_navigation() -> void:
 
 	# Link focus neighbors
 	for i in range(_focusable_controls.size()):
-		var current := _focusable_controls[i]
-		var prev_idx := (i - 1) if i > 0 else (_focusable_controls.size() - 1)
-		var next_idx := (i + 1) % _focusable_controls.size()
+		var current: Control = _focusable_controls[i]
+		var prev_idx: int = (i - 1) if i > 0 else (_focusable_controls.size() - 1)
+		var next_idx: int = (i + 1) % _focusable_controls.size()
 
-		var prev_control := _focusable_controls[prev_idx]
-		var next_control := _focusable_controls[next_idx]
+		var prev_control: Control = _focusable_controls[prev_idx]
+		var next_control: Control = _focusable_controls[next_idx]
 
 		current.focus_neighbor_top = current.get_path_to(prev_control)
 		current.focus_neighbor_bottom = current.get_path_to(next_control)
@@ -404,8 +433,8 @@ func _is_focusable(control: Control) -> bool:
 ## Apply focus indicator style to a control
 func _apply_focus_style(control: Control) -> void:
 	var settings := _get_settings_manager()
-	var high_contrast := settings.high_contrast if settings else false
-	var focus_indicators := settings.focus_indicators if settings else true
+	var high_contrast: bool = settings.high_contrast if settings else false
+	var focus_indicators: bool = settings.focus_indicators if settings else true
 
 	if not focus_indicators:
 		return
@@ -451,7 +480,7 @@ func get_focus_hint(control: Control) -> String:
 	if control is Button:
 		return Accessibility.button_hint(control.text)
 	if control is CheckBox or control is CheckButton:
-		var checked := control.button_pressed if control is CheckBox else (control as CheckButton).button_pressed
+		var checked: bool = control.button_pressed if control is CheckBox else (control as CheckButton).button_pressed
 		return Accessibility.checkbox_hint(control.text, checked)
 	if control is HSlider or control is VSlider:
 		var slider := control as Range
