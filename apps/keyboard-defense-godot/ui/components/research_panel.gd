@@ -80,7 +80,7 @@ func _create_current_research_display() -> Control:
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header.add_child(title)
 
-	var cancel_btn := BaseButton.ghost("Cancel", _on_cancel_pressed)
+	var cancel_btn := ButtonFactory.ghost("Cancel", _on_cancel_pressed)
 	cancel_btn.name = "CancelButton"
 	cancel_btn.visible = false
 	header.add_child(cancel_btn)

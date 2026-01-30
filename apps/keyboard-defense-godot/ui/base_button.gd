@@ -1,4 +1,4 @@
-class_name BaseButton
+class_name ButtonFactory
 extends RefCounted
 ## Factory class for creating consistently styled buttons.
 ## Provides button variants: primary, secondary, danger, ghost, success.
