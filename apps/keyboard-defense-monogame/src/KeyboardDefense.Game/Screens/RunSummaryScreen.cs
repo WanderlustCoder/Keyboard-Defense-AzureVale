@@ -18,6 +18,7 @@ public class RunSummaryScreen : GameScreen
     private readonly int _nodeIndex;
     private readonly string _nodeName;
     private readonly bool _returnToCampaignMapOnSummary;
+    private readonly string _verticalSliceProfileId;
     private Desktop? _desktop;
     private KeyboardState _prevKeyboard;
 
@@ -27,13 +28,15 @@ public class RunSummaryScreen : GameScreen
         bool isVictory,
         int nodeIndex = 0,
         string nodeName = "Vertical Slice",
-        bool returnToCampaignMapOnSummary = false)
+        bool returnToCampaignMapOnSummary = false,
+        string verticalSliceProfileId = "vertical_slice_default")
         : base(game, screenManager)
     {
         _isVictory = isVictory;
         _nodeIndex = nodeIndex;
         _nodeName = nodeName;
         _returnToCampaignMapOnSummary = returnToCampaignMapOnSummary;
+        _verticalSliceProfileId = verticalSliceProfileId;
     }
 
     public override void OnEnter()
@@ -279,7 +282,8 @@ public class RunSummaryScreen : GameScreen
                 _nodeIndex,
                 _nodeName,
                 singleWaveMode: true,
-                returnToCampaignMapOnSummary: true));
+                returnToCampaignMapOnSummary: true,
+                verticalSliceProfileId: _verticalSliceProfileId));
             return;
         }
 

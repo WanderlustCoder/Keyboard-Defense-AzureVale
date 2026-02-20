@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://keyboard-defense.local/schemas/vertical_slice_wave_profiles.schema.json",
+  "title": "Keyboard Defense Vertical Slice Wave Profiles",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "profiles",
+    "node_profiles"
+  ],
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "profiles": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "version",
+          "profile_id",
+          "description",
+          "start_state",
+          "wave"
+        ],
+        "properties": {
+          "version": {
+            "type": "string",
+            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+          },
+          "profile_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9_\\-]+$",
+            "minLength": 1
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1
+          },
+          "start_state": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "day",
+              "hp",
+              "gold",
+              "threat",
+              "lesson_id",
+              "practice_mode"
+            ],
+            "properties": {
+              "day": { "type": "integer", "minimum": 1 },
+              "hp": { "type": "integer", "minimum": 1 },
+              "gold": { "type": "integer", "minimum": 0 },
+              "threat": { "type": "integer", "minimum": 0 },
+              "lesson_id": { "type": "string", "minLength": 1 },
+              "practice_mode": { "type": "boolean" }
+            }
+          },
+          "wave": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "spawn_total",
+              "spawn_interval_sec",
+              "enemy_step_interval_sec",
+              "enemy_step_distance",
+              "enemy_contact_damage",
+              "typed_hit_damage",
+              "typed_miss_damage",
+              "tower_tick_damage"
+            ],
+            "properties": {
+              "spawn_total": { "type": "integer", "minimum": 1 },
+              "spawn_interval_sec": { "type": "number", "exclusiveMinimum": 0 },
+              "enemy_step_interval_sec": { "type": "number", "exclusiveMinimum": 0 },
+              "enemy_step_distance": { "type": "integer", "minimum": 1 },
+              "enemy_contact_damage": { "type": "integer", "minimum": 1 },
+              "typed_hit_damage": { "type": "integer", "minimum": 1 },
+              "typed_miss_damage": { "type": "integer", "minimum": 0 },
+              "tower_tick_damage": { "type": "integer", "minimum": 0 }
+            }
+          }
+        }
+      }
+    },
+    "node_profiles": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[a-z0-9_\\-]+$"
+      }
+    }
+  }
+}

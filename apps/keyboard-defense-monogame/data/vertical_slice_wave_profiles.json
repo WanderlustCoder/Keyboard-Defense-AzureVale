@@ -1,0 +1,83 @@
+{
+  "version": "1.0.0",
+  "profiles": [
+    {
+      "version": "1.0.0",
+      "profile_id": "campaign_intro",
+      "description": "Softer early-node profile for campaign onboarding.",
+      "start_state": {
+        "day": 1,
+        "hp": 22,
+        "gold": 12,
+        "threat": 0,
+        "lesson_id": "full_alpha",
+        "practice_mode": false
+      },
+      "wave": {
+        "spawn_total": 24,
+        "spawn_interval_sec": 2.7,
+        "enemy_step_interval_sec": 1.5,
+        "enemy_step_distance": 1,
+        "enemy_contact_damage": 1,
+        "typed_hit_damage": 2,
+        "typed_miss_damage": 1,
+        "tower_tick_damage": 1
+      }
+    },
+    {
+      "version": "1.0.0",
+      "profile_id": "campaign_elite",
+      "description": "Mid-map profile with stronger pressure and tighter timing.",
+      "start_state": {
+        "day": 1,
+        "hp": 20,
+        "gold": 10,
+        "threat": 1,
+        "lesson_id": "full_alpha",
+        "practice_mode": false
+      },
+      "wave": {
+        "spawn_total": 40,
+        "spawn_interval_sec": 2.2,
+        "enemy_step_interval_sec": 1.25,
+        "enemy_step_distance": 1,
+        "enemy_contact_damage": 1,
+        "typed_hit_damage": 2,
+        "typed_miss_damage": 1,
+        "tower_tick_damage": 1
+      }
+    },
+    {
+      "version": "1.0.0",
+      "profile_id": "campaign_boss",
+      "description": "Boss-path profile with high volume and harsher mistakes.",
+      "start_state": {
+        "day": 1,
+        "hp": 20,
+        "gold": 10,
+        "threat": 2,
+        "lesson_id": "full_alpha",
+        "practice_mode": false
+      },
+      "wave": {
+        "spawn_total": 52,
+        "spawn_interval_sec": 1.9,
+        "enemy_step_interval_sec": 1.1,
+        "enemy_step_distance": 1,
+        "enemy_contact_damage": 1,
+        "typed_hit_damage": 2,
+        "typed_miss_damage": 2,
+        "tower_tick_damage": 1
+      }
+    }
+  ],
+  "node_profiles": {
+    "forest-gate": "campaign_intro",
+    "whisper-grove": "campaign_intro",
+    "ember-bridge": "campaign_elite",
+    "citadel-rise": "campaign_elite",
+    "skywatch-pass": "campaign_elite",
+    "frost-crown": "campaign_boss",
+    "the-nexus": "campaign_boss"
+  }
+}

@@ -30,6 +30,7 @@ public class BattlefieldScreen : GameScreen
     private readonly string _nodeName;
     private readonly bool _singleWaveMode;
     private readonly bool _returnToCampaignMapOnSummary;
+    private readonly string _verticalSliceProfileId;
     private VerticalSliceWaveConfig? _verticalSliceConfig;
 
     private Desktop? _desktop;
@@ -85,13 +86,15 @@ public class BattlefieldScreen : GameScreen
         int nodeIndex,
         string nodeName,
         bool singleWaveMode = false,
-        bool returnToCampaignMapOnSummary = false)
+        bool returnToCampaignMapOnSummary = false,
+        string verticalSliceProfileId = "vertical_slice_default")
         : base(game, screenManager)
     {
         _nodeIndex = nodeIndex;
         _nodeName = nodeName;
         _singleWaveMode = singleWaveMode;
         _returnToCampaignMapOnSummary = returnToCampaignMapOnSummary;
+        _verticalSliceProfileId = verticalSliceProfileId;
     }
 
     public override void OnEnter()
@@ -124,7 +127,7 @@ public class BattlefieldScreen : GameScreen
 
         if (_singleWaveMode)
         {
-            var profile = VerticalSliceWaveData.Current;
+            var profile = VerticalSliceWaveData.GetProfile(_verticalSliceProfileId);
             _verticalSliceConfig = VerticalSliceWaveConfig.FromProfile(profile);
             var state = ctrl.State;
             state.Day = profile.StartDay;
@@ -135,7 +138,7 @@ public class BattlefieldScreen : GameScreen
             state.PracticeMode = profile.PracticeMode;
 
             AppendLog("Vertical Slice: survive one night wave.");
-            AppendLog($"Profile: {profile.ProfileId} ({profile.WaveSpawnTotal} enemies)");
+            AppendLog($"Profile: {_verticalSliceProfileId} ({profile.WaveSpawnTotal} enemies)");
             AppendLog("Controls: Enter submit, P pause/resume, R restart.");
             if (_verticalSliceConfig != null && ctrl.State.Phase == "day")
             {
@@ -620,7 +623,8 @@ public class BattlefieldScreen : GameScreen
                 _nodeIndex,
                 _nodeName,
                 singleWaveMode: true,
-                returnToCampaignMapOnSummary: _returnToCampaignMapOnSummary));
+                returnToCampaignMapOnSummary: _returnToCampaignMapOnSummary,
+                verticalSliceProfileId: _verticalSliceProfileId));
         });
     }
 
@@ -642,7 +646,8 @@ public class BattlefieldScreen : GameScreen
                     isVictory: false,
                     nodeIndex: _nodeIndex,
                     nodeName: _nodeName,
-                    returnToCampaignMapOnSummary: _returnToCampaignMapOnSummary));
+                    returnToCampaignMapOnSummary: _returnToCampaignMapOnSummary,
+                    verticalSliceProfileId: _verticalSliceProfileId));
                 return;
             }
 
@@ -660,7 +665,8 @@ public class BattlefieldScreen : GameScreen
                     isVictory: true,
                     nodeIndex: _nodeIndex,
                     nodeName: _nodeName,
-                    returnToCampaignMapOnSummary: _returnToCampaignMapOnSummary));
+                    returnToCampaignMapOnSummary: _returnToCampaignMapOnSummary,
+                    verticalSliceProfileId: _verticalSliceProfileId));
                 return;
             }
         }

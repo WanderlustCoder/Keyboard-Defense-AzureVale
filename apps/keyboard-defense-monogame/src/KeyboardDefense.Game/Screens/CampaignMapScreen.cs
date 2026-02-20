@@ -377,6 +377,7 @@ public class CampaignMapScreen : GameScreen
     {
         SceneTransition.Instance.BattleTransition(() =>
         {
+            string profileId = VerticalSliceWaveData.ResolveProfileIdForNode(node.Id);
             GameController.Instance.NewGame($"campaign_{node.Id}_{DateTime.Now.Ticks}");
             ScreenManager.Push(new BattlefieldScreen(
                 Game,
@@ -384,7 +385,8 @@ public class CampaignMapScreen : GameScreen
                 0,
                 node.Label,
                 singleWaveMode: true,
-                returnToCampaignMapOnSummary: true));
+                returnToCampaignMapOnSummary: true,
+                verticalSliceProfileId: profileId));
         });
     }
 

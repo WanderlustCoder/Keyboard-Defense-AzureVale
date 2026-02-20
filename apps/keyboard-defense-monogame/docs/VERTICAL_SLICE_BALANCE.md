@@ -8,6 +8,7 @@ single-wave loop (`Start Vertical Slice`).
 Primary config source:
 
 - `apps/keyboard-defense-monogame/data/vertical_slice_wave.json`
+- `apps/keyboard-defense-monogame/data/vertical_slice_wave_profiles.json`
 
 ## Baseline Constants
 
@@ -30,6 +31,17 @@ Start state defaults:
 - `threat`: `0`
 - `lesson_id`: `full_alpha`
 - `practice_mode`: `false`
+
+## Node-Specific Profiles
+
+Campaign nodes can use profile overrides resolved by node ID:
+
+- Explicit mapping from `node_profiles` in `vertical_slice_wave_profiles.json`
+- Fallback heuristic (when explicit mapping missing):
+  - IDs containing `boss` -> `campaign_boss` (if present)
+  - IDs containing `elite` -> `campaign_elite` (if present)
+  - IDs containing `intro`/`start`/`gate` -> `campaign_intro` (if present)
+  - otherwise `vertical_slice_default`
 
 ## Score Formula (Current)
 

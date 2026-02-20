@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json.Linq;
 
@@ -10,15 +11,89 @@ namespace KeyboardDefense.Core.Data;
 /// </summary>
 public static class VerticalSliceWaveData
 {
-    private static VerticalSliceWaveProfile _profile = VerticalSliceWaveProfile.CreateDefault();
+    private const string DefaultProfileId = "vertical_slice_default";
+    private static Dictionary<string, VerticalSliceWaveProfile> _profiles =
+        new(StringComparer.OrdinalIgnoreCase)
+        {
+            [DefaultProfileId] = VerticalSliceWaveProfile.CreateDefault(),
+        };
+    private static Dictionary<string, string> _nodeProfiles =
+        new(StringComparer.OrdinalIgnoreCase);
 
-    public static VerticalSliceWaveProfile Current => _profile;
+    public static VerticalSliceWaveProfile Current => GetProfile(DefaultProfileId);
 
     public static void LoadData(string dataDir)
     {
-        _profile = VerticalSliceWaveProfile.CreateDefault();
+        _profiles = new Dictionary<string, VerticalSliceWaveProfile>(StringComparer.OrdinalIgnoreCase)
+        {
+            [DefaultProfileId] = VerticalSliceWaveProfile.CreateDefault(),
+        };
+        _nodeProfiles = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         var path = Path.Combine(dataDir, "vertical_slice_wave.json");
+        if (File.Exists(path))
+        {
+            try
+            {
+                var text = File.ReadAllText(path);
+                var root = JObject.Parse(text);
+                var parsed = ParseAndValidate(root, _profiles[DefaultProfileId]);
+                string key = string.IsNullOrWhiteSpace(parsed.ProfileId) ? DefaultProfileId : parsed.ProfileId;
+                _profiles[key] = parsed;
+                if (!string.Equals(key, DefaultProfileId, StringComparison.OrdinalIgnoreCase))
+                    _profiles[DefaultProfileId] = parsed with { ProfileId = DefaultProfileId };
+            }
+            catch
+            {
+                _profiles[DefaultProfileId] = VerticalSliceWaveProfile.CreateDefault();
+            }
+        }
+
+        LoadProfileCollection(dataDir);
+    }
+
+    public static VerticalSliceWaveProfile GetProfile(string? profileId)
+    {
+        if (string.IsNullOrWhiteSpace(profileId))
+            return _profiles[DefaultProfileId];
+
+        string key = profileId.Trim();
+        if (_profiles.TryGetValue(key, out var profile))
+            return profile;
+
+        return _profiles[DefaultProfileId];
+    }
+
+    public static string ResolveProfileIdForNode(string nodeId)
+    {
+        if (!string.IsNullOrWhiteSpace(nodeId))
+        {
+            string key = nodeId.Trim();
+            if (_nodeProfiles.TryGetValue(key, out string? explicitProfile) &&
+                _profiles.ContainsKey(explicitProfile))
+            {
+                return explicitProfile;
+            }
+
+            string lowered = key.ToLowerInvariant();
+            if (lowered.Contains("boss", StringComparison.Ordinal))
+                return _profiles.ContainsKey("campaign_boss") ? "campaign_boss" : DefaultProfileId;
+            if (lowered.Contains("elite", StringComparison.Ordinal))
+                return _profiles.ContainsKey("campaign_elite") ? "campaign_elite" : DefaultProfileId;
+            if (lowered.Contains("intro", StringComparison.Ordinal) ||
+                lowered.Contains("start", StringComparison.Ordinal) ||
+                lowered.Contains("gate", StringComparison.Ordinal))
+            {
+                return _profiles.ContainsKey("campaign_intro") ? "campaign_intro" : DefaultProfileId;
+            }
+        }
+
+        return DefaultProfileId;
+    }
+
+    private static void LoadProfileCollection(string dataDir)
+    {
+        var path = Path.Combine(dataDir, "vertical_slice_wave_profiles.json");
         if (!File.Exists(path))
             return;
 
@@ -26,11 +101,36 @@ public static class VerticalSliceWaveData
         {
             var text = File.ReadAllText(path);
             var root = JObject.Parse(text);
-            _profile = ParseAndValidate(root, _profile);
+
+            if (root["profiles"] is JArray profilesArray)
+            {
+                foreach (var token in profilesArray)
+                {
+                    if (token is not JObject profileObj)
+                        continue;
+
+                    var parsed = ParseAndValidate(profileObj, _profiles[DefaultProfileId]);
+                    if (string.IsNullOrWhiteSpace(parsed.ProfileId))
+                        continue;
+                    _profiles[parsed.ProfileId] = parsed;
+                }
+            }
+
+            if (root["node_profiles"] is JObject nodeProfilesObj)
+            {
+                foreach (var prop in nodeProfilesObj.Properties())
+                {
+                    string nodeId = prop.Name?.Trim() ?? "";
+                    string profileId = prop.Value?.ToString()?.Trim() ?? "";
+                    if (string.IsNullOrEmpty(nodeId) || string.IsNullOrEmpty(profileId))
+                        continue;
+                    _nodeProfiles[nodeId] = profileId;
+                }
+            }
         }
         catch
         {
-            _profile = VerticalSliceWaveProfile.CreateDefault();
+            // Keep whatever valid profiles were already loaded.
         }
     }
 
@@ -125,7 +225,7 @@ public static class VerticalSliceWaveData
     }
 }
 
-public sealed class VerticalSliceWaveProfile
+public sealed record VerticalSliceWaveProfile
 {
     public string Version { get; init; } = "1.0.0";
     public string ProfileId { get; init; } = "vertical_slice_default";
