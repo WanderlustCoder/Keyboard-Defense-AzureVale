@@ -7,6 +7,7 @@
 - `docs/MONOGAME_CAMPAIGN_M1_PLAN.md` - Completed campaign progression milestone backlog after vertical-slice completion.
 - `docs/MONOGAME_CAMPAIGN_M2_PLAN.md` - Completed campaign hardening milestone for summary safety and retry consistency.
 - `docs/MONOGAME_CAMPAIGN_M3_PLAN.md` - Completed campaign map readability and node-inspection milestone.
+- `docs/MONOGAME_CAMPAIGN_M4_PLAN.md` - Active campaign map selection-summary and inspection-parity milestone.
 - `apps/keyboard-defense-monogame/KeyboardDefense.sln` - MonoGame solution entrypoint.
 - `apps/keyboard-defense-monogame/src/KeyboardDefense.Core/` - Deterministic simulation/domain logic.
 - `apps/keyboard-defense-monogame/src/KeyboardDefense.Game/` - Runtime game/render/input layer.

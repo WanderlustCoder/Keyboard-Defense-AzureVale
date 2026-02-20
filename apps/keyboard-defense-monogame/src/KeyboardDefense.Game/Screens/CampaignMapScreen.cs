@@ -529,6 +529,7 @@ public class CampaignMapScreen : GameScreen
             }
         }
 
+        DrawSelectionSummaryStrip(spriteBatch, font, prog, vp);
         DrawMapLegend(spriteBatch, font, vp);
         string? inspectedNode = !string.IsNullOrEmpty(_hoveredNode) ? _hoveredNode : _focusedNodeId;
         bool keyboardInspection = string.IsNullOrEmpty(_hoveredNode) && !string.IsNullOrEmpty(_focusedNodeId);
@@ -541,6 +542,62 @@ public class CampaignMapScreen : GameScreen
 
         // Transition overlay
         SceneTransition.Instance.Draw(spriteBatch, new Rectangle(0, 0, vp.Width, vp.Height));
+    }
+
+    private void DrawSelectionSummaryStrip(
+        SpriteBatch spriteBatch,
+        SpriteFont font,
+        ProgressionState progression,
+        Viewport viewport)
+    {
+        if (_pixel == null)
+            return;
+
+        int stripWidth = Math.Min(viewport.Width - 32, 860);
+        if (stripWidth < 220)
+            return;
+
+        var stripRect = new Rectangle(16, 56, stripWidth, 28);
+        spriteBatch.Draw(_pixel, stripRect, new Color(10, 14, 22, 220));
+        DrawRectOutline(spriteBatch, stripRect, ThemeColors.Border, 2);
+
+        string? inspectedNodeId = !string.IsNullOrEmpty(_hoveredNode) ? _hoveredNode : _focusedNodeId;
+        string text;
+        Color textColor = ThemeColors.TextDim;
+        if (inspectedNodeId != null && _nodeMap.TryGetValue(inspectedNodeId, out var node))
+        {
+            bool completed = progression.IsNodeCompleted(node.Id);
+            bool unlocked = progression.IsNodeUnlocked(node.Id, node.Requires);
+            string status = completed ? "Cleared" : unlocked ? "Ready" : "Locked";
+            string rewardState = node.RewardGold <= 0
+                ? "Reward: none"
+                : completed
+                    ? $"Reward: +{node.RewardGold}g claimed"
+                    : $"Reward: +{node.RewardGold}g available";
+            string profileId = VerticalSliceWaveData.ResolveProfileIdForNode(node.Id);
+            string inspectionMode = !string.IsNullOrEmpty(_hoveredNode) ? "Mouse" : "Keyboard";
+            text =
+                $"Inspect [{inspectionMode}] {node.Label} | {status} | {rewardState} | Profile: {profileId}";
+            textColor = unlocked ? ThemeColors.Text : ThemeColors.TextDim;
+        }
+        else
+        {
+            text = "Inspect a node (hover or Tab/Shift+Tab) to preview status, reward, and wave profile.";
+        }
+
+        float scale = Math.Min(
+            0.5f,
+            (stripRect.Width - 14) / Math.Max(1f, font.MeasureString(text).X));
+        spriteBatch.DrawString(
+            font,
+            text,
+            new Vector2(stripRect.X + 7, stripRect.Y + 7),
+            textColor,
+            0f,
+            Vector2.Zero,
+            scale,
+            SpriteEffects.None,
+            0f);
     }
 
     private void DrawMapLegend(SpriteBatch spriteBatch, SpriteFont font, Viewport viewport)
