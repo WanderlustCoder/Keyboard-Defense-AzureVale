@@ -28,6 +28,11 @@ public class RunSummaryScreen : GameScreen
     {
         var report = SessionAnalytics.Instance.GetReport();
         var verticalSliceSummary = TryGetVerticalSliceSummary();
+        if (verticalSliceSummary != null)
+            VerticalSliceProfileService.RecordRun(
+                verticalSliceSummary.Result,
+                verticalSliceSummary.Score,
+                verticalSliceSummary.ElapsedSeconds);
         BuildUi(report, verticalSliceSummary);
     }
 

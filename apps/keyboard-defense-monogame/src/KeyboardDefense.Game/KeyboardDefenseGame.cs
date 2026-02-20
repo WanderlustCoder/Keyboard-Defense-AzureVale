@@ -52,6 +52,7 @@ public class KeyboardDefenseGame : Microsoft.Xna.Framework.Game
         _settingsManager = new SettingsManager();
         _settingsManager.LoadSettings();
         KeybindManager.Instance.Load();
+        VerticalSliceProfileService.Load();
 
         // Load all JSON data files (buildings, lessons, factions, events, POIs, translations)
         DataLoader.LoadAll();

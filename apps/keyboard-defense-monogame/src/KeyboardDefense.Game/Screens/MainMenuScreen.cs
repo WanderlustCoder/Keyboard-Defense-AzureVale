@@ -92,6 +92,16 @@ public class MainMenuScreen : GameScreen
             });
         };
         vbox.Widgets.Add(verticalSliceButton);
+        var verticalSliceProfile = VerticalSliceProfileService.Current;
+        vbox.Widgets.Add(new Label
+        {
+            Text =
+                $"Slice Runs: {verticalSliceProfile.RunsPlayed}  " +
+                $"Last Score: {verticalSliceProfile.LastScore}  " +
+                $"Best: {verticalSliceProfile.BestScore}",
+            TextColor = ThemeColors.TextDim,
+            HorizontalAlignment = HorizontalAlignment.Center,
+        });
 
         var campaignButton = CreateMenuButton(Locale.Tr("menu.campaign"));
         campaignButton.Click += (_, _) =>
