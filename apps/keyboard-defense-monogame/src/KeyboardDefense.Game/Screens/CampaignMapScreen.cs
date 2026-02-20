@@ -386,7 +386,9 @@ public class CampaignMapScreen : GameScreen
                 node.Label,
                 singleWaveMode: true,
                 returnToCampaignMapOnSummary: true,
-                verticalSliceProfileId: profileId));
+                verticalSliceProfileId: profileId,
+                campaignNodeId: node.Id,
+                campaignNodeRewardGold: node.RewardGold));
         });
     }
 

@@ -19,6 +19,8 @@ public class RunSummaryScreen : GameScreen
     private readonly string _nodeName;
     private readonly bool _returnToCampaignMapOnSummary;
     private readonly string _verticalSliceProfileId;
+    private readonly string _campaignNodeId;
+    private readonly int _campaignNodeRewardGold;
     private Desktop? _desktop;
     private KeyboardState _prevKeyboard;
 
@@ -29,7 +31,9 @@ public class RunSummaryScreen : GameScreen
         int nodeIndex = 0,
         string nodeName = "Vertical Slice",
         bool returnToCampaignMapOnSummary = false,
-        string verticalSliceProfileId = "vertical_slice_default")
+        string verticalSliceProfileId = "vertical_slice_default",
+        string campaignNodeId = "",
+        int campaignNodeRewardGold = 0)
         : base(game, screenManager)
     {
         _isVictory = isVictory;
@@ -37,6 +41,8 @@ public class RunSummaryScreen : GameScreen
         _nodeName = nodeName;
         _returnToCampaignMapOnSummary = returnToCampaignMapOnSummary;
         _verticalSliceProfileId = verticalSliceProfileId;
+        _campaignNodeId = campaignNodeId ?? "";
+        _campaignNodeRewardGold = Math.Max(0, campaignNodeRewardGold);
     }
 
     public override void OnEnter()
@@ -48,7 +54,26 @@ public class RunSummaryScreen : GameScreen
                 verticalSliceSummary.Result,
                 verticalSliceSummary.Score,
                 verticalSliceSummary.ElapsedSeconds);
+        ApplyCampaignProgression(report, verticalSliceSummary);
         BuildUi(report, verticalSliceSummary);
+    }
+
+    private void ApplyCampaignProgression(SessionReport report, VerticalSliceSummary? verticalSliceSummary)
+    {
+        var state = GameController.Instance.State;
+        int wordsTyped = verticalSliceSummary?.WordsTyped ?? report.WordsTyped;
+        int enemiesDefeated = verticalSliceSummary?.EnemiesDefeated ?? state.EnemiesDefeated;
+        CampaignProgressionService.ApplySingleWaveOutcome(
+            ProgressionState.Instance,
+            _returnToCampaignMapOnSummary,
+            _isVictory,
+            _campaignNodeId,
+            _campaignNodeRewardGold,
+            state.Day,
+            enemiesDefeated,
+            wordsTyped,
+            report.WordsPerMinute,
+            report.AccuracyRate);
     }
 
     private void BuildUi(SessionReport report, VerticalSliceSummary? verticalSliceSummary)
@@ -283,7 +308,9 @@ public class RunSummaryScreen : GameScreen
                 _nodeName,
                 singleWaveMode: true,
                 returnToCampaignMapOnSummary: true,
-                verticalSliceProfileId: _verticalSliceProfileId));
+                verticalSliceProfileId: _verticalSliceProfileId,
+                campaignNodeId: _campaignNodeId,
+                campaignNodeRewardGold: _campaignNodeRewardGold));
             return;
         }
 

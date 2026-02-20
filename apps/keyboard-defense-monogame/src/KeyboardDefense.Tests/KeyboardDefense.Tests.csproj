@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\KeyboardDefense.Core\KeyboardDefense.Core.csproj" />
+    <ProjectReference Include="..\KeyboardDefense.Game\KeyboardDefense.Game.csproj" />
   </ItemGroup>
 
 </Project>

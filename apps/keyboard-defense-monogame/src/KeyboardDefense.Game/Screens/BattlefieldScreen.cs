@@ -31,6 +31,8 @@ public class BattlefieldScreen : GameScreen
     private readonly bool _singleWaveMode;
     private readonly bool _returnToCampaignMapOnSummary;
     private readonly string _verticalSliceProfileId;
+    private readonly string _campaignNodeId;
+    private readonly int _campaignNodeRewardGold;
     private VerticalSliceWaveConfig? _verticalSliceConfig;
 
     private Desktop? _desktop;
@@ -87,7 +89,9 @@ public class BattlefieldScreen : GameScreen
         string nodeName,
         bool singleWaveMode = false,
         bool returnToCampaignMapOnSummary = false,
-        string verticalSliceProfileId = "vertical_slice_default")
+        string verticalSliceProfileId = "vertical_slice_default",
+        string campaignNodeId = "",
+        int campaignNodeRewardGold = 0)
         : base(game, screenManager)
     {
         _nodeIndex = nodeIndex;
@@ -95,6 +99,8 @@ public class BattlefieldScreen : GameScreen
         _singleWaveMode = singleWaveMode;
         _returnToCampaignMapOnSummary = returnToCampaignMapOnSummary;
         _verticalSliceProfileId = verticalSliceProfileId;
+        _campaignNodeId = campaignNodeId ?? "";
+        _campaignNodeRewardGold = Math.Max(0, campaignNodeRewardGold);
     }
 
     public override void OnEnter()
@@ -624,7 +630,9 @@ public class BattlefieldScreen : GameScreen
                 _nodeName,
                 singleWaveMode: true,
                 returnToCampaignMapOnSummary: _returnToCampaignMapOnSummary,
-                verticalSliceProfileId: _verticalSliceProfileId));
+                verticalSliceProfileId: _verticalSliceProfileId,
+                campaignNodeId: _campaignNodeId,
+                campaignNodeRewardGold: _campaignNodeRewardGold));
         });
     }
 
@@ -647,7 +655,9 @@ public class BattlefieldScreen : GameScreen
                     nodeIndex: _nodeIndex,
                     nodeName: _nodeName,
                     returnToCampaignMapOnSummary: _returnToCampaignMapOnSummary,
-                    verticalSliceProfileId: _verticalSliceProfileId));
+                    verticalSliceProfileId: _verticalSliceProfileId,
+                    campaignNodeId: _campaignNodeId,
+                    campaignNodeRewardGold: _campaignNodeRewardGold));
                 return;
             }
 
@@ -666,7 +676,9 @@ public class BattlefieldScreen : GameScreen
                     nodeIndex: _nodeIndex,
                     nodeName: _nodeName,
                     returnToCampaignMapOnSummary: _returnToCampaignMapOnSummary,
-                    verticalSliceProfileId: _verticalSliceProfileId));
+                    verticalSliceProfileId: _verticalSliceProfileId,
+                    campaignNodeId: _campaignNodeId,
+                    campaignNodeRewardGold: _campaignNodeRewardGold));
                 return;
             }
         }
