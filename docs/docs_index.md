@@ -11,7 +11,8 @@
 - `docs/MONOGAME_CAMPAIGN_M5_PLAN.md` - Completed campaign traversal and keyboard accessibility consistency milestone.
 - `docs/MONOGAME_CAMPAIGN_M6_PLAN.md` - Completed campaign onboarding and launch/return-flow clarity milestone.
 - `docs/MONOGAME_CAMPAIGN_M7_PLAN.md` - Completed campaign release-hardening and playtest-readiness milestone.
-- `docs/MONOGAME_CAMPAIGN_M8_PLAN.md` - Active campaign pre-release polish and launch-readiness milestone.
+- `docs/MONOGAME_CAMPAIGN_M8_PLAN.md` - Completed campaign pre-release polish and launch-readiness milestone.
+- `docs/CAMPAIGN_RELEASE_NOTES_M1_M8_DRAFT.md` - Draft release notes summary covering campaign milestones, validation baselines, and RC artifacts.
 - `apps/keyboard-defense-monogame/KeyboardDefense.sln` - MonoGame solution entrypoint.
 - `apps/keyboard-defense-monogame/src/KeyboardDefense.Core/` - Deterministic simulation/domain logic.
 - `apps/keyboard-defense-monogame/src/KeyboardDefense.Game/` - Runtime game/render/input layer.

@@ -487,7 +487,10 @@ public class CampaignMapScreen : GameScreen
         // Escape to go back
         if (kb.IsKeyDown(Keys.Escape) && !_prevKeyboard.IsKeyDown(Keys.Escape))
         {
-            SceneTransition.Instance.MenuTransition(() => ScreenManager.Pop());
+            if (HasPendingLaunchConfirmation())
+                _launchFlow.Clear();
+            else
+                SceneTransition.Instance.MenuTransition(() => ScreenManager.Pop());
         }
 
         _prevMouse = mouse;
@@ -682,6 +685,7 @@ public class CampaignMapScreen : GameScreen
         }
 
         DrawSelectionSummaryStrip(spriteBatch, font, prog, vp);
+        DrawLaunchConfirmationBanner(spriteBatch, font, vp);
         DrawReturnContextBanner(spriteBatch, font, vp);
         DrawMapLegend(spriteBatch, font, vp);
         string? inspectedNode = !string.IsNullOrEmpty(_hoveredNode) ? _hoveredNode : _focusedNodeId;
@@ -770,7 +774,7 @@ public class CampaignMapScreen : GameScreen
             return;
 
         string traversalMode = GetKeyboardTraversalModeLabel();
-        var panelRect = new Rectangle(16, viewport.Height - 180, 520, 162);
+        var panelRect = new Rectangle(16, viewport.Height - 196, 540, 178);
         spriteBatch.Draw(_pixel, panelRect, new Color(12, 12, 18, 220));
         DrawRectOutline(spriteBatch, panelRect, ThemeColors.Border, 2);
 
@@ -870,6 +874,48 @@ public class CampaignMapScreen : GameScreen
             0f,
             Vector2.Zero,
             0.46f,
+            SpriteEffects.None,
+            0f);
+
+        spriteBatch.DrawString(
+            font,
+            "Esc: cancel pending launch (or back if none pending)",
+            new Vector2(panelRect.X + 10, panelRect.Y + 162),
+            ThemeColors.TextDim,
+            0f,
+            Vector2.Zero,
+            0.46f,
+            SpriteEffects.None,
+            0f);
+    }
+
+    private void DrawLaunchConfirmationBanner(SpriteBatch spriteBatch, SpriteFont font, Viewport viewport)
+    {
+        if (_pixel == null || !HasPendingLaunchConfirmation() || _launchFlow.PendingNodeId == null)
+            return;
+
+        string pendingNodeId = _launchFlow.PendingNodeId;
+        string nodeLabel = _nodeMap.TryGetValue(pendingNodeId, out var node) ? node.Label : pendingNodeId;
+        string text =
+            $"Launch pending: {nodeLabel}. Enter again to launch ({_launchFlow.PendingSecondsRemaining:0.0}s) | Esc cancels";
+
+        int width = Math.Min(viewport.Width - 32, 860);
+        if (width < 260)
+            return;
+        int x = (viewport.Width - width) / 2;
+        var rect = new Rectangle(x, 118, width, 30);
+
+        spriteBatch.Draw(_pixel, rect, new Color(28, 18, 10, 228));
+        DrawRectOutline(spriteBatch, rect, ThemeColors.Warning, 2);
+        float scale = Math.Min(0.5f, (rect.Width - 14) / Math.Max(1f, font.MeasureString(text).X));
+        spriteBatch.DrawString(
+            font,
+            text,
+            new Vector2(rect.X + 7, rect.Y + 8),
+            ThemeColors.Warning,
+            0f,
+            Vector2.Zero,
+            scale,
             SpriteEffects.None,
             0f);
     }
@@ -1188,6 +1234,12 @@ public class CampaignMapScreen : GameScreen
             CampaignProgressionService.CampaignOutcomeTone.Warning => ThemeColors.Warning,
             _ => ThemeColors.Text,
         };
+    }
+
+    private bool HasPendingLaunchConfirmation()
+    {
+        return !string.IsNullOrWhiteSpace(_launchFlow.PendingNodeId) &&
+            _launchFlow.PendingSecondsRemaining > 0f;
     }
 
     private void StepKeyboardFocusDirectional(int dirX, int dirY)
