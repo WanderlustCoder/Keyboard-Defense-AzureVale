@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "generated_utc": "2026-02-20T16:44:48Z",
+  "generated_utc": "2026-02-20T17:02:49Z",
   "assets": [
     {
       "id": "bld_barracks",
@@ -93,7 +93,7 @@
         "provider": "manual",
         "artifact_type": "other",
         "artifact_id": "runtime:bld_farm",
-        "exported_utc": "2026-02-20T16:44:48Z"
+        "exported_utc": "2026-02-20T17:02:49Z"
       },
       "constraints": {
         "max_kb": 96,
@@ -175,7 +175,7 @@
         "provider": "manual",
         "artifact_type": "other",
         "artifact_id": "runtime:bld_market",
-        "exported_utc": "2026-02-20T16:44:48Z"
+        "exported_utc": "2026-02-20T17:02:49Z"
       },
       "constraints": {
         "max_kb": 96,
@@ -257,7 +257,7 @@
         "provider": "manual",
         "artifact_type": "other",
         "artifact_id": "runtime:bld_tower_fire",
-        "exported_utc": "2026-02-20T16:44:48Z"
+        "exported_utc": "2026-02-20T17:02:49Z"
       },
       "constraints": {
         "max_kb": 96,
@@ -381,7 +381,7 @@
         "provider": "manual",
         "artifact_type": "other",
         "artifact_id": "runtime:enemy_armored",
-        "exported_utc": "2026-02-20T16:44:48Z"
+        "exported_utc": "2026-02-20T17:02:49Z"
       },
       "constraints": {
         "max_kb": 96,
@@ -629,7 +629,7 @@
         "provider": "manual",
         "artifact_type": "other",
         "artifact_id": "runtime:enemy_champion",
-        "exported_utc": "2026-02-20T16:44:48Z"
+        "exported_utc": "2026-02-20T17:02:49Z"
       },
       "constraints": {
         "max_kb": 96,
@@ -677,7 +677,7 @@
         "provider": "manual",
         "artifact_type": "other",
         "artifact_id": "runtime:enemy_elite",
-        "exported_utc": "2026-02-20T16:44:48Z"
+        "exported_utc": "2026-02-20T17:02:49Z"
       },
       "constraints": {
         "max_kb": 96,
@@ -725,7 +725,7 @@
         "provider": "manual",
         "artifact_type": "other",
         "artifact_id": "runtime:enemy_fen_seer",
-        "exported_utc": "2026-02-20T16:44:48Z"
+        "exported_utc": "2026-02-20T17:02:49Z"
       },
       "constraints": {
         "max_kb": 96,
@@ -823,7 +823,7 @@
         "provider": "manual",
         "artifact_type": "other",
         "artifact_id": "runtime:enemy_forest_guardian",
-        "exported_utc": "2026-02-20T16:44:48Z"
+        "exported_utc": "2026-02-20T17:02:49Z"
       },
       "constraints": {
         "max_kb": 96,
@@ -921,7 +921,7 @@
         "provider": "manual",
         "artifact_type": "other",
         "artifact_id": "runtime:enemy_phantom",
-        "exported_utc": "2026-02-20T16:44:48Z"
+        "exported_utc": "2026-02-20T17:02:49Z"
       },
       "constraints": {
         "max_kb": 96,
@@ -1069,7 +1069,7 @@
         "provider": "manual",
         "artifact_type": "other",
         "artifact_id": "runtime:enemy_scout",
-        "exported_utc": "2026-02-20T16:44:48Z"
+        "exported_utc": "2026-02-20T17:02:49Z"
       },
       "constraints": {
         "max_kb": 96,
@@ -1167,7 +1167,7 @@
         "provider": "manual",
         "artifact_type": "other",
         "artifact_id": "runtime:enemy_stone_golem",
-        "exported_utc": "2026-02-20T16:44:48Z"
+        "exported_utc": "2026-02-20T17:02:49Z"
       },
       "constraints": {
         "max_kb": 96,
@@ -1215,7 +1215,7 @@
         "provider": "manual",
         "artifact_type": "other",
         "artifact_id": "runtime:enemy_sunlord",
-        "exported_utc": "2026-02-20T16:44:48Z"
+        "exported_utc": "2026-02-20T17:02:49Z"
       },
       "constraints": {
         "max_kb": 96,
@@ -1313,7 +1313,7 @@
         "provider": "manual",
         "artifact_type": "other",
         "artifact_id": "runtime:enemy_tank",
-        "exported_utc": "2026-02-20T16:44:48Z"
+        "exported_utc": "2026-02-20T17:02:49Z"
       },
       "constraints": {
         "max_kb": 96,
@@ -1361,7 +1361,7 @@
         "provider": "manual",
         "artifact_type": "other",
         "artifact_id": "runtime:ico_food",
-        "exported_utc": "2026-02-20T16:44:48Z"
+        "exported_utc": "2026-02-20T17:02:49Z"
       },
       "constraints": {
         "max_kb": 8,
@@ -1409,7 +1409,7 @@
         "provider": "manual",
         "artifact_type": "other",
         "artifact_id": "runtime:ico_hp",
-        "exported_utc": "2026-02-20T16:44:48Z"
+        "exported_utc": "2026-02-20T17:02:49Z"
       },
       "constraints": {
         "max_kb": 8,
@@ -1432,7 +1432,7 @@
         "provider": "manual",
         "artifact_type": "other",
         "artifact_id": "runtime:ico_shield",
-        "exported_utc": "2026-02-20T16:44:48Z"
+        "exported_utc": "2026-02-20T17:02:49Z"
       },
       "constraints": {
         "max_kb": 8,
@@ -1455,7 +1455,7 @@
         "provider": "manual",
         "artifact_type": "other",
         "artifact_id": "runtime:ico_stone",
-        "exported_utc": "2026-02-20T16:44:48Z"
+        "exported_utc": "2026-02-20T17:02:49Z"
       },
       "constraints": {
         "max_kb": 8,
@@ -1478,7 +1478,7 @@
         "provider": "manual",
         "artifact_type": "other",
         "artifact_id": "runtime:ico_sword",
-        "exported_utc": "2026-02-20T16:44:48Z"
+        "exported_utc": "2026-02-20T17:02:49Z"
       },
       "constraints": {
         "max_kb": 8,
@@ -1526,7 +1526,7 @@
         "provider": "manual",
         "artifact_type": "other",
         "artifact_id": "runtime:ico_wood",
-        "exported_utc": "2026-02-20T16:44:48Z"
+        "exported_utc": "2026-02-20T17:02:49Z"
       },
       "constraints": {
         "max_kb": 8,
@@ -1549,7 +1549,7 @@
         "provider": "manual",
         "artifact_type": "other",
         "artifact_id": "runtime:tile_desert",
-        "exported_utc": "2026-02-20T16:44:48Z"
+        "exported_utc": "2026-02-20T17:02:49Z"
       },
       "constraints": {
         "max_kb": 48,
@@ -1572,7 +1572,7 @@
         "provider": "manual",
         "artifact_type": "other",
         "artifact_id": "runtime:tile_forest",
-        "exported_utc": "2026-02-20T16:44:48Z"
+        "exported_utc": "2026-02-20T17:02:49Z"
       },
       "constraints": {
         "max_kb": 48,
@@ -1595,7 +1595,7 @@
         "provider": "manual",
         "artifact_type": "other",
         "artifact_id": "runtime:tile_mountain",
-        "exported_utc": "2026-02-20T16:44:48Z"
+        "exported_utc": "2026-02-20T17:02:49Z"
       },
       "constraints": {
         "max_kb": 48,
@@ -1618,7 +1618,7 @@
         "provider": "manual",
         "artifact_type": "other",
         "artifact_id": "runtime:tile_plain",
-        "exported_utc": "2026-02-20T16:44:48Z"
+        "exported_utc": "2026-02-20T17:02:49Z"
       },
       "constraints": {
         "max_kb": 48,
@@ -1641,7 +1641,7 @@
         "provider": "manual",
         "artifact_type": "other",
         "artifact_id": "runtime:tile_road",
-        "exported_utc": "2026-02-20T16:44:48Z"
+        "exported_utc": "2026-02-20T17:02:49Z"
       },
       "constraints": {
         "max_kb": 48,

@@ -36,31 +36,17 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Validate Pixel Lab catalog manifest
+      - name: Run Pixel Lab manifest pipeline
         run: >
-          python tools/pixel_lab/validate_manifest.py
-          --manifest data/pixel_lab_manifest.catalog.json
-          --schema data/schemas/pixel_lab_manifest.schema.json
+          python tools/pixel_lab/run_pipeline.py
+          --report artifacts/summaries/pixel-lab-pipeline.json
 
-      - name: Validate Pixel Lab active runtime manifest
+      - name: Gate Pixel Lab generated file drift
         run: >
-          python tools/pixel_lab/validate_manifest.py
-          --manifest data/pixel_lab_manifest.active_runtime.json
-          --schema data/schemas/pixel_lab_manifest.schema.json
-          --textures-root Content/Textures
-          --check-files
-
-      - name: Gate active runtime subset against catalog
-        run: >
-          python tools/pixel_lab/verify_active_in_catalog.py
-          --catalog data/pixel_lab_manifest.catalog.json
-          --active data/pixel_lab_manifest.active_runtime.json
-
-      - name: Build runtime texture manifest from active runtime contract
-        run: >
-          python tools/pixel_lab/build_texture_manifest.py
-          --manifest data/pixel_lab_manifest.active_runtime.json
-          --out src/KeyboardDefense.Game/Content/Textures/texture_manifest.pixel_lab.json
+          git diff --exit-code --
+          data/pixel_lab_manifest.catalog.json
+          data/pixel_lab_manifest.active_runtime.json
+          src/KeyboardDefense.Game/Content/Textures/texture_manifest.pixel_lab.json
 
       - name: Restore dependencies
         run: dotnet restore
@@ -70,3 +56,11 @@ jobs:
 
       - name: Test
         run: dotnet test --no-build --configuration Release --verbosity normal
+
+      - name: Upload Pixel Lab pipeline report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pixel-lab-pipeline-${{ matrix.os }}
+          path: apps/keyboard-defense-monogame/artifacts/summaries/pixel-lab-pipeline.json
+          if-no-files-found: warn
