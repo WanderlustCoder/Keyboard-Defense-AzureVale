@@ -27,10 +27,11 @@ public class RunSummaryScreen : GameScreen
     public override void OnEnter()
     {
         var report = SessionAnalytics.Instance.GetReport();
-        BuildUi(report);
+        var verticalSliceSummary = TryGetVerticalSliceSummary();
+        BuildUi(report, verticalSliceSummary);
     }
 
-    private void BuildUi(SessionReport report)
+    private void BuildUi(SessionReport report, VerticalSliceSummary? verticalSliceSummary)
     {
         var root = new VerticalStackPanel
         {
@@ -99,6 +100,38 @@ public class RunSummaryScreen : GameScreen
             HorizontalAlignment = HorizontalAlignment.Center,
         });
 
+        if (verticalSliceSummary != null)
+        {
+            root.Widgets.Add(new HorizontalSeparator());
+            root.Widgets.Add(new Label
+            {
+                Text = "Vertical Slice Result",
+                TextColor = ThemeColors.AccentBlue,
+                HorizontalAlignment = HorizontalAlignment.Center,
+            });
+
+            root.Widgets.Add(new Label
+            {
+                Text =
+                    $"Result: {verticalSliceSummary.Result.ToUpperInvariant()}  " +
+                    $"Score: {verticalSliceSummary.Score}  " +
+                    $"Time: {FormatTime(verticalSliceSummary.ElapsedSeconds)}",
+                TextColor = ThemeColors.Text,
+                HorizontalAlignment = HorizontalAlignment.Center,
+            });
+
+            root.Widgets.Add(new Label
+            {
+                Text =
+                    $"Enemies: {verticalSliceSummary.EnemiesDefeated}  " +
+                    $"Words: {verticalSliceSummary.WordsTyped}  " +
+                    $"Misses: {verticalSliceSummary.Misses}  " +
+                    $"Damage: {verticalSliceSummary.DamageTaken}",
+                TextColor = ThemeColors.TextDim,
+                HorizontalAlignment = HorizontalAlignment.Center,
+            });
+        }
+
         root.Widgets.Add(new HorizontalSeparator());
 
         // Buttons
@@ -164,6 +197,52 @@ public class RunSummaryScreen : GameScreen
         int minutes = (int)(totalSeconds / 60);
         int seconds = (int)(totalSeconds % 60);
         return $"{minutes}:{seconds:D2}";
+    }
+
+    private static VerticalSliceSummary? TryGetVerticalSliceSummary()
+    {
+        var state = GameController.Instance.State;
+        string result = ReadMetricString(state, "vs_result");
+        if (string.IsNullOrWhiteSpace(result))
+            return null;
+
+        return new VerticalSliceSummary
+        {
+            Result = result,
+            Score = ReadMetricInt(state, "vs_score"),
+            ElapsedSeconds = ReadMetricInt(state, "vs_elapsed_seconds"),
+            EnemiesDefeated = ReadMetricInt(state, "enemies_defeated", state.EnemiesDefeated),
+            WordsTyped = ReadMetricInt(state, "battle_words_typed"),
+            Misses = ReadMetricInt(state, "vs_miss_count"),
+            DamageTaken = ReadMetricInt(state, "vs_damage_taken"),
+        };
+    }
+
+    private static int ReadMetricInt(Core.State.GameState state, string key, int fallback = 0)
+    {
+        if (!state.TypingMetrics.TryGetValue(key, out object? value) || value == null)
+            return fallback;
+        if (value is int i)
+            return i;
+        return int.TryParse(value.ToString(), out int parsed) ? parsed : fallback;
+    }
+
+    private static string ReadMetricString(Core.State.GameState state, string key)
+    {
+        if (!state.TypingMetrics.TryGetValue(key, out object? value) || value == null)
+            return string.Empty;
+        return value.ToString() ?? string.Empty;
+    }
+
+    private sealed class VerticalSliceSummary
+    {
+        public string Result { get; init; } = "";
+        public int Score { get; init; }
+        public int ElapsedSeconds { get; init; }
+        public int EnemiesDefeated { get; init; }
+        public int WordsTyped { get; init; }
+        public int Misses { get; init; }
+        public int DamageTaken { get; init; }
     }
 
     private void OnNewGame()
