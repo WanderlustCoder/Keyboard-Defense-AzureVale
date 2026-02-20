@@ -4,6 +4,10 @@ The active project is the MonoGame version at:
 
 - `apps/keyboard-defense-monogame`
 
+Current implementation milestone:
+
+- `docs/MONOGAME_VERTICAL_SLICE_PLAN.md` (first playable loop and task scaffold)
+
 ## Build and Test
 
 ```bash
