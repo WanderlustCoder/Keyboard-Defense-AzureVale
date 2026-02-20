@@ -9,12 +9,13 @@ Current implementation milestone:
 - `docs/MONOGAME_VERTICAL_SLICE_PLAN.md` (completed first-playable loop baseline)
 - `docs/MONOGAME_CAMPAIGN_M1_PLAN.md` (completed campaign progression baseline)
 - `docs/MONOGAME_CAMPAIGN_M2_PLAN.md` (completed campaign hardening and retry-flow milestone)
+- `docs/MONOGAME_CAMPAIGN_M3_PLAN.md` (active campaign map readability and inspection milestone)
 - `apps/keyboard-defense-monogame/docs/VERTICAL_SLICE_BALANCE.md` (current single-wave tuning baseline)
 
-Current focus after campaign M2 completion:
+Current focus in campaign M3:
 
-- Campaign-map reward cue validation and polish
-- Next campaign milestone planning (M3 backlog definition)
+- Campaign map legend and hover detail readability
+- Keyboard-only node inspection parity and map UX regression guardrails
 
 ## Build and Test
 

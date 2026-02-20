@@ -499,6 +499,9 @@ public class CampaignMapScreen : GameScreen
             }
         }
 
+        DrawMapLegend(spriteBatch, font, vp);
+        DrawHoveredNodeTooltip(spriteBatch, font, prog, vp);
+
         spriteBatch.End();
 
         // Myra UI on top (top bar)
@@ -506,6 +509,166 @@ public class CampaignMapScreen : GameScreen
 
         // Transition overlay
         SceneTransition.Instance.Draw(spriteBatch, new Rectangle(0, 0, vp.Width, vp.Height));
+    }
+
+    private void DrawMapLegend(SpriteBatch spriteBatch, SpriteFont font, Viewport viewport)
+    {
+        if (_pixel == null)
+            return;
+
+        var panelRect = new Rectangle(16, viewport.Height - 106, 360, 88);
+        spriteBatch.Draw(_pixel, panelRect, new Color(12, 12, 18, 220));
+        DrawRectOutline(spriteBatch, panelRect, ThemeColors.Border, 2);
+
+        spriteBatch.DrawString(
+            font,
+            "Legend",
+            new Vector2(panelRect.X + 10, panelRect.Y + 8),
+            ThemeColors.AccentCyan,
+            0f,
+            Vector2.Zero,
+            0.62f,
+            SpriteEffects.None,
+            0f);
+
+        spriteBatch.DrawString(
+            font,
+            "Border cyan: unlocked node",
+            new Vector2(panelRect.X + 10, panelRect.Y + 28),
+            ThemeColors.AccentCyan,
+            0f,
+            Vector2.Zero,
+            0.52f,
+            SpriteEffects.None,
+            0f);
+
+        spriteBatch.DrawString(
+            font,
+            "Card green: cleared node",
+            new Vector2(panelRect.X + 10, panelRect.Y + 46),
+            ThemeColors.Accent,
+            0f,
+            Vector2.Zero,
+            0.52f,
+            SpriteEffects.None,
+            0f);
+
+        spriteBatch.DrawString(
+            font,
+            "Gold text: first-clear reward available",
+            new Vector2(panelRect.X + 10, panelRect.Y + 64),
+            ThemeColors.GoldAccent,
+            0f,
+            Vector2.Zero,
+            0.52f,
+            SpriteEffects.None,
+            0f);
+    }
+
+    private void DrawHoveredNodeTooltip(
+        SpriteBatch spriteBatch,
+        SpriteFont font,
+        ProgressionState progression,
+        Viewport viewport)
+    {
+        if (_pixel == null || string.IsNullOrEmpty(_hoveredNode))
+            return;
+        if (!_nodeMap.TryGetValue(_hoveredNode, out var node))
+            return;
+
+        bool completed = progression.IsNodeCompleted(node.Id);
+        bool unlocked = progression.IsNodeUnlocked(node.Id, node.Requires);
+        string status = completed ? "Cleared" : unlocked ? "Ready" : "Locked";
+        string lesson = string.IsNullOrWhiteSpace(node.LessonId) ? "-" : node.LessonId;
+        string reward = node.RewardGold <= 0
+            ? "Reward: none"
+            : completed
+                ? $"Reward: +{node.RewardGold}g claimed"
+                : $"Reward: +{node.RewardGold}g available";
+        string profileId = VerticalSliceWaveData.ResolveProfileIdForNode(node.Id);
+
+        const int panelWidth = 360;
+        const int panelHeight = 120;
+        int x = _prevMouse.X + 20;
+        int y = _prevMouse.Y + 18;
+        if (x + panelWidth > viewport.Width - 8)
+            x = viewport.Width - panelWidth - 8;
+        if (y + panelHeight > viewport.Height - 8)
+            y = viewport.Height - panelHeight - 8;
+        x = Math.Max(8, x);
+        y = Math.Max(56, y);
+
+        var panelRect = new Rectangle(x, y, panelWidth, panelHeight);
+        Color panelColor = completed
+            ? new Color(16, 36, 26, 235)
+            : unlocked
+                ? new Color(18, 20, 36, 235)
+                : new Color(26, 18, 18, 235);
+        Color borderColor = completed
+            ? ThemeColors.Accent
+            : unlocked
+                ? ThemeColors.AccentCyan
+                : ThemeColors.Border;
+        Color titleColor = unlocked ? ThemeColors.Text : ThemeColors.TextDim;
+
+        spriteBatch.Draw(_pixel, panelRect, panelColor);
+        DrawRectOutline(spriteBatch, panelRect, borderColor, 2);
+
+        float titleScale = Math.Min(
+            0.72f,
+            (panelRect.Width - 16) / Math.Max(1f, font.MeasureString(node.Label).X));
+        spriteBatch.DrawString(
+            font,
+            node.Label,
+            new Vector2(panelRect.X + 8, panelRect.Y + 8),
+            titleColor,
+            0f,
+            Vector2.Zero,
+            titleScale,
+            SpriteEffects.None,
+            0f);
+
+        const float lineScale = 0.56f;
+        spriteBatch.DrawString(
+            font,
+            $"Status: {status}",
+            new Vector2(panelRect.X + 8, panelRect.Y + 30),
+            unlocked ? ThemeColors.AccentCyan : ThemeColors.TextDim,
+            0f,
+            Vector2.Zero,
+            lineScale,
+            SpriteEffects.None,
+            0f);
+        spriteBatch.DrawString(
+            font,
+            reward,
+            new Vector2(panelRect.X + 8, panelRect.Y + 48),
+            completed ? ThemeColors.TextDim : ThemeColors.GoldAccent,
+            0f,
+            Vector2.Zero,
+            lineScale,
+            SpriteEffects.None,
+            0f);
+        spriteBatch.DrawString(
+            font,
+            $"Lesson: {lesson}",
+            new Vector2(panelRect.X + 8, panelRect.Y + 66),
+            ThemeColors.Text,
+            0f,
+            Vector2.Zero,
+            lineScale,
+            SpriteEffects.None,
+            0f);
+        spriteBatch.DrawString(
+            font,
+            $"Wave profile: {profileId}",
+            new Vector2(panelRect.X + 8, panelRect.Y + 84),
+            ThemeColors.TextDim,
+            0f,
+            Vector2.Zero,
+            lineScale,
+            SpriteEffects.None,
+            0f);
     }
 
     private void DrawLine(SpriteBatch spriteBatch, Vector2 from, Vector2 to, Color color, int thickness)
