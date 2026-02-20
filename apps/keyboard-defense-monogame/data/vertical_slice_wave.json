@@ -1,0 +1,16 @@
+{
+  "version": "1.0.0",
+  "profile_id": "vertical_slice_default",
+  "description": "Single-wave baseline profile for first-playable loop.",
+  "start_state": {
+    "day": 1,
+    "hp": 20,
+    "gold": 10,
+    "threat": 0,
+    "lesson_id": "full_alpha",
+    "practice_mode": false
+  },
+  "wave": {
+    "spawn_total": 6
+  }
+}

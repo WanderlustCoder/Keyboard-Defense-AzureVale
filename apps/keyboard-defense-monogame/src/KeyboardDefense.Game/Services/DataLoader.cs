@@ -23,6 +23,7 @@ public static class DataLoader
         BuildingsData.LoadData(DataDirectory);
         LessonsData.LoadData(DataDirectory);
         FactionsData.LoadData(DataDirectory);
+        VerticalSliceWaveData.LoadData(DataDirectory);
         StoryManager.Instance.LoadData(DataDirectory);
 
         LoadEventTables(DataDirectory);

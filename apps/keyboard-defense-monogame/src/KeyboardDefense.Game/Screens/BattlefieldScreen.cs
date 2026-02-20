@@ -115,10 +115,25 @@ public class BattlefieldScreen : GameScreen
 
         if (_singleWaveMode)
         {
+            var profile = VerticalSliceWaveData.Current;
+            var state = ctrl.State;
+            state.Day = profile.StartDay;
+            state.Hp = profile.StartHp;
+            state.Gold = profile.StartGold;
+            state.Threat = profile.StartThreat;
+            state.LessonId = profile.LessonId;
+            state.PracticeMode = profile.PracticeMode;
+
             AppendLog("Vertical Slice: survive one night wave.");
+            AppendLog($"Profile: {profile.ProfileId} ({profile.WaveSpawnTotal} enemies)");
             if (ctrl.State.Phase == "day")
             {
                 ctrl.ApplyCommand("end");
+                if (ctrl.State.Phase == "night")
+                {
+                    ctrl.State.NightWaveTotal = profile.WaveSpawnTotal;
+                    ctrl.State.NightSpawnRemaining = profile.WaveSpawnTotal;
+                }
                 SessionAnalytics.Instance.OnGameEvent(ctrl.LastEvents);
                 _singleWaveNightStarted = true;
             }

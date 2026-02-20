@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://keyboard-defense.local/schemas/vertical_slice_wave.schema.json",
+  "title": "Keyboard Defense Vertical Slice Wave Profile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "profile_id",
+    "description",
+    "start_state",
+    "wave"
+  ],
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "profile_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9_\\-]+$",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "start_state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "day",
+        "hp",
+        "gold",
+        "threat",
+        "lesson_id",
+        "practice_mode"
+      ],
+      "properties": {
+        "day": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "hp": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "gold": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "threat": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "lesson_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "practice_mode": {
+          "type": "boolean"
+        }
+      }
+    },
+    "wave": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "spawn_total"
+      ],
+      "properties": {
+        "spawn_total": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    }
+  }
+}
