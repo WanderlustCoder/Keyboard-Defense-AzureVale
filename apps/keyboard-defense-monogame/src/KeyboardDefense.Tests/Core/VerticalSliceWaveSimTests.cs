@@ -28,7 +28,7 @@ public class VerticalSliceWaveSimTests
         Assert.Equal(4, state.NightWaveTotal);
         Assert.Equal(4, state.NightSpawnRemaining);
         Assert.Equal("", MetricString(state, "vs_result"));
-        Assert.True(events.Any(e => e.Contains("Night falls.", StringComparison.Ordinal)));
+        Assert.Contains(events, e => e.Contains("Night falls.", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -77,7 +77,7 @@ public class VerticalSliceWaveSimTests
         Assert.Equal("day", state.Phase);
         Assert.Equal("victory", MetricString(state, "vs_result"));
         Assert.Equal(1, MetricInt(state, "battle_words_typed"));
-        Assert.True(events.Any(e => e.StartsWith("typing_word_complete:", StringComparison.Ordinal)));
+        Assert.Contains(events, e => e.StartsWith("typing_word_complete:", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -129,7 +129,7 @@ public class VerticalSliceWaveSimTests
         Assert.True(state.TypingMetrics.ContainsKey("vs_summary_payload"));
         var payload = Assert.IsType<Dictionary<string, object>>(state.TypingMetrics["vs_summary_payload"]);
         Assert.Equal("defeat", payload["result"]?.ToString());
-        Assert.True(events.Any(e => e.StartsWith("typing_miss:", StringComparison.Ordinal)));
+        Assert.Contains(events, e => e.StartsWith("typing_miss:", StringComparison.Ordinal));
     }
 
     private static int MetricInt(GameState state, string key)
@@ -148,4 +148,3 @@ public class VerticalSliceWaveSimTests
         return value.ToString() ?? "";
     }
 }
-
