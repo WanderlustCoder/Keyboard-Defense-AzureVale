@@ -359,8 +359,13 @@ public class RunSummaryScreen : GameScreen
 
     private void OnMainMenu()
     {
-        if (_returnToCampaignMapOnSummary)
+        if (RunSummaryNavigationPolicy.ShouldReturnToCampaignMap(_returnToCampaignMapOnSummary))
         {
+            RunSummaryNavigationPolicy.PublishReturnContextIfNeeded(
+                _returnToCampaignMapOnSummary,
+                _campaignNodeId,
+                _nodeName,
+                _campaignOutcome);
             ScreenManager.Switch(new CampaignMapScreen(Game, ScreenManager));
             return;
         }

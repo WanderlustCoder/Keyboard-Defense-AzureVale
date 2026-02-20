@@ -11,12 +11,16 @@ Current implementation milestone:
 - `docs/MONOGAME_CAMPAIGN_M2_PLAN.md` (completed campaign hardening and retry-flow milestone)
 - `docs/MONOGAME_CAMPAIGN_M3_PLAN.md` (completed campaign map readability and inspection milestone)
 - `docs/MONOGAME_CAMPAIGN_M4_PLAN.md` (completed campaign map selection summary and inspection parity milestone)
+- `docs/MONOGAME_CAMPAIGN_M5_PLAN.md` (completed campaign UX and traversal consistency milestone)
+- `docs/MONOGAME_CAMPAIGN_M6_PLAN.md` (completed campaign onboarding and launch/return-flow clarity milestone)
+- `docs/MONOGAME_CAMPAIGN_M7_PLAN.md` (completed campaign release-hardening and playtest-readiness milestone)
+- `docs/MONOGAME_CAMPAIGN_M8_PLAN.md` (active campaign pre-release polish and launch-readiness milestone)
 - `apps/keyboard-defense-monogame/docs/VERTICAL_SLICE_BALANCE.md` (current single-wave tuning baseline)
 
-Current focus after campaign M4 completion:
+Current focus after campaign M8 kickoff:
 
-- Campaign milestone planning for M5
-- Additional campaign UX/accessibility validation guardrails
+- Execute final campaign polish pass with low-risk, high-value fixes.
+- Consolidate release notes and lock repeatable RC verification loop.
 
 ## Build and Test
 

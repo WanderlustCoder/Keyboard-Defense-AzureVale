@@ -21,7 +21,7 @@ param(
 $ErrorActionPreference = "Stop"
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $monogameRoot = Split-Path -Parent $scriptDir
-$gameProj = Join-Path $monogameRoot "src" "KeyboardDefense.Game" "KeyboardDefense.Game.csproj"
+$gameProj = Join-Path (Join-Path (Join-Path $monogameRoot "src") "KeyboardDefense.Game") "KeyboardDefense.Game.csproj"
 $gameName = "KeyboardDefense"
 
 if (-not $OutputDir) {
@@ -55,7 +55,7 @@ foreach ($rid in $rids) {
     $rid = $rid.Trim()
     Write-Host "--- Building $rid ---" -ForegroundColor Yellow
 
-    $publishDir = Join-Path $OutputDir "publish" $rid
+    $publishDir = Join-Path (Join-Path $OutputDir "publish") $rid
 
     dotnet publish $gameProj `
         -c Release `

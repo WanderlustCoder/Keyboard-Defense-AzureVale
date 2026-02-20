@@ -27,6 +27,20 @@ public class CampaignMapScreen : GameScreen
         string Id, string Label, string LessonId,
         List<string> Requires, int RewardGold);
 
+    private enum KeyboardTraversalMode
+    {
+        Linear,
+        Spatial,
+    }
+
+    private enum CampaignMapInspectMode
+    {
+        Mouse,
+        Keyboard,
+    }
+
+    private const string CampaignOnboardingDoneId = CampaignMapOnboardingPolicy.CampaignMapOnboardingDoneFlag;
+
     private readonly List<MapNode> _nodes = new();
     private readonly Dictionary<string, MapNode> _nodeMap = new();
 
@@ -47,6 +61,32 @@ public class CampaignMapScreen : GameScreen
     private string? _focusedNodeId;
     private readonly List<string> _keyboardNodeOrder = new();
     private int _keyboardFocusIndex = -1;
+    private KeyboardTraversalMode _keyboardTraversalMode = KeyboardTraversalMode.Linear;
+    private bool _ensureFocusedNodeVisible;
+    private CampaignMapInspectMode _inspectMode = CampaignMapInspectMode.Keyboard;
+    private bool _showCampaignOnboarding;
+    private int _campaignOnboardingStep;
+    private readonly CampaignMapLaunchFlow _launchFlow = new();
+    private string? _returnContextMessage;
+    private string? _returnContextNodeId;
+    private CampaignProgressionService.CampaignOutcomeTone _returnContextTone =
+        CampaignProgressionService.CampaignOutcomeTone.Neutral;
+    private float _returnContextSecondsRemaining;
+    private readonly List<(string Title, string Body)> _campaignOnboardingHints = new()
+    {
+        (
+            "Inspect before launch",
+            "Hover nodes or use Tab / Shift+Tab (Q / E) to preview status, reward, and wave profile."
+        ),
+        (
+            "Choose traversal mode",
+            "Press F6 or M to switch Linear/Spatial traversal. In Spatial mode use arrows or I/J/K/L."
+        ),
+        (
+            "Launch and return",
+            "Press Enter on a focused unlocked node to start. After summary, campaign returns here."
+        ),
+    };
     private MouseState _prevMouse;
     private KeyboardState _prevKeyboard;
     private DialogueBox? _dialogueBox;
@@ -63,6 +103,9 @@ public class CampaignMapScreen : GameScreen
         LoadMapData();
         LayoutNodes();
         BuildUi();
+        InitializeCampaignOnboarding();
+        ApplyPendingReturnContext();
+        CampaignPlaytestTelemetryService.RecordMapEntered();
     }
 
     public override void OnExit()
@@ -261,16 +304,39 @@ public class CampaignMapScreen : GameScreen
     {
         var mouse = Mouse.GetState();
         var kb = Keyboard.GetState();
+        float deltaSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-        // Scroll with mouse wheel or arrow keys
+        _launchFlow.Update(deltaSeconds);
+        if (_returnContextSecondsRemaining > 0f)
+        {
+            _returnContextSecondsRemaining = Math.Max(0f, _returnContextSecondsRemaining - deltaSeconds);
+            if (_returnContextSecondsRemaining <= 0f)
+            {
+                _returnContextMessage = null;
+                _returnContextNodeId = null;
+            }
+        }
+
+        if (_showCampaignOnboarding)
+        {
+            UpdateCampaignOnboarding(kb, mouse);
+            _prevMouse = mouse;
+            _prevKeyboard = kb;
+            SceneTransition.Instance.Update(gameTime);
+            return;
+        }
+
+        // Scroll with mouse wheel and WASD.
+        // Arrow keys also scroll when traversal mode is linear.
         float scrollSpeed = 400f * (float)gameTime.ElapsedGameTime.TotalSeconds;
-        if (kb.IsKeyDown(Keys.Up) || kb.IsKeyDown(Keys.W))
+        bool arrowKeysScroll = _keyboardTraversalMode == KeyboardTraversalMode.Linear;
+        if (kb.IsKeyDown(Keys.W) || (arrowKeysScroll && kb.IsKeyDown(Keys.Up)))
             _scrollOffset.Y += scrollSpeed;
-        if (kb.IsKeyDown(Keys.Down) || kb.IsKeyDown(Keys.S))
+        if (kb.IsKeyDown(Keys.S) || (arrowKeysScroll && kb.IsKeyDown(Keys.Down)))
             _scrollOffset.Y -= scrollSpeed;
-        if (kb.IsKeyDown(Keys.Left) || kb.IsKeyDown(Keys.A))
+        if (kb.IsKeyDown(Keys.A) || (arrowKeysScroll && kb.IsKeyDown(Keys.Left)))
             _scrollOffset.X += scrollSpeed;
-        if (kb.IsKeyDown(Keys.Right) || kb.IsKeyDown(Keys.D))
+        if (kb.IsKeyDown(Keys.D) || (arrowKeysScroll && kb.IsKeyDown(Keys.Right)))
             _scrollOffset.X -= scrollSpeed;
 
         int scrollDelta = mouse.ScrollWheelValue - _prevMouse.ScrollWheelValue;
@@ -281,11 +347,15 @@ public class CampaignMapScreen : GameScreen
         int maxWidth = (_nodePositions.Values.Any()
             ? (int)_nodePositions.Values.Max(p => p.X) + CardWidth + 80
             : vp.Width);
-        _scrollOffset.X = MathHelper.Clamp(_scrollOffset.X, -(maxWidth - vp.Width + 40), 40);
-        _scrollOffset.Y = MathHelper.Clamp(_scrollOffset.Y, -(_totalGraphHeight - vp.Height + 40), 40);
+        _scrollOffset = CampaignMapTraversal.ClampScrollOffset(
+            _scrollOffset,
+            vp.Width,
+            vp.Height,
+            maxWidth,
+            _totalGraphHeight);
 
-        // Hover detection
-        _hoveredNode = null;
+        // Hover candidate detection
+        string? hoveredCandidate = null;
         var mousePos = new Vector2(mouse.X, mouse.Y);
         foreach (var (id, rect) in _nodeRects)
         {
@@ -295,18 +365,83 @@ public class CampaignMapScreen : GameScreen
                 rect.Width, rect.Height);
             if (shifted.Contains(mousePos.ToPoint()))
             {
-                _hoveredNode = id;
+                hoveredCandidate = id;
                 break;
             }
         }
-        if (_hoveredNode != null)
-            SyncKeyboardFocusToNode(_hoveredNode);
+        bool mouseMoved = mouse.X != _prevMouse.X || mouse.Y != _prevMouse.Y;
+        bool clickStarted = mouse.LeftButton == ButtonState.Pressed &&
+            _prevMouse.LeftButton == ButtonState.Released;
+
+        bool keyboardNavigationRequested = false;
+
+        // Toggle keyboard traversal mode.
+        bool traversalToggleRequested = CampaignMapInputPolicy.IsTraversalModeToggleRequested(
+            IsKeyPressed(kb, Keys.F6),
+            IsKeyPressed(kb, Keys.M));
+        if (traversalToggleRequested)
+        {
+            ToggleKeyboardTraversalMode();
+            keyboardNavigationRequested = true;
+        }
 
         // Keyboard node inspection
-        if (IsKeyPressed(kb, Keys.Tab))
+        int? cycleDelta = CampaignMapInputPolicy.ResolveCycleDelta(
+            IsKeyPressed(kb, Keys.Tab),
+            kb.IsKeyDown(Keys.LeftShift) || kb.IsKeyDown(Keys.RightShift),
+            IsKeyPressed(kb, Keys.Q),
+            IsKeyPressed(kb, Keys.E));
+        if (cycleDelta.HasValue)
         {
-            bool reverse = kb.IsKeyDown(Keys.LeftShift) || kb.IsKeyDown(Keys.RightShift);
-            StepKeyboardFocus(reverse ? -1 : 1);
+            StepKeyboardFocus(cycleDelta.Value);
+            keyboardNavigationRequested = true;
+        }
+        if (_keyboardTraversalMode == KeyboardTraversalMode.Spatial)
+        {
+            if (IsKeyPressed(kb, Keys.Left) || IsKeyPressed(kb, Keys.J))
+            {
+                StepKeyboardFocusDirectional(-1, 0);
+                keyboardNavigationRequested = true;
+            }
+            if (IsKeyPressed(kb, Keys.Right) || IsKeyPressed(kb, Keys.L))
+            {
+                StepKeyboardFocusDirectional(1, 0);
+                keyboardNavigationRequested = true;
+            }
+            if (IsKeyPressed(kb, Keys.Up) || IsKeyPressed(kb, Keys.I))
+            {
+                StepKeyboardFocusDirectional(0, -1);
+                keyboardNavigationRequested = true;
+            }
+            if (IsKeyPressed(kb, Keys.Down) || IsKeyPressed(kb, Keys.K))
+            {
+                StepKeyboardFocusDirectional(0, 1);
+                keyboardNavigationRequested = true;
+            }
+        }
+        bool mouseInspectMode = CampaignMapInputPolicy.ResolveMouseInspectMode(
+            _inspectMode == CampaignMapInspectMode.Mouse,
+            mouseMoved,
+            clickStarted && hoveredCandidate != null,
+            keyboardNavigationRequested);
+        _inspectMode = mouseInspectMode
+            ? CampaignMapInspectMode.Mouse
+            : CampaignMapInspectMode.Keyboard;
+
+        if (_inspectMode == CampaignMapInspectMode.Mouse)
+        {
+            _hoveredNode = hoveredCandidate;
+            if (_hoveredNode != null)
+                SyncKeyboardFocusToNode(_hoveredNode);
+        }
+        else
+        {
+            _hoveredNode = null;
+        }
+        if (_ensureFocusedNodeVisible)
+        {
+            EnsureFocusedNodeVisible(vp, maxWidth);
+            _ensureFocusedNodeVisible = false;
         }
 
         // Keyboard launch for focused node
@@ -317,17 +452,34 @@ public class CampaignMapScreen : GameScreen
         {
             var prog = ProgressionState.Instance;
             if (prog.IsNodeUnlocked(focusedNode.Id, focusedNode.Requires))
-                LaunchBattle(focusedNode);
+            {
+                bool confirmed = _launchFlow.RequestLaunch(focusedNode.Id);
+                if (confirmed)
+                {
+                    CampaignPlaytestTelemetryService.RecordLaunchConfirmed(
+                        focusedNode.Id,
+                        "keyboard_confirm");
+                    LaunchBattle(focusedNode);
+                }
+                else
+                {
+                    CampaignPlaytestTelemetryService.RecordLaunchPromptShown(focusedNode.Id);
+                }
+            }
         }
 
         // Click to launch battle
         if (mouse.LeftButton == ButtonState.Pressed &&
             _prevMouse.LeftButton == ButtonState.Released &&
-            _hoveredNode != null && _nodeMap.TryGetValue(_hoveredNode, out var node))
+            hoveredCandidate != null && _nodeMap.TryGetValue(hoveredCandidate, out var node))
         {
             var prog = ProgressionState.Instance;
             if (prog.IsNodeUnlocked(node.Id, node.Requires))
             {
+                _launchFlow.Clear();
+                CampaignPlaytestTelemetryService.RecordLaunchConfirmed(
+                    node.Id,
+                    "mouse_click");
                 LaunchBattle(node);
             }
         }
@@ -530,10 +682,12 @@ public class CampaignMapScreen : GameScreen
         }
 
         DrawSelectionSummaryStrip(spriteBatch, font, prog, vp);
+        DrawReturnContextBanner(spriteBatch, font, vp);
         DrawMapLegend(spriteBatch, font, vp);
         string? inspectedNode = !string.IsNullOrEmpty(_hoveredNode) ? _hoveredNode : _focusedNodeId;
         bool keyboardInspection = string.IsNullOrEmpty(_hoveredNode) && !string.IsNullOrEmpty(_focusedNodeId);
         DrawInspectedNodeTooltip(spriteBatch, font, prog, vp, inspectedNode, keyboardInspection);
+        DrawCampaignOnboardingOverlay(spriteBatch, font, vp);
 
         spriteBatch.End();
 
@@ -562,6 +716,7 @@ public class CampaignMapScreen : GameScreen
         DrawRectOutline(spriteBatch, stripRect, ThemeColors.Border, 2);
 
         string? inspectedNodeId = !string.IsNullOrEmpty(_hoveredNode) ? _hoveredNode : _focusedNodeId;
+        string traversalMode = GetKeyboardTraversalModeLabel();
         string text;
         Color textColor = ThemeColors.TextDim;
         if (inspectedNodeId != null && _nodeMap.TryGetValue(inspectedNodeId, out var node))
@@ -577,12 +732,21 @@ public class CampaignMapScreen : GameScreen
             string profileId = VerticalSliceWaveData.ResolveProfileIdForNode(node.Id);
             string inspectionMode = !string.IsNullOrEmpty(_hoveredNode) ? "Mouse" : "Keyboard";
             text =
-                $"Inspect [{inspectionMode}] {node.Label} | {status} | {rewardState} | Profile: {profileId}";
-            textColor = unlocked ? ThemeColors.Text : ThemeColors.TextDim;
+                $"Inspect [{inspectionMode}] {node.Label} | {status} | {rewardState} | Profile: {profileId} | Traversal: {traversalMode}";
+            if (_launchFlow.PendingNodeId == node.Id && _launchFlow.PendingSecondsRemaining > 0f)
+            {
+                text += $" | Confirm launch: Enter again ({_launchFlow.PendingSecondsRemaining:0.0}s)";
+                textColor = ThemeColors.Warning;
+            }
+            else
+            {
+                textColor = unlocked ? ThemeColors.Text : ThemeColors.TextDim;
+            }
         }
         else
         {
-            text = "Inspect a node (hover or Tab/Shift+Tab) to preview status, reward, and wave profile.";
+            text =
+                $"Inspect a node (hover or Tab/Shift+Tab/Q/E) to preview status, reward, and wave profile. Traversal mode: {traversalMode} (F6/M toggles linear/spatial).";
         }
 
         float scale = Math.Min(
@@ -605,7 +769,8 @@ public class CampaignMapScreen : GameScreen
         if (_pixel == null)
             return;
 
-        var panelRect = new Rectangle(16, viewport.Height - 136, 430, 118);
+        string traversalMode = GetKeyboardTraversalModeLabel();
+        var panelRect = new Rectangle(16, viewport.Height - 180, 520, 162);
         spriteBatch.Draw(_pixel, panelRect, new Color(12, 12, 18, 220));
         DrawRectOutline(spriteBatch, panelRect, ThemeColors.Border, 2);
 
@@ -655,23 +820,88 @@ public class CampaignMapScreen : GameScreen
 
         spriteBatch.DrawString(
             font,
-            "Tab / Shift+Tab: inspect nodes without mouse",
+            "Tab / Shift+Tab or Q / E: cycle inspection order",
             new Vector2(panelRect.X + 10, panelRect.Y + 82),
             ThemeColors.Text,
             0f,
             Vector2.Zero,
-            0.50f,
+            0.47f,
             SpriteEffects.None,
             0f);
 
         spriteBatch.DrawString(
             font,
-            "Enter: launch currently focused unlocked node",
+            "Arrow keys (Spatial): directional nearest-node traversal",
             new Vector2(panelRect.X + 10, panelRect.Y + 98),
+            ThemeColors.Text,
+            0f,
+            Vector2.Zero,
+            0.47f,
+            SpriteEffects.None,
+            0f);
+
+        spriteBatch.DrawString(
+            font,
+            "I / J / K / L (Spatial): compact-keyboard traversal",
+            new Vector2(panelRect.X + 10, panelRect.Y + 114),
+            ThemeColors.Text,
+            0f,
+            Vector2.Zero,
+            0.47f,
+            SpriteEffects.None,
+            0f);
+
+        spriteBatch.DrawString(
+            font,
+            $"F6 or M: toggle traversal mode (current: {traversalMode})",
+            new Vector2(panelRect.X + 10, panelRect.Y + 130),
+            ThemeColors.Text,
+            0f,
+            Vector2.Zero,
+            0.47f,
+            SpriteEffects.None,
+            0f);
+
+        spriteBatch.DrawString(
+            font,
+            "Enter twice: confirm and launch focused unlocked node",
+            new Vector2(panelRect.X + 10, panelRect.Y + 146),
             ThemeColors.TextDim,
             0f,
             Vector2.Zero,
-            0.50f,
+            0.46f,
+            SpriteEffects.None,
+            0f);
+    }
+
+    private void DrawReturnContextBanner(SpriteBatch spriteBatch, SpriteFont font, Viewport viewport)
+    {
+        if (_pixel == null || string.IsNullOrWhiteSpace(_returnContextMessage) || _returnContextSecondsRemaining <= 0f)
+            return;
+
+        int width = Math.Min(viewport.Width - 32, 900);
+        if (width < 260)
+            return;
+
+        var rect = new Rectangle(16, 88, width, 28);
+        spriteBatch.Draw(_pixel, rect, new Color(9, 14, 21, 220));
+        DrawRectOutline(spriteBatch, rect, ThemeColors.AccentBlue, 2);
+
+        string text = _returnContextMessage!;
+        if (!string.IsNullOrWhiteSpace(_returnContextNodeId))
+            text += $" (focused node synced)";
+
+        float scale = Math.Min(
+            0.5f,
+            (rect.Width - 14) / Math.Max(1f, font.MeasureString(text).X));
+        spriteBatch.DrawString(
+            font,
+            text,
+            new Vector2(rect.X + 7, rect.Y + 7),
+            GetCampaignOutcomeToneColor(_returnContextTone),
+            0f,
+            Vector2.Zero,
+            scale,
             SpriteEffects.None,
             0f);
     }
@@ -794,6 +1024,172 @@ public class CampaignMapScreen : GameScreen
             0f);
     }
 
+    private void ToggleKeyboardTraversalMode()
+    {
+        _keyboardTraversalMode = _keyboardTraversalMode == KeyboardTraversalMode.Linear
+            ? KeyboardTraversalMode.Spatial
+            : KeyboardTraversalMode.Linear;
+        CampaignPlaytestTelemetryService.RecordTraversalModeToggled(GetKeyboardTraversalModeLabel());
+    }
+
+    private void InitializeCampaignOnboarding()
+    {
+        _campaignOnboardingStep = 0;
+        _showCampaignOnboarding = CampaignMapOnboardingPolicy.ShouldShow(
+            ProgressionState.Instance.CompletedAchievements);
+        if (_showCampaignOnboarding)
+            CampaignPlaytestTelemetryService.RecordOnboardingShown();
+    }
+
+    private void ApplyPendingReturnContext()
+    {
+        var context = CampaignMapReturnContextService.Consume();
+        if (!context.HasValue)
+            return;
+
+        _returnContextMessage = context.Value.Message;
+        _returnContextTone = context.Value.Tone;
+        _returnContextNodeId = string.IsNullOrWhiteSpace(context.Value.NodeId)
+            ? null
+            : context.Value.NodeId;
+        _returnContextSecondsRemaining = 10f;
+        CampaignPlaytestTelemetryService.RecordReturnContextShown(
+            _returnContextNodeId ?? string.Empty,
+            _returnContextTone);
+
+        if (_returnContextNodeId != null && _nodeMap.ContainsKey(_returnContextNodeId))
+        {
+            _inspectMode = CampaignMapInspectMode.Keyboard;
+            SyncKeyboardFocusToNode(_returnContextNodeId, requestVisibility: true);
+        }
+    }
+
+    private void UpdateCampaignOnboarding(KeyboardState kb, MouseState mouse)
+    {
+        bool dismissRequested = IsKeyPressed(kb, Keys.Escape);
+        bool advanceRequested =
+            IsKeyPressed(kb, Keys.Enter) ||
+            IsKeyPressed(kb, Keys.Space) ||
+            IsKeyPressed(kb, Keys.Tab) ||
+            (
+                mouse.LeftButton == ButtonState.Pressed &&
+                _prevMouse.LeftButton == ButtonState.Released
+            );
+
+        if (dismissRequested)
+        {
+            CompleteCampaignOnboarding();
+            return;
+        }
+
+        if (!advanceRequested)
+            return;
+
+        _campaignOnboardingStep = CampaignMapOnboardingPolicy.AdvanceStep(
+            _campaignOnboardingStep,
+            _campaignOnboardingHints.Count);
+        if (CampaignMapOnboardingPolicy.IsComplete(_campaignOnboardingStep, _campaignOnboardingHints.Count))
+            CompleteCampaignOnboarding();
+    }
+
+    private void CompleteCampaignOnboarding()
+    {
+        _showCampaignOnboarding = false;
+        _campaignOnboardingStep = 0;
+        if (ProgressionState.Instance.CompletedAchievements.Add(CampaignOnboardingDoneId))
+        {
+            CampaignPlaytestTelemetryService.RecordOnboardingCompleted();
+            ProgressionState.Instance.Save();
+        }
+    }
+
+    private void DrawCampaignOnboardingOverlay(
+        SpriteBatch spriteBatch,
+        SpriteFont font,
+        Viewport viewport)
+    {
+        if (_pixel == null || !_showCampaignOnboarding || _campaignOnboardingHints.Count == 0)
+            return;
+
+        int stepIndex = Math.Clamp(_campaignOnboardingStep, 0, _campaignOnboardingHints.Count - 1);
+        var step = _campaignOnboardingHints[stepIndex];
+
+        var fullRect = new Rectangle(0, 0, viewport.Width, viewport.Height);
+        spriteBatch.Draw(_pixel, fullRect, new Color(6, 10, 14, 210));
+
+        int panelWidth = Math.Min(viewport.Width - 48, 760);
+        int panelHeight = 176;
+        int panelX = (viewport.Width - panelWidth) / 2;
+        int panelY = Math.Max(108, (viewport.Height - panelHeight) / 2);
+        var panelRect = new Rectangle(panelX, panelY, panelWidth, panelHeight);
+
+        spriteBatch.Draw(_pixel, panelRect, new Color(12, 18, 28, 245));
+        DrawRectOutline(spriteBatch, panelRect, ThemeColors.AccentCyan, 2);
+
+        string stepBadge = $"Campaign onboarding {_campaignOnboardingStep + 1}/{_campaignOnboardingHints.Count}";
+        spriteBatch.DrawString(
+            font,
+            stepBadge,
+            new Vector2(panelRect.X + 14, panelRect.Y + 10),
+            ThemeColors.TextDim,
+            0f,
+            Vector2.Zero,
+            0.52f,
+            SpriteEffects.None,
+            0f);
+
+        spriteBatch.DrawString(
+            font,
+            step.Title,
+            new Vector2(panelRect.X + 14, panelRect.Y + 34),
+            ThemeColors.Accent,
+            0f,
+            Vector2.Zero,
+            0.76f,
+            SpriteEffects.None,
+            0f);
+
+        spriteBatch.DrawString(
+            font,
+            step.Body,
+            new Vector2(panelRect.X + 14, panelRect.Y + 70),
+            ThemeColors.Text,
+            0f,
+            Vector2.Zero,
+            0.56f,
+            SpriteEffects.None,
+            0f);
+
+        spriteBatch.DrawString(
+            font,
+            "Enter / Space / Tab / Click: next    Esc: dismiss",
+            new Vector2(panelRect.X + 14, panelRect.Bottom - 30),
+            ThemeColors.AccentCyan,
+            0f,
+            Vector2.Zero,
+            0.52f,
+            SpriteEffects.None,
+            0f);
+    }
+
+    private string GetKeyboardTraversalModeLabel()
+    {
+        return _keyboardTraversalMode == KeyboardTraversalMode.Linear
+            ? "Linear"
+            : "Spatial";
+    }
+
+    private static Color GetCampaignOutcomeToneColor(CampaignProgressionService.CampaignOutcomeTone tone)
+    {
+        return tone switch
+        {
+            CampaignProgressionService.CampaignOutcomeTone.Reward => ThemeColors.GoldAccent,
+            CampaignProgressionService.CampaignOutcomeTone.Success => ThemeColors.Accent,
+            CampaignProgressionService.CampaignOutcomeTone.Warning => ThemeColors.Warning,
+            _ => ThemeColors.Text,
+        };
+    }
+
     private void StepKeyboardFocusDirectional(int dirX, int dirY)
     {
         if (_keyboardNodeOrder.Count == 0)
@@ -803,52 +1199,23 @@ public class CampaignMapScreen : GameScreen
         {
             _keyboardFocusIndex = 0;
             _focusedNodeId = _keyboardNodeOrder[0];
+            _launchFlow.HandleFocusChanged(_focusedNodeId);
+            _ensureFocusedNodeVisible = true;
             return;
         }
 
         string currentId = _focusedNodeId;
-        Vector2 currentPos = _nodePositions[currentId];
-
-        string? bestId = null;
-        float bestScore = float.MaxValue;
-        foreach (string candidateId in _keyboardNodeOrder)
-        {
-            if (candidateId == currentId || !_nodePositions.TryGetValue(candidateId, out Vector2 candidatePos))
-                continue;
-
-            float dx = candidatePos.X - currentPos.X;
-            float dy = candidatePos.Y - currentPos.Y;
-            float primary;
-            float secondary;
-            float laneThreshold;
-
-            if (dirX != 0)
-            {
-                primary = dirX > 0 ? dx : -dx;
-                secondary = MathF.Abs(dy);
-                laneThreshold = RowSpacing * 0.65f;
-            }
-            else
-            {
-                primary = dirY > 0 ? dy : -dy;
-                secondary = MathF.Abs(dx);
-                laneThreshold = ColumnSpacing * 0.6f;
-            }
-
-            if (primary <= 0f)
-                continue;
-
-            float lanePenalty = secondary > laneThreshold ? secondary * 0.5f : secondary * 0.15f;
-            float score = primary * 4f + lanePenalty;
-            if (score < bestScore)
-            {
-                bestScore = score;
-                bestId = candidateId;
-            }
-        }
+        string? bestId = CampaignMapTraversal.FindDirectionalCandidate(
+            currentId,
+            _nodePositions,
+            _keyboardNodeOrder,
+            dirX,
+            dirY,
+            RowSpacing,
+            ColumnSpacing);
 
         if (bestId != null)
-            SyncKeyboardFocusToNode(bestId);
+            SyncKeyboardFocusToNode(bestId, requestVisibility: true);
         else
             StepKeyboardFocus((dirX < 0 || dirY < 0) ? -1 : 1);
     }
@@ -894,15 +1261,40 @@ public class CampaignMapScreen : GameScreen
         }
 
         _focusedNodeId = _keyboardNodeOrder[_keyboardFocusIndex];
+        _launchFlow.HandleFocusChanged(_focusedNodeId);
+        _ensureFocusedNodeVisible = true;
     }
 
-    private void SyncKeyboardFocusToNode(string nodeId)
+    private void SyncKeyboardFocusToNode(string nodeId, bool requestVisibility = false)
     {
         int idx = _keyboardNodeOrder.IndexOf(nodeId);
         if (idx < 0)
             return;
         _keyboardFocusIndex = idx;
         _focusedNodeId = nodeId;
+        _launchFlow.HandleFocusChanged(_focusedNodeId);
+        if (requestVisibility)
+            _ensureFocusedNodeVisible = true;
+    }
+
+    private void EnsureFocusedNodeVisible(Viewport viewport, int graphWidth)
+    {
+        if (string.IsNullOrEmpty(_focusedNodeId) || !_nodeRects.TryGetValue(_focusedNodeId, out var nodeRect))
+            return;
+
+        _scrollOffset = CampaignMapTraversal.EnsureFocusedNodeVisible(
+            _scrollOffset,
+            nodeRect,
+            viewport.Width,
+            viewport.Height,
+            topBound: 96,
+            margin: 24);
+        _scrollOffset = CampaignMapTraversal.ClampScrollOffset(
+            _scrollOffset,
+            viewport.Width,
+            viewport.Height,
+            graphWidth,
+            _totalGraphHeight);
     }
 
     private void DrawLine(SpriteBatch spriteBatch, Vector2 from, Vector2 to, Color color, int thickness)
