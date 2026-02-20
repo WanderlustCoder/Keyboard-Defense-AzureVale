@@ -21,6 +21,8 @@ public class RunSummaryScreen : GameScreen
     private readonly string _verticalSliceProfileId;
     private readonly string _campaignNodeId;
     private readonly int _campaignNodeRewardGold;
+    private CampaignProgressionService.CampaignOutcome _campaignOutcome =
+        CampaignProgressionService.CampaignOutcome.None;
     private Desktop? _desktop;
     private KeyboardState _prevKeyboard;
 
@@ -54,16 +56,18 @@ public class RunSummaryScreen : GameScreen
                 verticalSliceSummary.Result,
                 verticalSliceSummary.Score,
                 verticalSliceSummary.ElapsedSeconds);
-        ApplyCampaignProgression(report, verticalSliceSummary);
+        _campaignOutcome = ApplyCampaignProgression(report, verticalSliceSummary);
         BuildUi(report, verticalSliceSummary);
     }
 
-    private void ApplyCampaignProgression(SessionReport report, VerticalSliceSummary? verticalSliceSummary)
+    private CampaignProgressionService.CampaignOutcome ApplyCampaignProgression(
+        SessionReport report,
+        VerticalSliceSummary? verticalSliceSummary)
     {
         var state = GameController.Instance.State;
         int wordsTyped = verticalSliceSummary?.WordsTyped ?? report.WordsTyped;
         int enemiesDefeated = verticalSliceSummary?.EnemiesDefeated ?? state.EnemiesDefeated;
-        CampaignProgressionService.ApplySingleWaveOutcome(
+        return CampaignProgressionService.ApplySingleWaveOutcome(
             ProgressionState.Instance,
             _returnToCampaignMapOnSummary,
             _isVictory,
@@ -173,6 +177,52 @@ public class RunSummaryScreen : GameScreen
                     $"Misses: {verticalSliceSummary.Misses}  " +
                     $"Damage: {verticalSliceSummary.DamageTaken}",
                 TextColor = ThemeColors.TextDim,
+                HorizontalAlignment = HorizontalAlignment.Center,
+            });
+        }
+
+        if (_campaignOutcome.IsCampaignRun)
+        {
+            root.Widgets.Add(new HorizontalSeparator());
+            root.Widgets.Add(new Label
+            {
+                Text = "Campaign Node",
+                TextColor = ThemeColors.AccentBlue,
+                HorizontalAlignment = HorizontalAlignment.Center,
+            });
+
+            string outcomeText;
+            Color outcomeColor;
+            if (_campaignOutcome.IsVictory)
+            {
+                if (_campaignOutcome.RewardAwarded)
+                {
+                    outcomeText = $"Node cleared: +{_campaignOutcome.RewardGold} gold awarded.";
+                    outcomeColor = ThemeColors.GoldAccent;
+                }
+                else if (_campaignOutcome.NodeCompletedThisRun)
+                {
+                    outcomeText = "Node cleared.";
+                    outcomeColor = ThemeColors.Accent;
+                }
+                else
+                {
+                    outcomeText = "Node already cleared. No additional node reward.";
+                    outcomeColor = ThemeColors.TextDim;
+                }
+            }
+            else
+            {
+                outcomeText = _campaignOutcome.RewardGold > 0
+                    ? $"Node not cleared. Win to earn +{_campaignOutcome.RewardGold} gold."
+                    : "Node not cleared. Win to mark this node complete.";
+                outcomeColor = ThemeColors.Warning;
+            }
+
+            root.Widgets.Add(new Label
+            {
+                Text = outcomeText,
+                TextColor = outcomeColor,
                 HorizontalAlignment = HorizontalAlignment.Center,
             });
         }

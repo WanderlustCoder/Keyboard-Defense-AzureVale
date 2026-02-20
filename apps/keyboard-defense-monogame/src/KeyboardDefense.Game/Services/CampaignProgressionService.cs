@@ -7,7 +7,24 @@ namespace KeyboardDefense.Game.Services;
 /// </summary>
 public static class CampaignProgressionService
 {
-    public static void ApplySingleWaveOutcome(
+    public readonly record struct CampaignOutcome(
+        bool IsCampaignRun,
+        bool IsVictory,
+        bool NodeAlreadyCompleted,
+        bool NodeCompletedThisRun,
+        bool RewardAwarded,
+        int RewardGold)
+    {
+        public static CampaignOutcome None => new(
+            IsCampaignRun: false,
+            IsVictory: false,
+            NodeAlreadyCompleted: false,
+            NodeCompletedThisRun: false,
+            RewardAwarded: false,
+            RewardGold: 0);
+    }
+
+    public static CampaignOutcome ApplySingleWaveOutcome(
         ProgressionState progressionState,
         bool returnToCampaignMapOnSummary,
         bool isVictory,
@@ -20,7 +37,10 @@ public static class CampaignProgressionService
         double accuracyRate)
     {
         if (!returnToCampaignMapOnSummary || string.IsNullOrWhiteSpace(campaignNodeId))
-            return;
+            return CampaignOutcome.None;
+
+        int rewardGold = Math.Max(0, campaignNodeRewardGold);
+        bool alreadyCompleted = progressionState.IsNodeCompleted(campaignNodeId);
 
         progressionState.RecordGameEnd(
             victory: isVictory,
@@ -30,7 +50,21 @@ public static class CampaignProgressionService
             wpm: wordsPerMinute,
             accuracy: accuracyRate);
 
+        bool nodeCompletedThisRun = false;
+        bool rewardAwarded = false;
         if (isVictory)
-            progressionState.CompleteNode(campaignNodeId, Math.Max(0, campaignNodeRewardGold));
+        {
+            nodeCompletedThisRun = !alreadyCompleted;
+            progressionState.CompleteNode(campaignNodeId, rewardGold);
+            rewardAwarded = nodeCompletedThisRun && rewardGold > 0;
+        }
+
+        return new CampaignOutcome(
+            IsCampaignRun: true,
+            IsVictory: isVictory,
+            NodeAlreadyCompleted: alreadyCompleted,
+            NodeCompletedThisRun: nodeCompletedThisRun,
+            RewardAwarded: rewardAwarded,
+            RewardGold: rewardGold);
     }
 }
