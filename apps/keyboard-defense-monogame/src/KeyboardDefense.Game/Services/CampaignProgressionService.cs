@@ -29,6 +29,12 @@ public static class CampaignProgressionService
         }
     }
 
+    public sealed class CampaignSummarySideEffectsState
+    {
+        public bool HasAppliedSideEffects { get; set; }
+        public CampaignOutcome CachedOutcome { get; set; } = CampaignOutcome.None;
+    }
+
     public enum CampaignOutcomeTone
     {
         Neutral,
@@ -55,6 +61,43 @@ public static class CampaignProgressionService
     }
 
     public readonly record struct CampaignOutcomeDisplay(string Text, CampaignOutcomeTone Tone);
+
+    public static CampaignSummaryHandoff BuildRetryHandoff(CampaignSummaryHandoff handoff)
+    {
+        return CampaignSummaryHandoff.Create(
+            handoff.ReturnToCampaignMapOnSummary,
+            handoff.CampaignNodeId,
+            handoff.CampaignNodeRewardGold);
+    }
+
+    public static CampaignOutcome ApplySummarySideEffectsOnce(
+        ProgressionState progressionState,
+        CampaignSummarySideEffectsState sideEffectsState,
+        CampaignSummaryHandoff handoff,
+        bool isVictory,
+        int day,
+        int enemiesDefeated,
+        int wordsTyped,
+        double wordsPerMinute,
+        double accuracyRate)
+    {
+        if (sideEffectsState.HasAppliedSideEffects)
+            return sideEffectsState.CachedOutcome;
+
+        var outcome = ApplySingleWaveOutcome(
+            progressionState,
+            handoff,
+            isVictory,
+            day,
+            enemiesDefeated,
+            wordsTyped,
+            wordsPerMinute,
+            accuracyRate);
+
+        sideEffectsState.HasAppliedSideEffects = true;
+        sideEffectsState.CachedOutcome = outcome;
+        return outcome;
+    }
 
     public static CampaignOutcome ApplySingleWaveOutcome(
         ProgressionState progressionState,

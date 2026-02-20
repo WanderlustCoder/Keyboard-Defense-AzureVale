@@ -245,6 +245,60 @@ public class CampaignProgressionServiceTests
         Assert.Equal(0, handoff.CampaignNodeRewardGold);
     }
 
+    [Fact]
+    public void BuildRetryHandoff_PreservesCampaignMetadata()
+    {
+        var handoff = CampaignProgressionService.CampaignSummaryHandoff.Create(
+            returnToCampaignMapOnSummary: true,
+            campaignNodeId: "frost-crown",
+            campaignNodeRewardGold: 55);
+
+        var retry = CampaignProgressionService.BuildRetryHandoff(handoff);
+
+        Assert.Equal(handoff, retry);
+    }
+
+    [Fact]
+    public void ApplySummarySideEffectsOnce_AppliesProgressionOnlyOnFirstCall()
+    {
+        using var appDataScope = new TempAppDataScope();
+        var progression = new ProgressionState();
+        var state = new CampaignProgressionService.CampaignSummarySideEffectsState();
+        var handoff = CampaignProgressionService.CampaignSummaryHandoff.Create(
+            returnToCampaignMapOnSummary: true,
+            campaignNodeId: "skywatch-pass",
+            campaignNodeRewardGold: 22);
+
+        var first = CampaignProgressionService.ApplySummarySideEffectsOnce(
+            progression,
+            state,
+            handoff,
+            isVictory: true,
+            day: 3,
+            enemiesDefeated: 10,
+            wordsTyped: 26,
+            wordsPerMinute: 40,
+            accuracyRate: 0.9);
+
+        var second = CampaignProgressionService.ApplySummarySideEffectsOnce(
+            progression,
+            state,
+            handoff,
+            isVictory: false,
+            day: 1,
+            enemiesDefeated: 0,
+            wordsTyped: 0,
+            wordsPerMinute: 0,
+            accuracyRate: 0);
+
+        Assert.Equal(first, second);
+        Assert.True(state.HasAppliedSideEffects);
+        Assert.True(progression.IsNodeCompleted("skywatch-pass"));
+        Assert.Equal(22, progression.Gold);
+        Assert.Equal(1, progression.TotalGamesPlayed);
+        Assert.Equal(1, progression.TotalVictories);
+    }
+
     private sealed class TempAppDataScope : IDisposable
     {
         private readonly string? _originalAppData;

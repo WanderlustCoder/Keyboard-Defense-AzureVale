@@ -91,16 +91,21 @@ public class BattlefieldScreen : GameScreen
         bool returnToCampaignMapOnSummary = false,
         string verticalSliceProfileId = "vertical_slice_default",
         string campaignNodeId = "",
-        int campaignNodeRewardGold = 0)
+        int campaignNodeRewardGold = 0,
+        CampaignProgressionService.CampaignSummaryHandoff? campaignSummaryHandoff = null)
         : base(game, screenManager)
     {
         _nodeIndex = nodeIndex;
         _nodeName = nodeName;
         _singleWaveMode = singleWaveMode;
-        _returnToCampaignMapOnSummary = returnToCampaignMapOnSummary;
         _verticalSliceProfileId = verticalSliceProfileId;
-        _campaignNodeId = campaignNodeId ?? "";
-        _campaignNodeRewardGold = Math.Max(0, campaignNodeRewardGold);
+        var handoff = campaignSummaryHandoff ?? CampaignProgressionService.CampaignSummaryHandoff.Create(
+            returnToCampaignMapOnSummary,
+            campaignNodeId,
+            campaignNodeRewardGold);
+        _returnToCampaignMapOnSummary = handoff.ReturnToCampaignMapOnSummary;
+        _campaignNodeId = handoff.CampaignNodeId;
+        _campaignNodeRewardGold = handoff.CampaignNodeRewardGold;
     }
 
     public override void OnEnter()
@@ -629,10 +634,8 @@ public class BattlefieldScreen : GameScreen
                 _nodeIndex,
                 _nodeName,
                 singleWaveMode: true,
-                returnToCampaignMapOnSummary: _returnToCampaignMapOnSummary,
                 verticalSliceProfileId: _verticalSliceProfileId,
-                campaignNodeId: _campaignNodeId,
-                campaignNodeRewardGold: _campaignNodeRewardGold));
+                campaignSummaryHandoff: BuildCampaignSummaryHandoff()));
         });
     }
 

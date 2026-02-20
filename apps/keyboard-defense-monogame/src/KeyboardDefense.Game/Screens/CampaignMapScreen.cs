@@ -466,7 +466,9 @@ public class CampaignMapScreen : GameScreen
             // Lesson and reward info
             string info = "";
             if (node.RewardGold > 0)
-                info = completed ? $"{node.RewardGold}g (cleared)" : $"Reward: {node.RewardGold}g";
+                info = completed
+                    ? $"First clear: +{node.RewardGold}g claimed"
+                    : $"First clear: +{node.RewardGold}g available";
             if (!string.IsNullOrEmpty(info))
             {
                 var infoSize = font.MeasureString(info);

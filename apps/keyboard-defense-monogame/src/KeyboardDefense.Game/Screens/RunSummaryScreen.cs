@@ -22,9 +22,9 @@ public class RunSummaryScreen : GameScreen
     private readonly CampaignProgressionService.CampaignSummaryHandoff _campaignSummaryHandoff;
     private readonly string _campaignNodeId;
     private readonly int _campaignNodeRewardGold;
+    private readonly CampaignProgressionService.CampaignSummarySideEffectsState _summarySideEffectsState = new();
     private CampaignProgressionService.CampaignOutcome _campaignOutcome =
         CampaignProgressionService.CampaignOutcome.None;
-    private bool _summarySideEffectsApplied;
     private Desktop? _desktop;
     private KeyboardState _prevKeyboard;
 
@@ -59,20 +59,15 @@ public class RunSummaryScreen : GameScreen
     {
         var report = SessionAnalytics.Instance.GetReport();
         var verticalSliceSummary = TryGetVerticalSliceSummary();
-        if (!_summarySideEffectsApplied)
+        if (!_summarySideEffectsState.HasAppliedSideEffects && verticalSliceSummary != null)
         {
-            if (verticalSliceSummary != null)
-            {
-                VerticalSliceProfileService.RecordRun(
-                    verticalSliceSummary.Result,
-                    verticalSliceSummary.Score,
-                    verticalSliceSummary.ElapsedSeconds);
-            }
-
-            _campaignOutcome = ApplyCampaignProgression(report, verticalSliceSummary);
-            _summarySideEffectsApplied = true;
+            VerticalSliceProfileService.RecordRun(
+                verticalSliceSummary.Result,
+                verticalSliceSummary.Score,
+                verticalSliceSummary.ElapsedSeconds);
         }
 
+        _campaignOutcome = ApplyCampaignProgression(report, verticalSliceSummary);
         BuildUi(report, verticalSliceSummary);
     }
 
@@ -83,8 +78,9 @@ public class RunSummaryScreen : GameScreen
         var state = GameController.Instance.State;
         int wordsTyped = verticalSliceSummary?.WordsTyped ?? report.WordsTyped;
         int enemiesDefeated = verticalSliceSummary?.EnemiesDefeated ?? state.EnemiesDefeated;
-        return CampaignProgressionService.ApplySingleWaveOutcome(
+        return CampaignProgressionService.ApplySummarySideEffectsOnce(
             ProgressionState.Instance,
+            _summarySideEffectsState,
             _campaignSummaryHandoff,
             _isVictory,
             state.Day,
@@ -354,8 +350,7 @@ public class RunSummaryScreen : GameScreen
                 singleWaveMode: true,
                 returnToCampaignMapOnSummary: true,
                 verticalSliceProfileId: _verticalSliceProfileId,
-                campaignNodeId: _campaignNodeId,
-                campaignNodeRewardGold: _campaignNodeRewardGold));
+                campaignSummaryHandoff: CampaignProgressionService.BuildRetryHandoff(_campaignSummaryHandoff)));
             return;
         }
 
