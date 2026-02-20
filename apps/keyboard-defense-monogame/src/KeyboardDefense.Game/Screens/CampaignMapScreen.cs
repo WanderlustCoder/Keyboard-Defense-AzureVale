@@ -378,7 +378,13 @@ public class CampaignMapScreen : GameScreen
         SceneTransition.Instance.BattleTransition(() =>
         {
             GameController.Instance.NewGame($"campaign_{node.Id}_{DateTime.Now.Ticks}");
-            ScreenManager.Push(new BattlefieldScreen(Game, ScreenManager, 0, node.Label));
+            ScreenManager.Push(new BattlefieldScreen(
+                Game,
+                ScreenManager,
+                0,
+                node.Label,
+                singleWaveMode: true,
+                returnToCampaignMapOnSummary: true));
         });
     }
 

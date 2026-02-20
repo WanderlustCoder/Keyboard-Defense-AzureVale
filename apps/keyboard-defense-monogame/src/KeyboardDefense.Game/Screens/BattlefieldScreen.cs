@@ -29,6 +29,7 @@ public class BattlefieldScreen : GameScreen
     private readonly int _nodeIndex;
     private readonly string _nodeName;
     private readonly bool _singleWaveMode;
+    private readonly bool _returnToCampaignMapOnSummary;
     private VerticalSliceWaveConfig? _verticalSliceConfig;
 
     private Desktop? _desktop;
@@ -83,12 +84,14 @@ public class BattlefieldScreen : GameScreen
         ScreenManager screenManager,
         int nodeIndex,
         string nodeName,
-        bool singleWaveMode = false)
+        bool singleWaveMode = false,
+        bool returnToCampaignMapOnSummary = false)
         : base(game, screenManager)
     {
         _nodeIndex = nodeIndex;
         _nodeName = nodeName;
         _singleWaveMode = singleWaveMode;
+        _returnToCampaignMapOnSummary = returnToCampaignMapOnSummary;
     }
 
     public override void OnEnter()
@@ -608,14 +611,16 @@ public class BattlefieldScreen : GameScreen
 
         SceneTransition.Instance.BattleTransition(() =>
         {
-            GameController.Instance.NewGame($"vertical_slice_{DateTime.UtcNow.Ticks}");
+            string seedPrefix = _returnToCampaignMapOnSummary ? "campaign_retry" : "vertical_slice";
+            GameController.Instance.NewGame($"{seedPrefix}_{DateTime.UtcNow.Ticks}");
             ScreenManager.Pop();
             ScreenManager.Push(new BattlefieldScreen(
                 Game,
                 ScreenManager,
                 _nodeIndex,
                 _nodeName,
-                singleWaveMode: true));
+                singleWaveMode: true,
+                returnToCampaignMapOnSummary: _returnToCampaignMapOnSummary));
         });
     }
 
@@ -631,7 +636,13 @@ public class BattlefieldScreen : GameScreen
                 _gameEnded = true;
                 var milestones = Milestones.CheckNewMilestones(state);
                 _earnedMilestones.AddRange(milestones);
-                ScreenManager.Push(new RunSummaryScreen(Game, ScreenManager, isVictory: false));
+                ScreenManager.Push(new RunSummaryScreen(
+                    Game,
+                    ScreenManager,
+                    isVictory: false,
+                    nodeIndex: _nodeIndex,
+                    nodeName: _nodeName,
+                    returnToCampaignMapOnSummary: _returnToCampaignMapOnSummary));
                 return;
             }
 
@@ -643,7 +654,13 @@ public class BattlefieldScreen : GameScreen
                 _gameEnded = true;
                 var milestones = Milestones.CheckNewMilestones(state);
                 _earnedMilestones.AddRange(milestones);
-                ScreenManager.Push(new RunSummaryScreen(Game, ScreenManager, isVictory: true));
+                ScreenManager.Push(new RunSummaryScreen(
+                    Game,
+                    ScreenManager,
+                    isVictory: true,
+                    nodeIndex: _nodeIndex,
+                    nodeName: _nodeName,
+                    returnToCampaignMapOnSummary: _returnToCampaignMapOnSummary));
                 return;
             }
         }

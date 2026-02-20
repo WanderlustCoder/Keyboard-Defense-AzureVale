@@ -15,13 +15,25 @@ namespace KeyboardDefense.Game.Screens;
 public class RunSummaryScreen : GameScreen
 {
     private readonly bool _isVictory;
+    private readonly int _nodeIndex;
+    private readonly string _nodeName;
+    private readonly bool _returnToCampaignMapOnSummary;
     private Desktop? _desktop;
     private KeyboardState _prevKeyboard;
 
-    public RunSummaryScreen(KeyboardDefenseGame game, ScreenManager screenManager, bool isVictory)
+    public RunSummaryScreen(
+        KeyboardDefenseGame game,
+        ScreenManager screenManager,
+        bool isVictory,
+        int nodeIndex = 0,
+        string nodeName = "Vertical Slice",
+        bool returnToCampaignMapOnSummary = false)
         : base(game, screenManager)
     {
         _isVictory = isVictory;
+        _nodeIndex = nodeIndex;
+        _nodeName = nodeName;
+        _returnToCampaignMapOnSummary = returnToCampaignMapOnSummary;
     }
 
     public override void OnEnter()
@@ -146,17 +158,23 @@ public class RunSummaryScreen : GameScreen
             HorizontalAlignment = HorizontalAlignment.Center,
         };
 
-        var newGameBtn = ButtonFactory.Primary("New Game", OnNewGame);
+        var newGameBtn = ButtonFactory.Primary(
+            _returnToCampaignMapOnSummary ? "Retry Node" : "New Game",
+            OnNewGame);
         buttonRow.Widgets.Add(newGameBtn);
 
-        var mainMenuBtn = ButtonFactory.Secondary("Main Menu", OnMainMenu);
+        var mainMenuBtn = ButtonFactory.Secondary(
+            _returnToCampaignMapOnSummary ? "Campaign Map" : "Main Menu",
+            OnMainMenu);
         buttonRow.Widgets.Add(mainMenuBtn);
 
         root.Widgets.Add(buttonRow);
 
         root.Widgets.Add(new Label
         {
-            Text = "Press Enter for New Game, Escape for Main Menu",
+            Text = _returnToCampaignMapOnSummary
+                ? "Press Enter to retry this node, Escape for campaign map"
+                : "Press Enter for New Game, Escape for Main Menu",
             TextColor = ThemeColors.TextDim,
             HorizontalAlignment = HorizontalAlignment.Center,
         });
@@ -252,13 +270,30 @@ public class RunSummaryScreen : GameScreen
 
     private void OnNewGame()
     {
-        // Pop summary, pop victory/defeat, pop battlefield — then push fresh main menu
-        // Use Switch to clear the entire stack and start fresh
+        if (_returnToCampaignMapOnSummary)
+        {
+            GameController.Instance.NewGame($"campaign_retry_{DateTime.UtcNow.Ticks}");
+            ScreenManager.Switch(new BattlefieldScreen(
+                Game,
+                ScreenManager,
+                _nodeIndex,
+                _nodeName,
+                singleWaveMode: true,
+                returnToCampaignMapOnSummary: true));
+            return;
+        }
+
         ScreenManager.Switch(new MainMenuScreen(Game, ScreenManager));
     }
 
     private void OnMainMenu()
     {
+        if (_returnToCampaignMapOnSummary)
+        {
+            ScreenManager.Switch(new CampaignMapScreen(Game, ScreenManager));
+            return;
+        }
+
         ScreenManager.Switch(new MainMenuScreen(Game, ScreenManager));
     }
 
