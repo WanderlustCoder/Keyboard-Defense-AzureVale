@@ -37,6 +37,10 @@ public class BattlefieldScreen : GameScreen
     private Label? _dayLabel;
     private Label? _goldLabel;
     private Label? _enemyLabel;
+    private Label? _waveLabel;
+    private Label? _promptLabel;
+    private Label? _timerLabel;
+    private Label? _typingStatsLabel;
     private Label? _eventLog;
     private TextBox? _typingInput;
     private TypingInput? _typingHandler;
@@ -332,6 +336,21 @@ public class BattlefieldScreen : GameScreen
         hudBar.Widgets.Add(_enemyLabel);
         mainLayout.Widgets.Add(hudBar);
 
+        if (_singleWaveMode)
+        {
+            var sliceHudBar = new HorizontalStackPanel { Spacing = DesignSystem.SpaceMd };
+            _waveLabel = new Label { Text = "Wave: 0/0", TextColor = ThemeColors.AccentBlue };
+            _promptLabel = new Label { Text = "Prompt: -", TextColor = ThemeColors.TextDim };
+            _timerLabel = new Label { Text = "Time: 0:00", TextColor = ThemeColors.AccentCyan };
+            _typingStatsLabel = new Label { Text = "Words: 0  Misses: 0", TextColor = ThemeColors.TextDim };
+
+            sliceHudBar.Widgets.Add(_waveLabel);
+            sliceHudBar.Widgets.Add(_promptLabel);
+            sliceHudBar.Widgets.Add(_timerLabel);
+            sliceHudBar.Widgets.Add(_typingStatsLabel);
+            mainLayout.Widgets.Add(sliceHudBar);
+        }
+
         mainLayout.Widgets.Add(new HorizontalSeparator());
 
         // Event log
@@ -599,6 +618,30 @@ public class BattlefieldScreen : GameScreen
         if (_goldLabel != null) _goldLabel.Text = $"{Locale.Tr("resources.gold")}: {state.Gold}";
         if (_enemyLabel != null) _enemyLabel.Text = $"{Locale.Tr("hud.enemies")}: {state.Enemies.Count}";
 
+        if (_singleWaveMode)
+        {
+            if (_phaseLabel != null)
+                _phaseLabel.Text = $"{Locale.Tr("game.phase")}: {state.Phase} (single-wave)";
+
+            int total = Math.Max(0, state.NightWaveTotal);
+            int spawned = Math.Max(0, total - state.NightSpawnRemaining);
+            if (_waveLabel != null)
+                _waveLabel.Text = $"Wave: {spawned}/{total}  Active: {state.Enemies.Count}";
+
+            string promptText = string.IsNullOrEmpty(state.NightPrompt) ? "-" : state.NightPrompt;
+            if (_promptLabel != null)
+                _promptLabel.Text = $"Prompt: {promptText}";
+
+            float runClock = ReadMetricFloat(state, "vs_run_clock_sec", 0f);
+            if (_timerLabel != null)
+                _timerLabel.Text = $"Time: {FormatSeconds(runClock)}";
+
+            int wordsTyped = ReadMetricInt(state, "battle_words_typed", 0);
+            int misses = ReadMetricInt(state, "vs_miss_count", 0);
+            if (_typingStatsLabel != null)
+                _typingStatsLabel.Text = $"Words: {wordsTyped}  Misses: {misses}";
+        }
+
         // Screen shake on castle damage
         if (_prevHp > 0 && state.Hp < _prevHp)
         {
@@ -658,5 +701,33 @@ public class BattlefieldScreen : GameScreen
         if (!string.IsNullOrEmpty(current))
             current += "\n";
         _eventLog.Text = current + message;
+    }
+
+    private static string FormatSeconds(float value)
+    {
+        int total = Math.Max(0, (int)MathF.Floor(value));
+        int minutes = total / 60;
+        int seconds = total % 60;
+        return $"{minutes}:{seconds:D2}";
+    }
+
+    private static int ReadMetricInt(GameState state, string key, int fallback = 0)
+    {
+        if (!state.TypingMetrics.TryGetValue(key, out var value) || value == null)
+            return fallback;
+        if (value is int i)
+            return i;
+        return int.TryParse(value.ToString(), out int parsed) ? parsed : fallback;
+    }
+
+    private static float ReadMetricFloat(GameState state, string key, float fallback = 0f)
+    {
+        if (!state.TypingMetrics.TryGetValue(key, out var value) || value == null)
+            return fallback;
+        if (value is float f)
+            return f;
+        if (value is double d)
+            return (float)d;
+        return float.TryParse(value.ToString(), out float parsed) ? parsed : fallback;
     }
 }
