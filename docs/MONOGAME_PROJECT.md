@@ -6,8 +6,13 @@ The active project is the MonoGame version at:
 
 Current implementation milestone:
 
-- `docs/MONOGAME_VERTICAL_SLICE_PLAN.md` (first playable loop and task scaffold)
+- `docs/MONOGAME_VERTICAL_SLICE_PLAN.md` (completed first-playable loop baseline)
 - `apps/keyboard-defense-monogame/docs/VERTICAL_SLICE_BALANCE.md` (current single-wave tuning baseline)
+
+Current focus after vertical-slice completion:
+
+- Campaign-node progression polish and summary feedback
+- Node-specific wave profile coverage and fallback safety (`vertical_slice_wave_profiles.json`)
 
 ## Build and Test
 

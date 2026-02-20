@@ -3,7 +3,7 @@
 ## Current Project (MonoGame)
 
 - `docs/MONOGAME_PROJECT.md` - Active project workflow, commands, and structure.
-- `docs/MONOGAME_VERTICAL_SLICE_PLAN.md` - First-playable milestone scope and ordered task backlog.
+- `docs/MONOGAME_VERTICAL_SLICE_PLAN.md` - Completed first-playable milestone scope and acceptance checklist.
 - `apps/keyboard-defense-monogame/KeyboardDefense.sln` - MonoGame solution entrypoint.
 - `apps/keyboard-defense-monogame/src/KeyboardDefense.Core/` - Deterministic simulation/domain logic.
 - `apps/keyboard-defense-monogame/src/KeyboardDefense.Game/` - Runtime game/render/input layer.
@@ -15,6 +15,7 @@
 - `apps/keyboard-defense-monogame/docs/PIXEL_LAB_CONTRACT.md` - Pixel Lab integration contract.
 - `apps/keyboard-defense-monogame/docs/VERTICAL_SLICE_BALANCE.md` - Single-wave baseline constants and scoring assumptions.
 - `apps/keyboard-defense-monogame/data/vertical_slice_wave_profiles.json` - Node-specific single-wave profile overrides.
+- `apps/keyboard-defense-monogame/src/KeyboardDefense.Tests/Core/VerticalSliceWaveDataTests.cs` - Node-profile resolution and fallback coverage.
 - `apps/keyboard-defense-monogame/tools/pixel_lab/validate_manifest.py` - Manifest validation.
 - `apps/keyboard-defense-monogame/tools/pixel_lab/build_texture_manifest.py` - Runtime manifest generation.
 - `apps/keyboard-defense-monogame/tools/pixel_lab/split_runtime_subset.py` - Catalog/runtime subset split.
