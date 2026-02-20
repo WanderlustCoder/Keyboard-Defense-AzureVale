@@ -10,13 +10,13 @@ Current implementation milestone:
 - `docs/MONOGAME_CAMPAIGN_M1_PLAN.md` (completed campaign progression baseline)
 - `docs/MONOGAME_CAMPAIGN_M2_PLAN.md` (completed campaign hardening and retry-flow milestone)
 - `docs/MONOGAME_CAMPAIGN_M3_PLAN.md` (completed campaign map readability and inspection milestone)
-- `docs/MONOGAME_CAMPAIGN_M4_PLAN.md` (active campaign map selection summary and inspection parity milestone)
+- `docs/MONOGAME_CAMPAIGN_M4_PLAN.md` (completed campaign map selection summary and inspection parity milestone)
 - `apps/keyboard-defense-monogame/docs/VERTICAL_SLICE_BALANCE.md` (current single-wave tuning baseline)
 
-Current focus in campaign M4:
+Current focus after campaign M4 completion:
 
-- Selection summary strip clarity for inspected campaign nodes
-- Keyboard/mouse inspection parity and follow-up navigation polish
+- Campaign milestone planning for M5
+- Additional campaign UX/accessibility validation guardrails
 
 ## Build and Test
 

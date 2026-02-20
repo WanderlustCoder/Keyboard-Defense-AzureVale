@@ -10,7 +10,7 @@ Deliver campaign progression UX clarity improvements with lightweight runtime gu
 
 ## Milestone Status
 
-- Active as of February 20, 2026.
+- Completed on February 20, 2026.
 
 ## Definition of Done
 
@@ -28,10 +28,10 @@ Deliver campaign progression UX clarity improvements with lightweight runtime gu
 2. [x] `CM4-002` Inspection parity consistency
    - Use shared inspected-node source for mouse hover and keyboard focus.
    - Expose current inspection mode (`Mouse` vs `Keyboard`) in strip text.
-3. [ ] `CM4-003` Focus navigation polish
+3. [x] `CM4-003` Focus navigation polish
    - Improve keyboard inspection traversal heuristics for dense maps.
    - Ensure focus progression remains intuitive across columns/rows.
-4. [ ] `CM4-004` M4 regression artifacts
+4. [x] `CM4-004` M4 regression artifacts
    - Extend status checklist coverage for summary strip correctness.
    - Capture map UX validation notes for keyboard + mouse parity.
 
@@ -40,8 +40,8 @@ Deliver campaign progression UX clarity improvements with lightweight runtime gu
 - [x] Selection summary strip renders in campaign map runtime.
 - [x] Summary strip updates for both hovered and keyboard-focused nodes.
 - [x] Strip includes reward state and resolved wave profile information.
-- [ ] Keyboard focus traversal polish is completed.
-- [ ] M4-specific regression artifacts are documented.
+- [x] Keyboard focus traversal polish is completed.
+- [x] M4-specific regression artifacts are documented.
 
 ## Out of Scope (for this milestone)
 

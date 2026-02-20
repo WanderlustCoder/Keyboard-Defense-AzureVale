@@ -794,6 +794,65 @@ public class CampaignMapScreen : GameScreen
             0f);
     }
 
+    private void StepKeyboardFocusDirectional(int dirX, int dirY)
+    {
+        if (_keyboardNodeOrder.Count == 0)
+            return;
+
+        if (string.IsNullOrEmpty(_focusedNodeId) || !_nodePositions.ContainsKey(_focusedNodeId))
+        {
+            _keyboardFocusIndex = 0;
+            _focusedNodeId = _keyboardNodeOrder[0];
+            return;
+        }
+
+        string currentId = _focusedNodeId;
+        Vector2 currentPos = _nodePositions[currentId];
+
+        string? bestId = null;
+        float bestScore = float.MaxValue;
+        foreach (string candidateId in _keyboardNodeOrder)
+        {
+            if (candidateId == currentId || !_nodePositions.TryGetValue(candidateId, out Vector2 candidatePos))
+                continue;
+
+            float dx = candidatePos.X - currentPos.X;
+            float dy = candidatePos.Y - currentPos.Y;
+            float primary;
+            float secondary;
+            float laneThreshold;
+
+            if (dirX != 0)
+            {
+                primary = dirX > 0 ? dx : -dx;
+                secondary = MathF.Abs(dy);
+                laneThreshold = RowSpacing * 0.65f;
+            }
+            else
+            {
+                primary = dirY > 0 ? dy : -dy;
+                secondary = MathF.Abs(dx);
+                laneThreshold = ColumnSpacing * 0.6f;
+            }
+
+            if (primary <= 0f)
+                continue;
+
+            float lanePenalty = secondary > laneThreshold ? secondary * 0.5f : secondary * 0.15f;
+            float score = primary * 4f + lanePenalty;
+            if (score < bestScore)
+            {
+                bestScore = score;
+                bestId = candidateId;
+            }
+        }
+
+        if (bestId != null)
+            SyncKeyboardFocusToNode(bestId);
+        else
+            StepKeyboardFocus((dirX < 0 || dirY < 0) ? -1 : 1);
+    }
+
     private bool IsKeyPressed(KeyboardState current, Keys key)
     {
         return current.IsKeyDown(key) && !_prevKeyboard.IsKeyDown(key);
