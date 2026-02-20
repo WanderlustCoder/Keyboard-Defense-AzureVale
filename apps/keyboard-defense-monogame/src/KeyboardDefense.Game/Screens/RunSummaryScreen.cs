@@ -269,18 +269,18 @@ public class RunSummaryScreen : GameScreen
         {
             Text = label,
             TextColor = ThemeColors.TextDim,
-            GridRow = row,
-            GridColumn = col,
         };
+        Grid.SetRow(labelWidget, row);
+        Grid.SetColumn(labelWidget, col);
         grid.Widgets.Add(labelWidget);
 
         var valueWidget = new Label
         {
             Text = value,
             TextColor = ThemeColors.Text,
-            GridRow = row,
-            GridColumn = col + 1,
         };
+        Grid.SetRow(valueWidget, row);
+        Grid.SetColumn(valueWidget, col + 1);
         grid.Widgets.Add(valueWidget);
     }
 

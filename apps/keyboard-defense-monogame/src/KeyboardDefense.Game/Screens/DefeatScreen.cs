@@ -188,18 +188,18 @@ public class DefeatScreen : GameScreen
         {
             Text = label,
             TextColor = ThemeColors.TextDim,
-            GridRow = row,
-            GridColumn = 0,
         };
+        Grid.SetRow(labelWidget, row);
+        Grid.SetColumn(labelWidget, 0);
         grid.Widgets.Add(labelWidget);
 
         var valueWidget = new Label
         {
             Text = value,
             TextColor = ThemeColors.Text,
-            GridRow = row,
-            GridColumn = 1,
         };
+        Grid.SetRow(valueWidget, row);
+        Grid.SetColumn(valueWidget, 1);
         grid.Widgets.Add(valueWidget);
     }
 

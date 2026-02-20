@@ -28,8 +28,6 @@ public class CommandBar
     private float _errorTimer;
 
     public event Action<string>? CommandSubmitted;
-    public event Action<string>? InputChanged;
-
     public Panel RootWidget { get; }
 
     public CommandBar()

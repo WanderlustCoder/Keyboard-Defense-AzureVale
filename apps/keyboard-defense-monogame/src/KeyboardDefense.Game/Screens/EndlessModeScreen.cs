@@ -865,21 +865,23 @@ public class EndlessSummaryScreen : GameScreen
     {
         grid.RowsProportions.Add(new Proportion(ProportionType.Auto));
 
-        grid.Widgets.Add(new Label
+        var labelWidget = new Label
         {
             Text = label,
             TextColor = ThemeColors.TextDim,
-            GridRow = row,
-            GridColumn = 0,
-        });
+        };
+        Grid.SetRow(labelWidget, row);
+        Grid.SetColumn(labelWidget, 0);
+        grid.Widgets.Add(labelWidget);
 
-        grid.Widgets.Add(new Label
+        var valueWidget = new Label
         {
             Text = value,
             TextColor = ThemeColors.Text,
-            GridRow = row,
-            GridColumn = 1,
-        });
+        };
+        Grid.SetRow(valueWidget, row);
+        Grid.SetColumn(valueWidget, 1);
+        grid.Widgets.Add(valueWidget);
     }
 
     private static string GetEndlessGrade(int score)
