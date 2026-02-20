@@ -28,6 +28,7 @@ public class BattlefieldScreen : GameScreen
 {
     private readonly int _nodeIndex;
     private readonly string _nodeName;
+    private readonly bool _singleWaveMode;
 
     private Desktop? _desktop;
     private Label? _phaseLabel;
@@ -65,16 +66,23 @@ public class BattlefieldScreen : GameScreen
     private int _prevEnemyCount;
     private List<string> _prevEnemyKinds = new();
     private bool _gameEnded;
+    private bool _singleWaveNightStarted;
     private readonly List<string> _earnedMilestones = new();
     private HashSet<int> _prevEnemyIds = new();
     private int _prevHp;
     private KeyboardState _prevKeyboard;
 
-    public BattlefieldScreen(KeyboardDefenseGame game, ScreenManager screenManager, int nodeIndex, string nodeName)
+    public BattlefieldScreen(
+        KeyboardDefenseGame game,
+        ScreenManager screenManager,
+        int nodeIndex,
+        string nodeName,
+        bool singleWaveMode = false)
         : base(game, screenManager)
     {
         _nodeIndex = nodeIndex;
         _nodeName = nodeName;
+        _singleWaveMode = singleWaveMode;
     }
 
     public override void OnEnter()
@@ -105,9 +113,22 @@ public class BattlefieldScreen : GameScreen
         AppendLog($"{_nodeName} - {Locale.Tr("game.day")} {ctrl.State.Day}");
         AppendLog(Locale.Tr("battle.day_phase_help"));
 
-        // Start battle tutorial for first-time players
-        _battleTutorial = new BattleTutorial();
-        _battleTutorial.Start();
+        if (_singleWaveMode)
+        {
+            AppendLog("Vertical Slice: survive one night wave.");
+            if (ctrl.State.Phase == "day")
+            {
+                ctrl.ApplyCommand("end");
+                SessionAnalytics.Instance.OnGameEvent(ctrl.LastEvents);
+                _singleWaveNightStarted = true;
+            }
+        }
+        else
+        {
+            // Start battle tutorial for first-time players
+            _battleTutorial = new BattleTutorial();
+            _battleTutorial.Start();
+        }
     }
 
     public override void OnExit()
@@ -234,6 +255,8 @@ public class BattlefieldScreen : GameScreen
         _panelOverlay?.Achievement.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
         _panelOverlay?.Combo.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
         _battleTutorial?.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+
+        CheckGameEnd();
     }
 
     public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
@@ -464,6 +487,30 @@ public class BattlefieldScreen : GameScreen
         if (_gameEnded) return;
 
         var state = GameController.Instance.State;
+        if (_singleWaveMode)
+        {
+            if (state.Phase == "game_over")
+            {
+                _gameEnded = true;
+                var milestones = Milestones.CheckNewMilestones(state);
+                _earnedMilestones.AddRange(milestones);
+                ScreenManager.Push(new RunSummaryScreen(Game, ScreenManager, isVictory: false));
+                return;
+            }
+
+            if (_singleWaveNightStarted &&
+                state.Phase == "day" &&
+                state.NightSpawnRemaining <= 0 &&
+                state.Enemies.Count == 0)
+            {
+                _gameEnded = true;
+                var milestones = Milestones.CheckNewMilestones(state);
+                _earnedMilestones.AddRange(milestones);
+                ScreenManager.Push(new RunSummaryScreen(Game, ScreenManager, isVictory: true));
+                return;
+            }
+        }
+
         if (state.Phase == "victory")
         {
             _gameEnded = true;

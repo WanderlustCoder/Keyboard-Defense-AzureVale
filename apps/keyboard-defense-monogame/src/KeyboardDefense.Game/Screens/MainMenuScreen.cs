@@ -77,6 +77,22 @@ public class MainMenuScreen : GameScreen
             vbox.Widgets.Add(continueButton);
         }
 
+        var verticalSliceButton = CreateMenuButton("Start Vertical Slice");
+        verticalSliceButton.Click += (_, _) =>
+        {
+            SceneTransition.Instance.BattleTransition(() =>
+            {
+                GameController.Instance.NewGame($"vertical_slice_{DateTime.UtcNow.Ticks}");
+                ScreenManager.Push(new BattlefieldScreen(
+                    Game,
+                    ScreenManager,
+                    nodeIndex: 0,
+                    nodeName: "Vertical Slice",
+                    singleWaveMode: true));
+            });
+        };
+        vbox.Widgets.Add(verticalSliceButton);
+
         var campaignButton = CreateMenuButton(Locale.Tr("menu.campaign"));
         campaignButton.Click += (_, _) =>
         {
