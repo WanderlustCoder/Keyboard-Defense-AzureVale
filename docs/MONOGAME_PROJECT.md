@@ -7,6 +7,7 @@ The active project is the MonoGame version at:
 Current implementation milestone:
 
 - `docs/MONOGAME_VERTICAL_SLICE_PLAN.md` (first playable loop and task scaffold)
+- `apps/keyboard-defense-monogame/docs/VERTICAL_SLICE_BALANCE.md` (current single-wave tuning baseline)
 
 ## Build and Test
 

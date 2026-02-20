@@ -13,6 +13,7 @@
 - `apps/keyboard-defense-monogame/data/pixel_lab_manifest.active_runtime.json` - Runtime-shippable asset subset.
 - `apps/keyboard-defense-monogame/data/schemas/pixel_lab_manifest.schema.json` - Pixel Lab manifest schema.
 - `apps/keyboard-defense-monogame/docs/PIXEL_LAB_CONTRACT.md` - Pixel Lab integration contract.
+- `apps/keyboard-defense-monogame/docs/VERTICAL_SLICE_BALANCE.md` - Single-wave baseline constants and scoring assumptions.
 - `apps/keyboard-defense-monogame/tools/pixel_lab/validate_manifest.py` - Manifest validation.
 - `apps/keyboard-defense-monogame/tools/pixel_lab/build_texture_manifest.py` - Runtime manifest generation.
 - `apps/keyboard-defense-monogame/tools/pixel_lab/split_runtime_subset.py` - Catalog/runtime subset split.

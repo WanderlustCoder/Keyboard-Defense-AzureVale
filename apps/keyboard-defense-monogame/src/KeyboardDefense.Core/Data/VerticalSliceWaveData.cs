@@ -136,9 +136,9 @@ public sealed class VerticalSliceWaveProfile
     public int StartThreat { get; init; } = 0;
     public string LessonId { get; init; } = "full_alpha";
     public bool PracticeMode { get; init; } = false;
-    public int WaveSpawnTotal { get; init; } = 6;
-    public float SpawnIntervalSeconds { get; init; } = 1.0f;
-    public float EnemyStepIntervalSeconds { get; init; } = 1.0f;
+    public int WaveSpawnTotal { get; init; } = 32;
+    public float SpawnIntervalSeconds { get; init; } = 2.5f;
+    public float EnemyStepIntervalSeconds { get; init; } = 1.4f;
     public int EnemyStepDistance { get; init; } = 1;
     public int EnemyContactDamage { get; init; } = 1;
     public int TypedHitDamage { get; init; } = 2;
