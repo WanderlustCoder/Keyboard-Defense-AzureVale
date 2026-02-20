@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "generated_utc": "2026-02-20T16:44:48Z",
+  "generated_utc": "2026-02-20T16:53:47Z",
   "assets": [
     {
       "id": "affix_arcane",
@@ -1680,30 +1680,6 @@
       ]
     },
     {
-      "id": "combo_x2",
-      "category": "sprites",
-      "source": {
-        "provider": "manual",
-        "artifact_type": "other",
-        "artifact_id": "legacy:combo_x2",
-        "exported_utc": "2026-01-06T00:00:00Z"
-      },
-      "output": {
-        "relative_path": "sprites/combo_x2.png",
-        "width": 24,
-        "height": 16
-      },
-      "constraints": {
-        "max_kb": 2,
-        "pixel_art": true,
-        "alpha_required": true
-      },
-      "tags": [
-        "legacy_import",
-        "legacy_category_sprites"
-      ]
-    },
-    {
       "id": "combo_x3",
       "category": "icons",
       "source": {
@@ -1725,30 +1701,6 @@
       "tags": [
         "legacy_import",
         "legacy_category_icons"
-      ]
-    },
-    {
-      "id": "combo_x3",
-      "category": "sprites",
-      "source": {
-        "provider": "manual",
-        "artifact_type": "other",
-        "artifact_id": "legacy:combo_x3",
-        "exported_utc": "2026-01-06T00:00:00Z"
-      },
-      "output": {
-        "relative_path": "sprites/combo_x3.png",
-        "width": 24,
-        "height": 16
-      },
-      "constraints": {
-        "max_kb": 2,
-        "pixel_art": true,
-        "alpha_required": true
-      },
-      "tags": [
-        "legacy_import",
-        "legacy_category_sprites"
       ]
     },
     {
@@ -1968,30 +1920,6 @@
       ]
     },
     {
-      "id": "cursor_default",
-      "category": "icons",
-      "source": {
-        "provider": "manual",
-        "artifact_type": "other",
-        "artifact_id": "legacy:cursor_default",
-        "exported_utc": "2026-01-06T00:00:00Z"
-      },
-      "output": {
-        "relative_path": "icons/cursor_default.png",
-        "width": 16,
-        "height": 16
-      },
-      "constraints": {
-        "max_kb": 2,
-        "pixel_art": true,
-        "alpha_required": true
-      },
-      "tags": [
-        "legacy_import",
-        "legacy_category_icons"
-      ]
-    },
-    {
       "id": "cursor_hand",
       "category": "icons",
       "source": {
@@ -2085,30 +2013,6 @@
       "tags": [
         "legacy_import",
         "legacy_category_cursors"
-      ]
-    },
-    {
-      "id": "cursor_target",
-      "category": "icons",
-      "source": {
-        "provider": "manual",
-        "artifact_type": "other",
-        "artifact_id": "legacy:cursor_target",
-        "exported_utc": "2026-01-06T00:00:00Z"
-      },
-      "output": {
-        "relative_path": "icons/cursor_target.png",
-        "width": 16,
-        "height": 16
-      },
-      "constraints": {
-        "max_kb": 2,
-        "pixel_art": true,
-        "alpha_required": true
-      },
-      "tags": [
-        "legacy_import",
-        "legacy_category_icons"
       ]
     },
     {
@@ -6237,30 +6141,6 @@
       ]
     },
     {
-      "id": "ico_accuracy",
-      "category": "icons",
-      "source": {
-        "provider": "manual",
-        "artifact_type": "other",
-        "artifact_id": "legacy:ico_accuracy",
-        "exported_utc": "2026-01-06T00:00:00Z"
-      },
-      "output": {
-        "relative_path": "icons/ico_accuracy.png",
-        "width": 16,
-        "height": 16
-      },
-      "constraints": {
-        "max_kb": 2,
-        "pixel_art": true,
-        "alpha_required": true
-      },
-      "tags": [
-        "legacy_import",
-        "legacy_category_icons"
-      ]
-    },
-    {
       "id": "ico_achievement",
       "category": "icons",
       "source": {
@@ -6468,30 +6348,6 @@
       },
       "constraints": {
         "max_kb": 8,
-        "pixel_art": true,
-        "alpha_required": true
-      },
-      "tags": [
-        "legacy_import",
-        "legacy_category_icons"
-      ]
-    },
-    {
-      "id": "ico_back",
-      "category": "icons",
-      "source": {
-        "provider": "manual",
-        "artifact_type": "other",
-        "artifact_id": "legacy:ico_back",
-        "exported_utc": "2026-01-06T00:00:00Z"
-      },
-      "output": {
-        "relative_path": "icons/ico_back.png",
-        "width": 16,
-        "height": 16
-      },
-      "constraints": {
-        "max_kb": 2,
         "pixel_art": true,
         "alpha_required": true
       },
@@ -6837,30 +6693,6 @@
       ]
     },
     {
-      "id": "ico_energy",
-      "category": "icons",
-      "source": {
-        "provider": "manual",
-        "artifact_type": "other",
-        "artifact_id": "legacy:ico_energy",
-        "exported_utc": "2026-01-06T00:00:00Z"
-      },
-      "output": {
-        "relative_path": "icons/ico_energy.png",
-        "width": 16,
-        "height": 16
-      },
-      "constraints": {
-        "max_kb": 2,
-        "pixel_art": true,
-        "alpha_required": true
-      },
-      "tags": [
-        "legacy_import",
-        "legacy_category_icons"
-      ]
-    },
-    {
       "id": "ico_exit",
       "category": "icons",
       "source": {
@@ -6956,30 +6788,6 @@
       ]
     },
     {
-      "id": "ico_fullscreen",
-      "category": "icons",
-      "source": {
-        "provider": "manual",
-        "artifact_type": "other",
-        "artifact_id": "legacy:ico_fullscreen",
-        "exported_utc": "2026-01-06T00:00:00Z"
-      },
-      "output": {
-        "relative_path": "icons/ico_fullscreen.png",
-        "width": 16,
-        "height": 16
-      },
-      "constraints": {
-        "max_kb": 6,
-        "pixel_art": true,
-        "alpha_required": true
-      },
-      "tags": [
-        "legacy_import",
-        "legacy_category_icons"
-      ]
-    },
-    {
       "id": "ico_gem",
       "category": "icons",
       "source": {
@@ -6995,30 +6803,6 @@
       },
       "constraints": {
         "max_kb": 8,
-        "pixel_art": true,
-        "alpha_required": true
-      },
-      "tags": [
-        "legacy_import",
-        "legacy_category_icons"
-      ]
-    },
-    {
-      "id": "ico_gem",
-      "category": "icons",
-      "source": {
-        "provider": "manual",
-        "artifact_type": "other",
-        "artifact_id": "legacy:ico_gem",
-        "exported_utc": "2026-01-06T00:00:00Z"
-      },
-      "output": {
-        "relative_path": "icons/ico_gem.png",
-        "width": 16,
-        "height": 16
-      },
-      "constraints": {
-        "max_kb": 2,
         "pixel_art": true,
         "alpha_required": true
       },
@@ -7140,30 +6924,6 @@
       },
       "constraints": {
         "max_kb": 8,
-        "pixel_art": true,
-        "alpha_required": true
-      },
-      "tags": [
-        "legacy_import",
-        "legacy_category_icons"
-      ]
-    },
-    {
-      "id": "ico_help",
-      "category": "icons",
-      "source": {
-        "provider": "manual",
-        "artifact_type": "other",
-        "artifact_id": "legacy:ico_help",
-        "exported_utc": "2026-01-06T00:00:00Z"
-      },
-      "output": {
-        "relative_path": "icons/ico_help.png",
-        "width": 16,
-        "height": 16
-      },
-      "constraints": {
-        "max_kb": 2,
         "pixel_art": true,
         "alpha_required": true
       },
@@ -7436,30 +7196,6 @@
       ]
     },
     {
-      "id": "ico_music",
-      "category": "icons",
-      "source": {
-        "provider": "manual",
-        "artifact_type": "other",
-        "artifact_id": "legacy:ico_music",
-        "exported_utc": "2026-01-06T00:00:00Z"
-      },
-      "output": {
-        "relative_path": "icons/ico_music.png",
-        "width": 16,
-        "height": 16
-      },
-      "constraints": {
-        "max_kb": 6,
-        "pixel_art": true,
-        "alpha_required": true
-      },
-      "tags": [
-        "legacy_import",
-        "legacy_category_icons"
-      ]
-    },
-    {
       "id": "ico_new",
       "category": "icons",
       "source": {
@@ -7556,30 +7292,6 @@
       ]
     },
     {
-      "id": "ico_pause",
-      "category": "icons",
-      "source": {
-        "provider": "manual",
-        "artifact_type": "other",
-        "artifact_id": "legacy:ico_pause",
-        "exported_utc": "2026-01-06T00:00:00Z"
-      },
-      "output": {
-        "relative_path": "icons/ico_pause.png",
-        "width": 16,
-        "height": 16
-      },
-      "constraints": {
-        "max_kb": 2,
-        "pixel_art": true,
-        "alpha_required": true
-      },
-      "tags": [
-        "legacy_import",
-        "legacy_category_icons"
-      ]
-    },
-    {
       "id": "ico_perfect",
       "category": "icons",
       "source": {
@@ -7643,30 +7355,6 @@
       },
       "constraints": {
         "max_kb": 8,
-        "pixel_art": true,
-        "alpha_required": true
-      },
-      "tags": [
-        "legacy_import",
-        "legacy_category_icons"
-      ]
-    },
-    {
-      "id": "ico_play",
-      "category": "icons",
-      "source": {
-        "provider": "manual",
-        "artifact_type": "other",
-        "artifact_id": "legacy:ico_play",
-        "exported_utc": "2026-01-06T00:00:00Z"
-      },
-      "output": {
-        "relative_path": "icons/ico_play.png",
-        "width": 16,
-        "height": 16
-      },
-      "constraints": {
-        "max_kb": 2,
         "pixel_art": true,
         "alpha_required": true
       },
@@ -7844,30 +7532,6 @@
       ]
     },
     {
-      "id": "ico_scroll",
-      "category": "icons",
-      "source": {
-        "provider": "manual",
-        "artifact_type": "other",
-        "artifact_id": "legacy:ico_scroll",
-        "exported_utc": "2026-01-06T00:00:00Z"
-      },
-      "output": {
-        "relative_path": "icons/ico_scroll.png",
-        "width": 16,
-        "height": 16
-      },
-      "constraints": {
-        "max_kb": 2,
-        "pixel_art": true,
-        "alpha_required": true
-      },
-      "tags": [
-        "legacy_import",
-        "legacy_category_icons"
-      ]
-    },
-    {
       "id": "ico_settings",
       "category": "icons",
       "source": {
@@ -7878,54 +7542,6 @@
       },
       "output": {
         "relative_path": "icons/ico_settings.png",
-        "width": 16,
-        "height": 16
-      },
-      "constraints": {
-        "max_kb": 8,
-        "pixel_art": true,
-        "alpha_required": true
-      },
-      "tags": [
-        "legacy_import",
-        "legacy_category_icons"
-      ]
-    },
-    {
-      "id": "ico_settings",
-      "category": "icons",
-      "source": {
-        "provider": "manual",
-        "artifact_type": "other",
-        "artifact_id": "legacy:ico_settings",
-        "exported_utc": "2026-01-06T00:00:00Z"
-      },
-      "output": {
-        "relative_path": "icons/ico_settings.png",
-        "width": 16,
-        "height": 16
-      },
-      "constraints": {
-        "max_kb": 6,
-        "pixel_art": true,
-        "alpha_required": true
-      },
-      "tags": [
-        "legacy_import",
-        "legacy_category_icons"
-      ]
-    },
-    {
-      "id": "ico_sfx",
-      "category": "icons",
-      "source": {
-        "provider": "manual",
-        "artifact_type": "other",
-        "artifact_id": "legacy:ico_sfx",
-        "exported_utc": "2026-01-06T00:00:00Z"
-      },
-      "output": {
-        "relative_path": "icons/ico_sfx.png",
         "width": 16,
         "height": 16
       },
@@ -7954,7 +7570,7 @@
         "height": 16
       },
       "constraints": {
-        "max_kb": 6,
+        "max_kb": 8,
         "pixel_art": true,
         "alpha_required": true
       },
@@ -8289,30 +7905,6 @@
       },
       "constraints": {
         "max_kb": 8,
-        "pixel_art": true,
-        "alpha_required": true
-      },
-      "tags": [
-        "legacy_import",
-        "legacy_category_icons"
-      ]
-    },
-    {
-      "id": "ico_time",
-      "category": "icons",
-      "source": {
-        "provider": "manual",
-        "artifact_type": "other",
-        "artifact_id": "legacy:ico_time",
-        "exported_utc": "2026-01-06T00:00:00Z"
-      },
-      "output": {
-        "relative_path": "icons/ico_time.png",
-        "width": 16,
-        "height": 16
-      },
-      "constraints": {
-        "max_kb": 2,
         "pixel_art": true,
         "alpha_required": true
       },
@@ -8745,30 +8337,6 @@
       },
       "constraints": {
         "max_kb": 8,
-        "pixel_art": true,
-        "alpha_required": true
-      },
-      "tags": [
-        "legacy_import",
-        "legacy_category_icons"
-      ]
-    },
-    {
-      "id": "ico_wave",
-      "category": "icons",
-      "source": {
-        "provider": "manual",
-        "artifact_type": "other",
-        "artifact_id": "legacy:ico_wave",
-        "exported_utc": "2026-01-06T00:00:00Z"
-      },
-      "output": {
-        "relative_path": "icons/ico_wave.png",
-        "width": 16,
-        "height": 16
-      },
-      "constraints": {
-        "max_kb": 6,
         "pixel_art": true,
         "alpha_required": true
       },
@@ -15011,30 +14579,6 @@
       ]
     },
     {
-      "id": "tile_grass",
-      "category": "tiles",
-      "source": {
-        "provider": "manual",
-        "artifact_type": "other",
-        "artifact_id": "legacy:tile_grass",
-        "exported_utc": "2026-01-06T00:00:00Z"
-      },
-      "output": {
-        "relative_path": "tiles/tile_grass.png",
-        "width": 16,
-        "height": 16
-      },
-      "constraints": {
-        "max_kb": 6,
-        "pixel_art": true,
-        "alpha_required": true
-      },
-      "tags": [
-        "legacy_import",
-        "legacy_category_tiles"
-      ]
-    },
-    {
       "id": "tile_grass_forest_e",
       "category": "tiles",
       "source": {
@@ -16205,31 +15749,6 @@
       "tags": [
         "legacy_import",
         "legacy_category_tiles"
-      ]
-    },
-    {
-      "id": "tile_water",
-      "category": "tiles",
-      "source": {
-        "provider": "manual",
-        "artifact_type": "other",
-        "artifact_id": "legacy:tile_water",
-        "exported_utc": "2026-01-06T00:00:00Z"
-      },
-      "output": {
-        "relative_path": "tiles/tile_water.png",
-        "width": 32,
-        "height": 32
-      },
-      "constraints": {
-        "max_kb": 6,
-        "pixel_art": true,
-        "alpha_required": true
-      },
-      "tags": [
-        "legacy_import",
-        "legacy_category_tiles",
-        "runtime_curated"
       ]
     },
     {

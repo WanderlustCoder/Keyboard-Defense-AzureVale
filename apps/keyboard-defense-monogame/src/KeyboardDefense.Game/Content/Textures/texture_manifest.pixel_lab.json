@@ -1,0 +1,610 @@
+{
+  "version": "1.0.0",
+  "generated": "2026-02-20T16:52:55Z",
+  "textures": [
+    {
+      "id": "bld_barracks",
+      "path": "sprites/bld_barracks.png",
+      "category": "sprites",
+      "width": 96,
+      "height": 48,
+      "animations": {
+        "idle": {
+          "frames": 2,
+          "duration": 0.3,
+          "loop": true
+        }
+      }
+    },
+    {
+      "id": "bld_castle",
+      "path": "sprites/bld_castle.png",
+      "category": "sprites",
+      "width": 96,
+      "height": 48,
+      "animations": {
+        "idle": {
+          "frames": 2,
+          "duration": 0.3,
+          "loop": true
+        }
+      }
+    },
+    {
+      "id": "bld_farm",
+      "path": "sprites/bld_farm.png",
+      "category": "sprites",
+      "width": 96,
+      "height": 48,
+      "animations": {
+        "idle": {
+          "frames": 2,
+          "duration": 0.3,
+          "loop": true
+        }
+      }
+    },
+    {
+      "id": "bld_library",
+      "path": "sprites/bld_library.png",
+      "category": "sprites",
+      "width": 96,
+      "height": 48,
+      "animations": {
+        "idle": {
+          "frames": 2,
+          "duration": 0.3,
+          "loop": true
+        }
+      }
+    },
+    {
+      "id": "bld_market",
+      "path": "sprites/bld_market.png",
+      "category": "sprites",
+      "width": 96,
+      "height": 48,
+      "animations": {
+        "idle": {
+          "frames": 2,
+          "duration": 0.3,
+          "loop": true
+        }
+      }
+    },
+    {
+      "id": "bld_tower_arrow",
+      "path": "sprites/bld_tower_arrow.png",
+      "category": "sprites",
+      "width": 96,
+      "height": 48,
+      "animations": {
+        "idle": {
+          "frames": 2,
+          "duration": 0.3,
+          "loop": true
+        }
+      }
+    },
+    {
+      "id": "bld_tower_fire",
+      "path": "sprites/bld_tower_fire.png",
+      "category": "sprites",
+      "width": 96,
+      "height": 48,
+      "animations": {
+        "idle": {
+          "frames": 2,
+          "duration": 0.3,
+          "loop": true
+        }
+      }
+    },
+    {
+      "id": "bld_tower_slow",
+      "path": "sprites/bld_tower_slow.png",
+      "category": "sprites",
+      "width": 96,
+      "height": 48,
+      "animations": {
+        "idle": {
+          "frames": 2,
+          "duration": 0.3,
+          "loop": true
+        }
+      }
+    },
+    {
+      "id": "bld_wall",
+      "path": "sprites/bld_wall.png",
+      "category": "sprites",
+      "width": 96,
+      "height": 48,
+      "animations": {
+        "idle": {
+          "frames": 2,
+          "duration": 0.3,
+          "loop": true
+        }
+      }
+    },
+    {
+      "id": "enemy_armored",
+      "path": "sprites/enemy_armored.png",
+      "category": "sprites",
+      "width": 64,
+      "height": 64,
+      "animations": {
+        "idle": {
+          "frames": 2,
+          "duration": 0.3,
+          "loop": true
+        },
+        "walk": {
+          "frames": 2,
+          "duration": 0.15,
+          "loop": true
+        }
+      }
+    },
+    {
+      "id": "enemy_berserker",
+      "path": "sprites/enemy_berserker.png",
+      "category": "sprites",
+      "width": 64,
+      "height": 64,
+      "animations": {
+        "idle": {
+          "frames": 2,
+          "duration": 0.3,
+          "loop": true
+        },
+        "walk": {
+          "frames": 2,
+          "duration": 0.15,
+          "loop": true
+        }
+      }
+    },
+    {
+      "id": "enemy_boss_mage",
+      "path": "sprites/enemy_boss_mage.png",
+      "category": "sprites",
+      "width": 64,
+      "height": 64,
+      "animations": {
+        "idle": {
+          "frames": 2,
+          "duration": 0.3,
+          "loop": true
+        },
+        "walk": {
+          "frames": 2,
+          "duration": 0.15,
+          "loop": true
+        }
+      }
+    },
+    {
+      "id": "enemy_boss_warlord",
+      "path": "sprites/enemy_boss_warlord.png",
+      "category": "sprites",
+      "width": 64,
+      "height": 64,
+      "animations": {
+        "idle": {
+          "frames": 2,
+          "duration": 0.3,
+          "loop": true
+        },
+        "walk": {
+          "frames": 2,
+          "duration": 0.15,
+          "loop": true
+        }
+      }
+    },
+    {
+      "id": "enemy_brute",
+      "path": "sprites/enemy_brute.png",
+      "category": "sprites",
+      "width": 64,
+      "height": 64,
+      "animations": {
+        "idle": {
+          "frames": 2,
+          "duration": 0.3,
+          "loop": true
+        },
+        "walk": {
+          "frames": 2,
+          "duration": 0.15,
+          "loop": true
+        }
+      }
+    },
+    {
+      "id": "enemy_champion",
+      "path": "sprites/enemy_champion.png",
+      "category": "sprites",
+      "width": 64,
+      "height": 64,
+      "animations": {
+        "idle": {
+          "frames": 2,
+          "duration": 0.3,
+          "loop": true
+        },
+        "walk": {
+          "frames": 2,
+          "duration": 0.15,
+          "loop": true
+        }
+      }
+    },
+    {
+      "id": "enemy_elite",
+      "path": "sprites/enemy_elite.png",
+      "category": "sprites",
+      "width": 64,
+      "height": 64,
+      "animations": {
+        "idle": {
+          "frames": 2,
+          "duration": 0.3,
+          "loop": true
+        },
+        "walk": {
+          "frames": 2,
+          "duration": 0.15,
+          "loop": true
+        }
+      }
+    },
+    {
+      "id": "enemy_fen_seer",
+      "path": "sprites/enemy_fen_seer.png",
+      "category": "sprites",
+      "width": 64,
+      "height": 64,
+      "animations": {
+        "idle": {
+          "frames": 2,
+          "duration": 0.3,
+          "loop": true
+        },
+        "walk": {
+          "frames": 2,
+          "duration": 0.15,
+          "loop": true
+        }
+      }
+    },
+    {
+      "id": "enemy_flyer",
+      "path": "sprites/enemy_flyer.png",
+      "category": "sprites",
+      "width": 64,
+      "height": 64,
+      "animations": {
+        "idle": {
+          "frames": 2,
+          "duration": 0.3,
+          "loop": true
+        },
+        "walk": {
+          "frames": 2,
+          "duration": 0.15,
+          "loop": true
+        }
+      }
+    },
+    {
+      "id": "enemy_forest_guardian",
+      "path": "sprites/enemy_forest_guardian.png",
+      "category": "sprites",
+      "width": 64,
+      "height": 64,
+      "animations": {
+        "idle": {
+          "frames": 2,
+          "duration": 0.3,
+          "loop": true
+        },
+        "walk": {
+          "frames": 2,
+          "duration": 0.15,
+          "loop": true
+        }
+      }
+    },
+    {
+      "id": "enemy_healer",
+      "path": "sprites/enemy_healer.png",
+      "category": "sprites",
+      "width": 64,
+      "height": 64,
+      "animations": {
+        "idle": {
+          "frames": 2,
+          "duration": 0.3,
+          "loop": true
+        },
+        "walk": {
+          "frames": 2,
+          "duration": 0.15,
+          "loop": true
+        }
+      }
+    },
+    {
+      "id": "enemy_phantom",
+      "path": "sprites/enemy_phantom.png",
+      "category": "sprites",
+      "width": 64,
+      "height": 64,
+      "animations": {
+        "idle": {
+          "frames": 2,
+          "duration": 0.3,
+          "loop": true
+        },
+        "walk": {
+          "frames": 2,
+          "duration": 0.15,
+          "loop": true
+        }
+      }
+    },
+    {
+      "id": "enemy_raider",
+      "path": "sprites/enemy_raider.png",
+      "category": "sprites",
+      "width": 64,
+      "height": 64,
+      "animations": {
+        "idle": {
+          "frames": 2,
+          "duration": 0.3,
+          "loop": true
+        },
+        "walk": {
+          "frames": 2,
+          "duration": 0.15,
+          "loop": true
+        }
+      }
+    },
+    {
+      "id": "enemy_runner",
+      "path": "sprites/enemy_runner.png",
+      "category": "sprites",
+      "width": 64,
+      "height": 64,
+      "animations": {
+        "idle": {
+          "frames": 2,
+          "duration": 0.3,
+          "loop": true
+        },
+        "walk": {
+          "frames": 2,
+          "duration": 0.15,
+          "loop": true
+        }
+      }
+    },
+    {
+      "id": "enemy_scout",
+      "path": "sprites/enemy_scout.png",
+      "category": "sprites",
+      "width": 64,
+      "height": 64,
+      "animations": {
+        "idle": {
+          "frames": 2,
+          "duration": 0.3,
+          "loop": true
+        },
+        "walk": {
+          "frames": 2,
+          "duration": 0.15,
+          "loop": true
+        }
+      }
+    },
+    {
+      "id": "enemy_shielder",
+      "path": "sprites/enemy_shielder.png",
+      "category": "sprites",
+      "width": 64,
+      "height": 64,
+      "animations": {
+        "idle": {
+          "frames": 2,
+          "duration": 0.3,
+          "loop": true
+        },
+        "walk": {
+          "frames": 2,
+          "duration": 0.15,
+          "loop": true
+        }
+      }
+    },
+    {
+      "id": "enemy_stone_golem",
+      "path": "sprites/enemy_stone_golem.png",
+      "category": "sprites",
+      "width": 64,
+      "height": 64,
+      "animations": {
+        "idle": {
+          "frames": 2,
+          "duration": 0.3,
+          "loop": true
+        },
+        "walk": {
+          "frames": 2,
+          "duration": 0.15,
+          "loop": true
+        }
+      }
+    },
+    {
+      "id": "enemy_sunlord",
+      "path": "sprites/enemy_sunlord.png",
+      "category": "sprites",
+      "width": 64,
+      "height": 64,
+      "animations": {
+        "idle": {
+          "frames": 2,
+          "duration": 0.3,
+          "loop": true
+        },
+        "walk": {
+          "frames": 2,
+          "duration": 0.15,
+          "loop": true
+        }
+      }
+    },
+    {
+      "id": "enemy_swarm",
+      "path": "sprites/enemy_swarm.png",
+      "category": "sprites",
+      "width": 64,
+      "height": 64,
+      "animations": {
+        "idle": {
+          "frames": 2,
+          "duration": 0.3,
+          "loop": true
+        },
+        "walk": {
+          "frames": 2,
+          "duration": 0.15,
+          "loop": true
+        }
+      }
+    },
+    {
+      "id": "enemy_tank",
+      "path": "sprites/enemy_tank.png",
+      "category": "sprites",
+      "width": 64,
+      "height": 64,
+      "animations": {
+        "idle": {
+          "frames": 2,
+          "duration": 0.3,
+          "loop": true
+        },
+        "walk": {
+          "frames": 2,
+          "duration": 0.15,
+          "loop": true
+        }
+      }
+    },
+    {
+      "id": "ico_food",
+      "path": "icons/ico_food.png",
+      "category": "icons",
+      "width": 16,
+      "height": 16
+    },
+    {
+      "id": "ico_gold",
+      "path": "icons/ico_gold.png",
+      "category": "icons",
+      "width": 16,
+      "height": 16
+    },
+    {
+      "id": "ico_hp",
+      "path": "icons/ico_hp.png",
+      "category": "icons",
+      "width": 16,
+      "height": 16
+    },
+    {
+      "id": "ico_shield",
+      "path": "icons/ico_shield.png",
+      "category": "icons",
+      "width": 16,
+      "height": 16
+    },
+    {
+      "id": "ico_stone",
+      "path": "icons/ico_stone.png",
+      "category": "icons",
+      "width": 16,
+      "height": 16
+    },
+    {
+      "id": "ico_sword",
+      "path": "icons/ico_sword.png",
+      "category": "icons",
+      "width": 16,
+      "height": 16
+    },
+    {
+      "id": "ico_threat",
+      "path": "icons/ico_threat.png",
+      "category": "icons",
+      "width": 16,
+      "height": 16
+    },
+    {
+      "id": "ico_wood",
+      "path": "icons/ico_wood.png",
+      "category": "icons",
+      "width": 16,
+      "height": 16
+    },
+    {
+      "id": "tile_desert",
+      "path": "tiles/tile_desert.png",
+      "category": "tiles",
+      "width": 32,
+      "height": 32
+    },
+    {
+      "id": "tile_forest",
+      "path": "tiles/tile_forest.png",
+      "category": "tiles",
+      "width": 32,
+      "height": 32
+    },
+    {
+      "id": "tile_mountain",
+      "path": "tiles/tile_mountain.png",
+      "category": "tiles",
+      "width": 32,
+      "height": 32
+    },
+    {
+      "id": "tile_plain",
+      "path": "tiles/tile_plain.png",
+      "category": "tiles",
+      "width": 32,
+      "height": 32
+    },
+    {
+      "id": "tile_road",
+      "path": "tiles/tile_road.png",
+      "category": "tiles",
+      "width": 32,
+      "height": 32
+    },
+    {
+      "id": "tile_water",
+      "path": "tiles/tile_water.png",
+      "category": "tiles",
+      "width": 32,
+      "height": 32
+    }
+  ]
+}
