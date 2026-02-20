@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# Keyboard Defense pre-commit hook (MonoGame default, Godot opt-in)
+set -euo pipefail
+
+if [ "${SKIP_HOOKS:-}" = "1" ]; then
+  echo "[hooks] SKIP_HOOKS=1 detected. Skipping pre-commit checks."
+  exit 0
+fi
+
+REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$REPO_ROOT"
+echo "[hooks] Running Keyboard Defense pre-commit checks..."
+
+MONOGAME_TEST_SCRIPT="scripts/test.sh"
+if [ ! -f "$MONOGAME_TEST_SCRIPT" ]; then
+  echo "[hooks] Missing $MONOGAME_TEST_SCRIPT"
+  exit 1
+fi
+
+"$MONOGAME_TEST_SCRIPT"
+
+HOOK_ARGS="${*:-}"
+FLAG_SOURCE="${HOOK_ARGS} ${PRECOMMIT_FLAGS:-}"
+RUN_GODOT=0
+if [[ " $FLAG_SOURCE " == *" --godot "* ]] || [ "${PRECOMMIT_GODOT:-0}" = "1" ]; then
+  RUN_GODOT=1
+fi
+
+if [ "$RUN_GODOT" = "1" ]; then
+  GODOT_TEST_SCRIPT="apps/keyboard-defense-godot/scripts/run_tests.ps1"
+  if [ ! -f "$GODOT_TEST_SCRIPT" ]; then
+    echo "[hooks] Missing $GODOT_TEST_SCRIPT"
+    exit 1
+  fi
+
+  if command -v pwsh >/dev/null 2>&1; then
+    pwsh -NoProfile -ExecutionPolicy Bypass -File "$GODOT_TEST_SCRIPT"
+  elif command -v powershell >/dev/null 2>&1; then
+    powershell -NoProfile -ExecutionPolicy Bypass -File "$GODOT_TEST_SCRIPT"
+  else
+    echo "[hooks] PowerShell not available for --godot run."
+    exit 1
+  fi
+else
+  echo "[hooks] Godot checks skipped. Use PRECOMMIT_FLAGS=--godot (or PRECOMMIT_GODOT=1) to enable."
+fi
+
+echo "[hooks] All checks passed."

@@ -20,6 +20,22 @@ Root shortcuts:
 powershell -ExecutionPolicy Bypass -File .\scripts\test.ps1
 ```
 
+Hook setup (shared, repo-tracked):
+
+```bash
+./scripts/install-hooks.sh
+# or
+powershell -ExecutionPolicy Bypass -File .\scripts\install-hooks.ps1
+```
+
+Pre-commit defaults to MonoGame tests. Godot checks are opt-in:
+
+```bash
+PRECOMMIT_FLAGS=--godot git commit -m "..."
+# or
+PRECOMMIT_GODOT=1 git commit -m "..."
+```
+
 ## Pixel Lab Contract
 
 Canonical files:

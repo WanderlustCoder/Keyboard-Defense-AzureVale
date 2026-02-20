@@ -78,6 +78,14 @@ Root shortcuts:
 - `scripts/scenarios.ps1`
 - `scripts/scenarios.sh`
 
+Git hook setup (shared, repo-tracked):
+
+- `scripts/install-hooks.ps1`
+- `scripts/install-hooks.sh`
+- Default pre-commit behavior runs MonoGame tests.
+- Optional Godot checks can be enabled with `PRECOMMIT_FLAGS=--godot` or `PRECOMMIT_GODOT=1`.
+- `SKIP_HOOKS=1` skips local hook checks.
+
 ## Release
 
 Primary release workflow/tooling:
