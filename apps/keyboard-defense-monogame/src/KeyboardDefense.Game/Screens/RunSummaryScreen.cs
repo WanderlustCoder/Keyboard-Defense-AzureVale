@@ -24,6 +24,7 @@ public class RunSummaryScreen : GameScreen
     private readonly int _campaignNodeRewardGold;
     private CampaignProgressionService.CampaignOutcome _campaignOutcome =
         CampaignProgressionService.CampaignOutcome.None;
+    private bool _summarySideEffectsApplied;
     private Desktop? _desktop;
     private KeyboardState _prevKeyboard;
 
@@ -58,12 +59,20 @@ public class RunSummaryScreen : GameScreen
     {
         var report = SessionAnalytics.Instance.GetReport();
         var verticalSliceSummary = TryGetVerticalSliceSummary();
-        if (verticalSliceSummary != null)
-            VerticalSliceProfileService.RecordRun(
-                verticalSliceSummary.Result,
-                verticalSliceSummary.Score,
-                verticalSliceSummary.ElapsedSeconds);
-        _campaignOutcome = ApplyCampaignProgression(report, verticalSliceSummary);
+        if (!_summarySideEffectsApplied)
+        {
+            if (verticalSliceSummary != null)
+            {
+                VerticalSliceProfileService.RecordRun(
+                    verticalSliceSummary.Result,
+                    verticalSliceSummary.Score,
+                    verticalSliceSummary.ElapsedSeconds);
+            }
+
+            _campaignOutcome = ApplyCampaignProgression(report, verticalSliceSummary);
+            _summarySideEffectsApplied = true;
+        }
+
         BuildUi(report, verticalSliceSummary);
     }
 

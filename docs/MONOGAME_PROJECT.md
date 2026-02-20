@@ -7,13 +7,14 @@ The active project is the MonoGame version at:
 Current implementation milestone:
 
 - `docs/MONOGAME_VERTICAL_SLICE_PLAN.md` (completed first-playable loop baseline)
-- `docs/MONOGAME_CAMPAIGN_M1_PLAN.md` (active post-slice campaign progression milestone)
+- `docs/MONOGAME_CAMPAIGN_M1_PLAN.md` (completed campaign progression baseline)
+- `docs/MONOGAME_CAMPAIGN_M2_PLAN.md` (active campaign hardening and retry-flow milestone)
 - `apps/keyboard-defense-monogame/docs/VERTICAL_SLICE_BALANCE.md` (current single-wave tuning baseline)
 
-Current focus after vertical-slice completion:
+Current focus after campaign M1 completion:
 
-- Campaign-node progression polish and summary feedback
-- Node-specific wave profile coverage and fallback safety (`vertical_slice_wave_profiles.json`)
+- Summary side-effect safety and retry-flow metadata stability
+- Campaign map status clarity for first-clear rewards vs replayed nodes
 
 ## Build and Test
 

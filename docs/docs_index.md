@@ -4,7 +4,8 @@
 
 - `docs/MONOGAME_PROJECT.md` - Active project workflow, commands, and structure.
 - `docs/MONOGAME_VERTICAL_SLICE_PLAN.md` - Completed first-playable milestone scope and acceptance checklist.
-- `docs/MONOGAME_CAMPAIGN_M1_PLAN.md` - Active campaign progression milestone backlog after vertical-slice completion.
+- `docs/MONOGAME_CAMPAIGN_M1_PLAN.md` - Completed campaign progression milestone backlog after vertical-slice completion.
+- `docs/MONOGAME_CAMPAIGN_M2_PLAN.md` - Active campaign hardening milestone for summary safety and retry consistency.
 - `apps/keyboard-defense-monogame/KeyboardDefense.sln` - MonoGame solution entrypoint.
 - `apps/keyboard-defense-monogame/src/KeyboardDefense.Core/` - Deterministic simulation/domain logic.
 - `apps/keyboard-defense-monogame/src/KeyboardDefense.Game/` - Runtime game/render/input layer.
