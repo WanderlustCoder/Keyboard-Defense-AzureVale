@@ -5,6 +5,7 @@ using KeyboardDefense.Core.Data;
 
 namespace KeyboardDefense.Tests.Core;
 
+[Collection("VerticalSliceWaveDataSerial")]
 public sealed class VerticalSliceWaveDataTests : IDisposable
 {
     private readonly List<string> _tempDirs = new();

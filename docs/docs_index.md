@@ -16,6 +16,7 @@
 - `apps/keyboard-defense-monogame/docs/VERTICAL_SLICE_BALANCE.md` - Single-wave baseline constants and scoring assumptions.
 - `apps/keyboard-defense-monogame/data/vertical_slice_wave_profiles.json` - Node-specific single-wave profile overrides.
 - `apps/keyboard-defense-monogame/src/KeyboardDefense.Tests/Core/VerticalSliceWaveDataTests.cs` - Node-profile resolution and fallback coverage.
+- `apps/keyboard-defense-monogame/src/KeyboardDefense.Tests/Core/VerticalSliceWaveProfileCatalogTests.cs` - Real-data profile catalog and node-mapping regression coverage.
 - `apps/keyboard-defense-monogame/tools/pixel_lab/validate_manifest.py` - Manifest validation.
 - `apps/keyboard-defense-monogame/tools/pixel_lab/build_texture_manifest.py` - Runtime manifest generation.
 - `apps/keyboard-defense-monogame/tools/pixel_lab/split_runtime_subset.py` - Catalog/runtime subset split.
