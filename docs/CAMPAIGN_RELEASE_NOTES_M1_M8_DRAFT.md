@@ -3,6 +3,10 @@
 Status: Draft  
 Last Updated: 2026-02-20
 
+Superseded by:
+
+- `docs/RELEASE_NOTES_v0.1.0-rc1_2026-02-20.md`
+
 ## Release Summary
 
 Campaign feature work progressed from baseline map/progression support through release-hardening and pre-release polish.

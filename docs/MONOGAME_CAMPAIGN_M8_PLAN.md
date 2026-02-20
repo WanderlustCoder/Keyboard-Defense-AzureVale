@@ -34,6 +34,7 @@ Status: Implemented in this slice
 - Capture telemetry/checklist/test evidence references in one release-facing summary.
 - Ensure artifact references remain current for RC and release handoff.
 - Added initial release notes draft: `docs/CAMPAIGN_RELEASE_NOTES_M1_M8_DRAFT.md`.
+- Added versioned RC release notes: `docs/RELEASE_NOTES_v0.1.0-rc1_2026-02-20.md`.
 
 ## M8-03 RC verification loop hardening
 

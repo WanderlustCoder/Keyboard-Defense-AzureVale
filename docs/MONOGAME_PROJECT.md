@@ -19,7 +19,7 @@ Current implementation milestone:
 
 Current focus after campaign M8 completion:
 
-- Prepare final release notes and version/tag metadata from `docs/CAMPAIGN_RELEASE_NOTES_M1_M8_DRAFT.md`.
+- Maintain `v0.1.0-rc1` RC release notes/checksum evidence in `docs/RELEASE_NOTES_v0.1.0-rc1_2026-02-20.md`.
 - Maintain RC confidence with periodic packaging + campaign sanity reruns before final release cut.
 
 ## Build and Test

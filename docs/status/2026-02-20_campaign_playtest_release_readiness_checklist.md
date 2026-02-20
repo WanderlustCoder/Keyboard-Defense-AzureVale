@@ -53,3 +53,15 @@ Purpose: Validate campaign UX readiness and release confidence after M6 completi
 - Campaign-focused sanity sweep:
 - `dotnet test apps/keyboard-defense-monogame/KeyboardDefense.sln --configuration Release --filter "FullyQualifiedName~Campaign|FullyQualifiedName~Screens"`
 - Result: `67 passed, 0 failed`.
+
+## Final RC Package Evidence (v0.1.0-rc1)
+
+- Packaging command:
+- `powershell -ExecutionPolicy Bypass -File apps/keyboard-defense-monogame/tools/publish.ps1 -Version v0.1.0-rc1`
+- Packaging result: PASS (win/linux/osx artifacts generated).
+- Checksum file:
+- `apps/keyboard-defense-monogame/dist/SHA256SUMS-v0.1.0-rc1.txt`
+- SHA-256:
+- `baa7da9f54cc0f6ce9cb59a7ac612a51e645320cb7839a59bd4068d1ae1d1c54`  `KeyboardDefense-v0.1.0-rc1-linux-x64.tar.gz`
+- `aab6cd5314102cc581bfe2262eaf73c38544e340394fe7780a2c4ad95d6ef542`  `KeyboardDefense-v0.1.0-rc1-osx-x64.zip`
+- `955a021bc1413bfc667eabd86f28c0842123f81ff6170811103c51ac661365c9`  `KeyboardDefense-v0.1.0-rc1-win-x64.zip`
