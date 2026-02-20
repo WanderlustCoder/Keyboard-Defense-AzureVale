@@ -51,6 +51,20 @@ public static class VerticalSliceWaveData
         bool practiceMode = ReadBool(start?["practice_mode"], fallback.PracticeMode);
 
         int spawnTotal = ClampInt(ReadInt(wave?["spawn_total"], fallback.WaveSpawnTotal), 1, 128);
+        float spawnIntervalSeconds = ClampFloat(
+            ReadFloat(wave?["spawn_interval_sec"], fallback.SpawnIntervalSeconds), 0.1f, 10f);
+        float enemyStepIntervalSeconds = ClampFloat(
+            ReadFloat(wave?["enemy_step_interval_sec"], fallback.EnemyStepIntervalSeconds), 0.1f, 10f);
+        int enemyStepDistance = ClampInt(
+            ReadInt(wave?["enemy_step_distance"], fallback.EnemyStepDistance), 1, 10);
+        int enemyContactDamage = ClampInt(
+            ReadInt(wave?["enemy_contact_damage"], fallback.EnemyContactDamage), 1, 50);
+        int typedHitDamage = ClampInt(
+            ReadInt(wave?["typed_hit_damage"], fallback.TypedHitDamage), 1, 50);
+        int typedMissDamage = ClampInt(
+            ReadInt(wave?["typed_miss_damage"], fallback.TypedMissDamage), 0, 50);
+        int towerTickDamage = ClampInt(
+            ReadInt(wave?["tower_tick_damage"], fallback.TowerTickDamage), 0, 50);
 
         return new VerticalSliceWaveProfile
         {
@@ -64,6 +78,13 @@ public static class VerticalSliceWaveData
             LessonId = lessonId,
             PracticeMode = practiceMode,
             WaveSpawnTotal = spawnTotal,
+            SpawnIntervalSeconds = spawnIntervalSeconds,
+            EnemyStepIntervalSeconds = enemyStepIntervalSeconds,
+            EnemyStepDistance = enemyStepDistance,
+            EnemyContactDamage = enemyContactDamage,
+            TypedHitDamage = typedHitDamage,
+            TypedMissDamage = typedMissDamage,
+            TowerTickDamage = towerTickDamage,
         };
     }
 
@@ -81,6 +102,12 @@ public static class VerticalSliceWaveData
         return int.TryParse(token.ToString(), out int value) ? value : fallback;
     }
 
+    private static float ReadFloat(JToken? token, float fallback)
+    {
+        if (token == null) return fallback;
+        return float.TryParse(token.ToString(), out float value) ? value : fallback;
+    }
+
     private static bool ReadBool(JToken? token, bool fallback)
     {
         if (token == null) return fallback;
@@ -88,6 +115,11 @@ public static class VerticalSliceWaveData
     }
 
     private static int ClampInt(int value, int min, int max)
+    {
+        return Math.Clamp(value, min, max);
+    }
+
+    private static float ClampFloat(float value, float min, float max)
     {
         return Math.Clamp(value, min, max);
     }
@@ -105,7 +137,13 @@ public sealed class VerticalSliceWaveProfile
     public string LessonId { get; init; } = "full_alpha";
     public bool PracticeMode { get; init; } = false;
     public int WaveSpawnTotal { get; init; } = 6;
+    public float SpawnIntervalSeconds { get; init; } = 1.0f;
+    public float EnemyStepIntervalSeconds { get; init; } = 1.0f;
+    public int EnemyStepDistance { get; init; } = 1;
+    public int EnemyContactDamage { get; init; } = 1;
+    public int TypedHitDamage { get; init; } = 2;
+    public int TypedMissDamage { get; init; } = 1;
+    public int TowerTickDamage { get; init; } = 1;
 
     public static VerticalSliceWaveProfile CreateDefault() => new();
 }
-

@@ -29,6 +29,7 @@ public class BattlefieldScreen : GameScreen
     private readonly int _nodeIndex;
     private readonly string _nodeName;
     private readonly bool _singleWaveMode;
+    private VerticalSliceWaveConfig? _verticalSliceConfig;
 
     private Desktop? _desktop;
     private Label? _phaseLabel;
@@ -116,6 +117,7 @@ public class BattlefieldScreen : GameScreen
         if (_singleWaveMode)
         {
             var profile = VerticalSliceWaveData.Current;
+            _verticalSliceConfig = VerticalSliceWaveConfig.FromProfile(profile);
             var state = ctrl.State;
             state.Day = profile.StartDay;
             state.Hp = profile.StartHp;
@@ -126,15 +128,14 @@ public class BattlefieldScreen : GameScreen
 
             AppendLog("Vertical Slice: survive one night wave.");
             AppendLog($"Profile: {profile.ProfileId} ({profile.WaveSpawnTotal} enemies)");
-            if (ctrl.State.Phase == "day")
+            if (_verticalSliceConfig != null && ctrl.State.Phase == "day")
             {
-                ctrl.ApplyCommand("end");
-                if (ctrl.State.Phase == "night")
-                {
-                    ctrl.State.NightWaveTotal = profile.WaveSpawnTotal;
-                    ctrl.State.NightSpawnRemaining = profile.WaveSpawnTotal;
-                }
-                SessionAnalytics.Instance.OnGameEvent(ctrl.LastEvents);
+                var startEvents = new List<string>();
+                VerticalSliceWaveSim.StartSingleWave(ctrl.State, _verticalSliceConfig, startEvents);
+                foreach (string evt in startEvents)
+                    AppendLog(evt);
+                SessionAnalytics.Instance.OnGameEvent(startEvents);
+                OnStateChanged(ctrl.State);
                 _singleWaveNightStarted = true;
             }
         }
@@ -197,6 +198,9 @@ public class BattlefieldScreen : GameScreen
 
         // Tick spell cooldowns
         SpellSystem.Instance.UpdateCooldowns((float)gameTime.ElapsedGameTime.TotalSeconds * speedMul);
+
+        if (_singleWaveMode && _verticalSliceConfig != null && !_gameEnded)
+            RunVerticalSliceStep((float)gameTime.ElapsedGameTime.TotalSeconds * speedMul, null);
 
         // Update visual renderers
         var vp = Game.GraphicsDevice.Viewport;
@@ -451,6 +455,14 @@ public class BattlefieldScreen : GameScreen
         if (_typingInput != null)
             _typingInput.Text = "";
 
+        if (_singleWaveMode && _verticalSliceConfig != null)
+        {
+            RunVerticalSliceStep(0f, text);
+            SessionAnalytics.Instance.RecordEvent("word_typed");
+            CheckGameEnd();
+            return;
+        }
+
         var state = GameController.Instance.State;
 
         // Check if input matches a spell keyword before normal processing
@@ -495,6 +507,29 @@ public class BattlefieldScreen : GameScreen
         }
 
         CheckGameEnd();
+    }
+
+    private void RunVerticalSliceStep(float deltaSeconds, string? typedInput)
+    {
+        if (!_singleWaveMode || _verticalSliceConfig == null || _gameEnded)
+            return;
+
+        var events = new List<string>();
+        VerticalSliceWaveSim.Step(
+            GameController.Instance.State,
+            _verticalSliceConfig,
+            deltaSeconds,
+            typedInput,
+            events);
+
+        if (events.Count > 0)
+        {
+            foreach (string evt in events)
+                AppendLog(evt);
+            SessionAnalytics.Instance.OnGameEvent(events);
+        }
+
+        OnStateChanged(GameController.Instance.State);
     }
 
     private void CheckGameEnd()

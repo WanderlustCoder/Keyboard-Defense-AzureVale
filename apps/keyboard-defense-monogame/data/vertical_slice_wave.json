@@ -11,6 +11,13 @@
     "practice_mode": false
   },
   "wave": {
-    "spawn_total": 6
+    "spawn_total": 6,
+    "spawn_interval_sec": 1.0,
+    "enemy_step_interval_sec": 1.0,
+    "enemy_step_distance": 1,
+    "enemy_contact_damage": 1,
+    "typed_hit_damage": 2,
+    "typed_miss_damage": 1,
+    "tower_tick_damage": 1
   }
 }

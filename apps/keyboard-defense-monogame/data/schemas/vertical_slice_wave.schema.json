@@ -66,12 +66,47 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "spawn_total"
+        "spawn_total",
+        "spawn_interval_sec",
+        "enemy_step_interval_sec",
+        "enemy_step_distance",
+        "enemy_contact_damage",
+        "typed_hit_damage",
+        "typed_miss_damage",
+        "tower_tick_damage"
       ],
       "properties": {
         "spawn_total": {
           "type": "integer",
           "minimum": 1
+        },
+        "spawn_interval_sec": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "enemy_step_interval_sec": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "enemy_step_distance": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "enemy_contact_damage": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "typed_hit_damage": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "typed_miss_damage": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "tower_tick_damage": {
+          "type": "integer",
+          "minimum": 0
         }
       }
     }
