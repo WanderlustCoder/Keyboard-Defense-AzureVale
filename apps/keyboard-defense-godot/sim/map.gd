@@ -3,6 +3,11 @@ extends RefCounted
 
 const GameState = preload("res://sim/types.gd")
 const SimRng = preload("res://sim/rng.gd")
+const BiomeGenerator = preload("res://sim/biome_generator.gd")
+
+# Cached biome generator for consistent terrain across calls
+static var _biome_gen: BiomeGenerator = null
+static var _biome_gen_seed: int = -1
 
 const TERRAIN_PLAINS := "plains"
 const TERRAIN_FOREST := "forest"
@@ -15,10 +20,10 @@ const ZONE_FRONTIER := "frontier"   # Medium distance, moderate challenge
 const ZONE_WILDERNESS := "wilderness"  # Far from castle, high difficulty
 const ZONE_DEPTHS := "depths"       # Very far, endgame content
 
-# Zone thresholds (in tiles from castle)
-const ZONE_SAFE_RADIUS := 3
-const ZONE_FRONTIER_RADIUS := 6
-const ZONE_WILDERNESS_RADIUS := 10
+# Zone thresholds (in tiles from castle) - scaled for 64x64 map
+const ZONE_SAFE_RADIUS := 8
+const ZONE_FRONTIER_RADIUS := 16
+const ZONE_WILDERNESS_RADIUS := 28
 # Beyond ZONE_WILDERNESS_RADIUS is ZONE_DEPTHS
 
 # Zone properties
@@ -111,14 +116,16 @@ static func ensure_tile_generated(state: GameState, pos: Vector2i) -> void:
         return
     if str(state.terrain[index]) != "":
         return
-    state.terrain[index] = _roll_terrain(state)
+    state.terrain[index] = _roll_terrain(state, pos.x, pos.y)
+
 
 static func generate_terrain(state: GameState) -> void:
     _ensure_terrain_size(state)
-    var total: int = state.map_w * state.map_h
-    for i in range(total):
-        if str(state.terrain[i]) == "":
-            state.terrain[i] = _roll_terrain(state)
+    for y in range(state.map_h):
+        for x in range(state.map_w):
+            var index: int = idx(x, y, state.map_w)
+            if str(state.terrain[index]) == "":
+                state.terrain[index] = _roll_terrain(state, x, y)
 
 static func is_buildable(state: GameState, pos: Vector2i) -> bool:
     if not in_bounds(pos.x, pos.y, state.map_w, state.map_h):
@@ -230,7 +237,29 @@ static func _ensure_terrain_size(state: GameState) -> void:
     for _i in range(total):
         state.terrain.append("")
 
-static func _roll_terrain(state: GameState) -> String:
+## Get or create a biome generator for the current state seed
+static func _get_biome_generator(state: GameState) -> BiomeGenerator:
+    var seed_int: int = SimRng.seed_to_int(state.rng_seed)
+    if _biome_gen == null or _biome_gen_seed != seed_int:
+        _biome_gen = BiomeGenerator.create(seed_int)
+        _biome_gen_seed = seed_int
+    return _biome_gen
+
+
+## Reset the cached biome generator (call when starting a new game)
+static func reset_biome_generator() -> void:
+    _biome_gen = null
+    _biome_gen_seed = -1
+
+
+## Generate terrain at a position using noise-based biome generation
+static func _roll_terrain(state: GameState, x: int = -1, y: int = -1) -> String:
+    # Use noise-based generation if position is provided
+    if x >= 0 and y >= 0:
+        var gen := _get_biome_generator(state)
+        return gen.get_terrain_at(x, y, state.map_w, state.map_h, state.base_pos)
+
+    # Legacy fallback for calls without position (shouldn't happen)
     var roll: int = SimRng.roll_range(state, 1, 100)
     if roll <= 45:
         return TERRAIN_PLAINS

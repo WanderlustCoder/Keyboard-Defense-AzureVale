@@ -1,0 +1,241 @@
+{
+  "$schema": "../../../docs/keyboard-defense-plans/extended/schemas/poi.schema.json",
+  "pois": [
+    {
+      "id": "poi_evergrove_wagon",
+      "biome": "Evergrove",
+      "name": "Abandoned Wagon",
+      "icon": "wagon",
+      "event_table_id": "evergrove_wagon",
+      "rarity": 30,
+      "tags": ["salvage", "exploration"],
+      "min_day": 1,
+      "max_day": 10
+    },
+    {
+      "id": "poi_quiet_shrine",
+      "biome": "Evergrove",
+      "name": "Quiet Shrine",
+      "icon": "shrine",
+      "event_table_id": "evergrove_shrine",
+      "rarity": 20,
+      "tags": ["lore", "social"],
+      "min_day": 2,
+      "max_day": 15
+    },
+    {
+      "id": "poi_herb_patch",
+      "biome": "Evergrove",
+      "name": "Herb Patch",
+      "icon": "herbs",
+      "event_table_id": "evergrove_herbs",
+      "rarity": 40,
+      "tags": ["salvage", "healing"],
+      "min_day": 1,
+      "max_day": 20,
+      "respawn_days": 3
+    },
+    {
+      "id": "poi_stonepass_quarry",
+      "biome": "Stonepass",
+      "name": "Abandoned Quarry",
+      "icon": "quarry",
+      "event_table_id": "stonepass_quarry",
+      "rarity": 30,
+      "tags": ["salvage", "mining"],
+      "min_day": 3,
+      "max_day": 15,
+      "respawn_days": 4
+    },
+    {
+      "id": "poi_stonepass_watchtower",
+      "biome": "Stonepass",
+      "name": "Crumbling Watchtower",
+      "icon": "tower",
+      "event_table_id": "stonepass_watchtower",
+      "rarity": 20,
+      "tags": ["exploration", "combat"],
+      "min_day": 4,
+      "max_day": 20
+    },
+    {
+      "id": "poi_stonepass_cave",
+      "biome": "Stonepass",
+      "name": "Mountain Cave",
+      "icon": "cave",
+      "event_table_id": "stonepass_cave",
+      "rarity": 25,
+      "tags": ["exploration", "risk"],
+      "min_day": 5,
+      "max_day": 25
+    },
+    {
+      "id": "poi_stonepass_cairn",
+      "biome": "Stonepass",
+      "name": "Ancient Cairn",
+      "icon": "cairn",
+      "event_table_id": "stonepass_cairn",
+      "rarity": 15,
+      "tags": ["lore", "social"],
+      "min_day": 3,
+      "max_day": 18
+    },
+    {
+      "id": "poi_mistfen_dock",
+      "biome": "Mistfen",
+      "name": "Rotting Dock",
+      "icon": "dock",
+      "event_table_id": "mistfen_dock",
+      "rarity": 30,
+      "tags": ["salvage", "exploration"],
+      "min_day": 5,
+      "max_day": 18
+    },
+    {
+      "id": "poi_mistfen_willows",
+      "biome": "Mistfen",
+      "name": "Weeping Willows",
+      "icon": "willows",
+      "event_table_id": "mistfen_willows",
+      "rarity": 25,
+      "tags": ["lore", "healing"],
+      "min_day": 6,
+      "max_day": 22
+    },
+    {
+      "id": "poi_mistfen_hut",
+      "biome": "Mistfen",
+      "name": "Hermit's Hut",
+      "icon": "hut",
+      "event_table_id": "mistfen_hut",
+      "rarity": 20,
+      "tags": ["social", "risk"],
+      "min_day": 7,
+      "max_day": 25
+    },
+    {
+      "id": "poi_mistfen_altar",
+      "biome": "Mistfen",
+      "name": "Sunken Altar",
+      "icon": "altar",
+      "event_table_id": "mistfen_altar",
+      "rarity": 15,
+      "tags": ["lore", "risk"],
+      "min_day": 8,
+      "max_day": 30
+    },
+    {
+      "id": "poi_sunfields_windmill",
+      "biome": "Sunfields",
+      "name": "Old Windmill",
+      "icon": "windmill",
+      "event_table_id": "sunfields_windmill",
+      "rarity": 35,
+      "tags": ["salvage", "exploration"],
+      "min_day": 8,
+      "max_day": 20
+    },
+    {
+      "id": "poi_sunfields_orchard",
+      "biome": "Sunfields",
+      "name": "Golden Orchard",
+      "icon": "orchard",
+      "event_table_id": "sunfields_orchard",
+      "rarity": 30,
+      "tags": ["salvage", "healing"],
+      "min_day": 9,
+      "max_day": 25,
+      "respawn_days": 3
+    },
+    {
+      "id": "poi_sunfields_arena",
+      "biome": "Sunfields",
+      "name": "Training Arena",
+      "icon": "arena",
+      "event_table_id": "sunfields_arena",
+      "rarity": 20,
+      "tags": ["combat", "social"],
+      "min_day": 10,
+      "max_day": 30
+    },
+    {
+      "id": "poi_sunfields_monument",
+      "biome": "Sunfields",
+      "name": "Victory Monument",
+      "icon": "monument",
+      "event_table_id": "sunfields_monument",
+      "rarity": 15,
+      "tags": ["lore", "social"],
+      "min_day": 10,
+      "max_day": 35
+    },
+    {
+      "id": "poi_evergrove_hollow",
+      "biome": "Evergrove",
+      "name": "Ancient Hollow",
+      "icon": "hollow",
+      "event_table_id": "evergrove_hollow",
+      "rarity": 20,
+      "tags": ["lore", "risk"],
+      "min_day": 3,
+      "max_day": 12
+    },
+    {
+      "id": "poi_evergrove_beehives",
+      "biome": "Evergrove",
+      "name": "Wild Beehives",
+      "icon": "beehives",
+      "event_table_id": "evergrove_beehives",
+      "rarity": 35,
+      "tags": ["salvage", "risk"],
+      "min_day": 1,
+      "max_day": 8,
+      "respawn_days": 2
+    },
+    {
+      "id": "poi_stonepass_forge",
+      "biome": "Stonepass",
+      "name": "Dwarven Forge",
+      "icon": "forge",
+      "event_table_id": "stonepass_forge",
+      "rarity": 15,
+      "tags": ["salvage", "social"],
+      "min_day": 6,
+      "max_day": 22
+    },
+    {
+      "id": "poi_mistfen_graveyard",
+      "biome": "Mistfen",
+      "name": "Forgotten Graveyard",
+      "icon": "graveyard",
+      "event_table_id": "mistfen_graveyard",
+      "rarity": 20,
+      "tags": ["lore", "combat"],
+      "min_day": 8,
+      "max_day": 28
+    },
+    {
+      "id": "poi_sunfields_market",
+      "biome": "Sunfields",
+      "name": "Traveling Market",
+      "icon": "market",
+      "event_table_id": "sunfields_market",
+      "rarity": 25,
+      "tags": ["social", "salvage"],
+      "min_day": 8,
+      "max_day": 22,
+      "respawn_days": 5
+    },
+    {
+      "id": "poi_sunfields_fountain",
+      "biome": "Sunfields",
+      "name": "Blessed Fountain",
+      "icon": "fountain",
+      "event_table_id": "sunfields_fountain",
+      "rarity": 18,
+      "tags": ["healing", "lore"],
+      "min_day": 12,
+      "max_day": 30
+    }
+  ]
+}

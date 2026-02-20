@@ -1,0 +1,161 @@
+name: MonoGame Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version (e.g. 1.0.0)'
+        required: false
+        default: ''
+
+defaults:
+  run:
+    working-directory: apps/keyboard-defense-monogame
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            rid: win-x64
+            ext: zip
+          - os: ubuntu-latest
+            rid: linux-x64
+            ext: tar.gz
+          - os: macos-latest
+            rid: osx-x64
+            ext: zip
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Determine version
+        id: version
+        shell: bash
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          elif [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+          else
+            echo "version=$(git describe --tags --always)" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Validate Pixel Lab catalog manifest
+        run: >
+          python tools/pixel_lab/validate_manifest.py
+          --manifest data/pixel_lab_manifest.catalog.json
+          --schema data/schemas/pixel_lab_manifest.schema.json
+
+      - name: Validate Pixel Lab active runtime manifest
+        run: >
+          python tools/pixel_lab/validate_manifest.py
+          --manifest data/pixel_lab_manifest.active_runtime.json
+          --schema data/schemas/pixel_lab_manifest.schema.json
+          --textures-root Content/Textures
+          --check-files
+
+      - name: Gate active runtime subset against catalog
+        run: >
+          python tools/pixel_lab/verify_active_in_catalog.py
+          --catalog data/pixel_lab_manifest.catalog.json
+          --active data/pixel_lab_manifest.active_runtime.json
+
+      - name: Build runtime texture manifest from active runtime contract
+        run: >
+          python tools/pixel_lab/build_texture_manifest.py
+          --manifest data/pixel_lab_manifest.active_runtime.json
+          --out src/KeyboardDefense.Game/Content/Textures/texture_manifest.pixel_lab.json
+
+      - name: Run tests
+        run: dotnet test --configuration Release --verbosity normal
+
+      - name: Publish ${{ matrix.rid }}
+        run: |
+          dotnet publish src/KeyboardDefense.Game/KeyboardDefense.Game.csproj \
+            -c Release \
+            -r ${{ matrix.rid }} \
+            --self-contained true \
+            -p:PublishTrimmed=false \
+            -o publish/${{ matrix.rid }}
+
+      - name: Write version.txt
+        shell: bash
+        run: echo "${{ steps.version.outputs.version }}" > publish/${{ matrix.rid }}/version.txt
+
+      - name: Package (tar.gz)
+        if: matrix.ext == 'tar.gz'
+        run: tar -czf KeyboardDefense-${{ steps.version.outputs.version }}-${{ matrix.rid }}.tar.gz -C publish/${{ matrix.rid }} .
+
+      - name: Package (zip)
+        if: matrix.ext == 'zip'
+        shell: bash
+        run: |
+          cd publish/${{ matrix.rid }}
+          if command -v zip &>/dev/null; then
+            zip -qr ../../KeyboardDefense-${{ steps.version.outputs.version }}-${{ matrix.rid }}.zip .
+          else
+            powershell -Command "Compress-Archive -Path '.\*' -DestinationPath '..\..\KeyboardDefense-${{ steps.version.outputs.version }}-${{ matrix.rid }}.zip'"
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: KeyboardDefense-${{ matrix.rid }}
+          path: apps/keyboard-defense-monogame/KeyboardDefense-${{ steps.version.outputs.version }}-${{ matrix.rid }}.${{ matrix.ext }}
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Determine version
+        id: version
+        run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "Keyboard Defense ${{ steps.version.outputs.version }}"
+          body: |
+            ## Keyboard Defense ${{ steps.version.outputs.version }}
+
+            ### Downloads
+            - **Windows**: `KeyboardDefense-${{ steps.version.outputs.version }}-win-x64.zip`
+            - **Linux**: `KeyboardDefense-${{ steps.version.outputs.version }}-linux-x64.tar.gz`
+            - **macOS**: `KeyboardDefense-${{ steps.version.outputs.version }}-osx-x64.zip`
+
+            All builds are self-contained (.NET runtime included). No additional installation required.
+
+            ### Running
+            - **Windows**: Extract and run `KeyboardDefense.Game.exe`
+            - **Linux**: Extract, `chmod +x KeyboardDefense.Game`, then run `./KeyboardDefense.Game`
+            - **macOS**: Extract and run `KeyboardDefense.Game`
+          files: artifacts/**/*
+          draft: false
+          prerelease: false

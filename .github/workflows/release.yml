@@ -1,10 +1,6 @@
-name: semantic-release
+name: archived-semantic-release
 
 on:
-  push:
-    branches:
-      - master
-      - nightly
   workflow_dispatch:
 
 permissions:

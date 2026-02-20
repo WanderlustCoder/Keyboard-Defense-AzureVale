@@ -19,9 +19,9 @@ static func load_resource(path: String) -> Resource:
 		_stats.cache_hits += 1
 		return _cache[path]
 
-	var start_time := Time.get_ticks_msec()
-	var resource := load(path)
-	var load_time := Time.get_ticks_msec() - start_time
+	var start_time: int = Time.get_ticks_msec()
+	var resource: Resource = load(path)
+	var load_time: int = Time.get_ticks_msec() - start_time
 
 	if resource != null:
 		_cache[path] = resource

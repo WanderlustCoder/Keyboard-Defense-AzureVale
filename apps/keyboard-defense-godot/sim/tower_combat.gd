@@ -10,6 +10,7 @@ const SimDamageTypes = preload("res://sim/damage_types.gd")
 const SimEnemies = preload("res://sim/enemies.gd")
 const SimMap = preload("res://sim/map.gd")
 const SimBuildings = preload("res://sim/buildings.gd")
+const SimUpgrades = preload("res://sim/upgrades.gd")
 
 # =============================================================================
 # MAIN TOWER ATTACK STEP
@@ -98,6 +99,16 @@ static func _process_tower_attack(
 			_process_non_attacking_tower(state, tower_index, tower_pos, level, tower_type, stats, events)
 
 # =============================================================================
+# HELPER FUNCTIONS
+# =============================================================================
+
+## Calculate effective tower range including level bonus and research effects
+static func _get_effective_range(state: GameState, base_range: int, level: int) -> int:
+	var range_val: int = base_range + int((level - 1) * 0.5)
+	range_val += SimUpgrades.get_tower_range_bonus(state)
+	return range_val
+
+# =============================================================================
 # ATTACK IMPLEMENTATIONS
 # =============================================================================
 
@@ -113,7 +124,7 @@ static func _attack_single(
 	dist_field: PackedInt32Array,
 	events: Array[String]
 ) -> void:
-	var range_val: int = int(stats.get("range", 4)) + int((level - 1) * 0.5)
+	var range_val: int = _get_effective_range(state, int(stats.get("range", 4)), level)
 	var base_damage: int = int(stats.get("damage", 10)) + (level - 1) * 3
 	var damage_type: int = int(stats.get("damage_type", SimTowerTypes.DamageType.PHYSICAL))
 	var shots: int = int(stats.get("shots_per_attack", 1))
@@ -166,7 +177,7 @@ static func _attack_multi(
 	dist_field: PackedInt32Array,
 	events: Array[String]
 ) -> void:
-	var range_val: int = int(stats.get("range", 4)) + int((level - 1) * 0.5)
+	var range_val: int = _get_effective_range(state, int(stats.get("range", 4)), level)
 	var base_damage: int = int(stats.get("damage", 8)) + (level - 1) * 2
 	var damage_type: int = int(stats.get("damage_type", SimTowerTypes.DamageType.PHYSICAL))
 	var target_count: int = int(stats.get("target_count", 3)) + (level - 1)
@@ -208,7 +219,7 @@ static func _attack_aoe(
 	dist_field: PackedInt32Array,
 	events: Array[String]
 ) -> void:
-	var range_val: int = int(stats.get("range", 4)) + int((level - 1) * 0.5)
+	var range_val: int = _get_effective_range(state, int(stats.get("range", 4)), level)
 	var base_damage: int = int(stats.get("damage", 25)) + (level - 1) * 8
 	var damage_type: int = int(stats.get("damage_type", SimTowerTypes.DamageType.PHYSICAL))
 	var aoe_radius: int = int(stats.get("aoe_radius", 1)) + int((level - 1) * 0.25)
@@ -256,7 +267,7 @@ static func _attack_chain(
 	dist_field: PackedInt32Array,
 	events: Array[String]
 ) -> void:
-	var range_val: int = int(stats.get("range", 3)) + int((level - 1) * 0.5)
+	var range_val: int = _get_effective_range(state, int(stats.get("range", 3)), level)
 	var base_damage: int = int(stats.get("damage", 12)) + (level - 1) * 3
 	var damage_type: int = int(stats.get("damage_type", SimTowerTypes.DamageType.LIGHTNING))
 	var chain_count: int = int(stats.get("chain_count", 5)) + (level - 1)
@@ -310,7 +321,7 @@ static func _attack_adaptive(
 	dist_field: PackedInt32Array,
 	events: Array[String]
 ) -> void:
-	var range_val: int = int(stats.get("range", 5))
+	var range_val: int = _get_effective_range(state, int(stats.get("range", 5)), level)
 	var base_damage: int = int(stats.get("damage", 25))
 	var damage_type: int = int(stats.get("damage_type", SimTowerTypes.DamageType.PURE))
 
@@ -738,7 +749,7 @@ static func _attack_legacy_tower(
 	events: Array[String]
 ) -> void:
 	var stats: Dictionary = SimBuildings.tower_stats(level)
-	var range_val: int = int(stats.get("range", 3))
+	var range_val: int = _get_effective_range(state, int(stats.get("range", 3)), level)
 	var damage: int = int(stats.get("damage", 1))
 	var shots: int = int(stats.get("shots", 1))
 

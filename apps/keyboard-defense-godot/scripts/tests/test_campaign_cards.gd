@@ -68,7 +68,7 @@ func _assert_cards(helper: TestHelper, map: Control, progression) -> void:
 	var unlocked_count = 0
 	var locked_count = 0
 	for i in range(min(cards.size(), nodes.size())):
-		var card := cards[i] as Control
+		var card: Control = cards[i] as Control
 		var node: Dictionary = nodes[i]
 		_assert_card_content(helper, card, node, progression)
 		if card.mouse_default_cursor_shape == Control.CURSOR_POINTING_HAND:

@@ -1,0 +1,272 @@
+{
+  "version": 1,
+  "locale": "en",
+  "name": "English",
+
+  "ui": {
+    "save": "Save",
+    "load": "Load",
+    "quit": "Quit",
+    "back": "Back",
+    "continue": "Continue",
+    "start": "Start",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "close": "Close",
+    "yes": "Yes",
+    "no": "No",
+    "ok": "OK",
+    "settings": "Settings",
+    "help": "Help",
+    "stats": "Stats",
+    "achievements": "Achievements",
+    "lessons": "Lessons",
+    "profile": "Profile",
+    "main_menu": "Main Menu",
+    "new_game": "New Game",
+    "resume": "Resume",
+    "available_languages": "Available Languages:",
+    "current_language": "Current Language: {language}",
+    "language_changed": "Language changed to {language}"
+  },
+
+  "menu": {
+    "title": "KEYBOARD DEFENSE",
+    "subtitle": "Type to Defend Your Kingdom",
+    "campaign": "Campaign",
+    "kingdom_defense": "Kingdom Defense",
+    "open_world": "Open World",
+    "typing_practice": "Typing Practice",
+    "typing_profile": "Typing Profile"
+  },
+
+  "panels": {
+    "bestiary": "Bestiary",
+    "skills": "Skills",
+    "quests": "Quests",
+    "equipment": "Equipment",
+    "shop": "Shop",
+    "loot": "Loot",
+    "upgrades": "Upgrades",
+    "trade": "Trade",
+    "crafting": "Crafting",
+    "buffs": "Active Buffs",
+    "inventory": "Inventory",
+    "difficulty": "Difficulty",
+    "expeditions": "Expeditions",
+    "diplomacy": "Diplomacy",
+    "research": "Research",
+    "citizens": "Citizens",
+    "workers": "Workers",
+    "key_bindings": "Key Bindings",
+    "save_load": "Save / Load"
+  },
+
+  "actions": {
+    "explore": "Explore",
+    "end_day": "End Day",
+    "retreat": "Retreat",
+    "submit": "Submit",
+    "status": "Status",
+    "inspect": "Inspect",
+    "go": "Go",
+    "apply": "Apply",
+    "reset_defaults": "Reset Defaults",
+    "cycle": "Cycle",
+    "rebind": "Rebind",
+    "reset": "Reset",
+    "reset_all_defaults": "Reset All to Defaults",
+    "retry": "Retry",
+    "return_to_map": "Return to Map"
+  },
+
+  "settings": {
+    "audio": "Audio",
+    "display": "Display",
+    "gameplay": "Gameplay",
+    "language": "Language",
+    "master_volume": "Master Volume",
+    "music_volume": "Music Volume",
+    "typing_sounds": "Typing Sounds",
+    "screen_shake": "Screen Shake",
+    "show_wpm": "Show WPM",
+    "show_accuracy": "Show Accuracy",
+    "practice_mode": "Practice Mode",
+    "game_speed": "Game Speed",
+    "accessibility": "Accessibility",
+    "reduced_motion": "Reduced Motion",
+    "high_contrast": "High Contrast",
+    "large_text": "Large Text",
+    "focus_indicators": "Focus Indicators",
+    "colorblind_mode": "Colorblind Mode",
+    "colorblind_none": "None",
+    "colorblind_protanopia": "Protanopia",
+    "colorblind_deuteranopia": "Deuteranopia",
+    "colorblind_tritanopia": "Tritanopia"
+  },
+
+  "hud": {
+    "threat": "Threat",
+    "enemies": "Enemies",
+    "pos": "Pos"
+  },
+
+  "kingdom": {
+    "started": "Kingdom Defense mode started. Day 1.",
+    "commands_help": "Commands: gather <resource> <amount>, build <type> [x y], explore, end",
+    "type_help": "Type 'help' for full command list."
+  },
+
+  "battle": {
+    "day_phase_help": "Day phase: gather, build, explore. Type 'end' to start night."
+  },
+
+  "openworld": {
+    "intro": "Open World mode. Explore the map, gather resources, and survive the nights.",
+    "controls": "Use WASD or arrow keys to move cursor. Type commands to interact."
+  },
+
+  "game": {
+    "day": "Day",
+    "night": "Night",
+    "dawn": "Dawn",
+    "wave": "Wave",
+    "phase": "Phase",
+    "paused": "PAUSED",
+    "game_over": "GAME OVER",
+    "victory": "VICTORY",
+    "score": "Score",
+    "time": "Time",
+    "level": "Level"
+  },
+
+  "resources": {
+    "gold": "Gold",
+    "wood": "Wood",
+    "stone": "Stone",
+    "food": "Food",
+    "ap": "AP",
+    "hp": "HP",
+    "mana": "Mana"
+  },
+
+  "combat": {
+    "enemy_approaching": "Enemy approaching!",
+    "enemy_defeated": "Enemy defeated!",
+    "tower_built": "Tower built!",
+    "tower_upgraded": "Tower upgraded!",
+    "castle_damaged": "Castle damaged!",
+    "wave_complete": "Wave complete!",
+    "wave_incoming": "Wave incoming!",
+    "boss_appeared": "Boss appeared!",
+    "boss_defeated": "Boss defeated!",
+    "critical_hit": "Critical hit!",
+    "perfect_word": "Perfect!",
+    "combo": "Combo",
+    "miss": "Miss!"
+  },
+
+  "messages": {
+    "not_enough_gold": "Not enough gold!",
+    "not_enough_resources": "Not enough resources!",
+    "not_enough_ap": "Not enough AP!",
+    "invalid_command": "Invalid command",
+    "unknown_command": "Unknown command: {command}",
+    "day_phase_only": "Can only use during day phase",
+    "night_phase_only": "Can only use during night phase",
+    "building_placed": "{building} placed",
+    "building_removed": "{building} removed",
+    "upgrade_purchased": "{upgrade} purchased",
+    "lesson_started": "Starting lesson: {lesson}",
+    "lesson_complete": "Lesson complete!",
+    "achievement_unlocked": "Achievement unlocked: {achievement}",
+    "new_personal_best": "New personal best!",
+    "streak_continued": "Streak continued! {days} days",
+    "welcome_back": "Welcome back!",
+    "profile_saved": "Profile saved",
+    "profile_loaded": "Profile loaded",
+    "settings_saved": "Settings saved"
+  },
+
+  "help": {
+    "header": "COMMANDS",
+    "build": "build <type> - Build a structure",
+    "upgrade": "upgrade <type> - Purchase an upgrade",
+    "move": "move <dir> - Move cursor (wasd/arrows)",
+    "end": "end - End current phase",
+    "status": "status - Show game status",
+    "help": "help - Show this help",
+    "save": "save - Save game",
+    "load": "load - Load game",
+    "quit": "quit - Return to menu",
+    "stats": "stats - Show player statistics",
+    "lesson": "lesson <id> - Start a lesson",
+    "hero": "hero [id|none] - Select or clear hero",
+    "locale": "locale [id] - Show or change language",
+    "settings": "settings - Show settings",
+    "achievements": "achievements - Show achievements"
+  },
+
+  "time": {
+    "seconds": "{value}s",
+    "minutes": "{value}m",
+    "hours": "{value}h",
+    "minutes_seconds": "{minutes}m {seconds}s",
+    "hours_minutes": "{hours}h {minutes}m"
+  },
+
+  "stats": {
+    "header": "PLAYER STATISTICS",
+    "combat": "Combat",
+    "typing": "Typing",
+    "economy": "Economy",
+    "progression": "Progression",
+    "time": "Time",
+    "records": "Records",
+    "total_kills": "Total Kills",
+    "total_words": "Total Words",
+    "total_gold": "Total Gold",
+    "accuracy": "Accuracy",
+    "wpm": "WPM",
+    "highest_combo": "Highest Combo",
+    "highest_day": "Highest Day",
+    "play_time": "Play Time"
+  },
+
+  "heroes": {
+    "header": "HEROES",
+    "no_hero": "No hero selected",
+    "select_hero": "Type 'hero <id>' to select:",
+    "current_hero": "Current hero: {name}",
+    "passive": "Passive",
+    "ability": "Ability",
+    "cooldown": "Cooldown: {seconds}s",
+    "ready": "Ready!"
+  },
+
+  "tutorial": {
+    "welcome": "Welcome to Keyboard Defense!",
+    "move_cursor": "Use WASD or arrow keys to move the cursor",
+    "build_tower": "Type 'build tower' to build a tower",
+    "end_day": "Type 'end' to advance to night",
+    "type_words": "Type the words above enemies to defeat them",
+    "survive_night": "Survive the night to see dawn!",
+    "complete": "Tutorial complete! Good luck, defender!"
+  },
+
+  "accessibility": {
+    "high_contrast": "High Contrast",
+    "reduced_motion": "Reduced Motion",
+    "game_speed": "Game Speed",
+    "keyboard_hints": "Keyboard Hints",
+    "font_size": "Font Size"
+  },
+
+  "errors": {
+    "file_not_found": "File not found",
+    "save_failed": "Save failed",
+    "load_failed": "Load failed",
+    "invalid_input": "Invalid input",
+    "connection_failed": "Connection failed"
+  }
+}

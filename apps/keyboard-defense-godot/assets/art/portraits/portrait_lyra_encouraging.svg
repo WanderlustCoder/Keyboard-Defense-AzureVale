@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Lyra Portrait - 48x48 Pixel Art (Encouraging Expression) -->
+<!-- Raised eyebrows and bigger smile to convey encouragement -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="192" height="192" shape-rendering="crispEdges">
+  <title>Lyra - Encouraging Expression</title>
+
+  <!-- Background (transparent) -->
+  <rect width="48" height="48" fill="none"/>
+
+  <!-- === HAIR BUN === -->
+  <rect x="21" y="3" width="6" height="1" fill="#4a235a"/>
+  <rect x="20" y="4" width="1" height="2" fill="#4a235a"/>
+  <rect x="27" y="4" width="1" height="2" fill="#4a235a"/>
+  <rect x="21" y="4" width="6" height="3" fill="#64418c"/>
+  <rect x="22" y="4" width="3" height="1" fill="#8c64a0"/>
+  <rect x="20" y="6" width="8" height="1" fill="#64418c"/>
+
+  <!-- === MAIN HAIR MASS === -->
+  <rect x="12" y="7" width="24" height="1" fill="#4a235a"/>
+  <rect x="10" y="8" width="4" height="1" fill="#4a235a"/>
+  <rect x="34" y="8" width="4" height="1" fill="#4a235a"/>
+  <rect x="8" y="9" width="6" height="7" fill="#64418c"/>
+  <rect x="8" y="9" width="1" height="7" fill="#4a235a"/>
+  <rect x="34" y="9" width="6" height="7" fill="#64418c"/>
+  <rect x="39" y="9" width="1" height="7" fill="#4a235a"/>
+  <rect x="14" y="8" width="20" height="4" fill="#64418c"/>
+  <rect x="15" y="9" width="1" height="4" fill="#8c64a0"/>
+  <rect x="20" y="9" width="1" height="4" fill="#8c64a0"/>
+  <rect x="28" y="9" width="1" height="4" fill="#8c64a0"/>
+  <rect x="33" y="9" width="1" height="4" fill="#8c64a0"/>
+
+  <!-- === FACE BASE === -->
+  <rect x="13" y="12" width="22" height="3" fill="#f5cba7"/>
+  <rect x="18" y="13" width="8" height="1" fill="#ffdcb9"/>
+  <rect x="12" y="15" width="24" height="10" fill="#f5cba7"/>
+  <rect x="13" y="25" width="22" height="2" fill="#f5cba7"/>
+  <rect x="15" y="27" width="18" height="1" fill="#f5cba7"/>
+  <rect x="17" y="28" width="14" height="1" fill="#f5cba7"/>
+  <rect x="19" y="29" width="10" height="1" fill="#f5cba7"/>
+  <rect x="12" y="15" width="2" height="6" fill="#d2a57d"/>
+  <rect x="13" y="25" width="3" height="2" fill="#d2a57d"/>
+  <rect x="32" y="25" width="3" height="2" fill="#d2a57d"/>
+  <rect x="33" y="15" width="2" height="7" fill="#ffdcb9"/>
+
+  <!-- === EYEBROWS (RAISED - encouraging) === -->
+  <rect x="15" y="14" width="6" height="1" fill="#4a235a"/>
+  <rect x="15" y="15" width="1" height="1" fill="#4a235a"/>
+  <rect x="27" y="14" width="6" height="1" fill="#4a235a"/>
+  <rect x="32" y="15" width="1" height="1" fill="#4a235a"/>
+
+  <!-- === GLASSES === -->
+  <rect x="14" y="16" width="8" height="1" fill="#85929e"/>
+  <rect x="14" y="23" width="8" height="1" fill="#85929e"/>
+  <rect x="14" y="16" width="1" height="8" fill="#85929e"/>
+  <rect x="21" y="16" width="1" height="8" fill="#85929e"/>
+  <rect x="26" y="16" width="8" height="1" fill="#85929e"/>
+  <rect x="26" y="23" width="8" height="1" fill="#85929e"/>
+  <rect x="26" y="16" width="1" height="8" fill="#85929e"/>
+  <rect x="33" y="16" width="1" height="8" fill="#85929e"/>
+  <rect x="22" y="19" width="4" height="1" fill="#85929e"/>
+  <rect x="10" y="18" width="4" height="1" fill="#85929e"/>
+  <rect x="34" y="18" width="4" height="1" fill="#85929e"/>
+  <rect x="15" y="17" width="1" height="1" fill="#a0afb9"/>
+  <rect x="27" y="17" width="1" height="1" fill="#a0afb9"/>
+
+  <!-- === EYES (slightly wider for enthusiasm) === -->
+  <rect x="16" y="18" width="5" height="4" fill="#fafaff"/>
+  <rect x="17" y="18" width="3" height="4" fill="#50648c"/>
+  <rect x="18" y="19" width="1" height="2" fill="#1e1428"/>
+  <rect x="17" y="18" width="1" height="1" fill="#fafaff"/>
+  <rect x="15" y="17" width="7" height="1" fill="#4a235a"/>
+  <rect x="27" y="18" width="5" height="4" fill="#fafaff"/>
+  <rect x="28" y="18" width="3" height="4" fill="#50648c"/>
+  <rect x="29" y="19" width="1" height="2" fill="#1e1428"/>
+  <rect x="28" y="18" width="1" height="1" fill="#fafaff"/>
+  <rect x="26" y="17" width="7" height="1" fill="#4a235a"/>
+
+  <!-- === NOSE === -->
+  <rect x="24" y="22" width="1" height="2" fill="#d2a57d"/>
+  <rect x="23" y="24" width="1" height="1" fill="#d2a57d"/>
+  <rect x="25" y="24" width="1" height="1" fill="#ffdcb9"/>
+
+  <!-- === MOUTH (BIGGER SMILE - encouraging) === -->
+  <rect x="20" y="27" width="8" height="1" fill="#d2a57d"/>
+  <rect x="19" y="26" width="1" height="1" fill="#d2a57d"/>
+  <rect x="28" y="26" width="1" height="1" fill="#d2a57d"/>
+  <rect x="18" y="25" width="1" height="1" fill="#d2a57d"/>
+  <rect x="29" y="25" width="1" height="1" fill="#d2a57d"/>
+  <!-- Smile dimples -->
+  <rect x="17" y="25" width="1" height="1" fill="#e8b898"/>
+  <rect x="30" y="25" width="1" height="1" fill="#e8b898"/>
+
+  <!-- === NECK === -->
+  <rect x="20" y="30" width="8" height="2" fill="#f5cba7"/>
+  <rect x="20" y="30" width="2" height="2" fill="#d2a57d"/>
+
+  <!-- === ROBE === -->
+  <rect x="8" y="34" width="32" height="13" fill="#1a5276"/>
+  <rect x="10" y="33" width="28" height="1" fill="#1a5276"/>
+  <rect x="14" y="32" width="20" height="1" fill="#1a5276"/>
+  <rect x="18" y="31" width="12" height="1" fill="#1a5276"/>
+  <rect x="16" y="32" width="16" height="1" fill="#1a5276"/>
+  <rect x="8" y="34" width="8" height="13" fill="#0f3250"/>
+  <rect x="10" y="33" width="6" height="1" fill="#0f3250"/>
+  <rect x="32" y="34" width="6" height="10" fill="#3278aa"/>
+  <rect x="28" y="32" width="6" height="1" fill="#3278aa"/>
+
+  <!-- === GOLD TRIM === -->
+  <rect x="17" y="31" width="1" height="1" fill="#f4d03f"/>
+  <rect x="30" y="31" width="1" height="1" fill="#f4d03f"/>
+  <rect x="16" y="32" width="1" height="1" fill="#f4d03f"/>
+  <rect x="31" y="32" width="1" height="1" fill="#f4d03f"/>
+  <rect x="15" y="33" width="1" height="1" fill="#f4d03f"/>
+  <rect x="32" y="33" width="1" height="1" fill="#f4d03f"/>
+  <rect x="14" y="34" width="1" height="1" fill="#f4d03f"/>
+  <rect x="33" y="34" width="1" height="1" fill="#f4d03f"/>
+  <rect x="16" y="32" width="1" height="1" fill="#b49628"/>
+  <rect x="15" y="33" width="1" height="1" fill="#b49628"/>
+  <rect x="24" y="35" width="1" height="12" fill="#f4d03f"/>
+  <rect x="23" y="35" width="1" height="12" fill="#b49628"/>
+
+  <!-- === BOOK === -->
+  <rect x="16" y="40" width="16" height="6" fill="#6e2c00"/>
+  <rect x="17" y="41" width="14" height="4" fill="#fafaff"/>
+  <rect x="19" y="42" width="10" height="1" fill="#d2a57d"/>
+  <rect x="19" y="43" width="10" height="1" fill="#d2a57d"/>
+  <rect x="17" y="41" width="14" height="1" fill="#964b00"/>
+  <rect x="16" y="45" width="16" height="1" fill="#501e00"/>
+
+</svg>

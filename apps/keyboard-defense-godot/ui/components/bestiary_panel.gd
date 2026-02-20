@@ -81,7 +81,8 @@ func _build_ui() -> void:
 		var btn := Button.new()
 		btn.text = str(tab_info["name"])
 		btn.toggle_mode = true
-		DesignSystem.style_label(btn, "caption", ThemeColors.TEXT)
+		btn.add_theme_font_size_override("font_size", DesignSystem.FONT_CAPTION)
+		btn.add_theme_color_override("font_color", ThemeColors.TEXT)
 		var tab_val: Tab = tab_info["tab"]
 		btn.pressed.connect(_on_tab_selected.bind(tab_val))
 		_tab_bar.add_child(btn)

@@ -19,6 +19,12 @@ apps/**/coverage/
 apps/**/temp/
 apps/**/static-dashboard/
 
+# .NET / MonoGame
+**/bin/
+**/obj/
+*.user
+*.suo
+
 # Logs & temp files
 *.log
 *.tmp

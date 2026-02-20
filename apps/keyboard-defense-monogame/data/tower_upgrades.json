@@ -1,0 +1,704 @@
+{
+  "version": 1,
+  "upgrades": {
+    "tower_arrow": {
+      "max_level": 3,
+      "has_tier3_choice": true,
+      "levels": {
+        "1": {
+          "label": "Arrow Tower",
+          "stats": {}
+        },
+        "2": {
+          "label": "Longbow Tower",
+          "cost": {"wood": 6, "stone": 10},
+          "stats": {
+            "damage": 15,
+            "range": 5,
+            "attack_speed": 1.1
+          },
+          "ability": {
+            "name": "Sharpened Arrows",
+            "description": "+5 damage, +1 range"
+          }
+        },
+        "3": {
+          "label": "War Tower",
+          "cost": {"wood": 10, "stone": 15, "gold": 50},
+          "stats": {
+            "damage": 22,
+            "range": 6,
+            "attack_speed": 1.2
+          },
+          "ability": {
+            "name": "Extended Range",
+            "description": "+1 range, +7 damage"
+          }
+        }
+      },
+      "tier3_choices": {
+        "piercing": {
+          "label": "Piercing Shot Tower",
+          "cost": {"wood": 12, "stone": 18, "gold": 75},
+          "stats": {
+            "damage": 20,
+            "pierce_count": 2
+          },
+          "ability": {
+            "name": "Piercing Shot",
+            "description": "Arrows pierce through 2 enemies"
+          },
+          "evolves_to": "tower_arrow_piercing"
+        },
+        "rapid": {
+          "label": "Rapid Fire Tower",
+          "cost": {"wood": 12, "stone": 18, "gold": 75},
+          "stats": {
+            "damage": 12,
+            "attack_speed": 1.875,
+            "shots_per_attack": 2
+          },
+          "ability": {
+            "name": "Rapid Fire",
+            "description": "+50% attack speed, fires twice per attack"
+          },
+          "evolves_to": "tower_arrow_rapid"
+        },
+        "heavy": {
+          "label": "Heavy Ballista",
+          "cost": {"wood": 12, "stone": 18, "gold": 75},
+          "stats": {
+            "damage": 35,
+            "attack_speed": 0.8,
+            "stun_chance": 15
+          },
+          "ability": {
+            "name": "Heavy Draw",
+            "description": "+100% damage, chance to stun"
+          },
+          "evolves_to": "tower_arrow_heavy"
+        }
+      }
+    },
+    "tower_magic": {
+      "max_level": 3,
+      "has_tier3_choice": true,
+      "levels": {
+        "1": {
+          "label": "Magic Tower",
+          "stats": {}
+        },
+        "2": {
+          "label": "Wizard Tower",
+          "cost": {"wood": 8, "stone": 12, "gold": 30},
+          "stats": {
+            "damage": 22,
+            "attack_speed": 0.8,
+            "range": 5
+          },
+          "ability": {
+            "name": "Arcane Focus",
+            "description": "+7 damage, faster attacks"
+          }
+        },
+        "3": {
+          "label": "Arcane Spire",
+          "cost": {"wood": 12, "stone": 18, "gold": 60},
+          "stats": {
+            "damage": 30,
+            "range": 6,
+            "attack_speed": 0.85
+          },
+          "ability": {
+            "name": "Arcane Mastery",
+            "description": "+8 damage, +1 range"
+          }
+        }
+      },
+      "tier3_choices": {
+        "chain": {
+          "label": "Chain Lightning Tower",
+          "cost": {"wood": 15, "stone": 20, "gold": 90},
+          "stats": {
+            "damage": 25,
+            "chain_count": 3,
+            "chain_damage_percent": 60
+          },
+          "ability": {
+            "name": "Chain Lightning",
+            "description": "Attacks jump to 3 additional enemies"
+          },
+          "evolves_to": "tower_magic_chain"
+        },
+        "burst": {
+          "label": "Arcane Burst Tower",
+          "cost": {"wood": 15, "stone": 20, "gold": 90},
+          "stats": {
+            "damage": 20,
+            "aoe_radius": 1.5,
+            "target_type": "aoe"
+          },
+          "ability": {
+            "name": "Arcane Burst",
+            "description": "Attacks explode in an area"
+          },
+          "evolves_to": "tower_magic_burst"
+        },
+        "drain": {
+          "label": "Mana Drain Tower",
+          "cost": {"wood": 15, "stone": 20, "gold": 90},
+          "stats": {
+            "damage": 28,
+            "slow_percent": 20,
+            "slow_duration": 2.0,
+            "mana_drain": true
+          },
+          "ability": {
+            "name": "Mana Drain",
+            "description": "Slows enemies, disables special abilities"
+          },
+          "evolves_to": "tower_magic_drain"
+        }
+      }
+    },
+    "tower_frost": {
+      "max_level": 3,
+      "has_tier3_choice": true,
+      "levels": {
+        "1": {
+          "label": "Frost Tower",
+          "stats": {}
+        },
+        "2": {
+          "label": "Ice Tower",
+          "cost": {"wood": 6, "stone": 10},
+          "stats": {
+            "damage": 8,
+            "slow_percent": 35,
+            "slow_duration": 2.5,
+            "range": 4
+          },
+          "ability": {
+            "name": "Deep Chill",
+            "description": "+10% slow, +1 range"
+          }
+        },
+        "3": {
+          "label": "Glacier Tower",
+          "cost": {"wood": 10, "stone": 15, "gold": 40},
+          "stats": {
+            "damage": 12,
+            "slow_percent": 45,
+            "slow_duration": 3.0,
+            "range": 4
+          },
+          "ability": {
+            "name": "Arctic Winds",
+            "description": "+10% slow, longer duration"
+          }
+        }
+      },
+      "tier3_choices": {
+        "permafrost": {
+          "label": "Permafrost Tower",
+          "cost": {"wood": 12, "stone": 18, "gold": 60},
+          "stats": {
+            "slow_percent": 60,
+            "slow_duration": 5.0,
+            "aura_slow": true,
+            "aura_range": 2
+          },
+          "ability": {
+            "name": "Permafrost Aura",
+            "description": "Constantly slows all enemies in range"
+          },
+          "evolves_to": "tower_frost_permafrost"
+        },
+        "blizzard": {
+          "label": "Blizzard Tower",
+          "cost": {"wood": 12, "stone": 18, "gold": 60},
+          "stats": {
+            "damage": 15,
+            "target_type": "aoe",
+            "aoe_radius": 2,
+            "slow_percent": 30
+          },
+          "ability": {
+            "name": "Blizzard",
+            "description": "Area attack that damages and slows"
+          },
+          "evolves_to": "tower_frost_blizzard"
+        },
+        "freeze": {
+          "label": "Flash Freeze Tower",
+          "cost": {"wood": 12, "stone": 18, "gold": 60},
+          "stats": {
+            "damage": 20,
+            "freeze_chance": 15,
+            "freeze_duration": 1.5
+          },
+          "ability": {
+            "name": "Flash Freeze",
+            "description": "Chance to completely freeze enemies"
+          },
+          "evolves_to": "tower_frost_freeze"
+        }
+      }
+    },
+    "tower_cannon": {
+      "max_level": 3,
+      "has_tier3_choice": true,
+      "levels": {
+        "1": {
+          "label": "Cannon Tower",
+          "stats": {}
+        },
+        "2": {
+          "label": "Bombard Tower",
+          "cost": {"wood": 10, "stone": 18, "gold": 40},
+          "stats": {
+            "damage": 35,
+            "aoe_radius": 1.5,
+            "range": 5
+          },
+          "ability": {
+            "name": "Heavy Shells",
+            "description": "+10 damage, larger blast radius"
+          }
+        },
+        "3": {
+          "label": "Artillery Tower",
+          "cost": {"wood": 15, "stone": 25, "gold": 80},
+          "stats": {
+            "damage": 50,
+            "aoe_radius": 2,
+            "range": 6
+          },
+          "ability": {
+            "name": "Artillery Shells",
+            "description": "+15 damage, +1 range, larger radius"
+          }
+        }
+      },
+      "tier3_choices": {
+        "artillery": {
+          "label": "Long-Range Artillery",
+          "cost": {"wood": 18, "stone": 30, "gold": 100},
+          "stats": {
+            "damage": 60,
+            "range": 8,
+            "aoe_radius": 1.5,
+            "attack_speed": 0.3
+          },
+          "ability": {
+            "name": "Siege Range",
+            "description": "Extreme range, high damage"
+          },
+          "evolves_to": "tower_cannon_artillery"
+        },
+        "cluster": {
+          "label": "Cluster Bomb Tower",
+          "cost": {"wood": 18, "stone": 30, "gold": 100},
+          "stats": {
+            "damage": 40,
+            "aoe_radius": 3,
+            "cluster_count": 3,
+            "cluster_damage": 15
+          },
+          "ability": {
+            "name": "Cluster Bombs",
+            "description": "Explosions spawn additional explosions"
+          },
+          "evolves_to": "tower_cannon_cluster"
+        },
+        "napalm": {
+          "label": "Napalm Tower",
+          "cost": {"wood": 18, "stone": 30, "gold": 100},
+          "stats": {
+            "damage": 35,
+            "aoe_radius": 2,
+            "burn_damage": 8,
+            "burn_duration": 5.0
+          },
+          "ability": {
+            "name": "Napalm Shells",
+            "description": "Creates burning ground that damages over time"
+          },
+          "evolves_to": "tower_cannon_napalm"
+        }
+      }
+    },
+    "tower_multi": {
+      "max_level": 3,
+      "has_tier3_choice": true,
+      "levels": {
+        "1": {
+          "label": "Multi-Shot Tower",
+          "stats": {}
+        },
+        "2": {
+          "label": "Volley Tower",
+          "cost": {"wood": 12, "stone": 18, "gold": 60},
+          "stats": {
+            "damage": 10,
+            "target_count": 4,
+            "range": 5
+          },
+          "ability": {
+            "name": "Increased Volley",
+            "description": "+1 target, +2 damage, +1 range"
+          }
+        },
+        "3": {
+          "label": "Barrage Tower",
+          "cost": {"wood": 18, "stone": 25, "gold": 100},
+          "stats": {
+            "damage": 12,
+            "target_count": 5,
+            "attack_speed": 0.9
+          },
+          "ability": {
+            "name": "Rapid Barrage",
+            "description": "+1 target, faster attacks"
+          }
+        }
+      },
+      "tier3_choices": {
+        "gatling": {
+          "label": "Gatling Tower",
+          "cost": {"wood": 20, "stone": 28, "gold": 120},
+          "stats": {
+            "damage": 8,
+            "target_count": 8,
+            "attack_speed": 1.5
+          },
+          "ability": {
+            "name": "Gatling Fire",
+            "description": "Hits 8 targets with rapid fire"
+          },
+          "evolves_to": "tower_multi_gatling"
+        },
+        "sniper": {
+          "label": "Sniper Array",
+          "cost": {"wood": 20, "stone": 28, "gold": 120},
+          "stats": {
+            "damage": 25,
+            "target_count": 3,
+            "range": 8,
+            "crit_chance": 20
+          },
+          "ability": {
+            "name": "Precision Strikes",
+            "description": "Fewer targets but high damage and crit"
+          },
+          "evolves_to": "tower_multi_sniper"
+        }
+      }
+    },
+    "tower_arcane": {
+      "max_level": 3,
+      "has_tier3_choice": false,
+      "levels": {
+        "1": {
+          "label": "Arcane Tower",
+          "stats": {}
+        },
+        "2": {
+          "label": "Arcane Spire",
+          "cost": {"wood": 10, "stone": 15, "gold": 90},
+          "stats": {
+            "damage": 28,
+            "accuracy_multiplier": 1.2,
+            "range": 6
+          },
+          "ability": {
+            "name": "Arcane Focus",
+            "description": "Improved accuracy scaling"
+          }
+        },
+        "3": {
+          "label": "Arcane Nexus",
+          "cost": {"wood": 15, "stone": 22, "gold": 140},
+          "stats": {
+            "damage": 40,
+            "accuracy_multiplier": 1.5,
+            "overload_threshold": 10,
+            "overload_multiplier": 3.0
+          },
+          "ability": {
+            "name": "Arcane Overload",
+            "description": "Every 10th attack deals 3x damage and chains"
+          }
+        }
+      }
+    },
+    "tower_holy": {
+      "max_level": 3,
+      "has_tier3_choice": false,
+      "levels": {
+        "1": {
+          "label": "Holy Tower",
+          "stats": {}
+        },
+        "2": {
+          "label": "Sanctum Tower",
+          "cost": {"stone": 25, "gold": 120},
+          "stats": {
+            "damage": 25,
+            "purify_chance": 10,
+            "corruption_bonus_percent": 75,
+            "heal_allies_range": 2
+          },
+          "ability": {
+            "name": "Sacred Ground",
+            "description": "Heals nearby allied units, +5% purify"
+          }
+        },
+        "3": {
+          "label": "Cathedral Tower",
+          "cost": {"stone": 35, "gold": 180},
+          "stats": {
+            "damage": 35,
+            "purify_chance": 20,
+            "corruption_bonus_percent": 100,
+            "divine_shield_chance": 10
+          },
+          "ability": {
+            "name": "Divine Protection",
+            "description": "Chance to grant shields, guaranteed purify on kill"
+          }
+        }
+      }
+    },
+    "tower_siege": {
+      "max_level": 3,
+      "has_tier3_choice": false,
+      "levels": {
+        "1": {
+          "label": "Siege Tower",
+          "stats": {}
+        },
+        "2": {
+          "label": "Siege Engine",
+          "cost": {"wood": 20, "stone": 30, "gold": 150},
+          "stats": {
+            "damage": 140,
+            "charge_time": 4,
+            "max_charge_multiplier": 2.5
+          },
+          "ability": {
+            "name": "Improved Mechanism",
+            "description": "Faster charge, higher max damage"
+          }
+        },
+        "3": {
+          "label": "Siege Colossus",
+          "cost": {"wood": 30, "stone": 45, "gold": 250},
+          "stats": {
+            "damage": 200,
+            "charge_time": 3,
+            "max_charge_multiplier": 3.0,
+            "boss_damage_bonus": 50
+          },
+          "ability": {
+            "name": "Titan Killer",
+            "description": "Devastating damage, +50% vs bosses"
+          }
+        }
+      }
+    },
+    "tower_poison": {
+      "max_level": 3,
+      "has_tier3_choice": false,
+      "levels": {
+        "1": {
+          "label": "Venomspire",
+          "stats": {}
+        },
+        "2": {
+          "label": "Toxin Spire",
+          "cost": {"wood": 12, "stone": 18, "gold": 120},
+          "stats": {
+            "damage": 5,
+            "poison_damage_per_tick": 7,
+            "poison_duration": 6.0,
+            "healing_reduction": 30
+          },
+          "ability": {
+            "name": "Potent Toxins",
+            "description": "Stronger poison, reduces enemy healing"
+          }
+        },
+        "3": {
+          "label": "Plague Spire",
+          "cost": {"wood": 18, "stone": 25, "gold": 180},
+          "stats": {
+            "damage": 8,
+            "poison_damage_per_tick": 10,
+            "poison_max_stacks": 15,
+            "poison_spread_chance": 20
+          },
+          "ability": {
+            "name": "Virulent Plague",
+            "description": "Higher stack cap, poison can spread"
+          }
+        }
+      }
+    },
+    "tower_tesla": {
+      "max_level": 3,
+      "has_tier3_choice": false,
+      "levels": {
+        "1": {
+          "label": "Tesla Coil",
+          "stats": {}
+        },
+        "2": {
+          "label": "Arc Reactor",
+          "cost": {"wood": 10, "stone": 25, "gold": 130},
+          "stats": {
+            "damage": 16,
+            "chain_count": 6,
+            "chain_damage_falloff": 0.85,
+            "range": 4
+          },
+          "ability": {
+            "name": "Improved Conductors",
+            "description": "+1 chain, less falloff"
+          }
+        },
+        "3": {
+          "label": "Storm Generator",
+          "cost": {"wood": 15, "stone": 35, "gold": 200},
+          "stats": {
+            "damage": 22,
+            "chain_count": 8,
+            "chain_damage_falloff": 0.9,
+            "shock_chance": 15
+          },
+          "ability": {
+            "name": "Storm Surge",
+            "description": "+2 chains, chance to stun"
+          }
+        }
+      }
+    },
+    "tower_summoner": {
+      "max_level": 3,
+      "has_tier3_choice": false,
+      "levels": {
+        "1": {
+          "label": "Summoning Circle",
+          "stats": {}
+        },
+        "2": {
+          "label": "Conjuration Ring",
+          "cost": {"stone": 30, "gold": 175},
+          "stats": {
+            "max_summons": 4,
+            "summon_cooldown": 12.0,
+            "summon_hp_bonus": 25,
+            "summon_damage_bonus": 3
+          },
+          "ability": {
+            "name": "Enhanced Binding",
+            "description": "+1 max summons, stronger units"
+          }
+        },
+        "3": {
+          "label": "Gate of Spirits",
+          "cost": {"stone": 45, "gold": 275},
+          "stats": {
+            "max_summons": 5,
+            "summon_cooldown": 10.0,
+            "summon_hp_bonus": 50,
+            "summon_damage_bonus": 8,
+            "elite_summon_chance": 20
+          },
+          "ability": {
+            "name": "Spirit Gate",
+            "description": "+1 max, chance for elite summons"
+          }
+        }
+      }
+    },
+    "tower_support": {
+      "max_level": 3,
+      "has_tier3_choice": false,
+      "levels": {
+        "1": {
+          "label": "Command Post",
+          "stats": {}
+        },
+        "2": {
+          "label": "War Room",
+          "cost": {"wood": 15, "stone": 22, "gold": 140},
+          "stats": {
+            "aura_range": 4,
+            "damage_buff_percent": 20,
+            "speed_buff_percent": 15,
+            "crit_buff_percent": 5
+          },
+          "ability": {
+            "name": "Tactical Advantage",
+            "description": "Larger aura, stronger buffs"
+          }
+        },
+        "3": {
+          "label": "Strategic Command",
+          "cost": {"wood": 22, "stone": 32, "gold": 220},
+          "stats": {
+            "aura_range": 5,
+            "damage_buff_percent": 25,
+            "speed_buff_percent": 20,
+            "crit_buff_percent": 10,
+            "range_buff": 1
+          },
+          "ability": {
+            "name": "Supreme Command",
+            "description": "All buffs enhanced, +1 range to allies"
+          }
+        }
+      }
+    },
+    "tower_trap": {
+      "max_level": 3,
+      "has_tier3_choice": false,
+      "levels": {
+        "1": {
+          "label": "Trap Nexus",
+          "stats": {}
+        },
+        "2": {
+          "label": "Trap Forge",
+          "cost": {"wood": 12, "stone": 15, "gold": 110},
+          "stats": {
+            "trap_count": 4,
+            "trap_recharge_time": 8.0,
+            "trap_damage_bonus": 10,
+            "placement_range": 6
+          },
+          "ability": {
+            "name": "Improved Traps",
+            "description": "+1 trap, faster recharge, +10 damage"
+          }
+        },
+        "3": {
+          "label": "Trap Mastery",
+          "cost": {"wood": 18, "stone": 22, "gold": 170},
+          "stats": {
+            "trap_count": 5,
+            "trap_recharge_time": 6.0,
+            "trap_damage_bonus": 25,
+            "trap_radius_bonus": 0.5,
+            "chain_trap_chance": 30
+          },
+          "ability": {
+            "name": "Master Trapper",
+            "description": "+1 trap, chain reaction chance"
+          }
+        }
+      }
+    }
+  }
+}

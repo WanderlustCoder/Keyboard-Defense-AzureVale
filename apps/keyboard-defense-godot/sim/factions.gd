@@ -227,7 +227,7 @@ static func get_tribute_demand(state, faction_id: String) -> int:
 	var base_tribute: int = int(data.get("tribute_base", 50))
 
 	# Scale by day (factions demand more over time)
-	var day_mult := 1.0 + (state.day - 1) * 0.05
+	var day_mult: float = 1.0 + (int(state.day) - 1) * 0.05
 
 	# Relations affect tribute
 	var relation := get_relation(state, faction_id)

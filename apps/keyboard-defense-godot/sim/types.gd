@@ -135,8 +135,8 @@ func _init() -> void:
 	ap = ap_max
 	hp = 10
 	threat = 0
-	map_w = 16
-	map_h = 10
+	map_w = 64
+	map_h = 64
 	base_pos = Vector2i(int(map_w / 2), int(map_h / 2))
 	cursor_pos = base_pos
 	night_prompt = ""

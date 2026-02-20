@@ -76,7 +76,7 @@ func _build_map() -> void:
 		var completed = progression.is_node_completed(node_id)
 		var requires: Array = node.get("requires", [])
 
-		var card = _create_node_card(node_id, label, lesson_label_text, reward_gold, unlocked, completed, requires)
+		var card = _create_node_card(node_id, label, lesson_id, lesson_label_text, reward_gold, unlocked, completed, requires)
 		map_grid.add_child(card)
 		_card_refs[node_id] = card
 
@@ -92,7 +92,7 @@ func _get_missing_requirement(requires: Array) -> String:
 			return str(req_node.get("label", req_id))
 	return ""
 
-func _create_node_card(node_id: String, label: String, lesson_name: String, reward_gold: int, unlocked: bool, completed: bool, requires: Array = []) -> Control:
+func _create_node_card(node_id: String, label: String, lesson_id: String, lesson_name: String, reward_gold: int, unlocked: bool, completed: bool, requires: Array = []) -> Control:
 	var text_color := ThemeColors.TEXT if unlocked else ThemeColors.TEXT_DIM
 
 	var card = PanelContainer.new()
@@ -159,6 +159,26 @@ func _create_node_card(node_id: String, label: String, lesson_name: String, rewa
 	lesson_label.max_lines_visible = 1
 	lesson_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	content.add_child(lesson_label)
+
+	# Health indicator (only for unlocked nodes)
+	if unlocked and lesson_id != "":
+		var health_label_text := _get_lesson_health_label(lesson_id)
+		if health_label_text != "--":
+			var health_row = HBoxContainer.new()
+			health_row.alignment = BoxContainer.ALIGNMENT_CENTER
+			content.add_child(health_row)
+
+			var health_text = Label.new()
+			health_text.text = "Health: "
+			health_text.add_theme_font_size_override("font_size", 11)
+			health_text.add_theme_color_override("font_color", text_color)
+			health_row.add_child(health_text)
+
+			var health_value = Label.new()
+			health_value.text = health_label_text
+			health_value.add_theme_font_size_override("font_size", 11)
+			health_value.add_theme_color_override("font_color", _get_health_color(health_label_text))
+			health_row.add_child(health_value)
 
 	if reward_gold > 0 and unlocked:
 		var reward_label = Label.new()
@@ -281,3 +301,30 @@ func _start_unlock_pulse(card: Control, node_id: String) -> void:
 	tween.tween_property(card, "modulate", Color(1.0, 1.0, 1.0, 1.0), PULSE_DURATION * 0.5)
 	# Store reference (will be killed when map rebuilds)
 	_card_tweens[node_id + "_pulse"] = tween
+
+func _get_lesson_health_label(lesson_id: String) -> String:
+	# Get health label based on lesson mastery
+	var mastery: Dictionary = progression.get_lesson_mastery(lesson_id)
+	var attempts := int(mastery.get("attempt_count", 0))
+	if attempts < 2:
+		return "--"
+	# Simple health based on completion rate for now
+	var completions := int(mastery.get("completion_count", 0))
+	var rate := float(completions) / float(attempts) if attempts > 0 else 0.0
+	if rate >= 0.8:
+		return "GOOD"
+	elif rate >= 0.5:
+		return "OK"
+	else:
+		return "WARN"
+
+func _get_health_color(label: String) -> Color:
+	match label:
+		"GOOD":
+			return Color(0.3, 0.9, 0.5)
+		"OK":
+			return Color(0.9, 0.8, 0.2)
+		"WARN":
+			return Color(0.9, 0.4, 0.3)
+		_:
+			return ThemeColors.TEXT_DIM

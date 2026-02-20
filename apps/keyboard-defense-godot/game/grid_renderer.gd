@@ -42,6 +42,19 @@ const AssetLoader = preload("res://game/asset_loader.gd")
 @export var cost_affordable_color: Color = Color(0.4, 0.85, 0.5, 1.0)
 @export var cost_unaffordable_color: Color = Color(0.9, 0.4, 0.4, 1.0)
 
+# Fog of war colors and settings - atmospheric misty blue-gray
+@export var fog_base_color: Color = Color(0.12, 0.14, 0.22, 0.94)
+@export var fog_highlight_color: Color = Color(0.2, 0.24, 0.35, 0.88)
+@export var fog_dark_color: Color = Color(0.06, 0.08, 0.14, 0.97)
+@export var fog_color: Color = Color(0.1, 0.12, 0.18, 0.92)
+@export var fog_edge_color: Color = Color(0.15, 0.18, 0.28, 0.75)
+@export var fog_animation_speed: float = 0.15
+@export var fog_noise_scale: float = 0.08
+
+# Fog noise generator for animated effect
+var _fog_noise: FastNoiseLite
+var _fog_time: float = 0.0
+
 # Synergy visualization colors
 @export var synergy_line_color: Color = Color(0.5, 0.8, 1.0, 0.4)
 @export var synergy_glow_color: Color = Color(0.4, 0.7, 1.0, 0.25)
@@ -71,6 +84,10 @@ var preview_synergies: Array = []  # Synergies that would activate with current 
 var state_ref: GameState
 var highlight_enemy_ids: Dictionary = {}
 var focus_enemy_id: int = -1
+
+# Camera reference for viewport culling
+var camera: Camera2D = null
+var _viewport_size: Vector2 = Vector2.ZERO
 
 # Asset loader and texture cache
 var asset_loader: AssetLoader
@@ -146,6 +163,22 @@ func _ready() -> void:
 	asset_loader = AssetLoader.new()
 	asset_loader._load_manifest()
 	_preload_textures()
+	_viewport_size = get_viewport_rect().size
+	# Connect to window resize to update viewport size for culling
+	get_tree().root.size_changed.connect(_on_viewport_resized)
+	# Initialize fog noise generator
+	_fog_noise = FastNoiseLite.new()
+	_fog_noise.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH
+	_fog_noise.frequency = fog_noise_scale
+	_fog_noise.fractal_octaves = 3
+	_fog_noise.fractal_lacunarity = 2.0
+	_fog_noise.fractal_gain = 0.5
+
+
+func _on_viewport_resized() -> void:
+	_viewport_size = get_viewport_rect().size
+	queue_redraw()
+
 
 func _preload_textures() -> void:
 	# Preload common textures
@@ -214,6 +247,128 @@ func set_path_overlay(enabled: bool) -> void:
 	overlay_path_enabled = enabled
 	queue_redraw()
 
+
+## Set the camera reference for viewport culling
+func set_camera(cam: Camera2D) -> void:
+	camera = cam
+
+
+## Get the visible tile range for viewport culling
+## Returns Dictionary with min_x, max_x, min_y, max_y
+func _get_visible_tile_range() -> Dictionary:
+	# If no camera or viewport culling disabled, return full map
+	if camera == null or _viewport_size == Vector2.ZERO:
+		return {"min_x": 0, "max_x": map_w, "min_y": 0, "max_y": map_h}
+
+	# Get camera position in world space
+	var cam_pos: Vector2 = camera.global_position
+	var zoom: Vector2 = camera.zoom if camera.zoom != Vector2.ZERO else Vector2.ONE
+
+	# Calculate visible world area
+	var half_size: Vector2 = _viewport_size / (2.0 * zoom)
+	var visible_min: Vector2 = cam_pos - half_size
+	var visible_max: Vector2 = cam_pos + half_size
+
+	# Convert to tile coordinates with padding for partial tiles
+	var min_x: int = maxi(0, int((visible_min.x - origin.x) / cell_size.x) - 1)
+	var max_x: int = mini(map_w, int((visible_max.x - origin.x) / cell_size.x) + 2)
+	var min_y: int = maxi(0, int((visible_min.y - origin.y) / cell_size.y) - 1)
+	var max_y: int = mini(map_h, int((visible_max.y - origin.y) / cell_size.y) + 2)
+
+	return {"min_x": min_x, "max_x": max_x, "min_y": min_y, "max_y": max_y}
+
+
+## Check if a tile has any discovered neighbors (for fog edge detection)
+func _has_discovered_neighbor(x: int, y: int) -> bool:
+	for offset in NEIGHBOR_OFFSETS.values():
+		var nx: int = x + offset.x
+		var ny: int = y + offset.y
+		if SimMap.in_bounds(nx, ny, map_w, map_h):
+			var neighbor_idx: int = ny * map_w + nx
+			if discovered.has(neighbor_idx):
+				return true
+	return false
+
+
+## Count discovered neighbors for fog gradient intensity
+func _count_discovered_neighbors(x: int, y: int) -> int:
+	var count: int = 0
+	for offset in NEIGHBOR_OFFSETS.values():
+		var nx: int = x + offset.x
+		var ny: int = y + offset.y
+		if SimMap.in_bounds(nx, ny, map_w, map_h):
+			var neighbor_idx: int = ny * map_w + nx
+			if discovered.has(neighbor_idx):
+				count += 1
+	return count
+
+
+## Draw animated fog of war tile with noise-based visual effect
+func _draw_fog_tile(rect: Rect2, x: int, y: int, is_edge: bool, neighbor_count: int) -> void:
+	# Skip noise animation if reduced motion is enabled
+	if reduced_motion:
+		var simple_alpha: float = 0.95 if not is_edge else max(0.5, 1.0 - float(neighbor_count) / 8.0)
+		var simple_fog := Color(fog_base_color.r, fog_base_color.g, fog_base_color.b, simple_alpha)
+		draw_rect(rect, simple_fog, true)
+		return
+
+	# Generate noise values for this tile position with time-based animation
+	if _fog_noise == null:
+		draw_rect(rect, fog_base_color, true)
+		return
+
+	# Sample noise at multiple points within the tile for variation
+	var center_x: float = float(x) + 0.5
+	var center_y: float = float(y) + 0.5
+
+	# Primary noise layer - slow moving clouds
+	var noise1: float = _fog_noise.get_noise_3d(center_x, center_y, _fog_time)
+	# Secondary noise layer - faster wisps (offset position)
+	var noise2: float = _fog_noise.get_noise_3d(center_x + 100.0, center_y + 100.0, _fog_time * 1.5)
+	# Combined noise value normalized to 0-1
+	var combined_noise: float = (noise1 + noise2 * 0.5) / 1.5
+	combined_noise = (combined_noise + 1.0) * 0.5  # Normalize from -1,1 to 0,1
+
+	# Calculate base fog color with noise-based variation
+	var fog_variation: Color
+	if combined_noise > 0.6:
+		# Lighter wisps - highlight areas
+		fog_variation = fog_highlight_color.lerp(fog_base_color, (combined_noise - 0.6) / 0.4)
+	elif combined_noise < 0.35:
+		# Darker depths
+		fog_variation = fog_dark_color.lerp(fog_base_color, combined_noise / 0.35)
+	else:
+		# Base fog color
+		fog_variation = fog_base_color
+
+	# Adjust alpha based on edge proximity
+	var alpha: float = 0.98
+	if is_edge:
+		# Softer edges near discovered tiles
+		var edge_factor: float = float(neighbor_count) / 8.0
+		alpha = max(0.4, 0.95 - edge_factor * 0.5)
+		# Add wispy edge effect
+		var edge_noise: float = _fog_noise.get_noise_3d(center_x * 2.0, center_y * 2.0, _fog_time * 2.0)
+		edge_noise = (edge_noise + 1.0) * 0.5
+		alpha = lerpf(alpha, alpha * 0.7, edge_noise * edge_factor)
+
+	# Apply alpha and draw
+	fog_variation.a = alpha
+	draw_rect(rect, fog_variation, true)
+
+	# Draw swirl patterns on non-edge tiles for visual interest (more visible)
+	if not is_edge and combined_noise > 0.45:
+		var swirl_alpha: float = (combined_noise - 0.45) * 0.5
+		var swirl_color := Color(fog_highlight_color.r + 0.1, fog_highlight_color.g + 0.1, fog_highlight_color.b + 0.15, swirl_alpha)
+		var swirl_size: float = cell_size.x * 0.4 * combined_noise
+		var swirl_offset := Vector2(
+			sin(_fog_time * 0.5 + center_x) * cell_size.x * 0.2,
+			cos(_fog_time * 0.5 + center_y) * cell_size.y * 0.2
+		)
+		var swirl_center := rect.get_center() + swirl_offset
+		draw_circle(swirl_center, swirl_size, swirl_color)
+
+
 func set_enemy_highlights(candidate_ids: Array, focus_id: int) -> void:
 	highlight_enemy_ids.clear()
 	for enemy_id in candidate_ids:
@@ -228,9 +383,28 @@ func _draw() -> void:
 	if overlay_path_enabled and state_ref != null:
 		dist_field = SimMap.compute_dist_to_base(state_ref)
 
-	# Draw terrain tiles
-	for y in range(map_h):
-		for x in range(map_w):
+	# Get visible tile range for viewport culling
+	var visible_range: Dictionary = _get_visible_tile_range()
+	var min_x: int = visible_range["min_x"]
+	var max_x: int = visible_range["max_x"]
+	var min_y: int = visible_range["min_y"]
+	var max_y: int = visible_range["max_y"]
+
+
+	# Draw extended background fill to cover entire visible area and beyond
+	# This prevents black/blank areas if camera shows outside the map bounds
+	# Use a dark color that contrasts with fog
+	var padding: float = maxf(_viewport_size.x, _viewport_size.y) if _viewport_size != Vector2.ZERO else 2000.0
+	var extended_rect := Rect2(
+		origin - Vector2(padding, padding),
+		Vector2(map_w * cell_size.x + padding * 2, map_h * cell_size.y + padding * 2)
+	)
+	var bg_color := Color(0.04, 0.05, 0.08, 1.0)  # Dark background for fog contrast
+	draw_rect(extended_rect, bg_color, true)
+
+	# Draw terrain tiles (only visible ones)
+	for y in range(min_y, max_y):
+		for x in range(min_x, max_x):
 			var top_left: Vector2 = origin + Vector2(x * cell_size.x, y * cell_size.y)
 			var rect: Rect2 = Rect2(top_left, cell_size)
 			var index: int = y * map_w + x
@@ -238,15 +412,26 @@ func _draw() -> void:
 			var terrain_type := _terrain_at(index)
 
 			# Draw terrain background with autotiling transitions
-			var fill: Color = undiscovered_color
 			if is_discovered:
 				if use_sprites:
 					_draw_terrain_with_transitions(rect, x, y, terrain_type)
 				else:
-					fill = _terrain_color(terrain_type)
+					var fill: Color = _terrain_color(terrain_type)
 					draw_rect(rect, fill, true)
 			else:
-				draw_rect(rect, fill, true)
+				# Fog of war for undiscovered tiles
+				# Check if this tile is adjacent to discovered area
+				var has_discovered_neighbor: bool = _has_discovered_neighbor(x, y)
+				var neighbor_count: int = _count_discovered_neighbors(x, y) if has_discovered_neighbor else 0
+				if has_discovered_neighbor:
+					# Draw terrain underneath with fog overlay (edge tiles)
+					if use_sprites:
+						_draw_terrain_with_transitions(rect, x, y, terrain_type)
+					else:
+						var fill: Color = _terrain_color(terrain_type)
+						draw_rect(rect, fill, true)
+				# Draw animated fog overlay
+				_draw_fog_tile(rect, x, y, has_discovered_neighbor, neighbor_count)
 
 			# Draw path overlay
 			if overlay_path_enabled and dist_field.size() == map_w * map_h:
@@ -519,8 +704,8 @@ func _draw() -> void:
 		else:
 			night_alpha = (0.2 - time_of_day) / 0.2 * 0.3  # Fade out from 30%
 		var night_overlay: Color = Color(0.05, 0.05, 0.15, night_alpha)
-		var map_rect: Rect2 = Rect2(origin, Vector2(map_w * cell_size.x, map_h * cell_size.y))
-		draw_rect(map_rect, night_overlay, true)
+		var night_rect: Rect2 = Rect2(origin, Vector2(map_w * cell_size.x, map_h * cell_size.y))
+		draw_rect(night_rect, night_overlay, true)
 
 	# Draw threat level indicator bar (top of map)
 	_draw_threat_bar()
@@ -552,6 +737,7 @@ func _process(delta: float) -> void:
 	_update_combo_announcements(delta)
 	_update_insufficient_pulses(delta)
 	_aura_pulse_time += delta
+	_fog_time += delta * fog_animation_speed
 
 func _draw_centered_texture(rect: Rect2, tex: Texture2D, mod_color: Color = Color.WHITE) -> void:
 	var tex_size := tex.get_size()
@@ -2701,8 +2887,8 @@ func _draw_synergy_icon(positions: Array, synergy: Dictionary) -> void:
 
 		# Border
 		for i in range(4):
-			var p1 := diamond_points[i]
-			var p2 := diamond_points[(i + 1) % 4]
+			var p1: Vector2 = diamond_points[i]
+			var p2: Vector2 = diamond_points[(i + 1) % 4]
 			draw_line(p1, p2, Color(synergy_color.r, synergy_color.g, synergy_color.b, 0.8), 1.5)
 	else:
 		# Draw icon text with background

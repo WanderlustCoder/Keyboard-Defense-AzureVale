@@ -5,6 +5,7 @@ extends RefCounted
 const GameState = preload("res://sim/types.gd")
 const SimTowerTypes = preload("res://sim/tower_types.gd")
 const SimTypingMetrics = preload("res://sim/typing_metrics.gd")
+const SimUpgrades = preload("res://sim/upgrades.gd")
 
 # =============================================================================
 # CONSTANTS
@@ -36,7 +37,10 @@ static func get_tower_damage_multiplier(
 	var multiplier: float = 1.0
 
 	# Get combo multiplier (applies to all towers)
-	multiplier *= SimTypingMetrics.get_combo_multiplier(state)
+	# Base combo from typing streak + research bonus
+	var combo_mult: float = SimTypingMetrics.get_combo_multiplier(state)
+	combo_mult += SimUpgrades.get_combo_multiplier(state)  # Research bonus (additive)
+	multiplier *= combo_mult
 
 	# Apply tower-specific bonuses
 	match tower_id:

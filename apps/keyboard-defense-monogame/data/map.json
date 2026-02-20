@@ -1,0 +1,893 @@
+{
+  "version": 1,
+  "nodes": [
+    {
+      "id": "forest-gate",
+      "label": "Forest Gate",
+      "lesson_id": "home_row_1",
+      "requires": [],
+      "reward_gold": 10,
+      "drill_template": "forest-gate",
+      "drill_overrides": {
+        "steps": [
+          {
+            "index": 0,
+            "data": {
+              "word_count": 4,
+              "hint": "Start slow and keep fingers anchored."
+            }
+          },
+          {
+            "index": 1,
+            "data": {
+              "targets": ["as", "sad", "dad", "lad", "sass"],
+              "hint": "Tap the short bursts cleanly before the waves arrive."
+            }
+          },
+          {
+            "index": 3,
+            "data": {
+              "targets": ["flask", "lass", "fall", "ask", "salad", "flak"],
+              "hint": "Reinforce the longer sigils with steady rhythm."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "whisper-grove",
+      "label": "Whisper Grove",
+      "lesson_id": "home_row_2",
+      "requires": ["forest-gate"],
+      "reward_gold": 12,
+      "drill_template": "whisper-grove",
+      "drill_overrides": {
+        "steps": [
+          {
+            "index": 1,
+            "data": {
+              "targets": ["jkl", "jail", "lake", "kale", "jake"],
+              "hint": "Keep the right-hand taps light and even."
+            }
+          },
+          {
+            "index": 3,
+            "data": {
+              "targets": ["flake", "flail", "leaf", "safe", "lake", "flak"],
+              "hint": "Hold the grove line with calm accuracy."
+            }
+          },
+          {
+            "index": 4,
+            "data": {
+              "word_count": 9,
+              "hint": "Stay relaxed as the pace rises."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "ember-bridge",
+      "label": "Ember Bridge",
+      "lesson_id": "reach_row_1",
+      "requires": ["whisper-grove"],
+      "reward_gold": 14,
+      "drill_template": "ember-bridge",
+      "drill_overrides": {
+        "steps": [
+          {
+            "index": 1,
+            "data": {
+              "targets": ["read", "rest", "tale", "gate", "tread"],
+              "hint": "Reach up and return without rushing."
+            }
+          },
+          {
+            "index": 3,
+            "data": {
+              "targets": ["trade", "stage", "thread", "great", "shade", "stare"],
+              "hint": "Stretch cleanly across the reach row."
+            }
+          },
+          {
+            "index": 4,
+            "data": {
+              "word_count": 10,
+              "hint": "Lock in accuracy as the bridge heats up."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "citadel-rise",
+      "label": "Citadel Rise",
+      "lesson_id": "reach_row_2",
+      "requires": ["ember-bridge"],
+      "reward_gold": 18,
+      "drill_template": "citadel-rise",
+      "drill_overrides": {
+        "steps": [
+          {
+            "index": 1,
+            "data": {
+              "targets": ["banner", "warden", "torch", "storm", "armor"],
+              "hint": "Call the commands with measured control."
+            }
+          },
+          {
+            "index": 3,
+            "data": {
+              "targets": ["castle", "legend", "armor", "grace", "trace", "banner"],
+              "hint": "Keep the keep steady under pressure."
+            }
+          },
+          {
+            "index": 4,
+            "data": {
+              "word_count": 12,
+              "hint": "Maintain form through the final surge."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "skywatch-pass",
+      "label": "Skywatch Pass",
+      "lesson_id": "upper_row_1",
+      "requires": ["citadel-rise"],
+      "reward_gold": 20,
+      "drill_template": "skywatch-pass"
+    },
+    {
+      "id": "frost-crown",
+      "label": "Frost Crown",
+      "lesson_id": "upper_row_2",
+      "requires": ["skywatch-pass"],
+      "reward_gold": 24,
+      "drill_template": "frost-crown"
+    },
+    {
+      "id": "shadow-vale",
+      "label": "Shadow Vale",
+      "lesson_id": "bottom_row_1",
+      "requires": ["whisper-grove"],
+      "reward_gold": 14,
+      "drill_template": "shadow-vale",
+      "drill_overrides": {
+        "steps": [
+          {
+            "index": 1,
+            "data": {
+              "targets": ["ax", "vex", "zeal", "cave", "jazz"],
+              "hint": "Reach down to the shadow keys with control."
+            }
+          },
+          {
+            "index": 3,
+            "data": {
+              "targets": ["lack", "class", "valid", "black", "slack"],
+              "hint": "Blend the shadows with your home row anchor."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "cavern-depths",
+      "label": "Cavern Depths",
+      "lesson_id": "bottom_row_2",
+      "requires": ["shadow-vale"],
+      "reward_gold": 18,
+      "drill_template": "cavern-depths",
+      "drill_overrides": {
+        "steps": [
+          {
+            "index": 1,
+            "data": {
+              "targets": ["cab", "ban", "man", "van", "nab"],
+              "hint": "The cavern echoes with each keystroke."
+            }
+          },
+          {
+            "index": 3,
+            "data": {
+              "targets": ["cabin", "blank", "clamp", "brand", "crumb"],
+              "hint": "Navigate the depths with steady hands."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "crystal-hollow",
+      "label": "Crystal Hollow",
+      "lesson_id": "mixed_rows",
+      "requires": ["cavern-depths"],
+      "reward_gold": 22,
+      "drill_template": "crystal-hollow",
+      "drill_overrides": {
+        "steps": [
+          {
+            "index": 1,
+            "data": {
+              "targets": ["carved", "frozen", "blazed", "craven"],
+              "hint": "The crystals reflect every keystroke."
+            }
+          },
+          {
+            "index": 3,
+            "data": {
+              "targets": ["fragment", "chamber", "glimmer", "vibrant"],
+              "hint": "Navigate the crystalline maze with precision."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "storm-summit",
+      "label": "Storm Summit",
+      "lesson_id": "speed_alpha",
+      "requires": ["frost-crown"],
+      "reward_gold": 28,
+      "drill_template": "storm-summit",
+      "drill_overrides": {
+        "steps": [
+          {
+            "index": 1,
+            "data": {
+              "targets": ["gust", "bolt", "fury", "wind", "rage"],
+              "hint": "The storm tests your speed."
+            }
+          },
+          {
+            "index": 3,
+            "data": {
+              "targets": ["thunder", "cyclone", "tempest", "squall"],
+              "hint": "Weather the storm with rapid precision."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "the-nexus",
+      "label": "The Nexus",
+      "lesson_id": "nexus_blend",
+      "requires": ["crystal-hollow", "storm-summit"],
+      "reward_gold": 35,
+      "drill_template": "the-nexus",
+      "drill_overrides": {
+        "steps": [
+          {
+            "index": 1,
+            "data": {
+              "targets": ["converge", "unified", "balance", "merged"],
+              "hint": "Two paths become one."
+            }
+          },
+          {
+            "index": 3,
+            "data": {
+              "targets": ["junction", "crossing", "harmony", "synthesis"],
+              "hint": "All skills combine at the nexus."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "apex-tower",
+      "label": "Apex Tower",
+      "lesson_id": "apex_mastery",
+      "requires": ["the-nexus"],
+      "reward_gold": 50,
+      "drill_template": "apex-tower",
+      "drill_overrides": {
+        "steps": [
+          {
+            "index": 1,
+            "data": {
+              "targets": ["pinnacle", "zenith", "supreme", "ultimate"],
+              "hint": "The final ascent begins."
+            }
+          },
+          {
+            "index": 3,
+            "data": {
+              "targets": ["triumphant", "victorious", "legendary", "champion"],
+              "hint": "Claim your place at the apex."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "number-spire",
+      "label": "Number Spire",
+      "lesson_id": "numbers_1",
+      "requires": ["apex-tower"],
+      "reward_gold": 40,
+      "drill_template": "number-spire"
+    },
+    {
+      "id": "arcane-calculator",
+      "label": "Arcane Calculator",
+      "lesson_id": "numbers_2",
+      "requires": ["number-spire"],
+      "reward_gold": 55,
+      "drill_template": "arcane-calculator"
+    },
+    {
+      "id": "scribes-hall",
+      "label": "Scribe's Hall",
+      "lesson_id": "punctuation_1",
+      "requires": ["apex-tower"],
+      "reward_gold": 40,
+      "drill_template": "scribes-hall"
+    },
+    {
+      "id": "grand-library",
+      "label": "Grand Library",
+      "lesson_id": "punctuation_2",
+      "requires": ["scribes-hall"],
+      "reward_gold": 55,
+      "drill_template": "grand-library"
+    },
+    {
+      "id": "runeforge-entrance",
+      "label": "Runeforge Entrance",
+      "lesson_id": "symbols_1",
+      "requires": ["arcane-calculator", "grand-library"],
+      "reward_gold": 60,
+      "drill_template": "runeforge-entrance"
+    },
+    {
+      "id": "runeforge-core",
+      "label": "Runeforge Core",
+      "lesson_id": "symbols_2",
+      "requires": ["runeforge-entrance"],
+      "reward_gold": 75,
+      "drill_template": "runeforge-core"
+    },
+    {
+      "id": "speed-arena",
+      "label": "Speed Arena",
+      "lesson_id": "gauntlet_speed",
+      "requires": ["apex-tower"],
+      "reward_gold": 45,
+      "drill_template": "speed-arena"
+    },
+    {
+      "id": "endurance-arena",
+      "label": "Endurance Arena",
+      "lesson_id": "gauntlet_endurance",
+      "requires": ["apex-tower"],
+      "reward_gold": 45,
+      "drill_template": "endurance-arena"
+    },
+    {
+      "id": "chaos-arena",
+      "label": "Chaos Arena",
+      "lesson_id": "gauntlet_chaos",
+      "requires": ["speed-arena", "endurance-arena"],
+      "reward_gold": 100,
+      "drill_template": "chaos-arena"
+    },
+    {
+      "id": "training-grounds",
+      "label": "Training Grounds",
+      "lesson_id": "training_basics",
+      "requires": [],
+      "reward_gold": 5,
+      "drill_template": "training-grounds"
+    },
+    {
+      "id": "training-arena",
+      "label": "Training Arena",
+      "lesson_id": "training_rhythm",
+      "requires": ["training-grounds"],
+      "reward_gold": 8,
+      "drill_template": "training-arena"
+    },
+    {
+      "id": "twilight-glade",
+      "label": "Twilight Glade",
+      "lesson_id": "twilight_whisper",
+      "requires": ["whisper-grove"],
+      "reward_gold": 15,
+      "drill_template": "twilight-glade"
+    },
+    {
+      "id": "twilight-sanctum",
+      "label": "Twilight Sanctum",
+      "lesson_id": "twilight_shadow",
+      "requires": ["twilight-glade"],
+      "reward_gold": 20,
+      "drill_template": "twilight-sanctum"
+    },
+    {
+      "id": "twilight-throne",
+      "label": "Twilight Throne",
+      "lesson_id": "boss_twilight_lord",
+      "requires": ["twilight-sanctum"],
+      "reward_gold": 40,
+      "drill_template": "twilight-throne"
+    },
+    {
+      "id": "grove-guardian",
+      "label": "Grove Guardian",
+      "lesson_id": "boss_grove_guardian",
+      "requires": ["ember-bridge"],
+      "reward_gold": 25,
+      "drill_template": "grove-guardian"
+    },
+    {
+      "id": "citadel-warden",
+      "label": "Citadel Warden",
+      "lesson_id": "boss_citadel_warden",
+      "requires": ["frost-crown"],
+      "reward_gold": 35,
+      "drill_template": "citadel-warden"
+    },
+    {
+      "id": "capital-tower",
+      "label": "Capital Tower",
+      "lesson_id": "capitals_1",
+      "requires": ["apex-tower"],
+      "reward_gold": 45,
+      "drill_template": "capital-tower"
+    },
+    {
+      "id": "royal-court",
+      "label": "Royal Court",
+      "lesson_id": "capitals_2",
+      "requires": ["capital-tower"],
+      "reward_gold": 60,
+      "drill_template": "royal-court"
+    },
+    {
+      "id": "left-hand-forge",
+      "label": "Left Hand Forge",
+      "lesson_id": "finger_gym_left",
+      "requires": ["training-arena"],
+      "reward_gold": 12,
+      "drill_template": "left-hand-forge"
+    },
+    {
+      "id": "right-hand-forge",
+      "label": "Right Hand Forge",
+      "lesson_id": "finger_gym_right",
+      "requires": ["training-arena"],
+      "reward_gold": 12,
+      "drill_template": "right-hand-forge"
+    },
+    {
+      "id": "harmonic-chamber",
+      "label": "Harmonic Chamber",
+      "lesson_id": "alternating_hands",
+      "requires": ["left-hand-forge", "right-hand-forge"],
+      "reward_gold": 25,
+      "drill_template": "harmonic-chamber"
+    },
+    {
+      "id": "word-masters-den",
+      "label": "Word Master's Den",
+      "lesson_id": "common_words",
+      "requires": ["harmonic-chamber"],
+      "reward_gold": 30,
+      "drill_template": "word-masters-den"
+    },
+    {
+      "id": "eternal-scribe",
+      "label": "Eternal Scribe",
+      "lesson_id": "boss_eternal_scribe",
+      "requires": ["runeforge-core"],
+      "reward_gold": 150,
+      "drill_template": "eternal-scribe"
+    },
+    {
+      "id": "ember-path",
+      "label": "Ember Path",
+      "lesson_id": "fire_realm_1",
+      "requires": ["the-nexus"],
+      "reward_gold": 35,
+      "drill_template": "ember-path"
+    },
+    {
+      "id": "inferno-core",
+      "label": "Inferno Core",
+      "lesson_id": "fire_realm_2",
+      "requires": ["ember-path"],
+      "reward_gold": 45,
+      "drill_template": "inferno-core"
+    },
+    {
+      "id": "flame-tyrant",
+      "label": "Flame Tyrant",
+      "lesson_id": "fire_realm_boss",
+      "requires": ["inferno-core"],
+      "reward_gold": 80,
+      "drill_template": "flame-tyrant"
+    },
+    {
+      "id": "frozen-approach",
+      "label": "Frozen Approach",
+      "lesson_id": "ice_realm_1",
+      "requires": ["the-nexus"],
+      "reward_gold": 35,
+      "drill_template": "frozen-approach"
+    },
+    {
+      "id": "glacier-heart",
+      "label": "Glacier Heart",
+      "lesson_id": "ice_realm_2",
+      "requires": ["frozen-approach"],
+      "reward_gold": 45,
+      "drill_template": "glacier-heart"
+    },
+    {
+      "id": "frost-empress",
+      "label": "Frost Empress",
+      "lesson_id": "ice_realm_boss",
+      "requires": ["glacier-heart"],
+      "reward_gold": 80,
+      "drill_template": "frost-empress"
+    },
+    {
+      "id": "living-grove",
+      "label": "Living Grove",
+      "lesson_id": "nature_realm_1",
+      "requires": ["the-nexus"],
+      "reward_gold": 35,
+      "drill_template": "living-grove"
+    },
+    {
+      "id": "world-tree",
+      "label": "World Tree",
+      "lesson_id": "nature_realm_2",
+      "requires": ["living-grove"],
+      "reward_gold": 45,
+      "drill_template": "world-tree"
+    },
+    {
+      "id": "ancient-treant",
+      "label": "Ancient Treant",
+      "lesson_id": "nature_realm_boss",
+      "requires": ["world-tree"],
+      "reward_gold": 80,
+      "drill_template": "ancient-treant"
+    },
+    {
+      "id": "elemental-convergence",
+      "label": "Elemental Convergence",
+      "lesson_id": "gauntlet_chaos",
+      "requires": ["flame-tyrant", "frost-empress", "ancient-treant"],
+      "reward_gold": 200,
+      "drill_template": "elemental-convergence"
+    },
+    {
+      "id": "code-academy",
+      "label": "Code Academy",
+      "lesson_id": "code_variables",
+      "requires": ["apex-tower"],
+      "reward_gold": 40,
+      "drill_template": "code-academy"
+    },
+    {
+      "id": "keyword-vault",
+      "label": "Keyword Vault",
+      "lesson_id": "code_keywords",
+      "requires": ["code-academy"],
+      "reward_gold": 50,
+      "drill_template": "keyword-vault"
+    },
+    {
+      "id": "syntax-chamber",
+      "label": "Syntax Chamber",
+      "lesson_id": "code_syntax",
+      "requires": ["keyword-vault"],
+      "reward_gold": 60,
+      "drill_template": "syntax-chamber"
+    },
+    {
+      "id": "code-master-sanctum",
+      "label": "Code Master Sanctum",
+      "lesson_id": "code_master",
+      "requires": ["syntax-chamber"],
+      "reward_gold": 90,
+      "drill_template": "code-master-sanctum"
+    },
+    {
+      "id": "bronze-precision",
+      "label": "Bronze Precision",
+      "lesson_id": "precision_bronze",
+      "requires": ["training-arena"],
+      "reward_gold": 15,
+      "drill_template": "bronze-precision"
+    },
+    {
+      "id": "silver-precision",
+      "label": "Silver Precision",
+      "lesson_id": "precision_silver",
+      "requires": ["bronze-precision"],
+      "reward_gold": 25,
+      "drill_template": "silver-precision"
+    },
+    {
+      "id": "gold-precision",
+      "label": "Gold Precision",
+      "lesson_id": "precision_gold",
+      "requires": ["silver-precision"],
+      "reward_gold": 50,
+      "drill_template": "gold-precision"
+    },
+    {
+      "id": "legendary-forest-gate",
+      "label": "Legendary Forest Gate",
+      "lesson_id": "legendary_forest",
+      "requires": ["apex-tower"],
+      "reward_gold": 60,
+      "drill_template": "legendary-forest-gate"
+    },
+    {
+      "id": "legendary-citadel",
+      "label": "Legendary Citadel",
+      "lesson_id": "legendary_citadel",
+      "requires": ["legendary-forest-gate"],
+      "reward_gold": 80,
+      "drill_template": "legendary-citadel"
+    },
+    {
+      "id": "legendary-apex",
+      "label": "Legendary Apex",
+      "lesson_id": "legendary_apex",
+      "requires": ["legendary-citadel"],
+      "reward_gold": 120,
+      "drill_template": "legendary-apex"
+    },
+    {
+      "id": "sprint-trial",
+      "label": "Sprint Trial",
+      "lesson_id": "time_trial_sprint",
+      "requires": ["training-arena"],
+      "reward_gold": 20,
+      "drill_template": "sprint-trial"
+    },
+    {
+      "id": "marathon-trial",
+      "label": "Marathon Trial",
+      "lesson_id": "time_trial_marathon",
+      "requires": ["sprint-trial"],
+      "reward_gold": 35,
+      "drill_template": "marathon-trial"
+    },
+    {
+      "id": "double-letter-dungeon",
+      "label": "Double Letter Dungeon",
+      "lesson_id": "double_letters",
+      "requires": ["word-masters-den"],
+      "reward_gold": 35,
+      "drill_template": "double-letter-dungeon"
+    },
+    {
+      "id": "consonant-cavern",
+      "label": "Consonant Cavern",
+      "lesson_id": "consonant_clusters",
+      "requires": ["double-letter-dungeon"],
+      "reward_gold": 40,
+      "drill_template": "consonant-cavern"
+    },
+    {
+      "id": "vowel-sanctuary",
+      "label": "Vowel Sanctuary",
+      "lesson_id": "vowel_flow",
+      "requires": ["double-letter-dungeon"],
+      "reward_gold": 40,
+      "drill_template": "vowel-sanctuary"
+    },
+    {
+      "id": "phonetic-mastery",
+      "label": "Phonetic Mastery",
+      "lesson_id": "alternating_hands",
+      "requires": ["consonant-cavern", "vowel-sanctuary"],
+      "reward_gold": 65,
+      "drill_template": "phonetic-mastery"
+    },
+    {
+      "id": "mistfen-approach",
+      "label": "Mistfen Approach",
+      "lesson_id": "biome_mistfen",
+      "requires": ["apex-tower"],
+      "reward_gold": 45,
+      "drill_template": "mistfen-approach"
+    },
+    {
+      "id": "foggy-causeway",
+      "label": "Foggy Causeway",
+      "lesson_id": "punctuation_1",
+      "requires": ["mistfen-approach"],
+      "reward_gold": 50,
+      "drill_template": "foggy-causeway"
+    },
+    {
+      "id": "murky-delta",
+      "label": "Murky Delta",
+      "lesson_id": "biome_mistfen",
+      "requires": ["foggy-causeway"],
+      "reward_gold": 55,
+      "drill_template": "murky-delta"
+    },
+    {
+      "id": "willows-rest",
+      "label": "Willow's Rest",
+      "lesson_id": "punctuation_2",
+      "requires": ["murky-delta"],
+      "reward_gold": 60,
+      "drill_template": "willows-rest"
+    },
+    {
+      "id": "heron-rookery",
+      "label": "Heron Rookery",
+      "lesson_id": "symbols_1",
+      "requires": ["willows-rest"],
+      "reward_gold": 65,
+      "drill_template": "heron-rookery"
+    },
+    {
+      "id": "reed-maze",
+      "label": "Reed Maze",
+      "lesson_id": "biome_mistfen",
+      "requires": ["heron-rookery"],
+      "reward_gold": 70,
+      "drill_template": "reed-maze"
+    },
+    {
+      "id": "sunken-temple",
+      "label": "Sunken Temple",
+      "lesson_id": "symbols_2",
+      "requires": ["reed-maze"],
+      "reward_gold": 75,
+      "drill_template": "sunken-temple"
+    },
+    {
+      "id": "mist-warden-lair",
+      "label": "Mist Warden Lair",
+      "lesson_id": "biome_mistfen",
+      "requires": ["sunken-temple"],
+      "reward_gold": 80,
+      "drill_template": "mist-warden-lair"
+    },
+    {
+      "id": "fens-edge",
+      "label": "Fen's Edge",
+      "lesson_id": "punctuation_1",
+      "requires": ["mist-warden-lair"],
+      "reward_gold": 85,
+      "drill_template": "fens-edge"
+    },
+    {
+      "id": "ancient-pier",
+      "label": "Ancient Pier",
+      "lesson_id": "symbols_1",
+      "requires": ["fens-edge"],
+      "reward_gold": 90,
+      "drill_template": "ancient-pier"
+    },
+    {
+      "id": "seer-sanctum",
+      "label": "Seer Sanctum",
+      "lesson_id": "biome_mistfen",
+      "requires": ["ancient-pier"],
+      "reward_gold": 100,
+      "drill_template": "seer-sanctum"
+    },
+    {
+      "id": "fen-seer-throne",
+      "label": "Fen Seer Throne",
+      "lesson_id": "boss_fen_seer",
+      "requires": ["seer-sanctum"],
+      "reward_gold": 150,
+      "drill_template": "fen-seer-throne"
+    },
+    {
+      "id": "sunfields-gateway",
+      "label": "Sunfields Gateway",
+      "lesson_id": "biome_sunfields",
+      "requires": ["apex-tower"],
+      "reward_gold": 45,
+      "drill_template": "sunfields-gateway"
+    },
+    {
+      "id": "golden-meadow",
+      "label": "Golden Meadow",
+      "lesson_id": "speed_alpha",
+      "requires": ["sunfields-gateway"],
+      "reward_gold": 50,
+      "drill_template": "golden-meadow"
+    },
+    {
+      "id": "harvest-road",
+      "label": "Harvest Road",
+      "lesson_id": "biome_sunfields",
+      "requires": ["golden-meadow"],
+      "reward_gold": 55,
+      "drill_template": "harvest-road"
+    },
+    {
+      "id": "windmill-heights",
+      "label": "Windmill Heights",
+      "lesson_id": "gauntlet_speed",
+      "requires": ["harvest-road"],
+      "reward_gold": 60,
+      "drill_template": "windmill-heights"
+    },
+    {
+      "id": "sunlit-orchard",
+      "label": "Sunlit Orchard",
+      "lesson_id": "biome_sunfields",
+      "requires": ["windmill-heights"],
+      "reward_gold": 65,
+      "drill_template": "sunlit-orchard"
+    },
+    {
+      "id": "champions-road",
+      "label": "Champion's Road",
+      "lesson_id": "speed_alpha",
+      "requires": ["sunlit-orchard"],
+      "reward_gold": 70,
+      "drill_template": "champions-road"
+    },
+    {
+      "id": "blazing-arena",
+      "label": "Blazing Arena",
+      "lesson_id": "gauntlet_speed",
+      "requires": ["champions-road"],
+      "reward_gold": 75,
+      "drill_template": "blazing-arena"
+    },
+    {
+      "id": "valor-grounds",
+      "label": "Valor Grounds",
+      "lesson_id": "biome_sunfields",
+      "requires": ["blazing-arena"],
+      "reward_gold": 80,
+      "drill_template": "valor-grounds"
+    },
+    {
+      "id": "trial-of-dawn",
+      "label": "Trial of Dawn",
+      "lesson_id": "time_trial_sprint",
+      "requires": ["valor-grounds"],
+      "reward_gold": 85,
+      "drill_template": "trial-of-dawn"
+    },
+    {
+      "id": "pinnacle-field",
+      "label": "Pinnacle Field",
+      "lesson_id": "biome_sunfields",
+      "requires": ["trial-of-dawn"],
+      "reward_gold": 90,
+      "drill_template": "pinnacle-field"
+    },
+    {
+      "id": "sunlord-approach",
+      "label": "Sunlord Approach",
+      "lesson_id": "gauntlet_endurance",
+      "requires": ["pinnacle-field"],
+      "reward_gold": 100,
+      "drill_template": "sunlord-approach"
+    },
+    {
+      "id": "sunlord-throne",
+      "label": "Sunlord Throne",
+      "lesson_id": "boss_sunlord",
+      "requires": ["sunlord-approach"],
+      "reward_gold": 175,
+      "drill_template": "sunlord-throne"
+    }
+  ]
+}

@@ -1,0 +1,272 @@
+{
+  "version": 1,
+  "locale": "de",
+  "name": "Deutsch",
+
+  "ui": {
+    "save": "Speichern",
+    "load": "Laden",
+    "quit": "Beenden",
+    "back": "Zurück",
+    "continue": "Fortfahren",
+    "start": "Starten",
+    "cancel": "Abbrechen",
+    "confirm": "Bestätigen",
+    "close": "Schließen",
+    "yes": "Ja",
+    "no": "Nein",
+    "ok": "OK",
+    "settings": "Einstellungen",
+    "help": "Hilfe",
+    "stats": "Statistiken",
+    "achievements": "Erfolge",
+    "lessons": "Lektionen",
+    "profile": "Profil",
+    "main_menu": "Hauptmenü",
+    "new_game": "Neues Spiel",
+    "resume": "Fortsetzen",
+    "available_languages": "Verfügbare Sprachen:",
+    "current_language": "Aktuelle Sprache: {language}",
+    "language_changed": "Sprache geändert zu {language}"
+  },
+
+  "menu": {
+    "title": "KEYBOARD DEFENSE",
+    "subtitle": "Tippe, um dein Königreich zu verteidigen",
+    "campaign": "Kampagne",
+    "kingdom_defense": "Königreichverteidigung",
+    "open_world": "Offene Welt",
+    "typing_practice": "Tippübung",
+    "typing_profile": "Tippprofil"
+  },
+
+  "panels": {
+    "bestiary": "Bestiarium",
+    "skills": "Fähigkeiten",
+    "quests": "Aufträge",
+    "equipment": "Ausrüstung",
+    "shop": "Laden",
+    "loot": "Beute",
+    "upgrades": "Verbesserungen",
+    "trade": "Handel",
+    "crafting": "Herstellung",
+    "buffs": "Aktive Boni",
+    "inventory": "Inventar",
+    "difficulty": "Schwierigkeit",
+    "expeditions": "Expeditionen",
+    "diplomacy": "Diplomatie",
+    "research": "Forschung",
+    "citizens": "Bürger",
+    "workers": "Arbeiter",
+    "key_bindings": "Tastenbelegung",
+    "save_load": "Speichern / Laden"
+  },
+
+  "actions": {
+    "explore": "Erkunden",
+    "end_day": "Tag beenden",
+    "retreat": "Rückzug",
+    "submit": "Absenden",
+    "status": "Status",
+    "inspect": "Untersuchen",
+    "go": "Los",
+    "apply": "Anwenden",
+    "reset_defaults": "Zurücksetzen",
+    "cycle": "Wechseln",
+    "rebind": "Neu belegen",
+    "reset": "Zurücksetzen",
+    "reset_all_defaults": "Alles zurücksetzen",
+    "retry": "Wiederholen",
+    "return_to_map": "Zur Karte"
+  },
+
+  "settings": {
+    "audio": "Audio",
+    "display": "Anzeige",
+    "gameplay": "Spielablauf",
+    "language": "Sprache",
+    "accessibility": "Barrierefreiheit",
+    "reduced_motion": "Reduzierte Bewegung",
+    "high_contrast": "Hoher Kontrast",
+    "large_text": "Großer Text",
+    "focus_indicators": "Fokusanzeigen",
+    "master_volume": "Gesamtlautstärke",
+    "music_volume": "Musiklautstärke",
+    "typing_sounds": "Tippgeräusche",
+    "screen_shake": "Bildschirmwackeln",
+    "show_wpm": "WPM anzeigen",
+    "show_accuracy": "Genauigkeit anzeigen",
+    "practice_mode": "Übungsmodus",
+    "game_speed": "Spielgeschwindigkeit",
+    "colorblind_mode": "Farbenblindmodus",
+    "colorblind_none": "Keiner",
+    "colorblind_protanopia": "Protanopie",
+    "colorblind_deuteranopia": "Deuteranopie",
+    "colorblind_tritanopia": "Tritanopie"
+  },
+
+  "hud": {
+    "threat": "Bedrohung",
+    "enemies": "Feinde",
+    "pos": "Pos"
+  },
+
+  "kingdom": {
+    "started": "Königreichverteidigung gestartet. Tag 1.",
+    "commands_help": "Befehle: gather <Ressource> <Menge>, build <Typ> [x y], explore, end",
+    "type_help": "Tippe 'help' für alle Befehle."
+  },
+
+  "battle": {
+    "day_phase_help": "Tagphase: sammle, baue, erkunde. Tippe 'end' für die Nacht."
+  },
+
+  "openworld": {
+    "intro": "Offene-Welt-Modus. Erkunde die Karte, sammle Ressourcen und überlebe die Nächte.",
+    "controls": "WASD oder Pfeiltasten zum Bewegen. Tippe Befehle zur Interaktion."
+  },
+
+  "game": {
+    "day": "Tag",
+    "night": "Nacht",
+    "dawn": "Morgendämmerung",
+    "wave": "Welle",
+    "phase": "Phase",
+    "paused": "PAUSIERT",
+    "game_over": "SPIEL VORBEI",
+    "victory": "SIEG",
+    "score": "Punktzahl",
+    "time": "Zeit",
+    "level": "Stufe"
+  },
+
+  "resources": {
+    "gold": "Gold",
+    "wood": "Holz",
+    "stone": "Stein",
+    "food": "Nahrung",
+    "ap": "AP",
+    "hp": "LP",
+    "mana": "Mana"
+  },
+
+  "combat": {
+    "enemy_approaching": "Feind nähert sich!",
+    "enemy_defeated": "Feind besiegt!",
+    "tower_built": "Turm gebaut!",
+    "tower_upgraded": "Turm verbessert!",
+    "castle_damaged": "Burg beschädigt!",
+    "wave_complete": "Welle abgeschlossen!",
+    "wave_incoming": "Welle kommt!",
+    "boss_appeared": "Boss erschienen!",
+    "boss_defeated": "Boss besiegt!",
+    "critical_hit": "Kritischer Treffer!",
+    "perfect_word": "Perfekt!",
+    "combo": "Kombo",
+    "miss": "Verfehlt!"
+  },
+
+  "messages": {
+    "not_enough_gold": "Nicht genug Gold!",
+    "not_enough_resources": "Nicht genug Ressourcen!",
+    "not_enough_ap": "Nicht genug AP!",
+    "invalid_command": "Ungültiger Befehl",
+    "unknown_command": "Unbekannter Befehl: {command}",
+    "day_phase_only": "Nur während der Tagphase verfügbar",
+    "night_phase_only": "Nur während der Nachtphase verfügbar",
+    "building_placed": "{building} platziert",
+    "building_removed": "{building} entfernt",
+    "upgrade_purchased": "{upgrade} gekauft",
+    "lesson_started": "Lektion gestartet: {lesson}",
+    "lesson_complete": "Lektion abgeschlossen!",
+    "achievement_unlocked": "Erfolg freigeschaltet: {achievement}",
+    "new_personal_best": "Neuer persönlicher Rekord!",
+    "streak_continued": "Serie fortgesetzt! {days} Tage",
+    "welcome_back": "Willkommen zurück!",
+    "profile_saved": "Profil gespeichert",
+    "profile_loaded": "Profil geladen",
+    "settings_saved": "Einstellungen gespeichert"
+  },
+
+  "help": {
+    "header": "BEFEHLE",
+    "build": "build <typ> - Gebäude bauen",
+    "upgrade": "upgrade <typ> - Verbesserung kaufen",
+    "move": "move <richtung> - Cursor bewegen (wasd/Pfeile)",
+    "end": "end - Aktuelle Phase beenden",
+    "status": "status - Spielstand anzeigen",
+    "help": "help - Diese Hilfe anzeigen",
+    "save": "save - Spiel speichern",
+    "load": "load - Spiel laden",
+    "quit": "quit - Zum Menü",
+    "stats": "stats - Statistiken anzeigen",
+    "lesson": "lesson <id> - Lektion starten",
+    "hero": "hero [id|none] - Held wählen oder entfernen",
+    "locale": "locale [id] - Sprache anzeigen oder ändern",
+    "settings": "settings - Einstellungen anzeigen",
+    "achievements": "achievements - Erfolge anzeigen"
+  },
+
+  "time": {
+    "seconds": "{value}s",
+    "minutes": "{value}m",
+    "hours": "{value}h",
+    "minutes_seconds": "{minutes}m {seconds}s",
+    "hours_minutes": "{hours}h {minutes}m"
+  },
+
+  "stats": {
+    "header": "SPIELERSTATISTIKEN",
+    "combat": "Kampf",
+    "typing": "Tippen",
+    "economy": "Wirtschaft",
+    "progression": "Fortschritt",
+    "time": "Zeit",
+    "records": "Rekorde",
+    "total_kills": "Besiegte Feinde",
+    "total_words": "Getippte Wörter",
+    "total_gold": "Gesamtes Gold",
+    "accuracy": "Genauigkeit",
+    "wpm": "WPM",
+    "highest_combo": "Höchste Kombo",
+    "highest_day": "Höchster Tag",
+    "play_time": "Spielzeit"
+  },
+
+  "heroes": {
+    "header": "HELDEN",
+    "no_hero": "Kein Held ausgewählt",
+    "select_hero": "Tippe 'hero <id>' zum Auswählen:",
+    "current_hero": "Aktueller Held: {name}",
+    "passive": "Passiv",
+    "ability": "Fähigkeit",
+    "cooldown": "Abklingzeit: {seconds}s",
+    "ready": "Bereit!"
+  },
+
+  "tutorial": {
+    "welcome": "Willkommen bei Keyboard Defense!",
+    "move_cursor": "Benutze WASD oder Pfeiltasten zum Bewegen",
+    "build_tower": "Tippe 'build tower' um einen Turm zu bauen",
+    "end_day": "Tippe 'end' um zur Nacht voranzuschreiten",
+    "type_words": "Tippe die Wörter über den Feinden um sie zu besiegen",
+    "survive_night": "Überlebe die Nacht um den Morgen zu sehen!",
+    "complete": "Tutorial abgeschlossen! Viel Glück, Verteidiger!"
+  },
+
+  "accessibility": {
+    "high_contrast": "Hoher Kontrast",
+    "reduced_motion": "Reduzierte Bewegung",
+    "game_speed": "Spielgeschwindigkeit",
+    "keyboard_hints": "Tastaturhilfen",
+    "font_size": "Schriftgröße"
+  },
+
+  "errors": {
+    "file_not_found": "Datei nicht gefunden",
+    "save_failed": "Speichern fehlgeschlagen",
+    "load_failed": "Laden fehlgeschlagen",
+    "invalid_input": "Ungültige Eingabe",
+    "connection_failed": "Verbindung fehlgeschlagen"
+  }
+}

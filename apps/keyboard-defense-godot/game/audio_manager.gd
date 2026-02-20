@@ -54,7 +54,13 @@ enum SFX {
 	POI_APPEAR,
 	THREAT_PULSE_LOW,
 	THREAT_PULSE_HIGH,
-	WORD_COMPLETE
+	WORD_COMPLETE,
+	# Combat juice SFX
+	CRITICAL_HIT,
+	ENEMY_DEATH,
+	STATUS_APPLY,
+	STATUS_EXPIRE,
+	TOWER_RECOIL
 }
 
 # Music tracks
@@ -104,7 +110,13 @@ var _sfx_files := {
 	SFX.POI_APPEAR: "poi_appear.wav",
 	SFX.THREAT_PULSE_LOW: "hit_player.wav",  # Reuse hit_player with low pitch
 	SFX.THREAT_PULSE_HIGH: "hit_player.wav",  # Reuse with higher pitch
-	SFX.WORD_COMPLETE: "combo_up.wav"  # Reuse combo_up with slight pitch variation
+	SFX.WORD_COMPLETE: "combo_up.wav",  # Reuse combo_up with slight pitch variation
+	# Combat juice SFX mappings
+	SFX.CRITICAL_HIT: "hit_enemy.wav",  # Reuse with pitch shift
+	SFX.ENEMY_DEATH: "boss_defeated.wav",  # Reuse boss sound
+	SFX.STATUS_APPLY: "event_show.wav",  # Subtle effect apply
+	SFX.STATUS_EXPIRE: "event_skip.wav",  # Subtle effect end
+	SFX.TOWER_RECOIL: "build_place.wav"  # Short thump
 }
 
 # Music file mapping
@@ -150,7 +162,7 @@ func _ready() -> void:
 func _setup_audio_players() -> void:
 	# Create SFX player pool
 	for i in range(SFX_POOL_SIZE):
-		var player := AudioStreamPlayer.new()
+		var player: AudioStreamPlayer = AudioStreamPlayer.new()
 		player.bus = BUS_SFX if AudioServer.get_bus_index(BUS_SFX) >= 0 else BUS_MASTER
 		add_child(player)
 		_sfx_players.append(player)
@@ -178,7 +190,7 @@ func _preload_audio() -> void:
 	# Preload all SFX
 	for sfx_id in _sfx_files:
 		var path: String = SFX_PATH + str(_sfx_files[sfx_id])
-		var stream := load(path) as AudioStream
+		var stream: AudioStream = load(path) as AudioStream
 		if stream != null:
 			_sfx_cache[sfx_id] = stream
 		else:
@@ -187,7 +199,7 @@ func _preload_audio() -> void:
 	# Preload all music
 	for music_id in _music_files:
 		var path: String = MUSIC_PATH + str(_music_files[music_id])
-		var stream := load(path) as AudioStream
+		var stream: AudioStream = load(path) as AudioStream
 		if stream != null:
 			_music_cache[music_id] = stream
 		else:
@@ -207,9 +219,9 @@ func play_sfx(sfx_id: int, volume_offset_db: float = 0.0) -> void:
 		return
 
 	# Rate limiting for high-frequency sounds
-	var now := Time.get_ticks_msec() / 1000.0
+	var now: float = Time.get_ticks_msec() / 1000.0
 	if _last_play_time.has(sfx_id):
-		var limit := 0.0
+		var limit: float = 0.0
 		match sfx_id:
 			SFX.UI_KEYTAP:
 				limit = RATE_LIMIT_KEYTAP
@@ -220,7 +232,7 @@ func play_sfx(sfx_id: int, volume_offset_db: float = 0.0) -> void:
 	_last_play_time[sfx_id] = now
 
 	# Find available player
-	var player := _get_available_sfx_player()
+	var player: AudioStreamPlayer = _get_available_sfx_player()
 	if player == null:
 		return
 
@@ -248,7 +260,7 @@ func play_music(music_id: int, crossfade: bool = true) -> void:
 	var stream: AudioStream = _music_cache[music_id]
 
 	# Determine if this is a looping track or one-shot
-	var is_loop := music_id in [Music.MENU, Music.KINGDOM, Music.BATTLE_CALM, Music.BATTLE_TENSE]
+	var is_loop: bool = music_id in [Music.MENU, Music.KINGDOM, Music.BATTLE_CALM, Music.BATTLE_TENSE]
 
 	if crossfade and _active_music_player.playing:
 		_crossfade_to(stream, is_loop)
@@ -271,8 +283,8 @@ func _crossfade_to(stream: AudioStream, loop: bool) -> void:
 	_is_fading = true
 
 	# Swap active player
-	var old_player := _active_music_player
-	var new_player := _music_player_b if _active_music_player == _music_player_a else _music_player_a
+	var old_player: AudioStreamPlayer = _active_music_player
+	var new_player: AudioStreamPlayer = _music_player_b if _active_music_player == _music_player_a else _music_player_a
 	_active_music_player = new_player
 
 	# Setup new player
@@ -300,7 +312,7 @@ func play_stinger(music_id: int) -> void:
 
 	# Lower current music volume temporarily
 	if _active_music_player.playing:
-		var tween := create_tween()
+		var tween: Tween = create_tween()
 		tween.tween_property(_active_music_player, "volume_db", _music_volume_db - 8.0, 0.2)
 
 	_stinger_player.stream = _music_cache[music_id]
@@ -312,14 +324,14 @@ func play_stinger(music_id: int) -> void:
 
 func _on_stinger_finished() -> void:
 	if _active_music_player.playing:
-		var tween := create_tween()
+		var tween: Tween = create_tween()
 		tween.tween_property(_active_music_player, "volume_db", _music_volume_db, 0.5)
 
 ## Stop all music
 func stop_music(fade_out: bool = true) -> void:
 	_current_music = -1
 	if fade_out:
-		var tween := create_tween()
+		var tween: Tween = create_tween()
 		tween.tween_property(_music_player_a, "volume_db", -40.0, 0.5)
 		tween.parallel().tween_property(_music_player_b, "volume_db", -40.0, 0.5)
 		tween.tween_callback(func():
@@ -359,7 +371,7 @@ func start_ducking() -> void:
 
 	# Fade music volume down
 	_duck_tween = create_tween()
-	var target_db := _music_volume_db + DUCK_AMOUNT_DB
+	var target_db: float = _music_volume_db + DUCK_AMOUNT_DB
 	_duck_tween.tween_property(_active_music_player, "volume_db", target_db, DUCK_FADE_DURATION)
 
 func stop_ducking() -> void:
@@ -475,7 +487,7 @@ func switch_to_battle_music(tense: bool = false) -> void:
 
 func set_battle_intensity(tense: bool) -> void:
 	if _current_music in [Music.BATTLE_CALM, Music.BATTLE_TENSE]:
-		var target := Music.BATTLE_TENSE if tense else Music.BATTLE_CALM
+		var target: int = Music.BATTLE_TENSE if tense else Music.BATTLE_CALM
 		if _current_music != target:
 			play_music(target, true)
 
@@ -538,7 +550,7 @@ func play_sfx_pitched(sfx_id: int, pitch: float, volume_offset_db: float = 0.0) 
 	if not _sfx_cache.has(sfx_id):
 		return
 
-	var player := _get_available_sfx_player()
+	var player: AudioStreamPlayer = _get_available_sfx_player()
 	if player == null:
 		return
 
@@ -566,3 +578,195 @@ func stop_threat_pulse() -> void:
 	_threat_pulse_active = false
 	_threat_pulse_timer = 0.0
 	_threat_level = 0.0
+
+
+## Combat juice sounds
+func play_critical_hit() -> void:
+	play_sfx_pitched(SFX.CRITICAL_HIT, 1.3, 0.0)  # Higher pitch for impact
+
+
+func play_enemy_death() -> void:
+	play_sfx_pitched(SFX.ENEMY_DEATH, 0.9, -2.0)  # Slightly lower for weight
+
+
+func play_status_apply() -> void:
+	play_sfx_pitched(SFX.STATUS_APPLY, 1.1, -6.0)  # Quiet, higher pitch
+
+
+func play_status_expire() -> void:
+	play_sfx_pitched(SFX.STATUS_EXPIRE, 0.9, -8.0)  # Very quiet
+
+
+func play_tower_recoil() -> void:
+	play_sfx_pitched(SFX.TOWER_RECOIL, 1.2, -4.0)  # Quick thump
+
+
+## Rhythm tracking for varied typing sounds
+var _last_type_time: float = 0.0
+var _type_rhythm_count: int = 0
+
+## Play typing sound with rhythm-based variation
+func play_type_correct_rhythmic() -> void:
+	var current_time: float = Time.get_ticks_msec() / 1000.0
+	var delta: float = current_time - _last_type_time
+	_last_type_time = current_time
+
+	# If typing in rhythm (between 0.08-0.35 seconds), vary pitch upward
+	if delta > 0.08 and delta < 0.35:
+		_type_rhythm_count = mini(_type_rhythm_count + 1, 8)
+	else:
+		_type_rhythm_count = 0
+
+	var pitch: float = 1.0 + _type_rhythm_count * 0.03  # Slight pitch increase
+	play_sfx_pitched(SFX.TYPE_CORRECT, pitch, 0.0)
+
+
+## Play combo sound with pitch based on combo level
+func play_combo_sound(combo: int) -> void:
+	if combo < 2:
+		return
+
+	# Calculate pitch based on combo tier
+	var base_pitch: float = 1.0
+	var volume_offset: float = 0.0
+
+	if combo >= 50:
+		base_pitch = 1.5
+		volume_offset = 3.0
+		play_sfx_pitched(SFX.COMBO_MILESTONE_20, base_pitch, volume_offset)
+	elif combo >= 20:
+		base_pitch = 1.3
+		volume_offset = 2.0
+		play_sfx_pitched(SFX.COMBO_MILESTONE_10, base_pitch, volume_offset)
+	elif combo >= 10:
+		base_pitch = 1.2
+		volume_offset = 1.0
+		play_sfx_pitched(SFX.COMBO_MILESTONE_10, base_pitch, volume_offset)
+	elif combo >= 5:
+		base_pitch = 1.1
+		play_sfx_pitched(SFX.COMBO_MILESTONE_5, base_pitch, volume_offset)
+	else:
+		# Small combos just get combo_up with slight pitch variation
+		base_pitch = 1.0 + (combo - 2) * 0.02
+		play_sfx_pitched(SFX.COMBO_UP, base_pitch, -2.0)  # Quieter
+
+
+## Adaptive music state
+var _target_music_intensity: float = 0.0
+var _current_music_intensity: float = 0.0
+const MUSIC_INTENSITY_LERP_SPEED := 1.0
+
+## Set music intensity (0.0 = calm, 1.0 = intense)
+func set_music_intensity(intensity: float) -> void:
+	_target_music_intensity = clampf(intensity, 0.0, 1.0)
+
+
+## Update music based on threat level
+func update_music_for_threat(threat_percent: float) -> void:
+	# Map threat to intensity
+	if threat_percent < 30.0:
+		set_music_intensity(0.0)  # Calm
+	elif threat_percent < 50.0:
+		set_music_intensity(0.3)  # Slightly tense
+	elif threat_percent < 70.0:
+		set_music_intensity(0.6)  # Building tension
+	else:
+		set_music_intensity(1.0)  # Full intensity
+
+
+func _process(delta: float) -> void:
+	# Smoothly interpolate music intensity
+	if _current_music_intensity != _target_music_intensity:
+		_current_music_intensity = move_toward(
+			_current_music_intensity,
+			_target_music_intensity,
+			MUSIC_INTENSITY_LERP_SPEED * delta
+		)
+		_apply_music_intensity(_current_music_intensity)
+
+
+func _apply_music_intensity(intensity: float) -> void:
+	# Crossfade between calm and tense music tracks if both are playing
+	if _music_player_a == null or _music_player_b == null:
+		return
+	if not _music_player_a.playing and not _music_player_b.playing:
+		return
+
+	# Only apply if we're in battle music mode
+	if _current_music not in [Music.BATTLE_CALM, Music.BATTLE_TENSE]:
+		return
+
+	# Player A = calm, Player B = tense - adjust relative volumes
+	var base_volume: float = _music_volume_db
+	var intensity_db: float = lerpf(0.0, -6.0, intensity)  # Reduce calm music at high intensity
+	if _active_music_player == _music_player_a:
+		_music_player_a.volume_db = base_volume + intensity_db
+
+
+## Play SFX with optional random variation
+func play_sfx_varied(
+	sfx_id: int,
+	pitch_variation: float = 0.1,
+	volume_variation: float = 2.0
+) -> void:
+	var pitch: float = 1.0 + randf_range(-pitch_variation, pitch_variation)
+	var volume: float = randf_range(-volume_variation, volume_variation)
+	play_sfx_pitched(sfx_id, pitch, volume)
+
+
+## Play hit sound with variation based on damage
+func play_hit_varied(damage_amount: int = 1, is_critical: bool = false) -> void:
+	var base_pitch: float = 1.0
+
+	# Higher damage = lower pitch (more impactful)
+	if damage_amount >= 10:
+		base_pitch = 0.85
+	elif damage_amount >= 5:
+		base_pitch = 0.92
+	else:
+		base_pitch = 1.0
+
+	# Critical hits have slight pitch boost
+	if is_critical:
+		base_pitch *= 1.1
+
+	# Add random variation
+	var pitch: float = base_pitch + randf_range(-0.05, 0.05)
+	var volume: float = randf_range(-1.0, 1.0)
+
+	play_sfx_pitched(SFX.HIT_ENEMY, pitch, volume)
+
+	# Layer a second hit for criticals
+	if is_critical:
+		play_sfx_pitched(SFX.CRITICAL_HIT, pitch * 0.9, volume - 3.0)
+
+
+## Play word completion sound scaled to word length
+func play_word_complete_scaled(word_length: int, was_perfect: bool = true) -> void:
+	var base_pitch: float = 1.0
+	var volume: float = 0.0
+
+	# Longer words = more satisfying sound
+	if word_length >= 10:
+		base_pitch = 1.3
+		volume = 2.0
+	elif word_length >= 7:
+		base_pitch = 1.2
+		volume = 1.0
+	elif word_length >= 5:
+		base_pitch = 1.1
+		volume = 0.0
+	else:
+		base_pitch = 1.0
+		volume = -1.0
+
+	# Perfect completion (no mistakes) gets slight boost
+	if was_perfect:
+		base_pitch *= 1.05
+		volume += 1.0
+
+	play_sfx_pitched(SFX.WORD_COMPLETE, base_pitch, volume)
+
+	# Very long words get layered sound
+	if word_length >= 8:
+		play_sfx_pitched(SFX.COMBO_UP, base_pitch * 0.95, volume - 2.0)

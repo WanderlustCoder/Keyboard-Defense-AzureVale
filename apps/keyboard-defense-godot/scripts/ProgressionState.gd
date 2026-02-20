@@ -18,6 +18,17 @@ const DEFAULT_MASTERY := {
 	"last_accuracy": 0.0,
 	"last_wpm": 0.0
 }
+const DEFAULT_LESSON_MASTERY := {
+	"best_accuracy": 0.0,
+	"best_wpm": 0.0,
+	"attempt_count": 0,
+	"completion_count": 0
+}
+const DEFAULT_PATH_PROGRESS := {
+	"current_stage": 0,
+	"completed_stages": [],
+	"lessons_completed": []
+}
 const PERFORMANCE_TIERS := [
 	{
 		"id": "S",
@@ -60,9 +71,13 @@ var completed_nodes: Dictionary = {}
 var purchased_upgrades: Dictionary = {}
 var modifiers := DEFAULT_MODIFIERS.duplicate(true)
 var mastery := DEFAULT_MASTERY.duplicate(true)
+var lesson_mastery: Dictionary = {}  # {lesson_id: mastery_dict}
+var graduation_progress: Dictionary = {}  # {path_id: progress_dict}
+var graduation_paths: Dictionary = {}  # Cached from lessons.json
 var last_summary: Dictionary = {}
 var tutorial_completed: bool = false
 var battles_played: int = 0
+var active_battle: Dictionary = {}  # Stores battle state for resume
 
 func _ready() -> void:
 	_load_static_data()
@@ -83,6 +98,9 @@ func _load_static_data() -> void:
 		var lesson_id := str(entry.get("id", ""))
 		if lesson_id != "":
 			lessons[lesson_id] = entry
+
+	# Load graduation paths
+	graduation_paths = lessons_data.get("graduation_paths", {})
 
 	var map_data = _load_json(MAP_PATH)
 	for node in map_data.get("nodes", []):
@@ -267,9 +285,23 @@ func _load_save() -> void:
 	mastery = DEFAULT_MASTERY.duplicate(true)
 	for key in saved_mastery.keys():
 		mastery[key] = saved_mastery[key]
+
+	# Load per-lesson mastery
+	var saved_lesson_mastery: Dictionary = data.get("lesson_mastery", {})
+	lesson_mastery = {}
+	for lesson_id in saved_lesson_mastery.keys():
+		lesson_mastery[lesson_id] = saved_lesson_mastery[lesson_id]
+
+	# Load graduation progress
+	var saved_graduation: Dictionary = data.get("graduation_progress", {})
+	graduation_progress = {}
+	for path_id in saved_graduation.keys():
+		graduation_progress[path_id] = saved_graduation[path_id]
+
 	last_summary = data.get("last_summary", {})
 	tutorial_completed = bool(data.get("tutorial_completed", false))
 	battles_played = int(data.get("battles_played", 0))
+	active_battle = data.get("active_battle", {})
 
 func _save() -> void:
 	if not persistence_enabled:
@@ -280,9 +312,12 @@ func _save() -> void:
 		"purchased_upgrades": purchased_upgrades,
 		"modifiers": modifiers,
 		"mastery": mastery,
+		"lesson_mastery": lesson_mastery,
+		"graduation_progress": graduation_progress,
 		"last_summary": last_summary,
 		"tutorial_completed": tutorial_completed,
-		"battles_played": battles_played
+		"battles_played": battles_played,
+		"active_battle": active_battle
 	}
 	var file = FileAccess.open(SAVE_PATH, FileAccess.WRITE)
 	if file == null:
@@ -310,9 +345,12 @@ func reset_campaign() -> void:
 	purchased_upgrades = {}
 	modifiers = DEFAULT_MODIFIERS.duplicate(true)
 	mastery = DEFAULT_MASTERY.duplicate(true)
+	lesson_mastery = {}
+	graduation_progress = {}
 	last_summary = {}
 	tutorial_completed = false
 	battles_played = 0
+	active_battle = {}
 	_save()
 
 func add_gold(amount: int) -> void:
@@ -321,3 +359,144 @@ func add_gold(amount: int) -> void:
 
 func get_gold() -> int:
 	return gold
+
+func save_active_battle(battle_state: Dictionary) -> void:
+	active_battle = battle_state
+	_save()
+
+func clear_active_battle() -> void:
+	active_battle = {}
+	_save()
+
+func has_active_battle() -> bool:
+	return not active_battle.is_empty()
+
+# --- Per-Lesson Mastery ---
+
+func get_lesson_mastery(lesson_id: String) -> Dictionary:
+	if lesson_mastery.has(lesson_id):
+		return lesson_mastery[lesson_id]
+	return DEFAULT_LESSON_MASTERY.duplicate(true)
+
+func _update_lesson_mastery(lesson_id: String, summary: Dictionary, completed: bool) -> void:
+	if not lesson_mastery.has(lesson_id):
+		lesson_mastery[lesson_id] = DEFAULT_LESSON_MASTERY.duplicate(true)
+
+	var entry: Dictionary = lesson_mastery[lesson_id]
+	var accuracy := float(summary.get("accuracy", 0.0))
+	var wpm := float(summary.get("wpm", 0.0))
+
+	entry["best_accuracy"] = max(float(entry.get("best_accuracy", 0.0)), accuracy)
+	entry["best_wpm"] = max(float(entry.get("best_wpm", 0.0)), wpm)
+	entry["attempt_count"] = int(entry.get("attempt_count", 0)) + 1
+	if completed:
+		entry["completion_count"] = int(entry.get("completion_count", 0)) + 1
+
+func record_practice_attempt(lesson_id: String, summary: Dictionary) -> Dictionary:
+	var completed := bool(summary.get("completed", false))
+	_update_lesson_mastery(lesson_id, summary, completed)
+	_update_mastery(summary)
+
+	# Update graduation progress if lesson is part of a path
+	if completed:
+		update_graduation_progress(lesson_id)
+
+	# Calculate gold reward (practice only, no first-clear bonus)
+	var practice_gold := 3
+	var performance := _evaluate_performance(summary)
+	var performance_bonus := int(performance.get("bonus_gold", 0))
+	var gold_awarded := practice_gold + performance_bonus
+	gold += gold_awarded
+
+	last_summary = summary.duplicate()
+	last_summary["gold_awarded"] = gold_awarded
+	last_summary["practice_gold"] = practice_gold
+	last_summary["performance_tier"] = performance.get("id", "")
+	last_summary["performance_bonus"] = performance_bonus
+
+	_save()
+	return last_summary
+
+# --- Graduation Path Progress ---
+
+func get_path_progress(path_id: String) -> Dictionary:
+	if graduation_progress.has(path_id):
+		return graduation_progress[path_id]
+	return DEFAULT_PATH_PROGRESS.duplicate(true)
+
+func update_graduation_progress(lesson_id: String) -> void:
+	# Find which path(s) contain this lesson
+	for path_id in graduation_paths.keys():
+		var path_data: Dictionary = graduation_paths.get(path_id, {})
+		var stages: Array = path_data.get("stages", [])
+
+		for stage_data in stages:
+			if not stage_data is Dictionary:
+				continue
+			var stage_lessons: Array = stage_data.get("lessons", [])
+			if lesson_id in stage_lessons:
+				_update_path_lesson_completion(path_id, lesson_id, int(stage_data.get("stage", 0)))
+
+func _update_path_lesson_completion(path_id: String, lesson_id: String, stage_num: int) -> void:
+	if not graduation_progress.has(path_id):
+		graduation_progress[path_id] = DEFAULT_PATH_PROGRESS.duplicate(true)
+
+	var progress: Dictionary = graduation_progress[path_id]
+	var completed_lessons: Array = progress.get("lessons_completed", [])
+	var completed_stages: Array = progress.get("completed_stages", [])
+
+	# Add lesson to completed list if not already there
+	if lesson_id not in completed_lessons:
+		completed_lessons.append(lesson_id)
+		progress["lessons_completed"] = completed_lessons
+
+	# Check if stage is now complete
+	if stage_num > 0 and stage_num not in completed_stages:
+		if _is_stage_lessons_complete(path_id, stage_num):
+			completed_stages.append(stage_num)
+			completed_stages.sort()
+			progress["completed_stages"] = completed_stages
+
+			# Update current stage to next incomplete
+			var next_stage := stage_num + 1
+			if next_stage > int(progress.get("current_stage", 0)):
+				progress["current_stage"] = next_stage
+
+func _is_stage_lessons_complete(path_id: String, stage_num: int) -> bool:
+	var path_data: Dictionary = graduation_paths.get(path_id, {})
+	var stages: Array = path_data.get("stages", [])
+
+	for stage_data in stages:
+		if not stage_data is Dictionary:
+			continue
+		if int(stage_data.get("stage", 0)) == stage_num:
+			var stage_lessons: Array = stage_data.get("lessons", [])
+			var progress: Dictionary = get_path_progress(path_id)
+			var completed_lessons: Array = progress.get("lessons_completed", [])
+			for req_lesson in stage_lessons:
+				if req_lesson not in completed_lessons:
+					return false
+			return true
+	return false
+
+func is_stage_complete(path_id: String, stage_num: int) -> bool:
+	var progress: Dictionary = get_path_progress(path_id)
+	var completed_stages: Array = progress.get("completed_stages", [])
+	return stage_num in completed_stages
+
+func get_path_completion_percent(path_id: String) -> float:
+	var path_data: Dictionary = graduation_paths.get(path_id, {})
+	var stages: Array = path_data.get("stages", [])
+
+	var total_lessons := 0
+	for stage_data in stages:
+		if stage_data is Dictionary:
+			var stage_lessons: Array = stage_data.get("lessons", [])
+			total_lessons += stage_lessons.size()
+
+	if total_lessons <= 0:
+		return 0.0
+
+	var progress: Dictionary = get_path_progress(path_id)
+	var completed_lessons: Array = progress.get("lessons_completed", [])
+	return float(completed_lessons.size()) / float(total_lessons)

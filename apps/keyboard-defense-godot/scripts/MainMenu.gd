@@ -7,6 +7,8 @@ const SAVE_PATH := "user://typing_kingdom_save.json"
 const TypingProfile = preload("res://game/typing_profile.gd")
 const SimLoginRewards = preload("res://sim/login_rewards.gd")
 const LoginRewardPopup = preload("res://ui/components/login_reward_popup.gd")
+const SceneEntry = preload("res://ui/scene_entry.gd")
+const LessonPracticePanel = preload("res://ui/lesson_practice_panel.gd")
 
 const FONT_SIZE_HELP_TITLE := 28
 const FONT_SIZE_HELP_TEXT := 15
@@ -27,7 +29,9 @@ const PRESS_DURATION := 0.05
 
 var continue_button: Button = null
 var help_button: Button = null
+var practice_button: Button = null
 var help_panel: PanelContainer = null
+var _lesson_practice_panel: LessonPracticePanel = null
 var _button_tweens: Dictionary = {}  # button -> tween
 var _login_reward_popup: LoginRewardPopup = null
 var _profile: Dictionary = {}
@@ -45,9 +49,12 @@ func _ready() -> void:
 	_setup_tooltips()
 	_load_version()
 	_setup_help_button()
+	_setup_practice_button()
 	_setup_button_hover_effects()
 	if audio_manager != null:
 		audio_manager.switch_to_menu_music()
+	# Play entry animation for menu items
+	call_deferred("_animate_menu_entry")
 	# Check for daily login rewards
 	_check_login_rewards()
 
@@ -62,11 +69,18 @@ func _setup_continue_button() -> void:
 
 	# Create continue button
 	continue_button = Button.new()
-	continue_button.text = "Continue"
 	continue_button.custom_minimum_size = Vector2(0, 48)
 	continue_button.focus_mode = Control.FOCUS_ALL
-	continue_button.tooltip_text = "Resume your previous campaign"
 	continue_button.pressed.connect(_on_continue_pressed)
+
+	# Check if there's an active battle to resume
+	var progression = get_node_or_null("/root/ProgressionState")
+	if progression != null and progression.has_active_battle():
+		continue_button.text = "Resume Battle"
+		continue_button.tooltip_text = "Resume your in-progress battle"
+	else:
+		continue_button.text = "Continue"
+		continue_button.tooltip_text = "Resume your previous campaign"
 
 	# Insert before start button
 	var start_index := start_button.get_index()
@@ -117,10 +131,32 @@ func _setup_help_button() -> void:
 	# Move before Settings button (index 4: Title, Subtitle, Spacer, Start, Kingdom, then Help)
 	menu_vbox.move_child(help_button, menu_vbox.get_child_count() - 3)
 
+func _setup_practice_button() -> void:
+	# Ensure menu_vbox exists
+	if menu_vbox == null:
+		return
+
+	# Insert Practice Lessons button after Kingdom
+	practice_button = Button.new()
+	practice_button.text = "Practice Lessons"
+	practice_button.custom_minimum_size = Vector2(0, 48)
+	practice_button.focus_mode = Control.FOCUS_ALL
+	practice_button.tooltip_text = "Select any lesson to practice freely"
+	practice_button.pressed.connect(_on_practice_pressed)
+	menu_vbox.add_child(practice_button)
+	# Move after Kingdom button, before How to Play
+	menu_vbox.move_child(practice_button, menu_vbox.get_child_count() - 4)
+
 func _on_continue_pressed() -> void:
 	if audio_manager != null:
 		audio_manager.play_ui_confirm()
-	if game_controller != null:
+	if game_controller == null:
+		return
+	# Check if there's an active battle to resume
+	var progression = get_node_or_null("/root/ProgressionState")
+	if progression != null and progression.has_active_battle():
+		game_controller.go_to_battle_with_state(progression.active_battle)
+	else:
 		game_controller.go_to_map()
 
 func _on_start_pressed() -> void:
@@ -155,6 +191,44 @@ func _on_help_pressed() -> void:
 	if audio_manager != null:
 		audio_manager.play_ui_confirm()
 	_show_help_panel()
+
+func _on_practice_pressed() -> void:
+	if audio_manager != null:
+		audio_manager.play_ui_confirm()
+	_show_practice_panel()
+
+func _show_practice_panel() -> void:
+	if _lesson_practice_panel != null:
+		_lesson_practice_panel.get_parent().visible = true
+		_lesson_practice_panel.show_panel()
+		return
+
+	# Create overlay background
+	var overlay := ColorRect.new()
+	overlay.name = "PracticePanelOverlay"
+	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+	var bg := ThemeColors.BG_DARK
+	bg.a = 0.9
+	overlay.color = bg
+	add_child(overlay)
+
+	# Center container for the panel
+	var center := CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	overlay.add_child(center)
+
+	# Create and setup practice lessons panel
+	_lesson_practice_panel = LessonPracticePanel.new()
+	_lesson_practice_panel.closed.connect(_on_practice_panel_closed)
+	center.add_child(_lesson_practice_panel)
+
+	_lesson_practice_panel.show_panel()
+
+func _on_practice_panel_closed() -> void:
+	# Hide the overlay when panel closes
+	var overlay = get_node_or_null("PracticePanelOverlay")
+	if overlay != null:
+		overlay.visible = false
 
 func _show_help_panel() -> void:
 	if help_panel != null:
@@ -255,10 +329,26 @@ func _close_help_panel() -> void:
 		help_panel.visible = false
 
 func _input(event: InputEvent) -> void:
-	if help_panel != null and help_panel.visible:
-		if event.is_action_pressed("ui_cancel"):
+	# Handle ESC to close overlays
+	if event.is_action_pressed("ui_cancel"):
+		# Check practice panel first
+		var practice_overlay = get_node_or_null("PracticePanelOverlay")
+		if practice_overlay != null and practice_overlay.visible:
+			_close_practice_panel()
+			get_viewport().set_input_as_handled()
+			return
+		# Then help panel
+		if help_panel != null and help_panel.visible:
 			_close_help_panel()
 			get_viewport().set_input_as_handled()
+			return
+
+func _close_practice_panel() -> void:
+	if audio_manager != null:
+		audio_manager.play_ui_cancel()
+	_on_practice_panel_closed()
+	if _lesson_practice_panel != null:
+		_lesson_practice_panel.hide()
 
 func _setup_button_hover_effects() -> void:
 	# Setup hover for all menu buttons
@@ -275,6 +365,8 @@ func _setup_button_hover_effects() -> void:
 		buttons.append(continue_button)
 	if help_button != null:
 		buttons.append(help_button)
+	if practice_button != null:
+		buttons.append(practice_button)
 
 	for btn in buttons:
 		# Set pivot to center for proper scaling
@@ -283,6 +375,29 @@ func _setup_button_hover_effects() -> void:
 		btn.mouse_exited.connect(_on_button_hover_exit.bind(btn))
 		btn.button_down.connect(_on_button_press_down.bind(btn))
 		btn.button_up.connect(_on_button_press_up.bind(btn))
+
+
+func _animate_menu_entry() -> void:
+	# Gather menu buttons for entry animation
+	var menu_items: Array[Control] = []
+	if continue_button != null:
+		menu_items.append(continue_button)
+	if start_button != null:
+		menu_items.append(start_button)
+	if kingdom_button != null:
+		menu_items.append(kingdom_button)
+	if practice_button != null:
+		menu_items.append(practice_button)
+	if help_button != null:
+		menu_items.append(help_button)
+	if settings_button != null:
+		menu_items.append(settings_button)
+	if quit_button != null:
+		menu_items.append(quit_button)
+
+	# Animate buttons sliding in from below
+	SceneEntry.animate_entry(menu_items, "up")
+
 
 func _on_button_hover_enter(btn: Button) -> void:
 	if btn == null or _is_reduced_motion():

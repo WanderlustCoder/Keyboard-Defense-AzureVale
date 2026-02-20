@@ -1,0 +1,272 @@
+{
+  "version": 1,
+  "locale": "es",
+  "name": "Español",
+
+  "ui": {
+    "save": "Guardar",
+    "load": "Cargar",
+    "quit": "Salir",
+    "back": "Volver",
+    "continue": "Continuar",
+    "start": "Iniciar",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "close": "Cerrar",
+    "yes": "Sí",
+    "no": "No",
+    "ok": "Aceptar",
+    "settings": "Configuración",
+    "help": "Ayuda",
+    "stats": "Estadísticas",
+    "achievements": "Logros",
+    "lessons": "Lecciones",
+    "profile": "Perfil",
+    "main_menu": "Menú Principal",
+    "new_game": "Nueva Partida",
+    "resume": "Reanudar",
+    "available_languages": "Idiomas Disponibles:",
+    "current_language": "Idioma Actual: {language}",
+    "language_changed": "Idioma cambiado a {language}"
+  },
+
+  "menu": {
+    "title": "KEYBOARD DEFENSE",
+    "subtitle": "Escribe para Defender tu Reino",
+    "campaign": "Campaña",
+    "kingdom_defense": "Defensa del Reino",
+    "open_world": "Mundo Abierto",
+    "typing_practice": "Práctica de Mecanografía",
+    "typing_profile": "Perfil de Mecanografía"
+  },
+
+  "panels": {
+    "bestiary": "Bestiario",
+    "skills": "Habilidades",
+    "quests": "Misiones",
+    "equipment": "Equipamiento",
+    "shop": "Tienda",
+    "loot": "Botín",
+    "upgrades": "Mejoras",
+    "trade": "Comercio",
+    "crafting": "Fabricación",
+    "buffs": "Bonificaciones Activas",
+    "inventory": "Inventario",
+    "difficulty": "Dificultad",
+    "expeditions": "Expediciones",
+    "diplomacy": "Diplomacia",
+    "research": "Investigación",
+    "citizens": "Ciudadanos",
+    "workers": "Trabajadores",
+    "key_bindings": "Atajos de Teclado",
+    "save_load": "Guardar / Cargar"
+  },
+
+  "actions": {
+    "explore": "Explorar",
+    "end_day": "Terminar Día",
+    "retreat": "Retirada",
+    "submit": "Enviar",
+    "status": "Estado",
+    "inspect": "Inspeccionar",
+    "go": "Ir",
+    "apply": "Aplicar",
+    "reset_defaults": "Restablecer",
+    "cycle": "Cambiar",
+    "rebind": "Reasignar",
+    "reset": "Resetear",
+    "reset_all_defaults": "Restablecer Todo",
+    "retry": "Reintentar",
+    "return_to_map": "Volver al Mapa"
+  },
+
+  "settings": {
+    "audio": "Audio",
+    "display": "Pantalla",
+    "gameplay": "Jugabilidad",
+    "language": "Idioma",
+    "accessibility": "Accesibilidad",
+    "reduced_motion": "Movimiento Reducido",
+    "high_contrast": "Alto Contraste",
+    "large_text": "Texto Grande",
+    "focus_indicators": "Indicadores de Enfoque",
+    "master_volume": "Volumen General",
+    "music_volume": "Volumen de Música",
+    "typing_sounds": "Sonidos de Tecleo",
+    "screen_shake": "Vibración de Pantalla",
+    "show_wpm": "Mostrar PPM",
+    "show_accuracy": "Mostrar Precisión",
+    "practice_mode": "Modo Práctica",
+    "game_speed": "Velocidad del Juego",
+    "colorblind_mode": "Modo Daltónico",
+    "colorblind_none": "Ninguno",
+    "colorblind_protanopia": "Protanopia",
+    "colorblind_deuteranopia": "Deuteranopia",
+    "colorblind_tritanopia": "Tritanopia"
+  },
+
+  "hud": {
+    "threat": "Amenaza",
+    "enemies": "Enemigos",
+    "pos": "Pos"
+  },
+
+  "kingdom": {
+    "started": "Modo Defensa del Reino iniciado. Día 1.",
+    "commands_help": "Comandos: gather <recurso> <cantidad>, build <tipo> [x y], explore, end",
+    "type_help": "Escribe 'help' para ver todos los comandos."
+  },
+
+  "battle": {
+    "day_phase_help": "Fase diurna: recolecta, construye, explora. Escribe 'end' para iniciar la noche."
+  },
+
+  "openworld": {
+    "intro": "Modo Mundo Abierto. Explora el mapa, recolecta recursos y sobrevive las noches.",
+    "controls": "Usa WASD o las flechas para mover el cursor. Escribe comandos para interactuar."
+  },
+
+  "game": {
+    "day": "Día",
+    "night": "Noche",
+    "dawn": "Amanecer",
+    "wave": "Oleada",
+    "phase": "Fase",
+    "paused": "PAUSADO",
+    "game_over": "FIN DEL JUEGO",
+    "victory": "VICTORIA",
+    "score": "Puntuación",
+    "time": "Tiempo",
+    "level": "Nivel"
+  },
+
+  "resources": {
+    "gold": "Oro",
+    "wood": "Madera",
+    "stone": "Piedra",
+    "food": "Comida",
+    "ap": "PA",
+    "hp": "PV",
+    "mana": "Maná"
+  },
+
+  "combat": {
+    "enemy_approaching": "¡Enemigo acercándose!",
+    "enemy_defeated": "¡Enemigo derrotado!",
+    "tower_built": "¡Torre construida!",
+    "tower_upgraded": "¡Torre mejorada!",
+    "castle_damaged": "¡Castillo dañado!",
+    "wave_complete": "¡Oleada completada!",
+    "wave_incoming": "¡Oleada entrante!",
+    "boss_appeared": "¡Ha aparecido el jefe!",
+    "boss_defeated": "¡Jefe derrotado!",
+    "critical_hit": "¡Golpe crítico!",
+    "perfect_word": "¡Perfecto!",
+    "combo": "Combo",
+    "miss": "¡Fallo!"
+  },
+
+  "messages": {
+    "not_enough_gold": "¡No tienes suficiente oro!",
+    "not_enough_resources": "¡No tienes suficientes recursos!",
+    "not_enough_ap": "¡No tienes suficientes PA!",
+    "invalid_command": "Comando inválido",
+    "unknown_command": "Comando desconocido: {command}",
+    "day_phase_only": "Solo se puede usar durante el día",
+    "night_phase_only": "Solo se puede usar durante la noche",
+    "building_placed": "{building} colocado",
+    "building_removed": "{building} eliminado",
+    "upgrade_purchased": "{upgrade} comprado",
+    "lesson_started": "Iniciando lección: {lesson}",
+    "lesson_complete": "¡Lección completada!",
+    "achievement_unlocked": "Logro desbloqueado: {achievement}",
+    "new_personal_best": "¡Nueva marca personal!",
+    "streak_continued": "¡Racha continuada! {days} días",
+    "welcome_back": "¡Bienvenido de nuevo!",
+    "profile_saved": "Perfil guardado",
+    "profile_loaded": "Perfil cargado",
+    "settings_saved": "Configuración guardada"
+  },
+
+  "help": {
+    "header": "COMANDOS",
+    "build": "build <tipo> - Construir una estructura",
+    "upgrade": "upgrade <tipo> - Comprar una mejora",
+    "move": "move <dir> - Mover cursor (wasd/flechas)",
+    "end": "end - Terminar fase actual",
+    "status": "status - Mostrar estado del juego",
+    "help": "help - Mostrar esta ayuda",
+    "save": "save - Guardar partida",
+    "load": "load - Cargar partida",
+    "quit": "quit - Volver al menú",
+    "stats": "stats - Mostrar estadísticas",
+    "lesson": "lesson <id> - Iniciar una lección",
+    "hero": "hero [id|none] - Seleccionar o quitar héroe",
+    "locale": "locale [id] - Mostrar o cambiar idioma",
+    "settings": "settings - Mostrar configuración",
+    "achievements": "achievements - Mostrar logros"
+  },
+
+  "time": {
+    "seconds": "{value}s",
+    "minutes": "{value}m",
+    "hours": "{value}h",
+    "minutes_seconds": "{minutes}m {seconds}s",
+    "hours_minutes": "{hours}h {minutes}m"
+  },
+
+  "stats": {
+    "header": "ESTADÍSTICAS DEL JUGADOR",
+    "combat": "Combate",
+    "typing": "Mecanografía",
+    "economy": "Economía",
+    "progression": "Progresión",
+    "time": "Tiempo",
+    "records": "Récords",
+    "total_kills": "Enemigos Eliminados",
+    "total_words": "Palabras Escritas",
+    "total_gold": "Oro Total",
+    "accuracy": "Precisión",
+    "wpm": "PPM",
+    "highest_combo": "Combo Máximo",
+    "highest_day": "Día Máximo",
+    "play_time": "Tiempo de Juego"
+  },
+
+  "heroes": {
+    "header": "HÉROES",
+    "no_hero": "Ningún héroe seleccionado",
+    "select_hero": "Escribe 'hero <id>' para seleccionar:",
+    "current_hero": "Héroe actual: {name}",
+    "passive": "Pasiva",
+    "ability": "Habilidad",
+    "cooldown": "Enfriamiento: {seconds}s",
+    "ready": "¡Listo!"
+  },
+
+  "tutorial": {
+    "welcome": "¡Bienvenido a Keyboard Defense!",
+    "move_cursor": "Usa WASD o las flechas para mover el cursor",
+    "build_tower": "Escribe 'build tower' para construir una torre",
+    "end_day": "Escribe 'end' para avanzar a la noche",
+    "type_words": "Escribe las palabras sobre los enemigos para derrotarlos",
+    "survive_night": "¡Sobrevive la noche para ver el amanecer!",
+    "complete": "¡Tutorial completado! ¡Buena suerte, defensor!"
+  },
+
+  "accessibility": {
+    "high_contrast": "Alto Contraste",
+    "reduced_motion": "Movimiento Reducido",
+    "game_speed": "Velocidad del Juego",
+    "keyboard_hints": "Ayudas de Teclado",
+    "font_size": "Tamaño de Fuente"
+  },
+
+  "errors": {
+    "file_not_found": "Archivo no encontrado",
+    "save_failed": "Error al guardar",
+    "load_failed": "Error al cargar",
+    "invalid_input": "Entrada inválida",
+    "connection_failed": "Error de conexión"
+  }
+}

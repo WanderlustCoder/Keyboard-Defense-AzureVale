@@ -339,9 +339,9 @@ static func setup_keyboard_nav(container: Control) -> void:
 
 	# Link focus neighbors
 	for i in range(focusables.size()):
-		var current := focusables[i]
-		var prev_idx := (i - 1) if i > 0 else (focusables.size() - 1)
-		var next_idx := (i + 1) % focusables.size()
+		var current: Control = focusables[i]
+		var prev_idx: int = (i - 1) if i > 0 else (focusables.size() - 1)
+		var next_idx: int = (i + 1) % focusables.size()
 
 		current.focus_neighbor_top = current.get_path_to(focusables[prev_idx])
 		current.focus_neighbor_bottom = current.get_path_to(focusables[next_idx])

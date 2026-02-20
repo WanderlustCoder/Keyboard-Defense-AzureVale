@@ -1,0 +1,299 @@
+{
+  "version": 1,
+  "buildings": {
+    "farm": {
+      "label": "Farm",
+      "description": "Produces food to feed workers.",
+      "category": "production",
+      "cost": {"wood": 10},
+      "production": {"food": 3},
+      "defense": 0,
+      "worker_slots": 1,
+      "adjacency_bonus": {
+        "terrain": {"water": {"food": 1}},
+        "building": {"farm": {"food": 1}}
+      }
+    },
+    "lumber": {
+      "label": "Lumber Mill",
+      "description": "Harvests wood from nearby forests.",
+      "category": "production",
+      "cost": {"wood": 5, "food": 2},
+      "production": {"wood": 3},
+      "defense": 0,
+      "worker_slots": 1,
+      "adjacency_bonus": {
+        "terrain": {"forest": {"wood": 1}},
+        "building": {"lumber": {"wood": 1}}
+      }
+    },
+    "quarry": {
+      "label": "Quarry",
+      "description": "Extracts stone from mountain regions.",
+      "category": "production",
+      "cost": {"wood": 5, "food": 2},
+      "production": {"stone": 3},
+      "defense": 0,
+      "worker_slots": 1,
+      "adjacency_bonus": {
+        "terrain": {"mountain": {"stone": 1}},
+        "building": {"quarry": {"stone": 1}}
+      }
+    },
+    "market": {
+      "label": "Market",
+      "description": "Generates gold from trade. More buildings nearby increase income.",
+      "category": "economy",
+      "cost": {"wood": 8, "stone": 5},
+      "production": {"gold": 5},
+      "defense": 0,
+      "worker_slots": 1,
+      "adjacency_bonus": {
+        "terrain": {},
+        "building": {"*": {"gold": 1}}
+      }
+    },
+    "wall": {
+      "label": "Wall",
+      "description": "Blocks enemy movement and provides defense.",
+      "category": "defense",
+      "cost": {"wood": 4, "stone": 4},
+      "production": {},
+      "defense": 1,
+      "worker_slots": 0,
+      "adjacency_bonus": {
+        "terrain": {},
+        "building": {}
+      },
+      "blocks_movement": true
+    },
+    "tower": {
+      "label": "Tower",
+      "description": "Ranged defense that damages enemies. Stronger near walls.",
+      "category": "defense",
+      "cost": {"wood": 4, "stone": 8},
+      "production": {},
+      "defense": 2,
+      "worker_slots": 0,
+      "adjacency_bonus": {
+        "terrain": {},
+        "building": {"wall": {"defense": 1}}
+      },
+      "blocks_movement": true,
+      "combat_stats": {
+        "range": 3,
+        "damage": 1,
+        "shots_per_wave": 1
+      }
+    },
+    "barracks": {
+      "label": "Barracks",
+      "description": "Trains soldiers to defend the kingdom.",
+      "category": "military",
+      "cost": {"wood": 10, "stone": 8},
+      "production": {},
+      "defense": 1,
+      "worker_slots": 2,
+      "adjacency_bonus": {
+        "terrain": {},
+        "building": {"tower": {"defense": 1}}
+      },
+      "unlocks": ["garrison"]
+    },
+    "garrison": {
+      "label": "Garrison",
+      "description": "Houses trained soldiers that automatically defend nearby areas.",
+      "category": "military",
+      "cost": {"wood": 15, "stone": 12, "gold": 25},
+      "production": {},
+      "defense": 3,
+      "worker_slots": 3,
+      "adjacency_bonus": {
+        "terrain": {},
+        "building": {"barracks": {"defense": 1}, "wall": {"defense": 1}}
+      },
+      "requires": ["barracks"],
+      "combat_stats": {
+        "range": 2,
+        "damage": 2,
+        "shots_per_wave": 2
+      }
+    },
+    "temple": {
+      "label": "Temple",
+      "description": "Provides healing after each wave.",
+      "category": "support",
+      "cost": {"stone": 15, "gold": 20},
+      "production": {},
+      "defense": 0,
+      "worker_slots": 1,
+      "adjacency_bonus": {
+        "terrain": {},
+        "building": {"tower": {"damage": 1}}
+      },
+      "effects": {
+        "wave_heal": 1
+      }
+    },
+    "workshop": {
+      "label": "Workshop",
+      "description": "Reduces construction costs for all buildings.",
+      "category": "support",
+      "cost": {"wood": 12, "stone": 6},
+      "production": {},
+      "defense": 0,
+      "worker_slots": 2,
+      "adjacency_bonus": {
+        "terrain": {},
+        "building": {}
+      },
+      "effects": {
+        "build_cost_reduction": 0.15
+      }
+    },
+    "grand_cathedral": {
+      "label": "Grand Cathedral",
+      "description": "A magnificent place of worship that inspires the entire kingdom. Provides +50% morale and passive healing each wave.",
+      "category": "monument",
+      "tier": 4,
+      "cost": {"gold": 500, "stone": 200, "wood": 200},
+      "production": {},
+      "defense": 2,
+      "worker_slots": 4,
+      "adjacency_bonus": {
+        "terrain": {},
+        "building": {"temple": {"wave_heal": 1}}
+      },
+      "effects": {
+        "morale_bonus": 0.5,
+        "wave_heal": 3,
+        "castle_hp_regen": 1
+      },
+      "requires": ["temple"],
+      "limit_per_map": 1
+    },
+    "war_academy": {
+      "label": "War Academy",
+      "description": "The finest military institution in the realm. Unlocks elite units and provides +25% tower damage.",
+      "category": "monument",
+      "tier": 4,
+      "cost": {"gold": 400, "stone": 300},
+      "production": {},
+      "defense": 3,
+      "worker_slots": 3,
+      "adjacency_bonus": {
+        "terrain": {},
+        "building": {"barracks": {"tower_damage": 5}}
+      },
+      "effects": {
+        "tower_damage_bonus": 0.25,
+        "typing_power": 0.15,
+        "unlocks_elite_units": true
+      },
+      "requires": ["barracks"],
+      "limit_per_map": 1
+    },
+    "trade_emporium": {
+      "label": "Trade Emporium",
+      "description": "A grand trading hub connecting routes across the realm. Reduces trade costs by 30% and attracts traveling merchants.",
+      "category": "monument",
+      "tier": 4,
+      "cost": {"gold": 600, "stone": 100, "wood": 100},
+      "production": {"gold": 15},
+      "defense": 0,
+      "worker_slots": 5,
+      "adjacency_bonus": {
+        "terrain": {},
+        "building": {"market": {"gold": 5}}
+      },
+      "effects": {
+        "trade_cost_reduction": 0.3,
+        "merchant_attraction": true,
+        "faction_relation_bonus": 10
+      },
+      "requires": ["market"],
+      "limit_per_map": 1
+    },
+    "wizard_tower": {
+      "label": "Wizard Tower",
+      "description": "A tower of arcane knowledge where the greatest mages study. Unlocks magic abilities and provides +40% research speed.",
+      "category": "monument",
+      "tier": 4,
+      "cost": {"gold": 800, "stone": 400},
+      "production": {},
+      "defense": 2,
+      "worker_slots": 2,
+      "adjacency_bonus": {
+        "terrain": {},
+        "building": {}
+      },
+      "effects": {
+        "research_speed_bonus": 0.4,
+        "unlocks_magic": true,
+        "spell_power": 0.2
+      },
+      "requires": [],
+      "limit_per_map": 1,
+      "combat_stats": {
+        "range": 5,
+        "damage": 10,
+        "damage_type": "magic",
+        "shots_per_wave": 3
+      }
+    }
+  },
+  "categories": {
+    "production": {
+      "label": "Production",
+      "description": "Buildings that generate resources.",
+      "color": "#4CAF50"
+    },
+    "economy": {
+      "label": "Economy",
+      "description": "Buildings that generate gold.",
+      "color": "#FFC107"
+    },
+    "defense": {
+      "label": "Defense",
+      "description": "Buildings that protect the kingdom.",
+      "color": "#F44336"
+    },
+    "military": {
+      "label": "Military",
+      "description": "Buildings for training troops.",
+      "color": "#9C27B0"
+    },
+    "support": {
+      "label": "Support",
+      "description": "Buildings with special effects.",
+      "color": "#2196F3"
+    },
+    "monument": {
+      "label": "Monument",
+      "description": "Legendary Tier 4 structures with powerful kingdom-wide effects.",
+      "color": "#9C27B0"
+    }
+  },
+  "resources": {
+    "wood": {
+      "label": "Wood",
+      "icon": "wood",
+      "color": "#8B4513"
+    },
+    "stone": {
+      "label": "Stone",
+      "icon": "stone",
+      "color": "#808080"
+    },
+    "food": {
+      "label": "Food",
+      "icon": "food",
+      "color": "#FFD700"
+    },
+    "gold": {
+      "label": "Gold",
+      "icon": "gold",
+      "color": "#FFD700"
+    }
+  }
+}

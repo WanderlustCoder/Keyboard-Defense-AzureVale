@@ -1,0 +1,72 @@
+name: MonoGame CI
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'apps/keyboard-defense-monogame/**'
+      - '.github/workflows/monogame-ci.yml'
+  pull_request:
+    branches: [main, master]
+    paths:
+      - 'apps/keyboard-defense-monogame/**'
+      - '.github/workflows/monogame-ci.yml'
+
+defaults:
+  run:
+    working-directory: apps/keyboard-defense-monogame
+
+jobs:
+  build-and-test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Validate Pixel Lab catalog manifest
+        run: >
+          python tools/pixel_lab/validate_manifest.py
+          --manifest data/pixel_lab_manifest.catalog.json
+          --schema data/schemas/pixel_lab_manifest.schema.json
+
+      - name: Validate Pixel Lab active runtime manifest
+        run: >
+          python tools/pixel_lab/validate_manifest.py
+          --manifest data/pixel_lab_manifest.active_runtime.json
+          --schema data/schemas/pixel_lab_manifest.schema.json
+          --textures-root Content/Textures
+          --check-files
+
+      - name: Gate active runtime subset against catalog
+        run: >
+          python tools/pixel_lab/verify_active_in_catalog.py
+          --catalog data/pixel_lab_manifest.catalog.json
+          --active data/pixel_lab_manifest.active_runtime.json
+
+      - name: Build runtime texture manifest from active runtime contract
+        run: >
+          python tools/pixel_lab/build_texture_manifest.py
+          --manifest data/pixel_lab_manifest.active_runtime.json
+          --out src/KeyboardDefense.Game/Content/Textures/texture_manifest.pixel_lab.json
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Test
+        run: dotnet test --no-build --configuration Release --verbosity normal

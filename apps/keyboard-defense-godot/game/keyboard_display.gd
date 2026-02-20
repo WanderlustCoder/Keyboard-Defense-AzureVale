@@ -3,23 +3,55 @@ extends Control
 ## On-screen keyboard visualization for typing tutor
 ## Shows finger zones, highlights next key, flashes on correct/wrong input
 
-# Key layout (QWERTY)
+# Key layout (QWERTY) - full keyboard with special keys
 const ROWS := [
-	["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "="],
-	["q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "[", "]"],
-	["a", "s", "d", "f", "g", "h", "j", "k", "l", ";", "'"],
-	["z", "x", "c", "v", "b", "n", "m", ",", ".", "/"],
-	[" "]  # Spacebar
+	["`", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "=", "backspace"],
+	["tab", "q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "[", "]", "\\"],
+	["caps", "a", "s", "d", "f", "g", "h", "j", "k", "l", ";", "'", "enter"],
+	["lshift", "z", "x", "c", "v", "b", "n", "m", ",", ".", "/", "rshift"],
+	["lctrl", "lalt", " ", "ralt", "rctrl"]  # Bottom row with spacebar
 ]
 
-# Pixel offsets for staggered keyboard rows
-const ROW_OFFSETS := [0.0, 15.0, 25.0, 40.0, 120.0]
+# Width multipliers for special keys (1.0 = standard key width)
+const KEY_WIDTHS := {
+	"backspace": 2.0,
+	"tab": 1.5,
+	"\\": 1.5,
+	"caps": 1.75,
+	"enter": 2.25,
+	"lshift": 2.25,
+	"rshift": 2.75,
+	"lctrl": 1.25,
+	"lalt": 1.25,
+	"ralt": 1.25,
+	"rctrl": 1.25,
+	" ": 6.25  # Spacebar
+}
+
+# Display labels for special keys
+const KEY_LABELS := {
+	"backspace": "BKSP",
+	"tab": "TAB",
+	"\\": "\\",
+	"caps": "CAPS",
+	"enter": "ENTER",
+	"lshift": "SHIFT",
+	"rshift": "SHIFT",
+	"lctrl": "CTRL",
+	"lalt": "ALT",
+	"ralt": "ALT",
+	"rctrl": "CTRL",
+	" ": "SPACE"
+}
 
 # Finger zone assignments for proper touch typing
 const FINGER_ZONES := {
-	# Left hand - pinky
-	"1": "left_pinky", "`": "left_pinky",
-	"q": "left_pinky", "a": "left_pinky", "z": "left_pinky",
+	# Left hand - pinky (includes modifiers)
+	"`": "left_pinky", "1": "left_pinky",
+	"tab": "left_pinky", "q": "left_pinky",
+	"caps": "left_pinky", "a": "left_pinky",
+	"lshift": "left_pinky", "z": "left_pinky",
+	"lctrl": "left_pinky",
 	# Left hand - ring
 	"2": "left_ring",
 	"w": "left_ring", "s": "left_ring", "x": "left_ring",
@@ -40,12 +72,13 @@ const FINGER_ZONES := {
 	# Right hand - ring
 	"9": "right_ring",
 	"o": "right_ring", "l": "right_ring", ".": "right_ring",
-	# Right hand - pinky
-	"0": "right_pinky", "-": "right_pinky", "=": "right_pinky",
-	"p": "right_pinky", ";": "right_pinky", "'": "right_pinky",
-	"[": "right_pinky", "]": "right_pinky", "/": "right_pinky",
-	# Thumbs
-	" ": "thumb"
+	# Right hand - pinky (includes modifiers)
+	"0": "right_pinky", "-": "right_pinky", "=": "right_pinky", "backspace": "right_pinky",
+	"p": "right_pinky", "[": "right_pinky", "]": "right_pinky", "\\": "right_pinky",
+	";": "right_pinky", "'": "right_pinky", "enter": "right_pinky",
+	"/": "right_pinky", "rshift": "right_pinky", "rctrl": "right_pinky",
+	# Thumbs (spacebar and alt keys)
+	"lalt": "thumb", " ": "thumb", "ralt": "thumb"
 }
 
 # Colors for each finger (symmetric for left/right)
@@ -72,10 +105,9 @@ var _flash_tween: Tween = null
 var _next_key_pulse_time: float = 0.0  # For next-key pulsing animation
 var _settings_manager = null
 
-# Visual settings
-var key_size := Vector2(36, 36)
+# Visual settings (larger for full-width keyboard at bottom of screen)
+var key_size := Vector2(52, 52)  # Base key size (special keys use multipliers)
 var key_gap := 4.0
-var spacebar_width := 180.0
 var font: Font
 
 const FLASH_DURATION := 0.2  # Smooth fade duration
@@ -83,11 +115,11 @@ const NEXT_KEY_PULSE_SPEED := 4.0  # Pulse cycles per second
 const NEXT_KEY_PULSE_MIN_WIDTH := 2.5
 const NEXT_KEY_PULSE_MAX_WIDTH := 4.0
 
-# Impact ripple settings
+# Impact ripple settings (scaled for keys)
 const RIPPLE_DURATION := 0.35
-const RIPPLE_MAX_RADIUS := 28.0
-const RIPPLE_START_WIDTH := 3.0
-const RIPPLE_END_WIDTH := 1.0
+const RIPPLE_MAX_RADIUS := 38.0
+const RIPPLE_START_WIDTH := 4.0
+const RIPPLE_END_WIDTH := 1.5
 const RIPPLE_CORRECT_COLOR := Color(0.3, 0.9, 0.5, 0.8)
 const RIPPLE_ERROR_COLOR := Color(0.9, 0.3, 0.3, 0.8)
 
@@ -185,30 +217,42 @@ func _spawn_impact_ripple(key: String, correct: bool) -> void:
 		"correct": correct
 	})
 
+func _get_key_width(key: String) -> float:
+	var multiplier: float = KEY_WIDTHS.get(key, 1.0)
+	return key_size.x * multiplier
+
+func _get_row_width(row: Array) -> float:
+	var width := 0.0
+	for key in row:
+		width += _get_key_width(key) + key_gap
+	return width - key_gap  # Remove last gap
+
 func _draw() -> void:
 	key_rects.clear()
 	var y := 0.0
 
-	# Center the keyboard horizontally
-	var total_width := 12.0 * (key_size.x + key_gap)
-	var start_x := (size.x - total_width) / 2.0
+	# Find the widest row to use as reference for centering
+	var max_row_width := 0.0
+	for row in ROWS:
+		var row_width := _get_row_width(row)
+		if row_width > max_row_width:
+			max_row_width = row_width
 
 	for row_idx in range(ROWS.size()):
 		var row: Array = ROWS[row_idx]
-		var x: float = start_x + ROW_OFFSETS[row_idx]
+		var row_width := _get_row_width(row)
+
+		# Center this row
+		var start_x := (size.x - row_width) / 2.0
+		var x := start_x
 
 		for key in row:
-			var rect: Rect2
-			if key == " ":
-				# Spacebar is wider and centered
-				var spacebar_x := start_x + (total_width - spacebar_width) / 2.0
-				rect = Rect2(Vector2(spacebar_x, y), Vector2(spacebar_width, key_size.y))
-			else:
-				rect = Rect2(Vector2(x, y), key_size)
+			var key_width := _get_key_width(key)
+			var rect := Rect2(Vector2(x, y), Vector2(key_width, key_size.y))
 
 			key_rects[key] = rect
 			_draw_key(key, rect)
-			x += key_size.x + key_gap
+			x += key_width + key_gap
 
 		y += key_size.y + key_gap
 
@@ -295,19 +339,19 @@ func _draw_key(key: String, rect: Rect2) -> void:
 	draw_rect(rect, border_color, false, border_width)
 
 	# Draw key label
-	var label: String
-	if key == " ":
-		label = "SPACE"
-	else:
-		label = key.to_upper()
+	var label: String = KEY_LABELS.get(key, key.to_upper())
 
-	var font_size: int = 12 if key == " " else 14
+	# Smaller font for special keys with longer labels
+	var font_size: int = 18
+	if KEY_LABELS.has(key):
+		font_size = 12  # Smaller for special key labels
+
 	var text_size := font.get_string_size(label, HORIZONTAL_ALIGNMENT_CENTER, -1, font_size)
 	var text_pos := rect.position + (rect.size - text_size) / 2.0 + Vector2(0, text_size.y * 0.75)
 	draw_string(font, text_pos, label, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, text_color)
 
 	# Draw home row indicators (F and J keys have bumps)
 	if key == "f" or key == "j":
-		var bump_y := rect.position.y + rect.size.y - 8
+		var bump_y := rect.position.y + rect.size.y - 10
 		var bump_x := rect.position.x + rect.size.x / 2.0
-		draw_line(Vector2(bump_x - 6, bump_y), Vector2(bump_x + 6, bump_y), text_color.darkened(0.2), 2.0)
+		draw_line(Vector2(bump_x - 8, bump_y), Vector2(bump_x + 8, bump_y), text_color.darkened(0.2), 2.5)

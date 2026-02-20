@@ -173,8 +173,8 @@ static func get_conquest_progress(state) -> Dictionary:
 
 ## Get economic progress
 static func get_economic_progress(state) -> Dictionary:
-	var current := state.gold
-	var peak_gold := state.get("peak_gold", state.gold)
+	var current: int = state.gold
+	var peak_gold: int = int(state.get("peak_gold", state.gold))
 
 	return {
 		"current": current,
@@ -189,8 +189,8 @@ static func get_economic_progress(state) -> Dictionary:
 static func get_technological_progress(state) -> Dictionary:
 	var research := SimResearch.instance()
 	var all_research := research.get_all_research()
-	var total := all_research.size()
-	var completed := state.completed_research.size()
+	var total: int = all_research.size()
+	var completed: int = state.completed_research.size()
 
 	return {
 		"current": completed,
@@ -203,8 +203,8 @@ static func get_technological_progress(state) -> Dictionary:
 ## Get story progress
 static func get_story_progress(state) -> Dictionary:
 	# Story progress tracked separately
-	var current_act := state.get("current_act", 1)
-	var total_acts := 5  # Acts 1-5
+	var current_act: int = int(state.get("current_act", 1))
+	var total_acts: int = 5  # Acts 1-5
 
 	return {
 		"current": current_act,
@@ -248,8 +248,8 @@ static func update_victory_tracking(state) -> Dictionary:
 		state.peak_gold = state.gold
 
 	# Check for newly achieved victories
-	var current_achieved := check_victory_conditions(state)
-	var previous := state.get("victory_achieved", [])
+	var current_achieved: Array = check_victory_conditions(state)
+	var previous: Array = state.get("victory_achieved", [])
 
 	for victory_type in current_achieved:
 		if not previous.has(victory_type):

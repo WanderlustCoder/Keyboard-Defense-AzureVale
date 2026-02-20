@@ -6,6 +6,7 @@ const SimMap = preload("res://sim/map.gd")
 const SimPoi = preload("res://sim/poi.gd")
 const SimRng = preload("res://sim/rng.gd")
 const SimEnemies = preload("res://sim/enemies.gd")
+const SimUpgrades = preload("res://sim/upgrades.gd")
 
 const WORLD_TICK_INTERVAL := 1.0  # Seconds between world updates
 const TIME_ADVANCE_RATE := 0.02  # Time of day advances per tick (full cycle ~50 ticks)
@@ -76,8 +77,11 @@ static func tick(state: GameState, delta: float) -> Dictionary:
 				# Wave assault uses existing night phase combat
 				# Check if wave is cleared
 				if state.enemies.is_empty() and state.night_spawn_remaining <= 0:
+					var build_bonus: int = SimUpgrades.get_build_limit_bonus(state)
 					_end_wave_assault(state)
 					events.append("Wave repelled! The kingdom is safe... for now.")
+					if build_bonus > 0:
+						events.append("Architecture grants +%d AP." % build_bonus)
 
 			"event":
 				# Events are handled by the event system, just wait
@@ -128,7 +132,9 @@ static func _start_wave_assault(state: GameState) -> void:
 static func _end_wave_assault(state: GameState) -> void:
 	state.activity_mode = "exploration"
 	state.phase = "day"
-	state.ap = state.ap_max
+	# Apply build limit bonus from Architecture research as extra AP
+	var build_bonus: int = SimUpgrades.get_build_limit_bonus(state)
+	state.ap = state.ap_max + build_bonus
 	state.wave_cooldown = WAVE_COOLDOWN_DURATION
 	state.day += 1  # Advance day after wave
 

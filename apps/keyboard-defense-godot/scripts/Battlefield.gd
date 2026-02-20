@@ -73,6 +73,8 @@ var result_hint_label: Label = null
 @onready var game_controller = get_node("/root/GameController")
 @onready var audio_manager = get_node_or_null("/root/AudioManager")
 @onready var settings_manager = get_node_or_null("/root/SettingsManager")
+@onready var screen_shake = get_node_or_null("/root/ScreenShake")
+@onready var hit_pause = get_node_or_null("/root/HitPause")
 
 var pause_panel: PanelContainer = null
 var pause_label: Label = null
@@ -146,6 +148,12 @@ var active = true
 var result_action = "map"
 var battle_tutorial: BattleTutorial = null
 
+# Battle intro animation
+var _intro_playing: bool = false
+var _intro_timer: float = 0.0
+const INTRO_DURATION := 1.0
+const INTRO_TEXT_DELAY := 0.3
+
 # Screen shake state
 var _shake_intensity: float = 0.0
 var _shake_duration: float = 0.0
@@ -178,6 +186,14 @@ var _threat_glow: Control = null
 var _threat_glow_intensity: float = 0.0
 const THREAT_GLOW_THRESHOLD := 50.0  # Start glowing at 50%
 const THREAT_GLOW_MAX_INTENSITY := 0.6
+
+# Threat pulse effect
+var _threat_pulse: float = 0.0
+var _threat_pulse_direction: float = 1.0
+const THREAT_PULSE_SPEED := 2.5
+const THREAT_PULSE_MIN := 0.85
+const THREAT_PULSE_MAX := 1.0
+const THREAT_DANGER_THRESHOLD := 80.0  # Start pulsing at 80%
 
 # Typing panel streak glow effect
 var _streak_glow: Control = null
@@ -289,14 +305,32 @@ func _ready() -> void:
 		drill_target_label.pivot_offset = drill_target_label.size * 0.5
 		_drill_target_base_scale = drill_target_label.scale
 	_initialize_battle()
+	# Play intro animation after setup
+	call_deferred("_play_battle_intro")
 
 func _exit_tree() -> void:
 	if _error_shake_tween != null and _error_shake_tween.is_valid():
 		_error_shake_tween.kill()
 	if _backspace_feedback_tween != null and _backspace_feedback_tween.is_valid():
 		_backspace_feedback_tween.kill()
+	# Cancel any active hit pause and reset screen shake
+	if hit_pause != null:
+		hit_pause.cancel_pause()
+	if screen_shake != null:
+		screen_shake.reset()
 
 func _initialize_battle() -> void:
+	# Check if we're resuming from saved state
+	if game_controller.has_pending_battle_state():
+		_resume_battle_from_state(game_controller.get_pending_battle_state())
+		game_controller.clear_pending_battle_state()
+		return
+
+	# Check if this is a practice session (no campaign node)
+	if game_controller.practice_mode:
+		_initialize_practice_battle()
+		return
+
 	node_id = game_controller.next_battle_node_id
 	if node_id == "":
 		game_controller.go_to_map()
@@ -361,6 +395,106 @@ func _initialize_battle() -> void:
 	# Initialize battle tutorial for first-time players
 	_setup_battle_tutorial()
 
+func _initialize_practice_battle() -> void:
+	## Initialize a practice session without a campaign node
+	node_id = ""
+	lesson_id = game_controller.next_practice_lesson_id
+	if lesson_id == "":
+		game_controller.go_to_menu()
+		return
+
+	var lesson: Dictionary = progression.get_lesson(lesson_id)
+	if lesson.is_empty():
+		game_controller.go_to_menu()
+		return
+
+	node_label = "Practice"
+	lesson_words = lesson.get("words", [])
+	if lesson_words.is_empty():
+		lesson_words = _generate_words_from_lesson(lesson, lesson_id)
+
+	# Use default modifiers for practice (no upgrades apply)
+	var modifiers: Dictionary = progression.get_combat_modifiers()
+	base_modifiers = modifiers.duplicate(true)
+	base_typing_power = float(modifiers.get("typing_power", 1.0))
+	base_threat_rate_multiplier = float(modifiers.get("threat_rate_multiplier", 1.0))
+	base_mistake_forgiveness = float(modifiers.get("mistake_forgiveness", 0.0))
+	base_castle_health = 3 + int(modifiers.get("castle_health_bonus", 0))
+	base_threat_rate = 8.0
+	base_threat_relief = 12.0
+	base_mistake_penalty = 18.0
+	castle_health = base_castle_health
+	_set_threat(0.0)
+	active_buffs.clear()
+	_reset_streaks()
+	_clear_feedback()
+	_recompute_buff_modifiers()
+	_recompute_combat_values()
+	if battle_stage != null:
+		battle_stage.reset()
+	tutorial_mode = false  # No tutorial in practice mode
+
+	battle_start_time_ms = Time.get_ticks_msec()
+	battle_total_inputs = 0
+	battle_correct_inputs = 0
+	battle_errors = 0
+	battle_words_completed = 0
+	# Reset UI caches
+	_cached_threat = -1.0
+	_cached_castle_health = -1
+	_cached_accuracy = -1
+	_cached_wpm = -1
+	_cached_errors = -1
+	_current_accuracy_tier = 0
+	_trend_wpm_history.clear()
+	_trend_accuracy_history.clear()
+	_trend_sample_timer = 0.0
+
+	# Build a simple practice drill plan
+	drill_plan = _build_practice_drill_plan(lesson)
+	drill_index = -1
+
+	lesson_label.text = "Practice - %s" % lesson.get("label", lesson_id)
+	gold_label.text = "Gold: %d" % progression.gold
+	_refresh_bonus_label(base_modifiers)
+	_update_buff_hud()
+	_start_next_drill()
+	_update_threat()
+
+	# Start battle music
+	if audio_manager != null:
+		audio_manager.switch_to_battle_music(false)
+
+func _build_practice_drill_plan(lesson: Dictionary) -> Array:
+	## Build a simple drill plan for practice mode
+	var config: Dictionary = game_controller.practice_config
+	var difficulty: String = str(config.get("difficulty", "normal"))
+	var word_count := 8
+	match difficulty:
+		"easy":
+			word_count = 5
+		"normal":
+			word_count = 8
+		"hard":
+			word_count = 12
+
+	var plan: Array = [
+		{
+			"mode": "warmup",
+			"label": "Warm Up",
+			"word_count": min(3, lesson_words.size()),
+			"shuffle": true,
+			"hint": "Get your fingers ready!"
+		},
+		{
+			"mode": "lesson",
+			"label": lesson.get("label", "Practice"),
+			"word_count": min(word_count, lesson_words.size()),
+			"shuffle": true
+		}
+	]
+	return plan
+
 func _setup_battle_tutorial() -> void:
 	if battle_tutorial != null:
 		battle_tutorial.cleanup()
@@ -375,12 +509,137 @@ func _setup_battle_tutorial() -> void:
 	if battle_tutorial.is_active():
 		progression.mark_battle_started()
 		# Delay tutorial start slightly so player sees the battlefield
-		await get_tree().create_timer(0.5).timeout
+		# Guard against nodes not in tree (e.g., during headless tests)
+		if is_inside_tree():
+			await get_tree().create_timer(0.5).timeout
 		battle_tutorial.start()
 
 func _on_tutorial_finished() -> void:
 	# Tutorial complete, continue normally
 	pass
+
+
+func _play_battle_intro() -> void:
+	_intro_playing = true
+	_intro_timer = 0.0
+
+	# Disable input during intro
+	drill_input_enabled = false
+
+	# Animate elements in sequence
+	var tween := create_tween()
+
+	# Castle slides in from left
+	if battle_stage != null and battle_stage.castle != null:
+		var castle: Control = battle_stage.castle
+		var target_pos := castle.position
+		castle.position.x -= 100
+		castle.modulate.a = 0.0
+		tween.tween_property(castle, "position:x", target_pos.x, 0.4).set_ease(Tween.EASE_OUT)
+		tween.parallel().tween_property(castle, "modulate:a", 1.0, 0.3)
+
+	# Enemy slides in from right
+	tween.tween_interval(0.2)
+	if battle_stage != null and battle_stage.enemy != null:
+		var enemy: Control = battle_stage.enemy
+		var target_pos := enemy.position
+		enemy.position.x += 80
+		enemy.modulate.a = 0.0
+		tween.tween_property(enemy, "position:x", target_pos.x, 0.4).set_ease(Tween.EASE_OUT)
+		tween.parallel().tween_property(enemy, "modulate:a", 1.0, 0.3)
+
+	# "BATTLE START" text flash
+	tween.tween_interval(0.1)
+	tween.tween_callback(_show_battle_start_text)
+
+	# Wait then enable input
+	tween.tween_interval(0.4)
+	tween.tween_callback(func():
+		_intro_playing = false
+		drill_input_enabled = true
+	)
+
+
+func _show_battle_start_text() -> void:
+	if feedback_label == null:
+		return
+
+	feedback_label.text = "BATTLE START!"
+	feedback_label.add_theme_color_override("font_color", Color(1.0, 0.9, 0.3))
+	feedback_label.modulate.a = 1.0
+	feedback_label.scale = Vector2(1.5, 1.5)
+	feedback_label.visible = true
+	feedback_label.pivot_offset = feedback_label.size * 0.5
+
+	var tween := create_tween()
+	tween.tween_property(feedback_label, "scale", Vector2.ONE, 0.3).set_ease(Tween.EASE_OUT)
+	tween.tween_interval(0.5)
+	tween.tween_property(feedback_label, "modulate:a", 0.0, 0.2)
+
+
+func _play_victory_sequence() -> void:
+	# Screen flash
+	if screen_shake != null:
+		screen_shake.add_trauma(0.3)
+
+	# Show result panel
+	if result_panel != null:
+		result_panel.visible = true
+		result_panel.modulate.a = 0.0
+		result_panel.scale = Vector2(0.8, 0.8)
+		result_panel.pivot_offset = result_panel.size * 0.5
+
+		# Animate only when in scene tree
+		if is_inside_tree():
+			var tween := create_tween()
+			tween.set_ease(Tween.EASE_OUT)
+			tween.set_trans(Tween.TRANS_BACK)
+			tween.tween_property(result_panel, "modulate:a", 1.0, 0.3)
+			tween.parallel().tween_property(result_panel, "scale", Vector2.ONE, 0.4)
+
+	# Spawn victory particles (only when in scene tree for animations)
+	if battle_stage != null and battle_stage.hit_effects != null and is_inside_tree():
+		for i in range(5):
+			await get_tree().create_timer(0.1).timeout
+			if battle_stage.projectile_layer != null:
+				var pos := Vector2(
+					randf_range(100, 600),
+					randf_range(100, 300)
+				)
+				battle_stage.hit_effects.spawn_word_complete_burst(
+					battle_stage.projectile_layer,
+					pos
+				)
+
+
+func _play_defeat_sequence() -> void:
+	# Heavy screen shake
+	if screen_shake != null:
+		screen_shake.add_trauma(0.6)
+
+	# Dramatic pause
+	if hit_pause != null:
+		hit_pause.pause(0.15)
+
+	# Show result panel with shake
+	if result_panel != null:
+		# Set visible immediately so tests can verify state
+		result_panel.visible = true
+		result_panel.modulate.a = 0.0
+
+	# Animation effects only when in scene tree
+	if is_inside_tree():
+		# Tint screen red briefly
+		modulate = Color(1.2, 0.8, 0.8)
+		var color_tween := create_tween()
+		color_tween.tween_property(self, "modulate", Color.WHITE, 0.5)
+
+		# Delay the fade-in animation for dramatic effect
+		if result_panel != null:
+			await get_tree().create_timer(0.2).timeout
+			var tween := create_tween()
+			tween.tween_property(result_panel, "modulate:a", 1.0, 0.3)
+
 
 func _process(delta: float) -> void:
 	if not active:
@@ -418,6 +677,9 @@ func _process(delta: float) -> void:
 			battle_stage.reset_after_breach()
 			battle_stage.spawn_castle_damage_effect()
 			_trigger_screen_shake(12.0, 0.3)
+			# Hit pause for impact
+			if hit_pause != null:
+				hit_pause.pause_heavy()
 			if audio_manager != null:
 				audio_manager.play_hit_player()
 			# Tutorial trigger for castle damage
@@ -447,6 +709,9 @@ func _process(delta: float) -> void:
 			castle_health -= 1
 			_set_threat(25.0)
 			_trigger_screen_shake(12.0, 0.3)
+			# Hit pause for impact
+			if hit_pause != null:
+				hit_pause.pause_heavy()
 			# Tutorial trigger for castle damage
 			if battle_tutorial != null:
 				battle_tutorial.fire_trigger("castle_damaged")
@@ -523,7 +788,7 @@ func _handle_typing_result(result: Dictionary) -> void:
 			audio_manager.play_type_correct()
 		_trigger_typing_pulse()
 	_check_buff_triggers()
-	_update_feedback_for_status(status)
+	_update_feedback_for_status(status, result)
 	_apply_typing_combat(status)
 	if status == "lesson_complete":
 		_complete_drill()
@@ -601,6 +866,9 @@ func _update_threat() -> void:
 				# Normal - default
 				threat_bar.modulate = Color.WHITE
 
+	# Update threat pulse (scale animation)
+	_update_threat_pulse()
+
 	if castle_health != _cached_castle_health:
 		_cached_castle_health = castle_health
 		castle_label.text = "Castle Health: %d" % castle_health
@@ -628,18 +896,59 @@ func _clear_feedback() -> void:
 		feedback_label.text = ""
 		feedback_label.visible = false
 
-func _update_feedback_for_status(status: String) -> void:
+
+func _update_threat_pulse() -> void:
+	if threat_bar == null:
+		return
+
+	# Only pulse at danger threshold
+	if threat < THREAT_DANGER_THRESHOLD:
+		_threat_pulse = THREAT_PULSE_MAX
+		threat_bar.scale = Vector2.ONE
+		threat_bar.pivot_offset = threat_bar.size * 0.5
+		return
+
+	# Oscillate pulse
+	var delta := get_process_delta_time()
+	_threat_pulse += THREAT_PULSE_SPEED * delta * _threat_pulse_direction
+
+	if _threat_pulse >= THREAT_PULSE_MAX:
+		_threat_pulse = THREAT_PULSE_MAX
+		_threat_pulse_direction = -1.0
+	elif _threat_pulse <= THREAT_PULSE_MIN:
+		_threat_pulse = THREAT_PULSE_MIN
+		_threat_pulse_direction = 1.0
+
+	# Apply scale pulse
+	threat_bar.pivot_offset = threat_bar.size * 0.5
+	threat_bar.scale = Vector2(_threat_pulse, _threat_pulse)
+
+
+func _update_feedback_for_status(status: String, result: Dictionary = {}) -> void:
+	var was_perfect: bool = result.get("perfect", false)
 	if status == "error":
 		_show_feedback("Missed!", ThemeColors.ERROR, FEEDBACK_ERROR_DURATION)
 	elif status == "word_complete":
-		_show_feedback("Strike!", ThemeColors.ACCENT)
+		if was_perfect:
+			_show_feedback("Perfect!", ThemeColors.accent_alpha(1.0), FEEDBACK_DURATION)
+			_trigger_perfect_word_celebration()
+		else:
+			_show_feedback("Strike!", ThemeColors.ACCENT)
 		if audio_manager != null:
-			audio_manager.play_word_complete()
+			if was_perfect and audio_manager.has_method("play_word_complete_scaled"):
+				var word: String = str(result.get("word", ""))
+				audio_manager.play_word_complete_scaled(word.length(), was_perfect)
+			else:
+				audio_manager.play_word_complete()
 		# Spawn celebratory particle burst
 		if battle_stage != null:
 			battle_stage.spawn_word_complete_effect()
 	elif status == "lesson_complete":
-		_show_feedback("Wave Cleared!", ThemeColors.ACCENT_BLUE, FEEDBACK_WAVE_DURATION)
+		if was_perfect:
+			_show_feedback("Perfect Clear!", ThemeColors.ACCENT_BLUE, FEEDBACK_WAVE_DURATION)
+			_trigger_perfect_word_celebration()
+		else:
+			_show_feedback("Wave Cleared!", ThemeColors.ACCENT_BLUE, FEEDBACK_WAVE_DURATION)
 		if audio_manager != null:
 			audio_manager.play_wave_end()
 		# Also spawn particles for wave complete (bigger effect)
@@ -1027,6 +1336,8 @@ func _finish_battle(success: bool) -> void:
 	paused = false
 	if pause_panel != null:
 		pause_panel.visible = false
+	# Clear saved battle state - battle is over, don't resume
+	progression.clear_active_battle()
 	# Stop threat pulse audio
 	if audio_manager != null:
 		audio_manager.stop_threat_pulse()
@@ -1055,7 +1366,13 @@ func _finish_battle(success: bool) -> void:
 	var grade := _calculate_grade(accuracy, wpm, errors)
 
 	if success:
-		var completed_summary: Dictionary = progression.complete_node(node_id, summary)
+		var completed_summary: Dictionary
+		if game_controller.practice_mode:
+			# Practice mode - record attempt without campaign progress
+			completed_summary = progression.record_practice_attempt(lesson_id, summary)
+		else:
+			# Campaign mode - complete the node
+			completed_summary = progression.complete_node(node_id, summary)
 		var tier := str(completed_summary.get("performance_tier", ""))
 		var bonus := int(completed_summary.get("performance_bonus", 0))
 		var practice_gold = int(completed_summary.get("practice_gold", 0))
@@ -1064,7 +1381,11 @@ func _finish_battle(success: bool) -> void:
 		# Play victory sounds
 		if audio_manager != null:
 			audio_manager.play_victory()
-		var lines: Array = ["Victory! The castle stands strong."]
+		var lines: Array
+		if game_controller.practice_mode:
+			lines = ["Practice Complete!"]
+		else:
+			lines = ["Victory! The castle stands strong."]
 		if tier != "":
 			lines.append("Rank: %s" % tier)
 		lines.append(stats_line)
@@ -1082,37 +1403,62 @@ func _finish_battle(success: bool) -> void:
 			else:
 				lines.append("Gold: +%dg (%s)" % [gold_awarded, ", ".join(gold_parts)])
 		result_label.text = "\n".join(lines)
-		result_action = "map"
-		result_button.text = "Continue (Enter)"
+		if game_controller.practice_mode:
+			result_action = "menu"
+			result_button.text = "Done (Enter)"
+		else:
+			result_action = "map"
+			result_button.text = "Continue (Enter)"
 		if result_retry_button != null:
 			result_retry_button.visible = true
 			result_retry_button.text = "Retry (R)"
 		# Show animated grade
 		_show_result_grade(grade, true)
+		# Play victory sequence animation
+		_play_victory_sequence()
 	else:
-		progression.record_attempt(summary)
+		if game_controller.practice_mode:
+			# Record practice attempt even on defeat
+			progression.record_practice_attempt(lesson_id, summary)
+		else:
+			progression.record_attempt(summary)
 		# Play defeat sounds
 		if audio_manager != null:
 			audio_manager.play_defeat()
-		var lines: Array = ["Defeat. The walls fell.", stats_line, words_line]
+		var lines: Array
+		if game_controller.practice_mode:
+			lines = ["Practice Failed. Keep trying!", stats_line, words_line]
+		else:
+			lines = ["Defeat. The walls fell.", stats_line, words_line]
 		result_label.text = "\n".join(lines)
 		result_action = "retry"
 		result_button.text = "Retry (Enter)"
 		if result_retry_button != null:
 			result_retry_button.visible = true
-			result_retry_button.text = "Map (Esc)"
-			result_retry_button.pressed.disconnect(_on_result_retry_pressed)
-			result_retry_button.pressed.connect(_go_to_map_from_result)
+			if game_controller.practice_mode:
+				result_retry_button.text = "Done (Esc)"
+				result_retry_button.pressed.disconnect(_on_result_retry_pressed)
+				result_retry_button.pressed.connect(_go_to_menu_from_result)
+			else:
+				result_retry_button.text = "Map (Esc)"
+				result_retry_button.pressed.disconnect(_on_result_retry_pressed)
+				result_retry_button.pressed.connect(_go_to_map_from_result)
 		# Show grade (even on defeat, to encourage improvement)
 		_show_result_grade(grade, false)
-	result_panel.visible = true
+		# Play defeat sequence animation
+		_play_defeat_sequence()
 	gold_label.text = "Gold: %d" % progression.gold
 
 func _on_result_pressed() -> void:
 	if audio_manager != null:
 		audio_manager.play_ui_confirm()
 	if result_action == "retry":
-		game_controller.go_to_battle(node_id)
+		if game_controller.practice_mode:
+			game_controller.go_to_practice(lesson_id, game_controller.practice_config)
+		else:
+			game_controller.go_to_battle(node_id)
+	elif result_action == "menu":
+		game_controller.go_to_menu()
 	else:
 		game_controller.go_to_map()
 
@@ -1121,7 +1467,8 @@ func _on_exit_pressed() -> void:
 		return
 	if audio_manager != null:
 		audio_manager.play_ui_cancel()
-	game_controller.go_to_map()
+	# Save battle state for resume
+	_save_and_exit()
 
 func _format_bonus_text(modifiers: Dictionary) -> String:
 	var typing_power_bonus: int = int(round((float(modifiers.get("typing_power", 1.0)) - 1.0) * 100.0))
@@ -1300,7 +1647,8 @@ func _on_pause_resume_pressed() -> void:
 func _on_pause_retreat_pressed() -> void:
 	if audio_manager != null:
 		audio_manager.play_ui_cancel()
-	game_controller.go_to_map()
+	# Save battle state for resume
+	_save_and_exit()
 
 func _toggle_pause() -> void:
 	if not active or result_panel.visible:
@@ -1549,6 +1897,9 @@ func _trigger_error_shake() -> void:
 	# Check if screen shake is enabled in settings (respects user preference)
 	if settings_manager != null and not settings_manager.screen_shake:
 		return
+	# Guard against nodes not in tree (e.g., during headless tests)
+	if not is_inside_tree():
+		return
 
 	# Kill existing tween if running
 	if _error_shake_tween != null and _error_shake_tween.is_valid():
@@ -1589,6 +1940,9 @@ func _trigger_typing_pulse() -> void:
 	# Check reduced motion setting
 	if settings_manager != null and settings_manager.reduced_motion:
 		return
+	# Guard against nodes not in tree (e.g., during headless tests)
+	if not is_inside_tree():
+		return
 	# Kill existing tween if running
 	if _typing_pulse_tween != null and _typing_pulse_tween.is_valid():
 		_typing_pulse_tween.kill()
@@ -1601,8 +1955,63 @@ func _trigger_typing_pulse() -> void:
 	_typing_pulse_tween.tween_property(drill_target_label, "scale", pulse_scale, TYPING_PULSE_DURATION * 0.4)
 	_typing_pulse_tween.tween_property(drill_target_label, "scale", _drill_target_base_scale, TYPING_PULSE_DURATION * 0.6)
 
+
+var _perfect_celebration_tween: Tween = null
+
+func _trigger_perfect_word_celebration() -> void:
+	# Rainbow shimmer celebration for perfect words
+	if feedback_label == null:
+		return
+	# Check reduced motion setting
+	if settings_manager != null and settings_manager.reduced_motion:
+		return
+	# Kill existing celebration if running
+	if _perfect_celebration_tween != null and _perfect_celebration_tween.is_valid():
+		_perfect_celebration_tween.kill()
+
+	# Rainbow color cycle on feedback label
+	_perfect_celebration_tween = create_tween()
+	_perfect_celebration_tween.set_loops(2)
+
+	# Rainbow colors cycle
+	var rainbow_colors := [
+		Color(1.0, 0.4, 0.4),   # Red
+		Color(1.0, 0.7, 0.2),   # Orange
+		Color(1.0, 1.0, 0.3),   # Yellow
+		Color(0.4, 1.0, 0.4),   # Green
+		Color(0.3, 0.7, 1.0),   # Blue
+		Color(0.7, 0.4, 1.0),   # Purple
+	]
+
+	for color in rainbow_colors:
+		_perfect_celebration_tween.tween_property(feedback_label, "modulate", color, 0.08)
+
+	# End with gold
+	_perfect_celebration_tween.tween_property(feedback_label, "modulate", ThemeColors.ACCENT, 0.1)
+
+	# Also pulse scale
+	if drill_target_label != null:
+		var scale_tween := create_tween()
+		scale_tween.set_ease(Tween.EASE_OUT)
+		scale_tween.set_trans(Tween.TRANS_ELASTIC)
+		var big_scale := _drill_target_base_scale * 1.3
+		scale_tween.tween_property(drill_target_label, "scale", big_scale, 0.15)
+		scale_tween.tween_property(drill_target_label, "scale", _drill_target_base_scale, 0.3)
+
+
 func _trigger_screen_shake(intensity: float, duration: float) -> void:
-	# Check if screen shake is enabled in settings
+	# Use the ScreenShake autoload if available
+	if screen_shake != null:
+		# Map intensity to trauma presets (12.0 = heavy castle damage)
+		if intensity >= 12.0:
+			screen_shake.shake_heavy()
+		elif intensity >= 8.0:
+			screen_shake.shake_medium()
+		else:
+			screen_shake.shake_light()
+		return
+
+	# Fallback to local shake if autoload not available
 	if settings_manager != null and not settings_manager.screen_shake:
 		return
 	_shake_intensity = intensity
@@ -1665,16 +2074,24 @@ func _update_combo_indicator(delta: float) -> void:
 	# Determine combo tier and color
 	var combo_text := ""
 	var combo_color := ThemeColors.accent_alpha(0.9)  # Gold
+	var combo_base_scale := 1.0  # Base scale for tier
 
-	if total_streak >= 30:
+	if total_streak >= 50:
+		combo_text = "LEGENDARY! x%d" % total_streak
+		combo_color = Color(1.0, 0.3, 0.3, 1.0)  # Red - legendary
+		combo_base_scale = 1.4
+	elif total_streak >= 30:
 		combo_text = "BLAZING x%d" % total_streak
 		combo_color = Color(1.0, 0.5, 0.2, 1.0)  # Orange (unique)
+		combo_base_scale = 1.3
 	elif total_streak >= 20:
 		combo_text = "HOT x%d" % total_streak
 		combo_color = ThemeColors.ACCENT  # Gold
+		combo_base_scale = 1.2
 	elif total_streak >= 10:
 		combo_text = "COMBO x%d" % total_streak
 		combo_color = ThemeColors.accent_alpha(0.95).lerp(ThemeColors.ACCENT_BLUE, 0.85)  # Cyan
+		combo_base_scale = 1.1
 	else:
 		combo_text = "x%d" % total_streak
 		combo_color = ThemeColors.text_alpha(0.65)  # Silver/gray
@@ -1682,14 +2099,14 @@ func _update_combo_indicator(delta: float) -> void:
 	combo_label.text = combo_text
 	combo_label.add_theme_color_override("font_color", combo_color)
 
-	# Handle pulse animation
+	# Handle pulse animation with tier-based scaling
 	if _combo_pulse_timer > 0.0:
 		_combo_pulse_timer -= delta
 		var pulse_progress := 1.0 - (_combo_pulse_timer / COMBO_PULSE_DURATION)
-		_combo_scale = 1.0 + (1.0 - pulse_progress) * 0.3  # Start big, shrink to normal
+		_combo_scale = combo_base_scale + (1.0 - pulse_progress) * 0.3  # Start big, shrink to base
 		combo_label.scale = Vector2(_combo_scale, _combo_scale)
 	else:
-		combo_label.scale = Vector2(1.0, 1.0)
+		combo_label.scale = Vector2(combo_base_scale, combo_base_scale)
 
 func _pulse_combo_indicator() -> void:
 	_combo_pulse_timer = COMBO_PULSE_DURATION
@@ -1751,6 +2168,11 @@ func _go_to_map_from_result() -> void:
 	if audio_manager != null:
 		audio_manager.play_ui_cancel()
 	game_controller.go_to_map()
+
+func _go_to_menu_from_result() -> void:
+	if audio_manager != null:
+		audio_manager.play_ui_cancel()
+	game_controller.go_to_menu()
 
 func _calculate_grade(accuracy: float, wpm: float, errors: int) -> String:
 	# Check each grade threshold in order (S, A, B, C, D)
@@ -2243,3 +2665,140 @@ func _draw_streak_glow() -> void:
 			panel_size.y + expand * 2.0
 		)
 		_streak_glow.draw_rect(glow_rect, layer_color)
+
+
+# =============================================================================
+# BATTLE STATE PERSISTENCE
+# =============================================================================
+
+func _serialize_battle_state() -> Dictionary:
+	return {
+		"node_id": node_id,
+		"node_label": node_label,
+		"lesson_id": lesson_id,
+		"drill_plan": drill_plan.duplicate(true),
+		"drill_index": drill_index,
+		"current_drill": current_drill.duplicate(true),
+		"drill_mode": drill_mode,
+		"drill_label": drill_label,
+		"drill_timer": drill_timer,
+		"drill_word_goal": drill_word_goal,
+		"threat": threat,
+		"castle_health": castle_health,
+		"battle_start_time_ms": battle_start_time_ms,
+		"battle_total_inputs": battle_total_inputs,
+		"battle_correct_inputs": battle_correct_inputs,
+		"battle_errors": battle_errors,
+		"battle_words_completed": battle_words_completed,
+		"input_streak": input_streak,
+		"word_streak": word_streak,
+		"active_buffs": active_buffs.duplicate(true),
+		"words": words.duplicate(),
+		"lesson_words": lesson_words.duplicate(),
+		"current_word": typing_system.get_current_word() if typing_system != null else "",
+		"typed_so_far": typing_system.typed if typing_system != null else "",
+		"base_modifiers": base_modifiers.duplicate(true),
+		"base_typing_power": base_typing_power,
+		"base_threat_rate_multiplier": base_threat_rate_multiplier,
+		"base_mistake_forgiveness": base_mistake_forgiveness,
+		"base_castle_health": base_castle_health
+	}
+
+func _load_battle_state(state: Dictionary) -> void:
+	node_id = str(state.get("node_id", ""))
+	node_label = str(state.get("node_label", ""))
+	lesson_id = str(state.get("lesson_id", ""))
+	drill_plan = state.get("drill_plan", []).duplicate(true)
+	drill_index = int(state.get("drill_index", -1))
+	current_drill = state.get("current_drill", {}).duplicate(true)
+	drill_mode = str(state.get("drill_mode", ""))
+	drill_label = str(state.get("drill_label", ""))
+	drill_timer = float(state.get("drill_timer", 0.0))
+	drill_word_goal = int(state.get("drill_word_goal", 0))
+	threat = float(state.get("threat", 0.0))
+	castle_health = int(state.get("castle_health", 3))
+	battle_start_time_ms = int(state.get("battle_start_time_ms", 0))
+	battle_total_inputs = int(state.get("battle_total_inputs", 0))
+	battle_correct_inputs = int(state.get("battle_correct_inputs", 0))
+	battle_errors = int(state.get("battle_errors", 0))
+	battle_words_completed = int(state.get("battle_words_completed", 0))
+	input_streak = int(state.get("input_streak", 0))
+	word_streak = int(state.get("word_streak", 0))
+	active_buffs = state.get("active_buffs", []).duplicate(true)
+	words = state.get("words", []).duplicate()
+	lesson_words = state.get("lesson_words", []).duplicate()
+	base_modifiers = state.get("base_modifiers", {}).duplicate(true)
+	base_typing_power = float(state.get("base_typing_power", 1.0))
+	base_threat_rate_multiplier = float(state.get("base_threat_rate_multiplier", 1.0))
+	base_mistake_forgiveness = float(state.get("base_mistake_forgiveness", 0.0))
+	base_castle_health = int(state.get("base_castle_health", 3))
+
+func _save_and_exit() -> void:
+	var state := _serialize_battle_state()
+	progression.save_active_battle(state)
+	game_controller.go_to_map()
+
+func _resume_battle_from_state(state: Dictionary) -> void:
+	# Load all saved state
+	_load_battle_state(state)
+
+	# Get node/lesson info for UI
+	var node: Dictionary = progression.map_nodes.get(node_id, {})
+	var lesson: Dictionary = progression.get_lesson(lesson_id)
+
+	# Reset UI caches to force initial update
+	_cached_threat = -1.0
+	_cached_castle_health = -1
+	_cached_accuracy = -1
+	_cached_wpm = -1
+	_cached_errors = -1
+	_current_accuracy_tier = 0
+	_trend_wpm_history.clear()
+	_trend_accuracy_history.clear()
+	_trend_sample_timer = 0.0
+
+	# Recompute combat values from loaded state
+	_recompute_buff_modifiers()
+	_recompute_combat_values()
+
+	# Reset battle stage
+	if battle_stage != null:
+		battle_stage.reset()
+
+	# Update UI labels
+	lesson_label.text = "%s - %s (Resumed)" % [node_label, lesson.get("label", "Lesson")]
+	gold_label.text = "Gold: %d" % progression.gold
+	_refresh_bonus_label(base_modifiers)
+	_update_buff_hud()
+
+	# Initialize typing system with loaded words
+	if drill_index >= 0 and words.size() > 0:
+		var config: Dictionary = _build_typing_config(current_drill)
+		typing_system.start(words, config)
+
+		# Restore the current word if we had one
+		var saved_word := str(state.get("current_word", ""))
+		var saved_typed := str(state.get("typed_so_far", ""))
+
+		if saved_word != "":
+			# Find the word index for the saved word
+			var word_idx := words.find(saved_word)
+			if word_idx >= 0:
+				typing_system.word_index = word_idx
+				# Apply any typed progress
+				for i in range(saved_typed.length()):
+					var c := saved_typed.substr(i, 1)
+					typing_system.input_char(c)
+
+	_update_word_display()
+	_update_stats()
+	_update_drill_status()
+	_update_threat()
+
+	active = true
+	paused = false
+	tutorial_mode = false  # Don't show tutorial when resuming
+
+	# Start battle music
+	if audio_manager != null:
+		audio_manager.switch_to_battle_music(false)

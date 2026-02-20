@@ -88,11 +88,11 @@ func _rebuild_health_hearts(max_hp: int) -> void:
 
 func _update_health_visuals() -> void:
 	for i in range(_health_hearts.size()):
-		var heart := _health_hearts[i]
+		var heart: ColorRect = _health_hearts[i]
 		if not is_instance_valid(heart):
 			continue
 
-		var is_filled := i < _current_health
+		var is_filled: bool = i < _current_health
 
 		if is_filled:
 			# Full heart - red, possibly pulsing if low health

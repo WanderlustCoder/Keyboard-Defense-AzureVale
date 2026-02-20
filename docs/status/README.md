@@ -1,8 +1,12 @@
-# Archived Status Note
+# Archived Status Notes
 
-This status note is archived from a pre-Godot implementation.
-The current project is the Godot game at `apps/keyboard-defense-godot`.
+These status notes are historical snapshots from earlier implementation phases.
 
-See:
-- `docs/GODOT_PROJECT.md`
-- `docs/keyboard-defense-plans/README.md`
+Current project target:
+
+- `apps/keyboard-defense-monogame`
+
+Reference docs:
+
+- `docs/MONOGAME_PROJECT.md`
+- `docs/GODOT_PROJECT.md` (archived Godot reference)

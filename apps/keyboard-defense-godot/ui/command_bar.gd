@@ -301,10 +301,10 @@ func _update_autocomplete(input_text: String) -> void:
 
     # Update popup items
     for i in range(_autocomplete_items.size()):
-        var label := _autocomplete_items[i]
+        var label: Label = _autocomplete_items[i]
         if i < _autocomplete_matches.size():
-            var cmd := _autocomplete_matches[i]
-            var remaining := cmd.length() - trimmed.length()
+            var cmd: String = _autocomplete_matches[i]
+            var remaining: int = cmd.length() - trimmed.length()
             label.text = "  %s  (+%d)" % [cmd, remaining]
             label.visible = true
         else:
@@ -322,10 +322,10 @@ func _update_autocomplete(input_text: String) -> void:
 
 func _update_autocomplete_selection() -> void:
     for i in range(_autocomplete_items.size()):
-        var label := _autocomplete_items[i]
+        var label: Label = _autocomplete_items[i]
         if i == _autocomplete_selected:
             # Highlight selected item
-            var style := StyleBoxFlat.new()
+            var style: StyleBoxFlat = StyleBoxFlat.new()
             style.bg_color = AUTOCOMPLETE_SELECTED_COLOR
             style.set_corner_radius_all(2)
             label.add_theme_stylebox_override("normal", style)
@@ -339,7 +339,7 @@ func _apply_autocomplete() -> void:
     if _autocomplete_selected < 0 or _autocomplete_selected >= _autocomplete_matches.size():
         return
 
-    var selected_cmd := _autocomplete_matches[_autocomplete_selected]
+    var selected_cmd: String = _autocomplete_matches[_autocomplete_selected]
     text = selected_cmd + " "
     caret_column = text.length()
     _hide_autocomplete()

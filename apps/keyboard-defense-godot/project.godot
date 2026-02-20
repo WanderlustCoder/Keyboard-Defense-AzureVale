@@ -25,6 +25,9 @@ ProgressionState="*res://scripts/ProgressionState.gd"
 GameController="*res://scripts/GameController.gd"
 AudioManager="*res://game/audio_manager.gd"
 SettingsManager="*res://game/settings_manager.gd"
+ScreenShake="*res://game/screen_shake.gd"
+HitPause="*res://game/hit_pause.gd"
+SceneTransition="*res://game/scene_transition.gd"
 
 [debug]
 
@@ -34,10 +37,9 @@ settings/stdout/verbose=true
 [display]
 
 window/size/viewport_width=1920
-window/size/viewport_height=1080
-window/size/resizable=true
+window/size/viewport_height=1440
 window/size/window_width_override=1600
-window/size/window_height_override=900
+window/size/window_height_override=1200
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 

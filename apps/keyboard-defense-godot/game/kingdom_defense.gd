@@ -11,6 +11,7 @@ const SimWords = preload("res://sim/words.gd")
 const DefaultState = preload("res://sim/default_state.gd")
 const StoryManager = preload("res://game/story_manager.gd")
 const SimBuildings = preload("res://sim/buildings.gd")
+const SimUpgrades = preload("res://sim/upgrades.gd")
 const SimWorkers = preload("res://sim/workers.gd")
 const SimResearch = preload("res://sim/research.gd")
 const SimTrade = preload("res://sim/trade.gd")
@@ -122,36 +123,45 @@ const ResourceNodesReferencePanel = preload("res://ui/components/resource_nodes_
 const PlayerStatsReferencePanel = preload("res://ui/components/player_stats_reference_panel.gd")
 const WaveComposerReferencePanel = preload("res://ui/components/wave_composer_reference_panel.gd")
 
-# UI Node references
-@onready var grid_renderer: Node2D = $GridRenderer
-@onready var day_label: Label = $HUD/TopBar/HBox/DayLabel
-@onready var wave_label: Label = $HUD/TopBar/HBox/WaveLabel
-@onready var hp_value: Label = $HUD/TopBar/HBox/HPBar/HPValue
-@onready var gold_value: Label = $HUD/TopBar/HBox/GoldBar/GoldValue
-@onready var resources_label: Label = $HUD/TopBar/HBox/ResourceBar/ResourcesLabel
-@onready var lesson_label: Label = $HUD/TopBar/HBox/LessonLabel
-@onready var phase_label: Label = $HUD/TopBar/HBox/PhaseLabel
-@onready var menu_button: Button = $HUD/TopBar/HBox/MenuButton
-@onready var enemy_panel: Panel = $HUD/EnemyPanel
-@onready var current_enemy_label: RichTextLabel = $HUD/EnemyPanel/VBox/CurrentEnemy/CurrentLabel
-@onready var queue_list: RichTextLabel = $HUD/EnemyPanel/VBox/QueueList
-@onready var typing_panel: Panel = $HUD/TypingPanel
-@onready var word_display: RichTextLabel = $HUD/TypingPanel/VBox/WordDisplay
-@onready var input_display: Label = $HUD/TypingPanel/VBox/InputDisplay
-@onready var input_field: LineEdit = $HUD/TypingPanel/VBox/InputField
-@onready var wpm_label: Label = $HUD/TypingPanel/VBox/StatsBar/WPMLabel
-@onready var accuracy_label: Label = $HUD/TypingPanel/VBox/StatsBar/AccuracyLabel
-@onready var combo_label: Label = $HUD/TypingPanel/VBox/StatsBar/ComboLabel
-@onready var power_label: Label = $HUD/TypingPanel/VBox/StatsBar/PowerLabel
-@onready var hint_label: Label = $HUD/TypingPanel/VBox/HintLabel
-@onready var tip_label: Label = $HUD/TypingPanel/VBox/TipLabel
-@onready var finger_hint_label: Label = $HUD/TypingPanel/VBox/FingerHintLabel
-@onready var objective_label: RichTextLabel = $HUD/ObjectivePanel/ObjectiveLabel
-@onready var keyboard_display: Control = $HUD/TypingPanel/VBox/KeyboardPanel
-@onready var act_label: Label = $HUD/TopBar/HBox/ActLabel
-@onready var dialogue_box: Control = $DialogueBox
+# UI Node references - MainLayout structure with SubViewport for map
+@onready var grid_renderer: Node2D = $MainLayout/GameArea/MapArea/MapViewport/GridRenderer
+@onready var day_label: Label = $MainLayout/TopBar/HBox/DayLabel
+@onready var wave_label: Label = $MainLayout/TopBar/HBox/WaveLabel
+@onready var hp_value: Label = $MainLayout/TopBar/HBox/HPBar/HPValue
+@onready var gold_value: Label = $MainLayout/TopBar/HBox/GoldBar/GoldValue
+@onready var resources_label: Label = $MainLayout/TopBar/HBox/ResourceBar/ResourcesLabel
+@onready var lesson_label: Label = $MainLayout/TopBar/HBox/LessonLabel
+@onready var phase_label: Label = $MainLayout/TopBar/HBox/PhaseLabel
+@onready var menu_button: Button = $MainLayout/TopBar/HBox/MenuButton
+@onready var enemy_panel: Control = $MainLayout/GameArea/RightSidebar/SidebarContent/EnemySection
+@onready var current_enemy_label: RichTextLabel = $MainLayout/GameArea/RightSidebar/SidebarContent/EnemySection/CurrentEnemy/CurrentLabel
+@onready var queue_list: RichTextLabel = $MainLayout/GameArea/RightSidebar/SidebarContent/EnemySection/QueueList
+@onready var right_sidebar: Panel = $MainLayout/GameArea/RightSidebar
+@onready var word_display: RichTextLabel = $MainLayout/KeyboardArea/RightPanel/InfoContent/WordDisplay
+@onready var input_display: Label = $MainLayout/KeyboardArea/CenterArea/TypingBar/InputDisplay
+@onready var input_field: LineEdit = $MainLayout/KeyboardArea/CenterArea/TypingBar/InputField
+@onready var wpm_label: Label = $MainLayout/KeyboardArea/RightPanel/InfoContent/StatsGrid/WPMValue
+@onready var accuracy_label: Label = $MainLayout/KeyboardArea/RightPanel/InfoContent/StatsGrid/AccValue
+@onready var combo_label: Label = $MainLayout/KeyboardArea/RightPanel/InfoContent/StatsGrid/ComboValue
+@onready var power_label: Label = $MainLayout/KeyboardArea/RightPanel/InfoContent/StatsGrid/PowerValue
+@onready var tip_label: Label = $MainLayout/GameArea/RightSidebar/SidebarContent/TipLabel
+@onready var finger_hint_label: Label = $MainLayout/KeyboardArea/RightPanel/InfoContent/FingerHintLabel
+# Build menu in the sidebar for building selection
+@onready var build_menu: Control = $MainLayout/GameArea/RightSidebar/SidebarContent/BuildSection
+@onready var objective_label: RichTextLabel = $MainLayout/GameArea/RightSidebar/SidebarContent/ObjectiveSection/ObjectiveLabel
+@onready var keyboard_display: Control = $MainLayout/KeyboardArea/CenterArea/KeyboardPanel
+@onready var act_label: Label = $MainLayout/TopBar/HBox/ActLabel
+# Left panel dialogue elements (replaces old DialogueBox overlay)
+@onready var dialogue_portrait: TextureRect = $MainLayout/KeyboardArea/LeftPanel/DialogueContent/PortraitContainer/Portrait
+@onready var dialogue_speaker: Label = $MainLayout/KeyboardArea/LeftPanel/DialogueContent/SpeakerLabel
+@onready var dialogue_text_label: RichTextLabel = $MainLayout/KeyboardArea/LeftPanel/DialogueContent/DialogueText
+@onready var continue_hint: Label = $MainLayout/KeyboardArea/LeftPanel/DialogueContent/ContinueHint
+@onready var left_panel: Panel = $MainLayout/KeyboardArea/LeftPanel
 @onready var game_controller = get_node_or_null("/root/GameController")
 @onready var audio_manager = get_node_or_null("/root/AudioManager")
+@onready var camera: Camera2D = $MainLayout/GameArea/MapArea/MapViewport/GridRenderer/Camera
+@onready var minimap: Control = $MainLayout/GameArea/RightSidebar/SidebarContent/MinimapSection/MinimapContainer/Minimap
+@onready var map_viewport: SubViewport = $MainLayout/GameArea/MapArea/MapViewport
 
 # Game state
 var state: GameState
@@ -239,11 +249,22 @@ var lesson_accuracy_threshold: float = 0.8  # 80% accuracy to unlock next
 # Planning phase
 var planning_timer: float = 30.0
 var cursor_grid_pos: Vector2i = Vector2i(8, 5)
+var _click_start_pos: Vector2 = Vector2.ZERO
+var _click_start_camera_pos: Vector2 = Vector2.ZERO
+
+# Building placement mode (AoE-style click to select, click to place)
+var placement_building: String = ""  # Currently selected building for placement
 
 # Story state
 var last_act_intro_day: int = 0
 var game_started: bool = false
 var waiting_for_dialogue: bool = false
+
+# Dialogue state (LeftPanel-based dialogue system)
+var dialogue_lines: Array[String] = []
+var dialogue_line_index: int = 0
+var is_dialogue_active: bool = false
+signal dialogue_finished
 
 # Educational tracking
 var tip_timer: float = 0.0
@@ -298,7 +319,7 @@ var research_instance: SimResearch = null
 var profile: Dictionary = {}
 var achievement_checker: AchievementChecker = null
 var achievement_popup: Node = null
-var achievement_panel: AchievementPanel = null
+var achievement_panel: Control = null
 var notification_manager: NotificationManager = null
 var damage_taken_this_wave: int = 0
 var damage_taken_this_day: int = 0
@@ -890,9 +911,9 @@ func _init_achievement_system() -> void:
 
 func _show_streak_message(streak: int) -> void:
 	var message: String = StoryManager.get_daily_streak_message(streak)
-	if not message.is_empty() and dialogue_box:
+	if not message.is_empty():
 		var lines: Array[String] = [message]
-		dialogue_box.show_dialogue("Elder Lyra", lines)
+		_show_dialogue_in_panel("Elder Lyra", lines)
 
 func _add_event(message: String) -> void:
 	# Display an event message using the notification manager
@@ -1601,6 +1622,38 @@ func _on_build_requested(building_type: String) -> void:
 	# Build at cursor position via the same function used by typed commands
 	_try_build(building_type)
 
+
+## Called when a building is selected from the build menu (AoE-style placement)
+func _on_building_selected_for_placement(building_id: String) -> void:
+	placement_building = building_id
+	# Show preview on grid
+	if grid_renderer:
+		grid_renderer.set_preview_type(building_id)
+	_update_hint("Click to place %s | Right-click or Escape to cancel" % building_id)
+
+
+## Cancel building placement mode
+func _cancel_building_placement() -> void:
+	placement_building = ""
+	if grid_renderer:
+		grid_renderer.set_preview_type("")
+	if build_menu:
+		build_menu.clear_selection()
+	_update_hint("PLANNING: Select a building to place | Tab=dashboard | ready=start")
+
+
+## Try to place the currently selected building at cursor position
+func _place_selected_building() -> void:
+	if placement_building.is_empty():
+		return
+
+	var building_to_place: String = placement_building
+	_try_build(building_to_place)
+
+	# Keep the building selected for rapid placement (like AoE)
+	# User can right-click or Escape to cancel when done
+
+
 func _reset_game() -> void:
 	# Reset gameplay variables
 	day = 1
@@ -1639,11 +1692,14 @@ func _init_game_state() -> void:
 	state.lesson_id = lesson_order[current_lesson_index]
 	previous_lesson_id = state.lesson_id
 
-	# Discover entire map for RTS view
-	for y in range(state.map_h):
-		for x in range(state.map_w):
-			var index: int = y * state.map_w + x
-			state.discovered[index] = true
+	# Discover starting area around castle (radius 5 = 11x11 tiles)
+	var discover_radius: int = 5
+	for dy in range(-discover_radius, discover_radius + 1):
+		for dx in range(-discover_radius, discover_radius + 1):
+			var pos: Vector2i = state.base_pos + Vector2i(dx, dy)
+			if SimMap.in_bounds(pos.x, pos.y, state.map_w, state.map_h):
+				var index: int = pos.y * state.map_w + pos.x
+				state.discovered[index] = true
 
 	# Generate terrain
 	SimMap.generate_terrain(state)
@@ -1653,7 +1709,55 @@ func _init_game_state() -> void:
 	state.resources["stone"] = 10
 	state.resources["food"] = 5
 
+	_init_camera_and_minimap()
 	_update_grid_renderer()
+
+
+## Discover tiles around a position (used when building structures)
+func _discover_around(pos: Vector2i, radius: int) -> void:
+	var newly_discovered: int = 0
+	for dy in range(-radius, radius + 1):
+		for dx in range(-radius, radius + 1):
+			var tile_pos: Vector2i = pos + Vector2i(dx, dy)
+			if SimMap.in_bounds(tile_pos.x, tile_pos.y, state.map_w, state.map_h):
+				var index: int = tile_pos.y * state.map_w + tile_pos.x
+				if not state.discovered.has(index):
+					state.discovered[index] = true
+					newly_discovered += 1
+					# Ensure terrain is generated for newly discovered tiles
+					SimMap.ensure_tile_generated(state, tile_pos)
+	if newly_discovered > 0:
+		_update_grid_renderer()
+
+
+func _init_camera_and_minimap() -> void:
+	# Set up camera with map bounds
+	if camera and grid_renderer:
+		var map_pixel_size := Vector2(
+			state.map_w * grid_renderer.cell_size.x,
+			state.map_h * grid_renderer.cell_size.y
+		)
+		camera.set_map_bounds(grid_renderer.origin, map_pixel_size)
+
+		# Center camera on castle
+		var castle_world_pos: Vector2 = Vector2(grid_renderer.origin) + Vector2(
+			state.base_pos.x * grid_renderer.cell_size.x + grid_renderer.cell_size.x * 0.5,
+			state.base_pos.y * grid_renderer.cell_size.y + grid_renderer.cell_size.y * 0.5
+		)
+		camera.center_on(castle_world_pos, true)
+
+		# Connect camera to grid renderer for viewport culling
+		grid_renderer.set_camera(camera)
+
+	# Set up minimap
+	print("KingdomDefense: minimap=", minimap, " grid_renderer=", grid_renderer)
+	if minimap and grid_renderer:
+		minimap.set_camera(camera)
+		minimap.set_grid_params(grid_renderer.cell_size, grid_renderer.origin)
+		minimap.update_state(state)
+		print("KingdomDefense: minimap configured successfully")
+	else:
+		push_warning("KingdomDefense: minimap or grid_renderer is null!")
 
 
 func _place_starting_towers() -> void:
@@ -1685,8 +1789,12 @@ func _connect_signals() -> void:
 	if menu_button:
 		menu_button.pressed.connect(_on_menu_pressed)
 
-	if dialogue_box:
-		dialogue_box.dialogue_finished.connect(_on_dialogue_finished)
+	# Connect internal dialogue_finished signal
+	dialogue_finished.connect(_on_dialogue_finished)
+
+	# Connect build menu for AoE-style building placement
+	if build_menu:
+		build_menu.building_selected.connect(_on_building_selected_for_placement)
 
 func _process(delta: float) -> void:
 	# Pause game during dialogue
@@ -1714,6 +1822,25 @@ func _process_planning(delta: float) -> void:
 	if tip_timer >= tip_interval:
 		tip_timer = 0.0
 		_show_random_tip()
+
+	# Arrow keys pan camera (direct key check bypasses LineEdit focus)
+	if camera and not Input.is_key_pressed(KEY_CTRL):
+		var pan_dir := Vector2.ZERO
+		if Input.is_key_pressed(KEY_LEFT):
+			pan_dir.x -= 1.0
+		if Input.is_key_pressed(KEY_RIGHT):
+			pan_dir.x += 1.0
+		if Input.is_key_pressed(KEY_UP):
+			pan_dir.y -= 1.0
+		if Input.is_key_pressed(KEY_DOWN):
+			pan_dir.y += 1.0
+		if pan_dir != Vector2.ZERO:
+			var pan_speed: float = 600.0
+			var new_pos: Vector2 = camera.global_position + pan_dir.normalized() * pan_speed * delta
+			# Use instant=true since camera controller's _process is disabled during planning
+			camera.center_on(new_pos, true)
+			# Update grid renderer to properly draw fog in newly visible areas
+			_update_grid_renderer()
 
 func _process_practice(delta: float) -> void:
 	# Practice mode is event-driven via input, not delta-based
@@ -1929,12 +2056,18 @@ func _enemy_reached_castle(enemy_index: int) -> void:
 
 func _start_planning_phase() -> void:
 	current_phase = "planning"
-	planning_timer = 30.0
+	# Disable camera controller's built-in input so we can handle arrow keys manually
+	if camera and camera.has_method("set_input_enabled"):
+		camera.set_input_enabled(false)
+	# Base planning time + research bonus from Time Dilation
+	var base_time: float = 30.0
+	var bonus_time: int = SimUpgrades.get_planning_time_bonus(state)
+	planning_timer = base_time + float(bonus_time)
 	tip_timer = 0.0
 	cursor_grid_pos = state.base_pos + Vector2i(2, 0)
 	state.cursor_pos = cursor_grid_pos
 
-	_update_objective("Build defenses! [color=cyan]Ctrl+Arrows[/color] to move cursor.\n[color=cyan]Tab[/color] for Kingdom Dashboard | Type [color=cyan]ready[/color] to start.")
+	_update_objective("Build defenses! [color=cyan]Click[/color] to select tile, [color=cyan]Arrows[/color] to pan.\n[color=cyan]Tab[/color] for Kingdom Dashboard | Type [color=cyan]ready[/color] to start.")
 	_update_hint("PLANNING: build <type> | upgrade | research | trade | status | ach | ready | Tab=dashboard")
 	_update_grid_renderer()
 
@@ -1950,6 +2083,13 @@ func _start_planning_phase() -> void:
 
 func _start_defense_phase() -> void:
 	current_phase = "defense"
+
+	# Clear any building placement mode
+	_cancel_building_placement()
+
+	# Re-enable camera controller's built-in input for defense phase
+	if camera and camera.has_method("set_input_enabled"):
+		camera.set_input_enabled(true)
 	wave_start_time = Time.get_unix_time_from_system()
 	damage_taken_this_wave = 0
 	gold_earned_this_wave = 0
@@ -2371,16 +2511,15 @@ func _on_campaign_victory() -> void:
 	SimPlayerStats.increment_stat(profile, "campaigns_won", 1)
 	TypingProfile.save_profile(profile)
 
-	# Show victory dialogue if we have dialogue box
-	if dialogue_box:
-		var lines: Array[String] = [
-			"[color=gold]Congratulations, Champion![/color]",
-			"You have defended Keystonia from the Typhos Horde!",
-			"The Void Tyrant has been vanquished, and peace returns to the land.",
-			"Your typing skills have saved the kingdom!",
-			"[color=cyan]Victory Rewards: +%d Gold, +%d XP[/color]" % [victory_gold, victory_xp]
-		]
-		dialogue_box.show_dialogue("Elder Lyra", lines)
+	# Show victory dialogue
+	var lines: Array[String] = [
+		"[color=gold]Congratulations, Champion![/color]",
+		"You have defended Keystonia from the Typhos Horde!",
+		"The Void Tyrant has been vanquished, and peace returns to the land.",
+		"Your typing skills have saved the kingdom!",
+		"[color=cyan]Victory Rewards: +%d Gold, +%d XP[/color]" % [victory_gold, victory_xp]
+	]
+	_show_dialogue_in_panel("Elder Lyra", lines)
 
 	_update_objective("[color=gold]CAMPAIGN COMPLETE![/color] You have saved Keystonia!")
 
@@ -3093,6 +3232,10 @@ func _try_build(building_type: String) -> void:
 	# Update building counts
 	state.buildings[building_type] = int(state.buildings.get(building_type, 0)) + 1
 
+	# Discover area around new building (towers see farther than walls)
+	var discover_radius: int = 3 if building_type.contains("tower") or building_type.contains("auto_") else 1
+	_discover_around(cursor_grid_pos, discover_radius)
+
 	# Play build sound
 	if audio_manager:
 		audio_manager.play_ui_confirm()
@@ -3282,20 +3425,20 @@ func _update_ui() -> void:
 	else:
 		phase_label.add_theme_color_override("font_color", Color(0.9, 0.5, 0.4))
 
-	# Stats bar
-	wpm_label.text = "WPM: %d" % int(_get_wpm())
-	accuracy_label.text = "Accuracy: %d%%" % int(_get_accuracy() * 100)
+	# Stats bar (values only - titles are separate labels)
+	wpm_label.text = "%d" % int(_get_wpm())
+	accuracy_label.text = "%d%%" % int(_get_accuracy() * 100)
 
 	# Combo with tier display
-	var combo_display: String = SimCombo.format_combo_display(combo)
-	if combo_display.is_empty():
-		combo_label.text = "Combo: %d" % combo
+	var combo_tier: String = SimCombo.get_tier_name(combo)
+	if combo_tier.is_empty():
+		combo_label.text = "%d" % combo
 		combo_label.add_theme_color_override("font_color", Color.WHITE)
 	else:
-		combo_label.text = combo_display
+		combo_label.text = "%d (%s)" % [combo, combo_tier]
 		combo_label.add_theme_color_override("font_color", SimCombo.get_tier_color(combo))
 
-	power_label.text = "Power: %.1fx" % _calculate_power()
+	power_label.text = "%.1fx" % _calculate_power()
 
 	# Word display
 	if current_phase == "defense" and not current_word.is_empty():
@@ -3419,7 +3562,9 @@ func _update_objective(text: String) -> void:
 	objective_label.text = "[b]OBJECTIVE[/b]\n%s" % text
 
 func _update_hint(text: String) -> void:
-	hint_label.text = text
+	# Command hints now displayed via tip_label since we have a visual build menu
+	if tip_label:
+		tip_label.text = text
 
 func _update_grid_renderer() -> void:
 	if grid_renderer and grid_renderer.has_method("update_state"):
@@ -3433,7 +3578,65 @@ func _update_grid_renderer() -> void:
 		if grid_renderer.has_method("set_enemy_highlights"):
 			grid_renderer.set_enemy_highlights(highlights, target_enemy_id)
 
+	# Update minimap
+	if minimap and minimap.has_method("update_state"):
+		minimap.update_state(state)
+
 func _input(event: InputEvent) -> void:
+	# Handle Escape to cancel building placement first (before dialogue)
+	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
+		if current_phase == "planning" and not placement_building.is_empty():
+			_cancel_building_placement()
+			get_viewport().set_input_as_handled()
+			return
+
+	# Handle dialogue advancement
+	if is_dialogue_active and event is InputEventKey and event.pressed:
+		if event.keycode == KEY_ENTER or event.keycode == KEY_SPACE:
+			_advance_dialogue()
+			get_viewport().set_input_as_handled()
+			return
+		elif event.keycode == KEY_ESCAPE:
+			_finish_dialogue()
+			get_viewport().set_input_as_handled()
+			return
+
+	# Handle right-click to cancel building placement
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT:
+		if current_phase == "planning" and event.pressed and not placement_building.is_empty():
+			_cancel_building_placement()
+			get_viewport().set_input_as_handled()
+			return
+
+	# Handle mouse click to select grid tile (during planning phase)
+	# Only process if click is not on a GUI control (let buttons handle their own clicks)
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if current_phase == "planning":
+			# Check if click is on a GUI control - if so, let the GUI handle it
+			var gui_control = get_viewport().gui_get_hovered_control()
+			if gui_control != null and gui_control != grid_renderer:
+				# Click is on a GUI element (like build menu button), don't intercept
+				return
+
+			if event.pressed:
+				# Track click start for drag detection
+				_click_start_pos = event.position
+				_click_start_camera_pos = camera.global_position if camera else Vector2.ZERO
+			else:
+				# On release, check if this was a click (not a drag)
+				var mouse_moved: float = event.position.distance_to(_click_start_pos)
+				var camera_moved: float = 0.0
+				if camera:
+					camera_moved = camera.global_position.distance_to(_click_start_camera_pos)
+
+				# If mouse moved less than 5 pixels and camera didn't move, it's a click
+				if mouse_moved < 5.0 and camera_moved < 5.0:
+					_handle_grid_click(event.position)
+
+	# Handle mouse motion to update cursor preview position during building placement
+	if event is InputEventMouseMotion and current_phase == "planning" and not placement_building.is_empty():
+		_update_cursor_from_mouse()
+
 	if event is InputEventKey and event.pressed:
 		# F1 key toggles settings panel
 		if event.keycode == KEY_F1:
@@ -3449,7 +3652,8 @@ func _input(event: InputEvent) -> void:
 
 		# Handle planning phase input
 		if current_phase == "planning":
-			# Use Ctrl+Arrow keys for grid cursor movement (doesn't conflict with typing)
+			# Ctrl+Arrow keys for alternative keyboard-only cursor movement
+			# (Primary method is mouse click, but Ctrl+Arrows preserved for accessibility)
 			var moved: bool = false
 
 			if event.ctrl_pressed:
@@ -3472,17 +3676,69 @@ func _input(event: InputEvent) -> void:
 				_update_grid_renderer()
 				get_viewport().set_input_as_handled()
 
+
+## Handle mouse click on the grid to select a tile or place building
+func _handle_grid_click(_screen_pos: Vector2) -> void:
+	if not grid_renderer or not camera:
+		return
+
+	# Get mouse position in grid_renderer's local coordinate space
+	# This automatically accounts for camera position and zoom
+	var local_pos: Vector2 = grid_renderer.get_local_mouse_position()
+
+	# Convert to grid coordinates
+	var grid_x: int = int((local_pos.x - grid_renderer.origin.x) / grid_renderer.cell_size.x)
+	var grid_y: int = int((local_pos.y - grid_renderer.origin.y) / grid_renderer.cell_size.y)
+
+	# Check bounds
+	if grid_x < 0 or grid_x >= state.map_w or grid_y < 0 or grid_y >= state.map_h:
+		return
+
+	# Check if tile is discovered (can only click on visible tiles)
+	var index: int = grid_y * state.map_w + grid_x
+	if not state.discovered.get(index, false):
+		return
+
+	# Update cursor position
+	cursor_grid_pos = Vector2i(grid_x, grid_y)
+	state.cursor_pos = cursor_grid_pos
+	_update_grid_renderer()
+
+	# If in building placement mode, try to place the building
+	if not placement_building.is_empty():
+		_place_selected_building()
+
+
+## Update cursor position from mouse position (for building preview during placement)
+func _update_cursor_from_mouse() -> void:
+	if not grid_renderer or not camera:
+		return
+
+	# Get mouse position in grid_renderer's local coordinate space
+	var local_pos: Vector2 = grid_renderer.get_local_mouse_position()
+
+	# Convert to grid coordinates
+	var grid_x: int = int((local_pos.x - grid_renderer.origin.x) / grid_renderer.cell_size.x)
+	var grid_y: int = int((local_pos.y - grid_renderer.origin.y) / grid_renderer.cell_size.y)
+
+	# Check bounds
+	if grid_x < 0 or grid_x >= state.map_w or grid_y < 0 or grid_y >= state.map_h:
+		return
+
+	# Only update if position changed
+	var new_pos := Vector2i(grid_x, grid_y)
+	if new_pos != cursor_grid_pos:
+		cursor_grid_pos = new_pos
+		state.cursor_pos = cursor_grid_pos
+		_update_grid_renderer()
+
+
 func _on_menu_pressed() -> void:
 	if game_controller:
 		game_controller.go_to_menu()
 
 # Story dialogue functions
 func _show_game_start_dialogue() -> void:
-	if not dialogue_box:
-		game_started = true
-		_start_key_practice(state.lesson_id)
-		return
-
 	var speaker: String = StoryManager.get_dialogue_speaker("game_start")
 	var lines: Array[String] = StoryManager.get_dialogue_lines("game_start")
 
@@ -3492,12 +3748,9 @@ func _show_game_start_dialogue() -> void:
 		return
 
 	waiting_for_dialogue = true
-	dialogue_box.show_dialogue(speaker, lines)
+	_show_dialogue_in_panel(speaker, lines)
 
 func _show_act_intro() -> void:
-	if not dialogue_box:
-		return
-
 	if not StoryManager.should_show_act_intro(day, last_act_intro_day):
 		return
 
@@ -3514,12 +3767,9 @@ func _show_act_intro() -> void:
 
 	var lines: Array[String] = [intro_text]
 	waiting_for_dialogue = true
-	dialogue_box.show_dialogue(speaker, lines)
+	_show_dialogue_in_panel(speaker, lines)
 
 func _show_boss_intro() -> void:
-	if not dialogue_box:
-		return
-
 	var boss: Dictionary = StoryManager.get_boss_for_day(day)
 	if boss.is_empty():
 		return
@@ -3538,12 +3788,9 @@ func _show_boss_intro() -> void:
 		return
 
 	waiting_for_dialogue = true
-	dialogue_box.show_dialogue("", lines)
+	_show_dialogue_in_panel("", lines)
 
 func _show_boss_defeat() -> void:
-	if not dialogue_box:
-		return
-
 	var boss: Dictionary = StoryManager.get_boss_for_day(day)
 	if boss.is_empty():
 		return
@@ -3561,7 +3808,270 @@ func _show_boss_defeat() -> void:
 	lines.append_array(victory_lines)
 
 	waiting_for_dialogue = true
-	dialogue_box.show_dialogue(speaker, lines)
+	_show_dialogue_in_panel(speaker, lines)
+
+## Show dialogue in the LeftPanel (replaces old DialogueBox overlay)
+func _show_dialogue_in_panel(speaker: String, lines: Array[String]) -> void:
+	if lines.is_empty():
+		return
+
+	dialogue_lines = lines
+	dialogue_line_index = 0
+	is_dialogue_active = true
+
+	if dialogue_speaker:
+		dialogue_speaker.text = speaker
+		dialogue_speaker.visible = not speaker.is_empty()
+
+	# Update portrait
+	_update_dialogue_portrait(speaker)
+
+	_show_current_dialogue_line()
+
+	if continue_hint:
+		continue_hint.text = "Press [Enter] to continue..."
+		continue_hint.visible = true
+
+func _update_dialogue_portrait(speaker: String) -> void:
+	if not dialogue_portrait:
+		return
+
+	var texture: Texture2D = null
+
+	# Try asset loader first
+	var asset_loader = get_node_or_null("/root/AssetLoader")
+	if asset_loader != null:
+		texture = asset_loader.get_portrait_texture(speaker)
+
+	# Fallback: create procedural portrait for Elder Lyra
+	if texture == null and speaker.to_lower().contains("lyra"):
+		texture = _create_lyra_portrait()
+
+	if texture:
+		dialogue_portrait.texture = texture
+		dialogue_portrait.visible = true
+	else:
+		dialogue_portrait.texture = null
+		dialogue_portrait.visible = false
+
+func _create_lyra_portrait() -> ImageTexture:
+	## Creates Elder Lyra's portrait procedurally (64x64 pixel art with frame)
+	var img := Image.create(64, 64, false, Image.FORMAT_RGBA8)
+
+	# Frame colors
+	var frame_outer := Color("#1a1a2e")
+	var frame_gold := Color("#d4ac0d")
+	var frame_gold_light := Color("#f4d03f")
+	var frame_gold_dark := Color("#9a7b0a")
+	var frame_inner := Color("#2c1810")
+
+	# Background colors
+	var bg_dark := Color("#1a0a2e")
+	var bg_mid := Color("#201535")
+	var bg_accent := Color("#352350")
+	var bg_glow1 := Color("#402a5a")
+	var bg_glow2 := Color("#4a3570")
+	var bg_glow3 := Color("#5a4580")
+
+	# Hair colors
+	var hair_shadow := Color("#5a6575")
+	var hair_base := Color("#6a7585")
+	var hair_dark := Color("#7a8595")
+	var hair_mid := Color("#8a95a5")
+	var hair_light := Color("#9aa5b5")
+	var hair_lighter := Color("#aab5c5")
+	var hair_shine := Color("#e8f0f8")
+
+	# Skin colors
+	var skin_shadow := Color("#ddd0c5")
+	var skin_base := Color("#e5d5c5")
+	var skin_contour := Color("#e8dcd0")
+	var skin := Color("#f5e8db")
+	var skin_soft := Color("#f0e3d5")
+	var skin_highlight := Color("#faf3eb")
+
+	# Eye colors
+	var eye_white := Color("#fafafa")
+	var eyelid := Color("#8878a0")
+	var eyelid_lower := Color("#a098b0")
+	var lash := Color("#504860")
+	var iris_deepest := Color("#5b2878")
+	var iris_outer := Color("#7b3898")
+	var iris_mid := Color("#9548b8")
+	var iris_shine := Color("#c8a0d8")
+	var pupil := Color("#1a1525")
+
+	# Lip colors
+	var lip_upper := Color("#c08888")
+	var lip := Color("#d8a0a0")
+	var lip_highlight := Color("#f0d0d0")
+
+	# Robe colors
+	var robe_dark := Color("#4a2058")
+	var robe_mid := Color("#6a3078")
+	var robe_light := Color("#7a3888")
+	var trim := Color("#d4ac0d")
+	var trim_light := Color("#f4d03f")
+
+	# Magic colors
+	var magic := Color("#9a48a8")
+	var magic_light := Color("#d8c0e8")
+
+	# === OUTER FRAME ===
+	img.fill(frame_outer)
+	_fill_rect_portrait(img, 1, 1, 62, 62, frame_gold_dark)
+	_fill_rect_portrait(img, 2, 2, 60, 60, frame_gold)
+	_fill_rect_portrait(img, 3, 3, 58, 58, frame_gold_light)
+	_fill_rect_portrait(img, 4, 4, 56, 56, frame_inner)
+
+	# === BACKGROUND ===
+	_fill_rect_portrait(img, 5, 5, 54, 54, bg_dark)
+	_fill_rect_portrait(img, 5, 5, 54, 30, bg_mid)
+	_fill_rect_portrait(img, 18, 8, 28, 18, bg_accent)
+	_fill_rect_portrait(img, 20, 10, 24, 14, bg_glow1)
+	_fill_rect_portrait(img, 23, 12, 18, 10, bg_glow2)
+	_fill_rect_portrait(img, 27, 14, 10, 6, bg_glow3)
+
+	# === HAIR ===
+	# Left hair
+	_fill_rect_portrait(img, 10, 12, 10, 38, hair_base)
+	_fill_rect_portrait(img, 11, 13, 8, 36, hair_dark)
+	_fill_rect_portrait(img, 12, 14, 6, 34, hair_mid)
+	_fill_rect_portrait(img, 13, 18, 3, 4, hair_light)
+	_fill_rect_portrait(img, 14, 19, 2, 2, hair_lighter)
+	_fill_rect_portrait(img, 10, 17, 2, 1, hair_shine)
+
+	# Right hair
+	_fill_rect_portrait(img, 44, 12, 10, 38, hair_base)
+	_fill_rect_portrait(img, 45, 13, 8, 36, hair_dark)
+	_fill_rect_portrait(img, 46, 14, 6, 34, hair_mid)
+	_fill_rect_portrait(img, 48, 18, 3, 4, hair_light)
+	_fill_rect_portrait(img, 48, 19, 2, 2, hair_lighter)
+	_fill_rect_portrait(img, 52, 17, 2, 1, hair_shine)
+
+	# Top hair
+	_fill_rect_portrait(img, 18, 7, 28, 10, hair_base)
+	_fill_rect_portrait(img, 20, 8, 24, 8, hair_dark)
+	_fill_rect_portrait(img, 22, 9, 20, 6, hair_mid)
+	_fill_rect_portrait(img, 25, 10, 14, 4, hair_light)
+	_fill_rect_portrait(img, 25, 9, 4, 1, hair_shine)
+	_fill_rect_portrait(img, 31, 8, 2, 4, hair_shadow)
+
+	# === FACE ===
+	_fill_rect_portrait(img, 21, 13, 22, 24, skin_base)
+	_fill_rect_portrait(img, 23, 15, 18, 22, skin)
+	_fill_rect_portrait(img, 26, 17, 12, 12, skin_highlight)
+
+	# Cheeks
+	_fill_rect_portrait(img, 23, 24, 2, 6, skin_contour)
+	_fill_rect_portrait(img, 39, 24, 2, 6, skin_contour)
+
+	# Chin
+	_fill_rect_portrait(img, 24, 35, 16, 2, skin_soft)
+	_fill_rect_portrait(img, 26, 37, 12, 2, skin_soft)
+
+	# === EYES ===
+	# Left eye
+	_fill_rect_portrait(img, 24, 22, 7, 5, eye_white)
+	_fill_rect_portrait(img, 25, 22, 5, 5, iris_deepest)
+	_fill_rect_portrait(img, 25, 22, 4, 4, iris_outer)
+	_fill_rect_portrait(img, 26, 23, 3, 3, iris_mid)
+	_fill_rect_portrait(img, 27, 24, 2, 2, pupil)
+	_fill_rect_portrait(img, 25, 22, 2, 1, eye_white)
+	_fill_rect_portrait(img, 25, 23, 1, 2, iris_shine)
+	_fill_rect_portrait(img, 24, 21, 7, 1, eyelid)
+	_fill_rect_portrait(img, 25, 27, 5, 1, eyelid_lower)
+	_fill_rect_portrait(img, 24, 20, 1, 1, lash)
+	_fill_rect_portrait(img, 27, 20, 1, 1, lash)
+	_fill_rect_portrait(img, 30, 20, 1, 1, lash)
+
+	# Right eye
+	_fill_rect_portrait(img, 33, 22, 7, 5, eye_white)
+	_fill_rect_portrait(img, 34, 22, 5, 5, iris_deepest)
+	_fill_rect_portrait(img, 35, 22, 4, 4, iris_outer)
+	_fill_rect_portrait(img, 35, 23, 3, 3, iris_mid)
+	_fill_rect_portrait(img, 36, 24, 2, 2, pupil)
+	_fill_rect_portrait(img, 37, 22, 2, 1, eye_white)
+	_fill_rect_portrait(img, 38, 23, 1, 2, iris_shine)
+	_fill_rect_portrait(img, 33, 21, 7, 1, eyelid)
+	_fill_rect_portrait(img, 34, 27, 5, 1, eyelid_lower)
+	_fill_rect_portrait(img, 33, 20, 1, 1, lash)
+	_fill_rect_portrait(img, 36, 20, 1, 1, lash)
+	_fill_rect_portrait(img, 39, 20, 1, 1, lash)
+
+	# === NOSE ===
+	_fill_rect_portrait(img, 31, 27, 2, 4, skin_soft)
+	_fill_rect_portrait(img, 30, 31, 4, 1, skin)
+	_fill_rect_portrait(img, 30, 32, 1, 1, skin_shadow)
+	_fill_rect_portrait(img, 33, 32, 1, 1, skin_shadow)
+
+	# === LIPS ===
+	_fill_rect_portrait(img, 29, 33, 6, 1, lip_upper)
+	_fill_rect_portrait(img, 30, 33, 4, 1, lip)
+	_fill_rect_portrait(img, 29, 34, 6, 1, lip)
+	_fill_rect_portrait(img, 31, 34, 2, 1, lip_highlight)
+
+	# === ROBE ===
+	_fill_rect_portrait(img, 12, 44, 40, 16, robe_dark)
+	_fill_rect_portrait(img, 16, 46, 32, 12, robe_mid)
+	_fill_rect_portrait(img, 20, 48, 24, 8, robe_light)
+
+	# Collar trim
+	_fill_rect_portrait(img, 24, 44, 2, 5, trim)
+	_fill_rect_portrait(img, 38, 44, 2, 5, trim)
+	_fill_rect_portrait(img, 25, 44, 1, 1, trim_light)
+	_fill_rect_portrait(img, 38, 44, 1, 1, trim_light)
+
+	# === SPARKLES ===
+	_fill_rect_portrait(img, 7, 8, 2, 2, magic)
+	_fill_rect_portrait(img, 8, 9, 1, 1, magic_light)
+	_fill_rect_portrait(img, 55, 9, 2, 2, magic)
+	_fill_rect_portrait(img, 56, 10, 1, 1, magic_light)
+
+	return ImageTexture.create_from_image(img)
+
+func _fill_rect_portrait(img: Image, x: int, y: int, w: int, h: int, color: Color) -> void:
+	for px in range(x, mini(x + w, img.get_width())):
+		for py in range(y, mini(y + h, img.get_height())):
+			if px >= 0 and py >= 0:
+				img.set_pixel(px, py, color)
+
+func _show_current_dialogue_line() -> void:
+	if dialogue_line_index >= dialogue_lines.size():
+		_finish_dialogue()
+		return
+
+	var line: String = dialogue_lines[dialogue_line_index]
+	if dialogue_text_label:
+		dialogue_text_label.text = line
+
+func _advance_dialogue() -> void:
+	if not is_dialogue_active:
+		return
+
+	dialogue_line_index += 1
+	if dialogue_line_index >= dialogue_lines.size():
+		_finish_dialogue()
+	else:
+		_show_current_dialogue_line()
+
+func _finish_dialogue() -> void:
+	is_dialogue_active = false
+	dialogue_lines.clear()
+	dialogue_line_index = 0
+
+	# Clear the panel text and portrait
+	if dialogue_portrait:
+		dialogue_portrait.visible = false
+	if dialogue_speaker:
+		dialogue_speaker.text = ""
+	if dialogue_text_label:
+		dialogue_text_label.text = ""
+	if continue_hint:
+		continue_hint.text = ""
+		continue_hint.visible = false
+
+	dialogue_finished.emit()
 
 func _on_dialogue_finished() -> void:
 	waiting_for_dialogue = false
@@ -3695,11 +4205,6 @@ func _show_contextual_defense_tip() -> void:
 		tip_notification.show_tip_for_context(context)
 
 func _show_lesson_intro(lesson_id: String) -> void:
-	if not dialogue_box:
-		# No dialogue box - go straight to practice
-		_start_key_practice(lesson_id)
-		return
-
 	var lines: Array[String] = StoryManager.get_lesson_intro_lines(lesson_id)
 	if lines.is_empty():
 		# No intro lines - go straight to practice
@@ -3723,12 +4228,9 @@ func _show_lesson_intro(lesson_id: String) -> void:
 	pending_practice_lesson = lesson_id
 
 	waiting_for_dialogue = true
-	dialogue_box.show_dialogue(speaker, lines)
+	_show_dialogue_in_panel(speaker, lines)
 
 func _show_wave_feedback() -> void:
-	if not dialogue_box:
-		return
-
 	var accuracy_pct: float = _get_accuracy() * 100.0
 	var wpm: float = _get_wpm()
 
@@ -3777,7 +4279,7 @@ func _show_wave_feedback() -> void:
 		feedback_lines.append("[color=cyan]Tip: " + tip + "[/color]")
 
 	waiting_for_dialogue = true
-	dialogue_box.show_dialogue("Elder Lyra", feedback_lines)
+	_show_dialogue_in_panel("Elder Lyra", feedback_lines)
 
 func _check_lesson_progression() -> void:
 	var old_lesson: String = previous_lesson_id
@@ -3839,9 +4341,9 @@ func _update_practice_ui() -> void:
 		else:
 			finger_hint_label.text = "Press the highlighted key"
 
-	# Update hint label with progress
-	if hint_label:
-		hint_label.text = "KEY PRACTICE: %s - Press each key as it's highlighted" % progress
+	# Update tip label with progress
+	if tip_label:
+		tip_label.text = "KEY PRACTICE: %s - Press each key as it's highlighted" % progress
 
 	# Update objective
 	if objective_label:
@@ -3910,11 +4412,8 @@ func _complete_key_practice() -> void:
 
 	lines.append("Now let's put your new skills to the test in battle!")
 
-	if dialogue_box:
-		waiting_for_dialogue = true
-		dialogue_box.show_dialogue("Elder Lyra", lines)
-	else:
-		_start_planning_phase()
+	waiting_for_dialogue = true
+	_show_dialogue_in_panel("Elder Lyra", lines)
 
 func _skip_practice() -> void:
 	practice_mode = false
@@ -5777,10 +6276,10 @@ func _check_act_completion(completed_day: int) -> void:
 			TypingProfile.save_profile(profile)
 
 	# Show completion dialogue
-	if dialogue_box and not completion_text.is_empty():
+	if not completion_text.is_empty():
 		var lines: Array[String] = []
 		lines.append("[color=lime]Act Complete: %s[/color]" % act_name)
 		lines.append(completion_text)
 		if not reward.is_empty():
 			lines.append("[color=yellow]Reward: %s[/color]" % reward)
-		dialogue_box.show_dialogue("Elder Lyra", lines)
+		_show_dialogue_in_panel("Elder Lyra", lines)

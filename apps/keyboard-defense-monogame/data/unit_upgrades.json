@@ -1,0 +1,207 @@
+{
+  "version": 1,
+  "upgrades": [
+    {
+      "id": "archer-volley",
+      "label": "Archer Volley",
+      "tier": 1,
+      "cost": 16,
+      "description": "Boosts tower volley strength.",
+      "effects": {
+        "typing_power": 0.1
+      }
+    },
+    {
+      "id": "shield-smith",
+      "label": "Shield Smith",
+      "tier": 1,
+      "cost": 22,
+      "description": "Adds resilience when errors occur.",
+      "effects": {
+        "castle_health_bonus": 1
+      }
+    },
+    {
+      "id": "rune-engine",
+      "label": "Rune Engine",
+      "tier": 1,
+      "cost": 28,
+      "description": "Typing rhythm slows enemy pressure.",
+      "effects": {
+        "threat_rate_multiplier": -0.08
+      }
+    },
+    {
+      "id": "scout-network",
+      "label": "Scout Network",
+      "tier": 1,
+      "cost": 20,
+      "description": "Scouts reveal enemy weaknesses.",
+      "effects": {
+        "enemy_armor_reduction": 1
+      }
+    },
+    {
+      "id": "marksman-training",
+      "label": "Marksman Training",
+      "tier": 2,
+      "cost": 35,
+      "requires": ["archer-volley"],
+      "description": "Precision training increases critical hit chance.",
+      "effects": {
+        "critical_chance": 0.15
+      }
+    },
+    {
+      "id": "fortress-guard",
+      "label": "Fortress Guard",
+      "tier": 2,
+      "cost": 40,
+      "requires": ["shield-smith"],
+      "description": "Elite guards absorb hits for the castle.",
+      "effects": {
+        "castle_health_bonus": 2,
+        "damage_reduction": 0.1
+      }
+    },
+    {
+      "id": "rune-amplifier",
+      "label": "Rune Amplifier",
+      "tier": 2,
+      "cost": 38,
+      "requires": ["rune-engine"],
+      "description": "Amplified runes slow enemies more.",
+      "effects": {
+        "enemy_speed_reduction": 0.15
+      }
+    },
+    {
+      "id": "pathfinder-corps",
+      "label": "Pathfinder Corps",
+      "tier": 2,
+      "cost": 36,
+      "requires": ["scout-network"],
+      "description": "Scouts pierce enemy defenses.",
+      "effects": {
+        "armor_pierce": 1
+      }
+    },
+    {
+      "id": "legendary-archers",
+      "label": "Legendary Archers",
+      "tier": 3,
+      "cost": 70,
+      "requires": ["marksman-training"],
+      "description": "Legendary marksmen deal massive damage.",
+      "effects": {
+        "typing_power": 0.25,
+        "critical_chance": 0.2
+      }
+    },
+    {
+      "id": "impenetrable-defense",
+      "label": "Impenetrable Defense",
+      "tier": 3,
+      "cost": 75,
+      "requires": ["fortress-guard"],
+      "description": "Unbreakable defense protects against all threats.",
+      "effects": {
+        "castle_health_bonus": 3,
+        "damage_reduction": 0.25
+      }
+    },
+    {
+      "id": "rune-mastery",
+      "label": "Rune Mastery",
+      "tier": 3,
+      "cost": 72,
+      "requires": ["rune-amplifier"],
+      "description": "Master runes freeze enemies in place.",
+      "effects": {
+        "enemy_speed_reduction": 0.25,
+        "threat_rate_multiplier": -0.2
+      }
+    },
+    {
+      "id": "shadowblade-elite",
+      "label": "Shadowblade Elite",
+      "tier": 3,
+      "cost": 68,
+      "requires": ["pathfinder-corps"],
+      "description": "Elite agents bypass all armor.",
+      "effects": {
+        "armor_pierce": 2,
+        "critical_chance": 0.1
+      }
+    },
+    {
+      "id": "supply-corps",
+      "label": "Supply Corps",
+      "tier": 1,
+      "cost": 18,
+      "description": "Organized supply lines boost resource gathering.",
+      "effects": {
+        "resource_multiplier": 0.08
+      }
+    },
+    {
+      "id": "war-drummers",
+      "label": "War Drummers",
+      "tier": 1,
+      "cost": 24,
+      "description": "Battle drums inspire faster typing.",
+      "effects": {
+        "mistake_forgiveness": 0.08
+      }
+    },
+    {
+      "id": "quartermaster",
+      "label": "Quartermaster",
+      "tier": 2,
+      "cost": 34,
+      "requires": ["supply-corps"],
+      "description": "Expert logistics increase all gains.",
+      "effects": {
+        "resource_multiplier": 0.12,
+        "gold_multiplier": 0.1
+      }
+    },
+    {
+      "id": "battle-medics",
+      "label": "Battle Medics",
+      "tier": 2,
+      "cost": 42,
+      "requires": ["war-drummers"],
+      "description": "Medics heal the castle after each wave.",
+      "effects": {
+        "wave_heal": 1,
+        "mistake_forgiveness": 0.1
+      }
+    },
+    {
+      "id": "grand-logistics",
+      "label": "Grand Logistics",
+      "tier": 3,
+      "cost": 78,
+      "requires": ["quartermaster"],
+      "description": "Supreme organization maximizes all resources.",
+      "effects": {
+        "resource_multiplier": 0.2,
+        "gold_multiplier": 0.2,
+        "gold_income": 3
+      }
+    },
+    {
+      "id": "field-hospital",
+      "label": "Field Hospital",
+      "tier": 3,
+      "cost": 80,
+      "requires": ["battle-medics"],
+      "description": "Full medical corps ensures maximum recovery.",
+      "effects": {
+        "wave_heal": 3,
+        "castle_health_bonus": 2
+      }
+    }
+  ]
+}

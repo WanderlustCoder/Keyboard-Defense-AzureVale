@@ -1,0 +1,175 @@
+{
+  "version": 1,
+  "quality_bonuses": {
+    "perfect_kill_bonus": 1.0,
+    "no_mistake_bonus": 0.25,
+    "combo_tier_bonus": 0.05
+  },
+  "enemy_drops": {
+    "raider": {
+      "guaranteed": {"gold": 2},
+      "drops": [
+        {"resource": "wood", "amount": 3, "chance": 0.3},
+        {"resource": "food", "amount": 2, "chance": 0.2}
+      ],
+      "perfect_bonus": {"gold": 2}
+    },
+    "scout": {
+      "guaranteed": {"gold": 1},
+      "drops": [
+        {"resource": "food", "amount": 3, "chance": 0.4}
+      ],
+      "perfect_bonus": {"food": 2}
+    },
+    "armored": {
+      "guaranteed": {"gold": 3},
+      "drops": [
+        {"resource": "stone", "amount": 5, "chance": 0.5},
+        {"resource": "wood", "amount": 3, "chance": 0.3}
+      ],
+      "perfect_bonus": {"stone": 3, "gold": 2}
+    },
+    "tank": {
+      "guaranteed": {"gold": 4, "stone": 2},
+      "drops": [
+        {"resource": "stone", "amount": 8, "chance": 0.6}
+      ],
+      "perfect_bonus": {"stone": 5, "gold": 3}
+    },
+    "berserker": {
+      "guaranteed": {"gold": 3},
+      "drops": [
+        {"resource": "wood", "amount": 5, "chance": 0.4},
+        {"resource": "food", "amount": 4, "chance": 0.3}
+      ],
+      "perfect_bonus": {"gold": 3, "wood": 3}
+    },
+    "swarm": {
+      "guaranteed": {},
+      "drops": [
+        {"resource": "food", "amount": 2, "chance": 0.5}
+      ],
+      "perfect_bonus": {"food": 1}
+    },
+    "phantom": {
+      "guaranteed": {"gold": 3},
+      "drops": [
+        {"resource": "gold", "amount": 5, "chance": 0.3}
+      ],
+      "perfect_bonus": {"gold": 4}
+    },
+    "champion": {
+      "guaranteed": {"gold": 5},
+      "drops": [
+        {"resource": "wood", "amount": 5, "chance": 0.4},
+        {"resource": "stone", "amount": 5, "chance": 0.4},
+        {"resource": "food", "amount": 5, "chance": 0.4}
+      ],
+      "perfect_bonus": {"gold": 5, "wood": 3, "stone": 3}
+    },
+    "healer": {
+      "guaranteed": {"gold": 4},
+      "drops": [
+        {"resource": "food", "amount": 8, "chance": 0.6}
+      ],
+      "perfect_bonus": {"food": 5, "gold": 2}
+    },
+    "elite": {
+      "guaranteed": {"gold": 6},
+      "drops": [
+        {"resource": "wood", "amount": 8, "chance": 0.5},
+        {"resource": "stone", "amount": 8, "chance": 0.5},
+        {"resource": "food", "amount": 8, "chance": 0.5}
+      ],
+      "perfect_bonus": {"gold": 8, "wood": 5, "stone": 5}
+    },
+    "grunt": {
+      "guaranteed": {"gold": 1},
+      "drops": [
+        {"resource": "wood", "amount": 2, "chance": 0.25},
+        {"resource": "food", "amount": 1, "chance": 0.2}
+      ],
+      "perfect_bonus": {"gold": 1}
+    },
+    "archer": {
+      "guaranteed": {"gold": 2},
+      "drops": [
+        {"resource": "wood", "amount": 4, "chance": 0.4}
+      ],
+      "perfect_bonus": {"wood": 3, "gold": 1}
+    },
+    "specter": {
+      "guaranteed": {"gold": 4},
+      "drops": [
+        {"resource": "gold", "amount": 4, "chance": 0.4}
+      ],
+      "perfect_bonus": {"gold": 5}
+    },
+    "brute": {
+      "guaranteed": {"gold": 3, "stone": 1},
+      "drops": [
+        {"resource": "stone", "amount": 6, "chance": 0.5}
+      ],
+      "perfect_bonus": {"stone": 4, "gold": 2}
+    }
+  },
+  "boss_drops": {
+    "forest_guardian": {
+      "guaranteed": {"gold": 25, "wood": 30, "food": 20},
+      "drops": [
+        {"resource": "wood", "amount": 20, "chance": 1.0}
+      ],
+      "perfect_bonus": {"gold": 15, "wood": 25}
+    },
+    "stone_golem": {
+      "guaranteed": {"gold": 40, "stone": 50},
+      "drops": [
+        {"resource": "stone", "amount": 30, "chance": 1.0}
+      ],
+      "perfect_bonus": {"gold": 25, "stone": 35}
+    },
+    "fen_seer": {
+      "guaranteed": {"gold": 55, "food": 40},
+      "drops": [
+        {"resource": "gold", "amount": 20, "chance": 1.0}
+      ],
+      "perfect_bonus": {"gold": 40, "food": 25}
+    },
+    "sunlord": {
+      "guaranteed": {"gold": 75, "wood": 30, "stone": 30, "food": 30},
+      "drops": [
+        {"resource": "gold", "amount": 50, "chance": 1.0}
+      ],
+      "perfect_bonus": {"gold": 50, "wood": 20, "stone": 20, "food": 20}
+    },
+    "titan": {
+      "guaranteed": {"gold": 60, "stone": 40},
+      "drops": [
+        {"resource": "stone", "amount": 25, "chance": 1.0},
+        {"resource": "gold", "amount": 15, "chance": 0.8}
+      ],
+      "perfect_bonus": {"gold": 35, "stone": 30}
+    },
+    "dragon": {
+      "guaranteed": {"gold": 100, "wood": 40, "stone": 40, "food": 40},
+      "drops": [
+        {"resource": "gold", "amount": 50, "chance": 1.0}
+      ],
+      "perfect_bonus": {"gold": 75, "wood": 25, "stone": 25, "food": 25}
+    },
+    "hydra": {
+      "guaranteed": {"gold": 80, "food": 60},
+      "drops": [
+        {"resource": "food", "amount": 40, "chance": 1.0}
+      ],
+      "perfect_bonus": {"gold": 50, "food": 40}
+    },
+    "warlord": {
+      "guaranteed": {"gold": 70, "wood": 35, "stone": 35},
+      "drops": [
+        {"resource": "gold", "amount": 30, "chance": 1.0}
+      ],
+      "perfect_bonus": {"gold": 45, "wood": 20, "stone": 20}
+    }
+  }
+}

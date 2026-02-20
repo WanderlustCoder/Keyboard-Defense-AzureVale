@@ -221,7 +221,8 @@ static func _apply_build(state: GameState, intent: Dictionary, events: Array[Str
     if SimMap.get_terrain(state, pos) == SimMap.TERRAIN_WATER:
         events.append("Cannot build on water.")
         return
-    var cost: Dictionary = SimBuildings.cost_for(building_type)
+    var base_cost: Dictionary = SimBuildings.cost_for(building_type)
+    var cost: Dictionary = _apply_research_cost_reductions(state, base_cost)
     if not _has_resources(state, cost):
         events.append("Not enough resources to build %s." % building_type)
         return
@@ -401,7 +402,11 @@ static func _advance_night_step(state: GameState, hit_enemy_index: int, apply_mi
 
     if state.night_spawn_remaining <= 0 and state.enemies.is_empty():
         state.phase = "day"
-        state.ap = state.ap_max
+        # Apply build limit bonus from Architecture research as extra AP
+        var build_bonus: int = SimUpgrades.get_build_limit_bonus(state)
+        state.ap = state.ap_max + build_bonus
+        if build_bonus > 0:
+            events.append("Architecture grants +%d AP." % build_bonus)
         state.night_prompt = ""
         state.night_wave_total = 0
         state.threat = max(0, state.threat - 1)
@@ -424,7 +429,7 @@ static func _advance_night_step(state: GameState, hit_enemy_index: int, apply_mi
         if research_result.completed:
             var research_label: String = research.get_research(research_result.research_id).get("label", research_result.research_id)
             events.append("Research complete: %s!" % research_label)
-            # TODO: Apply research effects to gameplay
+            # Research effects automatically apply via SimUpgrades.get_total_effect()
         elif not state.active_research.is_empty():
             var summary: Dictionary = research.get_research_summary(state)
             events.append("Research progress: %s (%d/%d)" % [summary.active_label, summary.progress, summary.waves_needed])
@@ -455,12 +460,24 @@ static func _apply_player_attack_target(state: GameState, target_index: int, hit
 
     # Critical hit check
     var is_crit: bool = false
+    var is_perfect_crit: bool = false
     var crit_chance: float = SimUpgrades.get_critical_chance(state)
-    if crit_chance > 0.0:
+
+    # Check if word was typed perfectly (no errors)
+    var was_perfect: bool = int(state.typing_metrics.get("current_word_errors", 0)) == 0
+
+    # Perfect word crit from Word Mastery research
+    if was_perfect and SimUpgrades.has_perfect_word_crit(state):
+        is_crit = true
+        is_perfect_crit = true
+    elif crit_chance > 0.0:
         var roll: float = float(SimRng.roll_range(state, 1, 100)) / 100.0
         if roll <= crit_chance:
             is_crit = true
-            damage = damage * 2
+
+    if is_crit:
+        var crit_damage_bonus: float = 1.0 + SimUpgrades.get_critical_damage(state)
+        damage = int(float(damage) * (1.0 + crit_damage_bonus))
 
     # Apply armor reduction and pierce from upgrades
     var enemy_armor: int = SimEnemies.get_effective_armor(enemy)  # Uses status effects
@@ -476,7 +493,11 @@ static func _apply_player_attack_target(state: GameState, target_index: int, hit
     state.enemies[target_index] = enemy
     var enemy_word: String = str(enemy.get("word", ""))
     var word_text: String = hit_word if hit_word != "" else enemy_word
-    var crit_text: String = " CRITICAL!" if is_crit else ""
+    var crit_text: String = ""
+    if is_perfect_crit:
+        crit_text = " PERFECT CRITICAL!"
+    elif is_crit:
+        crit_text = " CRITICAL!"
     events.append("Hit %s#%d word=%s dmg=%d.%s" % [enemy_kind, enemy_id, word_text, effective_damage, crit_text])
 
     # NEW ABILITY SYSTEM: Handle ON_DAMAGE triggers
@@ -611,6 +632,9 @@ static func _enemy_move_step(state: GameState, dist_field: PackedInt32Array, eve
     var offsets: Array[Vector2i] = [Vector2i(0, -1), Vector2i(1, 0), Vector2i(0, 1), Vector2i(-1, 0)]
     var speed_reduction: float = SimUpgrades.get_enemy_speed_reduction(state)
     var damage_reduction: float = SimUpgrades.get_damage_reduction(state)
+    # Wall defense bonus from research adds 5% block chance per point
+    damage_reduction += float(SimUpgrades.get_wall_defense_bonus(state)) * 0.05
+    damage_reduction = clampf(damage_reduction, 0.0, 0.75)  # Cap at 75%
     for enemy_id in ids:
         var enemy_index: int = _find_enemy_index(state.enemies, enemy_id)
         if enemy_index < 0:
@@ -1212,7 +1236,8 @@ static func _apply_upgrade(state: GameState, intent: Dictionary, events: Array[S
     if level >= max_level:
         events.append("Tower is already max level.")
         return
-    var cost: Dictionary = SimBuildings.upgrade_cost_for(level)
+    var base_cost: Dictionary = SimBuildings.upgrade_cost_for(level)
+    var cost: Dictionary = _apply_research_cost_reductions(state, base_cost)
     if not _has_resources(state, cost):
         events.append("Not enough resources to upgrade tower.")
         return
@@ -1617,6 +1642,21 @@ static func _has_resources(state: GameState, cost: Dictionary) -> bool:
 static func _apply_cost(state: GameState, cost: Dictionary) -> void:
     for key in cost.keys():
         state.resources[key] = int(state.resources.get(key, 0)) - int(cost[key])
+
+## Apply research cost reductions to a building cost dictionary
+static func _apply_research_cost_reductions(state: GameState, base_cost: Dictionary) -> Dictionary:
+    var reduced: Dictionary = base_cost.duplicate(true)
+    var build_reduction: float = SimUpgrades.get_build_cost_reduction(state)
+    var stone_reduction: float = SimUpgrades.get_stone_cost_reduction(state)
+    for key in reduced.keys():
+        var base_value: int = int(reduced[key])
+        var reduction: float = build_reduction
+        # Stone has additional reduction from masonry research
+        if key == "stone":
+            reduction = min(0.5, build_reduction + stone_reduction)
+        var reduced_value: int = max(1, int(float(base_value) * (1.0 - reduction)))
+        reduced[key] = reduced_value
+    return reduced
 
 static func _apply_refund(state: GameState, refund: Dictionary) -> void:
     for key in refund.keys():

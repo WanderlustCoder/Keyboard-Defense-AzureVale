@@ -81,7 +81,7 @@ func _wire_battle_nodes(battle: Control, progression, game_controller) -> void:
 	battle.mistakes_label = battle.get_node("StatusPanel/Content/MistakesLabel")
 	battle.threat_bar = battle.get_node("StatusPanel/Content/ThreatBar")
 	battle.castle_label = battle.get_node("StatusPanel/Content/CastleLabel")
-	battle.bonus_label = battle.get_node("BonusPanel/BonusLabel")
+	battle.bonus_label = battle.get_node("BonusPanel/Content/BonusLabel")
 	battle.result_panel = battle.get_node("ResultPanel")
 	battle.result_label = battle.get_node("ResultPanel/Content/ResultLabel")
 	battle.result_button = battle.get_node("ResultPanel/Content/ResultButton")
@@ -100,7 +100,7 @@ func _assert_hud_state(helper: TestHelper, battle: Control, progression) -> void
 	var mistakes_label := battle.get_node("StatusPanel/Content/MistakesLabel") as Label
 	var threat_bar := battle.get_node("StatusPanel/Content/ThreatBar") as ProgressBar
 	var castle_label := battle.get_node("StatusPanel/Content/CastleLabel") as Label
-	var bonus_label := battle.get_node("BonusPanel/BonusLabel") as Label
+	var bonus_label := battle.get_node("BonusPanel/Content/BonusLabel") as Label
 	var buff_hud := battle.get_node("PlayField/BuffHud") as Control
 
 	helper.assert_true(lesson_label != null, "Lesson label exists")

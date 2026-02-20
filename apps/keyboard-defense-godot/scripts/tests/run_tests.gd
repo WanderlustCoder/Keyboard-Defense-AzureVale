@@ -16,7 +16,9 @@ const TESTS := [
 	"res://scripts/tests/test_map_layout.gd",
 	"res://scripts/tests/test_battle_smoke.gd",
 	"res://scripts/tests/test_battle_autoplay.gd",
-	"res://scripts/tests/test_battle_buffs.gd"
+	"res://scripts/tests/test_battle_buffs.gd",
+	"res://scripts/tests/test_kingdom_defense_controls.gd",
+	"res://scripts/tests/test_build_menu.gd"
 ]
 
 func _init() -> void:

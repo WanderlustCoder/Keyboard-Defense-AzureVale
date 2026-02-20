@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 4" width="4" height="4">
+  <!-- Trail particle (4x4) - small glow dot -->
+  <ellipse cx="2" cy="2" rx="1.5" ry="1.5" fill="#ffeedd"/>
+  <ellipse cx="2" cy="2" rx="1" ry="1" fill="#ffffff"/>
+</svg>

@@ -1,0 +1,340 @@
+{
+  "version": "1.0.0",
+  "sample_rate": 44100,
+  "bit_depth": 16,
+  "channels": 1,
+  "sfx": [
+    {
+      "id": "achievement_unlock",
+      "path": "sfx/achievement_unlock.wav"
+    },
+    {
+      "id": "boss_appear",
+      "path": "sfx/boss_appear.wav"
+    },
+    {
+      "id": "boss_defeated",
+      "path": "sfx/boss_defeated.wav"
+    },
+    {
+      "id": "boss_roar",
+      "path": "sfx/boss_roar.wav"
+    },
+    {
+      "id": "build",
+      "path": "sfx/build.wav"
+    },
+    {
+      "id": "build_complete",
+      "path": "sfx/build_complete.wav"
+    },
+    {
+      "id": "build_place",
+      "path": "sfx/build_place.wav"
+    },
+    {
+      "id": "combo_break",
+      "path": "sfx/combo_break.wav"
+    },
+    {
+      "id": "combo_max",
+      "path": "sfx/combo_max.wav"
+    },
+    {
+      "id": "combo_milestone_10",
+      "path": "sfx/combo_milestone_10.wav"
+    },
+    {
+      "id": "combo_milestone_20",
+      "path": "sfx/combo_milestone_20.wav"
+    },
+    {
+      "id": "combo_milestone_5",
+      "path": "sfx/combo_milestone_5.wav"
+    },
+    {
+      "id": "combo_up",
+      "path": "sfx/combo_up.wav"
+    },
+    {
+      "id": "critical_hit",
+      "path": "sfx/critical_hit.wav"
+    },
+    {
+      "id": "damage_boost",
+      "path": "sfx/damage_boost.wav"
+    },
+    {
+      "id": "dawn_break",
+      "path": "sfx/dawn_break.wav"
+    },
+    {
+      "id": "defeat",
+      "path": "sfx/defeat.wav"
+    },
+    {
+      "id": "defeat_stinger",
+      "path": "sfx/defeat_stinger.wav"
+    },
+    {
+      "id": "enemy_death",
+      "path": "sfx/enemy_death.wav"
+    },
+    {
+      "id": "enemy_reach_base",
+      "path": "sfx/enemy_reach_base.wav"
+    },
+    {
+      "id": "enemy_spawn",
+      "path": "sfx/enemy_spawn.wav"
+    },
+    {
+      "id": "explore",
+      "path": "sfx/explore.wav"
+    },
+    {
+      "id": "gather",
+      "path": "sfx/gather.wav"
+    },
+    {
+      "id": "gold_pickup",
+      "path": "sfx/gold_pickup.wav"
+    },
+    {
+      "id": "heal",
+      "path": "sfx/heal.wav"
+    },
+    {
+      "id": "heal_tick",
+      "path": "sfx/heal_tick.wav"
+    },
+    {
+      "id": "hit_enemy",
+      "path": "sfx/hit_enemy.wav"
+    },
+    {
+      "id": "hit_player",
+      "path": "sfx/hit_player.wav"
+    },
+    {
+      "id": "level_up",
+      "path": "sfx/level_up.wav"
+    },
+    {
+      "id": "loot_drop",
+      "path": "sfx/loot_drop.wav"
+    },
+    {
+      "id": "miss_whiff",
+      "path": "sfx/miss_whiff.wav"
+    },
+    {
+      "id": "night_fall",
+      "path": "sfx/night_fall.wav"
+    },
+    {
+      "id": "quest_complete",
+      "path": "sfx/quest_complete.wav"
+    },
+    {
+      "id": "research_complete",
+      "path": "sfx/research_complete.wav"
+    },
+    {
+      "id": "resource_pickup",
+      "path": "sfx/resource_pickup.wav"
+    },
+    {
+      "id": "shield_activate",
+      "path": "sfx/shield_activate.wav"
+    },
+    {
+      "id": "shield_block",
+      "path": "sfx/shield_block.wav"
+    },
+    {
+      "id": "shield_break",
+      "path": "sfx/shield_break.wav"
+    },
+    {
+      "id": "speed_boost",
+      "path": "sfx/speed_boost.wav"
+    },
+    {
+      "id": "status_apply",
+      "path": "sfx/status_apply.wav"
+    },
+    {
+      "id": "status_burn",
+      "path": "sfx/status_burn.wav"
+    },
+    {
+      "id": "status_expire",
+      "path": "sfx/status_expire.wav"
+    },
+    {
+      "id": "status_freeze",
+      "path": "sfx/status_freeze.wav"
+    },
+    {
+      "id": "status_poison",
+      "path": "sfx/status_poison.wav"
+    },
+    {
+      "id": "status_slow",
+      "path": "sfx/status_slow.wav"
+    },
+    {
+      "id": "status_stun",
+      "path": "sfx/status_stun.wav"
+    },
+    {
+      "id": "title_unlock",
+      "path": "sfx/title_unlock.wav"
+    },
+    {
+      "id": "tower_arcane",
+      "path": "sfx/tower_arcane.wav"
+    },
+    {
+      "id": "tower_arrow",
+      "path": "sfx/tower_arrow.wav"
+    },
+    {
+      "id": "tower_build",
+      "path": "sfx/tower_build.wav"
+    },
+    {
+      "id": "tower_cannon",
+      "path": "sfx/tower_cannon.wav"
+    },
+    {
+      "id": "tower_fire",
+      "path": "sfx/tower_fire.wav"
+    },
+    {
+      "id": "tower_holy",
+      "path": "sfx/tower_holy.wav"
+    },
+    {
+      "id": "tower_ice",
+      "path": "sfx/tower_ice.wav"
+    },
+    {
+      "id": "tower_lightning",
+      "path": "sfx/tower_lightning.wav"
+    },
+    {
+      "id": "tower_multi",
+      "path": "sfx/tower_multi.wav"
+    },
+    {
+      "id": "tower_poison",
+      "path": "sfx/tower_poison.wav"
+    },
+    {
+      "id": "tower_sell",
+      "path": "sfx/tower_sell.wav"
+    },
+    {
+      "id": "tower_shot",
+      "path": "sfx/tower_shot.wav"
+    },
+    {
+      "id": "tower_siege",
+      "path": "sfx/tower_siege.wav"
+    },
+    {
+      "id": "tower_upgrade",
+      "path": "sfx/tower_upgrade.wav"
+    },
+    {
+      "id": "tutorial_ding",
+      "path": "sfx/tutorial_ding.wav"
+    },
+    {
+      "id": "type_backspace",
+      "path": "sfx/type_backspace.wav"
+    },
+    {
+      "id": "type_correct",
+      "path": "sfx/type_correct.wav"
+    },
+    {
+      "id": "type_mistake",
+      "path": "sfx/type_mistake.wav"
+    },
+    {
+      "id": "ui_cancel",
+      "path": "sfx/ui_cancel.wav"
+    },
+    {
+      "id": "ui_close",
+      "path": "sfx/ui_close.wav"
+    },
+    {
+      "id": "ui_confirm",
+      "path": "sfx/ui_confirm.wav"
+    },
+    {
+      "id": "ui_error",
+      "path": "sfx/ui_error.wav"
+    },
+    {
+      "id": "ui_hover",
+      "path": "sfx/ui_hover.wav"
+    },
+    {
+      "id": "ui_keytap",
+      "path": "sfx/ui_keytap.wav"
+    },
+    {
+      "id": "ui_open",
+      "path": "sfx/ui_open.wav"
+    },
+    {
+      "id": "unit_spawn",
+      "path": "sfx/unit_spawn.wav"
+    },
+    {
+      "id": "upgrade_purchase",
+      "path": "sfx/upgrade_purchase.wav"
+    },
+    {
+      "id": "victory",
+      "path": "sfx/victory.wav"
+    },
+    {
+      "id": "victory_fanfare",
+      "path": "sfx/victory_fanfare.wav"
+    },
+    {
+      "id": "wave_complete",
+      "path": "sfx/wave_complete.wav"
+    },
+    {
+      "id": "wave_end",
+      "path": "sfx/wave_end.wav"
+    },
+    {
+      "id": "wave_start",
+      "path": "sfx/wave_start.wav"
+    },
+    {
+      "id": "word_complete",
+      "path": "sfx/word_complete.wav"
+    },
+    {
+      "id": "word_failed",
+      "path": "sfx/word_failed.wav"
+    },
+    {
+      "id": "word_perfect",
+      "path": "sfx/word_perfect.wav"
+    },
+    {
+      "id": "xp_gain",
+      "path": "sfx/xp_gain.wav"
+    }
+  ]
+}

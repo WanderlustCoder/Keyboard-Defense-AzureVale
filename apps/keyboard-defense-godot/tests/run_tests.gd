@@ -550,11 +550,13 @@ func _run_reducer_tests() -> void:
 
     var reject_state: GameState = DefaultState.create("test-reject")
     reject_state.resources["wood"] = 20
-    var reject_pos: Vector2i = reject_state.base_pos + Vector2i(2, 0)
+    # Use position 10 tiles away - beyond starting discovery radius of 5
+    var reject_pos: Vector2i = reject_state.base_pos + Vector2i(10, 0)
     var reject_index: int = SimMap.idx(reject_pos.x, reject_pos.y, reject_state.map_w)
+    var initial_ap: int = reject_state.ap
     var reject_result: Dictionary = IntentApplier.apply(reject_state, {"kind": "build", "building": "farm", "x": reject_pos.x, "y": reject_pos.y})
     _assert_true(not reject_result.state.structures.has(reject_index), "build rejects undiscovered")
-    _assert_equal(reject_result.state.ap, reject_state.ap, "build rejects without consuming AP")
+    _assert_equal(reject_result.state.ap, initial_ap, "build rejects without consuming AP")
 
     var water_state: GameState = DefaultState.create("test-water")
     water_state.resources["wood"] = 20
@@ -939,31 +941,7 @@ func _run_docs_tests() -> void:
     _assert_true(FileAccess.file_exists("res://docs/CHANGELOG.md"), "docs: CHANGELOG.md exists")
     _assert_true(FileAccess.file_exists("res://docs/ONBOARDING_TUTORIAL.md"), "docs: ONBOARDING_TUTORIAL.md exists")
     _assert_true(FileAccess.file_exists("res://docs/plans/README.md"), "docs: plans README exists")
-    _assert_true(FileAccess.file_exists("res://docs/plans/planpack_2025-12-27_tempPlans/IMPORT_NOTES.md"), "docs: planpack import notes exist")
-    _assert_true(FileAccess.file_exists("res://docs/plans/PLANPACK_TRIAGE.md"), "docs: planpack triage exists")
-    _assert_true(FileAccess.file_exists("res://docs/plans/p0/ONBOARDING_PLAN.md"), "docs: P0 onboarding plan exists")
-    _assert_true(FileAccess.file_exists("res://docs/plans/p0/ONBOARDING_COPY.md"), "docs: P0 onboarding copy exists")
-    _assert_true(FileAccess.file_exists("res://docs/plans/p0/ONBOARDING_IMPLEMENTATION_SPEC.md"), "docs: P0 onboarding implementation spec exists")
-    _assert_true(FileAccess.file_exists("res://docs/plans/p0/BALANCE_PLAN.md"), "docs: P0 balance plan exists")
-    _assert_true(FileAccess.file_exists("res://docs/plans/p0/BALANCE_TARGETS.md"), "docs: P0 balance targets exist")
-    _assert_true(FileAccess.file_exists("res://docs/plans/p0/ACCESSIBILITY_READABILITY_PLAN.md"), "docs: P0 accessibility plan exists")
-    _assert_true(FileAccess.file_exists("res://docs/plans/p0/EXPORT_PIPELINE_PLAN.md"), "docs: P0 export plan exists")
-    _assert_true(FileAccess.file_exists("res://docs/plans/p0/P0_IMPLEMENTATION_BACKLOG.md"), "docs: P0 implementation backlog exists")
-    _assert_true(FileAccess.file_exists("res://docs/plans/p1/CONTENT_EXPANSION_PLAN.md"), "docs: P1 content expansion plan exists")
-    _assert_true(FileAccess.file_exists("res://docs/plans/p1/VISUAL_STYLE_GUIDE_PLAN.md"), "docs: P1 visual style guide plan exists")
-    _assert_true(FileAccess.file_exists("res://docs/plans/p1/MAP_EXPLORATION_PLAN.md"), "docs: P1 map exploration plan exists")
-    _assert_true(FileAccess.file_exists("res://docs/plans/p1/QA_AUTOMATION_PLAN.md"), "docs: P1 QA automation plan exists")
-    _assert_true(FileAccess.file_exists("res://docs/plans/p1/SCENARIO_TEST_HARNESS_PLAN.md"), "docs: P1 scenario test harness plan exists")
-    _assert_true(FileAccess.file_exists("res://docs/plans/p1/SCENARIO_HARNESS_IMPLEMENTATION_SPEC.md"), "docs: P1 scenario harness implementation spec exists")
-    _assert_true(FileAccess.file_exists("res://docs/plans/p1/SCENARIO_CATALOG.md"), "docs: P1 scenario catalog exists")
-    _assert_true(FileAccess.file_exists("res://docs/plans/p1/CI_AUTOMATION_SPEC.md"), "docs: P1 CI automation spec exists")
-    _assert_true(FileAccess.file_exists("res://docs/plans/p1/GDSCRIPT_QUALITY_PLAN.md"), "docs: P1 GDScript quality plan exists")
-    _assert_true(FileAccess.file_exists("res://docs/plans/p2/META_PROGRESSION_PLAN.md"), "docs: P2 meta progression plan exists")
-    _assert_true(FileAccess.file_exists("res://docs/plans/p2/HERO_SYSTEM_PLAN.md"), "docs: P2 hero system plan exists")
-    _assert_true(FileAccess.file_exists("res://docs/plans/p2/LOCALIZATION_PLAN.md"), "docs: P2 localization plan exists")
-    _assert_true(FileAccess.file_exists("res://docs/plans/p2/AUDIO_PLAN.md"), "docs: P2 audio plan exists")
-    _assert_true(FileAccess.file_exists("res://docs/plans/ARCHITECTURE_MAPPING.md"), "docs: architecture mapping plan exists")
-    _assert_true(FileAccess.file_exists("res://docs/plans/SCHEMA_ALIGNMENT_PLAN.md"), "docs: schema alignment plan exists")
+    # Note: Many plan docs in p0/, p1/, p2/ and planpack_* have been archived/removed as part of cleanup
 
 func _run_export_pipeline_tests() -> void:
     var preset_path: String = "res://export_presets.cfg"
@@ -5165,10 +5143,10 @@ func _run_zone_system_tests() -> void:
     _assert_equal(SimMap.ZONE_WILDERNESS, "wilderness", "ZONE_WILDERNESS constant")
     _assert_equal(SimMap.ZONE_DEPTHS, "depths", "ZONE_DEPTHS constant")
 
-    # Test zone radii
-    _assert_equal(SimMap.ZONE_SAFE_RADIUS, 3, "Safe zone radius")
-    _assert_equal(SimMap.ZONE_FRONTIER_RADIUS, 6, "Frontier zone radius")
-    _assert_equal(SimMap.ZONE_WILDERNESS_RADIUS, 10, "Wilderness zone radius")
+    # Test zone radii (scaled for 64x64 map)
+    _assert_equal(SimMap.ZONE_SAFE_RADIUS, 8, "Safe zone radius")
+    _assert_equal(SimMap.ZONE_FRONTIER_RADIUS, 16, "Frontier zone radius")
+    _assert_equal(SimMap.ZONE_WILDERNESS_RADIUS, 28, "Wilderness zone radius")
 
     # Test zone data structure
     _assert_true(SimMap.ZONE_DATA.has(SimMap.ZONE_SAFE), "ZONE_DATA has safe zone")
@@ -5185,23 +5163,33 @@ func _run_zone_system_tests() -> void:
     _assert_true(safe_data.has("enemy_tier_max"), "Zone data has enemy_tier_max")
     _assert_true(safe_data.has("color"), "Zone data has color")
 
-    # Test distance calculations
-    state.base_pos = Vector2i(8, 5)  # Center of 16x10 map
-    _assert_equal(SimMap.distance_to_castle(state, Vector2i(8, 5)), 0, "Distance at castle is 0")
-    _assert_equal(SimMap.distance_to_castle(state, Vector2i(9, 5)), 1, "Manhattan distance 1 right")
-    _assert_equal(SimMap.distance_to_castle(state, Vector2i(10, 6)), 3, "Manhattan distance 3")
+    # Test distance calculations (default state is 64x64 with base at (32, 32))
+    _assert_equal(SimMap.distance_to_castle(state, state.base_pos), 0, "Distance at castle is 0")
+    _assert_equal(SimMap.distance_to_castle(state, Vector2i(state.base_pos.x + 1, state.base_pos.y)), 1, "Manhattan distance 1 right")
+    _assert_equal(SimMap.distance_to_castle(state, Vector2i(state.base_pos.x + 2, state.base_pos.y + 1)), 3, "Manhattan distance 3")
 
-    _assert_equal(SimMap.chebyshev_distance_to_castle(state, Vector2i(8, 5)), 0, "Chebyshev at castle is 0")
-    _assert_equal(SimMap.chebyshev_distance_to_castle(state, Vector2i(9, 6)), 1, "Chebyshev diagonal 1")
-    _assert_equal(SimMap.chebyshev_distance_to_castle(state, Vector2i(11, 8)), 3, "Chebyshev max of dx,dy")
+    _assert_equal(SimMap.chebyshev_distance_to_castle(state, state.base_pos), 0, "Chebyshev at castle is 0")
+    _assert_equal(SimMap.chebyshev_distance_to_castle(state, Vector2i(state.base_pos.x + 1, state.base_pos.y + 1)), 1, "Chebyshev diagonal 1")
+    _assert_equal(SimMap.chebyshev_distance_to_castle(state, Vector2i(state.base_pos.x + 3, state.base_pos.y + 3)), 3, "Chebyshev max of dx,dy")
 
-    # Test get_zone_at
-    _assert_equal(SimMap.get_zone_at(state, state.base_pos), SimMap.ZONE_SAFE, "Castle is in safe zone")
-    _assert_equal(SimMap.get_zone_at(state, Vector2i(8 + 2, 5)), SimMap.ZONE_SAFE, "2 tiles away is safe")
-    _assert_equal(SimMap.get_zone_at(state, Vector2i(8 + 4, 5)), SimMap.ZONE_FRONTIER, "4 tiles away is frontier")
-    _assert_equal(SimMap.get_zone_at(state, Vector2i(8 + 8, 5)), SimMap.ZONE_WILDERNESS, "8 tiles away is wilderness")
-    # On a 16x12 map with castle at (8,5), corner (0,0) has Chebyshev distance 8, which is wilderness (<=10)
-    _assert_equal(SimMap.get_zone_at(state, Vector2i(0, 0)), SimMap.ZONE_WILDERNESS, "Far corner is wilderness on small map")
+    # Test get_zone_at - use larger map for zone testing (radii are 8, 16, 28)
+    var zone_state: GameState = GameState.new()
+    zone_state.map_w = 64
+    zone_state.map_h = 64
+    zone_state.base_pos = Vector2i(32, 32)  # Center of 64x64 map
+    zone_state.terrain = []
+    zone_state.terrain.resize(64 * 64)
+    zone_state.terrain.fill("plains")
+    zone_state.discovered = {}  # Dictionary keyed by tile index
+    # Discover a small area around castle for exploration tests
+    var castle_idx: int = SimMap.idx(32, 32, 64)
+    zone_state.discovered[castle_idx] = true
+
+    _assert_equal(SimMap.get_zone_at(zone_state, zone_state.base_pos), SimMap.ZONE_SAFE, "Castle is in safe zone")
+    _assert_equal(SimMap.get_zone_at(zone_state, Vector2i(32 + 5, 32)), SimMap.ZONE_SAFE, "5 tiles away is safe")
+    _assert_equal(SimMap.get_zone_at(zone_state, Vector2i(32 + 12, 32)), SimMap.ZONE_FRONTIER, "12 tiles away is frontier")
+    _assert_equal(SimMap.get_zone_at(zone_state, Vector2i(32 + 20, 32)), SimMap.ZONE_WILDERNESS, "20 tiles away is wilderness")
+    _assert_equal(SimMap.get_zone_at(zone_state, Vector2i(32 + 30, 32)), SimMap.ZONE_DEPTHS, "30 tiles away is depths")
 
     # Test get_zone_data
     var zone_data: Dictionary = SimMap.get_zone_data(SimMap.ZONE_FRONTIER)
@@ -5237,12 +5225,12 @@ func _run_zone_system_tests() -> void:
     _assert_equal(SimMap.get_zone_resource_quality(SimMap.ZONE_SAFE), 1.0, "Safe zone quality 1.0")
     _assert_equal(SimMap.get_zone_resource_quality(SimMap.ZONE_DEPTHS), 2.0, "Depths quality 2.0")
 
-    # Test zone checks
-    _assert_true(SimMap.is_in_safe_zone(state, state.base_pos), "Castle is in safe zone")
-    _assert_false(SimMap.is_in_safe_zone(state, Vector2i(0, 0)), "Far corner not safe")
+    # Test zone checks - use zone_state (64x64 map) for proper distance testing
+    _assert_true(SimMap.is_in_safe_zone(zone_state, zone_state.base_pos), "Castle is in safe zone")
+    _assert_false(SimMap.is_in_safe_zone(zone_state, Vector2i(0, 0)), "Far corner not safe on large map")
 
-    _assert_false(SimMap.is_dangerous_zone(state, state.base_pos), "Castle is not dangerous")
-    _assert_true(SimMap.is_dangerous_zone(state, Vector2i(0, 0)), "Far corner is dangerous")
+    _assert_false(SimMap.is_dangerous_zone(zone_state, zone_state.base_pos), "Castle is not dangerous")
+    _assert_true(SimMap.is_dangerous_zone(zone_state, Vector2i(0, 0)), "Far corner is dangerous on large map")
 
     # Test get_all_zones
     var all_zones: Array[String] = SimMap.get_all_zones()
@@ -5353,23 +5341,23 @@ func _run_poi_zone_tests() -> void:
     _assert_equal(safe_filtered.size(), 1, "Safe zone allows 1 tier")
     _assert_equal(str(safe_filtered[0].get("id", "")), "tier1", "Only tier 1 in safe zone")
 
-    # Frontier zone (max tier 2)
-    var frontier_pos: Vector2i = Vector2i(state.base_pos.x + 4, state.base_pos.y)
+    # Frontier zone (max tier 2) - distance > 8 and <= 16, use distance 12
+    var frontier_pos: Vector2i = Vector2i(state.base_pos.x + 12, state.base_pos.y)
     var frontier_filtered: Array = SimPoi.filter_by_zone(state, pois, frontier_pos)
     _assert_equal(frontier_filtered.size(), 2, "Frontier allows 2 tiers")
 
-    # Wilderness zone (max tier 3) - use distance 8 from castle (within bounds)
-    var wild_pos: Vector2i = Vector2i(state.base_pos.x - 8, state.base_pos.y)  # (0, 5) on default map
+    # Wilderness zone (max tier 3) - distance > 16 and <= 28, use distance 20
+    var wild_pos: Vector2i = Vector2i(state.base_pos.x + 20, state.base_pos.y)
     var wild_filtered: Array = SimPoi.filter_by_zone(state, pois, wild_pos)
     _assert_equal(wild_filtered.size(), 3, "Wilderness allows 3 tiers")
 
-    # Depths zone requires distance > 10 - on default 16x10 map, no position is far enough
+    # Depths zone requires distance > 28
     # Create larger state for depths testing
     var large_state: GameState = DefaultState.create()
-    large_state.map_w = 30
-    large_state.map_h = 30
-    large_state.base_pos = Vector2i(15, 15)
-    var depths_pos: Vector2i = Vector2i(0, 0)  # Chebyshev distance 15 > 10 = depths
+    large_state.map_w = 64
+    large_state.map_h = 64
+    large_state.base_pos = Vector2i(32, 32)
+    var depths_pos: Vector2i = Vector2i(0, 0)  # Chebyshev distance 32 > 28 = depths
     var depths_filtered: Array = SimPoi.filter_by_zone(large_state, pois, depths_pos)
     _assert_equal(depths_filtered.size(), 4, "Depths allows all 4 tiers")
 
@@ -5516,14 +5504,15 @@ func _run_threat_spawn_tests() -> void:
             break
     _assert_true(high_tier_found, "Tier 4 zone can spawn elite enemies")
 
-    # Test exploration spawn modifier
-    state.cursor_pos = state.base_pos
-    var safe_modifier: float = WorldTick._get_exploration_spawn_modifier(state)
+    # Test exploration spawn modifier - use larger map for zone testing
+    var spawn_state: GameState = DefaultState.create()  # 64x64 map with base at (32, 32)
+    spawn_state.cursor_pos = spawn_state.base_pos
+    var safe_modifier: float = WorldTick._get_exploration_spawn_modifier(spawn_state)
     _assert_true(safe_modifier >= 0.0, "Safe zone modifier non-negative")
 
-    # Move cursor to wilderness
-    state.cursor_pos = Vector2i(0, 0)  # Far corner, should be depths/wilderness
-    var dangerous_modifier: float = WorldTick._get_exploration_spawn_modifier(state)
+    # Move cursor to depths (distance 32 > 28)
+    spawn_state.cursor_pos = Vector2i(0, 0)  # Far corner on 64x64 map, distance 32 = depths
+    var dangerous_modifier: float = WorldTick._get_exploration_spawn_modifier(spawn_state)
     _assert_true(dangerous_modifier > safe_modifier, "Dangerous zone has higher spawn modifier")
 
     # Test roaming enemy creation includes spawn_zone
@@ -11418,9 +11407,9 @@ func _test_sim_map_zone_constants() -> void:
     _assert_true(SimMap.ZONE_SAFE_RADIUS < SimMap.ZONE_FRONTIER_RADIUS, "SAFE < FRONTIER radius")
     _assert_true(SimMap.ZONE_FRONTIER_RADIUS < SimMap.ZONE_WILDERNESS_RADIUS, "FRONTIER < WILDERNESS radius")
 
-    _assert_equal(SimMap.ZONE_SAFE_RADIUS, 3, "ZONE_SAFE_RADIUS is 3")
-    _assert_equal(SimMap.ZONE_FRONTIER_RADIUS, 6, "ZONE_FRONTIER_RADIUS is 6")
-    _assert_equal(SimMap.ZONE_WILDERNESS_RADIUS, 10, "ZONE_WILDERNESS_RADIUS is 10")
+    _assert_equal(SimMap.ZONE_SAFE_RADIUS, 8, "ZONE_SAFE_RADIUS is 8")
+    _assert_equal(SimMap.ZONE_FRONTIER_RADIUS, 16, "ZONE_FRONTIER_RADIUS is 16")
+    _assert_equal(SimMap.ZONE_WILDERNESS_RADIUS, 28, "ZONE_WILDERNESS_RADIUS is 28")
 
 func _test_sim_map_zone_data() -> void:
     # ZONE_DATA structure

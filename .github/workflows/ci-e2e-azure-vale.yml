@@ -1,10 +1,7 @@
-name: ci-e2e-azure-vale
+name: archived-ci-e2e-azure-vale
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+  workflow_dispatch:
 
 env:
   CI: true

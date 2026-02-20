@@ -7,6 +7,7 @@ var typed: String = ""
 var total_inputs: int = 0
 var correct_inputs: int = 0
 var errors: int = 0
+var word_errors: int = 0  # Errors for current word only
 var start_time_ms: int = 0
 var allowed_chars: String = ""
 var case_sensitive: bool = false
@@ -18,6 +19,7 @@ func start(words_list: Array, config: Dictionary = {}) -> void:
 	total_inputs = 0
 	correct_inputs = 0
 	errors = 0
+	word_errors = 0
 	start_time_ms = Time.get_ticks_msec()
 	case_sensitive = bool(config.get("case_sensitive", false))
 	var allow_spaces = bool(config.get("allow_spaces", false))
@@ -40,7 +42,7 @@ func get_words_completed() -> int:
 	return word_index
 
 func get_elapsed_seconds() -> float:
-	var elapsed_ms := Time.get_ticks_msec() - start_time_ms
+	var elapsed_ms: int = Time.get_ticks_msec() - start_time_ms
 	return max(0.001, float(elapsed_ms) / 1000.0)
 
 func get_accuracy() -> float:
@@ -69,22 +71,26 @@ func input_char(char: String) -> Dictionary:
 	if allowed_chars != "" and allowed_chars.find(input_char) == -1:
 		total_inputs += 1
 		errors += 1
+		word_errors += 1
 		typed = ""
 		return {"status": "error", "expected": expected_raw, "received": input_char}
 	total_inputs += 1
 	if input_char != expected_cmp:
 		errors += 1
+		word_errors += 1
 		typed = ""
 		return {"status": "error", "expected": expected_raw, "received": input_char}
 	correct_inputs += 1
 	typed += expected_raw
 	if typed.length() >= current_word.length():
 		var finished_word := current_word
+		var was_perfect := word_errors == 0
 		word_index += 1
 		typed = ""
+		word_errors = 0  # Reset for next word
 		if word_index >= words.size():
-			return {"status": "lesson_complete", "word": finished_word}
-		return {"status": "word_complete", "word": finished_word}
+			return {"status": "lesson_complete", "word": finished_word, "perfect": was_perfect}
+		return {"status": "word_complete", "word": finished_word, "perfect": was_perfect}
 	return {"status": "progress", "expected": expected_raw}
 
 func backspace() -> void:

@@ -1,0 +1,2150 @@
+{
+  "version": 2,
+  "scenarios": [
+    {
+      "id": "determinism_smoke",
+      "seed": 1001,
+      "description": "Minimal day-only command smoke.",
+      "tags": [
+        "smoke",
+        "p0",
+        "balance",
+        "early"
+      ],
+      "priority": "P0",
+      "script": [
+        "status"
+      ],
+      "stop": {
+        "type": "after_commands"
+      },
+      "expect_baseline": {
+        "day": {
+          "eq": 1
+        },
+        "phase": {
+          "eq": "day"
+        }
+      }
+    },
+    {
+      "id": "day1_baseline",
+      "seed": 2001,
+      "description": "Gather, explore, and build a farm on day 1.",
+      "tags": [
+        "p0",
+        "balance",
+        "day",
+        "early"
+      ],
+      "priority": "P0",
+      "script": [
+        "gather wood 25",
+        "explore",
+        "build farm 8 6",
+        "status"
+      ],
+      "stop": {
+        "type": "after_commands"
+      },
+      "expect_baseline": {
+        "day": {
+          "eq": 1
+        },
+        "phase": {
+          "eq": "day"
+        },
+        "explored_count": {
+          "eq": 1
+        },
+        "buildings_count": {
+          "eq": 1
+        },
+        "buildings_by_type.farm": {
+          "eq": 1
+        },
+        "resources.wood": {
+          "eq": 15
+        },
+        "resources.stone": {
+          "eq": 0
+        },
+        "resources.food": {
+          "eq": 8
+        },
+        "threat": {
+          "eq": 1
+        },
+        "hp": {
+          "eq": 10
+        }
+      },
+      "expect_target": {
+        "resources.wood": {
+          "min": 5,
+          "max": 20
+        },
+        "resources.stone": {
+          "min": 0,
+          "max": 5
+        },
+        "resources.food": {
+          "min": 4,
+          "max": 12
+        },
+        "buildings_count": {
+          "min": 1,
+          "max": 2
+        }
+      }
+    },
+    {
+      "id": "first_night_smoke",
+      "seed": 3001,
+      "description": "Enter first night and make one typing attempt.",
+      "tags": [
+        "p0",
+        "balance",
+        "night",
+        "early"
+      ],
+      "priority": "P0",
+      "script": [
+        "end",
+        "wait",
+        "moss"
+      ],
+      "stop": {
+        "type": "after_commands"
+      },
+      "expect_baseline": {
+        "day": {
+          "eq": 2
+        },
+        "phase": {
+          "eq": "night"
+        },
+        "hp": {
+          "eq": 9
+        },
+        "enemies_alive": {
+          "eq": 2
+        },
+        "enemies_spawned": {
+          "eq": 2
+        },
+        "night_wave_total": {
+          "eq": 3
+        },
+        "resources.wood": {
+          "eq": 0
+        },
+        "resources.stone": {
+          "eq": 0
+        },
+        "resources.food": {
+          "eq": 1
+        }
+      },
+      "expect_target": {
+        "night_wave_total": {
+          "min": 2,
+          "max": 3
+        }
+      }
+    },
+    {
+      "id": "enter_night_stop",
+      "seed": 3101,
+      "description": "Stop when night begins after end.",
+      "tags": [
+        "p0",
+        "balance",
+        "stop",
+        "early"
+      ],
+      "priority": "P0",
+      "script": [
+        "end"
+      ],
+      "stop": {
+        "type": "until_phase",
+        "phase": "night",
+        "max_steps": 10
+      },
+      "expect_baseline": {
+        "day": {
+          "eq": 2
+        },
+        "phase": {
+          "eq": "night"
+        },
+        "night_wave_total": {
+          "eq": 3
+        },
+        "hp": {
+          "eq": 10
+        },
+        "resources.wood": {
+          "eq": 0
+        },
+        "resources.stone": {
+          "eq": 0
+        },
+        "resources.food": {
+          "eq": 1
+        }
+      }
+    },
+    {
+      "id": "day3_pacing",
+      "seed": 5001,
+      "description": "Reach day 3 with modest resources.",
+      "tags": [
+        "p0",
+        "balance",
+        "pacing",
+        "early"
+      ],
+      "priority": "P0",
+      "script": [
+        "gather wood 25",
+        "explore",
+        "explore",
+        "end",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "build farm 8 4",
+        "build lumber 7 5",
+        "gather stone 6",
+        "end",
+        "status"
+      ],
+      "stop": {
+        "type": "until_day",
+        "day": 3,
+        "max_steps": 200
+      },
+      "expect_baseline": {
+        "day": {
+          "eq": 3
+        },
+        "phase": {
+          "eq": "night"
+        },
+        "resources.wood": {
+          "eq": 13
+        },
+        "resources.stone": {
+          "eq": 6
+        },
+        "resources.food": {
+          "eq": 20
+        },
+        "hp": {
+          "eq": 5
+        },
+        "night_wave_total": {
+          "eq": 4
+        },
+        "enemies_spawned": {
+          "eq": 5
+        },
+        "enemies_killed": {
+          "eq": 5
+        },
+        "buildings_count": {
+          "eq": 2
+        }
+      },
+      "expect_target": {
+        "resources.wood": {
+          "min": 10,
+          "max": 30
+        },
+        "resources.stone": {
+          "min": 4,
+          "max": 12
+        },
+        "resources.food": {
+          "min": 8,
+          "max": 20
+        },
+        "buildings_count": {
+          "min": 2,
+          "max": 4
+        },
+        "night_wave_total": {
+          "min": 3,
+          "max": 5
+        }
+      }
+    },
+    {
+      "id": "explore_forward",
+      "seed": 4001,
+      "description": "Spend AP exploring three tiles.",
+      "tags": [
+        "p0",
+        "balance",
+        "explore",
+        "early"
+      ],
+      "priority": "P0",
+      "script": [
+        "explore",
+        "explore",
+        "explore",
+        "status"
+      ],
+      "stop": {
+        "type": "after_commands"
+      },
+      "expect_baseline": {
+        "day": {
+          "eq": 1
+        },
+        "phase": {
+          "eq": "day"
+        },
+        "explored_count": {
+          "eq": 3
+        },
+        "threat": {
+          "eq": 3
+        },
+        "resources.wood": {
+          "eq": 16
+        },
+        "resources.stone": {
+          "eq": 0
+        },
+        "resources.food": {
+          "eq": 8
+        },
+        "buildings_count": {
+          "eq": 0
+        }
+      },
+      "expect_target": {
+        "resources.wood": {
+          "min": 5,
+          "max": 20
+        },
+        "resources.food": {
+          "min": 4,
+          "max": 12
+        }
+      }
+    },
+    {
+      "id": "tower_upgrade_day2",
+      "seed": 4001,
+      "description": "Build and upgrade a tower on day 2.",
+      "tags": [
+        "p0",
+        "balance",
+        "tower",
+        "early"
+      ],
+      "priority": "P0",
+      "script": [
+        "gather wood 40",
+        "gather stone 40",
+        "explore",
+        "end",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "build tower 8 4",
+        "upgrade 8 4",
+        "upgrade 8 4",
+        "status"
+      ],
+      "stop": {
+        "type": "after_commands"
+      },
+      "expect_baseline": {
+        "day": {
+          "eq": 2
+        },
+        "phase": {
+          "eq": "night"
+        },
+        "buildings_by_type.tower": {
+          "eq": 0
+        },
+        "buildings_count": {
+          "eq": 0
+        },
+        "explored_count": {
+          "eq": 1
+        },
+        "night_wave_total": {
+          "eq": 4
+        },
+        "enemies_spawned": {
+          "eq": 4
+        },
+        "enemies_killed": {
+          "eq": 3
+        },
+        "enemies_alive": {
+          "eq": 1
+        },
+        "hp": {
+          "eq": 7
+        },
+        "resources.wood": {
+          "eq": 48
+        },
+        "resources.stone": {
+          "eq": 40
+        },
+        "resources.food": {
+          "eq": 1
+        },
+        "threat": {
+          "eq": 1
+        }
+      }
+    },
+    {
+      "id": "wall_build_day2",
+      "seed": 7001,
+      "description": "Build a wall after the first night.",
+      "tags": [
+        "p0",
+        "balance",
+        "defense",
+        "early"
+      ],
+      "priority": "P0",
+      "script": [
+        "gather wood 10",
+        "gather stone 5",
+        "explore",
+        "end",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "build wall 9 5",
+        "status"
+      ],
+      "stop": {
+        "type": "after_commands"
+      },
+      "expect_baseline": {
+        "day": {
+          "eq": 2
+        },
+        "phase": {
+          "eq": "day"
+        },
+        "buildings_by_type.wall": {
+          "eq": 1
+        },
+        "buildings_count": {
+          "eq": 1
+        },
+        "explored_count": {
+          "eq": 1
+        },
+        "night_wave_total": {
+          "eq": 0
+        },
+        "enemies_spawned": {
+          "eq": 4
+        },
+        "enemies_killed": {
+          "eq": 4
+        },
+        "enemies_alive": {
+          "eq": 0
+        },
+        "hp": {
+          "eq": 6
+        },
+        "resources.wood": {
+          "eq": 6
+        },
+        "resources.stone": {
+          "eq": 1
+        },
+        "resources.food": {
+          "eq": 9
+        },
+        "threat": {
+          "eq": 0
+        }
+      },
+      "expect_target": {
+        "buildings_count": {
+          "min": 1,
+          "max": 2
+        },
+        "resources.wood": {
+          "min": 5,
+          "max": 30
+        },
+        "resources.stone": {
+          "min": 0,
+          "max": 12
+        }
+      }
+    },
+    {
+      "id": "invalid_action_smoke",
+      "seed": 1002,
+      "description": "Parseable commands that fail gracefully.",
+      "tags": [
+        "p0",
+        "balance",
+        "robustness",
+        "early"
+      ],
+      "priority": "P0",
+      "script": [
+        "build farm 0 0",
+        "demolish 0 0",
+        "status"
+      ],
+      "stop": {
+        "type": "after_commands"
+      },
+      "expect_baseline": {
+        "day": {
+          "eq": 1
+        },
+        "phase": {
+          "eq": "day"
+        },
+        "buildings_count": {
+          "eq": 0
+        },
+        "resources.wood": {
+          "eq": 0
+        },
+        "resources.stone": {
+          "eq": 0
+        },
+        "resources.food": {
+          "eq": 0
+        },
+        "hp": {
+          "eq": 10
+        }
+      }
+    },
+    {
+      "id": "lesson_goal_prefs_smoke",
+      "seed": 6001,
+      "description": "Lesson and goal commands do not alter core sim state.",
+      "tags": [
+        "prefs",
+        "regression",
+        "smoke"
+      ],
+      "priority": "P1",
+      "script": [
+        "goal speed",
+        "goal balanced",
+        "lesson home_row_1",
+        "status"
+      ],
+      "stop": {
+        "type": "after_commands"
+      },
+      "expect_baseline": {
+        "day": {
+          "eq": 1
+        },
+        "phase": {
+          "eq": "day"
+        },
+        "lesson_id": {
+          "eq": "home_row_1"
+        },
+        "resources.wood": {
+          "eq": 0
+        },
+        "resources.stone": {
+          "eq": 0
+        },
+        "resources.food": {
+          "eq": 0
+        }
+      }
+    },
+    {
+      "id": "map_inspect_smoke",
+      "seed": 6002,
+      "description": "Inspect and map commands are safe in day.",
+      "tags": [
+        "ui",
+        "smoke"
+      ],
+      "priority": "P1",
+      "script": [
+        "inspect",
+        "map",
+        "status"
+      ],
+      "stop": {
+        "type": "after_commands"
+      },
+      "expect_baseline": {
+        "day": {
+          "eq": 1
+        },
+        "phase": {
+          "eq": "day"
+        },
+        "explored_count": {
+          "eq": 0
+        },
+        "resources.wood": {
+          "eq": 0
+        },
+        "resources.stone": {
+          "eq": 0
+        },
+        "resources.food": {
+          "eq": 0
+        }
+      }
+    },
+    {
+      "id": "lumber_build_day2",
+      "seed": 5001,
+      "description": "Build lumber mill after the first night.",
+      "tags": [
+        "p0",
+        "balance",
+        "economy",
+        "early"
+      ],
+      "priority": "P0",
+      "script": [
+        "gather wood 10",
+        "gather food 2",
+        "explore",
+        "end",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "build lumber 8 4",
+        "status"
+      ],
+      "stop": {
+        "type": "after_commands"
+      },
+      "expect_baseline": {
+        "day": {
+          "eq": 2
+        },
+        "phase": {
+          "eq": "day"
+        },
+        "buildings_by_type.lumber": {
+          "eq": 1
+        },
+        "buildings_count": {
+          "eq": 1
+        },
+        "explored_count": {
+          "eq": 1
+        },
+        "night_wave_total": {
+          "eq": 0
+        },
+        "enemies_spawned": {
+          "eq": 4
+        },
+        "enemies_killed": {
+          "eq": 4
+        },
+        "enemies_alive": {
+          "eq": 0
+        },
+        "hp": {
+          "eq": 6
+        },
+        "resources.wood": {
+          "eq": 5
+        },
+        "resources.stone": {
+          "eq": 0
+        },
+        "resources.food": {
+          "eq": 9
+        },
+        "threat": {
+          "eq": 0
+        }
+      },
+      "expect_target": {
+        "buildings_count": {
+          "min": 1,
+          "max": 2
+        },
+        "resources.wood": {
+          "min": 5,
+          "max": 30
+        },
+        "resources.food": {
+          "min": 8,
+          "max": 20
+        }
+      }
+    },
+    {
+      "id": "day5_pacing_basic",
+      "seed": 8001,
+      "description": "Reach day 5 with steady gathers and no builds.",
+      "tags": [
+        "p0",
+        "balance",
+        "mid",
+        "pacing"
+      ],
+      "priority": "P0",
+      "script": [
+        "gather wood 10",
+        "gather stone 20",
+        "explore",
+        "end",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "explore",
+        "build tower 8 6",
+        "build tower 9 5",
+        "build tower 7 5",
+        "build tower 8 4",
+        "end",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "gather wood 10",
+        "gather stone 10",
+        "build tower 8 6",
+        "build tower 9 5",
+        "build tower 7 5",
+        "build tower 8 4",
+        "end",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "gather wood 12",
+        "gather stone 6",
+        "gather food 6",
+        "end",
+        "status"
+      ],
+      "stop": {
+        "type": "after_commands"
+      },
+      "expect_baseline": {
+        "day": {
+          "eq": 5
+        },
+        "phase": {
+          "eq": "night"
+        },
+        "buildings_count": {
+          "eq": 2
+        },
+        "buildings_by_type.tower": {
+          "eq": 2
+        },
+        "explored_count": {
+          "eq": 2
+        },
+        "resources.wood": {
+          "eq": 32
+        },
+        "resources.stone": {
+          "eq": 20
+        },
+        "resources.food": {
+          "eq": 12
+        },
+        "hp": {
+          "eq": 5
+        },
+        "night_wave_total": {
+          "eq": 2
+        },
+        "threat": {
+          "eq": 0
+        }
+      },
+      "expect_target": {
+        "resources.wood": {
+          "min": 15,
+          "max": 40
+        },
+        "resources.stone": {
+          "min": 8,
+          "max": 20
+        },
+        "resources.food": {
+          "min": 12,
+          "max": 25
+        },
+        "night_wave_total": {
+          "min": 1,
+          "max": 4
+        }
+      }
+    },
+    {
+      "id": "day5_explore_focus",
+      "seed": 8002,
+      "description": "Reach day 5 with heavy exploration pressure.",
+      "tags": [
+        "p0",
+        "balance",
+        "mid",
+        "explore"
+      ],
+      "priority": "P0",
+      "script": [
+        "gather wood 10",
+        "gather stone 20",
+        "explore",
+        "end",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "explore",
+        "build tower 9 4",
+        "upgrade 9 4",
+        "end",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "explore",
+        "gather wood 10",
+        "end",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "explore",
+        "gather wood 10",
+        "gather food 6",
+        "end",
+        "status"
+      ],
+      "stop": {
+        "type": "after_commands"
+      },
+      "expect_baseline": {
+        "day": {
+          "eq": 5
+        },
+        "phase": {
+          "eq": "night"
+        },
+        "buildings_count": {
+          "eq": 1
+        },
+        "buildings_by_type.tower": {
+          "eq": 1
+        },
+        "explored_count": {
+          "eq": 4
+        },
+        "resources.wood": {
+          "eq": 30
+        },
+        "resources.stone": {
+          "eq": 12
+        },
+        "resources.food": {
+          "eq": 25
+        },
+        "hp": {
+          "eq": 6
+        },
+        "night_wave_total": {
+          "eq": 4
+        },
+        "threat": {
+          "eq": 1
+        }
+      },
+      "expect_target": {
+        "resources.wood": {
+          "min": 15,
+          "max": 40
+        },
+        "resources.stone": {
+          "min": 8,
+          "max": 20
+        },
+        "resources.food": {
+          "min": 12,
+          "max": 25
+        },
+        "night_wave_total": {
+          "min": 2,
+          "max": 5
+        }
+      }
+    },
+    {
+      "id": "day5_economy_focus",
+      "seed": 8003,
+      "description": "Reach day 5 with heavier gathering to test upper ranges.",
+      "tags": [
+        "p0",
+        "balance",
+        "mid",
+        "economy"
+      ],
+      "priority": "P0",
+      "script": [
+        "gather wood 12",
+        "gather stone 24",
+        "explore",
+        "end",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "explore",
+        "build tower 7 5",
+        "upgrade 7 5",
+        "end",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "gather wood 12",
+        "gather stone 10",
+        "build tower 8 6",
+        "build tower 9 5",
+        "build tower 7 5",
+        "build tower 8 4",
+        "end",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "gather wood 18",
+        "gather stone 8",
+        "gather food 8",
+        "end",
+        "status"
+      ],
+      "stop": {
+        "type": "after_commands"
+      },
+      "expect_baseline": {
+        "day": {
+          "eq": 5
+        },
+        "phase": {
+          "eq": "night"
+        },
+        "buildings_count": {
+          "eq": 2
+        },
+        "buildings_by_type.tower": {
+          "eq": 2
+        },
+        "explored_count": {
+          "eq": 2
+        },
+        "resources.wood": {
+          "eq": 30
+        },
+        "resources.stone": {
+          "eq": 20
+        },
+        "resources.food": {
+          "eq": 14
+        },
+        "hp": {
+          "eq": 6
+        },
+        "night_wave_total": {
+          "eq": 2
+        },
+        "threat": {
+          "eq": 0
+        }
+      }
+    },
+    {
+      "id": "day6_pacing_basic",
+      "seed": 8051,
+      "description": "Reach day 6 with steady gathers to test mid-game transition.",
+      "tags": [
+        "p0",
+        "balance",
+        "mid",
+        "pacing"
+      ],
+      "priority": "P0",
+      "script": [
+        "gather wood 10",
+        "gather stone 20",
+        "explore",
+        "end",
+        "wait", "wait", "wait", "wait", "wait",
+        "wait", "wait", "wait", "wait", "wait",
+        "wait", "wait", "wait", "wait", "wait",
+        "wait", "wait", "wait", "wait", "wait",
+        "explore",
+        "build tower 7 5",
+        "upgrade 7 5",
+        "end",
+        "wait", "wait", "wait", "wait", "wait",
+        "wait", "wait", "wait", "wait", "wait",
+        "wait", "wait", "wait", "wait", "wait",
+        "wait", "wait", "wait", "wait", "wait",
+        "gather wood 10",
+        "gather stone 10",
+        "upgrade 7 5",
+        "end",
+        "wait", "wait", "wait", "wait", "wait",
+        "wait", "wait", "wait", "wait", "wait",
+        "wait", "wait", "wait", "wait", "wait",
+        "wait", "wait", "wait", "wait", "wait",
+        "gather wood 12",
+        "gather stone 6",
+        "gather food 6",
+        "end",
+        "wait", "wait", "wait", "wait", "wait",
+        "wait", "wait", "wait", "wait", "wait",
+        "wait", "wait", "wait", "wait", "wait",
+        "wait", "wait", "wait", "wait", "wait",
+        "gather wood 12",
+        "gather stone 6",
+        "gather food 6",
+        "end",
+        "status"
+      ],
+      "stop": {
+        "type": "after_commands"
+      },
+      "expect_baseline": {
+        "day": { "eq": 6 },
+        "phase": { "eq": "night" },
+        "buildings_count": { "eq": 1 },
+        "buildings_by_type.tower": { "eq": 1 },
+        "explored_count": { "eq": 2 },
+        "hp": { "min": 4 },
+        "night_wave_total": { "min": 4, "max": 8 },
+        "threat": { "eq": 0 }
+      },
+      "expect_target": {
+        "resources.wood": { "min": 20, "max": 50 },
+        "resources.stone": { "min": 10, "max": 30 },
+        "resources.food": { "min": 12, "max": 28 }
+      }
+    },
+    {
+      "id": "day6_explore_focus",
+      "seed": 8052,
+      "description": "Reach day 6 with heavy exploration pressure.",
+      "tags": [
+        "p0",
+        "balance",
+        "mid",
+        "explore"
+      ],
+      "priority": "P0",
+      "script": [
+        "gather wood 10",
+        "gather stone 20",
+        "explore",
+        "end",
+        "wait", "wait", "wait", "wait", "wait",
+        "wait", "wait", "wait", "wait", "wait",
+        "wait", "wait", "wait", "wait", "wait",
+        "wait", "wait", "wait", "wait", "wait",
+        "explore",
+        "build tower 8 6",
+        "upgrade 8 6",
+        "end",
+        "wait", "wait", "wait", "wait", "wait",
+        "wait", "wait", "wait", "wait", "wait",
+        "wait", "wait", "wait", "wait", "wait",
+        "wait", "wait", "wait", "wait", "wait",
+        "explore",
+        "gather wood 10",
+        "gather stone 10",
+        "upgrade 8 6",
+        "end",
+        "wait", "wait", "wait", "wait", "wait",
+        "wait", "wait", "wait", "wait", "wait",
+        "wait", "wait", "wait", "wait", "wait",
+        "wait", "wait", "wait", "wait", "wait",
+        "explore",
+        "gather wood 10",
+        "gather food 6",
+        "end",
+        "wait", "wait", "wait", "wait", "wait",
+        "wait", "wait", "wait", "wait", "wait",
+        "wait", "wait", "wait", "wait", "wait",
+        "wait", "wait", "wait", "wait", "wait",
+        "gather wood 10",
+        "gather stone 6",
+        "gather food 6",
+        "end",
+        "status"
+      ],
+      "stop": {
+        "type": "after_commands"
+      },
+      "expect_baseline": {
+        "day": { "eq": 6 },
+        "phase": { "eq": "night" },
+        "buildings_count": { "eq": 1 },
+        "buildings_by_type.tower": { "eq": 1 },
+        "explored_count": { "eq": 4 },
+        "hp": { "min": 4 },
+        "night_wave_total": { "min": 4, "max": 10 },
+        "threat": { "min": 0, "max": 2 }
+      },
+      "expect_target": {
+        "resources.wood": { "min": 20, "max": 50 },
+        "resources.stone": { "min": 10, "max": 30 },
+        "resources.food": { "min": 12, "max": 28 }
+      }
+    },
+    {
+      "id": "day6_economy_focus",
+      "seed": 8053,
+      "description": "Reach day 6 with heavier gathering to test upper resource ranges.",
+      "tags": [
+        "p0",
+        "balance",
+        "mid",
+        "economy"
+      ],
+      "priority": "P0",
+      "script": [
+        "gather wood 12",
+        "gather stone 24",
+        "explore",
+        "end",
+        "wait", "wait", "wait", "wait", "wait",
+        "wait", "wait", "wait", "wait", "wait",
+        "wait", "wait", "wait", "wait", "wait",
+        "wait", "wait", "wait", "wait", "wait",
+        "explore",
+        "build tower 9 5",
+        "upgrade 9 5",
+        "end",
+        "wait", "wait", "wait", "wait", "wait",
+        "wait", "wait", "wait", "wait", "wait",
+        "wait", "wait", "wait", "wait", "wait",
+        "wait", "wait", "wait", "wait", "wait",
+        "gather wood 12",
+        "gather stone 10",
+        "upgrade 9 5",
+        "end",
+        "wait", "wait", "wait", "wait", "wait",
+        "wait", "wait", "wait", "wait", "wait",
+        "wait", "wait", "wait", "wait", "wait",
+        "wait", "wait", "wait", "wait", "wait",
+        "gather wood 18",
+        "gather stone 8",
+        "gather food 8",
+        "end",
+        "wait", "wait", "wait", "wait", "wait",
+        "wait", "wait", "wait", "wait", "wait",
+        "wait", "wait", "wait", "wait", "wait",
+        "wait", "wait", "wait", "wait", "wait",
+        "gather wood 18",
+        "gather stone 8",
+        "gather food 8",
+        "end",
+        "status"
+      ],
+      "stop": {
+        "type": "after_commands"
+      },
+      "expect_baseline": {
+        "day": { "eq": 6 },
+        "phase": { "eq": "night" },
+        "buildings_count": { "eq": 1 },
+        "buildings_by_type.tower": { "eq": 1 },
+        "explored_count": { "eq": 2 },
+        "hp": { "min": 4 },
+        "night_wave_total": { "min": 4, "max": 8 },
+        "threat": { "eq": 0 }
+      },
+      "expect_target": {
+        "resources.wood": { "min": 25, "max": 55 },
+        "resources.stone": { "min": 15, "max": 35 },
+        "resources.food": { "min": 15, "max": 30 }
+      }
+    },
+    {
+      "id": "day7_pacing_basic",
+      "seed": 8101,
+      "description": "Reach day 7 with steady gathers and no builds.",
+      "tags": [
+        "p0",
+        "balance",
+        "mid",
+        "pacing",
+        "long"
+      ],
+      "priority": "P0",
+      "script": [
+        "gather wood 10",
+        "gather stone 20",
+        "explore",
+        "end",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "explore",
+        "build tower 7 5",
+        "upgrade 7 5",
+        "end",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "gather wood 10",
+        "gather stone 10",
+        "upgrade 7 5",
+        "end",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "gather wood 12",
+        "gather stone 6",
+        "gather food 6",
+        "end",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "gather wood 12",
+        "gather stone 6",
+        "gather food 6",
+        "end",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "gather wood 12",
+        "gather stone 6",
+        "gather food 6",
+        "end",
+        "status"
+      ],
+      "stop": {
+        "type": "after_commands"
+      },
+      "expect_baseline": {
+        "day": {
+          "eq": 7
+        },
+        "phase": {
+          "eq": "night"
+        },
+        "buildings_count": {
+          "eq": 1
+        },
+        "buildings_by_type.tower": {
+          "eq": 1
+        },
+        "explored_count": {
+          "eq": 2
+        },
+        "resources.wood": {
+          "eq": 40
+        },
+        "resources.stone": {
+          "eq": 26
+        },
+        "resources.food": {
+          "eq": 26
+        },
+        "hp": {
+          "eq": 6
+        },
+        "night_wave_total": {
+          "eq": 5
+        },
+        "threat": {
+          "eq": 0
+        }
+      },
+      "expect_target": {
+        "resources.wood": {
+          "min": 20,
+          "max": 50
+        },
+        "resources.stone": {
+          "min": 12,
+          "max": 30
+        },
+        "resources.food": {
+          "min": 15,
+          "max": 30
+        }
+      }
+    },
+    {
+      "id": "day7_explore_focus",
+      "seed": 8102,
+      "description": "Reach day 7 with heavy exploration pressure.",
+      "tags": [
+        "p0",
+        "balance",
+        "mid",
+        "explore",
+        "long"
+      ],
+      "priority": "P0",
+      "script": [
+        "gather wood 10",
+        "gather stone 20",
+        "explore",
+        "end",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "explore",
+        "build tower 8 6",
+        "upgrade 8 6",
+        "end",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "explore",
+        "gather wood 10",
+        "gather stone 10",
+        "upgrade 8 6",
+        "end",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "explore",
+        "gather wood 10",
+        "gather food 6",
+        "end",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "explore",
+        "gather wood 10",
+        "gather food 6",
+        "end",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "gather wood 10",
+        "gather stone 6",
+        "gather food 6",
+        "end",
+        "status"
+      ],
+      "stop": {
+        "type": "after_commands"
+      },
+      "expect_baseline": {
+        "day": {
+          "eq": 7
+        },
+        "phase": {
+          "eq": "night"
+        },
+        "buildings_count": {
+          "eq": 1
+        },
+        "buildings_by_type.tower": {
+          "eq": 1
+        },
+        "explored_count": {
+          "eq": 5
+        },
+        "resources.wood": {
+          "eq": 50
+        },
+        "resources.stone": {
+          "eq": 26
+        },
+        "resources.food": {
+          "eq": 32
+        },
+        "hp": {
+          "eq": 6
+        },
+        "night_wave_total": {
+          "eq": 5
+        },
+        "threat": {
+          "eq": 0
+        }
+      }
+    },
+    {
+      "id": "day7_economy_focus",
+      "seed": 8103,
+      "description": "Reach day 7 with heavier gathering to test upper ranges.",
+      "tags": [
+        "p0",
+        "balance",
+        "mid",
+        "economy",
+        "long"
+      ],
+      "priority": "P0",
+      "script": [
+        "gather wood 12",
+        "gather stone 24",
+        "explore",
+        "end",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "explore",
+        "build tower 9 5",
+        "upgrade 9 5",
+        "end",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "gather wood 12",
+        "gather stone 10",
+        "upgrade 9 5",
+        "end",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "gather wood 18",
+        "gather stone 8",
+        "gather food 8",
+        "end",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "gather wood 18",
+        "gather stone 8",
+        "gather food 8",
+        "end",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "gather wood 18",
+        "gather stone 8",
+        "gather food 8",
+        "end",
+        "status"
+      ],
+      "stop": {
+        "type": "after_commands"
+      },
+      "expect_baseline": {
+        "day": {
+          "eq": 7
+        },
+        "phase": {
+          "eq": "night"
+        },
+        "buildings_count": {
+          "eq": 1
+        },
+        "buildings_by_type.tower": {
+          "eq": 1
+        },
+        "explored_count": {
+          "eq": 2
+        },
+        "resources.wood": {
+          "eq": 50
+        },
+        "resources.stone": {
+          "eq": 28
+        },
+        "resources.food": {
+          "eq": 32
+        },
+        "hp": {
+          "eq": 6
+        },
+        "night_wave_total": {
+          "eq": 5
+        },
+        "threat": {
+          "eq": 0
+        }
+      },
+      "expect_target": {
+        "resources.wood": {
+          "min": 20,
+          "max": 50
+        },
+        "resources.stone": {
+          "min": 12,
+          "max": 30
+        },
+        "resources.food": {
+          "min": 15,
+          "max": 32
+        }
+      }
+    },
+    {
+      "id": "day7_defense_smoke",
+      "seed": 8101,
+      "description": "Reach day 7 night with an upgraded tower defense line.",
+      "tags": [
+        "p0",
+        "balance",
+        "mid",
+        "defense",
+        "long"
+      ],
+      "priority": "P0",
+      "script": [
+        "gather wood 10",
+        "gather stone 20",
+        "explore",
+        "end",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "explore",
+        "build tower 7 5",
+        "upgrade 7 5",
+        "end",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "gather wood 10",
+        "gather stone 10",
+        "upgrade 7 5",
+        "end",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "gather wood 12",
+        "gather stone 6",
+        "gather food 6",
+        "end",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "gather wood 12",
+        "gather stone 6",
+        "gather food 6",
+        "end",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "wait",
+        "gather wood 12",
+        "gather stone 6",
+        "gather food 6",
+        "end",
+        "status"
+      ],
+      "stop": {
+        "type": "after_commands"
+      },
+      "expect_baseline": {
+        "day": {
+          "eq": 7
+        },
+        "phase": {
+          "eq": "night"
+        },
+        "buildings_count": {
+          "eq": 1
+        },
+        "buildings_by_type.tower": {
+          "eq": 1
+        },
+        "explored_count": {
+          "eq": 2
+        },
+        "resources.wood": {
+          "eq": 40
+        },
+        "resources.stone": {
+          "eq": 26
+        },
+        "resources.food": {
+          "eq": 26
+        },
+        "hp": {
+          "eq": 6
+        },
+        "night_wave_total": {
+          "eq": 5
+        },
+        "threat": {
+          "eq": 0
+        }
+      },
+      "expect_target": {
+        "resources.wood": {
+          "min": 20,
+          "max": 50
+        },
+        "resources.stone": {
+          "min": 12,
+          "max": 30
+        },
+        "resources.food": {
+          "min": 15,
+          "max": 30
+        }
+      }
+    }
+  ]
+}

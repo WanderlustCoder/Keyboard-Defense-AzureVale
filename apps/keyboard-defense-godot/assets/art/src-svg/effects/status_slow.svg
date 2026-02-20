@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8" width="8" height="8">
+  <!-- Slow status (8x8) - ice crystal -->
+  <!-- Vertical bar -->
+  <rect x="3" y="0" width="2" height="8" fill="#66ccff"/>
+  <!-- Horizontal bar -->
+  <rect x="0" y="3" width="8" height="2" fill="#66ccff"/>
+  <!-- Center bright -->
+  <rect x="3" y="3" width="2" height="2" fill="#ffffff"/>
+</svg>

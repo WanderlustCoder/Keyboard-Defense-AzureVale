@@ -109,8 +109,8 @@ static func get_render_stats() -> Dictionary:
 		"draw_calls": Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME),
 		"vertices": Performance.get_monitor(Performance.RENDER_TOTAL_PRIMITIVES_IN_FRAME),
 		"objects": Performance.get_monitor(Performance.RENDER_TOTAL_OBJECTS_IN_FRAME),
-		"2d_items": Performance.get_monitor(Performance.RENDER_2D_ITEMS_IN_FRAME),
-		"2d_draw_calls": Performance.get_monitor(Performance.RENDER_2D_DRAW_CALLS_IN_FRAME)
+		"2d_items": 0,  # Not available in Godot 4.2
+		"2d_draw_calls": 0  # Not available in Godot 4.2
 	}
 
 
@@ -189,8 +189,8 @@ class ScopeTimer extends RefCounted:
 		_start_time = Time.get_ticks_usec()
 
 	func stop() -> float:
-		var elapsed_us := Time.get_ticks_usec() - _start_time
-		var elapsed_ms := elapsed_us / 1000.0
+		var elapsed_us: int = Time.get_ticks_usec() - _start_time
+		var elapsed_ms: float = elapsed_us / 1000.0
 		if elapsed_ms > _threshold_ms:
 			print("[PERF] %s: %.2fms" % [_name, elapsed_ms])
 		return elapsed_ms
@@ -203,6 +203,6 @@ static func start_timer(name: String, threshold_ms: float = 1.0) -> ScopeTimer:
 
 ## Measure a callable and return elapsed time in ms
 static func measure(callable: Callable) -> float:
-	var start := Time.get_ticks_usec()
+	var start: int = Time.get_ticks_usec()
 	callable.call()
 	return (Time.get_ticks_usec() - start) / 1000.0

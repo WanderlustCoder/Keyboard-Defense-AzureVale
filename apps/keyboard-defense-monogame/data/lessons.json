@@ -1,0 +1,1045 @@
+{
+  "version": 2,
+  "default_lesson": "full_alpha",
+  "graduation_paths": {
+    "beginner": {
+      "name": "Beginner Path",
+      "description": "Learn touch typing from scratch",
+      "stages": [
+        {
+          "stage": 1,
+          "name": "First Keys",
+          "lessons": ["intro_left_hand", "intro_right_hand", "intro_home_row"],
+          "goal": "Learn where each key is - one key at a time!"
+        },
+        {
+          "stage": 2,
+          "name": "Key Pairs",
+          "lessons": ["intro_pairs_left", "intro_pairs_right", "intro_pairs_all"],
+          "goal": "Practice two-key combinations"
+        },
+        {
+          "stage": 3,
+          "name": "Home Row Fundamentals",
+          "lessons": ["home_row_1", "home_row_2", "home_row_words"],
+          "goal": "Master the home row position"
+        },
+        {
+          "stage": 4,
+          "name": "Reach Row Addition",
+          "lessons": ["reach_row_1", "reach_row_2", "reach_row_words"],
+          "goal": "Add E, R, T, Y, U, I, O to your repertoire"
+        },
+        {
+          "stage": 5,
+          "name": "Bottom Row",
+          "lessons": ["bottom_row_1", "bottom_row_2", "bottom_row_words"],
+          "goal": "Master Z, X, C, V, B, N, M"
+        },
+        {
+          "stage": 6,
+          "name": "Full Alphabet",
+          "lessons": ["full_alpha", "full_alpha_words", "common_words"],
+          "goal": "Type all letters fluently"
+        },
+        {
+          "stage": 7,
+          "name": "Simple Sentences",
+          "lessons": ["sentence_basics", "sentence_home_row", "sentence_common"],
+          "goal": "Graduate to full sentence typing"
+        }
+      ]
+    },
+    "intermediate": {
+      "name": "Intermediate Path",
+      "description": "Improve speed and accuracy",
+      "stages": [
+        {
+          "stage": 1,
+          "name": "Word Mastery",
+          "lessons": ["full_alpha_words", "common_words", "bigram_flow"],
+          "goal": "Build vocabulary typing speed"
+        },
+        {
+          "stage": 2,
+          "name": "Pattern Training",
+          "lessons": ["double_letters", "rhythm_words", "alternating_hands"],
+          "goal": "Master common typing patterns"
+        },
+        {
+          "stage": 3,
+          "name": "Sentence Fluency",
+          "lessons": ["sentence_common", "sentence_intermediate", "sentence_pangrams"],
+          "goal": "Type sentences with flow"
+        },
+        {
+          "stage": 4,
+          "name": "Themed Content",
+          "lessons": ["biome_evergrove", "biome_stonepass", "sentence_fantasy"],
+          "goal": "Practice with varied vocabulary"
+        }
+      ]
+    },
+    "advanced": {
+      "name": "Advanced Path",
+      "description": "Master complex typing challenges",
+      "stages": [
+        {
+          "stage": 1,
+          "name": "Numbers and Symbols",
+          "lessons": ["numbers_1", "numbers_2", "symbols_1", "symbols_2"],
+          "goal": "Full keyboard proficiency"
+        },
+        {
+          "stage": 2,
+          "name": "Precision Training",
+          "lessons": ["precision_bronze", "precision_silver", "precision_gold"],
+          "goal": "Achieve 95%+ accuracy"
+        },
+        {
+          "stage": 3,
+          "name": "Speed Challenges",
+          "lessons": ["gauntlet_speed", "time_trial_sprint", "time_trial_marathon"],
+          "goal": "Push your speed limits"
+        },
+        {
+          "stage": 4,
+          "name": "Advanced Sentences",
+          "lessons": ["sentence_advanced", "sentence_coding", "sentence_pangrams"],
+          "goal": "Master complex content"
+        },
+        {
+          "stage": 5,
+          "name": "Legendary Trials",
+          "lessons": ["legendary_forest", "legendary_citadel", "legendary_apex"],
+          "goal": "Complete the ultimate challenges"
+        }
+      ]
+    },
+    "coding": {
+      "name": "Programmer Path",
+      "description": "Typing for developers",
+      "stages": [
+        {
+          "stage": 1,
+          "name": "Code Basics",
+          "lessons": ["code_variables", "code_keywords"],
+          "goal": "Type common code patterns"
+        },
+        {
+          "stage": 2,
+          "name": "Symbols and Syntax",
+          "lessons": ["symbols_1", "code_syntax", "email_patterns"],
+          "goal": "Master brackets and operators"
+        },
+        {
+          "stage": 3,
+          "name": "Code Mastery",
+          "lessons": ["code_master", "mixed_case", "sentence_coding"],
+          "goal": "Type code fluently"
+        }
+      ]
+    }
+  },
+  "lessons": [
+    {
+      "id": "intro_left_hand",
+      "name": "Left Hand - Single Keys",
+      "description": "Learn A, S, D, F one key at a time. No rush!",
+      "mode": "charset",
+      "charset": "asdf",
+      "lengths": { "scout": [1, 1], "raider": [1, 1], "armored": [1, 2] }
+    },
+    {
+      "id": "intro_right_hand",
+      "name": "Right Hand - Single Keys",
+      "description": "Learn J, K, L one key at a time.",
+      "mode": "charset",
+      "charset": "jkl",
+      "lengths": { "scout": [1, 1], "raider": [1, 1], "armored": [1, 2] }
+    },
+    {
+      "id": "intro_home_row",
+      "name": "All Home Keys - Single",
+      "description": "Practice all home row keys, one at a time.",
+      "mode": "charset",
+      "charset": "asdfghjkl",
+      "lengths": { "scout": [1, 1], "raider": [1, 1], "armored": [1, 2] }
+    },
+    {
+      "id": "intro_pairs_left",
+      "name": "Left Hand - Pairs",
+      "description": "Two-letter combinations with A, S, D, F.",
+      "mode": "charset",
+      "charset": "asdf",
+      "lengths": { "scout": [2, 2], "raider": [2, 2], "armored": [2, 3] }
+    },
+    {
+      "id": "intro_pairs_right",
+      "name": "Right Hand - Pairs",
+      "description": "Two-letter combinations with J, K, L.",
+      "mode": "charset",
+      "charset": "jkl",
+      "lengths": { "scout": [2, 2], "raider": [2, 2], "armored": [2, 3] }
+    },
+    {
+      "id": "intro_pairs_all",
+      "name": "Home Row - Pairs",
+      "description": "Two-letter combinations across home row.",
+      "mode": "charset",
+      "charset": "asdfghjkl",
+      "lengths": { "scout": [2, 2], "raider": [2, 2], "armored": [2, 3] }
+    },
+    {
+      "id": "home_row_1",
+      "name": "Home Row Basics",
+      "description": "ASDF GH JKL; focused practice.",
+      "mode": "charset",
+      "charset": "asdfghjkl;",
+      "lengths": { "scout": [3, 4], "raider": [4, 6], "armored": [6, 8] }
+    },
+    {
+      "id": "home_row_2",
+      "name": "Home Row Extended",
+      "description": "Full home row with both hands.",
+      "mode": "charset",
+      "charset": "asdfghjkl;",
+      "lengths": { "scout": [3, 4], "raider": [4, 6], "armored": [6, 8] }
+    },
+    {
+      "id": "home_row_words",
+      "name": "Home Row Words",
+      "description": "Real words using only home row keys.",
+      "mode": "wordlist",
+      "wordlist": ["ad", "ah", "as", "ha", "la", "add", "ads", "aha", "ask", "ass", "dad", "fad", "gag", "gal", "gas", "had", "hag", "has", "jag", "lag", "lad", "sad", "sag", "adds", "dads", "fads", "gaga", "gags", "gala", "gals", "glad", "hags", "half", "hall", "jags", "lads", "lass", "lags", "sags", "slag", "shag", "dash", "gash", "lash", "hash", "sash", "fall", "alas", "falls", "flask", "galls", "glass", "halls", "salad", "shall", "slash", "flash", "flasks", "salads"],
+      "lengths": { "scout": [3, 4], "raider": [4, 6], "armored": [6, 8] }
+    },
+    {
+      "id": "reach_row_1",
+      "name": "Reach Row Intro",
+      "description": "Adds E, R, T, Y, U to home row.",
+      "mode": "charset",
+      "charset": "asdfghjkl;ertyu",
+      "lengths": { "scout": [3, 4], "raider": [4, 6], "armored": [6, 8] }
+    },
+    {
+      "id": "reach_row_2",
+      "name": "Reach Row Mastery",
+      "description": "Full reach row with home row foundation.",
+      "mode": "charset",
+      "charset": "asdfjkl;ertghyuionm",
+      "lengths": { "scout": [4, 5], "raider": [5, 7], "armored": [7, 9] }
+    },
+    {
+      "id": "reach_row_words",
+      "name": "Reach Row Words",
+      "description": "Real words using home and reach row keys.",
+      "mode": "wordlist",
+      "wordlist": ["the", "are", "her", "his", "its", "let", "get", "set", "she", "yes", "yet", "red", "led", "fed", "use", "try", "dry", "fry", "sky", "sly", "fly", "eat", "art", "first", "last", "fast", "just", "self", "tell", "sell", "fell", "yell", "test", "rest", "lest", "jest", "left", "felt", "held", "said", "laid", "raid", "this", "that", "they", "these", "those", "there", "their", "here", "year", "dear", "fear", "tear", "hear", "near", "real", "deal", "seal", "heal", "feel", "reel", "steel", "steer", "trees", "fresh", "flesh", "great", "treat", "other", "after", "later", "refer", "defer", "three", "there", "these", "seeds", "leads", "reads", "heads", "ideas", "years", "fears", "tears", "hears", "deals", "feels", "heals", "least", "feast", "yeast", "steel", "still", "skill", "shill", "grill", "drill", "thrill", "astral", "thread", "steady", "really", "easily", "fairly", "yearly", "dearly", "fairly"],
+      "lengths": { "scout": [3, 4], "raider": [4, 6], "armored": [6, 8] }
+    },
+    {
+      "id": "upper_row_1",
+      "name": "Upper Row Intro",
+      "description": "Adds Q, W, P to reach row keys.",
+      "mode": "charset",
+      "charset": "asdfjkl;ertghyuionmqwp",
+      "lengths": { "scout": [4, 5], "raider": [5, 7], "armored": [7, 9] }
+    },
+    {
+      "id": "upper_row_2",
+      "name": "Upper Row Mastery",
+      "description": "Full keyboard coverage.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [4, 5], "raider": [5, 7], "armored": [7, 10] }
+    },
+    {
+      "id": "bottom_row_1",
+      "name": "Bottom Row Intro",
+      "description": "Adds Z, X, C, V to home row.",
+      "mode": "charset",
+      "charset": "asdfghjklzxcv",
+      "lengths": { "scout": [3, 4], "raider": [4, 6], "armored": [6, 8] }
+    },
+    {
+      "id": "bottom_row_2",
+      "name": "Bottom Row Mastery",
+      "description": "Full bottom row with B, N, M.",
+      "mode": "charset",
+      "charset": "asdfghjklzxcvbnm",
+      "lengths": { "scout": [4, 5], "raider": [5, 7], "armored": [7, 9] }
+    },
+    {
+      "id": "bottom_row_words",
+      "name": "Bottom Row Words",
+      "description": "Words featuring Z, X, C, V, B, N, M keys.",
+      "mode": "wordlist",
+      "wordlist": ["box", "fox", "mix", "fix", "six", "wax", "axe", "zen", "zip", "zap", "zoo", "van", "vim", "vex", "cab", "cub", "can", "con", "ban", "bin", "bun", "man", "men", "mob", "nab", "nib", "nub", "maze", "zone", "zinc", "exam", "next", "vibe", "cave", "move", "come", "come", "boom", "zoom", "buzz", "fizz", "jazz", "fuzz", "maze", "haze", "daze", "gaze", "lazy", "cozy", "foxy", "waxy", "boxer", "mixer", "fixer", "mover", "cover", "coven", "bacon", "cabin", "camel", "canoe", "melon", "lemon", "money", "honey", "bunny", "funny", "comma", "mammal", "common", "banana", "vacuum", "zenith", "zombie", "amazon", "bazaar", "pizzaz", "blizzard", "maximize", "minimize"],
+      "lengths": { "scout": [3, 4], "raider": [4, 6], "armored": [6, 8] }
+    },
+    {
+      "id": "mixed_rows",
+      "name": "Mixed Rows",
+      "description": "Bottom row combined with reach keys.",
+      "mode": "charset",
+      "charset": "asdfghjklzxcvbnmertyu",
+      "lengths": { "scout": [4, 5], "raider": [5, 7], "armored": [7, 9] }
+    },
+    {
+      "id": "speed_alpha",
+      "name": "Speed Alpha",
+      "description": "Full alphabet with quick bursts.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [3, 4], "raider": [4, 5], "armored": [5, 7] }
+    },
+    {
+      "id": "nexus_blend",
+      "name": "Nexus Blend",
+      "description": "All keys converge at the nexus.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [4, 5], "raider": [5, 7], "armored": [7, 10] }
+    },
+    {
+      "id": "apex_mastery",
+      "name": "Apex Mastery",
+      "description": "The ultimate typing challenge.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [5, 6], "raider": [6, 8], "armored": [8, 12] }
+    },
+    {
+      "id": "full_alpha",
+      "name": "Full Alphabet",
+      "description": "AZ general practice.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [3, 4], "raider": [4, 6], "armored": [6, 9] }
+    },
+    {
+      "id": "full_alpha_words",
+      "name": "Common English Words",
+      "description": "Frequently used English vocabulary.",
+      "mode": "wordlist",
+      "wordlist": ["the", "and", "for", "are", "but", "not", "you", "all", "can", "had", "her", "was", "one", "our", "out", "day", "get", "has", "him", "his", "how", "its", "may", "new", "now", "old", "see", "two", "way", "who", "boy", "did", "own", "say", "she", "too", "use", "been", "call", "come", "each", "find", "from", "have", "here", "just", "know", "like", "long", "make", "many", "more", "much", "must", "name", "only", "over", "part", "said", "same", "some", "take", "than", "them", "then", "they", "this", "time", "very", "want", "well", "what", "when", "with", "word", "work", "year", "about", "after", "being", "could", "every", "first", "found", "great", "house", "large", "learn", "never", "other", "place", "point", "right", "small", "sound", "spell", "still", "study", "their", "there", "these", "thing", "think", "three", "under", "water", "where", "which", "while", "world", "would", "write", "people", "before", "called", "change", "around", "should", "through", "between", "different", "important"],
+      "lengths": { "scout": [3, 4], "raider": [4, 6], "armored": [6, 9] }
+    },
+    {
+      "id": "numbers_1",
+      "name": "Number Row Intro",
+      "description": "Core numbers 1-5 with letters.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz12345",
+      "lengths": { "scout": [3, 4], "raider": [4, 6], "armored": [6, 8] }
+    },
+    {
+      "id": "numbers_2",
+      "name": "Number Row Mastery",
+      "description": "Full number row 0-9.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz1234567890",
+      "lengths": { "scout": [4, 5], "raider": [5, 7], "armored": [7, 10] }
+    },
+    {
+      "id": "punctuation_1",
+      "name": "Punctuation Basics",
+      "description": "Common punctuation marks.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz.,;:'\"",
+      "lengths": { "scout": [4, 5], "raider": [5, 7], "armored": [7, 9] }
+    },
+    {
+      "id": "punctuation_2",
+      "name": "Punctuation Mastery",
+      "description": "Full punctuation with symbols.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz.,;:'\"!?-",
+      "lengths": { "scout": [4, 6], "raider": [6, 8], "armored": [8, 11] }
+    },
+    {
+      "id": "symbols_1",
+      "name": "Symbol Intro",
+      "description": "Common programming symbols.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz@#$%&*()",
+      "lengths": { "scout": [4, 5], "raider": [5, 7], "armored": [7, 9] }
+    },
+    {
+      "id": "symbols_2",
+      "name": "Symbol Mastery",
+      "description": "Full symbol coverage.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz@#$%^&*()[]{}",
+      "lengths": { "scout": [5, 6], "raider": [6, 8], "armored": [8, 11] }
+    },
+    {
+      "id": "gauntlet_speed",
+      "name": "Speed Gauntlet",
+      "description": "Short bursts at maximum speed.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [2, 3], "raider": [3, 4], "armored": [4, 5] }
+    },
+    {
+      "id": "gauntlet_endurance",
+      "name": "Endurance Gauntlet",
+      "description": "Long words for sustained focus.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [6, 8], "raider": [8, 10], "armored": [10, 14] }
+    },
+    {
+      "id": "gauntlet_chaos",
+      "name": "Chaos Gauntlet",
+      "description": "Everything at once.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz1234567890.,;:'\"!?-@#$%&*()",
+      "lengths": { "scout": [4, 6], "raider": [6, 9], "armored": [9, 13] }
+    },
+    {
+      "id": "training_basics",
+      "name": "Training Basics",
+      "description": "Fundamental finger placement.",
+      "mode": "charset",
+      "charset": "asdf",
+      "lengths": { "scout": [2, 3], "raider": [3, 4], "armored": [4, 5] }
+    },
+    {
+      "id": "training_rhythm",
+      "name": "Training Rhythm",
+      "description": "Building typing rhythm.",
+      "mode": "charset",
+      "charset": "asdfghjkl;",
+      "lengths": { "scout": [2, 3], "raider": [3, 4], "armored": [4, 6] }
+    },
+    {
+      "id": "capitals_1",
+      "name": "Capital Intro",
+      "description": "Shift key with home row.",
+      "mode": "charset",
+      "charset": "asdfghjkl;ASDFGHJKL:",
+      "lengths": { "scout": [3, 4], "raider": [4, 6], "armored": [6, 8] }
+    },
+    {
+      "id": "capitals_2",
+      "name": "Capital Mastery",
+      "description": "Full alphabet with capitals.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+      "lengths": { "scout": [4, 5], "raider": [5, 7], "armored": [7, 10] }
+    },
+    {
+      "id": "twilight_whisper",
+      "name": "Twilight Whisper",
+      "description": "Soft keys in the shadows.",
+      "mode": "charset",
+      "charset": "asdfghjklqwer",
+      "lengths": { "scout": [3, 4], "raider": [4, 5], "armored": [5, 7] }
+    },
+    {
+      "id": "twilight_shadow",
+      "name": "Twilight Shadow",
+      "description": "Dancing between light and dark.",
+      "mode": "charset",
+      "charset": "asdfghjklqwerzxcv",
+      "lengths": { "scout": [4, 5], "raider": [5, 7], "armored": [7, 9] }
+    },
+    {
+      "id": "twilight_void",
+      "name": "Twilight Void",
+      "description": "The darkness speaks in keystrokes.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [5, 6], "raider": [6, 8], "armored": [8, 11] }
+    },
+    {
+      "id": "boss_grove_guardian",
+      "name": "Grove Guardian",
+      "description": "The ancient protector awakens.",
+      "mode": "charset",
+      "charset": "asdfghjkl;ertyu",
+      "lengths": { "scout": [4, 5], "raider": [5, 7], "armored": [7, 10] }
+    },
+    {
+      "id": "boss_citadel_warden",
+      "name": "Citadel Warden",
+      "description": "The warden guards the inner keep.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [5, 6], "raider": [6, 8], "armored": [8, 11] }
+    },
+    {
+      "id": "boss_twilight_lord",
+      "name": "Twilight Lord",
+      "description": "Master of shadow and light.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [5, 7], "raider": [7, 9], "armored": [9, 12] }
+    },
+    {
+      "id": "boss_eternal_scribe",
+      "name": "Eternal Scribe",
+      "description": "The keeper of all written knowledge.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz.,;:'\"!?-",
+      "lengths": { "scout": [5, 7], "raider": [7, 9], "armored": [9, 12] }
+    },
+    {
+      "id": "boss_fen_seer",
+      "name": "Fen Seer",
+      "description": "Mistfen prophet who reads the fog.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz.,;:'\"!?-()[]{}",
+      "lengths": { "scout": [5, 7], "raider": [7, 10], "armored": [10, 14] }
+    },
+    {
+      "id": "boss_sunlord",
+      "name": "Sunlord Champion",
+      "description": "The blazing champion of Sunfields.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [4, 6], "raider": [6, 8], "armored": [8, 11] }
+    },
+    {
+      "id": "common_words",
+      "name": "Common Words",
+      "description": "Frequently used English words.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [3, 4], "raider": [4, 6], "armored": [6, 8] }
+    },
+    {
+      "id": "finger_gym_left",
+      "name": "Left Hand Gym",
+      "description": "Strengthen the left hand.",
+      "mode": "charset",
+      "charset": "qwertasdfgzxcvb",
+      "lengths": { "scout": [3, 4], "raider": [4, 6], "armored": [6, 8] }
+    },
+    {
+      "id": "finger_gym_right",
+      "name": "Right Hand Gym",
+      "description": "Strengthen the right hand.",
+      "mode": "charset",
+      "charset": "yuiophjklnm",
+      "lengths": { "scout": [3, 4], "raider": [4, 6], "armored": [6, 8] }
+    },
+    {
+      "id": "hand_alternation_drill",
+      "name": "Hand Alternation Drill",
+      "description": "Left-right-left patterns.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [4, 5], "raider": [5, 7], "armored": [7, 9] }
+    },
+    {
+      "id": "fire_realm_1",
+      "name": "Ember Path",
+      "description": "The flames test your speed.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [3, 4], "raider": [4, 5], "armored": [5, 6] }
+    },
+    {
+      "id": "fire_realm_2",
+      "name": "Inferno Core",
+      "description": "The heart of the volcano.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [4, 5], "raider": [5, 6], "armored": [6, 8] }
+    },
+    {
+      "id": "fire_realm_boss",
+      "name": "Flame Tyrant",
+      "description": "Lord of the burning realm.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [5, 6], "raider": [6, 8], "armored": [8, 10] }
+    },
+    {
+      "id": "ice_realm_1",
+      "name": "Frozen Approach",
+      "description": "The cold demands precision.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [4, 5], "raider": [5, 7], "armored": [7, 9] }
+    },
+    {
+      "id": "ice_realm_2",
+      "name": "Glacier Heart",
+      "description": "Deep within the eternal ice.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [5, 6], "raider": [6, 8], "armored": [8, 10] }
+    },
+    {
+      "id": "ice_realm_boss",
+      "name": "Frost Empress",
+      "description": "Queen of the frozen wastes.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [5, 7], "raider": [7, 9], "armored": [9, 12] }
+    },
+    {
+      "id": "nature_realm_1",
+      "name": "Living Grove",
+      "description": "The forest breathes with life.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [4, 5], "raider": [5, 7], "armored": [7, 9] }
+    },
+    {
+      "id": "nature_realm_2",
+      "name": "World Tree",
+      "description": "The heart of all nature.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [5, 6], "raider": [6, 8], "armored": [8, 10] }
+    },
+    {
+      "id": "nature_realm_boss",
+      "name": "Ancient Treant",
+      "description": "Protector of the world tree.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [5, 7], "raider": [7, 9], "armored": [9, 12] }
+    },
+    {
+      "id": "code_variables",
+      "name": "Variable Names",
+      "description": "Common programming variables.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz_",
+      "lengths": { "scout": [3, 5], "raider": [5, 8], "armored": [8, 12] }
+    },
+    {
+      "id": "code_keywords",
+      "name": "Code Keywords",
+      "description": "Programming language keywords.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [3, 5], "raider": [5, 7], "armored": [7, 10] }
+    },
+    {
+      "id": "code_syntax",
+      "name": "Code Syntax",
+      "description": "Brackets, operators, and syntax.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz(){}[]<>=+-*/",
+      "lengths": { "scout": [4, 6], "raider": [6, 8], "armored": [8, 12] }
+    },
+    {
+      "id": "code_master",
+      "name": "Code Master",
+      "description": "Full programming proficiency.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz1234567890_(){}[]<>=+-*/;:.",
+      "lengths": { "scout": [5, 7], "raider": [7, 10], "armored": [10, 14] }
+    },
+    {
+      "id": "precision_bronze",
+      "name": "Bronze Precision",
+      "description": "Accuracy over speed.",
+      "mode": "charset",
+      "charset": "asdfghjkl;",
+      "lengths": { "scout": [4, 5], "raider": [5, 7], "armored": [7, 9] }
+    },
+    {
+      "id": "precision_silver",
+      "name": "Silver Precision",
+      "description": "Surgical accuracy required.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [5, 6], "raider": [6, 8], "armored": [8, 10] }
+    },
+    {
+      "id": "precision_gold",
+      "name": "Gold Precision",
+      "description": "Flawless execution demanded.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [6, 8], "raider": [8, 10], "armored": [10, 13] }
+    },
+    {
+      "id": "legendary_forest",
+      "name": "Legendary Forest",
+      "description": "The forest, reborn in challenge.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [5, 7], "raider": [7, 9], "armored": [9, 12] }
+    },
+    {
+      "id": "legendary_citadel",
+      "name": "Legendary Citadel",
+      "description": "The citadel's ultimate trial.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [6, 8], "raider": [8, 10], "armored": [10, 14] }
+    },
+    {
+      "id": "legendary_apex",
+      "name": "Legendary Apex",
+      "description": "Beyond mastery lies legend.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz1234567890.,;:'\"!?-",
+      "lengths": { "scout": [7, 9], "raider": [9, 12], "armored": [12, 16] }
+    },
+    {
+      "id": "time_trial_sprint",
+      "name": "Sprint Trial",
+      "description": "Race against time.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [2, 3], "raider": [3, 4], "armored": [4, 5] }
+    },
+    {
+      "id": "time_trial_marathon",
+      "name": "Marathon Trial",
+      "description": "Endurance under pressure.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [6, 8], "raider": [8, 11], "armored": [11, 15] }
+    },
+    {
+      "id": "double_letter_drill",
+      "name": "Double Letter Drill",
+      "description": "Words with repeated letters.",
+      "mode": "charset",
+      "charset": "abcdefghijklmnopqrstuvwxyz",
+      "lengths": { "scout": [4, 5], "raider": [5, 7], "armored": [7, 10] }
+    },
+    {
+      "id": "consonant_clusters",
+      "name": "Consonant Clusters",
+      "description": "Challenging consonant combinations.",
+      "mode": "charset",
+      "charset": "bcdfghjklmnpqrstvwxyz",
+      "lengths": { "scout": [4, 5], "raider": [5, 7], "armored": [7, 9] }
+    },
+    {
+      "id": "vowel_flow",
+      "name": "Vowel Flow",
+      "description": "Smooth vowel transitions.",
+      "mode": "charset",
+      "charset": "aeiou",
+      "lengths": { "scout": [3, 4], "raider": [4, 5], "armored": [5, 7] }
+    },
+    {
+      "id": "bigram_flow",
+      "name": "Bigram Flow",
+      "description": "Common two-letter patterns like TH, ER, ON.",
+      "mode": "wordlist",
+      "wordlist": ["the", "there", "them", "then", "other", "another", "weather", "whether", "rather", "gather", "father", "mother", "brother", "either", "neither", "earth", "worth", "birth", "north", "south", "youth", "truth", "growth", "health", "wealth", "breath", "death", "beneath", "length", "strength", "month", "month", "cloth", "smooth", "tooth", "booth", "soothe", "loathe", "clothe", "bathe"],
+      "lengths": { "scout": [3, 4], "raider": [4, 6], "armored": [6, 8] }
+    },
+    {
+      "id": "weak_fingers",
+      "name": "Weak Finger Training",
+      "description": "Focus on pinky and ring finger keys.",
+      "mode": "charset",
+      "charset": "qazwsxplok",
+      "lengths": { "scout": [3, 4], "raider": [4, 5], "armored": [5, 7] }
+    },
+    {
+      "id": "pinky_power",
+      "name": "Pinky Power",
+      "description": "Intensive pinky finger practice.",
+      "mode": "charset",
+      "charset": "qazp",
+      "lengths": { "scout": [3, 4], "raider": [4, 5], "armored": [5, 6] }
+    },
+    {
+      "id": "ring_finger_focus",
+      "name": "Ring Finger Focus",
+      "description": "Build ring finger dexterity.",
+      "mode": "charset",
+      "charset": "wsxopl",
+      "lengths": { "scout": [3, 4], "raider": [4, 5], "armored": [5, 7] }
+    },
+    {
+      "id": "biome_evergrove",
+      "name": "Evergrove Woods",
+      "description": "Forest-themed vocabulary.",
+      "mode": "wordlist",
+      "wordlist": ["forest", "grove", "tree", "leaf", "branch", "bark", "root", "moss", "fern", "oak", "pine", "maple", "willow", "birch", "cedar", "spruce", "acorn", "sapling", "timber", "lumber", "woodland", "glade", "thicket", "clearing", "canopy", "shade", "foliage", "undergrowth", "bramble", "vine", "shrub", "bush", "hedge", "meadow", "dell", "vale", "hollow", "glen", "copse", "bower"],
+      "lengths": { "scout": [3, 5], "raider": [5, 7], "armored": [7, 10] }
+    },
+    {
+      "id": "biome_stonepass",
+      "name": "Stonepass Mountains",
+      "description": "Mountain-themed vocabulary.",
+      "mode": "wordlist",
+      "wordlist": ["mountain", "peak", "summit", "ridge", "cliff", "rock", "stone", "boulder", "cave", "cavern", "gorge", "canyon", "ravine", "crag", "bluff", "ledge", "slope", "ascent", "descent", "plateau", "granite", "slate", "quarry", "mine", "ore", "crystal", "gem", "iron", "copper", "silver", "gold", "tunnel", "shaft", "vein", "avalanche", "rockslide", "pass", "trail", "path", "alpine"],
+      "lengths": { "scout": [3, 5], "raider": [5, 7], "armored": [7, 10] }
+    },
+    {
+      "id": "biome_mistfen",
+      "name": "Mistfen Swamps",
+      "description": "Swamp-themed vocabulary.",
+      "mode": "wordlist",
+      "wordlist": ["swamp", "marsh", "bog", "fen", "mire", "muck", "mud", "moss", "reed", "cattail", "lily", "pond", "pool", "creek", "stream", "murk", "mist", "fog", "haze", "damp", "humid", "soggy", "wet", "dank", "frog", "toad", "newt", "snake", "heron", "crane", "duck", "goose", "fish", "eel", "crab", "clam", "snail", "slug", "leech", "mosquito"],
+      "lengths": { "scout": [3, 4], "raider": [4, 6], "armored": [6, 9] }
+    },
+    {
+      "id": "biome_sunfields",
+      "name": "Sunfields Plains",
+      "description": "Plains-themed vocabulary.",
+      "mode": "wordlist",
+      "wordlist": ["field", "plain", "prairie", "meadow", "grass", "wheat", "corn", "barley", "oat", "rye", "hay", "straw", "farm", "barn", "mill", "silo", "plow", "harvest", "crop", "seed", "soil", "earth", "dirt", "dust", "sun", "sky", "cloud", "wind", "breeze", "rain", "dew", "mist", "dawn", "dusk", "noon", "horizon", "vista", "expanse", "pasture", "range"],
+      "lengths": { "scout": [3, 5], "raider": [5, 7], "armored": [7, 9] }
+    },
+    {
+      "id": "alternating_hands",
+      "name": "Alternating Hands",
+      "description": "Words that alternate between hands.",
+      "mode": "wordlist",
+      "wordlist": ["their", "world", "which", "would", "right", "might", "sight", "light", "night", "fight", "eight", "height", "weight", "sleigh", "neigh", "leigh", "weigh", "thigh", "sigh", "high", "nigh", "plaid", "maid", "paid", "raid", "braid", "afraid", "laid", "said", "played", "stayed", "prayed", "swayed", "delayed", "dismayed", "betrayed", "portrayed", "surveyed", "conveyed", "displayed"],
+      "lengths": { "scout": [4, 5], "raider": [5, 7], "armored": [7, 9] }
+    },
+    {
+      "id": "same_hand_words",
+      "name": "Same Hand Challenge",
+      "description": "Words typed primarily with one hand.",
+      "mode": "wordlist",
+      "wordlist": ["test", "rest", "best", "west", "east", "fast", "vast", "cast", "last", "past", "mast", "feast", "beast", "least", "yeast", "waste", "haste", "taste", "paste", "caste", "grass", "brass", "class", "glass", "mass", "bass", "pass", "sass", "jazz", "fizz", "buzz", "fuzz", "huff", "puff", "buff", "cuff", "muff", "stuff", "fluff", "bluff"],
+      "lengths": { "scout": [3, 4], "raider": [4, 5], "armored": [5, 6] }
+    },
+    {
+      "id": "bigram_common",
+      "name": "Common Bigrams",
+      "description": "Common two-letter patterns for typing fluency.",
+      "mode": "wordlist",
+      "wordlist": ["the", "and", "that", "this", "with", "have", "from", "they", "been", "said", "each", "which", "their", "will", "when", "make", "like", "time", "just", "know", "take", "people", "year", "your", "good", "some", "could", "them", "than", "then", "other", "into", "think", "look", "only", "come", "over", "also", "back", "after"],
+      "lengths": { "scout": [3, 4], "raider": [4, 6], "armored": [6, 8] }
+    },
+    {
+      "id": "pinky_ring_strength",
+      "name": "Pinky Ring Strength",
+      "description": "Focus on pinky and ring finger strength.",
+      "mode": "charset",
+      "charset": "qazwsxpolm",
+      "lengths": { "scout": [3, 4], "raider": [4, 5], "armored": [5, 7] }
+    },
+    {
+      "id": "weak_fingers_words",
+      "name": "Pinky Words",
+      "description": "Words emphasizing outer finger reach.",
+      "mode": "wordlist",
+      "wordlist": ["plaza", "quiz", "aqua", "zeal", "zone", "zero", "zoom", "zest", "wax", "was", "saw", "paw", "law", "raw", "jaw", "claw", "draw", "straw", "spawn", "prawn", "pawn", "yawn", "lawn", "fawn", "dawn", "brawl", "crawl", "shawl", "awl", "owl", "howl", "growl", "prowl", "scowl", "vowel", "towel", "bowl", "fowl", "jowl", "cowl"],
+      "lengths": { "scout": [3, 4], "raider": [4, 5], "armored": [5, 6] }
+    },
+    {
+      "id": "mixed_case",
+      "name": "CamelCase Challenge",
+      "description": "Practice mixed case typing patterns.",
+      "mode": "wordlist",
+      "wordlist": ["GetUser", "SetName", "RunTest", "AddItem", "DelNode", "MaxSize", "MinVal", "NewFile", "OldData", "TopView", "EndGame", "SubMenu", "PopUp", "LogIn", "LogOut", "SignUp", "OptIn", "OptOut", "BackUp", "DropIn", "TurnOn", "TurnOff", "FadeIn", "FadeOut", "ZoomIn", "ZoomOut", "PlugIn", "TuneUp", "WarmUp", "CoolDown"],
+      "lengths": { "scout": [5, 6], "raider": [6, 7], "armored": [7, 9] }
+    },
+    {
+      "id": "email_patterns",
+      "name": "Email Typing",
+      "description": "Practice @, dots, and underscores.",
+      "mode": "wordlist",
+      "wordlist": ["user@mail", "test@site", "info@web", "help@app", "data.csv", "file.txt", "page.html", "app.js", "main.py", "test.go", "user_id", "max_val", "min_len", "new_item", "old_data", "get_user", "set_name", "run_test", "add_node", "del_file", "api.key", "db.host", "app.port", "user.name", "file.path", "node.js", "react.js", "vue.js", "next.js", "nest.js"],
+      "lengths": { "scout": [6, 8], "raider": [8, 10], "armored": [10, 12] }
+    },
+    {
+      "id": "double_letters",
+      "name": "Double Trouble",
+      "description": "Words with repeated letters.",
+      "mode": "wordlist",
+      "wordlist": ["book", "look", "took", "cook", "hook", "nook", "brook", "crook", "shook", "stood", "good", "wood", "hood", "food", "mood", "brood", "flood", "blood", "cool", "fool", "pool", "tool", "wool", "spool", "drool", "stool", "school", "balloon", "raccoon", "cartoon", "bassoon", "harpoon", "monsoon", "platoon", "festoon", "maroon", "lagoon", "baboon", "buffoon", "tycoon"],
+      "lengths": { "scout": [4, 5], "raider": [5, 7], "armored": [7, 8] }
+    },
+    {
+      "id": "rhythm_words",
+      "name": "Rhythm Builders",
+      "description": "Words with natural typing rhythm.",
+      "mode": "wordlist",
+      "wordlist": ["element", "minimum", "maximum", "premium", "stadium", "medium", "calcium", "sodium", "helium", "uranium", "titanium", "aluminum", "magnesium", "potassium", "chromium", "platinum", "selenium", "germanium", "palladium", "vanadium", "momentum", "symposium", "aquarium", "terrarium", "solarium", "auditorium", "moratorium", "crematorium", "planetarium", "sanitarium"],
+      "lengths": { "scout": [5, 7], "raider": [7, 9], "armored": [9, 12] }
+    },
+    {
+      "id": "sentence_basics",
+      "name": "Simple Sentences",
+      "description": "Short, simple sentences to build fluency.",
+      "mode": "sentence",
+      "sentences": [
+        "The cat sat.",
+        "I can run.",
+        "She is here.",
+        "We go home.",
+        "It is cold.",
+        "He has a dog.",
+        "They are fast.",
+        "This is fun.",
+        "I like cats.",
+        "We see the sun.",
+        "The dog ran fast.",
+        "I have a red hat.",
+        "She can read well.",
+        "They play all day.",
+        "We went to school.",
+        "He likes the park.",
+        "The bird can fly.",
+        "I want some food.",
+        "She has blue eyes.",
+        "We need more time."
+      ]
+    },
+    {
+      "id": "sentence_home_row",
+      "name": "Home Row Sentences",
+      "description": "Sentences emphasizing home row keys.",
+      "mode": "sentence",
+      "sentences": [
+        "Dad has a flask.",
+        "A glad lad had a salad.",
+        "Ash falls as a flash.",
+        "Shall dad add all salads?",
+        "A gal had a glass.",
+        "Add half a flask.",
+        "Dash and slash all flags.",
+        "A sad lass shall fall.",
+        "Glad dad adds a dash.",
+        "Flash a flag as a gala."
+      ]
+    },
+    {
+      "id": "sentence_common",
+      "name": "Common Phrases",
+      "description": "Everyday phrases and expressions.",
+      "mode": "sentence",
+      "sentences": [
+        "Thank you very much.",
+        "How are you today?",
+        "Nice to meet you.",
+        "See you later.",
+        "Have a good day.",
+        "What time is it?",
+        "I will be there soon.",
+        "Please let me know.",
+        "That sounds great.",
+        "I agree with you.",
+        "Could you help me?",
+        "That is a good idea.",
+        "I am on my way.",
+        "Let me think about it.",
+        "I appreciate your help.",
+        "Take care of yourself.",
+        "It was nice talking to you.",
+        "I look forward to it.",
+        "Best wishes to you.",
+        "Have a wonderful day."
+      ]
+    },
+    {
+      "id": "sentence_pangrams",
+      "name": "Pangram Practice",
+      "description": "Sentences using every letter of the alphabet.",
+      "mode": "sentence",
+      "sentences": [
+        "The quick brown fox jumps over the lazy dog.",
+        "Pack my box with five dozen liquor jugs.",
+        "How vexingly quick daft zebras jump.",
+        "The five boxing wizards jump quickly.",
+        "Sphinx of black quartz, judge my vow.",
+        "Two driven jocks help fax my big quiz.",
+        "The jay, pig, fox, zebra, and my wolves quack.",
+        "Sympathizing would fix Quaker objectives.",
+        "A quivering Texas zombie fought republic joy.",
+        "Crazy Frederick bought many very exquisite opal jewels."
+      ]
+    },
+    {
+      "id": "sentence_intermediate",
+      "name": "Intermediate Sentences",
+      "description": "Longer sentences for developing typists.",
+      "mode": "sentence",
+      "sentences": [
+        "The old house on the hill has been empty for years.",
+        "She walked through the garden, enjoying the warm sunshine.",
+        "After the storm, a beautiful rainbow appeared in the sky.",
+        "The children played happily in the park all afternoon.",
+        "He decided to learn a new skill during his free time.",
+        "The restaurant serves delicious food at reasonable prices.",
+        "We should always try our best in everything we do.",
+        "The library has thousands of books on many subjects.",
+        "Spring is my favorite season because flowers bloom everywhere.",
+        "Learning to type quickly takes practice and patience.",
+        "The concert was amazing and the crowd loved every song.",
+        "She finished reading the book in just three days.",
+        "The mountain path was steep but the view was worth it.",
+        "He makes coffee every morning before starting work.",
+        "The team worked together to complete the project on time."
+      ]
+    },
+    {
+      "id": "sentence_advanced",
+      "name": "Advanced Sentences",
+      "description": "Complex sentences for skilled typists.",
+      "mode": "sentence",
+      "sentences": [
+        "The professor explained the complex theory with remarkable clarity and enthusiasm.",
+        "Although the weather forecast predicted rain, we decided to go hiking anyway.",
+        "The architectural design of the building combines modern aesthetics with sustainability.",
+        "She demonstrated extraordinary leadership skills during the challenging project.",
+        "The symphony orchestra performed Beethoven's Fifth Symphony with exceptional precision.",
+        "Scientists discovered a new species of butterfly in the remote tropical rainforest.",
+        "The entrepreneur successfully launched three innovative startups within five years.",
+        "Understanding different perspectives helps us become more empathetic individuals.",
+        "The ancient manuscript revealed fascinating insights about medieval civilization.",
+        "Technological advancement continues to reshape how we communicate and collaborate."
+      ]
+    },
+    {
+      "id": "sentence_fantasy",
+      "name": "Fantasy Sentences",
+      "description": "Sentences themed around the world of Keystonia.",
+      "mode": "sentence",
+      "sentences": [
+        "The brave knight defended the castle from the shadow army.",
+        "Ancient magic flows through the keys of the mystic keyboard.",
+        "Elder Lyra taught the young heroes the secrets of swift typing.",
+        "The dragon breathed fire, but the typist was faster.",
+        "In Keystonia, words have power beyond imagination.",
+        "The dark lord's minions fell before a flurry of keystrokes.",
+        "Every accurate letter strengthens the kingdom's defenses.",
+        "The wizard enchanted the scroll with lightning-fast incantations.",
+        "Heroes are forged in the training grounds of the citadel.",
+        "The Void Tyrant's power weakens with each word typed true.",
+        "Legends speak of typists who could defeat armies with their speed.",
+        "The crystal towers of Keystonia glow with the light of mastery.",
+        "Only those with nimble fingers may enter the legendary trials.",
+        "The ancient keyboard holds the key to defeating darkness.",
+        "Victory belongs to those who type with both speed and precision."
+      ]
+    },
+    {
+      "id": "sentence_coding",
+      "name": "Programming Sentences",
+      "description": "Sentences about coding and technology.",
+      "mode": "sentence",
+      "sentences": [
+        "The function returns the sum of two integer values.",
+        "Always remember to close your database connections properly.",
+        "Version control helps teams collaborate on software projects.",
+        "The algorithm has a time complexity of O(n log n).",
+        "Unit tests ensure that individual components work correctly.",
+        "The API endpoint accepts POST requests with JSON data.",
+        "Clean code is easier to read, maintain, and debug.",
+        "The variable stores the user's input from the form field.",
+        "Recursion occurs when a function calls itself repeatedly.",
+        "The compiler converts source code into machine-readable format.",
+        "Object-oriented programming uses classes and inheritance.",
+        "The loop iterates through each element in the array.",
+        "Exception handling prevents crashes from unexpected errors.",
+        "The framework provides reusable components for rapid development.",
+        "Documentation helps other developers understand your code."
+      ]
+    }
+  ]
+}

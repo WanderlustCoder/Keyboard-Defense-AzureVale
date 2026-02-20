@@ -1,8 +1,6 @@
-name: codex-dashboard-nightly
+name: archived-codex-dashboard-nightly
 
 on:
-  schedule:
-    - cron: "30 5 * * *"
   workflow_dispatch:
     inputs:
       summary:

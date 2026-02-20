@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8" width="8" height="8">
+  <!-- Poison status (8x8) - droplet -->
+  <!-- Droplet body -->
+  <rect x="2" y="3" width="4" height="4" fill="#44cc44"/>
+  <rect x="3" y="2" width="2" height="2" fill="#44cc44"/>
+  <!-- Droplet tip -->
+  <rect x="3" y="0" width="2" height="2" fill="#66ee66"/>
+  <!-- Highlight -->
+  <rect x="2" y="3" width="1" height="2" fill="#88ff88"/>
+</svg>

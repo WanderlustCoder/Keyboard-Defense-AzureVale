@@ -5,6 +5,7 @@ const GameState = preload("res://sim/types.gd")
 const SimBuildings = preload("res://sim/buildings.gd")
 const SimRng = preload("res://sim/rng.gd")
 const SimBalance = preload("res://sim/balance.gd")
+const SimUpgrades = preload("res://sim/upgrades.gd")
 
 const NIGHT_WAVE_BASE_BY_DAY := {
     1: 2,
@@ -33,11 +34,40 @@ static func advance_day(state: GameState) -> Dictionary:
     state.day += 1
     var production: Dictionary = SimBuildings.daily_production(state)
     var summary: Array[String] = []
+
+    # Get research production bonuses
+    var food_bonus: float = SimUpgrades.get_food_production_bonus(state)
+    var gold_bonus: float = SimUpgrades.get_gold_production_bonus(state)
+
     for key in GameState.RESOURCE_KEYS:
-        var amount: int = int(production.get(key, 0))
+        var base_amount: int = int(production.get(key, 0))
+        var amount: int = base_amount
+
+        # Apply food production bonus from research
+        var bonus_applied: bool = false
+        if key == "food" and food_bonus > 0.0 and base_amount > 0:
+            amount = max(base_amount, int(float(base_amount) * (1.0 + food_bonus)))
+            bonus_applied = amount > base_amount
+
         if amount > 0:
             state.resources[key] = int(state.resources.get(key, 0)) + amount
-            summary.append("%d %s" % [amount, key])
+            if bonus_applied:
+                summary.append("%d %s (+%d%%)" % [amount, key, int(food_bonus * 100)])
+            else:
+                summary.append("%d %s" % [amount, key])
+
+    # Apply gold per building from research (Taxation)
+    var gold_per_building: int = SimUpgrades.get_gold_per_building(state)
+    if gold_per_building > 0:
+        var building_count: int = state.structures.size()
+        var tax_gold: int = building_count * gold_per_building
+        if tax_gold > 0:
+            state.gold += tax_gold
+            summary.append("+%d gold (tax)" % tax_gold)
+
+    # Apply gold production bonus (if there's any gold income source)
+    # This would apply to market/trade buildings if implemented
+
     var events: Array[String] = ["Day advanced to %d." % state.day]
     if summary.is_empty():
         events.append("Production: none.")

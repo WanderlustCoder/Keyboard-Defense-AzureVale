@@ -1,0 +1,232 @@
+{
+  "tables": [
+    {
+      "id": "evergrove_wagon",
+      "entries": [
+        { "event_id": "evt_bent_wheel", "weight": 35 },
+        { "event_id": "evt_hidden_cache", "weight": 25 },
+        { "event_id": "evt_abandoned_camp", "weight": 20 },
+        { "event_id": "evt_lost_traveler", "weight": 15 },
+        { "event_id": "evt_forest_ambush", "weight": 5 }
+      ],
+      "conditions": []
+    },
+    {
+      "id": "evergrove_shrine",
+      "entries": [
+        { "event_id": "evt_shrine_offering", "weight": 40 },
+        { "event_id": "evt_standing_stone", "weight": 25 },
+        { "event_id": "evt_scribe_notes", "weight": 20 },
+        { "event_id": "evt_lost_traveler", "weight": 15 }
+      ],
+      "conditions": []
+    },
+    {
+      "id": "evergrove_herbs",
+      "entries": [
+        { "event_id": "evt_herb_patch", "weight": 40 },
+        { "event_id": "evt_berry_bush", "weight": 30 },
+        { "event_id": "evt_wild_boar", "weight": 15 },
+        { "event_id": "evt_scribe_notes", "weight": 15 }
+      ],
+      "conditions": []
+    },
+    {
+      "id": "evergrove_default",
+      "entries": [
+        { "event_id": "evt_bent_wheel", "weight": 15 },
+        { "event_id": "evt_herb_patch", "weight": 15 },
+        { "event_id": "evt_berry_bush", "weight": 12 },
+        { "event_id": "evt_scribe_notes", "weight": 10 },
+        { "event_id": "evt_shrine_offering", "weight": 10 },
+        { "event_id": "evt_lost_traveler", "weight": 10 },
+        { "event_id": "evt_hidden_cache", "weight": 8 },
+        { "event_id": "evt_abandoned_camp", "weight": 8 },
+        { "event_id": "evt_standing_stone", "weight": 6 },
+        { "event_id": "evt_wild_boar", "weight": 4 },
+        { "event_id": "evt_forest_ambush", "weight": 2 }
+      ],
+      "conditions": []
+    },
+    {
+      "id": "stonepass_quarry",
+      "entries": [
+        { "event_id": "evt_ore_vein", "weight": 35 },
+        { "event_id": "evt_collapsed_tunnel", "weight": 25 },
+        { "event_id": "evt_miner_ghost", "weight": 20 },
+        { "event_id": "evt_rockslide", "weight": 20 }
+      ],
+      "conditions": []
+    },
+    {
+      "id": "stonepass_watchtower",
+      "entries": [
+        { "event_id": "evt_tower_scout", "weight": 30 },
+        { "event_id": "evt_bandit_lookout", "weight": 25 },
+        { "event_id": "evt_signal_fire", "weight": 25 },
+        { "event_id": "evt_abandoned_armory", "weight": 20 }
+      ],
+      "conditions": []
+    },
+    {
+      "id": "stonepass_cave",
+      "entries": [
+        { "event_id": "evt_cave_beast", "weight": 30 },
+        { "event_id": "evt_crystal_formation", "weight": 25 },
+        { "event_id": "evt_underground_spring", "weight": 25 },
+        { "event_id": "evt_collapsed_tunnel", "weight": 20 }
+      ],
+      "conditions": []
+    },
+    {
+      "id": "stonepass_cairn",
+      "entries": [
+        { "event_id": "evt_ancestor_blessing", "weight": 35 },
+        { "event_id": "evt_mountain_sage", "weight": 30 },
+        { "event_id": "evt_miner_ghost", "weight": 20 },
+        { "event_id": "evt_signal_fire", "weight": 15 }
+      ],
+      "conditions": []
+    },
+    {
+      "id": "mistfen_dock",
+      "entries": [
+        { "event_id": "evt_sunken_cargo", "weight": 35 },
+        { "event_id": "evt_fen_fisher", "weight": 25 },
+        { "event_id": "evt_swamp_creature", "weight": 20 },
+        { "event_id": "evt_fog_spirit", "weight": 20 }
+      ],
+      "conditions": []
+    },
+    {
+      "id": "mistfen_willows",
+      "entries": [
+        { "event_id": "evt_willow_whispers", "weight": 35 },
+        { "event_id": "evt_healing_waters", "weight": 30 },
+        { "event_id": "evt_fog_spirit", "weight": 20 },
+        { "event_id": "evt_swamp_creature", "weight": 15 }
+      ],
+      "conditions": []
+    },
+    {
+      "id": "mistfen_hut",
+      "entries": [
+        { "event_id": "evt_swamp_witch", "weight": 35 },
+        { "event_id": "evt_fen_fisher", "weight": 25 },
+        { "event_id": "evt_potion_trade", "weight": 25 },
+        { "event_id": "evt_fog_spirit", "weight": 15 }
+      ],
+      "conditions": []
+    },
+    {
+      "id": "mistfen_altar",
+      "entries": [
+        { "event_id": "evt_dark_offering", "weight": 30 },
+        { "event_id": "evt_willow_whispers", "weight": 25 },
+        { "event_id": "evt_fog_spirit", "weight": 25 },
+        { "event_id": "evt_sunken_cargo", "weight": 20 }
+      ],
+      "conditions": []
+    },
+    {
+      "id": "sunfields_windmill",
+      "entries": [
+        { "event_id": "evt_grain_stores", "weight": 35 },
+        { "event_id": "evt_miller_family", "weight": 30 },
+        { "event_id": "evt_field_bandits", "weight": 20 },
+        { "event_id": "evt_harvest_festival", "weight": 15 }
+      ],
+      "conditions": []
+    },
+    {
+      "id": "sunfields_orchard",
+      "entries": [
+        { "event_id": "evt_golden_apples", "weight": 35 },
+        { "event_id": "evt_harvest_festival", "weight": 25 },
+        { "event_id": "evt_miller_family", "weight": 25 },
+        { "event_id": "evt_field_bandits", "weight": 15 }
+      ],
+      "conditions": []
+    },
+    {
+      "id": "sunfields_arena",
+      "entries": [
+        { "event_id": "evt_champion_challenge", "weight": 35 },
+        { "event_id": "evt_training_grounds", "weight": 30 },
+        { "event_id": "evt_field_bandits", "weight": 20 },
+        { "event_id": "evt_veteran_wisdom", "weight": 15 }
+      ],
+      "conditions": []
+    },
+    {
+      "id": "sunfields_monument",
+      "entries": [
+        { "event_id": "evt_hero_blessing", "weight": 35 },
+        { "event_id": "evt_veteran_wisdom", "weight": 30 },
+        { "event_id": "evt_harvest_festival", "weight": 20 },
+        { "event_id": "evt_training_grounds", "weight": 15 }
+      ],
+      "conditions": []
+    },
+    {
+      "id": "evergrove_hollow",
+      "entries": [
+        { "event_id": "evt_standing_stone", "weight": 30 },
+        { "event_id": "evt_scribe_notes", "weight": 25 },
+        { "event_id": "evt_forest_ambush", "weight": 25 },
+        { "event_id": "evt_wild_boar", "weight": 20 }
+      ],
+      "conditions": []
+    },
+    {
+      "id": "evergrove_beehives",
+      "entries": [
+        { "event_id": "evt_berry_bush", "weight": 35 },
+        { "event_id": "evt_herb_patch", "weight": 30 },
+        { "event_id": "evt_wild_boar", "weight": 20 },
+        { "event_id": "evt_hidden_cache", "weight": 15 }
+      ],
+      "conditions": []
+    },
+    {
+      "id": "stonepass_forge",
+      "entries": [
+        { "event_id": "evt_ore_vein", "weight": 35 },
+        { "event_id": "evt_abandoned_armory", "weight": 30 },
+        { "event_id": "evt_mountain_sage", "weight": 20 },
+        { "event_id": "evt_miner_ghost", "weight": 15 }
+      ],
+      "conditions": []
+    },
+    {
+      "id": "mistfen_graveyard",
+      "entries": [
+        { "event_id": "evt_miner_ghost", "weight": 30 },
+        { "event_id": "evt_dark_offering", "weight": 25 },
+        { "event_id": "evt_fog_spirit", "weight": 25 },
+        { "event_id": "evt_swamp_creature", "weight": 20 }
+      ],
+      "conditions": []
+    },
+    {
+      "id": "sunfields_market",
+      "entries": [
+        { "event_id": "evt_miller_family", "weight": 30 },
+        { "event_id": "evt_grain_stores", "weight": 25 },
+        { "event_id": "evt_potion_trade", "weight": 25 },
+        { "event_id": "evt_field_bandits", "weight": 20 }
+      ],
+      "conditions": []
+    },
+    {
+      "id": "sunfields_fountain",
+      "entries": [
+        { "event_id": "evt_healing_waters", "weight": 35 },
+        { "event_id": "evt_hero_blessing", "weight": 30 },
+        { "event_id": "evt_shrine_offering", "weight": 20 },
+        { "event_id": "evt_harvest_festival", "weight": 15 }
+      ],
+      "conditions": []
+    }
+  ]
+}

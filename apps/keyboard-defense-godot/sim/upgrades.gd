@@ -3,6 +3,7 @@ extends RefCounted
 
 const GameState = preload("res://sim/types.gd")
 const SimHeroTypes = preload("res://sim/hero_types.gd")
+const SimResearch = preload("res://sim/research.gd")
 
 static var _kingdom_upgrades: Array = []
 static var _unit_upgrades: Array = []
@@ -126,7 +127,7 @@ static func purchase_unit_upgrade(state: GameState, upgrade_id: String) -> Dicti
 
 	return {"ok": true, "message": "Purchased %s for %d gold" % [label, cost]}
 
-## Calculate total effect value from all purchased upgrades and hero passives
+## Calculate total effect value from all purchased upgrades, hero passives, and research
 static func get_total_effect(state: GameState, effect_key: String) -> float:
 	var total: float = 0.0
 
@@ -149,6 +150,14 @@ static func get_total_effect(state: GameState, effect_key: String) -> float:
 		var hero_effects: Dictionary = SimHeroTypes.get_passive_effects(state.hero_id)
 		if hero_effects.has(effect_key):
 			total += float(hero_effects.get(effect_key, 0))
+
+	# Sum completed research effects
+	var research := SimResearch.instance()
+	var research_effects: Dictionary = research.get_total_effects(state)
+	if research_effects.has(effect_key):
+		var value = research_effects.get(effect_key, 0)
+		if typeof(value) != TYPE_BOOL:
+			total += float(value)
 
 	return total
 
@@ -206,6 +215,62 @@ static func get_enemy_speed_reduction(state: GameState) -> float:
 ## Get passive gold income per dawn
 static func get_gold_income(state: GameState) -> int:
 	return int(get_total_effect(state, "gold_income"))
+
+## Research-specific effects
+
+## Get stone cost reduction (0.0 to 1.0)
+static func get_stone_cost_reduction(state: GameState) -> float:
+	return clampf(get_total_effect(state, "stone_cost_reduction"), 0.0, 0.5)
+
+## Get build limit bonus (extra buildings per day)
+static func get_build_limit_bonus(state: GameState) -> int:
+	return int(get_total_effect(state, "build_limit_bonus"))
+
+## Get wall defense bonus
+static func get_wall_defense_bonus(state: GameState) -> int:
+	return int(get_total_effect(state, "wall_defense_bonus"))
+
+## Get build cost reduction (0.0 to 1.0)
+static func get_build_cost_reduction(state: GameState) -> float:
+	return clampf(get_total_effect(state, "build_cost_reduction"), 0.0, 0.5)
+
+## Get food production bonus (multiplier)
+static func get_food_production_bonus(state: GameState) -> float:
+	return get_total_effect(state, "food_production_bonus")
+
+## Get gold production bonus (multiplier)
+static func get_gold_production_bonus(state: GameState) -> float:
+	return get_total_effect(state, "gold_production_bonus")
+
+## Get gold per building (income from taxation)
+static func get_gold_per_building(state: GameState) -> int:
+	return int(get_total_effect(state, "gold_per_building"))
+
+## Get tower range bonus
+static func get_tower_range_bonus(state: GameState) -> int:
+	return int(get_total_effect(state, "tower_range_bonus"))
+
+## Get combo multiplier bonus
+static func get_combo_multiplier(state: GameState) -> float:
+	return get_total_effect(state, "combo_multiplier")
+
+## Get tower damage bonus
+static func get_tower_damage_bonus(state: GameState) -> int:
+	return int(get_total_effect(state, "tower_damage_bonus"))
+
+## Get planning time bonus (extra seconds)
+static func get_planning_time_bonus(state: GameState) -> int:
+	return int(get_total_effect(state, "planning_time_bonus"))
+
+## Get critical damage multiplier bonus
+static func get_critical_damage(state: GameState) -> float:
+	return get_total_effect(state, "critical_damage")
+
+## Check if perfect words deal critical damage (boolean research effect)
+static func has_perfect_word_crit(state: GameState) -> bool:
+	var research := SimResearch.instance()
+	var research_effects: Dictionary = research.get_total_effects(state)
+	return bool(research_effects.get("perfect_word_crit", false))
 
 ## List available upgrades for purchase
 static func list_available_kingdom_upgrades(state: GameState) -> Array:

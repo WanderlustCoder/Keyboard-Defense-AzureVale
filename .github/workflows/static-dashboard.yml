@@ -1,9 +1,7 @@
-name: static-dashboard
+name: archived-static-dashboard
 
 on:
   workflow_dispatch:
-  push:
-    branches: [master]
 
 permissions:
   contents: read

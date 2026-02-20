@@ -1,4 +1,4 @@
-extends Node2D
+extends Control
 
 const GameState = preload("res://sim/types.gd")
 const DefaultState = preload("res://sim/default_state.gd")
@@ -14,20 +14,33 @@ const SimEventEffects = preload("res://sim/event_effects.gd")
 const SimExplorationChallenges = preload("res://sim/exploration_challenges.gd")
 const DIALOGUE_BOX_SCENE := preload("res://scenes/DialogueBox.tscn")
 
-@onready var grid_renderer: Node2D = $GridRenderer
-@onready var command_bar: LineEdit = $CanvasLayer/HUD/CommandBar
-@onready var hp_label: Label = $CanvasLayer/HUD/TopBar/HPLabel
-@onready var gold_label: Label = $CanvasLayer/HUD/TopBar/GoldLabel
-@onready var day_label: Label = $CanvasLayer/HUD/TopBar/DayLabel
-@onready var resources_label: Label = $CanvasLayer/HUD/TopBar/ResourcesLabel
-@onready var mode_label: Label = $CanvasLayer/HUD/ModeLabel
-@onready var tile_info_label: Label = $CanvasLayer/HUD/TileInfoLabel
-@onready var actions_label: Label = $CanvasLayer/HUD/ActionsLabel
-@onready var log_label: RichTextLabel = $CanvasLayer/HUD/LogPanel/LogLabel
-@onready var menu_button: Button = $CanvasLayer/HUD/MenuButton
-@onready var objective_label: RichTextLabel = $CanvasLayer/HUD/ObjectivePanel/ObjectiveLabel
-@onready var enemy_panel: Panel = $CanvasLayer/HUD/EnemyPanel
-@onready var enemy_list: RichTextLabel = $CanvasLayer/HUD/EnemyPanel/EnemyList
+# Map rendering
+@onready var grid_renderer: Node2D = $MainLayout/GameArea/MapArea/MapViewport/GridRenderer
+@onready var camera: Camera2D = $MainLayout/GameArea/MapArea/MapViewport/GridRenderer/Camera
+@onready var map_viewport: SubViewport = $MainLayout/GameArea/MapArea/MapViewport
+
+# Top bar elements
+@onready var day_label: Label = $MainLayout/TopBar/HBox/DayLabel
+@onready var hp_value_label: Label = $MainLayout/TopBar/HBox/HPBar/HPValue
+@onready var gold_value_label: Label = $MainLayout/TopBar/HBox/GoldBar/GoldValue
+@onready var resources_label: Label = $MainLayout/TopBar/HBox/ResourceBar/ResourcesLabel
+@onready var mode_label: Label = $MainLayout/TopBar/HBox/ModeLabel
+@onready var menu_button: Button = $MainLayout/TopBar/HBox/MenuButton
+
+# Right sidebar elements
+@onready var minimap: Control = $MainLayout/GameArea/RightSidebar/SidebarContent/MinimapSection/MinimapContainer/Minimap
+@onready var enemy_panel: Panel = $MainLayout/GameArea/RightSidebar/SidebarContent/EnemySection/EnemyPanel
+@onready var enemy_list: RichTextLabel = $MainLayout/GameArea/RightSidebar/SidebarContent/EnemySection/EnemyPanel/EnemyList
+@onready var objective_label: RichTextLabel = $MainLayout/GameArea/RightSidebar/SidebarContent/ObjectiveSection/ObjectiveLabel
+@onready var tile_info_label: Label = $MainLayout/GameArea/RightSidebar/SidebarContent/TileInfoSection/TileInfoLabel
+@onready var log_label: RichTextLabel = $MainLayout/GameArea/RightSidebar/SidebarContent/LogSection/LogLabel
+
+# Keyboard area elements
+@onready var command_bar: LineEdit = $MainLayout/KeyboardArea/CenterArea/TypingBar/InputField
+@onready var actions_label: Label = $MainLayout/KeyboardArea/RightPanel/InfoContent/ActionsLabel
+@onready var threat_label: Label = $MainLayout/KeyboardArea/RightPanel/InfoContent/ThreatSection/ThreatLabel
+
+# Global singletons
 @onready var game_controller = get_node_or_null("/root/GameController")
 @onready var audio_manager = get_node_or_null("/root/AudioManager")
 
@@ -63,6 +76,9 @@ func _ready() -> void:
 	# Initialize dialogue box for story integration
 	_init_dialogue_box()
 
+	# Initialize camera and minimap
+	_init_camera_and_minimap()
+
 	command_bar.text_submitted.connect(_on_command_submitted)
 	command_bar.text_changed.connect(_on_command_changed)
 	command_bar.grab_focus()
@@ -78,6 +94,32 @@ func _ready() -> void:
 
 	# Show welcome dialogue from Elder Lyra
 	_show_welcome_dialogue()
+
+
+func _init_camera_and_minimap() -> void:
+	# Set up camera with map bounds
+	if camera and grid_renderer:
+		var map_pixel_size := Vector2(
+			state.map_w * grid_renderer.cell_size.x,
+			state.map_h * grid_renderer.cell_size.y
+		)
+		camera.set_map_bounds(grid_renderer.origin, map_pixel_size)
+
+		# Center camera on castle
+		var castle_world_pos: Vector2 = Vector2(grid_renderer.origin) + Vector2(
+			state.base_pos.x * grid_renderer.cell_size.x + grid_renderer.cell_size.x * 0.5,
+			state.base_pos.y * grid_renderer.cell_size.y + grid_renderer.cell_size.y * 0.5
+		)
+		camera.center_on(castle_world_pos, true)
+
+		# Connect camera to grid renderer for viewport culling
+		grid_renderer.set_camera(camera)
+
+	# Set up minimap
+	if minimap and grid_renderer:
+		minimap.set_camera(camera)
+		minimap.set_grid_params(grid_renderer.cell_size, grid_renderer.origin)
+		minimap.update_state(state)
 
 
 func _init_dialogue_box() -> void:
@@ -373,9 +415,13 @@ func _refresh_all() -> void:
 	_refresh_enemies()
 	grid_renderer.update_state(state)
 
+	# Update minimap
+	if minimap and minimap.has_method("update_state"):
+		minimap.update_state(state)
+
 func _refresh_hud() -> void:
-	hp_label.text = "HP: %d/10" % state.hp
-	gold_label.text = "Gold: %d" % state.gold
+	hp_value_label.text = "%d/10" % state.hp
+	gold_value_label.text = "%d" % state.gold
 	day_label.text = "Day %d" % state.day
 
 	# Resources
@@ -396,24 +442,33 @@ func _refresh_hud() -> void:
 		mode_label.add_theme_color_override("font_color", Color(0.4, 0.9, 0.4))
 	mode_label.text = mode_text
 
+	# Update threat display
+	var threat_pct: int = int(state.threat_level * 100)
+	threat_label.text = "%d%%" % threat_pct
+	if threat_pct >= 75:
+		threat_label.add_theme_color_override("font_color", Color(1, 0.3, 0.3))
+	elif threat_pct >= 50:
+		threat_label.add_theme_color_override("font_color", Color(1, 0.6, 0.3))
+	else:
+		threat_label.add_theme_color_override("font_color", Color(0.9, 0.5, 0.3))
+
 	# Update actions based on context
 	if not active_challenge.is_empty():
 		var words: Array = active_challenge.get("words", [])
 		var current_idx: int = int(active_challenge.get("current_word_index", 0))
 		var current_word: String = str(words[current_idx]) if current_idx < words.size() else ""
-		actions_label.text = "[color=yellow]CHALLENGE![/color] Type: %s | %d/%d" % [current_word, current_idx, words.size()]
+		actions_label.text = "CHALLENGE!\nType: %s\n%d/%d" % [current_word, current_idx, words.size()]
 	elif state.activity_mode in ["encounter", "wave_assault"]:
-		actions_label.text = "[color=red]COMBAT![/color] Type the enemy word to attack! | wait: skip turn"
+		actions_label.text = "COMBAT!\nType enemy word\nto attack!"
 	elif SimEvents.has_pending_event(state):
-		actions_label.text = "[color=cyan]EVENT![/color] Type your choice to respond."
+		actions_label.text = "EVENT!\nType your choice\nto respond."
 	else:
-		var threat_pct: int = int(state.threat_level * 100)
-		var actions: String = "explore | build | gather | end"
+		var actions: String = "explore\nbuild wall\nbuild tower\nbuild farm\nend"
 		# Check if there's a POI at cursor
 		var poi_id: String = SimPoi.get_poi_at(state, state.cursor_pos)
 		if poi_id != "" and not state.active_pois.get(poi_id, {}).get("interacted", false):
-			actions = "[color=cyan]interact[/color] | " + actions
-		actions_label.text = actions + " | Threat: %d%%" % threat_pct
+			actions = "interact\n" + actions
+		actions_label.text = actions
 
 func _refresh_objective() -> void:
 	var text: String = ""

@@ -1,0 +1,575 @@
+{
+  "version": 1,
+  "categories": {
+    "basic": {
+      "label": "Basic",
+      "description": "Entry-level towers available from the start",
+      "unlock_level": 0,
+      "color": "#4CAF50"
+    },
+    "advanced": {
+      "label": "Advanced",
+      "description": "Enhanced towers unlocked through progression",
+      "unlock_level": 10,
+      "color": "#2196F3"
+    },
+    "specialist": {
+      "label": "Specialist",
+      "description": "Situational towers with unique mechanics",
+      "unlock_level": 18,
+      "color": "#9C27B0"
+    },
+    "legendary": {
+      "label": "Legendary",
+      "description": "Unique powerful towers with special requirements",
+      "unlock_level": 30,
+      "color": "#FFD700"
+    }
+  },
+  "towers": {
+    "tower_arrow": {
+      "name": "Arrow Tower",
+      "description": "Fires arrows at enemies. Effective against unarmored targets.",
+      "category": "basic",
+      "footprint": [1, 1],
+      "base_cost": {"wood": 4, "stone": 8},
+      "base_stats": {
+        "damage": 10,
+        "range": 4,
+        "attack_speed": 1.0,
+        "shots_per_attack": 1,
+        "damage_type": "physical",
+        "target_type": "single"
+      },
+      "word_bonus": {
+        "condition": "starts_with_A",
+        "effect": {"damage_multiplier": 1.2}
+      },
+      "terrain_bonuses": {
+        "elevated": {"range": 1}
+      },
+      "blocks_movement": true,
+      "visual": {
+        "sprite_id": "bld_tower_arrow",
+        "projectile_id": "proj_arrow"
+      }
+    },
+    "tower_magic": {
+      "name": "Magic Tower",
+      "description": "Fires arcane bolts that ignore enemy armor.",
+      "category": "basic",
+      "footprint": [1, 1],
+      "base_cost": {"wood": 6, "stone": 10, "gold": 10},
+      "base_stats": {
+        "damage": 15,
+        "range": 5,
+        "attack_speed": 0.7,
+        "shots_per_attack": 1,
+        "damage_type": "magical",
+        "target_type": "single",
+        "armor_pierce": true
+      },
+      "word_bonus": {
+        "condition": "has_double_letters",
+        "effect": {"damage_multiplier": 1.15}
+      },
+      "terrain_bonuses": {
+        "arcane_node": {"damage": 4}
+      },
+      "blocks_movement": true,
+      "visual": {
+        "sprite_id": "bld_tower_magic",
+        "projectile_id": "proj_arcane_bolt"
+      }
+    },
+    "tower_frost": {
+      "name": "Frost Tower",
+      "description": "Chills enemies, slowing their movement.",
+      "category": "basic",
+      "footprint": [1, 1],
+      "base_cost": {"wood": 5, "stone": 8},
+      "base_stats": {
+        "damage": 5,
+        "range": 3,
+        "attack_speed": 0.8,
+        "shots_per_attack": 1,
+        "damage_type": "cold",
+        "target_type": "single",
+        "slow_percent": 25,
+        "slow_duration": 2.0
+      },
+      "word_bonus": {
+        "condition": "contains_ice_cold",
+        "effect": {"slow_percent_bonus": 10}
+      },
+      "terrain_bonuses": {},
+      "blocks_movement": true,
+      "visual": {
+        "sprite_id": "bld_tower_frost",
+        "projectile_id": "proj_frost_shard"
+      }
+    },
+    "tower_cannon": {
+      "name": "Cannon Tower",
+      "description": "Fires explosive shells with area damage.",
+      "category": "basic",
+      "footprint": [2, 2],
+      "base_cost": {"wood": 8, "stone": 15, "gold": 15},
+      "base_stats": {
+        "damage": 25,
+        "range": 4,
+        "attack_speed": 0.4,
+        "shots_per_attack": 1,
+        "damage_type": "physical",
+        "target_type": "aoe",
+        "aoe_radius": 1
+      },
+      "word_bonus": {
+        "condition": "length_6_plus",
+        "effect": {"damage_multiplier": 1.25}
+      },
+      "terrain_bonuses": {
+        "elevated": {"range": 1, "aoe_radius": 0.5}
+      },
+      "blocks_movement": true,
+      "visual": {
+        "sprite_id": "bld_tower_cannon",
+        "projectile_id": "proj_cannonball"
+      }
+    },
+    "tower_multi": {
+      "name": "Multi-Shot Tower",
+      "description": "Fires at multiple targets simultaneously.",
+      "category": "advanced",
+      "footprint": [1, 1],
+      "base_cost": {"wood": 10, "stone": 15, "gold": 50},
+      "base_stats": {
+        "damage": 8,
+        "range": 4,
+        "attack_speed": 0.8,
+        "shots_per_attack": 1,
+        "damage_type": "physical",
+        "target_type": "multi",
+        "target_count": 3
+      },
+      "unlock_requirement": {"type": "level", "value": 10},
+      "terrain_bonuses": {
+        "elevated": {"target_count": 1}
+      },
+      "blocks_movement": true,
+      "visual": {
+        "sprite_id": "bld_tower_multi",
+        "projectile_id": "proj_arrow"
+      }
+    },
+    "tower_arcane": {
+      "name": "Arcane Tower",
+      "description": "Damage scales with typing accuracy. Perfect accuracy grants bonus damage.",
+      "category": "advanced",
+      "footprint": [1, 1],
+      "base_cost": {"wood": 8, "stone": 12, "gold": 75},
+      "base_stats": {
+        "damage": 20,
+        "range": 5,
+        "attack_speed": 0.6,
+        "shots_per_attack": 1,
+        "damage_type": "magical",
+        "target_type": "single",
+        "accuracy_scaling": true,
+        "perfect_accuracy_bonus": 1.5
+      },
+      "unlock_requirement": {"type": "level", "value": 12},
+      "terrain_bonuses": {
+        "arcane_node": {"damage": 6, "range": 1}
+      },
+      "blocks_movement": true,
+      "visual": {
+        "sprite_id": "bld_tower_arcane",
+        "projectile_id": "proj_arcane_beam"
+      }
+    },
+    "tower_holy": {
+      "name": "Holy Tower",
+      "description": "Bonus damage to corrupted enemies. Can purify enemy affixes.",
+      "category": "advanced",
+      "footprint": [1, 1],
+      "base_cost": {"stone": 20, "gold": 100},
+      "base_stats": {
+        "damage": 18,
+        "range": 4,
+        "attack_speed": 0.7,
+        "shots_per_attack": 1,
+        "damage_type": "holy",
+        "target_type": "single",
+        "corruption_bonus_percent": 50,
+        "purify_chance": 5
+      },
+      "unlock_requirement": {"type": "level", "value": 15},
+      "terrain_bonuses": {
+        "sacred_ground": {"purify_chance": 10, "corruption_bonus_percent": 25}
+      },
+      "blocks_movement": true,
+      "visual": {
+        "sprite_id": "bld_tower_holy",
+        "projectile_id": "proj_holy_light"
+      }
+    },
+    "tower_siege": {
+      "name": "Siege Tower",
+      "description": "Massive damage with charge-up mechanic. Typing words increases charge damage.",
+      "category": "advanced",
+      "footprint": [2, 2],
+      "base_cost": {"wood": 15, "stone": 25, "gold": 125},
+      "base_stats": {
+        "damage": 100,
+        "range": 6,
+        "attack_speed": 0.15,
+        "shots_per_attack": 1,
+        "damage_type": "physical",
+        "target_type": "single",
+        "charge_mechanic": true,
+        "charge_time": 5,
+        "charge_damage_bonus_per_word": 0.1,
+        "max_charge_multiplier": 2.0
+      },
+      "unlock_requirement": {"type": "level", "value": 18},
+      "terrain_bonuses": {},
+      "blocks_movement": true,
+      "visual": {
+        "sprite_id": "bld_tower_siege",
+        "projectile_id": "proj_siege_bolt"
+      }
+    },
+    "tower_poison": {
+      "name": "Venomspire",
+      "description": "Applies stacking poison damage over time.",
+      "category": "specialist",
+      "footprint": [1, 1],
+      "base_cost": {"wood": 10, "stone": 15, "gold": 100},
+      "base_stats": {
+        "damage": 3,
+        "range": 4,
+        "attack_speed": 1.2,
+        "shots_per_attack": 1,
+        "damage_type": "poison",
+        "target_type": "single",
+        "poison_damage_per_tick": 5,
+        "poison_duration": 5.0,
+        "poison_max_stacks": 10
+      },
+      "unlock_requirement": {
+        "type": "compound",
+        "conditions": [
+          {"type": "level", "value": 20}
+        ]
+      },
+      "terrain_bonuses": {
+        "swamp": {"poison_max_stacks": 2, "poison_duration": 2.0}
+      },
+      "blocks_movement": true,
+      "visual": {
+        "sprite_id": "bld_tower_poison",
+        "projectile_id": "proj_venom_glob"
+      }
+    },
+    "tower_tesla": {
+      "name": "Tesla Coil",
+      "description": "Chain lightning between grouped enemies.",
+      "category": "specialist",
+      "footprint": [1, 1],
+      "base_cost": {"wood": 8, "stone": 20, "gold": 110},
+      "base_stats": {
+        "damage": 12,
+        "range": 3,
+        "attack_speed": 0.5,
+        "shots_per_attack": 1,
+        "damage_type": "lightning",
+        "target_type": "chain",
+        "chain_count": 5,
+        "chain_range": 2,
+        "chain_damage_falloff": 0.8
+      },
+      "unlock_requirement": {
+        "type": "compound",
+        "conditions": [
+          {"type": "level", "value": 22}
+        ]
+      },
+      "terrain_bonuses": {
+        "metal_deposit": {"chain_count": 2}
+      },
+      "blocks_movement": true,
+      "visual": {
+        "sprite_id": "bld_tower_tesla",
+        "projectile_id": "proj_lightning_arc"
+      }
+    },
+    "tower_summoner": {
+      "name": "Summoning Circle",
+      "description": "Summons allied creatures to fight enemies.",
+      "category": "specialist",
+      "footprint": [2, 2],
+      "base_cost": {"stone": 25, "gold": 150},
+      "base_stats": {
+        "damage": 0,
+        "range": 0,
+        "attack_speed": 0,
+        "shots_per_attack": 0,
+        "target_type": "none",
+        "max_summons": 3,
+        "summon_cooldown": 15.0,
+        "default_summon": "word_warrior"
+      },
+      "summons": {
+        "word_warrior": {"hp": 50, "damage": 8, "speed": 1},
+        "letter_sprite": {"hp": 25, "damage": 15, "speed": 2, "flying": true},
+        "grammar_golem": {"hp": 150, "damage": 20, "speed": 1, "taunt": true}
+      },
+      "unlock_requirement": {"type": "level", "value": 25},
+      "terrain_bonuses": {},
+      "blocks_movement": true,
+      "visual": {
+        "sprite_id": "bld_tower_summoner"
+      }
+    },
+    "tower_support": {
+      "name": "Command Post",
+      "description": "Buffs nearby towers. Does not attack directly.",
+      "category": "specialist",
+      "footprint": [1, 1],
+      "base_cost": {"wood": 12, "stone": 18, "gold": 120},
+      "base_stats": {
+        "damage": 0,
+        "range": 0,
+        "attack_speed": 0,
+        "shots_per_attack": 0,
+        "target_type": "none",
+        "aura_range": 3,
+        "damage_buff_percent": 15,
+        "speed_buff_percent": 10
+      },
+      "unlock_requirement": {"type": "level", "value": 20},
+      "terrain_bonuses": {
+        "elevated": {"aura_range": 1}
+      },
+      "blocks_movement": false,
+      "visual": {
+        "sprite_id": "bld_tower_support"
+      }
+    },
+    "tower_trap": {
+      "name": "Trap Nexus",
+      "description": "Places traps that trigger when enemies pass.",
+      "category": "specialist",
+      "footprint": [1, 1],
+      "base_cost": {"wood": 10, "stone": 12, "gold": 90},
+      "base_stats": {
+        "damage": 30,
+        "range": 0,
+        "attack_speed": 0,
+        "shots_per_attack": 0,
+        "target_type": "none",
+        "trap_count": 3,
+        "trap_recharge_time": 10.0,
+        "trap_radius": 1,
+        "placement_range": 5
+      },
+      "trap_types": {
+        "explosive": {"damage": 30, "radius": 1.0},
+        "frost": {"damage": 10, "radius": 1.5, "slow_percent": 50, "slow_duration": 3.0},
+        "poison": {"damage": 5, "radius": 1.0, "poison_damage": 10, "poison_duration": 5.0},
+        "stun": {"damage": 15, "radius": 0.5, "stun_duration": 2.0}
+      },
+      "unlock_requirement": {"type": "level", "value": 18},
+      "terrain_bonuses": {},
+      "blocks_movement": false,
+      "visual": {
+        "sprite_id": "bld_tower_trap"
+      }
+    },
+    "tower_legendary_wordsmith": {
+      "name": "Wordsmith's Forge",
+      "description": "Ultimate typing tower. Damage scales with WPM and accuracy.",
+      "category": "legendary",
+      "footprint": [2, 2],
+      "base_cost": {"wood": 30, "stone": 50, "gold": 500},
+      "base_stats": {
+        "damage": 25,
+        "range": 5,
+        "attack_speed": 1.0,
+        "shots_per_attack": 1,
+        "damage_type": "pure",
+        "target_type": "adaptive",
+        "wpm_scaling": true,
+        "accuracy_scaling": true,
+        "damage_formula": "base * (1 + WPM/100) * accuracy^2"
+      },
+      "special_abilities": {
+        "word_forge": {
+          "trigger": "words_typed",
+          "threshold": 50,
+          "damage": 200,
+          "description": "Every 50 words typed, deal 200 bonus damage"
+        },
+        "perfect_strike": {
+          "trigger": "perfect_accuracy_streak",
+          "threshold": 10,
+          "damage": 500,
+          "description": "10 consecutive perfect words unleash devastating attack"
+        }
+      },
+      "unlock_requirement": {"type": "level", "value": 30},
+      "placement_limit": 1,
+      "terrain_bonuses": {},
+      "blocks_movement": true,
+      "visual": {
+        "sprite_id": "bld_tower_wordsmith",
+        "projectile_id": "proj_word_blast"
+      }
+    },
+    "tower_legendary_shrine": {
+      "name": "Letter Spirit Shrine",
+      "description": "Adaptive tower channeling Letter Spirit power. Gains damage based on unique letters typed.",
+      "category": "legendary",
+      "footprint": [3, 3],
+      "base_cost": {"stone": 60, "gold": 600},
+      "base_stats": {
+        "damage": 50,
+        "range": 6,
+        "attack_speed": 0.5,
+        "shots_per_attack": 1,
+        "damage_type": "holy",
+        "target_type": "adaptive"
+      },
+      "spirit_modes": {
+        "alpha": {
+          "trigger": "boss_present",
+          "effect": "single_target_focus",
+          "damage_bonus": 100
+        },
+        "epsilon": {
+          "trigger": "enemies_10_plus",
+          "effect": "chain_all_in_range",
+          "chain_count": 10
+        },
+        "omega": {
+          "trigger": "castle_hp_below_50",
+          "effect": "heal_castle_on_kill",
+          "heal_amount": 1
+        }
+      },
+      "passive_aura": {
+        "effect": "damage_per_unique_letter",
+        "bonus_per_letter": 5,
+        "max_bonus": 130,
+        "window_seconds": 10
+      },
+      "unlock_requirement": {"type": "collection", "collection_id": "letter_spirits", "count": 26},
+      "placement_limit": 1,
+      "terrain_bonuses": {
+        "sacred_ground": {"damage": 25}
+      },
+      "blocks_movement": true,
+      "visual": {
+        "sprite_id": "bld_tower_shrine",
+        "projectile_id": "proj_spirit_beam"
+      }
+    },
+    "tower_legendary_purifier": {
+      "name": "Corruption Purifier",
+      "description": "Designed to combat corruption. Removes enemy affixes and deals massive damage to corrupted.",
+      "category": "legendary",
+      "footprint": [2, 2],
+      "base_cost": {"stone": 45, "gold": 750},
+      "base_stats": {
+        "damage": 40,
+        "range": 5,
+        "attack_speed": 0.6,
+        "shots_per_attack": 1,
+        "damage_type": "holy",
+        "target_type": "single",
+        "corruption_damage_bonus_percent": 100,
+        "purify_chance": 25
+      },
+      "special_abilities": {
+        "mass_purification": {
+          "cooldown": 30.0,
+          "range": 5,
+          "description": "Purify all enemies in range"
+        },
+        "corruption_shield": {
+          "range": 4,
+          "effect": "immunity_to_corruption_debuffs",
+          "description": "Nearby towers immune to corruption"
+        },
+        "final_word": {
+          "phrase": "CORRUPTION END",
+          "damage": 500,
+          "target": "boss_only",
+          "description": "Type the phrase to deal massive damage to boss"
+        }
+      },
+      "unlock_requirement": {"type": "level", "value": 35},
+      "placement_limit": 1,
+      "terrain_bonuses": {},
+      "blocks_movement": true,
+      "visual": {
+        "sprite_id": "bld_tower_purifier",
+        "projectile_id": "proj_purification_ray"
+      }
+    }
+  },
+  "synergies": {
+    "fire_and_ice": {
+      "name": "Elemental Mastery",
+      "towers": ["tower_cannon", "tower_frost"],
+      "proximity": 3,
+      "effect": "Frozen enemies take 3x fire damage, burning enemies take 3x ice damage"
+    },
+    "arrow_rain": {
+      "name": "Arrow Storm",
+      "towers": ["tower_arrow"],
+      "min_count": 3,
+      "proximity": 2,
+      "cooldown": 15.0,
+      "effect": "Coordinated attack every 15 seconds"
+    },
+    "arcane_support": {
+      "name": "Arcane Amplification",
+      "towers": ["tower_arcane", "tower_support"],
+      "proximity": 3,
+      "effect": "+50% accuracy bonus scaling"
+    },
+    "holy_purification": {
+      "name": "Divine Cleansing",
+      "towers": ["tower_holy", "tower_legendary_purifier"],
+      "proximity": 4,
+      "effect": "Doubled purification with explosions"
+    },
+    "chain_reaction": {
+      "name": "Chain Reaction",
+      "towers": ["tower_tesla", "tower_magic"],
+      "proximity": 3,
+      "effect": "+3 chain jumps, no falloff"
+    },
+    "kill_box": {
+      "name": "Kill Box",
+      "towers": ["tower_frost", "tower_cannon", "tower_poison"],
+      "proximity": 2,
+      "effect": "+25% damage from all sources in overlapping range"
+    },
+    "legion": {
+      "name": "Legion",
+      "towers": ["tower_summoner"],
+      "min_count": 2,
+      "proximity": 4,
+      "effect": "+2 max summons, +20% summon stats"
+    },
+    "titan_slayer": {
+      "name": "Titan Slayer",
+      "towers": ["tower_siege", "tower_support", "tower_arcane"],
+      "proximity": 3,
+      "effect": "50% faster charge, +100% boss damage"
+    }
+  }
+}

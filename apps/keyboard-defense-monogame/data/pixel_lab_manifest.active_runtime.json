@@ -1,0 +1,1686 @@
+{
+  "version": "1.0.0",
+  "generated_utc": "2026-02-20T16:44:48Z",
+  "assets": [
+    {
+      "id": "bld_barracks",
+      "category": "sprites",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "legacy:bld_barracks",
+        "exported_utc": "2026-01-06T00:00:00Z"
+      },
+      "output": {
+        "relative_path": "sprites/bld_barracks.png",
+        "width": 96,
+        "height": 48
+      },
+      "constraints": {
+        "max_kb": 12,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "legacy_import",
+        "legacy_category_buildings",
+        "runtime_curated"
+      ],
+      "animation": {
+        "layout": {
+          "frame_width": 48,
+          "frame_height": 48,
+          "rows": 1
+        },
+        "clips": [
+          {
+            "name": "idle",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 300,
+            "loop": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "bld_castle",
+      "category": "sprites",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "legacy:bld_castle",
+        "exported_utc": "2026-01-06T00:00:00Z"
+      },
+      "output": {
+        "relative_path": "sprites/bld_castle.png",
+        "width": 96,
+        "height": 48
+      },
+      "constraints": {
+        "max_kb": 16,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "legacy_import",
+        "legacy_category_buildings",
+        "runtime_curated"
+      ],
+      "animation": {
+        "layout": {
+          "frame_width": 48,
+          "frame_height": 48,
+          "rows": 1
+        },
+        "clips": [
+          {
+            "name": "idle",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 300,
+            "loop": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "bld_farm",
+      "category": "sprites",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "runtime:bld_farm",
+        "exported_utc": "2026-02-20T16:44:48Z"
+      },
+      "constraints": {
+        "max_kb": 96,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "runtime_curated"
+      ],
+      "output": {
+        "relative_path": "sprites/bld_farm.png",
+        "width": 96,
+        "height": 48
+      },
+      "animation": {
+        "layout": {
+          "frame_width": 48,
+          "frame_height": 48,
+          "rows": 1
+        },
+        "clips": [
+          {
+            "name": "idle",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 300,
+            "loop": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "bld_library",
+      "category": "sprites",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "legacy:bld_library",
+        "exported_utc": "2026-01-06T00:00:00Z"
+      },
+      "output": {
+        "relative_path": "sprites/bld_library.png",
+        "width": 96,
+        "height": 48
+      },
+      "constraints": {
+        "max_kb": 12,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "legacy_import",
+        "legacy_category_buildings",
+        "runtime_curated"
+      ],
+      "animation": {
+        "layout": {
+          "frame_width": 48,
+          "frame_height": 48,
+          "rows": 1
+        },
+        "clips": [
+          {
+            "name": "idle",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 300,
+            "loop": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "bld_market",
+      "category": "sprites",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "runtime:bld_market",
+        "exported_utc": "2026-02-20T16:44:48Z"
+      },
+      "constraints": {
+        "max_kb": 96,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "runtime_curated"
+      ],
+      "output": {
+        "relative_path": "sprites/bld_market.png",
+        "width": 96,
+        "height": 48
+      },
+      "animation": {
+        "layout": {
+          "frame_width": 48,
+          "frame_height": 48,
+          "rows": 1
+        },
+        "clips": [
+          {
+            "name": "idle",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 300,
+            "loop": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "bld_tower_arrow",
+      "category": "sprites",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "legacy:bld_tower_arrow",
+        "exported_utc": "2026-01-06T00:00:00Z"
+      },
+      "output": {
+        "relative_path": "sprites/bld_tower_arrow.png",
+        "width": 96,
+        "height": 48
+      },
+      "constraints": {
+        "max_kb": 12,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "legacy_import",
+        "legacy_category_buildings",
+        "runtime_curated"
+      ],
+      "animation": {
+        "layout": {
+          "frame_width": 48,
+          "frame_height": 48,
+          "rows": 1
+        },
+        "clips": [
+          {
+            "name": "idle",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 300,
+            "loop": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "bld_tower_fire",
+      "category": "sprites",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "runtime:bld_tower_fire",
+        "exported_utc": "2026-02-20T16:44:48Z"
+      },
+      "constraints": {
+        "max_kb": 96,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "runtime_curated"
+      ],
+      "output": {
+        "relative_path": "sprites/bld_tower_fire.png",
+        "width": 96,
+        "height": 48
+      },
+      "animation": {
+        "layout": {
+          "frame_width": 48,
+          "frame_height": 48,
+          "rows": 1
+        },
+        "clips": [
+          {
+            "name": "idle",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 300,
+            "loop": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "bld_tower_slow",
+      "category": "sprites",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "legacy:bld_tower_slow",
+        "exported_utc": "2026-01-06T00:00:00Z"
+      },
+      "output": {
+        "relative_path": "sprites/bld_tower_slow.png",
+        "width": 96,
+        "height": 48
+      },
+      "constraints": {
+        "max_kb": 12,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "legacy_import",
+        "legacy_category_buildings",
+        "runtime_curated"
+      ],
+      "animation": {
+        "layout": {
+          "frame_width": 48,
+          "frame_height": 48,
+          "rows": 1
+        },
+        "clips": [
+          {
+            "name": "idle",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 300,
+            "loop": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "bld_wall",
+      "category": "sprites",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "legacy:bld_wall",
+        "exported_utc": "2026-01-06T00:00:00Z"
+      },
+      "output": {
+        "relative_path": "sprites/bld_wall.png",
+        "width": 96,
+        "height": 48
+      },
+      "constraints": {
+        "max_kb": 8,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "legacy_import",
+        "legacy_category_buildings",
+        "runtime_curated"
+      ],
+      "animation": {
+        "layout": {
+          "frame_width": 48,
+          "frame_height": 48,
+          "rows": 1
+        },
+        "clips": [
+          {
+            "name": "idle",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 300,
+            "loop": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "enemy_armored",
+      "category": "sprites",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "runtime:enemy_armored",
+        "exported_utc": "2026-02-20T16:44:48Z"
+      },
+      "constraints": {
+        "max_kb": 96,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "runtime_curated"
+      ],
+      "output": {
+        "relative_path": "sprites/enemy_armored.png",
+        "width": 64,
+        "height": 64
+      },
+      "animation": {
+        "layout": {
+          "frame_width": 32,
+          "frame_height": 64,
+          "rows": 1
+        },
+        "clips": [
+          {
+            "name": "idle",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 300,
+            "loop": true
+          },
+          {
+            "name": "walk",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 150,
+            "loop": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "enemy_berserker",
+      "category": "sprites",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "legacy:enemy_berserker",
+        "exported_utc": "2026-01-06T00:00:00Z"
+      },
+      "output": {
+        "relative_path": "sprites/enemy_berserker.png",
+        "width": 64,
+        "height": 64
+      },
+      "constraints": {
+        "max_kb": 8,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "legacy_import",
+        "legacy_category_enemies",
+        "runtime_curated"
+      ],
+      "animation": {
+        "layout": {
+          "frame_width": 32,
+          "frame_height": 64,
+          "rows": 1
+        },
+        "clips": [
+          {
+            "name": "idle",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 300,
+            "loop": true
+          },
+          {
+            "name": "walk",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 150,
+            "loop": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "enemy_boss_mage",
+      "category": "sprites",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "legacy:enemy_boss_mage",
+        "exported_utc": "2026-01-06T00:00:00Z"
+      },
+      "output": {
+        "relative_path": "sprites/enemy_boss_mage.png",
+        "width": 64,
+        "height": 64
+      },
+      "constraints": {
+        "max_kb": 12,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "legacy_import",
+        "legacy_category_enemies",
+        "runtime_curated"
+      ],
+      "animation": {
+        "layout": {
+          "frame_width": 32,
+          "frame_height": 64,
+          "rows": 1
+        },
+        "clips": [
+          {
+            "name": "idle",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 300,
+            "loop": true
+          },
+          {
+            "name": "walk",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 150,
+            "loop": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "enemy_boss_warlord",
+      "category": "sprites",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "legacy:enemy_boss_warlord",
+        "exported_utc": "2026-01-06T00:00:00Z"
+      },
+      "output": {
+        "relative_path": "sprites/enemy_boss_warlord.png",
+        "width": 64,
+        "height": 64
+      },
+      "constraints": {
+        "max_kb": 12,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "legacy_import",
+        "legacy_category_enemies",
+        "runtime_curated"
+      ],
+      "animation": {
+        "layout": {
+          "frame_width": 32,
+          "frame_height": 64,
+          "rows": 1
+        },
+        "clips": [
+          {
+            "name": "idle",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 300,
+            "loop": true
+          },
+          {
+            "name": "walk",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 150,
+            "loop": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "enemy_brute",
+      "category": "sprites",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "legacy:enemy_brute",
+        "exported_utc": "2026-01-06T00:00:00Z"
+      },
+      "output": {
+        "relative_path": "sprites/enemy_brute.png",
+        "width": 64,
+        "height": 64
+      },
+      "constraints": {
+        "max_kb": 8,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "legacy_import",
+        "legacy_category_enemies",
+        "runtime_curated"
+      ],
+      "animation": {
+        "layout": {
+          "frame_width": 32,
+          "frame_height": 64,
+          "rows": 1
+        },
+        "clips": [
+          {
+            "name": "idle",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 300,
+            "loop": true
+          },
+          {
+            "name": "walk",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 150,
+            "loop": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "enemy_champion",
+      "category": "sprites",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "runtime:enemy_champion",
+        "exported_utc": "2026-02-20T16:44:48Z"
+      },
+      "constraints": {
+        "max_kb": 96,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "runtime_curated"
+      ],
+      "output": {
+        "relative_path": "sprites/enemy_champion.png",
+        "width": 64,
+        "height": 64
+      },
+      "animation": {
+        "layout": {
+          "frame_width": 32,
+          "frame_height": 64,
+          "rows": 1
+        },
+        "clips": [
+          {
+            "name": "idle",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 300,
+            "loop": true
+          },
+          {
+            "name": "walk",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 150,
+            "loop": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "enemy_elite",
+      "category": "sprites",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "runtime:enemy_elite",
+        "exported_utc": "2026-02-20T16:44:48Z"
+      },
+      "constraints": {
+        "max_kb": 96,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "runtime_curated"
+      ],
+      "output": {
+        "relative_path": "sprites/enemy_elite.png",
+        "width": 64,
+        "height": 64
+      },
+      "animation": {
+        "layout": {
+          "frame_width": 32,
+          "frame_height": 64,
+          "rows": 1
+        },
+        "clips": [
+          {
+            "name": "idle",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 300,
+            "loop": true
+          },
+          {
+            "name": "walk",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 150,
+            "loop": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "enemy_fen_seer",
+      "category": "sprites",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "runtime:enemy_fen_seer",
+        "exported_utc": "2026-02-20T16:44:48Z"
+      },
+      "constraints": {
+        "max_kb": 96,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "runtime_curated"
+      ],
+      "output": {
+        "relative_path": "sprites/enemy_fen_seer.png",
+        "width": 64,
+        "height": 64
+      },
+      "animation": {
+        "layout": {
+          "frame_width": 32,
+          "frame_height": 64,
+          "rows": 1
+        },
+        "clips": [
+          {
+            "name": "idle",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 300,
+            "loop": true
+          },
+          {
+            "name": "walk",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 150,
+            "loop": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "enemy_flyer",
+      "category": "sprites",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "legacy:enemy_flyer",
+        "exported_utc": "2026-01-06T00:00:00Z"
+      },
+      "output": {
+        "relative_path": "sprites/enemy_flyer.png",
+        "width": 64,
+        "height": 64
+      },
+      "constraints": {
+        "max_kb": 8,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "legacy_import",
+        "legacy_category_enemies",
+        "runtime_curated"
+      ],
+      "animation": {
+        "layout": {
+          "frame_width": 32,
+          "frame_height": 64,
+          "rows": 1
+        },
+        "clips": [
+          {
+            "name": "idle",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 300,
+            "loop": true
+          },
+          {
+            "name": "walk",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 150,
+            "loop": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "enemy_forest_guardian",
+      "category": "sprites",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "runtime:enemy_forest_guardian",
+        "exported_utc": "2026-02-20T16:44:48Z"
+      },
+      "constraints": {
+        "max_kb": 96,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "runtime_curated"
+      ],
+      "output": {
+        "relative_path": "sprites/enemy_forest_guardian.png",
+        "width": 64,
+        "height": 64
+      },
+      "animation": {
+        "layout": {
+          "frame_width": 32,
+          "frame_height": 64,
+          "rows": 1
+        },
+        "clips": [
+          {
+            "name": "idle",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 300,
+            "loop": true
+          },
+          {
+            "name": "walk",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 150,
+            "loop": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "enemy_healer",
+      "category": "sprites",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "legacy:enemy_healer",
+        "exported_utc": "2026-01-06T00:00:00Z"
+      },
+      "output": {
+        "relative_path": "sprites/enemy_healer.png",
+        "width": 64,
+        "height": 64
+      },
+      "constraints": {
+        "max_kb": 8,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "legacy_import",
+        "legacy_category_enemies",
+        "runtime_curated"
+      ],
+      "animation": {
+        "layout": {
+          "frame_width": 32,
+          "frame_height": 64,
+          "rows": 1
+        },
+        "clips": [
+          {
+            "name": "idle",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 300,
+            "loop": true
+          },
+          {
+            "name": "walk",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 150,
+            "loop": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "enemy_phantom",
+      "category": "sprites",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "runtime:enemy_phantom",
+        "exported_utc": "2026-02-20T16:44:48Z"
+      },
+      "constraints": {
+        "max_kb": 96,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "runtime_curated"
+      ],
+      "output": {
+        "relative_path": "sprites/enemy_phantom.png",
+        "width": 64,
+        "height": 64
+      },
+      "animation": {
+        "layout": {
+          "frame_width": 32,
+          "frame_height": 64,
+          "rows": 1
+        },
+        "clips": [
+          {
+            "name": "idle",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 300,
+            "loop": true
+          },
+          {
+            "name": "walk",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 150,
+            "loop": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "enemy_raider",
+      "category": "sprites",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "legacy:enemy_raider",
+        "exported_utc": "2026-01-06T00:00:00Z"
+      },
+      "output": {
+        "relative_path": "sprites/enemy_raider.png",
+        "width": 64,
+        "height": 64
+      },
+      "constraints": {
+        "max_kb": 8,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "legacy_import",
+        "legacy_category_enemies",
+        "runtime_curated"
+      ],
+      "animation": {
+        "layout": {
+          "frame_width": 32,
+          "frame_height": 64,
+          "rows": 1
+        },
+        "clips": [
+          {
+            "name": "idle",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 300,
+            "loop": true
+          },
+          {
+            "name": "walk",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 150,
+            "loop": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "enemy_runner",
+      "category": "sprites",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "legacy:enemy_runner",
+        "exported_utc": "2026-01-06T00:00:00Z"
+      },
+      "output": {
+        "relative_path": "sprites/enemy_runner.png",
+        "width": 64,
+        "height": 64
+      },
+      "constraints": {
+        "max_kb": 8,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "legacy_import",
+        "legacy_category_enemies",
+        "runtime_curated"
+      ],
+      "animation": {
+        "layout": {
+          "frame_width": 32,
+          "frame_height": 64,
+          "rows": 1
+        },
+        "clips": [
+          {
+            "name": "idle",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 300,
+            "loop": true
+          },
+          {
+            "name": "walk",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 150,
+            "loop": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "enemy_scout",
+      "category": "sprites",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "runtime:enemy_scout",
+        "exported_utc": "2026-02-20T16:44:48Z"
+      },
+      "constraints": {
+        "max_kb": 96,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "runtime_curated"
+      ],
+      "output": {
+        "relative_path": "sprites/enemy_scout.png",
+        "width": 64,
+        "height": 64
+      },
+      "animation": {
+        "layout": {
+          "frame_width": 32,
+          "frame_height": 64,
+          "rows": 1
+        },
+        "clips": [
+          {
+            "name": "idle",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 300,
+            "loop": true
+          },
+          {
+            "name": "walk",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 150,
+            "loop": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "enemy_shielder",
+      "category": "sprites",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "legacy:enemy_shielder",
+        "exported_utc": "2026-01-06T00:00:00Z"
+      },
+      "output": {
+        "relative_path": "sprites/enemy_shielder.png",
+        "width": 64,
+        "height": 64
+      },
+      "constraints": {
+        "max_kb": 8,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "legacy_import",
+        "legacy_category_enemies",
+        "runtime_curated"
+      ],
+      "animation": {
+        "layout": {
+          "frame_width": 32,
+          "frame_height": 64,
+          "rows": 1
+        },
+        "clips": [
+          {
+            "name": "idle",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 300,
+            "loop": true
+          },
+          {
+            "name": "walk",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 150,
+            "loop": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "enemy_stone_golem",
+      "category": "sprites",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "runtime:enemy_stone_golem",
+        "exported_utc": "2026-02-20T16:44:48Z"
+      },
+      "constraints": {
+        "max_kb": 96,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "runtime_curated"
+      ],
+      "output": {
+        "relative_path": "sprites/enemy_stone_golem.png",
+        "width": 64,
+        "height": 64
+      },
+      "animation": {
+        "layout": {
+          "frame_width": 32,
+          "frame_height": 64,
+          "rows": 1
+        },
+        "clips": [
+          {
+            "name": "idle",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 300,
+            "loop": true
+          },
+          {
+            "name": "walk",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 150,
+            "loop": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "enemy_sunlord",
+      "category": "sprites",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "runtime:enemy_sunlord",
+        "exported_utc": "2026-02-20T16:44:48Z"
+      },
+      "constraints": {
+        "max_kb": 96,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "runtime_curated"
+      ],
+      "output": {
+        "relative_path": "sprites/enemy_sunlord.png",
+        "width": 64,
+        "height": 64
+      },
+      "animation": {
+        "layout": {
+          "frame_width": 32,
+          "frame_height": 64,
+          "rows": 1
+        },
+        "clips": [
+          {
+            "name": "idle",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 300,
+            "loop": true
+          },
+          {
+            "name": "walk",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 150,
+            "loop": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "enemy_swarm",
+      "category": "sprites",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "legacy:enemy_swarm",
+        "exported_utc": "2026-01-06T00:00:00Z"
+      },
+      "output": {
+        "relative_path": "sprites/enemy_swarm.png",
+        "width": 64,
+        "height": 64
+      },
+      "constraints": {
+        "max_kb": 4,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "legacy_import",
+        "legacy_category_enemies",
+        "runtime_curated"
+      ],
+      "animation": {
+        "layout": {
+          "frame_width": 32,
+          "frame_height": 64,
+          "rows": 1
+        },
+        "clips": [
+          {
+            "name": "idle",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 300,
+            "loop": true
+          },
+          {
+            "name": "walk",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 150,
+            "loop": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "enemy_tank",
+      "category": "sprites",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "runtime:enemy_tank",
+        "exported_utc": "2026-02-20T16:44:48Z"
+      },
+      "constraints": {
+        "max_kb": 96,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "runtime_curated"
+      ],
+      "output": {
+        "relative_path": "sprites/enemy_tank.png",
+        "width": 64,
+        "height": 64
+      },
+      "animation": {
+        "layout": {
+          "frame_width": 32,
+          "frame_height": 64,
+          "rows": 1
+        },
+        "clips": [
+          {
+            "name": "idle",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 300,
+            "loop": true
+          },
+          {
+            "name": "walk",
+            "row": 0,
+            "start_frame": 0,
+            "frames": 2,
+            "frame_ms": 150,
+            "loop": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "ico_food",
+      "category": "icons",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "runtime:ico_food",
+        "exported_utc": "2026-02-20T16:44:48Z"
+      },
+      "constraints": {
+        "max_kb": 8,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "runtime_curated"
+      ],
+      "output": {
+        "relative_path": "icons/ico_food.png",
+        "width": 16,
+        "height": 16
+      }
+    },
+    {
+      "id": "ico_gold",
+      "category": "icons",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "legacy:ico_gold",
+        "exported_utc": "2026-01-06T00:00:00Z"
+      },
+      "output": {
+        "relative_path": "icons/ico_gold.png",
+        "width": 16,
+        "height": 16
+      },
+      "constraints": {
+        "max_kb": 8,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "legacy_import",
+        "legacy_category_icons",
+        "runtime_curated"
+      ]
+    },
+    {
+      "id": "ico_hp",
+      "category": "icons",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "runtime:ico_hp",
+        "exported_utc": "2026-02-20T16:44:48Z"
+      },
+      "constraints": {
+        "max_kb": 8,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "runtime_curated"
+      ],
+      "output": {
+        "relative_path": "icons/ico_hp.png",
+        "width": 16,
+        "height": 16
+      }
+    },
+    {
+      "id": "ico_shield",
+      "category": "icons",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "runtime:ico_shield",
+        "exported_utc": "2026-02-20T16:44:48Z"
+      },
+      "constraints": {
+        "max_kb": 8,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "runtime_curated"
+      ],
+      "output": {
+        "relative_path": "icons/ico_shield.png",
+        "width": 16,
+        "height": 16
+      }
+    },
+    {
+      "id": "ico_stone",
+      "category": "icons",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "runtime:ico_stone",
+        "exported_utc": "2026-02-20T16:44:48Z"
+      },
+      "constraints": {
+        "max_kb": 8,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "runtime_curated"
+      ],
+      "output": {
+        "relative_path": "icons/ico_stone.png",
+        "width": 16,
+        "height": 16
+      }
+    },
+    {
+      "id": "ico_sword",
+      "category": "icons",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "runtime:ico_sword",
+        "exported_utc": "2026-02-20T16:44:48Z"
+      },
+      "constraints": {
+        "max_kb": 8,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "runtime_curated"
+      ],
+      "output": {
+        "relative_path": "icons/ico_sword.png",
+        "width": 16,
+        "height": 16
+      }
+    },
+    {
+      "id": "ico_threat",
+      "category": "icons",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "legacy:ico_threat",
+        "exported_utc": "2026-01-06T00:00:00Z"
+      },
+      "output": {
+        "relative_path": "icons/ico_threat.png",
+        "width": 16,
+        "height": 16
+      },
+      "constraints": {
+        "max_kb": 8,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "legacy_import",
+        "legacy_category_icons",
+        "runtime_curated"
+      ]
+    },
+    {
+      "id": "ico_wood",
+      "category": "icons",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "runtime:ico_wood",
+        "exported_utc": "2026-02-20T16:44:48Z"
+      },
+      "constraints": {
+        "max_kb": 8,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "runtime_curated"
+      ],
+      "output": {
+        "relative_path": "icons/ico_wood.png",
+        "width": 16,
+        "height": 16
+      }
+    },
+    {
+      "id": "tile_desert",
+      "category": "tiles",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "runtime:tile_desert",
+        "exported_utc": "2026-02-20T16:44:48Z"
+      },
+      "constraints": {
+        "max_kb": 48,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "runtime_curated"
+      ],
+      "output": {
+        "relative_path": "tiles/tile_desert.png",
+        "width": 32,
+        "height": 32
+      }
+    },
+    {
+      "id": "tile_forest",
+      "category": "tiles",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "runtime:tile_forest",
+        "exported_utc": "2026-02-20T16:44:48Z"
+      },
+      "constraints": {
+        "max_kb": 48,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "runtime_curated"
+      ],
+      "output": {
+        "relative_path": "tiles/tile_forest.png",
+        "width": 32,
+        "height": 32
+      }
+    },
+    {
+      "id": "tile_mountain",
+      "category": "tiles",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "runtime:tile_mountain",
+        "exported_utc": "2026-02-20T16:44:48Z"
+      },
+      "constraints": {
+        "max_kb": 48,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "runtime_curated"
+      ],
+      "output": {
+        "relative_path": "tiles/tile_mountain.png",
+        "width": 32,
+        "height": 32
+      }
+    },
+    {
+      "id": "tile_plain",
+      "category": "tiles",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "runtime:tile_plain",
+        "exported_utc": "2026-02-20T16:44:48Z"
+      },
+      "constraints": {
+        "max_kb": 48,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "runtime_curated"
+      ],
+      "output": {
+        "relative_path": "tiles/tile_plain.png",
+        "width": 32,
+        "height": 32
+      }
+    },
+    {
+      "id": "tile_road",
+      "category": "tiles",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "runtime:tile_road",
+        "exported_utc": "2026-02-20T16:44:48Z"
+      },
+      "constraints": {
+        "max_kb": 48,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "runtime_curated"
+      ],
+      "output": {
+        "relative_path": "tiles/tile_road.png",
+        "width": 32,
+        "height": 32
+      }
+    },
+    {
+      "id": "tile_water",
+      "category": "tiles",
+      "source": {
+        "provider": "manual",
+        "artifact_type": "other",
+        "artifact_id": "legacy:tile_water",
+        "exported_utc": "2026-01-06T00:00:00Z"
+      },
+      "output": {
+        "relative_path": "tiles/tile_water.png",
+        "width": 32,
+        "height": 32
+      },
+      "constraints": {
+        "max_kb": 6,
+        "pixel_art": true,
+        "alpha_required": true
+      },
+      "tags": [
+        "legacy_import",
+        "legacy_category_tiles",
+        "runtime_curated"
+      ]
+    }
+  ]
+}

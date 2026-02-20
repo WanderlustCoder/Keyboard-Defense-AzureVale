@@ -199,7 +199,7 @@ func _update_progress_display() -> void:
 
 	# Update progress dots
 	for i in range(_progress_dots.size()):
-		var dot := _progress_dots[i]
+		var dot: ColorRect = _progress_dots[i]
 		if i < _current_step:
 			# Completed step - green
 			dot.color = DOT_COLOR_COMPLETE

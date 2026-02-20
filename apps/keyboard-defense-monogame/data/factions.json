@@ -1,0 +1,70 @@
+{
+  "version": 1,
+  "factions": {
+    "northern_tribes": {
+      "name": "Northern Tribes",
+      "description": "Hardy warriors from the frozen north. They respect strength and value honor in battle.",
+      "personality": "aggressive",
+      "base_relation": -10,
+      "trade_modifier": 1.2,
+      "tribute_base": 50,
+      "military_strength": 80,
+      "color": "#4a7cb5",
+      "leader": "Warchief Bjorn",
+      "capital": "Frosthold",
+      "resources": ["iron", "furs", "warriors"]
+    },
+    "merchant_guild": {
+      "name": "Merchant Guild",
+      "description": "A coalition of wealthy traders who control the major trade routes. Gold speaks louder than swords.",
+      "personality": "mercantile",
+      "base_relation": 20,
+      "trade_modifier": 0.8,
+      "tribute_base": 30,
+      "military_strength": 40,
+      "color": "#c9a227",
+      "leader": "Guildmaster Aldric",
+      "capital": "Goldport",
+      "resources": ["gold", "exotic_goods", "information"]
+    },
+    "forest_clans": {
+      "name": "Forest Clans",
+      "description": "Reclusive hunters who fiercely guard their ancestral woodlands. They prefer to be left alone.",
+      "personality": "isolationist",
+      "base_relation": 0,
+      "trade_modifier": 1.0,
+      "tribute_base": 40,
+      "military_strength": 60,
+      "color": "#3d8b40",
+      "leader": "Elder Sylvana",
+      "capital": "Deepwood",
+      "resources": ["wood", "herbs", "scouts"]
+    },
+    "mountain_kingdom": {
+      "name": "Mountain Kingdom",
+      "description": "Master craftsmen who carve their homes from the living rock. Their fortresses are legendary.",
+      "personality": "defensive",
+      "base_relation": 5,
+      "trade_modifier": 0.9,
+      "tribute_base": 60,
+      "military_strength": 70,
+      "color": "#7a6b5c",
+      "leader": "King Thorin III",
+      "capital": "Stonehall",
+      "resources": ["stone", "gems", "siege_weapons"]
+    },
+    "coastal_federation": {
+      "name": "Coastal Federation",
+      "description": "A loose alliance of fishing villages and port towns. They control the seas and value freedom.",
+      "personality": "opportunistic",
+      "base_relation": 10,
+      "trade_modifier": 0.85,
+      "tribute_base": 35,
+      "military_strength": 50,
+      "color": "#2e8b8b",
+      "leader": "Admiral Corsair",
+      "capital": "Tidehaven",
+      "resources": ["fish", "ships", "sailors"]
+    }
+  }
+}
