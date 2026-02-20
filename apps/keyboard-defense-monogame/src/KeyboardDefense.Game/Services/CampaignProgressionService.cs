@@ -7,6 +7,14 @@ namespace KeyboardDefense.Game.Services;
 /// </summary>
 public static class CampaignProgressionService
 {
+    public enum CampaignOutcomeTone
+    {
+        Neutral,
+        Success,
+        Reward,
+        Warning,
+    }
+
     public readonly record struct CampaignOutcome(
         bool IsCampaignRun,
         bool IsVictory,
@@ -23,6 +31,8 @@ public static class CampaignProgressionService
             RewardAwarded: false,
             RewardGold: 0);
     }
+
+    public readonly record struct CampaignOutcomeDisplay(string Text, CampaignOutcomeTone Tone);
 
     public static CampaignOutcome ApplySingleWaveOutcome(
         ProgressionState progressionState,
@@ -66,5 +76,39 @@ public static class CampaignProgressionService
             NodeCompletedThisRun: nodeCompletedThisRun,
             RewardAwarded: rewardAwarded,
             RewardGold: rewardGold);
+    }
+
+    public static CampaignOutcomeDisplay BuildSummaryDisplay(CampaignOutcome outcome)
+    {
+        if (!outcome.IsCampaignRun)
+            return new CampaignOutcomeDisplay(string.Empty, CampaignOutcomeTone.Neutral);
+
+        if (outcome.IsVictory)
+        {
+            if (outcome.RewardAwarded)
+            {
+                return new CampaignOutcomeDisplay(
+                    $"Node cleared: +{outcome.RewardGold} gold awarded.",
+                    CampaignOutcomeTone.Reward);
+            }
+
+            if (outcome.NodeCompletedThisRun)
+                return new CampaignOutcomeDisplay("Node cleared.", CampaignOutcomeTone.Success);
+
+            return new CampaignOutcomeDisplay(
+                "Node already cleared. No additional node reward.",
+                CampaignOutcomeTone.Neutral);
+        }
+
+        if (outcome.RewardGold > 0)
+        {
+            return new CampaignOutcomeDisplay(
+                $"Node not cleared. Win to earn +{outcome.RewardGold} gold.",
+                CampaignOutcomeTone.Warning);
+        }
+
+        return new CampaignOutcomeDisplay(
+            "Node not cleared. Win to mark this node complete.",
+            CampaignOutcomeTone.Warning);
     }
 }

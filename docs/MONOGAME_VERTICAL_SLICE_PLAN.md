@@ -9,6 +9,10 @@ Deliver a first playable MonoGame loop for Keyboard Defense:
 - Resolve to victory or defeat.
 - Return to menu and replay.
 
+## Milestone Status
+
+- Completed on February 20, 2026.
+
 ## Definition of Done
 
 1. Core gameplay loop is fully playable in `apps/keyboard-defense-monogame`.
@@ -27,45 +31,45 @@ Deliver a first playable MonoGame loop for Keyboard Defense:
 
 ## Ordered Task Backlog
 
-1. `VS-001` Boot and scene flow
+1. [x] `VS-001` Boot and scene flow
    - Implement title/menu -> battle -> result screen flow in MonoGame.
    - Add explicit restart-to-menu behavior after run completion.
-2. `VS-002` Vertical-slice data contract
+2. [x] `VS-002` Vertical-slice data contract
    - Add JSON for one wave profile (spawn cadence, enemy templates, hp, speed, rewards).
    - Add schema validation for the new data files.
-3. `VS-003` Core wave simulation
+3. [x] `VS-003` Core wave simulation
    - Implement deterministic wave timer, spawn queue, enemy lane progression, and run clock.
    - Expose intent/event API consumed by the game layer.
-4. `VS-004` Typing resolution core
+4. [x] `VS-004` Typing resolution core
    - Implement target selection and prefix matching for active words.
    - Emit typed-hit, miss, and word-complete events to the sim.
-5. `VS-005` Combat and outcome rules
+5. [x] `VS-005` Combat and outcome rules
    - Apply damage, enemy defeat, castle/life damage, and win/lose conditions.
    - Add score summary payload for result screen.
-6. `VS-006` MonoGame battle presentation
+6. [x] `VS-006` MonoGame battle presentation
    - Render battlefield, enemies, active word prompts, HUD values, and result panel.
    - Bind rendering to current Pixel Lab runtime textures.
-7. `VS-007` Input and UX pass
+7. [x] `VS-007` Input and UX pass
    - Route keyboard text input and control keys (pause/restart/confirm).
    - Ensure state transitions are stable under rapid input.
-8. `VS-008` Persistence baseline
+8. [x] `VS-008` Persistence baseline
    - Save and load minimal profile fields needed by the slice (last score, runs played).
    - Add versioned save structure for future expansion.
-9. `VS-009` Test coverage for slice systems
+9. [x] `VS-009` Test coverage for slice systems
    - Add unit tests for typing resolution and wave/combat transitions.
    - Add one flow test covering full wave to victory and one to defeat.
-10. `VS-010` Slice balancing pass
+10. [x] `VS-010` Slice balancing pass
     - Tune default values for a 3-5 minute run with clear difficulty ramp.
     - Record baseline constants and assumptions in docs.
 
 ## Acceptance Checklist
 
-- [ ] A run can be started, completed, and replayed without restart.
-- [ ] Victory and defeat both reachable through normal play.
-- [ ] Core sim behavior is deterministic under fixed seed inputs.
-- [ ] Test suite covers critical state transitions for slice loop.
-- [ ] No Godot project dependency in MonoGame runtime path.
-- [ ] Pixel Lab manifest pipeline remains green in CI.
+- [x] A run can be started, completed, and replayed without restart.
+- [x] Victory and defeat both reachable through normal play.
+- [x] Core sim behavior is deterministic under fixed seed inputs.
+- [x] Test suite covers critical state transitions for slice loop.
+- [x] No Godot project dependency in MonoGame runtime path.
+- [x] Pixel Lab manifest pipeline remains green in CI.
 
 ## Execution Notes
 

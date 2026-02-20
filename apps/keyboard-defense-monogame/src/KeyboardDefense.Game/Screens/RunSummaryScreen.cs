@@ -191,37 +191,18 @@ public class RunSummaryScreen : GameScreen
                 HorizontalAlignment = HorizontalAlignment.Center,
             });
 
-            string outcomeText;
-            Color outcomeColor;
-            if (_campaignOutcome.IsVictory)
+            var summaryDisplay = CampaignProgressionService.BuildSummaryDisplay(_campaignOutcome);
+            var outcomeColor = summaryDisplay.Tone switch
             {
-                if (_campaignOutcome.RewardAwarded)
-                {
-                    outcomeText = $"Node cleared: +{_campaignOutcome.RewardGold} gold awarded.";
-                    outcomeColor = ThemeColors.GoldAccent;
-                }
-                else if (_campaignOutcome.NodeCompletedThisRun)
-                {
-                    outcomeText = "Node cleared.";
-                    outcomeColor = ThemeColors.Accent;
-                }
-                else
-                {
-                    outcomeText = "Node already cleared. No additional node reward.";
-                    outcomeColor = ThemeColors.TextDim;
-                }
-            }
-            else
-            {
-                outcomeText = _campaignOutcome.RewardGold > 0
-                    ? $"Node not cleared. Win to earn +{_campaignOutcome.RewardGold} gold."
-                    : "Node not cleared. Win to mark this node complete.";
-                outcomeColor = ThemeColors.Warning;
-            }
+                CampaignProgressionService.CampaignOutcomeTone.Reward => ThemeColors.GoldAccent,
+                CampaignProgressionService.CampaignOutcomeTone.Success => ThemeColors.Accent,
+                CampaignProgressionService.CampaignOutcomeTone.Warning => ThemeColors.Warning,
+                _ => ThemeColors.TextDim,
+            };
 
             root.Widgets.Add(new Label
             {
-                Text = outcomeText,
+                Text = summaryDisplay.Text,
                 TextColor = outcomeColor,
                 HorizontalAlignment = HorizontalAlignment.Center,
             });

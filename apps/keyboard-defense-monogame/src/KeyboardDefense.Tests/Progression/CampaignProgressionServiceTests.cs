@@ -113,6 +113,67 @@ public class CampaignProgressionServiceTests
         Assert.Equal(0, progression.TotalVictories);
     }
 
+    [Fact]
+    public void BuildSummaryDisplay_UsesRewardMessage_OnFirstVictoryClear()
+    {
+        var outcome = new CampaignProgressionService.CampaignOutcome(
+            IsCampaignRun: true,
+            IsVictory: true,
+            NodeAlreadyCompleted: false,
+            NodeCompletedThisRun: true,
+            RewardAwarded: true,
+            RewardGold: 35);
+
+        var display = CampaignProgressionService.BuildSummaryDisplay(outcome);
+
+        Assert.Equal("Node cleared: +35 gold awarded.", display.Text);
+        Assert.Equal(CampaignProgressionService.CampaignOutcomeTone.Reward, display.Tone);
+    }
+
+    [Fact]
+    public void BuildSummaryDisplay_UsesAlreadyClearedMessage_OnRepeatVictory()
+    {
+        var outcome = new CampaignProgressionService.CampaignOutcome(
+            IsCampaignRun: true,
+            IsVictory: true,
+            NodeAlreadyCompleted: true,
+            NodeCompletedThisRun: false,
+            RewardAwarded: false,
+            RewardGold: 35);
+
+        var display = CampaignProgressionService.BuildSummaryDisplay(outcome);
+
+        Assert.Equal("Node already cleared. No additional node reward.", display.Text);
+        Assert.Equal(CampaignProgressionService.CampaignOutcomeTone.Neutral, display.Tone);
+    }
+
+    [Fact]
+    public void BuildSummaryDisplay_UsesDefeatRewardPrompt_WhenRewardExists()
+    {
+        var outcome = new CampaignProgressionService.CampaignOutcome(
+            IsCampaignRun: true,
+            IsVictory: false,
+            NodeAlreadyCompleted: false,
+            NodeCompletedThisRun: false,
+            RewardAwarded: false,
+            RewardGold: 18);
+
+        var display = CampaignProgressionService.BuildSummaryDisplay(outcome);
+
+        Assert.Equal("Node not cleared. Win to earn +18 gold.", display.Text);
+        Assert.Equal(CampaignProgressionService.CampaignOutcomeTone.Warning, display.Tone);
+    }
+
+    [Fact]
+    public void BuildSummaryDisplay_UsesEmptyNeutral_WhenNotCampaignRun()
+    {
+        var display = CampaignProgressionService.BuildSummaryDisplay(
+            CampaignProgressionService.CampaignOutcome.None);
+
+        Assert.Equal(string.Empty, display.Text);
+        Assert.Equal(CampaignProgressionService.CampaignOutcomeTone.Neutral, display.Tone);
+    }
+
     private sealed class TempAppDataScope : IDisposable
     {
         private readonly string? _originalAppData;
