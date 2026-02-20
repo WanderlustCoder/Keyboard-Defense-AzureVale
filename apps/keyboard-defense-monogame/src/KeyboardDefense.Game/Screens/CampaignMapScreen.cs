@@ -44,6 +44,9 @@ public class CampaignMapScreen : GameScreen
     private Vector2 _scrollOffset;
     private int _totalGraphHeight;
     private string? _hoveredNode;
+    private string? _focusedNodeId;
+    private readonly List<string> _keyboardNodeOrder = new();
+    private int _keyboardFocusIndex = -1;
     private MouseState _prevMouse;
     private KeyboardState _prevKeyboard;
     private DialogueBox? _dialogueBox;
@@ -203,6 +206,8 @@ public class CampaignMapScreen : GameScreen
                     _totalGraphHeight = bottom;
             }
         }
+
+        RebuildKeyboardNodeOrder();
     }
 
     private void BuildUi()
@@ -293,6 +298,26 @@ public class CampaignMapScreen : GameScreen
                 _hoveredNode = id;
                 break;
             }
+        }
+        if (_hoveredNode != null)
+            SyncKeyboardFocusToNode(_hoveredNode);
+
+        // Keyboard node inspection
+        if (IsKeyPressed(kb, Keys.Tab))
+        {
+            bool reverse = kb.IsKeyDown(Keys.LeftShift) || kb.IsKeyDown(Keys.RightShift);
+            StepKeyboardFocus(reverse ? -1 : 1);
+        }
+
+        // Keyboard launch for focused node
+        if (IsKeyPressed(kb, Keys.Enter) &&
+            _hoveredNode == null &&
+            _focusedNodeId != null &&
+            _nodeMap.TryGetValue(_focusedNodeId, out var focusedNode))
+        {
+            var prog = ProgressionState.Instance;
+            if (prog.IsNodeUnlocked(focusedNode.Id, focusedNode.Requires))
+                LaunchBattle(focusedNode);
         }
 
         // Click to launch battle
@@ -437,6 +462,7 @@ public class CampaignMapScreen : GameScreen
             bool completed = prog.IsNodeCompleted(node.Id);
             bool unlocked = prog.IsNodeUnlocked(node.Id, node.Requires);
             bool hovered = _hoveredNode == node.Id;
+            bool keyboardFocused = _hoveredNode == null && _focusedNodeId == node.Id;
 
             // Card background
             Color bgColor = completed ? new Color(20, 40, 30)
@@ -444,6 +470,8 @@ public class CampaignMapScreen : GameScreen
                 : new Color(20, 20, 25);
             if (hovered && unlocked)
                 bgColor = completed ? new Color(30, 55, 40) : new Color(35, 35, 55);
+            else if (keyboardFocused && unlocked)
+                bgColor = completed ? new Color(36, 62, 46) : new Color(44, 44, 64);
 
             spriteBatch.Draw(_pixel, rect, bgColor);
 
@@ -451,6 +479,8 @@ public class CampaignMapScreen : GameScreen
             Color borderColor = completed ? ThemeColors.Accent
                 : unlocked ? ThemeColors.AccentCyan
                 : ThemeColors.Border;
+            if (keyboardFocused && unlocked)
+                borderColor = ThemeColors.AccentBlue;
             int borderWidth = completed ? 3 : 2;
             DrawRectOutline(spriteBatch, rect, borderColor, borderWidth);
 
@@ -500,7 +530,9 @@ public class CampaignMapScreen : GameScreen
         }
 
         DrawMapLegend(spriteBatch, font, vp);
-        DrawHoveredNodeTooltip(spriteBatch, font, prog, vp);
+        string? inspectedNode = !string.IsNullOrEmpty(_hoveredNode) ? _hoveredNode : _focusedNodeId;
+        bool keyboardInspection = string.IsNullOrEmpty(_hoveredNode) && !string.IsNullOrEmpty(_focusedNodeId);
+        DrawInspectedNodeTooltip(spriteBatch, font, prog, vp, inspectedNode, keyboardInspection);
 
         spriteBatch.End();
 
@@ -516,7 +548,7 @@ public class CampaignMapScreen : GameScreen
         if (_pixel == null)
             return;
 
-        var panelRect = new Rectangle(16, viewport.Height - 106, 360, 88);
+        var panelRect = new Rectangle(16, viewport.Height - 136, 430, 118);
         spriteBatch.Draw(_pixel, panelRect, new Color(12, 12, 18, 220));
         DrawRectOutline(spriteBatch, panelRect, ThemeColors.Border, 2);
 
@@ -563,17 +595,41 @@ public class CampaignMapScreen : GameScreen
             0.52f,
             SpriteEffects.None,
             0f);
+
+        spriteBatch.DrawString(
+            font,
+            "Tab / Shift+Tab: inspect nodes without mouse",
+            new Vector2(panelRect.X + 10, panelRect.Y + 82),
+            ThemeColors.Text,
+            0f,
+            Vector2.Zero,
+            0.50f,
+            SpriteEffects.None,
+            0f);
+
+        spriteBatch.DrawString(
+            font,
+            "Enter: launch currently focused unlocked node",
+            new Vector2(panelRect.X + 10, panelRect.Y + 98),
+            ThemeColors.TextDim,
+            0f,
+            Vector2.Zero,
+            0.50f,
+            SpriteEffects.None,
+            0f);
     }
 
-    private void DrawHoveredNodeTooltip(
+    private void DrawInspectedNodeTooltip(
         SpriteBatch spriteBatch,
         SpriteFont font,
         ProgressionState progression,
-        Viewport viewport)
+        Viewport viewport,
+        string? inspectedNodeId,
+        bool keyboardInspection)
     {
-        if (_pixel == null || string.IsNullOrEmpty(_hoveredNode))
+        if (_pixel == null || string.IsNullOrEmpty(inspectedNodeId))
             return;
-        if (!_nodeMap.TryGetValue(_hoveredNode, out var node))
+        if (!_nodeMap.TryGetValue(inspectedNodeId, out var node))
             return;
 
         bool completed = progression.IsNodeCompleted(node.Id);
@@ -589,8 +645,18 @@ public class CampaignMapScreen : GameScreen
 
         const int panelWidth = 360;
         const int panelHeight = 120;
-        int x = _prevMouse.X + 20;
-        int y = _prevMouse.Y + 18;
+        int x;
+        int y;
+        if (keyboardInspection)
+        {
+            x = viewport.Width - panelWidth - 12;
+            y = 68;
+        }
+        else
+        {
+            x = _prevMouse.X + 20;
+            y = _prevMouse.Y + 18;
+        }
         if (x + panelWidth > viewport.Width - 8)
             x = viewport.Width - panelWidth - 8;
         if (y + panelHeight > viewport.Height - 8)
@@ -669,6 +735,58 @@ public class CampaignMapScreen : GameScreen
             lineScale,
             SpriteEffects.None,
             0f);
+    }
+
+    private bool IsKeyPressed(KeyboardState current, Keys key)
+    {
+        return current.IsKeyDown(key) && !_prevKeyboard.IsKeyDown(key);
+    }
+
+    private void RebuildKeyboardNodeOrder()
+    {
+        _keyboardNodeOrder.Clear();
+        foreach (var (id, pos) in _nodePositions.OrderBy(p => p.Value.X).ThenBy(p => p.Value.Y))
+            _keyboardNodeOrder.Add(id);
+
+        if (_keyboardNodeOrder.Count == 0)
+        {
+            _keyboardFocusIndex = -1;
+            _focusedNodeId = null;
+            return;
+        }
+
+        if (_keyboardFocusIndex < 0 || _keyboardFocusIndex >= _keyboardNodeOrder.Count)
+            _keyboardFocusIndex = 0;
+        _focusedNodeId = _keyboardNodeOrder[_keyboardFocusIndex];
+    }
+
+    private void StepKeyboardFocus(int delta)
+    {
+        if (_keyboardNodeOrder.Count == 0)
+            return;
+
+        if (_keyboardFocusIndex < 0 || _keyboardFocusIndex >= _keyboardNodeOrder.Count)
+        {
+            _keyboardFocusIndex = 0;
+        }
+        else
+        {
+            int next = (_keyboardFocusIndex + delta) % _keyboardNodeOrder.Count;
+            if (next < 0)
+                next += _keyboardNodeOrder.Count;
+            _keyboardFocusIndex = next;
+        }
+
+        _focusedNodeId = _keyboardNodeOrder[_keyboardFocusIndex];
+    }
+
+    private void SyncKeyboardFocusToNode(string nodeId)
+    {
+        int idx = _keyboardNodeOrder.IndexOf(nodeId);
+        if (idx < 0)
+            return;
+        _keyboardFocusIndex = idx;
+        _focusedNodeId = nodeId;
     }
 
     private void DrawLine(SpriteBatch spriteBatch, Vector2 from, Vector2 to, Color color, int thickness)

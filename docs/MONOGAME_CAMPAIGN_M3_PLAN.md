@@ -10,7 +10,7 @@ Deliver campaign map readability and pre-run clarity improvements:
 
 ## Milestone Status
 
-- Active as of February 20, 2026.
+- Completed on February 20, 2026.
 
 ## Definition of Done
 
@@ -28,10 +28,10 @@ Deliver campaign map readability and pre-run clarity improvements:
 2. [x] `CM3-002` Hover node detail tooltip
    - Show status, reward state, lesson ID, and resolved wave profile on hover.
    - Clamp tooltip position to viewport bounds for readability.
-3. [ ] `CM3-003` Keyboard-only node inspection polish
+3. [x] `CM3-003` Keyboard-only node inspection polish
    - Add keyboard focus/selection parity for node details (without mouse hover dependency).
    - Preserve existing launch controls and map navigation semantics.
-4. [ ] `CM3-004` Map UX regression guardrails
+4. [x] `CM3-004` Map UX regression guardrails
    - Add or update checklist/test coverage for node detail readability and cue consistency.
    - Keep campaign map rendering performance and state transitions stable.
 
@@ -40,8 +40,8 @@ Deliver campaign map readability and pre-run clarity improvements:
 - [x] Campaign map legend is visible and readable at runtime.
 - [x] Hover tooltip shows node status, reward, lesson, and profile data.
 - [x] Tooltip and legend coexist without obscuring top-bar controls.
-- [ ] Keyboard-only inspection parity is implemented.
-- [ ] M3 regressions are documented and covered by test/checklist artifacts.
+- [x] Keyboard-only inspection parity is implemented.
+- [x] M3 regressions are documented and covered by test/checklist artifacts.
 
 ## Out of Scope (for this milestone)
 
