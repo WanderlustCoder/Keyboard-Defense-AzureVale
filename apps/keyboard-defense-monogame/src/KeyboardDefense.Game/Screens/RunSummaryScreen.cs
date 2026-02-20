@@ -19,6 +19,7 @@ public class RunSummaryScreen : GameScreen
     private readonly string _nodeName;
     private readonly bool _returnToCampaignMapOnSummary;
     private readonly string _verticalSliceProfileId;
+    private readonly CampaignProgressionService.CampaignSummaryHandoff _campaignSummaryHandoff;
     private readonly string _campaignNodeId;
     private readonly int _campaignNodeRewardGold;
     private CampaignProgressionService.CampaignOutcome _campaignOutcome =
@@ -35,16 +36,22 @@ public class RunSummaryScreen : GameScreen
         bool returnToCampaignMapOnSummary = false,
         string verticalSliceProfileId = "vertical_slice_default",
         string campaignNodeId = "",
-        int campaignNodeRewardGold = 0)
+        int campaignNodeRewardGold = 0,
+        CampaignProgressionService.CampaignSummaryHandoff? campaignSummaryHandoff = null)
         : base(game, screenManager)
     {
         _isVictory = isVictory;
         _nodeIndex = nodeIndex;
         _nodeName = nodeName;
-        _returnToCampaignMapOnSummary = returnToCampaignMapOnSummary;
         _verticalSliceProfileId = verticalSliceProfileId;
-        _campaignNodeId = campaignNodeId ?? "";
-        _campaignNodeRewardGold = Math.Max(0, campaignNodeRewardGold);
+        _campaignSummaryHandoff = campaignSummaryHandoff ??
+            CampaignProgressionService.CampaignSummaryHandoff.Create(
+                returnToCampaignMapOnSummary,
+                campaignNodeId,
+                campaignNodeRewardGold);
+        _returnToCampaignMapOnSummary = _campaignSummaryHandoff.ReturnToCampaignMapOnSummary;
+        _campaignNodeId = _campaignSummaryHandoff.CampaignNodeId;
+        _campaignNodeRewardGold = _campaignSummaryHandoff.CampaignNodeRewardGold;
     }
 
     public override void OnEnter()
@@ -69,10 +76,8 @@ public class RunSummaryScreen : GameScreen
         int enemiesDefeated = verticalSliceSummary?.EnemiesDefeated ?? state.EnemiesDefeated;
         return CampaignProgressionService.ApplySingleWaveOutcome(
             ProgressionState.Instance,
-            _returnToCampaignMapOnSummary,
+            _campaignSummaryHandoff,
             _isVictory,
-            _campaignNodeId,
-            _campaignNodeRewardGold,
             state.Day,
             enemiesDefeated,
             wordsTyped,

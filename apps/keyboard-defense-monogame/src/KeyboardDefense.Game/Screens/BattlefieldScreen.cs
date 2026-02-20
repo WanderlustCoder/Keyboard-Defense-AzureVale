@@ -656,8 +656,7 @@ public class BattlefieldScreen : GameScreen
                     nodeName: _nodeName,
                     returnToCampaignMapOnSummary: _returnToCampaignMapOnSummary,
                     verticalSliceProfileId: _verticalSliceProfileId,
-                    campaignNodeId: _campaignNodeId,
-                    campaignNodeRewardGold: _campaignNodeRewardGold));
+                    campaignSummaryHandoff: BuildCampaignSummaryHandoff()));
                 return;
             }
 
@@ -677,8 +676,7 @@ public class BattlefieldScreen : GameScreen
                     nodeName: _nodeName,
                     returnToCampaignMapOnSummary: _returnToCampaignMapOnSummary,
                     verticalSliceProfileId: _verticalSliceProfileId,
-                    campaignNodeId: _campaignNodeId,
-                    campaignNodeRewardGold: _campaignNodeRewardGold));
+                    campaignSummaryHandoff: BuildCampaignSummaryHandoff()));
                 return;
             }
         }
@@ -832,6 +830,14 @@ public class BattlefieldScreen : GameScreen
         if (value is double d)
             return (float)d;
         return float.TryParse(value.ToString(), out float parsed) ? parsed : fallback;
+    }
+
+    private CampaignProgressionService.CampaignSummaryHandoff BuildCampaignSummaryHandoff()
+    {
+        return CampaignProgressionService.CampaignSummaryHandoff.Create(
+            _returnToCampaignMapOnSummary,
+            _campaignNodeId,
+            _campaignNodeRewardGold);
     }
 
     private void DrawSingleWavePauseOverlay(SpriteBatch spriteBatch, int width, int height)

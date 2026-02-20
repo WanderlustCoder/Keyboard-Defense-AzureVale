@@ -174,6 +174,77 @@ public class CampaignProgressionServiceTests
         Assert.Equal(CampaignProgressionService.CampaignOutcomeTone.Neutral, display.Tone);
     }
 
+    [Fact]
+    public void ApplySingleWaveOutcome_UsingBattleToSummaryHandoff_Victory_CompletesNodeAndRewards()
+    {
+        using var appDataScope = new TempAppDataScope();
+        var progression = new ProgressionState();
+        var handoff = CampaignProgressionService.CampaignSummaryHandoff.Create(
+            returnToCampaignMapOnSummary: true,
+            campaignNodeId: "the-nexus",
+            campaignNodeRewardGold: 40);
+
+        var outcome = CampaignProgressionService.ApplySingleWaveOutcome(
+            progression,
+            handoff,
+            isVictory: true,
+            day: 5,
+            enemiesDefeated: 21,
+            wordsTyped: 42,
+            wordsPerMinute: 51.3,
+            accuracyRate: 0.96);
+        var display = CampaignProgressionService.BuildSummaryDisplay(outcome);
+
+        Assert.True(outcome.NodeCompletedThisRun);
+        Assert.True(outcome.RewardAwarded);
+        Assert.Equal(40, progression.Gold);
+        Assert.True(progression.IsNodeCompleted("the-nexus"));
+        Assert.Equal("Node cleared: +40 gold awarded.", display.Text);
+        Assert.Equal(CampaignProgressionService.CampaignOutcomeTone.Reward, display.Tone);
+    }
+
+    [Fact]
+    public void ApplySingleWaveOutcome_UsingBattleToSummaryHandoff_Defeat_ShowsRetryPromptWithoutReward()
+    {
+        using var appDataScope = new TempAppDataScope();
+        var progression = new ProgressionState();
+        var handoff = CampaignProgressionService.CampaignSummaryHandoff.Create(
+            returnToCampaignMapOnSummary: true,
+            campaignNodeId: "citadel-rise",
+            campaignNodeRewardGold: 30);
+
+        var outcome = CampaignProgressionService.ApplySingleWaveOutcome(
+            progression,
+            handoff,
+            isVictory: false,
+            day: 4,
+            enemiesDefeated: 12,
+            wordsTyped: 27,
+            wordsPerMinute: 38.0,
+            accuracyRate: 0.84);
+        var display = CampaignProgressionService.BuildSummaryDisplay(outcome);
+
+        Assert.False(outcome.NodeCompletedThisRun);
+        Assert.False(outcome.RewardAwarded);
+        Assert.False(progression.IsNodeCompleted("citadel-rise"));
+        Assert.Equal(0, progression.Gold);
+        Assert.Equal("Node not cleared. Win to earn +30 gold.", display.Text);
+        Assert.Equal(CampaignProgressionService.CampaignOutcomeTone.Warning, display.Tone);
+    }
+
+    [Fact]
+    public void CampaignSummaryHandoff_Create_NormalizesNodeAndReward()
+    {
+        var handoff = CampaignProgressionService.CampaignSummaryHandoff.Create(
+            returnToCampaignMapOnSummary: true,
+            campaignNodeId: "  ember-bridge  ",
+            campaignNodeRewardGold: -5);
+
+        Assert.True(handoff.ReturnToCampaignMapOnSummary);
+        Assert.Equal("ember-bridge", handoff.CampaignNodeId);
+        Assert.Equal(0, handoff.CampaignNodeRewardGold);
+    }
+
     private sealed class TempAppDataScope : IDisposable
     {
         private readonly string? _originalAppData;

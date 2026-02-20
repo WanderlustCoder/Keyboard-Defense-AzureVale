@@ -7,6 +7,28 @@ namespace KeyboardDefense.Game.Services;
 /// </summary>
 public static class CampaignProgressionService
 {
+    public readonly record struct CampaignSummaryHandoff(
+        bool ReturnToCampaignMapOnSummary,
+        string CampaignNodeId,
+        int CampaignNodeRewardGold)
+    {
+        public static CampaignSummaryHandoff None => new(
+            ReturnToCampaignMapOnSummary: false,
+            CampaignNodeId: string.Empty,
+            CampaignNodeRewardGold: 0);
+
+        public static CampaignSummaryHandoff Create(
+            bool returnToCampaignMapOnSummary,
+            string? campaignNodeId,
+            int campaignNodeRewardGold)
+        {
+            return new CampaignSummaryHandoff(
+                ReturnToCampaignMapOnSummary: returnToCampaignMapOnSummary,
+                CampaignNodeId: (campaignNodeId ?? string.Empty).Trim(),
+                CampaignNodeRewardGold: Math.Max(0, campaignNodeRewardGold));
+        }
+    }
+
     public enum CampaignOutcomeTone
     {
         Neutral,
@@ -33,6 +55,29 @@ public static class CampaignProgressionService
     }
 
     public readonly record struct CampaignOutcomeDisplay(string Text, CampaignOutcomeTone Tone);
+
+    public static CampaignOutcome ApplySingleWaveOutcome(
+        ProgressionState progressionState,
+        CampaignSummaryHandoff handoff,
+        bool isVictory,
+        int day,
+        int enemiesDefeated,
+        int wordsTyped,
+        double wordsPerMinute,
+        double accuracyRate)
+    {
+        return ApplySingleWaveOutcome(
+            progressionState,
+            handoff.ReturnToCampaignMapOnSummary,
+            isVictory,
+            handoff.CampaignNodeId,
+            handoff.CampaignNodeRewardGold,
+            day,
+            enemiesDefeated,
+            wordsTyped,
+            wordsPerMinute,
+            accuracyRate);
+    }
 
     public static CampaignOutcome ApplySingleWaveOutcome(
         ProgressionState progressionState,
