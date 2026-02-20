@@ -72,6 +72,7 @@ public class BattlefieldScreen : GameScreen
     private List<string> _prevEnemyKinds = new();
     private bool _gameEnded;
     private bool _singleWaveNightStarted;
+    private bool _singleWavePaused;
     private readonly List<string> _earnedMilestones = new();
     private HashSet<int> _prevEnemyIds = new();
     private int _prevHp;
@@ -132,6 +133,7 @@ public class BattlefieldScreen : GameScreen
 
             AppendLog("Vertical Slice: survive one night wave.");
             AppendLog($"Profile: {profile.ProfileId} ({profile.WaveSpawnTotal} enemies)");
+            AppendLog("Controls: Enter submit, P pause/resume, R restart.");
             if (_verticalSliceConfig != null && ctrl.State.Phase == "day")
             {
                 var startEvents = new List<string>();
@@ -174,23 +176,30 @@ public class BattlefieldScreen : GameScreen
         // Process typing input only when no panel is active
         if (_panelOverlay == null || !_panelOverlay.HasActivePanel)
         {
-            _typingHandler?.ProcessInput();
-
             var kbState = Keyboard.GetState();
-
-            // Tutorial controls take priority when active
-            if (_battleTutorial != null && _battleTutorial.IsActive)
+            if (_singleWaveMode && HandleSingleWaveControlInput(kbState))
             {
-                if (kbState.IsKeyDown(Keys.Escape) && !_prevKeyboard.IsKeyDown(Keys.Escape))
-                    _battleTutorial.Skip();
-                else if (kbState.IsKeyDown(Keys.Enter) && !_prevKeyboard.IsKeyDown(Keys.Enter))
-                    _battleTutorial.AdvanceDialogue();
-                else if (kbState.IsKeyDown(Keys.Space) && !_prevKeyboard.IsKeyDown(Keys.Space))
-                    _battleTutorial.AdvanceDialogue();
+                _prevKeyboard = kbState;
             }
-            else if (KeybindManager.Instance.IsActionPressed("submit", kbState, _prevKeyboard))
+            else
             {
-                SubmitInput();
+                if (!_singleWavePaused)
+                    _typingHandler?.ProcessInput();
+
+                // Tutorial controls take priority when active
+                if (_battleTutorial != null && _battleTutorial.IsActive)
+                {
+                    if (kbState.IsKeyDown(Keys.Escape) && !_prevKeyboard.IsKeyDown(Keys.Escape))
+                        _battleTutorial.Skip();
+                    else if (kbState.IsKeyDown(Keys.Enter) && !_prevKeyboard.IsKeyDown(Keys.Enter))
+                        _battleTutorial.AdvanceDialogue();
+                    else if (kbState.IsKeyDown(Keys.Space) && !_prevKeyboard.IsKeyDown(Keys.Space))
+                        _battleTutorial.AdvanceDialogue();
+                }
+                else if (!_singleWavePaused && KeybindManager.Instance.IsActionPressed("submit", kbState, _prevKeyboard))
+                {
+                    SubmitInput();
+                }
             }
 
             _prevKeyboard = kbState;
@@ -203,7 +212,7 @@ public class BattlefieldScreen : GameScreen
         // Tick spell cooldowns
         SpellSystem.Instance.UpdateCooldowns((float)gameTime.ElapsedGameTime.TotalSeconds * speedMul);
 
-        if (_singleWaveMode && _verticalSliceConfig != null && !_gameEnded)
+        if (_singleWaveMode && _verticalSliceConfig != null && !_gameEnded && !_singleWavePaused)
             RunVerticalSliceStep((float)gameTime.ElapsedGameTime.TotalSeconds * speedMul, null);
 
         // Update visual renderers
@@ -310,6 +319,8 @@ public class BattlefieldScreen : GameScreen
         spriteBatch.Begin();
         _panelOverlay?.DrawOverlays(spriteBatch, Game.DefaultFont, vp.Width, vp.Height);
         _battleTutorial?.Draw(spriteBatch, Game.DefaultFont, vp.Width, vp.Height);
+        if (_singleWaveMode && _singleWavePaused)
+            DrawSingleWavePauseOverlay(spriteBatch, vp.Width, vp.Height);
         spriteBatch.End();
 
         // Scene transition
@@ -468,6 +479,9 @@ public class BattlefieldScreen : GameScreen
 
     private void SubmitInput()
     {
+        if (_singleWaveMode && _singleWavePaused)
+            return;
+
         string text = _typingInput?.Text?.Trim() ?? "";
         if (string.IsNullOrEmpty(text)) return;
 
@@ -549,6 +563,60 @@ public class BattlefieldScreen : GameScreen
         }
 
         OnStateChanged(GameController.Instance.State);
+    }
+
+    private bool HandleSingleWaveControlInput(KeyboardState kbState)
+    {
+        if (!_singleWaveMode || _gameEnded)
+            return false;
+
+        if (IsKeyPressed(kbState, Keys.P))
+        {
+            _singleWavePaused = !_singleWavePaused;
+            AppendLog(_singleWavePaused ? "Paused." : "Resumed.");
+            return true;
+        }
+
+        if (_singleWavePaused && IsKeyPressed(kbState, Keys.Enter))
+        {
+            _singleWavePaused = false;
+            AppendLog("Resumed.");
+            return true;
+        }
+
+        if (IsKeyPressed(kbState, Keys.R))
+        {
+            RestartSingleWaveRun();
+            return true;
+        }
+
+        return false;
+    }
+
+    private bool IsKeyPressed(KeyboardState current, Keys key)
+    {
+        return current.IsKeyDown(key) && !_prevKeyboard.IsKeyDown(key);
+    }
+
+    private void RestartSingleWaveRun()
+    {
+        if (_gameEnded)
+            return;
+
+        _gameEnded = true;
+        AppendLog("Restarting vertical slice...");
+
+        SceneTransition.Instance.BattleTransition(() =>
+        {
+            GameController.Instance.NewGame($"vertical_slice_{DateTime.UtcNow.Ticks}");
+            ScreenManager.Pop();
+            ScreenManager.Push(new BattlefieldScreen(
+                Game,
+                ScreenManager,
+                _nodeIndex,
+                _nodeName,
+                singleWaveMode: true));
+        });
     }
 
     private void CheckGameEnd()
@@ -729,5 +797,21 @@ public class BattlefieldScreen : GameScreen
         if (value is double d)
             return (float)d;
         return float.TryParse(value.ToString(), out float parsed) ? parsed : fallback;
+    }
+
+    private void DrawSingleWavePauseOverlay(SpriteBatch spriteBatch, int width, int height)
+    {
+        const string title = "PAUSED";
+        const string subtitle = "Press P or Enter to resume, R to restart";
+
+        var font = Game.DefaultFont;
+        var titleSize = font.MeasureString(title);
+        var subtitleSize = font.MeasureString(subtitle);
+
+        var titlePos = new Vector2((width - titleSize.X) * 0.5f, height * 0.45f);
+        var subtitlePos = new Vector2((width - subtitleSize.X) * 0.5f, titlePos.Y + 34f);
+
+        spriteBatch.DrawString(font, title, titlePos, ThemeColors.Accent);
+        spriteBatch.DrawString(font, subtitle, subtitlePos, ThemeColors.Text);
     }
 }
