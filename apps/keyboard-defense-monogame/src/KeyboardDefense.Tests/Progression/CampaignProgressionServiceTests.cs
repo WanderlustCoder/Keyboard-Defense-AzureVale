@@ -12,7 +12,7 @@ public class CampaignProgressionServiceTests
         using var appDataScope = new TempAppDataScope();
         var progression = new ProgressionState();
 
-        CampaignProgressionService.ApplySingleWaveOutcome(
+        var firstOutcome = CampaignProgressionService.ApplySingleWaveOutcome(
             progression,
             returnToCampaignMapOnSummary: true,
             isVictory: true,
@@ -24,7 +24,7 @@ public class CampaignProgressionServiceTests
             wordsPerMinute: 42.5,
             accuracyRate: 0.91);
 
-        CampaignProgressionService.ApplySingleWaveOutcome(
+        var secondOutcome = CampaignProgressionService.ApplySingleWaveOutcome(
             progression,
             returnToCampaignMapOnSummary: true,
             isVictory: true,
@@ -35,6 +35,20 @@ public class CampaignProgressionServiceTests
             wordsTyped: 34,
             wordsPerMinute: 44.0,
             accuracyRate: 0.93);
+
+        Assert.True(firstOutcome.IsCampaignRun);
+        Assert.True(firstOutcome.IsVictory);
+        Assert.False(firstOutcome.NodeAlreadyCompleted);
+        Assert.True(firstOutcome.NodeCompletedThisRun);
+        Assert.True(firstOutcome.RewardAwarded);
+        Assert.Equal(25, firstOutcome.RewardGold);
+
+        Assert.True(secondOutcome.IsCampaignRun);
+        Assert.True(secondOutcome.IsVictory);
+        Assert.True(secondOutcome.NodeAlreadyCompleted);
+        Assert.False(secondOutcome.NodeCompletedThisRun);
+        Assert.False(secondOutcome.RewardAwarded);
+        Assert.Equal(25, secondOutcome.RewardGold);
 
         Assert.True(progression.IsNodeCompleted("forest_gate"));
         Assert.Equal(25, progression.Gold);
@@ -48,7 +62,7 @@ public class CampaignProgressionServiceTests
         using var appDataScope = new TempAppDataScope();
         var progression = new ProgressionState();
 
-        CampaignProgressionService.ApplySingleWaveOutcome(
+        var outcome = CampaignProgressionService.ApplySingleWaveOutcome(
             progression,
             returnToCampaignMapOnSummary: true,
             isVictory: false,
@@ -59,6 +73,13 @@ public class CampaignProgressionServiceTests
             wordsTyped: 14,
             wordsPerMinute: 28.0,
             accuracyRate: 0.82);
+
+        Assert.True(outcome.IsCampaignRun);
+        Assert.False(outcome.IsVictory);
+        Assert.False(outcome.NodeAlreadyCompleted);
+        Assert.False(outcome.NodeCompletedThisRun);
+        Assert.False(outcome.RewardAwarded);
+        Assert.Equal(30, outcome.RewardGold);
 
         Assert.False(progression.IsNodeCompleted("whisper_grove"));
         Assert.Equal(0, progression.Gold);
@@ -72,7 +93,7 @@ public class CampaignProgressionServiceTests
         using var appDataScope = new TempAppDataScope();
         var progression = new ProgressionState();
 
-        CampaignProgressionService.ApplySingleWaveOutcome(
+        var outcome = CampaignProgressionService.ApplySingleWaveOutcome(
             progression,
             returnToCampaignMapOnSummary: false,
             isVictory: true,
@@ -83,6 +104,8 @@ public class CampaignProgressionServiceTests
             wordsTyped: 20,
             wordsPerMinute: 35.0,
             accuracyRate: 0.88);
+
+        Assert.Equal(CampaignProgressionService.CampaignOutcome.None, outcome);
 
         Assert.False(progression.IsNodeCompleted("ember_bridge"));
         Assert.Equal(0, progression.Gold);
