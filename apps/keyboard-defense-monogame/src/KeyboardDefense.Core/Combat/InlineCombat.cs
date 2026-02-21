@@ -70,7 +70,9 @@ public static class InlineCombat
         int combo = TypingMetrics.GetComboCount(state);
         double wpm = TypingMetrics.GetCurrentWpm(state);
         double accuracy = TypingMetrics.GetAccuracy(state);
-        int damage = SimBalance.CalculateTypingDamage(baseDamage, wpm, accuracy, combo);
+        var profTier = TypingProficiency.GetTier(wpm, accuracy);
+        double profDamageMult = TypingProficiency.GetDamageMultiplier(profTier);
+        int damage = (int)(SimBalance.CalculateTypingDamage(baseDamage, wpm, accuracy, combo) * profDamageMult);
         damage = Math.Max(1, damage);
 
         // Apply damage to enemy
@@ -92,7 +94,8 @@ public static class InlineCombat
 
             // Award gold
             int tier = Convert.ToInt32(target.GetValueOrDefault("tier", 0));
-            int goldReward = 3 + tier * 2;
+            double profGoldMult = TypingProficiency.GetGoldMultiplier(profTier);
+            int goldReward = (int)((3 + tier * 2) * profGoldMult);
             state.Gold += goldReward;
 
             events.Add($"Defeated {kind}! +{goldReward} gold. ({damage} damage)");

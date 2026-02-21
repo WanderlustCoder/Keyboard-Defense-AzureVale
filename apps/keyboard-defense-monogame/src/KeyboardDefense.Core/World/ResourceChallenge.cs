@@ -100,6 +100,11 @@ public static class ResourceChallenge
         // Calculate performance score based on accuracy
         double score = CalculateScore(typed, challengeWord);
 
+        // Apply typing proficiency resource bonus
+        var profTier = TypingProficiency.GetTier();
+        double profResourceMult = TypingProficiency.GetResourceMultiplier(profTier);
+        score = Math.Min(100.0, score * profResourceMult);
+
         // Harvest with performance multiplier
         var result = ResourceNodes.HarvestNode(state, nodeIndex, score);
 

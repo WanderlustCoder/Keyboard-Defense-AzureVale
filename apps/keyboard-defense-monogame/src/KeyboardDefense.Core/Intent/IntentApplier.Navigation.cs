@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using KeyboardDefense.Core.State;
+using KeyboardDefense.Core.Typing;
 using KeyboardDefense.Core.World;
 
 namespace KeyboardDefense.Core.Intent;
@@ -118,8 +119,8 @@ public static partial class IntentApplier
         state.PlayerPos = newPos;
         state.CursorPos = newPos; // Keep cursor synced with player
 
-        // Discover tiles in radius around player
-        const int discoverRadius = 3;
+        // Discover tiles in radius around player (proficiency bonus increases radius)
+        int discoverRadius = 3 + TypingProficiency.GetDiscoveryRadiusBonus(TypingProficiency.GetTier());
         for (int ry = -discoverRadius; ry <= discoverRadius; ry++)
         {
             for (int rx = -discoverRadius; rx <= discoverRadius; rx++)
