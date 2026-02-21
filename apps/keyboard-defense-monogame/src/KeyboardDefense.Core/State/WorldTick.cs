@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using KeyboardDefense.Core.Balance;
 using KeyboardDefense.Core.Combat;
 using KeyboardDefense.Core.Typing;
 using KeyboardDefense.Core.World;
@@ -28,6 +29,7 @@ public static class WorldTick
     public const int WaveBaseWood = 5;
     public const int WaveBaseStone = 3;
     public const int WaveBaseFood = 2;
+    private static readonly string[] WaveEnemyKinds = { "scout", "raider", "armored", "swarm", "berserker" };
 
     public static Dictionary<string, object> Tick(GameState state, double delta)
     {
@@ -63,6 +65,7 @@ public static class WorldTick
                     break;
 
                 case "wave_assault":
+                    SpawnWaveEnemies(state);
                     if (state.Enemies.Count == 0 && state.NightSpawnRemaining <= 0)
                     {
                         EndWaveAssault(state);
@@ -93,9 +96,10 @@ public static class WorldTick
     {
         state.ActivityMode = "wave_assault";
         state.Phase = "night";
-        int baseSize = 2 + state.Day / 2;
-        int threatBonus = (int)(state.ThreatLevel * 3);
-        int waveSize = baseSize + threatBonus;
+        string difficultyMode = GetDifficultyMode(state);
+        int threatForScaling = GetThreatForScaling(state);
+        int waveSize = SimBalance.CalculateWaveSize(state.Day, threatForScaling);
+        waveSize = Difficulty.ApplyWaveSizeModifier(waveSize, difficultyMode);
         state.NightWaveTotal = waveSize;
         state.NightSpawnRemaining = waveSize;
         state.Enemies.Clear();
@@ -104,9 +108,12 @@ public static class WorldTick
 
     private static void EndWaveAssault(GameState state)
     {
+        string difficultyMode = GetDifficultyMode(state);
+
         // Calculate rewards based on wave size
         int waveSize = state.NightWaveTotal;
         int goldReward = WaveBaseGold + waveSize * WavePerEnemyGold;
+        goldReward = Difficulty.ApplyGoldModifier(goldReward, difficultyMode);
         int woodReward = WaveBaseWood + waveSize / 2;
         int stoneReward = WaveBaseStone + waveSize / 3;
         int foodReward = WaveBaseFood + waveSize / 4;
@@ -172,6 +179,7 @@ public static class WorldTick
                 return false;
             });
 
+            ApplyDifficultyToEnemy(hostile, state);
             state.EncounterEnemies.Add(hostile);
         }
 
@@ -179,6 +187,107 @@ public static class WorldTick
         InlineCombat.AssignWords(state, state.EncounterEnemies);
 
         return $"Encounter! {hostiles.Count} enem{(hostiles.Count == 1 ? "y" : "ies")} engage you!";
+    }
+
+    private static void SpawnWaveEnemies(GameState state)
+    {
+        if (state.NightSpawnRemaining <= 0) return;
+
+        int maxConcurrentEnemies = Math.Max(3, Math.Min(6, state.NightWaveTotal));
+        if (state.Enemies.Count >= maxConcurrentEnemies) return;
+
+        string difficultyMode = GetDifficultyMode(state);
+        int threatForScaling = GetThreatForScaling(state);
+
+        int hp = SimBalance.CalculateEnemyHp(state.Day, threatForScaling);
+        hp = Difficulty.ApplyHealthModifier(hp, difficultyMode);
+
+        int damage = 1 + (state.Day / 6);
+        damage = Difficulty.ApplyDamageModifier(damage, difficultyMode);
+
+        int speed = 1 + (state.Day / 10);
+        speed = (int)Difficulty.ApplySpeedModifier(speed, difficultyMode);
+
+        var usedWords = new HashSet<string>();
+        foreach (var enemy in state.Enemies)
+        {
+            string existingWord = enemy.GetValueOrDefault("word")?.ToString() ?? "";
+            if (!string.IsNullOrWhiteSpace(existingWord))
+                usedWords.Add(existingWord);
+        }
+
+        string kind = WaveEnemyKinds[SimRng.RollRange(state, 0, WaveEnemyKinds.Length - 1)];
+        string word = WordPool.WordForEnemy(
+            state.RngSeed,
+            state.Day,
+            kind,
+            state.EnemyNextId,
+            usedWords,
+            state.LessonId);
+
+        var enemyEntry = new Dictionary<string, object>
+        {
+            ["id"] = state.EnemyNextId++,
+            ["kind"] = kind,
+            ["pos"] = SimMap.GetSpawnPos(state),
+            ["word"] = word,
+            ["hp"] = hp,
+            ["max_hp"] = hp,
+            ["damage"] = damage,
+            ["speed"] = speed,
+            ["dist"] = 10,
+            ["tier"] = Math.Max(0, damage - 1),
+            ["gold"] = Math.Max(1, 1 + threatForScaling / 3),
+        };
+
+        state.Enemies.Add(enemyEntry);
+        state.NightSpawnRemaining--;
+    }
+
+    private static void ApplyDifficultyToEnemy(Dictionary<string, object> enemy, GameState state)
+    {
+        string difficultyMode = GetDifficultyMode(state);
+        int threatForScaling = GetThreatForScaling(state);
+
+        int hp = Convert.ToInt32(enemy.GetValueOrDefault("hp", SimBalance.CalculateEnemyHp(state.Day, threatForScaling)));
+        hp = Difficulty.ApplyHealthModifier(hp, difficultyMode);
+        enemy["hp"] = hp;
+        enemy["max_hp"] = hp;
+
+        int damage = Convert.ToInt32(enemy.GetValueOrDefault("damage", 1 + Convert.ToInt32(enemy.GetValueOrDefault("tier", 0))));
+        damage = Difficulty.ApplyDamageModifier(damage, difficultyMode);
+        enemy["damage"] = damage;
+        enemy["tier"] = Math.Max(0, damage - 1);
+
+        int speed = Convert.ToInt32(enemy.GetValueOrDefault("speed", 1));
+        speed = (int)Difficulty.ApplySpeedModifier(speed, difficultyMode);
+        enemy["speed"] = speed;
+    }
+
+    private static int GetThreatForScaling(GameState state)
+    {
+        int explorationThreat = (int)Math.Round(state.ThreatLevel * SimBalance.ThreatMax);
+        return Math.Max(state.Threat, explorationThreat);
+    }
+
+    private static string GetDifficultyMode(GameState state)
+    {
+        if (state.EventFlags.TryGetValue("difficulty_mode", out var modeObj))
+        {
+            string mode = modeObj?.ToString() ?? "";
+            if (!string.IsNullOrWhiteSpace(mode))
+                return mode;
+        }
+
+        var difficultyModeProp = state.GetType().GetProperty("DifficultyMode");
+        if (difficultyModeProp != null)
+        {
+            string mode = difficultyModeProp.GetValue(state)?.ToString() ?? "";
+            if (!string.IsNullOrWhiteSpace(mode))
+                return mode;
+        }
+
+        return Difficulty.DefaultMode;
     }
 
     private static void TickThreatLevel(GameState state)
