@@ -43,6 +43,10 @@ public static class WorldQuests
             "combo_master" => state.EnemiesDefeated >= 5,
             "kingdom_builder" => state.CompletedQuests.Contains("first_tower"),
             "boss_slayer" => state.Day >= 3,
+            "supply_run" => state.Day >= 2,
+            "stone_collector" => state.Day >= 3,
+            "feast_preparation" => state.Day >= 4,
+            "defender_of_the_realm" => state.EnemiesDefeated >= 10,
             _ => true,
         };
     }
@@ -91,7 +95,9 @@ public static class WorldQuests
             if (Convert.ToBoolean(result.GetValueOrDefault("ok", false)))
             {
                 var def = Quests.GetQuest(questId);
-                events.Add($"Quest complete: {def?.Name ?? questId}!");
+                string message = result.GetValueOrDefault("message")?.ToString()
+                    ?? $"Quest complete: {def?.Name ?? questId}!";
+                events.Add(message);
             }
         }
 

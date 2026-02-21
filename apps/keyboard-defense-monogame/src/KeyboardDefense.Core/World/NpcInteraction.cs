@@ -203,8 +203,9 @@ public static class NpcInteraction
             // Route quests to appropriate NPCs
             bool matches = npcType switch
             {
-                "trainer" => def.Category is "typing" or "combat",
-                "quest_giver" => def.Category is "exploration" or "building" or "boss",
+                "trainer" => def.Category is "typing" or "combat" or "tutorial",
+                "quest_giver" => def.Category is "exploration" or "building" or "boss" or "economy" or "tutorial",
+                "merchant" => def.Category is "economy",
                 _ => false,
             };
 

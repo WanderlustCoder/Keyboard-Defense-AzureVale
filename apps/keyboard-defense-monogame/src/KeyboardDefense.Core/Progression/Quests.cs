@@ -34,6 +34,18 @@ public static class Quests
         ["boss_slayer"] = new("Boss Slayer", "Defeat any boss.",
             "combat", QuestCondition.DefeatBoss(null),
             new() { ["gold"] = 50, ["skill_point"] = 2 }),
+        ["supply_run"] = new("Supply Run", "Gather 20 wood from resource nodes.",
+            "economy", QuestCondition.TypeWords(20),
+            new() { ["wood"] = 15, ["gold"] = 10 }),
+        ["stone_collector"] = new("Stone Collector", "Gather 15 stone from resource nodes.",
+            "economy", QuestCondition.TypeWords(30),
+            new() { ["stone"] = 10, ["gold"] = 10 }),
+        ["feast_preparation"] = new("Feast Preparation", "Gather 10 food for the kingdom.",
+            "economy", QuestCondition.TypeWords(40),
+            new() { ["food"] = 10, ["gold"] = 15 }),
+        ["defender_of_the_realm"] = new("Defender of the Realm", "Defeat 25 enemies.",
+            "combat", QuestCondition.DefeatEnemies(25),
+            new() { ["gold"] = 60, ["skill_point"] = 2, ["wood"] = 20, ["stone"] = 10 }),
     };
 
     public static QuestDef? GetQuest(string questId) => Registry.GetValueOrDefault(questId);
@@ -70,6 +82,15 @@ public static class Quests
             rewards.Add($"+{sp} skill point(s)");
         }
 
+        // Resource rewards
+        foreach (var (resource, amount) in quest.Rewards)
+        {
+            if (resource is "gold" or "skill_point") continue; // already handled
+            int current = state.Resources.GetValueOrDefault(resource, 0);
+            state.Resources[resource] = current + amount;
+            rewards.Add($"+{amount} {resource}");
+        }
+
         return new()
         {
             ["ok"] = true,
@@ -89,4 +110,5 @@ public record QuestCondition(string Type, string? Target, int Value)
     public static QuestCondition TypeWords(int count) => new("type_words", null, count);
     public static QuestCondition ReachCombo(int combo) => new("combo", null, combo);
     public static QuestCondition DefeatBoss(string? bossId) => new("defeat_boss", bossId, 1);
+    public static QuestCondition DefeatEnemies(int count) => new("defeat_enemies", null, count);
 }
