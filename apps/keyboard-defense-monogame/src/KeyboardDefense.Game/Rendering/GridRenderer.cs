@@ -305,7 +305,18 @@ public class GridRenderer
         var rect = TileRect(pos);
         int inset = CellSize / 8;
         var inner = new Rectangle(rect.X + inset, rect.Y + inset, rect.Width - inset * 2, rect.Height - inset * 2);
-        spriteBatch.Draw(_pixel!, inner, BaseColor);
+
+        // Try castle sprite
+        AssetLoader.Instance.RegisterBuildingSprite("castle");
+        var sheet = AssetLoader.Instance.Animator.GetSheet("bld_castle");
+        if (sheet?.Texture != null)
+        {
+            spriteBatch.Draw(sheet.Texture, inner, Color.White);
+        }
+        else
+        {
+            spriteBatch.Draw(_pixel!, inner, BaseColor);
+        }
 
         // Base outline
         DrawRectOutline(spriteBatch, inner, ThemeColors.GoldBright, 2);
