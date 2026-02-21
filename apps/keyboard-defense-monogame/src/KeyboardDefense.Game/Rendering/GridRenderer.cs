@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using KeyboardDefense.Core.State;
 using KeyboardDefense.Core.World;
+using KeyboardDefense.Game.Effects;
 using KeyboardDefense.Game.Services;
 using KeyboardDefense.Game.UI;
 
@@ -25,6 +26,8 @@ public class GridRenderer
     // Per-entity animation states
     private readonly Dictionary<int, SpriteAnimator.AnimationState> _buildingAnimStates = new();
     private readonly Dictionary<int, SpriteAnimator.AnimationState> _enemyAnimStates = new();
+
+    public CombatVfx? Vfx { get; set; }
 
     // Terrain colors
     private static readonly Color PlainColor = new(90, 130, 65);
@@ -246,6 +249,13 @@ public class GridRenderer
         else
         {
             spriteBatch.Draw(_pixel!, inner, color);
+        }
+
+        // Hit flash overlay
+        if (Vfx != null && Vfx.IsFlashing(enemyId))
+        {
+            float intensity = Vfx.GetFlashIntensity(enemyId);
+            spriteBatch.Draw(_pixel!, inner, Color.White * (intensity * 0.7f));
         }
 
         // Word label

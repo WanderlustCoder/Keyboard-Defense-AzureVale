@@ -47,6 +47,7 @@ public class WorldScreen : GameScreen
     private readonly MinimapRenderer _minimapRenderer = new();
     private readonly PlayerRenderer _playerRenderer = new();
     private readonly DayNightOverlay _dayNightOverlay = new();
+    private readonly CombatVfx _combatVfx = new();
 
     // Panels
     private HelpPanel? _helpPanel;
@@ -86,6 +87,7 @@ public class WorldScreen : GameScreen
         _playerRenderer.Initialize(Game.GraphicsDevice, Game.DefaultFont);
         _playerRenderer.CellSize = _gridRenderer.CellSize;
         _dayNightOverlay.Initialize(Game.GraphicsDevice);
+        _gridRenderer.Vfx = _combatVfx;
 
         var state = GameController.Instance.State;
         var vp = Game.GraphicsDevice.Viewport;
@@ -171,6 +173,7 @@ public class WorldScreen : GameScreen
         // Update renderers
         _gridRenderer.Update(dt);
         _playerRenderer.Update(dt);
+        _combatVfx.Update(dt);
 
         // Update HUD
         OnStateChanged(state);
@@ -203,6 +206,14 @@ public class WorldScreen : GameScreen
             samplerState: SamplerState.PointClamp,
             blendState: BlendState.AlphaBlend);
         _playerRenderer.Draw(spriteBatch, state.PlayerPos.X, state.PlayerPos.Y, state.PlayerFacing);
+        spriteBatch.End();
+
+        // Draw combat VFX (floating damage numbers)
+        spriteBatch.Begin(
+            transformMatrix: cameraTransform,
+            samplerState: SamplerState.PointClamp,
+            blendState: BlendState.AlphaBlend);
+        _combatVfx.Draw(spriteBatch, Game.DefaultFont);
         spriteBatch.End();
 
         // Day/night overlay
@@ -372,10 +383,66 @@ public class WorldScreen : GameScreen
 
         if (state.ActivityMode == "encounter")
         {
+            int hpBefore = state.EncounterEnemies.Count > 0
+                ? Convert.ToInt32(state.EncounterEnemies[0].GetValueOrDefault("hp", 0))
+                : 0;
+            int enemyCountBefore = state.EncounterEnemies.Count;
+
             var events = InlineCombat.ProcessTyping(state, text);
             foreach (string evt in events)
                 AppendLog(evt);
             SessionAnalytics.Instance.RecordEvent("word_typed");
+
+            // VFX: check what happened
+            if (events.Count > 0 && !events[0].StartsWith("Miss"))
+            {
+                // Find the target enemy position for floating text
+                // Parse damage from event string
+                var playerWorldPos = _gridRenderer.TileCenter(state.PlayerPos);
+                var targetPos = playerWorldPos + new Vector2(48, 0);
+
+                // Extract damage number from event text
+                int damage = 0;
+                foreach (string evt in events)
+                {
+                    int parenIdx = evt.LastIndexOf('(');
+                    int spaceIdx = evt.LastIndexOf(" damage");
+                    if (parenIdx >= 0 && spaceIdx > parenIdx)
+                    {
+                        string numStr = evt.Substring(parenIdx + 1, spaceIdx - parenIdx - 1);
+                        int.TryParse(numStr, out damage);
+                    }
+                }
+
+                bool killed = enemyCountBefore > state.EncounterEnemies.Count;
+                int combo = Core.Typing.TypingMetrics.GetComboCount(state);
+
+                if (damage > 0)
+                    _combatVfx.ShowDamage(targetPos, damage, combo >= 5);
+
+                // Flash the first encounter enemy (the one that was hit)
+                if (state.EncounterEnemies.Count > 0)
+                {
+                    int eid = Convert.ToInt32(state.EncounterEnemies[0].GetValueOrDefault("id", 0));
+                    _combatVfx.FlashEnemy(eid);
+                }
+
+                if (killed)
+                {
+                    _combatVfx.OnEnemyKilled(combo);
+                    _combatVfx.CheckComboAnnouncement(combo, _panelOverlay!.Combo);
+
+                    // Show gold reward as floating text
+                    foreach (string evt in events)
+                    {
+                        if (evt.Contains("gold"))
+                        {
+                            _combatVfx.ShowText(targetPos + new Vector2(0, 20), evt.Split('!')[0] + "!", ThemeColors.GoldAccent);
+                            break;
+                        }
+                    }
+                }
+            }
         }
         else if (state.ActivityMode == "harvest_challenge")
         {
