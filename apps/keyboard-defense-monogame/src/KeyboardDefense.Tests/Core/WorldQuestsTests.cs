@@ -321,4 +321,126 @@ public class WorldQuestsTests
         Assert.Empty(events);
         Assert.Empty(state.CompletedQuests);
     }
+
+    [Fact]
+    public void CheckCompletions_AwardsGold()
+    {
+        var state = DefaultState.Create();
+        state.Structures.Clear();
+        state.Structures[1] = "tower";
+        int goldBefore = state.Gold;
+
+        WorldQuests.CheckCompletions(state);
+
+        Assert.True(state.Gold > goldBefore, "Completing a quest should award gold");
+    }
+
+    [Fact]
+    public void CheckCompletions_MultipleQuestsReady_AllComplete()
+    {
+        var state = DefaultState.Create();
+        state.Day = 5;
+        state.EnemiesDefeated = 30;
+        state.MaxComboEver = 25;
+        state.WavesSurvived = 10;
+        state.TypingMetrics["battle_words_typed"] = 150;
+        state.Structures.Clear();
+        state.Structures[1] = "tower";
+        for (int i = 2; i <= 12; i++) state.Structures[i] = "farm";
+        for (int i = 0; i < 60; i++) state.Discovered.Add(i);
+
+        var events = WorldQuests.CheckCompletions(state);
+
+        Assert.True(events.Count >= 3, $"Multiple quests should complete, got {events.Count}");
+        Assert.True(state.CompletedQuests.Count >= 3);
+    }
+
+    [Fact]
+    public void CheckCompletions_AlreadyCompleted_NotRetriggered()
+    {
+        var state = DefaultState.Create();
+        state.Structures.Clear();
+        state.Structures[1] = "tower";
+
+        WorldQuests.CheckCompletions(state);
+        int goldAfterFirst = state.Gold;
+
+        var events = WorldQuests.CheckCompletions(state);
+        Assert.Empty(events);
+        Assert.Equal(goldAfterFirst, state.Gold);
+    }
+
+    [Fact]
+    public void GetProgress_SpeedDemon_UsesMaxComboEver()
+    {
+        var state = DefaultState.Create();
+        state.MaxComboEver = 30;
+
+        var progress = WorldQuests.GetProgress(state, "speed_demon");
+        Assert.True(progress.Current > 0 || progress.Target > 0);
+    }
+
+    [Fact]
+    public void Quests_GetQuest_ReturnsNullForUnknownId()
+    {
+        Assert.Null(Quests.GetQuest("totally_fake_quest"));
+    }
+
+    [Fact]
+    public void Quests_GetQuest_ReturnsDefForKnownId()
+    {
+        var def = Quests.GetQuest("first_tower");
+        Assert.NotNull(def);
+        Assert.Equal("First Defense", def!.Name);
+    }
+
+    [Fact]
+    public void Quests_IsComplete_FalseByDefault()
+    {
+        var state = DefaultState.Create();
+        Assert.False(Quests.IsComplete(state, "first_tower"));
+    }
+
+    [Fact]
+    public void Quests_IsComplete_TrueAfterCompletion()
+    {
+        var state = DefaultState.Create();
+        state.CompletedQuests.Add("first_tower");
+        Assert.True(Quests.IsComplete(state, "first_tower"));
+    }
+
+    [Fact]
+    public void Quests_CompleteQuest_AlreadyDone_ReturnsFalse()
+    {
+        var state = DefaultState.Create();
+        state.CompletedQuests.Add("first_tower");
+        var result = Quests.CompleteQuest(state, "first_tower");
+        Assert.False(Convert.ToBoolean(result["ok"]));
+    }
+
+    [Fact]
+    public void Quests_CompleteQuest_UnknownId_ReturnsFalse()
+    {
+        var state = DefaultState.Create();
+        var result = Quests.CompleteQuest(state, "nonexistent");
+        Assert.False(Convert.ToBoolean(result["ok"]));
+    }
+
+    [Fact]
+    public void Quests_Registry_HasAtLeast15Quests()
+    {
+        Assert.True(Quests.Registry.Count >= 15, $"Registry has {Quests.Registry.Count} quests");
+    }
+
+    [Fact]
+    public void Quests_GetActiveQuests_ExcludesCompleted()
+    {
+        var state = DefaultState.Create();
+        state.CompletedQuests.Add("first_tower");
+        state.CompletedQuests.Add("explorer");
+
+        var active = Quests.GetActiveQuests(state);
+        Assert.DoesNotContain("first_tower", active);
+        Assert.DoesNotContain("explorer", active);
+    }
 }

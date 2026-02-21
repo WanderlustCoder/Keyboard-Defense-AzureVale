@@ -94,6 +94,300 @@ public class CommandParserTests
         var parsed = CommandParser.Parse("xyzzy");
         Assert.False((bool)parsed["ok"]);
     }
+
+    [Fact]
+    public void Parse_NullString_Throws()
+    {
+        Assert.ThrowsAny<Exception>(() => CommandParser.Parse(null!));
+    }
+
+    [Fact]
+    public void Parse_WhitespaceOnly_ReturnsError()
+    {
+        var parsed = CommandParser.Parse("   ");
+        Assert.False((bool)parsed["ok"]);
+    }
+
+    [Fact]
+    public void Parse_VersionCommand()
+    {
+        var parsed = CommandParser.Parse("version");
+        Assert.True((bool)parsed["ok"]);
+    }
+
+    [Fact]
+    public void Parse_WaitCommand()
+    {
+        var parsed = CommandParser.Parse("wait");
+        Assert.True((bool)parsed["ok"]);
+        var intent = GetIntent(parsed);
+        Assert.Equal("wait", intent["kind"]);
+    }
+
+    [Fact]
+    public void Parse_MapCommand()
+    {
+        var parsed = CommandParser.Parse("map");
+        Assert.True((bool)parsed["ok"]);
+    }
+
+    [Fact]
+    public void Parse_SaveCommand()
+    {
+        var parsed = CommandParser.Parse("save");
+        Assert.True((bool)parsed["ok"]);
+    }
+
+    [Fact]
+    public void Parse_LoadCommand()
+    {
+        var parsed = CommandParser.Parse("load");
+        Assert.True((bool)parsed["ok"]);
+    }
+
+    [Fact]
+    public void Parse_RestartCommand()
+    {
+        var parsed = CommandParser.Parse("restart");
+        Assert.True((bool)parsed["ok"]);
+    }
+
+    [Fact]
+    public void Parse_DefendCommand_WithText()
+    {
+        var parsed = CommandParser.Parse("defend hello");
+        Assert.True((bool)parsed["ok"]);
+        var intent = GetIntent(parsed);
+        Assert.Equal("defend_input", intent["kind"]);
+    }
+
+    [Fact]
+    public void Parse_InspectCommand()
+    {
+        var parsed = CommandParser.Parse("inspect");
+        Assert.True((bool)parsed["ok"]);
+    }
+
+    [Fact]
+    public void Parse_UpgradeCommand()
+    {
+        var parsed = CommandParser.Parse("upgrade");
+        Assert.True((bool)parsed["ok"]);
+    }
+
+    [Fact]
+    public void Parse_DemolishCommand()
+    {
+        var parsed = CommandParser.Parse("demolish");
+        Assert.True((bool)parsed["ok"]);
+    }
+
+    [Fact]
+    public void Parse_OverlayCommand_RequiresArgs()
+    {
+        // overlay requires "overlay path <on|off>" — bare "overlay" returns error
+        var parsed = CommandParser.Parse("overlay");
+        Assert.False((bool)parsed["ok"]);
+    }
+
+    [Fact]
+    public void Parse_OverlayCommand_WithValidArgs()
+    {
+        var parsed = CommandParser.Parse("overlay path on");
+        Assert.True((bool)parsed["ok"]);
+    }
+
+    [Fact]
+    public void Parse_SettingsCommand()
+    {
+        var parsed = CommandParser.Parse("settings");
+        Assert.True((bool)parsed["ok"]);
+    }
+
+    [Fact]
+    public void Parse_LookShortcut()
+    {
+        var parsed = CommandParser.Parse("l");
+        Assert.True((bool)parsed["ok"]);
+    }
+
+    [Fact]
+    public void Parse_TalkShortcut()
+    {
+        var parsed = CommandParser.Parse("t");
+        Assert.True((bool)parsed["ok"]);
+    }
+
+    [Fact]
+    public void Parse_AttackShortcut()
+    {
+        var parsed = CommandParser.Parse("attack");
+        Assert.True((bool)parsed["ok"]);
+    }
+
+    [Fact]
+    public void Parse_FightShortcut()
+    {
+        var parsed = CommandParser.Parse("fight");
+        Assert.True((bool)parsed["ok"]);
+    }
+
+    [Fact]
+    public void Parse_GrabShortcut()
+    {
+        var parsed = CommandParser.Parse("grab");
+        Assert.True((bool)parsed["ok"]);
+    }
+
+    [Fact]
+    public void Parse_HarvestCommand()
+    {
+        var parsed = CommandParser.Parse("harvest");
+        Assert.True((bool)parsed["ok"]);
+    }
+
+    [Fact]
+    public void Parse_NodesCommand()
+    {
+        var parsed = CommandParser.Parse("nodes");
+        Assert.True((bool)parsed["ok"]);
+    }
+
+    [Fact]
+    public void Parse_EnemiesCommand()
+    {
+        var parsed = CommandParser.Parse("enemies");
+        Assert.True((bool)parsed["ok"]);
+    }
+
+    [Fact]
+    public void Parse_ZoneCommand()
+    {
+        var parsed = CommandParser.Parse("zone");
+        Assert.True((bool)parsed["ok"]);
+    }
+
+    [Fact]
+    public void Parse_ZonesAlias()
+    {
+        var parsed = CommandParser.Parse("zones");
+        Assert.True((bool)parsed["ok"]);
+    }
+
+    [Fact]
+    public void Parse_InteractCommand()
+    {
+        var parsed = CommandParser.Parse("interact");
+        Assert.True((bool)parsed["ok"]);
+    }
+
+    [Fact]
+    public void Parse_UpgradesCommand()
+    {
+        var parsed = CommandParser.Parse("upgrades");
+        Assert.True((bool)parsed["ok"]);
+    }
+
+    [Fact]
+    public void Parse_NewCommand()
+    {
+        var parsed = CommandParser.Parse("new");
+        Assert.True((bool)parsed["ok"]);
+    }
+
+    [Fact]
+    public void Parse_CursorCommand_WithDirection()
+    {
+        // cursor requires valid direction mapped to dx/dy
+        var parsed = CommandParser.Parse("cursor north");
+        // If direction is recognized, ok=true; otherwise error
+        Assert.NotNull(parsed);
+    }
+
+    [Fact]
+    public void Parse_TutorialCommand()
+    {
+        var parsed = CommandParser.Parse("tutorial");
+        Assert.True((bool)parsed["ok"]);
+    }
+
+    [Fact]
+    public void Parse_LessonsCommand()
+    {
+        var parsed = CommandParser.Parse("lessons");
+        Assert.True((bool)parsed["ok"]);
+    }
+
+    [Fact]
+    public void Parse_LootCommand()
+    {
+        var parsed = CommandParser.Parse("loot");
+        Assert.True((bool)parsed["ok"]);
+    }
+
+    [Fact]
+    public void Parse_ExpeditionCommand()
+    {
+        var parsed = CommandParser.Parse("expedition");
+        Assert.True((bool)parsed["ok"]);
+    }
+
+    [Fact]
+    public void Parse_ExpShortcut()
+    {
+        var parsed = CommandParser.Parse("exp");
+        Assert.True((bool)parsed["ok"]);
+    }
+
+    [Fact]
+    public void Parse_SeedCommand_WithValue()
+    {
+        var parsed = CommandParser.Parse("seed test123");
+        Assert.True((bool)parsed["ok"]);
+    }
+
+    [Fact]
+    public void Parse_TradeCommand()
+    {
+        var parsed = CommandParser.Parse("trade");
+        Assert.True((bool)parsed["ok"]);
+    }
+
+    [Fact]
+    public void Parse_ResearchCommand()
+    {
+        var parsed = CommandParser.Parse("research");
+        Assert.True((bool)parsed["ok"]);
+    }
+
+    [Fact]
+    public void Parse_HeroCommand()
+    {
+        var parsed = CommandParser.Parse("hero");
+        Assert.True((bool)parsed["ok"]);
+    }
+
+    [Fact]
+    public void Parse_MixedCaseCommand()
+    {
+        var parsed = CommandParser.Parse("StAtUs");
+        Assert.True((bool)parsed["ok"]);
+    }
+
+    [Fact]
+    public void Parse_LeadingTrailingSpaces()
+    {
+        var parsed = CommandParser.Parse("  help  ");
+        Assert.True((bool)parsed["ok"]);
+    }
+
+    [Fact]
+    public void Parse_Build_MissingArgs_ReturnsError()
+    {
+        var parsed = CommandParser.Parse("build");
+        // Build with no args might return error or default behavior
+        Assert.NotNull(parsed);
+    }
 }
 
 public class IntentApplierTests

@@ -212,16 +212,19 @@ public class GridRenderer
         int chance = hash % 100;
 
         string? textureName = null;
+        int variant = hash / 100 % 4;
         if (terrain == SimMap.TerrainForest && chance < 30)
-            textureName = (hash / 100 % 2 == 0) ? "tree" : "pine";
-        else if (terrain == SimMap.TerrainPlains && chance < 10)
-            textureName = "reeds";
-        else if (terrain == SimMap.TerrainMountain && chance < 15)
-            textureName = "rock";
-        else if (terrain == SimMap.TerrainDesert && chance < 12)
-            textureName = "rock"; // Scattered boulders in desert
-        else if (terrain == SimMap.TerrainSnow && chance < 10)
-            textureName = (hash / 100 % 2 == 0) ? "rock" : "pine";
+            textureName = variant switch { 0 => "tree", 1 => "pine", 2 => "tree", _ => "reeds2" };
+        else if (terrain == SimMap.TerrainPlains && chance < 15)
+            textureName = variant switch { 0 => "reeds", 1 => "signpost", 2 => "well", _ => "reeds" };
+        else if (terrain == SimMap.TerrainMountain && chance < 18)
+            textureName = variant switch { 0 => "rock", 1 => "mine", 2 => "rock", _ => "campfire" };
+        else if (terrain == SimMap.TerrainDesert && chance < 14)
+            textureName = variant switch { 0 => "rock", 1 => "campfire", 2 => "signpost", _ => "rock" };
+        else if (terrain == SimMap.TerrainSnow && chance < 12)
+            textureName = variant switch { 0 => "rock", 1 => "pine", 2 => "campfire", _ => "shrine" };
+        else if (terrain == SimMap.TerrainWater && chance < 5)
+            textureName = "bridge";
 
         if (textureName == null) return;
 

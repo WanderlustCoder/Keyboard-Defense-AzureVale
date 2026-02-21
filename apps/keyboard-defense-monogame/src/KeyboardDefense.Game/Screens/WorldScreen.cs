@@ -69,6 +69,8 @@ public class WorldScreen : GameScreen
     private DialogueBox? _dialogueBox;
     private QuestsPanel? _questsPanel;
     private DailyChallengesPanel? _dailyChallengesPanel;
+    private DamageCalculatorPanel? _damageCalcPanel;
+    private AutoTowerPanel? _autoTowerPanel;
 
     // Input row (for toggling visibility by mode)
     private HorizontalStackPanel? _inputRow;
@@ -587,6 +589,7 @@ public class WorldScreen : GameScreen
             }
 
             CheckDailyChallenges(state);
+            CheckQuestCompletions(state);
         }
         else if (state.ActivityMode == "harvest_challenge")
         {
@@ -603,8 +606,8 @@ public class WorldScreen : GameScreen
             GameController.Instance.ApplyIntent(intent);
             SessionAnalytics.Instance.OnGameEvent(GameController.Instance.LastEvents);
             SessionAnalytics.Instance.RecordEvent("word_typed");
-            AudioManager.Instance.PlaySfx(AudioManager.Sfx.EnemyHit);
             CheckDailyChallenges(state);
+            CheckQuestCompletions(state);
         }
     }
 
@@ -762,6 +765,11 @@ public class WorldScreen : GameScreen
             _dailyChallengesPanel?.Refresh(GameController.Instance.State);
             _panelOverlay?.OpenPanel(_dailyChallengesPanel!);
         }, 100);
+        AddBtn("Towers", () => _panelOverlay?.OpenPanel(_autoTowerPanel!));
+        AddBtn("Calc", () => {
+            _damageCalcPanel?.Refresh(GameController.Instance.State);
+            _panelOverlay?.OpenPanel(_damageCalcPanel!);
+        });
 
         // Layout: HUD at top, grid takes center, log + input + buttons at bottom
         var bottomPanel = new VerticalStackPanel { Spacing = DesignSystem.SpaceSm };
@@ -787,6 +795,8 @@ public class WorldScreen : GameScreen
         _dialogueBox = new DialogueBox();
         _questsPanel = new QuestsPanel();
         _dailyChallengesPanel = new DailyChallengesPanel();
+        _damageCalcPanel = new DamageCalculatorPanel();
+        _autoTowerPanel = new AutoTowerPanel();
 
         _panelOverlay.Bind("panel_help", _helpPanel);
         _panelOverlay.Bind("panel_settings", _settingsPanel);
@@ -797,6 +807,8 @@ public class WorldScreen : GameScreen
         _panelOverlay.Bind("panel_inventory", _inventoryPanel);
         _panelOverlay.Bind("panel_quests", _questsPanel);
         _panelOverlay.Bind("panel_challenges", _dailyChallengesPanel);
+        _panelOverlay.Bind("panel_damage_calc", _damageCalcPanel);
+        _panelOverlay.Bind("panel_auto_tower", _autoTowerPanel);
 
         // Register dialogue box as a panel (not key-bound, opened programmatically)
         rootPanel.Widgets.Add(_dialogueBox.RootWidget);
@@ -878,6 +890,22 @@ public class WorldScreen : GameScreen
                 });
                 AudioManager.Instance.PlaySfx(AudioManager.Sfx.LevelUp);
             }
+        }
+    }
+
+    private void CheckQuestCompletions(GameState state)
+    {
+        var events = WorldQuests.CheckCompletions(state);
+        foreach (string evt in events)
+        {
+            AppendLog(evt);
+            _panelOverlay?.Toast.Show(new Notification
+            {
+                Message = evt,
+                Type = NotificationManager.NotificationType.Success,
+                Duration = 5f,
+            });
+            AudioManager.Instance.PlaySfx(AudioManager.Sfx.LevelUp);
         }
     }
 }
