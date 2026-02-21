@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using KeyboardDefense.Core.Combat;
 using KeyboardDefense.Core.State;
+using KeyboardDefense.Core.World;
 
 namespace KeyboardDefense.Core.World;
 
@@ -20,6 +21,7 @@ public static class WorldEntities
         PopulateResourceNodes(state);
         PopulateRoamingEnemies(state);
         PopulateNpcs(state);
+        PopulatePois(state);
     }
 
     private static void PopulateResourceNodes(GameState state)
@@ -100,6 +102,31 @@ public static class WorldEntities
                 ["pos"] = pos.Value,
                 ["name"] = GetNpcName(npcType),
                 ["quest_available"] = true,
+            });
+        }
+    }
+
+    private static void PopulatePois(GameState state)
+    {
+        // Place key POI landmarks in specific zones
+        var poiPlacements = new[]
+        {
+            (Id: "watchtower", Zone: SimMap.ZoneFrontier),
+            (Id: "shrine", Zone: SimMap.ZoneSafe),
+            (Id: "mine", Zone: SimMap.ZoneWilderness),
+            (Id: "campfire", Zone: SimMap.ZoneFrontier),
+            (Id: "campsite", Zone: SimMap.ZoneWilderness),
+        };
+
+        foreach (var placement in poiPlacements)
+        {
+            var pos = FindValidPositionInZone(state, placement.Zone, 40);
+            if (pos == null) continue;
+
+            Poi.SpawnPoi(state, placement.Id, pos.Value, new Dictionary<string, object>
+            {
+                ["zone"] = placement.Zone,
+                ["event_id"] = $"poi_{placement.Id}",
             });
         }
     }

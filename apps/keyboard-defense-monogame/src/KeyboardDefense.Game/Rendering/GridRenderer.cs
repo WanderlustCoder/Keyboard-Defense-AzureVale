@@ -91,6 +91,12 @@ public class GridRenderer
                 DrawResourceNode(spriteBatch, pos, nodeData);
         }
 
+        // Draw POI landmarks
+        foreach (var (poiId, poiData) in state.ActivePois)
+        {
+            DrawPoiLandmark(spriteBatch, poiId, poiData);
+        }
+
         // Draw NPCs
         foreach (var npc in state.Npcs)
         {
@@ -184,6 +190,40 @@ public class GridRenderer
         // Grid line
         spriteBatch.Draw(_pixel!, new Rectangle(rect.X, rect.Y, rect.Width, 1), Color.Black * 0.15f);
         spriteBatch.Draw(_pixel!, new Rectangle(rect.X, rect.Y, 1, rect.Height), Color.Black * 0.15f);
+
+        // Decorative map objects (deterministic scatter based on position hash)
+        DrawDecorations(spriteBatch, pos, terrain, rect);
+    }
+
+    private void DrawDecorations(SpriteBatch spriteBatch, GridPoint pos, string terrain, Rectangle rect)
+    {
+        // Deterministic hash for scatter placement (no RNG needed)
+        int hash = (pos.X * 7919 + pos.Y * 7907) & 0x7FFFFFFF;
+        int chance = hash % 100;
+
+        string? textureName = null;
+        if (terrain == SimMap.TerrainForest && chance < 30)
+            textureName = (hash / 100 % 2 == 0) ? "tree" : "pine";
+        else if (terrain == SimMap.TerrainPlains && chance < 10)
+            textureName = "reeds";
+        else if (terrain == SimMap.TerrainMountain && chance < 15)
+            textureName = "rock";
+
+        if (textureName == null) return;
+
+        var texture = AssetLoader.Instance.GetTexture(textureName);
+        if (texture == null) return;
+
+        // Place at slight offset within tile for natural look
+        int offsetX = (hash / 1000) % (CellSize / 4) - CellSize / 8;
+        int offsetY = (hash / 10000) % (CellSize / 4) - CellSize / 8;
+        int decoSize = CellSize * 2 / 3;
+        var decoRect = new Rectangle(
+            rect.X + (CellSize - decoSize) / 2 + offsetX,
+            rect.Y + (CellSize - decoSize) / 2 + offsetY,
+            decoSize, decoSize);
+
+        spriteBatch.Draw(texture, decoRect, Color.White * 0.85f);
     }
 
     /// <summary>Get the transition edge color based on the neighboring terrain type.</summary>
@@ -389,19 +429,59 @@ public class GridRenderer
         }
     }
 
-    private void DrawNpc(SpriteBatch spriteBatch, Dictionary<string, object> npc)
+    private void DrawPoiLandmark(SpriteBatch spriteBatch, string poiId, Dictionary<string, object> poiData)
     {
-        if (!npc.TryGetValue("x", out var xObj) || !npc.TryGetValue("y", out var yObj))
+        GridPoint pos;
+        if (poiData.GetValueOrDefault("pos") is GridPoint gp)
+            pos = gp;
+        else
             return;
 
-        int x = Convert.ToInt32(xObj);
-        int y = Convert.ToInt32(yObj);
-        var rect = TileRect(new GridPoint(x, y));
+        var rect = TileRect(pos);
+        int inset = CellSize / 6;
+        var inner = new Rectangle(rect.X + inset, rect.Y + inset, rect.Width - inset * 2, rect.Height - inset * 2);
+
+        // Try POI-specific texture (watchtower, shrine, campfire, etc.)
+        string textureKey = poiId.Contains("_") ? poiId.Split('_')[0] : poiId;
+        var texture = AssetLoader.Instance.GetTexture(textureKey);
+        if (texture != null)
+        {
+            spriteBatch.Draw(texture, inner, Color.White);
+        }
+        else
+        {
+            // Fallback: golden diamond marker
+            spriteBatch.Draw(_pixel!, inner, ThemeColors.GoldAccent * 0.7f);
+        }
+
+        // POI label
+        if (_font != null)
+        {
+            string label = poiId.Replace('_', ' ');
+            var size = _font.MeasureString(label);
+            float scale = Math.Min(0.5f, (float)(CellSize + 4) / size.X);
+            spriteBatch.DrawString(_font, label,
+                new Vector2(rect.X + (rect.Width - size.X * scale) * 0.5f, rect.Y - size.Y * scale - 1),
+                ThemeColors.GoldBright, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+        }
+    }
+
+    private void DrawNpc(SpriteBatch spriteBatch, Dictionary<string, object> npc)
+    {
+        GridPoint pos;
+        if (npc.GetValueOrDefault("pos") is GridPoint gp)
+            pos = gp;
+        else if (npc.TryGetValue("x", out var xObj) && npc.TryGetValue("y", out var yObj))
+            pos = new GridPoint(Convert.ToInt32(xObj), Convert.ToInt32(yObj));
+        else
+            return;
+
+        var rect = TileRect(pos);
         int inset = CellSize / 5;
         var inner = new Rectangle(rect.X + inset, rect.Y + inset, rect.Width - inset * 2, rect.Height - inset * 2);
 
         // Colored rectangle with role-based tint
-        string role = npc.GetValueOrDefault("role")?.ToString() ?? "";
+        string role = npc.GetValueOrDefault("type")?.ToString() ?? npc.GetValueOrDefault("role")?.ToString() ?? "";
         Color color = role switch
         {
             "trainer" => new Color(80, 200, 120),
@@ -426,7 +506,7 @@ public class GridRenderer
         }
 
         // Quest marker (! for available quests)
-        if (_font != null && npc.GetValueOrDefault("has_quest") is true)
+        if (_font != null && (npc.GetValueOrDefault("quest_available") is true || npc.GetValueOrDefault("has_quest") is true))
         {
             spriteBatch.DrawString(_font, "!",
                 new Vector2(rect.Right - 8, rect.Y - 12),
