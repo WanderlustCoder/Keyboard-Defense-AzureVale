@@ -128,9 +128,43 @@ public class GridRenderer
         else
             spriteBatch.Draw(_pixel!, rect, color);
 
+        // Auto-tile edge transitions: darken edges where biome changes
+        var transitions = AutoTileResolver.GetEdgeTransitions(state, pos);
+        foreach (var edge in transitions)
+        {
+            Color edgeColor = GetTransitionColor(terrain, edge.NeighborTerrain);
+            int edgeThickness = Math.Max(2, CellSize / 8);
+
+            Rectangle edgeRect = edge.Direction switch
+            {
+                AutoTileResolver.North => new Rectangle(rect.X, rect.Y, rect.Width, edgeThickness),
+                AutoTileResolver.East => new Rectangle(rect.Right - edgeThickness, rect.Y, edgeThickness, rect.Height),
+                AutoTileResolver.South => new Rectangle(rect.X, rect.Bottom - edgeThickness, rect.Width, edgeThickness),
+                AutoTileResolver.West => new Rectangle(rect.X, rect.Y, edgeThickness, rect.Height),
+                _ => Rectangle.Empty,
+            };
+
+            if (edgeRect != Rectangle.Empty)
+                spriteBatch.Draw(_pixel!, edgeRect, edgeColor);
+        }
+
         // Grid line
         spriteBatch.Draw(_pixel!, new Rectangle(rect.X, rect.Y, rect.Width, 1), Color.Black * 0.15f);
         spriteBatch.Draw(_pixel!, new Rectangle(rect.X, rect.Y, 1, rect.Height), Color.Black * 0.15f);
+    }
+
+    /// <summary>Get the transition edge color based on the neighboring terrain type.</summary>
+    private static Color GetTransitionColor(string currentTerrain, string neighborTerrain)
+    {
+        // Blend toward the neighbor's color at 35% opacity for a soft edge
+        Color neighborColor = neighborTerrain switch
+        {
+            SimMap.TerrainForest => ForestColor,
+            SimMap.TerrainMountain => MountainColor,
+            SimMap.TerrainWater => WaterColor,
+            _ => PlainColor,
+        };
+        return neighborColor * 0.35f;
     }
 
     private void DrawStructure(SpriteBatch spriteBatch, GridPoint pos, string type, int level)
