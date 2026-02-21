@@ -84,4 +84,58 @@ public static partial class IntentApplier
     {
         events.Add($"Zone summary: {state.Discovered.Count} tiles discovered across the kingdom.");
     }
+
+    private static void ApplyMovePlayer(GameState state, Dictionary<string, object> intent, List<string> events)
+    {
+        int dx = Convert.ToInt32(intent.GetValueOrDefault("dx", 0));
+        int dy = Convert.ToInt32(intent.GetValueOrDefault("dy", 0));
+        int newX = state.PlayerPos.X + dx;
+        int newY = state.PlayerPos.Y + dy;
+
+        // Update facing regardless of passability
+        if (dx < 0) state.PlayerFacing = "left";
+        else if (dx > 0) state.PlayerFacing = "right";
+        else if (dy < 0) state.PlayerFacing = "up";
+        else if (dy > 0) state.PlayerFacing = "down";
+
+        // Validate bounds
+        if (!SimMap.InBounds(newX, newY, state.MapW, state.MapH))
+        {
+            events.Add("You can't go that way.");
+            return;
+        }
+
+        // Validate passability
+        var newPos = new GridPoint(newX, newY);
+        if (!SimMap.IsPassable(state, newPos))
+        {
+            string terrain = SimMap.GetTerrain(state, newPos);
+            events.Add($"Blocked by {terrain}.");
+            return;
+        }
+
+        // Move player
+        state.PlayerPos = newPos;
+        state.CursorPos = newPos; // Keep cursor synced with player
+
+        // Discover tiles in radius around player
+        const int discoverRadius = 3;
+        for (int ry = -discoverRadius; ry <= discoverRadius; ry++)
+        {
+            for (int rx = -discoverRadius; rx <= discoverRadius; rx++)
+            {
+                int tx = newX + rx;
+                int ty = newY + ry;
+                if (SimMap.InBounds(tx, ty, state.MapW, state.MapH))
+                {
+                    int idx = SimMap.Idx(tx, ty, state.MapW);
+                    if (!state.Discovered.Contains(idx))
+                    {
+                        state.Discovered.Add(idx);
+                        SimMap.EnsureTileGenerated(state, new GridPoint(tx, ty));
+                    }
+                }
+            }
+        }
+    }
 }

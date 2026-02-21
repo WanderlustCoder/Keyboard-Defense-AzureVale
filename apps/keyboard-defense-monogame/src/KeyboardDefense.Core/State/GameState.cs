@@ -96,6 +96,9 @@ public class GameState
     public bool PracticeMode { get; set; }
 
     // Open-world exploration
+    public GridPoint PlayerPos { get; set; }
+    public string PlayerFacing { get; set; } = "down";
+    public List<Dictionary<string, object>> Npcs { get; set; } = new();
     public List<Dictionary<string, object>> RoamingEnemies { get; set; } = new();
     public List<Dictionary<string, object>> RoamingResources { get; set; } = new();
     public float ThreatLevel { get; set; }
@@ -178,6 +181,7 @@ public class GameState
         MapH = 64;
         BasePos = new GridPoint(MapW / 2, MapH / 2);
         CursorPos = BasePos;
+        PlayerPos = BasePos;
         NightPrompt = "";
         NightSpawnRemaining = 0;
         NightWaveTotal = 0;

@@ -31,6 +31,9 @@ public static class DefaultState
         // Starting resources
         state.Gold = 10;
 
+        // Populate world with resource nodes, roaming enemies, NPCs
+        WorldEntities.PopulateWorld(state);
+
         // Optionally place starting auto-towers near base
         if (placeStartingTowers)
             PlaceStartingTowers(state);

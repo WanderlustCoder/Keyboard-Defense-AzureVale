@@ -12,6 +12,9 @@
 - `docs/MONOGAME_CAMPAIGN_M6_PLAN.md` - Completed campaign onboarding and launch/return-flow clarity milestone.
 - `docs/MONOGAME_CAMPAIGN_M7_PLAN.md` - Completed campaign release-hardening and playtest-readiness milestone.
 - `docs/MONOGAME_CAMPAIGN_M8_PLAN.md` - Completed campaign pre-release polish and launch-readiness milestone.
+- `docs/MONOGAME_CAMPAIGN_M9_PLAN.md` - Active campaign organic-feel refactor and menu-friction reduction milestone.
+- `docs/MONOGAME_OPEN_WORLD_TOPDOWN_PLAN.md` - Active top-down open-world implementation blueprint aligned to Super Fantasy Kingdom style target.
+- `docs/PIXEL_LAB_ART_REDO_PLAN.md` - Active Pixel Lab staging plan for campaign visual rebuild aligned with target fantasy feel.
 - `docs/RELEASE_NOTES_v0.1.0-rc1_2026-02-20.md` - Final versioned RC release notes (tag/date/changelog) for current MonoGame campaign release candidate.
 - `docs/CAMPAIGN_RELEASE_NOTES_M1_M8_DRAFT.md` - Draft release notes summary covering campaign milestones, validation baselines, and RC artifacts.
 - `apps/keyboard-defense-monogame/KeyboardDefense.sln` - MonoGame solution entrypoint.
@@ -50,6 +53,8 @@
 - `docs/status/2026-02-20_campaign_map_traversal_mode_checklist.md` - Focused UI checklist for linear/spatial traversal mode toggle behavior and runtime hinting.
 - `docs/status/2026-02-20_campaign_map_onboarding_hints_checklist.md` - Focused UI checklist for first-time campaign onboarding hints and persistence behavior.
 - `docs/status/2026-02-20_campaign_playtest_release_readiness_checklist.md` - Campaign playtest telemetry and release-readiness gate checklist.
+- `docs/status/2026-02-20_campaign_feel_findings.md` - Active findings ledger for menu-like friction, pacing roughness, and art coherence issues.
+- `docs/status/2026-02-20_pixel_lab_single_asset_qa_queue.md` - Single-piece Pixel Lab production queue with mandatory QA gate between asset generations.
 - `apps/keyboard-defense-monogame/tools/pixel_lab/validate_manifest.py` - Manifest validation.
 - `apps/keyboard-defense-monogame/tools/pixel_lab/build_texture_manifest.py` - Runtime manifest generation.
 - `apps/keyboard-defense-monogame/tools/pixel_lab/split_runtime_subset.py` - Catalog/runtime subset split.

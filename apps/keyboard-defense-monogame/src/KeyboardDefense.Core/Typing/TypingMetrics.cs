@@ -135,4 +135,23 @@ public static class TypingMetrics
         long now = Stopwatch.GetTimestamp();
         return (double)(now - start) / Stopwatch.Frequency;
     }
+
+    /// <summary>Alias for GetWpm — returns current words per minute.</summary>
+    public static double GetCurrentWpm(GameState state) => GetWpm(state);
+
+    /// <summary>Increment the perfect word streak (combo counter).</summary>
+    public static void IncrementCombo(GameState state)
+    {
+        var m = state.TypingMetrics;
+        m["perfect_word_streak"] = Convert.ToInt32(m.GetValueOrDefault("perfect_word_streak", 0)) + 1;
+        int newCombo = Convert.ToInt32(m["perfect_word_streak"]);
+        if (newCombo > state.MaxComboEver)
+            state.MaxComboEver = newCombo;
+    }
+
+    /// <summary>Reset the combo counter to 0.</summary>
+    public static void ResetCombo(GameState state)
+    {
+        state.TypingMetrics["perfect_word_streak"] = 0;
+    }
 }

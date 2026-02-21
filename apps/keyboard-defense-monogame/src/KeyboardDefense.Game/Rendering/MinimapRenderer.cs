@@ -25,6 +25,7 @@ public class MinimapRenderer
     private static readonly Color FogColor = new(25, 25, 35);
     private static readonly Color BaseMarker = ThemeColors.GoldAccent;
     private static readonly Color CursorMarker = ThemeColors.Cyan;
+    private static readonly Color PlayerMarker = new(80, 160, 255);
     private static readonly Color EnemyMarker = ThemeColors.DamageRed;
     private static readonly Color StructureMarker = new(160, 140, 100);
 
@@ -106,6 +107,15 @@ public class MinimapRenderer
                 (int)(origin.X + state.BasePos.X * tileW - size / 2),
                 (int)(origin.Y + state.BasePos.Y * tileH - size / 2),
                 size, size), BaseMarker);
+        }
+
+        // Player marker (distinct from cursor)
+        {
+            int size = Math.Max(3, (int)(tileW * 2));
+            spriteBatch.Draw(_pixel, new Rectangle(
+                (int)(origin.X + state.PlayerPos.X * tileW - size / 2),
+                (int)(origin.Y + state.PlayerPos.Y * tileH - size / 2),
+                size, size), PlayerMarker);
         }
 
         // Cursor marker

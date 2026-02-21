@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using KeyboardDefense.Core.Combat;
 using KeyboardDefense.Core.World;
 
 namespace KeyboardDefense.Core.State;
@@ -41,17 +42,17 @@ public static class WorldTick
             switch (state.ActivityMode)
             {
                 case "exploration":
+                    WorldEntities.TickEntityMovement(state);
                     TickThreatLevel(state);
+                    var encounterEvent = CheckProximityEncounter(state);
+                    if (encounterEvent != "") events.Add(encounterEvent);
                     var waveEvent = CheckWaveAssaultTrigger(state);
                     if (waveEvent != "") events.Add(waveEvent);
                     break;
 
                 case "encounter":
-                    if (state.Enemies.Count == 0)
-                    {
-                        EndEncounter(state);
-                        events.Add("Encounter resolved. Continue exploring.");
-                    }
+                    var approachEvents = InlineCombat.TickEnemyApproach(state, (float)WorldTickInterval);
+                    events.AddRange(approachEvents);
                     break;
 
                 case "wave_assault":
@@ -107,6 +108,44 @@ public static class WorldTick
     {
         state.ActivityMode = "exploration";
         state.Phase = "day";
+    }
+
+    private static string CheckProximityEncounter(GameState state)
+    {
+        const int encounterRadius = 2;
+        var nearbyEnemies = WorldEntities.GetEntitiesNear(state, state.PlayerPos, encounterRadius);
+        var hostiles = new List<Dictionary<string, object>>();
+
+        foreach (var entity in nearbyEnemies)
+        {
+            if (entity.GetValueOrDefault("entity_type")?.ToString() == "enemy")
+                hostiles.Add(entity);
+        }
+
+        if (hostiles.Count == 0) return "";
+
+        // Move the closest enemy into the encounter
+        state.ActivityMode = "encounter";
+        state.EncounterEnemies.Clear();
+
+        foreach (var hostile in hostiles)
+        {
+            // Remove from roaming list
+            int hostileId = Convert.ToInt32(hostile.GetValueOrDefault("id", -1));
+            state.RoamingEnemies.RemoveAll(e =>
+            {
+                if (e.TryGetValue("id", out var idObj))
+                    return Convert.ToInt32(idObj) == hostileId;
+                return false;
+            });
+
+            state.EncounterEnemies.Add(hostile);
+        }
+
+        // Assign words to encounter enemies
+        InlineCombat.AssignWords(state, state.EncounterEnemies);
+
+        return $"Encounter! {hostiles.Count} enem{(hostiles.Count == 1 ? "y" : "ies")} engage you!";
     }
 
     private static void TickThreatLevel(GameState state)

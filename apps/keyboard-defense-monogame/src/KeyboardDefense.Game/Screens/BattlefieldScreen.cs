@@ -29,10 +29,7 @@ public class BattlefieldScreen : GameScreen
     private readonly int _nodeIndex;
     private readonly string _nodeName;
     private readonly bool _singleWaveMode;
-    private readonly bool _returnToCampaignMapOnSummary;
     private readonly string _verticalSliceProfileId;
-    private readonly string _campaignNodeId;
-    private readonly int _campaignNodeRewardGold;
     private VerticalSliceWaveConfig? _verticalSliceConfig;
 
     private Desktop? _desktop;
@@ -88,24 +85,13 @@ public class BattlefieldScreen : GameScreen
         int nodeIndex,
         string nodeName,
         bool singleWaveMode = false,
-        bool returnToCampaignMapOnSummary = false,
-        string verticalSliceProfileId = "vertical_slice_default",
-        string campaignNodeId = "",
-        int campaignNodeRewardGold = 0,
-        CampaignProgressionService.CampaignSummaryHandoff? campaignSummaryHandoff = null)
+        string verticalSliceProfileId = "vertical_slice_default")
         : base(game, screenManager)
     {
         _nodeIndex = nodeIndex;
         _nodeName = nodeName;
         _singleWaveMode = singleWaveMode;
         _verticalSliceProfileId = verticalSliceProfileId;
-        var handoff = campaignSummaryHandoff ?? CampaignProgressionService.CampaignSummaryHandoff.Create(
-            returnToCampaignMapOnSummary,
-            campaignNodeId,
-            campaignNodeRewardGold);
-        _returnToCampaignMapOnSummary = handoff.ReturnToCampaignMapOnSummary;
-        _campaignNodeId = handoff.CampaignNodeId;
-        _campaignNodeRewardGold = handoff.CampaignNodeRewardGold;
     }
 
     public override void OnEnter()
@@ -249,19 +235,16 @@ public class BattlefieldScreen : GameScreen
         int currentEnemyCount = state.Enemies.Count;
         if (currentEnemyCount < _prevEnemyCount && _prevEnemyCount > 0)
         {
-            // Identify which enemy kinds were killed by diffing previous vs current
             var remainingKinds = new List<string>(currentKinds);
             foreach (string kind in _prevEnemyKinds)
             {
                 if (!remainingKinds.Remove(kind))
                 {
-                    // This kind was in prev but not current — it was killed
                     if (!string.IsNullOrEmpty(kind))
                         _bestiaryPanel?.RecordKill(kind);
                 }
             }
 
-            // Trigger visual effects
             int killed = _prevEnemyCount - currentEnemyCount;
             for (int i = 0; i < killed; i++)
             {
@@ -313,26 +296,20 @@ public class BattlefieldScreen : GameScreen
         var vp = Game.GraphicsDevice.Viewport;
         var state = GameController.Instance.State;
 
-        // Apply screen shake
         var shakeOffset = ScreenShake.Instance.Offset;
 
-        // Draw battle stage (top area)
         _battleStage.Draw(spriteBatch, state);
 
-        // Draw damage numbers and hit effects
         DamageNumbers.Instance.Draw(spriteBatch, Game.DefaultFont);
         HitEffects.Instance.Draw(spriteBatch);
 
-        // Draw keyboard display below battle stage
         int kbHeight = _keyboardDisplay.TotalHeight;
         int battleH = vp.Height - 260 - kbHeight;
         float kbY = Math.Max(200, battleH) + 10;
         _keyboardDisplay.Draw(spriteBatch, new Vector2(vp.Width * 0.5f - 220 + shakeOffset.X, kbY + shakeOffset.Y));
 
-        // Draw Myra UI on top (HUD, event log, input)
         _desktop?.Render();
 
-        // Draw panel overlays and tutorial
         spriteBatch.Begin();
         _panelOverlay?.DrawOverlays(spriteBatch, Game.DefaultFont, vp.Width, vp.Height);
         _battleTutorial?.Draw(spriteBatch, Game.DefaultFont, vp.Width, vp.Height);
@@ -340,7 +317,6 @@ public class BattlefieldScreen : GameScreen
             DrawSingleWavePauseOverlay(spriteBatch, vp.Width, vp.Height);
         spriteBatch.End();
 
-        // Scene transition
         SceneTransition.Instance.Draw(spriteBatch, new Rectangle(0, 0, vp.Width, vp.Height));
     }
 
@@ -539,7 +515,6 @@ public class BattlefieldScreen : GameScreen
                 _battleStage.FireProjectile(_battleStage.CastlePosition, targetPos, ThemeColors.AccentCyan);
                 AudioManager.Instance.PlaySfx(AudioManager.Sfx.TowerShot);
 
-                // Flash the targeted enemy
                 if (state.Enemies[0].TryGetValue("id", out var idObj))
                     _battleStage.FlashEnemy(Convert.ToInt32(idObj));
             }
@@ -625,8 +600,7 @@ public class BattlefieldScreen : GameScreen
 
         SceneTransition.Instance.BattleTransition(() =>
         {
-            string seedPrefix = _returnToCampaignMapOnSummary ? "campaign_retry" : "vertical_slice";
-            GameController.Instance.NewGame($"{seedPrefix}_{DateTime.UtcNow.Ticks}");
+            GameController.Instance.NewGame($"vertical_slice_{DateTime.UtcNow.Ticks}");
             ScreenManager.Pop();
             ScreenManager.Push(new BattlefieldScreen(
                 Game,
@@ -634,8 +608,7 @@ public class BattlefieldScreen : GameScreen
                 _nodeIndex,
                 _nodeName,
                 singleWaveMode: true,
-                verticalSliceProfileId: _verticalSliceProfileId,
-                campaignSummaryHandoff: BuildCampaignSummaryHandoff()));
+                verticalSliceProfileId: _verticalSliceProfileId));
         });
     }
 
@@ -657,9 +630,7 @@ public class BattlefieldScreen : GameScreen
                     isVictory: false,
                     nodeIndex: _nodeIndex,
                     nodeName: _nodeName,
-                    returnToCampaignMapOnSummary: _returnToCampaignMapOnSummary,
-                    verticalSliceProfileId: _verticalSliceProfileId,
-                    campaignSummaryHandoff: BuildCampaignSummaryHandoff()));
+                    verticalSliceProfileId: _verticalSliceProfileId));
                 return;
             }
 
@@ -677,9 +648,7 @@ public class BattlefieldScreen : GameScreen
                     isVictory: true,
                     nodeIndex: _nodeIndex,
                     nodeName: _nodeName,
-                    returnToCampaignMapOnSummary: _returnToCampaignMapOnSummary,
-                    verticalSliceProfileId: _verticalSliceProfileId,
-                    campaignSummaryHandoff: BuildCampaignSummaryHandoff()));
+                    verticalSliceProfileId: _verticalSliceProfileId));
                 return;
             }
         }
@@ -755,11 +724,9 @@ public class BattlefieldScreen : GameScreen
             else
                 ScreenShake.Instance.ShakeMedium();
 
-            // Hit pause on big damage
             if (damage >= 5)
                 HitPause.Instance.PauseMedium();
 
-            // Visual effect at castle
             DamageNumbers.Instance.SpawnDamage(_battleStage.CastlePosition, damage);
             HitEffects.Instance.SpawnDamageFlash(_battleStage.CastlePosition);
             _battleStage.FlashCastle();
@@ -833,14 +800,6 @@ public class BattlefieldScreen : GameScreen
         if (value is double d)
             return (float)d;
         return float.TryParse(value.ToString(), out float parsed) ? parsed : fallback;
-    }
-
-    private CampaignProgressionService.CampaignSummaryHandoff BuildCampaignSummaryHandoff()
-    {
-        return CampaignProgressionService.CampaignSummaryHandoff.Create(
-            _returnToCampaignMapOnSummary,
-            _campaignNodeId,
-            _campaignNodeRewardGold);
     }
 
     private void DrawSingleWavePauseOverlay(SpriteBatch spriteBatch, int width, int height)

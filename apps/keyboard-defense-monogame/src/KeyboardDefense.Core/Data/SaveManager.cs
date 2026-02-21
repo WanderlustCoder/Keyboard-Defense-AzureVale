@@ -54,6 +54,8 @@ public static class SaveManager
             ["map_h"] = state.MapH,
             ["base_pos"] = PointToDict(state.BasePos),
             ["cursor_pos"] = PointToDict(state.CursorPos),
+            ["player_pos"] = PointToDict(state.PlayerPos),
+            ["player_facing"] = state.PlayerFacing,
             ["terrain"] = new List<string>(state.Terrain),
             ["structures"] = SerializeIntKeyDict(state.Structures),
             ["structure_levels"] = SerializeIntIntDict(state.StructureLevels),
@@ -72,6 +74,17 @@ public static class SaveManager
             ["purchased_unit_upgrades"] = new List<string>(state.PurchasedUnitUpgrades),
             ["typing_metrics"] = state.TypingMetrics,
             ["arrow_rain_timer"] = state.ArrowRainTimer,
+            // Open-world fields
+            ["time_of_day"] = state.TimeOfDay,
+            ["activity_mode"] = state.ActivityMode,
+            ["threat_level"] = state.ThreatLevel,
+            ["wave_cooldown"] = state.WaveCooldown,
+            ["roaming_enemies"] = state.RoamingEnemies,
+            ["npcs"] = state.Npcs,
+            ["enemies_defeated"] = state.EnemiesDefeated,
+            ["max_combo_ever"] = state.MaxComboEver,
+            ["completed_quests"] = new List<string>(state.CompletedQuests),
+            ["skill_points"] = state.SkillPoints,
         };
     }
 
@@ -106,6 +119,8 @@ public static class SaveManager
 
         state.BasePos = PointFromDict(data, "base_pos", new GridPoint(state.MapW / 2, state.MapH / 2));
         state.CursorPos = PointFromDict(data, "cursor_pos", state.BasePos);
+        state.PlayerPos = PointFromDict(data, "player_pos", state.BasePos);
+        state.PlayerFacing = GetString(data, "player_facing", "down");
 
         // Restore collections
         state.Resources = DeserializeStringIntDict(data, "resources");
@@ -117,6 +132,18 @@ public static class SaveManager
         state.Enemies = DeserializeEnemyList(data, "enemies");
         state.PurchasedKingdomUpgrades = DeserializeStringList(data, "purchased_kingdom_upgrades");
         state.PurchasedUnitUpgrades = DeserializeStringList(data, "purchased_unit_upgrades");
+
+        // Open-world fields
+        state.TimeOfDay = GetFloat(data, "time_of_day", 0.25f);
+        state.ActivityMode = GetString(data, "activity_mode", "exploration");
+        state.ThreatLevel = GetFloat(data, "threat_level", 0f);
+        state.WaveCooldown = GetFloat(data, "wave_cooldown", 0f);
+        state.RoamingEnemies = DeserializeEnemyList(data, "roaming_enemies");
+        state.Npcs = DeserializeEnemyList(data, "npcs");
+        state.EnemiesDefeated = GetInt(data, "enemies_defeated", 0);
+        state.MaxComboEver = GetInt(data, "max_combo_ever", 0);
+        state.CompletedQuests = DeserializeStringHashSet(data, "completed_quests");
+        state.SkillPoints = GetInt(data, "skill_points", 0);
 
         return (true, state, null);
     }
@@ -301,6 +328,25 @@ public static class SaveManager
                     result.Add(enemy);
                 }
             }
+        }
+        return result;
+    }
+
+    private static HashSet<string> DeserializeStringHashSet(Dictionary<string, object> data, string key)
+    {
+        var result = new HashSet<string>();
+        if (!data.TryGetValue(key, out var raw)) return result;
+        if (raw is Newtonsoft.Json.Linq.JArray jArr)
+        {
+            foreach (var item in jArr)
+            {
+                string? s = item.ToObject<string>();
+                if (s != null) result.Add(s);
+            }
+        }
+        else if (raw is List<string> list)
+        {
+            foreach (var s in list) result.Add(s);
         }
         return result;
     }

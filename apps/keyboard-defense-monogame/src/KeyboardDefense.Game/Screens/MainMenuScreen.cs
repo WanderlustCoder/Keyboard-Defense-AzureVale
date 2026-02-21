@@ -71,11 +71,23 @@ public class MainMenuScreen : GameScreen
                 if (GameController.Instance.LoadGame())
                 {
                     SceneTransition.Instance.BattleTransition(() =>
-                        ScreenManager.Push(new BattlefieldScreen(Game, ScreenManager, 0, "Loaded Game")));
+                        ScreenManager.Push(new WorldScreen(Game, ScreenManager)));
                 }
             };
             vbox.Widgets.Add(continueButton);
         }
+
+        // Play button — launches WorldScreen (open-world mode)
+        var playButton = CreateMenuButton("Play");
+        playButton.Click += (_, _) =>
+        {
+            SceneTransition.Instance.BattleTransition(() =>
+            {
+                GameController.Instance.NewGame($"world_{DateTime.UtcNow.Ticks}");
+                ScreenManager.Push(new WorldScreen(Game, ScreenManager));
+            });
+        };
+        vbox.Widgets.Add(playButton);
 
         var verticalSliceButton = CreateMenuButton("Start Vertical Slice");
         verticalSliceButton.Click += (_, _) =>
@@ -102,30 +114,6 @@ public class MainMenuScreen : GameScreen
             TextColor = ThemeColors.TextDim,
             HorizontalAlignment = HorizontalAlignment.Center,
         });
-
-        var campaignButton = CreateMenuButton(Locale.Tr("menu.campaign"));
-        campaignButton.Click += (_, _) =>
-        {
-            SceneTransition.Instance.BattleTransition(() =>
-                ScreenManager.Push(new CampaignMapScreen(Game, ScreenManager)));
-        };
-        vbox.Widgets.Add(campaignButton);
-
-        var kingdomButton = CreateMenuButton(Locale.Tr("menu.kingdom_defense"));
-        kingdomButton.Click += (_, _) =>
-        {
-            SceneTransition.Instance.BattleTransition(() =>
-                ScreenManager.Push(new KingdomDefenseScreen(Game, ScreenManager)));
-        };
-        vbox.Widgets.Add(kingdomButton);
-
-        var openWorldButton = CreateMenuButton(Locale.Tr("menu.open_world"));
-        openWorldButton.Click += (_, _) =>
-        {
-            SceneTransition.Instance.BattleTransition(() =>
-                ScreenManager.Push(new OpenWorldScreen(Game, ScreenManager)));
-        };
-        vbox.Widgets.Add(openWorldButton);
 
         var practiceButton = CreateMenuButton(Locale.Tr("menu.typing_practice"));
         practiceButton.Click += (_, _) =>
@@ -169,7 +157,6 @@ public class MainMenuScreen : GameScreen
             {
                 if (!rootPanel.Widgets.Contains(_dailyChallengesPanel.RootWidget))
                     rootPanel.Widgets.Add(_dailyChallengesPanel.RootWidget);
-                // Refresh with current state if available, otherwise use default state
                 var state = GameController.HasAnySave() ? GameController.Instance.State : new Core.State.GameState();
                 _dailyChallengesPanel.Refresh(state);
                 _dailyChallengesPanel.Open();
@@ -233,14 +220,12 @@ public class MainMenuScreen : GameScreen
         {
             spriteBatch.Begin(blendState: BlendState.AlphaBlend, samplerState: SamplerState.PointClamp);
 
-            // Scale portrait to display at 3x (pixel art upscale)
             int scale = 3;
             int drawW = _portrait.Width * scale;
             int drawH = _portrait.Height * scale;
             int drawX = 60;
             int drawY = vp.Height / 2 - drawH / 2;
 
-            // Subtle pulse
             float pulse = 1f + MathF.Sin(_totalTime * 1.5f) * 0.02f;
             drawW = (int)(drawW * pulse);
             drawH = (int)(drawH * pulse);
@@ -249,7 +234,6 @@ public class MainMenuScreen : GameScreen
                 new Rectangle(drawX, drawY, drawW, drawH),
                 Color.White);
 
-            // Portrait label
             var font = Game.DefaultFont;
             string name = "Lyra";
             var nameSize = font.MeasureString(name);
@@ -280,7 +264,6 @@ public class MainMenuScreen : GameScreen
 
     private static string LoadVersion()
     {
-        // Try to read version from a version file
         string[] candidates = new[]
         {
             Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "version.txt"),
@@ -296,6 +279,6 @@ public class MainMenuScreen : GameScreen
             }
         }
 
-        return "v0.2.0 - MonoGame Port";
+        return "v0.3.0 - Open World";
     }
 }

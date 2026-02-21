@@ -67,6 +67,9 @@ public static partial class IntentApplier
                 break;
 
             // --- Navigation ---
+            case "move_player":
+                ApplyMovePlayer(newState, intent, events);
+                break;
             case "cursor":
                 ApplyCursor(newState, intent, events);
                 break;

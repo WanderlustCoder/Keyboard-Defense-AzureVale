@@ -15,12 +15,15 @@ Current implementation milestone:
 - `docs/MONOGAME_CAMPAIGN_M6_PLAN.md` (completed campaign onboarding and launch/return-flow clarity milestone)
 - `docs/MONOGAME_CAMPAIGN_M7_PLAN.md` (completed campaign release-hardening and playtest-readiness milestone)
 - `docs/MONOGAME_CAMPAIGN_M8_PLAN.md` (completed campaign pre-release polish and launch-readiness milestone)
+- `docs/MONOGAME_CAMPAIGN_M9_PLAN.md` (active campaign organic-feel refactor and art-redo milestone)
+- `docs/PIXEL_LAB_ART_REDO_PLAN.md` (active Pixel Lab staging plan for campaign visual rebuild)
 - `apps/keyboard-defense-monogame/docs/VERTICAL_SLICE_BALANCE.md` (current single-wave tuning baseline)
 
-Current focus after campaign M8 completion:
+Current focus after campaign M9 kickoff:
 
-- Maintain `v0.1.0-rc1` RC release notes/checksum evidence in `docs/RELEASE_NOTES_v0.1.0-rc1_2026-02-20.md`.
-- Maintain RC confidence with periodic packaging + campaign sanity reruns before final release cut.
+- Execute M9-01/M9-02 interaction flow refactor to reduce menu-like friction.
+- Execute M9-03 Pixel Lab asset redo batches from `docs/PIXEL_LAB_ART_REDO_PLAN.md`.
+- Track and close high-severity feel findings in `docs/status/2026-02-20_campaign_feel_findings.md`.
 
 ## Build and Test
 
