@@ -1,45 +1,30 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using KeyboardDefense.Core.Combat;
 using KeyboardDefense.Core.State;
 using KeyboardDefense.Core.Typing;
-using KeyboardDefense.Core.World;
 
 namespace KeyboardDefense.Tests.Core;
 
-public class InlineCombatTests
+public class InlineCombatCoreTests
 {
-    private static GameState CreateCombatState()
+    [Fact]
+    public void Constants_MatchExpectedValues()
     {
-        var state = DefaultState.Create("combat_test");
-        state.ActivityMode = "encounter";
-        TypingMetrics.InitBattleMetrics(state);
-        return state;
+        Assert.Equal(2, InlineCombat.EncounterTriggerRadius);
+        Assert.Equal(0.3f, InlineCombat.EnemyApproachSpeed, 3);
     }
-
-    private static Dictionary<string, object> MakeEnemy(int id, string kind = "raider", int hp = 3, int tier = 0)
-    {
-        return new Dictionary<string, object>
-        {
-            ["id"] = id,
-            ["kind"] = kind,
-            ["hp"] = hp,
-            ["tier"] = tier,
-            ["word"] = "test",
-            ["pos"] = new GridPoint(32, 30),
-            ["approach_progress"] = 0f,
-        };
-    }
-
-    // --- AssignWords ---
 
     [Fact]
-    public void AssignWords_SetsWordOnEachEnemy()
+    public void AssignWords_AssignsNonEmptyWordToEveryEnemy()
     {
-        var state = CreateCombatState();
+        var state = CreateEncounterState();
         var enemies = new List<Dictionary<string, object>>
         {
-            MakeEnemy(1),
-            MakeEnemy(2),
-            MakeEnemy(3),
+            CreateEnemy(1, kind: "scout"),
+            CreateEnemy(2, kind: "raider"),
+            CreateEnemy(3, kind: "armored"),
         };
 
         InlineCombat.AssignWords(state, enemies);
@@ -47,290 +32,246 @@ public class InlineCombatTests
         foreach (var enemy in enemies)
         {
             string word = enemy.GetValueOrDefault("word")?.ToString() ?? "";
-            Assert.False(string.IsNullOrEmpty(word), "Each enemy should have a word assigned");
+            Assert.False(string.IsNullOrWhiteSpace(word));
         }
     }
 
     [Fact]
-    public void AssignWords_NoDuplicateWords()
+    public void AssignWords_AssignsUniqueWordsAcrossEncounter()
     {
-        var state = CreateCombatState();
+        var state = CreateEncounterState();
         var enemies = new List<Dictionary<string, object>>
         {
-            MakeEnemy(1),
-            MakeEnemy(2),
-            MakeEnemy(3),
+            CreateEnemy(1),
+            CreateEnemy(2),
+            CreateEnemy(3),
+            CreateEnemy(4),
         };
 
         InlineCombat.AssignWords(state, enemies);
 
-        var words = enemies.Select(e => e["word"]?.ToString()).ToList();
-        Assert.Equal(words.Count, words.Distinct().Count());
-    }
-
-    // --- ProcessTyping ---
-
-    [Fact]
-    public void ProcessTyping_CorrectWord_DamagesEnemy()
-    {
-        var state = CreateCombatState();
-        var enemy = MakeEnemy(1, hp: 10);
-        enemy["word"] = "hello";
-        state.EncounterEnemies.Add(enemy);
-
-        var events = InlineCombat.ProcessTyping(state, "hello");
-
-        int hp = Convert.ToInt32(enemy["hp"]);
-        Assert.True(hp < 10, "Enemy HP should decrease after correct word");
-        Assert.NotEmpty(events);
+        var words = enemies.Select(e => e["word"]?.ToString() ?? "").ToList();
+        Assert.Equal(words.Count, words.Distinct(StringComparer.OrdinalIgnoreCase).Count());
     }
 
     [Fact]
-    public void ProcessTyping_CorrectWord_KillsEnemy()
+    public void AssignWords_DifferentEnemiesReceiveDifferentWords()
     {
-        var state = CreateCombatState();
-        var enemy = MakeEnemy(1, hp: 1);
-        enemy["word"] = "die";
-        state.EncounterEnemies.Add(enemy);
+        var state = CreateEncounterState();
+        var enemies = new List<Dictionary<string, object>>
+        {
+            CreateEnemy(10, kind: "scout"),
+            CreateEnemy(11, kind: "scout"),
+        };
 
-        var events = InlineCombat.ProcessTyping(state, "die");
+        InlineCombat.AssignWords(state, enemies);
 
-        Assert.Empty(state.EncounterEnemies);
-        Assert.True(events.Any(e => e.Contains("Defeated")));
+        string first = enemies[0]["word"]?.ToString() ?? "";
+        string second = enemies[1]["word"]?.ToString() ?? "";
+        Assert.NotEqual(first, second);
     }
 
     [Fact]
-    public void ProcessTyping_WrongWord_ReturnsMissEvent()
+    public void ProcessTyping_NotInEncounterMode_ReturnsEmptyEvents()
     {
-        var state = CreateCombatState();
-        var enemy = MakeEnemy(1);
-        enemy["word"] = "hello";
-        state.EncounterEnemies.Add(enemy);
+        var state = CreateEncounterState();
+        state.ActivityMode = "exploration";
+        state.EncounterEnemies.Add(CreateEnemy(1, word: "mist", hp: 10));
+
+        int hpBefore = Convert.ToInt32(state.EncounterEnemies[0]["hp"]);
+        var events = InlineCombat.ProcessTyping(state, "mist");
+
+        Assert.Empty(events);
+        Assert.Equal(hpBefore, Convert.ToInt32(state.EncounterEnemies[0]["hp"]));
+    }
+
+    [Fact]
+    public void ProcessTyping_EmptyInput_ReturnsEmptyEvents()
+    {
+        var state = CreateEncounterState();
+        state.EncounterEnemies.Add(CreateEnemy(1, word: "mist", hp: 10));
+
+        var events = InlineCombat.ProcessTyping(state, "   ");
+
+        Assert.Empty(events);
+        Assert.Equal(10, Convert.ToInt32(state.EncounterEnemies[0]["hp"]));
+    }
+
+    [Fact]
+    public void ProcessTyping_WrongWord_ReturnsMissAndDoesNotDamageEnemy()
+    {
+        var state = CreateEncounterState();
+        state.EncounterEnemies.Add(CreateEnemy(1, word: "mist", hp: 8));
 
         var events = InlineCombat.ProcessTyping(state, "wrong");
 
-        Assert.True(events.Any(e => e.Contains("Miss")));
-        Assert.Single(state.EncounterEnemies); // enemy still alive
+        Assert.Single(events);
+        Assert.Contains("Miss", events[0], StringComparison.OrdinalIgnoreCase);
+        Assert.Equal(8, Convert.ToInt32(state.EncounterEnemies[0]["hp"]));
     }
 
     [Fact]
-    public void ProcessTyping_CaseInsensitive()
+    public void ProcessTyping_WrongWord_IncrementsBattleErrorsMetric()
     {
-        var state = CreateCombatState();
-        var enemy = MakeEnemy(1, hp: 1);
-        enemy["word"] = "Hello";
-        state.EncounterEnemies.Add(enemy);
+        var state = CreateEncounterState();
+        state.EncounterEnemies.Add(CreateEnemy(1, word: "mist", hp: 8));
 
-        var events = InlineCombat.ProcessTyping(state, "HELLO");
+        InlineCombat.ProcessTyping(state, "wrong");
+
+        Assert.Equal(1, Convert.ToInt32(state.TypingMetrics["battle_errors"]));
+    }
+
+    [Fact]
+    public void ProcessTyping_CorrectWord_DealsDamageAndReturnsEvents()
+    {
+        var state = CreateEncounterState();
+        state.EncounterEnemies.Add(CreateEnemy(1, word: "mist", hp: 50));
+
+        var events = InlineCombat.ProcessTyping(state, "mist");
+
+        Assert.NotEmpty(events);
+        Assert.True(Convert.ToInt32(state.EncounterEnemies[0]["hp"]) < 50);
+    }
+
+    [Fact]
+    public void ProcessTyping_CorrectWord_IncrementsComboAndWordsTypedMetric()
+    {
+        var state = CreateEncounterState();
+        state.EncounterEnemies.Add(CreateEnemy(1, word: "mist", hp: 50));
+
+        InlineCombat.ProcessTyping(state, "mist");
+
+        Assert.Equal(1, TypingMetrics.GetComboCount(state));
+        Assert.Equal(1, Convert.ToInt32(state.TypingMetrics["battle_words_typed"]));
+    }
+
+    [Fact]
+    public void ProcessTyping_LethalDamage_RemovesEnemyIncrementsDefeatedAndAwardsGold()
+    {
+        var state = CreateEncounterState();
+        state.EncounterEnemies.Add(CreateEnemy(1, word: "mist", hp: 1, tier: 2));
+        int goldBefore = state.Gold;
+
+        var events = InlineCombat.ProcessTyping(state, "mist");
 
         Assert.Empty(state.EncounterEnemies);
-    }
-
-    [Fact]
-    public void ProcessTyping_AwardsGold()
-    {
-        var state = CreateCombatState();
-        int goldBefore = state.Gold;
-        var enemy = MakeEnemy(1, hp: 1, tier: 0);
-        enemy["word"] = "gold";
-        state.EncounterEnemies.Add(enemy);
-
-        InlineCombat.ProcessTyping(state, "gold");
-
-        Assert.True(state.Gold > goldBefore, "Killing an enemy should award gold");
-    }
-
-    [Fact]
-    public void ProcessTyping_IncrementsCombo()
-    {
-        var state = CreateCombatState();
-        // Use high HP so enemy survives (EndEncounter resets combo on last kill)
-        var enemy1 = MakeEnemy(1, hp: 1);
-        enemy1["word"] = "first";
-        var enemy2 = MakeEnemy(2, hp: 100);
-        enemy2["word"] = "second";
-        state.EncounterEnemies.Add(enemy1);
-        state.EncounterEnemies.Add(enemy2);
-
-        int comboBefore = TypingMetrics.GetComboCount(state);
-        InlineCombat.ProcessTyping(state, "first");
-
-        Assert.True(TypingMetrics.GetComboCount(state) > comboBefore);
-    }
-
-    [Fact]
-    public void ProcessTyping_IncrementsEnemiesDefeated()
-    {
-        var state = CreateCombatState();
-        int defeatedBefore = state.EnemiesDefeated;
-        var enemy = MakeEnemy(1, hp: 1);
-        enemy["word"] = "count";
-        state.EncounterEnemies.Add(enemy);
-
-        InlineCombat.ProcessTyping(state, "count");
-
-        Assert.Equal(defeatedBefore + 1, state.EnemiesDefeated);
-    }
-
-    [Fact]
-    public void ProcessTyping_EmptyInput_NoEffect()
-    {
-        var state = CreateCombatState();
-        var enemy = MakeEnemy(1);
-        enemy["word"] = "hello";
-        state.EncounterEnemies.Add(enemy);
-
-        var events = InlineCombat.ProcessTyping(state, "  ");
-
-        Assert.Empty(events);
-        Assert.Single(state.EncounterEnemies);
-    }
-
-    [Fact]
-    public void ProcessTyping_NotInEncounterMode_NoEffect()
-    {
-        var state = CreateCombatState();
-        state.ActivityMode = "exploration";
-        var enemy = MakeEnemy(1);
-        enemy["word"] = "hello";
-        state.EncounterEnemies.Add(enemy);
-
-        var events = InlineCombat.ProcessTyping(state, "hello");
-
-        Assert.Empty(events);
+        Assert.Equal(1, state.EnemiesDefeated);
+        Assert.Equal(goldBefore + 7, state.Gold);
+        Assert.Contains(events, e => e.Contains("Defeated", StringComparison.OrdinalIgnoreCase));
     }
 
     [Fact]
     public void ProcessTyping_LastEnemyKilled_EndsEncounter()
     {
-        var state = CreateCombatState();
-        var enemy = MakeEnemy(1, hp: 1);
-        enemy["word"] = "last";
-        state.EncounterEnemies.Add(enemy);
+        var state = CreateEncounterState();
+        state.EncounterEnemies.Add(CreateEnemy(1, word: "mist", hp: 1));
 
-        var events = InlineCombat.ProcessTyping(state, "last");
+        var events = InlineCombat.ProcessTyping(state, "mist");
 
         Assert.Equal("exploration", state.ActivityMode);
-        Assert.True(events.Any(e => e.Contains("cleared")));
-    }
-
-    // --- TickEnemyApproach ---
-
-    [Fact]
-    public void TickEnemyApproach_AdvancesEnemies()
-    {
-        var state = CreateCombatState();
-        var enemy = MakeEnemy(1);
-        enemy["approach_progress"] = 0f;
-        state.EncounterEnemies.Add(enemy);
-
-        InlineCombat.TickEnemyApproach(state, 1.0f);
-
-        float progress = Convert.ToSingle(enemy["approach_progress"]);
-        Assert.True(progress > 0f, "Enemy approach progress should advance");
+        Assert.Empty(state.EncounterEnemies);
+        Assert.Contains(events, e => e.Contains("Encounter cleared", StringComparison.OrdinalIgnoreCase));
     }
 
     [Fact]
-    public void TickEnemyApproach_EnemyReachesPlayer_DealsDamage()
+    public void ProcessTyping_MatchingIsCaseInsensitive()
     {
-        var state = CreateCombatState();
-        int hpBefore = state.Hp;
-        var enemy = MakeEnemy(1, tier: 0);
-        enemy["approach_progress"] = 0.99f; // almost there
-        state.EncounterEnemies.Add(enemy);
+        var state = CreateEncounterState();
+        state.EncounterEnemies.Add(CreateEnemy(1, word: "scout", hp: 1));
 
-        // Tick enough to push past 1.0
-        InlineCombat.TickEnemyApproach(state, 1.0f);
-
-        Assert.True(state.Hp < hpBefore, "Player should take damage when enemy reaches them");
-    }
-
-    [Fact]
-    public void TickEnemyApproach_EnemyReachesPlayer_RemovedFromEncounter()
-    {
-        var state = CreateCombatState();
-        var enemy = MakeEnemy(1);
-        enemy["approach_progress"] = 0.99f;
-        state.EncounterEnemies.Add(enemy);
-
-        InlineCombat.TickEnemyApproach(state, 1.0f);
+        var events = InlineCombat.ProcessTyping(state, "SCOUT");
 
         Assert.Empty(state.EncounterEnemies);
+        Assert.Contains(events, e => e.Contains("Defeated", StringComparison.OrdinalIgnoreCase));
     }
 
     [Fact]
-    public void TickEnemyApproach_HigherTier_MoreDamage()
+    public void TickEnemyApproach_NotInEncounterMode_ReturnsEmptyEvents()
     {
-        var stateT0 = CreateCombatState();
-        stateT0.Hp = 100;
-        var enemyT0 = MakeEnemy(1, tier: 0);
-        enemyT0["approach_progress"] = 0.99f;
-        stateT0.EncounterEnemies.Add(enemyT0);
-        InlineCombat.TickEnemyApproach(stateT0, 1.0f);
-        int damageT0 = 100 - stateT0.Hp;
-
-        var stateT2 = CreateCombatState();
-        stateT2.Hp = 100;
-        var enemyT2 = MakeEnemy(2, tier: 2);
-        enemyT2["approach_progress"] = 0.99f;
-        stateT2.EncounterEnemies.Add(enemyT2);
-        InlineCombat.TickEnemyApproach(stateT2, 1.0f);
-        int damageT2 = 100 - stateT2.Hp;
-
-        Assert.True(damageT2 > damageT0, $"Tier 2 damage ({damageT2}) should exceed tier 0 ({damageT0})");
-    }
-
-    [Fact]
-    public void TickEnemyApproach_KillsPlayer_SetsGameOver()
-    {
-        var state = CreateCombatState();
-        state.Hp = 1;
-        var enemy = MakeEnemy(1, tier: 0);
-        enemy["approach_progress"] = 0.99f;
-        state.EncounterEnemies.Add(enemy);
-
-        var events = InlineCombat.TickEnemyApproach(state, 1.0f);
-
-        Assert.Equal("game_over", state.Phase);
-        Assert.True(events.Any(e => e.Contains("defeated")));
-    }
-
-    [Fact]
-    public void TickEnemyApproach_NotInEncounter_NoEffect()
-    {
-        var state = CreateCombatState();
+        var state = CreateEncounterState();
         state.ActivityMode = "exploration";
-        var enemy = MakeEnemy(1);
-        enemy["approach_progress"] = 0.5f;
-        state.EncounterEnemies.Add(enemy);
+        state.EncounterEnemies.Add(CreateEnemy(1, approachProgress: 0.4f));
 
         var events = InlineCombat.TickEnemyApproach(state, 1.0f);
 
         Assert.Empty(events);
+        Assert.Equal(0.4f, Convert.ToSingle(state.EncounterEnemies[0]["approach_progress"]), 3);
     }
 
     [Fact]
-    public void TickEnemyApproach_AllEnemiesGone_EndsEncounter()
+    public void TickEnemyApproach_AdvancesApproachProgressBySpeedTimesDelta()
     {
-        var state = CreateCombatState();
-        state.Hp = 100;
-        var enemy = MakeEnemy(1);
-        enemy["approach_progress"] = 0.99f;
-        state.EncounterEnemies.Add(enemy);
+        var state = CreateEncounterState();
+        state.EncounterEnemies.Add(CreateEnemy(1, approachProgress: 0.1f));
+
+        InlineCombat.TickEnemyApproach(state, 2.0f);
+
+        float approach = Convert.ToSingle(state.EncounterEnemies[0]["approach_progress"]);
+        Assert.Equal(0.7f, approach, 3);
+    }
+
+    [Fact]
+    public void TickEnemyApproach_EnemyReachesPlayer_DamagesPlayerAndRemovesEnemy()
+    {
+        var state = CreateEncounterState();
+        state.Hp = 10;
+        state.EncounterEnemies.Add(CreateEnemy(1, tier: 0, approachProgress: 0.95f));
+        state.EncounterEnemies.Add(CreateEnemy(2, tier: 0, approachProgress: 0.0f));
+
+        var events = InlineCombat.TickEnemyApproach(state, 1.0f);
+
+        Assert.Equal(9, state.Hp);
+        Assert.Single(state.EncounterEnemies);
+        Assert.Equal(2, Convert.ToInt32(state.EncounterEnemies[0]["id"]));
+        Assert.Contains(events, e => e.Contains("strikes you", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
+    public void TickEnemyApproach_HighTierEnemyDealsOnePlusTierDamage()
+    {
+        var state = CreateEncounterState();
+        state.Hp = 10;
+        state.EncounterEnemies.Add(CreateEnemy(1, tier: 3, approachProgress: 0.99f));
+
+        InlineCombat.TickEnemyApproach(state, 1.0f);
+
+        Assert.Equal(6, state.Hp);
+    }
+
+    [Fact]
+    public void TickEnemyApproach_HpReachesZero_SetsPhaseToGameOver()
+    {
+        var state = CreateEncounterState();
+        state.Hp = 1;
+        state.EncounterEnemies.Add(CreateEnemy(1, tier: 0, approachProgress: 0.99f));
+
+        var events = InlineCombat.TickEnemyApproach(state, 1.0f);
+
+        Assert.Equal("game_over", state.Phase);
+        Assert.Equal("encounter", state.ActivityMode);
+        Assert.Contains(events, e => e.Contains("defeated", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
+    public void TickEnemyApproach_WhenAllEnemiesAreGone_EncounterEnds()
+    {
+        var state = CreateEncounterState();
+        state.Hp = 10;
+        state.EncounterEnemies.Add(CreateEnemy(1, tier: 0, approachProgress: 0.99f));
 
         var events = InlineCombat.TickEnemyApproach(state, 1.0f);
 
         Assert.Equal("exploration", state.ActivityMode);
-        Assert.True(events.Any(e => e.Contains("cleared")));
+        Assert.Empty(state.EncounterEnemies);
+        Assert.Contains(events, e => e.Contains("Encounter cleared", StringComparison.OrdinalIgnoreCase));
     }
 
-    // --- EndEncounter ---
-
     [Fact]
-    public void EndEncounter_ReturnsToExploration()
+    public void EndEncounter_SetsExplorationModeAndClearsEncounterEnemies()
     {
-        var state = CreateCombatState();
-        state.EncounterEnemies.Add(MakeEnemy(1));
+        var state = CreateEncounterState();
+        state.EncounterEnemies.Add(CreateEnemy(1));
+        state.EncounterEnemies.Add(CreateEnemy(2));
 
         InlineCombat.EndEncounter(state);
 
@@ -341,13 +282,42 @@ public class InlineCombatTests
     [Fact]
     public void EndEncounter_ResetsCombo()
     {
-        var state = CreateCombatState();
+        var state = CreateEncounterState();
         TypingMetrics.IncrementCombo(state);
         TypingMetrics.IncrementCombo(state);
-        Assert.True(TypingMetrics.GetComboCount(state) > 0);
+        Assert.Equal(2, TypingMetrics.GetComboCount(state));
 
         InlineCombat.EndEncounter(state);
 
         Assert.Equal(0, TypingMetrics.GetComboCount(state));
+    }
+
+    private static GameState CreateEncounterState()
+    {
+        var state = DefaultState.Create();
+        state.ActivityMode = "encounter";
+        TypingMetrics.InitBattleMetrics(state);
+        return state;
+    }
+
+    private static Dictionary<string, object> CreateEnemy(
+        int id,
+        string kind = "scout",
+        string word = "mist",
+        int hp = 5,
+        int tier = 0,
+        GridPoint? pos = null,
+        float approachProgress = 0f)
+    {
+        return new Dictionary<string, object>
+        {
+            ["kind"] = kind,
+            ["id"] = id,
+            ["word"] = word,
+            ["hp"] = hp,
+            ["tier"] = tier,
+            ["pos"] = pos ?? new GridPoint(5, 5),
+            ["approach_progress"] = approachProgress,
+        };
     }
 }
