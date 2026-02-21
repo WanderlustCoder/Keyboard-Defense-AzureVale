@@ -83,10 +83,36 @@ public class GridRenderer
             DrawStructure(spriteBatch, pos, structureType, state.StructureLevels.GetValueOrDefault(index, 1));
         }
 
+        // Draw resource nodes
+        foreach (var (nodeIdx, nodeData) in state.ResourceNodes)
+        {
+            var pos = GridPoint.FromIndex(nodeIdx, state.MapW);
+            if (state.Discovered.Contains(nodeIdx))
+                DrawResourceNode(spriteBatch, pos, nodeData);
+        }
+
+        // Draw NPCs
+        foreach (var npc in state.Npcs)
+        {
+            DrawNpc(spriteBatch, npc);
+        }
+
+        // Draw roaming enemies
+        foreach (var enemy in state.RoamingEnemies)
+        {
+            DrawRoamingEnemy(spriteBatch, enemy);
+        }
+
+        // Draw encounter enemies (with words)
+        foreach (var enemy in state.EncounterEnemies)
+        {
+            DrawEnemy(spriteBatch, enemy);
+        }
+
         // Draw base
         DrawBase(spriteBatch, state.BasePos);
 
-        // Draw enemies
+        // Draw enemies (campaign/battle mode)
         foreach (var enemy in state.Enemies)
         {
             DrawEnemy(spriteBatch, enemy);
@@ -114,38 +140,45 @@ public class GridRenderer
 
         var rect = TileRect(pos);
 
-        // Try sprite texture, fall back to colored rectangle
-        string tileId = terrain switch
-        {
-            SimMap.TerrainForest => "forest",
-            SimMap.TerrainMountain => "mountain",
-            SimMap.TerrainWater => "water",
-            _ => "plain",
-        };
-        var texture = AssetLoader.Instance.GetTileTexture(tileId);
-        if (texture != null)
-            spriteBatch.Draw(texture, rect, Color.White);
-        else
-            spriteBatch.Draw(_pixel!, rect, color);
+        // Try Wang tileset first (auto-tiled with transition corners)
+        int cardinalMask = AutoTileResolver.GetCardinalMask(state, pos);
+        bool drewTileset = TilesetManager.Instance.DrawTile(spriteBatch, terrain, cardinalMask, rect);
 
-        // Auto-tile edge transitions: darken edges where biome changes
-        var transitions = AutoTileResolver.GetEdgeTransitions(state, pos);
-        foreach (var edge in transitions)
+        if (!drewTileset)
         {
-            Color edgeColor = GetTransitionColor(terrain, edge.NeighborTerrain);
-            int edgeThickness = Math.Max(2, CellSize / 8);
-
-            Rectangle edgeRect = edge.Direction switch
+            // Try sprite texture, fall back to colored rectangle
+            string tileId = terrain switch
             {
-                AutoTileResolver.North => new Rectangle(rect.X, rect.Y, rect.Width, edgeThickness),
-                AutoTileResolver.East => new Rectangle(rect.Right - edgeThickness, rect.Y, edgeThickness, rect.Height),
-                AutoTileResolver.South => new Rectangle(rect.X, rect.Bottom - edgeThickness, rect.Width, edgeThickness),
-                AutoTileResolver.West => new Rectangle(rect.X, rect.Y, edgeThickness, rect.Height),
-                _ => Rectangle.Empty,
+                SimMap.TerrainForest => "forest",
+                SimMap.TerrainMountain => "mountain",
+                SimMap.TerrainWater => "water",
+                _ => "plain",
             };
+            var texture = AssetLoader.Instance.GetTileTexture(tileId);
+            if (texture != null)
+                spriteBatch.Draw(texture, rect, Color.White);
+            else
+                spriteBatch.Draw(_pixel!, rect, color);
 
-            if (edgeRect != Rectangle.Empty)
-                spriteBatch.Draw(_pixel!, edgeRect, edgeColor);
+            // Auto-tile edge transitions: darken edges where biome changes
+            var transitions = AutoTileResolver.GetEdgeTransitions(state, pos);
+            foreach (var edge in transitions)
+            {
+                Color edgeColor = GetTransitionColor(terrain, edge.NeighborTerrain);
+                int edgeThickness = Math.Max(2, CellSize / 8);
+
+                Rectangle edgeRect = edge.Direction switch
+                {
+                    AutoTileResolver.North => new Rectangle(rect.X, rect.Y, rect.Width, edgeThickness),
+                    AutoTileResolver.East => new Rectangle(rect.Right - edgeThickness, rect.Y, edgeThickness, rect.Height),
+                    AutoTileResolver.South => new Rectangle(rect.X, rect.Bottom - edgeThickness, rect.Width, edgeThickness),
+                    AutoTileResolver.West => new Rectangle(rect.X, rect.Y, edgeThickness, rect.Height),
+                    _ => Rectangle.Empty,
+                };
+
+                if (edgeRect != Rectangle.Empty)
+                    spriteBatch.Draw(_pixel!, edgeRect, edgeColor);
+            }
         }
 
         // Grid line
@@ -303,6 +336,133 @@ public class GridRenderer
                 spriteBatch.DrawString(_font, word,
                     new Vector2(rect.X + (rect.Width - size.X * scale) * 0.5f, rect.Y + rect.Height + 2),
                     Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+            }
+        }
+    }
+
+    // Map object texture names by resource node type
+    private static readonly Dictionary<string, string> NodeTextures = new()
+    {
+        ["wood_grove"] = "tree",
+        ["stone_quarry"] = "rock",
+        ["food_garden"] = "reeds",
+        ["herb_patch"] = "reeds2",
+        ["iron_deposit"] = "mine",
+        ["pine_forest"] = "pine",
+    };
+
+    private static readonly Color ResourceNodeColor = new(120, 180, 80);
+    private static readonly Color NpcColor = new(100, 160, 220);
+    private static readonly Color RoamingEnemyColor = new(200, 80, 80, 180);
+
+    private void DrawResourceNode(SpriteBatch spriteBatch, GridPoint pos, Dictionary<string, object> nodeData)
+    {
+        var rect = TileRect(pos);
+        int inset = CellSize / 6;
+        var inner = new Rectangle(rect.X + inset, rect.Y + inset, rect.Width - inset * 2, rect.Height - inset * 2);
+
+        string nodeType = nodeData.GetValueOrDefault("type")?.ToString() ?? "";
+
+        // Try map object texture
+        if (NodeTextures.TryGetValue(nodeType, out string? texName))
+        {
+            var texture = AssetLoader.Instance.GetTexture(texName);
+            if (texture != null)
+            {
+                spriteBatch.Draw(texture, inner, Color.White);
+                return;
+            }
+        }
+
+        // Fallback: colored diamond shape (approximated with rectangle)
+        spriteBatch.Draw(_pixel!, inner, ResourceNodeColor);
+
+        // Node type label
+        if (_font != null && !string.IsNullOrEmpty(nodeType))
+        {
+            string label = nodeType.Replace('_', ' ');
+            var size = _font.MeasureString(label);
+            float scale = Math.Min(0.5f, (float)(CellSize - 4) / size.X);
+            spriteBatch.DrawString(_font, label,
+                new Vector2(rect.X + (rect.Width - size.X * scale) * 0.5f, rect.Y + rect.Height + 1),
+                Color.LightGreen, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+        }
+    }
+
+    private void DrawNpc(SpriteBatch spriteBatch, Dictionary<string, object> npc)
+    {
+        if (!npc.TryGetValue("x", out var xObj) || !npc.TryGetValue("y", out var yObj))
+            return;
+
+        int x = Convert.ToInt32(xObj);
+        int y = Convert.ToInt32(yObj);
+        var rect = TileRect(new GridPoint(x, y));
+        int inset = CellSize / 5;
+        var inner = new Rectangle(rect.X + inset, rect.Y + inset, rect.Width - inset * 2, rect.Height - inset * 2);
+
+        // Colored rectangle with role-based tint
+        string role = npc.GetValueOrDefault("role")?.ToString() ?? "";
+        Color color = role switch
+        {
+            "trainer" => new Color(80, 200, 120),
+            "merchant" => new Color(220, 180, 60),
+            "quest_giver" => new Color(160, 100, 220),
+            _ => NpcColor,
+        };
+        spriteBatch.Draw(_pixel!, inner, color);
+
+        // NPC name label
+        if (_font != null)
+        {
+            string name = npc.GetValueOrDefault("name")?.ToString() ?? role;
+            if (!string.IsNullOrEmpty(name))
+            {
+                var size = _font.MeasureString(name);
+                float scale = Math.Min(0.6f, (float)(CellSize + 8) / size.X);
+                spriteBatch.DrawString(_font, name,
+                    new Vector2(rect.X + (rect.Width - size.X * scale) * 0.5f, rect.Y - size.Y * scale - 2),
+                    Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+            }
+        }
+
+        // Quest marker (! for available quests)
+        if (_font != null && npc.GetValueOrDefault("has_quest") is true)
+        {
+            spriteBatch.DrawString(_font, "!",
+                new Vector2(rect.Right - 8, rect.Y - 12),
+                ThemeColors.GoldAccent, 0f, Vector2.Zero, 0.8f, SpriteEffects.None, 0f);
+        }
+    }
+
+    private void DrawRoamingEnemy(SpriteBatch spriteBatch, Dictionary<string, object> enemy)
+    {
+        GridPoint pos;
+        if (enemy.GetValueOrDefault("pos") is GridPoint gp)
+            pos = gp;
+        else if (enemy.TryGetValue("x", out var xObj) && enemy.TryGetValue("y", out var yObj))
+            pos = new GridPoint(Convert.ToInt32(xObj), Convert.ToInt32(yObj));
+        else
+            return;
+
+        var rect = TileRect(pos);
+        int inset = CellSize / 3;
+        var inner = new Rectangle(rect.X + inset, rect.Y + inset, rect.Width - inset * 2, rect.Height - inset * 2);
+
+        // Red threat indicator
+        spriteBatch.Draw(_pixel!, inner, RoamingEnemyColor);
+
+        // Threat zone overlay (semi-transparent on nearby tiles)
+        int threatRadius = 2;
+        for (int dy = -threatRadius; dy <= threatRadius; dy++)
+        {
+            for (int dx = -threatRadius; dx <= threatRadius; dx++)
+            {
+                if (dx == 0 && dy == 0) continue;
+                int dist = Math.Abs(dx) + Math.Abs(dy);
+                if (dist > threatRadius) continue;
+                float alpha = 0.08f * (1f - (float)dist / (threatRadius + 1));
+                var threatRect = TileRect(new GridPoint(pos.X + dx, pos.Y + dy));
+                spriteBatch.Draw(_pixel!, threatRect, Color.Red * alpha);
             }
         }
     }

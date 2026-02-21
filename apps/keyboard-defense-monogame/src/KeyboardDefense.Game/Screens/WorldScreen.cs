@@ -10,6 +10,7 @@ using KeyboardDefense.Core.Intent;
 using KeyboardDefense.Core.Progression;
 using KeyboardDefense.Core.State;
 using KeyboardDefense.Core.World;
+using KeyboardDefense.Game.Audio;
 using KeyboardDefense.Game.Effects;
 using KeyboardDefense.Game.Input;
 using KeyboardDefense.Game.Rendering;
@@ -73,6 +74,9 @@ public class WorldScreen : GameScreen
     private static readonly string[] BuildMenuItems =
         { "wall", "tower", "farm", "lumber", "quarry", "market", "barracks" };
 
+    // Audio state tracking
+    private string _lastActivityMode = "";
+
     public WorldScreen(KeyboardDefenseGame game, ScreenManager screenManager)
         : base(game, screenManager) { }
 
@@ -81,7 +85,8 @@ public class WorldScreen : GameScreen
         _typingHandler = new TypingInput();
         _typingHandler.Attach(Game.Window);
 
-        // Initialize renderers
+        // Initialize tilesets and renderers
+        TilesetManager.Instance.Initialize(Game.GraphicsDevice, AssetLoader.Instance.TextureRoot);
         _gridRenderer.Initialize(Game.GraphicsDevice, Game.DefaultFont);
         _minimapRenderer.Initialize(Game.GraphicsDevice);
         _playerRenderer.Initialize(Game.GraphicsDevice, Game.DefaultFont);
@@ -104,6 +109,10 @@ public class WorldScreen : GameScreen
         BuildUi();
         OnStateChanged(ctrl.State);
         AppendLog("You awaken at the castle. Use WASD to explore. E to interact. B to build.");
+
+        // Start exploration music
+        _lastActivityMode = state.ActivityMode;
+        AudioManager.Instance.PlayMusic(AudioManager.MusicTrack.Calm);
     }
 
     public override void OnExit()
@@ -114,6 +123,8 @@ public class WorldScreen : GameScreen
         ctrl.EventsEmitted -= OnEventsEmitted;
         _desktop = null;
         _panelOverlay = null;
+
+        AudioManager.Instance.StopMusic();
     }
 
     public override void Update(GameTime gameTime)
@@ -148,6 +159,7 @@ public class WorldScreen : GameScreen
                 {
                     ResourceChallenge.CancelChallenge(state);
                     AppendLog("Harvest cancelled.");
+                    AudioManager.Instance.PlaySfx(AudioManager.Sfx.UiCancel);
                 }
             }
 
@@ -159,11 +171,17 @@ public class WorldScreen : GameScreen
         if (tickResult.TryGetValue("events", out var eventsObj) && eventsObj is List<string> events)
         {
             foreach (string evt in events)
+            {
                 AppendLog(evt);
+                PlayEventSfx(evt);
+            }
         }
 
         // Tick resource node cooldowns
         ResourceChallenge.TickCooldowns(state, dt);
+
+        // Switch music when activity mode changes
+        UpdateMusicTrack(state);
 
         // Update camera
         var vp = Game.GraphicsDevice.Viewport;
@@ -281,6 +299,7 @@ public class WorldScreen : GameScreen
             _buildMenuIndex = 0;
             AppendLog("BUILD MODE: Use Left/Right to select, Enter to place, Escape to cancel.");
             AppendLog($"Selected: {BuildMenuItems[_buildMenuIndex]}");
+            AudioManager.Instance.PlaySfx(AudioManager.Sfx.UiOpen);
             return;
         }
 
@@ -293,6 +312,7 @@ public class WorldScreen : GameScreen
             var npcResult = NpcInteraction.TryInteract(state);
             if (npcResult != null)
             {
+                AudioManager.Instance.PlayUiConfirm();
                 if (npcResult.GetValueOrDefault("lines") is List<string> lines)
                 {
                     foreach (string line in lines)
@@ -301,7 +321,10 @@ public class WorldScreen : GameScreen
                 // Auto-complete ready quests when talking to NPCs
                 var questEvents = NpcInteraction.CompleteReadyQuests(state);
                 foreach (string evt in questEvents)
+                {
                     AppendLog(evt);
+                    AudioManager.Instance.PlaySfx(AudioManager.Sfx.QuestComplete);
+                }
                 return;
             }
 
@@ -312,6 +335,7 @@ public class WorldScreen : GameScreen
                 string nodeName = harvestResult.GetValueOrDefault("node_name")?.ToString() ?? "node";
                 string word = harvestResult.GetValueOrDefault("word")?.ToString() ?? "";
                 AppendLog($"Harvesting {nodeName}! Type: {word}");
+                AudioManager.Instance.PlaySfx(AudioManager.Sfx.Gather);
             }
             else
             {
@@ -327,6 +351,7 @@ public class WorldScreen : GameScreen
         {
             _buildMode = false;
             AppendLog("Build mode cancelled.");
+            AudioManager.Instance.PlaySfx(AudioManager.Sfx.UiCancel);
             return;
         }
 
@@ -335,11 +360,13 @@ public class WorldScreen : GameScreen
         {
             _buildMenuIndex = (_buildMenuIndex - 1 + BuildMenuItems.Length) % BuildMenuItems.Length;
             AppendLog($"Selected: {BuildMenuItems[_buildMenuIndex]}");
+            AudioManager.Instance.PlayUiHover();
         }
         else if (IsKeyPressed(kb, Keys.Right) || IsKeyPressed(kb, Keys.D))
         {
             _buildMenuIndex = (_buildMenuIndex + 1) % BuildMenuItems.Length;
             AppendLog($"Selected: {BuildMenuItems[_buildMenuIndex]}");
+            AudioManager.Instance.PlayUiHover();
         }
 
         // Enter/Space places the building at player position
@@ -355,6 +382,9 @@ public class WorldScreen : GameScreen
             });
             GameController.Instance.ApplyIntent(intent);
             _buildMode = false;
+            AudioManager.Instance.PlaySfx(building == "tower"
+                ? AudioManager.Sfx.TowerBuild
+                : AudioManager.Sfx.Build);
         }
     }
 
@@ -371,6 +401,7 @@ public class WorldScreen : GameScreen
             ["dy"] = dy,
         });
         GameController.Instance.ApplyIntent(intent);
+        AudioManager.Instance.PlaySfx(AudioManager.Sfx.Explore, -0.3f);
     }
 
     private void SubmitTyping()
@@ -418,7 +449,10 @@ public class WorldScreen : GameScreen
                 int combo = Core.Typing.TypingMetrics.GetComboCount(state);
 
                 if (damage > 0)
+                {
                     _combatVfx.ShowDamage(targetPos, damage, combo >= 5);
+                    AudioManager.Instance.PlaySfx(AudioManager.Sfx.EnemyHit);
+                }
 
                 // Flash the first encounter enemy (the one that was hit)
                 if (state.EncounterEnemies.Count > 0)
@@ -431,6 +465,10 @@ public class WorldScreen : GameScreen
                 {
                     _combatVfx.OnEnemyKilled(combo);
                     _combatVfx.CheckComboAnnouncement(combo, _panelOverlay!.Combo);
+                    AudioManager.Instance.PlayEnemyDeath();
+
+                    if (combo > 1)
+                        AudioManager.Instance.PlayComboUp();
 
                     // Show gold reward as floating text
                     foreach (string evt in events)
@@ -438,10 +476,15 @@ public class WorldScreen : GameScreen
                         if (evt.Contains("gold"))
                         {
                             _combatVfx.ShowText(targetPos + new Vector2(0, 20), evt.Split('!')[0] + "!", ThemeColors.GoldAccent);
+                            AudioManager.Instance.PlaySfx(AudioManager.Sfx.GoldPickup);
                             break;
                         }
                     }
                 }
+            }
+            else if (events.Count > 0)
+            {
+                AudioManager.Instance.PlaySfx(AudioManager.Sfx.MissWhiff);
             }
         }
         else if (state.ActivityMode == "harvest_challenge")
@@ -450,6 +493,7 @@ public class WorldScreen : GameScreen
             foreach (string evt in events)
                 AppendLog(evt);
             SessionAnalytics.Instance.RecordEvent("word_typed");
+            AudioManager.Instance.PlayWordComplete();
         }
         else if (state.ActivityMode == "wave_assault")
         {
@@ -457,7 +501,54 @@ public class WorldScreen : GameScreen
             GameController.Instance.ApplyIntent(intent);
             SessionAnalytics.Instance.OnGameEvent(GameController.Instance.LastEvents);
             SessionAnalytics.Instance.RecordEvent("word_typed");
+            AudioManager.Instance.PlaySfx(AudioManager.Sfx.EnemyHit);
         }
+    }
+
+    private void UpdateMusicTrack(GameState state)
+    {
+        if (state.ActivityMode == _lastActivityMode) return;
+
+        var audio = AudioManager.Instance;
+        switch (state.ActivityMode)
+        {
+            case "exploration":
+                audio.StopDucking();
+                audio.PlayMusic(AudioManager.MusicTrack.Calm);
+                break;
+            case "encounter":
+                audio.StartDucking();
+                audio.PlayMusic(AudioManager.MusicTrack.Battle);
+                break;
+            case "wave_assault":
+                audio.StartDucking();
+                audio.PlayMusic(AudioManager.MusicTrack.BattleTense);
+                break;
+            case "harvest_challenge":
+                // Keep current music, just duck slightly
+                audio.StartDucking();
+                break;
+        }
+
+        _lastActivityMode = state.ActivityMode;
+    }
+
+    private static void PlayEventSfx(string evt)
+    {
+        var audio = AudioManager.Instance;
+
+        if (evt.Contains("WAVE ASSAULT"))
+            audio.PlaySfx(AudioManager.Sfx.WaveStart);
+        else if (evt.Contains("Wave repelled"))
+            audio.PlaySfx(AudioManager.Sfx.WaveComplete);
+        else if (evt.Contains("Encounter!"))
+            audio.PlaySfx(AudioManager.Sfx.EnemySpawn);
+        else if (evt.Contains("dawn") || evt.Contains("Dawn"))
+            audio.PlaySfx(AudioManager.Sfx.DawnBreak);
+        else if (evt.Contains("dusk") || evt.Contains("Dusk") || evt.Contains("nightfall"))
+            audio.PlaySfx(AudioManager.Sfx.NightFall);
+        else if (evt.Contains("level up") || evt.Contains("Level up"))
+            audio.PlaySfx(AudioManager.Sfx.LevelUp);
     }
 
     private void BuildUi()

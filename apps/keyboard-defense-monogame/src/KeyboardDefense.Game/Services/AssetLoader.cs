@@ -26,6 +26,9 @@ public class AssetLoader
     private string _textureRoot = "";
     private bool _initialized;
 
+    /// <summary>Path to the Content/Textures/ directory.</summary>
+    public string TextureRoot => _textureRoot;
+
     /// <summary>Global sprite animator with registered sheets.</summary>
     public SpriteAnimator Animator => _animator;
 
@@ -148,6 +151,8 @@ public class AssetLoader
             Path.Combine(_textureRoot, "portraits", $"{id}.png"),
             Path.Combine(_textureRoot, "ui", $"{id}.png"),
             Path.Combine(_textureRoot, "effects", $"{id}.png"),
+            Path.Combine(_textureRoot, "tilesets", $"{id}.png"),
+            Path.Combine(_textureRoot, "map_objects", $"{id}.png"),
             Path.Combine(_textureRoot, $"{id}.png"),
         };
 
