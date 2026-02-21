@@ -121,7 +121,15 @@ public class AssetLoader
         => GetTexture($"enemy_{kind}");
 
     public Texture2D? GetBuildingTexture(string type)
-        => GetTexture($"bld_{type}");
+    {
+        // Try exact match first, then common aliases
+        var tex = GetTexture($"bld_{type}");
+        if (tex != null) return tex;
+
+        // Alias generic tower to tower_arrow
+        if (type == "tower") return GetTexture("bld_tower_arrow");
+        return null;
+    }
 
     public Texture2D? GetTileTexture(string biome)
         => GetTexture($"tile_{biome}");

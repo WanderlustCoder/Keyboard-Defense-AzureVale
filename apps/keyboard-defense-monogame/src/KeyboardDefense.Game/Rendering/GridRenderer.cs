@@ -615,8 +615,33 @@ public class GridRenderer
         int inset = CellSize / 3;
         var inner = new Rectangle(rect.X + inset, rect.Y + inset, rect.Width - inset * 2, rect.Height - inset * 2);
 
-        // Red threat indicator
-        spriteBatch.Draw(_pixel!, inner, RoamingEnemyColor);
+        // Try enemy sprite via SpriteAnimator (same pattern as DrawEnemy)
+        string kind = enemy.GetValueOrDefault("kind")?.ToString() ?? "";
+        int enemyId = 0;
+        if (enemy.TryGetValue("id", out var idObj))
+            enemyId = Convert.ToInt32(idObj);
+
+        AssetLoader.Instance.RegisterEnemySprite(kind);
+        string spriteId = $"enemy_{kind}";
+        var sheet = AssetLoader.Instance.Animator.GetSheet(spriteId);
+
+        if (sheet?.Texture != null)
+        {
+            if (!_enemyAnimStates.TryGetValue(enemyId, out var animState))
+            {
+                animState = SpriteAnimator.CreateState();
+                animState.EnableBob(speed: 1.5f, amplitude: 1.5f, phase: enemyId * 0.7f);
+                var idle = sheet.GetClip("idle");
+                if (idle != null) animState.Play(idle);
+                _enemyAnimStates[enemyId] = animState;
+            }
+            AssetLoader.Instance.Animator.Draw(spriteBatch, spriteId, animState, inner, Color.White * 0.85f);
+        }
+        else
+        {
+            // Fallback: red threat indicator
+            spriteBatch.Draw(_pixel!, inner, RoamingEnemyColor);
+        }
 
         // Threat zone overlay (semi-transparent on nearby tiles)
         int threatRadius = 2;

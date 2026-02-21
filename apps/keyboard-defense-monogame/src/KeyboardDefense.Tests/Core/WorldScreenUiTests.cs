@@ -627,6 +627,160 @@ public class WorldScreenUiTests
         });
     }
 
+    // ─────────────────────────────────────────────────
+    // DailyChallenges integration (wired to WorldScreen)
+    // ─────────────────────────────────────────────────
+
+    [Fact]
+    public void CheckProgress_DefeatEnemies_ReturnsCompletedWhenThresholdMet()
+    {
+        var state = new GameState { Day = 1, EnemiesDefeated = 0 };
+        var challenges = DailyChallenges.GetTodaysChallenges(1);
+        var defeatChallenge = challenges.Find(c => c.Type == ChallengeType.DefeatEnemies);
+        if (defeatChallenge == null) return; // not in today's pool
+
+        state.EnemiesDefeated = defeatChallenge.Target;
+        var completed = DailyChallenges.CheckProgress(state);
+        Assert.Contains(defeatChallenge.Id, completed);
+    }
+
+    [Fact]
+    public void CompleteChallenge_AwardsGold()
+    {
+        var state = new GameState { Day = 1, Gold = 100 };
+        var challenges = DailyChallenges.GetTodaysChallenges(1);
+        var challenge = challenges[0];
+
+        // Set up progress to complete
+        SetupChallengeProgress(state, challenge);
+
+        int goldBefore = state.Gold;
+        var result = DailyChallenges.CompleteChallenge(state, challenge.Id);
+        Assert.True(result["ok"] is true);
+        Assert.True(state.Gold > goldBefore, "Gold should increase after challenge completion");
+        Assert.Contains(challenge.Id, state.CompletedDailyChallenges);
+    }
+
+    [Fact]
+    public void CompleteChallenge_AlreadyCompleted_ReturnsFalse()
+    {
+        var state = new GameState { Day = 1 };
+        var challenges = DailyChallenges.GetTodaysChallenges(1);
+        var challenge = challenges[0];
+        state.CompletedDailyChallenges.Add(challenge.Id);
+
+        var result = DailyChallenges.CompleteChallenge(state, challenge.Id);
+        Assert.True(result["ok"] is false);
+    }
+
+    [Fact]
+    public void CheckProgress_AlreadyCompleted_NotReturnedAgain()
+    {
+        var state = new GameState { Day = 1, EnemiesDefeated = 999, MaxComboEver = 999 };
+        state.TypingMetrics["battle_words_typed"] = 999;
+        state.PerfectNightsToday = 99;
+        state.NoDamageNightsToday = 99;
+        state.FastestNightSeconds = 10;
+
+        var challenges = DailyChallenges.GetTodaysChallenges(1);
+
+        // Complete all first
+        foreach (var c in challenges)
+            state.CompletedDailyChallenges.Add(c.Id);
+
+        var completed = DailyChallenges.CheckProgress(state);
+        Assert.Empty(completed);
+    }
+
+    [Fact]
+    public void GetProgress_ComboStreak_ReturnsMaxCombo()
+    {
+        var state = new GameState { MaxComboEver = 12 };
+        var challenges = DailyChallenges.GetTodaysChallenges(1);
+        var comboChallenge = challenges.Find(c => c.Type == ChallengeType.ComboStreak);
+        if (comboChallenge == null) return;
+
+        var (current, target) = DailyChallenges.GetProgress(state, comboChallenge);
+        Assert.Equal(Math.Min(12, target), current);
+    }
+
+    [Fact]
+    public void GetProgress_SurviveDays_ReturnsDayCount()
+    {
+        var state = new GameState { Day = 7 };
+        var challenges = DailyChallenges.GetTodaysChallenges(1);
+        var surviveChallenge = challenges.Find(c => c.Type == ChallengeType.SurviveDays);
+        if (surviveChallenge == null) return;
+
+        var (current, target) = DailyChallenges.GetProgress(state, surviveChallenge);
+        Assert.Equal(Math.Min(7, target), current);
+    }
+
+    [Fact]
+    public void GetTodaysChallenges_Returns3Challenges()
+    {
+        var challenges = DailyChallenges.GetTodaysChallenges(1);
+        Assert.Equal(3, challenges.Count);
+    }
+
+    [Fact]
+    public void GetTodaysChallenges_DeterministicForSameDay()
+    {
+        var a = DailyChallenges.GetTodaysChallenges(1);
+        var b = DailyChallenges.GetTodaysChallenges(1);
+        Assert.Equal(a[0].Id, b[0].Id);
+        Assert.Equal(a[1].Id, b[1].Id);
+        Assert.Equal(a[2].Id, b[2].Id);
+    }
+
+    [Fact]
+    public void GetTodaysChallenges_ScalesRewardsWithTier()
+    {
+        var earlyGame = DailyChallenges.GetChallengesForDate(DateTime.UtcNow, 1);
+        var lateGame = DailyChallenges.GetChallengesForDate(DateTime.UtcNow, 20);
+
+        // Late-game rewards should be at least as high (tier multiplier)
+        int earlyTotal = earlyGame[0].Reward + earlyGame[1].Reward + earlyGame[2].Reward;
+        int lateTotal = lateGame[0].Reward + lateGame[1].Reward + lateGame[2].Reward;
+        Assert.True(lateTotal >= earlyTotal, "Late-game rewards should scale with tier");
+    }
+
+    [Fact]
+    public void TimeUntilRefresh_ReturnsPositiveTimeSpan()
+    {
+        var remaining = DailyChallenges.TimeUntilRefresh();
+        Assert.True(remaining.TotalSeconds > 0, "Time until refresh should be positive");
+        Assert.True(remaining.TotalHours <= 24, "Time until refresh should be <= 24 hours");
+    }
+
+    private static void SetupChallengeProgress(GameState state, ChallengeDef challenge)
+    {
+        switch (challenge.Type)
+        {
+            case ChallengeType.DefeatEnemies:
+                state.EnemiesDefeated = challenge.Target;
+                break;
+            case ChallengeType.TypeWords:
+                state.TypingMetrics["battle_words_typed"] = challenge.Target;
+                break;
+            case ChallengeType.PerfectAccuracy:
+                state.PerfectNightsToday = challenge.Target;
+                break;
+            case ChallengeType.ComboStreak:
+                state.MaxComboEver = challenge.Target;
+                break;
+            case ChallengeType.SurviveDays:
+                state.Day = challenge.Target;
+                break;
+            case ChallengeType.SpeedRun:
+                state.FastestNightSeconds = challenge.Target - 1; // Under target = complete
+                break;
+            case ChallengeType.NoDamage:
+                state.NoDamageNightsToday = challenge.Target;
+                break;
+        }
+    }
+
     private static Dictionary<string, object> CreateEnemy(
         int id,
         string kind = "scout",
