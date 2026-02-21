@@ -36,26 +36,43 @@ public class PlayerRenderer
         int inset = CellSize / 6;
         var inner = new Rectangle(rect.X + inset, rect.Y + inset, rect.Width - inset * 2, rect.Height - inset * 2);
 
-        // Try animated sprite via SpriteAnimator
-        string spriteId = "player_avatar";
-        var sheet = AssetLoader.Instance.Animator.GetSheet(spriteId);
-        if (sheet?.Texture != null)
+        // Try directional character sprite first
+        string direction = facing switch
         {
-            if (_animState == null)
-            {
-                _animState = SpriteAnimator.CreateState();
-                _animState.EnableBob(speed: 2.5f, amplitude: 1.5f, phase: 0f);
-                var idle = sheet.GetClip("idle");
-                if (idle != null) _animState.Play(idle);
-            }
-            AssetLoader.Instance.Animator.Draw(spriteBatch, spriteId, _animState, inner, Color.White);
+            "up" => "north",
+            "down" => "south",
+            "left" => "west",
+            "right" => "east",
+            _ => "south",
+        };
+        var dirTexture = AssetLoader.Instance.GetPlayerTexture(direction);
+        if (dirTexture != null)
+        {
+            spriteBatch.Draw(dirTexture, inner, Color.White);
         }
         else
         {
-            // Fallback: colored rectangle with facing indicator
-            spriteBatch.Draw(_pixel, inner, PlayerColor);
-            DrawOutline(spriteBatch, inner, PlayerOutline, 2);
-            DrawFacingIndicator(spriteBatch, inner, facing);
+            // Try animated sprite via SpriteAnimator
+            string spriteId = "player_avatar";
+            var sheet = AssetLoader.Instance.Animator.GetSheet(spriteId);
+            if (sheet?.Texture != null)
+            {
+                if (_animState == null)
+                {
+                    _animState = SpriteAnimator.CreateState();
+                    _animState.EnableBob(speed: 2.5f, amplitude: 1.5f, phase: 0f);
+                    var idle = sheet.GetClip("idle");
+                    if (idle != null) _animState.Play(idle);
+                }
+                AssetLoader.Instance.Animator.Draw(spriteBatch, spriteId, _animState, inner, Color.White);
+            }
+            else
+            {
+                // Fallback: colored rectangle with facing indicator
+                spriteBatch.Draw(_pixel, inner, PlayerColor);
+                DrawOutline(spriteBatch, inner, PlayerOutline, 2);
+                DrawFacingIndicator(spriteBatch, inner, facing);
+            }
         }
     }
 

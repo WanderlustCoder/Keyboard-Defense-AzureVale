@@ -34,6 +34,8 @@ public class GridRenderer
     private static readonly Color ForestColor = new(45, 90, 40);
     private static readonly Color MountainColor = new(130, 110, 90);
     private static readonly Color WaterColor = new(50, 90, 150);
+    private static readonly Color DesertColor = new(190, 170, 110);
+    private static readonly Color SnowColor = new(200, 210, 230);
     private static readonly Color FogColor = new(20, 20, 30);
 
     // Entity colors
@@ -145,6 +147,8 @@ public class GridRenderer
             SimMap.TerrainForest => ForestColor,
             SimMap.TerrainMountain => MountainColor,
             SimMap.TerrainWater => WaterColor,
+            SimMap.TerrainDesert => DesertColor,
+            SimMap.TerrainSnow => SnowColor,
             _ => PlainColor,
         };
 
@@ -162,6 +166,8 @@ public class GridRenderer
                 SimMap.TerrainForest => "forest",
                 SimMap.TerrainMountain => "mountain",
                 SimMap.TerrainWater => "water",
+                SimMap.TerrainDesert => "desert",
+                SimMap.TerrainSnow => "snow",
                 _ => "plain",
             };
             var texture = AssetLoader.Instance.GetTileTexture(tileId);
@@ -212,6 +218,10 @@ public class GridRenderer
             textureName = "reeds";
         else if (terrain == SimMap.TerrainMountain && chance < 15)
             textureName = "rock";
+        else if (terrain == SimMap.TerrainDesert && chance < 12)
+            textureName = "rock"; // Scattered boulders in desert
+        else if (terrain == SimMap.TerrainSnow && chance < 10)
+            textureName = (hash / 100 % 2 == 0) ? "rock" : "pine";
 
         if (textureName == null) return;
 
@@ -239,6 +249,8 @@ public class GridRenderer
             SimMap.TerrainForest => ForestColor,
             SimMap.TerrainMountain => MountainColor,
             SimMap.TerrainWater => WaterColor,
+            SimMap.TerrainDesert => DesertColor,
+            SimMap.TerrainSnow => SnowColor,
             _ => PlainColor,
         };
         return neighborColor * 0.35f;
@@ -421,6 +433,25 @@ public class GridRenderer
         ["herb_patch"] = "reeds2",
         ["iron_deposit"] = "mine",
         ["pine_forest"] = "pine",
+        ["gold_vein"] = "mine",
+        ["crystal_cave"] = "rock",
+    };
+
+    // Map object texture names by POI type
+    private static readonly Dictionary<string, string> PoiTextures = new()
+    {
+        ["watchtower"] = "watchtower",
+        ["shrine"] = "shrine",
+        ["mine"] = "mine",
+        ["campfire"] = "campfire",
+        ["campsite"] = "campsite",
+        ["well"] = "well",
+        ["market"] = "market_stall",
+        ["signpost"] = "signpost",
+        ["bridge"] = "bridge",
+        ["training_dummy"] = "training_dummy",
+        ["arena"] = "training_dummy",
+        ["forge"] = "mine",
     };
 
     private static readonly Color ResourceNodeColor = new(120, 180, 80);
@@ -475,6 +506,9 @@ public class GridRenderer
 
         // Try POI-specific texture (watchtower, shrine, campfire, etc.)
         string textureKey = poiId.Contains("_") ? poiId.Split('_')[0] : poiId;
+        // Check POI texture map first, then raw key
+        if (PoiTextures.TryGetValue(textureKey, out string? mappedTex))
+            textureKey = mappedTex;
         var texture = AssetLoader.Instance.GetTexture(textureKey);
         if (texture != null)
         {
@@ -512,16 +546,28 @@ public class GridRenderer
         int inset = CellSize / 5;
         var inner = new Rectangle(rect.X + inset, rect.Y + inset, rect.Width - inset * 2, rect.Height - inset * 2);
 
-        // Colored rectangle with role-based tint
         string role = npc.GetValueOrDefault("type")?.ToString() ?? npc.GetValueOrDefault("role")?.ToString() ?? "";
-        Color color = role switch
+
+        // Try character sprite texture (direction based on facing)
+        string direction = npc.GetValueOrDefault("facing")?.ToString() ?? "south";
+        var texture = AssetLoader.Instance.GetNpcTexture(role, direction);
+
+        if (texture != null)
         {
-            "trainer" => new Color(80, 200, 120),
-            "merchant" => new Color(220, 180, 60),
-            "quest_giver" => new Color(160, 100, 220),
-            _ => NpcColor,
-        };
-        spriteBatch.Draw(_pixel!, inner, color);
+            spriteBatch.Draw(texture, inner, Color.White);
+        }
+        else
+        {
+            // Fallback: colored rectangle with role-based tint
+            Color color = role switch
+            {
+                "trainer" => new Color(80, 200, 120),
+                "merchant" => new Color(220, 180, 60),
+                "quest_giver" => new Color(160, 100, 220),
+                _ => NpcColor,
+            };
+            spriteBatch.Draw(_pixel!, inner, color);
+        }
 
         // NPC name label
         if (_font != null)
@@ -531,8 +577,17 @@ public class GridRenderer
             {
                 var size = _font.MeasureString(name);
                 float scale = Math.Min(0.6f, (float)(CellSize + 8) / size.X);
+
+                // Dark background pill for readability
+                int pillWidth = (int)(size.X * scale) + 6;
+                int pillHeight = (int)(size.Y * scale) + 2;
+                int pillX = rect.X + (rect.Width - pillWidth) / 2;
+                int pillY = (int)(rect.Y - size.Y * scale - 4);
+                spriteBatch.Draw(_pixel!, new Rectangle(pillX, pillY, pillWidth, pillHeight),
+                    Color.Black * 0.6f);
+
                 spriteBatch.DrawString(_font, name,
-                    new Vector2(rect.X + (rect.Width - size.X * scale) * 0.5f, rect.Y - size.Y * scale - 2),
+                    new Vector2(pillX + 3, pillY + 1),
                     Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
             }
         }

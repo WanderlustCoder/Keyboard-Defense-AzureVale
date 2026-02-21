@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using KeyboardDefense.Core.State;
 using KeyboardDefense.Core.World;
 
@@ -95,10 +98,12 @@ public class WorldEntityTests
     }
 
     [Fact]
-    public void PopulateWorld_NpcsAreInSafeZone()
+    public void PopulateWorld_HasCoreAndOutpostNpcs()
     {
         var state = CreateWorldState();
-        foreach (var npc in state.Npcs)
+        // Core NPCs (no "zone" key) should be in Safe Zone
+        var coreNpcs = state.Npcs.Where(n => !n.ContainsKey("zone")).ToList();
+        foreach (var npc in coreNpcs)
         {
             if (npc.GetValueOrDefault("pos") is GridPoint pos)
             {
@@ -106,6 +111,11 @@ public class WorldEntityTests
                 Assert.Equal(SimMap.ZoneSafe, zone);
             }
         }
+        // Outpost NPCs (with "zone" key) exist in outer zones
+        var outpostNpcs = state.Npcs.Where(n => n.ContainsKey("zone")).ToList();
+        Assert.True(outpostNpcs.Count > 0, "Should have outpost NPCs in outer zones");
+        // Total NPC count is substantial
+        Assert.True(state.Npcs.Count >= 5, $"Expected >= 5 NPCs, got {state.Npcs.Count}");
     }
 
     [Fact]
@@ -339,5 +349,139 @@ public class WorldEntityTests
         Assert.Contains("enemy", types);
         Assert.Contains("npc", types);
         Assert.Contains("resource", types);
+    }
+
+    // --- Desert/Snow terrain biome tests ---
+
+    [Fact]
+    public void PopulateWorld_DesertTerrainGeneratedInSouthEast()
+    {
+        var state = CreateWorldState();
+        var bp = state.BasePos;
+
+        // Check tiles far south-east of the base (dist > 18, x > bp.X+4, y > bp.Y+4)
+        var desertTiles = new List<string>();
+        for (int y = bp.Y + 10; y < state.MapH; y++)
+        {
+            for (int x = bp.X + 10; x < state.MapW; x++)
+            {
+                double dist = Math.Sqrt(Math.Pow(x - bp.X, 2) + Math.Pow(y - bp.Y, 2));
+                if (dist > 18)
+                {
+                    string terrain = SimMap.GetTerrain(state, new GridPoint(x, y));
+                    desertTiles.Add(terrain);
+                }
+            }
+        }
+
+        Assert.True(desertTiles.Count > 0, "Should have tiles in the far south-east region");
+        Assert.Contains(SimMap.Desert, desertTiles);
+    }
+
+    [Fact]
+    public void PopulateWorld_SnowTerrainGeneratedInNorthWest()
+    {
+        var state = CreateWorldState();
+        var bp = state.BasePos;
+
+        // Check tiles far north-west of the base (dist > 18, x < bp.X-4, y < bp.Y-4)
+        var snowTiles = new List<string>();
+        for (int y = 0; y < bp.Y - 4; y++)
+        {
+            for (int x = 0; x < bp.X - 4; x++)
+            {
+                double dist = Math.Sqrt(Math.Pow(x - bp.X, 2) + Math.Pow(y - bp.Y, 2));
+                if (dist > 18)
+                {
+                    string terrain = SimMap.GetTerrain(state, new GridPoint(x, y));
+                    snowTiles.Add(terrain);
+                }
+            }
+        }
+
+        Assert.True(snowTiles.Count > 0, "Should have tiles in the far north-west region");
+        Assert.Contains(SimMap.Snow, snowTiles);
+    }
+
+    // --- Advanced resource node tests ---
+
+    [Fact]
+    public void PopulateWorld_ResourceNodesIncludeAdvancedTypes()
+    {
+        var state = CreateWorldState();
+        var advancedTypes = new HashSet<string> { "herb_patch", "iron_deposit", "pine_forest", "crystal_cave" };
+
+        var resourceTypes = state.ResourceNodes.Values
+            .Select(n => n.GetValueOrDefault("type")?.ToString() ?? "")
+            .ToList();
+
+        bool hasAdvanced = resourceTypes.Any(t => advancedTypes.Contains(t));
+        Assert.True(hasAdvanced,
+            $"Expected at least one advanced resource type among: {string.Join(", ", advancedTypes)}. " +
+            $"Got: {string.Join(", ", resourceTypes.Distinct())}");
+    }
+
+    [Fact]
+    public void PopulateWorld_DepthsZoneHasResourceNodes()
+    {
+        var state = CreateWorldState();
+
+        var depthsNodes = state.ResourceNodes.Values
+            .Where(n => n.GetValueOrDefault("zone")?.ToString() == SimMap.ZoneDepths)
+            .ToList();
+
+        Assert.True(depthsNodes.Count > 0,
+            "Depths zone should have resource nodes");
+    }
+
+    // --- Outpost NPC tests ---
+
+    [Fact]
+    public void PopulateWorld_OutpostNpcsHaveZoneKey()
+    {
+        var state = CreateWorldState();
+
+        var outpostNpcs = state.Npcs.Where(n => n.ContainsKey("zone")).ToList();
+        Assert.True(outpostNpcs.Count > 0, "Should have at least one outpost NPC");
+
+        foreach (var npc in outpostNpcs)
+        {
+            Assert.True(npc.ContainsKey("zone"),
+                $"Outpost NPC '{npc.GetValueOrDefault("name")}' must have 'zone' key");
+            Assert.True(npc.ContainsKey("facing"),
+                $"Outpost NPC '{npc.GetValueOrDefault("name")}' must have 'facing' key");
+
+            string zone = npc["zone"]?.ToString() ?? "";
+            Assert.True(zone == SimMap.ZoneFrontier || zone == SimMap.ZoneWilderness || zone == SimMap.ZoneDepths,
+                $"Outpost NPC zone '{zone}' must be frontier, wilderness, or depths");
+        }
+    }
+
+    // --- POI tests ---
+
+    [Fact]
+    public void PopulateWorld_PoisSpreadAcrossAllZones()
+    {
+        var state = CreateWorldState();
+
+        var poiZones = state.ActivePois.Values
+            .Where(p => p.ContainsKey("zone"))
+            .Select(p => p["zone"]?.ToString() ?? "")
+            .Distinct()
+            .ToList();
+
+        Assert.Contains(SimMap.ZoneSafe, poiZones);
+        Assert.Contains(SimMap.ZoneFrontier, poiZones);
+        Assert.Contains(SimMap.ZoneWilderness, poiZones);
+        Assert.Contains(SimMap.ZoneDepths, poiZones);
+    }
+
+    [Fact]
+    public void PopulateWorld_MorePoisThanBefore()
+    {
+        var state = CreateWorldState();
+
+        Assert.True(state.ActivePois.Count >= 12,
+            $"Expected at least 12 POIs (12 guaranteed + random bonus), got {state.ActivePois.Count}");
     }
 }

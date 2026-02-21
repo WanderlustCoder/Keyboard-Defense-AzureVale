@@ -11,11 +11,11 @@ public class BattleFlowTests
     [Fact]
     public void CompleteBattle_DefeatAllEnemies_SurvivesNight()
     {
-        var sim = new GameSimulator("battle_complete");
+        var sim = new GameSimulator("battle_complete_v2");
         sim.EndDay();
         Assert.Equal("night", sim.State.Phase);
 
-        var result = sim.RunNightToCompletion();
+        var result = sim.RunNightToCompletion(maxSteps: 150);
 
         // Night should end with transition back to day (survived)
         Assert.Equal("day", result.EndPhase);

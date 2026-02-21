@@ -14,6 +14,8 @@ public static class SimMap
     public const string Forest = "forest";
     public const string Mountain = "mountain";
     public const string Water = "water";
+    public const string Desert = "desert";
+    public const string Snow = "snow";
 
     public const string ZoneSafe = "safe";
     public const string ZoneFrontier = "frontier";
@@ -112,6 +114,8 @@ public static class SimMap
     public const string TerrainForest = Forest;
     public const string TerrainMountain = Mountain;
     public const string TerrainWater = Water;
+    public const string TerrainDesert = Desert;
+    public const string TerrainSnow = Snow;
 
     public static string[] GetAllZones() => new[] { ZoneSafe, ZoneFrontier, ZoneWilderness, ZoneDepths };
 
@@ -225,6 +229,30 @@ public static class SimMap
         var bp = state.BasePos;
         double dist = Math.Sqrt(Math.Pow(x - bp.X, 2) + Math.Pow(y - bp.Y, 2));
         if (dist <= 6) return roll <= 30 ? Forest : Plains;
+
+        // Desert appears in hot quadrants (south-east), snow in cold quadrants (north-west)
+        bool southEast = x > bp.X + 4 && y > bp.Y + 4;
+        bool northWest = x < bp.X - 4 && y < bp.Y - 4;
+
+        if (dist > 18 && southEast)
+        {
+            // Desert zone: far south-east
+            if (roll <= 40) return Desert;
+            if (roll <= 55) return Plains;
+            if (roll <= 75) return Mountain;
+            if (roll <= 90) return Forest;
+            return Water;
+        }
+
+        if (dist > 18 && northWest)
+        {
+            // Snow zone: far north-west
+            if (roll <= 40) return Snow;
+            if (roll <= 55) return Mountain;
+            if (roll <= 75) return Forest;
+            if (roll <= 90) return Plains;
+            return Water;
+        }
 
         if (roll <= 45) return Plains;
         if (roll <= 75) return Forest;

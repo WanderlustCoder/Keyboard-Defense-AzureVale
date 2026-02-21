@@ -12,6 +12,7 @@ namespace KeyboardDefense.Core.World;
 public static class WorldEntities
 {
     private static readonly string[] ResourceNodeTypes = { "wood_grove", "stone_quarry", "food_garden", "gold_vein" };
+    private static readonly string[] AdvancedResourceTypes = { "herb_patch", "iron_deposit", "pine_forest", "crystal_cave" };
     private static readonly string[] EnemyKindsByTier = { "scout", "raider", "armored", "berserker", "elite" };
     private static readonly string[] NpcTypes = { "trainer", "merchant", "quest_giver" };
 
@@ -26,25 +27,38 @@ public static class WorldEntities
 
     private static void PopulateResourceNodes(GameState state)
     {
-        // Place 4-8 resource nodes per zone in discovered-accessible areas
-        string[] zones = { SimMap.ZoneSafe, SimMap.ZoneFrontier, SimMap.ZoneWilderness };
-        foreach (string zone in zones)
+        // Place resource nodes per zone — more nodes and variety in outer zones
+        var zoneConfigs = new[]
         {
-            int count = SimRng.RollRange(state, 4, 8);
+            (Zone: SimMap.ZoneSafe, Min: 5, Max: 8, UseAdvanced: false),
+            (Zone: SimMap.ZoneFrontier, Min: 6, Max: 10, UseAdvanced: true),
+            (Zone: SimMap.ZoneWilderness, Min: 6, Max: 10, UseAdvanced: true),
+            (Zone: SimMap.ZoneDepths, Min: 3, Max: 5, UseAdvanced: true),
+        };
+
+        foreach (var config in zoneConfigs)
+        {
+            int count = SimRng.RollRange(state, config.Min, config.Max);
             for (int i = 0; i < count; i++)
             {
-                var pos = FindValidPositionInZone(state, zone, 50);
+                var pos = FindValidPositionInZone(state, config.Zone, 50);
                 if (pos == null) continue;
 
                 int idx = SimMap.Idx(pos.Value.X, pos.Value.Y, state.MapW);
                 if (state.ResourceNodes.ContainsKey(idx)) continue;
 
-                string nodeType = ResourceNodeTypes[SimRng.RollRange(state, 0, ResourceNodeTypes.Length - 1)];
+                // Mix in advanced resource types for outer zones
+                string nodeType;
+                if (config.UseAdvanced && SimRng.RollRange(state, 1, 100) <= 35)
+                    nodeType = AdvancedResourceTypes[SimRng.RollRange(state, 0, AdvancedResourceTypes.Length - 1)];
+                else
+                    nodeType = ResourceNodeTypes[SimRng.RollRange(state, 0, ResourceNodeTypes.Length - 1)];
+
                 state.ResourceNodes[idx] = new Dictionary<string, object>
                 {
                     ["type"] = nodeType,
                     ["pos"] = pos.Value,
-                    ["zone"] = zone,
+                    ["zone"] = config.Zone,
                     ["cooldown"] = 0,
                 };
             }
@@ -90,7 +104,7 @@ public static class WorldEntities
 
     private static void PopulateNpcs(GameState state)
     {
-        // Place NPCs near the safe zone (close to castle)
+        // Core NPCs near the castle (Safe Zone)
         foreach (string npcType in NpcTypes)
         {
             var pos = FindValidPositionInZone(state, SimMap.ZoneSafe, 30);
@@ -102,23 +116,65 @@ public static class WorldEntities
                 ["pos"] = pos.Value,
                 ["name"] = GetNpcName(npcType),
                 ["quest_available"] = true,
+                ["facing"] = "south",
+            });
+        }
+
+        // Outpost NPCs in outer zones for exploration reward
+        var outpostNpcs = new[]
+        {
+            (Type: "merchant", Zone: SimMap.ZoneFrontier, Name: "Wandering Eli"),
+            (Type: "trainer", Zone: SimMap.ZoneFrontier, Name: "Battlemaster Kira"),
+            (Type: "quest_giver", Zone: SimMap.ZoneWilderness, Name: "Ranger Selene"),
+            (Type: "merchant", Zone: SimMap.ZoneWilderness, Name: "Relic Dealer Voss"),
+            (Type: "trainer", Zone: SimMap.ZoneDepths, Name: "Sage Ophira"),
+            (Type: "quest_giver", Zone: SimMap.ZoneDepths, Name: "The Cartographer"),
+        };
+
+        foreach (var npcDef in outpostNpcs)
+        {
+            var pos = FindValidPositionInZone(state, npcDef.Zone, 40);
+            if (pos == null) continue;
+
+            state.Npcs.Add(new Dictionary<string, object>
+            {
+                ["type"] = npcDef.Type,
+                ["pos"] = pos.Value,
+                ["name"] = npcDef.Name,
+                ["quest_available"] = true,
+                ["facing"] = "south",
+                ["zone"] = npcDef.Zone,
             });
         }
     }
 
     private static void PopulatePois(GameState state)
     {
-        // Place key POI landmarks in specific zones
-        var poiPlacements = new[]
+        // Guaranteed POI landmarks per zone
+        var guaranteedPois = new[]
         {
-            (Id: "watchtower", Zone: SimMap.ZoneFrontier),
+            // Safe Zone — peaceful landmarks
             (Id: "shrine", Zone: SimMap.ZoneSafe),
-            (Id: "mine", Zone: SimMap.ZoneWilderness),
+            (Id: "well", Zone: SimMap.ZoneSafe),
+            (Id: "signpost", Zone: SimMap.ZoneSafe),
+
+            // Frontier — outpost landmarks
+            (Id: "watchtower", Zone: SimMap.ZoneFrontier),
             (Id: "campfire", Zone: SimMap.ZoneFrontier),
+            (Id: "bridge", Zone: SimMap.ZoneFrontier),
+            (Id: "training_dummy", Zone: SimMap.ZoneFrontier),
+
+            // Wilderness — exploration landmarks
             (Id: "campsite", Zone: SimMap.ZoneWilderness),
+            (Id: "mine", Zone: SimMap.ZoneWilderness),
+            (Id: "market", Zone: SimMap.ZoneWilderness),
+
+            // Depths — dangerous landmarks
+            (Id: "forge", Zone: SimMap.ZoneDepths),
+            (Id: "arena", Zone: SimMap.ZoneDepths),
         };
 
-        foreach (var placement in poiPlacements)
+        foreach (var placement in guaranteedPois)
         {
             var pos = FindValidPositionInZone(state, placement.Zone, 40);
             if (pos == null) continue;
@@ -128,6 +184,36 @@ public static class WorldEntities
                 ["zone"] = placement.Zone,
                 ["event_id"] = $"poi_{placement.Id}",
             });
+        }
+
+        // Random bonus POIs per zone (2-3 extra per zone for variety)
+        string[][] zoneBonusPois =
+        {
+            new[] { "well", "signpost" },                           // Safe
+            new[] { "campfire", "signpost", "bridge" },             // Frontier
+            new[] { "campsite", "campfire", "mine", "market" },     // Wilderness
+            new[] { "campfire", "mine", "forge" },                  // Depths
+        };
+        string[] zones = { SimMap.ZoneSafe, SimMap.ZoneFrontier, SimMap.ZoneWilderness, SimMap.ZoneDepths };
+
+        for (int z = 0; z < zones.Length; z++)
+        {
+            int bonusCount = SimRng.RollRange(state, 2, 3);
+            for (int i = 0; i < bonusCount; i++)
+            {
+                var pos = FindValidPositionInZone(state, zones[z], 40);
+                if (pos == null) continue;
+
+                string poiId = zoneBonusPois[z][SimRng.RollRange(state, 0, zoneBonusPois[z].Length - 1)];
+                string uniqueId = $"{poiId}_{z}_{i}";
+
+                Poi.SpawnPoi(state, uniqueId, pos.Value, new Dictionary<string, object>
+                {
+                    ["zone"] = zones[z],
+                    ["event_id"] = $"poi_{poiId}",
+                    ["display_name"] = poiId.Replace('_', ' '),
+                });
+            }
         }
     }
 

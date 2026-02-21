@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using KeyboardDefense.Core.Data;
+using KeyboardDefense.Game.Services;
 using Myra.Graphics2D.UI;
 
 namespace KeyboardDefense.Game.UI.Components;
@@ -13,6 +14,7 @@ namespace KeyboardDefense.Game.UI.Components;
 public class DialogueBox : BasePanel
 {
     private readonly Panel _portraitPanel;
+    private Image? _portraitImage;
     private readonly Label _speakerLabel;
     private readonly Label _messageLabel;
     private readonly Label _counterLabel;
@@ -79,9 +81,34 @@ public class DialogueBox : BasePanel
         AddWidget(bottomRow);
     }
 
-    /// <summary>Set portrait color based on NPC type.</summary>
+    /// <summary>Set portrait from NPC character sprite, with color fallback.</summary>
     public void SetSpeakerPortrait(string npcType)
     {
+        // Try loading the NPC's south-facing character sprite as portrait
+        var texture = AssetLoader.Instance.GetNpcTexture(npcType, "south");
+        if (texture != null)
+        {
+            // Use Myra Image widget inside portrait panel
+            if (_portraitImage == null)
+            {
+                _portraitImage = new Image
+                {
+                    Width = 64,
+                    Height = 64,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center,
+                };
+                _portraitPanel.Widgets.Add(_portraitImage);
+            }
+            _portraitImage.Renderable = new Myra.Graphics2D.TextureAtlases.TextureRegion(texture);
+            _portraitPanel.Background = new Myra.Graphics2D.Brushes.SolidBrush(ThemeColors.BgCard);
+            return;
+        }
+
+        // Fallback: colored rectangle based on NPC type (hide image if it exists)
+        if (_portraitImage != null)
+            _portraitImage.Renderable = null;
+
         var color = npcType switch
         {
             "trainer" => ThemeColors.Success,           // green

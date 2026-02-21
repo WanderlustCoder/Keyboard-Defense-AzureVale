@@ -33,6 +33,8 @@ public class TilesetManager
         ["forest"] = "sd",
         ["mountain"] = "mc",
         ["water"] = "wb",
+        ["desert"] = "dg",
+        ["snow"] = "sr",
     };
 
     /// <summary>

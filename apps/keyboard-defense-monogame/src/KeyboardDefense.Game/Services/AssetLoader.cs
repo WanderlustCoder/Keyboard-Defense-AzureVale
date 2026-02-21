@@ -132,6 +132,20 @@ public class AssetLoader
     public Texture2D? GetPortrait(string name)
         => GetTexture(name);
 
+    /// <summary>
+    /// Get NPC character texture by type and direction (south/east/north/west).
+    /// Files stored as characters/npc_{type}_{direction}.png.
+    /// </summary>
+    public Texture2D? GetNpcTexture(string npcType, string direction = "south")
+        => GetTexture($"npc_{npcType}_{direction}");
+
+    /// <summary>
+    /// Get player character texture by direction.
+    /// Files stored as characters/player_hero_{direction}.png.
+    /// </summary>
+    public Texture2D? GetPlayerTexture(string direction = "south")
+        => GetTexture($"player_hero_{direction}");
+
     private Texture2D? TryLoadTexture(string id)
     {
         // Try manifest path first
@@ -149,6 +163,7 @@ public class AssetLoader
             Path.Combine(_textureRoot, "tiles", $"{id}.png"),
             Path.Combine(_textureRoot, "icons", $"{id}.png"),
             Path.Combine(_textureRoot, "portraits", $"{id}.png"),
+            Path.Combine(_textureRoot, "characters", $"{id}.png"),
             Path.Combine(_textureRoot, "ui", $"{id}.png"),
             Path.Combine(_textureRoot, "effects", $"{id}.png"),
             Path.Combine(_textureRoot, "tilesets", $"{id}.png"),
