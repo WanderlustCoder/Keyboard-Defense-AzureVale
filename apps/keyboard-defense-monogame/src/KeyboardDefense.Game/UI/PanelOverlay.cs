@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Myra.Graphics2D.UI;
@@ -19,6 +20,7 @@ public class PanelOverlay
     private readonly List<PanelBinding> _bindings = new();
     private BasePanel? _activePanel;
     private KeyboardState _prevKeyboard;
+    private float _dimAlpha;
 
     private record PanelBinding(string? Action, Keys? FallbackKey, BasePanel Panel);
 
@@ -112,6 +114,27 @@ public class PanelOverlay
         RefreshPanel(panel);
         panel.Open();
         _activePanel = panel;
+    }
+
+    /// <summary>Update panel animations and background dim.</summary>
+    public void UpdateAnimations(float deltaTime)
+    {
+        float dimTarget = _activePanel != null ? 0.4f : 0f;
+        _dimAlpha = MathHelper.Lerp(_dimAlpha, dimTarget, Math.Min(1f, deltaTime * 8f));
+
+        foreach (var binding in _bindings)
+            binding.Panel.UpdateAnimation(deltaTime);
+    }
+
+    /// <summary>
+    /// Draw background dim when a panel is open.
+    /// Call between grid rendering and Myra desktop with its own SpriteBatch block.
+    /// </summary>
+    public void DrawBackgroundDim(SpriteBatch spriteBatch, Texture2D pixel, int screenWidth, int screenHeight)
+    {
+        if (_dimAlpha < 0.01f) return;
+        spriteBatch.Draw(pixel, new Rectangle(0, 0, screenWidth, screenHeight),
+            Color.Black * _dimAlpha);
     }
 
     /// <summary>

@@ -171,6 +171,33 @@ public static class InlineCombat
         TypingMetrics.ResetCombo(state);
     }
 
+    /// <summary>
+    /// Update partial typing progress on encounter enemies.
+    /// Sets typed_chars and is_target flags for visual feedback.
+    /// </summary>
+    public static void UpdatePartialProgress(GameState state, string currentInput)
+    {
+        if (state.ActivityMode != "encounter") return;
+
+        string typed = (currentInput ?? "").Trim().ToLowerInvariant();
+
+        foreach (var enemy in state.EncounterEnemies)
+        {
+            string word = (enemy.GetValueOrDefault("word")?.ToString() ?? "").ToLowerInvariant();
+
+            if (!string.IsNullOrEmpty(typed) && word.StartsWith(typed))
+            {
+                enemy["typed_chars"] = typed.Length;
+                enemy["is_target"] = true;
+            }
+            else
+            {
+                enemy["typed_chars"] = 0;
+                enemy["is_target"] = false;
+            }
+        }
+    }
+
     private static void IncrementTypingMetric(GameState state, string key)
     {
         if (state.TypingMetrics.TryGetValue(key, out var val))

@@ -7,11 +7,12 @@ namespace KeyboardDefense.Game.UI.Components;
 
 /// <summary>
 /// Dialogue box for NPC conversations and tutorial messages.
-/// Supports sequential lines, speaker labels, and StoryManager integration.
+/// Supports sequential lines, speaker labels, portraits, and StoryManager integration.
 /// Ported from game/dialogue_box.gd.
 /// </summary>
 public class DialogueBox : BasePanel
 {
+    private readonly Panel _portraitPanel;
     private readonly Label _speakerLabel;
     private readonly Label _messageLabel;
     private readonly Label _counterLabel;
@@ -30,12 +31,27 @@ public class DialogueBox : BasePanel
         RootWidget.Height = 200;
         RootWidget.VerticalAlignment = VerticalAlignment.Bottom;
 
+        // Main horizontal layout: [portrait | text column]
+        var mainRow = new HorizontalStackPanel { Spacing = DesignSystem.SpaceMd };
+
+        // Portrait area (64x64 colored rect, later swappable for real portraits)
+        _portraitPanel = new Panel
+        {
+            Width = 64,
+            Height = 64,
+            Background = new Myra.Graphics2D.Brushes.SolidBrush(ThemeColors.BgCard),
+        };
+        mainRow.Widgets.Add(_portraitPanel);
+
+        // Text column
+        var textColumn = new VerticalStackPanel { Spacing = DesignSystem.SpaceXs };
+
         _speakerLabel = new Label
         {
             Text = "",
             TextColor = ThemeColors.AccentCyan,
         };
-        AddWidget(_speakerLabel);
+        textColumn.Widgets.Add(_speakerLabel);
 
         _messageLabel = new Label
         {
@@ -44,7 +60,10 @@ public class DialogueBox : BasePanel
             Wrap = true,
             HorizontalAlignment = HorizontalAlignment.Stretch,
         };
-        AddWidget(_messageLabel);
+        textColumn.Widgets.Add(_messageLabel);
+
+        mainRow.Widgets.Add(textColumn);
+        AddWidget(mainRow);
 
         AddWidget(new Panel { Height = DesignSystem.SpaceSm });
 
@@ -58,6 +77,19 @@ public class DialogueBox : BasePanel
         _nextButton.Width = 120;
         bottomRow.Widgets.Add(_nextButton);
         AddWidget(bottomRow);
+    }
+
+    /// <summary>Set portrait color based on NPC type.</summary>
+    public void SetSpeakerPortrait(string npcType)
+    {
+        var color = npcType switch
+        {
+            "trainer" => ThemeColors.Success,           // green
+            "merchant" => ThemeColors.GoldAccent,       // gold
+            "quest_giver" => ThemeColors.RarityEpic,    // purple
+            _ => ThemeColors.AccentBlue,
+        };
+        _portraitPanel.Background = new Myra.Graphics2D.Brushes.SolidBrush(color);
     }
 
     public void StartDialogue(List<DialogueLine> lines)

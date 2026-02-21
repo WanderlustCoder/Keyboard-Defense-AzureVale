@@ -41,6 +41,7 @@ public class WorldScreen : GameScreen
     private Label? _zoneLabel;
     private Label? _timeLabel;
     private Label? _modeLabel;
+    private Panel? _hudBgPanel;
 
     // Renderers
     private readonly WorldCamera _camera = new();
@@ -49,6 +50,13 @@ public class WorldScreen : GameScreen
     private readonly PlayerRenderer _playerRenderer = new();
     private readonly DayNightOverlay _dayNightOverlay = new();
     private readonly CombatVfx _combatVfx = new();
+    private readonly CombatTransition _combatTransition = new();
+    private readonly InlineCombatOverlay _inlineCombatOverlay = new();
+    private readonly HarvestChallengeOverlay _harvestChallengeOverlay = new();
+    private readonly QuestTrackerHud _questTrackerHud = new();
+
+    // Shared pixel texture for SpriteBatch overlays
+    private Texture2D? _pixel;
 
     // Panels
     private HelpPanel? _helpPanel;
@@ -58,6 +66,11 @@ public class WorldScreen : GameScreen
     private UpgradesPanel? _upgradesPanel;
     private InventoryPanel? _inventoryPanel;
     private SaveLoadPanel? _saveLoadPanel;
+    private DialogueBox? _dialogueBox;
+    private QuestsPanel? _questsPanel;
+
+    // Input row (for toggling visibility by mode)
+    private HorizontalStackPanel? _inputRow;
 
     // Movement
     private KeyboardState _prevKeyboard;
@@ -85,6 +98,10 @@ public class WorldScreen : GameScreen
         _typingHandler = new TypingInput();
         _typingHandler.Attach(Game.Window);
 
+        // Shared pixel texture
+        _pixel = new Texture2D(Game.GraphicsDevice, 1, 1);
+        _pixel.SetData(new[] { Color.White });
+
         // Initialize tilesets and renderers
         TilesetManager.Instance.Initialize(Game.GraphicsDevice, AssetLoader.Instance.TextureRoot);
         _gridRenderer.Initialize(Game.GraphicsDevice, Game.DefaultFont);
@@ -93,6 +110,10 @@ public class WorldScreen : GameScreen
         _playerRenderer.CellSize = _gridRenderer.CellSize;
         _dayNightOverlay.Initialize(Game.GraphicsDevice);
         _gridRenderer.Vfx = _combatVfx;
+        _combatTransition.Initialize(Game.GraphicsDevice);
+        _inlineCombatOverlay.Initialize(Game.GraphicsDevice, Game.DefaultFont);
+        _harvestChallengeOverlay.Initialize(Game.GraphicsDevice, Game.DefaultFont);
+        _questTrackerHud.Initialize(Game.GraphicsDevice, Game.DefaultFont);
 
         var state = GameController.Instance.State;
         var vp = Game.GraphicsDevice.Viewport;
@@ -133,6 +154,7 @@ public class WorldScreen : GameScreen
         var state = GameController.Instance.State;
 
         _panelOverlay?.Update();
+        _panelOverlay?.UpdateAnimations(dt);
 
         if (_panelOverlay == null || !_panelOverlay.HasActivePanel)
         {
@@ -158,6 +180,7 @@ public class WorldScreen : GameScreen
                 if (state.ActivityMode == "harvest_challenge" && IsKeyPressed(kb, Keys.Escape))
                 {
                     ResourceChallenge.CancelChallenge(state);
+                    _harvestChallengeOverlay.Hide();
                     AppendLog("Harvest cancelled.");
                     AudioManager.Instance.PlaySfx(AudioManager.Sfx.UiCancel);
                 }
@@ -183,6 +206,13 @@ public class WorldScreen : GameScreen
         // Switch music when activity mode changes
         UpdateMusicTrack(state);
 
+        // Update partial typing progress for inline combat word coloring
+        if (state.ActivityMode == "encounter")
+        {
+            string currentInput = _typingInput?.Text ?? "";
+            InlineCombat.UpdatePartialProgress(state, currentInput);
+        }
+
         // Update camera
         var vp = Game.GraphicsDevice.Viewport;
         _camera.SetViewport(vp.Width, vp.Height);
@@ -192,6 +222,12 @@ public class WorldScreen : GameScreen
         _gridRenderer.Update(dt);
         _playerRenderer.Update(dt);
         _combatVfx.Update(dt);
+        _combatTransition.Update(dt);
+        _inlineCombatOverlay.Update(dt, state);
+        _harvestChallengeOverlay.Update(dt);
+
+        // Update input row visibility based on activity mode
+        UpdateInputRowVisibility(state);
 
         // Update HUD
         OnStateChanged(state);
@@ -237,10 +273,42 @@ public class WorldScreen : GameScreen
         // Day/night overlay
         _dayNightOverlay.Draw(spriteBatch, state.TimeOfDay, vp.Width, vp.Height);
 
+        // Combat transition vignette
+        spriteBatch.Begin(blendState: BlendState.AlphaBlend);
+        _combatTransition.Draw(spriteBatch, vp.Width, vp.Height);
+        spriteBatch.End();
+
         // Draw minimap in top-right corner
         spriteBatch.Begin(blendState: BlendState.AlphaBlend, samplerState: SamplerState.PointClamp);
         _minimapRenderer.Draw(spriteBatch, state, new Vector2(vp.Width - 210, 10));
         spriteBatch.End();
+
+        // Inline combat overlay (combo, banner, timers)
+        spriteBatch.Begin(blendState: BlendState.AlphaBlend);
+        _inlineCombatOverlay.Draw(spriteBatch, state, vp.Width, vp.Height);
+        spriteBatch.End();
+
+        // Harvest challenge overlay
+        if (state.ActivityMode == "harvest_challenge")
+        {
+            string currentInput = _typingInput?.Text ?? "";
+            spriteBatch.Begin(blendState: BlendState.AlphaBlend);
+            _harvestChallengeOverlay.Draw(spriteBatch, currentInput, vp.Width, vp.Height);
+            spriteBatch.End();
+        }
+
+        // Quest tracker HUD
+        spriteBatch.Begin(blendState: BlendState.AlphaBlend);
+        _questTrackerHud.Draw(spriteBatch, state, vp.Width, vp.Height);
+        spriteBatch.End();
+
+        // Background dim when panel is open
+        if (_panelOverlay != null && _pixel != null)
+        {
+            spriteBatch.Begin(blendState: BlendState.AlphaBlend);
+            _panelOverlay.DrawBackgroundDim(spriteBatch, _pixel, vp.Width, vp.Height);
+            spriteBatch.End();
+        }
 
         // Draw Myra UI (HUD overlay)
         _desktop?.Render();
@@ -313,11 +381,39 @@ public class WorldScreen : GameScreen
             if (npcResult != null)
             {
                 AudioManager.Instance.PlayUiConfirm();
-                if (npcResult.GetValueOrDefault("lines") is List<string> lines)
+
+                // Build dialogue lines and show in DialogueBox
+                string speaker = npcResult.GetValueOrDefault("speaker")?.ToString() ?? "NPC";
+                string npcType = npcResult.GetValueOrDefault("npc_type")?.ToString() ?? "";
+
+                if (npcResult.GetValueOrDefault("lines") is List<string> lines && _dialogueBox != null)
                 {
+                    // Convert to DialogueLine records for the dialogue box
+                    var dialogueLines = new List<DialogueLine>();
+                    foreach (string line in lines)
+                    {
+                        // Lines often come as "Name: message" — parse speaker if present
+                        int colonIdx = line.IndexOf(':');
+                        if (colonIdx > 0 && colonIdx < 20)
+                        {
+                            dialogueLines.Add(new DialogueLine(
+                                line[..colonIdx].Trim(),
+                                line[(colonIdx + 1)..].Trim()));
+                        }
+                        else
+                        {
+                            dialogueLines.Add(new DialogueLine(speaker, line));
+                        }
+                    }
+
+                    _dialogueBox.SetSpeakerPortrait(npcType);
+                    _dialogueBox.StartDialogue(dialogueLines);
+
+                    // Also log for history
                     foreach (string line in lines)
                         AppendLog(line);
                 }
+
                 // Auto-complete ready quests when talking to NPCs
                 var questEvents = NpcInteraction.CompleteReadyQuests(state);
                 foreach (string evt in questEvents)
@@ -334,8 +430,10 @@ public class WorldScreen : GameScreen
             {
                 string nodeName = harvestResult.GetValueOrDefault("node_name")?.ToString() ?? "node";
                 string word = harvestResult.GetValueOrDefault("word")?.ToString() ?? "";
+                string resource = harvestResult.GetValueOrDefault("resource")?.ToString() ?? "wood";
                 AppendLog($"Harvesting {nodeName}! Type: {word}");
                 AudioManager.Instance.PlaySfx(AudioManager.Sfx.Gather);
+                _harvestChallengeOverlay.Show(word, nodeName, resource);
             }
             else
             {
@@ -494,6 +592,7 @@ public class WorldScreen : GameScreen
                 AppendLog(evt);
             SessionAnalytics.Instance.RecordEvent("word_typed");
             AudioManager.Instance.PlayWordComplete();
+            _harvestChallengeOverlay.Hide();
         }
         else if (state.ActivityMode == "wave_assault")
         {
@@ -508,6 +607,18 @@ public class WorldScreen : GameScreen
     private void UpdateMusicTrack(GameState state)
     {
         if (state.ActivityMode == _lastActivityMode) return;
+
+        // Trigger combat transition effects on mode change
+        switch (state.ActivityMode)
+        {
+            case "encounter":
+                _combatTransition.TriggerEnter();
+                break;
+            case "exploration" when _lastActivityMode == "encounter":
+                _combatTransition.TriggerExit();
+                _inlineCombatOverlay.Reset();
+                break;
+        }
 
         var audio = AudioManager.Instance;
         switch (state.ActivityMode)
@@ -533,6 +644,15 @@ public class WorldScreen : GameScreen
         _lastActivityMode = state.ActivityMode;
     }
 
+    private void UpdateInputRowVisibility(GameState state)
+    {
+        if (_inputRow == null) return;
+
+        // Show input row during combat/typing modes, hide during exploration
+        bool showInput = state.ActivityMode is "encounter" or "wave_assault" or "harvest_challenge";
+        _inputRow.Visible = showInput;
+    }
+
     private static void PlayEventSfx(string evt)
     {
         var audio = AudioManager.Instance;
@@ -556,11 +676,17 @@ public class WorldScreen : GameScreen
         var rootPanel = new Panel();
         var mainLayout = new VerticalStackPanel { Spacing = DesignSystem.SpaceSm };
 
-        // Top HUD bar
+        // Top HUD bar with dark semi-transparent background
+        _hudBgPanel = new Panel
+        {
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            Height = 32,
+            Background = new Myra.Graphics2D.Brushes.SolidBrush(Color.Black * 0.5f),
+        };
         var hudBar = new HorizontalStackPanel { Spacing = DesignSystem.SpaceMd };
         _dayLabel = new Label { Text = "Day 1", TextColor = ThemeColors.Accent };
         _hpLabel = new Label { Text = "HP: 10", TextColor = ThemeColors.Success };
-        _goldLabel = new Label { Text = "Gold: 0", TextColor = ThemeColors.ResourceGold };
+        _goldLabel = new Label { Text = "Gold: 0", TextColor = ThemeColors.GoldAccent };
         _threatLabel = new Label { Text = "Threat: 0%", TextColor = ThemeColors.Threat };
         _zoneLabel = new Label { Text = "Zone: Safe", TextColor = ThemeColors.AccentCyan };
         _timeLabel = new Label { Text = "Time: Dawn", TextColor = ThemeColors.AccentBlue };
@@ -573,7 +699,8 @@ public class WorldScreen : GameScreen
         hudBar.Widgets.Add(_zoneLabel);
         hudBar.Widgets.Add(_timeLabel);
         hudBar.Widgets.Add(_modeLabel);
-        mainLayout.Widgets.Add(hudBar);
+        _hudBgPanel.Widgets.Add(hudBar);
+        mainLayout.Widgets.Add(_hudBgPanel);
         mainLayout.Widgets.Add(new HorizontalSeparator());
 
         // Event log at bottom
@@ -595,10 +722,10 @@ public class WorldScreen : GameScreen
         };
 
         // Typing input (shown during encounters/challenges)
-        var inputRow = new HorizontalStackPanel { Spacing = DesignSystem.SpaceSm };
-        inputRow.Widgets.Add(new Label { Text = "> ", TextColor = ThemeColors.AccentCyan });
+        _inputRow = new HorizontalStackPanel { Spacing = DesignSystem.SpaceSm, Visible = false };
+        _inputRow.Widgets.Add(new Label { Text = "> ", TextColor = ThemeColors.AccentCyan });
         _typingInput = new TextBox { HorizontalAlignment = HorizontalAlignment.Stretch };
-        inputRow.Widgets.Add(_typingInput);
+        _inputRow.Widgets.Add(_typingInput);
         var submitBtn = new Button
         {
             Content = new Label { Text = Locale.Tr("actions.submit") },
@@ -606,7 +733,7 @@ public class WorldScreen : GameScreen
             Height = DesignSystem.SizeButtonMd,
         };
         submitBtn.Click += (_, _) => SubmitTyping();
-        inputRow.Widgets.Add(submitBtn);
+        _inputRow.Widgets.Add(submitBtn);
 
         // Bottom bar with action buttons
         var bottomBar = new HorizontalStackPanel { Spacing = DesignSystem.SpaceSm };
@@ -632,7 +759,7 @@ public class WorldScreen : GameScreen
         var bottomPanel = new VerticalStackPanel { Spacing = DesignSystem.SpaceSm };
         bottomPanel.VerticalAlignment = VerticalAlignment.Bottom;
         bottomPanel.Widgets.Add(scrollViewer);
-        bottomPanel.Widgets.Add(inputRow);
+        bottomPanel.Widgets.Add(_inputRow);
         bottomPanel.Widgets.Add(bottomBar);
 
         rootPanel.Widgets.Add(mainLayout);
@@ -649,6 +776,8 @@ public class WorldScreen : GameScreen
         _upgradesPanel = new UpgradesPanel();
         _inventoryPanel = new InventoryPanel();
         _saveLoadPanel = new SaveLoadPanel();
+        _dialogueBox = new DialogueBox();
+        _questsPanel = new QuestsPanel();
 
         _panelOverlay.Bind("panel_help", _helpPanel);
         _panelOverlay.Bind("panel_settings", _settingsPanel);
@@ -657,6 +786,10 @@ public class WorldScreen : GameScreen
         _panelOverlay.Bind(Keys.F5, _saveLoadPanel);
         _panelOverlay.Bind(Keys.F7, _upgradesPanel);
         _panelOverlay.Bind("panel_inventory", _inventoryPanel);
+        _panelOverlay.Bind("panel_quests", _questsPanel);
+
+        // Register dialogue box as a panel (not key-bound, opened programmatically)
+        rootPanel.Widgets.Add(_dialogueBox.RootWidget);
     }
 
     private void OnStateChanged(GameState state)

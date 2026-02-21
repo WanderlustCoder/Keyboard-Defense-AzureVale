@@ -17,6 +17,10 @@ public class BasePanel
     private readonly VerticalStackPanel _content;
     private readonly Label _titleLabel;
 
+    // Animation
+    private readonly TweenValue _fadeAnim = new(0f);
+    private readonly TweenValue _slideAnim = new(0f);
+
     public event Action? Opened;
     public event Action? Closed;
 
@@ -67,6 +71,11 @@ public class BasePanel
     {
         Visible = true;
         RootWidget.Visible = true;
+
+        // Trigger fade-in + slide-up animation
+        _fadeAnim.Start(0f, 1f, DesignSystem.AnimNormal, Transitions.EaseOut);
+        _slideAnim.Start(30f, 0f, DesignSystem.AnimNormal, Transitions.EaseOutBack);
+
         Opened?.Invoke();
     }
 
@@ -74,6 +83,8 @@ public class BasePanel
     {
         Visible = false;
         RootWidget.Visible = false;
+        _fadeAnim.Cancel();
+        _slideAnim.Cancel();
         Closed?.Invoke();
     }
 
@@ -81,6 +92,19 @@ public class BasePanel
     {
         if (Visible) Close();
         else Open();
+    }
+
+    /// <summary>Update open/close animation. Call once per frame.</summary>
+    public void UpdateAnimation(float deltaTime)
+    {
+        _fadeAnim.Update(deltaTime);
+        _slideAnim.Update(deltaTime);
+
+        if (Visible)
+        {
+            RootWidget.Opacity = _fadeAnim.IsComplete ? 1f : _fadeAnim.Value;
+            RootWidget.Top = (int)(_slideAnim.IsComplete ? 0 : _slideAnim.Value);
+        }
     }
 
     public void AddWidget(Widget widget)

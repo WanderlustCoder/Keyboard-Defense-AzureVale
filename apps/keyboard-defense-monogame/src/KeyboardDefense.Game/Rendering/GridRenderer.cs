@@ -124,6 +124,10 @@ public class GridRenderer
             DrawEnemy(spriteBatch, enemy);
         }
 
+        // Draw interaction prompts near entities
+        if (state.ActivityMode == "exploration")
+            DrawInteractionPrompts(spriteBatch, state);
+
         // Draw cursor
         DrawCursor(spriteBatch, state.CursorPos);
 
@@ -365,17 +369,45 @@ public class GridRenderer
             spriteBatch.Draw(_pixel!, inner, Color.White * (intensity * 0.7f));
         }
 
-        // Word label
+        // Word label with per-character coloring (above enemy)
         if (_font != null && enemy.TryGetValue("word", out var wordObj))
         {
             string word = wordObj?.ToString() ?? "";
             if (!string.IsNullOrEmpty(word))
             {
-                var size = _font.MeasureString(word);
-                float scale = Math.Min(1f, (float)(CellSize - 4) / size.X);
-                spriteBatch.DrawString(_font, word,
-                    new Vector2(rect.X + (rect.Width - size.X * scale) * 0.5f, rect.Y + rect.Height + 2),
-                    Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+                int typedChars = Convert.ToInt32(enemy.GetValueOrDefault("typed_chars", 0));
+                bool isTarget = enemy.GetValueOrDefault("is_target") is true;
+
+                var fullSize = _font.MeasureString(word);
+                float scale = Math.Min(0.8f, (float)(CellSize + 8) / fullSize.X);
+
+                // Dark background pill behind word
+                int pillWidth = (int)(fullSize.X * scale) + 8;
+                int pillHeight = (int)(fullSize.Y * scale) + 4;
+                int pillX = rect.X + (rect.Width - pillWidth) / 2;
+                int pillY = rect.Y - pillHeight - 2;
+                spriteBatch.Draw(_pixel!, new Rectangle(pillX, pillY, pillWidth, pillHeight),
+                    Color.Black * 0.7f);
+
+                // Per-character coloring
+                float charX = pillX + 4;
+                float charY = pillY + 2;
+                for (int ci = 0; ci < word.Length; ci++)
+                {
+                    Color charColor;
+                    if (ci < typedChars)
+                        charColor = ThemeColors.TypedCorrect; // green for typed
+                    else if (isTarget)
+                        charColor = Color.White; // white remaining for active target
+                    else
+                        charColor = ThemeColors.TypedPending; // dim for non-target
+
+                    string ch = word[ci].ToString();
+                    spriteBatch.DrawString(_font, ch,
+                        new Vector2(charX, charY), charColor,
+                        0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+                    charX += _font.MeasureString(ch).X * scale;
+                }
             }
         }
     }
@@ -590,6 +622,65 @@ public class GridRenderer
             (int)Origin.X + pos.X * CellSize,
             (int)Origin.Y + pos.Y * CellSize,
             CellSize, CellSize);
+    }
+
+    private void DrawInteractionPrompts(SpriteBatch spriteBatch, GameState state)
+    {
+        if (_font == null || _pixel == null) return;
+        var playerPos = state.PlayerPos;
+
+        // Check NPCs
+        foreach (var npc in state.Npcs)
+        {
+            GridPoint npcPos;
+            if (npc.GetValueOrDefault("pos") is GridPoint gp)
+                npcPos = gp;
+            else if (npc.TryGetValue("x", out var xObj) && npc.TryGetValue("y", out var yObj))
+                npcPos = new GridPoint(Convert.ToInt32(xObj), Convert.ToInt32(yObj));
+            else continue;
+
+            if (playerPos.ManhattanDistance(npcPos) <= 1)
+            {
+                DrawPromptBubble(spriteBatch, npcPos, "[E] Talk");
+                break; // Only show one prompt at a time
+            }
+        }
+
+        // Check resource nodes
+        foreach (var (nodeIdx, nodeData) in state.ResourceNodes)
+        {
+            if (nodeData.GetValueOrDefault("pos") is not GridPoint nPos) continue;
+            float cooldown = Convert.ToSingle(nodeData.GetValueOrDefault("cooldown", 0f));
+            if (cooldown > 0) continue;
+
+            if (playerPos.ManhattanDistance(nPos) <= 1)
+            {
+                DrawPromptBubble(spriteBatch, nPos, "[E] Harvest");
+                break;
+            }
+        }
+    }
+
+    private void DrawPromptBubble(SpriteBatch spriteBatch, GridPoint pos, string text)
+    {
+        if (_font == null || _pixel == null) return;
+
+        var rect = TileRect(pos);
+        var textSize = _font.MeasureString(text);
+        float scale = 0.5f;
+        int pillWidth = (int)(textSize.X * scale) + 10;
+        int pillHeight = (int)(textSize.Y * scale) + 6;
+        int pillX = rect.X + (rect.Width - pillWidth) / 2;
+        int pillY = rect.Y - pillHeight - 6;
+
+        // Dark background pill
+        spriteBatch.Draw(_pixel, new Rectangle(pillX, pillY, pillWidth, pillHeight),
+            Color.Black * 0.75f);
+
+        // Cyan text
+        spriteBatch.DrawString(_font, text,
+            new Vector2(pillX + 5, pillY + 3), ThemeColors.AccentCyan,
+            0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
     }
 
     private void DrawRectOutline(SpriteBatch spriteBatch, Rectangle rect, Color color, int thickness)
