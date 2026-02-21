@@ -16,7 +16,7 @@ public class ProgressionState
 
     private const string FileName = "progression.json";
 
-    // Campaign progress
+    // Lifetime stats
     public int HighestDayReached { get; set; }
     public int TotalGamesPlayed { get; set; }
     public int TotalVictories { get; set; }
@@ -32,11 +32,11 @@ public class ProgressionState
     public HashSet<string> UnlockedBadges { get; set; } = new();
     public HashSet<string> CompletedAchievements { get; set; } = new();
 
-    // Campaign map (legacy int-based)
+    // Completed nodes (legacy int-based)
     public HashSet<int> CompletedNodes { get; set; } = new();
     public int FurthestNode { get; set; }
 
-    // Campaign map (string-based, matches map.json node IDs)
+    // Completed nodes (string-based)
     public HashSet<string> CompletedNodeIds { get; set; } = new();
     public int Gold { get; set; }
 

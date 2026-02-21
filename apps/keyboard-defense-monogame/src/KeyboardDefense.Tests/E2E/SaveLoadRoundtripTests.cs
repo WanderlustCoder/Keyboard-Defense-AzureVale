@@ -10,10 +10,10 @@ namespace KeyboardDefense.Tests.E2E;
 public class SaveLoadE2ETests
 {
     [Fact]
-    public void SaveLoad_MidCampaign_PreservesScalars()
+    public void SaveLoad_MidGame_PreservesScalars()
     {
         var sim = new GameSimulator("save_mid");
-        sim.RunCampaign(3);
+        sim.RunGameLoop(3);
 
         // Save
         string json = SaveManager.StateToJson(sim.State);

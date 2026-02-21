@@ -152,13 +152,13 @@ public class TypingProfileFlowTests
     }
 
     [Fact]
-    public void BattleTyping_TracksMetricsThroughCampaign()
+    public void BattleTyping_TracksMetricsThroughGameLoop()
     {
         var sim = new GameSimulator("typing_track");
-        sim.RunCampaign(2);
+        sim.RunGameLoop(2);
 
         // After 2 days of combat, events should have been generated
-        Assert.True(sim.AllEvents.Count > 0, "Campaign should generate events");
-        Assert.True(sim.TotalSteps > 0, "Campaign should take steps");
+        Assert.True(sim.AllEvents.Count > 0, "Game loop should generate events");
+        Assert.True(sim.TotalSteps > 0, "Game loop should take steps");
     }
 }

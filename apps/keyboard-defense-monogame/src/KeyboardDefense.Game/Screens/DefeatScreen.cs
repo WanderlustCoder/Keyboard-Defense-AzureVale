@@ -14,7 +14,7 @@ namespace KeyboardDefense.Game.Screens;
 
 /// <summary>
 /// Defeat screen shown when the player loses a battle.
-/// Displays survival stats, retry option, and return to campaign map.
+/// Displays survival stats, retry option, and return to main menu.
 /// </summary>
 public class DefeatScreen : GameScreen
 {
@@ -165,14 +165,14 @@ public class DefeatScreen : GameScreen
         var retryBtn = ButtonFactory.Primary("Retry", OnRetry);
         buttonRow.Widgets.Add(retryBtn);
 
-        var mapBtn = ButtonFactory.Secondary("Return to Map", OnReturnToMap);
+        var mapBtn = ButtonFactory.Secondary("Main Menu", OnReturnToMap);
         buttonRow.Widgets.Add(mapBtn);
 
         root.Widgets.Add(buttonRow);
 
         root.Widgets.Add(new Label
         {
-            Text = "Press Enter to retry, Escape to return to map",
+            Text = "Press Enter to retry, Escape for main menu",
             TextColor = ThemeColors.TextDim,
             HorizontalAlignment = HorizontalAlignment.Center,
         });
@@ -216,7 +216,7 @@ public class DefeatScreen : GameScreen
     {
         // Pop defeat screen — battlefield underneath already has OnExit wired
         ScreenManager.Pop();
-        ScreenManager.Pop(); // Pop battlefield too, returning to campaign map
+        ScreenManager.Pop(); // Pop battlefield too, returning to previous screen
     }
 
     public override void Update(GameTime gameTime)

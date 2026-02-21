@@ -141,10 +141,10 @@ public class GameSimulator
         EndDay();
     }
 
-    /// <summary>Run multiple full day/night cycles.</summary>
-    public CampaignResult RunCampaign(int days, int maxStepsPerNight = 100)
+    /// <summary>Run multiple full day/night cycles and return aggregate results.</summary>
+    public GameRunResult RunGameLoop(int days, int maxStepsPerNight = 100)
     {
-        var result = new CampaignResult();
+        var result = new GameRunResult();
 
         for (int d = 0; d < days; d++)
         {
@@ -180,7 +180,7 @@ public class GameSimulator
         public int EndHp;
     }
 
-    public class CampaignResult
+    public class GameRunResult
     {
         public int DaysCompleted;
         public int TotalEnemiesKilled;
