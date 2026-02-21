@@ -83,6 +83,7 @@ public static class SaveManager
             ["npcs"] = state.Npcs,
             ["enemies_defeated"] = state.EnemiesDefeated,
             ["max_combo_ever"] = state.MaxComboEver,
+            ["waves_survived"] = state.WavesSurvived,
             ["completed_quests"] = new List<string>(state.CompletedQuests),
             ["skill_points"] = state.SkillPoints,
         };
@@ -142,6 +143,7 @@ public static class SaveManager
         state.Npcs = DeserializeEnemyList(data, "npcs");
         state.EnemiesDefeated = GetInt(data, "enemies_defeated", 0);
         state.MaxComboEver = GetInt(data, "max_combo_ever", 0);
+        state.WavesSurvived = GetInt(data, "waves_survived", 0);
         state.CompletedQuests = DeserializeStringHashSet(data, "completed_quests");
         state.SkillPoints = GetInt(data, "skill_points", 0);
 

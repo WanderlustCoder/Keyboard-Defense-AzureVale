@@ -71,6 +71,7 @@ public static class WorldQuests
                 ? (state.BossesDefeated.Contains(condition.Target) ? 1 : 0)
                 : state.BossesDefeated.Count,
             "defeat_enemies" => state.EnemiesDefeated,
+            "survive_waves" => state.WavesSurvived,
             _ => 0,
         };
 

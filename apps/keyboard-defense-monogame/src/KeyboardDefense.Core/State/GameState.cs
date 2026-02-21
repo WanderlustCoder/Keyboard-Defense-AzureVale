@@ -60,6 +60,7 @@ public class GameState
     public int SkillPoints { get; set; }
     public int EnemiesDefeated { get; set; }
     public int MaxComboEver { get; set; }
+    public int WavesSurvived { get; set; }
     public string ActiveTitle { get; set; } = "";
 
     // Inventory & equipment

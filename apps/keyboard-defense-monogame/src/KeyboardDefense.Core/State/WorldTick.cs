@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using KeyboardDefense.Core.Combat;
+using KeyboardDefense.Core.Typing;
 using KeyboardDefense.Core.World;
 
 namespace KeyboardDefense.Core.State;
@@ -21,6 +22,12 @@ public static class WorldTick
     public const double ThreatGrowthRate = 0.02;
     public const double WaveAssaultThreshold = 0.8;
     public const double WaveCooldownDuration = 30.0;
+    /// <summary>Reward constants for wave completion.</summary>
+    public const int WaveBaseGold = 10;
+    public const int WavePerEnemyGold = 3;
+    public const int WaveBaseWood = 5;
+    public const int WaveBaseStone = 3;
+    public const int WaveBaseFood = 2;
 
     public static Dictionary<string, object> Tick(GameState state, double delta)
     {
@@ -97,6 +104,32 @@ public static class WorldTick
 
     private static void EndWaveAssault(GameState state)
     {
+        // Calculate rewards based on wave size
+        int waveSize = state.NightWaveTotal;
+        int goldReward = WaveBaseGold + waveSize * WavePerEnemyGold;
+        int woodReward = WaveBaseWood + waveSize / 2;
+        int stoneReward = WaveBaseStone + waveSize / 3;
+        int foodReward = WaveBaseFood + waveSize / 4;
+
+        // Apply proficiency multiplier
+        var profTier = TypingProficiency.GetTier();
+        double profMult = TypingProficiency.GetGoldMultiplier(profTier);
+        goldReward = (int)(goldReward * profMult);
+        double resMult = TypingProficiency.GetResourceMultiplier(profTier);
+        woodReward = (int)(woodReward * resMult);
+        stoneReward = (int)(stoneReward * resMult);
+        foodReward = (int)(foodReward * resMult);
+
+        // Apply rewards
+        state.Gold += goldReward;
+        state.Resources["wood"] = state.Resources.GetValueOrDefault("wood", 0) + woodReward;
+        state.Resources["stone"] = state.Resources.GetValueOrDefault("stone", 0) + stoneReward;
+        state.Resources["food"] = state.Resources.GetValueOrDefault("food", 0) + foodReward;
+
+        // Track wave completion
+        state.WavesSurvived++;
+
+        // Reset state
         state.ActivityMode = "exploration";
         state.Phase = "day";
         state.Ap = state.ApMax;

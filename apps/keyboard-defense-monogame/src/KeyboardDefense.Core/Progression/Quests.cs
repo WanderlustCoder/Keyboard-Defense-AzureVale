@@ -46,6 +46,9 @@ public static class Quests
         ["defender_of_the_realm"] = new("Defender of the Realm", "Defeat 25 enemies.",
             "combat", QuestCondition.DefeatEnemies(25),
             new() { ["gold"] = 60, ["skill_point"] = 2, ["wood"] = 20, ["stone"] = 10 }),
+        ["wave_defender"] = new("Wave Defender", "Survive 3 wave assaults.",
+            "combat", QuestCondition.SurviveWaves(3),
+            new() { ["gold"] = 50, ["wood"] = 15, ["stone"] = 15, ["food"] = 10 }),
     };
 
     public static QuestDef? GetQuest(string questId) => Registry.GetValueOrDefault(questId);
@@ -111,4 +114,5 @@ public record QuestCondition(string Type, string? Target, int Value)
     public static QuestCondition ReachCombo(int combo) => new("combo", null, combo);
     public static QuestCondition DefeatBoss(string? bossId) => new("defeat_boss", bossId, 1);
     public static QuestCondition DefeatEnemies(int count) => new("defeat_enemies", null, count);
+    public static QuestCondition SurviveWaves(int count) => new("survive_waves", null, count);
 }
