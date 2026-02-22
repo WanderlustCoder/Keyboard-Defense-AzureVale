@@ -33,15 +33,8 @@ public class WorldScreen : GameScreen
     private TextBox? _typingInput;
     private Label? _eventLog;
 
-    // HUD labels
-    private Label? _dayLabel;
-    private Label? _hpLabel;
-    private Label? _goldLabel;
-    private Label? _threatLabel;
-    private Label? _zoneLabel;
-    private Label? _timeLabel;
-    private Label? _modeLabel;
-    private Panel? _hudBgPanel;
+    // SpriteBatch HUD bar (replaces Myra labels)
+    private readonly HudBarOverlay _hudBarOverlay = new();
 
     // Renderers
     private readonly WorldCamera _camera = new();
@@ -117,6 +110,7 @@ public class WorldScreen : GameScreen
         _inlineCombatOverlay.Initialize(Game.GraphicsDevice, Game.DefaultFont);
         _harvestChallengeOverlay.Initialize(Game.GraphicsDevice, Game.DefaultFont);
         _questTrackerHud.Initialize(Game.GraphicsDevice, Game.DefaultFont);
+        _hudBarOverlay.Initialize(Game.GraphicsDevice, Game.DefaultFont);
 
         // Initialize chunk-based world map renderer
         string chunkDir = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content", "Textures", "world");
@@ -297,9 +291,15 @@ public class WorldScreen : GameScreen
         _combatTransition.Draw(spriteBatch, vp.Width, vp.Height);
         spriteBatch.End();
 
-        // Draw minimap in top-right corner
+        // Draw minimap in top-right corner (pass viewport range for indicator)
+        _minimapRenderer.ViewportRange = _camera.GetVisibleTileRange();
         spriteBatch.Begin(blendState: BlendState.AlphaBlend, samplerState: SamplerState.PointClamp);
         _minimapRenderer.Draw(spriteBatch, state, new Vector2(vp.Width - 210, 10));
+        spriteBatch.End();
+
+        // HUD bar overlay (SpriteBatch-rendered, replaces Myra labels)
+        spriteBatch.Begin(blendState: BlendState.AlphaBlend, samplerState: SamplerState.PointClamp);
+        _hudBarOverlay.Draw(spriteBatch, state, vp.Width);
         spriteBatch.End();
 
         // Inline combat overlay (combo, banner, timers)
@@ -699,32 +699,7 @@ public class WorldScreen : GameScreen
         var rootPanel = new Panel();
         var mainLayout = new VerticalStackPanel { Spacing = DesignSystem.SpaceSm };
 
-        // Top HUD bar with dark semi-transparent background
-        _hudBgPanel = new Panel
-        {
-            HorizontalAlignment = HorizontalAlignment.Stretch,
-            Height = 40,
-            Background = new Myra.Graphics2D.Brushes.SolidBrush(Color.Black * 0.5f),
-        };
-        var hudBar = new HorizontalStackPanel { Spacing = DesignSystem.SpaceMd };
-        _dayLabel = new Label { Text = "Day 1", TextColor = ThemeColors.Accent };
-        _hpLabel = new Label { Text = "HP: 10", TextColor = ThemeColors.Success };
-        _goldLabel = new Label { Text = "Gold: 0", TextColor = ThemeColors.GoldAccent };
-        _threatLabel = new Label { Text = "Threat: 0%", TextColor = ThemeColors.Threat };
-        _zoneLabel = new Label { Text = "Zone: Safe", TextColor = ThemeColors.AccentCyan };
-        _timeLabel = new Label { Text = "Time: Dawn", TextColor = ThemeColors.AccentBlue };
-        _modeLabel = new Label { Text = "Exploring", TextColor = ThemeColors.Accent };
-
-        hudBar.Widgets.Add(_dayLabel);
-        hudBar.Widgets.Add(_hpLabel);
-        hudBar.Widgets.Add(_goldLabel);
-        hudBar.Widgets.Add(_threatLabel);
-        hudBar.Widgets.Add(_zoneLabel);
-        hudBar.Widgets.Add(_timeLabel);
-        hudBar.Widgets.Add(_modeLabel);
-        _hudBgPanel.Widgets.Add(hudBar);
-        mainLayout.Widgets.Add(_hudBgPanel);
-        mainLayout.Widgets.Add(new HorizontalSeparator());
+        // (HUD bar is now drawn via SpriteBatch in _hudBarOverlay — no Myra widgets)
 
         // Event log at bottom
         _eventLog = new Label
@@ -832,38 +807,9 @@ public class WorldScreen : GameScreen
 
     private void OnStateChanged(GameState state)
     {
-        if (_dayLabel != null) _dayLabel.Text = $"Day {state.Day}";
-        if (_hpLabel != null)
-        {
-            _hpLabel.Text = $"HP: {state.Hp}";
-            _hpLabel.TextColor = state.Hp > 10 ? ThemeColors.Success : state.Hp > 5 ? ThemeColors.Warning : ThemeColors.Error;
-        }
-        if (_goldLabel != null) _goldLabel.Text = $"Gold: {state.Gold}";
-        if (_threatLabel != null) _threatLabel.Text = $"Threat: {(int)(state.ThreatLevel * 100)}%";
-        if (_zoneLabel != null)
-        {
-            string zone = SimMap.GetZoneAt(state, state.PlayerPos);
-            _zoneLabel.Text = $"Zone: {SimMap.GetZoneName(zone)}";
-        }
-        if (_timeLabel != null) _timeLabel.Text = $"Time: {GetTimeOfDayName(state.TimeOfDay)}";
-        if (_modeLabel != null) _modeLabel.Text = state.ActivityMode switch
-        {
-            "exploration" => _buildMode ? "BUILD MODE" : "Exploring",
-            "encounter" => "COMBAT!",
-            "wave_assault" => "WAVE ASSAULT!",
-            "harvest_challenge" => "HARVESTING",
-            _ => state.ActivityMode,
-        };
+        // HUD data is read directly from GameState each frame by _hudBarOverlay.Draw()
+        _hudBarOverlay.BuildMode = _buildMode;
     }
-
-    private static string GetTimeOfDayName(float time) => time switch
-    {
-        < 0.15f => "Night",
-        < 0.30f => "Dawn",
-        < 0.70f => "Day",
-        < 0.85f => "Dusk",
-        _ => "Night",
-    };
 
     private void OnEventsEmitted(List<string> events)
     {

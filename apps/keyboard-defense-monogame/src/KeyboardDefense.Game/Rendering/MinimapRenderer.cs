@@ -16,7 +16,11 @@ public class MinimapRenderer
     public int MinimapSize { get; set; } = 200;
     public int BorderWidth { get; set; } = 2;
 
-    private static readonly Color BorderColor = new(60, 60, 80);
+    /// <summary>Visible tile range from camera, used to draw a viewport indicator.</summary>
+    public (int minX, int minY, int maxX, int maxY)? ViewportRange { get; set; }
+
+    private static readonly Color OuterFrame = new(25, 22, 40);
+    private static readonly Color BronzeAccent = new(80, 70, 50);
     private static readonly Color BgColor = new(15, 15, 25);
     private static readonly Color PlainColor = new(90, 130, 65);
     private static readonly Color ForestColor = new(45, 90, 40);
@@ -28,6 +32,7 @@ public class MinimapRenderer
     private static readonly Color PlayerMarker = new(80, 160, 255);
     private static readonly Color EnemyMarker = ThemeColors.DamageRed;
     private static readonly Color StructureMarker = new(160, 140, 100);
+    private static readonly Color ViewportColor = Color.White * 0.4f;
 
     private Texture2D? _pixel;
 
@@ -43,16 +48,20 @@ public class MinimapRenderer
 
         int mapW = state.MapW;
         int mapH = state.MapH;
-        float tileW = (float)(MinimapSize - BorderWidth * 2) / mapW;
-        float tileH = (float)(MinimapSize - BorderWidth * 2) / mapH;
+        int inner = MinimapSize - BorderWidth * 2;
+        float tileW = (float)inner / mapW;
+        float tileH = (float)inner / mapH;
         var origin = screenPos + new Vector2(BorderWidth, BorderWidth);
 
-        // Background + border
+        // 3-layer border frame: outer dark → bronze accent → inner bg
         spriteBatch.Draw(_pixel, new Rectangle(
-            (int)screenPos.X, (int)screenPos.Y, MinimapSize, MinimapSize), BorderColor);
+            (int)screenPos.X, (int)screenPos.Y, MinimapSize, MinimapSize), OuterFrame);
+        spriteBatch.Draw(_pixel, new Rectangle(
+            (int)screenPos.X + 1, (int)screenPos.Y + 1,
+            MinimapSize - 2, MinimapSize - 2), BronzeAccent);
         spriteBatch.Draw(_pixel, new Rectangle(
             (int)screenPos.X + BorderWidth, (int)screenPos.Y + BorderWidth,
-            MinimapSize - BorderWidth * 2, MinimapSize - BorderWidth * 2), BgColor);
+            inner, inner), BgColor);
 
         // Terrain
         foreach (int tileIdx in state.Discovered)
@@ -139,5 +148,25 @@ public class MinimapRenderer
                 (int)(origin.Y + state.CursorPos.Y * tileH - size / 2),
                 size, size), CursorMarker);
         }
+
+        // Viewport indicator — white semi-transparent rectangle showing camera view
+        if (ViewportRange is var (vMinX, vMinY, vMaxX, vMaxY))
+        {
+            int rx = (int)(origin.X + vMinX * tileW);
+            int ry = (int)(origin.Y + vMinY * tileH);
+            int rw = Math.Max(1, (int)((vMaxX - vMinX) * tileW));
+            int rh = Math.Max(1, (int)((vMaxY - vMinY) * tileH));
+            var vpRect = new Rectangle(rx, ry, rw, rh);
+            DrawRectBorder(spriteBatch, vpRect, ViewportColor, 1);
+        }
+    }
+
+    private void DrawRectBorder(SpriteBatch sb, Rectangle rect, Color color, int thickness)
+    {
+        if (_pixel == null) return;
+        sb.Draw(_pixel, new Rectangle(rect.X, rect.Y, rect.Width, thickness), color);
+        sb.Draw(_pixel, new Rectangle(rect.X, rect.Bottom - thickness, rect.Width, thickness), color);
+        sb.Draw(_pixel, new Rectangle(rect.X, rect.Y + thickness, thickness, rect.Height - thickness * 2), color);
+        sb.Draw(_pixel, new Rectangle(rect.Right - thickness, rect.Y + thickness, thickness, rect.Height - thickness * 2), color);
     }
 }

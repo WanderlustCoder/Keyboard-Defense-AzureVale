@@ -23,6 +23,11 @@ public class InlineCombatOverlay
     private float _comboPopTimer;
     private const float ComboPopDuration = 0.3f;
 
+    // Gradient colors for combat banner
+    private static readonly Color BannerLeft = new(40, 15, 15);
+    private static readonly Color BannerRight = new(20, 15, 20);
+    private static readonly Color BannerBorder = new(180, 50, 50);
+
     public void Initialize(GraphicsDevice device, SpriteFont font)
     {
         _pixel = new Texture2D(device, 1, 1);
@@ -68,11 +73,24 @@ public class InlineCombatOverlay
         int bannerHeight = 36;
         int bannerY = 50;
 
-        // Dark banner background
         int bannerWidth = (int)(size.X * scale) + 40;
         int bannerX = (screenWidth - bannerWidth) / 2;
-        spriteBatch.Draw(_pixel!, new Rectangle(bannerX, bannerY, bannerWidth, bannerHeight),
-            Color.Black * 0.7f);
+
+        // Horizontal gradient: dark red-tinted left → dark right
+        int steps = 8;
+        int stripW = Math.Max(1, bannerWidth / steps);
+        for (int i = 0; i < steps; i++)
+        {
+            float t = (float)i / (steps - 1);
+            Color c = Color.Lerp(BannerLeft, BannerRight, t) * 0.85f;
+            int sx = bannerX + i * stripW;
+            int sw = (i == steps - 1) ? (bannerX + bannerWidth - sx) : stripW;
+            spriteBatch.Draw(_pixel!, new Rectangle(sx, bannerY, sw, bannerHeight), c);
+        }
+
+        // Top and bottom red border
+        spriteBatch.Draw(_pixel!, new Rectangle(bannerX, bannerY, bannerWidth, 1), BannerBorder * 0.6f);
+        spriteBatch.Draw(_pixel!, new Rectangle(bannerX, bannerY + bannerHeight - 1, bannerWidth, 1), BannerBorder * 0.6f);
 
         // Text centered in banner
         var textPos = new Vector2(
@@ -122,9 +140,27 @@ public class InlineCombatOverlay
             popScale = 1f + 0.4f * Transitions.EaseOutElastic(1f - t);
         }
 
-        float scale = 1.2f * popScale;
+        float scale = 1.6f * popScale;
         int x = screenWidth - 120;
         int y = 220;
+
+        // Glow effect — 4 offset draws in tier color at 30% alpha
+        if (!string.IsNullOrEmpty(tierLabel))
+        {
+            Color glowColor = comboColor * 0.3f;
+            spriteBatch.DrawString(_font, comboText,
+                new Vector2(x - 1, y), glowColor,
+                0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+            spriteBatch.DrawString(_font, comboText,
+                new Vector2(x + 1, y), glowColor,
+                0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+            spriteBatch.DrawString(_font, comboText,
+                new Vector2(x, y - 1), glowColor,
+                0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+            spriteBatch.DrawString(_font, comboText,
+                new Vector2(x, y + 1), glowColor,
+                0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+        }
 
         // Shadow
         spriteBatch.DrawString(_font, comboText,
