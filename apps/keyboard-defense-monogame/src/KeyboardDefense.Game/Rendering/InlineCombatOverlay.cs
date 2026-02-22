@@ -66,7 +66,7 @@ public class InlineCombatOverlay
         var size = _font!.MeasureString(text);
         float scale = 0.8f;
         int bannerHeight = 36;
-        int bannerY = 60;
+        int bannerY = 50;
 
         // Dark banner background
         int bannerWidth = (int)(size.X * scale) + 40;
@@ -124,7 +124,7 @@ public class InlineCombatOverlay
 
         float scale = 1.2f * popScale;
         int x = screenWidth - 120;
-        int y = 110;
+        int y = 220;
 
         // Shadow
         spriteBatch.DrawString(_font, comboText,

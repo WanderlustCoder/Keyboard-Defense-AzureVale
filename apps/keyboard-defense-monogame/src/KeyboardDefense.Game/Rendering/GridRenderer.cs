@@ -732,7 +732,7 @@ public class GridRenderer
                 if (!state.Discovered.Contains(idx))
                 {
                     var rect = TileRect(new GridPoint(x, y));
-                    spriteBatch.Draw(_pixel!, rect, FogColor);
+                    spriteBatch.Draw(_pixel!, rect, FogColor * 0.85f);
                 }
             }
         }

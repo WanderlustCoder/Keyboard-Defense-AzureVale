@@ -46,7 +46,7 @@ public class QuestTrackerHud
         int displayed = Math.Min(activeQuests.Count, MaxDisplayQuests);
         int panelHeight = PanelPadding * 2 + displayed * EntryHeight + 16; // +16 for header
 
-        int panelX = screenWidth - PanelWidth - 220; // Left of minimap
+        int panelX = screenWidth - PanelWidth - 230; // Left of minimap with gap
         int panelY = 10;
 
         // Background

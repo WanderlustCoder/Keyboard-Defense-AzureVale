@@ -91,7 +91,10 @@ public static class LessonsData
     public static IReadOnlyList<string> LessonIds()
     {
         EnsureLoaded();
-        return _cache!.Keys.ToList();
+        var keys = _cache!.Keys;
+        var list = new List<string>(keys.Count);
+        foreach (var k in keys) list.Add(k);
+        return list;
     }
 
     public static IReadOnlyList<GraduationPath> GetPaths()

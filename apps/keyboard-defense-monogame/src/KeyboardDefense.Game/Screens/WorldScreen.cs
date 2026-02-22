@@ -130,7 +130,7 @@ public class WorldScreen : GameScreen
         var state = GameController.Instance.State;
         var vp = Game.GraphicsDevice.Viewport;
         _camera.Initialize(vp.Width, vp.Height, state.MapW, state.MapH, _gridRenderer.CellSize);
-        _camera.Zoom = 1.5f;
+        _camera.Zoom = 2.5f;
         _camera.SnapTo(state.PlayerPos.X, state.PlayerPos.Y);
 
         // Start session analytics
@@ -547,7 +547,7 @@ public class WorldScreen : GameScreen
                 // Find the target enemy position for floating text
                 // Parse damage from event string
                 var playerWorldPos = _gridRenderer.TileCenter(state.PlayerPos);
-                var targetPos = playerWorldPos + new Vector2(48, 0);
+                var targetPos = playerWorldPos + new Vector2(_gridRenderer.CellSize, 0);
 
                 // Extract damage number from event text
                 int damage = 0;
@@ -703,7 +703,7 @@ public class WorldScreen : GameScreen
         _hudBgPanel = new Panel
         {
             HorizontalAlignment = HorizontalAlignment.Stretch,
-            Height = 32,
+            Height = 40,
             Background = new Myra.Graphics2D.Brushes.SolidBrush(Color.Black * 0.5f),
         };
         var hudBar = new HorizontalStackPanel { Spacing = DesignSystem.SpaceMd };

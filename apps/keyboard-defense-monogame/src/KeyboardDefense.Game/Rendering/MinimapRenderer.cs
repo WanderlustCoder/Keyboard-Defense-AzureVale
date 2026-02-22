@@ -100,6 +100,19 @@ public class MinimapRenderer
             }
         }
 
+        // Roaming enemies (only show on discovered tiles)
+        foreach (var roamer in state.RoamingEnemies)
+        {
+            if (roamer.TryGetValue("pos", out var rpos) && rpos is GridPoint rp && state.Discovered.Contains(SimMap.Idx(rp.X, rp.Y, mapW)))
+            {
+                int size = Math.Max(2, (int)(tileW * 1.5f));
+                spriteBatch.Draw(_pixel, new Rectangle(
+                    (int)(origin.X + rp.X * tileW),
+                    (int)(origin.Y + rp.Y * tileH),
+                    size, size), EnemyMarker);
+            }
+        }
+
         // Base marker
         {
             int size = Math.Max(3, (int)(tileW * 2));
