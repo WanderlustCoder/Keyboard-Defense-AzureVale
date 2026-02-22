@@ -15,8 +15,8 @@ public class EventLogOverlay
     private readonly HudPainter _painter = new();
     private readonly List<LogEntry> _entries = new();
     private const int MaxEntries = 15;
-    private const float EntryHeight = 16f;
-    private const float TextScale = 0.4f;
+    private const float EntryHeight = 20f;
+    private const float TextScale = 0.5f;
 
     private static readonly Color BgTop = Color.Transparent;
     private static readonly Color BgBottom = new(10, 9, 18, 180);

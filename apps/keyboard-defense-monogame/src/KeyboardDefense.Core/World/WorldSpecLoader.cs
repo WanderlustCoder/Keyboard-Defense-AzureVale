@@ -163,6 +163,8 @@ public static class WorldSpecLoader
     {
         if (minLevel <= 1) return SimMap.Water;
         if (minLevel == 2) return SimMap.Desert; // beach
+        // Roads override plains/forest/desert but not water/mountain
+        if (isRoad && maxMount < 1) return SimMap.Road;
         // level 3 = meadow
         if (maxMount >= 1) return SimMap.Mountain;
         if (maxSwamp >= 1) return SimMap.Forest; // swamp

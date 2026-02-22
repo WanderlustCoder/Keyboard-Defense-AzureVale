@@ -20,7 +20,7 @@ public class BattleHudOverlay
     private Texture2D? _icoGold;
     private Texture2D? _icoEnemy;
 
-    private const int BarHeight = 44;
+    private const int BarHeight = 60;
 
     private static readonly Color GradTop = new(15, 13, 25);
     private static readonly Color GradBottom = new(25, 22, 40);
@@ -58,53 +58,53 @@ public class BattleHudOverlay
         if (SingleWaveMode) phaseText += " (WAVE)";
 
         if (isNight)
-            _painter.DrawTextGlow(sb, new Vector2(x, cy - 8), phaseText, ThemeColors.DamageRed, ThemeColors.DamageRed, 0.5f);
+            _painter.DrawTextGlow(sb, new Vector2(x, cy - 10), phaseText, ThemeColors.DamageRed, ThemeColors.DamageRed, 0.65f);
         else
-            _painter.DrawTextShadowed(sb, new Vector2(x, cy - 8), phaseText, ThemeColors.AccentCyan, 0.5f);
+            _painter.DrawTextShadowed(sb, new Vector2(x, cy - 10), phaseText, ThemeColors.AccentCyan, 0.65f);
 
-        x += (int)(_painter.Font!.MeasureString(phaseText).X * 0.5f) + 12;
+        x += (int)(_painter.Font!.MeasureString(phaseText).X * 0.65f) + 14;
         DrawDivider(sb, x, barRect);
-        x += 8;
+        x += 10;
 
         // Section 2: Day
         string dayText = $"DAY {state.Day}";
-        _painter.DrawTextShadowed(sb, new Vector2(x, cy - 8), dayText, ThemeColors.Accent, 0.5f);
-        x += 64;
+        _painter.DrawTextShadowed(sb, new Vector2(x, cy - 10), dayText, ThemeColors.Accent, 0.65f);
+        x += 80;
         DrawDivider(sb, x, barRect);
-        x += 8;
+        x += 10;
 
         // Section 3: HP with progress bar
         float hpMax = 20f;
         float hpPct = Math.Clamp(state.Hp / hpMax, 0f, 1f);
         Color hpColor = ThemeColors.GetHealthColor(hpPct);
 
-        _painter.DrawIconLabel(sb, new Vector2(x, cy - 8), _icoHp, "HP", ThemeColors.Text, 0.45f);
-        x += 52;
-        _painter.DrawProgressBar(sb, new Rectangle(x, cy - 5, 80, 10), hpPct, hpColor, Color.Black * 0.4f);
-        x += 84;
-        _painter.DrawTextShadowed(sb, new Vector2(x, cy - 7), $"{state.Hp}/20", hpColor, 0.45f);
-        x += 50;
-        DrawDivider(sb, x, barRect);
-        x += 8;
-
-        // Section 4: Gold
-        _painter.DrawIconLabel(sb, new Vector2(x, cy - 8), _icoGold, state.Gold.ToString(), ThemeColors.ResourceGold, 0.45f);
+        _painter.DrawIconLabel(sb, new Vector2(x, cy - 10), _icoHp, "HP", ThemeColors.Text, 0.6f);
+        x += 64;
+        _painter.DrawProgressBar(sb, new Rectangle(x, cy - 7, 100, 14), hpPct, hpColor, Color.Black * 0.4f);
+        x += 104;
+        _painter.DrawTextShadowed(sb, new Vector2(x, cy - 9), $"{state.Hp}/20", hpColor, 0.6f);
         x += 60;
         DrawDivider(sb, x, barRect);
-        x += 8;
+        x += 10;
+
+        // Section 4: Gold
+        _painter.DrawIconLabel(sb, new Vector2(x, cy - 10), _icoGold, state.Gold.ToString(), ThemeColors.ResourceGold, 0.6f);
+        x += 72;
+        DrawDivider(sb, x, barRect);
+        x += 10;
 
         // Section 5: Enemies
         int enemyCount = state.Enemies.Count;
         Color enemyColor = enemyCount > 5 ? ThemeColors.DamageRed : ThemeColors.Error;
-        _painter.DrawIconLabel(sb, new Vector2(x, cy - 8), _icoEnemy, "", ThemeColors.Text, 0.45f);
-        x += 20;
+        _painter.DrawIconLabel(sb, new Vector2(x, cy - 10), _icoEnemy, "", ThemeColors.Text, 0.6f);
+        x += 24;
         if (enemyCount > 5)
-            _painter.DrawTextGlow(sb, new Vector2(x, cy - 7), enemyCount.ToString(), enemyColor, ThemeColors.DamageRed, 0.5f);
+            _painter.DrawTextGlow(sb, new Vector2(x, cy - 9), enemyCount.ToString(), enemyColor, ThemeColors.DamageRed, 0.65f);
         else
-            _painter.DrawTextShadowed(sb, new Vector2(x, cy - 7), enemyCount.ToString(), enemyColor, 0.5f);
-        x += 30;
+            _painter.DrawTextShadowed(sb, new Vector2(x, cy - 9), enemyCount.ToString(), enemyColor, 0.65f);
+        x += 36;
         DrawDivider(sb, x, barRect);
-        x += 8;
+        x += 10;
 
         if (SingleWaveMode)
             DrawWaveSection(sb, state, ref x, cy, barRect);
@@ -113,23 +113,23 @@ public class BattleHudOverlay
         string prompt = string.IsNullOrEmpty(state.NightPrompt) ? "" : state.NightPrompt;
         if (!string.IsNullOrEmpty(prompt))
         {
-            _painter.DrawTextShadowed(sb, new Vector2(x, cy - 12), "TARGET", ThemeColors.TextDim, 0.35f);
-            _painter.DrawTextGlow(sb, new Vector2(x, cy), prompt, ThemeColors.AccentCyan, ThemeColors.AccentCyan, 0.55f);
-            x += (int)(_painter.Font!.MeasureString(prompt).X * 0.55f) + 16;
+            _painter.DrawTextShadowed(sb, new Vector2(x, cy - 14), "TARGET", ThemeColors.TextDim, 0.45f);
+            _painter.DrawTextGlow(sb, new Vector2(x, cy + 2), prompt, ThemeColors.AccentCyan, ThemeColors.AccentCyan, 0.7f);
+            x += (int)(_painter.Font!.MeasureString(prompt).X * 0.7f) + 18;
             DrawDivider(sb, x, barRect);
-            x += 8;
+            x += 10;
         }
 
-        // Section: WPM/Accuracy (right-aligned)
+        // Section: Combo (right-aligned)
         int combo = TypingMetrics.GetComboCount(state);
         if (combo > 0)
         {
             string comboText = $"x{combo}";
             Color comboColor = combo >= 10 ? ThemeColors.GoldAccent : ThemeColors.AccentCyan;
             if (combo >= 10)
-                _painter.DrawTextGlow(sb, new Vector2(x, cy - 8), comboText, comboColor, ThemeColors.GoldAccent, 0.5f);
+                _painter.DrawTextGlow(sb, new Vector2(x, cy - 10), comboText, comboColor, ThemeColors.GoldAccent, 0.65f);
             else
-                _painter.DrawTextShadowed(sb, new Vector2(x, cy - 8), comboText, comboColor, 0.5f);
+                _painter.DrawTextShadowed(sb, new Vector2(x, cy - 10), comboText, comboColor, 0.65f);
         }
     }
 
@@ -140,23 +140,23 @@ public class BattleHudOverlay
         int spawned = Math.Max(0, total - state.NightSpawnRemaining);
         float wavePct = Math.Clamp((float)spawned / total, 0f, 1f);
 
-        _painter.DrawTextShadowed(sb, new Vector2(x, cy - 12), "WAVE", ThemeColors.TextDim, 0.35f);
-        _painter.DrawProgressBar(sb, new Rectangle(x, cy + 1, 60, 8), wavePct, ThemeColors.AccentBlue, Color.Black * 0.4f);
-        x += 64;
-        _painter.DrawTextShadowed(sb, new Vector2(x, cy - 7), $"{spawned}/{total}", ThemeColors.AccentBlue, 0.4f);
-        x += 42;
+        _painter.DrawTextShadowed(sb, new Vector2(x, cy - 14), "WAVE", ThemeColors.TextDim, 0.45f);
+        _painter.DrawProgressBar(sb, new Rectangle(x, cy + 2, 80, 10), wavePct, ThemeColors.AccentBlue, Color.Black * 0.4f);
+        x += 84;
+        _painter.DrawTextShadowed(sb, new Vector2(x, cy - 9), $"{spawned}/{total}", ThemeColors.AccentBlue, 0.55f);
+        x += 52;
 
         // Timer
         float runClock = ReadMetricFloat(state, "vs_run_clock_sec");
         string timerText = FormatSeconds(runClock);
-        _painter.DrawTextShadowed(sb, new Vector2(x, cy - 7), timerText, ThemeColors.AccentCyan, 0.45f);
-        x += 50;
+        _painter.DrawTextShadowed(sb, new Vector2(x, cy - 9), timerText, ThemeColors.AccentCyan, 0.6f);
+        x += 60;
 
         // Words / Misses
         int words = ReadMetricInt(state, "battle_words_typed");
         int misses = ReadMetricInt(state, "vs_miss_count");
-        _painter.DrawTextShadowed(sb, new Vector2(x, cy - 7), $"W:{words} M:{misses}", ThemeColors.TextDim, 0.4f);
-        x += 80;
+        _painter.DrawTextShadowed(sb, new Vector2(x, cy - 9), $"W:{words} M:{misses}", ThemeColors.TextDim, 0.55f);
+        x += 100;
 
         DrawDivider(sb, x, barRect);
         x += 8;

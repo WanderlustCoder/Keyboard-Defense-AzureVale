@@ -16,6 +16,7 @@ public static class SimMap
     public const string Water = "water";
     public const string Desert = "desert";
     public const string Snow = "snow";
+    public const string Road = "road";
 
     public const string ZoneSafe = "safe";
     public const string ZoneFrontier = "frontier";
@@ -121,6 +122,7 @@ public static class SimMap
     public const string TerrainWater = Water;
     public const string TerrainDesert = Desert;
     public const string TerrainSnow = Snow;
+    public const string TerrainRoad = Road;
 
     public static string[] GetAllZones() => new[] { ZoneSafe, ZoneFrontier, ZoneWilderness, ZoneDepths };
 

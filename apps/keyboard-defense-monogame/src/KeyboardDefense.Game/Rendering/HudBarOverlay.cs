@@ -25,7 +25,7 @@ public class HudBarOverlay
     private Texture2D? _icoFood;
     private Texture2D? _icoThreat;
 
-    private const int BarHeight = 44;
+    private const int BarHeight = 60;
 
     // Gradient colors
     private static readonly Color GradTop = new(15, 13, 25);
@@ -63,59 +63,59 @@ public class HudBarOverlay
 
         // Section 1: Day
         string dayText = $"DAY {state.Day}";
-        _painter.DrawTextShadowed(sb, new Vector2(x, cy - 8), dayText, ThemeColors.Accent, 0.55f);
-        x += 70;
+        _painter.DrawTextShadowed(sb, new Vector2(x, cy - 10), dayText, ThemeColors.Accent, 0.7f);
+        x += 90;
         DrawDivider(sb, x, barRect);
-        x += 8;
+        x += 10;
 
         // Section 2: HP with progress bar
         float hpMax = 20f;
         float hpPct = Math.Clamp(state.Hp / hpMax, 0f, 1f);
         Color hpColor = ThemeColors.GetHealthColor(hpPct);
 
-        _painter.DrawIconLabel(sb, new Vector2(x, cy - 8), _icoHp, "HP", ThemeColors.Text, 0.45f);
-        x += 52;
-        _painter.DrawProgressBar(sb, new Rectangle(x, cy - 5, 80, 10), hpPct, hpColor, Color.Black * 0.4f);
-        x += 84;
-        _painter.DrawTextShadowed(sb, new Vector2(x, cy - 7), $"{state.Hp}/20", hpColor, 0.45f);
-        x += 50;
+        _painter.DrawIconLabel(sb, new Vector2(x, cy - 10), _icoHp, "HP", ThemeColors.Text, 0.6f);
+        x += 64;
+        _painter.DrawProgressBar(sb, new Rectangle(x, cy - 7, 100, 14), hpPct, hpColor, Color.Black * 0.4f);
+        x += 104;
+        _painter.DrawTextShadowed(sb, new Vector2(x, cy - 9), $"{state.Hp}/20", hpColor, 0.6f);
+        x += 60;
         DrawDivider(sb, x, barRect);
-        x += 8;
+        x += 10;
 
         // Section 3: Resources (gold, wood, stone, food)
         int wood = state.Resources.GetValueOrDefault("wood", 0);
         int stone = state.Resources.GetValueOrDefault("stone", 0);
         int food = state.Resources.GetValueOrDefault("food", 0);
 
-        _painter.DrawIconLabel(sb, new Vector2(x, cy - 8), _icoGold, state.Gold.ToString(), ThemeColors.ResourceGold, 0.45f);
+        _painter.DrawIconLabel(sb, new Vector2(x, cy - 10), _icoGold, state.Gold.ToString(), ThemeColors.ResourceGold, 0.6f);
+        x += 72;
+        _painter.DrawIconLabel(sb, new Vector2(x, cy - 10), _icoWood, wood.ToString(), ThemeColors.ResourceWood, 0.6f);
         x += 60;
-        _painter.DrawIconLabel(sb, new Vector2(x, cy - 8), _icoWood, wood.ToString(), ThemeColors.ResourceWood, 0.45f);
-        x += 50;
-        _painter.DrawIconLabel(sb, new Vector2(x, cy - 8), _icoStone, stone.ToString(), ThemeColors.ResourceStone, 0.45f);
-        x += 50;
-        _painter.DrawIconLabel(sb, new Vector2(x, cy - 8), _icoFood, food.ToString(), ThemeColors.ResourceFood, 0.45f);
-        x += 50;
+        _painter.DrawIconLabel(sb, new Vector2(x, cy - 10), _icoStone, stone.ToString(), ThemeColors.ResourceStone, 0.6f);
+        x += 60;
+        _painter.DrawIconLabel(sb, new Vector2(x, cy - 10), _icoFood, food.ToString(), ThemeColors.ResourceFood, 0.6f);
+        x += 60;
         DrawDivider(sb, x, barRect);
-        x += 8;
+        x += 10;
 
         // Section 4: Threat with progress bar
         float threat = MathHelper.Clamp(state.ThreatLevel, 0f, 1f);
         int threatPct = (int)(threat * 100);
         Color threatBarColor = Color.Lerp(ThemeColors.AccentCyan, ThemeColors.DamageRed, threat);
 
-        _painter.DrawIconLabel(sb, new Vector2(x, cy - 8), _icoThreat, "", ThemeColors.Text, 0.45f);
-        x += 20;
-        _painter.DrawProgressBar(sb, new Rectangle(x, cy - 5, 60, 10), threat, threatBarColor, Color.Black * 0.4f);
-        x += 64;
+        _painter.DrawIconLabel(sb, new Vector2(x, cy - 10), _icoThreat, "", ThemeColors.Text, 0.6f);
+        x += 24;
+        _painter.DrawProgressBar(sb, new Rectangle(x, cy - 7, 80, 14), threat, threatBarColor, Color.Black * 0.4f);
+        x += 84;
 
         string threatText = $"{threatPct}%";
         if (threat >= 0.8f)
-            _painter.DrawTextGlow(sb, new Vector2(x, cy - 7), threatText, ThemeColors.DamageRed, ThemeColors.DamageRed, 0.45f);
+            _painter.DrawTextGlow(sb, new Vector2(x, cy - 9), threatText, ThemeColors.DamageRed, ThemeColors.DamageRed, 0.6f);
         else
-            _painter.DrawTextShadowed(sb, new Vector2(x, cy - 7), threatText, threatBarColor, 0.45f);
-        x += 42;
+            _painter.DrawTextShadowed(sb, new Vector2(x, cy - 9), threatText, threatBarColor, 0.6f);
+        x += 52;
         DrawDivider(sb, x, barRect);
-        x += 8;
+        x += 10;
 
         // Section 5: Zone / Time / Mode info
         string zone = SimMap.GetZoneName(SimMap.GetZoneAt(state, state.PlayerPos));
@@ -129,13 +129,13 @@ public class HudBarOverlay
             _ => state.ActivityMode,
         };
 
-        _painter.DrawTextShadowed(sb, new Vector2(x, cy - 12), $"{zone} \u00b7 {time}", ThemeColors.AccentCyan, 0.4f);
+        _painter.DrawTextShadowed(sb, new Vector2(x, cy - 14), $"{zone} \u00b7 {time}", ThemeColors.AccentCyan, 0.55f);
 
         Color modeColor = mode == "COMBAT!" ? ThemeColors.DamageRed : ThemeColors.Accent;
         if (mode == "COMBAT!")
-            _painter.DrawTextGlow(sb, new Vector2(x, cy + 2), mode, modeColor, ThemeColors.DamageRed, 0.4f);
+            _painter.DrawTextGlow(sb, new Vector2(x, cy + 4), mode, modeColor, ThemeColors.DamageRed, 0.55f);
         else
-            _painter.DrawTextShadowed(sb, new Vector2(x, cy + 2), mode, modeColor, 0.4f);
+            _painter.DrawTextShadowed(sb, new Vector2(x, cy + 4), mode, modeColor, 0.55f);
     }
 
     private void DrawDivider(SpriteBatch sb, int x, Rectangle barRect)

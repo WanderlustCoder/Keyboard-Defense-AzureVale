@@ -18,11 +18,11 @@ public class QuestTrackerHud
     private readonly HudPainter _painter = new();
 
     private const int MaxDisplayQuests = 3;
-    private const int BarWidth = 120;
-    private const int BarHeight = 8;
-    private const int PanelWidth = 200;
-    private const int EntryHeight = 32;
-    private const int PanelPadding = 8;
+    private const int BarWidth = 150;
+    private const int BarHeight = 10;
+    private const int PanelWidth = 240;
+    private const int EntryHeight = 38;
+    private const int PanelPadding = 10;
 
     private static readonly Color BgTop = new(20, 18, 32, 200);
     private static readonly Color BgBottom = new(12, 10, 22, 220);
@@ -65,7 +65,7 @@ public class QuestTrackerHud
         // Header text
         _painter.DrawTextShadowed(spriteBatch,
             new Vector2(panelX + PanelPadding, panelY + PanelPadding),
-            "QUESTS", ThemeColors.GoldAccent, 0.5f);
+            "QUESTS", ThemeColors.GoldAccent, 0.6f);
 
         int entryY = panelY + PanelPadding + 18;
 
@@ -84,7 +84,7 @@ public class QuestTrackerHud
             string name = def.Name.Length > 20 ? def.Name[..20] + ".." : def.Name;
             Color nameColor = completed ? ThemeColors.Success : ThemeColors.Text;
             _painter.DrawTextShadowed(spriteBatch,
-                new Vector2(panelX + PanelPadding, y), name, nameColor, 0.4f);
+                new Vector2(panelX + PanelPadding, y), name, nameColor, 0.55f);
 
             // Progress bar with border
             int barX = panelX + PanelPadding;
@@ -96,7 +96,7 @@ public class QuestTrackerHud
                     new Rectangle(barX, barY, BarWidth, BarHeight),
                     1f, ThemeColors.Success * 0.8f, Color.Black * 0.4f);
                 _painter.DrawTextShadowed(spriteBatch,
-                    new Vector2(barX + BarWidth + 4, barY - 2), "OK", ThemeColors.Success, 0.35f);
+                    new Vector2(barX + BarWidth + 4, barY - 2), "OK", ThemeColors.Success, 0.45f);
             }
             else if (target > 0)
             {
@@ -107,7 +107,7 @@ public class QuestTrackerHud
 
                 string progress = $"{current}/{target}";
                 _painter.DrawTextShadowed(spriteBatch,
-                    new Vector2(barX + BarWidth + 4, barY - 2), progress, ThemeColors.TextDim, 0.35f);
+                    new Vector2(barX + BarWidth + 4, barY - 2), progress, ThemeColors.TextDim, 0.45f);
             }
         }
     }

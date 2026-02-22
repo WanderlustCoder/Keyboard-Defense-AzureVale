@@ -42,6 +42,7 @@ public class GridRenderer
     private static readonly Color WaterColor = new(50, 90, 150);
     private static readonly Color DesertColor = new(190, 170, 110);
     private static readonly Color SnowColor = new(200, 210, 230);
+    private static readonly Color RoadColor = new(140, 120, 80);
     private static readonly Color FogColor = new(20, 20, 30);
 
     // Entity colors
@@ -154,7 +155,10 @@ public class GridRenderer
     private void DrawTerrain(SpriteBatch spriteBatch, GameState state, GridPoint pos)
     {
         string terrain = SimMap.GetTerrain(state, pos);
-        Color color = terrain switch
+        bool isRoad = terrain == SimMap.TerrainRoad;
+        string baseTerrain = isRoad ? SimMap.TerrainPlains : terrain;
+
+        Color color = baseTerrain switch
         {
             SimMap.TerrainForest => ForestColor,
             SimMap.TerrainMountain => MountainColor,
@@ -167,28 +171,62 @@ public class GridRenderer
         var rect = TileRect(pos);
 
         // Use wang_0 (full base terrain tile) from each biome's tileset for detailed art
-        bool drewTileset = TilesetManager.Instance.DrawTile(spriteBatch, terrain, 15, rect);
+        bool drewTileset = TilesetManager.Instance.DrawTile(spriteBatch, baseTerrain, 15, rect);
 
         if (!drewTileset)
         {
-            // Try sprite texture, fall back to colored rectangle
-            string tileId = terrain switch
+            // Try grass tile variants for plains (position hash selects variant)
+            if (baseTerrain == SimMap.TerrainPlains)
             {
-                SimMap.TerrainForest => "forest",
-                SimMap.TerrainMountain => "mountain",
-                SimMap.TerrainWater => "water",
-                SimMap.TerrainDesert => "desert",
-                SimMap.TerrainSnow => "snow",
-                _ => "plain",
-            };
-            var texture = AssetLoader.Instance.GetTileTexture(tileId);
-            if (texture != null)
-                spriteBatch.Draw(texture, rect, Color.White);
+                int grassHash = (pos.X * 7919 + pos.Y * 7907) & 0x7FFFFFFF;
+                int variant = grassHash % 4;
+                string grassId = $"tile_grass_{variant}";
+                var grassTex = AssetLoader.Instance.GetTexture(grassId);
+                if (grassTex != null)
+                    spriteBatch.Draw(grassTex, rect, Color.White);
+                else
+                {
+                    var plainTex = AssetLoader.Instance.GetTileTexture("plain");
+                    if (plainTex != null)
+                        spriteBatch.Draw(plainTex, rect, Color.White);
+                    else
+                        spriteBatch.Draw(_pixel!, rect, color);
+                }
+            }
             else
-                spriteBatch.Draw(_pixel!, rect, color);
+            {
+                // Try sprite texture, fall back to colored rectangle
+                string tileId = baseTerrain switch
+                {
+                    SimMap.TerrainForest => "forest",
+                    SimMap.TerrainMountain => "mountain",
+                    SimMap.TerrainWater => "water",
+                    SimMap.TerrainDesert => "desert",
+                    SimMap.TerrainSnow => "snow",
+                    _ => "plain",
+                };
+                var texture = AssetLoader.Instance.GetTileTexture(tileId);
+                if (texture != null)
+                    spriteBatch.Draw(texture, rect, Color.White);
+                else
+                    spriteBatch.Draw(_pixel!, rect, color);
+            }
         }
 
-        // Edge transitions: darken edges where biome changes
+        // Road overlay — draw dirt path on top of base terrain
+        if (isRoad)
+        {
+            int roadHash = (pos.X * 3571 + pos.Y * 4219) & 0x7FFFFFFF;
+            int roadVariant = roadHash % 3;
+            string roadId = $"tile_road_{roadVariant}";
+            var roadTex = AssetLoader.Instance.GetTexture(roadId);
+            if (roadTex != null)
+                spriteBatch.Draw(roadTex, rect, Color.White * 0.85f);
+            else
+                spriteBatch.Draw(_pixel!, rect, RoadColor);
+        }
+
+        // Edge transitions: darken edges where biome changes (roads use base terrain for transitions)
         var transitions = AutoTileResolver.GetEdgeTransitions(state, pos);
         foreach (var edge in transitions)
         {
@@ -213,7 +251,9 @@ public class GridRenderer
         spriteBatch.Draw(_pixel!, new Rectangle(rect.X, rect.Y, 1, rect.Height), Color.Black * 0.15f);
 
         // Decorative map objects (deterministic scatter based on position hash)
-        DrawDecorations(spriteBatch, pos, terrain, rect);
+        // Roads don't get decorations; use base terrain for scatter checks
+        if (!isRoad)
+            DrawDecorations(spriteBatch, pos, baseTerrain, rect);
     }
 
     private void DrawDecorations(SpriteBatch spriteBatch, GridPoint pos, string terrain, Rectangle rect)
@@ -226,8 +266,8 @@ public class GridRenderer
         int variant = hash / 100 % 4;
         if (terrain == SimMap.TerrainForest && chance < 30)
             textureName = variant switch { 0 => "tree", 1 => "pine", 2 => "tree", _ => "reeds2" };
-        else if (terrain == SimMap.TerrainPlains && chance < 15)
-            textureName = variant switch { 0 => "reeds", 1 => "signpost", 2 => "well", _ => "reeds" };
+        else if (terrain == SimMap.TerrainPlains && chance < 5)
+            textureName = variant switch { 0 => "signpost", 1 => "well", 2 => "campfire", _ => "signpost" };
         else if (terrain == SimMap.TerrainMountain && chance < 18)
             textureName = variant switch { 0 => "rock", 1 => "mine", 2 => "rock", _ => "campfire" };
         else if (terrain == SimMap.TerrainDesert && chance < 14)
@@ -265,6 +305,7 @@ public class GridRenderer
             SimMap.TerrainWater => WaterColor,
             SimMap.TerrainDesert => DesertColor,
             SimMap.TerrainSnow => SnowColor,
+            SimMap.TerrainRoad => RoadColor,
             _ => PlainColor,
         };
         return neighborColor * 0.35f;
@@ -311,26 +352,87 @@ public class GridRenderer
         }
     }
 
-    private void DrawBase(SpriteBatch spriteBatch, GridPoint pos)
+    private void DrawBase(SpriteBatch spriteBatch, GridPoint center)
     {
-        var rect = TileRect(pos);
-        int inset = CellSize / 8;
-        var inner = new Rectangle(rect.X + inset, rect.Y + inset, rect.Width - inset * 2, rect.Height - inset * 2);
+        // 3x3 walled settlement compound centered on base position
+        // Layout:
+        //   [corner] [wall_h/gate] [corner]
+        //   [wall_v] [  keep     ] [wall_v]
+        //   [corner] [  wall_h  ] [corner]
+        var loader = AssetLoader.Instance;
 
-        // Try castle sprite
-        AssetLoader.Instance.RegisterBuildingSprite("castle");
-        var sheet = AssetLoader.Instance.Animator.GetSheet("bld_castle");
-        if (sheet?.Texture != null)
+        for (int dy = -1; dy <= 1; dy++)
         {
-            spriteBatch.Draw(sheet.Texture, inner, Color.White);
-        }
-        else
-        {
-            spriteBatch.Draw(_pixel!, inner, BaseColor);
-        }
+            for (int dx = -1; dx <= 1; dx++)
+            {
+                var tilePos = new GridPoint(center.X + dx, center.Y + dy);
+                var rect = TileRect(tilePos);
 
-        // Base outline
-        DrawRectOutline(spriteBatch, inner, ThemeColors.GoldBright, 2);
+                if (dx == 0 && dy == 0)
+                {
+                    // Center: castle keep
+                    var keepTex = loader.GetTexture("bld_keep");
+                    if (keepTex != null)
+                        spriteBatch.Draw(keepTex, rect, Color.White);
+                    else
+                        spriteBatch.Draw(_pixel!, rect, BaseColor);
+                    DrawRectOutline(spriteBatch, rect, ThemeColors.GoldBright, 2);
+                }
+                else if (dx == 0 && dy == -1)
+                {
+                    // North center: gate
+                    var gateTex = loader.GetTexture("bld_gate");
+                    if (gateTex != null)
+                        spriteBatch.Draw(gateTex, rect, Color.White);
+                    else
+                    {
+                        spriteBatch.Draw(_pixel!, rect, StructureColor);
+                        DrawRectOutline(spriteBatch, rect, ThemeColors.Border, 1);
+                    }
+                }
+                else if (Math.Abs(dx) == 1 && Math.Abs(dy) == 1)
+                {
+                    // Corners
+                    var cornerTex = loader.GetTexture("bld_wall_corner");
+                    if (cornerTex != null)
+                    {
+                        var flip = SpriteEffects.None;
+                        if (dx > 0) flip |= SpriteEffects.FlipHorizontally;
+                        if (dy > 0) flip |= SpriteEffects.FlipVertically;
+                        spriteBatch.Draw(cornerTex, rect, null, Color.White, 0f, Vector2.Zero, flip, 0f);
+                    }
+                    else
+                    {
+                        spriteBatch.Draw(_pixel!, rect, MountainColor);
+                        DrawRectOutline(spriteBatch, rect, ThemeColors.Border, 1);
+                    }
+                }
+                else if (dx == 0)
+                {
+                    // South center: horizontal wall
+                    var wallHTex = loader.GetTexture("bld_wall_h");
+                    if (wallHTex != null)
+                        spriteBatch.Draw(wallHTex, rect, Color.White);
+                    else
+                    {
+                        spriteBatch.Draw(_pixel!, rect, MountainColor);
+                        DrawRectOutline(spriteBatch, rect, ThemeColors.Border, 1);
+                    }
+                }
+                else
+                {
+                    // East/West: vertical wall
+                    var wallVTex = loader.GetTexture("bld_wall_v");
+                    if (wallVTex != null)
+                        spriteBatch.Draw(wallVTex, rect, Color.White);
+                    else
+                    {
+                        spriteBatch.Draw(_pixel!, rect, MountainColor);
+                        DrawRectOutline(spriteBatch, rect, ThemeColors.Border, 1);
+                    }
+                }
+            }
+        }
     }
 
     private void DrawEnemy(SpriteBatch spriteBatch, Dictionary<string, object> enemy)
