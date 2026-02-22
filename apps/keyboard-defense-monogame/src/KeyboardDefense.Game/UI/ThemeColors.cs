@@ -233,3 +233,55 @@ public static class ThemeColors
     /// </summary>
     public static Color GetText() => GetAccessibleColor(Text, true);
 }
+
+public record FrameStyle(
+    Color BgTop, Color BgBottom, Color BorderColor, Color HighlightColor,
+    Color AccentColor, Color TitleBgTop, Color TitleBgBottom, Color TitleColor,
+    bool ShowCornerDots);
+
+public static class FrameStyles
+{
+    public static readonly FrameStyle Default = new(
+        BgTop: new Color(18, 16, 28),
+        BgBottom: new Color(12, 10, 20),
+        BorderColor: ThemeColors.Border,
+        HighlightColor: ThemeColors.BorderHighlight,
+        AccentColor: ThemeColors.Accent,
+        TitleBgTop: new Color(30, 26, 48),
+        TitleBgBottom: new Color(20, 18, 35),
+        TitleColor: ThemeColors.Accent,
+        ShowCornerDots: true);
+
+    public static readonly FrameStyle Combat = new(
+        BgTop: new Color(25, 12, 14),
+        BgBottom: new Color(15, 8, 10),
+        BorderColor: ThemeColors.DamageRed,
+        HighlightColor: new Color(180, 60, 60),
+        AccentColor: ThemeColors.DamageRed,
+        TitleBgTop: new Color(40, 16, 18),
+        TitleBgBottom: new Color(25, 12, 14),
+        TitleColor: ThemeColors.DamageRed,
+        ShowCornerDots: true);
+
+    public static readonly FrameStyle Gold = new(
+        BgTop: new Color(22, 18, 12),
+        BgBottom: new Color(14, 12, 8),
+        BorderColor: ThemeColors.GoldAccent,
+        HighlightColor: new Color(200, 170, 80),
+        AccentColor: ThemeColors.GoldAccent,
+        TitleBgTop: new Color(35, 28, 15),
+        TitleBgBottom: new Color(22, 18, 12),
+        TitleColor: ThemeColors.GoldAccent,
+        ShowCornerDots: true);
+
+    public static readonly FrameStyle Info = new(
+        BgTop: new Color(14, 18, 28),
+        BgBottom: new Color(10, 12, 20),
+        BorderColor: ThemeColors.AccentBlue,
+        HighlightColor: new Color(100, 140, 200),
+        AccentColor: ThemeColors.AccentBlue,
+        TitleBgTop: new Color(20, 28, 45),
+        TitleBgBottom: new Color(14, 18, 28),
+        TitleColor: ThemeColors.AccentBlue,
+        ShowCornerDots: false);
+}

@@ -1,5 +1,6 @@
 using System;
 using Microsoft.Xna.Framework;
+using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.UI;
 
 namespace KeyboardDefense.Game.UI;
@@ -13,6 +14,7 @@ public class BasePanel
     public string Title { get; set; }
     public bool Visible { get; set; }
     public Panel RootWidget { get; }
+    public FrameStyle Style { get; set; } = FrameStyles.Default;
 
     private readonly VerticalStackPanel _content;
     private readonly Label _titleLabel;
@@ -35,6 +37,10 @@ public class BasePanel
             HorizontalAlignment = HorizontalAlignment.Center,
             VerticalAlignment = VerticalAlignment.Center,
             Visible = false,
+            Background = new SolidBrush(ThemeColors.BgPanel),
+            Border = new SolidBrush(ThemeColors.Border),
+            BorderThickness = new Myra.Graphics2D.Thickness(1),
+            Padding = new Myra.Graphics2D.Thickness(8, 36, 8, 8),
         };
 
         var layout = new VerticalStackPanel { Spacing = DesignSystem.SpacingMd };
@@ -44,12 +50,14 @@ public class BasePanel
         _titleLabel = new Label
         {
             Text = title,
+            TextColor = ThemeColors.Accent,
             HorizontalAlignment = HorizontalAlignment.Center,
         };
         var closeBtn = ButtonFactory.Ghost("X", Close);
         closeBtn.HorizontalAlignment = HorizontalAlignment.Right;
         closeBtn.Width = 32;
         closeBtn.Height = 32;
+        closeBtn.OverBackground = new SolidBrush(ThemeColors.DamageRed * 0.3f);
 
         titleBar.Widgets.Add(_titleLabel);
         titleBar.Widgets.Add(closeBtn);

@@ -33,19 +33,13 @@ public class BattlefieldScreen : GameScreen
     private VerticalSliceWaveConfig? _verticalSliceConfig;
 
     private Desktop? _desktop;
-    private Label? _phaseLabel;
-    private Label? _hpLabel;
-    private Label? _dayLabel;
-    private Label? _goldLabel;
-    private Label? _enemyLabel;
-    private Label? _waveLabel;
-    private Label? _promptLabel;
-    private Label? _timerLabel;
-    private Label? _typingStatsLabel;
-    private Label? _eventLog;
     private TextBox? _typingInput;
     private TypingInput? _typingHandler;
     private PanelOverlay? _panelOverlay;
+
+    // SpriteBatch HUD replacements
+    private readonly BattleHudOverlay _battleHud = new();
+    private readonly EventLogOverlay _eventLogOverlay = new();
 
     private BestiaryPanel? _bestiaryPanel;
     private StatsPanel? _statsPanel;
@@ -103,6 +97,12 @@ public class BattlefieldScreen : GameScreen
         // Initialize visual renderers
         _battleStage.Initialize(Game.GraphicsDevice, Game.DefaultFont);
         _keyboardDisplay.Initialize(Game.GraphicsDevice, Game.DefaultFont);
+        if (Game.DefaultFont != null)
+        {
+            _battleHud.Initialize(Game.GraphicsDevice, Game.DefaultFont);
+            _battleHud.SingleWaveMode = _singleWaveMode;
+            _eventLogOverlay.Initialize(Game.GraphicsDevice, Game.DefaultFont);
+        }
 
         BuildUi();
 
@@ -308,6 +308,19 @@ public class BattlefieldScreen : GameScreen
         float kbY = Math.Max(200, battleH) + 10;
         _keyboardDisplay.Draw(spriteBatch, new Vector2(vp.Width * 0.5f - 220 + shakeOffset.X, kbY + shakeOffset.Y));
 
+        // Draw SpriteBatch HUD + event log
+        spriteBatch.Begin(blendState: BlendState.AlphaBlend, samplerState: SamplerState.PointClamp);
+        _battleHud.Draw(spriteBatch, state, vp.Width);
+
+        // Event log positioned below HUD bar, left side
+        int logY = 48;
+        int logH = Math.Max(100, battleH - 60);
+        _eventLogOverlay.Draw(spriteBatch, new Rectangle(4, logY, 320, logH));
+
+        // Draw panel frames before Myra
+        _panelOverlay?.DrawPanelFrames(spriteBatch);
+        spriteBatch.End();
+
         _desktop?.Render();
 
         spriteBatch.Begin();
@@ -325,91 +338,42 @@ public class BattlefieldScreen : GameScreen
         var rootPanel = new Panel();
         var mainLayout = new VerticalStackPanel { Spacing = DesignSystem.SpaceSm };
 
-        // Top HUD bar
-        var hudBar = new HorizontalStackPanel { Spacing = DesignSystem.SpaceLg };
-        _dayLabel = new Label { Text = $"{Locale.Tr("game.day")} 1", TextColor = ThemeColors.Accent };
-        _phaseLabel = new Label { Text = $"{Locale.Tr("game.phase")}: day", TextColor = ThemeColors.AccentCyan };
-        _hpLabel = new Label { Text = $"{Locale.Tr("resources.hp")}: 20", TextColor = ThemeColors.Success };
-        _goldLabel = new Label { Text = $"{Locale.Tr("resources.gold")}: 0", TextColor = ThemeColors.ResourceGold };
-        _enemyLabel = new Label { Text = $"{Locale.Tr("hud.enemies")}: 0", TextColor = ThemeColors.Error };
+        // Spacer for SpriteBatch HUD bar (44px)
+        mainLayout.Widgets.Add(new Panel { Height = 48 });
 
-        hudBar.Widgets.Add(_dayLabel);
-        hudBar.Widgets.Add(_phaseLabel);
-        hudBar.Widgets.Add(_hpLabel);
-        hudBar.Widgets.Add(_goldLabel);
-        hudBar.Widgets.Add(_enemyLabel);
-        mainLayout.Widgets.Add(hudBar);
-
-        if (_singleWaveMode)
+        // Input area (positioned above bottom bar)
+        var inputRow = new HorizontalStackPanel
         {
-            var sliceHudBar = new HorizontalStackPanel { Spacing = DesignSystem.SpaceMd };
-            _waveLabel = new Label { Text = "Wave: 0/0", TextColor = ThemeColors.AccentBlue };
-            _promptLabel = new Label { Text = "Prompt: -", TextColor = ThemeColors.TextDim };
-            _timerLabel = new Label { Text = "Time: 0:00", TextColor = ThemeColors.AccentCyan };
-            _typingStatsLabel = new Label { Text = "Words: 0  Misses: 0", TextColor = ThemeColors.TextDim };
-
-            sliceHudBar.Widgets.Add(_waveLabel);
-            sliceHudBar.Widgets.Add(_promptLabel);
-            sliceHudBar.Widgets.Add(_timerLabel);
-            sliceHudBar.Widgets.Add(_typingStatsLabel);
-            mainLayout.Widgets.Add(sliceHudBar);
-        }
-
-        mainLayout.Widgets.Add(new HorizontalSeparator());
-
-        // Event log
-        _eventLog = new Label
-        {
-            Text = "",
-            TextColor = ThemeColors.Text,
-            Wrap = true,
-            HorizontalAlignment = HorizontalAlignment.Stretch,
-            VerticalAlignment = VerticalAlignment.Stretch,
+            Spacing = DesignSystem.SpaceSm,
+            VerticalAlignment = VerticalAlignment.Bottom,
         };
-
-        var scrollViewer = new ScrollViewer
-        {
-            Content = _eventLog,
-            HorizontalAlignment = HorizontalAlignment.Stretch,
-            VerticalAlignment = VerticalAlignment.Stretch,
-        };
-        mainLayout.Widgets.Add(scrollViewer);
-
-        mainLayout.Widgets.Add(new HorizontalSeparator());
-
-        // Input area
-        var inputRow = new HorizontalStackPanel { Spacing = DesignSystem.SpaceSm };
         inputRow.Widgets.Add(new Label { Text = "> ", TextColor = ThemeColors.AccentCyan });
 
         _typingInput = new TextBox
         {
             HorizontalAlignment = HorizontalAlignment.Stretch,
+            Background = new Myra.Graphics2D.Brushes.SolidBrush(ThemeColors.BgInput),
+            Border = new Myra.Graphics2D.Brushes.SolidBrush(ThemeColors.Border),
+            BorderThickness = new Myra.Graphics2D.Thickness(1),
+            TextColor = ThemeColors.Text,
         };
         inputRow.Widgets.Add(_typingInput);
 
-        var submitBtn = new Button
-        {
-            Content = new Label { Text = Locale.Tr("actions.submit") },
-            Width = 100,
-            Height = DesignSystem.SizeButtonMd,
-        };
-        submitBtn.Click += (_, _) => SubmitInput();
+        var submitBtn = ButtonFactory.Primary(Locale.Tr("actions.submit"), SubmitInput);
+        submitBtn.Width = 100;
+        submitBtn.Height = DesignSystem.SizeButtonMd;
         inputRow.Widgets.Add(submitBtn);
 
         mainLayout.Widgets.Add(inputRow);
 
-        // Bottom: action buttons
+        // Bottom: action buttons (styled)
         var bottomBar = new HorizontalStackPanel { Spacing = DesignSystem.SpaceSm };
 
         void AddBtn(string label, Action action, int width = 80)
         {
-            var btn = new Button
-            {
-                Content = new Label { Text = label },
-                Width = width,
-                Height = DesignSystem.SizeButtonSm,
-            };
-            btn.Click += (_, _) => action();
+            var btn = ButtonFactory.Ghost(label, action);
+            btn.Width = width;
+            btn.Height = DesignSystem.SizeButtonSm;
             bottomBar.Widgets.Add(btn);
         }
 
@@ -468,6 +432,10 @@ public class BattlefieldScreen : GameScreen
         _panelOverlay.Bind("panel_damage_calc", _damageCalculatorPanel);
         _panelOverlay.Bind("panel_spells", _spellPanel);
         _panelOverlay.Bind("panel_targeting", _targetingPanel);
+
+        // Initialize panel frame rendering
+        if (Game.DefaultFont != null)
+            _panelOverlay.InitializeFrames(Game.GraphicsDevice, Game.DefaultFont);
     }
 
     private void SubmitInput()
@@ -681,39 +649,7 @@ public class BattlefieldScreen : GameScreen
 
     private void OnStateChanged(GameState state)
     {
-        if (_dayLabel != null) _dayLabel.Text = $"{Locale.Tr("game.day")} {state.Day}";
-        if (_phaseLabel != null) _phaseLabel.Text = $"{Locale.Tr("game.phase")}: {state.Phase}";
-        if (_hpLabel != null)
-        {
-            _hpLabel.Text = $"{Locale.Tr("resources.hp")}: {state.Hp}";
-            _hpLabel.TextColor = state.Hp > 10 ? ThemeColors.Success : state.Hp > 5 ? ThemeColors.Warning : ThemeColors.Error;
-        }
-        if (_goldLabel != null) _goldLabel.Text = $"{Locale.Tr("resources.gold")}: {state.Gold}";
-        if (_enemyLabel != null) _enemyLabel.Text = $"{Locale.Tr("hud.enemies")}: {state.Enemies.Count}";
-
-        if (_singleWaveMode)
-        {
-            if (_phaseLabel != null)
-                _phaseLabel.Text = $"{Locale.Tr("game.phase")}: {state.Phase} (single-wave)";
-
-            int total = Math.Max(0, state.NightWaveTotal);
-            int spawned = Math.Max(0, total - state.NightSpawnRemaining);
-            if (_waveLabel != null)
-                _waveLabel.Text = $"Wave: {spawned}/{total}  Active: {state.Enemies.Count}";
-
-            string promptText = string.IsNullOrEmpty(state.NightPrompt) ? "-" : state.NightPrompt;
-            if (_promptLabel != null)
-                _promptLabel.Text = $"Prompt: {promptText}";
-
-            float runClock = ReadMetricFloat(state, "vs_run_clock_sec", 0f);
-            if (_timerLabel != null)
-                _timerLabel.Text = $"Time: {FormatSeconds(runClock)}";
-
-            int wordsTyped = ReadMetricInt(state, "battle_words_typed", 0);
-            int misses = ReadMetricInt(state, "vs_miss_count", 0);
-            if (_typingStatsLabel != null)
-                _typingStatsLabel.Text = $"Words: {wordsTyped}  Misses: {misses}";
-        }
+        // BattleHudOverlay reads state directly in Draw() — no label updates needed
 
         // Screen shake on castle damage
         if (_prevHp > 0 && state.Hp < _prevHp)
@@ -767,39 +703,7 @@ public class BattlefieldScreen : GameScreen
 
     private void AppendLog(string message)
     {
-        if (_eventLog == null) return;
-        string current = _eventLog.Text ?? "";
-        if (!string.IsNullOrEmpty(current))
-            current += "\n";
-        _eventLog.Text = current + message;
-    }
-
-    private static string FormatSeconds(float value)
-    {
-        int total = Math.Max(0, (int)MathF.Floor(value));
-        int minutes = total / 60;
-        int seconds = total % 60;
-        return $"{minutes}:{seconds:D2}";
-    }
-
-    private static int ReadMetricInt(GameState state, string key, int fallback = 0)
-    {
-        if (!state.TypingMetrics.TryGetValue(key, out var value) || value == null)
-            return fallback;
-        if (value is int i)
-            return i;
-        return int.TryParse(value.ToString(), out int parsed) ? parsed : fallback;
-    }
-
-    private static float ReadMetricFloat(GameState state, string key, float fallback = 0f)
-    {
-        if (!state.TypingMetrics.TryGetValue(key, out var value) || value == null)
-            return fallback;
-        if (value is float f)
-            return f;
-        if (value is double d)
-            return (float)d;
-        return float.TryParse(value.ToString(), out float parsed) ? parsed : fallback;
+        _eventLogOverlay.Append(message);
     }
 
     private void DrawSingleWavePauseOverlay(SpriteBatch spriteBatch, int width, int height)

@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Myra.Graphics2D.UI;
 using KeyboardDefense.Game.Effects;
+using KeyboardDefense.Game.Rendering;
 using KeyboardDefense.Game.Services;
 using KeyboardDefense.Game.UI;
 using KeyboardDefense.Game.UI.Components;
@@ -23,6 +24,8 @@ public class MainMenuScreen : GameScreen
     private DailyChallengesPanel? _dailyChallengesPanel;
     private Texture2D? _portrait;
     private float _totalTime;
+    private readonly HudPainter _painter = new();
+    private readonly NineSliceFrame _frame = new();
 
     public MainMenuScreen(KeyboardDefenseGame game, ScreenManager screenManager)
         : base(game, screenManager) { }
@@ -31,6 +34,12 @@ public class MainMenuScreen : GameScreen
     {
         // Load Lyra portrait from Content/Textures/portraits/
         _portrait = AssetLoader.Instance.GetPortrait("lyra_v12_neutral");
+
+        if (Game.DefaultFont != null)
+        {
+            _painter.Initialize(Game.GraphicsDevice, Game.DefaultFont);
+            _frame.Initialize(Game.GraphicsDevice, Game.DefaultFont);
+        }
 
         var rootPanel = new Panel();
 
@@ -41,31 +50,15 @@ public class MainMenuScreen : GameScreen
             VerticalAlignment = VerticalAlignment.Center,
         };
 
-        // Title with accent styling
-        var title = new Label
-        {
-            Text = Locale.Tr("menu.title"),
-            TextColor = ThemeColors.Accent,
-            HorizontalAlignment = HorizontalAlignment.Center,
-        };
-        vbox.Widgets.Add(title);
-
-        // Subtitle
-        var subtitle = new Label
-        {
-            Text = Locale.Tr("menu.subtitle"),
-            TextColor = ThemeColors.AccentCyan,
-            HorizontalAlignment = HorizontalAlignment.Center,
-        };
-        vbox.Widgets.Add(subtitle);
-
-        // Spacer
-        vbox.Widgets.Add(new Panel { Height = DesignSystem.SpaceMd });
+        // Title + subtitle are drawn in SpriteBatch — add invisible spacer
+        vbox.Widgets.Add(new Panel { Height = 80 });
 
         // Continue button (only if a save exists)
         if (GameController.HasAnySave())
         {
-            var continueButton = CreateMenuButton(Locale.Tr("ui.continue"));
+            var continueButton = ButtonFactory.Primary(Locale.Tr("ui.continue"));
+            continueButton.Width = 280;
+            continueButton.Height = DesignSystem.SizeButtonLg;
             continueButton.Click += (_, _) =>
             {
                 if (GameController.Instance.LoadGame())
@@ -78,7 +71,9 @@ public class MainMenuScreen : GameScreen
         }
 
         // Play button — launches WorldScreen (open-world mode)
-        var playButton = CreateMenuButton("Play");
+        var playButton = ButtonFactory.Primary("Play");
+        playButton.Width = 280;
+        playButton.Height = DesignSystem.SizeButtonLg;
         playButton.Click += (_, _) =>
         {
             SceneTransition.Instance.BattleTransition(() =>
@@ -89,7 +84,9 @@ public class MainMenuScreen : GameScreen
         };
         vbox.Widgets.Add(playButton);
 
-        var verticalSliceButton = CreateMenuButton("Start Vertical Slice");
+        var verticalSliceButton = ButtonFactory.Primary("Start Vertical Slice");
+        verticalSliceButton.Width = 280;
+        verticalSliceButton.Height = DesignSystem.SizeButtonLg;
         verticalSliceButton.Click += (_, _) =>
         {
             SceneTransition.Instance.BattleTransition(() =>
@@ -115,7 +112,12 @@ public class MainMenuScreen : GameScreen
             HorizontalAlignment = HorizontalAlignment.Center,
         });
 
-        var practiceButton = CreateMenuButton(Locale.Tr("menu.typing_practice"));
+        // Divider
+        vbox.Widgets.Add(new HorizontalSeparator());
+
+        var practiceButton = ButtonFactory.Secondary(Locale.Tr("menu.typing_practice"));
+        practiceButton.Width = 280;
+        practiceButton.Height = DesignSystem.SizeButtonLg;
         practiceButton.Click += (_, _) =>
         {
             SceneTransition.Instance.BattleTransition(() =>
@@ -123,7 +125,9 @@ public class MainMenuScreen : GameScreen
         };
         vbox.Widgets.Add(practiceButton);
 
-        var endlessButton = CreateMenuButton("Endless Mode");
+        var endlessButton = ButtonFactory.Secondary("Endless Mode");
+        endlessButton.Width = 280;
+        endlessButton.Height = DesignSystem.SizeButtonLg;
         endlessButton.Click += (_, _) =>
         {
             SceneTransition.Instance.BattleTransition(() =>
@@ -131,7 +135,12 @@ public class MainMenuScreen : GameScreen
         };
         vbox.Widgets.Add(endlessButton);
 
-        var profileButton = CreateMenuButton(Locale.Tr("menu.typing_profile"));
+        // Divider
+        vbox.Widgets.Add(new HorizontalSeparator());
+
+        var profileButton = ButtonFactory.Ghost(Locale.Tr("menu.typing_profile"));
+        profileButton.Width = 280;
+        profileButton.Height = DesignSystem.SizeButtonLg;
         profileButton.Click += (_, _) =>
         {
             _profilePanel ??= new TypingProfilePanel();
@@ -147,7 +156,9 @@ public class MainMenuScreen : GameScreen
         };
         vbox.Widgets.Add(profileButton);
 
-        var dailyChallengesButton = CreateMenuButton(Locale.Tr("panels.daily_challenges"));
+        var dailyChallengesButton = ButtonFactory.Ghost(Locale.Tr("panels.daily_challenges"));
+        dailyChallengesButton.Width = 280;
+        dailyChallengesButton.Height = DesignSystem.SizeButtonLg;
         dailyChallengesButton.Click += (_, _) =>
         {
             _dailyChallengesPanel ??= new DailyChallengesPanel();
@@ -164,7 +175,9 @@ public class MainMenuScreen : GameScreen
         };
         vbox.Widgets.Add(dailyChallengesButton);
 
-        var settingsButton = CreateMenuButton(Locale.Tr("ui.settings"));
+        var settingsButton = ButtonFactory.Ghost(Locale.Tr("ui.settings"));
+        settingsButton.Width = 280;
+        settingsButton.Height = DesignSystem.SizeButtonLg;
         settingsButton.Click += (_, _) =>
         {
             _settingsPanel ??= new SettingsPanel();
@@ -179,7 +192,9 @@ public class MainMenuScreen : GameScreen
         };
         vbox.Widgets.Add(settingsButton);
 
-        var quitButton = CreateMenuButton(Locale.Tr("ui.quit"));
+        var quitButton = ButtonFactory.Danger(Locale.Tr("ui.quit"));
+        quitButton.Width = 280;
+        quitButton.Height = DesignSystem.SizeButtonLg;
         quitButton.Click += (_, _) => Game.Exit();
         vbox.Widgets.Add(quitButton);
 
@@ -215,11 +230,31 @@ public class MainMenuScreen : GameScreen
     {
         var vp = Game.GraphicsDevice.Viewport;
 
+        spriteBatch.Begin(blendState: BlendState.AlphaBlend, samplerState: SamplerState.PointClamp);
+
+        // Full-screen vertical gradient background
+        if (_painter.IsReady)
+        {
+            var bgBottom = new Color(16, 14, 25);
+            _painter.DrawGradientV(spriteBatch, new Rectangle(0, 0, vp.Width, vp.Height),
+                ThemeColors.BgDark, bgBottom, 16);
+
+            // Decorative horizontal accent line at ~40% screen height
+            int lineY = (int)(vp.Height * 0.4f);
+            _painter.DrawRect(spriteBatch, new Rectangle(0, lineY, vp.Width, 1),
+                ThemeColors.Border * 0.3f);
+
+            // Vignette — darkened edges for depth
+            int vigSize = 80;
+            _painter.DrawGradientV(spriteBatch, new Rectangle(0, 0, vp.Width, vigSize),
+                Color.Black * 0.3f, Color.Transparent, 4);
+            _painter.DrawGradientV(spriteBatch, new Rectangle(0, vp.Height - vigSize, vp.Width, vigSize),
+                Color.Transparent, Color.Black * 0.3f, 4);
+        }
+
         // Draw portrait on the left side if available
         if (_portrait != null)
         {
-            spriteBatch.Begin(blendState: BlendState.AlphaBlend, samplerState: SamplerState.PointClamp);
-
             int scale = 3;
             int drawW = _portrait.Width * scale;
             int drawH = _portrait.Height * scale;
@@ -230,36 +265,65 @@ public class MainMenuScreen : GameScreen
             drawW = (int)(drawW * pulse);
             drawH = (int)(drawH * pulse);
 
+            // Portrait frame
+            if (_frame.IsReady)
+            {
+                var frameRect = new Rectangle(drawX - 6, drawY - 6, drawW + 12, drawH + 12);
+                _frame.DrawFrame(spriteBatch, frameRect, FrameStyles.Gold);
+            }
+
             spriteBatch.Draw(_portrait,
                 new Rectangle(drawX, drawY, drawW, drawH),
                 Color.White);
 
+            // Nameplate below portrait
             var font = Game.DefaultFont;
-            string name = "Lyra";
-            var nameSize = font.MeasureString(name);
-            spriteBatch.DrawString(font, name,
-                new Vector2(drawX + (drawW - nameSize.X) * 0.5f, drawY + drawH + 8),
-                ThemeColors.AccentCyan);
+            if (font != null && _painter.IsReady)
+            {
+                string name = "Lyra";
+                var nameSize = font.MeasureString(name);
+                float nameX = drawX + (drawW - nameSize.X * 0.5f) * 0.5f;
+                float nameY = drawY + drawH + 8;
 
-            spriteBatch.End();
+                // Small gradient bar behind name
+                int barW = drawW;
+                _painter.DrawGradientV(spriteBatch,
+                    new Rectangle(drawX, (int)nameY - 2, barW, (int)(nameSize.Y * 0.5f) + 4),
+                    ThemeColors.BgPanel, Color.Transparent, 4);
+
+                _painter.DrawTextShadowed(spriteBatch, new Vector2(nameX, nameY), name, ThemeColors.AccentCyan, 0.5f);
+            }
         }
+
+        // SpriteBatch title + subtitle
+        if (_painter.IsReady)
+        {
+            var font = Game.DefaultFont!;
+            string titleText = Locale.Tr("menu.title");
+            string subtitleText = Locale.Tr("menu.subtitle");
+
+            var titleSize = font.MeasureString(titleText) * 0.9f;
+            float titleX = vp.Width / 2f - titleSize.X / 2f;
+            float titleY = vp.Height * 0.08f;
+
+            _painter.DrawTextGlow(spriteBatch, new Vector2(titleX, titleY), titleText,
+                ThemeColors.GoldAccent, ThemeColors.Glow, 0.9f);
+
+            var subtitleSize = font.MeasureString(subtitleText) * 0.5f;
+            float subX = vp.Width / 2f - subtitleSize.X / 2f;
+            float subY = titleY + titleSize.Y + 4;
+
+            _painter.DrawTextShadowed(spriteBatch, new Vector2(subX, subY), subtitleText,
+                ThemeColors.AccentCyan, 0.5f);
+        }
+
+        spriteBatch.End();
 
         // Draw Myra UI on top
         _desktop?.Render();
 
         // Draw transition overlay
         SceneTransition.Instance.Draw(spriteBatch, new Rectangle(0, 0, vp.Width, vp.Height));
-    }
-
-    private static Button CreateMenuButton(string text)
-    {
-        return new Button
-        {
-            Content = new Label { Text = text, HorizontalAlignment = HorizontalAlignment.Center },
-            Width = 300,
-            Height = DesignSystem.SizeButtonLg,
-            HorizontalAlignment = HorizontalAlignment.Center,
-        };
     }
 
     private static string LoadVersion()

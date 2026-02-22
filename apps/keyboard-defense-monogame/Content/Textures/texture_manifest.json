@@ -605,6 +605,69 @@
       "category": "icons",
       "width": 16,
       "height": 16
+    },
+    {
+      "id": "ui_frame_corner",
+      "path": "ui/ui_frame_corner.png",
+      "category": "ui",
+      "width": 32,
+      "height": 32
+    },
+    {
+      "id": "ui_frame_edge_h",
+      "path": "ui/ui_frame_edge_h.png",
+      "category": "ui",
+      "width": 32,
+      "height": 32
+    },
+    {
+      "id": "ui_frame_edge_v",
+      "path": "ui/ui_frame_edge_v.png",
+      "category": "ui",
+      "width": 32,
+      "height": 32
+    },
+    {
+      "id": "ui_close",
+      "path": "ui/ui_close.png",
+      "category": "ui",
+      "width": 32,
+      "height": 32
+    },
+    {
+      "id": "ui_trophy",
+      "path": "ui/ui_trophy.png",
+      "category": "ui",
+      "width": 32,
+      "height": 32
+    },
+    {
+      "id": "ui_notify_info",
+      "path": "ui/ui_notify_info.png",
+      "category": "ui",
+      "width": 32,
+      "height": 32
+    },
+    {
+      "id": "ui_notify_warning",
+      "path": "ui/ui_notify_warning.png",
+      "category": "ui",
+      "width": 32,
+      "height": 32
+    },
+    {
+      "id": "ui_notify_error",
+      "path": "ui/ui_notify_error.png",
+      "category": "ui",
+      "width": 32,
+      "height": 32
+    },
+    {
+      "id": "ui_notify_success",
+      "path": "ui/ui_notify_success.png",
+      "category": "ui",
+      "width": 32,
+      "height": 32
     }
   ]
 }

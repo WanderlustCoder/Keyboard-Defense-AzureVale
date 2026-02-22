@@ -14,6 +14,7 @@ public class NotificationToast
     private Notification? _current;
     private float _alpha;
     private float _slideOffset;
+    private Texture2D? _pixel;
 
     private const float FadeInTime = 0.3f;
     private const float FadeOutTime = 0.5f;
@@ -63,20 +64,38 @@ public class NotificationToast
     {
         if (_current == null || font == null || _alpha <= 0.01f) return;
 
+        if (_pixel == null)
+        {
+            _pixel = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
+            _pixel.SetData(new[] { Color.White });
+        }
+
         string text = _current.Message;
         Vector2 size = font.MeasureString(text);
 
         float x = (screenWidth - size.X) / 2;
         float y = 20 + _slideOffset;
 
-        // Background
-        var bgColor = new Color(20, 20, 30, (int)(200 * _alpha));
         var bgRect = new Rectangle((int)(x - 16), (int)(y - 8), (int)(size.X + 32), (int)(size.Y + 16));
 
-        // Draw background (requires a 1x1 pixel texture)
-        // Caller should provide via SpriteBatch
+        // Background
+        spriteBatch.Draw(_pixel, bgRect, ThemeColors.BgPanel * _alpha);
 
-        // Text
+        // Border
+        Color borderColor = ThemeColors.Border * _alpha;
+        spriteBatch.Draw(_pixel, new Rectangle(bgRect.X, bgRect.Y, bgRect.Width, 1), borderColor);
+        spriteBatch.Draw(_pixel, new Rectangle(bgRect.X, bgRect.Bottom - 1, bgRect.Width, 1), borderColor);
+        spriteBatch.Draw(_pixel, new Rectangle(bgRect.X, bgRect.Y, 1, bgRect.Height), borderColor);
+        spriteBatch.Draw(_pixel, new Rectangle(bgRect.Right - 1, bgRect.Y, 1, bgRect.Height), borderColor);
+
+        // Colored left-edge strip based on notification type
+        Color edgeColor = _current.GetColor() * _alpha;
+        spriteBatch.Draw(_pixel, new Rectangle(bgRect.X, bgRect.Y, 4, bgRect.Height), edgeColor);
+
+        // Text with shadow
+        Color shadowColor = Color.Black * (_alpha * 0.5f);
+        spriteBatch.DrawString(font, text, new Vector2(x + 1, y + 1), shadowColor);
+
         Color textColor = _current.GetColor() * _alpha;
         spriteBatch.DrawString(font, text, new Vector2(x, y), textColor);
     }

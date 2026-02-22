@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -24,6 +23,7 @@ public class PracticeScreen : GameScreen
     private Desktop? _desktop;
     private LessonPracticePanel? _practicePanel;
     private readonly KeyboardOverlay _keyboardDisplay = new();
+    private readonly HudPainter _painter = new();
     private TypingInput? _typingHandler;
     private KeyboardState _prevKeyboard;
 
@@ -39,6 +39,8 @@ public class PracticeScreen : GameScreen
         LessonProgress.Instance.Load(SaveService.GetSavesDir());
 
         _keyboardDisplay.Initialize(Game.GraphicsDevice, Game.DefaultFont);
+        if (Game.DefaultFont != null)
+            _painter.Initialize(Game.GraphicsDevice, Game.DefaultFont);
 
         _practicePanel = new LessonPracticePanel();
 
@@ -114,6 +116,16 @@ public class PracticeScreen : GameScreen
     public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
     {
         var vp = Game.GraphicsDevice.Viewport;
+
+        // Gradient background
+        if (_painter.IsReady)
+        {
+            spriteBatch.Begin(blendState: BlendState.AlphaBlend, samplerState: SamplerState.PointClamp);
+            _painter.DrawGradientV(spriteBatch,
+                new Rectangle(0, 0, vp.Width, vp.Height),
+                ThemeColors.BgDark, new Color(16, 14, 25), 16);
+            spriteBatch.End();
+        }
 
         // Draw keyboard display at bottom with finger zone highlighting
         int kbHeight = _keyboardDisplay.TotalHeight;

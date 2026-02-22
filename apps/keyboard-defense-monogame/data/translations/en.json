@@ -59,7 +59,8 @@
     "citizens": "Citizens",
     "workers": "Workers",
     "key_bindings": "Key Bindings",
-    "save_load": "Save / Load"
+    "save_load": "Save / Load",
+    "daily_challenges": "Daily Challenges"
   },
 
   "actions": {

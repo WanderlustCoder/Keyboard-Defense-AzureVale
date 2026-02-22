@@ -329,6 +329,14 @@ public class WorldScreen : GameScreen
             spriteBatch.End();
         }
 
+        // Draw panel frames (SpriteBatch) before Myra
+        if (_panelOverlay != null)
+        {
+            spriteBatch.Begin(blendState: BlendState.AlphaBlend, samplerState: SamplerState.PointClamp);
+            _panelOverlay.DrawPanelFrames(spriteBatch);
+            spriteBatch.End();
+        }
+
         // Draw Myra UI (HUD overlay)
         _desktop?.Render();
 
@@ -800,6 +808,10 @@ public class WorldScreen : GameScreen
         _panelOverlay.Bind("panel_challenges", _dailyChallengesPanel);
         _panelOverlay.Bind("panel_damage_calc", _damageCalcPanel);
         _panelOverlay.Bind("panel_auto_tower", _autoTowerPanel);
+
+        // Initialize panel frame rendering
+        if (Game.DefaultFont != null)
+            _panelOverlay.InitializeFrames(Game.GraphicsDevice, Game.DefaultFont);
 
         // Register dialogue box as a panel (not key-bound, opened programmatically)
         rootPanel.Widgets.Add(_dialogueBox.RootWidget);

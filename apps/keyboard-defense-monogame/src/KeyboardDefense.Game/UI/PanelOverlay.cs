@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Input;
 using Myra.Graphics2D.UI;
 using KeyboardDefense.Game.Services;
 using KeyboardDefense.Game.UI.Components;
+using KeyboardDefense.Game.Rendering;
 
 namespace KeyboardDefense.Game.UI;
 
@@ -21,6 +22,7 @@ public class PanelOverlay
     private BasePanel? _activePanel;
     private KeyboardState _prevKeyboard;
     private float _dimAlpha;
+    private PanelFrameRenderer? _frameRenderer;
 
     private record PanelBinding(string? Action, Keys? FallbackKey, BasePanel Panel);
 
@@ -149,6 +151,23 @@ public class PanelOverlay
     }
 
     public bool HasActivePanel => _activePanel != null;
+
+    public void InitializeFrames(GraphicsDevice device, SpriteFont font)
+    {
+        _frameRenderer = new PanelFrameRenderer();
+        _frameRenderer.Initialize(device, font);
+        Achievement.Initialize(device, font);
+    }
+
+    public void DrawPanelFrames(SpriteBatch sb)
+    {
+        if (_frameRenderer == null || !_frameRenderer.IsReady) return;
+        foreach (var binding in _bindings)
+        {
+            if (binding.Panel.Visible)
+                _frameRenderer.DrawPanelFrame(sb, binding.Panel);
+        }
+    }
 
     private bool IsKeyPressed(KeyboardState current, Keys key)
         => current.IsKeyDown(key) && !_prevKeyboard.IsKeyDown(key);

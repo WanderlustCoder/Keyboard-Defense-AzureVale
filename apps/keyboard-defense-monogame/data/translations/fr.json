@@ -59,7 +59,8 @@
     "citizens": "Citoyens",
     "workers": "Ouvriers",
     "key_bindings": "Raccourcis Clavier",
-    "save_load": "Sauvegarder / Charger"
+    "save_load": "Sauvegarder / Charger",
+    "daily_challenges": "Défis Quotidiens"
   },
 
   "actions": {

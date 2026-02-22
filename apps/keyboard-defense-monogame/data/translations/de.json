@@ -59,7 +59,8 @@
     "citizens": "Bürger",
     "workers": "Arbeiter",
     "key_bindings": "Tastenbelegung",
-    "save_load": "Speichern / Laden"
+    "save_load": "Speichern / Laden",
+    "daily_challenges": "Tägliche Herausforderungen"
   },
 
   "actions": {

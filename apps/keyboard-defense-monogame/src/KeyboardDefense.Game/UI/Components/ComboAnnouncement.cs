@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 namespace KeyboardDefense.Game.UI.Components;
 
 /// <summary>
-/// Combo streak announcement overlay with scaling text effect.
+/// Combo streak announcement overlay with scaling text effect and glow.
 /// Ported from ui/components/combo_announcement.gd.
 /// </summary>
 public class ComboAnnouncement
@@ -14,6 +14,7 @@ public class ComboAnnouncement
     private string _message = "";
     private float _timer;
     private bool _active;
+    private Texture2D? _pixel;
 
     private const float TotalDuration = 1.5f;
     private const float ScaleUpTime = 0.2f;
@@ -64,13 +65,61 @@ public class ComboAnnouncement
 
         // Color based on combo count
         Color color;
-        if (_comboCount >= 10)
+        Color glowColor;
+        if (_comboCount >= 20)
+        {
             color = ThemeColors.GoldAccent;
+            glowColor = ThemeColors.GoldAccent;
+        }
+        else if (_comboCount >= 10)
+        {
+            color = ThemeColors.GoldAccent;
+            glowColor = ThemeColors.ComboOrange;
+        }
         else if (_comboCount >= 5)
+        {
             color = ThemeColors.ComboOrange;
+            glowColor = ThemeColors.AccentCyan;
+        }
         else
+        {
             color = ThemeColors.AccentCyan;
+            glowColor = Color.Transparent;
+        }
 
+        // Background glow circle for combo 5+
+        if (_comboCount >= 5 && _pixel != null)
+        {
+            int glowSize = (int)(80 * scale);
+            var glowRect = new Rectangle(
+                (int)position.X - glowSize / 2,
+                (int)position.Y - glowSize / 2,
+                glowSize, glowSize);
+            spriteBatch.Draw(_pixel, glowRect, glowColor * (alpha * 0.15f));
+        }
+
+        // Lazy init pixel for glow
+        if (_pixel == null && _comboCount >= 5)
+        {
+            _pixel = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
+            _pixel.SetData(new[] { Color.White });
+        }
+
+        // Glow text (4-offset for combo 5+)
+        if (_comboCount >= 5)
+        {
+            Color gc = glowColor * (alpha * 0.3f);
+            spriteBatch.DrawString(font, _message, position + new Vector2(-1, 0) * scale, gc,
+                0f, origin, scale, SpriteEffects.None, 0);
+            spriteBatch.DrawString(font, _message, position + new Vector2(1, 0) * scale, gc,
+                0f, origin, scale, SpriteEffects.None, 0);
+            spriteBatch.DrawString(font, _message, position + new Vector2(0, -1) * scale, gc,
+                0f, origin, scale, SpriteEffects.None, 0);
+            spriteBatch.DrawString(font, _message, position + new Vector2(0, 1) * scale, gc,
+                0f, origin, scale, SpriteEffects.None, 0);
+        }
+
+        // Main text
         spriteBatch.DrawString(
             font, _message, position,
             color * alpha,

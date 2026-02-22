@@ -19,6 +19,7 @@ public class BattleTutorial
     private bool _finished;
     private bool _skipped;
     private readonly HashSet<string> _firedTriggers = new();
+    private Texture2D? _pixel;
 
     // Dialogue state
     private bool _dialogueVisible;
@@ -235,14 +236,20 @@ public class BattleTutorial
         spriteBatch.DrawString(font, stepText, new Vector2(boxX + boxWidth - padding - stepSize.X, boxY + padding), ThemeColors.Accent);
     }
 
-    private static void DrawFilledRect(SpriteBatch spriteBatch, Rectangle rect, Color color)
+    private void EnsurePixel(SpriteBatch spriteBatch)
     {
-        var pixel = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
-        pixel.SetData(new[] { Color.White });
-        spriteBatch.Draw(pixel, rect, color);
+        if (_pixel != null) return;
+        _pixel = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
+        _pixel.SetData(new[] { Color.White });
     }
 
-    private static void DrawBorder(SpriteBatch spriteBatch, Rectangle rect, Color color)
+    private void DrawFilledRect(SpriteBatch spriteBatch, Rectangle rect, Color color)
+    {
+        EnsurePixel(spriteBatch);
+        spriteBatch.Draw(_pixel, rect, color);
+    }
+
+    private void DrawBorder(SpriteBatch spriteBatch, Rectangle rect, Color color)
     {
         DrawFilledRect(spriteBatch, new Rectangle(rect.X, rect.Y, rect.Width, 1), color);
         DrawFilledRect(spriteBatch, new Rectangle(rect.X, rect.Bottom - 1, rect.Width, 1), color);

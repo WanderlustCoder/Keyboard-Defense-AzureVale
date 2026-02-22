@@ -1,11 +1,12 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using KeyboardDefense.Game.Rendering;
 
 namespace KeyboardDefense.Game.UI.Components;
 
 /// <summary>
-/// Achievement unlock popup with slide-in animation.
+/// Achievement unlock popup with slide-in animation, gold frame, and glow text.
 /// Ported from ui/components/achievement_popup.gd.
 /// </summary>
 public class AchievementPopup
@@ -16,12 +17,21 @@ public class AchievementPopup
     private float _totalDuration;
     private bool _active;
 
+    private readonly NineSliceFrame _frame = new();
+    private readonly HudPainter _painter = new();
+
     private const float SlideInTime = 0.4f;
     private const float DisplayTime = 4.0f;
     private const float SlideOutTime = 0.4f;
     private const float TotalTime = SlideInTime + DisplayTime + SlideOutTime;
 
     public bool IsActive => _active;
+
+    public void Initialize(GraphicsDevice device, SpriteFont font)
+    {
+        _frame.Initialize(device, font);
+        _painter.Initialize(device, font);
+    }
 
     public void Show(string title, string description)
     {
@@ -65,14 +75,26 @@ public class AchievementPopup
         }
 
         float y = 60;
+        var panelRect = new Rectangle((int)slideX, (int)y, 300, 50);
 
-        // Draw title
-        var titleColor = ThemeColors.GoldAccent;
-        spriteBatch.DrawString(font, $"Achievement: {_title}", new Vector2(slideX + 10, y + 10), titleColor);
+        // Gold NineSliceFrame
+        if (_frame.IsReady)
+            _frame.DrawFrame(spriteBatch, panelRect, FrameStyles.Gold);
 
-        // Draw description
-        var descColor = ThemeColors.TextDim;
-        spriteBatch.DrawString(font, _description, new Vector2(slideX + 10, y + 30), descColor);
+        // Title with glow
+        string titleText = $"Achievement: {_title}";
+        if (_painter.IsReady)
+        {
+            _painter.DrawTextGlow(spriteBatch, new Vector2(slideX + 10, y + 8),
+                titleText, ThemeColors.GoldAccent, ThemeColors.GoldAccent, 0.45f);
+            _painter.DrawTextShadowed(spriteBatch, new Vector2(slideX + 10, y + 28),
+                _description, ThemeColors.TextDim, 0.4f);
+        }
+        else
+        {
+            spriteBatch.DrawString(font, titleText, new Vector2(slideX + 10, y + 8), ThemeColors.GoldAccent);
+            spriteBatch.DrawString(font, _description, new Vector2(slideX + 10, y + 28), ThemeColors.TextDim);
+        }
     }
 
     private static float EaseOutBack(float t)

@@ -140,6 +140,9 @@ public class AssetLoader
     public Texture2D? GetPortrait(string name)
         => GetTexture(name);
 
+    public Texture2D? GetUiTexture(string name)
+        => GetTexture($"ui_{name}");
+
     /// <summary>
     /// Get NPC character texture by type and direction (south/east/north/west).
     /// Files stored as characters/npc_{type}_{direction}.png.

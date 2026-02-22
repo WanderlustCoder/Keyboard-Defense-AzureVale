@@ -3,6 +3,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Myra.Graphics2D.UI;
+using KeyboardDefense.Game.Effects;
+using KeyboardDefense.Game.Rendering;
 using KeyboardDefense.Game.Services;
 using KeyboardDefense.Game.UI;
 
@@ -20,6 +22,9 @@ public class RunSummaryScreen : GameScreen
     private readonly string _verticalSliceProfileId;
     private Desktop? _desktop;
     private KeyboardState _prevKeyboard;
+    private readonly HudPainter _painter = new();
+    private readonly NineSliceFrame _frame = new();
+    private string _performanceGrade = "";
 
     public RunSummaryScreen(
         KeyboardDefenseGame game,
@@ -38,6 +43,12 @@ public class RunSummaryScreen : GameScreen
 
     public override void OnEnter()
     {
+        if (Game.DefaultFont != null)
+        {
+            _painter.Initialize(Game.GraphicsDevice, Game.DefaultFont);
+            _frame.Initialize(Game.GraphicsDevice, Game.DefaultFont);
+        }
+
         var report = SessionAnalytics.Instance.GetReport();
         var verticalSliceSummary = TryGetVerticalSliceSummary();
         if (verticalSliceSummary != null)
@@ -48,11 +59,13 @@ public class RunSummaryScreen : GameScreen
                 verticalSliceSummary.ElapsedSeconds);
         }
 
+        _performanceGrade = report.PerformanceGrade;
         BuildUi(report, verticalSliceSummary);
     }
 
     private void BuildUi(SessionReport report, VerticalSliceSummary? verticalSliceSummary)
     {
+        var rootPanel = new Panel();
         var root = new VerticalStackPanel
         {
             Spacing = DesignSystem.SpaceLg,
@@ -61,13 +74,8 @@ public class RunSummaryScreen : GameScreen
             Width = 560,
         };
 
-        // Header
-        root.Widgets.Add(new Label
-        {
-            Text = _isVictory ? "VICTORY!" : "DEFEAT",
-            TextColor = _isVictory ? ThemeColors.GoldAccent : ThemeColors.Error,
-            HorizontalAlignment = HorizontalAlignment.Center,
-        });
+        // Title spacer (drawn via SpriteBatch)
+        root.Widgets.Add(new Panel { Height = 60 });
 
         root.Widgets.Add(new Label
         {
@@ -103,7 +111,7 @@ public class RunSummaryScreen : GameScreen
 
         root.Widgets.Add(new HorizontalSeparator());
 
-        // Performance Grade
+        // Performance Grade (label only — glow drawn via SpriteBatch)
         root.Widgets.Add(new Label
         {
             Text = "Performance Grade",
@@ -174,7 +182,8 @@ public class RunSummaryScreen : GameScreen
             HorizontalAlignment = HorizontalAlignment.Center,
         });
 
-        _desktop = new Desktop { Root = root };
+        rootPanel.Widgets.Add(root);
+        _desktop = new Desktop { Root = rootPanel };
     }
 
     private void AddStatCell(Grid grid, int row, int col, string label, string value)
@@ -283,10 +292,57 @@ public class RunSummaryScreen : GameScreen
             OnMainMenu();
 
         _prevKeyboard = kb;
+        SceneTransition.Instance.Update(gameTime);
     }
 
     public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
     {
+        var vp = Game.GraphicsDevice.Viewport;
+
+        spriteBatch.Begin(blendState: BlendState.AlphaBlend, samplerState: SamplerState.PointClamp);
+
+        if (_painter.IsReady)
+        {
+            // Gradient background — tint based on victory/defeat
+            Color bgBottom = _isVictory ? new Color(16, 14, 25) : new Color(25, 10, 10);
+            _painter.DrawGradientV(spriteBatch,
+                new Rectangle(0, 0, vp.Width, vp.Height),
+                ThemeColors.BgDark, bgBottom, 16);
+
+            // Frame — Gold for victory, Combat for defeat
+            var frameStyle = _isVictory ? FrameStyles.Gold : FrameStyles.Combat;
+            int frameW = 580;
+            int frameH = vp.Height - 80;
+            int frameX = (vp.Width - frameW) / 2;
+            int frameY = 40;
+            if (_frame.IsReady)
+                _frame.DrawFrame(spriteBatch, new Rectangle(frameX, frameY, frameW, frameH), frameStyle);
+
+            // Header glow title
+            string titleText = _isVictory ? "VICTORY!" : "DEFEAT";
+            Color titleColor = _isVictory ? ThemeColors.GoldAccent : ThemeColors.DamageRed;
+            var titleSize = _painter.Font!.MeasureString(titleText) * 0.8f;
+            float titleX = vp.Width / 2f - titleSize.X / 2f;
+            float titleY = frameY + 16;
+            _painter.DrawTextGlow(spriteBatch, new Vector2(titleX, titleY),
+                titleText, titleColor, titleColor, 0.8f);
+
+            // Grade glow for S/A
+            if (_performanceGrade is "S" or "A")
+            {
+                var gradeColor = GetGradeColor(_performanceGrade);
+                var gradeSize = _painter.Font.MeasureString(_performanceGrade) * 0.7f;
+                float gradeX = vp.Width / 2f - gradeSize.X / 2f;
+                float gradeY = titleY + titleSize.Y + 4;
+                _painter.DrawTextGlow(spriteBatch, new Vector2(gradeX, gradeY),
+                    _performanceGrade, gradeColor, gradeColor, 0.7f);
+            }
+        }
+
+        spriteBatch.End();
+
         _desktop?.Render();
+
+        SceneTransition.Instance.Draw(spriteBatch, new Rectangle(0, 0, vp.Width, vp.Height));
     }
 }

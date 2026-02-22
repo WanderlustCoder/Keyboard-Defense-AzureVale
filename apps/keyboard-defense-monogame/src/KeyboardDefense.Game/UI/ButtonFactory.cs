@@ -50,10 +50,18 @@ public static class ButtonFactory
     {
         var btn = new Button
         {
-            Content = new Label { Text = text },
+            Content = new Label
+            {
+                Text = text,
+                TextColor = ThemeColors.Text,
+            },
             Width = DesignSystem.ButtonWidthMd,
             Height = DesignSystem.ButtonHeightMd,
             HorizontalAlignment = HorizontalAlignment.Center,
+            Background = new Myra.Graphics2D.Brushes.SolidBrush(bgColor),
+            OverBackground = new Myra.Graphics2D.Brushes.SolidBrush(hoverColor),
+            Border = new Myra.Graphics2D.Brushes.SolidBrush(ThemeColors.Border),
+            BorderThickness = new Myra.Graphics2D.Thickness(1),
         };
         return btn;
     }

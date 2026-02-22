@@ -7,6 +7,8 @@ using Myra.Graphics2D.UI;
 using KeyboardDefense.Core.Progression;
 using KeyboardDefense.Core.State;
 using KeyboardDefense.Core.Typing;
+using KeyboardDefense.Game.Effects;
+using KeyboardDefense.Game.Rendering;
 using KeyboardDefense.Game.Services;
 using KeyboardDefense.Game.UI;
 
@@ -24,6 +26,8 @@ public class DefeatScreen : GameScreen
     private readonly List<string> _newMilestones;
     private Desktop? _desktop;
     private KeyboardState _prevKeyboard;
+    private readonly HudPainter _painter = new();
+    private readonly NineSliceFrame _frame = new();
 
     public DefeatScreen(
         KeyboardDefenseGame game, ScreenManager screenManager,
@@ -39,6 +43,12 @@ public class DefeatScreen : GameScreen
 
     public override void OnEnter()
     {
+        if (Game.DefaultFont != null)
+        {
+            _painter.Initialize(Game.GraphicsDevice, Game.DefaultFont);
+            _frame.Initialize(Game.GraphicsDevice, Game.DefaultFont);
+        }
+
         // Record progression (defeat)
         double wpm = TypingMetrics.GetWpm(_finalState);
         double accuracy = TypingMetrics.GetAccuracy(_finalState);
@@ -58,6 +68,7 @@ public class DefeatScreen : GameScreen
 
     private void BuildUi(double wpm, double accuracy, int wordsTyped)
     {
+        var rootPanel = new Panel();
         var root = new VerticalStackPanel
         {
             Spacing = DesignSystem.SpaceLg,
@@ -66,13 +77,8 @@ public class DefeatScreen : GameScreen
             Width = 500,
         };
 
-        // Title
-        root.Widgets.Add(new Label
-        {
-            Text = "DEFEATED",
-            TextColor = ThemeColors.Error,
-            HorizontalAlignment = HorizontalAlignment.Center,
-        });
+        // Title spacer (drawn via SpriteBatch)
+        root.Widgets.Add(new Panel { Height = 60 });
 
         root.Widgets.Add(new Label
         {
@@ -177,7 +183,8 @@ public class DefeatScreen : GameScreen
             HorizontalAlignment = HorizontalAlignment.Center,
         });
 
-        _desktop = new Desktop { Root = root };
+        rootPanel.Widgets.Add(root);
+        _desktop = new Desktop { Root = rootPanel };
     }
 
     private void AddStatRow(Grid grid, int row, string label, string value)
@@ -205,7 +212,6 @@ public class DefeatScreen : GameScreen
 
     private void OnRetry()
     {
-        // Pop defeat screen, then battlefield screen, then push a new battlefield
         ScreenManager.Pop(); // Pop defeat screen
         ScreenManager.Pop(); // Pop old battlefield
         var battle = new BattlefieldScreen(Game, ScreenManager, _nodeIndex, _nodeName);
@@ -214,9 +220,8 @@ public class DefeatScreen : GameScreen
 
     private void OnReturnToMap()
     {
-        // Pop defeat screen — battlefield underneath already has OnExit wired
         ScreenManager.Pop();
-        ScreenManager.Pop(); // Pop battlefield too, returning to previous screen
+        ScreenManager.Pop();
     }
 
     public override void Update(GameTime gameTime)
@@ -229,10 +234,43 @@ public class DefeatScreen : GameScreen
             OnReturnToMap();
 
         _prevKeyboard = kb;
+        SceneTransition.Instance.Update(gameTime);
     }
 
     public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
     {
+        var vp = Game.GraphicsDevice.Viewport;
+
+        spriteBatch.Begin(blendState: BlendState.AlphaBlend, samplerState: SamplerState.PointClamp);
+
+        if (_painter.IsReady)
+        {
+            // Dark gradient background with reddish tint
+            _painter.DrawGradientV(spriteBatch,
+                new Rectangle(0, 0, vp.Width, vp.Height),
+                ThemeColors.BgDark, new Color(25, 10, 10), 16);
+
+            // Combat frame around center content
+            int frameW = 520;
+            int frameH = vp.Height - 80;
+            int frameX = (vp.Width - frameW) / 2;
+            int frameY = 40;
+            if (_frame.IsReady)
+                _frame.DrawFrame(spriteBatch, new Rectangle(frameX, frameY, frameW, frameH), FrameStyles.Combat);
+
+            // "DEFEATED" red glow title
+            string titleText = "DEFEATED";
+            var titleSize = _painter.Font!.MeasureString(titleText) * 0.9f;
+            float titleX = vp.Width / 2f - titleSize.X / 2f;
+            float titleY = frameY + 16;
+            _painter.DrawTextGlow(spriteBatch, new Vector2(titleX, titleY),
+                titleText, ThemeColors.DamageRed, ThemeColors.DamageRed, 0.9f);
+        }
+
+        spriteBatch.End();
+
         _desktop?.Render();
+
+        SceneTransition.Instance.Draw(spriteBatch, new Rectangle(0, 0, vp.Width, vp.Height));
     }
 }

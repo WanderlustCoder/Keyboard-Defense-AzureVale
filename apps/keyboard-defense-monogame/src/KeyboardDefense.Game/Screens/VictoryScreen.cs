@@ -7,6 +7,8 @@ using Myra.Graphics2D.UI;
 using KeyboardDefense.Core.Progression;
 using KeyboardDefense.Core.State;
 using KeyboardDefense.Core.Typing;
+using KeyboardDefense.Game.Effects;
+using KeyboardDefense.Game.Rendering;
 using KeyboardDefense.Game.Services;
 using KeyboardDefense.Game.UI;
 
@@ -24,6 +26,9 @@ public class VictoryScreen : GameScreen
     private readonly List<string> _newMilestones;
     private Desktop? _desktop;
     private KeyboardState _prevKeyboard;
+    private readonly HudPainter _painter = new();
+    private readonly NineSliceFrame _frame = new();
+    private string _grade = "";
 
     public VictoryScreen(
         KeyboardDefenseGame game, ScreenManager screenManager,
@@ -39,6 +44,12 @@ public class VictoryScreen : GameScreen
 
     public override void OnEnter()
     {
+        if (Game.DefaultFont != null)
+        {
+            _painter.Initialize(Game.GraphicsDevice, Game.DefaultFont);
+            _frame.Initialize(Game.GraphicsDevice, Game.DefaultFont);
+        }
+
         // Record progression
         double wpm = TypingMetrics.GetWpm(_finalState);
         double accuracy = TypingMetrics.GetAccuracy(_finalState);
@@ -60,8 +71,9 @@ public class VictoryScreen : GameScreen
     private void BuildUi(double wpm, double accuracy, int wordsTyped)
     {
         int score = Victory.CalculateScore(_finalState);
-        string grade = Victory.GetGrade(score);
+        _grade = Victory.GetGrade(score);
 
+        var rootPanel = new Panel();
         var root = new VerticalStackPanel
         {
             Spacing = DesignSystem.SpaceLg,
@@ -70,13 +82,8 @@ public class VictoryScreen : GameScreen
             Width = 500,
         };
 
-        // Title
-        root.Widgets.Add(new Label
-        {
-            Text = "VICTORY!",
-            TextColor = ThemeColors.GoldAccent,
-            HorizontalAlignment = HorizontalAlignment.Center,
-        });
+        // Title spacer (drawn via SpriteBatch)
+        root.Widgets.Add(new Panel { Height = 60 });
 
         root.Widgets.Add(new Label
         {
@@ -95,8 +102,8 @@ public class VictoryScreen : GameScreen
         };
         gradeRow.Widgets.Add(new Label
         {
-            Text = $"Grade: {grade}",
-            TextColor = GetGradeColor(grade),
+            Text = $"Grade: {_grade}",
+            TextColor = GetGradeColor(_grade),
         });
         gradeRow.Widgets.Add(new Label
         {
@@ -183,7 +190,8 @@ public class VictoryScreen : GameScreen
             HorizontalAlignment = HorizontalAlignment.Center,
         });
 
-        _desktop = new Desktop { Root = root };
+        rootPanel.Widgets.Add(root);
+        _desktop = new Desktop { Root = rootPanel };
     }
 
     private void AddStatRow(Grid grid, int row, string label, string value, Color? valueColor = null)
@@ -229,10 +237,54 @@ public class VictoryScreen : GameScreen
         if (kb.IsKeyDown(Keys.Enter) && !_prevKeyboard.IsKeyDown(Keys.Enter))
             OnContinue();
         _prevKeyboard = kb;
+        SceneTransition.Instance.Update(gameTime);
     }
 
     public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
     {
+        var vp = Game.GraphicsDevice.Viewport;
+
+        spriteBatch.Begin(blendState: BlendState.AlphaBlend, samplerState: SamplerState.PointClamp);
+
+        if (_painter.IsReady)
+        {
+            // Gradient background
+            _painter.DrawGradientV(spriteBatch,
+                new Rectangle(0, 0, vp.Width, vp.Height),
+                ThemeColors.BgDark, new Color(16, 14, 25), 16);
+
+            // Gold frame around center content
+            int frameW = 520;
+            int frameH = vp.Height - 80;
+            int frameX = (vp.Width - frameW) / 2;
+            int frameY = 40;
+            if (_frame.IsReady)
+                _frame.DrawFrame(spriteBatch, new Rectangle(frameX, frameY, frameW, frameH), FrameStyles.Gold);
+
+            // "VICTORY!" glow title
+            string titleText = "VICTORY!";
+            var titleSize = _painter.Font!.MeasureString(titleText) * 0.9f;
+            float titleX = vp.Width / 2f - titleSize.X / 2f;
+            float titleY = frameY + 16;
+            _painter.DrawTextGlow(spriteBatch, new Vector2(titleX, titleY),
+                titleText, ThemeColors.GoldAccent, ThemeColors.GoldAccent, 0.9f);
+
+            // Grade glow for S/A ranks
+            if (_grade is "S" or "A")
+            {
+                string gradeText = _grade;
+                var gradeSize = _painter.Font.MeasureString(gradeText) * 0.8f;
+                float gradeX = vp.Width / 2f - gradeSize.X / 2f;
+                float gradeY = titleY + titleSize.Y + 8;
+                _painter.DrawTextGlow(spriteBatch, new Vector2(gradeX, gradeY),
+                    gradeText, GetGradeColor(_grade), GetGradeColor(_grade), 0.8f);
+            }
+        }
+
+        spriteBatch.End();
+
         _desktop?.Render();
+
+        SceneTransition.Instance.Draw(spriteBatch, new Rectangle(0, 0, vp.Width, vp.Height));
     }
 }

@@ -29,6 +29,7 @@ public class DialogueBox : BasePanel
 
     public DialogueBox() : base("Dialogue")
     {
+        Style = FrameStyles.Gold;
         RootWidget.Width = 600;
         RootWidget.Height = 200;
         RootWidget.VerticalAlignment = VerticalAlignment.Bottom;
@@ -42,6 +43,8 @@ public class DialogueBox : BasePanel
             Width = 64,
             Height = 64,
             Background = new Myra.Graphics2D.Brushes.SolidBrush(ThemeColors.BgCard),
+            Border = new Myra.Graphics2D.Brushes.SolidBrush(ThemeColors.Border),
+            BorderThickness = new Myra.Graphics2D.Thickness(2),
         };
         mainRow.Widgets.Add(_portraitPanel);
 
