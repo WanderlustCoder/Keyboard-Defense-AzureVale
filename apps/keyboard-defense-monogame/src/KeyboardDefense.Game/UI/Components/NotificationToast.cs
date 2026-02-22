@@ -16,9 +16,18 @@ public class NotificationToast
     private float _slideOffset;
     private Texture2D? _pixel;
 
+    // Notification type icons (loaded lazily from AssetLoader)
+    private Texture2D? _iconInfo;
+    private Texture2D? _iconWarning;
+    private Texture2D? _iconError;
+    private Texture2D? _iconSuccess;
+    private bool _iconsLoaded;
+
     private const float FadeInTime = 0.3f;
     private const float FadeOutTime = 0.5f;
     private const float SlideDistance = 30f;
+    private const int IconSize = 16;
+    private const int IconPadding = 6;
 
     public void Show(Notification notification)
     {
@@ -70,13 +79,28 @@ public class NotificationToast
             _pixel.SetData(new[] { Color.White });
         }
 
+        if (!_iconsLoaded)
+        {
+            _iconsLoaded = true;
+            var loader = AssetLoader.Instance;
+            _iconInfo = loader.GetUiTexture("notify_info");
+            _iconWarning = loader.GetUiTexture("notify_warning");
+            _iconError = loader.GetUiTexture("notify_error");
+            _iconSuccess = loader.GetUiTexture("notify_success");
+        }
+
         string text = _current.Message;
         Vector2 size = font.MeasureString(text);
 
-        float x = (screenWidth - size.X) / 2;
+        // Determine icon for this notification type
+        Texture2D? icon = GetIconForType(_current.Type);
+        int iconOffset = icon != null ? IconSize + IconPadding : 0;
+
+        float totalW = size.X + iconOffset;
+        float x = (screenWidth - totalW) / 2;
         float y = 20 + _slideOffset;
 
-        var bgRect = new Rectangle((int)(x - 16), (int)(y - 8), (int)(size.X + 32), (int)(size.Y + 16));
+        var bgRect = new Rectangle((int)(x - 16), (int)(y - 8), (int)(totalW + 32), (int)(size.Y + 16));
 
         // Background
         spriteBatch.Draw(_pixel, bgRect, ThemeColors.BgPanel * _alpha);
@@ -92,11 +116,28 @@ public class NotificationToast
         Color edgeColor = _current.GetColor() * _alpha;
         spriteBatch.Draw(_pixel, new Rectangle(bgRect.X, bgRect.Y, 4, bgRect.Height), edgeColor);
 
+        // Draw icon if available
+        if (icon != null)
+        {
+            int iconY = (int)(y + (size.Y - IconSize) / 2);
+            spriteBatch.Draw(icon, new Rectangle((int)x, iconY, IconSize, IconSize), Color.White * _alpha);
+        }
+
         // Text with shadow
+        float textX = x + iconOffset;
         Color shadowColor = Color.Black * (_alpha * 0.5f);
-        spriteBatch.DrawString(font, text, new Vector2(x + 1, y + 1), shadowColor);
+        spriteBatch.DrawString(font, text, new Vector2(textX + 1, y + 1), shadowColor);
 
         Color textColor = _current.GetColor() * _alpha;
-        spriteBatch.DrawString(font, text, new Vector2(x, y), textColor);
+        spriteBatch.DrawString(font, text, new Vector2(textX, y), textColor);
     }
+
+    private Texture2D? GetIconForType(NotificationManager.NotificationType type) => type switch
+    {
+        NotificationManager.NotificationType.Info => _iconInfo,
+        NotificationManager.NotificationType.Warning => _iconWarning,
+        NotificationManager.NotificationType.Error => _iconError,
+        NotificationManager.NotificationType.Success => _iconSuccess,
+        _ => null,
+    };
 }

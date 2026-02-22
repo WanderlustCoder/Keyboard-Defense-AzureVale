@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using KeyboardDefense.Game.Services;
 using KeyboardDefense.Game.UI;
 
 namespace KeyboardDefense.Game.Rendering;
@@ -17,6 +18,7 @@ public class PanelFrameRenderer
     public void Initialize(GraphicsDevice device, SpriteFont font)
     {
         _frame.Initialize(device, font);
+        _frame.LoadFrameTextures(AssetLoader.Instance);
         _font = font;
     }
 

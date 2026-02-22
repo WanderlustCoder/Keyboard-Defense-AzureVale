@@ -47,6 +47,7 @@ public class RunSummaryScreen : GameScreen
         {
             _painter.Initialize(Game.GraphicsDevice, Game.DefaultFont);
             _frame.Initialize(Game.GraphicsDevice, Game.DefaultFont);
+            _frame.LoadFrameTextures(AssetLoader.Instance);
         }
 
         var report = SessionAnalytics.Instance.GetReport();

@@ -2,6 +2,7 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using KeyboardDefense.Game.Rendering;
+using KeyboardDefense.Game.Services;
 
 namespace KeyboardDefense.Game.UI.Components;
 
@@ -19,18 +20,23 @@ public class AchievementPopup
 
     private readonly NineSliceFrame _frame = new();
     private readonly HudPainter _painter = new();
+    private Texture2D? _trophyIcon;
 
     private const float SlideInTime = 0.4f;
     private const float DisplayTime = 4.0f;
     private const float SlideOutTime = 0.4f;
     private const float TotalTime = SlideInTime + DisplayTime + SlideOutTime;
+    private const int IconSize = 20;
+    private const int IconPadding = 6;
 
     public bool IsActive => _active;
 
     public void Initialize(GraphicsDevice device, SpriteFont font)
     {
         _frame.Initialize(device, font);
+        _frame.LoadFrameTextures(AssetLoader.Instance);
         _painter.Initialize(device, font);
+        _trophyIcon = AssetLoader.Instance.GetUiTexture("trophy");
     }
 
     public void Show(string title, string description)
@@ -81,19 +87,27 @@ public class AchievementPopup
         if (_frame.IsReady)
             _frame.DrawFrame(spriteBatch, panelRect, FrameStyles.Gold);
 
-        // Title with glow
+        // Trophy icon + title with glow
+        float textX = slideX + 10;
+        if (_trophyIcon != null)
+        {
+            int iconY = (int)y + 6;
+            spriteBatch.Draw(_trophyIcon, new Rectangle((int)(slideX + 8), iconY, IconSize, IconSize), Color.White);
+            textX = slideX + 8 + IconSize + IconPadding;
+        }
+
         string titleText = $"Achievement: {_title}";
         if (_painter.IsReady)
         {
-            _painter.DrawTextGlow(spriteBatch, new Vector2(slideX + 10, y + 8),
+            _painter.DrawTextGlow(spriteBatch, new Vector2(textX, y + 8),
                 titleText, ThemeColors.GoldAccent, ThemeColors.GoldAccent, 0.45f);
-            _painter.DrawTextShadowed(spriteBatch, new Vector2(slideX + 10, y + 28),
+            _painter.DrawTextShadowed(spriteBatch, new Vector2(textX, y + 28),
                 _description, ThemeColors.TextDim, 0.4f);
         }
         else
         {
-            spriteBatch.DrawString(font, titleText, new Vector2(slideX + 10, y + 8), ThemeColors.GoldAccent);
-            spriteBatch.DrawString(font, _description, new Vector2(slideX + 10, y + 28), ThemeColors.TextDim);
+            spriteBatch.DrawString(font, titleText, new Vector2(textX, y + 8), ThemeColors.GoldAccent);
+            spriteBatch.DrawString(font, _description, new Vector2(textX, y + 28), ThemeColors.TextDim);
         }
     }
 
