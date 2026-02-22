@@ -24,7 +24,7 @@ public class GameController
 
     public GameController()
     {
-        State = DefaultState.Create("default", true);
+        State = DefaultState.Create("default", true, useWorldSpec: true);
         SaveService.MigrateLegacySaves();
         TypingProfile.Instance.Load(SaveService.GetSavesDir());
         LessonProgress.Instance.Load(SaveService.GetSavesDir());
@@ -32,7 +32,7 @@ public class GameController
 
     public void NewGame(string seed = "default")
     {
-        State = DefaultState.Create(seed, true);
+        State = DefaultState.Create(seed, true, useWorldSpec: true);
         LastEvents.Clear();
         LastEvents.Add($"New game started with seed '{seed}'.");
         StateChanged?.Invoke(State);

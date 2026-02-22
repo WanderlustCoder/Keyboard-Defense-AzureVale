@@ -22,9 +22,9 @@ public static class SimMap
     public const string ZoneWilderness = "wilderness";
     public const string ZoneDepths = "depths";
 
-    public const int ZoneSafeRadius = 8;
-    public const int ZoneFrontierRadius = 16;
-    public const int ZoneWildernessRadius = 28;
+    public const int ZoneSafeRadius = 4;
+    public const int ZoneFrontierRadius = 8;
+    public const int ZoneWildernessRadius = 14;
 
     public static readonly Dictionary<string, ZoneData> ZoneDataMap = new()
     {
@@ -88,9 +88,14 @@ public static class SimMap
     public static string GetZoneAt(GameState state, GridPoint pos)
     {
         int dist = ChebyshevDistanceToCastle(state, pos);
-        if (dist <= ZoneSafeRadius) return ZoneSafe;
-        if (dist <= ZoneFrontierRadius) return ZoneFrontier;
-        if (dist <= ZoneWildernessRadius) return ZoneWilderness;
+
+        // Scale zone radii proportionally to map size (base constants tuned for 32x32)
+        float scale = MathF.Sqrt((float)(state.MapW * state.MapH) / 1024f);
+        if (scale < 1f) scale = 1f;
+
+        if (dist <= (int)(ZoneSafeRadius * scale)) return ZoneSafe;
+        if (dist <= (int)(ZoneFrontierRadius * scale)) return ZoneFrontier;
+        if (dist <= (int)(ZoneWildernessRadius * scale)) return ZoneWilderness;
         return ZoneDepths;
     }
 
@@ -228,13 +233,13 @@ public static class SimMap
         // Guarantee land near castle
         var bp = state.BasePos;
         double dist = Math.Sqrt(Math.Pow(x - bp.X, 2) + Math.Pow(y - bp.Y, 2));
-        if (dist <= 6) return roll <= 30 ? Forest : Plains;
+        if (dist <= 3) return roll <= 30 ? Forest : Plains;
 
         // Desert appears in hot quadrants (south-east), snow in cold quadrants (north-west)
-        bool southEast = x > bp.X + 4 && y > bp.Y + 4;
-        bool northWest = x < bp.X - 4 && y < bp.Y - 4;
+        bool southEast = x > bp.X + 3 && y > bp.Y + 3;
+        bool northWest = x < bp.X - 3 && y < bp.Y - 3;
 
-        if (dist > 18 && southEast)
+        if (dist > 8 && southEast)
         {
             // Desert zone: far south-east
             if (roll <= 40) return Desert;
@@ -244,7 +249,7 @@ public static class SimMap
             return Water;
         }
 
-        if (dist > 18 && northWest)
+        if (dist > 8 && northWest)
         {
             // Snow zone: far north-west
             if (roll <= 40) return Snow;

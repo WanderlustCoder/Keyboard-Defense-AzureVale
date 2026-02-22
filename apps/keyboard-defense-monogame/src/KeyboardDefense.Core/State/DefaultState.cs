@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using KeyboardDefense.Core.Data;
 using KeyboardDefense.Core.World;
 
@@ -9,7 +11,7 @@ namespace KeyboardDefense.Core.State;
 /// </summary>
 public static class DefaultState
 {
-    public static GameState Create(string seed = "default", bool placeStartingTowers = false)
+    public static GameState Create(string seed = "default", bool placeStartingTowers = false, bool useWorldSpec = false)
     {
         var state = new GameState();
         SimRng.SeedState(state, seed);
@@ -18,27 +20,58 @@ public static class DefaultState
         // Reset biome generator for new seed
         SimMap.ResetBiomeGenerator();
 
-        // Generate terrain using noise-based biomes
-        SimMap.GenerateTerrain(state);
+        // Try spec-driven world when explicitly requested
+        string? specPath = useWorldSpec ? FindSpecPath() : null;
+        bool specLoaded = specPath != null && WorldSpecLoader.PopulateFromSpec(state, specPath);
+
+        if (specLoaded)
+        {
+            // Place base inland on meadow terrain
+            state.BasePos = new GridPoint(60, 54);
+            state.PlayerPos = state.BasePos;
+            state.CursorPos = state.BasePos;
+
+            // Larger discover radius for bigger map
+            DiscoverStartingArea(state, 12);
+        }
+        else
+        {
+            // Fallback: procedural terrain on default 32x32 grid
+            SimMap.GenerateTerrain(state);
+            DiscoverStartingArea(state, 5);
+        }
 
         // Ensure castle is on plains
         int baseIndex = SimMap.Idx(state.BasePos.X, state.BasePos.Y, state.MapW);
         state.Terrain[baseIndex] = SimMap.TerrainPlains;
 
-        // Discover starting area around castle (radius 5 = 11x11 tiles)
-        DiscoverStartingArea(state, 5);
-
         // Starting resources
         state.Gold = 10;
 
         // Populate world with resource nodes, roaming enemies, NPCs
-        WorldEntities.PopulateWorld(state);
+        if (specLoaded)
+        {
+            var pois = WorldSpecLoader.GetPoiPositions(specPath!);
+            WorldEntities.PopulateWorld(state, pois);
+        }
+        else
+        {
+            WorldEntities.PopulateWorld(state);
+        }
 
         // Optionally place starting auto-towers near base
         if (placeStartingTowers)
             PlaceStartingTowers(state);
 
         return state;
+    }
+
+    private static string? FindSpecPath()
+    {
+        // Check data/ directory (copied to output by build)
+        string dataPath = Path.Combine(AppContext.BaseDirectory, "data", "world_spec.json");
+        if (File.Exists(dataPath)) return dataPath;
+        return null;
     }
 
     private static void DiscoverStartingArea(GameState state, int radius)

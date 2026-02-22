@@ -19,6 +19,12 @@ public class GridRenderer
     public int CellSize { get; set; } = 48;
     public Vector2 Origin { get; set; } = Vector2.Zero;
 
+    /// <summary>When true, skip per-tile terrain drawing (chunk background provides it).</summary>
+    public bool UseChunkBackground { get; set; }
+
+    /// <summary>Set from camera each frame for chunk-aware fog culling.</summary>
+    public (int minX, int minY, int maxX, int maxY) VisibleRange { get; set; }
+
     private Texture2D? _pixel;
     private SpriteFont? _font;
     private float _totalTime;
@@ -71,11 +77,14 @@ public class GridRenderer
             samplerState: SamplerState.PointClamp,
             blendState: BlendState.AlphaBlend);
 
-        // Draw terrain for discovered tiles
-        foreach (int tileIdx in state.Discovered)
+        // Draw terrain for discovered tiles (skip when chunk background is used)
+        if (!UseChunkBackground)
         {
-            var pos = GridPoint.FromIndex(tileIdx, state.MapW);
-            DrawTerrain(spriteBatch, state, pos);
+            foreach (int tileIdx in state.Discovered)
+            {
+                var pos = GridPoint.FromIndex(tileIdx, state.MapW);
+                DrawTerrain(spriteBatch, state, pos);
+            }
         }
 
         // Draw structures
@@ -133,8 +142,11 @@ public class GridRenderer
         // Draw cursor
         DrawCursor(spriteBatch, state.CursorPos);
 
-        // Draw fog for undiscovered adjacent tiles
-        DrawFog(spriteBatch, state);
+        // Draw fog
+        if (UseChunkBackground)
+            DrawChunkFog(spriteBatch, state);
+        else
+            DrawFog(spriteBatch, state);
 
         spriteBatch.End();
     }
@@ -154,9 +166,8 @@ public class GridRenderer
 
         var rect = TileRect(pos);
 
-        // Try Wang tileset first (auto-tiled with transition corners)
-        int cardinalMask = AutoTileResolver.GetCardinalMask(state, pos);
-        bool drewTileset = TilesetManager.Instance.DrawTile(spriteBatch, terrain, cardinalMask, rect);
+        // Use wang_0 (full base terrain tile) from each biome's tileset for detailed art
+        bool drewTileset = TilesetManager.Instance.DrawTile(spriteBatch, terrain, 15, rect);
 
         if (!drewTileset)
         {
@@ -175,26 +186,26 @@ public class GridRenderer
                 spriteBatch.Draw(texture, rect, Color.White);
             else
                 spriteBatch.Draw(_pixel!, rect, color);
+        }
 
-            // Auto-tile edge transitions: darken edges where biome changes
-            var transitions = AutoTileResolver.GetEdgeTransitions(state, pos);
-            foreach (var edge in transitions)
+        // Edge transitions: darken edges where biome changes
+        var transitions = AutoTileResolver.GetEdgeTransitions(state, pos);
+        foreach (var edge in transitions)
+        {
+            Color edgeColor = GetTransitionColor(terrain, edge.NeighborTerrain);
+            int edgeThickness = Math.Max(2, CellSize / 8);
+
+            Rectangle edgeRect = edge.Direction switch
             {
-                Color edgeColor = GetTransitionColor(terrain, edge.NeighborTerrain);
-                int edgeThickness = Math.Max(2, CellSize / 8);
+                AutoTileResolver.North => new Rectangle(rect.X, rect.Y, rect.Width, edgeThickness),
+                AutoTileResolver.East => new Rectangle(rect.Right - edgeThickness, rect.Y, edgeThickness, rect.Height),
+                AutoTileResolver.South => new Rectangle(rect.X, rect.Bottom - edgeThickness, rect.Width, edgeThickness),
+                AutoTileResolver.West => new Rectangle(rect.X, rect.Y, edgeThickness, rect.Height),
+                _ => Rectangle.Empty,
+            };
 
-                Rectangle edgeRect = edge.Direction switch
-                {
-                    AutoTileResolver.North => new Rectangle(rect.X, rect.Y, rect.Width, edgeThickness),
-                    AutoTileResolver.East => new Rectangle(rect.Right - edgeThickness, rect.Y, edgeThickness, rect.Height),
-                    AutoTileResolver.South => new Rectangle(rect.X, rect.Bottom - edgeThickness, rect.Width, edgeThickness),
-                    AutoTileResolver.West => new Rectangle(rect.X, rect.Y, edgeThickness, rect.Height),
-                    _ => Rectangle.Empty,
-                };
-
-                if (edgeRect != Rectangle.Empty)
-                    spriteBatch.Draw(_pixel!, edgeRect, edgeColor);
-            }
+            if (edgeRect != Rectangle.Empty)
+                spriteBatch.Draw(_pixel!, edgeRect, edgeColor);
         }
 
         // Grid line
@@ -700,6 +711,30 @@ public class GridRenderer
             var pos = GridPoint.FromIndex(tileIdx, state.MapW);
             var rect = TileRect(pos);
             spriteBatch.Draw(_pixel!, rect, FogColor * 0.7f);
+        }
+    }
+
+    /// <summary>Draw opaque fog on all undiscovered tiles in visible range (for chunk background).</summary>
+    private void DrawChunkFog(SpriteBatch spriteBatch, GameState state)
+    {
+        var (minX, minY, maxX, maxY) = VisibleRange;
+        // Clamp to map bounds
+        minX = Math.Max(0, minX);
+        minY = Math.Max(0, minY);
+        maxX = Math.Min(state.MapW - 1, maxX);
+        maxY = Math.Min(state.MapH - 1, maxY);
+
+        for (int y = minY; y <= maxY; y++)
+        {
+            for (int x = minX; x <= maxX; x++)
+            {
+                int idx = SimMap.Idx(x, y, state.MapW);
+                if (!state.Discovered.Contains(idx))
+                {
+                    var rect = TileRect(new GridPoint(x, y));
+                    spriteBatch.Draw(_pixel!, rect, FogColor);
+                }
+            }
         }
     }
 

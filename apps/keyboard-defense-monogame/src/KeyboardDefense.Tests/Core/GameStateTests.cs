@@ -18,9 +18,9 @@ public class GameStateTests
         Assert.Equal(3, state.Ap);
         Assert.Equal(10, state.Hp);
         Assert.Equal(0, state.Threat);
-        Assert.Equal(64, state.MapW);
-        Assert.Equal(64, state.MapH);
-        Assert.Equal(new GridPoint(32, 32), state.BasePos);
+        Assert.Equal(32, state.MapW);
+        Assert.Equal(32, state.MapH);
+        Assert.Equal(new GridPoint(16, 16), state.BasePos);
         Assert.Equal(state.BasePos, state.CursorPos);
         Assert.Equal("full_alpha", state.LessonId);
         Assert.Equal(1, state.EnemyNextId);
@@ -52,7 +52,7 @@ public class GameStateTests
     public void GameState_Terrain_CorrectSize()
     {
         var state = new GameState();
-        Assert.Equal(64 * 64, state.Terrain.Count);
+        Assert.Equal(state.MapW * state.MapH, state.Terrain.Count);
     }
 
     [Fact]
@@ -68,9 +68,9 @@ public class GameStateTests
     {
         var state = new GameState();
         Assert.Equal(0, state.Index(0, 0));
-        Assert.Equal(64, state.Index(0, 1)); // Second row
+        Assert.Equal(state.MapW, state.Index(0, 1)); // Second row
         Assert.Equal(1, state.Index(1, 0)); // Second column
-        Assert.Equal(64 + 5, state.Index(5, 1));
+        Assert.Equal(state.MapW + 5, state.Index(5, 1));
     }
 }
 

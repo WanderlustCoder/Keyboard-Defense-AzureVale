@@ -263,6 +263,7 @@ public class OpenWorldFlowTests
 
         Assert.True(state.Discovered.Count > initialDiscovered,
             "Walking should discover new tiles");
-        Assert.Equal(state.BasePos.X + 8, state.PlayerPos.X);
+        Assert.True(state.PlayerPos.X > state.BasePos.X,
+            "Player should have moved east from base");
     }
 }

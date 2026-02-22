@@ -54,6 +54,7 @@ public class WorldScreen : GameScreen
     private readonly InlineCombatOverlay _inlineCombatOverlay = new();
     private readonly HarvestChallengeOverlay _harvestChallengeOverlay = new();
     private readonly QuestTrackerHud _questTrackerHud = new();
+    private readonly WorldMapRenderer _worldMapRenderer = new();
 
     // Shared pixel texture for SpriteBatch overlays
     private Texture2D? _pixel;
@@ -110,7 +111,6 @@ public class WorldScreen : GameScreen
         _gridRenderer.Initialize(Game.GraphicsDevice, Game.DefaultFont);
         _minimapRenderer.Initialize(Game.GraphicsDevice);
         _playerRenderer.Initialize(Game.GraphicsDevice, Game.DefaultFont);
-        _playerRenderer.CellSize = _gridRenderer.CellSize;
         _dayNightOverlay.Initialize(Game.GraphicsDevice);
         _gridRenderer.Vfx = _combatVfx;
         _combatTransition.Initialize(Game.GraphicsDevice);
@@ -118,9 +118,19 @@ public class WorldScreen : GameScreen
         _harvestChallengeOverlay.Initialize(Game.GraphicsDevice, Game.DefaultFont);
         _questTrackerHud.Initialize(Game.GraphicsDevice, Game.DefaultFont);
 
+        // Initialize chunk-based world map renderer
+        string chunkDir = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content", "Textures", "world");
+        _worldMapRenderer.Initialize(Game.GraphicsDevice, chunkDir);
+
+        // Use 32px tiles to match spec tile_size; zoom 1.5 to compensate visually
+        _gridRenderer.CellSize = 32;
+        _playerRenderer.CellSize = 32;
+        _gridRenderer.UseChunkBackground = _worldMapRenderer.HasChunks;
+
         var state = GameController.Instance.State;
         var vp = Game.GraphicsDevice.Viewport;
         _camera.Initialize(vp.Width, vp.Height, state.MapW, state.MapH, _gridRenderer.CellSize);
+        _camera.Zoom = 1.5f;
         _camera.SnapTo(state.PlayerPos.X, state.PlayerPos.Y);
 
         // Start session analytics
@@ -254,7 +264,13 @@ public class WorldScreen : GameScreen
         var cameraTransform = _camera.GetTransform()
             * Matrix.CreateTranslation(shakeOffset.X, shakeOffset.Y, 0);
 
-        // Draw grid (terrain, structures, enemies)
+        // Draw pre-rendered chunk background (if available)
+        _worldMapRenderer.Draw(spriteBatch, cameraTransform);
+
+        // Update visible range for chunk-aware fog culling
+        _gridRenderer.VisibleRange = _camera.GetVisibleTileRange();
+
+        // Draw grid (entities, structures, fog — terrain skipped when chunks are used)
         _gridRenderer.Draw(spriteBatch, state, cameraTransform, new Rectangle(0, 0, vp.Width, vp.Height));
 
         // Draw player avatar on top of grid

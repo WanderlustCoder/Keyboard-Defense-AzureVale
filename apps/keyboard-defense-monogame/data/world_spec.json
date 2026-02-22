@@ -1,0 +1,348 @@
+{
+  "version": "2.0",
+  "tag": "v2",
+  "tile_size": 32,
+  "world": {
+    "width": 192,
+    "height": 108,
+    "chunk_width": 96,
+    "chunk_height": 54
+  },
+  "assets": {
+    "tilesets": {
+      "mb": "a38ebeca-7234-43b9-bb0c-44eebbf96cbd",
+      "bs": "b92c323c-101d-46c7-bc9e-f896095445ff",
+      "sd": "a931658e-73d7-4b6a-a4fe-9980ca35524d",
+      "wb": "2053a22d-4707-4201-a7ce-32da5c352221",
+      "mc": "fecb136a-e097-4b3d-958d-2f4921ab855a",
+      "rd": "4fa11585-70e0-4ef3-bfa7-fc636389ff9e"
+    },
+    "objects": {
+      "tree": "5ac20ba4-ffd5-4dca-972c-da1b94d129c4",
+      "pine": "c2cbbce4-9695-46f6-b522-13fef64f774a",
+      "rock": "76f19182-d74c-4141-af87-9a9cca300591",
+      "reeds2": "d2f44677-4b82-43ff-9bb4-3c6c062cdaf7",
+      "watchtower": "096ea248-5b93-41fe-9511-9d6955ca95b4",
+      "shrine": "abba6f8d-ffc7-4c3e-b11d-95320f030784",
+      "mine": "58da11b1-a70c-4674-acdf-dfd6cbc7f416",
+      "campfire": "f3abfdb5-4161-4cd1-a130-cc1008f6fe1e",
+      "campsite": "157d52ef-976a-4cf2-88f7-fdd96e8c4bcc"
+    }
+  },
+  "coast": {
+    "bands": {
+      "meadow_to_beach": 9,
+      "beach_to_shallow": 4,
+      "shallow_to_deep": 9
+    },
+    "control_points": [
+      {
+        "y": 0,
+        "x": 124
+      },
+      {
+        "y": 14,
+        "x": 121
+      },
+      {
+        "y": 30,
+        "x": 127
+      },
+      {
+        "y": 46,
+        "x": 119
+      },
+      {
+        "y": 62,
+        "x": 125
+      },
+      {
+        "y": 78,
+        "x": 120
+      },
+      {
+        "y": 94,
+        "x": 126
+      },
+      {
+        "y": 108,
+        "x": 122
+      }
+    ],
+    "bays_shallow": [
+      {
+        "x": 137,
+        "y": 57,
+        "r": 12.0
+      },
+      {
+        "x": 146,
+        "y": 62,
+        "r": 9.0
+      },
+      {
+        "x": 132,
+        "y": 70,
+        "r": 8.5
+      },
+      {
+        "x": 141,
+        "y": 82,
+        "r": 6.5
+      }
+    ],
+    "bays_deep": [
+      {
+        "x": 150,
+        "y": 60,
+        "r": 5.5
+      },
+      {
+        "x": 141,
+        "y": 73,
+        "r": 4.5
+      }
+    ]
+  },
+  "biomes": {
+    "swamp": {
+      "outer": [
+        {
+          "x": 44,
+          "y": 82,
+          "r": 11.0
+        },
+        {
+          "x": 58,
+          "y": 84,
+          "r": 10.0
+        },
+        {
+          "x": 67,
+          "y": 75,
+          "r": 8.0
+        },
+        {
+          "x": 52,
+          "y": 91,
+          "r": 7.0
+        }
+      ],
+      "core": [
+        {
+          "x": 53,
+          "y": 84,
+          "r": 5.0
+        },
+        {
+          "x": 61,
+          "y": 82,
+          "r": 4.0
+        }
+      ],
+      "cut": [
+        {
+          "x": 37,
+          "y": 86,
+          "r": 4.0
+        },
+        {
+          "x": 69,
+          "y": 71,
+          "r": 3.0
+        },
+        {
+          "x": 64,
+          "y": 94,
+          "r": 3.2
+        },
+        {
+          "x": 50,
+          "y": 72,
+          "r": 2.5
+        }
+      ]
+    },
+    "mountain": {
+      "outer": [
+        {
+          "x": 102,
+          "y": 24,
+          "r": 10.5
+        },
+        {
+          "x": 112,
+          "y": 26,
+          "r": 9.0
+        },
+        {
+          "x": 109,
+          "y": 36,
+          "r": 7.0
+        },
+        {
+          "x": 118,
+          "y": 22,
+          "r": 5.0
+        }
+      ],
+      "core": [
+        {
+          "x": 110,
+          "y": 25,
+          "r": 4.8
+        },
+        {
+          "x": 104,
+          "y": 31,
+          "r": 4.0
+        }
+      ],
+      "cut": [
+        {
+          "x": 96,
+          "y": 33,
+          "r": 3.5
+        },
+        {
+          "x": 121,
+          "y": 18,
+          "r": 3.0
+        },
+        {
+          "x": 116,
+          "y": 40,
+          "r": 3.0
+        }
+      ]
+    }
+  },
+  "poi": {
+    "targets": {
+      "shrine": {
+        "x": 56,
+        "y": 83
+      },
+      "camp": {
+        "x": 84,
+        "y": 58
+      },
+      "outpost": {
+        "x": 76,
+        "y": 45
+      },
+      "ruins": {
+        "x": 96,
+        "y": 70
+      },
+      "watchtower": {
+        "x": 108,
+        "y": 28
+      },
+      "mine": {
+        "x": 113,
+        "y": 24
+      },
+      "shore": {
+        "x": 117,
+        "y": 51
+      }
+    },
+    "buffers": {
+      "shrine": 4,
+      "camp": 5,
+      "outpost": 4,
+      "ruins": 4,
+      "watchtower": 4,
+      "mine": 4
+    },
+    "draw": [
+      {
+        "poi": "shrine",
+        "object": "shrine",
+        "scale": 0.88
+      },
+      {
+        "poi": "camp",
+        "object": "campsite",
+        "scale": 0.82
+      },
+      {
+        "poi": "camp",
+        "object": "campfire",
+        "scale": 0.72,
+        "dx": -1,
+        "dy": 0
+      },
+      {
+        "poi": "outpost",
+        "object": "campsite",
+        "scale": 0.74
+      },
+      {
+        "poi": "ruins",
+        "object": "shrine",
+        "scale": 0.7
+      },
+      {
+        "poi": "watchtower",
+        "object": "watchtower",
+        "scale": 0.9
+      },
+      {
+        "poi": "mine",
+        "object": "mine",
+        "scale": 0.88
+      },
+      {
+        "poi": "shore",
+        "object": "campfire",
+        "scale": 0.7
+      }
+    ]
+  },
+  "roads": {
+    "main_radius": 1.35,
+    "mountain_radius": 1.1,
+    "branch_radius": 0.72,
+    "corridors": [
+      {
+        "layer": "main",
+        "radius": 1.0,
+        "smooth_iterations": 1,
+        "points": [
+          "shrine",
+          "camp",
+          "outpost",
+          "watchtower",
+          "mine"
+        ]
+      },
+      {
+        "layer": "branch",
+        "radius": 0.75,
+        "smooth_iterations": 1,
+        "points": [
+          "camp",
+          "ruins"
+        ]
+      },
+      {
+        "layer": "branch",
+        "radius": 0.75,
+        "smooth_iterations": 1,
+        "points": [
+          "watchtower",
+          "shore"
+        ]
+      }
+    ]
+  },
+  "props": {
+    "meadow_grid_step": 8,
+    "mountain_grid_step": 6,
+    "swamp_grid_step": 6,
+    "shore_grid_step": 7,
+    "road_buffer": 2
+  }
+}

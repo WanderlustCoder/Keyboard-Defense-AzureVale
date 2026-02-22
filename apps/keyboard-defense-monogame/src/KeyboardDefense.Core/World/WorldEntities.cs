@@ -17,12 +17,12 @@ public static class WorldEntities
     private static readonly string[] NpcTypes = { "trainer", "merchant", "quest_giver" };
 
     /// <summary>Seeds the world with resource nodes, roaming enemies, and NPCs.</summary>
-    public static void PopulateWorld(GameState state)
+    public static void PopulateWorld(GameState state, Dictionary<string, GridPoint>? specPois = null)
     {
         PopulateResourceNodes(state);
         PopulateRoamingEnemies(state);
         PopulateNpcs(state);
-        PopulatePois(state);
+        PopulatePois(state, specPois);
     }
 
     private static void PopulateResourceNodes(GameState state)
@@ -148,8 +148,38 @@ public static class WorldEntities
         }
     }
 
-    private static void PopulatePois(GameState state)
+    private static void PopulatePois(GameState state, Dictionary<string, GridPoint>? specPois = null)
     {
+        // When spec POIs are available, place them at fixed coordinates
+        if (specPois != null && specPois.Count > 0)
+        {
+            // Map spec POI names to game POI types
+            var specToPoiType = new Dictionary<string, string>
+            {
+                ["shrine"] = "shrine",
+                ["camp"] = "campsite",
+                ["outpost"] = "watchtower",
+                ["ruins"] = "forge",
+                ["watchtower"] = "watchtower",
+                ["mine"] = "mine",
+                ["shore"] = "bridge",
+            };
+
+            foreach (var (specName, pos) in specPois)
+            {
+                if (!SimMap.InBounds(pos.X, pos.Y, state.MapW, state.MapH)) continue;
+                string poiId = specToPoiType.GetValueOrDefault(specName, specName);
+                string zone = SimMap.GetZoneAt(state, pos);
+                Poi.SpawnPoi(state, poiId, pos, new Dictionary<string, object>
+                {
+                    ["zone"] = zone,
+                    ["event_id"] = $"poi_{poiId}",
+                    ["spec_name"] = specName,
+                });
+            }
+            return;
+        }
+
         // Guaranteed POI landmarks per zone
         var guaranteedPois = new[]
         {

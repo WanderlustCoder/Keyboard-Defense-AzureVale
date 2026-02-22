@@ -178,8 +178,8 @@ public class GameState
         Ap = ApMax;
         Hp = 10;
         Threat = 0;
-        MapW = 64;
-        MapH = 64;
+        MapW = 32;
+        MapH = 32;
         BasePos = new GridPoint(MapW / 2, MapH / 2);
         CursorPos = BasePos;
         PlayerPos = BasePos;
