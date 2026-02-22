@@ -266,8 +266,8 @@ public class GridRenderer
         int variant = hash / 100 % 4;
         if (terrain == SimMap.TerrainForest && chance < 30)
             textureName = variant switch { 0 => "tree", 1 => "pine", 2 => "tree", _ => "reeds2" };
-        else if (terrain == SimMap.TerrainPlains && chance < 5)
-            textureName = variant switch { 0 => "signpost", 1 => "well", 2 => "campfire", _ => "signpost" };
+        else if (terrain == SimMap.TerrainPlains && chance < 8)
+            textureName = variant switch { 0 => "wildflowers", 1 => "grass_tuft", 2 => "small_stones", _ => "wildflowers" };
         else if (terrain == SimMap.TerrainMountain && chance < 18)
             textureName = variant switch { 0 => "rock", 1 => "mine", 2 => "rock", _ => "campfire" };
         else if (terrain == SimMap.TerrainDesert && chance < 14)
@@ -354,13 +354,27 @@ public class GridRenderer
 
     private void DrawBase(SpriteBatch spriteBatch, GridPoint center)
     {
-        // 3x3 walled settlement compound centered on base position
+        var loader = AssetLoader.Instance;
+
+        // Try single cohesive settlement sprite across the 3x3 area
+        var settlementTex = loader.GetTexture("bld_settlement");
+        if (settlementTex != null)
+        {
+            var topLeft = new GridPoint(center.X - 1, center.Y - 1);
+            var compoundRect = new Rectangle(
+                (int)Origin.X + topLeft.X * CellSize,
+                (int)Origin.Y + topLeft.Y * CellSize,
+                CellSize * 3, CellSize * 3);
+            spriteBatch.Draw(settlementTex, compoundRect, Color.White);
+            DrawRectOutline(spriteBatch, compoundRect, ThemeColors.GoldBright, 2);
+            return;
+        }
+
+        // Fallback: 3x3 walled settlement compound from individual pieces
         // Layout:
         //   [corner] [wall_h/gate] [corner]
         //   [wall_v] [  keep     ] [wall_v]
         //   [corner] [  wall_h  ] [corner]
-        var loader = AssetLoader.Instance;
-
         for (int dy = -1; dy <= 1; dy++)
         {
             for (int dx = -1; dx <= 1; dx++)

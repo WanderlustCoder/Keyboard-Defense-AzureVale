@@ -673,29 +673,29 @@
       "id": "tile_grass_0",
       "path": "tiles/tile_grass_0.png",
       "category": "tiles",
-      "width": 32,
-      "height": 32
+      "width": 48,
+      "height": 48
     },
     {
       "id": "tile_grass_1",
       "path": "tiles/tile_grass_1.png",
       "category": "tiles",
-      "width": 32,
-      "height": 32
+      "width": 48,
+      "height": 48
     },
     {
       "id": "tile_grass_2",
       "path": "tiles/tile_grass_2.png",
       "category": "tiles",
-      "width": 32,
-      "height": 32
+      "width": 48,
+      "height": 48
     },
     {
       "id": "tile_grass_3",
       "path": "tiles/tile_grass_3.png",
       "category": "tiles",
-      "width": 32,
-      "height": 32
+      "width": 48,
+      "height": 48
     },
     {
       "id": "tile_road_0",
@@ -752,6 +752,34 @@
       "category": "map_objects",
       "width": 48,
       "height": 48
+    },
+    {
+      "id": "bld_settlement",
+      "path": "map_objects/bld_settlement.png",
+      "category": "map_objects",
+      "width": 144,
+      "height": 144
+    },
+    {
+      "id": "wildflowers",
+      "path": "map_objects/wildflowers.png",
+      "category": "map_objects",
+      "width": 32,
+      "height": 32
+    },
+    {
+      "id": "grass_tuft",
+      "path": "map_objects/grass_tuft.png",
+      "category": "map_objects",
+      "width": 32,
+      "height": 32
+    },
+    {
+      "id": "small_stones",
+      "path": "map_objects/small_stones.png",
+      "category": "map_objects",
+      "width": 32,
+      "height": 32
     }
   ]
 }
