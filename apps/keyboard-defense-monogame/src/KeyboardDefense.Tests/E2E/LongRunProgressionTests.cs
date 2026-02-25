@@ -256,6 +256,10 @@ public class LongRunProgressionTests
             });
         }
 
+        // Ensure AP is available for gather+build actions
+        state.ApMax = Math.Max(state.ApMax, 10);
+        state.Ap = state.ApMax;
+
         state = ApplyIntent(state, "build", new()
         {
             ["building"] = "tower",

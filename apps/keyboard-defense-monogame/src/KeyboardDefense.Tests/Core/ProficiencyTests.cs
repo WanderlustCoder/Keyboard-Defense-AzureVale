@@ -84,16 +84,14 @@ public sealed class ProficiencyTests : IDisposable
         Assert.Equal(TypingProficiency.ProficiencyTier.Novice, TypingProficiency.GetTier());
     }
 
-    [Fact]
-    public void GetTier_FromProfile_LowAccuracyPreventsPromotion()
+    [Theory]
+    [InlineData(120.0, 0.70, TypingProficiency.ProficiencyTier.Novice)]   // high WPM, low accuracy
+    [InlineData(120.0, 0.74, TypingProficiency.ProficiencyTier.Novice)]   // just below Adept threshold
+    [InlineData(120.0, 0.80, TypingProficiency.ProficiencyTier.Expert)]   // meets Expert but not Master
+    [InlineData(120.0, 0.84, TypingProficiency.ProficiencyTier.Expert)]   // just below Master threshold
+    public void GetTier_LowAccuracy_PreventsPromotion(double wpm, double accuracy, TypingProficiency.ProficiencyTier expected)
     {
-        var profile = TypingProfile.Instance;
-        SeedAccuracy(profile, correct: 70, errors: 30); // 70% accuracy
-
-        for (int i = 0; i < 5; i++)
-            profile.RecordSession(120.0, 0.99, wordsTyped: 50, errors: 0, durationSec: 30.0);
-
-        Assert.Equal(TypingProficiency.ProficiencyTier.Novice, TypingProficiency.GetTier());
+        Assert.Equal(expected, TypingProficiency.GetTier(wpm, accuracy));
     }
 
     [Theory]
