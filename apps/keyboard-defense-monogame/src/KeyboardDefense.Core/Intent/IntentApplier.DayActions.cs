@@ -10,6 +10,9 @@ using KeyboardDefense.Core.World;
 
 namespace KeyboardDefense.Core.Intent;
 
+/// <summary>
+/// Contains day-phase intent handlers for economy, construction, exploration, and progression actions.
+/// </summary>
 public static partial class IntentApplier
 {
     private static void ApplyGather(GameState state, Dictionary<string, object> intent, List<string> events)
@@ -60,9 +63,15 @@ public static partial class IntentApplier
             events.Add("That tile is already occupied.");
             return;
         }
-        if (SimMap.GetTerrain(state, pos) == SimMap.TerrainWater)
+        string terrain = SimMap.GetTerrain(state, pos);
+        if (terrain == SimMap.TerrainWater)
         {
             events.Add("Cannot build on water.");
+            return;
+        }
+        if (terrain == SimMap.TerrainMountain)
+        {
+            events.Add("Cannot build on mountain.");
             return;
         }
         var cost = BuildingsData.CostFor(buildingType);

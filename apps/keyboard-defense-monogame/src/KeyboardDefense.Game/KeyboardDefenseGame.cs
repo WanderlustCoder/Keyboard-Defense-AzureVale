@@ -28,11 +28,15 @@ public class KeyboardDefenseGame : Microsoft.Xna.Framework.Game
     private ScreenManager _screenManager = null!;
     private SettingsManager _settingsManager = null!;
     private PerfOverlay _perfOverlay = null!;
+    private readonly bool _disableChunkBackground;
 
     public static KeyboardDefenseGame Instance { get; private set; } = null!;
 
-    public KeyboardDefenseGame()
+    public KeyboardDefenseGame(string[]? args = null)
     {
+        _disableChunkBackground = args != null && Array.Exists(args, arg =>
+            arg.Equals("--no-chunks", StringComparison.OrdinalIgnoreCase) ||
+            arg.Equals("--chunks=off", StringComparison.OrdinalIgnoreCase));
         Instance = this;
         _graphics = new GraphicsDeviceManager(this)
         {
@@ -125,4 +129,5 @@ public class KeyboardDefenseGame : Microsoft.Xna.Framework.Game
     public SpriteFont DefaultFont => _defaultFont;
     public ScreenManager ScreenManager => _screenManager;
     public SettingsManager SettingsManager => _settingsManager;
+    public bool DisableChunkBackground => _disableChunkBackground;
 }

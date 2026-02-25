@@ -11,8 +11,22 @@ using KeyboardDefense.Core.World;
 
 namespace KeyboardDefense.Core.Intent;
 
+/// <summary>
+/// Contains content- and UI-facing intent handlers such as lessons, settings, and tutorial actions.
+/// </summary>
 public static partial class IntentApplier
 {
+    private const int DefaultLessonSampleCount = 3;
+    private const int EnemyWordOrdinalStart = 1;
+    private const int DefaultEventChoiceIndex = 0;
+    private const string DefaultEventChoiceId = "0";
+    private const int ResetResearchProgressValue = 0;
+    private const int GatherYieldMin = 1;
+    private const int GatherYieldMax = 3;
+    private const int InvalidExpeditionIndex = -1;
+    private const int FirstValidExpeditionIndex = 0;
+    private const int DefaultResourceNodeYield = 1;
+
     // --- Lessons ---
     private static void ApplyLessonShow(GameState state, List<string> events)
     {
@@ -48,12 +62,12 @@ public static partial class IntentApplier
 
     private static void ApplyLessonSample(GameState state, Dictionary<string, object> intent, List<string> events)
     {
-        int count = Convert.ToInt32(intent.GetValueOrDefault("count", 3));
+        int count = Convert.ToInt32(intent.GetValueOrDefault("count", DefaultLessonSampleCount));
         var words = new List<string>();
         var used = new HashSet<string>();
         for (int i = 0; i < count; i++)
         {
-            string word = WordPool.WordForEnemy(state.RngSeed, state.Day, "raider", i + 1, used, state.LessonId);
+            string word = WordPool.WordForEnemy(state.RngSeed, state.Day, "raider", i + EnemyWordOrdinalStart, used, state.LessonId);
             words.Add(word);
             used.Add(word);
         }
@@ -96,8 +110,8 @@ public static partial class IntentApplier
             events.Add("No pending event.");
             return;
         }
-        int choiceIndex = 0;
-        string choiceId = intent.GetValueOrDefault("choice_id")?.ToString() ?? "0";
+        int choiceIndex = DefaultEventChoiceIndex;
+        string choiceId = intent.GetValueOrDefault("choice_id")?.ToString() ?? DefaultEventChoiceId;
         int.TryParse(choiceId, out choiceIndex);
         var result = Events.ResolveChoice(state, choiceIndex);
         string message = result.GetValueOrDefault("message")?.ToString() ?? result.GetValueOrDefault("error")?.ToString() ?? "Choice resolved.";
@@ -180,7 +194,7 @@ public static partial class IntentApplier
         }
         string cancelled = state.ActiveResearch;
         state.ActiveResearch = "";
-        state.ResearchProgress = 0;
+        state.ResearchProgress = ResetResearchProgressValue;
         events.Add($"Research cancelled: {cancelled}");
     }
 
@@ -218,7 +232,7 @@ public static partial class IntentApplier
             SimMap.TerrainMountain => "stone",
             _ => "food"
         };
-        int amount = SimRng.RollRange(state, 1, 3);
+        int amount = SimRng.RollRange(state, GatherYieldMin, GatherYieldMax);
         state.Resources[resource] = state.Resources.GetValueOrDefault(resource, 0) + amount;
         events.Add($"Gathered {amount} {resource} from {terrain}.");
     }
@@ -270,8 +284,8 @@ public static partial class IntentApplier
 
     private static void ApplyCancelExpedition(GameState state, Dictionary<string, object> intent, List<string> events)
     {
-        int expIdx = Convert.ToInt32(intent.GetValueOrDefault("id", -1));
-        if (expIdx < 0 || expIdx >= state.ActiveExpeditions.Count)
+        int expIdx = Convert.ToInt32(intent.GetValueOrDefault("id", InvalidExpeditionIndex));
+        if (expIdx < FirstValidExpeditionIndex || expIdx >= state.ActiveExpeditions.Count)
         {
             events.Add("Invalid expedition ID.");
             return;
@@ -307,7 +321,7 @@ public static partial class IntentApplier
             return;
         }
         string nodeType = node.GetValueOrDefault("type")?.ToString() ?? "unknown";
-        int yield = Convert.ToInt32(node.GetValueOrDefault("yield", 1));
+        int yield = Convert.ToInt32(node.GetValueOrDefault("yield", DefaultResourceNodeYield));
         string resource = nodeType switch
         {
             "iron" => "stone",

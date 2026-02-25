@@ -10,9 +10,20 @@ namespace KeyboardDefense.Core.Typing;
 /// </summary>
 public static class TypingFeedback
 {
+    /// <summary>
+    /// Normalizes raw player input by trimming whitespace and converting to lowercase.
+    /// </summary>
+    /// <param name="input">The raw input string to normalize.</param>
+    /// <returns>A normalized lowercase string, or an empty string for null input.</returns>
     public static string NormalizeInput(string input)
         => input?.Trim().ToLowerInvariant() ?? "";
 
+    /// <summary>
+    /// Calculates the number of leading characters shared by two strings.
+    /// </summary>
+    /// <param name="typed">The typed input to compare.</param>
+    /// <param name="word">The target word to compare against.</param>
+    /// <returns>The matching prefix length.</returns>
     public static int PrefixLen(string typed, string word)
     {
         int len = Math.Min(typed.Length, word.Length);
@@ -23,6 +34,12 @@ public static class TypingFeedback
         return len;
     }
 
+    /// <summary>
+    /// Computes Levenshtein edit distance between two strings.
+    /// </summary>
+    /// <param name="a">The first string.</param>
+    /// <param name="b">The second string.</param>
+    /// <returns>The minimum number of single-character edits needed to transform one string into the other.</returns>
     public static int EditDistance(string a, string b)
     {
         int m = a.Length, n = b.Length;
@@ -42,6 +59,12 @@ public static class TypingFeedback
         return dp[m, n];
     }
 
+    /// <summary>
+    /// Evaluates alive enemies against typed input and returns matching candidate metadata.
+    /// </summary>
+    /// <param name="typed">The typed input used to match enemy words.</param>
+    /// <param name="enemies">Enemy dictionaries containing word, id, and alive state data.</param>
+    /// <returns>A candidate analysis result containing exact, best-prefix, and expected-next-character data.</returns>
     public static TypingCandidateResult EnemyCandidates(string typed, List<Dictionary<string, object>> enemies)
     {
         var result = new TypingCandidateResult { Typed = typed };
@@ -96,12 +119,38 @@ public static class TypingFeedback
     }
 }
 
+/// <summary>
+/// Aggregated candidate-matching information for typed input against enemy words.
+/// </summary>
 public class TypingCandidateResult
 {
+    /// <summary>
+    /// The original typed input string used for candidate evaluation.
+    /// </summary>
     public string Typed { get; set; } = "";
+
+    /// <summary>
+    /// Enemy id with an exact word match, when one is found.
+    /// </summary>
     public int? ExactId { get; set; }
+
+    /// <summary>
+    /// Enemy ids that share any positive prefix match with the typed input.
+    /// </summary>
     public List<int> CandidateIds { get; set; } = new();
+
+    /// <summary>
+    /// The largest prefix length matched by any candidate.
+    /// </summary>
     public int BestPrefixLen { get; set; }
+
+    /// <summary>
+    /// Enemy ids tied for the best prefix match length.
+    /// </summary>
     public List<int> BestIds { get; set; } = new();
+
+    /// <summary>
+    /// Distinct expected next characters based on current prefix matches.
+    /// </summary>
     public List<char> ExpectedNextChars { get; set; } = new();
 }

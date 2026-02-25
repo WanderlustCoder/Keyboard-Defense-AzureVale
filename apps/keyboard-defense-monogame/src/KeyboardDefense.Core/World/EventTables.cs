@@ -13,11 +13,17 @@ public static class EventTables
 {
     private static Dictionary<string, List<Dictionary<string, object>>>? _tables;
 
+    /// <summary>
+    /// Loads event table definitions used by subsequent weighted event selection calls.
+    /// </summary>
     public static void LoadTables(Dictionary<string, List<Dictionary<string, object>>> tables)
     {
         _tables = tables;
     }
 
+    /// <summary>
+    /// Selects one eligible event entry from the requested table using deterministic weighted random selection.
+    /// </summary>
     public static Dictionary<string, object>? SelectEvent(GameState state, string tableId)
     {
         if (_tables == null || !_tables.TryGetValue(tableId, out var entries))
@@ -40,8 +46,16 @@ public static class EventTables
         return eligible.Last();
     }
 
+    /// <summary>
+    /// Evaluates cooldown and condition gates to determine whether an event entry is currently eligible.
+    /// </summary>
     public static bool CheckConditions(GameState state, Dictionary<string, object> entry)
     {
+        // Cooldown check applies regardless of conditions
+        string eventId = entry.GetValueOrDefault("event_id", "").ToString() ?? "";
+        if (state.EventCooldowns.TryGetValue(eventId, out int cooldownDay) && state.Day < cooldownDay)
+            return false;
+
         if (entry.GetValueOrDefault("conditions") is not Dictionary<string, object> conditions)
             return true;
 
@@ -56,13 +70,12 @@ public static class EventTables
             if (!state.EventFlags.ContainsKey(flagStr)) return false;
         }
 
-        string eventId = entry.GetValueOrDefault("event_id", "").ToString() ?? "";
-        if (state.EventCooldowns.TryGetValue(eventId, out int cooldownDay) && state.Day < cooldownDay)
-            return false;
-
         return true;
     }
 
+    /// <summary>
+    /// Sets the day-based cooldown expiration for an event so it cannot re-trigger before the target day.
+    /// </summary>
     public static void SetCooldown(GameState state, string eventId, int cooldownDays)
     {
         state.EventCooldowns[eventId] = state.Day + cooldownDays;

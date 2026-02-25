@@ -11,12 +11,35 @@ namespace KeyboardDefense.Game.Effects;
 public class HitPause
 {
     private static HitPause? _instance;
+
+    /// <summary>
+    /// Gets the singleton hit pause controller instance.
+    /// </summary>
     public static HitPause Instance => _instance ??= new();
 
+    /// <summary>
+    /// Micro pause preset duration in seconds.
+    /// </summary>
     public const float PresetMicro = 0.02f;
+
+    /// <summary>
+    /// Light pause preset duration in seconds.
+    /// </summary>
     public const float PresetLight = 0.05f;
+
+    /// <summary>
+    /// Medium pause preset duration in seconds.
+    /// </summary>
     public const float PresetMedium = 0.10f;
+
+    /// <summary>
+    /// Heavy pause preset duration in seconds.
+    /// </summary>
     public const float PresetHeavy = 0.18f;
+
+    /// <summary>
+    /// Extreme pause preset duration in seconds.
+    /// </summary>
     public const float PresetExtreme = 0.30f;
 
     private const float MinDuration = 0.01f;
@@ -24,10 +47,24 @@ public class HitPause
 
     private float _remaining;
 
+    /// <summary>
+    /// Occurs when a pause starts or extends to a longer duration.
+    /// </summary>
     public event Action<float>? PauseStarted;
+
+    /// <summary>
+    /// Occurs when the active pause ends.
+    /// </summary>
     public event Action? PauseEnded;
 
+    /// <summary>
+    /// Gets a value indicating whether hit pause is currently active.
+    /// </summary>
     public bool IsPausing => _remaining > 0f;
+
+    /// <summary>
+    /// Gets the remaining paused time in seconds.
+    /// </summary>
     public float RemainingTime => _remaining;
 
     /// <summary>
@@ -36,6 +73,10 @@ public class HitPause
     /// </summary>
     public float TimeScale => IsPausing ? 0f : 1f;
 
+    /// <summary>
+    /// Starts a hit pause using a duration clamped to the configured minimum and maximum.
+    /// </summary>
+    /// <param name="duration">Requested pause duration in seconds.</param>
     public void Pause(float duration)
     {
         // Skip if reduced motion is enabled
@@ -51,12 +92,34 @@ public class HitPause
         }
     }
 
+    /// <summary>
+    /// Starts hit pause using the micro preset duration.
+    /// </summary>
     public void PauseMicro() => Pause(PresetMicro);
+
+    /// <summary>
+    /// Starts hit pause using the light preset duration.
+    /// </summary>
     public void PauseLight() => Pause(PresetLight);
+
+    /// <summary>
+    /// Starts hit pause using the medium preset duration.
+    /// </summary>
     public void PauseMedium() => Pause(PresetMedium);
+
+    /// <summary>
+    /// Starts hit pause using the heavy preset duration.
+    /// </summary>
     public void PauseHeavy() => Pause(PresetHeavy);
+
+    /// <summary>
+    /// Starts hit pause using the extreme preset duration.
+    /// </summary>
     public void PauseExtreme() => Pause(PresetExtreme);
 
+    /// <summary>
+    /// Ends an active pause immediately.
+    /// </summary>
     public void Cancel()
     {
         if (_remaining > 0f)
@@ -66,11 +129,18 @@ public class HitPause
         }
     }
 
+    /// <summary>
+    /// Clears pause state without raising events.
+    /// </summary>
     public void Reset()
     {
         _remaining = 0f;
     }
 
+    /// <summary>
+    /// Advances pause timing and ends pause when remaining time reaches zero.
+    /// </summary>
+    /// <param name="gameTime">Frame timing information used to decrement remaining pause time.</param>
     public void Update(GameTime gameTime)
     {
         if (_remaining <= 0f) return;

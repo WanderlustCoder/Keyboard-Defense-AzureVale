@@ -41,3 +41,5 @@ temp_*.txt
 temp_*.ts
 TEMP_*.txt
 tmp.txt
+.worktrees/
+.aider*

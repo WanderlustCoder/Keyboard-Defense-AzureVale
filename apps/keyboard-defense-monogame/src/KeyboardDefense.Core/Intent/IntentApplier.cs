@@ -19,6 +19,14 @@ namespace KeyboardDefense.Core.Intent;
 /// </summary>
 public static partial class IntentApplier
 {
+    /// <summary>
+    /// Routes an intent to the appropriate handler and returns the updated state with emitted events.
+    /// </summary>
+    /// <param name="state">The current simulation state to copy and mutate.</param>
+    /// <param name="intent">The normalized intent payload to apply.</param>
+    /// <returns>
+    /// A result envelope containing the new state, event messages, and an optional follow-up request.
+    /// </returns>
     public static Dictionary<string, object> Apply(GameState state, Dictionary<string, object> intent)
     {
         var events = new List<string>();

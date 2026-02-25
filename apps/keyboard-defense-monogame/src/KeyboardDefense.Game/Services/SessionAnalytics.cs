@@ -9,22 +9,61 @@ namespace KeyboardDefense.Game.Services;
 public class SessionAnalytics
 {
     private static SessionAnalytics? _instance;
+    /// <summary>
+    /// Gets the shared analytics instance used for the current run.
+    /// </summary>
     public static SessionAnalytics Instance => _instance ??= new();
 
+    /// <summary>
+    /// Gets the local timestamp when the current session started.
+    /// </summary>
     public DateTime SessionStartTime { get; private set; }
+    /// <summary>
+    /// Gets the total elapsed play time captured for this session in seconds.
+    /// </summary>
     public double TotalPlayTimeSeconds { get; private set; }
+    /// <summary>
+    /// Gets the number of completed in-game days recorded this session.
+    /// </summary>
     public int DaysCompleted { get; private set; }
+    /// <summary>
+    /// Gets the number of enemies defeated this session.
+    /// </summary>
     public int EnemiesDefeated { get; private set; }
+    /// <summary>
+    /// Gets the number of typed words counted this session.
+    /// </summary>
     public int WordsTyped { get; private set; }
+    /// <summary>
+    /// Gets the number of correctly typed characters counted this session.
+    /// </summary>
     public int CharsTyped { get; private set; }
+    /// <summary>
+    /// Gets the number of typing errors recorded this session.
+    /// </summary>
     public int TotalErrors { get; private set; }
+    /// <summary>
+    /// Gets the highest combo value reached during this session.
+    /// </summary>
     public int PeakCombo { get; private set; }
+    /// <summary>
+    /// Gets the total amount of gold earned this session.
+    /// </summary>
     public int GoldEarned { get; private set; }
+    /// <summary>
+    /// Gets the number of buildings placed this session.
+    /// </summary>
     public int BuildingsPlaced { get; private set; }
+    /// <summary>
+    /// Gets the number of explored tiles recorded this session.
+    /// </summary>
     public int TilesExplored { get; private set; }
 
     private bool _active;
 
+    /// <summary>
+    /// Starts a new analytics session and resets all tracked counters.
+    /// </summary>
     public void StartSession()
     {
         SessionStartTime = DateTime.Now;
@@ -41,6 +80,9 @@ public class SessionAnalytics
         _active = true;
     }
 
+    /// <summary>
+    /// Records a normalized analytics event and updates matching counters.
+    /// </summary>
     public void RecordEvent(string eventType, int value = 1)
     {
         if (!_active) return;
@@ -77,6 +119,9 @@ public class SessionAnalytics
         }
     }
 
+    /// <summary>
+    /// Parses raw gameplay event messages and maps them to analytics counters.
+    /// </summary>
     public void OnGameEvent(List<string> events)
     {
         if (!_active) return;
@@ -114,6 +159,9 @@ public class SessionAnalytics
         }
     }
 
+    /// <summary>
+    /// Builds a report snapshot with derived accuracy, speed, and performance grade.
+    /// </summary>
     public SessionReport GetReport()
     {
         if (_active)
@@ -168,18 +216,60 @@ public class SessionAnalytics
 /// </summary>
 public class SessionReport
 {
+    /// <summary>
+    /// Gets the local timestamp when the reported session started.
+    /// </summary>
     public DateTime SessionStartTime { get; init; }
+    /// <summary>
+    /// Gets the total elapsed play time represented by the report, in seconds.
+    /// </summary>
     public double TotalPlayTimeSeconds { get; init; }
+    /// <summary>
+    /// Gets the number of completed in-game days included in the report.
+    /// </summary>
     public int DaysCompleted { get; init; }
+    /// <summary>
+    /// Gets the number of defeated enemies included in the report.
+    /// </summary>
     public int EnemiesDefeated { get; init; }
+    /// <summary>
+    /// Gets the total typed word count included in the report.
+    /// </summary>
     public int WordsTyped { get; init; }
+    /// <summary>
+    /// Gets the total correct character count included in the report.
+    /// </summary>
     public int CharsTyped { get; init; }
+    /// <summary>
+    /// Gets the total typing error count included in the report.
+    /// </summary>
     public int TotalErrors { get; init; }
+    /// <summary>
+    /// Gets the highest combo reached during the reported session.
+    /// </summary>
     public int PeakCombo { get; init; }
+    /// <summary>
+    /// Gets the total gold earned in the reported session.
+    /// </summary>
     public int GoldEarned { get; init; }
+    /// <summary>
+    /// Gets the number of buildings placed in the reported session.
+    /// </summary>
     public int BuildingsPlaced { get; init; }
+    /// <summary>
+    /// Gets the number of explored tiles in the reported session.
+    /// </summary>
     public int TilesExplored { get; init; }
+    /// <summary>
+    /// Gets the typing accuracy ratio computed for the report.
+    /// </summary>
     public double AccuracyRate { get; init; }
+    /// <summary>
+    /// Gets the words-per-minute speed computed for the report.
+    /// </summary>
     public double WordsPerMinute { get; init; }
+    /// <summary>
+    /// Gets the letter-grade performance rank assigned to the report.
+    /// </summary>
     public string PerformanceGrade { get; init; } = "D";
 }

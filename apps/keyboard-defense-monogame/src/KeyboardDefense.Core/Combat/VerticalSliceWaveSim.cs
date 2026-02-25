@@ -25,9 +25,27 @@ public static class VerticalSliceWaveSim
     private const string ElapsedSecondsKey = "vs_elapsed_seconds";
     private const string DamageTakenKey = "vs_damage_taken";
     private const string SummaryPayloadKey = "vs_summary_payload";
+    private const string BattleCharsTypedKey = "battle_chars_typed";
+    private const string BattleWordsTypedKey = "battle_words_typed";
+
+    private const int NoEnemyIndex = -1;
+    private const int DefaultEnemyId = 0;
+    private const int DefaultEnemyHp = 1;
+    private const int DefaultEnemyGoldReward = 1;
+    private const int DefaultEnemyDistance = 10;
+
+    private const int VictoryScoreBonus = 500;
+    private const int ScorePerEnemyDefeated = 100;
+    private const int ScorePerWordTyped = 20;
+    private const int ScorePerHpRemaining = 10;
+    private const int ScorePenaltyPerMiss = 15;
+    private const int ScorePenaltyPerDamageTaken = 20;
 
     private static readonly string[] EnemyKinds = { "scout", "raider", "armored", "swarm", "berserker" };
 
+    /// <summary>
+    /// Initializes deterministic state for a single vertical-slice night wave.
+    /// </summary>
     public static void StartSingleWave(GameState state, VerticalSliceWaveConfig config, List<string> events)
     {
         state.Phase = "night";
@@ -40,7 +58,7 @@ public static class VerticalSliceWaveSim
         SetMetricFloat(state, SpawnTimerKey, 0f);
         SetMetricFloat(state, EnemyStepTimerKey, config.EnemyStepIntervalSeconds);
         SetMetricFloat(state, RunClockKey, 0f);
-        SetMetricInt(state, ActiveTargetIdKey, 0);
+        SetMetricInt(state, ActiveTargetIdKey, DefaultEnemyId);
         SetMetricString(state, ActivePrefixKey, string.Empty);
         SetMetricString(state, ResultKey, string.Empty);
         SetMetricInt(state, StartHpKey, state.Hp);
@@ -53,6 +71,9 @@ public static class VerticalSliceWaveSim
         events.Add($"Night falls. Enemy wave: {config.SpawnTotal}.");
     }
 
+    /// <summary>
+    /// Advances the active wave simulation by a time slice and optional typed input.
+    /// </summary>
     public static void Step(
         GameState state,
         VerticalSliceWaveConfig config,
@@ -122,12 +143,12 @@ public static class VerticalSliceWaveSim
         if (string.IsNullOrEmpty(fragment))
             return;
 
-        IncrementMetricInt(state, "battle_chars_typed", fragment.Length);
+        IncrementMetricInt(state, BattleCharsTypedKey, fragment.Length);
         SyncActiveTarget(state);
 
-        int activeTargetId = GetMetricInt(state, ActiveTargetIdKey, 0);
+        int activeTargetId = GetMetricInt(state, ActiveTargetIdKey, DefaultEnemyId);
         string activePrefix = GetMetricString(state, ActivePrefixKey, string.Empty);
-        int targetIndex = activeTargetId > 0 ? TryGetEnemyIndexById(state, activeTargetId) : -1;
+        int targetIndex = activeTargetId > 0 ? TryGetEnemyIndexById(state, activeTargetId) : NoEnemyIndex;
 
         if (targetIndex >= 0)
         {
@@ -151,7 +172,7 @@ public static class VerticalSliceWaveSim
                 return;
             }
 
-            SetMetricInt(state, ActiveTargetIdKey, 0);
+            SetMetricInt(state, ActiveTargetIdKey, DefaultEnemyId);
             SetMetricString(state, ActivePrefixKey, string.Empty);
             state.NightPrompt = string.Empty;
         }
@@ -164,7 +185,7 @@ public static class VerticalSliceWaveSim
         }
 
         var targetEnemy = state.Enemies[targetIndex];
-        int targetId = Convert.ToInt32(targetEnemy.GetValueOrDefault("id", 0));
+        int targetId = Convert.ToInt32(targetEnemy.GetValueOrDefault("id", DefaultEnemyId));
         string word = TypingFeedback.NormalizeInput(
             targetEnemy.GetValueOrDefault("word")?.ToString() ?? string.Empty);
         if (string.IsNullOrEmpty(word))
@@ -195,21 +216,21 @@ public static class VerticalSliceWaveSim
         if (targetIndex < 0 || targetIndex >= state.Enemies.Count)
             return;
 
-        SetMetricInt(state, ActiveTargetIdKey, 0);
+        SetMetricInt(state, ActiveTargetIdKey, DefaultEnemyId);
         SetMetricString(state, ActivePrefixKey, string.Empty);
         state.NightPrompt = string.Empty;
 
         var enemy = state.Enemies[targetIndex];
-        int hp = Convert.ToInt32(enemy.GetValueOrDefault("hp", 1));
+        int hp = Convert.ToInt32(enemy.GetValueOrDefault("hp", DefaultEnemyHp));
         hp -= config.TypedHitDamage;
         enemy["hp"] = hp;
 
-        IncrementMetricInt(state, "battle_words_typed", 1);
+        IncrementMetricInt(state, BattleWordsTypedKey, 1);
         events.Add($"typing_word_complete: target='{word}' damage={config.TypedHitDamage}");
 
         if (hp <= 0)
         {
-            int goldReward = Convert.ToInt32(enemy.GetValueOrDefault("gold", 1));
+            int goldReward = Convert.ToInt32(enemy.GetValueOrDefault("gold", DefaultEnemyGoldReward));
             state.Gold += goldReward;
             state.Enemies.RemoveAt(targetIndex);
             state.EnemiesDefeated++;
@@ -250,7 +271,7 @@ public static class VerticalSliceWaveSim
         int hpRemaining = Math.Max(0, state.Hp);
         int damageTaken = Math.Max(0, startHp - hpRemaining);
         int enemiesDefeated = Math.Max(0, state.EnemiesDefeated);
-        int wordsTyped = Math.Max(0, GetMetricInt(state, "battle_words_typed", 0));
+        int wordsTyped = Math.Max(0, GetMetricInt(state, BattleWordsTypedKey, 0));
         int misses = Math.Max(0, GetMetricInt(state, MissCountKey, 0));
         int score = ComputeScore(victory, hpRemaining, enemiesDefeated, wordsTyped, misses, damageTaken);
 
@@ -290,20 +311,20 @@ public static class VerticalSliceWaveSim
     {
         int score = 0;
         if (victory)
-            score += 500;
+            score += VictoryScoreBonus;
 
-        score += enemiesDefeated * 100;
-        score += wordsTyped * 20;
-        score += hpRemaining * 10;
-        score -= misses * 15;
-        score -= damageTaken * 20;
+        score += enemiesDefeated * ScorePerEnemyDefeated;
+        score += wordsTyped * ScorePerWordTyped;
+        score += hpRemaining * ScorePerHpRemaining;
+        score -= misses * ScorePenaltyPerMiss;
+        score -= damageTaken * ScorePenaltyPerDamageTaken;
 
         return Math.Max(0, score);
     }
 
     private static int SelectTargetByPrefix(GameState state, string prefix)
     {
-        int bestIndex = -1;
+        int bestIndex = NoEnemyIndex;
         int bestDist = int.MaxValue;
         int bestWordLen = int.MaxValue;
 
@@ -314,7 +335,7 @@ public static class VerticalSliceWaveSim
             if (!word.StartsWith(prefix, StringComparison.Ordinal))
                 continue;
 
-            int dist = Convert.ToInt32(enemy.GetValueOrDefault("dist", 10));
+            int dist = Convert.ToInt32(enemy.GetValueOrDefault("dist", DefaultEnemyDistance));
             int wordLen = word.Length;
 
             if (dist < bestDist || (dist == bestDist && wordLen < bestWordLen))
@@ -330,7 +351,7 @@ public static class VerticalSliceWaveSim
 
     private static void SyncActiveTarget(GameState state)
     {
-        int activeTargetId = GetMetricInt(state, ActiveTargetIdKey, 0);
+        int activeTargetId = GetMetricInt(state, ActiveTargetIdKey, DefaultEnemyId);
         if (activeTargetId <= 0)
         {
             state.NightPrompt = string.Empty;
@@ -341,7 +362,7 @@ public static class VerticalSliceWaveSim
         int enemyIndex = TryGetEnemyIndexById(state, activeTargetId);
         if (enemyIndex < 0)
         {
-            SetMetricInt(state, ActiveTargetIdKey, 0);
+            SetMetricInt(state, ActiveTargetIdKey, DefaultEnemyId);
             SetMetricString(state, ActivePrefixKey, string.Empty);
             state.NightPrompt = string.Empty;
             return;
@@ -353,7 +374,7 @@ public static class VerticalSliceWaveSim
 
         if (string.IsNullOrEmpty(word) || !word.StartsWith(prefix, StringComparison.Ordinal))
         {
-            SetMetricInt(state, ActiveTargetIdKey, 0);
+            SetMetricInt(state, ActiveTargetIdKey, DefaultEnemyId);
             SetMetricString(state, ActivePrefixKey, string.Empty);
             state.NightPrompt = string.Empty;
             return;
@@ -406,13 +427,13 @@ public static class VerticalSliceWaveSim
                 break;
 
             var target = state.Enemies[0];
-            int hp = Convert.ToInt32(target.GetValueOrDefault("hp", 1));
+            int hp = Convert.ToInt32(target.GetValueOrDefault("hp", DefaultEnemyHp));
             hp -= config.TowerTickDamage;
             target["hp"] = hp;
 
             if (hp <= 0)
             {
-                int goldReward = Convert.ToInt32(target.GetValueOrDefault("gold", 1));
+                int goldReward = Convert.ToInt32(target.GetValueOrDefault("gold", DefaultEnemyGoldReward));
                 state.Gold += goldReward;
                 state.Enemies.RemoveAt(0);
                 state.EnemiesDefeated++;
@@ -430,7 +451,7 @@ public static class VerticalSliceWaveSim
         for (int i = state.Enemies.Count - 1; i >= 0; i--)
         {
             var enemy = state.Enemies[i];
-            int dist = Convert.ToInt32(enemy.GetValueOrDefault("dist", 10));
+            int dist = Convert.ToInt32(enemy.GetValueOrDefault("dist", DefaultEnemyDistance));
             dist = Math.Max(0, dist - config.EnemyStepDistance);
             enemy["dist"] = dist;
 
@@ -471,18 +492,18 @@ public static class VerticalSliceWaveSim
                 return i;
         }
 
-        return -1;
+        return NoEnemyIndex;
     }
 
     private static int TryGetEnemyIndexById(GameState state, int enemyId)
     {
         for (int i = 0; i < state.Enemies.Count; i++)
         {
-            int id = Convert.ToInt32(state.Enemies[i].GetValueOrDefault("id", 0));
+            int id = Convert.ToInt32(state.Enemies[i].GetValueOrDefault("id", DefaultEnemyId));
             if (id == enemyId)
                 return i;
         }
-        return -1;
+        return NoEnemyIndex;
     }
 
     private static float GetMetricFloat(GameState state, string key, float fallback)
@@ -550,17 +571,64 @@ public static class VerticalSliceWaveSim
     }
 }
 
+/// <summary>
+/// Configuration values that control spawn cadence, enemy advancement, and damage tuning
+/// for a single vertical-slice wave simulation.
+/// </summary>
 public sealed class VerticalSliceWaveConfig
 {
-    public int SpawnTotal { get; init; } = 6;
-    public float SpawnIntervalSeconds { get; init; } = 1.0f;
-    public float EnemyStepIntervalSeconds { get; init; } = 1.0f;
-    public int EnemyStepDistance { get; init; } = 1;
-    public int EnemyContactDamage { get; init; } = 1;
-    public int TypedHitDamage { get; init; } = 2;
-    public int TypedMissDamage { get; init; } = 1;
-    public int TowerTickDamage { get; init; } = 1;
+    private const int DefaultSpawnTotal = 6;
+    private const float DefaultSpawnIntervalSeconds = 1.0f;
+    private const float DefaultEnemyStepIntervalSeconds = 1.0f;
+    private const int DefaultEnemyStepDistance = 1;
+    private const int DefaultEnemyContactDamage = 1;
+    private const int DefaultTypedHitDamage = 2;
+    private const int DefaultTypedMissDamage = 1;
+    private const int DefaultTowerTickDamage = 1;
 
+    /// <summary>
+    /// Total number of enemies to spawn during the wave.
+    /// </summary>
+    public int SpawnTotal { get; init; } = DefaultSpawnTotal;
+
+    /// <summary>
+    /// Seconds between enemy spawn attempts.
+    /// </summary>
+    public float SpawnIntervalSeconds { get; init; } = DefaultSpawnIntervalSeconds;
+
+    /// <summary>
+    /// Seconds between simulation combat/advance ticks.
+    /// </summary>
+    public float EnemyStepIntervalSeconds { get; init; } = DefaultEnemyStepIntervalSeconds;
+
+    /// <summary>
+    /// Distance each enemy advances per step tick.
+    /// </summary>
+    public int EnemyStepDistance { get; init; } = DefaultEnemyStepDistance;
+
+    /// <summary>
+    /// Minimum damage applied when an enemy reaches the base.
+    /// </summary>
+    public int EnemyContactDamage { get; init; } = DefaultEnemyContactDamage;
+
+    /// <summary>
+    /// Damage applied when typing fully completes an enemy word.
+    /// </summary>
+    public int TypedHitDamage { get; init; } = DefaultTypedHitDamage;
+
+    /// <summary>
+    /// Self-damage applied on typing misses when practice mode is disabled.
+    /// </summary>
+    public int TypedMissDamage { get; init; } = DefaultTypedMissDamage;
+
+    /// <summary>
+    /// Damage dealt by each auto tower during a tower tick.
+    /// </summary>
+    public int TowerTickDamage { get; init; } = DefaultTowerTickDamage;
+
+    /// <summary>
+    /// Creates a runtime wave configuration from a vertical-slice profile.
+    /// </summary>
     public static VerticalSliceWaveConfig FromProfile(VerticalSliceWaveProfile profile)
     {
         return new VerticalSliceWaveConfig

@@ -11,6 +11,9 @@ namespace KeyboardDefense.Core.Progression;
 /// </summary>
 public static class Skills
 {
+    /// <summary>
+    /// Skill tree registry keyed by stable skill identifier.
+    /// </summary>
     public static readonly Dictionary<string, SkillDef> Registry = new()
     {
         ["quick_fingers"] = new("Quick Fingers", "Increases typing damage by 10%.",
@@ -29,8 +32,14 @@ public static class Skills
             "combat", 3, new() { ["long_word_bonus"] = 0.25 }, "critical_strike"),
     };
 
+    /// <summary>
+    /// Returns a skill definition by id, or null when the skill is not registered.
+    /// </summary>
     public static SkillDef? GetSkill(string skillId) => Registry.GetValueOrDefault(skillId);
 
+    /// <summary>
+    /// Evaluates skill tree unlock rules including duplicate unlock prevention, prerequisite gating, and skill point cost by tier.
+    /// </summary>
     public static bool CanUnlock(GameState state, string skillId)
     {
         if (!Registry.TryGetValue(skillId, out var skill)) return false;
@@ -40,6 +49,9 @@ public static class Skills
         return state.SkillPoints >= skill.Tier;
     }
 
+    /// <summary>
+    /// Attempts to unlock a skill, spending tier-cost skill points and recording the unlocked skill on success.
+    /// </summary>
     public static Dictionary<string, object> UnlockSkill(GameState state, string skillId)
     {
         if (!CanUnlock(state, skillId))
@@ -56,6 +68,9 @@ public static class Skills
         };
     }
 
+    /// <summary>
+    /// Aggregates unlocked skill bonuses for a key, multiplying entries that end with "_mult" and otherwise summing additively.
+    /// </summary>
     public static double GetBonusValue(GameState state, string bonusKey, double defaultValue = 0)
     {
         double total = defaultValue;
@@ -73,11 +88,17 @@ public static class Skills
         return total;
     }
 
+    /// <summary>
+    /// Lists currently unlockable skills according to current state and skill tree prerequisites.
+    /// </summary>
     public static List<string> GetAvailableSkills(GameState state)
     {
         return Registry.Keys.Where(id => CanUnlock(state, id)).ToList();
     }
 }
 
+/// <summary>
+/// Immutable skill definition describing tier, prerequisite chain, and passive bonus payload.
+/// </summary>
 public record SkillDef(string Name, string Description, string Category, int Tier,
     Dictionary<string, double> Bonuses, string? Prerequisite);

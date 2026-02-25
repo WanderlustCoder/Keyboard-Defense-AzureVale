@@ -670,29 +670,36 @@
       "height": 32
     },
     {
+      "id": "tile_grass_base",
+      "path": "tiles/tile_grass_base.png",
+      "category": "tiles",
+      "width": 32,
+      "height": 32
+    },
+    {
       "id": "tile_grass_0",
       "path": "tiles/tile_grass_0.png",
       "category": "tiles",
-      "width": 48,
-      "height": 48
+      "width": 32,
+      "height": 32
     },
     {
       "id": "tile_grass_1",
       "path": "tiles/tile_grass_1.png",
       "category": "tiles",
-      "width": 48,
-      "height": 48
+      "width": 32,
+      "height": 32
     },
     {
       "id": "tile_grass_2",
       "path": "tiles/tile_grass_2.png",
       "category": "tiles",
-      "width": 48,
-      "height": 48
+      "width": 32,
+      "height": 32
     },
     {
-      "id": "tile_grass_3",
-      "path": "tiles/tile_grass_3.png",
+      "id": "tile_grass_simple",
+      "path": "tiles/tile_grass_simple.png",
       "category": "tiles",
       "width": 48,
       "height": 48
@@ -768,8 +775,36 @@
       "height": 32
     },
     {
-      "id": "grass_tuft",
-      "path": "map_objects/grass_tuft.png",
+      "id": "tuft_a",
+      "path": "map_objects/tuft_a.png",
+      "category": "map_objects",
+      "width": 32,
+      "height": 32
+    },
+    {
+      "id": "tuft_b",
+      "path": "map_objects/tuft_b.png",
+      "category": "map_objects",
+      "width": 32,
+      "height": 32
+    },
+    {
+      "id": "tuft_c",
+      "path": "map_objects/tuft_c.png",
+      "category": "map_objects",
+      "width": 32,
+      "height": 32
+    },
+    {
+      "id": "tuft_d",
+      "path": "map_objects/tuft_d.png",
+      "category": "map_objects",
+      "width": 32,
+      "height": 32
+    },
+    {
+      "id": "tuft_e",
+      "path": "map_objects/tuft_e.png",
       "category": "map_objects",
       "width": 32,
       "height": 32

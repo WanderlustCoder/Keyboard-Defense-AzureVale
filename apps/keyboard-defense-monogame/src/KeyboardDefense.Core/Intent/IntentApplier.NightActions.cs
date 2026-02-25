@@ -11,6 +11,9 @@ using KeyboardDefense.Core.World;
 
 namespace KeyboardDefense.Core.Intent;
 
+/// <summary>
+/// Contains night-phase intent handlers for typing defense, wave stepping, and combat resolution.
+/// </summary>
 public static partial class IntentApplier
 {
     private static bool ApplyDefendInput(GameState state, Dictionary<string, object> intent, List<string> events)

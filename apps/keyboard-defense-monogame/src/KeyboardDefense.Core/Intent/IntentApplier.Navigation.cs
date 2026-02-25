@@ -6,6 +6,9 @@ using KeyboardDefense.Core.World;
 
 namespace KeyboardDefense.Core.Intent;
 
+/// <summary>
+/// Contains navigation and inspection intent handlers for cursor movement, map queries, and tile details.
+/// </summary>
 public static partial class IntentApplier
 {
     private static void ApplyCursor(GameState state, Dictionary<string, object> intent, List<string> events)

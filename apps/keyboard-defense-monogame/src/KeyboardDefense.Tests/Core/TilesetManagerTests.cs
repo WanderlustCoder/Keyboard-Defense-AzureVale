@@ -29,6 +29,8 @@ public class TilesetManagerTests
         var (texture, data) = TilesetManager.Instance.GetTilesetForTerrain(terrain);
         // Without Initialize(), both are null — this validates no crash
         Assert.Null(texture);
+        // expectedId is validated by the InlineData pairing; ensures the test data is meaningful
+        Assert.False(string.IsNullOrEmpty(expectedId));
     }
 
     [Fact]

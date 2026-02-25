@@ -11,6 +11,10 @@ namespace KeyboardDefense.Core.Combat;
 /// </summary>
 public static class AutoTargeting
 {
+    /// <summary>
+    /// Selects in-range enemy targets for a tower by applying the requested targeting mode
+    /// (nearest, health-based, speed-based, cluster, chain, contact, or smart scoring).
+    /// </summary>
     public static List<Dictionary<string, object>> PickTargets(
         GameState state, int towerIndex, AutoTowerTypes.AutoTargetMode mode, int range, int count = 1)
     {

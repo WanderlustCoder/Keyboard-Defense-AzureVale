@@ -25,6 +25,9 @@ public class HitEffects
     }
 
     private static HitEffects? _instance;
+    /// <summary>
+    /// Gets the shared hit effects renderer instance.
+    /// </summary>
     public static HitEffects Instance => _instance ??= new();
 
     private const float DefaultLifetime = 0.5f;
@@ -37,6 +40,9 @@ public class HitEffects
     private readonly ObjectPool<Particle> _pool;
     private Texture2D? _pixel;
 
+    /// <summary>
+    /// Initializes particle pooling for hit effect bursts.
+    /// </summary>
     public HitEffects()
     {
         _pool = new ObjectPool<Particle>(
@@ -45,45 +51,85 @@ public class HitEffects
             64, MaxParticles);
     }
 
+    /// <summary>
+    /// Gets the number of currently active particles.
+    /// </summary>
     public int ActiveCount => _particles.Count;
 
+    /// <summary>
+    /// Creates the 1x1 texture used to render square particles.
+    /// </summary>
+    /// <param name="device">Graphics device that owns the particle texture resource.</param>
     public void Initialize(GraphicsDevice device)
     {
         _pixel = new Texture2D(device, 1, 1);
         _pixel.SetData(new[] { Color.White });
     }
 
+    /// <summary>
+    /// Spawns a standard radial spark burst at 200 px/s with a 0.5 second lifetime and 4 px particle size.
+    /// </summary>
+    /// <param name="position">World position where the burst originates.</param>
+    /// <param name="color">Base particle color for the burst.</param>
+    /// <param name="count">Number of particles to emit before reduced-motion scaling.</param>
     public void SpawnHitSparks(Vector2 position, Color color, int count = DefaultCount)
     {
         SpawnBurst(position, color, count, DefaultSpeed, DefaultLifetime, DefaultSize);
     }
 
+    /// <summary>
+    /// Spawns a high-intensity burst (16 particles, 300 px/s, 0.6 seconds, 6 px) for power actions.
+    /// </summary>
+    /// <param name="position">World position where the burst originates.</param>
     public void SpawnPowerBurst(Vector2 position)
     {
         SpawnBurst(position, ThemeColors.GoldAccent, 16, 300f, 0.6f, 6f);
     }
 
+    /// <summary>
+    /// Spawns a short damage flash burst (6 particles, 150 px/s, 0.3 seconds, 3 px).
+    /// </summary>
+    /// <param name="position">World position where the flash originates.</param>
     public void SpawnDamageFlash(Vector2 position)
     {
         SpawnBurst(position, ThemeColors.DamageRed, 6, 150f, 0.3f, 3f);
     }
 
+    /// <summary>
+    /// Spawns a completion burst (12 particles, 250 px/s, 0.5 seconds, 5 px) for completed words.
+    /// </summary>
+    /// <param name="position">World position where the completion burst originates.</param>
     public void SpawnWordCompleteBurst(Vector2 position)
     {
         SpawnBurst(position, ThemeColors.Cyan, 12, 250f, 0.5f, 5f);
     }
 
+    /// <summary>
+    /// Spawns a critical-hit burst (20 particles, 350 px/s, 0.7 seconds, 7 px).
+    /// </summary>
+    /// <param name="position">World position where the critical burst originates.</param>
     public void SpawnCriticalHit(Vector2 position)
     {
         SpawnBurst(position, new Color(255, 50, 50), 20, 350f, 0.7f, 7f);
     }
 
+    /// <summary>
+    /// Spawns layered death effects: a primary colored burst and a slower gray smoke burst.
+    /// </summary>
+    /// <param name="position">World position where the enemy died.</param>
+    /// <param name="color">Primary burst color, typically tied to enemy type.</param>
     public void SpawnEnemyDeath(Vector2 position, Color color)
     {
         SpawnBurst(position, color, 24, 400f, 0.8f, 6f);
         SpawnBurst(position, Color.Gray, 8, 100f, 1.0f, 3f); // Smoke
     }
 
+    /// <summary>
+    /// Spawns short-lived trail bursts along a tower projectile path.
+    /// </summary>
+    /// <param name="from">Start world position of the shot path.</param>
+    /// <param name="to">End world position of the shot path.</param>
+    /// <param name="color">Trail particle color.</param>
     public void SpawnTowerShot(Vector2 from, Vector2 to, Color color)
     {
         // Trail particles along the shot path
@@ -101,13 +147,20 @@ public class HitEffects
         }
     }
 
-    /// <summary>Subtle ground dust when enemies walk.</summary>
+    /// <summary>
+    /// Spawns subtle ground dust (3 particles, 30 px/s, 0.4 seconds, 2 px) for enemy movement.
+    /// </summary>
+    /// <param name="position">World position near the enemy feet.</param>
     public void SpawnDustTrail(Vector2 position)
     {
         SpawnBurst(position + new Vector2(0, 4), new Color(120, 110, 90), 3, 30f, 0.4f, 2f);
     }
 
-    /// <summary>Small particles for active status effects on enemies.</summary>
+    /// <summary>
+    /// Spawns small status particles (2 particles, 40 px/s, 0.3 seconds, 2 px) color-coded by effect type.
+    /// </summary>
+    /// <param name="position">World position where the status pulse appears.</param>
+    /// <param name="effectType">Status key used to select particle color.</param>
     public void SpawnStatusTick(Vector2 position, string effectType)
     {
         Color color = effectType switch
@@ -121,7 +174,10 @@ public class HitEffects
         SpawnBurst(position, color, 2, 40f, 0.3f, 2f);
     }
 
-    /// <summary>Upward sparkle when a building completes construction.</summary>
+    /// <summary>
+    /// Spawns layered construction completion sparkles with a gold burst and a white accent burst.
+    /// </summary>
+    /// <param name="position">World position where construction completed.</param>
     public void SpawnBuildComplete(Vector2 position)
     {
         SpawnBurst(position, ThemeColors.GoldAccent, 10, 120f, 0.6f, 4f);
@@ -154,6 +210,10 @@ public class HitEffects
         }
     }
 
+    /// <summary>
+    /// Advances particle simulation, applying deceleration and removing particles once their lifetime expires.
+    /// </summary>
+    /// <param name="gameTime">Frame timing used to compute simulation delta time.</param>
     public void Update(GameTime gameTime)
     {
         float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -176,6 +236,11 @@ public class HitEffects
         }
     }
 
+    /// <summary>
+    /// Draws active particles with time-based fade and size shrink animation.
+    /// </summary>
+    /// <param name="spriteBatch">Sprite batch used to render particle quads.</param>
+    /// <param name="cameraTransform">Optional world-to-screen transform matrix.</param>
     public void Draw(SpriteBatch spriteBatch, Matrix? cameraTransform = null)
     {
         if (_particles.Count == 0 || _pixel == null) return;
@@ -203,6 +268,9 @@ public class HitEffects
         spriteBatch.End();
     }
 
+    /// <summary>
+    /// Returns all active particles to the pool and clears the active list.
+    /// </summary>
     public void Clear()
     {
         foreach (var p in _particles)

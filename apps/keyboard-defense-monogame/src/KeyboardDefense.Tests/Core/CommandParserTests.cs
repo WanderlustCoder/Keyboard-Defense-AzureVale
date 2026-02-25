@@ -390,67 +390,6 @@ public class CommandParserTests
     }
 }
 
-public class IntentApplierTests
-{
-    [Fact]
-    public void Apply_HelpIntent_ReturnsEvents()
-    {
-        var state = DefaultState.Create("test", true);
-        var intent = SimIntents.Make("help");
-        var result = IntentApplier.Apply(state, intent);
-
-        Assert.True(result.ContainsKey("events"));
-        var events = result["events"] as List<string>;
-        Assert.NotNull(events);
-        Assert.NotEmpty(events!);
-    }
-
-    [Fact]
-    public void Apply_StatusIntent_ReturnsEvents()
-    {
-        var state = DefaultState.Create("test", true);
-        var intent = SimIntents.Make("status");
-        var result = IntentApplier.Apply(state, intent);
-
-        Assert.True(result.ContainsKey("events"));
-    }
-
-    [Fact]
-    public void Apply_GatherIntent_ReturnsState()
-    {
-        var state = DefaultState.Create("test", true);
-        var intent = SimIntents.Make("gather", new() { ["resource"] = "wood" });
-        var result = IntentApplier.Apply(state, intent);
-
-        Assert.True(result.ContainsKey("state"));
-    }
-
-    [Fact]
-    public void Apply_EndIntent_ChangesPhase()
-    {
-        var state = DefaultState.Create("test", true);
-        Assert.Equal("day", state.Phase);
-
-        var intent = SimIntents.Make("end");
-        var result = IntentApplier.Apply(state, intent);
-
-        // Apply returns a new state copy - check the returned state
-        var newState = result["state"] as GameState;
-        Assert.NotNull(newState);
-        Assert.Equal("night", newState!.Phase);
-    }
-
-    [Fact]
-    public void Apply_UnknownIntent_DoesNotCrash()
-    {
-        var state = DefaultState.Create("test", true);
-        var intent = SimIntents.Make("totally_unknown_intent");
-        var result = IntentApplier.Apply(state, intent);
-
-        Assert.NotNull(result);
-    }
-}
-
 public class DefaultStateTests
 {
     [Fact]

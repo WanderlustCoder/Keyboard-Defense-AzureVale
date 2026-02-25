@@ -12,14 +12,29 @@ namespace KeyboardDefense.Core.Data;
 /// </summary>
 public static class SaveManager
 {
+    /// <summary>
+    /// Current save-data schema version written to and validated from the root <c>version</c> field.
+    /// </summary>
     public const int SaveVersion = 1;
 
+    /// <summary>
+    /// Serializes a <see cref="GameState"/> into formatted JSON.
+    /// </summary>
+    /// <param name="state">The game state to serialize.</param>
+    /// <returns>The serialized JSON representation of the state.</returns>
     public static string StateToJson(GameState state)
     {
         var dict = StateToDict(state);
         return JsonConvert.SerializeObject(dict, Formatting.Indented);
     }
 
+    /// <summary>
+    /// Deserializes JSON into a <see cref="GameState"/>.
+    /// </summary>
+    /// <param name="json">The JSON string to deserialize.</param>
+    /// <returns>
+    /// A tuple containing success status, the deserialized state when successful, and an error message when failed.
+    /// </returns>
     public static (bool Ok, GameState? State, string? Error) StateFromJson(string json)
     {
         try
@@ -35,6 +50,11 @@ public static class SaveManager
         }
     }
 
+    /// <summary>
+    /// Converts a <see cref="GameState"/> into a dictionary suitable for JSON serialization.
+    /// </summary>
+    /// <param name="state">The game state to convert.</param>
+    /// <returns>A dictionary containing persisted save data.</returns>
     public static Dictionary<string, object> StateToDict(GameState state)
     {
         var discoveredList = new List<int>(state.Discovered);
@@ -195,6 +215,13 @@ public static class SaveManager
         };
     }
 
+    /// <summary>
+    /// Reconstructs a <see cref="GameState"/> from save dictionary data.
+    /// </summary>
+    /// <param name="data">The save dictionary data to parse.</param>
+    /// <returns>
+    /// A tuple containing success status, the reconstructed state when successful, and an error message when failed.
+    /// </returns>
     public static (bool Ok, GameState? State, string? Error) StateFromDict(Dictionary<string, object> data)
     {
         int version = GetInt(data, "version", 1);
@@ -402,6 +429,12 @@ public static class SaveManager
         return (true, state, null);
     }
 
+    /// <summary>
+    /// Saves a <see cref="GameState"/> to a file path.
+    /// </summary>
+    /// <param name="state">The game state to persist.</param>
+    /// <param name="path">The destination file path.</param>
+    /// <returns><c>true</c> when the save succeeds; otherwise, <c>false</c>.</returns>
     public static bool SaveToFile(GameState state, string path)
     {
         try
@@ -410,12 +443,20 @@ public static class SaveManager
             File.WriteAllText(path, json);
             return true;
         }
-        catch
+        catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine($"Failed to save file '{path}': {ex.Message}");
             return false;
         }
     }
 
+    /// <summary>
+    /// Loads a <see cref="GameState"/> from a file path.
+    /// </summary>
+    /// <param name="path">The source file path.</param>
+    /// <returns>
+    /// A tuple containing success status, the loaded state when successful, and an error message when failed.
+    /// </returns>
     public static (bool Ok, GameState? State, string? Error) LoadFromFile(string path)
     {
         try
@@ -427,6 +468,7 @@ public static class SaveManager
         }
         catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine($"Failed to load file '{path}': {ex.Message}");
             return (false, null, $"Load error: {ex.Message}");
         }
     }

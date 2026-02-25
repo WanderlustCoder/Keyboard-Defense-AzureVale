@@ -30,6 +30,9 @@ public class DamageNumbers
     }
 
     private static DamageNumbers? _instance;
+    /// <summary>
+    /// Gets the shared floating number renderer instance.
+    /// </summary>
     public static DamageNumbers Instance => _instance ??= new();
 
     private const float FloatDuration = 1.2f;
@@ -53,6 +56,9 @@ public class DamageNumbers
     private readonly List<FloatingNumber> _numbers = new();
     private readonly ObjectPool<FloatingNumber> _pool;
 
+    /// <summary>
+    /// Initializes pooling for floating combat number instances.
+    /// </summary>
     public DamageNumbers()
     {
         _pool = new ObjectPool<FloatingNumber>(
@@ -61,32 +67,80 @@ public class DamageNumbers
             32, MaxNumbers);
     }
 
+    /// <summary>
+    /// Gets the number of currently active floating numbers.
+    /// </summary>
     public int ActiveCount => _numbers.Count;
 
+    /// <summary>
+    /// Spawns a standard damage number using the default float animation.
+    /// </summary>
+    /// <param name="worldPos">World position where the number appears.</param>
+    /// <param name="damage">Damage value to display.</param>
     public void SpawnDamage(Vector2 worldPos, int damage)
         => Spawn(worldPos, damage.ToString(), NumberType.Damage, false);
 
+    /// <summary>
+    /// Spawns a critical damage number with emphasized scale and stronger upward launch.
+    /// </summary>
+    /// <param name="worldPos">World position where the number appears.</param>
+    /// <param name="damage">Critical damage value to display.</param>
     public void SpawnCrit(Vector2 worldPos, int damage)
         => Spawn(worldPos, damage.ToString() + "!", NumberType.Critical, true);
 
+    /// <summary>
+    /// Spawns a heal number using the default floating animation.
+    /// </summary>
+    /// <param name="worldPos">World position where the number appears.</param>
+    /// <param name="amount">Healing amount to display.</param>
     public void SpawnHeal(Vector2 worldPos, int amount)
         => Spawn(worldPos, "+" + amount, NumberType.Heal, false);
 
+    /// <summary>
+    /// Spawns a blocked-hit label using the default floating animation.
+    /// </summary>
+    /// <param name="worldPos">World position where the label appears.</param>
     public void SpawnBlocked(Vector2 worldPos)
         => Spawn(worldPos, "BLOCKED", NumberType.Blocked, false);
 
+    /// <summary>
+    /// Spawns a gold gain number using the default floating animation.
+    /// </summary>
+    /// <param name="worldPos">World position where the number appears.</param>
+    /// <param name="amount">Gold amount to display.</param>
     public void SpawnGold(Vector2 worldPos, int amount)
         => Spawn(worldPos, "+" + amount + "g", NumberType.Gold, false);
 
+    /// <summary>
+    /// Spawns an experience gain number using the default floating animation.
+    /// </summary>
+    /// <param name="worldPos">World position where the number appears.</param>
+    /// <param name="amount">Experience amount to display.</param>
     public void SpawnXp(Vector2 worldPos, int amount)
         => Spawn(worldPos, "+" + amount + "xp", NumberType.Xp, false);
 
+    /// <summary>
+    /// Spawns a combo counter using the default floating animation.
+    /// </summary>
+    /// <param name="worldPos">World position where the number appears.</param>
+    /// <param name="combo">Combo multiplier to display.</param>
     public void SpawnCombo(Vector2 worldPos, int combo)
         => Spawn(worldPos, combo + "x!", NumberType.Combo, false);
 
+    /// <summary>
+    /// Spawns a miss label using the default floating animation.
+    /// </summary>
+    /// <param name="worldPos">World position where the label appears.</param>
     public void SpawnMiss(Vector2 worldPos)
         => Spawn(worldPos, "MISS", NumberType.Miss, false);
 
+    /// <summary>
+    /// Spawns a floating number with 1.2 second lifetime, horizontal jitter, upward launch, and optional crit scaling.
+    /// </summary>
+    /// <param name="worldPos">World position where the number appears.</param>
+    /// <param name="text">Display text rendered for this floating number.</param>
+    /// <param name="type">Semantic number type used to choose color.</param>
+    /// <param name="isCrit">When <see langword="true"/>, applies larger scale and stronger upward velocity.</param>
     public void Spawn(Vector2 worldPos, string text, NumberType type, bool isCrit)
     {
         if (_numbers.Count >= MaxNumbers) return;
@@ -105,6 +159,10 @@ public class DamageNumbers
         _numbers.Add(num);
     }
 
+    /// <summary>
+    /// Advances floating number animation by applying gravity, position integration, and lifetime expiration.
+    /// </summary>
+    /// <param name="gameTime">Frame timing used to compute simulation delta time.</param>
     public void Update(GameTime gameTime)
     {
         float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -126,6 +184,12 @@ public class DamageNumbers
         }
     }
 
+    /// <summary>
+    /// Draws active floating numbers with shadow, pulse scale animation, and fade-out during the final 30 percent of lifetime.
+    /// </summary>
+    /// <param name="spriteBatch">Sprite batch used to render text.</param>
+    /// <param name="font">SpriteFont used to measure and draw labels.</param>
+    /// <param name="cameraTransform">Optional world-to-screen transform matrix.</param>
     public void Draw(SpriteBatch spriteBatch, SpriteFont font, Matrix? cameraTransform = null)
     {
         if (_numbers.Count == 0) return;
@@ -156,6 +220,9 @@ public class DamageNumbers
         spriteBatch.End();
     }
 
+    /// <summary>
+    /// Returns all active floating numbers to the pool and clears the active list.
+    /// </summary>
     public void Clear()
     {
         foreach (var num in _numbers)

@@ -14,6 +14,9 @@ namespace KeyboardDefense.Game.Services;
 public class KeybindManager
 {
     private static KeybindManager? _instance;
+    /// <summary>
+    /// Gets the singleton keybind manager instance used by the game runtime.
+    /// </summary>
     public static KeybindManager Instance => _instance ??= new();
 
     private static readonly string SettingsDir = Path.Combine(
@@ -24,8 +27,14 @@ public class KeybindManager
     private readonly Dictionary<string, Keybind> _bindings = new();
     private readonly Dictionary<string, Keybind> _defaults = new();
 
+    /// <summary>
+    /// Raised after bindings are changed, reset, loaded, or otherwise updated.
+    /// </summary>
     public event Action? BindingsChanged;
 
+    /// <summary>
+    /// Creates a keybind manager and registers the default action bindings.
+    /// </summary>
     public KeybindManager()
     {
         RegisterDefaults();
@@ -77,18 +86,30 @@ public class KeybindManager
             _bindings[action] = bind;
     }
 
+    /// <summary>
+    /// Gets the full keybind configuration for an action, if one exists.
+    /// </summary>
     public Keybind? GetBinding(string action)
     {
         return _bindings.GetValueOrDefault(action);
     }
 
+    /// <summary>
+    /// Gets the primary key assigned to an action, or <see cref="Keys.None"/> if unbound.
+    /// </summary>
     public Keys GetKey(string action)
     {
         return _bindings.TryGetValue(action, out var bind) ? bind.Key : Keys.None;
     }
 
+    /// <summary>
+    /// Returns a read-only view of all currently active action bindings.
+    /// </summary>
     public IReadOnlyDictionary<string, Keybind> GetAllBindings() => _bindings;
 
+    /// <summary>
+    /// Sets or replaces a binding for an existing action and preserves its display label.
+    /// </summary>
     public void SetBinding(string action, Keys key, bool ctrl = false, bool shift = false, bool alt = false)
     {
         if (!_defaults.ContainsKey(action)) return;
@@ -98,6 +119,9 @@ public class KeybindManager
         BindingsChanged?.Invoke();
     }
 
+    /// <summary>
+    /// Restores a single action binding back to its registered default.
+    /// </summary>
     public void ResetBinding(string action)
     {
         if (_defaults.TryGetValue(action, out var def))
@@ -107,6 +131,9 @@ public class KeybindManager
         }
     }
 
+    /// <summary>
+    /// Restores all action bindings to their default key combinations.
+    /// </summary>
     public void ResetAllToDefaults()
     {
         _bindings.Clear();
@@ -153,6 +180,9 @@ public class KeybindManager
         return conflicts;
     }
 
+    /// <summary>
+    /// Saves non-default keybind overrides to the per-user settings file.
+    /// </summary>
     public void Save()
     {
         try
@@ -184,6 +214,9 @@ public class KeybindManager
         }
     }
 
+    /// <summary>
+    /// Loads persisted keybind overrides and applies them on top of defaults.
+    /// </summary>
     public void Load()
     {
         // Reset to defaults first
@@ -211,15 +244,33 @@ public class KeybindManager
 
     private class KeybindData
     {
+        /// <summary>
+        /// Serialized key name used for deserialization into <see cref="Keys"/>.
+        /// </summary>
         public string Key { get; set; } = "";
+        /// <summary>
+        /// Indicates whether Ctrl is required for the binding.
+        /// </summary>
         public bool Ctrl { get; set; }
+        /// <summary>
+        /// Indicates whether Shift is required for the binding.
+        /// </summary>
         public bool Shift { get; set; }
+        /// <summary>
+        /// Indicates whether Alt is required for the binding.
+        /// </summary>
         public bool Alt { get; set; }
     }
 }
 
+/// <summary>
+/// Immutable keybind configuration for a single action and its UI label.
+/// </summary>
 public record Keybind(Keys Key, bool Ctrl, bool Shift, bool Alt, string Label, string Action)
 {
+    /// <summary>
+    /// Gets a user-facing string representation of the key and modifiers.
+    /// </summary>
     public string DisplayString
     {
         get

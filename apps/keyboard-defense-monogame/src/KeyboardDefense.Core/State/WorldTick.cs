@@ -31,6 +31,9 @@ public static class WorldTick
     public const int WaveBaseFood = 2;
     private static readonly string[] WaveEnemyKinds = { "scout", "raider", "armored", "swarm", "berserker" };
 
+    /// <summary>
+    /// Advances the open-world tick loop, updating time progression, activity mode flow, threat pressure, and encounters.
+    /// </summary>
     public static Dictionary<string, object> Tick(GameState state, double delta)
     {
         state.WorldTickAccum += (float)delta;

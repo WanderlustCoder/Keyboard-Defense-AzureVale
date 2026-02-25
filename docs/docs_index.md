@@ -17,6 +17,7 @@
 - `docs/PIXEL_LAB_ART_REDO_PLAN.md` - Active Pixel Lab staging plan for campaign visual rebuild aligned with target fantasy feel.
 - `docs/RELEASE_NOTES_v0.1.0-rc1_2026-02-20.md` - Final versioned RC release notes (tag/date/changelog) for current MonoGame campaign release candidate.
 - `docs/CAMPAIGN_RELEASE_NOTES_M1_M8_DRAFT.md` - Draft release notes summary covering campaign milestones, validation baselines, and RC artifacts.
+- `docs/keyboard-defense-plans/UI_FEEL_CHUNKED_MAP_BRIEF.md` - UI visual direction, non-clone guardrails, and chunked map progression requirements for the next UI implementation pass.
 - `apps/keyboard-defense-monogame/KeyboardDefense.sln` - MonoGame solution entrypoint.
 - `apps/keyboard-defense-monogame/src/KeyboardDefense.Core/` - Deterministic simulation/domain logic.
 - `apps/keyboard-defense-monogame/src/KeyboardDefense.Game/` - Runtime game/render/input layer.
@@ -26,6 +27,7 @@
 - `apps/keyboard-defense-monogame/data/pixel_lab_manifest.active_runtime.json` - Runtime-shippable asset subset.
 - `apps/keyboard-defense-monogame/data/schemas/pixel_lab_manifest.schema.json` - Pixel Lab manifest schema.
 - `apps/keyboard-defense-monogame/docs/PIXEL_LAB_CONTRACT.md` - Pixel Lab integration contract.
+- `docs/keyboard-defense-plans/UI_PIXEL_LAB_USAGE.md` - UI-specific Pixel Lab usage rules and runtime texture mapping requirements.
 - `apps/keyboard-defense-monogame/docs/VERTICAL_SLICE_BALANCE.md` - Single-wave baseline constants and scoring assumptions.
 - `apps/keyboard-defense-monogame/data/vertical_slice_wave_profiles.json` - Node-specific single-wave profile overrides.
 - `apps/keyboard-defense-monogame/src/KeyboardDefense.Tests/Core/VerticalSliceWaveDataTests.cs` - Node-profile resolution and fallback coverage.
@@ -55,6 +57,9 @@
 - `docs/status/2026-02-20_campaign_playtest_release_readiness_checklist.md` - Campaign playtest telemetry and release-readiness gate checklist.
 - `docs/status/2026-02-20_campaign_feel_findings.md` - Active findings ledger for menu-like friction, pacing roughness, and art coherence issues.
 - `docs/status/2026-02-20_pixel_lab_single_asset_qa_queue.md` - Single-piece Pixel Lab production queue with mandatory QA gate between asset generations.
+- `docs/status/2026-02-24_ui_section_build_log.md` - UI section-level build approvals and implementation notes for iterative prototypes.
+- `apps/keyboard-defense-monogame/docs/ui/grassland_block_v2_pixel_lab.html` - Browser prototype: Pixel Lab-backed grassland chunk and chunk-state UI.
+- `apps/keyboard-defense-monogame/docs/ui/grassland_block_v3_detail_only_grass.html` - Browser prototype: grass-only high-detail chunk state prototype.
 - `apps/keyboard-defense-monogame/tools/pixel_lab/validate_manifest.py` - Manifest validation.
 - `apps/keyboard-defense-monogame/tools/pixel_lab/build_texture_manifest.py` - Runtime manifest generation.
 - `apps/keyboard-defense-monogame/tools/pixel_lab/split_runtime_subset.py` - Catalog/runtime subset split.

@@ -22,6 +22,11 @@ public class NineSliceFrame
     private Texture2D? _edgeV;
     private bool _texturesLoaded;
 
+    /// <summary>
+    /// Allocates the fallback 1x1 pixel texture and caches the UI font used for frame title rendering.
+    /// </summary>
+    /// <param name="device">Graphics device that owns the generated fallback texture.</param>
+    /// <param name="font">Font cached for frame text measurement and drawing.</param>
     public void Initialize(GraphicsDevice device, SpriteFont font)
     {
         _pixel = new Texture2D(device, 1, 1);
@@ -29,11 +34,15 @@ public class NineSliceFrame
         _font = font;
     }
 
+    /// <summary>
+    /// Gets whether initialization has created the fallback texture required for drawing frames.
+    /// </summary>
     public bool IsReady => _pixel != null;
 
     /// <summary>
-    /// Load UI frame textures from AssetLoader. Falls back to procedural if any are missing.
+    /// Loads the frame corner and edge textures from the asset loader, using procedural rendering if any texture is unavailable.
     /// </summary>
+    /// <param name="loader">Asset loader used to resolve frame texture IDs.</param>
     public void LoadFrameTextures(AssetLoader loader)
     {
         _cornerTL = loader.GetUiTexture("frame_corner");
@@ -42,6 +51,12 @@ public class NineSliceFrame
         _texturesLoaded = _cornerTL != null && _edgeH != null && _edgeV != null;
     }
 
+    /// <summary>
+    /// Draws a frame within the specified rectangle using textured 9-slice output when ready, otherwise a procedural fallback frame.
+    /// </summary>
+    /// <param name="sb">Sprite batch used for all frame draw calls.</param>
+    /// <param name="rect">Destination rectangle for the frame outer bounds.</param>
+    /// <param name="style">Style colors and accents applied to the frame render.</param>
     public void DrawFrame(SpriteBatch sb, Rectangle rect, FrameStyle style)
     {
         if (_pixel == null) return;
@@ -146,6 +161,15 @@ public class NineSliceFrame
         }
     }
 
+    /// <summary>
+    /// Draws a title bar inset from the panel frame with a four-strip vertical gradient, separator line, and centered title text at 0.55 scale.
+    /// </summary>
+    /// <param name="sb">Sprite batch used to draw the title bar background and text.</param>
+    /// <param name="font">Font used to measure and render the title text.</param>
+    /// <param name="panelRect">Outer panel frame rectangle used to position the title bar.</param>
+    /// <param name="title">Panel title text rendered in the title bar center.</param>
+    /// <param name="style">Frame style values that provide bar and text colors.</param>
+    /// <param name="height">Title bar height in pixels; defaults to 32.</param>
     public void DrawTitleBar(SpriteBatch sb, SpriteFont font, Rectangle panelRect, string title, FrameStyle style, int height = 32)
     {
         if (_pixel == null) return;

@@ -11,6 +11,9 @@ namespace KeyboardDefense.Game.Effects;
 /// </summary>
 public class SceneTransition
 {
+    /// <summary>
+    /// Supported full-screen transition overlay styles.
+    /// </summary>
     public enum TransitionType
     {
         Fade, FadeWhite, WipeLeft, WipeRight, WipeUp, WipeDown
@@ -19,6 +22,10 @@ public class SceneTransition
     private enum Phase { None, FadeOut, FadeIn }
 
     private static SceneTransition? _instance;
+
+    /// <summary>
+    /// Gets the singleton transition controller instance.
+    /// </summary>
     public static SceneTransition Instance => _instance ??= new();
 
     private const float DefaultDuration = 0.4f;
@@ -31,18 +38,42 @@ public class SceneTransition
     private Action? _midpointCallback;
     private Texture2D? _pixel;
 
+    /// <summary>
+    /// Occurs when a transition begins its fade-out phase.
+    /// </summary>
     public event Action? TransitionStarted;
+
+    /// <summary>
+    /// Occurs when a transition reaches full overlay and invokes midpoint work.
+    /// </summary>
     public event Action? TransitionMidpoint;
+
+    /// <summary>
+    /// Occurs when a transition completes its fade-in phase and clears the overlay.
+    /// </summary>
     public event Action? TransitionFinished;
 
+    /// <summary>
+    /// Gets a value indicating whether any transition phase is currently active.
+    /// </summary>
     public bool IsTransitioning => _phase != Phase.None;
 
+    /// <summary>
+    /// Initializes the transition renderer resources.
+    /// </summary>
+    /// <param name="device">Graphics device used to create a 1x1 white pixel texture for overlays.</param>
     public void Initialize(GraphicsDevice device)
     {
         _pixel = new Texture2D(device, 1, 1);
         _pixel.SetData(new[] { Color.White });
     }
 
+    /// <summary>
+    /// Starts a two-phase transition that linearly fades or wipes out and back in over the provided total duration.
+    /// </summary>
+    /// <param name="type">Transition visual style to render.</param>
+    /// <param name="duration">Total transition duration in seconds, split evenly between fade-out and fade-in phases.</param>
+    /// <param name="midpointCallback">Optional callback invoked at full overlay between phases.</param>
     public void StartTransition(TransitionType type, float duration, Action? midpointCallback = null)
     {
         if (_phase != Phase.None) return;
@@ -61,21 +92,38 @@ public class SceneTransition
         TransitionStarted?.Invoke();
     }
 
+    /// <summary>
+    /// Starts a transition using the supplied type and duration.
+    /// </summary>
+    /// <param name="type">Transition visual style to render.</param>
+    /// <param name="duration">Total transition duration in seconds.</param>
     public void FadeOut(TransitionType type = TransitionType.Fade, float duration = DefaultDuration)
     {
         StartTransition(type, duration);
     }
 
+    /// <summary>
+    /// Starts the standard battle transition with a short black fade and optional midpoint callback.
+    /// </summary>
+    /// <param name="callback">Optional callback invoked at transition midpoint.</param>
     public void BattleTransition(Action? callback = null)
     {
         StartTransition(TransitionType.Fade, 0.3f, callback);
     }
 
+    /// <summary>
+    /// Starts the standard menu transition with a quick black fade and optional midpoint callback.
+    /// </summary>
+    /// <param name="callback">Optional callback invoked at transition midpoint.</param>
     public void MenuTransition(Action? callback = null)
     {
         StartTransition(TransitionType.Fade, 0.25f, callback);
     }
 
+    /// <summary>
+    /// Advances the active transition phase using elapsed frame time.
+    /// </summary>
+    /// <param name="gameTime">Frame timing information used to accumulate transition progress.</param>
     public void Update(GameTime gameTime)
     {
         if (_phase == Phase.None) return;
@@ -109,6 +157,11 @@ public class SceneTransition
         }
     }
 
+    /// <summary>
+    /// Draws the transition overlay for the current progress and transition type.
+    /// </summary>
+    /// <param name="spriteBatch">Sprite batch used to render the overlay.</param>
+    /// <param name="viewport">Current viewport rectangle covered by the transition effect.</param>
     public void Draw(SpriteBatch spriteBatch, Rectangle viewport)
     {
         if (_phase == Phase.None || _pixel == null || _progress <= 0f) return;

@@ -23,8 +23,17 @@ public static class BuildingsData
         "auto_arcane", "auto_doom"
     };
 
+    /// <summary>
+    /// Determines whether a building type is part of the known, valid building ID set.
+    /// </summary>
+    /// <param name="buildingType">Building type identifier to validate.</param>
+    /// <returns><c>true</c> when the type is recognized; otherwise, <c>false</c>.</returns>
     public static bool IsValid(string buildingType) => ValidTypes.Contains(buildingType);
 
+    /// <summary>
+    /// Loads building definitions from <c>buildings.json</c> in the provided data directory into cache.
+    /// </summary>
+    /// <param name="dataDir">Root data directory containing building definition files.</param>
     public static void LoadData(string dataDir)
     {
         var path = Path.Combine(dataDir, "buildings.json");
@@ -53,18 +62,33 @@ public static class BuildingsData
         }
     }
 
+    /// <summary>
+    /// Gets a cached building definition by ID.
+    /// </summary>
+    /// <param name="id">Building definition identifier.</param>
+    /// <returns>The building definition when found; otherwise, <c>null</c>.</returns>
     public static BuildingDef? GetBuilding(string id)
     {
         _cache ??= new();
         return _cache.GetValueOrDefault(id);
     }
 
+    /// <summary>
+    /// Returns the resource cost table for a building type.
+    /// </summary>
+    /// <param name="buildingType">Building type identifier.</param>
+    /// <returns>The cost mapping for the building, or an empty mapping when unknown.</returns>
     public static Dictionary<string, int> CostFor(string buildingType)
     {
         var def = GetBuilding(buildingType);
         return def?.Cost ?? new Dictionary<string, int>();
     }
 
+    /// <summary>
+    /// Sums defense contribution from placed structures in the current game state.
+    /// </summary>
+    /// <param name="state">Game state containing placed structure instances.</param>
+    /// <returns>Total defense score contributed by all known structures.</returns>
     public static int TotalDefense(State.GameState state)
     {
         int total = 0;
@@ -76,6 +100,11 @@ public static class BuildingsData
         return total;
     }
 
+    /// <summary>
+    /// Computes total per-day resource production from owned buildings and their counts.
+    /// </summary>
+    /// <param name="state">Game state containing building ownership counts.</param>
+    /// <returns>A resource-to-amount mapping for one day of production.</returns>
     public static Dictionary<string, int> DailyProduction(State.GameState state)
     {
         var output = new Dictionary<string, int>();
@@ -107,15 +136,53 @@ public static class BuildingsData
     }
 }
 
+/// <summary>
+/// Immutable-style data contract describing a building entry loaded from building data files.
+/// </summary>
 public class BuildingDef
 {
+    /// <summary>
+    /// Stable building identifier used by save data and runtime lookups.
+    /// </summary>
     public string Id { get; set; } = "";
+
+    /// <summary>
+    /// Player-facing building display name.
+    /// </summary>
     public string Name { get; set; } = "";
+
+    /// <summary>
+    /// Descriptive text shown in UI tooltips and details panels.
+    /// </summary>
     public string Description { get; set; } = "";
+
+    /// <summary>
+    /// Resource costs required to construct one instance of the building.
+    /// </summary>
     public Dictionary<string, int> Cost { get; set; } = new();
+
+    /// <summary>
+    /// Resource outputs generated per day by one instance of the building.
+    /// </summary>
     public Dictionary<string, int> Production { get; set; } = new();
+
+    /// <summary>
+    /// Defensive value contributed by one instance of the building.
+    /// </summary>
     public int Defense { get; set; }
+
+    /// <summary>
+    /// Number of worker slots provided by one instance of the building.
+    /// </summary>
     public int WorkerSlots { get; set; }
+
+    /// <summary>
+    /// Content category tag used for grouping and progression logic.
+    /// </summary>
     public string Category { get; set; } = "";
+
+    /// <summary>
+    /// Progression tier for gating or sorting building availability.
+    /// </summary>
     public int Tier { get; set; }
 }

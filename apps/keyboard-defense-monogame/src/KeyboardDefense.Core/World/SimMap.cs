@@ -35,10 +35,22 @@ public static class SimMap
         [ZoneDepths] = new("The Depths", "Only the bravest venture here.", 2.0, 2.0, 4, 2.0),
     };
 
+    /// <summary>
+    /// Converts grid coordinates to the flattened tile index used by map-backed collections.
+    /// </summary>
     public static int Idx(int x, int y, int w) => y * w + x;
+    /// <summary>
+    /// Converts a flattened tile index back into grid coordinates.
+    /// </summary>
     public static GridPoint PosFromIndex(int index, int w) => new(index % w, index / w);
+    /// <summary>
+    /// Returns whether a coordinate lies within the map dimensions.
+    /// </summary>
     public static bool InBounds(int x, int y, int w, int h) => x >= 0 && y >= 0 && x < w && y < h;
 
+    /// <summary>
+    /// Enumerates orthogonal neighboring tiles that are inside the map bounds.
+    /// </summary>
     public static List<GridPoint> Neighbors4(GridPoint pos, int w, int h)
     {
         var results = new List<GridPoint>();
@@ -53,6 +65,9 @@ public static class SimMap
         return results;
     }
 
+    /// <summary>
+    /// Returns the terrain type at the given map position, or an empty string when unavailable.
+    /// </summary>
     public static string GetTerrain(GameState state, GridPoint pos)
     {
         if (!InBounds(pos.X, pos.Y, state.MapW, state.MapH)) return "";
@@ -62,6 +77,9 @@ public static class SimMap
         return state.Terrain[index];
     }
 
+    /// <summary>
+    /// Determines whether a tile can host a new structure based on discovery, occupancy, and terrain rules.
+    /// </summary>
     public static bool IsBuildable(GameState state, GridPoint pos)
     {
         if (!InBounds(pos.X, pos.Y, state.MapW, state.MapH)) return false;
@@ -70,9 +88,12 @@ public static class SimMap
         if (!state.Discovered.Contains(index)) return false;
         if (state.Structures.ContainsKey(index)) return false;
         string terrain = GetTerrain(state, pos);
-        return terrain != Water;
+        return terrain != Water && terrain != Mountain;
     }
 
+    /// <summary>
+    /// Determines whether movement can traverse a tile, accounting for blocking structures and terrain.
+    /// </summary>
     public static bool IsPassable(GameState state, GridPoint pos)
     {
         if (!InBounds(pos.X, pos.Y, state.MapW, state.MapH)) return false;
@@ -86,6 +107,9 @@ public static class SimMap
         return terrain != Water;
     }
 
+    /// <summary>
+    /// Computes the zone identifier for a tile based on scaled distance bands from the castle.
+    /// </summary>
     public static string GetZoneAt(GameState state, GridPoint pos)
     {
         int dist = ChebyshevDistanceToCastle(state, pos);
@@ -100,19 +124,40 @@ public static class SimMap
         return ZoneDepths;
     }
 
+    /// <summary>
+    /// Computes Manhattan distance from a tile to the castle position.
+    /// </summary>
     public static int DistanceToCastle(GameState state, GridPoint pos)
         => Math.Abs(pos.X - state.BasePos.X) + Math.Abs(pos.Y - state.BasePos.Y);
 
+    /// <summary>
+    /// Computes Chebyshev distance from a tile to the castle position.
+    /// </summary>
     public static int ChebyshevDistanceToCastle(GameState state, GridPoint pos)
         => Math.Max(Math.Abs(pos.X - state.BasePos.X), Math.Abs(pos.Y - state.BasePos.Y));
 
+    /// <summary>
+    /// Resolves zone metadata for a zone identifier, defaulting to safe-zone values when unknown.
+    /// </summary>
     public static ZoneData GetZoneData(string zoneId)
         => ZoneDataMap.GetValueOrDefault(zoneId, ZoneDataMap[ZoneSafe]);
 
+    /// <summary>
+    /// Returns the display name for a zone identifier.
+    /// </summary>
     public static string GetZoneName(string zoneId) => GetZoneData(zoneId).Name;
 
+    /// <summary>
+    /// Returns the threat-scaling multiplier for entities in the given zone.
+    /// </summary>
     public static double GetZoneThreatMultiplier(string zoneId) => GetZoneData(zoneId).ThreatMultiplier;
+    /// <summary>
+    /// Returns the loot-scaling multiplier for rewards found in the given zone.
+    /// </summary>
     public static double GetZoneLootMultiplier(string zoneId) => GetZoneData(zoneId).LootMultiplier;
+    /// <summary>
+    /// Returns the highest enemy tier expected in the given zone.
+    /// </summary>
     public static int GetZoneEnemyTierMax(string zoneId) => GetZoneData(zoneId).EnemyTierMax;
 
     // Terrain constant aliases for cross-file compatibility
@@ -124,10 +169,19 @@ public static class SimMap
     public const string TerrainSnow = Snow;
     public const string TerrainRoad = Road;
 
+    /// <summary>
+    /// Returns the ordered set of all world zone identifiers used by map and world-generation systems.
+    /// </summary>
     public static string[] GetAllZones() => new[] { ZoneSafe, ZoneFrontier, ZoneWilderness, ZoneDepths };
 
+    /// <summary>
+    /// Resets biome-generation state for compatibility with legacy call sites; no state is currently retained.
+    /// </summary>
     public static void ResetBiomeGenerator() { /* No-op: stateless in C# port */ }
 
+    /// <summary>
+    /// Lazily generates terrain content for a tile if it has not been assigned yet.
+    /// </summary>
     public static void EnsureTileGenerated(GameState state, GridPoint pos)
     {
         if (!InBounds(pos.X, pos.Y, state.MapW, state.MapH)) return;
@@ -137,6 +191,9 @@ public static class SimMap
             state.Terrain[index] = RollTerrain(state, pos.X, pos.Y);
     }
 
+    /// <summary>
+    /// Checks whether at least one map edge tile has a passable route to the castle.
+    /// </summary>
     public static bool PathOpenToBase(GameState state)
     {
         var dist = ComputeDistToBase(state);
@@ -154,6 +211,9 @@ public static class SimMap
         return false;
     }
 
+    /// <summary>
+    /// Picks a random edge coordinate as an enemy spawn origin for wave and roaming systems.
+    /// </summary>
     public static GridPoint GetSpawnPos(GameState state)
     {
         // Pick a random edge tile
@@ -167,6 +227,9 @@ public static class SimMap
         };
     }
 
+    /// <summary>
+    /// Returns the discovered-map coverage ratio in the range from 0 to 1.
+    /// </summary>
     public static double GetTotalExploration(GameState state)
     {
         int discovered = state.Discovered.Count;
@@ -174,6 +237,9 @@ public static class SimMap
         return total > 0 ? (double)discovered / total : 0;
     }
 
+    /// <summary>
+    /// Fills all uninitialized terrain tiles for the current map dimensions.
+    /// </summary>
     public static void GenerateTerrain(GameState state)
     {
         EnsureTerrainSize(state);
@@ -188,6 +254,9 @@ public static class SimMap
         }
     }
 
+    /// <summary>
+    /// Computes breadth-first path distances from every passable tile to the castle tile.
+    /// </summary>
     public static int[] ComputeDistToBase(GameState state)
     {
         EnsureTerrainSize(state);
@@ -268,4 +337,7 @@ public static class SimMap
     }
 }
 
+/// <summary>
+/// Immutable zone metadata used to drive difficulty, rewards, and descriptive world map presentation.
+/// </summary>
 public record ZoneData(string Name, string Description, double ThreatMultiplier, double LootMultiplier, int EnemyTierMax, double ResourceQuality);

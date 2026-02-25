@@ -10,6 +10,9 @@ namespace KeyboardDefense.Core.Combat;
 /// </summary>
 public static class TowerCombat
 {
+    /// <summary>
+    /// Processes one attack tick for each tower and dispatches to category-specific attack logic.
+    /// </summary>
     public static List<string> ProcessTowerAttacks(
         GameState state,
         List<Dictionary<string, object>> towers,
@@ -45,6 +48,9 @@ public static class TowerCombat
         return events;
     }
 
+    /// <summary>
+    /// Resolves a single-target attack by finding one target and applying typed damage calculation.
+    /// </summary>
     public static void ProcessSingleAttack(
         GameState state,
         Dictionary<string, object> tower,
@@ -64,6 +70,9 @@ public static class TowerCombat
         events.Add($"{towerName} hits {enemyWord} for {finalDamage}.");
     }
 
+    /// <summary>
+    /// Resolves a multi-shot attack by selecting up to <c>multi_count</c> targets and damaging each.
+    /// </summary>
     public static void ProcessMultiAttack(
         GameState state,
         Dictionary<string, object> tower,
@@ -86,6 +95,9 @@ public static class TowerCombat
             events.Add($"{towerName} hits {targets.Count} targets.");
     }
 
+    /// <summary>
+    /// Resolves an area attack around a chosen center target with radius-based damage falloff.
+    /// </summary>
     public static void ProcessAoeAttack(
         GameState state,
         Dictionary<string, object> tower,
@@ -113,6 +125,9 @@ public static class TowerCombat
             events.Add($"{towerName} blasts {targets.Count} enemies.");
     }
 
+    /// <summary>
+    /// Resolves a chain attack that jumps between nearby enemies with per-jump damage reduction.
+    /// </summary>
     public static void ProcessChainAttack(
         GameState state,
         Dictionary<string, object> tower,
@@ -140,6 +155,9 @@ public static class TowerCombat
             events.Add($"{towerName} chains through {chain.Count} enemies.");
     }
 
+    /// <summary>
+    /// Maps a string damage type token to the internal <see cref="DamageType"/> enum value.
+    /// </summary>
     public static DamageType ParseDamageType(string? typeName)
     {
         return typeName?.ToLowerInvariant() switch

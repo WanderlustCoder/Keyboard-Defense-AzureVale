@@ -17,6 +17,8 @@ Current implementation milestone:
 - `docs/MONOGAME_CAMPAIGN_M8_PLAN.md` (completed campaign pre-release polish and launch-readiness milestone)
 - `docs/MONOGAME_CAMPAIGN_M9_PLAN.md` (active campaign organic-feel refactor and art-redo milestone)
 - `docs/PIXEL_LAB_ART_REDO_PLAN.md` (active Pixel Lab staging plan for campaign visual rebuild)
+- `docs/keyboard-defense-plans/UI_FEEL_CHUNKED_MAP_BRIEF.md` (UI feel spec and chunked progression requirements before next feature pass)
+- `docs/keyboard-defense-plans/UI_PIXEL_LAB_USAGE.md` (mandatory runtime UI texture mapping path through Pixel Lab)
 - `apps/keyboard-defense-monogame/docs/VERTICAL_SLICE_BALANCE.md` (current single-wave tuning baseline)
 
 Current focus after campaign M9 kickoff:

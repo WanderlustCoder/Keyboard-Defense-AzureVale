@@ -10,6 +10,11 @@ namespace KeyboardDefense.Core.Economy;
 /// </summary>
 public static class Trade
 {
+    /// <summary>
+    /// Base exchange rates for one unit of source resource converted into target resource.
+    /// Current routes are: wood to stone (1.0), wood to food (1.5), stone to wood (1.0),
+    /// stone to food (1.5), food to wood (0.67), and food to stone (0.67).
+    /// </summary>
     public static readonly Dictionary<string, Dictionary<string, double>> BaseRates = new()
     {
         ["wood"] = new() { ["stone"] = 1.0, ["food"] = 1.5 },
@@ -17,6 +22,16 @@ public static class Trade
         ["food"] = new() { ["wood"] = 0.67, ["stone"] = 0.67 },
     };
 
+    /// <summary>
+    /// Gets the exchange rate between two resources, including the market building bonus when available.
+    /// </summary>
+    /// <param name="from">The resource being spent.</param>
+    /// <param name="to">The resource being received.</param>
+    /// <param name="state">The game state used to evaluate market bonus eligibility.</param>
+    /// <returns>
+    /// The effective exchange rate for the route, or <c>0</c> when no route exists.
+    /// A market increases the base rate by 15%.
+    /// </returns>
     public static double GetExchangeRate(string from, string to, GameState? state = null)
     {
         if (!BaseRates.TryGetValue(from, out var rates)) return 0;
@@ -29,6 +44,17 @@ public static class Trade
         return rate;
     }
 
+    /// <summary>
+    /// Executes a trade by spending one resource and adding the converted amount of another resource.
+    /// </summary>
+    /// <param name="state">The game state containing resources and structures.</param>
+    /// <param name="from">The resource type to spend.</param>
+    /// <param name="to">The resource type to receive.</param>
+    /// <param name="amount">The amount of source resource to spend.</param>
+    /// <returns>
+    /// A result dictionary with <c>success</c> and either trade details
+    /// (<c>spent</c>, <c>received</c>, <c>rate</c>) or an <c>error</c> message.
+    /// </returns>
     public static Dictionary<string, object> ExecuteTrade(GameState state, string from, string to, int amount)
     {
         if (from == to)

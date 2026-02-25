@@ -8,6 +8,12 @@ namespace KeyboardDefense.Core.Intent;
 /// </summary>
 public static class SimIntents
 {
+    /// <summary>
+    /// Creates an intent payload dictionary with a required kind and optional additional fields.
+    /// </summary>
+    /// <param name="kind">The intent kind identifier used for routing.</param>
+    /// <param name="data">Optional extra key-value pairs to merge into the payload.</param>
+    /// <returns>A normalized intent payload dictionary.</returns>
     public static Dictionary<string, object> Make(string kind, Dictionary<string, object>? data = null)
     {
         var intent = new Dictionary<string, object> { ["kind"] = kind };
@@ -21,6 +27,10 @@ public static class SimIntents
         return intent;
     }
 
+    /// <summary>
+    /// Returns the default help text lines shown for the help intent.
+    /// </summary>
+    /// <returns>A list of user-facing command help lines.</returns>
     public static List<string> HelpLines()
     {
         return new List<string>

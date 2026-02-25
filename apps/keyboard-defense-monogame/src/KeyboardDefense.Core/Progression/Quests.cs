@@ -11,6 +11,9 @@ namespace KeyboardDefense.Core.Progression;
 /// </summary>
 public static class Quests
 {
+    /// <summary>
+    /// Quest catalog keyed by stable quest identifier.
+    /// </summary>
     public static readonly Dictionary<string, QuestDef> Registry = new()
     {
         ["first_tower"] = new("First Defense", "Build your first tower.",
@@ -75,11 +78,20 @@ public static class Quests
             new() { ["gold"] = 100, ["skill_point"] = 3, ["wood"] = 25, ["stone"] = 25, ["food"] = 15 }),
     };
 
+    /// <summary>
+    /// Returns the quest definition for a quest id, or null when the id is not registered.
+    /// </summary>
     public static QuestDef? GetQuest(string questId) => Registry.GetValueOrDefault(questId);
 
+    /// <summary>
+    /// Returns true when the specified quest id has already been completed in the current run.
+    /// </summary>
     public static bool IsComplete(GameState state, string questId)
         => state.CompletedQuests.Contains(questId);
 
+    /// <summary>
+    /// Returns all quest ids that are still active because they are not yet completed.
+    /// </summary>
     public static List<string> GetActiveQuests(GameState state)
     {
         return Registry.Keys
@@ -87,6 +99,9 @@ public static class Quests
             .ToList();
     }
 
+    /// <summary>
+    /// Completes a quest lifecycle step by validating the quest, marking completion, and granting rewards.
+    /// </summary>
     public static Dictionary<string, object> CompleteQuest(GameState state, string questId)
     {
         if (!Registry.TryGetValue(questId, out var quest))
@@ -126,17 +141,54 @@ public static class Quests
     }
 }
 
+/// <summary>
+/// Immutable quest definition containing identity, completion condition, and reward payload.
+/// </summary>
 public record QuestDef(string Name, string Description, string Category,
     QuestCondition Condition, Dictionary<string, int> Rewards);
 
+/// <summary>
+/// Immutable quest condition descriptor used by the quest evaluation pipeline.
+/// </summary>
 public record QuestCondition(string Type, string? Target, int Value)
 {
+    /// <summary>
+    /// Creates a build-condition quest requirement for a structure type and count target.
+    /// </summary>
     public static QuestCondition BuildStructure(string? type, int count) => new("build", type, count);
+
+    /// <summary>
+    /// Creates a survive-night quest requirement for the required number of nights.
+    /// </summary>
     public static QuestCondition SurviveNight(int count) => new("survive_night", null, count);
+
+    /// <summary>
+    /// Creates an exploration quest requirement for discovered tile count.
+    /// </summary>
     public static QuestCondition DiscoverTiles(int count) => new("discover", null, count);
+
+    /// <summary>
+    /// Creates a typing quest requirement for successfully typed word count.
+    /// </summary>
     public static QuestCondition TypeWords(int count) => new("type_words", null, count);
+
+    /// <summary>
+    /// Creates a combo quest requirement for reaching a combo threshold.
+    /// </summary>
     public static QuestCondition ReachCombo(int combo) => new("combo", null, combo);
+
+    /// <summary>
+    /// Creates a boss quest requirement for defeating a specific boss or any boss.
+    /// </summary>
     public static QuestCondition DefeatBoss(string? bossId) => new("defeat_boss", bossId, 1);
+
+    /// <summary>
+    /// Creates a combat quest requirement for defeating a total number of enemies.
+    /// </summary>
     public static QuestCondition DefeatEnemies(int count) => new("defeat_enemies", null, count);
+
+    /// <summary>
+    /// Creates a wave quest requirement for surviving a number of assault waves.
+    /// </summary>
     public static QuestCondition SurviveWaves(int count) => new("survive_waves", null, count);
 }

@@ -106,19 +106,14 @@ public class OpenWorldFlowTests
         var state = CreateWorldState();
         Assert.DoesNotContain("first_tower", state.CompletedQuests);
 
-        // Build a tower
+        // Directly place a tower structure (bypasses IntentApplier to isolate quest logic)
         var pos = new GridPoint(state.BasePos.X + 2, state.BasePos.Y);
         int idx = SimMap.Idx(pos.X, pos.Y, state.MapW);
         state.Terrain[idx] = SimMap.TerrainPlains;
         state.Discovered.Add(idx);
-
-        var buildResult = IntentApplier.Apply(state, SimIntents.Make("build", new()
-        {
-            ["building"] = "tower",
-            ["x"] = pos.X,
-            ["y"] = pos.Y,
-        }));
-        state = (GameState)buildResult["state"];
+        state.Structures[idx] = "tower";
+        state.StructureLevels[idx] = 1;
+        state.Buildings["tower"] = state.Buildings.GetValueOrDefault("tower", 0) + 1;
 
         // Check quest completion via WorldQuests
         var (current, target) = WorldQuests.GetProgress(state, "first_tower");

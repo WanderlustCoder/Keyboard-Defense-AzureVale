@@ -14,8 +14,14 @@ namespace KeyboardDefense.Game.Services;
 /// </summary>
 public static class DataLoader
 {
+    /// <summary>
+    /// Gets the resolved root directory used to load runtime data files.
+    /// </summary>
     public static string DataDirectory { get; private set; } = "";
 
+    /// <summary>
+    /// Loads all game data domains and localized text for the active locale.
+    /// </summary>
     public static void LoadAll()
     {
         DataDirectory = ResolveDataDir();
@@ -104,6 +110,11 @@ public static class DataLoader
         Poi.LoadPois(pois);
     }
 
+    /// <summary>
+    /// Loads translation strings for the provided locale from the data directory.
+    /// </summary>
+    /// <param name="dataDir">The root data directory that contains translation files.</param>
+    /// <param name="locale">The locale code used to select the translation file.</param>
     public static void LoadTranslations(string dataDir, string locale)
     {
         var path = Path.Combine(dataDir, "translations", $"{locale}.json");

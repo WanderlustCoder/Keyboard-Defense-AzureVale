@@ -22,6 +22,9 @@ public static class SimTick
         "lantern", "rune", "shield", "spear", "ward"
     };
 
+    /// <summary>
+    /// Advances the simulation by one day, applying building production, midgame bonuses, and resource caps.
+    /// </summary>
     public static Dictionary<string, object> AdvanceDay(GameState state)
     {
         state.Day++;
@@ -62,12 +65,18 @@ public static class SimTick
         };
     }
 
+    /// <summary>
+    /// Selects a deterministic night prompt token used by night-phase encounter content.
+    /// </summary>
     public static string BuildNightPrompt(GameState state)
     {
         var prompt = SimRng.Choose(state, NightPrompts);
         return prompt?.ToString() ?? "";
     }
 
+    /// <summary>
+    /// Computes the total number of night-wave enemies for the current day after defense mitigation.
+    /// </summary>
     public static int ComputeNightWaveTotal(GameState state, int defense)
     {
         int baseWaves = NightWaveBaseByDay.GetValueOrDefault(state.Day, 2 + state.Day / 2);

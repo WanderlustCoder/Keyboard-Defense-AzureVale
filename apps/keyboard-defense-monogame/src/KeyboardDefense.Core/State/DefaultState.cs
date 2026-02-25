@@ -11,6 +11,14 @@ namespace KeyboardDefense.Core.State;
 /// </summary>
 public static class DefaultState
 {
+    /// <summary>
+    /// Creates a freshly initialized game state and populates world data for a new run.
+    /// State creation transitions from constructor defaults into either spec-driven or procedural world setup.
+    /// </summary>
+    /// <param name="seed">Random seed string used to initialize deterministic state.</param>
+    /// <param name="placeStartingTowers">If set, places starter auto-towers around the base.</param>
+    /// <param name="useWorldSpec">If set, attempts to load and apply the world specification file.</param>
+    /// <returns>A fully initialized <see cref="GameState"/>.</returns>
     public static GameState Create(string seed = "default", bool placeStartingTowers = false, bool useWorldSpec = false)
     {
         var state = new GameState();
@@ -66,6 +74,10 @@ public static class DefaultState
         return state;
     }
 
+    /// <summary>
+    /// Locates the world specification file from runtime data output.
+    /// </summary>
+    /// <returns>The full path when found; otherwise <see langword="null"/>.</returns>
     private static string? FindSpecPath()
     {
         // Check data/ directory (copied to output by build)
@@ -74,6 +86,11 @@ public static class DefaultState
         return null;
     }
 
+    /// <summary>
+    /// Marks and generates tiles in the initial discovery radius around the base.
+    /// </summary>
+    /// <param name="state">The game state to mutate.</param>
+    /// <param name="radius">The discovery radius in tiles.</param>
     private static void DiscoverStartingArea(GameState state, int radius)
     {
         for (int dy = -radius; dy <= radius; dy++)
@@ -91,6 +108,10 @@ public static class DefaultState
         }
     }
 
+    /// <summary>
+    /// Places predefined starter tower structures adjacent to the base position.
+    /// </summary>
+    /// <param name="state">The game state to mutate.</param>
     private static void PlaceStartingTowers(GameState state)
     {
         var basePos = state.BasePos;

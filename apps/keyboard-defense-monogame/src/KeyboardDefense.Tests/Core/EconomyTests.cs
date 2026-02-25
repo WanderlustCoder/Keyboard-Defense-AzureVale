@@ -115,7 +115,7 @@ public class ItemsTests
     }
 }
 
-public class TradeTests
+public class TradeBasicTests
 {
     [Fact]
     public void BaseRates_ContainsCommonResources()
@@ -193,106 +193,4 @@ public class TradeTests
         Assert.False((bool)result["success"]);
     }
 }
-
-public class CraftingTests
-{
-    [Fact]
-    public void Recipes_ContainsKnownRecipes()
-    {
-        Assert.NotEmpty(Crafting.Recipes);
-        Assert.True(Crafting.Recipes.ContainsKey("iron_ingot"));
-        Assert.True(Crafting.Recipes.ContainsKey("health_potion"));
-    }
-
-    [Fact]
-    public void CanCraft_WithMaterials_ReturnsTrue()
-    {
-        var state = new GameState();
-        state.Inventory["iron_ore"] = 5;
-
-        Assert.True(Crafting.CanCraft(state, "iron_ingot"));
-    }
-
-    [Fact]
-    public void CanCraft_WithoutMaterials_ReturnsFalse()
-    {
-        var state = new GameState();
-        Assert.False(Crafting.CanCraft(state, "iron_ingot"));
-    }
-
-    [Fact]
-    public void CanCraft_UnknownRecipe_ReturnsFalse()
-    {
-        var state = new GameState();
-        Assert.False(Crafting.CanCraft(state, "nonexistent"));
-    }
-
-    [Fact]
-    public void Craft_WithMaterials_Succeeds()
-    {
-        var state = new GameState();
-        state.Inventory["iron_ore"] = 5;
-
-        var result = Crafting.Craft(state, "iron_ingot");
-        Assert.True((bool)result["success"]);
-        Assert.Equal("iron_ingot", result["item"]);
-    }
-
-    [Fact]
-    public void Craft_ConsumesMaterials()
-    {
-        var state = new GameState();
-        state.Inventory["iron_ore"] = 5;
-
-        Crafting.Craft(state, "iron_ingot");
-
-        // iron_ingot recipe needs 2 iron_ore
-        Assert.Equal(3, Convert.ToInt32(state.Inventory["iron_ore"]));
-    }
-
-    [Fact]
-    public void Craft_AddsToInventory()
-    {
-        var state = new GameState();
-        state.Inventory["iron_ore"] = 5;
-
-        Crafting.Craft(state, "iron_ingot");
-
-        Assert.True(state.Inventory.ContainsKey("iron_ingot"));
-        Assert.Equal(1, Convert.ToInt32(state.Inventory["iron_ingot"]));
-    }
-
-    [Fact]
-    public void Craft_WithoutMaterials_Fails()
-    {
-        var state = new GameState();
-        var result = Crafting.Craft(state, "iron_ingot");
-        Assert.False((bool)result["success"]);
-    }
-
-    [Fact]
-    public void Craft_UnknownRecipe_Fails()
-    {
-        var state = new GameState();
-        var result = Crafting.Craft(state, "nonexistent");
-        Assert.False((bool)result["success"]);
-    }
-
-    [Fact]
-    public void GetAvailableRecipes_NoMaterials_ReturnsEmpty()
-    {
-        var state = new GameState();
-        var available = Crafting.GetAvailableRecipes(state);
-        Assert.Empty(available);
-    }
-
-    [Fact]
-    public void GetAvailableRecipes_WithMaterials_ReturnsMatching()
-    {
-        var state = new GameState();
-        state.Inventory["iron_ore"] = 10;
-
-        var available = Crafting.GetAvailableRecipes(state);
-        Assert.Contains("iron_ingot", available);
-    }
-}
+// CraftingTests moved to dedicated CraftingTests.cs

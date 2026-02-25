@@ -10,6 +10,9 @@ namespace KeyboardDefense.Game.UI;
 /// </summary>
 public static class Accessibility
 {
+    /// <summary>
+    /// Supported color palette modes for accessibility rendering.
+    /// </summary>
     public enum ColorMode { Normal, Protanopia, Deuteranopia, Tritanopia }
 
     // Normal palette
@@ -98,12 +101,18 @@ public static class Accessibility
         ["square"] = "\u25a0",
     };
 
+    /// <summary>
+    /// Gets a color from the selected accessibility palette by semantic key.
+    /// </summary>
     public static Color GetColor(string colorKey, ColorMode mode = ColorMode.Normal)
     {
         var palette = GetPalette(mode);
         return palette.GetValueOrDefault(colorKey, Color.White);
     }
 
+    /// <summary>
+    /// Returns the palette dictionary used for the requested color mode.
+    /// </summary>
     public static Dictionary<string, Color> GetPalette(ColorMode mode) => mode switch
     {
         ColorMode.Protanopia => PaletteProtanopia,
@@ -112,12 +121,21 @@ public static class Accessibility
         _ => PaletteNormal,
     };
 
+    /// <summary>
+    /// Maps an element type to a shape identifier used for non-color cues.
+    /// </summary>
     public static string GetShapeIndicator(string elementType)
         => ShapeIndicators.GetValueOrDefault(elementType, "circle");
 
+    /// <summary>
+    /// Maps a shape identifier to the glyph used in UI labels.
+    /// </summary>
     public static string GetShapeSymbol(string shape)
         => ShapeSymbols.GetValueOrDefault(shape, "\u25cf");
 
+    /// <summary>
+    /// Produces a high-contrast replacement color based on source brightness and usage.
+    /// </summary>
     public static Color GetHighContrastColor(Color original, bool isForeground)
     {
         float brightness = (original.R * 0.299f + original.G * 0.587f + original.B * 0.114f) / 255f;
@@ -126,17 +144,32 @@ public static class Accessibility
         return brightness > 0.5f ? new Color(10, 10, 10) : Color.Black;
     }
 
+    /// <summary>
+    /// Adjusts animation duration for reduced-motion accessibility mode.
+    /// </summary>
     public static float GetAnimationDuration(float baseDuration, bool reducedMotion)
         => reducedMotion ? Math.Min(baseDuration * 0.1f, 0.05f) : baseDuration;
 
+    /// <summary>
+    /// Adjusts particle density when reduced-motion mode is enabled.
+    /// </summary>
     public static int GetParticleCount(int baseCount, bool reducedMotion)
         => reducedMotion ? Math.Max(1, baseCount / 4) : baseCount;
 
+    /// <summary>
+    /// Indicates whether animation playback should be skipped entirely.
+    /// </summary>
     public static bool ShouldSkipAnimation(bool reducedMotion) => reducedMotion;
 
+    /// <summary>
+    /// Scales a base font size for large-text accessibility mode.
+    /// </summary>
     public static float GetFontSize(float baseSize, bool largeText)
         => largeText ? baseSize * 1.25f : baseSize;
 
+    /// <summary>
+    /// Returns the minimum touch target size for the current text-size mode.
+    /// </summary>
     public static Vector2 GetMinTouchTarget(bool largeText)
         => largeText ? new Vector2(56, 56) : new Vector2(44, 44);
 }

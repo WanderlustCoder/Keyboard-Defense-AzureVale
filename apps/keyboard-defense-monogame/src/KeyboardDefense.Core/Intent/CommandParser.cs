@@ -13,6 +13,11 @@ namespace KeyboardDefense.Core.Intent;
 /// </summary>
 public static class CommandParser
 {
+    /// <summary>
+    /// Parses a raw command string into an intent envelope.
+    /// </summary>
+    /// <param name="command">The user-entered command text.</param>
+    /// <returns>A result dictionary containing either an intent payload or an error message.</returns>
     public static Dictionary<string, object> Parse(string command)
     {
         string trimmed = command.Trim();
@@ -228,13 +233,7 @@ public static class CommandParser
 
     private static Dictionary<string, object> ParseInspect(string[] tokens)
     {
-        if (tokens.Length == 1)
-            return Ok(SimIntents.Make("inspect"));
-        if (tokens.Length != 3)
-            return Error("Usage: inspect [x y]");
-        if (!IsValidInt(tokens[1], out int x) || !IsValidInt(tokens[2], out int y))
-            return Error("Inspect coordinates must be integers.");
-        return Ok(SimIntents.Make("inspect", new() { ["x"] = x, ["y"] = y }));
+        return ParseOptionalCoordinates(tokens, "inspect", "Usage: inspect [x y]", "Inspect coordinates must be integers.");
     }
 
     private static Dictionary<string, object> ParseZone(string[] tokens)
@@ -248,13 +247,7 @@ public static class CommandParser
 
     private static Dictionary<string, object> ParseDemolish(string[] tokens)
     {
-        if (tokens.Length == 1)
-            return Ok(SimIntents.Make("demolish"));
-        if (tokens.Length != 3)
-            return Error("Usage: demolish [x y]");
-        if (!IsValidInt(tokens[1], out int x) || !IsValidInt(tokens[2], out int y))
-            return Error("Demolish coordinates must be integers.");
-        return Ok(SimIntents.Make("demolish", new() { ["x"] = x, ["y"] = y }));
+        return ParseOptionalCoordinates(tokens, "demolish", "Usage: demolish [x y]", "Demolish coordinates must be integers.");
     }
 
     private static Dictionary<string, object> ParsePreview(string[] tokens)
@@ -271,13 +264,7 @@ public static class CommandParser
 
     private static Dictionary<string, object> ParseUpgrade(string[] tokens)
     {
-        if (tokens.Length == 1)
-            return Ok(SimIntents.Make("upgrade"));
-        if (tokens.Length != 3)
-            return Error("Usage: upgrade [x y]");
-        if (!IsValidInt(tokens[1], out int x) || !IsValidInt(tokens[2], out int y))
-            return Error("Upgrade coordinates must be integers.");
-        return Ok(SimIntents.Make("upgrade", new() { ["x"] = x, ["y"] = y }));
+        return ParseOptionalCoordinates(tokens, "upgrade", "Usage: upgrade [x y]", "Upgrade coordinates must be integers.");
     }
 
     private static Dictionary<string, object> ParseOverlay(string[] tokens)
@@ -644,15 +631,7 @@ public static class CommandParser
 
     private static Dictionary<string, object> ParseHarvest(string[] tokens)
     {
-        if (tokens.Length == 1)
-            return Ok(SimIntents.Make("harvest_node"));
-        if (tokens.Length == 3)
-        {
-            if (!IsValidInt(tokens[1], out int x) || !IsValidInt(tokens[2], out int y))
-                return Error("Harvest coordinates must be integers.");
-            return Ok(SimIntents.Make("harvest_node", new() { ["x"] = x, ["y"] = y }));
-        }
-        return Error("Usage: harvest [x y]");
+        return ParseOptionalCoordinates(tokens, "harvest_node", "Usage: harvest [x y]", "Harvest coordinates must be integers.");
     }
 
     private static Dictionary<string, object> ParseHero(string[] tokens)
@@ -718,5 +697,20 @@ public static class CommandParser
         foreach (var item in arr)
             if (item == value) return true;
         return false;
+    }
+
+    private static Dictionary<string, object> ParseOptionalCoordinates(
+        string[] tokens,
+        string intentKind,
+        string usageMessage,
+        string invalidCoordinateMessage)
+    {
+        if (tokens.Length == 1)
+            return Ok(SimIntents.Make(intentKind));
+        if (tokens.Length != 3)
+            return Error(usageMessage);
+        if (!IsValidInt(tokens[1], out int x) || !IsValidInt(tokens[2], out int y))
+            return Error(invalidCoordinateMessage);
+        return Ok(SimIntents.Make(intentKind, new() { ["x"] = x, ["y"] = y }));
     }
 }

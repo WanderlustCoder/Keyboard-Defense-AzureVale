@@ -15,6 +15,11 @@ public class PanelFrameRenderer
     private readonly NineSliceFrame _frame = new();
     private SpriteFont? _font;
 
+    /// <summary>
+    /// Initializes the panel frame renderer resources and attempts to load frame textures from the shared asset loader.
+    /// </summary>
+    /// <param name="device">Graphics device used by the underlying frame renderer.</param>
+    /// <param name="font">Font cached for title bar text rendering.</param>
     public void Initialize(GraphicsDevice device, SpriteFont font)
     {
         _frame.Initialize(device, font);
@@ -22,8 +27,16 @@ public class PanelFrameRenderer
         _font = font;
     }
 
+    /// <summary>
+    /// Gets whether the underlying frame renderer is initialized and ready to draw panel frames.
+    /// </summary>
     public bool IsReady => _frame.IsReady;
 
+    /// <summary>
+    /// Draws a frame and title bar around a visible panel using the panel root bounds expanded by 4 pixels on each side.
+    /// </summary>
+    /// <param name="sb">Sprite batch used to draw frame and title bar geometry.</param>
+    /// <param name="panel">Panel whose style, title, and bounds determine the rendered frame.</param>
     public void DrawPanelFrame(SpriteBatch sb, BasePanel panel)
     {
         if (!_frame.IsReady || _font == null) return;

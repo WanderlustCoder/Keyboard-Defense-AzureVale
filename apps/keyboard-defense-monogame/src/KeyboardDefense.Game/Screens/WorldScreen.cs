@@ -119,7 +119,7 @@ public class WorldScreen : GameScreen
         // Use 32px tiles to match spec tile_size; zoom 1.5 to compensate visually
         _gridRenderer.CellSize = 32;
         _playerRenderer.CellSize = 32;
-        _gridRenderer.UseChunkBackground = _worldMapRenderer.HasChunks;
+        _gridRenderer.UseChunkBackground = _worldMapRenderer.HasChunks && !Game.DisableChunkBackground;
 
         var state = GameController.Instance.State;
         var vp = Game.GraphicsDevice.Viewport;

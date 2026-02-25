@@ -47,6 +47,11 @@ public class SpriteAnimator
         private float _pulseSpeed;
         private float _pulseAmplitude;
 
+        /// <summary>
+        /// Starts playing the specified clip from frame zero and clears elapsed time and completion flags.
+        /// If the same clip is already active and still playing, no state transition is applied.
+        /// </summary>
+        /// <param name="clip">The clip to play as the current animation state.</param>
         public void Play(AnimationClip clip)
         {
             if (CurrentClip == clip && Playing && !Finished) return;
@@ -57,6 +62,9 @@ public class SpriteAnimator
             Playing = true;
         }
 
+        /// <summary>
+        /// Stops playback and resets frame timing progress to the initial frame without clearing the current clip.
+        /// </summary>
         public void Stop()
         {
             Playing = false;
@@ -79,6 +87,13 @@ public class SpriteAnimator
             _pulseAmplitude = amplitude;
         }
 
+        /// <summary>
+        /// Advances animation timing and procedural effects for the current state.
+        /// Frame progression is driven by <paramref name="deltaTime"/>, transitions to frame zero for looping clips,
+        /// and locks to the final frame while marking the clip finished for non-looping clips.
+        /// </summary>
+        /// <param name="deltaTime">Time elapsed since the previous update, used for frame-duration accumulation.</param>
+        /// <param name="totalTime">Total runtime used to evaluate bob and pulse oscillation phases.</param>
         public void Update(float deltaTime, float totalTime)
         {
             // Frame animation
@@ -135,6 +150,11 @@ public class SpriteAnimator
         public int FrameHeight { get; init; }
         public Dictionary<string, AnimationClip> Clips { get; init; } = new();
 
+        /// <summary>
+        /// Looks up an animation clip by name from this sprite sheet definition.
+        /// </summary>
+        /// <param name="name">Clip identifier, such as an animation state name.</param>
+        /// <returns>The matching clip when present; otherwise <see langword="null"/>.</returns>
         public AnimationClip? GetClip(string name)
             => Clips.GetValueOrDefault(name);
     }

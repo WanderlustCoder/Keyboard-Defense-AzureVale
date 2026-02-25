@@ -19,12 +19,84 @@ public class BattleStageRenderer
 
     // Layout
     private Rectangle _bounds;
+    private const int PixelTextureSize = 1;
     private const int CastleWidth = 80;
     private const int CastleHeight = 120;
     private const int EnemySize = 40;
     private const int ProjectileSize = 6;
     private const int HpBarHeight = 20;
     private const float EnemySpacing = 70f;
+    private const int GroundOffsetFromBottom = 60;
+    private const int GroundLineHeight = 2;
+    private const int GroundFillHeight = 58;
+    private const int CastleOffsetX = 40;
+    private const int EnemyStartOffsetX = 60;
+    private const int EnemyVerticalOffset = 8;
+    private const int MinDisplayHp = 20;
+    private const int HpBarHorizontalInset = 10;
+    private const int HpBarTopInset = 8;
+    private const int HpBarTextOffsetY = 2;
+    private const int UiOutlineThickness = 1;
+    private const int CastleNotchSections = 5;
+    private const int CastleNotchHeight = 12;
+    private const int CastleNotchCount = 3;
+    private const int CastleNotchInset = 2;
+    private const int CastleGateWidth = 20;
+    private const int CastleGateHeight = 30;
+    private const int CastleLabelOffsetY = 20;
+    private const int CastleOutlineThickness = 2;
+    private const float CastleFallbackTint = 0.8f;
+    private const float CastleLabelScale = 0.6f;
+    private const float HpTextScale = 0.8f;
+    private const float EnemyHitKnockback = 4f;
+    private const float EnemySpawnSlideDistance = 30f;
+    private const int EnemyHpBarOffsetY = 8;
+    private const int EnemyHpBarHeight = 4;
+    private const float EnemyWordMaxScale = 0.7f;
+    private const float EnemyWordHorizontalPadding = 4f;
+    private const int EnemyWordOffsetY = 4;
+    private const float EnemyLetterAlpha = 0.8f;
+    private const int ProjectileTrailInset = 2;
+    private const int ProjectileTrailExpansion = 4;
+    private const float ProjectileTrailAlpha = 0.3f;
+    private const float ProjectileHitDistance = 10f;
+    private const float ProjectileMinDistance = 1f;
+    private const float DeathAnimScaleGrowth = 0.5f;
+    private const int PromptOffsetY = 30;
+    private const int PromptOffsetX = 150;
+    private const int PromptBackgroundPaddingX = 8;
+    private const int PromptBackgroundPaddingTop = 4;
+    private const int PromptBackgroundWidthPadding = 16;
+    private const int PromptBackgroundHeight = 28;
+    private const float PromptBackgroundWidthScale = 1.2f;
+    private const float PromptBackgroundAlpha = 0.9f;
+    private const int StatusEffectOffsetY = 16;
+    private const int StatusDotSpacing = 8;
+    private const int StatusDotSize = 6;
+    private const float StatusPulseBase = 0.7f;
+    private const float StatusPulseAmplitude = 0.3f;
+    private const float StatusPulseFrequency = 4f;
+    private const int ComboDisplayMin = 1;
+    private const float ComboXScale = 1.4f;
+    private const int ComboXOffset = 20;
+    private const int ComboYOffset = 40;
+    private const float ComboBaseScale = 1.2f;
+    private const float ComboPopScale = 0.4f;
+    private const int ComboBackgroundPaddingX = 8;
+    private const int ComboBackgroundPaddingTop = 4;
+    private const int ComboBackgroundWidthPadding = 16;
+    private const int ComboBackgroundHeightPadding = 8;
+    private const float ComboBackgroundAlpha = 0.8f;
+    private const int ComboMegaThreshold = 20;
+    private const int ComboSuperThreshold = 10;
+    private const int ComboThreshold = 5;
+    private const int ComboLabelOffsetY = 2;
+    private const float ComboLabelAlpha = 0.7f;
+    private const float ComboLabelScale = 0.6f;
+    private const float CastleFlashAlphaScale = 0.5f;
+    private const float EnemyBobSpeed = 2f;
+    private const float EnemyBobAmplitude = 3f;
+    private const float EnemyBobPhaseStep = 0.7f;
 
     // Animation
     private float _totalTime;
@@ -91,18 +163,32 @@ public class BattleStageRenderer
         public Color Color;
     }
 
+    /// <summary>
+    /// Initializes renderer resources required for battle-stage drawing.
+    /// </summary>
+    /// <param name="device">Graphics device used to allocate the fallback pixel texture.</param>
+    /// <param name="font">Font used for stage labels, counters, and word prompts.</param>
     public void Initialize(GraphicsDevice device, SpriteFont font)
     {
-        _pixel = new Texture2D(device, 1, 1);
+        _pixel = new Texture2D(device, PixelTextureSize, PixelTextureSize);
         _pixel.SetData(new[] { Color.White });
         _font = font;
     }
 
+    /// <summary>
+    /// Sets the screen-space bounds used by all stage layout calculations.
+    /// </summary>
+    /// <param name="bounds">Viewport rectangle reserved for battle-stage rendering.</param>
     public void SetBounds(Rectangle bounds)
     {
         _bounds = bounds;
     }
 
+    /// <summary>
+    /// Advances transient stage animation state, including projectiles, flashes, spawns, and combo pop timing.
+    /// </summary>
+    /// <param name="gameTime">Frame timing used to compute simulation delta time.</param>
+    /// <param name="speedMultiplier">Scalar applied to delta time for fast-forward or slow-motion updates.</param>
     public void Update(GameTime gameTime, float speedMultiplier = 1f)
     {
         float dt = (float)gameTime.ElapsedGameTime.TotalSeconds * speedMultiplier;
@@ -116,7 +202,7 @@ public class BattleStageRenderer
             p.Position += p.Velocity * dt;
             _projectiles[i] = p;
 
-            if (p.Lifetime <= 0f || Vector2.Distance(p.Position, p.Target) < 10f)
+            if (p.Lifetime <= 0f || Vector2.Distance(p.Position, p.Target) < ProjectileHitDistance)
                 _projectiles.RemoveAt(i);
         }
 
@@ -188,7 +274,7 @@ public class BattleStageRenderer
         {
             state = SpriteAnimator.CreateState();
             // Stagger bob phase per enemy for visual variety
-            state.EnableBob(speed: 2f, amplitude: 3f, phase: index * 0.7f);
+            state.EnableBob(speed: EnemyBobSpeed, amplitude: EnemyBobAmplitude, phase: index * EnemyBobPhaseStep);
 
             // Try to start walk animation if sprite sheet is available
             string spriteId = $"enemy_{kind}";
@@ -203,6 +289,13 @@ public class BattleStageRenderer
         return state;
     }
 
+    /// <summary>
+    /// Draws battle-stage sprite layers back-to-front in this order: background, HP bar, castle,
+    /// castle flash overlay, enemies, status effects, projectiles, death animations, word progress,
+    /// then combo counter.
+    /// </summary>
+    /// <param name="spriteBatch">Sprite batch used for all stage draw calls.</param>
+    /// <param name="state">Current game state snapshot that drives visual content.</param>
     public void Draw(SpriteBatch spriteBatch, GameState state)
     {
         if (_pixel == null || _font == null) return;
@@ -231,21 +324,25 @@ public class BattleStageRenderer
         spriteBatch.Draw(_pixel!, _bounds, new Color(15, 18, 25));
 
         // Ground line
-        int groundY = _bounds.Bottom - 60;
-        spriteBatch.Draw(_pixel!, new Rectangle(_bounds.X, groundY, _bounds.Width, 2),
+        int groundY = _bounds.Bottom - GroundOffsetFromBottom;
+        spriteBatch.Draw(_pixel!, new Rectangle(_bounds.X, groundY, _bounds.Width, GroundLineHeight),
             new Color(60, 70, 50));
 
         // Ground fill
-        spriteBatch.Draw(_pixel!, new Rectangle(_bounds.X, groundY + 2, _bounds.Width, 58),
+        spriteBatch.Draw(_pixel!, new Rectangle(_bounds.X, groundY + GroundLineHeight, _bounds.Width, GroundFillHeight),
             new Color(25, 30, 20));
     }
 
     private void DrawHpBar(SpriteBatch spriteBatch, GameState state)
     {
-        int maxHp = Math.Max(state.Hp, 20);
+        int maxHp = Math.Max(state.Hp, MinDisplayHp);
         float hpPct = Math.Clamp((float)state.Hp / maxHp, 0f, 1f);
 
-        var barBg = new Rectangle(_bounds.X + 10, _bounds.Y + 8, _bounds.Width - 20, HpBarHeight);
+        var barBg = new Rectangle(
+            _bounds.X + HpBarHorizontalInset,
+            _bounds.Y + HpBarTopInset,
+            _bounds.Width - HpBarHorizontalInset * 2,
+            HpBarHeight);
         spriteBatch.Draw(_pixel!, barBg, new Color(30, 25, 40));
 
         int fillWidth = (int)(barBg.Width * hpPct);
@@ -254,25 +351,25 @@ public class BattleStageRenderer
         spriteBatch.Draw(_pixel!, barFill, hpColor);
 
         // Border
-        DrawRectOutline(spriteBatch, barBg, ThemeColors.Border, 1);
+        DrawRectOutline(spriteBatch, barBg, ThemeColors.Border, UiOutlineThickness);
 
         // HP text
         string hpText = $"HP: {state.Hp}/{maxHp}";
         var textSize = _font!.MeasureString(hpText);
         spriteBatch.DrawString(_font, hpText,
-            new Vector2(barBg.X + (barBg.Width - textSize.X) * 0.5f, barBg.Y + 2),
-            Color.White, 0f, Vector2.Zero, 0.8f, SpriteEffects.None, 0f);
+            new Vector2(barBg.X + (barBg.Width - textSize.X) * 0.5f, barBg.Y + HpBarTextOffsetY),
+            Color.White, 0f, Vector2.Zero, HpTextScale, SpriteEffects.None, 0f);
     }
 
     private void DrawCastle(SpriteBatch spriteBatch, GameState state)
     {
-        int groundY = _bounds.Bottom - 60;
-        int castleX = _bounds.X + 40;
+        int groundY = _bounds.Bottom - GroundOffsetFromBottom;
+        int castleX = _bounds.X + CastleOffsetX;
         int castleY = groundY - CastleHeight;
 
         // Castle body
         var castleRect = new Rectangle(castleX, castleY, CastleWidth, CastleHeight);
-        int castleMaxHp = Math.Max(state.Hp, 20);
+        int castleMaxHp = Math.Max(state.Hp, MinDisplayHp);
         float hpPct = Math.Clamp((float)state.Hp / castleMaxHp, 0f, 1f);
         Color castleColor = ThemeColors.GetHealthColor(hpPct);
 
@@ -280,21 +377,21 @@ public class BattleStageRenderer
         if (castleTexture != null)
             spriteBatch.Draw(castleTexture, castleRect, Color.White);
         else
-            spriteBatch.Draw(_pixel!, castleRect, castleColor * 0.8f);
+            spriteBatch.Draw(_pixel!, castleRect, castleColor * CastleFallbackTint);
 
         // Castle battlements (3 notches across top)
-        int notchW = CastleWidth / 5;
-        int notchH = 12;
-        for (int i = 0; i < 3; i++)
+        int notchW = CastleWidth / CastleNotchSections;
+        int notchH = CastleNotchHeight;
+        for (int i = 0; i < CastleNotchCount; i++)
         {
-            int nx = castleX + notchW * (i * 2) + 2;
-            spriteBatch.Draw(_pixel!, new Rectangle(nx, castleY - notchH, notchW - 2, notchH),
+            int nx = castleX + notchW * (i * 2) + CastleNotchInset;
+            spriteBatch.Draw(_pixel!, new Rectangle(nx, castleY - notchH, notchW - CastleNotchInset, notchH),
                 castleColor);
         }
 
         // Castle gate
-        int gateW = 20;
-        int gateH = 30;
+        int gateW = CastleGateWidth;
+        int gateH = CastleGateHeight;
         spriteBatch.Draw(_pixel!, new Rectangle(
             castleX + (CastleWidth - gateW) / 2,
             castleY + CastleHeight - gateH,
@@ -304,17 +401,17 @@ public class BattleStageRenderer
         string label = "CASTLE";
         var labelSize = _font!.MeasureString(label);
         spriteBatch.DrawString(_font, label,
-            new Vector2(castleX + (CastleWidth - labelSize.X * 0.6f) * 0.5f, castleY + 20),
-            Color.White, 0f, Vector2.Zero, 0.6f, SpriteEffects.None, 0f);
+            new Vector2(castleX + (CastleWidth - labelSize.X * CastleLabelScale) * 0.5f, castleY + CastleLabelOffsetY),
+            Color.White, 0f, Vector2.Zero, CastleLabelScale, SpriteEffects.None, 0f);
 
         // Outline
-        DrawRectOutline(spriteBatch, castleRect, castleColor, 2);
+        DrawRectOutline(spriteBatch, castleRect, castleColor, CastleOutlineThickness);
     }
 
     private void DrawEnemies(SpriteBatch spriteBatch, GameState state)
     {
-        int groundY = _bounds.Bottom - 60;
-        int startX = _bounds.Right - 60;
+        int groundY = _bounds.Bottom - GroundOffsetFromBottom;
+        int startX = _bounds.Right - EnemyStartOffsetX;
 
         // Track active enemy IDs for animation state cleanup
         var activeIds = new HashSet<int>();
@@ -336,7 +433,7 @@ public class BattleStageRenderer
 
             // Position enemies from right, advancing left
             float xPos = startX - i * EnemySpacing;
-            float yPos = groundY - EnemySize - 8;
+            float yPos = groundY - EnemySize - EnemyVerticalOffset;
 
             // Apply animation-driven bob offset
             yPos += animState.BobOffset;
@@ -345,14 +442,14 @@ public class BattleStageRenderer
             bool isFlashing = _hitFlashes.TryGetValue(enemyId, out float flashTime) && flashTime > 0;
             Color drawColor = isFlashing ? Color.White : color;
             if (isFlashing)
-                xPos += 4f * (flashTime / HitFlashDuration);  // knockback toward right
+                xPos += EnemyHitKnockback * (flashTime / HitFlashDuration);  // knockback toward right
 
             // Spawn fade-in
             float spawnAlpha = 1f;
             if (_spawnAnims.TryGetValue(enemyId, out float spawnTime) && spawnTime > 0)
             {
                 spawnAlpha = 1f - (spawnTime / SpawnAnimDuration);
-                xPos += (1f - spawnAlpha) * 30f;  // slide in from right
+                xPos += (1f - spawnAlpha) * EnemySpawnSlideDistance;  // slide in from right
             }
 
             // Enemy body — use sprite animator if available
@@ -382,9 +479,9 @@ public class BattleStageRenderer
                     maxHp = Math.Max(1, Convert.ToInt32(mhpObj));
                 float hpPct = Math.Clamp((float)hp / maxHp, 0f, 1f);
 
-                var hpBg = new Rectangle((int)xPos, (int)yPos - 8, EnemySize, 4);
+                var hpBg = new Rectangle((int)xPos, (int)yPos - EnemyHpBarOffsetY, EnemySize, EnemyHpBarHeight);
                 spriteBatch.Draw(_pixel!, hpBg, new Color(30, 10, 10));
-                spriteBatch.Draw(_pixel!, new Rectangle(hpBg.X, hpBg.Y, (int)(hpBg.Width * hpPct), 4),
+                spriteBatch.Draw(_pixel!, new Rectangle(hpBg.X, hpBg.Y, (int)(hpBg.Width * hpPct), EnemyHpBarHeight),
                     ThemeColors.GetHealthColor(hpPct));
             }
 
@@ -393,9 +490,9 @@ public class BattleStageRenderer
             if (!string.IsNullOrEmpty(word))
             {
                 var wordSize = _font!.MeasureString(word);
-                float scale = Math.Min(0.7f, (EnemySpacing - 4) / wordSize.X);
+                float scale = Math.Min(EnemyWordMaxScale, (EnemySpacing - EnemyWordHorizontalPadding) / wordSize.X);
                 spriteBatch.DrawString(_font, word,
-                    new Vector2(xPos + (EnemySize - wordSize.X * scale) * 0.5f, yPos + EnemySize + 4),
+                    new Vector2(xPos + (EnemySize - wordSize.X * scale) * 0.5f, yPos + EnemySize + EnemyWordOffsetY),
                     Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
             }
 
@@ -406,7 +503,7 @@ public class BattleStageRenderer
                 var letterSize = _font!.MeasureString(letter);
                 spriteBatch.DrawString(_font, letter,
                     new Vector2(xPos + (EnemySize - letterSize.X) * 0.5f, yPos + (EnemySize - letterSize.Y) * 0.5f),
-                    Color.White * 0.8f);
+                    Color.White * EnemyLetterAlpha);
             }
         }
 
@@ -434,8 +531,12 @@ public class BattleStageRenderer
             spriteBatch.Draw(_pixel!, rect, p.Color);
 
             // Trail glow
-            var trailRect = new Rectangle(rect.X - 2, rect.Y - 2, rect.Width + 4, rect.Height + 4);
-            spriteBatch.Draw(_pixel!, trailRect, p.Color * 0.3f);
+            var trailRect = new Rectangle(
+                rect.X - ProjectileTrailInset,
+                rect.Y - ProjectileTrailInset,
+                rect.Width + ProjectileTrailExpansion,
+                rect.Height + ProjectileTrailExpansion);
+            spriteBatch.Draw(_pixel!, trailRect, p.Color * ProjectileTrailAlpha);
         }
     }
 
@@ -445,7 +546,7 @@ public class BattleStageRenderer
         {
             float t = 1f - (d.Timer / DeathAnimDuration);
             float alpha = 1f - t;
-            float scale = 1f + t * 0.5f;
+            float scale = 1f + t * DeathAnimScaleGrowth;
             int size = (int)(EnemySize * scale);
 
             var rect = new Rectangle(
@@ -462,14 +563,18 @@ public class BattleStageRenderer
         string prompt = state.NightPrompt;
         if (string.IsNullOrEmpty(prompt) || state.Phase != "night") return;
 
-        float y = _bounds.Bottom - 30;
-        float x = _bounds.X + 150;
+        float y = _bounds.Bottom - PromptOffsetY;
+        float x = _bounds.X + PromptOffsetX;
 
         // Background bar
         var promptSize = _font!.MeasureString(prompt);
-        var bgRect = new Rectangle((int)x - 8, (int)y - 4, (int)(promptSize.X * 1.2f) + 16, 28);
-        spriteBatch.Draw(_pixel!, bgRect, new Color(20, 15, 30) * 0.9f);
-        DrawRectOutline(spriteBatch, bgRect, ThemeColors.Border, 1);
+        var bgRect = new Rectangle(
+            (int)x - PromptBackgroundPaddingX,
+            (int)y - PromptBackgroundPaddingTop,
+            (int)(promptSize.X * PromptBackgroundWidthScale) + PromptBackgroundWidthPadding,
+            PromptBackgroundHeight);
+        spriteBatch.Draw(_pixel!, bgRect, new Color(20, 15, 30) * PromptBackgroundAlpha);
+        DrawRectOutline(spriteBatch, bgRect, ThemeColors.Border, UiOutlineThickness);
 
         // Render each character - typed chars in green, remaining in white
         float charX = x;
@@ -484,11 +589,17 @@ public class BattleStageRenderer
     }
 
     // Public effect triggers
+    /// <summary>
+    /// Spawns a projectile visual moving from the castle toward an enemy target.
+    /// </summary>
+    /// <param name="from">World position where the projectile starts.</param>
+    /// <param name="to">World position the projectile travels toward.</param>
+    /// <param name="color">Tint applied to the projectile and its trail.</param>
     public void FireProjectile(Vector2 from, Vector2 to, Color color)
     {
         var dir = to - from;
         float dist = dir.Length();
-        if (dist < 1f) return;
+        if (dist < ProjectileMinDistance) return;
 
         _projectiles.Add(new Projectile
         {
@@ -500,11 +611,20 @@ public class BattleStageRenderer
         });
     }
 
+    /// <summary>
+    /// Starts the hit-flash effect for the specified enemy.
+    /// </summary>
+    /// <param name="enemyId">Stable enemy identifier used by rendering effect state.</param>
     public void FlashEnemy(int enemyId)
     {
         _hitFlashes[enemyId] = HitFlashDuration;
     }
 
+    /// <summary>
+    /// Queues a radial death animation at an enemy's last rendered position.
+    /// </summary>
+    /// <param name="position">Center point of the defeated enemy.</param>
+    /// <param name="color">Base color for the expanding fade-out effect.</param>
     public void EnemyDeath(Vector2 position, Color color)
     {
         _deathAnims.Add(new DeathAnim
@@ -519,19 +639,19 @@ public class BattleStageRenderer
     {
         if (_castleFlashTimer <= 0f) return;
 
-        int groundY = _bounds.Bottom - 60;
-        int castleX = _bounds.X + 40;
+        int groundY = _bounds.Bottom - GroundOffsetFromBottom;
+        int castleX = _bounds.X + CastleOffsetX;
         int castleY = groundY - CastleHeight;
         var castleRect = new Rectangle(castleX, castleY, CastleWidth, CastleHeight);
 
-        float alpha = _castleFlashTimer / CastleFlashDuration * 0.5f;
+        float alpha = _castleFlashTimer / CastleFlashDuration * CastleFlashAlphaScale;
         spriteBatch.Draw(_pixel!, castleRect, new Color(255, 40, 40) * alpha);
     }
 
     private void DrawStatusEffects(SpriteBatch spriteBatch, GameState state)
     {
-        int groundY = _bounds.Bottom - 60;
-        int startX = _bounds.Right - 60;
+        int groundY = _bounds.Bottom - GroundOffsetFromBottom;
+        int startX = _bounds.Right - EnemyStartOffsetX;
 
         for (int i = 0; i < state.Enemies.Count; i++)
         {
@@ -543,7 +663,7 @@ public class BattleStageRenderer
                 continue;
 
             float xPos = startX - i * EnemySpacing;
-            float yBase = groundY - EnemySize - 16;
+            float yBase = groundY - EnemySize - StatusEffectOffsetY;
 
             int dotIndex = 0;
             foreach (var effect in effects)
@@ -551,11 +671,11 @@ public class BattleStageRenderer
                 string effectType = effect.GetValueOrDefault("type")?.ToString() ?? "";
                 if (StatusColors.TryGetValue(effectType, out Color statusColor))
                 {
-                    int dotX = (int)xPos + dotIndex * 8;
+                    int dotX = (int)xPos + dotIndex * StatusDotSpacing;
                     int dotY = (int)yBase;
                     // Pulsing dot
-                    float pulse = 0.7f + 0.3f * MathF.Sin(_totalTime * 4f + dotIndex);
-                    spriteBatch.Draw(_pixel!, new Rectangle(dotX, dotY, 6, 6), statusColor * pulse);
+                    float pulse = StatusPulseBase + StatusPulseAmplitude * MathF.Sin(_totalTime * StatusPulseFrequency + dotIndex);
+                    spriteBatch.Draw(_pixel!, new Rectangle(dotX, dotY, StatusDotSize, StatusDotSize), statusColor * pulse);
                     dotIndex++;
                 }
             }
@@ -564,58 +684,69 @@ public class BattleStageRenderer
 
     private void DrawComboCounter(SpriteBatch spriteBatch, GameState state)
     {
-        if (state.Phase != "night" || _displayCombo <= 1)
+        if (state.Phase != "night" || _displayCombo <= ComboDisplayMin)
             return;
 
         string comboText = $"x{_displayCombo}";
         var textSize = _font!.MeasureString(comboText);
 
         // Position: upper right of battle stage
-        float x = _bounds.Right - textSize.X * 1.4f - 20;
-        float y = _bounds.Y + 40;
+        float x = _bounds.Right - textSize.X * ComboXScale - ComboXOffset;
+        float y = _bounds.Y + ComboYOffset;
 
         // Pop scale animation
-        float scale = 1.2f;
+        float scale = ComboBaseScale;
         if (_comboPopTimer > 0f)
         {
             float t = _comboPopTimer / ComboPopDuration;
-            scale = 1.2f + t * 0.4f;
+            scale = ComboBaseScale + t * ComboPopScale;
         }
 
         // Background
-        var bgRect = new Rectangle((int)(x - 8), (int)(y - 4),
-            (int)(textSize.X * scale + 16), (int)(textSize.Y * scale + 8));
-        spriteBatch.Draw(_pixel!, bgRect, new Color(20, 10, 30) * 0.8f);
+        var bgRect = new Rectangle((int)(x - ComboBackgroundPaddingX), (int)(y - ComboBackgroundPaddingTop),
+            (int)(textSize.X * scale + ComboBackgroundWidthPadding), (int)(textSize.Y * scale + ComboBackgroundHeightPadding));
+        spriteBatch.Draw(_pixel!, bgRect, new Color(20, 10, 30) * ComboBackgroundAlpha);
 
         // Combo color based on streak
-        Color comboColor = _displayCombo >= 20 ? new Color(255, 200, 40) :
-                           _displayCombo >= 10 ? new Color(200, 100, 255) :
-                           _displayCombo >= 5 ? new Color(100, 200, 255) :
+        Color comboColor = _displayCombo >= ComboMegaThreshold ? new Color(255, 200, 40) :
+                           _displayCombo >= ComboSuperThreshold ? new Color(200, 100, 255) :
+                           _displayCombo >= ComboThreshold ? new Color(100, 200, 255) :
                            new Color(200, 200, 200);
 
         spriteBatch.DrawString(_font, comboText, new Vector2(x, y),
             comboColor, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
 
         // "COMBO" label
-        string label = _displayCombo >= 20 ? "MEGA COMBO!" :
-                       _displayCombo >= 10 ? "SUPER COMBO!" :
-                       _displayCombo >= 5 ? "COMBO!" : "COMBO";
+        string label = _displayCombo >= ComboMegaThreshold ? "MEGA COMBO!" :
+                       _displayCombo >= ComboSuperThreshold ? "SUPER COMBO!" :
+                       _displayCombo >= ComboThreshold ? "COMBO!" : "COMBO";
         spriteBatch.DrawString(_font, label,
-            new Vector2(x, y + textSize.Y * scale + 2),
-            comboColor * 0.7f, 0f, Vector2.Zero, 0.6f, SpriteEffects.None, 0f);
+            new Vector2(x, y + textSize.Y * scale + ComboLabelOffsetY),
+            comboColor * ComboLabelAlpha, 0f, Vector2.Zero, ComboLabelScale, SpriteEffects.None, 0f);
     }
 
     // Public effect triggers
+    /// <summary>
+    /// Triggers the castle damage flash overlay for a brief duration.
+    /// </summary>
     public void FlashCastle()
     {
         _castleFlashTimer = CastleFlashDuration;
     }
 
+    /// <summary>
+    /// Starts the spawn fade-in animation for an enemy entering the lane.
+    /// </summary>
+    /// <param name="enemyId">Stable enemy identifier used by renderer effect state.</param>
     public void SpawnEnemy(int enemyId)
     {
         _spawnAnims[enemyId] = SpawnAnimDuration;
     }
 
+    /// <summary>
+    /// Updates the displayed combo counter and triggers pop animation on streak increase.
+    /// </summary>
+    /// <param name="combo">Current combat combo value.</param>
     public void SetCombo(int combo)
     {
         if (combo > _displayCombo)
@@ -626,21 +757,28 @@ public class BattleStageRenderer
     /// <summary>
     /// Gets the screen position of an enemy by index, for effect spawning.
     /// </summary>
+    /// <param name="index">Zero-based enemy lane index from right to left.</param>
+    /// <param name="totalEnemies">Current enemy count used by callers for lane indexing context.</param>
+    /// <returns>Center point of the requested enemy slot in screen space.</returns>
     public Vector2 GetEnemyPosition(int index, int totalEnemies)
     {
-        int groundY = _bounds.Bottom - 60;
-        int startX = _bounds.Right - 60;
+        int groundY = _bounds.Bottom - GroundOffsetFromBottom;
+        int startX = _bounds.Right - EnemyStartOffsetX;
         float xPos = startX - index * EnemySpacing;
-        float yPos = groundY - EnemySize - 8;
+        float yPos = groundY - EnemySize - EnemyVerticalOffset;
         return new Vector2(xPos + EnemySize * 0.5f, yPos + EnemySize * 0.5f);
     }
 
+    /// <summary>
+    /// Gets the center screen position of the castle for targeting and effect anchoring.
+    /// </summary>
+    /// <value>Castle center point in screen-space coordinates.</value>
     public Vector2 CastlePosition
     {
         get
         {
-            int groundY = _bounds.Bottom - 60;
-            return new Vector2(_bounds.X + 40 + CastleWidth * 0.5f, groundY - CastleHeight * 0.5f);
+            int groundY = _bounds.Bottom - GroundOffsetFromBottom;
+            return new Vector2(_bounds.X + CastleOffsetX + CastleWidth * 0.5f, groundY - CastleHeight * 0.5f);
         }
     }
 

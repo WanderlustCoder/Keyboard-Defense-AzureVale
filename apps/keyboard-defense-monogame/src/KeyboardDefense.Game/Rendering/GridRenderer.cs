@@ -16,7 +16,33 @@ namespace KeyboardDefense.Game.Rendering;
 /// </summary>
 public class GridRenderer
 {
-    public int CellSize { get; set; } = 48;
+    private const int DefaultCellSize = 48;
+    private const int SinglePixelTextureSize = 1;
+    private const int DefaultStructureLevel = 1;
+    private const int TerrainAutoTileMask = 15;
+    private const int TerrainHashSalt = 17;
+    private const int RoadHashXMultiplier = 3571;
+    private const int RoadHashYMultiplier = 4219;
+    private const int RoadVariantCount = 3;
+    private const float RoadOverlayAlpha = 0.85f;
+    private const int TransitionMinThickness = 2;
+    private const int TransitionThicknessDivisor = 8;
+    private const int CursorOutlineThickness = 3;
+    private const int InteractionPromptDistance = 1;
+    private const float FogTileAlpha = 0.7f;
+    private const float ChunkFogTileAlpha = 0.85f;
+    private const float TileCenterOffsetFactor = 0.5f;
+    private const float PromptBubbleScale = 0.5f;
+    private const int PromptBubbleWidthPadding = 10;
+    private const int PromptBubbleHeightPadding = 6;
+    private const int PromptBubbleYOffset = 6;
+    private const int PromptTextXOffset = 5;
+    private const int PromptTextYOffset = 3;
+    private const float PromptBubbleBackgroundAlpha = 0.75f;
+
+    /// <summary>Gets or sets the world-space pixel size of one map tile used during all world render stages.</summary>
+    public int CellSize { get; set; } = DefaultCellSize;
+    /// <summary>Gets or sets the world-space origin offset applied when converting grid coordinates to screen space.</summary>
     public Vector2 Origin { get; set; } = Vector2.Zero;
 
     /// <summary>When true, skip per-tile terrain drawing (chunk background provides it).</summary>
@@ -33,6 +59,7 @@ public class GridRenderer
     private readonly Dictionary<int, SpriteAnimator.AnimationState> _buildingAnimStates = new();
     private readonly Dictionary<int, SpriteAnimator.AnimationState> _enemyAnimStates = new();
 
+    /// <summary>Gets or sets the combat visual-effects service used during enemy overlay rendering.</summary>
     public CombatVfx? Vfx { get; set; }
 
     // Terrain colors
@@ -52,14 +79,18 @@ public class GridRenderer
     private static readonly Color TowerColor = ThemeColors.ShieldBlue;
     private static readonly Color EnemyColor = ThemeColors.DamageRed;
 
+    /// <summary>Initializes rendering resources used during the setup stage before per-frame updates and draws.</summary>
+    /// <param name="device">Graphics device used to allocate GPU-backed textures.</param>
+    /// <param name="font">Default font used by world-space text overlays and prompts.</param>
     public void Initialize(GraphicsDevice device, SpriteFont font)
     {
-        _pixel = new Texture2D(device, 1, 1);
+        _pixel = new Texture2D(device, SinglePixelTextureSize, SinglePixelTextureSize);
         _pixel.SetData(new[] { Color.White });
         _font = font;
     }
 
-    /// <summary>Update animation states. Call once per frame before Draw.</summary>
+    /// <summary>Advances cached animation state during the frame update stage before the render pass starts.</summary>
+    /// <param name="deltaTime">Elapsed frame time in seconds for deterministic animation stepping.</param>
     public void Update(float deltaTime)
     {
         _totalTime += deltaTime;
@@ -69,6 +100,11 @@ public class GridRenderer
             animState.Update(deltaTime, _totalTime);
     }
 
+    /// <summary>Executes the world render pipeline stage order: terrain, entities, interaction overlays, cursor, and fog.</summary>
+    /// <param name="spriteBatch">Sprite batch used for all draw calls in this renderer pass.</param>
+    /// <param name="state">Current game simulation state that provides discovered tiles and world entities.</param>
+    /// <param name="cameraTransform">Camera transform applied to convert world-space tiles to the active viewport.</param>
+    /// <param name="viewport">Current viewport bounds associated with this render pass.</param>
     public void Draw(SpriteBatch spriteBatch, GameState state, Matrix cameraTransform, Rectangle viewport)
     {
         if (_pixel == null) return;
@@ -92,7 +128,7 @@ public class GridRenderer
         foreach (var (index, structureType) in state.Structures)
         {
             var pos = GridPoint.FromIndex(index, state.MapW);
-            DrawStructure(spriteBatch, pos, structureType, state.StructureLevels.GetValueOrDefault(index, 1));
+            DrawStructure(spriteBatch, pos, structureType, state.StructureLevels.GetValueOrDefault(index, DefaultStructureLevel));
         }
 
         // Draw resource nodes
@@ -170,28 +206,18 @@ public class GridRenderer
 
         var rect = TileRect(pos);
 
-        // Use wang_0 (full base terrain tile) from each biome's tileset for detailed art
-        bool drewTileset = TilesetManager.Instance.DrawTile(spriteBatch, baseTerrain, 15, rect);
+        // Use Wang tilesets for non-plains terrain.
+        bool drewTileset = baseTerrain != SimMap.TerrainPlains &&
+                           TilesetManager.Instance.DrawTile(spriteBatch, baseTerrain, TerrainAutoTileMask, rect);
+        int terrainHash = GetDeterministicHash(pos.X, pos.Y, TerrainHashSalt);
 
         if (!drewTileset)
         {
-            // Try grass tile variants for plains (position hash selects variant)
             if (baseTerrain == SimMap.TerrainPlains)
             {
-                int grassHash = (pos.X * 7919 + pos.Y * 7907) & 0x7FFFFFFF;
-                int variant = grassHash % 4;
-                string grassId = $"tile_grass_{variant}";
-                var grassTex = AssetLoader.Instance.GetTexture(grassId);
-                if (grassTex != null)
-                    spriteBatch.Draw(grassTex, rect, Color.White);
-                else
-                {
-                    var plainTex = AssetLoader.Instance.GetTileTexture("plain");
-                    if (plainTex != null)
-                        spriteBatch.Draw(plainTex, rect, Color.White);
-                    else
-                        spriteBatch.Draw(_pixel!, rect, color);
-                }
+                DrawPlainsTerrain(spriteBatch, rect, pos, terrainHash, color);
+                if (!isRoad)
+                    DrawPlainsMacroOverlay(spriteBatch, pos, terrainHash);
             }
             else
             {
@@ -216,12 +242,12 @@ public class GridRenderer
         // Road overlay — draw dirt path on top of base terrain
         if (isRoad)
         {
-            int roadHash = (pos.X * 3571 + pos.Y * 4219) & 0x7FFFFFFF;
-            int roadVariant = roadHash % 3;
+            int roadHash = (pos.X * RoadHashXMultiplier + pos.Y * RoadHashYMultiplier) & 0x7FFFFFFF;
+            int roadVariant = roadHash % RoadVariantCount;
             string roadId = $"tile_road_{roadVariant}";
             var roadTex = AssetLoader.Instance.GetTexture(roadId);
             if (roadTex != null)
-                spriteBatch.Draw(roadTex, rect, Color.White * 0.85f);
+                spriteBatch.Draw(roadTex, rect, Color.White * RoadOverlayAlpha);
             else
                 spriteBatch.Draw(_pixel!, rect, RoadColor);
         }
@@ -231,7 +257,7 @@ public class GridRenderer
         foreach (var edge in transitions)
         {
             Color edgeColor = GetTransitionColor(terrain, edge.NeighborTerrain);
-            int edgeThickness = Math.Max(2, CellSize / 8);
+            int edgeThickness = Math.Max(TransitionMinThickness, CellSize / TransitionThicknessDivisor);
 
             Rectangle edgeRect = edge.Direction switch
             {
@@ -246,28 +272,28 @@ public class GridRenderer
                 spriteBatch.Draw(_pixel!, edgeRect, edgeColor);
         }
 
-        // Grid line
-        spriteBatch.Draw(_pixel!, new Rectangle(rect.X, rect.Y, rect.Width, 1), Color.Black * 0.15f);
-        spriteBatch.Draw(_pixel!, new Rectangle(rect.X, rect.Y, 1, rect.Height), Color.Black * 0.15f);
-
         // Decorative map objects (deterministic scatter based on position hash)
         // Roads don't get decorations; use base terrain for scatter checks
         if (!isRoad)
-            DrawDecorations(spriteBatch, pos, baseTerrain, rect);
+            DrawDecorations(spriteBatch, baseTerrain, rect, pos, terrainHash);
     }
 
-    private void DrawDecorations(SpriteBatch spriteBatch, GridPoint pos, string terrain, Rectangle rect)
+    private void DrawDecorations(SpriteBatch spriteBatch, string terrain, Rectangle rect, GridPoint pos, int terrainHash)
     {
         // Deterministic hash for scatter placement (no RNG needed)
-        int hash = (pos.X * 7919 + pos.Y * 7907) & 0x7FFFFFFF;
+        int hash = terrainHash;
         int chance = hash % 100;
+
+        if (terrain == SimMap.TerrainPlains)
+        {
+            DrawPlainsTufts(spriteBatch, rect, pos, hash);
+            return;
+        }
 
         string? textureName = null;
         int variant = hash / 100 % 4;
         if (terrain == SimMap.TerrainForest && chance < 30)
             textureName = variant switch { 0 => "tree", 1 => "pine", 2 => "tree", _ => "reeds2" };
-        else if (terrain == SimMap.TerrainPlains && chance < 8)
-            textureName = variant switch { 0 => "wildflowers", 1 => "grass_tuft", 2 => "small_stones", _ => "wildflowers" };
         else if (terrain == SimMap.TerrainMountain && chance < 18)
             textureName = variant switch { 0 => "rock", 1 => "mine", 2 => "rock", _ => "campfire" };
         else if (terrain == SimMap.TerrainDesert && chance < 14)
@@ -292,6 +318,253 @@ public class GridRenderer
             decoSize, decoSize);
 
         spriteBatch.Draw(texture, decoRect, Color.White * 0.85f);
+    }
+
+    private static readonly string[] TuftIds = { "tuft_a", "tuft_b", "tuft_c", "tuft_d", "tuft_e" };
+
+    private Texture2D? GetTuftTexture(int localHash)
+    {
+        string tuftId = TuftIds[localHash % TuftIds.Length];
+        return AssetLoader.Instance.GetTexture(tuftId) ?? AssetLoader.Instance.GetTexture("tuft_a");
+    }
+
+    private void DrawPlainsTufts(SpriteBatch spriteBatch, Rectangle rect, GridPoint pos, int hash)
+    {
+        // Pass 1: Edge tufts — placed at tile boundaries to hide seams (85% of tiles)
+        int edgeHash = GetDeterministicHash(pos.X, pos.Y, hash ^ 0x600D);
+        if ((edgeHash % 100) < 85)
+        {
+            // Place 1-3 tufts straddling tile edges
+            int edgeCount = 1 + (edgeHash / 100 % 3);
+            for (int e = 0; e < edgeCount; e++)
+            {
+                int eh = GetDeterministicHash(pos.X + e * 3, pos.Y, edgeHash ^ (e * 5471));
+                var texture = GetTuftTexture(eh);
+                if (texture == null) continue;
+
+                float scale = 0.8f + ((eh >> 6) & 0xF) / 60f;
+                int size = (int)(CellSize * 0.5f * scale);
+                int edge = eh % 4; // 0=top, 1=right, 2=bottom, 3=left
+                int along = (int)(((eh >> 4) & 0x3FF) / 1023f * (CellSize - size));
+
+                int x, y;
+                switch (edge)
+                {
+                    case 0: x = rect.X + along; y = rect.Y - size / 3; break;
+                    case 1: x = rect.Right - size * 2 / 3; y = rect.Y + along; break;
+                    case 2: x = rect.X + along; y = rect.Bottom - size * 2 / 3; break;
+                    default: x = rect.X - size / 3; y = rect.Y + along; break;
+                }
+
+                var effects = (eh & 1) != 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+                spriteBatch.Draw(texture, new Rectangle(x, y, size, size), null,
+                    Color.White * 0.75f, 0f, Vector2.Zero, effects, 0f);
+            }
+        }
+
+        // Pass 2: Interior tufts — random scatter within tile (50% of tiles)
+        if ((hash % 100) < 50)
+        {
+            int count = 1 + (hash / 100 % 3);
+            for (int i = 0; i < count; i++)
+            {
+                int localHash = GetDeterministicHash(pos.X + i, pos.Y, hash ^ (i * 7919));
+                var texture = GetTuftTexture(localHash);
+                if (texture == null) continue;
+
+                float seedX = ((localHash >> 2) & 0x3FF) / 1023f;
+                float seedY = ((localHash >> 12) & 0x3FF) / 1023f;
+
+                float scale = 0.85f + ((localHash >> 6) & 0xF) / 50f;
+                int size = (int)(CellSize * 0.55f * scale);
+                int x = rect.X + (int)(seedX * (rect.Width - size));
+                int y = rect.Y + (int)(seedY * (rect.Height - size));
+
+                var effects = (localHash & 1) != 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+                spriteBatch.Draw(texture, new Rectangle(x, y, size, size), null,
+                    Color.White * 0.80f, 0f, Vector2.Zero, effects, 0f);
+            }
+        }
+
+        // Rare wildflower/stone accents at ~5% density
+        int accentHash = hash ^ unchecked((int)0xdeadbeef);
+        if ((accentHash % 100) < 5)
+        {
+            string accentId = (accentHash / 100 % 2) == 0 ? "wildflowers" : "small_stones";
+            var accentTex = AssetLoader.Instance.GetTexture(accentId);
+            if (accentTex != null)
+            {
+                int ax = rect.X + (accentHash / 1000 % (rect.Width / 2)) + rect.Width / 4;
+                int ay = rect.Y + (accentHash / 10000 % (rect.Height / 2)) + rect.Height / 4;
+                int aSize = CellSize * 2 / 5;
+                spriteBatch.Draw(accentTex, new Rectangle(ax, ay, aSize, aSize), Color.White * 0.7f);
+            }
+        }
+    }
+
+    private void DrawPlainsTerrain(SpriteBatch spriteBatch, Rectangle rect, GridPoint pos, int terrainHash, Color fallbackColor)
+    {
+        // Use large noise cells (9-12) so tone changes gradually across many tiles — no visible steps
+        float tone = GetPlainsField(pos, 11, 73);
+        float warmth = GetPlainsField(pos, 14, 131);
+        var toneColor = new Color(
+            MathHelper.Clamp(0.82f + tone * 0.28f + warmth * 0.05f, 0f, 1.15f),
+            MathHelper.Clamp(0.85f + tone * 0.28f, 0f, 1.15f),
+            MathHelper.Clamp(0.76f + tone * 0.22f, 0f, 1.05f),
+            1f);
+
+        // Layer 1: seamless base — NO flips so Wang tile edges match perfectly between neighbors
+        var baseTex = AssetLoader.Instance.GetTexture("tile_grass_base")
+                   ?? AssetLoader.Instance.GetTexture("tile_grass_simple");
+        if (baseTex != null)
+            spriteBatch.Draw(baseTex, rect, toneColor);
+        else
+            spriteBatch.Draw(_pixel!, rect, fallbackColor);
+
+        // Layer 2: flipped overlay at 30% alpha to break repetition — seams hidden by transparency
+        if (baseTex != null)
+        {
+            var flip = GetPlainsFlip(terrainHash);
+            var overRect = new Rectangle(rect.X - 2, rect.Y - 2, rect.Width + 4, rect.Height + 4);
+            spriteBatch.Draw(baseTex, overRect, null, toneColor * 0.30f, 0f, Vector2.Zero, flip, 0f);
+        }
+    }
+
+    private void DrawPlainsMacroOverlay(SpriteBatch spriteBatch, GridPoint pos, int terrainHash)
+    {
+        DrawPlainsMacroPatch(
+            spriteBatch,
+            pos,
+            terrainHash,
+            macroCell: 6,
+            patchSalt: unchecked((int)0x9e3779b9),
+            densityPercent: 80f,
+            alphaPrimary: 0.055f,
+            alphaSecondary: 0.03f,
+            stretch: 0.40f);
+        DrawPlainsMacroPatch(
+            spriteBatch,
+            pos,
+            terrainHash,
+            macroCell: 10,
+            patchSalt: unchecked((int)0xcafef00d),
+            densityPercent: 42f,
+            alphaPrimary: 0.030f,
+            alphaSecondary: 0.018f,
+            stretch: 0.60f);
+    }
+
+    private void DrawPlainsMacroPatch(
+        SpriteBatch spriteBatch,
+        GridPoint pos,
+        int terrainHash,
+        int macroCell,
+        int patchSalt,
+        float densityPercent,
+        float alphaPrimary,
+        float alphaSecondary,
+        float stretch)
+    {
+        int macroX = pos.X / macroCell;
+        int macroY = pos.Y / macroCell;
+        int macroHash = GetDeterministicHash(macroX, macroY, terrainHash ^ patchSalt);
+        if ((macroHash % 100) >= densityPercent) return;
+
+        int anchorX = macroX * macroCell + ((macroHash & 0x7) % macroCell);
+        int anchorY = macroY * macroCell + ((macroHash >> 3) & 0x7) % macroCell;
+        if (pos.X != anchorX || pos.Y != anchorY) return;
+
+        float tone = GetPlainsTone(pos);
+        var toneColor = new Color(
+            MathHelper.Clamp(0.82f + tone * 0.32f, 0f, 1.2f),
+            MathHelper.Clamp(0.82f + tone * 0.32f, 0f, 1.2f),
+            MathHelper.Clamp(0.82f + tone * 0.32f, 0f, 1.2f),
+            1f);
+
+        int primaryIdx = GetPlainsVariant(pos, patchSalt, 4, macroCell + 4);
+        int secondaryIdx = GetPlainsVariant(pos, patchSalt ^ 0x55aa, 4, macroCell + 5);
+        if (secondaryIdx == primaryIdx) secondaryIdx = (secondaryIdx + 1) % 4;
+        string overlayPrimaryId = $"tile_grass_{primaryIdx}";
+        string overlaySecondaryId = $"tile_grass_{secondaryIdx}";
+
+        var macroPrimary = AssetLoader.Instance.GetTexture(overlayPrimaryId);
+        var macroSecondary = AssetLoader.Instance.GetTexture(overlaySecondaryId);
+        if (macroPrimary == null && macroSecondary == null) return;
+
+        int macroW = macroCell - ((macroHash >> 1) & 1);
+        int macroH = macroCell - ((macroHash >> 2) & 1);
+        float macroShiftX = (((macroHash >> 3) & 0x7) - 3.5f) * stretch;
+        float macroShiftY = (((macroHash >> 6) & 0x7) - 3.5f) * stretch;
+        var macroRect = new Rectangle(
+            macroX * CellSize * macroCell + (int)macroShiftX,
+            macroY * CellSize * macroCell + (int)macroShiftY,
+            macroW * CellSize + 2,
+            macroH * CellSize + 2);
+
+        var primaryFlip = GetPlainsFlip(macroHash);
+        var secondaryFlip = GetPlainsFlip(macroHash ^ unchecked((int)0x85ebca6b));
+
+        if (macroPrimary != null)
+            spriteBatch.Draw(macroPrimary, macroRect, null, toneColor * alphaPrimary, 0f, Vector2.Zero, primaryFlip, 0f);
+
+        if (macroSecondary != null && overlayPrimaryId != overlaySecondaryId)
+            spriteBatch.Draw(macroSecondary, macroRect, null, toneColor * alphaSecondary, 0f, Vector2.Zero, secondaryFlip, 0f);
+    }
+
+    private int GetPlainsVariant(GridPoint pos, int salt, int variantCount, int cellSize = 7)
+    {
+        float noise = GetPlainsField(pos, cellSize, salt);
+        int variant = (int)(noise * variantCount);
+        if (variant >= variantCount) variant = variantCount - 1;
+        return variant;
+    }
+
+    private float GetPlainsTone(GridPoint pos)
+    {
+        const int toneCell = 5;
+        return GetPlainsField(pos, toneCell, 73);
+    }
+
+    private float GetPlainsField(GridPoint pos, int cellSize, int salt)
+    {
+        int toneCellX = Math.Max(0, pos.X / cellSize);
+        int toneCellY = Math.Max(0, pos.Y / cellSize);
+        float localX = (float)(pos.X % cellSize) / cellSize;
+        float localY = (float)(pos.Y % cellSize) / cellSize;
+
+        float n00 = Hash01(toneCellX, toneCellY, salt);
+        float n10 = Hash01(toneCellX + 1, toneCellY, salt);
+        float n01 = Hash01(toneCellX, toneCellY + 1, salt);
+        float n11 = Hash01(toneCellX + 1, toneCellY + 1, salt);
+
+        float top = MathHelper.Lerp(n00, n10, localX);
+        float bottom = MathHelper.Lerp(n01, n11, localX);
+        return MathHelper.Lerp(top, bottom, localY);
+    }
+
+    private static float Hash01(int x, int y, int salt)
+    {
+        return GetDeterministicHash(x, y, salt) / (float)int.MaxValue;
+    }
+
+    private static SpriteEffects GetPlainsFlip(int hash)
+    {
+        var effects = SpriteEffects.None;
+        if ((hash & 1) != 0) effects |= SpriteEffects.FlipHorizontally;
+        if ((hash & 2) != 0) effects |= SpriteEffects.FlipVertically;
+        return effects;
+    }
+
+    private static int GetDeterministicHash(int x, int y, int salt = 0)
+    {
+        unchecked
+        {
+            int h = x * 31 + y * 17 + salt;
+            h ^= (h << 13);
+            h ^= (h >> 17);
+            h ^= (h << 5);
+            return h & 0x7FFFFFFF;
+        }
     }
 
     /// <summary>Get the transition edge color based on the neighboring terrain type.</summary>
@@ -803,7 +1076,7 @@ public class GridRenderer
     private void DrawCursor(SpriteBatch spriteBatch, GridPoint pos)
     {
         var rect = TileRect(pos);
-        DrawRectOutline(spriteBatch, rect, CursorColor, 3);
+        DrawRectOutline(spriteBatch, rect, CursorColor, CursorOutlineThickness);
     }
 
     private void DrawFog(SpriteBatch spriteBatch, GameState state)
@@ -826,7 +1099,7 @@ public class GridRenderer
         {
             var pos = GridPoint.FromIndex(tileIdx, state.MapW);
             var rect = TileRect(pos);
-            spriteBatch.Draw(_pixel!, rect, FogColor * 0.7f);
+            spriteBatch.Draw(_pixel!, rect, FogColor * FogTileAlpha);
         }
     }
 
@@ -848,17 +1121,20 @@ public class GridRenderer
                 if (!state.Discovered.Contains(idx))
                 {
                     var rect = TileRect(new GridPoint(x, y));
-                    spriteBatch.Draw(_pixel!, rect, FogColor * 0.85f);
+                    spriteBatch.Draw(_pixel!, rect, FogColor * ChunkFogTileAlpha);
                 }
             }
         }
     }
 
+    /// <summary>Computes the center point of a grid tile during coordinate conversion for world-space overlays.</summary>
+    /// <param name="pos">Grid position to convert.</param>
+    /// <returns>World-space pixel center of the tile.</returns>
     public Vector2 TileCenter(GridPoint pos)
     {
         return new Vector2(
-            Origin.X + pos.X * CellSize + CellSize * 0.5f,
-            Origin.Y + pos.Y * CellSize + CellSize * 0.5f);
+            Origin.X + pos.X * CellSize + CellSize * TileCenterOffsetFactor,
+            Origin.Y + pos.Y * CellSize + CellSize * TileCenterOffsetFactor);
     }
 
     private Rectangle TileRect(GridPoint pos)
@@ -884,7 +1160,7 @@ public class GridRenderer
                 npcPos = new GridPoint(Convert.ToInt32(xObj), Convert.ToInt32(yObj));
             else continue;
 
-            if (playerPos.ManhattanDistance(npcPos) <= 1)
+            if (playerPos.ManhattanDistance(npcPos) <= InteractionPromptDistance)
             {
                 DrawPromptBubble(spriteBatch, npcPos, "[E] Talk");
                 break; // Only show one prompt at a time
@@ -898,7 +1174,7 @@ public class GridRenderer
             float cooldown = Convert.ToSingle(nodeData.GetValueOrDefault("cooldown", 0f));
             if (cooldown > 0) continue;
 
-            if (playerPos.ManhattanDistance(nPos) <= 1)
+            if (playerPos.ManhattanDistance(nPos) <= InteractionPromptDistance)
             {
                 DrawPromptBubble(spriteBatch, nPos, "[E] Harvest");
                 break;
@@ -912,19 +1188,19 @@ public class GridRenderer
 
         var rect = TileRect(pos);
         var textSize = _font.MeasureString(text);
-        float scale = 0.5f;
-        int pillWidth = (int)(textSize.X * scale) + 10;
-        int pillHeight = (int)(textSize.Y * scale) + 6;
+        float scale = PromptBubbleScale;
+        int pillWidth = (int)(textSize.X * scale) + PromptBubbleWidthPadding;
+        int pillHeight = (int)(textSize.Y * scale) + PromptBubbleHeightPadding;
         int pillX = rect.X + (rect.Width - pillWidth) / 2;
-        int pillY = rect.Y - pillHeight - 6;
+        int pillY = rect.Y - pillHeight - PromptBubbleYOffset;
 
         // Dark background pill
         spriteBatch.Draw(_pixel, new Rectangle(pillX, pillY, pillWidth, pillHeight),
-            Color.Black * 0.75f);
+            Color.Black * PromptBubbleBackgroundAlpha);
 
         // Cyan text
         spriteBatch.DrawString(_font, text,
-            new Vector2(pillX + 5, pillY + 3), ThemeColors.AccentCyan,
+            new Vector2(pillX + PromptTextXOffset, pillY + PromptTextYOffset), ThemeColors.AccentCyan,
             0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
     }
 

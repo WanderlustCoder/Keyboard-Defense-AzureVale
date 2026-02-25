@@ -11,9 +11,41 @@ namespace KeyboardDefense.Game.Services;
 public class NotificationManager
 {
     private static NotificationManager? _instance;
+    /// <summary>
+    /// Gets the shared notification manager instance.
+    /// </summary>
     public static NotificationManager Instance => _instance ??= new();
 
-    public enum NotificationType { Info, Success, Warning, Error, Achievement, Combo }
+    /// <summary>
+    /// Defines supported notification categories for styling and behavior.
+    /// </summary>
+    public enum NotificationType
+    {
+        /// <summary>
+        /// Represents a general informational message.
+        /// </summary>
+        Info,
+        /// <summary>
+        /// Represents a positive success message.
+        /// </summary>
+        Success,
+        /// <summary>
+        /// Represents a warning message.
+        /// </summary>
+        Warning,
+        /// <summary>
+        /// Represents an error message.
+        /// </summary>
+        Error,
+        /// <summary>
+        /// Represents an achievement unlock message.
+        /// </summary>
+        Achievement,
+        /// <summary>
+        /// Represents a combo milestone message.
+        /// </summary>
+        Combo
+    }
 
     private readonly Queue<Notification> _queue = new();
     private Notification? _active;
@@ -23,9 +55,20 @@ public class NotificationManager
     private const float AchievementDisplayTime = 5.0f;
     private const int MaxQueueSize = 10;
 
+    /// <summary>
+    /// Occurs when a notification becomes active and is shown.
+    /// </summary>
     public event Action<Notification>? NotificationShown;
+    /// <summary>
+    /// Occurs when the active notification is dismissed after its duration ends.
+    /// </summary>
     public event Action? NotificationDismissed;
 
+    /// <summary>
+    /// Enqueues a notification message if the queue has available capacity.
+    /// </summary>
+    /// <param name="message">The notification message text.</param>
+    /// <param name="type">The notification type that controls duration and styling.</param>
     public void Push(string message, NotificationType type = NotificationType.Info)
     {
         if (_queue.Count >= MaxQueueSize) return;
@@ -39,16 +82,30 @@ public class NotificationManager
         _queue.Enqueue(notification);
     }
 
+    /// <summary>
+    /// Enqueues a formatted achievement notification with title and description.
+    /// </summary>
+    /// <param name="title">The achievement title.</param>
+    /// <param name="description">The achievement description text.</param>
     public void PushAchievement(string title, string description)
     {
         Push($"Achievement Unlocked: {title}\n{description}", NotificationType.Achievement);
     }
 
+    /// <summary>
+    /// Enqueues a formatted combo notification.
+    /// </summary>
+    /// <param name="comboCount">The combo multiplier value.</param>
+    /// <param name="message">The combo message text.</param>
     public void PushCombo(int comboCount, string message)
     {
         Push($"COMBO x{comboCount}! {message}", NotificationType.Combo);
     }
 
+    /// <summary>
+    /// Advances notification timers and activates the next queued notification when needed.
+    /// </summary>
+    /// <param name="deltaTime">Elapsed update time in seconds.</param>
     public void Update(float deltaTime)
     {
         if (_active != null)
@@ -71,10 +128,22 @@ public class NotificationManager
         }
     }
 
+    /// <summary>
+    /// Gets the currently active notification, if any.
+    /// </summary>
     public Notification? Current => _active;
+    /// <summary>
+    /// Gets a value indicating whether a notification is currently active.
+    /// </summary>
     public bool HasActive => _active != null;
+    /// <summary>
+    /// Gets the number of queued notifications waiting to be displayed.
+    /// </summary>
     public int QueueCount => _queue.Count;
 
+    /// <summary>
+    /// Clears queued notifications and dismisses any active notification immediately.
+    /// </summary>
     public void Clear()
     {
         _queue.Clear();
@@ -82,15 +151,36 @@ public class NotificationManager
     }
 }
 
+/// <summary>
+/// Represents a single notification item with timing and presentation data.
+/// </summary>
 public class Notification
 {
+    /// <summary>
+    /// Gets or sets the notification message text.
+    /// </summary>
     public string Message { get; set; } = "";
+    /// <summary>
+    /// Gets or sets the notification type.
+    /// </summary>
     public NotificationManager.NotificationType Type { get; set; }
+    /// <summary>
+    /// Gets or sets the total display duration in seconds.
+    /// </summary>
     public float Duration { get; set; }
+    /// <summary>
+    /// Gets or sets the elapsed display time in seconds.
+    /// </summary>
     public float Elapsed { get; set; }
 
+    /// <summary>
+    /// Gets the normalized display progress in the range 0..1.
+    /// </summary>
     public float Progress => Duration > 0 ? Elapsed / Duration : 1f;
 
+    /// <summary>
+    /// Gets the UI color associated with the current notification type.
+    /// </summary>
     public Color GetColor() => Type switch
     {
         NotificationManager.NotificationType.Success => UI.ThemeColors.Success,
