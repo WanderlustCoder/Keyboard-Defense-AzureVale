@@ -10,7 +10,7 @@ namespace KeyboardDefense.Game.Rendering;
 /// Status effect indicators (burn, slow, poison, etc) shown on units.
 /// Ported from game/status_indicators.gd (162 lines).
 /// </summary>
-public class StatusIndicators
+public class StatusIndicators : IDisposable
 {
     private class Indicator
     {
@@ -142,5 +142,11 @@ public class StatusIndicators
     public void Clear()
     {
         _indicators.Clear();
+    }
+
+    public void Dispose()
+    {
+        _pixel?.Dispose();
+        _pixel = null;
     }
 }

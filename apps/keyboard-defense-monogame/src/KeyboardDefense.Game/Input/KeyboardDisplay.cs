@@ -11,7 +11,7 @@ namespace KeyboardDefense.Game.Input;
 /// Visual keyboard display with key highlighting, finger zones, and feedback.
 /// Ported from game/keyboard_display.gd (358 lines).
 /// </summary>
-public class KeyboardDisplay
+public class KeyboardDisplay : IDisposable
 {
     private static readonly string[][] Rows =
     {
@@ -165,5 +165,11 @@ public class KeyboardDisplay
 
         // Inactive
         return new Color(30, 30, 40);
+    }
+
+    public void Dispose()
+    {
+        _pixel?.Dispose();
+        _pixel = null;
     }
 }

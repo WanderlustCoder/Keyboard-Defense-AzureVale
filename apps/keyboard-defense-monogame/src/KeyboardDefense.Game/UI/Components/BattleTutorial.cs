@@ -12,7 +12,7 @@ namespace KeyboardDefense.Game.UI.Components;
 /// Ported from scripts/BattleTutorial.gd.
 /// Shows Elder Lyra dialogue with trigger-based step progression.
 /// </summary>
-public class BattleTutorial
+public class BattleTutorial : IDisposable
 {
     private int _currentStep;
     private bool _waitingForTrigger;
@@ -255,5 +255,11 @@ public class BattleTutorial
         DrawFilledRect(spriteBatch, new Rectangle(rect.X, rect.Bottom - 1, rect.Width, 1), color);
         DrawFilledRect(spriteBatch, new Rectangle(rect.X, rect.Y, 1, rect.Height), color);
         DrawFilledRect(spriteBatch, new Rectangle(rect.Right - 1, rect.Y, 1, rect.Height), color);
+    }
+
+    public void Dispose()
+    {
+        _pixel?.Dispose();
+        _pixel = null;
     }
 }

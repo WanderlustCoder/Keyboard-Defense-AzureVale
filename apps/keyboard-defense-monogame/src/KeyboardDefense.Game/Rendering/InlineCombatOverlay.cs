@@ -13,7 +13,7 @@ namespace KeyboardDefense.Game.Rendering;
 /// combo counter with tiered colors, encounter banner, and approach timers.
 /// Follows the CombatVfx SpriteBatch overlay pattern.
 /// </summary>
-public class InlineCombatOverlay
+public class InlineCombatOverlay : IDisposable
 {
     private Texture2D? _pixel;
     private SpriteFont? _font;
@@ -223,5 +223,11 @@ public class InlineCombatOverlay
     {
         _displayCombo = 0;
         _comboPopTimer = 0;
+    }
+
+    public void Dispose()
+    {
+        _pixel?.Dispose();
+        _pixel = null;
     }
 }

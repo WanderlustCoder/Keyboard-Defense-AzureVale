@@ -9,7 +9,7 @@ namespace KeyboardDefense.Game.Effects;
 /// Screen transition effects (fade, wipe, etc).
 /// Ported from game/scene_transition.gd (265 lines).
 /// </summary>
-public class SceneTransition
+public class SceneTransition : IDisposable
 {
     /// <summary>
     /// Supported full-screen transition overlay styles.
@@ -206,5 +206,11 @@ public class SceneTransition
         }
 
         spriteBatch.End();
+    }
+
+    public void Dispose()
+    {
+        _pixel?.Dispose();
+        _pixel = null;
     }
 }

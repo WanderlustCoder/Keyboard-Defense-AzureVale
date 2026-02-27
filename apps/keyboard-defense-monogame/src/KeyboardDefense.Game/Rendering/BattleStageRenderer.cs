@@ -12,7 +12,7 @@ namespace KeyboardDefense.Game.Rendering;
 /// Visual combat arena renderer for the battlefield screen.
 /// Draws castle, enemies advancing, projectiles, HP bar, word progress.
 /// </summary>
-public class BattleStageRenderer
+public class BattleStageRenderer : IDisposable
 {
     private Texture2D? _pixel;
     private SpriteFont? _font;
@@ -807,5 +807,11 @@ public class BattleStageRenderer
         spriteBatch.Draw(_pixel!, new Rectangle(rect.X, rect.Bottom - thickness, rect.Width, thickness), color);
         spriteBatch.Draw(_pixel!, new Rectangle(rect.X, rect.Y, thickness, rect.Height), color);
         spriteBatch.Draw(_pixel!, new Rectangle(rect.Right - thickness, rect.Y, thickness, rect.Height), color);
+    }
+
+    public void Dispose()
+    {
+        _pixel?.Dispose();
+        _pixel = null;
     }
 }

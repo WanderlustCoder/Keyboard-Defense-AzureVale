@@ -9,7 +9,7 @@ namespace KeyboardDefense.Game.UI.Components;
 /// Toast notification overlay drawn via SpriteBatch.
 /// Ported from ui/components/notification_toast.gd.
 /// </summary>
-public class NotificationToast
+public class NotificationToast : IDisposable
 {
     private Notification? _current;
     private float _alpha;
@@ -140,4 +140,10 @@ public class NotificationToast
         NotificationManager.NotificationType.Success => _iconSuccess,
         _ => null,
     };
+
+    public void Dispose()
+    {
+        _pixel?.Dispose();
+        _pixel = null;
+    }
 }

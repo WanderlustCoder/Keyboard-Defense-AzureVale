@@ -10,7 +10,7 @@ namespace KeyboardDefense.Game.Rendering;
 /// QWERTY keyboard overlay with finger zone colors, key flash on press,
 /// and next-expected-key highlight.
 /// </summary>
-public class KeyboardOverlay
+public class KeyboardOverlay : IDisposable
 {
     private Texture2D? _pixel;
     private SpriteFont? _font;
@@ -210,5 +210,11 @@ public class KeyboardOverlay
         spriteBatch.Draw(_pixel!, new Rectangle(rect.X, rect.Bottom - thickness, rect.Width, thickness), color);
         spriteBatch.Draw(_pixel!, new Rectangle(rect.X, rect.Y, thickness, rect.Height), color);
         spriteBatch.Draw(_pixel!, new Rectangle(rect.Right - thickness, rect.Y, thickness, rect.Height), color);
+    }
+
+    public void Dispose()
+    {
+        _pixel?.Dispose();
+        _pixel = null;
     }
 }

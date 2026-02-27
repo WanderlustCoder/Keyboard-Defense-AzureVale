@@ -9,7 +9,7 @@ namespace KeyboardDefense.Game.Rendering;
 /// Red vignette border flash on encounter enter/exit transitions.
 /// Follows the CombatVfx SpriteBatch overlay pattern.
 /// </summary>
-public class CombatTransition
+public class CombatTransition : IDisposable
 {
     private Texture2D? _pixel;
     private float _timer;
@@ -74,5 +74,11 @@ public class CombatTransition
         spriteBatch.Draw(_pixel, new Rectangle(0, border, border, screenHeight - border * 2), tint);
         // Right edge
         spriteBatch.Draw(_pixel, new Rectangle(screenWidth - border, border, border, screenHeight - border * 2), tint);
+    }
+
+    public void Dispose()
+    {
+        _pixel?.Dispose();
+        _pixel = null;
     }
 }

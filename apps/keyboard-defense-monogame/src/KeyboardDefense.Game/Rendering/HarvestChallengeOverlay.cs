@@ -9,7 +9,7 @@ namespace KeyboardDefense.Game.Rendering;
 /// Centered overlay during harvest_challenge mode.
 /// Shows node name, challenge word with per-char coloring, and cancel hint.
 /// </summary>
-public class HarvestChallengeOverlay
+public class HarvestChallengeOverlay : IDisposable
 {
     private Texture2D? _pixel;
     private SpriteFont? _font;
@@ -137,5 +137,11 @@ public class HarvestChallengeOverlay
         spriteBatch.Draw(_pixel!, new Rectangle(rect.X, rect.Bottom - thickness, rect.Width, thickness), color);
         spriteBatch.Draw(_pixel!, new Rectangle(rect.X, rect.Y, thickness, rect.Height), color);
         spriteBatch.Draw(_pixel!, new Rectangle(rect.Right - thickness, rect.Y, thickness, rect.Height), color);
+    }
+
+    public void Dispose()
+    {
+        _pixel?.Dispose();
+        _pixel = null;
     }
 }

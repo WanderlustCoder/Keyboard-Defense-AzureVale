@@ -11,7 +11,7 @@ namespace KeyboardDefense.Game.Rendering;
 /// If UI textures are loaded, draws textured corners + tiled edges.
 /// Otherwise falls back to gradient backgrounds, borders, highlights, and corner dots.
 /// </summary>
-public class NineSliceFrame
+public class NineSliceFrame : IDisposable
 {
     private Texture2D? _pixel;
     private SpriteFont? _font;
@@ -211,5 +211,11 @@ public class NineSliceFrame
         sb.Draw(_pixel!, new Rectangle(rect.X, rect.Bottom - thickness, rect.Width, thickness), color);
         sb.Draw(_pixel!, new Rectangle(rect.X, rect.Y + thickness, thickness, rect.Height - thickness * 2), color);
         sb.Draw(_pixel!, new Rectangle(rect.Right - thickness, rect.Y + thickness, thickness, rect.Height - thickness * 2), color);
+    }
+
+    public void Dispose()
+    {
+        _pixel?.Dispose();
+        _pixel = null;
     }
 }

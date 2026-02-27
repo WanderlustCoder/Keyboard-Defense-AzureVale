@@ -10,7 +10,7 @@ namespace KeyboardDefense.Game.UI.Components;
 /// Debug performance overlay showing FPS, memory usage, and draw call estimate.
 /// Toggle visibility with F3 key. Draws in top-right corner.
 /// </summary>
-public class PerfOverlay
+public class PerfOverlay : IDisposable
 {
     private const float UpdateInterval = 0.5f;
     private const int Padding = 8;
@@ -140,5 +140,11 @@ public class PerfOverlay
             0f, Vector2.Zero, 0.8f, SpriteEffects.None, 0f);
 
         _spriteBatch.End();
+    }
+
+    public void Dispose()
+    {
+        _pixel?.Dispose();
+        _pixel = null!;
     }
 }

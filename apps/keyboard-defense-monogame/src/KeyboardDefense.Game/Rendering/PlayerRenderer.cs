@@ -10,7 +10,7 @@ namespace KeyboardDefense.Game.Rendering;
 /// 4-directional facing with idle/walk states.
 /// Falls back to colored rectangle until Pixel Lab avatar is generated.
 /// </summary>
-public class PlayerRenderer
+public class PlayerRenderer : IDisposable
 {
     private Texture2D? _pixel;
     private SpriteFont? _font;
@@ -105,5 +105,11 @@ public class PlayerRenderer
         spriteBatch.Draw(_pixel, new Rectangle(rect.X, rect.Bottom - thickness, rect.Width, thickness), color);
         spriteBatch.Draw(_pixel, new Rectangle(rect.X, rect.Y, thickness, rect.Height), color);
         spriteBatch.Draw(_pixel, new Rectangle(rect.Right - thickness, rect.Y, thickness, rect.Height), color);
+    }
+
+    public void Dispose()
+    {
+        _pixel?.Dispose();
+        _pixel = null;
     }
 }

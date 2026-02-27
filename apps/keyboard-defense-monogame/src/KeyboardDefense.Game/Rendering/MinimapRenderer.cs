@@ -12,7 +12,7 @@ namespace KeyboardDefense.Game.Rendering;
 /// Renders a minimap overview of the game world.
 /// Ported from game/minimap_renderer.gd (325 lines).
 /// </summary>
-public class MinimapRenderer
+public class MinimapRenderer : IDisposable
 {
     /// <summary>
     /// Snapshot of minimap tile colors and marker positions derived from game state.
@@ -328,5 +328,11 @@ public class MinimapRenderer
         sb.Draw(_pixel, new Rectangle(rect.X, rect.Bottom - thickness, rect.Width, thickness), color);
         sb.Draw(_pixel, new Rectangle(rect.X, rect.Y + thickness, thickness, rect.Height - thickness * 2), color);
         sb.Draw(_pixel, new Rectangle(rect.Right - thickness, rect.Y + thickness, thickness, rect.Height - thickness * 2), color);
+    }
+
+    public void Dispose()
+    {
+        _pixel?.Dispose();
+        _pixel = null;
     }
 }

@@ -11,7 +11,7 @@ namespace KeyboardDefense.Game.Rendering;
 /// Particle-based hit effects with object pooling.
 /// Ported from game/hit_effects.gd (373 lines).
 /// </summary>
-public class HitEffects
+public class HitEffects : IDisposable
 {
     private class Particle
     {
@@ -276,5 +276,11 @@ public class HitEffects
         foreach (var p in _particles)
             _pool.Return(p);
         _particles.Clear();
+    }
+
+    public void Dispose()
+    {
+        _pixel?.Dispose();
+        _pixel = null;
     }
 }

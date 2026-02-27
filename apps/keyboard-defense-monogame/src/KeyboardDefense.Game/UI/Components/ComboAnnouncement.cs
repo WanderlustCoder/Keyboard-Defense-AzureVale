@@ -8,7 +8,7 @@ namespace KeyboardDefense.Game.UI.Components;
 /// Combo streak announcement overlay with scaling text effect and glow.
 /// Ported from ui/components/combo_announcement.gd.
 /// </summary>
-public class ComboAnnouncement
+public class ComboAnnouncement : IDisposable
 {
     private int _comboCount;
     private string _message = "";
@@ -125,5 +125,11 @@ public class ComboAnnouncement
             color * alpha,
             0f, origin, scale,
             SpriteEffects.None, 0);
+    }
+
+    public void Dispose()
+    {
+        _pixel?.Dispose();
+        _pixel = null;
     }
 }

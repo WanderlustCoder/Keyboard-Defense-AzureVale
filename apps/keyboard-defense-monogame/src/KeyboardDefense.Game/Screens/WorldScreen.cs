@@ -152,10 +152,16 @@ public class WorldScreen : GameScreen
         _desktop = null;
         _panelOverlay = null;
 
-        // Dispose GPU resources
+        // Dispose GPU resources — all renderers that create Texture2D
         _pixel?.Dispose();
         _pixel = null;
         _gridRenderer?.Dispose();
+        _minimapRenderer?.Dispose();
+        _playerRenderer?.Dispose();
+        _dayNightOverlay?.Dispose();
+        _combatTransition?.Dispose();
+        _inlineCombatOverlay?.Dispose();
+        _harvestChallengeOverlay?.Dispose();
 
         AudioManager.Instance.StopMusic();
     }

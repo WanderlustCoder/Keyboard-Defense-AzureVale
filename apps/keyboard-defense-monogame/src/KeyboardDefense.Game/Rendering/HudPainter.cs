@@ -9,7 +9,7 @@ namespace KeyboardDefense.Game.Rendering;
 /// rectangles, borders, gradients, progress bars, icon+label pairs, shadowed/glow text.
 /// Manages its own 1x1 pixel texture and font reference.
 /// </summary>
-public class HudPainter
+public class HudPainter : IDisposable
 {
     private Texture2D? _pixel;
     private SpriteFont? _font;
@@ -110,5 +110,11 @@ public class HudPainter
         // Main text
         sb.DrawString(_font, text, pos, color,
             0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+    }
+
+    public void Dispose()
+    {
+        _pixel?.Dispose();
+        _pixel = null;
     }
 }

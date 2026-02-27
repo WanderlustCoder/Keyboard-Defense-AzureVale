@@ -8,7 +8,7 @@ namespace KeyboardDefense.Game.Rendering;
 /// Visual tint overlay based on time of day (0.0-1.0).
 /// Night: dark blue. Dawn/dusk: warm gradients. Day: clear.
 /// </summary>
-public class DayNightOverlay
+public class DayNightOverlay : IDisposable
 {
     private Texture2D? _pixel;
 
@@ -78,5 +78,11 @@ public class DayNightOverlay
         // Dusk → night
         float nightProgress = (t - DuskEnd) / (1f - DuskEnd);
         return Color.Lerp(DuskColor, NightColor, nightProgress);
+    }
+
+    public void Dispose()
+    {
+        _pixel?.Dispose();
+        _pixel = null;
     }
 }
