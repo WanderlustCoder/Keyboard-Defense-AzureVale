@@ -99,7 +99,8 @@ public class TypingProfile
     /// <summary>Get characters with accuracy below WeakKeyThreshold, sorted weakest first.</summary>
     public List<char> GetWeakKeys()
     {
-        return KeyStats
+        var snapshot = KeyStats.ToList();
+        return snapshot
             .Where(kv => kv.Value.Total >= MinSamplesForWeakKey)
             .Where(kv => (double)kv.Value.Correct / kv.Value.Total < WeakKeyThreshold)
             .OrderBy(kv => (double)kv.Value.Correct / kv.Value.Total)
@@ -110,7 +111,8 @@ public class TypingProfile
     /// <summary>Get characters with accuracy above StrongKeyThreshold, sorted strongest first.</summary>
     public List<char> GetStrongKeys()
     {
-        return KeyStats
+        var snapshot = KeyStats.ToList();
+        return snapshot
             .Where(kv => kv.Value.Total >= MinSamplesForWeakKey)
             .Where(kv => (double)kv.Value.Correct / kv.Value.Total >= StrongKeyThreshold)
             .OrderByDescending(kv => (double)kv.Value.Correct / kv.Value.Total)
@@ -151,8 +153,9 @@ public class TypingProfile
     /// <summary>Get the overall accuracy rate.</summary>
     public double GetOverallAccuracy()
     {
-        int totalCorrect = KeyStats.Values.Sum(k => k.Correct);
-        int totalAttempts = KeyStats.Values.Sum(k => k.Total);
+        var values = KeyStats.Values.ToList();
+        int totalCorrect = values.Sum(k => k.Correct);
+        int totalAttempts = values.Sum(k => k.Total);
         if (totalAttempts == 0) return 1.0;
         return (double)totalCorrect / totalAttempts;
     }
@@ -290,7 +293,7 @@ public class TypingProfile
 
     private ProfileData ToData() => new()
     {
-        KeyStats = KeyStats.ToDictionary(kv => kv.Key.ToString(), kv => new[] { kv.Value.Correct, kv.Value.Total }),
+        KeyStats = KeyStats.ToList().ToDictionary(kv => kv.Key.ToString(), kv => new[] { kv.Value.Correct, kv.Value.Total }),
         Sessions = Sessions,
         TotalCharsTyped = TotalCharsTyped,
         TotalWordsTyped = TotalWordsTyped,
