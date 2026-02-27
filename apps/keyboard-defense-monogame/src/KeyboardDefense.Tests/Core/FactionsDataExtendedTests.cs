@@ -10,6 +10,7 @@ namespace KeyboardDefense.Tests.Core;
 /// Extended tests for FactionsData — relation boundary thresholds, status transitions,
 /// daily decay edge cases, clamping, and FactionDef defaults.
 /// </summary>
+[Collection("StaticData")]
 public class FactionsDataExtendedTests
 {
     // =========================================================================
