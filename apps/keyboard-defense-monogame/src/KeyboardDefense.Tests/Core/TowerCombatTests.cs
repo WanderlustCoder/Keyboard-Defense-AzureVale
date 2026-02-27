@@ -255,8 +255,8 @@ public class TowerCombatTests
         {
             ["name"] = name,
             ["category"] = category,
-            ["x"] = x,
-            ["y"] = y,
+            ["pos_x"] = x,
+            ["pos_y"] = y,
             ["damage"] = damage,
             ["target_mode"] = targetMode,
             ["damage_type"] = damageType,
@@ -279,8 +279,8 @@ public class TowerCombatTests
         return new Dictionary<string, object>
         {
             ["id"] = id,
-            ["x"] = x,
-            ["y"] = y,
+            ["pos_x"] = x,
+            ["pos_y"] = y,
             ["hp"] = hp,
             ["armor"] = armor,
             ["alive"] = alive,

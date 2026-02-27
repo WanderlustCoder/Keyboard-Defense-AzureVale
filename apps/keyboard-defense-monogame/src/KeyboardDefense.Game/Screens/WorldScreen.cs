@@ -152,6 +152,11 @@ public class WorldScreen : GameScreen
         _desktop = null;
         _panelOverlay = null;
 
+        // Dispose GPU resources
+        _pixel?.Dispose();
+        _pixel = null;
+        _gridRenderer?.Dispose();
+
         AudioManager.Instance.StopMusic();
     }
 

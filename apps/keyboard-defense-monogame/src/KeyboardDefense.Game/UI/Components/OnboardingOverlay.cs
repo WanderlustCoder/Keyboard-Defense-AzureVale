@@ -13,7 +13,7 @@ namespace KeyboardDefense.Game.UI.Components;
 /// Shows contextual hints and step-by-step guidance for new players.
 /// Ported from game/onboarding_flow.gd.
 /// </summary>
-public class OnboardingOverlay
+public class OnboardingOverlay : IDisposable
 {
     private int _currentStep;
     private bool _finished;
@@ -22,6 +22,7 @@ public class OnboardingOverlay
 
     private float _animTimer;
     private bool _visible = true;
+    private Texture2D? _pixel;
 
     public bool IsActive => !_finished && !_dismissed;
 
@@ -226,10 +227,19 @@ public class OnboardingOverlay
         return result + currentLine;
     }
 
-    private static void DrawFilledRect(SpriteBatch spriteBatch, Rectangle rect, Color color)
+    private void DrawFilledRect(SpriteBatch spriteBatch, Rectangle rect, Color color)
     {
-        var pixel = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
-        pixel.SetData(new[] { Color.White });
-        spriteBatch.Draw(pixel, rect, color);
+        if (_pixel == null || _pixel.IsDisposed)
+        {
+            _pixel = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
+            _pixel.SetData(new[] { Color.White });
+        }
+        spriteBatch.Draw(_pixel, rect, color);
+    }
+
+    public void Dispose()
+    {
+        _pixel?.Dispose();
+        _pixel = null;
     }
 }

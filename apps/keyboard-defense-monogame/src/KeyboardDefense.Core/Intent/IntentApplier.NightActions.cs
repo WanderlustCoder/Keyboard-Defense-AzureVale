@@ -139,7 +139,7 @@ public static partial class IntentApplier
         if (hp <= 0)
         {
             int goldReward = Convert.ToInt32(enemy.GetValueOrDefault("gold", 1));
-            state.Gold += goldReward;
+            state.Gold = Math.Min(state.Gold + goldReward, SimBalance.GoldCap);
             state.Enemies.RemoveAt(targetIndex);
             state.EnemiesDefeated++;
             events.Add($"Typed '{wordText}' — {damage} damage. Enemy defeated! +{goldReward} gold.");
@@ -186,7 +186,7 @@ public static partial class IntentApplier
             if (hp <= 0)
             {
                 int goldReward = Convert.ToInt32(target.GetValueOrDefault("gold", 1));
-                state.Gold += goldReward;
+                state.Gold = Math.Min(state.Gold + goldReward, SimBalance.GoldCap);
                 state.EnemiesDefeated++;
                 toRemove.Add(0);
                 events.Add($"Auto-tower defeats enemy! +{goldReward} gold.");

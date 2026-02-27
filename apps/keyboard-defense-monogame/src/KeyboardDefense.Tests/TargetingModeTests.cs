@@ -10,8 +10,8 @@ public class TargetingModeTests
         return new Dictionary<string, object>
         {
             ["id"] = id,
-            ["x"] = x,
-            ["y"] = y,
+            ["pos_x"] = x,
+            ["pos_y"] = y,
             ["hp"] = hp,
             ["max_hp"] = hp,
             ["speed"] = speed,
@@ -23,8 +23,8 @@ public class TargetingModeTests
     {
         return new Dictionary<string, object>
         {
-            ["x"] = x,
-            ["y"] = y,
+            ["pos_x"] = x,
+            ["pos_y"] = y,
             ["target_mode"] = targetMode,
         };
     }
@@ -36,7 +36,7 @@ public class TargetingModeTests
     {
         var state = new GameState();
         // Tower with no explicit target_mode falls back to "nearest"
-        var tower = new Dictionary<string, object> { ["x"] = 0, ["y"] = 0 };
+        var tower = new Dictionary<string, object> { ["pos_x"] = 0, ["pos_y"] = 0 };
         var enemies = new List<Dictionary<string, object>>
         {
             MakeEnemy(1, 5, 5, 10),
@@ -201,7 +201,7 @@ public class TargetingModeTests
         {
             new()
             {
-                ["id"] = 1, ["x"] = 1, ["y"] = 0, ["hp"] = 0,
+                ["id"] = 1, ["pos_x"] = 1, ["pos_y"] = 0, ["hp"] = 0,
                 ["alive"] = false, ["speed"] = 1,
             },
             MakeEnemy(2, 5, 5, 10),
@@ -221,7 +221,7 @@ public class TargetingModeTests
         {
             new()
             {
-                ["id"] = 1, ["x"] = 1, ["y"] = 0, ["hp"] = 0,
+                ["id"] = 1, ["pos_x"] = 1, ["pos_y"] = 0, ["hp"] = 0,
                 ["alive"] = false, ["speed"] = 1,
             },
         };
@@ -266,7 +266,7 @@ public class TargetingModeTests
     [Fact]
     public void FindAoeTargets_ReturnsEnemiesWithinRadius()
     {
-        var center = new Dictionary<string, object> { ["x"] = 5, ["y"] = 5 };
+        var center = new Dictionary<string, object> { ["pos_x"] = 5, ["pos_y"] = 5 };
         var enemies = new List<Dictionary<string, object>>
         {
             MakeEnemy(1, 5, 6, 10),   // distance 1, in range
@@ -281,13 +281,13 @@ public class TargetingModeTests
     [Fact]
     public void FindAoeTargets_ExcludesDeadEnemies()
     {
-        var center = new Dictionary<string, object> { ["x"] = 0, ["y"] = 0 };
+        var center = new Dictionary<string, object> { ["pos_x"] = 0, ["pos_y"] = 0 };
         var enemies = new List<Dictionary<string, object>>
         {
             MakeEnemy(1, 1, 0, 10),
             new()
             {
-                ["id"] = 2, ["x"] = 0, ["y"] = 1, ["hp"] = 0,
+                ["id"] = 2, ["pos_x"] = 0, ["pos_y"] = 1, ["hp"] = 0,
                 ["alive"] = false, ["speed"] = 1,
             },
         };
@@ -337,15 +337,15 @@ public class TargetingModeTests
     [Fact]
     public void ManhattanDistance_CalculatesCorrectly()
     {
-        var a = new Dictionary<string, object> { ["x"] = 0, ["y"] = 0 };
-        var b = new Dictionary<string, object> { ["x"] = 3, ["y"] = 4 };
+        var a = new Dictionary<string, object> { ["pos_x"] = 0, ["pos_y"] = 0 };
+        var b = new Dictionary<string, object> { ["pos_x"] = 3, ["pos_y"] = 4 };
         Assert.Equal(7, Targeting.ManhattanDistance(a, b));
     }
 
     [Fact]
     public void ManhattanDistance_SamePoint_ReturnsZero()
     {
-        var a = new Dictionary<string, object> { ["x"] = 5, ["y"] = 5 };
+        var a = new Dictionary<string, object> { ["pos_x"] = 5, ["pos_y"] = 5 };
         Assert.Equal(0, Targeting.ManhattanDistance(a, a));
     }
 
@@ -431,7 +431,7 @@ public class TargetingModeTests
     [Fact]
     public void TowerTargetMode_MissingKey_DefaultsToNearest()
     {
-        var tower = new Dictionary<string, object> { ["x"] = 0, ["y"] = 0 };
+        var tower = new Dictionary<string, object> { ["pos_x"] = 0, ["pos_y"] = 0 };
         // No "target_mode" key at all
         Assert.False(tower.ContainsKey("target_mode"));
 

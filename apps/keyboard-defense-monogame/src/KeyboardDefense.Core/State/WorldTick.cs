@@ -131,7 +131,7 @@ public static class WorldTick
         foodReward = (int)(foodReward * resMult);
 
         // Apply rewards
-        state.Gold += goldReward;
+        state.Gold = Math.Min(state.Gold + goldReward, Balance.SimBalance.GoldCap);
         state.Resources["wood"] = state.Resources.GetValueOrDefault("wood", 0) + woodReward;
         state.Resources["stone"] = state.Resources.GetValueOrDefault("stone", 0) + stoneReward;
         state.Resources["food"] = state.Resources.GetValueOrDefault("food", 0) + foodReward;
@@ -145,6 +145,8 @@ public static class WorldTick
         state.Ap = state.ApMax;
         state.WaveCooldown = (float)WaveCooldownDuration;
         state.Day++;
+        state.TradeHistory.Clear();
+        state.CompletedDailyChallenges.Clear();
     }
 
     private static void EndEncounter(GameState state)

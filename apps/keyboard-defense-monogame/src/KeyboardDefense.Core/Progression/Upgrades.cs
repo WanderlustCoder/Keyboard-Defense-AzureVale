@@ -82,6 +82,10 @@ public static class Upgrades
         // Check prerequisites
         if (upgrade.GetValueOrDefault("requires") is string req && !string.IsNullOrEmpty(req))
         {
+            // Validate the prerequisite ID actually exists in upgrade definitions
+            var reqUpgrade = category == "kingdom" ? GetKingdomUpgrade(req) : GetUnitUpgrade(req);
+            if (reqUpgrade == null)
+                return new() { ["ok"] = false, ["error"] = $"Prerequisite '{req}' not found in upgrade definitions." };
             if (!purchased.Contains(req))
                 return new() { ["ok"] = false, ["error"] = $"Requires {req} first." };
         }

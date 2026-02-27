@@ -143,6 +143,7 @@ public static partial class IntentApplier
     private static void ApplyDemolish(GameState state, Dictionary<string, object> intent, List<string> events)
     {
         if (!RequireDay(state, events)) return;
+        if (!ConsumeAp(state, events)) return;
         var pos = IntentPosition(state, intent);
         int index = SimMap.Idx(pos.X, pos.Y, state.MapW);
         if (!state.Structures.ContainsKey(index))

@@ -115,7 +115,7 @@ public static class Quests
         var rewards = new List<string>();
         if (quest.Rewards.TryGetValue("gold", out int gold))
         {
-            state.Gold += gold;
+            state.Gold = Math.Min(state.Gold + gold, Balance.SimBalance.GoldCap);
             rewards.Add($"+{gold} gold");
         }
         if (quest.Rewards.TryGetValue("skill_point", out int sp))

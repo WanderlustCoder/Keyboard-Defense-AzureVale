@@ -109,7 +109,7 @@ public static class Crafting
         int current = 0;
         if (state.Inventory.TryGetValue(item, out var val))
             current = Convert.ToInt32(val);
-        state.Inventory[item] = current + 1;
+        state.Inventory[item] = Math.Min(current + 1, 999);
     }
 }
 

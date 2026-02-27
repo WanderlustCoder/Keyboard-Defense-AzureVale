@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using KeyboardDefense.Core.Balance;
 using KeyboardDefense.Core.State;
 
 namespace KeyboardDefense.Core.Progression;
@@ -201,7 +202,7 @@ public static class DailyChallenges
             return new() { ["ok"] = false, ["error"] = "Challenge not available today." };
 
         state.CompletedDailyChallenges.Add(challengeId);
-        state.Gold += challenge.Reward;
+        state.Gold = Math.Min(state.Gold + challenge.Reward, Balance.SimBalance.GoldCap);
 
         return new()
         {

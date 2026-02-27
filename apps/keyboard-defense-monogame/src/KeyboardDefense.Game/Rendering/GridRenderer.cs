@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using KeyboardDefense.Core.State;
@@ -14,7 +15,7 @@ namespace KeyboardDefense.Game.Rendering;
 /// Renders the game grid: terrain, structures, enemies, fog of war, cursor.
 /// Simplified port of game/grid_renderer.gd (38K+ lines - core rendering only).
 /// </summary>
-public class GridRenderer
+public class GridRenderer : IDisposable
 {
     private const int DefaultCellSize = 48;
     private const int SinglePixelTextureSize = 1;
@@ -124,8 +125,8 @@ public class GridRenderer
             }
         }
 
-        // Draw structures
-        foreach (var (index, structureType) in state.Structures)
+        // Draw structures (Y-sorted for correct depth ordering)
+        foreach (var (index, structureType) in state.Structures.OrderBy(kvp => kvp.Key / state.MapW))
         {
             var pos = GridPoint.FromIndex(index, state.MapW);
             DrawStructure(spriteBatch, pos, structureType, state.StructureLevels.GetValueOrDefault(index, DefaultStructureLevel));
@@ -1214,5 +1215,11 @@ public class GridRenderer
         spriteBatch.Draw(_pixel!, new Rectangle(rect.X, rect.Y, thickness, rect.Height), color);
         // Right
         spriteBatch.Draw(_pixel!, new Rectangle(rect.Right - thickness, rect.Y, thickness, rect.Height), color);
+    }
+
+    public void Dispose()
+    {
+        _pixel?.Dispose();
+        _pixel = null;
     }
 }

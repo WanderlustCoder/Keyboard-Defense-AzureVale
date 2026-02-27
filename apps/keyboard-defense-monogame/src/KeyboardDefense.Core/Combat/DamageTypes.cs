@@ -25,13 +25,18 @@ public static class DamageTypes
 
         // Type interaction bonuses
         string affix = enemy.GetValueOrDefault("affix", "")?.ToString() ?? "";
+        bool frozenConsumed = false;
         damage = damageType switch
         {
             DamageType.Holy when affix != "" => (int)(damage * 1.5), // 1.5x vs affixed
             DamageType.Lightning => (int)(damage * 1.2), // Default lightning bonus
-            DamageType.Fire when HasEffect(enemy, "frozen") => damage * 3, // 3x vs frozen
+            DamageType.Fire when HasEffect(enemy, "frozen") => FireConsumesFrozen(damage, out frozenConsumed), // 3x vs frozen
             _ => damage,
         };
+
+        // Remove frozen effect after fire consumes it
+        if (frozenConsumed)
+            RemoveEffect(enemy, "frozen");
 
         return Math.Max(1, damage);
     }
@@ -67,6 +72,19 @@ public static class DamageTypes
         DamageType.Pure => "Pure",
         _ => "Unknown",
     };
+
+    private static int FireConsumesFrozen(int damage, out bool consumed)
+    {
+        consumed = true;
+        return damage * 3;
+    }
+
+    private static void RemoveEffect(Dictionary<string, object> enemy, string effectId)
+    {
+        if (enemy.GetValueOrDefault("effects") is not List<Dictionary<string, object>> effects)
+            return;
+        effects.RemoveAll(eff => eff.GetValueOrDefault("id")?.ToString() == effectId);
+    }
 
     private static bool HasEffect(Dictionary<string, object> enemy, string effectId)
     {

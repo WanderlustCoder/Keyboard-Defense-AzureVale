@@ -288,8 +288,7 @@ public static partial class IntentApplier
         var (ok, copy, _) = SaveManager.StateFromJson(json);
         if (ok && copy != null)
             return copy;
-        // Fallback: return source (mutations will affect original)
-        return source;
+        throw new InvalidOperationException("State copy failed: JSON roundtrip error");
     }
 
     // --- Common helpers ---

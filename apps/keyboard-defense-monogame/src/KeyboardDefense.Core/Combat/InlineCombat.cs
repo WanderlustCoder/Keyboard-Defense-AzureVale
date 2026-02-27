@@ -59,6 +59,7 @@ public static class InlineCombat
         if (target == null)
         {
             events.Add($"Miss! No enemy has the word '{input}'.");
+            TypingMetrics.ResetCombo(state);
             // Track errors in typing metrics
             if (state.TypingMetrics.TryGetValue("battle_errors", out var errObj))
                 state.TypingMetrics["battle_errors"] = Convert.ToInt32(errObj) + 1;
@@ -96,7 +97,7 @@ public static class InlineCombat
             int tier = Convert.ToInt32(target.GetValueOrDefault("tier", 0));
             double profGoldMult = TypingProficiency.GetGoldMultiplier(profTier);
             int goldReward = (int)((3 + tier * 2) * profGoldMult);
-            state.Gold += goldReward;
+            state.Gold = Math.Min(state.Gold + goldReward, Balance.SimBalance.GoldCap);
 
             events.Add($"Defeated {kind}! +{goldReward} gold. ({damage} damage)");
 

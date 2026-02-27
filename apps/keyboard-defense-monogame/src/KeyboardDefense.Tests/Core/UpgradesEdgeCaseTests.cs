@@ -204,6 +204,7 @@ public class UpgradesEdgeCaseTests
             },
             unit: new()
             {
+                Upgrade("shared-base", 5),
                 Upgrade("unit-elite", 25, requires: "shared-base")
             },
             action: () =>

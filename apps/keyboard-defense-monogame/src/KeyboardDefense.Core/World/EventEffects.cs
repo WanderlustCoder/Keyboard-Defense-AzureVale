@@ -40,7 +40,7 @@ public static class EventEffects
     private static string ApplyGoldAdd(GameState state, Dictionary<string, object> effect)
     {
         int amount = Convert.ToInt32(effect.GetValueOrDefault("amount", 0));
-        state.Gold += amount;
+        state.Gold = Math.Min(state.Gold + amount, Balance.SimBalance.GoldCap);
         return amount > 0 ? $"+{amount} gold" : $"{amount} gold";
     }
 

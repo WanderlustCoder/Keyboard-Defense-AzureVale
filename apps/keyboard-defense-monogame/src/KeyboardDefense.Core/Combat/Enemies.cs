@@ -136,7 +136,7 @@ public static class Enemies
         {
             if (!enemy.ContainsKey("word") || string.IsNullOrEmpty(enemy["word"]?.ToString()))
             {
-                enemy["word"] = "enemy";
+                enemy["word"] = $"enemy_{enemy.GetValueOrDefault("id", 0)}";
             }
         }
     }

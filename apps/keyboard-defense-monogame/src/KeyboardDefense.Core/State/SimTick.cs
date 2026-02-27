@@ -28,6 +28,8 @@ public static class SimTick
     public static Dictionary<string, object> AdvanceDay(GameState state)
     {
         state.Day++;
+        state.TradeHistory.Clear();
+        state.CompletedDailyChallenges.Clear();
         var events = new List<string> { $"Day advanced to {state.Day}." };
         var summary = new List<string>();
 

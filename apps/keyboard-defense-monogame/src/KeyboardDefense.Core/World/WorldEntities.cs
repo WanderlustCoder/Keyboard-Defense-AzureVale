@@ -323,6 +323,9 @@ public static class WorldEntities
 
     private static GridPoint? FindValidPositionInZone(GameState state, string targetZone, int maxAttempts)
     {
+        if (state.MapW < 3 || state.MapH < 3)
+            return new GridPoint(state.MapW / 2, state.MapH / 2);
+
         for (int attempt = 0; attempt < maxAttempts; attempt++)
         {
             int x = SimRng.RollRange(state, 1, state.MapW - 2);

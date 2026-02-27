@@ -38,6 +38,7 @@ public static class ComboSystem
 
     public static int ApplyDamageBonus(int baseDamage, int combo)
     {
+        baseDamage = Math.Max(0, baseDamage);
         int bonus = GetDamageBonusPercent(combo);
         return baseDamage + (baseDamage * bonus / 100);
     }

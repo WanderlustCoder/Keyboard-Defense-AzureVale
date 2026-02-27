@@ -62,6 +62,12 @@ public static class Trade
         if (amount <= 0)
             return Error("Amount must be positive.");
 
+        // Prevent round-trip exploit: each resource pair can only be traded once per day
+        string tradeKey = $"{from}:{to}";
+        if (state.TradeHistory.Contains(tradeKey))
+            return Error($"Already traded {from} to {to} today. Wait until tomorrow.");
+
+
         double rate = GetExchangeRate(from, to, state);
         if (rate <= 0)
             return Error($"No trade route from {from} to {to}.");
@@ -73,7 +79,8 @@ public static class Trade
         int received = Math.Max(1, (int)(amount * rate));
 
         state.Resources[from] = currentFrom - amount;
-        state.Resources[to] = state.Resources.GetValueOrDefault(to, 0) + received;
+        state.Resources[to] = Math.Min(state.Resources.GetValueOrDefault(to, 0) + received, 999);
+        state.TradeHistory.Add(tradeKey);
 
         return new Dictionary<string, object>
         {

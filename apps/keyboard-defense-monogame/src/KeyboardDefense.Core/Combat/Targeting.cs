@@ -53,14 +53,14 @@ public static class Targeting
         int radius)
     {
         var results = new List<Dictionary<string, object>>();
-        var cx = Convert.ToInt32(center.GetValueOrDefault("x", 0));
-        var cy = Convert.ToInt32(center.GetValueOrDefault("y", 0));
+        var cx = Convert.ToInt32(center.GetValueOrDefault("pos_x", 0));
+        var cy = Convert.ToInt32(center.GetValueOrDefault("pos_y", 0));
 
         foreach (var enemy in enemies)
         {
             if (enemy.GetValueOrDefault("alive") is not true) continue;
-            var ex = Convert.ToInt32(enemy.GetValueOrDefault("x", 0));
-            var ey = Convert.ToInt32(enemy.GetValueOrDefault("y", 0));
+            var ex = Convert.ToInt32(enemy.GetValueOrDefault("pos_x", 0));
+            var ey = Convert.ToInt32(enemy.GetValueOrDefault("pos_y", 0));
             var dist = Math.Abs(cx - ex) + Math.Abs(cy - ey);
             if (dist <= radius) results.Add(enemy);
         }
@@ -112,6 +112,10 @@ public static class Targeting
         int bestDist = int.MaxValue;
         foreach (var e in enemies)
         {
+            // Skip dead enemies (hp <= 0)
+            int hp = Convert.ToInt32(e.GetValueOrDefault("hp", 0));
+            if (hp <= 0) continue;
+
             int dist = ManhattanDistance(tower, e);
             if (dist < bestDist)
             {
@@ -166,10 +170,10 @@ public static class Targeting
 
     public static int ManhattanDistance(Dictionary<string, object> a, Dictionary<string, object> b)
     {
-        int ax = Convert.ToInt32(a.GetValueOrDefault("x", 0));
-        int ay = Convert.ToInt32(a.GetValueOrDefault("y", 0));
-        int bx = Convert.ToInt32(b.GetValueOrDefault("x", 0));
-        int by = Convert.ToInt32(b.GetValueOrDefault("y", 0));
+        int ax = Convert.ToInt32(a.GetValueOrDefault("pos_x", 0));
+        int ay = Convert.ToInt32(a.GetValueOrDefault("pos_y", 0));
+        int bx = Convert.ToInt32(b.GetValueOrDefault("pos_x", 0));
+        int by = Convert.ToInt32(b.GetValueOrDefault("pos_y", 0));
         return Math.Abs(ax - bx) + Math.Abs(ay - by);
     }
 

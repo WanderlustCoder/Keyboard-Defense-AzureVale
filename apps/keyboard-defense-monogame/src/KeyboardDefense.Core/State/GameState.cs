@@ -40,6 +40,10 @@ public class GameState
     /// </summary>
     public int Hp { get; set; }
     /// <summary>
+    /// Gets or sets the maximum settlement hit points.
+    /// </summary>
+    public int MaxHp { get; set; } = 10;
+    /// <summary>
     /// Gets or sets the discrete threat score used by encounter pacing systems.
     /// </summary>
     public int Threat { get; set; }
@@ -263,6 +267,11 @@ public class GameState
     /// Gets or sets the day index when the last trade occurred.
     /// </summary>
     public int LastTradeDay { get; set; }
+    /// <summary>
+    /// Gets or sets per-day trade cooldown tracking to prevent round-trip exploits.
+    /// Each entry is a "from:to" pair traded on the current day. Cleared on day advance.
+    /// </summary>
+    public HashSet<string> TradeHistory { get; set; } = new();
 
     // Faction/Diplomacy system
     /// <summary>
@@ -516,6 +525,7 @@ public class GameState
         ApMax = 3;
         Ap = ApMax;
         Hp = 10;
+        MaxHp = 10;
         Threat = 0;
         MapW = 32;
         MapH = 32;

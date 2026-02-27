@@ -69,7 +69,7 @@ public class HudBarOverlay
         x += 10;
 
         // Section 2: HP with progress bar
-        float hpMax = 20f;
+        float hpMax = Math.Max(1, state.MaxHp);
         float hpPct = Math.Clamp(state.Hp / hpMax, 0f, 1f);
         Color hpColor = ThemeColors.GetHealthColor(hpPct);
 
@@ -77,7 +77,7 @@ public class HudBarOverlay
         x += 64;
         _painter.DrawProgressBar(sb, new Rectangle(x, cy - 7, 100, 14), hpPct, hpColor, Color.Black * 0.4f);
         x += 104;
-        _painter.DrawTextShadowed(sb, new Vector2(x, cy - 9), $"{state.Hp}/20", hpColor, 0.6f);
+        _painter.DrawTextShadowed(sb, new Vector2(x, cy - 9), $"{state.Hp}/{state.MaxHp}", hpColor, 0.6f);
         x += 60;
         DrawDivider(sb, x, barRect);
         x += 10;

@@ -73,12 +73,15 @@ public static class Diplomacy
         if (!state.FactionAgreements["war"].Contains(factionId))
             state.FactionAgreements["war"].Add(factionId);
 
-        // Remove other agreements
-        foreach (var (_, list) in state.FactionAgreements)
+        // Remove other agreements (collect keys first to avoid modifying during iteration)
+        var keysToClean = new List<string>();
+        foreach (var (key, list) in state.FactionAgreements)
         {
-            if (list != state.FactionAgreements.GetValueOrDefault("war"))
-                list.Remove(factionId);
+            if (key != "war" && list.Contains(factionId))
+                keysToClean.Add(key);
         }
+        foreach (var key in keysToClean)
+            state.FactionAgreements[key].Remove(factionId);
 
         ModifyRelation(state, factionId, -50);
         return new() { ["ok"] = true, ["message"] = $"War declared on {factionId}!" };

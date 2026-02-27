@@ -62,7 +62,7 @@ public static class Loot
     public static void CollectLoot(GameState state, Dictionary<string, object> loot)
     {
         int gold = Convert.ToInt32(loot.GetValueOrDefault("gold", 0));
-        state.Gold += gold;
+        state.Gold = Math.Min(state.Gold + gold, Balance.SimBalance.GoldCap);
 
         if (loot.TryGetValue("material", out var material) && material is string mat)
         {

@@ -178,7 +178,15 @@ public class WorldCamera
         float maxWorldX = _worldWidth * _cellSize;
         float maxWorldY = _worldHeight * _cellSize;
 
-        _position.X = MathHelper.Clamp(_position.X, halfW, maxWorldX - halfW);
-        _position.Y = MathHelper.Clamp(_position.Y, halfH, maxWorldY - halfH);
+        float minX = halfW;
+        float maxClampX = maxWorldX - halfW;
+        if (minX > maxClampX) { float mid = (minX + maxClampX) / 2; minX = maxClampX = mid; }
+
+        float minY = halfH;
+        float maxClampY = maxWorldY - halfH;
+        if (minY > maxClampY) { float mid = (minY + maxClampY) / 2; minY = maxClampY = mid; }
+
+        _position.X = MathHelper.Clamp(_position.X, minX, maxClampX);
+        _position.Y = MathHelper.Clamp(_position.Y, minY, maxClampY);
     }
 }

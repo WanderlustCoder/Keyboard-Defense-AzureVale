@@ -69,9 +69,9 @@ public class AssetLoader
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Manifest load failure is non-fatal
+                System.Diagnostics.Debug.WriteLine($"AssetLoader: Manifest load failure: {ex.Message}");
             }
         }
 
@@ -95,9 +95,9 @@ public class AssetLoader
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Non-fatal
+                System.Diagnostics.Debug.WriteLine($"AssetLoader: Non-fatal load error: {ex.Message}");
             }
         }
     }
@@ -200,8 +200,9 @@ public class AssetLoader
             using var stream = File.OpenRead(path);
             return Texture2D.FromStream(_device, stream);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine($"AssetLoader: Failed to load {path}: {ex.Message}");
             return null;
         }
     }

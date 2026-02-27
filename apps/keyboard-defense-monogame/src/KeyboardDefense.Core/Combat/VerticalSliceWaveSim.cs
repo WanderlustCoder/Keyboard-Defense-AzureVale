@@ -231,7 +231,7 @@ public static class VerticalSliceWaveSim
         if (hp <= 0)
         {
             int goldReward = Convert.ToInt32(enemy.GetValueOrDefault("gold", DefaultEnemyGoldReward));
-            state.Gold += goldReward;
+            state.Gold = Math.Min(state.Gold + goldReward, Balance.SimBalance.GoldCap);
             state.Enemies.RemoveAt(targetIndex);
             state.EnemiesDefeated++;
             events.Add($"Enemy defeated! +{goldReward} gold.");
@@ -434,7 +434,7 @@ public static class VerticalSliceWaveSim
             if (hp <= 0)
             {
                 int goldReward = Convert.ToInt32(target.GetValueOrDefault("gold", DefaultEnemyGoldReward));
-                state.Gold += goldReward;
+                state.Gold = Math.Min(state.Gold + goldReward, Balance.SimBalance.GoldCap);
                 state.Enemies.RemoveAt(0);
                 state.EnemiesDefeated++;
                 events.Add($"Auto-tower defeats enemy! +{goldReward} gold.");

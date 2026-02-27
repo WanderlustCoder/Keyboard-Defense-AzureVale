@@ -11,7 +11,7 @@ namespace KeyboardDefense.Core.World;
 /// </summary>
 public static class EventTables
 {
-    private static Dictionary<string, List<Dictionary<string, object>>>? _tables;
+    private static volatile Dictionary<string, List<Dictionary<string, object>>>? _tables;
 
     /// <summary>
     /// Loads event table definitions used by subsequent weighted event selection calls.
@@ -26,7 +26,8 @@ public static class EventTables
     /// </summary>
     public static Dictionary<string, object>? SelectEvent(GameState state, string tableId)
     {
-        if (_tables == null || !_tables.TryGetValue(tableId, out var entries))
+        var tables = _tables;
+        if (tables == null || !tables.TryGetValue(tableId, out var entries))
             return null;
 
         var eligible = entries.Where(e => CheckConditions(state, e)).ToList();

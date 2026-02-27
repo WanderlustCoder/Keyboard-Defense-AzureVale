@@ -18,6 +18,7 @@ public class SaveManagerTests
         "ap_max",
         "ap",
         "hp",
+        "max_hp",
         "threat",
         "resources",
         "buildings",

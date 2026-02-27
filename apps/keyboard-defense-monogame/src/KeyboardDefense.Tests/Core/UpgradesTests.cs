@@ -121,6 +121,7 @@ public class UpgradesTests
         WithUpgrades(
             kingdom: new()
             {
+                Upgrade("k-tier-one", 10),
                 Upgrade("k-tier-two", 30, requires: "k-tier-one")
             },
             unit: new(),
@@ -141,6 +142,7 @@ public class UpgradesTests
         WithUpgrades(
             kingdom: new()
             {
+                Upgrade("k-tier-one", 10),
                 Upgrade("k-tier-two", 30, requires: "k-tier-one")
             },
             unit: new(),

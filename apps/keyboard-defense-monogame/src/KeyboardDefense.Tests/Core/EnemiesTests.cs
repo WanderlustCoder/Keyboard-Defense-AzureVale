@@ -284,8 +284,8 @@ public class EnemiesTests
 
         Enemies.EnsureEnemyWords(state);
 
-        Assert.Equal("enemy", state.Enemies[0]["word"]);
-        Assert.Equal("enemy", state.Enemies[1]["word"]);
+        Assert.Equal("enemy_1", state.Enemies[0]["word"]);
+        Assert.Equal("enemy_2", state.Enemies[1]["word"]);
         Assert.Equal("typed", state.Enemies[2]["word"]);
     }
 

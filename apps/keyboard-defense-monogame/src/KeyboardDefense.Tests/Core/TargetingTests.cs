@@ -19,8 +19,8 @@ public class TargetingTests
         return new Dictionary<string, object>
         {
             ["id"] = id,
-            ["x"] = x,
-            ["y"] = y,
+            ["pos_x"] = x,
+            ["pos_y"] = y,
             ["hp"] = hp,
             ["speed"] = speed,
             ["alive"] = alive,
@@ -31,8 +31,8 @@ public class TargetingTests
     {
         return new Dictionary<string, object>
         {
-            ["x"] = x,
-            ["y"] = y,
+            ["pos_x"] = x,
+            ["pos_y"] = y,
             ["target_mode"] = targetMode,
         };
     }
@@ -355,8 +355,8 @@ public class TargetingTests
     {
         var center = new Dictionary<string, object>
         {
-            ["x"] = 5,
-            ["y"] = 5,
+            ["pos_x"] = 5,
+            ["pos_y"] = 5,
         };
         var enemies = new List<Dictionary<string, object>>
         {
@@ -410,13 +410,13 @@ public class TargetingTests
     {
         var a = new Dictionary<string, object>
         {
-            ["x"] = -2,
-            ["y"] = 5,
+            ["pos_x"] = -2,
+            ["pos_y"] = 5,
         };
         var b = new Dictionary<string, object>
         {
-            ["x"] = 3,
-            ["y"] = 1,
+            ["pos_x"] = 3,
+            ["pos_y"] = 1,
         };
 
         Assert.Equal(9, Targeting.ManhattanDistance(a, b));
@@ -428,8 +428,8 @@ public class TargetingTests
     {
         var point = new Dictionary<string, object>
         {
-            ["x"] = 12,
-            ["y"] = -7,
+            ["pos_x"] = 12,
+            ["pos_y"] = -7,
         };
 
         Assert.Equal(0, Targeting.ManhattanDistance(point, point));

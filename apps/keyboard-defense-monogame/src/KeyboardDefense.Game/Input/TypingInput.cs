@@ -15,6 +15,8 @@ public class TypingInput
     private readonly Queue<char> _charBuffer = new();
     private readonly Queue<TypingAction> _actionBuffer = new();
     private bool _attached;
+    private char _lastChar;
+    private long _lastCharTicks;
 
     public enum TypingAction { None, Backspace, Enter, Escape, Tab }
 
@@ -57,6 +59,12 @@ public class TypingInput
         }
         else if (!char.IsControl(c))
         {
+            // Deduplicate: skip if same char arrives within 10ms (same frame)
+            long now = Environment.TickCount64;
+            if (c == _lastChar && now - _lastCharTicks < 10)
+                return;
+            _lastChar = c;
+            _lastCharTicks = now;
             _charBuffer.Enqueue(c);
         }
     }

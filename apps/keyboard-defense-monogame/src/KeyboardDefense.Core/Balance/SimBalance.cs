@@ -15,6 +15,19 @@ public static class SimBalance
     // =========================================================================
 
     /// <summary>
+    /// Maximum gold a player can accumulate. Additions are clamped to this value.
+    /// </summary>
+    public const int GoldCap = 999_999;
+
+    /// <summary>
+    /// Safely adds gold to the game state, clamping at <see cref="GoldCap"/>.
+    /// </summary>
+    public static void AddGold(GameState state, int amount)
+    {
+        state.Gold = Math.Min(state.Gold + amount, GoldCap);
+    }
+
+    /// <summary>
     /// First day when exploration rewards may be redirected toward stone catch-up.
     /// </summary>
     public const int MidgameStoneCatchupDay = 4;

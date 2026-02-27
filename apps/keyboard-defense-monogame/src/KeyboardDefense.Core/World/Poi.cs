@@ -11,7 +11,7 @@ namespace KeyboardDefense.Core.World;
 /// </summary>
 public static class Poi
 {
-    private static Dictionary<string, Dictionary<string, object>>? _poiDefs;
+    private static volatile Dictionary<string, Dictionary<string, object>>? _poiDefs;
 
     public static void LoadPois(Dictionary<string, Dictionary<string, object>> pois)
     {
@@ -20,8 +20,9 @@ public static class Poi
 
     public static Dictionary<string, object>? GetPoiDef(string poiId)
     {
-        if (_poiDefs == null) return null;
-        return _poiDefs.GetValueOrDefault(poiId);
+        var defs = _poiDefs;
+        if (defs == null) return null;
+        return defs.GetValueOrDefault(poiId);
     }
 
     public static bool HasActivePoi(GameState state, string poiId)
